@@ -216,5 +216,5 @@ function extension_api_checker() {
 }
 
 extensions_add_godmode_function('extension_api_checker');
-extensions_add_godmode_menu_option(__('API checker'), 'PM', 'gsetup', null, "v1r1");
+extensions_add_godmode_menu_option(__('API checker'), 'PM', 'gextensions', null, "v1r1");
 ?>

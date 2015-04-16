@@ -2375,12 +2375,12 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	}
 	
 	if (($icon == "") && ($godmode == false)) {
-		$icon = "images/op_monitoring.png";
+		$icon = "";
 	}
 	
 	if ($godmode == true) {
-		$type = "nomn";
-		$type2 = "menu_tab_frame";
+		$type = "view";
+		$type2 = "menu_tab_frame_view";
 		$separator_class = "separator";
 	} 
 	else {
@@ -2393,11 +2393,11 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	$buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
 	
 	
-	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . html_print_image($icon, true, array("style" => "vertical-align:middle;", "class" => "bottom", "border" => "0", "alt" => "")) . '&nbsp; ';
-	$buffer .= '<span style="display: inline-block; vertical-align: top; margin-top: 2px;">' . 
+	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . '&nbsp; ';
+	$buffer .= '<span style="">' . 
 		ui_print_truncate_text($title, 38);
 	if ($help != "")
-		$buffer .= "<div class='head_help' style='float: right; margin-top: -3px !important; margin-left: 2px !important;'>" .
+		$buffer .= "<div class='head_help' style='float: right; margin-top: 3px !important; margin-left: 2px !important;'>" .
 			ui_print_help_icon ($help, true, '', 'images/help_w.png') . "</div>";
 	$buffer .= '</span></li></ul></div>';
 	

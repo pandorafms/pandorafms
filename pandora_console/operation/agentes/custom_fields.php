@@ -52,7 +52,8 @@ if ($fields === false) {
 	echo "<div class='nf'>". __("No fields defined"). "</div>";
 }
 else {
-	$table->width = '98%';
+	$table->width = '100%';
+	$table->class = 'databox data';
 	$table->head = array ();
 	$table->head[0] = __('Field');
 	$table->head[1] = __('Display on front') .
@@ -60,7 +61,7 @@ else {
 	$table->head[2] = __('Description');
 	$table->align = array ();
 	$table->align[1] = 'center';
-	$table->align[2] = 'center';
+	$table->align[2] = 'left';
 	$table->data = array ();
 	
 	foreach ($fields as $field) {

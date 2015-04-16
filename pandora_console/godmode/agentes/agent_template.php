@@ -164,7 +164,6 @@ if (isset ($_POST["template_id"])) {
 // TEMPLATE ASSIGMENT FORM
 // ==========================
 
-echo "<br>";
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'">';
 
 $nps = db_get_all_fields_in_table ("tnetwork_profile", "name");
@@ -177,7 +176,7 @@ foreach ($nps as $row) {
 	$select[$row["id_np"]] = $row["name"];
 }
 
-echo '<table width="98%" cellpadding="2" cellspacing="2" class="databox" >';
+echo '<table width="100%" cellpadding="2" cellspacing="2" class="databox filters" >';
 echo "<tr><td class='datos' style='width:50%'>";
 html_print_select ($select, "template_id", '', '', '', 0, false, false, true, '', false, 'max-width: 200px !important');
 echo '</td>';
@@ -213,10 +212,10 @@ if ($result === false) {
 	$result = array ();
 }
 
-$table->width = '98%';
+$table->width = '100%';
 $table->cellpadding = 4;
 $table->cellspacing = 4;
-$table->class = "databox";
+$table->class = "databox data";
 $table->head = array ();
 $table->data = array ();
 $table->align = array ();

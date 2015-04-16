@@ -209,7 +209,7 @@ $snmp_versions['2'] = 'v. 2';
 $snmp_versions['2c'] = 'v. 2c';
 $snmp_versions['3'] = 'v. 3';
 
-$table->width = '99%';
+$table->width = '100%';
 $table->data = array ();
 
 

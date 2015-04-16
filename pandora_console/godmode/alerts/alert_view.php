@@ -50,7 +50,7 @@ ui_print_page_header (__('Alert details'), "images/op_alerts.png", false, "", fa
 
 // TABLE DETAILS
 
-$table_details->class = 'alternate';
+$table_details->class = 'databox';
 $table_details->width = '100%';
 $table_details->size = array ();
 $table_details->data = array();
@@ -129,7 +129,7 @@ if (enterprise_installed() && $alert['id_policy_alerts'] != 0) {
 
 // TABLE CONDITIONS
 
-$table_conditions->class = 'alternate';
+$table_conditions->class = 'databox';
 $table_conditions->width = '100%';
 $table_conditions->size = array ();
 $table_conditions->data = array();

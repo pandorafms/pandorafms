@@ -51,7 +51,7 @@ echo "<div style='margin-bottom: 30px;'></div>";
 /* Map with the current position */
 echo "<div id=\"" . $agent_name . "_agent_map\" style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
 
-if (!gis_get_agent_map($id_agente, "500px", "98%", true, true, $period)) {
+if (!gis_get_agent_map($id_agente, "500px", "100%", true, true, $period)) {
 	ui_print_error_message(__("There is no default map. Please go to the setup for to set a default map."));
 	echo "<script type='text/javascript'>
 		$(document).ready(function() {
@@ -95,11 +95,14 @@ if ($dataLastPosition !== false) {
 		$dataLastPosition['stored_longitude'] . ", " . $dataLastPosition['stored_latitude'] . ", " . $dataLastPosition['stored_altitude'];
 }
 echo "<br />";
-echo "<form action='index.php?" . $url . "' method='POST'>";
-echo __("Period to show data as path") . ": ";
+echo "<form class='' action='index.php?" . $url . "' method='POST'>";
+echo "<table width=100% class='databox filters'>";
+echo "<tr><td>" . __("Period to show data as path") . ": ";
+echo "<td>";
 html_print_extended_select_for_time ('period', $period, '', '', '0', 10);
+echo "<td>";
 html_print_submit_button(__('Refresh path'), 'refresh', false, 'class = "sub upd"');
-echo "</form>";
+echo "</table></form>";
 
 echo "<h4>" . __("Positional data from the last") . " " . human_time_description_raw ($period) ."</h4>";
 /* Get the total number of Elements for the pagination */ 

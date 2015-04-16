@@ -37,7 +37,7 @@ if ($servers === false) {
 	return;
 }
 
-$table->width = '98%';
+$table->width = '100%';
 $table->size = array ();
 
 $table->style = array ();
@@ -50,7 +50,7 @@ $table->align[4] = 'center';
 $table->align[5] = 'center';
 $table->align[8] = 'center';
 
-$table->title = __('Tactical server information');
+//$table->title = __('Tactical server information');
 $table->titleclass = 'tabletitle';
 $table->titlestyle = 'text-transform:uppercase;';
 
@@ -161,6 +161,10 @@ if ($tiny) {
 	unset($table->head[7]);
 	unset($table->head[8]);
 }
-	
-html_print_table ($table);
+if ($tiny) {
+	ui_toggle(html_print_table ($table,true), __('Tactical server information'));
+}
+else{
+	html_print_table ($table);
+}
 ?>

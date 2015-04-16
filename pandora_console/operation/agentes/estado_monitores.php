@@ -416,7 +416,8 @@ function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 	$status_text_monitor = '', $status_module_group=-1) {
 	
 	$form_text = '';
-	
+	$table->class = "databox filters";
+	$table->width = "100%";
 	$table->data[0][0] = html_print_input_hidden('filter_monitors', 1, true);
 	$table->data[0][0] .= html_print_input_hidden('monitors_change_filter', 1, true);
 	$table->data[0][0] .= __('Status:');

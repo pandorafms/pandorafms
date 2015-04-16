@@ -114,14 +114,14 @@ if (strstr($page, "policy_modules") === false && $id_agent_module) {
 $update_module_id = (int) get_parameter_get ('update_module');
 
 $table_simple->id = 'simple';
-$table_simple->width = '98%';
-$table_simple->class = 'databox_color';
+$table_simple->width = '100%';
+$table_simple->class = 'databox';
 $table_simple->data = array ();
 $table_simple->colspan = array ();
 $table_simple->style = array ();
-$table_simple->style[0] = 'font-weight: bold; vertical-align: top; width: 26%';
+$table_simple->style[0] = 'font-weight: bold; width: 26%;';
 $table_simple->style[1] = 'width: 40%';
-$table_simple->style[2] = 'font-weight: bold; vertical-align: top';
+$table_simple->style[2] = 'font-weight: bold;';
 
 #$table_simple->colspan[4][1] = 3;
 $table_simple->colspan[5][1] = 3;
@@ -292,13 +292,13 @@ else {
 
 /* Advanced form part */
 $table_advanced->id = 'advanced';
-$table_advanced->width = '98%';
-$table_advanced->class = 'databox_color';
+$table_advanced->width = '100%';
+$table_advanced->class = 'databox';
 $table_advanced->data = array ();
 $table_advanced->style = array ();
 $table_advanced->style[0] =
 	$table_advanced->style[3] =
-	$table_advanced->style[5] = 'font-weight: bold; vertical-align: top';
+	$table_advanced->style[5] = 'font-weight: bold;';
 $table_advanced->colspan = array ();
 
 $table_advanced->data[0][0] = __('Description');

@@ -383,7 +383,7 @@ if ($print_agent) {
 }
 
 $table->width = '100%';
-$table->class = "databox";
+$table->class = "databox data";
 if(defined('METACONSOLE')){
 	$table->cellpadding = '0';
 	$table->cellspacing = '0';

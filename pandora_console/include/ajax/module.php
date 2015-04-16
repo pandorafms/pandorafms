@@ -209,7 +209,8 @@ if ($get_module_detail) {
 		$result = array_slice($module_data, $offset, $block_size);
 	}
 	
-	$table->width = '98%';
+	$table->width = '100%';
+	$table->class = 'databox data';
 	$table->data = array();
 	
 	$index = 0;
@@ -673,10 +674,10 @@ if ($list_modules) {
 	if (empty ($modules)) {
 		$modules = array ();
 	}
-	$table->width = "98%";
+	$table->width = "100%";
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
-	$table->class = "databox";
+	$table->class = "databox data";
 	$table->head = array ();
 	$table->data = array ();
 	
@@ -708,7 +709,7 @@ if ($list_modules) {
 		'<a href="' . $url . '&sort_field=last_contact&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
 
 	
-	$table->align = array("left", "left", "center", "left", "left", "center");
+	$table->align = array("center", "left", "center", "left", "left", "center","left","left","center");
 	
 	$last_modulegroup = 0;
 	$rowIndex = 0;

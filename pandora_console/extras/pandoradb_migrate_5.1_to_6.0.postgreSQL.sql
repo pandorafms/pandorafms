@@ -82,3 +82,12 @@ ALTER TABLE "tperfil" ADD COLUMN "vconsole_management" SMALLINT NOT NULL DEFAULT
 UPDATE "tperfil" SET "map_view" = 1, "vconsole_view" = 1 WHERE "report_view" = 1;
 UPDATE "tperfil" SET "map_edit" = 1, "vconsole_edit" = 1 WHERE "report_edit" = 1;
 UPDATE "tperfil" SET "map_management" = 1, "vconsole_management" = 1 WHERE "report_management" = 1;
+
+-- ---------------------------------------------------------------------
+-- Table tsessions_php
+-- ---------------------------------------------------------------------
+CREATE TABLE "tsessions_php" (
+	"id_session" SERIAL NOT NULL PRIMARY KEY,
+	"last_active" INTEGER NOT NULL,
+	"data" TEXT default ''
+);

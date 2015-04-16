@@ -231,9 +231,9 @@ if ($view_mode === false) {
 	if ($config["user_can_update_password"]) {
 		$data = array();
 		$data[0] = __('New Password');
-		$data[0] .= $jump . html_print_input_text_extended ("password_new", "", '', '', '40', '25', $view_mode, '', 'class="input"', true, true);
+		$data[0] .= $jump . html_print_input_text_extended ("password_new", "", '', '', '40', '45', $view_mode, '', 'class="input"', true, true);
 		$data[1] = __('Password confirmation');
-		$data[1] .= $jump . html_print_input_text_extended ("password_conf", "", '', '', '40', '25', $view_mode, '', 'class="input"', true, true);
+		$data[1] .= $jump . html_print_input_text_extended ("password_conf", "", '', '', '40', '45', $view_mode, '', 'class="input"', true, true);
 		$table->rowclass[] = '';
 		$table->rowstyle[] = 'font-weight: bold;';
 		$table->data[] = $data;

@@ -22,7 +22,7 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC150413';
+$build_version = 'PC150415';
 $pandora_version = 'v6.0dev';
 
 // Do not overwrite default timezone set if defined.
@@ -117,6 +117,11 @@ date_default_timezone_set("Europe/Madrid");
 
 
 config_process_config();
+
+config_prepare_session();
+require_once ($config["homedir"].'/include/load_session.php');
+$resultado = session_start();
+
 
 if (!isset($config["homeurl_static"])) {
 	$config["homeurl_static"] = $config["homeurl"];

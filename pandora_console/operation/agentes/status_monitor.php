@@ -97,8 +97,9 @@ if (!defined('METACONSOLE')){
 				$sortField . '&amp;sort=' . $sort .'&amp;pure=' . $config['pure'] . $ag_custom_fields_params . '">';
 	//echo '<table cellspacing="4" cellpadding="4" width="100%" class="databox"><tr>';
 	$table->width = "100%";
-	$table->cellspacing = 4;
-	$table->cellpadding = 4;
+	$table->cellspacing = 0;
+	$table->cellpadding = 0;
+	$table->class = "databox filters";
 }else{
 	$filters = '<form class="filters_form" method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;ag_group=' . 
 			$ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . 
@@ -409,11 +410,11 @@ if(defined("METACONSOLE")){
 	$table->style[4] = 'vertical-align:middle; font-weight: bold;';
 }
 else{
-	$table->style[0] = 'vertical-align:middle;';
-	$table->style[1] = 'vertical-align:middle;';
-	$table->style[2] = 'vertical-align:middle;';
-	$table->style[3] = 'vertical-align:middle;';
-	$table->style[4] = 'vertical-align:middle;';
+	$table->style[0] = 'font-weight: bold;';
+	$table->style[1] = 'font-weight: bold;';
+	$table->style[2] = 'font-weight: bold;';
+	$table->style[3] = 'font-weight: bold;';
+	$table->style[4] = 'font-weight: bold;';
 }
 $table->data[0][0] = __('Group');
 
@@ -501,8 +502,8 @@ if(!defined('METACONSOLE')){
 }
 
 $table_custom_fields = new stdClass();
-$table_custom_fields->class = 'databox';
-$table_custom_fields->width = '99%';
+$table_custom_fields->class = 'filters';
+$table_custom_fields->width = '100%';
 if(defined('METACONSOLE')){
 		$table_custom_fields->width = '100%';
 		$table_custom_fields->class = 'filters';
@@ -924,10 +925,10 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 	}
 }
 
-$table->cellpadding = 4;
-$table->cellspacing = 4;
-$table->width = "98%";
-$table->class = "databox";
+$table->cellpadding = 0;
+$table->cellspacing = 0;
+$table->width = "100%";
+$table->class = "databox data";
 if(defined('METACONSOLE')){
 	$table->width = "100%";
 	$table->cellpadding = '0';
@@ -1002,7 +1003,7 @@ if (! defined ('METACONSOLE')) {
 }
 
 if (! defined ('METACONSOLE'))
-	$table->align[10] = "right";
+	$table->align[10] = "left";
 
 $rowPair = true;
 $iterator = 0;
@@ -1213,7 +1214,6 @@ foreach ($result as $row) {
 	}
 	
 	if ($row['history_data'] == 1 && $acl_graphs) {
-		
 		$graph_type = return_graphtype ($row["module_type"]);
 		
 		$url = ui_get_full_url("operation/agentes/stat_win.php", false, false, false);
@@ -1247,7 +1247,11 @@ foreach ($result as $row) {
 				$row['server_name'] . "\", 0, " . SECONDS_1DAY . ")'>" .
 			html_print_image ("images/binary.png", true,
 				array ("border" => "0", "alt" => "")) . "</a>";
-		
+				
+		$data[7] .= "<span id='hidden_name_module_" . $row["id_agente_modulo"] . "'
+						style='display: none;'>" .
+						$row["module_name"] .
+					"</span>";
 	}
 	
 	$data[8] = ui_print_module_warn_value($row['max_warning'],
@@ -1414,7 +1418,8 @@ ui_require_javascript_file('pandora_modules');
 				period = <?php echo SECONDS_1DAY; ?>;
 			}
 		}
-		
+		valor = $("hidden_name_module_"+module_id);
+		console.log(valor);
 		$.ajax({
 			type: "POST",
 			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",

@@ -60,10 +60,10 @@ if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && !$is_extra) {
 
 // START: TABLE AGENT BUILD
 $table_agent->id = 'agent_details_main';
-$table_agent->width = '100%';
+$table_agent->width = '450px';
 $table_agent->cellspacing = 4;
 $table_agent->cellpadding = 4;
-$table_agent->class = 'databox_frame';
+$table_agent->class = 'databox';
 $table_agent->style[0] = 'width: 16px; text-align:center; padding: 0px;';
 $table_agent->style[5] = 'width: 16px; text-align:center; padding: 0px;';
 $table_agent->styleTable = 'padding:0px;';
@@ -186,7 +186,7 @@ $table_contact->id = 'agent_contact_main';
 $table_contact->width = '100%';
 $table_contact->cellspacing = 4;
 $table_contact->cellpadding = 4;
-$table_contact->class = 'databox';
+$table_contact->class = 'databox data';
 $table_contact->style[0] = 'width: 30%;';
 $table_contact->style[1] = 'width: 70%;';
 
@@ -229,7 +229,7 @@ $table_data->id = 'agent_data_main';
 $table_data->width = '100%';
 $table_data->cellspacing = 4;
 $table_data->cellpadding = 4;
-$table_data->class = 'databox';
+$table_data->class = 'databox data';
 $table_data->style[0] = 'width: 30%;';
 $table_data->style[1] = 'width: 70%;';
 
@@ -483,23 +483,23 @@ if (!empty($network_interfaces)) {
 
 $table = null;
 $table->id = 'agent_details';
-$table->width = '98%';
+$table->width = '100%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
-$table->class = 'databox';
+$table->class = 'agents';
 $table->style = array_fill(0, 3, 'vertical-align: top;');
 
 $data = array();
 $data[0] = html_print_table($table_agent, true);
 $data[0] .=
-	'<fieldset class="databox" style="position: static;">
-		<legend style="text-align:left; color: #666;">' . 
+	'<table width=450px class="databox" style="">
+		<tr><th>' . 
 			__('Events (24h)') . 
-		'</legend>' . 
-		'<div style="margin: auto; text-align:center; width: 300px;">' .
-		graph_graphic_agentevents ($id_agente, 300, 15, SECONDS_1DAY, '', true) . 
-		'</div>' . 
-	'</fieldset>';
+		'</th></tr>' . 
+		'<tr><td style="text-align:center;">' .
+		graph_graphic_agentevents ($id_agente, 450, 15, SECONDS_1DAY, '', true) . 
+		'</td></tr>' . 
+	'</table>';
 
 // ACCESS RATE GRAPH
 $access_agent = db_get_value_sql("SELECT COUNT(id_agent)
@@ -508,16 +508,16 @@ $access_agent = db_get_value_sql("SELECT COUNT(id_agent)
 
 if ($config["agentaccess"] && $access_agent > 0) {
 	$data[0] .=
-		'<fieldset class="databox" style="position: static;">
-			<legend style="text-align:left; color: #666;">' . 
+		'<table width=100% class="databox" style="position: static;">
+		<tr><th>' . 
 				__('Agent access rate (24h)') . 
-			'</legend>' . 
-			'<div style="margin: auto; text-align:center; width: 300px;">' .
+			'</th></tr>' . 
+		'<tr><td style="margin: auto; text-align:center; width: 300px;">' .
 			graphic_agentaccess($id_agente, 300, 100, SECONDS_1DAY, true) . 
-			'</div>' . 
-		'</fieldset>';
+			'</td></tr>' . 
+	'</table>';
 }
-
+$table->style[0] = 'width:40%;';
 $data[1] = html_print_table($table_contact, true);
 $data[1] .= empty($table_data->data) ?
 	'' :
@@ -529,7 +529,7 @@ $data[1] .= !isset($table_interface) ?
 	'' :
 	'<br>' . html_print_table($table_interface, true);
 
-$table->rowspan[0][1] = 2;
+$table->rowspan[0][1] = 0;
 
 $data[2] = '<div style="width:100%; text-align:right">';
 $data[2] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a><br>';

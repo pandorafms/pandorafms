@@ -1578,9 +1578,9 @@ echo '</div>';
 	
 	// Set the position and width of the subtab
 	function agent_wizard_tab_setup() {		
-		$('#agent_wizard_subtabs').css('left', $('.agent_wizard_tab').offset().left)
-		$('#agent_wizard_subtabs').css('top', $('.agent_wizard_tab').offset().top + $('.agent_wizard_tab').height() + 4)
-		$('#agent_wizard_subtabs').css('width', $('.agent_wizard_tab').width() + 6)
+		$('#agent_wizard_subtabs').css('left', $('.agent_wizard_tab').offset().left-5)
+		$('#agent_wizard_subtabs').css('top', $('.agent_wizard_tab').offset().top + $('.agent_wizard_tab').height() + 7)
+		$('#agent_wizard_subtabs').css('width', $('.agent_wizard_tab').width() + 19)
 	}
 	
 	function agent_wizard_tab_show() {

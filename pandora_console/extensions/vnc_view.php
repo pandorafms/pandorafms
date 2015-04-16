@@ -20,7 +20,7 @@ function vnc_view() {
 
 	$display = get_parameter("display", 0);
 	echo "<form method=post>";
-	echo "<table class=databox width=500>";
+	echo "<table class='databox filters' width=100%>";
 	echo "<tr><td>";
 	echo __("VNC Display (:0 by default)") . "&nbsp;";
 	echo "<input type=text name=display value=$display>";

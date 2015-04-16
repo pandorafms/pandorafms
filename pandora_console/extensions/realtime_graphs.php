@@ -128,7 +128,7 @@ function pandora_realtime_graphs () {
 	set_js_value('timezone_offset', date('Z', time()));
 }
 
-extensions_add_operation_menu_option (__('Realtime graphs'), null, null, "v1r1");
+extensions_add_operation_menu_option (__('Realtime graphs'), "estado", null, "v1r1","view");
 extensions_add_main_function ('pandora_realtime_graphs');
 
 $db = NULL;

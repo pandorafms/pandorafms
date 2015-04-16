@@ -327,6 +327,8 @@ function config_update_config () {
 						$error_update[] = __('Password');
 					if (!config_update_value ('double_auth_enabled', get_parameter ('double_auth_enabled')))
 						$error_update[] = __('Double authentication');
+					if (!config_update_value ('session_timeout', get_parameter ('session_timeout')))
+						$error_update[] = __('Session timeout');
 					/////////////
 					break;
 				case 'perf':
@@ -1318,6 +1320,10 @@ function config_process_config () {
 			"");
 	}
 	
+	if (!isset ($config["session_timeout"])) {
+		config_update_value ('session_timeout', 90);
+	}
+	
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }
@@ -1530,5 +1536,22 @@ function config_user_set_custom_config() {
 	if (defined('METACONSOLE')) {
 		$config['metaconsole_access'] = $userinfo["metaconsole_access"];
 	}
+}
+
+function config_prepare_session() {
+	global $config;
+	
+	// Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours
+	$sessionCookieExpireTime = $config["session_timeout"] * 60;
+	ini_set('session.gc_maxlifetime', $sessionCookieExpireTime);
+	session_set_cookie_params ($sessionCookieExpireTime);
+	
+	// Reset the expiration time upon page load //session_name() is default name of session PHPSESSID
+	
+	if (isset($_COOKIE[session_name()]))
+		setcookie(session_name(), $_COOKIE[session_name()], time() + $sessionCookieExpireTime, "/");
+	
+	ini_set("post_max_size",$config["max_file_size"]);
+	ini_set("upload_max_filesize",$config["max_file_size"]);
 }
 ?>

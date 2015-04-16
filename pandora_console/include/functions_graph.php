@@ -2468,6 +2468,67 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 		$config['fontpath'], $config['font_size'], 1, 'bottom');
 }
 
+function grafico_eventos_agente ($width = 300, $height = 200, $result = false, $meta = false, $history = false) {
+	global $config;
+	global $graphic_type;
+	
+	//It was urlencoded, so we urldecode it
+	//$url = html_entity_decode (rawurldecode ($url), ENT_QUOTES);
+	$data = array ();
+	$loop = 0;
+	
+	if ($result === false) {
+		$result = array();
+	}
+	
+	$system_events = 0;
+	$other_events = 0;
+	$total = array();
+	$i = 0;
+	
+	foreach ($result as $row) {
+		if ($meta) {
+			$count[] = $row["agent_name"];
+		}
+		else {
+			if ($row["id_agente"] == 0) {
+				$count[] = __('SYSTEM');
+			}
+			else
+				$count[] = agents_get_name ($row["id_agente"]) ;
+		}
+		
+	}
+	
+	$total = array_count_values($count);
+	
+	foreach ($total as $key => $total) {
+		if ($meta) {
+			$name = $key." (".$total.")";
+		}
+		else {
+			$name = $key." (".$total.")";
+		}
+		$data[$name] = $total;
+	}
+	
+	/*
+	if ($other_events > 0) {
+		$name = __('Other')." (".$other_events.")";
+		$data[$name] = $other_events;
+	}
+	*/
+	
+	// Sort the data
+	arsort($data);
+	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	
+	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+		__('Others'), '', $water_mark,
+		$config['fontpath'], $config['font_size'], 1, 'bottom');
+}
+
 /**
  * Print a pie graph with events data in 320x200 size
  * 

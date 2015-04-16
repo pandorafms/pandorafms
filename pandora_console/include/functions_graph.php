@@ -2897,6 +2897,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	if ($uncompressed_module) {
 		$avg_only = 1;
 	}
+	$search_in_history_db = db_search_in_history_db($datelimit);
 	
 	// Get event data (contains alert data too)
 	if ($show_unknown == 1 || $show_events == 1 || $show_alerts == 1) {
@@ -3609,6 +3610,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	if ($uncompressed_module) {
 		$avg_only = 1;
 	}
+	$search_in_history_db = db_search_in_history_db($datelimit);
 	
 	// Get event data (contains alert data too)
 	if ($show_events == 1 || $show_alerts == 1) {

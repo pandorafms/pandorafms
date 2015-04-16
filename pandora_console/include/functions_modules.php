@@ -1645,6 +1645,23 @@ function modules_get_agentmodule_data ($id_agent_module, $period,
 		$values[$key]["agent_name"] = $agent_name;
 	}
 	
+	if ($search_in_history_db) {
+		$datos = array();
+		foreach ($values as $key => $value) {
+			$utimestamp[$key] = $value['utimestamp'];
+		}
+		
+		array_multisort($utimestamp, SORT_DESC, $values);
+		foreach ($utimestamp as $key => $utimes) {
+			$datos[$key] = array('utimestamp'=>$utimes,
+									'data'=>$values[$key]["data"],
+									'module_name'=>$values[$key]["module_name"],
+									'agent_id'=>$values[$key]["agent_id"],
+									'agent_name'=>$values[$key]["agent_name"]
+								);
+		}
+		$values = $datos;
+	}
 	return $values;
 }
 

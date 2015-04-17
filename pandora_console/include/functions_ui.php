@@ -931,7 +931,7 @@ function ui_print_string_substr ($string, $cutoff = 16, $return = false, $fontsi
 	$font_size_mod = "";
 	
 	if ($fontsize > 0) {
-		$font_size_mod = "style='font-size: ".$fontsize."px'";
+		$font_size_mod = "style='font-size: ".$fontsize."pt'";
 	}
 	$string = '<span '.$font_size_mod.' title="'.io_safe_input($string2).'">'.mb_substr ($string2, 0, $cutoff, "UTF-8").$string3.'</span>';
 	
@@ -2095,6 +2095,9 @@ function ui_toggle($code, $name, $title = '', $hidden_default = true, $return = 
 	$output .= '<a href="javascript:" id="tgl_ctrl_'.$uniqid.'">' . html_print_image ($original, true, array ("title" => $title, "id" => "image_".$uniqid)) . '&nbsp;&nbsp;<b>'.$name.'</b></a>';
 	$output .= '<br />';
 	
+	if (!defined("METACONSOLE"))
+		$output .= '<br />';
+	
 	// Code into a div
 	$output .= "<div id='tgl_div_".$uniqid."' style='".$style."'>\n";
 	$output .= $code;
@@ -2434,7 +2437,10 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 					
 					$buffer .= '<li class="' . $class . '">';
 					$buffer .= $option['text'];
+					if (isset($option['sub_menu']))
+						$buffer .= $option['sub_menu'];
 					$buffer .= '</li>';
+					
 				}
 				else {
 					$buffer .= '<li class="nomn">';

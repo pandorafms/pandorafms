@@ -120,6 +120,7 @@ if (!defined('METACONSOLE')) {
 
 $table = new StdClass();
 $table->width = "100%";
+$table->class='databox filters';
 $table->data = array();
 $table->rowspan = array();
 

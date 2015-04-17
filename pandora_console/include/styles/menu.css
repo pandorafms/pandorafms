@@ -81,23 +81,16 @@ li:hover ul { display: block; }
 	min-height: 35px !important;
 	height: 35px;
 	width: 160px;
+	font-weight: normal !important;
 }
-
-.submenu li a {
-	#background-color: #222;
-	#border-style: none;
-	#border-color: #666;
+.sub_subMenu.selected{
+	font-weight: bold !important;
 }
 
 .submenu2 li a {
-	#background-color: #222;
 	margin-left: 0px;
 	padding-left: 0px;
 	display:block;
-}
-
-.submenu2 li a:hover {
-	#background-color: #111 !important;
 }
 
 .menu li img.toggle {
@@ -106,11 +99,12 @@ li:hover ul { display: block; }
 	/* Positions it back where it should be */
 	border-left: 1px;
 }
+
 .menu li.has_submenu > a > div {
 	background: url(../../images/arrow.png) no-repeat 90% 50%;
 	z-index: 1; /* Positions it on top of the rest */
 }
-.menu li.has_submenu .flecha{
+.menu li.has_submenu .flecha {
 	background: url(../../images/arrow.png) no-repeat 90% 50%;
 	z-index: 1; /* Positions it on top of the rest */
 }
@@ -119,12 +113,8 @@ li:hover ul { display: block; }
 	background-color: #E4E4E4 !important;
 }
 
-.submenu_not_selected a, .submenu2_not_selected a {
+.menu li.submenu_not_selected a, .menu li.submenu2_not_selected a {
 	font-weight: normal !important;
-}
-
-.menu li.submenu_selected a {
-	font-weight: bold;
 }
 
 .submenu_selected {
@@ -145,90 +135,66 @@ li:hover ul { display: block; }
 
 /* Icons specified here */
 #icon_oper-networkconsole {
- 	background: url(../../images/op_network.png) no-repeat 50% 50%;
+ 	background: url(../../images/op_network.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-agents {
 	border-top-right-radius: 5px;
 	border-right-style: solid;
 	border-right-width: 0px;
-	background: url(../../images/op_monitoring.png) no-repeat 50% 50%;
+	background: url(../../images/op_monitoring.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-events {
-	background: url(../../images/op_events.png) no-repeat 50% 50%;
+	background: url(../../images/op_events.menu.png) no-repeat 50% 50%;
 }
 
 /* users */
 #icon_oper-users {
-	background: url(../../images/op_workspace.png) no-repeat 50% 50%;
+	background: url(../../images/op_workspace.menu.png) no-repeat 50% 50%;
 }
 /* trap console */
 #icon_oper-snmpc, #icon_god-snmpc {
-	background: url(../../images/op_snmp.png) no-repeat 50% 50%;
+	background: url(../../images/op_snmp.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-reporting {
-	background: url(../../images/op_reporting.png) no-repeat 50% 50%;
+	background: url(../../images/op_reporting.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-gismaps {
-	background: url(../../images/op_gis.png) no-repeat 50% 50%;
+	background: url(../../images/op_gis.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-netflow {
-	background: url(../../images/op_netflow.png) no-repeat 50% 50%;
+	background: url(../../images/op_netflow.menu.png) no-repeat 50% 50%;
 }
-#icon_oper-extensions, #icon_god-extensions {
-	background: url(../../images/extensions.png) no-repeat 50% 50%;
+#icon_oper-extensions {
+	background: url(../../images/extensions.menu.png) no-repeat 50% 50%;
 }
 
 /* Godmode images */
-#icon_god-gismaps {
-	background: url(../../images/gm_gis.png) no-repeat 50% 50%;
+#icon_god-resources {
+	background: url(../../images/gm_resources.menu.png) no-repeat 50% 50%;
 }
-#icon_god-agents {
-	background: url(../../images/gm_monitoring.png) no-repeat 50% 50%;
-}
-#icon_god-massive {
-	background: url(../../images/gm_massive_operations.png) no-repeat 50% 50%;
-}
-#icon_god-services {
-	background: url(../../images/box.png) no-repeat 50% 50%;
-}
-#icon_god-modules {
-	background: url(../../images/gm_modules.png) no-repeat 50% 50%;
+#icon_god-configuration {
+	background: url(../../images/gm_configuration.menu.png) no-repeat 50% 50%;
 }
 #icon_god-alerts {
-	background: url(../../images/gm_alerts.png) no-repeat 50% 50%;
-}
-#icon_god-dbmaint {
-	background: url(../../images/gm_db.png) no-repeat 50% 50%;
+	background: url(../../images/gm_alerts.menu.png) no-repeat 50% 50%;
 }
 #icon_god-users {
-	background: url(../../images/gm_users.png) no-repeat 50% 50%;
+	background: url(../../images/gm_users.menu.png) no-repeat 50% 50%;
 }
 #icon_god-reporting {
-	background: url(../../images/reporting_edit.png) no-repeat 50% 50%;
+	background: url(../../images/reporting_edit.menu.png) no-repeat 50% 50%;
 }
 #icon_god-servers {
-	background: url(../../images/gm_servers.png) no-repeat 50% 50%;
-}
-#icon_god-audit {
-	background: url(../../images/gm_log.png) no-repeat 50% 50%;
-}
-#icon_god-netflow {
-	background: url(../../images/gm_netflow.png) no-repeat 50% 50%;
+	background: url(../../images/gm_servers.menu.png) no-repeat 50% 50%;
 }
 #icon_god-setup {
-	background: url(../../images/gm_setup.png) no-repeat 50% 50%;
-}
-#icon_god-policies {
-	background: url(../../images/gm_policies.png) no-repeat 50% 50%;
-}
-#icon_oper-inventory {
-	background: url(../../images/page_white_text.png) no-repeat 50% 50%;
-}
-#icon_god-tag {
-	background: url(../../images/tag_red.png) no-repeat 50% 50%;
+	background: url(../../images/gm_setup.menu.png) no-repeat 50% 50%;
 }
 #icon_god-events {
-	background: url(../../images/gm_events.png) no-repeat 50% 50%;
+	background: url(../../images/gm_events.menu.png) no-repeat 50% 50%;
+}
+#icon_god-extensions {
+	background: url(../../images/builder.menu.png) no-repeat 50% 50%;
 }
 
 #menu_container {

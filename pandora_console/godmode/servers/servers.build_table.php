@@ -38,6 +38,7 @@ if ($servers === false) {
 }
 
 $table->width = '100%';
+$table->class = 'databox data';
 $table->size = array ();
 
 $table->style = array ();
@@ -46,9 +47,11 @@ $table->style[0] = 'font-weight: bold';
 $table->align = array ();
 $table->align[1] = 'center';
 $table->align[3] = 'center';
-$table->align[4] = 'center';
-$table->align[5] = 'center';
 $table->align[8] = 'center';
+
+$table->headstyle[1] = 'text-align:center';
+$table->headstyle[3] = 'text-align:center';
+$table->headstyle[8] = 'text-align:center';
 
 //$table->title = __('Tactical server information');
 $table->titleclass = 'tabletitle';
@@ -74,7 +77,7 @@ $table->data = array ();
 
 foreach ($servers as $server) {
 	$data = array ();
-	
+	$table->cellclass[][3] = "progress_bar";
 	$data[0] = '<span title="' . $server['version'] . '">' .
 		$server['name'] . '</span>';
 	
@@ -100,12 +103,12 @@ foreach ($servers as $server) {
 			$data[5] = 'N/A';
 			break;
 		case "export":
-			$data[3] = progress_bar($server["load"], 60, 20, $server["lag_txt"], 0);
+			$data[3] = progress_bar($server["load"], 100, 10, $server["lag_txt"], 0);
 			$data[4] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
 			$data[5] = 'N/A';
 			break;
 		default:
-			$data[3] = progress_bar($server["load"], 60, 20, $server["lag_txt"], 0);
+			$data[3] = progress_bar($server["load"], 100, 10, $server["lag_txt"], 0);
 			$data[4] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
 			$data[5] = '<span style="white-space:nowrap;">' .
 				$server["lag_txt"] . '</span>';
@@ -153,6 +156,7 @@ foreach ($servers as $server) {
 		unset($data[8]);
 	}
 	array_push ($table->data, $data);
+	
 }
 
 if ($tiny) {

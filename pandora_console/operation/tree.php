@@ -108,13 +108,7 @@ switch ($tab) {
 		break;
 }
 
-if (defined('METACONSOLE')) {
-	if ($strict_acl)
-		$header_sub_title = '';
-
-	ui_meta_print_header($header_title, $header_sub_title, $tabs);
-}
-else{
+if (!defined('METACONSOLE')) {
 	if (!$strict_acl)
 		$header_title = $header_title ." - ". $header_sub_title;
 
@@ -153,25 +147,24 @@ $table->rowspan[][count($row)-1] = 2;
 
 $table->data[] = $row;
 
-// Module filter
-$module_status_arr = array();
-$module_status_arr[-1] = __('All'); //default
-$module_status_arr[AGENT_MODULE_STATUS_NORMAL] = __('Normal'); 
-$module_status_arr[AGENT_MODULE_STATUS_WARNING] = __('Warning');
-$module_status_arr[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
-$module_status_arr[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
-$module_status_arr[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
+if (!defined('METACONSOLE')) {
+	// Module filter
+	$module_status_arr = array();
+	$module_status_arr[-1] = __('All'); //default
+	$module_status_arr[AGENT_MODULE_STATUS_NORMAL] = __('Normal'); 
+	$module_status_arr[AGENT_MODULE_STATUS_WARNING] = __('Warning');
+	$module_status_arr[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
+	$module_status_arr[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
+	$module_status_arr[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
 
-$row = array();
-$row[] = __('Module status');
-$row[] = html_print_select($module_status_arr, "status_module", $status_module, '', '', 0, true);
-$row[] = __('Search module');
-if (defined('METACONSOLE'))
-	$row[] = html_print_input_text("search_module", $search_module, '', 70, 30, true);
-else
+	$row = array();
+	$row[] = __('Module status');
+	$row[] = html_print_select($module_status_arr, "status_module", $status_module, '', '', 0, true);
+	$row[] = __('Search module');
 	$row[] = html_print_input_text("search_module", $search_module, '', 40, 30, true);
 
-$table->data[] = $row;
+	$table->data[] = $row;
+}
 
 if (defined('METACONSOLE')) {
 	$table->width = "96%";

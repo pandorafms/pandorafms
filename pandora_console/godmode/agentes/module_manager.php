@@ -126,7 +126,7 @@ if (($policy_page) || (isset($agent))) {
 echo "</table>";
 echo "</form>";
 
-echo '<div style="text-align: right; width: 100%;">';
+echo '<div style="text-align: right; width: 100%;padding-top:10px;padding-bottom:10px">';
 echo "<strong>";
 echo "<a style='color: #004A1B;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules in Pandora FMS Library")."</a>";
 echo "</strong>";
@@ -478,7 +478,7 @@ $total_modules = db_get_value_sql($sql_total_modules);
 $total_modules = isset ($total_modules) ? $total_modules : 0;
 
 if ($modules === false) {
-	echo "<div class='nf'>" . __('No available data to show') . "</div>";
+	ui_print_empty_data ( __('No available data to show') );
 	return;
 }
 

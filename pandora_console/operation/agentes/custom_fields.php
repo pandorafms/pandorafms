@@ -49,15 +49,17 @@ else {
 
 if ($fields === false) {
 	$fields = array();
-	echo "<div class='nf'>". __("No fields defined"). "</div>";
+	ui_print_empty_data ( __("No fields defined") );
 }
 else {
 	$table->width = '100%';
 	$table->class = 'databox data';
 	$table->head = array ();
 	$table->head[0] = __('Field');
+	$table->size[0] = "20%";
 	$table->head[1] = __('Display on front') .
 		ui_print_help_tip (__('The fields with display on front enabled will be displayed into the agent details'), true);
+	$table->size[1] = "10%";
 	$table->head[2] = __('Description');
 	$table->align = array ();
 	$table->align[1] = 'center';

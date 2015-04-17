@@ -355,6 +355,26 @@ if ($id_agente) {
 		. html_print_image ("images/wand_agent.png", true, array ( "title" => __('Agent wizard')))
 		. '</a>';
 	
+	// Hidden subtab layer
+	$agent_wizard['sub_menu'] .=  '<ul class="mn subsubmenu" style="display:none; float:none;">';
+	$agent_wizard['sub_menu'] .=  '<li class="nomn tab_godmode" style="text-align: center;">';
+	$agent_wizard['sub_menu'] .=  '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_explorer&id_agente='.$id_agente.'">'
+			. html_print_image ("images/wand_snmp.png", true, array ( "title" => __('SNMP Wizard')))
+			. '</a>';
+	$agent_wizard['sub_menu'] .=  '</li>';
+	$agent_wizard['sub_menu'] .=  '<li class="nomn tab_godmode" style="text-align: center;">';
+	$agent_wizard['sub_menu'] .=  '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_interfaces_explorer&id_agente='.$id_agente.'">'
+			. html_print_image ("images/wand_interfaces.png", true, array ( "title" => __('SNMP Interfaces wizard')))
+			. '</a>';
+	$agent_wizard['sub_menu'] .=  '</li>';
+	$agent_wizard['sub_menu'] .=  '<li class="nomn tab_godmode" style="text-align: center;">';
+	$agent_wizard['sub_menu'] .=  '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=wmi_explorer&id_agente='.$id_agente.'">'
+			. html_print_image ("images/wand_wmi.png", true, array ( "title" => __('WMI Wizard')))
+			. '</a>';
+	$agent_wizard['sub_menu'] .=  '</li>';
+	$agent_wizard['sub_menu'] .=  '</ul>';
+	
+	
 	if ($tab == "agent_wizard")
 		$agent_wizard['active'] = true;
 	else
@@ -1539,31 +1559,8 @@ switch ($tab) {
 		break;
 }
 
-// Hidden subtab layer
-echo '<div id="agent_wizard_subtabs">';
-echo '<ul class="mn subsubmenu" style="background: #555555;">';
-
-echo '<li class="nomn tab_godmode" style="text-align: center;">';
-echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_explorer&id_agente='.$id_agente.'">'
-		. html_print_image ("images/wand_snmp.png", true, array ( "title" => __('SNMP Wizard')))
-		. '</a>';
-echo '<li>';
-
-echo '<li class="nomn tab_godmode" style="text-align: center;">';
-echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_interfaces_explorer&id_agente='.$id_agente.'">'
-		. html_print_image ("images/wand_interfaces.png", true, array ( "title" => __('SNMP Interfaces wizard')))
-		. '</a>';
-echo '<li>';
-
-echo '<li class="nomn tab_godmode" style="text-align: center;">';
-echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=wmi_explorer&id_agente='.$id_agente.'">'
-		. html_print_image ("images/wand_wmi.png", true, array ( "title" => __('WMI Wizard')))
-		. '</a>';
-echo '<li>';
-
-echo '</ul>';
-echo '</div>';
 ?>
+
 <script type="text/javascript">
 	/* <![CDATA[ */
 	var wizard_tab_showed = 0;
@@ -1572,23 +1569,23 @@ echo '</div>';
 		// Control the tab and subtab hover. When mouse leave one, 
 		// check if is hover the other before hide the subtab
 		$('.agent_wizard_tab').hover(agent_wizard_tab_show, agent_wizard_tab_hide);
-		
-		$('#agent_wizard_subtabs').hover(agent_wizard_tab_show, agent_wizard_tab_hide);
+
 	});
 	
 	// Set the position and width of the subtab
+	/*
 	function agent_wizard_tab_setup() {		
 		$('#agent_wizard_subtabs').css('left', $('.agent_wizard_tab').offset().left-5)
 		$('#agent_wizard_subtabs').css('top', $('.agent_wizard_tab').offset().top + $('.agent_wizard_tab').height() + 7)
 		$('#agent_wizard_subtabs').css('width', $('.agent_wizard_tab').width() + 19)
 	}
-	
+	*/
 	function agent_wizard_tab_show() {
-		agent_wizard_tab_setup();
+		
 		wizard_tab_showed = wizard_tab_showed + 1;
 		
 		if(wizard_tab_showed == 1) {
-			$('#agent_wizard_subtabs').show("fast");
+			$('.subsubmenu').show("fast");
 		}
 	}
 	
@@ -1597,14 +1594,10 @@ echo '</div>';
 		
 		setTimeout(function() {
 			if(wizard_tab_showed <= 0) {
-				$('#agent_wizard_subtabs').hide("fast");
+				$('.subsubmenu').hide("fast");
 			}
-		},500);
+		},1500);
 	}
-	
-	$(window).resize(function() {
-		agent_wizard_tab_setup();
-	});
 	
 	/* ]]> */
 </script>

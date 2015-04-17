@@ -674,7 +674,7 @@ if (isset($data)) {
 	html_print_table ($table);
 }
 else {
-	echo "<div class='nf'>" . __('No alerts defined') . "</div>";
+	ui_print_empty_data ( __('No alerts defined') );
 }
 
 // Create alert button

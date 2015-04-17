@@ -106,16 +106,11 @@ if (empty($modules)) {
 }
 
 $table = null;
-$table->width = '98%';
+$table->width = '100%';
 
 $table->style[0] = 'font-weight: bolder; text-align: right;';
 $table->style[1] = '';
 $table->style[2] = 'font-weight: bolder; text-align: right;';
-
-$table->valign[0] = 'top';
-$table->valign[1] = 'top';
-$table->valign[2] = 'top';
-$table->valign[3] = 'top';
 
 $table->rowspan[0][0] = 6;
 $table->rowspan[0][1] = 6;
@@ -174,7 +169,11 @@ else
 	$date = $utime;
 
 if ($combined) {
-	echo "<h4>" . __('Combined graph') . '</h4>';
+	
+	echo "<div style='width: 555px;'><strong style='font-size:9pt;'>" . __('Combined graph') . '</strong>&nbsp;&nbsp;';
+	html_print_button(__('Save as custom graph'), 'save_custom_graph',
+		false, 'save_custom_graph();', 'class="sub add" style="margin:0px"');
+	echo "</div>";
 	
 	custom_graphs_print(0,
 		$height,
@@ -186,11 +185,6 @@ if ($combined) {
 		false,
 		'white',
 		$modules);
-	
-	echo "<div style='width: 555px; text-align: right;'>";
-	html_print_button(__('Save as custom graph'), 'save_custom_graph',
-		false, 'save_custom_graph();', 'class="sub save"');
-	echo "</div>";
 }
 else {
 	foreach ($modules as $id_module) {
@@ -220,7 +214,7 @@ echo "<div style='clear: both;'></div>";
 //Dialog to save the custom graph
 echo "<div id='dialog_save_custom_graph' style='display: none;'>";
 $table = null;
-$table->width = '98%';
+$table->width = '100%';
 $table->style[0] = 'font-weight: bolder; text-align: right;';
 $table->data[0][0] = __('Name custom graph');
 $table->data[0][1] =

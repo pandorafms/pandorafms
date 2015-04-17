@@ -39,7 +39,7 @@ if (tags_has_user_acl_tags()) {
 <table border="0" width="100%">
 	<tr>
 		
-		<td width="30%" style="padding-right: 10px;" valign="top">
+		<td width="25%" style="padding-right: 20px;" valign="top">
 			
 			
 			<?php
@@ -54,7 +54,7 @@ if (tags_has_user_acl_tags()) {
 			$table->cellspacing = 4;
 			$table->head = array ();
 			$table->data = array ();
-			$table->style[0] = 'text-align:center;';
+			$table->headstyle[0] = 'text-align:center;';
 			$table->width = "100%";
 			$table->head[0] = '<span>' . __('Pandora FMS Overview') . '</span>';
 			$table->head_colspan[0] = 4; 
@@ -103,7 +103,7 @@ if (tags_has_user_acl_tags()) {
 			
 		</td>
 		
-		<td width="70%" valign="top">
+		<td width="75%" valign="top">
 			
 			
 			<?php

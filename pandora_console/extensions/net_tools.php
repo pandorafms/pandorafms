@@ -101,12 +101,12 @@ function main_net_tools () {
 			function mostrarColumns(ValueSelect){
 				value = ValueSelect.value;
 				if ( value==3 ) {
-					document.getElementById('netToolTable').width='100%';
-					document.getElementById('snmpcolumn').style.display='block';
+					$('netToolTable').css('width','100%');
+					$('#snmpcolumn').show();
 				}
 				else{
-					document.getElementById('netToolTable').width='100%';
-					document.getElementById('snmpcolumn').style.display='none';
+					$('netToolTable').css('width','100%');
+					$('#snmpcolumn').hide();
 				}
 			}
 		</script>";
@@ -143,7 +143,7 @@ function main_net_tools () {
 	echo __("SNMP Community") . "&nbsp;";
 	echo "<input name=community type=text value='public'>";
 	echo "</td><td>";
-	echo "<input name=submit type=submit class='sub next' value='".__('Execute')."'>";
+	echo "<input style='margin:0px;' name=submit type=submit class='sub next' value='".__('Execute')."'>";
 	echo "</td>";
 	echo "</tr></table>";
 	echo "</form>";

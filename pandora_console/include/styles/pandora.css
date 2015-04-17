@@ -315,7 +315,7 @@ div#menu {
 	width: 45px;
 	float: left;
 	height: 828px;
-	z-index: 999;
+	z-index: 2000;
 	position: absolute;
 }
 
@@ -613,12 +613,6 @@ input:-webkit-autofill {
 /* END OF LOGIN STYLES */
 /***********************/
 
-label {
-	display: block;
-	padding-top: 4px;
-	font-weight: bold;
-	text-align: left;
-}
 th > label {
 	padding-top: 7px;
 }
@@ -665,6 +659,7 @@ input.target, input.search, input.copy, input.add, input.graph,
 input.percentile, input.binary, input.camera, input.config,
 input.cancel, input.default, input.filter, input.pdf {
 	padding-right: 30px;
+	margin-top: 15px;
 	height: 23px;
 
 }
@@ -1149,10 +1144,6 @@ div.title_line {
 #menu_tab li:hover a {
 	/*background: #b2b08a url("../../images/arrow.png") no-repeat right 3px;*/
 }
-#menu_tab li:hover ul a, #menu_tab .mn ul {
-	background: #db6351;
-	border-top: none;
-}
 
 #menu_tab li.nomn {
 	min-width: 30px;
@@ -1316,6 +1307,11 @@ span.rmess, span.nrmess {
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
+	padding-bottom: 5px;
+
+}
+.databox_color{
+	padding-top: 5px;
 }
 
 table.databox {
@@ -1335,8 +1331,10 @@ table.databox {
 }
 
 .databox th {
-	padding: 5px 7px;
+	padding: 9px 7px;
+	font-weight: normal;
 	color: #fff;
+	padding-left: 10px;
 }
 
 .databox th * {
@@ -1359,8 +1357,9 @@ table.databox {
 .tactical_set{
 	background: #FFF;
 	border: 1px solid #E2E2E2;
-	margin-left: 10%;
-	width: 71%;
+	margin-left: auto;
+	margin-right: auto;
+	width: auto;
 }
 
 /* For use in Netflow */
@@ -1723,7 +1722,7 @@ form#filter_form {
 }
 ul.action_list {
 	margin: 0;
-	list-style: none inside url(../../images/arrow.png);
+	list-style: none inside circle;
 }
 ul.action_list li div {
 	margin-left: 15px;
@@ -2259,10 +2258,6 @@ li.links a:hover  {
 	background-color: #222222 !important;
 }
 
-.menu li.submenu_selected a {
-	font-weight: bold;
-}
-
 .operation {
 	background-color: #333 !important;
 }
@@ -2460,7 +2455,7 @@ input.search_input {
 	margin-top: 8px !important;
 }
 
-a>img, td>img, td>input, td>span {
+a>img, td>input, td>span {
 	vertical-align: middle;
 }
 
@@ -2831,8 +2826,9 @@ table#policy_modules td * {
 }
 
 .status_tactical{
-	width: 78%;
-	margin-left: 10%;
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
 	background-color: #FFF !important;
 	padding: 10px;
 	border: 1px solid #E2E2E2;
@@ -2857,8 +2853,28 @@ table#policy_modules td * {
 }
 
 .databox.data td{
-	padding-left: 5px;
-	border: 1px solid #E2E2E2;
+	padding-left: 10px;
+	border: 1px solid #EFEFEF;
+}
+
+.databox .search{
+	margin-top: 0px;
+}
+
+.databox.data td.progress_bar img{
+	border: 3px solid #000;
+	border-radius: 100px;
+}
+
+.databox td{
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 7px;
+	padding-bottom: 7px;
+}
+.databox.pies fieldset.tactical_set{
+	width:70% !important;
+	height: 285px;
 }
 
 .difference{
@@ -2909,9 +2925,23 @@ table#policy_modules td * {
 	background: none !important ;
 }
 
+.subsubmenu{
+	position: absolute;
+	float: right;
+	z-index: 9999;
+	display: none;
+	margin-top: 6px !important ;
+	left: 0px !important;
+}
+.subsubmenu li{
+	margin-top: 0px !important ;
+}
 
 .databox.filters td{
 	padding: 10px;
+}
+.databox_color td{
+	padding-left: 10px;
 }
 
 .godmode, .menu_icon ul li{
@@ -2923,6 +2953,10 @@ table#policy_modules td * {
 
 .godmode{
 	border-top: 4px solid !important;
+	padding-bottom: 4px !important;
+	border-bottom-right-radius: 5px;
+	border-right-style: solid;
+	border-right-width: 0px;
 }
 /* The items with the class 'spinner' will rotate */
 /* Not supported on IE9 and below */

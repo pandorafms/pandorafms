@@ -42,9 +42,9 @@ function pandora_realtime_graphs () {
 	$canvas .= '</div>';
 	echo $canvas;
 	
-	$table->width = '99%';
+	$table->width = '100%';
 	$table->id = 'table-form';
-	$table->class = 'databox';
+	$table->class = 'databox filters';
 	$table->style = array ();
 	$table->style[0] = 'font-weight: bold;';
 	$table->style[1] = 'font-weight: bold;';
@@ -62,7 +62,7 @@ function pandora_realtime_graphs () {
 	$graph = get_parameter('graph', 'cpu_load');
 	$refresh = get_parameter('refresh', '1000');
 	
-	$data['graph'] = __('Graph') . '<br>' . html_print_select ($graph_fields, 'graph', $graph, '', '', 0, true);
+	$data['graph'] = __('Graph') . '&nbsp;&nbsp;' . html_print_select ($graph_fields, 'graph', $graph, '', '', 0, true);
 	$data['reset'] = html_print_button(__('Clear graph'), 'reset', false, 'clearGraph()', 'class="sub delete"', true);
 
 	$refresh_fields[1000] = human_time_description_raw(1, true, 'large');
@@ -70,8 +70,8 @@ function pandora_realtime_graphs () {
 	$refresh_fields[10000] = human_time_description_raw(10, true, 'large');
 	$refresh_fields[30000] = human_time_description_raw(30, true, 'large');
 	
-	$data['refresh'] = __('Refresh interval') . '<br>' . html_print_select ($refresh_fields, 'refresh', $refresh, '', '', 0, true);
-	$data['incremental'] = __('Incremental') . '<br>' . html_print_checkbox ('incremental', 1, 0, true);
+	$data['refresh'] = __('Refresh interval') . '&nbsp;&nbsp;' . html_print_select ($refresh_fields, 'refresh', $refresh, '', '', 0, true);
+	$data['incremental'] = __('Incremental') . '&nbsp;&nbsp;' . html_print_checkbox ('incremental', 1, 0, true);
 
 	$table->data[] = $data;
 	
@@ -85,10 +85,10 @@ function pandora_realtime_graphs () {
 		
 		$data = array();
 		
-		$data['snmp_address'] = __('Target IP') . '<br>' . html_print_input_text ('ip_target', $snmp_address, '', 50, 255, true);
+		$data['snmp_address'] = __('Target IP') . '&nbsp;&nbsp;' . html_print_input_text ('ip_target', $snmp_address, '', 50, 255, true);
 		$table->colspan[1]['snmp_address'] = 2;
 
-		$data['snmp_community'] = __('Community') . '<br>' . html_print_input_text ('snmp_community', $snmp_community, '', 50, 255, true);
+		$data['snmp_community'] = __('Community') . '&nbsp;&nbsp;' . html_print_input_text ('snmp_community', $snmp_community, '', 50, 255, true);
 		$table->colspan[1]['snmp_community'] = 2;
 
 		$table->data[] = $data;
@@ -99,12 +99,11 @@ function pandora_realtime_graphs () {
 		$snmp_versions['2c'] = '2c';
 		
 		$data = array();
-		$data['snmp_oid'] = __('OID') . '<br>' . html_print_input_text ('snmp_oid', $snmp_oid, '', 100, 255, true);
-		$data['snmp_oid'] .= html_print_button (__('SNMP walk'), 'snmp_walk', false, 'snmpBrowserWindow()', 'class="sub next"', true);
+		$data['snmp_oid'] = __('OID') . '&nbsp;&nbsp;' . html_print_input_text ('snmp_oid', $snmp_oid, '', 100, 255, true);
 		$table->colspan[2]['snmp_oid'] = 2;
 
-		$data['snmp_ver'] = __('Version') . '<br>' . html_print_select ($snmp_versions, 'snmp_version', $snmp_ver, '', '', 0, true);
-		
+		$data['snmp_ver'] = __('Version') . '&nbsp;&nbsp;' . html_print_select ($snmp_versions, 'snmp_version', $snmp_ver, '', '', 0, true);
+		$data['snmp_ver'] .= '&nbsp;&nbsp;' . html_print_button (__('SNMP walk'), 'snmp_walk', false, 'snmpBrowserWindow()', 'class="sub next"', true);
 		$table->colspan[2]['snmp_ver'] = 2;
 		
 		$table->data[] = $data;

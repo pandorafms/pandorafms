@@ -216,7 +216,7 @@ if ($id_agente) {
 	}
 </style>
 <?php
-$table->rowspan[1][2] = 7;
+$table->rowspan[1][2] = 3;
 if ($id_agente) {
 	$table->data[1][2] =
 		"<a id='qr_code_agent_view' href='javascript: show_dialog_qrcode(null, \"" .

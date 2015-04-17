@@ -159,7 +159,7 @@ if (!empty($all_data)) {
 }
 
 echo '<table border=0 style="width:100%;"><tr>';
-echo '<td style="vertical-align: top; min-width: 180px; width:25%; padding-right: 10px; vertical-align: top; padding-top: 0px;" id="leftcolumn">';
+echo '<td style="vertical-align: top; min-width: 180px; width:25%; padding-right: 20px; vertical-align: top; padding-top: 0px;" id="leftcolumn">';
 // ---------------------------------------------------------------------
 // The status horizontal bars (Global health, Monitor sanity...
 // ---------------------------------------------------------------------
@@ -216,7 +216,7 @@ html_print_table($table);
 
 echo '</td>'; //Left column
 
-echo '<td style="vertical-align: top; width: 56%; padding-top: 0px;" id="rightcolumn">';
+echo '<td style="vertical-align: top; width: 75%; padding-top: 0px;" id="rightcolumn">';
 
 
 // ---------------------------------------------------------------------
@@ -229,7 +229,7 @@ if (!empty($acltags)) {
 	$tags_condition = tags_get_acl_tags_event_condition($acltags, false, $user_strict);
 
 	if (!empty($tags_condition)) {
-		$events = events_print_event_table ("estado<>1 AND ($tags_condition)", 10, "100%",true);
+		$events = events_print_event_table ("estado<>1 AND ($tags_condition)", 10, "100%",true,false,true);
 		ui_toggle($events, __('Latest events'));
 	}
 }
@@ -240,8 +240,22 @@ if (!empty($acltags)) {
 if ($is_admin) {
 	$tiny = true;
 	require($config['homedir'] . '/godmode/servers/servers.build_table.php');
+	
 }
-
+$out .= '<table cellpadding=0 cellspacing=0 class="databox pies"  style="margin-top:15px;" width=100%><tr><td>';
+	$out .= '<fieldset class="databox tactical_set">
+			<legend>' . 
+				__('Event graph') . 
+			'</legend>' . 
+			grafico_eventos_total("", 250, 150, false) . '</fieldset>';
+	$out .="</td><td>";
+	$out .= '<fieldset class="databox tactical_set">
+			<legend>' . 
+				__('Event graph by agent') . 
+			'</legend>' . 
+			grafico_eventos_grupo(250, 150, "", false, false, false) . '</fieldset>';
+	$out .= '</td></tr></table>';
+echo $out;
 
 echo '</td>';
 echo '</tr></table>';

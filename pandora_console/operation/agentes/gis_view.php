@@ -49,7 +49,7 @@ foreach ($_GET as $key => $value) {
 echo "<div style='margin-bottom: 30px;'></div>";
 
 /* Map with the current position */
-echo "<div id=\"" . $agent_name . "_agent_map\" style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
+echo "<div id=\"" . $agent_name . "_agent_map\" style=\"border:1px solid black; width:100%; height: 30em;\"></div>";
 
 if (!gis_get_agent_map($id_agente, "500px", "100%", true, true, $period)) {
 	ui_print_error_message(__("There is no default map. Please go to the setup for to set a default map."));
@@ -125,8 +125,7 @@ $result = db_get_all_rows_sql ($sql, true);
 
 
 if ($result === false) {
-	echo "<div class='nf'>" .
-		__('This agent doesn\'t have any GIS data.') . "</div>";
+	ui_print_empty_data( __('This agent doesn\'t have any GIS data.') );
 }
 else {
 	ui_pagination ($countData, false) ;

@@ -27,7 +27,7 @@ $menu_godmode['class'] = 'godmode';
 if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0, "AD")) {
 	$menu_godmode["gagente"]["text"] = __('Resources');
 	$menu_godmode["gagente"]["sec2"] = "godmode/agentes/modificar_agente";
-	$menu_godmode["gagente"]["id"] = "god-agents";
+	$menu_godmode["gagente"]["id"] = "god-resources";
 
 	if (check_acl ($config['id_user'], 0, "AW")) {
 		$sub = array ();
@@ -86,7 +86,7 @@ if (check_acl ($config['id_user'], 0, "UM")) {
 if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu_godmode["gmodules"]["text"] = __('Configuration');
 	$menu_godmode["gmodules"]["sec2"] = "godmode/modules/manage_network_templates";
-	$menu_godmode["gmodules"]["id"] = "god-modules";
+	$menu_godmode["gmodules"]["id"] = "god-configuration";
 
 	$sub = array ();
 

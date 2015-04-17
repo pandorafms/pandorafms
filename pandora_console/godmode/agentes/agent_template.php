@@ -252,6 +252,6 @@ if (!empty ($table->data)) {
 	unset ($table);
 }
 else {
-	echo '<div class="nf">No modules</div>';
+	ui_print_empty_data ( __('No modules') ) ;
 }
 ?>

@@ -2341,7 +2341,7 @@ function graph_events_validated($width = 300, $height = 200, $url = "", $meta = 
  * @param bool if the graph required is or not for metaconsole
  * @param bool if the graph required is or not for history table
  */
-function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = false, $history = false) {
+function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = false, $history = false, $noWaterMark = true) {
 	global $config;
 	global $graphic_type;
 	
@@ -2463,9 +2463,10 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	
 	// Sort the data
 	arsort($data);
-	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if ($noWaterMark) {
+		$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Other'), '', $water_mark,
@@ -2538,7 +2539,7 @@ function grafico_eventos_agente ($width = 300, $height = 200, $result = false, $
  * 
  * @param string filter Filter for query in DB
  */
-function grafico_eventos_total($filter = "", $width = 320, $height = 200) {
+function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWaterMark = true) {
 	global $config;
 	global $graphic_type;
 	
@@ -2595,10 +2596,11 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200) {
 				break;
 		}
 	}
-	
-	$water_mark = array(
-		'file' => $config['homedir'] . "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("/images/logo_vertical_water.png", false, false, false));
+	if ($noWaterMark) {
+		$water_mark = array(
+			'file' => $config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("/images/logo_vertical_water.png", false, false, false));
+	}
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Other'), '', $water_mark,

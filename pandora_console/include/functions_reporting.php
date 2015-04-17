@@ -358,10 +358,117 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$report,
 					$content);
 				break;
+			case 'database_serialized':
+				$report['contents'][] = reporting_database_serialized(
+					$report,
+					$content);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_database_serialized($report, $content) {
+	global $config;
+	
+	$return['type'] = 'database_serialized';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Database Serialized');
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	$keys = array();
+	if ($content['header_definition'] != '') {
+		$keys = explode('|', $content['header_definition']);
+	}
+	
+	$return['keys'] = $keys;
+	
+	
+	$datelimit = $report["datetime"] - $content['period'];
+	$search_in_history_db = db_search_in_history_db($datelimit);
+	
+	// This query gets information from the default and the historic database
+	$result = db_get_all_rows_sql('SELECT *
+		FROM tagente_datos
+		WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
+			AND utimestamp > ' . $datelimit . '
+			AND utimestamp <= ' . $report["datetime"], $search_in_history_db);
+	
+	// Adds string data if there is no numeric data	
+	if ((count($result) < 0) or (!$result)) {
+		// This query gets information from the default and the historic database
+		$result = db_get_all_rows_sql('SELECT *
+			FROM tagente_datos_string
+			WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
+				AND utimestamp > ' . $datelimit . '
+				AND utimestamp <= ' . $report["datetime"], $search_in_history_db);
+	} 
+	if ($result === false) {
+		$result = array();
+	}
+	
+	$data = array();
+	foreach ($result as $row) {
+		$date = date($config["date_format"], $row['utimestamp']);
+		$serialized_data = $row['datos'];
+		
+		// Cut line by line
+		if (empty($content['line_separator']) ||
+			empty($serialized_data)) {
+			
+			$rowsUnserialize = array($row['datos']);
+		}
+		else {
+			$rowsUnserialize = explode($content['line_separator'], $serialized_data);
+		}
+		
+		
+		foreach ($rowsUnserialize as $rowUnser) {
+			$row = array();
+			
+			$row['date'] = $date;
+			$row['data'] = array();
+			
+			if (empty($content['column_separator'])) {
+				if (empty($keys)) {
+					$row['data'][][] = $rowUnser;
+				}
+				else {
+					$row['data'][][$keys[0]] = $rowUnser;
+				}
+			}
+			else {
+				$columnsUnserialize = explode($content['column_separator'], $rowUnser);
+				
+				
+				$i = 0;
+				$temp_row = array();
+				foreach ($columnsUnserialize as $cell) {
+					if (isset($keys[$i])) {
+						$temp_row[$keys[$i]] = $cell;
+					}
+					else {
+						$temp_row[] = $cell;
+					}
+					$i++;
+				}
+				
+				$row['data'][] = $temp_row;
+			}
+			
+			$data[] = $row;
+		}
+	}
+	
+	$return["data"] = $data;
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_group_configuration($report, $content) {

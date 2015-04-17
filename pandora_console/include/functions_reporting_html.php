@@ -224,6 +224,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'group_configuration':
 				reporting_html_group_configuration($table, $item);
 				break;
+			case 'database_serialized':
+				reporting_html_database_serialized($table, $item);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -234,6 +237,29 @@ function reporting_html_print_report($report, $mini = false) {
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
 	}
+}
+
+function reporting_html_database_serialized($table, $item) {
+	
+	$table1->width = '100%';
+	$table1->head = array (__('Date'));
+	if (!empty($item['keys'])) {
+		$table1->head = array_merge($table1->head, $item['keys']);
+	}
+	$table1->style[0] = 'text-align: left';
+	
+	$table1->data = array ();
+	foreach ($item['data'] as $data) {
+		foreach ($data['data'] as $data_unserialied) {
+			$row = array($data['date']);
+			$row = array_merge($row, $data_unserialied);
+			$table1->data[] = $row;
+		}
+	}
+	
+	$table->colspan['database_serialized']['cell'] = 3;
+	$table->cellstyle['database_serialized']['cell'] = 'text-align: center;';
+	$table->data['database_serialized']['cell'] = html_print_table($table1, true);
 }
 
 function reporting_html_group_configuration($table, $item) {
@@ -4280,89 +4306,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$table->colspan[2][0] = 3;
 			$data[0] = reporting_get_module_detailed_event($content['id_agent_module'], $content['period'], $report["datetime"], true);
 			array_push ($table->data, $data);
-			break;
-		
-		case 'database_serialized':
-			if (empty($item_title)) {
-				$item_title = __('Serialize data');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text($module_name, 'module_medium', false));
-			
-			// Put description at the end of the module (if exists)
-			$next_row = 1;
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				$table->colspan[$next_row][0] = 3;
-				array_push ($table->data, $data_desc);
-				$next_row++;
-			}
-			
-			$table->colspan[$next_row][0] = 3;
-			
-			$table2->class = 'databox alternate';
-			$table2->width = '100%';
-			
-			//Create the head
-			$table2->head = array();
-			if ($content['header_definition'] != '') {
-				$table2->head = explode('|', $content['header_definition']);
-			}
-			else {
-				$table2->head[] = __('Data');
-			}
-			array_unshift($table2->head, __('Date'));
-			
-			$datelimit = $report["datetime"] - $content['period'];
-			$search_in_history_db = db_search_in_history_db($datelimit);
-			
-			// This query gets information from the default and the historic database
-			$result = db_get_all_rows_sql('SELECT *
-				FROM tagente_datos
-				WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
-					AND utimestamp > ' . $datelimit . '
-					AND utimestamp <= ' . $report["datetime"], $search_in_history_db);
-			
-			// Adds string data if there is no numeric data	
-			if ((count($result) < 0) or (!$result)) {
-				// This query gets information from the default and the historic database
-				$result = db_get_all_rows_sql('SELECT *
-					FROM tagente_datos_string
-					WHERE id_agente_modulo = ' . $content['id_agent_module'] . '
-						AND utimestamp > ' . $datelimit . '
-						AND utimestamp <= ' . $report["datetime"], $search_in_history_db);
-			} 
-			if ($result === false) {
-				$result = array();
-			}
-			
-			$table2->data = array();
-			foreach ($result as $row) {
-				$date = date ($config["date_format"], $row['utimestamp']);
-				$serialized = $row['datos'];
-				if (empty($content['line_separator']) ||
-					empty($serialized)) {
-						$rowsUnserialize = array($row['datos']);
-				}
-				else {
-					$rowsUnserialize = explode($content['line_separator'], $serialized);
-				}
-				foreach ($rowsUnserialize as $rowUnser) {
-					if (empty($content['column_separator'])) {
-						$columnsUnserialize = array($rowUnser);
-					}
-					else {
-						$columnsUnserialize = explode($content['column_separator'], $rowUnser);
-					}
-					
-					array_unshift($columnsUnserialize, $date);
-					array_push($table2->data, $columnsUnserialize);
-				} 
-			}
-			
-			$cellContent = html_print_table($table2, true);
-			array_push($table->data, array($cellContent));
 			break;
 		
 		case 'group_report':

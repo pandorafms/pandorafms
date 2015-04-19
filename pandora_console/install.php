@@ -538,6 +538,7 @@ function install_step2() {
 			$res += check_extension("mbstring","PHP Multibyte String");
 			$res += check_extension("zip","PHP Zip");
 			$res += check_extension("zlib","PHP Zlib extension");
+			$res += check_extension("json","PHP json extension");
 			$res += check_extension("curl","CURL (Client URL Library)");
 			if (PHP_OS == "FreeBSD") {
 				$res += check_exists ("/usr/local/bin/twopi","Graphviz Binary");

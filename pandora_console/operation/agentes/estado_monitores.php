@@ -347,7 +347,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 			
 			extra_parameters = '&selection_mode=' + selection_mode + '&date_from=' + date_from + '&date_to=' + date_to + '&time_from=' + time_from + '&time_to=' + time_to;
 		}
-		
+		title = <?php echo "\"" . __("Module: ") . "\"" ?>;
 		$.ajax({
 			type: "POST",
 			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
@@ -361,7 +361,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 						resizable: true,
 						draggable: true,
 						modal: true,
-						title: <?php echo __("Module: ") ?> module_name,
+						title: title + module_name,
 						overlay: {
 							opacity: 0.5,
 							background: "black"

@@ -16,7 +16,7 @@
 
 if (! isset($_SESSION['id_usuario'])) {
 	session_start();
-	session_write_close();
+	//session_write_close();
 }
 
 // Global & session management
@@ -55,7 +55,8 @@ if (file_exists ('../../include/languages/'.$user_language.'.mo')) {
 }
 
 echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
-$label = str_replace('%3D', '=', get_parameter('label', ''));
+html_debug_print(get_parameter('label', ''));
+$label = str_replace('253D', '=', get_parameter('label'));
 $label = base64_decode($label);
 $id = get_parameter('id');
 //$label = rawurldecode(urldecode(base64_decode(get_parameter('label', ''))));

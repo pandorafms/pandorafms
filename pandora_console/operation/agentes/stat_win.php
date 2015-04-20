@@ -55,7 +55,7 @@ if (file_exists ('../../include/languages/'.$user_language.'.mo')) {
 }
 
 echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css"/>';
-html_debug_print(get_parameter('label', ''));
+
 $label = str_replace('253D', '=', get_parameter('label'));
 $label = base64_decode($label);
 $id = get_parameter('id');

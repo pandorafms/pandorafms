@@ -272,6 +272,7 @@ enterprise_hook('close_meta_frame');
 						recipient: $("div#tree-controller-recipient"),
 						detailRecipient: $("div#tree-controller-detail-recipient"),
 						page: parameters['page'],
+						emptyMessage: "<?php echo __('No data found'); ?>",
 						tree: data.tree,
 						baseURL: "<?php echo ui_get_full_url(false, false, false, defined('METACONSOLE')); ?>",
 						ajaxURL: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",

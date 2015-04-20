@@ -1631,6 +1631,8 @@ function modules_get_previous_data ($id_agent_module, $utimestamp = 0, $string =
 		ORDER BY utimestamp DESC',
 		$id_agent_module, $utimestamp, $utimestamp - SECONDS_2DAY);
 	
+	
+	
 	$search_in_history_db = db_search_in_history_db($utimestamp);
 	
 	return db_get_row_sql ($sql, $search_in_history_db);

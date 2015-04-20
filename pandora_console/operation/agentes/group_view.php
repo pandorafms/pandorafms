@@ -53,7 +53,16 @@ if (isset ($_GET["update_netgroup"])) {
 }
 
 // Get group list that user has access
-$groups_full = users_get_groups ($config['id_user'], "AR", true, true);
+$groups_full = users_get_groups ($config['id_user'], "AR", true, true,
+	null, 'id_grupo', true);
+
+foreach ($groups_full as $i => $g) {
+	if ($g['id_grupo'] == 0) {
+		$groups_full[$i]['parent'] = -1;
+	}
+}
+
+$groups_full = sort_by_hierarchy($groups_full);
 
 $groups = array();
 foreach ($groups_full as $group) {
@@ -140,5 +149,16 @@ else {
 		"</div>";
 }
 
+function sort_by_hierarchy($groups, $parent = -1) {
+	$return = array();
+	foreach ($groups as $g) {
+		if ($g['parent'] == $parent) {
+			$return[] = $g;
+			
+			$return = array_merge($return, sort_by_hierarchy($groups, $g['id_grupo']));
+		}
+	}
+	
+	return $return;
+}
 ?>
-

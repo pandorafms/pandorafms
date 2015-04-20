@@ -331,7 +331,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 		});
 		
 	// Show the modal window of an module
-	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period) {
+	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period,module_name) {
 		
 		var server_name = '';
 		var extra_parameters = '';
@@ -347,7 +347,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 			
 			extra_parameters = '&selection_mode=' + selection_mode + '&date_from=' + date_from + '&date_to=' + date_to + '&time_from=' + time_from + '&time_to=' + time_to;
 		}
-		
+		title = <?php echo "\"" . __("Module: ") . "\"" ?>;
 		$.ajax({
 			type: "POST",
 			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
@@ -361,6 +361,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 						resizable: true,
 						draggable: true,
 						modal: true,
+						title: title + module_name,
 						overlay: {
 							opacity: 0.5,
 							background: "black"
@@ -369,7 +370,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 						height: 500
 					})
 					.show ();
-					refresh_pagination_callback (module_id, id_agent, "");
+					refresh_pagination_callback (module_id, id_agent, "",module_name);
 					datetime_picker_callback();
 					forced_title_callback();
 			}
@@ -394,7 +395,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 	}
 	datetime_picker_callback();
 	
-	function refresh_pagination_callback (module_id, id_agent, server_name) {
+	function refresh_pagination_callback (module_id, id_agent, server_name,module_name) {
 		$(".binary_dialog").click( function() {
 			
 			var classes = $(this).attr('class');
@@ -405,7 +406,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 			
 			var period = $('#period').val();
 			
-			show_module_detail_dialog(module_id, id_agent, server_name, offset, period);
+			show_module_detail_dialog(module_id, id_agent, server_name, offset, period,module_name);
 			return false;
 		});
 	}

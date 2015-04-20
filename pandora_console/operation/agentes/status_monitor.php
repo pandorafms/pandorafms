@@ -1223,7 +1223,7 @@ foreach ($result as $row) {
 			"show_module_detail_dialog(" .
 				$row["id_agente_modulo"] . ", ".
 				$row['id_agent'] . ", \"" .
-				$row['server_name'] . "\", 0, " . SECONDS_1DAY . ")'>" .
+				$row['server_name'] . "\", 0, " . SECONDS_1DAY . ', "' . $row["module_name"] . "\")'>" .
 			html_print_image ("images/binary.png", true,
 				array ("border" => "0", "alt" => "")) . "</a>";
 				
@@ -1388,7 +1388,7 @@ ui_require_javascript_file('pandora_modules');
 	}
 	
 	// Show the modal window of an module
-	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period) {
+	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period, module_name) {
 		if (period == -1) {
 			if ($("#period").length == 1) {
 				period = $('#period').val();
@@ -1397,8 +1397,7 @@ ui_require_javascript_file('pandora_modules');
 				period = <?php echo SECONDS_1DAY; ?>;
 			}
 		}
-		valor = $("hidden_name_module_"+module_id);
-		console.log(valor);
+		title = <?php echo "\"" . __("Module: ") . "\"" ?>;
 		$.ajax({
 			type: "POST",
 			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
@@ -1412,6 +1411,7 @@ ui_require_javascript_file('pandora_modules');
 						resizable: true,
 						draggable: true,
 						modal: true,
+						title: title + module_name,
 						overlay: {
 							opacity: 0.5,
 							background: "black"
@@ -1421,12 +1421,12 @@ ui_require_javascript_file('pandora_modules');
 					})
 					.show ();
 				
-				refresh_pagination_callback (module_id, id_agent, server_name);
+				refresh_pagination_callback (module_id, id_agent, server_name,module_name);
 			}
 		});
 	}
 	
-	function refresh_pagination_callback (module_id, id_agent, server_name) {
+	function refresh_pagination_callback (module_id, id_agent, server_name,module_name) {
 		
 		$(".binary_dialog").click( function() {
 			var classes = $(this).attr('class');
@@ -1437,7 +1437,7 @@ ui_require_javascript_file('pandora_modules');
 			
 			var period = $('#period').val();
 			
-			show_module_detail_dialog(module_id, id_agent, server_name, offset, period);
+			show_module_detail_dialog(module_id, id_agent, server_name, offset, period,module_name);
 			
 			return false;
 		});

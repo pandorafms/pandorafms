@@ -572,7 +572,7 @@ Pandora_Module_Logevent::getEventDescriptionXPATH (PEVENTLOGRECORD pevlr) {
 	}
 	
 	// Build the XPATH query
-	query = "Event/System[EventID=" + inttostr(pevlr->EventID & EVENT_ID_MASK) + "]";
+	query = "Event/System[EventRecordID=" + inttostr(pevlr->RecordNumber) + "]";
 	pwsQuery = strAnsiToUnicode (query.c_str());		
 	pwsPath = strAnsiToUnicode (this->source.c_str());
 	

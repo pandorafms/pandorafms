@@ -327,7 +327,7 @@ enterprise_hook('close_meta_frame');
 		.prop("id", "module_details_window")
 		.appendTo('body');
 
-	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period) {
+	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period, module_name) {
 		var params = {};
 		var f = new Date();
 		period = $('#period').val();
@@ -350,7 +350,7 @@ enterprise_hook('close_meta_frame');
 		params.id_module = module_id;
 		params.offset = offset;
 		params.period = period;
-		
+		title =   <?php echo "'" . __("Module: ") . "'" ?> ;
 		$.ajax({
 			type: "POST",
 			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
@@ -364,6 +364,7 @@ enterprise_hook('close_meta_frame');
 						resizable: true,
 						draggable: true,
 						modal: true,
+						title: title + module_name,
 						overlay: {
 							opacity: 0.5,
 							background: "black"
@@ -372,7 +373,7 @@ enterprise_hook('close_meta_frame');
 						height: 500
 					})
 					.show ();
-					refresh_pagination_callback(module_id, id_agent, server_name);
+					refresh_pagination_callback(module_id, id_agent, server_name, module_name);
 					datetime_picker_callback();
 					forced_title_callback();
 			}
@@ -396,7 +397,7 @@ enterprise_hook('close_meta_frame');
 		
 	}
 	
-	function refresh_pagination_callback (module_id, id_agent, server_name) {
+	function refresh_pagination_callback (module_id, id_agent, server_name,module_name) {
 		
 		$(".binary_dialog").click( function() {
 			
@@ -408,7 +409,7 @@ enterprise_hook('close_meta_frame');
 			
 			var period = $('#period').val();
 			
-			show_module_detail_dialog(module_id, id_agent, server_name, offset, period);
+			show_module_detail_dialog(module_id, id_agent, server_name, offset, period,module_name);
 			return false;
 		});
 	}

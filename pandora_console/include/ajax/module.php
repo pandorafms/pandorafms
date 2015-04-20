@@ -127,7 +127,10 @@ if ($get_module_detail) {
 		'style="margin-right: 15px;"', true) . __("Choose a time from now");
 	$formtable->data[0][1] = html_print_select ($periods, 'period', $period, '', '', 0, true, false, false);
 	$formtable->data[0][2] = '';
-	$formtable->data[0][3] = "<a href='javascript: show_module_detail_dialog(" . $module_id .", ".  $agentId.", \"" . $server_name . "\", 0, -1)'>". html_print_image ("images/refresh.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
+	$formtable->data[0][3] = "<a href='javascript: show_module_detail_dialog(" . $module_id .", ".  $agentId.", \"" . $server_name .
+							"\", 0, -1,\"" . modules_get_agentmodule_name( $module_id ) . "\")'>" .
+							html_print_image ("images/refresh.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . 
+							"</a>";
 	$formtable->rowspan[0][3] = 2;
 	$formtable->cellstyle[0][3] = 'vertical-align: middle;';
 	
@@ -1012,7 +1015,7 @@ if ($list_modules) {
 					$id_agente . ", " .
 					"\"" . $server_name . "\", " .
 					0 . ", " .
-					SECONDS_1DAY . ")'>". html_print_image ("images/binary.png", true, array ("border" => "0", "alt" => "")) . "</a>";
+					SECONDS_1DAY . ', "' . $module["module_name"] . ")'>". html_print_image ("images/binary.png", true, array ("border" => "0", "alt" => "")) . "</a>";
 		}
 		
 		if ($module['estado'] == 3) {

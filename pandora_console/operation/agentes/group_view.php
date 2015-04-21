@@ -91,7 +91,6 @@ foreach ($result_groups as $data) {
 	$monitor_unknown += $data["_monitors_unknown_"];
 }
 $total = $monitor_ok + $monitor_warning + $monitor_critical;
-//$total_ok = format_numeric (($total_agentes / $monitor_ok / 100), 1);
 $total_ok = format_numeric (($monitor_ok*100)/$total,0);
 $total_warning = format_numeric (($monitor_warning*100)/$total,0);
 $total_critical = format_numeric (($monitor_critical*100)/$total,0);
@@ -110,8 +109,6 @@ echo '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="data
 	echo "</tr>";
 echo "</table>";
 
-
-
 ui_pagination($count);
 
 if (!empty($result_groups)) {
@@ -126,15 +123,15 @@ if (!empty($result_groups)) {
 		echo "<tr>";
 			echo "<th style='width: 26px;'>" . __("Force") . "</th>";
 			echo "<th width='30%' style='min-width: 60px;'>" . __("Group") . "</th>";
-			echo "<th width='10%' style='min-width: 60px;'>" . __("Total") . "</th>";
-			echo "<th width='10%' style='min-width: 60px;'>" . __("Unknown") . "</th>";
-			echo "<th width='10%' style='min-width: 60px;'>" . __("Not init") . "</th>";
-			echo "<th width='10%' style='min-width: 60px;'>" . __("Unknown") . "</th>";
-			echo "<th width='10%' style='min-width: 60px;'>" . __("Not Init") . "</th>";
-			echo "<th width='10%' style='min-width: 60px;'>" . __("Normal") . "</th>";
-			echo "<th width='10%' style='min-width: 60px;'>" . __("Warning") . "</th>";
-			echo "<th width='10%' style='min-width: 60px;'>" . __("Critical") . "</th>";
-			echo "<th width='10%' style='min-width: 60px;'>" . __("Alert fired") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Total") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Unknown") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Not init") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Unknown") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Not Init") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Normal") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Warning") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Critical") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Alert fired") . "</th>";
 		echo "</tr>";
 		foreach ($result_groups as $data) {
 			
@@ -331,7 +328,6 @@ if (!empty($result_groups)) {
 		}
 	echo '</table>';
 } else {
-	echo "<div class='nf'>" . __('There are no defined agents') .
-		"</div>";
+	ui_print_info_message ( __('There are no defined agents'));
 }
 ?>

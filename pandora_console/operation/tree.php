@@ -190,7 +190,7 @@ if (defined('METACONSOLE')) {
 	ui_toggle($form_html, __('Show Options'));
 	echo "<br>";
 }else{
-	echo "<br>";
+	//echo "<br>";
 	ui_toggle($form_html, __('Tree search'));
 }
 

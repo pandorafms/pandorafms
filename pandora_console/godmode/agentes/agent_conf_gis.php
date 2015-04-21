@@ -46,10 +46,10 @@ if (!gis_get_agent_map($id_agente, "500px", "98%", false)) {
 } 
 
 if ($agentData === false) {
-	echo "<p>" . __("There is no GIS data for this agent, so it's positioned in default position of map.") . "</p>";
+	ui_print_info_message ( __("There is no GIS data for this agent, so it's positioned in default position of map.") );
 }
-echo "<div class='warn'>" .
-	__("Warning: When you change the Agent position, the agent automatically activates the 'Ignore new GIS data' option") . "</div>";
+ui_print_warning_message (
+	__("When you change the Agent position, the agent automatically activates the 'Ignore new GIS data' option") );
 
 $table->width = '100%';
 $table->class = 'databox filters';

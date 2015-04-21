@@ -159,10 +159,10 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 			else {
 				$firstLetter = $name[0];
 			}
-			/*
+			
 			if (!in_array($firstLetter, $firstLetterNameVisualToShow)) {
 				continue;
-			}*/
+			}
 			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($name, 0, 19);
 			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["title"] = $name;
 			if (!empty($config['vc_refr'])) {

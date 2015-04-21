@@ -128,7 +128,7 @@ if ($get_module_detail) {
 	$formtable->data[0][1] = html_print_select ($periods, 'period', $period, '', '', 0, true, false, false);
 	$formtable->data[0][2] = '';
 	$formtable->data[0][3] = "<a href='javascript: show_module_detail_dialog(" . $module_id .", ".  $agentId.", \"" . $server_name .
-							"\", 0, -1,\"" . modules_get_agentmodule_name( $module_id ) . "\")'>" .
+					"\", 0, -1,\"" . modules_get_agentmodule_name( $module_id ) . "\")'>" .
 					html_print_image ("images/refresh.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . 
 					"</a>";
 	$formtable->rowspan[0][3] = 2;

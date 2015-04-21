@@ -141,7 +141,7 @@ if ($disk_conf_delete) {
 echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
 
 $table->width = '100%';
-$table->class = "databox_color";
+$table->class = "databox filters";
 
 $table->head = array ();
 $table->style = array ();
@@ -277,7 +277,7 @@ html_print_table ($table);
 unset($table);
 
 $table->width = '100%';
-$table->class = "databox_color";
+$table->class = "databox filters";
 
 $table->head = array ();
 $table->style = array ();
@@ -391,7 +391,7 @@ ui_toggle(html_print_table ($table, true), __('Advanced options'));
 unset($table);
 
 $table->width = '100%';
-$table->class = "databox_color";
+$table->class = "databox filters";
 
 $table->head = array ();
 $table->style = array ();

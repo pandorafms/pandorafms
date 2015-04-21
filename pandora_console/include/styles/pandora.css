@@ -102,7 +102,7 @@ h1, h2, h3, h4 {
 	font-size: 1em;
 	font-family: Arial, Sans-serif;
 	text-transform: uppercase;
-	color: #3f4e2f;
+	color: #3F3F3F;
 	padding-bottom: 4px;
 	padding-top: 7px;
 }
@@ -116,9 +116,7 @@ h3 {
 	font-size: 14px;
 }
 h4 {
-	margin-bottom: 2px;
-	padding-bottom: 0px;
-	padding-top: 5px;
+	margin-bottom: 10px;
 	font-size: 13px;
 	color: #3F3F3F;
 	text-transform: none;
@@ -969,6 +967,10 @@ tr.disabled_row_user * {
 	color: #f85858;
 }
 
+.warning *{
+	color: #FAD403;
+}
+
 .help {
 	background: url(../../images/help.png) no-repeat;
 }
@@ -1176,7 +1178,7 @@ div.title_line {
 /*	text-transform: uppercase; */
 	padding: 0px 0px 0px 0px;
 	color: #fff;
-	font-size: 9pt;
+	font-size: 8.5pt;
 	font-weight: bold;
 	line-height: 18px;
 }
@@ -1301,13 +1303,12 @@ span.rmess, span.nrmess {
 /* New styles for data box */
 .databox, .databox_color, .databox_frame {
 	margin-bottom: 5px;
-	margin-top: 5px;
+	margin-top: 0px;
 	margin-left: 0px;
 	border: 1px solid #e2e2e2;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
-	padding-bottom: 5px;
 
 }
 .databox_color{
@@ -1335,6 +1336,9 @@ table.databox {
 	font-weight: normal;
 	color: #fff;
 	padding-left: 10px;
+}
+.databox td {
+	#border-bottom: 1px solid #E2E2E2;
 }
 
 .databox th * {
@@ -1488,7 +1492,6 @@ div#main_pure {
 }
 .img_help {
 	cursor: help;
-	margin-top: -5px;
 }
 #loading {
 	position:fixed;
@@ -1881,7 +1884,7 @@ div#steps_clean {
 	width: 100%;
 	padding-right: 0px;
 	margin-left: 0px !important;
-	margin-bottom: 15px;
+	margin-bottom: 20px;
 	height: 31px;
 }
 div#events_list {
@@ -1910,6 +1913,7 @@ div#logo_text3 {
 }
 .pagination {
 	margin-top: 15px;
+	margin-bottom: 5px;
 }
 .pagination * {
 	margin-left: 0px !important;
@@ -2071,6 +2075,7 @@ div.cellBig {
 .info_box {
 	background: #F9FAF9;
 	margin-top: 10px !important;
+	margin-bottom: 10px !important;
 	padding: 0px 5px 5px 10px;
 	border-color: #E2E2E2;
 	border-style: solid;
@@ -2455,8 +2460,8 @@ input.search_input {
 	margin-top: 8px !important;
 }
 
-a>img, td>input, td>span {
-	vertical-align: middle;
+a[id^='tgl_ctrl_']>img{
+	vertical-align:middle;
 }
 
 .noshadow {
@@ -2854,7 +2859,7 @@ table#policy_modules td * {
 
 .databox.data td{
 	padding-left: 10px;
-	border: 1px solid #EFEFEF;
+	border-bottom: 1px solid #E2E2E2;
 }
 
 .databox .search{
@@ -2937,9 +2942,22 @@ table#policy_modules td * {
 	margin-top: 0px !important ;
 }
 
+.databox.filters{
+	margin-bottom: 17px;
+}
+
 .databox.filters td{
 	padding: 10px;
+	padding-left:20px;
 }
+
+.databox.filters td>img, .databox.filters td>div>a>img, 
+.databox.filters td>span>img, .databox.filters td>span>a>img,
+.databox.filters td>a>img{
+	vertical-align: middle;
+	margin-left: 5px;
+}
+
 .databox_color td{
 	padding-left: 10px;
 }

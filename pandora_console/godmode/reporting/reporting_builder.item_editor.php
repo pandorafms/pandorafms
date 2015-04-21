@@ -1135,14 +1135,24 @@ html_print_input_hidden('id_item', $idItem);
 				html_print_checkbox ('event_graph_by_agent', true, $event_graph_by_agent);
 				?>
 				</span>
-				<?
+				<span id="row_event_graph_by_user">
+				<?php
 				echo __('By user validator');
 				html_print_checkbox ('event_graph_by_user_validator', true, $event_graph_by_user_validator);
+				?>
+				</span>
+				<span id="row_event_graph_by_criticity">
+				<?php
 				echo __('By criticity');
 				html_print_checkbox ('event_graph_by_criticity', true, $event_graph_by_criticity);
+				?>
+				</span>
+				<span id="row_event_graph_by_validated">
+				<?php
 				echo __('Validated vs unvalidated');
 				html_print_checkbox ('event_graph_validated_vs_unvalidated', true, $event_graph_validated_vs_unvalidated);
 				?>
+				</span>
 			</td>
 		</tr>
 		<tr id="row_show_in_two_columns" style="" class="datos">
@@ -2032,7 +2042,10 @@ function chooseType() {
 	$("#row_module_multi").hide();
 	$("#row_event_filter").hide();
 	$("#row_event_graphs").hide();
-	$("#row_event_graph_by_agent").show();
+	$("#row_event_graph_by_agent").hide();
+	$("#row_event_graph_by_user").hide();
+	$("#row_event_graph_by_criticity").hide();
+	$("#row_event_graph_by_validated").hide();
 	$("#row_netflow_filter").hide();
 	$("#row_max_values").hide();
 	$("#row_resolution").hide();
@@ -2060,6 +2073,11 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_event_filter").show();
 			$("#row_event_graphs").show();
+			
+			$("#row_event_graph_by_agent").show();
+			$("#row_event_graph_by_user").show();
+			$("#row_event_graph_by_criticity").show();
+			$("#row_event_graph_by_validated").show();
 			break;
 		case 'simple_graph':
 			$("#row_time_compare_overlapped").show();
@@ -2276,7 +2294,10 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_event_filter").show();
 			$("#row_event_graphs").show();
-			$("#row_event_graph_by_agent").hide();
+			
+			$("#row_event_graph_by_user").show();
+			$("#row_event_graph_by_criticity").show();
+			$("#row_event_graph_by_validated").show();
 			
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();
@@ -2287,6 +2308,11 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			
+			$("#row_event_graph_by_agent").show();
+			$("#row_event_graph_by_user").show();
+			$("#row_event_graph_by_criticity").show();
+			$("#row_event_graph_by_validated").show();
 			
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();

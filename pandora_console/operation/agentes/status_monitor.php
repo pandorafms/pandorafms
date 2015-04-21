@@ -1203,7 +1203,7 @@ foreach ($result as $row) {
 				"type" => $graph_type,
 				"period" => SECONDS_1DAY,
 				"id" => $row["id_agente_modulo"],
-				"label" => rawurlencode(urlencode(base64_encode($row["module_name"]))),
+				"label" => base64_encode($row["module_name"]),
 				"refresh" => SECONDS_10MINUTES
 			);
 		

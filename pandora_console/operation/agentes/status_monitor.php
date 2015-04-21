@@ -917,6 +917,7 @@ if(defined('METACONSOLE')){
 	$table->width = "100%";
 	$table->cellpadding = '0';
 	$table->cellspacing = '0';
+	$table->class = "databox";
 }
 $table->head = array ();
 $table->data = array ();

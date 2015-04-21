@@ -227,6 +227,13 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'database_serialized':
 				reporting_html_database_serialized($table, $item);
 				break;
+			case 'agent_detailed_event':
+			case 'event_report_agent':
+				reporting_html_event_report_agent($table, $item);
+				break;
+			case 'group_report':
+				reporting_html_group_report($table, $item);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -236,6 +243,199 @@ function reporting_html_print_report($report, $mini = false) {
 		
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
+	}
+}
+
+function reporting_html_group_report($table, $item) {
+	global $config;
+	
+	$table->colspan['group_report']['cell'] = 3;
+	$table->cellstyle['group_report']['cell'] = 'text-align: center;';
+	$table->data['group_report']['cell'] = "<table width='100%'>
+		<tr>
+			<td></td>
+			<td colspan='3'><div class='cellBold cellCenter'>" .
+				__('Total') . "</div></td>
+			<td colspan='3'><div class='cellBold cellCenter'>" .
+				__('Unknown') . "</div></td>
+		</tr>
+		<tr>
+			<td><div class='cellBold cellCenter'>" .
+				__('Agents') . "</div></td>
+			<td colspan='3'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>" .
+				$item["data"]['group_stats']['total_agents'] . "</div></td>
+			<td colspan='3'><div class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>" .
+				$item["data"]['group_stats']['agents_unknown'] . "</div></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><div class='cellBold cellCenter'>" .
+				__('Total') . "</div></td>
+			<td><div class='cellBold cellCenter'>" .
+				__('Normal') . "</div></td>
+			<td><div class='cellBold cellCenter'>" .
+				__('Critical') . "</div></td>
+			<td><div class='cellBold cellCenter'>" .
+				__('Warning') . "</div></td>
+			<td><div class='cellBold cellCenter'>" .
+				__('Unknown') . "</div></td>
+			<td><div class='cellBold cellCenter'>" .
+				__('Not init') . "</div></td>
+		</tr>
+		<tr>
+			<td><div class='cellBold cellCenter'>" .
+				__('Monitors') . "</div></td>
+			<td><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>" .
+				$item["data"]['group_stats']['monitor_checks'] . "</div></td>
+			<td><div class='cellBold cellCenter cellNormal cellBorder1 cellBig'>" .
+				$item["data"]['group_stats']['monitor_ok'] ."</div></td>
+			<td><div class='cellBold cellCenter cellCritical cellBorder1 cellBig'>" .
+				$item["data"]['group_stats']['monitor_critical'] . "</div></td>
+			<td><div class='cellBold cellCenter cellWarning cellBorder1 cellBig'>" .
+				$item["data"]['group_stats']['monitor_warning'] . "</div></td>
+			<td><div class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>" .
+				$item["data"]['group_stats']['monitor_unknown'] . "</div></td>
+			<td><div class='cellBold cellCenter cellNotInit cellBorder1 cellBig'>" .
+				$item["data"]['group_stats']['monitor_not_init'] . "</div></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td colspan='3'><div class='cellBold cellCenter'>" .
+				__('Defined') . "</div></td>
+			<td colspan='3'><div class='cellBold cellCenter'>" .
+				__('Fired') . "</div></td>
+		</tr>
+		<tr>
+			<td><div class='cellBold cellCenter'>" .
+				__('Alerts') . "</div></td>
+			<td colspan='3'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>" .
+				$item["data"]['group_stats']['monitor_alerts'] . "</div></td>
+			<td colspan='3'><div class='cellBold cellCenter cellAlert cellBorder1 cellBig'>" .
+				$item["data"]['group_stats']['monitor_alerts_fired'] . "</div></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td colspan='6'><div class='cellBold cellCenter'>" .
+				__('Last %s', human_time_description_raw($item['date']['period'])) . "</div></td>
+		</tr>
+		<tr>
+			<td><div class='cellBold cellCenter'>" .
+				__('Events') . "</div></td>
+			<td colspan='6'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>" .
+				$item["data"]["count_events"]."</div></td>
+		</tr>
+	</table>";
+}
+
+function reporting_html_event_report_agent($table, $item) {
+	global $config;
+	
+	$table1->width = '99%';
+	
+	$table1->align = array();
+	$table1->align[0] = 'center';
+	$table1->align[1] = 'center';
+	$table1->align[3] = 'center';
+	
+	$table1->data = array ();
+	
+	$table1->head = array ();
+	$table1->head[0] = __('Status');
+	$table1->head[1] = __('Count');
+	$table1->head[2] = __('Name');
+	$table1->head[3] = __('Type');
+	$table1->head[4] = __('Criticity');
+	$table1->head[5] = __('Val. by');
+	$table1->head[6] = __('Timestamp');
+	
+	foreach ($item['data'] as $i => $event) {
+		$table1->cellclass[$i][1] =
+		$table1->cellclass[$i][2] = 
+		$table1->cellclass[$i][4] =
+		$table1->cellclass[$i][5] =
+		$table1->cellclass[$i][6] =
+			get_priority_class ($event["criticity"]);
+		
+		$data = array ();
+		// Colored box
+		switch ($event['status']) {
+			case 0:
+				$img_st = "images/star.png";
+				$title_st = __('New event');
+				break;
+			case 1:
+				$img_st = "images/tick.png";
+				$title_st = __('Event validated');
+				break;
+			case 2:
+				$img_st = "images/hourglass.png";
+				$title_st = __('Event in process');
+				break;
+		}
+		$data[] = html_print_image ($img_st, true, 
+			array ("class" => "image_status",
+				"width" => 16,
+				"title" => $title_st));
+		
+		$data[] = $event['count'];
+		
+		$data[] = ui_print_truncate_text(
+			io_safe_output($event['name']),
+			140, false, true);
+		//$data[] = $event['event_type'];
+		$data[] = events_print_type_img ($event["type"], true);
+		
+		$data[] = get_priority_name ($event['criticity']);
+		if (empty($event['validated_by']) && $event['status'] == EVENT_VALIDATE) {
+			$data[] = '<i>' . __('System') . '</i>';
+		}
+		else {
+			$user_name = db_get_value ('fullname', 'tusuario', 'id_user', $event['validated_by']);
+			$data[] = io_safe_output($user_name);
+		}
+		$data[] = '<font style="font-size: 6pt;">' .
+			date($config['date_format'], $event['timestamp']) . '</font>';
+		array_push ($table1->data, $data);
+	}
+	
+	$table->colspan['event_list']['cell'] = 3;
+	$table->cellstyle['event_list']['cell'] = 'text-align: center;';
+	$table->data['event_list']['cell'] = html_print_table($table1, true);
+	
+	if (!empty($item['chart']['by_user_validator'])) {
+		$table1 = null;
+		$table1->width = '99%';
+		$table1->head = array ();
+		$table1->head[0] = __('Events validated by user');
+		$table1->data[0][0] = $item['chart']['by_user_validator'];
+		
+		$table->colspan['chart_by_user_validator']['cell'] = 3;
+		$table->cellstyle['chart_by_user_validator']['cell'] = 'text-align: center;';
+		$table->data['chart_by_user_validator']['cell'] = html_print_table($table1, true);
+	}
+	
+	if (!empty($item['chart']['by_criticity'])) {
+		$table1 = null;
+		$table1->width = '99%';
+		$table1->head = array ();
+		$table1->head[0] = __('Events by criticity');
+		$table1->data[0][0] = $item['chart']['by_criticity'];
+		
+		$table->colspan['chart_by_criticity']['cell'] = 3;
+		$table->cellstyle['chart_by_criticity']['cell'] = 'text-align: center;';
+		$table->data['chart_by_criticity']['cell'] = html_print_table($table1, true);
+	}
+	
+	if (!empty($item['chart']['validated_vs_unvalidated'])) {
+		$table1 = null;
+		$table1->width = '99%';
+		$table1->head = array ();
+		$table1->head[0] = __('Amount events validated');
+		$table1->data[0][0] = $item['chart']['validated_vs_unvalidated'];
+		
+		$table->colspan['chart_validated_vs_unvalidated']['cell'] = 3;
+		$table->cellstyle['chart_validated_vs_unvalidated']['cell'] = 'text-align: center;';
+		$table->data['chart_validated_vs_unvalidated']['cell'] = html_print_table($table1, true);
 	}
 }
 
@@ -2958,127 +3158,6 @@ function reporting_agents_get_group_agents_detailed ($id_group, $period = 0, $da
 }
 
 
-/** 
- * Get a detailed report of summarized events per agent
- *
- * It construct a table object with all the grouped events happened in an agent
- * during a period of time.
- * 
- * @param mixed Agent id(s) to get the report from.
- * @param int Period of time (in seconds) to get the report.
- * @param int Beginning date (unixtime) of the report
- * @param bool Flag to return or echo the report table (echo by default).
- * 
- * @return A table object (XHTML)
- */
-function reporting_get_agents_detailed_event ($id_agents, $period = 0,
-	$date = 0, $return = false, $filter_event_validated = false,
-	$filter_event_critical = false, $filter_event_warning = false, $filter_event_no_validated = false) {
-	
-	global $config;
-	
-	$id_agents = (array)safe_int ($id_agents, 1);
-	
-	if (!is_numeric ($date)) {
-		$date = strtotime ($date);
-	}
-	if (empty ($date)) {
-		$date = get_system_time ();
-	}
-	
-	$table->width = '99%';
-	
-	$table->align = array();
-	$table->align[0] = 'center';
-	$table->align[1] = 'center';
-	$table->align[3] = 'center';
-	
-	$table->data = array ();
-	
-	$table->head = array ();
-	$table->head[0] = __('Status');
-	$table->head[1] = __('Count');
-	$table->head[2] = __('Name');
-	$table->head[3] = __('Type');
-	$table->head[4] = __('Criticity');
-	$table->head[5] = __('Val. by');
-	$table->head[6] = __('Timestamp');
-	
-	$events = array ();
-	
-	foreach ($id_agents as $id_agent) {
-		$event = events_get_agent ($id_agent,
-			(int)$period,
-			(int)$date,
-			$filter_event_validated, $filter_event_critical,
-			$filter_event_warning, $filter_event_no_validated);
-		
-		if (!empty ($event)) {
-			array_push ($events, $event);
-		}
-	}
-
-	if ($events) {
-		$note = '';
-		if (count($events) >= 1000) {
-			$note .= '* ' . __('Maximum of events shown') . ' (1000)<br>';
-		}
-		foreach ($events as $eventRow) {
-			foreach ($eventRow as $k => $event) {
-				//First pass along the class of this row
-				$table->cellclass[$k][1] = $table->cellclass[$k][2] = 
-				$table->cellclass[$k][4] = $table->cellclass[$k][5] =
-				$table->cellclass[$k][6] =
-					get_priority_class ($event["criticity"]);
-				
-				$data = array ();
-				// Colored box
-				switch ($event['estado']) {
-					case 0:
-						$img_st = "images/star.png";
-						$title_st = __('New event');
-						break;
-					case 1:
-						$img_st = "images/tick.png";
-						$title_st = __('Event validated');
-						break;
-					case 2:
-						$img_st = "images/hourglass.png";
-						$title_st = __('Event in process');
-						break;
-				}
-				$data[] = html_print_image ($img_st, true, 
-					array ("class" => "image_status",
-						"width" => 16,
-						"title" => $title_st));
-				
-				$data[] = $event['event_rep'];
-				
-				$data[] = ui_print_truncate_text(
-					io_safe_output($event['evento']),
-					140, false, true);
-				//$data[] = $event['event_type'];
-				$data[] = events_print_type_img ($event["event_type"], true);
-				
-				$data[] = get_priority_name ($event['criticity']);
-				if (empty($event['id_usuario']) && $event['estado'] == EVENT_VALIDATE) {
-					$data[] = '<i>' . __('System') . '</i>';
-				}
-				else {
-					$user_name = db_get_value ('fullname', 'tusuario', 'id_user', $event['id_usuario']);
-					$data[] = io_safe_output($user_name);
-				}
-				$data[] = '<font style="font-size: 6pt;">' .
-					date($config['date_format'], $event['timestamp_rep']) . '</font>';
-				array_push ($table->data, $data);
-			}
-		}
-	}
-	
-	if ($events)
-		return html_print_table ($table, $return) . $note;
-}
-
 /**
  * Gets a detailed reporting of groups's events.  
  *
@@ -4003,136 +4082,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			break;
 		
-		case 'agent_detailed_event':
-		case 'event_report_agent':
-			if (empty($item_title)) {
-				$item_title = __('Agent detailed event');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text(agents_get_name($content['id_agent']), 'agent_medium', false));
-			
-			$style = json_decode(io_safe_output($content['style']), true);
-			
-			$filter_event_no_validated = $style['filter_event_no_validated'];
-			$filter_event_validated = $style['filter_event_validated'];
-			$filter_event_critical = $style['filter_event_critical'];
-			$filter_event_warning = $style['filter_event_warning'];
-			
-			$event_graph_by_agent = $style['event_graph_by_agent'];
-			$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
-			$event_graph_by_criticity = $style['event_graph_by_criticity'];
-			$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
-			
-			$next_row = 1;
-			
-			// Put description at the end of the module (if exists)
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-			}
-			
-			$data = array ();
-			$table->colspan[$next_row][0] = 3;
-			$next_row++;
-			$data[0] = reporting_get_agents_detailed_event(
-				$content['id_agent'], $content['period'],
-				$report["datetime"], true,
-				$filter_event_validated,
-				$filter_event_critical,
-				$filter_event_warning,
-				$filter_event_no_validated);
-			
-			if(!empty($data[0])) {
-				array_push ($table->data, $data);
-								
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-			}
-			
-			
-			if ($event_graph_by_user_validator) {
-				$data_graph = reporting_get_count_events_validated_by_user(
-					array('id_agent' => $content['id_agent']), $content['period'],
-					$report["datetime"],
-					$filter_event_validated,
-					$filter_event_critical,
-					$filter_event_warning,
-					$filter_event_no_validated);
-				
-				$table_event_graph = null;
-				$table_event_graph->width = '100%';
-				$table_event_graph->style[0] = 'text-align: center;';
-				$table_event_graph->head[0] = __('Events validated by user');
-				
-				$table_event_graph->data[0][0] = pie3d_graph(
-					false, $data_graph, 500, 150, __("other"), "",
-					ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
-					$config['fontpath'], $config['font_size']);
-				
-				$data[0] = html_print_table($table_event_graph, true);
-				
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-				array_push ($table->data, $data);
-			}
-			
-			if ($event_graph_by_criticity) {
-				$data_graph = reporting_get_count_events_by_criticity(
-					array('id_agent' => $content['id_agent']), $content['period'],
-					$report["datetime"],
-					$filter_event_validated,
-					$filter_event_critical,
-					$filter_event_warning,
-					$filter_event_no_validated);
-						
-				$colors = get_criticity_pie_colors($data_graph);
-				
-				$table_event_graph = null;
-				$table_event_graph->width = '100%';
-				$table_event_graph->style[0] = 'text-align: center;';
-				$table_event_graph->head[0] = __('Events by criticity');
-				
-				$table_event_graph->data[0][0] = pie3d_graph(
-					false, $data_graph, 500, 150, __("other"), "",
-					ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
-					$config['fontpath'], $config['font_size'], 1, false, $colors);
-				
-				$data[0] = html_print_table($table_event_graph, true);
-				
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-				array_push ($table->data, $data);
-			}
-			
-			if ($event_graph_validated_vs_unvalidated) {
-				$data_graph = reporting_get_count_events_validated(
-					array('id_agent' => $content['id_agent']), $content['period'],
-					$report["datetime"],
-					$filter_event_validated,
-					$filter_event_critical,
-					$filter_event_warning,
-					$filter_event_no_validated);
-				
-				$table_event_graph = null;
-				$table_event_graph->width = '100%';
-				$table_event_graph->style[0] = 'text-align: center;';
-				$table_event_graph->head[0] = __('Amount events validated');
-				
-				$table_event_graph->data[0][0] = pie3d_graph(
-					false, $data_graph, 500, 150, __("other"), "",
-					ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
-					$config['fontpath'], $config['font_size']);
-				
-				$data[0] = html_print_table($table_event_graph, true);
-				
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-				array_push ($table->data, $data);
-			}
-			break;
 		
 		case 'event_report_group':
 			if (empty($item_title)) {
@@ -4306,109 +4255,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$table->colspan[2][0] = 3;
 			$data[0] = reporting_get_module_detailed_event($content['id_agent_module'], $content['period'], $report["datetime"], true);
 			array_push ($table->data, $data);
-			break;
-		
-		case 'group_report':
-			$group_name = groups_get_name($content['id_group'], true);
-			$group_stats = reporting_get_group_stats($content['id_group']);
-			// Get events of the last 8 hours
-			$events = events_get_group_events ($content['id_group'], 28800, $report['datetime']);
-			
-			if ($events === false) {
-				$events = array();
-			}
-			
-			if (empty($item_title)) {
-				$item_title = __('Group report').': "'.$group_name.'"';
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title);
-			
-			$table->colspan[1][0] = 3;
-			
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-			}
-			
-			$table->colspan[2][0] = 3;
-			
-			$table->data[2][0] = 
-				"<table width='100%'>
-					<tr>
-						<td></td>
-						<td colspan='3'><div class='cellBold cellCenter'>" .
-							__('Total') . "</div></td>
-						<td colspan='3'><div class='cellBold cellCenter'>" .
-							__('Unknown') . "</div></td>
-					</tr>
-					<tr>
-						<td><div class='cellBold cellCenter'>" .
-							__('Agents') . "</div></td>
-						<td colspan='3'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>" .
-							$group_stats['total_agents'] . "</div></td>
-						<td colspan='3'><div class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>" .
-							$group_stats['agents_unknown'] . "</div></td>
-					</tr>
-					<tr>
-						<td></td>
-						<td><div class='cellBold cellCenter'>" .
-							__('Total') . "</div></td>
-						<td><div class='cellBold cellCenter'>" .
-							__('Normal') . "</div></td>
-						<td><div class='cellBold cellCenter'>" .
-							__('Critical') . "</div></td>
-						<td><div class='cellBold cellCenter'>" .
-							__('Warning') . "</div></td>
-						<td><div class='cellBold cellCenter'>" .
-							__('Unknown') . "</div></td>
-						<td><div class='cellBold cellCenter'>" .
-							__('Not init') . "</div></td>
-					</tr>
-					<tr>
-						<td><div class='cellBold cellCenter'>" .
-							__('Monitors') . "</div></td>
-						<td><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>" .
-							$group_stats['monitor_checks'] . "</div></td>
-						<td><div class='cellBold cellCenter cellNormal cellBorder1 cellBig'>" .
-							$group_stats['monitor_ok'] ."</div></td>
-						<td><div class='cellBold cellCenter cellCritical cellBorder1 cellBig'>" .
-							$group_stats['monitor_critical'] . "</div></td>
-						<td><div class='cellBold cellCenter cellWarning cellBorder1 cellBig'>" .
-							$group_stats['monitor_warning'] . "</div></td>
-						<td><div class='cellBold cellCenter cellUnknown cellBorder1 cellBig'>" .
-							$group_stats['monitor_unknown'] . "</div></td>
-						<td><div class='cellBold cellCenter cellNotInit cellBorder1 cellBig'>" .
-							$group_stats['monitor_not_init'] . "</div></td>
-					</tr>
-					<tr>
-						<td></td>
-						<td colspan='3'><div class='cellBold cellCenter'>" .
-							__('Defined') . "</div></td>
-						<td colspan='3'><div class='cellBold cellCenter'>" .
-							__('Fired') . "</div></td>
-					</tr>
-					<tr>
-						<td><div class='cellBold cellCenter'>" .
-							__('Alerts') . "</div></td>
-						<td colspan='3'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>" .
-							$group_stats['monitor_alerts'] . "</div></td>
-						<td colspan='3'><div class='cellBold cellCenter cellAlert cellBorder1 cellBig'>" .
-							$group_stats['monitor_alerts_fired'] . "</div></td>
-					</tr>
-					<tr>
-						<td></td>
-						<td colspan='6'><div class='cellBold cellCenter'>" .
-							__('Last 8 hours') . "</div></td>
-					</tr>
-					<tr>
-						<td><div class='cellBold cellCenter'>" .
-							__('Events') . "</div></td>
-						<td colspan='6'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>" .
-							count($events)."</div></td>
-					</tr>
-				</table>";
-			
 			break;
 		
 		case 'top_n':

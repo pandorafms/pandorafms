@@ -363,11 +363,152 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$report,
 					$content);
 				break;
+			case 'agent_detailed_event':
+			case 'event_report_agent':
+				$report['contents'][] = reporting_event_report_agent(
+					$report,
+					$content);
+				break;
+			case 'group_report':
+				$report['contents'][] = reporting_group_report(
+					$report,
+					$content);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
 }
+
+function reporting_group_report($report, $content) {
+	global $config;
+	
+	$return['type'] = 'group_report';
+	
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Group Report');
+	}
+	
+	$return['title'] = $content['name'];
+	$return['subtitle'] = groups_get_name($content['id_group'], true);
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	$return["data"] = array();
+	
+	$events = events_get_group_events(
+		$content['id_group'],
+		$content['period'],
+		$report['datetime']);
+	if (empty($events)) {
+		$events = array();
+	}
+	$return["data"]["count_events"] = count($events);
+	
+	$return["data"]["group_stats"] = reporting_get_group_stats($content['id_group']);
+	
+	return reporting_check_structure_content($return);
+}
+
+function reporting_event_report_agent($report, $content) {
+	global $config;
+	
+	$return['type'] = 'event_report_agent';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Event Report Agent');
+	}
+	
+	$return['title'] = $content['name'];
+	$return['subtitle'] = agents_get_name($content['id_agent']);
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	$style = $content['style'];
+	
+	$filter_event_no_validated = $style['filter_event_no_validated'];
+	$filter_event_validated = $style['filter_event_validated'];
+	$filter_event_critical = $style['filter_event_critical'];
+	$filter_event_warning = $style['filter_event_warning'];
+	
+	$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
+	$event_graph_by_criticity = $style['event_graph_by_criticity'];
+	$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
+	
+	$return['data'] = reporting_get_agents_detailed_event(
+		$content['id_agent'],
+		$content['period'],
+		$report["datetime"],
+		true,
+		$filter_event_validated,
+		$filter_event_critical,
+		$filter_event_warning,
+		$filter_event_no_validated,
+		true);
+	
+	$return["chart"]["by_user_validator"] = null;
+	$return["chart"]["by_criticity"] = null;
+	$return["chart"]["validated_vs_unvalidated"] = null;
+	
+	if ($event_graph_by_user_validator) {
+		$data_chart =
+			reporting_get_count_events_validated_by_user(
+				array('id_agent' => $content['id_agent']),
+				$content['period'],
+				$report["datetime"],
+				$filter_event_validated,
+				$filter_event_critical,
+				$filter_event_warning,
+				$filter_event_no_validated);
+		
+		$return["chart"]["by_user_validator"] = pie3d_graph(
+			false,
+			$data_chart,
+			500,
+			150,
+			__("other"),
+			"",
+			ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
+			$config['fontpath'],
+			$config['font_size']);
+	}
+	
+	if ($event_graph_by_criticity) {
+		$data_graph = reporting_get_count_events_by_criticity(
+			array('id_agent' => $content['id_agent']), $content['period'],
+			$report["datetime"],
+			$filter_event_validated,
+			$filter_event_critical,
+			$filter_event_warning,
+			$filter_event_no_validated);
+		
+		$colors = get_criticity_pie_colors($data_graph);
+		
+		$return["chart"]["by_criticity"] = pie3d_graph(
+			false, $data_graph, 500, 150, __("other"), "",
+			ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
+			$config['fontpath'], $config['font_size'], 1, false, $colors);
+	}
+	
+	if ($event_graph_validated_vs_unvalidated) {
+		$data_graph = reporting_get_count_events_validated(
+			array('id_agent' => $content['id_agent']), $content['period'],
+			$report["datetime"],
+			$filter_event_validated,
+			$filter_event_critical,
+			$filter_event_warning,
+			$filter_event_no_validated);
+		
+		$return["chart"]["validated_vs_unvalidated"] = pie3d_graph(
+			false, $data_graph, 500, 150, __("other"), "",
+			ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
+			$config['fontpath'], $config['font_size']);
+	}
+	
+	return reporting_check_structure_content($return);
+}
+
 
 function reporting_database_serialized($report, $content) {
 	global $config;
@@ -2366,6 +2507,157 @@ function reporting_set_conf_charts(&$width, &$height, &$only_image, $type, $cont
 // MAYBE MOVE THE NEXT FUNCTIONS TO A FILE NAMED AS FUNCTION_REPORTING.UTILS.PHP //
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
+
+
+
+/** 
+ * Get a detailed report of summarized events per agent
+ *
+ * It construct a table object with all the grouped events happened in an agent
+ * during a period of time.
+ * 
+ * @param mixed Agent id(s) to get the report from.
+ * @param int Period of time (in seconds) to get the report.
+ * @param int Beginning date (unixtime) of the report
+ * @param bool Flag to return or echo the report table (echo by default).
+ * 
+ * @return A table object (XHTML)
+ */
+function reporting_get_agents_detailed_event ($id_agents, $period = 0,
+	$date = 0, $return = false, $filter_event_validated = false,
+	$filter_event_critical = false, $filter_event_warning = false,
+	$filter_event_no_validated = false, $only_data = false) {
+	
+	global $config;
+	
+	if ($only_data) {
+		$return_data = array();
+	}
+	
+	$id_agents = (array)safe_int ($id_agents, 1);
+	
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	
+	$table->width = '99%';
+	
+	$table->align = array();
+	$table->align[0] = 'center';
+	$table->align[1] = 'center';
+	$table->align[3] = 'center';
+	
+	$table->data = array ();
+	
+	$table->head = array ();
+	$table->head[0] = __('Status');
+	$table->head[1] = __('Count');
+	$table->head[2] = __('Name');
+	$table->head[3] = __('Type');
+	$table->head[4] = __('Criticity');
+	$table->head[5] = __('Val. by');
+	$table->head[6] = __('Timestamp');
+	
+	$events = array ();
+	
+	foreach ($id_agents as $id_agent) {
+		$event = events_get_agent ($id_agent,
+			(int)$period,
+			(int)$date,
+			$filter_event_validated, $filter_event_critical,
+			$filter_event_warning, $filter_event_no_validated);
+		
+		if (empty($event)) {
+			$event = array();
+		}
+		
+		if ($only_data) {
+			foreach ($event as $e) {
+				$return_data[] = array(
+					'status' => $e['estado'],
+					'count' => $e['event_rep'],
+					'name' => $e['evento'],
+					'type' => $e["event_type"],
+					'criticity' => $e["criticity"],
+					'validated_by' => $e['id_usuario'],
+					'timestamp' => $e['timestamp_rep']
+				);
+			}
+		}
+		else {
+			if (!empty ($event)) {
+				array_push ($events, $event);
+			}
+		}
+	}
+	
+	if ($only_data) {
+		return $return_data;
+	}
+	
+	if ($events) {
+		$note = '';
+		if (count($events) >= 1000) {
+			$note .= '* ' . __('Maximum of events shown') . ' (1000)<br>';
+		}
+		foreach ($events as $eventRow) {
+			foreach ($eventRow as $k => $event) {
+				//First pass along the class of this row
+				$table->cellclass[$k][1] = $table->cellclass[$k][2] = 
+				$table->cellclass[$k][4] = $table->cellclass[$k][5] =
+				$table->cellclass[$k][6] =
+					get_priority_class ($event["criticity"]);
+				
+				$data = array ();
+				// Colored box
+				switch ($event['estado']) {
+					case 0:
+						$img_st = "images/star.png";
+						$title_st = __('New event');
+						break;
+					case 1:
+						$img_st = "images/tick.png";
+						$title_st = __('Event validated');
+						break;
+					case 2:
+						$img_st = "images/hourglass.png";
+						$title_st = __('Event in process');
+						break;
+				}
+				$data[] = html_print_image ($img_st, true, 
+					array ("class" => "image_status",
+						"width" => 16,
+						"title" => $title_st));
+				
+				$data[] = $event['event_rep'];
+				
+				$data[] = ui_print_truncate_text(
+					io_safe_output($event['evento']),
+					140, false, true);
+				//$data[] = $event['event_type'];
+				$data[] = events_print_type_img ($event["event_type"], true);
+				
+				$data[] = get_priority_name ($event['criticity']);
+				if (empty($event['id_usuario']) && $event['estado'] == EVENT_VALIDATE) {
+					$data[] = '<i>' . __('System') . '</i>';
+				}
+				else {
+					$user_name = db_get_value ('fullname', 'tusuario', 'id_user', $event['id_usuario']);
+					$data[] = io_safe_output($user_name);
+				}
+				$data[] = '<font style="font-size: 6pt;">' .
+					date($config['date_format'], $event['timestamp_rep']) . '</font>';
+				array_push ($table->data, $data);
+			}
+		}
+	}
+	
+	if ($events)
+		return html_print_table ($table, $return) . $note;
+}
 
 /** 
  * Get general statistical info on a group

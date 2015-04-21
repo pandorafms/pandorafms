@@ -390,7 +390,7 @@ TreeController = {
 											try {
 												var serverName = element.serverName.length > 0 ? element.serverName : '';
 												if ($("#module_details_window").length > 0)
-													show_module_detail_dialog(element.id, '', serverName, 0, 86400, element.name.replace("&#x20;", " ") );
+													show_module_detail_dialog(element.id, '', serverName, 0, 86400, element.name.replace(/&#x20;/g , " ") );
 											}
 											catch (error) {
 												// console.log(error);

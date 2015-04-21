@@ -10,14 +10,14 @@ msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-04-15 11:14+0200\n"
-"PO-Revision-Date: 2015-04-15 09:49+0000\n"
-"Last-Translator: Vanessa <vanessa.gil@artica.es>\n"
+"PO-Revision-Date: 2015-04-16 12:38+0000\n"
+"Last-Translator: Carlos Moreno <carlos.moreno@artica.es>\n"
 "Language-Team: Español; Castellano <>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-04-15 09:56+0000\n"
-"X-Generator: Launchpad (build 17428)\n"
+"X-Launchpad-Export-Date: 2015-04-20 12:08+0000\n"
+"X-Generator: Launchpad (build 17430)\n"
 "Language: \n"
 
 #: ../../general/links_menu.php:20 ../../godmode/menu.php:242
@@ -6894,27 +6894,27 @@ msgstr "Gestión de informes"
 
 #: ../../godmode/users/profile_list.php:321
 msgid "Network maps reading"
-msgstr ""
+msgstr "Lectura de mapas de red"
 
 #: ../../godmode/users/profile_list.php:322
 msgid "Network maps writing"
-msgstr ""
+msgstr "Escritura de mapas de red"
 
 #: ../../godmode/users/profile_list.php:323
 msgid "Network maps management"
-msgstr ""
+msgstr "Gestión de mapas de red"
 
 #: ../../godmode/users/profile_list.php:324
 msgid "Visual console reading"
-msgstr ""
+msgstr "Lectura de consola visual"
 
 #: ../../godmode/users/profile_list.php:325
 msgid "Visual console writing"
-msgstr ""
+msgstr "Escritura de consola visual"
 
 #: ../../godmode/users/profile_list.php:326
 msgid "Visual console management"
-msgstr ""
+msgstr "Gestión de consola visual"
 
 #: ../../godmode/users/profile_list.php:327
 #: ../../enterprise/extensions/check_acls.php:60
@@ -6996,7 +6996,7 @@ msgstr "Gestionar usuarios"
 
 #: ../../godmode/users/configure_profile.php:291
 msgid "Manage database"
-msgstr ""
+msgstr "Gestión de la base de datos"
 
 #: ../../godmode/users/configure_profile.php:297 ../../operation/menu.php:264
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:217
@@ -7024,15 +7024,15 @@ msgstr "Gestionar informes"
 
 #: ../../godmode/users/configure_profile.php:325
 msgid "View network maps"
-msgstr ""
+msgstr "Ver mapas de red"
 
 #: ../../godmode/users/configure_profile.php:329
 msgid "Edit network maps"
-msgstr ""
+msgstr "Editar mapas de red"
 
 #: ../../godmode/users/configure_profile.php:333
 msgid "Manage network maps"
-msgstr ""
+msgstr "Gestionar mapas de red"
 
 #: ../../godmode/users/configure_profile.php:339
 #: ../../include/functions_menu.php:443
@@ -7041,7 +7041,7 @@ msgstr "Ver consola visual"
 
 #: ../../godmode/users/configure_profile.php:343
 msgid "Edit visual console"
-msgstr ""
+msgstr "Editar consola visual"
 
 #: ../../godmode/users/configure_profile.php:347
 #: ../../include/functions_menu.php:471
@@ -7230,6 +7230,8 @@ msgid ""
 "Strict ACL is not recommended for admin users because performance could be "
 "affected."
 msgstr ""
+"ACL Estricto no está recomendado para usuarios admin porque el rendimiento "
+"podría verse afectado."
 
 #: ../../godmode/users/configure_user.php:300
 #: ../../godmode/users/configure_user.php:310
@@ -7257,6 +7259,8 @@ msgstr "Las contraseñas no coinciden"
 msgid ""
 "Strict ACL is not recommended for this user. Performance could be affected."
 msgstr ""
+"ACL Estricto no está recomendado para este usuario. El rendimiento podría "
+"verse afectado"
 
 #: ../../godmode/users/configure_user.php:395
 msgid "Profile added successfully"
@@ -9199,7 +9203,7 @@ msgstr "Ninguna categoría encontrada"
 
 #: ../../godmode/menu.php:28
 msgid "Resources"
-msgstr ""
+msgstr "Recursos"
 
 #: ../../godmode/menu.php:34
 #: ../../enterprise/meta/monitoring/wizard/wizard.main.php:200
@@ -9339,7 +9343,7 @@ msgstr "Configuración"
 
 #: ../../godmode/menu.php:193 ../../godmode/menu.php:196
 msgid "General Setup"
-msgstr ""
+msgstr "Configuracion general"
 
 #: ../../godmode/menu.php:204 ../../godmode/setup/setup.php:81
 #: ../../godmode/setup/setup.php:111
@@ -9384,7 +9388,7 @@ msgstr "Licencia"
 
 #: ../../godmode/menu.php:235
 msgid "Admin tools"
-msgstr ""
+msgstr "Herramientas administrativas"
 
 #: ../../godmode/menu.php:241
 msgid "System audit log"
@@ -10000,7 +10004,7 @@ msgstr "La fecha de fin debe ser mayor que la fecha de inicio"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:163
 msgid "The end date must be higher than the current time"
-msgstr ""
+msgstr "La fecha fin debería ser posterior a la fecha actual"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:168
 #: ../../godmode/agentes/planned_downtime.editor.php:438
@@ -16347,7 +16351,7 @@ msgstr ""
 
 #: ../../operation/users/user_edit.php:674
 msgid "Deactivate"
-msgstr ""
+msgstr "Desactivado"
 
 #: ../../operation/users/user_edit.php:706
 msgid "The double autentication was deactivated successfully"
@@ -16541,7 +16545,7 @@ msgstr "Monitorización"
 
 #: ../../operation/menu.php:37
 msgid "Views"
-msgstr ""
+msgstr "Vistas"
 
 #: ../../operation/menu.php:50 ../../operation/tree.php:87
 #: ../../enterprise/meta/general/main_header.php:82
@@ -16583,7 +16587,7 @@ msgstr "Generador de traps SNMP"
 
 #: ../../operation/menu.php:105
 msgid "Topology maps"
-msgstr ""
+msgstr "Mapas topológicos"
 
 #: ../../operation/menu.php:114
 #: ../../operation/agentes/networkmap.groups.php:132
@@ -16639,7 +16643,7 @@ msgstr "Mensaje nuevo"
 
 #: ../../operation/menu.php:369
 msgid "Tools"
-msgstr ""
+msgstr "Herramientas"
 
 #: ../../operation/menu.php:375 ../../operation/agentes/exportdata.php:36
 msgid "Export data"
@@ -16752,23 +16756,23 @@ msgstr "Filtro de control de eventos"
 
 #: ../../operation/events/events_list.php:675
 msgid "Error creating filter."
-msgstr ""
+msgstr "Error creando filtro."
 
 #: ../../operation/events/events_list.php:676
 msgid "Error creating filter is duplicated."
-msgstr ""
+msgstr "Error creando filtro al estar duplicado."
 
 #: ../../operation/events/events_list.php:677
 msgid "Filter created."
-msgstr ""
+msgstr "Filtro creado."
 
 #: ../../operation/events/events_list.php:679
 msgid "Filter updated."
-msgstr ""
+msgstr "Filtro actualizado."
 
 #: ../../operation/events/events_list.php:680
 msgid "Error updating filter."
-msgstr ""
+msgstr "Error actualizando filtro."
 
 #: ../../operation/events/events_list.php:990
 msgid "Filter name cannot be left blank"
@@ -17108,7 +17112,7 @@ msgstr "Políticas"
 #: ../../operation/tree.php:88
 #, php-format
 msgid "Sort the agents by %s"
-msgstr ""
+msgstr "Ordenar los agentes por %s"
 
 #: ../../operation/tree.php:91
 msgid "tags"
@@ -17148,7 +17152,7 @@ msgstr "Buscar módulo"
 
 #: ../../operation/tree.php:193
 msgid "Tree search"
-msgstr ""
+msgstr "Búsqueda de árbol"
 
 #: ../../operation/tree.php:281
 #: ../../enterprise/include/functions_reporting_csv.php:775
@@ -17310,7 +17314,7 @@ msgstr "Gestionar"
 
 #: ../../operation/agentes/ver_agente.php:887
 msgid "Log Viewer"
-msgstr ""
+msgstr "Visor de sucesos"
 
 #: ../../operation/agentes/ver_agente.php:979
 #: ../../enterprise/include/functions_reporting_pdf.php:4092
@@ -17322,7 +17326,7 @@ msgstr "Últimos datos"
 #: ../../operation/agentes/interface_traffic_graph_win.php:48
 #: ../../operation/agentes/stat_win.php:44
 msgid "There was a problem connecting with the node"
-msgstr ""
+msgstr "Hubo un problema conectando con el nodo"
 
 #: ../../operation/agentes/interface_traffic_graph_win.php:66
 msgid "In"
@@ -17641,7 +17645,7 @@ msgstr "No se pudo guardar el mapa de red"
 
 #: ../../operation/agentes/networkmap.php:249
 msgid "There was an error loading the network map"
-msgstr ""
+msgstr "Hubo un error cargando el mapa de red"
 
 #: ../../operation/agentes/networkmap.php:301
 #: ../../operation/snmpconsole/snmp_view.php:74
@@ -17924,7 +17928,7 @@ msgstr "Refrescar datos"
 
 #: ../../operation/agentes/tactical.php:175
 msgid "Report of State"
-msgstr ""
+msgstr "Informe de Estado"
 
 #: ../../operation/agentes/tactical.php:233
 #: ../../include/functions_events.php:864
@@ -18441,7 +18445,7 @@ msgstr ""
 
 #: ../../index.php:228 ../../enterprise/meta/index.php:247
 msgid "The code shouldn't be empty"
-msgstr ""
+msgstr "El código no debería estar vacío"
 
 #: ../../index.php:240 ../../enterprise/meta/index.php:259
 msgid "Expired login"
@@ -19188,11 +19192,11 @@ msgstr "Borrado masivo de políticas de alertas"
 
 #: ../../enterprise/godmode/massive/massive_operations.php:80
 msgid "Masive tags module policy edition"
-msgstr ""
+msgstr "Edición masiva de de módulos por política"
 
 #: ../../enterprise/godmode/massive/massive_operations.php:81
 msgid "Masive modules policy tags edition"
-msgstr ""
+msgstr "Edición masiva de etiquetas por política"
 
 #: ../../enterprise/godmode/massive/massive_operations.php:89
 msgid "Massive alert SNMP deletion"
@@ -19226,11 +19230,11 @@ msgstr "Etiquetas usadas"
 
 #: ../../enterprise/godmode/massive/massive_tags_edit_policy.php:101
 msgid "Modules unused"
-msgstr ""
+msgstr "Módulos sin usar"
 
 #: ../../enterprise/godmode/massive/massive_tags_edit_policy.php:117
 msgid "Modules used"
-msgstr ""
+msgstr "Módulos usados"
 
 #: ../../enterprise/godmode/massive/massive_delete_alerts_snmp.php:165
 #: ../../enterprise/godmode/massive/massive_modify_alerts_snmp.php:216
@@ -19552,7 +19556,7 @@ msgstr "Colector de Logs"
 
 #: ../../enterprise/godmode/menu.php:118
 msgid "Password policy"
-msgstr ""
+msgstr "Política de contraseñas"
 
 #: ../../enterprise/godmode/agentes/collection_manager.php:37
 #: ../../enterprise/operation/agentes/collection_view.php:47
@@ -21640,7 +21644,7 @@ msgstr "Fecha de inicio"
 
 #: ../../enterprise/operation/log/log_viewer.php:334
 msgid "The start date cannot be greater than the end date"
-msgstr ""
+msgstr "La fecha de inicio no puede ser posterior a la fecha fin"
 
 #: ../../enterprise/operation/inventory/inventory.php:262
 msgid "Export this list to CSV"
@@ -21747,7 +21751,7 @@ msgstr "Error al procesar mapa"
 
 #: ../../enterprise/operation/agentes/agent_inventory.php:56
 msgid "This agent has not modules inventory"
-msgstr ""
+msgstr "Este agente no tiene módulos de inventario"
 
 #: ../../enterprise/operation/agentes/agent_inventory.php:159
 #: ../../enterprise/operation/agentes/agent_inventory.php:160
@@ -22090,7 +22094,7 @@ msgstr "Vista de grupo"
 
 #: ../../enterprise/meta/monitoring/group_view.php:74
 msgid "Summary by status"
-msgstr ""
+msgstr "Resumen por estado"
 
 #: ../../enterprise/meta/monitoring/group_view.php:78
 msgid "% Monitors Critical"
@@ -22106,7 +22110,7 @@ msgstr "% Monitores Ok"
 
 #: ../../enterprise/meta/monitoring/group_view.php:81
 msgid "% Agents Unknown"
-msgstr ""
+msgstr "% Agentes Desconocidos"
 
 #: ../../enterprise/meta/monitoring/group_view.php:101
 msgid "Group or Tag"
@@ -23002,7 +23006,7 @@ msgstr ""
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:2475
 msgid "Module successfully added."
-msgstr ""
+msgstr "Módulo añadido con éxito."
 
 #: ../../enterprise/meta/include/functions_wizard_meta.php:2547
 #: ../../enterprise/meta/include/functions_wizard_meta.php:2636
@@ -23047,7 +23051,7 @@ msgstr "Guardar en grupo"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:512
 msgid "Filter by tag"
-msgstr "Filtrar por tag"
+msgstr "Filtrar por etiqueta"
 
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:518
 msgid "Filter by agents"
@@ -25554,7 +25558,7 @@ msgstr ""
 
 #: ../../enterprise/extensions/check_acls.php:197
 msgid "Only admin users can see this section."
-msgstr ""
+msgstr "Solo los usuarios administradores pueden ver esta sección."
 
 #: ../../enterprise/extensions/check_acls.php:201
 msgid "Check ACL"
@@ -27596,7 +27600,7 @@ msgstr "Borrar elemento"
 
 #: ../../include/functions_visual_map_editor.php:556
 msgid "Copy item"
-msgstr ""
+msgstr "Copiar elemento"
 
 #: ../../include/functions_visual_map_editor.php:584
 msgid "No image or name defined."
@@ -27735,7 +27739,7 @@ msgstr "Respuesta personalizada"
 
 #: ../../include/functions_events.php:1931
 msgid "There was an error connecting to the node"
-msgstr ""
+msgstr "Hubo un error conectando al nodo"
 
 #: ../../include/functions_events.php:1970
 msgid "Agent details"
@@ -28774,7 +28778,7 @@ msgstr "%d Agentes desconocidos"
 #: ../../include/functions_reporting.php:7853
 #, php-format
 msgid "%d not init agents"
-msgstr ""
+msgstr "%d agentes no iniciados"
 
 #: ../../include/functions_reporting.php:7975
 #, php-format
@@ -30291,11 +30295,11 @@ msgstr "Configuración BD"
 
 #: ../../extensions/db_status.php:67
 msgid "DB User with privileges"
-msgstr ""
+msgstr "Usuario de BD con privilegios"
 
 #: ../../extensions/db_status.php:69
 msgid "DB Password for this user"
-msgstr ""
+msgstr "Password BD para este usuario"
 
 #: ../../extensions/db_status.php:73
 msgid "DB Hostname"
@@ -31646,9 +31650,6 @@ msgstr "Logs sistema"
 #~ msgid "No items defined"
 #~ msgstr "No se han definido elementos"
 
-#~ msgid "Agent unknown"
-#~ msgstr "Agente desconocido"
-
 #~ msgid ""
 #~ "Red cell when the module group and agent have at least one module in "
 #~ "critical state and the others in any state."
@@ -31679,26 +31680,8 @@ msgstr "Logs sistema"
 #~ msgid "hour"
 #~ msgstr "hora"
 
-#~ msgid "There are no defined maps in this view"
-#~ msgstr "No hay mapas definidos en esta vista"
-
-#~ msgid "Add map"
-#~ msgstr "Añadir mapa"
-
-#~ msgid "No selected"
-#~ msgstr "No seleccionado"
-
-#~ msgid "Manage custom fields"
-#~ msgstr "Gestionar campos personalizados"
-
-#~ msgid "Manage recon script"
-#~ msgstr "Gestionar script recon"
-
 #~ msgid "Manage SNMP console"
 #~ msgstr "Consola SNMP"
-
-#~ msgid "Manage tags"
-#~ msgstr "Gestionar etiquetas"
 
 #~ msgid ""
 #~ "Pandora FMS Sanity tool is used to remove bad database structure data, "
@@ -31721,26 +31704,5 @@ msgstr "Logs sistema"
 #~ msgid "This server has no recon tasks assigned"
 #~ msgstr "Este servidor no tiene ninguna tarea de reconocimiento asignada"
 
-#~ msgid "Manage monitoring"
-#~ msgstr "Gestionar la monitorización"
-
-#~ msgid "ACL Setup"
-#~ msgstr "Configuración de ACL"
-
-#~ msgid "Dictionary"
-#~ msgstr "Diccionario"
-
-#~ msgid "Configuration could not be saved"
-#~ msgstr "La configuración no se puede guardar"
-
-#~ msgid "Configuration saved"
-#~ msgstr "Configuración guardada"
-
 #~ msgid "Manage plugins"
 #~ msgstr "Gestionar plugins"
-
-#~ msgid "Network View"
-#~ msgstr "Vista de red"
-
-#~ msgid "Manage categories"
-#~ msgstr "Gestionar categorías"

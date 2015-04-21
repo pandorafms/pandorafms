@@ -1342,7 +1342,7 @@ class Tree {
 					"type" => $graphType,
 					"period" => SECONDS_1DAY,
 					"id" => $module['id'],
-					"label" => rawurlencode(urlencode(base64_encode($module['name']))),
+					"label" => base64_encode($module['name']),
 					"refresh" => SECONDS_10MINUTES
 				);
 			

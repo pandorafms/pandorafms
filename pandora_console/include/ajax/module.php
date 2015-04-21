@@ -1015,7 +1015,7 @@ if ($list_modules) {
 					$id_agente . ", " .
 					"\"" . $server_name . "\", " .
 					0 . ", " .
-					SECONDS_1DAY . ', "' . $module["module_name"] . ")'>". html_print_image ("images/binary.png", true, array ("border" => "0", "alt" => "")) . "</a>";
+					SECONDS_1DAY . ", \" " . modules_get_agentmodule_name( $module["id_agente_modulo"] ) . "\")'>". html_print_image ("images/binary.png", true, array ("border" => "0", "alt" => "")) . "</a>";
 		}
 		
 		if ($module['estado'] == 3) {

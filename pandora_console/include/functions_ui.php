@@ -250,7 +250,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 				$icon_image = 'images/suc.png';
 				break;
 			case 'warning':
-				$icon_image = 'images/warn.png';
+				$icon_image = 'images/warning_big.png';
 				break;
 		}
 		

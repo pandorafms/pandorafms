@@ -142,8 +142,9 @@ $form_filter .= "</td>";
 $form_filter .= "</tr>\n";
 $form_filter .= "</table>\n";
 $form_filter .= "</form>\n";
+if ( defined("METACONSOLE"))
+	echo "<br>";
 
-echo "<br>";
 ui_toggle($form_filter, __('Alert control filter'), __('Toggle filter(s)'));
 
 $simple_alerts = array();
@@ -323,9 +324,14 @@ if (!$id_agente) {
 else {
 	$url = 'index.php?sec='.$sec.'&sec2=godmode/agentes/configurar_agente&pure='.$pure.'&tab=alert&id_agente=' . $id_agente . '&offset=' . $offset . $form_params;
 }
-
-$table->class = 'alert_list databox';
+if ( defined("METACONSOLE") )
+	$table->class = 'alert_list databox';
+else
+	$table->class = 'databox filters';
+	
 $table->width = '100%';
+$table->cellpadding = 0;
+$table->cellspacing = 0;
 $table->size = array ();
 
 $table->align[2] = 'left';

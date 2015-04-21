@@ -498,7 +498,8 @@ switch ($action) {
 		break;
 }
 
-$urlForm = $config['homeurl'] . 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
+$urlForm = $config['homeurl'] .
+	'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
 
 echo '<form action="' . $urlForm . '" method="post">';
 html_print_input_hidden('id_item', $idItem);
@@ -518,7 +519,7 @@ else
 								" . __('Item Editor') . "
 							</th>
 						</tr>
-					</thead>";			
+					</thead>";
 			}
 		?>
 	<tbody>
@@ -552,8 +553,8 @@ else
 		</tr>
 		<tr id="row_netflow_filter" style="" class="datos">
 			<td><?php echo __('Filter');?></td>
-			<td><?php
-				
+			<td>
+				<?php
 				$own_info = get_user_info ($config['id_user']);
 				
 				// Get group list that user has access
@@ -1082,7 +1083,12 @@ else
 		</tr>
 		<tr id="row_show_resume" style="" class="datos">
 			<td><?php echo __('Show resume') . ui_print_help_tip(__('Show a resume table with max, min, average of total modules on the report bottom'), true);?></td>
-			<td><?php html_print_checkbox('checkbox_show_resume', 1, $show_resume);?></td>
+			<td>
+				<?php
+				html_print_checkbox('checkbox_show_resume', 1,
+					$show_resume);
+				?>
+			</td>
 		</tr>
 		<tr id="row_event_filter" style="" class="datos">
 			<td><?php echo __('Event filter'); ?></td>
@@ -1109,14 +1115,24 @@ else
 				html_print_checkbox ('event_graph_by_agent', true, $event_graph_by_agent);
 				?>
 				</span>
-				<?
+				<span id="row_event_graph_by_user">
+				<?php
 				echo __('By user validator');
 				html_print_checkbox ('event_graph_by_user_validator', true, $event_graph_by_user_validator);
+				?>
+				</span>
+				<span id="row_event_graph_by_criticity">
+				<?php
 				echo __('By criticity');
 				html_print_checkbox ('event_graph_by_criticity', true, $event_graph_by_criticity);
+				?>
+				</span>
+				<span id="row_event_graph_by_validated">
+				<?php
 				echo __('Validated vs unvalidated');
 				html_print_checkbox ('event_graph_validated_vs_unvalidated', true, $event_graph_validated_vs_unvalidated);
 				?>
+				</span>
 			</td>
 		</tr>
 		<tr id="row_show_in_two_columns" style="" class="datos">
@@ -1170,7 +1186,8 @@ function print_SLA_list($width, $action, $idItem = null) {
 	global $config;
 	global $meta;
 	
-	$report_item_type = db_get_value ('type', 'treport_content', 'id_rc', $idItem);
+	$report_item_type = db_get_value('type', 'treport_content', 'id_rc',
+		$idItem);
 	?>
 	<table class="databox" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="100%">
 		<thead>
@@ -1222,17 +1239,17 @@ function print_SLA_list($width, $action, $idItem = null) {
 						$server_name_element = '';
 						if ($meta && $server_name != '') 
 							$server_name_element .= ' (' . $server_name . ')';
-
+						
 						echo '<tr id="sla_' . $item['id'] . '" style="" class="datos">';
 						echo 	'<td class="sla_list_agent_col">' . printSmallFont($nameAgent) . $server_name_element .  '</td>';
 						echo 	'<td class="sla_list_module_col">' . printSmallFont($nameModule) . '</td>';
-
+						
 						if (enterprise_installed() && $report_item_type == 'SLA_services') {
 							enterprise_include_once("include/functions_services.php");
 							$nameService = enterprise_hook('services_get_name', array($item['id_agent_module']));
 							echo '<td class="sla_list_service_col">' . printSmallFont($nameService) . '</th>';
 						}
-
+						
 						echo 	'<td class="sla_list_sla_min_col">' . $item['sla_min'] . '</td>';
 						echo 	'<td class="sla_list_sla_max_col">' . $item['sla_max'] . '</td>';
 						echo 	'<td class="sla_list_sla_limit_col">' . $item['sla_limit'] . '</td>';
@@ -1325,6 +1342,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 function print_General_list($width, $action, $idItem = null) {
 	global $config;
 	global $meta;
+	
 	if (!isset($meta))
 		$meta = false;
 	
@@ -1359,10 +1377,13 @@ function print_General_list($width, $action, $idItem = null) {
 				case 'update':
 				case 'edit':
 					echo '<tbody id="list_general">';
-					$itemsGeneral = db_get_all_rows_filter('treport_content_item', array('id_report_content' => $idItem));
+					$itemsGeneral = db_get_all_rows_filter(
+						'treport_content_item',
+						array('id_report_content' => $idItem));
 					if ($itemsGeneral === false) {
 						$itemsGeneral = array();
 					}
+					
 					foreach ($itemsGeneral as $item) {
 						$server_name = $item ['server_name'];
 						// Metaconsole db connection
@@ -1373,13 +1394,17 @@ function print_General_list($width, $action, $idItem = null) {
 								continue;
 							}
 						}
-						$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
+						$idAgent = db_get_value_filter(
+							'id_agente', 'tagente_modulo',
+							array('id_agente_modulo' => $item['id_agent_module']));
+						
 						$nameAgent = agents_get_name ($idAgent);
 						$nameModule = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						
 						$server_name_element = '';
 						if ($meta && $server_name != '') 
-							$server_name_element .= ' (' . $server_name . ')';						
+							$server_name_element .= ' (' . $server_name . ')';
+						
 						
 						echo '<tr id="general_' . $item['id'] . '" style="" class="datos">
 								<td>' . printSmallFont($nameAgent) . $server_name_element .  '</td>
@@ -1389,6 +1414,8 @@ function print_General_list($width, $action, $idItem = null) {
 									<a href="javascript: deleteGeneralRow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>
 							</tr>';
+						
+						
 						if ($meta) {
 							//Restore db connection
 							metaconsole_restore_db();
@@ -1427,8 +1454,19 @@ function print_General_list($width, $action, $idItem = null) {
 								ui_print_agent_autocomplete_input($params);
 								?>
 							</td>
-							<td><select id="id_agent_module_general" name="id_agente_modulo_general" disabled="disabled" style="max-width: 180px"><option value="0"><?php echo __('Select an Agent first'); ?></option></select></td>
-							<td><?php html_print_select ($operation, 'id_operation_module_general', 0, false, '', '', false, false, true, 'width: 200px', false); ?></td>
+							<td>
+								<select id="id_agent_module_general" name="id_agente_modulo_general" disabled="disabled" style="max-width: 180px">
+									<option value="0"><?php echo __('Select an Agent first'); ?></option>
+								</select>
+							</td>
+							<td>
+								<?php
+								html_print_select($operation,
+									'id_operation_module_general', 0,
+									false, '', '', false, false, true,
+									'width: 200px', false);
+								?>
+							</td>
 							<td style="text-align: center;"><a href="javascript: addGeneralRow();"><?php html_print_image("images/disk.png", false); ?></a></td>
 						</tr>
 					</tbody>
@@ -1460,7 +1498,8 @@ $(document).ready (function () {
 		minuteText: '<?php echo __('Minute');?>',
 		secondText: '<?php echo __('Second');?>',
 		currentText: '<?php echo __('Now');?>',
-		closeText: '<?php echo __('Close');?>'});
+		closeText: '<?php echo __('Close');?>'
+	});
 });
 
 function create_custom_graph() {
@@ -1699,13 +1738,13 @@ function addSLARow() {
 	var slaMin = $("input[name=sla_min]").val();
 	var slaMax = $("input[name=sla_max]").val();
 	var slaLimit = $("input[name=sla_limit]").val();
-
+	
 	var serviceId = $("select#id_service>option:selected").val();
 	var serviceName = $("select#id_service>option:selected").text();
 	
 	if (((idAgent != '') && (slaMin != '') && (slaMax != '')
 		&& (slaLimit != '')) || serviceId != '') {
-
+			
 			if (nameAgent != '') {
 				//Truncate nameAgent
 				var params = [];
@@ -1722,7 +1761,7 @@ function addSLARow() {
 						nameAgent = data;
 					}
 				});
-
+				
 				//Truncate nameModule
 				var params = [];
 				params.push("truncate_text=1");
@@ -1748,7 +1787,7 @@ function addSLARow() {
 			params.push("sla_max=" + slaMax);
 			params.push("sla_limit=" + slaLimit);
 			params.push("server_id=" + serverId);
-
+			
 			if (serviceId != '') {
 				params.push("id_service=" + serviceId);
 			}
@@ -1835,6 +1874,7 @@ function addGeneralRow() {
 				nameModule = data;
 			}
 		});
+		
 		//Truncate nameOperation
 		var params = [];
 		params.push("truncate_text=1");
@@ -1850,6 +1890,7 @@ function addGeneralRow() {
 				nameOperation = data;
 			}
 		});
+		
 		var params = [];
 		params.push("add_general=1");
 		params.push("id=" + $("input[name=id_item]").val());
@@ -1935,7 +1976,10 @@ function chooseType() {
 	$("#row_module_multi").hide();
 	$("#row_event_filter").hide();
 	$("#row_event_graphs").hide();
-	$("#row_event_graph_by_agent").show();
+	$("#row_event_graph_by_agent").hide();
+	$("#row_event_graph_by_user").hide();
+	$("#row_event_graph_by_criticity").hide();
+	$("#row_event_graph_by_validated").hide();
 	$("#row_netflow_filter").hide();
 	$("#row_max_values").hide();
 	$("#row_resolution").hide();
@@ -1963,6 +2007,11 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_event_filter").show();
 			$("#row_event_graphs").show();
+			
+			$("#row_event_graph_by_agent").show();
+			$("#row_event_graph_by_user").show();
+			$("#row_event_graph_by_criticity").show();
+			$("#row_event_graph_by_validated").show();
 			break;
 		case 'simple_graph':
 			$("#row_only_avg").show();
@@ -2024,7 +2073,7 @@ function chooseType() {
 			$("#row_only_display_wrong").show();
 			$("#row_working_time").show();
 			$("#row_sort").show();
-
+			
 			$(".sla_list_agent_col").hide();
 			$(".sla_list_module_col").hide();
 			$(".sla_list_service_col").show();
@@ -2177,8 +2226,11 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_event_filter").show();
 			$("#row_event_graphs").show();
-			$("#row_event_graph_by_agent").hide();
-		
+			
+			$("#row_event_graph_by_user").show();
+			$("#row_event_graph_by_criticity").show();
+			$("#row_event_graph_by_validated").show();
+			
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();
 			break;
@@ -2188,6 +2240,11 @@ function chooseType() {
 			$("#row_module").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
+			
+			$("#row_event_graph_by_agent").show();
+			$("#row_event_graph_by_user").show();
+			$("#row_event_graph_by_criticity").show();
+			$("#row_event_graph_by_validated").show();
 			
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();

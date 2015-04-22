@@ -237,6 +237,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'exception':
 				reporting_html_exception($table, $item);
 				break;
+			case 'agent_module':
+				reporting_html_agent_module($table, $item);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -249,12 +252,147 @@ function reporting_html_print_report($report, $mini = false) {
 	}
 }
 
+function reporting_html_agent_module($table, $item) {
+	$table->colspan['agent_module']['cell'] = 3;
+	$table->cellstyle['agent_module']['cell'] = 'text-align: center;';
+	
+	if (!empty($item['failed'])) {
+		$table->data['agent_module']['cell'] = $item['failed'];
+	}
+	else {
+		$table_data = '<table cellpadding="1" cellspacing="4" cellspacing="0" border="0" style="background-color: #EEE;">';
+		
+		$table_data .= "<th>" . __("Agents") . " / " . __("Modules") . "</th>";
+		
+		
+		$first = reset($item['data']);
+		$list_modules = $first['modules'];
+		
+		foreach ($list_modules as $module_name => $module) {
+			$file_name = string2image(
+				ui_print_truncate_text($module_name, 'module_small',
+					false, true, false, '...'),
+				false, false, 6, 270, '#B1B1B1', 'FFF', 4, 0);
+			$table_data .= '<th width="22px">' .
+				html_print_image($file_name, true,
+					array('title' => $module_name)) .
+				"</th>";
+		}
+		
+		foreach ($item['data'] as $row) {
+			$table_data .= "<tr style='height: 35px;'>";
+			switch ($row['agent_status']) {
+				case 4: // Alert fired status
+					$rowcolor = COL_ALERTFIRED;
+					$textcolor = '#000';
+					break;
+				case 1: // Critical status
+					$rowcolor = COL_CRITICAL;
+					$textcolor = '#FFF';
+					break;
+				case 2: // Warning status
+					$rowcolor = COL_WARNING;
+					$textcolor = '#000';
+					break;
+				case 0: // Normal status
+					$rowcolor = COL_NORMAL;
+					$textcolor = '#FFF';
+					break;
+				case 3: 
+				case -1: 
+				default: // Unknown status
+					$rowcolor = COL_UNKNOWN;
+					$textcolor = '#FFF';
+					break;
+			}
+			
+			$file_name = string2image(
+				ui_print_truncate_text($row['agent_name'], 'agent_small',
+					false, true, false, '...'),
+				false, false, 6, 0, $rowcolor, $textcolor, 4, 0);
+			$table_data .= "<td style='background-color: " . $rowcolor . ";'>" .
+				html_print_image($file_name, true,
+					array('title' => $row['agent_name'])) . "</td>";
+			
+			foreach ($row['modules'] as $module) {
+				if (is_null($module)) {
+					$table_data .= "<td style='background-color: #DDD;'></td>";
+				}
+				else {
+					$table_data .= "<td style='text-align: center; background-color: #DDD;'>";
+					switch ($module) {
+						case 0:
+							$table_data .= ui_print_status_image(
+								'module_ok.png',
+								__("%s in %s : NORMAL",
+									$module['name'],
+									$row['agent_name']),
+								true, array('width' => '20px', 'height' => '20px'));
+							break;
+						case 1:
+							$table_data .= ui_print_status_image(
+								'module_critical.png',
+								__("%s in %s : CRITICAL",
+									$module['name'],
+									$row['agent_name']),
+								true, array('width' => '20px', 'height' => '20px'));
+							break;
+						case 2:
+							$table_data .= ui_print_status_image(
+								'module_warning.png',
+								__("%s in %s : WARNING",
+									$module['name'],
+									$row['agent_name']),
+								true, array('width' => '20px', 'height' => '20px'));
+							break;
+						case 3:
+							$table_data .= ui_print_status_image(
+								'module_unknown.png',
+								__("%s in %s : UNKNOWN",
+									$module['name'],
+									$row['agent_name']),
+								true, array('width' => '20px', 'height' => '20px'));
+							break;
+						case 4:
+							$table_data .= ui_print_status_image(
+								'module_alertsfired.png',
+								__("%s in %s : ALERTS FIRED",
+									$module['name'],
+									$row['agent_name']),
+								true, array('width' => '20px', 'height' => '20px'));
+							break;
+					}
+					$table_data .= "</td>";
+				}
+				
+			}
+		}
+		
+		$table_data .= "</table>";
+		
+		$table_data .= "<div class='legend_basic' style='width: 96%'>";
+		
+		$table_data .= "<table>";
+		$table_data .= "<tr><td colspan='2' style='padding-bottom: 10px;'><b>" . __('Legend') . "</b></td></tr>";
+		$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_ALERTFIRED . ";'></div></td><td>" . __("Orange cell when the module has fired alerts") . "</td></tr>";
+		$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_CRITICAL . ";'></div></td><td>" . __("Red cell when the module has a critical status") . "</td></tr>";
+		$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_WARNING . ";'></div></td><td>" . __("Yellow cell when the module has a warning status") . "</td></tr>";
+		$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_NORMAL . ";'></div></td><td>" . __("Green cell when the module has a normal status") . "</td></tr>";
+		$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_UNKNOWN . ";'></div></td><td>" . __("Grey cell when the module has an unknown status") . "</td></tr>";
+		$table_data .= "</table>";
+		$table_data .= "</div>";
+		
+		
+		$table->data['agent_module']['cell'] = $table_data;
+	}
+}
+
 function reporting_html_exception($table, $item) {
 	
 	if (!empty($item['failed'])) {
 		$table->colspan['group_report']['cell'] = 3;
 		$table->cellstyle['group_report']['cell'] = 'text-align: center;';
-		$table->data['event_list']['cell'] = $item['failed'];
+		$table->data['group_report']['cell'] = $item['failed'];
 	}
 	else {
 		$table1->width = '99%';
@@ -4670,211 +4808,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			break;
 		
-		case 'agent_module':
-			$group_name = groups_get_name($content['id_group']);
-			if ($content['id_module_group'] == 0) {
-				$module_group_name = __('All');
-			}
-			else {
-				$module_group_name = db_get_value('name', 'tmodule_group',
-					'id_mg',  $content['id_module_group']);
-			}
-			
-			if (empty($item_title)) {
-				$item_title = __('Agents/Modules');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				$group_name . ' - ' . $module_group_name);
-			
-			$id_group = $content['id_group'];
-			$id_module_group = $content['id_module_group'];
-			$offset = get_parameter('offset', 0);
-			$block = 20; //Maximun number of modules displayed on the table
-			$modulegroup = get_parameter('modulegroup', 0);
-			$table->style[1] = 'text-align: right';
-			
-			// Put description at the end of the module (if exists)
-			$table->colspan[1][0] = 3;
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-			}
-			
-			$agents = '';
-			if ($id_group > 0) {
-				$agents = agents_get_group_agents($id_group);
-				$agents = array_keys($agents);
-			}
-			
-			$filter_module_groups = false;	
-			if ($id_module_group > 0) {
-				$filter_module_groups['id_module_group'] = $id_module_group;
-			}
-			
-			$all_modules = agents_get_modules ($agents, false, $filter_module_groups, true, false);
-			
-			$modules_by_name = array();
-			$name = '';
-			$cont = 0;
-			
-			foreach ($all_modules as $key => $module) {
-				if ($module == $name) {
-					$modules_by_name[$cont-1]['id'][] = $key;
-				}
-				else {
-					$name = $module;
-					$modules_by_name[$cont]['name'] = $name;
-					$modules_by_name[$cont]['id'][] = $key;
-					$cont ++;
-				}
-			}
-			
-			if ($config["pure"] == 1) {
-				$block = count($modules_by_name);
-			}
-			
-			$filter_groups = array ('offset' => (int) $offset,
-				'limit' => (int) $config['block_size']);
-				
-			if ($id_group > 0) {
-				$filter_groups['id_grupo'] = $id_group;
-			}
-			
-			$agents = agents_get_agents ($filter_groups);
-			$nagents = count($agents);
-			
-			if ($all_modules == false || $agents == false) {
-				$data = array ();
-				$table->colspan[2][0] = 3;
-				$data[0] = __('There are no agents with modules');
-				array_push ($table->data, $data);
-				break;
-			}
-			$table_data = '<table cellpadding="1" cellspacing="4" cellspacing="0" border="0" style="background-color: #EEE;">';
-			
-			$table_data .= "<th>".__("Agents")." / ".__("Modules")."</th>";
-			
-			$nmodules = 0;
-			foreach ($modules_by_name as $module) {
-				$nmodules++;
-				
-				$file_name = string2image(ui_print_truncate_text($module['name'], 'module_small', false, true, false, '...'), false, false, 6, 270, '#B1B1B1', 'FFF', 4, 0);
-				$table_data .= '<th width="22px">' . html_print_image($file_name, true, array('title' => $module['name']))."</th>";
-			}
-			// Dont use pagination
-			/*if ($block < $nmodules) {
-				$table_data .= "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><b>...</b></th>";
-			}*/
-			
-			$filter_agents = false;
-			if ($id_group > 0) {
-				$filter_agents = array('id_grupo' => $id_group);
-			}
-			// Prepare pagination
-			ui_pagination ((int)count(agents_get_agents ($filter_agents)));
-			$table_data .= "<br>";
-			
-			foreach ($agents as $agent) {
-				// Get stats for this group
-				$agent_status = agents_get_status($agent['id_agente']);
-				
-				switch($agent_status) {
-					case 4: // Alert fired status
-						$rowcolor = COL_ALERTFIRED;
-						$textcolor = '#000';
-						break;
-					case 1: // Critical status
-						$rowcolor = COL_CRITICAL;
-						$textcolor = '#FFF';
-						break;
-					case 2: // Warning status
-						$rowcolor = COL_WARNING;
-						$textcolor = '#000';
-						break;
-					case 0: // Normal status
-						$rowcolor = COL_NORMAL;
-						$textcolor = '#FFF';
-						break;
-					case 3: 
-					case -1: 
-					default: // Unknown status
-						$rowcolor = COL_UNKNOWN;
-						$textcolor = '#FFF';
-						break;
-				}
-				
-				$table_data .= "<tr style='height: 35px;'>";
-				
-				$file_name = string2image(ui_print_truncate_text($agent['nombre'], 'agent_small', false, true, false, '...'), false, false, 6, 0, $rowcolor, $textcolor, 4, 0);
-				$table_data .= "<td style='background-color: ".$rowcolor.";'>".html_print_image($file_name, true, array('title' => $agent['nombre']))."</td>";
-				$agent_modules = agents_get_modules($agent['id_agente']);
-				
-				$nmodules = 0;
-				
-				foreach ($modules_by_name as $module) {
-					$nmodules++;
-					// Don't use pagination
-					/*if ($nmodules > $block) {
-						continue;
-					}*/
-					
-					$match = false;
-					foreach($module['id'] as $module_id){
-						if (!$match && array_key_exists($module_id,$agent_modules)) {
-							$status = modules_get_agentmodule_status($module_id);
-							$table_data .= "<td style='text-align: center; background-color: #DDD;'>";
-							$win_handle = dechex(crc32($module_id.$module["name"]));
-							$graph_type = return_graphtype (modules_get_agentmodule_type($module_id));
-							
-							switch ($status) {
-								case 0:
-									$table_data .= ui_print_status_image ('module_ok.png', $module['name']." in ".$agent['nombre'].": ".__('NORMAL'), true, array('width' => '20px', 'height' => '20px'));
-									break;
-								case 1:
-									$table_data .= ui_print_status_image ('module_critical.png', $module['name']." in ".$agent['nombre'].": ".__('CRITICAL'), true, array('width' => '20px', 'height' => '20px'));
-									break;
-								case 2:
-									$table_data .= ui_print_status_image ('module_warning.png', $module['name']." in ".$agent['nombre'].": ".__('WARNING'), true, array('width' => '20px', 'height' => '20px'));
-									break;
-								case 3:
-									$table_data .= ui_print_status_image ('module_unknown.png', $module['name']." in ".$agent['nombre'].": ".__('UNKNOWN'), true, array('width' => '20px', 'height' => '20px'));
-									break;
-								case 4:
-									$table_data .= ui_print_status_image ('module_alertsfired.png', $module['name']." in ".$agent['nombre'].": ".__('ALERTS FIRED'), true, array('width' => '20px', 'height' => '20px'));
-									break;
-							}
-							$table_data .= "</td>";
-							$match = true;
-						}
-					}
-					
-					if (!$match) {
-						$table_data .= "<td style='background-color: #DDD;'></td>";
-					}
-				}
-				
-				$table_data .= "</tr>";
-			}
-			
-			$table_data .= "</table>";
-			
-			$table_data .= "<div class='legend_basic' style='width: 96%'>";
-			
-			$table_data .= "<table>";
-			$table_data .= "<tr><td colspan='2' style='padding-bottom: 10px;'><b>" . __('Legend') . "</b></td></tr>";
-			$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_ALERTFIRED . ";'></div></td><td>" . __("Orange cell when the module has fired alerts") . "</td></tr>";
-			$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_CRITICAL . ";'></div></td><td>" . __("Red cell when the module has a critical status") . "</td></tr>";
-			$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_WARNING . ";'></div></td><td>" . __("Yellow cell when the module has a warning status") . "</td></tr>";
-			$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_NORMAL . ";'></div></td><td>" . __("Green cell when the module has a normal status") . "</td></tr>";
-			$table_data .= "<tr><td class='legend_square_simple'><div style='background-color: " . COL_UNKNOWN . ";'></div></td><td>" . __("Grey cell when the module has an unknown status") . "</td></tr>";
-			$table_data .= "</table>";
-			$table_data .= "</div>";
-			$data = array ();
-			$table->colspan[2][0] = 3;
-			$data[0] = $table_data;
-			array_push ($table->data, $data);
-			break;
 		case 'inventory':
 			if (empty($item_title)) {
 				$item_title = __('Inventory');

@@ -382,10 +382,111 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$force_width_chart,
 					$force_height_chart);
 				break;
+			case 'agent_module':
+				$report['contents'][] = reporting_agent_module(
+					$report,
+					$content);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_agent_module($report, $content) {
+	global $config;
+	
+	$id_group = $content['id_group'];
+	$id_module_group = $content['id_module_group'];
+	
+	$return['type'] = 'agent_module';
+	
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Agent/Modules');
+	}
+	
+	$return['title'] = $content['name'];
+	$group_name = groups_get_name($content['id_group'], true);
+	if ($content['id_module_group'] == 0) {
+		$module_group_name = __('All');
+	}
+	else {
+		$module_group_name = db_get_value('name', 'tmodule_group',
+			'id_mg',  $content['id_module_group']);
+	}
+	$return['subtitle'] = $group_name . " - " . $module_group_name;
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	$return["data"] = array();
+	
+	$agents = array();
+	if ($id_group > 0) {
+		$agents = agents_get_group_agents($id_group);
+		$agents = array_keys($agents);
+	}
+	
+	$filter_module_groups = false;
+	if ($id_module_group > 0) {
+		$filter_module_groups['id_module_group'] = $id_module_group;
+	}
+	
+	$all_modules = agents_get_modules($agents, false,
+		$filter_module_groups, true, false);
+	
+	$modules_by_name = array();
+	$name = '';
+	$cont = 0;
+	
+	foreach ($all_modules as $key => $module) {
+		if ($module == $name) {
+			$modules_by_name[$cont - 1]['id'][] = $key;
+		}
+		else {
+			$name = $module;
+			$modules_by_name[$cont]['name'] = $name;
+			$modules_by_name[$cont]['id'][] = $key;
+			$cont ++;
+		}
+	}
+	
+	$filter_groups = array();
+	if ($id_group > 0) {
+		$filter_groups['id_grupo'] = $id_group;
+	}
+	$agents = agents_get_agents ($filter_groups);
+	$nagents = count($agents);
+	
+	if ($all_modules == false || $agents == false) {
+		$return['failed'] = __('There are no agents with modules');
+	}
+	else {
+		foreach ($agents as $agent) {
+			$row = array();
+			$row['agent_status'][$agent['id_agente']] =
+				agents_get_status($agent['id_agente']);
+			$row['agent_name'] = $agent['nombre'];
+			
+			$agent_modules = agents_get_modules($agent['id_agente']);
+			
+			$row['modules'] = array();
+			foreach ($modules_by_name as $module) {
+				$row['modules'][$module['name']] = null;
+				foreach ($module['id'] as $module_id) {
+					if (array_key_exists($module_id, $agent_modules)) {
+						$row['modules'][$module['name']] =
+							modules_get_agentmodule_status($module_id);
+						break;
+					} 
+				}
+			}
+			
+			$return['data'][] = $row;
+		}
+	}
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_exception($report, $content, $type = 'dinamic',

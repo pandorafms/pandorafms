@@ -181,14 +181,26 @@ function mysql_db_get_row ($table, $field_search, $condition, $fields = false) {
  * @return mixed A matrix with all the values in the table
  */
 function mysql_db_get_all_rows_in_table($table, $order_field = "", $order = 'ASC') {
-	if ($order_field != "") {
-		return db_get_all_rows_sql ("SELECT *
-			FROM `".$table."`
-			ORDER BY ".$order_field . " " . $order);
+	$sql = "
+		SELECT *
+		FROM `".$table."`";
+	
+	if (!empty($order_field)) {
+		if (is_array($order_field)) {
+			foreach ($order_field as $i => $o) {
+				$order_field[$i] = $o . " " . $order;
+			}
+			$sql .= "
+				ORDER BY " . implode(",", $order_field);
+		}
+		else {
+			$sql .= "
+				ORDER BY ".$order_field . " " . $order;
+		}
+		
 	}
-	else {
-		return db_get_all_rows_sql ("SELECT * FROM `".$table."`");
-	}
+	
+	return db_get_all_rows_sql($sql);
 }
 
 /**

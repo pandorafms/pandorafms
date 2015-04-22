@@ -138,7 +138,7 @@ function mainAgentsModules() {
 		}
 		$count++;
 	}
-
+	$total_pagination = count($agents);
 	$all_modules = agents_get_modules($agents, false, $filter_module_group, true, false);
 	
 	$modules_by_name = array();
@@ -242,13 +242,12 @@ function mainAgentsModules() {
 	
 	echo "</tr>";
 	
-	$filter_agents = array('offset' => (int) $offset,
-		'limit' => (int) $config['block_size'], 'disabled' => 0);
+	$filter_agents = array('offset' => (int) $offset, 'disabled' => 0);
 	if ($group_id > 0) {
 		$filter_agents['id_grupo'] = $group_id;
 	}
 	// Prepare pagination
-	ui_pagination ((int)count(agents_get_agents ($filter_agents)));
+	ui_pagination ($total_pagination);
 	
 	foreach ($agents as $agent) {
 		// Get stats for this group

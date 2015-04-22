@@ -234,6 +234,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'group_report':
 				reporting_html_group_report($table, $item);
 				break;
+			case 'exception':
+				reporting_html_exception($table, $item);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -243,6 +246,81 @@ function reporting_html_print_report($report, $mini = false) {
 		
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
+	}
+}
+
+function reporting_html_exception($table, $item) {
+	
+	if (!empty($item['failed'])) {
+		$table->colspan['group_report']['cell'] = 3;
+		$table->cellstyle['group_report']['cell'] = 'text-align: center;';
+		$table->data['event_list']['cell'] = $item['failed'];
+	}
+	else {
+		$table1->width = '99%';
+		
+		$table1->align = array();
+		$table1->align['agent'] = 'left';
+		$table1->align['module'] = 'left';
+		$table1->align['operation'] = 'left';
+		$table1->align['value'] = 'right';
+		
+		$table1->data = array ();
+		
+		$table1->head = array ();
+		$table1->head['agent'] = __('Agent');
+		$table1->head['module'] = __('Module');
+		$table1->head['operation'] = __('Operation');
+		$table1->head['value'] = __('Value');
+		
+		foreach ($item['data'] as $data) {
+			$row = array();
+			$row['agent'] = $data['agent'];
+			$row['module'] = $data['module'];
+			$row['operation'] = $data['operation'];
+			$row['value'] = $data['formated_value'];
+			
+			$table1->data[] = $row;
+		}
+		
+		$table->colspan['data']['cell'] = 3;
+		$table->cellstyle['data']['cell'] = 'text-align: center;';
+		$table->data['data']['cell'] = html_print_table($table1, true);
+		
+		if (!empty($item['chart'])) {
+			$table->colspan['chart_pie']['cell'] = 3;
+			$table->cellstyle['chart_pie']['cell'] = 'text-align: center;';
+			$table->data['chart_pie']['cell'] = $item["chart"]["pie"];
+			
+			$table->colspan['chart_hbar']['cell'] = 3;
+			$table->cellstyle['chart_hbar']['cell'] = 'text-align: center;';
+			$table->data['chart_hbar']['cell'] = $item["chart"]["hbar"];
+		}
+		
+		if (!empty($item['resume'])) {
+			$table1 = null;
+			$table1->width = '99%';
+			
+			$table1->align = array();
+			$table1->align['min'] = 'right';
+			$table1->align['avg'] = 'right';
+			$table1->align['max'] = 'right';
+			
+			$table1->head = array ();
+			$table1->head['min'] = __('Min Value');
+			$table1->head['avg'] = __('Average Value');
+			$table1->head['max'] = __('Max Value');
+			
+			$table1->data = array ();
+			$table1->data[] = array(
+				'min' => $item['resume']['min']['formated_value'],
+				'avg' => $item['resume']['avg']['formated_value'],
+				'max' => $item['resume']['max']['formated_value']);
+			
+			$table->colspan['resume']['cell'] = 3;
+			$table->cellstyle['resume']['cell'] = 'text-align: center;';
+			$table->data['resume']['cell'] = html_print_table($table1, true);
+		}
 	}
 }
 
@@ -4591,400 +4669,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, array(html_print_table($table_summary, true)));
 			}
 			break;
-		case 'exception':
-			$order_uptodown = $content['order_uptodown'];
-			$exception_condition = $content['exception_condition'];
-			$exception_condition_value = $content['exception_condition_value'];
-			$show_graph = $content['show_graph'];
-			
-			$table->style[1] = 'text-align: right';
-			
-			switch ($exception_condition) {
-				case REPORT_EXCEPTION_CONDITION_EVERYTHING:
-					$title_exeption = __('Exception - Everything');
-					break;
-				case REPORT_EXCEPTION_CONDITION_GE:
-					$title_exeption =
-						sprintf(__('Exception - Modules over or equal to %s'),
-						$exception_condition_value);
-					break;
-				case REPORT_EXCEPTION_CONDITION_LE:
-					$title_exeption =
-						sprintf(__('Exception - Modules under or equal to %s'),
-						$exception_condition_value);
-					break;
-				case REPORT_EXCEPTION_CONDITION_L:
-					$title_exeption =
-						sprintf(__('Exception - Modules under %s'),
-						$exception_condition_value);
-					break;
-				case REPORT_EXCEPTION_CONDITION_G:
-					$title_exeption =
-						sprintf(__('Exception - Modules over %s'),
-						$exception_condition_value);
-					break;
-				case REPORT_EXCEPTION_CONDITION_E:
-					$title_exeption =
-						sprintf(__('Exception - Equal to %s'),
-						$exception_condition_value);
-					break;
-				case REPORT_EXCEPTION_CONDITION_NE:
-					$title_exeption =
-						sprintf(__('Exception - Not equal to %s'),
-						$exception_condition_value);
-					break;
-				case REPORT_EXCEPTION_CONDITION_OK:
-					$title_exeption =
-						__('Exception - Modules at normal status');
-					break;
-				case REPORT_EXCEPTION_CONDITION_NOT_OK:
-					$title_exeption =
-						__('Exception - Modules at critical or warning status');
-					break;
-			}
-			
-			if (empty($item_title)) {
-				$item_title = $title_exeption;
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title);
-			
-			// Put description at the end of the module (if exists)
-			$table->colspan[1][0] = 3;
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-			}
-			//Get all the related data
-			$sql = sprintf("
-				SELECT id_agent_module, server_name, operation
-				FROM treport_content_item
-				WHERE id_report_content = %d", $content['id_rc']);
-			
-			$exceptions = db_process_sql ($sql);
-			if ($exceptions === false) {
-				$data = array ();
-				$table->colspan[2][0] = 3;
-				$data[0] = __('There are no Agent/Modules defined');
-				array_push ($table->data, $data);
-				break;
-			}
-			
-			if ($show_graph == 0 || $show_graph == 1) {
-				$table1->width = '99%';
-				$table1->data = array ();
-				$table1->head = array ();
-				$table1->head[0] = __('Agent');
-				$table1->head[1] = __('Module');
-				$table1->head[2] = __('Operation');
-				$table1->head[3] = __('Value');
-				$table1->style[0] = 'text-align: left';
-				$table1->style[1] = 'text-align: left';
-				$table1->style[2] = 'text-align: left';
-				$table1->style[3] = 'text-align: left';
-			}
-			
-			//Get the very first not null value 
-			$i=0;
-			do {
-				//Metaconsole connection
-				$server_name = $exceptions[$i]['server_name'];
-				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
-					$connection = metaconsole_get_connection($server_name);
-					if (metaconsole_load_external_db($connection) != NOERR) {
-						//ui_print_error_message ("Error connecting to ".$server_name);
-						continue;
-					}
-				}
-				
-				if ($content['period'] == 0) {
-					$min =
-						modules_get_last_value($exceptions[$i]['id_agent_module']);
-				}
-				else {
-					switch ($exceptions[$i]['operation']) {
-						case 'avg':
-							$min = reporting_get_agentmodule_data_average(
-								$exceptions[$i]['id_agent_module'], $content['period']);
-							break;
-						case 'max':
-							$min = reporting_get_agentmodule_data_max(
-								$exceptions[$i]['id_agent_module'], $content['period']);
-							break;
-						case 'min':
-							$min = reporting_get_agentmodule_data_min(
-								$exceptions[$i]['id_agent_module'], $content['period']);
-							break;
-					}
-				}
-				$i++;
-				
-				//Restore dbconnection
-				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
-					metaconsole_restore_db();
-				}
-			}
-			while ($min === false && $i < count($exceptions));
-			$max = $min;
-			$avg = 0;
-			
-			$i=0;
-			foreach ($exceptions as $exc) {
-				//Metaconsole connection
-				$server_name = $exc['server_name'];
-				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
-					$connection = metaconsole_get_connection($server_name);
-					if (metaconsole_load_external_db($connection) != NOERR) {
-						//ui_print_error_message ("Error connecting to ".$server_name);
-						continue;
-					}
-				}
-				
-				$ag_name = modules_get_agentmodule_agent_name ($exc ['id_agent_module']);
-				$mod_name = modules_get_agentmodule_name ($exc ['id_agent_module']);
-				$unit = db_get_value('unit', 'tagente_modulo',
-					'id_agente_modulo', $exc['id_agent_module']);
-				
-				if ($content['period'] == 0) {
-					$value =
-						modules_get_last_value($exceptions[$i]['id_agent_module']);
-				}
-				else {
-					switch ($exc['operation']) {
-						case 'avg':
-							$value = reporting_get_agentmodule_data_average ($exc['id_agent_module'], $content['period']);
-							break;
-						case 'max':
-							$value = reporting_get_agentmodule_data_max ($exc['id_agent_module'], $content['period']);
-							break;
-						case 'min':
-							$value = reporting_get_agentmodule_data_min ($exc['id_agent_module'], $content['period']);
-							break;
-					}
-				}
-				
-				if ($value !== false) {
-					if ($value > $max) $max = $value;
-					if ($value < $min) $min = $value;
-					$avg += $value;
-					
-					//Skips
-					switch ($exception_condition) {
-						case REPORT_EXCEPTION_CONDITION_EVERYTHING:
-							break;
-						case REPORT_EXCEPTION_CONDITION_GE:
-							if ($value < $exception_condition_value) {
-								continue 2;
-							}
-							break;
-						case REPORT_EXCEPTION_CONDITION_LE:
-							if ($value > $exception_condition_value) {
-								continue 2;
-							}
-							break;
-						case REPORT_EXCEPTION_CONDITION_L:
-							if ($value > $exception_condition_value) {
-								continue 2;
-							}
-							break;
-						case REPORT_EXCEPTION_CONDITION_G:
-							if ($value < $exception_condition_value) {
-								continue 2;
-							}
-							break;
-						case REPORT_EXCEPTION_CONDITION_E:
-							if ($value != $exception_condition_value) {
-								continue 2;
-							}
-							break;
-						case REPORT_EXCEPTION_CONDITION_NE:
-							if ($value == $exception_condition_value) {
-								continue 2;
-							}
-							break;
-						case REPORT_EXCEPTION_CONDITION_OK:
-							if (modules_get_agentmodule_status($exc['id_agent_module']) != 0) {
-								continue 2;
-							}
-							break;
-						case REPORT_EXCEPTION_CONDITION_NOT_OK:
-							if (modules_get_agentmodule_status($exc['id_agent_module']) == 0) {
-								continue 2;
-							}
-							break;
-					}
-					
-					$i++;
-					$data_exceptions[] = $value;
-					$id_agent_module[] = $exc['id_agent_module'];
-					$agent_name[] = $ag_name;
-					$module_name[] = $mod_name;
-					$units[] = $unit;
-					if ($exc['operation'] == 'avg') {
-						$operation[] = "rate";
-					}
-					else {
-						$operation[] = $exc['operation'];
-					}
-				}
-				//Restore dbconnection
-				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
-					metaconsole_restore_db();
-				}
-			}
-			
-			//$i <= 0 means that there are no rows on the table, therefore no modules under the conditions defined.
-			if ($i <= 0) {
-				$data = array ();
-				$table->colspan[2][0] = 3;
-				$data[0] = __('There are no');
-				
-				switch ($exception_condition) {
-					case REPORT_EXCEPTION_CONDITION_EVERYTHING:
-						$data[0] .= ' '.__('Modules under those conditions');
-						break;
-					case REPORT_EXCEPTION_CONDITION_GE:
-						$data[0] .= ' '.__('Modules over or equal to').' '.$exception_condition_value;
-						break;
-					case REPORT_EXCEPTION_CONDITION_LE:
-						$data[0] .= ' '.__('Modules less or equal to').' '.$exception_condition_value;
-						break;
-					case REPORT_EXCEPTION_CONDITION_L:
-						$data[0] .= ' '.__('Modules less').' '.$exception_condition_value;
-						break;
-					case REPORT_EXCEPTION_CONDITION_G:
-						$data[0] .= ' '.__('Modules over').' '.$exception_condition_value;
-						break;
-					case REPORT_EXCEPTION_CONDITION_E:
-						$data[0] .= ' '.__('Modules equal to').' '.$exception_condition_value;
-						break;
-					case REPORT_EXCEPTION_CONDITION_NE:
-						$data[0] .= ' '.__('Modules not equal to').' '.$exception_condition_value;
-						break;
-					case REPORT_EXCEPTION_CONDITION_OK:
-						$data[0] .= ' '.__('Modules normal status');
-						break;
-					case REPORT_EXCEPTION_CONDITION_NOT_OK:
-						$data[0] .= ' '.__('Modules at critial or warning status');
-						break;
-				}
-				
-				
-				array_push ($table->data, $data);
-				break;
-			}
-			//$i > 0 means that there is at least one row on the table
-			elseif ($i > 0) {
-				$avg = $avg / $i;
-				
-				switch ($order_uptodown) {
-					//Order descending
-					case 1:
-						array_multisort($data_exceptions, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
-						break;
-					//Order ascending
-					case 2:
-						array_multisort($data_exceptions, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
-						break;
-					//Order by agent name or without selection
-					case 0:
-					case 3:
-						array_multisort($agent_name, SORT_ASC, $data_exceptions, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC);
-						break;
-				}
-				
-				if ($order_uptodown == 1 || $order_uptodown == 2) {
-					$j = 0;
-					$data_pie_graph = array();
-					$data_hbar = array();
-					foreach ($data_exceptions as $dex) {
-						$data_hbar[$agent_name[$j]]['g'] = $dex;
-						$data_pie_graph[$agent_name[$j]] = $dex;
-						if ($show_graph == 0 || $show_graph == 1) {
-							$data = array();
-							$data[0] = $agent_name[$j];
-							$data[1] = $module_name[$j];
-							$data[2] = __($operation[$j]);
-							$data[3] = format_for_graph($dex, 2) . " " . $units[$j];
-							array_push ($table1->data, $data);
-						}
-						$j++;
-					}
-				}
-				else if ($order_uptodown == 0 || $order_uptodown == 3) {
-					$j = 0;
-					$data_pie_graph = array();
-					$data_hbar = array();
-					foreach ($agent_name as $an) {
-						$data_hbar[$an]['g'] = $data_exceptions[$j];
-						$data_pie_graph[$an] = $data_exceptions[$j];
-						if ($show_graph == 0 || $show_graph == 1) {
-							$data = array();
-							$data[0] = $an;
-							$data[1] = $module_name[$j];
-							$data[2] = __($operation[$j]);
-							$data[3] = format_for_graph($data_exceptions[$j], 2) . " " . $units[$j];
-							array_push ($table1->data, $data);
-						}
-						$j++;
-					}
-				}
-			}
-			
-			$table->colspan[2][0] = 3;
-			$table->cellstyle[2][0] = 'text-align: center;';
-			if ($show_graph == 0 || $show_graph == 1) {
-				$data = array();
-				$data[0] = html_print_table($table1, true);
-				array_push ($table->data, $data);
-			}
-			
-			$table->colspan[3][0] = 3;
-			$table->cellstyle[3][0] = 'text-align: center;';
-			
-			$data = array();
-			if ($show_graph == 1 || $show_graph == 2) {
-				$data[0] = pie3d_graph(false, $data_pie_graph,
-					600, 150, __("other"),
-					ui_get_full_url(false, false, false, false),
-					ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
-					$config['fontpath'], $config['font_size']); 
-				array_push ($table->data, $data);
-				//Display bars graph
-				$table->colspan[4][0] = 3;
-				$table->cellstyle[4][0] = 'text-align: center;';
-				$height = count($data_pie_graph) * 20 + 85;
-				$data = array();
-				
-				$data[0] = hbar_graph(false, $data_hbar, 600, $height,
-					array(), array(), "", "", true,
-					ui_get_full_url(false, false, false, false),
-					ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png", '', '', true, 1, true);
-				
-				array_push ($table->data, $data);
-			}
-			
-			if ($content['show_resume'] && $i>0) {
-				unset($table_summary);
-				
-				$table_summary->width = '99%';
-				$table_summary->data = array ();
-				$table_summary->head = array ();
-				$table_summary->head[0] = __('Min Value');
-				$table_summary->head[1] = __('Average Value');
-				$table_summary->head[2] = __('Max Value');
-				
-				$table_summary->data[0][0] = format_for_graph($min,2);
-				$table_summary->data[0][1] = format_for_graph($avg,2);
-				$table_summary->data[0][2] = format_for_graph($max,2);
-				
-				$table->colspan[5][0] = 3;
-				$table->cellstyle[5][0] = 'text-align: center;';
-				array_push ($table->data, array('<b>'.__('Summary').'</b>'));
-				$table->colspan[6][0] = 3;
-				array_push ($table->data, array(html_print_table($table_summary, true)));
-			}
-			break;
+		
 		case 'agent_module':
 			$group_name = groups_get_name($content['id_group']);
 			if ($content['id_module_group'] == 0) {

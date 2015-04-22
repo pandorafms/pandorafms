@@ -374,10 +374,389 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$report,
 					$content);
 				break;
+			case 'exception':
+				$report['contents'][] = reporting_exception(
+					$report,
+					$content,
+					$type,
+					$force_width_chart,
+					$force_height_chart);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_exception($report, $content, $type = 'dinamic',
+	$force_width_chart = null, $force_height_chart = null) {
+	global $config;
+	
+	$return['type'] = 'exception';
+	
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Exception');
+	}
+	
+	$return['title'] = $content['name'];
+	$exception_condition = $content['exception_condition'];
+	switch ($exception_condition) {
+		case REPORT_EXCEPTION_CONDITION_EVERYTHING:
+			$return['subtitle'] = __('Exception - Everything');
+			break;
+		case REPORT_EXCEPTION_CONDITION_GE:
+			$return['subtitle'] =
+				sprintf(__('Exception - Modules over or equal to %s'),
+				$exception_condition_value);
+			break;
+		case REPORT_EXCEPTION_CONDITION_LE:
+			$return['subtitle'] =
+				sprintf(__('Exception - Modules under or equal to %s'),
+				$exception_condition_value);
+			break;
+		case REPORT_EXCEPTION_CONDITION_L:
+			$return['subtitle'] =
+				sprintf(__('Exception - Modules under %s'),
+				$exception_condition_value);
+			break;
+		case REPORT_EXCEPTION_CONDITION_G:
+			$return['subtitle'] =
+				sprintf(__('Exception - Modules over %s'),
+				$exception_condition_value);
+			break;
+		case REPORT_EXCEPTION_CONDITION_E:
+			$return['subtitle'] =
+				sprintf(__('Exception - Equal to %s'),
+				$exception_condition_value);
+			break;
+		case REPORT_EXCEPTION_CONDITION_NE:
+			$return['subtitle'] =
+				sprintf(__('Exception - Not equal to %s'),
+				$exception_condition_value);
+			break;
+		case REPORT_EXCEPTION_CONDITION_OK:
+			$return['subtitle'] =
+				__('Exception - Modules at normal status');
+			break;
+		case REPORT_EXCEPTION_CONDITION_NOT_OK:
+			$return['subtitle'] =
+				__('Exception - Modules at critical or warning status');
+			break;
+	}
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	$return["data"] = array();
+	$return["chart"] = array();
+	$return["resume"] = array();
+	
+	$order_uptodown = $content['order_uptodown'];
+	$exception_condition_value = $content['exception_condition_value'];
+	$show_graph = $content['show_graph'];
+	
+	//Get all the related data
+	$sql = sprintf("
+		SELECT id_agent_module, server_name, operation
+		FROM treport_content_item
+		WHERE id_report_content = %d", $content['id_rc']);
+	
+	$exceptions = db_process_sql ($sql);
+	if ($exceptions === false) {
+		$return['failed'] = __('There are no Agent/Modules defined');
+	}
+	else {
+		//Get the very first not null value 
+		$i = 0;
+		do {
+			//Metaconsole connection
+			$server_name = $exceptions[$i]['server_name'];
+			if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+				$connection = metaconsole_get_connection($server_name);
+				if (metaconsole_load_external_db($connection) != NOERR) {
+					//ui_print_error_message ("Error connecting to ".$server_name);
+					continue;
+				}
+			}
+			
+			if ($content['period'] == 0) {
+				$min =
+					modules_get_last_value($exceptions[$i]['id_agent_module']);
+			}
+			else {
+				switch ($exceptions[$i]['operation']) {
+					case 'avg':
+						$min = reporting_get_agentmodule_data_average(
+							$exceptions[$i]['id_agent_module'], $content['period']);
+						break;
+					case 'max':
+						$min = reporting_get_agentmodule_data_max(
+							$exceptions[$i]['id_agent_module'], $content['period']);
+						break;
+					case 'min':
+						$min = reporting_get_agentmodule_data_min(
+							$exceptions[$i]['id_agent_module'], $content['period']);
+						break;
+				}
+			}
+			$i++;
+			
+			//Restore dbconnection
+			if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+				metaconsole_restore_db();
+			}
+		}
+		while ($min === false && $i < count($exceptions));
+		$max = $min;
+		$avg = 0;
+		
+		
+		$i = 0;
+		foreach ($exceptions as $exc) {
+			//Metaconsole connection
+			$server_name = $exc['server_name'];
+			if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+				$connection = metaconsole_get_connection($server_name);
+				if (metaconsole_load_external_db($connection) != NOERR) {
+					//ui_print_error_message ("Error connecting to ".$server_name);
+					continue;
+				}
+			}
+			
+			$ag_name = modules_get_agentmodule_agent_name ($exc ['id_agent_module']);
+			$mod_name = modules_get_agentmodule_name ($exc ['id_agent_module']);
+			$unit = db_get_value('unit', 'tagente_modulo',
+				'id_agente_modulo', $exc['id_agent_module']);
+			
+			if ($content['period'] == 0) {
+				$value =
+					modules_get_last_value($exceptions[$i]['id_agent_module']);
+			}
+			else {
+				switch ($exc['operation']) {
+					case 'avg':
+						$value = reporting_get_agentmodule_data_average ($exc['id_agent_module'], $content['period']);
+						break;
+					case 'max':
+						$value = reporting_get_agentmodule_data_max ($exc['id_agent_module'], $content['period']);
+						break;
+					case 'min':
+						$value = reporting_get_agentmodule_data_min ($exc['id_agent_module'], $content['period']);
+						break;
+				}
+			}
+			
+			if ($value !== false) {
+				if ($value > $max) $max = $value;
+				if ($value < $min) $min = $value;
+				$avg += $value;
+				
+				//Skips
+				switch ($exception_condition) {
+					case REPORT_EXCEPTION_CONDITION_EVERYTHING:
+						break;
+					case REPORT_EXCEPTION_CONDITION_GE:
+						if ($value < $exception_condition_value) {
+							continue 2;
+						}
+						break;
+					case REPORT_EXCEPTION_CONDITION_LE:
+						if ($value > $exception_condition_value) {
+							continue 2;
+						}
+						break;
+					case REPORT_EXCEPTION_CONDITION_L:
+						if ($value > $exception_condition_value) {
+							continue 2;
+						}
+						break;
+					case REPORT_EXCEPTION_CONDITION_G:
+						if ($value < $exception_condition_value) {
+							continue 2;
+						}
+						break;
+					case REPORT_EXCEPTION_CONDITION_E:
+						if ($value != $exception_condition_value) {
+							continue 2;
+						}
+						break;
+					case REPORT_EXCEPTION_CONDITION_NE:
+						if ($value == $exception_condition_value) {
+							continue 2;
+						}
+						break;
+					case REPORT_EXCEPTION_CONDITION_OK:
+						if (modules_get_agentmodule_status($exc['id_agent_module']) != 0) {
+							continue 2;
+						}
+						break;
+					case REPORT_EXCEPTION_CONDITION_NOT_OK:
+						if (modules_get_agentmodule_status($exc['id_agent_module']) == 0) {
+							continue 2;
+						}
+						break;
+				}
+				
+				$i++;
+				$data_exceptions[] = $value;
+				$id_agent_module[] = $exc['id_agent_module'];
+				$agent_name[] = $ag_name;
+				$module_name[] = $mod_name;
+				$units[] = $unit;
+				if ($exc['operation'] == 'avg') {
+					$operation[] = "rate";
+				}
+				else {
+					$operation[] = $exc['operation'];
+				}
+			}
+			//Restore dbconnection
+			if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+				metaconsole_restore_db();
+			}
+		}
+		
+		if ($i == 0) {
+			switch ($exception_condition) {
+				case REPORT_EXCEPTION_CONDITION_EVERYTHING:
+					$return['failed'] = __('There are no Modules under those conditions.');
+					break;
+				case REPORT_EXCEPTION_CONDITION_GE:
+					$return['failed'] = __('There are no Modules over or equal to %s.', $exception_condition_value);
+					break;
+				case REPORT_EXCEPTION_CONDITION_LE:
+					$return['failed'] = __('There are no Modules less or equal to %s.', $exception_condition_value);
+					break;
+				case REPORT_EXCEPTION_CONDITION_L:
+					$return['failed'] = __('There are no Modules less %s.', $exception_condition_value);
+					break;
+				case REPORT_EXCEPTION_CONDITION_G:
+					$return['failed'] = __('There are no Modules over %s.', $exception_condition_value);
+					break;
+				case REPORT_EXCEPTION_CONDITION_E:
+					$return['failed'] = __('There are no Modules equal to %s', $exception_condition_value);
+					break;
+				case REPORT_EXCEPTION_CONDITION_NE:
+					$return['failed'] = __('There are no Modules not equal to %s', $exception_condition_value);
+					break;
+				case REPORT_EXCEPTION_CONDITION_OK:
+					$return['failed'] = __('There are no Modules normal status');
+					break;
+				case REPORT_EXCEPTION_CONDITION_NOT_OK:
+					$return['failed'] = __('There are no Modules at critial or warning status');
+					break;
+			}
+			
+		}
+		else {
+			$avg = $avg / $i;
+			
+			switch ($order_uptodown) {
+				//Order descending
+				case 1:
+					array_multisort($data_exceptions, SORT_DESC,
+						$agent_name, SORT_ASC, $module_name, SORT_ASC,
+						$id_agent_module, SORT_ASC);
+					break;
+				//Order ascending
+				case 2:
+					array_multisort($data_exceptions, SORT_ASC,
+						$agent_name, SORT_ASC, $module_name, SORT_ASC,
+						$id_agent_module, SORT_ASC);
+					break;
+				//Order by agent name or without selection
+				case 0:
+				case 3:
+					array_multisort($agent_name, SORT_ASC,
+						$data_exceptions, SORT_ASC, $module_name,
+						SORT_ASC, $id_agent_module, SORT_ASC);
+					break;
+			}
+			
+			if ($order_uptodown == 1 || $order_uptodown == 2) {
+				$j = 0;
+				$data_pie_graph = array();
+				$data_hbar = array();
+				foreach ($data_exceptions as $dex) {
+					$data_hbar[$agent_name[$j]]['g'] = $dex;
+					$data_pie_graph[$agent_name[$j]] = $dex;
+					if ($show_graph == 0 || $show_graph == 1) {
+						$data = array();
+						$data['agent'] = $agent_name[$j];
+						$data['module'] = $module_name[$j];
+						$data['operation'] = __($operation[$j]);
+						$data['value'] = $dex;
+						$data['formated_value'] = format_for_graph($dex, 2) . " " . $units[$j];
+						$return['data'][] = $data;
+					}
+					$j++;
+				}
+			}
+			else if ($order_uptodown == 0 || $order_uptodown == 3) {
+				$j = 0;
+				$data_pie_graph = array();
+				$data_hbar = array();
+				foreach ($agent_name as $an) {
+					$data_hbar[$an]['g'] = $data_exceptions[$j];
+					$data_pie_graph[$an] = $data_exceptions[$j];
+					if ($show_graph == 0 || $show_graph == 1) {
+						$data = array();
+						$data['agent'] = $an;
+						$data['module'] = $module_name[$j];
+						$data['operation'] = __($operation[$j]);
+						$data['value'] = $data_exceptions[$j];
+						$data['formated_value'] = format_for_graph($data_exceptions[$j], 2) . " " . $units[$j];
+						$return['data'][] = $data;
+					}
+					$j++;
+				}
+			}
+			
+			if ($show_graph == 1 || $show_graph == 2) {
+				
+				
+				reporting_set_conf_charts($width, $height, $only_image,
+					$type, $content, $ttl);
+				
+				if (!empty($force_width_chart)) {
+					$width = $force_width_chart;
+				}
+				
+				if (!empty($force_height_chart)) {
+					$height = $force_height_chart;
+				}
+				
+				
+				$return["chart"]["pie"] = pie3d_graph(false, $data_pie_graph,
+					600, 150, __("other"),
+					ui_get_full_url(false, false, false, false),
+					ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
+					$config['fontpath'], $config['font_size']); 
+				$return["chart"]["hbar"] = hbar_graph(false,
+					$data_hbar, 600, $height,
+					array(), array(), "", "", true,
+					ui_get_full_url(false, false, false, false),
+					ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png", '', '', true, 1, true);
+			}
+			
+			
+			
+			if ($content['show_resume'] && $i > 0) {
+				$return["resume"]['min']['value'] = $min;
+				$return["resume"]['min']['formated_value'] = format_for_graph($min,2);
+				$return["resume"]['max']['value'] = $max;
+				$return["resume"]['max']['formated_value'] = format_for_graph($max,2);
+				$return["resume"]['avg']['value'] = $avg;
+				$return["resume"]['avg']['formated_value'] = format_for_graph($avg,2);
+			}
+			
+			
+		}
+		
+	}
+	
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_group_report($report, $content) {
@@ -1086,7 +1465,8 @@ function reporting_sql_graph($report, $content, $type,
 	}
 	
 	// Get chart
-	reporting_set_conf_charts($width, $height, $only_image, $type, $content);
+	reporting_set_conf_charts($width, $height, $only_image, $type,
+		$content, $ttl);
 	
 	if (!empty($force_width_chart)) {
 		$width = $force_width_chart;
@@ -1203,7 +1583,8 @@ function reporting_netflow($report, $content, $type,
 	$return["date"] = reporting_get_date_text($report, $content);
 	
 	// Get chart
-	reporting_set_conf_charts($width, $height, $only_image, $type, $content);
+	reporting_set_conf_charts($width, $height, $only_image, $type,
+		$content, $ttl);
 	
 	if (!empty($force_width_chart)) {
 		$width = $force_width_chart;
@@ -1255,7 +1636,8 @@ function reporting_simple_baseline_graph($report, $content,
 	$return["date"] = reporting_get_date_text($report, $content);
 	
 	// Get chart
-	reporting_set_conf_charts($width, $height, $only_image, $type, $content);
+	reporting_set_conf_charts($width, $height, $only_image, $type,
+		$content, $ttl);
 	
 	if (!empty($force_width_chart)) {
 		$width = $force_width_chart;
@@ -1352,7 +1734,8 @@ function reporting_projection_graph($report, $content,
 	}
 	
 	// Get chart
-	reporting_set_conf_charts($width, $height, $only_image, $type, $content);
+	reporting_set_conf_charts($width, $height, $only_image, $type,
+		$content, $ttl);
 	
 	if (!empty($force_width_chart)) {
 		$width = $force_width_chart;
@@ -2273,7 +2656,8 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	
 	$return['chart'] = '';
 	// Get chart
-	reporting_set_conf_charts($width, $height, $only_image, $type, $content);
+	reporting_set_conf_charts($width, $height, $only_image, $type,
+		$content, $ttl);
 	
 	$height += count($modules) * REPORTING_CUSTOM_GRAPH_LEGEND_EACH_MODULE_VERTICAL_SIZE;
 	
@@ -2342,7 +2726,8 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 	
 	$return['chart'] = '';
 	// Get chart
-	reporting_set_conf_charts($width, $height, $only_image, $type, $content);
+	reporting_set_conf_charts($width, $height, $only_image, $type,
+		$content, $ttl);
 	
 	if (!empty($force_width_chart)) {
 		$width = $force_width_chart;
@@ -2478,7 +2863,8 @@ function reporting_check_structure_content($report) {
 	return $report;
 }
 
-function reporting_set_conf_charts(&$width, &$height, &$only_image, $type, $content, &$ttl) {
+function reporting_set_conf_charts(&$width, &$height, &$only_image, $type,
+	$content, &$ttl) {
 	switch ($type) {
 		case 'dinamic':
 			$only_image = false;

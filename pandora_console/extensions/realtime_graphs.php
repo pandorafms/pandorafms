@@ -46,6 +46,8 @@ function pandora_realtime_graphs () {
 	$table->id = 'table-form';
 	$table->class = 'databox filters';
 	$table->style = array ();
+	$table->cellpadding = '0';
+	$table->cellspacing = '0';
 	$table->style[0] = 'font-weight: bold;';
 	$table->style[1] = 'font-weight: bold;';
 	$table->style[2] = 'font-weight: bold;';
@@ -63,7 +65,6 @@ function pandora_realtime_graphs () {
 	$refresh = get_parameter('refresh', '1000');
 	
 	$data['graph'] = __('Graph') . '&nbsp;&nbsp;' . html_print_select ($graph_fields, 'graph', $graph, '', '', 0, true);
-	$data['reset'] = html_print_button(__('Clear graph'), 'reset', false, 'clearGraph()', 'class="sub delete"', true);
 
 	$refresh_fields[1000] = human_time_description_raw(1, true, 'large');
 	$refresh_fields[5000] = human_time_description_raw(5, true, 'large');
@@ -72,7 +73,7 @@ function pandora_realtime_graphs () {
 	
 	$data['refresh'] = __('Refresh interval') . '&nbsp;&nbsp;' . html_print_select ($refresh_fields, 'refresh', $refresh, '', '', 0, true);
 	$data['incremental'] = __('Incremental') . '&nbsp;&nbsp;' . html_print_checkbox ('incremental', 1, 0, true);
-
+	$data['reset'] = html_print_button(__('Clear graph'), 'reset', false, 'clearGraph()', 'class="sub delete" style="margin-top:0px;"', true);
 	$table->data[] = $data;
 	
 	

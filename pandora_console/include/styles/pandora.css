@@ -2957,6 +2957,12 @@ table#policy_modules td * {
 	vertical-align: middle;
 	margin-left: 5px;
 }
+.databox.data td>img, .databox.data td>div>a>img, 
+.databox.data td>span>img, .databox.data td>span>a>img,
+.databox.data td>a>img{
+	vertical-align: middle;
+	margin-left: 5px;
+}
 
 .databox_color td{
 	padding-left: 10px;

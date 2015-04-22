@@ -176,7 +176,7 @@ function mainAgentsModules() {
 		return;
 	}
 	
-	echo '<table cellpadding="4" cellspacing="4" border="0" style="width:98%;" class="agents_modules_table">';
+	echo '<table cellpadding="4" cellspacing="4" border="0" style="width:100%;" class="agents_modules_table">';
 	
 	echo "<tr>";
 	

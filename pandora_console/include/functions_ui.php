@@ -876,13 +876,13 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	$actions = alerts_get_alert_agent_module_actions ($alert['id'], false);
 	
 	if (!empty($actions)) {
-		$actionText = '<div style="margin-left: 10px;"><ul class="action_list">';
+		$actionText = '<div><ul class="action_list">';
 		foreach ($actions as $action) {
-			$actionText .= '<div><span class="action_name"><li>' . $action['name'];
+			$actionText .= '<div style="margin-bottom: 5px;" ><span class="action_name"><li>' . $action['name'];
 			if ($action["fires_min"] != $action["fires_max"]){
 				$actionText .=  " (".$action["fires_min"] . " / ". $action["fires_max"] . ")";
 			}
-			$actionText .= '</li></span><br /></div>';
+			$actionText .= '</li></span></div>';
 		}
 		$actionText .= '</ul></div>';
 	}

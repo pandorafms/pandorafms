@@ -41,6 +41,8 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	
 	$table->width = '100%';
 	$table->class = 'databox filters';
+	$table->cellpadding = '0';
+	$table->cellspacing = '0';
 	if(defined('METACONSOLE')){
 		$table->class = 'databox_filters';
 		$table->width = '96%';

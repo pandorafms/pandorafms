@@ -453,14 +453,9 @@ $rows_select[0] = __('Not assigned');
 
 $table->data[0][5] = html_print_select($rows_select, 'modulegroup', $modulegroup, '', __('All'),-1,true, false, true, '', false, 'width: 120px;');
 
-
-if(defined('METACONSOLE')){
-	
-	$table->rowspan[0][6] = 2;
-	$table->data[0][6] = html_print_submit_button (__('Show'), "uptbutton",
-							false, 'class="sub search" style="margin-top:0px;"',true);
-
-}
+$table->rowspan[0][6] = 2;
+$table->data[0][6] = html_print_submit_button (__('Show'), "uptbutton",
+						false, 'class="sub search" style="margin-top:0px;"',true);
 
 $table->data[1][0] = __('Module name');
 
@@ -494,11 +489,6 @@ else {
 	
 	$table->data[1][5] = html_print_select ($tags, "tag_filter",
 		$tag_filter, '', __('All'), '', true, false, true, '', false, 'width: 150px;');
-}
-
-
-if(!defined('METACONSOLE')){
-	$table->data[1][6] = html_print_submit_button (__('Show'), "uptbutton", false, 'class="sub search"',true);
 }
 
 $table_custom_fields = new stdClass();

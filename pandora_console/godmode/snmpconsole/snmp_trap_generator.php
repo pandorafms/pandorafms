@@ -58,7 +58,8 @@ if ($generate_trap) {
 }
 
 $traps_generator = '<form method="POST" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_trap_generator">';
-$table->width = '90%';
+$table->width = '100%';
+$table->class = 'databox filters';
 $table->size = array ();
 $table->data = array ();
 

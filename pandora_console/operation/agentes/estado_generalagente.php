@@ -124,7 +124,7 @@ $table_agent->cellstyle[count($table_agent->data)][0] =
 
 $data[2] = ui_print_os_icon ($agent["id_os"], false, true, true, false, false, false, array('title' => __('OS') . ': ' . get_os_name ($agent["id_os"])));
 $table_agent->cellstyle[count($table_agent->data)][2] =
-	'width: 16px; text-align: right; padding: 0px; vertical-align: top;';
+	'width: 16px; text-align: right; padding: 0px;';
 $data[3] = empty($agent["os_version"]) ? get_os_name ((int) $agent["id_os"]) : $agent["os_version"];
 $table_agent->colspan[count($table_agent->data)][3] = 2;
 
@@ -144,7 +144,7 @@ if (!empty($address)) {
 	$data = array();
 	$data[2] = html_print_image('images/world.png', true, array('title' => __('IP address')));
 	$table_agent->cellstyle[count($table_agent->data)][2] =
-		'width: 16px; text-align: right; padding: 0px; vertical-align: top;';
+		'width: 16px; text-align: right; padding: 0px;';
 	$data[3] = '<span style="vertical-align:top; display: inline-block;">';
 	$data[3] .= empty($address) ? '<em>' . __('N/A') . '</em>' : $address;
 	$data[3] .= '</span>';
@@ -156,7 +156,7 @@ if (!empty($address)) {
 $data = array();
 $data[2] = html_print_image('images/version.png', true, array('title' => __('Agent Version')));
 $table_agent->cellstyle[count($table_agent->data)][2] =
-	'width: 16px; text-align: right; padding: 0px; vertical-align: top;';
+	'width: 16px; text-align: right; padding: 0px;';
 $data[3] = '<span style="vertical-align:top; display: inline-block;">';
 $data[3] .= empty($agent["agent_version"]) ? '<i>' . __('N/A') . '</i>' : $agent["agent_version"];
 $data[3] .= '</span>';
@@ -168,7 +168,7 @@ $data = array();
 $data[2] = html_print_image('images/default_list.png', true,
 	array('title' => __('Description')));
 $table_agent->cellstyle[count($table_agent->data)][2] =
-	'width: 16px; text-align: right; padding: 0px; vertical-align: top;';
+	'width: 16px; text-align: right; padding: 0px;';
 $data[3] = '<span style="vertical-align:top; display: inline-block;">';
 $data[3] .= empty($agent["comentarios"]) ?
 	'<em>' . __('N/A') . '</em>' :

@@ -285,7 +285,10 @@ switch ($config["dbtype"]) {
 $sql_all = sprintf($sql_all, $whereSubquery);
 $sql_count = sprintf($sql_count, $whereSubquery);
 
-$table->width = '90%';
+$table->width = '100%';
+$table->cellpadding = 0;
+$table->cellspacing = 0;
+$table->class = 'databox filters';
 $table->size = array ();
 $table->size[0] = '120px';
 $table->data = array ();
@@ -351,8 +354,7 @@ $trapcount = (int) db_get_value_sql($sql_count);
 
 // No traps 
 if (empty ($traps)) {
-	echo '<div class="nf">' .
-		__('There are no SNMP traps in database') . '</div>';
+	ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no SNMP traps in database') ) );
 	return;
 }
 
@@ -381,10 +383,10 @@ ui_pagination ($trapcount, $urlPagination, $offset, $pagination);
 
 echo '<form name="eventtable" method="POST" action="' . $url_snmp . '">';
 
-$table->cellpadding = 4;
-$table->cellspacing = 4;
-$table->width = '99%';
-$table->class = "databox";
+$table->cellpadding = 0;
+$table->cellspacing = 0;
+$table->width = '100%';
+$table->class = "databox data";
 $table->head = array ();
 $table->size = array ();
 $table->data = array ();

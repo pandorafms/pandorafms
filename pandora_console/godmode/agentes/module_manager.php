@@ -128,7 +128,7 @@ echo "</form>";
 
 echo '<div style="text-align: right; width: 100%;padding-top:10px;padding-bottom:10px">';
 echo "<strong>";
-echo "<a style='color: #004A1B;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules in Pandora FMS Library")."</a>";
+echo "<a style='color: #373737;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules in Pandora FMS Library")."</a>";
 echo "</strong>";
 echo '</div>';
 

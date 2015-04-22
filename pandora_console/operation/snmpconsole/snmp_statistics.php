@@ -94,7 +94,7 @@ $traps_generated_by_oid = db_get_all_rows_sql($sql_traps_generated_by_oid);
 
 // No traps 
 if (empty($traps_generated_by_source) || empty($traps_generated_by_oid)) {
-	echo '<div class="nf">'.__('There are no SNMP traps in database').'</div>';
+	ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no SNMP traps in database') ) );
 	return;
 }
 
@@ -104,6 +104,7 @@ $water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water
 // By SOURCE
 $table_source = new StdClass();
 $table_source->width = '100%';
+$table_source->class = 'databox data';
 $table_source->head[] = __("Traps received by source") . " - " . sprintf(__('Top %d'), 25);
 $table_source->head_colspan[] = 2;
 $table_source->headstyle[] = "background-color: #82b92e";

@@ -119,8 +119,6 @@ if ($new_agent) {
 		$server_name = reset(array_keys($servers));
 }
 
-echo '<div style="height: 5px">&nbsp;</div>';
-
 if (!$new_agent) {
 	// Agent remote configuration editor
 	enterprise_include_once('include/functions_config_agents.php');

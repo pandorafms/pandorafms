@@ -126,7 +126,7 @@ a {
 	text-decoration: none;
 }
 a:hover {
-	color: #003a3a;
+	color: #373737;
 	text-decoration: underline;
 }
 a.white_bold {
@@ -657,7 +657,6 @@ input.target, input.search, input.copy, input.add, input.graph,
 input.percentile, input.binary, input.camera, input.config,
 input.cancel, input.default, input.filter, input.pdf {
 	padding-right: 30px;
-	margin-top: 15px;
 	height: 23px;
 
 }
@@ -2942,8 +2941,8 @@ table#policy_modules td * {
 	margin-top: 0px !important ;
 }
 
-.databox.filters{
-	margin-bottom: 17px;
+.databox.filters, .databox.data{
+	margin-bottom: 20px;
 }
 
 .databox.filters td{
@@ -2957,7 +2956,7 @@ table#policy_modules td * {
 	vertical-align: middle;
 	margin-left: 5px;
 }
-.databox.data td>img, .databox.data td>div>a>img, 
+.databox.data td>img,.databox.data th>img, .databox.data td>div>a>img, 
 .databox.data td>span>img, .databox.data td>span>a>img,
 .databox.data td>a>img{
 	vertical-align: middle;

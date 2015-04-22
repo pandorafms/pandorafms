@@ -181,7 +181,7 @@ enterprise_hook('open_meta_frame');
 if (defined ('METACONSOLE')){
 	$class = "databox data";
 }else{
-	$class = "databox";
+	$class = "databox filters";
 }
 
 echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure='.$pure.'">';
@@ -395,24 +395,20 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	
 	echo "<br />";
 	
-	if (defined ('METACONSOLE')) {
-		echo "<table class='' width='100%' style='border: 0px; text-align:right;'><tr><td>";
-	}
-	
-	
+	echo "<table class='' width='100%' style='border: 0px; text-align:right;'><tr><td>";
+
 	html_print_submit_button (__('Draw'), 'draw_button', false, 'class="sub upd"');
 	
 	if (!$netflow_disable_custom_lvfilters) {
 		if (check_acl ($config["id_user"], 0, "AW")) {
 			html_print_submit_button (__('Save as new filter'), 'save_button', false, 'class="sub upd" onClick="return defineFilterName();"');
-			
+			."&nbsp;&nbsp;".
 			html_print_submit_button (__('Update current filter'), 'update_button', false, 'class="sub upd"');
 		}
 	}
 	
-	if (defined ('METACONSOLE')) {
-		echo "</td></tr></table>";
-	}
+	echo "</td></tr></table>";
+
 echo'</form>';
 
 if ($draw != '') {

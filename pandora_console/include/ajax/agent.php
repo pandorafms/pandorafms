@@ -36,34 +36,12 @@ if ($get_agents_group) {
 	
 	$return = array();
 	if ($id_group != -1) {
-		if (defined('METACONSOLE')) {
-			
-			if ($id_server == 0) {
-				$servers = $servers = db_get_all_rows_sql ("SELECT *
-					FROM tmetaconsole_setup
-					WHERE disabled = 0");
-			}
-			else {
-				$servers = db_get_all_rows_sql ("SELECT *
-					FROM tmetaconsole_setup
-					WHERE id = " . $id_server . "
-						AND disabled = 0");
-			}
-			
-			foreach ($servers as $server) {
-				if (metaconsole_load_external_db ($server) != NOERR) {
-					continue;
-				}
-				
-				$return = agents_get_group_agents($id_group);
-				
-				//Restore db connection
-				metaconsole_restore_db();
-			}
-		}
-		else {
-			$return = agents_get_group_agents($id_group);
-		}
+		$filter = array();
+		
+		if (defined('METACONSOLE'))
+			$filter['id_server'] = $id_server;
+		
+		$return = agents_get_group_agents($id_group, $filter,  "none");
 	}
 	
 	switch ($mode) {

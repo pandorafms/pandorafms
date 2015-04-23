@@ -110,7 +110,7 @@ $type_search = get_parameter('type_filter', '0');
 
 ?>
 <form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/networkmap_list">
-	<table style='width: 100%' class='databox'>
+	<table style='width: 100%' class='databox filters'>
 		<tr>
 			<td class='datos' >
 				<?php echo __('Group'); ?>
@@ -144,7 +144,8 @@ $type_search = get_parameter('type_filter', '0');
 
 // Display table
 $table = new StdClass();
-$table->width = "98%";
+$table->width = "100%";
+$table->class = "databox data";
 
 $table->style = array();
 $table->style[0] = '';
@@ -192,8 +193,7 @@ $user_info = users_get_user_by_id($config['id_user']);
 $network_maps = db_get_all_rows_filter('tnetwork_map', $where);
 
 if ($network_maps === false) {
-	echo "<div class='warn'>" . __('Not networkmap defined.') .
-		"</div>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=> __('Not networkmap defined.') ) );
 }
 else {
 	$table->data = array();
@@ -237,9 +237,11 @@ else {
 if ($networkmaps_write || $networkmaps_manage) {
 	$table_manage = new StdClass();
 	$table_manage->width = "100%";
+	$table_manage->class = "databox filters";
 	$table_manage->style = array();
 	$table_manage->style[0] = 'font-weight: bold';
-	$table_manage->style[3] = 'text-align: right';
+	$table_manage->style[2] = 'font-weight: bold';
+	$table_manage->style[4] = 'text-align: right';
 	$table_manage->size = array();
 	$table_manage->head = array();
 	$table_manage->data = array();
@@ -256,6 +258,7 @@ if ($networkmaps_write || $networkmaps_manage) {
 	$row = array();
 	$row[] = __('Action');
 	$row[] = html_print_select($actions, 'action', 'create', '', '', 0, true, false, false);
+	$row[] = __('Type');
 	$row[] = html_print_select($networkmap_types, 'tab', 'topology', '', '', 0, true)
 		. html_print_select($delete_options, 'delete_options', 'selected', '', '', 0, true, false, false);
 	$row[] = html_print_submit_button (__('Execute'), 'crt', false, 'class="sub next"', true)

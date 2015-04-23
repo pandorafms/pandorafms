@@ -105,10 +105,18 @@ function mainAgentsAlerts() {
 	}
 	
 	// Header
-	ui_print_page_header (__("Agents/Alerts"), "images/op_alerts.png", false, "", false, $onheader);
+	ui_print_page_header (__("Agents/Alerts"), "images/op_alerts.png", false, "", false, $updated_time);
 	
 	// Old style table, we need a lot of special formatting,don't use table function
 	// Prepare old-style table
+	echo '<table class="databox filters" cellpadding="0" cellspacing="0" border="0" style="width:100%;">';
+	echo "<tr>";
+	echo "<td>" . $filter_groups  . "</td>";
+	if ($config['pure'] == 1) 
+		echo "<td>" . $comborefr  . "</td>";
+	echo "<td> <strong>" . __("Full screen") . "</strong>" . $fullscreen['text'] . "</td>";
+	echo "</tr>";
+	echo "</table>";
 	
 	$filter = array ('offset' => (int) $offset,
 		'limit' => (int) $config['block_size']);
@@ -144,7 +152,7 @@ function mainAgentsAlerts() {
 	$nagents = count(agents_get_agents ($filter_count));
 	
 	if ($agents == false) {
-		echo "<div class='nf'>" . __('There are no agents with alerts')."</div>";
+		ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no agents with alerts') ) );
 		return;
 	}
 	
@@ -164,12 +172,15 @@ function mainAgentsAlerts() {
 	// Prepare pagination
 	ui_pagination ($nagents);
 	
-	echo '<table cellpadding="4" cellspacing="4" border="0" width=98%>';
-	echo "<th width='140px' height='25px'>".__("Agents")." / ".__("Alert templates")."</th>";
+	echo '<table class="databox data" cellpadding="0" cellspacing="0" border="0" width=100%>';
+	echo "<th width='140px' >".__("Agents")." / ".__("Alert templates")."</th>";
 	
 	if ($hor_offset > 0) {
 		$new_hor_offset = $hor_offset-$block;
-		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_alerts&refr=0&hor_offset=".$new_hor_offset."&offset=".$offset."&group_id=".$group_id."'>".html_print_image("images/darrowleft.png",true, array('title' => __('Previous templates')))."</a> </th>";
+		echo "<th width='20px' style='' rowspan='".($nagents+1)."'>
+				<a href='index.php?sec=extensions&sec2=extensions/agents_alerts&refr=0&hor_offset=".
+					$new_hor_offset."&offset=".$offset."&group_id=".$group_id."'>".
+						html_print_image("images/darrowleft.png",true, array('title' => __('Previous templates')))."</a> </th>";
 	}
 	
 	$templates_raw = array();
@@ -200,12 +211,14 @@ function mainAgentsAlerts() {
 		if ($tname == '') {
 			continue;
 		}
-		echo '<th width="20px" >'. html_print_image('images/information.png', true, array('title' => io_safe_output($tname))) ."</th>";
+		echo '<th width="20px" >'. io_safe_output($tname) . html_print_image('images/information.png', true, array('title' => io_safe_output($tname))) ."</th>";
 	}
 	
 	if (($hor_offset + $block) < $ntemplates) {
 		$new_hor_offset = $hor_offset+$block;
-		echo "<th width='20px' style='vertical-align:top; padding-top: 35px;' rowspan='".($nagents+1)."'><a href='index.php?sec=extensions&sec2=extensions/agents_alerts&hor_offset=".$new_hor_offset."&offset=".$offset."&group_id=".$group_id."'>".html_print_image("images/darrowright.png",true, array('title' => __('More templates')))."</a> </th>";
+		echo "<th width='20px' style='' rowspan='".($nagents+1)."'>
+			<a href='index.php?sec=extensions&sec2=extensions/agents_alerts&hor_offset=".$new_hor_offset."&offset=".
+				$offset."&group_id=".$group_id."'>".html_print_image("images/darrowright.png",true, array('title' => __('More templates')))."</a> </th>";
 	}
 	
 	foreach ($agents as $agent) {
@@ -231,7 +244,7 @@ function mainAgentsAlerts() {
 					$cellstyle = 'background:'.COL_ALERTFIRED.';';
 				}
 				
-				echo '<td style="text-align:center;'.$cellstyle.'"> ';
+				echo '<td style=";'.$cellstyle.'"> ';
 				
 				$uniqid = uniqid();
 				echo "<div>";

@@ -1333,7 +1333,7 @@ if (!empty ($table->data)) {
 	html_print_table ($table);
 }
 else {
-	echo "<div class='nf'>".__('This group doesn\'t have any monitor')."</div>";
+	ui_print_info_message ( array ( 'no_close' => true, 'message' => __('This group doesn\'t have any monitor') ) );
 }
 
 echo "<div id='monitor_details_window'></div>";

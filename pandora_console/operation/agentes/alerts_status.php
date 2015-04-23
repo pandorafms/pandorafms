@@ -584,7 +584,7 @@ if (!empty ($table->data)) {
 	echo '</form>';
 }
 else {
-	ui_print_empty_data ( __('No alerts found') );
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No alerts found') ) );
 }
 
 //strict user hidden

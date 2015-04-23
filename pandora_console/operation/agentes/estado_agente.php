@@ -569,7 +569,7 @@ if (!empty ($table->data)) {
 	
 }
 else {
-	ui_print_info_message (__('There are no defined agents') );
+	ui_print_info_message ( array ( 'no_close' => true, 'message' => __('There are no defined agents') ) );
 }
 ?>
 

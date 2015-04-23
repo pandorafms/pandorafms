@@ -36,7 +36,7 @@ $agent_name = md5($agent_name);
 /* Map with the current position */
 echo "<div id=\"" . $agent_name . "_agent_map\" style=\"border:1px solid black; width:100%; height: 30em;\"></div>";
 
-if (!gis_get_agent_map($id_agente, "500px", "98%", false)) {
+if (!gis_get_agent_map($id_agente, "500px", "100%", false)) {
 	ui_print_error_message(__("There is no default map. Please go to the setup for to set a default map."));
 	echo "<script type='text/javascript'>
 		$(document).ready(function() {
@@ -46,10 +46,11 @@ if (!gis_get_agent_map($id_agente, "500px", "98%", false)) {
 } 
 
 if ($agentData === false) {
-	ui_print_info_message ( __("There is no GIS data for this agent, so it's positioned in default position of map.") );
+	ui_print_info_message ( array ( 'no_close' => true, 'message' => 
+					__("There is no GIS data for this agent, so it's positioned in default position of map.") ) );
 }
-ui_print_warning_message (
-	__("When you change the Agent position, the agent automatically activates the 'Ignore new GIS data' option") );
+ui_print_warning_message (array ( 'no_close' => true, 'message' =>
+	__("When you change the Agent position, the agent automatically activates the 'Ignore new GIS data' option") ) );
 
 $table->width = '100%';
 $table->class = 'databox filters';
@@ -59,6 +60,8 @@ $table->cellspacing = 0;
 $table->head[0] =__('Agent position');
 $table->head_colspan[0] = 4;
 $table->headstyle[0] = "text-align:center";
+$table->style[0] = 'font-weight: bold; ';
+$table->style[2] = 'font-weight: bold; ';
 
 $table->data[1][0] = __('Latitude: ');
 $table->data[1][1] = html_print_input_text_extended ('latitude', $agentData['stored_latitude'], 'text-latitude', '', 20, 20, false, '',

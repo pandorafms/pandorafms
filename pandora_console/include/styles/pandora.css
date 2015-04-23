@@ -727,6 +727,10 @@ input.pdf {
 input.pdf:disabled {
 	background-image: url(../../images/input_pdf.disabled.png) !important;
 }
+input.camera {
+	background-image: url(../../images/camera.png) !important;
+}
+
 #toolbox #auto_save {
 	padding-top: 5px;
 }

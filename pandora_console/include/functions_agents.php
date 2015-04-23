@@ -757,12 +757,13 @@ function agents_common_modules ($id_agent, $filter = false, $indexed = true, $ge
  * @param string $case Which case to return the agentname as (lower, upper, none)
  * @param boolean $noACL jump the ACL test.
  * @param boolean $childGroups The flag to get agents in the child group of group parent passed. By default false.
- * @param boolean $extra_access The flag to get agents of extra access policies.
  *
  * @return array An array with all agents in the group or an empty array
  */
-function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower", $noACL = false, $childGroups = false, $extra_access = true) {
+function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower", $noACL = false, $childGroups = false) {
 	global $config;
+	
+	$filter = array();
 	
 	if (!$noACL) {
 		$id_group = groups_safe_acl($config["id_user"], $id_group, "AR");
@@ -785,43 +786,30 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 		$id_group = array_keys(users_get_groups(false, "AR", true, false, (array)$id_group));
 	}
 	
-	if (is_array($id_group)) {
-		$all_groups = false;
-		$search_group_sql = sprintf ('id_grupo IN (%s)', implode (",", $id_group));
+	if (!empty($id_group)) {
+		$filter['id_grupo'] = $id_group;
 	}
-	else if ($id_group == 0) { //All group
-		$all_groups = true;
-		$search_group_sql = '1 = 1';
-	}
-	else {
-		$all_groups = false;
-		$search_group_sql = sprintf ('id_grupo = %d', $id_group);
-	}
-	
-	$search_sql = '1 = 1';
 	
 	if ($search === true) {
 		//No added search. Show both disabled and non-disabled
 	}
-	elseif (is_array ($search)) {
+	else if (is_array ($search)) {
+		$filter['disabled'] = 0;
 		if (isset ($search["disabled"])) {
-			$search_sql .= ' AND disabled = '.($search["disabled"] ? 1 : 0); //Bool, no cleanup necessary
+			$filter['disabled'] = (int) $search["disabled"];
+			
+			unset ($search["disabled"]);
 		}
-		else {
-			$search_sql .= ' AND disabled = 0';
-		}
-		unset ($search["disabled"]);
+		
 		if (isset ($search["string"])) {
 			$string = io_safe_input ($search["string"]);
 			switch ($config["dbtype"]) {
 				case "mysql":
-					$search_sql .= ' AND (nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%")';
-					break;
 				case "postgresql":
-					$search_sql .= ' AND (nombre COLLATE utf8_general_ci LIKE \'%'.$string.'%\' OR direccion LIKE \'%'.$string.'%\')';
+					$filter[] = "(nombre COLLATE utf8_general_ci LIKE '%$string%' OR direccion LIKE '%$string%')";
 					break;
 				case "oracle":
-					$search_sql .= ' AND (UPPER(nombre)  LIKE UPPER(\'%'.$string.'%\') OR direccion LIKE upper(\'%'.$string.'%\'))';
+					$filter[] = "(UPPER(nombre) LIKE UPPER('%$string%') OR direccion LIKE upper('%$string%'))";
 					break;
 			}
 			
@@ -832,13 +820,11 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 			$name = io_safe_input ($search["name"]);
 			switch ($config["dbtype"]) {
 				case "mysql":
-					$search_sql .= ' AND nombre COLLATE utf8_general_ci LIKE "' . $name . '" ';
-					break;
 				case "postgresql":
-					$search_sql .= ' AND nombre COLLATE utf8_general_ci LIKE \'' . $name . '\' ';
+					$filter[] = "nombre COLLATE utf8_general_ci LIKE '$name'";
 					break;
 				case "oracle":
-					$search_sql .= ' AND UPPER(nombre) LIKE UPPER(\'' . $name . '\') ';
+					$filter[] = "UPPER(nombre) LIKE UPPER('$name')";
 					break;
 			}
 			
@@ -848,65 +834,60 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 		if (isset($search['status'])) {
 			switch ($search['status']) {
 				case AGENT_STATUS_NORMAL:
-					$search_sql .=
-						" AND normal_count = total_count";
+					$filter[] = "normal_count = total_count";
 					break;
 				case AGENT_STATUS_WARNING:
-					$search_sql .=
-						" AND critical_count = 0 AND warning_count > 0";
+					$filter[] = "(critical_count = 0 AND warning_count > 0)";
 					break;
 				case AGENT_STATUS_CRITICAL:
-					$search_sql .=
-						" AND critical_count > 0";
+					$filter[] = "critical_count > 0";
 					break;
 				case AGENT_STATUS_UNKNOWN:
-					$search_sql .=
-						" AND critical_count = 0 AND warning_count = 0
-							AND unknown_count > 0";
+					$filter[] = "(critical_count = 0 AND warning_count = 0 AND unknown_count > 0)";
 					break;
 				case AGENT_STATUS_NOT_NORMAL:
-					$search_sql .= " AND normal_count <> total_count";
+					$filter[] = "normal_count <> total_count";
 					break;
 				case AGENT_STATUS_NOT_INIT:
-					$search_sql .= " AND notinit_count = total_count";
+					$filter[] = "notinit_count = total_count";
 					break;
 			}
 			unset($search['status']);
 		}
 		
+		if (defined('METACONSOLE') && isset($search['id_server'])) {
+			$filter['id_tmetaconsole_setup'] = $search['id_server'];
+			
+			unset ($search["id_server"]);
+		}
 		
-		if (! empty ($search)) {
-			$search_sql .= ' AND '.db_format_array_where_clause_sql ($search);
+		// Add the rest of the filter from the search array
+		foreach ($search as $key => $value) {
+			$filter[] = $value;
 		}
 	}
 	else {
-		$search_sql .= ' AND disabled = 0';
+		$filter['disabled'] = 0;
 	}
 	
-	enterprise_include_once ('include/functions_policies.php');
+	$filter['order'] = 'nombre';
 	
-	// TODO: CLEAN extra_sql
-	$extra_sql = '';
-	
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-			$sql = sprintf ("SELECT id_agente, nombre
-				FROM tagente
-				WHERE (%s %s) AND (%s)
-				ORDER BY nombre",
-				$extra_sql, $search_group_sql, $search_sql);
-			break;
-		case "oracle":
-			$sql = sprintf ("SELECT id_agente, nombre
-				FROM tagente
-				WHERE (%s %s) AND (%s)
-				ORDER BY dbms_lob.substr(nombre,4000,1)",
-				$extra_sql, $search_group_sql, $search_sql);
-			break;
+	if (defined('METACONSOLE')) {
+		$table_name = 'tmetaconsole_agent';
+		
+		$fields = array(
+				'id_tagente AS id_agente', 'nombre'
+			);
+	}
+	else {
+		$table_name = 'tagente';
+		
+		$fields = array(
+				'id_agente', 'nombre'
+			);
 	}
 	
-	$result = db_get_all_rows_sql ($sql);
+	$result = db_get_all_rows_filter($table_name, $filter, $fields);
 	
 	if ($result === false)
 		return array (); //Return an empty array

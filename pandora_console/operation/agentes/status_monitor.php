@@ -654,22 +654,6 @@ switch ($sortField) {
 				break;
 		}
 		break;
-	case 'data':
-		switch ($sort) {
-			case 'up':
-				$selectDataUp = $selected;
-				$order = array(
-					'field' => 'tagente_estado.datos',
-					'order' => 'ASC');
-				break;
-			case 'down':
-				$selectDataDown = $selected;
-				$order = array(
-					'field' => 'tagente_estado.datos',
-					'order' => 'DESC');
-				break;
-		}
-		break;
 	case 'timestamp':
 		switch ($sort) {
 			case 'up':
@@ -933,6 +917,7 @@ if(defined('METACONSOLE')){
 	$table->width = "100%";
 	$table->cellpadding = '0';
 	$table->cellspacing = '0';
+	$table->class = "databox";
 }
 $table->head = array ();
 $table->data = array ();
@@ -989,11 +974,6 @@ $table->head[8] = __('Warn');
 $table->align[8] = "left";
 
 $table->head[9] = __('Data');
-if (! defined ('METACONSOLE')) {
-	$table->head[9] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=data&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectDataUp, "alt" => "up"))  . '</a>' .
-	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=data&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectDataDown, "alt" => "down")) . '</a>';
-}
-
 $table->align[9] = "left";
 
 $table->head[10] = __('Timestamp');
@@ -1224,7 +1204,7 @@ foreach ($result as $row) {
 				"type" => $graph_type,
 				"period" => SECONDS_1DAY,
 				"id" => $row["id_agente_modulo"],
-				"label" => rawurlencode(urlencode(base64_encode($row["module_name"]))),
+				"label" => base64_encode($row["module_name"]),
 				"refresh" => SECONDS_10MINUTES
 			);
 		
@@ -1244,7 +1224,7 @@ foreach ($result as $row) {
 			"show_module_detail_dialog(" .
 				$row["id_agente_modulo"] . ", ".
 				$row['id_agent'] . ", \"" .
-				$row['server_name'] . "\", 0, " . SECONDS_1DAY . ")'>" .
+				$row['server_name'] . "\", 0, " . SECONDS_1DAY . ', "' . $row["module_name"] . "\")'>" .
 			html_print_image ("images/binary.png", true,
 				array ("border" => "0", "alt" => "")) . "</a>";
 				
@@ -1409,7 +1389,7 @@ ui_require_javascript_file('pandora_modules');
 	}
 	
 	// Show the modal window of an module
-	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period) {
+	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period, module_name) {
 		if (period == -1) {
 			if ($("#period").length == 1) {
 				period = $('#period').val();
@@ -1418,8 +1398,7 @@ ui_require_javascript_file('pandora_modules');
 				period = <?php echo SECONDS_1DAY; ?>;
 			}
 		}
-		valor = $("hidden_name_module_"+module_id);
-		console.log(valor);
+		title = <?php echo "\"" . __("Module: ") . "\"" ?>;
 		$.ajax({
 			type: "POST",
 			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
@@ -1433,6 +1412,7 @@ ui_require_javascript_file('pandora_modules');
 						resizable: true,
 						draggable: true,
 						modal: true,
+						title: title + module_name,
 						overlay: {
 							opacity: 0.5,
 							background: "black"
@@ -1442,12 +1422,12 @@ ui_require_javascript_file('pandora_modules');
 					})
 					.show ();
 				
-				refresh_pagination_callback (module_id, id_agent, server_name);
+				refresh_pagination_callback (module_id, id_agent, server_name,module_name);
 			}
 		});
 	}
 	
-	function refresh_pagination_callback (module_id, id_agent, server_name) {
+	function refresh_pagination_callback (module_id, id_agent, server_name,module_name) {
 		
 		$(".binary_dialog").click( function() {
 			var classes = $(this).attr('class');
@@ -1458,7 +1438,7 @@ ui_require_javascript_file('pandora_modules');
 			
 			var period = $('#period').val();
 			
-			show_module_detail_dialog(module_id, id_agent, server_name, offset, period);
+			show_module_detail_dialog(module_id, id_agent, server_name, offset, period,module_name);
 			
 			return false;
 		});

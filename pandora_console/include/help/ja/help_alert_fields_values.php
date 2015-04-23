@@ -14,3 +14,6 @@ value1,tag1;value2,tag2;value3,tag3
 例:
 <br><br>
 1,Number one;2,Number two;3,Number three;4,Number four
+
+<br><br>
+<i>_html_editor_</i>という値を設定することにより、HTML エディタとしてフィールドを設定することもできます。

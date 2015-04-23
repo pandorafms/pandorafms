@@ -33,7 +33,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "6.0dev PS150417";
+my $version = "6.0dev PS150423";
 
 # Pandora server configuration
 my %conf;
@@ -99,6 +99,9 @@ sub pandora_purgedb ($$) {
 
 		# Delete old export data
 		pandora_delete_old_export_data ($dbh, $ulimit_timestamp);
+		
+		# Delete sessions data
+		pandora_delete_old_session_data ($dbh, $ulimit_timestamp);
 	
 		# Delete old inventory data
 		if (enterprise_load (\%conf) != 0) {
@@ -945,6 +948,18 @@ sub pandora_delete_old_export_data {
 
 	log_message ('PURGE', "Deleting old export data from tserver_export_data\n");
 	while(db_do ($dbh, "DELETE FROM tserver_export_data WHERE UNIX_TIMESTAMP(timestamp) < ? LIMIT $SMALL_OPERATION_STEP", $ulimit_timestamp) ne '0E0') {
+		usleep (10000);
+	};
+}
+
+##############################################################################
+# Delete old session data.
+##############################################################################
+sub pandora_delete_old_session_data {
+	my ($dbh, $ulimit_timestamp) = @_;
+
+	log_message ('PURGE', "Deleting old session data from tsessions_php\n");
+	while(db_do ($dbh, "DELETE FROM tsessions_php WHERE last_active < ? LIMIT $SMALL_OPERATION_STEP", $ulimit_timestamp) ne '0E0') {
 		usleep (10000);
 	};
 }

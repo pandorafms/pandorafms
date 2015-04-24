@@ -368,28 +368,44 @@ div#foot {
 #login_body {
 	/* Set rules to fill background */
 	min-height: 100%;
-	min-width: 960px;
-
-	/* Set up proportionate scaling */
+	min-width: 1024px;
 	width: 100%;
-	height: auto;
-
-	/* Set up positioning */
-	position: fixed;
-	top: 0;
-	left: 0;
-	z-index: -999;
-
-	background-color: #DDD;
-	background-image: url(../../images/login_background.jpg);
-	background-repeat: repeat;
-	background-position: center;
+	z-index: -9999;
+	position: absolute;
 }
 
 @media screen and (max-width: 1024px) { /* Specific to this particular image */
 	#login_body {
 		left: 50%;
 		margin-left: -512px;   /* 50% */
+	}
+}
+@media screen and (max-width: 1100px) { /* Specific to this particular image */
+	#login_body {
+		background-image: url("../../images/backgrounds/fondo_madera_bn_1100.jpg");
+		background-repeat: repeat;
+		background-position: center center;
+	}
+}
+@media screen and (max-width: 1400px) { /* Specific to this particular image */
+	#login_body {
+		background-image: url("../../images/backgrounds/fondo_madera_bn_1400.jpg");
+		background-repeat: repeat;
+		background-position: center center;
+	}
+}
+@media screen and (max-width: 2000px) { /* Specific to this particular image */
+	#login_body {
+		background-image: url("../../images/backgrounds/fondo_madera_bn_2000.jpg");
+		background-repeat: repeat;
+		background-position: center center;
+	}
+}
+@media screen and (max-width: 2500px) { /* Specific to this particular image */
+	#login_body {
+		background-image: url("../../images/backgrounds/fondo_madera_bn_2500.jpg");
+		background-repeat: repeat;
+		background-position: center center;
 	}
 }
 
@@ -402,10 +418,9 @@ h1#log_f {
 	padding-bottom: 3px;
 }
 div#login {
-	border-left: solid 1px #000;
-	border-top: solid 1px #000;
-	border-bottom: solid 2px #000;
-	border-right: solid 2px #000;
+	border-width: 2px 2px 2px 2px;
+	border-style: solid;
+	border-color: #000;
 	font-size: 12px !important;
 }
 div#login_in, #login_f {
@@ -414,57 +429,55 @@ div#login_in, #login_f {
 }
 
 .databox_login, .databox_logout {
-	border: none !important;
-	padding: 4px;
-	border-radius: 11px;
-	height: 227px;
+	border-radius: 5px;
+	height: 200px;
 }
 
 #login_inner {
 	width: 100%;
 	height: 100%;
-	border-radius: 4px;
-	overflow: hidden;
-
+	border-radius: 5px;
 	/* Browser without multibackground support */
-	background: #ffffff !important;
-    /* Safari 4-5, Chrome 1-9 */
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#E9E9E9)) !important;
-    /* Safari 5.1+, Chrome 10+ */
-	background: -webkit-linear-gradient(top, #ffffff, #E9E9E9) !important;
-    /* Firefox 3.6+ */
-    background: -moz-linear-gradient(top, #ffffff, #E9E9E9) !important;
-    /* Opera 11.10+ */
-    background: -o-linear-background(top, #ffffff, #E9E9E9) !important;
-    /* IE 10 */
-    background: -ms-linear-background(top, #ffffff, #E9E9E9) !important;
-    /* estÃ¡ndar */
-    background: linear-background(top, #ffffff, #E9E9E9) !important;
+	background-color: #373737 !important;
+
 }
 #login_outer {
-	-moz-box-shadow: 8px 8px 30px #777;
-	-webkit-box-shadow: 8px 8px 30px #777;
-	box-shadow: 8px 8px 30px #777;
-	padding: 3px;
 	border-radius: 11px;
-	width: 431px !important;
-	margin: 100px auto;
-	background-color: #3f3f3f;
+	background-color: #000;
+	width: 500px !important;
+	color: #FFF !important;
+	margin: 0px auto;
 }
+
+.version_login{
+	transform: rotate(36deg);
+	float: right;
+	margin-top: 18px;
+	width: 80px;
+	height: 0px;
+	border-right: 13px solid transparent;
+	border-left: 25px solid transparent;
+	border-bottom: 18px solid #80BA27;
+	left: 16px;
+	position: relative;
+}
+
 
 #login_outer * {
 	font-family: Nunito, "Arial Rounded MT", Arial, Helvetica, sans-serif;
 	font-weight: bold;
 }
-
+.login_border{
+	border-right: 1px solid #FFF;
+	text-align: center;
+}
 table#login_layout {
-	width: 100%;
-	height: 213px;
+	width: 30%;
+	height: 160px;
+	position: absolute;
 }
 
 div#error_login {
-	#margin: 0 auto;
-	#margin-top: -10px;
 	text-align: center;
 	margin-top: 5px;
 	margin-left: 5px;
@@ -489,22 +502,40 @@ div#login_f {
 	margin-bottom: 25px;
 }
 
-IMG.login_logo {
-	border: 0px;
-	width: 140px;
-	margin-top: 15px;
-	margin-bottom: 15px;
-}
-
 a:focus, input:focus, button:focus {
 	utline-width: 0;
 	outline: 0;
 }
 
-DIV.login_button, DIV.login_links {
+DIV.login_links {
+	margin: 10px 0px 0px;
+	color: #FFF;
+	text-align: center;
+}
+
+DIV.login_links>a {
+	color: #FFF;
+}
+
+DIV.login_button{
 	text-align:right;
-	width: 191px;
-	margin: 16px 0px 17px 0px;
+	width: 68%;
+	margin-top: 15px;
+}
+
+DIV.login_button>input{
+	background-color: #373737 !important;
+	border: 0px none;
+	background-image: url("../../images/input_go.png") !important;
+	padding-right: 25px !important;
+}
+
+.login_page{
+	height: 200px;
+	padding-top: 10%;
+	text-align: center;
+	width: 100%;
+	position: absolute;
 }
 
 input.next_login {
@@ -519,7 +550,17 @@ input.next_login {
 }
 
 DIV.login_nick, DIV.login_pass {
-	text-align: left;
+	text-align:left;
+	padding-left: 15px;
+}
+
+DIV.login_nick>input, DIV.login_pass>input {
+	height: 25px;
+	border-radius:0px;
+	margin-left: 10px;
+}
+DIV.login_nick>img, DIV.login_pass>img {
+	vertical-align: middle;
 }
 
 DIV.login_links a {
@@ -556,7 +597,6 @@ DIV.login_pass {
 
 input.login {
 	border: 0px none;
-	background-color: #ebebeb !important;
 	margin: 0px 0px;
 	width: 135px;
 	height: 18px;
@@ -567,7 +607,7 @@ input.login {
 
 input.login_user {
 	/* Browser without multibackground support */
-	background-color: #e2e2e2 !important;
+	color: #373737 !important;
 	padding-left: 8px;
 	width: 179px;
 	color: #222;
@@ -593,15 +633,12 @@ input.login_password {
 }
 
 #ver_num {
-	color: #000;
-	font-size: xx-small;
-	background: white;
-	margin-top: 32px;
-	margin: 0 auto;
-	width: 100px;
+	margin: 0px auto;
+	width: 100%;
 	position: absolute;
 	bottom: 10px;
-	right: 0px;
+	color: #FFF;
+	text-align: center;
 }
 
 input:-webkit-autofill {

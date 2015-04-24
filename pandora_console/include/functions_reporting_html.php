@@ -240,6 +240,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'agent_module':
 				reporting_html_agent_module($table, $item);
 				break;
+			case 'inventory':
+				reporting_html_inventory($table, $item);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -250,6 +253,63 @@ function reporting_html_print_report($report, $mini = false) {
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
 	}
+}
+
+function reporting_html_inventory($table, $item) {
+	if (!empty($item['failed'])) {
+		$table->colspan['failed']['cell'] = 3;
+		$table->cellstyle['failed']['cell'] = 'text-align: center;';
+		$table->data['failed']['cell'] = $item['failed'];
+	}
+	else {
+		foreach ($item['data'] as $module_item) {
+			$table1 = null;
+			$table1->width = '99%';
+			
+			$first = reset($module_item['data']);
+			$count_columns = count($first);
+			
+			
+			$table1->cellstyle[0][0] =
+				'background: #373737; color: #FFF;';
+			$table1->data[0][0] = $module_item['agent_name'];
+			if ($count_columns == 1)
+				$table1->colspan[0][0] = $count_columns + 1; // + columm date
+			else
+				$table1->colspan[0][0] = $count_columns;
+			
+			
+			$table1->cellstyle[1][0] =
+			$table1->cellstyle[1][1] =
+				'background: #373737; color: #FFF;';
+			$table1->data[1][0] = $module_item['name'];
+			if ($count_columns - 1 > 0)
+				$table1->colspan[1][0] = $count_columns - 1;
+			$table1->data[1][1] = $module_item['timestamp'];
+			
+			
+			$table1->cellstyle[2] = array_pad(
+				array(),
+				$count_columns,
+				'background: #373737; color: #FFF;');
+			$table1->data[2] = array_keys($first);
+			if ($count_columns - 1 == 0) {
+				$table1->colspan[2][0] = $count_columns + 1; // + columm date; 
+			}
+			
+			$table1->data = array_merge($table1->data, $module_item['data']);
+			
+			
+			$table->colspan[
+				$module_item['name'] . "_" .$module_item['id_agente']]['cell'] = 3;
+			$table->data[
+				$module_item['name'] . "_" .$module_item['id_agente']]['cell'] =
+				html_print_table($table1, true);
+			
+			
+		}
+	}
+	
 }
 
 function reporting_html_agent_module($table, $item) {
@@ -4808,40 +4868,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			break;
 		
-		case 'inventory':
-			if (empty($item_title)) {
-				$item_title = __('Inventory');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title);
-			
-			$es = json_decode($content['external_source'], true);
-			
-			$id_agent = $es['id_agents'];
-			$module_name = $es['inventory_modules'];
-			if (empty($module_name)) {
-				$module_name = array(0 => 0);
-			}
-			$date = $es['date'];
-			$description = $content['description'];
-			
-			$data = array ();
-			$table->colspan[1][0] = 2;
-			$table->colspan[2][0] = 2;
-			if ($description != '') {
-				$data[0] = $description;
-				array_push ($table->data, $data);
-			}
-			
-			$inventory_data = inventory_get_data((array)$id_agent,(array)$module_name,$date,'',false);
-			
-			if ($inventory_data == ERR_NODATA) {
-				$inventory_data = "<div class='nf'>".__('No data found.')."</div>";
-				$inventory_data .= "&nbsp;</td></tr><tr><td>";
-			}
-			
-			$data[0] = $inventory_data;
-			array_push ($table->data, $data);
-			break;
+		
 		case 'inventory_changes':
 			if (empty($item_title)) {
 				$item_title = __('Inventory changes');

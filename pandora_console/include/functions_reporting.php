@@ -392,10 +392,53 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$report,
 					$content);
 				break;
+			case 'inventory_changes':
+				$report['contents'][] = reporting_inventory_changes(
+					$report,
+					$content);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_inventory_changes($report, $content) {
+	global $config;
+	
+	$return['type'] = 'inventory_changes';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Inventory Changes');
+	}
+	
+	$return['title'] = $content['name'];
+	$return['subtitle'] = agents_get_name($content['id_agent']);
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	$es = json_decode($content['external_source'], true);
+	
+	$id_agent = $es['id_agents'];
+	$module_name = $es['inventory_modules'];
+	
+	
+	
+	$inventory_changes = inventory_get_changes(
+		$id_agent, $module_name,
+		$report["datetime"] - $content['period'],
+		$report["datetime"], "array");
+	
+	$return['data'] = array();
+	
+	if ($inventory_changes == ERR_NODATA) {
+		$return['failed'] = __('No changes found.');
+	}
+	else {
+		$return['data'] = $inventory_changes;
+	}
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_inventory($report, $content) {

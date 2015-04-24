@@ -243,6 +243,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'inventory':
 				reporting_html_inventory($table, $item);
 				break;
+			case 'inventory_changes':
+				reporting_html_inventory_changes($table, $item);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -252,6 +255,57 @@ function reporting_html_print_report($report, $mini = false) {
 		
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
+	}
+}
+
+function reporting_html_inventory_changes($table, $item) {
+	if (!empty($item['failed'])) {
+		$table->colspan['failed']['cell'] = 3;
+		$table->cellstyle['failed']['cell'] = 'text-align: center;';
+		$table->data['failed']['cell'] = $item['failed'];
+	}
+	else {
+		foreach ($item['data'] as $module_item) {
+			$table1 = null;
+			$table1->width = '99%';
+			
+			$table1->cellstyle[0][0] =
+			$table1->cellstyle[0][1] =
+				'background: #373737; color: #FFF;';
+			$table1->data[0][0] = $module_item['agent'];
+			$table1->data[0][1] = $module_item['module'];
+			
+			
+			$table1->cellstyle[1][0] =
+				'background: #373737; color: #FFF;';
+			$table1->data[1][0] = $module_item['date'];
+			$table1->colspan[1][0] = 2;
+			
+			
+			$table1->cellstyle[2][0] =
+				'background: #373737; color: #FFF; text-align: center;';
+			$table1->data[2][0] = __('Added');
+			$table1->colspan[2][0] = 2;
+			
+			
+			$table1->data = array_merge($table1->data, $module_item['added']);
+			
+			
+			$table1->cellstyle[3 + count($module_item['added'])][0] =
+				'background: #373737; color: #FFF; text-align: center;';
+			$table1->data[3 + count($module_item['added'])][0] = __('Deleted');
+			$table1->colspan[3 + count($module_item['added'])][0] = 2;
+			
+			
+			$table1->data = array_merge($table1->data, $module_item['deleted']);
+			
+			
+			$table->colspan[
+				$module_item['agent'] . "_" .$module_item['module']]['cell'] = 3;
+			$table->data[
+				$module_item['agent'] . "_" .$module_item['module']]['cell'] =
+				html_print_table($table1, true);
+		}
 	}
 }
 
@@ -4869,39 +4923,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			break;
 		
 		
-		case 'inventory_changes':
-			if (empty($item_title)) {
-				$item_title = __('Inventory changes');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title);
-			
-			$es = json_decode($content['external_source'], true);
-			
-			$id_agent = $es['id_agents'];
-			$module_name = $es['inventory_modules'];
-			$description = $content['description'];
-			
-			$inventory_changes = inventory_get_changes($id_agent, $module_name, $report["datetime"] - $content['period'], $report["datetime"]);
-			
-			if ($inventory_changes == ERR_NODATA) {
-				$inventory_changes = "<div class='nf'>".__('No changes found.')."</div>";
-				$inventory_changes .= "&nbsp;</td></tr><tr><td>";
-			}
-			
-			$data = array ();
-			
-			$table->colspan[1][0] = 2;
-			
-			if ($description != '') {
-				$data[0] = $description;
-				array_push ($table->data, $data);
-			}
-			
-			$data[0] = $inventory_changes;
-			$table->colspan[2][0] = 2;
-			
-			array_push ($table->data, $data);
-			break;
 	}
 	//Restore dbconnection
 	if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE') && $remote_connection == 1) {

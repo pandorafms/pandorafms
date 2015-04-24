@@ -1,9 +1,13 @@
+' Pandora FMS Agent Inventory Plugin for Microsoft Windows (All platfforms)
+' (c) 2015 Borja Sanchez <fborja.sanchez@artica.es>
+' This plugin extends agent inventory feature. Only enterprise version
+' --------------------------------------------------------------------------
 on error resume next
 'WMI CD_ROM_drives_info
 
 Wscript.StdOut.WriteLine "<inventory>"
 Wscript.StdOut.WriteLine "<inventory_module>"
-Wscript.StdOut.WriteLine "<name>CDROMs</name>"
+Wscript.StdOut.WriteLine "<name>CDROM</name>"
 Wscript.StdOut.WriteLine "<type><![CDATA[generic_data_string]]></type>"
 Wscript.StdOut.WriteLine "<datalist>"
 

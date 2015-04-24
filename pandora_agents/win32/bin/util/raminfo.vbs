@@ -1,3 +1,7 @@
+' Pandora FMS Agent Inventory Plugin for Microsoft Windows (All platfforms)
+' (c) 2015 Borja Sanchez <fborja.sanchez@artica.es>
+' This plugin extends agent inventory feature. Only enterprise version
+' --------------------------------------------------------------------------
 on error resume next
 'WMI raminfo
 
@@ -13,8 +17,8 @@ Set colRAMs = objWMIService.ExecQuery("Select deviceLocator,capacity,speed from 
 
 For Each ram In colRAMs
   Wscript.StdOut.WriteLine "<data><![CDATA[" & ram.deviceLocator _ 
-	& ";" & (ram.capacity/(1024*1024)) _
-	& ";" & ram.speed _
+	& ";" & Abs(Round((ram.capacity/(1024*1024)),2)) & " MB" _
+	& ";" & ram.speed & " MHz"_
 	& "]]></data>"
 Next
 

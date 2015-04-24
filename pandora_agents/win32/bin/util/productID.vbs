@@ -3,7 +3,7 @@
 ' (c) 2015 Sancho Lerena <slerena@artica.es>
 ' This plugin extends agent inventory feature. Only enterprise version
 ' ----------------------------------------------------------------
-
+on error resume next
 
 Wscript.StdOut.WriteLine "<inventory>"
 Wscript.StdOut.WriteLine "<inventory_module>"

@@ -130,6 +130,7 @@ switch ($action) {
 			case 'exception':
 			case 'general':
 			case 'network_interfaces_report':
+			case 'availability':
 				$get_data_editor = true;
 				break;
 			default:

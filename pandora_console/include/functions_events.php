@@ -1342,7 +1342,7 @@ function events_get_module ($id_agent_module, $period, $date = 0) {
 	
 	$datelimit = $date - $period;
 	
-	$sql_where .= sprintf(' AND id_agentmodule = %d AND utimestamp > %d
+	$sql_where = sprintf(' AND id_agentmodule = %d AND utimestamp > %d
 			AND utimestamp <= %d ', $id_agent_module, $datelimit, $date);
 	
 	return events_get_events_grouped($sql_where, 0, 1000);

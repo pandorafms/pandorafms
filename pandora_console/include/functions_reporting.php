@@ -397,10 +397,46 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$report,
 					$content);
 				break;
+			case 'event_report_module':
+				$report['contents'][] = reporting_event_report_module(
+					$report,
+					$content);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
+}
+
+function reporting_event_report_module($report, $content) {
+	global $config;
+	
+	$return['type'] = 'event_report_module';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Event Report Module');
+	}
+	
+	$return['title'] = $content['name'];
+	$return['subtitle'] = agents_get_name($content['id_agent']) .
+		" - " .
+		io_safe_output(
+			modules_get_agentmodule_name($content['id_agent_module']));
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	$data = reporting_get_module_detailed_event(
+		$content['id_agent_module'], $content['period'],
+		$report["datetime"], true, false, true);
+	
+	if (empty($data)) {
+		$return['failed'] = __('No events');
+	}
+	else {
+		$return['data'] = $data;
+	}
+	
+	return reporting_check_structure_content($return);
 }
 
 function reporting_inventory_changes($report, $content) {
@@ -3082,6 +3118,116 @@ function reporting_set_conf_charts(&$width, &$height, &$only_image, $type,
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
+
+
+/** 
+ * Get a detailed report of summarized events per agent
+ *
+ * It construct a table object with all the grouped events happened in an agent
+ * during a period of time.
+ * 
+ * @param mixed Module id to get the report from.
+ * @param int Period of time (in seconds) to get the report.
+ * @param int Beginning date (unixtime) of the report
+ * @param bool Flag to return or echo the report table (echo by default).
+ * @param bool Flag to return the html or table object, by default html.
+ * 
+ * @return mixed A table object (XHTML) or object table is false the html.
+ */
+function reporting_get_module_detailed_event ($id_modules, $period = 0,
+	$date = 0, $return = false, $html = true, $only_data = false) {
+	
+	global $config;
+	
+	$id_modules = (array)safe_int ($id_modules, 1);
+	
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	
+	$table->width = '99%';
+	$table->data = array ();
+	$table->head = array ();
+	$table->head[0] = __('Status');
+	$table->head[1] = __('Event name');
+	$table->head[2] = __('Event type');
+	$table->head[3] = __('Criticity');
+	$table->head[4] = __('Count');
+	$table->head[5] = __('Timestamp');
+	$table->style[0] = 'text-align: center;';
+	$table->style[4] = 'text-align: center;';
+	
+	$events = array ();
+	
+	foreach ($id_modules as $id_module) {
+		$event = events_get_module ($id_module, (int) $period, (int) $date);
+		if (!empty ($event)) {
+			array_push ($events, $event);
+		}
+	}
+	
+	if ($only_data) {
+		return $event;
+	}
+	
+	if ($events) {
+		$note = '';
+		if (count($events) >= 1000) {
+			$note .= '* ' . __('Maximum of events shown') . ' (1000)<br>';
+		}
+		foreach ($events as $eventRow) {
+			foreach ($eventRow as $k => $event) {
+				//$k = count($table->data);
+				$table->cellclass[$k][1] = $table->cellclass[$k][2] =
+				$table->cellclass[$k][3] = $table->cellclass[$k][4] =
+				$table->cellclass[$k][5] =  get_priority_class ($event["criticity"]);
+				
+				$data = array ();
+				
+				// Colored box
+				switch ($event['estado']) {
+					case 0:
+						$img_st = "images/star.png";
+						$title_st = __('New event');
+						break;
+					case 1:
+						$img_st = "images/tick.png";
+						$title_st = __('Event validated');
+						break;
+					case 2:
+						$img_st = "images/hourglass.png";
+						$title_st = __('Event in process');
+						break;
+				}
+				$data[0] = html_print_image ($img_st, true, 
+					array ("class" => "image_status",
+						"width" => 16,
+						"title" => $title_st,
+						"id" => 'status_img_' . $event["id_evento"]));
+						
+				$data[1] = io_safe_output($event['evento']);
+				$data[2] = $event['event_type'];
+				$data[3] = get_priority_name ($event['criticity']);
+				$data[4] = $event['event_rep'];
+				$data[5] = date($config['date_format'], $event['timestamp_rep']);
+				array_push ($table->data, $data);
+			}
+		}
+		
+		if ($html) {
+			return html_print_table ($table, $return) . $note;
+		}
+		else {
+			return $table;
+		}
+	}
+	else {
+		return false;
+	}
+}
 
 
 /** 

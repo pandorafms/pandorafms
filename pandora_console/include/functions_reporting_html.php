@@ -246,6 +246,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'inventory_changes':
 				reporting_html_inventory_changes($table, $item);
 				break;
+			case 'event_report_module':
+				reporting_html_event_report_module($table, $item);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -255,6 +258,72 @@ function reporting_html_print_report($report, $mini = false) {
 		
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
+	}
+}
+
+function reporting_html_event_report_module($table, $item) {
+	
+	global $config;
+	
+	if (!empty($item['failed'])) {
+		$table->colspan['events']['cell'] = 3;
+		$table->data['events']['cell'] = $item['failed'];
+	}
+	else {
+		$table1->width = '99%';
+		$table1->data = array ();
+		$table1->head = array ();
+		$table1->head[0] = __('Status');
+		$table1->head[1] = __('Event name');
+		$table1->head[2] = __('Event type');
+		$table1->head[3] = __('Criticity');
+		$table1->head[4] = __('Count');
+		$table1->head[5] = __('Timestamp');
+		$table1->style[0] = 'text-align: center;';
+		$table1->style[4] = 'text-align: center;';
+		
+		
+		foreach ($item['data'] as $i => $event) {
+			$data = array();
+			
+			$table1->cellclass[$i][1] =
+			$table1->cellclass[$i][2] =
+			$table1->cellclass[$i][3] =
+			$table1->cellclass[$i][4] =
+			$table1->cellclass[$i][5] =  get_priority_class($event["criticity"]);
+			
+			// Colored box
+			switch ($event['estado']) {
+				case 0:
+					$img_st = "images/star.png";
+					$title_st = __('New event');
+					break;
+				case 1:
+					$img_st = "images/tick.png";
+					$title_st = __('Event validated');
+					break;
+				case 2:
+					$img_st = "images/hourglass.png";
+					$title_st = __('Event in process');
+					break;
+			}
+			
+			$data[0] = html_print_image ($img_st, true, 
+				array ("class" => "image_status",
+					"width" => 16,
+					"title" => $title_st,
+					"id" => 'status_img_' . $event["id_evento"]));
+			$data[1] = io_safe_output($event['evento']);
+			$data[2] = $event['event_type'];
+			$data[3] = get_priority_name ($event['criticity']);
+			$data[4] = $event['event_rep'];
+			$data[5] = date($config['date_format'], $event['timestamp_rep']);
+			
+			$table1->data[] = $data;
+		}
+		
+		$table->colspan['events']['cell'] = 3;
+		$table->data['events']['cell'] = html_print_table($table1, true);
 	}
 }
 
@@ -3607,109 +3676,6 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 }
 
 
-/** 
- * Get a detailed report of summarized events per agent
- *
- * It construct a table object with all the grouped events happened in an agent
- * during a period of time.
- * 
- * @param mixed Module id to get the report from.
- * @param int Period of time (in seconds) to get the report.
- * @param int Beginning date (unixtime) of the report
- * @param bool Flag to return or echo the report table (echo by default).
- * @param bool Flag to return the html or table object, by default html.
- * 
- * @return mixed A table object (XHTML) or object table is false the html.
- */
-function reporting_get_module_detailed_event ($id_modules, $period = 0, $date = 0, $return = false, $html = true) {
-	global $config;
-	
-	$id_modules = (array)safe_int ($id_modules, 1);
-	
-	if (!is_numeric ($date)) {
-		$date = strtotime ($date);
-	}
-	if (empty ($date)) {
-		$date = get_system_time ();
-	}
-	
-	$table->width = '99%';
-	$table->data = array ();
-	$table->head = array ();
-	$table->head[0] = __('Status');
-	$table->head[1] = __('Event name');
-	$table->head[2] = __('Event type');
-	$table->head[3] = __('Criticity');
-	$table->head[4] = __('Count');
-	$table->head[5] = __('Timestamp');
-	$table->style[0] = 'text-align: center;';
-	$table->style[4] = 'text-align: center;';
-	
-	$events = array ();
-	
-	foreach ($id_modules as $id_module) {
-		$event = events_get_module ($id_module, (int) $period, (int) $date);
-		if (!empty ($event)) {
-			array_push ($events, $event);
-		}
-	}
-	
-	if ($events) {
-		$note = '';
-		if (count($events) >= 1000) {
-			$note .= '* ' . __('Maximum of events shown') . ' (1000)<br>';
-		}
-		foreach ($events as $eventRow) {
-			foreach ($eventRow as $k => $event) {
-				//$k = count($table->data);
-				$table->cellclass[$k][1] = $table->cellclass[$k][2] =
-				$table->cellclass[$k][3] = $table->cellclass[$k][4] =
-				$table->cellclass[$k][5] =  get_priority_class ($event["criticity"]);
-				
-				$data = array ();
-				
-				// Colored box
-				switch ($event['estado']) {
-					case 0:
-						$img_st = "images/star.png";
-						$title_st = __('New event');
-						break;
-					case 1:
-						$img_st = "images/tick.png";
-						$title_st = __('Event validated');
-						break;
-					case 2:
-						$img_st = "images/hourglass.png";
-						$title_st = __('Event in process');
-						break;
-				}
-				$data[0] = html_print_image ($img_st, true, 
-					array ("class" => "image_status",
-						"width" => 16,
-						"title" => $title_st,
-						"id" => 'status_img_' . $event["id_evento"]));
-						
-				$data[1] = io_safe_output($event['evento']);
-				$data[2] = $event['event_type'];
-				$data[3] = get_priority_name ($event['criticity']);
-				$data[4] = $event['event_rep'];
-				$data[5] = date($config['date_format'], $event['timestamp_rep']);
-				array_push ($table->data, $data);
-			}
-		}
-		
-		if ($html) {
-			return html_print_table ($table, $return) . $note;
-		}
-		else {
-			return $table;
-		}
-	}
-	else {
-		return false;
-	}
-}
-
 
 /**
  *  This is the callback sorting function for SLA values descending
@@ -4564,27 +4530,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$next_row++;
 				array_push ($table->data, $data);
 			}
-			break;
-		case 'event_report_module':
-			if (empty($item_title)) {
-				$item_title = __('Module detailed event');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text($agent_name, 'agent_medium', false) .
-				' <br> ' . ui_print_truncate_text($module_name, 'module_medium', false));
-			
-			// Put description at the end of the module (if exists)
-			$table->colspan[1][0] = 3;
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-			}
-			
-			$data = array ();
-			$table->colspan[2][0] = 3;
-			$data[0] = reporting_get_module_detailed_event($content['id_agent_module'], $content['period'], $report["datetime"], true);
-			array_push ($table->data, $data);
 			break;
 		
 		case 'top_n':

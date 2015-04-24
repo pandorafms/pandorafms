@@ -2340,6 +2340,7 @@ function chooseType() {
 			$("#row_order_uptodown").show();
 			$("#row_show_address_agent").show();
 			$("#row_show_in_two_columns").show();
+			$("#row_show_resume").show();
 			break;
 		case 'group_report':
 			$("#row_group").show();

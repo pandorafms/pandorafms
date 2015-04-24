@@ -41,7 +41,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '6.0dev';
-use constant AGENT_BUILD => '150421';
+use constant AGENT_BUILD => '150424';
 
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {
@@ -754,8 +754,31 @@ sub read_config (;$) {
 	$RemoteConfFile = "$AgentMD5.conf";
 	$RemoteMD5File = "$AgentMD5.md5";
 	
-	# Set the maximun number of threads
-	$ThreadSem = Thread::Semaphore->new ($Conf{'agent_threads'}) if defined ($Sem);
+	# Load thread support if agent_threads is greater than 1.
+	if ($Conf{'agent_threads'} > 1) {
+		eval {
+			local $SIG{__DIE__};
+			require threads;
+			require threads::shared;
+			require Thread::Semaphore;
+		};
+		if (!$@) {
+			$Sem = Thread::Semaphore->new;
+			$ThreadSem = Thread::Semaphore->new ($Conf{'agent_threads'});
+			threads::shared::share (\$Xml);
+			threads::shared::share (\$Sem);
+			log_message ('log', 'Using thread library.');
+		} else {
+			log_message ('log', 'Thread library is not available. agent_threads is set to 1 (disabled).');
+			$Conf{'agent_threads'} = 1;
+			$Sem = undef;
+			$ThreadSem = undef;
+		}
+	} else {
+		$Sem = undef;
+		$ThreadSem = undef;
+		log_message ('log', 'Thread is disabled.');
+	}
 
 	# Set tentacle client options
 	if ($Conf{'transfer_mode'} eq 'tentacle') {
@@ -1205,7 +1228,7 @@ sub guess_os_version ($) {
 ################################################################################
 sub exec_module ($) {
 	my $module = shift;
-
+print "THREAD " . threads->tid() . " EXECUTING MODULE " . $module->{'name'} . "\n";
 	# Need something to execute
 	if ($module->{'func'} == 0) {
 		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
@@ -2063,27 +2086,6 @@ $Conf{'temporal'} = fix_directory ($Conf{'temporal'});
 error ("Temporal directory '" . $Conf{'temporal'} . "' does not exist.") unless (-d "$Conf{'temporal'}");
 $Conf{'server_path'} = fix_directory ($Conf{'server_path'});
 $Conf{'secondary_server_path'} = fix_directory ($Conf{'secondary_server_path'});
-
-# Load thread support if agent_threads is greater than 1.
-if ($Conf{'agent_threads'} > 1) {
-	eval {
-		local $SIG{__DIE__};
-		require threads;
-		require threads::shared;
-		require Thread::Semaphore;
-	};
-	if (!$@) {
-		$Sem = Thread::Semaphore->new;
-		threads::shared::share (\$Xml);
-		threads::shared::share (\$Sem);
-		log_message ('log', 'Using thread library.');
-	} else {
-		log_message ('log', 'Thread library is not available. agent_threads is set to 1 (disabled).');
-		$Conf{'agent_threads'} = 1;
-	}
-} else {
-	log_message ('log', 'Thread is disabled.');
-}
 
 # Startup delay
 log_message ('log', 'Sleeping for ' . $Conf{'delayed_startup'} . ' seconds.') if ($Conf{'delayed_startup'} > 0);

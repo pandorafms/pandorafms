@@ -1112,6 +1112,7 @@ switch ($action) {
 								$good_format = true;
 								break;
 							case 'availability':
+								$values['period'] = get_parameter('period');
 								// HACK it is saved in show_graph field.
 								// Show interfaces instead the modules
 								$values['show_graph'] =

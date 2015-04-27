@@ -3238,9 +3238,12 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 function reporting_get_group_detailed_event ($id_group, $period = 0,
 	$date = 0, $return = false, $html = true,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false) {
-		
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_filter_search = null) {
+	
 	global $config;
+	
+	
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -3268,7 +3271,8 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 	
 	$events = events_get_group_events($id_group, $period, $date,
 		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning, $filter_event_no_validated);
+		$filter_event_warning, $filter_event_no_validated,
+		$filter_event_filter_search);
 	
 	if ($events) {
 		$note = '';
@@ -5025,6 +5029,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$filter_event_validated = $style['filter_event_validated'];
 			$filter_event_critical = $style['filter_event_critical'];
 			$filter_event_warning = $style['filter_event_warning'];
+			$filter_event_filter_search = $style['event_filter_search'];
 			
 			$event_graph_by_agent = $style['event_graph_by_agent'];
 			$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
@@ -5037,10 +5042,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$filter_event_validated,
 				$filter_event_critical,
 				$filter_event_warning,
-				$filter_event_no_validated);
-			if(!empty($data[0])) {
+				$filter_event_no_validated,
+				$filter_event_filter_search);
+			
+			if (!empty($data[0])) {
 				array_push ($table->data, $data);
-								
+				
 				$table->colspan[$next_row][0] = 3;
 				$next_row++;
 			}
@@ -5052,7 +5059,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$filter_event_validated,
 					$filter_event_critical,
 					$filter_event_warning,
-					$filter_event_no_validated);
+					$filter_event_no_validated,
+					$filter_event_filter_search);
 				
 				$table_event_graph = null;
 				$table_event_graph->width = '100%';
@@ -5078,7 +5086,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$filter_event_validated,
 					$filter_event_critical,
 					$filter_event_warning,
-					$filter_event_no_validated);
+					$filter_event_no_validated,
+					$filter_event_filter_search);
 				
 				$table_event_graph = null;
 				$table_event_graph->head[0] = __('Events validated by user');
@@ -5104,7 +5113,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$filter_event_validated,
 					$filter_event_critical,
 					$filter_event_warning,
-					$filter_event_no_validated);
+					$filter_event_no_validated,
+					$filter_event_filter_search);
 				
 				$colors = get_criticity_pie_colors($data_graph);
 				
@@ -5132,7 +5142,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$filter_event_validated,
 					$filter_event_critical,
 					$filter_event_warning,
-					$filter_event_no_validated);
+					$filter_event_no_validated,
+					$filter_event_filter_search);
 				
 				$table_event_graph = null;
 				$table_event_graph->head[0] = __('Amount events validated');
@@ -5608,6 +5619,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				break;
 			}
 			
+			
+			
 			$data = array();
 			
 			$avg = 0;
@@ -5649,6 +5662,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$item['id_agent_module']);
 				
 				$text = $row['agent'] . " (" . $text . ")";
+				
 				
 				$monitor_value = reporting_get_agentmodule_sla(
 					$item['id_agent_module'],
@@ -8237,7 +8251,8 @@ function reporting_template_graphs_get_user ($id_user = 0, $only_names = false, 
 function reporting_get_count_events_by_agent ($id_group, $period = 0,
 	$date = 0,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_filter_search = false) {
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -8248,7 +8263,8 @@ function reporting_get_count_events_by_agent ($id_group, $period = 0,
 	
 	return events_get_count_events_by_agent($id_group, $period, $date,
 		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning, $filter_event_no_validated);
+		$filter_event_warning, $filter_event_no_validated,
+		$filter_event_filter_search);
 }
 
 /**
@@ -8265,7 +8281,8 @@ function reporting_get_count_events_by_agent ($id_group, $period = 0,
 function reporting_get_count_events_validated_by_user ($filter, $period = 0,
 	$date = 0,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_filter_search = null) {
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -8276,7 +8293,8 @@ function reporting_get_count_events_validated_by_user ($filter, $period = 0,
 	
 	return events_get_count_events_validated_by_user($filter, $period, $date,
 		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning, $filter_event_no_validated);
+		$filter_event_warning, $filter_event_no_validated,
+		$filter_event_filter_search);
 }
 
 /**
@@ -8293,7 +8311,8 @@ function reporting_get_count_events_validated_by_user ($filter, $period = 0,
 function reporting_get_count_events_by_criticity ($filter, $period = 0,
 	$date = 0,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_filter_search = null) {
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -8304,7 +8323,8 @@ function reporting_get_count_events_by_criticity ($filter, $period = 0,
 	
 	return events_get_count_events_by_criticity($filter, $period, $date,
 		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning, $filter_event_no_validated);
+		$filter_event_warning, $filter_event_no_validated,
+		$filter_event_filter_search);
 }
 
 /**
@@ -8321,7 +8341,8 @@ function reporting_get_count_events_by_criticity ($filter, $period = 0,
 function reporting_get_count_events_validated ($filter, $period = 0,
 	$date = 0,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_filter_search = null) {
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -8332,7 +8353,8 @@ function reporting_get_count_events_validated ($filter, $period = 0,
 	
 	return events_get_count_events_validated($filter, $period, $date,
 		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning, $filter_event_no_validated);
+		$filter_event_warning, $filter_event_no_validated,
+		$filter_event_filter_search);
 }
 
 /**

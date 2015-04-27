@@ -104,6 +104,9 @@ $netflow_filter = 0;
 $max_values = 0;
 $resolution = 0;
 
+//Others
+$filter_search = "";
+
 switch ($action) {
 	case 'new':
 		$actionParameter = 'save';
@@ -412,6 +415,8 @@ switch ($action) {
 					$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
 					$event_graph_by_criticity = $style['event_graph_by_criticity'];
 					$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
+					
+					$filter_search = $style['event_filter_search'];
 					break;
 				case 'event_report_module':
 					$description = $item['description'];
@@ -1172,6 +1177,14 @@ html_print_input_hidden('id_item', $idItem);
 				html_print_checkbox('show_in_landscape', 1,
 					$show_in_landscape, false, false,
 					'if ($(\'input[name=show_in_landscape]\').is(\':checked\')) $(\'input[name=show_in_two_columns]\').attr(\'checked\', false);');
+				?>
+			</td>
+		</tr>
+		<tr id="row_filter_search" style="" class="datos">
+			<td><?php echo __('Free search');?></td>
+			<td>
+				<?php
+				html_print_input_text('filter_search', $filter_search);
 				?>
 			</td>
 		</tr>
@@ -2043,14 +2056,17 @@ function chooseType() {
 	$("#row_module_multi").hide();
 	$("#row_event_filter").hide();
 	$("#row_event_graphs").hide();
+	
 	$("#row_event_graph_by_agent").hide();
 	$("#row_event_graph_by_user").hide();
 	$("#row_event_graph_by_criticity").hide();
 	$("#row_event_graph_by_validated").hide();
+	
 	$("#row_netflow_filter").hide();
 	$("#row_max_values").hide();
 	$("#row_resolution").hide();
 	$("#row_last_value").hide();
+	$("#row_filter_search").hide();
 	
 	// SLA list default state
 	$("#sla_list").hide();
@@ -2079,6 +2095,8 @@ function chooseType() {
 			$("#row_event_graph_by_user").show();
 			$("#row_event_graph_by_criticity").show();
 			$("#row_event_graph_by_validated").show();
+			
+			$("#row_filter_search").show();
 			break;
 		case 'simple_graph':
 			$("#row_time_compare_overlapped").show();

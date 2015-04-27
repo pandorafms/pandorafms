@@ -957,6 +957,8 @@ switch ($action) {
 						$event_graph_by_criticity = get_parameter('event_graph_by_criticity', 0);
 						$event_graph_validated_vs_unvalidated = get_parameter('event_graph_validated_vs_unvalidated', 0);
 						
+						$event_filter_search = get_parameter('filter_search', '');
+						
 						// If metaconsole is activated
 						if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
 							if (($values['type'] == 'custom_graph') or ($values['type'] == 'automatic_custom_graph')) {
@@ -1023,6 +1025,13 @@ switch ($action) {
 								$style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
 								$style['event_graph_by_criticity'] = $event_graph_by_criticity;
 								$style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
+								
+								switch ($values['type']) {
+									case 'event_report_group':
+										$style['event_filter_search'] =
+											$event_filter_search;
+										break;
+								}
 								break;
 							case 'simple_graph':
 								// Warning. We are using this column to hold this value to avoid
@@ -1243,6 +1252,9 @@ switch ($action) {
 								$event_graph_by_user_validator = get_parameter('event_graph_by_user_validator', 0);
 								$event_graph_by_criticity = get_parameter('event_graph_by_criticity', 0);
 								$event_graph_validated_vs_unvalidated = get_parameter('event_graph_validated_vs_unvalidated', 0);
+								
+								$event_filter_search = get_parameter('filter_search', '');
+								
 								//Added for events items
 								$style['filter_event_no_validated'] = $filter_event_no_validated;
 								$style['filter_event_validated'] = $filter_event_validated;
@@ -1253,6 +1265,14 @@ switch ($action) {
 								$style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
 								$style['event_graph_by_criticity'] = $event_graph_by_criticity;
 								$style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
+								
+								switch ($values['type']) {
+									case 'event_report_group':
+										$style['event_filter_search'] =
+											$event_filter_search;
+										break;
+								}
+								
 								break;
 							case 'simple_graph':
 								// Warning. We are using this column to hold this value to avoid

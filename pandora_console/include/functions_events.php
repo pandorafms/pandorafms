@@ -109,7 +109,9 @@ function events_get_event ($id, $fields = false) {
 	return $event;
 }
 
-function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $meta = false, $history = false, $total = false) {
+function events_get_events_grouped($sql_post, $offset = 0,
+	$pagination = 1, $meta = false, $history = false, $total = false) {
+	
 	global $config; 
 	
 	$table = events_get_events_table($meta, $history);
@@ -1174,7 +1176,8 @@ function events_print_type_description ($type, $return = false) {
  */
 function events_get_group_events ($id_group, $period, $date,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_search = false) {
 	
 	global $config;
 	
@@ -1204,8 +1207,17 @@ function events_get_group_events ($id_group, $period, $date,
 	if ($filter_event_no_validated) {
 		$sql_where .= ' AND estado = 0 ';
 	}
-	$sql_where .= sprintf(' AND id_grupo IN (%s) AND utimestamp > %d
-			AND utimestamp <= %d ', implode (",", $id_group), $datelimit, $date);
+	
+	if (!empty($filter_event_search)) {
+		$sql_where .= ' AND (evento LIKE "%'. io_safe_input($filter_event_search) . '%"'.
+			' OR id_evento LIKE "%' . io_safe_input($filter_event_search) . '%")';
+	}
+	
+	$sql_where .= sprintf('
+		AND id_grupo IN (%s)
+		AND utimestamp > %d
+		AND utimestamp <= %d ',
+		implode (",", $id_group), $datelimit, $date);
 	
 	return events_get_events_grouped($sql_where, 0, 1000);
 }
@@ -2523,7 +2535,9 @@ function events_clean_tags ($tags) {
  */
 function events_get_count_events_by_agent ($id_group, $period, $date,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_search = false) {
+	
 	global $config;
 	
 	$id_group = groups_safe_acl ($config["id_user"], $id_group, "AR");
@@ -2552,6 +2566,11 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
 	}
 	if ($filter_event_no_validated) {
 		$sql_where .= ' AND estado = 0 ';
+	}
+	
+	if (!empty($filter_event_search)) {
+		$sql_where .= ' AND (evento LIKE "%%'. io_safe_input($filter_event_search) . '%%"'.
+			' OR id_evento LIKE "%%' . io_safe_input($filter_event_search) . '%%")';
 	}
 	
 	$sql = sprintf ('SELECT id_agente,
@@ -2595,7 +2614,9 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
  */
 function events_get_count_events_validated_by_user ($filter, $period, $date,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_search = false) {
+	
 	global $config;
 	
 	$sql_filter = ' AND 1=1 ';
@@ -2634,6 +2655,11 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
 	}
 	if ($filter_event_no_validated) {
 		$sql_where .= ' AND estado = 0 ';
+	}
+	
+	if (!empty($filter_event_search)) {
+		$sql_where .= ' AND (evento LIKE "%%'. io_safe_input($filter_event_search) . '%%"'.
+			' OR id_evento LIKE "%%' . io_safe_input($filter_event_search) . '%%")';
 	}
 	
 	$sql = sprintf ('SELECT id_usuario,
@@ -2677,7 +2703,9 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
  */
 function events_get_count_events_by_criticity ($filter, $period, $date,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_search = false) {
+	
 	global $config;
 	
 	$sql_filter = ' AND 1=1 ';
@@ -2716,6 +2744,11 @@ function events_get_count_events_by_criticity ($filter, $period, $date,
 	}
 	if ($filter_event_no_validated) {
 		$sql_where .= ' AND estado = 0 ';
+	}
+	
+	if (!empty($filter_event_search)) {
+		$sql_where .= ' AND (evento LIKE "%%'. io_safe_input($filter_event_search) . '%%"'.
+			' OR id_evento LIKE "%%' . io_safe_input($filter_event_search) . '%%")';
 	}
 	
 	$sql = sprintf ('SELECT criticity,
@@ -2752,7 +2785,9 @@ function events_get_count_events_by_criticity ($filter, $period, $date,
  */
 function events_get_count_events_validated ($filter, $period, $date,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_search = false) {
+	
 	global $config;
 	
 	$sql_filter = ' AND 1=1 ';
@@ -2791,6 +2826,11 @@ function events_get_count_events_validated ($filter, $period, $date,
 	}
 	if ($filter_event_no_validated) {
 		$sql_where .= ' AND estado = 0 ';
+	}
+	
+	if (!empty($filter_event_search)) {
+		$sql_where .= ' AND (evento LIKE "%%'. io_safe_input($filter_event_search) . '%%"'.
+			' OR id_evento LIKE "%%' . io_safe_input($filter_event_search) . '%%")';
 	}
 	
 	$sql = sprintf ('SELECT estado,

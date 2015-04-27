@@ -112,7 +112,7 @@ $type_search = get_parameter('type_filter', '0');
 <form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/networkmap_list">
 	<table style='width: 100%' class='databox filters'>
 		<tr>
-			<td class='datos' >
+			<td class='datos' style="font-weight:bold;">
 				<?php echo __('Group'); ?>
 			</td>
 			<td class='datos'>
@@ -121,7 +121,7 @@ $type_search = get_parameter('type_filter', '0');
 					true, 'group_search', $group_search);
 				?>
 			</td>
-			<td class='datos'>
+			<td class='datos' style="font-weight:bold;">
 				<?php echo __('Type'); ?>
 			</td>
 			<td class='datos'>
@@ -149,10 +149,10 @@ $table->class = "databox data";
 
 $table->style = array();
 $table->style[0] = '';
-$table->style[1] = 'text-align: center;';
-$table->style[2] = 'text-align: center;';
-$table->style[3] = 'text-align: center;';
-$table->style[4] = 'text-align: center;';
+$table->style[1] = 'text-align: left;';
+$table->style[2] = 'text-align: left;';
+$table->style[3] = 'text-align: left;';
+$table->style[4] = 'text-align: left;';
 
 $table->size = array();
 $table->size[0] = '80%';

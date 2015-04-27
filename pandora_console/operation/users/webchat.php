@@ -72,7 +72,7 @@ ui_print_page_header (__('Webchat'), "images/comments.png", false, "", false, ""
 
 $table = null;
 
-$table->width = '95%';
+$table->width = '100%';
 $table->style[0][1] = 'text-align: right; vertical-align: top;';
 
 $table->data[0][0] = '<div id="chat_box" style="width: 95%;

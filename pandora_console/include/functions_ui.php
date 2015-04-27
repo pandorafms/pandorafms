@@ -3178,7 +3178,6 @@ function ui_print_agent_autocomplete_input($parameters) {
 					
 					jQuery.ajax ({
 						data: data_params,
-						async: false,
 						type: "POST",
 						url: action="' . $javascript_ajax_page . '",
 						timeout: 10000,
@@ -3392,15 +3391,12 @@ function ui_print_agent_autocomplete_input($parameters) {
 			
 			jQuery.ajax ({
 				data: data_params,
-				async: false,
 				type: "POST",
 				url: action="' . $javascript_ajax_page . '",
 				timeout: 10000,
 				dataType: "json",
 				success: function (data) {
 						if (data.length == 0) {
-							alert("' . __('Does not exist agent with this name.') . '");
-							
 							//Set icon
 							$("#' . $input_id . '")
 								.css("background",

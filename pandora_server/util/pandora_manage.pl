@@ -35,7 +35,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "6.0dev PS150422";
+my $version = "6.0dev PS150427";
 
 # save program name for logging
 my $progname = basename($0);
@@ -538,7 +538,7 @@ sub pandora_validate_event_id ($$$) {
 sub pandora_update_user_from_hash ($$$$) {
 	my ($parameters, $where_column, $where_value, $dbh) = @_;
 	
-	my $user_id = db_process_update($dbh, 'tusuario', $parameters, $where_column, $where_value);
+	my $user_id = db_process_update($dbh, 'tusuario', $parameters, {$where_column => $where_value});
 	return $user_id;
 }
 
@@ -548,7 +548,7 @@ sub pandora_update_user_from_hash ($$$$) {
 sub pandora_update_alert_template_from_hash ($$$$) {
 	my ($parameters, $where_column, $where_value, $dbh) = @_;
 	
-	my $template_id = db_process_update($dbh, 'talert_templates', $parameters, $where_column, $where_value);
+	my $template_id = db_process_update($dbh, 'talert_templates', $parameters, {$where_column => $where_value});
 	return $template_id;
 }
 
@@ -662,7 +662,7 @@ sub pandora_create_special_day_from_hash ($$$) {
 sub pandora_update_special_day_from_hash ($$$$) {
 	my ($parameters, $where_column, $where_value, $dbh) = @_;
 	
-	my $special_day_id = db_process_update($dbh, 'talert_special_days', $parameters, $where_column, $where_value);
+	my $special_day_id = db_process_update($dbh, 'talert_special_days', $parameters, {$where_column => $where_value});
 	return $special_day_id;
 }
 
@@ -3521,7 +3521,7 @@ sub cli_stop_downtime () {
 		
 	my $parameters->{'date_to'} = time;
 		
-	db_process_update($dbh, 'tplanned_downtime', $parameters, 'id', $downtime_id);
+	db_process_update($dbh, 'tplanned_downtime', $parameters, {'id' => $downtime_id});
 }
 
 ###############################################################################
@@ -3634,7 +3634,7 @@ sub pandora_get_event_name($$) {
 sub pandora_update_event_from_hash ($$$$) {
 	my ($parameters, $where_column, $where_value, $dbh) = @_;
 	
-	my $event_id = db_process_update($dbh, 'tevento', $parameters, $where_column, $where_value);
+	my $event_id = db_process_update($dbh, 'tevento', $parameters, {$where_column => $where_value});
 	return $event_id;
 }
 

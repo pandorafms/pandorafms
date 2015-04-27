@@ -180,7 +180,7 @@ if (defined('METACONSOLE')) {
 	$table->rowstyle["all_2"] = 'display: none;';
 	$table->data["all_2"][0] = __('Servers');
 	$table->data["all_2"][1] = html_meta_print_select_servers(false,
-		false, 'servers', '', '', '', 0, true);
+		false, 'servers', '', 'metaconsole_init();', '', 0, true);
 }
 
 
@@ -207,8 +207,12 @@ $table->data["all_one_item_per_agent"][1] .= html_print_input_hidden(
 
 $table->rowstyle["all_4"] = 'display: none;';
 $table->data["all_4"][0] = __('Agents');
-$table->data["all_4"][1] = html_print_select(
-	agents_get_group_agents(0, false, "none", false, true),
+
+$agents_list = array();
+if (!defined('METACONSOLE'))
+	$agents_list = agents_get_group_agents(0, false, "none", false, true);
+
+$table->data["all_4"][1] = html_print_select($agents_list,
 	'id_agents[]', 0, false, '', '', true, true);
 $table->data["all_4"][2] = ' <span style="vertical-align: top;">' .
 	__('Modules') . '</span>';
@@ -269,7 +273,7 @@ else {
 		onsubmit="if (! confirm(\''.__('Are you sure to add many elements\nin visual map?').'\')) return false; else return check_fields();">';
 }
 
-if(defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	echo "<div class='title_tactical' style='margin-top: 15px; '>" . __('Wizard') . "</div>";
 }
 
@@ -293,16 +297,14 @@ echo '<span id="none_text" style="display: none;">' . __('None') . '</span>';
 echo '<span id="loading_text" style="display: none;">' . __('Loading...') . '</span>';
 ?>
 <script type="text/javascript">
-var show_only_enabled_modules = true;
 
-<?php
-if (defined('METACONSOLE')) {
-	echo 'var url_ajax = "../../ajax.php";';
+var metaconsole_enabled = <?php echo json_encode(defined('METACONSOLE')); ?>;
+var show_only_enabled_modules = true;
+var url_ajax = "ajax.php";
+
+if (metaconsole_enabled) {
+	url_ajax = "../../ajax.php";
 }
-else {
-	echo 'var url_ajax = "ajax.php";';
-}
-?>
 
 $(document).ready (function () {
 	hidden_rows();
@@ -311,40 +313,42 @@ $(document).ready (function () {
 		selected = $("#process_value").val();
 		
 		if (selected == <?php echo PROCESS_VALUE_NONE; ?>) {
-			$("tr", "#wizard_table").filter(function () {return /^.*modulegraph_simplevalue.*/.test(this.id); }).hide();
+			$("tr", "#wizard_table").filter(function () {
+				return /^.*modulegraph_simplevalue.*/.test(this.id);
+			}).hide();
 		}
 		else {
-			$("tr", "#wizard_table").filter(function () {return /^.*modulegraph_simplevalue.*/.test(this.id); }).show();
+			$("tr", "#wizard_table").filter(function () {
+				return /^.*modulegraph_simplevalue.*/.test(this.id);
+			}).show();
 		}
 	});
 	
 	$("#groups").change (function () {
-		$('#id_agents').attr('disabled', true);
-		$('#id_agents').empty ();
-		$('#id_agents').append ($('<option></option>').html($("#loading_text").html()));
-		$('#id_agents').css ("width", "auto");
-		$('#id_agents').css ("max-width", "");
+		$('#id_agents')
+			.attr('disabled', true)
+			.empty ()
+			.css ("width", "auto")
+			.css ("max-width", "")
+			.append ($('<option></option>').html($("#loading_text").html()));
 		
-		var data_params = {"page": "include/ajax/agent",
-			"get_agents_group": 1,
-			"id_group": $("#groups").val(),
-			<?php
-			if (defined('METACONSOLE')) {
-				echo '"id_server": $("#servers").val(),' . "\n";
-			}
-			?>
-			"mode": "json"
-			};
+		var data_params = {
+			page: "include/ajax/agent",
+			get_agents_group: 1,
+			id_group: $("#groups").val(),
+			mode: "json"
+		};
+		
+		if (metaconsole_enabled)
+			data_params.id_server = $("#servers").val();
 		
 		jQuery.ajax ({
 			data: data_params,
-			async: false,
 			type: 'POST',
 			url: url_ajax,
-			timeout: 10000,
 			dataType: 'json',
 			success: function (data) {
-				$('#id_agents').empty ();
+				$('#id_agents').empty();
 				
 				if (isEmptyObject(data)) {
 					var noneText = $("#none_text").html(); //Trick for catch the translate text.
@@ -358,35 +362,32 @@ $(document).ready (function () {
 					});
 				}
 				
-				$('#id_agents').css ("width", "auto");
-				$('#id_agents').css ("max-width", "");
-				
-				
 				$('#id_agents').removeAttr('disabled');
-				
-				return;
 			}
 		});
-		
-		return;
 	});
 	
 	$("#id_agents").change ( function() {
-		if ($("#hidden-item_per_agent_test").val() == 0) 
-			agent_changed_by_multiple_agents(
-			<?php
-			if (defined('METACONSOLE')) {
-				echo "{'data': {'id_server': 'servers', 'metaconsole': 1, 'homedir': '../../'}}";
+		if ($("#hidden-item_per_agent_test").val() == 0) {
+			var options = {};
+			
+			if (metaconsole_enabled) {
+				options = {
+					'data': {
+						'id_server': 'servers',
+						'metaconsole': 1,
+						'homedir': '../../'
+					}
+				};
 			}
-			?>
-			);
+			
+			agent_changed_by_multiple_agents(options);
+		}
 	});
 	
-	<?php
-	if (defined('METACONSOLE')) {
-		echo "metaconsole_init();";
+	if (metaconsole_enabled) {
+		metaconsole_init();
 	}
-	?>
 	
 	$("select[name='kind_relationship']").change(function() {
 	
@@ -497,7 +498,7 @@ function item_per_agent_change(itemPerAgent) {
 }
 
 function metaconsole_init() {
-	$("#groups").trigger('change');
+	$("#groups").change();
 }
 </script>
 <style type="text/css">

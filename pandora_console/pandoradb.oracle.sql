@@ -31,79 +31,79 @@ CREATE OR REPLACE FUNCTION NOW RETURN TIMESTAMP AS t_now TIMESTAMP; BEGIN SELECT
 -- Table `taddress`
 -- ---------------------------------------------------------------------
 CREATE TABLE taddress (
-	id_a NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	ip VARCHAR(60) default '',
-	ip_pack NUMBER(10, 0) default 0 NOT NULL 
+	id_a NUMBER(10, 0) PRIMARY KEY,
+	ip VARCHAR(60) DEFAULT '',
+	ip_pack NUMBER(10, 0) DEFAULT 0 
 );
 CREATE INDEX taddress_ip_idx ON taddress(ip);
 CREATE SEQUENCE taddress_s INCREMENT BY 1 START WITH 1;
 -- Triggers must end with double semicolons because Pandora installer need it 
-CREATE OR REPLACE TRIGGER taddress_inc BEFORE INSERT ON taddress REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT taddress_s.nextval INTO :NEW.ID_A FROM dual; END;;
+CREATE OR REPLACE TRIGGER taddress_inc BEFORE INSERT ON taddress REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT taddress_s.nextval INTO :NEW.id_a FROM dual; END;;
 
 -- ---------------------------------------------------------------------
 -- Table `taddress_agent`
 -- ---------------------------------------------------------------------
 CREATE TABLE taddress_agent (
-	id_ag NUMBER(19, 0) NOT NULL PRIMARY KEY,
-	id_a NUMBER(19, 0) default 0 NOT NULL,
-	id_agent NUMBER(19, 0) default 0 NOT NULL 
+	id_ag NUMBER(19, 0) PRIMARY KEY,
+	id_a NUMBER(19, 0) DEFAULT 0,
+	id_agent NUMBER(19, 0) DEFAULT 0 
 );
 CREATE SEQUENCE taddress_agent_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER taddress_agent_inc BEFORE INSERT ON taddress_agent REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT taddress_agent_s.nextval INTO :NEW.ID_AG FROM dual; END;;
+CREATE OR REPLACE TRIGGER taddress_agent_inc BEFORE INSERT ON taddress_agent REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT taddress_agent_s.nextval INTO :NEW.id_ag FROM dual; END;;
 
 -- ---------------------------------------------------------------------
 -- Table `tagente`
 -- ---------------------------------------------------------------------
 CREATE TABLE tagente (
-	id_agente NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	nombre VARCHAR2(600) default '',
-	direccion VARCHAR2(100) default NULL,
-	comentarios VARCHAR2(255) default '',
-	id_grupo NUMBER(10, 0) default 0 NOT NULL,
-	ultimo_contacto TIMESTAMP default NULL,
-	modo NUMBER(5, 0) default 0 NOT NULL,
-	intervalo NUMBER(10, 0) default 300 NOT NULL,
-	id_os NUMBER(10, 0) default 0,
-	os_version VARCHAR2(100) default '',
-	agent_version VARCHAR2(100) default '',
-	ultimo_contacto_remoto TIMESTAMP default NULL,
-	disabled NUMBER(5, 0) default 0 NOT NULL,
-	id_parent NUMBER(10, 0) default 0,
-	custom_id VARCHAR2(255) default '',
-	server_name VARCHAR2(100) default '',
-	cascade_protection NUMBER(5, 0) default 0 NOT NULL, 
+	id_agente NUMBER(10, 0) PRIMARY KEY,
+	nombre VARCHAR2(600) DEFAULT '',
+	direccion VARCHAR2(100) DEFAULT NULL,
+	comentarios VARCHAR2(255) DEFAULT '',
+	id_grupo NUMBER(10, 0) DEFAULT 0,
+	ultimo_contacto TIMESTAMP DEFAULT NULL,
+	modo NUMBER(5, 0) DEFAULT 0,
+	intervalo NUMBER(10, 0) DEFAULT 300,
+	id_os NUMBER(10, 0) DEFAULT 0,
+	os_version VARCHAR2(100) DEFAULT '',
+	agent_version VARCHAR2(100) DEFAULT '',
+	ultimo_contacto_remoto TIMESTAMP DEFAULT NULL,
+	disabled NUMBER(5, 0) DEFAULT 0,
+	id_parent NUMBER(10, 0) DEFAULT 0,
+	custom_id VARCHAR2(255) DEFAULT '',
+	server_name VARCHAR2(100) DEFAULT '',
+	cascade_protection NUMBER(5, 0) DEFAULT 0, 
 	--number of hours of diference with the server timezone
 	timezone_offset NUMBER(5, 0) DEFAULT 0 NULL,
 	 --path in the server to the image of the icon representing the agent
 	icon_path VARCHAR2(127) DEFAULT NULL NULL ,
-	 --set it to one to update the position data (altitude, longitude, latitude) when getting information from the agent or to 0 to keep the last value and don\'t update it
-	update_gis_data NUMBER(5, 0) DEFAULT 1 NOT NULL,
+	 --set it to one to update the position data (altitude, longitude, latitude) whenetting information from the agent or to 0 to keep the last value and don\'t update it
+	update_gis_data NUMBER(5, 0) DEFAULT 1,
 	url_address CLOB DEFAULT '' NULL,
-	quiet NUMBER(5, 0) default 0 NOT NULL,
-	normal_count NUMBER(20, 0) default 0 NOT NULL,
-	warning_count NUMBER(20, 0) default 0 NOT NULL,
-	critical_count NUMBER(20, 0) default 0 NOT NULL,
-	unknown_count NUMBER(20, 0) default 0 NOT NULL,
-	notinit_count NUMBER(20, 0) default 0 NOT NULL,
-	total_count NUMBER(20, 0) default 0 NOT NULL,
-	fired_count NUMBER(20, 0) default 0 NOT NULL,
-	update_module_count NUMBER(5, 0) default 0 NOT NULL
-	update_alert_count NUMBER(5, 0) default 0 NOT NULL
+	quiet NUMBER(5, 0) DEFAULT 0,
+	normal_count NUMBER(20, 0) DEFAULT 0,
+	warning_count NUMBER(20, 0) DEFAULT 0,
+	critical_count NUMBER(20, 0) DEFAULT 0,
+	unknown_count NUMBER(20, 0) DEFAULT 0,
+	notinit_count NUMBER(20, 0) DEFAULT 0,
+	total_count NUMBER(20, 0) DEFAULT 0,
+	fired_count NUMBER(20, 0) DEFAULT 0,
+	update_module_count NUMBER(5, 0) DEFAULT 0,
+	update_alert_count NUMBER(5, 0) DEFAULT 0
 );
 CREATE INDEX tagente_nombre_idx ON tagente(nombre);
 CREATE INDEX tagente_direccion_idx ON tagente(direccion);
 CREATE INDEX tagente_disabled_idx ON tagente(disabled);
 CREATE INDEX tagente_id_grupo_idx ON tagente(id_grupo);
 CREATE SEQUENCE tagente_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tagente_inc BEFORE INSERT ON tagente REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_s.nextval INTO :NEW.ID_AGENTE FROM dual; END;;
+CREATE OR REPLACE TRIGGER tagente_inc BEFORE INSERT ON tagente REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_s.nextval INTO :NEW.id_agente FROM dual; END;;
 
 -- -----------------------------------------------------
 -- Table `tagente_datos`
 -- -----------------------------------------------------
 CREATE TABLE tagente_datos (
-	id_agente_modulo NUMBER(10, 0) default 0 NOT NULL,
-	datos BINARY_DOUBLE default NULL,
-	utimestamp NUMBER(10, 0) default 0
+	id_agente_modulo NUMBER(10, 0) DEFAULT 0,
+	datos BINARY_DOUBLE DEFAULT NULL,
+	utimestamp NUMBER(10, 0) DEFAULT 0
 );
 CREATE INDEX tagente_datos_id_agent_mod_idx ON tagente_datos(id_agente_modulo);
 CREATE INDEX tagente_datos_utimestamp_idx ON tagente_datos(utimestamp);
@@ -112,21 +112,21 @@ CREATE INDEX tagente_datos_utimestamp_idx ON tagente_datos(utimestamp);
 -- Table `tagente_datos_inc`
 -- -----------------------------------------------------
 CREATE TABLE tagente_datos_inc (
-	id_agente_modulo NUMBER(10, 0) default 0 NOT NULL,
-	datos BINARY_DOUBLE default NULL,
-	utimestamp NUMBER(10, 0) default 0 NOT NULL
+	id_agente_modulo NUMBER(10, 0) DEFAULT 0,
+	datos BINARY_DOUBLE DEFAULT NULL,
+	utimestamp NUMBER(10, 0) DEFAULT 0
 );
 CREATE INDEX tagente_datos_inc_id_ag_mo_idx ON tagente_datos_inc(id_agente_modulo);
 CREATE SEQUENCE tagente_datos_inc_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tagente_datos_inc_inc BEFORE INSERT ON tagente_datos_inc REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_datos_inc_s.nextval INTO :NEW.ID_ADI FROM dual; END;;
+--CREATE OR REPLACE TRIGGER tagente_datos_inc_inc BEFORE INSERT ON tagente_datos_inc REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_datos_inc_s.nextval INTO :NEW.id_adi FROM dual; END;;
 
 -- -----------------------------------------------------
 -- Table `tagente_datos_string`
 -- -----------------------------------------------------
 CREATE TABLE tagente_datos_string (
-	id_agente_modulo NUMBER(10, 0) NOT NULL,
-	datos CLOB NOT NULL,
-	utimestamp NUMBER(10, 0) default 0 NOT NULL 
+	id_agente_modulo NUMBER(10, 0),
+	datos CLOB,
+	utimestamp NUMBER(10, 0) DEFAULT 0 
 );
 CREATE INDEX tagente_datos_string_utsta_idx ON tagente_datos_string(utimestamp);
 
@@ -134,37 +134,37 @@ CREATE INDEX tagente_datos_string_utsta_idx ON tagente_datos_string(utimestamp);
 -- Table `tagente_datos_log4x`
 -- -----------------------------------------------------
 CREATE TABLE tagente_datos_log4x (
-	id_tagente_datos_log4x NUMBER(19, 0) NOT NULL PRIMARY KEY,
-	id_agente_modulo NUMBER(10, 0) default 0 NOT NULL,
-	severity CLOB NOT NULL,
-	message CLOB NOT NULL,
-	stacktrace CLOB NOT NULL,
-	utimestamp NUMBER(10, 0) default 0 NOT NULL
+	id_tagente_datos_log4x NUMBER(19, 0) PRIMARY KEY,
+	id_agente_modulo NUMBER(10, 0) DEFAULT 0,
+	severity CLOB,
+	message CLOB,
+	stacktrace CLOB,
+	utimestamp NUMBER(10, 0) DEFAULT 0
 );
 CREATE INDEX tagente_datos_log4x_id_a_m_idx ON tagente_datos_log4x(id_agente_modulo);
 CREATE SEQUENCE tagente_datos_log4x_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tagente_datos_log4x_inc BEFORE INSERT ON tagente_datos_log4x REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_datos_log4x_s.nextval INTO :NEW.ID_TAGENTE_DATOS_LOG4X FROM dual; END;;
+CREATE OR REPLACE TRIGGER tagente_datos_log4x_inc BEFORE INSERT ON tagente_datos_log4x REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_datos_log4x_s.nextval INTO :NEW.id_tagente_datos_log4x FROM dual; END;;
 
 -- -----------------------------------------------------
 -- Table `tagente_estado`
 -- -----------------------------------------------------
 CREATE TABLE tagente_estado (
-	id_agente_estado NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_agente_modulo NUMBER(10, 0) default 0 NOT NULL,
-	datos CLOB default '',
-	timestamp TIMESTAMP default NULL,
-	estado NUMBER(10, 0) default 0 NOT NULL,
-	id_agente NUMBER(10, 0) default 0 NOT NULL,
-	last_try TIMESTAMP default NULL,
-	utimestamp NUMBER(19, 0) default 0 NOT NULL,
-	current_interval NUMBER(10, 0) default 0 NOT NULL,
-	running_by NUMBER(10, 0) default 0,
-	last_execution_try NUMBER(19, 0) default 0 NOT NULL,
-	status_changes NUMBER(10, 0) default 0,
-	last_status NUMBER(10, 0) default 0,
-	last_known_status NUMBER(10, 0) default 0,
-	last_error NUMBER(10, 0) default 0,
-	ff_start_utimestamp NUMBER(10, 0) default 0
+	id_agente_estado NUMBER(10, 0) PRIMARY KEY,
+	id_agente_modulo NUMBER(10, 0) DEFAULT 0,
+	datos CLOB DEFAULT '',
+	timestamp TIMESTAMP DEFAULT NULL,
+	estado NUMBER(10, 0) DEFAULT 0,
+	id_agente NUMBER(10, 0) DEFAULT 0,
+	last_try TIMESTAMP DEFAULT NULL,
+	utimestamp NUMBER(19, 0) DEFAULT 0,
+	current_interval NUMBER(10, 0) DEFAULT 0,
+	running_by NUMBER(10, 0) DEFAULT 0,
+	last_execution_try NUMBER(19, 0) DEFAULT 0,
+	status_changes NUMBER(10, 0) DEFAULT 0,
+	last_status NUMBER(10, 0) DEFAULT 0,
+	last_known_status NUMBER(10, 0) DEFAULT 0,
+	last_error NUMBER(10, 0) DEFAULT 0,
+	ff_start_utimestamp NUMBER(10, 0) DEFAULT 0
 );
 CREATE INDEX tagente_estado_id_agente_idx ON tagente_estado(id_agente);
 CREATE INDEX tagente_estado_estado_idx ON tagente_estado(estado);
@@ -174,7 +174,7 @@ CREATE INDEX tagente_estado_last_ex_try_idx ON tagente_estado(last_execution_try
 
 CREATE SEQUENCE tagente_estado_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tagente_estado_inc BEFORE INSERT ON tagente_estado REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_estado_s.nextval INTO :NEW.ID_AGENTE_ESTADO FROM dual; END;;
+CREATE OR REPLACE TRIGGER tagente_estado_inc BEFORE INSERT ON tagente_estado REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_estado_s.nextval INTO :NEW.id_agente_estado FROM dual; END;;
 
 -- Probably last_execution_try index is not useful and loads more than benefits
 
@@ -188,75 +188,71 @@ CREATE OR REPLACE TRIGGER tagente_estado_inc BEFORE INSERT ON tagente_estado REF
 -- 7 - WEB Server (enteprise)
 
 CREATE TABLE tagente_modulo (
-	id_agente_modulo NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_agente NUMBER(10, 0) default 0 NOT NULL,
-	id_tipo_modulo NUMBER(10, 0) default 0 NOT NULL,
-	descripcion CLOB default '',
-	extended_info CLOB default '',
-	nombre CLOB default '',
+	id_agente_modulo NUMBER(10, 0) PRIMARY KEY,
+	id_agente NUMBER(10, 0) DEFAULT 0,
+	id_tipo_modulo NUMBER(10, 0) DEFAULT 0,
+	descripcion CLOB DEFAULT '',
+	extended_info CLOB DEFAULT '',
+	nombre CLOB DEFAULT '',
 	unit VARCHAR2(100) DEFAULT '',
-	id_policy_module NUMBER(10, 0) default 0 NOT NULL,
-	max NUMBER(19, 0) default 0 NOT NULL,
-	min NUMBER(19, 0) default 0 NOT NULL,
-	module_interval NUMBER(10, 0) default 0 NOT NULL,
+	id_policy_module NUMBER(10, 0) DEFAULT 0,
+	max NUMBER(19, 0) DEFAULT 0,
+	min NUMBER(19, 0) DEFAULT 0,
+	module_interval NUMBER(10, 0) DEFAULT 0,
 	cron_interval VARCHAR2(100) DEFAULT '',
-	tcp_port NUMBER(10, 0) default 0 NOT NULL,
-	tcp_send CLOB default '',
-	tcp_rcv CLOB default '',
-	snmp_community VARCHAR2(100) default '',
-	snmp_oid VARCHAR2(255) default '0',
-	ip_target VARCHAR2(100) default '',
-	id_module_group NUMBER(10, 0) default 0 NOT NULL,
-	flag NUMBER(5, 0) default 1 NOT NULL,
-	id_modulo NUMBER(10, 0) default 0 NOT NULL,
-	disabled NUMBER(5, 0) default 0 NOT NULL,
-	id_export NUMBER(10, 0) default 0 NOT NULL,
-	plugin_user CLOB default '',
-	plugin_pass CLOB default '',
-	plugin_parameter CLOB,
-	id_plugin NUMBER(10, 0) default 0,
-	post_process BINARY_DOUBLE default NULL,
-	prediction_module NUMBER(19, 0) default 0,
-	max_timeout NUMBER(10, 0) default 0,
-	max_retries NUMBER(10, 0) default 0,
-	custom_id VARCHAR2(255) default '',
-	history_data  NUMBER(5, 0) default 1,
-	min_warning BINARY_DOUBLE default 0,
-	max_warning BINARY_DOUBLE default 0,
-	str_warning CLOB default '',
-	min_critical BINARY_DOUBLE default 0,
-	max_critical BINARY_DOUBLE default 0,
-	str_critical CLOB default '',
-	min_ff_event INTEGER default 0,
-	delete_pending NUMBER(5, 0) default 0 NOT NULL,
-	policy_linked NUMBER(5, 0) default 0 NOT NULL,
-	policy_adopted NUMBER(5, 0) default 0 NOT NULL,
-	custom_string_1 CLOB default '',
-	custom_string_2 CLOB default '',
-	custom_string_3 CLOB default '',
-	custom_integer_1 NUMBER(10, 0) default 0,
-	custom_integer_2 NUMBER(10, 0) default 0,
-	wizard_level VARCHAR2(100) default 'nowizard' NOT NULL,
-	macros CLOB default '',
-	critical_instructions CLOB default '',
-	warning_instructions CLOB default '',
-	unknown_instructions CLOB default '',
-	quiet NUMBER(5, 0) default 0 NOT NULL,
-	critical_instructions VARCHAR2(255) default '',
-	warning_instructions VARCHAR2(255) default '',
-	unknown_instructions VARCHAR2(255) default '',
-	critical_inverse NUMBER(1, 0) default 0 NOT NULL,
-	warning_inverse NUMBER(1, 0) default 0 NOT NULL,
-	id_category NUMBER(10, 0) default 0 NOT NULL,
-	disabled_types_event CLOB default '',
-	module_macros CLOB default '',
-	min_ff_event_normal INTEGER default 0,
-        min_ff_event_warning INTEGER default 0,
-        min_ff_event_critical INTEGER default 0,
-        each_ff NUMBER(1, 0) default 0,
-	ff_timeout INTEGER unsigned default 0
-	
-	CONSTRAINT t_agente_modulo_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
+	tcp_port NUMBER(10, 0) DEFAULT 0,
+	tcp_send CLOB DEFAULT '',
+	tcp_rcv CLOB DEFAULT '',
+	snmp_community VARCHAR2(100) DEFAULT '',
+	snmp_oid VARCHAR2(255) DEFAULT '0',
+	ip_target VARCHAR2(100) DEFAULT '',
+	id_module_group NUMBER(10, 0) DEFAULT 0,
+	flag NUMBER(5, 0) DEFAULT 1,
+	id_modulo NUMBER(10, 0) DEFAULT 0,
+	disabled NUMBER(5, 0) DEFAULT 0,
+	id_export NUMBER(10, 0) DEFAULT 0,
+	plugin_user CLOB DEFAULT '',
+	plugin_pass CLOB DEFAULT '',
+	plugin_parameter CLOB DEFAULT '',
+	id_plugin NUMBER(10, 0) DEFAULT 0,
+	post_process BINARY_DOUBLE DEFAULT NULL,
+	prediction_module NUMBER(19, 0) DEFAULT 0,
+	max_timeout NUMBER(10, 0) DEFAULT 0,
+	max_retries NUMBER(10, 0) DEFAULT 0,
+	custom_id VARCHAR2(255) DEFAULT '',
+	history_data  NUMBER(5, 0) DEFAULT 1,
+	min_warning BINARY_DOUBLE DEFAULT 0,
+	max_warning BINARY_DOUBLE DEFAULT 0,
+	str_warning CLOB DEFAULT '',
+	min_critical BINARY_DOUBLE DEFAULT 0,
+	max_critical BINARY_DOUBLE DEFAULT 0,
+	str_critical CLOB DEFAULT '',
+	min_ff_event INTEGER DEFAULT 0,
+	delete_pending NUMBER(5, 0) DEFAULT 0,
+	policy_linked NUMBER(5, 0) DEFAULT 0,
+	policy_adopted NUMBER(5, 0) DEFAULT 0,
+	custom_string_1 CLOB DEFAULT '',
+	custom_string_2 CLOB DEFAULT '',
+	custom_string_3 CLOB DEFAULT '',
+	custom_integer_1 NUMBER(10, 0) DEFAULT 0,
+	custom_integer_2 NUMBER(10, 0) DEFAULT 0,
+	wizard_level VARCHAR2(100) DEFAULT 'nowizard',
+	macros CLOB DEFAULT '',
+	critical_instructions CLOB DEFAULT '',
+	warning_instructions CLOB DEFAULT '',
+	unknown_instructions CLOB DEFAULT '',
+	quiet NUMBER(5, 0) DEFAULT 0,
+	critical_inverse NUMBER(1, 0) DEFAULT 0,
+	warning_inverse NUMBER(1, 0) DEFAULT 0,
+	id_category NUMBER(10, 0) DEFAULT 0,
+	disabled_types_event CLOB DEFAULT '',
+	module_macros CLOB DEFAULT '',
+	min_ff_event_normal INTEGER DEFAULT 0,
+	min_ff_event_warning INTEGER DEFAULT 0,
+	min_ff_event_critical INTEGER DEFAULT 0,
+	each_ff NUMBER(1, 0) DEFAULT 0,
+	ff_timeout INTEGER DEFAULT 0,
+	CONSTRAINT t_agente_modulo_wizard_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
 );
 CREATE INDEX tagente_modulo_id_agente_idx ON tagente_modulo(id_agente);
 CREATE INDEX tagente_modulo_id_t_mod_idx ON tagente_modulo(id_tipo_modulo);
@@ -264,260 +260,260 @@ CREATE INDEX tagente_modulo_disabled_idx ON tagente_modulo(disabled);
 
 CREATE SEQUENCE tagente_modulo_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tagente_modulo_inc BEFORE INSERT ON tagente_modulo REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_modulo_s.nextval INTO :NEW.ID_AGENTE_MODULO FROM dual; END;;
+CREATE OR REPLACE TRIGGER tagente_modulo_inc BEFORE INSERT ON tagente_modulo REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_modulo_s.nextval INTO :NEW.id_agente_modulo FROM dual; END;;
 
 -- snmp_oid is also used for WMI query
 
 CREATE TABLE tagent_access (
-	id_agent NUMBER(10, 0) default 0 NOT NULL,
-	utimestamp NUMBER(19, 0) default 0 NOT NULL
+	id_agent NUMBER(10, 0) DEFAULT 0,
+	utimestamp NUMBER(19, 0) DEFAULT 0
 );
 CREATE INDEX tagent_access_id_agent_idx ON tagent_access(id_agent);
 CREATE INDEX tagent_access_utimestamp_idx ON tagent_access(utimestamp);
 
 CREATE TABLE talert_snmp (
-	id_as NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_alert NUMBER(10, 0) default 0 NOT NULL,
-	al_field1 CLOB default '',
-	al_field2 CLOB default '',
-	al_field3 CLOB default '',
-	al_field4 CLOB default '',
-	al_field5 CLOB default '',
-	al_field6 CLOB default '',
-	al_field7 CLOB default '',
-	al_field8 CLOB default '',
-	al_field9 CLOB default '',
-	al_field10 CLOB default '',
-	description VARCHAR2(255) default '',
-	alert_type NUMBER(5, 0) default 0 NOT NULL,
-	agent VARCHAR2(100) default '',
-	custom_oid CLOB default '',
-	oid VARCHAR2(255) default '',
-	time_threshold NUMBER(10, 0) default 0 NOT NULL,
-	times_fired NUMBER(5, 0) default 0 NOT NULL,
-	last_fired TIMESTAMP default NULL,
-	max_alerts NUMBER(10, 0) default 1 NOT NULL,
-	min_alerts NUMBER(10, 0) default 1 NOT NULL,
-	internal_counter NUMBER(10, 0) default 0 NOT NULL,
-	priority NUMBER(10, 0) default 0,
-	_snmp_f1_ CLOB default '', 
-	_snmp_f2_ CLOB default '', 
-	_snmp_f3_ CLOB default '',
-	_snmp_f4_ CLOB default '', 
-	_snmp_f5_ CLOB default '', 
-	_snmp_f6_ CLOB default '',
-	_snmp_f7_ CLOB default '',
-	_snmp_f8_ CLOB default '',
-	_snmp_f9_ CLOB default '',
-	_snmp_f10_ CLOB default '',
-	_snmp_f11_ CLOB default '',
-	_snmp_f12_ CLOB default '',
-	_snmp_f13_ CLOB default '',
-	_snmp_f14_ CLOB default '',
-	_snmp_f15_ CLOB default '',
-	_snmp_f16_ CLOB default '',
-	_snmp_f17_ CLOB default '',
-	_snmp_f18_ CLOB default '',
-	_snmp_f19_ CLOB default '',
-	_snmp_f20_ CLOB default '',
-	trap_type NUMBER(10, 0) DEFAULT -1 NOT NULL,
+	id_as NUMBER(10, 0) PRIMARY KEY,
+	id_alert NUMBER(10, 0) DEFAULT 0,
+	al_field1 CLOB DEFAULT '',
+	al_field2 CLOB DEFAULT '',
+	al_field3 CLOB DEFAULT '',
+	al_field4 CLOB DEFAULT '',
+	al_field5 CLOB DEFAULT '',
+	al_field6 CLOB DEFAULT '',
+	al_field7 CLOB DEFAULT '',
+	al_field8 CLOB DEFAULT '',
+	al_field9 CLOB DEFAULT '',
+	al_field10 CLOB DEFAULT '',
+	description VARCHAR2(255) DEFAULT '',
+	alert_type NUMBER(5, 0) DEFAULT 0,
+	agent VARCHAR2(100) DEFAULT '',
+	custom_oid CLOB DEFAULT '',
+	oid VARCHAR2(255) DEFAULT '',
+	time_threshold NUMBER(10, 0) DEFAULT 0,
+	times_fired NUMBER(5, 0) DEFAULT 0,
+	last_fired TIMESTAMP DEFAULT NULL,
+	max_alerts NUMBER(10, 0) DEFAULT 1,
+	min_alerts NUMBER(10, 0) DEFAULT 1,
+	internal_counter NUMBER(10, 0) DEFAULT 0,
+	priority NUMBER(10, 0) DEFAULT 0,
+	"_snmp_f1_" CLOB DEFAULT '', 
+	"_snmp_f2_" CLOB DEFAULT '', 
+	"_snmp_f3_" CLOB DEFAULT '',
+	"_snmp_f4_" CLOB DEFAULT '', 
+	"_snmp_f5_" CLOB DEFAULT '', 
+	"_snmp_f6_" CLOB DEFAULT '',
+	"_snmp_f7_" CLOB DEFAULT '',
+	"_snmp_f8_" CLOB DEFAULT '',
+	"_snmp_f9_" CLOB DEFAULT '',
+	"_snmp_f10_" CLOB DEFAULT '',
+	"_snmp_f11_" CLOB DEFAULT '',
+	"_snmp_f12_" CLOB DEFAULT '',
+	"_snmp_f13_" CLOB DEFAULT '',
+	"_snmp_f14_" CLOB DEFAULT '',
+	"_snmp_f15_" CLOB DEFAULT '',
+	"_snmp_f16_" CLOB DEFAULT '',
+	"_snmp_f17_" CLOB DEFAULT '',
+	"_snmp_f18_" CLOB DEFAULT '',
+	"_snmp_f19_" CLOB DEFAULT '',
+	"_snmp_f20_" CLOB DEFAULT '',
+	trap_type NUMBER(10, 0) DEFAULT -1,
 	single_value VARCHAR2(255) DEFAULT '',
-	"position" NUMBER(10, 0) default 0 NOT NULL,
-	id_group NUMBER(10, 0) default 0 NOT NULL,
-	order_1 NUMBER(10, 0) default 1 NOT NULL ,
-	order_2 NUMBER(10, 0) default 2 NOT NULL ,
-	order_3 NUMBER(10, 0) default 3 NOT NULL ,
-	order_4 NUMBER(10, 0) default 4 NOT NULL ,
-	order_5 NUMBER(10, 0) default 5 NOT NULL ,
-	order_6 NUMBER(10, 0) default 6 NOT NULL ,
-	order_7 NUMBER(10, 0) default 7 NOT NULL ,
-	order_8 NUMBER(10, 0) default 8 NOT NULL ,
-	order_9 NUMBER(10, 0) default 9 NOT NULL ,
-	order_10 NUMBER(10, 0) default 10 NOT NULL ,
-	order_11 NUMBER(10, 0) default 11 NOT NULL ,
-	order_12 NUMBER(10, 0) default 12 NOT NULL ,
-	order_13 NUMBER(10, 0) default 13 NOT NULL ,
-	order_14 NUMBER(10, 0) default 14 NOT NULL ,
-	order_15 NUMBER(10, 0) default 15 NOT NULL ,
-	order_16 NUMBER(10, 0) default 16 NOT NULL ,
-	order_17 NUMBER(10, 0) default 17 NOT NULL ,
-	order_18 NUMBER(10, 0) default 18 NOT NULL ,
-	order_19 NUMBER(10, 0) default 19 NOT NULL ,
-	order_20 NUMBER(10, 0) default 20 NOT NULL 
+	position NUMBER(10, 0) DEFAULT 0,
+	id_group NUMBER(10, 0) DEFAULT 0,
+	order_1 NUMBER(10, 0) DEFAULT 1 ,
+	order_2 NUMBER(10, 0) DEFAULT 2 ,
+	order_3 NUMBER(10, 0) DEFAULT 3 ,
+	order_4 NUMBER(10, 0) DEFAULT 4 ,
+	order_5 NUMBER(10, 0) DEFAULT 5 ,
+	order_6 NUMBER(10, 0) DEFAULT 6 ,
+	order_7 NUMBER(10, 0) DEFAULT 7 ,
+	order_8 NUMBER(10, 0) DEFAULT 8 ,
+	order_9 NUMBER(10, 0) DEFAULT 9 ,
+	order_10 NUMBER(10, 0) DEFAULT 10 ,
+	order_11 NUMBER(10, 0) DEFAULT 11 ,
+	order_12 NUMBER(10, 0) DEFAULT 12 ,
+	order_13 NUMBER(10, 0) DEFAULT 13 ,
+	order_14 NUMBER(10, 0) DEFAULT 14 ,
+	order_15 NUMBER(10, 0) DEFAULT 15 ,
+	order_16 NUMBER(10, 0) DEFAULT 16 ,
+	order_17 NUMBER(10, 0) DEFAULT 17 ,
+	order_18 NUMBER(10, 0) DEFAULT 18 ,
+	order_19 NUMBER(10, 0) DEFAULT 19 ,
+	order_20 NUMBER(10, 0) DEFAULT 20 
 );
 
 CREATE SEQUENCE talert_snmp_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER talert_snmp_inc BEFORE INSERT ON talert_snmp REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_snmp_s.nextval INTO :NEW.ID_AS FROM dual; END;;
+CREATE OR REPLACE TRIGGER talert_snmp_inc BEFORE INSERT ON talert_snmp REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_snmp_s.nextval INTO :NEW.id_as FROM dual; END;;
 
 CREATE TABLE talert_commands (
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) default '',
-	command CLOB default '',
-	description CLOB default '',
-	internal NUMBER(10, 0) default 0,
-	fields_descriptions CLOB default '',
-	fields_values CLOB default ''
+	id NUMBER(10, 0) PRIMARY KEY,
+	name VARCHAR2(100) DEFAULT '',
+	command CLOB DEFAULT '',
+	description CLOB DEFAULT '',
+	internal NUMBER(10, 0) DEFAULT 0,
+	fields_descriptions CLOB DEFAULT '',
+	fields_values CLOB DEFAULT ''
 );
 
 CREATE SEQUENCE talert_commands_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER talert_commands_inc BEFORE INSERT ON talert_commands REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_commands_s.nextval INTO :NEW.ID FROM dual; END;;
+CREATE OR REPLACE TRIGGER talert_commands_inc BEFORE INSERT ON talert_commands REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_commands_s.nextval INTO :NEW.id FROM dual; END;;
 
 CREATE TABLE talert_actions (
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name CLOB default '',
-	id_alert_command NUMBER(10, 0) default 0 NOT NULL REFERENCES talert_commands(id)  ON DELETE CASCADE,
-	field1 CLOB default '',
-	field2 CLOB default '',
-	field3 CLOB default '',
-	field4 CLOB default '',
-	field5 CLOB default '',
-	field6 CLOB default '',
-	field7 CLOB default '',
-	field8 CLOB default '',
-	field9 CLOB default '',
-	field10 CLOB default '',
-	id_group NUMBER(19, 0) default 0 NOT NULL,
-	action_threshold NUMBER(19, 0) default 0 NOT NULL,
-	field1_recovery CLOB NOT NULL default '',
-	field2_recovery CLOB NOT NULL default '',
-	field3_recovery CLOB NOT NULL default '',
-	field4_recovery CLOB NOT NULL default '',
-	field5_recovery CLOB NOT NULL default '',
-	field6_recovery CLOB NOT NULL default '',
-	field7_recovery CLOB NOT NULL default '',
-	field8_recovery CLOB NOT NULL default '',
-	field9_recovery CLOB NOT NULL default '',
-	field10_recovery CLOB NOT NULL default ''
+	id NUMBER(10, 0) PRIMARY KEY,
+	name CLOB DEFAULT '',
+	id_alert_command NUMBER(10, 0) DEFAULT 0 REFERENCES talert_commands(id)  ON DELETE CASCADE,
+	field1 CLOB DEFAULT '',
+	field2 CLOB DEFAULT '',
+	field3 CLOB DEFAULT '',
+	field4 CLOB DEFAULT '',
+	field5 CLOB DEFAULT '',
+	field6 CLOB DEFAULT '',
+	field7 CLOB DEFAULT '',
+	field8 CLOB DEFAULT '',
+	field9 CLOB DEFAULT '',
+	field10 CLOB DEFAULT '',
+	id_group NUMBER(19, 0) DEFAULT 0,
+	action_threshold NUMBER(19, 0) DEFAULT 0,
+	field1_recovery CLOB DEFAULT '',
+	field2_recovery CLOB DEFAULT '',
+	field3_recovery CLOB DEFAULT '',
+	field4_recovery CLOB DEFAULT '',
+	field5_recovery CLOB DEFAULT '',
+	field6_recovery CLOB DEFAULT '',
+	field7_recovery CLOB DEFAULT '',
+	field8_recovery CLOB DEFAULT '',
+	field9_recovery CLOB DEFAULT '',
+	field10_recovery CLOB DEFAULT ''
 );
 
 CREATE SEQUENCE talert_actions_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER talert_actions_inc BEFORE INSERT ON talert_actions REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_actions_s.nextval INTO :NEW.ID FROM dual; END;;
+CREATE OR REPLACE TRIGGER talert_actions_inc BEFORE INSERT ON talert_actions REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_actions_s.nextval INTO :NEW.id FROM dual; END;;
 
 -- on update trigger
-CREATE OR REPLACE TRIGGER talert_actions_update AFTER UPDATE OF ID ON talert_commands FOR EACH ROW BEGIN UPDATE talert_actions SET ID_ALERT_COMMAND = :NEW.ID WHERE ID_ALERT_COMMAND = :OLD.ID; END;;
+CREATE OR REPLACE TRIGGER talert_actions_update AFTER UPDATE OF id ON talert_commands FOR EACH ROW BEGIN UPDATE talert_actions SET id_alert_command = :NEW.id WHERE id_alert_command = :OLD.id; END;;
 
 -- use to_char(time_from, 'hh24:mi:ss') function to retrieve time_from field info
 -- use to_char(time_to,   'hh24:mi:ss') function to retrieve time_to field info
 CREATE TABLE talert_templates (
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name CLOB default '',
-	description CLOB,
-	id_alert_action NUMBER(10, 0) REFERENCES talert_actions(id)  ON DELETE SET NULL,
-	field1 CLOB NOT NULL default '',
-	field2 CLOB NOT NULL default '',
-	field3 CLOB NOT NULL default '',
-	field4 CLOB NOT NULL default '',
-	field5 CLOB NOT NULL default '',
-	field6 CLOB NOT NULL default '',
-	field7 CLOB NOT NULL default '',
-	field8 CLOB NOT NULL default '',
-	field9 CLOB NOT NULL default '',
-	field10 CLOB NOT NULL default '',
+	id NUMBER(10, 0) PRIMARY KEY,
+	name CLOB DEFAULT '',
+	description CLOB DEFAULT '',
+	id_alert_action NUMBER(10, 0) REFERENCES talert_actions(id) ON DELETE SET NULL,
+	field1 CLOB DEFAULT '',
+	field2 CLOB DEFAULT '',
+	field3 CLOB DEFAULT '',
+	field4 CLOB DEFAULT '',
+	field5 CLOB DEFAULT '',
+	field6 CLOB DEFAULT '',
+	field7 CLOB DEFAULT '',
+	field8 CLOB DEFAULT '',
+	field9 CLOB DEFAULT '',
+	field10 CLOB DEFAULT '',
 	type VARCHAR2(50), 
-	value VARCHAR2(255) default '',
-	matches_value NUMBER(5, 0) default 0,
-	max_value DOUBLE PRECISION default NULL,
-	min_value DOUBLE PRECISION default NULL,
-	time_threshold NUMBER(10, 0) default 0 NOT NULL,
-	max_alerts NUMBER(10, 0) default 1 NOT NULL,
-	min_alerts NUMBER(10, 0) default 0 NOT NULL,
-	time_from TIMESTAMP default to_date('00:00:00','hh24:mi:ss'), 
-	time_to TIMESTAMP default to_date('00:00:00','hh24:mi:ss'),   
-	monday NUMBER(5, 0) default 1,
-	tuesday NUMBER(5, 0) default 1,
-	wednesday NUMBER(5, 0) default 1,
-	thursday NUMBER(5, 0) default 1,
-	friday NUMBER(5, 0) default 1,
-	saturday NUMBER(5, 0) default 1,
-	sunday NUMBER(5, 0) default 1,
-	recovery_notify NUMBER(5, 0) default 0,
-	field1_recovery CLOB NOT NULL default '',
-	field2_recovery CLOB NOT NULL default '',
-	field3_recovery CLOB NOT NULL default '',
-	field4_recovery CLOB NOT NULL default '',
-	field5_recovery CLOB NOT NULL default '',
-	field6_recovery CLOB NOT NULL default '',
-	field7_recovery CLOB NOT NULL default '',
-	field8_recovery CLOB NOT NULL default '',
-	field9_recovery CLOB NOT NULL default '',
-	field10_recovery CLOB NOT NULL default '',
-	priority NUMBER(10, 0) default 0 NOT NULL,
-	id_group NUMBER(10, 0) default 0 NOT NULL, 
-	special_day NUMBER(5, 0) default 0,
-	wizard_level VARCHAR2(100) default 'nowizard' NOT NULL,
+	value VARCHAR2(255) DEFAULT '',
+	matches_value NUMBER(5, 0) DEFAULT 0,
+	max_value DOUBLE PRECISION DEFAULT NULL,
+	min_value DOUBLE PRECISION DEFAULT NULL,
+	time_threshold NUMBER(10, 0) DEFAULT 0,
+	max_alerts NUMBER(10, 0) DEFAULT 1,
+	min_alerts NUMBER(10, 0) DEFAULT 0,
+	time_from TIMESTAMP DEFAULT to_date('00:00:00','hh24:mi:ss'), 
+	time_to TIMESTAMP DEFAULT to_date('00:00:00','hh24:mi:ss'),   
+	monday NUMBER(5, 0) DEFAULT 1,
+	tuesday NUMBER(5, 0) DEFAULT 1,
+	wednesday NUMBER(5, 0) DEFAULT 1,
+	thursday NUMBER(5, 0) DEFAULT 1,
+	friday NUMBER(5, 0) DEFAULT 1,
+	saturday NUMBER(5, 0) DEFAULT 1,
+	sunday NUMBER(5, 0) DEFAULT 1,
+	recovery_notify NUMBER(5, 0) DEFAULT 0,
+	field1_recovery CLOB DEFAULT '',
+	field2_recovery CLOB DEFAULT '',
+	field3_recovery CLOB DEFAULT '',
+	field4_recovery CLOB DEFAULT '',
+	field5_recovery CLOB DEFAULT '',
+	field6_recovery CLOB DEFAULT '',
+	field7_recovery CLOB DEFAULT '',
+	field8_recovery CLOB DEFAULT '',
+	field9_recovery CLOB DEFAULT '',
+	field10_recovery CLOB DEFAULT '',
+	priority NUMBER(10, 0) DEFAULT 0,
+	id_group NUMBER(10, 0) DEFAULT 0, 
+	special_day NUMBER(5, 0) DEFAULT 0,
+	wizard_level VARCHAR2(100) DEFAULT 'nowizard',
 	CONSTRAINT t_alert_templates_type_cons CHECK (type IN ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always')),
-	CONSTRAINT t_alert_templates_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
+	CONSTRAINT t_alert_templates_wizard_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
 );
 CREATE INDEX talert_templates_id_al_act_idx ON talert_templates(id_alert_action);
 
 CREATE SEQUENCE talert_templates_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER talert_templates_inc BEFORE INSERT ON talert_templates REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_templates_s.nextval INTO :NEW.ID FROM dual; END;;
+CREATE OR REPLACE TRIGGER talert_templates_inc BEFORE INSERT ON talert_templates REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_templates_s.nextval INTO :NEW.id FROM dual; END;;
 
 -- on update trigger
-CREATE OR REPLACE TRIGGER talert_templates_update AFTER UPDATE OF ID ON talert_actions FOR EACH ROW BEGIN UPDATE talert_templates SET ID_ALERT_ACTION = :NEW.ID WHERE ID_ALERT_ACTION = :OLD.ID; END;;
+CREATE OR REPLACE TRIGGER talert_templates_update AFTER UPDATE OF id ON talert_actions FOR EACH ROW BEGIN UPDATE talert_templates SET id_alert_action = :NEW.id WHERE id_alert_action = :OLD.id; END;;
 
 CREATE TABLE talert_template_modules (
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_agent_module NUMBER(10, 0) NOT NULL REFERENCES tagente_modulo(id_agente_modulo) ON DELETE CASCADE,
-	id_alert_template NUMBER(10, 0) NOT NULL REFERENCES talert_templates(id) ON DELETE CASCADE, 
-	id_policy_alerts NUMBER(10, 0) default 0 NOT NULL,
-	internal_counter NUMBER(10, 0) default 0,
-	last_fired NUMBER(19, 0) default 0 NOT NULL,
-	last_reference NUMBER(19, 0) default 0 NOT NULL,
-	times_fired NUMBER(10, 0) default 0 NOT NULL,
-	disabled NUMBER(5, 0) default 0,
-	standby NUMBER(5, 0) default 0,
-	priority NUMBER(10, 0) default 0,
-	force_execution NUMBER(5, 0) default 0
+	id NUMBER(10, 0) PRIMARY KEY,
+	id_agent_module NUMBER(10, 0) REFERENCES tagente_modulo(id_agente_modulo) ON DELETE CASCADE,
+	id_alert_template NUMBER(10, 0) REFERENCES talert_templates(id) ON DELETE CASCADE, 
+	id_policy_alerts NUMBER(10, 0) DEFAULT 0,
+	internal_counter NUMBER(10, 0) DEFAULT 0,
+	last_fired NUMBER(19, 0) DEFAULT 0,
+	last_reference NUMBER(19, 0) DEFAULT 0,
+	times_fired NUMBER(10, 0) DEFAULT 0,
+	disabled NUMBER(5, 0) DEFAULT 0,
+	standby NUMBER(5, 0) DEFAULT 0,
+	priority NUMBER(10, 0) DEFAULT 0,
+	force_execution NUMBER(5, 0) DEFAULT 0
 );
 CREATE UNIQUE INDEX talert_template_modules_idx ON talert_template_modules(id_agent_module);
 
 CREATE SEQUENCE talert_template_modules_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER talert_template_modules_inc BEFORE INSERT ON talert_template_modules REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_template_modules_s.nextval INTO :NEW.ID FROM dual; END;;
+CREATE OR REPLACE TRIGGER talert_template_modules_inc BEFORE INSERT ON talert_template_modules REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_template_modules_s.nextval INTO :NEW.id FROM dual; END;;
 
 -- on update trigger
-CREATE OR REPLACE TRIGGER talert_template_modules_update AFTER UPDATE OF ID_AGENTE_MODULO ON tagente_modulo FOR EACH ROW BEGIN UPDATE talert_template_modules SET ID_AGENT_MODULE = :NEW.ID_AGENTE_MODULO WHERE ID_AGENT_MODULE = :OLD.ID_AGENTE_MODULO; END;;
+CREATE OR REPLACE TRIGGER talert_template_modules_update AFTER UPDATE OF id_agente_modulo ON tagente_modulo FOR EACH ROW BEGIN UPDATE talert_template_modules SET id_agent_module = :NEW.id_agente_modulo WHERE id_agent_module = :OLD.id_agente_modulo; END;;
 
 -- on update trigger 1
-CREATE OR REPLACE TRIGGER talert_template_module_update1 AFTER UPDATE OF ID ON talert_templates FOR EACH ROW BEGIN UPDATE talert_template_modules SET ID_ALERT_TEMPLATE = :NEW.ID WHERE ID_ALERT_TEMPLATE = :OLD.ID; END;;
+CREATE OR REPLACE TRIGGER talert_template_module_update1 AFTER UPDATE OF id ON talert_templates FOR EACH ROW BEGIN UPDATE talert_template_modules SET id_alert_template = :NEW.id WHERE id_alert_template = :OLD.id; END;;
 
 CREATE TABLE talert_template_module_actions (
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_alert_template_module NUMBER(10, 0) NOT NULL REFERENCES talert_template_modules(id) ON DELETE CASCADE, 
-	id_alert_action NUMBER(10, 0) NOT NULL REFERENCES talert_actions(id) ON DELETE CASCADE, 
-	fires_min NUMBER(10, 0) default 0 NOT NULL,
-	fires_max NUMBER(10, 0) default 0 NOT NULL,
-	module_action_threshold NUMBER(10, 0) default 0 NOT NULL,
-  	last_execution NUMBER(18, 0) default 0 NOT NULL 
+	id NUMBER(10, 0) PRIMARY KEY,
+	id_alert_template_module NUMBER(10, 0) REFERENCES talert_template_modules(id) ON DELETE CASCADE, 
+	id_alert_action NUMBER(10, 0) REFERENCES talert_actions(id) ON DELETE CASCADE, 
+	fires_min NUMBER(10, 0) DEFAULT 0,
+	fires_max NUMBER(10, 0) DEFAULT 0,
+	module_action_threshold NUMBER(10, 0) DEFAULT 0,
+  	last_execution NUMBER(18, 0) DEFAULT 0 
 );
 
 CREATE SEQUENCE talert_template_modu_actions_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER talert_template_mod_action_inc BEFORE INSERT ON talert_template_module_actions REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_template_modu_actions_s.nextval INTO :NEW.ID FROM dual; END;;
+CREATE OR REPLACE TRIGGER talert_template_mod_action_inc BEFORE INSERT ON talert_template_module_actions REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_template_modu_actions_s.nextval INTO :NEW.id FROM dual; END;;
 
 -- on update trigger
-CREATE OR REPLACE TRIGGER talert_template_mod_act_update AFTER UPDATE OF ID ON talert_template_modules FOR EACH ROW BEGIN UPDATE talert_template_module_actions SET ID_ALERT_TEMPLATE_MODULE = :NEW.ID WHERE ID_ALERT_TEMPLATE_MODULE = :OLD.ID; END;;
+CREATE OR REPLACE TRIGGER talert_template_mod_act_update AFTER UPDATE OF id ON talert_template_modules FOR EACH ROW BEGIN UPDATE talert_template_module_actions SET id_alert_template_module = :NEW.id WHERE id_alert_template_module = :OLD.id; END;;
 
 -- on update trigger 1
-CREATE OR REPLACE TRIGGER talert_template_mod_ac_update1 AFTER UPDATE OF ID ON talert_actions FOR EACH ROW BEGIN UPDATE talert_template_module_actions SET ID_ALERT_ACTION = :NEW.ID WHERE ID_ALERT_ACTION = :OLD.ID; END;;
+CREATE OR REPLACE TRIGGER talert_template_mod_ac_update1 AFTER UPDATE OF id ON talert_actions FOR EACH ROW BEGIN UPDATE talert_template_module_actions SET id_alert_action = :NEW.id WHERE id_alert_action = :OLD.id; END;;
 
 CREATE TABLE talert_special_days (
-	id NUMBER(10,0) NOT NULL PRIMARY KEY,
-	id_group NUMBER(10, 0) default 0 NOT NULL, 
-	date DATE default '0000-00-00' NOT NULL,
-	same_day VARCHAR2(20) default 'sunday',
+	id NUMBER(10,0) PRIMARY KEY,
+	id_group NUMBER(10, 0) DEFAULT 0, 
+	"date" DATE,
+	same_day VARCHAR2(20) DEFAULT 'sunday',
 	description CLOB,
-	CONSTRAINT talert_special_days_same_day_cons CHECK (same_day IN ('monday','tuesday','wednesday','thursday','friday','saturday','sunday'))
+	CONSTRAINT talert_special_days_sday_cons CHECK (same_day IN ('monday','tuesday','wednesday','thursday','friday','saturday','sunday'))
 );
 
 -- on update trigger
 CREATE SEQUENCE talert_special_days_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER talert_special_days_inc BEFORE INSERT ON talert_special_days REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_special_days_s.nextval INTO :NEW.ID FROM dual; END talert_special_days_inc;;
+CREATE OR REPLACE TRIGGER talert_special_days_inc BEFORE INSERT ON talert_special_days REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_special_days_s.nextval INTO :NEW.id FROM dual; END talert_special_days_inc;;
 
 -- ---------------------------------------------------------------------
 -- Table `tattachment`
@@ -528,36 +524,36 @@ CREATE OR REPLACE TRIGGER talert_special_days_inc BEFORE INSERT ON talert_specia
 -- Priority : 3 - Warning (yellow)
 -- Priority : 4 - Critical (red)
 CREATE TABLE tattachment (
-	id_attachment NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_incidencia NUMBER(10, 0) default 0 NOT NULL,
-	id_usuario VARCHAR2(60) default '',
-	filename VARCHAR2(255) default '',
-	description VARCHAR2(150) default '',
-	"size" NUMBER(19, 0) default 0 NOT NULL
+	id_attachment NUMBER(10, 0) PRIMARY KEY,
+	id_incidencia NUMBER(10, 0) DEFAULT 0,
+	id_usuario VARCHAR2(60) DEFAULT '',
+	filename VARCHAR2(255) DEFAULT '',
+	description VARCHAR2(150) DEFAULT '',
+	"size" NUMBER(19, 0) DEFAULT 0
 );
 
 CREATE SEQUENCE tattachment_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tattachment_inc BEFORE INSERT ON tattachment REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tattachment_s.nextval INTO :NEW.ID_ATTACHMENT FROM dual; END;;
+CREATE OR REPLACE TRIGGER tattachment_inc BEFORE INSERT ON tattachment REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tattachment_s.nextval INTO :NEW.id_attachment FROM dual; END;;
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig`
 -- ---------------------------------------------------------------------
 CREATE TABLE tconfig (
-	id_config NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	token VARCHAR2(100) default '',
-	value VARCHAR2(255) default '' 
+	id_config NUMBER(10, 0) PRIMARY KEY,
+	token VARCHAR2(100) DEFAULT '',
+	value VARCHAR2(255) DEFAULT '' 
 );
 CREATE SEQUENCE tconfig_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tconfig_inc BEFORE INSERT ON tconfig REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tconfig_s.nextval INTO :NEW.ID_CONFIG FROM dual; END;;
+CREATE OR REPLACE TRIGGER tconfig_inc BEFORE INSERT ON tconfig REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tconfig_s.nextval INTO :NEW.id_config FROM dual; END;;
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig_os`
 -- ---------------------------------------------------------------------
 CREATE TABLE tconfig_os (
-	id_os NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) default '',
-	description VARCHAR2(250) default '',
-	icon_name VARCHAR2(100) default ''
+	id_os NUMBER(10, 0) PRIMARY KEY,
+	name VARCHAR2(100) DEFAULT '',
+	description VARCHAR2(250) DEFAULT '',
+	icon_name VARCHAR2(100) DEFAULT ''
 );
 
 -- ---------------------------------------------------------------------
@@ -565,27 +561,27 @@ CREATE TABLE tconfig_os (
 -- ---------------------------------------------------------------------
 -- use to_char(timestamp, 'hh24:mi:ss') function to retrieve timestamp field info
 CREATE TABLE tevento (
-	id_evento NUMBER(19, 0) NOT NULL PRIMARY KEY,
-	id_agente NUMBER(10, 0) default 0 NOT NULL,
-	id_usuario VARCHAR2(100) default '0' NOT NULL,
-	id_grupo NUMBER(10, 0) default 0 NOT NULL,
-	estado NUMBER(10, 0) default 0 NOT NULL,
-	timestamp TIMESTAMP default NULL,
-	evento CLOB default '',
-	utimestamp NUMBER(19, 0) default 0 NOT NULL,
-	event_type VARCHAR2(50) default 'unknown',
-	id_agentmodule NUMBER(10, 0) default 0 NOT NULL,
-	id_alert_am NUMBER(10, 0) default 0 NOT NULL,
-	criticity NUMBER(10, 0) default 0 NOT NULL,
+	id_evento NUMBER(19, 0) PRIMARY KEY,
+	id_agente NUMBER(10, 0) DEFAULT 0,
+	id_usuario VARCHAR2(100) DEFAULT '0',
+	id_grupo NUMBER(10, 0) DEFAULT 0,
+	estado NUMBER(10, 0) DEFAULT 0,
+	timestamp TIMESTAMP DEFAULT NULL,
+	evento CLOB DEFAULT '',
+	utimestamp NUMBER(19, 0) DEFAULT 0,
+	event_type VARCHAR2(50) DEFAULT 'unknown',
+	id_agentmodule NUMBER(10, 0) DEFAULT 0,
+	id_alert_am NUMBER(10, 0) DEFAULT 0,
+	criticity NUMBER(10, 0) DEFAULT 0,
 	user_comment CLOB,
 	tags CLOB,
-	source VARCHAR2(100) default '' NOT NULL,
-	id_extra VARCHAR2(100) default '' NOT NULL,
-	critical_instructions VARCHAR2(255) default '',
-	warning_instructions VARCHAR2(255) default '',
-	unknown_instructions VARCHAR2(255) default '',
-	owner_user VARCHAR2(100) default '0' NOT NULL,
-	ack_utimestamp NUMBER(19, 0) default 0 NOT NULL,
+	source VARCHAR2(100) DEFAULT '',
+	id_extra VARCHAR2(100) DEFAULT '',
+	critical_instructions CLOB DEFAULT '',
+	warning_instructions CLOB DEFAULT '',
+	unknown_instructions CLOB DEFAULT '',
+	owner_user VARCHAR2(100) DEFAULT '0',
+	ack_utimestamp NUMBER(19, 0) DEFAULT 0,
 	custom_data CLOB,
 	CONSTRAINT tevento_event_type_cons CHECK (event_type IN ('going_unknown','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change'))
 );
@@ -595,7 +591,7 @@ CREATE INDEX tevento_id_agentmodule_idx ON tevento(id_agentmodule);
 
 CREATE SEQUENCE tevento_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tevento_inc BEFORE INSERT ON tevento REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tevento_s.nextval INTO :NEW.ID_EVENTO FROM dual; END;;
+CREATE OR REPLACE TRIGGER tevento_inc BEFORE INSERT ON tevento REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tevento_s.nextval INTO :NEW.id_evento FROM dual; END;;
 
 -- ---------------------------------------------------------------------
 -- Table `tgrupo`
@@ -606,14 +602,14 @@ CREATE OR REPLACE TRIGGER tevento_inc BEFORE INSERT ON tevento REFERENCING NEW A
 -- Criticity: 3 - Warning (yellow) (status 2)
 -- Criticity: 4 - Critical (red) (status 1)
 CREATE TABLE tgrupo (
-	id_grupo NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	nombre CLOB default '',
-	icon VARCHAR2(50) default 'world',
-	parent NUMBER(10, 0) default 0 NOT NULL,
-	propagate NUMBER(5, 0) default 0,
-	disabled NUMBER(5, 0) default 0,
-	custom_id VARCHAR2(255) default '',
-	id_skin NUMBER(10, 0) DEFAULT 0 NOT NULL,
+	id_grupo NUMBER(10, 0) PRIMARY KEY,
+	nombre CLOB DEFAULT '',
+	icon VARCHAR2(50) DEFAULT 'world',
+	parent NUMBER(10, 0) DEFAULT 0,
+	propagate NUMBER(5, 0) DEFAULT 0,
+	disabled NUMBER(5, 0) DEFAULT 0,
+	custom_id VARCHAR2(255) DEFAULT '',
+	id_skin NUMBER(10, 0) DEFAULT 0,
 	description CLOB,
 	contact CLOB,
 	other CLOB
@@ -621,309 +617,306 @@ CREATE TABLE tgrupo (
 
 CREATE SEQUENCE tgrupo_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tgrupo_inc BEFORE INSERT ON tgrupo REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgrupo_s.nextval INTO :NEW.ID_GRUPO FROM dual; END;;
+CREATE OR REPLACE TRIGGER tgrupo_inc BEFORE INSERT ON tgrupo REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgrupo_s.nextval INTO :NEW.id_grupo FROM dual; END;;
 
 -- ---------------------------------------------------------------------
 -- Table `tincidencia`
 -- ---------------------------------------------------------------------
 CREATE TABLE tincidencia (
-	id_incidencia NUMBER(19, 0) NOT NULL PRIMARY KEY,
-	inicio TIMESTAMP default NULL,
-	cierre TIMESTAMP default NULL,
-	titulo CLOB default '',
-	descripcion CLOB NOT NULL,
-	id_usuario VARCHAR2(60) default '',
-	origen VARCHAR2(100) default '',
-	estado NUMBER(10, 0) default 0 NOT NULL,
-	prioridad NUMBER(10, 0) default 0 NOT NULL,
-	id_grupo NUMBER(10, 0) default 0 NOT NULL,
-	actualizacion TIMESTAMP default CURRENT_TIMESTAMP,
-	id_creator VARCHAR2(60) default NULL,
-	id_lastupdate VARCHAR2(60) default NULL,
-	id_agente_modulo NUMBER(19, 0) NOT NULL,
-	notify_email NUMBER(10, 0) default 0 NOT NULL,
-	id_agent NUMBER(19, 0) default 0 NULL 
+	id_incidencia NUMBER(19, 0) PRIMARY KEY,
+	inicio TIMESTAMP DEFAULT NULL,
+	cierre TIMESTAMP DEFAULT NULL,
+	titulo CLOB DEFAULT '',
+	descripcion CLOB,
+	id_usuario VARCHAR2(60) DEFAULT '',
+	origen VARCHAR2(100) DEFAULT '',
+	estado NUMBER(10, 0) DEFAULT 0,
+	prioridad NUMBER(10, 0) DEFAULT 0,
+	id_grupo NUMBER(10, 0) DEFAULT 0,
+	actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	id_creator VARCHAR2(60) DEFAULT NULL,
+	id_lastupdate VARCHAR2(60) DEFAULT NULL,
+	id_agente_modulo NUMBER(19, 0),
+	notify_email NUMBER(10, 0) DEFAULT 0,
+	id_agent NUMBER(19, 0) DEFAULT 0 NULL 
 );
 CREATE INDEX tincidencia_id_1_idx ON tincidencia(id_usuario,id_incidencia);
 CREATE INDEX tincidencia_id_agente_mod_idx ON tincidencia(id_agente_modulo);
 
---This trigger is for tranlate "on update CURRENT_TIMESTAMP" of MySQL.
-CREATE OR REPLACE TRIGGER tincidencia_actualizacion_ts BEFORE UPDATE ON tincidencia FOR EACH ROW BEGIN select CURRENT_TIMESTAMP into :NEW.ACTUALIZACION from dual; END;;
+--This trigger is for tranlate on update CURRENT_TIMESTAMP of MySQL.
+CREATE OR REPLACE TRIGGER tincidencia_actualizacion_ts BEFORE UPDATE ON tincidencia FOR EACH ROW BEGIN select CURRENT_TIMESTAMP into :NEW.actualizacion FROM dual; END;;
 
 CREATE SEQUENCE tincidencia_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tincidencia_inc BEFORE INSERT ON tincidencia REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tincidencia_s.nextval INTO :NEW.ID_INCIDENCIA FROM dual; END;;
+CREATE OR REPLACE TRIGGER tincidencia_inc BEFORE INSERT ON tincidencia REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tincidencia_s.nextval INTO :NEW.id_incidencia FROM dual; END;;
 
 -- ---------------------------------------------------------------------
 -- Table `tlanguage`
 -- ---------------------------------------------------------------------
 CREATE TABLE tlanguage (
-	id_language VARCHAR2(6) default '',
-	name VARCHAR2(100) default ''
+	id_language VARCHAR2(6) DEFAULT '',
+	name VARCHAR2(100) DEFAULT ''
 );
 
 -- ---------------------------------------------------------------------
 -- Table `tlink`
 -- ---------------------------------------------------------------------
 CREATE TABLE tlink (
-	id_link NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) default '',
-	link VARCHAR2(255) default ''
+	id_link NUMBER(10, 0) PRIMARY KEY,
+	name VARCHAR2(100) DEFAULT '',
+	link VARCHAR2(255) DEFAULT ''
 );
 
 CREATE SEQUENCE tlink_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tlink_inc BEFORE INSERT ON tlink REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tlink_s.nextval INTO :NEW.ID_LINK FROM dual; END;;
+CREATE OR REPLACE TRIGGER tlink_inc BEFORE INSERT ON tlink REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tlink_s.nextval INTO :NEW.id_link FROM dual; END;;
 
 -- ---------------------------------------------------------------------
 -- Table `tmensajes`
 -- ---------------------------------------------------------------------
 CREATE TABLE tmensajes (
-	id_mensaje NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_usuario_origen VARCHAR2(60) default '',
-	id_usuario_destino VARCHAR2(60) default '',
-	mensaje CLOB NOT NULL,
-	timestamp NUMBER(19, 0) default 0 NOT NULL,
-	subject VARCHAR2(255) default '',
-	estado NUMBER(10, 0) default 0 NOT NULL 
+	id_mensaje NUMBER(10, 0) PRIMARY KEY,
+	id_usuario_origen VARCHAR2(60) DEFAULT '',
+	id_usuario_destino VARCHAR2(60) DEFAULT '',
+	mensaje CLOB,
+	timestamp NUMBER(19, 0) DEFAULT 0,
+	subject VARCHAR2(255) DEFAULT '',
+	estado NUMBER(10, 0) DEFAULT 0 
 );
 
 CREATE SEQUENCE tmensajes_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tmensajes_inc BEFORE INSERT ON tmensajes REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmensajes_s.nextval INTO :NEW.ID_MENSAJE FROM dual; END;;
+CREATE OR REPLACE TRIGGER tmensajes_inc BEFORE INSERT ON tmensajes REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmensajes_s.nextval INTO :NEW.id_mensaje FROM dual; END;;
 
 -- ---------------------------------------------------------------------
 -- Table `tmodule_group`
 -- ---------------------------------------------------------------------
 CREATE TABLE tmodule_group (
-	id_mg NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(150) default ''
+	id_mg NUMBER(10, 0) PRIMARY KEY,
+	name VARCHAR2(150) DEFAULT ''
 );
 
 CREATE SEQUENCE tmodule_group_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tmodule_group_inc BEFORE INSERT ON tmodule_group REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmodule_group_s.nextval INTO :NEW.ID_MG FROM dual; END;;
+CREATE OR REPLACE TRIGGER tmodule_group_inc BEFORE INSERT ON tmodule_group REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmodule_group_s.nextval INTO :NEW.id_mg FROM dual; END;;
 
 -- ----------------------------------------------------------------------
 -- Table `tmodule_relationship`
 -- ----------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS tmodule_relationship (
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	module_a NUMBER(10, 0) NOT NULL REFERENCES tagente_modulo(id_agente_modulo)
-		ON DELETE CASCADE,
-	module_b NUMBER(10, 0) NOT NULL REFERENCES tagente_modulo(id_agente_modulo)
-		ON DELETE CASCADE,
-	disable_update NUMBER(1, 0) default 0 NOT NULL
+CREATE TABLE tmodule_relationship (
+	id NUMBER(10, 0) PRIMARY KEY,
+	module_a NUMBER(10, 0) REFERENCES tagente_modulo(id_agente_modulo) ON DELETE CASCADE,
+	module_b NUMBER(10, 0) REFERENCES tagente_modulo(id_agente_modulo) ON DELETE CASCADE,
+	disable_update NUMBER(1, 0) DEFAULT 0
 );
 
 CREATE SEQUENCE tmodule_relationship_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tmodule_relationship_inc BEFORE INSERT ON tmodule_relationship REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmodule_relationship_s.nextval INTO :NEW.ID FROM dual; END;;
+CREATE OR REPLACE TRIGGER tmodule_relationship_inc BEFORE INSERT ON tmodule_relationship REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmodule_relationship_s.nextval INTO :NEW.id FROM dual; END;;
 
 -- ----------------------------------------------------------------------
 -- Table `tnetwork_component`
 -- ----------------------------------------------------------------------
 CREATE TABLE tnetwork_component (
-	id_nc NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name CLOB NOT NULL,
-	description VARCHAR2(300) default NULL,
-	id_group NUMBER(10, 0) default 1 NOT NULL,
-	type NUMBER(10, 0) default 6 NOT NULL,
-	max NUMBER(10, 0) default 0 NOT NULL,
-	min NUMBER(19, 0) default 0 NOT NULL,
-	module_interval NUMBER(19, 0) default 0 NOT NULL,
-	module_ff_interval NUMBER(19, 0) default 0 NOT NULL,
-	tcp_port NUMBER(10, 0) default 0 NOT NULL,
-	tcp_send CLOB NOT NULL,
-	tcp_rcv CLOB NOT NULL,
-	snmp_community VARCHAR2(255) default 'NULL' NOT NULL,
-	snmp_oid VARCHAR2(400) NOT NULL,
-	id_module_group NUMBER(10, 0) default 0 NOT NULL,
-	id_modulo NUMBER(10, 0) default 0 NOT NULL,
-	id_plugin NUMBER(10, 0) default 0,
-	plugin_user CLOB default '',
-	plugin_pass CLOB default '',
+	id_nc NUMBER(10, 0) PRIMARY KEY,
+	name CLOB,
+	description VARCHAR2(300) DEFAULT NULL,
+	id_group NUMBER(10, 0) DEFAULT 1,
+	type NUMBER(10, 0) DEFAULT 6,
+	max NUMBER(10, 0) DEFAULT 0,
+	min NUMBER(19, 0) DEFAULT 0,
+	module_interval NUMBER(19, 0) DEFAULT 0,
+	module_ff_interval NUMBER(19, 0) DEFAULT 0,
+	tcp_port NUMBER(10, 0) DEFAULT 0,
+	tcp_send CLOB,
+	tcp_rcv CLOB,
+	snmp_community VARCHAR2(255) DEFAULT '',
+	snmp_oid VARCHAR2(400) DEFAULT '',
+	id_module_group NUMBER(10, 0) DEFAULT 0,
+	id_modulo NUMBER(10, 0) DEFAULT 0,
+	id_plugin NUMBER(10, 0) DEFAULT 0,
+	plugin_user CLOB DEFAULT '',
+	plugin_pass CLOB DEFAULT '',
 	plugin_parameter CLOB,
-	max_timeout NUMBER(10, 0) default 0,
-	max_retries NUMBER(10, 0) default 0,
-	history_data NUMBER(5, 0) default 1,
-	min_warning BINARY_DOUBLE default 0,
-	max_warning BINARY_DOUBLE default 0,
-	str_warning CLOB default '',
-	min_critical BINARY_DOUBLE default 0,
-	max_critical BINARY_DOUBLE default 0,
-	str_critical CLOB default '',
-	min_ff_event NUMBER(10, 0) default 0,
-	custom_string_1 CLOB default '',
-	custom_string_2 CLOB default '',
-	custom_string_3 CLOB default '',
-	custom_integer_1 INTEGER default 0,
-	custom_integer_2 INTEGER default 0,
-	post_process BINARY_DOUBLE default 0.
-	unit CLOB default '',
-	wizard_level VARCHAR2(100) default 'nowizard' NOT NULL,
-	macros CLOB default '',
-	critical_instructions VARCHAR2(255) default '',
-	warning_instructions VARCHAR2(255) default '',
-	unknown_instructions VARCHAR2(255) default '',
-	critical_inverse NUMBER(1, 0) default 0 NOT NULL,
-	warning_inverse NUMBER(1, 0) default 0 NOT NULL,
-	id_category NUMBER(10, 0) default 0 NOT NULL,
+	max_timeout NUMBER(10, 0) DEFAULT 0,
+	max_retries NUMBER(10, 0) DEFAULT 0,
+	history_data NUMBER(5, 0) DEFAULT 1,
+	min_warning BINARY_DOUBLE DEFAULT 0,
+	max_warning BINARY_DOUBLE DEFAULT 0,
+	str_warning CLOB DEFAULT '',
+	min_critical BINARY_DOUBLE DEFAULT 0,
+	max_critical BINARY_DOUBLE DEFAULT 0,
+	str_critical CLOB DEFAULT '',
+	min_ff_event NUMBER(10, 0) DEFAULT 0,
+	custom_string_1 CLOB DEFAULT '',
+	custom_string_2 CLOB DEFAULT '',
+	custom_string_3 CLOB DEFAULT '',
+	custom_integer_1 INTEGER DEFAULT 0,
+	custom_integer_2 INTEGER DEFAULT 0,
+	post_process BINARY_DOUBLE DEFAULT 0,
+	unit CLOB DEFAULT '',
+	wizard_level VARCHAR2(100) DEFAULT 'nowizard',
+	macros CLOB DEFAULT '',
+	critical_instructions CLOB DEFAULT '',
+	warning_instructions CLOB DEFAULT '',
+	unknown_instructions CLOB DEFAULT '',
+	critical_inverse NUMBER(1, 0) DEFAULT 0,
+	warning_inverse NUMBER(1, 0) DEFAULT 0,
+	id_category NUMBER(10, 0) DEFAULT 0,
 	tags CLOB,
-	disabled_types_event CLOB default '',
-	module_macros CLOB default '',
-	min_ff_event_normal INTEGER default 0,
-        min_ff_event_warning INTEGER default 0,
-        min_ff_event_critical INTEGER default 0,
-        each_ff NUMBER(1, 0) default 0,
-	
-	CONSTRAINT t_network_component_wizard_level_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
+	disabled_types_event CLOB DEFAULT '',
+	module_macros CLOB DEFAULT '',
+	min_ff_event_normal INTEGER DEFAULT 0,
+	min_ff_event_warning INTEGER DEFAULT 0,
+	min_ff_event_critical INTEGER DEFAULT 0,
+	each_ff NUMBER(1, 0) DEFAULT 0,
+	CONSTRAINT t_network_component_wiz_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
 );
 
 CREATE SEQUENCE tnetwork_component_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tnetwork_component_inc BEFORE INSERT ON tnetwork_component REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetwork_component_s.nextval INTO :NEW.ID_NC FROM dual; END;;
+CREATE OR REPLACE TRIGGER tnetwork_component_inc BEFORE INSERT ON tnetwork_component REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetwork_component_s.nextval INTO :NEW.id_nc FROM dual; END;;
 
 CREATE TABLE tnetwork_component_group (
-	id_sg NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(200) default '',
-	parent NUMBER(19, 0) default 0 NOT NULL 
+	id_sg NUMBER(10, 0) PRIMARY KEY,
+	name VARCHAR2(200) DEFAULT '',
+	parent NUMBER(19, 0) DEFAULT 0 
 );
 
 
 CREATE TABLE tnetwork_profile (
-	id_np NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) default '',
-	description VARCHAR2(250) default ''
+	id_np NUMBER(10, 0) PRIMARY KEY,
+	name VARCHAR2(100) DEFAULT '',
+	description VARCHAR2(250) DEFAULT ''
 );
 
 CREATE SEQUENCE tnetwork_profile_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tnetwork_profile_inc BEFORE INSERT ON tnetwork_profile REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetwork_profile_s.nextval INTO :NEW.ID_NP FROM dual; END;;
+CREATE OR REPLACE TRIGGER tnetwork_profile_inc BEFORE INSERT ON tnetwork_profile REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetwork_profile_s.nextval INTO :NEW.id_np FROM dual; END;;
 
 CREATE TABLE tnetwork_profile_component (
-	id_nc NUMBER(19, 0) default 0 NOT NULL,
-	id_np NUMBER(19, 0) default 0 NOT NULL
+	id_nc NUMBER(19, 0) DEFAULT 0,
+	id_np NUMBER(19, 0) DEFAULT 0
 );
 CREATE INDEX tnetwork_profile_id_np_idx ON tnetwork_profile_component(id_np);
 
 CREATE TABLE tnota (
-	id_nota NUMBER(19, 0) NOT NULL PRIMARY KEY,
-	id_incident NUMBER(19, 0) NOT NULL,
-	id_usuario VARCHAR2(100) default '0' NOT NULL,
-	timestamp TIMESTAMP  default CURRENT_TIMESTAMP, 
-	nota CLOB NOT NULL
+	id_nota NUMBER(19, 0) PRIMARY KEY,
+	id_incident NUMBER(19, 0),
+	id_usuario VARCHAR2(100) DEFAULT '0',
+	timestamp TIMESTAMP  DEFAULT CURRENT_TIMESTAMP, 
+	nota CLOB
 );
 CREATE INDEX tnota_id_incident_idx ON tnota(id_incident);
 
 CREATE TABLE torigen (
-	origen VARCHAR2(100) default ''
+	origen VARCHAR2(100) DEFAULT ''
 );
 
 CREATE TABLE tperfil (
-	id_perfil NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name CLOB default '',
-	incident_edit NUMBER(1, 0) default 0 NOT NULL,
-	incident_view NUMBER(1, 0) default 0 NOT NULL,
-	incident_management NUMBER(1, 0) default 0 NOT NULL,
-	agent_view NUMBER(1, 0) default 0 NOT NULL,
-	agent_edit NUMBER(1, 0) default 0 NOT NULL,
-	alert_edit NUMBER(1, 0) default 0 NOT NULL,
-	user_management NUMBER(1, 0) default 0 NOT NULL,
-	db_management NUMBER(1, 0) default 0 NOT NULL,
-	alert_management NUMBER(1, 0) default 0 NOT NULL,
-	pandora_management NUMBER(1, 0) default 0 NOT NULL,
-	report_view NUMBER(1, 0) default 0 NOT NULL,
-	report_edit NUMBER(1, 0) default 0 NOT NULL,
-	report_management NUMBER(1, 0) default 0 NOT NULL,
-	event_view NUMBER(1, 0) default 0 NOT NULL,
-	event_edit NUMBER(1, 0) default 0 NOT NULL,
-	event_management NUMBER(1, 0) default 0 NOT NULL,
-	agent_disable NUMBER(1, 0) default 0 NOT NULL,
-	map_view NUMBER(1, 0) default 0 NOT NULL,
-	map_edit NUMBER(1, 0) default 0 NOT NULL,
-	map_management NUMBER(1, 0) default 0 NOT NULL,
-	vconsole_view NUMBER(1, 0) default 0 NOT NULL,
-	vconsole_edit NUMBER(1, 0) default 0 NOT NULL,
-	vconsole_management NUMBER(1, 0) default 0 NOT NULL
+	id_perfil NUMBER(10, 0) PRIMARY KEY,
+	name CLOB DEFAULT '',
+	incident_edit NUMBER(1, 0) DEFAULT 0,
+	incident_view NUMBER(1, 0) DEFAULT 0,
+	incident_management NUMBER(1, 0) DEFAULT 0,
+	agent_view NUMBER(1, 0) DEFAULT 0,
+	agent_edit NUMBER(1, 0) DEFAULT 0,
+	alert_edit NUMBER(1, 0) DEFAULT 0,
+	user_management NUMBER(1, 0) DEFAULT 0,
+	db_management NUMBER(1, 0) DEFAULT 0,
+	alert_management NUMBER(1, 0) DEFAULT 0,
+	pandora_management NUMBER(1, 0) DEFAULT 0,
+	report_view NUMBER(1, 0) DEFAULT 0,
+	report_edit NUMBER(1, 0) DEFAULT 0,
+	report_management NUMBER(1, 0) DEFAULT 0,
+	event_view NUMBER(1, 0) DEFAULT 0,
+	event_edit NUMBER(1, 0) DEFAULT 0,
+	event_management NUMBER(1, 0) DEFAULT 0,
+	agent_disable NUMBER(1, 0) DEFAULT 0,
+	map_view NUMBER(1, 0) DEFAULT 0,
+	map_edit NUMBER(1, 0) DEFAULT 0,
+	map_management NUMBER(1, 0) DEFAULT 0,
+	vconsole_view NUMBER(1, 0) DEFAULT 0,
+	vconsole_edit NUMBER(1, 0) DEFAULT 0,
+	vconsole_management NUMBER(1, 0) DEFAULT 0
 );
 
 CREATE SEQUENCE tperfil_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tperfil_inc BEFORE INSERT ON tperfil REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tperfil_s.nextval INTO :NEW.ID_PERFIL FROM dual; END;;
+CREATE OR REPLACE TRIGGER tperfil_inc BEFORE INSERT ON tperfil REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tperfil_s.nextval INTO :NEW.id_perfil FROM dual; END;;
 
 CREATE TABLE trecon_script (
-	id_recon_script NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) default '',
-	description CLOB default NULL,
-	script VARCHAR2(250) default '',
-	macros CLOB default ''
+	id_recon_script NUMBER(10, 0) PRIMARY KEY,
+	name VARCHAR2(100) DEFAULT '',
+	description CLOB DEFAULT NULL,
+	script VARCHAR2(250) DEFAULT '',
+	macros CLOB DEFAULT ''
 );
 
 CREATE SEQUENCE trecon_script_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER trecon_script_inc BEFORE INSERT ON trecon_script REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT trecon_script_s.nextval INTO :NEW.ID_RECON_SCRIPT FROM dual; END;;
+CREATE OR REPLACE TRIGGER trecon_script_inc BEFORE INSERT ON trecon_script REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT trecon_script_s.nextval INTO :NEW.id_recon_script FROM dual; END;;
 
 CREATE TABLE trecon_task (
-	id_rt NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) default '',
-	description VARCHAR2(250) default '',
-	subnet CLOB default NULL,
-	id_network_profile NUMBER(10, 0) default 0 NOT NULL,
-	create_incident NUMBER(10, 0) default 0 NOT NULL,
-	id_group NUMBER(10, 0) default 1 NOT NULL,
-	utimestamp NUMBER(19, 0) default 0 NOT NULL,
-	status NUMBER(10, 0) default 0 NOT NULL,
-	interval_sweep NUMBER(10, 0) default 0 NOT NULL,
-	id_recon_server NUMBER(10, 0) default 0 NOT NULL,
-	id_os NUMBER(10, 0) default 0 NOT NULL,
-	recon_ports VARCHAR2(250) default '',
-	snmp_community VARCHAR2(64) default 'public' NOT NULL,
+	id_rt NUMBER(10, 0) PRIMARY KEY,
+	name VARCHAR2(100) DEFAULT '',
+	description VARCHAR2(250) DEFAULT '',
+	subnet CLOB DEFAULT NULL,
+	id_network_profile NUMBER(10, 0) DEFAULT 0,
+	create_incident NUMBER(10, 0) DEFAULT 0,
+	id_group NUMBER(10, 0) DEFAULT 1,
+	utimestamp NUMBER(19, 0) DEFAULT 0,
+	status NUMBER(10, 0) DEFAULT 0,
+	interval_sweep NUMBER(10, 0) DEFAULT 0,
+	id_recon_server NUMBER(10, 0) DEFAULT 0,
+	id_os NUMBER(10, 0) DEFAULT 0,
+	recon_ports VARCHAR2(250) DEFAULT '',
+	snmp_community VARCHAR2(64) DEFAULT 'public',
 	id_recon_script NUMBER(10, 0),
-	field1 CLOB default NULL,
-	field2 VARCHAR2(250) default '',
-	field3 VARCHAR2(250) default '',
-	field4 VARCHAR2(250) default '',
-	os_detect NUMBER(5, 0) default 1 NOT NULL,
-	resolve_names NUMBER(5, 0) default 1 NOT NULL,
-	parent_detection NUMBER(5, 0) default 1 NOT NULL,
-	parent_recursion NUMBER(5, 0) default 1 NOT NULL,
-	disabled NUMBER(5, 0) default 1 NOT NULL,
-	macros CLOB default ''
+	field1 CLOB DEFAULT NULL,
+	field2 VARCHAR2(250) DEFAULT '',
+	field3 VARCHAR2(250) DEFAULT '',
+	field4 VARCHAR2(250) DEFAULT '',
+	os_detect NUMBER(5, 0) DEFAULT 1,
+	resolve_names NUMBER(5, 0) DEFAULT 1,
+	parent_detection NUMBER(5, 0) DEFAULT 1,
+	parent_recursion NUMBER(5, 0) DEFAULT 1,
+	disabled NUMBER(5, 0) DEFAULT 1,
+	macros CLOB DEFAULT ''
 );
 CREATE INDEX trecon_task_id_rec_serv_idx ON trecon_task(id_recon_server);
 
 CREATE SEQUENCE trecon_task_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER trecon_task_inc BEFORE INSERT ON trecon_task REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT trecon_task_s.nextval INTO :NEW.ID_RT FROM dual; END trecon_task_inc;;
+CREATE OR REPLACE TRIGGER trecon_task_inc BEFORE INSERT ON trecon_task REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT trecon_task_s.nextval INTO :NEW.id_rt FROM dual; END trecon_task_inc;;
 
 CREATE TABLE tserver (
-	id_server NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) default '',
-	ip_address VARCHAR2(100) default '',
-	status NUMBER(10, 0) default 0 NOT NULL,
-	laststart TIMESTAMP default NULL,
-	keepalive TIMESTAMP default NULL,
-	snmp_server NUMBER(10, 0) default 0 NOT NULL,
-	network_server NUMBER(10, 0) default 0 NOT NULL,
-	data_server NUMBER(10, 0) default 0 NOT NULL,
-	master NUMBER(10, 0) default 0 NOT NULL,
-	checksum NUMBER(10, 0) default 0 NOT NULL,
-	description VARCHAR2(255) default NULL,
-	recon_server NUMBER(10, 0) default 0 NOT NULL,
-	version VARCHAR2(20) default '',
-	plugin_server NUMBER(10, 0) default 0 NOT NULL,
-	prediction_server NUMBER(10, 0) default 0 NOT NULL,
-	wmi_server NUMBER(10, 0) default 0 NOT NULL,
-	export_server NUMBER(10, 0) default 0 NOT NULL,
-	server_type NUMBER(10, 0) default 0 NOT NULL,
-	queued_modules NUMBER(10, 0) default 0 NOT NULL,
-	threads NUMBER(10, 0) default 0 NOT NULL,
-	lag_time NUMBER(10, 0) default 0 NOT NULL,
-	lag_modules NUMBER(10, 0) default 0 NOT NULL,
-	total_modules_running NUMBER(10, 0) default 0 NOT NULL,
-	my_modules NUMBER(10, 0) default 0 NOT NULL,
-	stat_utimestamp NUMBER(19, 0) default 0 NOT NULL
+	id_server NUMBER(10, 0) PRIMARY KEY,
+	name VARCHAR2(100) DEFAULT '',
+	ip_address VARCHAR2(100) DEFAULT '',
+	status NUMBER(10, 0) DEFAULT 0,
+	laststart TIMESTAMP DEFAULT NULL,
+	keepalive TIMESTAMP DEFAULT NULL,
+	snmp_server NUMBER(10, 0) DEFAULT 0,
+	network_server NUMBER(10, 0) DEFAULT 0,
+	data_server NUMBER(10, 0) DEFAULT 0,
+	master NUMBER(10, 0) DEFAULT 0,
+	checksum NUMBER(10, 0) DEFAULT 0,
+	description VARCHAR2(255) DEFAULT NULL,
+	recon_server NUMBER(10, 0) DEFAULT 0,
+	version VARCHAR2(20) DEFAULT '',
+	plugin_server NUMBER(10, 0) DEFAULT 0,
+	prediction_server NUMBER(10, 0) DEFAULT 0,
+	wmi_server NUMBER(10, 0) DEFAULT 0,
+	export_server NUMBER(10, 0) DEFAULT 0,
+	server_type NUMBER(10, 0) DEFAULT 0,
+	queued_modules NUMBER(10, 0) DEFAULT 0,
+	threads NUMBER(10, 0) DEFAULT 0,
+	lag_time NUMBER(10, 0) DEFAULT 0,
+	lag_modules NUMBER(10, 0) DEFAULT 0,
+	total_modules_running NUMBER(10, 0) DEFAULT 0,
+	my_modules NUMBER(10, 0) DEFAULT 0,
+	stat_utimestamp NUMBER(19, 0) DEFAULT 0
 );
 CREATE INDEX tserver_name_idx ON tserver(name);
 CREATE INDEX tserver_keepalive_idx ON tserver(keepalive);
@@ -931,7 +924,7 @@ CREATE INDEX tserver_status_idx ON tserver(status);
 
 CREATE SEQUENCE tserver_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tserver_inc BEFORE INSERT ON tserver REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tserver_s.nextval INTO :NEW.ID_SERVER FROM dual; END tserver_inc;;
+CREATE OR REPLACE TRIGGER tserver_inc BEFORE INSERT ON tserver REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tserver_s.nextval INTO :NEW.id_server FROM dual; END tserver_inc;;
 
 -- server types:
 -- 0 data
@@ -947,515 +940,515 @@ CREATE OR REPLACE TRIGGER tserver_inc BEFORE INSERT ON tserver REFERENCING NEW A
 -- TODO: drop 2.x xxxx_server fields, unused since server_type exists.
 
 CREATE TABLE tsesion (
-	id_sesion NUMBER(19, 0) NOT NULL PRIMARY KEY,
-	id_usuario VARCHAR2(60) default '0' NOT NULL,
-	ip_origen VARCHAR2(100) default '',
-	accion VARCHAR2(100) default '',
-	descripcion CLOB default '',
-	fecha TIMESTAMP default NULL,
-	utimestamp NUMBER(19, 0) default 0 NOT NULL
+	id_sesion NUMBER(19, 0) PRIMARY KEY,
+	id_usuario VARCHAR2(60) DEFAULT '0',
+	ip_origen VARCHAR2(100) DEFAULT '',
+	accion VARCHAR2(100) DEFAULT '',
+	descripcion CLOB DEFAULT '',
+	fecha TIMESTAMP DEFAULT NULL,
+	utimestamp NUMBER(19, 0) DEFAULT 0
 );
 CREATE INDEX tsesion_utimestamp_idx ON tsesion(utimestamp);
 CREATE INDEX tsesion_id_usuario_idx ON tsesion(id_usuario);
 
 CREATE SEQUENCE tsesion_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tsesion_inc BEFORE INSERT ON tsesion REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tsesion_s.nextval INTO :NEW.ID_SESION FROM dual; END tsesion_inc;;
+CREATE OR REPLACE TRIGGER tsesion_inc BEFORE INSERT ON tsesion REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tsesion_s.nextval INTO :NEW.id_sesion FROM dual; END tsesion_inc;;
 
 -- ---------------------------------------------------------------------
--- Table "ttipo_modulo"
+-- Table ttipo_modulo
 -- ---------------------------------------------------------------------
 CREATE TABLE ttipo_modulo (
-	id_tipo NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	nombre VARCHAR2(100) default '',
-	categoria NUMBER(10, 0) default 0 NOT NULL,
-	descripcion VARCHAR2(100) default '',
-	icon VARCHAR2(100) default NULL
+	id_tipo NUMBER(10, 0) PRIMARY KEY,
+	nombre VARCHAR2(100) DEFAULT '',
+	categoria NUMBER(10, 0) DEFAULT 0,
+	descripcion VARCHAR2(100) DEFAULT '',
+	icon VARCHAR2(100) DEFAULT NULL
 );
 CREATE SEQUENCE ttipo_modulo_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER ttipo_modulo_inc BEFORE INSERT ON ttipo_modulo REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttipo_modulo_s.nextval INTO :NEW.ID_TIPO FROM dual; END ttipo_modulo_inc;;
+CREATE OR REPLACE TRIGGER ttipo_modulo_inc BEFORE INSERT ON ttipo_modulo REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttipo_modulo_s.nextval INTO :NEW.id_tipo FROM dual; END ttipo_modulo_inc;;
 
 -- ---------------------------------------------------------------------
--- Table "ttrap"
+-- Table ttrap
 -- ---------------------------------------------------------------------
 CREATE TABLE ttrap (
-	id_trap NUMBER(19, 0) NOT NULL PRIMARY KEY,
-	source VARCHAR2(50) default '',
-	oid CLOB default '',
-	oid_custom CLOB default '',
-	type NUMBER(10, 0) default 0 NOT NULL,
-	type_custom VARCHAR2(100) default '',
-	value CLOB default '',
-	value_custom CLOB default '',
-	alerted NUMBER(5, 0) default 0 NOT NULL,
-	status NUMBER(5, 0) default 0 NOT NULL,
-	id_usuario VARCHAR2(150) default '',
-	timestamp TIMESTAMP default NULL,
-	priority NUMBER(5, 0) default 2 NOT NULL,
-	text VARCHAR2(255) default '',
-	description VARCHAR2(255) default '',
-	severity NUMBER(10, 0) default 2 NOT NULL
+	id_trap NUMBER(19, 0) PRIMARY KEY,
+	source VARCHAR2(50) DEFAULT '',
+	oid CLOB DEFAULT '',
+	oid_custom CLOB DEFAULT '',
+	type NUMBER(10, 0) DEFAULT 0,
+	type_custom VARCHAR2(100) DEFAULT '',
+	value CLOB DEFAULT '',
+	value_custom CLOB DEFAULT '',
+	alerted NUMBER(5, 0) DEFAULT 0,
+	status NUMBER(5, 0) DEFAULT 0,
+	id_usuario VARCHAR2(150) DEFAULT '',
+	timestamp TIMESTAMP DEFAULT NULL,
+	priority NUMBER(5, 0) DEFAULT 2,
+	text VARCHAR2(255) DEFAULT '',
+	description VARCHAR2(255) DEFAULT '',
+	severity NUMBER(10, 0) DEFAULT 2
 );
 CREATE SEQUENCE ttrap_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER ttrap_inc BEFORE INSERT ON ttrap REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttrap_s.nextval INTO :NEW.ID_TRAP FROM dual; END ttrap_inc;;
+CREATE OR REPLACE TRIGGER ttrap_inc BEFORE INSERT ON ttrap REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttrap_s.nextval INTO :NEW.id_trap FROM dual; END ttrap_inc;;
 
 -- -----------------------------------------------------
 -- Table `tusuario`
 -- -----------------------------------------------------
 CREATE TABLE tusuario (
-	id_user VARCHAR2(60) NOT NULL PRIMARY KEY,
-	fullname VARCHAR2(255) NOT NULL,
+	id_user VARCHAR2(60) PRIMARY KEY,
+	fullname VARCHAR2(255),
 	firstname VARCHAR2(255),
 	lastname VARCHAR2(255),
-	middlename VARCHAR2(255) default '',
-	password VARCHAR2(45) default NULL,
-	comments VARCHAR2(200) default NULL,
-	last_connect NUMBER(19, 0) default 0 NOT NULL,
-	registered NUMBER(19, 0) default 0 NOT NULL,
-	email VARCHAR2(100) default NULL,
-	phone VARCHAR2(100) default NULL,
-	is_admin NUMBER(5, 0) default 0 NOT NULL,
-	language VARCHAR2(10) default NULL,
-	timezone VARCHAR2(50) default '',
-	block_size NUMBER(10, 0) default 20 NOT NULL,
-	flash_chart NUMBER(10, 0) default 1 NOT NULL,
-	id_skin NUMBER(10, 0) DEFAULT 0 NOT NULL,
-	disabled NUMBER(10, 0) default 0 NOT NULL,
+	middlename VARCHAR2(255) DEFAULT '',
+	password VARCHAR2(45) DEFAULT NULL,
+	comments VARCHAR2(200) DEFAULT NULL,
+	last_connect NUMBER(19, 0) DEFAULT 0,
+	registered NUMBER(19, 0) DEFAULT 0,
+	email VARCHAR2(100) DEFAULT NULL,
+	phone VARCHAR2(100) DEFAULT NULL,
+	is_admin NUMBER(5, 0) DEFAULT 0,
+	language VARCHAR2(10) DEFAULT NULL,
+	timezone VARCHAR2(50) DEFAULT '',
+	block_size NUMBER(10, 0) DEFAULT 20,
+	flash_chart NUMBER(10, 0) DEFAULT 1,
+	id_skin NUMBER(10, 0) DEFAULT 0,
+	disabled NUMBER(10, 0) DEFAULT 0,
 	shortcut NUMBER(5, 0) DEFAULT 0,
-	shortcut_data CLOB default '',
-	section VARCHAR2(255) NOT NULL,
-	data_section VARCHAR2(255) NOT NULL,
-	force_change_pass NUMBER(5,0) default 0 NOT NULL,
-	last_pass_change TIMESTAMP default 0,
-	last_failed_login TIMESTAMP default 0,
-	failed_attempt NUMBER(5,0) default 0 NOT NULL,
-	login_blocked NUMBER(5,0) default 0 NOT NULL,
-	metaconsole_access VARCHAR2(100) default 'basic' NOT NULL,
-	not_login NUMBER(5,0) default 0 NOT NULL,
-	metaconsole_agents_manager NUMBER(10, 0) default 0 NOT NULL,
-	metaconsole_assigned_server NUMBER(10, 0) default 0 NOT NULL,
-	metaconsole_access_node NUMBER(10, 0) default 0 NOT NULL,
-	strict_acl NUMBER(5,0) NOT NULL DEFAULT 0,
-	CONSTRAINT t_usuario_metaconsole_access_cons CHECK (metaconsole_access IN ('basic','advanced'))
+	shortcut_data CLOB DEFAULT '',
+	section VARCHAR2(255) DEFAULT '',
+	data_section VARCHAR2(255) DEFAULT '',
+	force_change_pass NUMBER(5,0) DEFAULT 0,
+	last_pass_change TIMESTAMP,
+	last_failed_login TIMESTAMP,
+	failed_attempt NUMBER(5,0) DEFAULT 0,
+	login_blocked NUMBER(5,0) DEFAULT 0,
+	metaconsole_access VARCHAR2(100) DEFAULT 'basic',
+	not_login NUMBER(5,0) DEFAULT 0,
+	metaconsole_agents_manager NUMBER(10, 0) DEFAULT 0,
+	metaconsole_assigned_server NUMBER(10, 0) DEFAULT 0,
+	metaconsole_access_node NUMBER(10, 0) DEFAULT 0,
+	strict_acl NUMBER(5,0) DEFAULT 0,
+	CONSTRAINT t_usuario_metaconsole_acc_cons CHECK (metaconsole_access IN ('basic','advanced'))
 );
 
 -- -----------------------------------------------------
 -- Table `tusuario_perfil`
 -- -----------------------------------------------------
 CREATE TABLE tusuario_perfil (
-	id_up NUMBER(19, 0) NOT NULL PRIMARY KEY,
-	id_usuario VARCHAR2(100) default '',
-	id_perfil NUMBER(10, 0) default 0 NOT NULL,
-	id_grupo NUMBER(10, 0) default 0 NOT NULL,
-	assigned_by VARCHAR2(100) default '',
-	id_policy NUMBER(10, 0) DEFAULT 0 NOT NULL,
+	id_up NUMBER(19, 0) PRIMARY KEY,
+	id_usuario VARCHAR2(100) DEFAULT '',
+	id_perfil NUMBER(10, 0) DEFAULT 0,
+	id_grupo NUMBER(10, 0) DEFAULT 0,
+	assigned_by VARCHAR2(100) DEFAULT '',
+	id_policy NUMBER(10, 0) DEFAULT 0,
 	tags CLOB
 );
 CREATE SEQUENCE tusuario_perfil_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tusuario_perfil_inc BEFORE INSERT ON tusuario_perfil REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tusuario_perfil_s.nextval INTO :NEW.ID_UP FROM dual; END tusuario_perfil_inc;;
+CREATE OR REPLACE TRIGGER tusuario_perfil_inc BEFORE INSERT ON tusuario_perfil REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tusuario_perfil_s.nextval INTO :NEW.id_up FROM dual; END tusuario_perfil_inc;;
 
 -- ----------------------------------------------------------------------
 -- Table `tuser_double_auth`
 -- ----------------------------------------------------------------------
 CREATE TABLE tuser_double_auth (
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_user VARCHAR2(60) NOT NULL REFERENCES tusuario(id_user) ON DELETE CASCADE,
-	secret VARCHAR2(20) NOT NULL
+	id NUMBER(10, 0) PRIMARY KEY,
+	id_user VARCHAR2(60) REFERENCES tusuario(id_user) ON DELETE CASCADE,
+	secret VARCHAR2(20)
 );
 CREATE SEQUENCE tuser_double_auth_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tuser_double_auth_inc BEFORE INSERT ON tuser_double_auth REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tuser_double_auth_s.nextval INTO :NEW.ID FROM dual; END tuser_double_auth_inc;;
+CREATE OR REPLACE TRIGGER tuser_double_auth_inc BEFORE INSERT ON tuser_double_auth REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tuser_double_auth_s.nextval INTO :NEW.id FROM dual; END tuser_double_auth_inc;;
 
 -- ---------------------------------------------------------------------
--- Table "tnews"
+-- Table tnews
 -- ---------------------------------------------------------------------
 CREATE TABLE tnews (
-	id_news NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	id_news NUMBER(10, 0) PRIMARY KEY,
 	author VARCHAR2(255) DEFAULT '',
 	subject VARCHAR2(255) DEFAULT '',
-	text CLOB NOT NULL,
-	timestamp TIMESTAMP default NULL,
-	id_group NUMBER(10, 0) default 0 NOT NULL,
-	modal NUMBER(5, 0) default 0 NOT NULL,
-	expire NUMBER(5, 0) default 0 NOT NULL,
-	expire_timestamp TIMESTAMP default NULL
+	text CLOB,
+	timestamp TIMESTAMP DEFAULT NULL,
+	id_group NUMBER(10, 0) DEFAULT 0,
+	modal NUMBER(5, 0) DEFAULT 0,
+	expire NUMBER(5, 0) DEFAULT 0,
+	expire_timestamp TIMESTAMP DEFAULT NULL
 );
 CREATE SEQUENCE tnews_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tnews_inc BEFORE INSERT ON tnews REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnews_s.nextval INTO :NEW.ID_NEWS FROM dual; END tnews_inc;;
+CREATE OR REPLACE TRIGGER tnews_inc BEFORE INSERT ON tnews REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnews_s.nextval INTO :NEW.id_news FROM dual; END tnews_inc;;
 
 -- ---------------------------------------------------------------------
--- Table "tgraph"
+-- Table tgraph
 -- ---------------------------------------------------------------------
 CREATE TABLE tgraph (
-	id_graph NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_user VARCHAR2(100) default '',
-	name VARCHAR2(150) default '',
-	description CLOB NOT NULL,
-	period NUMBER(10, 0) default 0 NOT NULL,
-	width NUMBER(10, 0) default 0 NOT NULL,
-	height NUMBER(10, 0) default 0 NOT NULL,
-	private NUMBER(5, 0) default 0 NOT NULL,
-	events NUMBER(5, 0) default 0 NOT NULL,
-	stacked NUMBER(5, 0) default 0 NOT NULL,
-	id_group NUMBER(19, 0) default 0 NOT NULL,
-	id_graph_template NUMBER(11, 0) default 0 NOT NULL 
+	id_graph NUMBER(10, 0) PRIMARY KEY,
+	id_user VARCHAR2(100) DEFAULT '',
+	name VARCHAR2(150) DEFAULT '',
+	description CLOB,
+	period NUMBER(10, 0) DEFAULT 0,
+	width NUMBER(10, 0) DEFAULT 0,
+	height NUMBER(10, 0) DEFAULT 0,
+	private NUMBER(5, 0) DEFAULT 0,
+	events NUMBER(5, 0) DEFAULT 0,
+	stacked NUMBER(5, 0) DEFAULT 0,
+	id_group NUMBER(19, 0) DEFAULT 0,
+	id_graph_template NUMBER(11, 0) DEFAULT 0 
 );
 CREATE SEQUENCE tgraph_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tgraph_inc BEFORE INSERT ON tgraph REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgraph_s.nextval INTO :NEW.ID_GRAPH FROM dual; END tgraph_inc;;
+CREATE OR REPLACE TRIGGER tgraph_inc BEFORE INSERT ON tgraph REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgraph_s.nextval INTO :NEW.id_graph FROM dual; END tgraph_inc;;
 
 -- ---------------------------------------------------------------------
--- Table "tgraph_source"
+-- Table tgraph_source
 -- ---------------------------------------------------------------------
 CREATE TABLE tgraph_source (
-	id_gs NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_graph NUMBER(19, 0) default 0 NOT NULL,
-	id_agent_module  NUMBER(19, 0) default 0 NOT NULL,
-	weight BINARY_DOUBLE default 0
+	id_gs NUMBER(10, 0) PRIMARY KEY,
+	id_graph NUMBER(19, 0) DEFAULT 0,
+	id_agent_module  NUMBER(19, 0) DEFAULT 0,
+	weight BINARY_DOUBLE DEFAULT 0
 );
 CREATE SEQUENCE tgraph_source_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tgraph_source_inc BEFORE INSERT ON tgraph_source REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgraph_source_s.nextval INTO :NEW.ID_GS FROM dual; END tgraph_source_inc;;
+CREATE OR REPLACE TRIGGER tgraph_source_inc BEFORE INSERT ON tgraph_source REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgraph_source_s.nextval INTO :NEW.id_gs FROM dual; END tgraph_source_inc;;
 
 -- ---------------------------------------------------------------------
--- Table "treport"
+-- Table treport
 -- ---------------------------------------------------------------------
 CREATE TABLE treport (
-	id_report NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_user VARCHAR2(100) default '',
-	name VARCHAR2(150) default '',
-	description CLOB NOT NULL,
-	private NUMBER(5, 0) default 0 NOT NULL,
-	id_group NUMBER(19, 0) default 0 NOT NULL,
-	custom_logo VARCHAR2(200)  default NULL,
-	header CLOB  default NULL,
-	first_page CLOB default NULL,
-	footer CLOB default NULL,
-	custom_font VARCHAR2(200) default NULL,
-	id_template NUMBER(10, 0) default 0 NOT NULL,
-	id_group_edit NUMBER(19, 0) default 0 NOT NULL,
+	id_report NUMBER(10, 0) PRIMARY KEY,
+	id_user VARCHAR2(100) DEFAULT '',
+	name VARCHAR2(150) DEFAULT '',
+	description CLOB,
+	private NUMBER(5, 0) DEFAULT 0,
+	id_group NUMBER(19, 0) DEFAULT 0,
+	custom_logo VARCHAR2(200)  DEFAULT NULL,
+	header CLOB  DEFAULT NULL,
+	first_page CLOB DEFAULT NULL,
+	footer CLOB DEFAULT NULL,
+	custom_font VARCHAR2(200) DEFAULT NULL,
+	id_template NUMBER(10, 0) DEFAULT 0,
+	id_group_edit NUMBER(19, 0) DEFAULT 0,
 	metaconsole NUMBER(5, 0) DEFAULT 0,
-	non_interactive NUMBER(5, 0) default 0 NOT NULL
+	non_interactive NUMBER(5, 0) DEFAULT 0
 );
 CREATE SEQUENCE treport_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER treport_inc BEFORE INSERT ON treport REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_s.nextval INTO :NEW.ID_REPORT FROM dual; END treport_inc;;
+CREATE OR REPLACE TRIGGER treport_inc BEFORE INSERT ON treport REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_s.nextval INTO :NEW.id_report FROM dual; END treport_inc;;
 
 -- -----------------------------------------------------
--- Table "treport_content"
+-- Table treport_content
 -- -----------------------------------------------------
 -- use to_char(time_from, 'hh24:mi:ss') function to retrieve time_from field info
 -- use to_char(time_to,   'hh24:mi:ss') function to retrieve time_to field info
 CREATE TABLE treport_content (
-	id_rc NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_report NUMBER(10, 0) default 0 NOT NULL REFERENCES treport(id_report) ON DELETE CASCADE, 
-	id_gs  NUMBER(10, 0) default NULL,
-	id_agent_module NUMBER(19, 0) default NULL,
-	type VARCHAR2(30) default 'simple_graph',
-	period NUMBER(19, 0) default 0 NOT NULL,
-	order NUMBER(19, 0) default 0 NOT NULL,
-	name VARCHAR2(150) default NULL,
+	id_rc NUMBER(10, 0) PRIMARY KEY,
+	id_report NUMBER(10, 0) DEFAULT 0 REFERENCES treport(id_report) ON DELETE CASCADE, 
+	id_gs  NUMBER(10, 0) DEFAULT NULL,
+	id_agent_module NUMBER(19, 0) DEFAULT NULL,
+	"type" VARCHAR2(30) DEFAULT 'simple_graph',
+	period NUMBER(19, 0) DEFAULT 0,
+	"order" NUMBER(19, 0) DEFAULT 0,
+	name VARCHAR2(150) DEFAULT NULL,
 	description CLOB, 
-	id_agent NUMBER(19, 0) default 0 NOT NULL,
-	text CLOB default NULL,
-	external_source CLOB default NULL,
-	treport_custom_sql_id NUMBER(10, 0) default 0,
-	header_definition CLOB default NULL,
-	column_separator CLOB default NULL,
-	line_separator CLOB default NULL,
-	time_from TIMESTAMP default to_date('00:00:00','hh24:mi:ss'), 
-	time_to TIMESTAMP default to_date('00:00:00','hh24:mi:ss'),   	
-	monday NUMBER(5, 0) default 1 NOT NULL,
-	tuesday NUMBER(5, 0) default 1 NOT NULL,
-	wednesday NUMBER(5, 0) default 1 NOT NULL,
-	thursday NUMBER(5, 0) default 1 NOT NULL,
-	friday NUMBER(5, 0) default 1 NOT NULL,
-	saturday NUMBER(5, 0) default 1 NOT NULL,
-	sunday NUMBER(5, 0) default 1 NOT NULL,
-	only_display_wrong NUMBER(5, 0) default 0 NOT NULL,
-	top_n NUMBER(10, 0) default 0 NOT NULL,
-	top_n_value NUMBER(10, 0) default 10 NOT NULL ,
-	exception_condition NUMBER(10, 0) default 0 NOT NULL,
-	exception_condition_value BINARY_DOUBLE default 0 NOT NULL,
-	show_resume NUMBER(10, 0) default 0 NOT NULL,
-	order_uptodown NUMBER(10, 0) default 0 NOT NULL,
-	show_graph NUMBER(10, 0) default 0 NOT NULL,
-	group_by_agent NUMBER(10, 0) default 0 NOT NULL,
-	style CLOB default '',
-	id_group NUMBER(10, 0) default 0 NOT NULL,
-	id_module_group NUMBER(10, 0) default 0 NOT NULL,
-	server_name CLOB default ''
+	id_agent NUMBER(19, 0) DEFAULT 0,
+	text CLOB DEFAULT NULL,
+	external_source CLOB DEFAULT NULL,
+	treport_custom_sql_id NUMBER(10, 0) DEFAULT 0,
+	header_definition CLOB DEFAULT NULL,
+	column_separator CLOB DEFAULT NULL,
+	line_separator CLOB DEFAULT NULL,
+	time_from TIMESTAMP DEFAULT to_date('00:00:00','hh24:mi:ss'), 
+	time_to TIMESTAMP DEFAULT to_date('00:00:00','hh24:mi:ss'),   	
+	monday NUMBER(5, 0) DEFAULT 1,
+	tuesday NUMBER(5, 0) DEFAULT 1,
+	wednesday NUMBER(5, 0) DEFAULT 1,
+	thursday NUMBER(5, 0) DEFAULT 1,
+	friday NUMBER(5, 0) DEFAULT 1,
+	saturday NUMBER(5, 0) DEFAULT 1,
+	sunday NUMBER(5, 0) DEFAULT 1,
+	only_display_wrong NUMBER(5, 0) DEFAULT 0,
+	top_n NUMBER(10, 0) DEFAULT 0,
+	top_n_value NUMBER(10, 0) DEFAULT 10 ,
+	exception_condition NUMBER(10, 0) DEFAULT 0,
+	exception_condition_value BINARY_DOUBLE DEFAULT 0,
+	show_resume NUMBER(10, 0) DEFAULT 0,
+	order_uptodown NUMBER(10, 0) DEFAULT 0,
+	show_graph NUMBER(10, 0) DEFAULT 0,
+	group_by_agent NUMBER(10, 0) DEFAULT 0,
+	style CLOB DEFAULT '',
+	id_group NUMBER(10, 0) DEFAULT 0,
+	id_module_group NUMBER(10, 0) DEFAULT 0,
+	server_name CLOB DEFAULT ''
 );
 
 CREATE SEQUENCE treport_content_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER treport_content_inc BEFORE INSERT ON treport_content REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_content_s.nextval INTO :NEW.ID_RC FROM dual; END treport_content_inc;;
+CREATE OR REPLACE TRIGGER treport_content_inc BEFORE INSERT ON treport_content REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_content_s.nextval INTO :NEW.id_rc FROM dual; END treport_content_inc;;
 
 -- on update trigger
-CREATE OR REPLACE TRIGGER treport_content_update AFTER UPDATE OF ID_REPORT ON treport FOR EACH ROW BEGIN UPDATE treport_content SET ID_RC = :NEW.ID_REPORT WHERE ID_RC = :OLD.ID_REPORT; END;;
+CREATE OR REPLACE TRIGGER treport_content_update AFTER UPDATE OF id_report ON treport FOR EACH ROW BEGIN UPDATE treport_content SET id_rc = :NEW.id_report WHERE id_rc = :OLD.id_report; END;;
 
 CREATE TABLE treport_content_sla_combined (
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_report_content NUMBER(10, 0) NOT NULL  REFERENCES treport_content(id_rc) ON DELETE CASCADE,
-	id_agent_module NUMBER(10, 0) NOT NULL,
-	sla_max BINARY_DOUBLE default 0 NOT NULL,
-	sla_min BINARY_DOUBLE default 0 NOT NULL,
-	sla_limit BINARY_DOUBLE default 0 NOT NULL,
-	server_name CLOB default ''
+	id NUMBER(10, 0) PRIMARY KEY,
+	id_report_content NUMBER(10, 0)  REFERENCES treport_content(id_rc) ON DELETE CASCADE,
+	id_agent_module NUMBER(10, 0),
+	sla_max BINARY_DOUBLE DEFAULT 0,
+	sla_min BINARY_DOUBLE DEFAULT 0,
+	sla_limit BINARY_DOUBLE DEFAULT 0,
+	server_name CLOB DEFAULT ''
 );
 
 CREATE SEQUENCE treport_cont_sla_c_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER treport_content_sla_comb_inc BEFORE INSERT ON treport_content REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_cont_sla_c_s.nextval INTO :NEW.ID_RC FROM dual; END treport_content_sla_comb_inc;; 
+CREATE OR REPLACE TRIGGER treport_content_sla_comb_inc BEFORE INSERT ON treport_content REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_cont_sla_c_s.nextval INTO :NEW.id_rc FROM dual; END treport_content_sla_comb_inc;; 
 
 -- on update trigger
-CREATE OR REPLACE TRIGGER treport_cont_sla_comb_update AFTER UPDATE OF ID_RC ON treport_content FOR EACH ROW BEGIN UPDATE treport_content_sla_combined SET ID_REPORT_CONTENT = :NEW.ID_RC WHERE ID_REPORT_CONTENT = :OLD.ID_RC; END;;
+CREATE OR REPLACE TRIGGER treport_cont_sla_comb_update AFTER UPDATE OF id_rc on treport_content FOR EACH ROW BEGIN UPDATE treport_content_sla_combined SET id_report_content = :NEW.id_rc WHERE id_report_content = :OLD.id_rc; END;;
 
 
 CREATE TABLE treport_content_item (
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_report_content NUMBER(10, 0) NOT NULL REFERENCES treport_content(id_rc) ON DELETE CASCADE,
-	id_agent_module NUMBER(10, 0) NOT NULL,
-	server_name CLOB default '',
-	operation CLOB default ''
+	id NUMBER(10, 0) PRIMARY KEY,
+	id_report_content NUMBER(10, 0) REFERENCES treport_content(id_rc) ON DELETE CASCADE,
+	id_agent_module NUMBER(10, 0),
+	server_name CLOB DEFAULT '',
+	operation CLOB DEFAULT ''
 );
 
 CREATE SEQUENCE treport_content_item_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER treport_content_item_inc BEFORE INSERT ON treport_content_item REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_content_item_s.nextval INTO :NEW.ID FROM dual; END treport_content_item_inc;; 
+CREATE OR REPLACE TRIGGER treport_content_item_inc BEFORE INSERT ON treport_content_item REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_content_item_s.nextval INTO :NEW.id FROM dual; END treport_content_item_inc;; 
 
 -- ---------------------------------------------------------------------
--- Table "treport_custom_sql"
+-- Table treport_custom_sql
 -- ---------------------------------------------------------------------
 CREATE TABLE treport_custom_sql (
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(150) default '',
-	sql CLOB default NULL
+	id NUMBER(10, 0) PRIMARY KEY,
+	name VARCHAR2(150) DEFAULT '',
+	sql CLOB DEFAULT NULL
 );
 CREATE SEQUENCE treport_custom_sql_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER treport_custom_sql_inc BEFORE INSERT ON treport_custom_sql REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_custom_sql_s.nextval INTO :NEW.ID FROM dual; END treport_custom_sql_inc;;
+CREATE OR REPLACE TRIGGER treport_custom_sql_inc BEFORE INSERT ON treport_custom_sql REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_custom_sql_s.nextval INTO :NEW.id FROM dual; END treport_custom_sql_inc;;
 
 -- ---------------------------------------------------------------------
--- Table "tlayout"
+-- Table tlayout
 -- ---------------------------------------------------------------------
 CREATE TABLE tlayout (
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name varchar(50)  NOT NULL,
-	id_group NUMBER(10, 0) NOT NULL,
-	background varchar(200)  NOT NULL,
-	height NUMBER(10, 0) default 0 NOT NULL,
-	width NUMBER(10, 0) default 0 NOT NULL
+	id NUMBER(10, 0) PRIMARY KEY,
+	name varchar(50) ,
+	id_group NUMBER(10, 0),
+	background varchar(200) ,
+	height NUMBER(10, 0) DEFAULT 0,
+	width NUMBER(10, 0) DEFAULT 0
 );
 CREATE SEQUENCE tlayout_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tlayout_inc BEFORE INSERT ON tlayout REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tlayout_s.nextval INTO :NEW.ID FROM dual; END tlayout_inc;;
+CREATE OR REPLACE TRIGGER tlayout_inc BEFORE INSERT ON tlayout REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tlayout_s.nextval INTO :NEW.id FROM dual; END tlayout_inc;;
 
 -- ---------------------------------------------------------------------
--- Table "tlayout_data"
+-- Table tlayout_data
 -- ---------------------------------------------------------------------
 CREATE TABLE tlayout_data (
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_layout NUMBER(10, 0) default 0 NOT NULL,
-	pos_x NUMBER(10, 0) default 0 NOT NULL,
-	pos_y NUMBER(10, 0) default 0 NOT NULL,
-	height NUMBER(10, 0) default 0 NOT NULL,
-	width NUMBER(10, 0) default 0 NOT NULL,
-	label CLOB default '',
+	id NUMBER(10, 0) PRIMARY KEY,
+	id_layout NUMBER(10, 0) DEFAULT 0,
+	pos_x NUMBER(10, 0) DEFAULT 0,
+	pos_y NUMBER(10, 0) DEFAULT 0,
+	height NUMBER(10, 0) DEFAULT 0,
+	width NUMBER(10, 0) DEFAULT 0,
+	label CLOB DEFAULT '',
 	image VARCHAR2(200) DEFAULT '',
-	type NUMBER(5, 0) default 0 NOT NULL,
-	period NUMBER(10, 0) default 3600 NOT NULL,
-	id_agente_modulo NUMBER(19, 0) default 0 NOT NULL,
-	id_agent NUMBER(10, 0) default 0 NOT NULL,
-	id_layout_linked NUMBER(10, 0) default 0 NOT NULL,
-	parent_item NUMBER(10, 0) default 0 NOT NULL,
-	enable_link NUMBER(5, 0) default 1 NOT NULL,
-	id_metaconsole NUMBER(10, 0) default 0 NOT NULL,
-	id_group NUMBER(10, 0) default 0 NOT NULL,
-	id_custom_graph NUMBER(10, 0) default 0 NOT NULL
+	type NUMBER(5, 0) DEFAULT 0,
+	period NUMBER(10, 0) DEFAULT 3600,
+	id_agente_modulo NUMBER(19, 0) DEFAULT 0,
+	id_agent NUMBER(10, 0) DEFAULT 0,
+	id_layout_linked NUMBER(10, 0) DEFAULT 0,
+	parent_item NUMBER(10, 0) DEFAULT 0,
+	enable_link NUMBER(5, 0) DEFAULT 1,
+	id_metaconsole NUMBER(10, 0) DEFAULT 0,
+	id_group NUMBER(10, 0) DEFAULT 0,
+	id_custom_graph NUMBER(10, 0) DEFAULT 0
 );
 CREATE SEQUENCE tlayout_data_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tlayout_data_inc BEFORE INSERT ON tlayout_data REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tlayout_data_s.nextval INTO :NEW.ID FROM dual; END tlayout_data_inc;;
+CREATE OR REPLACE TRIGGER tlayout_data_inc BEFORE INSERT ON tlayout_data REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tlayout_data_s.nextval INTO :NEW.id FROM dual; END tlayout_data_inc;;
 
 -- ---------------------------------------------------------------------
--- Table "tplugin"
+-- Table tplugin
 -- ---------------------------------------------------------------------
 CREATE TABLE tplugin (
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(200) NOT NULL,
+	id NUMBER(10, 0) PRIMARY KEY,
+	name VARCHAR2(200),
 	description CLOB,
-	max_timeout NUMBER(10, 0) default 0 NOT NULL,
-	max_retries NUMBER(10, 0) default 0,
-	execute VARCHAR2(250) NOT NULL,
-	net_dst_opt VARCHAR2(50) default '',
-	net_port_opt VARCHAR2(50) default '',
-	user_opt VARCHAR2(50) default '',
-	pass_opt VARCHAR2(50) default '',
-	plugin_type NUMBER(5, 0) default 0 NOT NULL,
-	macros CLOB default '',
-	parameters CLOB default ''
+	max_timeout NUMBER(10, 0) DEFAULT 0,
+	max_retries NUMBER(10, 0) DEFAULT 0,
+	execute VARCHAR2(250),
+	net_dst_opt VARCHAR2(50) DEFAULT '',
+	net_port_opt VARCHAR2(50) DEFAULT '',
+	user_opt VARCHAR2(50) DEFAULT '',
+	pass_opt VARCHAR2(50) DEFAULT '',
+	plugin_type NUMBER(5, 0) DEFAULT 0,
+	macros CLOB DEFAULT '',
+	parameters CLOB DEFAULT ''
 ); 
 CREATE SEQUENCE tplugin_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tplugin_inc BEFORE INSERT ON tplugin REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplugin_s.nextval INTO :NEW.ID FROM dual; END tplugin_inc;;
+CREATE OR REPLACE TRIGGER tplugin_inc BEFORE INSERT ON tplugin REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplugin_s.nextval INTO :NEW.id FROM dual; END tplugin_inc;;
 
 -- ---------------------------------------------------------------------
--- Table "tmodule"
+-- Table tmodule
 -- ---------------------------------------------------------------------
 CREATE TABLE tmodule (
-	id_module NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) default '' 
+	id_module NUMBER(10, 0) PRIMARY KEY,
+	name VARCHAR2(100) DEFAULT '' 
 );
 CREATE SEQUENCE tmodule_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tmodule_inc BEFORE INSERT ON tmodule REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmodule_s.nextval INTO :NEW.ID_MODULE FROM dual; END tmodule_inc;;
+CREATE OR REPLACE TRIGGER tmodule_inc BEFORE INSERT ON tmodule REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmodule_s.nextval INTO :NEW.id_module FROM dual; END tmodule_inc;;
 
 -- ---------------------------------------------------------------------
--- Table "tserver_export"
+-- Table tserver_export
 -- ---------------------------------------------------------------------
 CREATE TABLE tserver_export (
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) default '',
-	preffix VARCHAR2(100) default '',
-	interval NUMBER(10, 0) default 300 NOT NULL,
-	ip_server VARCHAR2(100) default '',
-	connect_mode VARCHAR2(20) default 'local',
-	id_export_server NUMBER(10, 0) default NULL ,
-	"user" VARCHAR2(100) default '',
-	pass VARCHAR2(100) default '',
-	port NUMBER(10, 0) default 0 NOT NULL,
-	directory VARCHAR2(100) default '',
-	options VARCHAR2(100) default '',
+	id NUMBER(10, 0) PRIMARY KEY,
+	name VARCHAR2(100) DEFAULT '',
+	preffix VARCHAR2(100) DEFAULT '',
+	interval NUMBER(10, 0) DEFAULT 300,
+	ip_server VARCHAR2(100) DEFAULT '',
+	connect_mode VARCHAR2(20) DEFAULT 'local',
+	id_export_server NUMBER(10, 0) DEFAULT NULL ,
+	"user" VARCHAR2(100) DEFAULT '',
+	pass VARCHAR2(100) DEFAULT '',
+	port NUMBER(10, 0) DEFAULT 0,
+	directory VARCHAR2(100) DEFAULT '',
+	options VARCHAR2(100) DEFAULT '',
 	--Number of hours of diference with the server timezone
-	timezone_offset NUMBER(5, 0) default 0 NOT NULL,
+	timezone_offset NUMBER(5, 0) DEFAULT 0,
 	CONSTRAINT tserver_export_conn_mode_cons CHECK (connect_mode IN ('tentacle', 'ssh', 'local'))
 );
 CREATE SEQUENCE tserver_export_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tserver_export_inc BEFORE INSERT ON tserver_export REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tserver_export_s.nextval INTO :NEW.ID FROM dual; END tserver_export_inc;;
+CREATE OR REPLACE TRIGGER tserver_export_inc BEFORE INSERT ON tserver_export REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tserver_export_s.nextval INTO :NEW.id FROM dual; END tserver_export_inc;;
 
 -- id_export_server is real pandora fms export server process that manages this server
--- id is the "destination" server to export
+-- id is the destination server to export
 CREATE TABLE tserver_export_data (
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_export_server NUMBER(10, 0) default 0 NOT NULL,
-	agent_name VARCHAR2(100) default '',
-	module_name VARCHAR2(100) default '',
-	module_type VARCHAR2(100) default '',
-	data VARCHAR2(255) default NULL, 
-	timestamp TIMESTAMP default NULL
+	id NUMBER(10, 0) PRIMARY KEY,
+	id_export_server NUMBER(10, 0) DEFAULT 0,
+	agent_name VARCHAR2(100) DEFAULT '',
+	module_name VARCHAR2(100) DEFAULT '',
+	module_type VARCHAR2(100) DEFAULT '',
+	data VARCHAR2(255) DEFAULT NULL, 
+	timestamp TIMESTAMP DEFAULT NULL
 );
 
 CREATE SEQUENCE tserver_export_data_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tserver_export_data_inc BEFORE INSERT ON tserver_export_data REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tserver_export_data_s.nextval INTO :NEW.ID FROM dual; END tserver_export_data_inc;;
+CREATE OR REPLACE TRIGGER tserver_export_data_inc BEFORE INSERT ON tserver_export_data REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tserver_export_data_s.nextval INTO :NEW.id FROM dual; END tserver_export_data_inc;;
 
 -- -----------------------------------------------------
 -- Table `tplanned_downtime`
 -- -----------------------------------------------------
 CREATE TABLE tplanned_downtime (
-	id NUMBER(19, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(100) NOT NULL,
-	description CLOB NOT NULL,
-	date_from NUMBER(19, 0) default 0 NOT NULL,
-	date_to NUMBER(19, 0) default 0 NOT NULL,
-	executed NUMBER(5, 0) default 0 NOT NULL,
-	id_group NUMBER(19, 0) default 0 NOT NULL,
-	only_alerts NUMBER(5, 0) default 0 NOT NULL,
-	monday NUMBER(5, 0) default 0,
-	tuesday NUMBER(5, 0) default 0,
-	wednesday NUMBER(5, 0) default 0,
-	thursday NUMBER(5, 0) default 0,
-	friday NUMBER(5, 0) default 0,
-	saturday NUMBER(5, 0) default 0,
-	sunday NUMBER(5, 0) default 0,
+	id NUMBER(19, 0) PRIMARY KEY,
+	name VARCHAR2(100),
+	description CLOB,
+	date_from NUMBER(19, 0) DEFAULT 0,
+	date_to NUMBER(19, 0) DEFAULT 0,
+	executed NUMBER(5, 0) DEFAULT 0,
+	id_group NUMBER(19, 0) DEFAULT 0,
+	only_alerts NUMBER(5, 0) DEFAULT 0,
+	monday NUMBER(5, 0) DEFAULT 0,
+	tuesday NUMBER(5, 0) DEFAULT 0,
+	wednesday NUMBER(5, 0) DEFAULT 0,
+	thursday NUMBER(5, 0) DEFAULT 0,
+	friday NUMBER(5, 0) DEFAULT 0,
+	saturday NUMBER(5, 0) DEFAULT 0,
+	sunday NUMBER(5, 0) DEFAULT 0,
 	-- Need to set better datatype
-	periodically_time_from DATE default NULL,
-	periodically_time_to DATE default NULL,
+	periodically_time_from DATE DEFAULT NULL,
+	periodically_time_to DATE DEFAULT NULL,
 	--
-	periodically_day_from NUMBER(19, 0) default NULL,
-	periodically_day_to NUMBER(19, 0) default NULL,
-	type_downtime VARCHAR2(100) NOT NULL default 'disabled_agents_alerts',
-	type_execution VARCHAR2(100) NOT NULL default 'once',
-	type_periodicity VARCHAR2(100) NOT NULL default 'weekly',
-	id_user VARCHAR2(100) default '0' NOT NULL
+	periodically_day_from NUMBER(19, 0) DEFAULT NULL,
+	periodically_day_to NUMBER(19, 0) DEFAULT NULL,
+	type_downtime VARCHAR2(100) DEFAULT 'disabled_agents_alerts',
+	type_execution VARCHAR2(100) DEFAULT 'once',
+	type_periodicity VARCHAR2(100) DEFAULT 'weekly',
+	id_user VARCHAR2(100) DEFAULT '0'
 );
 CREATE SEQUENCE tplanned_downtime_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tplanned_downtime_inc BEFORE INSERT ON tplanned_downtime REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplanned_downtime_s.nextval INTO :NEW.ID FROM dual; END tplanned_downtime_inc;;
+CREATE OR REPLACE TRIGGER tplanned_downtime_inc BEFORE INSERT ON tplanned_downtime REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplanned_downtime_s.nextval INTO :NEW.id FROM dual; END tplanned_downtime_inc;;
 
 -- -----------------------------------------------------
 -- Table `tplanned_downtime_agents`
 -- -----------------------------------------------------
 CREATE TABLE tplanned_downtime_agents (
-	id NUMBER(19, 0) NOT NULL PRIMARY KEY,
-	id_agent NUMBER(19, 0) default 0 NOT NULL,
-	id_downtime NUMBER(19, 0) default 0 NOT NULL REFERENCES tplanned_downtime(id) ON DELETE CASCADE,
-	all_modules NUMBER(5, 0) default 1
+	id NUMBER(19, 0) PRIMARY KEY,
+	id_agent NUMBER(19, 0) DEFAULT 0,
+	id_downtime NUMBER(19, 0) DEFAULT 0 REFERENCES tplanned_downtime(id) ON DELETE CASCADE,
+	all_modules NUMBER(5, 0) DEFAULT 1
 );
 CREATE SEQUENCE tplanned_downtime_agents_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tplanned_downtime_agents_inc BEFORE INSERT ON tplanned_downtime_agents REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplanned_downtime_agents_s.nextval INTO :NEW.ID FROM dual; END tplanned_downtime_agents_inc;;
+CREATE OR REPLACE TRIGGER tplanned_downtime_agents_inc BEFORE INSERT ON tplanned_downtime_agents REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplanned_downtime_agents_s.nextval INTO :NEW.id FROM dual; END tplanned_downtime_agents_inc;;
 
 -- -----------------------------------------------------
 -- Table `tplanned_downtime_modules`
 -- -----------------------------------------------------
 CREATE TABLE tplanned_downtime_modules (
-	id NUMBER(19, 0) NOT NULL PRIMARY KEY,
-	id_agent NUMBER(19, 0) default 0 NOT NULL,
-	id_agent_module NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_downtime NUMBER(19, 0) default 0 NOT NULL REFERENCES tplanned_downtime(id) ON DELETE CASCADE
+	id NUMBER(19, 0) PRIMARY KEY,
+	id_agent NUMBER(19, 0) DEFAULT 0,
+	id_agent_module NUMBER(10, 0) REFERENCES tagente_modulo(id_agente_modulo) ON DELETE CASCADE,
+	id_downtime NUMBER(19, 0) DEFAULT 0 REFERENCES tplanned_downtime(id) ON DELETE CASCADE
 );
 CREATE SEQUENCE tplanned_downtime_modules_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tplanned_downtime_modules_inc BEFORE INSERT ON tplanned_downtime_modules REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplanned_downtime_modules_s.nextval INTO :NEW.ID FROM dual; END tplanned_downtime_modules_inc;;
+CREATE OR REPLACE TRIGGER tplanned_downtime_modules_inc BEFORE INSERT ON tplanned_downtime_modules REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplanned_downtime_modules_s.nextval INTO :NEW.id FROM dual; END tplanned_downtime_modules_inc;;
 
--- GIS extension Tables
+--IS extension Tables
 
 -- -----------------------------------------------------
--- Table "tgis_data_history"
+-- Table tgis_data_history
 -- -----------------------------------------------------
---Table to store historical GIS information of the agents
+--Table to store historicalIS information of the agents
 CREATE TABLE tgis_data_history (
 	--key of the table
-	id_tgis_data NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	longitude BINARY_DOUBLE NOT NULL,
-	latitude BINARY_DOUBLE NOT NULL,
-	altitude BINARY_DOUBLE NOT NULL,
+	id_tgis_data NUMBER(10, 0) PRIMARY KEY,
+	longitude BINARY_DOUBLE,
+	latitude BINARY_DOUBLE,
+	altitude BINARY_DOUBLE,
 	--timestamp on wich the agente started to be in this position
 	start_timestamp  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	--timestamp on wich the agent was placed for last time on this position
-	end_timestamp  TIMESTAMP default NULL,
+	end_timestamp  TIMESTAMP DEFAULT NULL,
 	--description of the region correoponding to this placemnt
 	description CLOB DEFAULT NULL,
 	-- 0 to show that the position cames from the agent, 1 to show that the position was established manualy
-	manual_placement NUMBER(5, 0) default 0 NOT NULL,
+	manual_placement NUMBER(5, 0) DEFAULT 0,
 	-- Number of data packages received with this position from the start_timestampa to the_end_timestamp
-	number_of_packages NUMBER(10, 0) default 1 NOT NULL,
+	number_of_packages NUMBER(10, 0) DEFAULT 1,
 	--reference to the agent
-	tagente_id_agente NUMBER(10, 0) NOT NULL 
+	tagente_id_agente NUMBER(10, 0) 
 );
 CREATE INDEX tgis_data_history_start_t_idx ON tgis_data_history(start_timestamp);
 CREATE INDEX tgis_data_history_end_t_idx ON tgis_data_history(end_timestamp);
  
 CREATE SEQUENCE tgis_data_history_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tgis_data_history_inc BEFORE INSERT ON tgis_data_history REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgis_data_history_s.nextval INTO :NEW.ID_TGIS_DATA FROM dual; END tgis_data_history_inc;;
+CREATE OR REPLACE TRIGGER tgis_data_history_inc BEFORE INSERT ON tgis_data_history REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgis_data_history_s.nextval INTO :NEW.id_tgis_data FROM dual; END tgis_data_history_inc;;
 
 -- -----------------------------------------------------
--- Table "tgis_data_status"
+-- Table tgis_data_status
 -- -----------------------------------------------------
---Table to store last GIS information of the agents
+--Table to store lastIS information of the agents
 --ON UPDATE NO ACTION is implicit on Oracle DBMS for tagente_id_agente field 
 CREATE TABLE tgis_data_status (
 	--Reference to the agent
-	tagente_id_agente NUMBER(10, 0) NOT NULL REFERENCES tagente(id_agente) ON DELETE CASCADE, 
+	tagente_id_agente NUMBER(10, 0) REFERENCES tagente(id_agente) ON DELETE CASCADE, 
 	--Last received longitude
-	current_longitude BINARY_DOUBLE NOT NULL,
+	current_longitude BINARY_DOUBLE,
 	--Last received latitude 
-	current_latitude BINARY_DOUBLE NOT NULL,
+	current_latitude BINARY_DOUBLE,
 	--Last received altitude 
-	current_altitude BINARY_DOUBLE NOT NULL,
+	current_altitude BINARY_DOUBLE,
 	--Reference longitude to see if the agent has moved
-	stored_longitude BINARY_DOUBLE NOT NULL,
+	stored_longitude BINARY_DOUBLE,
 	--Reference latitude to see if the agent has moved
-	stored_latitude BINARY_DOUBLE NOT NULL,
+	stored_latitude BINARY_DOUBLE,
 	--Reference altitude to see if the agent has moved
 	stored_altitude BINARY_DOUBLE DEFAULT NULL,
 	--Number of data packages received with this position since start_timestampa
-	number_of_packages NUMBER(10, 0) default 1 NOT NULL, 
+	number_of_packages NUMBER(10, 0) DEFAULT 1, 
 	--Timestamp on wich the agente started to be in this position
-	start_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, 
+	start_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
 	--0 to show that the position cames from the agent, 1 to show that the position was established manualy
-	manual_placement NUMBER(5, 0) default 0 NOT NULL, 
+	manual_placement NUMBER(5, 0) DEFAULT 0, 
 	--description of the region correoponding to this placemnt
 	description CLOB NULL,
   PRIMARY KEY(tagente_id_agente)
@@ -1463,14 +1456,14 @@ CREATE TABLE tgis_data_status (
 CREATE INDEX tgis_data_status_start_t_idx ON tgis_data_status(start_timestamp);
 
 -- -----------------------------------------------------
--- Table "tgis_map"
+-- Table tgis_map
 -- -----------------------------------------------------
---Table containing information about a gis map
+--Table containing information about ais map
 CREATE TABLE tgis_map (
     --table identifier
-	id_tgis_map NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	id_tgis_map NUMBER(10, 0) PRIMARY KEY,
 	--Name of the map
-	map_name VARCHAR2(63) NOT NULL,
+	map_name VARCHAR2(63),
 	--longitude of the center of the map when it\'s loaded
 	initial_longitude BINARY_DOUBLE DEFAULT NULL,
 	--latitude of the center of the map when it\'s loaded
@@ -1478,33 +1471,33 @@ CREATE TABLE tgis_map (
 	--altitude of the center of the map when it\'s loaded
 	initial_altitude BINARY_DOUBLE DEFAULT NULL,
 	--Zoom level to show when the map is loaded.
-	zoom_level NUMBER(5, 0) default 1 NOT NULL,
+	zoom_level NUMBER(5, 0) DEFAULT 1,
 	--path on the server to the background image of the map
 	map_background VARCHAR2(127) DEFAULT NULL,
-	--default longitude for the agents placed on the map
-	default_longitude BINARY_DOUBLE DEFAULT NULL,
-	--default latitude for the agents placed on the map
-	default_latitude BINARY_DOUBLE DEFAULT NULL,
-	--default altitude for the agents placed on the map
-	default_altitude DOUBLE PRECISION DEFAULT NULL,
+	--DEFAULT longitude for the agents placed on the map
+	DEFAULT_longitude BINARY_DOUBLE DEFAULT NULL,
+	--DEFAULT latitude for the agents placed on the map
+	DEFAULT_latitude BINARY_DOUBLE DEFAULT NULL,
+	--DEFAULT altitude for the agents placed on the map
+	DEFAULT_altitude DOUBLE PRECISION DEFAULT NULL,
 	--Group that owns the map
-	group_id NUMBER(10, 0) default 0 NOT NULL,
-	--1 if this is the default map, 0 in other case
-	default_map NUMBER(5, 0) default 0 NOT NULL
+	group_id NUMBER(10, 0) DEFAULT 0,
+	--1 if this is the DEFAULT map, 0 in other case
+	DEFAULT_map NUMBER(5, 0) DEFAULT 0
 );
 CREATE INDEX tgis_map_tagente_map_name_idx ON tgis_map(map_name);
 
 CREATE SEQUENCE tgis_map_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tgis_map_inc BEFORE INSERT ON tgis_map REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgis_map_s.nextval INTO :NEW.ID_TGIS_MAP FROM dual; END tgis_map_inc;;
+CREATE OR REPLACE TRIGGER tgis_map_inc BEFORE INSERT ON tgis_map REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgis_map_s.nextval INTO :NEW.id_tgis_map FROM dual; END tgis_map_inc;;
 
 -- -----------------------------------------------------
--- Table "tgis_map_connection"
+-- Table tgis_map_connection
 -- -----------------------------------------------------
 --Table to store the map connection information
 CREATE TABLE tgis_map_connection (
 	--table id
-	id_tmap_connection NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	id_tmap_connection NUMBER(10, 0) PRIMARY KEY,
 	--Name of the connection (name of the base layer)
 	conection_name VARCHAR2(45) DEFAULT NULL,
 	--Type of map server to connect
@@ -1513,14 +1506,14 @@ CREATE TABLE tgis_map_connection (
 	conection_data CLOB DEFAULT NULL, 
 	--Number of zoom levels available
 	num_zoom_levels NUMBER(5, 0) DEFAULT NULL, 
-	--Default Zoom Level for the connection
-	default_zoom_level NUMBER(5, 0) default 16 NOT NULL,
-	--default longitude for the agents placed on the map
-	default_longitude BINARY_DOUBLE DEFAULT NULL,
-	--default latitude for the agents placed on the map
-	default_latitude BINARY_DOUBLE DEFAULT NULL,
-	--default altitude for the agents placed on the map
-	default_altitude BINARY_DOUBLE DEFAULT NULL,
+	--DEFAULT Zoom Level for the connection
+	DEFAULT_zoom_level NUMBER(5, 0) DEFAULT 16,
+	--DEFAULT longitude for the agents placed on the map
+	DEFAULT_longitude BINARY_DOUBLE DEFAULT NULL,
+	--DEFAULT latitude for the agents placed on the map
+	DEFAULT_latitude BINARY_DOUBLE DEFAULT NULL,
+	--DEFAULT altitude for the agents placed on the map
+	DEFAULT_altitude BINARY_DOUBLE DEFAULT NULL,
 	--longitude of the center of the map when it\'s loaded
 	initial_longitude BINARY_DOUBLE DEFAULT NULL,
 	--latitude of the center of the map when it\'s loaded
@@ -1528,419 +1521,419 @@ CREATE TABLE tgis_map_connection (
 	--altitude of the center of the map when it\'s loaded
 	initial_altitude BINARY_DOUBLE DEFAULT NULL, 
 	--Group that owns the map
-	group_id NUMBER(10, 0) default 0 NOT NULL  
+	group_id NUMBER(10, 0) DEFAULT 0  
 );
 
 CREATE SEQUENCE tgis_map_connection_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tgis_map_connection_inc BEFORE INSERT ON tgis_map_connection REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgis_map_connection_s.nextval INTO :NEW.ID_TMAP_CONNECTION FROM dual; END tgis_map_connection_inc;;
+CREATE OR REPLACE TRIGGER tgis_map_connection_inc BEFORE INSERT ON tgis_map_connection REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgis_map_connection_s.nextval INTO :NEW.id_tmap_connection FROM dual; END tgis_map_connection_inc;;
 
 -- -----------------------------------------------------
--- Table "tgis_map_has_tgis_map_connection"
+-- Table tgis_map_has_tgis_map_connection
 -- -----------------------------------------------------
 
 -- This table is commented because table name length is more 30 chars. TODO: Change it's name 
 
---Table to asociate a connection to a gis map
+--Table to asociate a connection to ais map
 --CREATE TABLE tgis_map_has_tgis_map_connection (
 	--reference to tgis_map
---	tgis_map_id_tgis_map NUMBER(10, 0) NOT NULL REFERENCES tgis_map(id_tgis_map) ON DELETE CASCADE, 
+--	tgis_map_id_tgis_map NUMBER(10, 0) REFERENCES tgis_map(id_tgis_map) ON DELETE CASCADE, 
 	--reference to tgis_map_connection
---	tgis_map_connection_id_tmap_connection NUMBER(10, 0) NOT NULL REFERENCES tgis_map_connection (id_tmap_connection) ON DELETE CASCADE, 
+--	tgis_map_connection_id_tmap_connection NUMBER(10, 0) REFERENCES tgis_map_connection (id_tmap_connection) ON DELETE CASCADE, 
 	--Last Modification Time of the Connection
---	modification_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, 
-	--Flag to mark the default map connection of a map
---	default_map_connection NUMBER(5, 0) default 0 NOT NULL,
+--	modification_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+	--Flag to mark the DEFAULT map connection of a map
+--	DEFAULT_map_connection NUMBER(5, 0) DEFAULT 0,
 --  PRIMARY KEY (tgis_map_id_tgis_map, tgis_map_connection_id_tmap_connection)
 --);
 --CREATE INDEX tgis_map_has_tgis_map_connection_map_tgis_map_id_tgis_map_idx ON tgis_map_has_tgis_map_connection(tgis_map_id_tgis_map);
 --CREATE INDEX tgis_map_has_tgis_map_connection_map_tgis_map_connection_id_tmap_connection_idx ON tgis_map_has_tgis_map_connection(tgis_map_connection_id_tmap_connection);
 
---This trigger is for tranlate "on update CURRENT_TIMESTAMP" of MySQL.
---CREATE OR REPLACE TRIGGER tgis_map_has_tgis_map_connection_ts BEFORE UPDATE ON tgis_map_has_tgis_map_connection FOR EACH ROW BEGIN select CURRENT_TIMESTAMP into :NEW.MODIFICATION_TIME from dual; END;;
+--This trigger is for tranlate on update CURRENT_TIMESTAMP of MySQL.
+--CREATE OR REPLACE TRIGGER tgis_map_has_tgis_map_connection_ts BEFORE UPDATE ON tgis_map_has_tgis_map_connection FOR EACH ROW BEGIN select CURRENT_TIMESTAMP into :NEW.modification_time from dual; END;;
 
 -- -----------------------------------------------------
--- Table "tgis_map_layer"
+-- Table tgis_map_layer
 -- -----------------------------------------------------
 --Table containing information about the map layers
 CREATE TABLE tgis_map_layer (
 	--table id
-	id_tmap_layer NUMBER(10, 0) NOT NULL PRIMARY KEY,
+	id_tmap_layer NUMBER(10, 0) PRIMARY KEY,
 	--Name of the layer
-	layer_name VARCHAR2(45) NOT NULL, 
+	layer_name VARCHAR2(45), 
 	--True if the layer must be shown
-	view_layer NUMBER(5, 0) default 1 NOT NULL, 
+	view_layer NUMBER(5, 0) DEFAULT 1, 
 	--Number of order of the layer in the layer stack, bigger means upper on the stack.\n
-	layer_stack_order NUMBER(5, 0) default 0 NOT NULL, 
+	layer_stack_order NUMBER(5, 0) DEFAULT 0, 
 	--reference to the map containing the layer
-	tgis_map_id_tgis_map NUMBER(10, 0) default 0 NOT NULL REFERENCES tgis_map(id_tgis_map) ON DELETE CASCADE, 
-	--reference to the group shown in the layer
-	tgrupo_id_grupo NUMBER(19, 0) NOT NULL 
+	tgis_map_id_tgis_map NUMBER(10, 0) DEFAULT 0 REFERENCES tgis_map(id_tgis_map) ON DELETE CASCADE, 
+	--reference to theroup shown in the layer
+	tgrupo_id_grupo NUMBER(19, 0) 
 );
 
 CREATE SEQUENCE tgis_map_layer_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tgis_map_layer_inc BEFORE INSERT ON tgis_map_layer REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgis_map_layer_s.nextval INTO :NEW.ID_TMAP_LAYER FROM dual; END tgis_map_layer_inc;;
+CREATE OR REPLACE TRIGGER tgis_map_layer_inc BEFORE INSERT ON tgis_map_layer REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgis_map_layer_s.nextval INTO :NEW.id_tmap_layer FROM dual; END tgis_map_layer_inc;;
 
 -- -----------------------------------------------------
--- Table "tgis_map_layer_has_tagente"
+-- Table tgis_map_layer_has_tagente
 -- -----------------------------------------------------
 --Table to define wich agents are shown in a layer
 CREATE TABLE tgis_map_layer_has_tagente (
-	tgis_map_layer_id_tmap_layer NUMBER(10, 0) NOT NULL REFERENCES tgis_map_layer(id_tmap_layer) ON DELETE CASCADE,
-	tagente_id_agente NUMBER(10, 0) NOT NULL REFERENCES tagente(id_agente) ON DELETE CASCADE,
+	tgis_map_layer_id_tmap_layer NUMBER(10, 0) REFERENCES tgis_map_layer(id_tmap_layer) ON DELETE CASCADE,
+	tagente_id_agente NUMBER(10, 0) REFERENCES tagente(id_agente) ON DELETE CASCADE,
   PRIMARY KEY (tgis_map_layer_id_tmap_layer, tagente_id_agente)
 );
 CREATE INDEX tgis_map_layer_has_tagente_idx ON tgis_map_layer_has_tagente(tgis_map_layer_id_tmap_layer);
 CREATE INDEX tgis_map_layer_has_tagent1_idx ON tgis_map_layer_has_tagente(tagente_id_agente);
 
 -- ---------------------------------------------------------------------
--- Table "tgroup_stat"
+-- Table tgroup_stat
 -- ---------------------------------------------------------------------
---Table to store global system stats per group
+--Table to storelobal system stats perroup
 CREATE TABLE tgroup_stat (
-	id_group NUMBER(10, 0) default 0 NOT NULL PRIMARY KEY,
-	modules NUMBER(10, 0) default 0 NOT NULL,
-	normal NUMBER(10, 0) default 0 NOT NULL,
-	critical NUMBER(10, 0) default 0 NOT NULL,
-	warning NUMBER(10, 0) default 0 NOT NULL,
-	unknown NUMBER(10, 0) default 0 NOT NULL,
-	"non-init" NUMBER(10, 0) default 0 NOT NULL,
-	alerts NUMBER(10, 0) default 0 NOT NULL,
-	alerts_fired NUMBER(10, 0) default 0 NOT NULL,
-	agents NUMBER(10, 0) default 0 NOT NULL,
-	agents_unknown NUMBER(10, 0) default 0 NOT NULL,
-	utimestamp NUMBER(10, 0) default 0 NOT NULL
+	id_group NUMBER(10, 0) DEFAULT 0 PRIMARY KEY,
+	modules NUMBER(10, 0) DEFAULT 0,
+	normal NUMBER(10, 0) DEFAULT 0,
+	critical NUMBER(10, 0) DEFAULT 0,
+	warning NUMBER(10, 0) DEFAULT 0,
+	unknown NUMBER(10, 0) DEFAULT 0,
+	"non-init" NUMBER(10, 0) DEFAULT 0,
+	alerts NUMBER(10, 0) DEFAULT 0,
+	alerts_fired NUMBER(10, 0) DEFAULT 0,
+	agents NUMBER(10, 0) DEFAULT 0,
+	agents_unknown NUMBER(10, 0) DEFAULT 0,
+	utimestamp NUMBER(10, 0) DEFAULT 0
 );
 
 ------------------------------------------------------------------------
--- Table "tnetwork_map"
+-- Table tnetwork_map
 ------------------------------------------------------------------------
 CREATE TABLE tnetwork_map (
-	id_networkmap NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_user VARCHAR2(60)  NOT NULL,
-	name VARCHAR2(100)  NOT NULL,
-	type VARCHAR2(20)  NOT NULL,
-	layout VARCHAR2(20)  NOT NULL,
-	nooverlap NUMBER(5, 0) default 0 NOT NULL,
-	simple NUMBER(5, 0) default 0 NOT NULL,
-	regenerate NUMBER(5, 0) default 1 NOT NULL,
-	font_size NUMBER(10, 0) default 12 NOT NULL,
-	id_group NUMBER(10, 0) default 0 NOT NULL,
-	id_module_group NUMBER(10, 0) default 0 NOT NULL,  
-	id_policy NUMBER(10, 0) default 0 NOT NULL,
-	depth VARCHAR2(20) NOT NULL,
-	only_modules_with_alerts NUMBER(10, 0) default 0 NOT NULL,
-	hide_policy_modules SMALLINT default 0 NOT NULL,
-	zoom BINARY_DOUBLE default 1,
-	distance_nodes BINARY_DOUBLE default 2.5,
-	center NUMBER(10, 0) default 0 NOT NULL,
+	id_networkmap NUMBER(10, 0) PRIMARY KEY,
+	id_user VARCHAR2(60) ,
+	name VARCHAR2(100) ,
+	type VARCHAR2(20) ,
+	layout VARCHAR2(20) ,
+	nooverlap NUMBER(5, 0) DEFAULT 0,
+	simple NUMBER(5, 0) DEFAULT 0,
+	regenerate NUMBER(5, 0) DEFAULT 1,
+	font_size NUMBER(10, 0) DEFAULT 12,
+	id_group NUMBER(10, 0) DEFAULT 0,
+	id_module_group NUMBER(10, 0) DEFAULT 0,  
+	id_policy NUMBER(10, 0) DEFAULT 0,
+	depth VARCHAR2(20),
+	only_modules_with_alerts NUMBER(10, 0) DEFAULT 0,
+	hide_policy_modules SMALLINT DEFAULT 0,
+	zoom BINARY_DOUBLE DEFAULT 1,
+	distance_nodes BINARY_DOUBLE DEFAULT 2.5,
+	center NUMBER(10, 0) DEFAULT 0,
 	contracted_nodes CLOB,
-	show_snmp_modules NUMBER(5, 0) default 0 NOT NULL,
+	show_snmp_modules NUMBER(5, 0) DEFAULT 0,
 	text_filter VARCHAR(100) DEFAULT '',
-	dont_show_subgroups NUMBER(10, 0) default 0 NOT NULL,
-	pandoras_children NUMBER(10, 0) default 0 NOT NULL,
-	show_groups NUMBER(10, 0) default 0 NOT NULL,
-	show_modules NUMBER(10, 0) default 0 NOT NULL,
-	id_agent NUMBER(10, 0) default 0 NOT NULL,
-	server_name VARCHAR(100)  NOT NULL,
-	show_modulegroup NUMBER(10, 0) default 0 NOT NULL,
-	l2_network NUMBER(1, 0) default 0 NOT NULL
+	dont_show_subgroups NUMBER(10, 0) DEFAULT 0,
+	pandoras_children NUMBER(10, 0) DEFAULT 0,
+	show_groups NUMBER(10, 0) DEFAULT 0,
+	show_modules NUMBER(10, 0) DEFAULT 0,
+	id_agent NUMBER(10, 0) DEFAULT 0,
+	server_name VARCHAR(100) ,
+	show_modulegroup NUMBER(10, 0) DEFAULT 0,
+	l2_network NUMBER(1, 0) DEFAULT 0
 );
 
 CREATE SEQUENCE tnetwork_map_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tnetwork_map_inc BEFORE INSERT ON tnetwork_map REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetwork_map_s.nextval INTO :NEW.ID_NETWORKMAP FROM dual; END tnetwork_map_inc;;
+CREATE OR REPLACE TRIGGER tnetwork_map_inc BEFORE INSERT ON tnetwork_map REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetwork_map_s.nextval INTO :NEW.id_networkmap FROM dual; END tnetwork_map_inc;;
 
 -- ---------------------------------------------------------------------
--- Table "tsnmp_filter"
+-- Table tsnmp_filter
 -- ---------------------------------------------------------------------
 CREATE TABLE tsnmp_filter (
-	id_snmp_filter NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	description VARCHAR2(255) default '',
-	filter VARCHAR2(255) default ''
+	id_snmp_filter NUMBER(10, 0) PRIMARY KEY,
+	description VARCHAR2(255) DEFAULT '',
+	filter VARCHAR2(255) DEFAULT ''
 );
 
 CREATE SEQUENCE tsnmp_filter_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tsnmp_filter_inc BEFORE INSERT ON tsnmp_filter REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tsnmp_filter_s.nextval INTO :NEW.ID_SNMP_FILTER FROM dual; END tsnmp_filter_inc;;
+CREATE OR REPLACE TRIGGER tsnmp_filter_inc BEFORE INSERT ON tsnmp_filter REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tsnmp_filter_s.nextval INTO :NEW.id_snmp_filter FROM dual; END tsnmp_filter_inc;;
 
 -- ---------------------------------------------------------------------
--- Table "tagent_custom_fields"
+-- Table tagent_custom_fields
 -- ---------------------------------------------------------------------
 CREATE TABLE tagent_custom_fields (
-	id_field NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	name VARCHAR2(45) default '',
-	display_on_front NUMBER(5, 0) default 0 NOT NULL
+	id_field NUMBER(10, 0) PRIMARY KEY,
+	name VARCHAR2(45) DEFAULT '',
+	display_on_front NUMBER(5, 0) DEFAULT 0
 );
 
 CREATE SEQUENCE tagent_custom_fields_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER tagent_custom_fields_inc BEFORE INSERT ON tagent_custom_fields REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagent_custom_fields_s.nextval INTO :NEW.ID_FIELD FROM dual; END tagent_custom_fields_inc;;
+CREATE OR REPLACE TRIGGER tagent_custom_fields_inc BEFORE INSERT ON tagent_custom_fields REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagent_custom_fields_s.nextval INTO :NEW.id_field FROM dual; END tagent_custom_fields_inc;;
 
 -- ---------------------------------------------------------------------
--- Table "tagent_custom_data"
+-- Table tagent_custom_data
 -- ---------------------------------------------------------------------
 CREATE TABLE tagent_custom_data (
-	id_field NUMBER(10, 0) NOT NULL REFERENCES tagent_custom_fields(id_field) ON DELETE CASCADE,
-	id_agent NUMBER(10, 0) NOT NULL REFERENCES tagente(id_agente) ON DELETE CASCADE,
-	description CLOB default '',
-  PRIMARY KEY  (id_field, id_agent)
+	id_field NUMBER(10, 0) REFERENCES tagent_custom_fields(id_field) ON DELETE CASCADE,
+	id_agent NUMBER(10, 0) REFERENCES tagente(id_agente) ON DELETE CASCADE,
+	description CLOB DEFAULT '',
+  PRIMARY KEY (id_field, id_agent)
 );
 
 -- on update trigger
-CREATE OR REPLACE TRIGGER tagent_custom_data_update AFTER UPDATE OF ID_FIELD ON tagent_custom_fields FOR EACH ROW BEGIN UPDATE tagent_custom_data SET ID_FIELD = :NEW.ID_FIELD WHERE ID_FIELD = :OLD.ID_FIELD; END;;
+CREATE OR REPLACE TRIGGER tagent_custom_data_update AFTER UPDATE OF id_field on tagent_custom_fields FOR EACH ROW BEGIN UPDATE tagent_custom_data SET id_field = :NEW.id_field WHERE id_field = :OLD.id_field; END;;
 
 -- on update trigger 1
-CREATE OR REPLACE TRIGGER tagent_custom_data_update1 AFTER UPDATE OF ID_AGENTE ON tagente FOR EACH ROW BEGIN UPDATE tagent_custom_data SET ID_AGENT = :NEW.ID_AGENTE WHERE ID_AGENT = :OLD.ID_AGENTE; END;;
+CREATE OR REPLACE TRIGGER tagent_custom_data_update1 AFTER UPDATE OF id_agente on tagente FOR EACH ROW BEGIN UPDATE tagent_custom_data SET id_agent = :NEW.id_agente WHERE id_agent = :OLD.id_agente; END;;
 
 -- Procedure for retrieve PK information after an insert statement
 CREATE OR REPLACE PROCEDURE insert_id (table_name IN VARCHAR2, sql_insert IN VARCHAR2, id OUT NUMBER) IS BEGIN EXECUTE IMMEDIATE sql_insert; EXECUTE IMMEDIATE 'SELECT ' ||table_name||'_s.currval FROM DUAL' INTO id; EXCEPTION WHEN others THEN RAISE_APPLICATION_ERROR(-20001, 'ERROR on insert_id procedure, please check input parameters or procedure logic.'); END insert_id;;
 
 
 -- ---------------------------------------------------------------------
--- Table "ttag"
+-- Table ttag
 -- ---------------------------------------------------------------------
 CREATE TABLE ttag ( 
-	id_tag NUMBER(10, 0) NOT NULL PRIMARY KEY, 
-	name VARCHAR2(100) default '' NOT NULL, 
-	description CLOB default '' NOT NULL, 
-	url CLOB default '' NOT NULL,
+	id_tag NUMBER(10, 0) PRIMARY KEY, 
+	name VARCHAR2(100) DEFAULT '', 
+	description CLOB DEFAULT '', 
+	url CLOB DEFAULT '',
 	email CLOB NULL,
 	phone CLOB NULL
 ); 
 
 CREATE SEQUENCE ttag_s INCREMENT BY 1 START WITH 1;
 
-CREATE OR REPLACE TRIGGER ttag_inc BEFORE INSERT ON ttag REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttag_s.nextval INTO :NEW.ID_TAG FROM dual; END ttag_inc;;
+CREATE OR REPLACE TRIGGER ttag_inc BEFORE INSERT ON ttag REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttag_s.nextval INTO :NEW.id_tag FROM dual; END ttag_inc;;
 
 -- ---------------------------------------------------------------------
--- Table "ttag_module"
+-- Table ttag_module
 -- ---------------------------------------------------------------------
 
 CREATE TABLE ttag_module (
-	id_tag NUMBER(10, 0) NOT NULL,
-	id_agente_modulo NUMBER(10, 0) DEFAULT 0 NOT NULL,
-	id_policy_module NUMBER(10, 0) DEFAULT 0 NOT NULL,
+	id_tag NUMBER(10, 0),
+	id_agente_modulo NUMBER(10, 0) DEFAULT 0,
+	id_policy_module NUMBER(10, 0) DEFAULT 0,
 	PRIMARY KEY  (id_tag, id_agente_modulo)
 ); 
 
 CREATE INDEX ttag_module_id_ag_modulo_idx ON ttag_module(id_agente_modulo);
 
 -- ---------------------------------------------------------------------
--- Table "ttag_policy_module"
+-- Table ttag_policy_module
 -- ---------------------------------------------------------------------
 
 CREATE TABLE ttag_policy_module ( 
-	id_tag NUMBER(10, 0) NOT NULL, 
-	id_policy_module NUMBER(10, 0) DEFAULT 0 NOT NULL, 
+	id_tag NUMBER(10, 0), 
+	id_policy_module NUMBER(10, 0) DEFAULT 0, 
 	PRIMARY KEY  (id_tag, id_policy_module)
 ); 
 
 CREATE INDEX ttag_poli_mod_id_pol_mo_idx ON ttag_policy_module(id_policy_module);
 
 -- -----------------------------------------------------
--- Table "tnetflow_filter"
+-- Table tnetflow_filter
 -- -----------------------------------------------------
 
 CREATE TABLE tnetflow_filter (
-	id_sg NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_name VARCHAR2(600) NOT NULL,
+	id_sg NUMBER(10, 0) PRIMARY KEY,
+	id_name VARCHAR2(600),
 	id_group NUMBER(10, 0),
-	ip_dst CLOB NOT NULL,
-	ip_src CLOB NOT NULL,
-	dst_port CLOB NOT NULL,
-	src_port CLOB NOT NULL,
-	advanced_filter CLOB NOT NULL,
-	filter_args CLOB NOT NULL,
+	ip_dst CLOB,
+	ip_src CLOB,
+	dst_port CLOB,
+	src_port CLOB,
+	advanced_filter CLOB,
+	filter_args CLOB,
 	aggregate VARCHAR2(60),
 	output VARCHAR2(60)
 );
 
 CREATE SEQUENCE tnetflow_filter_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tnetflow_filter_inc BEFORE INSERT ON tnetflow_filter REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetflow_filter_s.nextval INTO :NEW.ID_SG FROM dual; END tnetflow_filter_inc;;
+CREATE OR REPLACE TRIGGER tnetflow_filter_inc BEFORE INSERT ON tnetflow_filter REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetflow_filter_s.nextval INTO :NEW.id_sg FROM dual; END tnetflow_filter_inc;;
 
 -- -----------------------------------------------------
--- Table "tnetflow_report"
+-- Table tnetflow_report
 -- -----------------------------------------------------
 
 CREATE TABLE tnetflow_report (
-	id_report NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_name VARCHAR2(100) NOT NULL,
-	description CLOB default '',
-	id_group NUMBER(10, 0)
-	server_name CLOB default '',
+	id_report NUMBER(10, 0) PRIMARY KEY,
+	id_name VARCHAR2(100),
+	description CLOB DEFAULT '',
+	id_group NUMBER(10, 0),
+	server_name CLOB DEFAULT ''
 );
 
 CREATE SEQUENCE tnetflow_report_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tnetflow_report_inc BEFORE INSERT ON tnetflow_report REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetflow_report_s.nextval INTO :NEW.ID_REPORT FROM dual; END tnetflow_report_inc;;
+CREATE OR REPLACE TRIGGER tnetflow_report_inc BEFORE INSERT ON tnetflow_report REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetflow_report_s.nextval INTO :NEW.id_report FROM dual; END tnetflow_report_inc;;
 
 -- -----------------------------------------------------
--- Table "tnetflow_report_content"
+-- Table tnetflow_report_content
 -- -----------------------------------------------------
 
 CREATE TABLE tnetflow_report_content (
-id_rc NUMBER(10, 0) NOT NULL PRIMARY KEY,
-id_report NUMBER(10, 0) NOT NULL REFERENCES tnetflow_report(id_report) ON DELETE CASCADE,
-id_filter NUMBER(10,0) NOT NULL REFERENCES tnetflow_filter(id_sg) ON DELETE CASCADE,
-description CLOB default '',
-"date" NUMBER(20, 0) default 0 NOT NULL,
-period NUMBER(11, 0) default 0 NOT NULL,
-max NUMBER(11, 0) default 0 NOT NULL,
-show_graph VARCHAR2(60),
-"order" NUMBER(11,0) default 0 NOT NULL
+	id_rc NUMBER(10, 0) PRIMARY KEY,
+	id_report NUMBER(10, 0) REFERENCES tnetflow_report(id_report) ON DELETE CASCADE,
+	id_filter NUMBER(10,0) REFERENCES tnetflow_filter(id_sg) ON DELETE CASCADE,
+	description CLOB DEFAULT '',
+	"date" NUMBER(20, 0) DEFAULT 0,
+	period NUMBER(11, 0) DEFAULT 0,
+	max NUMBER(11, 0) DEFAULT 0,
+	show_graph VARCHAR2(60),
+	"order" NUMBER(11,0) DEFAULT 0
 );
 
 CREATE SEQUENCE tnetflow_report_content_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tnetflow_report_content_inc BEFORE INSERT ON tnetflow_report_content REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetflow_report_content_s.nextval INTO :NEW.ID_RC FROM dual; END tnetflow_report_content_inc;;
+CREATE OR REPLACE TRIGGER tnetflow_report_content_inc BEFORE INSERT ON tnetflow_report_content REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetflow_report_content_s.nextval INTO :NEW.id_rc FROM dual; END tnetflow_report_content_inc;;
 
 -- ---------------------------------------------------------------------
 -- Table `tevent_filter`
 -- ---------------------------------------------------------------------
 CREATE TABLE tevent_filter (
-	id_filter NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_group_filter NUMBER(10, 0) default 0 NOT NULL,
-	id_name VARCHAR2(600) NOT NULL,
-	id_group NUMBER(10, 0) default 0 NOT NULL,
-	event_type CLOB default '' NOT NULL,
-	severity NUMBER(10, 0) default -1 NOT NULL,
-	status NUMBER(10, 0) default -1 NOT NULL,
-	search CLOB default '',
-	text_agent CLOB default '', 
-	pagination NUMBER(10, 0) default 25 NOT NULL,
-	event_view_hr NUMBER(10, 0) default 8 NOT NULL,
+	id_filter NUMBER(10, 0) PRIMARY KEY,
+	id_group_filter NUMBER(10, 0) DEFAULT 0,
+	id_name VARCHAR2(600),
+	id_group NUMBER(10, 0) DEFAULT 0,
+	event_type CLOB DEFAULT '',
+	severity NUMBER(10, 0) DEFAULT -1,
+	status NUMBER(10, 0) DEFAULT -1,
+	search CLOB DEFAULT '',
+	text_agent CLOB DEFAULT '', 
+	pagination NUMBER(10, 0) DEFAULT 25,
+	event_view_hr NUMBER(10, 0) DEFAULT 8,
 	id_user_ack CLOB,
-	group_rep NUMBER(10, 0) default 0 NOT NULL,
+	group_rep NUMBER(10, 0) DEFAULT 0,
 	tag_with CLOB,
 	tag_without CLOB,
-	filter_only_alert NUMBER(10, 0) default -1 NOT NULL
+	filter_only_alert NUMBER(10, 0) DEFAULT -1
 );
 
 CREATE SEQUENCE tevent_filter_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tevent_filter_inc BEFORE INSERT ON tevent_filter REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tevent_filter_s.nextval INTO :NEW.ID_FILTER FROM dual; END tevent_filter_inc;;
+CREATE OR REPLACE TRIGGER tevent_filter_inc BEFORE INSERT ON tevent_filter REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tevent_filter_s.nextval INTO :NEW.id_filter FROM dual; END tevent_filter_inc;;
 
 -- ---------------------------------------------------------------------
 -- Table `tpassword_history`
 -- ---------------------------------------------------------------------
 CREATE TABLE tpassword_history (
-	id_pass  NUMBER(10) NOT NULL PRIMARY KEY,
-	id_user varchar2(60) NOT NULL,
-	password varchar2(45) default '',
-	date_begin TIMESTAMP DEFAULT 0,
-	date_end TIMESTAMP DEFAULT 0
+	id_pass  NUMBER(10) PRIMARY KEY,
+	id_user varchar2(60),
+	password varchar2(45) DEFAULT '',
+	date_begin TIMESTAMP,
+	date_end TIMESTAMP
 );
 
 CREATE SEQUENCE tpassword_history_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tpassword_history_inc BEFORE INSERT ON tpassword_history REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tpassword_history_s.nextval INTO :NEW.ID_PASS FROM dual; END tpassword_history_inc;;
+CREATE OR REPLACE TRIGGER tpassword_history_inc BEFORE INSERT ON tpassword_history REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tpassword_history_s.nextval INTO :NEW.id_pass FROM dual; END tpassword_history_inc;;
 
 -- ---------------------------------------------------------------------
 -- Table `tevent_response`
 -- ---------------------------------------------------------------------
 CREATE TABLE tevent_response (
-	id  NUMBER(10) NOT NULL PRIMARY KEY,
-	name varchar2(600) NOT NULL default '',
+	id  NUMBER(10) PRIMARY KEY,
+	name varchar2(600) DEFAULT '',
 	description CLOB,
 	target CLOB,
-	type varchar2(60) NOT NULL,
-	id_group MEDIUMINT(4) NOT NULL default 0,
-	modal_width NUMBER(10, 0) NOT NULL DEFAULT 0,
-	modal_height NUMBER(10, 0) NOT NULL DEFAULT 0,
-	new_window NUMBER(10, 0) NOT NULL DEFAULT 0,
+	type varchar2(60),
+	id_group NUMBER(10, 0) DEFAULT 0,
+	modal_width NUMBER(10, 0) DEFAULT 0,
+	modal_height NUMBER(10, 0) DEFAULT 0,
+	new_window NUMBER(10, 0) DEFAULT 0,
 	params CLOB
 );
 
 CREATE SEQUENCE tevent_response_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tevent_response_inc BEFORE INSERT ON tevent_response REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tevent_response_s.nextval INTO :NEW.ID FROM dual; END tevent_response_inc;;
+CREATE OR REPLACE TRIGGER tevent_response_inc BEFORE INSERT ON tevent_response REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tevent_response_s.nextval INTO :NEW.id FROM dual; END tevent_response_inc;;
 
 -- ---------------------------------------------------------------------
--- Table "tcategory"
+-- Table tcategory
 -- ---------------------------------------------------------------------
 CREATE TABLE tcategory ( 
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY, 
-	name VARCHAR2(600) default '' NOT NULL
+	id NUMBER(10, 0) PRIMARY KEY, 
+	name VARCHAR2(600) DEFAULT ''
 ); 
 
 -- ---------------------------------------------------------------------
 -- Table `tupdate_settings`
 -- ---------------------------------------------------------------------
 CREATE TABLE tupdate_settings ( 
-	key VARCHAR2(255) default '' PRIMARY KEY, 
-	value VARCHAR2(255) default ''
+	key VARCHAR2(255) DEFAULT '' PRIMARY KEY, 
+	value VARCHAR2(255) DEFAULT ''
 );
 
 -- ---------------------------------------------------------------------
 -- Table `tupdate_package`
 -- ---------------------------------------------------------------------
-CREATE TABLE tupdate_package( 
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY, 
-	timestamp  TIMESTAMP default NULL, 
-	description VARCHAR2(255) default ''
+CREATE TABLE tupdate_package ( 
+	id NUMBER(10, 0) PRIMARY KEY, 
+	timestamp  TIMESTAMP DEFAULT NULL, 
+	description VARCHAR2(255) DEFAULT ''
 );
 
 CREATE SEQUENCE tupdate_package_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tupdate_package_inc BEFORE INSERT ON tupdate_package REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tupdate_package_s.nextval INTO :NEW.ID FROM dual; END tupdate_package_inc;;
+CREATE OR REPLACE TRIGGER tupdate_package_inc BEFORE INSERT ON tupdate_package REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tupdate_package_s.nextval INTO :NEW.id FROM dual; END tupdate_package_inc;;
 
 -- ---------------------------------------------------------------------
 -- Table `tupdate`
 -- ---------------------------------------------------------------------
 CREATE TABLE tupdate ( 
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY, 
+	id NUMBER(10, 0) PRIMARY KEY, 
 	type VARCHAR2(15), 
-	id_update_package NUMBER(10, 0) default 0 REFERENCES tupdate_package(id) ON DELETE CASCADE, 
-	filename VARCHAR2(250) default '', 
-	checksum VARCHAR2(250) default '', 
-	previous_checksum VARCHAR2(250) default '', 
-	svn_version NUMBER(10, 0) default 0, 
-	data CLOB default '', 
-	data_rollback CLOB default '', 
-	description CLOB default '', 
-	db_table_name VARCHAR2(140) default '', 
-	db_field_name VARCHAR2(140) default '', 
-	db_field_value VARCHAR2(1024) default '', 
+	id_update_package NUMBER(10, 0) DEFAULT 0 REFERENCES tupdate_package(id) ON DELETE CASCADE, 
+	filename VARCHAR2(250) DEFAULT '', 
+	checksum VARCHAR2(250) DEFAULT '', 
+	previous_checksum VARCHAR2(250) DEFAULT '', 
+	svn_version NUMBER(10, 0) DEFAULT 0, 
+	data CLOB DEFAULT '', 
+	data_rollback CLOB DEFAULT '', 
+	description CLOB DEFAULT '', 
+	db_table_name VARCHAR2(140) DEFAULT '', 
+	db_field_name VARCHAR2(140) DEFAULT '', 
+	db_field_value VARCHAR2(1024) DEFAULT '', 
 	CONSTRAINT tupdate_type_cons CHECK (type IN ('code', 'db_data', 'db_schema', 'binary'))
 );
 
 CREATE SEQUENCE tupdate_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tupdate_inc BEFORE INSERT ON tupdate REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tupdate_s.nextval INTO :NEW.ID FROM dual; END;;
-CREATE OR REPLACE TRIGGER tupdate_update AFTER UPDATE OF ID ON tupdate_package FOR EACH ROW BEGIN UPDATE tupdate SET ID_UPDATE_PACKAGE = :NEW.ID WHERE ID_UPDATE_PACKAGE = :OLD.ID; END;;
+CREATE OR REPLACE TRIGGER tupdate_inc BEFORE INSERT ON tupdate REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tupdate_s.nextval INTO :NEW.id FROM dual; END;;
+CREATE OR REPLACE TRIGGER tupdate_update AFTER UPDATE OF id on tupdate_package FOR EACH ROW BEGIN UPDATE tupdate SET id_update_package = :NEW.id WHERE id_update_package = :OLD.id; END;;
 
 -- ---------------------------------------------------------------------
 -- Table `tupdate_journal`
 -- ---------------------------------------------------------------------
 CREATE TABLE tupdate_journal ( 
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY, 
-	id_update NUMBER(10, 0) default 0 REFERENCES tupdate(id) ON DELETE CASCADE
+	id NUMBER(10, 0) PRIMARY KEY, 
+	id_update NUMBER(10, 0) DEFAULT 0 REFERENCES tupdate(id) ON DELETE CASCADE
 );
 
 CREATE SEQUENCE tupdate_journal_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER tupdate_journal_inc BEFORE INSERT ON tupdate_journal REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tupdate_journal_s.nextval INTO :NEW.ID FROM dual; END;;
-CREATE OR REPLACE TRIGGER tupdate_journal_update AFTER UPDATE OF ID ON tupdate FOR EACH ROW BEGIN UPDATE tupdate_journal SET ID = :NEW.ID WHERE ID = :OLD.ID; END;;
+CREATE OR REPLACE TRIGGER tupdate_journal_inc BEFORE INSERT ON tupdate_journal REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tupdate_journal_s.nextval INTO :NEW.id FROM dual; END;;
+CREATE OR REPLACE TRIGGER tupdate_journal_update AFTER UPDATE OF id on tupdate FOR EACH ROW BEGIN UPDATE tupdate_journal SET id = :NEW.id WHERE id = :OLD.id; END;;
 
 
 -- ---------------------------------------------------------------------
 -- Table talert_snmp_action
 -- ---------------------------------------------------------------------
-CREATE TABLE  talert_snmp_action (
-	id NUMBER(10, 0) NOT NULL PRIMARY KEY,
-	id_alert_snmp NUMBER(10, 0) NOT NULL default 0,
-	alert_type NUMBER(2, 0) NOT NULL default 0,
-	al_field1 CLOB default '' NOT NULL,
-	al_field2 CLOB default '' NOT NULL,
-	al_field3 CLOB default '' NOT NULL,
-	al_field4 CLOB default '' NOT NULL,
-	al_field5 CLOB default '' NOT NULL,
-	al_field6 CLOB default '' NOT NULL,
-	al_field7 CLOB default '' NOT NULL,
-	al_field8 CLOB default '' NOT NULL,
-	al_field9 CLOB default '' NOT NULL,
-	al_field10 CLOB default '' NOT NULL
+CREATE TABLE talert_snmp_action (
+	id NUMBER(10, 0) PRIMARY KEY,
+	id_alert_snmp NUMBER(10, 0) DEFAULT 0,
+	alert_type NUMBER(2, 0) DEFAULT 0,
+	al_field1 CLOB DEFAULT '',
+	al_field2 CLOB DEFAULT '',
+	al_field3 CLOB DEFAULT '',
+	al_field4 CLOB DEFAULT '',
+	al_field5 CLOB DEFAULT '',
+	al_field6 CLOB DEFAULT '',
+	al_field7 CLOB DEFAULT '',
+	al_field8 CLOB DEFAULT '',
+	al_field9 CLOB DEFAULT '',
+	al_field10 CLOB DEFAULT ''
 );
 
 -- ---------------------------------------------------------------------
 -- Table tsessions_php
 -- ---------------------------------------------------------------------
 CREATE TABLE tsessions_php (
-	id_session VARCHAR2(52) NOT NULL PRIMARY KEY,
-	last_active NUMBER(20, 0) NOT NULL,
-	data CLOB default ''
+	id_session VARCHAR2(52) PRIMARY KEY,
+	last_active NUMBER(20, 0),
+	data CLOB DEFAULT ''
 );

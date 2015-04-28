@@ -102,7 +102,7 @@ echo '<div id="login_in">';
 			// For stable/live function it might be wise to comment it out
 			
 			/* CUSTOM BRANDING ENDS HERE */
-	echo '</td><td style="padding-top: 30px;">';
+	echo '</td><td style="padding-top: 15px;">';
 	
 	switch ($login_screen) {
 		case 'login':
@@ -114,11 +114,16 @@ echo '<div id="login_in">';
 			
 			echo '<div class="login_nick">';
 			html_print_image ("/images/usuario_login.png", false);
-			html_print_input_text_extended ("nick", '', "nick", '', '', '' , false, '', 'class="login login_user"');
+			html_print_input_text_extended ("nick", __('User'), "nick", '', '', '' , false,
+									array('onfocus' => "javascript:if ( $('.login_user').val() == 'User') $('.login_user').val('');",
+									'onblur'=>"javascript: if ( $('.login_user').val() == false) $('.login_user').val('". __('User')."');"), 'class="login login_user"  ');
 			echo '</div><br />';
 			echo '<div class="login_pass">';
 			html_print_image ("/images/candado_login.png", false);
-			html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false, '', 'class="login login_password"', false, true);
+			html_print_input_text_extended ("pass", 'pass', "pass", '', '', '' ,false,
+									array('onfocus' => "javascript:if ( $('.login_password').val() == 'pass')  $('.login_password').val('');",
+											'onblur'=>"javascript:if ( $('.login_password').val() == false) $('.login_password').val('". __('pass')."');"),
+								 'class="login login_password"', false, true);
 			echo '</div>';
 			echo '<div class="login_button">';
 			html_print_submit_button(__("Login"), "login_button", false, 'class="sub next_login"');
@@ -181,7 +186,7 @@ echo $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_versi
 if (isset ($login_failed)) {
 	echo '<div id="login_failed" title="Login failed" style="">';
 		
-		echo '<div style="position:absolute; top:0px; text-align: center; left:0%; right:0%; height:100px; width:330px; margin: 0 auto; ">';
+		echo '<div style="position:absolute; top:0px; text-align: center; left:0%; right:0%; height:100px; width:400px; margin: 0 auto; ">';
 			
 			echo '<div id="error_login" style="margin-top: 20px">';
 			echo '<strong style="font-size: 10pt">' . $config["auth_error"] . '</strong>';
@@ -323,7 +328,7 @@ html_print_div(array('id' => 'modal_alert', 'hidden' => true));
 					background: "black"
 				},
 				width: 500,
-				height: 300
+				height: 200
 			})
 			.show ();
 	}
@@ -362,7 +367,7 @@ html_print_div(array('id' => 'modal_alert', 'hidden' => true));
 				resizable: true,
 				draggable: true,
 				modal: true,
-				height: 200,
+				height: 160,
 				width: 400,
 				overlay: {
 					opacity: 0.5,

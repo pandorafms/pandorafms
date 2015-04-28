@@ -144,6 +144,7 @@ p.center {
 h1#log_title {
 	font-size: 18px;
 	margin-bottom: 0px;
+	color: #FFF !important;
 }
 div#log_msg {
 	display: none;
@@ -410,6 +411,7 @@ div#foot {
 }
 
 p.log_in {
+	color: #FFF !important;
 	padding: 0px 10px;
 }
 h1#log_f {
@@ -552,6 +554,7 @@ input.next_login {
 DIV.login_nick, DIV.login_pass {
 	text-align:left;
 	padding-left: 15px;
+	margin-top: 10px;
 }
 
 DIV.login_nick>input, DIV.login_pass>input {
@@ -559,6 +562,15 @@ DIV.login_nick>input, DIV.login_pass>input {
 	border-radius:0px;
 	margin-left: 10px;
 }
+
+DIV.login_nick>input:focus,DIV.login_pass>input:focus {
+    outline-width: 0px;
+    border-color: #373737;
+    background-color: #373737;
+    font-size: 12px;
+    box-shadow: 0px 0px 3px 3px #e2e2e2;
+}
+
 DIV.login_nick>img, DIV.login_pass>img {
 	vertical-align: middle;
 }
@@ -612,17 +624,14 @@ input.login_user {
 	width: 179px;
 	color: #222;
 	height: 18px;
-	-webkit-box-shadow: 0 0 0px 1000px #e2e2e2 inset;
 }
 
 input.login_password {
 	/* Browser without multibackground support */
-	background-color: #e2e2e2 !important;
 	padding-left: 8px;
 	width: 179px;
 	color: #222;
 	height: 18px;
-	-webkit-box-shadow: 0 0 0px 1000px #e2e2e2 inset;
 }
 .databox_error {
 	width: 657px !important;
@@ -674,7 +683,7 @@ input.sub {
 
 	background-color: #333 !important;
 	background-repeat: no-repeat !important;
-	background-position: 92% 5px !important;
+	background-position: 92% 3px !important;
 
 	color: white !important;
 	padding: 3px 3px 5px 12px;
@@ -2500,7 +2509,7 @@ input.search_input {
 	margin-top: 8px !important;
 }
 
-a[id^='tgl_ctrl_']>img{
+a[id^='tgl_ctrl_']>img, a[id^='tgl_ctrl_']>b>img{
 	vertical-align:middle;
 }
 

@@ -199,6 +199,7 @@ CREATE TABLE tagente_modulo (
 	max NUMBER(19, 0) DEFAULT 0,
 	min NUMBER(19, 0) DEFAULT 0,
 	module_interval NUMBER(10, 0) DEFAULT 0,
+	module_ff_interval` NUMBER(10, 0) DEFAULT 0,
 	cron_interval VARCHAR2(100) DEFAULT '',
 	tcp_port NUMBER(10, 0) DEFAULT 0,
 	tcp_send CLOB DEFAULT '',
@@ -726,7 +727,6 @@ CREATE TABLE tnetwork_component (
 	max NUMBER(10, 0) DEFAULT 0,
 	min NUMBER(19, 0) DEFAULT 0,
 	module_interval NUMBER(19, 0) DEFAULT 0,
-	module_ff_interval NUMBER(19, 0) DEFAULT 0,
 	tcp_port NUMBER(10, 0) DEFAULT 0,
 	tcp_send CLOB,
 	tcp_rcv CLOB,
@@ -1260,6 +1260,9 @@ CREATE TABLE tlayout_data (
 	id_metaconsole NUMBER(10, 0) DEFAULT 0,
 	id_group NUMBER(10, 0) DEFAULT 0,
 	id_custom_graph NUMBER(10, 0) DEFAULT 0
+	border_width NUMBER UNSIGNED NOT NULL default 0,
+	border_color VARCHAR2(200) DEFAULT '',
+	fill_color VARCHAR2(200) DEFAULT '',
 );
 CREATE SEQUENCE tlayout_data_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tlayout_data_inc BEFORE INSERT ON tlayout_data REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tlayout_data_s.nextval INTO :NEW.id FROM dual; END tlayout_data_inc;;
@@ -1474,16 +1477,16 @@ CREATE TABLE tgis_map (
 	zoom_level NUMBER(5, 0) DEFAULT 1,
 	--path on the server to the background image of the map
 	map_background VARCHAR2(127) DEFAULT NULL,
-	--DEFAULT longitude for the agents placed on the map
-	DEFAULT_longitude BINARY_DOUBLE DEFAULT NULL,
-	--DEFAULT latitude for the agents placed on the map
-	DEFAULT_latitude BINARY_DOUBLE DEFAULT NULL,
-	--DEFAULT altitude for the agents placed on the map
-	DEFAULT_altitude DOUBLE PRECISION DEFAULT NULL,
+	--Default longitude for the agents placed on the map
+	default_longitude BINARY_DOUBLE DEFAULT NULL,
+	--Default latitude for the agents placed on the map
+	default_latitude BINARY_DOUBLE DEFAULT NULL,
+	--Default altitude for the agents placed on the map
+	default_altitude DOUBLE PRECISION DEFAULT NULL,
 	--Group that owns the map
 	group_id NUMBER(10, 0) DEFAULT 0,
-	--1 if this is the DEFAULT map, 0 in other case
-	DEFAULT_map NUMBER(5, 0) DEFAULT 0
+	--1 if this is the default map, 0 in other case
+	default_map NUMBER(5, 0) DEFAULT 0
 );
 CREATE INDEX tgis_map_tagente_map_name_idx ON tgis_map(map_name);
 
@@ -1506,14 +1509,14 @@ CREATE TABLE tgis_map_connection (
 	conection_data CLOB DEFAULT NULL, 
 	--Number of zoom levels available
 	num_zoom_levels NUMBER(5, 0) DEFAULT NULL, 
-	--DEFAULT Zoom Level for the connection
-	DEFAULT_zoom_level NUMBER(5, 0) DEFAULT 16,
-	--DEFAULT longitude for the agents placed on the map
-	DEFAULT_longitude BINARY_DOUBLE DEFAULT NULL,
-	--DEFAULT latitude for the agents placed on the map
-	DEFAULT_latitude BINARY_DOUBLE DEFAULT NULL,
-	--DEFAULT altitude for the agents placed on the map
-	DEFAULT_altitude BINARY_DOUBLE DEFAULT NULL,
+	--Default Zoom Level for the connection
+	default_zoom_level NUMBER(5, 0) DEFAULT 16,
+	--Default longitude for the agents placed on the map
+	default_longitude BINARY_DOUBLE DEFAULT NULL,
+	--Default latitude for the agents placed on the map
+	default_latitude BINARY_DOUBLE DEFAULT NULL,
+	--Default altitude for the agents placed on the map
+	default_altitude BINARY_DOUBLE DEFAULT NULL,
 	--longitude of the center of the map when it\'s loaded
 	initial_longitude BINARY_DOUBLE DEFAULT NULL,
 	--latitude of the center of the map when it\'s loaded

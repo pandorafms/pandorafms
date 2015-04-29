@@ -357,7 +357,7 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 		echo "<td></td>";
 		echo "<td></td>";
 	} else {
-		echo "<td>" . ui_print_help_icon ('pcap_filter', true, ui_get_full_url(false, false, false, false)) . "</td>";
+		echo "<td>" . ui_print_help_icon ('pcap_filter', true) . "</td>";
 		echo "<td colspan='5'>" . html_print_textarea ('advanced_filter', 4, 40, $filter['advanced_filter'], "style='min-height: 0px; width: 90%;'", true) . "</td>";
 	}
 	

@@ -17,7 +17,7 @@ Set colVideoCards = objWMIService.ExecQuery("Select caption,AdapterRAM,PNPDevice
 
 For Each vcard In colVideoCards
   Wscript.StdOut.WriteLine "<data><![CDATA["  & vcard.caption _ 
-	& ";" & Abs(Round(vcard.AdapterRAM/(1024*1024)),2) & " MB" _
+	& ";" & Round(Abs(vcard.AdapterRAM/(1024*1024)),2) & " MB" _
 	& ";" & vcard.PNPDeviceID _
 	& "]]></data>"
 Next

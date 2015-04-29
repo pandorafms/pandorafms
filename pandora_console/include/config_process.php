@@ -253,6 +253,9 @@ switch ($config["dbtype"]) {
 		}
 		break;
 	case "oracle":
+		if (!isset($config['quote_string'])) {
+			$config['db_quote_string'] = "'";
+		}
 		break;
 }
 //======================================================================

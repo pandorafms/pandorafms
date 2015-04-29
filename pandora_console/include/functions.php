@@ -2213,7 +2213,7 @@ function get_news($arguments) {
 		case "oracle":
 			$sql = sprintf("SELECT subject,timestamp,text,author
 				FROM tnews
-				WHERE rownum <= %limit AND id_group IN (%s) AND 
+				WHERE rownum <= %s AND id_group IN (%s) AND 
 								modal = %s AND 
 								(expire = 0 OR (expire = 1 AND expire_timestamp > '%s'))
 				ORDER BY timestamp DESC", $limit, $id_group, $modal, $current_datetime);

@@ -252,6 +252,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'event_report_group':
 				reporting_html_event_report_group($table, $item);
 				break;
+			case 'top_n':
+				reporting_html_top_n($table, $item);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -261,6 +264,75 @@ function reporting_html_print_report($report, $mini = false) {
 		
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
+	}
+}
+
+function reporting_html_top_n($table, $item) {
+	if (!empty($item['failed'])) {
+		$table->colspan['top_n']['cell'] = 3;
+		$table->data['top_n']['cell'] = $item['failed'];
+	}
+	else {
+		$table1->width = '99%';
+		
+		$table1->align = array();
+		$table1->align[0] = 'left';
+		$table1->align[1] = 'left';
+		$table1->align[2] = 'right';
+		
+		$table1->data = array ();
+		
+		$table1->head = array ();
+		$table1->head[0] = __('Agent');
+		$table1->head[1] = __('Module');
+		$table1->head[2] = __('Value');
+		
+		foreach ($item['data'] as $top) {
+			$row = array();
+			$row[] = $top['agent'];
+			$row[] = $top['module'];
+			$row[] = $top['formated_value'];
+			$table1->data[] = $row;
+		}
+		
+		$table->colspan['top_n']['cell'] = 3;
+		$table->data['top_n']['cell'] = html_print_table($table1, true);
+		
+		if (!empty($item['chars']['pie'])) {
+			$table->colspan['char_pie']['cell'] = 3;
+			$table->data['char_pie']['cell'] = $item['chars']['pie'];
+		}
+		
+		if (!empty($item['chars']['bars'])) {
+			$table->colspan['char_bars']['cell'] = 3;
+			$table->data['char_bars']['cell'] = $item['chars']['bars'];
+		}
+		
+		if (!empty($item['resume'])) {
+			$table1 = null;
+			$table1->width = '99%';
+			
+			$table1->align = array();
+			$table1->align[0] = 'center';
+			$table1->align[1] = 'center';
+			$table1->align[2] = 'center';
+			
+			$table1->data = array ();
+			
+			$table1->head = array ();
+			$table1->head[0] = __('Min Value');
+			$table1->head[1] = __('Average Value');
+			$table1->head[2] = __('Max Value');
+			
+			$row = array();
+			$row[] = $item['resume']['min']['formated_value'];
+			$row[] = $item['resume']['avg']['formated_value'];
+			$row[] = $item['resume']['max']['formated_value'];
+			$table1->data[] = $row;
+			
+			$table->colspan['resume']['cell'] = 3;
+			$table->data['resume']['cell'] = html_print_table($table1, true);
+		}
 	}
 }
 
@@ -288,7 +360,7 @@ function reporting_html_event_report_group($table, $item) {
 		$table1->head[4] = __('Criticity');
 		$table1->head[5] = __('Val. by');
 		$table1->head[6] = __('Timestamp');
-	
+		
 		foreach ($item['data'] as $k => $event) {
 			//First pass along the class of this row
 			$table1->cellclass[$k][1] = $table1->cellclass[$k][3] =
@@ -4402,340 +4474,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		
 		
 		
-		case 'top_n':
-			$top_n = $content['top_n'];
-			
-			switch ($top_n) {
-				case REPORT_TOP_N_MAX:
-					$type_top_n = __('Max');
-					break;
-				case REPORT_TOP_N_MIN:
-					$type_top_n = __('Min');
-					break;
-				case REPORT_TOP_N_AVG:
-				default:
-					//If nothing is selected then it will be shown the average data
-					$type_top_n = __('Avg');
-					break;
-			}
-			
-			if (empty($item_title)) {
-				$item_title = 'Top '.$content['top_n_value'] . '<br>' . $type_top_n;
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title);
-			
-			$order_uptodown = $content['order_uptodown'];
-			
-			$top_n_value = $content['top_n_value'];
-			$show_graph = $content['show_graph'];
-			
-			$table->style[0] = 'padding: 8px 5px 8px 5px;';
-			$table->style[1] = 'text-align: right';
-			
-			// Put description at the end of the module (if exists)
-			$table->colspan[1][0] = 3;
-			if ($content["description"] != "") {
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-			}
-			//Get all the related data
-			$sql = sprintf("SELECT id_agent_module, server_name
-				FROM treport_content_item
-				WHERE id_report_content = %d", $content['id_rc']);
-			
-			$tops = db_process_sql ($sql);
-			
-			if ($tops === false) {
-				$data = array ();
-				$table->colspan[2][0] = 3;
-				$data[0] = __('There are no Agent/Modules defined');
-				array_push ($table->data, $data);
-				break;
-			}
-			
-			if ($show_graph != REPORT_TOP_N_ONLY_GRAPHS) {
-				$table1->width = '99%';
-				$table1->data = array ();
-				$table1->head = array ();
-				$table1->head[0] = __('Agent');
-				$table1->head[1] = __('Module');
-				$table1->head[2] = __('Value');
-				$table1->style[0] = 'text-align: left';
-				$table1->style[1] = 'text-align: left';
-				$table1->style[2] = 'text-align: left';
-			}
-			
-			//Get data of all agents (before to slide to N values)
-			$data_top = array();
-			
-			foreach ($tops as $key => $row) {
-				
-				//Metaconsole connection
-				$server_name = $row['server_name'];
-				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
-					$connection = metaconsole_get_connection($server_name);
-					if (metaconsole_load_external_db($connection) != NOERR) {
-						//ui_print_error_message ("Error connecting to ".$server_name);
-						continue;
-					}
-				}
-				
-				$ag_name = modules_get_agentmodule_agent_name($row ['id_agent_module']); 
-				$mod_name = modules_get_agentmodule_name ($row ['id_agent_module']);
-				$unit = db_get_value('unit', 'tagente_modulo',
-					'id_agente_modulo', $row ['id_agent_module']); 
-				
-				
-				switch ($top_n) {
-					case REPORT_TOP_N_MAX:
-						$value = reporting_get_agentmodule_data_max ($row['id_agent_module'], $content['period']);
-						break;
-					case REPORT_TOP_N_MIN:
-						$value = reporting_get_agentmodule_data_min ($row['id_agent_module'], $content['period']);
-						break;
-					case REPORT_TOP_N_AVG:
-					default:
-						//If nothing is selected then it will be shown the average data
-						$value = reporting_get_agentmodule_data_average ($row['id_agent_module'], $content['period']);
-						break;
-				}
-				
-				//If the returned value from modules_get_agentmodule_data_max/min/avg is false it won't be stored.
-				if ($value !== false) {
-					$data_top[$key] = $value;
-					$id_agent_module[$key] = $row['id_agent_module'];
-					$agent_name[$key] = $ag_name;
-					$module_name[$key] = $mod_name;
-					$units[$key] = $unit;
-				}
-				
-				//Restore dbconnection
-				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
-					metaconsole_restore_db();
-				}
-			}
-			
-			if (empty($data_top)) {
-				$data = array ();
-				$table->colspan[2][0] = 3;
-				$data[0] = __('Insuficient data');
-				array_push ($table->data, $data);
-				break;
-			}
-			
-			//Order to show.
-			switch ($order_uptodown) {
-				//Descending
-				case 1:
-					array_multisort($data_top, SORT_DESC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
-					break;
-				//Ascending
-				case 2:
-					array_multisort($data_top, SORT_ASC, $agent_name, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
-					break;
-				//By agent name or without selection
-				case 0:
-				case 3:
-					array_multisort($agent_name, SORT_ASC, $data_top, SORT_ASC, $module_name, SORT_ASC, $id_agent_module, SORT_ASC, $units, SORT_ASC);
-					break;
-			}
-			
-			array_splice ($data_top, $top_n_value);
-			array_splice ($agent_name, $top_n_value);
-			array_splice ($module_name, $top_n_value);
-			array_splice ($id_agent_module, $top_n_value);
-			array_splice ($units, $top_n_value);
-			
-			$data_top_values = array ();
-			$data_top_values['data_top'] = $data_top;
-			$data_top_values['agent_name'] = $agent_name;
-			$data_top_values['module_name'] = $module_name; 
-			$data_top_values['id_agent_module'] = $id_agent_module;
-			$data_top_values['units'] = $units;
-			
-			// Define truncate size depends the graph width
-			$truncate_size = $sizgraph_w / (4 * ($config['font_size']))-1;
-			
-			if ($order_uptodown == 1 || $order_uptodown == 2) {
-				$i = 0;
-				$data_pie_graph = array();
-				$data_hbar = array();
-				foreach ($data_top as $dt) {
-					$item_name = '';
-					$item_name =
-						ui_print_truncate_text($agent_name[$i], $truncate_size, false, true, false, "...") .
-						' - ' . 
-						ui_print_truncate_text($module_name[$i], $truncate_size, false, true, false, "...");
-					
-					
-					
-					//Dirty hack, maybe I am going to apply a job in Apple
-					//https://www.imperialviolet.org/2014/02/22/applebug.html
-					$item_name_key_pie = $item_name;
-					$exist_key = true;
-					while ($exist_key) {
-						if (isset($data_pie_graph[$item_name_key_pie])) {
-							$item_name_key_pie .= ' ';
-						}
-						else {
-							$exist_key = false;
-						}
-					}
-					$item_name_key_hbar = $item_name;
-					$exist_key = true;
-					while ($exist_key) {
-						if (isset($data_hbar[$item_name_key_hbar])) {
-							$item_name_key_hbar = ' ' . $item_name_key_hbar;
-						}
-						else {
-							$exist_key = false;
-						}
-					}
-					
-					
-					
-					$data_hbar[$item_name]['g'] = $dt; 
-					$data_pie_graph[$item_name] = $dt;
-					
-					if ($show_graph == 0 || $show_graph == 1) {
-						$data = array();
-						$data[0] = $agent_name[$i];
-						$data[1] = $module_name[$i];
-						
-						$data[2] = format_for_graph($dt,2) . " " . $units[$i];
-						array_push ($table1->data, $data);
-					}
-					$i++;
-					if ($i >= $top_n_value) break;
-				} 
-			}
-			else if ($order_uptodown == 0 || $order_uptodown == 3) {
-				$i = 0;
-				$data_pie_graph = array();
-				$data_hbar = array();
-				foreach ($agent_name as $an) {
-					$item_name = '';
-					$item_name =
-						ui_print_truncate_text($agent_name[$i],
-							$truncate_size, false, true, false, "...") .
-						' - ' . 
-						ui_print_truncate_text($module_name[$i],
-							$truncate_size, false, true, false, "...");
-					
-					
-					
-					//Dirty hack, maybe I am going to apply a job in Apple
-					//https://www.imperialviolet.org/2014/02/22/applebug.html
-					$item_name_key_pie = $item_name;
-					$exist_key = true;
-					while ($exist_key) {
-						if (isset($data_pie_graph[$item_name_key_pie])) {
-							$item_name_key_pie .= ' ';
-						}
-						else {
-							$exist_key = false;
-						}
-					}
-					$item_name_key_hbar = $item_name;
-					$exist_key = true;
-					while ($exist_key) {
-						if (isset($data_hbar[$item_name_key_hbar])) {
-							$item_name_key_hbar = ' ' . $item_name_key_hbar;
-						}
-						else {
-							$exist_key = false;
-						}
-					}
-					
-					
-					
-					$data_pie_graph[$item_name] = $data_top[$i];
-					$data_hbar[$item_name]['g'] = $data_top[$i];
-					if  ($show_graph == 0 || $show_graph == 1) {
-						$data = array();
-						$data[0] = $an;
-						$data[1] = $module_name[$i];
-						$data[2] = format_for_graph($data_top[$i],2) . " " . $units[$i];
-						array_push ($table1->data, $data);
-					}
-					$i++;
-					if ($i >= $top_n_value) break;
-				}
-			}
-			
-			unset($data);
-			$table->colspan[2][0] = 3;
-			$table->style[2] = 'text-align:center';
-			if ($show_graph == 0 || $show_graph == 1) {
-				$data = array();
-				$data[0] = html_print_table($table1, true);
-				array_push ($table->data, $data);
-			}
-			
-			$table->colspan[3][0] = 3;
-			$data = array();
-			if ($show_graph != REPORT_TOP_N_ONLY_TABLE) {
-				
-				$data[0] = pie3d_graph(false, $data_pie_graph,
-					$sizgraph_w, $sizgraph_h, __("other"),
-					ui_get_full_url(false, true, false, false) . '/',
-					ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
-					$config['fontpath'], $config['font_size']);
-				
-				
-				array_push ($table->data, $data);
-				//Display bars graph
-				$table->colspan[4][0] = 3;
-				$table->style[0] .= 'text-align:center';
-				$height = count($data_pie_graph)*20+35;
-				$data = array();
-				$data[0] = hbar_graph(false, $data_hbar, $sizgraph_w,
-					$height, array(), array(), "", "", true,
-					ui_get_full_url(false, true, false, false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png", $config['fontpath'], $config['font_size'], true, 1, true);
-				
-				array_push ($table->data, $data);
-			}
-			
-			if ($content['show_resume'] && count($data_top_values) > 0) {
-				//Get the very first not null value 
-				$i=0;
-				do {
-					$min = $data_top_values['data_top'][$i];
-					$i++;
-				}
-				while ($min === false && $i < count($data_top_values));
-				$max = $min;
-				$avg = 0;
-				
-				$i=0;
-				foreach ($data_top_values['data_top'] as $key => $dtv) {
-					if ($dtv < $min) $min = $dtv;
-					if ($dtv > $max) $max = $dtv;
-					$avg += $dtv;
-					$i++;
-				}
-				$avg = $avg / $i;
-				
-				unset($table_summary);
-				
-				$table_summary->width = '99%';
-				$table_summary->data = array ();
-				$table_summary->head = array ();
-				$table_summary->head[0] = __('Min Value');
-				$table_summary->head[1] = __('Average Value');
-				$table_summary->head[2] = __('Max Value');
-				
-				$table_summary->data[0][0] = format_for_graph($min, 2);
-				$table_summary->data[0][1] = format_for_graph($avg, 2);
-				$table_summary->data[0][2] = format_for_graph($max, 2);
-				
-				$table->colspan[5][0] = 3;
-				array_push ($table->data, array('<b>'.__('Summary').'</b>'));
-				$table->colspan[6][0] = 3;
-				array_push ($table->data, array(html_print_table($table_summary, true)));
-			}
-			break;
+		
 		
 		
 	}

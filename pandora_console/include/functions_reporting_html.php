@@ -255,6 +255,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'top_n':
 				reporting_html_top_n($table, $item);
 				break;
+			case 'SLA':
+				reporting_html_SLA($table, $item, $mini);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -264,6 +267,123 @@ function reporting_html_print_report($report, $mini = false) {
 		
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
+	}
+}
+
+function reporting_html_SLA($table, $item, $mini) {
+	if ($mini) {
+		$font_size = '1.5';
+	}
+	else {
+		$font_size = '3';
+	}
+	
+	if (!empty($item['failed'])) {
+		$table->colspan['sla']['cell'] = 3;
+		$table->data['sla']['cell'] = $item['failed'];
+	}
+	else {
+		
+		if (!empty($item['planned_downtimes'])) {
+			$table1->width = '99%';
+			
+			$table1->align = array();
+			$table1->align[0] = 'left';
+			$table1->align[1] = 'left';
+			$table1->align[2] = 'left';
+			$table1->align[3] = 'left';
+			
+			$table1->data = array ();
+			
+			$table1->head = array ();
+			$table1->head[0] = __('Name');
+			$table1->head[1] = __('Description');
+			$table1->head[2] = __('Execution');
+			$table1->head[3] = __('Dates');
+			
+			foreach ($item['planned_downtimes'] as $downtime) {
+				$row = array();
+				$row[] = $downtime['name'];
+				$row[] = $downtime['description'];
+				$row[] = $downtime['execution'];
+				$row[] = $downtime['dates'];
+				
+				$table1->data[] = $row;
+			}
+			
+			$table->colspan['planned_downtime']['cell'] = 3;
+			$table->data['planned_downtime']['cell'] = html_print_table($table1, true);
+		}
+		
+		$table1->width = '99%';
+		
+		$table1->align = array();
+		$table1->align[0] = 'left';
+		$table1->align[1] = 'left';
+		$table1->align[2] = 'right';
+		$table1->align[3] = 'right';
+		$table1->align[4] = 'right';
+		$table1->align[5] = 'right';
+		
+		$table1->data = array ();
+		
+		$table1->head = array ();
+		$table1->head[0] = __('Agent');
+		$table1->head[1] = __('Module');
+		$table1->head[2] = __('Max/Min Values');
+		$table1->head[3] = __('SLA Limit');
+		$table1->head[4] = __('SLA Compliance');
+		$table1->head[5] = __('Status');
+		
+		
+		
+		foreach ($item['data'] as $sla) {
+			$row = array();
+			$row[] = $sla['agent'];
+			$row[] = $sla['module'];
+			$row[] = $sla['max'] . " / " . $sla['min'];
+			$row[] = $sla['sla_limit'] . "%";
+			
+			if ($sla['sla_value_unknown']) {
+				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
+					' - ' . '</span>';
+				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
+					__('Unknown') . '</span>';
+			}
+			elseif ($sla['sla_status']) {
+				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
+					$sla['sla_value'] . "%" . '</span>';
+				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
+					__('OK') . '</span>';
+			}
+			else {
+				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
+					$sla['sla_value'] . "%" . '</span>';
+				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
+					__('Fail') . '</span>';
+			}
+			
+			$table1->data[] = $row;
+		}
+		
+		$table->colspan['sla']['cell'] = 3;
+		$table->data['sla']['cell'] = html_print_table($table1, true);
+		
+		if (!empty($item['charts'])) {
+			$table1 = null;
+			$table1->width = '99%';
+			
+			$table1->data = array ();
+			
+			foreach ($item['charts'] as $chart) {
+				$table1->data[] = array(
+					$chart['agent'] . "<br />" . $chart['module'],
+					$chart['chart']);
+			}
+			
+			$table->colspan['charts']['cell'] = 3;
+			$table->data['charts']['cell'] = html_print_table($table1, true);
+		}
 	}
 }
 
@@ -298,14 +418,14 @@ function reporting_html_top_n($table, $item) {
 		$table->colspan['top_n']['cell'] = 3;
 		$table->data['top_n']['cell'] = html_print_table($table1, true);
 		
-		if (!empty($item['chars']['pie'])) {
+		if (!empty($item['charts']['pie'])) {
 			$table->colspan['char_pie']['cell'] = 3;
-			$table->data['char_pie']['cell'] = $item['chars']['pie'];
+			$table->data['char_pie']['cell'] = $item['charts']['pie'];
 		}
 		
-		if (!empty($item['chars']['bars'])) {
+		if (!empty($item['charts']['bars'])) {
 			$table->colspan['char_bars']['cell'] = 3;
-			$table->data['char_bars']['cell'] = $item['chars']['bars'];
+			$table->data['char_bars']['cell'] = $item['charts']['bars'];
 		}
 		
 		if (!empty($item['resume'])) {
@@ -3932,543 +4052,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 'SLA_services':
 			if (function_exists("reporting_enterprise_sla_services"))
 				reporting_enterprise_sla_services($mini, $content, $report, $table, $item_title);
-			break;
-		case 3:
-		case 'SLA':
-			if (empty($item_title)) {
-				$item_title = __('S.L.A.');
-			}
-			reporting_header_content($mini, $content, $report, $table, $item_title);
-			
-			$edge_interval = 10;
-			
-			// What show?
-			$show_table = $content['show_graph'] == 0 || $content['show_graph'] == 1;
-			$show_graphs = $content['show_graph'] == 1 || $content['show_graph'] == 2;
-			
-			//RUNNING
-			$table->style[1] = 'text-align: right';
-			
-			// Put description at the end of the module (if exists)
-			
-			$table->colspan[0][1] = 2;
-			$next_row = 1;
-			if ($content["description"] != "") {
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-				$data_desc = array();
-				$data_desc[0] = $content["description"];
-				array_push ($table->data, $data_desc);
-			}
-			
-			$slas = db_get_all_rows_field_filter ('treport_content_sla_combined',
-				'id_report_content', $content['id_rc']);
-			
-			if ($slas === false) {
-				$data = array ();
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-				$data[0] = __('There are no SLAs defined');
-				array_push ($table->data, $data);
-				$slas = array ();
-				break;
-			}
-			elseif ($show_table) {
-				$table1->width = '99%';
-				$table1->data = array ();
-				$table1->head = array ();
-				$table1->head[0] = __('Agent');
-				$table1->head[1] = __('Module');
-				$table1->head[2] = __('Max/Min Values');
-				$table1->head[3] = __('SLA Limit');
-				$table1->head[4] = __('SLA Compliance');
-				$table1->head[5] = __('Status');
-				// $table1->head[6] = __('Criticity');
-				$table1->style[0] = 'text-align: left';
-				$table1->style[1] = 'text-align: left';
-				$table1->style[2] = 'text-align: right';
-				$table1->style[3] = 'text-align: right';
-				$table1->style[4] = 'text-align: right';
-				$table1->style[5] = 'text-align: right';
-				// $table1->style[6] = 'text-align: center';
-			}
-			
-			// Table Planned Downtimes
-			require_once ($config['homedir'] . '/include/functions_planned_downtimes.php');
-			$metaconsole_on = ($config['metaconsole'] == 1) && defined('METACONSOLE');
-			$downtime_malformed = false;
-			
-			$planned_downtimes_empty = true;
-			$malformed_planned_downtimes_empty = true;
-			
-			if ($metaconsole_on) {
-				$id_agent_modules_by_server = array();
-				
-				foreach ($slas as $sla) {
-					$server = $sla['server_name'];
-					if (empty($server))
-						continue;
-					
-					if (!isset($id_agent_modules_by_server[$server]))
-						$id_agent_modules_by_server[$server] = array();
-					
-					$id_agent_modules_by_server[$server][] = $sla['id_agent_module'];
-				}
-				
-				$planned_downtimes_by_server = array();
-				$malformed_planned_downtimes_by_server = array();
-				foreach ($id_agent_modules_by_server as $server => $id_agent_modules) {
-					//Metaconsole connection
-					if (!empty($server)) {
-						$connection = metaconsole_get_connection($server);
-						if (!metaconsole_load_external_db($connection)) {
-							continue;
-						}
-						
-						$planned_downtimes_by_server[$server] = reporting_get_planned_downtimes(($report['datetime']-$content['period']), $report['datetime'], $id_agent_modules);
-						$malformed_planned_downtimes_by_server[$server] = planned_downtimes_get_malformed();
-						
-						if (!empty($planned_downtimes_by_server[$server]))
-							$planned_downtimes_empty = false;
-						if (!empty($malformed_planned_downtimes_by_server[$server]))
-							$malformed_planned_downtimes_empty = false;
-						
-						//Restore db connection
-						metaconsole_restore_db();
-					}
-				}
-				
-				if (!$planned_downtimes_empty) {
-					$table_planned_downtimes = new StdClass();
-					$table_planned_downtimes->width = '100%';
-					$table_planned_downtimes->title = __('This SLA has been affected by the following planned downtimes');
-					$table_planned_downtimes->head = array();
-					$table_planned_downtimes->head[0] = __('Server');
-					$table_planned_downtimes->head[1] = __('Name');
-					$table_planned_downtimes->head[2] = __('Description');
-					$table_planned_downtimes->head[3] = __('Execution');
-					$table_planned_downtimes->head[4] = __('Dates');
-					$table_planned_downtimes->headstyle = array();
-					$table_planned_downtimes->style = array();
-					$table_planned_downtimes->cellstyle = array();
-					$table_planned_downtimes->data = array();
-					
-					foreach ($planned_downtimes_by_server as $server => $planned_downtimes) {
-						foreach ($planned_downtimes as $planned_downtime) {
-							$data = array();
-							$data[0] = $server;
-							$data[1] = $planned_downtime['name'];
-							$data[2] = $planned_downtime['description'];
-							$data[3] = ucfirst($planned_downtime['type_execution']);
-							$data[4] = "";
-							switch ($planned_downtime['type_execution']) {
-								case 'once':
-									$data[3] = date ("Y-m-d H:i", $planned_downtime['date_from']) .
-										"&nbsp;" . __('to') . "&nbsp;".
-										date ("Y-m-d H:i", $planned_downtime['date_to']);
-									break;
-								case 'periodically':
-									switch ($planned_downtime['type_periodicity']) {
-										case 'weekly':
-											$data[4] = __('Weekly:');
-											$data[4] .= "&nbsp;";
-											if ($planned_downtime['monday']) {
-												$data[4] .= __('Mon');
-												$data[4] .= "&nbsp;";
-											}
-											if ($planned_downtime['tuesday']) {
-												$data[4] .= __('Tue');
-												$data[4] .= "&nbsp;";
-											}
-											if ($planned_downtime['wednesday']) {
-												$data[4] .= __('Wed');
-												$data[4] .= "&nbsp;";
-											}
-											if ($planned_downtime['thursday']) {
-												$data[4] .= __('Thu');
-												$data[4] .= "&nbsp;";
-											}
-											if ($planned_downtime['friday']) {
-												$data[4] .= __('Fri');
-												$data[4] .= "&nbsp;";
-											}
-											if ($planned_downtime['saturday']) {
-												$data[4] .= __('Sat');
-												$data[4] .= "&nbsp;";
-											}
-											if ($planned_downtime['sunday']) {
-												$data[4] .= __('Sun');
-												$data[4] .= "&nbsp;";
-											}
-											$data[4] .= "&nbsp;(" . $planned_downtime['periodically_time_from']; 
-											$data[4] .= "-" . $planned_downtime['periodically_time_to'] . ")";
-											break;
-										case 'monthly':
-											$data[4] = __('Monthly:') . "&nbsp;";
-											$data[4] .= __('From day') . "&nbsp;" . $planned_downtime['periodically_day_from'];
-											$data[4] .= "&nbsp;" . strtolower(__('To day')) . "&nbsp;";
-											$data[4] .= $planned_downtime['periodically_day_to'];
-											$data[4] .= "&nbsp;(" . $planned_downtime['periodically_time_from'];
-											$data[4] .= "-" . $planned_downtime['periodically_time_to'] . ")";
-											break;
-									}
-									break;
-							}
-							
-							if (!$malformed_planned_downtimes_empty
-									&& isset($malformed_planned_downtimes_by_server[$server])
-									&& isset($malformed_planned_downtimes_by_server[$server][$planned_downtime['id']])) {
-								$next_row_num = count($table_planned_downtimes->data);
-								$table_planned_downtimes->cellstyle[$next_row_num][0] = 'color: red';
-								$table_planned_downtimes->cellstyle[$next_row_num][1] = 'color: red';
-								$table_planned_downtimes->cellstyle[$next_row_num][2] = 'color: red';
-								$table_planned_downtimes->cellstyle[$next_row_num][3] = 'color: red';
-								$table_planned_downtimes->cellstyle[$next_row_num][4] = 'color: red';
-								
-								if (!$downtime_malformed)
-									$downtime_malformed = true;
-							}
-							
-							$table_planned_downtimes->data[] = $data;
-						}
-					}
-				}
-			}
-			else {
-				$id_agent_modules = array();
-				foreach ($slas as $sla) {
-					if (!empty($sla['id_agent_module']))
-						$id_agent_modules[] = $sla['id_agent_module'];
-				}
-				
-				$planned_downtimes = reporting_get_planned_downtimes(($report['datetime']-$content['period']), $report['datetime'], $id_agent_modules);
-				$malformed_planned_downtimes = planned_downtimes_get_malformed();
-				
-				if (!empty($planned_downtimes))
-					$planned_downtimes_empty = false;
-				if (!empty($malformed_planned_downtimes))
-					$malformed_planned_downtimes_empty = false;
-				
-				if (!$planned_downtimes_empty) {
-					$table_planned_downtimes = new StdClass();
-					$table_planned_downtimes->width = '100%';
-					$table_planned_downtimes->title = __('This SLA has been affected by the following planned downtimes');
-					$table_planned_downtimes->head = array();
-					$table_planned_downtimes->head[0] = __('Name');
-					$table_planned_downtimes->head[1] = __('Description');
-					$table_planned_downtimes->head[2] = __('Execution');
-					$table_planned_downtimes->head[3] = __('Dates');
-					$table_planned_downtimes->headstyle = array();
-					$table_planned_downtimes->style = array();
-					$table_planned_downtimes->cellstyle = array();
-					$table_planned_downtimes->data = array();
-					
-					foreach ($planned_downtimes as $planned_downtime) {
-						
-						$data = array();
-						$data[0] = $planned_downtime['name'];
-						$data[1] = $planned_downtime['description'];
-						$data[2] = ucfirst($planned_downtime['type_execution']);
-						$data[3] = "";
-						switch ($planned_downtime['type_execution']) {
-							case 'once':
-								$data[3] = date ("Y-m-d H:i", $planned_downtime['date_from']) .
-									"&nbsp;" . __('to') . "&nbsp;".
-									date ("Y-m-d H:i", $planned_downtime['date_to']);
-								break;
-							case 'periodically':
-								switch ($planned_downtime['type_periodicity']) {
-									case 'weekly':
-										$data[3] = __('Weekly:');
-										$data[3] .= "&nbsp;";
-										if ($planned_downtime['monday']) {
-											$data[3] .= __('Mon');
-											$data[3] .= "&nbsp;";
-										}
-										if ($planned_downtime['tuesday']) {
-											$data[3] .= __('Tue');
-											$data[3] .= "&nbsp;";
-										}
-										if ($planned_downtime['wednesday']) {
-											$data[3] .= __('Wed');
-											$data[3] .= "&nbsp;";
-										}
-										if ($planned_downtime['thursday']) {
-											$data[3] .= __('Thu');
-											$data[3] .= "&nbsp;";
-										}
-										if ($planned_downtime['friday']) {
-											$data[3] .= __('Fri');
-											$data[3] .= "&nbsp;";
-										}
-										if ($planned_downtime['saturday']) {
-											$data[3] .= __('Sat');
-											$data[3] .= "&nbsp;";
-										}
-										if ($planned_downtime['sunday']) {
-											$data[3] .= __('Sun');
-											$data[3] .= "&nbsp;";
-										}
-										$data[3] .= "&nbsp;(" . $planned_downtime['periodically_time_from']; 
-										$data[3] .= "-" . $planned_downtime['periodically_time_to'] . ")";
-										break;
-									case 'monthly':
-										$data[3] = __('Monthly:') . "&nbsp;";
-										$data[3] .= __('From day') . "&nbsp;" . $planned_downtime['periodically_day_from'];
-										$data[3] .= "&nbsp;" . strtolower(__('To day')) . "&nbsp;";
-										$data[3] .= $planned_downtime['periodically_day_to'];
-										$data[3] .= "&nbsp;(" . $planned_downtime['periodically_time_from'];
-										$data[3] .= "-" . $planned_downtime['periodically_time_to'] . ")";
-										break;
-								}
-								break;
-						}
-						
-						if (!$malformed_planned_downtimes_empty && isset($malformed_planned_downtimes[$planned_downtime['id']])) {
-							$next_row_num = count($table_planned_downtimes->data);
-							$table_planned_downtimes->cellstyle[$next_row_num][0] = 'color: red';
-							$table_planned_downtimes->cellstyle[$next_row_num][1] = 'color: red';
-							$table_planned_downtimes->cellstyle[$next_row_num][2] = 'color: red';
-							$table_planned_downtimes->cellstyle[$next_row_num][3] = 'color: red';
-							
-							if (!$downtime_malformed)
-								$downtime_malformed = true;
-						}
-						
-						$table_planned_downtimes->data[] = $data;
-					}
-				}
-			}
-			
-			if ($downtime_malformed) {
-				$info_malformed = ui_print_error_message(
-					__('This item is affected by a malformed planned downtime') . ". " .
-					__('Go to the planned downtimes section to solve this') . ".", '', true);
-				
-				$data = array();
-				$data[0] = $info_malformed;
-				$data[0] .= html_print_table($table_planned_downtimes, true);
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-				array_push ($table->data, $data);
-				break;
-			}
-			
-			$data_graph = array ();
-			// $data_horin_graph = array();
-			$data_graph[__('Inside limits')] = 0;
-			$data_graph[__('Out of limits')] = 0;
-			$data_graph[__('On the edge')] = 0;
-			$data_graph[__('Unknown')] = 0;
-			// $data_horin_graph[__('Inside limits')] = 0;
-			// $data_horin_graph[__('Out of limits')] = 0;
-			// $data_horin_graph[__('On the edge')] = 0;
-			// $data_horin_graph[__('Unknown')] = 0;
-			
-			$data_graph[__('Plannified downtime')] = 0;
-			
-			$urlImage = ui_get_full_url(false, true, false, false);
-			
-			$sla_failed = false;
-			$total_SLA = 0;
-			$total_result_SLA = 'ok';
-			$sla_showed = array();
-			$sla_showed_values = array();
-			
-			foreach ($slas as $sla) {
-				$server_name = $sla ['server_name'];
-				//Metaconsole connection
-				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
-					$connection = metaconsole_get_connection($server_name);
-					if (!metaconsole_load_external_db($connection)) {
-						//ui_print_error_message ("Error connecting to ".$server_name);
-						continue;
-					}
-				}
-				
-				if (modules_is_disable_agent($sla['id_agent_module'])) {
-					continue;
-				}
-				
-				//Get the sla_value in % and store it on $sla_value
-				$sla_value = reporting_get_agentmodule_sla(
-					$sla['id_agent_module'], $content['period'],
-					$sla['sla_min'], $sla['sla_max'],
-					$report["datetime"], $content,
-					$content['time_from'], $content['time_to']);
-				
-				if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
-					//Restore db connection
-					metaconsole_restore_db();
-				}
-				
-				//Do not show right modules if 'only_display_wrong' is active
-				if ($content['only_display_wrong'] == 1 &&
-					$sla_value >= $sla['sla_limit']) {
-					
-					continue;
-				}
-				
-				$sla_showed[] = $sla;
-				$sla_showed_values[] = $sla_value;
-				
-			}
-			
-			// SLA items sorted descending ()
-			if ($content['top_n'] == 2) {
-				arsort($sla_showed_values);
-			}
-			// SLA items sorted ascending
-			else if ($content['top_n'] == 1) {
-				asort($sla_showed_values);
-			}
-			
-			// Slice graphs calculation
-			if ($show_graphs && !empty($slas)) {
-				$tableslice->width = '99%';
-				$tableslice->style[0] = 'text-align: right';
-				$tableslice->data = array ();
-			}
-			
-			foreach ($sla_showed_values as $k => $sla_value) {
-				$sla = $sla_showed[$k];
-				
-				$server_name = $sla ['server_name'];
-				//Metaconsole connection
-				if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
-					$connection = metaconsole_get_connection($server_name);
-					if (metaconsole_connect($connection) != NOERR) {
-						//ui_print_error_message ("Error connecting to ".$server_name);
-						continue;
-					}
-				}
-				
-				//Fill the array data_graph for the pie graph
-				// if ($sla_value === false) {
-				// 	$data_graph[__('Unknown')]++;
-				// 	// $data_horin_graph[__('Unknown')]['g']++;
-				// }
-				// # Fix : 100% accurance is 'inside limits' although 10% was not overrun
-				// else if (($sla_value == 100 && $sla_value >= $sla['sla_limit']) ) {
-				// 	$data_graph[__('Inside limits')]++;
-				// 	$data_horin_graph[__('Inside limits')]['g']++;
-				// }
-				// else if ($sla_value <= ($sla['sla_limit']+10) && $sla_value >= ($sla['sla_limit']-10)) {
-				// 	$data_graph[__('On the edge')]++;
-				// 	$data_horin_graph[__('On the edge')]['g']++;
-				// }
-				// else if ($sla_value > ($sla['sla_limit']+10)) {
-				// 	$data_graph[__('Inside limits')]++;
-				// 	$data_horin_graph[__('Inside limits')]['g']++;
-				// }
-				// else if ($sla_value < ($sla['sla_limit']-10)) {
-				// 	$data_graph[__('Out of limits')]++;
-				// 	$data_horin_graph[__('Out of limits')]['g']++;
-				// }
-				
-				// if ($sla_value === false) {
-				// 	if ($total_result_SLA != 'fail')
-				// 		$total_result_SLA = 'unknown';
-				// }
-				// else if ($sla_value < $sla['sla_limit']) {
-				// 	$total_result_SLA = 'fail';
-				// }
-				
-				$total_SLA += $sla_value;
-				
-				if ($show_table) {
-					$data = array ();
-					$data[0] = modules_get_agentmodule_agent_name ($sla['id_agent_module']);
-					$data[1] = modules_get_agentmodule_name ($sla['id_agent_module']);
-					$data[2] = $sla['sla_max'].'/';
-					$data[2] .= $sla['sla_min'];
-					$data[3] = $sla['sla_limit'].'%';
-					
-					if ($sla_value === false) {
-						$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">';
-						$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">'.__('Unknown').'</span>';
-						// $data[6] = html_print_image('images/status_sets/default/severity_maintenance.png',true,array('title'=>__('Unknown')));
-					}
-					else {
-						$data[4] = '';
-						$data[5] = '';
-						// $data[6] = '';
-						
-						if ($sla_value >= $sla['sla_limit']) {
-							$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: '.COL_NORMAL.';">';
-							$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: '.COL_NORMAL.';">'.__('OK').'</span>';
-						}
-						else {
-							$sla_failed = true;
-							$data[4] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">';
-							$data[5] = '<span style="font: bold '.$sizem.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">'.__('Fail').'</span>';
-						}
-						
-						// Print icon with status including edge
-						# Fix : 100% accurance is 'inside limits' although 10% was not overrun
-						// if (($sla_value == 100 && $sla_value >= $sla['sla_limit']) || ($sla_value > ($sla['sla_limit'] + $edge_interval))) {
-						// 	$data[6] = html_print_image('images/status_sets/default/severity_normal.png',true,array('title'=>__('Inside limits')));
-						// }
-						// elseif (($sla_value <= $sla['sla_limit'] + $edge_interval)
-						// 	&& ($sla_value >= $sla['sla_limit'] - $edge_interval)) {
-						// 	$data[6] = html_print_image('images/status_sets/default/severity_warning.png',true,array('title'=>__('On the edge')));
-						// }
-						// else {
-						// 	$data[6] = html_print_image('images/status_sets/default/severity_critical.png',true,array('title'=>__('Out of limits')));
-						// }
-						
-						$data[4] .= format_numeric ($sla_value, 2). "%";
-					}
-					$data[4] .= "</span>";
-					
-					array_push ($table1->data, $data);
-				}
-				
-				// Slice graphs calculation
-				if ($show_graphs) {
-					$dataslice = array();
-					$dataslice[0] = modules_get_agentmodule_agent_name ($sla['id_agent_module']);
-					$dataslice[0] .= "<br>";
-					$dataslice[0] .= modules_get_agentmodule_name ($sla['id_agent_module']);
-					
-					$dataslice[1] = graph_sla_slicebar ($sla['id_agent_module'], $content['period'],
-						$sla['sla_min'], $sla['sla_max'], $report['datetime'], $content, $content['time_from'],
-						$content['time_to'], 650, 25, $urlImage, 1, false, false);
-					
-					array_push ($tableslice->data, $dataslice);
-				}
-				
-				if ($config ['metaconsole'] == 1 && defined('METACONSOLE')) {
-					//Restore db connection
-					metaconsole_restore_db();
-				}
-			} 
-			
-			if ($show_table) {
-				$data = array();
-				$data[0] = html_print_table($table1, true);
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-				array_push ($table->data, $data);
-			}
-			
-			// $data = array();
-			// $data_pie_graph = json_encode ($data_graph);
-			if ($show_graphs && !empty($slas)) {
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-				$data = array();
-				$data[0] = html_print_table($tableslice, true);
-				array_push ($table->data, $data);
-			}
-			
-			if (!empty($table_planned_downtimes)) {
-				$data = array();
-				$data[0] = html_print_table($table_planned_downtimes, true);
-				$table->colspan[$next_row][0] = 3;
-				$next_row++;
-				array_push ($table->data, $data);
-			}
 			break;
 		
 		

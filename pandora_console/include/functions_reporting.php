@@ -413,14 +413,424 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$force_width_chart,
 					$force_height_chart);
 				break;
+			case 'SLA':
+				$report['contents'][] = reporting_SLA(
+					$report,
+					$content,
+					$type,
+					$force_width_chart,
+					$force_height_chart);
+				break;
 		}
 	}
 	
 	return reporting_check_structure_report($report);
 }
 
+function reporting_SLA($report, $content, $type = 'dinamic',
+	$force_width_chart = null, $force_height_chart = null) {
+	
+	global $config;
+	
+	$return['type'] = 'SLA';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('S.L.A.');
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	
+	
+	$edge_interval = 10;
+	
+	$slas = db_get_all_rows_field_filter (
+		'treport_content_sla_combined',
+		'id_report_content', $content['id_rc']);
+	
+	if (empty($slas)) {
+		$return['failed'] = __('There are no SLAs defined');
+	}
+	else {
+		
+		// What show?
+		$show_table = $content['show_graph'] == 0 || $content['show_graph'] == 1;
+		$show_graphs = $content['show_graph'] == 1 || $content['show_graph'] == 2;
+		
+		
+		// Table Planned Downtimes
+		require_once ($config['homedir'] . '/include/functions_planned_downtimes.php');
+		$metaconsole_on = ($config['metaconsole'] == 1) && defined('METACONSOLE');
+		$downtime_malformed = false;
+		
+		$planned_downtimes_empty = true;
+		$malformed_planned_downtimes_empty = true;
+		
+		$return['planned_downtimes'] = array();
+		
+		if ($metaconsole_on) {
+			$id_agent_modules_by_server = array();
+			
+			foreach ($slas as $sla) {
+				$server = $sla['server_name'];
+				if (empty($server))
+					continue;
+				
+				if (!isset($id_agent_modules_by_server[$server]))
+					$id_agent_modules_by_server[$server] = array();
+				
+				$id_agent_modules_by_server[$server][] = $sla['id_agent_module'];
+			}
+			
+			$planned_downtimes_by_server = array();
+			$malformed_planned_downtimes_by_server = array();
+			foreach ($id_agent_modules_by_server as $server => $id_agent_modules) {
+				//Metaconsole connection
+				if (!empty($server)) {
+					$connection = metaconsole_get_connection($server);
+					if (!metaconsole_load_external_db($connection)) {
+						continue;
+					}
+					
+					$planned_downtimes_by_server[$server] = reporting_get_planned_downtimes(($report['datetime']-$content['period']), $report['datetime'], $id_agent_modules);
+					$malformed_planned_downtimes_by_server[$server] = planned_downtimes_get_malformed();
+					
+					if (!empty($planned_downtimes_by_server[$server]))
+						$planned_downtimes_empty = false;
+					if (!empty($malformed_planned_downtimes_by_server[$server]))
+						$malformed_planned_downtimes_empty = false;
+					
+					//Restore db connection
+					metaconsole_restore_db();
+				}
+			}
+			
+			if (!$planned_downtimes_empty) {
+				foreach ($planned_downtimes_by_server as $server => $planned_downtimes) {
+					foreach ($planned_downtimes as $planned_downtime) {
+						$data = array();
+						$data['server'] = $server;
+						$data['name'] = $planned_downtime['name'];
+						$data['description'] = $planned_downtime['description'];
+						$data['execution'] = ucfirst($planned_downtime['type_execution']);
+						$data['dates'] = "";
+						switch ($planned_downtime['type_execution']) {
+							case 'once':
+								$data['dates'] = date ("Y-m-d H:i", $planned_downtime['date_from']) .
+									"&nbsp;" . __('to') . "&nbsp;".
+									date ("Y-m-d H:i", $planned_downtime['date_to']);
+								break;
+							case 'periodically':
+								switch ($planned_downtime['type_periodicity']) {
+									case 'weekly':
+										$data['dates'] = __('Weekly:');
+										$data['dates'] .= "&nbsp;";
+										if ($planned_downtime['monday']) {
+											$data['dates'] .= __('Mon');
+											$data['dates'] .= "&nbsp;";
+										}
+										if ($planned_downtime['tuesday']) {
+											$data['dates'] .= __('Tue');
+											$data['dates'] .= "&nbsp;";
+										}
+										if ($planned_downtime['wednesday']) {
+											$data['dates'] .= __('Wed');
+											$data['dates'] .= "&nbsp;";
+										}
+										if ($planned_downtime['thursday']) {
+											$data['dates'] .= __('Thu');
+											$data['dates'] .= "&nbsp;";
+										}
+										if ($planned_downtime['friday']) {
+											$data['dates'] .= __('Fri');
+											$data['dates'] .= "&nbsp;";
+										}
+										if ($planned_downtime['saturday']) {
+											$data['dates'] .= __('Sat');
+											$data['dates'] .= "&nbsp;";
+										}
+										if ($planned_downtime['sunday']) {
+											$data['dates'] .= __('Sun');
+											$data['dates'] .= "&nbsp;";
+										}
+										$data['dates'] .= "&nbsp;(" . $planned_downtime['periodically_time_from']; 
+										$data['dates'] .= "-" . $planned_downtime['periodically_time_to'] . ")";
+										break;
+									case 'monthly':
+										$data['dates'] = __('Monthly:') . "&nbsp;";
+										$data['dates'] .= __('From day') . "&nbsp;" . $planned_downtime['periodically_day_from'];
+										$data['dates'] .= "&nbsp;" . strtolower(__('To day')) . "&nbsp;";
+										$data['dates'] .= $planned_downtime['periodically_day_to'];
+										$data['dates'] .= "&nbsp;(" . $planned_downtime['periodically_time_from'];
+										$data['dates'] .= "-" . $planned_downtime['periodically_time_to'] . ")";
+										break;
+								}
+								break;
+						}
+						
+						$data['malformed'] = 0;
+						if (!$malformed_planned_downtimes_empty
+								&& isset($malformed_planned_downtimes_by_server[$server])
+								&& isset($malformed_planned_downtimes_by_server[$server][$planned_downtime['id']])) {
+							
+							$data['malformed'] = 1;
+							
+							if (!$downtime_malformed)
+								$downtime_malformed = true;
+						}
+						
+						$return['planned_downtimes'][] = $data;
+					}
+				}
+			}
+		}
+		else {
+			$id_agent_modules = array();
+			foreach ($slas as $sla) {
+				if (!empty($sla['id_agent_module']))
+					$id_agent_modules[] = $sla['id_agent_module'];
+			}
+			
+			$planned_downtimes = reporting_get_planned_downtimes(($report['datetime']-$content['period']), $report['datetime'], $id_agent_modules);
+			$malformed_planned_downtimes = planned_downtimes_get_malformed();
+			
+			if (!empty($planned_downtimes))
+				$planned_downtimes_empty = false;
+			if (!empty($malformed_planned_downtimes))
+				$malformed_planned_downtimes_empty = false;
+			
+			if (!$planned_downtimes_empty) {
+				foreach ($planned_downtimes as $planned_downtime) {
+					
+					$data = array();
+					$data['name'] = $planned_downtime['name'];
+					$data['description'] = $planned_downtime['description'];
+					$data['execution'] = ucfirst($planned_downtime['type_execution']);
+					$data['dates'] = "";
+					switch ($planned_downtime['type_execution']) {
+						case 'once':
+							$data['dates'] = date ("Y-m-d H:i", $planned_downtime['date_from']) .
+								"&nbsp;" . __('to') . "&nbsp;".
+								date ("Y-m-d H:i", $planned_downtime['date_to']);
+							break;
+						case 'periodically':
+							switch ($planned_downtime['type_periodicity']) {
+								case 'weekly':
+									$data['dates'] = __('Weekly:');
+									$data['dates'] .= "&nbsp;";
+									if ($planned_downtime['monday']) {
+										$data['dates'] .= __('Mon');
+										$data['dates'] .= "&nbsp;";
+									}
+									if ($planned_downtime['tuesday']) {
+										$data['dates'] .= __('Tue');
+										$data['dates'] .= "&nbsp;";
+									}
+									if ($planned_downtime['wednesday']) {
+										$data['dates'] .= __('Wed');
+										$data['dates'] .= "&nbsp;";
+									}
+									if ($planned_downtime['thursday']) {
+										$data['dates'] .= __('Thu');
+										$data['dates'] .= "&nbsp;";
+									}
+									if ($planned_downtime['friday']) {
+										$data['dates'] .= __('Fri');
+										$data['dates'] .= "&nbsp;";
+									}
+									if ($planned_downtime['saturday']) {
+										$data['dates'] .= __('Sat');
+										$data['dates'] .= "&nbsp;";
+									}
+									if ($planned_downtime['sunday']) {
+										$data['dates'] .= __('Sun');
+										$data['dates'] .= "&nbsp;";
+									}
+									$data['dates'] .= "&nbsp;(" . $planned_downtime['periodically_time_from']; 
+									$data['dates'] .= "-" . $planned_downtime['periodically_time_to'] . ")";
+									break;
+								case 'monthly':
+									$data['dates'] = __('Monthly:') . "&nbsp;";
+									$data['dates'] .= __('From day') . "&nbsp;" . $planned_downtime['periodically_day_from'];
+									$data['dates'] .= "&nbsp;" . strtolower(__('To day')) . "&nbsp;";
+									$data['dates'] .= $planned_downtime['periodically_day_to'];
+									$data['dates'] .= "&nbsp;(" . $planned_downtime['periodically_time_from'];
+									$data['dates'] .= "-" . $planned_downtime['periodically_time_to'] . ")";
+									break;
+							}
+							break;
+					}
+					
+					$data['malformed'] = 0;
+					if (!$malformed_planned_downtimes_empty && isset($malformed_planned_downtimes[$planned_downtime['id']])) {
+						$data['malformed'] = 1;
+						if (!$downtime_malformed)
+							$downtime_malformed = true;
+					}
+					
+					$return['planned_downtimes'][] = $data;
+				}
+			}
+		}
+		
+		if ($downtime_malformed) {
+			$return['failed'] =
+				__('This item is affected by a malformed planned downtime. Go to the planned downtimes section to solve this.');
+		}
+		else {
+			
+			
+			$urlImage = ui_get_full_url(false, true, false, false);
+			
+			$sla_failed = false;
+			$total_SLA = 0;
+			$total_result_SLA = 'ok';
+			$sla_showed = array();
+			$sla_showed_values = array();
+			
+			foreach ($slas as $sla) {
+				$server_name = $sla ['server_name'];
+				//Metaconsole connection
+				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+					$connection = metaconsole_get_connection($server_name);
+					if (!metaconsole_load_external_db($connection)) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
+					}
+				}
+				
+				if (modules_is_disable_agent($sla['id_agent_module'])) {
+					continue;
+				}
+				
+				//Get the sla_value in % and store it on $sla_value
+				$sla_value = reporting_get_agentmodule_sla(
+					$sla['id_agent_module'], $content['period'],
+					$sla['sla_min'], $sla['sla_max'],
+					$report["datetime"], $content,
+					$content['time_from'], $content['time_to']);
+				
+				if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
+					//Restore db connection
+					metaconsole_restore_db();
+				}
+				
+				//Do not show right modules if 'only_display_wrong' is active
+				if ($content['only_display_wrong'] == 1 &&
+					$sla_value >= $sla['sla_limit']) {
+					
+					continue;
+				}
+				
+				$sla_showed[] = $sla;
+				$sla_showed_values[] = $sla_value;
+				
+			}
+			
+			// SLA items sorted descending ()
+			if ($content['top_n'] == 2) {
+				arsort($sla_showed_values);
+			}
+			// SLA items sorted ascending
+			else if ($content['top_n'] == 1) {
+				asort($sla_showed_values);
+			}
+		}
+		
+		$return['data'] = array();
+		$return['charts'] = null;
+		
+		foreach ($sla_showed_values as $k => $sla_value) {
+			$sla = $sla_showed[$k];
+			
+			$server_name = $sla ['server_name'];
+			//Metaconsole connection
+			if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
+				$connection = metaconsole_get_connection($server_name);
+				if (metaconsole_connect($connection) != NOERR) {
+					continue;
+				}
+			}
+			
+			$total_SLA += $sla_value;
+			
+			if ($show_table) {
+				$data = array ();
+				$data['agent'] = modules_get_agentmodule_agent_name ($sla['id_agent_module']);
+				$data['module'] = modules_get_agentmodule_name ($sla['id_agent_module']);
+				$data['max'] = $sla['sla_max'];
+				$data['min'] = $sla['sla_min'];
+				$data['sla_limit'] = $sla['sla_limit'];
+				
+				$data['sla_value_unknown'] = 0;
+				$data['sla_status'] = 0;
+				$data['sla_value'] = 0;
+				if ($sla_value === false) {
+					$data['sla_value_unknown'] = 1;
+				}
+				else {
+					
+					if ($sla_value >= $sla['sla_limit']) {
+						$data['sla_status'] = 1;
+					}
+					else {
+						$sla_failed = true;
+						$data['sla_status'] = 0;
+					}
+					
+					// Print icon with status including edge
+					# Fix : 100% accurance is 'inside limits' although 10% was not overrun
+					// if (($sla_value == 100 && $sla_value >= $sla['sla_limit']) || ($sla_value > ($sla['sla_limit'] + $edge_interval))) {
+					// 	$data[6] = html_print_image('images/status_sets/default/severity_normal.png',true,array('title'=>__('Inside limits')));
+					// }
+					// elseif (($sla_value <= $sla['sla_limit'] + $edge_interval)
+					// 	&& ($sla_value >= $sla['sla_limit'] - $edge_interval)) {
+					// 	$data[6] = html_print_image('images/status_sets/default/severity_warning.png',true,array('title'=>__('On the edge')));
+					// }
+					// else {
+					// 	$data[6] = html_print_image('images/status_sets/default/severity_critical.png',true,array('title'=>__('Out of limits')));
+					// }
+					
+					$data['sla_value'] = $sla_value;
+					$data['sla_formated_value'] = format_numeric ($sla_value, 2). "%";
+				}
+				
+				$return['data'][] = $data;
+			}
+			
+			
+			// Slice graphs calculation
+			if ($show_graphs) {
+				$dataslice = array();
+				$dataslice['agent'] = modules_get_agentmodule_agent_name ($sla['id_agent_module']);
+				$dataslice['module'] = modules_get_agentmodule_name ($sla['id_agent_module']);
+				
+				$dataslice['chart'] = graph_sla_slicebar(
+					$sla['id_agent_module'], $content['period'],
+					$sla['sla_min'], $sla['sla_max'],
+					$report['datetime'], $content, $content['time_from'],
+					$content['time_to'], 650, 25, $urlImage, 1, false, false);
+				
+				$return['charts'][] = $dataslice;
+			}
+			
+			if ($config ['metaconsole'] == 1 && defined('METACONSOLE')) {
+				//Restore db connection
+				metaconsole_restore_db();
+			}
+		}
+		
+		
+	}
+	
+	return reporting_check_structure_content($return);
+}
+
 function reporting_event_top_n($report, $content, $type = 'dinamic',
 	$force_width_chart = null, $force_height_chart = null) {
+	
 	global $config;
 	
 	$return['type'] = 'top_n';
@@ -677,13 +1087,13 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 			}
 			
 			
-			$return['chars']['bars'] = null;
-			$return['chars']['pie'] = null;
+			$return['charts']['bars'] = null;
+			$return['charts']['pie'] = null;
 			
 			
 			if ($show_graph != REPORT_TOP_N_ONLY_TABLE) {
 				
-				$return['chars']['pie'] = pie3d_graph(false,
+				$return['charts']['pie'] = pie3d_graph(false,
 					$data_pie_graph,
 					$width, $height, __("other"),
 					ui_get_full_url(false, true, false, false) . '/',
@@ -692,7 +1102,7 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 				
 				
 				//Display bars graph
-				$return['chars']['bars'] = hbar_graph(
+				$return['charts']['bars'] = hbar_graph(
 					false, $data_hbar, $width,
 					$height, array(), array(), "", "", true,
 					ui_get_full_url(false, true, false, false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png", $config['fontpath'], $config['font_size'], true, 1, true);
@@ -735,11 +1145,6 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 				$return['resume']['avg']['formated_value'] = format_for_graph($avg, 2);
 				$return['resume']['max']['value'] = $max;
 				$return['resume']['max']['formated_value'] = format_for_graph($max, 2);
-				
-				$table->colspan[5][0] = 3;
-				array_push ($table->data, array('<b>'.__('Summary').'</b>'));
-				$table->colspan[6][0] = 3;
-				array_push ($table->data, array(html_print_table($table_summary, true)));
 			}
 			
 			

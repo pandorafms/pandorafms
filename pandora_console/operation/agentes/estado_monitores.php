@@ -72,8 +72,8 @@ if (is_ajax ()) {
 		
 		$table_relations = new stdClass();
 		$table_relations->id = 'module_' . $id_agente_modulo . '_relations';
-		$table_relations->width = '98%';
-		$table_relations->class = 'databox';
+		$table_relations->width = '100%';
+		$table_relations->class = 'databox filters';
 		$table_relations->style = array();
 		$table_relations->style[0] = 'font-weight: bold;';
 		$table_relations->style[2] = 'font-weight: bold;';

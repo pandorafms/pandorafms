@@ -1,3 +1,7 @@
+' Pandora FMS Agent Inventory Plugin for Microsoft Windows (All platfforms)
+' (c) 2015 Borja Sanchez <fborja.sanchez@artica.es>
+' This plugin extends agent inventory feature. Only enterprise version
+' --------------------------------------------------------------------------
 on error resume next
 'WMI real interfaces info
 '  exlusions: 
@@ -14,7 +18,11 @@ Wscript.StdOut.WriteLine "<datalist>"
 
 strComputer = "."
 Set objWMIService = GetObject("winmgmts:" & "{impersonationLevel=impersonate}!\\" & strComputer & "\root\cimv2")
-Set colAdapters = objWMIService.ExecQuery("Select * from Win32_NetworkAdapter Where not PNPDeviceID like 'ROOT%%' and not PNPDeviceID like 'SW%%'")
+Set colAdapters = objWMIService.ExecQuery("Select * from Win32_NetworkAdapter " & _
+						"Where not PNPDeviceID like 'ROOT%%' " & _
+						"and not PNPDeviceID like 'SW%%' " & _
+						"and not ServiceName is null " & _
+						"and not ServiceName like 'vwifimp' ")
 
 For Each iface In colAdapters 
 ' return model MACAddress IPAddress

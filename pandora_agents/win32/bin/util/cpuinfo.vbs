@@ -12,7 +12,7 @@ Set objWMIService = GetObject("winmgmts:" & "{impersonationLevel=impersonate}!\\
 Set colCPUs = objWMIService.ExecQuery("Select name,maxclockspeed,caption from Win32_Processor")
 
 For Each cpu In colCPUs
-  Wscript.StdOut.WriteLine "<data><![CDATA[" & cpu.name & ";" & cpu.maxclockspeed & ";" & cpu.caption & "]]></data>"
+  Wscript.StdOut.WriteLine "<data><![CDATA[" & cpu.name & ";" & cpu.maxclockspeed & " MHz;" & cpu.caption & "]]></data>"
 Next
 
 Wscript.StdOut.WriteLine "</datalist>"

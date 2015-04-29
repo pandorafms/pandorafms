@@ -1,10 +1,8 @@
-' 
-' Windows information retriever: Software Installed
-'
-' WMI/REGISTRY based
+' Pandora FMS Agent Inventory Plugin for Microsoft Windows (All platfforms)
 ' (c) 2015 Sancho Lerena <slerena@artica.es>
 ' (c) 2015 Borja Sanchez <fborja.sanchez@artica.es>
-'--------------------------------------------------------
+' This plugin extends agent inventory feature. Only enterprise version
+' --------------------------------------------------------------------------
 on error resume next
 
 Class ObjectList

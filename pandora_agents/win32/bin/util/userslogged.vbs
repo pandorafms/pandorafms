@@ -1,3 +1,7 @@
+' Pandora FMS Agent Inventory Plugin for Microsoft Windows (All platfforms)
+' (c) 2015 Borja Sanchez <fborja.sanchez@artica.es>
+' This plugin extends agent inventory feature. Only enterprise version
+' --------------------------------------------------------------------------
 on error resume next
 ' Lista todos los usuarios del equipo que han iniciado procesos
 
@@ -57,8 +61,9 @@ Wscript.StdOut.WriteLine "<datalist>"
 
 
 For Each usuario in loggedUsers
-	Wscript.StdOut.WriteLine "<data><![CDATA[" & usuario _ 
-	& "]]></data>"
+	Wscript.StdOut.WriteLine "<data><![CDATA[" & split(usuario,"\")(0) _ 
+	  & ";" & split(usuario,"\")(1) _
+	  & "]]></data>"
 next
 
 

@@ -1,3 +1,7 @@
+' Pandora FMS Agent Inventory Plugin for Microsoft Windows (All platfforms)
+' (c) 2015 Borja Sanchez <fborja.sanchez@artica.es>
+' This plugin extends agent inventory feature. Only enterprise version
+' --------------------------------------------------------------------------
 on error resume next
 'WMI mobo info
 

@@ -1,3 +1,7 @@
+' Pandora FMS Agent Inventory Plugin for Microsoft Windows (All platfforms)
+' (c) 2015 Borja Sanchez <fborja.sanchez@artica.es>
+' This plugin extends agent inventory feature. Only enterprise version
+' --------------------------------------------------------------------------
 On Error Resume Next
 
 'WMI printers attached
@@ -33,13 +37,17 @@ For Each objPrinter in colPrinters
 		WScript.stdOut.Write "<data><![CDATA[" & _
 			objPrinter.DeviceID & ";" & _
 			objPrinter.DriverName & ";"
-		Set colPorts = oWMI.ExecQuery("Select HostAddress from Win32_TCPIPPrinterPort where Name like '" & objPrinter.PortName & "'",,48)
-		For Each objPort in colPorts
-			tcp_port_exists = 1
-			Wscript.stdOut.Write objPort.HostAddress
-		Next
-		If (tcp_port_exists = 0) Then
-			Wscript.stdOut.Write objPrinter.PortName
+		If (objPrinter.Local) Then
+			Set colPorts = oWMI.ExecQuery("Select HostAddress from Win32_TCPIPPrinterPort where Name like '" & objPrinter.PortName & "'",,48)
+			For Each objPort in colPorts
+				tcp_port_exists = 1
+				Wscript.stdOut.Write objPort.HostAddress
+			Next
+			If (tcp_port_exists = 0) Then
+				Wscript.stdOut.Write objPrinter.PortName
+			End If
+		Else
+			Wscript.stdOut.Write objPrinter.ServerName
 		End If
 		wscript.stdOut.WriteLine "]]></data>"
 	end if

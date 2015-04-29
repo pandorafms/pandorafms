@@ -604,7 +604,7 @@ CREATE OR REPLACE TRIGGER tevento_inc BEFORE INSERT ON tevento REFERENCING NEW A
 -- Criticity: 4 - Critical (red) (status 1)
 CREATE TABLE tgrupo (
 	id_grupo NUMBER(10, 0) PRIMARY KEY,
-	nombre CLOB DEFAULT '',
+	nombre VARCHAR2(100) DEFAULT '',
 	icon VARCHAR2(50) DEFAULT 'world',
 	parent NUMBER(10, 0) DEFAULT 0,
 	propagate NUMBER(5, 0) DEFAULT 0,

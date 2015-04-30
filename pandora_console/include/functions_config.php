@@ -1359,8 +1359,8 @@ function config_check () {
 	}
 	
 	// Get remote file dir.
-	$remote_config = db_get_value_filter('value',
-		'tconfig', array('token' => 'remote_config'));
+	$remote_config = io_safe_output(db_get_value_filter('value',
+		'tconfig', array('token' => 'remote_config')));
 	
 	
 	if (enterprise_installed()) {
@@ -1412,7 +1412,7 @@ function config_check () {
 			__("Database maintance problem"));
 	}
 	
-	$fontpath = db_get_value_filter('value', 'tconfig', array('token' => 'fontpath'));
+	$fontpath = io_safe_output(db_get_value_filter('value', 'tconfig', array('token' => 'fontpath')));
 	if (($fontpath == "") OR (!file_exists ($fontpath))) {
 		set_pandora_error_for_header(
 			__('Your defined font doesnt exist or is not defined. Please check font parameters in your config'),

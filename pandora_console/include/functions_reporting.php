@@ -3648,6 +3648,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		$sizem = '1.5';
 		$sizgraph_w = '450';
 		$sizgraph_h = '100';
+		
+		$sla_width = '250';
 	}
 	else {
 		$sizem = '3';
@@ -4508,9 +4510,21 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$dataslice[0] .= "<br>";
 					$dataslice[0] .= modules_get_agentmodule_name ($sla['id_agent_module']);
 					
-					$dataslice[1] = graph_sla_slicebar ($sla['id_agent_module'], $content['period'],
-						$sla['sla_min'], $sla['sla_max'], $report['datetime'], $content, $content['time_from'],
-						$content['time_to'], 650, 25, $urlImage, 1, false, false);
+					$dataslice[1] = graph_sla_slicebar (
+						$sla['id_agent_module'],
+						$content['period'],
+						$sla['sla_min'],
+						$sla['sla_max'],
+						$report['datetime'],
+						$content,
+						$content['time_from'],
+						$content['time_to'],
+						$sla_width,
+						25,
+						$urlImage,
+						1,
+						false,
+						false);
 					
 					array_push ($tableslice->data, $dataslice);
 				}

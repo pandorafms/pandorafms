@@ -1429,7 +1429,7 @@ function tags_get_agents_counter ($id_tag, $groups_and_tags = array(), $agent_fi
 				$module_status_array = array_unique($module_status_array);
 				$status_str = implode(",", $module_status_array);
 				
-				$module_status_filter = "INNER JOIN tagente_estado AS tae
+				$module_status_filter = "INNER JOIN tagente_estado tae
 											ON tam.id_agente_modulo = tae.id_agente_modulo
 												AND tae.estado IN ($status_str)";
 			}
@@ -1439,13 +1439,13 @@ function tags_get_agents_counter ($id_tag, $groups_and_tags = array(), $agent_fi
 	$count = 0;
 	if ($realtime) {
 		$sql = "SELECT DISTINCT ta.id_agente
-				FROM tagente AS ta
-				INNER JOIN tagente_modulo AS tam
+				FROM tagente ta
+				INNER JOIN tagente_modulo tam
 					ON ta.id_agente = tam.id_agente
 						AND tam.disabled = 0
 						$module_name_filter
 				$module_status_filter
-				INNER JOIN ttag_module AS ttm
+				INNER JOIN ttag_module ttm
 					ON ttm.id_tag = $id_tag
 						AND tam.id_agente_modulo = ttm.id_agente_modulo
 				WHERE ta.disabled = 0
@@ -1602,13 +1602,13 @@ function tags_get_agents_counter ($id_tag, $groups_and_tags = array(), $agent_fi
 			}
 			
 			$sql = "SELECT COUNT(DISTINCT ta.id_agente) 
-					FROM tagente AS ta
-					INNER JOIN tagente_modulo AS tam
+					FROM tagente ta
+					INNER JOIN tagente_modulo tam
 						ON ta.id_agente = tam.id_agente
 							AND tam.disabled = 0
 							$module_name_filter
 					$module_status_filter
-					INNER JOIN ttag_module AS ttm
+					INNER JOIN ttag_module ttm
 						ON ttm.id_tag = $id_tag
 							AND tam.id_agente_modulo = ttm.id_agente_modulo
 					WHERE ta.disabled = 0
@@ -1892,14 +1892,14 @@ function tags_get_monitors_counter ($id_tag, $groups_and_tags = array(), $agent_
 	}
 	
 	$sql = "SELECT COUNT(DISTINCT tam.id_agente_modulo)
-			FROM tagente_modulo AS tam
-			INNER JOIN tagente_estado AS tae
+			FROM tagente_modulo tam
+			INNER JOIN tagente_estado tae
 				ON tam.id_agente_modulo = tae.id_agente_modulo
 					$modules_clause
-			INNER JOIN ttag_module AS ttm
+			INNER JOIN ttag_module ttm
 				ON ttm.id_tag = $id_tag
 					AND tam.id_agente_modulo = ttm.id_agente_modulo
-			INNER JOIN tagente AS ta
+			INNER JOIN tagente ta
 				ON tam.id_agente = ta.id_agente
 					AND ta.disabled = 0
 					$agent_name_filter

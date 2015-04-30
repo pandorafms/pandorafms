@@ -2397,22 +2397,21 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	//is required if both DISTINCT() and COUNT() are in the statement 
 	switch ($config["dbtype"]) {
 		case "mysql":
+		case "postgresql":
 			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente,
 					COUNT(id_agente) AS count'.$field_extra.'
 				FROM '.$event_table.'
 				WHERE 1=1 %s %s
 				GROUP BY id_agente'.$groupby_extra.'
 				ORDER BY count DESC LIMIT 8', $url, $tags_condition);
-			
 			break;
-		case "postgresql":
 		case "oracle":
 			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente,
 					id_grupo, COUNT(id_agente) AS count'.$field_extra.'
 				FROM '.$event_table.'
-				WHERE 1=1 %s %s
+				WHERE rownum <= 0 %s %s
 				GROUP BY id_agente, id_grupo'.$groupby_extra.'
-				ORDER BY count DESC LIMIT 8', $url, $tags_condition); 
+				ORDER BY count DESC', $url, $tags_condition); 
 			break;
 	}
 	

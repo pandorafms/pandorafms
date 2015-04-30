@@ -1960,10 +1960,10 @@ function modules_get_relations ($params = array()) {
 	
 	$sql = "SELECT DISTINCT tmr.id, tmr.module_a, tmr.module_b,
 				tmr.disable_update
-			FROM tmodule_relationship AS tmr,
-				tagente_modulo AS tam,
-				tagente AS ta,
-				ttipo_modulo AS ttm
+			FROM tmodule_relationship tmr,
+				tagente_modulo tam,
+				tagente ta,
+				ttipo_modulo ttm
 			WHERE ";
 	
 	$agent_filter = "";

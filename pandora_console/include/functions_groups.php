@@ -1265,7 +1265,7 @@ function groups_get_agents_counter ($group, $agent_filter = array(), $module_fil
 				$module_status_array = array_unique($module_status_array);
 				$status_str = implode(",", $module_status_array);
 				
-				$module_status_filter = "INNER JOIN tagente_estado AS tae
+				$module_status_filter = "INNER JOIN tagente_estado tae
 											ON tam.id_agente_modulo = tae.id_agente_modulo
 												AND tae.estado IN ($status_str)";
 			}
@@ -1276,8 +1276,8 @@ function groups_get_agents_counter ($group, $agent_filter = array(), $module_fil
 	// Realtime
 	if ($realtime) {
 		$sql = "SELECT DISTINCT ta.id_agente
-				FROM tagente AS ta
-				INNER JOIN tagente_modulo AS tam
+				FROM tagente ta
+				INNER JOIN tagente_modulo tam
 					ON ta.id_agente = tam.id_agente
 						AND tam.disabled = 0
 						$module_name_filter
@@ -1436,7 +1436,7 @@ function groups_get_agents_counter ($group, $agent_filter = array(), $module_fil
 			}
 			
 			$sql = "SELECT COUNT(DISTINCT ta.id_agente) 
-					FROM tagente AS ta
+					FROM tagente ta
 					WHERE ta.disabled = 0
 						$agent_name_filter
 						$status_filter
@@ -1738,11 +1738,11 @@ function groups_get_monitors_counter ($group, $agent_filter = array(), $module_f
 	
 	if ($realtime) {
 		$sql = "SELECT COUNT(DISTINCT tam.id_agente_modulo)
-				FROM tagente_modulo AS tam
-				INNER JOIN tagente_estado AS tae
+				FROM tagente_modulo tam
+				INNER JOIN tagente_estado tae
 					ON tam.id_agente_modulo = tae.id_agente_modulo
 						$modules_clause
-				INNER JOIN tagente AS ta
+				INNER JOIN tagente ta
 					ON tam.id_agente = ta.id_agente
 						AND ta.disabled = 0
 						$agent_name_filter
@@ -1786,7 +1786,7 @@ function groups_get_monitors_counter ($group, $agent_filter = array(), $module_f
 		$status_columns_str = implode(",", $status_columns_array);
 		
 		$sql = "SELECT SUM($status_columns_str)
-				FROM tagente AS ta
+				FROM tagente ta
 				WHERE ta.disabled = 0
 					$agent_name_filter
 					$agents_clause
@@ -2305,7 +2305,7 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 					SELECT *
 					FROM tgrupo
 					WHERE id_grupo IN (" . $user_groups_ids . ")
-					ORDER BY nombre COLLATE utf8_general_ci ASC");
+					ORDER BY nombre ASC");
 				break;
 		}
 	}

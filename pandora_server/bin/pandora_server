@@ -107,7 +107,7 @@ sub pandora_startup () {
 	pandora_audit (\%Config, 'Pandora FMS Server Daemon starting', 'SYSTEM', 'System', $DBH);
 	
 	# Load servers
-	if ($Config{"license_type"} != METACONSOLE_LICENSE) {
+	if (!defined($Config{"license_type"}) || $Config{"license_type"} != METACONSOLE_LICENSE) {
 		pandora_reset_server (\%Config, $DBH);
 		push (@Servers, new PandoraFMS::DataServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::NetworkServer (\%Config, $DBH));

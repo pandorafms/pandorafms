@@ -307,9 +307,9 @@ if (empty($id_groups)) {
 else {
 	$whereAlertSimple .= ' AND id_agent_module IN (
 		SELECT tam.id_agente_modulo
-		FROM tagente_modulo AS tam
+		FROM tagente_modulo tam
 		WHERE tam.id_agente IN (SELECT ta.id_agente
-			FROM tagente AS ta
+			FROM tagente ta
 			WHERE ta.id_grupo IN (' . implode(',', $id_groups) . '))) ';
 }
 

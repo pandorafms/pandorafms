@@ -192,6 +192,8 @@ class Tree {
 	}
 
 	protected function getAgentCountersSql ($agent_table) {
+		global $config;
+		
 		$columns = $this->getAgentCounterColumnsSql($agent_table);
 		
 		switch ($config["dbtype"]) {
@@ -203,7 +205,7 @@ class Tree {
 				$columns = "SELECT $columns FROM dual WHERE rownum <= 1";
 				break;
 		}
-
+		
 		return $columns;
 	}
 
@@ -320,15 +322,13 @@ class Tree {
 		switch ($rootType) {
 			case 'group':
 				// ACL Group
+				$user_groups_str = "-1";
 				$group_acl =  "";
 				if (!$this->strictACL) {
 					if (!empty($this->userGroups)) {
 						$user_groups_str = implode(",", array_keys($this->userGroups));
-						$group_acl = "AND ta.id_grupo IN ($user_groups_str)";
 					}
-					else {
-						$group_acl = "AND ta.id_grupo = -1";
-					}
+					$group_acl = "AND ta.id_grupo IN ($user_groups_str)";
 				}
 				else {
 					if (!empty($this->acltags)) {
@@ -342,16 +342,10 @@ class Tree {
 						if (!empty($groups)) {
 							if (array_search(0, $groups) === false) {
 								$user_groups_str = implode(",", $groups);
-								$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
 							}
 						}
-						else {
-							$group_acl = "AND ta.id_grupo = -1";
-						}
 					}
-					else {
-						$group_acl = "AND ta.id_grupo = -1";
-					}
+					$group_acl = "AND ta.id_grupo IN ($user_groups_str)";
 				}
 
 				switch ($type) {
@@ -365,63 +359,50 @@ class Tree {
 							$order_fields = 'tg.nombre ASC, tg.id_grupo ASC';
 							
 							if (! defined('METACONSOLE')) {
-								// Add the agent counters to the columns
-								$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
-												FROM tagente ta
-												LEFT JOIN tagente_modulo tam
-													ON tam.disabled = 0
-														AND ta.id_agente = tam.id_agente
-														$module_search_filter
-												$module_status_join
-												WHERE ta.disabled = 0
-													AND ta.id_grupo = tg.id_grupo
-													$group_acl
-													$agent_search_filter
-													$agent_status_filter";
-								$counter_columns = $this->getAgentCounterColumnsSql($agent_table);
-								if (!empty($counter_columns))
-									$columns .= ", $counter_columns";
-								
-								$sql = "SELECT $columns
-										FROM tgrupo tg
-										LEFT JOIN tagente ta
-												LEFT JOIN tagente_modulo tam
-													ON tam.disabled = 0
-														AND ta.id_agente = tam.id_agente
-														$module_search_filter
-												$module_status_join
-											ON ta.disabled = 0
-												AND tg.id_grupo = ta.id_grupo
-												$group_acl
-												$agent_search_filter
-												$agent_status_filter
-										GROUP BY tg.id_grupo
-										ORDER BY $order_fields";
+								// Groups SQL
+								if ($item_for_count === false) {
+									$sql = "SELECT $columns
+											FROM tgrupo tg
+											WHERE tg.id_grupo IN ($user_groups_str)
+											ORDER BY $order_fields";
+								}
+								// Counters SQL
+								else {
+									$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
+													FROM tagente ta
+													LEFT JOIN tagente_modulo tam
+														ON tam.disabled = 0
+															AND ta.id_agente = tam.id_agente
+															$module_search_filter
+													$module_status_join
+													WHERE ta.disabled = 0
+														AND ta.id_grupo = $item_for_count
+														$group_acl
+														$agent_search_filter
+														$agent_status_filter";
+									$sql = $this->getAgentCountersSql($agent_table);
+								}
 							}
 							// Metaconsole
 							else {
-								// Add the agent counters to the columns
-								$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
-												FROM tmetaconsole_agent ta
-												WHERE ta.disabled = 0
-													AND ta.id_grupo = tg.id_grupo
-													$group_acl
-													$agent_search_filter
-													$agent_status_filter";
-								$counter_columns = $this->getAgentCounterColumnsSql($agent_table);
-								if (!empty($counter_columns))
-									$columns .= ", $counter_columns";
-								
-								$sql = "SELECT $columns
-										FROM tgrupo tg
-										LEFT JOIN tagente ta
-											ON ta.disabled = 0
-												AND tg.id_grupo = ta.id_grupo
-												$group_acl
-												$agent_search_filter
-												$agent_status_filter
-										GROUP BY tg.id_grupo
-										ORDER BY $order_fields";
+								// Groups SQL
+								if ($item_for_count === false) {
+									$sql = "SELECT $columns
+											FROM tgrupo tg
+											WHERE tg.id_grupo IN ($user_groups_str)
+											ORDER BY $order_fields";
+								}
+								// Counters SQL
+								else {
+									$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
+													FROM tmetaconsole_agent ta
+													WHERE ta.disabled = 0
+														AND ta.id_grupo = $item_for_count
+														$group_acl
+														$agent_search_filter
+														$agent_status_filter";
+									$sql = $this->getAgentCountersSql($agent_table);
+								}
 							}
 						}
 						else {
@@ -444,7 +425,6 @@ class Tree {
 											$group_acl
 											$agent_search_filter
 											$agent_status_filter
-										GROUP BY ta.id_agente
 										ORDER BY $order_fields";
 							}
 							else {
@@ -461,7 +441,6 @@ class Tree {
 											$group_acl
 											$agent_search_filter
 											$agent_status_filter
-										GROUP BY ta.id_tagente
 										ORDER BY $order_fields";
 							}
 						}
@@ -1961,6 +1940,13 @@ class Tree {
 			// Build the group hierarchy
 			foreach ($items as $key => $item) {
 				if (empty($item['parent'])) {
+					
+					$counters = $this->getCounters($item['id']);
+					if (!empty($counters)) {
+						foreach ($counters as $type => $value) {
+							$item[$type] = $value;
+						}
+					}
 					
 					unset($items[$key]);
 					$items_tmp = array();

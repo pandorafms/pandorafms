@@ -153,7 +153,7 @@ function mainModuleGroups() {
 				GROUP BY estado, utimestamp";
 			break;
 		case "oracle":
-			$sql = "SELECT COUNT(id_agente) AS count, case when utimestamp = 0 then 5 else estado end estado
+			$sql = "SELECT COUNT(id_agente) AS count, (case when utimestamp = 0 then 5 else estado end) AS estado
 				FROM tagente_estado
 				WHERE id_agente IN
 					(SELECT id_agente FROM tagente WHERE id_grupo = %d AND (disabled IS NOT NULL AND disabled <> 0))
@@ -161,7 +161,7 @@ function mainModuleGroups() {
 					(SELECT id_agente_modulo 
 						FROM tagente_modulo 
 						WHERE id_module_group = %d AND (disabled IS NOT NULL AND disabled <> 0) AND (delete_pending IS NOT NULL AND delete_pending <> 0))
-				GROUP BY estado";
+				GROUP BY (case when utimestamp = 0 then 5 else estado end)";
 			break;
 	}
 	

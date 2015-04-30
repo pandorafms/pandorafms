@@ -33,7 +33,7 @@ if (is_ajax ()) {
 				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%' . $string . '%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
 				break;
 			case "oracle":
-				$filter[] = '(upper(nombre) LIKE upper("%' . $string . '%") OR upper(direccion) LIKE upper("%'.$string.'%") OR upper(comentarios) LIKE upper("%'.$string.'%"))';
+				$filter[] = '(upper(nombre) LIKE upper(\'%'.$string.'%\') OR upper(direccion) LIKE upper(\'%'.$string.'%\') OR upper(comentarios) LIKE upper(\'%'.$string.'%\'))';
 				break;
 		}
 		$filter[] = 'id_agente != ' . $id_agent;

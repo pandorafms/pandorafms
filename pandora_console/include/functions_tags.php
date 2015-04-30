@@ -923,14 +923,29 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 		return array();
 	}
 	
-	$query = sprintf("
-		SELECT count(*) 
-		FROM tusuario_perfil, tperfil
-		WHERE tperfil.id_perfil = tusuario_perfil.id_perfil
-			AND tusuario_perfil.id_usuario = '%s'
-			AND tperfil.%s = 1
-			AND tags <> ''", 
-		$id_user, $acl_column);
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$query = sprintf("
+				SELECT count(*) 
+				FROM tusuario_perfil, tperfil
+				WHERE tperfil.id_perfil = tusuario_perfil.id_perfil
+					AND tusuario_perfil.id_usuario = '%s'
+					AND tperfil.%s = 1
+					AND tags <> ''", 
+				$id_user, $acl_column);
+			break;
+		case "oracle":
+			$query = sprintf("
+				SELECT count(*) 
+				FROM tusuario_perfil, tperfil
+				WHERE tperfil.id_perfil = tusuario_perfil.id_perfil
+					AND tusuario_perfil.id_usuario = '%s'
+					AND tperfil.%s = 1
+					AND dbms_lob.getlength(tags) > 0", 
+				$id_user, $acl_column);
+			break;
+	}
 	
 	$profiles_without_tags = db_get_value_sql($query);
 	

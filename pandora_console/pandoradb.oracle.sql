@@ -193,7 +193,7 @@ CREATE TABLE tagente_modulo (
 	id_tipo_modulo NUMBER(10, 0) DEFAULT 0,
 	descripcion CLOB DEFAULT '',
 	extended_info CLOB DEFAULT '',
-	nombre CLOB DEFAULT '',
+	nombre VARCHAR2(4000) DEFAULT '',
 	unit VARCHAR2(100) DEFAULT '',
 	id_policy_module NUMBER(10, 0) DEFAULT 0,
 	max NUMBER(19, 0) DEFAULT 0,
@@ -221,7 +221,7 @@ CREATE TABLE tagente_modulo (
 	max_timeout NUMBER(10, 0) DEFAULT 0,
 	max_retries NUMBER(10, 0) DEFAULT 0,
 	custom_id VARCHAR2(255) DEFAULT '',
-	history_data  NUMBER(5, 0) DEFAULT 1,
+	history_data NUMBER(5, 0) DEFAULT 1,
 	min_warning BINARY_DOUBLE DEFAULT 0,
 	max_warning BINARY_DOUBLE DEFAULT 0,
 	str_warning CLOB DEFAULT '',
@@ -974,8 +974,8 @@ CREATE OR REPLACE TRIGGER ttipo_modulo_inc BEFORE INSERT ON ttipo_modulo REFEREN
 CREATE TABLE ttrap (
 	id_trap NUMBER(19, 0) PRIMARY KEY,
 	source VARCHAR2(50) DEFAULT '',
-	oid CLOB DEFAULT '',
-	oid_custom CLOB DEFAULT '',
+	oid VARCHAR2(1024) DEFAULT '',
+	oid_custom VARCHAR2(1024) DEFAULT '',
 	type NUMBER(10, 0) DEFAULT 0,
 	type_custom VARCHAR2(100) DEFAULT '',
 	value CLOB DEFAULT '',
@@ -1042,7 +1042,7 @@ CREATE TABLE tusuario_perfil (
 	id_grupo NUMBER(10, 0) DEFAULT 0,
 	assigned_by VARCHAR2(100) DEFAULT '',
 	id_policy NUMBER(10, 0) DEFAULT 0,
-	tags CLOB
+	tags CLOB DEFAULT ''
 );
 CREATE SEQUENCE tusuario_perfil_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tusuario_perfil_inc BEFORE INSERT ON tusuario_perfil REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tusuario_perfil_s.nextval INTO :NEW.id_up FROM dual; END tusuario_perfil_inc;;
@@ -1639,9 +1639,11 @@ CREATE TABLE tnetwork_map (
 	show_groups NUMBER(10, 0) DEFAULT 0,
 	show_modules NUMBER(10, 0) DEFAULT 0,
 	id_agent NUMBER(10, 0) DEFAULT 0,
-	server_name VARCHAR(100) ,
+	server_name VARCHAR(100),
 	show_modulegroup NUMBER(10, 0) DEFAULT 0,
-	l2_network NUMBER(1, 0) DEFAULT 0
+	l2_network NUMBER(1, 0) DEFAULT 0,
+	id_tag NUMBER(11, 0) DEFAULT 0,
+	store_group NUMBER(11, 0) DEFAULT 0
 );
 
 CREATE SEQUENCE tnetwork_map_s INCREMENT BY 1 START WITH 1;

@@ -181,7 +181,6 @@ switch ($config["dbtype"]) {
 			LIMIT %d,%d";
 		break;
 	case "postgresql":
-	case "oracle":
 		$sql = "SELECT *
 			FROM ttrap
 			WHERE (source IN (
@@ -190,6 +189,15 @@ switch ($config["dbtype"]) {
 					) OR source='' OR source NOT IN (SELECT direccion FROM tagente)) %s
 			ORDER BY timestamp DESC
 			LIMIT %d OFFSET %d";
+		break;
+	case "oracle":
+		$sql = "SELECT *
+			FROM ttrap
+			WHERE (source IN (
+					SELECT direccion FROM tagente
+					WHERE id_grupo IN ($str_user_groups)
+					) OR source='' OR source NOT IN (SELECT direccion FROM tagente)) %s
+			ORDER BY timestamp DESC";
 		break;
 }
 $sql_all = "SELECT *
@@ -279,6 +287,7 @@ switch ($config["dbtype"]) {
 		$set = array();
 		$set['limit'] = $pagination;
 		$set['offset'] = $offset;
+		$sql = sprintf($sql, $whereSubquery);
 		$sql = oracle_recode_query ($sql, $set);
 		break;
 }

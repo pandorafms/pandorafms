@@ -849,6 +849,8 @@ switch ($action) {
 								$values['top_n'] = get_parameter('combo_sla_sort_options',0);
 								$values['top_n_value'] = get_parameter('quantity');
 								$values['text'] = get_parameter('text');
+								$values['show_graph'] = get_parameter('combo_graph_options');
+								
 								$good_format = true;
 								break;
 							case 'inventory':
@@ -1083,6 +1085,8 @@ switch ($action) {
 								$values['top_n'] = get_parameter('combo_sla_sort_options',0);
 								$values['top_n_value'] = get_parameter('quantity');
 								$values['text'] = get_parameter('text');
+								$values['show_graph'] = get_parameter('combo_graph_options');
+								
 								$good_format = true;
 								break;
 							case 'inventory':

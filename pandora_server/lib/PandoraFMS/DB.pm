@@ -138,7 +138,7 @@ sub db_connect ($$$$$$) {
 	elsif ($rdbms eq 'oracle') {
 		$RDBMS = 'oracle';
 		$RDBMS_QUOTE = '"';
-		$RDBMS_QUOTE_STRING = '"';
+		$RDBMS_QUOTE_STRING = '\'';
 		
 		# Connect to Oracle
 		my $dbh = DBI->connect("DBI:Oracle:dbname=$db_name;host=$db_host;port=$db_port;sid=pandora", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });

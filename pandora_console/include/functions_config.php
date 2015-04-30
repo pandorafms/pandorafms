@@ -1299,8 +1299,8 @@ function config_check () {
 	}
 	
 	// Get remote file dir.
-	$remote_config = db_get_value_filter('value',
-		'tconfig', array('token' => 'remote_config'));
+	$remote_config = io_safe_output(db_get_value_filter('value',
+		'tconfig', array('token' => 'remote_config')));
 	
 	
 	if (enterprise_installed()) {
@@ -1362,7 +1362,7 @@ function config_check () {
 			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 	}
 	
-	$fontpath = db_get_value_filter('value', 'tconfig', array('token' => 'fontpath'));
+	$fontpath = io_safe_output(db_get_value_filter('value', 'tconfig', array('token' => 'fontpath')));
 	if (($fontpath == "") OR (!file_exists ($fontpath))) {
 		$config["alert_cnt"]++;
 		$_SESSION["alert_msg"] .= ui_print_error_message(

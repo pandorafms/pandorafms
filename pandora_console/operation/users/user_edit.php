@@ -291,7 +291,6 @@ if (!$meta) {
 	$data[1] = __('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true);
 	$values = array (
 		'Default' =>__('Default'),
-		'Dashboard'=>__('Dashboard'),
 		'Visual console'=>__('Visual console'),
 		'Event list'=>__('Event list'),
 		'Group view'=>__('Group view'),

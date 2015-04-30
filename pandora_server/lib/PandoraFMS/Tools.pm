@@ -57,6 +57,8 @@ our @EXPORT = qw(
 	ICMPSERVER
 	SNMPSERVER
 	$DEVNULL
+	RECOVERED_ALERT
+	FIRED_ALERT
     cron_get_closest_in_range
 	cron_next_execution
 	cron_next_execution_date
@@ -105,6 +107,10 @@ use constant WEBSERVER => 9;
 use constant EVENTSERVER => 10;
 use constant ICMPSERVER => 11;
 use constant SNMPSERVER => 12;
+
+# Alert modes
+use constant RECOVERED_ALERT => 0;
+use constant FIRED_ALERT => 1;
 
 # /dev/null
 our $DEVNULL = ($^O eq 'MSWin32') ? '/Nul' : '/dev/null';

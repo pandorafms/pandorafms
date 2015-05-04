@@ -420,8 +420,6 @@ if ($delete_networkmap || $add_networkmap || $save_networkmap) {
 
 // CONFIGURATION FORM
 
-echo "<br>";
-
 // Layout selection
 $layout_array = array (
 	'circular' => 'circular',
@@ -450,18 +448,18 @@ $form_elems[] = __('Store group') . '&nbsp;' .
 $form_elems[] = __('Group') . '&nbsp;' .
 	html_print_select_groups(false, 'AR', false, 'group', $group, '', 'All', 0, true);
 
+// Free text
+if ($activeTab != 'radial_dynamic') {
+	$form_elems[] = __('Free text for search (*):') . '&nbsp;' .
+		html_print_input_text('text_filter', $text_filter, '', 25, 100, true);
+}
+
 // Module group
 if ($activeTab == 'groups' || $activeTab == 'policies' || $activeTab == 'radial_dynamic') {
 	$form_elems[] = __('Module group') . '&nbsp;' .
 		html_print_select_from_sql ('
 			SELECT id_mg, name
 			FROM tmodule_group', 'module_group', $module_group, '', 'All', 0, true);
-}
-
-// Interfaces
-if ($activeTab == 'topology') {
-	$form_elems[] = __('Show interfaces') . '&nbsp;' .
-		html_print_checkbox ('show_snmp_modules', '1', $show_snmp_modules, true);
 }
 
 // Layout
@@ -478,6 +476,12 @@ if ($activeTab == 'groups') {
 		'group' => __('Groups'));
 	$form_elems[] = __('Depth') . '&nbsp;' .
 		html_print_select ($depth_levels, 'depth', $depth, '', '', '', true, false, false);
+}
+
+// Interfaces
+if ($activeTab == 'topology') {
+	$form_elems[] = __('Show interfaces') . '&nbsp;' .
+		html_print_checkbox ('show_snmp_modules', '1', $show_snmp_modules, true);
 }
 
 // No overlap
@@ -534,12 +538,6 @@ if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
 		html_print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 2, 4, true);
 }
 
-// Free text
-if ($activeTab != 'radial_dynamic') {
-	$form_elems[] = __('Free text for search (*):') . '&nbsp;' .
-		html_print_input_text('text_filter', $text_filter, '', 30, 100, true);
-}
-
 // Don't show subgroups
 if (($activeTab == 'groups') || ($activeTab == 'topology')) {
 	$form_elems[] = __('Don\'t show subgroups:') .
@@ -561,11 +559,11 @@ if ($nooverlap == 1) {
 }
 
 unset($table);
-$table->width = '98%';
-$table->class = 'databox';
+$table->width = '100%';
+$table->class = 'databox filters';
 $table->data = array();
 
-$max_col = 5;
+$max_col = 4;
 $col = 0;
 $row = 0;
 
@@ -574,7 +572,7 @@ foreach ($form_elems as $key => $element) {
 		$col = 0;
 		$row++;
 	}
-	
+	$table->size[] = "25%";
 	$table->data[$row][$col] = $element;
 	$col++;
 }

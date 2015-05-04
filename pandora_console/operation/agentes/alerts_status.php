@@ -377,14 +377,16 @@ if ($print_agent) {
 		ui_toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, $tag_filter, true, $strict_user),__('Show Options'));;
 	}
 	else{
-		echo '<br>';
 		ui_toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, $tag_filter, true, $strict_user),__('Alert control filter'), __('Toggle filter(s)'));
 	}
 }
 
 $table->width = '100%';
 $table->class = "databox data";
+$table->cellpadding = '0';
+$table->cellspacing = '0';
 if(defined('METACONSOLE')){
+	$table->class = "databox";
 	$table->cellpadding = '0';
 	$table->cellspacing = '0';
 }
@@ -415,9 +417,11 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[7] = __('Last fired');
 		$table->head[8] = __('Status');
 		if (!defined('METACONSOLE')) {
+			$table->size[8] = '4%';
 			if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
 				$table->head[9] = __('Validate');
 				$table->align[9] = 'center';
+				$table->size[9] = '5%';
 			}
 		}
 		
@@ -453,9 +457,11 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
 		if (!defined('METACONSOLE')) {
+			$table->size[7] = '5%';
 			if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
 				$table->head[8] = __('Validate');
 				$table->align[8] = 'center';
+				$table->size[8] = '5%';
 			}
 		}
 		$table->align[7] = 'center';
@@ -484,9 +490,11 @@ else {
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
 		if (!defined('METACONSOLE')) {
+			$table->size[7] = '5%';
 			if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
 				$table->head[8] = __('Validate');
 				$table->align[8] = 'center';
+				$table->size[8] = '5%';
 			}
 		}
 		$table->align[7] = 'center';
@@ -515,9 +523,11 @@ else {
 		$table->head[5] = __('Last fired');
 		$table->head[6] = __('Status');
 		if (!defined('METACONSOLE')) {
+			$table->size[6] = '5%';
 			if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
 				$table->head[7] = __('Validate');
 				$table->align[7] = 'center';
+				$table->size[7] = '5%';
 			}
 		}
 		$table->align[6] = 'center';
@@ -574,7 +584,7 @@ if (!empty ($table->data)) {
 	echo '</form>';
 }
 else {
-	ui_print_empty_data ( __('No alerts found') );
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No alerts found') ) );
 }
 
 //strict user hidden

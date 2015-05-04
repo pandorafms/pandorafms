@@ -123,7 +123,8 @@ $table->width = "100%";
 $table->class='databox filters';
 $table->data = array();
 $table->rowspan = array();
-
+$table->style[0] = 'font-weight: bold;';
+$table->style[2] = 'font-weight: bold;';
 // Agent filter
 $agent_status_arr = array();
 $agent_status_arr[AGENT_STATUS_ALL] = __('All'); //default
@@ -183,7 +184,7 @@ if (defined('METACONSOLE')) {
 	ui_toggle($form_html, __('Show Options'));
 	echo "<br>";
 }else{
-	echo "<br>";
+	//echo "<br>";
 	ui_toggle($form_html, __('Tree search'));
 }
 

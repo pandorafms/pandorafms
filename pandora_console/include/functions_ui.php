@@ -231,6 +231,9 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 			case 'suc':
 				$text_title = __('Success');
 				break;
+			case 'warning':
+				$text_title = __('Warning');
+				break;
 		}
 	}
 	
@@ -245,6 +248,9 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 				break;
 			case 'suc':
 				$icon_image = 'images/suc.png';
+				break;
+			case 'warning':
+				$icon_image = 'images/warning_big.png';
 				break;
 		}
 		
@@ -368,6 +374,21 @@ function ui_print_result_message ($result, $good = '', $bad = '', $attributes = 
 	else {
 		return ui_print_success_message ($good, $attributes, $return, $tag);
 	}
+}
+
+/** 
+ * Prints an warning message.
+ * 
+ * @param mixed The string warning message or array ('title', 'message', 'icon', 'no_close') to be displayed
+ * @param string Any other attributes to be set for the tag.
+ * @param bool Whether to output the string or return it
+ * @param string What tag to use (you could specify something else than
+ * h3 like div or h2)
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function ui_print_warning_message ($message, $attributes = '', $return = false, $tag = 'h3') {
+	return ui_print_message ($message, 'warning', $attributes, $return, $tag);
 }
 
 /**
@@ -855,13 +876,13 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	$actions = alerts_get_alert_agent_module_actions ($alert['id'], false);
 	
 	if (!empty($actions)) {
-		$actionText = '<div style="margin-left: 10px;"><ul class="action_list">';
+		$actionText = '<div><ul class="action_list">';
 		foreach ($actions as $action) {
-			$actionText .= '<div><span class="action_name"><li>' . $action['name'];
+			$actionText .= '<div style="margin-bottom: 5px;" ><span class="action_name"><li>' . $action['name'];
 			if ($action["fires_min"] != $action["fires_max"]){
 				$actionText .=  " (".$action["fires_min"] . " / ". $action["fires_max"] . ")";
 			}
-			$actionText .= '</li></span><br /></div>';
+			$actionText .= '</li></span></div>';
 		}
 		$actionText .= '</ul></div>';
 	}
@@ -2400,7 +2421,7 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	$buffer .= '<span style="">' . 
 		ui_print_truncate_text($title, 38);
 	if ($help != "")
-		$buffer .= "<div class='head_help' style='float: right; margin-top: 3px !important; margin-left: 2px !important;'>" .
+		$buffer .= "<div class='head_help' style='float: right; margin-top: -2px !important; margin-left: 2px !important;'>" .
 			ui_print_help_icon ($help, true, '', 'images/help_w.png') . "</div>";
 	$buffer .= '</span></li></ul></div>';
 	

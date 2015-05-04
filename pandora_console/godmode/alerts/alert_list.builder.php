@@ -38,10 +38,14 @@ $table->data = array ();
 $table->size = array ();
 $table->size = array ();
 $table->size[0] = '10%';
-$table->size[1] = '30%';
-$table->style[0] = 'font-weight: bold; vertical-align: top;';
-$table->align[0] = 'left';
-$table->align[1] = 'left';
+$table->size[1] = '25%';
+$table->size[2] = '10%';
+$table->size[3] = '20%';
+$table->style[0] = 'font-weight: bold; ';
+$table->style[1] = 'font-weight: bold; ';
+$table->style[2] = 'font-weight: bold; ';
+$table->style[3] = 'font-weight: bold; ';
+
 // This is because if this view is reused after list alert view then 
 // styles in the previous view can affect this table.
 $table->rowstyle[0] = '';

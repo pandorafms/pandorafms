@@ -25,7 +25,7 @@ function vnc_view() {
 	echo __("VNC Display (:0 by default)") . "&nbsp;";
 	echo "<input type=text name=display value=$display>";
 	echo "</td><td>";
-	echo "<input type=submit class='sub next' value='".__("Send")."'>";
+	echo "<input type=submit class='sub next' style='margin-top:0px;' value='".__("Send")."'>";
 	echo "</td>";
 	echo "</tr></table>";
 	$port = 5800 + $display;

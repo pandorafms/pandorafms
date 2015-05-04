@@ -484,37 +484,36 @@ function snmp_browser_print_oid ($oid = array(), $custom_action = '',
  * @return string The container div.
  * 
  */
-function snmp_browser_print_container ($return = false, $width = '95%', $height = '500px', $display = '') {
+function snmp_browser_print_container ($return = false, $width = '100%', $height = '500px', $display = '') {
 	
 	// Target selection
 	$table->width = '100%';
+	$table->class = 'databox filters';
 	$table->size = array ();
 	$table->data = array ();
 	
-	$table->data[0][0] = '<strong>'.__('Target IP').'</strong><br>';
+	$table->data[0][0] = '<strong>'.__('Target IP').'</strong> &nbsp;&nbsp;';
 	$table->data[0][0] .= html_print_input_text ('target_ip', '', '', 25, 0, true);
-	$table->data[0][1] = '<strong>'.__('Community').'</strong><br>';
+	$table->data[0][1] = '<strong>'.__('Community').'</strong> &nbsp;&nbsp;';
 	$table->data[0][1] .= html_print_input_text ('community', '', '', 25, 0, true);
-	$table->data[0][2] = '<strong>'.__('Starting OID').'</strong><br>';
+	$table->data[0][2] = '<strong>'.__('Starting OID').'</strong> &nbsp;&nbsp;';
 	$table->data[0][2] .= html_print_input_text ('starting_oid', '.1.3.6.1.2', '', 25, 0, true);
 	
-	$table->data[0][3] = '<strong>' . __('Version') . '</strong>';
+	$table->data[0][3] = '<strong>' . __('Version') . '</strong> &nbsp;&nbsp;';
 	$table->data[0][3] .= html_print_select (
 		array ('1' => 'v. 1',
 			'2' => 'v. 2',
 			'2c' => 'v. 2c',
 			'3' => 'v. 3'),
 		'snmp_browser_version', '', 'checkSNMPVersion();', '', '', true, false, false, '');
-	$table->cellstyle[0][3] = 'width: 15px;';
-	
-	$table->data[0][4] = html_print_button(__('Browse'), 'browse', false, 'snmpBrowse()', 'class="sub search"', true);
-	$table->cellstyle[0][4] = 'vertical-align: bottom;';
+
+	$table->data[0][4] = html_print_button(__('Browse'), 'browse', false, 'snmpBrowse()', 'class="sub search" style="margin-top:0px;"', true);
 	
 	// SNMP v3 options
-	$table3->width = '98%';
+	$table3->width = '100%';
 	
-	$table3->valign[0] = 'top';
-	$table3->valign[1] = 'top';
+	$table3->valign[0] = '';
+	$table3->valign[1] = '';
 	
 	$table3->data[2][1] = '<b>'.__('Auth user').'</b>';
 	$table3->data[2][2] = html_print_input_text ('snmp3_browser_auth_user', '', '', 15, 60, true);
@@ -535,6 +534,7 @@ function snmp_browser_print_container ($return = false, $width = '95%', $height 
 	
 	// Search tools
 	$table2->width = '100%';
+	$table2->class = 'databox filters';
 	$table2->size = array ();
 	$table2->data = array ();
 	

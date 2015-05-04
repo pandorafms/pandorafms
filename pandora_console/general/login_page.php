@@ -62,44 +62,47 @@ if (!empty($config['login_background'])) {
 	$login_body_style = "style=\"background-image: url('$background_url');\"";
 }
 echo '<div id="login_body" ' . $login_body_style . '></div>';
-echo '<div id="login_outer">';
+echo '<div class="login_page"><div id="login_outer">';
 echo '<div class="databox_login" id="login">';
 echo '<div id="login_inner">';
 
-echo '
-	<div id="login_in">
-		<form method="post" action="' . ui_get_full_url('index.php'.$url) . '" >';
+echo '<div id="login_in">';
+	echo '<div class="version_login"><div style="padding-top: 2px; color: #FFF;">' . $pandora_version . '</div></div>';
+	echo '<form method="post" action="' . ui_get_full_url('index.php'.$url) . '" >';
 	
 	//TODO: Put branding in variables (external file) or database
 	/* CUSTOM BRANDING STARTS HERE */
 	
 	// Replace the following with your own URL and logo.
 	// A mashup of the Pandora FMS logo and your companies highly preferred
-	echo '<table id="login_layout"><tr><td rowspan=2 style="width: 200px;">';
-	
-	echo '<a href="' . $logo_link . '">';
-	if (defined ('METACONSOLE')) {
-		html_print_image ("enterprise/meta/images/pandora_login_enterprise.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
-	}
-	else if (defined ('PANDORA_ENTERPRISE')) {
-		html_print_image ($config['homeurl'] . "/images/pandora_login_enterprise.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
-	}
-	else {
-		html_print_image ($config['homeurl'] . "/images/pandora_login.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
-	}
-	echo '</a>';
-	
-	// This prints the current pandora console version.
-	// For stable/live function it might be wise to comment it out
-	
-	/* CUSTOM BRANDING ENDS HERE */
-	echo '</td><td>';
+	echo '<table id="login_layout">';
+	echo'<tr style="height:15px;"><td>';
 	echo '<div class="login_links">';
 	echo '<a href="http://wiki.pandorafms.com/" target="_blank">' . __('Help') . '</a>';
 	echo ' | ';
 	echo '<a href="http://forums.pandorafms.com/" target="_blank">' . __('Support') . '</a>';
 	echo '</div>';
-	echo '</td></tr><tr><td>';
+	echo '</td></tr>';
+	echo'<tr>
+		<td class="login_border" rowspan=2 style="width: 160px;">';
+	
+			echo '<a href="' . $logo_link . '">';
+			if (defined ('METACONSOLE')) {
+				html_print_image ("images/logo_login.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+			}
+			else if (defined ('PANDORA_ENTERPRISE')) {
+				html_print_image ("images/logo_login.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+			}
+			else {
+				html_print_image ("images/logo_login.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+			}
+			echo '</a>';
+			
+			// This prints the current pandora console version.
+			// For stable/live function it might be wise to comment it out
+			
+			/* CUSTOM BRANDING ENDS HERE */
+	echo '</td><td style="padding-top: 15px;">';
 	
 	switch ($login_screen) {
 		case 'login':
@@ -108,20 +111,22 @@ echo '
 					html_print_input_hidden ($key, $value);
 				}
 			}
-			echo '<div class="login_nick_text">';
-			echo __('User') . '<br>';
-			echo '</div>';
+			
 			echo '<div class="login_nick">';
-			html_print_input_text_extended ("nick", '', "nick", '', '', '' , false, '', 'class="login login_user"');
-			echo '</div>';
-			echo '<div class="login_pass_text">';
-			echo __('Password') . '<br>';
-			echo '</div>';
+			html_print_image ("/images/usuario_login.png", false);
+			html_print_input_text_extended ("nick", __('User'), "nick", '', '', '' , false,
+									array('onfocus' => "javascript:if ( $('.login_user').val() == 'User') $('.login_user').val('');",
+									'onblur'=>"javascript: if ( $('.login_user').val() == false) $('.login_user').val('". __('User')."');"), 'class="login login_user"  ');
+			echo '</div><br />';
 			echo '<div class="login_pass">';
-			html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false, '', 'class="login login_password"', false, true);
+			html_print_image ("/images/candado_login.png", false);
+			html_print_input_text_extended ("pass", 'pass', "pass", '', '', '' ,false,
+									array('onfocus' => "javascript:if ( $('.login_password').val() == 'pass')  $('.login_password').val('');",
+											'onblur'=>"javascript:if ( $('.login_password').val() == false) $('.login_password').val('". __('pass')."');"),
+								 'class="login login_password"', false, true);
 			echo '</div>';
 			echo '<div class="login_button">';
-			html_print_submit_button(__("Login") . '&nbsp;&nbsp;>', "login_button", false, 'class="sub next_login"');
+			html_print_submit_button(__("Login"), "login_button", false, 'class="sub next_login"');
 			echo '</div>';
 			break;
 		case 'logout':
@@ -165,10 +170,11 @@ echo '</form>
 	</div>
 </div>
 </div>
+</div>
 </div>';
 
 if (defined ('METACONSOLE')) {
-	echo '<div id="ver_num" style="text-align: center;">';
+	echo '<div id="ver_num">';
 }
 else {
 	echo '<div id="ver_num">';
@@ -180,7 +186,7 @@ echo $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_versi
 if (isset ($login_failed)) {
 	echo '<div id="login_failed" title="Login failed" style="">';
 		
-		echo '<div style="position:absolute; top:0px; text-align: center; left:0%; right:0%; height:100px; width:330px; margin: 0 auto; ">';
+		echo '<div style="position:absolute; top:0px; text-align: center; left:0%; right:0%; height:100px; width:400px; margin: 0 auto; ">';
 			
 			echo '<div id="error_login" style="margin-top: 20px">';
 			echo '<strong style="font-size: 10pt">' . $config["auth_error"] . '</strong>';
@@ -322,7 +328,7 @@ html_print_div(array('id' => 'modal_alert', 'hidden' => true));
 					background: "black"
 				},
 				width: 500,
-				height: 300
+				height: 200
 			})
 			.show ();
 	}
@@ -361,7 +367,7 @@ html_print_div(array('id' => 'modal_alert', 'hidden' => true));
 				resizable: true,
 				draggable: true,
 				modal: true,
-				height: 200,
+				height: 160,
 				width: 400,
 				overlay: {
 					opacity: 0.5,

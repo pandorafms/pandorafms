@@ -139,11 +139,13 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$sub["godmode/reporting/map_builder"]["type"] = "direct";
 	$sub["godmode/reporting/map_builder"]["subtype"] = "nolink";
 	$layouts = db_get_all_rows_in_table ('tlayout', 'name');
+	$sub2 = array ();
+	$sub2["godmode/reporting/map_builder"]["text"] = __("List of visual console");
 	if ($layouts === false) {
 		$layouts = array ();
 	}
 	else{
-		$sub2 = array ();
+		
 		$id = (int) get_parameter ('id', -1);
 		
 		$firstLetterNameVisualToShow = array('_', ',', '[', '(');
@@ -159,10 +161,10 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 			else {
 				$firstLetter = $name[0];
 			}
-			/*
+			
 			if (!in_array($firstLetter, $firstLetterNameVisualToShow)) {
 				continue;
-			}*/
+			}
 			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($name, 0, 19);
 			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["title"] = $name;
 			if (!empty($config['vc_refr'])) {
@@ -186,7 +188,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 			$sub["gismaps"]["type"] = "direct";
 			$sub["gismaps"]["subtype"] = "nolink";
 			$sub2 = array ();
-			
+			$sub2["operation/gis_maps/index"]["text"] = __("List of Gis maps");
 			$gisMaps = db_get_all_rows_in_table ('tgis_map', 'map_name');
 			if ($gisMaps === false) {
 				$gisMaps = array ();
@@ -322,11 +324,11 @@ $sub["operation/users/webchat"]["refr"] = 0;
 if (check_acl ($config['id_user'], 0, "IR") == 1) {
 	$temp_sec2 = $sec2; 
 	if($config['integria_enabled']) {
-		$sec2 = "operation/integria_incidents/incident";
+		$sec2 = "incident";
 		$sec2sub = "operation/integria_incidents/incident_statistics";
 	}
 	else {
-		$sec2 = "operation/incidents/incident";
+		$sec2 = "incident";
 		$sec2sub = "operation/incidents/incident_statistics";
 	}
 	
@@ -339,6 +341,7 @@ if (check_acl ($config['id_user'], 0, "IR") == 1) {
 		"operation/integria_incidents");
 	
 	$sub2 = array ();
+	$sub2['operation/incidents/incident']["text"] = _("List of Incidents");
 	$sub2[$sec2sub]["text"] = __('Statistics');
 	
 	$sub[$sec2]["sub2"] = $sub2;
@@ -347,14 +350,15 @@ if (check_acl ($config['id_user'], 0, "IR") == 1) {
 
 
 // Messages
-$sub["operation/messages/message_list"]["text"] = __('Messages');
-$sub["operation/messages/message_list"]["refr"] = 0;
-$sub["operation/messages/message_list"]["type"] = "direct";
-$sub["operation/messages/message_list"]["subtype"] = "nolink";
+$sub["message_list"]["text"] = __('Messages');
+$sub["message_list"]["refr"] = 0;
+$sub["message_list"]["type"] = "direct";
+$sub["message_list"]["subtype"] = "nolink";
 $sub2 = array ();
+$sub2["operation/messages/message_list"]["text"] = __('Messages List');
 $sub2["operation/messages/message_edit&amp;new_msg=1"]["text"] = __('New message');
 
-$sub["operation/messages/message_list"]["sub2"] = $sub2;
+$sub["message_list"]["sub2"] = $sub2;
 
 $menu_operation["workspace"]["sub"] = $sub;
 

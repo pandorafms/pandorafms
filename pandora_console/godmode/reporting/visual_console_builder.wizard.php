@@ -47,7 +47,8 @@ $table->id = 'wizard_table';
 $table->head = array ();
 if (!defined('METACONSOLE')) {
 	$metaconsole_hack = '';
-	$table->width = '98%';
+	$table->width = '100%';
+	$table->class = 'databox filters';
 }
 else {
 	$metaconsole_hack = '../../';
@@ -59,21 +60,17 @@ else {
 }
 
 $table->style = array ();
-if (!defined('METACONSOLE')) {
-	$table->style[0] = 'font-weight: bold; vertical-align: text-top;';
-	$table->style[1] = 'font-weight: bold; vertical-align: middle;';
-	$table->style[2] = 'font-weight: bold; vertical-align: top';
-}
-else{
-	$table->style[0] = 'font-weight: bold; ';
-	$table->style[1] = 'font-weight: bold; ';
-	$table->style[2] = 'font-weight: bold; ';
-}
+
+$table->style[0] = 'font-weight: bold; ';
+$table->style[1] = 'font-weight: bold; ';
+$table->style[2] = 'font-weight: bold; ';
+
 $table->size = array ();
-$table->size[0] = "20%";
-$table->size[1] = "20%";
-$table->size[2] = "20%";
-$table->size[3] = "20%";
+$table->size[0] = "15%";
+$table->size[1] = "15%";
+$table->size[2] = "15%";
+$table->size[3] = "15%";
+
 
 $table->align = array();
 $table->align[0] = 'left';

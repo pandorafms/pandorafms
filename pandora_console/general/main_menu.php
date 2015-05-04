@@ -222,9 +222,9 @@ $(document).ready( function() {
 			$('div#title_menu').show();
 			handsInMenu = 1;
 			openTimeMenu = new Date().getTime();
-			$('#menu').css('width', '130px');
+			$('#menu').css('width', '145px');
 			$('li.menu_icon').addClass( " no_hidden_menu" );
-			$('ul.submenu').css('left', '129px');
+			$('ul.submenu').css('left', '144px');
 		}).mouseleave(function(){
 			handsInMenu = 0;
 			setTimeout(function() {

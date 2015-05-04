@@ -2362,4 +2362,12 @@ function set_unless_defined (&$var, $default) {
 		return false;
 	}
 }
+
+function sort_by_column (&$array_ref, $column) {
+	if (!empty($column)) {
+		usort($array_ref, function ($a, $b) {
+			return strcmp($a[$column], $b[$column]);
+		});
+	}
+}
 ?>

@@ -1740,9 +1740,9 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 			}
 			
 			foreach ($nodes as $node) {
-				db_process_delete_temp ("tnetworkmap_enterprise_relation_nodes",
+				db_process_delete_temp ("tnetworkmap_ent_rel_nodes",
 					"parent", $node['id']);
-				db_process_delete_temp ("tnetworkmap_enterprise_relation_nodes",
+				db_process_delete_temp ("tnetworkmap_ent_rel_nodes",
 					"child", $node['id']);
 			}
 			

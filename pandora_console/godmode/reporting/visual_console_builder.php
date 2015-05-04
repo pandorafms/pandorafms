@@ -292,7 +292,7 @@ switch ($activeTab) {
 					$values['id_layout_linked'] = get_parameter('map_linked_' . $id, 0);
 					
 					if (enterprise_installed()) {
-						enterprise_visual_map_update_action_from_list_elements($type, $values);
+						enterprise_visual_map_update_action_from_list_elements($type, $values, $id);
 					}
 					
 					db_process_sql_update('tlayout_data', $values, array('id' => $id));

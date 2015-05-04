@@ -214,6 +214,7 @@ foreach ($layoutDatas as $layoutData) {
 		case STATIC_GRAPH:
 		case ICON:
 		case GROUP_ITEM:
+		case SERVICE:
 			$table->data[$i + 1][1] =
 				html_print_select ($images_list,
 					'image_' . $idLayoutData, $layoutData['image'], '',

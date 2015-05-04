@@ -177,8 +177,8 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 				$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = 0;
 			}
 		}
-		$sub["godmode/reporting/map_builder"]["sub2"] = $sub2;
 	}
+	$sub["godmode/reporting/map_builder"]["sub2"] = $sub2;
 	// Agent read, Server read
 	if (check_acl ($config['id_user'], 0, "AR")) {
 		

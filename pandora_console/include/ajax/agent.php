@@ -99,7 +99,7 @@ if ($search_agents && ((!defined('METACONSOLE')) || $force_local)) {
 			$filter_agents[] = '(nombre LIKE \'%'.$string.'%\')';
 			break;
 		case "oracle":
-			$filter_agents[] = '(UPPER(nombre) LIKE UPPER(\'%'.$string.'%\')';
+			$filter_agents[] = '(UPPER(nombre) LIKE UPPER(\'%'.$string.'%\'))';
 			break;
 	}
 	$agents = agents_get_agents($filter_agents, array ('id_agente', 'nombre', 'direccion'));

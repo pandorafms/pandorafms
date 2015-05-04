@@ -372,16 +372,35 @@ if(!empty($groups)) {
 									  	AND tam.id_agente_modulo = $module_id
 									  	AND tpda.all_modules = 1))";
 	}
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = "SELECT *
+					FROM tplanned_downtime
+					WHERE $where_values
+					ORDER BY type_execution DESC, date_from DESC
+					LIMIT ".$config["block_size"]."
+					OFFSET $offset";
+			break;
+		case "oracle":
+			$set = array ();
+			$set['limit'] = $config["block_size"];
+			$set['offset'] = $offset;
+			
+			$sql = "SELECT *
+					FROM tplanned_downtime
+					WHERE $where_values
+					ORDER BY type_execution DESC, date_from DESC";
+			
+			$sql = oracle_recode_query ($sql, $set);
+			break;
+	}
 
-	$sql = "SELECT *
-			FROM tplanned_downtime
-			WHERE $where_values
-			ORDER BY type_execution DESC, date_from DESC
-			LIMIT ".$config["block_size"]."
-			OFFSET $offset";
 	$sql_count = "SELECT COUNT(id) AS num
 				  FROM tplanned_downtime
 				  WHERE $where_values";
+	
 	$downtimes = db_get_all_rows_sql ($sql);
 	$downtimes_number_res = db_get_all_rows_sql($sql_count);
 	$downtimes_number = $downtimes_number_res != false ? $downtimes_number_res[0]['num'] : 0;

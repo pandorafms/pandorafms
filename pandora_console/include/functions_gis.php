@@ -942,9 +942,9 @@ function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $c
 	$defaultMap = db_get_all_rows_sql("
 		SELECT t1.*, t3.conection_name, t3.connection_type,
 			t3.conection_data, t3.num_zoom_levels
-		FROM tgis_map AS t1, 
-			tgis_map_has_tgis_map_connection AS t2, 
-			tgis_map_connection AS t3
+		FROM tgis_map t1, 
+			tgis_map_has_tgis_map_connection t2, 
+			tgis_map_connection t3
 		WHERE t1.default_map = 1
 			AND t2.tgis_map_id_tgis_map = t1.id_tgis_map
 			AND t2.default_map_connection = 1
@@ -1189,9 +1189,9 @@ function gis_get_map_data($idMap) {
 			$connections = db_get_all_rows_sql('SELECT t1.tgis_map_connection_id_tmap_connection AS id_conection,
 					t1.default_map_connection AS `default`, (
 						SELECT t2.num_zoom_levels
-						FROM tgis_map_connection AS t2
+						FROM tgis_map_connection t2
 						WHERE t2.id_tmap_connection = t1.tgis_map_connection_id_tmap_connection) AS num_zoom_levels
-				FROM tgis_map_has_tgis_map_connection AS t1
+				FROM tgis_map_has_tgis_map_connection t1
 				WHERE t1.tgis_map_id_tgis_map = '. $map['id_tgis_map']);
 			break;
 		case "postgresql":
@@ -1199,9 +1199,9 @@ function gis_get_map_data($idMap) {
 			$connections = db_get_all_rows_sql('SELECT t1.tgis_map_connection_id_tmap_connection AS id_conection,
 					t1.default_map_connection AS "default", (
 						SELECT t2.num_zoom_levels
-						FROM tgis_map_connection AS t2
+						FROM tgis_map_connection t2
 						WHERE t2.id_tmap_connection = t1.tgis_map_connection_id_tmap_connection) AS num_zoom_levels
-				FROM tgis_map_has_tgis_map_connection AS t1
+				FROM tgis_map_has_tgis_map_connection t1
 				WHERE t1.tgis_map_id_tgis_map = '. $map['id_tgis_map']);
 			break;
 	}

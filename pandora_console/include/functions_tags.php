@@ -524,10 +524,10 @@ function tags_get_agents($id_tag, $id_policy_module = 0) {
 		FROM tagente
 		WHERE id_agente IN (
 			SELECT t1.id_agente
-			FROM tagente_modulo AS t1
+			FROM tagente_modulo t1
 			WHERE t1.id_agente_modulo IN (
 				SELECT t2.id_agente_modulo
-				FROM ttag_module AS t2
+				FROM ttag_module t2
 				WHERE id_tag = " . $id_tag . "
 					AND id_policy_module = " . $id_policy_module . "))");
 	

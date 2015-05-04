@@ -39,13 +39,13 @@ if (isset ($_GET["get_agent"])) {
 if ($editGraph) {
 	$graphRows = db_get_all_rows_sql("SELECT t1.*,
 		(SELECT t3.nombre 
-			FROM tagente AS t3 
+			FROM tagente t3 
 			WHERE t3.id_agente = 
 				(SELECT t2.id_agente 
-					FROM tagente_modulo AS t2
+					FROM tagente_modulo t2
 					WHERE t2.id_agente_modulo = t1.id_agent_module)) 
 		AS agent_name
-		FROM tgraph_source AS t1
+		FROM tgraph_source t1
 		WHERE t1.id_graph = " . $id);
 	$module_array = array();
 	$weight_array = array();

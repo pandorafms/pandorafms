@@ -1347,8 +1347,8 @@ switch ($action) {
 						case 'module':
 							$sql = "
 								SELECT t1.id_rc, t2.nombre
-								FROM treport_content AS t1
-									LEFT JOIN tagente_modulo AS t2
+								FROM treport_content t1
+									LEFT JOIN tagente_modulo t2
 										ON t1.id_agent_module = t2.id_agente_modulo
 								WHERE %s
 								ORDER BY nombre %s
@@ -1360,11 +1360,11 @@ switch ($action) {
 								FROM
 									(
 									SELECT t1.*, id_agente
-									FROM treport_content AS t1
-										LEFT JOIN tagente_modulo AS t2
+									FROM treport_content t1
+										LEFT JOIN tagente_modulo t2
 											ON t1.id_agent_module = id_agente_modulo
-									) AS t4
-									LEFT JOIN tagente AS t5
+									) t4
+									LEFT JOIN tagente t5
 										ON (t4.id_agent = t5.id_agente OR t4.id_agente = t5.id_agente)
 								WHERE %s
 								ORDER BY t5.nombre %s

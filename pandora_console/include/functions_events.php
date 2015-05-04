@@ -1267,12 +1267,12 @@ function events_get_group_events_steps ($begin, &$result, $id_group, $period, $d
 	
 	$sql = sprintf ('SELECT *,
 			(SELECT t2.nombre
-				FROM tagente AS t2
+				FROM tagente t2
 				WHERE t2.id_agente = t3.id_agente) AS agent_name,
 			(SELECT t2.fullname
-				FROM tusuario AS t2
+				FROM tusuario t2
 				WHERE t2.id_user = t3.id_usuario) AS user_name
-		FROM tevento AS t3
+		FROM tevento t3
 		WHERE utimestamp > %d AND utimestamp <= %d
 			AND id_grupo IN (%s) ' . $sql_where . '
 		ORDER BY utimestamp ASC',
@@ -2566,10 +2566,10 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
 	
 	$sql = sprintf ('SELECT id_agente,
 		(SELECT t2.nombre
-			FROM tagente AS t2
+			FROM tagente t2
 			WHERE t2.id_agente = t3.id_agente) AS agent_name,
 		COUNT(*) AS count
-		FROM tevento AS t3
+		FROM tevento t3
 		WHERE utimestamp > %d AND utimestamp <= %d
 			AND id_grupo IN (%s) ' . $sql_where . '
 		GROUP BY id_agente',
@@ -2648,10 +2648,10 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
 	
 	$sql = sprintf ('SELECT id_usuario,
 		(SELECT t2.fullname
-			FROM tusuario AS t2
+			FROM tusuario t2
 			WHERE t2.id_user = t3.id_usuario) AS user_name,
 		COUNT(*) AS count
-		FROM tevento AS t3
+		FROM tevento t3
 		WHERE utimestamp > %d AND utimestamp <= %d
 			%s ' . $sql_where . '
 		GROUP BY id_usuario',

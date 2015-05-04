@@ -95,12 +95,12 @@ if ($searchModules) {
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$chunk_sql = '
-				FROM tagente_modulo AS t1
-					INNER JOIN tagente AS t2
+				FROM tagente_modulo t1
+					INNER JOIN tagente t2
 						ON t2.id_agente = t1.id_agente
-					INNER JOIN tgrupo AS t3
+					INNER JOIN tgrupo t3
 						ON t3.id_grupo = t2.id_grupo
-					INNER JOIN tagente_estado AS t4
+					INNER JOIN tagente_estado t4
 						ON t4.id_agente_modulo = t1.id_agente_modulo
 				WHERE
 					' . $sql_tags . '
@@ -124,12 +124,12 @@ if ($searchModules) {
 			break;
 		case "postgresql":
 			$chunk_sql = '
-				FROM tagente_modulo AS t1
-					INNER JOIN tagente AS t2
+				FROM tagente_modulo t1
+					INNER JOIN tagente t2
 						ON t2.id_agente = t1.id_agente
-					INNER JOIN tgrupo AS t3
+					INNER JOIN tgrupo t3
 						ON t3.id_grupo = t2.id_grupo
-					INNER JOIN tagente_estado AS t4
+					INNER JOIN tagente_estado t4
 						ON t4.id_agente_modulo = t1.id_agente_modulo
 				WHERE
 					' . $sql_tags . '
@@ -152,12 +152,12 @@ if ($searchModules) {
 			break;
 		case "oracle":
 			$chunk_sql = '
-				FROM tagente_modulo AS t1
-					INNER JOIN tagente AS t2
+				FROM tagente_modulo t1
+					INNER JOIN tagente t2
 						ON t2.id_agente = t1.id_agente
-					INNER JOIN tgrupo AS t3
+					INNER JOIN tgrupo t3
 						ON t3.id_grupo = t2.id_grupo
-					INNER JOIN tagente_estado AS t4
+					INNER JOIN tagente_estado t4
 						ON t4.id_agente_modulo = t1.id_agente_modulo
 				WHERE
 					' . $sql_tags . '

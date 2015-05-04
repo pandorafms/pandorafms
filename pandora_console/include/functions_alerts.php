@@ -96,11 +96,11 @@ function alerts_get_alerts($id_group = 0, $free_search = "", $status = "all", $s
 	}
 	$sql .= '
 		FROM talert_template_modules AS t0
-		INNER JOIN talert_templates AS t1
+		INNER JOIN talert_templates t1
 			ON t0.id_alert_template = t1.id
-		INNER JOIN tagente_modulo AS t2
+		INNER JOIN tagente_modulo t2
 			ON t0.id_agent_module = t2.id_agente_modulo
-		INNER JOIN tagente AS t3
+		INNER JOIN tagente t3
 			ON t2.id_agente = t3.id_agente
 		WHERE 1=1
 			' . $status_query . ' ' . $standby_query . ' ' . $group_query . '

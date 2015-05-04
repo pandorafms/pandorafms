@@ -181,7 +181,7 @@ if ($searchFlag) {
 			case "mysql":
 			case "postgresql":
 				$where .= " AND id_agent_module IN (SELECT t2.id_agente_modulo
-					FROM tagente AS t1 INNER JOIN tagente_modulo AS t2 ON t1.id_agente = t2.id_agente
+					FROM tagente t1 INNER JOIN tagente_modulo t2 ON t1.id_agente = t2.id_agente
 					WHERE t1.nombre LIKE '" . trim($agentName) . "')";
 				break;
 			case "oracle":

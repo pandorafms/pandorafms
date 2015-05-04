@@ -118,8 +118,8 @@ if ($searchAgents) {
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$sql = "
-				FROM tagente AS t1
-					INNER JOIN tgrupo AS t2
+				FROM tagente t1
+					INNER JOIN tgrupo t2
 						ON t2.id_grupo = t1.id_grupo
 				WHERE (
 						1 = (
@@ -149,8 +149,8 @@ if ($searchAgents) {
 		case "postgresql":
 		case "oracle":
 			$sql = "
-				FROM tagente AS t1
-					INNER JOIN tgrupo AS t2
+				FROM tagente t1
+					INNER JOIN tgrupo t2
 						ON t2.id_grupo = t1.id_grupo
 				WHERE (
 						1 = (

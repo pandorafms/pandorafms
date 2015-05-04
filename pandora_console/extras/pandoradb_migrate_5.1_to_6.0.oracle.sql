@@ -26,10 +26,10 @@ INSERT INTO tconfig_os (name, description, icon_name) VALUES ('Mainframe', 'Main
 
 ALTER TABLE tlayout_data ADD COLUMN id_policy_module NUMBER(10, 0) DEFAULT 0 NOT NULL;
 
-UPDATE ttag_module AS t1
+UPDATE ttag_module t1
 SET t1.id_policy_module = (
 	SELECT t2.id_policy_module
-	FROM tagente_modulo AS t2
+	FROM tagente_modulo t2
 	WHERE t1.id_agente_modulo = t2.id_agente_modulo);
 
 /* 2014/12/10 */

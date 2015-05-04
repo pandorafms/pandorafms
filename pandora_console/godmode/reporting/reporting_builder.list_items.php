@@ -44,11 +44,11 @@ else {
 				FROM
 					(
 					SELECT t1.*, id_agente
-					FROM treport_content AS t1
-						LEFT JOIN tagente_modulo AS t2
+					FROM treport_content t1
+						LEFT JOIN tagente_modulo t2
 							ON t1.id_agent_module = id_agente_modulo
-					) AS t4
-					INNER JOIN tagente AS t5
+					) t4
+					INNER JOIN tagente t5
 						ON (t4.id_agent = t5.id_agente OR t4.id_agente = t5.id_agente)
 				WHERE t4.id_report = ' . $idReport);
 			break;
@@ -82,8 +82,8 @@ else {
 		case "postgresql":
 			$rows = db_get_all_rows_sql('
 				SELECT t1.id_agent_module, t2.nombre
-				FROM treport_content AS t1
-					INNER JOIN tagente_modulo AS t2
+				FROM treport_content t1
+					INNER JOIN tagente_modulo t2
 						ON t1.id_agent_module = t2.id_agente_modulo
 				WHERE t1.id_report = ' . $idReport);
 			break;

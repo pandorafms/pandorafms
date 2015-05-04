@@ -81,7 +81,7 @@ if ($update) {
 			
 			$agents_ = db_get_all_rows_sql('
 				SELECT DISTINCT(t1.id_agente)
-				FROM tagente AS t1, tagente_modulo AS t2
+				FROM tagente t1, tagente_modulo t2
 				WHERE t1.id_agente = t2.id_agente
 					AND t2.delete_pending = 0 ' . $condition);
 			foreach ($agents_ as $id_agent) {

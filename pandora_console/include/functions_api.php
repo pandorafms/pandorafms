@@ -742,10 +742,10 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType) {
 				$modules = db_get_all_rows_sql('SELECT *
 					FROM (SELECT id_agente_modulo as module_id_agent_modulo ' .  $module_additional_columns . '
 							FROM tagente_modulo 
-							WHERE id_agente = ' . $agent['agent_id'] . ') AS t1 
+							WHERE id_agente = ' . $agent['agent_id'] . ') t1 
 						INNER JOIN (SELECT id_agente_modulo as module_id_agent_modulo ' .  $estado_additional_columns . '
 							FROM tagente_estado
-							WHERE id_agente = ' . $agent['agent_id'] . ') AS t2
+							WHERE id_agente = ' . $agent['agent_id'] . ') t2
 						ON t1.module_id_agent_modulo = t2.module_id_agent_modulo');
 				
 				if ($modules === false) $modules = array();
@@ -766,14 +766,14 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType) {
 					
 					$alerts = db_get_all_rows_sql('SELECT t1.id_agent_module as alert_id_agent_module ' .  $alert_additional_columns . '
 						FROM (SELECT * FROM talert_template_modules
-							WHERE id_agent_module = ' . $module['module_id_agent_modulo'] . ') AS t1 
-						INNER JOIN talert_templates AS t2
+							WHERE id_agent_module = ' . $module['module_id_agent_modulo'] . ') t1 
+						INNER JOIN talert_templates t2
 							ON t1.id_alert_template = t2.id
-						LEFT JOIN talert_template_module_actions AS t3
+						LEFT JOIN talert_template_module_actions t3
 							ON t1.id = t3.id_alert_template_module
-						LEFT JOIN talert_actions AS t4
+						LEFT JOIN talert_actions t4
 							ON t3.id_alert_action = t4.id
-						LEFT JOIN talert_commands AS t5
+						LEFT JOIN talert_commands t5
 							ON t4.id_alert_command = t5.id');
 					
 					if ($alerts === false) $alerts = array();
@@ -981,10 +981,10 @@ function get_module_properties($id_module, $fields, $separator, $returnType, $re
 	$modules = db_get_all_rows_sql('SELECT *
 		FROM (SELECT id_agente_modulo as module_id_agent_modulo ' .  $module_additional_columns . '
 				FROM tagente_modulo 
-				WHERE id_agente_modulo = ' . $id_module . ') AS t1 
+				WHERE id_agente_modulo = ' . $id_module . ') t1 
 			INNER JOIN (SELECT id_agente_modulo as module_id_agent_modulo ' .  $estado_additional_columns . '
 				FROM tagente_estado
-				WHERE id_agente_modulo = ' . $id_module . ') AS t2
+				WHERE id_agente_modulo = ' . $id_module . ') t2
 			ON t1.module_id_agent_modulo = t2.module_id_agent_modulo');
 
 	if ($modules === false) $modules = array();
@@ -5889,8 +5889,8 @@ function api_set_new_event($trash1, $trash2, $other, $trash3) {
 		}
 		else {
 			$idAlert = db_get_value_sql("SELECT t1.id 
-				FROM talert_template_modules AS t1 
-					INNER JOIN talert_templates AS t2 
+				FROM talert_template_modules t1 
+					INNER JOIN talert_templates t2 
 						ON t1.id_alert_template = t2.id 
 				WHERE t1.id_agent_module = 1
 					AND t2.name LIKE '" . $other['data'][7] . "'");
@@ -6425,10 +6425,10 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 					if (defined ('METACONSOLE')) {
 						$sql = "SELECT *,
 							(SELECT t2.nombre
-								FROM tgrupo AS t2
+								FROM tgrupo t2
 								WHERE t2.id_grupo = " . $table_events . ".id_grupo) AS group_name,
 							(SELECT t2.icon
-								FROM tgrupo AS t2
+								FROM tgrupo t2
 								WHERE t2.id_grupo = " . $table_events . ".id_grupo) AS group_icon
 							FROM " . $table_events . "
 							WHERE 1=1 " . $sql_post . "
@@ -6438,13 +6438,13 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 					else {
 						$sql = "SELECT *,
 							(SELECT t1.nombre
-								FROM tagente AS t1
+								FROM tagente t1
 								WHERE t1.id_agente = tevento.id_agente) AS agent_name,
 							(SELECT t2.nombre
-								FROM tgrupo AS t2
+								FROM tgrupo t2
 								WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
 							(SELECT t2.icon
-								FROM tgrupo AS t2
+								FROM tgrupo t2
 								WHERE t2.id_grupo = tevento.id_grupo) AS group_icon,
 							(SELECT tmodule.name
 								FROM tmodule
@@ -6464,13 +6464,13 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 				//TODO TOTAL
 				$sql = "SELECT *,
 					(SELECT t1.nombre
-						FROM tagente AS t1
+						FROM tagente t1
 						WHERE t1.id_agente = tevento.id_agente) AS agent_name,
 					(SELECT t2.nombre
-						FROM tgrupo AS t2
+						FROM tgrupo t2
 						WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
 					(SELECT t2.icon
-						FROM tgrupo AS t2
+						FROM tgrupo t2
 						WHERE t2.id_grupo = tevento.id_grupo) AS group_icon,
 					(SELECT tmodule.name
 						FROM tmodule
@@ -6491,13 +6491,13 @@ function get_events_with_user($trash1, $trash2, $other, $returnType, $user_in_db
 				
 				$sql = "SELECT *,
 					(SELECT t1.nombre
-						FROM tagente AS t1
+						FROM tagente t1
 						WHERE t1.id_agente = tevento.id_agente) AS agent_name,
 					(SELECT t2.nombre
-						FROM tgrupo AS t2
+						FROM tgrupo t2
 						WHERE t2.id_grupo = tevento.id_grupo) AS group_name,
 					(SELECT t2.icon
-						FROM tgrupo AS t2
+						FROM tgrupo t2
 						WHERE t2.id_grupo = tevento.id_grupo) AS group_icon,
 					(SELECT tmodule.name
 						FROM tmodule

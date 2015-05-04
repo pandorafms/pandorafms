@@ -21,8 +21,8 @@ $searchMaps = check_acl($config["id_user"], 0, "IR");
 $maps = false;
 if ($searchMaps) {
 	$sql = "SELECT t1.id, t1.name, t1.id_group,
-			(SELECT COUNT(*) FROM tlayout_data AS t2 WHERE t2.id_layout = t1.id) AS count 
-		FROM tlayout AS t1 WHERE t1.name LIKE '%" . $stringSearchSQL . "%'
+			(SELECT COUNT(*) FROM tlayout_data t2 WHERE t2.id_layout = t1.id) AS count 
+		FROM tlayout t1 WHERE t1.name LIKE '%" . $stringSearchSQL . "%'
 		LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
 	$maps = db_process_sql($sql);
 	

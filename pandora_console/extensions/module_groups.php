@@ -56,9 +56,9 @@ if (is_ajax ()) {
 						$default_action = false;
 						// Try to get actions for the current alert	
 						$sql = 'SELECT t2.name
-							FROM talert_template_module_actions AS t1
-								INNER JOIN talert_actions AS t2
-								INNER JOIN talert_template_modules AS t3
+							FROM talert_template_module_actions t1
+								INNER JOIN talert_actions t2
+								INNER JOIN talert_template_modules t3
 								ON t3.id = t1.id_alert_template_module
 								AND t1.id_alert_action = t2.id
 							WHERE (t3.id_alert_template = ' . $template['id'] . ' AND

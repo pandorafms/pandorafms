@@ -287,8 +287,8 @@ switch ($config["dbtype"]) {
 	case "mysql":
 	case "postgresql":
 		$profiles = db_get_all_rows_sql('SELECT id_grupo
-			FROM tusuario_perfil AS t1
-				INNER JOIN tperfil AS t2 ON t1.id_perfil = t2.id_perfil
+			FROM tusuario_perfil t1
+				INNER JOIN tperfil t2 ON t1.id_perfil = t2.id_perfil
 			WHERE t2.agent_view = 1 AND t1.id_usuario = \'' . $config['id_user'] .  '\'');
 		if ($profiles === false)
 			$profiles = array();

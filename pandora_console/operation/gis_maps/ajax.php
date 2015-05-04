@@ -120,16 +120,16 @@ switch ($opt) {
 					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
 							IFNULL(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
 							IFNULL(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
-						FROM tagente AS t1
-						LEFT JOIN tgis_data_status AS t2 ON t1.id_agente = t2.tagente_id_agente
+						FROM tagente t1
+						LEFT JOIN tgis_data_status t2 ON t1.id_agente = t2.tagente_id_agente
 							WHERE 1 = 0');
 				}
 				else {
 					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
 							IFNULL(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
 							IFNULL(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
-						FROM tagente AS t1
-						LEFT JOIN tgis_data_status AS t2 ON t1.id_agente = t2.tagente_id_agente
+						FROM tagente t1
+						LEFT JOIN tgis_data_status t2 ON t1.id_agente = t2.tagente_id_agente
 							WHERE id_agente IN (' . implode(',', $idAgentsWithGIS) . ')');
 				}
 				break;
@@ -138,16 +138,16 @@ switch ($opt) {
 					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
 							COALESCE(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
 							COALESCE(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
-						FROM tagente AS t1
-						LEFT JOIN tgis_data_status AS t2 ON t1.id_agente = t2.tagente_id_agente
+						FROM tagente t1
+						LEFT JOIN tgis_data_status t2 ON t1.id_agente = t2.tagente_id_agente
 							WHERE 1 = 0');
 				}
 				else {
 					$agentsGISStatus = db_get_all_rows_sql('SELECT t1.nombre, id_parent, t1.id_agente AS tagente_id_agente,
 							COALESCE(t2.stored_longitude, ' . $defaultCoords['default_longitude'] . ') AS stored_longitude,
 							COALESCE(t2.stored_latitude, ' . $defaultCoords['default_latitude'] . ') AS stored_latitude
-						FROM tagente AS t1
-						LEFT JOIN tgis_data_status AS t2 ON t1.id_agente = t2.tagente_id_agente
+						FROM tagente t1
+						LEFT JOIN tgis_data_status t2 ON t1.id_agente = t2.tagente_id_agente
 							WHERE id_agente IN (' . implode(',', $idAgentsWithGIS) . ')');
 				}
 				break;

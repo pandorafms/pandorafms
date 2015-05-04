@@ -233,7 +233,7 @@ switch ($activeTab) {
 					$values['label_color'] = get_parameter('label_color_' . $id, '#000000');
 					
 					if (enterprise_installed()) {
-						enterprise_visual_map_update_action_from_list_elements($type, $values);
+						enterprise_visual_map_update_action_from_list_elements($type, $values, $id);
 					}
 					
 					db_process_sql_update('tlayout_data', $values, array('id' => $id));

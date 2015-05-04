@@ -2751,14 +2751,19 @@ function showPreview(image) {
 
 function showPreviewStaticGraph(staticGraph) {
 	metaconsole = $("input[name='metaconsole']").val();
+	var $spinner = $("<img />");
+	$spinner.prop("src", "images/spinner.gif");
 	
 	var url_ajax = "ajax.php";
 	if (metaconsole != 0) {
 		url_ajax = "../../ajax.php";
+		$spinner.prop("src", "../../images/spinner.gif");
 	}
 	
-	$("#preview").empty();
-	$("#preview").css('text-align', 'right');
+	$("#preview")
+		.empty()
+		.css('text-align', 'right')
+		.append($spinner);
 	
 	if (staticGraph != '') {
 		imgBase = "images/console/icons/" + staticGraph;
@@ -2772,28 +2777,38 @@ function showPreviewStaticGraph(staticGraph) {
 			type: 'POST',
 			url: url_ajax,
 			data: parameter,
-			async: false,
 			dataType: 'json',
 			timeout: 10000,
+			error: function (xhr, textStatus, errorThrown) {
+				$("#preview").empty();console.log(errorThrown);
+			},
 			success: function (data) {
+				$("#preview").empty();
+				
 				jQuery.each(data, function(i, line) {
 					$("#preview").append(line);
 				});
 			}
 		});
+		
 	}
 }
 
 function showPreviewIcon(icon) {
-	metaconsole = $("input[name='metaconsole']").val();
+	var metaconsole = $("input[name='metaconsole']").val();
+	var $spinner = $("<img />");
+	$spinner.prop("src", "images/spinner.gif");
 	
 	var url_ajax = "ajax.php";
 	if (metaconsole != 0) {
 		url_ajax = "../../ajax.php";
+		$spinner.prop("src", "../../images/spinner.gif");
 	}
 	
-	$("#preview").empty();
-	$("#preview").css('text-align', 'left');
+	$("#preview")
+		.empty()
+		.css('text-align', 'left')
+		.append($spinner);
 	
 	if (icon != '') {
 		imgBase = "images/console/icons/" + icon;
@@ -2806,10 +2821,14 @@ function showPreviewIcon(icon) {
 			data: params.join ("&"),
 			type: 'POST',
 			url: url_ajax,
-			async: false,
 			timeout: 10000,
+			error: function (xhr, textStatus, errorThrown) {
+				$("#preview").empty();
+			},
 			success: function (data) {
-				$("#preview").append(data);
+				$("#preview")
+					.empty()
+					.append(data);
 			}
 		});
 	}

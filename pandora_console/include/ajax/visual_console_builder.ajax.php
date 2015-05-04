@@ -17,6 +17,23 @@ global $config;
 
 check_login ();
 
+$get_image_path_status = get_parameter('get_image_path_status', 0);
+if ($get_image_path_status){
+	$img_src = get_parameter("img_src");
+	$only_src = get_parameter("only_src", 0);
+	
+	$result = array();
+	
+	$result['bad'] = html_print_image($img_src . '_bad.png', true, '', $only_src);
+	$result['ok'] = html_print_image($img_src . '_ok.png', true, '', $only_src);
+	$result['warning'] = html_print_image($img_src . '_warning.png', true, '', $only_src);
+	$result['ok'] = html_print_image($img_src . '_ok.png', true, '', $only_src);
+	$result['normal'] = html_print_image($img_src . '.png', true, '', $only_src);
+	
+	echo json_encode($result);
+	return;
+}
+
 $id_visual_console = get_parameter('id_visual_console', null);
 
 // WARNING: CHECK THE ENTIRE FUNCTIONALITY
@@ -111,7 +128,6 @@ $line_width = (int)get_parameter('line_width', 0);
 $line_color = get_parameter('line_color', '');
 
 $get_element_status = get_parameter('get_element_status', 0);
-$get_image_path_status = get_parameter('get_image_path_status', 0);
 
 $enable_link = get_parameter('enable_link', 1);
 
@@ -900,21 +916,6 @@ if ($get_element_status) {
 	echo $res;
 	
 	return;
-}
-
-if ($get_image_path_status){
-	$img_src = get_parameter("img_src");
-	$only_src = get_parameter("only_src", 0);
-	
-	$result = array();
-	
-	$result['bad'] = html_print_image($img_src . '_bad.png', true, '', $only_src);
-	$result['ok'] = html_print_image($img_src . '_ok.png', true, '', $only_src);
-	$result['warning'] = html_print_image($img_src . '_warning.png', true, '', $only_src);
-	$result['ok'] = html_print_image($img_src . '_ok.png', true, '', $only_src);
-	$result['normal'] = html_print_image($img_src . '.png', true, '', $only_src);
-	
-	echo json_encode($result);
 }
 
 ?>

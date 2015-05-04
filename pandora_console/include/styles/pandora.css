@@ -102,7 +102,7 @@ h1, h2, h3, h4 {
 	font-size: 1em;
 	font-family: Arial, Sans-serif;
 	text-transform: uppercase;
-	color: #3f4e2f;
+	color: #3F3F3F;
 	padding-bottom: 4px;
 	padding-top: 7px;
 }
@@ -116,9 +116,7 @@ h3 {
 	font-size: 14px;
 }
 h4 {
-	margin-bottom: 2px;
-	padding-bottom: 0px;
-	padding-top: 5px;
+	margin-bottom: 10px;
 	font-size: 13px;
 	color: #3F3F3F;
 	text-transform: none;
@@ -128,7 +126,7 @@ a {
 	text-decoration: none;
 }
 a:hover {
-	color: #003a3a;
+	color: #373737;
 	text-decoration: underline;
 }
 a.white_bold {
@@ -146,6 +144,7 @@ p.center {
 h1#log_title {
 	font-size: 18px;
 	margin-bottom: 0px;
+	color: #FFF !important;
 }
 div#log_msg {
 	display: none;
@@ -370,22 +369,10 @@ div#foot {
 #login_body {
 	/* Set rules to fill background */
 	min-height: 100%;
-	min-width: 960px;
-
-	/* Set up proportionate scaling */
+	min-width: 1024px;
 	width: 100%;
-	height: auto;
-
-	/* Set up positioning */
-	position: fixed;
-	top: 0;
-	left: 0;
-	z-index: -999;
-
-	background-color: #DDD;
-	background-image: url(../../images/login_background.jpg);
-	background-repeat: repeat;
-	background-position: center;
+	z-index: -9999;
+	position: absolute;
 }
 
 @media screen and (max-width: 1024px) { /* Specific to this particular image */
@@ -394,8 +381,37 @@ div#foot {
 		margin-left: -512px;   /* 50% */
 	}
 }
+@media screen and (max-width: 1100px) { /* Specific to this particular image */
+	#login_body {
+		background-image: url("../../images/backgrounds/fondo_madera_bn_1100.jpg");
+		background-repeat: repeat;
+		background-position: center center;
+	}
+}
+@media screen and (max-width: 1400px) { /* Specific to this particular image */
+	#login_body {
+		background-image: url("../../images/backgrounds/fondo_madera_bn_1400.jpg");
+		background-repeat: repeat;
+		background-position: center center;
+	}
+}
+@media screen and (max-width: 2000px) { /* Specific to this particular image */
+	#login_body {
+		background-image: url("../../images/backgrounds/fondo_madera_bn_2000.jpg");
+		background-repeat: repeat;
+		background-position: center center;
+	}
+}
+@media screen and (max-width: 2500px) { /* Specific to this particular image */
+	#login_body {
+		background-image: url("../../images/backgrounds/fondo_madera_bn_2500.jpg");
+		background-repeat: repeat;
+		background-position: center center;
+	}
+}
 
 p.log_in {
+	color: #FFF !important;
 	padding: 0px 10px;
 }
 h1#log_f {
@@ -404,10 +420,9 @@ h1#log_f {
 	padding-bottom: 3px;
 }
 div#login {
-	border-left: solid 1px #000;
-	border-top: solid 1px #000;
-	border-bottom: solid 2px #000;
-	border-right: solid 2px #000;
+	border-width: 2px 2px 2px 2px;
+	border-style: solid;
+	border-color: #000;
 	font-size: 12px !important;
 }
 div#login_in, #login_f {
@@ -416,57 +431,55 @@ div#login_in, #login_f {
 }
 
 .databox_login, .databox_logout {
-	border: none !important;
-	padding: 4px;
-	border-radius: 11px;
-	height: 227px;
+	border-radius: 5px;
+	height: 200px;
 }
 
 #login_inner {
 	width: 100%;
 	height: 100%;
-	border-radius: 4px;
-	overflow: hidden;
-
+	border-radius: 5px;
 	/* Browser without multibackground support */
-	background: #ffffff !important;
-    /* Safari 4-5, Chrome 1-9 */
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff), to(#E9E9E9)) !important;
-    /* Safari 5.1+, Chrome 10+ */
-	background: -webkit-linear-gradient(top, #ffffff, #E9E9E9) !important;
-    /* Firefox 3.6+ */
-    background: -moz-linear-gradient(top, #ffffff, #E9E9E9) !important;
-    /* Opera 11.10+ */
-    background: -o-linear-background(top, #ffffff, #E9E9E9) !important;
-    /* IE 10 */
-    background: -ms-linear-background(top, #ffffff, #E9E9E9) !important;
-    /* estÃ¡ndar */
-    background: linear-background(top, #ffffff, #E9E9E9) !important;
+	background-color: #373737 !important;
+
 }
 #login_outer {
-	-moz-box-shadow: 8px 8px 30px #777;
-	-webkit-box-shadow: 8px 8px 30px #777;
-	box-shadow: 8px 8px 30px #777;
-	padding: 3px;
 	border-radius: 11px;
-	width: 431px !important;
-	margin: 100px auto;
-	background-color: #3f3f3f;
+	background-color: #000;
+	width: 500px !important;
+	color: #FFF !important;
+	margin: 0px auto;
 }
+
+.version_login{
+	transform: rotate(36deg);
+	float: right;
+	margin-top: 18px;
+	width: 80px;
+	height: 0px;
+	border-right: 13px solid transparent;
+	border-left: 25px solid transparent;
+	border-bottom: 18px solid #80BA27;
+	left: 16px;
+	position: relative;
+}
+
 
 #login_outer * {
 	font-family: Nunito, "Arial Rounded MT", Arial, Helvetica, sans-serif;
 	font-weight: bold;
 }
-
+.login_border{
+	border-right: 1px solid #FFF;
+	text-align: center;
+}
 table#login_layout {
-	width: 100%;
-	height: 213px;
+	width: 30%;
+	height: 160px;
+	position: absolute;
 }
 
 div#error_login {
-	#margin: 0 auto;
-	#margin-top: -10px;
 	text-align: center;
 	margin-top: 5px;
 	margin-left: 5px;
@@ -491,22 +504,40 @@ div#login_f {
 	margin-bottom: 25px;
 }
 
-IMG.login_logo {
-	border: 0px;
-	width: 140px;
-	margin-top: 15px;
-	margin-bottom: 15px;
-}
-
 a:focus, input:focus, button:focus {
 	utline-width: 0;
 	outline: 0;
 }
 
-DIV.login_button, DIV.login_links {
+DIV.login_links {
+	margin: 10px 0px 0px;
+	color: #FFF;
+	text-align: center;
+}
+
+DIV.login_links>a {
+	color: #FFF;
+}
+
+DIV.login_button{
 	text-align:right;
-	width: 191px;
-	margin: 16px 0px 17px 0px;
+	width: 68%;
+	margin-top: 15px;
+}
+
+DIV.login_button>input{
+	background-color: #373737 !important;
+	border: 0px none;
+	background-image: url("../../images/input_go.png") !important;
+	padding-right: 25px !important;
+}
+
+.login_page{
+	height: 200px;
+	padding-top: 10%;
+	text-align: center;
+	width: 100%;
+	position: absolute;
 }
 
 input.next_login {
@@ -521,7 +552,27 @@ input.next_login {
 }
 
 DIV.login_nick, DIV.login_pass {
-	text-align: left;
+	text-align:left;
+	padding-left: 15px;
+	margin-top: 10px;
+}
+
+DIV.login_nick>input, DIV.login_pass>input {
+	height: 25px;
+	border-radius:0px;
+	margin-left: 10px;
+}
+
+DIV.login_nick>input:focus,DIV.login_pass>input:focus {
+    outline-width: 0px;
+    border-color: #373737;
+    background-color: #373737;
+    font-size: 12px;
+    box-shadow: 0px 0px 3px 3px #e2e2e2;
+}
+
+DIV.login_nick>img, DIV.login_pass>img {
+	vertical-align: middle;
 }
 
 DIV.login_links a {
@@ -558,7 +609,6 @@ DIV.login_pass {
 
 input.login {
 	border: 0px none;
-	background-color: #ebebeb !important;
 	margin: 0px 0px;
 	width: 135px;
 	height: 18px;
@@ -569,22 +619,19 @@ input.login {
 
 input.login_user {
 	/* Browser without multibackground support */
-	background-color: #e2e2e2 !important;
+	color: #373737 !important;
 	padding-left: 8px;
 	width: 179px;
 	color: #222;
 	height: 18px;
-	-webkit-box-shadow: 0 0 0px 1000px #e2e2e2 inset;
 }
 
 input.login_password {
 	/* Browser without multibackground support */
-	background-color: #e2e2e2 !important;
 	padding-left: 8px;
 	width: 179px;
 	color: #222;
 	height: 18px;
-	-webkit-box-shadow: 0 0 0px 1000px #e2e2e2 inset;
 }
 .databox_error {
 	width: 657px !important;
@@ -595,15 +642,12 @@ input.login_password {
 }
 
 #ver_num {
-	color: #000;
-	font-size: xx-small;
-	background: white;
-	margin-top: 32px;
-	margin: 0 auto;
-	width: 100px;
+	margin: 0px auto;
+	width: 100%;
 	position: absolute;
 	bottom: 10px;
-	right: 0px;
+	color: #FFF;
+	text-align: center;
 }
 
 input:-webkit-autofill {
@@ -639,7 +683,7 @@ input.sub {
 
 	background-color: #333 !important;
 	background-repeat: no-repeat !important;
-	background-position: 92% 5px !important;
+	background-position: 92% 3px !important;
 
 	color: white !important;
 	padding: 3px 3px 5px 12px;
@@ -659,7 +703,6 @@ input.target, input.search, input.copy, input.add, input.graph,
 input.percentile, input.binary, input.camera, input.config,
 input.cancel, input.default, input.filter, input.pdf {
 	padding-right: 30px;
-	margin-top: 15px;
 	height: 23px;
 
 }
@@ -730,6 +773,10 @@ input.pdf {
 input.pdf:disabled {
 	background-image: url(../../images/input_pdf.disabled.png) !important;
 }
+input.camera {
+	background-image: url(../../images/camera.png) !important;
+}
+
 #toolbox #auto_save {
 	padding-top: 5px;
 }
@@ -969,6 +1016,10 @@ tr.disabled_row_user * {
 	color: #f85858;
 }
 
+.warning *{
+	color: #FAD403;
+}
+
 .help {
 	background: url(../../images/help.png) no-repeat;
 }
@@ -1176,7 +1227,7 @@ div.title_line {
 /*	text-transform: uppercase; */
 	padding: 0px 0px 0px 0px;
 	color: #fff;
-	font-size: 9pt;
+	font-size: 8.5pt;
 	font-weight: bold;
 	line-height: 18px;
 }
@@ -1301,13 +1352,12 @@ span.rmess, span.nrmess {
 /* New styles for data box */
 .databox, .databox_color, .databox_frame {
 	margin-bottom: 5px;
-	margin-top: 5px;
+	margin-top: 0px;
 	margin-left: 0px;
 	border: 1px solid #e2e2e2;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
-	padding-bottom: 5px;
 
 }
 .databox_color{
@@ -1335,6 +1385,9 @@ table.databox {
 	font-weight: normal;
 	color: #fff;
 	padding-left: 10px;
+}
+.databox td {
+	#border-bottom: 1px solid #E2E2E2;
 }
 
 .databox th * {
@@ -1488,7 +1541,6 @@ div#main_pure {
 }
 .img_help {
 	cursor: help;
-	margin-top: -5px;
 }
 #loading {
 	position:fixed;
@@ -1881,7 +1933,7 @@ div#steps_clean {
 	width: 100%;
 	padding-right: 0px;
 	margin-left: 0px !important;
-	margin-bottom: 15px;
+	margin-bottom: 20px;
 	height: 31px;
 }
 div#events_list {
@@ -1910,6 +1962,7 @@ div#logo_text3 {
 }
 .pagination {
 	margin-top: 15px;
+	margin-bottom: 5px;
 }
 .pagination * {
 	margin-left: 0px !important;
@@ -2071,6 +2124,7 @@ div.cellBig {
 .info_box {
 	background: #F9FAF9;
 	margin-top: 10px !important;
+	margin-bottom: 10px !important;
 	padding: 0px 5px 5px 10px;
 	border-color: #E2E2E2;
 	border-style: solid;
@@ -2455,8 +2509,8 @@ input.search_input {
 	margin-top: 8px !important;
 }
 
-a>img, td>input, td>span {
-	vertical-align: middle;
+a[id^='tgl_ctrl_']>img, a[id^='tgl_ctrl_']>b>img{
+	vertical-align:middle;
 }
 
 .noshadow {
@@ -2854,7 +2908,7 @@ table#policy_modules td * {
 
 .databox.data td{
 	padding-left: 10px;
-	border: 1px solid #EFEFEF;
+	border-bottom: 1px solid #E2E2E2;
 }
 
 .databox .search{
@@ -2937,9 +2991,28 @@ table#policy_modules td * {
 	margin-top: 0px !important ;
 }
 
+.databox.filters, .databox.data{
+	margin-bottom: 20px;
+}
+
 .databox.filters td{
 	padding: 10px;
+	padding-left:20px;
 }
+
+.databox.filters td>img, .databox.filters td>div>a>img, 
+.databox.filters td>span>img, .databox.filters td>span>a>img,
+.databox.filters td>a>img{
+	vertical-align: middle;
+	margin-left: 5px;
+}
+.databox.data td>img,.databox.data th>img, .databox.data td>div>a>img, 
+.databox.data td>span>img, .databox.data td>span>a>img,
+.databox.data td>a>img{
+	vertical-align: middle;
+	margin-left: 5px;
+}
+
 .databox_color td{
 	padding-left: 10px;
 }

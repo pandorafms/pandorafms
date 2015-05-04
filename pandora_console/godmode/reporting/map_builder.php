@@ -178,7 +178,7 @@ if ($delete_layout || $copy_layout) {
 	}
 }
 
-$table->width = '98%';
+$table->width = '100%';
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Map name');
@@ -194,10 +194,10 @@ if ($vconsoles_write || $vconsoles_manage) {
 
 $table->align = array ();
 $table->align[0] = 'left';
-$table->align[1] = 'center';
-$table->align[2] = 'center';
-$table->align[3] = 'center';
-$table->align[4] = 'center';
+$table->align[1] = 'left';
+$table->align[2] = 'left';
+$table->align[3] = 'left';
+$table->align[4] = 'left';
 
 // Only display maps of "All" group if user is administrator
 // or has "VR" privileges, otherwise show only maps of user group
@@ -208,7 +208,7 @@ else
 	$maps = visual_map_get_user_layouts ($config['id_user'], false, false, false);
 
 if (!$maps) {
-	echo '<div class="nf">'.__('No maps defined').'</div>';
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No maps defined') ) );
 }
 else {
 	foreach ($maps as $map) {

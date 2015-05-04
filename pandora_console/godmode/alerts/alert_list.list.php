@@ -48,13 +48,14 @@ else {
 }
 
 // Table for filter controls
-$form_filter = '<form method="post" action="index.php?sec=' . $sec . '&amp;sec2=' . $sec2 . '&amp;refr=' . ((int)get_parameter('refr', 0)) . '&amp;pure='.$config["pure"].'">';
-$form_filter .= "<input type='hidden' name='search' value='1' />\n";
-$form_filter .= '<table style="width: 100%;" cellpadding="0" cellspacing="0" class="databox filters">'."\n";
-$form_filter .= "<tr>\n";
-$form_filter .= "<td>" . __('Template name') . "</td><td>";
+$form_filter = '<form method="post" action="index.php?sec=' . $sec . '&amp;sec2=' . $sec2 . '&amp;refr=' . ((int)get_parameter('refr', 0)) .
+					'&amp;pure='.$config["pure"].'">';
+$form_filter .= "<input type='hidden' name='search' value='1' />";
+$form_filter .= '<table style="width: 100%;" cellpadding="0" cellspacing="0" class="databox filters">';
+$form_filter .= "<tr>";
+$form_filter .= "<td style='font-weight: bold;'>" . __('Template name') . "</td><td>";
 $form_filter .= html_print_input_text ('template_name', $templateName, '', 12, 255, true);
-$form_filter .= "</td>\n";
+$form_filter .= "</td>";
 $temp = agents_get_agents();
 $arrayAgents = array();
 
@@ -65,7 +66,7 @@ if ($temp) {
 	}
 }
 
-$form_filter .= "<td>".__('Agents')."</td><td>";
+$form_filter .= "<td style='font-weight: bold;'>".__('Agents')."</td><td>";
 
 
 $params = array();
@@ -79,12 +80,12 @@ $params['metaconsole_enabled'] = false;
 $form_filter .=  ui_print_agent_autocomplete_input($params);
 
 
-$form_filter .= "</td>\n";
+$form_filter .= "</td>";
 
-$form_filter .= "<td>".__('Module name')."</td><td>";
+$form_filter .= "<td style='font-weight: bold;'>".__('Module name')."</td><td>";
 $form_filter .= html_print_input_text ('module_name', $moduleName, '', 12, 255, true);
-$form_filter .= "</td>\n";
-$form_filter .= "</tr>\n";
+$form_filter .= "</td>";
+$form_filter .= "</tr>";
 
 $all_groups = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
 
@@ -94,7 +95,7 @@ if ($groups_user === false) {
 }
 $groups_id = implode(',', array_keys($groups_user));
 
-$form_filter .= "<tr>\n";
+$form_filter .= "<tr>";
 switch ($config["dbtype"]) {
 	case "mysql":
 	case "postgresql":
@@ -111,39 +112,47 @@ if (is_array($temp)) {
 		$arrayActions[$actionElement['id']] = $actionElement['name'];
 	}
 }
-$form_filter .= "<td>".__('Actions')."</td><td>";
+$form_filter .= "<td style='font-weight: bold;'>".__('Actions')."</td><td>";
 $form_filter .= html_print_select ($arrayActions, "action_id", $actionID,  '', __('All'), -1, true);
-$form_filter .= "</td>\n";
-$form_filter .= "<td>".__('Field content')."</td><td>";
-$form_filter .= html_print_input_text ('field_content', $fieldContent, '', 12, 255, true);
-$form_filter .= "</td>\n";
-$form_filter .= "<td>".__('Priority')."</td><td>";
-$form_filter .= html_print_select (get_priorities (), 'priority',$priority, '', __('All'), -1, true);
 $form_filter .= "</td>";
-$form_filter .= "</tr>\n";
+$form_filter .= "<td style='font-weight: bold;'>".__('Field content')."</td><td>";
+$form_filter .= html_print_input_text ('field_content', $fieldContent, '', 12, 255, true);
+$form_filter .= "</td>";
+$form_filter .= "<td style='font-weight: bold;'>".__('Priority')."</td><td>";
+$form_filter .= html_print_select (get_priorities (), 'priority',$priority, '', __('All'), -1, true);
+$form_filter .= "</td style='font-weight: bold;'>";
+$form_filter .= "</tr>";
 
-$form_filter .= "<tr>\n";
-$form_filter .= "<td>".__('Enabled / Disabled')."</td><td>";
+$form_filter .= "<tr>";
+$form_filter .= "<td style='font-weight: bold;'>".__('Enabled / Disabled')."</td><td>";
 $ed_list = array ();
 $ed_list[0] = __('Enable');
 $ed_list[1] = __('Disable');
 $form_filter .= html_print_select ($ed_list, 'enabledisable', $enabledisable, '', __('All'), -1, true);
-$form_filter .= "</td><td>".__('Standby')."</td><td>";
+$form_filter .= "</td><td style='font-weight: bold;'>".__('Standby')."</td><td>";
 $sb_list = array ();
 $sb_list[1] = __('Standby on');
 $sb_list[0] = __('Standby off');
 $form_filter .= html_print_select ($sb_list, 'standby', $standby, '', __('All'), -1, true);
-$form_filter .= "</td></tr>\n";
+$form_filter .= "</td></tr>";
+if ( defined("METACONSOLE") ) {
+	$form_filter .= "<tr>";
+	$form_filter .= "<td colspan='6' align='right'>";
+	$form_filter .= html_print_submit_button (__('Update'), '', false, 'class="sub upd"', true);
+	$form_filter .= "</td>";
+	$form_filter .= "</tr>";
+	$form_filter .= "</table>";
+}else{
+	$form_filter .= "</table>";
+	$form_filter .= "<div  style='text-align:right; height:100%;'>";
+	$form_filter .= html_print_submit_button (__('Update'), '', false, 'class="sub upd"', true);
+	$form_filter .= "</div>";
+}
 
-$form_filter .= "<tr>\n";
-$form_filter .= "<td colspan='6' align='right'>";
-$form_filter .= html_print_submit_button (__('Update'), '', false, 'class="sub upd"', true);
-$form_filter .= "</td>";
-$form_filter .= "</tr>\n";
-$form_filter .= "</table>\n";
-$form_filter .= "</form>\n";
+$form_filter .= "</form>";
+if ( defined("METACONSOLE"))
+	echo "<br>";
 
-echo "<br>";
 ui_toggle($form_filter, __('Alert control filter'), __('Toggle filter(s)'));
 
 $simple_alerts = array();
@@ -323,9 +332,14 @@ if (!$id_agente) {
 else {
 	$url = 'index.php?sec='.$sec.'&sec2=godmode/agentes/configurar_agente&pure='.$pure.'&tab=alert&id_agente=' . $id_agente . '&offset=' . $offset . $form_params;
 }
-
-$table->class = 'alert_list databox';
+if ( defined("METACONSOLE") )
+	$table->class = 'alert_list databox';
+else
+	$table->class = 'databox filters';
+	
 $table->width = '100%';
+$table->cellpadding = 0;
+$table->cellspacing = 0;
 $table->size = array ();
 
 $table->align[2] = 'left';
@@ -674,7 +688,7 @@ if (isset($data)) {
 	html_print_table ($table);
 }
 else {
-	ui_print_empty_data ( __('No alerts defined') );
+	ui_print_info_message ( array('no_close' => true, 'message' =>  __('No alerts defined') ) );
 }
 
 // Create alert button

@@ -167,9 +167,9 @@ function mainModuleGroups() {
 	
 	ui_print_page_header (__("Combined table of agent group and module group"), "images/module_group.png", false, "", false, '');
 	
-	echo "<p>" .
-		__("This table shows in columns the modules group and in rows agents group. The cell shows all modules") .
-		"</p>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=>
+		__("This table shows in columns the modules group and in rows agents group. The cell shows all modules") )
+		);
 	
 	
 	$agentGroups = users_get_groups ($config['id_user'], "AR", false);
@@ -182,7 +182,7 @@ function mainModuleGroups() {
 		$table->headstyle[] = "width: 20%";
 		foreach ($modelGroups as $i => $n) {
 			$table->headstyle[] = "width: 7%";
-			$modelGroups[$i] = ui_print_truncate_text($n, GENERIC_SIZE_TEXT);
+			$modelGroups[$i] = ui_print_truncate_text($n, GENERIC_SIZE_TEXT, true, true, true, '&hellip;', 'color:#FFF');
 		}
 		
 		$head = $modelGroups;
@@ -203,7 +203,7 @@ function mainModuleGroups() {
 			$fired = false;
 			$row = array();
 			
-			array_push($row, ui_print_truncate_text($name, GENERIC_SIZE_TEXT));
+			array_push($row, ui_print_truncate_text($name, GENERIC_SIZE_TEXT, true, true, true, '&hellip;', 'color:#FFF'));
 			
 			foreach ($modelGroups as $idModelGroup => $modelGroup) {
 				$fired = false;

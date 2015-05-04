@@ -197,15 +197,6 @@ echo '</td><td style="width:5%;">&nbsp;</td>';
 
 echo '</tr></table></form>';
 
-if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0, "AM")) {
-	echo '<div style="text-align: right; float: right;">';
-	echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
-		html_print_input_hidden ('new_agent', 1);
-		html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
-	echo "</form>";
-	echo '</div>';
-}
-
 if ($search != "") {
 	$filter = array ("string" => '%' . $search . '%');
 }
@@ -427,11 +418,11 @@ if (empty ($agents)) {
 
 // Prepare pagination
 ui_pagination ($total_agents,
-	ui_get_url_refresh (array ('group_id' => $group_id, 'recursion' => $recursion, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status)));
+ui_get_url_refresh (array ('group_id' => $group_id, 'recursion' => $recursion, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status)));
 
 // Show data.
-$table->cellpadding = 4;
-$table->cellspacing = 4;
+$table->cellpadding = 0;
+$table->cellspacing = 0;
 $table->width = "100%";
 $table->class = "databox data";
 
@@ -439,35 +430,52 @@ $table->head = array ();
 $table->head[0] = __('Agent'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
+$table->size[0] = "10%";
+
 $table->head[1] = __('Description');
+$table->size[1] = "30%";
+
 $table->head[2] = __('OS'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=os&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=os&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown, "alt" => "down")) . '</a>';
+$table->size[2] = "4%";
+
 $table->head[3] = __('Interval'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=interval&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up")) . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=interval&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown, "alt" => "down")) . '</a>';
+$table->size[3] = "10%";
+
 $table->head[4] = __('Group'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=group&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectGroupUp, "alt" => "up")) . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=group&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown, "alt" => "down")) . '</a>';
+$table->size[4] = "15%";
+
 $table->head[5] = __('Modules');
+$table->size[5] = "10%";
+
 $table->head[6] = __('Status');
+$table->size[6] = "4%";
+
 $table->head[7] = __('Alerts');
+$table->size[7] = "4%";
+
 $table->head[8] = __('Last contact'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=last_contact&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastContactUp, "alt" => "up")) . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=last_contact&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
+$table->size[8] = "15%";
 
 $table->align = array ();
 
 $table->align[2] = "center";
-$table->align[3] = "center";
-$table->align[4] = "center";
-$table->align[5] = "center";
+$table->align[3] = "left";
+$table->align[4] = "left";
+$table->align[5] = "left";
 $table->align[6] = "center";
 $table->align[7] = "center";
-$table->align[8] = "right";
+$table->align[8] = "left";
 
 $table->style = array();
-$table->style[0] = 'width: 15%';
+//$table->style[0] = 'width: 15%';
 
 $table->data = array ();
 
@@ -489,14 +497,14 @@ foreach ($agents as $agent) {
 	
 	$data = array ();
 	
-	$data[0] = '';
-	$data[0] .= '<span class="left">';
+	$data[0] = '<div class="left_' . $agent["id_agente"] . '">';
+	$data[0] .= '<span>';
 	if ($agent['quiet']) {
 		$data[0] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "&nbsp;";
 	}
 	$data[0] .= ui_print_agent_name($agent["id_agente"], true, 60, 'font-size:6.5pt !important;', true);
 	$data[0] .= '</span>';
-	$data[0] .= '<div class="left actions" style="visibility: hidden; clear: left">';
+	$data[0] .= '<div class="agentleft_' . $agent["id_agente"] . '" style="visibility: hidden; clear: left;">';
 	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
 	$data[0] .= ' | ';
 	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'&tab=data">'.__('Data').'</a>';
@@ -504,7 +512,7 @@ foreach ($agents as $agent) {
 		$data[0] .= ' | ';
 		$data[0] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$agent["id_agente"].'">'.__('Edit').'</a>';
 	}
-	$data[0] .= '</div>';
+	$data[0] .= '</div></div>';
 	
 	$data[1] = ui_print_truncate_text(strip_tags(ui_bbcode_to_html($agent["description"])), 'description', false, true, true, '[&hellip;]', 'font-size: 6.5pt');
 	
@@ -541,6 +549,14 @@ foreach ($agents as $agent) {
 
 if (!empty ($table->data)) {
 	html_print_table ($table);
+	if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0, "AM")) {
+		echo '<div style="text-align: right; float: right;">';
+		echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
+			html_print_input_hidden ('new_agent', 1);
+			html_print_submit_button (__('Create agent'), 'crt', false, 'class="sub next"');
+		echo "</form>";
+		echo '</div>';
+	}
 	ui_pagination ($total_agents,
 		ui_get_url_refresh(array(
 			'group_id' => $group_id,
@@ -550,20 +566,20 @@ if (!empty ($table->data)) {
 			'status' => $status)),
 		0, 0, false, 'offset', false);
 	unset ($table);
+	
 }
 else {
-	echo '<div class="nf">'.__('There are no defined agents').'</div>';
+	ui_print_info_message ( array ( 'no_close' => true, 'message' => __('There are no defined agents') ) );
 }
 ?>
 
 <script type="text/javascript">
 $(document).ready (function () {
-	
-	$("table#table1 tr").hover (function () {
-			$(".actions", this).css ("visibility", "");
-		},
-		function () {
-			$(".actions", this).css ("visibility", "hidden");
+	$("[class^='left']").mouseenter (function () {
+		console.log($(this));
+		$(".agent"+$(this)[0].className).css('visibility', '');
+	}).mouseleave(function () {
+		$(".agent"+$(this)[0].className).css('visibility', 'hidden');
 	});
 });
 </script>

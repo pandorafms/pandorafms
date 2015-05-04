@@ -84,7 +84,7 @@ switch ($action) {
 		break;
 }
 
-$table->width = '98%';
+$table->width = '100%';
 if (defined('METACONSOLE')) {
 	$table->width = '100%';
 	$table->class = 'databox data';

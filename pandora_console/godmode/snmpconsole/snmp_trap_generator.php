@@ -58,30 +58,31 @@ if ($generate_trap) {
 }
 
 $traps_generator = '<form method="POST" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_trap_generator">';
-$table->width = '90%';
+$table->width = '100%';
+$table->class = 'databox filters';
 $table->size = array ();
 $table->data = array ();
 
 $table->data[0][0] = __('Host address');
 $table->data[0][1] = html_print_input_text('snmp_host_address', $snmp_host_address, '', 50, 255, true);
 
-$table->data[1][0] = __('Community');
-$table->data[1][1] = html_print_input_text('snmp_community', $snmp_community, '', 50, 255, true);
+$table->data[0][2] = __('Community');
+$table->data[0][3] = html_print_input_text('snmp_community', $snmp_community, '', 50, 255, true);
 
 $table->data[2][0] = __('Enterprise String');
 $table->data[2][1] = html_print_input_text('snmp_oid', $snmp_oid, '', 50, 255, true);
 
+$table->data[2][2] = __('Value');
+$table->data[2][3] = html_print_input_text('snmp_value', $snmp_value, '', 50, 255, true);
+
 $table->data[3][0] = __('SNMP Agent');
 $table->data[3][1] = html_print_input_text('snmp_agent', $snmp_agent, '', 50, 255, true);
 
-$table->data[4][0] = __('SNMP Type').' '.ui_print_help_icon ("snmp_trap_types", true);
-$table->data[4][1] = html_print_input_text('snmp_type', $snmp_type, '', 50, 255, true);
+$table->data[3][2] = __('SNMP Type').' '.ui_print_help_icon ("snmp_trap_types", true);
+$table->data[3][3] = html_print_input_text('snmp_type', $snmp_type, '', 50, 255, true);
 
 $types = array(0 => 'Cold start (0)', 1 => 'Warm start (1)', 2 => 'Link down (2)', 3 => 'Link up (3)', 4 => 'Authentication failure (4)', 5 => 'EGP neighbor loss (5)', 6 => 'Enterprise (6)');
-$table->data[4][1] = html_print_select($types, 'snmp_type', $snmp_type, '', __('Select'), -1, true, false, false);
-
-$table->data[5][0] = __('Value');
-$table->data[5][1] = html_print_input_text('snmp_value', $snmp_value, '', 50, 255, true);
+$table->data[3][3] = html_print_select($types, 'snmp_type', $snmp_type, '', __('Select'), -1, true, false, false);
 
 
 $traps_generator .= html_print_table($table, true);

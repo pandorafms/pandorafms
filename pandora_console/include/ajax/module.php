@@ -901,8 +901,26 @@ if ($list_modules) {
 		}
 		else {
 			if (is_numeric($module["datos"]) && !modules_is_string_type($module['id_tipo_modulo'])){
-				$salida = format_numeric($module["datos"]);
-				
+				if ( $config["render_proc"] ){
+					switch($module["id_tipo_modulo"]) {
+						case 2:
+						case 6:
+						case 9:
+						case 18:
+						case 21:
+						case 31:
+							if ($module["datos"]>=1) 
+								$salida ='OK';
+							else
+								$salida = 'FAIL';
+							break;
+						default:	
+							$salida = format_numeric($module["datos"]);
+						break;
+					}
+				}else{
+					$salida = format_numeric($module["datos"]);
+				}
 				// Show units ONLY in numeric data types
 				if (isset($module["unit"])){
 					$salida .= "&nbsp;" . '<i>'. io_safe_output($module["unit"]) . '</i>';

@@ -251,7 +251,7 @@ config_check();
 					$maintenance_link_open_txt =  '<a href="' . $maintenance_link . '" title="' . $maintenance_title . '" class="' . $maintenance_class . '" id="show_systemalert_dialog">'; 
 					$maintenance_link_open_img =  '<a href="' . $maintenance_link . '" title="' . $maintenance_title . '" class="' . $maintenance_class . '">'; 
 					$maintenance_link_close =  '</a>'; 
-					$maintenance_img = $maintenance_link_open_img . html_print_image ("images/header_warning.png", true, array ("title" => __('You have %d warning(s)', $config["alert_cnt"]), "id" => "yougotalert", "class" => "bot")) . $maintenance_link_close;
+					$maintenance_img = $maintenance_link_open_img . html_print_image ("images/header_yellow.png", true, array ("title" => __('You have %d warning(s)', $config["alert_cnt"]), "id" => "yougotalert", "class" => "bot")) . $maintenance_link_close;
 				}
 				else {
 					$maintenance_img = html_print_image ("images/header_ready.png", true, array ("title" => __('There are not warnings'), "id" => "yougotalert", "class" => "bot"));

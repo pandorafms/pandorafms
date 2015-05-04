@@ -461,6 +461,8 @@ function config_update_config () {
 						$error_update[] = __('Show the group name instead the group icon.');
 					if (!config_update_value ('custom_graph_widht', (int) get_parameter('custom_graph_widht', 1)))
 						$error_update[] = __('Default line thickness for the Custom Graph.');
+					if (!config_update_value ('render_proc', (int) get_parameter('render_proc', 0)))
+						$error_update[] = __('Render data of module type is proc.');
 					
 					
 					
@@ -1254,6 +1256,9 @@ function config_process_config () {
 	if (!isset($config['custom_graph_widht'])) {
 		config_update_value ('custom_graph_widht', 1);
 	}
+	if (!isset($config['render_proc'])) {
+		config_update_value ('render_proc', 0);
+	}
 	
 	if (!isset($config['command_snapshot'])) {
 		config_update_value ('command_snapshot', 1);
@@ -1364,6 +1369,7 @@ function config_check () {
 	
 	
 	if (enterprise_installed()) {
+		
 		if (!is_readable ($remote_config)) {
 			set_pandora_error_for_header(
 				__('Remote configuration directory is not readble for the console') .

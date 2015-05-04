@@ -3,23 +3,23 @@
 ' This plugin extends agent inventory feature. Only enterprise version
 ' --------------------------------------------------------------------------
 on error resume next
-'WMI cpuinfo
+'WMI architecture
+
 
 Wscript.StdOut.WriteLine "<inventory>"
 Wscript.StdOut.WriteLine "<inventory_module>"
-Wscript.StdOut.WriteLine "<name>CPU</name>"
+Wscript.StdOut.WriteLine "<name>Architecture</name>"
 Wscript.StdOut.WriteLine "<type><![CDATA[generic_data_string]]></type>"
 Wscript.StdOut.WriteLine "<datalist>"
 
 strComputer = "."
 Set objWMIService = GetObject("winmgmts:" & "{impersonationLevel=impersonate}!\\" & strComputer & "\root\cimv2")
-Set colCPUs = objWMIService.ExecQuery("Select name,maxclockspeed,caption from Win32_Processor")
+Set cols = objWMIService.ExecQuery("Select osarchitecture from Win32_OperatingSystem")
 
-For Each cpu In colCPUs
-  Wscript.StdOut.WriteLine "<data><![CDATA[" & cpu.name & ";" & cpu.maxclockspeed & " MHz;" & cpu.caption & "]]></data>"
+For Each data In cols
+  Wscript.StdOut.WriteLine "<data><![CDATA[" & data.osarchitecture & "]]></data>"
 Next
 
 Wscript.StdOut.WriteLine "</datalist>"
 Wscript.StdOut.WriteLine "</inventory_module>"
 Wscript.StdOut.WriteLine "</inventory>"
-

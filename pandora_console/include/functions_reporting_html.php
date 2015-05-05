@@ -258,6 +258,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'SLA':
 				reporting_html_SLA($table, $item, $mini);
 				break;
+			case 'SLA_monthly':
+				reporting_enterprise_html_SLA_monthly($table, $item, $mini);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -4045,10 +4048,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 	$item_title = $content['name'];
 	
 	switch ($content["type"]) {
-		case 'SLA_monthly':
-			if (function_exists("reporting_enterprise_sla_monthly"))
-				reporting_enterprise_sla_monthly($mini, $content, $report, $table, $item_title);
-			break;
 		case 'SLA_services':
 			if (function_exists("reporting_enterprise_sla_services"))
 				reporting_enterprise_sla_services($mini, $content, $report, $table, $item_title);

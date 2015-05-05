@@ -4380,9 +4380,9 @@ Set the current master server.
 sub pandora_set_master ($$) {
 	my ($pa_config, $dbh) = @_;
 	
-	my $current_master = get_db_value ($dbh, 'SELECT name FROM tserver 
+	my $current_master = get_db_value_limit ($dbh, 'SELECT name FROM tserver 
 	                                  WHERE master <> 0 AND status = 1
-									  ORDER BY master DESC LIMIT 1');
+									  ORDER BY master DESC', 1);
 	return unless defined($current_master) and ($current_master ne $Master);
 
 	logger($pa_config, "Server $current_master is the current master.", 1);

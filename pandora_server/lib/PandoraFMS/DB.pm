@@ -59,6 +59,7 @@ our @EXPORT = qw(
 		get_db_rows
 		get_db_single_row
 		get_db_value
+		get_db_value_limit
 		get_first_server_name
 		get_group_id
 		get_group_name
@@ -141,7 +142,7 @@ sub db_connect ($$$$$$) {
 		$RDBMS_QUOTE_STRING = '\'';
 		
 		# Connect to Oracle
-		my $dbh = DBI->connect("DBI:Oracle:dbname=$db_name;host=$db_host;port=$db_port;sid=pandora", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
+		my $dbh = DBI->connect("DBI:Oracle:dbname=$db_name;host=$db_host;port=$db_port;sid=$db_name", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
 		return undef unless defined ($dbh);
 		
 		# Set date format
@@ -604,13 +605,40 @@ sub get_group_name ($$) {
 ########################################################################
 sub get_db_value ($$;@) {
 	my ($dbh, $query, @values) = @_;
-	#my @rows;
 	
 	# Cache statements
 	my $sth = $dbh->prepare_cached($query);
 	
 	$sth->execute(@values);
 	
+	# Save returned rows
+	while (my $row = $sth->fetchrow_arrayref()) {
+		$sth->finish();
+		return defined ($row->[0]) ? $row->[0] : undef;
+	}
+	
+	$sth->finish();
+	
+	return undef;
+}
+
+########################################################################
+## Get a single column returned by an SQL query with a LIMIT statement
+## as a hash reference.
+########################################################################
+sub get_db_value_limit ($$$;@) {
+	my ($dbh, $query, $limit, @values) = @_;
+	
+	# Cache statements
+	my $sth;
+	if ($RDBMS ne 'oracle') {
+		$sth = $dbh->prepare_cached($query . ' LIMIT ' . $limit);
+	} else {
+		$sth = $dbh->prepare_cached('SELECT * FROM (' . $query . ') WHERE ROWNUM <= ' . $limit);
+	}
+
+	$sth->execute(@values);
+
 	# Save returned rows
 	while (my $row = $sth->fetchrow_arrayref()) {
 		$sth->finish();

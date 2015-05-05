@@ -1856,7 +1856,10 @@ CREATE OR REPLACE TRIGGER tevent_response_inc BEFORE INSERT ON tevent_response R
 CREATE TABLE tcategory ( 
 	id NUMBER(10, 0) PRIMARY KEY, 
 	name VARCHAR2(600) DEFAULT ''
-); 
+);
+
+CREATE SEQUENCE tcategory_s INCREMENT BY 1 START WITH 1;
+CREATE OR REPLACE TRIGGER tcategory_inc BEFORE INSERT ON tcategory REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tcategory_s.nextval INTO :NEW.ID FROM dual; END tcategory_inc;;
 
 -- ---------------------------------------------------------------------
 -- Table `tupdate_settings`

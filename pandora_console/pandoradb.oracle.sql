@@ -815,7 +815,7 @@ CREATE TABLE torigen (
 
 CREATE TABLE tperfil (
 	id_perfil NUMBER(10, 0) PRIMARY KEY,
-	name CLOB DEFAULT '',
+	name VARCHAR2(200) NOT NULL,
 	incident_edit NUMBER(1, 0) DEFAULT 0,
 	incident_view NUMBER(1, 0) DEFAULT 0,
 	incident_management NUMBER(1, 0) DEFAULT 0,

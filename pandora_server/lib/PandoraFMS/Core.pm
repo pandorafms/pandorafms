@@ -4502,7 +4502,7 @@ sub pandora_module_unknown ($$) {
 			}
 			
 			my $do_event = 0;
-			if ($module->{'disabled_types_event'} eq "") {
+			if (!defined($module->{'disabled_types_event'}) || $module->{'disabled_types_event'} eq "") {
 				$do_event = 1;
 			}
 			else {
@@ -4776,6 +4776,8 @@ sub pandora_get_os ($$) {
 sub load_module_macros ($$) {
 	my ($macros, $macro_hash) = @_;
 	
+	return if (!defined($macros));
+
 	# Decode and parse module macros
 	my $decoded_macros = {};
 	eval {

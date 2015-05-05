@@ -779,12 +779,11 @@ sub db_process_insert($$$$;@) {
 	}
 	$wildcards = '('.$wildcards.')';
 	
-	my $columns_string = join($RDBMS_QUOTE . ',' . $RDBMS_QUOTE,
-		@columns_array);
+	my $columns_string = join(',', @columns_array);
 	
 	my $res = db_insert ($dbh,
 		$index,
-		"INSERT INTO $table (" . $RDBMS_QUOTE . $columns_string . $RDBMS_QUOTE . ") VALUES " . $wildcards, @values_array);
+		"INSERT INTO $table ($columns_string) VALUES " . $wildcards, @values_array);
 	
 	
 	return $res;
@@ -854,10 +853,8 @@ sub add_address ($$) {
 sub add_new_address_agent ($$$) {
 	my ($dbh, $addr_id, $agent_id) = @_;
 	
-	db_do ($dbh, 'INSERT INTO taddress_agent (' .
-		$RDBMS_QUOTE . 'id_a' . $RDBMS_QUOTE . ', ' .
-		$RDBMS_QUOTE. 'id_agent' . $RDBMS_QUOTE. ')
-		VALUES (?, ?)', $addr_id, $agent_id);
+	db_do ($dbh, 'INSERT INTO taddress_agent (id_a, id_agent)
+	              VALUES (?, ?)', $addr_id, $agent_id);
 }
 
 ########################################################################
@@ -1028,7 +1025,7 @@ sub db_insert_get_values ($) {
 		# Not value for the given column
 		next if (! defined ($value));
 		
-		$columns .= $PandoraFMS::DB::RDBMS_QUOTE . "$key" . $PandoraFMS::DB::RDBMS_QUOTE . ",";
+		$columns .= $key . ",";
 		push (@values, $value);
 	}
 	

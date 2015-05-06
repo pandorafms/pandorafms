@@ -61,7 +61,7 @@ $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Status');
 $table->head[2] = __('Type');
-$table->head[3] = __('Load') . ui_print_help_tip (__("Modules running on this server / Total modules of this type"), true);
+$table->head[3] = __('Version');
 $table->head[4] = __('Modules');
 $table->head[5] = __('Lag') . ui_print_help_tip (__("Avg. Delay(sec)/Modules delayed"), true);
 $table->head[6] = __('T/Q') . ui_print_help_tip (__("Threads / Queued modules currently"), true);
@@ -93,22 +93,22 @@ foreach ($servers as $server) {
 		if ($server["master"] == 1){
 			$data[2] .= ui_print_help_tip (__("This is a master server"), true);
 		}
-	$data[2] .= '</span> <span style="font-size:8px;"> v' . $server["version"]. '</span>';
+	//$data[2] .= '</span> <span style="font-size:8px;"> v' .. '</span>';
 	
 	switch ($server['type']) {
 		case "snmp":
 		case "event":
-			$data[3] = 'N/A';
+			$data[3] =  $server["version"];
 			$data[4] = 'N/A';
 			$data[5] = 'N/A';
 			break;
 		case "export":
-			$data[3] = progress_bar($server["load"], 100, 10, $server["lag_txt"], 0);
+			$data[3] = $server["version"];
 			$data[4] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
 			$data[5] = 'N/A';
 			break;
 		default:
-			$data[3] = progress_bar($server["load"], 100, 10, $server["lag_txt"], 0);
+			$data[3] =  $server["version"];
 			$data[4] = $server["modules"] . " ".__('of')." ". $server["modules_total"];
 			$data[5] = '<span style="white-space:nowrap;">' .
 				$server["lag_txt"] . '</span>';

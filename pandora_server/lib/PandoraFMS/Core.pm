@@ -647,15 +647,26 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 	
 	# Simple alert
 	if (defined ($alert->{'id_template_module'})) {
-		@actions = get_db_rows ($dbh, 'SELECT *, talert_template_module_actions.id AS id_alert_template_module_actions
-					FROM talert_template_module_actions, talert_actions, talert_commands
-					WHERE talert_template_module_actions.id_alert_action = talert_actions.id
-					AND talert_actions.id_alert_command = talert_commands.id
-					AND talert_template_module_actions.id_alert_template_module = ?
-					AND ((fires_min = 0 AND fires_max = 0)
-					OR (fires_min <= fires_max AND ? >= fires_min AND ? <= fires_max)
-					OR (fires_min > fires_max AND ? >= fires_min))', 
-					$alert->{'id_template_module'}, $alert->{'times_fired'}, $alert->{'times_fired'}, $alert->{'times_fired'});	
+		if ($alert_mode == RECOVERED_ALERT) {
+			@actions = get_db_rows ($dbh, 'SELECT *, talert_template_module_actions.id AS id_alert_template_module_actions
+						FROM talert_template_module_actions, talert_actions, talert_commands
+						WHERE talert_template_module_actions.id_alert_action = talert_actions.id
+						AND talert_actions.id_alert_command = talert_commands.id
+						AND talert_template_module_actions.id_alert_template_module = ?
+						AND ((fires_min = 0 AND fires_max = 0)
+						OR ? >= fires_min)',
+						$alert->{'id_template_module'}, $alert->{'times_fired'});	
+		} else {
+			@actions = get_db_rows ($dbh, 'SELECT *, talert_template_module_actions.id AS id_alert_template_module_actions
+						FROM talert_template_module_actions, talert_actions, talert_commands
+						WHERE talert_template_module_actions.id_alert_action = talert_actions.id
+						AND talert_actions.id_alert_command = talert_commands.id
+						AND talert_template_module_actions.id_alert_template_module = ?
+						AND ((fires_min = 0 AND fires_max = 0)
+						OR (fires_min <= fires_max AND ? >= fires_min AND ? <= fires_max)
+						OR (fires_min > fires_max AND ? >= fires_min))', 
+						$alert->{'id_template_module'}, $alert->{'times_fired'}, $alert->{'times_fired'}, $alert->{'times_fired'});	
+		}
 
 		# Get default action
 		if ($#actions < 0) {
@@ -667,15 +678,25 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 	}
 	# Event alert
 	else {
-		@actions = get_db_rows ($dbh, 'SELECT * FROM tevent_alert_action, talert_actions, talert_commands
-					WHERE tevent_alert_action.id_alert_action = talert_actions.id
-					AND talert_actions.id_alert_command = talert_commands.id
-					AND tevent_alert_action.id_event_alert = ?
-					AND ((fires_min = 0 AND fires_max = 0)
-					OR (fires_min <= fires_max AND ? >= fires_min AND ? <= fires_max)
-					OR (fires_min > fires_max AND ? >= fires_min))', 
-					$alert->{'id'}, $alert->{'times_fired'}, $alert->{'times_fired'}, $alert->{'times_fired'});
-					
+		if ($alert_mode == RECOVERED_ALERT) {
+			@actions = get_db_rows ($dbh, 'SELECT * FROM tevent_alert_action, talert_actions, talert_commands
+						WHERE tevent_alert_action.id_alert_action = talert_actions.id
+						AND talert_actions.id_alert_command = talert_commands.id
+						AND tevent_alert_action.id_event_alert = ?
+						AND ((fires_min = 0 AND fires_max = 0)
+						OR ? >= fires_min)',
+						$alert->{'id'}, $alert->{'times_fired'});
+		} else {
+			@actions = get_db_rows ($dbh, 'SELECT * FROM tevent_alert_action, talert_actions, talert_commands
+						WHERE tevent_alert_action.id_alert_action = talert_actions.id
+						AND talert_actions.id_alert_command = talert_commands.id
+						AND tevent_alert_action.id_event_alert = ?
+						AND ((fires_min = 0 AND fires_max = 0)
+						OR (fires_min <= fires_max AND ? >= fires_min AND ? <= fires_max)
+						OR (fires_min > fires_max AND ? >= fires_min))', 
+						$alert->{'id'}, $alert->{'times_fired'}, $alert->{'times_fired'}, $alert->{'times_fired'});
+		}
+
 		# Get default action
 		if ($#actions < 0) {
 			@actions = get_db_rows ($dbh, 'SELECT * FROM talert_actions, talert_commands
@@ -733,7 +754,7 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 	if ($event_generated == 0) {
 
 		#If we've spotted an alert recovered, we set the new event's severity to 2 (NORMAL), otherwise the original value is maintained.
-		my ($text, $event, $severity) = ($alert_mode == 0) ? ('recovered', 'alert_recovered', 2) : ('fired', 'alert_fired', $alert->{'priority'});
+		my ($text, $event, $severity) = ($alert_mode == RECOVERED_ALERT) ? ('recovered', 'alert_recovered', 2) : ('fired', 'alert_fired', $alert->{'priority'});
 
 		pandora_event ($pa_config, "Alert $text (" . safe_output($alert->{'name'}) . ") " . (defined ($module) ? 'assigned to ('. safe_output($module->{'nombre'}) . ")" : ""),
  			(defined ($agent) ? $agent->{'id_grupo'} : 0), (defined ($agent) ? $agent->{'id_agente'} : 0), $severity, (defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : 0),
@@ -785,7 +806,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	}
 	
 	# Recovery fields, thanks to Kato Atsushi
-	if ($alert_mode == 0) {
+	if ($alert_mode == RECOVERED_ALERT) {
 		# Field 1 is a special case where [RECOVER] prefix is not added even when it is defined
 		$field1 = $alert->{'field1_recovery'} ? $alert->{'field1_recovery'} : $field1;
 		$field1 = $action->{'field1_recovery'} ? $action->{'field1_recovery'} : $field1;
@@ -2608,7 +2629,7 @@ sub pandora_create_module_from_hash ($$$) {
 sub pandora_update_module_from_hash ($$$$$) {
 	my ($pa_config, $parameters, $where_column, $where_value, $dbh) = @_;
 	
-	my $module_id = db_process_update($dbh, 'tagente_modulo', $parameters, $where_column, $where_value);
+	my $module_id = db_process_update($dbh, 'tagente_modulo', $parameters, {$where_column => $where_value});
 	return $module_id;
 }
 
@@ -2618,7 +2639,7 @@ sub pandora_update_module_from_hash ($$$$$) {
 sub pandora_update_table_from_hash ($$$$$$) {
 	my ($pa_config, $parameters, $where_column, $where_value, $table, $dbh) = @_;
 	
-	my $module_id = db_process_update($dbh, $table, $parameters, $where_column, $where_value);
+	my $module_id = db_process_update($dbh, $table, $parameters, {$where_column => $where_value});
 	return $module_id;
 }
 
@@ -4663,24 +4684,8 @@ sub pandora_set_event_storm_protection ($) {
 ##########################################################################
 # Update the module status count of an agent.
 ##########################################################################
-sub pandora_update_agent_count ($$) {
-	my ($dbh, $agent_id) = @_;
-	
-	db_do ($dbh, 'UPDATE tagente SET update_module_count=0,
-	normal_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=0),
-	critical_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=1),
-	warning_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=2),
-	unknown_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=3),
-	notinit_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=4),
-	total_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id .
-	') WHERE id_agente = ' . $agent_id);
-}
-
-##########################################################################
-# Update the module status count of an agent.
-##########################################################################
-sub pandora_update_agent_module_count ($$) {
-	my ($dbh, $agent_id) = @_;
+sub pandora_update_agent_module_count ($$$) {
+	my ($pa_config, $dbh, $agent_id) = @_;
 	
 	db_do ($dbh, 'UPDATE tagente SET update_module_count=0,
 	normal_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=0),
@@ -4690,6 +4695,9 @@ sub pandora_update_agent_module_count ($$) {
 	notinit_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id . ' AND estado=4),
 	total_count=(SELECT COUNT(*) FROM tagente_modulo, tagente_estado WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=tagente_estado.id_agente_modulo AND tagente_modulo.id_agente=' . $agent_id .
 	') WHERE id_agente = ' . $agent_id);
+
+	# Sync the agent cache every time the module count is updated.
+	enterprise_hook('update_agent_cache', [$pa_config, $dbh, $agent_id]) if ($pa_config->{'metaconsole_agent_cache'} == 1);
 }
 
 ##########################################################################

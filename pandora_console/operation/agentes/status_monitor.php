@@ -453,14 +453,9 @@ $rows_select[0] = __('Not assigned');
 
 $table->data[0][5] = html_print_select($rows_select, 'modulegroup', $modulegroup, '', __('All'),-1,true, false, true, '', false, 'width: 120px;');
 
-
-if(defined('METACONSOLE')){
-	
-	$table->rowspan[0][6] = 2;
-	$table->data[0][6] = html_print_submit_button (__('Show'), "uptbutton",
-							false, 'class="sub search" style="margin-top:0px;"',true);
-
-}
+$table->rowspan[0][6] = 2;
+$table->data[0][6] = html_print_submit_button (__('Show'), "uptbutton",
+						false, 'class="sub search" style="margin-top:0px;"',true);
 
 $table->data[1][0] = __('Module name');
 
@@ -494,11 +489,6 @@ else {
 	
 	$table->data[1][5] = html_print_select ($tags, "tag_filter",
 		$tag_filter, '', __('All'), '', true, false, true, '', false, 'width: 150px;');
-}
-
-
-if(!defined('METACONSOLE')){
-	$table->data[1][6] = html_print_submit_button (__('Show'), "uptbutton", false, 'class="sub search"',true);
 }
 
 $table_custom_fields = new stdClass();
@@ -1239,7 +1229,27 @@ foreach ($result as $row) {
 		$row['min_critical'], $row['str_critical']);
 	
 	if (is_numeric($row["datos"])) {
-		$salida = format_numeric($row["datos"]);
+		if ( $config["render_proc"] ){
+				switch($row["module_type"]) {
+					case 2:
+					case 6:
+					case 9:
+					case 18:
+					case 21:
+					case 31:
+						
+						if ( $row["datos"] >= 1 ) 
+							$salida ='OK';
+						else
+							$salida = 'FAIL';
+						break;
+					default:	
+						$salida = format_numeric($row["datos"]);
+						break;
+				}
+		}else{
+			$salida = format_numeric($row["datos"]);
+		}
 		
 		// Show units ONLY in numeric data types
 		if (isset($row["unit"])) {
@@ -1343,7 +1353,7 @@ if (!empty ($table->data)) {
 	html_print_table ($table);
 }
 else {
-	echo "<div class='nf'>".__('This group doesn\'t have any monitor')."</div>";
+	ui_print_info_message ( array ( 'no_close' => true, 'message' => __('This group doesn\'t have any monitor') ) );
 }
 
 echo "<div id='monitor_details_window'></div>";

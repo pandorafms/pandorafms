@@ -509,6 +509,6 @@ if ($table_events) {
 		array_keys($groups), 'ER', 'event_condition', 'AND');
 	
 	events_print_event_table ("estado <> 1 $tags_condition", 10, '100%',
-		false, $id_agente);
+		false, $id_agente,true);
 }
 ?>

@@ -281,11 +281,8 @@ switch ($activeTab) {
 					}
 					$agentName = get_parameter('agent_' .  $id, '');
 					if (defined('METACONSOLE')) {
-						$values['id_metaconsole'] = db_get_value('id',
-							'tmetaconsole_setup', 'server_name',
-							get_parameter('id_server_name_' . $id, ''));
-						$values['id_agent'] =
-							(int)get_parameter('id_agent_' . $id, 0);
+						$values['id_metaconsole'] = (int) get_parameter('id_server_id_' . $id, '');
+						$values['id_agent'] = (int) get_parameter('id_agent_' . $id, 0);
 					}
 					else {
 						$values['id_agent'] = agents_get_agent_id($agentName);
@@ -295,7 +292,7 @@ switch ($activeTab) {
 					$values['id_layout_linked'] = get_parameter('map_linked_' . $id, 0);
 					
 					if (enterprise_installed()) {
-						enterprise_visual_map_update_action_from_list_elements($type, $values);
+						enterprise_visual_map_update_action_from_list_elements($type, $values, $id);
 					}
 					
 					db_process_sql_update('tlayout_data', $values, array('id' => $id));

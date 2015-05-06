@@ -72,8 +72,8 @@ if (is_ajax ()) {
 		
 		$table_relations = new stdClass();
 		$table_relations->id = 'module_' . $id_agente_modulo . '_relations';
-		$table_relations->width = '98%';
-		$table_relations->class = 'databox';
+		$table_relations->width = '100%';
+		$table_relations->class = 'databox filters';
 		$table_relations->style = array();
 		$table_relations->style[0] = 'font-weight: bold;';
 		$table_relations->style[2] = 'font-weight: bold;';
@@ -419,6 +419,9 @@ function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 	$form_text = '';
 	$table->class = "databox filters";
 	$table->width = "100%";
+	$table->style[0] = 'font-weight: bold;';
+	$table->style[2] = 'font-weight: bold;';
+	$table->style[4] = 'font-weight: bold;';
 	$table->data[0][0] = html_print_input_hidden('filter_monitors', 1, true);
 	$table->data[0][0] .= html_print_input_hidden('monitors_change_filter', 1, true);
 	$table->data[0][0] .= __('Status:');
@@ -450,7 +453,7 @@ function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 	}
 	$table->data[0][5] = html_print_select ($rows_select,'status_module_group', $status_module_group, '', '',0, true);
 	$table->data[0][6] = html_print_button(__('Filter'), 'filter', false, 'filter_modules();', 'class="sub search"', true);
-	$table->data[0][7] = '&nbsp;' . html_print_button(__('Reset'), 'filter', false, 'reset_filter_modules();', 'class="sub upd"', true);
+	$table->data[0][7] = '&nbsp;' . html_print_button(__('Reset'), 'filter', false, 'reset_filter_modules();', 'class="sub upd" style="margin-top:0px;"', true);
 	$form_text .= html_print_table($table, true);
 	
 	$filter_hidden = false;
@@ -459,6 +462,6 @@ function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 		$filter_hidden = true;
 	}
 	
-	ui_toggle($form_text, __('Form filter'), __('Form filter'), $filter_hidden);
+	echo $form_text;
 }
 ?>

@@ -369,7 +369,10 @@ switch ($action) {
 			$search_name = "%$search%' OR description LIKE '%$search%";
 		}
 		
-		$table_aux->width = '99%';
+		$table_aux->width = '100%';
+		$table_aux->class = 'databox filters';
+		$table_aux->cellpadding = 0;
+		$table_aux->cellspacing = 0;
 		if(defined('METACONSOLE')){
 			$table_aux->class = 'databox_filters';
 			$table_aux->width = '96%';
@@ -456,10 +459,15 @@ switch ($action) {
 		$table->width = '0px';
 		if (sizeof ($reports)) {
 			$table->id = 'report_list';
-			$table->width = '98%';
+			$table->width = '100%';
+			$table->class = 'databox data';
+			$table->cellpadding = 0;
+			$table->cellspacing = 0;
 			if(defined('METACONSOLE')){
+				$table->class = 'databox';
 				$table->width = '100%';
 			}
+			
 			$table->head = array ();
 			$table->align = array ();
 			$table->align[2] = 'center';
@@ -470,6 +478,13 @@ switch ($action) {
 			$table->head[1] = __('Description');
 			$table->head[2] = __('HTML');
 			$table->head[3] = __('XML');
+			$table->size[0] = '20%';
+			$table->size[1] = '30%';
+			$table->size[2] = '2%';
+			$table->size[3] = '2%';
+			$table->size[4] = '2%';
+			$table->size[5] = '2%';
+			$table->size[6] = '2%';
 			
 			$next = 4;
 			//Calculate dinamically the number of the column
@@ -481,21 +496,22 @@ switch ($action) {
 			if (check_acl ($config['id_user'], 0, "RM")) {
 				
 				$table->head[$next] = __('Private');
-				$table->size[$next] = '40px';
+				$table->size[$next] = '2%';
 				if(defined('METACONSOLE'))
 					$table->align[$next] = '';
 				else
 					$table->align[$next] = 'center';
 				$next++;
 				$table->head[$next] = __('Group');
-				$table->align[$next] = 'center';
+				$table->size[$next] = '15%';
+
 				$next++;
 				if(!defined('METACONSOLE'))
 					$table->head[$next] = '<span title="Operations">' .
 						__('Op.') . '</span>';
 					
-				$table->size = array ();
-				$table->size[$next] = '80px';
+				//$table->size = array ();
+				$table->size[$next] = '5%';
 				$table->style[$next] = 'text-align:center;';
 			
 			}
@@ -632,15 +648,14 @@ switch ($action) {
 			html_print_table ($table);
 		}
 		else{
-			echo "<br />";
-			echo "<div class='nf'>".__('No data found.')."</div>";
+			ui_print_info_message ( array ( 'no_close' => true, 'message' =>  __('No data found.') ) );
 		}
 		if (check_acl ($config['id_user'], 0, "RW")) {
 			echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure='.$pure.'">';
 			if (defined("METACONSOLE"))
 				echo '<div class="action-buttons" style="width: 100%; ">';
 			else
-				echo '<div class="action-buttons" style="width: 98%; margin-top: 5px;">';
+				echo '<div class="action-buttons" style="width: 100%;">';
 			html_print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
 			echo "</div>";
 			echo "</form>";

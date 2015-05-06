@@ -17,15 +17,14 @@
 // Load global vars
 global $config;
 
-require_once ($config['homedir']. "/include/functions_events.php"); //Event processing functions
-require_once ($config['homedir']. "/include/functions_alerts.php"); //Alerts processing functions
-require_once ($config['homedir']. "/include/functions.php");
-require_once($config['homedir'] . "/include/functions_agents.php"); //Agents funtions
-require_once($config['homedir'] . "/include/functions_users.php"); //Users functions
-require_once ($config['homedir'] . '/include/functions_groups.php');
-
-require_once ($config["homedir"] . '/include/functions_graph.php');
-require_once ($config["homedir"] . '/include/functions_tags.php');
+require_once ($config['homedir'] . "/include/functions.php");
+require_once ($config['homedir'] . "/include/functions_events.php"); //Event processing functions
+require_once ($config['homedir'] . "/include/functions_alerts.php"); //Alerts processing functions
+require_once ($config['homedir'] . "/include/functions_agents.php"); //Agents funtions
+require_once ($config['homedir'] . "/include/functions_users.php"); //Users functions
+require_once ($config['homedir'] . "/include/functions_groups.php");
+require_once ($config["homedir"] . "/include/functions_graph.php");
+require_once ($config["homedir"] . "/include/functions_tags.php");
 
 check_login ();
 
@@ -35,8 +34,6 @@ if (! check_acl ($config["id_user"], 0, "ER")) {
 	require ("general/noaccess.php");
 	return;
 }
-
-$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
 if(defined('METACONSOLE')){
 	$jump = '&nbsp;&nbsp;';
@@ -162,7 +159,7 @@ require('events.build_query.php');
 
 $id_name = get_parameter('id_name', '');
 
-if(!defined("METACONSOLE"))
+if (!defined("METACONSOLE"))
 	echo "<br>";
 
 
@@ -174,7 +171,7 @@ $update_pressed = (int) !empty($update_pressed);
 if ($update_pressed || $open_filter) {
 	$open_filter = true;
 }
-if(!defined("METACONSOLE")){
+if (!defined("METACONSOLE")) {
 	$table = html_get_predefined_table('transparent', 2);
 	$table->styleTable = 'width: 23px; float: right; background: #ECECEC;';
 	$table->width = '98%';
@@ -275,7 +272,7 @@ $table->width = '98%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'databox';
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$table->width = '100%';
 	$table->cellspacing = 0;
 	$table->cellpadding = 0;
@@ -283,7 +280,7 @@ if(defined('METACONSOLE')){
 }
 
 $table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
-if(!defined("METACONSOLE"))
+if (!defined("METACONSOLE"))
 	$table->style[0] = 'width: 50%; width:50%;';
 $data = array();
 $table->rowid[3] = 'update_filter_row1';
@@ -330,7 +327,7 @@ $tabletags_with->cellspacing = 4;
 $tabletags_with->cellpadding = 4;
 $tabletags_with->class = 'noshadow';
 $tabletags_with->styleTable = 'border: 0px;';
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$tabletags_with->width = '100%';
 	$tabletags_with->class = 'nobady';
 	$tabletags_with->cellspacing = 0;
@@ -340,7 +337,7 @@ if(defined('METACONSOLE')){
 
 
 $data = array();
-if(!defined("METACONSOLE"))
+if (!defined("METACONSOLE"))
 	$data[0] = html_print_select ($tags_select_with, 'select_with', '', '', '', 0,
 		true, true, true, '', false, 'width: 120px; height: 70px;') . '<br>';
 else
@@ -365,7 +362,7 @@ $tabletags_without->width = '100%';
 $tabletags_without->cellspacing = 4;
 $tabletags_without->cellpadding = 4;
 $tabletags_without->class = 'noshadow';
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$tabletags_without->width = '100%';
 	$tabletags_without->class = 'nobady';
 	$tabletags_without->cellspacing = 0;
@@ -374,7 +371,7 @@ if(defined('METACONSOLE')){
 $tabletags_without->styleTable = 'border: 0px;';
 
 $data = array();
-if(!defined("METACONSOLE"))
+if (!defined("METACONSOLE"))
 	$data[0] = html_print_select ($tags_select_without, 'select_without', '', '', '', 0,
 		true, true, true, '', false, 'width: 120px; height: 70px;') . '<br>';
 else
@@ -385,7 +382,7 @@ $data[1] = html_print_image('images/darrowright.png', true, array('id' => 'butto
 $data[1] .= html_print_input_hidden('tag_without', $tag_without_base64, true);
 $data[1] .= '<br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'button-remove_without', 'style' => 'cursor: pointer;', 'title' => __('Remove')));
 
-if(!defined("METACONSOLE"))
+if (!defined("METACONSOLE"))
 	$data[2] = html_print_select ($tag_without_temp, 'tag_without_temp', array(), '', '',
 		0, true, true, true, '', false, "width: 120px; height: 70px;");
 else
@@ -399,11 +396,11 @@ $tabletags_without->rowclass[] = '';
 
 // EVENTS FILTER
 // Table for filter controls
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$events_filter = '<form id="form_filter" class="filters_form" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='. 
 		(int)get_parameter("refr", 0) .'&amp;pure='.$config["pure"].'&amp;section=' . $section . '&amp;history='.(int)$history.'">';
 }
-else{
+else {
 	$events_filter = '<form id="form_filter" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='. 
 		(int)get_parameter("refr", 0) .'&amp;pure='.$config["pure"].'&amp;section=' . $section . '&amp;history='.(int)$history.'">';
 }
@@ -511,7 +508,7 @@ $table_advanced->data[] = $data;
 $table_advanced->rowclass[] = '';
 
 $data = array();
-if(defined('METACONSOLE'))
+if (defined('METACONSOLE'))
 {
 	$data[0] = '<fieldset class="" style="width: 310px;">' .
 			'<legend>' .
@@ -526,7 +523,7 @@ if(defined('METACONSOLE'))
 			html_print_table($tabletags_without, true) .
 		'</fieldset>';
 }
-else{
+else {
 	$data[0] = '<fieldset class="databox" style="width: 310px;">' .
 			'<legend>' .
 				__('Events with following tags') .
@@ -550,7 +547,7 @@ $table->width = '100%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'databox';
-if (defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$table->width = '96%';
 	$table->class = 'databox_filters';
 }
@@ -617,7 +614,7 @@ if (check_acl ($config["id_user"], 0, "EW")) {
 	$data[0] .= '<a href="javascript:" onclick="show_save_filter_dialog();">' . 
 				html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
 }
-if(defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	$data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . 
 				html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a> &nbsp;';
 	$data[0] .= '<a id="events_graph_link" href="javascript: show_events_graph_dialog()">' . 
@@ -626,7 +623,7 @@ if(defined("METACONSOLE")){
 else
 	$data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . 
 				html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a> <br />';
-if(defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	if (empty($id_name)) {
 		$data[0] .= '<div id="filter_loaded_span" style="font-weight: normal">[' .
 			__('No filter loaded') .
@@ -638,7 +635,7 @@ if(defined("METACONSOLE")){
 			']</div>';
 	}
 }
-else{
+else {
 	if (empty($id_name)) {
 		$data[0] .= '<span id="filter_loaded_span" style="font-weight: normal">[' .
 			__('No filter loaded') .

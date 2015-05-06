@@ -52,7 +52,7 @@ echo "<div style='margin-bottom: 30px;'></div>";
 echo "<div id=\"" . $agent_name . "_agent_map\" style=\"border:1px solid black; width:100%; height: 30em;\"></div>";
 
 if (!gis_get_agent_map($id_agente, "500px", "100%", true, true, $period)) {
-	ui_print_error_message(__("There is no default map. Please go to the setup for to set a default map."));
+	ui_print_error_message( __("There is no default map. Please go to the setup for to set a default map.") );
 	echo "<script type='text/javascript'>
 		$(document).ready(function() {
 			$('#" . $agent_name . "_agent_map').hide();
@@ -82,26 +82,24 @@ gis_activate_ajax_refresh(null, $timestampLastOperation);
 gis_activate_select_control();
 
 if ($agentData === false) {
-	echo "<p>" .
-		__("There is no GIS data for this agent, so it's positioned in default position of map.") .
-		"</p>";
+	ui_print_info_message (
+		__("There is no GIS data for this agent, so it's positioned in default position of map.") );
 }
 
-echo "<br />";
 $dataLastPosition = gis_get_data_last_position_agent($agentId);
 if ($dataLastPosition !== false) {
 	echo "<b>" . __("Last position in ") .
 		$dataLastPosition['start_timestamp'] . ":</b> " .
 		$dataLastPosition['stored_longitude'] . ", " . $dataLastPosition['stored_latitude'] . ", " . $dataLastPosition['stored_altitude'];
 }
-echo "<br />";
+
 echo "<form class='' action='index.php?" . $url . "' method='POST'>";
 echo "<table width=100% class='databox filters'>";
 echo "<tr><td>" . __("Period to show data as path") . ": ";
 echo "<td>";
 html_print_extended_select_for_time ('period', $period, '', '', '0', 10);
 echo "<td>";
-html_print_submit_button(__('Refresh path'), 'refresh', false, 'class = "sub upd"');
+html_print_submit_button(__('Refresh path'), 'refresh', false, 'class = "sub upd" style="margin-top:0px"');
 echo "</table></form>";
 
 echo "<h4>" . __("Positional data from the last") . " " . human_time_description_raw ($period) ."</h4>";

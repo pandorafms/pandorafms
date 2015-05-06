@@ -1847,18 +1847,22 @@ function reporting_get_stats_alerts($data, $links = false) {
 	$table_al->rowclass[] = '';
 	$table_al->data[] = $tdata;
 	
-	if(!defined('METACONSOLE')){
+	if (!defined('METACONSOLE')) {
 		$output = '<fieldset class="databox tactical_set">
 					<legend>' . 
 						__('Defined and fired alerts') . 
 					'</legend>' . 
 					html_print_table($table_al, true) . '</fieldset>';
-	}else{
+	}
+	else {
+		// Remove the defined alerts cause with the new cache table is difficult to retrieve them
+		unset($table_al->data[0][0], $table_al->data[0][1]);
+		
 		$table_al->class = "tactical_view";
 		$table_al->style = array();
 		$output = '<fieldset class="tactical_set">
 					<legend>' . 
-						__('Defined and fired alerts') . 
+						__('Fired alerts') . 
 					'</legend>' . 
 					html_print_table($table_al, true) . '</fieldset>';
 	}

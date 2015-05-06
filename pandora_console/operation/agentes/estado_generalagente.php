@@ -60,9 +60,9 @@ if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && !$is_extra) {
 
 // START: TABLE AGENT BUILD
 $table_agent->id = 'agent_details_main';
-$table_agent->width = '450px';
-$table_agent->cellspacing = 4;
-$table_agent->cellpadding = 4;
+$table_agent->width = '82%';
+$table_agent->cellspacing = 0;
+$table_agent->cellpadding = 0;
 $table_agent->class = 'databox';
 $table_agent->style[0] = 'width: 16px; text-align:center; padding: 0px;';
 $table_agent->style[5] = 'width: 16px; text-align:center; padding: 0px;';
@@ -124,7 +124,7 @@ $table_agent->cellstyle[count($table_agent->data)][0] =
 
 $data[2] = ui_print_os_icon ($agent["id_os"], false, true, true, false, false, false, array('title' => __('OS') . ': ' . get_os_name ($agent["id_os"])));
 $table_agent->cellstyle[count($table_agent->data)][2] =
-	'width: 16px; text-align: right; padding: 0px; vertical-align: top;';
+	'width: 16px; text-align: right; padding: 0px;';
 $data[3] = empty($agent["os_version"]) ? get_os_name ((int) $agent["id_os"]) : $agent["os_version"];
 $table_agent->colspan[count($table_agent->data)][3] = 2;
 
@@ -144,7 +144,7 @@ if (!empty($address)) {
 	$data = array();
 	$data[2] = html_print_image('images/world.png', true, array('title' => __('IP address')));
 	$table_agent->cellstyle[count($table_agent->data)][2] =
-		'width: 16px; text-align: right; padding: 0px; vertical-align: top;';
+		'width: 16px; text-align: right; padding: 0px;';
 	$data[3] = '<span style="vertical-align:top; display: inline-block;">';
 	$data[3] .= empty($address) ? '<em>' . __('N/A') . '</em>' : $address;
 	$data[3] .= '</span>';
@@ -156,7 +156,7 @@ if (!empty($address)) {
 $data = array();
 $data[2] = html_print_image('images/version.png', true, array('title' => __('Agent Version')));
 $table_agent->cellstyle[count($table_agent->data)][2] =
-	'width: 16px; text-align: right; padding: 0px; vertical-align: top;';
+	'width: 16px; text-align: right; padding: 0px;';
 $data[3] = '<span style="vertical-align:top; display: inline-block;">';
 $data[3] .= empty($agent["agent_version"]) ? '<i>' . __('N/A') . '</i>' : $agent["agent_version"];
 $data[3] .= '</span>';
@@ -168,7 +168,7 @@ $data = array();
 $data[2] = html_print_image('images/default_list.png', true,
 	array('title' => __('Description')));
 $table_agent->cellstyle[count($table_agent->data)][2] =
-	'width: 16px; text-align: right; padding: 0px; vertical-align: top;';
+	'width: 16px; text-align: right; padding: 0px;';
 $data[3] = '<span style="vertical-align:top; display: inline-block;">';
 $data[3] .= empty($agent["comentarios"]) ?
 	'<em>' . __('N/A') . '</em>' :
@@ -184,8 +184,8 @@ $table_agent->rowclass[] = '';
 // START: TABLE CONTACT BUILD
 $table_contact->id = 'agent_contact_main';
 $table_contact->width = '100%';
-$table_contact->cellspacing = 4;
-$table_contact->cellpadding = 4;
+$table_contact->cellspacing = 0;
+$table_contact->cellpadding = 0;
 $table_contact->class = 'databox data';
 $table_contact->style[0] = 'width: 30%;';
 $table_contact->style[1] = 'width: 70%;';
@@ -227,8 +227,8 @@ $table_contact->data[] = $data;
 // START: TABLE DATA BUILD
 $table_data->id = 'agent_data_main';
 $table_data->width = '100%';
-$table_data->cellspacing = 4;
-$table_data->cellpadding = 4;
+$table_data->cellspacing = 0;
+$table_data->cellpadding = 0;
 $table_data->class = 'databox data';
 $table_data->style[0] = 'width: 30%;';
 $table_data->style[1] = 'width: 70%;';
@@ -355,8 +355,8 @@ if ($last_incident != false) {
 	
 	$table_incident->id = 'agent_incident_main';
 	$table_incident->width = '100%';
-	$table_incident->cellspacing = 4;
-	$table_incident->cellpadding = 4;
+	$table_incident->cellspacing = 0;
+	$table_incident->cellpadding = 0;
 	$table_incident->class = 'databox';
 	$table_incident->style[0] = 'width: 30%;';
 	$table_incident->style[1] = 'width: 70%;';
@@ -484,8 +484,8 @@ if (!empty($network_interfaces)) {
 $table = null;
 $table->id = 'agent_details';
 $table->width = '100%';
-$table->cellspacing = 4;
-$table->cellpadding = 4;
+$table->cellspacing = 0;
+$table->cellpadding = 0;
 $table->class = 'agents';
 $table->style = array_fill(0, 3, 'vertical-align: top;');
 
@@ -508,7 +508,7 @@ $access_agent = db_get_value_sql("SELECT COUNT(id_agent)
 
 if ($config["agentaccess"] && $access_agent > 0) {
 	$data[0] .=
-		'<table width=100% class="databox" style="position: static;">
+		'<br /><table width=82% class="databox" style="">
 		<tr><th>' . 
 				__('Agent access rate (24h)') . 
 			'</th></tr>' . 

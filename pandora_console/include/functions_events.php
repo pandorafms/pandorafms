@@ -849,11 +849,11 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 	
 	if ($result === false) {
 		if ($return){
-			$returned = '<div class="nf">' . __('No events') . '</div>';
+			$returned = ui_print_info_message ( __('No events'),'',true );
 			return $returned;
 		}
 		else	
-			echo '<div class="nf">' . __('No events') . '</div>';
+			echo ui_print_info_message ( __('No events') );
 	}
 	else {
 		$table->id = 'latest_events_table';
@@ -871,7 +871,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$table->cellclass = array ();
 		$table->data = array ();
 		$table->align = array ();
-		$table->style[0] = $table->style[1] = $table->style[2] = 'width:25px; background: #E8E8E8;';
+		$table->style[0] = $table->style[1] = $table->style[2] = 'width:25px;';
 		if ($agent_id == 0) {
 			$table->style[3] = 'word-break: break-all;';
 		}
@@ -891,11 +891,13 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		
 		if ($agent_id == 0) {
 			$table->head[4] = __('Agent name');
+			$table->size[4] = "15%";
 		}
 		
 		$table->head[5] = __('Timestamp');
 		$table->headclass[5] = "datos3 f9";
 		$table->align[5] = "left";
+		$table->size[5] = "15%";
 		
 		foreach ($result as $event) {
 			if (! check_acl ($config["id_user"], $event["id_grupo"], "ER")) {

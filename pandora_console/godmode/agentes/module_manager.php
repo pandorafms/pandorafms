@@ -33,7 +33,7 @@ $search_string = io_safe_output(urldecode(trim(get_parameter ("search_string", "
 //echo '<form id="create_module_type" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
 echo '<form id="create_module_type" method="post" action="'.$url.'">';
 echo '<table width="100%" cellpadding="2" cellspacing="2" class="databox filters" >';
-echo "<tr><td class='datos' style='width:20%'>";
+echo "<tr><td class='datos' style='width:20%; font-weight: bold;'>";
 echo __('Search') . ' ' .
 	html_print_input_text ('search_string', $search_string, '', 15, 255, true);
 echo "</td>";
@@ -111,7 +111,8 @@ if (($policy_page) || (isset($agent))) {
 	if ($show_creation) {
 		// Create module/type combo
 		//echo '<form id="create_module_type" method="post" action="'.$url.'">';
-		echo '<td class="datos">';
+		echo '<td class="datos" style="font-weight: bold;">';
+		echo __("Type");
 		html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false, '', false, 'max-width:300px;' );
 		html_print_input_hidden ('edit_module', 1);
 		echo '</td>';
@@ -128,7 +129,7 @@ echo "</form>";
 
 echo '<div style="text-align: right; width: 100%;padding-top:10px;padding-bottom:10px">';
 echo "<strong>";
-echo "<a style='color: #004A1B;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules in Pandora FMS Library")."</a>";
+echo "<a style='color: #373737;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules in Pandora FMS Library")."</a>";
 echo "</strong>";
 echo '</div>';
 
@@ -529,7 +530,7 @@ $table->rowstyle = array();
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
-$table->size[2] = '55px';
+$table->size[2] = '70px';
 $table->align = array ();
 $table->align[2] = 'left';
 $table->align[8] = 'left';

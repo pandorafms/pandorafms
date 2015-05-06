@@ -90,7 +90,6 @@ li:hover ul { display: block; }
 .submenu2 li a {
 	margin-left: 0px;
 	padding-left: 0px;
-	display:block;
 }
 
 .menu li img.toggle {
@@ -195,6 +194,7 @@ li:hover ul { display: block; }
 }
 #icon_god-extensions {
 	background: url(../../images/builder.menu.png) no-repeat 50% 50%;
+	
 }
 
 #menu_container {
@@ -218,11 +218,6 @@ ul li {
 	position: absolute;
 	top: 0;
 	display: none;
-}
-
-/* Styles for Menu Items */
-ul li a {
-	display: block;
 }
 
 /* Fix IE. Hide from IE Mac \*/

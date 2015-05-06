@@ -43,7 +43,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "6.0dev";
-my $pandora_build = "150421";
+my $pandora_build = "150506";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -159,6 +159,9 @@ sub pandora_get_sharedconfig ($$) {
 
 	# Pandora FMS Console's attachment directory
 	$pa_config->{"attachment_dir"} = pandora_get_tconfig_token ($dbh, 'attachment_store', '/var/www/pandora_console/attachment');
+
+	# Metaconsole agent cache.
+	$pa_config->{"metaconsole_agent_cache"} = pandora_get_tconfig_token ($dbh, 'metaconsole_agent_cache', 0);
 }
 
 ##########################################################################

@@ -427,7 +427,12 @@ function reporting_make_reporting_data($id_report, $date, $time,
 					$content);
 				break;
 			case 'SLA_services':
-				
+				$report['contents'][] = reporting_enterprise_sla_services_refactoriced(
+					$report,
+					$content,
+					$type,
+					$force_width_chart,
+					$force_height_chart);
 				break;
 		}
 	}

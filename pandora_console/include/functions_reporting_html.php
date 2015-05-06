@@ -261,6 +261,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'SLA_monthly':
 				reporting_enterprise_html_SLA_monthly($table, $item, $mini);
 				break;
+			case 'SLA_services':
+				reporting_enterprise_html_SLA_services($table, $item, $mini);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')
@@ -4047,19 +4050,6 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 	
 	$item_title = $content['name'];
 	
-	switch ($content["type"]) {
-		case 'SLA_services':
-			if (function_exists("reporting_enterprise_sla_services"))
-				reporting_enterprise_sla_services($mini, $content, $report, $table, $item_title);
-			break;
-		
-		
-		
-		
-		
-		
-		
-	}
 	//Restore dbconnection
 	if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE') && $remote_connection == 1) {
 		metaconsole_restore_db_force();

@@ -82,7 +82,10 @@ function reports_get_report ($id_report, $filter = false, $fields = false) {
  *
  * @return array An array with all the reports the user can view.
  */
-function reports_get_reports ($filter = false, $fields = false, $returnAllGroup = true, $privileges = 'RR', $group = false, $strict_user) {
+function reports_get_reports ($filter = false, $fields = false,
+	$returnAllGroup = true, $privileges = 'RR', $group = false,
+	$strict_user = false) {
+	
 	global $config;
 	
 	if (! is_array ($filter))

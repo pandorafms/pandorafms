@@ -127,7 +127,10 @@ if ($get_module_detail) {
 		'style="margin-right: 15px;"', true) . __("Choose a time from now");
 	$formtable->data[0][1] = html_print_select ($periods, 'period', $period, '', '', 0, true, false, false);
 	$formtable->data[0][2] = '';
-	$formtable->data[0][3] = "<a href='javascript: show_module_detail_dialog(" . $module_id .", ".  $agentId.", \"" . $server_name . "\", 0, -1)'>". html_print_image ("images/refresh.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . "</a>";
+	$formtable->data[0][3] = "<a href='javascript: show_module_detail_dialog(" . $module_id .", ".  $agentId.", \"" . $server_name .
+					"\", 0, -1,\"" . modules_get_agentmodule_name( $module_id ) . "\")'>" .
+					html_print_image ("images/refresh.png", true, array ("style" => 'vertical-align: middle;', "border" => "0" )) . 
+					"</a>";
 	$formtable->rowspan[0][3] = 2;
 	$formtable->cellstyle[0][3] = 'vertical-align: middle;';
 	
@@ -209,7 +212,8 @@ if ($get_module_detail) {
 		$result = array_slice($module_data, $offset, $block_size);
 	}
 	
-	$table->width = '98%';
+	$table->width = '100%';
+	$table->class = 'databox data';
 	$table->data = array();
 	
 	$index = 0;
@@ -673,10 +677,10 @@ if ($list_modules) {
 	if (empty ($modules)) {
 		$modules = array ();
 	}
-	$table->width = "98%";
+	$table->width = "100%";
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
-	$table->class = "databox";
+	$table->class = "databox data";
 	$table->head = array ();
 	$table->data = array ();
 	
@@ -708,7 +712,7 @@ if ($list_modules) {
 		'<a href="' . $url . '&sort_field=last_contact&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
 
 	
-	$table->align = array("left", "left", "center", "left", "left", "center");
+	$table->align = array("center", "left", "center", "left", "left", "center","left","left","center");
 	
 	$last_modulegroup = 0;
 	$rowIndex = 0;
@@ -897,8 +901,26 @@ if ($list_modules) {
 		}
 		else {
 			if (is_numeric($module["datos"]) && !modules_is_string_type($module['id_tipo_modulo'])){
-				$salida = format_numeric($module["datos"]);
-				
+				if ( $config["render_proc"] ){
+					switch($module["id_tipo_modulo"]) {
+						case 2:
+						case 6:
+						case 9:
+						case 18:
+						case 21:
+						case 31:
+							if ($module["datos"]>=1) 
+								$salida ='OK';
+							else
+								$salida = 'FAIL';
+							break;
+						default:	
+							$salida = format_numeric($module["datos"]);
+						break;
+					}
+				}else{
+					$salida = format_numeric($module["datos"]);
+				}
 				// Show units ONLY in numeric data types
 				if (isset($module["unit"])){
 					$salida .= "&nbsp;" . '<i>'. io_safe_output($module["unit"]) . '</i>';
@@ -1011,7 +1033,7 @@ if ($list_modules) {
 					$id_agente . ", " .
 					"\"" . $server_name . "\", " .
 					0 . ", " .
-					SECONDS_1DAY . ")'>". html_print_image ("images/binary.png", true, array ("border" => "0", "alt" => "")) . "</a>";
+					SECONDS_1DAY . ", \" " . modules_get_agentmodule_name( $module["id_agente_modulo"] ) . "\")'>". html_print_image ("images/binary.png", true, array ("border" => "0", "alt" => "")) . "</a>";
 		}
 		
 		if ($module['estado'] == 3) {
@@ -1031,6 +1053,14 @@ if ($list_modules) {
 	<script type="text/javascript">
 		/* <![CDATA[ */
 		$("a.tag_details").cluetip ({
+			arrows: true,
+			attribute: 'href',
+			cluetipClass: 'default'
+		})
+		.click (function () {
+			return false;
+		});
+		$("a.relations_details").cluetip ({
 			arrows: true,
 			attribute: 'href',
 			cluetipClass: 'default'

@@ -17,8 +17,8 @@
 */
 
 .menu {
-	border-width: 1px 0 0 0px;
-	border-style: solid;
+	border-width: 0px 0px 0px 0px;
+	border-style: none;
 	border-color: #777;
 }
 .menu ul {
@@ -27,47 +27,30 @@
 	margin: 0;
 }
 .menu li.selected, .menu li.not_selected {
-	border: 0px solid black;
-	border-bottom: 1px solid #d4d4d4;
+	border: 0px none black;
+	border-bottom: 0px none #d4d4d4;
 	margin: 0;
 }
 .menu li.selected {
-	background-color: #d9fb86 !important;
+	box-shadow: inset 4px 0 #80BA27;
+	background-color: #585858 !important;
 }
 
 .menu li a {
 	/*background-color: inherit;*/
 	color: #FFFFFF;
 	/*font-weight: bold;*/
-	display:block; /* This makes it so that the whole li is clickable */
+	/* This makes it so that the whole li is clickable */
 	text-decoration:none;
-	padding: 9px;
-	margin-left: 28px;
 }
+
+li:hover ul { display: block; }
 
 .submenu_text{
-	background-repeat: no-repeat !important;
-	padding: 8px 0px 8px 17px;
-	margin-left: 10px;
+	padding: 11px;
+	margin-left: 0px;
 	color: #fff;
-}
-
-.submenu_text_middle{
-	background-image: url(../../images/submenu_tree_middle.png) !important;	
-}
-
-.submenu_text_last{
-	background-image: url(../../images/submenu_tree_last.png) !important;	
-}
-
-.submenu2_text_middle{
-	background-image: url(../../images/submenu2_tree_middle.png) !important;
-	padding-left: 25px;	
-}
-
-.submenu2_text_last{
-	background-image: url(../../images/submenu2_tree_last.png) !important;
-	padding-left: 25px;
+	width: 86%;
 }
 
 .menu li.subselected a{
@@ -76,42 +59,52 @@
 
 .menu a:hover {
 	text-decoration:none;
-	border:1px;
+	border:0px;
 }
 .submenu {
-	font-family: Georgia,"Times New Roman","Bitstream Charter",Times,serif;
-	margin: 0px 10px 0px 0;
+	margin: 0px 0px 0px 0px;
+	position: absolute;
+	z-index: 999;
+	left: 44px;
+	min-height: 35px;
+	height: 35px;
+	width: 160px;
 }
-.submenu li a {
-	background-color: #222;
-	margin-left: 0px;
-	/*padding-left: 29px;*/
-	display:block;
-	border-width: 0px 0px 0px 0px;
-	border-style: solid;
-	border-color: #666;
-	padding: 0px;
+
+.submenu2{
+	position: absolute;
+	z-index: 999;
+	left: 160px;
+}
+
+.sub_subMenu{
+	min-height: 35px !important;
+	height: 35px;
+	width: 160px;
+	font-weight: normal !important;
+}
+.sub_subMenu.selected{
+	font-weight: bold !important;
 }
 
 .submenu2 li a {
-	background-color: #111;
 	margin-left: 0px;
 	padding-left: 0px;
-	display:block;
-}
-
-.submenu2 li a:hover {
-	background-color: #111 !important;
 }
 
 .menu li img.toggle {
 	visibility: hidden;
 	float:right;
-	margin: -20px 0px 0 0; /* Positions it back where it should be */
+	/* Positions it back where it should be */
 	border-left: 1px;
 }
-.menu li.has_submenu > img.toggle{
-	visibility: visible;
+
+.menu li.has_submenu > a > div {
+	background: url(../../images/arrow.png) no-repeat 90% 50%;
+	z-index: 1; /* Positions it on top of the rest */
+}
+.menu li.has_submenu .flecha {
+	background: url(../../images/arrow.png) no-repeat 90% 50%;
 	z-index: 1; /* Positions it on top of the rest */
 }
 
@@ -119,22 +112,19 @@
 	background-color: #E4E4E4 !important;
 }
 
-.submenu_not_selected a, .submenu2_not_selected a {
+.menu li.submenu_not_selected a, .menu li.submenu2_not_selected a {
 	font-weight: normal !important;
-}
-
-.menu li.submenu_selected a {
-	font-weight: bold;
 }
 
 .submenu_selected {
 	margin-bottom: 0px !important;
+	box-shadow: inset 4px 0 #80BA27 !important; 
 }
 
 .menu .menu_icon, .menu li.links {
-	background-color: #daedae;
 	background-position: 4px 4px;
 	background-repeat: no-repeat;
+	cursor: pointer;
 }
 
 .menu li.links {
@@ -144,86 +134,67 @@
 
 /* Icons specified here */
 #icon_oper-networkconsole {
- 	background-image: url(../../images/op_network.png);
+ 	background: url(../../images/op_network.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-agents {
-	background-image: url(../../images/op_monitoring.png);
+	border-top-right-radius: 5px;
+	border-right-style: solid;
+	border-right-width: 0px;
+	background: url(../../images/op_monitoring.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-events {
-	background-image: url(../../images/op_events.png);
+	background: url(../../images/op_events.menu.png) no-repeat 50% 50%;
 }
+
 /* users */
 #icon_oper-users {
-	background-image: url(../../images/op_workspace.png);
+	background: url(../../images/op_workspace.menu.png) no-repeat 50% 50%;
 }
 /* trap console */
 #icon_oper-snmpc, #icon_god-snmpc {
-	background-image: url(../../images/op_snmp.png);
+	background: url(../../images/op_snmp.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-reporting {
-	background-image: url(../../images/op_reporting.png);
+	background: url(../../images/op_reporting.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-gismaps {
-	background-image: url(../../images/op_gis.png);
+	background: url(../../images/op_gis.menu.png) no-repeat 50% 50%;
 }
 #icon_oper-netflow {
-	background-image: url(../../images/op_netflow.png);
+	background: url(../../images/op_netflow.menu.png) no-repeat 50% 50%;
 }
-#icon_oper-extensions, #icon_god-extensions {
-	background-image: url(../../images/extensions.png);
+#icon_oper-extensions {
+	background: url(../../images/extensions.menu.png) no-repeat 50% 50%;
 }
 
 /* Godmode images */
-#icon_god-gismaps {
-	background-image: url(../../images/gm_gis.png);
+#icon_god-resources {
+	background: url(../../images/gm_resources.menu.png) no-repeat 50% 50%;
 }
-#icon_god-agents {
-	background-image: url(../../images/gm_monitoring.png);
-}
-#icon_god-massive {
-	background-image: url(../../images/gm_massive_operations.png);
-}
-#icon_god-services {
-	background-image: url(../../images/box.png);
-}
-#icon_god-modules {
-	background-image: url(../../images/gm_modules.png);
+#icon_god-configuration {
+	background: url(../../images/gm_configuration.menu.png) no-repeat 50% 50%;
 }
 #icon_god-alerts {
-	background-image: url(../../images/gm_alerts.png);
-}
-#icon_god-dbmaint {
-	background-image: url(../../images/gm_db.png);
+	background: url(../../images/gm_alerts.menu.png) no-repeat 50% 50%;
 }
 #icon_god-users {
-	background-image: url(../../images/gm_users.png);
+	background: url(../../images/gm_users.menu.png) no-repeat 50% 50%;
 }
 #icon_god-reporting {
-	background-image: url(../../images/reporting_edit.png);
+	background: url(../../images/reporting_edit.menu.png) no-repeat 50% 50%;
 }
 #icon_god-servers {
-	background-image: url(../../images/gm_servers.png);
-}
-#icon_god-audit {
-	background-image: url(../../images/gm_log.png);
-}
-#icon_god-netflow {
-	background-image: url(../../images/gm_netflow.png);
+	background: url(../../images/gm_servers.menu.png) no-repeat 50% 50%;
 }
 #icon_god-setup {
-	background-image: url(../../images/gm_setup.png);
-}
-#icon_god-policies {
-	background-image: url(../../images/gm_policies.png);
-}
-#icon_oper-inventory {
-	background-image: url(../../images/page_white_text.png);
-}
-#icon_god-tag {
-	background-image: url(../../images/tag_red.png);
+	background: url(../../images/gm_setup.menu.png) no-repeat 50% 50%;
 }
 #icon_god-events {
-	background-image: url(../../images/gm_events.png);
+	background: url(../../images/gm_events.menu.png) no-repeat 50% 50%;
+}
+#icon_god-extensions {
+	background: url(../../images/builder.menu.png) no-repeat 50% 50%;
+	
 }
 
 #menu_container {
@@ -232,3 +203,27 @@
 	left: -80px;
 	background-color: #AAA;
 }
+
+ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	}
+
+ul li {
+	position: relative;
+	}
+	
+.menu li ul {
+	position: absolute;
+	top: 0;
+	display: none;
+}
+
+/* Fix IE. Hide from IE Mac \*/
+* html ul li { float: left; height: 1%; }
+* html ul li a { height: 1%; }
+/* End */
+
+ul li a:hover { color: #E2144A; } /* Hover Styles */
+/*li ul li a { padding: 2px 5px; }  Sub Menu Styles */

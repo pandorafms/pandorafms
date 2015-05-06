@@ -46,7 +46,7 @@ TreeController = {
 						$group
 							.addClass("tree-root")
 							.hide()
-							.prepend('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')+'images/pandora.ico.gif" />');
+							.prepend('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')+'images/pandora.png" />');
 					}
 					// Normal group
 					else {
@@ -390,7 +390,7 @@ TreeController = {
 											try {
 												var serverName = element.serverName.length > 0 ? element.serverName : '';
 												if ($("#module_details_window").length > 0)
-													show_module_detail_dialog(element.id, '', serverName, 0, 86400);
+													show_module_detail_dialog(element.id, '', serverName, 0, 86400, element.name.replace(/&#x20;/g , " ") );
 											}
 											catch (error) {
 												// console.log(error);

@@ -325,10 +325,10 @@ foreach ($interfaces as $interface) {
 echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
 echo "<form method='post' id='walk_form' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_interfaces_explorer&id_agente=$id_agent'>";
 
-$table->width = '98%';
-
-$table->valign[0] = 'top';
-$table->valign[1] = 'top';
+$table->width = '100%';
+$table->cellpadding = 0;
+$table->cellspacing = 0;
+$table->class = 'databox filters';
 
 $table->data[0][0] = '<b>' . __('Target IP') . '</b>';
 $table->data[0][1] = html_print_input_text ('ip_target', $ip_target, '', 15, 60, true);
@@ -355,10 +355,7 @@ html_print_table($table);
 unset($table);
 
 //SNMP3 OPTIONS 
-$table->width = '98%';
-
-$table->valign[0] = 'top';
-$table->valign[1] = 'top';
+$table->width = '100%';
 
 $table->data[2][1] = '<b>'.__('Auth user').'</b>';
 $table->data[2][2] = html_print_input_text ('snmp3_auth_user', $snmp3_auth_user, '', 15, 60, true);
@@ -422,10 +419,7 @@ if (!empty($interfaces_list)) {
 	html_print_input_hidden('snmp3_privacy_pass', $snmp3_privacy_pass);
 	html_print_input_hidden('snmp3_security_level', $snmp3_security_level);
 	
-	$table->width = '98%';
-	
-	$table->valign[0] = 'top';
-	$table->valign[1] = 'top';
+	$table->width = '100%';
 	
 	//Agent selector
 	$table->data[0][0] = '<b>'.__('Interfaces').'</b>';

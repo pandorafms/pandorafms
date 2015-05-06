@@ -738,7 +738,13 @@ CREATE TABLE "tperfil" (
 	"event_view" SMALLINT NOT NULL default 0,
 	"event_edit" SMALLINT NOT NULL default 0,
 	"event_management" SMALLINT NOT NULL default 0,
-	"agent_disable" SMALLINT NOT NULL default 0
+	"agent_disable" SMALLINT NOT NULL default 0,
+	"map_view" SMALLINT NOT NULL default 0,
+	"map_edit" SMALLINT NOT NULL default 0,
+	"map_management" SMALLINT NOT NULL default 0,
+	"vconsole_view" SMALLINT NOT NULL default 0,
+	"vconsole_edit" SMALLINT NOT NULL default 0,
+	"vconsole_management" SMALLINT NOT NULL default 0
 );
 
 -- ---------------------------------------------------------------------
@@ -1691,4 +1697,13 @@ CREATE TABLE  "talert_snmp_action" (
 	"al_field8" TEXT default '',
 	"al_field9" TEXT default '',
 	"al_field10" TEXT default ''
+);
+
+-- ---------------------------------------------------------------------
+-- Table tsessions_php
+-- ---------------------------------------------------------------------
+CREATE TABLE "tsessions_php" (
+	"id_session" SERIAL NOT NULL PRIMARY KEY,
+	"last_active" INTEGER NOT NULL,
+	"data" TEXT default ''
 );

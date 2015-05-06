@@ -362,5 +362,5 @@ function extension_db_status_execute_sql_file($url, $connection) {
 }
 
 extensions_add_godmode_function('extension_db_status');
-extensions_add_godmode_menu_option(__('DB Status'), 'PM', 'gdbman', null, "v1r1");
+extensions_add_godmode_menu_option(__('DB Status'), 'PM', 'gextensions', null, "v1r1", 'gdbman');
 ?>

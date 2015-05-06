@@ -204,21 +204,23 @@ function config_update_config () {
 						if ((int)get_parameter('event_replication') == 1) {
 							if (!config_update_value ('replication_interval', (int)get_parameter('replication_interval')))
 								$error_update[] = __('Replication interval');
-							if (!config_update_value ('replication_dbhost', (string)get_parameter('replication_dbhost')))
-								$error_update[] = __('Replication DB host');
-							if (!config_update_value ('replication_dbname', (string)get_parameter('replication_dbname')))
-								$error_update[] = __('Replication DB database');
-							if (!config_update_value ('replication_dbuser', (string)get_parameter('replication_dbuser')))
-								$error_update[] = __('Replication DB user');
-							if (!config_update_value ('replication_dbpass', io_input_password((string)get_parameter('replication_dbpass'))))
-								$error_update[] = __('Replication DB password');
-							if (!config_update_value ('replication_dbport', (string)get_parameter('replication_dbport')))
-								$error_update[] = __('Replication DB port');
 							if (!config_update_value ('replication_mode', (string)get_parameter('replication_mode')))
 								$error_update[] = __('Replication mode');
 							if (!config_update_value ('show_events_in_local', (string)get_parameter('show_events_in_local')))
 								$error_update[] = __('Show events list in local console (read only)');
 						}
+						if (!config_update_value ('replication_dbhost', (string)get_parameter('replication_dbhost')))
+							$error_update[] = __('Replication DB host');
+						if (!config_update_value ('replication_dbname', (string)get_parameter('replication_dbname')))
+							$error_update[] = __('Replication DB database');
+						if (!config_update_value ('replication_dbuser', (string)get_parameter('replication_dbuser')))
+							$error_update[] = __('Replication DB user');
+						if (!config_update_value ('replication_dbpass', io_input_password((string)get_parameter('replication_dbpass'))))
+							$error_update[] = __('Replication DB password');
+						if (!config_update_value ('replication_dbport', (string)get_parameter('replication_dbport')))
+							$error_update[] = __('Replication DB port');
+						if (!config_update_value ('metaconsole_agent_cache', (int)get_parameter('metaconsole_agent_cache')))
+							$error_update[] = __('Metaconsole agent cache');
 						if (!config_update_value ('log_collector', (bool)get_parameter('log_collector')))
 							$error_update[] = __('Activate Log Collector');
 						
@@ -325,6 +327,8 @@ function config_update_config () {
 						$error_update[] = __('Password');
 					if (!config_update_value ('double_auth_enabled', get_parameter ('double_auth_enabled')))
 						$error_update[] = __('Double authentication');
+					if (!config_update_value ('session_timeout', get_parameter ('session_timeout')))
+						$error_update[] = __('Session timeout');
 					/////////////
 					break;
 				case 'perf':
@@ -457,6 +461,8 @@ function config_update_config () {
 						$error_update[] = __('Show the group name instead the group icon.');
 					if (!config_update_value ('custom_graph_widht', (int) get_parameter('custom_graph_widht', 1)))
 						$error_update[] = __('Default line thickness for the Custom Graph.');
+					if (!config_update_value ('render_proc', (int) get_parameter('render_proc', 0)))
+						$error_update[] = __('Render data of module type is proc.');
 					
 					
 					
@@ -796,6 +802,10 @@ function config_process_config () {
 		config_update_value ('replication_mode', "only_validated");
 	}
 	
+	if (!isset ($config["metaconsole_agent_cache"])) {
+		config_update_value ('metaconsole_agent_cache', 0);
+	}
+
 	if (!isset ($config["show_events_in_local"])) {
 		config_update_value ('show_events_in_local', 0);
 	}
@@ -1246,6 +1256,9 @@ function config_process_config () {
 	if (!isset($config['custom_graph_widht'])) {
 		config_update_value ('custom_graph_widht', 1);
 	}
+	if (!isset($config['render_proc'])) {
+		config_update_value ('render_proc', 0);
+	}
 	
 	if (!isset($config['command_snapshot'])) {
 		config_update_value ('command_snapshot', 1);
@@ -1312,6 +1325,10 @@ function config_process_config () {
 			"");
 	}
 	
+	if (!isset ($config["session_timeout"])) {
+		config_update_value ('session_timeout', 90);
+	}
+	
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }
@@ -1347,11 +1364,12 @@ function config_check () {
 	}
 	
 	// Get remote file dir.
-	$remote_config = db_get_value_filter('value',
-		'tconfig', array('token' => 'remote_config'));
+	$remote_config = io_safe_output(db_get_value_filter('value',
+		'tconfig', array('token' => 'remote_config')));
 	
 	
 	if (enterprise_installed()) {
+		
 		if (!is_readable ($remote_config)) {
 			set_pandora_error_for_header(
 				__('Remote configuration directory is not readble for the console') .
@@ -1400,11 +1418,17 @@ function config_check () {
 			__("Database maintance problem"));
 	}
 	
-	$fontpath = db_get_value_filter('value', 'tconfig', array('token' => 'fontpath'));
+	$fontpath = io_safe_output(db_get_value_filter('value', 'tconfig', array('token' => 'fontpath')));
 	if (($fontpath == "") OR (!file_exists ($fontpath))) {
 		set_pandora_error_for_header(
 			__('Your defined font doesnt exist or is not defined. Please check font parameters in your config'),
 			__("Default font doesnt exist"));
+	}
+	
+	if ($config['event_storm_protection']) {
+		set_pandora_error_for_header(
+			__('You need to restart server after altering this configuration setting.'),
+			__('Event storm protection is activated. No events will be generated during this mode.'));
 	}
 	
 	global $develop_bypass;
@@ -1518,5 +1542,22 @@ function config_user_set_custom_config() {
 	if (defined('METACONSOLE')) {
 		$config['metaconsole_access'] = $userinfo["metaconsole_access"];
 	}
+}
+
+function config_prepare_session() {
+	global $config;
+	
+	// Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours
+	$sessionCookieExpireTime = $config["session_timeout"] * 60;
+	ini_set('session.gc_maxlifetime', $sessionCookieExpireTime);
+	session_set_cookie_params ($sessionCookieExpireTime);
+	
+	// Reset the expiration time upon page load //session_name() is default name of session PHPSESSID
+	
+	if (isset($_COOKIE[session_name()]))
+		setcookie(session_name(), $_COOKIE[session_name()], time() + $sessionCookieExpireTime, "/");
+	
+	ini_set("post_max_size",$config["max_file_size"]);
+	ini_set("upload_max_filesize",$config["max_file_size"]);
 }
 ?>

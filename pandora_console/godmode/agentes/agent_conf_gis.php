@@ -34,9 +34,9 @@ $agent_name = agents_get_name($id_agente);
 $agent_name = md5($agent_name);
 
 /* Map with the current position */
-echo "<div id=\"" . $agent_name . "_agent_map\" style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
+echo "<div id=\"" . $agent_name . "_agent_map\" style=\"border:1px solid black; width:100%; height: 30em;\"></div>";
 
-if (!gis_get_agent_map($id_agente, "500px", "98%", false)) {
+if (!gis_get_agent_map($id_agente, "500px", "100%", false)) {
 	ui_print_error_message(__("There is no default map. Please go to the setup for to set a default map."));
 	echo "<script type='text/javascript'>
 		$(document).ready(function() {
@@ -46,32 +46,38 @@ if (!gis_get_agent_map($id_agente, "500px", "98%", false)) {
 } 
 
 if ($agentData === false) {
-	echo "<p>" . __("There is no GIS data for this agent, so it's positioned in default position of map.") . "</p>";
+	ui_print_info_message ( array ( 'no_close' => true, 'message' => 
+					__("There is no GIS data for this agent, so it's positioned in default position of map.") ) );
 }
-echo "<div class='warn'>" .
-	__("Warning: When you change the Agent position, the agent automatically activates the 'Ignore new GIS data' option") . "</div>";
+ui_print_warning_message (array ( 'no_close' => true, 'message' =>
+	__("When you change the Agent position, the agent automatically activates the 'Ignore new GIS data' option") ) );
 
-$table->width = '85%';
+$table->width = '100%';
+$table->class = 'databox filters';
 $table->data = array();
-
+$table->cellpadding = 0;
+$table->cellspacing = 0;
 $table->head[0] =__('Agent position');
-$table->head_colspan[0] = 2;
+$table->head_colspan[0] = 4;
+$table->headstyle[0] = "text-align:center";
+$table->style[0] = 'font-weight: bold; ';
+$table->style[2] = 'font-weight: bold; ';
 
 $table->data[1][0] = __('Latitude: ');
 $table->data[1][1] = html_print_input_text_extended ('latitude', $agentData['stored_latitude'], 'text-latitude', '', 20, 20, false, '',
 	array('onchange' => "setIgnoreGISDataEnabled()", 'onkeyup' => "setIgnoreGISDataEnabled()"), true);
 
-$table->data[2][0] = __('Longitude: ');
-$table->data[2][1] = html_print_input_text_extended ('longitude', $agentData['stored_longitude'], 'text-longitude', '', 20, 20, false, '',
+$table->data[1][2] = __('Longitude: ');
+$table->data[1][3] = html_print_input_text_extended ('longitude', $agentData['stored_longitude'], 'text-longitude', '', 20, 20, false, '',
 	array('onchange' => "setIgnoreGISDataEnabled()", 'onkeyup' => "setIgnoreGISDataEnabled()"), true);
 
-$table->data[3][0] = __('Altitude: ');
-$table->data[3][1] = html_print_input_text_extended ('altitude', $agentData['stored_altitude'], 'text-altitude', '', 10, 10, false, '',
+$table->data[2][0] = __('Altitude: ');
+$table->data[2][1] = html_print_input_text_extended ('altitude', $agentData['stored_altitude'], 'text-altitude', '', 10, 10, false, '',
 	array('onchange' => "setIgnoreGISDataEnabled()", 'onkeyup' => "setIgnoreGISDataEnabled()"), true);
 
-$table->data[4][0] = __('Ignore new GIS data:');
-$table->data[4][1] = __('Yes').' '.html_print_radio_button_extended ("update_gis_data", 0, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
-$table->data[4][1] .= __('No').' '.html_print_radio_button_extended ("update_gis_data", 1, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
+$table->data[2][2] = __('Ignore new GIS data:');
+$table->data[2][3] = __('Yes').' '.html_print_radio_button_extended ("update_gis_data", 0, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
+$table->data[2][3] .= __('No').' '.html_print_radio_button_extended ("update_gis_data", 1, '', $updateGisData, false, '', 'style="margin-right: 40px;"', true);
 
 $url = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente;
 echo "<form method='post' action='" . $url . "' onsubmit ='return validateFormFields();'>";

@@ -49,10 +49,10 @@ foreach ($_GET as $key => $value) {
 echo "<div style='margin-bottom: 30px;'></div>";
 
 /* Map with the current position */
-echo "<div id=\"" . $agent_name . "_agent_map\" style=\"border:1px solid black; width:98%; height: 30em;\"></div>";
+echo "<div id=\"" . $agent_name . "_agent_map\" style=\"border:1px solid black; width:100%; height: 30em;\"></div>";
 
-if (!gis_get_agent_map($id_agente, "500px", "98%", true, true, $period)) {
-	ui_print_error_message(__("There is no default map. Please go to the setup for to set a default map."));
+if (!gis_get_agent_map($id_agente, "500px", "100%", true, true, $period)) {
+	ui_print_error_message( __("There is no default map. Please go to the setup for to set a default map.") );
 	echo "<script type='text/javascript'>
 		$(document).ready(function() {
 			$('#" . $agent_name . "_agent_map').hide();
@@ -82,24 +82,25 @@ gis_activate_ajax_refresh(null, $timestampLastOperation);
 gis_activate_select_control();
 
 if ($agentData === false) {
-	echo "<p>" .
-		__("There is no GIS data for this agent, so it's positioned in default position of map.") .
-		"</p>";
+	ui_print_info_message (
+		__("There is no GIS data for this agent, so it's positioned in default position of map.") );
 }
 
-echo "<br />";
 $dataLastPosition = gis_get_data_last_position_agent($agentId);
 if ($dataLastPosition !== false) {
 	echo "<b>" . __("Last position in ") .
 		$dataLastPosition['start_timestamp'] . ":</b> " .
 		$dataLastPosition['stored_longitude'] . ", " . $dataLastPosition['stored_latitude'] . ", " . $dataLastPosition['stored_altitude'];
 }
-echo "<br />";
-echo "<form action='index.php?" . $url . "' method='POST'>";
-echo __("Period to show data as path") . ": ";
+
+echo "<form class='' action='index.php?" . $url . "' method='POST'>";
+echo "<table width=100% class='databox filters'>";
+echo "<tr><td>" . __("Period to show data as path") . ": ";
+echo "<td>";
 html_print_extended_select_for_time ('period', $period, '', '', '0', 10);
-html_print_submit_button(__('Refresh path'), 'refresh', false, 'class = "sub upd"');
-echo "</form>";
+echo "<td>";
+html_print_submit_button(__('Refresh path'), 'refresh', false, 'class = "sub upd" style="margin-top:0px"');
+echo "</table></form>";
 
 echo "<h4>" . __("Positional data from the last") . " " . human_time_description_raw ($period) ."</h4>";
 /* Get the total number of Elements for the pagination */ 
@@ -122,8 +123,7 @@ $result = db_get_all_rows_sql ($sql, true);
 
 
 if ($result === false) {
-	echo "<div class='nf'>" .
-		__('This agent doesn\'t have any GIS data.') . "</div>";
+	ui_print_empty_data( __('This agent doesn\'t have any GIS data.') );
 }
 else {
 	ui_pagination ($countData, false) ;

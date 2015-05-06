@@ -63,7 +63,7 @@
 		<div style='height: 10px'>
 			<?php
 $version = '6.0dev';
-$build = '150329';
+$build = '150506';
 			$banner = "v$version Build $build";
 			
 			error_reporting(0);
@@ -538,6 +538,7 @@ function install_step2() {
 			$res += check_extension("mbstring","PHP Multibyte String");
 			$res += check_extension("zip","PHP Zip");
 			$res += check_extension("zlib","PHP Zlib extension");
+			$res += check_extension("json","PHP json extension");
 			$res += check_extension("curl","CURL (Client URL Library)");
 			if (PHP_OS == "FreeBSD") {
 				$res += check_exists ("/usr/local/bin/twopi","Graphviz Binary");

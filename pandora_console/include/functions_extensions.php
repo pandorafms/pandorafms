@@ -335,9 +335,10 @@ function extensions_load_extensions ($process_login) {
  *
  * @param string name Name of the extension in the Operation menu  
  * @param string fatherId Id of the parent menu item for the current extension 
+ * @param string subfatherId Id of the parent submenu item for the current extension 
  * @param string icon Path to the icon image (18x18 px). If this parameter is blank then predefined icon will be used
  */
-function extensions_add_operation_menu_option ($name, $fatherId = null, $icon = null, $version="N/A") {
+function extensions_add_operation_menu_option ($name, $fatherId = null, $icon = null, $version="N/A", $subfatherId = null) {
 	global $config;
 	global $extension_file;
 	
@@ -352,6 +353,7 @@ function extensions_add_operation_menu_option ($name, $fatherId = null, $icon = 
 	
 	$option_menu['sec2'] = $extension['dir'] . '/' . mb_substr ($extension_file, 0, -4);
 	$option_menu['fatherId'] = $fatherId;
+	$option_menu['subfatherId'] = $subfatherId;
 	$option_menu['icon'] = $icon;
 	$option_menu['version'] = $version;
 	
@@ -364,9 +366,10 @@ function extensions_add_operation_menu_option ($name, $fatherId = null, $icon = 
  * @param string name Name of the extension in the Godmode menu  
  * @param string acl User ACL level required to see this extension in the godmode menu 
  * @param string fatherId Id of the parent menu item for the current extension 
+ * @param string subfatherId Id of the parent submenu item for the current extension 
  * @param string icon Path to the icon image (18x18 px). If this parameter is blank then predefined icon will be used
  */
-function extensions_add_godmode_menu_option ($name, $acl, $fatherId = null, $icon = null, $version="N/A") {
+function extensions_add_godmode_menu_option ($name, $acl, $fatherId = null, $icon = null, $version="N/A", $subfatherId = null) {
 	global $config;
 	global $extension_file;
 	
@@ -379,6 +382,7 @@ function extensions_add_godmode_menu_option ($name, $acl, $fatherId = null, $ico
 	$extension = &$config['extensions'][$extension_file];
 	$option_menu['sec2'] = $extension['dir'] . '/' . mb_substr ($extension_file, 0, -4);
 	$option_menu['fatherId'] = $fatherId;
+	$option_menu['subfatherId'] = $subfatherId;
 	$option_menu['icon'] = $icon;
 	$option_menu['version'] = $version;
 	$extension['godmode_menu'] = $option_menu;

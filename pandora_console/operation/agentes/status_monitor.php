@@ -97,8 +97,9 @@ if (!defined('METACONSOLE')){
 				$sortField . '&amp;sort=' . $sort .'&amp;pure=' . $config['pure'] . $ag_custom_fields_params . '">';
 	//echo '<table cellspacing="4" cellpadding="4" width="100%" class="databox"><tr>';
 	$table->width = "100%";
-	$table->cellspacing = 4;
-	$table->cellpadding = 4;
+	$table->cellspacing = 0;
+	$table->cellpadding = 0;
+	$table->class = "databox filters";
 }else{
 	$filters = '<form class="filters_form" method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;ag_group=' . 
 			$ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . 
@@ -409,11 +410,11 @@ if(defined("METACONSOLE")){
 	$table->style[4] = 'vertical-align:middle; font-weight: bold;';
 }
 else{
-	$table->style[0] = 'vertical-align:middle;';
-	$table->style[1] = 'vertical-align:middle;';
-	$table->style[2] = 'vertical-align:middle;';
-	$table->style[3] = 'vertical-align:middle;';
-	$table->style[4] = 'vertical-align:middle;';
+	$table->style[0] = 'font-weight: bold;';
+	$table->style[1] = 'font-weight: bold;';
+	$table->style[2] = 'font-weight: bold;';
+	$table->style[3] = 'font-weight: bold;';
+	$table->style[4] = 'font-weight: bold;';
 }
 $table->data[0][0] = __('Group');
 
@@ -452,14 +453,9 @@ $rows_select[0] = __('Not assigned');
 
 $table->data[0][5] = html_print_select($rows_select, 'modulegroup', $modulegroup, '', __('All'),-1,true, false, true, '', false, 'width: 120px;');
 
-
-if(defined('METACONSOLE')){
-	
-	$table->rowspan[0][6] = 2;
-	$table->data[0][6] = html_print_submit_button (__('Show'), "uptbutton",
-							false, 'class="sub search" style="margin-top:0px;"',true);
-
-}
+$table->rowspan[0][6] = 2;
+$table->data[0][6] = html_print_submit_button (__('Show'), "uptbutton",
+						false, 'class="sub search" style="margin-top:0px;"',true);
 
 $table->data[1][0] = __('Module name');
 
@@ -495,14 +491,9 @@ else {
 		$tag_filter, '', __('All'), '', true, false, true, '', false, 'width: 150px;');
 }
 
-
-if(!defined('METACONSOLE')){
-	$table->data[1][6] = html_print_submit_button (__('Show'), "uptbutton", false, 'class="sub search"',true);
-}
-
 $table_custom_fields = new stdClass();
-$table_custom_fields->class = 'databox';
-$table_custom_fields->width = '99%';
+$table_custom_fields->class = 'filters';
+$table_custom_fields->width = '100%';
 if(defined('METACONSOLE')){
 		$table_custom_fields->width = '100%';
 		$table_custom_fields->class = 'filters';
@@ -649,22 +640,6 @@ switch ($sortField) {
 				$selectStatusDown = $selected;
 				$order = array(
 					'field' => 'tagente_estado.estado',
-					'order' => 'DESC');
-				break;
-		}
-		break;
-	case 'data':
-		switch ($sort) {
-			case 'up':
-				$selectDataUp = $selected;
-				$order = array(
-					'field' => 'tagente_estado.datos',
-					'order' => 'ASC');
-				break;
-			case 'down':
-				$selectDataDown = $selected;
-				$order = array(
-					'field' => 'tagente_estado.datos',
 					'order' => 'DESC');
 				break;
 		}
@@ -924,14 +899,15 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 	}
 }
 
-$table->cellpadding = 4;
-$table->cellspacing = 4;
-$table->width = "98%";
-$table->class = "databox";
+$table->cellpadding = 0;
+$table->cellspacing = 0;
+$table->width = "100%";
+$table->class = "databox data";
 if(defined('METACONSOLE')){
 	$table->width = "100%";
 	$table->cellpadding = '0';
 	$table->cellspacing = '0';
+	$table->class = "databox";
 }
 $table->head = array ();
 $table->data = array ();
@@ -988,11 +964,6 @@ $table->head[8] = __('Warn');
 $table->align[8] = "left";
 
 $table->head[9] = __('Data');
-if (! defined ('METACONSOLE')) {
-	$table->head[9] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=data&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectDataUp, "alt" => "up"))  . '</a>' .
-	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=data&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectDataDown, "alt" => "down")) . '</a>';
-}
-
 $table->align[9] = "left";
 
 $table->head[10] = __('Timestamp');
@@ -1002,7 +973,7 @@ if (! defined ('METACONSOLE')) {
 }
 
 if (! defined ('METACONSOLE'))
-	$table->align[10] = "right";
+	$table->align[10] = "left";
 
 $rowPair = true;
 $iterator = 0;
@@ -1213,7 +1184,6 @@ foreach ($result as $row) {
 	}
 	
 	if ($row['history_data'] == 1 && $acl_graphs) {
-		
 		$graph_type = return_graphtype ($row["module_type"]);
 		
 		$url = ui_get_full_url("operation/agentes/stat_win.php", false, false, false);
@@ -1224,7 +1194,7 @@ foreach ($result as $row) {
 				"type" => $graph_type,
 				"period" => SECONDS_1DAY,
 				"id" => $row["id_agente_modulo"],
-				"label" => rawurlencode(urlencode(base64_encode($row["module_name"]))),
+				"label" => base64_encode($row["module_name"]),
 				"refresh" => SECONDS_10MINUTES
 			);
 		
@@ -1244,10 +1214,14 @@ foreach ($result as $row) {
 			"show_module_detail_dialog(" .
 				$row["id_agente_modulo"] . ", ".
 				$row['id_agent'] . ", \"" .
-				$row['server_name'] . "\", 0, " . SECONDS_1DAY . ")'>" .
+				$row['server_name'] . "\", 0, " . SECONDS_1DAY . ', "' . $row["module_name"] . "\")'>" .
 			html_print_image ("images/binary.png", true,
 				array ("border" => "0", "alt" => "")) . "</a>";
-		
+				
+		$data[7] .= "<span id='hidden_name_module_" . $row["id_agente_modulo"] . "'
+						style='display: none;'>" .
+						$row["module_name"] .
+					"</span>";
 	}
 	
 	$data[8] = ui_print_module_warn_value($row['max_warning'],
@@ -1255,7 +1229,27 @@ foreach ($result as $row) {
 		$row['min_critical'], $row['str_critical']);
 	
 	if (is_numeric($row["datos"])) {
-		$salida = format_numeric($row["datos"]);
+		if ( $config["render_proc"] ){
+				switch($row["module_type"]) {
+					case 2:
+					case 6:
+					case 9:
+					case 18:
+					case 21:
+					case 31:
+						
+						if ( $row["datos"] >= 1 ) 
+							$salida ='OK';
+						else
+							$salida = 'FAIL';
+						break;
+					default:	
+						$salida = format_numeric($row["datos"]);
+						break;
+				}
+		}else{
+			$salida = format_numeric($row["datos"]);
+		}
 		
 		// Show units ONLY in numeric data types
 		if (isset($row["unit"])) {
@@ -1359,7 +1353,7 @@ if (!empty ($table->data)) {
 	html_print_table ($table);
 }
 else {
-	echo "<div class='nf'>".__('This group doesn\'t have any monitor')."</div>";
+	ui_print_info_message ( array ( 'no_close' => true, 'message' => __('This group doesn\'t have any monitor') ) );
 }
 
 echo "<div id='monitor_details_window'></div>";
@@ -1405,7 +1399,7 @@ ui_require_javascript_file('pandora_modules');
 	}
 	
 	// Show the modal window of an module
-	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period) {
+	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period, module_name) {
 		if (period == -1) {
 			if ($("#period").length == 1) {
 				period = $('#period').val();
@@ -1414,7 +1408,7 @@ ui_require_javascript_file('pandora_modules');
 				period = <?php echo SECONDS_1DAY; ?>;
 			}
 		}
-		
+		title = <?php echo "\"" . __("Module: ") . "\"" ?>;
 		$.ajax({
 			type: "POST",
 			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
@@ -1428,6 +1422,7 @@ ui_require_javascript_file('pandora_modules');
 						resizable: true,
 						draggable: true,
 						modal: true,
+						title: title + module_name,
 						overlay: {
 							opacity: 0.5,
 							background: "black"
@@ -1437,12 +1432,12 @@ ui_require_javascript_file('pandora_modules');
 					})
 					.show ();
 				
-				refresh_pagination_callback (module_id, id_agent, server_name);
+				refresh_pagination_callback (module_id, id_agent, server_name,module_name);
 			}
 		});
 	}
 	
-	function refresh_pagination_callback (module_id, id_agent, server_name) {
+	function refresh_pagination_callback (module_id, id_agent, server_name,module_name) {
 		
 		$(".binary_dialog").click( function() {
 			var classes = $(this).attr('class');
@@ -1453,7 +1448,7 @@ ui_require_javascript_file('pandora_modules');
 			
 			var period = $('#period').val();
 			
-			show_module_detail_dialog(module_id, id_agent, server_name, offset, period);
+			show_module_detail_dialog(module_id, id_agent, server_name, offset, period,module_name);
 			
 			return false;
 		});

@@ -1583,6 +1583,7 @@ function modules_get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) 
  */
 function modules_get_agentmodule_data ($id_agent_module, $period,
 	$date = 0, $trash=false, $conexion = false, $order = 'ASC') {
+	global $config;
 	
 	$module = db_get_row('tagente_modulo', 'id_agente_modulo',
 		$id_agent_module);
@@ -1619,6 +1620,28 @@ function modules_get_agentmodule_data ($id_agent_module, $period,
 				ORDER BY utimestamp %s",
 				$id_agent_module, $datelimit, $date, $order);
 			break;
+		case 2:
+		case 6:
+		case 9:
+		case 18:
+		case 21:
+		case 31:
+			if ( $config["render_proc"] ) {
+				$sql = sprintf ("SELECT IF(datos >= 1, 'OK', 'FAIL') as data, utimestamp
+					FROM tagente_datos
+					WHERE id_agente_modulo = %d
+						AND utimestamp > %d AND utimestamp <= %d
+					ORDER BY utimestamp %s",
+					$id_agent_module, $datelimit, $date, $order);
+			}else{
+				$sql = sprintf ("SELECT datos AS data, utimestamp
+				FROM tagente_datos
+				WHERE id_agente_modulo = %d
+					AND utimestamp > %d AND utimestamp <= %d
+				ORDER BY utimestamp %s",
+				$id_agent_module, $datelimit, $date, $order);
+			}
+			break;
 		default:
 			$sql = sprintf ("SELECT datos AS data, utimestamp
 				FROM tagente_datos
@@ -1645,6 +1668,23 @@ function modules_get_agentmodule_data ($id_agent_module, $period,
 		$values[$key]["agent_name"] = $agent_name;
 	}
 	
+	if ($search_in_history_db) {
+		$datos = array();
+		foreach ($values as $key => $value) {
+			$utimestamp[$key] = $value['utimestamp'];
+		}
+		
+		array_multisort($utimestamp, SORT_DESC, $values);
+		foreach ($utimestamp as $key => $utimes) {
+			$datos[$key] = array('utimestamp'=>$utimes,
+									'data'=>$values[$key]["data"],
+									'module_name'=>$values[$key]["module_name"],
+									'agent_id'=>$values[$key]["agent_id"],
+									'agent_name'=>$values[$key]["agent_name"]
+								);
+		}
+		$values = $datos;
+	}
 	return $values;
 }
 

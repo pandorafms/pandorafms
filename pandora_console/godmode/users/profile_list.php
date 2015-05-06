@@ -103,45 +103,78 @@ if ($delete_profile) {
 }
 
 // Store the variables when create or update
-if($create_profile || $update_profile) {
+if ($create_profile || $update_profile) {
 	$name = get_parameter ("name");
+	
+	// Incidents
 	$incident_view = (bool) get_parameter ("incident_view");
 	$incident_edit = (bool) get_parameter ("incident_edit");
 	$incident_management = (bool) get_parameter ("incident_management");
+	
+	// Agents
 	$agent_view = (bool) get_parameter ("agent_view");
 	$agent_edit = (bool) get_parameter ("agent_edit");
+	$agent_disable = (bool) get_parameter ("agent_disable");
+	
+	// Alerts
 	$alert_edit = (bool) get_parameter ("alert_edit");
-	$user_management = (bool) get_parameter ("user_management");
-	$db_management = (bool) get_parameter ("db_management");
 	$alert_management = (bool) get_parameter ("alert_management");
+	
+	// Users
+	$user_management = (bool) get_parameter ("user_management");
+	
+	// DB
+	$db_management = (bool) get_parameter ("db_management");
+	
+	// Pandora
 	$pandora_management = (bool) get_parameter ("pandora_management");
-	$report_view = (bool) get_parameter ("report_view");
-	$report_edit = (bool) get_parameter ("report_edit");
-	$report_management = (bool) get_parameter ("report_management");
+	
+	// Events
 	$event_view = (bool) get_parameter ("event_view");
 	$event_edit = (bool) get_parameter ("event_edit");
 	$event_management = (bool) get_parameter ("event_management");
-	$agent_disable = (bool) get_parameter ("agent_disable");
+	
+	// Reports
+	$report_view = (bool) get_parameter ("report_view");
+	$report_edit = (bool) get_parameter ("report_edit");
+	$report_management = (bool) get_parameter ("report_management");
+	
+	// Network maps
+	$map_view = (bool) get_parameter ("map_view");
+	$map_edit = (bool) get_parameter ("map_edit");
+	$map_management = (bool) get_parameter ("map_management");
+	
+	// Visual console
+	$vconsole_view = (bool) get_parameter ("vconsole_view");
+	$vconsole_edit = (bool) get_parameter ("vconsole_edit");
+	$vconsole_management = (bool) get_parameter ("vconsole_management");
 	
 	$values = array(
-		'name' => $name,
-		'incident_view' => $incident_view,
-		'incident_edit' => $incident_edit,
-		'incident_management' => $incident_management,
-		'agent_view' => $agent_view,
-		'agent_edit' => $agent_edit,
-		'alert_edit' => $alert_edit,
-		'user_management' => $user_management,
-		'db_management' => $db_management,
-		'alert_management' => $alert_management,
-		'pandora_management' => $pandora_management,
-		'report_view' => $report_view,
-		'report_edit' => $report_edit,
-		'report_management' => $report_management,
-		'event_view' => $event_view,
-		'event_edit' => $event_edit,
-		'event_management' => $event_management,
-		'agent_disable' => $agent_disable);
+			'name' => $name,
+			'incident_view' => $incident_view,
+			'incident_edit' => $incident_edit,
+			'incident_management' => $incident_management,
+			'agent_view' => $agent_view,
+			'agent_edit' => $agent_edit,
+			'agent_disable' => $agent_disable,
+			'alert_edit' => $alert_edit,
+			'alert_management' => $alert_management,
+			'user_management' => $user_management,
+			'db_management' => $db_management,
+			'event_view' => $event_view,
+			'event_edit' => $event_edit,
+			'event_management' => $event_management,
+			'report_view' => $report_view,
+			'report_edit' => $report_edit,
+			'report_management' => $report_management,
+			'map_view' => $map_view,
+			'map_edit' => $map_edit,
+			'map_management' => $map_management,
+			'vconsole_view' => $vconsole_view,
+			'vconsole_edit' => $vconsole_edit,
+			'vconsole_management' => $vconsole_management,
+			'pandora_management' => $pandora_management
+		);
 }
 
 // Update profile
@@ -149,16 +182,41 @@ if ($update_profile) {
 	if ($name) {
 		$ret = db_process_sql_update('tperfil', $values, array('id_perfil' => $id_profile));
 		if ($ret !== false) {
-			$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .
-				' Incident edit: ' . $incident_edit . ' Incident management: ' . $incident_management .
-				' Agent view: ' . $agent_view . ' Agent edit: ' . $agent_edit .
-				' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
-				' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
-				' Report view: ' . $report_view . ' Report edit: ' . $report_edit .
-				' Report management: ' . $report_management . ' Event view: ' . $event_view .
-				' Event edit: ' . $event_edit . ' Event management: ' . $event_management .
-				' Agent disable: ' . $agent_disable .
-				' Pandora Management: ' . $pandora_management;
+			$info = 'Name: ' . $name .
+					
+					' Incident view: ' . $incident_view .
+					' Incident edit: ' . $incident_edit .
+					' Incident management: ' . $incident_management .
+					
+					' Agent view: ' . $agent_view .
+					' Agent edit: ' . $agent_edit .
+					' Agent disable: ' . $agent_disable .
+					
+					' Alert edit: ' . $alert_edit .
+					' Alert management: ' . $alert_management .
+					
+					' User management: ' . $user_management .
+					
+					' DB management: ' . $db_management .
+					
+					' Event view: ' . $event_view .
+					' Event edit: ' . $event_edit .
+					' Event management: ' . $event_management .
+					
+					' Report view: ' . $report_view .
+					' Report edit: ' . $report_edit .
+					' Report management: ' . $report_management .
+					
+					' Network map view: ' . $map_view .
+					' Network map edit: ' . $map_edit .
+					' Network map management: ' . $map_management .
+					
+					' Visual console view: ' . $vconsole_view .
+					' Visual console edit: ' . $vconsole_edit .
+					' Visual console management: ' . $vconsole_management .
+					
+					' Pandora Management: ' . $pandora_management;
+			
 			db_pandora_audit("User management",
 				"Update profile ". $name, false, false, $info);
 			
@@ -182,16 +240,41 @@ if ($create_profile) {
 		if ($ret !== false) {
 			ui_print_success_message(__('Successfully created'));
 			
-			$info = 'Name: ' . $name . ' Incident view: ' . $incident_view .
-				' Incident edit: ' . $incident_edit . ' Incident management: ' . $incident_management .
-				' Agent view: ' . $agent_view . ' Agent edit: ' . $agent_edit .
-				' Alert edit: ' . $alert_edit . ' User management: ' . $user_management .
-				' DB management: ' . $db_management . ' Alert management: ' . $alert_management .
-				' Report view: ' . $report_view . ' Report edit: ' . $report_edit .
-				' Report management: ' . $report_management . ' Event view: ' . $event_view .
-				' Event edit: ' . $event_edit . ' Event management: ' . $event_management .
-				' Agent disable: ' . $agent_disable .
-				' Pandora Management: ' . $pandora_management;
+			$info = 'Name: ' . $name .
+					
+					' Incident view: ' . $incident_view .
+					' Incident edit: ' . $incident_edit .
+					' Incident management: ' . $incident_management .
+					
+					' Agent view: ' . $agent_view .
+					' Agent edit: ' . $agent_edit .
+					' Agent disable: ' . $agent_disable .
+					
+					' Alert edit: ' . $alert_edit .
+					' Alert management: ' . $alert_management .
+					
+					' User management: ' . $user_management .
+					
+					' DB management: ' . $db_management .
+					
+					' Event view: ' . $event_view .
+					' Event edit: ' . $event_edit .
+					' Event management: ' . $event_management .
+					
+					' Report view: ' . $report_view .
+					' Report edit: ' . $report_edit .
+					' Report management: ' . $report_management .
+					
+					' Network map view: ' . $map_view .
+					' Network map edit: ' . $map_edit .
+					' Network map management: ' . $map_management .
+					
+					' Visual console view: ' . $vconsole_view .
+					' Visual console edit: ' . $vconsole_edit .
+					' Visual console management: ' . $vconsole_management .
+					
+					' Pandora Management: ' . $pandora_management;
+			
 			db_pandora_audit("User management",
 				"Created profile ". $name, false, false, $info);
 		}
@@ -217,26 +300,32 @@ $table->data = array ();
 $table->size = array ();
 $table->align = array ();
 
-$table->head[0] = __('Profiles');
+$table->head['profiles'] = __('Profiles');
 
-$table->head[1] = "IR" . ui_print_help_tip (__('System incidents reading'), true);
-$table->head[2] = "IW" . ui_print_help_tip (__('System incidents writing'), true);
-$table->head[3] = "IM" . ui_print_help_tip (__('System incidents management'), true);
-$table->head[4] = "AR" . ui_print_help_tip (__('Agents reading'), true);
-$table->head[5] = "AW" . ui_print_help_tip (__('Agents management'), true);
-$table->head[6] = "AD" . ui_print_help_tip (__('Agents disable'), true);
-$table->head[7] = "LW" . ui_print_help_tip (__('Alerts editing'), true);
-$table->head[8] = "UM" . ui_print_help_tip (__('Users management'), true);
-$table->head[9] = "DM" . ui_print_help_tip (__('Database management'), true);
-$table->head[10] = "LM" . ui_print_help_tip (__('Alerts management'), true);
-$table->head[11] = "RR" . ui_print_help_tip (__('Reports reading'), true);
-$table->head[12] = "RW" . ui_print_help_tip (__('Reports writing'), true);
-$table->head[13] = "RM" . ui_print_help_tip (__('Reports management'), true);
-$table->head[14] = "ER" . ui_print_help_tip (__('Events reading'), true);
-$table->head[15] = "EW" . ui_print_help_tip (__('Events writing'), true);
-$table->head[16] = "EM" . ui_print_help_tip (__('Events management'), true);
-$table->head[17] = "PM" . ui_print_help_tip (__('Systems management'), true);
-$table->head[18] = '<span title="Operations">' . __('Op.') . '</span>';
+$table->head['IR'] = "IR" . ui_print_help_tip (__('System incidents reading'), true);
+$table->head['IW'] = "IW" . ui_print_help_tip (__('System incidents writing'), true);
+$table->head['IM'] = "IM" . ui_print_help_tip (__('System incidents management'), true);
+$table->head['AR'] = "AR" . ui_print_help_tip (__('Agents reading'), true);
+$table->head['AW'] = "AW" . ui_print_help_tip (__('Agents management'), true);
+$table->head['AD'] = "AD" . ui_print_help_tip (__('Agents disable'), true);
+$table->head['LW'] = "LW" . ui_print_help_tip (__('Alerts editing'), true);
+$table->head['LM'] = "LM" . ui_print_help_tip (__('Alerts management'), true);
+$table->head['UM'] = "UM" . ui_print_help_tip (__('Users management'), true);
+$table->head['DM'] = "DM" . ui_print_help_tip (__('Database management'), true);
+$table->head['ER'] = "ER" . ui_print_help_tip (__('Events reading'), true);
+$table->head['EW'] = "EW" . ui_print_help_tip (__('Events writing'), true);
+$table->head['EM'] = "EM" . ui_print_help_tip (__('Events management'), true);
+$table->head['RR'] = "RR" . ui_print_help_tip (__('Reports reading'), true);
+$table->head['RW'] = "RW" . ui_print_help_tip (__('Reports writing'), true);
+$table->head['RM'] = "RM" . ui_print_help_tip (__('Reports management'), true);
+$table->head['MR'] = "MR" . ui_print_help_tip (__('Network maps reading'), true);
+$table->head['MW'] = "MW" . ui_print_help_tip (__('Network maps writing'), true);
+$table->head['MM'] = "MM" . ui_print_help_tip (__('Network maps management'), true);
+$table->head['VR'] = "VR" . ui_print_help_tip (__('Visual console reading'), true);
+$table->head['VW'] = "VW" . ui_print_help_tip (__('Visual console writing'), true);
+$table->head['VM'] = "VM" . ui_print_help_tip (__('Visual console management'), true);
+$table->head['PM'] = "PM" . ui_print_help_tip (__('Systems management'), true);
+$table->head['operations'] = '<span title="Operations">' . __('Op.') . '</span>';
 
 $table->align = array_fill (1, 11, "center");
 $table->size = array_fill (1, 10, 40);
@@ -249,26 +338,32 @@ if ($profiles === false) {
 $img = html_print_image ("images/ok.png", true, array ("border" => 0)); 
 
 foreach ($profiles as $profile) {
-	$data[0] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'&pure='.$pure.'"><b>'.$profile["name"].'</b></a>';
-	$data[1] = ($profile["incident_view"] ? $img : '');
-	$data[2] = ($profile["incident_edit"] ? $img : '');
-	$data[3] = ($profile["incident_management"] ? $img : '');
-	$data[4] = ($profile["agent_view"] ? $img : '');
-	$data[5] = ($profile["agent_edit"] ? $img : '');
-	$data[6] = ($profile["agent_disable"] ? $img : '');
-	$data[7] = ($profile["alert_edit"] ? $img : '');
-	$data[8] = ($profile["user_management"] ? $img : '');
-	$data[9] = ($profile["db_management"] ? $img : '');
-	$data[10] = ($profile["alert_management"] ? $img : '');
-	$data[11] = ($profile["report_view"] ? $img : '');
-	$data[12] = ($profile["report_edit"] ? $img : '');
-	$data[13] = ($profile["report_management"] ? $img : '');
-	$data[14] = ($profile["event_view"] ? $img : '');
-	$data[15] = ($profile["event_edit"] ? $img : '');
-	$data[16] = ($profile["event_management"] ? $img : '');
-	$data[17] = ($profile["pandora_management"] ? $img : '');
-	$data[18] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'&pure='.$pure.'"><b>'. html_print_image('images/config.png', true, array('title' => __('Edit'))) .'</b></a>';
-	$data[18] .= '&nbsp;&nbsp;<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile["id_perfil"].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. html_print_image("images/cross.png", true) . '</a>';
+	$data['profiles'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'&pure='.$pure.'"><b>'.$profile["name"].'</b></a>';
+	$data['IR'] = ($profile["incident_view"] ? $img : '');
+	$data['IW'] = ($profile["incident_edit"] ? $img : '');
+	$data['IM'] = ($profile["incident_management"] ? $img : '');
+	$data['AR'] = ($profile["agent_view"] ? $img : '');
+	$data['AW'] = ($profile["agent_edit"] ? $img : '');
+	$data['AD'] = ($profile["agent_disable"] ? $img : '');
+	$data['LW'] = ($profile["alert_edit"] ? $img : '');
+	$data['LM'] = ($profile["alert_management"] ? $img : '');
+	$data['UM'] = ($profile["user_management"] ? $img : '');
+	$data['DM'] = ($profile["db_management"] ? $img : '');
+	$data['ER'] = ($profile["event_view"] ? $img : '');
+	$data['EW'] = ($profile["event_edit"] ? $img : '');
+	$data['EM'] = ($profile["event_management"] ? $img : '');
+	$data['RR'] = ($profile["report_view"] ? $img : '');
+	$data['RW'] = ($profile["report_edit"] ? $img : '');
+	$data['RM'] = ($profile["report_management"] ? $img : '');
+	$data['MR'] = ($profile["map_view"] ? $img : '');
+	$data['MW'] = ($profile["map_edit"] ? $img : '');
+	$data['MM'] = ($profile["map_management"] ? $img : '');
+	$data['VR'] = ($profile["vconsole_view"] ? $img : '');
+	$data['VW'] = ($profile["vconsole_edit"] ? $img : '');
+	$data['VM'] = ($profile["vconsole_management"] ? $img : '');
+	$data['PM'] = ($profile["pandora_management"] ? $img : '');
+	$data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'&pure='.$pure.'"><b>'. html_print_image('images/config.png', true, array('title' => __('Edit'))) .'</b></a>';
+	$data['operations'] .= '&nbsp;&nbsp;<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile["id_perfil"].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. html_print_image("images/cross.png", true) . '</a>';
 	array_push ($table->data, $data);
 }
 

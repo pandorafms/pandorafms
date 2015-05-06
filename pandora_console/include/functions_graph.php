@@ -1383,7 +1383,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color); 
+				$unit, $ttl, $homeurl, $background_color); 
 			break;
 		case CUSTOM_GRAPH_STACKED_LINE:
 			return stacked_line_graph($flash_charts, $graph_values,
@@ -1555,10 +1555,14 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	
-	$colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
+	//$colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
+	$colors[__('Critical')] = COL_CRITICAL;
+	$colors[__('Warning')] = COL_WARNING;
+	$colors[__('Normal')] = COL_NORMAL;
+	$colors[__('Unknown')] = COL_UNKNOWN;
 	
 	if ($show_not_init) {
-		$colors[] = COL_NOTINIT;
+		$colors[__('Not init')] = COL_NOTINIT;
 	}
 	
 	if (array_sum($data) == 0) {
@@ -2337,7 +2341,7 @@ function graph_events_validated($width = 300, $height = 200, $url = "", $meta = 
  * @param bool if the graph required is or not for metaconsole
  * @param bool if the graph required is or not for history table
  */
-function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = false, $history = false) {
+function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = false, $history = false, $noWaterMark = true) {
 	global $config;
 	global $graphic_type;
 	
@@ -2459,12 +2463,74 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	
 	// Sort the data
 	arsort($data);
+	if ($noWaterMark) {
+		$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
+	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+		__('Other'), '', $water_mark,
+		$config['fontpath'], $config['font_size'], 1, 'bottom');
+}
+
+function grafico_eventos_agente ($width = 300, $height = 200, $result = false, $meta = false, $history = false) {
+	global $config;
+	global $graphic_type;
+	
+	//It was urlencoded, so we urldecode it
+	//$url = html_entity_decode (rawurldecode ($url), ENT_QUOTES);
+	$data = array ();
+	$loop = 0;
+	
+	if ($result === false) {
+		$result = array();
+	}
+	
+	$system_events = 0;
+	$other_events = 0;
+	$total = array();
+	$i = 0;
+	
+	foreach ($result as $row) {
+		if ($meta) {
+			$count[] = $row["agent_name"];
+		}
+		else {
+			if ($row["id_agente"] == 0) {
+				$count[] = __('SYSTEM');
+			}
+			else
+				$count[] = agents_get_name ($row["id_agente"]) ;
+		}
+		
+	}
+	
+	$total = array_count_values($count);
+	
+	foreach ($total as $key => $total) {
+		if ($meta) {
+			$name = $key." (".$total.")";
+		}
+		else {
+			$name = $key." (".$total.")";
+		}
+		$data[$name] = $total;
+	}
+	
+	/*
+	if ($other_events > 0) {
+		$name = __('Other')." (".$other_events.")";
+		$data[$name] = $other_events;
+	}
+	*/
+	
+	// Sort the data
+	arsort($data);
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Other'), '', $water_mark,
+		__('Others'), '', $water_mark,
 		$config['fontpath'], $config['font_size'], 1, 'bottom');
 }
 
@@ -2473,7 +2539,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
  * 
  * @param string filter Filter for query in DB
  */
-function grafico_eventos_total($filter = "", $width = 320, $height = 200) {
+function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWaterMark = true) {
 	global $config;
 	global $graphic_type;
 	
@@ -2530,10 +2596,11 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200) {
 				break;
 		}
 	}
-	
-	$water_mark = array(
-		'file' => $config['homedir'] . "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("/images/logo_vertical_water.png", false, false, false));
+	if ($noWaterMark) {
+		$water_mark = array(
+			'file' => $config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("/images/logo_vertical_water.png", false, false, false));
+	}
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Other'), '', $water_mark,
@@ -2832,6 +2899,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	if ($uncompressed_module) {
 		$avg_only = 1;
 	}
+	$search_in_history_db = db_search_in_history_db($datelimit);
 	
 	// Get event data (contains alert data too)
 	if ($show_unknown == 1 || $show_events == 1 || $show_alerts == 1) {
@@ -3544,6 +3612,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	if ($uncompressed_module) {
 		$avg_only = 1;
 	}
+	$search_in_history_db = db_search_in_history_db($datelimit);
 	
 	// Get event data (contains alert data too)
 	if ($show_events == 1 || $show_alerts == 1) {

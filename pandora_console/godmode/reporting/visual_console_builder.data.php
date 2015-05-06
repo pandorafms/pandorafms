@@ -17,7 +17,26 @@ global $config;
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "RW")) {
+if (empty($idVisualConsole)) {
+	// ACL for the a new visual console
+	// if (!isset($vconsole_read))
+	// 	$vconsole_read = check_acl ($config['id_user'], 0, "VR");
+	if (!isset($vconsole_write))
+		$vconsole_write = check_acl ($config['id_user'], 0, "VW");
+	if (!isset($vconsole_manage))
+		$vconsole_manage = check_acl ($config['id_user'], 0, "VM");
+}
+else {
+	// ACL for the existing visual console
+	// if (!isset($vconsole_read))
+	// 	$vconsole_read = check_acl ($config['id_user'], $idGroup, "VR");
+	if (!isset($vconsole_write))
+		$vconsole_write = check_acl ($config['id_user'], $idGroup, "VW");
+	if (!isset($vconsole_manage))
+		$vconsole_manage = check_acl ($config['id_user'], $idGroup, "VM");
+}
+
+if (!$vconsole_write && !$vconsole_manage) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
@@ -65,7 +84,7 @@ switch ($action) {
 		break;
 }
 
-$table->width = '98%';
+$table->width = '100%';
 if (defined('METACONSOLE')) {
 	$table->width = '100%';
 	$table->class = 'databox data';
@@ -85,7 +104,7 @@ $groups = users_get_groups ($config['id_user'], 'RW');
 $own_info = get_user_info($config['id_user']);
 // Only display group "All" if user is administrator
 // or has "RW" privileges
-if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "RW"))
+if ($own_info['is_admin'] || $vconsole_write || $vconsole_manage)
 	$display_all_group = true;
 else
 	$display_all_group = false;

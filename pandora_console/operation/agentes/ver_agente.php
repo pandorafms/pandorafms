@@ -246,7 +246,12 @@ if (is_ajax ()) {
 			
 			foreach ($idAgents as $idA) {
 				if (empty($metaconsole_server_name)) {
-					$row = explode ('|', $idA);
+					if (strstr($idA, "|@_@|")) {
+							$row = explode ('|@_@|', $idA);
+					}
+					else {
+						$row = explode ('|', $idA);
+					}
 					$server_name = $row[0];
 					$id_agent = $row [1];
 				}
@@ -418,6 +423,9 @@ if (is_ajax ()) {
 				($filter != '' ? $filter : false), $indexed);
 		}
 		
+		if (empty($agent_modules))
+			$agent_modules = array();
+		
 		foreach ($agent_modules as $key => $module) {
 			$agent_modules[$key]['nombre'] = io_safe_output($module['nombre']);
 		}
@@ -433,28 +441,24 @@ if (is_ajax ()) {
 	
 	if ($get_agent_status_tooltip) {
 		$id_agent = (int) get_parameter ('id_agent');
-		$metaconsole = (bool)get_parameter('metaconsole', false);
-		$id_server = (int)get_parameter('id_server', 0); //Metaconsole
+		$metaconsole = (bool) get_parameter('metaconsole', false);
+		$id_server = (int) get_parameter('id_server', 0); //Metaconsole
 		
 		$server = null;
 		if ($metaconsole) {
-			$strict_user = (bool) db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
-			$server = db_get_row('tmetaconsole_setup', 'id', $id_server);
+			$filter = array();
+			if (!empty($id_agent))
+				$filter['id_tagente'] = $id_agent;
+			if (!empty($id_server))
+				$filter['id_tmetaconsole_setup'] = $id_server;
 			
-			if (metaconsole_connect($server) != NOERR) {
-				return;
-			}
-			
-			$agent = db_get_row ('tagente', 'id_agente', $id_agent);
-			
-			metaconsole_restore_db();
+			$agent = db_get_row_filter('tmetaconsole_agent', $filter);
 		}
 		else {
 			$agent = db_get_row ('tagente', 'id_agente', $id_agent);
 		}
 		
-		
-		
+		if ($agent === false) { return; }
 		
 		echo '<h3>'.$agent['nombre'].'</h3>';
 		echo '<strong>'.__('Main IP').':</strong> '.$agent['direccion'].'<br />';
@@ -469,130 +473,91 @@ if (is_ajax ()) {
 		
 		echo '<strong>'.__('Last contact').':</strong> '.human_time_comparation($agent['ultimo_contacto']).'<br />';
 		echo '<strong>'.__('Last remote contact').':</strong> '.human_time_comparation($agent['ultimo_contacto_remoto']).'<br />';
-			
-		# Fix : Only show agents with module with tags of user profile
-		$_user_tags = tags_get_user_tags($config['id_user'], 'RR');
 		
-		$_sql_post = '';
-		if (is_array($_user_tags) && !empty($_user_tags)) {
+		if (!$metaconsole) {
+			# Fix : Only show agents with module with tags of user profile
+			$_user_tags = tags_get_user_tags($config['id_user'], 'RR');
 			
-			$_tags = implode(',', array_keys($_user_tags));
-			
-			$_sql_post .= ' AND tagente_modulo.id_agente_modulo IN (SELECT a.id_agente_modulo FROM tagente_modulo a, ttag_module b WHERE a.id_agente_modulo=b.id_agente_modulo AND b.id_tag IN (' . $_tags . ')) ';
-			
-		}
-		
-		$sql = sprintf ('SELECT tagente_modulo.descripcion,
-				tagente_modulo.nombre
-			FROM tagente_estado, tagente_modulo 
-			WHERE tagente_modulo.id_agente = %d
-				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-				AND tagente_modulo.disabled = 0 
-				AND tagente_estado.estado = 1', $id_agent);
-		
-		$sql .= $_sql_post;
-		
-		if ($metaconsole) {
-			if (metaconsole_connect($server) != NOERR) {
-				return;
+			$_sql_post = '';
+			if (is_array($_user_tags) && !empty($_user_tags)) {
+				
+				$_tags = implode(',', array_keys($_user_tags));
+				
+				$_sql_post .= ' AND tagente_modulo.id_agente_modulo IN (SELECT a.id_agente_modulo FROM tagente_modulo a, ttag_module b WHERE a.id_agente_modulo=b.id_agente_modulo AND b.id_tag IN (' . $_tags . ')) ';
+				
 			}
+			
+			$sql = sprintf ('SELECT tagente_modulo.descripcion,
+					tagente_modulo.nombre
+				FROM tagente_estado, tagente_modulo 
+				WHERE tagente_modulo.id_agente = %d
+					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+					AND tagente_modulo.disabled = 0 
+					AND tagente_estado.estado = 1', $id_agent);
+			
+			$sql .= $_sql_post;
 			
 			$bad_modules = db_get_all_rows_sql ($sql);
 			
-			metaconsole_restore_db();
-		}
-		else {
-			$bad_modules = db_get_all_rows_sql ($sql);
-		}
-		
-		$sql = sprintf ('SELECT COUNT(*)
-			FROM tagente_modulo
-			WHERE id_agente = %d
-				AND disabled = 0', $id_agent);
-		if ($metaconsole) {
-			if (metaconsole_connect($server) != NOERR) {
-				return;
-			}
-			
+			$sql = sprintf ('SELECT COUNT(*)
+				FROM tagente_modulo
+				WHERE id_agente = %d
+					AND disabled = 0', $id_agent);
 			$total_modules = db_get_sql ($sql);
 			
-			metaconsole_restore_db();
-		}
-		else {
-			$total_modules = db_get_sql ($sql);
-		}
-		
-		if ($bad_modules === false)
-			$size_bad_modules = 0;
-		else
-			$size_bad_modules = sizeof ($bad_modules);
-		
-		// Modules down
-		if ($size_bad_modules > 0 && (!$metaconsole || !$strict_user)) {
-			echo '<strong>'.__('Monitors down').':</strong> '.$size_bad_modules.' / '.$total_modules;
-			echo '<ul>';
-			foreach ($bad_modules as $module) {
-				echo '<li>';
-				echo ui_print_truncate_text($module['nombre'], 'module_small');
-				echo '</li>';
-			}
-			echo '</ul>';
-		}
-		
-		// Alerts (if present)
-		$sql = sprintf ('SELECT COUNT(talert_template_modules.id)
-				FROM talert_template_modules, tagente_modulo, tagente
-				WHERE tagente.id_agente = %d
-					AND tagente.disabled = 0
-					AND tagente.id_agente = tagente_modulo.id_agente
-					AND tagente_modulo.disabled = 0
-					AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
-					AND talert_template_modules.times_fired > 0 ',
-				$id_agent);
-		if ($metaconsole) {
-			if (metaconsole_connect($server) != NOERR) {
-				return;
-			}
+			if ($bad_modules === false)
+				$size_bad_modules = 0;
+			else
+				$size_bad_modules = sizeof ($bad_modules);
 			
-			$alert_modules = db_get_sql ($sql);
-			
-			metaconsole_restore_db();
-		}
-		else {
-			$alert_modules = db_get_sql ($sql);
-		}
-		
-		if ($alert_modules > 0 && (!$metaconsole || !$strict_user)) {
-			$sql = sprintf ('SELECT tagente_modulo.nombre, talert_template_modules.last_fired
-				FROM talert_template_modules, tagente_modulo, tagente
-				WHERE tagente.id_agente = %d
-					AND tagente.disabled = 0
-					AND tagente.id_agente = tagente_modulo.id_agente
-					AND tagente_modulo.disabled = 0
-					AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
-					AND talert_template_modules.times_fired > 0 ',
-				$id_agent);
-			if ($metaconsole) {
-				if (metaconsole_connect($server) != NOERR) {
-					return;
+			// Modules down
+			if ($size_bad_modules > 0) {
+				echo '<strong>'.__('Monitors down').':</strong> '.$size_bad_modules.' / '.$total_modules;
+				echo '<ul>';
+				foreach ($bad_modules as $module) {
+					echo '<li>';
+					echo ui_print_truncate_text($module['nombre'], 'module_small');
+					echo '</li>';
 				}
+				echo '</ul>';
+			}
+			
+			// Alerts (if present)
+			$sql = sprintf ('SELECT COUNT(talert_template_modules.id)
+					FROM talert_template_modules, tagente_modulo, tagente
+					WHERE tagente.id_agente = %d
+						AND tagente.disabled = 0
+						AND tagente.id_agente = tagente_modulo.id_agente
+						AND tagente_modulo.disabled = 0
+						AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
+						AND talert_template_modules.times_fired > 0 ',
+					$id_agent);
+			
+			$alert_modules = (int) db_get_sql ($sql);
+			
+			if ($alert_modules > 0) {
+				$sql = sprintf ('SELECT tagente_modulo.nombre, talert_template_modules.last_fired
+					FROM talert_template_modules, tagente_modulo, tagente
+					WHERE tagente.id_agente = %d
+						AND tagente.disabled = 0
+						AND tagente.id_agente = tagente_modulo.id_agente
+						AND tagente_modulo.disabled = 0
+						AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
+						AND talert_template_modules.times_fired > 0 ',
+					$id_agent);
 				
 				$alerts = db_get_all_rows_sql ($sql);
 				
-				metaconsole_restore_db();
+				echo '<strong>'.__('Alerts fired').':</strong>';
+				echo "<ul>";
+				foreach ($alerts as $alert_item) {
+					echo '<li>';
+					echo ui_print_truncate_text($alert_item['nombre']).' -> ';
+					echo human_time_comparation($alert_item['last_fired']);
+					echo '</li>';
+				}
+				echo '</ul>';
 			}
-			else {
-				$alerts = db_get_all_rows_sql ($sql);
-			}
-			echo '<strong>'.__('Alerts fired').':</strong>';
-			echo "<ul>";
-			foreach ($alerts as $alert_item) {
-				echo '<li>';
-				echo ui_print_truncate_text($alert_item['nombre']).' -> ';
-				echo human_time_comparation($alert_item['last_fired']);
-				echo '</li>';
-			}
-			echo '</ul>';
 		}
 		
 		return;

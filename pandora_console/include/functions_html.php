@@ -816,8 +816,8 @@ function html_print_extended_select_for_cron ($hour = '*', $minute = '*', $mday 
 
 	# Print selectors
 	$table->id = 'cron';
-	$table->width = '98%';
-	$table->class = 'databox_color';
+	$table->width = '100%';
+	$table->class = 'databox data';
 	$table->head[0] = __('Hour');
 	$table->head[1] = __('Minute');
 	$table->head[2] = __('Month day');

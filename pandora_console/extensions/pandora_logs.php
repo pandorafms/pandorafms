@@ -80,7 +80,7 @@ function pandoralogs_extension_main () {
 	view_logfile ($logs_directory."/pandora_server.error");
 }
 
-extensions_add_godmode_menu_option (__('System logfiles'), 'PM','glog', null, "v1r1");
+extensions_add_godmode_menu_option (__('System logfiles'), 'PM','', null, "v1r1");
 extensions_add_godmode_function('pandoralogs_extension_main');
 
 ?>

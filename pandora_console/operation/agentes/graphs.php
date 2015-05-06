@@ -106,16 +106,12 @@ if (empty($modules)) {
 }
 
 $table = null;
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox filters';
 
-$table->style[0] = 'font-weight: bolder; text-align: right;';
+$table->style[0] = 'font-weight: bolder; text-align: left;';
 $table->style[1] = '';
-$table->style[2] = 'font-weight: bolder; text-align: right;';
-
-$table->valign[0] = 'top';
-$table->valign[1] = 'top';
-$table->valign[2] = 'top';
-$table->valign[3] = 'top';
+$table->style[2] = 'font-weight: bolder; text-align: left;';
 
 $table->rowspan[0][0] = 6;
 $table->rowspan[0][1] = 6;
@@ -159,7 +155,9 @@ $htmlForm = '<form method="post" action="index.php?sec=estado&sec2=operation/age
 $htmlForm .= html_print_table($table, true);
 $htmlForm .= html_print_input_hidden('filter', 1, true);
 $htmlForm .= '<div class="action-buttons" style="width: '.$table->width.'">';
-$htmlForm .= html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub upd"', true);
+$htmlForm .= html_print_button(__('Save as custom graph'), 'save_custom_graph',
+		false, 'save_custom_graph();', 'class="sub add" style="margin-top:10px"',true) . '&nbsp;&nbsp;' .
+		 html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub upd" style="margin-top:10px"', true);
 $htmlForm .= '</div>';
 $htmlForm .= '</form>';
 
@@ -174,7 +172,9 @@ else
 	$date = $utime;
 
 if ($combined) {
-	echo "<h4>" . __('Combined graph') . '</h4>';
+	
+	echo "<div style='width: 555px;'><strong style='font-size:9pt;'>" . __('Combined graph') . '</strong>';
+	echo "</div>";
 	
 	custom_graphs_print(0,
 		$height,
@@ -186,11 +186,6 @@ if ($combined) {
 		false,
 		'white',
 		$modules);
-	
-	echo "<div style='width: 555px; text-align: right;'>";
-	html_print_button(__('Save as custom graph'), 'save_custom_graph',
-		false, 'save_custom_graph();', 'class="sub save"');
-	echo "</div>";
 }
 else {
 	foreach ($modules as $id_module) {
@@ -220,7 +215,7 @@ echo "<div style='clear: both;'></div>";
 //Dialog to save the custom graph
 echo "<div id='dialog_save_custom_graph' style='display: none;'>";
 $table = null;
-$table->width = '98%';
+$table->width = '100%';
 $table->style[0] = 'font-weight: bolder; text-align: right;';
 $table->data[0][0] = __('Name custom graph');
 $table->data[0][1] =

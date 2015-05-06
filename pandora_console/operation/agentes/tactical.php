@@ -49,7 +49,7 @@ else {
 }
 
 // Header
-ui_print_page_header (__("Tactical view"), "images/op_monitoring.png", false, "", false, $updated_time);
+ui_print_page_header (__("Tactical view"), "", false, "", false, $updated_time);
 
 $all_data = group_get_groups_list($config['id_user'], $user_strict, 'AR', true, false, 'tactical');
 
@@ -159,7 +159,7 @@ if (!empty($all_data)) {
 }
 
 echo '<table border=0 style="width:100%;"><tr>';
-echo '<td style="vertical-align: top; min-width: 180px; width:25%; padding-right: 10px; vertical-align: top; padding-top: 0px;" id="leftcolumn">';
+echo '<td style="vertical-align: top; min-width: 180px; width:25%; padding-right: 20px; vertical-align: top; padding-top: 0px;" id="leftcolumn">';
 // ---------------------------------------------------------------------
 // The status horizontal bars (Global health, Monitor sanity...
 // ---------------------------------------------------------------------
@@ -172,23 +172,19 @@ $table->head = array ();
 $table->data = array ();
 $table->style = array ();
 
-$table->data[0][0] = reporting_get_stats_indicators($data, 120, 20);
+$table->head[0] = '<span>' . __('Report of State') . '</span>';
+$stats = reporting_get_stats_indicators($data, 120, 10,false);
+$status = '<table class="status_tactical">';
+foreach ( $stats as $stat ) {
+	$status .= '<tr><td><b>' . $stat['title'] . '</b>' . '</td><td>' . $stat['graph'] . "</td></tr>" ;
+}
+$status .= '</table>';
+$table->data[0][0] = $status;
 $table->rowclass[] = '';
-
-html_print_table ($table);
-unset($table);
 
 // ---------------------------------------------------------------------
 // Monitor checks
 // ---------------------------------------------------------------------
-$table->width = "100%";
-$table->class = "";
-$table->cellpadding = 4;
-$table->cellspacing = 4;
-$table->border = 0;
-$table->head = array ();
-$table->data = array ();
-$table->style = array ();
 
 $data_agents = array(
 		__('Critical') => $data['monitor_critical'],
@@ -198,32 +194,25 @@ $data_agents = array(
 		__('Not init') => $data['monitor_not_init']
 	);
 
-$table->data[0][0] = reporting_get_stats_alerts($data);
-$table->data[0][0] .= reporting_get_stats_modules_status($data, 180, 100, false, $data_agents);
-$table->data[0][0] .= reporting_get_stats_agents_monitors($data);
+$table->data[1][0] = reporting_get_stats_alerts($data);
+$table->data[2][0] .= reporting_get_stats_modules_status($data, 180, 100, false, $data_agents);
+$table->data[3][0] .= reporting_get_stats_agents_monitors($data);
 $table->rowclass[] = '';
 
-html_print_table($table);
+
 
 
 // ---------------------------------------------------------------------
 // Server performance 
 // ---------------------------------------------------------------------
 if ($is_admin) {
-	$table->width = "99%";
-	$table->class = "";
-	$table->cellpadding = 4;
-	$table->cellspacing = 4;
-	$table->border = 0;
-	$table->head = array ();
-	$table->data = array ();
-	$table->style = array ();
 	
-	$table->data[0][0] = reporting_get_stats_servers(false);
+	$table->data[4][0] = reporting_get_stats_servers(false);
 	$table->rowclass[] = '';
 	
-	html_print_table($table);
 }
+
+html_print_table($table);
 
 echo '</td>'; //Left column
 
@@ -240,7 +229,8 @@ if (!empty($acltags)) {
 	$tags_condition = tags_get_acl_tags_event_condition($acltags, false, $user_strict);
 
 	if (!empty($tags_condition)) {
-		events_print_event_table ("estado<>1 AND ($tags_condition)", 10, "100%");
+		$events = events_print_event_table ("estado<>1 AND ($tags_condition)", 10, "100%",true,false,true);
+		ui_toggle($events, __('Latest events'));
 	}
 }
 
@@ -250,8 +240,22 @@ if (!empty($acltags)) {
 if ($is_admin) {
 	$tiny = true;
 	require($config['homedir'] . '/godmode/servers/servers.build_table.php');
+	
 }
-
+$out .= '<table cellpadding=0 cellspacing=0 class="databox pies"  style="margin-top:15px;" width=100%><tr><td>';
+	$out .= '<fieldset class="databox tactical_set">
+			<legend>' . 
+				__('Event graph') . 
+			'</legend>' . 
+			grafico_eventos_total("", 250, 150, false) . '</fieldset>';
+	$out .="</td><td>";
+	$out .= '<fieldset class="databox tactical_set">
+			<legend>' . 
+				__('Event graph by agent') . 
+			'</legend>' . 
+			grafico_eventos_grupo(250, 150, "", false, false, false) . '</fieldset>';
+	$out .= '</td></tr></table>';
+echo $out;
 
 echo '</td>';
 echo '</tr></table>';

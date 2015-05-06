@@ -53,13 +53,15 @@ function ssh_gateway () {
 		}
 		
 		echo "<form method=post>";
-		echo "<table class=databox cellspacing=4 cellpadding=4>";
+		echo "<table class='databox filters' cellspacing=4 cellpadding=4 width=100%>";
 		echo "<td>".__("Host address")."<td><input type=text size=25 value='$HOST' name=host>";
-		echo "<tr>";
+		//echo "<tr>";
 		echo "<td>".__("User")."<td><input type=text size=25 value='$USER' name=user>" . ui_print_help_tip(__('For security reasons the following characters are not allowed: %s', '< > | ` $ ; &'), true);
+		echo "<td rowspan=2 vertical_aling='middle'>&nbsp;&nbsp;&nbsp;<input type=submit name=connect class='sub upd' style='margin-top:0px;' value=".__("Connect").">";
+		echo "<input type=hidden name=commit value=1></td>";
 		echo "<tr>";
 		echo "<td>".__("Port (use 0 for default)")."<td><input type=text size=5 value='$PORT' name=port>";	
-		echo "<tr><td>";
+		echo "<td>";
 		echo __("Connect mode")."<td><select name=mode>";
 		if ($MODE == "telnet") {
 			echo "<option>telnet";
@@ -71,8 +73,7 @@ function ssh_gateway () {
 		}
 		echo "</select>";
 		
-		echo "&nbsp;&nbsp;&nbsp;<input type=submit name=connect class='sub upd' value=".__("Connect").">";
-		echo "<td><input type=hidden name=commit value=1>";
+		
 		echo "</form></table>";
 	}
 	

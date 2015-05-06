@@ -511,8 +511,8 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 			$('#extra_'+graph_id).text(from+'-'+to);
 			var extra_height = parseInt($('#extra_'+graph_id).css('height').split('px')[0]);
 			var extra_width = parseInt($('#extra_'+graph_id).css('width').split('px')[0]);
-			$('#extra_'+graph_id).css('left',pos.pageX-(extra_width/2)+'px');
-			$('#extra_'+graph_id).css('top',plot.offset().top-extra_height-5+'px');
+			$('#extra_'+graph_id).css('left',pos.pageX-(extra_width/4)+'px');
+			//$('#extra_'+graph_id).css('top',plot.offset().top-extra_height-5+'px');
 			$('#extra_'+graph_id).show();
 		}
 	});
@@ -860,7 +860,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 					$('#timestamp_'+graph_id).text(labels_long[j]);
 				}
 				
-				$('#timestamp_'+graph_id).css('top', plot.offset().top-$('#timestamp_'+graph_id).height()*1.5);
+				//$('#timestamp_'+graph_id).css('top', plot.offset().top-$('#timestamp_'+graph_id).height()*1.5);
 				
 				var timesize = $('#timestamp_'+graph_id).width();
 				

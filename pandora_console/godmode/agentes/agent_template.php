@@ -164,7 +164,6 @@ if (isset ($_POST["template_id"])) {
 // TEMPLATE ASSIGMENT FORM
 // ==========================
 
-echo "<br>";
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente='.$id_agente.'">';
 
 $nps = db_get_all_fields_in_table ("tnetwork_profile", "name");
@@ -177,12 +176,12 @@ foreach ($nps as $row) {
 	$select[$row["id_np"]] = $row["name"];
 }
 
-echo '<table width="98%" cellpadding="2" cellspacing="2" class="databox" >';
+echo '<table width="100%" cellpadding="0" cellspacing="0" class="databox filters" >';
 echo "<tr><td class='datos' style='width:50%'>";
 html_print_select ($select, "template_id", '', '', '', 0, false, false, true, '', false, 'max-width: 200px !important');
 echo '</td>';
 echo '<td class="datos">';
-html_print_submit_button (__('Assign'), 'crt', false, 'class="sub next"');
+html_print_submit_button (__('Assign'), 'crt', false, 'class="sub next" style="margin-top:0px;"');
 echo '</td>';
 echo '</tr>';
 echo "</form>";
@@ -213,10 +212,10 @@ if ($result === false) {
 	$result = array ();
 }
 
-$table->width = '98%';
-$table->cellpadding = 4;
-$table->cellspacing = 4;
-$table->class = "databox";
+$table->width = '100%';
+$table->cellpadding = 0;
+$table->cellspacing = 0;
+$table->class = "databox data";
 $table->head = array ();
 $table->data = array ();
 $table->align = array ();
@@ -226,13 +225,16 @@ $table->head[1] = __('Type');
 $table->head[2] = __('Description');
 $table->head[3] = __('Action');
 
-$table->align[1] = "center";
-$table->align[3] = "center";
+$table->align[1] = "left";
+$table->align[3] = "left";
+$table->size[0] = "30%";
+$table->size[1] = "5%";
+$table->size[3] = "8%";
 
 foreach ($result as $row) {
 	$data = array ();
 	
-	$data[0] = '<span style="font-size: 7.2pt">' . $row["nombre"];
+	$data[0] = '<span>' . $row["nombre"];
 	if ($row["id_tipo_modulo"] > 0) {
 		$data[1] = html_print_image("images/" . modules_show_icon_type ($row["id_tipo_modulo"]), true, array("border" => "0"));
 	}
@@ -253,6 +255,6 @@ if (!empty ($table->data)) {
 	unset ($table);
 }
 else {
-	echo '<div class="nf">No modules</div>';
+	ui_print_empty_data ( __('No modules') ) ;
 }
 ?>

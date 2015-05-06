@@ -32,16 +32,16 @@ $search_string = io_safe_output(urldecode(trim(get_parameter ("search_string", "
 // Search string filter form
 //echo '<form id="create_module_type" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
 echo '<form id="create_module_type" method="post" action="'.$url.'">';
-echo '<table width="98%" cellpadding="2" cellspacing="2" class="databox" >';
-echo "<tr><td class='datos' style='width:20%'>";
+echo '<table width="100%" cellpadding="2" cellspacing="2" class="databox filters" >';
+echo "<tr><td class='datos' style='width:20%; font-weight: bold;'>";
 echo __('Search') . ' ' .
 	html_print_input_text ('search_string', $search_string, '', 15, 255, true);
 echo "</td>";
 echo "<td class='datos' style='width:20%'>";
 html_print_submit_button (__('Filter'), 'filter', false, 'class="sub search"');
 echo "</td>";
-echo "<td class='datos' style='width:20%'>";
-echo '</form>';
+echo "<td class='datos' style='width:20%'></td>";
+//echo '</form>';
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo
 
@@ -110,7 +110,9 @@ if (($policy_page) || (isset($agent))) {
 	
 	if ($show_creation) {
 		// Create module/type combo
-		echo '<form id="create_module_type" method="post" action="'.$url.'">';
+		//echo '<form id="create_module_type" method="post" action="'.$url.'">';
+		echo '<td class="datos" style="font-weight: bold;">';
+		echo __("Type");
 		html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false, '', false, 'max-width:300px;' );
 		html_print_input_hidden ('edit_module', 1);
 		echo '</td>';
@@ -118,15 +120,16 @@ if (($policy_page) || (isset($agent))) {
 		echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
 		echo '</td>';
 		echo '</tr>';
-		echo "</form>";
+		//echo "</form>";
 	}
 }
 
 echo "</table>";
+echo "</form>";
 
-echo '<div style="text-align: right; width: 98%;">';
+echo '<div style="text-align: right; width: 100%;padding-top:10px;padding-bottom:10px">';
 echo "<strong>";
-echo "<a style='color: #004A1B;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules in Pandora FMS Library")."</a>";
+echo "<a style='color: #373737;' target='_blank' href='http://pandorafms.com/Library/Library/'>".__("Get more modules in Pandora FMS Library")."</a>";
 echo "</strong>";
 echo '</div>';
 
@@ -476,7 +479,7 @@ $total_modules = db_get_value_sql($sql_total_modules);
 $total_modules = isset ($total_modules) ? $total_modules : 0;
 
 if ($modules === false) {
-	echo "<div class='nf'>" . __('No available data to show') . "</div>";
+	ui_print_empty_data ( __('No available data to show') );
 	return;
 }
 
@@ -494,7 +497,8 @@ if ($paginate_module) {
 	ui_pagination($total_modules, $url);
 }
 
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox data';
 $table->head = array ();
 $table->head[0] = __('Name') . ' ' .
 	'<a href="' . $url . '&sort_field=name&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
@@ -526,7 +530,7 @@ $table->rowstyle = array();
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->size = array ();
-$table->size[2] = '55px';
+$table->size[2] = '70px';
 $table->align = array ();
 $table->align[2] = 'left';
 $table->align[8] = 'left';

@@ -231,6 +231,9 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 			case 'suc':
 				$text_title = __('Success');
 				break;
+			case 'warning':
+				$text_title = __('Warning');
+				break;
 		}
 	}
 	
@@ -245,6 +248,9 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 				break;
 			case 'suc':
 				$icon_image = 'images/suc.png';
+				break;
+			case 'warning':
+				$icon_image = 'images/warning_big.png';
 				break;
 		}
 		
@@ -368,6 +374,21 @@ function ui_print_result_message ($result, $good = '', $bad = '', $attributes = 
 	else {
 		return ui_print_success_message ($good, $attributes, $return, $tag);
 	}
+}
+
+/** 
+ * Prints an warning message.
+ * 
+ * @param mixed The string warning message or array ('title', 'message', 'icon', 'no_close') to be displayed
+ * @param string Any other attributes to be set for the tag.
+ * @param bool Whether to output the string or return it
+ * @param string What tag to use (you could specify something else than
+ * h3 like div or h2)
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function ui_print_warning_message ($message, $attributes = '', $return = false, $tag = 'h3') {
+	return ui_print_message ($message, 'warning', $attributes, $return, $tag);
 }
 
 /**
@@ -855,13 +876,13 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	$actions = alerts_get_alert_agent_module_actions ($alert['id'], false);
 	
 	if (!empty($actions)) {
-		$actionText = '<div style="margin-left: 10px;"><ul class="action_list">';
+		$actionText = '<div><ul class="action_list">';
 		foreach ($actions as $action) {
-			$actionText .= '<div><span class="action_name"><li>' . $action['name'];
+			$actionText .= '<div style="margin-bottom: 5px;" ><span class="action_name"><li>' . $action['name'];
 			if ($action["fires_min"] != $action["fires_max"]){
 				$actionText .=  " (".$action["fires_min"] . " / ". $action["fires_max"] . ")";
 			}
-			$actionText .= '</li></span><br /></div>';
+			$actionText .= '</li></span></div>';
 		}
 		$actionText .= '</ul></div>';
 	}
@@ -931,7 +952,7 @@ function ui_print_string_substr ($string, $cutoff = 16, $return = false, $fontsi
 	$font_size_mod = "";
 	
 	if ($fontsize > 0) {
-		$font_size_mod = "style='font-size: ".$fontsize."px'";
+		$font_size_mod = "style='font-size: ".$fontsize."pt'";
 	}
 	$string = '<span '.$font_size_mod.' title="'.io_safe_input($string2).'">'.mb_substr ($string2, 0, $cutoff, "UTF-8").$string3.'</span>';
 	
@@ -2095,6 +2116,9 @@ function ui_toggle($code, $name, $title = '', $hidden_default = true, $return = 
 	$output .= '<a href="javascript:" id="tgl_ctrl_'.$uniqid.'">' . html_print_image ($original, true, array ("title" => $title, "id" => "image_".$uniqid)) . '&nbsp;&nbsp;<b>'.$name.'</b></a>';
 	$output .= '<br />';
 	
+	if (!defined("METACONSOLE"))
+		$output .= '<br />';
+	
 	// Code into a div
 	$output .= "<div id='tgl_div_".$uniqid."' style='".$style."'>\n";
 	$output .= $code;
@@ -2375,12 +2399,12 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	}
 	
 	if (($icon == "") && ($godmode == false)) {
-		$icon = "images/op_monitoring.png";
+		$icon = "";
 	}
 	
 	if ($godmode == true) {
-		$type = "nomn";
-		$type2 = "menu_tab_frame";
+		$type = "view";
+		$type2 = "menu_tab_frame_view";
 		$separator_class = "separator";
 	} 
 	else {
@@ -2393,11 +2417,11 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	$buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
 	
 	
-	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . html_print_image($icon, true, array("style" => "vertical-align:middle;", "class" => "bottom", "border" => "0", "alt" => "")) . '&nbsp; ';
-	$buffer .= '<span style="display: inline-block; vertical-align: top; margin-top: 2px;">' . 
+	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . '&nbsp; ';
+	$buffer .= '<span style="">' . 
 		ui_print_truncate_text($title, 38);
 	if ($help != "")
-		$buffer .= "<div class='head_help' style='float: right; margin-top: -3px !important; margin-left: 2px !important;'>" .
+		$buffer .= "<div class='head_help' style='float: right; margin-top: -2px !important; margin-left: 2px !important;'>" .
 			ui_print_help_icon ($help, true, '', 'images/help_w.png') . "</div>";
 	$buffer .= '</span></li></ul></div>';
 	
@@ -2434,7 +2458,10 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 					
 					$buffer .= '<li class="' . $class . '">';
 					$buffer .= $option['text'];
+					if (isset($option['sub_menu']))
+						$buffer .= $option['sub_menu'];
 					$buffer .= '</li>';
+					
 				}
 				else {
 					$buffer .= '<li class="nomn">';
@@ -3151,7 +3178,6 @@ function ui_print_agent_autocomplete_input($parameters) {
 					
 					jQuery.ajax ({
 						data: data_params,
-						async: false,
 						type: "POST",
 						url: action="' . $javascript_ajax_page . '",
 						timeout: 10000,
@@ -3365,15 +3391,12 @@ function ui_print_agent_autocomplete_input($parameters) {
 			
 			jQuery.ajax ({
 				data: data_params,
-				async: false,
 				type: "POST",
 				url: action="' . $javascript_ajax_page . '",
 				timeout: 10000,
 				dataType: "json",
 				success: function (data) {
 						if (data.length == 0) {
-							alert("' . __('Does not exist agent with this name.') . '");
-							
 							//Set icon
 							$("#' . $input_id . '")
 								.css("background",

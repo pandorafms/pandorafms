@@ -158,7 +158,7 @@ function dbmgr_extension_main () {
 }
 
 /* This adds a option in the operation menu */
-extensions_add_godmode_menu_option (__('DB interface'), 'PM','gdbman',"dbmanager/icon.png","v1r1");
+extensions_add_godmode_menu_option (__('DB interface'), 'PM','gextensions',"dbmanager/icon.png","v1r1", 'gdbman');
 
 /* This sets the function to be called when the extension is selected in the operation menu */
 extensions_add_godmode_function ('dbmgr_extension_main');

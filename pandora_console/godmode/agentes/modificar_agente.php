@@ -125,7 +125,7 @@ if ($disable_agent) {
 		__('Successfully disabled'), __('Could not be disabled'));
 }
 
-echo "<table cellpadding='4' cellspacing='4' class='databox' width='98%' style='font-weight: bold; margin-bottom: 10px;'>
+echo "<table cellpadding='4' cellspacing='4' class='databox filters' width='100%' style='font-weight: bold; margin-bottom: 10px;'>
 	<tr>";
 echo "<form method='post'
 	action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'>";
@@ -164,14 +164,6 @@ echo "<input name='srcbutton' type='submit' class='sub search' value='".__('Sear
 echo "</form>";
 echo "<td>";
 echo "</tr></table>";
-
-echo '<div style="text-align: right; float: right;">';
-echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
-	html_print_input_hidden ('new_agent', 1);
-	html_print_submit_button (__('Create agent'), 'crt-1', false, 'class="sub next"');
-echo "</form>";
-echo "</div>";
-
 
 $order_collation = "";
 switch ($config["dbtype"]) {
@@ -422,7 +414,7 @@ ui_pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modifi
 
 if ($agents !== false) {
 	
-	echo "<table cellpadding='4' id='agent_list' cellspacing='4' width='98%' class='databox'>";
+	echo "<table cellpadding='4' id='agent_list' cellspacing='4' width='100%' class='databox data'>";
 	echo "<th>".__('Agent name') . ' ' .
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=up&disabled=$disabled">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
@@ -572,7 +564,7 @@ if ($agents !== false) {
 	}
 	echo "</table>";
 	ui_pagination ($total_agents, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group&search=$search&sort_field=$sortField&sort=$sort&disabled=$disabled", $offset);
-	echo "<table width='98%'><tr><td align='right'>";
+	echo "<table width='100%'><tr><td align='right'>";
 }
 else {
 	echo "<div class='nf'>" . __('There are no defined agents') . "</div>";
@@ -581,7 +573,7 @@ else {
 
 if (check_acl ($config["id_user"], 0, "AW")) {
 	// Create agent button
-	echo '<div style="text-align: right; float: right;">';
+	echo '<div style="text-align: right;">';
 	echo '<form method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
 	html_print_input_hidden ('new_agent', 1);
 	html_print_submit_button (__('Create agent'), 'crt-2', false,

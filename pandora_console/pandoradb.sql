@@ -782,23 +782,29 @@ CREATE TABLE IF NOT EXISTS `torigen` (
 CREATE TABLE IF NOT EXISTS `tperfil` (
 	`id_perfil` int(10) unsigned NOT NULL auto_increment,
 	`name` TEXT NOT NULL,
-	`incident_edit` tinyint(3) NOT NULL default '0',
-	`incident_view` tinyint(3) NOT NULL default '0',
-	`incident_management` tinyint(3) NOT NULL default '0',
-	`agent_view` tinyint(3) NOT NULL default '0',
-	`agent_edit` tinyint(3) NOT NULL default '0',
-	`alert_edit` tinyint(3) NOT NULL default '0',
-	`user_management` tinyint(3) NOT NULL default '0',
-	`db_management` tinyint(3) NOT NULL default '0',
-	`alert_management` tinyint(3) NOT NULL default '0',
-	`pandora_management` tinyint(3) NOT NULL default '0',
-	`report_view` tinyint(3) NOT NULL default '0',
-	`report_edit` tinyint(3) NOT NULL default '0',
-	`report_management` tinyint(3) NOT NULL default '0',
-	`event_view` tinyint(3) NOT NULL default '0',
-	`event_edit` tinyint(3) NOT NULL default '0',
-	`event_management` tinyint(3) NOT NULL default '0',
-	`agent_disable` tinyint(3) NOT NULL default '0',
+	`incident_edit` tinyint(1) NOT NULL DEFAULT 0,
+	`incident_view` tinyint(1) NOT NULL DEFAULT 0,
+	`incident_management` tinyint(1) NOT NULL DEFAULT 0,
+	`agent_view` tinyint(1) NOT NULL DEFAULT 0,
+	`agent_edit` tinyint(1) NOT NULL DEFAULT 0,
+	`alert_edit` tinyint(1) NOT NULL DEFAULT 0,
+	`user_management` tinyint(1) NOT NULL DEFAULT 0,
+	`db_management` tinyint(1) NOT NULL DEFAULT 0,
+	`alert_management` tinyint(1) NOT NULL DEFAULT 0,
+	`pandora_management` tinyint(1) NOT NULL DEFAULT 0,
+	`report_view` tinyint(1) NOT NULL DEFAULT 0,
+	`report_edit` tinyint(1) NOT NULL DEFAULT 0,
+	`report_management` tinyint(1) NOT NULL DEFAULT 0,
+	`event_view` tinyint(1) NOT NULL DEFAULT 0,
+	`event_edit` tinyint(1) NOT NULL DEFAULT 0,
+	`event_management` tinyint(1) NOT NULL DEFAULT 0,
+	`agent_disable` tinyint(1) NOT NULL DEFAULT 0,
+	`map_view` tinyint(1) NOT NULL DEFAULT 0,
+	`map_edit` tinyint(1) NOT NULL DEFAULT 0,
+	`map_management` tinyint(1) NOT NULL DEFAULT 0,
+	`vconsole_view` tinyint(1) NOT NULL DEFAULT 0,
+	`vconsole_edit` tinyint(1) NOT NULL DEFAULT 0,
+	`vconsole_management` tinyint(1) NOT NULL DEFAULT 0,
 	PRIMARY KEY  (`id_perfil`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1790,3 +1796,13 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp_action` (
 	`al_field10` text NOT NULL,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tsessions_php`
+-- ---------------------------------------------------------------------
+CREATE TABLE tsessions_php (
+	`id_session` CHAR(52) NOT NULL,
+	`last_active` INTEGER NOT NULL,
+	`data` TEXT,
+	PRIMARY KEY (`id_session`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;

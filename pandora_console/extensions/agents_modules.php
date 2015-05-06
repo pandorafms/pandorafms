@@ -74,12 +74,12 @@ function mainAgentsModules() {
 	$filter_module_groups = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => $offset, 'hor_offset' => $offset,'group_id' => $group_id, 'modulegroup' => $modulegroup)).'">';
 	$filter_module_groups .= '<b>'.__('Module group').'</b>';
 	$filter_module_groups .= html_print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
-		'modulegroup', $modulegroup, 'this.form.submit()',__('All'), 0, true, false, true, false, 'width: 100px; margin-right: 10px; margin-top: 5px;');
+		'modulegroup', $modulegroup, 'this.form.submit()',__('All'), 0, true, false, true, false, 'width: auto;');
 	$filter_module_groups .= '</form>';
 	
 	$filter_groups = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => $offset, 'hor_offset' => $offset,'group_id' => $group_id, 'modulegroup' => $modulegroup)).'">';
 	$filter_groups .= '<b>'.__('Group').'</b>';
-	$filter_groups .= html_print_select_groups(false, "AR", true, 'group_id', $group_id, 'this.form.submit()', '', '', true, false, true, '', false , 'width: 100px; margin-right: 10px;; margin-top: 5px;');
+	$filter_groups .= html_print_select_groups(false, "AR", true, 'group_id', $group_id, 'this.form.submit()', '', '', true, false, true, '', false , 'width: auto;');
 	$filter_groups .= '</form>';
 	
 	$comborefr = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => $offset, 'hor_offset' => $offset,'group_id' => $group_id, 'modulegroup' => $modulegroup)).'">';
@@ -116,10 +116,19 @@ function mainAgentsModules() {
 	}
 	
 	// Header
-	ui_print_page_header (__("Agents/Modules"), "images/module_mc.png", false, "", false, $onheader);
+	ui_print_page_header (__("Agents/Modules"), "images/module_mc.png", false, "", false, $updated_time);
 	
 	// Old style table, we need a lot of special formatting,don't use table function
 	// Prepare old-style table
+	echo '<table class="databox filters" cellpadding="0" cellspacing="0" border="0" style="width:100%;">';
+	echo "<tr>";
+	echo "<td>" . $filter_module_groups . "</td>";
+	echo "<td>" . $filter_groups  . "</td>";
+	if ($config['pure'] == 1) 
+		echo "<td>" . $comborefr  . "</td>";
+	echo "<td> <strong>" . __("Full screen") . "</strong>" . $fullscreen['text'] . "</td>";
+	echo "</tr>";
+	echo "</table>";
 	
 	$agents = '';
 	$agents = agents_get_group_agents($group_id,array('disabled' => 0));
@@ -138,7 +147,7 @@ function mainAgentsModules() {
 		}
 		$count++;
 	}
-
+	$total_pagination = count($agents);
 	$all_modules = agents_get_modules($agents, false, $filter_module_group, true, false);
 	
 	$modules_by_name = array();
@@ -172,15 +181,15 @@ function mainAgentsModules() {
 	$nagents = count($agents);
 	
 	if ($all_modules == false || $agents == false) {
-		echo "<div class='nf'>".__('There are no agents with modules')."</div>";
+		ui_print_info_message ( array('no_close'=>true, 'message'=> __('There are no agents with modules') ) );
 		return;
 	}
 	
-	echo '<table cellpadding="4" cellspacing="4" border="0" style="width:98%;" class="agents_modules_table">';
+	echo '<table cellpadding="4" cellspacing="4" border="0" style="width:100%;" class="agents_modules_table">';
 	
 	echo "<tr>";
 	
-	echo "<th width='140px' height='25px' valign='bottom' style='text-align: right !important;'>" . __("Agents") . " / " . __("Modules") . "</th>";
+	echo "<th width='140px' style='text-align: right !important;'>" . __("Agents") . " / " . __("Modules") . "</th>";
 	
 	if ($hor_offset > 0) {
 		$new_hor_offset = $hor_offset-$block;
@@ -242,13 +251,12 @@ function mainAgentsModules() {
 	
 	echo "</tr>";
 	
-	$filter_agents = array('offset' => (int) $offset,
-		'limit' => (int) $config['block_size'], 'disabled' => 0);
+	$filter_agents = array('offset' => (int) $offset, 'disabled' => 0);
 	if ($group_id > 0) {
 		$filter_agents['id_grupo'] = $group_id;
 	}
 	// Prepare pagination
-	ui_pagination ((int)count(agents_get_agents ($filter_agents)));
+	ui_pagination ($total_pagination);
 	
 	foreach ($agents as $agent) {
 		// Get stats for this group
@@ -392,7 +400,7 @@ function mainAgentsModules() {
 		";
 }
 
-extensions_add_operation_menu_option(__("Agents/Modules view"), 'estado', 'agents_modules/icon_menu.png', "v1r1");
+extensions_add_operation_menu_option(__("Agents/Modules view"), 'estado', 'agents_modules/icon_menu.png', "v1r1","view");
 extensions_add_main_function('mainAgentsModules');
 
 ?>

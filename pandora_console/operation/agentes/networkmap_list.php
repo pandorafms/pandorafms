@@ -19,7 +19,12 @@ global $config;
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "AR")) {
+// ACL for the general permission
+$networkmaps_read = check_acl ($config['id_user'], 0, "MR");
+$networkmaps_write = check_acl ($config['id_user'], 0, "MW");
+$networkmaps_manage = check_acl ($config['id_user'], 0, "MM");
+
+if (!$networkmaps_read && !$networkmaps_write && !$networkmaps_manage) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Networkmap builder");
 	if (is_ajax()) {
@@ -38,35 +43,34 @@ if (is_ajax()) {
 
 	$delete_networkmaps = (bool) get_parameter('delete_networkmaps');
 	if ($delete_networkmaps) {
-		if ( check_acl ($config['id_user'], 0, "RW") ||  check_acl ($config['id_user'], 0, "RM") ) {
-			if (check_acl ($config['id_user'], 0, "RM")) {
-					$result = false;
-					$results = array();
-					$ids_networkmap = (array) get_parameter ('ids_networkmap');
-					foreach ($ids_networkmap as $id) {
-						$results[$id] = (bool) networkmap_delete_networkmap($id);
-					}
-					echo json_encode($results);
-					return;
-				}
-			else{
-				if (check_acl ($config['id_user'], 0, "RW")) {
-					$result = false;
-					$results = array();
-					$ids_networkmap = (array) get_parameter ('ids_networkmap');
-					foreach ($ids_networkmap as $id) {
-						$results[$id] = (bool) networkmap_delete_user_networkmap($config['id_user'], $id);
-					}
-					echo json_encode($results);
-					return;
-				}
+		
+		$results = array();
+		$ids_networkmap = (array) get_parameter('ids_networkmap');
+		
+		foreach ($ids_networkmap as $id) {
+			$store_group = (int) db_get_value('store_group', 'tnetwork_map', 'id_networkmap',$id_networkmap);
+			
+			// ACL
+			// $networkmap_read = check_acl ($config['id_user'], $store_group, "MR");
+			$networkmap_write = check_acl ($config['id_user'], $store_group, "MW");
+			$networkmap_manage = check_acl ($config['id_user'], $store_group, "MM");
+			
+			if ($networkmap_manage) {
+				$results[$id] = (bool) networkmap_delete_networkmap($id);
 			}
-		}else{
-		db_pandora_audit("ACL Violation",
-				"Trying to access Networkmap deletion");
-			echo json_encode(-1);
-			return;
+			else if ($networkmap_write) {
+				$results[$id] = (bool) networkmap_delete_user_networkmap($config['id_user'], $id);
+			}
 		}
+		
+		// None permission
+		if (!empty($ids_networkmap) && empty($results)) {
+			db_pandora_audit("ACL Violation", "Trying to access Networkmap deletion");
+			$results = -1;
+		}
+		
+		echo json_encode($results);
+		return;
 	}
 	return;
 }
@@ -80,12 +84,16 @@ $id_networkmap = get_parameter ('id_networkmap', 0);
 $delete_networkmap = get_parameter ('delete_networkmap', 0);
 
 if ($delete_networkmap) {
-	if (is_user_admin ($config['id_user'])){
+
+	// ACL
+	// $networkmap_read = check_acl ($config['id_user'], $store_group, "MR");
+	$networkmap_write = check_acl ($config['id_user'], $store_group, "MW");
+	$networkmap_manage = check_acl ($config['id_user'], $store_group, "MM");
+	
+	if ($networkmap_manage || is_user_admin ($config['id_user'])) {
 		$result = networkmap_delete_networkmap($id_networkmap);
 	}
-	elseif (check_acl ($config['id_user'], 0, "RM")) {
-		$result = networkmap_delete_networkmap($id_networkmap);
-	}elseif (check_acl ($config['id_user'], 0, "RW")) {
+	else if ($networkmap_write) {
 		$result = networkmap_delete_user_networkmap($config['id_user'], $id_networkmap);
 	}
 	$message = ui_print_result_message ($result,
@@ -102,9 +110,9 @@ $type_search = get_parameter('type_filter', '0');
 
 ?>
 <form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/networkmap_list">
-	<table style='width: 100%' class='databox'>
+	<table style='width: 100%' class='databox filters'>
 		<tr>
-			<td class='datos' >
+			<td class='datos' style="font-weight:bold;">
 				<?php echo __('Group'); ?>
 			</td>
 			<td class='datos'>
@@ -113,7 +121,7 @@ $type_search = get_parameter('type_filter', '0');
 					true, 'group_search', $group_search);
 				?>
 			</td>
-			<td class='datos'>
+			<td class='datos' style="font-weight:bold;">
 				<?php echo __('Type'); ?>
 			</td>
 			<td class='datos'>
@@ -136,22 +144,22 @@ $type_search = get_parameter('type_filter', '0');
 
 // Display table
 $table = new StdClass();
-$table->width = "98%";
+$table->width = "100%";
+$table->class = "databox data";
 
 $table->style = array();
 $table->style[0] = '';
-$table->style[1] = 'text-align: center;';
-$table->style[2] = 'text-align: center;';
-$table->style[3] = 'text-align: center;';
-$table->style[4] = 'text-align: center;';
-$table->style[5] = 'text-align: center;';
+$table->style[1] = 'text-align: left;';
+$table->style[2] = 'text-align: left;';
+$table->style[3] = 'text-align: left;';
+$table->style[4] = 'text-align: left;';
 
 $table->size = array();
 $table->size[0] = '80%';
 $table->size[1] = '60px';
 $table->size[2] = '30px';
 
-if (check_acl ($config['id_user'], 0, "RW") || check_acl ($config['id_user'], 0, "RM")) {
+if ($networkmaps_write || $networkmaps_manage) {
 	$table->size[3] = '30px';
 	$table->size[4] = '30px';
 }
@@ -160,22 +168,21 @@ $table->head = array();
 $table->head[0] = __('Name');
 $table->head[1] = __('Type');
 $table->head[2] = __('Group');
-if (check_acl ($config['id_user'], 0, "RW") || check_acl ($config['id_user'], 0, "RM")) {
-	$table->head[3] = __('Edit');
-	$table->head[4] = __('Delete');
+if ($networkmaps_write || $networkmaps_manage) {
+	$table->head[3] = __('Delete');
 	// Checkbox to select all the another checkboxes
-	$table->head[5] = html_print_checkbox('check_delete_all', 0, false, true);
+	$table->head[4] = html_print_checkbox('check_delete_all', 0, false, true);
 }
 $id_groups = array_keys(users_get_groups());
 
 // Create filter
 $where = array();
-$where['id_group'] = $id_groups;
+$where['store_group'] = $id_groups;
 // Order by type field
 $where['order'] = 'type';
 
 if (!empty($group_search))
-	$where['id_group'] = $group_search;
+	$where['store_group'] = $group_search;
 
 if ($type_search != '0')
 	$where['type'] = $type_search;
@@ -183,38 +190,41 @@ if ($type_search != '0')
 //Check for maps only visible for this user
 $user_info = users_get_user_by_id($config['id_user']);
 
-//If the user is not admin only user map are shown.
-//if (!$user_info['is_admin']) {
-//	$where['id_user'] = $config['id_user'];
-//}
-
 $network_maps = db_get_all_rows_filter('tnetwork_map', $where);
 
 if ($network_maps === false) {
-	echo "<div class='warn'>" . __('Not networkmap defined.') .
-		"</div>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=> __('Not networkmap defined.') ) );
 }
 else {
 	$table->data = array();
 	foreach ($network_maps as $network_map) {
+		// ACL
+		$networkmap_read = check_acl ($config['id_user'], $store_group, "MR");
+		$networkmap_write = check_acl ($config['id_user'], $store_group, "MW");
+		$networkmap_manage = check_acl ($config['id_user'], $store_group, "MM");
+		
+		// ACL
+		if (!$networkmap_read && !$networkmap_write && !$networkmap_manage)
+			continue;
+		
 		// If enterprise not loaded then skip this code
-		if ($network_map['type'] == 'policies' and (!defined('PANDORA_ENTERPRISE')))
+		if ($network_map['type'] == 'policies' && !defined('PANDORA_ENTERPRISE'))
 			continue;
 	
-		if (($network_map['type'] == 'radial_dynamic' || $network_map['type'] == 'policies') && ($strict_user)) {
+		if (($network_map['type'] == 'radial_dynamic' || $network_map['type'] == 'policies') && $strict_user) {
 			continue;
 		}
-			
-		$data = array();
-		$data[0] = '<b><a href="index.php?sec=network&sec2=operation/agentes/networkmap&tab=view&id_networkmap=' . $network_map['id_networkmap'] . '">' . $network_map['name'] . '</a></b>';
-		$data[1] = $network_map['type'];
 		
-		$data[2] = ui_print_group_icon ($network_map['id_group'], true);
-		if (check_acl ($config['id_user'], 0, "RW") || check_acl ($config['id_user'], 0, "RM")) {
-			$data[3] = '<a href="index.php?sec=network&sec2=operation/agentes/networkmap&tab=edit&edit_networkmap=1&id_networkmap=' . $network_map['id_networkmap'] . '" alt="' . __('Config') . '">' . html_print_image("images/config.png", true) . '</a>';
-			$data[4] = '<a href="index.php?sec=network&sec2=operation/agentes/networkmap_list&delete_networkmap=1&id_networkmap=' . $network_map['id_networkmap'] . '" alt="' . __('Delete') . '" onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' . html_print_image('images/cross.png', true) . '</a>';
+		$data = array();
+		$data[0] = '<b><a href="index.php?sec=network&sec2=operation/agentes/networkmap&tab=' . $network_map['type']
+			. '&id_networkmap=' . $network_map['id_networkmap'] . '">' . $network_map['name'] . '</a></b>';
+		$data[1] = $network_map['type'];
+		$data[2] = ui_print_group_icon ($network_map['store_group'], true);
+		
+		if ($networkmap_write || $networkmap_manage) {
+			$data[3] = '<a href="index.php?sec=network&sec2=operation/agentes/networkmap_list&delete_networkmap=1&id_networkmap=' . $network_map['id_networkmap'] . '" alt="' . __('Delete') . '" onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' . html_print_image('images/cross.png', true) . '</a>';
 			// The value of the checkbox will be the networkmap id to recover it in js to perform the massive deletion
-			$data[5] = html_print_checkbox('check_delete', $network_map['id_networkmap'], false, true);
+			$data[4] = html_print_checkbox('check_delete', $network_map['id_networkmap'], false, true);
 		}
 		
 		$table->data[] = $data;
@@ -224,12 +234,14 @@ else {
 }
 
 // Create networkmap form
-if (check_acl ($config['id_user'], 0, "RW") || check_acl ($config['id_user'], 0, "RM")) {
+if ($networkmaps_write || $networkmaps_manage) {
 	$table_manage = new StdClass();
 	$table_manage->width = "100%";
+	$table_manage->class = "databox filters";
 	$table_manage->style = array();
 	$table_manage->style[0] = 'font-weight: bold';
-	$table_manage->style[3] = 'text-align: right';
+	$table_manage->style[2] = 'font-weight: bold';
+	$table_manage->style[4] = 'text-align: right';
 	$table_manage->size = array();
 	$table_manage->head = array();
 	$table_manage->data = array();
@@ -246,6 +258,7 @@ if (check_acl ($config['id_user'], 0, "RW") || check_acl ($config['id_user'], 0,
 	$row = array();
 	$row[] = __('Action');
 	$row[] = html_print_select($actions, 'action', 'create', '', '', 0, true, false, false);
+	$row[] = __('Type');
 	$row[] = html_print_select($networkmap_types, 'tab', 'topology', '', '', 0, true)
 		. html_print_select($delete_options, 'delete_options', 'selected', '', '', 0, true, false, false);
 	$row[] = html_print_submit_button (__('Execute'), 'crt', false, 'class="sub next"', true)

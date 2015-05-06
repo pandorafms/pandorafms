@@ -18,13 +18,13 @@ if ((! file_exists("include/config.php")) || (! is_readable("include/config.php"
 	exit;
 }
 
+// Real start
+session_start();
+
 require_once ('include/config.php');
 require_once ('include/functions.php');
 require_once ('include/functions_db.php');
 require_once ('include/auth/mysql.php');
-
-// Real start
-session_start ();
 
 // Hash login process
 if (isset ($_GET["loginhash"])) {

@@ -101,18 +101,27 @@ sub pandora_startup () {
 	# Generate the encryption key after reading the passphrase.
 	$Config{"encryption_key"} = enterprise_hook('pandora_get_encryption_key', [\%Config, $Config{"encryption_passphrase"}]);
 
+	# Update the agent cache.
+	enterprise_hook('update_agent_cache', [\%Config, $DBH]) if ($Config{'metaconsole_agent_cache'} == 1);
+
 	pandora_audit (\%Config, 'Pandora FMS Server Daemon starting', 'SYSTEM', 'System', $DBH);
 	
 	# Load servers
-	pandora_reset_server (\%Config, $DBH);
-	push (@Servers, new PandoraFMS::DataServer (\%Config, $DBH));
-	push (@Servers, new PandoraFMS::NetworkServer (\%Config, $DBH));
-	push (@Servers, new PandoraFMS::ReconServer (\%Config, $DBH));
-	push (@Servers, new PandoraFMS::SNMPServer (\%Config, $DBH));
-	push (@Servers, new PandoraFMS::WMIServer (\%Config, $DBH));
-	push (@Servers, new PandoraFMS::PluginServer (\%Config, $DBH));
-	push (@Servers, new PandoraFMS::PredictionServer (\%Config, $DBH));
+	if (!defined($Config{"license_type"}) || $Config{"license_type"} != METACONSOLE_LICENSE) {
+		pandora_reset_server (\%Config, $DBH);
+		push (@Servers, new PandoraFMS::DataServer (\%Config, $DBH));
+		push (@Servers, new PandoraFMS::NetworkServer (\%Config, $DBH));
+		push (@Servers, new PandoraFMS::ReconServer (\%Config, $DBH));
+		push (@Servers, new PandoraFMS::SNMPServer (\%Config, $DBH));
+		push (@Servers, new PandoraFMS::WMIServer (\%Config, $DBH));
+		push (@Servers, new PandoraFMS::PluginServer (\%Config, $DBH));
+		push (@Servers, new PandoraFMS::PredictionServer (\%Config, $DBH));
+	} else {
+		# Metaconsole service modules are run by the prediction server
+		push (@Servers, new PandoraFMS::PredictionServer (\%Config, $DBH));
+	}
 	
+	# There are enterprise metaconsole servers!
 	enterprise_hook('load_enterprise_servers', [\@Servers, \%Config, $DBH]);
 	
 	# Start the netflow daemon if necessary
@@ -291,7 +300,7 @@ sub pandora_server_tasks ($) {
 						logger ($pa_config, "Updating module status and fired alert counts for agent " . $agent->{'nombre'}, 10);
 						
 						if ($agent->{'update_module_count'} == 1) {
-							pandora_update_agent_module_count ($dbh, $agent->{'id_agente'});
+							pandora_update_agent_module_count ($pa_config, $dbh, $agent->{'id_agente'});
 						}
 						
 						if ($agent->{'update_alert_count'} == 1) {

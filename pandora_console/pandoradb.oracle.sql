@@ -823,23 +823,29 @@ CREATE TABLE torigen (
 CREATE TABLE tperfil (
 	id_perfil NUMBER(10, 0) NOT NULL PRIMARY KEY,
 	name CLOB default '',
-	incident_edit NUMBER(5, 0) default 0 NOT NULL,
-	incident_view NUMBER(5, 0) default 0 NOT NULL,
-	incident_management NUMBER(5, 0) default 0 NOT NULL,
-	agent_view NUMBER(5, 0) default 0 NOT NULL,
-	agent_edit NUMBER(5, 0) default 0 NOT NULL,
-	alert_edit NUMBER(5, 0) default 0 NOT NULL,
-	user_management NUMBER(5, 0) default 0 NOT NULL,
-	db_management NUMBER(5, 0) default 0 NOT NULL,
-	alert_management NUMBER(5, 0) default 0 NOT NULL,
-	pandora_management NUMBER(5, 0) default 0 NOT NULL,
-	report_view NUMBER(5, 0) default 0 NOT NULL,
-	report_edit NUMBER(5, 0) default 0 NOT NULL,
-	report_management NUMBER(5, 0) default 0 NOT NULL,
-	event_view NUMBER(5, 0) default 0 NOT NULL,
-	event_edit NUMBER(5, 0) default 0 NOT NULL,
-	event_management NUMBER(5, 0) default 0 NOT NULL,
-	agent_disable NUMBER(5, 0) default 0 NOT NULL
+	incident_edit NUMBER(1, 0) default 0 NOT NULL,
+	incident_view NUMBER(1, 0) default 0 NOT NULL,
+	incident_management NUMBER(1, 0) default 0 NOT NULL,
+	agent_view NUMBER(1, 0) default 0 NOT NULL,
+	agent_edit NUMBER(1, 0) default 0 NOT NULL,
+	alert_edit NUMBER(1, 0) default 0 NOT NULL,
+	user_management NUMBER(1, 0) default 0 NOT NULL,
+	db_management NUMBER(1, 0) default 0 NOT NULL,
+	alert_management NUMBER(1, 0) default 0 NOT NULL,
+	pandora_management NUMBER(1, 0) default 0 NOT NULL,
+	report_view NUMBER(1, 0) default 0 NOT NULL,
+	report_edit NUMBER(1, 0) default 0 NOT NULL,
+	report_management NUMBER(1, 0) default 0 NOT NULL,
+	event_view NUMBER(1, 0) default 0 NOT NULL,
+	event_edit NUMBER(1, 0) default 0 NOT NULL,
+	event_management NUMBER(1, 0) default 0 NOT NULL,
+	agent_disable NUMBER(1, 0) default 0 NOT NULL,
+	map_view NUMBER(1, 0) default 0 NOT NULL,
+	map_edit NUMBER(1, 0) default 0 NOT NULL,
+	map_management NUMBER(1, 0) default 0 NOT NULL,
+	vconsole_view NUMBER(1, 0) default 0 NOT NULL,
+	vconsole_edit NUMBER(1, 0) default 0 NOT NULL,
+	vconsole_management NUMBER(1, 0) default 0 NOT NULL
 );
 
 CREATE SEQUENCE tperfil_s INCREMENT BY 1 START WITH 1;
@@ -1928,4 +1934,13 @@ CREATE TABLE  talert_snmp_action (
 	al_field8 CLOB default '' NOT NULL,
 	al_field9 CLOB default '' NOT NULL,
 	al_field10 CLOB default '' NOT NULL
+);
+
+-- ---------------------------------------------------------------------
+-- Table tsessions_php
+-- ---------------------------------------------------------------------
+CREATE TABLE tsessions_php (
+	id_session VARCHAR2(52) NOT NULL PRIMARY KEY,
+	last_active NUMBER(20, 0) NOT NULL,
+	data CLOB default ''
 );

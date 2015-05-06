@@ -108,13 +108,7 @@ switch ($tab) {
 		break;
 }
 
-if (defined('METACONSOLE')) {
-	if ($strict_acl)
-		$header_sub_title = '';
-
-	ui_meta_print_header($header_title, $header_sub_title, $tabs);
-}
-else{
+if (!defined('METACONSOLE')) {
 	if (!$strict_acl)
 		$header_title = $header_title ." - ". $header_sub_title;
 
@@ -126,9 +120,11 @@ else{
 
 $table = new StdClass();
 $table->width = "100%";
+$table->class='databox filters';
 $table->data = array();
 $table->rowspan = array();
-
+$table->style[0] = 'font-weight: bold;';
+$table->style[2] = 'font-weight: bold;';
 // Agent filter
 $agent_status_arr = array();
 $agent_status_arr[AGENT_STATUS_ALL] = __('All'); //default
@@ -153,25 +149,24 @@ $table->rowspan[][count($row)-1] = 2;
 
 $table->data[] = $row;
 
-// Module filter
-$module_status_arr = array();
-$module_status_arr[-1] = __('All'); //default
-$module_status_arr[AGENT_MODULE_STATUS_NORMAL] = __('Normal'); 
-$module_status_arr[AGENT_MODULE_STATUS_WARNING] = __('Warning');
-$module_status_arr[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
-$module_status_arr[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
-$module_status_arr[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
+if (!defined('METACONSOLE')) {
+	// Module filter
+	$module_status_arr = array();
+	$module_status_arr[-1] = __('All'); //default
+	$module_status_arr[AGENT_MODULE_STATUS_NORMAL] = __('Normal'); 
+	$module_status_arr[AGENT_MODULE_STATUS_WARNING] = __('Warning');
+	$module_status_arr[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
+	$module_status_arr[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
+	$module_status_arr[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
 
-$row = array();
-$row[] = __('Module status');
-$row[] = html_print_select($module_status_arr, "status_module", $status_module, '', '', 0, true);
-$row[] = __('Search module');
-if (defined('METACONSOLE'))
-	$row[] = html_print_input_text("search_module", $search_module, '', 70, 30, true);
-else
+	$row = array();
+	$row[] = __('Module status');
+	$row[] = html_print_select($module_status_arr, "status_module", $status_module, '', '', 0, true);
+	$row[] = __('Search module');
 	$row[] = html_print_input_text("search_module", $search_module, '', 40, 30, true);
 
-$table->data[] = $row;
+	$table->data[] = $row;
+}
 
 if (defined('METACONSOLE')) {
 	$table->width = "96%";
@@ -189,7 +184,7 @@ if (defined('METACONSOLE')) {
 	ui_toggle($form_html, __('Show Options'));
 	echo "<br>";
 }else{
-	echo "<br>";
+	//echo "<br>";
 	ui_toggle($form_html, __('Tree search'));
 }
 
@@ -235,7 +230,8 @@ enterprise_hook('close_meta_frame');
 	
 	$("form#tree_search").submit(function(e) {
 		e.preventDefault();
-	
+		$(".tree-element-detail-content").hide();
+		$(".tree-controller-detail-recipient").hide();
 		processTreeSearch();
 	});
 	
@@ -270,6 +266,7 @@ enterprise_hook('close_meta_frame');
 						recipient: $("div#tree-controller-recipient"),
 						detailRecipient: $("div#tree-controller-detail-recipient"),
 						page: parameters['page'],
+						emptyMessage: "<?php echo __('No data found'); ?>",
 						tree: data.tree,
 						baseURL: "<?php echo ui_get_full_url(false, false, false, defined('METACONSOLE')); ?>",
 						ajaxURL: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
@@ -325,7 +322,7 @@ enterprise_hook('close_meta_frame');
 		.prop("id", "module_details_window")
 		.appendTo('body');
 
-	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period) {
+	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period, module_name) {
 		var params = {};
 		var f = new Date();
 		period = $('#period').val();
@@ -348,7 +345,7 @@ enterprise_hook('close_meta_frame');
 		params.id_module = module_id;
 		params.offset = offset;
 		params.period = period;
-		
+		title =   <?php echo "'" . __("Module: ") . "'" ?> ;
 		$.ajax({
 			type: "POST",
 			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
@@ -362,6 +359,7 @@ enterprise_hook('close_meta_frame');
 						resizable: true,
 						draggable: true,
 						modal: true,
+						title: title + module_name,
 						overlay: {
 							opacity: 0.5,
 							background: "black"
@@ -370,7 +368,7 @@ enterprise_hook('close_meta_frame');
 						height: 500
 					})
 					.show ();
-					refresh_pagination_callback(module_id, id_agent, server_name);
+					refresh_pagination_callback(module_id, id_agent, server_name, module_name);
 					datetime_picker_callback();
 					forced_title_callback();
 			}
@@ -394,7 +392,7 @@ enterprise_hook('close_meta_frame');
 		
 	}
 	
-	function refresh_pagination_callback (module_id, id_agent, server_name) {
+	function refresh_pagination_callback (module_id, id_agent, server_name,module_name) {
 		
 		$(".binary_dialog").click( function() {
 			
@@ -406,7 +404,7 @@ enterprise_hook('close_meta_frame');
 			
 			var period = $('#period').val();
 			
-			show_module_detail_dialog(module_id, id_agent, server_name, offset, period);
+			show_module_detail_dialog(module_id, id_agent, server_name, offset, period,module_name);
 			return false;
 		});
 	}

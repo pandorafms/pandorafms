@@ -351,64 +351,110 @@ class Tree {
 						if (empty($rootID) || $rootID == -1) {
 							if ($this->strictACL)
 								return false;
-
-							$columns = 'tg.id_grupo AS id, tg.nombre AS name, tg.parent, tg.icon, COUNT(DISTINCT(ta.id_agente)) AS total_count';
+							
+							$columns = 'tg.id_grupo AS id, tg.nombre AS name, tg.parent, tg.icon';
 							$order_fields = 'tg.nombre ASC, tg.id_grupo ASC';
-
-							// Add the agent counters to the columns
-							$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
-											FROM tagente AS ta
-											LEFT JOIN tagente_modulo AS tam
-												ON tam.disabled = 0
-													AND ta.id_agente = tam.id_agente
-													$module_search_filter
-											$module_status_join
-											WHERE ta.disabled = 0
-												AND ta.id_grupo = tg.id_grupo
+							
+							if (! defined('METACONSOLE')) {
+								// Add the agent counters to the columns
+								$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
+												FROM tagente AS ta
+												LEFT JOIN tagente_modulo AS tam
+													ON tam.disabled = 0
+														AND ta.id_agente = tam.id_agente
+														$module_search_filter
+												$module_status_join
+												WHERE ta.disabled = 0
+													AND ta.id_grupo = tg.id_grupo
+													$group_acl
+													$agent_search_filter
+													$agent_status_filter";
+								$counter_columns = $this->getAgentCounterColumnsSql($agent_table);
+								if (!empty($counter_columns))
+									$columns .= ", $counter_columns";
+								
+								$sql = "SELECT $columns
+										FROM tgrupo AS tg
+										LEFT JOIN tagente AS ta
+												LEFT JOIN tagente_modulo AS tam
+													ON tam.disabled = 0
+														AND ta.id_agente = tam.id_agente
+														$module_search_filter
+												$module_status_join
+											ON ta.disabled = 0
+												AND tg.id_grupo = ta.id_grupo
 												$group_acl
 												$agent_search_filter
-												$agent_status_filter";
-							$counter_columns = $this->getAgentCounterColumnsSql($agent_table);
-							if (!empty($counter_columns))
-								$columns .= ", $counter_columns";
+												$agent_status_filter
+										GROUP BY tg.id_grupo
+										ORDER BY $order_fields";
+							}
+							// Metaconsole
+							else {
+								// Add the agent counters to the columns
+								$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
+												FROM tmetaconsole_agent AS ta
+												WHERE ta.disabled = 0
+													AND ta.id_grupo = tg.id_grupo
+													$group_acl
+													$agent_search_filter
+													$agent_status_filter";
+								$counter_columns = $this->getAgentCounterColumnsSql($agent_table);
+								if (!empty($counter_columns))
+									$columns .= ", $counter_columns";
+								
+								$sql = "SELECT $columns
+										FROM tgrupo AS tg
+										LEFT JOIN tagente AS ta
+											ON ta.disabled = 0
+												AND tg.id_grupo = ta.id_grupo
+												$group_acl
+												$agent_search_filter
+												$agent_status_filter
+										GROUP BY tg.id_grupo
+										ORDER BY $order_fields";
+							}
+						}
+						else {
+							if (! defined('METACONSOLE') || $this->strictACL) {
+								$columns = 'ta.id_agente AS id, ta.nombre AS name, 
+									ta.fired_count, ta.normal_count, ta.warning_count,
+									ta.critical_count, ta.unknown_count, ta.notinit_count,
+									ta.total_count, ta.quiet';
+								$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
 
-							$sql = "SELECT $columns
-									FROM tgrupo AS tg
-									LEFT JOIN tagente AS ta
-											LEFT JOIN tagente_modulo AS tam
-												ON tam.disabled = 0
-													AND ta.id_agente = tam.id_agente
-													$module_search_filter
-											$module_status_join
-										ON ta.disabled = 0
-											AND tg.id_grupo = ta.id_grupo
+								$sql = "SELECT $columns
+										FROM tagente AS ta
+										LEFT JOIN tagente_modulo AS tam
+											ON tam.disabled = 0
+												AND ta.id_agente = tam.id_agente
+												$module_search_filter
+										$module_status_join
+										WHERE ta.disabled = 0
+											AND ta.id_grupo = $rootID
 											$group_acl
 											$agent_search_filter
 											$agent_status_filter
-									GROUP BY tg.id_grupo
-									ORDER BY $order_fields";
-						}
-						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name, 
-								ta.fired_count, ta.normal_count, ta.warning_count,
-								ta.critical_count, ta.unknown_count, ta.notinit_count,
-								ta.total_count, ta.quiet';
-							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
-
-							$sql = "SELECT $columns
-									FROM tagente AS ta
-									LEFT JOIN tagente_modulo AS tam
-										ON tam.disabled = 0
-											AND ta.id_agente = tam.id_agente
-											$module_search_filter
-									$module_status_join
-									WHERE ta.disabled = 0
-										AND ta.id_grupo = $rootID
-										$group_acl
-										$agent_search_filter
-										$agent_status_filter
-									GROUP BY ta.id_agente
-									ORDER BY $order_fields";
+										GROUP BY ta.id_agente
+										ORDER BY $order_fields";
+							}
+							else {
+								$columns = 'ta.id_tagente AS id, ta.nombre AS name, 
+									ta.fired_count, ta.normal_count, ta.warning_count,
+									ta.critical_count, ta.unknown_count, ta.notinit_count,
+									ta.total_count, ta.quiet, id_tmetaconsole_setup AS server_id';
+								$order_fields = 'ta.nombre ASC, ta.id_tagente ASC';
+								
+								$sql = "SELECT $columns
+										FROM tmetaconsole_agent AS ta
+										WHERE ta.disabled = 0
+											AND ta.id_grupo = $rootID
+											$group_acl
+											$agent_search_filter
+											$agent_status_filter
+										GROUP BY ta.id_tagente
+										ORDER BY $order_fields";
+							}
 						}
 						break;
 					// Get the modules of an agent
@@ -416,7 +462,7 @@ class Tree {
 						$columns = 'tam.id_agente_modulo AS id, tam.nombre AS name,
 							tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos';
 						$order_fields = 'tam.nombre ASC, tam.id_agente_modulo ASC';
-
+						
 						$sql = "SELECT $columns
 								FROM tagente_modulo AS tam
 								$module_status_join
@@ -1339,7 +1385,7 @@ class Tree {
 					"type" => $graphType,
 					"period" => SECONDS_1DAY,
 					"id" => $module['id'],
-					"label" => rawurlencode(urlencode(base64_encode($module['name']))),
+					"label" => base64_encode($module['name']),
 					"refresh" => SECONDS_10MINUTES
 				);
 			
@@ -1384,8 +1430,12 @@ class Tree {
 		$agent['rootID'] = $this->rootID;
 		$agent['rootType'] = $this->rootType;
 		
-		if (defined("METACONSOLE") && !empty($server))
-			$agent['serverID'] = $server['id'];
+		if (defined("METACONSOLE")) {
+			if (isset($agent['server_id']))
+				$agent['serverID'] = $agent['server_id'];
+			else if (!empty($server))
+				$agent['serverID'] = $server['id'];
+		}
 
 		// Realtime counters for Strict ACL
 		if ($this->strictACL) {
@@ -1532,37 +1582,37 @@ class Tree {
 			if (isset($agent['unknown_count']))
 				$agent['counters']['unknown'] = $agent['unknown_count'];
 			else
-				$agent['counters']['unknown'] = agents_monitor_unknown($agent['id']);
+				$agent['counters']['unknown'] = (int) agents_monitor_unknown($agent['id']);
 			
 			if (isset($agent['critical_count']))
 				$agent['counters']['critical'] = $agent['critical_count'];
 			else
-				$agent['counters']['critical'] = agents_monitor_critical($agent['id']);
+				$agent['counters']['critical'] = (int) agents_monitor_critical($agent['id']);
 			
 			if (isset($agent['warning_count']))
 				$agent['counters']['warning'] = $agent['warning_count'];
 			else
-				$agent['counters']['warning'] = agents_monitor_warning($agent['id']);
+				$agent['counters']['warning'] = (int) agents_monitor_warning($agent['id']);
 			
 			if (isset($agent['notinit_count']))
 				$agent['counters']['not_init'] = $agent['notinit_count'];
 			else
-				$agent['counters']['not_init'] = agents_monitor_notinit($agent['id']);
+				$agent['counters']['not_init'] = (int) agents_monitor_notinit($agent['id']);
 			
 			if (isset($agent['normal_count']))
 				$agent['counters']['ok'] = $agent['normal_count'];
 			else
-				$agent['counters']['ok'] = agents_monitor_ok($agent['id']);
+				$agent['counters']['ok'] = (int) agents_monitor_ok($agent['id']);
 			
 			if (isset($agent['total_count']))
 				$agent['counters']['total'] = $agent['total_count'];
 			else
-				$agent['counters']['total'] = agents_monitor_total($agent['id']);
+				$agent['counters']['total'] = (int) agents_monitor_total($agent['id']);
 			
 			if (isset($agent['fired_count']))
 				$agent['counters']['alerts'] = $agent['fired_count'];
 			else
-				$agent['counters']['alerts'] = agents_get_alerts_fired($agent['id']);
+				$agent['counters']['alerts'] = (int) agents_get_alerts_fired($agent['id']);
 		}
 		
 		// Status image
@@ -1640,25 +1690,25 @@ class Tree {
 		}
 	}
 	
-	private static function extractItemWithID ($items, $item_id, $item_type = "group") {
+	private static function extractItemWithID ($items, $item_id, $item_type = "group", $strictACL = false) {
 		foreach ($items as $item) {
 			if ($item["type"] != $item_type)
 				continue;
 			
 			// Item found
-			if (! defined("METACONSOLE")) {
-				if ($item["id"] == $item_id)
-					return $item;
-			}
-			else {
+			if ($strictACL && defined("METACONSOLE")) {
 				foreach ($item["id"] as $server_id => $id) {
 					if ($id == $item_id)
 						return $item;
 				}
 			}
+			else {
+				if ($item["id"] == $item_id)
+					return $item;
+			}
 			
 			if ($item["type"] == "group" && !empty($item["children"])) {
-				$result = self::extractItemWithID($item["children"], $item_id, $item_type);
+				$result = self::extractItemWithID($item["children"], $item_id, $item_type, $strictACL);
 				
 				// Item found on children
 				if ($result !== false)
@@ -1672,7 +1722,7 @@ class Tree {
 	
 	public function getData() {
 		
-		if (! $this->strictACL) {
+		if (! defined('METACONSOLE')) {
 			switch ($this->type) {
 				case 'os':
 					$this->getDataOS();
@@ -1696,7 +1746,7 @@ class Tree {
 					$this->getDataExtended();
 			}
 		}
-		else {
+		else if ($this->strictACL) {
 			switch ($this->type) {
 				case 'group':
 				case 'tag':
@@ -1705,6 +1755,14 @@ class Tree {
 				case 'agent':
 					$this->getDataAgent();
 					break;
+			}
+		}
+		else {
+			if ($this->type == 'agent') {
+				$this->getDataAgent();
+			}
+			else {
+				$this->getDataGroup();
 			}
 		}
 	}
@@ -1718,7 +1776,7 @@ class Tree {
 		
 		// Module names
 		if ($this->id == -1) {
-		
+			
 		}
 		// Agents
 		else {
@@ -1734,18 +1792,12 @@ class Tree {
 					
 					$server = metaconsole_get_servers($this->serverID);
 					if (metaconsole_connect($server) == NOERR) {
-						db_clean_cache();
-						
-						$newItems = $this->getItems();
-						$this->processModules($newItems, $server);
-						$items = array_merge($items, $newItems);
+						$items = $this->getItems();
+						$this->processModules($items, $server);
 						
 						metaconsole_restore_db();
 					}
 				}
-				
-				if (!empty($items))
-					usort($items, array("Tree", "cmpSortNames"));
 				
 				$processed_items = $items;
 			}
@@ -1894,56 +1946,27 @@ class Tree {
 		
 		// Groups
 		if ($this->id == -1) {
-			if (! defined ('METACONSOLE')) {
-				$items = $this->getItems();
-				
-				// Build the group hierarchy
-				foreach ($items as $key => $item) {
-					if (empty($item['parent'])) {
-						
-						unset($items[$key]);
-						$items_tmp = array();
-						$processed_item = $this->getProcessedItem($item, false, $items, $items_tmp, true);
-						
-						if (!empty($processed_item)
-								&& isset($processed_item['counters'])
-								&& isset($processed_item['counters']['total'])
-								&& !empty($processed_item['counters']['total']))
-							$processed_items[] = $processed_item;
-					}
+			
+			$items = $this->getItems();
+			
+			// Build the group hierarchy
+			foreach ($items as $key => $item) {
+				if (empty($item['parent'])) {
+					
+					unset($items[$key]);
+					$items_tmp = array();
+					$processed_item = $this->getProcessedItem($item, false, $items, $items_tmp, true);
+					
+					if (!empty($processed_item)
+							&& isset($processed_item['counters'])
+							&& isset($processed_item['counters']['total'])
+							&& !empty($processed_item['counters']['total']))
+						$processed_items[] = $processed_item;
 				}
-			}
-			else {
-				$servers = metaconsole_get_servers();
-				
-				$item_list = array();
-				foreach ($servers as $server) {
-					if (metaconsole_connect($server) != NOERR)
-						continue;
-					db_clean_cache();
-					
-					$items = $this->getItems();
-					
-					// Build the group hierarchy
-					$processed_items = array();
-					foreach ($items as $key => $item) {
-						if (empty($item['parent'])) {
-							
-							unset($items[$key]);
-							$processed_items[] = $this->getProcessedItem($item, $server, $items);
-						}
-					}
-					
-					$item_list = array_merge($item_list, $processed_items);
-					
-					metaconsole_restore_db();
-				}
-				
-				$processed_items = $this->getMergedItems($item_list);
 			}
 			// groupID filter. To access the view from tactical views f.e.
 			if (!empty($processed_items) && !empty($this->filter['groupID'])) {
-				$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group");
+				$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group", $this->strictACL);
 				
 				if ($result === false)
 					$processed_items = array();
@@ -1953,35 +1976,9 @@ class Tree {
 		}
 		// Agents
 		else {
-			if (! defined ('METACONSOLE')) {
-				$items = $this->getItems();
-				$this->processAgents($items);
-				$processed_items = $items;
-			}
-			else {
-				$rootIDs = $this->rootID;
-				
-				$items = array();
-				foreach ($rootIDs as $serverID => $rootID) {
-					$server = metaconsole_get_servers($serverID);
-					if (metaconsole_connect($server) != NOERR)
-						continue;
-					db_clean_cache();
-					
-					$this->rootID = $rootID;
-					$newItems = $this->getItems();
-					$this->processAgents($newItems, $server);
-					$items = array_merge($items, $newItems);
-					
-					metaconsole_restore_db();
-				}
-				$this->rootID = $rootIDs;
-				
-				if (!empty($items))
-					usort($items, array("Tree", "cmpSortNames"));
-				
-				$processed_items = $items;
-			}
+			$items = $this->getItems();
+			$this->processAgents($items);
+			$processed_items = $items;
 		}
 		
 		$this->tree = $processed_items;

@@ -47,9 +47,9 @@ pidof_pandora () {
 		fi
 		if [ "$ZONE" = "global" ]
 		then
-			PANDORA_PID=`ps -f -z global | grep "$TRUNCATED_DAEMON" | grep -v grep | head -1 | awk '{ print $2 }'`
+			PANDORA_PID=`ps -f -z global | grep "$TRUNCATED_DAEMON" | grep -v grep | awk '{ print $2 }'`
 		else
-			PANDORA_PID=`ps -Af | grep "$TRUNCATED_DAEMON" | grep -v grep | head -1 | awk '{ print $2 }'`
+			PANDORA_PID=`ps -Af | grep "$TRUNCATED_DAEMON" | grep -v grep | awk '{ print $2 }'`
 		fi
 	elif [ "$OS_NAME" = "Linux" ] && [ -x /usr/sbin/vzpid ]
 	then
@@ -66,7 +66,7 @@ pidof_pandora () {
 			fi
 		done
 	else
-		PANDORA_PID=`ps -Af | grep "$DAEMON $PANDORA_PATH" | grep -v grep | head -1 | awk '{ print $2 }'`
+		PANDORA_PID=`ps -Af | grep "$DAEMON $PANDORA_PATH" | grep -v grep | awk '{ print $2 }'`
 	fi
 	
 	echo $PANDORA_PID
@@ -90,7 +90,14 @@ case "$1" in
 		su $PANDORA_USER -c "PATH=$PATH nohup $DAEMON $PANDORA_PATH >/dev/null 2>$LOGFILE &"
 		sleep 2
 		PANDORA_PID=`pidof_pandora`
-		echo "Pandora FMS Agent is now running with PID $PANDORA_PID"
+		if [ "$PANDORA_PID" = "" ]
+		then
+
+			echo "Pandora FMS Agent could not be started. Please check the file $LOGFILE."
+			exit 1
+		else 
+			echo "Pandora FMS Agent is now running with PID $PANDORA_PID"
+		fi
 	;;
 	
 	stop)

@@ -40,6 +40,9 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	require_once ($config['homedir'] . "/include/functions_tags.php");
 	
 	$table->width = '100%';
+	$table->class = 'databox filters';
+	$table->cellpadding = '0';
+	$table->cellspacing = '0';
 	if(defined('METACONSOLE')){
 		$table->class = 'databox_filters';
 		$table->width = '96%';
@@ -48,6 +51,11 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	}
 	$table->data = array ();
 	$table->style = array ();
+	$table->style[0] = 'font-weight: bold;';
+	$table->style[1] = 'font-weight: bold;';
+	$table->style[2] = 'font-weight: bold;';
+	$table->style[3] = 'font-weight: bold;';
+	$table->style[4] = 'font-weight: bold;';
 	if(defined('METACONSOLE')){
 		$table->style[0] = 'vertical-align:middle; font-weight: bold;';
 		$table->style[1] = 'vertical-align:middle; font-weight: bold;';
@@ -99,10 +107,13 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	    $data = '<form style="background-color: #ECECEC;" method="post" action="'.$url.'">';
 	}
 	else{
-		$table->data[1][4] = html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true);
 		$data = '<form method="post" action="'.$url.'">';
 	}
 	$data .= html_print_table ($table, true);
+	if ( !defined("METACONSOLE") )
+		$data .= "<div style='height:100%; text-align:right;'>" . 
+				html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true) . "</div>";
+	
 	$data .= '</form>';
 	
 	if ($return) {

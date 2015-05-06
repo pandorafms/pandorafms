@@ -17,15 +17,14 @@
 // Load global vars
 global $config;
 
-require_once ($config['homedir']. "/include/functions_events.php"); //Event processing functions
-require_once ($config['homedir']. "/include/functions_alerts.php"); //Alerts processing functions
-require_once ($config['homedir']. "/include/functions.php");
-require_once($config['homedir'] . "/include/functions_agents.php"); //Agents funtions
-require_once($config['homedir'] . "/include/functions_users.php"); //Users functions
-require_once ($config['homedir'] . '/include/functions_groups.php');
-
-require_once ($config["homedir"] . '/include/functions_graph.php');
-require_once ($config["homedir"] . '/include/functions_tags.php');
+require_once ($config['homedir'] . "/include/functions.php");
+require_once ($config['homedir'] . "/include/functions_events.php"); //Event processing functions
+require_once ($config['homedir'] . "/include/functions_alerts.php"); //Alerts processing functions
+require_once ($config['homedir'] . "/include/functions_agents.php"); //Agents funtions
+require_once ($config['homedir'] . "/include/functions_users.php"); //Users functions
+require_once ($config['homedir'] . "/include/functions_groups.php");
+require_once ($config["homedir"] . "/include/functions_graph.php");
+require_once ($config["homedir"] . "/include/functions_tags.php");
 
 check_login ();
 
@@ -35,8 +34,6 @@ if (! check_acl ($config["id_user"], 0, "ER")) {
 	require ("general/noaccess.php");
 	return;
 }
-
-$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
 if(defined('METACONSOLE')){
 	$jump = '&nbsp;&nbsp;';
@@ -162,7 +159,7 @@ require('events.build_query.php');
 
 $id_name = get_parameter('id_name', '');
 
-if(!defined("METACONSOLE"))
+if (!defined("METACONSOLE"))
 	echo "<br>";
 
 
@@ -174,7 +171,7 @@ $update_pressed = (int) !empty($update_pressed);
 if ($update_pressed || $open_filter) {
 	$open_filter = true;
 }
-if(!defined("METACONSOLE")){
+if (!defined("METACONSOLE")) {
 	$table = html_get_predefined_table('transparent', 2);
 	$table->styleTable = 'width: 23px; float: right; background: #ECECEC;';
 	$table->width = '98%';
@@ -233,7 +230,10 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$table->rowid[1] = 'save_filter_row1';
 	$data[0] = __('Filter name') . $jump;
 	$data[0] .= html_print_input_text ('id_name', '', '', 15, 255, true);
-	$data[1] = __('Filter group') . $jump;
+	if(defined('METACONSOLE'))
+		$data[1] = __('Save in Group') . $jump;
+	else
+		$data[1] = __('Filter group') . $jump;
 	# Fix : Only admin users can see group ALL
 	$data[1] .= html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group", $id_group, '', '', 0, true, false, false, 'w130', false, '', false, false, 'id_grupo', $strict_user);
 	$table->data[] = $data;
@@ -272,7 +272,7 @@ $table->width = '98%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'databox';
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$table->width = '100%';
 	$table->cellspacing = 0;
 	$table->cellpadding = 0;
@@ -280,7 +280,7 @@ if(defined('METACONSOLE')){
 }
 
 $table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
-if(!defined("METACONSOLE"))
+if (!defined("METACONSOLE"))
 	$table->style[0] = 'width: 50%; width:50%;';
 $data = array();
 $table->rowid[3] = 'update_filter_row1';
@@ -327,7 +327,7 @@ $tabletags_with->cellspacing = 4;
 $tabletags_with->cellpadding = 4;
 $tabletags_with->class = 'noshadow';
 $tabletags_with->styleTable = 'border: 0px;';
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$tabletags_with->width = '100%';
 	$tabletags_with->class = 'nobady';
 	$tabletags_with->cellspacing = 0;
@@ -337,7 +337,7 @@ if(defined('METACONSOLE')){
 
 
 $data = array();
-if(!defined("METACONSOLE"))
+if (!defined("METACONSOLE"))
 	$data[0] = html_print_select ($tags_select_with, 'select_with', '', '', '', 0,
 		true, true, true, '', false, 'width: 120px; height: 70px;') . '<br>';
 else
@@ -362,7 +362,7 @@ $tabletags_without->width = '100%';
 $tabletags_without->cellspacing = 4;
 $tabletags_without->cellpadding = 4;
 $tabletags_without->class = 'noshadow';
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$tabletags_without->width = '100%';
 	$tabletags_without->class = 'nobady';
 	$tabletags_without->cellspacing = 0;
@@ -371,7 +371,7 @@ if(defined('METACONSOLE')){
 $tabletags_without->styleTable = 'border: 0px;';
 
 $data = array();
-if(!defined("METACONSOLE"))
+if (!defined("METACONSOLE"))
 	$data[0] = html_print_select ($tags_select_without, 'select_without', '', '', '', 0,
 		true, true, true, '', false, 'width: 120px; height: 70px;') . '<br>';
 else
@@ -382,7 +382,7 @@ $data[1] = html_print_image('images/darrowright.png', true, array('id' => 'butto
 $data[1] .= html_print_input_hidden('tag_without', $tag_without_base64, true);
 $data[1] .= '<br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'button-remove_without', 'style' => 'cursor: pointer;', 'title' => __('Remove')));
 
-if(!defined("METACONSOLE"))
+if (!defined("METACONSOLE"))
 	$data[2] = html_print_select ($tag_without_temp, 'tag_without_temp', array(), '', '',
 		0, true, true, true, '', false, "width: 120px; height: 70px;");
 else
@@ -396,11 +396,11 @@ $tabletags_without->rowclass[] = '';
 
 // EVENTS FILTER
 // Table for filter controls
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$events_filter = '<form id="form_filter" class="filters_form" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='. 
 		(int)get_parameter("refr", 0) .'&amp;pure='.$config["pure"].'&amp;section=' . $section . '&amp;history='.(int)$history.'">';
 }
-else{
+else {
 	$events_filter = '<form id="form_filter" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='. 
 		(int)get_parameter("refr", 0) .'&amp;pure='.$config["pure"].'&amp;section=' . $section . '&amp;history='.(int)$history.'">';
 }
@@ -469,9 +469,13 @@ if (!$meta) {
 }
 else {
 	$data[1] = __('Server') . $jump;
-	$data[1] .= html_print_select_from_sql(
-		'SELECT id, server_name FROM tmetaconsole_setup',
-		'server_id', $server_id, 'script', __('All'), '0', true);
+	if ($strict_user)
+		$data[1] .= html_print_select('','server_id',
+						$server_id, 'script', __('All'), '0', true);
+	else
+		$data[1] .= html_print_select_from_sql(
+						'SELECT id, server_name FROM tmetaconsole_setup',
+						'server_id', $server_id, 'script', __('All'), '0', true);
 }
 
 $table_advanced->data[] = $data;
@@ -504,7 +508,7 @@ $table_advanced->data[] = $data;
 $table_advanced->rowclass[] = '';
 
 $data = array();
-if(defined('METACONSOLE'))
+if (defined('METACONSOLE'))
 {
 	$data[0] = '<fieldset class="" style="width: 310px;">' .
 			'<legend>' .
@@ -519,7 +523,7 @@ if(defined('METACONSOLE'))
 			html_print_table($tabletags_without, true) .
 		'</fieldset>';
 }
-else{
+else {
 	$data[0] = '<fieldset class="databox" style="width: 310px;">' .
 			'<legend>' .
 				__('Events with following tags') .
@@ -543,7 +547,7 @@ $table->width = '100%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'databox';
-if (defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$table->width = '96%';
 	$table->class = 'databox_filters';
 }
@@ -610,7 +614,7 @@ if (check_acl ($config["id_user"], 0, "EW")) {
 	$data[0] .= '<a href="javascript:" onclick="show_save_filter_dialog();">' . 
 				html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
 }
-if(defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	$data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . 
 				html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a> &nbsp;';
 	$data[0] .= '<a id="events_graph_link" href="javascript: show_events_graph_dialog()">' . 
@@ -619,7 +623,7 @@ if(defined("METACONSOLE")){
 else
 	$data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . 
 				html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a> <br />';
-if(defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	if (empty($id_name)) {
 		$data[0] .= '<div id="filter_loaded_span" style="font-weight: normal">[' .
 			__('No filter loaded') .
@@ -631,7 +635,7 @@ if(defined("METACONSOLE")){
 			']</div>';
 	}
 }
-else{
+else {
 	if (empty($id_name)) {
 		$data[0] .= '<span id="filter_loaded_span" style="font-weight: normal">[' .
 			__('No filter loaded') .
@@ -725,6 +729,68 @@ else {
 }
 
 if (!empty($result)) {
+	if ($group_rep == 0) {
+		$sql = "SELECT COUNT(id_evento)
+			FROM $event_table
+			WHERE 1=1 " . $sql_post;
+	}
+	else {
+		
+		$sql = "SELECT COUNT(1)
+			FROM (SELECT 1
+				FROM $event_table
+				WHERE 1=1 " . $sql_post . "
+				GROUP BY evento, id_agentmodule) AS t";
+	}
+	$limit = (int) db_get_sql ($sql);
+	
+	if ($group_rep == 0) {
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$sql = "SELECT *, 1 event_rep
+					FROM $event_table
+					WHERE 1=1 " . $sql_post . "
+					ORDER BY utimestamp DESC LIMIT 0,".$limit;
+				break;
+			case "postgresql":
+				$sql = "SELECT *, 1 event_rep
+					FROM $event_table
+					WHERE 1=1 " . $sql_post . "
+					ORDER BY utimestamp DESC LIMIT ".$limit." OFFSET 0";
+				break;
+			case "oracle":
+				$set = array();
+				$set['limit'] = $pagination;
+				$set['offset'] = $offset;
+				$sql = "SELECT *, 1 event_rep
+					FROM $event_table
+					WHERE 1=1 " . $sql_post . "
+					ORDER BY utimestamp DESC"; 
+				$sql = oracle_recode_query ($sql, $set);
+				break;
+		}
+		
+		//Extract the events by filter (or not) from db
+		$results_graph = db_get_all_rows_sql ($sql);
+	}
+	else {
+		$results_graph = events_get_events_grouped($sql_post,
+											0,
+											$limit,
+											$meta,
+											$history);
+	}
+		
+	$graph = '<div style="width: 350px; margin: 0 auto;">' .
+		grafico_eventos_agente(350, 185,
+			$results_graph, $meta, $history, $tags_acls_condition,$limit) .
+		'</div>';
+	html_print_div(array('id' => 'events_graph',
+		'hidden' => true, 'content' => $graph));
+}
+
+
+if (!empty($result)) {
 	//~ Checking the event tags exactly. The event query filters approximated tags to keep events
 	//~ with several tags
 	$acltags = tags_get_user_module_and_tags ($config['id_user'],'ER', true);
@@ -737,14 +803,7 @@ if (!empty($result)) {
 	}
 }
 
-if (!empty($result)) {
-	$graph = '<div style="width: 350px; margin: 0 auto;">' .
-		grafico_eventos_grupo(350, 185,
-			rawurlencode ($sql_post), $meta, $history) .
-		'</div>';
-	html_print_div(array('id' => 'events_graph',
-		'hidden' => true, 'content' => $graph));
-}
+
 
 // Delete rnum field generated by oracle_recode_query() function
 if (($config['dbtype'] == 'oracle') && ($result !== false)) {

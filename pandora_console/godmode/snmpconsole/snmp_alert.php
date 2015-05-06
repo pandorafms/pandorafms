@@ -503,7 +503,7 @@ if ($create_alert || $update_alert) {
 	
 	/* SNMP alert filters */
 	
-	echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox" style="font-weight: bold">';
+	echo '<table cellpadding="0" cellspacing="0" width="100%" class="databox filter" style="font-weight: bold">';
 	
 	// Description
 	echo '<tr><td class="datos" valign="top">'.__('Description').'</td><td class="datos">';
@@ -863,7 +863,8 @@ else {
 	$offset = (int) get_parameter ('offset');
 	
 	$table_filter = new stdClass();
-	$table_filter->width = "98%";
+	$table_filter->width = "100%";
+	$table_filter->class = "databox filters";
 	$table_filter->data = array();
 	$table_filter->data[0][0] = __('Free search') . ui_print_help_tip(
 		__('Search by these fields description, OID, Custom Value, SNMP Agent (IP), Single value, each Variable bindings/Datas.'), true);
@@ -884,7 +885,7 @@ else {
 	$form_filter .= '</div>';
 	$form_filter .= '</form>';
 	
-	echo "<br>";
+	//echo "<br>";
 	ui_toggle($form_filter,__('Alert SNMP control filter'), __('Toggle filter(s)'));
 	
 	$filter = array();
@@ -948,7 +949,7 @@ else {
 	//Overview
 	if ($count == 0) {
 		$result = array ();
-		echo "<div class='nf'>" . __('There are no SNMP alerts') . "</div>";
+		ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no SNMP alerts') ) );
 	}
 	else {
 		ui_pagination ($count, $url_pagination);
@@ -965,8 +966,8 @@ else {
 	$table->size = array ();
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
-	$table->width = "98%";
-	$table->class= "databox";
+	$table->width = "100%";
+	$table->class= "databox data";
 	$table->align = array ();
 	
 	$table->head[0] = '<span title="' . __('Position') . '">' . __('P.') . '</span>';

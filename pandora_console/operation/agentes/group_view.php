@@ -77,24 +77,63 @@ if ($count == 1) {
 		unset($result_groups[0]);
 	}
 }
+
+$total_agentes = 0;
+$monitor_ok = 0;
+$monitor_warning = 0;
+$monitor_critical = 0;
+$agents_unknown = 0;
+foreach ($result_groups as $data) {
+	$total_agentes += $data["_total_agents_"];
+	$monitor_ok += $data["_monitors_ok_"];
+	$monitor_warning += $data["_monitors_warning_"];
+	$monitor_critical += $data["_monitors_critical_"];
+	$monitor_unknown += $data["_monitors_unknown_"];
+}
+$total = $monitor_ok + $monitor_warning + $monitor_critical+$monitor_unknown;
+$total_ok = format_numeric (($monitor_ok*100)/$total,0);
+$total_warning = format_numeric (($monitor_warning*100)/$total,0);
+$total_critical = format_numeric (($monitor_critical*100)/$total,0);
+$total_unknown = format_numeric (($monitor_unknown*100)/$total,0);
+
+echo '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="databox">';
+	echo "<tr>";
+		echo "<th style='text-align: center;'>" . __("Summary of the status groups") . "</th>";
+	echo "</tr>";
+	echo "<tr height=70px'>";
+		echo "<td align='center'>";
+			echo "<span id='sumary' style='background-color:#FC4444;'>". $total_critical ."%</span>";
+			echo "<span id='sumary' style='background-color:#FAD403;'>". $total_warning ."%</span>";
+			echo "<span id='sumary' style='background-color:#80BA27;'>". $total_ok ."%</span>";
+			echo "<span id='sumary' style='background-color:#B2B2B2;'>". $total_unknown ."%</span>";
+		echo "</td>";
+	echo "</tr>";
+echo "</table>";
+
 ui_pagination($count);
 
 if (!empty($result_groups)) {
 
-	echo '<table cellpadding="0" cellspacing="0" style="margin-top:10px;" class="databox" border="0" width="98%">';
+	echo '<table cellpadding="0" cellspacing="0" style="margin-top:10px;" class="databox data" border="0" width="100%">';
 		echo "<tr>";
-		echo "<th style='width: 26px;'>" . __("Force") . "</th>";
-		echo "<th width='30%' style='min-width: 60px;'>" . __("Group") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Agents") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Agent unknown") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Agents not init") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Unknown") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Not Init") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Normal") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Warning") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Critical") . "</th>";
-		echo "<th width='10%' style='min-width: 60px;'>" . __("Alert fired") . "</th>";
+			echo "<th colspan=2 ></th>";
+			echo "<th colspan=3 class='difference' style='text-align:center'>" . __("Agents") . "</th>";
+			echo "<th colspan=6 style='text-align:center'>" . __("Modules") . "</th>";
+		echo "</tr>";
 		
+		echo "<tr>";
+			echo "<th style='width: 26px;'>" . __("Force") . "</th>";
+			echo "<th width='30%' style='min-width: 60px;'>" . __("Group") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Total") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Unknown") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Not init") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Unknown") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Not Init") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Normal") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Warning") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Critical") . "</th>";
+			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Alert fired") . "</th>";
+		echo "</tr>";
 		foreach ($result_groups as $data) {
 			
 			// Calculate entire row color
@@ -290,7 +329,6 @@ if (!empty($result_groups)) {
 		}
 	echo '</table>';
 } else {
-	echo "<div class='nf'>" . __('There are no defined agents') .
-		"</div>";
+	ui_print_info_message ( __('There are no defined agents'));
 }
 ?>

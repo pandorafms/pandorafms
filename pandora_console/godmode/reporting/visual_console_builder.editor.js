@@ -1080,7 +1080,7 @@ function cleanFields(item) {
 		tinymce.get('text-label').setContent("(_VALUE_)");
 	}
 	
-	fill_parent_select();
+	//fill_parent_select();
 	
 	var anyText = $("#any_text").html(); //Trick for catch the translate text.
 	$("#module")

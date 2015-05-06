@@ -71,6 +71,37 @@ config_check();
 				$table->styleTable = 'margin: auto; margin-top: 0px;';
 				$table->rowclass[0] = '';
 				
+				// Search bar
+				$search_bar = '<form method="get" style="display: inline;" name="quicksearch" action="">';
+				if (!isset($config['search_keywords'])) {
+					$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
+				}
+				else {
+					if (strlen($config['search_keywords']) == 0)
+						$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
+					else
+						$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = false; </script>';
+				}
+				
+				$search_bar .= '<input type="text" id="keywords" name="keywords"';
+				if (!isset($config['search_keywords']))
+					$search_bar .= "value='" . __("Enter keywords to search") . "'";
+				else if (strlen($config['search_keywords']) == 0)
+					$search_bar .= "value='" . __("Enter keywords to search") . "'";
+				else
+					$search_bar .= "value='" . $config['search_keywords'] . "'";
+				
+				$search_bar .= 'onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
+					onkeyup="javascript: fieldKeyWordEmpty = false;"
+					style="margin-top:5px;" class="search_input" />';
+				
+				//$search_bar .= 'onClick="javascript: document.quicksearch.submit()"';
+				
+				$search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
+				$search_bar .= '</form>';
+				
+				$table->data[0]['searchbar'] = $search_bar;
+				
 				// Servers check
 				$servers = array();
 				$servers["all"] = (int) db_get_value ('COUNT(id_server)','tserver');
@@ -220,7 +251,7 @@ config_check();
 					$maintenance_link_open_txt =  '<a href="' . $maintenance_link . '" title="' . $maintenance_title . '" class="' . $maintenance_class . '" id="show_systemalert_dialog">'; 
 					$maintenance_link_open_img =  '<a href="' . $maintenance_link . '" title="' . $maintenance_title . '" class="' . $maintenance_class . '">'; 
 					$maintenance_link_close =  '</a>'; 
-					$maintenance_img = $maintenance_link_open_img . html_print_image ("images/header_warning.png", true, array ("title" => __('You have %d warning(s)', $config["alert_cnt"]), "id" => "yougotalert", "class" => "bot")) . $maintenance_link_close;
+					$maintenance_img = $maintenance_link_open_img . html_print_image ("images/header_yellow.png", true, array ("title" => __('You have %d warning(s)', $config["alert_cnt"]), "id" => "yougotalert", "class" => "bot")) . $maintenance_link_close;
 				}
 				else {
 					$maintenance_img = html_print_image ("images/header_ready.png", true, array ("title" => __('There are not warnings'), "id" => "yougotalert", "class" => "bot"));
@@ -262,39 +293,6 @@ config_check();
 					$table->data[0][9] .= html_print_image ("images/header_email.png", true, array ("title" => __('You have %d unread message(s)', $msg_cnt), "id" => "yougotmail", "class" => "bot", 'style' => 'width:24px;'));
 					$table->data[0][9] .= '</a>';
 				}
-				
-				
-				
-				// Search bar
-				$search_bar = '<form method="get" style="display: inline;" name="quicksearch" action="">';
-				if (!isset($config['search_keywords'])) {
-					$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
-				}
-				else {
-					if (strlen($config['search_keywords']) == 0)
-						$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = true; </script>';
-					else
-						$search_bar .= '<script type="text/javascript"> var fieldKeyWordEmpty = false; </script>';
-				}
-				
-				$search_bar .= '<input type="text" id="keywords" name="keywords"';
-				if (!isset($config['search_keywords']))
-					$search_bar .= "value='" . __("Enter keywords to search") . "'";
-				else if (strlen($config['search_keywords']) == 0)
-					$search_bar .= "value='" . __("Enter keywords to search") . "'";
-				else
-					$search_bar .= "value='" . $config['search_keywords'] . "'";
-				
-				$search_bar .= 'onfocus="javascript: if (fieldKeyWordEmpty) $(\'#keywords\').val(\'\');"
-					onkeyup="javascript: fieldKeyWordEmpty = false;"
-					style="margin-top:5px;" class="search_input" />';
-				
-				//$search_bar .= 'onClick="javascript: document.quicksearch.submit()"';
-				
-				$search_bar .= "<input type='hidden' name='head_search_keywords' value='abc' />";
-				$search_bar .= '</form>';
-				
-				$table->data[0]['searchbar'] = $search_bar;
 				
 				$table->data[0][11] = ui_print_help_tip (__("Blank characters are used as AND conditions"), true);
 				

@@ -90,6 +90,7 @@ $time = get_parameter_post ('time', date (TIME_FORMAT, get_system_time ()));
 $connection_name = get_parameter('connection_name', '');
 $interval_length = (int) get_parameter('interval_length', 300);
 $address_resolution = (int) get_parameter('address_resolution', $config['netflow_get_ip_hostname']);
+$filter_selected = (int) get_parameter('filter_selected', 0);
 
 // Read buttons
 $draw = get_parameter('draw_button', '');
@@ -180,7 +181,7 @@ enterprise_hook('open_meta_frame');
 if (defined ('METACONSOLE')){
 	$class = "databox data";
 }else{
-	$class = "databox";
+	$class = "databox filters";
 }
 
 echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure='.$pure.'">';
@@ -317,8 +318,9 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	$sql = "SELECT *
 		FROM tnetflow_filter
 		WHERE id_group IN (".implode(',', array_keys ($user_groups)).")";
-	echo "<td colspan='3'>" . html_print_select_from_sql ($sql, 'filter_id', $filter_id, '', __('none'), 0, true) . "</td>";
-	
+	echo "<td colspan='3'>" . html_print_select_from_sql ($sql, 'filter_id', $filter_id, '', __('Select a filter'), 0, true);
+	html_print_input_hidden("filter_selected", $filter_selected, false);
+	echo "</td>";
 	echo "</tr>";
 	
 	
@@ -330,7 +332,7 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 		echo "<td></td>";
 	}
 	else {
-		echo "<td>" . __('Dst Ip'). ui_print_help_tip (__("Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true) . "</td>";
+		echo "<td style='font-weight:bold;'>" . __('Dst Ip'). ui_print_help_tip (__("Destination IP. A comma separated list of destination ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true) . "</td>";
 		echo "<td colspan='2'>" . html_print_input_text ('ip_dst', $filter['ip_dst'], false, 30, 80, true) . "</td>";
 	}
 	
@@ -339,7 +341,7 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 		echo "<td></td>";
 	}
 	else {
-		echo "<td>" . __('Src Ip'). ui_print_help_tip (__("Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true) . "</td>";
+		echo "<td style='font-weight:bold;'>" . __('Src Ip'). ui_print_help_tip (__("Source IP. A comma separated list of source ip. If we leave the field blank, will show all ip. Example filter by ip:<br>25.46.157.214,160.253.135.249"), true) . "</td>";
 		echo "<td colspan='2'>" . html_print_input_text ('ip_src', $filter['ip_src'], false, 30, 80, true) . "</td>";
 	}
 	
@@ -351,7 +353,7 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 		echo "<td></td>";
 	}
 	else {
-		echo "<td>" . __('Dst Port'). ui_print_help_tip (__("Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true) . "</td>";
+		echo "<td style='font-weight:bold;'>" . __('Dst Port'). ui_print_help_tip (__("Destination port. A comma separated list of destination ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true) . "</td>";
 		echo "<td colspan='2'>" . html_print_input_text ('dst_port', $filter['dst_port'], false, 30, 80, true) . "</td>";
 	}
 	
@@ -360,15 +362,20 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 		echo "<td></td>";
 	}
 	else {
-		echo "<td>" . __('Src Port'). ui_print_help_tip (__("Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true) . "</td>";
+		echo "<td style='font-weight:bold;'>" . __('Src Port'). ui_print_help_tip (__("Source port. A comma separated list of source ports. If we leave the field blank, will show all ports. Example filter by ports 80 and 22:<br>80,22"), true) . "</td>";
 		echo "<td colspan='2'>" . html_print_input_text ('src_port', $filter['src_port'], false, 30, 80, true) . "</td>";
 	}
 	
 	echo "</tr>";
 	echo "<tr class='filter_advance' style='display: none;'>";
 	
-	echo "<td>" . ui_print_help_icon ('pcap_filter', true, ui_get_full_url(false, false, false, false)) . "</td>";
-	echo "<td colspan='5'>" . html_print_textarea ('advanced_filter', 4, 40, $filter['advanced_filter'], "style='min-height: 0px; width: 90%;'", true) . "</td>";
+	if ($netflow_disable_custom_lvfilters) {
+		echo "<td></td>";
+		echo "<td></td>";
+	} else {
+		echo "<td>" . ui_print_help_icon ('pcap_filter', true) . "</td>";
+		echo "<td colspan='5'>" . html_print_textarea ('advanced_filter', 4, 40, $filter['advanced_filter'], "style='min-height: 0px; width: 90%;'", true) . "</td>";
+	}
 	
 	echo "</tr>";
 	echo "<tr>";
@@ -386,34 +393,37 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	
 	echo "</table>";
 	
-	echo "<br />";
+	//echo "<br />";
 	
-	if (defined ('METACONSOLE')) {
-		echo "<table class='' width='100%' style='border: 0px; text-align:right;'><tr><td>";
-	}
-	
-	
-	html_print_submit_button (__('Draw'), 'draw_button', false, 'class="sub upd"');
+	echo "<table class='' width='100%' style='border: 0px; text-align:right;'><tr><td>";
+
+	echo html_print_submit_button (__('Draw'), 'draw_button', false, 'class="sub upd"',true) . "&nbsp;&nbsp;" ;
 	
 	if (!$netflow_disable_custom_lvfilters) {
 		if (check_acl ($config["id_user"], 0, "AW")) {
 			html_print_submit_button (__('Save as new filter'), 'save_button', false, 'class="sub upd" onClick="return defineFilterName();"');
-			
 			html_print_submit_button (__('Update current filter'), 'update_button', false, 'class="sub upd"');
 		}
 	}
 	
-	if (defined ('METACONSOLE')) {
-		echo "</td></tr></table>";
-	}
+	echo "</td></tr></table>";
+
 echo'</form>';
 
 if ($draw != '') {
 	// Draw
 	echo "<br/>";
+
+	// No filter selected
+	if ($netflow_disable_custom_lvfilters && $filter_selected == 0) {
+		ui_print_error_message(__('No filter selected'));
+	}
+	// Draw the netflow chart
+	else {
 	echo netflow_draw_item ($start_date, $end_date,
 		$interval_length, $chart_type, $filter,
 		$max_aggregates, $connection_name, 'HTML', $address_resolution);
+	}
 }
 
 enterprise_hook('close_meta_frame');
@@ -482,6 +492,7 @@ ui_include_time_picker();
 			// Check right filter type
 			$("#radiobtn0001").attr("checked", "checked");
 			
+			$("#hidden-filter_selected").val(0);
 			$("#text-ip_dst").val('');
 			$("#text-ip_src").val('');
 			$("#text-dst_port").val('');
@@ -496,6 +507,7 @@ ui_include_time_picker();
 		}
 		else {
 			// Load fields from DB
+			$("#hidden-filter_selected").val(1);
 			
 			// Get filter type
 			<?php

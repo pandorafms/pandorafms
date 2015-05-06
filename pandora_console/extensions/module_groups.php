@@ -167,9 +167,9 @@ function mainModuleGroups() {
 	
 	ui_print_page_header (__("Combined table of agent group and module group"), "images/module_group.png", false, "", false, '');
 	
-	echo "<p>" .
-		__("This table shows in columns the modules group and in rows agents group. The cell shows all modules") .
-		"</p>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=>
+		__("This table shows in columns the modules group and in rows agents group. The cell shows all modules") )
+		);
 	
 	
 	$agentGroups = users_get_groups ($config['id_user'], "AR", false);
@@ -178,20 +178,22 @@ function mainModuleGroups() {
 	if (!empty($agentGroups) && !empty($modelGroups)) {
 		array_walk($modelGroups, 'translate'); //Translate all head titles to language is set
 		
+		$table = null;
+		$table->headstyle[] = "width: 20%";
 		foreach ($modelGroups as $i => $n) {
-			$modelGroups[$i] = ui_print_truncate_text($n, GENERIC_SIZE_TEXT);
+			$table->headstyle[] = "width: 7%";
+			$modelGroups[$i] = ui_print_truncate_text($n, GENERIC_SIZE_TEXT, true, true, true, '&hellip;', 'color:#FFF');
 		}
 		
 		$head = $modelGroups;
 		array_unshift($head, '&nbsp;');
 		
 		//Metaobject use in html_print_table
-		$table = null;
-		$table->align[0] = 'right'; //Align to right the first column.
+		$table->align[0] = 'left'; //Align to left the first column.
 		$table->style[0] = 'color: #ffffff; '.
-			'background-color: #373737; font-weight: bolder; padding-right: 10px;';
+			'background-color: #373737; font-weight: bolder; padding-right: 10px; width:20%; ';
 		$table->head = $head;
-		$table->width = '98%';
+		$table->width = '100%';
 		
 		//The content of table
 		$tableData = array();
@@ -201,7 +203,7 @@ function mainModuleGroups() {
 			$fired = false;
 			$row = array();
 			
-			array_push($row, ui_print_truncate_text($name, GENERIC_SIZE_TEXT));
+			array_push($row, ui_print_truncate_text($name, GENERIC_SIZE_TEXT, true, true, true, '&hellip;', 'color:#FFF'));
 			
 			foreach ($modelGroups as $idModelGroup => $modelGroup) {
 				$fired = false;
@@ -247,29 +249,29 @@ function mainModuleGroups() {
 				else {
 					
 					if ($fired) {
-						$color = '#ffa300'; //Orange when the cell for this model group and agent has at least one alert fired.
+						$color = '#FFA631'; //Orange when the cell for this model group and agent has at least one alert fired.
 					}
 					else if (array_key_exists(1, $states)) {
-						$color = '#cc0000'; //Red when the cell for this model group and agent has at least one module in critical state and the rest in any state.
+						$color = '#FC4444'; //Red when the cell for this model group and agent has at least one module in critical state and the rest in any state.
 						$font_color = '#ffffff';
 					}
 					elseif (array_key_exists(2, $states)) {
-						$color = '#fce94f'; //Yellow when the cell for this model group and agent has at least one in warning state and the rest in green state.
+						$color = '#FAD403'; //Yellow when the cell for this model group and agent has at least one in warning state and the rest in green state.
 					}
 					elseif (array_key_exists(3, $states)) {
-						$color = '#babdb6'; //Grey when the cell for this model group and agent has at least one module in unknown state and the rest in any state.
+						$color = '#B2B2B2 '; //Grey when the cell for this model group and agent has at least one module in unknown state and the rest in any state.
 					}
 					elseif (array_key_exists(0, $states)) {
-						$color = '#8ae234'; //Green when the cell for this model group and agent has OK state all modules.
+						$color = '#80BA27'; //Green when the cell for this model group and agent has OK state all modules.
 					}
 					elseif (array_key_exists(5, $states)) {
-						$color = '#729fcf'; // Blue when the cell for this module group and all modules have not init value.
+						$color = '#5BB6E5'; // Blue when the cell for this module group and all modules have not init value.
 					}
 					
 					
-					$alinkStart = '<a class="info_cell" rel="ajax.php?page=extensions/module_groups&get_info_alert_module_group=1&module_group=' . $idModelGroup . '&id_agent_group=' . $idAgentGroup . '"
-						href="index.php?sec=estado&sec2=operation/agentes/status_monitor&status=-1&ag_group=' . $idAgentGroup . 
-						'&modulegroup=' . $idModelGroup . '" style="color: ' . $font_color . '; font-size: 18px;";>';
+					$alinkStart = '<a class="info_cell" rel="ajax.php?page=extensions/module_groups&get_info_alert_module_group=1&module_group=' . 
+									$idModelGroup . '&id_agent_group=' . $idAgentGroup . '"href="index.php?sec=estado&sec2=operation/agentes/status_monitor&status=-1&ag_group=' .
+									$idAgentGroup . '&modulegroup=' . $idModelGroup . '" style="color: ' . $font_color . '; font-size: 18px;";>';
 					$alinkEnd = '</a>';
 				}
 				
@@ -284,13 +286,13 @@ function mainModuleGroups() {
 			array_push($tableData,$row);
 		}
 		$table->data = $tableData;
-		echo "<div style='width:98%; overflow-x:auto;'>";
+		echo "<div style='width:100%; overflow-x:auto;'>";
 		html_print_table($table);
 		echo "</div>";
 		
-		echo "<div class='legend_basic' style='width: 94%'>";
+		echo "<div class='legend_basic' style='width: 98.6%'>";
 
-		echo "<table>";
+		echo "<table >";
 		echo "<tr><td colspan='2' style='padding-bottom: 10px;'><b>" . __('Legend') . "</b></td></tr>";
 		echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_ALERTFIRED . ";'></div></td><td>" . __("Orange cell when the module group and agent have at least one alarm fired.") . "</td></tr>";
 		echo "<tr><td class='legend_square_simple'><div style='background-color: " . COL_CRITICAL . ";'></div></td><td>" . __("Red cell when the module group and agent have at least one module in critical status and the others in any status") . "</td></tr>";
@@ -320,6 +322,6 @@ function mainModuleGroups() {
 	<?php
 }
  
-extensions_add_operation_menu_option(__("Module groups"), 'estado', 'module_groups/brick.png', "v1r1");
+extensions_add_operation_menu_option(__("Module groups"), 'estado', 'module_groups/brick.png', "v1r1","view");
 extensions_add_main_function('mainModuleGroups');
 ?>

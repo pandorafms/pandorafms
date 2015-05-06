@@ -817,7 +817,7 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
  * 
  * @return string HTML with table element 
  */
-function events_print_event_table ($filter = "", $limit = 10, $width = 440, $return = false, $agent_id = 0) {
+function events_print_event_table ($filter = "", $limit = 10, $width = 440, $return = false, $agent_id = 0, $tactical_view = false) {
 	global $config;
 	
 	if ($agent_id == 0) {
@@ -850,15 +850,21 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 	$result = db_get_all_rows_sql ($sql);
 	
 	if ($result === false) {
-		echo '<div class="nf">' . __('No events') . '</div>';
+		if ($return){
+			$returned = ui_print_info_message ( __('No events'),'',true );
+			return $returned;
+		}
+		else	
+			echo ui_print_info_message ( __('No events') );
 	}
 	else {
 		$table->id = 'latest_events_table';
-		$table->cellpadding = 4;
-		$table->cellspacing = 4;
+		$table->cellpadding = 0;
+		$table->cellspacing = 0;
 		$table->width = $width;
-		$table->class = "databox";
-		$table->title = __('Latest events');
+		$table->class = "databox data";
+		if (!$tactical_view)
+			$table->title = __('Latest events');
 		$table->titleclass = 'tabletitle';
 		$table->titlestyle = 'text-transform:uppercase;';
 		$table->headclass = array ();
@@ -867,7 +873,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		$table->cellclass = array ();
 		$table->data = array ();
 		$table->align = array ();
-		$table->style[0] = $table->style[1] = $table->style[2] = 'width:25px; background: #E8E8E8;';
+		$table->style[0] = $table->style[1] = $table->style[2] = 'width:25px;';
 		if ($agent_id == 0) {
 			$table->style[3] = 'word-break: break-all;';
 		}
@@ -887,11 +893,13 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		
 		if ($agent_id == 0) {
 			$table->head[4] = __('Agent name');
+			$table->size[4] = "15%";
 		}
 		
 		$table->head[5] = __('Timestamp');
 		$table->headclass[5] = "datos3 f9";
 		$table->align[5] = "left";
+		$table->size[5] = "15%";
 		
 		foreach ($result as $event) {
 			if (! check_acl ($config["id_user"], $event["id_grupo"], "ER")) {
@@ -949,7 +957,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			$data[2] = events_print_type_img ($event["event_type"], true);
 			
 			/* Event text */
-			$data[3] = ui_print_string_substr (io_safe_output($event["evento"]), 75, true, '9');
+			$data[3] = ui_print_string_substr (io_safe_output($event["evento"]), 75, true, '7.5');
 			
 			if($agent_id == 0) {
 				if ($event["id_agente"] > 0) {
@@ -957,7 +965,8 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 					// Get class name, for the link color...
 					$myclass =  get_priority_class ($event["criticity"]);
 					
-					$data[4] = "<a class='$myclass' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event["id_agente"]."'>".agents_get_name ($event["id_agente"]). "</A>";
+					$data[4] = "<a class='$myclass' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event["id_agente"]."'>".
+								agents_get_name ($event["id_agente"]). "</A>";
 					
 				// ui_print_agent_name ($event["id_agente"], true, 25, '', true);
 				// for System or SNMP generated alerts
@@ -971,7 +980,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			}
 			
 			// Timestamp
-			$data[5] = ui_print_timestamp ($event["timestamp"], true, array('style' => 'font-size: 8px'));
+			$data[5] = ui_print_timestamp ($event["timestamp"], true, array('style' => 'font-size: 7.5pt; letter-spacing: 0.3pt;'));
 			
 			$class = get_priority_class ($event["criticity"]);
 			$cell_classes[3] = $cell_classes[4] = $cell_classes[5] = $class;
@@ -981,35 +990,36 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		}
 		
 		$events_table = html_print_table ($table, true);
-		$out = '<table width="98%"><tr><td style="width: 90%; padding-right: 10px; vertical-align: top; padding-top: 0px;">';
+		$out = '<table width="100%"><tr><td style="width: 90%; vertical-align: top; padding-top: 0px;">';
 		$out .= $events_table;
 		
-		if ($agent_id != 0) {
-			$out .= '</td><td style="width: 200px; vertical-align: top;">';
-			$out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
-			$out .= '<fieldset class="databox tactical_set">
-					<legend>' . 
-						__('Events -by module-') . 
-					'</legend>' . 
-					graph_event_module (180, 100, $event['id_agente']) . '</fieldset>';
-			$out .= '</td></tr></table>';
+		if (!$tactical_view) {
+			if ($agent_id != 0) {
+				$out .= '</td><td style="width: 200px; vertical-align: top;">';
+				$out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
+				$out .= '<fieldset class="databox tactical_set">
+						<legend>' . 
+							__('Events -by module-') . 
+						'</legend>' . 
+						graph_event_module (180, 100, $event['id_agente']) . '</fieldset>';
+				$out .= '</td></tr></table>';
+			}
+			else {
+				$out .= '</td><td style="width: 200px; vertical-align: top;">';
+				$out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
+				$out .= '<fieldset class="databox tactical_set">
+						<legend>' . 
+							__('Event graph') . 
+						'</legend>' . 
+						grafico_eventos_total("", 180, 60) . '</fieldset>';
+				$out .= '<fieldset class="databox tactical_set">
+						<legend>' . 
+							__('Event graph by agent') . 
+						'</legend>' . 
+						grafico_eventos_grupo(180, 60) . '</fieldset>';
+				$out .= '</td></tr></table>';
+			}
 		}
-		else {
-			$out .= '</td><td style="width: 200px; vertical-align: top;">';
-			$out .= '<table cellpadding=0 cellspacing=0 class="databox"><tr><td>';
-			$out .= '<fieldset class="databox tactical_set">
-					<legend>' . 
-						__('Event graph') . 
-					'</legend>' . 
-					grafico_eventos_total("", 180, 60) . '</fieldset>';
-			$out .= '<fieldset class="databox tactical_set">
-					<legend>' . 
-						__('Event graph by agent') . 
-					'</legend>' . 
-					grafico_eventos_grupo(180, 60) . '</fieldset>';
-			$out .= '</td></tr></table>';
-		}
-		
 		$out .= '</td></tr></table>';
 		
 		unset ($table);

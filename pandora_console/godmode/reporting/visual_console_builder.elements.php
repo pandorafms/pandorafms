@@ -17,7 +17,23 @@ global $config;
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "RW")) {
+// Visual console required
+if (empty($visualConsole)) {
+	db_pandora_audit("ACL Violation",
+		"Trying to access report builder");
+	require ("general/noaccess.php");
+	exit;
+}
+
+// ACL for the existing visual console
+// if (!isset($vconsole_read))
+// 	$vconsole_read = check_acl ($config['id_user'], $visualConsole['id_group'], "VR");
+if (!isset($vconsole_write))
+	$vconsole_write = check_acl ($config['id_user'], $visualConsole['id_group'], "VW");
+if (!isset($vconsole_manage))
+	$vconsole_manage = check_acl ($config['id_user'], $visualConsole['id_group'], "VM");
+
+if (!$vconsole_write && !$vconsole_manage) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
@@ -198,6 +214,7 @@ foreach ($layoutDatas as $layoutData) {
 		case STATIC_GRAPH:
 		case ICON:
 		case GROUP_ITEM:
+		case SERVICE:
 			$table->data[$i + 1][1] =
 				html_print_select ($images_list,
 					'image_' . $idLayoutData, $layoutData['image'], '',
@@ -324,11 +341,9 @@ foreach ($layoutDatas as $layoutData) {
 					$params['javascript_ajax_page'] = '../../ajax.php';
 					$params['disabled_javascript_on_blur_function'] = true;
 					
-					$params['print_input_server'] = true;
-					$params['input_server_id'] = 
-						$params['input_server_name'] = 'id_server_name_' . $idLayoutData;
-					$params['input_server_value'] =
-						db_get_value('server_name', 'tmetaconsole_setup', 'id', $layoutData['id_metaconsole']);
+					$params['print_input_id_server'] = true;
+					$params['input_id_server_id'] = $params['input_id_server_name'] = 'id_server_id_' . $idLayoutData;
+					$params['input_id_server_value'] = $layoutData['id_metaconsole'];
 					$params['metaconsole_enabled'] = true;
 					$params['print_hidden_input_idagent'] = true;
 					$params['hidden_input_idagent_name'] = 'id_agent_' . $idLayoutData;

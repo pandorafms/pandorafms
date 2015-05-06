@@ -120,7 +120,9 @@ config_process_config();
 
 config_prepare_session();
 require_once ($config["homedir"].'/include/load_session.php');
-$resultado = session_start();
+if(session_id() == '') {
+	$resultado = session_start();
+}
 
 
 if (!isset($config["homeurl_static"])) {

@@ -302,7 +302,7 @@ $(document).ready (function () {
 					
 					// Replace the old column with the new
 					$table_macros_field.replaceWith(field_row);
-					if (old_value != '' && old_recovery_value != ''){
+					if (old_value != '' || old_recovery_value != ''){
 						$("[name=field" + i + "_value]").val(old_value);
 						$("[name=field" + i + "_recovery_value]").val(old_recovery_value);
 					}

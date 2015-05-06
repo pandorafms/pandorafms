@@ -1329,6 +1329,12 @@ function config_process_config () {
 		config_update_value ('session_timeout', 90);
 	}
 	
+	if (!isset ($config["max_file_size"])) {
+		config_update_value ('max_file_size', "2M");
+	}
+	
+	
+	
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();
 }
@@ -1557,7 +1563,7 @@ function config_prepare_session() {
 	if (isset($_COOKIE[session_name()]))
 		setcookie(session_name(), $_COOKIE[session_name()], time() + $sessionCookieExpireTime, "/");
 	
-	ini_set("post_max_size",$config["max_file_size"]);
-	ini_set("upload_max_filesize",$config["max_file_size"]);
+	ini_set("post_max_size", $config["max_file_size"]);
+	ini_set("upload_max_filesize", $config["max_file_size"]);
 }
 ?>

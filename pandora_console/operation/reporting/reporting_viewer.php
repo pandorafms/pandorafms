@@ -245,7 +245,6 @@ if ($enable_init_date) {
 }
 
 $report = reporting_make_reporting_data($id_report, $date, $time, $period, 'dinamic');
-//~ html_debug_print($report);
 reporting_html_print_report($report);
 
 echo "<br>";
@@ -351,68 +350,6 @@ $(document).ready (function () {
 if ($datetime === false || $datetime == -1) {
 	ui_print_error_message(__('Invalid date selected'));
 	return;
-}
-
-// TODO: Evaluate if it's better to render blocks when are calculated
-// (enabling realtime flush) or if it's better to wait report to be
-// finished before showing anything (this could break the execution
-// by overflowing the running PHP memory on HUGE reports).
-
-
-$table->size = array ();
-$table->style = array ();
-$table->width = '98%';
-$table->class = 'databox';
-$table->rowclass = array ();
-$table->rowclass[0] = 'datos3';
-
-$report["group_name"] = groups_get_name ($report['id_group']);
-
-switch ($config["dbtype"]) {
-	case "mysql":
-		$contents = db_get_all_rows_field_filter ("treport_content",
-			"id_report", $id_report, "`order`");
-		break;
-	case "postgresql":
-		$contents = db_get_all_rows_field_filter ("treport_content",
-			"id_report", $id_report, '"order"');
-		break;
-	case "oracle":
-		$contents = db_get_all_rows_field_filter ("treport_content",
-			"id_report", $id_report, '"order"');
-		break;
-}
-if ($contents === false) {
-	return;
-}
-
-foreach ($contents as $content) {
-	$table->data = array ();
-	$table->head = array ();
-	$table->style = array ();
-	$table->colspan = array ();
-	$table->rowstyle = array ();
-	
-	// Calculate new inteval for all reports
-	if ($enable_init_date) {
-		if ($datetime_init >= $datetime) {
-			$datetime_init = $date_init_less;
-		}
-		$new_interval = $report['datetime'] - $datetime_init;
-		$content['period'] = $new_interval;
-	}
-	
-	reporting_render_report_html_item ($content, $table, $report);
-	
-	if ($content['type'] == 'agent_module')
-		echo '<div style="width: 99%; overflow: auto;">';
-	
-	html_print_table ($table);
-	
-	if ($content['type'] == 'agent_module')
-		echo '</div>';
-	
-	flush ();
 }
 
 enterprise_hook('close_meta_frame');

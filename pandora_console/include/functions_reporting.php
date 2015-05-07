@@ -3859,7 +3859,11 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 					false,
 					$only_avg,
 					false,
-					$report["datetime"], $only_image, $urlImage);
+					$report["datetime"],
+					$only_image,
+					$urlImage,
+					"",
+					$ttl);
 				
 			}
 			else {
@@ -3887,7 +3891,7 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 					true,
 					$only_image,
 					ui_get_full_url(false, false, false, false),
-					1,
+					$ttl,
 					false,
 					'',
 					$time_compare_overlapped,

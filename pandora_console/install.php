@@ -62,8 +62,8 @@
 	<body>
 		<div style='height: 10px'>
 			<?php
-$version = '6.0dev';
-$build = '150504';
+			$version = '6.0dev';
+			$build = '150504';
 			$banner = "v$version Build $build";
 			
 			error_reporting(0);
@@ -722,6 +722,18 @@ function install_step3() {
 function install_step4() {
 	$pandora_config = "include/config.php";
 	
+	if (!defined('PHP_EOL')) {
+		switch (strtoupper(substr(PHP_OS, 0, 3))) {
+			// Windows
+			case 'WIN':
+				define('PHP_EOL', "\r\n");
+				break;
+			// Unix
+			default:
+				define('PHP_EOL', "\n");
+		}
+	}
+	
 	if ( (! isset($_POST["user"])) || (! isset($_POST["dbname"])) || (! isset($_POST["host"])) || 
 	(! isset($_POST["pass"])) || (!isset($_POST['engine'])) || (! isset($_POST["db_action"])) ) {
 		$dbpassword = "";
@@ -818,32 +830,32 @@ function install_step4() {
 							$cfgout = fopen ($pandora_config,"w");
 							$config_contents = fread ($cfgin, filesize("include/config.inc.php"));
 							$dbtype = 'mysql';
-							$config_new = '<?php
-							// Begin of automatic config file
-							$config["dbtype"] = "' . $dbtype . '"; //DB type (mysql, postgresql...in future others)
-							$config["dbname"]="'.$dbname.'";			// MySQL DataBase name
-							$config["dbuser"]="pandora";			// DB User
-							$config["dbpass"]="'.$random_password.'";	// DB Password
-							$config["dbhost"]="'.$dbhost.'";			// DB Host
-							$config["homedir"]="'.$path.'";		// Config homedir
-							/*
-							----------Attention--------------------
-							Please note that in certain installations:
-								- reverse proxy.
-								- web server in other ports.
-								- https
-							
-							This variable might be dynamically altered.
-							
-							But it is save as backup in the
-							$config["homeurl_static"]
-							for expecial needs.
-							----------Attention--------------------
-							*/
-							$config["homeurl"]="'.$url.'";			// Base URL
-							$config["homeurl_static"]="'.$url.'";			// Don\'t  delete
-							// End of automatic config file
-							?>';
+							$config_new = '<?php' . PHP_EOL
+								. '// Begin of automatic config file' . PHP_EOL
+								. '$config["dbtype"] = "' . $dbtype . '";			//DB type (mysql, oracle, postgresql)' . PHP_EOL
+								. '$config["dbname"]="' . $dbname . '";			// DataBase name' . PHP_EOL
+								. '$config["dbuser"]="pandora";			// DB User' . PHP_EOL
+								. '$config["dbpass"]="' . $random_password . '";		// DB Password' . PHP_EOL
+								. '$config["dbhost"]="' . $dbhost . '";			// DB Host' . PHP_EOL
+								. '$config["homedir"]="' . $path . '";			// Config homedir' . PHP_EOL
+								. '/*' . PHP_EOL
+								. '----------Attention--------------------' . PHP_EOL
+								. 'Please note that in certain installations:' . PHP_EOL
+								. '	- reverse proxy.' . PHP_EOL
+								. '	- web server in other ports.' . PHP_EOL
+								. '	- https' . PHP_EOL
+								. PHP_EOL
+								. 'This variable might be dynamically altered.' . PHP_EOL
+								. PHP_EOL
+								. 'But it is save as backup in the' . PHP_EOL
+								. '$config["homeurl_static"]' . PHP_EOL
+								. 'for expecial cases.' . PHP_EOL
+								. '----------Attention--------------------' . PHP_EOL
+								. '*/' . PHP_EOL
+								. '$config["homeurl"]="'.$url.'";			// Base URL' . PHP_EOL
+								. '$config["homeurl_static"]="'.$url.'";		// Don\'t  delete' . PHP_EOL
+								. '// End of automatic config file' . PHP_EOL
+								. '?>' . PHP_EOL . PHP_EOL;
 							$step7 = fputs ($cfgout, $config_new);
 							$step7 = $step7 + fputs ($cfgout, $config_contents);
 							if ($step7 > 0)
@@ -882,8 +894,7 @@ function install_step4() {
 						
 						check_generic ($step2, "Populating database");	
 
-						if (PHP_OS == "FreeBSD")
- {
+						if (PHP_OS == "FreeBSD") {
 							$step_freebsd = adjust_paths_for_freebsd ($engine, $connection);
 							check_generic ($step_freebsd, "Adjusting paths in database for FreeBSD");
 						}
@@ -901,32 +912,32 @@ function install_step4() {
 							$cfgout = fopen ($pandora_config,"w");
 							$config_contents = fread ($cfgin, filesize("include/config.inc.php"));
 							$dbtype = 'oracle';
-							$config_new = '<?php
-							// Begin of automatic config file
-							$config["dbtype"] = "' . $dbtype . '"; 	//DB type (mysql, postgresql, oracle)
-							$config["dbname"]="' . $dbname . '";		// Oracle DataBase name
-							$config["dbuser"]="' . $dbuser . '";		// DB User
-							$config["dbpass"]="' . $dbpassword . '";	// DB Password
-							$config["dbhost"]="' . $dbhost . '";		// DB Host
-							$config["homedir"]="' . $path . '";		// Config homedir
-							/*
-							----------Attention--------------------
-							Please note that in certain installations:
-								- reverse proxy.
-								- web server in other ports.
-								- https
-							
-							This variable might be dynamically altered.
-							
-							But it is save as backup in the
-							$config["homeurl_static"]
-							for expecial cases.
-							----------Attention--------------------
-							*/
-							$config["homeurl"]="' . $url . '";		// Base URL
-							$config["homeurl_static"]="'.$url.'";			// Don\'t  delete
-							// End of automatic config file
-							?>';
+							$config_new = '<?php' . PHP_EOL
+								. '// Begin of automatic config file' . PHP_EOL
+								. '$config["dbtype"] = "' . $dbtype . '";		//DB type (mysql, oracle, postgresql)' . PHP_EOL
+								. '$config["dbname"]="' . $dbname . '";		// DataBase name' . PHP_EOL
+								. '$config["dbuser"]="' . $dbuser . '";		// DB User' . PHP_EOL
+								. '$config["dbpass"]="' . $dbpassword . '";			// DB Password' . PHP_EOL
+								. '$config["dbhost"]="' . $dbhost . '";		// DB Host' . PHP_EOL
+								. '$config["homedir"]="' . $path . '";		// Config homedir' . PHP_EOL
+								. '/*' . PHP_EOL
+								. '----------Attention--------------------' . PHP_EOL
+								. 'Please note that in certain installations:' . PHP_EOL
+								. '	- reverse proxy.' . PHP_EOL
+								. '	- web server in other ports.' . PHP_EOL
+								. '	- https' . PHP_EOL
+								. PHP_EOL
+								. 'This variable might be dynamically altered.' . PHP_EOL
+								. PHP_EOL
+								. 'But it is save as backup in the' . PHP_EOL
+								. '$config["homeurl_static"]' . PHP_EOL
+								. 'for expecial cases.' . PHP_EOL
+								. '----------Attention--------------------' . PHP_EOL
+								. '*/' . PHP_EOL
+								. '$config["homeurl"]="'.$url.'";			// Base URL' . PHP_EOL
+								. '$config["homeurl_static"]="'.$url.'";		// Don\'t  delete' . PHP_EOL
+								. '// End of automatic config file' . PHP_EOL
+								. '?>' . PHP_EOL . PHP_EOL;
 							$step4 = fputs ($cfgout, $config_new);
 							$step4 = $step4 + fputs ($cfgout, $config_contents);
 							if ($step4 > 0)
@@ -1000,8 +1011,7 @@ function install_step4() {
 						
 						check_generic ($step4, "Populating database");
 
-						if (PHP_OS == "FreeBSD")
- {
+						if (PHP_OS == "FreeBSD") {
 							$step_freebsd = adjust_paths_for_freebsd ($engine, $connection);
 							check_generic ($step_freebsd, "Adjusting paths in database for FreeBSD");
 						}
@@ -1101,32 +1111,32 @@ function install_step4() {
 							$cfgout = fopen ($pandora_config,"w");
 							$config_contents = fread ($cfgin, filesize("include/config.inc.php"));
 							$dbtype = 'postgresql';
-							$config_new = '<?php
-							// Begin of automatic config file
-							$config["dbtype"] = "' . $dbtype . '"; //DB type (mysql, postgresql...in future others)
-							$config["dbname"]="'.$dbname.'";			// MySQL DataBase name
-							$config["dbuser"]="pandora";			// DB User
-							$config["dbpass"]="'.$random_password.'";	// DB Password
-							$config["dbhost"]="'.$dbhost.'";			// DB Host
-							$config["homedir"]="'.$path.'";		// Config homedir
-							/*
-							----------Attention--------------------
-							Please note that in certain installations:
-								- reverse proxy.
-								- web server in other ports.
-								- https
-							
-							This variable might be dynamically altered.
-							
-							But it is save as backup in the
-							$config["homeurl_static"]
-							for expecial cases.
-							----------Attention--------------------
-							*/
-							$config["homeurl"]="'.$url.'";			// Base URL
-							$config["homeurl_static"]="'.$url.'";			// Don\'t  delete
-							// End of automatic config file
-							?>';
+							$config_new = '<?php' . PHP_EOL
+								. '// Begin of automatic config file' . PHP_EOL
+								. '$config["dbtype"] = "'.$dbtype.'"; //DB type (mysql, oracle, postgresql...)' . PHP_EOL
+								. '$config["dbname"]="'.$dbname.'";			// DataBase name' . PHP_EOL
+								. '$config["dbuser"]="pandora";			// DB User' . PHP_EOL
+								. '$config["dbpass"]="'.$random_password.'";		// DB Password' . PHP_EOL
+								. '$config["dbhost"]="'.$dbhost.'";			// DB Host' . PHP_EOL
+								. '$config["homedir"]="'.$path.'";		// Config homedir' . PHP_EOL
+								. '/*' . PHP_EOL
+								. '----------Attention--------------------' . PHP_EOL
+								. 'Please note that in certain installations:' . PHP_EOL
+								. '	- reverse proxy.' . PHP_EOL
+								. '	- web server in other ports.' . PHP_EOL
+								. '	- https' . PHP_EOL
+								. PHP_EOL
+								. 'This variable might be dynamically altered.' . PHP_EOL
+								. PHP_EOL
+								. 'But it is save as backup in the' . PHP_EOL
+								. '$config["homeurl_static"]' . PHP_EOL
+								. 'for expecial cases.' . PHP_EOL
+								. '----------Attention--------------------' . PHP_EOL
+								. '*/' . PHP_EOL
+								. '$config["homeurl"]="'.$url.'";			// Base URL' . PHP_EOL
+								. '$config["homeurl_static"]="'.$url.'";		// Don\'t  delete' . PHP_EOL
+								. '// End of automatic config file' . PHP_EOL
+								. '?>' . PHP_EOL . PHP_EOL;
 							$step7 = fputs ($cfgout, $config_new);
 							$step7 = $step7 + fputs ($cfgout, $config_contents);
 							if ($step7 > 0)

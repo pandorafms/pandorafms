@@ -141,7 +141,7 @@ $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_use
 $tags = tags_get_user_tags($config['id_user'], 'ER');
 
 
-if ($id_agent == 0 && $text_agent != __('All')) {
+if ($id_agent == 0 && !empty($text_agent)) {
 	$id_agent = -1;
 }
 
@@ -708,7 +708,7 @@ if ($group_rep == 0) {
 			$set = array();
 			$set['limit'] = $pagination;
 			$set['offset'] = $offset;
-			$sql = "SELECT *, 1 event_rep
+			$sql = "SELECT $event_table.*, 1 event_rep
 				FROM $event_table
 				WHERE 1=1 " . $sql_post . "
 				ORDER BY utimestamp DESC"; 
@@ -735,12 +735,23 @@ if (!empty($result)) {
 			WHERE 1=1 " . $sql_post;
 	}
 	else {
-		
-		$sql = "SELECT COUNT(1)
-			FROM (SELECT 1
-				FROM $event_table
-				WHERE 1=1 " . $sql_post . "
-				GROUP BY evento, id_agentmodule) AS t";
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$sql = "SELECT COUNT(1)
+						FROM (SELECT 1
+							FROM $event_table
+							WHERE 1=1 " . $sql_post . "
+							GROUP BY evento, id_agentmodule) t";
+				break;
+			case "oracle":
+				$sql = "SELECT COUNT(1)
+						FROM (SELECT 1
+							FROM $event_table
+							WHERE 1=1 " . $sql_post . "
+							GROUP BY to_char(evento), id_agentmodule) t";
+				break;
+		}
 	}
 	$limit = (int) db_get_sql ($sql);
 	
@@ -762,7 +773,7 @@ if (!empty($result)) {
 				$set = array();
 				$set['limit'] = $pagination;
 				$set['offset'] = $offset;
-				$sql = "SELECT *, 1 event_rep
+				$sql = "SELECT $event_table.*, 1 event_rep
 					FROM $event_table
 					WHERE 1=1 " . $sql_post . "
 					ORDER BY utimestamp DESC"; 
@@ -814,15 +825,27 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 
 if ($group_rep == 0) {
 	$sql = "SELECT COUNT(id_evento)
-		FROM $event_table
-		WHERE 1=1 " . $sql_post;
+			FROM $event_table
+			WHERE 1=1 $sql_post";
 }
 else {
-	$sql = "SELECT COUNT(1)
-		FROM (SELECT 1
-			FROM $event_table
-			WHERE 1=1 " . $sql_post . "
-			GROUP BY evento, id_agentmodule) AS t";
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = "SELECT COUNT(1)
+				FROM (SELECT 1
+					FROM $event_table
+					WHERE 1=1 $sql_post
+					GROUP BY evento, id_agentmodule) t";
+			break;
+		case "oracle":
+			$sql = "SELECT COUNT(1)
+					FROM (SELECT 1
+						FROM $event_table
+						WHERE 1=1 $sql_post
+						GROUP BY to_char(evento), id_agentmodule) t";
+			break;
+	}
 }
 
 

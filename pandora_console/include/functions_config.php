@@ -1408,6 +1408,7 @@ function config_check () {
 	$PHPmemory_limit = config_return_in_bytes(ini_get('memory_limit'));
 	$PHPmax_execution_time = ini_get('max_execution_time');
 	$PHPsafe_mode = ini_get('safe_mode');
+	$PHPdisable_functions = ini_get('disable_functions');
 	
 	if ($PHPsafe_mode === '1') {
 		$config["alert_cnt"]++;
@@ -1451,6 +1452,12 @@ function config_check () {
 			array('title' => sprintf(__("Not recommended '%s' value in PHP configuration"), 'memory_limit'),
 			'message' => sprintf(__('Recommended value is: %s'), sprintf(__('%s or greater'), '500M')) . '<br><br>' . __('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
 			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+	}
+	
+	if (preg_match("/system/", $PHPdisable_functions) or preg_match("/exec/", $PHPdisable_functions)) {
+		set_pandora_error_for_header( 
+			__("Variable disable_functions containts functions system() or exec(), in PHP configuration file (php.ini)"). '<br /><br />' . 
+			__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'), __("Problems with disable functions in PHP.INI"));
 	}
 }
 

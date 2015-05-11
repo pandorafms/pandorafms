@@ -15,75 +15,68 @@
 // GNU General Public License for more details.
 
 
-function mysql_session_open ($save_path, $session_name) {
+function pandora_session_open ($save_path, $session_name) {
 	return true;
-} 
+}
 
-function mysql_session_close() {
+function pandora_session_close() {
 	return true;
-} 
+}
 
-function mysql_session_read ($SessionID) {        
-
-	$SessionID = addslashes($SessionID); 
- 
-    $sql = "SELECT data FROM tsessions_php                   
-		WHERE id_session = '$SessionID'";
+function pandora_session_read ($session_id) {
+	$session_id = addslashes($session_id);
+	$session_data = db_get_value('data', 'tsessions_php', 'id_session', $session_id);
 	
-	$session_data = db_process_sql($sql);
+	if (!empty($session_data))
+		return $session_data;
+	else
+		return false;
+}
 
-	if (count($session_data) == 1) {        
-		return $session_data[0]['data'];
-	} else {             
-		return false;         
-	}     
-} 
-
-function mysql_session_write ($SessionID, $val) {
-
-	$SessionID = addslashes($SessionID);         
-    $val = addslashes($val); 
-
-	$sql = "SELECT COUNT(*) FROM tsessions_php
-		WHERE id_session = '$SessionID'";
-		
-	$SessionExists = db_process_sql ($sql); 
-
-	$session_exists = $SessionExists[0]['COUNT(*)'];
-
-	if ($session_exists == 0) {
-		$now = time();
-		$retval_write = db_process_sql_insert ('tsessions_php', array('id_session'=>$SessionID, 'last_active'=>$now, 'data'=>$val));
-	} else {
-		$now = time();
-		$retval_write = db_process_sql_update ('tsessions_php', array('last_active'=>$now, 'data'=>$val), array('id_session'=>$SessionID));
-	} 
-
-	return $retval_write;     
-} 
-
-function mysql_session_destroy ($SessionID) {   
-    $SessionID = addslashes($SessionID); 
-
-    $retval = db_process_sql ("DELETE FROM tsessions_php 
-				WHERE id_session = '$SessionID'");
-	return $retval;
-} 
-
-function mysql_session_gc ($maxlifetime = 300) {
-	global $config;
+function pandora_session_write ($session_id, $val) {
+	$session_id = addslashes($session_id);
 	
-	if (isset($config['session_timeout'])) {
-		$maxlifetime = $config['session_timeout'];
+	$values = array();
+	$values['last_active'] = time();
+	
+	if (!empty($val))
+		$values['data'] = addslashes($val);
+	
+	$session_exists = (bool) db_get_value('COUNT(id_session)', 'tsessions_php', 'id_session', $session_id);
+	
+	if (!$session_exists) {
+		$values['id_session'] = $session_id;
+		$retval_write = db_process_sql_insert('tsessions_php', $values);
 	}
- 
-	$CutoffTime = time() - $maxlifetime;
-	        
-	$retval = db_process_sql("DELETE FROM tsessions_php 
-			WHERE last_active < $CutoffTime");         
+	else {
+		$retval_write = db_process_sql_update('tsessions_php', $values, array('id_session' => $session_id));
+	}
+
+	return $retval_write;
+}
+
+function pandora_session_destroy ($session_id) {
+	$session_id = addslashes($session_id);
+	
+	$retval = db_process_sql_delete('tsessions_php', array('id_session' => $session_id));
+	
 	return $retval;
 }
 
-$resultado_handler = session_set_save_handler ('mysql_session_open', 'mysql_session_close', 'mysql_session_read', 'mysql_session_write', 'mysql_session_destroy', 'mysql_session_gc'); 
+function pandora_session_gc ($max_lifetime = 300) {
+	global $config;
+	
+	if (isset($config['session_timeout'])) {
+		$max_lifetime = $config['session_timeout'];
+	}
+	
+	$time_limit = time() - $max_lifetime;
+	
+	$retval = db_process_sql_delete('tsessions_php', array('last_active' => "<" . $time_limit));
+	
+	return $retval;
+}
+
+$result_handler = session_set_save_handler ('pandora_session_open', 'pandora_session_close', 'pandora_session_read', 'pandora_session_write', 'pandora_session_destroy', 'pandora_session_gc'); 
 
 ?>

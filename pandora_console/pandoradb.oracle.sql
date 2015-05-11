@@ -27,6 +27,9 @@
 CREATE OR REPLACE FUNCTION UNIX_TIMESTAMP (oracletime IN DATE DEFAULT SYSDATE) RETURN INTEGER AS unixtime INTEGER; BEGIN unixtime := (oracletime - to_date('19700101','YYYYMMDD')) * 86400; RETURN unixtime; END;;
 CREATE OR REPLACE FUNCTION NOW RETURN TIMESTAMP AS t_now TIMESTAMP; BEGIN SELECT LOCALTIMESTAMP INTO t_now FROM dual; RETURN t_now; END;;
 
+-- Procedure for retrieve PK information after an insert statement
+CREATE OR REPLACE PROCEDURE insert_id (table_name IN VARCHAR2, sql_insert IN VARCHAR2, id OUT NUMBER ) IS v_count NUMBER; BEGIN EXECUTE IMMEDIATE sql_insert; EXECUTE IMMEDIATE 'SELECT COUNT(*) FROM user_sequences WHERE sequence_name = ''' || table_name || '_s''' INTO v_count; IF v_count >= 1 THEN EXECUTE IMMEDIATE 'SELECT ' || table_name || '_s.currval FROM DUAL' INTO id; ELSE id := 0; END IF; EXCEPTION WHEN others THEN RAISE_APPLICATION_ERROR(-20001, 'ERROR on insert_id procedure, please check input parameters or procedure logic.'); END insert_id;;
+
 -- ---------------------------------------------------------------------
 -- Table `taddress`
 -- ---------------------------------------------------------------------
@@ -1691,10 +1694,6 @@ CREATE OR REPLACE TRIGGER tagent_custom_data_update AFTER UPDATE OF id_field on 
 
 -- on update trigger 1
 CREATE OR REPLACE TRIGGER tagent_custom_data_update1 AFTER UPDATE OF id_agente on tagente FOR EACH ROW BEGIN UPDATE tagent_custom_data SET id_agent = :NEW.id_agente WHERE id_agent = :OLD.id_agente; END;;
-
--- Procedure for retrieve PK information after an insert statement
-CREATE OR REPLACE PROCEDURE insert_id (table_name IN VARCHAR2, sql_insert IN VARCHAR2, id OUT NUMBER) IS BEGIN EXECUTE IMMEDIATE sql_insert; EXECUTE IMMEDIATE 'SELECT ' ||table_name||'_s.currval FROM DUAL' INTO id; EXCEPTION WHEN others THEN RAISE_APPLICATION_ERROR(-20001, 'ERROR on insert_id procedure, please check input parameters or procedure logic.'); END insert_id;;
-
 
 -- ---------------------------------------------------------------------
 -- Table ttag

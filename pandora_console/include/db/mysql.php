@@ -1099,4 +1099,67 @@ function mysql_get_fields($table) {
 	
 	return db_get_all_rows_sql("SHOW COLUMNS FROM " . $table);
 }
+
+/**
+ * Process a file with an oracle schema sentences.
+ * Based on the function which installs the pandoradb.sql schema.
+ * 
+ * @param string $path File path.
+ * @param bool $handle_error Whether to handle the mysql_query errors or throw an exception.
+ * 
+ * @return bool Return the final status of the operation.
+ */
+function mysql_db_process_file ($path, $handle_error = true) {
+	global $config;
+	
+	if (file_exists($path)) {
+		$file_content = file($path);
+		$query = "";
+		
+		// Begin the transaction
+		mysql_db_process_sql_begin();
+		
+		foreach ($file_content as $sql_line) {
+			if (trim($sql_line) != "" && strpos($sql_line, "--") === false) {
+				
+				$query .= $sql_line;
+				
+				if (preg_match("/;[\040]*\$/", $sql_line)) {
+					if (!$result = mysql_query($query)) {
+						// Error. Rollback the transaction
+						mysql_db_process_sql_rollback();
+						
+						$error_message = mysql_error();
+						
+						// Handle the error
+						if ($handle_error) {
+							$backtrace = debug_backtrace();
+							$error = sprintf('%s (\'%s\') in <strong>%s</strong> on line %d',
+								$error_message, $query, $backtrace[0]['file'], $backtrace[0]['line']);
+							db_add_database_debug_trace ($query, $error_message);
+							set_error_handler('db_sql_error_handler');
+							trigger_error($error);
+							restore_error_handler();
+							
+							return false;
+						}
+						// Throw an exception with the error message
+						else {
+							throw new Exception($error_message);
+						}
+					}
+					$query = "";
+				}
+			}
+		}
+		
+		// No errors. Commit the transaction
+		mysql_db_process_sql_commit();
+		
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 ?>

@@ -641,7 +641,7 @@ function db_process_sql($sql, $rettype = "affected_rows", $dbconnection = '', $c
 			return @postgresql_db_process_sql($sql, $rettype, $dbconnection, $cache, $status);
 			break;
 		case "oracle":
-			return @oracle_db_process_sql($sql, $rettype, $dbconnection, $cache, $status, $autocommit);
+			return oracle_db_process_sql($sql, $rettype, $dbconnection, $cache, $status, $autocommit);
 			break;
 	}
 }
@@ -1206,6 +1206,32 @@ function db_search_in_history_db ($utimestamp) {
 	}
 
 	return $search_in_history_db;
+}
+
+/**
+ * Process a file with an oracle schema sentences.
+ * Based on the function which installs the pandoradb.sql schema.
+ * 
+ * @param string $path File path.
+ * @param bool $handle_error Whether to handle the oci_execute errors or throw an exception.
+ * 
+ * @return bool Return the final status of the operation.
+ */
+function db_process_file ($path, $handle_error = true) {
+	global $config;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_db_process_file($path, $handle_error);
+			break;
+		case "postgresql":
+			// Not supported
+			//return postgresql_db_process_file($path, $handle_error);
+			break;
+		case "oracle":
+			return oracle_db_process_file($path, $handle_error);
+			break;
+	}
 }
 
 ?>

@@ -221,7 +221,7 @@ function oracle_db_process_sql($sql, $rettype = "affected_rows", $dbconnection =
 	
 	if ($sql == '')
 		return false;
-	
+	$cache = false;
 	if ($cache && ! empty ($sql_cache[$sql])) {
 		$retval = $sql_cache[$sql];
 		$sql_cache['saved']++;
@@ -229,40 +229,32 @@ function oracle_db_process_sql($sql, $rettype = "affected_rows", $dbconnection =
 	}
 	else {
 		$id = 0;
-		$parse_query = explode(' ',trim(preg_replace('/\s\s+/',' ',$sql)));
-		$table_name = preg_replace('/\((\w*|,\w*)*\)|\(\w*|,\w*/','',preg_replace('/\s/','',$parse_query[2]));
-		$type = explode(' ',strtoupper(trim($sql)));
+		$parse_query = explode(' ', trim(preg_replace('/\s\s+/', ' ', $sql)));
+		$table_name = preg_replace('/\((\w*|,\w*)*\)|\(\w*|,\w*/', '', preg_replace('/\s/', '', $parse_query[2]));
+		$type = explode(' ', strtoupper(trim($sql)));
 		
 		$start = microtime (true);
-		if ($dbconnection !== '') {
-			if ($type[0] == 'INSERT') {
-				$query = oci_parse($dbconnection, 'begin insert_id(:table_name, :sql, :out); end;');
-			}
-			// Prevent execution of insert_id stored procedure
-			else if ($type[0] == '/INSERT') {
-				$query = oci_parse($dbconnection, substr($sql,1));			
-			}
-			else {
-				$query = oci_parse($dbconnection, $sql);
-			}
+		
+		if (empty($dbconnection)) {
+			$dbconnection = $config['dbconnection'];
+		}
+		
+		if ($type[0] == 'INSERT') {
+			$query = oci_parse($dbconnection, 'BEGIN insert_id(:table_name, :sql, :out); END;');
+		}
+		// Prevent execution of insert_id stored procedure
+		else if ($type[0] == '/INSERT') {
+			$query = oci_parse($dbconnection, substr($sql,1));
 		}
 		else {
-			if ($type[0] == 'INSERT'){
-				$query = oci_parse($config['dbconnection'], 'begin insert_id(:table_name, :sql, :out); end;');
-			}
-			// Prevent execution of insert_id stored procedure
-			else if ($type[0] == '/INSERT'){
-				$query = oci_parse($config['dbconnection'], substr($sql,1));			
-			}
-			else {
-				$query = oci_parse($config['dbconnection'], $sql);
-			}
+			$query = oci_parse($dbconnection, $sql);
 		}
+		
 		//If query is an insert retrieve Id field
-		if ($type[0] == 'INSERT'){
-			oci_bind_by_name($query,":table_name", $table_name ,32);
-			oci_bind_by_name($query,":sql", $sql, 1000);
-			oci_bind_by_name($query,":out", $id, 32);
+		if ($type[0] == 'INSERT') {
+			oci_bind_by_name($query, ":table_name", $table_name, 32);
+			oci_bind_by_name($query, ":sql", $sql, -1);
+			oci_bind_by_name($query, ":out", $id, 32);
 		}
 		
 		if (!$autocommit) {
@@ -1480,5 +1472,96 @@ function oracle_db_get_table_count($sql, $search_history_db = false) {
 	$count += $history_count;
 	
 	return $count;
+}
+
+/**
+ * Process a file with an oracle schema sentences.
+ * Based on the function which installs the pandoradb.sql schema.
+ * 
+ * @param string $path File path.
+ * @param bool $handle_error Whether to handle the oci_execute errors or throw an exception.
+ * 
+ * @return bool Return the final status of the operation.
+ */
+function oracle_db_process_file ($path, $handle_error = true) {
+	global $config;
+	
+	if (file_exists($path)) {
+		$file_content = file($path);
+		
+		$query = "";
+		$plsql_block = false;
+		
+		// Begin the transaction
+		oracle_db_process_sql_begin();
+		
+		foreach ($file_content as $sql_line) {
+			$clean_line = trim($sql_line);
+			$comment = preg_match("/^(\s|\t)*--.*$/", $clean_line);
+			if ($comment) {
+				continue;
+			}
+			
+			if (empty($clean_line)) {
+				continue;
+			}
+			
+			//Support for PL/SQL blocks
+			if (preg_match("/^BEGIN$/", $clean_line)) {
+				$query .= $clean_line . ' ';
+				$plsql_block = true;
+			}
+			else{
+				$query .= $clean_line;
+			}
+			
+			//Check query's end with a back slash and any returns in the end of line or if it's a PL/SQL block 'END;;' string
+			if ((preg_match("/;[\040]*\$/", $clean_line) && !$plsql_block) || 
+				(preg_match("/^END;;[\040]*\$/", $clean_line) && $plsql_block)) {
+				$plsql_block = false;
+				//Execute and clean buffer
+				
+				//Delete the last semicolon from current query
+				$query = substr($query, 0, strlen($query) - 1);
+				$sql = oci_parse($config['dbconnection'], $query);
+				$result = oci_execute($sql, OCI_NO_AUTO_COMMIT);
+				
+				if (!$result) {
+					// Error. Rollback the transaction
+					oracle_db_process_sql_rollback();
+					
+					$e = oci_error($sql);
+					
+					// Handle the error
+					if ($handle_error) {
+						$backtrace = debug_backtrace();
+						$error = sprintf('%s (\'%s\') in <strong>%s</strong> on line %d',
+							htmlentities($e['message'], ENT_QUOTES), $query, $backtrace[0]['file'], $backtrace[0]['line']);
+						db_add_database_debug_trace ($query, htmlentities($e['message'], ENT_QUOTES));
+						set_error_handler('db_sql_error_handler');
+						trigger_error($error);
+						restore_error_handler();
+						
+						return false;
+					}
+					// Throw an exception with the error message
+					else {
+						throw new Exception($e['message']);
+					}
+				}
+				
+				$query = "";
+				oci_free_statement($sql);
+			}
+		}
+		
+		// No errors. Commit the transaction
+		oracle_db_process_sql_commit();
+		
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 ?>

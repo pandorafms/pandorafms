@@ -18,45 +18,37 @@
 function pandora_files_repo_install () {
 	global $config;
 	
-	
-	if (isset($config['files_repo_installed'])) {
-		if ($config['files_repo_installed'] == 1) {
-			return;
-		}
-	}
-	
+	if (isset($config['files_repo_installed']) && $config['files_repo_installed'] == 1)
+		return;
 	
 	$full_extensions_dir = $config['homedir']."/".EXTENSIONS_DIR."/";
 	$full_sql_dir = $full_extensions_dir."files_repo/sql/";
 	
-	/* SQL installation */
+	$file_path = '';
 	switch ($config['dbtype']) {
-		case 'mysql':
-			$sentences = file ($full_sql_dir.'files_repo.sql');
+		case "mysql":
+			$file_path = $full_sql_dir . 'files_repo.sql';
 			break;
-		case 'postgresql':
-			$sentences = file ($full_sql_dir.'files_repo.postgreSQL.sql');
+		case "postgresql":
+			$file_path = $full_sql_dir . 'files_repo.postgreSQL.sql';
 			break;
-		case 'oracle':
-			$sentences = file ($full_sql_dir.'files_repo.oracle.sql');
+		case "oracle":
+			$file_path = $full_sql_dir . 'files_repo.oracle.sql';
 			break;
 	}
 	
-	
-	foreach ($sentences as $sentence) {
-		if (trim ($sentence) == "")
-			continue;
-		$success = db_process_sql ($sentence);
-		if ($success === false)
-			return;
+	if (!empty($file_path)) {
+		$result = db_process_file($file_path);
+		
+		if ($result) {
+			/* Configuration values */
+			$values = array(
+					"token" => "files_repo_installed",
+					"value" => 1
+				);
+			db_process_sql_insert('tconfig', $values);
+		}
 	}
-	
-	/* Configuration values */
-	$values = array(
-			"token" => "files_repo_installed",
-			"value" => 1
-		);
-	db_process_sql_insert('tconfig', $values);
 }
 
 function pandora_files_repo_uninstall () {
@@ -76,7 +68,11 @@ function pandora_files_repo_uninstall () {
 				WHERE "token" LIKE \'files_repo_%\'');
 			break;
 		case "oracle":
+			db_process_sql('DROP TRIGGER "tfiles_repo_group_inc"');
+			db_process_sql('DROP SEQUENCE "tfiles_repo_group_s"');
 			db_process_sql('DROP TABLE "tfiles_repo_group"');
+			db_process_sql('DROP TRIGGER "tfiles_repo_inc"');
+			db_process_sql('DROP SEQUENCE "tfiles_repo_s"');
 			db_process_sql('DROP TABLE "tfiles_repo"');
 			db_process_sql('DELETE FROM tconfig
 				WHERE token LIKE \'files_repo_%\'');

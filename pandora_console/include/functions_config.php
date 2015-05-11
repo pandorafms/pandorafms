@@ -1455,9 +1455,12 @@ function config_check () {
 	}
 	
 	if (preg_match("/system/", $PHPdisable_functions) or preg_match("/exec/", $PHPdisable_functions)) {
-		set_pandora_error_for_header( 
-			__("Variable disable_functions containts functions system() or exec(), in PHP configuration file (php.ini)"). '<br /><br />' . 
-			__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'), __("Problems with disable functions in PHP.INI"));
+		$config["alert_cnt"]++;
+		$_SESSION["alert_msg"] .= ui_print_info_message(
+			array('title' => __("Problems with disable functions in PHP.INI"),
+			'message' => __("Variable disable_functions containts functions system() or exec(), in PHP configuration file (php.ini)"). '<br /><br />' . 
+			__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
+			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 	}
 }
 

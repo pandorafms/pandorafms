@@ -182,33 +182,33 @@ function events_get_events_grouped($sql_post, $offset = 0, $pagination = 1, $met
 		case "oracle":
 			if ($total) {
 				$sql = "SELECT COUNT(*)
-					FROM $table te
-					WHERE 1=1 " . $sql_post . " 
-					GROUP BY estado, to_char(evento), id_agentmodule" . $groupby_extra . ") b ";
+						FROM $table te
+						WHERE 1=1 $sql_post
+						GROUP BY estado, to_char(evento), id_agentmodule" . $groupby_extra . ") b ";
 			}
 			else {
 				$set = array();
 				$set['limit'] = $pagination;
 				$set['offset'] = $offset;
+				
 				// TODO: Remove duplicate user comments
 				$sql = "SELECT a.*, b.event_rep, b.timestamp_rep
-					FROM (SELECT * FROM $table WHERE 1=1 " . $sql_post . ") a, 
-					(SELECT MAX (id_evento) AS id_evento,  to_char(evento) AS evento, 
-					id_agentmodule, COUNT(*) AS event_rep,
-					LISTAGG(user_comment, '') AS user_comment, MAX(utimestamp) AS timestamp_rep, 
-					LISTAGG(id_evento, '') AS similar_ids,
-					MIN(utimestamp) AS timestamp_rep_min,
-					(SELECT owner_user FROM $table WHERE id_evento = MAX(te.id_evento)) owner_user,
-					(SELECT id_usuario FROM $table WHERE id_evento = MAX(te.id_evento)) id_usuario,
-					(SELECT id_agente FROM $table WHERE id_evento = MAX(te.id_evento)) id_agente,
-					(SELECT criticity FROM $table WHERE id_evento = MAX(te.id_evento)) AS criticity,
-					(SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp
-					FROM $table te
-					WHERE 1=1 " . $sql_post . " 
-					GROUP BY estado, to_char(evento), id_agentmodule" . $groupby_extra . ") b 
-					WHERE a.id_evento=b.id_evento AND 
-					to_char(a.evento)=to_char(b.evento) 
-					AND a.id_agentmodule=b.id_agentmodule";
+						FROM (SELECT * FROM $table WHERE 1=1 $sql_post) a,
+							(SELECT MAX(id_evento) AS id_evento, to_char(evento) AS evento, MIN(utimestamp) AS timestamp_rep_min,
+								id_agentmodule, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep,
+								LISTAGG(user_comment, '<br>') WITHIN GROUP (ORDER BY null) AS user_comment,
+								LISTAGG(id_evento, ',') WITHIN GROUP (ORDER BY null) AS similar_ids,
+								MAX(owner_user) KEEP (DENSE_RANK FIRST ORDER BY id_evento) AS owner_user,
+								MAX(id_usuario) KEEP (DENSE_RANK FIRST ORDER BY id_evento) AS id_usuario,
+								MAX(id_agente) KEEP (DENSE_RANK FIRST ORDER BY id_evento) AS id_agente,
+								MAX(criticity) KEEP (DENSE_RANK FIRST ORDER BY id_evento) AS criticity,
+								MAX(ack_utimestamp) KEEP (DENSE_RANK FIRST ORDER BY id_evento) AS ack_utimestamp
+							FROM $table te
+							WHERE 1=1 $sql_post
+							GROUP BY estado, to_char(evento), id_agentmodule$groupby_extra) b 
+						WHERE a.id_evento = b.id_evento
+							AND to_char(a.evento)=to_char(b.evento)
+							AND a.id_agentmodule=b.id_agentmodule";
 				$sql = oracle_recode_query ($sql, $set);
 			}
 			break;

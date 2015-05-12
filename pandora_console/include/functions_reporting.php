@@ -365,7 +365,10 @@ function reporting_make_reporting_data($id_report, $date, $time,
 			case 'event_report_agent':
 				$report['contents'][] = reporting_event_report_agent(
 					$report,
-					$content);
+					$content,
+					$type,
+					$force_width_chart,
+					$force_height_chart);
 				break;
 			case 'group_report':
 				$report['contents'][] = reporting_group_report(
@@ -1894,7 +1897,10 @@ function reporting_group_report($report, $content) {
 	return reporting_check_structure_content($return);
 }
 
-function reporting_event_report_agent($report, $content) {
+function reporting_event_report_agent($report, $content,
+	$type = 'dinamic', $force_width_chart = null,
+	$force_height_chart = null) {
+	
 	global $config;
 	
 	$return['type'] = 'event_report_agent';
@@ -1930,6 +1936,21 @@ function reporting_event_report_agent($report, $content) {
 		$filter_event_no_validated,
 		true);
 	
+	
+	
+	reporting_set_conf_charts($width, $height, $only_image, $type,
+		$content, $ttl);
+	
+	if (!empty($force_width_chart)) {
+		$width = $force_width_chart;
+	}
+	
+	if (!empty($force_height_chart)) {
+		$height = $force_height_chart;
+	}
+	
+	
+	
 	$return["chart"]["by_user_validator"] = null;
 	$return["chart"]["by_criticity"] = null;
 	$return["chart"]["validated_vs_unvalidated"] = null;
@@ -1951,10 +1972,11 @@ function reporting_event_report_agent($report, $content) {
 			500,
 			150,
 			__("other"),
-			"",
+			ui_get_full_url(false, false, false, false),
 			ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
 			$config['fontpath'],
-			$config['font_size']);
+			$config['font_size'],
+			$ttl);
 	}
 	
 	if ($event_graph_by_criticity) {
@@ -1969,9 +1991,18 @@ function reporting_event_report_agent($report, $content) {
 		$colors = get_criticity_pie_colors($data_graph);
 		
 		$return["chart"]["by_criticity"] = pie3d_graph(
-			false, $data_graph, 500, 150, __("other"), "",
+			false,
+			$data_graph,
+			500,
+			150,
+			__("other"),
+			ui_get_full_url(false, false, false, false),
 			ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
-			$config['fontpath'], $config['font_size'], 1, false, $colors);
+			$config['fontpath'],
+			$config['font_size'],
+			$ttl,
+			false,
+			$colors);
 	}
 	
 	if ($event_graph_validated_vs_unvalidated) {
@@ -1984,9 +2015,16 @@ function reporting_event_report_agent($report, $content) {
 			$filter_event_no_validated);
 		
 		$return["chart"]["validated_vs_unvalidated"] = pie3d_graph(
-			false, $data_graph, 500, 150, __("other"), "",
+			false,
+			$data_graph,
+			500,
+			150,
+			__("other"),
+			ui_get_full_url(false, false, false, false),
 			ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
-			$config['fontpath'], $config['font_size']);
+			$config['fontpath'],
+			$config['font_size'],
+			$ttl);
 	}
 	
 	return reporting_check_structure_content($return);
@@ -2593,7 +2631,8 @@ function reporting_sql_graph($report, $content, $type,
 				$height,
 				$content["type"],
 				true,
-				ui_get_full_url(false, false, false, false));
+				ui_get_full_url(false, false, false, false),
+				$ttl);
 			break;
 		case 'data':
 			break;
@@ -3997,6 +4036,13 @@ function reporting_set_conf_charts(&$width, &$height, &$only_image, $type,
 	}
 }
 
+
+
+
+
+
+
+
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -4005,6 +4051,94 @@ function reporting_set_conf_charts(&$width, &$height, &$only_image, $type,
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
+/**
+ * Gets a detailed reporting of groups's events.  
+ *
+ * @param unknown_type $id_group Id of the group.
+ * @param unknown_type $period Time period of the report.
+ * @param unknown_type $date Date of the report.
+ * @param unknown_type $return Whether to return or not.
+ * @param unknown_type $html Whether to return HTML code or not.
+ *
+ * @return string Report of groups's events
+ */
+function reporting_get_count_events_validated ($filter, $period = 0,
+	$date = 0,
+	$filter_event_validated = false, $filter_event_critical = false,
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_search = false) {
+	
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	
+	return events_get_count_events_validated($filter, $period, $date,
+		$filter_event_validated, $filter_event_critical,
+		$filter_event_warning, $filter_event_no_validated,
+		$filter_event_search);
+}
+
+/**
+ * Gets a detailed reporting of groups's events.  
+ *
+ * @param unknown_type $id_group Id of the group.
+ * @param unknown_type $period Time period of the report.
+ * @param unknown_type $date Date of the report.
+ * @param unknown_type $return Whether to return or not.
+ * @param unknown_type $html Whether to return HTML code or not.
+ *
+ * @return string Report of groups's events
+ */
+function reporting_get_count_events_by_criticity ($filter, $period = 0,
+	$date = 0,
+	$filter_event_validated = false, $filter_event_critical = false,
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_search = false) {
+	
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	
+	return events_get_count_events_by_criticity($filter, $period, $date,
+		$filter_event_validated, $filter_event_critical,
+		$filter_event_warning, $filter_event_no_validated,
+		$filter_event_search);
+}
+
+/**
+ * Gets a detailed reporting of groups's events.  
+ *
+ * @param unknown_type $filter.
+ * @param unknown_type $period Time period of the report.
+ * @param unknown_type $date Date of the report.
+ * @param unknown_type $return Whether to return or not.
+ * @param unknown_type $html Whether to return HTML code or not.
+ *
+ * @return string Report of groups's events
+ */
+function reporting_get_count_events_validated_by_user ($filter, $period = 0,
+	$date = 0,
+	$filter_event_validated = false, $filter_event_critical = false,
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_search = false) {
+	
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	
+	return events_get_count_events_validated_by_user($filter, $period, $date,
+		$filter_event_validated, $filter_event_critical,
+		$filter_event_warning, $filter_event_no_validated, $filter_event_search);
+}
 
 /**
  * Gets a detailed reporting of groups's events.  

@@ -2671,7 +2671,10 @@ function grafico_eventos_usuario ($width, $height) {
  * @param integer width graph width
  * @param integer Graph type 1 vbar, 2 hbar, 3 pie
  */
-function graph_custom_sql_graph ($id, $width, $height, $type = 'sql_graph_vbar', $only_image = false, $homeurl = '', $ttl = 1) {
+function graph_custom_sql_graph ($id, $width, $height,
+	$type = 'sql_graph_vbar', $only_image = false, $homeurl = '',
+	$ttl = 1) {
+	
 	global $config;
 	
 	$report_content = db_get_row ('treport_content', 'id_rc', $id);

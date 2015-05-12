@@ -1057,7 +1057,7 @@ function reporting_html_group_report($table, $item) {
 			<td><div class='cellBold cellCenter'>" .
 				__('Events') . "</div></td>
 			<td colspan='6'><div class='cellBold cellCenter cellWhite cellBorder1 cellBig'>" .
-				$item["data"]["count_events"]."</div></td>
+				$item["data"]["count_events"] . "</div></td>
 		</tr>
 	</table>";
 }
@@ -3549,21 +3549,6 @@ function reporting_header_content($mini, $content, $report, &$table,
 	array_push ($table->data, $data);
 }
 
-/** 
- * This function is used once, in reporting_viewer.php, the HTML report render
- * file. This function proccess each report item and write the render in the
- * table record.
- * 
- * @param array $content Record of treport_content table for current item
- * @param array $table HTML Table row
- * @param array $report Report contents, with some added fields.
- * @param array $mini Mini flag for reduce the size.
- * 
- */
-
-function reporting_render_report_html_item ($content, $table, $report, $mini = false) {
-	
-}
 
 
 
@@ -3648,94 +3633,10 @@ function reporting_get_count_events_by_agent ($id_group, $period = 0,
 		$filter_event_filter_search);
 }
 
-/**
- * Gets a detailed reporting of groups's events.  
- *
- * @param unknown_type $filter.
- * @param unknown_type $period Time period of the report.
- * @param unknown_type $date Date of the report.
- * @param unknown_type $return Whether to return or not.
- * @param unknown_type $html Whether to return HTML code or not.
- *
- * @return string Report of groups's events
- */
-function reporting_get_count_events_validated_by_user ($filter, $period = 0,
-	$date = 0,
-	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false,
-	$filter_event_search = false) {
-	
-	if (!is_numeric ($date)) {
-		$date = strtotime ($date);
-	}
-	if (empty ($date)) {
-		$date = get_system_time ();
-	}
-	
-	return events_get_count_events_validated_by_user($filter, $period, $date,
-		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning, $filter_event_no_validated, $filter_event_search);
-}
 
-/**
- * Gets a detailed reporting of groups's events.  
- *
- * @param unknown_type $id_group Id of the group.
- * @param unknown_type $period Time period of the report.
- * @param unknown_type $date Date of the report.
- * @param unknown_type $return Whether to return or not.
- * @param unknown_type $html Whether to return HTML code or not.
- *
- * @return string Report of groups's events
- */
-function reporting_get_count_events_by_criticity ($filter, $period = 0,
-	$date = 0,
-	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false,
-	$filter_event_search = false) {
-	
-	if (!is_numeric ($date)) {
-		$date = strtotime ($date);
-	}
-	if (empty ($date)) {
-		$date = get_system_time ();
-	}
-	
-	return events_get_count_events_by_criticity($filter, $period, $date,
-		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning, $filter_event_no_validated,
-		$filter_event_search);
-}
 
-/**
- * Gets a detailed reporting of groups's events.  
- *
- * @param unknown_type $id_group Id of the group.
- * @param unknown_type $period Time period of the report.
- * @param unknown_type $date Date of the report.
- * @param unknown_type $return Whether to return or not.
- * @param unknown_type $html Whether to return HTML code or not.
- *
- * @return string Report of groups's events
- */
-function reporting_get_count_events_validated ($filter, $period = 0,
-	$date = 0,
-	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false,
-	$filter_event_search = false) {
-	
-	if (!is_numeric ($date)) {
-		$date = strtotime ($date);
-	}
-	if (empty ($date)) {
-		$date = get_system_time ();
-	}
-	
-	return events_get_count_events_validated($filter, $period, $date,
-		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning, $filter_event_no_validated,
-		$filter_event_search);
-}
+
+
 
 function reporting_get_agents_by_status ($data, $graph_width = 250, $graph_height = 150, $links = false) {
 	global $config;

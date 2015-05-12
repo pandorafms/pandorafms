@@ -529,13 +529,13 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 	$id_modules = (array) $id_modules;
 	
 	$error = false;
-	$pos_y = 0;
-	$pos_x = 0;
+	$pos_y = 10;
+	$pos_x = 10;
 	
 	foreach ($id_modules as $id_module) {
 		if ($pos_x > 600) {
-			$pos_x = 0;
-			$pos_y = $range;
+			$pos_x = 10;
+			$pos_y = $pos_y + $range;
 		}
 		
 		if ($id_server != 0) {
@@ -639,7 +639,7 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 		
 		db_process_sql_insert ('tlayout_data', $values);
 		
-		$pos_x = $range;
+		$pos_x = $pos_x + $range;
 	}
 	
 	$return = ui_print_success_message (__('Modules successfully added to layout'), '', true);
@@ -1108,14 +1108,14 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 	}
 	
 	echo '<div id="layout_map"
-		style="margin: 20px auto;
+		style="margin:0px auto;
 			text-align:center;
 			z-index: 0;
+			position:relative;
 			width:' . $mapWidth . 'px;
-			height:' . $mapHeight . 'px;
-			background: #FFF url('.ui_get_full_url($backgroundImage).') no-repeat 50% 50%;">';
-	//echo "<img src='" .
-		//ui_get_full_url($backgroundImage) . "' width='100%' height='100%' />";
+			height:' . $mapHeight . 'px;">';
+	echo "<img src='" .
+		ui_get_full_url($backgroundImage) . "' width='100%' height='100%' />";
 	
 	
 	$layout_datas = db_get_all_rows_field_filter('tlayout_data',
@@ -1233,11 +1233,10 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				
 				// Draw image
 				if ($resizedMap)
-					echo '<div style="width:150px; float: left; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				else
-					echo '<div style="width:150px; float: left; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' margin-left: 50px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				
-				echo "<div style='width:150px'>";
 				if ($show_links) {
 					if ((!empty($layout_data['id_agent'])
 						&& empty($layout_data['id_layout_linked']))
@@ -1413,7 +1412,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				}
 				echo "</div>";
 				
-				echo "</a>" . "</div>";
+				echo "</a>";
 				break;
 			
 			
@@ -1421,9 +1420,9 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 			case LABEL:
 				$z_index = 4;
 				if ($resizedMap)
-					echo '<div style="float:left; text-align: left; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				else                  
-					echo '<div style="float:left; text-align: left; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					echo '<div style="left: 0px; top: 0px; text-align: left; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+				else
+					echo '<div style="left: 0px; top: 0px; text-align: left; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				
 				$endTagA = false;
 				if ($show_links) {
@@ -1452,9 +1451,9 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 			case ICON:
 				$z_index = 4;
 				if ($resizedMap)
-					echo '<div style="float:left text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				else                  
-					echo '<div style="float:left text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.((integer)($proportion * $layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion * $layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+				else
+					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				
 				$endTagA = false;
 				if ($show_links) {
@@ -1561,9 +1560,9 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				$unit_text = trim(io_safe_output($unit_text));
 				
 				if ($resizedMap)
-					echo '<div style="float:left; z-index: 1; color: '.$layout_data['label_color'].'; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
-				else                  
-					echo '<div style="float:left; z-index: 1; color: '.$layout_data['label_color'].'; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					echo '<div style="left: 0px; top: 0px; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+				else
+					echo '<div style="left: 0px; top: 0px; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				
 				$endTagA = false;
 				
@@ -1775,9 +1774,9 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				
 				
 				if ($resizedMap)
-					echo '<div style="float:left; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.((integer)($proportion *$layout_data['pos_x'])).'px; margin-top:'.((integer)($proportion *$layout_data['pos_y'])).'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				else
-					echo '<div style="float:left; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				
 				
 				//Metaconsole db connection
@@ -1951,7 +1950,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 						((integer)($proportion * $layout_data['pos_y']));
 				}
 				
-				echo '<div style="float:left; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+				echo '<div style="left: 0px; top: 0px; text-align: center; z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				
 				echo io_safe_output($layout_data['label']);
 				echo "<br>";

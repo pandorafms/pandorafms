@@ -148,6 +148,11 @@ sub db_connect ($$$$$$) {
 		# Set date format
 		$dbh->do("ALTER SESSION SET NLS_TIMESTAMP_FORMAT='YYYY-MM-DD HH24:MI:SS'");
 		$dbh->do("ALTER SESSION SET NLS_NUMERIC_CHARACTERS='.,'");
+		
+		# Configuration to avoid errors when working with CLOB columns
+		$dbh->{'LongReadLen'} = 66000;
+		$dbh->{'LongTruncOk'} = 1;
+		
 		return $dbh;
 	}
 	

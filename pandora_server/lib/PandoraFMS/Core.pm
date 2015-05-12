@@ -4317,7 +4317,7 @@ sub pandora_self_monitoring ($$) {
 			WHERE token = 'db_maintance'
 				AND NULLIF(value, '')::int > UNIX_TIMESTAMP() - 86400");
 	}
-	else if ($RDBMS eq 'oracle') {
+	elsif ($RDBMS eq 'oracle') {
 		$dbmaintance = get_db_value ($dbh,
 			"SELECT COUNT(*)
 			FROM tconfig

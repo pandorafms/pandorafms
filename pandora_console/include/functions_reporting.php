@@ -406,7 +406,10 @@ function reporting_make_reporting_data($id_report, $date, $time,
 			case 'event_report_group':
 				$report['contents'][] = reporting_event_report_group(
 					$report,
-					$content);
+					$content,
+					$type,
+					$force_width_chart,
+					$force_height_chart);
 				break;
 			case 'top_n':
 				$report['contents'][] = reporting_event_top_n(
@@ -1171,7 +1174,10 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 	return reporting_check_structure_content($return);
 }
 
-function reporting_event_report_group($report, $content) {
+function reporting_event_report_group($report, $content,
+	$type = 'dinamic', $force_width_chart = null,
+	$force_height_chart = null) {
+	
 	global $config;
 	
 	$return['type'] = 'event_report_group';
@@ -1214,6 +1220,21 @@ function reporting_event_report_group($report, $content) {
 		$return['data'] = $data;
 	}
 	
+	
+	
+	reporting_set_conf_charts($width, $height, $only_image, $type,
+		$content, $ttl);
+	
+	if (!empty($force_width_chart)) {
+		$width = $force_width_chart;
+	}
+	
+	if (!empty($force_height_chart)) {
+		$height = $force_height_chart;
+	}
+	
+	
+	
 	$return['chart']['by_agent'] = null;
 	$return['chart']['by_user_validator'] = null;
 	$return['chart']['by_criticity'] = null;
@@ -1230,9 +1251,16 @@ function reporting_event_report_group($report, $content) {
 			$filter_event_filter_search);
 			
 		$return['chart']['by_agent']= pie3d_graph(
-			false, $data_graph, 500, 150, __("other"), "",
+			false,
+			$data_graph,
+			500,
+			150,
+			__("other"),
+			ui_get_full_url(false, false, false, false),
 			ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
-			$config['fontpath'], $config['font_size']);
+			$config['fontpath'],
+			$config['font_size'],
+			$ttl);
 	}
 	
 	if ($event_graph_by_user_validator) {
@@ -1247,9 +1275,16 @@ function reporting_event_report_group($report, $content) {
 				$filter_event_filter_search);
 		
 		$return['chart']['by_user_validator'] = pie3d_graph(
-			false, $data_graph, 500, 150, __("other"), "",
+			false,
+			$data_graph,
+			500,
+			150,
+			__("other"),
+			ui_get_full_url(false, false, false, false),
 			ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
-			$config['fontpath'], $config['font_size']);
+			$config['fontpath'],
+			$config['font_size'],
+			$ttl);
 	}
 	
 	if ($event_graph_by_criticity) {
@@ -1265,9 +1300,18 @@ function reporting_event_report_group($report, $content) {
 		$colors = get_criticity_pie_colors($data_graph);
 		
 		$return['chart']['by_criticity'] = pie3d_graph(
-			false, $data_graph, 500, 150, __("other"), "",
+			false,
+			$data_graph,
+			500,
+			150,
+			__("other"),
+			ui_get_full_url(false, false, false, false),
 			ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
-			$config['fontpath'], $config['font_size'], 1, false, $colors);
+			$config['fontpath'],
+			$config['font_size'],
+			$ttl,
+			false,
+			$colors);
 	}
 	
 	if ($event_graph_validated_vs_unvalidated) {
@@ -1282,9 +1326,16 @@ function reporting_event_report_group($report, $content) {
 				$filter_event_filter_search);
 		
 		$return['chart']['validated_vs_unvalidated'] = pie3d_graph(
-			false, $data_graph, 500, 150, __("other"), "",
+			false,
+			$data_graph,
+			500,
+			150,
+			__("other"),
+			ui_get_full_url(false, false, false, false),
 			ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
-			$config['fontpath'], $config['font_size']);
+			$config['fontpath'],
+			$config['font_size'],
+			$ttl);
 	}
 	
 	return reporting_check_structure_content($return);
@@ -6333,5 +6384,35 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 	}
 
 	return $downtime_dates;
+}
+
+/**
+ * Gets a detailed reporting of groups's events.  
+ *
+ * @param unknown_type $id_group Id of the group.
+ * @param unknown_type $period Time period of the report.
+ * @param unknown_type $date Date of the report.
+ * @param unknown_type $return Whether to return or not.
+ * @param unknown_type $html Whether to return HTML code or not.
+ *
+ * @return string Report of groups's events
+ */
+function reporting_get_count_events_by_agent ($id_group, $period = 0,
+	$date = 0,
+	$filter_event_validated = false, $filter_event_critical = false,
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_filter_search = null) {
+	
+	if (!is_numeric ($date)) {
+		$date = strtotime ($date);
+	}
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	
+	return events_get_count_events_by_agent($id_group, $period, $date,
+		$filter_event_validated, $filter_event_critical,
+		$filter_event_warning, $filter_event_no_validated,
+		$filter_event_filter_search);
 }
 ?>

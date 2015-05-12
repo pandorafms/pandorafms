@@ -29,28 +29,44 @@ require_once ($config['homedir'].'/include/functions_users.php');
 
 if (is_ajax ()) {
 	$get_explanation = (bool) get_parameter('get_explanation', 0);
-	
 	if ($get_explanation) {
-		$id = (int) get_parameter('id', 0);
+		$id = (int) get_parameter('id');
 		
 		$explanation = db_get_value('description', 'trecon_script', 'id_recon_script', $id);
 		
 		echo io_safe_output($explanation);
-		
 		return;
 	}
 	
 	$get_recon_script_macros = get_parameter('get_recon_script_macros');
 	if ($get_recon_script_macros) {
-		$id_recon_script = get_parameter('id', 0);
+		$id_recon_script = (int) get_parameter('id');
+		$id_recon_task = (int) get_parameter('id_rt');
 		
-		$recon_script_macros = db_get_value('macros', 'trecon_script', 'id_recon_script',
-			$id_recon_script);
+		if (!empty($id_recon_task) && empty($id_recon_script)) {
+			$recon_script_macros = db_get_value('macros', 'trecon_task', 'id_rt', $id_recon_task);
+		}
+		else if (!empty($id_recon_task)) {
+			$recon_task_id_rs = (int) db_get_value('id_recon_script', 'trecon_task', 'id_rt', $id_recon_task);
+			
+			if ($id_recon_script == $recon_task_id_rs) {
+				$recon_script_macros = db_get_value('macros', 'trecon_task', 'id_rt', $id_recon_task);
+			}
+			else {
+				$recon_script_macros = db_get_value('macros', 'trecon_script', 'id_recon_script', $id_recon_script);
+			}
+		}
+		else if (!empty($id_recon_script)) {
+			$recon_script_macros = db_get_value('macros', 'trecon_script', 'id_recon_script', $id_recon_script);
+		}
+		else {
+			$recon_script_macros = array();
+		}
 		
 		$macros = array();
 		$macros['base64'] = base64_encode($recon_script_macros);
 		$macros['array'] = json_decode($recon_script_macros,true);
-		
+		html_debug($recon_script_macros, true);html_debug(json_decode($recon_script_macros,true), true);
 		echo io_json_mb_encode($macros);
 		return;
 	}
@@ -59,10 +75,10 @@ if (is_ajax ()) {
 }
 
 // Edit mode
-if (isset ($_GET["update"]) or (isset($_GET["crt"]))) {
+if (isset($_GET["update"]) || (isset($_GET["crt"]))) {
 	
 	$update_recon = true;
-	if (isset ($_GET["crt"])) {
+	if (isset($_GET["crt"])) {
 		if ($_GET["crt"] != "update") {
 			$update_recon = false;
 		}
@@ -75,7 +91,7 @@ if (isset ($_GET["update"]) or (isset($_GET["crt"]))) {
 		if (!isset($id_rt)) {
 			$id_rt = (int) get_parameter_get ("update");
 		}
-		$row = db_get_row ("trecon_task","id_rt",$id_rt);
+		$row = db_get_row ("trecon_task", "id_rt", $id_rt);
 		$name = $row["name"];
 		$network = $row["subnet"];
 		$id_recon_server = $row["id_recon_server"];
@@ -105,7 +121,7 @@ if (isset ($_GET["update"]) or (isset($_GET["crt"]))) {
 		$macros = $row["macros"];
 	}
 }
-elseif (isset ($_GET["create"]) or isset($_GET["crt"])) {
+elseif (isset($_GET["create"]) || isset($_GET["crt"])) {
 	$create_recon = true;
 	if (isset ($_GET["crt"])) {
 		if ($_GET["crt"] != "Create") {
@@ -150,28 +166,29 @@ if ($is_windows) {
 	echo '</div>';
 }
 
-$table->id='table_recon';
-$table->width='98%';
-$table->cellspacing=4;
-$table->cellpadding=4;
-$table->class="databox_color";
-$table->rowclass[3]="network_sweep";
-$table->rowclass[5]="network_sweep";
-$table->rowclass[7]="network_sweep";
-$table->rowclass[8]="network_sweep";
-$table->rowclass[11]="network_sweep";
-$table->rowclass[17]="network_sweep";
-$table->rowclass[18]="network_sweep";
-$table->rowclass[19]="network_sweep";
-$table->rowclass[20]="network_sweep";
-$table->rowclass[21]="network_sweep";
+$table->id = 'table_recon';
+$table->width = '98%';
+$table->cellspacing = 4;
+$table->cellpadding = 4;
+$table->class = "databox_color";
 
-$table->rowclass[6]="recon_script";
-$table->rowclass[12]="recon_script";
-$table->rowclass[13]="recon_script";
-$table->rowclass[14]="recon_script";
-$table->rowclass[15]="recon_script";
-$table->rowclass[16]="recon_script";
+$table->rowclass[3] = "network_sweep";
+$table->rowclass[5] = "network_sweep";
+$table->rowclass[7] = "network_sweep";
+$table->rowclass[8] = "network_sweep";
+$table->rowclass[11] = "network_sweep";
+$table->rowclass[17] = "network_sweep";
+$table->rowclass[18] = "network_sweep";
+$table->rowclass[19] = "network_sweep";
+$table->rowclass[20] = "network_sweep";
+$table->rowclass[21] = "network_sweep";
+
+$table->rowclass[6] = "recon_script";
+$table->rowclass[12] = "recon_script";
+$table->rowclass[13] = "recon_script";
+$table->rowclass[14] = "recon_script";
+$table->rowclass[15] = "recon_script";
+$table->rowclass[16] = "recon_script";
 // Name
 $table->data[0][0] = "<b>" . __('Task name') . "</b>";
 $table->data[0][1] = html_print_input_text ('name', $name, '', 25, 0, true);
@@ -181,28 +198,24 @@ $table->data[1][0] = "<b>" . __('Recon server') .
 	ui_print_help_tip(
 		__('You must select a Recon Server for the Task, otherwise the Recon Task will never run'), true);
 
-$table->data[1][1] = html_print_select_from_sql ('SELECT id_server, name
-	FROM tserver
-	WHERE server_type = 3
-	ORDER BY name', "id_recon_server", $id_recon_server, '', '', '', true);
-
+$sql = 'SELECT id_server, name
+		FROM tserver
+		WHERE server_type = 3
+		ORDER BY name';
+$table->data[1][1] = html_print_select_from_sql ($sql, "id_recon_server", $id_recon_server, '', '', '', true);
 
 $fields['network_sweep'] = __("Network sweep");
 if (!$is_windows)
 	$fields['recon_script'] = __("Custom script");
 
-
 $table->data[2][0] = "<b>".__('Mode')."</b>";
 $table->data[2][1] = html_print_select ($fields, "mode", $mode, '', '', 0, true);
-
 
 // Network 
 $table->data[3][0] = "<b>".__('Network');
 $table->data[3][1] = html_print_input_text ('network', $network, '', 25, 0, true);
 
 // Interval
-
-
 $table->data[4][0] = "<b>".__('Interval');
 $table->data[4][0] .= ui_print_help_tip (__('Manual interval means that it will be executed only On-demand'), true);
 
@@ -214,25 +227,32 @@ $table->data[4][1] .= html_print_extended_select_for_time ('interval' , $interva
 $table->data[4][1] .= ui_print_help_tip (__('The minimum recomended interval for Recon Task is 5 minutes'), true);
 $table->data[4][1] .= '</span>';
 
-
 // Module template
 $table->data[5][0] = "<b>".__('Module template');
-$table->data[5][1] = html_print_select_from_sql ('SELECT id_np, name FROM tnetwork_profile',
-	"id_network_profile", $id_network_profile, '', __('None'), 0, true);
+
+$sql = 'SELECT id_np, name
+		FROM tnetwork_profile
+		ORDER BY name';
+$table->data[5][1] = html_print_select_from_sql ($sql, "id_network_profile", $id_network_profile, '', __('None'), 0, true);
 
 // Recon script
 $data[1] = '';
 $table->data[6][0] = "<b>".__('Recon script');
-$table->data[6][1] = html_print_select_from_sql ('SELECT id_recon_script, name FROM trecon_script', 
-	"id_recon_script", $id_recon_script, 'get_explanation_recon_script($(\'#id_recon_script\').val())', '', '', true);
-$table->data[6][1] .= $data[1] .= html_print_input_hidden('macros',
-	base64_encode($macros),true);
 
+$sql = 'SELECT id_recon_script, name
+		FROM trecon_script
+		ORDER BY name';
+$table->data[6][1] = html_print_select_from_sql ($sql, "id_recon_script", $id_recon_script, '', '', '', true);
+$table->data[6][1] .= "<span id='spinner_recon_script' style='display: none;'>" . html_print_image ("images/spinner.gif", true) . "</span>";
+$table->data[6][1] .= $data[1] .= html_print_input_hidden('macros', base64_encode($macros),true);
 
 // OS
 $table->data[7][0] = "<b>".__('OS');
-$table->data[7][1] = html_print_select_from_sql ('SELECT id_os, name FROM tconfig_os ORDER BY name',
-	"id_os", $id_os, '', __('Any'), -1, true);
+
+$sql = 'SELECT id_os, name
+		FROM tconfig_os
+		ORDER BY name';
+$table->data[7][1] = html_print_select_from_sql ($sql, "id_os", $id_os, '', __('Any'), -1, true);
 
 // Recon ports
 $table->data[8][0] = "<b>".__('Ports');
@@ -255,18 +275,14 @@ $table->data[10][1] = html_print_select ($values, "create_incident", $create_inc
 $table->data[11][0] = "<b>".__('SNMP Default community');
 $table->data[11][1] =  html_print_input_text ('snmp_community', $snmp_community, '', 35, 0, true);
 
-// SNMP default community
-$table->data[11][0] = "<b>".__('SNMP Default community');
-$table->data[11][1] =  html_print_input_text ('snmp_community', $snmp_community, '', 35, 0, true);
-
-
+// Explanation
 $explanation = db_get_value('description', 'trecon_script', 'id_recon_script', $id_recon_script);
 
 $table->data[12][0] = "<b>" . __('Explanation') . "</b>";
-$table->data[12][1] = "<span id='spinner_layour' style='display: none;'>" . html_print_image ("images/spinner.gif", true) .
+$table->data[12][1] = "<span id='spinner_layout' style='display: none;'>" . html_print_image ("images/spinner.gif", true) .
 "</span>" . html_print_textarea('explanation', 4, 60, $explanation, 'style="width: 388px;"', true);
 
-// A hidden "model row" to clone it from javascript to add fields dynamicly
+// A hidden "model row" to clone it from javascript to add fields dynamicaly
 $data = array ();
 $data[0] = 'macro_desc';
 $data[0] .= ui_print_help_tip ('macro_help', true);
@@ -333,91 +349,131 @@ echo "</form>";
 ui_require_javascript_file ('pandora_modules');
 
 ?>
+
 <script type="text/javascript">
-/* <![CDATA[ */
-$(document).ready (function () {
-	if($('#mode').val() == 'recon_script') {
-		$(".recon_script").attr ('style', '');
-		$(".network_sweep").attr ('style', 'display:none');
-	}
-	else if($('#mode').val() == 'network_sweep') {
-		$(".network_sweep").attr ('style', '');
-		$(".recon_script").attr ('style', 'display:none');
-	}
+
+	$(document).ready (function () {
+		
+	});
 	
-	$('#mode').change(function() {
-		if(this.value == 'recon_script') {
-			$(".recon_script").attr ('style', '');
-			$(".network_sweep").attr ('style', 'display:none');
-			$("#textarea_explanation").css('display', 'none');
-			$("#spinner_layour").css('display', '');
+	var xhrManager = function () {
+		var manager = {};
+		
+		manager.tasks = [];
+		
+		manager.addTask = function (xhr) {
+			manager.tasks.push(xhr);
+		}
+		
+		manager.stopTasks = function () {
+			while (manager.tasks.length > 0)
+				manager.tasks.pop().abort();
+		}
+		
+		return manager;
+	};
+	
+	var taskManager = new xhrManager();
+	
+	$('select#interval_manual_defined').change(function() {
+		if ($("#interval_manual_defined").val() == 1) {
+			$('#interval_manual_container').hide();
+			$('#text-interval_text').val(0);
+			$('#hidden-interval').val(0);
+		}
+		else {
+			$('#interval_manual_container').show();
+			$('#text-interval_text').val(10);
+			$('#hidden-interval').val(600);
+			$('#interval_units').val(60);
+		}
+	}).change();
+	
+	$('select#id_recon_script').change(function() {
+		if ($('select#mode').val() == 'recon_script')
+			get_explanation_recon_script($(this).val());
+	});
+	
+	$('select#mode').change(function() {
+		var type = $(this).val();
+		
+		if (type == 'recon_script') {
+			$(".recon_script").show();
+			$(".network_sweep").hide();
+			
 			get_explanation_recon_script($("#id_recon_script").val());
 		}
-		else if(this.value == 'network_sweep') {
-			$(".network_sweep").attr ('style', '');
-			$(".recon_script").attr ('style', 'display:none');
+		else if (type == 'network_sweep') {
+			$(".recon_script").hide();
+			$(".network_sweep").show();
 		}
-	});
-});
-
-$("#interval_manual_defined").change(function() {
-	if ($("#interval_manual_defined").val() == 1) {
-		$('#interval_manual_container').css('visibility', 'hidden');
-		$('#text-interval_text').val('0');
-		$('#hidden-interval').val('0');
-	}
-	else {
-		$('#interval_manual_container').css('visibility', '');
-		$('#text-interval_text').val('10');
-		$('#hidden-interval').val('600');
-		$('#interval_units').val('60');
-	}
-});
+	}).change();
 	
-$("#interval_manual_defined").trigger('change');
-
-
-function get_explanation_recon_script(id) {
-	jQuery.post ("ajax.php",
-		{"page" : "godmode/servers/manage_recontask_form",
-		"get_explanation" : 1,
-		"id" : id
-		},
-		function (data, status) {
-			$("#spinner_layour").css('display', 'none');
-			$("#textarea_explanation").css('display', '');
-			$("#textarea_explanation").val(data);
-		}
-	);
-	
-	var params = [];
-	params.push("page=godmode/servers/manage_recontask_form");
-	params.push("get_recon_script_macros=1");
-	params.push("id=" + id);
-	
-	jQuery.ajax ({
-		data: params.join ("&"),
-		type: 'POST',
-		url: action = get_php_value('absolute_homeurl') + "ajax.php",
-		async: false,
-		timeout: 10000,
-		dataType: 'json',
-		success: function (data) {
-			// Delete all the macro fields
-			$('.macro_field').remove();
-			
-			if (data['array'] != null) {
-				$('#hidden-macros').val(data['base64']);
-				jQuery.each (data['array'], function (i, macro) {
-					if (macro['desc'] != '') {
-						add_macro_field(macro, 'table_recon-macro');
-					}
-				});
+	function get_explanation_recon_script (id) {
+		// Stop old ajax tasks
+		taskManager.stopTasks();
+		
+		// Show the spinners
+		$("#textarea_explanation").hide();
+		$("#spinner_layout").show();
+		
+		var xhr = jQuery.ajax ({
+			data: {
+				'page': 'godmode/servers/manage_recontask_form',
+				'get_explanation': 1,
+				'id': id,
+				'id_rt': <?php echo json_encode((int)$id_rt); ?>
+			},
+			url: "<?php echo $config['homeurl']; ?>ajax.php",
+			type: 'POST',
+			dataType: 'text',
+			complete: function (xhr, textStatus) {
+				$("#spinner_layout").hide();
+			},
+			success: function (data, textStatus, xhr) {
+				$("#textarea_explanation").val(data);
+				$("#textarea_explanation").show();
+			},
+			error: function (xhr, textStatus, errorThrown) {
+				console.log(errorThrown);
 			}
-			
-			forced_title_callback();
-		}
-	});
-}
-/* ]]> */
+		});
+		taskManager.addTask(xhr);
+		
+		// Delete all the macro fields
+		$('.macro_field').remove();
+		$("#spinner_recon_script").show();
+		
+		var xhr = jQuery.ajax ({
+			data: {
+				'page': 'godmode/servers/manage_recontask_form',
+				'get_recon_script_macros': 1,
+				'id': id,
+				'id_rt': <?php echo json_encode((int)$id_rt); ?>
+			},
+			url: "<?php echo $config['homeurl']; ?>ajax.php",
+			type: 'POST',
+			dataType: 'json',
+			complete: function (xhr, textStatus) {
+				$("#spinner_recon_script").hide();
+				forced_title_callback();
+			},
+			success: function (data, textStatus, xhr) {
+				if (data.array !== null) {
+					$('#hidden-macros').val(data.base64);
+					
+					jQuery.each (data.array, function (i, macro) {
+						if (macro.desc != '') {
+							add_macro_field(macro, 'table_recon-macro');
+						}
+					});
+				}
+			},
+			error: function (xhr, textStatus, errorThrown) {
+				console.log(errorThrown);
+			}
+		});
+		taskManager.addTask(xhr);
+	}
+
 </script>

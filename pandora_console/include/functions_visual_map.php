@@ -778,9 +778,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 	
 	echo '<div id="' . $id . '" class="' . $class . '" ' .
 		'style="z-index: ' .$z_index . ';' .
-			'position: absolute; top: ' . $top . 'px; ' .
-			'left: ' . $left . 'px;' .
-			'text-align: center;' .
+			'margin-top: ' . $top . 'px; ' .
+			'margin-left: ' . $left . 'px;' .
+			'float: center;' .
 			'display: inline-block; ' . $sizeStyle . '">';
 	
 	if ($link) {
@@ -800,6 +800,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		case STATIC_GRAPH:
 		case GROUP_ITEM:
+			echo "<div style='width:150px'>";
 			if ($layoutData['image'] != null) {
 				
 				
@@ -861,6 +862,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 				echo '<br />';
 			}
 			echo io_safe_output($text);
+			echo "</div>";
 			break;
 		
 		case PERCENTILE_BAR:
@@ -1179,13 +1181,13 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 	$id_modules = (array) $id_modules;
 	
 	$error = false;
-	$pos_y = 10;
-	$pos_x = 10;
+	$pos_y = 0;
+	$pos_x = 0;
 	
 	foreach ($id_modules as $id_module) {
 		if ($pos_x > 600) {
-			$pos_x = 10;
-			$pos_y = $pos_y + $range;
+			$pos_x = 0;
+			$pos_y = $range;
 		}
 		
 		if ($id_server != 0) {
@@ -1288,7 +1290,7 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 		
 		db_process_sql_insert ('tlayout_data', $values);
 		
-		$pos_x = $pos_x + $range;
+		$pos_x = $range;
 	}
 	
 	$return = ui_print_success_message (__('Modules successfully added to layout'), '', true);
@@ -1776,11 +1778,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		style="margin:0px auto;
 			text-align:center;
 			z-index: 0;
-			position:relative;
 			width:' . $mapWidth . 'px;
-			height:' . $mapHeight . 'px;">';
-	echo "<img src='" .
-		ui_get_full_url($backgroundImage) . "' width='100%' height='100%' />";
+			height:' . $mapHeight . 'px;
+			background: #FFF url('.ui_get_full_url($backgroundImage).') no-repeat 50% 50%;">';
+	
+	//echo "<img src='" .
+		//ui_get_full_url($backgroundImage) . "' width='100%' height='100%' />";
 	
 	
 	$layout_datas = db_get_all_rows_field_filter('tlayout_data',

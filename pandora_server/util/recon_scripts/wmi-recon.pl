@@ -360,7 +360,7 @@ pandora_load_config(\%CONF);
 pandora_start_log(\%CONF);
 
 # Connect to the DB.
-$DBH = db_connect ('mysql', $CONF{'dbname'}, $CONF{'dbhost'}, $CONF{'dbport'}, $CONF{'dbuser'}, $CONF{'dbpass'});
+$DBH = db_connect ($CONF{'dbengine'}, $CONF{'dbname'}, $CONF{'dbhost'}, $CONF{'dbport'}, $CONF{'dbuser'}, $CONF{'dbpass'});
 
 # Get the recon task from the database.
 my $task = get_db_single_row ($DBH, 'SELECT * FROM trecon_task WHERE id_rt = ?', $TASK_ID);

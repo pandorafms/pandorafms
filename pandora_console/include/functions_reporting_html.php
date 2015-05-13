@@ -1218,11 +1218,10 @@ function reporting_html_group_configuration($table, $item) {
 
 function reporting_html_network_interfaces_report($table, $item) {
 	
-	if ($item['error']) {
+	if (!empty($item['failed'])) {
 		$table->colspan['interfaces']['cell'] = 3;
 		$table->cellstyle['interfaces']['cell'] = 'text-align: left;';
-		$table->data['interfaces']['cell'] =
-			__('The group has no agents or none of the agents has any network interface');
+		$table->data['interfaces']['cell'] = $item['failed'];
 	}
 	else {
 		

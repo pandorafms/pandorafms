@@ -2251,11 +2251,12 @@ function reporting_network_interfaces_report($report, $content,
 	$network_interfaces_by_agents = agents_get_network_interfaces(false, $filter);
 	
 	if (empty($network_interfaces_by_agents)) {
-		$return['error'] = 1;
+		$return['failed'] =
+			__('The group has no agents or none of the agents has any network interface');
 		$return['data'] = array();
 	}
 	else {
-		$return['error'] = 0;
+		$return['failed'] = null;
 		$return['data'] = array();
 		
 		foreach ($network_interfaces_by_agents as $agent_id => $agent) {

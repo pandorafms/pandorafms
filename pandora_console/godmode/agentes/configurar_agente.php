@@ -994,7 +994,7 @@ if ($update_module || $create_module) {
 	
 	// Make changes in the conf file if necessary
 	enterprise_include_once('include/functions_config_agents.php');
-	if (!policies_is_module_in_policy($id_agent_module)) {
+	if (!enterprise_hook('policies_is_module_in_policy', array($id_agent_module))) {
 		enterprise_hook('config_agents_write_module_in_conf',
 			array($id_agente, io_safe_output($old_configuration_data),
 				io_safe_output($configuration_data), $disabled));

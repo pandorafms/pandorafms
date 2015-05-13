@@ -1117,7 +1117,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			$pa_config,
 			$event_text,
 			(defined ($agent) ? $agent->{'id_grupo'} : 0),
-			(defined ($fullagent) ? $fullagent->{'id_agente'} : 0),
+			(defined ($agent) ? $agent->{'id_agente'} : 0),
 			$priority,
 			(defined($alert) ? $alert->{'id'} : 0),
 			(defined($alert) ? $alert->{'id_agent_module'} : 0),

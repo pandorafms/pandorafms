@@ -270,7 +270,7 @@ sub get_agent_from_name ($$) {
 	
 	return undef if (! defined ($name) || $name eq '');
 	
-	return get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.nombre = ?', $name);
+	return get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.nombre = ?', safe_input($name));
 }
 
 ##########################################################################
@@ -1117,7 +1117,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 			$pa_config,
 			$event_text,
 			(defined ($agent) ? $agent->{'id_grupo'} : 0),
-			(defined ($agent) ? $agent->{'id_agente'} : 0),
+			(defined ($fullagent) ? $fullagent->{'id_agente'} : 0),
 			$priority,
 			(defined($alert) ? $alert->{'id'} : 0),
 			(defined($alert) ? $alert->{'id_agent_module'} : 0),

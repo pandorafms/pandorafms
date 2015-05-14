@@ -411,6 +411,10 @@ class Tree {
 									ta.fired_count, ta.normal_count, ta.warning_count,
 									ta.critical_count, ta.unknown_count, ta.notinit_count,
 									ta.total_count, ta.quiet';
+								$group_by_fields = 'ta.id_agente, ta.nombre, 
+									ta.fired_count, ta.normal_count, ta.warning_count,
+									ta.critical_count, ta.unknown_count, ta.notinit_count,
+									ta.total_count, ta.quiet';
 								$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
 
 								$sql = "SELECT $columns
@@ -425,6 +429,7 @@ class Tree {
 											$group_acl
 											$agent_search_filter
 											$agent_status_filter
+										GROUP BY $group_by_fields
 										ORDER BY $order_fields";
 							}
 							else {
@@ -464,7 +469,6 @@ class Tree {
 								WHERE tam.disabled = 0
 									AND tam.id_agente = $parent
 									$module_search_filter
-								GROUP BY tam.id_agente_modulo
 								ORDER BY $order_fields";
 						break;
 				}
@@ -523,6 +527,7 @@ class Tree {
 							}
 							
 							$columns = 'tt.id_tag AS id, tt.name AS name';
+							$group_by_fields = 'tt.id_tag, tt.name';
 							$order_fields = 'tt.name ASC, tt.id_tag ASC';
 							
 							// Tags SQL
@@ -543,7 +548,7 @@ class Tree {
 											$agent_search_filter
 											$agent_status_filter
 										$tag_filter
-										GROUP BY tt.id_tag
+										GROUP BY $group_by_fields
 										ORDER BY $order_fields";
 							}
 							// Counters SQL
@@ -570,6 +575,10 @@ class Tree {
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
+							$group_by_fields = 'ta.id_agente, ta.nombre, 
+								ta.fired_count, ta.normal_count, ta.warning_count,
+								ta.critical_count, ta.unknown_count, ta.notinit_count,
+								ta.total_count, ta.quiet';
 							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
 
 							$sql = "SELECT $columns
@@ -586,7 +595,7 @@ class Tree {
 										$group_acl
 										$agent_search_filter
 										$agent_status_filter
-									GROUP BY ta.id_agente
+									GROUP BY $group_by_fields
 									ORDER BY $order_fields";
 						}
 						break;
@@ -611,7 +620,6 @@ class Tree {
 								WHERE tam.disabled = 0
 									AND tam.id_agente = $parent
 									$module_search_filter
-								GROUP BY tam.id_agente_modulo
 								ORDER BY $order_fields";
 						break;
 				}
@@ -632,6 +640,7 @@ class Tree {
 					case 'os':
 						if (empty($rootID) || $rootID == -1) {
 							$columns = 'tos.id_os AS id, tos.name AS name, tos.icon_name AS os_icon';
+							$group_by_fields = 'tos.id_os, tos.name, tos.icon_name';
 							$order_fields = 'tos.icon_name ASC, tos.id_os ASC';
 
 							// OS SQL
@@ -645,7 +654,7 @@ class Tree {
 												$agent_status_filter
 												$group_acl
 										$modules_join
-										GROUP BY tos.id_os
+										GROUP BY $group_by_fields
 										ORDER BY $order_fields";
 							}
 							// Counters SQL
@@ -666,6 +675,10 @@ class Tree {
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
+							$group_by_fields = 'ta.id_agente, ta.nombre, 
+								ta.fired_count, ta.normal_count, ta.warning_count,
+								ta.critical_count, ta.unknown_count, ta.notinit_count,
+								ta.total_count, ta.quiet';
 							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
 
 							$sql = "SELECT $columns
@@ -676,7 +689,7 @@ class Tree {
 										$group_acl
 										$agent_search_filter
 										$agent_status_filter
-									GROUP BY ta.id_agente
+									GROUP BY $group_by_fields
 									ORDER BY $order_fields";
 						}
 						break;
@@ -702,7 +715,6 @@ class Tree {
 								WHERE tam.disabled = 0
 									$agent_filter
 									$module_search_filter
-								GROUP BY tam.id_agente_modulo
 								ORDER BY $order_fields";
 						break;
 				}
@@ -723,6 +735,7 @@ class Tree {
 					case 'module_group':
 						if (empty($rootID) || $rootID == -1) {
 							$columns = 'tmg.id_mg AS id, tmg.name AS name';
+							$group_by_fields = 'tmg.id_mg, tmg.name';
 							$order_fields = 'tmg.name ASC, tmg.id_mg ASC';
 							
 							// Module groups SQL
@@ -740,7 +753,7 @@ class Tree {
 												$group_acl
 												$agent_search_filter
 												$agent_status_filter
-										GROUP BY tmg.id_mg
+										GROUP BY $group_by_fields
 										ORDER BY $order_fields";
 							}
 							// Counters SQL
@@ -765,6 +778,10 @@ class Tree {
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
+							$group_by_fields = 'ta.id_agente, ta.nombre, 
+								ta.fired_count, ta.normal_count, ta.warning_count,
+								ta.critical_count, ta.unknown_count, ta.notinit_count,
+								ta.total_count, ta.quiet';
 							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
 							
 							$sql = "SELECT $columns
@@ -779,7 +796,7 @@ class Tree {
 										$group_acl
 										$agent_search_filter
 										$agent_status_filter
-									GROUP BY ta.id_agente
+									GROUP BY $group_by_fields
 									ORDER BY $order_fields";
 						}
 						break;
@@ -805,7 +822,6 @@ class Tree {
 									$agent_filter
 									$module_group_filter
 									$module_search_filter
-								GROUP BY tam.id_agente_modulo
 								ORDER BY $order_fields";
 						break;
 				}
@@ -867,6 +883,10 @@ class Tree {
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
+							$group_by_fields = 'ta.id_agente, ta.nombre, 
+								ta.fired_count, ta.normal_count, ta.warning_count,
+								ta.critical_count, ta.unknown_count, ta.notinit_count,
+								ta.total_count, ta.quiet';
 							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
 							
 							$symbols = ' !"#$%&\'()*+,./:;<=>?@[\\]^{|}~';
@@ -891,7 +911,7 @@ class Tree {
 										$group_acl
 										$agent_search_filter
 										$agent_status_filter
-									GROUP BY ta.id_agente
+									GROUP BY $group_by_fields
 									ORDER BY $order_fields";
 						}
 						break;
@@ -936,7 +956,6 @@ class Tree {
 									$module_name_filter
 									$module_group_filter
 									$module_search_filter
-								GROUP BY tam.id_agente_modulo
 								ORDER BY $order_fields";
 						break;
 				}

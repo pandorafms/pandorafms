@@ -1383,7 +1383,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color); 
+				$unit, $ttl, $homeurl, $background_color); 
 			break;
 		case CUSTOM_GRAPH_STACKED_LINE:
 			return stacked_line_graph($flash_charts, $graph_values,

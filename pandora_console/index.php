@@ -66,7 +66,9 @@ if ((! file_exists ("include/config.php")) || (! is_readable ("include/config.ph
 }
 
 // Real start
-session_start ();
+if(session_id() == '') {
+	session_start ();
+}
 require_once ("include/config.php");
 
 

@@ -41,7 +41,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '6.0dev';
-use constant AGENT_BUILD => '150504';
+use constant AGENT_BUILD => '150514';
 
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {
@@ -1228,7 +1228,7 @@ sub guess_os_version ($) {
 ################################################################################
 sub exec_module ($) {
 	my $module = shift;
-print "THREAD " . threads->tid() . " EXECUTING MODULE " . $module->{'name'} . "\n";
+
 	# Need something to execute
 	if ($module->{'func'} == 0) {
 		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);

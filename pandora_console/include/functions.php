@@ -1691,7 +1691,9 @@ function check_login ($output = true) {
 	}
 	else {
 		require_once($config["homedir"].'/mobile/include/user.class.php');
-		session_start ();
+		if(session_id() == '') {
+			session_start ();
+		}
 		session_write_close ();
 		if (isset($_SESSION['user'])) {
 			$user = $_SESSION['user'];

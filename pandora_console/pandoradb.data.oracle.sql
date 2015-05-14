@@ -22,11 +22,14 @@
 
 -- PL/SQL blocks must end with two semicolons because Pandora installer need it 
 
-
+--
 -- Dumping data for table talert_commands
 --
 BEGIN
 LOCK TABLE talert_commands IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER talert_commands_inc DISABLE';
+
 INSERT INTO talert_commands (id, name, command, description, internal, fields_descriptions, fields_values) VALUES (1,'eMail','Internal&#x20;type','This&#x20;alert&#x20;send&#x20;an&#x20;email&#x20;using&#x20;internal&#x20;Pandora&#x20;FMS&#x20;Server&#x20;SMTP&#x20;capabilities&#x20;&#40;defined&#x20;in&#x20;each&#x20;server,&#x20;using:&#x0d;&#x0a;_field1_&#x20;as&#x20;destination&#x20;email&#x20;address,&#x20;and&#x0d;&#x0a;_field2_&#x20;as&#x20;subject&#x20;for&#x20;message.&#x20;&#x0d;&#x0a;_field3_&#x20;as&#x20;text&#x20;of&#x20;message.',1,'[\Destination&#x20;address\",\Subject\",\Text\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"_html_editor_\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
 INSERT INTO talert_commands (id, name, command, description, internal, fields_descriptions, fields_values) VALUES (2,'Internal&#x20;Audit','Internal&#x20;type','This&#x20;alert&#x20;save&#x20;alert&#x20;in&#x20;Pandora&#x20;internal&#x20;audit&#x20;system.&#x20;Fields&#x20;are&#x20;static&#x20;and&#x20;only&#x20;_field1_&#x20;is&#x20;used.',1,'[\Description\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
 INSERT INTO talert_commands (id, name, command, description, internal, fields_descriptions, fields_values) VALUES (3,'Pandora&#x20;FMS&#x20;Event','Internal&#x20;type','This&#x20;alert&#x20;create&#x20;an&#x20;special&#x20;event&#x20;into&#x20;Pandora&#x20;FMS&#x20;event&#x20;manager.',1,'[\Event&#x20;text\",\Event&#x20;type\",\Source\",\Agent&#x20;name&#x20;or&#x20;_agent_\",\Event&#x20;criticity\",\ID&#x20;extra\",\Tags&#x20;separated&#x20;by&#x20;commas\",\Comments\",\"\",\"\"]','[\"\",\"alert_ceased,Alert&#x20;ceased;alert_fired,Alert&#x20;fired;alert_manual_validation,Alert&#x20;manual&#x20;validation;alert_recovered,Alert&#x20;recovered;configuration_change,Configuration&#x20;change&#x20;;error,Error;critical,Monitor&#x20;Critical;normal,Monitor&#x20;Normal;going_unknown,Monitor\",\"\",\"\",\"4,Critical;1,Informational;0,Maintenance;6,Major;5,Minor;2,Normal;3,Warning\",\"\",\"\",\"\",\"\",\"\"]');
@@ -38,6 +41,12 @@ INSERT INTO talert_commands (id, name, command, description, internal, fields_de
 INSERT INTO talert_commands (id, name, command, description, internal, fields_descriptions, fields_values) VALUES (9,'SMS','sendsms&#x20;_field1_&#x20;_field2_','Send&#x20;SMS&#x20;using&#x20;the&#x20;Pandora&#x20;FMS&#x20;standard&#x20;SMS&#x20;device,&#x20;using&#x20;smstools.&#x20;&#x20;Uses&#x20;field2&#x20;as&#x20;text&#x20;message,&#x20;field1&#x20;as&#x20;destination&#x20;phone&#x20;&#40;include&#x20;international&#x20;prefix!&#41;',0,'[\Destination&#x20;number\",\Message\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
 INSERT INTO talert_commands (id, name, command, description, internal, fields_descriptions, fields_values) VALUES (10,'Validate&#x20;Event','Internal&#x20;type','This&#x20;alert&#x20;validate&#x20;the&#x20;events&#x20;matched&#x20;with&#x20;a&#x20;module&#x20;given&#x20;the&#x20;agent&#x20;name&#x20;&#40;_field1_&#41;&#x20;and&#x20;module&#x20;name&#x20;&#40;_field2_&#41;',1,'[\Agent&#x20;name\",\Module&#x20;name\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
 INSERT INTO talert_commands (id, name, command, description, internal, fields_descriptions, fields_values) VALUES (11,'Integria&#x20;IMS&#x20;Ticket','Internal&#x20;type','This&#x20;alert&#x20;create&#x20;a&#x20;ticket&#x20;into&#x20;your&#x20;Integria&#x20;IMS.',1,'[\Integria&#x20;IMS&#x20;API&#x20;path\",\Integria&#x20;IMS&#x20;API&#x20;pass\",\Integria&#x20;IMS&#x20;user\",\Ticket&#x20;title\",\Ticket&#x20;group&#x20;ID\",\Ticket&#x20;priority\",\Ticket&#x20;description\"]','[\"\",\"\",\"\",\"\",\"\",\"10,Maintenance;0,Informative;1,Low;2,Medium;3,Serious;4,Very&#x20;Serious\",\"\"]');
+INSERT INTO talert_commands (id, name, command, description, internal, fields_descriptions, fields_values) VALUES (12,'Remote&#x20;agent&#x20;control','/usr/share/pandora_server/util/udp_client.pl&#x20;_address_&#x20;41122&#x20;&quot;_field1_&quot;','This&#x20;command&#x20;is&#x20;used&#x20;to&#x20;send&#x20;commands&#x20;to&#x20;the&#x20;Pandora&#x20;FMS&#x20;agents&#x20;with&#x20;the&#x20;UDP&#x20;server&#x20;enabled.&#x20;The&#x20;UDP&#x20;server&#x20;is&#x20;used&#x20;to&#x20;order&#x20;agents&#x20;&#40;Windows&#x20;and&#x20;UNIX&#41;&#x20;to&#x20;&quot;refresh&quot;&#x20;the&#x20;agent&#x20;execution:&#x20;that&#x20;means,&#x20;to&#x20;force&#x20;the&#x20;agent&#x20;to&#x20;execute&#x20;and&#x20;send&#x20;data',0,'[\Command\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
+
+-- Update curr val of sequence
+update_currval('talert_commands', 'id');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER talert_commands_inc ENABLE';
 
 COMMIT;
 END;;
@@ -132,6 +141,9 @@ END;;
 --
 BEGIN
 LOCK TABLE tconfig_os IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tconfig_os_inc DISABLE';
+
 INSERT INTO tconfig_os VALUES (1,'Linux','Linux: All versions','so_linux.png');
 INSERT INTO tconfig_os VALUES (2,'Solaris','Sun Solaris','so_solaris.png');
 INSERT INTO tconfig_os VALUES (3,'AIX','IBM AIX','so_aix.png');
@@ -151,23 +163,13 @@ INSERT INTO tconfig_os VALUES (17, 'Router', 'Generic router', 'so_router.png');
 INSERT INTO tconfig_os VALUES (18, 'Switch', 'Generic switch', 'so_switch.png');
 INSERT INTO tconfig_os VALUES (19, 'Satellite', 'Satellite agent', 'satellite.png');
 INSERT INTO tconfig_os VALUES (20, 'Mainframe', 'Mainframe agent', 'so_mainframe.png');
+
+-- Update curr val of sequence
+update_currval('tconfig_os', 'id_os');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tconfig_os_inc ENABLE';
+
 COMMIT;
-END;;
-
-CREATE SEQUENCE tconfig_os_s INCREMENT BY 1 START WITH 1;
-
-CREATE OR REPLACE TRIGGER tconfig_os_inc BEFORE INSERT ON tconfig_os REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tconfig_os_s.nextval INTO :NEW.id_os FROM dual; END;;
-
--- PLSQL for update curr val of sequence
-BEGIN 
-	DECLARE key_max NUMBER := 0; 
-	key_currval NUMBER := 0; 
-BEGIN 
-	SELECT MAX(id_os) INTO key_max FROM tconfig_os;
-	EXECUTE IMMEDIATE 'ALTER SEQUENCE TCONFIG_OS_S INCREMENT BY ' || key_max; 
-	SELECT TCONFIG_OS_S.NEXTVAL INTO key_currval FROM dual; 
-	EXECUTE IMMEDIATE 'ALTER SEQUENCE TCONFIG_OS_S INCREMENT BY 1'; 
-END; 
 END;;
 
 --
@@ -175,6 +177,9 @@ END;;
 --
 BEGIN
 LOCK TABLE tgrupo IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tgrupo_inc DISABLE';
+
 INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id, id_skin, description) VALUES (2,'Servers','server_database',0,0,0,'',1,'');
 INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id, id_skin, description) VALUES (4,'Firewalls','firewall',0,0,0,'',1,'');
 INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id, id_skin, description) VALUES (8,'Databases','database_gear',0,0,0,'',1,'');
@@ -183,6 +188,12 @@ INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_
 INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id, id_skin, description) VALUES (11,'Workstations','computer',0,0,0,'',1,'');
 INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id, id_skin, description) VALUES (12,'Applications','applications',0,0,0,'',1,'');
 INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled, custom_id, id_skin, description) VALUES (13,'Web','world',0,0,0,'',1,'');
+
+-- Update curr val of sequence
+update_currval('tgrupo', 'id_grupo');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tgrupo_inc ENABLE';
+
 COMMIT;
 END;;
 
@@ -217,11 +228,20 @@ END;;
 --
 BEGIN
 LOCK TABLE tlink IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tlink_inc DISABLE';
+
 INSERT INTO tlink VALUES (1,'Pandora FMS Manual','http://wiki.pandorafms.com/?title=Pandora');
 INSERT INTO tlink VALUES (2,'Pandora FMS','http://pandorafms.com');
 INSERT INTO tlink VALUES (3,'Report a bug','{https://sourceforge.net/tracker/?func=add&amp;group_id=155200&amp;atid=794852}');
 INSERT INTO tlink VALUES (4,'Suggest new feature','http://sourceforge.net/tracker/?group_id=155200&amp;atid=794855');
 INSERT INTO tlink VALUES (5,'Module library','http://pandorafms.com/pandora/repository/en');
+
+-- Update curr val of sequence
+update_currval('tlink', 'id_link');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tlink_inc ENABLE';
+
 COMMIT;
 END;;
 
@@ -230,6 +250,9 @@ END;;
 --
 BEGIN
 LOCK TABLE tmodule_group IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tmodule_group_inc DISABLE';
+
 INSERT INTO tmodule_group VALUES (1,'General');
 INSERT INTO tmodule_group VALUES (2,'Networking');
 INSERT INTO tmodule_group VALUES (3,'Application');
@@ -239,6 +262,12 @@ INSERT INTO tmodule_group VALUES (6,'Performance');
 INSERT INTO tmodule_group VALUES (7,'Database');
 INSERT INTO tmodule_group VALUES (8,'Enviromental');
 INSERT INTO tmodule_group VALUES (9,'Users');
+
+-- Update curr val of sequence
+update_currval('tmodule_group', 'id_mg');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tmodule_group_inc ENABLE';
+
 COMMIT;
 END;;
 
@@ -265,6 +294,9 @@ END;;
 -- Identifiers 30 and 31 are reserved for Enterprise data types
 BEGIN
 LOCK TABLE ttipo_modulo IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER ttipo_modulo_inc DISABLE';
+
 INSERT INTO ttipo_modulo VALUES (1,'generic_data',0,'Generic data','mod_data.png');
 INSERT INTO ttipo_modulo VALUES (2,'generic_proc',1,'Generic boolean','mod_proc.png');
 INSERT INTO ttipo_modulo VALUES (3,'generic_data_string',2,'Generic string','mod_string.png');
@@ -285,7 +317,14 @@ INSERT INTO ttipo_modulo VALUES (22,'async_data', 6, 'Asyncronous numeric data',
 INSERT INTO ttipo_modulo VALUES (23,'async_string', 8, 'Asyncronous string data', 'mod_async_string.png');
 INSERT INTO ttipo_modulo VALUES (24,'log4x',0,'Log4x','mod_log4x.png');
 INSERT INTO ttipo_modulo VALUES (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
+
+-- Update curr val of sequence
+update_currval('ttipo_modulo', 'id_tipo');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER ttipo_modulo_inc ENABLE';
+
 COMMIT;
+
 END;;
 
 -- Categoria field is used to segregate several types
@@ -298,7 +337,7 @@ END;;
 BEGIN
 LOCK TABLE tusuario IN EXCLUSIVE MODE;
 INSERT INTO tusuario (id_user, fullname, firstname, lastname, middlename, password, comments, last_connect, registered, email, phone, is_admin, flash_chart, language, block_size, section) VALUES
-('admin', 'Pandora', 'Pandora', 'Admin', ' ', '1da7ee7d45b96d0e1f45ee4ee23da560', 'Admin Pandora', 1232642121, 0, 'admin@example.com', '555-555-5555', 1, -1, 'default', 0, 'Default');
+('admin', 'Pandora', 'Pandora', 'Admin', '', '1da7ee7d45b96d0e1f45ee4ee23da560', 'Admin Pandora', 1232642121, 0, 'admin@example.com', '555-555-5555', 1, -1, 'default', 0, 'Default');
 COMMIT;
 END;;
 
@@ -317,11 +356,20 @@ END;;
 --
 BEGIN
 LOCK TABLE tperfil IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tperfil_inc DISABLE';
+
 INSERT INTO tperfil VALUES (1,'Operator&#x20;&#40;Read&#41;',0,1,0,1,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0);
 INSERT INTO tperfil VALUES (2,'Operator&#x20;&#40;Write&#41;',1,1,0,1,0,0,0,0,0,0,1,1,0,1,1,0,0,1,1,0,1,1,0);
 INSERT INTO tperfil VALUES (3,'Chief&#x20;Operator',1,1,1,1,0,0,0,0,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1);
 INSERT INTO tperfil VALUES (4,'Group&#x20;coordinator',1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1);
 INSERT INTO tperfil VALUES (5,'Pandora&#x20;Administrator',1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
+
+-- Update curr val of sequence
+update_currval('tperfil', 'id_perfil');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tperfil_inc ENABLE';
+
 COMMIT;
 END;;
 
@@ -330,8 +378,17 @@ END;;
 --
 BEGIN
 LOCK TABLE tnews IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tnews_inc DISABLE';
+
 INSERT INTO tnews (id_news, author, subject, text, timestamp) VALUES (1,'admin','Welcome to Pandora FMS 4.0','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.<br><br>The Pandora FMS Team.',current_timestamp);
 INSERT INTO tnews (id_news, author, subject, text, timestamp) VALUES (2,'admin','New Pandora FMS Agent Features','Feel free to test our new features for both Windows and Linux agents: Proxy and Broker modes.',current_timestamp);
+
+-- Update curr val of sequence
+update_currval('tnews', 'id_news');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tnews_inc ENABLE';
+
 COMMIT;
 END;;
 
@@ -340,11 +397,20 @@ END;;
 --
 BEGIN
 LOCK TABLE tmodule IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tmodule_inc DISABLE';
+
 INSERT INTO tmodule VALUES (1,'Agent&#x20;module');
 INSERT INTO tmodule VALUES (2,'Network&#x20;module');
 INSERT INTO tmodule VALUES (4,'Plugin&#x20;module');
 INSERT INTO tmodule VALUES (5,'Prediction&#x20;module');
 INSERT INTO tmodule VALUES (6,'WMI&#x20;module');
+
+-- Update curr val of sequence
+update_currval('tmodule', 'id_module');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tmodule_inc ENABLE';
+
 COMMIT;
 END;;
 
@@ -353,6 +419,9 @@ END;;
 --
 BEGIN
 LOCK TABLE tnetwork_component IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tnetwork_component_inc DISABLE';
+
 INSERT INTO tnetwork_component (id_nc, name, description, id_group, type, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, id_module_group, id_modulo, id_plugin, plugin_user, plugin_pass, plugin_parameter, max_timeout, history_data, min_warning, max_warning, str_warning, min_critical, max_critical, str_critical, min_ff_event, custom_string_1, custom_string_2, custom_string_3, custom_integer_1, custom_integer_2, post_process, wizard_level, critical_instructions, warning_instructions, unknown_instructions, tags, disabled_types_event, module_macros) VALUES (1,'OS&#x20;Total&#x20;process','Total&#x20;process&#x20;in&#x20;Operating&#x20;System&#x20;(UNIX&#x20;MIB)',13,15,0,0,300,0,'','','public','HOST-RESOURCES-MIB::hrSystemProcesses.0 ',4,2,0,NULL,NULL,NULL,0,1,0.00,0.00,NULL,0.00,0.00,NULL,0,NULL,NULL,NULL,0,0,0.0000000000000,'basic','','','','','','');
 INSERT INTO tnetwork_component (id_nc, name, description, id_group, type, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, id_module_group, id_modulo, id_plugin, plugin_user, plugin_pass, plugin_parameter, max_timeout, history_data, min_warning, max_warning, str_warning, min_critical, max_critical, str_critical, min_ff_event, custom_string_1, custom_string_2, custom_string_3, custom_integer_1, custom_integer_2, post_process, wizard_level, critical_instructions, warning_instructions, unknown_instructions, tags, disabled_types_event, module_macros) VALUES (2,'OS&#x20;CPU&#x20;Load&#x20;(1&#x20;min)','CPU&#x20;Load&#x20;in&#x20;Operating&#x20;System&#x20;(UNIX&#x20;MIB)',13,15,0,0,300,0,'','','public','UCD-SNMP-MIB::laLoad.1',4,2,0,NULL,NULL,NULL,0,1,0.00,0.00,NULL,0.00,0.00,NULL,0,NULL,NULL,NULL,0,0,0.0000000000000,'basic','','','','','','');
 INSERT INTO tnetwork_component (id_nc, name, description, id_group, type, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, id_module_group, id_modulo, id_plugin, plugin_user, plugin_pass, plugin_parameter, max_timeout, history_data, min_warning, max_warning, str_warning, min_critical, max_critical, str_critical, min_ff_event, custom_string_1, custom_string_2, custom_string_3, custom_integer_1, custom_integer_2, post_process, wizard_level, critical_instructions, warning_instructions, unknown_instructions, tags, disabled_types_event, module_macros) VALUES (3,'Sysname','Get&#x20;name&#x20;of&#x20;system&#x20;using&#x20;SNMP&#x20;standard&#x20;MIB',1,17,0,0,900,0,'','','public','.1.3.6.1.2.1.1.1.0',1,2,0,NULL,NULL,NULL,0,1,0.00,0.00,NULL,0.00,0.00,NULL,0,NULL,NULL,NULL,0,0,0.0000000000000,'basic','','','','','','');
@@ -962,6 +1031,12 @@ INSERT INTO tnetwork_component (id_nc, name, description, id_group, type, max, m
 INSERT INTO tnetwork_component (id_nc, name, description, id_group, type, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, id_module_group, id_modulo, id_plugin, plugin_user, plugin_pass, plugin_parameter, max_timeout, history_data, min_warning, max_warning, str_warning, min_critical, max_critical, str_critical, min_ff_event, custom_string_1, custom_string_2, custom_string_3, custom_integer_1, custom_integer_2, post_process, wizard_level, critical_instructions, warning_instructions, unknown_instructions, tags, disabled_types_event, module_macros) VALUES (783,'Check&#x20;Informix&#x20;Port','',19,9,0,0,300,1526,'','','public','',2,2,0,'','','',0,1,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.0000000000000,'basic','','','','','','');
 INSERT INTO tnetwork_component (id_nc, name, description, id_group, type, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, id_module_group, id_modulo, id_plugin, plugin_user, plugin_pass, plugin_parameter, max_timeout, history_data, min_warning, max_warning, str_warning, min_critical, max_critical, str_critical, min_ff_event, custom_string_1, custom_string_2, custom_string_3, custom_integer_1, custom_integer_2, post_process, wizard_level, critical_instructions, warning_instructions, unknown_instructions, tags, disabled_types_event, module_macros) VALUES (784,'Check&#x20;port&#x20;DB2','',49,9,0,0,300,50000,'','','public','',2,2,0,'','','',0,1,0.00,0.00,'',0.00,0.00,'',0,'','','',0,0,0.0000000000000,'basic','','','','','','');
 INSERT INTO tnetwork_component (id_nc, name, description, id_group, type, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, id_module_group, id_modulo, id_plugin, plugin_user, plugin_pass, plugin_parameter, max_timeout, max_retries, history_data, min_warning, max_warning, str_warning, min_critical, max_critical, str_critical, min_ff_event, custom_string_1, custom_string_2, custom_string_3, custom_integer_1, custom_integer_2, post_process, unit, wizard_level, macros, critical_instructions, warning_instructions, unknown_instructions, critical_inverse, warning_inverse, id_category, tags, disabled_types_event, module_macros, min_ff_event_normal, min_ff_event_warning, min_ff_event_critical, each_ff) VALUES (785,'Packet&#x20;Loss','Measure&#x20;packet&#x20;loss&#x20;in&#x20;the&#x20;network,&#x20;using&#x20;a&#x20;flood&#x20;ping&#x20;&#40;50&#x20;ping&#x20;in&#x20;8&#x20;secons&#41;&#x20;and&#x20;counting&#x20;back&#x20;missing&#x20;packets.&#x20;It&#x20;should&#x20;be&#x20;zero&#x20;on&#x20;most&#x20;cases.&#x20;',10,1,0,0,300,0,'','','','',2,4,9,'','','',0,0,1,10.00,0.00,'',30.00,0.00,'',0,'','','',0,0,0.00000,'%','nowizard','{\"1\":{\macro\":\"_field1_\",\desc\":\Test&#x20;time\",\help\":\"\",\value\":\"8\",\hide\":\"\"},\"2\":{\macro\":\"_field2_\",\desc\":\Target&#x20;IP\",\help\":\"\",\value\":\"\",\hide\":\"\"}}','You&#x20;should&#x20;check&#x20;manually&#x20;the&#x20;packet&#x20;loss&#x20;of&#x20;the&#x20;network&#x20;with&#x20;a&#x20;flood&#x20;ping&#x20;on&#x20;targeted&#x20;host&#x20;&#40;ping&#x20;-c&#x20;100&#x20;-f&#x20;xxxx&#41;.&#x20;Aditionally,&#x20;and&#x20;due&#x20;the&#x20;major&#x20;packet&#x20;loss,&#x20;probably&#x20;you&#x20;can&#x20;see&#x20;a&#x20;simple&#x20;ping&#x20;failing&#x20;here.&#x20;Check&#x20;your&#x20;network&#x20;equipment.','You&#x20;should&#x20;check&#x20;manually&#x20;the&#x20;packet&#x20;loss&#x20;of&#x20;the&#x20;network&#x20;with&#x20;a&#x20;flood&#x20;ping&#x20;on&#x20;targeted&#x20;host&#x20;&#40;ping&#x20;-c&#x20;100&#x20;-f&#x20;xxxx&#41;','',0,0,0,'','{\going_unknown\":0}','',0,0,0,0);
+
+-- Update curr val of sequence
+update_currval('tnetwork_component', 'id_nc');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tnetwork_component_inc ENABLE';
+
 COMMIT;
 END;;
 
@@ -970,24 +1045,27 @@ END;;
 --
 BEGIN
 LOCK TABLE tnetwork_component_group IN EXCLUSIVE MODE;
-INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (1,'General group',0);
-INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (2,'Cisco MIBs',10);
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tnetwork_component_group_inc DISABLE';
+
+INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (1,'General&#x20;group',0);
+INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (2,'Cisco&#x20;MIBs',10);
 INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (5,'UNIX&#x20;Systems',12);
-INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (10,'Network Management',0);
+INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (10,'Network&#x20;Management',0);
 INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (11,'Microsoft&#x20;Windows',12);
-INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (12,'Operating Systems',0);
-INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (13,'UCD Mibs (Linux, UCD-SNMP)',12);
+INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (12,'Operating&#x20;Systems',0);
+INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (13,'UCD&#x20;Mibs&#x20;(Linux,&#x20;UCD-SNMP)',12);
 INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (14,'WMI',12);
 INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (15,'Databases',0);
-INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (16,'Windows System',14);
-INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (17,'Windows Hardware Layer',14);
-INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (18,'Windows AD ',14);
-INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (19,'Windows IIS ',14);
-INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (20,'Windows Exchange',14);
-INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (21,'Windows LDAP ',14);
-INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (22,'Windows MSDTC  ',14);
-INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (23,'Catalyst 2900  ',2);
-INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (24,'Windows Printers',14);
+INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (16,'Windows&#x20;System',14);
+INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (17,'Windows&#x20;Hardware&#x20;Layer',14);
+INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (18,'Windows&#x20;AD',14);
+INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (19,'Windows&#x20;IIS',14);
+INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (20,'Windows&#x20;Exchange',14);
+INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (21,'Windows&#x20;LDAP',14);
+INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (22,'Windows&#x20;MSDTC',14);
+INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (23,'Catalyst&#x20;2900',2);
+INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (24,'Windows&#x20;Printers',14);
 INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (25,'Citrix',0);
 INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (26,'Exchange&#x20;Services',20);
 INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (27,'MS&#x20;SQL&#x20;Server',15);
@@ -1012,6 +1090,12 @@ INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (45,'Solaris',
 INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (46,'AIX',5);
 INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (47,'BSD',5);
 INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (48,'MacOS',0);
+
+-- Update curr val of sequence
+update_currval('tnetwork_component_group', 'id_sg');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tnetwork_component_group_inc ENABLE';
+
 COMMIT;
 END;;
 
@@ -1020,8 +1104,16 @@ END;;
 --
 BEGIN
 LOCK TABLE tnetwork_profile IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tnetwork_profile_inc DISABLE';
+
 INSERT INTO tnetwork_profile (id_np, name, description) VALUES (2,'Basic Monitoring','Only ICMP check');
 INSERT INTO tnetwork_profile (id_np, name, description) VALUES (3,'Basic DMZ Server monitoring','This group of network checks, checks for default services located on DMZ servers...');
+
+-- Update curr val of sequence
+update_currval('tnetwork_profile', 'id_np');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tnetwork_profile_inc ENABLE';
 
 COMMIT;
 END;;
@@ -1044,14 +1136,32 @@ END;;
 -- GIS
 BEGIN
 LOCK TABLE tgis_map IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tgis_map_inc DISABLE';
+
 INSERT INTO tgis_map VALUES (1,'Sample',-3.708187,40.42056,0,16,'',-3.708187,40.42056,0,0,1);
+
+-- Update curr val of sequence
+update_currval('tgis_map', 'id_tgis_map');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tgis_map_inc ENABLE';
+
 COMMIT;
 END;;
 
 BEGIN
 LOCK TABLE tgis_map_connection IN EXCLUSIVE MODE;
-INSERT INTO tgis_map_connection VALUES (1,'OpenStreetMap (MapQuest Open)','OSM','{\type\":\OSM\",\url\":\http://otile1.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png\"}',19,16,-3.708187,40.42056,0,-3.708187,40.42056,0,0);
-INSERT INTO tgis_map_connection VALUES (2,'OpenStreetMap (Standard)','OSM','{\type\":\OSM\",\url\":\http://tile.openstreetmap.org/${z}/${x}/${y}.png\"}',19,16,-3.708187,40.42056,0,-3.708187,40.42056,0,0);
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tgis_map_connection_inc DISABLE';
+
+INSERT INTO tgis_map_connection VALUES (1,'OpenStreetMap (MapQuest Open)','OSM','{"type":"OSM","url":"http://otile1.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png"}',19,16,-3.708187,40.42056,0,-3.708187,40.42056,0,0);
+INSERT INTO tgis_map_connection VALUES (2,'OpenStreetMap (Standard)','OSM','{"type":"OSM","url":"http://tile.openstreetmap.org/${z}/${x}/${y}.png"}',19,16,-3.708187,40.42056,0,-3.708187,40.42056,0,0);
+
+-- Update curr val of sequence
+update_currval('tgis_map_connection', 'id_tmap_connection');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tgis_map_connection_inc ENABLE';
+
 COMMIT;
 END;;
 
@@ -1059,54 +1169,81 @@ END;;
 
 --BEGIN
 --LOCK TABLE tgis_map_has_tgis_map_connection IN EXCLUSIVE MODE;
+
+--EXECUTE IMMEDIATE 'ALTER TRIGGER tgis_map_has_tgis_map_connection_inc DISABLE';
+
 --INSERT INTO tgis_map_has_tgis_map_connection VALUES (1,1,'2010-03-01 09:46:48',1);
+
+--EXECUTE IMMEDIATE 'ALTER TRIGGER tgis_map_has_tgis_map_connection_inc ENABLE';
+
 --COMMIT;
 --END;
 --/
 
 BEGIN
 LOCK TABLE tgis_map_layer IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tgis_map_layer_inc DISABLE';
+
 INSERT INTO tgis_map_layer VALUES (1,'Group All',1,0,1,0);
+
+-- Update curr val of sequence
+update_currval('tgis_map_layer', 'id_tmap_layer');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tgis_map_layer_inc ENABLE';
+
 COMMIT;
 END;;
 
--- example alert template
-BEGIN
-LOCK TABLE talert_commands IN EXCLUSIVE MODE;
-INSERT INTO talert_commands (id, name, command, description, internal, fields_descriptions, fields_values) VALUES (12,'Remote&#x20;agent&#x20;control','/usr/share/pandora_server/util/udp_client.pl&#x20;_address_&#x20;41122&#x20;&quot;_field1_&quot;','This&#x20;command&#x20;is&#x20;used&#x20;to&#x20;send&#x20;commands&#x20;to&#x20;the&#x20;Pandora&#x20;FMS&#x20;agents&#x20;with&#x20;the&#x20;UDP&#x20;server&#x20;enabled.&#x20;The&#x20;UDP&#x20;server&#x20;is&#x20;used&#x20;to&#x20;order&#x20;agents&#x20;&#40;Windows&#x20;and&#x20;UNIX&#41;&#x20;to&#x20;&quot;refresh&quot;&#x20;the&#x20;agent&#x20;execution:&#x20;that&#x20;means,&#x20;to&#x20;force&#x20;the&#x20;agent&#x20;to&#x20;execute&#x20;and&#x20;send&#x20;data',0,'[\Command\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
-COMMIT;
-END;;
 
 BEGIN
 LOCK TABLE talert_actions IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER talert_actions_inc DISABLE';
+
 INSERT INTO talert_actions (id, name, id_alert_command, field1, field2, field3, id_group, action_threshold) VALUES (1,'Mail&#x20;to&#x20;XXX',1,'yourmail@domain.es','[PANDORA] Alert from agent _agent_ on module _module_','',0,0);
 INSERT INTO talert_actions (id, name, id_alert_command, field1, field2, field3, id_group, action_threshold) VALUES (2,'Restart&#x20;agent',12,'REFRESH AGENT *','','',0,0);
 INSERT INTO talert_actions (id, name, id_alert_command, field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, id_group, action_threshold, field1_recovery, field2_recovery, field3_recovery, field4_recovery, field5_recovery, field6_recovery, field7_recovery, field8_recovery, field9_recovery, field10_recovery) VALUES (3,'Pandora&#x20;FMS&#x20;Event',3,'_agent_&#x20;_module_&#x20;generated&#x20;an&#x20;event&#x20;alert&#x20;&#40;_data_&#41;','alert_fired','pandora','','4','','','','','',0,0,'RECOVERED:&#x20;_agent_&#x20;_module_&#x20;generated&#x20;event&#x20;alert&#x20;&#40;_data_&#41;','alert_ceased','pandora','','4','','','','','');
 INSERT INTO talert_actions (id, name, id_alert_command, field1, field2, field3, field4, field5, field6, field7, field8, field9, field10, id_group, action_threshold, field1_recovery, field2_recovery, field3_recovery, field4_recovery, field5_recovery, field6_recovery, field7_recovery, field8_recovery, field9_recovery, field10_recovery) VALUES (4,'Create&#x20;a&#x20;ticket&#x20;in&#x20;Integria&#x20;IMS',11,'http://localhost/integria/include/api.php','1234','admin','_agent_:&#x20;_alert_name_','1','3','_alert_description_','','','',0,0,'','','','','','','','','','');
+
+-- Update curr val of sequence
+update_currval('talert_actions', 'id');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER talert_actions_inc ENABLE';
+
 COMMIT;
 END;;
 
 BEGIN
 LOCK TABLE talert_templates IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER talert_templates_inc DISABLE';
+
 INSERT INTO talert_templates (id, name, description, id_alert_action, field1, field2, field3, type, value, matches_value, max_value, min_value, time_threshold, max_alerts, min_alerts, time_from, time_to, monday, tuesday, wednesday, thursday, friday, saturday, sunday, recovery_notify, field2_recovery, field3_recovery, priority, id_group, special_day, wizard_level) VALUES (1,'Critical&#x20;condition','This is a generic alert template to fire on condition CRITICAL',1,'','','Hello, this is an automated email coming from Pandora FMS\r\n\r\nThis alert has been fired because a CRITICAL condition in one of your monitored items:\r\n\r\nAgent : _agent_\r\nModule: _module_\r\nModule description: _moduledescription_\r\nTimestamp _timestamp_\r\nCurrent value: _data_\r\n\r\nThanks for your time.\r\n\r\nBest regards\r\nPandora FMS\r\n','critical','',1,0.00,0.00,86400,1,0,to_date('12:00:00','hh24:mi:ss'),to_date('12:00:00','hh24:mi:ss'),1,1,1,1,1,1,1,1,'[PANDORA] Alert RECOVERED for CRITICAL status on _agent_ / _module_','Hello, this is an automated email coming from Pandora FMS\r\n\r\nThis alert has been RECOVERED from a CRITICAL condition in one of your monitored items:\r\n\r\nAgent : _agent_\r\nModule: _module_\r\nModule description: _moduledescription_\r\nTimestamp _timestamp_\r\nCurrent value: _data_\r\n\r\nThanks for your time.\r\n\r\nBest regards\r\nPandora FMS\r\n',4,0,0,'basic');
 INSERT INTO talert_templates (id, name, description, id_alert_action, field1, field2, field3, type, value, matches_value, max_value, min_value, time_threshold, max_alerts, min_alerts, time_from, time_to, monday, tuesday, wednesday, thursday, friday, saturday, sunday, recovery_notify, field2_recovery, field3_recovery, priority, id_group, special_day, wizard_level) VALUES (2,'Manual&#x20;alert','This is a template used to fire manual alerts, condition defined here never will be executed. Use this template to assign to your actions/commands used to do remote management (Agent restart, execute commands on server, etc).',NULL,'','',' ','max_min','',1,0.00,1.00,86400,1,0,to_date('12:00:00','hh24:mi:ss'),to_date('12:00:00','hh24:mi:ss'),1,1,1,1,1,1,1,0,' ',' ',1,0,0,'basic');
 INSERT INTO talert_templates (id, name, description, id_alert_action, field1, field2, field3, type, value, matches_value, max_value, min_value, time_threshold, max_alerts, min_alerts, time_from, time_to, monday, tuesday, wednesday, thursday, friday, saturday, sunday, recovery_notify, field2_recovery, field3_recovery, priority, id_group, special_day, wizard_level) VALUES (3,'Warning&#x20;condition','This&#x20;is&#x20;a&#x20;generic&#x20;alert&#x20;template&#x20;to&#x20;fire&#x20;on&#x20;WARNING&#x20;condition.',1,'','','Hello,&#x20;this&#x20;is&#x20;an&#x20;automated&#x20;email&#x20;coming&#x20;from&#x20;Pandora&#x20;FMS&#x0d;&#x0a;&#x0d;&#x0a;This&#x20;alert&#x20;has&#x20;been&#x20;fired&#x20;because&#x20;a&#x20;WARNING&#x20;condition&#x20;in&#x20;one&#x20;of&#x20;your&#x20;monitored&#x20;items:&#x0d;&#x0a;&#x0d;&#x0a;Agent&#x20;:&#x20;_agent_&#x0d;&#x0a;Module:&#x20;_module_&#x0d;&#x0a;Module&#x20;description:&#x20;_moduledescription_&#x0d;&#x0a;Timestamp&#x20;_timestamp_&#x0d;&#x0a;Current&#x20;value:&#x20;_data_&#x0d;&#x0a;&#x0d;&#x0a;Thanks&#x20;for&#x20;your&#x20;time.&#x0d;&#x0a;&#x0d;&#x0a;Best&#x20;regards&#x0d;&#x0a;Pandora&#x20;FMS&#x0d;&#x0a;','warning','',1,0.00,0.00,86400,1,0,to_date('12:00:00','hh24:mi:ss'),to_date('12:00:00','hh24:mi:ss'),1,1,1,1,1,1,1,1,'[PANDORA]&#x20;Alert&#x20;RECOVERED&#x20;for&#x20;WARNING&#x20;status&#x20;on&#x20;_agent_&#x20;/&#x20;_module_','Hello,&#x20;this&#x20;is&#x20;an&#x20;automated&#x20;email&#x20;coming&#x20;from&#x20;Pandora&#x20;FMS&#x0d;&#x0a;&#x0d;&#x0a;This&#x20;alert&#x20;has&#x20;been&#x20;RECOVERED&#x20;from&#x20;a&#x20;WARNING&#x20;condition&#x20;in&#x20;one&#x20;of&#x20;your&#x20;monitored&#x20;items:&#x0d;&#x0a;&#x0d;&#x0a;Agent&#x20;:&#x20;_agent_&#x0d;&#x0a;Module:&#x20;_module_&#x0d;&#x0a;Module&#x20;description:&#x20;_moduledescription_&#x0d;&#x0a;Timestamp&#x20;_timestamp_&#x0d;&#x0a;Current&#x20;value:&#x20;_data_&#x0d;&#x0a;&#x0d;&#x0a;Thanks&#x20;for&#x20;your&#x20;time.&#x0d;&#x0a;&#x0d;&#x0a;Best&#x20;regards&#x0d;&#x0a;Pandora&#x20;FMS&#x0d;&#x0a;',3,0,0,'basic');
+
+-- Update curr val of sequence
+update_currval('talert_templates', 'id');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER talert_templates_inc ENABLE';
+
 COMMIT;
 END;;
 
 -- treport_custom_sql Data
+-- procedure to insert more than 4000 chars into a string 
+CREATE OR REPLACE PROCEDURE treport_custom_sql_insert (IDX IN NUMBER, NAME IN VARCHAR2, SQL_TXT IN VARCHAR2, FLAG IN NUMBER := 0 ) AS g_nclob CLOB; BEGIN IF FLAG = 0 THEN INSERT INTO treport_custom_sql (id, name, sql) VALUES (IDX, NAME, empty_clob()) RETURNING sql INTO g_nclob; DBMS_LOB.write(g_nclob, length (SQL_TXT), 1, SQL_TXT); ELSE SELECT sql INTO g_nclob FROM treport_custom_sql WHERE id = IDX FOR UPDATE; DBMS_LOB.writeappend(g_nclob, length(SQL_TXT), SQL_TXT); END IF; END treport_custom_sql_insert;;
+
 BEGIN
 LOCK TABLE treport_custom_sql IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER treport_custom_sql_inc DISABLE';
+
 INSERT INTO treport_custom_sql (id, name, sql) VALUES (1, 'Monitoring&#x20;Report&#x20;Agent', 'select&#x20;direccion,&#x20;nombre,&#x20;comentarios,&#x20;&#40;select&#x20;nombre&#x20;from&#x20;tgrupo&#x20;where&#x20;tgrupo.id_grupo&#x20;=&#x20;tagente.id_grupo&#41;&#x20;as&#x20;group&#x20;from&#x20;tagente;');
 INSERT INTO treport_custom_sql (id, name, sql) VALUES (2, 'Monitoring&#x20;Report&#x20;Modules', 'select&#x20;&#40;select&#x20;tagente.nombre&#x20;from&#x20;tagente&#x20;where&#x20;tagente.id_agente&#x20;=&#x20;tagente_modulo.id_agente&#41;&#x20;as&#x20;agent_name,&#x20;nombre&#x20;,&#x20;&#40;select&#x20;tmodule_group.name&#x20;from&#x20;tmodule_group&#x20;where&#x20;tmodule_group.id_mg&#x20;=&#x20;tagente_modulo.id_module_group&#41;&#x20;as&#x20;module_group,&#x20;module_interval&#x20;from&#x20;tagente_modulo&#x20;where&#x20;delete_pending&#x20;=&#x20;0&#x20;order&#x20;by&#x20;agent_name;');
 INSERT INTO treport_custom_sql (id, name, sql) VALUES (3, 'Monitoring&#x20;Report&#x20;Alerts', 'select&#x20;t1.nombre&#x20;as&#x20;agent_name,&#x20;t2.nombre&#x20;as&#x20;module_name,&#x20;&#40;select&#x20;talert_templates.name&#x20;from&#x20;talert_templates&#x20;where&#x20;talert_templates.id&#x20;=&#x20;t3.id_alert_template&#41;&#x20;as&#x20;template,&#x20;&#40;select&#x20;group_concat&#40;t02.name&#41;&#x20;from&#x20;talert_template_module_actions&#x20;as&#x20;t01&#x20;inner&#x20;join&#x20;talert_actions&#x20;as&#x20;t02&#x20;on&#x20;t01.id_alert_action&#x20;=&#x20;t02.id&#x20;where&#x20;t01.id_alert_template_module&#x20;=&#x20;t3.id&#x20;group&#x20;by&#x20;t01.id_alert_template_module&#41;&#x20;as&#x20;actions&#x20;from&#x20;tagente&#x20;as&#x20;t1&#x20;inner&#x20;join&#x20;tagente_modulo&#x20;as&#x20;t2&#x20;on&#x20;t1.id_agente&#x20;=&#x20;t2.id_agente&#x20;inner&#x20;join&#x20;talert_template_modules&#x20;as&#x20;t3&#x20;on&#x20;t2.id_agente_modulo&#x20;=&#x20;t3.id_agent_module&#x20;order&#x20;by&#x20;agent_name,&#x20;module_name;');
-COMMIT;
-END;;
 
--- procedure to insert more than 4000 chars into a string 
-CREATE OR REPLACE PROCEDURE treport_custom_sql_insert (IDX IN NUMBER, NAME IN VARCHAR2, SQL_TXT IN VARCHAR2, FLAG IN NUMBER) AS g_nclob CLOB; BEGIN if FLAG = 0 then INSERT INTO treport_custom_sql (id, name, sql) VALUES (IDX, NAME, empty_clob()) RETURNING sql INTO g_nclob; dbms_lob.write(g_nclob, length (SQL_TXT), 1, SQL_TXT); else SELECT sql INTO g_nclob FROM treport_custom_sql WHERE id = IDX FOR UPDATE; dbms_lob.writeappend(g_nclob, length(SQL_TXT), SQL_TXT); end if; END;;
-
-BEGIN
 treport_custom_sql_insert(4, 'Group&#x20;view', 'select&#x20;t1.nombre,&#x20;&#40;select&#x20;count&#40;t3.id_agente&#41;&#x20;from&#x20;tagente&#x20;t3&#x20;where&#x20;t1.id_grupo&#x20;=',0);
 
 treport_custom_sql_insert(4, 'Group&#x20;view','&#x20;t3.id_grupo&#41;&#x20;agents,&#x20;&#40;SELECT&#x20;COUNT&#40;t4.id_agente&#41;&#x20;FROM&#x20;tagente&#x20;',1);
@@ -1166,12 +1303,36 @@ treport_custom_sql_insert(4, 'Group&#x20;view','tagente_modulo.id_agente_modulo&
 treport_custom_sql_insert(4, 'Group&#x20;view','=&#x20;tagente_modulo.id_agente_modulo&#x20;AND&#x20;times_fired&#x20;&gt;&#x20;0&#41;&#x20;monitor_alert_fired&#x20;from&#x20;tgrupo&#x20;t1&#x20;where&#x20;0&#x20;',1);
 
 treport_custom_sql_insert(4, 'Group&#x20;view','&lt;&#x20;&#40;select&#x20;count&#40;t2.id_agente&#41;&#x20;from&#x20;tagente&#x20;t2&#x20;where&#x20;t1.id_grupo&#x20;=&#x20;t2.id_grupo&#41;',1);
+
+-- Update curr val of sequence
+update_currval('treport_custom_sql', 'id');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER treport_custom_sql_inc ENABLE';
+
 COMMIT;
 END;;
+
+BEGIN
+LOCK TABLE trecon_script IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER trecon_script_inc DISABLE';
 
 INSERT INTO trecon_script VALUES (2,'IPMI&#x20;Recon','Specific&#x20;Pandora&#x20;FMS&#x20;Intel&#x20;DCM&#x20;Discovery&#x20;&#40;c&#41;&#x20;Artica&#x20;ST&#x20;2011&#x20;&lt;info@artica.es&gt;&#x0d;&#x0a;&#x0d;&#x0a;Usage:&#x20;./ipmi-recon.pl&#x20;&lt;task_id&gt;&#x20;&lt;group_id&gt;&#x20;&lt;create_incident_flag&gt;&#x20;&lt;custom_field1&gt;&#x20;&lt;custom_field2&gt;&#x20;&lt;custom_field3&gt;&#x0d;&#x0a;&#x0d;&#x0a;*&#x20;custom_field1&#x20;=&#x20;Network&#x20;i.e.:&#x20;192.168.100.0/24&#x0d;&#x0a;*&#x20;custom_field2&#x20;=&#x20;Username&#x0d;&#x0a;*&#x20;custom_fiedl3&#x20;=&#x20;Password','/usr/share/pandora_server/util/recon_scripts/ipmi-recon.pl','{"1":{"macro":"_field1_","desc":"Network","help":"i.e.:&#x20;192.168.100.0/24","value":"","hide":""},"2":{"macro":"_field2_","desc":"Username","help":"","value":"","hide":""},"3":{"macro":"_field3_","desc":"Password","help":"","value":"","hide":"1"}}');
 INSERT INTO trecon_script VALUES (4,'SNMP&#x20;L2&#x20;Recon','Pandora&#x20;FMS&#x20;SNMP&#x20;Recon&#x20;Plugin&#x20;for&#x20;level&#x20;2&#x20;network&#x20;topology&#x20;discovery.&#x0d;&#x0a;&#40;c&#41;&#x20;Artica&#x20;ST&#x20;2014&#x20;&lt;info@artica.es&gt;&#x0d;&#x0a;&#x0d;&#x0a;Usage:&#x0d;&#x0a;&#x0d;&#x0a;&#x20;&#x20;&#x20;./snmp-recon.pl&#x20;&lt;task_id&gt;&#x20;&lt;group_id&gt;&#x20;&lt;create_incident&gt;&#x20;&lt;custom_field1&gt;&#x20;&lt;custom_field2&gt;&#x20;[custom_field3]&#x20;[custom_field4]&#x0d;&#x0a;&#x0d;&#x0a;&#x20;*&#x20;custom_field1&#x20;=&#x20;comma&#x20;separated&#x20;list&#x20;of&#x20;networks&#x20;&#40;i.e.:&#x20;192.168.1.0/24,192.168.2.0/24&#41;&#x0d;&#x0a;&#x20;*&#x20;custom_field2&#x20;=&#x20;comma&#x20;separated&#x20;list&#x20;of&#x20;snmp&#x20;communities&#x20;to&#x20;try.&#x0d;&#x0a;&#x20;*&#x20;custom_field3&#x20;=&#x20;a&#x20;router&#x20;in&#x20;the&#x20;network.&#x20;Optional&#x20;but&#x20;recommended.&#x0d;&#x0a;&#x20;*&#x20;custom_field4&#x20;=&#x20;set&#x20;to&#x20;-a&#x20;to&#x20;add&#x20;all&#x20;network&#x20;interfaces&#x20;&#40;by&#x20;default&#x20;only&#x20;interfaces&#x20;that&#x20;are&#x20;up&#x20;are&#x20;added&#41;.&#x0d;&#x0a;&#x0d;&#x0a;&#x20;Additional&#x20;information:&#x0d;&#x0a;When&#x20;the&#x20;script&#x20;is&#x20;called&#x20;from&#x20;a&#x20;recon&#x20;task&#x20;the&#x20;task_id,&#x20;group_id&#x20;and&#x20;create_incident&#x20;parameters&#x20;are&#x20;automatically&#x20;filled&#x20;by&#x20;the&#x20;Pandora&#x20;FMS&#x20;Server.','/usr/share/pandora_server/util/recon_scripts/snmp-recon.pl','{"1":{"macro":"_field1_","desc":"Network","help":"Comma&#x20;separated&#x20;list&#x20;of&#x20;networks&#x20;&#40;i.e.:&#x20;192.168.1.0/24,192.168.2.0/24&#41;","value":"","hide":""},"2":{"macro":"_field2_","desc":"Community","help":"Comma&#x20;separated&#x20;list&#x20;of&#x20;snmp&#x20;communities&#x20;to&#x20;try.","value":"","hide":""},"3":{"macro":"_field3_","desc":"Router","help":"A&#x20;router&#x20;in&#x20;the&#x20;network.&#x20;Optional&#x20;but&#x20;recommended.","value":"","hide":""},"4":{"macro":"_field4_","desc":"Optional&#x20;parameter","help":"Set&#x20;to&#x20;-a&#x20;to&#x20;add&#x20;all&#x20;network&#x20;interfaces&#x20;&#40;by&#x20;default&#x20;only&#x20;interfaces&#x20;that&#x20;are&#x20;up&#x20;are&#x20;added&#41;.","value":"","hide":""}}');
 INSERT INTO trecon_script VALUES (5,'WMI&#x20;Recon&#x20;Script','This&#x20;script&#x20;is&#x20;used&#x20;to&#x20;automatically&#x20;gather&#x20;host&#x20;information&#x20;via&#x20;WMI.&#x0d;&#x0a;Available&#x20;parameters:&#x0d;&#x0a;&#x0d;&#x0a;*&#x20;Network&#x20;=&#x20;network&#x20;to&#x20;scan&#x20;&#40;e.g.&#x20;192.168.100.0/24&#41;.&#x0d;&#x0a;*&#x20;WMI&#x20;auth&#x20;=&#x20;comma&#x20;separated&#x20;list&#x20;of&#x20;WMI&#x20;authentication&#x20;tokens&#x20;in&#x20;the&#x20;format&#x20;username%password&#x20;&#40;e.g.&#x20;Administrador%pass&#41;.&#x0d;&#x0a;&#x0d;&#x0a;See&#x20;the&#x20;documentation&#x20;for&#x20;more&#x20;information.','/usr/share/pandora_server/util/recon_scripts/wmi-recon.pl','{"1":{"macro":"_field1_","desc":"Network","help":"","value":"","hide":""},"2":{"macro":"_field2_","desc":"WMI&#x20;auth","help":"","value":"","hide":""}}');
+
+-- Update curr val of sequence
+update_currval('trecon_script', 'id_recon_script');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER trecon_script_inc ENABLE';
+
+COMMIT;
+END;;
+
+BEGIN
+LOCK TABLE tplugin IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tplugin_inc DISABLE';
 
 INSERT INTO tplugin (id, name, description, max_timeout, execute, plugin_type, macros, parameters) VALUES (1,'IPMI&#x20;Plugin','Plugin&#x20;to&#x20;get&#x20;IPMI&#x20;monitors&#x20;from&#x20;a&#x20;IPMI&#x20;Device.',0,'/usr/share/pandora_server/util/plugin/ipmi-plugin.pl',0,'{1:{macro:"_field1_",desc:Target&#x20;IP,help:"",value:""},2:{macro:"_field2_",desc:Username,help:"",value:""},3:{macro:"_field3_",desc:Password,help:"",value:""}}','-h&#x20;_field1_-u&#x20;_field2_-p&#x20;_field3_');
 INSERT INTO tplugin (id, name, description, max_timeout, execute, plugin_type, macros, parameters) VALUES (2,'DNS&#x20;Plugin','This&#x20;plugin&#x20;is&#x20;used&#x20;to&#x20;check&#x20;if&#x20;a&#x20;specific&#x20;domain&#x20;return&#x20;a&#x20;specific&#x20;IP&#x20;address,&#x20;and&#x20;to&#x20;check&#x20;how&#x20;time&#x20;&#40;milisecs&#41;&#x20;takes&#x20;the&#x20;DNS&#x20;to&#x20;answer.&#x20;Use&#x20;IP&#x20;address&#x20;parameter&#x20;to&#x20;specify&#x20;the&#x20;IP&#x20;of&#x20;your&#x20;domain.&#x20;Use&#x20;these&#x20;custom&#x20;parameters&#x20;for&#x20;the&#x20;other&#x20;parameters:&#x0d;&#x0a;&#x0d;&#x0a;-d&#x20;domain&#x20;to&#x20;check&#x20;&#40;for&#x20;example&#x20;pandorafms.com&#41;&#x0d;&#x0a;-s&#x20;DNS&#x20;Server&#x20;to&#x20;check&#x20;&#x20;&#40;for&#x20;example&#x20;8.8.8.8&#41;&#x0d;&#x0a;&#x0d;&#x0a;Optional&#x20;parameters:&#x0d;&#x0a;&#x0d;&#x0a;-t&#x20;Do&#x20;a&#x20;DNS&#x20;time&#x20;response&#x20;check&#x20;instead&#x20;DNS&#x20;resolve&#x20;test&#x0d;&#x0a;&#x0d;&#x0a;',15,'/usr/share/pandora_server/util/plugin/dns_plugin.sh',0,'{1:{macro:"_field1_",desc:Target&#x20;IP,help:"",value:""},2:{macro:"_field2_",desc:Domain&#x20;to&#x20;check,help:For&#x20;example&#x20;pandorafms.com,value:""},3:{macro:"_field3_",desc:DNS&#x20;Server&#x20;to&#x20;check,help:For&#x20;example&#x20;8.8.8.8,value:""},4:{macro:"_field4_",desc:Optional&#x20;parameters,help:"",value:""}}','-i&#x20;_field1_&#x20;-d&#x20;_field2_&#x20;-s&#x20;_field3_&#x20;_field4_');
@@ -1180,10 +1341,36 @@ INSERT INTO tplugin (id, name, description, max_timeout, execute, plugin_type, m
 INSERT INTO tplugin (id, name, description, max_timeout, execute, plugin_type, macros, parameters) VALUES (6,'MySQL&#x20;Plugin','Samples:&#x0d;&#x0a;&#x20;&#x20;&#x20;./mysql_plugin.sh&#x20;-u&#x20;root&#x20;-p&#x20;none&#x20;-s&#x20;localhost&#x20;-q&#x20;Com_select&#x0d;&#x0a;&#x20;&#x20;&#x20;./mysql_plugin.sh&#x20;-u&#x20;root&#x20;-p&#x20;none&#x20;-s&#x20;localhost&#x20;-q&#x20;Com_update&#x0d;&#x0a;&#x20;&#x20;&#x20;./mysql_plugin.sh&#x20;-u&#x20;root&#x20;-p&#x20;none&#x20;-s&#x20;localhost&#x20;-q&#x20;Connections&#x0d;&#x0a;&#x20;&#x20;&#x20;./mysql_plugin.sh&#x20;-u&#x20;root&#x20;-p&#x20;anypass&#x20;-s&#x20;192.168.50.24&#x20;-q&#x20;Innodb_rows_read&#x0d;&#x0a;',15,'/usr/share/pandora_server/util/plugin/mysql_plugin.sh',0,'{1:{macro:"_field1_",desc:IP&#x20;address,help:IP&#x20;address,value:""},2:{macro:"_field2_",desc:Username,help:Username&#x20;to&#x20;access&#x20;to&#x20;database,value:""},3:{macro:"_field3_",desc:Password,help:Password&#x20;to&#x20;access&#x20;to&#x20;database,value:""},4:{macro:"_field4_",desc:Query&#x20;string,help:Query&#x20;string&#x20;of&#x20;global&#x20;status.&#x20;For&#x20;example&#x20;&#039;Aborted_connects&#039;&#x20;or&#x20;&#039;Innodb_rows_read&#039;",value:""}}', '-s&#x20;_field1_&#x20;-u&#x20;_field2_&#x20;-p&#x20;_field3_&#x20;-q&#x20;_field4_');
 INSERT INTO tplugin (id, name, description, max_timeout, execute, plugin_type, macros, parameters) VALUES (8,'SNMP&#x20;remote','Plugin&#x20;that&#x20;gets&#x20;remotely,&#x20;using&#x20;SNMP,&#x20;values&#x20;such&#x20;as&#x20;the&#x20;percentage&#x20;of&#x20;disk&#x20;or&#x20;memory&#x20;used,&#x20;the&#x20;status&#x20;of&#x20;a&#x20;process&#x20;or&#x20;the&#x20;CPU&#x20;load',0,'perl&#x20;/usr/share/pandora_server/util/plugin/snmp_remote.pl',0,'{1:{macro:"_field1_",desc:Target&#x20;IP,help:"",value:"_address_"},2:{macro:"_field2_",desc:Community,help:"",value:public},3:{macro:"_field3_",desc:Plug-in&#x20;Parameters,help:Memory&#x20;use&#x20;&#40;%&#41;&#x0d;&#x0a;-m&#x20;memuse&#x0d;&#x0a;&#x0d;&#x0a;Disk&#x20;use&#x20;&#40;%&#41;&#x0d;&#x0a;-m&#x20;diskuse&#x20;-d&#x20;[disk&#x20;name]&#x0d;&#x0a;&#x0d;&#x0a;Status&#x20;of&#x20;a&#x20;process&#x20;&#40;0/1&#41;&#x0d;&#x0a;-m&#x20;process&#x20;-p&#x20;[process_name]&#x20;&#x0d;&#x0a;&#x0d;&#x0a;Average&#x20;of&#x20;CPUs&#x20;Load&#x20;&#40;%&#41;&#x0d;&#x0a;-m&#x20;cpuload,value:""}}', '-H&#x20;_field1_&#x20;-c&#x20;_field2_&#x20;_field3_');
 
+-- Update curr val of sequence
+update_currval('tplugin', 'id');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tplugin_inc ENABLE';
+
+COMMIT;
+END;;
+
+BEGIN
+LOCK TABLE tagent_custom_fields IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tagent_custom_fields_inc DISABLE';
 
 INSERT INTO tagent_custom_fields VALUES (1,'Serial&#x20;Number',0);
 INSERT INTO tagent_custom_fields VALUES (2,'Department',0);
 INSERT INTO tagent_custom_fields VALUES (3,'Additional&#x20;ID',0);
+
+-- Update curr val of sequence
+update_currval('tagent_custom_fields', 'id_field');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tagent_custom_fields_inc ENABLE';
+
+COMMIT;
+END;;
+
+
+BEGIN
+LOCK TABLE ttag IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER ttag_inc DISABLE';
 
 INSERT INTO ttag (id_tag, name, description, url, email) VALUES (1,'network','Network&#x20;equipment','http://artica.es','');
 INSERT INTO ttag (id_tag, name, description, url, email) VALUES (2,'critical','Critical&#x20;modules','','');
@@ -1191,11 +1378,36 @@ INSERT INTO ttag (id_tag, name, description, url, email) VALUES (3,'dmz','DMZ&#x
 INSERT INTO ttag (id_tag, name, description, url, email) VALUES (4,'performance','Performance&#x20;anda&#x20;capacity&#x20;modules','','');
 INSERT INTO ttag (id_tag, name, description, url, email) VALUES (5,'configuration','','','');
 
+-- Update curr val of sequence
+update_currval('ttag', 'id_tag');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER ttag_inc ENABLE';
+
+COMMIT;
+END;;
+
+
+BEGIN
+LOCK TABLE tevent_response IN EXCLUSIVE MODE;
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tevent_response_inc DISABLE';
+
 INSERT INTO tevent_response VALUES (1,'Ping&#x20;to&#x20;host','Ping&#x20;to&#x20;the&#x20;agent&#x20;host','ping&#x20;-c&#x20;5&#x20;_agent_address_','command',0,620,500,0,'');
 INSERT INTO tevent_response VALUES (2,'SSH&#x20;to&#x20;host','Connect&#x20;via&#x20;SSH&#x20;to&#x20;the&#x20;agent','http://192.168.70.164:8022/anyterm.html?param=_User_@_agent_address_','url',0,800,450,0,'User');
 INSERT INTO tevent_response VALUES (3,'Create&#x20;incident&#x20;from&#x20;event','Create&#x20;a&#x20;incident&#x20;from&#x20;the&#x20;event&#x20;with&#x20;the&#x20;standard&#x20;incidents&#x20;system&#x20;of&#x20;Pandora&#x20;FMS','index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;insert_form&amp;from_event=_event_id_','url',0,0,0,1,'');
 INSERT INTO tevent_response VALUES (4,'Create&#x20;Integria&#x20;IMS&#x20;incident&#x20;from&#x20;event','Create&#x20;a&#x20;incident&#x20;from&#x20;the&#x20;event&#x20;with&#x20;integria&#x20;incidents&#x20;system&#x20;of&#x20;Pandora&#x20;FMS.&#x20;&#x0d;&#x0a;&#x0d;&#x0a;Is&#x20;necessary&#x20;to&#x20;enable&#x20;and&#x20;configure&#x20;the&#x20;Integria&#x20;incidents&#x20;in&#x20;Pandora&#x20;FMS&#x20;setup.','index.php?sec=workspace&amp;sec2=operation/integria_incidents/incident&amp;tab=editor&amp;from_event=_event_id_','url',0,0,0,1,'');
 INSERT INTO tevent_response VALUES (5,'Restart&#x20;agent','Restart&#x20;the&#x20;agent&#x20;with&#x20;using&#x20;UDP&#x20;protocol.&#x0d;&#x0a;&#x0d;&#x0a;To&#x20;use&#x20;this&#x20;response&#x20;is&#x20;necessary&#x20;to&#x20;have&#x20;installed&#x20;Pandora&#x20;FMS&#x20;server&#x20;and&#x20;console&#x20;in&#x20;the&#x20;same&#x20;machine.','/usr/share/pandora_server/util/udp_client.pl&#x20;_agent_address_&#x20;41122&#x20;&quot;REFRESH&#x20;AGENT&quot;','command',0,620,500,0,'');
+
+-- Update curr val of sequence
+update_currval('tevent_response', 'id');
+
+EXECUTE IMMEDIATE 'ALTER TRIGGER tevent_response_inc ENABLE';
+
+COMMIT;
+END;;
+
+BEGIN
+LOCK TABLE tupdate_settings IN EXCLUSIVE MODE;
 
 INSERT INTO tupdate_settings VALUES ('current_update', '412');
 INSERT INTO tupdate_settings VALUES ('customer_key', 'PANDORA-FREE');
@@ -1212,3 +1424,4 @@ INSERT INTO tupdate_settings VALUES ('proxy_user', '');
 INSERT INTO tupdate_settings VALUES ('proxy_pass', '');
 
 COMMIT;
+END;;

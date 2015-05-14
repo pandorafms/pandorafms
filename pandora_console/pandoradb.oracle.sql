@@ -30,6 +30,9 @@ CREATE OR REPLACE FUNCTION NOW RETURN TIMESTAMP AS t_now TIMESTAMP; BEGIN SELECT
 -- Procedure for retrieve PK information after an insert statement
 CREATE OR REPLACE PROCEDURE insert_id (table_name IN VARCHAR2, sql_insert IN VARCHAR2, id OUT NUMBER ) IS v_count NUMBER; BEGIN EXECUTE IMMEDIATE sql_insert; EXECUTE IMMEDIATE 'SELECT COUNT(*) FROM user_sequences WHERE sequence_name = ''' || table_name || '_s''' INTO v_count; IF v_count >= 1 THEN EXECUTE IMMEDIATE 'SELECT ' || table_name || '_s.currval FROM DUAL' INTO id; ELSE id := 0; END IF; EXCEPTION WHEN others THEN RAISE_APPLICATION_ERROR(-20001, 'ERROR on insert_id procedure, please check input parameters or procedure logic.'); END insert_id;;
 
+-- Procedure for update curr val of sequence
+CREATE OR REPLACE PROCEDURE update_currval (table_name IN VARCHAR2, column_name IN VARCHAR2 ) IS key_max NUMBER; BEGIN EXECUTE IMMEDIATE 'SELECT MAX(' || column_name || ') FROM ' || table_name INTO key_max; IF (key_max IS NULL) THEN key_max := 1; ELSE key_max := key_max + 1; END IF; EXECUTE IMMEDIATE 'DROP SEQUENCE ' || table_name || '_s'; EXECUTE IMMEDIATE 'CREATE SEQUENCE ' || table_name || '_s INCREMENT BY 1 START WITH ' || key_max; EXECUTE IMMEDIATE 'SELECT ' || table_name || '_s.nextval FROM dual'; END update_currval;;
+
 -- ---------------------------------------------------------------------
 -- Table `taddress`
 -- ---------------------------------------------------------------------
@@ -39,8 +42,8 @@ CREATE TABLE taddress (
 	ip_pack NUMBER(10, 0) DEFAULT 0 
 );
 CREATE INDEX taddress_ip_idx ON taddress(ip);
+
 CREATE SEQUENCE taddress_s INCREMENT BY 1 START WITH 1;
--- Triggers must end with double semicolons because Pandora installer need it 
 CREATE OR REPLACE TRIGGER taddress_inc BEFORE INSERT ON taddress REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT taddress_s.nextval INTO :NEW.id_a FROM dual; END;;
 
 -- ---------------------------------------------------------------------
@@ -51,6 +54,7 @@ CREATE TABLE taddress_agent (
 	id_a NUMBER(19, 0) DEFAULT 0,
 	id_agent NUMBER(19, 0) DEFAULT 0 
 );
+
 CREATE SEQUENCE taddress_agent_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER taddress_agent_inc BEFORE INSERT ON taddress_agent REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT taddress_agent_s.nextval INTO :NEW.id_ag FROM dual; END;;
 
@@ -74,12 +78,12 @@ CREATE TABLE tagente (
 	id_parent NUMBER(10, 0) DEFAULT 0,
 	custom_id VARCHAR2(255) DEFAULT '',
 	server_name VARCHAR2(100) DEFAULT '',
-	cascade_protection NUMBER(5, 0) DEFAULT 0, 
+	cascade_protection NUMBER(5, 0) DEFAULT 0,
 	--number of hours of diference with the server timezone
 	timezone_offset NUMBER(5, 0) DEFAULT 0,
-	 --path in the server to the image of the icon representing the agent
+	--path in the server to the image of the icon representing the agent
 	icon_path VARCHAR2(127) DEFAULT '',
-	 --set it to one to update the position data (altitude, longitude, latitude) whenetting information from the agent or to 0 to keep the last value and don\'t update it
+	--set it to one to update the position data (altitude, longitude, latitude) whenetting information from the agent or to 0 to keep the last value and don\'t update it
 	update_gis_data NUMBER(5, 0) DEFAULT 1,
 	url_address CLOB DEFAULT '',
 	quiet NUMBER(5, 0) DEFAULT 0,
@@ -97,6 +101,7 @@ CREATE INDEX tagente_nombre_idx ON tagente(nombre);
 CREATE INDEX tagente_direccion_idx ON tagente(direccion);
 CREATE INDEX tagente_disabled_idx ON tagente(disabled);
 CREATE INDEX tagente_id_grupo_idx ON tagente(id_grupo);
+
 CREATE SEQUENCE tagente_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tagente_inc BEFORE INSERT ON tagente REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_s.nextval INTO :NEW.id_agente FROM dual; END;;
 
@@ -111,6 +116,8 @@ CREATE TABLE tagente_datos (
 CREATE INDEX tagente_datos_id_agent_mod_idx ON tagente_datos(id_agente_modulo);
 CREATE INDEX tagente_datos_utimestamp_idx ON tagente_datos(utimestamp);
 
+-- This sequence will not work with the 'insert_id' procedure
+
 -- -----------------------------------------------------
 -- Table `tagente_datos_inc`
 -- -----------------------------------------------------
@@ -120,8 +127,8 @@ CREATE TABLE tagente_datos_inc (
 	utimestamp NUMBER(10, 0) DEFAULT 0
 );
 CREATE INDEX tagente_datos_inc_id_ag_mo_idx ON tagente_datos_inc(id_agente_modulo);
-CREATE SEQUENCE tagente_datos_inc_s INCREMENT BY 1 START WITH 1;
---CREATE OR REPLACE TRIGGER tagente_datos_inc_inc BEFORE INSERT ON tagente_datos_inc REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_datos_inc_s.nextval INTO :NEW.id_adi FROM dual; END;;
+
+-- This sequence will not work with the 'insert_id' procedure
 
 -- -----------------------------------------------------
 -- Table `tagente_datos_string`
@@ -132,6 +139,8 @@ CREATE TABLE tagente_datos_string (
 	utimestamp NUMBER(10, 0) DEFAULT 0 
 );
 CREATE INDEX tagente_datos_string_utsta_idx ON tagente_datos_string(utimestamp);
+
+-- This sequence will not work with the 'insert_id' procedure
 
 -- -----------------------------------------------------
 -- Table `tagente_datos_log4x`
@@ -145,6 +154,7 @@ CREATE TABLE tagente_datos_log4x (
 	utimestamp NUMBER(10, 0) DEFAULT 0
 );
 CREATE INDEX tagente_datos_log4x_id_a_m_idx ON tagente_datos_log4x(id_agente_modulo);
+
 CREATE SEQUENCE tagente_datos_log4x_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tagente_datos_log4x_inc BEFORE INSERT ON tagente_datos_log4x REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_datos_log4x_s.nextval INTO :NEW.id_tagente_datos_log4x FROM dual; END;;
 
@@ -176,7 +186,6 @@ CREATE INDEX tagente_estado_running_by_idx ON tagente_estado(running_by);
 CREATE INDEX tagente_estado_last_ex_try_idx ON tagente_estado(last_execution_try);
 
 CREATE SEQUENCE tagente_estado_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tagente_estado_inc BEFORE INSERT ON tagente_estado REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_estado_s.nextval INTO :NEW.id_agente_estado FROM dual; END;;
 
 -- Probably last_execution_try index is not useful and loads more than benefits
@@ -190,6 +199,9 @@ CREATE OR REPLACE TRIGGER tagente_estado_inc BEFORE INSERT ON tagente_estado REF
 -- 6 - WMI server
 -- 7 - WEB Server (enteprise)
 
+-- -----------------------------------------------------
+-- Table `tagente_modulo`
+-- -----------------------------------------------------
 CREATE TABLE tagente_modulo (
 	id_agente_modulo NUMBER(10, 0) PRIMARY KEY,
 	id_agente NUMBER(10, 0) DEFAULT 0,
@@ -263,11 +275,13 @@ CREATE INDEX tagente_modulo_id_t_mod_idx ON tagente_modulo(id_tipo_modulo);
 CREATE INDEX tagente_modulo_disabled_idx ON tagente_modulo(disabled);
 
 CREATE SEQUENCE tagente_modulo_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tagente_modulo_inc BEFORE INSERT ON tagente_modulo REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagente_modulo_s.nextval INTO :NEW.id_agente_modulo FROM dual; END;;
 
 -- snmp_oid is also used for WMI query
 
+-- -----------------------------------------------------
+-- Table `tagent_access`
+-- -----------------------------------------------------
 CREATE TABLE tagent_access (
 	id_agent NUMBER(10, 0) DEFAULT 0,
 	utimestamp NUMBER(19, 0) DEFAULT 0
@@ -275,6 +289,11 @@ CREATE TABLE tagent_access (
 CREATE INDEX tagent_access_id_agent_idx ON tagent_access(id_agent);
 CREATE INDEX tagent_access_utimestamp_idx ON tagent_access(utimestamp);
 
+-- This sequence will not work with the 'insert_id' procedure
+
+-- -----------------------------------------------------
+-- Table `talert_snmp`
+-- -----------------------------------------------------
 CREATE TABLE talert_snmp (
 	id_as NUMBER(10, 0) PRIMARY KEY,
 	id_alert NUMBER(10, 0) DEFAULT 0,
@@ -347,9 +366,11 @@ CREATE TABLE talert_snmp (
 );
 
 CREATE SEQUENCE talert_snmp_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER talert_snmp_inc BEFORE INSERT ON talert_snmp REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_snmp_s.nextval INTO :NEW.id_as FROM dual; END;;
 
+-- -----------------------------------------------------
+-- Table `talert_commands`
+-- -----------------------------------------------------
 CREATE TABLE talert_commands (
 	id NUMBER(10, 0) PRIMARY KEY,
 	name VARCHAR2(100) DEFAULT '',
@@ -361,9 +382,11 @@ CREATE TABLE talert_commands (
 );
 
 CREATE SEQUENCE talert_commands_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER talert_commands_inc BEFORE INSERT ON talert_commands REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_commands_s.nextval INTO :NEW.id FROM dual; END;;
 
+-- -----------------------------------------------------
+-- Table `talert_actions`
+-- -----------------------------------------------------
 CREATE TABLE talert_actions (
 	id NUMBER(10, 0) PRIMARY KEY,
 	name CLOB DEFAULT '',
@@ -393,12 +416,14 @@ CREATE TABLE talert_actions (
 );
 
 CREATE SEQUENCE talert_actions_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER talert_actions_inc BEFORE INSERT ON talert_actions REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_actions_s.nextval INTO :NEW.id FROM dual; END;;
 
 -- on update trigger
 CREATE OR REPLACE TRIGGER talert_actions_update AFTER UPDATE OF id ON talert_commands FOR EACH ROW BEGIN UPDATE talert_actions SET id_alert_command = :NEW.id WHERE id_alert_command = :OLD.id; END;;
 
+-- -----------------------------------------------------
+-- Table `talert_templates`
+-- -----------------------------------------------------
 -- use to_char(time_from, 'hh24:mi:ss') function to retrieve time_from field info
 -- use to_char(time_to,   'hh24:mi:ss') function to retrieve time_to field info
 CREATE TABLE talert_templates (
@@ -454,12 +479,14 @@ CREATE TABLE talert_templates (
 CREATE INDEX talert_templates_id_al_act_idx ON talert_templates(id_alert_action);
 
 CREATE SEQUENCE talert_templates_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER talert_templates_inc BEFORE INSERT ON talert_templates REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_templates_s.nextval INTO :NEW.id FROM dual; END;;
 
 -- on update trigger
 CREATE OR REPLACE TRIGGER talert_templates_update AFTER UPDATE OF id ON talert_actions FOR EACH ROW BEGIN UPDATE talert_templates SET id_alert_action = :NEW.id WHERE id_alert_action = :OLD.id; END;;
 
+-- -----------------------------------------------------
+-- Table `talert_template_modules`
+-- -----------------------------------------------------
 CREATE TABLE talert_template_modules (
 	id NUMBER(10, 0) PRIMARY KEY,
 	id_agent_module NUMBER(10, 0) REFERENCES tagente_modulo(id_agente_modulo) ON DELETE CASCADE,
@@ -486,6 +513,9 @@ CREATE OR REPLACE TRIGGER talert_template_modules_update AFTER UPDATE OF id_agen
 -- on update trigger 1
 CREATE OR REPLACE TRIGGER talert_template_module_update1 AFTER UPDATE OF id ON talert_templates FOR EACH ROW BEGIN UPDATE talert_template_modules SET id_alert_template = :NEW.id WHERE id_alert_template = :OLD.id; END;;
 
+-- -----------------------------------------------------
+-- Table `talert_template_module_actions`
+-- -----------------------------------------------------
 CREATE TABLE talert_template_module_actions (
 	id NUMBER(10, 0) PRIMARY KEY,
 	id_alert_template_module NUMBER(10, 0) REFERENCES talert_template_modules(id) ON DELETE CASCADE, 
@@ -495,7 +525,7 @@ CREATE TABLE talert_template_module_actions (
 	module_action_threshold NUMBER(10, 0) DEFAULT 0,
   	last_execution NUMBER(18, 0) DEFAULT 0 
 );
-
+-- This sequence will not work with the 'insert_id' procedure
 CREATE SEQUENCE talert_template_modu_actions_s INCREMENT BY 1 START WITH 1;
 
 CREATE OR REPLACE TRIGGER talert_template_mod_action_inc BEFORE INSERT ON talert_template_module_actions REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_template_modu_actions_s.nextval INTO :NEW.id FROM dual; END;;
@@ -506,6 +536,9 @@ CREATE OR REPLACE TRIGGER talert_template_mod_act_update AFTER UPDATE OF id ON t
 -- on update trigger 1
 CREATE OR REPLACE TRIGGER talert_template_mod_ac_update1 AFTER UPDATE OF id ON talert_actions FOR EACH ROW BEGIN UPDATE talert_template_module_actions SET id_alert_action = :NEW.id WHERE id_alert_action = :OLD.id; END;;
 
+-- -----------------------------------------------------
+-- Table `talert_special_days`
+-- -----------------------------------------------------
 CREATE TABLE talert_special_days (
 	id NUMBER(10,0) PRIMARY KEY,
 	id_group NUMBER(10, 0) DEFAULT 0, 
@@ -547,6 +580,7 @@ CREATE TABLE tconfig (
 	token VARCHAR2(100) DEFAULT '',
 	value CLOB DEFAULT '' 
 );
+
 CREATE SEQUENCE tconfig_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tconfig_inc BEFORE INSERT ON tconfig REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tconfig_s.nextval INTO :NEW.id_config FROM dual; END;;
 
@@ -559,6 +593,9 @@ CREATE TABLE tconfig_os (
 	description VARCHAR2(250) DEFAULT '',
 	icon_name VARCHAR2(100) DEFAULT ''
 );
+
+CREATE SEQUENCE tconfig_os_s INCREMENT BY 1 START WITH 1;
+CREATE OR REPLACE TRIGGER tconfig_os_inc BEFORE INSERT ON tconfig_os REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tconfig_os_s.nextval INTO :NEW.id_os FROM dual; END;;
 
 -- ---------------------------------------------------------------------
 -- Table `tevento`
@@ -594,7 +631,6 @@ CREATE INDEX tevento_id_2_idx ON tevento(utimestamp, id_evento);
 CREATE INDEX tevento_id_agentmodule_idx ON tevento(id_agentmodule);
 
 CREATE SEQUENCE tevento_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tevento_inc BEFORE INSERT ON tevento REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tevento_s.nextval INTO :NEW.id_evento FROM dual; END;;
 
 -- ---------------------------------------------------------------------
@@ -620,7 +656,6 @@ CREATE TABLE tgrupo (
 );
 
 CREATE SEQUENCE tgrupo_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tgrupo_inc BEFORE INSERT ON tgrupo REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgrupo_s.nextval INTO :NEW.id_grupo FROM dual; END;;
 
 -- ---------------------------------------------------------------------
@@ -651,7 +686,6 @@ CREATE INDEX tincidencia_id_agente_mod_idx ON tincidencia(id_agente_modulo);
 CREATE OR REPLACE TRIGGER tincidencia_actualizacion_ts BEFORE UPDATE ON tincidencia FOR EACH ROW BEGIN select CURRENT_TIMESTAMP into :NEW.actualizacion FROM dual; END;;
 
 CREATE SEQUENCE tincidencia_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tincidencia_inc BEFORE INSERT ON tincidencia REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tincidencia_s.nextval INTO :NEW.id_incidencia FROM dual; END;;
 
 -- ---------------------------------------------------------------------
@@ -661,6 +695,7 @@ CREATE TABLE tlanguage (
 	id_language VARCHAR2(6) DEFAULT '',
 	name VARCHAR2(100) DEFAULT ''
 );
+-- This sequence will not work with the 'insert_id' procedure
 
 -- ---------------------------------------------------------------------
 -- Table `tlink`
@@ -672,7 +707,6 @@ CREATE TABLE tlink (
 );
 
 CREATE SEQUENCE tlink_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tlink_inc BEFORE INSERT ON tlink REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tlink_s.nextval INTO :NEW.id_link FROM dual; END;;
 
 -- ---------------------------------------------------------------------
@@ -689,7 +723,6 @@ CREATE TABLE tmensajes (
 );
 
 CREATE SEQUENCE tmensajes_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tmensajes_inc BEFORE INSERT ON tmensajes REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmensajes_s.nextval INTO :NEW.id_mensaje FROM dual; END;;
 
 -- ---------------------------------------------------------------------
@@ -701,7 +734,6 @@ CREATE TABLE tmodule_group (
 );
 
 CREATE SEQUENCE tmodule_group_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tmodule_group_inc BEFORE INSERT ON tmodule_group REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmodule_group_s.nextval INTO :NEW.id_mg FROM dual; END;;
 
 -- ----------------------------------------------------------------------
@@ -715,7 +747,6 @@ CREATE TABLE tmodule_relationship (
 );
 
 CREATE SEQUENCE tmodule_relationship_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tmodule_relationship_inc BEFORE INSERT ON tmodule_relationship REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmodule_relationship_s.nextval INTO :NEW.id FROM dual; END;;
 
 -- ----------------------------------------------------------------------
@@ -777,16 +808,23 @@ CREATE TABLE tnetwork_component (
 );
 
 CREATE SEQUENCE tnetwork_component_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tnetwork_component_inc BEFORE INSERT ON tnetwork_component REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetwork_component_s.nextval INTO :NEW.id_nc FROM dual; END;;
 
+-- ----------------------------------------------------------------------
+-- Table `tnetwork_component_group`
+-- ----------------------------------------------------------------------
 CREATE TABLE tnetwork_component_group (
 	id_sg NUMBER(10, 0) PRIMARY KEY,
 	name VARCHAR2(200) DEFAULT '',
 	parent NUMBER(19, 0) DEFAULT 0 
 );
 
+CREATE SEQUENCE tnetwork_component_group_s INCREMENT BY 1 START WITH 1;
+CREATE OR REPLACE TRIGGER tnetwork_component_group_inc BEFORE INSERT ON tnetwork_component_group REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetwork_component_group_s.nextval INTO :NEW.id_sg FROM dual; END;;
 
+-- ----------------------------------------------------------------------
+-- Table `tnetwork_profile`
+-- ----------------------------------------------------------------------
 CREATE TABLE tnetwork_profile (
 	id_np NUMBER(10, 0) PRIMARY KEY,
 	name VARCHAR2(100) DEFAULT '',
@@ -794,15 +832,22 @@ CREATE TABLE tnetwork_profile (
 );
 
 CREATE SEQUENCE tnetwork_profile_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tnetwork_profile_inc BEFORE INSERT ON tnetwork_profile REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetwork_profile_s.nextval INTO :NEW.id_np FROM dual; END;;
 
+-- ----------------------------------------------------------------------
+-- Table `tnetwork_profile_component`
+-- ----------------------------------------------------------------------
 CREATE TABLE tnetwork_profile_component (
 	id_nc NUMBER(19, 0) DEFAULT 0,
 	id_np NUMBER(19, 0) DEFAULT 0
 );
 CREATE INDEX tnetwork_profile_id_np_idx ON tnetwork_profile_component(id_np);
 
+-- This sequence will not work with the 'insert_id' procedure
+
+-- ----------------------------------------------------------------------
+-- Table `tnota`
+-- ----------------------------------------------------------------------
 CREATE TABLE tnota (
 	id_nota NUMBER(19, 0) PRIMARY KEY,
 	id_incident NUMBER(19, 0),
@@ -812,10 +857,20 @@ CREATE TABLE tnota (
 );
 CREATE INDEX tnota_id_incident_idx ON tnota(id_incident);
 
+-- This sequence will not work with the 'insert_id' procedure
+
+-- ----------------------------------------------------------------------
+-- Table `torigen`
+-- ----------------------------------------------------------------------
 CREATE TABLE torigen (
 	origen VARCHAR2(100) DEFAULT ''
 );
 
+-- This sequence will not work with the 'insert_id' procedure
+
+-- ----------------------------------------------------------------------
+-- Table `tperfil`
+-- ----------------------------------------------------------------------
 CREATE TABLE tperfil (
 	id_perfil NUMBER(10, 0) PRIMARY KEY,
 	name VARCHAR2(200) NOT NULL,
@@ -845,9 +900,11 @@ CREATE TABLE tperfil (
 );
 
 CREATE SEQUENCE tperfil_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tperfil_inc BEFORE INSERT ON tperfil REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tperfil_s.nextval INTO :NEW.id_perfil FROM dual; END;;
 
+-- ----------------------------------------------------------------------
+-- Table `trecon_script`
+-- ----------------------------------------------------------------------
 CREATE TABLE trecon_script (
 	id_recon_script NUMBER(10, 0) PRIMARY KEY,
 	name VARCHAR2(100) DEFAULT '',
@@ -857,9 +914,11 @@ CREATE TABLE trecon_script (
 );
 
 CREATE SEQUENCE trecon_script_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER trecon_script_inc BEFORE INSERT ON trecon_script REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT trecon_script_s.nextval INTO :NEW.id_recon_script FROM dual; END;;
 
+-- ----------------------------------------------------------------------
+-- Table `trecon_task`
+-- ----------------------------------------------------------------------
 CREATE TABLE trecon_task (
 	id_rt NUMBER(10, 0) PRIMARY KEY,
 	name VARCHAR2(100) DEFAULT '',
@@ -890,9 +949,11 @@ CREATE TABLE trecon_task (
 CREATE INDEX trecon_task_id_rec_serv_idx ON trecon_task(id_recon_server);
 
 CREATE SEQUENCE trecon_task_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER trecon_task_inc BEFORE INSERT ON trecon_task REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT trecon_task_s.nextval INTO :NEW.id_rt FROM dual; END trecon_task_inc;;
 
+-- ----------------------------------------------------------------------
+-- Table `tserver`
+-- ----------------------------------------------------------------------
 CREATE TABLE tserver (
 	id_server NUMBER(10, 0) PRIMARY KEY,
 	name VARCHAR2(100) DEFAULT '',
@@ -926,7 +987,6 @@ CREATE INDEX tserver_keepalive_idx ON tserver(keepalive);
 CREATE INDEX tserver_status_idx ON tserver(status);
 
 CREATE SEQUENCE tserver_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tserver_inc BEFORE INSERT ON tserver REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tserver_s.nextval INTO :NEW.id_server FROM dual; END tserver_inc;;
 
 -- server types:
@@ -942,6 +1002,9 @@ CREATE OR REPLACE TRIGGER tserver_inc BEFORE INSERT ON tserver REFERENCING NEW A
 -- 9 web
 -- TODO: drop 2.x xxxx_server fields, unused since server_type exists.
 
+-- ----------------------------------------------------------------------
+-- Table `tsesion`
+-- ----------------------------------------------------------------------
 CREATE TABLE tsesion (
 	id_sesion NUMBER(19, 0) PRIMARY KEY,
 	id_usuario VARCHAR2(60) DEFAULT '0',
@@ -955,11 +1018,10 @@ CREATE INDEX tsesion_utimestamp_idx ON tsesion(utimestamp);
 CREATE INDEX tsesion_id_usuario_idx ON tsesion(id_usuario);
 
 CREATE SEQUENCE tsesion_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tsesion_inc BEFORE INSERT ON tsesion REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tsesion_s.nextval INTO :NEW.id_sesion FROM dual; END tsesion_inc;;
 
 -- ---------------------------------------------------------------------
--- Table ttipo_modulo
+-- Table `ttipo_modulo`
 -- ---------------------------------------------------------------------
 CREATE TABLE ttipo_modulo (
 	id_tipo NUMBER(10, 0) PRIMARY KEY,
@@ -968,11 +1030,12 @@ CREATE TABLE ttipo_modulo (
 	descripcion VARCHAR2(100) DEFAULT '',
 	icon VARCHAR2(100) DEFAULT NULL
 );
+
 CREATE SEQUENCE ttipo_modulo_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER ttipo_modulo_inc BEFORE INSERT ON ttipo_modulo REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttipo_modulo_s.nextval INTO :NEW.id_tipo FROM dual; END ttipo_modulo_inc;;
 
 -- ---------------------------------------------------------------------
--- Table ttrap
+-- Table `ttrap`
 -- ---------------------------------------------------------------------
 CREATE TABLE ttrap (
 	id_trap NUMBER(19, 0) PRIMARY KEY,
@@ -992,6 +1055,7 @@ CREATE TABLE ttrap (
 	description VARCHAR2(255) DEFAULT '',
 	severity NUMBER(10, 0) DEFAULT 2
 );
+
 CREATE SEQUENCE ttrap_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER ttrap_inc BEFORE INSERT ON ttrap REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttrap_s.nextval INTO :NEW.id_trap FROM dual; END ttrap_inc;;
 
@@ -1035,6 +1099,8 @@ CREATE TABLE tusuario (
 	CONSTRAINT t_usuario_metaconsole_acc_cons CHECK (metaconsole_access IN ('basic','advanced'))
 );
 
+-- This sequence will not work with the 'insert_id' procedure
+
 -- -----------------------------------------------------
 -- Table `tusuario_perfil`
 -- -----------------------------------------------------
@@ -1047,6 +1113,7 @@ CREATE TABLE tusuario_perfil (
 	id_policy NUMBER(10, 0) DEFAULT 0,
 	tags CLOB DEFAULT ''
 );
+
 CREATE SEQUENCE tusuario_perfil_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tusuario_perfil_inc BEFORE INSERT ON tusuario_perfil REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tusuario_perfil_s.nextval INTO :NEW.id_up FROM dual; END tusuario_perfil_inc;;
 
@@ -1058,11 +1125,12 @@ CREATE TABLE tuser_double_auth (
 	id_user VARCHAR2(60) REFERENCES tusuario(id_user) ON DELETE CASCADE,
 	secret VARCHAR2(20)
 );
+
 CREATE SEQUENCE tuser_double_auth_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tuser_double_auth_inc BEFORE INSERT ON tuser_double_auth REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tuser_double_auth_s.nextval INTO :NEW.id FROM dual; END tuser_double_auth_inc;;
 
 -- ---------------------------------------------------------------------
--- Table tnews
+-- Table `tnews`
 -- ---------------------------------------------------------------------
 CREATE TABLE tnews (
 	id_news NUMBER(10, 0) PRIMARY KEY,
@@ -1075,11 +1143,12 @@ CREATE TABLE tnews (
 	expire NUMBER(5, 0) DEFAULT 0,
 	expire_timestamp TIMESTAMP DEFAULT NULL
 );
+
 CREATE SEQUENCE tnews_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tnews_inc BEFORE INSERT ON tnews REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnews_s.nextval INTO :NEW.id_news FROM dual; END tnews_inc;;
 
 -- ---------------------------------------------------------------------
--- Table tgraph
+-- Table `tgraph`
 -- ---------------------------------------------------------------------
 CREATE TABLE tgraph (
 	id_graph NUMBER(10, 0) PRIMARY KEY,
@@ -1095,11 +1164,12 @@ CREATE TABLE tgraph (
 	id_group NUMBER(19, 0) DEFAULT 0,
 	id_graph_template NUMBER(11, 0) DEFAULT 0 
 );
+
 CREATE SEQUENCE tgraph_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tgraph_inc BEFORE INSERT ON tgraph REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgraph_s.nextval INTO :NEW.id_graph FROM dual; END tgraph_inc;;
 
 -- ---------------------------------------------------------------------
--- Table tgraph_source
+-- Table `tgraph_source`
 -- ---------------------------------------------------------------------
 CREATE TABLE tgraph_source (
 	id_gs NUMBER(10, 0) PRIMARY KEY,
@@ -1107,11 +1177,12 @@ CREATE TABLE tgraph_source (
 	id_agent_module  NUMBER(19, 0) DEFAULT 0,
 	weight BINARY_DOUBLE DEFAULT 0
 );
+
 CREATE SEQUENCE tgraph_source_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tgraph_source_inc BEFORE INSERT ON tgraph_source REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgraph_source_s.nextval INTO :NEW.id_gs FROM dual; END tgraph_source_inc;;
 
 -- ---------------------------------------------------------------------
--- Table treport
+-- Table `treport`
 -- ---------------------------------------------------------------------
 CREATE TABLE treport (
 	id_report NUMBER(10, 0) PRIMARY KEY,
@@ -1130,11 +1201,12 @@ CREATE TABLE treport (
 	metaconsole NUMBER(5, 0) DEFAULT 0,
 	non_interactive NUMBER(5, 0) DEFAULT 0
 );
+
 CREATE SEQUENCE treport_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER treport_inc BEFORE INSERT ON treport REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_s.nextval INTO :NEW.id_report FROM dual; END treport_inc;;
 
 -- -----------------------------------------------------
--- Table treport_content
+-- Table `treport_content`
 -- -----------------------------------------------------
 -- use to_char(time_from, 'hh24:mi:ss') function to retrieve time_from field info
 -- use to_char(time_to,   'hh24:mi:ss') function to retrieve time_to field info
@@ -1180,12 +1252,14 @@ CREATE TABLE treport_content (
 );
 
 CREATE SEQUENCE treport_content_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER treport_content_inc BEFORE INSERT ON treport_content REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_content_s.nextval INTO :NEW.id_rc FROM dual; END treport_content_inc;;
 
 -- on update trigger
 CREATE OR REPLACE TRIGGER treport_content_update AFTER UPDATE OF id_report ON treport FOR EACH ROW BEGIN UPDATE treport_content SET id_rc = :NEW.id_report WHERE id_rc = :OLD.id_report; END;;
 
+-- -----------------------------------------------------
+-- Table `treport_content_sla_combined`
+-- -----------------------------------------------------
 CREATE TABLE treport_content_sla_combined (
 	id NUMBER(10, 0) PRIMARY KEY,
 	id_report_content NUMBER(10, 0)  REFERENCES treport_content(id_rc) ON DELETE CASCADE,
@@ -1196,14 +1270,17 @@ CREATE TABLE treport_content_sla_combined (
 	server_name CLOB DEFAULT ''
 );
 
-CREATE SEQUENCE treport_cont_sla_c_s INCREMENT BY 1 START WITH 1;
+-- This sequence will not work with the 'insert_id' procedure
 
+CREATE SEQUENCE treport_cont_sla_c_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER treport_content_sla_comb_inc BEFORE INSERT ON treport_content REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_cont_sla_c_s.nextval INTO :NEW.id_rc FROM dual; END treport_content_sla_comb_inc;; 
 
 -- on update trigger
 CREATE OR REPLACE TRIGGER treport_cont_sla_comb_update AFTER UPDATE OF id_rc on treport_content FOR EACH ROW BEGIN UPDATE treport_content_sla_combined SET id_report_content = :NEW.id_rc WHERE id_report_content = :OLD.id_rc; END;;
 
-
+-- -----------------------------------------------------
+-- Table `treport_content_item`
+-- -----------------------------------------------------
 CREATE TABLE treport_content_item (
 	id NUMBER(10, 0) PRIMARY KEY,
 	id_report_content NUMBER(10, 0) REFERENCES treport_content(id_rc) ON DELETE CASCADE,
@@ -1213,22 +1290,22 @@ CREATE TABLE treport_content_item (
 );
 
 CREATE SEQUENCE treport_content_item_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER treport_content_item_inc BEFORE INSERT ON treport_content_item REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_content_item_s.nextval INTO :NEW.id FROM dual; END treport_content_item_inc;; 
 
 -- ---------------------------------------------------------------------
--- Table treport_custom_sql
+-- Table `treport_custom_sql`
 -- ---------------------------------------------------------------------
 CREATE TABLE treport_custom_sql (
 	id NUMBER(10, 0) PRIMARY KEY,
 	name VARCHAR2(150) DEFAULT '',
 	sql CLOB DEFAULT NULL
 );
+
 CREATE SEQUENCE treport_custom_sql_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER treport_custom_sql_inc BEFORE INSERT ON treport_custom_sql REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_custom_sql_s.nextval INTO :NEW.id FROM dual; END treport_custom_sql_inc;;
 
 -- ---------------------------------------------------------------------
--- Table tlayout
+-- Table `tlayout`
 -- ---------------------------------------------------------------------
 CREATE TABLE tlayout (
 	id NUMBER(10, 0) PRIMARY KEY,
@@ -1238,11 +1315,12 @@ CREATE TABLE tlayout (
 	height NUMBER(10, 0) DEFAULT 0,
 	width NUMBER(10, 0) DEFAULT 0
 );
+
 CREATE SEQUENCE tlayout_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tlayout_inc BEFORE INSERT ON tlayout REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tlayout_s.nextval INTO :NEW.id FROM dual; END tlayout_inc;;
 
 -- ---------------------------------------------------------------------
--- Table tlayout_data
+-- Table `tlayout_data`
 -- ---------------------------------------------------------------------
 CREATE TABLE tlayout_data (
 	id NUMBER(10, 0) PRIMARY KEY,
@@ -1267,11 +1345,12 @@ CREATE TABLE tlayout_data (
 	border_color VARCHAR2(200) DEFAULT '',
 	fill_color VARCHAR2(200) DEFAULT ''
 );
+
 CREATE SEQUENCE tlayout_data_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tlayout_data_inc BEFORE INSERT ON tlayout_data REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tlayout_data_s.nextval INTO :NEW.id FROM dual; END tlayout_data_inc;;
 
 -- ---------------------------------------------------------------------
--- Table tplugin
+-- Table `tplugin`
 -- ---------------------------------------------------------------------
 CREATE TABLE tplugin (
 	id NUMBER(10, 0) PRIMARY KEY,
@@ -1287,22 +1366,24 @@ CREATE TABLE tplugin (
 	plugin_type NUMBER(5, 0) DEFAULT 0,
 	macros CLOB DEFAULT '',
 	parameters CLOB DEFAULT ''
-); 
+);
+
 CREATE SEQUENCE tplugin_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tplugin_inc BEFORE INSERT ON tplugin REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplugin_s.nextval INTO :NEW.id FROM dual; END tplugin_inc;;
 
 -- ---------------------------------------------------------------------
--- Table tmodule
+-- Table `tmodule`
 -- ---------------------------------------------------------------------
 CREATE TABLE tmodule (
 	id_module NUMBER(10, 0) PRIMARY KEY,
 	name VARCHAR2(100) DEFAULT '' 
 );
+
 CREATE SEQUENCE tmodule_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tmodule_inc BEFORE INSERT ON tmodule REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmodule_s.nextval INTO :NEW.id_module FROM dual; END tmodule_inc;;
 
 -- ---------------------------------------------------------------------
--- Table tserver_export
+-- Table `tserver_export`
 -- ---------------------------------------------------------------------
 CREATE TABLE tserver_export (
 	id NUMBER(10, 0) PRIMARY KEY,
@@ -1321,9 +1402,13 @@ CREATE TABLE tserver_export (
 	timezone_offset NUMBER(5, 0) DEFAULT 0,
 	CONSTRAINT tserver_export_conn_mode_cons CHECK (connect_mode IN ('tentacle', 'ssh', 'local'))
 );
+
 CREATE SEQUENCE tserver_export_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tserver_export_inc BEFORE INSERT ON tserver_export REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tserver_export_s.nextval INTO :NEW.id FROM dual; END tserver_export_inc;;
 
+-- ---------------------------------------------------------------------
+-- Table `tserver_export_data`
+-- ---------------------------------------------------------------------
 -- id_export_server is real pandora fms export server process that manages this server
 -- id is the destination server to export
 CREATE TABLE tserver_export_data (
@@ -1337,7 +1422,6 @@ CREATE TABLE tserver_export_data (
 );
 
 CREATE SEQUENCE tserver_export_data_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tserver_export_data_inc BEFORE INSERT ON tserver_export_data REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tserver_export_data_s.nextval INTO :NEW.id FROM dual; END tserver_export_data_inc;;
 
 -- -----------------------------------------------------
@@ -1370,6 +1454,7 @@ CREATE TABLE tplanned_downtime (
 	type_periodicity VARCHAR2(100) DEFAULT 'weekly',
 	id_user VARCHAR2(100) DEFAULT '0'
 );
+
 CREATE SEQUENCE tplanned_downtime_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tplanned_downtime_inc BEFORE INSERT ON tplanned_downtime REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplanned_downtime_s.nextval INTO :NEW.id FROM dual; END tplanned_downtime_inc;;
 
@@ -1382,6 +1467,7 @@ CREATE TABLE tplanned_downtime_agents (
 	id_downtime NUMBER(19, 0) DEFAULT 0 REFERENCES tplanned_downtime(id) ON DELETE CASCADE,
 	all_modules NUMBER(5, 0) DEFAULT 1
 );
+
 CREATE SEQUENCE tplanned_downtime_agents_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tplanned_downtime_agents_inc BEFORE INSERT ON tplanned_downtime_agents REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplanned_downtime_agents_s.nextval INTO :NEW.id FROM dual; END tplanned_downtime_agents_inc;;
 
@@ -1394,13 +1480,14 @@ CREATE TABLE tplanned_downtime_modules (
 	id_agent_module NUMBER(10, 0) REFERENCES tagente_modulo(id_agente_modulo) ON DELETE CASCADE,
 	id_downtime NUMBER(19, 0) DEFAULT 0 REFERENCES tplanned_downtime(id) ON DELETE CASCADE
 );
+
 CREATE SEQUENCE tplanned_downtime_modules_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tplanned_downtime_modules_inc BEFORE INSERT ON tplanned_downtime_modules REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tplanned_downtime_modules_s.nextval INTO :NEW.id FROM dual; END tplanned_downtime_modules_inc;;
 
 --IS extension Tables
 
 -- -----------------------------------------------------
--- Table tgis_data_history
+-- Table `tgis_data_history`
 -- -----------------------------------------------------
 --Table to store historicalIS information of the agents
 CREATE TABLE tgis_data_history (
@@ -1426,11 +1513,10 @@ CREATE INDEX tgis_data_history_start_t_idx ON tgis_data_history(start_timestamp)
 CREATE INDEX tgis_data_history_end_t_idx ON tgis_data_history(end_timestamp);
  
 CREATE SEQUENCE tgis_data_history_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tgis_data_history_inc BEFORE INSERT ON tgis_data_history REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgis_data_history_s.nextval INTO :NEW.id_tgis_data FROM dual; END tgis_data_history_inc;;
 
 -- -----------------------------------------------------
--- Table tgis_data_status
+-- Table `tgis_data_status`
 -- -----------------------------------------------------
 --Table to store lastIS information of the agents
 --ON UPDATE NO ACTION is implicit on Oracle DBMS for tagente_id_agente field 
@@ -1461,8 +1547,10 @@ CREATE TABLE tgis_data_status (
 );
 CREATE INDEX tgis_data_status_start_t_idx ON tgis_data_status(start_timestamp);
 
+-- This sequence will not work with the 'insert_id' procedure
+
 -- -----------------------------------------------------
--- Table tgis_map
+-- Table `tgis_map`
 -- -----------------------------------------------------
 --Table containing information about ais map
 CREATE TABLE tgis_map (
@@ -1494,11 +1582,10 @@ CREATE TABLE tgis_map (
 CREATE INDEX tgis_map_tagente_map_name_idx ON tgis_map(map_name);
 
 CREATE SEQUENCE tgis_map_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tgis_map_inc BEFORE INSERT ON tgis_map REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgis_map_s.nextval INTO :NEW.id_tgis_map FROM dual; END tgis_map_inc;;
 
 -- -----------------------------------------------------
--- Table tgis_map_connection
+-- Table `tgis_map_connection`
 -- -----------------------------------------------------
 --Table to store the map connection information
 CREATE TABLE tgis_map_connection (
@@ -1531,11 +1618,10 @@ CREATE TABLE tgis_map_connection (
 );
 
 CREATE SEQUENCE tgis_map_connection_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tgis_map_connection_inc BEFORE INSERT ON tgis_map_connection REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgis_map_connection_s.nextval INTO :NEW.id_tmap_connection FROM dual; END tgis_map_connection_inc;;
 
 -- -----------------------------------------------------
--- Table tgis_map_has_tgis_map_connection
+-- Table `tgis_map_has_tgis_map_connection`
 -- -----------------------------------------------------
 
 -- This table is commented because table name length is more 30 chars. TODO: Change it's name 
@@ -1559,7 +1645,7 @@ CREATE OR REPLACE TRIGGER tgis_map_connection_inc BEFORE INSERT ON tgis_map_conn
 --CREATE OR REPLACE TRIGGER tgis_map_has_tgis_map_connection_ts BEFORE UPDATE ON tgis_map_has_tgis_map_connection FOR EACH ROW BEGIN select CURRENT_TIMESTAMP into :NEW.modification_time from dual; END;;
 
 -- -----------------------------------------------------
--- Table tgis_map_layer
+-- Table `tgis_map_layer`
 -- -----------------------------------------------------
 --Table containing information about the map layers
 CREATE TABLE tgis_map_layer (
@@ -1578,11 +1664,10 @@ CREATE TABLE tgis_map_layer (
 );
 
 CREATE SEQUENCE tgis_map_layer_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tgis_map_layer_inc BEFORE INSERT ON tgis_map_layer REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgis_map_layer_s.nextval INTO :NEW.id_tmap_layer FROM dual; END tgis_map_layer_inc;;
 
 -- -----------------------------------------------------
--- Table tgis_map_layer_has_tagente
+-- Table `tgis_map_layer_has_tagente`
 -- -----------------------------------------------------
 --Table to define wich agents are shown in a layer
 CREATE TABLE tgis_map_layer_has_tagente (
@@ -1593,8 +1678,10 @@ CREATE TABLE tgis_map_layer_has_tagente (
 CREATE INDEX tgis_map_layer_has_tagente_idx ON tgis_map_layer_has_tagente(tgis_map_layer_id_tmap_layer);
 CREATE INDEX tgis_map_layer_has_tagent1_idx ON tgis_map_layer_has_tagente(tagente_id_agente);
 
+-- This sequence will not work with the 'insert_id' procedure
+
 -- ---------------------------------------------------------------------
--- Table tgroup_stat
+-- Table `tgroup_stat`
 -- ---------------------------------------------------------------------
 --Table to storelobal system stats perroup
 CREATE TABLE tgroup_stat (
@@ -1612,8 +1699,10 @@ CREATE TABLE tgroup_stat (
 	utimestamp NUMBER(10, 0) DEFAULT 0
 );
 
+-- This sequence will not work with the 'insert_id' procedure
+
 ------------------------------------------------------------------------
--- Table tnetwork_map
+-- Table `tnetwork_map`
 ------------------------------------------------------------------------
 CREATE TABLE tnetwork_map (
 	id_networkmap NUMBER(10, 0) PRIMARY KEY,
@@ -1650,11 +1739,10 @@ CREATE TABLE tnetwork_map (
 );
 
 CREATE SEQUENCE tnetwork_map_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tnetwork_map_inc BEFORE INSERT ON tnetwork_map REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetwork_map_s.nextval INTO :NEW.id_networkmap FROM dual; END tnetwork_map_inc;;
 
 -- ---------------------------------------------------------------------
--- Table tsnmp_filter
+-- Table `tsnmp_filter`
 -- ---------------------------------------------------------------------
 CREATE TABLE tsnmp_filter (
 	id_snmp_filter NUMBER(10, 0) PRIMARY KEY,
@@ -1663,11 +1751,10 @@ CREATE TABLE tsnmp_filter (
 );
 
 CREATE SEQUENCE tsnmp_filter_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tsnmp_filter_inc BEFORE INSERT ON tsnmp_filter REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tsnmp_filter_s.nextval INTO :NEW.id_snmp_filter FROM dual; END tsnmp_filter_inc;;
 
 -- ---------------------------------------------------------------------
--- Table tagent_custom_fields
+-- Table `tagent_custom_fields`
 -- ---------------------------------------------------------------------
 CREATE TABLE tagent_custom_fields (
 	id_field NUMBER(10, 0) PRIMARY KEY,
@@ -1676,11 +1763,10 @@ CREATE TABLE tagent_custom_fields (
 );
 
 CREATE SEQUENCE tagent_custom_fields_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER tagent_custom_fields_inc BEFORE INSERT ON tagent_custom_fields REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tagent_custom_fields_s.nextval INTO :NEW.id_field FROM dual; END tagent_custom_fields_inc;;
 
 -- ---------------------------------------------------------------------
--- Table tagent_custom_data
+-- Table `tagent_custom_data`
 -- ---------------------------------------------------------------------
 CREATE TABLE tagent_custom_data (
 	id_field NUMBER(10, 0) REFERENCES tagent_custom_fields(id_field) ON DELETE CASCADE,
@@ -1689,6 +1775,8 @@ CREATE TABLE tagent_custom_data (
   PRIMARY KEY (id_field, id_agent)
 );
 
+-- This sequence will not work with the 'insert_id' procedure
+
 -- on update trigger
 CREATE OR REPLACE TRIGGER tagent_custom_data_update AFTER UPDATE OF id_field on tagent_custom_fields FOR EACH ROW BEGIN UPDATE tagent_custom_data SET id_field = :NEW.id_field WHERE id_field = :OLD.id_field; END;;
 
@@ -1696,7 +1784,7 @@ CREATE OR REPLACE TRIGGER tagent_custom_data_update AFTER UPDATE OF id_field on 
 CREATE OR REPLACE TRIGGER tagent_custom_data_update1 AFTER UPDATE OF id_agente on tagente FOR EACH ROW BEGIN UPDATE tagent_custom_data SET id_agent = :NEW.id_agente WHERE id_agent = :OLD.id_agente; END;;
 
 -- ---------------------------------------------------------------------
--- Table ttag
+-- Table `ttag`
 -- ---------------------------------------------------------------------
 CREATE TABLE ttag ( 
 	id_tag NUMBER(10, 0) PRIMARY KEY, 
@@ -1708,38 +1796,36 @@ CREATE TABLE ttag (
 ); 
 
 CREATE SEQUENCE ttag_s INCREMENT BY 1 START WITH 1;
-
 CREATE OR REPLACE TRIGGER ttag_inc BEFORE INSERT ON ttag REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT ttag_s.nextval INTO :NEW.id_tag FROM dual; END ttag_inc;;
 
 -- ---------------------------------------------------------------------
--- Table ttag_module
+-- Table `ttag_module`
 -- ---------------------------------------------------------------------
-
 CREATE TABLE ttag_module (
 	id_tag NUMBER(10, 0),
 	id_agente_modulo NUMBER(10, 0) DEFAULT 0,
 	id_policy_module NUMBER(10, 0) DEFAULT 0,
 	PRIMARY KEY  (id_tag, id_agente_modulo)
 ); 
-
 CREATE INDEX ttag_module_id_ag_modulo_idx ON ttag_module(id_agente_modulo);
 
--- ---------------------------------------------------------------------
--- Table ttag_policy_module
--- ---------------------------------------------------------------------
+-- This sequence will not work with the 'insert_id' procedure
 
+-- ---------------------------------------------------------------------
+-- Table `ttag_policy_module`
+-- ---------------------------------------------------------------------
 CREATE TABLE ttag_policy_module ( 
 	id_tag NUMBER(10, 0), 
 	id_policy_module NUMBER(10, 0) DEFAULT 0, 
 	PRIMARY KEY  (id_tag, id_policy_module)
-); 
-
+);
 CREATE INDEX ttag_poli_mod_id_pol_mo_idx ON ttag_policy_module(id_policy_module);
 
--- -----------------------------------------------------
--- Table tnetflow_filter
--- -----------------------------------------------------
+-- This sequence will not work with the 'insert_id' procedure
 
+-- -----------------------------------------------------
+-- Table `tnetflow_filter`
+-- -----------------------------------------------------
 CREATE TABLE tnetflow_filter (
 	id_sg NUMBER(10, 0) PRIMARY KEY,
 	id_name VARCHAR2(600),
@@ -1758,9 +1844,8 @@ CREATE SEQUENCE tnetflow_filter_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tnetflow_filter_inc BEFORE INSERT ON tnetflow_filter REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetflow_filter_s.nextval INTO :NEW.id_sg FROM dual; END tnetflow_filter_inc;;
 
 -- -----------------------------------------------------
--- Table tnetflow_report
+-- Table `tnetflow_report`
 -- -----------------------------------------------------
-
 CREATE TABLE tnetflow_report (
 	id_report NUMBER(10, 0) PRIMARY KEY,
 	id_name VARCHAR2(100),
@@ -1773,9 +1858,8 @@ CREATE SEQUENCE tnetflow_report_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tnetflow_report_inc BEFORE INSERT ON tnetflow_report REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tnetflow_report_s.nextval INTO :NEW.id_report FROM dual; END tnetflow_report_inc;;
 
 -- -----------------------------------------------------
--- Table tnetflow_report_content
+-- Table `tnetflow_report_content`
 -- -----------------------------------------------------
-
 CREATE TABLE tnetflow_report_content (
 	id_rc NUMBER(10, 0) PRIMARY KEY,
 	id_report NUMBER(10, 0) REFERENCES tnetflow_report(id_report) ON DELETE CASCADE,
@@ -1850,7 +1934,7 @@ CREATE SEQUENCE tevent_response_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tevent_response_inc BEFORE INSERT ON tevent_response REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tevent_response_s.nextval INTO :NEW.id FROM dual; END tevent_response_inc;;
 
 -- ---------------------------------------------------------------------
--- Table tcategory
+-- Table `tcategory`
 -- ---------------------------------------------------------------------
 CREATE TABLE tcategory ( 
 	id NUMBER(10, 0) PRIMARY KEY, 
@@ -1867,6 +1951,8 @@ CREATE TABLE tupdate_settings (
 	key VARCHAR2(255) DEFAULT '' PRIMARY KEY, 
 	value VARCHAR2(255) DEFAULT ''
 );
+
+-- This sequence will not work with the 'insert_id' procedure
 
 -- ---------------------------------------------------------------------
 -- Table `tupdate_package`
@@ -1916,9 +2002,8 @@ CREATE SEQUENCE tupdate_journal_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tupdate_journal_inc BEFORE INSERT ON tupdate_journal REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tupdate_journal_s.nextval INTO :NEW.id FROM dual; END;;
 CREATE OR REPLACE TRIGGER tupdate_journal_update AFTER UPDATE OF id on tupdate FOR EACH ROW BEGIN UPDATE tupdate_journal SET id = :NEW.id WHERE id = :OLD.id; END;;
 
-
 -- ---------------------------------------------------------------------
--- Table talert_snmp_action
+-- Table `talert_snmp_action`
 -- ---------------------------------------------------------------------
 CREATE TABLE talert_snmp_action (
 	id NUMBER(10, 0) PRIMARY KEY,
@@ -1936,11 +2021,15 @@ CREATE TABLE talert_snmp_action (
 	al_field10 CLOB DEFAULT ''
 );
 
+-- This sequence will not work with the 'insert_id' procedure
+
 -- ---------------------------------------------------------------------
--- Table tsessions_php
+-- Table `tsessions_php`
 -- ---------------------------------------------------------------------
 CREATE TABLE tsessions_php (
 	id_session VARCHAR2(52) PRIMARY KEY,
 	last_active NUMBER(20, 0),
 	data CLOB DEFAULT ''
 );
+
+-- This sequence will not work with the 'insert_id' procedure

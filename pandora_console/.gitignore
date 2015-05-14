@@ -1,7 +1,9 @@
 attachment/networkmap_*
 attachment/mibs/.index
 attachment/pandora_chat.global_counter.txt
+attachment/pandora_chat.user_list.json.txt
 attachment/collection
 include/config.php
 pandora_console.log
 enterprise
+*.bak

@@ -1731,7 +1731,7 @@ function reporting_html_general(&$table, $item) {
 					foreach ($list_modules as $name) {
 						$table1->style[$name] = 'text-align: right;';
 						if (isset($modules[$name])) {
-							$row[$name] = $value;
+							$row[$name] = $modules[$name];
 						}
 						else {
 							$row[$name] = "--";

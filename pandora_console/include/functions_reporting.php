@@ -1114,17 +1114,33 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 				
 				$return['charts']['pie'] = pie3d_graph(false,
 					$data_pie_graph,
-					$width, $height, __("other"),
+					$width, $height,
+					__("other"),
 					ui_get_full_url(false, true, false, false) . '/',
 					ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
-					$config['fontpath'], $config['font_size']);
+					$config['fontpath'],
+					$config['font_size'],
+					$ttl);
 				
 				
 				//Display bars graph
 				$return['charts']['bars'] = hbar_graph(
-					false, $data_hbar, $width,
-					$height, array(), array(), "", "", true,
-					ui_get_full_url(false, true, false, false) . '/', $config['homedir'] .  "/images/logo_vertical_water.png", $config['fontpath'], $config['font_size'], true, 1, true);
+					false,
+					$data_hbar,
+					$width,
+					count($data_hbar) * 50,
+					array(),
+					array(),
+					"",
+					"",
+					true,
+					ui_get_full_url(false, true, false, false) . '/',
+					$config['homedir'] . "/images/logo_vertical_water.png",
+					$config['fontpath'],
+					$config['font_size'],
+					true,
+					$ttl,
+					true);
 			}
 			
 			$return['resume'] = null;

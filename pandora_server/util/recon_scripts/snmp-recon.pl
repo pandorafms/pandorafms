@@ -694,7 +694,7 @@ sub create_pandora_agent($) {
 		# Assign the new address to the agent
 		my $agent_addr_id = get_agent_addr_id ($DBH, $addr_id, $agent_id);
 		if ($agent_addr_id <= 0) {
-			db_do ($DBH, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
+			db_do ($DBH, 'INSERT INTO taddress_agent (id_a, id_agent)
 						  VALUES (?, ?)', $addr_id, $agent_id);
 		}
 	}

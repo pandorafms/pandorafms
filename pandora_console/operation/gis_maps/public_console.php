@@ -182,7 +182,7 @@ if ($layers != false) {
 			break;
 		case "oracle":
 			$timestampLastOperation = db_get_value_sql(
-				"SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (86400)) FROM dual");
+				"SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (" . SECONDS_1DAY . ")) FROM dual");
 			break;
 	}
 	

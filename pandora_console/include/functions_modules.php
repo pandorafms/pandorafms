@@ -1355,6 +1355,118 @@ function modules_get_moduletypes ($type = "all", $rows = "nombre") {
 	return $return;
 }
 
+function modules_get_first_contact_date($id_agent_module) {
+	global $config;
+	
+	// TODO REMOVE THE TIME IN PLANNED DOWNTIME
+	
+	// TODO FOR OTHER KIND OF DATA
+	
+	$sql = "
+		SELECT utimestamp
+		FROM tagente_datos
+		WHERE id_agente_modulo = " . (int)($id_agent_module) . "
+		ORDER BY utimestamp ASC
+		LIMIT 1";
+	
+	$first_date = db_get_sql($sql, 0, $config['history_db_enabled']);
+	
+	return $first_date;
+}
+
+function modules_get_count_datas($id_agent_module, $date_init, $date_end) {
+	$interval = modules_get_interval ($id_agent_module);
+	
+	// TODO REMOVE THE TIME IN PLANNED DOWNTIME
+	
+	if (!is_numeric($date_init)) {
+		$date_init = strtotime($date_init);
+	}
+	
+	if (!is_numeric($date_end)) {
+		$date_end = strtotime($date_end);
+	}
+	
+	$first_date = modules_get_first_contact_date($id_agent_module);
+	
+	if ($date_init < $first_date) {
+		$date_init = $first_date;
+	}
+	
+	$diff = $date_end - $date_init;
+	
+	return ($diff / $interval);
+}
+
+function modules_get_data_with_value($id_agent_module, $date_init,
+	$date_end, $value, $split_interval = false) {
+	
+	global $config;
+	
+	// TODO REMOVE THE TIME IN PLANNED DOWNTIME
+	
+	// TODO FOR OTHER KIND OF DATA
+	
+	if (!is_numeric($date_init)) {
+		$date_init = strtotime($date_init);
+	}
+	
+	if (!is_numeric($date_end)) {
+		$date_end = strtotime($date_end);
+	}
+	
+	$sql = "
+		SELECT *
+		FROM tagente_datos
+		WHERE
+			datos = " . (int)$value . "
+			AND id_agente_modulo = " . (int)$id_agent_module . "
+			AND (utimestamp >= " . $date_init . " AND utimestamp <= " . $date_end . ")";
+	
+	$data = db_get_all_rows_sql($sql,
+		$config['history_db_enabled']);
+	
+	if (empty($data)) {
+		$data = array();
+	}
+	
+	if ($split_interval) {
+		$temp = array();
+		$previous_utimestamp = false;
+		foreach ($data as $row) {
+			if ($previous_utimestamp === false) {
+				$previous_utimestamp = $row['utimestamp'];
+				
+				$temp[] = $row;
+			}
+			else {
+				$diff = $row['utimestamp'] - $previous_utimestamp;
+				
+				$interval = modules_get_interval($id_agent_module);
+				
+				if ($diff > $interval) {
+					$fake_count = (int)($diff / $interval);
+					
+					$fake = $row;
+					for ($iterator = 1; $iterator <= $fake_count; $iterator++) {
+						$fake['utimestamp'] = $previous_utimestamp + ($iterator * $interval);
+						$temp[] = $fake;
+					}
+				}
+				else {
+					$temp[] = $row;
+				}
+				
+				$previous_utimestamp = $row['utimestamp'];
+				
+				$data = $temp;
+			}
+		}
+	}
+	
+	return $data;
+}
+
 /**
  * Get the interval value of an agent module.
  *
@@ -1519,8 +1631,10 @@ function modules_get_previous_data ($id_agent_module, $utimestamp = 0, $string =
 		ORDER BY utimestamp DESC',
 		$id_agent_module, $utimestamp, $utimestamp - SECONDS_2DAY);
 	
+	
+	
 	$search_in_history_db = db_search_in_history_db($utimestamp);
-
+	
 	return db_get_row_sql ($sql, $search_in_history_db);
 }
 
@@ -1554,7 +1668,7 @@ function modules_get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) 
 		$id_agent_module, $utimestamp + $interval, $utimestamp);
 	
 	$search_in_history_db = db_search_in_history_db($utimestamp);
-
+	
 	return db_get_row_sql ($sql, $search_in_history_db);
 }
 
@@ -1631,6 +1745,23 @@ function modules_get_agentmodule_data ($id_agent_module, $period,
 		$values[$key]["agent_name"] = $agent_name;
 	}
 	
+	if ($search_in_history_db) {
+		$datos = array();
+		foreach ($values as $key => $value) {
+			$utimestamp[$key] = $value['utimestamp'];
+		}
+		
+		array_multisort($utimestamp, SORT_DESC, $values);
+		foreach ($utimestamp as $key => $utimes) {
+			$datos[$key] = array('utimestamp'=>$utimes,
+									'data'=>$values[$key]["data"],
+									'module_name'=>$values[$key]["module_name"],
+									'agent_id'=>$values[$key]["agent_id"],
+									'agent_name'=>$values[$key]["agent_name"]
+								);
+		}
+		$values = $datos;
+	}
 	return $values;
 }
 

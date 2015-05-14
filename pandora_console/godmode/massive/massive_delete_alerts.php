@@ -248,7 +248,11 @@ ui_require_jquery_file ('pandora.controls');
 
 <script type="text/javascript">
 /* <![CDATA[ */
+
+
 $(document).ready (function () {
+	
+	
 	$("#id_agents").change(agent_changed_by_multiple_agents_with_alerts);
 	
 	$("#id_alert_template").change (function () {

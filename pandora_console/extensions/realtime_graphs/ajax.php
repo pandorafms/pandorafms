@@ -20,24 +20,43 @@ $graph = $_POST['graph'];
 $graph_title = $_POST['graph_title'];
 $refresh = $_POST['refresh'];
 
+$os = strtolower(PHP_OS);
+	if (substr($os, 0, 3) === 'win') {
+		$os = 'windows';
+}
 switch($graph) {
 	case 'cpu_load':
-		$data = exec("top -bn 2 -d 0.01 | grep '^Cpu' | tail -n 1 | awk '{ print $2+$4+$6 }'");
+		if ( $os == 'windows')
+			$data = exec('wmic cpu get loadpercentage|find /I /V "Loadpercentage" | findstr /r "[0-9]" ');
+		else
+			$data = exec("top -bn 2 -d 0.01 | grep '^Cpu' | tail -n 1 | awk '{ print $2+$4+$6 }'");
 		break;
 	case 'pending_packets':
 		$data = exec("ls /var/spool/pandora/data_in/*.data | wc -l");
 		break;
 	case 'disk_io_wait':
-		$data = exec("vmstat 1 3 | tail -1 | awk '{ print $16 }'");
+		if ( $os == 'windows')
+			$data = exec("vmstat 1 3 | tail -1 | awk '{ print $16 }'");
+		else
+			$data = exec("vmstat 1 3 | tail -1 | awk '{ print $16 }'");
 		break;
 	case 'mysql_load':
-		$data = exec("ps aux | grep mysqld | grep -v safe | grep -v grep | awk '{ print $3 }'");
+		if ( $os == 'windows')
+			$data = exec('(FOR /F "skip=2 tokens=2 delims=\," %P IN (\'typeperf "\\Process(mysqld)\\% processor time" -sc 1\') DO @echo %P)|find /V /I "..."');
+		else
+			$data = exec("ps aux | grep mysqld | grep -v safe | grep -v grep | awk '{ print $3 }'");
 		break;
 	case 'apache_load':
-		$data = exec("ps aux | grep apache2 | grep -v safe | grep -v grep | awk '{ sum+=$3 } END { print sum }'");
+		if ( $os == 'windows')
+			$data = exec('(FOR /F "skip=2 tokens=2 delims=\," %P IN (\'typeperf "\\Process(httpd)\\% processor time" -sc 1\') DO @echo %P)|find /V /I "..."');
+		else
+			$data = exec("ps aux | grep apache2 | grep -v safe | grep -v grep | awk '{ sum+=$3 } END { print sum }'");
 		break;
 	case 'server_load':
-		$data = exec("ps aux | grep pandora_server | grep -v grep | awk '{ print $3 }'");
+		if ( $os == 'windows')
+			$data = exec('(FOR /F "skip=2 tokens=2 delims=\," %P IN (\'typeperf "\\Process(pandora_server)\\% processor time" -sc 1\') DO @echo %P)|find /V /I "..."');
+		else
+			$data = exec("ps aux | grep pandora_server | grep -v grep | awk '{ print $3 }'");
 		break;
 	case 'snmp_interface':
 		$snmp_address = $_POST['snmp_address'];

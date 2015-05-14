@@ -31,22 +31,22 @@ if (! check_acl ($config['id_user'], 0, "DM")) {
 $time["all"] = get_system_time ();
 
 // 1 day ago
-$time["1day"] = $time["all"]-86400;
+$time["1day"] = $time["all"] - SECONDS_1DAY;
 
 // 3 days ago
-$time["3day"] = $time["all"]-(86400*3);
+$time["3day"] = $time["all"] - ( SECONDS_1DAY * 3);
 
 // 1 week ago
-$time["1week"] = $time["all"]-(86400*7);
+$time["1week"] = $time["all"] - SECONDS_1WEEK;
 
 // 2 weeks ago
-$time["2week"] = $time["all"]-(86400*14);
+$time["2week"] = $time["all"] - SECONDS_2WEEK;
 
 // 1 month ago
-$time["1month"] = $time["all"]-(86400*30);
+$time["1month"] = $time["all"] - SECONDS_1MONTH;
 
 // Three months ago
-$time["3month"] = $time["all"]-(86400*90);
+$time["3month"] = $time["all"] - SECONDS_3MONTHS;
 
 // Todo for a good DB maintenance 
 /* 

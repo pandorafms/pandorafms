@@ -137,7 +137,10 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
  *
  * @return array A list of the groups the user has certain privileges.
  */
-function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup = true, $returnAllColumns = false, $id_groups = null, $keys_field = 'id_grupo') {
+function users_get_groups ($id_user = false, $privilege = "AR",
+	$returnAllGroup = true, $returnAllColumns = false, $id_groups = null,
+	$keys_field = 'id_grupo') {
+	
 	if (empty ($id_user)) {
 		global $config;
 		
@@ -159,7 +162,7 @@ function users_get_groups ($id_user = false, $privilege = "AR", $returnAllGroup 
 		$groups = db_get_all_rows_filter('tgrupo', array('id_grupo' => $list_id_groups, 'order' => 'parent, nombre'));
 	}
 	else {
-		$groups = db_get_all_rows_in_table ('tgrupo', 'parent, nombre');
+		$groups = db_get_all_rows_in_table ('tgrupo', array('parent', 'nombre'));
 	}
 	
 	$user_groups = array ();

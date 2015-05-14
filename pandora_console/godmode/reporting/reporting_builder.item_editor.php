@@ -29,6 +29,13 @@ $meta = false;
 if (($config['metaconsole'] == 1) && (defined('METACONSOLE'))) {
 	$meta = true;
 }
+
+
+
+
+
+
+
 $show_graph_options = Array();
 $show_graph_options[0] = __('Only table');
 $show_graph_options[1] = __('Table & Graph');
@@ -58,15 +65,16 @@ $group = 0;
 $group_by_agent = 0;
 $order_uptodown = 0;
 $show_resume = 0;
+$show_address_agent = 0;
 $top_n = 0;
 $top_n_value = 10;
 $exception_condition = REPORT_EXCEPTION_CONDITION_EVERYTHING;
 $exception_condition_value = 10;
 $modulegroup = 0;
-$period = 86400;
+$period = SECONDS_1DAY;
 // Added support for projection graphs
-$period_pg = 432000;
-$projection_period = 432000;
+$period_pg = SECONDS_5DAY;
+$projection_period = SECONDS_5DAY;
 $only_display_wrong = 0;
 // Added support for prediction date report
 $min_interval = '0.00';
@@ -87,6 +95,7 @@ $inventory_modules = array();
 $date = null;
 // Only avg is selected by default for the simple graphs
 $only_avg = true;
+$time_compare_overlapped = false;
 
 //Added for events items
 $filter_event_validated = false;
@@ -101,6 +110,9 @@ $event_graph_validated_vs_unvalidated = false;
 $netflow_filter = 0;
 $max_values = 0;
 $resolution = 0;
+
+//Others
+$filter_search = "";
 
 switch ($action) {
 	case 'new':
@@ -120,6 +132,7 @@ switch ($action) {
 		
 		// If we are creating a new report item then clean interface and display creation view
 		$type = get_parameter('type', 'SLA');
+		
 		switch ($type) {
 			case 'SLA_monthly':
 			case 'SLA_services':
@@ -128,8 +141,10 @@ switch ($action) {
 			case 'exception':
 			case 'general':
 			case 'network_interfaces_report':
+			case 'availability':
 				$get_data_editor = true;
 				break;
+			
 			default:
 				$actionParameter = 'save';
 				$action = 'new';
@@ -173,6 +188,7 @@ switch ($action) {
 					$idAgentModule = $item['id_agent_module'];
 					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 					break;
+				
 				case 'simple_graph':
 					$only_avg = isset($style['only_avg']) ? (bool) $style['only_avg'] : true;
 					// The break hasn't be forgotten.
@@ -187,7 +203,11 @@ switch ($action) {
 						$projection_period = $item['top_n_value'];
 						$period_pg = $item['period'];
 					}
+					
+					// HACK it is saved in show_graph field.
+					$time_compare_overlapped  = $item['show_graph'];
 					break;
+				
 				case 'prediction_date':
 					$description = $item['description'];
 					$idAgentModule = $item['id_agent_module'];
@@ -406,6 +426,8 @@ switch ($action) {
 					$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
 					$event_graph_by_criticity = $style['event_graph_by_criticity'];
 					$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
+					
+					$filter_search = $style['event_filter_search'];
 					break;
 				case 'event_report_module':
 					$description = $item['description'];
@@ -419,7 +441,15 @@ switch ($action) {
 					$period = $item['period'];
 					$order_uptodown = $item['order_uptodown'];
 					$show_resume = $item['show_resume'];
-					$show_graph = $item['show_graph'];
+					break;
+				case 'availability':
+					$description = $item['description'];
+					$period = $item['period'];
+					$order_uptodown = $item['order_uptodown'];
+					$show_resume = $item['show_resume'];
+					// HACK it is saved in show_graph field.
+					// Show interfaces instead the modules
+					$show_address_agent = $item['show_graph'];
 					break;
 				case 'group_report':
 					$description = $item['description'];
@@ -463,6 +493,7 @@ switch ($action) {
 					$idAgent = $es['id_agents'];
 					$idAgentModule = $inventory_modules;
 					break;
+				
 				case 'inventory_changes':
 					$period = $item['period'];
 					$description = $item['description'];
@@ -470,12 +501,15 @@ switch ($action) {
 					$inventory_modules = $es['inventory_modules'];
 					$id_agents = $es['id_agents'];
 					break;
+				
 				case 'agent_configuration':
 					$idAgent = $item['id_agent'];
 					break;
+				
 				case 'group_configuration':
 					$group = $item['id_group'];
 					break;
+				
 				case 'netflow_area':
 				case 'netflow_pie':
 				case 'netflow_data':
@@ -498,18 +532,24 @@ switch ($action) {
 		break;
 }
 
-$urlForm = $config['homeurl'] . 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
+
+$urlForm = $config['homeurl'] .
+	'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
 
 echo '<form action="' . $urlForm . '" method="post">';
 html_print_input_hidden('id_item', $idItem);
+
+
 ?>
 <table style="" class="databox" id="" border="0" cellpadding="4" cellspacing="4" width="98%">
 	<tbody>
 		<tr id="row_type" style="" class="datos">
-			<td style="vertical-align: top; width: 220px;"><?php echo __('Type'); ?></td>
+			<td style="vertical-align: top; width: 220px;">
+				<?php echo __('Type'); ?>
+			</td>
 			<td style="">
 				<?php
-				if ($action == 'new') { 
+				if ($action == 'new') {
 					html_print_select(reports_get_report_types(false, true), 'type', $type, 'chooseType();', '', '');
 				}
 				else {
@@ -523,6 +563,7 @@ html_print_input_hidden('id_item', $idItem);
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_name" style="" class="datos">
 			<td style="vertical-align: top;">
 				<?php echo __('Name'); ?>
@@ -533,10 +574,11 @@ html_print_input_hidden('id_item', $idItem);
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_netflow_filter" style="" class="datos">
 			<td><?php echo __('Filter');?></td>
-			<td><?php
-				
+			<td>
+				<?php
 				$own_info = get_user_info ($config['id_user']);
 				
 				// Get group list that user has access
@@ -551,6 +593,7 @@ html_print_input_hidden('id_item', $idItem);
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_description" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Description'); ?></td>
 			<td style="">
@@ -559,6 +602,7 @@ html_print_input_hidden('id_item', $idItem);
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_period" style="" class="datos">
 			<td style="vertical-align: top;">
 				<?php
@@ -567,7 +611,8 @@ html_print_input_hidden('id_item', $idItem);
 			</td>
 			<td style="">
 				<?php
-				html_print_extended_select_for_time ('period', $period, '', '', '0', 10);
+				html_print_extended_select_for_time('period', $period,
+					'', '', '0', 10);
 				?>
 			</td>
 		</tr>
@@ -596,8 +641,10 @@ html_print_input_hidden('id_item', $idItem);
 			<td style="">
 				<?php
 				html_print_extended_select_for_time ('resolution', $resolution, '', '', '0', 10);
-				?></td>
+				?>
+			</td>
 		</tr>
+		
 		<tr id="row_period1" style="" class="datos">
 			<td style="vertical-align: top;">
 				<?php
@@ -630,12 +677,14 @@ html_print_input_hidden('id_item', $idItem);
 		</tr>
 		<tr id="row_interval" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Data range') . ui_print_help_icon('prediction_date', true); ?></td>
-			<td><?php
+			<td>
+				<?php
 				echo __('Max') . "&nbsp;";
 				html_print_input_text('max_interval', $max_interval, '', 5, 10);
 				echo "&nbsp;" . __('Min') . "&nbsp;";
 				html_print_input_text('min_interval', $min_interval, '', 5, 10);
-				?></td>
+				?>
+			</td>
 		</tr>
 		<tr id="row_only_display_wrong" style="" class="datos">
 			<td><?php echo __('Only display wrong SLAs');?></td>
@@ -716,6 +765,8 @@ html_print_input_hidden('id_item', $idItem);
 				</table>
 			</td>
 		</tr>
+		
+		
 		<tr id="row_group" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Group');?></td>
 			<td style="">
@@ -735,6 +786,7 @@ html_print_input_hidden('id_item', $idItem);
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_agent" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Agent'); ?></td>
 			<td style="">
@@ -785,8 +837,13 @@ html_print_input_hidden('id_item', $idItem);
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_module" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Module'); ?></td>
+			<td style="vertical-align: top;">
+				<?php
+				echo __('Module');
+				?>
+			</td>
 			<td style="max-width: 180px">
 				<?php
 				if ($idAgent) {
@@ -828,6 +885,7 @@ html_print_input_hidden('id_item', $idItem);
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_agent_multi" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Agents'); ?></td>
 			<td>
@@ -843,6 +901,7 @@ html_print_input_hidden('id_item', $idItem);
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_module_multi" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Modules'); ?></td>
 			<td>
@@ -858,6 +917,7 @@ html_print_input_hidden('id_item', $idItem);
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_date" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Date'); ?></td>
 			<td style="max-width: 180px">
@@ -875,6 +935,7 @@ html_print_input_hidden('id_item', $idItem);
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_custom_graph" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Custom graph'); ?></td>
 			<td style="">
@@ -934,14 +995,19 @@ html_print_input_hidden('id_item', $idItem);
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_text" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Text'); ?></td>
 			<td style=""><?php html_print_textarea('text', 5, 25, $text); ?></td>
 		</tr>
+		
+		
+		
 		<tr id="row_custom" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Custom SQL template'); ?></td>
 			<td style=""><?php html_print_select_from_sql('SELECT id, name FROM treport_custom_sql', 'id_custom', $idCustom, 'chooseSQLquery()', '--', '0'); ?></td>
 		</tr>
+		
 		<tr id="row_query" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('SQL query'); ?></td>
 			<td style="" id="sql_entry">
@@ -951,6 +1017,7 @@ html_print_input_hidden('id_item', $idItem);
 			</td>
 			<td style="" id="sql_example"></td> 
 		</tr>
+		
 		<?php
 		if ($meta) {
 		?>
@@ -965,10 +1032,12 @@ html_print_input_hidden('id_item', $idItem);
 		<?php
 		}
 		?>
+		
 		<tr id="row_header" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Serialized header') . ui_print_help_tip(__("The separator character is |"), true);?></td>
 			<td style=""><?php html_print_input_text('header', $header, '', 90, 250); ?></td>
 		</tr>
+		
 		<tr id="row_url" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('URL'); ?></td>
 			<td style=""><?php html_print_input_text('url', $url, '', 90, 250); ?></td>
@@ -1001,14 +1070,17 @@ html_print_input_hidden('id_item', $idItem);
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_quantity" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Quantity (n)'); ?></td>
 			<td style=""><?php html_print_input_text('quantity', $top_n_value, '', 5, 5); ?></td>
 		</tr>
+		
 		<tr id="row_max_values" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Max. values'); ?></td>
 			<td style=""><?php html_print_input_text('max_values', $max_values, '', 5, 5); ?></td>
 		</tr>
+		
 		<tr id="row_max_min_avg" style="" class="datos">
 			<td><?php echo __('Display');?></td>
 			<td>
@@ -1022,6 +1094,16 @@ html_print_input_hidden('id_item', $idItem);
 				?>
 			</td>
 		</tr>
+		
+		<tr id="row_time_compare_overlapped" style="" class="datos">
+			<td><?php echo __('Time compare (Overlapped)');?></td>
+			<td>
+				<?php
+				html_print_checkbox('time_compare_overlapped', 1, $time_compare_overlapped);
+				?>
+			</td>
+		</tr>
+		
 		<tr id="row_only_avg" style="" class="datos">
 			<td><?php echo __('Only average');?></td>
 			<td><?php html_print_checkbox('only_avg', 1, $only_avg);?></td>
@@ -1032,7 +1114,9 @@ html_print_input_hidden('id_item', $idItem);
 		</tr>
 		<tr id="row_exception_condition" style="" class="datos">
 			<td><?php echo __('Condition');?></td>
-			<td><?php
+			<td>
+				<?php
+				
 				$list_exception_condition = array(
 					REPORT_EXCEPTION_CONDITION_EVERYTHING => __('Everything'),
 					REPORT_EXCEPTION_CONDITION_GE => __('Greater or equal (>=)'),
@@ -1046,7 +1130,9 @@ html_print_input_hidden('id_item', $idItem);
 					);
 				html_print_select($list_exception_condition, 'exception_condition', $exception_condition);
 				
-				/*echo ;
+				
+				/*
+				echo __('Everything');
 				html_print_radio_button ('radiobutton_exception_condition', 0, '', $exception_condition);
 				echo __('>=');
 				html_print_radio_button ('radiobutton_exception_condition', 1, '', $exception_condition);
@@ -1056,16 +1142,39 @@ html_print_input_hidden('id_item', $idItem);
 				html_print_radio_button ('radiobutton_exception_condition', 3, '', $exception_condition);
 				echo __('Not OK');
 				html_print_radio_button ('radiobutton_exception_condition', 4, '', $exception_condition);
-				*/?></td>
+				*/
+				?>
+			</td>
 		</tr>
+		
 		<tr id="row_show_graph" style="" class="datos">
 			<td><?php echo __('Show graph');?></td>
 			<td><?php html_print_select ($show_graph_options, 'combo_graph_options', $show_graph);?></td>
-			
 		</tr>
+		
+		<tr id="row_show_address_agent" style="" class="datos">
+			<td>
+				<?php
+				echo __('Show address instead module name.') .
+					ui_print_help_tip(__('Show the main address of agent.'), true);
+				?>
+			</td>
+			<td>
+				<?php
+				html_print_checkbox('checkbox_show_address_agent', 1,
+					$show_address_agent);
+				?>
+			</td>
+		</tr>
+		
 		<tr id="row_show_resume" style="" class="datos">
 			<td><?php echo __('Show resume') . ui_print_help_tip(__('Show a resume table with max, min, average of total modules on the report bottom'), true);?></td>
-			<td><?php html_print_checkbox('checkbox_show_resume', 1, $show_resume);?></td>
+			<td>
+				<?php
+				html_print_checkbox('checkbox_show_resume', 1,
+					$show_resume);
+				?>
+			</td>
 		</tr>
 		<tr id="row_event_filter" style="" class="datos">
 			<td><?php echo __('Event filter'); ?></td>
@@ -1082,7 +1191,7 @@ html_print_input_hidden('id_item', $idItem);
 				?>
 			</td>
 		</tr>
-		</tr>
+		
 		<tr id="row_event_graphs" style="" class="datos">
 			<td><?php echo __('Event graphs'); ?></td>
 			<td>
@@ -1092,25 +1201,38 @@ html_print_input_hidden('id_item', $idItem);
 				html_print_checkbox ('event_graph_by_agent', true, $event_graph_by_agent);
 				?>
 				</span>
-				<?
+				<span id="row_event_graph_by_user">
+				<?php
 				echo __('By user validator');
 				html_print_checkbox ('event_graph_by_user_validator', true, $event_graph_by_user_validator);
+				?>
+				</span>
+				<span id="row_event_graph_by_criticity">
+				<?php
 				echo __('By criticity');
 				html_print_checkbox ('event_graph_by_criticity', true, $event_graph_by_criticity);
+				?>
+				</span>
+				<span id="row_event_graph_by_validated">
+				<?php
 				echo __('Validated vs unvalidated');
 				html_print_checkbox ('event_graph_validated_vs_unvalidated', true, $event_graph_validated_vs_unvalidated);
 				?>
+				</span>
 			</td>
 		</tr>
+		
 		<tr id="row_show_in_two_columns" style="" class="datos">
 			<td><?php echo __('Show in two columns');?></td>
 			<td><?php html_print_checkbox('show_in_two_columns', 1, $show_in_two_columns, false,
 				false, 'if ($(\'input[name=show_in_two_columns]\').is(\':checked\')) $(\'input[name=show_in_landscape]\').attr(\'checked\', false);');?></td>
 		</tr>
+		
 		<tr id="row_sort" style="" class="datos">
 			<td><?php echo __('Order') . ui_print_help_tip(__('SLA items sorted by fulfillment value'), true);?></td>
 			<td><?php html_print_select ($show_sort_options, 'combo_sla_sort_options', $sla_sorted_by, '', __('None'), 0); ?></td>
 		</tr>
+		
 		<tr id="row_show_in_landscape" style="" class="datos">
 			<td><?php echo __('Show in landscape');?></td>
 			<td>
@@ -1121,11 +1243,24 @@ html_print_input_hidden('id_item', $idItem);
 				?>
 			</td>
 		</tr>
+		
+		
+		
+		<tr id="row_filter_search" style="" class="datos">
+			<td><?php echo __('Free search');?></td>
+			<td>
+				<?php
+				html_print_input_text('filter_search', $filter_search);
+				?>
+			</td>
+		</tr>
 	</tbody>
 </table>
+<br />
+<br />
 <?php
 print_SLA_list('95%', $action, $idItem);
-print_General_list('95%', $action, $idItem);
+print_General_list('95%', $action, $idItem, $type);
 echo '<div class="action-buttons" style="width: 95%">';
 if ($action == 'new') {
 	html_print_submit_button(__('Create item'), 'create_item', false, 'class="sub wand"');
@@ -1139,6 +1274,7 @@ echo '</form>';
 ui_include_time_picker();
 ui_require_javascript_file('pandora');
 
+
 if ($enterpriseEnable) {
 	reporting_enterprise_text_box();
 }
@@ -1151,7 +1287,8 @@ function print_SLA_list($width, $action, $idItem = null) {
 	global $config;
 	global $meta;
 	
-	$report_item_type = db_get_value ('type', 'treport_content', 'id_rc', $idItem);
+	$report_item_type = db_get_value('type', 'treport_content', 'id_rc',
+		$idItem);
 	?>
 	<table class="databox" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="98%">
 		<thead>
@@ -1185,13 +1322,15 @@ function print_SLA_list($width, $action, $idItem = null) {
 					foreach ($itemsSLA as $item) {
 						$server_name = $item ['server_name'];
 						// Metaconsole db connection
-						if ($meta && $server_name != '') {
+						if ($meta && ($server_name != '')) {
 							$connection = metaconsole_get_connection($server_name);
 							if (metaconsole_load_external_db($connection) != NOERR) {
 								//ui_print_error_message ("Error connecting to ".$server_name);
 								continue;
 							}
 						}
+						
+						
 						$idAgent = db_get_value_filter('id_agente',
 							'tagente_modulo',
 							array('id_agente_modulo' => $item['id_agent_module']));
@@ -1221,6 +1360,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 									<a href="javascript: deleteSLARow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>';
 						echo '</tr>';
+						
 						if ($meta) {
 							//Restore db connection
 							metaconsole_restore_db();
@@ -1240,11 +1380,13 @@ function print_SLA_list($width, $action, $idItem = null) {
 							<td class="sla_list_sla_min_col sla_min"></td>
 							<td class="sla_list_sla_max_col sla_max"></td>
 							<td class="sla_list_sla_limit_col sla_limit"></td>
+							
 							<td class="sla_list_action_col" style="text-align: center;">
 								<a class="delete_button" href="javascript: deleteSLARow(0);"><?php html_print_image("images/cross.png", false); ?></a>
 							</td>
 						</tr>
 					</tbody>
+					
 					<tbody>
 						<tr id="sla_form" style="" class="datos">
 							<td class="sla_list_agent_col">
@@ -1289,7 +1431,10 @@ function print_SLA_list($width, $action, $idItem = null) {
 							<td class="sla_list_sla_min_col"><input name="sla_min" id="text-sla_min" size="10" maxlength="10" type="text"></td>
 							<td class="sla_list_sla_max_col"><input name="sla_max" id="text-sla_max" size="10" maxlength="10" type="text"></td>
 							<td class="sla_list_sla_limit_col"><input name="sla_limit" id="text-sla_limit" size="10" maxlength="10" type="text"></td>
-							<td class="sla_list_action_col" style="text-align: center;"><a href="javascript: addSLARow();"><?php html_print_image("images/disk.png", false); ?></a></td>
+							
+							<td class="sla_list_action_col" style="text-align: center;">
+								<a href="javascript: addSLARow();"><?php html_print_image("images/disk.png", false); ?></a>
+							</td>
 						</tr>
 					</tbody>
 					<?php
@@ -1303,9 +1448,10 @@ function print_SLA_list($width, $action, $idItem = null) {
 	<?php
 }
 
-function print_General_list($width, $action, $idItem = null) {
+function print_General_list($width, $action, $idItem = null, $type = 'general') {
 	global $config;
 	global $meta;
+	
 	if (!isset($meta))
 		$meta = false;
 	
@@ -1320,11 +1466,24 @@ function print_General_list($width, $action, $idItem = null) {
 	<table class="databox" id="general_list" border="0" cellpadding="4" cellspacing="4" width="98%">
 		<thead>
 			<tr>
-				<th class="header" scope="col"><?php echo __('Agent');?></th>
-				<th class="header" scope="col"><?php echo __('Module');?></th>
-				<th class="header" scope="col"><?php echo __('Operation') .
-					ui_print_help_tip(__("Please be careful, when the module have diferent intervals in their life, the summatory maybe get bad result."), true);?></th>
-				<th class="header" scope="col"><?php echo __('Action');?></th>
+				<?php
+				if ($type == "availability") {
+					?>
+					<th class="header" scope="col"><?php echo __('Agent');?></th>
+					<th class="header" scope="col"><?php echo __('Module');?></th>
+					<th class="header" scope="col"><?php echo __('Action');?></th>
+					<?php
+				}
+				else {
+				?>
+					<th class="header" scope="col"><?php echo __('Agent');?></th>
+					<th class="header" scope="col"><?php echo __('Module');?></th>
+					<th class="header" scope="col"><?php echo __('Operation') .
+						ui_print_help_tip(__("Please be careful, when the module have diferent intervals in their life, the summatory maybe get bad result."), true);?></th>
+					<th class="header" scope="col"><?php echo __('Action');?></th>
+				<?php
+				}
+				?>
 			</tr>
 		</thead>
 			<?php
@@ -1332,7 +1491,11 @@ function print_General_list($width, $action, $idItem = null) {
 				case 'new':
 					?>
 					<tr id="general_template" style="" class="datos">
-						<td colspan="3"><?php echo __('Please save the report to start adding items into the list.');?></td>
+						<td colspan="3">
+							<?php
+							echo __('Please save the report to start adding items into the list.');
+							?>
+						</td>
 					</tr>
 					<?php
 					break;
@@ -1340,36 +1503,60 @@ function print_General_list($width, $action, $idItem = null) {
 				case 'update':
 				case 'edit':
 					echo '<tbody id="list_general">';
-					$itemsGeneral = db_get_all_rows_filter('treport_content_item', array('id_report_content' => $idItem));
+					$itemsGeneral = db_get_all_rows_filter(
+						'treport_content_item',
+						array('id_report_content' => $idItem));
 					if ($itemsGeneral === false) {
 						$itemsGeneral = array();
 					}
+					
 					foreach ($itemsGeneral as $item) {
 						$server_name = $item ['server_name'];
 						// Metaconsole db connection
-						if ($meta && $server_name != '') {
+						if ($meta && ($server_name != '')) {
 							$connection = metaconsole_get_connection($server_name);
 							if (metaconsole_load_external_db($connection) != NOERR) {
 								//ui_print_error_message ("Error connecting to ".$server_name);
 								continue;
 							}
 						}
-						$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
+						
+						
+						$idAgent = db_get_value_filter(
+							'id_agente', 'tagente_modulo',
+							array('id_agente_modulo' => $item['id_agent_module']));
+						
 						$nameAgent = agents_get_name ($idAgent);
 						$nameModule = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 						
 						$server_name_element = '';
 						if ($meta && $server_name != '') 
-							$server_name_element .= ' (' . $server_name . ')';						
+							$server_name_element .= ' (' . $server_name . ')';
 						
-						echo '<tr id="general_' . $item['id'] . '" style="" class="datos">
+						
+						if ($type == "availability") {
+							echo '<tr id="general_' . $item['id'] . '" style="" class="datos">
 								<td>' . printSmallFont($nameAgent) . $server_name_element .  '</td>
 								<td>' . printSmallFont($nameModule) . '</td>
-								<td>' . printSmallFont($operation[$item['operation']]) . '</td>
 								<td style="text-align: center;">
 									<a href="javascript: deleteGeneralRow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>
 							</tr>';
+						}
+						else {
+							echo '<tr id="general_' . $item['id'] . '" style="" class="datos">
+								<td>' . printSmallFont($nameAgent) . $server_name_element .  '</td>
+								<td>' . printSmallFont($nameModule) . '</td>
+								<td>' .
+									printSmallFont($operation[$item['operation']]) .
+								'</td>
+								<td style="text-align: center;">
+									<a href="javascript: deleteGeneralRow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
+								</td>
+							</tr>';
+						}
+						
+						
 						if ($meta) {
 							//Restore db connection
 							metaconsole_restore_db();
@@ -1377,14 +1564,22 @@ function print_General_list($width, $action, $idItem = null) {
 					}
 					echo '</tbody>';
 					?>
+					
 					<tbody id="general_template">
 						<tr id="row" style="display: none;" class="datos">
 							<td class="agent_name"></td>
 							<td class="module_name"></td>
-							<td class="operation_name"></td>
+							<?php
+							if ($type != "availability") {
+							?>
+								<td class="operation_name"></td>
+							<?php
+							}
+							?>
 							<td style="text-align: center;"><a class="delete_button" href="javascript: deleteGeneralRow(0);"><?php html_print_image("images/cross.png", false); ?></a></td>
 						</tr>
 					</tbody>
+					
 					<tbody>
 						<tr id="general_form" style="" class="datos">
 							<td>
@@ -1408,11 +1603,29 @@ function print_General_list($width, $action, $idItem = null) {
 								ui_print_agent_autocomplete_input($params);
 								?>
 							</td>
-							<td><select id="id_agent_module_general" name="id_agente_modulo_general" disabled="disabled" style="max-width: 180px"><option value="0"><?php echo __('Select an Agent first'); ?></option></select></td>
-							<td><?php html_print_select ($operation, 'id_operation_module_general', 0, false, '', '', false, false, true, 'width: 200px', false); ?></td>
+							<td>
+								<select id="id_agent_module_general" name="id_agente_modulo_general" disabled="disabled" style="max-width: 180px">
+									<option value="0"><?php echo __('Select an Agent first'); ?></option>
+								</select>
+							</td>
+							<?php
+							if ($type !== "availability") {
+							?>
+								<td>
+									<?php
+									html_print_select($operation,
+										'id_operation_module_general', 0,
+										false, '', '', false, false, true,
+										'width: 200px', false);
+									?>
+								</td>
+							<?php
+							}
+							?>
 							<td style="text-align: center;"><a href="javascript: addGeneralRow();"><?php html_print_image("images/disk.png", false); ?></a></td>
 						</tr>
 					</tbody>
+					
 					<?php
 					break;
 				default:
@@ -1591,11 +1804,11 @@ function chooseSQLquery() {
 	
 	if (idCustom == 0) {
 		$("#sql_example").css('display', 'none');
-		$("#sql_entry").css('display', '');
+		$("#sql_entry").show();
 		$("#sql_example").html('');
 	}
 	else {
-		$("#sql_example").css('display', '');
+		$("#sql_example").show();
 		$("#sql_entry").css('display', 'none');
 		
 		var params1 = [];
@@ -1782,7 +1995,13 @@ function addGeneralRow() {
 	var idAgent = $("input[name=id_agent_general]").val();
 	var serverId = $("input[name=id_server]").val();
 	var idModule = $("#id_agent_module_general").val();
-	var operation = $("#id_operation_module_general").val();
+	var operation;
+	if ($("#id_operation_module_general").length) {
+		operation = $("#id_operation_module_general").val();
+	}
+	else {
+		operation = "";
+	}
 	var nameModule = $("#id_agent_module_general :selected").text();
 	var nameOperation = $("#id_operation_module_general :selected").text();
 	
@@ -1817,6 +2036,7 @@ function addGeneralRow() {
 				nameModule = data;
 			}
 		});
+		
 		//Truncate nameOperation
 		var params = [];
 		params.push("truncate_text=1");
@@ -1832,6 +2052,7 @@ function addGeneralRow() {
 				nameOperation = data;
 			}
 		});
+		
 		var params = [];
 		params.push("add_general=1");
 		params.push("id=" + $("input[name=id_item]").val());
@@ -1901,9 +2122,12 @@ function chooseType() {
 	$("#general_list").hide();
 	$("#row_order_uptodown").hide();
 	$("#row_show_resume").hide();
+	$("#row_show_address_agent").hide();
+	
 	$("#row_show_graph").hide();
 	$("#row_max_min_avg").hide();
 	$("#row_only_avg").hide();
+	$("#row_time_compare_overlapped").hide();
 	$("#row_quantity").hide();
 	$("#row_exception_condition_value").hide();
 	$("#row_exception_condition").hide();
@@ -1917,11 +2141,17 @@ function chooseType() {
 	$("#row_module_multi").hide();
 	$("#row_event_filter").hide();
 	$("#row_event_graphs").hide();
-	$("#row_event_graph_by_agent").show();
+	
+	$("#row_event_graph_by_agent").hide();
+	$("#row_event_graph_by_user").hide();
+	$("#row_event_graph_by_criticity").hide();
+	$("#row_event_graph_by_validated").hide();
+	
 	$("#row_netflow_filter").hide();
 	$("#row_max_values").hide();
 	$("#row_resolution").hide();
 	$("#row_last_value").hide();
+	$("#row_filter_search").hide();
 	
 	// SLA list default state
 	$("#sla_list").hide();
@@ -1945,8 +2175,17 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_event_filter").show();
 			$("#row_event_graphs").show();
+			
+			$("#row_event_graph_by_agent").show();
+			$("#row_event_graph_by_user").show();
+			$("#row_event_graph_by_criticity").show();
+			$("#row_event_graph_by_validated").show();
+			
+			$("#row_filter_search").show();
 			break;
+		
 		case 'simple_graph':
+			$("#row_time_compare_overlapped").show();
 			$("#row_only_avg").show();
 			// The break hasn't be forgotten, this element
 			// only should be shown on the simple graphs.
@@ -1957,7 +2196,9 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
+			$("#row_time_compare_overlapped").show();
 			break;
+		
 		case 'projection_graph':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -1967,6 +2208,7 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
 			break;
+		
 		case 'prediction_date':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -1975,6 +2217,7 @@ function chooseType() {
 			$("#row_interval").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'custom_graph':
 		case 'automatic_custom_graph':
 			$("#row_description").show();
@@ -1983,6 +2226,7 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
 			break;
+		
 		case 'SLA':
 			$("#row_description").show();
 			$("#row_period").show();
@@ -1993,6 +2237,7 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_sort").show();
 			break;
+		
 		case 'SLA_monthly':
 			$("#row_description").show();
 			$("#sla_list").show();
@@ -2000,6 +2245,7 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_sort").show();
 			break;
+		
 		case 'SLA_services':
 			$("#row_description").show();
 			$("#row_period").show();
@@ -2015,6 +2261,7 @@ function chooseType() {
 			$(".sla_list_sla_limit_col").hide();
 			$("#sla_list").show();
 			break;
+		
 		case 'monitor_report':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2022,6 +2269,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'avg_value':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2029,6 +2277,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'max_value':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2036,6 +2285,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'min_value':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2043,6 +2293,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'sumatory':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2050,17 +2301,20 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'agent_detailed':
 			$("#row_description").show();
 			$("#row_agent").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'text':
 			$("#row_description").show();
 			$("#row_text").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'sql':
 			$("#row_description").show();
 			$("#row_query").show();
@@ -2070,6 +2324,7 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'sql_graph_pie':
 			$("#row_description").show();
 			$("#row_query").show();
@@ -2077,6 +2332,7 @@ function chooseType() {
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'sql_graph_hbar':
 			$("#row_description").show();
 			$("#row_query").show();
@@ -2084,6 +2340,7 @@ function chooseType() {
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'sql_graph_vbar':
 			$("#row_description").show();
 			$("#row_query").show();
@@ -2091,10 +2348,12 @@ function chooseType() {
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'url':
 			$("#row_description").show();
 			$("#row_url").show();
 			break;
+		
 		case 'database_serialized':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2105,6 +2364,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'TTRT':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2112,6 +2372,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'TTO':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2119,6 +2380,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'MTBF':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2126,6 +2388,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'MTTR':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2133,6 +2396,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'alert_report_module':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2140,18 +2404,21 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'alert_report_group':
 			$("#row_description").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_group").show();
 			break;
+		
 		case 'alert_report_agent':
 			$("#row_description").show();
 			$("#row_agent").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'event_report_agent':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2159,11 +2426,15 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_event_filter").show();
 			$("#row_event_graphs").show();
-			$("#row_event_graph_by_agent").hide();
+			
+			$("#row_event_graph_by_user").show();
+			$("#row_event_graph_by_criticity").show();
+			$("#row_event_graph_by_validated").show();
 			
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();
 			break;
+		
 		case 'event_report_module':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2171,9 +2442,15 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			
+			$("#row_event_graph_by_agent").show();
+			$("#row_event_graph_by_user").show();
+			$("#row_event_graph_by_criticity").show();
+			$("#row_event_graph_by_validated").show();
+			
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();
 			break;
+		
 		case 'general':
 			$("#row_description").show();
 			$("#row_group_by_agent").show();
@@ -2189,16 +2466,29 @@ function chooseType() {
 				$("input[name='last_value']").prop("checked", true);
 			}
 			break;
+		
+		case 'availability':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#general_list").show();
+			$("#row_order_uptodown").show();
+			$("#row_show_address_agent").show();
+			$("#row_show_in_two_columns").show();
+			$("#row_show_resume").show();
+			break;
+		
 		case 'group_report':
 			$("#row_group").show();
 			$("#row_servers").show();
 			$("#row_description").show();
 			break;
+		
 		case 'network_interfaces_report':
 			$("#row_group").show();
 			$("#row_description").show();
 			$("#row_period").show();
 			break;
+		
 		case 'top_n':
 			$("#row_description").show();
 			$("#row_period").show();
@@ -2210,6 +2500,7 @@ function chooseType() {
 			$("#row_show_graph").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'exception':
 			$("#row_description").show();
 			$("#row_period").show();
@@ -2227,11 +2518,13 @@ function chooseType() {
 				$("input[name='last_value']").prop("checked", true);
 			}
 			break;
+		
 		case 'agent_module':
 			$("#row_description").show();
 			$("#row_group").show();
 			$("#row_module_group").show();
 			break;
+		
 		case 'inventory_changes':
 			$("#row_description").show();
 			$("#row_period").show();
@@ -2246,8 +2539,8 @@ function chooseType() {
 			$("#combo_group").change(function() {
 				updateAgents($(this).val());
 			});
-			
 			break;
+		
 		case 'inventory':
 			$("#row_description").show();
 			$("#row_group").show();
@@ -2256,10 +2549,21 @@ function chooseType() {
 			$("#row_date").show();
 			$("#row_show_in_two_columns").show();
 			
-			$("#id_agents").change(agent_changed_by_multiple_agents_inventory);
+			
+			$("#id_agents")
+				.change(agent_changed_by_multiple_agents_inventory);
 			$("#id_agents").trigger('change');
 			
-			$("#row_servers").show();
+			
+			<?php
+			if ($meta) {
+				?>
+				
+				$("#row_servers").show();
+				
+				<?php
+			}
+			?>
 			
 			$("#combo_group").change(function() {
 				$('#hidden-date_selected').val('');
@@ -2278,14 +2582,18 @@ function chooseType() {
 			if (!$("#hidden-date_selected").val())
 				updateInventoryDates();
 			break;
+		
 		case 'inventory_changes':
 			break;
+		
 		case 'agent_configuration':
 			$("#row_agent").show();
 			break;
+		
 		case 'group_configuration':
 			$("#row_group").show();
 			break;
+		
 		case 'netflow_area':
 			$("#row_netflow_filter").show();
 			$("#row_description").show();
@@ -2294,6 +2602,7 @@ function chooseType() {
 			$("#row_resolution").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'netflow_pie':
 			$("#row_netflow_filter").show();
 			$("#row_description").show();
@@ -2302,6 +2611,7 @@ function chooseType() {
 			$("#row_resolution").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'netflow_data':
 			$("#row_netflow_filter").show();
 			$("#row_description").show();
@@ -2310,6 +2620,7 @@ function chooseType() {
 			$("#row_resolution").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'netflow_summary':
 			$("#row_netflow_filter").show();
 			$("#row_description").show();
@@ -2317,6 +2628,7 @@ function chooseType() {
 			$("#row_resolution").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'netflow_statistics':
 			$("#row_netflow_filter").show();
 			$("#row_description").show();
@@ -2324,6 +2636,9 @@ function chooseType() {
 			$("#row_max_values").show();
 			$("#row_resolution").show();
 			$("#row_servers").show();
+			break;
+		
+		case 'automatic_graph':
 			break;
 	}
 }

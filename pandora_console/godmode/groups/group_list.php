@@ -145,6 +145,9 @@ if (defined('METACONSOLE')) {
 	agents_meta_print_header();
 	$sec = 'advanced';
 	
+	echo '<div class="notify">';
+	echo __("Edit or delete groups can cause problems with synchronization");
+	echo '</div>';	
 }
 else {
 	

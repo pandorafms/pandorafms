@@ -257,7 +257,7 @@ Pandora_Module_Logevent::getLogEvents (list<string> &event_list, unsigned char d
 	TCHAR lp_referenced_domain_name[_MAX_PATH + 1];
 	DWORD cch_referenced_domain_name = _MAX_PATH + 1;
 	SID_NAME_USE pe_use;
-	string description;
+	string description, output;
 	
 	if (this->log_event == NULL) {
 	    return -1;
@@ -392,9 +392,19 @@ Pandora_Module_Logevent::getLogEvents (list<string> &event_list, unsigned char d
 					event << "]";						
 				}
 				
+				
+				// Remove carriage returns and new lines in between the description.
+				output = "";
+				for (size_t i = 0; i < description.size(); i++) {
+					if (description[i] != '\n' && description[i] != '\r') {
+						output += description[i];
+					}
+				}
+				output += '\n';
+
 				// Print the event description
 				event << " ";
-				event << description;
+				event << output;
 			     
 			    // Add the event to the list
 			    event_list.push_back (event.str());
@@ -562,7 +572,7 @@ Pandora_Module_Logevent::getEventDescriptionXPATH (PEVENTLOGRECORD pevlr) {
 	}
 	
 	// Build the XPATH query
-	query = "Event/System[EventID=" + inttostr(pevlr->EventID & EVENT_ID_MASK) + "]";
+	query = "Event/System[EventRecordID=" + inttostr(pevlr->RecordNumber) + "]";
 	pwsQuery = strAnsiToUnicode (query.c_str());		
 	pwsPath = strAnsiToUnicode (this->source.c_str());
 	

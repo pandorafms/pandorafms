@@ -247,23 +247,23 @@ function mainModuleGroups() {
 				else {
 					
 					if ($fired) {
-						$color = '#ffa300'; //Orange when the cell for this model group and agent has at least one alert fired.
+						$color = '#FFA631'; //Orange when the cell for this model group and agent has at least one alert fired.
 					}
 					else if (array_key_exists(1, $states)) {
-						$color = '#cc0000'; //Red when the cell for this model group and agent has at least one module in critical state and the rest in any state.
+						$color = '#FC4444'; //Red when the cell for this model group and agent has at least one module in critical state and the rest in any state.
 						$font_color = '#ffffff';
 					}
 					elseif (array_key_exists(2, $states)) {
-						$color = '#fce94f'; //Yellow when the cell for this model group and agent has at least one in warning state and the rest in green state.
+						$color = '#FAD403'; //Yellow when the cell for this model group and agent has at least one in warning state and the rest in green state.
 					}
 					elseif (array_key_exists(3, $states)) {
-						$color = '#babdb6'; //Grey when the cell for this model group and agent has at least one module in unknown state and the rest in any state.
+						$color = '#B2B2B2'; //Grey when the cell for this model group and agent has at least one module in unknown state and the rest in any state.
 					}
 					elseif (array_key_exists(0, $states)) {
-						$color = '#8ae234'; //Green when the cell for this model group and agent has OK state all modules.
+						$color = '#80BA27'; //Green when the cell for this model group and agent has OK state all modules.
 					}
 					elseif (array_key_exists(5, $states)) {
-						$color = '#729fcf'; // Blue when the cell for this module group and all modules have not init value.
+						$color = '#5BB6E5'; // Blue when the cell for this module group and all modules have not init value.
 					}
 					
 					

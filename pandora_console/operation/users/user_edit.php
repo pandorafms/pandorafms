@@ -222,9 +222,9 @@ if ($view_mode === false) {
 	if ($config["user_can_update_password"]) {
 		$data = array();
 		$data[0] = __('New Password');
-		$data[0] .= '<br>' . html_print_input_text_extended ("password_new", "", '', '', '40', '25', $view_mode, '', 'class="input"', true, true);
+		$data[0] .= '<br>' . html_print_input_text_extended ("password_new", "", '', '', '40', '45', $view_mode, '', 'class="input"', true, true);
 		$data[1] = __('Password confirmation');
-		$data[1] .= '<br>' . html_print_input_text_extended ("password_conf", "", '', '', '40', '25', $view_mode, '', 'class="input"', true, true);
+		$data[1] .= '<br>' . html_print_input_text_extended ("password_conf", "", '', '', '40', '45', $view_mode, '', 'class="input"', true, true);
 		$table->rowclass[] = '';
 		$table->rowstyle[] = 'font-weight: bold;';
 		$table->data[] = $data;
@@ -282,7 +282,6 @@ if (!$meta) {
 	$data[1] = __('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true);
 	$values = array (
 		'Default' =>__('Default'),
-		'Dashboard'=>__('Dashboard'),
 		'Visual console'=>__('Visual console'),
 		'Event list'=>__('Event list'),
 		'Group view'=>__('Group view'),

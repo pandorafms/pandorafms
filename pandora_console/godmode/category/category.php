@@ -126,6 +126,7 @@ if (!empty($result)) {
 	}
 	
 	html_print_table ($table);
+	
 }
 else {
 	// No categories available or selected

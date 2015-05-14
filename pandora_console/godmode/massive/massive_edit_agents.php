@@ -436,9 +436,13 @@ ui_require_jquery_file ('bgiframe');
 ?>
 <script type="text/javascript">
 /* <![CDATA[ */
-	
+
+
 //Use this function for change 3 icons when change the selectbox
 $(document).ready (function () {
+	
+	
+	
 	$("#id_agents").change (function () {
 		var idAgents = Array();
 		jQuery.each ($("#id_agents option:selected"), function (i, val) {

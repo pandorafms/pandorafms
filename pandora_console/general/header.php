@@ -45,8 +45,9 @@ config_check();
 						}
 						$logo_title = 'Pandora FMS Enterprise';
 					}
-				
-					echo html_print_image($custom_logo, true, array("alt" => $logo_title, "border" => '0'));
+					
+					echo html_print_image($custom_logo, true,
+						array("alt" => $logo_title, "border" => '0'));
 				?>
 			</a>
 		</td>

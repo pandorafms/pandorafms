@@ -120,17 +120,17 @@ switch ($config["dbtype"]) {
 
 
 /* Color constants */
-define('COL_CRITICAL','#f85858');
-define('COL_WARNING','#ffea59');
-define('COL_WARNING_DARK','#FFB900');
-define('COL_NORMAL','#6EB432');
-define('COL_NOTINIT','#3BA0FF');
-define('COL_UNKNOWN','#AAAAAA');
-define('COL_ALERTFIRED','#FF8800');
-define('COL_MINOR','#F099A2');
-define('COL_MAJOR','#C97A4A');
-define('COL_INFORMATIONAL','#E4E4E4');
-define('COL_MAINTENANCE','#3BA0FF');
+define('COL_CRITICAL',		'#FC4444');
+define('COL_WARNING',		'#FAD403');
+define('COL_WARNING_DARK',	'#FFB900');
+define('COL_NORMAL',		'#80BA27');
+define('COL_NOTINIT',		'#5BB6E5');
+define('COL_UNKNOWN',		'#B2B2B2');
+define('COL_ALERTFIRED',	'#FFA631');
+define('COL_MINOR',			'#F099A2');
+define('COL_MAJOR',			'#C97A4A');
+define('COL_INFORMATIONAL',	'#E4E4E4');
+define('COL_MAINTENANCE',	'#3BA0FF');
 
 define('COL_GRAPH1', '#C397F2');
 define('COL_GRAPH2', '#FFE66C');

@@ -286,7 +286,7 @@ $(document).ready (function () {
 					else {
 						
 						$('#table_macros-field' + i).replaceWith(field_row);
-						if (old_value != '' && old_recovery_value != ''){
+						if (old_value != '' || old_recovery_value != ''){
 							$("[name=field" + i + "_value]").val(old_value);
 							$("[name=field" + i + "_recovery_value]").val(old_recovery_value);
 						}
@@ -310,6 +310,7 @@ $(document).ready (function () {
 						$('#table_macros-field' + i).show();
 					}
 				}
+				
 				
 				render_command_preview(original_command);
 				render_command_recovery_preview(original_command);

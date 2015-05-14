@@ -119,7 +119,7 @@ function config_update_config () {
 				case 'general':
 					if (!config_update_value ('language', (string) get_parameter ('language')))
 						$error_update[] = __('Language code for Pandora');
-					if (!config_update_value ('remote_config', (string) get_parameter ('remote_config')))
+					if (!config_update_value ('remote_config', io_safe_input((string) get_parameter ('remote_config'))))
 						$error_update[] = __('Remote config directory');
 					if (!config_update_value ('loginhash_pwd', (string) get_parameter ('loginhash_pwd')))
 						$error_update[] = __('Auto login (hash) password');
@@ -130,7 +130,7 @@ function config_update_config () {
 						$error_update[] = __('Automatic check for updates');
 					if (!config_update_value ('https', (bool) get_parameter ('https')))
 						$error_update[] = __('Enforce https');
-					if (!config_update_value ('attachment_store', (string) get_parameter ('attachment_store')))
+					if (!config_update_value ('attachment_store', io_safe_input((string) get_parameter ('attachment_store'))))
 						$error_update[] = __('Attachment store');
 					if (!config_update_value ('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API')))
 						$error_update[] = __('IP list with API access');
@@ -405,7 +405,7 @@ function config_update_config () {
 						$error_update[] = __('Show QR code header');
 					if (!config_update_value ('status_images_set', (string) get_parameter ('status_images_set')))
 						$error_update[] = __('Status icon set');
-					if (!config_update_value ('fontpath', (string) get_parameter ('fontpath')))
+					if (!config_update_value ('fontpath', io_safe_input((string) get_parameter ('fontpath'))))
 						$error_update[] = __('Font path');
 					if (!config_update_value ('font_size', get_parameter('font_size')))
 						$error_update[] = __('Font size');
@@ -443,7 +443,7 @@ function config_update_config () {
 						$error_update[] = __('Fixed menu');
 					if (!config_update_value ('paginate_module', get_parameter('paginate_module')))
 						$error_update[] = __('Paginate module');
-					if (!config_update_value ('graphviz_bin_dir', get_parameter('graphviz_bin_dir')))
+					if (!config_update_value ('graphviz_bin_dir', io_safe_input(get_parameter('graphviz_bin_dir'))))
 						$error_update[] = __('Custom graphviz directory');
 					if (!config_update_value ('networkmap_max_width', get_parameter('networkmap_max_width')))
 						$error_update[] = __('Networkmap max width');
@@ -531,7 +531,7 @@ function config_update_config () {
 					$error_update[] = __('Name resolution for IP address');
 				break;
 			case 'log':
-				if (!config_update_value ('log_dir', get_parameter('log_dir')))
+				if (!config_update_value ('log_dir', io_safe_input(get_parameter('log_dir'))))
 					$error_update[] = __('Netflow max lifetime');
 				if (!config_update_value ('log_max_lifetime', (int)get_parameter('log_max_lifetime')))
 					$error_update[] = __('Log max lifetime');
@@ -805,21 +805,21 @@ function config_process_config () {
 	// dir.
 	if (!isset ($config['attachment_store'])) {
 		config_update_value('attachment_store',
-			$config['homedir'] . '/attachment');
+			io_safe_input($config['homedir']) . '/attachment');
 	}
 	else {
 		//Fixed when the user moves the pandora console to another dir
 		//after the first uses.
 		if (!is_dir($config['attachment_store'])) {
 			config_update_value('attachment_store',
-				$config['homedir'] . '/attachment');
+				io_safe_input($config['homedir']) . '/attachment');
 		}
 	}
 	
 	
 	if (!isset ($config['fontpath'])) {
 		config_update_value('fontpath',
-			$config['homedir'] . '/include/fonts/smallfont.ttf');
+			io_safe_input($config['homedir']) . '/include/fonts/smallfont.ttf');
 	}
 	
 	if (!isset ($config['style'])) {
@@ -1299,8 +1299,8 @@ function config_check () {
 	}
 	
 	// Get remote file dir.
-	$remote_config = db_get_value_filter('value',
-		'tconfig', array('token' => 'remote_config'));
+	$remote_config = io_safe_output(db_get_value_filter('value',
+		'tconfig', array('token' => 'remote_config')));
 	
 	
 	if (enterprise_installed()) {
@@ -1362,7 +1362,7 @@ function config_check () {
 			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 	}
 	
-	$fontpath = db_get_value_filter('value', 'tconfig', array('token' => 'fontpath'));
+	$fontpath = io_safe_output(db_get_value_filter('value', 'tconfig', array('token' => 'fontpath')));
 	if (($fontpath == "") OR (!file_exists ($fontpath))) {
 		$config["alert_cnt"]++;
 		$_SESSION["alert_msg"] .= ui_print_error_message(
@@ -1408,6 +1408,7 @@ function config_check () {
 	$PHPmemory_limit = config_return_in_bytes(ini_get('memory_limit'));
 	$PHPmax_execution_time = ini_get('max_execution_time');
 	$PHPsafe_mode = ini_get('safe_mode');
+	$PHPdisable_functions = ini_get('disable_functions');
 	
 	if ($PHPsafe_mode === '1') {
 		$config["alert_cnt"]++;
@@ -1450,6 +1451,15 @@ function config_check () {
 		$_SESSION["alert_msg"] .= ui_print_info_message(
 			array('title' => sprintf(__("Not recommended '%s' value in PHP configuration"), 'memory_limit'),
 			'message' => sprintf(__('Recommended value is: %s'), sprintf(__('%s or greater'), '500M')) . '<br><br>' . __('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
+			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
+	}
+	
+	if (preg_match("/system/", $PHPdisable_functions) or preg_match("/exec/", $PHPdisable_functions)) {
+		$config["alert_cnt"]++;
+		$_SESSION["alert_msg"] .= ui_print_info_message(
+			array('title' => __("Problems with disable functions in PHP.INI"),
+			'message' => __("Variable disable_functions containts functions system() or exec(), in PHP configuration file (php.ini)"). '<br /><br />' . 
+			__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
 			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 	}
 }

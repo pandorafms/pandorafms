@@ -705,8 +705,8 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	}*/
 	
 	if ($show_unknown) {
-		$legend['unknown'.$series_suffix] = __('Unknown').$series_suffix_str;
-		$chart_extra_data['legend_unknown'] = $legend['unknown'.$series_suffix_str];
+		$legend['unknown' . $series_suffix] = __('Unknown') . $series_suffix_str;
+		$chart_extra_data['legend_unknown'] = $legend['unknown' . $series_suffix_str];
 	}
 }
 
@@ -720,7 +720,6 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	
 	global $config;
 	global $graphic_type;
-	
 	
 	$flash_chart = $config['flash_charts'];
 	
@@ -1383,7 +1382,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color); 
+				$unit, $ttl, $homeurl, $background_color); 
 			break;
 		case CUSTOM_GRAPH_STACKED_LINE:
 			return stacked_line_graph($flash_charts, $graph_values,
@@ -1555,10 +1554,14 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	
-	$colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
+	//$colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
+	$colors[__('Critical')] = COL_CRITICAL;
+	$colors[__('Warning')] = COL_WARNING;
+	$colors[__('Normal')] = COL_NORMAL;
+	$colors[__('Unknown')] = COL_UNKNOWN;
 	
 	if ($show_not_init) {
-		$colors[] = COL_NOTINIT;
+		$colors[__('Not init')] = COL_NOTINIT;
 	}
 	
 	if (array_sum($data) == 0) {
@@ -2831,6 +2834,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	if ($uncompressed_module) {
 		$avg_only = 1;
 	}
+	$search_in_history_db = db_search_in_history_db($datelimit);
 	
 	// Get event data (contains alert data too)
 	if ($show_unknown == 1 || $show_events == 1 || $show_alerts == 1) {
@@ -2861,7 +2865,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
 			'order' => 'utimestamp ASC'),
-		array ('datos', 'utimestamp'));
+		array ('datos', 'utimestamp'), 'AND', $search_in_history_db);
 	if ($data === false) {
 		$data = array ();
 	}
@@ -3542,6 +3546,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	if ($uncompressed_module) {
 		$avg_only = 1;
 	}
+	$search_in_history_db = db_search_in_history_db($datelimit);
 	
 	// Get event data (contains alert data too)
 	if ($show_events == 1 || $show_alerts == 1) {
@@ -3562,7 +3567,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
 			'order' => 'utimestamp ASC'),
-		array ('datos', 'utimestamp'));
+		array ('datos', 'utimestamp'), 'AND', $search_in_history_db);
 	if ($data === false) {
 		$data = array ();
 	}

@@ -400,6 +400,7 @@ function reporting_get_agentmodule_data_sum ($id_agent_module,
 	return $total;
 }
 
+
 /** 
  * Get SLA of a module.
  * 
@@ -416,7 +417,7 @@ function reporting_get_agentmodule_data_sum ($id_agent_module,
  * @return float SLA percentage of the requested module. False if no data were
  * found
  */
-function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $date = 0, $daysWeek = null, $timeFrom = null, $timeTo = null) {
+function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_value = 1, $max_value = false, $date = 0, $daysWeek = null, $timeFrom = null, $timeTo = null) {
 	global $config;
 	
 	if (empty($id_agent_module))
@@ -494,6 +495,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	
 	// Get previous data
 	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
+	
 	if ($previous_data !== false) {
 		$previous_data['utimestamp'] = $datelimit;
 		array_unshift ($interval_data, $previous_data);
@@ -501,6 +503,7 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	
 	// Get next data
 	$next_data = modules_get_next_data ($id_agent_module, $date);
+	
 	if ($next_data !== false) {
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
@@ -541,6 +544,8 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 		$previous_status = 0;
 	}
 	
+	
+	
 	foreach ($interval_data as $data) {
 		// Previous status was critical
 		if ($previous_status == 1) {
@@ -569,6 +574,226 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0, $min_valu
 	
 	// Return the percentage of SLA compliance
 	return (float) (100 - ($bad_period / $period) * 100);
+}
+
+/** 
+ * Get SLA of a module.
+ * 
+ * @param int Agent module to calculate SLA
+ * @param int Period to check the SLA compliance.
+ * @param int Minimum data value the module in the right interval
+ * @param int Maximum data value the module in the right interval. False will
+ * ignore max value
+ * @param int Beginning date of the report in UNIX time (current date by default).
+ * @param array $dayWeek  Array of days week to extract as array('monday' => false, 'tuesday' => true....), and by default is null.
+ * @param string $timeFrom Time in the day to start to extract in mysql format, by default null.
+ * @param string $timeTo Time in the day to end to extract in mysql format, by default null.
+ * 
+ * @return float SLA percentage of the requested module. False if no data were
+ * found
+ */
+function reporting_get_agentmodule_sla ($id_agent_module, $period = 0,
+	$min_value = 1, $max_value = false, $date = 0, $daysWeek = null,
+	$timeFrom = null, $timeTo = null) {
+	
+	global $config;
+	
+	if (empty($id_agent_module))
+		return false;
+	
+	// Set initial conditions
+	$bad_period = 0;
+	// Limit date to start searching data
+	$datelimit = $date - $period;
+	$search_in_history_db = db_search_in_history_db($datelimit);
+	
+	// Initialize variables
+	if (empty ($date)) {
+		$date = get_system_time ();
+	}
+	if ($daysWeek === null) {
+		$daysWeek = array();
+	}
+	
+	
+	// Calculate the SLA for large time without hours
+	if ($timeFrom == $timeTo) {
+		// Get interval data
+		$sql = sprintf ('SELECT *
+			FROM tagente_datos
+			WHERE id_agente_modulo = %d
+				AND utimestamp > %d AND utimestamp <= %d',
+			$id_agent_module, $datelimit, $date);
+		
+		//Add the working times (mon - tue - wed ...) and from time to time
+		$days = array();
+		//Translate to mysql week days
+		if ($daysWeek) {
+			foreach ($daysWeek as $key => $value) {
+				if (!$value) {
+					if ($key == 'monday') {
+						$days[] = 2;
+					}
+					if ($key == 'tuesday') {
+						$days[] = 3;
+					}
+					if ($key == 'wednesday') {
+						$days[] = 4;
+					}
+					if ($key == 'thursday') {
+						$days[] = 5;
+					}
+					if ($key == 'friday') {
+						$days[] = 6;
+					}
+					if ($key == 'saturday') {
+						$days[] = 7;
+					}
+					if ($key == 'sunday') {
+						$days[] = 1;
+					}
+				}
+			}
+		}
+		
+		if (count($days) > 0) {
+			$sql .= ' AND DAYOFWEEK(FROM_UNIXTIME(utimestamp)) NOT IN (' . implode(',', $days) . ')';
+		}
+		
+		$sql .= "\n";
+		$sql .= ' ORDER BY utimestamp ASC';
+		$interval_data = db_get_all_rows_sql ($sql, $search_in_history_db);
+		
+		if ($interval_data === false) {
+			$interval_data = array ();
+		}
+		
+		// Calculate planned downtime dates
+		$downtime_dates = reporting_get_planned_downtimes_intervals($id_agent_module, $datelimit, $date);
+		
+		// Get previous data
+		$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
+		
+		if ($previous_data !== false) {
+			$previous_data['utimestamp'] = $datelimit;
+			array_unshift ($interval_data, $previous_data);
+		}
+		
+		// Get next data
+		$next_data = modules_get_next_data ($id_agent_module, $date);
+		
+		if ($next_data !== false) {
+			$next_data['utimestamp'] = $date;
+			array_push ($interval_data, $next_data);
+		}
+		else if (count ($interval_data) > 0) {
+			// Propagate the last known data to the end of the interval
+			$next_data = array_pop ($interval_data);
+			array_push ($interval_data, $next_data);
+			$next_data['utimestamp'] = $date;
+			array_push ($interval_data, $next_data);
+		}
+		
+		if (count ($interval_data) < 2) {
+			return false;
+		}
+		
+		
+		$first_data = array_shift ($interval_data);
+		
+		// Do not count the empty start of an interval as 0
+		if ($first_data['utimestamp'] != $datelimit) {
+			$period = $date - $first_data['utimestamp'];
+		}
+		
+		$previous_utimestamp = $first_data['utimestamp'];
+		if ((($max_value > $min_value AND ($first_data['datos'] > $max_value OR $first_data['datos'] < $min_value))) OR
+			($max_value <= $min_value AND $first_data['datos'] < $min_value)) {
+			
+			$previous_status = 1;
+			foreach ($downtime_dates as $date_dt) {
+				if (($date_dt['date_from'] <= $previous_utimestamp) AND ($date_dt['date_to'] >= $previous_utimestamp)) {
+					$previous_status = 0;
+				}
+			}
+		}
+		else {
+			$previous_status = 0;
+		}
+		
+		
+		
+		
+		
+		foreach ($interval_data as $data) {
+			// Previous status was critical
+			if ($previous_status == 1) {
+				$bad_period += $data['utimestamp'] - $previous_utimestamp;
+			}
+			
+			if (array_key_exists('datos', $data)) {
+				// Re-calculate previous status for the next data
+				if ((($max_value > $min_value AND ($data['datos'] > $max_value OR $data['datos'] < $min_value))) OR
+					($max_value <= $min_value AND $data['datos'] < $min_value)) {
+					
+					$previous_status = 1;
+					foreach ($downtime_dates as $date_dt) {
+						if (($date_dt['date_from'] <= $data['utimestamp']) AND ($date_dt['date_to'] >= $data['utimestamp'])) {
+							$previous_status = 0;
+						}
+					}
+				}
+				else {
+					$previous_status = 0;
+				}
+			}
+			
+			$previous_utimestamp = $data['utimestamp'];
+		}
+		
+		// Return the percentage of SLA compliance
+		return (float) (100 - ($bad_period / $period) * 100);
+	}
+	elseif ($period <= SECONDS_1DAY) {
+		
+		
+		return reporting_get_agentmodule_sla_day(
+			$id_agent_module,
+			$period,
+			$min_value,
+			$max_value,
+			$date,
+			$daysWeek,
+			$timeFrom,
+			$timeTo);
+	}
+	else {
+		// Extract the data each day
+		
+		$sla = 0;
+		
+		$i = 0;
+		for ($interval = 0; $interval <= $period; $interval = $interval + SECONDS_1DAY) {
+			$datelimit = $date - $interval;
+			
+			$sla_day = reporting_get_agentmodule_sla(
+				$id_agent_module,
+				SECONDS_1DAY,
+				$min_value,
+				$max_value,
+				$datelimit + $interval,
+				$daysWeek,
+				$timeFrom, $timeTo);
+			
+			
+			$sla += $sla_day;
+			$i++;
+		}
+		
+		$sla = $sla / $i;
+		
+		return $sla;
+	}
 }
 /** 
  * Get several SLA data for an agentmodule within a period divided on subperiods
@@ -3013,9 +3238,12 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 function reporting_get_group_detailed_event ($id_group, $period = 0,
 	$date = 0, $return = false, $html = true,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false) {
-		
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_filter_search = null) {
+	
 	global $config;
+	
+	
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -3043,7 +3271,8 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 	
 	$events = events_get_group_events($id_group, $period, $date,
 		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning, $filter_event_no_validated);
+		$filter_event_warning, $filter_event_no_validated,
+		$filter_event_filter_search);
 	
 	if ($events) {
 		$note = '';
@@ -3419,6 +3648,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		$sizem = '1.5';
 		$sizgraph_w = '450';
 		$sizgraph_h = '100';
+		
+		$sla_width = '250';
 	}
 	else {
 		$sizem = '3';
@@ -3505,12 +3736,29 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				
 				$urlImage = ui_get_full_url(false, false, false, false);
 				
-				$data[0] = grafico_modulo_string ($content['id_agent_module'], $content['period'],
-					false, $sizgraph_w, $sizgraph_h, '', '', false, $only_avg, false,
-					$report["datetime"], $only_image, $urlImage);
+				$data[0] = grafico_modulo_string (
+					$content['id_agent_module'],
+					$content['period'],
+					false,
+					$sizgraph_w,
+					$sizgraph_h,
+					'',
+					'',
+					false,
+					$only_avg,
+					false,
+					$report["datetime"],
+					$only_image,
+					$urlImage);
 				
 			}
 			else {
+				// HACK it is saved in show_graph field.
+				$time_compare_overlapped = false;
+				if ($content['show_graph']) {
+					$time_compare_overlapped = 'overlapped';
+				}
+				
 				
 				$data[0] = grafico_modulo_sparse(
 					$content['id_agent_module'],
@@ -3533,7 +3781,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					1,
 					false,
 					'',
-					false,
+					$time_compare_overlapped,
 					true);
 			}
 			
@@ -3652,11 +3900,35 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, $data_desc);
 			}
 			
+			// HACK it is saved in show_graph field.
+			$time_compare_overlapped = false;
+			if ($content['show_graph']) {
+				$time_compare_overlapped = 'overlapped';
+			}
+			
 			$data = array ();
-			$data[0] = grafico_modulo_sparse($content['id_agent_module'], $content['period'],
-				false, $sizgraph_w, $sizgraph_h, '', '', false, true, true,
-				$report["datetime"], '', true, 0, true, $only_image,
-				ui_get_full_url(false, false, false, false));
+			$data[0] = grafico_modulo_sparse(
+				$content['id_agent_module'],
+				$content['period'],
+				false,
+				$sizgraph_w,
+				$sizgraph_h,
+				'',
+				'',
+				false,
+				true,
+				true,
+				$report["datetime"],
+				'',
+				true,
+				0,
+				true, 
+				only_image,
+				ui_get_full_url(false, false, false, false),
+				1,
+				false,
+				'',
+				$time_compare_overlapped);
 			
 			/*$data[0] = 	graphic_combined_module(
 				$modules,
@@ -4238,9 +4510,21 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$dataslice[0] .= "<br>";
 					$dataslice[0] .= modules_get_agentmodule_name ($sla['id_agent_module']);
 					
-					$dataslice[1] = graph_sla_slicebar ($sla['id_agent_module'], $content['period'],
-						$sla['sla_min'], $sla['sla_max'], $report['datetime'], $content, $content['time_from'],
-						$content['time_to'], 650, 25, $urlImage, 1, false, false);
+					$dataslice[1] = graph_sla_slicebar (
+						$sla['id_agent_module'],
+						$content['period'],
+						$sla['sla_min'],
+						$sla['sla_max'],
+						$report['datetime'],
+						$content,
+						$content['time_from'],
+						$content['time_to'],
+						$sla_width,
+						25,
+						$urlImage,
+						1,
+						false,
+						false);
 					
 					array_push ($tableslice->data, $dataslice);
 				}
@@ -4759,6 +5043,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			$filter_event_validated = $style['filter_event_validated'];
 			$filter_event_critical = $style['filter_event_critical'];
 			$filter_event_warning = $style['filter_event_warning'];
+			$filter_event_filter_search = $style['event_filter_search'];
 			
 			$event_graph_by_agent = $style['event_graph_by_agent'];
 			$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
@@ -4771,10 +5056,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$filter_event_validated,
 				$filter_event_critical,
 				$filter_event_warning,
-				$filter_event_no_validated);
-			if(!empty($data[0])) {
+				$filter_event_no_validated,
+				$filter_event_filter_search);
+			
+			if (!empty($data[0])) {
 				array_push ($table->data, $data);
-								
+				
 				$table->colspan[$next_row][0] = 3;
 				$next_row++;
 			}
@@ -4786,7 +5073,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$filter_event_validated,
 					$filter_event_critical,
 					$filter_event_warning,
-					$filter_event_no_validated);
+					$filter_event_no_validated,
+					$filter_event_filter_search);
 				
 				$table_event_graph = null;
 				$table_event_graph->width = '100%';
@@ -4812,7 +5100,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$filter_event_validated,
 					$filter_event_critical,
 					$filter_event_warning,
-					$filter_event_no_validated);
+					$filter_event_no_validated,
+					$filter_event_filter_search);
 				
 				$table_event_graph = null;
 				$table_event_graph->head[0] = __('Events validated by user');
@@ -4838,7 +5127,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$filter_event_validated,
 					$filter_event_critical,
 					$filter_event_warning,
-					$filter_event_no_validated);
+					$filter_event_no_validated,
+					$filter_event_filter_search);
 				
 				$colors = get_criticity_pie_colors($data_graph);
 				
@@ -4866,7 +5156,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					$filter_event_validated,
 					$filter_event_critical,
 					$filter_event_warning,
-					$filter_event_no_validated);
+					$filter_event_no_validated,
+					$filter_event_filter_search);
 				
 				$table_event_graph = null;
 				$table_event_graph->head[0] = __('Amount events validated');
@@ -5311,6 +5602,311 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		case 'network_interfaces_report':
 			reporting_network_interfaces_table($content, $report, $mini, $item_title, $table);
 			break;
+		case 'availability':
+			if (empty($item_title)) {
+				$item_title = __('Availability');
+			}
+			reporting_header_content($mini, $content, $report, $table, $item_title);
+			
+			// Put description at the end of the module (if exists)
+			$table->colspan[1][0] = 3;
+			if ($content["description"] != "") {
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push($table->data, $data_desc);
+			}
+			
+			$sql = sprintf("
+				SELECT id_agent_module,
+					server_name, operation
+				FROM treport_content_item
+				WHERE id_report_content = %d",
+				$content['id_rc']);
+			
+			$items = db_process_sql ($sql);
+			if (empty($items)) {
+				$data = array ();
+				$table->colspan[2][0] = 3;
+				$data[0] =
+					__('There are no Agent/Modules defined');
+				array_push ($table->data, $data);
+				break;
+			}
+			
+			
+			
+			$data = array();
+			
+			$avg = 0;
+			$min = null;
+			$min_text = "";
+			$max = null;
+			$max_text = "";
+			$count = 0;
+			foreach ($items as $item) {
+				//aaMetaconsole connection
+				$server_name = $item ['server_name'];
+				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+					$connection = metaconsole_get_connection($server_name);
+					if (metaconsole_load_external_db($connection) != NOERR) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
+					}
+				}
+				
+				if (modules_is_disable_agent($item['id_agent_module'])) {
+					continue;
+				}
+				
+				$row = array();
+				
+				$text = "";
+				
+				// HACK it is saved in show_graph field.
+				// Show interfaces instead the modules
+				if ($content['show_graph']) {
+					$text = $row['ip_address'] = agents_get_address(
+						modules_get_agentmodule_agent($item['id_agent_module']));
+				}
+				else {
+					$text = $row['module'] = modules_get_agentmodule_name(
+						$item['id_agent_module']);
+				}
+				$row['agent'] = modules_get_agentmodule_agent_name(
+					$item['id_agent_module']);
+				
+				$text = $row['agent'] . " (" . $text . ")";
+				
+				
+				$monitor_value = reporting_get_agentmodule_sla(
+					$item['id_agent_module'],
+					$content['period'],
+					1,
+					false,
+					$report["datetime"]);
+				
+				if ($monitor_value === false) {
+					$row['checks'] = __('Unknown');
+					$row['failed'] = __('Unknown');
+					$row['fail'] = __('Unknown');
+					$row['poling_time'] = __('Unknown');
+					$row['time_unavaliable'] = __('Unknown');
+					$row['ok'] = __('Unknown');
+				}
+				else {
+					$count_checks = modules_get_count_datas(
+						$item['id_agent_module'],
+						$report["datetime"] - $content['period'],
+						$report["datetime"]);
+					$count_fails = count(
+						modules_get_data_with_value(
+							$item['id_agent_module'],
+							$report["datetime"] - $content['period'],
+							$report["datetime"],
+							0, true));
+					$percent_ok = (($count_checks - $count_fails) * 100) / $count_checks;
+					$percent_fail = 100 - $percent_ok;
+					
+					$row['ok'] = format_numeric($percent_ok, 2) . " %";
+					$row['fail'] = format_numeric($percent_fail, 2) . " %";
+					$row['checks'] = format_numeric($count_checks, 2);
+					$row['failed'] = format_numeric($count_fails ,2);
+					$row['poling_time'] = human_time_description_raw(
+						($count_checks - $count_fails) * modules_get_interval($item['id_agent_module']),
+						true);
+					$row['time_unavaliable'] = "-";
+					if ($count_fails > 0) {
+						$row['time_unavaliable'] = human_time_description_raw(
+							$count_fails * modules_get_interval($item['id_agent_module']),
+							true);
+					}
+				}
+				
+				$data[] = $row;
+				
+				
+				$avg = (($avg * $count) + $monitor_value) / ($count + 1);
+				if (is_null($min)) {
+					$min = $percent_ok;
+					$min_text = $text;
+				}
+				else {
+					if ($min > $percent_ok) {
+						$min = $percent_ok;
+						$min_text = $text;
+					}
+				}
+				if (is_null($max)) {
+					$max = $percent_ok;
+					$max_text = $text;
+				}
+				else {
+					if ($max < $percent_ok) {
+						$max = $percent_ok;
+						$max_text = $text;
+					}
+				}
+				
+				//Restore dbconnection
+				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+					metaconsole_restore_db();
+				}
+				
+				$count++;
+			}
+			
+			switch ($content['order_uptodown']) {
+				case REPORT_ITEM_ORDER_BY_AGENT_NAME:
+					$temp = array();
+					foreach ($data as $row) {
+						$i = 0;
+						foreach ($temp as $t_row) {
+							if (strcmp($row['agent'], $t_row['agent']) < 0) {
+								break;
+							}
+							
+							$i++;
+						}
+						
+						array_splice($temp, $i, 0, array($row));
+					}
+					
+					$data = $temp;
+					break;
+				case REPORT_ITEM_ORDER_BY_ASCENDING:
+					$temp = array();
+					foreach ($data as $row) {
+						$i = 0;
+						foreach ($temp as $t_row) {
+							if ($content['show_graph']) {
+								if (strcmp($row['ip_address'], $t_row['ip_address']) < 0) {
+									break;
+								}
+							}
+							else {
+								if (strcmp($row['module'], $t_row['module']) < 0) {
+									break;
+								}
+							}
+							
+							$i++;
+						}
+						
+						array_splice($temp, $i, 0, array($row));
+					}
+					
+					$data = $temp;
+					break;
+				case REPORT_ITEM_ORDER_BY_DESCENDING:
+					$temp = array();
+					foreach ($data as $row) {
+						$i = 0;
+						foreach ($temp as $t_row) {
+							if ($content['show_graph']) {
+								if (strcmp($row['ip_address'], $t_row['ip_address']) > 0) {
+									break;
+								}
+							}
+							else {
+								if (strcmp($row['module'], $t_row['module']) > 0) {
+									break;
+								}
+							}
+							
+							$i++;
+						}
+						
+						array_splice($temp, $i, 0, array($row));
+					}
+					
+					$data = $temp;
+					break;
+			}
+			
+			
+			
+			$table1->width = '99%';
+			$table1->data = array ();
+			$table1->head = array ();
+			$table1->head[0] = __('Agent');
+			// HACK it is saved in show_graph field.
+			// Show interfaces instead the modules
+			if ($content['show_graph']) {
+				$table1->head[1] = __('IP Address');
+			}
+			else {
+				$table1->head[1] = __('Module');
+			}
+			$table1->head[2] = __('# Checks');
+			$table1->head[3] = __('# Failed');
+			$table1->head[4] = __('% Fail');
+			$table1->head[5] = __('Poling time');
+			$table1->head[6] = __('Time unavailable');
+			$table1->head[7] = __('% Ok');
+			
+			$table1->style[0] = 'text-align: left';
+			$table1->style[1] = 'text-align: left';
+			$table1->style[2] = 'text-align: right';
+			$table1->style[3] = 'text-align: right';
+			$table1->style[4] = 'text-align: right';
+			$table1->style[5] = 'text-align: right';
+			$table1->style[6] = 'text-align: right';
+			$table1->style[7] = 'text-align: right';
+			
+			foreach ($data as $row) {
+				$table_row = array();
+				$table_row[] = $row['agent'];
+				if ($content['show_graph']) {
+					$table_row[] = $row['ip_address'];
+				}
+				else {
+					$table_row[] = $row['module'];
+				}
+				$table_row[] = $row['checks'];
+				$table_row[] = $row['failed'];
+				$table_row[] = $row['fail'];
+				$table_row[] = $row['poling_time'];
+				$table_row[] = $row['time_unavaliable'];
+				$table_row[] = $row['ok'];
+				
+				$table1->data[] = $table_row;
+			}
+			
+			$table->colspan[2][0] = 3;
+			$data = array();
+			$data[0] = html_print_table($table1, true);
+			array_push ($table->data, $data);
+			
+			if ($content['show_resume']) {
+				$table1->width = '99%';
+				$table1->data = array ();
+				$table1->head = array ();
+				$table1->style = array();
+				$table1->head['min_text'] = '';
+				$table1->head['min'] = __('Min Value');
+				$table1->head['avg'] = __('Average Value');
+				$table1->head['max_text'] = '';
+				$table1->head['max'] = __('Max Value');
+				$table1->style['min_text'] = 'text-align: left';
+				$table1->style['min'] = 'text-align: right';
+				$table1->style['avg'] = 'text-align: right';
+				$table1->style['max_text'] = 'text-align: left';
+				$table1->style['max'] = 'text-align: right';
+				
+				$table1->data[] = array(
+					'min_text' => $min_text,
+					'min' => format_numeric($min, 2) . "%",
+					'avg' => format_numeric($avg, 2) . "%",
+					'max_text' => $max_text,
+					'max' => format_numeric($max, 2) . "%"
+					);
+				
+				$table->colspan[3][0] = 3;
+				$data = array();
+				$data[0] = html_print_table($table1, true);
+				array_push ($table->data, $data);
+			}
+			break;
 		case 'general':
 			if (empty($item_title)) {
 				$item_title = __('General');
@@ -5329,6 +5925,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$data_desc[0] = $content["description"];
 				array_push($table->data, $data_desc);
 			}
+			
+			
 			
 			switch ($group_by_agent) {
 				//0 means not group by agent
@@ -7667,7 +8265,8 @@ function reporting_template_graphs_get_user ($id_user = 0, $only_names = false, 
 function reporting_get_count_events_by_agent ($id_group, $period = 0,
 	$date = 0,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_filter_search = false) {
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -7678,7 +8277,8 @@ function reporting_get_count_events_by_agent ($id_group, $period = 0,
 	
 	return events_get_count_events_by_agent($id_group, $period, $date,
 		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning, $filter_event_no_validated);
+		$filter_event_warning, $filter_event_no_validated,
+		$filter_event_filter_search);
 }
 
 /**
@@ -7695,7 +8295,8 @@ function reporting_get_count_events_by_agent ($id_group, $period = 0,
 function reporting_get_count_events_validated_by_user ($filter, $period = 0,
 	$date = 0,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_filter_search = null) {
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -7706,7 +8307,8 @@ function reporting_get_count_events_validated_by_user ($filter, $period = 0,
 	
 	return events_get_count_events_validated_by_user($filter, $period, $date,
 		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning, $filter_event_no_validated);
+		$filter_event_warning, $filter_event_no_validated,
+		$filter_event_filter_search);
 }
 
 /**
@@ -7723,7 +8325,8 @@ function reporting_get_count_events_validated_by_user ($filter, $period = 0,
 function reporting_get_count_events_by_criticity ($filter, $period = 0,
 	$date = 0,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_filter_search = null) {
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -7734,7 +8337,8 @@ function reporting_get_count_events_by_criticity ($filter, $period = 0,
 	
 	return events_get_count_events_by_criticity($filter, $period, $date,
 		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning, $filter_event_no_validated);
+		$filter_event_warning, $filter_event_no_validated,
+		$filter_event_filter_search);
 }
 
 /**
@@ -7751,7 +8355,8 @@ function reporting_get_count_events_by_criticity ($filter, $period = 0,
 function reporting_get_count_events_validated ($filter, $period = 0,
 	$date = 0,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false,
+	$filter_event_filter_search = null) {
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -7762,7 +8367,8 @@ function reporting_get_count_events_validated ($filter, $period = 0,
 	
 	return events_get_count_events_validated($filter, $period, $date,
 		$filter_event_validated, $filter_event_critical,
-		$filter_event_warning, $filter_event_no_validated);
+		$filter_event_warning, $filter_event_no_validated,
+		$filter_event_filter_search);
 }
 
 /**

@@ -1237,6 +1237,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				else
 					echo '<div style="left: 0px; top: 0px; text-align: center; z-index: '.$z_index.'; '.($layout_data['label_color'][0] == '#' ? 'color: '.$layout_data['label_color'].';' : '').' position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 				
+				echo "<div style='width:150px'>";
 				if ($show_links) {
 					if ((!empty($layout_data['id_agent'])
 						&& empty($layout_data['id_layout_linked']))
@@ -1412,7 +1413,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				}
 				echo "</div>";
 				
-				echo "</a>";
+				echo "</a> </div>";
 				break;
 			
 			
@@ -2304,7 +2305,8 @@ function visual_map_create_internal_name_item($label = null, $type, $image, $age
 }
 
 function visual_map_get_items_parents($idVisual) {
-	$items = db_get_all_rows_filter('tlayout_data',array('id_layout' => $idVisual));
+	$items = db_get_all_rows_sql(sprintf("SELECT * FROM tlayout_data where id_layout = %s order by label",$idVisual));
+	//$items = db_get_all_fields_in_table('tlayout_data',array('id_layout' => $idVisual));
 	if ($items == false) {
 		$items = array();
 	}

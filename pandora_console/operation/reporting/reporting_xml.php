@@ -155,8 +155,6 @@ switch ($date_mode) {
 $report = reporting_make_reporting_data($id_report, $date, $time,
 	$period, 'static');
 
-//~ html_debug_print($report); exit;
-
 //------- Removed the unused fields ------------------------------------
 unset($report['header']);
 unset($report['first_page']);

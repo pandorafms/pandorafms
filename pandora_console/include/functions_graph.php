@@ -1817,20 +1817,37 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 				if ($num_3months !== false) {
 					// All data
 					unset($filter['utimestamp']);
-					$num_all = 0;
-					$num_all += (int) db_get_value_sql('SELECT count(*) FROM tagente_datos');
-					$num_all += (int) db_get_value_sql('SELECT count(*) FROM tagente_datos_string');
-					$num_all += (int) db_get_value_sql('SELECT count(*) FROM tagente_datos_log4x');
+					
+					if (empty($filter)) {
+						$num_all = 0;
+						$num_all += (int) db_get_value_sql('SELECT count(*) FROM tagente_datos');
+						$num_all += (int) db_get_value_sql('SELECT count(*) FROM tagente_datos_string');
+						$num_all += (int) db_get_value_sql('SELECT count(*) FROM tagente_datos_log4x');
+					}
+					else {
+						$num_all = 0;
+						$num_all += (int) db_get_value_filter('count(*)', 'tagente_datos', $filter);
+						$num_all += (int) db_get_value_filter('count(*)', 'tagente_datos_string', $filter);
+						$num_all += (int) db_get_value_filter('count(*)', 'tagente_datos_log4x', $filter);
+					}
 					
 					if ($num_all !== false) {
 						$num_older = $num_all - $num_3months;
 						
 						if ($config['history_db_enabled'] == 1) {
 							// All data in common and history database
-							$num_all_w_history = 0;
-							$num_all_w_history += (int) db_get_value_sql('SELECT count(*) FROM tagente_datos', true);
-							$num_all_w_history += (int) db_get_value_sql('SELECT count(*) FROM tagente_datos_string', true);
-							$num_all_w_history += (int) db_get_value_sql('SELECT count(*) FROM tagente_datos_log4x', true);
+							if (empty($filter)) {
+								$num_all_w_history = 0;
+								$num_all_w_history += (int) db_get_value_sql('SELECT count(*) FROM tagente_datos', true);
+								$num_all_w_history += (int) db_get_value_sql('SELECT count(*) FROM tagente_datos_string', true);
+								$num_all_w_history += (int) db_get_value_sql('SELECT count(*) FROM tagente_datos_log4x', true);
+							}
+							else {
+								$num_all_w_history = 0;
+								$num_all_w_history += (int) db_get_value_filter('count(*)', 'tagente_datos', $filter, 'AND', true);
+								$num_all_w_history += (int) db_get_value_filter('count(*)', 'tagente_datos_string', $filter, 'AND', true);
+								$num_all_w_history += (int) db_get_value_filter('count(*)', 'tagente_datos_log4x', $filter, 'AND', true);
+							}
 							
 							if ($num_all_w_history !== false) {
 								$num_history = $num_all_w_history - $num_all;

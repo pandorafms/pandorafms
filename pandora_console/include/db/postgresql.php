@@ -404,7 +404,7 @@ function postgresql_encapsule_fields_with_same_name_to_instructions($field) {
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function postgresql_db_get_value_filter ($field, $table, $filter, $where_join = 'AND') {
+function postgresql_db_get_value_filter ($field, $table, $filter, $where_join = 'AND', $search_history_db = false) {
 	if (! is_array ($filter) || empty ($filter))
 		return false;
 	
@@ -427,7 +427,7 @@ function postgresql_db_get_value_filter ($field, $table, $filter, $where_join = 
 		$field, $table,
 		db_format_array_where_clause_sql ($filter, $where_join));
 	
-	$result = db_get_all_rows_sql ($sql);
+	$result = db_get_all_rows_sql ($sql, $search_history_db);
 	
 	if ($result === false)
 		return false;

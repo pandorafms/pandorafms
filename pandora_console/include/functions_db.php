@@ -271,18 +271,18 @@ function db_get_value($field, $table, $field_search = 1, $condition = 1, $search
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function db_get_value_filter ($field, $table, $filter, $where_join = 'AND') {
+function db_get_value_filter ($field, $table, $filter, $where_join = 'AND', $search_history_db = false) {
 	global $config;
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			return mysql_db_get_value_filter($field, $table, $filter, $where_join);
+			return mysql_db_get_value_filter($field, $table, $filter, $where_join, $search_history_db);
 			break;
 		case "postgresql":
-			return postgresql_db_get_value_filter($field, $table, $filter, $where_join);
+			return postgresql_db_get_value_filter($field, $table, $filter, $where_join, $search_history_db);
 			break;
 		case "oracle":
-			return oracle_db_get_value_filter($field, $table, $filter, $where_join);
+			return oracle_db_get_value_filter($field, $table, $filter, $where_join, $search_history_db);
 			break;
 	}
 }

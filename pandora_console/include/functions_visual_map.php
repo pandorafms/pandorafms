@@ -800,6 +800,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		case STATIC_GRAPH:
 		case GROUP_ITEM:
+			echo "<div style='width:150px'>";
 			if ($layoutData['image'] != null) {
 				
 				
@@ -861,6 +862,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 				echo '<br />';
 			}
 			echo io_safe_output($text);
+			echo "</div>";
 			break;
 		
 		case PERCENTILE_BAR:

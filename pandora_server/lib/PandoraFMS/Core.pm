@@ -270,7 +270,7 @@ sub get_agent_from_name ($$) {
 	
 	return undef if (! defined ($name) || $name eq '');
 	
-	return get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.nombre = ?', $name);
+	return get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE tagente.nombre = ?', safe_input($name));
 }
 
 ##########################################################################

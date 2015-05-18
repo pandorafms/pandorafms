@@ -796,6 +796,7 @@ function config_process_config () {
 	// }
 	
 	require_once ($config["homedir"] . "/include/auth/mysql.php");
+	require_once ($config["homedir"] . "/include/functions_io.php");
 	
 	
 	// Next is the directory where "/attachment" directory is placed,

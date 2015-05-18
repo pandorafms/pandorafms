@@ -120,11 +120,13 @@ function mysql_db_get_value ($field, $table, $field_search = 1, $condition = 1, 
 	if ($result === false)
 		return false;
 	
-	if ($field[0] == '`')
-		$field = str_replace ('`', '', $field);
+	$row = array_shift($result);
+	$value = array_shift($row);
 	
+	if ($value === null)
+		return false;
 	
-	return $result[0][$field];
+	return $value;
 }
 
 /** 
@@ -412,9 +414,13 @@ function mysql_db_get_value_filter ($field, $table, $filter, $where_join = 'AND'
 	if ($result === false)
 		return false;
 	
-	$fieldClean = str_replace('`', '', $field);
+	$row = array_shift($result);
+	$value = array_shift($row);
 	
-	return $result[0][$fieldClean];
+	if ($value === null)
+		return false;
+	
+	return $value;
 }
 
 /**
@@ -610,8 +616,13 @@ function mysql_db_get_value_sql($sql, $dbconnection = false) {
 	if ($result === false)
 		return false;
 	
-	foreach ($result[0] as $f)
-		return $f;
+	$row = array_shift($result);
+	$value = array_shift($row);
+	
+	if ($value === null)
+		return false;
+	
+	return $value;
 }
 
 /**

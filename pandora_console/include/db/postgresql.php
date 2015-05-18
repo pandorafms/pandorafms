@@ -72,15 +72,13 @@ function postgresql_db_get_value ($field, $table, $field_search = 1, $condition 
 	if ($result === false)
 		return false;
 	
-	if ($field[0] == '`')
-		$field = str_replace ('`', '', $field);
+	$row = array_shift($result);
+	$value = array_shift($row);
 	
-	if (!isset($result[0][$field])) {
-		return reset($result[0]);
-	}
-	else {
-		return $result[0][$field];
-	}
+	if ($value === null)
+		return false;
+	
+	return $value;
 }
 
 /** 
@@ -416,11 +414,6 @@ function postgresql_db_get_value_filter ($field, $table, $filter, $where_join = 
 	if (strstr($field, "(") === false) {
 		//It is a field.
 		$field = '"' . $field . '"';
-		$is_a_function = false;
-	}
-	else {
-		//It is a function.
-		$is_a_function = true;
 	}
 	
 	$sql = sprintf ("SELECT %s FROM \"%s\" WHERE %s LIMIT 1",
@@ -429,20 +422,13 @@ function postgresql_db_get_value_filter ($field, $table, $filter, $where_join = 
 	
 	$result = db_get_all_rows_sql ($sql, $search_history_db);
 	
-	if ($result === false)
+	$row = array_shift($result);
+	$value = array_shift($row);
+	
+	if ($value === null)
 		return false;
 	
-	if (!$is_a_function) {
-		$fieldClean = str_replace('"', '', $field);
-		$fieldClean = str_replace('`', '', $fieldClean);
-	}
-	else {
-		//Extract the name of function.
-		$temp = explode('(', $field);
-		$fieldClean = strtolower(trim($temp[0]));
-	}
-	
-	return $result[0][$fieldClean];
+	return $value;
 }
 
 /**
@@ -634,8 +620,13 @@ function postgresql_db_get_value_sql($sql, $dbconnection = false) {
 	if ($result === false)
 		return false;
 	
-	foreach ($result[0] as $f)
-		return $f;
+	$row = array_shift($result);
+	$value = array_shift($row);
+	
+	if ($value === null)
+		return false;
+	
+	return $value;
 }
 
 /**

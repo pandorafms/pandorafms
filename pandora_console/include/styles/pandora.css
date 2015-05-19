@@ -2316,7 +2316,7 @@ li.links a:hover  {
 }
 
 input#text-id_parent.ac_input, input, textarea, select {
-	background-color: #ffffff !important;
+	background-color: #ffffff;
 	border: 1px solid #cbcbcb;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;

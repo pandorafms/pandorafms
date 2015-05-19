@@ -258,6 +258,7 @@ config_check();
 				}
 				
 				$table->data[0][3] = $maintenance_img;
+				
 				// Main help icon
 				$table->data[0][4] = ui_print_help_icon ("main_help", true, '', 'images/header_help.png');
 				

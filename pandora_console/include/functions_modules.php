@@ -2071,7 +2071,7 @@ function modules_relation_exists ($id_module, $id_module_other = false) {
  */
 function modules_add_relation ($id_module_a, $id_module_b) {
 	$result = false;
-
+	
 	if (!modules_relation_exists($id_module_a, $id_module_b) && $id_module_a > 0 && $id_module_b > 0) {
 		$values = array(
 				'module_a' => $id_module_a,
@@ -2079,7 +2079,7 @@ function modules_add_relation ($id_module_a, $id_module_b) {
 			);
 		$result = db_process_sql_insert('tmodule_relationship', $values);
 	}
-
+	
 	return $result;
 }
 
@@ -2092,7 +2092,7 @@ function modules_add_relation ($id_module_a, $id_module_b) {
  */
 function modules_delete_relation ($id_relation) {
 	$result = db_process_sql_delete('tmodule_relationship', array('id' => $id_relation));
-
+	
 	return $result;
 }
 
@@ -2107,11 +2107,125 @@ function modules_change_relation_lock ($id_relation) {
 	$old_value = (int) db_get_value('disable_update', 'tmodule_relationship', 'id', $id_relation);
 	$new_value = $old_value === 1 ? 0 : 1;
 	
-	$result = db_process_sql_update('tmodule_relationship',
-									array('disable_update' => $new_value),
-									array('id' => $id_relation));
-
+	$result = db_process_sql_update(
+		'tmodule_relationship',
+		array('disable_update' => $new_value),
+		array('id' => $id_relation));
+	
 	return ($result !== false ? $new_value : $old_value);
 }
 
+
+
+function modules_get_count_datas($id_agent_module, $date_init, $date_end) {
+	$interval = modules_get_interval ($id_agent_module);
+	
+	// TODO REMOVE THE TIME IN PLANNED DOWNTIME
+	
+	if (!is_numeric($date_init)) {
+		$date_init = strtotime($date_init);
+	}
+	
+	if (!is_numeric($date_end)) {
+		$date_end = strtotime($date_end);
+	}
+	
+	$first_date = modules_get_first_contact_date($id_agent_module);
+	
+	if ($date_init < $first_date) {
+		$date_init = $first_date;
+	}
+	
+	$diff = $date_end - $date_init;
+	
+	return ($diff / $interval);
+}
+
+function modules_get_data_with_value($id_agent_module, $date_init,
+	$date_end, $value, $split_interval = false) {
+	
+	global $config;
+	
+	// TODO REMOVE THE TIME IN PLANNED DOWNTIME
+	
+	// TODO FOR OTHER KIND OF DATA
+	
+	if (!is_numeric($date_init)) {
+		$date_init = strtotime($date_init);
+	}
+	
+	if (!is_numeric($date_end)) {
+		$date_end = strtotime($date_end);
+	}
+	
+	$sql = "
+		SELECT *
+		FROM tagente_datos
+		WHERE
+			datos = " . (int)$value . "
+			AND id_agente_modulo = " . (int)$id_agent_module . "
+			AND (utimestamp >= " . $date_init . " AND utimestamp <= " . $date_end . ")";
+	
+	$data = db_get_all_rows_sql($sql,
+		$config['history_db_enabled']);
+	
+	if (empty($data)) {
+		$data = array();
+	}
+	
+	if ($split_interval) {
+		$temp = array();
+		$previous_utimestamp = false;
+		foreach ($data as $row) {
+			if ($previous_utimestamp === false) {
+				$previous_utimestamp = $row['utimestamp'];
+				
+				$temp[] = $row;
+			}
+			else {
+				$diff = $row['utimestamp'] - $previous_utimestamp;
+				
+				$interval = modules_get_interval($id_agent_module);
+				
+				if ($diff > $interval) {
+					$fake_count = (int)($diff / $interval);
+					
+					$fake = $row;
+					for ($iterator = 1; $iterator <= $fake_count; $iterator++) {
+						$fake['utimestamp'] = $previous_utimestamp + ($iterator * $interval);
+						$temp[] = $fake;
+					}
+				}
+				else {
+					$temp[] = $row;
+				}
+				
+				$previous_utimestamp = $row['utimestamp'];
+				
+				$data = $temp;
+			}
+		}
+	}
+	
+	return $data;
+}
+
+function modules_get_first_contact_date($id_agent_module) {
+	global $config;
+	
+	// TODO REMOVE THE TIME IN PLANNED DOWNTIME
+	
+	// TODO FOR OTHER KIND OF DATA
+	
+	$sql = "
+		SELECT utimestamp
+		FROM tagente_datos
+		WHERE id_agente_modulo = " . (int)($id_agent_module) . "
+		ORDER BY utimestamp ASC
+		LIMIT 1";
+	
+	$first_date = db_get_sql($sql, 0, $config['history_db_enabled']);
+	
+	return $first_date;
+}
 ?>

@@ -28,6 +28,7 @@ if (! check_acl($config['id_user'], 0, "EW")) {
 $update = get_parameter('upd_button', '');
 $default = (int) get_parameter('default', 0);
 
+
 if ($default != 0) {
 	$event_fields = io_safe_input('evento,id_agente,estado,timestamp');
 	$fields_selected = explode (',', $event_fields);

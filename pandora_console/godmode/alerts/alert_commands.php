@@ -140,7 +140,7 @@ if (is_ajax ()) {
 						$rfield = html_print_select($fields_value_select,
 							'field'.$i.'_recovery_value', '', '', '', 0, true, false, false, 'fields_recovery');
 					}
-					else{
+					else {
 						$ffield = html_print_textarea ('field' . $i . '_value',1, 1, $fv[0],
 											'style="min-height:40px" class="fields"', true);
 						$rfield = html_print_textarea ('field' . $i . '_recovery_value', 1, 1, $fv[0],

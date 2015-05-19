@@ -24,45 +24,49 @@ $id_report = (int) get_parameter ('id');
 
 if (! $id_report) {
 	db_pandora_audit("HACK Attempt",
-		"Trying to access graph viewer withoud ID");
+		"Trying to access report viewer withoud ID");
 	include ("general/noaccess.php");
 	return;
 }
 
-// Get Report record (to get id_group)
-$report = db_get_row ('treport', 'id_report', $id_report);
+// Include with the functions to calculate each kind of report.
+require_once ($config['homedir'] . '/include/functions_reporting.php');
+require_once ($config['homedir'] . '/include/functions_reporting_html.php');
+require_once ($config['homedir'] . '/include/functions_groups.php');
+enterprise_include_once("include/functions_reporting.php");
 
-// Check ACL on the report to see if user has access to the report.
-if (empty($report) || ! check_acl ($config['id_user'], $report['id_group'], "RR")) {
-	db_pandora_audit("ACL Violation","Trying to access graph reader");
+
+if (!reporting_user_can_see_report($id_report)) {
+	db_pandora_audit("ACL Violation", "Trying to access report viewer");
 	include ("general/noaccess.php");
 	exit;
 }
-
-// Include with the functions to calculate each kind of report.
-require_once ($config['homedir'] . '/include/functions_reporting.php');
-require_once ($config['homedir'] . '/include/functions_groups.php');
-
-enterprise_include("include/functions_reporting.php");
-
-$pure = get_parameter('pure',0);
 
 // Get different date to search the report.
 $date = (string) get_parameter ('date', date(DATE_FORMAT));
 $time = (string) get_parameter ('time', date(TIME_FORMAT));
 
 $datetime = strtotime ($date . ' ' . $time);
-$report["datetime"] = $datetime;
 
 // Calculations in order to modify init date of the report
 $date_init_less = strtotime(date('Y-m-j')) - SECONDS_1DAY;
 $date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
 $time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
-$datetime_init = strtotime ($date_init.' '.$time_init);
+$datetime_init = strtotime ($date_init . ' ' . $time_init);
 $enable_init_date = get_parameter('enable_init_date', 0);
+$pure = (int)get_parameter('pure', 0);
 
-// Standard header
+$period = null;
+// Calculate new inteval for all reports
+if ($enable_init_date) {
+	if ($datetime_init >= $datetime) {
+		$datetime_init = $date_init_less;
+	}
+	$period = $datetime - $datetime_init;
+}
 
+
+//------------------- INIT HEADER --------------------------------------
 $url = "index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report&date=$date&time=$time&pure=$pure";
 
 $options = array();
@@ -120,23 +124,30 @@ if ($config['metaconsole'] == 1 and defined('METACONSOLE')) {
 	ui_meta_print_header(__('Reporting'), "", $options);
 }
 else {
-	ui_print_page_header (__('Reporting'). " &raquo;  ". __('Custom reporting'). " - ".$report["name"],
+	ui_print_page_header (
+		__('Reporting') .
+		" &raquo;  " .
+		__('Custom reporting') .
+		" - " .
+		reporting_get_name($id_report),
 		"images/op_reporting.png", false, "", false, $options);
 }
+//------------------- END HEADER ---------------------------------------
 
-if ($enable_init_date) {
-	if ($datetime_init > $datetime) {
-		ui_print_error_message ("Invalid date selected. Initial date must be before end date.");
-	}
-}
 
+
+
+
+
+
+//------------------------ INIT FORM -----------------------------------
 $table->id = 'controls_table';
 $table->width = '99%';
 $table->class = 'databox';
-if (defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	$table->width = '100%';
 	$table->class = 'databox data';
-
+	
 	$table->head[0] = __('View Report');
 	$table->head_colspan[0] = 5;
 	$table->headstyle[0] = 'text-align: center';
@@ -172,14 +183,14 @@ if (defined("METACONSOLE")) {
 	else {
 		$table->data[0][1] = '<div style="">' . __("Name: ") . $report['name'] . '</div>';
 	}
-
+	
 	$table->data[0][1] .= '<div style=" width:100%;">'.__('Set initial date') . html_print_checkbox('enable_init_date', 1, $enable_init_date, true);
 	$html_enterprise = enterprise_hook('reporting_print_button_PDF', array($id_report));
 	if ($html_enterprise !== ENTERPRISE_NOT_HOOK) {
 		$table->data[0][1] .= $html_enterprise;
 	}
 	$table->data[0][1] .= '</div>';
-
+	
 	$table->data[1][1] = '<div style="">' . __('From') . ': ';
 	$table->data[1][1] .= html_print_input_text ('date_init', $date_init, '', 12, 10, true). ' ';
 	$table->data[1][1] .= html_print_input_text ('time_init', $time_init, '', 10, 7, true). ' </div>';
@@ -192,21 +203,23 @@ if (defined("METACONSOLE")) {
 	$table->data[1][2] .= html_print_input_text ('time', $time, '', 10, 7, true) . ' ';
 	$table->data[1][2] .= html_print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true) . ' </div>';
 }
-else{
-	if ($report['description'] != '') {
-		$table->data[0][1] = '<div style="float:left">'.$report['description'].'</div>';
+else {
+	if (reporting_get_description($id_report)) {
+		$table->data[0][1] = '<div style="float:left">' .
+			reporting_get_description($id_report) . '</div>';
 	}
 	else {
-		$table->data[0][1] = '<div style="float:left">'.$report['name'].'</div>';
+		$table->data[0][1] = '<div style="float:left">' .
+			reporting_get_name($id_report) . '</div>';
 	}
-
+	
 	$table->data[0][1] .= '<div style="text-align:right; width:100%; margin-right:50px">'.__('Set initial date') . html_print_checkbox('enable_init_date', 1, $enable_init_date, true);
 	$html_enterprise = enterprise_hook('reporting_print_button_PDF', array($id_report));
 	if ($html_enterprise !== ENTERPRISE_NOT_HOOK) {
 		$table->data[0][1] .= $html_enterprise;
 	}
 	$table->data[0][1] .= '</div>';
-
+	
 	$table->data[1][1] = '<div style="float:left;padding-top:3px;">' . __('From') . ': </div>';
 	$table->data[1][1] .= html_print_input_text ('date_init', $date_init, '', 12, 10, true). ' ';
 	$table->data[1][1] .= html_print_input_text ('time_init', $time_init, '', 10, 7, true). ' ';
@@ -218,10 +231,37 @@ else{
 	
 }
 
-echo '<form method="post" action="'.$url.'&pure='.$config["pure"].'" style="margin-right: 0px;">';
+echo '<form method="post" action="' . $url . '&pure=' . $config["pure"] . '" style="margin-right: 0px;">';
 html_print_table ($table);
 html_print_input_hidden ('id_report', $id_report);
 echo '</form>';
+//------------------------ END FORM ------------------------------------
+
+if ($enable_init_date) {
+	if ($datetime_init > $datetime) {
+		ui_print_error_message(
+			__("Invalid date selected. Initial date must be before end date."));
+	}
+}
+
+$report = reporting_make_reporting_data($id_report, $date, $time, $period, 'dinamic');
+reporting_html_print_report($report);
+
+echo "<br>";
+
+
+//----------------------------------------------------------------------
+
+
+// Get Report record (to get id_group)
+$report = db_get_row ('treport', 'id_report', $id_report);
+$report["datetime"] = $datetime;
+
+
+
+
+
+
 
 // The rowspan of the first row is only 2 in controls table. Why is used the same code here and in the items??
 $table->rowspan[0][0] = 1;
@@ -310,68 +350,6 @@ $(document).ready (function () {
 if ($datetime === false || $datetime == -1) {
 	ui_print_error_message(__('Invalid date selected'));
 	return;
-}
-
-// TODO: Evaluate if it's better to render blocks when are calculated
-// (enabling realtime flush) or if it's better to wait report to be
-// finished before showing anything (this could break the execution
-// by overflowing the running PHP memory on HUGE reports).
-
-
-$table->size = array ();
-$table->style = array ();
-$table->width = '98%';
-$table->class = 'databox';
-$table->rowclass = array ();
-$table->rowclass[0] = 'datos3';
-
-$report["group_name"] = groups_get_name ($report['id_group']);
-
-switch ($config["dbtype"]) {
-	case "mysql":
-		$contents = db_get_all_rows_field_filter ("treport_content",
-			"id_report", $id_report, "`order`");
-		break;
-	case "postgresql":
-		$contents = db_get_all_rows_field_filter ("treport_content",
-			"id_report", $id_report, '"order"');
-		break;
-	case "oracle":
-		$contents = db_get_all_rows_field_filter ("treport_content",
-			"id_report", $id_report, '"order"');
-		break;
-}
-if ($contents === false) {
-	return;
-}
-
-foreach ($contents as $content) {
-	$table->data = array ();
-	$table->head = array ();
-	$table->style = array ();
-	$table->colspan = array ();
-	$table->rowstyle = array ();
-	
-	// Calculate new inteval for all reports
-	if ($enable_init_date){
-		if ($datetime_init >= $datetime) {
-			$datetime_init = $date_init_less;
-		}
-		$new_interval = $report['datetime'] - $datetime_init;
-		$content['period'] = $new_interval;
-	}
-	
-	reporting_render_report_html_item ($content, $table, $report);
-	
-	if ($content['type'] == 'agent_module')
-		echo '<div style="width: 99%; overflow: auto;">';
-	
-	html_print_table ($table);
-	
-	if ($content['type'] == 'agent_module')
-		echo '</div>';
-	
-	flush ();
 }
 
 enterprise_hook('close_meta_frame');

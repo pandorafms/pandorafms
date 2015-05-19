@@ -58,6 +58,7 @@ $group = 0;
 $group_by_agent = 0;
 $order_uptodown = 0;
 $show_resume = 0;
+$show_address_agent = 0;
 $top_n = 0;
 $top_n_value = 10;
 $exception_condition = REPORT_EXCEPTION_CONDITION_EVERYTHING;
@@ -87,6 +88,7 @@ $inventory_modules = array();
 $date = null;
 // Only avg is selected by default for the simple graphs
 $only_avg = true;
+$time_compare_overlapped = false;
 
 //Added for events items
 $filter_event_validated = false;
@@ -101,6 +103,9 @@ $event_graph_validated_vs_unvalidated = false;
 $netflow_filter = 0;
 $max_values = 0;
 $resolution = 0;
+
+//Others
+$filter_search = "";
 
 switch ($action) {
 	case 'new':
@@ -128,6 +133,7 @@ switch ($action) {
 			case 'exception':
 			case 'general':
 			case 'network_interfaces_report':
+			case 'availability':
 				$get_data_editor = true;
 				break;
 			default:
@@ -187,6 +193,9 @@ switch ($action) {
 						$projection_period = $item['top_n_value'];
 						$period_pg = $item['period'];
 					}
+					
+					// HACK it is saved in show_graph field.
+					$time_compare_overlapped  = $item['show_graph'];
 					break;
 				case 'prediction_date':
 					$description = $item['description'];
@@ -406,6 +415,8 @@ switch ($action) {
 					$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
 					$event_graph_by_criticity = $style['event_graph_by_criticity'];
 					$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
+					
+					$filter_search = $style['event_filter_search'];
 					break;
 				case 'event_report_module':
 					$description = $item['description'];
@@ -419,7 +430,15 @@ switch ($action) {
 					$period = $item['period'];
 					$order_uptodown = $item['order_uptodown'];
 					$show_resume = $item['show_resume'];
-					$show_graph = $item['show_graph'];
+					break;
+				case 'availability':
+					$description = $item['description'];
+					$period = $item['period'];
+					$order_uptodown = $item['order_uptodown'];
+					$show_resume = $item['show_resume'];
+					// HACK it is saved in show_graph field.
+					// Show interfaces instead the modules
+					$show_address_agent = $item['show_graph'];
 					break;
 				case 'group_report':
 					$description = $item['description'];
@@ -1040,6 +1059,14 @@ else
 				?>
 			</td>
 		</tr>
+		<tr id="row_time_compare_overlapped" style="" class="datos">
+			<td><?php echo __('Time compare (Overlapped)');?></td>
+			<td>
+				<?php
+				html_print_checkbox('time_compare_overlapped', 1, $time_compare_overlapped);
+				?>
+			</td>
+		</tr>
 		<tr id="row_only_avg" style="" class="datos">
 			<td><?php echo __('Only average');?></td>
 			<td><?php html_print_checkbox('only_avg', 1, $only_avg);?></td>
@@ -1080,6 +1107,20 @@ else
 			<td><?php echo __('Show graph');?></td>
 			<td><?php html_print_select ($show_graph_options, 'combo_graph_options', $show_graph);?></td>
 			
+		</tr>
+		<tr id="row_show_address_agent" style="" class="datos">
+			<td>
+				<?php
+				echo __('Show address instead module name.') .
+					ui_print_help_tip(__('Show the main address of agent.'), true);
+				?>
+			</td>
+			<td>
+				<?php
+				html_print_checkbox('checkbox_show_address_agent', 1,
+					$show_address_agent);
+				?>
+			</td>
 		</tr>
 		<tr id="row_show_resume" style="" class="datos">
 			<td><?php echo __('Show resume') . ui_print_help_tip(__('Show a resume table with max, min, average of total modules on the report bottom'), true);?></td>
@@ -1154,13 +1195,21 @@ else
 				?>
 			</td>
 		</tr>
+		<tr id="row_filter_search" style="" class="datos">
+			<td><?php echo __('Free search');?></td>
+			<td>
+				<?php
+				html_print_input_text('filter_search', $filter_search);
+				?>
+			</td>
+		</tr>
 	</tbody>
 </table>
 <br />
 <br />
 <?php
 print_SLA_list('95%', $action, $idItem);
-print_General_list('95%', $action, $idItem);
+print_General_list('95%', $action, $idItem, $type);
 echo '<div class="action-buttons" style="width: 100%">';
 if ($action == 'new') {
 	html_print_submit_button(__('Create item'), 'create_item', false, 'class="sub wand"');
@@ -1339,7 +1388,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 	<?php
 }
 
-function print_General_list($width, $action, $idItem = null) {
+function print_General_list($width, $action, $idItem = null, $type = 'general') {
 	global $config;
 	global $meta;
 	
@@ -1357,11 +1406,24 @@ function print_General_list($width, $action, $idItem = null) {
 	<table class="databox" id="general_list" border="0" cellpadding="4" cellspacing="4" width="100%">
 		<thead>
 			<tr>
-				<th class="header" scope="col"><?php echo __('Agent');?></th>
-				<th class="header" scope="col"><?php echo __('Module');?></th>
-				<th class="header" scope="col"><?php echo __('Operation') .
-					ui_print_help_tip(__("Please be careful, when the module have diferent intervals in their life, the summatory maybe get bad result."), true);?></th>
-				<th class="header" scope="col"><?php echo __('Action');?></th>
+				<?php
+				if ($type == "availability") {
+					?>
+					<th class="header" scope="col"><?php echo __('Agent');?></th>
+					<th class="header" scope="col"><?php echo __('Module');?></th>
+					<th class="header" scope="col"><?php echo __('Action');?></th>
+					<?php
+				}
+				else {
+				?>
+					<th class="header" scope="col"><?php echo __('Agent');?></th>
+					<th class="header" scope="col"><?php echo __('Module');?></th>
+					<th class="header" scope="col"><?php echo __('Operation') .
+						ui_print_help_tip(__("Please be careful, when the module have diferent intervals in their life, the summatory maybe get bad result."), true);?></th>
+					<th class="header" scope="col"><?php echo __('Action');?></th>
+				<?php
+				}
+				?>
 			</tr>
 		</thead>
 			<?php
@@ -1406,14 +1468,27 @@ function print_General_list($width, $action, $idItem = null) {
 							$server_name_element .= ' (' . $server_name . ')';
 						
 						
-						echo '<tr id="general_' . $item['id'] . '" style="" class="datos">
+						if ($type == "availability") {
+							echo '<tr id="general_' . $item['id'] . '" style="" class="datos">
 								<td>' . printSmallFont($nameAgent) . $server_name_element .  '</td>
 								<td>' . printSmallFont($nameModule) . '</td>
-								<td>' . printSmallFont($operation[$item['operation']]) . '</td>
 								<td style="text-align: center;">
 									<a href="javascript: deleteGeneralRow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>
 							</tr>';
+						}
+						else {
+							echo '<tr id="general_' . $item['id'] . '" style="" class="datos">
+								<td>' . printSmallFont($nameAgent) . $server_name_element .  '</td>
+								<td>' . printSmallFont($nameModule) . '</td>
+								<td>' .
+									printSmallFont($operation[$item['operation']]) .
+								'</td>
+								<td style="text-align: center;">
+									<a href="javascript: deleteGeneralRow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
+								</td>
+							</tr>';
+						}
 						
 						
 						if ($meta) {
@@ -1427,7 +1502,13 @@ function print_General_list($width, $action, $idItem = null) {
 						<tr id="row" style="display: none;" class="datos">
 							<td class="agent_name"></td>
 							<td class="module_name"></td>
-							<td class="operation_name"></td>
+							<?php
+							if ($type != "availability") {
+							?>
+								<td class="operation_name"></td>
+							<?php
+							}
+							?>
 							<td style="text-align: center;"><a class="delete_button" href="javascript: deleteGeneralRow(0);"><?php html_print_image("images/cross.png", false); ?></a></td>
 						</tr>
 					</tbody>
@@ -1459,14 +1540,20 @@ function print_General_list($width, $action, $idItem = null) {
 									<option value="0"><?php echo __('Select an Agent first'); ?></option>
 								</select>
 							</td>
-							<td>
-								<?php
-								html_print_select($operation,
-									'id_operation_module_general', 0,
-									false, '', '', false, false, true,
-									'width: 200px', false);
-								?>
-							</td>
+							<?php
+							if ($type !== "availability") {
+							?>
+								<td>
+									<?php
+									html_print_select($operation,
+										'id_operation_module_general', 0,
+										false, '', '', false, false, true,
+										'width: 200px', false);
+									?>
+								</td>
+							<?php
+							}
+							?>
 							<td style="text-align: center;"><a href="javascript: addGeneralRow();"><?php html_print_image("images/disk.png", false); ?></a></td>
 						</tr>
 					</tbody>
@@ -1839,7 +1926,13 @@ function addGeneralRow() {
 	var idAgent = $("input[name=id_agent_general]").val();
 	var serverId = $("input[name=id_server]").val();
 	var idModule = $("#id_agent_module_general").val();
-	var operation = $("#id_operation_module_general").val();
+	var operation;
+	if ($("#id_operation_module_general").length) {
+		operation = $("#id_operation_module_general").val();
+	}
+	else {
+		operation = "";
+	}
 	var nameModule = $("#id_agent_module_general :selected").text();
 	var nameOperation = $("#id_operation_module_general :selected").text();
 	
@@ -1960,9 +2053,11 @@ function chooseType() {
 	$("#general_list").hide();
 	$("#row_order_uptodown").hide();
 	$("#row_show_resume").hide();
+	$("#row_show_address_agent").hide();
 	$("#row_show_graph").hide();
 	$("#row_max_min_avg").hide();
 	$("#row_only_avg").hide();
+	$("#row_time_compare_overlapped").hide();
 	$("#row_quantity").hide();
 	$("#row_exception_condition_value").hide();
 	$("#row_exception_condition").hide();
@@ -1984,6 +2079,7 @@ function chooseType() {
 	$("#row_max_values").hide();
 	$("#row_resolution").hide();
 	$("#row_last_value").hide();
+	$("#row_filter_search").hide();
 	
 	// SLA list default state
 	$("#sla_list").hide();
@@ -2012,8 +2108,11 @@ function chooseType() {
 			$("#row_event_graph_by_user").show();
 			$("#row_event_graph_by_criticity").show();
 			$("#row_event_graph_by_validated").show();
+			
+			$("#row_filter_search").show();
 			break;
 		case 'simple_graph':
+			$("#row_time_compare_overlapped").show();
 			$("#row_only_avg").show();
 			// The break hasn't be forgotten, this element
 			// only should be shown on the simple graphs.
@@ -2024,6 +2123,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
+			$("#row_time_compare_overlapped").show();
 			break;
 		case 'projection_graph':
 			$("#row_description").show();
@@ -2263,6 +2363,15 @@ function chooseType() {
 				$("#row_period").hide();
 				$("input[name='last_value']").prop("checked", true);
 			}
+			break;
+		case 'availability':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#general_list").show();
+			$("#row_order_uptodown").show();
+			$("#row_show_address_agent").show();
+			$("#row_show_in_two_columns").show();
+			$("#row_show_resume").show();
 			break;
 		case 'group_report':
 			$("#row_group").show();

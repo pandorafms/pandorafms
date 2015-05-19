@@ -57,7 +57,7 @@ else {
 
 $table->width = '90%';
 
-if(defined('METACONSOLE')){
+if(defined('METACONSOLE')) {
 	$table->width = '100%';
 	$table->class = 'databox data';
 	$table->head[0] = __('Edit event responses');

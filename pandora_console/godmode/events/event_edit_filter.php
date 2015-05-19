@@ -159,7 +159,8 @@ $table->class = "databox";
 $table->style[0] = 'vertical-align: top;';
 
 $table->valign[1] = 'top';
-if (defined('METACONSOLE')){
+
+if (defined('METACONSOLE')) {
 	$table->width = '100%';
 	$table->border = 0;
 	$table->cellspacing = 3;
@@ -288,7 +289,7 @@ $add_without_tag_disabled = empty($tags_select_without);
 $remove_without_tag_disabled = empty($tag_without_temp);
 
 
-if (defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	
 	$table->data[13][0] = '<b>' . __('Events with following tags') . '</b>';
 	$table->data[13][0] .= '<br>' . html_print_select ($tags_select_with, 'select_with',

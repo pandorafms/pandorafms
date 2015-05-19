@@ -21,7 +21,7 @@ my $freemem=`cat /proc/meminfo | grep 'MemFree' | awk '{ print \$2 } '`;
 my $cached=`cat /proc/meminfo | grep '^Cached:' | awk '{ print \$2 } '`;
 my $cachedswap=`cat /proc/meminfo | grep '^SwapCached:' | awk '{ print \$2 }'`;
 my $available=$freemem+$cached+$cachedwap;
-my $available_percent = floor(($available / $STOTAL)*100);
+my $available_percent = floor(($available / $TOTAL)*100);
 
 
 print "<module>\n";

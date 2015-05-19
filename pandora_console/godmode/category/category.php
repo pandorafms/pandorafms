@@ -43,7 +43,7 @@ if(defined('METACONSOLE')) {
 			'text' => '<a href="index.php?sec=advanced&sec2=godmode/category/category&tab=list&pure='.(int)$config['pure'].'">' . 
 				html_print_image ("images/list.png", true, array ("title" => __('List categories'))) .'</a>'));
 }
-else{
+else {
 	$buttons = array(
 		'list' => array(
 			'active' => false,
@@ -132,6 +132,7 @@ if (!empty($result)) {
 		$iterator++;
 		
 		$data = array ();
+		
 		if(defined('METACONSOLE')){
 			$data[0] = "<a href='index.php?sec=advanced&sec2=godmode/category/edit_category&action=update&id_category=" . $category["id"] . "&pure=" . (int)$config['pure'] . "'>" . $category["name"] . "</a>";  
 			$data[1] = "<a href='index.php?sec=advanced&sec2=godmode/category/edit_category&action=update&id_category=".$category["id"] . "&pure=" . (int)$config['pure'] . "'>" . html_print_image("images/config.png", true, array("title" => "Edit")) . "</a>&nbsp;&nbsp;";

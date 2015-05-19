@@ -97,11 +97,11 @@ if ($idReport != 0) {
 				$edit = true;
 			break;
 	}
-
+	
 	if (! $edit) {
 		// The user that created the report should can delete it. Despite its permissions.
 		$delete_report_bypass = false;
-
+		
 		if ($action == 'delete_report') {
 			if ($config['id_user'] == $report['id_user'] || is_user_admin ($config["id_user"])) {
 				$delete_report_bypass = true;
@@ -342,14 +342,14 @@ switch ($action) {
 					}
 					break;
 			}
-
+			
 			if (! $delete) {
 				db_pandora_audit("ACL Violation",
 					"Trying to access report builder deletion");
 				require ("general/noaccess.php");
 				exit;
 			}
-
+			
 			$result = reports_delete_report ($idReport);
 			if ($result !== false)
 				db_pandora_audit("Report management", "Delete report #$idReport");
@@ -402,7 +402,7 @@ switch ($action) {
 			html_print_table($table_aux);
 			echo "</form>";
 		}
-			
+		
 		
 		ui_require_jquery_file ('pandora.controls');
 		ui_require_jquery_file ('ajaxqueue');
@@ -453,8 +453,14 @@ switch ($action) {
 			$filter['metaconsole'] = 0;
 		
 		$reports = reports_get_reports ($filter,
-			array ('name', 'id_report', 'description', 'private',
-				'id_user', 'id_group', 'non_interactive'), $return_all_group, 'RR', $group, $strict_user);
+			array (
+				'name',
+				'id_report',
+				'description',
+				'private',
+				'id_user',
+				'id_group',
+				'non_interactive'), $return_all_group, 'RR', $group, $strict_user);
 		
 		$table->width = '0px';
 		if (sizeof ($reports)) {
@@ -557,7 +563,8 @@ switch ($action) {
 				if (enterprise_hook ('load_custom_reporting_2') !== ENTERPRISE_NOT_HOOK) {
 					$next = 7;
 				}
-
+				
+				
 				//Admin options only for RM flag
 				if (check_acl ($config['id_user'], 0, "RM")) {
 					
@@ -688,7 +695,7 @@ switch ($action) {
 		}
 		break;
 	case 'update':
-	case 'save': 
+	case 'save':
 		switch ($activeTab) {
 			case 'main':
 				$reportName = get_parameter('name');
@@ -768,12 +775,13 @@ switch ($action) {
 							$first_page = $config['custom_report_front_firstpage'];
 							$footer = $config['custom_report_front_footer'];							
 							
-						} else {
-						
+						}
+						else {
+							
 							$start_url = ui_get_full_url(false, false, false, false);
 							$first_page = "&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;img&#x20;src=&quot;" . $start_url . "/images/pandora_report_logo.png&quot;&#x20;alt=&quot;&quot;&#x20;width=&quot;800&quot;&#x20;/&gt;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&amp;nbsp;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;span&#x20;style=&quot;font-size:&#x20;xx-large;&quot;&gt;&#40;_REPORT_NAME_&#41;&lt;/span&gt;&lt;/p&gt;&#x0d;&#x0a;&lt;p&#x20;style=&quot;text-align:&#x20;center;&quot;&gt;&lt;span&#x20;style=&quot;font-size:&#x20;large;&quot;&gt;&#40;_DATETIME_&#41;&lt;/span&gt;&lt;/p&gt;";
 							$logo = $header = $footer = null;
-						
+							
 						}
 						
 						$idOrResult = db_process_sql_insert('treport',
@@ -813,7 +821,8 @@ switch ($action) {
 				break;
 			case 'item_editor':
 				$resultOperationDB = null;
-				$report = db_get_row_filter('treport', array('id_report' => $idReport));
+				$report = db_get_row_filter('treport',
+					array('id_report' => $idReport));
 				
 				$reportName = $report['name'];
 				$idGroupReport = $report['id_group'];
@@ -855,6 +864,8 @@ switch ($action) {
 								$values['top_n'] = get_parameter('combo_sla_sort_options',0);
 								$values['top_n_value'] = get_parameter('quantity');
 								$values['text'] = get_parameter('text');
+								$values['show_graph'] = get_parameter('combo_graph_options');
+								
 								$good_format = true;
 								break;
 							case 'inventory':
@@ -886,11 +897,27 @@ switch ($action) {
 								$values['top_n_value'] = get_parameter('max_values');
 								$good_format = true;
 								break;
+							case 'availability':
+								// HACK it is saved in show_graph field.
+								// Show interfaces instead the modules
+								$values['show_graph'] =
+									get_parameter('checkbox_show_address_agent');
+								$good_format = true;
+								break;
+							case 'simple_graph':
+							case 'simple_baseline_graph':
+								// HACK it is saved in show_graph field.
+								$values['show_graph'] =
+									(int)get_parameter('time_compare_overlapped');
+								$values['period'] = get_parameter('period');
+								$good_format = true;
+								break;
 							default:
 								$values['period'] = get_parameter('period');
 								$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);
 								$values['top_n_value'] = get_parameter('quantity');
 								$values['text'] = get_parameter('text');
+								$values['show_graph'] = get_parameter('combo_graph_options');
 								$good_format = true;
 						}
 						
@@ -922,7 +949,6 @@ switch ($action) {
 						$values['order_uptodown'] = get_parameter ('radiobutton_order_uptodown');
 						$values['exception_condition'] = (int)get_parameter('exception_condition', 0);
 						$values['exception_condition_value'] = get_parameter('exception_condition_value');
-						$values['show_graph'] = get_parameter('combo_graph_options');
 						$values['id_module_group'] = get_parameter('combo_modulegroup');
 						$values['id_group'] = get_parameter ('combo_group');
 						$values['server_name'] = get_parameter ('server_name');
@@ -947,6 +973,8 @@ switch ($action) {
 						$event_graph_by_user_validator = get_parameter('event_graph_by_user_validator', 0);
 						$event_graph_by_criticity = get_parameter('event_graph_by_criticity', 0);
 						$event_graph_validated_vs_unvalidated = get_parameter('event_graph_validated_vs_unvalidated', 0);
+						
+						$event_filter_search = get_parameter('filter_search', '');
 						
 						// If metaconsole is activated
 						if ($config['metaconsole'] == 1 && defined('METACONSOLE')) {
@@ -1014,6 +1042,13 @@ switch ($action) {
 								$style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
 								$style['event_graph_by_criticity'] = $event_graph_by_criticity;
 								$style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
+								
+								switch ($values['type']) {
+									case 'event_report_group':
+										$style['event_filter_search'] =
+											$event_filter_search;
+										break;
+								}
 								break;
 							case 'simple_graph':
 								// Warning. We are using this column to hold this value to avoid
@@ -1065,6 +1100,8 @@ switch ($action) {
 								$values['top_n'] = get_parameter('combo_sla_sort_options',0);
 								$values['top_n_value'] = get_parameter('quantity');
 								$values['text'] = get_parameter('text');
+								$values['show_graph'] = get_parameter('combo_graph_options');
+								
 								$good_format = true;
 								break;
 							case 'inventory':
@@ -1102,11 +1139,28 @@ switch ($action) {
 								$values['top_n_value'] = get_parameter('max_values');
 								$good_format = true;
 								break;
+							case 'availability':
+								$values['period'] = get_parameter('period');
+								// HACK it is saved in show_graph field.
+								// Show interfaces instead the modules
+								$values['show_graph'] =
+									get_parameter('checkbox_show_address_agent');
+								$good_format = true;
+								break;
+							case 'simple_graph':
+							case 'simple_baseline_graph':
+								// HACK it is saved in show_graph field.
+								$values['show_graph'] =
+									(int)get_parameter('time_compare_overlapped');
+								$values['period'] = get_parameter('period');
+								$good_format = true;
+								break;
 							default: 
 								$values['period'] = get_parameter('period');
 								$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);
 								$values['top_n_value'] = get_parameter('quantity');
 								$values['text'] = get_parameter('text');
+								$values['show_graph'] = get_parameter('combo_graph_options');
 								$good_format = true;
 						}
 						
@@ -1154,7 +1208,6 @@ switch ($action) {
 						$values['order_uptodown'] = get_parameter ('radiobutton_order_uptodown',0);
 						$values['exception_condition'] = (int)get_parameter('radiobutton_exception_condition', 0);
 						$values['exception_condition_value'] = get_parameter('exception_condition_value');
-						$values['show_graph'] = get_parameter('combo_graph_options');
 						$values['id_module_group'] = get_parameter('combo_modulegroup');
 						$values['id_group'] = get_parameter ('combo_group');
 						$values['server_name'] = get_parameter ('server_name');
@@ -1218,6 +1271,9 @@ switch ($action) {
 								$event_graph_by_user_validator = get_parameter('event_graph_by_user_validator', 0);
 								$event_graph_by_criticity = get_parameter('event_graph_by_criticity', 0);
 								$event_graph_validated_vs_unvalidated = get_parameter('event_graph_validated_vs_unvalidated', 0);
+								
+								$event_filter_search = get_parameter('filter_search', '');
+								
 								//Added for events items
 								$style['filter_event_no_validated'] = $filter_event_no_validated;
 								$style['filter_event_validated'] = $filter_event_validated;
@@ -1228,6 +1284,14 @@ switch ($action) {
 								$style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
 								$style['event_graph_by_criticity'] = $event_graph_by_criticity;
 								$style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
+								
+								switch ($values['type']) {
+									case 'event_report_group':
+										$style['event_filter_search'] =
+											$event_filter_search;
+										break;
+								}
+								
 								break;
 							case 'simple_graph':
 								// Warning. We are using this column to hold this value to avoid
@@ -1592,7 +1656,7 @@ switch ($action) {
 			switch ($activeTab) {
 				case 'main':
 					$buttons['list_reports']['active'] = true;
-					$subsection = ' &raquo; '.__('Custom reporting');
+					$subsection = ' &raquo; ' . __('Custom reporting');
 					break;
 				default:
 					$subsection = reporting_enterprise_add_subsection_main($activeTab, $buttons);

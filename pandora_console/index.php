@@ -153,11 +153,12 @@ $change_pass = get_parameter_post('renew_password', 0);
 
 if ($change_pass == 1) {
 	
+	$password_old = (string) get_parameter_post ('old_password', '');
 	$password_new = (string) get_parameter_post ('new_password', '');
 	$password_confirm = (string) get_parameter_post ('confirm_new_password', '');
 	$id = (string) get_parameter_post ('login', '');
 	
-	$changed_pass = login_update_password_check ($password_new, $password_confirm, $id);
+	$changed_pass = login_update_password_check ($password_old, $password_new, $password_confirm, $id);
 }
 
 $searchPage = false;

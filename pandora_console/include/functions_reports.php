@@ -82,7 +82,10 @@ function reports_get_report ($id_report, $filter = false, $fields = false) {
  *
  * @return array An array with all the reports the user can view.
  */
-function reports_get_reports ($filter = false, $fields = false, $returnAllGroup = true, $privileges = 'RR', $group = false, $strict_user) {
+function reports_get_reports ($filter = false, $fields = false,
+	$returnAllGroup = true, $privileges = 'RR', $group = false,
+	$strict_user = false) {
+	
 	global $config;
 	
 	if (! is_array ($filter))
@@ -578,7 +581,8 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 		'name' => __('Top n'));
 	$types['network_interfaces_report'] = array('optgroup' => __('Grouped'),
 		'name' => __('Network interfaces'));
-	
+	$types['availability'] = array('optgroup' => __('Grouped'),
+		'name' => __('Availability'));
 	
 	
 	$types['text'] = array('optgroup' => __('Text/HTML '),

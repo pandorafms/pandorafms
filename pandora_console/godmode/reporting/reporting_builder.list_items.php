@@ -77,7 +77,7 @@ else {
 		$agents[$row['id_agente']] = $row['nombre'];
 	}
 	
-	switch ($config['dbtype']){
+	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":
 			$rows = db_get_all_rows_sql('

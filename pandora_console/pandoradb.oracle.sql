@@ -23,8 +23,7 @@
 
 -- Pandora schema creation script
 -- Triggers must end with two semicolons because Pandora installer need it 
-
-CREATE OR REPLACE FUNCTION UNIX_TIMESTAMP (oracletime IN DATE DEFAULT SYSDATE) RETURN INTEGER AS unixtime INTEGER; BEGIN unixtime := (oracletime - to_date('19700101','YYYYMMDD')) * 86400; RETURN unixtime; END;;
+CREATE OR REPLACE FUNCTION UNIX_TIMESTAMP (oracletime IN DATE DEFAULT NULL ) RETURN INTEGER AS utcdate DATE; unixtime INTEGER; BEGIN IF (oracletime IS NULL) THEN utcdate := SYS_EXTRACT_UTC(SYSTIMESTAMP); ELSE utcdate := oracletime; END IF; unixtime := (utcdate - to_date('19700101','YYYYMMDD')) * 86400; RETURN unixtime; END;;
 CREATE OR REPLACE FUNCTION NOW RETURN TIMESTAMP AS t_now TIMESTAMP; BEGIN SELECT LOCALTIMESTAMP INTO t_now FROM dual; RETURN t_now; END;;
 
 -- Procedure for retrieve PK information after an insert statement

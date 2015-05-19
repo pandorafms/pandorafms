@@ -97,6 +97,9 @@ function reporting_html_header(&$table, $mini, $title, $subtitle,
 
 function reporting_html_print_report($report, $mini = false) {
 	
+	
+	
+	
 	foreach ($report['contents'] as $key => $item) {
 		$table->size = array ();
 		$table->style = array ();
@@ -1206,7 +1209,7 @@ function reporting_html_group_configuration($table, $item) {
 	foreach ($item['data'] as $agent) {
 		$table2->width = '100%';
 		$table2->data = array ();
-		reporting_html_agent_configuration(&$table2, array('data' => $agent));
+		reporting_html_agent_configuration($table2, array('data' => $agent));
 		
 		$cell .= html_print_table($table2, true);
 	}
@@ -1520,6 +1523,10 @@ function reporting_html_agent_configuration(&$table, $item) {
 		
 		$table->data['modules']['cell'] = html_print_table($table1, true);
 	}
+}
+
+function reporting_html_TTRT_value(&$table, $item, $mini, $only_value = false, $check_empty = false) {
+	reporting_html_value($table, $item, $mini);
 }
 
 function reporting_html_TTO_value(&$table, $item, $mini, $only_value = false, $check_empty = false) {

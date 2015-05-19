@@ -2700,11 +2700,11 @@ function reporting_sql_graph($report, $content, $type,
 	global $config;
 	
 	switch ($type_sql_graph) {
-		case 'netflow_area':
-			$return['type'] = 'sql_graph_vbar';
-			break;
 		case 'sql_graph_hbar':
 			$return['type'] = 'sql_graph_hbar';
+			break;
+		case 'sql_graph_vbar':
+			$return['type'] = 'sql_graph_vbar';
 			break;
 		case 'sql_graph_pie':
 			$return['type'] = 'sql_graph_pie';

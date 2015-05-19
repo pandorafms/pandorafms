@@ -2956,7 +2956,7 @@ sub pandora_update_module_on_error ($$$) {
 
 	# Set tagente_estado.current_interval to make sure it is not 0
 	my $current_interval;
-	if ($module->{'cron_interval'} ne '' && $module->{'cron_interval'} ne '* * * * *') {
+	if (defined($module->{'cron_interval'}) && $module->{'cron_interval'} ne '' && $module->{'cron_interval'} ne '* * * * *') {
 		$current_interval = cron_next_execution ($module->{'cron_interval'});
 	}
 	elsif ($module->{'module_interval'} == 0) {
@@ -4998,7 +4998,7 @@ sub pandora_output_password($$) {
 	my ($pa_config, $password) = @_;
 
 	# Do not attemp to decrypt empty passwords.
-	return '' if ($password eq '');
+	return '' if (! defined($password) || $password eq '');
 
 	# Encryption disabled.
 	return $password if (! defined($pa_config->{'encryption_key'}) || $pa_config->{'encryption_key'} eq '');

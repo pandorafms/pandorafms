@@ -129,7 +129,7 @@ $(document).ready (function () {
 			resizable: true,
 			draggable: true,
 			modal: true,
-			height: 260,
+			height: 360,
 			width: 590,
 			overlay: {
 				opacity: 0.5,

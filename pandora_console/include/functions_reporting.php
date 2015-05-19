@@ -2622,8 +2622,8 @@ function reporting_alert_report_module($report, $content) {
 	$return["date"] = reporting_get_date_text($report, $content);
 	
 	$alerts = db_get_all_rows_sql('SELECT *, t1.id as id_alert_template_module
-		FROM talert_template_modules AS t1
-			INNER JOIN talert_templates AS t2 ON t1.id_alert_template = t2.id
+		FROM talert_template_modules t1
+			INNER JOIN talert_templates t2 ON t1.id_alert_template = t2.id
 		WHERE id_agent_module = ' . $content['id_agent_module']);
 	
 	if ($alerts === false) {

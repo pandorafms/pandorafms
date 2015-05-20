@@ -1526,19 +1526,19 @@ function reporting_html_agent_configuration(&$table, $item) {
 }
 
 function reporting_html_TTRT_value(&$table, $item, $mini, $only_value = false, $check_empty = false) {
-	reporting_html_value($table, $item, $mini);
+	reporting_html_value($table, $item, $mini, $only_value, $check_empty);
 }
 
 function reporting_html_TTO_value(&$table, $item, $mini, $only_value = false, $check_empty = false) {
-	reporting_html_value($table, $item, $mini);
+	reporting_html_value($table, $item, $mini, $only_value, $check_empty);
 }
 
 function reporting_html_MTBF_value(&$table, $item, $mini, $only_value = false, $check_empty = false) {
-	reporting_html_value($table, $item, $mini);
+	reporting_html_value($table, $item, $mini, $only_value, $check_empty);
 }
 
 function reporting_html_MTTR_value(&$table, $item, $mini, $only_value = false, $check_empty = false) {
-	reporting_html_value($table, $item, $mini);
+	reporting_html_value($table, $item, $mini, $only_value, $check_empty);
 }
 
 function reporting_html_sum_value(&$table, $item, $mini) {

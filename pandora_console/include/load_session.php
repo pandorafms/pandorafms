@@ -33,14 +33,14 @@ function pandora_session_read ($session_id) {
 		return false;
 }
 
-function pandora_session_write ($session_id, $val) {
+function pandora_session_write ($session_id, $data) {
 	$session_id = addslashes($session_id);
 	
 	$values = array();
 	$values['last_active'] = time();
 	
-	if (!empty($val))
-		$values['data'] = addslashes($val);
+	if (!empty($data))
+		$values['data'] = addslashes($data);
 	
 	$session_exists = (bool) db_get_value('COUNT(id_session)', 'tsessions_php', 'id_session', $session_id);
 	
@@ -58,7 +58,7 @@ function pandora_session_write ($session_id, $val) {
 function pandora_session_destroy ($session_id) {
 	$session_id = addslashes($session_id);
 	
-	$retval = db_process_sql_delete('tsessions_php', array('id_session' => $session_id));
+	$retval = (bool) db_process_sql_delete('tsessions_php', array('id_session' => $session_id));
 	
 	return $retval;
 }
@@ -72,7 +72,7 @@ function pandora_session_gc ($max_lifetime = 300) {
 	
 	$time_limit = time() - $max_lifetime;
 	
-	$retval = db_process_sql_delete('tsessions_php', array('last_active' => "<" . $time_limit));
+	$retval = (bool) db_process_sql_delete('tsessions_php', array('last_active' => "<" . $time_limit));
 	
 	return $retval;
 }

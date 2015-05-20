@@ -179,8 +179,7 @@ if ($searchAgents) {
 			break;
 	}
 	
-	$select = 
-		"SELECT t1.id_agente, t1.ultimo_contacto, t1.nombre, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled";
+	$select = "SELECT t1.id_agente, t1.ultimo_contacto, t1.nombre, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled";
 	if ($only_count) {
 		$limit = " ORDER BY " . $order['field'] . " " . $order['order'] . 
 			" LIMIT " . $config["block_size"] . " OFFSET 0";
@@ -190,7 +189,26 @@ if ($searchAgents) {
 			" LIMIT " . $config['block_size'] . " OFFSET " . get_parameter('offset',0);
 	}
 	
-	$query = $select . $sql . $limit;
+	$query = $select . $sql;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$query .= $limit;
+			break;
+		case "oracle":
+			$set = array();
+			$set['limit'] = $config['block_size'];
+			
+			if ($only_count)
+				$set['offset'] = 0;
+			else
+				$set['offset'] = (int) get_parameter('offset');
+			
+			$query .= " ORDER BY " . $order['field'] . " " . $order['order'];
+			$query = oracle_recode_query ($query, $set);
+			break;
+	}
 	
 	$agents = db_process_sql($query);
 	if (empty($agents))

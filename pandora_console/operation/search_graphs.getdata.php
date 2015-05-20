@@ -18,6 +18,7 @@ global $config;
 
 include_once('include/functions_custom_graphs.php');
 
+//Check ACL
 $searchGraphs = check_acl($config["id_user"], 0, "IR");
 
 $graphs = false;
@@ -25,33 +26,24 @@ $graphs = false;
 if ($searchGraphs) {
 	//Check ACL
 	$usergraphs = custom_graphs_get_user($config['id_user'], true);
-	
 	$usergraphs_id = array_keys($usergraphs);
 	
-	if (!$usergraphs_id) {
-		$graphs_condition = " AND 1<>1";
-	}
-	else {
-		$graphs_condition = " AND id_graph IN (".implode(',',$usergraphs_id).")";
-	}
+	if (empty($usergraphs_id))
+		return;
 	
-	$fromwhere = "FROM tgraph
-		WHERE (name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%')".$graphs_condition;
-	$limitoffset = "LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
+	$filter = array();
+	$filter[] = "(name LIKE '%$stringSearchSQL%' OR description LIKE '%$stringSearchSQL%')";
+	$filter['id_graph'] = $usergraphs_id;
 	
-	$sql_count = "SELECT COUNT(id_graph) AS count $fromwhere";
+	$columns = array('id_graph', 'name', 'description');
+	$count_columns = array('COUNT(id_graph) AS count');
 	
-	if ($only_count) {
-		$totalGraphs = db_get_value_sql($sql_count);
-	}
-	else {
-		$sql = "SELECT id_graph, name, description $fromwhere $limitoffset";
-		
-		$graphs = db_process_sql($sql);
-		
-		if($graphs !== false) {
-			$totalGraphs = db_get_value_sql($sql_count);
-		}
+	$totalGraphs = db_get_value_filter('tgraph', $filter, $count_columns);
+	
+	if (! $only_count && (int)$totalGraphs > 0) {
+		$filter['limit'] = $config['block_size'];
+		$filter['offset'] = (int)  get_parameter('offset');
+		$graphs = db_get_all_rows_filter('tgraph', $filter, $columns);
 	}
 }
 ?>

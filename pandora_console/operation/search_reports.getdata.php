@@ -47,12 +47,26 @@ $reports = false;
 if($searchReports) {
 	$sql = "SELECT id_report, name, description
 		FROM treport
-		WHERE (name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%')".$reports_condition.
-		" LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
+		WHERE (name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%')".$reports_condition;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql .= " LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
+			break;
+		case "oracle":
+			$set = array();
+			$set['limit'] = $config['block_size'];
+			$set['offset'] = (int) get_parameter('offset');
+			
+			$sql = oracle_recode_query ($sql, $set);
+			break;
+	}
+	
 	$sql_count = "SELECT COUNT(id_report) AS count
 		FROM treport
 		WHERE (name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%')".$reports_condition;
-		
+	
 	if($only_count) {
 		$totalReports = db_get_value_sql($sql_count);
 	}

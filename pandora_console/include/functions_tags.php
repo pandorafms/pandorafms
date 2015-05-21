@@ -693,14 +693,7 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
 		return ERR_WRONG_PARAMETERS;
 	}
 	
-	$query = sprintf("SELECT tags, id_grupo 
-			FROM tusuario_perfil, tperfil
-			WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
-				tusuario_perfil.id_usuario = '%s' AND 
-				tperfil.%s = 1 AND
-			(tusuario_perfil.id_grupo IN (%s) OR tusuario_perfil.id_grupo = 0)
-			ORDER BY id_grupo", $id_user, $acl_column, implode(',',$id_group));
-	$tags = db_get_all_rows_sql($query);
+	$tags = tags_get_user_module_and_tags($id_user, $access);
 	
 	// If not profiles returned, the user havent acl permissions
 	if (empty($tags)) {

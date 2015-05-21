@@ -7399,4 +7399,163 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	
 	return $data_colors;
 }
+
+function reporting_get_stats_servers($tiny = true) {
+	global $config;
+	
+	$server_performance = servers_get_performance();
+	
+	// Alerts table
+	$table_srv = html_get_predefined_table();
+	
+	$table_srv->style[0] = $table_srv->style[2] = 'text-align: right; padding: 5px;';
+	$table_srv->style[1] = $table_srv->style[3] = 'text-align: left; padding: 5px;';
+	
+	$tdata = array();
+	$tdata[0] = html_print_image('images/module.png', true, array('title' => __('Total running modules'), 'width' => '25px'));
+	$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_modules"]) . '</span>';
+	
+	$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["total_modules_rate"], 2) . '</span>';
+	$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+	
+	$table_srv->rowclass[] = '';
+	$table_srv->data[] = $tdata;
+	
+	$tdata = array();
+	$tdata[0] = '<hr style="border: 0; height: 1px; background: #DDD">';
+	$table_srv->colspan[count($table_srv->data)][0] = 4;
+	$table_srv->rowclass[] = '';
+	$table_srv->data[] = $tdata;
+	
+	$tdata = array();
+	$tdata[0] = html_print_image('images/database.png', true, array('title' => __('Local modules'), 'width' => '25px'));
+	$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_local_modules"]) . '</span>';
+	
+	$tdata[2] = '<span class="med_data">' .
+		format_numeric($server_performance ["local_modules_rate"], 2) . '</span>';
+	$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+	
+	$table_srv->rowclass[] = '';
+	$table_srv->data[] = $tdata;
+	
+	if ($tiny) {
+		$tdata = array();
+		$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Remote modules'), 'width' => '25px'));
+		$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_remote_modules"]) . '</span>';
+		
+		$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["remote_modules_rate"], 2) . '</span>';
+		$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+		
+		$table_srv->rowclass[] = '';
+		$table_srv->data[] = $tdata;
+	}
+	else {
+		if (isset($server_performance ["total_network_modules"])) {
+			$tdata = array();
+			$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Network modules'), 'width' => '25px'));
+			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_network_modules"]) . '</span>';
+			
+			$tdata[2] = '<span class="med_data">' .
+				format_numeric($server_performance["network_modules_rate"], 2) .
+				'</span>';
+			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+			
+			$table_srv->rowclass[] = '';
+			$table_srv->data[] = $tdata;
+		}
+		
+		if (isset($server_performance ["total_plugin_modules"])) {
+			$tdata = array();
+			$tdata[0] = html_print_image('images/plugin.png', true, array('title' => __('Plugin modules'), 'width' => '25px'));
+			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_plugin_modules"]) . '</span>';
+			
+			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["plugin_modules_rate"], 2) . '</span>';
+			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+			
+			$table_srv->rowclass[] = '';
+			$table_srv->data[] = $tdata;
+		}
+		
+		if (isset($server_performance ["total_prediction_modules"])) {
+			$tdata = array();
+			$tdata[0] = html_print_image('images/chart_bar.png', true, array('title' => __('Prediction modules'), 'width' => '25px'));
+			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_prediction_modules"]) . '</span>';
+			
+			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["prediction_modules_rate"], 2) . '</span>';
+			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+			
+			$table_srv->rowclass[] = '';
+			$table_srv->data[] = $tdata;
+		}
+		
+		if (isset($server_performance ["total_wmi_modules"])) {
+			$tdata = array();
+			$tdata[0] = html_print_image('images/wmi.png', true, array('title' => __('WMI modules'), 'width' => '25px'));
+			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_wmi_modules"]) . '</span>';
+			
+			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["wmi_modules_rate"], 2) . '</span>';
+			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+			
+			$table_srv->rowclass[] = '';
+			$table_srv->data[] = $tdata;
+		}
+		
+		if (isset($server_performance ["total_web_modules"])) {
+			$tdata = array();
+			$tdata[0] = html_print_image('images/world.png', true, array('title' => __('Web modules'), 'width' => '25px'));
+			$tdata[1] = '<span class="big_data">' .
+				format_numeric($server_performance ["total_web_modules"]) .
+				'</span>';
+			
+			$tdata[2] = '<span class="med_data">' .
+				format_numeric($server_performance ["web_modules_rate"], 2) .
+				'</span>';
+			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+			
+			$table_srv->rowclass[] = '';
+			$table_srv->data[] = $tdata;
+		}
+		
+		$tdata = array();
+		$tdata[0] = '<hr style="border: 0; height: 1px; background: #DDD">';
+		$table_srv->colspan[count($table_srv->data)][0] = 4;
+		$table_srv->rowclass[] = '';
+		$table_srv->data[] = $tdata;
+		
+		
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$system_events = db_get_value_sql(
+					'SELECT SQL_NO_CACHE COUNT(id_evento)
+					FROM tevento');
+				break;
+			case "postgresql":
+			case "oracle":
+				$system_events = db_get_value_sql(
+					'SELECT COUNT(id_evento)
+					FROM tevento');
+				break;
+		}
+		
+		
+		
+		$tdata = array();
+		$tdata[0] = html_print_image('images/lightning_go.png', true,
+			array('title' => __('Total events'), 'width' => '25px'));
+		$tdata[1] = '<span class="big_data">' .
+			format_numeric($system_events) . '</span>';
+		
+		$table_srv->colspan[count($table_srv->data)][1] = 3;
+		$table_srv->rowclass[] = '';
+		$table_srv->data[] = $tdata;
+	}
+	
+	$output = '<fieldset class="databox tactical_set">
+				<legend>' . 
+					__('Server performance') . 
+				'</legend>' . 
+				html_print_table($table_srv, true) . '</fieldset>';
+	
+	return $output;
+}
 ?>

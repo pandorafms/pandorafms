@@ -101,6 +101,7 @@ function reporting_html_print_report($report, $mini = false) {
 	
 	
 	foreach ($report['contents'] as $key => $item) {
+		$table = new stdClass();
 		$table->size = array ();
 		$table->style = array ();
 		$table->width = '98%';

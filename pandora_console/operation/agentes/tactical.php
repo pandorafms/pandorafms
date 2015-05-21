@@ -163,6 +163,7 @@ echo '<td style="vertical-align: top; min-width: 180px; width:25%; padding-right
 // ---------------------------------------------------------------------
 // The status horizontal bars (Global health, Monitor sanity...
 // ---------------------------------------------------------------------
+$table = new stdClass();
 $table->width = "100%";
 $table->class = "";
 $table->cellpadding = 2;
@@ -195,8 +196,8 @@ $data_agents = array(
 	);
 
 $table->data[1][0] = reporting_get_stats_alerts($data);
-$table->data[2][0] .= reporting_get_stats_modules_status($data, 180, 100, false, $data_agents);
-$table->data[3][0] .= reporting_get_stats_agents_monitors($data);
+$table->data[2][0] = reporting_get_stats_modules_status($data, 180, 100, false, $data_agents);
+$table->data[3][0] = reporting_get_stats_agents_monitors($data);
 $table->rowclass[] = '';
 
 

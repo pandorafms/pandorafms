@@ -141,6 +141,7 @@ else {
 
 
 //------------------------ INIT FORM -----------------------------------
+$table = new stdClass();
 $table->id = 'controls_table';
 $table->width = '99%';
 $table->class = 'databox';

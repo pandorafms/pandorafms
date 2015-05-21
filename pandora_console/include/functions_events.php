@@ -2794,7 +2794,7 @@ function events_get_count_events_by_criticity ($filter, $period, $date,
  *
  * @return array An array with all the events happened.
  */
-function events_get_count_events_validated ($filter, $period, $date,
+function events_get_count_events_validated ($filter, $period = null, $date = null,
 	$filter_event_validated = false, $filter_event_critical = false,
 	$filter_event_warning = false, $filter_event_no_validated = false,
 	$filter_event_search = false) {
@@ -2818,9 +2818,25 @@ function events_get_count_events_validated ($filter, $period, $date,
 			sprintf(' AND id_agente = %d ', $filter['id_agent']);
 	}
 	
-	$datelimit = $date - $period;
+	$date_filter = '';
+	if (!empty($date) && !empty($period)) {
+		$datelimit = $date - $period;
+		
+		$date_filter .= sprintf (' AND utimestamp > %d AND utimestamp <= %d ',
+			$datelimit, $date);
+	}
+	else if (!empty($period)) {
+		$date = time();
+		$datelimit = $date - $period;
+		
+		$date_filter .= sprintf (' AND utimestamp > %d AND utimestamp <= %d ',
+			$datelimit, $date);
+	}
+	else if (!empty($date)) {
+		$date_filter .= sprintf (' AND utimestamp <= %d ', $date);
+	}
 	
-	$sql_where = ' AND 1 = 1 ';
+	$sql_where = ' AND 1=1 ';
 	$criticities = array();
 	if ($filter_event_critical) {
 		$criticities[] = 4;
@@ -2844,30 +2860,31 @@ function events_get_count_events_validated ($filter, $period, $date,
 			' OR id_evento LIKE "%%' . io_safe_input($filter_event_search) . '%%")';
 	}
 	
-	$sql = sprintf ('SELECT estado,
-		COUNT(*) AS count
-		FROM tevento
-		WHERE utimestamp > %d AND utimestamp <= %d
-			%s ' . $sql_where . '
-		GROUP BY estado',
-		$datelimit, $date, $sql_filter);
+	$sql = sprintf ('SELECT estado, COUNT(*) AS count
+					FROM tevento
+					WHERE 1=1 %s %s %s
+					GROUP BY estado',
+					$date_filter, $sql_filter, $sql_where);
 	
 	$rows = db_get_all_rows_sql ($sql);
 	
 	if ($rows == false)
 		$rows = array();
 	
-	$return = array();
-	$return[__('Validated')] = 0;
-	$return[__('Not validated')] = 0;
-	foreach ($rows as $row) {
-		if ($row['estado'] == 1) {
-			$return[__('Validated')] += $row['count'];
+	$return = array_reduce($rows, function($carry, $item) {
+		$status = (int) $item['estado'];
+		$count = (int) $item['count'];
+		
+		if ($status === 1) {
+			$carry[__('Validated')] += $count;
 		}
-		else {
-			$return[__('Not validated')] += $row['count'];
+		else if ($status === 0) {
+			$carry[__('Not validated')] += $count;
 		}
-	}
+		
+		return $carry;
+		
+	}, array(__('Validated') => 0, __('Not validated') => 0));
 	
 	return $return;
 }

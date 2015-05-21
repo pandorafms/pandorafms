@@ -203,7 +203,8 @@ function events_get_events_grouped($sql_post, $offset = 0,
 									FROM $table te
 									WHERE 1=1 $sql_post
 									GROUP BY estado, to_char(evento), id_agentmodule$groupby_extra) tb
-							ON ta.id_evento = tb.id_evento";
+							ON ta.id_evento = tb.id_evento
+						ORDER BY tb.timestamp_rep DESC";
 				$sql = oracle_recode_query ($sql, $set);
 			}
 			break;

@@ -194,23 +194,16 @@ function events_get_events_grouped($sql_post, $offset = 0,
 				$set['offset'] = $offset;
 				
 				// TODO: Remove duplicate user comments
-				$sql = "SELECT a.*, b.event_rep, b.timestamp_rep
-						FROM (SELECT * FROM $table WHERE 1=1 $sql_post) a,
-							(SELECT MAX(id_evento) AS id_evento, to_char(evento) AS evento, MIN(utimestamp) AS timestamp_rep_min,
-								id_agentmodule, COUNT(*) AS event_rep, MAX(utimestamp) AS timestamp_rep,
-								LISTAGG(user_comment, '<br>') WITHIN GROUP (ORDER BY null) AS user_comment,
-								LISTAGG(id_evento, ',') WITHIN GROUP (ORDER BY null) AS similar_ids,
-								MAX(owner_user) KEEP (DENSE_RANK FIRST ORDER BY id_evento) AS owner_user,
-								MAX(id_usuario) KEEP (DENSE_RANK FIRST ORDER BY id_evento) AS id_usuario,
-								MAX(id_agente) KEEP (DENSE_RANK FIRST ORDER BY id_evento) AS id_agente,
-								MAX(criticity) KEEP (DENSE_RANK FIRST ORDER BY id_evento) AS criticity,
-								MAX(ack_utimestamp) KEEP (DENSE_RANK FIRST ORDER BY id_evento) AS ack_utimestamp
-							FROM $table te
-							WHERE 1=1 $sql_post
-							GROUP BY estado, to_char(evento), id_agentmodule$groupby_extra) b 
-						WHERE a.id_evento = b.id_evento
-							AND to_char(a.evento)=to_char(b.evento)
-							AND a.id_agentmodule=b.id_agentmodule";
+				$sql = "SELECT ta.*, tb.event_rep, tb.timestamp_rep, tb.timestamp_rep_min, tb.user_comments, tb.similar_ids
+						FROM $table ta
+						INNER JOIN (SELECT MAX(id_evento) AS id_evento, COUNT(id_evento) AS event_rep,
+										MAX(utimestamp) AS timestamp_rep, MIN(utimestamp) AS timestamp_rep_min,
+										LISTAGG(user_comment, '<br>') WITHIN GROUP (ORDER BY id_evento ASC) AS user_comments,
+										LISTAGG(id_evento, ',') WITHIN GROUP (ORDER BY id_evento ASC) AS similar_ids
+									FROM $table te
+									WHERE 1=1 $sql_post
+									GROUP BY estado, to_char(evento), id_agentmodule$groupby_extra) tb
+							ON ta.id_evento = tb.id_evento";
 				$sql = oracle_recode_query ($sql, $set);
 			}
 			break;
@@ -223,6 +216,13 @@ function events_get_events_grouped($sql_post, $offset = 0,
 		return reset($events[0]);
 	}
 	else {
+		// Override the column 'user_comment' with the column 'user_comments' when oracle
+		if (!empty($events) && $config["dbtype"] == "oracle") {
+			array_walk($events, function(&$value, $key) {
+				set_if_defined($value['user_comments'], $value['user_comments']);
+			});
+		}
+		
 		return $events;
 	}
 }

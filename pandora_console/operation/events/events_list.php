@@ -35,12 +35,13 @@ if (! check_acl ($config["id_user"], 0, "ER")) {
 	return;
 }
 
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$jump = '&nbsp;&nbsp;';
 }
-else{
+else {
 	$jump = "<br>";
 }
+
 if (is_ajax()) {
 	$get_filter_values = get_parameter('get_filter_values', 0);
 	$save_event_filter = get_parameter('save_event_filter', 0);
@@ -141,7 +142,7 @@ $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_use
 $tags = tags_get_user_tags($config['id_user'], 'ER');
 
 
-if ($id_agent == 0 && $text_agent != '') {
+if ($id_agent == 0 && $text_agent != __('All')) {
 	$id_agent = -1;
 }
 

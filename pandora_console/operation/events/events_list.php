@@ -141,10 +141,12 @@ $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_use
 // Get the tags where the user have permissions in Events reading tasks
 $tags = tags_get_user_tags($config['id_user'], 'ER');
 
-
 if ($id_agent == 0 && $text_agent != __('All')) {
 	$id_agent = -1;
 }
+
+
+
 
 /////////////////////////////////////////////
 // Build the condition of the events query

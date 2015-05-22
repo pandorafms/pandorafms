@@ -2785,6 +2785,14 @@ function reporting_monitor_report($report, $content) {
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	$value = reporting_get_agentmodule_sla(
 		$content['id_agent_module'],
 		$content['period'],
@@ -2803,6 +2811,10 @@ function reporting_monitor_report($report, $content) {
 		
 		$return["data"]["fail"]["value"] = 100 - $return["data"]["ok"]["value"];
 		$return["data"]["fail"]["formated_value"] = (100 - $return["data"]["ok"]["formated_value"]);
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);

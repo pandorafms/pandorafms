@@ -141,7 +141,7 @@ $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_use
 $tags = tags_get_user_tags($config['id_user'], 'ER');
 
 
-if ($id_agent == 0 && $text_agent != __('All')) {
+if ($id_agent == 0 && $text_agent != '') {
 	$id_agent = -1;
 }
 

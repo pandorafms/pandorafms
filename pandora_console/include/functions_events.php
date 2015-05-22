@@ -481,9 +481,10 @@ function events_change_owner ($id_event, $new_owner = false, $force = false, $me
 	}
 	
 	// If no new_owner is provided, the current user will be the owner
-	if (empty($new_owner)) {
-		$new_owner = $config['id_user'];
-	}
+	// ** Comment this lines because if possible selected None owner in owner event. TIQUET: #2250***
+	//if (empty($new_owner)) {
+	//	$new_owner = $config['id_user'];
+	//}
 	
 	// Only generate comment when is forced (sometimes is changed the owner when comment)
 	if ($force) {

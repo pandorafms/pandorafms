@@ -1987,6 +1987,8 @@ function reporting_exception($report, $content, $type = 'dinamic',
 function reporting_group_report($report, $content) {
 	global $config;
 	
+	$metaconsole_on = ($config['metaconsole'] == 1) && defined('METACONSOLE');
+	
 	$return['type'] = 'group_report';
 	
 	
@@ -2004,13 +2006,22 @@ function reporting_group_report($report, $content) {
 	$events = events_get_group_events(
 		$content['id_group'],
 		$content['period'],
-		$report['datetime']);
+		$report['datetime'],
+		false,
+		false,
+		false,
+		false,
+		false,
+		$metaconsole_on);
+	
 	if (empty($events)) {
 		$events = array();
 	}
 	$return["data"]["count_events"] = count($events);
 	
 	$return["data"]["group_stats"] = reporting_get_group_stats($content['id_group']);
+	
+	
 	
 	return reporting_check_structure_content($return);
 }
@@ -3953,6 +3964,16 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 	
 	global $config;
 	
+	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
+	
 	$return = array();
 	$return['type'] = 'simple_graph';
 	
@@ -3960,10 +3981,14 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 		$content['name'] = __('Simple graph');
 	}
 	
+	
+	
 	$module_name = io_safe_output(
 		modules_get_agentmodule_name($content['id_agent_module']));
 	$agent_name = io_safe_output(
 		modules_get_agentmodule_agent_name ($content['id_agent_module']));
+	
+	
 	
 	
 	$return['title'] = $content['name'];
@@ -4058,6 +4083,10 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 			break;
 		case 'data':
 			break;
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);
@@ -4698,7 +4727,7 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 	// -----------------------------------------------------------------
 	if ($config["realtimestats"] == 0) {
 		
-		if (!is_array($id_group)){
+		if (!is_array($id_group)) {
 			$my_group = $id_group;
 			$id_group = array();
 			$id_group[0] = $my_group;

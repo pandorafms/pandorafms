@@ -988,6 +988,7 @@ function reporting_html_exception($table, $item) {
 function reporting_html_group_report($table, $item) {
 	global $config;
 	
+	
 	$table->colspan['group_report']['cell'] = 3;
 	$table->cellstyle['group_report']['cell'] = 'text-align: center;';
 	$table->data['group_report']['cell'] = "<table width='100%'>

@@ -3231,6 +3231,14 @@ function reporting_value($report, $content, $type) {
 		}
 	}
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	$module_name = io_safe_output(
 		modules_get_agentmodule_name($content['id_agent_module']));
 	$agent_name = io_safe_output(
@@ -3299,6 +3307,10 @@ function reporting_value($report, $content, $type) {
 	$return['data'] = array(
 		'value' => $value,
 		'formated_value' => $formated_value);
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
 	
 	return reporting_check_structure_content($return);
 }

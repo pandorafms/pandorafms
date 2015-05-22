@@ -420,6 +420,7 @@ else {
 
 //----------------------------------------------------------------------
 //- INI ADVANCE FILTER -------------------------------------------------
+$table_advanced = new stdClass();
 $table_advanced->id = 'events_filter_form_advanced';
 $table_advanced->width = '98%';
 $table_advanced->cellspacing = 4;
@@ -543,6 +544,7 @@ $table_advanced->rowclass[] = '';
 //- END ADVANCE FILTER -------------------------------------------------
 
 
+$table = new stdClass();
 $table->id = 'events_filter_form';
 $table->width = '100%';
 $table->cellspacing = 4;

@@ -32,6 +32,12 @@ CREATE OR REPLACE PROCEDURE insert_id (table_name IN VARCHAR2, sql_insert IN VAR
 -- Procedure for update curr val of sequence
 CREATE OR REPLACE PROCEDURE update_currval (table_name IN VARCHAR2, column_name IN VARCHAR2 ) IS key_max NUMBER; BEGIN EXECUTE IMMEDIATE 'SELECT MAX(' || column_name || ') FROM ' || table_name INTO key_max; IF (key_max IS NULL) THEN key_max := 1; ELSE key_max := key_max + 1; END IF; EXECUTE IMMEDIATE 'DROP SEQUENCE ' || table_name || '_s'; EXECUTE IMMEDIATE 'CREATE SEQUENCE ' || table_name || '_s INCREMENT BY 1 START WITH ' || key_max; EXECUTE IMMEDIATE 'SELECT ' || table_name || '_s.nextval FROM dual'; END update_currval;;
 
+-- Type which constists in a table of VARCHAR2
+CREATE OR REPLACE TYPE t_varchar2_tab AS TABLE OF VARCHAR2(4000);
+
+-- Function that uses the 't_varchar2_tab' type to concat elements and return them as 'CLOB', without the limitation of 'LISTAGG()' (VARCHAR2(4000))
+CREATE OR REPLACE FUNCTION tab_to_string (v_varchar2_tab IN t_varchar2_tab, v_delimiter IN CLOB DEFAULT ',') RETURN CLOB IS v_tmp_clob CLOB; v_clob CLOB := ''; BEGIN IF (v_varchar2_tab.COUNT > 0) THEN FOR i IN v_varchar2_tab.FIRST .. v_varchar2_tab.LAST LOOP IF (i != v_varchar2_tab.FIRST) THEN v_clob := v_clob || v_delimiter; END IF; v_tmp_clob := v_varchar2_tab(i); v_clob := v_clob || v_tmp_clob; END LOOP; END IF; RETURN v_clob; END tab_to_string;;
+
 -- ---------------------------------------------------------------------
 -- Table `taddress`
 -- ---------------------------------------------------------------------

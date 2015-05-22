@@ -25,6 +25,8 @@ require_once ($config['homedir'].'/include/functions_ui.php');
 
 check_login ();
 
+
+
 if (! check_acl ($config["id_user"], 0, "ER")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
@@ -46,10 +48,7 @@ if (!$meta) {
 	if (isset($config['event_replication']) &&  
 		$config['event_replication'] == 1) {
 		
-		if ($config['show_events_in_local'] == 0) {
-			return;
-		}
-		else {
+		if ((bool)$config['show_events_in_local']) {
 			$readonly = true;
 		}
 	}
@@ -223,6 +222,8 @@ $date_from = (string)get_parameter('date_from', '');
 $date_to = (string)get_parameter('date_to', '');
 $server_id = (int)get_parameter('server_id', 0);
 
+
+
 $text_agent = (string) get_parameter("text_agent");
 $id_agent = get_parameter('id_agent', 0);
 if ($id_agent != 0) {
@@ -241,6 +242,7 @@ if ($id_agent_module != 0) {
 		$text_module = '';
 	}
 }
+
 
 
 $tag_with_json = base64_decode(get_parameter("tag_with", '')) ;
@@ -262,6 +264,8 @@ $search = io_safe_output(get_parameter ("search"));
 users_get_groups ($config["id_user"], "ER");
 
 $ids = (array) get_parameter ("eventid", -1);
+
+
 
 $params = "search=" . rawurlencode(io_safe_input($search)) . 
 	"&amp;event_type=" . $event_type .
@@ -294,6 +298,8 @@ if ($meta) {
 }
 
 $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;" . $params;
+
+
 
 // Header
 if ($config["pure"] == 0 || $meta) {

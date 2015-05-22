@@ -855,10 +855,11 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			$returned = ui_print_info_message ( __('No events'),'',true );
 			return $returned;
 		}
-		else	
+		else
 			echo ui_print_info_message ( __('No events') );
 	}
 	else {
+		$table = new stdClass();
 		$table->id = 'latest_events_table';
 		$table->cellpadding = 0;
 		$table->cellspacing = 0;

@@ -1571,7 +1571,8 @@ function events_check_event_filter_group ($id_filter) {
 function events_get_macros() {
 	return array('_agent_address_' => __('Agent address'),
 		'_agent_id_' => __('Agent id'),
-		'_event_id_' => __('Event id'));
+		'_event_id_' => __('Event id'),
+		'_module_address_' => __('Module Agent address'),);
 }
 
 /**
@@ -1865,6 +1866,20 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
 				break;
 			case '_event_id_':
 				$subst = $event['id_evento'];
+				break;
+			case '_module_address_':
+				if($meta) {
+					$server = metaconsole_get_connection_by_id ($server_id);
+					metaconsole_connect($server);
+				}
+
+				$module = db_get_row("tagente_modulo",'id_agente_modulo', $event['id_agentmodule']);
+				if ($module['ip_target'] != false)
+					$subst = $module['ip_target'];
+				
+				if($meta) {
+					metaconsole_restore_db_force();
+				}
 				break;
 		}
 		

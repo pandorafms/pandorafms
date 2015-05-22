@@ -193,13 +193,12 @@ function events_get_events_grouped($sql_post, $offset = 0,
 				$set['limit'] = $pagination;
 				$set['offset'] = $offset;
 				
-				// TODO: Remove duplicate user comments
 				$sql = "SELECT ta.*, tb.event_rep, tb.timestamp_rep, tb.timestamp_rep_min, tb.user_comments, tb.similar_ids
 						FROM $table ta
 						INNER JOIN (SELECT MAX(id_evento) AS id_evento, COUNT(id_evento) AS event_rep,
 										MAX(utimestamp) AS timestamp_rep, MIN(utimestamp) AS timestamp_rep_min,
-										LISTAGG(user_comment, '<br>') WITHIN GROUP (ORDER BY id_evento ASC) AS user_comments,
-										LISTAGG(id_evento, ',') WITHIN GROUP (ORDER BY id_evento ASC) AS similar_ids
+										TAB_TO_STRING(CAST(COLLECT(TO_CHAR(user_comment) ORDER BY id_evento ASC) AS t_varchar2_tab), '<br>') AS user_comments,
+										TAB_TO_STRING(CAST(COLLECT(CAST(id_evento AS VARCHAR2(4000)) ORDER BY id_evento ASC) AS t_varchar2_tab)) AS similar_ids
 									FROM $table te
 									WHERE 1=1 $sql_post
 									GROUP BY estado, to_char(evento), id_agentmodule$groupby_extra) tb

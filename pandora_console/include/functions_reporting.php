@@ -2898,6 +2898,14 @@ function reporting_simple_baseline_graph($report, $content,
 	
 	global $config;
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	$return['type'] = 'simple_baseline_graph';
 	
 	if (empty($content['name'])) {
@@ -2939,11 +2947,16 @@ function reporting_simple_baseline_graph($report, $content,
 				true,
 				0,
 				true,
-				false,
-				ui_get_full_url(false, false, false, false));
+				$only_image,
+				ui_get_full_url(false, false, false, false),
+				$ttl);
 			break;
 		case 'data':
 			break;
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);

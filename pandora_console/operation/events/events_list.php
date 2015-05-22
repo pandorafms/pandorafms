@@ -235,7 +235,7 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	else
 		$data[1] = __('Filter group') . $jump;
 	# Fix : Only admin users can see group ALL
-	$data[1] .= html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group", $id_group, '', '', 0, true, false, false, 'w130', false, '', false, false, 'id_grupo', $strict_user);
+	$data[1] .= html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group_filter", $id_group_filter, '', '', 0, true, false, false, 'w130', false, '', false, false, 'id_grupo', $strict_user);
 	$table->data[] = $data;
 	$table->rowclass[] = '';
 	
@@ -961,18 +961,14 @@ $(document).ready( function() {
 							$("#id_user_ack").val(val);
 						if (i == 'group_rep')
 							$("#group_rep").val(val);
-						if (i == 'tag_with') {
+						if (i == 'tag_with')
 							$("#hidden-tag_with").val(val);
-						}
-						if (i == 'tag_without') {
+						if (i == 'tag_without')
 							$("#hidden-tag_without").val(val);
-						}
 						if (i == 'filter_only_alert')
 							$("#filter_only_alert").val(val);
 						if (i == 'id_group_filter')
-							$("#id_group").val(val);
-						if (i == 'id_group1')
-							$("#id_group1").val(val);
+							$("#id_group_filter").val(val);
 					});
 					reorder_tags_inputs();
 					// Update the info with the loaded filter
@@ -1021,7 +1017,7 @@ $(document).ready( function() {
 				"page" : "operation/events/events_list",
 				"save_event_filter" : 1,
 				"id_name" : $("#text-id_name").val(),
-				"id_group" : $("#id_group").val(),
+				"id_group" : $("select#id_group").val(),
 				"event_type" : $("#event_type").val(),
 				"severity" : $("#severity").val(),
 				"status" : $("#status").val(),
@@ -1034,7 +1030,7 @@ $(document).ready( function() {
 				"tag_with": Base64.decode($("#hidden-tag_with").val()),
 				"tag_without": Base64.decode($("#hidden-tag_without").val()),
 				"filter_only_alert" : $("#filter_only_alert").val(),
-				"id_group_filter": $("#id_group").val()
+				"id_group_filter": $("#id_group_filter").val()
 			},
 			function (data) {
 				$(".info_box").hide();
@@ -1113,8 +1109,8 @@ $(document).ready( function() {
 		jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 			{"page" : "operation/events/events_list",
 			"update_event_filter" : 1,
-			"id" : $("#filter_id").val(),
-			"id_group" : $("#id_group").val(),
+			"id" : $("#overwrite_filter").val(),
+			"id_group" : $("select#id_group").val(),
 			"event_type" : $("#event_type").val(),
 			"severity" : $("#severity").val(),
 			"status" : $("#status").val(),
@@ -1127,7 +1123,7 @@ $(document).ready( function() {
 			"tag_with" : Base64.decode($("#hidden-tag_with").val()),
 			"tag_without" : Base64.decode($("#hidden-tag_without").val()),
 			"filter_only_alert" : $("#filter_only_alert").val(),
-			"id_group_filter": $("#id_group").val()
+			"id_group_filter": $("#id_group_filter").val()
 			},
 			function (data) {
 				$(".info_box").hide();

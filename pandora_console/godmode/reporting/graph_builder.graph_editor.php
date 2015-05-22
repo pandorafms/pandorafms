@@ -46,7 +46,7 @@ if ($editGraph) {
 					WHERE t2.id_agente_modulo = t1.id_agent_module)) 
 		AS agent_name
 		FROM tgraph_source AS t1
-		WHERE t1.id_graph = " . $id);
+		WHERE t1.id_graph = " . $id_graph);
 	$module_array = array();
 	$weight_array = array();
 	$agent_array = array();
@@ -62,7 +62,7 @@ if ($editGraph) {
 		$agent_array[] = $graphRow['agent_name'];
 	}
 	
-	$graphInTgraph = db_get_row_sql("SELECT * FROM tgraph WHERE id_graph = " . $id);
+	$graphInTgraph = db_get_row_sql("SELECT * FROM tgraph WHERE id_graph = " . $id_graph);
 	$stacked = $graphInTgraph['stacked'];
 	$period = $graphInTgraph['period'];
 	$width = $graphInTgraph['width'];
@@ -98,7 +98,7 @@ if(count($module_array) > 0){
 		echo "<td class='$tdcolor' align='center'>";
 		echo "<table><tr>";
 
-		echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_weight=1&id=". $id ."&graph=" . $idgs_array[$a] . "'>";
+		echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_weight=1&id=". $id_graph ."&graph=" . $idgs_array[$a] . "'>";
 		html_print_input_text ('weight', $weight_array[$a], '', 20, 10, false, false);
 		html_print_submit_button ('Ok', 'btn', false, '', false);
 		echo "</form>";
@@ -106,7 +106,7 @@ if(count($module_array) > 0){
 		echo "</tr></table>";
 		echo "</td>";
 		echo "<td class='$tdcolor' align='center'>";
-		echo "<a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&delete_module=1&id=". $id ."&delete=" . $idgs_array[$a] . "'>".html_print_image('images/cross.png', true, array ('title' => __('Delete')))."</a>";
+		echo "<a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&delete_module=1&id=". $id_graph ."&delete=" . $idgs_array[$a] . "'>".html_print_image('images/cross.png', true, array ('title' => __('Delete')))."</a>";
 
 		echo "</td></tr>";
 	}
@@ -116,7 +116,7 @@ if(count($module_array) > 0){
 //Configuration form
 
 echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
-echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&add_module=1&edit_graph=1&id=" . $id . "'>";
+echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&add_module=1&edit_graph=1&id=" . $id_graph . "'>";
 
 echo "<table width='98%' cellpadding='4' cellpadding='4' class='databox_color'>";
 echo "<tr>";

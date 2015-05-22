@@ -134,8 +134,9 @@ if ($multiple_delete) {
 $graphs = custom_graphs_get_user ($config['id_user'], false, true, "RR");
 
 if (!empty ($graphs)) {
+	$table = new stdClass();
 	$table->width = '98%';
-	$tale->class = 'databox_frame';
+	$table->class = 'databox_frame';
 	$table->align = array ();
 	$table->head = array ();
 	$table->head[0] = __('Graph name');

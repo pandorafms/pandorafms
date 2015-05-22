@@ -2999,6 +2999,14 @@ function reporting_projection_graph($report, $content,
 	
 	global $config;
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	$return['type'] = 'projection_graph';
 	
 	if (empty($content['name'])) {
@@ -3047,9 +3055,9 @@ function reporting_projection_graph($report, $content,
 				0,
 				0,
 				$report["datetime"],
-				true,
+				$only_image,
 				ui_get_full_url(false, false, false, false) . '/',
-				1,
+				$ttl,
 				// Important parameter, this tell to graphic_combined_module function that is a projection graph
 				$output_projection,
 				$content['top_n_value']
@@ -3057,6 +3065,10 @@ function reporting_projection_graph($report, $content,
 			break;
 		case 'data':
 			break;
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);

@@ -3912,6 +3912,14 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
 	
 	$return = array();
@@ -3963,10 +3971,15 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 				$graph["stacked"],
 				$report["datetime"],
 				$only_image,
-				ui_get_full_url(false, false, false, false));
+				ui_get_full_url(false, false, false, false),
+				$ttl);
 			break;
 		case 'data':
 			break;
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);

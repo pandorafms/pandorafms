@@ -1189,7 +1189,7 @@ function events_print_type_description ($type, $return = false) {
 function events_get_group_events ($id_group, $period, $date,
 	$filter_event_validated = false, $filter_event_critical = false,
 	$filter_event_warning = false, $filter_event_no_validated = false,
-	$filter_event_search = false) {
+	$filter_event_search = false, $meta = false) {
 	
 	global $config;
 	
@@ -1231,7 +1231,7 @@ function events_get_group_events ($id_group, $period, $date,
 		AND utimestamp <= %d ',
 		implode (",", $id_group), $datelimit, $date);
 	
-	return events_get_events_grouped($sql_where, 0, 1000);
+	return events_get_events_grouped($sql_where, 0, 1000, $meta);
 }
 
 /**
@@ -1851,7 +1851,7 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
 		$subst = '';
 		switch($macro) {
 			case '_agent_address_':
-				if($meta) {
+				if ($meta) {
 					$server = metaconsole_get_connection_by_id ($server_id);
 					metaconsole_connect($server);
 				}

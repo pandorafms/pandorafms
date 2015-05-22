@@ -3655,6 +3655,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 		$sizem = '3';
 		$sizgraph_w = '900';
 		$sizgraph_h = '230';
+		
+		$sla_width = '500';
 	}
 	
 	// Disable remote connections for netflow report items

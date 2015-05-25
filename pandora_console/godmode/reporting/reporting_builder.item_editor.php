@@ -2425,11 +2425,11 @@ function chooseType() {
 			$("#row_module_multi").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_servers").show();
-			$("#id_agents").change(agent_changed_by_multiple_agents_inventory);
+			$("#id_agents").change(event_change_id_agent_inventory);
 			$("#id_agents").trigger('change');
 			
 			$("#combo_group").change(function() {
-				updateAgents($(this).val());
+				updateAgents($(this).val(), <?php echo '"' . ui_get_full_url(false, false, false, false) . '"'; ?>);
 			});
 			
 			break;
@@ -2441,27 +2441,27 @@ function chooseType() {
 			$("#row_date").show();
 			$("#row_show_in_two_columns").show();
 			
-			$("#id_agents").change(agent_changed_by_multiple_agents_inventory);
+			$("#id_agents").change(event_change_id_agent_inventory);
 			$("#id_agents").trigger('change');
 			
 			$("#row_servers").show();
 			
 			$("#combo_group").change(function() {
 				$('#hidden-date_selected').val('');
-				updateInventoryDates();
-				updateAgents($(this).val());
+				updateInventoryDates(<?php echo '"' . ui_get_full_url(false, false, false, false) . '"'; ?>);
+				updateAgents($(this).val(), <?php echo '"' . ui_get_full_url(false, false, false, false) . '"'; ?>);
 			});
 			$("#id_agents").change(function() {
 				$('#hidden-date_selected').val('');
-				updateInventoryDates();
+				updateInventoryDates(<?php echo '"' . ui_get_full_url(false, false, false, false) . '"'; ?>);
 			});
 			$("#inventory_modules").change(function() {
 				$('#hidden-date_selected').val('');
-				updateInventoryDates();
+				updateInventoryDates(<?php echo '"' . ui_get_full_url(false, false, false, false) . '"'; ?>);
 			});
 			
 			if (!$("#hidden-date_selected").val())
-				updateInventoryDates();
+				updateInventoryDates(<?php echo '"' . ui_get_full_url(false, false, false, false) . '"'; ?>);
 			break;
 		case 'inventory_changes':
 			break;
@@ -2512,6 +2512,14 @@ function chooseType() {
 			$("#row_servers").show();
 			break;
 	}
+}
+
+function event_change_id_agent_inventory() {
+	agent_changed_by_multiple_agents_inventory(
+		{"data" : {"homedir" : <?php echo '"' . ui_get_full_url(false, false, false, false) . '"'; ?>}},
+		null,
+		null,
+		$("#combo_server").val());
 }
 
 function set_last_value_period() {

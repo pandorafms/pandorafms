@@ -1445,6 +1445,14 @@ function reporting_inventory_changes($report, $content) {
 		$content['name'] = __('Inventory Changes');
 	}
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	$return['title'] = $content['name'];
 	$return['subtitle'] = agents_get_name($content['id_agent']);
 	$return["description"] = $content["description"];
@@ -1471,6 +1479,10 @@ function reporting_inventory_changes($report, $content) {
 		$return['data'] = $inventory_changes;
 	}
 	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
+	
 	return reporting_check_structure_content($return);
 }
 
@@ -1483,6 +1495,14 @@ function reporting_inventory($report, $content) {
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('Inventory');
+	}
+	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
 	}
 	
 	$return['title'] = $content['name'];
@@ -1508,6 +1528,10 @@ function reporting_inventory($report, $content) {
 	}
 	else {
 		$return['data'] = $inventory_data;
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);
@@ -1604,6 +1628,10 @@ function reporting_agent_module($report, $content) {
 			
 			$return['data'][] = $row;
 		}
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);

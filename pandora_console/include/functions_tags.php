@@ -669,88 +669,43 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
 		}
 	}
 	
-	if ((string)$id_group === "0") {
-		$id_group = array_keys(users_get_groups($id_user, $access, false));
-		
-		if (empty($id_group)) {
-			return ERR_WRONG_PARAMETERS;
-		}
+	if ($id_group == 0) {
+		// Don't filter
+		$id_group = array();
 	}
 	elseif (empty($id_group)) {
 		return ERR_WRONG_PARAMETERS;
 	}
 	elseif (!is_array($id_group)) {
-		$id_group = (array) $id_group;
+		$id_group = array($id_group);
 	}
-	
-	if ($id_group[0] != 0) {
-		$id_group = groups_get_all_hierarchy_group ($id_group[0]);
-	}
+	$groups = $id_group;
 	
 	$acl_column = get_acl_column($access);
-	
 	if (empty($acl_column)) {
 		return ERR_WRONG_PARAMETERS;
 	}
 	
-	$tags = tags_get_user_module_and_tags($id_user, $access);
+	$acltags = tags_get_user_module_and_tags($id_user, $access);
 	
-	// If not profiles returned, the user havent acl permissions
-	if (empty($tags)) {
-		return ERR_ACL;
-	}
 	
-	// Array to store groups where there arent tags restriction
-	$non_restriction_groups = array();
-	
-	$acltags = array();
-	foreach ($tags as $tagsone) {
-		if ($force_group_and_tag) {
-			if (empty($tagsone['tags'])) {
-				// Do none
-			}
+	// Delete the groups without tag restrictions from the acl tags array if $force_group_and_tag == false
+	// Delete the groups that aren't in the received groups id
+	$acltags_aux = array();
+	foreach ($acltags as $group_id => $tags) {
+		if (!empty($groups) && array_search($group_id, $groups) === false) {
+			unset($acltags[$group_id]);
 		}
 		else {
-			if (empty($tagsone['tags'])) {
-				// If there arent tags restriction in all groups (group 0), return no condition
-				if ($tagsone['id_grupo'] == 0) {
-					switch ($return_mode) {
-						case 'data':
-							return array();
-							break;
-						case 'event_condition':
-						case 'module_condition':
-							return "";
-							break;
-					}
-				}
-				
-				$non_restriction_groups[] = $tagsone['id_grupo'];
-				continue;
-			}
-		}
-		
-		$tags_array = explode(',',$tagsone['tags']);
-		if ($force_group_and_tag) {
-			if (empty($tagsone['tags'])) {
-				$tags_array = array();
-			}
-		}
-		
-		if (!isset($acltags[$tagsone['id_grupo']])) {
-			$acltags[$tagsone['id_grupo']] = $tags_array;
-		}
-		else {
-			$acltags[$tagsone['id_grupo']] = array_unique(array_merge($acltags[$tagsone['id_grupo']], $tags_array));
+			if (!empty($tags))
+				$tags = explode(",", $tags);
+			$acltags_aux[$group_id] = $tags;
 		}
 	}
-	
-	// Delete the groups without tag restrictions from the acl tags array
-	foreach ($non_restriction_groups as $nrgroup) {
-		if (isset($acltags[$nrgroup])) {
-			unset($acltags[$nrgroup]);
-		}
-	}
+	// Clean the possible empty elements
+	if (!$force_group_and_tag)
+		$acltags_aux = array_filter($acltags_aux);
+	$acltags = $acltags_aux;
 	
 	switch ($return_mode) {
 		case 'data':

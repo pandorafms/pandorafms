@@ -2048,6 +2048,14 @@ function reporting_group_report($report, $content) {
 		$content['name'] = __('Group Report');
 	}
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	$return['title'] = $content['name'];
 	$return['subtitle'] = groups_get_name($content['id_group'], true);
 	$return["description"] = $content["description"];
@@ -2073,7 +2081,9 @@ function reporting_group_report($report, $content) {
 	
 	$return["data"]["group_stats"] = reporting_get_group_stats($content['id_group']);
 	
-	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
 	
 	return reporting_check_structure_content($return);
 }

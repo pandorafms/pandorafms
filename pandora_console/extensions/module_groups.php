@@ -130,7 +130,7 @@ function mainModuleGroups() {
 	//The big query
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$sql = "SELECT COUNT(id_agente) AS count, case utimestamp when 0 then 5 else estado end as estado 
+			$sql = "SELECT COUNT(id_agente) AS count, estado 
 				FROM tagente_estado
 				WHERE id_agente IN
 					(SELECT id_agente FROM tagente WHERE id_grupo = %d AND disabled IS FALSE)
@@ -141,8 +141,7 @@ function mainModuleGroups() {
 				GROUP BY estado";
 			break;
 		case "postgresql":
-			$sql = "SELECT COUNT(id_agente) AS count,
-					case utimestamp when 0 then 5 else estado end as estado
+			$sql = "SELECT COUNT(id_agente) AS count, estado
 				FROM tagente_estado
 				WHERE id_agente IN
 					(SELECT id_agente FROM tagente WHERE id_grupo = %d AND disabled = 0)
@@ -153,7 +152,7 @@ function mainModuleGroups() {
 				GROUP BY estado, utimestamp";
 			break;
 		case "oracle":
-			$sql = "SELECT COUNT(id_agente) AS count, case when utimestamp = 0 then 5 else estado end estado
+			$sql = "SELECT COUNT(id_agente) AS count, estado
 				FROM tagente_estado
 				WHERE id_agente IN
 					(SELECT id_agente FROM tagente WHERE id_grupo = %d AND (disabled IS NOT NULL AND disabled <> 0))

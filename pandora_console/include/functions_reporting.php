@@ -1226,6 +1226,14 @@ function reporting_event_report_group($report, $content,
 		$content['name'] = __('Event Report Group');
 	}
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	$return['title'] = $content['name'];
 	$return['subtitle'] = groups_get_name($content['id_group'], true);
 	if (!empty($content['style']['event_filter_search'])) {
@@ -1378,6 +1386,10 @@ function reporting_event_report_group($report, $content,
 			$ttl);
 	}
 	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
+	
 	return reporting_check_structure_content($return);
 }
 
@@ -1388,6 +1400,14 @@ function reporting_event_report_module($report, $content) {
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('Event Report Module');
+	}
+	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
 	}
 	
 	$return['title'] = $content['name'];
@@ -1407,6 +1427,10 @@ function reporting_event_report_module($report, $content) {
 	}
 	else {
 		$return['data'] = $data;
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);
@@ -2038,6 +2062,14 @@ function reporting_event_report_agent($report, $content,
 		$content['name'] = __('Event Report Agent');
 	}
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	$return['title'] = $content['name'];
 	$return['subtitle'] = agents_get_name($content['id_agent']);
 	$return["description"] = $content["description"];
@@ -2154,6 +2186,10 @@ function reporting_event_report_agent($report, $content,
 			$config['fontpath'],
 			$config['font_size'],
 			$ttl);
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);

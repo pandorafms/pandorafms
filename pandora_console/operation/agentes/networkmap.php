@@ -211,11 +211,11 @@ $buttons['topology'] = array('active' => $activeTab == 'topology',
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=topology&amp;pure='.$pure.'">' . 
 		html_print_image("images/op_network.png", true, array ("title" => __('Topology view'))) .'</a>');
 
-$buttons['dinamic'] = array('active' => $activeTab == 'dinamic',
-	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=dinamic&amp;pure='.$pure.'">' . 
+$buttons['dynamic'] = array('active' => $activeTab == 'dynamic',
+	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=dynamic&amp;pure='.$pure.'">' . 
 		html_print_image("images/dynamic_network_icon.png", true, array ("title" => __('Dynamic view'))) .'</a>');
 
-$buttons['radial_dinamic'] = array('active' => $activeTab == 'radial_dynamic',
+$buttons['radial_dynamic'] = array('active' => $activeTab == 'radial_dynamic',
 	'text' => '<a href="index.php?sec=network&amp;sec2=operation/agentes/networkmap&amp;tab=radial_dynamic&amp;pure='.$pure.'">' . 
 		html_print_image("images/radial_dynamic_network_icon.png", true, array ("title" => __('Radial dynamic view'))) .'</a>');
 
@@ -280,10 +280,10 @@ switch ($activeTab) {
 	case 'policies':
 		$title = __('Policies view');
 		break;
-	case 'dinamic':
+	case 'dynamic':
 		$title = __('Dynamic view');
 		break;
-	case 'radial_dinamic':
+	case 'radial_dynamic':
 		$title = __('Radial dynamic view');
 		break;
 }
@@ -345,7 +345,7 @@ if ($activeTab == 'topology') {
 		html_print_checkbox ('show_snmp_modules', '1', $show_snmp_modules, true);
 }
 
-if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
+if ($activeTab != 'dynamic' && $activeTab != 'radial_dynamic') {
 	$table->data[0][] = __('Layout') . '&nbsp;' .
 		html_print_select ($layout_array, 'layout', $layout, '', '', '', true);
 }
@@ -368,7 +368,7 @@ if ($activeTab == 'policies') {
 		html_print_select ($depth_levels, 'depth', $depth, '', '', '', true, false, false);
 }
 
-if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
+if ($activeTab != 'dynamic' && $activeTab != 'radial_dynamic') {
 	$table->data[1][] = __('No Overlap') . '&nbsp;' .
 		html_print_checkbox ('nooverlap', '1', $nooverlap, true);
 }
@@ -386,12 +386,12 @@ if (($activeTab == 'groups' || $activeTab == 'policies') &&
 	}
 }
 
-if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
+if ($activeTab != 'dynamic' && $activeTab != 'radial_dynamic') {
 	$table->data[1][] = __('Simple') . '&nbsp;' .
 		html_print_checkbox ('simple', '1', $simple, true);
 }
 
-if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
+if ($activeTab != 'dynamic' && $activeTab != 'radial_dynamic') {
 	$table->data[1][] = __('Regenerate') . '&nbsp;' .
 		html_print_checkbox ('regen', '1', $regen, true);
 }
@@ -412,7 +412,7 @@ if ($pure == "1") {
 	
 }
 
-if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
+if ($activeTab != 'dynamic' && $activeTab != 'radial_dynamic') {
 	$table->data[1][] = __('Font') . '&nbsp;' .
 		html_print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 2, 4, true);
 }
@@ -457,7 +457,7 @@ if ($id_networkmap != 0) {
 		case 'policies':
 			require_once(ENTERPRISE_DIR . '/operation/policies/networkmap.policies.php');
 			break;
-		case 'dinamic':
+		case 'dynamic':
 			require_once('operation/agentes/networkmap.dinamic.php');
 			break;
 		case 'radial_dynamic':

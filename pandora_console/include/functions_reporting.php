@@ -3408,6 +3408,14 @@ function reporting_sql($report, $content) {
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text();
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	if ($content['treport_custom_sql_id'] != 0) {
 		switch ($config["dbtype"]) {
 			case "mysql":
@@ -3464,6 +3472,10 @@ function reporting_sql($report, $content) {
 	else {
 		$return['correct'] = 0;
 		$return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, union, password, pass, insert or update.');
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);

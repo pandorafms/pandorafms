@@ -393,7 +393,7 @@ switch ($activeTab) {
 		$title = __('Policies view');
 		$icon = "images/policies_mc.png";
 		break;
-	case 'dinamic':
+	case 'dynamic':
 		$title = __('Dynamic view');
 		$icon = "images/dynamic_network_icon.png";
 		break;
@@ -463,7 +463,7 @@ if ($activeTab == 'groups' || $activeTab == 'policies' || $activeTab == 'radial_
 }
 
 // Layout
-if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
+if ($activeTab != 'dynamic' && $activeTab != 'radial_dynamic') {
 	$form_elems[] = __('Layout') . '&nbsp;' .
 		html_print_select ($layout_array, 'layout', $layout, '', '', '', true);
 }
@@ -485,7 +485,7 @@ if ($activeTab == 'topology') {
 }
 
 // No overlap
-if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
+if ($activeTab != 'dynamic' && $activeTab != 'radial_dynamic') {
 	$form_elems[] = __('No Overlap') . '&nbsp;' .
 		html_print_checkbox ('nooverlap', '1', $nooverlap, true);
 }
@@ -505,13 +505,13 @@ if ($activeTab == 'groups') {
 }
 
 // Simple
-if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
+if ($activeTab != 'dynamic' && $activeTab != 'radial_dynamic') {
 	$form_elems[] = __('Simple') . '&nbsp;' .
 		html_print_checkbox ('simple', '1', $simple, true);
 }
 
 // Regenerate
-if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
+if ($activeTab != 'dynamic' && $activeTab != 'radial_dynamic') {
 	$form_elems[] = __('Regenerate') . '&nbsp;' .
 		html_print_checkbox ('regen', '1', $regen, true);
 }
@@ -533,7 +533,7 @@ if ($pure == "1") {
 }
 
 // Font
-if ($activeTab != 'dinamic' && $activeTab != 'radial_dynamic') {
+if ($activeTab != 'dynamic' && $activeTab != 'radial_dynamic') {
 	$form_elems[] = __('Font') . '&nbsp;' .
 		html_print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 2, 4, true);
 }
@@ -594,7 +594,7 @@ switch ($activeTab) {
 	case 'policies':
 		require_once(ENTERPRISE_DIR . '/operation/policies/networkmap.policies.php');
 		break;
-	case 'dinamic':
+	case 'dynamic':
 		require_once('operation/agentes/networkmap.dinamic.php');
 		break;
 	case 'radial_dynamic':

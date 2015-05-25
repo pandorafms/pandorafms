@@ -2307,6 +2307,14 @@ function reporting_group_configuration($report, $content) {
 		$content['name'] = __('Group configuration');
 	}
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	$group_name = groups_get_name($content['id_group'], true);
 	
 	$return['title'] = $content['name'];
@@ -2334,6 +2342,10 @@ function reporting_group_configuration($report, $content) {
 		$agent_report = reporting_agent_configuration($report, $content_agent);
 		
 		$return['data'][] = $agent_report['data'];
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);
@@ -3172,6 +3184,13 @@ function reporting_agent_configuration($report, $content) {
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
 	
 	$sql = "
 		SELECT *
@@ -3263,6 +3282,10 @@ function reporting_agent_configuration($report, $content) {
 	}
 	
 	$return['data'] = $agent_configuration;
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
 	
 	return reporting_check_structure_content($return);
 }

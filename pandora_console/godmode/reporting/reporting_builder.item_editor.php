@@ -2470,6 +2470,7 @@ function chooseType() {
 			break;
 		case 'group_configuration':
 			$("#row_group").show();
+			$("#row_servers").show();
 			break;
 		case 'netflow_area':
 			$("#row_netflow_filter").show();

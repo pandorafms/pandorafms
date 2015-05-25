@@ -178,7 +178,7 @@ $interface_traffic_modules = array(
 			array_values($interface_traffic_modules),
 			$config['homeurl'],
 			array_keys($interface_traffic_modules),
-			array("bytes"),
+			array_fill(0, count($interface_traffic_modules),"bytes"),
 			false);
 		
 		echo '</div>';

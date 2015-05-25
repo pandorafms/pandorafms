@@ -417,6 +417,7 @@ function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 	$status_text_monitor = '', $status_module_group=-1) {
 	
 	$form_text = '';
+	$table = new stdClass();
 	$table->class = "databox filters";
 	$table->width = "100%";
 	$table->style[0] = 'font-weight: bold;';

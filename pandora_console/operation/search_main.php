@@ -29,6 +29,7 @@ echo '<br><div style="margin:auto; width:90%; padding: 10px; background: #fff">'
 
 $anyfound = false;
 
+$table = new stdClass();
 $table->id = 'summary';
 $table->width = '98%';
 

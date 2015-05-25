@@ -2412,6 +2412,14 @@ function reporting_alert_report_group($report, $content) {
 		$content['name'] = __('Alert Report Group');
 	}
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	$group_name = groups_get_name($content['id_group'], true);
 	
 	$return['title'] = $content['name'];
@@ -2514,6 +2522,10 @@ function reporting_alert_report_group($report, $content) {
 	
 	$return['data'] = $data;
 	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
+	
 	return reporting_check_structure_content($return);
 }
 
@@ -2525,6 +2537,15 @@ function reporting_alert_report_agent($report, $content) {
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('Alert Report Agent');
+	}
+	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
 	}
 	
 	$agent_name = agents_get_name($content['id_agent']);
@@ -2609,6 +2630,10 @@ function reporting_alert_report_agent($report, $content) {
 	
 	$return['data'] = $data;
 	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
+	
 	return reporting_check_structure_content($return);
 }
 
@@ -2620,6 +2645,14 @@ function reporting_alert_report_module($report, $content) {
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('Alert Report Module');
+	}
+	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
 	}
 	
 	$module_name = io_safe_output(
@@ -2701,6 +2734,10 @@ function reporting_alert_report_module($report, $content) {
 	}
 	
 	$return['data'] = $data;
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
 	
 	return reporting_check_structure_content($return);
 }

@@ -550,7 +550,7 @@ else
 					html_print_select(reports_get_report_types(false, true), 'type', $type, 'chooseType();', '', '');
 				}
 				else {
-					$report_type = reports_get_report_types($type);
+					$report_type = reports_get_report_types();
 					if (!empty($report_type) and isset($report_type[$type]['name']))
 						echo $report_type[$type]['name'];
 					else
@@ -2312,6 +2312,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_group").show();
+			$("#row_servers").show();
 			break;
 		case 'alert_report_agent':
 			$("#row_description").show();

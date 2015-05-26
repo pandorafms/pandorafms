@@ -442,6 +442,9 @@ switch ($action) {
 						break;
 					default:
 						if (enterprise_installed()) {
+							if ($image !== null) {
+								$values['image'] = $image;
+							}
 							enterprise_ajax_update_values($action, $type, $values);
 						}
 						break;

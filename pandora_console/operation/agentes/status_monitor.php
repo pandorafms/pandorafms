@@ -1204,7 +1204,26 @@ foreach ($result as $row) {
 		$row['min_critical'], $row['str_critical']);
 	
 	if (is_numeric($row["datos"])) {
-		$salida = format_numeric($row["datos"]);
+		if ( $config["render_proc"] ){
+			switch($row["module_type"]) {
+				case 2:
+				case 6:
+				case 9:
+				case 18:
+				case 21:
+				case 31:
+					if ( $row["datos"] >= 1 ) 
+						$salida ='OK';
+					else
+						$salida = 'FAIL';
+					break;
+				default:	
+					$salida = format_numeric($row["datos"]);
+					break;
+			}
+		}else{
+			$salida = format_numeric($row["datos"]);
+		}
 		
 		// Show units ONLY in numeric data types
 		if (isset($row["unit"])) {

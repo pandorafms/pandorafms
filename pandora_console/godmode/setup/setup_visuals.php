@@ -492,6 +492,16 @@ $table->data[$row][1] = html_print_input_text ('custom_graph_widht',
 
 $row++;
 
+$table->data[$row][0] = __('Render data of module type is proc.');
+$table->data[$row][1] = __('Yes') . '&nbsp;' . 
+		html_print_radio_button ('render_proc', 1, '',
+		$config["render_proc"], true) .
+	'&nbsp;&nbsp;';
+$table->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('render_proc', 0, '',
+		$config["render_proc"], true);
+
+$row++;
 
 echo '<form id="form_setup" method="post">';
 html_print_input_hidden ('update_config', 1);

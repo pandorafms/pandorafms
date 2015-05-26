@@ -453,7 +453,9 @@ function config_update_config () {
 						$error_update[] = __('Show the group name instead the group icon.');
 					if (!config_update_value ('custom_graph_widht', get_parameter('custom_graph_widht')))
 						$error_update[] = __('Default line thickness for the Custom Graph.');
-					
+					if (!config_update_value ('render_proc', (int) get_parameter('render_proc', 0)))
+						$error_update[] = __('Render data of module type is proc.');
+						
 					$interval_values = get_parameter ('interval_values');
 					
 					// Add new interval value if is provided
@@ -1201,7 +1203,10 @@ function config_process_config () {
 	if (!isset($config['custom_graph_widht'])) {
 		config_update_value ('custom_graph_widht', 1);
 	}
-	
+	if (!isset($config['render_proc'])) {
+		config_update_value ('render_proc', 0);
+	}
+
 	if (!isset($config['command_snapshot'])) {
 		config_update_value ('command_snapshot', 1);
 	}

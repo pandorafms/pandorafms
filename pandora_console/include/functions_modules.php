@@ -2141,14 +2141,8 @@ function modules_get_count_datas($id_agent_module, $date_init, $date_end) {
 	return ($diff / $interval);
 }
 
-function modules_get_data_with_value($id_agent_module, $date_init,
-	$date_end, $value, $split_interval = false) {
-	
-	global $config;
-	
-	// TODO REMOVE THE TIME IN PLANNED DOWNTIME
-	
-	// TODO FOR OTHER KIND OF DATA
+function modules_get_count_data_with_value($id_agent_module, $date_init,
+	$date_end, $value) {
 	
 	if (!is_numeric($date_init)) {
 		$date_init = strtotime($date_init);
@@ -2158,57 +2152,49 @@ function modules_get_data_with_value($id_agent_module, $date_init,
 		$date_end = strtotime($date_end);
 	}
 	
-	$sql = "
-		SELECT *
+	$sql = "SELECT *
 		FROM tagente_datos
 		WHERE
-			datos = " . (int)$value . "
-			AND id_agente_modulo = " . (int)$id_agent_module . "
+			id_agente_modulo = " . (int)$id_agent_module . "
 			AND (utimestamp >= " . $date_init . " AND utimestamp <= " . $date_end . ")";
 	
-	$data = db_get_all_rows_sql($sql,
-		$config['history_db_enabled']);
+	$data = db_get_all_rows_sql($sql, $config['history_db_enabled']);
 	
 	if (empty($data)) {
 		$data = array();
 	}
 	
-	if ($split_interval) {
-		$temp = array();
-		$previous_utimestamp = false;
-		foreach ($data as $row) {
-			if ($previous_utimestamp === false) {
-				$previous_utimestamp = $row['utimestamp'];
-				
-				$temp[] = $row;
+	$interval = modules_get_interval($id_agent_module);
+	
+	$total_time_with_value = 0;
+	$on_value_detected = false;
+	$timestamp_with_value = null;
+	
+	foreach ($data as $row) {
+		if ($row['datos'] == $value) {
+			if (!$on_value_detected) {
+				$timestamp_with_value = $row['utimestamp'];
+				$on_value_detected = true;
 			}
-			else {
-				$diff = $row['utimestamp'] - $previous_utimestamp;
+		}
+		else {
+			if ($on_value_detected) {
+				$total_time_with_value 
+					+= $row['utimestamp'] - $timestamp_with_value;
 				
-				$interval = modules_get_interval($id_agent_module);
-				
-				if ($diff > $interval) {
-					$fake_count = (int)($diff / $interval);
-					
-					$fake = $row;
-					for ($iterator = 1; $iterator <= $fake_count; $iterator++) {
-						$fake['utimestamp'] = $previous_utimestamp + ($iterator * $interval);
-						$temp[] = $fake;
-					}
-				}
-				else {
-					$temp[] = $row;
-				}
-				
-				$previous_utimestamp = $row['utimestamp'];
-				
-				$data = $temp;
+				$on_value_detected = false;
 			}
 		}
 	}
 	
-	return $data;
+	if ($on_value_detected && !empty($data)) {
+		$total_time_with_value 
+			+= $date_end - $timestamp_with_value;
+	}
+	
+	return $total_time_with_value / $interval;
 }
+
 
 function modules_get_first_contact_date($id_agent_module) {
 	global $config;

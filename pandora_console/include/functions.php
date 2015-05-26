@@ -464,29 +464,19 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 			$returnTime .= "$hours $hoursString ";
 		}
 		
-		$mins = floor($seconds / SECONDS_1MINUTE);
+		$mins = floor($seconds / 60);
 		
 		if ($mins != 0) {
-			$seconds = $seconds - ($mins * SECONDS_1MINUTE);
+			$seconds = $seconds - ($mins * 60);
 			
-			if ($hours == 0) {
-				$returnTime .= "$mins $minutesString ";
-			}
-			else {
-				$returnTime = sprintf("%02d",$hours) . ':' .
-					sprintf("%02d",$mins);
-			}
+			$returnTime .= "$mins $minutesString ";
+			
 		}
 		
+		$seconds = (int) $seconds;
+		
 		if ($seconds != 0) {
-			if ($hours == 0) {
-				$returnTime .= "$seconds $secondsString ";
-			}
-			else {
-				$returnTime = sprintf("%02d",$hours) . ':' .
-					sprintf("%02d",$mins) . ':' .
-					sprintf("%02d",$seconds);
-			}
+			$returnTime .= "$seconds $secondsString ";
 		}
 		
 		$return = ' ';

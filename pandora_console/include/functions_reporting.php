@@ -3715,12 +3715,11 @@ function reporting_availability($report, $content) {
 			$percent_ok = 0;
 		}
 		else {
-			$count_fails = count(
-				modules_get_data_with_value(
-					$item['id_agent_module'],
-					$report["datetime"] - $content['period'],
-					$report["datetime"],
-					0, true));
+			$count_fails = modules_get_count_data_with_value(
+				$item['id_agent_module'],
+				$report["datetime"] - $content['period'],
+				$report["datetime"],
+				0);
 			$percent_ok = (($count_checks - $count_fails) * 100) / $count_checks;
 			$percent_fail = 100 - $percent_ok;
 			

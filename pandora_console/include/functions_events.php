@@ -846,12 +846,13 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 	$result = db_get_all_rows_sql ($sql);
 	
 	if ($result === false) {
-		if ($return){
-			$returned = ui_print_info_message ( __('No events'),'',true );
+		if ($return) {
+			$returned = ui_print_info_message (__('No events'), '', true);
 			return $returned;
 		}
-		else
-			echo ui_print_info_message ( __('No events') );
+		else {
+			echo ui_print_info_message (__('No events'));
+		}
 	}
 	else {
 		$table = new stdClass();

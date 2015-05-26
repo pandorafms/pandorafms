@@ -83,11 +83,13 @@ sub ipmi_ping ($$$) {
 	
 	my $res = `$cmd`;	
 
-	if ($res =~ /100\.0% packet loss/) {
-		return 0;
-	}	
-	
-	return 1;
+	if ($res =~ / (\d+\.\d+)% packet loss/) {
+		if ($1 ne '100.0') {
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 sub create_ipmi_modules($$$$$$$) {

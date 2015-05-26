@@ -1683,6 +1683,8 @@ function modules_get_next_data ($id_agent_module, $utimestamp = 0, $string = 0) 
  */
 function modules_get_agentmodule_data ($id_agent_module, $period,
 	$date = 0, $trash=false, $conexion = false, $order = 'ASC') {
+	global $config;
+	
 	
 	$module = db_get_row('tagente_modulo', 'id_agente_modulo',
 		$id_agent_module);
@@ -1718,6 +1720,28 @@ function modules_get_agentmodule_data ($id_agent_module, $period,
 					AND utimestamp > %d AND utimestamp <= %d
 				ORDER BY utimestamp %s",
 				$id_agent_module, $datelimit, $date, $order);
+			break;
+		case 2:
+		case 6:
+		case 9:
+		case 18:
+		case 21:
+		case 31:
+			if ( $config["render_proc"] ) {
+				$sql = sprintf ("SELECT IF(datos >= 1, 'OK', 'FAIL') as data, utimestamp
+					FROM tagente_datos
+					WHERE id_agente_modulo = %d
+						AND utimestamp > %d AND utimestamp <= %d
+					ORDER BY utimestamp %s",
+					$id_agent_module, $datelimit, $date, $order);
+			}else{
+				$sql = sprintf ("SELECT datos AS data, utimestamp
+				FROM tagente_datos
+				WHERE id_agente_modulo = %d
+					AND utimestamp > %d AND utimestamp <= %d
+				ORDER BY utimestamp %s",
+				$id_agent_module, $datelimit, $date, $order);
+			}
 			break;
 		default:
 			$sql = sprintf ("SELECT datos AS data, utimestamp

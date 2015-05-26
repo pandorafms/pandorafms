@@ -1458,7 +1458,7 @@ function config_check () {
 		}
 		if ($_SESSION['new_update'] == 'new') {
 			set_pandora_error_for_header(
-				__('There is a new update please go to menu Administration and into extensions <a style="font-weight:bold;" href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online">go to Update Manager</a> for more details.'),
+				__('There is a new update available. Please<a style="font-weight:bold;" href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online"> go to Administration:Setup:Update Manager</a> for more details.'),
 				__("New update of Pandora Console"));
 		}
 	}

@@ -28571,13 +28571,13 @@ msgstr "Error on first setup open update"
 msgid "New update of Pandora Console"
 msgstr "New update of Pandora Console"
 
-#: ../../include/functions_config.php:1346
+#: ../../include/functions_config.php:1401
 msgid ""
-"There is a new update please go to menu Administration and into extensions "
-"<a style=\"font-weight:bold;\" "
+"There is a new update available. Please<a style=\"font-weight:bold;\" "
 "href=\"index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=on"
-"line\">go to Update Manager</a> for more details."
+"line\"> go to Administration:Setup:Update Manager</a> for more details."
 msgstr ""
+
 
 #: ../../include/functions_config.php:1361
 msgid "PHP safe mode is enabled. Some features may not properly work."

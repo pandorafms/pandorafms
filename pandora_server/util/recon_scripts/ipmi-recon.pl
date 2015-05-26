@@ -21,8 +21,8 @@ use PandoraFMS::Config;
 ##########################################################################
 # Global variables so set behaviour here:
 
-my $pkg_count = 3; #Number of ping pkgs
-my $pkg_timeout = 3; #Pkg ping timeout wait
+my $pkg_count = 2; #Number of ping pkgs
+my $pkg_timeout = 1; #Pkg ping timeout wait
 
 ##########################################################################
 # Code begins here, do not touch
@@ -44,6 +44,7 @@ my $create_incident = $ARGV[2]; # Defined by user
 my $target_network = $ARGV[3]; # Filed1 defined by user
 my $username = $ARGV[4]; # Field2 defined by user
 my $password = $ARGV[5]; # Field3 defined by user
+my $extraopts = $ARGV[6]; # Field4 defined by user
 
 
 ##########################################################################
@@ -62,10 +63,11 @@ sub show_help {
 	print "\nSpecific Pandora FMS Intel DCM Discovery\n";
 	print "(c) Artica ST 2011 <info\@artica.es>\n\n";
 	print "Usage:\n\n";
-	print "   $0 <task_id> <group_id> <create_incident_flag> <custom_field1> <custom_field2> <custom_field3>\n\n";
+	print "   $0 <task_id> <group_id> <create_incident_flag> <custom_field1> <custom_field2> <custom_field3> <custom_field4>\n\n";
 	print " * custom_field1 = network. i.e.: 192.168.100.0/24\n";
 	print " * custom_field2 = username \n";
-	print " * custom_fiedl3 = password \n";
+	print " * custom_field3 = password \n";
+	print " * custom_field4 = additional ipmi-sensors options \n";
 	exit;
 }
 
@@ -88,10 +90,10 @@ sub ipmi_ping ($$$) {
 	return 1;
 }
 
-sub create_ipmi_modules($$$$$$) {
-	my ($conf, $dbh, $addr, $user, $pass, $id_agent) = @_;
+sub create_ipmi_modules($$$$$$$) {
+	my ($conf, $dbh, $addr, $user, $pass, $extraopts, $id_agent) = @_;
 
-        my $cmd = "ipmi-sensors -h $addr -u $user -p $pass";
+        my $cmd = "ipmi-sensors -h $addr -u $user -p $pass $extraopts";
 
         my $res = `$cmd`;
 
@@ -127,19 +129,22 @@ sub create_ipmi_modules($$$$$$) {
 		
 		my $id_module_type = get_module_id($dbh, $module_type);
 
-		my $params = "-s $aux[0]";
-			
+		my $macros = '{'.
+			'"1":{"macro":"_field1_","desc":"'.safe_input("Target IP").'","help":"","value":"'.$addr.'","hide":""},'.
+			'"2":{"macro":"_field2_","desc":"Username","help":"","value":"'.$user.'","hide":""},'.
+			'"3":{"macro":"_field3_","desc":"Password","help":"","value":"'.$pass.'","hide":"1"},'.
+			'"4":{"macro":"_field4_","desc":"Sensor","help":"","value":"'.$aux[0].'","hide":""},'.
+			'"5":{"macro":"_field5_","desc":"'.safe_input("Additional Options").'","help":"","value":"'.$extraopts.'","hide":""}'.
+			'}';
+
 		my %parameters;
 
 		$parameters{"nombre"} = safe_input($name);
 		$parameters{"id_tipo_modulo"} = $id_module_type;		
 		$parameters{"id_agente"} = $id_agent;
 		$parameters{"id_plugin"} = $ipmi_plugin_id;
-		$parameters{"ip_target"} = $addr;
-		$parameters{"plugin_user"} = $user;
-		$parameters{"plugin_pass"} = $pass;
 		$parameters{"id_modulo"} = 4;
-		$parameters{"plugin_parameter"} = $params;
+		$parameters{"macros"} = $macros;
 
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);	
 		
@@ -184,17 +189,7 @@ if (! defined ($net_addr)) {
 # Scan the network for host
 my ($total_hosts, $hosts_found, $addr_found) = ($net_addr->num, 0, '');
 
-my $last = 0;
-for (my $i = 1; $net_addr <= $net_addr->broadcast; $i++, $net_addr++) {
-	if($last == 1) {
-		last;
-	}
-	
-	my $net_addr_temp = $net_addr + 1;
-	if($net_addr eq $net_addr_temp) {
-		$last = 1;
-	}
-	
+for (my $i = 1; $net_addr < $net_addr->broadcast; $i++, $net_addr++) {
 	if ($net_addr =~ /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.(\d{1,3})\b/) {
 		if($1 eq '0' || $1 eq '255') {
 			next;
@@ -228,7 +223,7 @@ for (my $i = 1; $net_addr <= $net_addr->broadcast; $i++, $net_addr++) {
 		# Create a new agent
 		$agent_id = pandora_create_agent (\%conf, $conf{'servername'}, $host_name, $addr, $target_group, 0, 11, '', 300, $dbh);
 
-		create_ipmi_modules(\%conf, $dbh, $addr, $username, $password, $agent_id);
+		create_ipmi_modules(\%conf, $dbh, $addr, $username, $password, $extraopts, $agent_id);
 	}
 
 	# Generate an event

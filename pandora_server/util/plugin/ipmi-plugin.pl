@@ -11,7 +11,12 @@ sub get_param($) {
 	
 	for(my $i=0; $i<$#ARGV; $i++) {
 		
-		if ($ARGV[$i] eq $param) {
+		if ($ARGV[$i] eq "--") {
+			if ($param eq "--") {
+				$value = join(' ', @ARGV[$i+1..$#ARGV]);
+			}
+			last;
+		} elsif ($ARGV[$i] eq $param) {
 			$value = $ARGV[$i+1];
 			last;
 		}
@@ -40,8 +45,9 @@ my $host = get_param("h");
 my $user = get_param("u");
 my $pass = get_param("p");
 my $sensor = get_param("s");
+my $extraopts = get_param("-");
 
-my $res = `ipmi-sensors -h $host -u $user -p $pass -s $sensor | tail -1`;
+my $res = `ipmi-sensors -h $host -u $user -p $pass -s $sensor $extraopts | tail -1`;
 
 my @aux = split(/\|/, $res);
 

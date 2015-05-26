@@ -14,6 +14,7 @@
 // GNU General Public License for more details.
 
 if(!isset($table->width)) {
+	$table = new stdClass();
 	$table->width = '100%';
 }
 
@@ -500,7 +501,7 @@ foreach ($result as $event) {
 		if (!empty($event_user_comments)) {
 			$last_key = key(array_slice($event_user_comments, -1, 1, true));
 			$date_format = $config['date_format'];
-
+			
 			foreach ($event_user_comments as $key => $event_user_comment) {
 				$event_user_comment_str .= sprintf('%s: %s<br>%s: %s<br>%s: %s<br>',
 					__('Date'), date($date_format, $event_user_comment['utimestamp']),
@@ -591,7 +592,7 @@ foreach ($result as $event) {
 					array ("title" => __('Validate event')));
 				$data[$i] .= '</a>';
 			}
-
+			
 			// Delete event
 			if ((tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'],$childrens_ids) == 1)) {
 				if($event['estado'] != 2) {
@@ -677,7 +678,7 @@ if (!empty ($table->data)) {
 					});  
 				}
 			</script>
-			<?php			
+			<?php
 		}
 		//~ if (!$readonly && tags_check_acl ($config["id_user"], 0,"EM", $event['clean_tags']) == 1) {
 		if (!$readonly && ($show_delete_button)) {

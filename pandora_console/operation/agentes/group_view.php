@@ -82,6 +82,7 @@ $total_agentes = 0;
 $monitor_ok = 0;
 $monitor_warning = 0;
 $monitor_critical = 0;
+$monitor_unknown = 0;
 $agents_unknown = 0;
 foreach ($result_groups as $data) {
 	$total_agentes += $data["_total_agents_"];

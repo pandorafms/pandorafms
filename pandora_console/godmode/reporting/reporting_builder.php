@@ -369,6 +369,7 @@ switch ($action) {
 			$search_name = "%$search%' OR description LIKE '%$search%";
 		}
 		
+		$table_aux = new stdClass();
 		$table_aux->width = '100%';
 		$table_aux->class = 'databox filters';
 		$table_aux->cellpadding = 0;
@@ -462,6 +463,7 @@ switch ($action) {
 				'id_group',
 				'non_interactive'), $return_all_group, 'RR', $group, $strict_user);
 		
+		$table = new stdClass();
 		$table->width = '0px';
 		if (sizeof ($reports)) {
 			$table->id = 'report_list';

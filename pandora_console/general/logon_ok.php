@@ -49,6 +49,7 @@ if (tags_has_user_acl_tags()) {
 			// Overview Table
 			///////////////
 			
+			$table = new stdClass();
 			$table->class = "databox";
 			$table->cellpadding = 4;
 			$table->cellspacing = 4;
@@ -154,6 +155,7 @@ if (tags_has_user_acl_tags()) {
 			// Show last activity from this user
 			echo '<div id="activity">';
 			
+			$table = new stdClass();
 			$table->width = '100%'; //Don't specify px
 			$table->data = array ();
 			$table->size = array ();

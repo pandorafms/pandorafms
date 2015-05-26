@@ -481,9 +481,10 @@ function events_change_owner ($id_event, $new_owner = false, $force = false, $me
 	}
 	
 	// If no new_owner is provided, the current user will be the owner
-	if (empty($new_owner)) {
-		$new_owner = $config['id_user'];
-	}
+	// ** Comment this lines because if possible selected None owner in owner event. TIQUET: #2250***
+	//if (empty($new_owner)) {
+	//	$new_owner = $config['id_user'];
+	//}
 	
 	// Only generate comment when is forced (sometimes is changed the owner when comment)
 	if ($force) {
@@ -849,10 +850,11 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 			$returned = ui_print_info_message ( __('No events'),'',true );
 			return $returned;
 		}
-		else	
+		else
 			echo ui_print_info_message ( __('No events') );
 	}
 	else {
+		$table = new stdClass();
 		$table->id = 'latest_events_table';
 		$table->cellpadding = 0;
 		$table->cellspacing = 0;
@@ -1182,7 +1184,7 @@ function events_print_type_description ($type, $return = false) {
 function events_get_group_events ($id_group, $period, $date,
 	$filter_event_validated = false, $filter_event_critical = false,
 	$filter_event_warning = false, $filter_event_no_validated = false,
-	$filter_event_search = false) {
+	$filter_event_search = false, $meta = false) {
 	
 	global $config;
 	
@@ -1224,7 +1226,7 @@ function events_get_group_events ($id_group, $period, $date,
 		AND utimestamp <= %d ',
 		implode (",", $id_group), $datelimit, $date);
 	
-	return events_get_events_grouped($sql_where, 0, 1000);
+	return events_get_events_grouped($sql_where, 0, 1000, $meta);
 }
 
 /**
@@ -1565,7 +1567,8 @@ function events_check_event_filter_group ($id_filter) {
 function events_get_macros() {
 	return array('_agent_address_' => __('Agent address'),
 		'_agent_id_' => __('Agent id'),
-		'_event_id_' => __('Event id'));
+		'_event_id_' => __('Event id'),
+		'_module_address_' => __('Module Agent address'),);
 }
 
 /**
@@ -1843,7 +1846,7 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
 		$subst = '';
 		switch($macro) {
 			case '_agent_address_':
-				if($meta) {
+				if ($meta) {
 					$server = metaconsole_get_connection_by_id ($server_id);
 					metaconsole_connect($server);
 				}
@@ -1859,6 +1862,20 @@ function events_get_response_target($event_id, $response_id, $server_id, $histor
 				break;
 			case '_event_id_':
 				$subst = $event['id_evento'];
+				break;
+			case '_module_address_':
+				if($meta) {
+					$server = metaconsole_get_connection_by_id ($server_id);
+					metaconsole_connect($server);
+				}
+
+				$module = db_get_row("tagente_modulo",'id_agente_modulo', $event['id_agentmodule']);
+				if ($module['ip_target'] != false)
+					$subst = $module['ip_target'];
+				
+				if($meta) {
+					metaconsole_restore_db_force();
+				}
 				break;
 		}
 		

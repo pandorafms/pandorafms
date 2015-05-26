@@ -35,12 +35,13 @@ if (! check_acl ($config["id_user"], 0, "ER")) {
 	return;
 }
 
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$jump = '&nbsp;&nbsp;';
 }
-else{
+else {
 	$jump = "<br>";
 }
+
 if (is_ajax()) {
 	$get_filter_values = get_parameter('get_filter_values', 0);
 	$save_event_filter = get_parameter('save_event_filter', 0);
@@ -419,6 +420,7 @@ else {
 
 //----------------------------------------------------------------------
 //- INI ADVANCE FILTER -------------------------------------------------
+$table_advanced = new stdClass();
 $table_advanced->id = 'events_filter_form_advanced';
 $table_advanced->width = '98%';
 $table_advanced->cellspacing = 4;
@@ -542,6 +544,7 @@ $table_advanced->rowclass[] = '';
 //- END ADVANCE FILTER -------------------------------------------------
 
 
+$table = new stdClass();
 $table->id = 'events_filter_form';
 $table->width = '100%';
 $table->cellspacing = 4;

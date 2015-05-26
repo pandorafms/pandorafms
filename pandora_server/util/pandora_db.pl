@@ -33,7 +33,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "6.0dev PS150519";
+my $version = "6.0dev PS150526";
 
 # Pandora server configuration
 my %conf;
@@ -217,19 +217,22 @@ sub pandora_purgedb ($$) {
 		}
 		log_message ('', "\n");
 
-		log_message ('PURGE', "Deleting validated events from tmetaconsole_event_history.", '');
-		$events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM tmetaconsole_event_history WHERE estado = 1");
-		while($events_to_delete > 0) {
-			db_do($dbh, "DELETE FROM tmetaconsole_event_history WHERE estado = 1 LIMIT ?", $BIG_OPERATION_STEP);
-			$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
+		if (defined($conf->{'_enterprise_installed'}) && $conf->{'_enterprise_installed'} eq '1' &&
+			defined($conf->{'_metaconsole'}) && $conf->{'_metaconsole'} eq '1'){
+			log_message ('PURGE', "Deleting validated events from tmetaconsole_event_history.", '');
+			$events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM tmetaconsole_event_history WHERE estado = 1");
+			while($events_to_delete > 0) {
+				db_do($dbh, "DELETE FROM tmetaconsole_event_history WHERE estado = 1 LIMIT ?", $BIG_OPERATION_STEP);
+				$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
 			
-			# Mark the progress
-			log_message ('', ".");
+				# Mark the progress
+				log_message ('', ".");
 			
-			# Do not overload the MySQL server
-			usleep (10000);
+				# Do not overload the MySQL server
+				usleep (10000);
+			}
+			log_message ('', "\n");
 		}
-		log_message ('', "\n");
 	}
 	else {
 		log_message ('PURGE', 'event_purge is set to 0. Old events will not be deleted.');

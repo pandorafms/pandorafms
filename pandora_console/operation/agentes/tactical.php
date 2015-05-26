@@ -163,6 +163,7 @@ echo '<td style="vertical-align: top; min-width: 180px; width:25%; padding-right
 // ---------------------------------------------------------------------
 // The status horizontal bars (Global health, Monitor sanity...
 // ---------------------------------------------------------------------
+$table = new stdClass();
 $table->width = "100%";
 $table->class = "";
 $table->cellpadding = 2;
@@ -195,8 +196,8 @@ $data_agents = array(
 	);
 
 $table->data[1][0] = reporting_get_stats_alerts($data);
-$table->data[2][0] .= reporting_get_stats_modules_status($data, 180, 100, false, $data_agents);
-$table->data[3][0] .= reporting_get_stats_agents_monitors($data);
+$table->data[2][0] = reporting_get_stats_modules_status($data, 180, 100, false, $data_agents);
+$table->data[3][0] = reporting_get_stats_agents_monitors($data);
 $table->rowclass[] = '';
 
 
@@ -227,7 +228,7 @@ $acltags = tags_get_user_module_and_tags ($config['id_user'], $access = 'ER', $u
 
 if (!empty($acltags)) {
 	$tags_condition = tags_get_acl_tags_event_condition($acltags, false, $user_strict);
-
+	
 	if (!empty($tags_condition)) {
 		$events = events_print_event_table ("estado<>1 AND ($tags_condition)", 10, "100%",true,false,true);
 		ui_toggle($events, __('Latest events'));
@@ -242,7 +243,7 @@ if ($is_admin) {
 	require($config['homedir'] . '/godmode/servers/servers.build_table.php');
 	
 }
-$out .= '<table cellpadding=0 cellspacing=0 class="databox pies"  style="margin-top:15px;" width=100%><tr><td>';
+$out = '<table cellpadding=0 cellspacing=0 class="databox pies"  style="margin-top:15px;" width=100%><tr><td>';
 	$out .= '<fieldset class="databox tactical_set">
 			<legend>' . 
 				__('Event graph') . 

@@ -1684,7 +1684,7 @@ function networkmap_get_types ($strict_user = false) {
 	
 	$networkmap_types['topology'] = __('Create a new topology map');
 	$networkmap_types['groups'] = __('Create a new group map');
-	$networkmap_types['dinamic'] = __('Create a new dynamic map');
+	$networkmap_types['dynamic'] = __('Create a new dynamic map');
 	if (!$strict_user) {
 		$networkmap_types['radial_dynamic'] = __('Create a new radial dynamic map');
 	}
@@ -1710,7 +1710,7 @@ function networkmap_get_filter_types ($strict_user = false) {
 	
 	$networkmap_types['topology'] = __('Topology');
 	$networkmap_types['groups'] = __('Group');
-	$networkmap_types['dinamic'] = __('Dynamic');
+	$networkmap_types['dynamic'] = __('Dynamic');
 	if (!$strict_user) {
 		$networkmap_types['radial_dynamic'] = __('Radial dynamic');
 	}

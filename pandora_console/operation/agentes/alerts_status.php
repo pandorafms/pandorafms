@@ -381,6 +381,7 @@ if ($print_agent) {
 	}
 }
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = "databox data";
 $table->cellpadding = '0';

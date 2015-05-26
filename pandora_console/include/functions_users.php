@@ -125,7 +125,8 @@ function users_get_groups_for_select($id_user,  $privilege = "AR", $returnAllGro
 	}
 	else {
 		// First group it's needed to retrieve its parent group
-		$first_group = reset(array_slice($user_groups, 0, 1));
+		$first_group = array_slice($user_groups, 0, 1);
+		$first_group = reset($first_group);
 		$parent_group = $first_group['parent'];
 		
 		$user_groups_tree = groups_get_groups_tree_recursive($user_groups, $parent_group);

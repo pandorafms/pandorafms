@@ -1226,6 +1226,14 @@ function reporting_event_report_group($report, $content,
 		$content['name'] = __('Event Report Group');
 	}
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	$return['title'] = $content['name'];
 	$return['subtitle'] = groups_get_name($content['id_group'], true);
 	if (!empty($content['style']['event_filter_search'])) {
@@ -1378,6 +1386,10 @@ function reporting_event_report_group($report, $content,
 			$ttl);
 	}
 	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
+	
 	return reporting_check_structure_content($return);
 }
 
@@ -1388,6 +1400,14 @@ function reporting_event_report_module($report, $content) {
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('Event Report Module');
+	}
+	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
 	}
 	
 	$return['title'] = $content['name'];
@@ -1409,6 +1429,10 @@ function reporting_event_report_module($report, $content) {
 		$return['data'] = $data;
 	}
 	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
+	
 	return reporting_check_structure_content($return);
 }
 
@@ -1419,6 +1443,14 @@ function reporting_inventory_changes($report, $content) {
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('Inventory Changes');
+	}
+	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
 	}
 	
 	$return['title'] = $content['name'];
@@ -1447,6 +1479,10 @@ function reporting_inventory_changes($report, $content) {
 		$return['data'] = $inventory_changes;
 	}
 	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
+	
 	return reporting_check_structure_content($return);
 }
 
@@ -1459,6 +1495,14 @@ function reporting_inventory($report, $content) {
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('Inventory');
+	}
+	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
 	}
 	
 	$return['title'] = $content['name'];
@@ -1484,6 +1528,10 @@ function reporting_inventory($report, $content) {
 	}
 	else {
 		$return['data'] = $inventory_data;
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);
@@ -1580,6 +1628,10 @@ function reporting_agent_module($report, $content) {
 			
 			$return['data'][] = $row;
 		}
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);
@@ -1987,11 +2039,21 @@ function reporting_exception($report, $content, $type = 'dinamic',
 function reporting_group_report($report, $content) {
 	global $config;
 	
+	$metaconsole_on = ($config['metaconsole'] == 1) && defined('METACONSOLE');
+	
 	$return['type'] = 'group_report';
 	
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('Group Report');
+	}
+	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
 	}
 	
 	$return['title'] = $content['name'];
@@ -2004,13 +2066,24 @@ function reporting_group_report($report, $content) {
 	$events = events_get_group_events(
 		$content['id_group'],
 		$content['period'],
-		$report['datetime']);
+		$report['datetime'],
+		false,
+		false,
+		false,
+		false,
+		false,
+		$metaconsole_on);
+	
 	if (empty($events)) {
 		$events = array();
 	}
 	$return["data"]["count_events"] = count($events);
 	
 	$return["data"]["group_stats"] = reporting_get_group_stats($content['id_group']);
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
 	
 	return reporting_check_structure_content($return);
 }
@@ -2025,6 +2098,14 @@ function reporting_event_report_agent($report, $content,
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('Event Report Agent');
+	}
+	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
 	}
 	
 	$return['title'] = $content['name'];
@@ -2145,6 +2226,10 @@ function reporting_event_report_agent($report, $content,
 			$ttl);
 	}
 	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
+	
 	return reporting_check_structure_content($return);
 }
 
@@ -2260,6 +2345,14 @@ function reporting_group_configuration($report, $content) {
 		$content['name'] = __('Group configuration');
 	}
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	$group_name = groups_get_name($content['id_group'], true);
 	
 	$return['title'] = $content['name'];
@@ -2287,6 +2380,10 @@ function reporting_group_configuration($report, $content) {
 		$agent_report = reporting_agent_configuration($report, $content_agent);
 		
 		$return['data'][] = $agent_report['data'];
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);
@@ -2401,6 +2498,14 @@ function reporting_alert_report_group($report, $content) {
 		$content['name'] = __('Alert Report Group');
 	}
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	$group_name = groups_get_name($content['id_group'], true);
 	
 	$return['title'] = $content['name'];
@@ -2503,6 +2608,10 @@ function reporting_alert_report_group($report, $content) {
 	
 	$return['data'] = $data;
 	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
+	
 	return reporting_check_structure_content($return);
 }
 
@@ -2514,6 +2623,15 @@ function reporting_alert_report_agent($report, $content) {
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('Alert Report Agent');
+	}
+	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
 	}
 	
 	$agent_name = agents_get_name($content['id_agent']);
@@ -2598,6 +2716,10 @@ function reporting_alert_report_agent($report, $content) {
 	
 	$return['data'] = $data;
 	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
+	
 	return reporting_check_structure_content($return);
 }
 
@@ -2609,6 +2731,14 @@ function reporting_alert_report_module($report, $content) {
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('Alert Report Module');
+	}
+	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
 	}
 	
 	$module_name = io_safe_output(
@@ -2690,6 +2820,10 @@ function reporting_alert_report_module($report, $content) {
 	}
 	
 	$return['data'] = $data;
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
 	
 	return reporting_check_structure_content($return);
 }
@@ -2774,6 +2908,14 @@ function reporting_monitor_report($report, $content) {
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	$value = reporting_get_agentmodule_sla(
 		$content['id_agent_module'],
 		$content['period'],
@@ -2792,6 +2934,10 @@ function reporting_monitor_report($report, $content) {
 		
 		$return["data"]["fail"]["value"] = 100 - $return["data"]["ok"]["value"];
 		$return["data"]["fail"]["formated_value"] = (100 - $return["data"]["ok"]["formated_value"]);
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);
@@ -2887,6 +3033,14 @@ function reporting_simple_baseline_graph($report, $content,
 	
 	global $config;
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	$return['type'] = 'simple_baseline_graph';
 	
 	if (empty($content['name'])) {
@@ -2928,11 +3082,16 @@ function reporting_simple_baseline_graph($report, $content,
 				true,
 				0,
 				true,
-				false,
-				ui_get_full_url(false, false, false, false));
+				$only_image,
+				ui_get_full_url(false, false, false, false),
+				$ttl);
 			break;
 		case 'data':
 			break;
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);
@@ -2974,6 +3133,14 @@ function reporting_projection_graph($report, $content,
 	$force_height_chart = null) {
 	
 	global $config;
+	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
 	
 	$return['type'] = 'projection_graph';
 	
@@ -3023,9 +3190,9 @@ function reporting_projection_graph($report, $content,
 				0,
 				0,
 				$report["datetime"],
-				true,
+				$only_image,
 				ui_get_full_url(false, false, false, false) . '/',
-				1,
+				$ttl,
 				// Important parameter, this tell to graphic_combined_module function that is a projection graph
 				$output_projection,
 				$content['top_n_value']
@@ -3033,6 +3200,10 @@ function reporting_projection_graph($report, $content,
 			break;
 		case 'data':
 			break;
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);
@@ -3051,6 +3222,13 @@ function reporting_agent_configuration($report, $content) {
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
 	
 	$sql = "
 		SELECT *
@@ -3143,6 +3321,10 @@ function reporting_agent_configuration($report, $content) {
 	
 	$return['data'] = $agent_configuration;
 	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
+	
 	return reporting_check_structure_content($return);
 }
 
@@ -3205,6 +3387,14 @@ function reporting_value($report, $content, $type) {
 				$return['type'] = __('TTRT');
 				break;
 		}
+	}
+	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
 	}
 	
 	$module_name = io_safe_output(
@@ -3275,6 +3465,10 @@ function reporting_value($report, $content, $type) {
 	$return['data'] = array(
 		'value' => $value,
 		'formated_value' => $formated_value);
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
+	}
 	
 	return reporting_check_structure_content($return);
 }
@@ -3348,6 +3542,14 @@ function reporting_sql($report, $content) {
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text();
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	if ($content['treport_custom_sql_id'] != 0) {
 		switch ($config["dbtype"]) {
 			case "mysql":
@@ -3404,6 +3606,10 @@ function reporting_sql($report, $content) {
 	else {
 		$return['correct'] = 0;
 		$return['error'] = __('Illegal query: Due security restrictions, there are some tokens or words you cannot use: *, delete, drop, alter, modify, union, password, pass, insert or update.');
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);
@@ -3888,6 +4094,14 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
 	$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
 	
 	$return = array();
@@ -3939,10 +4153,15 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 				$graph["stacked"],
 				$report["datetime"],
 				$only_image,
-				ui_get_full_url(false, false, false, false));
+				ui_get_full_url(false, false, false, false),
+				$ttl);
 			break;
 		case 'data':
 			break;
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);
@@ -3953,6 +4172,16 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 	
 	global $config;
 	
+	
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
+	}
+	
+	
 	$return = array();
 	$return['type'] = 'simple_graph';
 	
@@ -3960,10 +4189,14 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 		$content['name'] = __('Simple graph');
 	}
 	
+	
+	
 	$module_name = io_safe_output(
 		modules_get_agentmodule_name($content['id_agent_module']));
 	$agent_name = io_safe_output(
 		modules_get_agentmodule_agent_name ($content['id_agent_module']));
+	
+	
 	
 	
 	$return['title'] = $content['name'];
@@ -4058,6 +4291,10 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 			break;
 		case 'data':
 			break;
+	}
+	
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);
@@ -4698,7 +4935,7 @@ function reporting_get_group_stats ($id_group = 0, $access = 'AR') {
 	// -----------------------------------------------------------------
 	if ($config["realtimestats"] == 0) {
 		
-		if (!is_array($id_group)){
+		if (!is_array($id_group)) {
 			$my_group = $id_group;
 			$id_group = array();
 			$id_group[0] = $my_group;
@@ -7402,5 +7639,164 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	}
 	
 	return $data_colors;
+}
+
+function reporting_get_stats_servers($tiny = true) {
+	global $config;
+	
+	$server_performance = servers_get_performance();
+	
+	// Alerts table
+	$table_srv = html_get_predefined_table();
+	
+	$table_srv->style[0] = $table_srv->style[2] = 'text-align: right; padding: 5px;';
+	$table_srv->style[1] = $table_srv->style[3] = 'text-align: left; padding: 5px;';
+	
+	$tdata = array();
+	$tdata[0] = html_print_image('images/module.png', true, array('title' => __('Total running modules'), 'width' => '25px'));
+	$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_modules"]) . '</span>';
+	
+	$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["total_modules_rate"], 2) . '</span>';
+	$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+	
+	$table_srv->rowclass[] = '';
+	$table_srv->data[] = $tdata;
+	
+	$tdata = array();
+	$tdata[0] = '<hr style="border: 0; height: 1px; background: #DDD">';
+	$table_srv->colspan[count($table_srv->data)][0] = 4;
+	$table_srv->rowclass[] = '';
+	$table_srv->data[] = $tdata;
+	
+	$tdata = array();
+	$tdata[0] = html_print_image('images/database.png', true, array('title' => __('Local modules'), 'width' => '25px'));
+	$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_local_modules"]) . '</span>';
+	
+	$tdata[2] = '<span class="med_data">' .
+		format_numeric($server_performance ["local_modules_rate"], 2) . '</span>';
+	$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+	
+	$table_srv->rowclass[] = '';
+	$table_srv->data[] = $tdata;
+	
+	if ($tiny) {
+		$tdata = array();
+		$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Remote modules'), 'width' => '25px'));
+		$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_remote_modules"]) . '</span>';
+		
+		$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["remote_modules_rate"], 2) . '</span>';
+		$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+		
+		$table_srv->rowclass[] = '';
+		$table_srv->data[] = $tdata;
+	}
+	else {
+		if (isset($server_performance ["total_network_modules"])) {
+			$tdata = array();
+			$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Network modules'), 'width' => '25px'));
+			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_network_modules"]) . '</span>';
+			
+			$tdata[2] = '<span class="med_data">' .
+				format_numeric($server_performance["network_modules_rate"], 2) .
+				'</span>';
+			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+			
+			$table_srv->rowclass[] = '';
+			$table_srv->data[] = $tdata;
+		}
+		
+		if (isset($server_performance ["total_plugin_modules"])) {
+			$tdata = array();
+			$tdata[0] = html_print_image('images/plugin.png', true, array('title' => __('Plugin modules'), 'width' => '25px'));
+			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_plugin_modules"]) . '</span>';
+			
+			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["plugin_modules_rate"], 2) . '</span>';
+			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+			
+			$table_srv->rowclass[] = '';
+			$table_srv->data[] = $tdata;
+		}
+		
+		if (isset($server_performance ["total_prediction_modules"])) {
+			$tdata = array();
+			$tdata[0] = html_print_image('images/chart_bar.png', true, array('title' => __('Prediction modules'), 'width' => '25px'));
+			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_prediction_modules"]) . '</span>';
+			
+			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["prediction_modules_rate"], 2) . '</span>';
+			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+			
+			$table_srv->rowclass[] = '';
+			$table_srv->data[] = $tdata;
+		}
+		
+		if (isset($server_performance ["total_wmi_modules"])) {
+			$tdata = array();
+			$tdata[0] = html_print_image('images/wmi.png', true, array('title' => __('WMI modules'), 'width' => '25px'));
+			$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_wmi_modules"]) . '</span>';
+			
+			$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["wmi_modules_rate"], 2) . '</span>';
+			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+			
+			$table_srv->rowclass[] = '';
+			$table_srv->data[] = $tdata;
+		}
+		
+		if (isset($server_performance ["total_web_modules"])) {
+			$tdata = array();
+			$tdata[0] = html_print_image('images/world.png', true, array('title' => __('Web modules'), 'width' => '25px'));
+			$tdata[1] = '<span class="big_data">' .
+				format_numeric($server_performance ["total_web_modules"]) .
+				'</span>';
+			
+			$tdata[2] = '<span class="med_data">' .
+				format_numeric($server_performance ["web_modules_rate"], 2) .
+				'</span>';
+			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+			
+			$table_srv->rowclass[] = '';
+			$table_srv->data[] = $tdata;
+		}
+		
+		$tdata = array();
+		$tdata[0] = '<hr style="border: 0; height: 1px; background: #DDD">';
+		$table_srv->colspan[count($table_srv->data)][0] = 4;
+		$table_srv->rowclass[] = '';
+		$table_srv->data[] = $tdata;
+		
+		
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$system_events = db_get_value_sql(
+					'SELECT SQL_NO_CACHE COUNT(id_evento)
+					FROM tevento');
+				break;
+			case "postgresql":
+			case "oracle":
+				$system_events = db_get_value_sql(
+					'SELECT COUNT(id_evento)
+					FROM tevento');
+				break;
+		}
+		
+		
+		
+		$tdata = array();
+		$tdata[0] = html_print_image('images/lightning_go.png', true,
+			array('title' => __('Total events'), 'width' => '25px'));
+		$tdata[1] = '<span class="big_data">' .
+			format_numeric($system_events) . '</span>';
+		
+		$table_srv->colspan[count($table_srv->data)][1] = 3;
+		$table_srv->rowclass[] = '';
+		$table_srv->data[] = $tdata;
+	}
+	
+	$output = '<fieldset class="databox tactical_set">
+				<legend>' . 
+					__('Server performance') . 
+				'</legend>' . 
+				html_print_table($table_srv, true) . '</fieldset>';
+	
+	return $output;
 }
 ?>

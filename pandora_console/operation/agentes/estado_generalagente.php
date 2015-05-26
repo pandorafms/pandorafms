@@ -59,6 +59,7 @@ if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && !$is_extra) {
 }
 
 // START: TABLE AGENT BUILD
+$table_agent = new stdClass();
 $table_agent->id = 'agent_details_main';
 $table_agent->width = '82%';
 $table_agent->cellspacing = 0;
@@ -182,6 +183,7 @@ $table_agent->rowclass[] = '';
 // END: TABLE AGENT BUILD
 
 // START: TABLE CONTACT BUILD
+$table_contact = new stdClass();
 $table_contact->id = 'agent_contact_main';
 $table_contact->width = '100%';
 $table_contact->cellspacing = 0;
@@ -225,6 +227,7 @@ $table_contact->data[] = $data;
 // END: TABLE CONTACT BUILD
 
 // START: TABLE DATA BUILD
+$table_data = new stdClass();
 $table_data->id = 'agent_data_main';
 $table_data->width = '100%';
 $table_data->cellspacing = 0;
@@ -481,7 +484,7 @@ if (!empty($network_interfaces)) {
 
 // END: TABLE INTERFACES
 
-$table = null;
+$table = new stdClass();
 $table->id = 'agent_details';
 $table->width = '100%';
 $table->cellspacing = 0;

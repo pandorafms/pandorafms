@@ -184,12 +184,14 @@ if ($moduleFilter != 0) {
 	$where .= ' AND id_agent_module = ' . $moduleFilter;
 }
 
+/*
 // Filter report items created from metaconsole in normal console list and the opposite
 if (defined('METACONSOLE') and $config['metaconsole'] == 1) {
 	$where .= ' AND ((server_name IS NOT NULL AND length(server_name) != 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
 }
 else
 	$where .= ' AND ((server_name IS NULL OR length(server_name) = 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
+*/
 
 switch ($config["dbtype"]) {
 	case "mysql":

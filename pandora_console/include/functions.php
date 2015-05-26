@@ -473,24 +473,14 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 		if ($mins != 0) {
 			$seconds = $seconds - ($mins * 60);
 			
-			if ($hours == 0) {
-				$returnTime .= "$mins $minutesString ";
-			}
-			else {
-				$returnTime = sprintf("%02d", $hours) . ':' .
-					sprintf("%02d", $mins);
-			}
+			$returnTime .= "$mins $minutesString ";
+			
 		}
 		
+		$seconds = (int) $seconds;
+		
 		if ($seconds != 0) {
-			if ($hours == 0) {
-				$returnTime .= "$seconds $secondsString ";
-			}
-			else {
-				$returnTime = sprintf("%02d",$hours) . ':' .
-					sprintf("%02d",$mins) . ':' .
-					sprintf("%02d",$seconds);
-			}
+			$returnTime .= "$seconds $secondsString ";
 		}
 		
 		$return = ' ';

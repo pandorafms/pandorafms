@@ -5700,12 +5700,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						$item['id_agent_module'],
 						$report["datetime"] - $content['period'],
 						$report["datetime"]);
-					$count_fails = count(
-						modules_get_data_with_value(
-							$item['id_agent_module'],
+					$count_fails = modules_get_count_data_with_value(
+						$item['id_agent_module'],
 							$report["datetime"] - $content['period'],
 							$report["datetime"],
-							0, true));
+							0);
+					
 					$percent_ok = (($count_checks - $count_fails) * 100) / $count_checks;
 					$percent_fail = 100 - $percent_ok;
 					

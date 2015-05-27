@@ -13,6 +13,9 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+
+require_once ('include/functions_clippy.php');
+
 // Load global vars
 global $config;
 
@@ -29,10 +32,17 @@ global $tiny;
 
 $servers = servers_get_info();
 if ($servers === false) {
-	echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";
+	$server_clippy = clippy_context_help("servers_down");
+	echo "<div class='nf'>".__('There are no servers configured into the database').$server_clippy."</div>";
 	return;
 }
 
+
+$stateServers = (int) servers_check_status ();
+if ($stateServers == 0)
+	$server_clippy = clippy_context_help("servers_down");
+else
+	$server_clippy = "";
 $table->width = '98%';
 $table->size = array ();
 
@@ -46,7 +56,7 @@ $table->align[4] = 'center';
 $table->align[5] = 'center';
 $table->align[8] = 'center';
 
-$table->title = __('Tactical server information');
+$table->title = __('Tactical server information') . $server_clippy;
 $table->titleclass = 'tabletitle';
 $table->titlestyle = 'text-transform:uppercase;';
 

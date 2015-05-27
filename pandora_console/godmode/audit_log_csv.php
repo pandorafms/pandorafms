@@ -17,7 +17,6 @@ require_once ($ownDir.'../include/config.php');
 global $config;
 require_once ($config["homedir"]."/include/functions.php");
 require_once ($config["homedir"]."/include/functions_db.php");
-enterprise_include ($config["homedir"]."/enterprise/include/functions_reporting_csv.php");
 require_once ($config["homedir"]."/include/auth/mysql.php");
 
 error_reporting(E_ALL);

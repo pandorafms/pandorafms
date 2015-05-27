@@ -1377,6 +1377,12 @@ function config_check () {
 			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 	}
 	
+	if ($config['event_storm_protection']) {
+		set_pandora_error_for_header(
+			__('You need to restart server after altering this configuration setting.'),
+			__('Event storm protection is activated. No events will be generated during this mode.'));
+	}
+	
 	global $develop_bypass;
 	
 	if ($develop_bypass == 1){

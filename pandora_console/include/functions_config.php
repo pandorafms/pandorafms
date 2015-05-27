@@ -1378,9 +1378,11 @@ function config_check () {
 	}
 	
 	if ($config['event_storm_protection']) {
-		set_pandora_error_for_header(
-			__('You need to restart server after altering this configuration setting.'),
-			__('Event storm protection is activated. No events will be generated during this mode.'));
+		config["alert_cnt"]++;
+		$_SESSION["alert_msg"] .= ui_print_error_message(
+			array('title' =>__('Event storm protection is activated. No events will be generated during this mode.'),
+			'message' => __('You need to restart server after altering this configuration setting.'),
+			'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 	}
 	
 	global $develop_bypass;

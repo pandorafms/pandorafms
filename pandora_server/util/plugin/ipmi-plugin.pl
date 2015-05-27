@@ -54,7 +54,7 @@ my ($sensor_id, $name, $type, $value, $units, $eventmask) = split(/,/, $res);
 #Output the value
 if ($value eq 'N/A') {
 	if ($eventmask =~ /([0-9A-Fa-f]+)h/) {
-		print hex substr($eventmask, 0, -1);
+		print hex $1;
 	} else {
 		print $eventmask;
 	}

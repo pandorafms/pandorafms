@@ -155,17 +155,13 @@ sub create_ipmi_modules($$$$$$$) {
 	
 	my $ipmi_plugin_id = get_db_value($dbh, "SELECT id FROM tplugin WHERE name = '".safe_input("IPMI Plugin")."'");
 	
-	for (my $i=1; $i < $#lines; $i++) {
+	for (my $i=0; $i <= $#lines; $i++) {
 		
 		my $line = $lines[$i];
 		
 		my ($sensor, $name, $type, $value, $units, $lowerNR, $lowerC, $lowerNC, $upperNC, $upperC, $upperNR, $eventmask) = split(/,/, $line);
 		
-		my $module_name = $name.' - '.$type;
-
-		if ($units ne 'N/A') {
-			$module_name .= " ($units)";
-		}
+		my $module_name = $type.': '.$name;
 
 		my $module_type;
 		my $module_warn_min;
@@ -216,6 +212,7 @@ sub create_ipmi_modules($$$$$$$) {
 		$parameters{"id_agente"} = $id_agent;
 		$parameters{"id_plugin"} = $ipmi_plugin_id;
 		$parameters{"id_modulo"} = 4;
+		$parameters{"unit"} = $units if $units ne 'N/A';
 		$parameters{"min_warning"} = $module_warn_min if defined $module_warn_min;
 		$parameters{"max_warning"} = $module_warn_max if defined $module_warn_max;
 		$parameters{"warning_inverse"} = $module_warn_invert if defined $module_warn_invert;

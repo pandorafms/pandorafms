@@ -2324,12 +2324,11 @@ function clear_pandora_error_for_header() {
 function set_pandora_error_for_header($message, $title = null) {
 	global $config;
 	
-	if (!isset($config["alert_cnt"])) {
-		$config["alert_cnt"] = 0;
-	}
-	if (!isset($_SESSION["alert_msg"])) {
-		$_SESSION["alert_msg"] = "";
-	}
+	if (!isset($config['alert_cnt']))
+		$config['alert_cnt'] = 0;
+	
+	if (!isset($_SESSION['alert_msg']))
+		$_SESSION['alert_msg'] = array();
 	
 	$message_config = array();
 	if (isset($title))
@@ -2337,10 +2336,32 @@ function set_pandora_error_for_header($message, $title = null) {
 	$message_config['message'] = $message;
 	$message_config['no_close'] = true;
 	
+	$config['alert_cnt']++;
+	$_SESSION['alert_msg'][] = array('type' => 'error', 'message' => $message_config);
+}
+
+function get_pandora_error_for_header() {
+	$result = '';
 	
-	$config["alert_cnt"]++;
-	$_SESSION["alert_msg"] .= ui_print_error_message($message_config,
-		'', true);
+	if (isset($_SESSION['alert_msg']) && is_array($_SESSION['alert_msg'])) {
+		foreach ($_SESSION['alert_msg'] as $key => $value) {
+			if (!isset($value['type']) || !isset($value['message']))
+				continue;
+			
+			switch ($value['type']) {
+				case 'error':
+					$result .= ui_print_error_message($value['message'], '', true);
+					break;
+				case 'info':
+					$result .= ui_print_info_message($value['message'], '', true);
+					break;
+				default:
+					break;
+			}
+		}
+	}
+	
+	return $result;
 }
 
 function set_if_defined (&$var, $test) {

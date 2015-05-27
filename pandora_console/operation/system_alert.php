@@ -2,6 +2,6 @@
 
 // TODO: Poner esto resizable y dragable: http://jqueryui.com/demos/dialog
 
-echo $_SESSION["alert_msg"];
+echo get_pandora_error_for_header();
 
 ?>

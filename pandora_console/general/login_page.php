@@ -155,8 +155,8 @@ echo '<div id="login_in">';
 			if (isset($error_info)) {
 				echo '<h1 id="log_title">' . $error_info['title'] . '</h1>';
 				echo '<div id="error_buttons">';
-				echo '<a href="index.php">' . html_print_image($config['homeurl'] . '/images/refresh.png', true, array('title' => __('Refresh')), false, true) . '</a>';
-				echo '<a href="javascript: modal_alert_critical()">' . html_print_image($config['homeurl'] . '/images/help.png', true, array('title' => __('View details')), false, true) . '</a>';
+				echo '<a href="index.php">' . html_print_image($config['homeurl'] . '/images/refresh_white.png', true, array('title' => __('Refresh')), false, true) . '</a>';
+				echo '<a href="javascript: modal_alert_critical()">' . html_print_image($config['homeurl'] . '/images/help_white.png', true, array('title' => __('View details')), false, true) . '</a>';
 				echo '</div>';
 				echo '<div id="log_msg">';
 				echo $error_info['message'];

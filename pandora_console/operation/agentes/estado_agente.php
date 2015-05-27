@@ -304,6 +304,20 @@ switch ($sortField) {
 				break;
 		}
 		break;
+	case 'description':
+		switch ($sort) {
+			case 'up':
+				$selectLastContactUp = $selected;
+				$order = array('field' => 'comentarios',
+					'field2' => 'nombre' . $order_collation, 'order' => 'DESC');
+				break;
+			case 'down':
+				$selectLastContactDown = $selected;
+				$order = array('field' => 'comentarios',
+					'field2' => 'nombre' . $order_collation, 'order' => 'ASC');
+				break;
+		}
+		break;
 	default:
 		$selectNameUp = $selected;
 		$selectNameDown = '';
@@ -432,7 +446,10 @@ $table->head[0] = __('Agent'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
 $table->size[0] = "10%";
 
-$table->head[1] = __('Description');
+$table->head[1] = __('Description'). ' ' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=description&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=description&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
+
 $table->size[1] = "30%";
 
 $table->head[2] = __('OS'). ' ' .

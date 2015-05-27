@@ -454,7 +454,7 @@ function config_update_config () {
 					if (!config_update_value ('custom_graph_widht', get_parameter('custom_graph_widht')))
 						$error_update[] = __('Default line thickness for the Custom Graph.');
 					if (!config_update_value ('render_proc', (int) get_parameter('render_proc', 0)))
-						$error_update[] = __('Render data of module type is proc.');
+						$error_update[] = __('Display proc modules in binary format (OK/FAIL)');
 						
 					$interval_values = get_parameter ('interval_values');
 					

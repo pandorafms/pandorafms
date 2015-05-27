@@ -492,7 +492,7 @@ $table->data[$row][1] = html_print_input_text ('custom_graph_widht',
 
 $row++;
 
-$table->data[$row][0] = __('Render data of module type is proc.');
+$table->data[$row][0] = __('Display proc modules in binary format (OK/FAIL)');
 $table->data[$row][1] = __('Yes') . '&nbsp;' . 
 		html_print_radio_button ('render_proc', 1, '',
 		$config["render_proc"], true) .

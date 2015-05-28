@@ -11,7 +11,12 @@ sub get_param($) {
 	
 	for(my $i=0; $i<$#ARGV; $i++) {
 		
-		if ($ARGV[$i] eq $param) {
+		if ($ARGV[$i] eq "--") {
+			if ($param eq "--") {
+				$value = join(' ', @ARGV[$i+1..$#ARGV]);
+			}
+			last;
+		} elsif ($ARGV[$i] eq $param) {
 			$value = $ARGV[$i+1];
 			last;
 		}
@@ -40,16 +45,19 @@ my $host = get_param("h");
 my $user = get_param("u");
 my $pass = get_param("p");
 my $sensor = get_param("s");
+my $extraopts = get_param("-");
 
-my $res = `ipmi-sensors -h $host -u $user -p $pass -s $sensor | tail -1`;
+my $res = `ipmi-sensors -h $host -u $user -p $pass -s $sensor $extraopts --ignore-not-available-sensors --no-header-output --comma-separated-output --output-event-bitmask`;
 
-my @aux = split(/\|/, $res);
-
-my $value = $aux[3];
-
-$value =~ s/\n//;
-$value =~ s/^\s+//;
-$value =~ s/\s+$//;
+my ($sensor_id, $name, $type, $value, $units, $eventmask) = split(/,/, $res);
 
 #Output the value
-print $value;
+if ($value eq 'N/A') {
+	if ($eventmask =~ /([0-9A-Fa-f]+)h/) {
+		print hex $1;
+	} else {
+		print $eventmask;
+	}
+} else {
+	print $value;
+}

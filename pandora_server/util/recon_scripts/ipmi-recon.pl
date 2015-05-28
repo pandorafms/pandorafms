@@ -21,8 +21,8 @@ use PandoraFMS::Config;
 ##########################################################################
 # Global variables so set behaviour here:
 
-my $pkg_count = 3; #Number of ping pkgs
-my $pkg_timeout = 3; #Pkg ping timeout wait
+my $pkg_count = 2; #Number of ping pkgs
+my $pkg_timeout = 1; #Pkg ping timeout wait
 
 ##########################################################################
 # Code begins here, do not touch
@@ -44,7 +44,60 @@ my $create_incident = $ARGV[2]; # Defined by user
 my $target_network = $ARGV[3]; # Filed1 defined by user
 my $username = $ARGV[4]; # Field2 defined by user
 my $password = $ARGV[5]; # Field3 defined by user
+my $extraopts = $ARGV[6]; # Field4 defined by user
 
+# Map Sensor type to module type and thresholds
+# 0 = numeric, record has thresholds
+# 1 = simple flag, 0 normal, > 0 critical
+# 2 = complex flags, for now ignore alert settings
+# 3 = string or unknown
+my %sensor_types = (
+	'Temperature' => 0,
+	'Voltage' => 0,
+	'Current' => 0,
+	'Fan' => 0,
+	'Physical Security' => 1,
+	'Platform Security Violation Attempt' => 1,
+	'Processor' => 2,
+	'Power Supply' => 2,
+	'Power Unit' => 2,
+	'Cooling Device' => 0,
+	'Other Units Based Sensor' => 0,
+	'Memory' => 2,
+	'Drive Slot' => 3,
+	'POST Memory Resize' => 3,
+	'System Firmware Progress' => 1,
+	'Event Logging Disabled' => 2,
+	'Watchdog 1' => 2,
+	'System Event' => 2,
+	'Critical Interrupt' => 1,
+	'Button Switch' => 2,
+	'Module Board' => 3,
+	'Microcontroller Coprocessor' => 3,
+	'Add In Card' => 3,
+	'Chassis' => 3,
+	'Chip Set' => 3,
+	'Other Fru' => 3,
+	'Cable Interconnect' => 3,
+	'Terminator' => 3,
+	'System Boot Initiated' => 2,
+	'Boot Error' => 1,
+	'OS Boot' => 2,
+	'OS Critical Stop' => 1,
+	'Slot Connector' => 2,
+	'System ACPI Power State' => 2,
+	'Watchdog 2' => 2,
+	'Platform Alert' => 2,
+	'Entity Presence' => 2,
+	'Monitor ASIC IC' => 3,
+	'LAN' => 2,
+	'Management Subsystem Health' => 1,
+	'Battery' => 2,
+	'Session Audit' => 3,
+	'Version Change' => 3,
+	'FRU State' => 3,
+	'OEM Reserved' => 3
+);
 
 ##########################################################################
 # Update recon task status.
@@ -62,10 +115,11 @@ sub show_help {
 	print "\nSpecific Pandora FMS Intel DCM Discovery\n";
 	print "(c) Artica ST 2011 <info\@artica.es>\n\n";
 	print "Usage:\n\n";
-	print "   $0 <task_id> <group_id> <create_incident_flag> <custom_field1> <custom_field2> <custom_field3>\n\n";
+	print "   $0 <task_id> <group_id> <create_incident_flag> <custom_field1> <custom_field2> <custom_field3> <custom_field4>\n\n";
 	print " * custom_field1 = network. i.e.: 192.168.100.0/24\n";
 	print " * custom_field2 = username \n";
-	print " * custom_fiedl3 = password \n";
+	print " * custom_field3 = password \n";
+	print " * custom_field4 = additional ipmi-sensors options \n";
 	exit;
 }
 
@@ -81,65 +135,91 @@ sub ipmi_ping ($$$) {
 	
 	my $res = `$cmd`;	
 
-	if ($res =~ /100\.0% packet loss/) {
-		return 0;
-	}	
-	
-	return 1;
+	if ($res =~ / (\d+\.\d+)% packet loss/) {
+		if ($1 ne '100.0') {
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
-sub create_ipmi_modules($$$$$$) {
-	my ($conf, $dbh, $addr, $user, $pass, $id_agent) = @_;
+sub create_ipmi_modules($$$$$$$) {
+	my ($conf, $dbh, $addr, $user, $pass, $extraopts, $id_agent) = @_;
 
-        my $cmd = "ipmi-sensors -h $addr -u $user -p $pass";
+	my $cmd = "ipmi-sensors -h $addr -u $user -p $pass $extraopts --ignore-not-available-sensors --no-header-output --comma-separated-output --non-abbreviated-units --output-sensor-thresholds --output-event-bitmask";
 
-        my $res = `$cmd`;
+	my $res = `$cmd`;
 
 	my @lines = split(/\n/, $res);
 	
 	my $ipmi_plugin_id = get_db_value($dbh, "SELECT id FROM tplugin WHERE name = '".safe_input("IPMI Plugin")."'");
-
 	
-	for(my $i=1; $i < $#lines; $i++) {
+	for (my $i=0; $i <= $#lines; $i++) {
 		
 		my $line = $lines[$i];
 		
-		my @aux = split(/\|/, $line);
+		my ($sensor, $name, $type, $value, $units, $lowerNR, $lowerC, $lowerNC, $upperNC, $upperC, $upperNR, $eventmask) = split(/,/, $line);
 		
-		my $name = $aux[1];
+		my $module_name = $type.': '.$name;
 
-		#Trim name
-		$name =~ s/^\s+//;
-		$name =~ s/\s+$//;
-		
-		my $module_type = "generic_data_string";
-		
-		my $value_read = $aux[3];
-		
-		#Trim name
-		$value_read =~ s/^\s+//;
-		$value_read =~ s/\s+$//;
-		
-		#Check if value read is integer or boolean
-		if ($value_read =~ m/^\d+.\d+$/ || $value_read =~ m/^\d+$/) {
+		my $module_type;
+		my $module_warn_min;
+		my $module_warn_max;
+		my $module_warn_invert;
+		my $module_critical_min;
+		my $module_critical_max;
+		my $module_critical_invert;
+
+		if ($sensor_types{$type} == 0) {
 			$module_type = "generic_data";	
-		} 
+			if ($lowerC ne 'N/A' and $upperC ne 'N/A') {
+				$module_critical_min = $lowerC;
+				$module_critical_max = $upperC;
+				$module_critical_invert = 1;
+			}
+			if ($lowerNC ne 'N/A' and $upperNC ne 'N/A') {
+				$module_warn_min = $lowerNC;
+				$module_warn_max = $upperNC;
+				$module_warn_invert = 1;
+			}
+		} elsif  ($sensor_types{$type} == 1) {
+			$module_type = "generic_data";
+			$module_critical_min = "1";
+			$module_critical_max = "0";
+		} elsif  ($sensor_types{$type} == 2) {
+			$module_type = "generic_data";
+		} elsif  ($sensor_types{$type} == 3) {
+			$module_type = "generic_data_string";
+		} else {
+			$module_type = "generic_data_string";
+		}
 		
 		my $id_module_type = get_module_id($dbh, $module_type);
 
-		my $params = "-s $aux[0]";
-			
+		my $macros = '{'.
+			'"1":{"macro":"_field1_","desc":"'.safe_input("Target IP").'","help":"","value":"'.$addr.'","hide":""},'.
+			'"2":{"macro":"_field2_","desc":"Username","help":"","value":"'.$user.'","hide":""},'.
+			'"3":{"macro":"_field3_","desc":"Password","help":"","value":"'.$pass.'","hide":"1"},'.
+			'"4":{"macro":"_field4_","desc":"Sensor","help":"","value":"'.$sensor.'","hide":""},'.
+			'"5":{"macro":"_field5_","desc":"'.safe_input("Additional Options").'","help":"","value":"'.$extraopts.'","hide":""}'.
+			'}';
+
 		my %parameters;
 
-		$parameters{"nombre"} = safe_input($name);
+		$parameters{"nombre"} = safe_input($module_name);
 		$parameters{"id_tipo_modulo"} = $id_module_type;		
 		$parameters{"id_agente"} = $id_agent;
 		$parameters{"id_plugin"} = $ipmi_plugin_id;
-		$parameters{"ip_target"} = $addr;
-		$parameters{"plugin_user"} = $user;
-		$parameters{"plugin_pass"} = $pass;
 		$parameters{"id_modulo"} = 4;
-		$parameters{"plugin_parameter"} = $params;
+		$parameters{"unit"} = $units if $units ne 'N/A';
+		$parameters{"min_warning"} = $module_warn_min if defined $module_warn_min;
+		$parameters{"max_warning"} = $module_warn_max if defined $module_warn_max;
+		$parameters{"warning_inverse"} = $module_warn_invert if defined $module_warn_invert;
+		$parameters{"min_critical"} = $module_critical_min if defined $module_critical_min;
+		$parameters{"max_critical"} = $module_critical_max if defined $module_critical_max;
+		$parameters{"critical_inverse"} = $module_critical_invert if defined $module_critical_invert;
+		$parameters{"macros"} = $macros;
 
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);	
 		
@@ -184,17 +264,7 @@ if (! defined ($net_addr)) {
 # Scan the network for host
 my ($total_hosts, $hosts_found, $addr_found) = ($net_addr->num, 0, '');
 
-my $last = 0;
-for (my $i = 1; $net_addr <= $net_addr->broadcast; $i++, $net_addr++) {
-	if($last == 1) {
-		last;
-	}
-	
-	my $net_addr_temp = $net_addr + 1;
-	if($net_addr eq $net_addr_temp) {
-		$last = 1;
-	}
-	
+for (my $i = 1; $net_addr < $net_addr->broadcast; $i++, $net_addr++) {
 	if ($net_addr =~ /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.(\d{1,3})\b/) {
 		if($1 eq '0' || $1 eq '255') {
 			next;
@@ -228,7 +298,7 @@ for (my $i = 1; $net_addr <= $net_addr->broadcast; $i++, $net_addr++) {
 		# Create a new agent
 		$agent_id = pandora_create_agent (\%conf, $conf{'servername'}, $host_name, $addr, $target_group, 0, 11, '', 300, $dbh);
 
-		create_ipmi_modules(\%conf, $dbh, $addr, $username, $password, $agent_id);
+		create_ipmi_modules(\%conf, $dbh, $addr, $username, $password, $extraopts, $agent_id);
 	}
 
 	# Generate an event

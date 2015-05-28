@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # **********************************************************************
 # Pandora FMS Generic Unix/Perl Agent
-# (c) 2009-2011 Artica Soluciones Tecnológicas
+# (c) 2009-2015 Artica Soluciones Tecnológicas
 # with the help of many people. Please see http://pandorafms.org
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
@@ -12,7 +12,7 @@ pandora_agent - Pandora FMS Agent
 
 =head1 VERSION
 
-Version 5.0
+Version 6.0
 
 =head1 USAGE
 
@@ -132,6 +132,7 @@ my %DefaultConf = (
 	'encoding' => 'UTF-8',
 	'server_port' => 41121,
 	'transfer_mode' => 'tentacle',
+	'transfer_timeout' => 30,
 	'server_user' => 'pandora',
 	'server_pwd' => '',
 	'server_ssl' => 'no',
@@ -145,6 +146,7 @@ my %DefaultConf = (
 	'secondary_server_path' => '/var/spool/pandora/data_in',
 	'secondary_server_port' => 41121,
 	'secondary_transfer_mode' => 'tentacle',
+	'secondary_transfer_timeout' => 30,
 	'secondary_server_user' => 'pandora',
 	'secondary_server_pwd' => '',
 	'secondary_server_ssl' => 'no',
@@ -814,29 +816,38 @@ sub send_file {
 	my ($file, $secondary) = @_;
 	my $output;
 
-	if ($Conf{'transfer_mode'} eq 'tentacle') {
- 		$output = `tentacle_client -v -a $Conf{'server_ip'} -p $Conf{'server_port'} $Conf{'server_opts'} "$file" 2>&1 >$DevNull`;
-	} elsif ($Conf{'transfer_mode'} eq 'ssh') {
- 		$output = `scp -P $Conf{'server_port'} "$file" pandora@"$Conf{'server_ip'}:$Conf{'server_path'}" 2>&1 >$DevNull`;
-	} elsif ($Conf{'transfer_mode'} eq 'ftp') {
-		my $base = basename ($file);
-		my $dir = dirname ($file);
+	eval {
+		local $SIG{'ALRM'} = sub {die};
+		alarm ($Conf{'transfer_timeout'});
+		if ($Conf{'transfer_mode'} eq 'tentacle') {
+			$output = `tentacle_client -v -a $Conf{'server_ip'} -p $Conf{'server_port'} $Conf{'server_opts'} "$file" 2>&1 >$DevNull`;
+		} elsif ($Conf{'transfer_mode'} eq 'ssh') {
+ 			$output = `scp -P $Conf{'server_port'} "$file" pandora@"$Conf{'server_ip'}:$Conf{'server_path'}" 2>&1 >$DevNull`;
+		} elsif ($Conf{'transfer_mode'} eq 'ftp') {
+			my $base = basename ($file);
+			my $dir = dirname ($file);
 
-		$output = `ftp -n $Conf{'server_opts'} $Conf{'server_ip'} $Conf{'server_port'} 2>&1 >$DevNull <<FEOF1
-        quote USER $Conf{'server_user'}
-		quote PASS $Conf{'server_pwd'}
-		lcd "$dir"
-		cd "$Conf{'server_path'}"
-		put "$base"
-		quit
-		FEOF1`
-	} elsif ($Conf{'transfer_mode'} eq 'local') {
-		$output = `cp "$file" "$Conf{'server_path'}/" 2>&1 >$DevNull`;
+			$output = `ftp -n $Conf{'server_opts'} $Conf{'server_ip'} $Conf{'server_port'} 2>&1 >$DevNull <<FEOF1
+			quote USER $Conf{'server_user'}
+			quote PASS $Conf{'server_pwd'}
+			lcd "$dir"
+			cd "$Conf{'server_path'}"
+			put "$base"
+			quit
+			FEOF1`
+		} elsif ($Conf{'transfer_mode'} eq 'local') {
+			$output = `cp "$file" "$Conf{'server_path'}/" 2>&1 >$DevNull`;
+	 	}
+		alarm (0);
+	};
+
+	if ($@) {
+		$output = "File transfer command is not responding.";
 	}
 
 	# Get the errorlevel
 	my $rc = $? >> 8;
-	if ($rc != 0) {
+	if ($rc != 0 || $@) {
 		log_message ('error', "Error sending file '$file': $output");
 	}
 
@@ -876,6 +887,7 @@ sub swap_servers () {
 	($Conf{'server_path'}, $Conf{'secondary_server_path'}) = ($Conf{'secondary_server_path'}, $Conf{'server_path'});
 	($Conf{'server_port'}, $Conf{'secondary_server_port'}) = ($Conf{'secondary_server_port'}, $Conf{'server_port'});
 	($Conf{'transfer_mode'}, $Conf{'secondary_transfer_mode'}) = ($Conf{'secondary_transfer_mode'}, $Conf{'transfer_mode'});
+	($Conf{'transfer_timeout'}, $Conf{'secondary_transfer_timeout'}) = ($Conf{'secondary_transfer_timeout'}, $Conf{'transfer_timeout'});
 	($Conf{'server_user'}, $Conf{'secondary_server_user'}) = ($Conf{'secondary_server_user'}, $Conf{'server_user'});
 	($Conf{'server_pwd'}, $Conf{'secondary_server_pwd'}) = ($Conf{'secondary_server_pwd'}, $Conf{'server_pwd'});
 	($Conf{'server_ssl'}, $Conf{'secondary_server_ssl'}) = ($Conf{'secondary_server_ssl'}, $Conf{'server_ssl'});
@@ -889,29 +901,38 @@ sub recv_file ($) {
 	my $file = shift;
 	my $output;
 
-	if ($Conf{'transfer_mode'} eq 'tentacle') {
- 		$output = `cd "$Conf{'temporal'}"$CmdSep tentacle_client -v -g -a $Conf{'server_ip'} -p $Conf{'server_port'} $Conf{'server_opts'} $file 2>&1 >$DevNull`
-	} elsif ($Conf{'transfer_mode'} eq 'ssh') {
- 		$output = `scp -P $Conf{'server_port'} pandora@"$Conf{'server_ip'}:$Conf{'server_path'}/$file" $Conf{'temporal'} 2>&1 >$DevNull`;
-	} elsif ($Conf{'transfer_mode'} eq 'ftp') {
-		my $base = basename ($file);
-		my $dir = dirname ($file);
+	eval {
+		local $SIG{'ALRM'} = sub {die};
+		alarm ($Conf{'transfer_timeout'});
+		if ($Conf{'transfer_mode'} eq 'tentacle') {
+ 			$output = `cd "$Conf{'temporal'}"$CmdSep tentacle_client -v -g -a $Conf{'server_ip'} -p $Conf{'server_port'} $Conf{'server_opts'} $file 2>&1 >$DevNull`
+		} elsif ($Conf{'transfer_mode'} eq 'ssh') {
+ 			$output = `scp -P $Conf{'server_port'} pandora@"$Conf{'server_ip'}:$Conf{'server_path'}/$file" $Conf{'temporal'} 2>&1 >$DevNull`;
+		} elsif ($Conf{'transfer_mode'} eq 'ftp') {
+			my $base = basename ($file);
+			my $dir = dirname ($file);
 
-		$output = `ftp -n $Conf{'server_opts'} $Conf{'server_ip'} $Conf{'server_port'} 2>&1 >$DevNull <<FEOF1
-        quote USER $Conf{'server_user'}
-		quote PASS $Conf{'server_pwd'}
-		lcd "$Conf{'temporal'}"
-		cd "$Conf{'server_path'}"
-		get "$file"
-		quit
-		FEOF1`
-	} elsif ($Conf{'transfer_mode'} eq 'local') {
-		$output = `cp $Conf{'server_path'}/$file $Conf{'temporal'} 2>&1 >$DevNull`;
+			$output = `ftp -n $Conf{'server_opts'} $Conf{'server_ip'} $Conf{'server_port'} 2>&1 >$DevNull <<FEOF1
+			quote USER $Conf{'server_user'}
+			quote PASS $Conf{'server_pwd'}
+			lcd "$Conf{'temporal'}"
+			cd "$Conf{'server_path'}"
+			get "$file"
+			quit
+			FEOF1`
+		} elsif ($Conf{'transfer_mode'} eq 'local') {
+			$output = `cp $Conf{'server_path'}/$file $Conf{'temporal'} 2>&1 >$DevNull`;
+		}
+		alarm (0);
+	};
+
+	if ($@) {
+		$output = "File transfer command is not responding.";
 	}
 
 	# Get the errorlevel
 	my $rc = $? >> 8;
-	if ($rc != 0) {
+	if ($rc != 0 || $@) {
 		log_message ('error', "Error retrieving file: $output");
 	}
 

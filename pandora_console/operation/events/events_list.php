@@ -266,17 +266,17 @@ $tag_with_temp = array();
 $tag_without_temp = array();
 foreach ($tags as $id_tag => $tag) {
 	if (array_search($id_tag, $tag_with) === false) {
-		$tags_select_with[$id_tag] = $tag;
+		$tags_select_with[$id_tag] = ui_print_truncate_text ($tag, 16, false);
 	}
 	else {
-		$tag_with_temp[$id_tag] = $tag;
+		$tag_with_temp[$id_tag] = ui_print_truncate_text ($tag, 16, false);
 	}
 	
 	if (array_search($id_tag, $tag_without) === false) {
-		$tags_select_without[$id_tag] = $tag;
+		$tags_select_without[$id_tag] = ui_print_truncate_text ($tag, 16, false);
 	}
 	else {
-		$tag_without_temp[$id_tag] = $tag;
+		$tag_without_temp[$id_tag] = ui_print_truncate_text ($tag, 16, false);
 	}
 }
 
@@ -295,12 +295,12 @@ $tabletags_with->styleTable = 'border: 0px;';
 
 $data = array();
 $data[0] = html_print_select ($tags_select_with, 'select_with', '', '', '', 0,
-	true, true, true, '', false, 'width: 120px; height: 70px;') . '<br>';
+	true, true, true, '', false, 'width: 200px; height: 70px;') . '<br>';
 $data[1] = html_print_image('images/darrowright.png', true, array('id' => 'button-add_with', 'style' => 'cursor: pointer;', 'title' => __('Add')));
 $data[1] .= html_print_input_hidden('tag_with', $tag_with_base64, true);
 $data[1] .= '<br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'button-remove_with', 'style' => 'cursor: pointer;', 'title' => __('Remove')));
 $data[2] = html_print_select ($tag_with_temp, 'tag_with_temp', array(), '', '',
-	0, true, true, true, '', false, "width: 120px; height: 70px;");
+	0, true, true, true, '', false, "width: 200px; height: 70px;");
 $tabletags_with->data[] = $data;
 $tabletags_with->rowclass[] = '';
 
@@ -316,12 +316,12 @@ $tabletags_without->styleTable = 'border: 0px;';
 
 $data = array();
 $data[0] = html_print_select ($tags_select_without, 'select_without', '', '', '', 0,
-	true, true, true, '', false, 'width: 120px; height: 70px;') . '<br>';
+	true, true, true, '', false, 'width: 200px; height: 70px;') . '<br>';
 $data[1] = html_print_image('images/darrowright.png', true, array('id' => 'button-add_without', 'style' => 'cursor: pointer;', 'title' => __('Add')));
 $data[1] .= html_print_input_hidden('tag_without', $tag_without_base64, true);
 $data[1] .= '<br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'button-remove_without', 'style' => 'cursor: pointer;', 'title' => __('Remove')));
 $data[2] = html_print_select ($tag_without_temp, 'tag_without_temp', array(), '', '',
-	0, true, true, true, '', false, "width: 120px; height: 70px;");
+	0, true, true, true, '', false, "width: 200px; height: 70px;");
 $tabletags_without->data[] = $data;
 $tabletags_without->rowclass[] = '';
 

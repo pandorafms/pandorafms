@@ -47,17 +47,22 @@ my $pass = get_param("p");
 my $sensor = get_param("s");
 my $extraopts = get_param("-");
 
-my $res = `ipmi-sensors -h $host -u $user -p $pass -s $sensor $extraopts --ignore-not-available-sensors --no-header-output --comma-separated-output --output-event-bitmask`;
+my $cmd = "ipmi-sensors -h $host -u $user -p $pass -s $sensor $extraopts --ignore-not-available-sensors --no-header-output --comma-separated-output --output-event-bitmask";
+my $res = `$cmd`;
 
-my ($sensor_id, $name, $type, $value, $units, $eventmask) = split(/,/, $res);
+if (defined $res and "$res" ne "") {
+	my ($sensor_id, $name, $type, $value, $units, $eventmask) = split(/,/, $res);
 
-#Output the value
-if ($value eq 'N/A') {
-	if ($eventmask =~ /([0-9A-Fa-f]+)h/) {
-		print hex $1;
+	#Output the value
+	if ($value eq 'N/A') {
+		if ($eventmask =~ /([0-9A-Fa-f]+)h/) {
+			print hex $1;
+		} else {
+			print $eventmask;
+		}
 	} else {
-		print $eventmask;
+		print $value;
 	}
 } else {
-	print $value;
+	print STDERR "Error processing command: $cmd\n";
 }

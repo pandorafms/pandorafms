@@ -263,9 +263,14 @@ function oracle_db_process_sql($sql, $rettype = "affected_rows", $dbconnection =
 		}
 		$time = microtime (true) - $start;
 		
+		$config['oracle_error_query'] = null;
 		if ($result === false) {
 			$backtrace = debug_backtrace ();
 			$e = oci_error($query);
+			
+			$config['oracle_error_query'] = $query;
+			
+			
 			$error = sprintf ('%s (\'%s\') in <strong>%s</strong> on line %d',
 				htmlentities($e['message'], ENT_QUOTES), $sql, $backtrace[0]['file'], $backtrace[0]['line']);
 			db_add_database_debug_trace ($sql, htmlentities($e['message'], ENT_QUOTES));
@@ -1356,7 +1361,13 @@ function oracle_safe_sql_string($string) {
  * @return string Return the string error.
  */
 function oracle_db_get_last_error() {
-	$ora_erno = oci_error();
+	global $config;
+	
+	if (empty($config['oracle_error_query'])) {
+		return null;
+	}
+	
+	$ora_erno = oci_error($config['oracle_error_query']);
 	
 	return $ora_erno['message'];
 }

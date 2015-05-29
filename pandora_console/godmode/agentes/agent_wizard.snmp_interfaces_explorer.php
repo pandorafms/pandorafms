@@ -309,11 +309,11 @@ if ($create_modules) {
 $interfaces_list = array();
 foreach ($interfaces as $interface) {
 	// Get the interface name, removing " " characters and avoid "blank" interfaces
-	if (isset($interface['ifName']) && $interface['ifName']['value'] != "") {
-		$ifname = $interface['ifName']['value'];
-	}
-	else if (isset($interface['ifDescr']) && $interface['ifDescr']['value'] != "") {
+	if (isset($interface['ifDescr']) && $interface['ifDescr']['value'] != "") {
 		$ifname = $interface['ifDescr']['value'];
+	}
+	else if (isset($interface['ifName']) && $interface['ifName']['value'] != "") {
+		$ifname = $interface['ifName']['value'];
 	}
 	else {
 		continue;

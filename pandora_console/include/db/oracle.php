@@ -450,7 +450,7 @@ function oracle_encapsule_fields_with_same_name_to_instructions($field) {
 		if ($return[0] !== '"') {
 			// The columns declared without quotes are converted to uppercase in oracle.
 			// A column named asd is equal to asd, ASD or "ASD", but no to "asd".
-			$return = '"' . strtoupper($return) . '"';
+			$return = '"' . $return . '"';
 		}
 	}
 	

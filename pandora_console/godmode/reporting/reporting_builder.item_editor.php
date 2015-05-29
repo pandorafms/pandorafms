@@ -1235,8 +1235,9 @@ function print_SLA_list($width, $action, $idItem = null) {
 	global $config;
 	global $meta;
 	
-	$report_item_type = db_get_value('type', 'treport_content', 'id_rc',
-		$idItem);
+	$report_item_type = db_get_value(
+		oracle_encapsule_fields_with_same_name_to_instructions('type'),
+		'treport_content', 'id_rc', $idItem);
 	?>
 	<table class="databox" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="100%">
 		<thead>

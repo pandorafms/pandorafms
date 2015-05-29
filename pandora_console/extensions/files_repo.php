@@ -18,6 +18,7 @@
 function pandora_files_repo_install () {
 	global $config;
 	
+	
 	if (isset($config['files_repo_installed']) && $config['files_repo_installed'] == 1)
 		return;
 	

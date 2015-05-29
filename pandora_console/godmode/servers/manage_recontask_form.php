@@ -29,12 +29,14 @@ require_once ($config['homedir'].'/include/functions_users.php');
 
 if (is_ajax ()) {
 	$get_explanation = (bool) get_parameter('get_explanation', 0);
+	
 	if ($get_explanation) {
-		$id = (int) get_parameter('id');
+		$id = (int) get_parameter('id', 0);
 		
 		$explanation = db_get_value('description', 'trecon_script', 'id_recon_script', $id);
 		
 		echo io_safe_output($explanation);
+		
 		return;
 	}
 	
@@ -66,7 +68,7 @@ if (is_ajax ()) {
 		$macros = array();
 		$macros['base64'] = base64_encode($recon_script_macros);
 		$macros['array'] = json_decode($recon_script_macros,true);
-		html_debug($recon_script_macros, true);html_debug(json_decode($recon_script_macros,true), true);
+		
 		echo io_json_mb_encode($macros);
 		return;
 	}
@@ -208,14 +210,18 @@ $fields['network_sweep'] = __("Network sweep");
 if (!$is_windows)
 	$fields['recon_script'] = __("Custom script");
 
+
 $table->data[2][0] = "<b>".__('Mode')."</b>";
 $table->data[2][1] = html_print_select ($fields, "mode", $mode, '', '', 0, true);
+
 
 // Network 
 $table->data[3][0] = "<b>".__('Network');
 $table->data[3][1] = html_print_input_text ('network', $network, '', 25, 0, true);
 
 // Interval
+
+
 $table->data[4][0] = "<b>".__('Interval');
 $table->data[4][0] .= ui_print_help_tip (__('Manual interval means that it will be executed only On-demand'), true);
 
@@ -226,6 +232,7 @@ $table->data[4][1] .= '<span id="interval_manual_container">';
 $table->data[4][1] .= html_print_extended_select_for_time ('interval' , $interval, '', '', '0', false, true, false, false);
 $table->data[4][1] .= ui_print_help_tip (__('The minimum recomended interval for Recon Task is 5 minutes'), true);
 $table->data[4][1] .= '</span>';
+
 
 // Module template
 $table->data[5][0] = "<b>".__('Module template');
@@ -351,129 +358,129 @@ ui_require_javascript_file ('pandora_modules');
 ?>
 
 <script type="text/javascript">
+/* <![CDATA[ */
+$(document).ready (function () {
+	
+});
 
-	$(document).ready (function () {
-		
-	});
+var xhrManager = function () {
+	var manager = {};
 	
-	var xhrManager = function () {
-		var manager = {};
-		
-		manager.tasks = [];
-		
-		manager.addTask = function (xhr) {
-			manager.tasks.push(xhr);
-		}
-		
-		manager.stopTasks = function () {
-			while (manager.tasks.length > 0)
-				manager.tasks.pop().abort();
-		}
-		
-		return manager;
-	};
+	manager.tasks = [];
 	
-	var taskManager = new xhrManager();
-	
-	$('select#interval_manual_defined').change(function() {
-		if ($("#interval_manual_defined").val() == 1) {
-			$('#interval_manual_container').hide();
-			$('#text-interval_text').val(0);
-			$('#hidden-interval').val(0);
-		}
-		else {
-			$('#interval_manual_container').show();
-			$('#text-interval_text').val(10);
-			$('#hidden-interval').val(600);
-			$('#interval_units').val(60);
-		}
-	}).change();
-	
-	$('select#id_recon_script').change(function() {
-		if ($('select#mode').val() == 'recon_script')
-			get_explanation_recon_script($(this).val());
-	});
-	
-	$('select#mode').change(function() {
-		var type = $(this).val();
-		
-		if (type == 'recon_script') {
-			$(".recon_script").show();
-			$(".network_sweep").hide();
-			
-			get_explanation_recon_script($("#id_recon_script").val());
-		}
-		else if (type == 'network_sweep') {
-			$(".recon_script").hide();
-			$(".network_sweep").show();
-		}
-	}).change();
-	
-	function get_explanation_recon_script (id) {
-		// Stop old ajax tasks
-		taskManager.stopTasks();
-		
-		// Show the spinners
-		$("#textarea_explanation").hide();
-		$("#spinner_layout").show();
-		
-		var xhr = jQuery.ajax ({
-			data: {
-				'page': 'godmode/servers/manage_recontask_form',
-				'get_explanation': 1,
-				'id': id,
-				'id_rt': <?php echo json_encode((int)$id_rt); ?>
-			},
-			url: "<?php echo $config['homeurl']; ?>ajax.php",
-			type: 'POST',
-			dataType: 'text',
-			complete: function (xhr, textStatus) {
-				$("#spinner_layout").hide();
-			},
-			success: function (data, textStatus, xhr) {
-				$("#textarea_explanation").val(data);
-				$("#textarea_explanation").show();
-			},
-			error: function (xhr, textStatus, errorThrown) {
-				console.log(errorThrown);
-			}
-		});
-		taskManager.addTask(xhr);
-		
-		// Delete all the macro fields
-		$('.macro_field').remove();
-		$("#spinner_recon_script").show();
-		
-		var xhr = jQuery.ajax ({
-			data: {
-				'page': 'godmode/servers/manage_recontask_form',
-				'get_recon_script_macros': 1,
-				'id': id,
-				'id_rt': <?php echo json_encode((int)$id_rt); ?>
-			},
-			url: "<?php echo $config['homeurl']; ?>ajax.php",
-			type: 'POST',
-			dataType: 'json',
-			complete: function (xhr, textStatus) {
-				$("#spinner_recon_script").hide();
-				forced_title_callback();
-			},
-			success: function (data, textStatus, xhr) {
-				if (data.array !== null) {
-					$('#hidden-macros').val(data.base64);
-					
-					jQuery.each (data.array, function (i, macro) {
-						if (macro.desc != '') {
-							add_macro_field(macro, 'table_recon-macro');
-						}
-					});
-				}
-			},
-			error: function (xhr, textStatus, errorThrown) {
-				console.log(errorThrown);
-			}
-		});
-		taskManager.addTask(xhr);
+	manager.addTask = function (xhr) {
+		manager.tasks.push(xhr);
 	}
+	
+	manager.stopTasks = function () {
+		while (manager.tasks.length > 0)
+			manager.tasks.pop().abort();
+	}
+	
+	return manager;
+};
 
+var taskManager = new xhrManager();
+
+$('select#interval_manual_defined').change(function() {
+	if ($("#interval_manual_defined").val() == 1) {
+		$('#interval_manual_container').hide();
+		$('#text-interval_text').val(0);
+		$('#hidden-interval').val(0);
+	}
+	else {
+		$('#interval_manual_container').show();
+		$('#text-interval_text').val(10);
+		$('#hidden-interval').val(600);
+		$('#interval_units').val(60);
+	}
+}).change();
+
+$('select#id_recon_script').change(function() {
+	if ($('select#mode').val() == 'recon_script')
+		get_explanation_recon_script($(this).val());
+});
+
+$('select#mode').change(function() {
+	var type = $(this).val();
+	
+	if (type == 'recon_script') {
+		$(".recon_script").show();
+		$(".network_sweep").hide();
+		
+		get_explanation_recon_script($("#id_recon_script").val());
+	}
+	else if (type == 'network_sweep') {
+		$(".recon_script").hide();
+		$(".network_sweep").show();
+	}
+}).change();
+
+function get_explanation_recon_script (id) {
+	// Stop old ajax tasks
+	taskManager.stopTasks();
+	
+	// Show the spinners
+	$("#textarea_explanation").hide();
+	$("#spinner_layout").show();
+	
+	var xhr = jQuery.ajax ({
+		data: {
+			'page': 'godmode/servers/manage_recontask_form',
+			'get_explanation': 1,
+			'id': id,
+			'id_rt': <?php echo json_encode((int)$id_rt); ?>
+		},
+		url: "<?php echo $config['homeurl']; ?>ajax.php",
+		type: 'POST',
+		dataType: 'text',
+		complete: function (xhr, textStatus) {
+			$("#spinner_layout").hide();
+		},
+		success: function (data, textStatus, xhr) {
+			$("#textarea_explanation").val(data);
+			$("#textarea_explanation").show();
+		},
+		error: function (xhr, textStatus, errorThrown) {
+			console.log(errorThrown);
+		}
+	});
+	taskManager.addTask(xhr);
+	
+	// Delete all the macro fields
+	$('.macro_field').remove();
+	$("#spinner_recon_script").show();
+	
+	var xhr = jQuery.ajax ({
+		data: {
+			'page': 'godmode/servers/manage_recontask_form',
+			'get_recon_script_macros': 1,
+			'id': id,
+			'id_rt': <?php echo json_encode((int)$id_rt); ?>
+		},
+		url: "<?php echo $config['homeurl']; ?>ajax.php",
+		type: 'POST',
+		dataType: 'json',
+		complete: function (xhr, textStatus) {
+			$("#spinner_recon_script").hide();
+			forced_title_callback();
+		},
+		success: function (data, textStatus, xhr) {
+			if (data.array !== null) {
+				$('#hidden-macros').val(data.base64);
+				
+				jQuery.each (data.array, function (i, macro) {
+					if (macro.desc != '') {
+						add_macro_field(macro, 'table_recon-macro');
+					}
+				});
+			}
+		},
+		error: function (xhr, textStatus, errorThrown) {
+			console.log(errorThrown);
+		}
+	});
+	taskManager.addTask(xhr);
+}
+/* ]]> */
 </script>

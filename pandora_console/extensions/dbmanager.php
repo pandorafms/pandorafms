@@ -64,6 +64,10 @@ function dbmanager_query ($sql, &$error) {
 				$backtrace = debug_backtrace();
 				$error = db_get_last_error();
 				
+				if (empty($error)) {
+					return "Empty";
+				}
+				
 				return false;
 			}
 			
@@ -147,6 +151,7 @@ function dbmgr_extension_main () {
 	}
 	
 	echo "<div style='overflow: auto;'>";
+	$table = new stdClass();
 	$table->width = '90%';
 	$table->class = 'dbmanager';
 	$table->head = array_keys ($result[0]);

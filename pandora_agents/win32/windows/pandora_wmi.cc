@@ -934,30 +934,33 @@ Pandora_Wmi::getCPUsInfo (list<string> &rows){
  * 
  * This is a helper to extract the IPs from the result of the WMI query at 
  * getNICsInfo, that returns a **string with the IPs so this function gets this
- * parameter and retunrs a string with all  the IPs separated by ' , '
+ * parameter and returns a string with all  the IPs separated by ' , '
  * @param ip_array array of Strings of IPs as returned by the query on getNICsInfo
  * @return A string with the IPs separated by ' , ' 
  */
 string 
 getIPs(VARIANT *ip_array){
-    UINT i; 
-    VARIANT *pvArray; 
+    UINT i;
+    VARIANT *pvArray;
     string ret = "";
     if (V_VT(ip_array) == (VT_ARRAY | VT_VARIANT)) {
-       if (FAILED(SafeArrayAccessData(V_ARRAY(ip_array), (void **) &pvArray))) {
-          ret += "";
-       }
-       int num_ips  = V_ARRAY(ip_array)->rgsabound[0].cElements;
-       for (i = 0;i < num_ips;i++) { 
-           if (V_VT(&pvArray[i]) == VT_BSTR) { 
-	   	     if (i > 0) {
-		   	   ret += " , ";
-	   	     }
-             LPSTR szStringA;                     
-             ret +=  Pandora_Strutils::strUnicodeToAnsi( V_BSTR(&pvArray[i]));             
-           } 
-       } 
-       SafeArrayUnaccessData(V_ARRAY(ip_array));                                  
+       if (!FAILED(SafeArrayAccessData(V_ARRAY(ip_array), (void **) &pvArray))) {
+	       int num_ips = V_ARRAY(ip_array)->rgsabound[0].cElements;
+	       for (i = 0;i < num_ips;i++) {
+	           if (V_VT(&pvArray[i]) == VT_BSTR) {
+	           		string address = Pandora_Strutils::strUnicodeToAnsi( V_BSTR(&pvArray[i]));
+	           		if (strnicmp(address.c_str(), "fe80:", 5) == 0) {
+	           			/* Ignore link local addresses */
+	           			continue;
+					}
+		   	    	if (i > 0) {
+						ret += " , ";
+					}
+					ret += address;
+	           }
+	       }
+	       SafeArrayUnaccessData(V_ARRAY(ip_array));
+	   }
     }
 	return ret;
 }
@@ -1198,7 +1201,8 @@ string
 Pandora_Wmi::getSystemAddress () {
     CDhInitialize init;
 	CDispPtr      wmi_svc =  NULL, nic_info = NULL;
-    VARIANT ip_addresses;
+    VARIANT       ip_gateways;
+    VARIANT       ip_addresses;
 	char         *caption  = NULL, *mac_address = NULL;
 	string        ret = "";
 
@@ -1207,19 +1211,22 @@ Pandora_Wmi::getSystemAddress () {
 		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &nic_info, wmi_svc,
 				     L".ExecQuery(%S)",
-				     L"SELECT IPAddress FROM Win32_NetworkAdapterConfiguration WHERE IPEnabled = True"));
+				     L"SELECT IPAddress, DefaultIPGateway FROM Win32_NetworkAdapterConfiguration WHERE IPEnabled = True"));
 
 		FOR_EACH (nic_info_item, nic_info, NULL) {
-		    dhGetValue (L"%v", &ip_addresses, nic_info_item,
-				    L".IPAddress");
-			
-		    if (&ip_addresses != NULL)
-		    {
-               ret = getIPs(&ip_addresses);
-			   if(ret != "0.0.0.0") {
+		    dhGetValue (L"%v", &ip_gateways, nic_info_item,
+				    L".DefaultIPGateway");
+
+			ret = getIPs(&ip_gateways);
+			if (ret != "") {
+			    dhGetValue (L"%v", &ip_addresses, nic_info_item,
+					    L".IPAddress");
+
+	        	ret = getIPs(&ip_addresses);
+				if (ret != "" && ret != "0.0.0.0") {
 					break;
-			   }
-            }			
+				}
+			}
 		} NEXT_THROW (nic_info_item);
 	} catch (string errstr) {
 		pandoraLog ("runWMIQuery error. %s", errstr.c_str ());

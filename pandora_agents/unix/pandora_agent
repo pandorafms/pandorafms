@@ -2208,20 +2208,11 @@ while (1) {
 	if(defined($Conf{'address'})) {
 		# Check if address is auto to get the local ip
 		if ($Conf{'address'} eq 'auto') {
-			# Tested on Ubuntu, debian, Suse, Solaris 10 and AIX 5.1
-			my @address_list = `ifconfig -a 2>$DevNull | grep -v '127.0.0' | grep '[0-9]*\\.[0-9]*\\.[0-9]*' | awk '{ print \$2 }' | awk -F':' '{ print \$2 }'`;
-			if ($#address_list < 0) {
-				# Tested on Red Hat 7
-				@address_list = `ip addr show 2>$DevNull | grep -v '127.0.0' | grep '[0-9]*\\.[0-9]*\\.[0-9]*' | awk '{print \$2}' | cut -d/ -f1`;
-			}
-			for (my $i = 0; $i <= $#address_list; $i++) {		
-				chomp($address_list[$i]);
-				if ($i > 0) {
-					$address .= ',';
-				}
-				
-				$address .= $address_list[$i];
-			}			
+			# Tested on Ubuntu 12.04.5 and 14.04.2, Debian 7.8 and 8.0, CentOS 6.6 and 7.0, FreeBSD 10, Fedora 21
+			my @address_list = `ifconfig -a 2>$DevNull | sed -nE 's/^.*inet (addr:)?([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+).*\$/\\2/p' | grep -v '^127\\..*'`;
+			my @ipv6_address_list = `ifconfig -a 2>$DevNull | sed -nE 's/^[[:space:]]+inet6 (addr: )?([0-9a-fA-F:]+).*(prefixlen [0-9]+ *|scopeid 0x0<global>|Scope:Global)\$/\\2/p' | grep -v '^::1\$'`;
+			chomp (@address_list, @ipv6_address_list);
+			$address = join(',', @address_list, @ipv6_address_list);
 		}
 		else {
 			$address = $Conf{'address'};

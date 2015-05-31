@@ -124,7 +124,6 @@ typedef struct _LIBSSH2_USERAUTH_KBDINT_RESPONSE
 	unsigned int length;
 } LIBSSH2_USERAUTH_KBDINT_RESPONSE;
 
-#define ENOTCONN -40
 /* 'keyboard-interactive' authentication callback */
 #define LIBSSH2_USERAUTH_KBDINT_RESPONSE_FUNC(name_) void name_(const char* name, int name_len, const char* instruction, int instruction_len, int num_prompts, const LIBSSH2_USERAUTH_KBDINT_PROMPT* prompts, LIBSSH2_USERAUTH_KBDINT_RESPONSE* responses, void **abstract)
 

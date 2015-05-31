@@ -557,7 +557,7 @@ Pandora_Module_Logevent::getEventDescriptionXPATH (PEVENTLOGRECORD pevlr) {
 	wstring pwsPath;
 	EVT_HANDLE hEvents[1];
 	DWORD dwReturned = 0;
-	LPWSTR ppValues[] = {L"Event/System/Provider/@Name"};
+	LPCWSTR ppValues[] = {L"Event/System/Provider/@Name"};
 	DWORD count = sizeof(ppValues)/sizeof(LPWSTR);
 	EVT_HANDLE hContext = NULL;
 	PEVT_VARIANT pRenderedValues = NULL;

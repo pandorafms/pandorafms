@@ -24,11 +24,23 @@ function update_manager_get_config_values() {
 	global $build_version;
 	global $pandora_version;
 	
-	$license = db_get_value(
-		db_encapsule_fields_with_same_name_to_instructions('value'),
-		'tupdate_settings',
-		db_encapsule_fields_with_same_name_to_instructions('key'),
-		'customer_key');
+	switch ($config["dbtype"]) {
+		case "postgresql":
+		case "mysql":
+			$license = db_get_value(
+				db_encapsule_fields_with_same_name_to_instructions('value'),
+				'tupdate_settings',
+				db_encapsule_fields_with_same_name_to_instructions('key'),
+				'customer_key');
+			break;
+		case 'oracle':
+			$license = db_get_value(
+				'value',
+				'tupdate_settings',
+				'key',
+				'customer_key');
+			break;
+	}
 	
 	$limit_count = db_get_value_sql("SELECT count(*) FROM tagente");
 	
@@ -510,11 +522,25 @@ function update_manager_get_current_package() {
 		$token = 'current_package';
 	}
 	
-	$current_update = db_get_value(
-		db_encapsule_fields_with_same_name_to_instructions('value'),
-		'tupdate_settings',
-		db_encapsule_fields_with_same_name_to_instructions('key'),
-		$token);
+	switch ($config["dbtype"]) {
+		case "postgresql":
+		case "mysql":
+			$current_update = db_get_value(
+				db_encapsule_fields_with_same_name_to_instructions('value'),
+				'tupdate_settings',
+				db_encapsule_fields_with_same_name_to_instructions('key'),
+				$token);
+			break;
+		case "oracle":
+			$current_update = db_get_value(
+				'value',
+				'tupdate_settings',
+				'key',
+				$token);
+			break;
+	}
+	
+	
 	
 	if ($current_update === false) {
 		$current_update = 0;

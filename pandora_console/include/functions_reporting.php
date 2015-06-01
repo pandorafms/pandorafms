@@ -733,6 +733,11 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 				}
 				
 				if (modules_is_disable_agent($sla['id_agent_module'])) {
+					if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
+						//Restore db connection
+						metaconsole_restore_db();
+					}
+					
 					continue;
 				}
 				

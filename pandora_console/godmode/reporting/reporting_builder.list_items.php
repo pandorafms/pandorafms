@@ -26,6 +26,18 @@ if (! check_acl ($config['id_user'], 0, "RW")) {
 include_once($config['homedir'] . "/include/functions_agents.php");
 enterprise_include_once ('include/functions_metaconsole.php');
 
+
+switch ($config['dbtype']) {
+	case "mysql":
+	case "postgresql":
+		$type_escaped = "type";
+		break;
+	case "oracle":
+		$type_escaped = db_encapsule_fields_with_same_name_to_instructions(
+			"type");
+		break;
+}
+
 if ($config ['metaconsole'] == 1 and defined('METACONSOLE')) {
 	$agents = array();
 	$agents = metaconsole_get_report_agents($idReport);
@@ -105,15 +117,17 @@ else {
 		$modules[$row['id_agent_module']] = $row['nombre'];
 	}
 	
+	
+	
 	// Filter report items created from metaconsole in normal console list and the opposite
 	if (defined('METACONSOLE') and $config['metaconsole'] == 1) {
-		$where_types = ' AND ((server_name IS NOT NULL AND length(server_name) != 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
+		$where_types = ' AND ((server_name IS NOT NULL AND length(server_name) != 0) OR ' . $type_escaped . ' IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
 	}
 	else
-		$where_types = ' AND ((server_name IS NULL OR length(server_name) = 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
+		$where_types = ' AND ((server_name IS NULL OR length(server_name) = 0) OR ' . $type_escaped . ' IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
 	
 	$rows = db_get_all_rows_sql('
-		SELECT DISTINCT(type)
+		SELECT DISTINCT(' . $type_escaped . ')
 		FROM treport_content
 		WHERE id_report = ' . $idReport . $where_types);
 	if ($rows === false) {
@@ -128,6 +142,8 @@ else {
 			$types[$row['type']] = get_report_name($row['type']);
 	}
 }
+
+
 
 $agentFilter = get_parameter('agent_filter', 0);
 $moduleFilter = get_parameter('module_filter', 0);
@@ -210,10 +226,10 @@ if ($moduleFilter != 0) {
 
 // Filter report items created from metaconsole in normal console list and the opposite
 if (defined('METACONSOLE') and $config['metaconsole'] == 1) {
-	$where .= ' AND ((server_name IS NOT NULL AND length(server_name) != 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
+	$where .= ' AND ((server_name IS NOT NULL AND length(server_name) != 0) OR ' . $type_escaped . ' IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
 }
 else
-	$where .= ' AND ((server_name IS NULL OR length(server_name) = 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
+	$where .= ' AND ((server_name IS NULL OR length(server_name) = 0) OR ' . $type_escaped . ' IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
 
 switch ($config["dbtype"]) {
 	case "mysql":

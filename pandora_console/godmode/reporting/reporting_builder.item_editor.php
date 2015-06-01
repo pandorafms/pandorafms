@@ -1264,7 +1264,9 @@ function print_SLA_list($width, $action, $idItem = null) {
 				case 'update':
 				case 'edit':
 					echo '<tbody id="list_sla">';
-					$itemsSLA = db_get_all_rows_filter('treport_content_sla_combined', array('id_report_content' => $idItem));
+					$itemsSLA = db_get_all_rows_filter(
+						'treport_content_sla_combined',
+						array('id_report_content' => $idItem));
 					if ($itemsSLA === false) {
 						$itemsSLA = array();
 					}

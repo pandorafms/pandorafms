@@ -512,7 +512,7 @@ switch ($action) {
 				$next++;
 				$table->head[$next] = __('Group');
 				$table->size[$next] = '15%';
-
+				
 				$next++;
 				if(!defined('METACONSOLE'))
 					$table->head[$next] = '<span title="Operations">' .
@@ -1062,7 +1062,10 @@ switch ($action) {
 						$values['style'] = io_safe_input(json_encode($style));
 						
 						if ($good_format) {
-							$resultOperationDB = db_process_sql_update('treport_content', $values, array('id_rc' => $idItem));
+							$resultOperationDB = db_process_sql_update(
+								'treport_content',
+								$values,
+								array('id_rc' => $idItem));
 						}
 						else {
 							$resultOperationDB = false;
@@ -1201,8 +1204,8 @@ switch ($action) {
 								$values['time_to'] = get_parameter('time_to');
 								break;
 							case "oracle":
-								$values['time_from'] = '#to_date(\'' . get_parameter('time_from') . '\',\'hh24:mi\')';
-								$values['time_to'] = '#to_date(\'' . get_parameter('time_to') . '\', \'hh24:mi\')';
+								$values['time_from'] = '#to_date(\'' . get_parameter('time_from') . '\',\'hh24:mi:ss\')';
+								$values['time_to'] = '#to_date(\'' . get_parameter('time_to') . '\', \'hh24:mi:ss\')';
 								break;
 						}
 						$values['group_by_agent'] = get_parameter ('checkbox_row_group_by_agent',0);
@@ -1305,6 +1308,17 @@ switch ($action) {
 						$values['style'] = io_safe_input(json_encode($style));
 						
 						if ($good_format) {
+							switch ($config["dbtype"]) {
+								case "oracle":
+									if (isset($values['type'])) {
+										$values[
+											db_encapsule_fields_with_same_name_to_instructions(
+												"type")] = $values['type'];
+										unset($values['type']);
+									}
+									break;
+							}
+							
 							$result = db_process_sql_insert(
 								'treport_content', $values);
 							

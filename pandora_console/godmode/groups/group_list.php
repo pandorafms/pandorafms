@@ -110,7 +110,7 @@ if (is_ajax ()) {
 			//  if group ID doesn't matter and $privilege is specified (like 'AW'),
 			//  retruns all agents that current user has $privilege privilege for.
 			$agents = agents_get_group_agents(
-				array_keys (users_get_groups ($config["id_user"], $privilege, false)));
+				array_keys (users_get_groups ($config["id_user"], $privilege, false)),$filter,"none",false,$recursion);
 		}
 		else {
 			$agents = agents_get_group_agents($id_group, $filter, "none",

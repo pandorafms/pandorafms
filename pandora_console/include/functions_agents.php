@@ -859,7 +859,8 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 							AND unknown_count > 0";
 					break;
 				case AGENT_STATUS_NOT_NORMAL:
-					$search_sql .= " AND normal_count <> total_count";
+					$search_sql .= " AND normal_count <> total_count AND
+										critical_count = 0 AND warning_count = 0";
 					break;
 				case AGENT_STATUS_NOT_INIT:
 					$search_sql .= " AND notinit_count = total_count";

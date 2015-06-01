@@ -3672,6 +3672,11 @@ function reporting_availability($report, $content) {
 		}
 		
 		if (modules_is_disable_agent($item['id_agent_module'])) {
+			//Restore dbconnection
+			if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+				metaconsole_restore_db();
+			}
+			
 			continue;
 		}
 		

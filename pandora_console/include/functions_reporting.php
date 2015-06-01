@@ -5657,6 +5657,12 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				}
 				
 				if (modules_is_disable_agent($item['id_agent_module'])) {
+					//Restore dbconnection
+					if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+						metaconsole_restore_db();
+					}
+					
+					
 					continue;
 				}
 				

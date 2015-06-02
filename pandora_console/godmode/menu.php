@@ -99,7 +99,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	}
 	enterprise_hook('agents_submenu');
 	if (check_acl ($config['id_user'], 0, "AW")) {
-		$sub["gmassive"]["text"] = __('Massive operations');
+		$sub["gmassive"]["text"] = __('Bulk operations');
 		$sub["gmassive"]["type"] = "direct";
 		$sub["gmassive"]["subtype"] = "nolink";
 		$sub2 = array ();

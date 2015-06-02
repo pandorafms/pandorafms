@@ -33,30 +33,30 @@ $tab = (string) get_parameter ('tab', 'massive_agents');
 $option = (string) get_parameter ('option', '');
 
 $options_alerts = array(
-	'add_alerts' => __('Massive alerts addition'),
-	'delete_alerts' => __('Massive alerts deletion'), 
-	'add_action_alerts' => __('Massive alert actions addition'),
-	'delete_action_alerts' => __('Massive alert actions deletion'),
-	'enable_disable_alerts' => __('Massive alert enable/disable'),
-	'standby_alerts' => __('Massive alert setting standby'));
+	'add_alerts' => __('Bulk alert add'),
+	'delete_alerts' => __('Bulk alert delete'), 
+	'add_action_alerts' => __('Bulk alert actions add'),
+	'delete_action_alerts' => __('Bulk alert actions delete'),
+	'enable_disable_alerts' => __('Bulk alert enable/disable'),
+	'standby_alerts' => __('Bulk alert setting standby'));
 
 $options_agents = array(
-	'edit_agents' => __('Massive agents edition'),
-	'delete_agents' => __('Massive agents deletion'));
+	'edit_agents' => __('Bulk agent edit'),
+	'delete_agents' => __('Bulk agent delete'));
 
 if (check_acl ($config['id_user'], 0, "PM")) {
 	$options_users = array(
-		'add_profiles' => __('Massive profiles addition'),
-		'delete_profiles' => __('Massive profiles deletion'));
+		'add_profiles' => __('Bulk profile add'),
+		'delete_profiles' => __('Bulk profile delete'));
 }
 else {
 	$options_users = array();
 }
 
 $options_modules = array(
-	'delete_modules' => __('Massive modules deletion'),
-	'edit_modules' => __('Massive modules edition'), 
-	'copy_modules' => __('Massive modules copy'));
+	'delete_modules' => __('Bulk module delete'),
+	'edit_modules' => __('Bulk module edit'), 
+	'copy_modules' => __('Bulk module copy'));
 
 if (! check_acl ($config['id_user'], 0, "PM")) {
 	unset($options_modules['edit_modules']);

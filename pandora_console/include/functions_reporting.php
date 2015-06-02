@@ -747,6 +747,11 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 				}
 				
 				if (modules_is_disable_agent($sla['id_agent_module'])) {
+					if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
+						//Restore db connection
+						metaconsole_restore_db();
+					}
+					
 					continue;
 				}
 				
@@ -3712,6 +3717,11 @@ function reporting_availability($report, $content) {
 		}
 		
 		if (modules_is_disable_agent($item['id_agent_module'])) {
+			//Restore dbconnection
+			if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+				metaconsole_restore_db();
+			}
+			
 			continue;
 		}
 		
@@ -3755,12 +3765,11 @@ function reporting_availability($report, $content) {
 			$percent_ok = 0;
 		}
 		else {
-			$count_fails = count(
-				modules_get_data_with_value(
-					$item['id_agent_module'],
-					$report["datetime"] - $content['period'],
-					$report["datetime"],
-					0, true));
+			$count_fails = modules_get_count_data_with_value(
+				$item['id_agent_module'],
+				$report["datetime"] - $content['period'],
+				$report["datetime"],
+				0);
 			$percent_ok = (($count_checks - $count_fails) * 100) / $count_checks;
 			$percent_fail = 100 - $percent_ok;
 			

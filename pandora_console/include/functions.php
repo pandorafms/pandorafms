@@ -2386,6 +2386,17 @@ function set_unless_defined (&$var, $default) {
 	}
 }
 
+function set_when_empty (&$var, $default) {
+	if (empty($var)) {
+		$var = $default;
+		
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 function sort_by_column (&$array_ref, $column) {
 	if (!empty($column)) {
 		usort($array_ref, function ($a, $b) {

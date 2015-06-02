@@ -26,6 +26,12 @@
 CREATE OR REPLACE FUNCTION UNIX_TIMESTAMP (oracletime IN DATE DEFAULT NULL ) RETURN INTEGER AS utcdate DATE; unixtime INTEGER; BEGIN IF (oracletime IS NULL) THEN utcdate := SYS_EXTRACT_UTC(SYSTIMESTAMP); ELSE utcdate := oracletime; END IF; unixtime := (utcdate - to_date('19700101','YYYYMMDD')) * 86400; RETURN unixtime; END;;
 CREATE OR REPLACE FUNCTION NOW RETURN TIMESTAMP AS t_now TIMESTAMP; BEGIN SELECT LOCALTIMESTAMP INTO t_now FROM dual; RETURN t_now; END;;
 
+CREATE OR REPLACE FUNCTION FROM_UNIXTIME (p_unix_ts IN NUMBER) RETURN TIMESTAMP IS l_date TIMESTAMP; BEGIN l_date := date '1970-01-01' + p_unix_ts/60/60/24; RETURN l_date; END;;
+
+CREATE OR REPLACE FUNCTION DAYOFWEEK (p_date IN TIMESTAMP) RETURN NUMBER IS l_number_week NUMBER; BEGIN l_number_week := to_char(p_date, 'd'); RETURN l_number_week; END;;
+
+CREATE OR REPLACE FUNCTION TIME (p_date IN TIMESTAMP) RETURN VARCHAR2 IS l_time VARCHAR2(20); BEGIN l_time := TO_CHAR(p_date,'hh24:mi:ss'); RETURN l_time; END;;
+
 -- Procedure for retrieve PK information after an insert statement
 CREATE OR REPLACE PROCEDURE insert_id (table_name IN VARCHAR2, sql_insert IN VARCHAR2, id OUT NUMBER ) IS v_count NUMBER; BEGIN EXECUTE IMMEDIATE sql_insert; EXECUTE IMMEDIATE 'SELECT COUNT(*) FROM user_sequences WHERE sequence_name = UPPER(''' || table_name || '_s'')' INTO v_count; IF v_count >= 1 THEN EXECUTE IMMEDIATE 'SELECT ' || table_name || '_s.currval FROM DUAL' INTO id; ELSE id := 0; END IF; EXCEPTION WHEN others THEN RAISE_APPLICATION_ERROR(-20001, 'ERROR on insert_id procedure, please check input parameters or procedure logic.'); END insert_id;;
 
@@ -1278,10 +1284,10 @@ CREATE TABLE treport_content_sla_combined (
 -- This sequence will not work with the 'insert_id' procedure
 
 CREATE SEQUENCE treport_cont_sla_c_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER treport_content_sla_comb_inc BEFORE INSERT ON treport_content REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_cont_sla_c_s.nextval INTO :NEW.id_rc FROM dual; END treport_content_sla_comb_inc;; 
+CREATE OR REPLACE TRIGGER treport_content_sla_comb_inc BEFORE INSERT ON treport_content_sla_combined REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT treport_cont_sla_c_s.nextval INTO :NEW.id FROM dual; END treport_content_sla_comb_inc;; 
 
 -- on update trigger
-CREATE OR REPLACE TRIGGER treport_cont_sla_comb_update AFTER UPDATE OF id_rc on treport_content FOR EACH ROW BEGIN UPDATE treport_content_sla_combined SET id_report_content = :NEW.id_rc WHERE id_report_content = :OLD.id_rc; END;;
+CREATE OR REPLACE TRIGGER treport_cont_sla_comb_update AFTER UPDATE OF id on treport_content_sla_combined FOR EACH ROW BEGIN UPDATE treport_content_sla_combined SET id = :NEW.id WHERE id = :OLD.id; END;;
 
 -- -----------------------------------------------------
 -- Table `treport_content_item`

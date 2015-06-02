@@ -429,6 +429,9 @@ function oracle_db_process_sql_insert($table, $values, $autocommit = true) {
 	$query .= ' VALUES (' . $values_str . ')';
 	$status = '';
 	
+	
+	
+	
 	return db_process_sql($query, 'insert_id', '', true, $status, $autocommit);
 }
 
@@ -1189,6 +1192,10 @@ function oracle_db_process_sql_update($table, $values, $where = false, $where_jo
 	}
 	$status = '';
 	
+	
+	
+	
+	
 	return db_process_sql ($query, "affected_rows", '', true, $status, $autocommit);
 }
 
@@ -1581,5 +1588,9 @@ function oracle_db_process_file ($path, $handle_error = true) {
 	else {
 		return false;
 	}
+}
+
+function oracle_format_float_to_php($val) {
+	return floatval(str_replace(',', '.', $val));
 }
 ?>

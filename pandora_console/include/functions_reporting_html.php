@@ -325,6 +325,7 @@ function reporting_html_SLA($table, $item, $mini) {
 			$table->data['planned_downtime']['cell'] = html_print_table($table1, true);
 		}
 		
+		$table1 = new stdClass();
 		$table1->width = '99%';
 		
 		$table1->align = array();
@@ -380,7 +381,7 @@ function reporting_html_SLA($table, $item, $mini) {
 		$table->data['sla']['cell'] = html_print_table($table1, true);
 		
 		if (!empty($item['charts'])) {
-			$table1 = null;
+			$table1 = new stdClass();
 			$table1->width = '99%';
 			
 			$table1->data = array ();

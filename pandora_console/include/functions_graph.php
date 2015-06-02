@@ -2662,6 +2662,17 @@ function graph_custom_sql_graph ($id, $width, $height,
 		}
 	}
 	
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			break;
+		case "oracle":
+			$sql = str_replace(";", "", $sql);
+			break;
+	}
+	
+	
 	$data_result = db_get_all_rows_sql ($sql);
 	
 	if (($config['metaconsole'] == 1) && defined('METACONSOLE'))

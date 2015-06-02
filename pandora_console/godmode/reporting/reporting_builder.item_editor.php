@@ -1302,9 +1302,29 @@ function print_SLA_list($width, $action, $idItem = null) {
 							echo '<td class="sla_list_service_col">' . printSmallFont($nameService) . '</th>';
 						}
 						
-						echo 	'<td class="sla_list_sla_min_col">' . $item['sla_min'] . '</td>';
-						echo 	'<td class="sla_list_sla_max_col">' . $item['sla_max'] . '</td>';
-						echo 	'<td class="sla_list_sla_limit_col">' . $item['sla_limit'] . '</td>';
+						switch ($config['dbtype']) {
+							case "mysql":
+							case "postgresql":
+								$item_sla_min = $item['sla_min'];
+								$item_sla_max = $item['sla_max'];
+								$item_sla_limit = $item['sla_limit'];
+								break;
+							case "oracle":
+								$item_sla_min =
+									oracle_format_float_to_php($item['sla_min']);
+								$item_sla_max =
+									oracle_format_float_to_php($item['sla_max']);
+								$item_sla_limit =
+									oracle_format_float_to_php($item['sla_limit']);
+								break;
+						}
+						
+						echo 	'<td class="sla_list_sla_min_col">' .
+							$item_sla_min . '</td>';
+						echo 	'<td class="sla_list_sla_max_col">' .
+							$item_sla_max . '</td>';
+						echo 	'<td class="sla_list_sla_limit_col">' .
+							$item_sla_limit . '</td>';
 						echo 	'<td class="sla_list_action_col" style="text-align: center;">
 									<a href="javascript: deleteSLARow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>';

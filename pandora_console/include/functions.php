@@ -464,29 +464,19 @@ function human_time_description_raw ($seconds, $exactly = false, $units = 'large
 			$returnTime .= "$hours $hoursString ";
 		}
 		
-		$mins = floor($seconds / SECONDS_1MINUTE);
+		$mins = floor($seconds / 60);
 		
 		if ($mins != 0) {
-			$seconds = $seconds - ($mins * SECONDS_1MINUTE);
+			$seconds = $seconds - ($mins * 60);
 			
-			if ($hours == 0) {
-				$returnTime .= "$mins $minutesString ";
-			}
-			else {
-				$returnTime = sprintf("%02d",$hours) . ':' .
-					sprintf("%02d",$mins);
-			}
+			$returnTime .= "$mins $minutesString ";
+			
 		}
 		
+		$seconds = (int) $seconds;
+		
 		if ($seconds != 0) {
-			if ($hours == 0) {
-				$returnTime .= "$seconds $secondsString ";
-			}
-			else {
-				$returnTime = sprintf("%02d",$hours) . ':' .
-					sprintf("%02d",$mins) . ':' .
-					sprintf("%02d",$seconds);
-			}
+			$returnTime .= "$seconds $secondsString ";
 		}
 		
 		$return = ' ';
@@ -1507,7 +1497,7 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '',
 			switch ($snmp3_security_level) {
 				case "authNoPriv":
 					$command_str = $snmpwalk_bin .
-						' -m ALL -v 3' .
+						' -m ALL -Oa -v 3' .
 						' -u ' . escapeshellarg($snmp3_auth_user) .
 						' -A ' . escapeshellarg($snmp3_auth_pass) .
 						' -l ' . escapeshellarg($snmp3_security_level) .
@@ -1518,7 +1508,7 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '',
 					break;
 				case "noAuthNoPriv":
 					$command_str = $snmpwalk_bin .
-						' -m ALL -v 3' .
+						' -m ALL -Oa -v 3' .
 						' -u ' . escapeshellarg($snmp3_auth_user) .
 						' -l ' . escapeshellarg($snmp3_security_level) .
 						' ' . escapeshellarg($ip_target)  .
@@ -1527,7 +1517,7 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '',
 					break;
 				default:
 					$command_str = $snmpwalk_bin .
-						' -m ALL -v 3' .
+						' -m ALL -Oa -v 3' .
 						' -u ' . escapeshellarg($snmp3_auth_user) .
 						' -A ' . escapeshellarg($snmp3_auth_pass) .
 						' -l ' . escapeshellarg($snmp3_security_level) .
@@ -1544,7 +1534,7 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '',
 		case '2c':
 		case '1':
 		default:
-			$command_str = $snmpwalk_bin . ' -m ALL -v ' . escapeshellarg($snmp_version) . ' -c ' . escapeshellarg($snmp_community) . ' ' . escapeshellarg($ip_target)  . ' ' . $base_oid . ' 2> ' . $error_redir_dir;
+			$command_str = $snmpwalk_bin . ' -m ALL -Oa -v ' . escapeshellarg($snmp_version) . ' -c ' . escapeshellarg($snmp_community) . ' ' . escapeshellarg($ip_target)  . ' ' . $base_oid . ' 2> ' . $error_redir_dir;
 			break;
 	}
 	

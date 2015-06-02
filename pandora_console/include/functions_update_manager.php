@@ -497,18 +497,20 @@ function update_manager_set_current_package($current_package) {
 		$token = 'current_package';
 	}
 	
-	$value = db_get_value('`value`',
-		'tupdate_settings', '`key`', $token);
+	$col_value = db_encapsule_fields_with_same_name_to_instructions('value');
+	$col_key = db_encapsule_fields_with_same_name_to_instructions('key');
+	
+	$value = db_get_value($col_value,
+		'tupdate_settings', $col_key, $token);
 	
 	if ($value === false) {
 		db_process_sql_insert('tupdate_settings',
-			array('`value`' => $current_package,
-				'`key`' => $token));
+			array($col_value => $current_package, $col_key => $token));
 	}
 	else {
 		db_process_sql_update('tupdate_settings',
-			array('`value`' => $current_package),
-			array('`key`' => $token));
+			array($col_value => $current_package),
+			array($col_key => $token));
 	}
 }
 

@@ -107,7 +107,7 @@ read_func(void *ptr, size_t size, size_t nmemb, FILE *stream)
  */
 int
 Pandora_Ftp_Client::ftpFileFilename (const string remote_filename,
-				     const string filepath)
+				     const string filepath, int timeout)
 {
 	FILE              *fd;
 	string             operation1;
@@ -155,8 +155,8 @@ Pandora_Ftp_Client::ftpFileFilename (const string remote_filename,
 		curl_easy_setopt (this->curl, CURLOPT_UPLOAD, 1) ;
 		curl_easy_setopt (this->curl, CURLOPT_URL, url.c_str ());
 		curl_easy_setopt (this->curl, CURLOPT_POSTQUOTE, headerlist);
-		curl_easy_setopt (this->curl, CURLOPT_TIMEOUT, 240);
-		curl_easy_setopt (this->curl, CURLOPT_FTP_RESPONSE_TIMEOUT, 60);
+		curl_easy_setopt (this->curl, CURLOPT_TIMEOUT, timeout * 4);
+		curl_easy_setopt (this->curl, CURLOPT_FTP_RESPONSE_TIMEOUT, timeout);
 		curl_easy_setopt (this->curl, CURLOPT_READFUNCTION, read_func);
 		curl_easy_setopt (this->curl, CURLOPT_READDATA, fd);
 		curl_easy_setopt (curl, CURLOPT_INFILESIZE_LARGE,

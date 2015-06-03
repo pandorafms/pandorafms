@@ -404,6 +404,7 @@ function reporting_html_top_n($table, $item) {
 		$table->data['top_n']['cell'] = $item['failed'];
 	}
 	else {
+		$table1 = new stdClass();
 		$table1->width = '99%';
 		
 		$table1->align = array();
@@ -440,7 +441,7 @@ function reporting_html_top_n($table, $item) {
 		}
 		
 		if (!empty($item['resume'])) {
-			$table1 = null;
+			$table1 = new stdClass();
 			$table1->width = '99%';
 			
 			$table1->align = array();
@@ -803,28 +804,30 @@ function reporting_html_agent_module($table, $item) {
 				"</th>";
 		}
 		
+		
+		
 		foreach ($item['data'] as $row) {
 			$table_data .= "<tr style='height: 35px;'>";
 			switch ($row['agent_status']) {
-				case 4: // Alert fired status
+				case AGENT_STATUS_ALERT_FIRED:
 					$rowcolor = COL_ALERTFIRED;
 					$textcolor = '#000';
 					break;
-				case 1: // Critical status
+				case AGENT_STATUS_CRITICAL:
 					$rowcolor = COL_CRITICAL;
 					$textcolor = '#FFF';
 					break;
-				case 2: // Warning status
+				case AGENT_STATUS_WARNING:
 					$rowcolor = COL_WARNING;
 					$textcolor = '#000';
 					break;
-				case 0: // Normal status
+				case AGENT_STATUS_NORMAL:
 					$rowcolor = COL_NORMAL;
 					$textcolor = '#FFF';
 					break;
-				case 3: 
-				case -1: 
-				default: // Unknown status
+				case AGENT_STATUS_UNKNOWN:
+				case AGENT_STATUS_ALL:
+				default:
 					$rowcolor = COL_UNKNOWN;
 					$textcolor = '#FFF';
 					break;
@@ -838,50 +841,50 @@ function reporting_html_agent_module($table, $item) {
 				html_print_image($file_name, true,
 					array('title' => $row['agent_name'])) . "</td>";
 			
-			foreach ($row['modules'] as $module) {
+			foreach ($row['modules'] as $module_name => $module) {
 				if (is_null($module)) {
 					$table_data .= "<td style='background-color: #DDD;'></td>";
 				}
 				else {
 					$table_data .= "<td style='text-align: center; background-color: #DDD;'>";
 					switch ($module) {
-						case 0:
+						case AGENT_STATUS_NORMAL:
 							$table_data .= ui_print_status_image(
 								'module_ok.png',
 								__("%s in %s : NORMAL",
-									$module['name'],
+									$module_name,
 									$row['agent_name']),
 								true, array('width' => '20px', 'height' => '20px'));
 							break;
-						case 1:
+						case AGENT_STATUS_CRITICAL:
 							$table_data .= ui_print_status_image(
 								'module_critical.png',
 								__("%s in %s : CRITICAL",
-									$module['name'],
+									$module_name,
 									$row['agent_name']),
 								true, array('width' => '20px', 'height' => '20px'));
 							break;
-						case 2:
+						case AGENT_STATUS_WARNING:
 							$table_data .= ui_print_status_image(
 								'module_warning.png',
 								__("%s in %s : WARNING",
-									$module['name'],
+									$module_name,
 									$row['agent_name']),
 								true, array('width' => '20px', 'height' => '20px'));
 							break;
-						case 3:
+						case AGENT_STATUS_UNKNOWN:
 							$table_data .= ui_print_status_image(
 								'module_unknown.png',
 								__("%s in %s : UNKNOWN",
-									$module['name'],
+									$module_name,
 									$row['agent_name']),
 								true, array('width' => '20px', 'height' => '20px'));
 							break;
-						case 4:
+						case AGENT_STATUS_ALERT_FIRED:
 							$table_data .= ui_print_status_image(
 								'module_alertsfired.png',
 								__("%s in %s : ALERTS FIRED",
-									$module['name'],
+									$module_name,
 									$row['agent_name']),
 								true, array('width' => '20px', 'height' => '20px'));
 							break;
@@ -1815,6 +1818,7 @@ function reporting_html_sql(&$table, $item) {
 	else {
 		$first = true;
 		
+		$table2 = new stdClass();
 		$table2->class = 'databox';
 		$table2->width = '100%';
 		

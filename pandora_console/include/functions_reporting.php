@@ -1234,14 +1234,6 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 				}
 				$avg = $avg / $i;
 				
-				unset($table_summary);
-				
-				$table_summary->width = '99%';
-				$table_summary->data = array ();
-				$table_summary->head = array ();
-				$table_summary->head[0] = __('Min Value');
-				$table_summary->head[1] = __('Average Value');
-				$table_summary->head[2] = __('Max Value');
 				
 				$return['resume']['min']['value'] = $min;
 				$return['resume']['min']['formated_value'] = format_for_graph($min, 2);

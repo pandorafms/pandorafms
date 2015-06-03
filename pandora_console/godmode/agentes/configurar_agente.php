@@ -356,7 +356,7 @@ if ($id_agente) {
 		. '</a>';
 	
 	// Hidden subtab layer
-	$agent_wizard['sub_menu'] .=  '<ul class="mn subsubmenu" style="display:none; float:none;">';
+	$agent_wizard['sub_menu'] =  '<ul class="mn subsubmenu" style="display:none; float:none;">';
 	$agent_wizard['sub_menu'] .=  '<li class="nomn tab_godmode" style="text-align: center;">';
 	$agent_wizard['sub_menu'] .=  '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_explorer&id_agente='.$id_agente.'">'
 			. html_print_image ("images/wand_snmp.png", true, array ( "title" => __('SNMP Wizard')))

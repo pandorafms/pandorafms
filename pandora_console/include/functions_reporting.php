@@ -4118,6 +4118,18 @@ function reporting_general($report, $content) {
 					$data['value'] = null;
 				}
 				else {
+					
+					switch ($config["dbtype"]) {
+						case "mysql":
+						case "postgresql":
+							break;
+						case "oracle":
+							if (preg_match("/[0-9]+,[0-9]E+[+-][0-9]+/", $d)) {
+								$d = oracle_format_float_to_php($d);
+							}
+							break;
+					}
+					
 					if (!is_numeric($d)) {
 						$data['value'] = $d;
 					}

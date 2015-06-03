@@ -1408,6 +1408,7 @@ function reporting_html_monitor_report($table, $item, $mini) {
 	$table->colspan['module']['cell'] = 3;
 	$table->cellstyle['module']['cell'] = 'text-align: center;';
 	
+	$table1 = new stdClass();
 	$table1->width = '99%';
 	$table1->head = array ();
 	$table1->data = array ();
@@ -1700,6 +1701,7 @@ function reporting_html_general(&$table, $item) {
 	if (!empty($item["data"])) {
 		switch ($item['subtype']) {
 			case REPORT_GENERAL_NOT_GROUP_BY_AGENT:
+				$table1 = new stdClass();
 				$table1->width = '99%';
 				$table1->data = array ();
 				$table1->head = array ();
@@ -1715,10 +1717,19 @@ function reporting_html_general(&$table, $item) {
 				$table1->style[3] = 'text-align: left';
 				
 				foreach ($item['data'] as $row) {
-					$table1->data[] = array(
-						$row['agent'],
-						$row['module'],
-						$row['value']);
+					if ($item['date']['period'] != 0) {
+						$table1->data[] = array(
+							$row['agent'],
+							$row['module'],
+							$row['operator'],
+							$row['value']);
+					}
+					else {
+						$table1->data[] = array(
+							$row['agent'],
+							$row['module'],
+							$row['value']);
+					}
 				}
 				break;
 			case REPORT_GENERAL_GROUP_BY_AGENT:
@@ -1763,6 +1774,7 @@ function reporting_html_general(&$table, $item) {
 	}
 	
 	if ($item['resume'] && !empty($item["data"])) {
+		$table_summary = new stdClass();
 		$table_summary->width = '99%';
 		
 		$table_summary->data = array ();

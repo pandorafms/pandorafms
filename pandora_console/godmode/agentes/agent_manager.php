@@ -115,8 +115,10 @@ if ($new_agent) {
 		$nombre_agente = $direccion_agente;
 	
 	$servers = servers_get_names();
-	if (!empty($servers))
-		$server_name = reset(array_keys($servers));
+	if (!empty($servers)) {
+		$array_keys_servers = array_keys($servers);
+		$server_name = reset($array_keys_servers);
+	}
 }
 
 if (!$new_agent) {
@@ -138,6 +140,7 @@ if ($disk_conf_delete) {
 
 echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = "databox filters";
 
@@ -261,7 +264,9 @@ if (!array_key_exists($server_name, $servers)) {
 $table->data[6][0] = __('Server');
 if ($new_agent) {
 	//Set first server by default.
-	$server_name = reset(array_keys(servers_get_names()));
+	$servers_get_names = servers_get_names();
+	$array_keys_servers_get_names = array_keys($servers_get_names);
+	$server_name = reset($array_keys_servers_get_names);
 }
 $table->data[6][1] = html_print_select (servers_get_names (),
 	'server_name', $server_name, '', __('None'), 0, true). ' ' . ui_print_help_icon ('agent_server', true);
@@ -274,6 +279,7 @@ $table->data[7][1] = html_print_input_text ('comentarios', $comentarios,
 html_print_table ($table);
 unset($table);
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = "databox filters";
 
@@ -388,6 +394,7 @@ $table->data[7][1] = html_print_checkbox('quiet', 1, $quiet, true);
 ui_toggle(html_print_table ($table, true), __('Advanced options'));
 unset($table);
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = "databox filters";
 

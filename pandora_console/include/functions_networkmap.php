@@ -379,19 +379,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		}
 	}
 	
-	// Addded the relationship of parents of agents
-	foreach ($agents as $agent) {
-		if ($agent['id_parent'] != "0" &&
-			array_key_exists($agent['id_parent'], $node_ref)) {
-			
-			
-			$parents[$node_ref[$agent['id_agente']]] = $node_ref[$agent['id_parent']];
-		}
-		else {
-			$orphans[$node_ref[$agent['id_agente']]] = 1;
-		}
-	}
-	
 	// Drop the modules without a partner if l2_network is true
 	// and the snmp interfaces token is false
 	if ($l2_network) {
@@ -418,6 +405,19 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 					unset($orphans[$node_count]);
 					unset($parents[$node_count]);
 				}
+			}
+		}
+	} else {
+		// Addded the relationship of parents of agents
+		foreach ($agents as $agent) {
+			if ($agent['id_parent'] != "0" &&
+				array_key_exists($agent['id_parent'], $node_ref)) {
+				
+				
+				$parents[$node_ref[$agent['id_agente']]] = $node_ref[$agent['id_parent']];
+			}
+			else {
+				$orphans[$node_ref[$agent['id_agente']]] = 1;
 			}
 		}
 	}

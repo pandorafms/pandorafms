@@ -29,7 +29,7 @@ include_once($config['homedir'] . "/include/functions_profile.php");
 // Load enterprise extensions
 enterprise_include ('godmode/setup/setup_auth.php');
 
-
+$table = new StdClass();
 $table->data = array ();
 $table->width = '98%';
 $table->size[0] = '30%';

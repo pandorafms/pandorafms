@@ -168,6 +168,7 @@ if ($is_windows) {
 	echo '</div>';
 }
 
+$table = new StdClass();
 $table->id = 'table_recon';
 $table->width = '98%';
 $table->cellspacing = 4;

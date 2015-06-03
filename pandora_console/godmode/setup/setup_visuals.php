@@ -45,6 +45,7 @@ enterprise_include ('godmode/setup/setup_visuals.php');
 require_once ('include/functions_themes.php');
 require_once ('include/functions_gis.php');
 
+$table = new StdClass();
 $table->width = '98%';
 $table->data = array ();
 

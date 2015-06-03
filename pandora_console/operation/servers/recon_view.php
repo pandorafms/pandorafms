@@ -73,7 +73,8 @@ else{
 			if ($recon_tasks === false) {
 				$recon_tasks = array ();
 			}
-
+			
+			$table = new StdClass();
 			$table->cellpadding = 4;
 			$table->cellspacing = 4;
 			$table->width = "99%";

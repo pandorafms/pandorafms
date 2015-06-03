@@ -18,6 +18,7 @@ global $config;
 
 check_login ();
 
+$table = new StdClass();
 $table->width = '100%';
 $table->data = array ();
 $table->size = array();

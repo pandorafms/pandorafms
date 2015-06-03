@@ -35,7 +35,7 @@ enterprise_include_once ('godmode/setup/setup.php');
  to add it there.
 */
 
-
+$table = new StdClass();
 $table->width = '98%';
 $table->data = array ();
 
@@ -66,7 +66,7 @@ $table->data[7][1] = html_print_input_text ('days_compact', $config["days_compac
 $table->data[8][0] = __('Max. days before delete unknown modules');
 $table->data[8][1] = html_print_input_text ('days_delete_unknown', $config["days_delete_unknown"], '', 5, 5, true);
 
-
+$table_other = new StdClass();
 $table_other->width = '98%';
 $table_other->data = array ();
 

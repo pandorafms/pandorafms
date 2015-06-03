@@ -37,6 +37,7 @@ if ($servers === false) {
 	return;
 }
 
+$table = new StdClass();
 $table->width = '100%';
 $table->class = 'databox data';
 $table->size = array ();

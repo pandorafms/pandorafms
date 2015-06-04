@@ -83,7 +83,7 @@ install -m 0640 conf/pandora_server.conf.new $RPM_BUILD_ROOT%{_sysconfdir}/pando
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/sudoers.d
 chmod 0750 $RPM_BUILD_ROOT%{_sysconfdir}/sudoers.d
 cat <<EOF > $RPM_BUILD_ROOT%{_sysconfdir}/sudoers.d/pandora
-Defaults:pandora !requiretty
+Defaults:root !requiretty
 EOF
 chmod 0440 $RPM_BUILD_ROOT%{_sysconfdir}/sudoers.d/pandora
 

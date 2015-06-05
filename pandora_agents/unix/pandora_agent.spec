@@ -53,9 +53,9 @@ cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/man/man1/tentacle_client.1.gz $RP
 
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/Linux/pandora_agent.conf $RPM_BUILD_ROOT/usr/share/pandora_agent/pandora_agent.conf.rpmnew
 
-if [ -f $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent.spec ] ; then
-	rm $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent.spec
-fi
+#if [ -f $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent.spec ] ; then
+#	rm $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent.spec
+#fi
 
 %clean
 rm -Rf $RPM_BUILD_ROOT

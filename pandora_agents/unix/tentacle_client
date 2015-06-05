@@ -407,6 +407,7 @@ sub start_ssl {
 	if ($t_ssl_cert eq ''){
 		IO::Socket::SSL->start_SSL (
 			$t_socket,
+			SSL_verify_mode => '0x00',
 		);
 	}
 	elsif ($t_ssl_ca eq '') {

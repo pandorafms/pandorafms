@@ -2667,7 +2667,7 @@ function events_get_count_events_validated ($filter, $period, $date,
 	
 	global $config;
 	
-	$sql_filter = ' AND 1=1 ';
+	$sql_filter = ' 1=1 ';
 	if (isset($filter['id_group'])) {
 		$id_group = groups_safe_acl ($config["id_user"], $filter['id_group'], "AR");
 		
@@ -2712,11 +2712,10 @@ function events_get_count_events_validated ($filter, $period, $date,
 	
 	$sql = sprintf ('SELECT estado,
 		COUNT(*) AS count
-		FROM tevento
-		WHERE utimestamp > %d AND utimestamp <= %d
+		FROM tevento WHERE 
 			%s ' . $sql_where . '
 		GROUP BY estado',
-		$datelimit, $date, $sql_filter);
+		$sql_filter);
 	
 	$rows = db_get_all_rows_sql ($sql);
 	

@@ -1669,7 +1669,7 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	fclose (conf_fh);
 
 	/* Only send if debug is not activated */
-	if (true || getPandoraDebug () == false) {
+	if (getPandoraDebug () == false) {
 		rc = this->copyDataFile (tmp_filename);
         
 		/* Delete the file if successfully copied, buffer disabled or not enough space available */

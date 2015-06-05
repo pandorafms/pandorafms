@@ -2130,7 +2130,11 @@ function modules_get_count_datas($id_agent_module, $date_init, $date_end) {
 		$date_end = strtotime($date_end);
 	}
 	
+	
+	
 	$first_date = modules_get_first_contact_date($id_agent_module);
+	
+	
 	
 	if ($date_init < $first_date) {
 		$date_init = $first_date;
@@ -2143,6 +2147,8 @@ function modules_get_count_datas($id_agent_module, $date_init, $date_end) {
 
 function modules_get_count_data_with_value($id_agent_module, $date_init,
 	$date_end, $value) {
+	
+	global $config;
 	
 	if (!is_numeric($date_init)) {
 		$date_init = strtotime($date_init);
@@ -2203,14 +2209,9 @@ function modules_get_first_contact_date($id_agent_module) {
 	
 	// TODO FOR OTHER KIND OF DATA
 	
-	$sql = "
-		SELECT utimestamp
-		FROM tagente_datos
-		WHERE id_agente_modulo = " . (int)($id_agent_module) . "
-		ORDER BY utimestamp ASC
-		LIMIT 1";
-	
-	$first_date = db_get_sql($sql, 0, $config['history_db_enabled']);
+	$first_date = db_get_value('utimestamp', 'tagente_datos',
+		'id_agente_modulo', $id_agent_module,
+		$config['history_db_enabled']);
 	
 	return $first_date;
 }

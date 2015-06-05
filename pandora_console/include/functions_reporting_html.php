@@ -1615,6 +1615,7 @@ function reporting_html_text(&$table, $item) {
 function reporting_html_availability(&$table, $item) {
 	
 	if (!empty($item["data"])) {
+		$table1 = new stdClass();
 		$table1->width = '99%';
 		$table1->data = array ();
 		$table1->head = array ();

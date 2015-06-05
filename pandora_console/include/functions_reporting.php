@@ -3721,6 +3721,8 @@ function reporting_availability($report, $content) {
 		
 		$text = "";
 		
+		
+		
 		// HACK it is saved in show_graph field.
 		// Show interfaces instead the modules
 		if ($content['show_graph']) {
@@ -3744,6 +3746,7 @@ function reporting_availability($report, $content) {
 			$item['id_agent_module'],
 			$report["datetime"] - $content['period'],
 			$report["datetime"]);
+		
 		
 		
 		if (empty($count_checks)) {

@@ -2144,6 +2144,8 @@ function modules_get_count_datas($id_agent_module, $date_init, $date_end) {
 function modules_get_count_data_with_value($id_agent_module, $date_init,
 	$date_end, $value) {
 	
+	global $config;
+	
 	if (!is_numeric($date_init)) {
 		$date_init = strtotime($date_init);
 	}

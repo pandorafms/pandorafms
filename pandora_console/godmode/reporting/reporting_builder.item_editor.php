@@ -553,7 +553,7 @@ html_print_input_hidden('id_item', $idItem);
 					html_print_select(reports_get_report_types(false, true), 'type', $type, 'chooseType();', '', '');
 				}
 				else {
-					$report_type = reports_get_report_types($type);
+					$report_type = reports_get_report_types(false, true);
 					if (!empty($report_type) and isset($report_type[$type]['name']))
 						echo $report_type[$type]['name'];
 					else

@@ -147,7 +147,7 @@ echo '<a href="javascript: toggleFormFilter();"><b>' .
 		array("title" => __('Toggle filter(s)'),
 		"id" => 'image_form_filter')) . '</a>';
 
-$table = null;
+$table = new stdClass();
 $table->width = '100%';
 $table->data[0][0] = __('Agents');
 $table->data[0][1] = html_print_select($agents, 'agent_filter', $agentFilter, '', __('All'), 0, true);
@@ -412,7 +412,7 @@ echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_bui
 	echo "</div>";
 echo "</form>";
 
-$table = null;
+$table = new stdClass();
 $table->width = '100%';
 $table->colspan[0][0] = 3;
 $table->size = array();
@@ -435,7 +435,7 @@ echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_bui
 html_print_table($table);
 echo "</form>";
 
-$table = null;
+$table = new stdClass();
 $table->width = '100%';
 $table->colspan[0][0] = 3;
 $table->size = array();

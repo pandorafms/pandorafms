@@ -4011,8 +4011,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				reporting_enterprise_sla_monthly($mini, $content, $report, $table, $item_title);
 			break;
 		case 'SLA_services':
-			if (function_exists("reporting_enterprise_sla_services"))
+			if (function_exists("reporting_enterprise_sla_services")) {
 				reporting_enterprise_sla_services($mini, $content, $report, $table, $item_title);
+			}
 			break;
 		case 3:
 		case 'SLA':

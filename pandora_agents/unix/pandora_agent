@@ -510,6 +510,9 @@ sub parse_conf_modules($) {
 				# Make the module run the first time
 				$module->{'counter'} = $module->{'intensive_interval'};
 							
+				# Replace macros
+				replace_macros ($module);
+
 				push (@Modules, {%{$module}});
 			} else {
 				$module->{'func'} = \&module_plugin;
@@ -601,7 +604,7 @@ sub write_broker_conf($){
 	my ($broker_agent) = @_;
 	my $content = '';
 
-	# I don't think the following should be copied either: proxy_*, secondary_* 
+	# I don't think the following should be copied either: proxy_*
 	my %ignored_tokens = (
 		'broker_agent' => 1, 'agent_name_cmd' => 1, 'udp_server' => 1, 'cron_mode' => 1
 	);

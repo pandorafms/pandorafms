@@ -34,12 +34,12 @@ require_once("include/functions_post_process.php");
 enterprise_include ('godmode/setup/setup_visuals.php');
 
 /*
- NOTICE FOR DEVELOPERS:
- 
- Update operation is done in config_process.php
- This is done in that way so the user can see the changes inmediatly.
- If you added a new token, please check config_update_config() in functions_config.php
- to add it there.
+NOTICE FOR DEVELOPERS:
+
+Update operation is done in config_process.php
+This is done in that way so the user can see the changes inmediatly.
+If you added a new token, please check config_update_config() in functions_config.php
+to add it there.
 */
 
 require_once ('include/functions_themes.php');
@@ -240,13 +240,17 @@ $font_size_array = array(
 	14 => 14,
 	15 => 15);
 
-$table->data[$row][1] = html_print_select($font_size_array, 'font_size', $config["font_size"], '', '', 0, true); 
+$table->data[$row][1] = html_print_select($font_size_array, 'font_size',
+	$config["font_size"], '', '', 0, true);
 
 $row++;
 
-$table->data[$row][0] = __('Interactive charts') . ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true);
-$table->data[$row][1] = __('Yes').'&nbsp;'.html_print_radio_button ('flash_charts', 1, '', $config["global_flash_charts"], true).'&nbsp;&nbsp;';
-$table->data[$row][1] .= __('No').'&nbsp;'.html_print_radio_button ('flash_charts', 0, '', $config["global_flash_charts"], true);
+$table->data[$row][0] = __('Interactive charts') .
+	ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true);
+$table->data[$row][1] = __('Yes').'&nbsp;' .
+	html_print_radio_button ('flash_charts', 1, '', $config["global_flash_charts"], true).'&nbsp;&nbsp;';
+$table->data[$row][1] .= __('No').'&nbsp;' .
+	html_print_radio_button ('flash_charts', 0, '', $config["global_flash_charts"], true);
 
 $row++;
 

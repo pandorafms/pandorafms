@@ -456,7 +456,7 @@ else {
 							$data[5] .= __('Sun');
 							$data[5] .= "&nbsp;";
 						}
-						$data[5] .= "&nbsp;(" . $downtime['periodically_time_from']; 
+						$data[5] .= "&nbsp;(" . $downtime['periodically_time_from'];
 						$data[5] .= "-" . $downtime['periodically_time_to'] . ")";
 						break;
 					case 'monthly':

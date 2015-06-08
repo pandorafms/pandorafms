@@ -257,7 +257,7 @@ if (check_acl ($config['id_user'], 0, "RR")) {
 // Events reading
 if (check_acl ($config['id_user'], 0, "ER")) {
 	// Events
-	$menu_operation["eventos"]["text"] = __('Events'); 
+	$menu_operation["eventos"]["text"] = __('Events');
 	$menu_operation["eventos"]["refr"] = 0;
 	$menu_operation["eventos"]["sec2"] = "operation/events/events";
 	$menu_operation["eventos"]["id"] = "oper-events";
@@ -295,7 +295,9 @@ if (check_acl ($config['id_user'], 0, "ER")) {
 			echo ui_get_full_url('operation/events/sound_events.php');
 			?>';
 		
-		window.open(url, '<?php __('Sound Alerts'); ?>','width=475, height=275, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no'); 
+		window.open(url,
+			'<?php __('Sound Alerts'); ?>',
+			'width=475, height=275, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no');
 	}
 	</script>
 	<?php
@@ -322,7 +324,7 @@ $sub["operation/users/webchat"]["refr"] = 0;
 
 //Incidents
 if (check_acl ($config['id_user'], 0, "IR") == 1) {
-	$temp_sec2 = $sec2; 
+	$temp_sec2 = $sec2;
 	if($config['integria_enabled']) {
 		$sec2 = "incident";
 		$sec2sub = "operation/integria_incidents/incident_statistics";

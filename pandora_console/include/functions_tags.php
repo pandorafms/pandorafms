@@ -595,7 +595,7 @@ function tags_get_tags_formatted ($tags_array, $get_url = true) {
  * 
  * @return mixed/string Tag ids
  */
- 
+
 function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
 	$return_mode = 'module_condition', $query_prefix = '',
 	$query_table = '', $meta = false, $childrens_ids = array(),
@@ -690,7 +690,7 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
  * 
  * @return string SQL condition for tagente_module
  */
- 
+
 function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
 	if (!empty($modules_table)) {
 		$modules_table .= '.';
@@ -781,17 +781,18 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group
 		// Group condition (The module belongs to an agent of the group X)
 		// Juanma (08/05/2014) Fix : Get all groups (children also, Propagate ACL func!)
 		$group_condition = sprintf('id_grupo IN (%s)', implode(',', array_values(groups_get_id_recursive($group_id))));
-		$_groups_not_in .= implode(',', array_values(groups_get_id_recursive($group_id))) . ','; 
+		$_groups_not_in .= implode(',', array_values(groups_get_id_recursive($group_id))) . ',';
 		
 		// Tags condition (The module has at least one of the restricted tags)
 		$tags_condition = '';
 		if (empty($group_tags)) {
 			$tags_condition = "id_grupo = ".$group_id;
-		} else {
+		}
+		else {
 			if (!is_array($group_tags)) {
 				$group_tags = explode(',', $group_tags);
 			}
-
+			
 			foreach ($group_tags as $tag) {
 				// If the tag ID doesnt exist, ignore
 				if (!isset($all_tags[$tag])) {
@@ -1132,18 +1133,18 @@ function tags_check_acl($id_user, $id_group, $access, $tags = array(), $flag_id_
 
 function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p = false) {
 	global $config;
-
+	
 	if($id_user === false) {
 		$id_user = $config['id_user'];
 	}
 	
 	$acls = tags_get_acl_tags($id_user, $id_group, $access, 'data');
-
+	
 	// If there are wrong parameters or fail ACL check, return false
 	if($acls === ERR_WRONG_PARAMETERS || $acls === ERR_ACL) {
 		return false;
 	}
-
+	
 	// If there are not tags restrictions or tags passed, check the group access
 	if (empty($acls) || empty($tags)) {
 		if (!is_array($id_group))
@@ -1154,10 +1155,10 @@ function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p =
 				return true;
 		}
 	}
-
+	
 	# Fix: If user profile has more than one group, due to ACL propagation then id_group can be an array
 	if (is_array($id_group)) {
-
+		
 		foreach ($id_group  as $group) {
 			if($group > 0) {
 				if(isset($acls[$group])) {
@@ -1171,8 +1172,9 @@ function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p =
 				else {
 					//return false;
 					$return = false;
-                }
-			} else {
+				}
+			}
+			else {
 				foreach($acls as $acl_tags) {
 						foreach($tags as $tag) {
 								$tag = tags_get_id($tag);
@@ -1182,10 +1184,11 @@ function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p =
 						}
 				}
 			}
-
+			
 		}
-
-	} else {
+		
+	}
+	else {
 		if($id_group > 0) {
 			if(isset($acls[$id_group])) {
 				foreach($tags as $tag) {
@@ -1217,7 +1220,7 @@ function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p =
 	
 	if ($return == false) {
 		$parent = db_get_value('parent','tgrupo','id_grupo',$id_group);
-
+		
 		if ($parent !== 0) {
 			$propagate = db_get_value('propagate','tgrupo','id_grupo',$parent);
 			if ($propagate == 1) {
@@ -1231,7 +1234,7 @@ function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p =
 /* This function checks event ACLs */
 function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $childrens_ids = array()) {
 	global $config;
-
+	
 	if($id_user === false) {
 		$id_user = $config['id_user'];
 	}
@@ -1245,18 +1248,21 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 	if ($tags_user === ERR_WRONG_PARAMETERS || $tags_user === ERR_ACL) {
 		return false;
 	}
-
+	
 	//check user without tags
 	$sql = "SELECT id_usuario FROM tusuario_perfil
 		WHERE id_usuario = '".$config["id_user"]."' AND tags = ''
-		AND id_perfil IN (SELECT id_perfil FROM tperfil WHERE ".get_acl_column($access)."=1)
-		AND id_grupo = ".$id_group;
+			AND id_perfil IN (
+				SELECT id_perfil
+				FROM tperfil
+				WHERE ".get_acl_column($access)." = 1)
+			AND id_grupo = ".$id_group;
 	$user_has_perm_without_tags = db_get_all_rows_sql ($sql);
 	
 	if ($user_has_perm_without_tags) {
 		return true;
 	}
-
+	
 	$tags_str = '';
 	if (!empty($tags)) {
 		foreach ($tags as $tag) {
@@ -1265,7 +1271,7 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 		}
 		$tags_str = implode(',', $tags_aux);
 	}
-
+	
 	$query = sprintf("SELECT tags, id_grupo 
 				FROM tusuario_perfil, tperfil
 				WHERE tperfil.id_perfil = tusuario_perfil.id_perfil AND
@@ -1273,7 +1279,7 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 					tperfil.%s = 1
 				ORDER BY id_grupo", $id_user, get_acl_column($access));
 	$user_tags = db_get_all_rows_sql($query);
-
+	
 	if ($user_tags === false) {
 		$user_tags = array();
 	}
@@ -1282,7 +1288,7 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
 		$tags_user = $user_tag['tags'];
 		$id_group_user = $user_tag['id_grupo'];
 		$childrens = groups_get_childrens($id_group_user, null, true);
-
+		
 		if (empty($childrens)) {
 			$group_ids = $id_group_user;
 		} else {
@@ -1325,7 +1331,7 @@ function tags_checks_event_acl($id_user, $id_group, $access, $tags = array(), $c
  * 
  */
 function tags_get_agents_counter ($id_tag, $groups_and_tags = array(), $agent_filter = array(), $module_filter = array(), $realtime = true) {
-
+	
 	// Avoid mysql error
 	if (empty($id_tag))
 		return false;
@@ -1907,10 +1913,10 @@ function tags_get_monitors_counter ($id_tag, $groups_and_tags = array(), $agent_
 					$groups_clause
 			WHERE tam.disabled = 0
 				$module_name_filter";
-			
+	
 	$count = db_get_sql ($sql);
-
-	return $count;	
+	
+	return $count;
 }
 
 /**

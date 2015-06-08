@@ -55,7 +55,7 @@ if (isset ($_GET["update_netgroup"])) {
 if ($config["realtimestats"] == 0) {
 	$updated_time ="<a href='index.php?sec=estado&sec2=operation/agentes/tactical&force_refresh=1'>";
 	$updated_time .= __('Last update'). " : ". ui_print_timestamp (db_get_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
-	$updated_time .= "</a>"; 
+	$updated_time .= "</a>";
 }
 else {
 	$updated_time = __("Updated at realtime");

@@ -19,7 +19,7 @@
  */
 
 global $config;
-	
+
 $options = array();
 $options['id_user'] = $config['id_user'];
 $options['modal'] = true;

@@ -599,7 +599,7 @@ else {
 
 // http://es2.php.net/manual/en/ref.session.php#64525
 // Session locking concurrency speedup!
-session_write_close (); 
+session_write_close ();
 
 
 // Main block of content

@@ -873,7 +873,7 @@ if (!$fail) {
 	if ($arrow) {
 		$table->data[2][1] .= '<div class="wizard_mode_form wizard_mode_snmpdata wizard_mode_snmpdata_arrow clickable">' . html_print_image('images/darrowright.png', true, array('title' => __('Add to modules list'))) . '</div>';
 	}
-	$table->data[2][1] .= '<br><br><div class="wizard_mode_delete_arrow clickable">' . html_print_image('images/cross.png', true, array('title' => __('Remove from modules list'))) . '</div>'; 
+	$table->data[2][1] .= '<br><br><div class="wizard_mode_delete_arrow clickable">' . html_print_image('images/cross.png', true, array('title' => __('Remove from modules list'))) . '</div>';
 	$table->cellstyle[2][1] = 'vertical-align: middle; text-align: center;';
 	
 	$table->data[2][2] = html_print_select (array (), 'module[]', 0, false, '', 0, true, true, true, '', false, 'width:300px; height: 100%;');

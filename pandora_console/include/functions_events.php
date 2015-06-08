@@ -2126,7 +2126,7 @@ function events_page_details ($event, $server = "") {
 			$data[1] .= html_print_image('images/chart_curve.png',true);
 			$data[1] .= '</a>';
 			$table_details->data[] = $data;
- 		}
+		}
 	}
 	
 	$data = array();

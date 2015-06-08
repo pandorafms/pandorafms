@@ -27,12 +27,12 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 enterprise_include_once ('godmode/setup/setup.php');
 
 /*
- NOTICE FOR DEVELOPERS:
- 
- Update operation is done in config_process.php
- This is done in that way so the user can see the changes inmediatly.
- If you added a new token, please check config_update_config() in functions_config.php
- to add it there.
+NOTICE FOR DEVELOPERS:
+
+Update operation is done in config_process.php
+This is done in that way so the user can see the changes inmediatly.
+If you added a new token, please check config_update_config() in functions_config.php
+to add it there.
 */
 
 

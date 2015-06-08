@@ -67,7 +67,8 @@ echo '<div class="databox_login" id="login">';
 echo '<div id="login_inner">';
 
 echo '<div id="login_in">';
-	echo '<div class="version_login"><div style="padding-top: 2px; color: #FFF;">' . $pandora_version . '</div></div>';
+	echo '<div class="version_login">
+		<div style="padding-top: 2px; color: #FFF;">' . $pandora_version . '</div></div>';
 	echo '<form method="post" action="' . ui_get_full_url('index.php'.$url) . '" >';
 	
 	//TODO: Put branding in variables (external file) or database
@@ -281,7 +282,7 @@ ui_require_jquery_file('jquery-ui-1.10.0.custom');
 			<div style="position: relative; top:120px; width:650px; margin: 0 auto; text-align: left;  border: 1px solid #FFF;">
 				<?php 
 					echo '<span style="font-size: 10pt; color: #2E2E2E; font-weight: bold;">';
-						echo __('Why is it recommended to upgrade the web browser?'); 
+						echo __('Why is it recommended to upgrade the web browser?');
 					echo '</span>';
 					
 					echo '<span style="font-size: 9.5pt; line-height: 18px;">';

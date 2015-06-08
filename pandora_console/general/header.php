@@ -213,10 +213,12 @@ config_check();
 					$autorefresh_additional .= '</span>';
 					unset ($values);
 					
-					$autorefresh_link_open_img = '<a class="white autorefresh" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
+					$autorefresh_link_open_img =
+						'<a class="white autorefresh" href="' . ui_get_url_refresh ($ignored_params) . '">';
 					
 					if ($_GET['refr']) {
-						$autorefresh_link_open_txt = '<a class="white autorefresh autorefresh_txt" href="' . ui_get_url_refresh ($ignored_params) . '">'; 
+						$autorefresh_link_open_txt =
+							'<a class="white autorefresh autorefresh_txt" href="' . ui_get_url_refresh ($ignored_params) . '">';
 					}
 					else {
 						$autorefresh_link_open_txt = '<a>';
@@ -229,8 +231,8 @@ config_check();
 					
 					$ignored_params['refr'] = false;
 					
-					$autorefresh_link_open_img = ''; 
-					$autorefresh_link_open_txt = ''; 
+					$autorefresh_link_open_img = '';
+					$autorefresh_link_open_txt = '';
 					$autorefresh_link_close = '';
 				}
 				
@@ -249,10 +251,18 @@ config_check();
 					$maintenance_title = __("System alerts detected - Please fix as soon as possible");
 					$maintenance_class = $maintenance_id = 'show_systemalert_dialog white';
 					
-					$maintenance_link_open_txt =  '<a href="' . $maintenance_link . '" title="' . $maintenance_title . '" class="' . $maintenance_class . '" id="show_systemalert_dialog">'; 
-					$maintenance_link_open_img =  '<a href="' . $maintenance_link . '" title="' . $maintenance_title . '" class="' . $maintenance_class . '">'; 
-					$maintenance_link_close =  '</a>'; 
-					$maintenance_img = $maintenance_link_open_img . html_print_image ("images/header_yellow.png", true, array ("title" => __('You have %d warning(s)', $config["alert_cnt"]), "id" => "yougotalert", "class" => "bot")) . $maintenance_link_close;
+					$maintenance_link_open_txt = 
+						'<a href="' . $maintenance_link . '" title="' . $maintenance_title . '" class="' . $maintenance_class . '" id="show_systemalert_dialog">';
+					$maintenance_link_open_img = 
+						'<a href="' . $maintenance_link . '" title="' . $maintenance_title . '" class="' . $maintenance_class . '">';
+					$maintenance_link_close = '</a>';
+					$maintenance_img = $maintenance_link_open_img .
+						html_print_image("images/header_yellow.png",
+							true, array(
+								"title" => __('You have %d warning(s)',
+								$config["alert_cnt"]),
+								"id" => "yougotalert",
+								"class" => "bot")) . $maintenance_link_close;
 				}
 				else {
 					$maintenance_img = html_print_image ("images/header_ready.png", true, array ("title" => __('There are not warnings'), "id" => "yougotalert", "class" => "bot"));
@@ -322,7 +332,7 @@ config_check();
 	<?php
 	$config_fixed_header = false;
 	if (isset($config['fixed_header'])) {
-		$config_fixed_header = $config['fixed_header']; 
+		$config_fixed_header = $config['fixed_header'];
 	}
 	?>
 	

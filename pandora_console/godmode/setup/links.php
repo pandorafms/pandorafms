@@ -38,7 +38,7 @@ if (isset($_POST["create"])) { // If create
 	if (! $result)
 		ui_print_error_message(__('There was a problem creating link'));
 	else {
-		ui_print_success_message(__('Successfully created')); 
+		ui_print_success_message(__('Successfully created'));
 		$id_link = $result;
 	}
 }
@@ -66,8 +66,8 @@ if (isset($_GET["borrar"])) { // if delete
 	if (! $result)
 		ui_print_error_message(__('There was a problem deleting link'));
 	else
-		ui_print_success_message(__('Successfully deleted')); 
-
+		ui_print_success_message(__('Successfully deleted'));
+	
 }
 
 // Main form view for Links edit

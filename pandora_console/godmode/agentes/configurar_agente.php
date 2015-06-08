@@ -486,7 +486,7 @@ if ($id_agente) {
 	// This add information to the header 
 	switch ($tab) {
 		case "main":
-			$tab_description = '- '. __('Setup'); 
+			$tab_description = '- '. __('Setup');
 			break;
 		case "collection":
 			$tab_description = '- ' . __('Collection') ;

@@ -431,13 +431,18 @@ $table->style[1] = 'width: 30%;';
 $table->style[2] = 'width: 30%;';
 $table->style[3] = 'font-weight: bold; width: 30%;';
 
-$table->title = __('Firing fields') . ui_print_help_tip(__('Fields passed to the command executed by this action when the alert is fired'), true);
+$table->title = __('Firing fields') .
+	ui_print_help_tip(__('Fields passed to the command executed by this action when the alert is fired'), true);
 
-$table->head[0] = __('Field') . ui_print_help_tip(__('Fields configured on the command associated to the action'), true);
-$table->head[1] = __('Template fields') . ui_print_help_tip(__('Triggering fields configured in template'), true); 
-$table->head[2] = __('Action fields') . ui_print_help_tip(__('Triggering fields configured in action'), true); 
+$table->head[0] = __('Field') .
+	ui_print_help_tip(__('Fields configured on the command associated to the action'), true);
+$table->head[1] = __('Template fields') .
+	ui_print_help_tip(__('Triggering fields configured in template'), true);
+$table->head[2] = __('Action fields') .
+	ui_print_help_tip(__('Triggering fields configured in action'), true);
 
-$table->head[3] = __('Executed on firing') . ui_print_help_tip(__('Fields used on execution when the alert is fired'), true);
+$table->head[3] = __('Executed on firing') .
+	ui_print_help_tip(__('Fields used on execution when the alert is fired'), true);
 
 $firing_fields = array();
 

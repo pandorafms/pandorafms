@@ -157,7 +157,7 @@ else {
 if (defined('METACONSOLE')) {
 	if ($modulegroup != '-1')
 		$sql_conditions .= sprintf (" AND tagente_modulo.id_module_group IN (SELECT id_mg 
-			FROM tmodule_group WHERE name = '%s')", $modulegroup);	
+			FROM tmodule_group WHERE name = '%s')", $modulegroup);
 }
 else if ($modulegroup > -1) {
 	$sql_conditions .= sprintf (" AND tagente_modulo.id_module_group = '%d'", $modulegroup);
@@ -187,7 +187,7 @@ elseif ($status == AGENT_MODULE_STATUS_CRITICAL_BAD) { //Critical
 	$sql_conditions .= " AND tagente_estado.estado = 1 AND utimestamp > 0";
 }
 elseif ($status == AGENT_MODULE_STATUS_WARNING) { //Warning
-	$sql_conditions .= " AND tagente_estado.estado = 2 AND utimestamp > 0";	
+	$sql_conditions .= " AND tagente_estado.estado = 2 AND utimestamp > 0";
 }
 elseif ($status == AGENT_MODULE_STATUS_NOT_NORMAL) { //Not normal
 	$sql_conditions .= " AND tagente_estado.estado <> 0";
@@ -243,9 +243,14 @@ if ($tag_filter !== 0) {
 $groups = users_get_groups($config["id_user"]);
 
 if ($ag_group !== 0) {
-	$sql_conditions_tags = tags_get_acl_tags($config['id_user'], $ag_group, 'AR', 'module_condition', 'AND', 'tagente_modulo', true, array(), true); 
+	$sql_conditions_tags = tags_get_acl_tags($config['id_user'],
+		$ag_group, 'AR', 'module_condition', 'AND', 'tagente_modulo',
+		true, array(), true);
 } else {
-	$sql_conditions_tags = tags_get_acl_tags($config['id_user'], array_keys($groups), 'AR', 'module_condition', 'AND', 'tagente_modulo', true, array(), true); 
+	$sql_conditions_tags = tags_get_acl_tags(
+		$config['id_user'], array_keys($groups), 'AR',
+		'module_condition', 'AND', 'tagente_modulo', true, array(),
+		true);
 }
 
 if (is_numeric($sql_conditions_tags)) {
@@ -428,7 +433,7 @@ $table->data[0][2] = __('Monitor status');
 
 
 $fields = array ();
-$fields[AGENT_MODULE_STATUS_NORMAL] = __('Normal'); 
+$fields[AGENT_MODULE_STATUS_NORMAL] = __('Normal');
 $fields[AGENT_MODULE_STATUS_WARNING] = __('Warning');
 $fields[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
 $fields[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
@@ -920,7 +925,7 @@ $table->align = array ();
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
 	$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 
-$table->head[1] = __('Agent'); 
+$table->head[1] = __('Agent');
 if (! defined ('METACONSOLE')) {
 	$table->head[1] .=' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=agent_name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectAgentNameUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=agent_name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentNameDown, "alt" => "down")) . '</a>';
@@ -933,7 +938,7 @@ if (! defined ('METACONSOLE')) {
 }
 $table->align[2] = "left";
 
-$table->head[3] = __('Module name'); 
+$table->head[3] = __('Module name');
 if (! defined ('METACONSOLE')) {
 	$table->head[3] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=module_name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleNameUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=module_name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleNameDown, "alt" => "down")) . '</a>';
@@ -943,7 +948,7 @@ if (! defined ('METACONSOLE')) {
 $table->head[4] = __('Tags');
 */
 
-$table->head[5] = __('Interval'); 
+$table->head[5] = __('Interval');
 if (! defined ('METACONSOLE')) {
 	$table->head[5] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=interval&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=interval&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown, "alt" => "down")) . '</a>';
@@ -1062,7 +1067,7 @@ foreach ($result as $row) {
 				'id_agente='. $row["id_agent"] . '&amp;' .
 				'loginhash=auto&amp;' .
 				'loginhash_data=' . $row["hashdata"] . '&amp;' .
-				'loginhash_user=' . str_rot13($row["user"]) . '">'; 
+				'loginhash_user=' . str_rot13($row["user"]) . '">';
 		$agent_name = ui_print_truncate_text($row["agent_name"],
 			'agent_small', false, true, false, '[&hellip;]',
 			'font-size:7.5pt;');
@@ -1281,7 +1286,7 @@ foreach ($result as $row) {
 			$link = "winopeng_var('operation/agentes/snapshot_view.php?" .
 				"id=" . $row["id_agente_modulo"] .
 				"&refr=" . $row["current_interval"] .
-				"&label=" . rawurlencode(urlencode(io_safe_output($row["module_name"]))) . "','" . $win_handle . "', 700,480)"; 
+				"&label=" . rawurlencode(urlencode(io_safe_output($row["module_name"]))) . "','" . $win_handle . "', 700,480)";
 			
 			$salida = '<a href="javascript:' . $link . '">' .
 				html_print_image("images/default_list.png", true,

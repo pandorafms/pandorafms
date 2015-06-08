@@ -17,7 +17,7 @@
 
 global $config;
 
-require_once ($config["homedir"] . '/include/functions_graph.php'); 
+require_once ($config["homedir"] . '/include/functions_graph.php');
 
 check_login ();
 

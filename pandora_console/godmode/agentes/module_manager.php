@@ -191,7 +191,7 @@ if ($multiple_delete) {
 			case "mysql":
 			case "postgresql":
 				$result = db_process_sql_delete('tagente_estado',
-					array('id_agente_modulo' => $id_agent_module_del)); 
+					array('id_agente_modulo' => $id_agent_module_del));
 				if ($result === false)
 					$error++;
 				
@@ -426,7 +426,7 @@ $search_string_entities = io_safe_input($search_string);
 
 $basic_where = sprintf("(nombre LIKE '%%%s%%' OR nombre LIKE '%%%s%%' OR descripcion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%') AND", $search_string, $search_string_entities, $search_string, $search_string_entities);
 
-$where_tags = tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 'tagente_modulo'); 
+$where_tags = tags_get_acl_tags($config['id_user'], 0, 'AR', 'module_condition', 'AND', 'tagente_modulo');
 
 $paginate_module = false;
 if (isset($config['paginate_module']))
@@ -681,7 +681,7 @@ foreach ($modules as $module) {
 	$data[7] = ui_print_module_warn_value ($module["max_warning"],
 		$module["min_warning"], $module["str_warning"],
 		$module["max_critical"], $module["min_critical"],
-		$module["str_critical"]); 
+		$module["str_critical"]);
 	
 	if ($module['disabled']) {
 		$data[8] = "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&enable_module=".$module['id_agente_modulo']."'>".

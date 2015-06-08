@@ -16,9 +16,10 @@
 // Load global vars
 global $config;
 
-check_login (); 
+check_login ();
 
-ui_print_page_header (__('Database maintenance').' &raquo; '.__('Event database cleanup'), "images/gm_db.png", false, "", true);
+ui_print_page_header (__('Database maintenance').' &raquo; ' .
+	__('Event database cleanup'), "images/gm_db.png", false, "", true);
 
 if (! check_acl ($config['id_user'], 0, "DM")) {
 	db_pandora_audit("ACL Violation", "Trying to access Database Management Event");

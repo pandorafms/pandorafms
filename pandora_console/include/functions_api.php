@@ -3850,9 +3850,9 @@ function api_set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
 	$values['min_critical'] = $other['data'][11];
 	$values['max_critical'] = $other['data'][12];
 	$values['str_critical'] = $other['data'][13];
- 	$values['history_data'] = $other['data'][14];
- 	$values['configuration_data'] = $other['data'][15];
- 	$values['disabled_types_event'] = $disabled_types_event;
+	$values['history_data'] = $other['data'][14];
+	$values['configuration_data'] = $other['data'][15];
+	$values['disabled_types_event'] = $disabled_types_event;
 	$values['module_macros'] = $other['data'][17];
 	$values['min_ff_event'] = $other['data'][18];
 	$values['each_ff'] = $other['data'][19];
@@ -3860,8 +3860,8 @@ function api_set_add_data_module_policy($id, $thrash1, $other, $thrash3) {
 	$values['min_ff_event_warning'] = $other['data'][21];
 	$values['min_ff_event_critical'] = $other['data'][22];
 	$values['ff_timeout'] = $other['data'][23];
- 	
- 	if ($name_module_policy !== false) {
+	
+	if ($name_module_policy !== false) {
 		if ($name_module_policy[0]['name'] == $other['data'][0]) {
 			returnError('error_add_data_module_policy',
 				__('Error adding data module to policy. The module is already in the policy.'));
@@ -7959,37 +7959,38 @@ function api_set_update_special_day($id_special_day, $thrash2, $other, $thrash3)
 		return;
 	}
 	
-        $special_day = $other['data'][0];
-        $same_day = $other['data'][1];
-        $description = $other['data'][2];
-        $idGroup = $other['data'][3];
-
+	$special_day = $other['data'][0];
+	$same_day = $other['data'][1];
+	$description = $other['data'][2];
+	$idGroup = $other['data'][3];
+	
 	if ($id_special_day == "") {
 		returnError('error_update_special_day', __('Error updating special day. Id cannot be left blank.'));
 		return;
-        }
-        
+		}
+	
 	$check_id_special_day = db_get_value ('id', 'talert_special_days', 'id', $id_special_day);
-   
-        if (!$check_id_special_day) {
+	
+	if (!$check_id_special_day) {
 		returnError('error_update_special_day', __('Error updating special day. Id doesn\'t exists.'));
 		return;
 	}
-
+	
 	if (!preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $special_day)) {
 		returnError('error_update_special_day', __('Error updating special day. Invalid date format.'));
 		return;	
 	}
- 
-        $return = db_process_sql_update('talert_special_days',
-                array('date' => $special_day,
-                        'same_day' => $same_day,
-                        'description' => $description,
-                        'id_group' => $idGroup),
-                array('id' => $id_special_day));
-
-        returnData('string',
-                array('type' => 'string', 'data' => (int)((bool)$return)));
+	
+	$return = db_process_sql_update('talert_special_days',
+		array(
+			'date' => $special_day,
+			'same_day' => $same_day,
+			'description' => $description,
+			'id_group' => $idGroup),
+		array('id' => $id_special_day));
+	
+	returnData('string',
+		array('type' => 'string', 'data' => (int)((bool)$return)));
 }
 
 /**

@@ -190,12 +190,12 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 		echo "<input type='hidden' name='create' value='1'>";
 	else
 		echo "<input type='hidden' name='update' value='1'>";
-	echo "<input type='hidden' name='id_news' value='"; 
+	echo "<input type='hidden' name='id_news' value='";
 	if (isset($id_news)) {
 		echo $id_news;
 	} 
 	echo "'>";
-
+	
 	html_print_table($table);
 	
 	echo "<table width='" . $table->width . "'>";

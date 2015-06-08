@@ -30,7 +30,7 @@ if (is_ajax ()) {
 		
 		$filter = array ();
 		$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%'.$string.'%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
-		$filter['id_grupo'] = $id_group; 
+		$filter['id_grupo'] = $id_group;
 		
 		$agents = agents_get_agents ($filter, array ('nombre', 'direccion'));
 		if ($agents === false)
@@ -41,9 +41,9 @@ if (is_ajax ()) {
 		}
 		
 		return;
- 	}
- 	
- 	return;
+	}
+	
+	return;
 }
 
 check_login ();

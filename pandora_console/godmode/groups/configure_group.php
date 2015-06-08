@@ -122,7 +122,7 @@ foreach ($files as $key => $f) {//Remove from the list the non-desired .png file
 $table->data[1][1] = html_print_select ($files, 'icon', $icon, '', 'None', '', true);
 $table->data[1][1] .= ' <span id="icon_preview">';
 if ($icon) {
-	$table->data[1][1] .= html_print_image("images/groups_small/".$icon, true); 
+	$table->data[1][1] .= html_print_image("images/groups_small/".$icon, true);
 }
 
 $table->data[1][1] .= '</span>';
@@ -152,7 +152,7 @@ else {
 
 if ($acl_parent) {
 	$table->data[2][1] .= ' <span id="parent_preview">';
-	$table->data[2][1] .= html_print_image("images/groups_small/".groups_get_icon ($id_parent).".png", true); 
+	$table->data[2][1] .= html_print_image("images/groups_small/".groups_get_icon ($id_parent).".png", true);
 	$table->data[2][1] .= '</span>';
 }
 
@@ -269,5 +269,5 @@ function parent_changed () {
 $(document).ready (function () {
 	$('#icon').change (icon_changed);
 	$('#id_parent').change (parent_changed);
-}); 
+});
 </script>

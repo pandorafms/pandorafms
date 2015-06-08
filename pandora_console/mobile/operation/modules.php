@@ -301,7 +301,7 @@ class Modules {
 		
 		// Part SQL for the Tag
 		$sql_conditions_tags = tags_get_acl_tags($user->getIdUser(),
-			$user->getIdGroups($this->acl), $this->acl, 'module_condition', 'AND', 'tagente_modulo'); 
+			$user->getIdGroups($this->acl), $this->acl, 'module_condition', 'AND', 'tagente_modulo');
 		
 		
 		$sql_conditions = " AND tagente_modulo.disabled = 0 AND tagente.disabled = 0";
@@ -329,7 +329,7 @@ class Modules {
 			$sql_conditions .= " AND tagente_estado.estado = 1 AND utimestamp > 0";
 		}
 		elseif ($this->status == AGENT_MODULE_STATUS_WARNING) { //Warning
-			$sql_conditions .= " AND tagente_estado.estado = 2 AND utimestamp > 0";	
+			$sql_conditions .= " AND tagente_estado.estado = 2 AND utimestamp > 0";
 		}
 		elseif ($this->status == AGENT_MODULE_STATUS_NOT_NORMAL) { //Not normal
 			$sql_conditions .= " AND tagente_estado.estado <> 0";
@@ -416,9 +416,12 @@ class Modules {
 			foreach ($modules_db as $module) {
 				$row = array();
 				
-				$row[0] = $row[__('Module name')] =
-                                        '<span class="data module_name">'.ui_print_truncate_text($module['module_name'], 30, false)."</span>";
-					
+				$row[0] =
+				$row[__('Module name')] =
+					'<span class="data module_name">' .
+					ui_print_truncate_text($module['module_name'], 30, false) .
+					"</span>";
+				
 				if ($this->columns['agent']) {
 					$row[1] = $row[__('Agent name')] =
 						'<span class="data"><span class="show_collapside" style="display: none; font-weight: bolder;">' . __('Agent') . ' </span>' .
@@ -698,10 +701,10 @@ class Modules {
 					$this->free_search);
 			}
 			if (!$this->default_filters['tag']) {
-				$tag_name = tags_get_name($this->tag); 
-                                $filters_to_serialize[] = sprintf(__("Tag: %s"),
-                                        $tag_name);
-                        }
+				$tag_name = tags_get_name($this->tag);
+					$filters_to_serialize[] = sprintf(__("Tag: %s"),
+					$tag_name);
+			}
 			
 			$string = '(' . implode(' - ', $filters_to_serialize) . ')';
 			

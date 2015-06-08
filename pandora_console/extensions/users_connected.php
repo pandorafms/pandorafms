@@ -98,7 +98,7 @@ function users_extension_main_god ($god = true) {
 						FROM tsesion
 						WHERE id_usuario = '%s'
 						AND to_char(descripcion) = '" . io_safe_input('Logged in') . "' 
-						ORDER BY fecha DESC",$row["id_user"])); 
+						ORDER BY fecha DESC",$row["id_user"]));
 				break;
 			}
 			

@@ -112,7 +112,7 @@ if ($create_category) {
 // Get results when update action is performed
 if ($action == "update" && $id_category != 0) {
 	$result_category = db_get_row_filter('tcategory', array('id' => $id_category));
-	$name_category = $result_category["name"]; 
+	$name_category = $result_category["name"];
 } // If current action is create (new) or somethig goes wrong fields are filled with void value
 else {
 	$name_category = "";
@@ -162,7 +162,7 @@ else
 			echo "<td>";
 		else
 			echo "<td align=center>";
-		html_print_input_text ('name_category', $name_category); 
+		html_print_input_text ('name_category', $name_category);
 		echo "</td>";
 	echo "</tr>";
 	if (!defined('METACONSOLE')) {

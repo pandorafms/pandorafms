@@ -476,7 +476,7 @@ foreach ($info as $user_id => $user_info) {
 	if ($config["admin_can_delete_user"] && $user_info['id_user'] != $config['id_user']) {
 		$data[6] .= "<a href='index.php?sec=".$sec."&sec2=godmode/users/user_list&user_del=1&pure=".$pure."&delete_user=".$user_info['id_user']."'>".html_print_image('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" .__('Deleting User'). " ". $user_info['id_user'] . ". " . __('Are you sure?') ."')) return false"))."</a>";
 		if (defined('METACONSOLE')) {
-			$data[6] .= "<a href='index.php?sec=".$sec."&sec2=godmode/users/user_list&user_del=1&pure=".$pure."&delete_user=".$user_info['id_user']."&delete_all=1'>".html_print_image('images/cross_double.png', true, array ('title' => __('Delete from all consoles'), 'onclick' => "if (! confirm ('" .__('Deleting User %s from all consoles', $user_info['id_user']) . ". " . __('Are you sure?') ."')) return false"))."</a>";	
+			$data[6] .= "<a href='index.php?sec=" . $sec . "&sec2=godmode/users/user_list&user_del=1&pure=".$pure."&delete_user=".$user_info['id_user']."&delete_all=1'>".html_print_image('images/cross_double.png', true, array ('title' => __('Delete from all consoles'), 'onclick' => "if (! confirm ('" .__('Deleting User %s from all consoles', $user_info['id_user']) . ". " . __('Are you sure?') ."')) return false"))."</a>";
 		}
 	}
 	else {

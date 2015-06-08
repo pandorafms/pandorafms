@@ -188,7 +188,7 @@ $table->rowstyle["all_3"] = 'display: none;';
 $table->data["all_3"][0] = __('Groups');
 $table->colspan["all_3"][1] = "3";
 $table->data["all_3"][1] = html_print_select_groups(
-	$config['id_user'], "AR", true, 'groups', '', '', '', 0, true); 
+	$config['id_user'], "AR", true, 'groups', '', '', '', 0, true);
 
 
 $table->rowstyle["all_one_item_per_agent"] = 'display: none';

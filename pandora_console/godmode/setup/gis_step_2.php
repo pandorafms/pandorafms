@@ -471,14 +471,14 @@ function selMapConnectionType() {
 	switch ($('#sel_type :selected').val()) {
 		case 'OSM':
 			$('#form_map_connection_type').html('<?php echo $optionsConnectionOSMTable; ?>').hide();
-			break; 
+			break;
 		case 'Gmap':
 			// TODO: Validate there is a key, and use it
 			$('#form_map_connection_type').html('<?php echo $optionsConnectionGmapTable; ?>').hide();
-			break; 
+			break;
 		case 'Static_Image':
 			$('#form_map_connection_type').html('<?php echo $optionsConnectionImageTable; ?>').hide();
-			break; 
+			break;
 		default:
 			$('#form_map_connection_type').html('').hide();
 			break;

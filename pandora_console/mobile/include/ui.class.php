@@ -411,7 +411,7 @@ class Ui {
 		//Erase other options and only for the input
 		unset($options['label']);
 		
-		$html .= "<input "; 
+		$html .= "<input ";
 		foreach ($options as $option => $value) {
 			$html .= " " . $option  . "='" . $value . "' ";
 		}

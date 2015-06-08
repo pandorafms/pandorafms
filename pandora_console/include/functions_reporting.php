@@ -1063,7 +1063,7 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 					
 					
 					
-					$data_hbar[$item_name]['g'] = $dt; 
+					$data_hbar[$item_name]['g'] = $dt;
 					$data_pie_graph[$item_name] = $dt;
 					
 					if ($show_graph == 0 || $show_graph == 1) {
@@ -5586,7 +5586,7 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period=0, $d
 		return 0;
 	}
 	
-	return $total / $count;	
+	return $total / $count;
 }
 
 

@@ -68,7 +68,7 @@ else {
 	
 	ui_meta_print_page_header($nav_bar);
 	
-	ui_meta_print_header(__("Netflow filters"));	
+	ui_meta_print_header(__("Netflow filters"));
 }
 
 if ($id) {
@@ -91,7 +91,7 @@ else {
 	$dst_port = '';
 	$src_port = '';
 	$aggregate = 'none';
-	$output = 'bytes';	
+	$output = 'bytes';
 	$advanced_filter = '';
 }
 

@@ -49,7 +49,7 @@ else {
 	
 	ui_meta_print_page_header($nav_bar);
 	
-	ui_meta_print_header(__("Netflow filters"));	
+	ui_meta_print_header(__("Netflow filters"));
 }
 
 $delete = (bool) get_parameter ('delete');
@@ -81,7 +81,7 @@ if ($multiple_delete) {
 	$ids = (array)get_parameter('delete_multiple', array());
 	
 	foreach ($ids as $id) {
-		$id_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id);	
+		$id_filter = db_get_value('id_name', 'tnetflow_filter', 'id_sg', $id);
 		$result = db_process_sql_delete ('tnetflow_filter',
 			array ('id_sg' => $id));
 		

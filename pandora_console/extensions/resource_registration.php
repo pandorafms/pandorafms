@@ -129,7 +129,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 				foreach ($agents as $agent) {
 					if ($regular_expresion) {
 						if ((bool)preg_match("/" . $agent_clean . "/", io_safe_output($agent['nombre']))) {
-							$agents_item[$agent['id_agente']]['name'] = $agent['nombre']; 
+							$agents_item[$agent['id_agente']]['name'] = $agent['nombre'];
 						}
 					}
 					else {
@@ -153,13 +153,13 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 						if ($regular_expresion) {
 							if ((bool)preg_match("/" . $module_clean . "/", io_safe_output($module['nombre']))) {
 								$agents_item[$id]['modules'][$module['id_agente_modulo']]['name'] = 
-									$module['nombre']; 
+									$module['nombre'];
 							}
 						}
 						else {
 							if ($module_clean == io_safe_output($module['nombre'])) {
 								$agents_item[$id]['modules'][$module['id_agente_modulo']]['name'] = 
-									$module['nombre']; 
+									$module['nombre'];
 							}
 						}
 					}
@@ -241,7 +241,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 														'sla_max' => (string)$sla_xml->sla_max,
 														'sla_min' => (string)$sla_xml->sla_min,
 														'sla_limit' => (string)$sla_xml->sla_limit
-														); 
+														);
 												}
 											}
 											else {
@@ -298,7 +298,7 @@ function process_upload_xml_report($xml, $group_filter = 0) {
 				case 'event_report_module':
 					break;
 				case 'alert_report_module':
-					break; 
+					break;
 				case 'alert_report_agent':
 					break;
 				case 'alert_report_group':
@@ -445,7 +445,7 @@ function process_upload_xml_visualmap($xml, $filter_group = 0) {
 				$regular_expresion = ($agent_clean != $item->agent);
 				
 				$agents = agents_get_agents(array('id_grupo' => $filter_group), array('id_agente', 'nombre'));
-				if ($agents === false) $agents = array(); 
+				if ($agents === false) $agents = array();
 				$temp = array();
 				foreach ($agents as $agent) {
 					$temp[$agent['id_agente']] = $agent['nombre'];
@@ -692,7 +692,7 @@ function process_upload_xml_component($xml) {
 						'custom_string_3' => $custom_string_3,
 						'post_process' => $post_process));
 				if ((bool)$idComponent) {
-					$components[] = $idComponent; 
+					$components[] = $idComponent;
 				}
 				break;
 			case 4: //Plugin component
@@ -728,7 +728,7 @@ function process_upload_xml_component($xml) {
 						'custom_string_3' => $custom_string_3,
 						'post_process' => $post_process));
 				if ((bool)$idComponent) {
-					$components[] = $idComponent; 
+					$components[] = $idComponent;
 				}
 				break;
 			case 5: //Prediction component
@@ -766,7 +766,7 @@ function process_upload_xml_component($xml) {
 						'custom_string_3' => $custom_string_3,
 						'post_process' => $post_process));
 				if ((bool)$idComponent) {
-					$components[] = $idComponent; 
+					$components[] = $idComponent;
 				}
 				break;
 			case 7: //Web component

@@ -240,7 +240,7 @@ class Tactical {
 		$sessions = db_get_all_rows_sql ($sql);
 		
 		if ($sessions === false)
-			$sessions = array (); 
+			$sessions = array ();
 		
 		$return = array();
 		foreach ($sessions as $session) {

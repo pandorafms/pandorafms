@@ -405,5 +405,5 @@ html_print_input_hidden("shortcut_id_user", $config['id_user']);
 			helper: "clone",
 			scroll: false
 		});
-	});	
+	});
 </script>

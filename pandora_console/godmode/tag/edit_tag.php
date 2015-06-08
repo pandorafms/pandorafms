@@ -69,7 +69,7 @@ else {
 if ($update_tag && $id_tag != 0) {
 	
 	// Erase comma characters on tag name
-	$name_tag = str_replace(',', '', $name_tag); 
+	$name_tag = str_replace(',', '', $name_tag);
 	
 	$values = array();
 	$values['name'] = $name_tag;
@@ -98,7 +98,7 @@ if ($create_tag) {
 	$return_create = true;
 	
 	// Erase comma characters on tag name
-	$name_tag = str_replace(',', '', $name_tag); 
+	$name_tag = str_replace(',', '', $name_tag);
 	
 	$data = array();
 	$data['name'] = $name_tag;
@@ -130,7 +130,7 @@ if ($create_tag) {
 // Get results when update action is performed
 if ($action == "update" && $id_tag != 0) {
 	$result_tag = tags_search_tag_id($id_tag);
-	$name_tag = $result_tag["name"]; 
+	$name_tag = $result_tag["name"];
 	$description_tag = $result_tag["description"];
 	$url_tag = $result_tag["url"];
 	$email_tag = $result_tag["email"];
@@ -164,15 +164,15 @@ else
 	}
 	echo "<tr>";
 		echo "<td align='left'>";
-		html_print_label (__("Name"),'name');
+		html_print_label (__("Name"), 'name');
 		echo "</td>";
-		echo "<td align='left'>"; 
-		html_print_input_text ('name_tag', $name_tag); 
+		echo "<td align='left'>";
+		html_print_input_text ('name_tag', $name_tag);
 		echo "</td>";
 	echo "</tr>";
 	echo "<tr>";
 		echo "<td align='left'>";
-		html_print_label (__("Description"),'name');
+		html_print_label (__("Description"), 'name');
 		echo "</td>";
 		echo "<td align='left'>";
 		html_print_input_text ('description_tag', $description_tag);
@@ -180,8 +180,9 @@ else
 	echo "</tr>";
 	echo "<tr>";
 		echo "<td align='left'>";
-		echo '<b>' . __("Url") . '</b>'; 
-		echo ui_print_help_tip (__("Hyperlink to help information that has to exist previously."), true);
+		echo '<b>' . __("Url") . '</b>';
+		echo ui_print_help_tip(
+			__("Hyperlink to help information that has to exist previously."), true);
 		echo "</td>";
 		echo "<td align='left'>";
 		html_print_input_text ('url_tag', $url_tag);
@@ -189,8 +190,9 @@ else
 	echo "</tr>";
 	echo "<tr>";
 		echo "<td align='left'>";
-		echo '<b>' . __("Email") . '</b>'; 
-		echo ui_print_help_tip (__("Associated Email direction to use later in alerts associated to Tags."), true);
+		echo '<b>' . __("Email") . '</b>';
+		echo ui_print_help_tip(
+			__("Associated Email direction to use later in alerts associated to Tags."), true);
 		echo "</td>";
 		echo "<td align='left'>";
 		html_print_textarea('email_tag', 5, 20, $email_tag);
@@ -198,8 +200,9 @@ else
 	echo "</tr>";
 	echo "<tr>";
 		echo "<td align='left'>";
-		echo '<b>' . __("Phone") . '</b>'; 
-		echo ui_print_help_tip (__("Associated phone number to use later in alerts associated to Tags."), true);
+		echo '<b>' . __("Phone") . '</b>';
+		echo ui_print_help_tip(
+			__("Associated phone number to use later in alerts associated to Tags."), true);
 		echo "</td>";
 		echo "<td align='left'>";
 		html_print_textarea('phone_tag', 5, 20, $phone_tag);

@@ -556,11 +556,12 @@ else {
 			'execute' => $plugin_execute, 
 			'plugin_type' => $plugin_plugin_type,
 			'parameters' => $parameters,
-			'macros' => $macros); 
+			'macros' => $macros);
 		
 		$result = false;
 		if ($values['name'] != '' && $values['execute'] != '')
-			$result = db_process_sql_update('tplugin', $values, array('id' => $plugin_id));
+			$result = db_process_sql_update('tplugin', $values,
+				array('id' => $plugin_id));
 		
 		if (! $result) {
 			ui_print_error_message(__('Problem updating plugin'));

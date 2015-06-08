@@ -650,7 +650,7 @@ if (!empty ($table->data)) {
 	}
 	
 	if ($allow_action) {
-		echo '<form method="post" id="form_events" action="'.$url.'">';	
+		echo '<form method="post" id="form_events" action="'.$url.'">';
 		echo "<input type='hidden' name='delete' id='hidden_delete_events' value='0' />";
 	}
 	

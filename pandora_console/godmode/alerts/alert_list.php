@@ -84,7 +84,7 @@ if ($create_alert) {
 		$module_name = db_get_value ("nombre",
 			"tagente_modulo","id_agente_modulo", $id_agent_module);
 		$agent_name = agents_get_name (db_get_value ("id_agente",
-			"tagente_modulo","id_agente_modulo", $id_agent_module)); 
+			"tagente_modulo","id_agente_modulo", $id_agent_module));
 		
 		// Audit the creation only when the alert creation is correct
 		if ($id) {
@@ -124,7 +124,8 @@ if ($delete_alert) {
 	$id_agent_module = $temp["id_agent_module"];
 	$alert_template_name = db_get_value ("name", "talert_templates","id", $id_alert_template);
 	$module_name = db_get_value ("nombre", "tagente_modulo","id_agente_modulo", $id_agent_module);
-	$agent_name = agents_get_name (db_get_value ("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module)); 
+	$agent_name = agents_get_name(
+		db_get_value("id_agente", "tagente_modulo","id_agente_modulo", $id_agent_module));
 	
 	$result = alerts_delete_alert_agent_module ($id_alert_agent_module);
 	

@@ -373,7 +373,7 @@ else {
 /*	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->size[4] = '25%';
 	}  */
-	$table->size[3] = '1%';	
+	$table->size[3] = '1%';
 	$table->size[4] = '10%';
 }
 
@@ -660,7 +660,7 @@ foreach ($simple_alerts as $alert) {
 	
 	// To manage alert is necessary LW permissions in the agent group 
 	if(check_acl ($config['id_user'], $agent_group, "LW")) {
-		$data[4] .= '&nbsp;&nbsp;<form class="delete_alert_form" action="' . $url . '" method="post" style="display: inline;">';	
+		$data[4] .= '&nbsp;&nbsp;<form class="delete_alert_form" action="' . $url . '" method="post" style="display: inline;">';
 		if ($alert['disabled']) {
 			$data[4] .= html_print_image('images/add.disabled.png',
 			true, array('title' => __("Add action")));

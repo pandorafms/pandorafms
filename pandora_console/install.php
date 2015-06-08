@@ -420,7 +420,7 @@ function adjust_paths_for_freebsd($engine, $connection = false) {
 				break;
 			case 'pgsql':
 				pg_send_query($connection, $adjust_sql[$i]);
-                                $result = pg_get_result($connection);
+				$result = pg_get_result($connection);
 				break;
 		}
 		if (!$result) {
@@ -880,10 +880,10 @@ function install_step4() {
 							$step2 = parse_oracle_dump($connection, "pandoradb.data.oracle.sql");
 						}
 						
-						check_generic ($step2, "Populating database");	
-
+						check_generic ($step2, "Populating database");
+						
 						if (PHP_OS == "FreeBSD")
- {
+						{
 							$step_freebsd = adjust_paths_for_freebsd ($engine, $connection);
 							check_generic ($step_freebsd, "Adjusting paths in database for FreeBSD");
 						}
@@ -999,9 +999,8 @@ function install_step4() {
 						}
 						
 						check_generic ($step4, "Populating database");
-
-						if (PHP_OS == "FreeBSD")
- {
+						
+						if (PHP_OS == "FreeBSD") {
 							$step_freebsd = adjust_paths_for_freebsd ($engine, $connection);
 							check_generic ($step_freebsd, "Adjusting paths in database for FreeBSD");
 						}
@@ -1009,7 +1008,7 @@ function install_step4() {
 						if ($step4) {
 							$random_password = random_name (8);
 							
-							pg_query($connection, "DROP USER pandora"); 
+							pg_query($connection, "DROP USER pandora");
 							pg_send_query($connection, "CREATE USER pandora WITH PASSWORD '" . $random_password . "'");
 							$result = pg_get_result($connection);
 							
@@ -1155,7 +1154,7 @@ function install_step4() {
 				$info = "<div class='err'><b>There were some problems.
 				Installation was not completed.</b> 
 				<p>Please correct failures before trying again.
-				All database "; 
+				All database ";
 				if ($engine == 'oracle')
 					$info .= "objects ";
 				else
@@ -1204,7 +1203,7 @@ function install_step5() {
 			<h2>Installation complete</h2>
 			<p>For security, you now must manually delete this installer 
 			('<i>install.php</i>') file before trying to access to your Pandora FMS console.
-			<p>You should also install Pandora FMS Servers before trying to monitor anything; 
+			<p>You should also install Pandora FMS Servers before trying to monitor anything;
 			please read documentation on how to install it.</p>
 			<p>Default user is <b>'admin'</b> with password <b>'pandora'</b>, 
 			please change it both as soon as possible.</p>

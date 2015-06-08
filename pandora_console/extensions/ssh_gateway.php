@@ -60,7 +60,7 @@ function ssh_gateway () {
 		echo "<td rowspan=2 vertical_aling='middle'>&nbsp;&nbsp;&nbsp;<input type=submit name=connect class='sub upd' style='margin-top:0px;' value=".__("Connect").">";
 		echo "<input type=hidden name=commit value=1></td>";
 		echo "<tr>";
-		echo "<td>".__("Port (use 0 for default)")."<td><input type=text size=5 value='$PORT' name=port>";	
+		echo "<td>".__("Port (use 0 for default)")."<td><input type=text size=5 value='$PORT' name=port>";
 		echo "<td>";
 		echo __("Connect mode")."<td><select name=mode>";
 		if ($MODE == "telnet") {

@@ -104,11 +104,11 @@ if ($save_alert || $modify_alert) {
 	$max_alerts = (int) get_parameter_post ("max_alerts", 1);
 	$min_alerts = (int) get_parameter_post ("min_alerts", 0);
 	$priority = (int) get_parameter_post ("priority", 0);
-	$custom_oid_data_1 = (string) get_parameter ("custom_oid_data_1"); 
-	$custom_oid_data_2 = (string) get_parameter ("custom_oid_data_2"); 
-	$custom_oid_data_3 = (string) get_parameter ("custom_oid_data_3"); 
-	$custom_oid_data_4 = (string) get_parameter ("custom_oid_data_4"); 
-	$custom_oid_data_5 = (string) get_parameter ("custom_oid_data_5"); 
+	$custom_oid_data_1 = (string) get_parameter ("custom_oid_data_1");
+	$custom_oid_data_2 = (string) get_parameter ("custom_oid_data_2");
+	$custom_oid_data_3 = (string) get_parameter ("custom_oid_data_3");
+	$custom_oid_data_4 = (string) get_parameter ("custom_oid_data_4");
+	$custom_oid_data_5 = (string) get_parameter ("custom_oid_data_5");
 	$custom_oid_data_6 = (string) get_parameter ("custom_oid_data_6");
 	$custom_oid_data_7 = (string) get_parameter ("custom_oid_data_7");
 	$custom_oid_data_8 = (string) get_parameter ("custom_oid_data_8");
@@ -146,9 +146,9 @@ if ($save_alert || $modify_alert) {
 	$order_20 = (int) get_parameter ("order_20", 20);
 	
 	$trap_type = (int) get_parameter ("trap_type", -1);
-	$single_value = (string) get_parameter ("single_value"); 
-	$position = (int) get_parameter ("position"); 
-	$group = (int) get_parameter ("group"); 
+	$single_value = (string) get_parameter ("single_value");
+	$position = (int) get_parameter ("position");
+	$group = (int) get_parameter ("group");
 	
 	if ($time_threshold == -1) {
 		$time_threshold = $time_other;
@@ -354,7 +354,7 @@ if ($update_alert) {
 	$order_19 = $alert["order_19"];
 	$order_20 = $alert["order_20"];
 	$trap_type = $alert["trap_type"];
-	$single_value = $alert["single_value"]; 
+	$single_value = $alert["single_value"];
 	$position = $alert["position"];
 	$group = $alert["id_group"];
 }

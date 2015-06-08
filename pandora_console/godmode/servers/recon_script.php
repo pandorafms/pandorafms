@@ -61,7 +61,7 @@ if ($create != "") {
 	$form_name = "";
 	$form_description = "";
 	$form_script = "";
-    $macros = "";
+	$macros = "";
 }
 
 // SHOW THE FORM

@@ -156,7 +156,7 @@ if (isset($_GET["update"])) {
 		else  {
 			if (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
 				$reason = __('Incorrect format in Subnet field');
-			$result = false; 
+			$result = false;
 		}
 	}
 	else
@@ -253,7 +253,7 @@ if ($result !== false) {
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
 	$table->class = "databox";
-	$table->data = array ();	
+	$table->data = array ();
 	
 	$table->style[8] = 'text-align: center;';
 	

@@ -118,7 +118,7 @@ class Networkmaps {
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$filter_title = sprintf(__('Filter Networkmaps by %s'),
-				$this->filterNetworkmapsGetString()); 
+				$this->filterNetworkmapsGetString());
 			$ui->contentBeginCollapsible($filter_title);
 				$ui->beginForm("index.php?page=networkmaps");
 					$system = System::getInstance();

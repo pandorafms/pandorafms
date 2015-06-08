@@ -149,7 +149,7 @@ if (defined('METACONSOLE')) {
 	
 	echo '<div class="notify">';
 	echo __("Edit or delete groups can cause problems with synchronization");
-	echo '</div>';	
+	echo '</div>';
 	
 }
 else {
@@ -198,7 +198,7 @@ if (($create_group) && (check_acl($config['id_user'], 0, "PM"))) {
 		
 			$result = db_process_sql_insert('tgrupo', $values);
 			if ($result) {
-				ui_print_success_message(__('Group successfully created')); 
+				ui_print_success_message(__('Group successfully created'));
 			}
 			else {
 				ui_print_error_message(__('There was a problem creating group'));

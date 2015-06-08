@@ -31,13 +31,13 @@ switch ($action) {
 	case 'new':
 		$actionButtonHtml = html_print_submit_button(__('Save'),
 			'add', false, 'class="sub wand"', true);
-		$hiddenFieldAction = 'save'; 
+		$hiddenFieldAction = 'save';
 		break;
 	case 'update':
 	case 'edit':
 		$actionButtonHtml = html_print_submit_button(__('Update'),
 			'edit', false, 'class="sub upd"', true);
-		$hiddenFieldAction = 'update'; 
+		$hiddenFieldAction = 'update';
 		break;
 }
 

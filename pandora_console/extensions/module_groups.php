@@ -30,7 +30,7 @@ if (is_ajax ()) {
 	if ($get_info_alert_module_group) {
 		$agents = agents_get_group_agents($id_agent_group);
 		if (!empty($agents)) { 
-			$alerts = agents_get_alerts_simple(array_keys($agents)); 
+			$alerts = agents_get_alerts_simple(array_keys($agents));
 			foreach ($alerts as $alert) {
 				$module = db_get_row_filter('tagente_modulo', array('id_agente_modulo' => $alert['id_agent_module']));
 				if ($module_group == $module['id_module_group']) {
@@ -108,14 +108,14 @@ if (is_ajax ()) {
 		echo '<i>No available data</i>';
 	}
 }
- 
+
 /**
  * Translate the array texts using gettext
  */
 function translate(&$item, $key) {
 	$item = __($item);
 }
- 
+
 /**
  * The main function of module groups and the enter point to
  * execute the code.
@@ -320,7 +320,7 @@ function mainModuleGroups() {
 	</script>
 	<?php
 }
- 
+
 extensions_add_operation_menu_option(__("Module groups"), 'estado', 'module_groups/brick.png', "v1r1","view");
 extensions_add_main_function('mainModuleGroups');
 ?>

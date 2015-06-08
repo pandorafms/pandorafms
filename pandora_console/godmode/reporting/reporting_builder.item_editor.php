@@ -781,7 +781,7 @@ else
 					$agent_name = '';
 					
 					if (metaconsole_load_external_db($connection) == NOERR)
-						$agent_name = db_get_value_filter('nombre', 'tagente', array('id_agente' => $idAgent));	
+						$agent_name = db_get_value_filter('nombre', 'tagente', array('id_agente' => $idAgent));
 						// Append server name
 						if (!empty($agent_name))
 							$agent_name .= ' (' . $server_name . ')';

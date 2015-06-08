@@ -218,22 +218,22 @@ $(document).ready (function () {
 	
 	$("#select_snmp_oid").click (
 		function () {
-			$(this).css ("width", "auto"); 
-			$(this).css ("min-width", "180px"); 
+			$(this).css ("width", "auto");
+			$(this).css ("min-width", "180px");
 		});
 	
 	$("#select_snmp_oid").blur (function () {
-		$(this).css ("width", "180px"); 
+		$(this).css ("width", "180px");
 	});
 	
 	$("#id_module_type").click (
 		function () {
-			$(this).css ("width", "auto"); 
-			$(this).css ("min-width", "180px"); 
+			$(this).css ("width", "auto");
+			$(this).css ("min-width", "180px");
 		});
 	
 	$("#id_module_type").blur (function () {
-		$(this).css ("width", "180px"); 
+		$(this).css ("width", "180px");
 	});
 	
 	// Keep elements in the form and the SNMP browser synced
@@ -294,10 +294,10 @@ $(document).ready (function () {
 	});
 	$('#snmp3_auth_pass').keyup(function() {
 		$('#snmp3_browser_auth_pass').val($(this).val());
-	});	
+	});
 	$('#snmp3_browser_auth_pass').keyup(function() {
 		$('#snmp3_auth_pass').val($(this).val());
-	});	
+	});
 	$('#snmp3_privacy_method').change(function() {
 		$('#snmp3_browser_privacy_method').val($(this).val());
 	});
@@ -306,7 +306,7 @@ $(document).ready (function () {
 	});
 	$('#snmp3_privacy_pass').keyup(function() {
 		$('#snmp3_browser_privacy_pass').val($(this).val());
-	});	
+	});
 	$('#snmp3_browser_privacy_pass').keyup(function() {
 		$('#snmp3_privacy_pass').val($(this).val());
 	});

@@ -178,12 +178,19 @@ foreach ($fields_available as $key=>$available) {
 
 $table->data[0][0] =  '<b>' . __('Fields available').'</b>';
 $table->data[1][0] = html_print_select ($fields_available, 'fields_available[]', true, '', '', '', true, true, false, '', false, 'width: 200px');
-$table->data[1][1] =  '<a href="javascript:">'.html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add fields to select'))).'</a>'; 
-$table->data[1][1] .= '<br><br><br><br><a href="javascript:">'. html_print_image('images/darrowleft.png', true, array('id' => 'left', 'title' => __('Delete fields to select'))).'</a>';
+$table->data[1][1] =  '<a href="javascript:">' .
+	html_print_image('images/darrowright.png', true,
+	array('id' => 'right', 'title' => __('Add fields to select'))) .
+	'</a>';
+$table->data[1][1] .= '<br><br><br><br><a href="javascript:">' .
+	html_print_image('images/darrowleft.png', true,
+	array('id' => 'left', 'title' => __('Delete fields to select'))) .
+	'</a>';
 
 $table->data[0][1] = '';
 $table->data[0][2] = '<b>' . __('Fields selected') . '</b>';
-$table->data[1][2] =  html_print_select($result_selected, 'fields_selected[]', true, '', '', '', true, true, false, '', false, 'width: 200px');	
+$table->data[1][2] =  html_print_select($result_selected,
+	'fields_selected[]', true, '', '', '', true, true, false, '', false, 'width: 200px');
 
 echo '<form id="custom_events" method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=fields&amp;pure='.$config['pure'].'">';
 html_print_table($table);

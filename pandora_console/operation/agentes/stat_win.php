@@ -45,7 +45,7 @@ if ($config["metaconsole"] && !empty($server_id)) {
 			echo "</body>";
 		echo "</html>";
 		exit;
- 	}
+	}
 }
 
 $user_language = get_user_language ($config['id_user']);
@@ -128,8 +128,8 @@ $id = get_parameter('id');
 		
 		if (!$permission) {
 			require ($config['homedir'] . "/general/noaccess.php");
- 			exit;
- 		}
+			exit;
+		}
 		
 		$draw_alerts = get_parameter("draw_alerts", 0);
 		$avg_only = get_parameter ("avg_only", 0);

@@ -128,7 +128,7 @@ $table->style[2] = 'font-weight: bold;';
 // Agent filter
 $agent_status_arr = array();
 $agent_status_arr[AGENT_STATUS_ALL] = __('All'); //default
-$agent_status_arr[AGENT_STATUS_NORMAL] = __('Normal'); 
+$agent_status_arr[AGENT_STATUS_NORMAL] = __('Normal');
 $agent_status_arr[AGENT_STATUS_WARNING] = __('Warning');
 $agent_status_arr[AGENT_STATUS_CRITICAL] = __('Critical');
 $agent_status_arr[AGENT_STATUS_UNKNOWN] = __('Unknown');
@@ -153,7 +153,7 @@ if (!defined('METACONSOLE')) {
 	// Module filter
 	$module_status_arr = array();
 	$module_status_arr[-1] = __('All'); //default
-	$module_status_arr[AGENT_MODULE_STATUS_NORMAL] = __('Normal'); 
+	$module_status_arr[AGENT_MODULE_STATUS_NORMAL] = __('Normal');
 	$module_status_arr[AGENT_MODULE_STATUS_WARNING] = __('Warning');
 	$module_status_arr[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
 	$module_status_arr[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');

@@ -53,6 +53,7 @@ config_check();
 		</td>
 		<td style="min-width:200px;">
 			<?php
+				$table = new stdClass();
 				$table->id = "header_table";
 				$table->class = "none";
 				$table->cellpadding = 0;

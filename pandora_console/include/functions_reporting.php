@@ -4055,6 +4055,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				break;
 			}
 			elseif ($show_table) {
+				$table1 = new stdClass();
 				$table1->width = '99%';
 				$table1->data = array ();
 				$table1->head = array ();
@@ -4412,6 +4413,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			// Slice graphs calculation
 			if ($show_graphs && !empty($slas)) {
+				$tableslice = new stdClass();
 				$tableslice->width = '99%';
 				$tableslice->style[0] = 'text-align: right';
 				$tableslice->data = array ();

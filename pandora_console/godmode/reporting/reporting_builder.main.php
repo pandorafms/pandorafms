@@ -41,6 +41,7 @@ switch ($action) {
 		break;
 }
 
+$table = new stdClass();
 $table->width = '98%';
 $table->id = 'add_alert_table';
 $table->class = 'databox';

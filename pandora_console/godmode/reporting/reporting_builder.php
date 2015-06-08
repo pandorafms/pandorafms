@@ -366,6 +366,7 @@ switch ($action) {
 			$search_name = "%$search%' OR description LIKE '%$search%";
 		}
 		
+		$table_aux = new stdClass();
 		$table_aux->width = '99%';
 		$table_aux->colspan[0][0] = 4;
 		$table_aux->data[0][0] = "<b>". __("Group") . "</b>";
@@ -440,6 +441,7 @@ switch ($action) {
 				'id_group',
 				'non_interactive'), $return_all_group, 'RR', $group);
 		
+		$table = new stdClass();
 		$table->width = '0px';
 		if (sizeof ($reports)) {
 			$table->id = 'report_list';

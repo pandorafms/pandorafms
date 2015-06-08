@@ -264,7 +264,7 @@ if (defined("METACONSOLE")){
 	$filter .= '</form>';
 	ui_toggle($filter, __("Show Options"));
 }
-else{
+else {
 	echo '<form method="post" action="' . $url . '">';
 	html_print_table ($table);
 	echo '</form>';

@@ -238,7 +238,7 @@ $(document).ready( function() {
 			}, 1500);
 		});
 	}
-	else{
+	else {
 		$('div#title_menu').hide();
 	}
 });

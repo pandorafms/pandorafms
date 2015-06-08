@@ -183,7 +183,7 @@ if (defined('METACONSOLE')){
 	$table->head_colspan[0] = 5;
 	$table->headstyle[0] = 'text-align: center';
 }
-else{
+else {
 	$table->style[0] = 'vertical-align: top;';
 }
 

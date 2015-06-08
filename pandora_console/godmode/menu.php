@@ -306,7 +306,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["enterprise"] = $extension['enterprise'];
 								$menu_godmode[$extmenu['fatherId']]['hasExtensions'] = true;
 							}
-							else{
+							else {
 								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["text"] = __($extmenu['name']);
 								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = 0;
 								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["icon"] = $extmenu['icon'];
@@ -316,7 +316,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 								$menu_godmode[$extmenu['fatherId']]['hasExtensions'] = true;
 							}
 						}
-						else{
+						else {
 							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["text"] = __($extmenu['name']);
 							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = 0;
 							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["icon"] = $extmenu['icon'];

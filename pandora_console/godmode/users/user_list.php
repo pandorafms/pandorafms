@@ -241,7 +241,8 @@ if(defined('METACONSOLE')){
 	$form_filter .= html_print_table($table, true);
 	$form_filter .= "</form>";
 	ui_toggle($form_filter, __('Show Options'));
-}else{
+}
+else {
 	$form_filter = "<form method='post'>";
 	$form_filter .= html_print_table($table, true);
 	$form_filter .= "</form>";
@@ -256,7 +257,7 @@ if(defined('METACONSOLE')){
 	$table->width = '100%';
 	$table->class = "databox";
 }
-else{
+else {
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
 	$table->width = '99%';
@@ -444,7 +445,7 @@ foreach ($info as $user_id => $user_info) {
 			}
 			$data[4] .= "</div>";
 		}
-		else{
+		else {
 			$data[4] .= "<table width='100%'>";
 			foreach ($result as $row) {
 				$data[4] .= "<tr>";

@@ -507,8 +507,8 @@ if(defined("METACONSOLE")){
 	$filter .= '</form>';
 	ui_toggle($filter, __("Show Options"));
 }
-else{
-	echo '<form method="post" action="'.$url.'">';
+else {
+	echo '<form method="post" action="' . $url . '">';
 	html_print_table ($table);
 	echo '</form>';
 }
@@ -517,7 +517,10 @@ $filter = array ();
 if ($search_id_group)
 	$filter['id_group'] = $search_id_group;
 if ($search_string != '')
-	$filter[] = '(name LIKE "%'.$search_string.'%" OR description LIKE "%'.$search_string.'%" OR tcp_send LIKE "%'.$search_string.'%" OR tcp_rcv LIKE "%'.$search_string.'%")';
+	$filter[] = '(name LIKE "%' . $search_string . '%" ' .
+		'OR description LIKE "%'. $search_string . '%" ' .
+		'OR tcp_send LIKE "%' . $search_string . '%" ' .
+		'OR tcp_rcv LIKE "%' . $search_string . '%")';
 
 $total_components = network_components_get_network_components (false, $filter, 'COUNT(*) AS total');
 $total_components = $total_components[0]['total'];

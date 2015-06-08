@@ -397,7 +397,7 @@ switch ($action) {
 			$filter .= "</form>";
 			ui_toggle($filter, __("Show Option"));
 		}
-		else{
+		else {
 			echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&id_group=$id_group&pure=$pure'
 				method='post'>";
 			html_print_table($table_aux);
@@ -656,7 +656,7 @@ switch ($action) {
 			}
 			html_print_table ($table);
 		}
-		else{
+		else {
 			ui_print_info_message ( array ( 'no_close' => true, 'message' =>  __('No data found.') ) );
 		}
 		if (check_acl ($config['id_user'], 0, "RW")) {

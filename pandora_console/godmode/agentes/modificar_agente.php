@@ -251,12 +251,12 @@ if ($search != "") {
 		LIKE '%$search%' OR direccion LIKE '%$search%') ";
 }
 
-if ($disabled==1)
+if ($disabled == 1)
 { 
 	$search_sql = " AND disabled = ". $disabled . $search_sql;
 }
-else{
-	if ($disabled==0){
+else {
+	if ($disabled == 0) {
 		$search_sql = " AND disabled = 0" . $search_sql;
 	}
 }

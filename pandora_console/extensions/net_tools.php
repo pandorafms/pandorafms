@@ -86,12 +86,12 @@ function main_net_tools () {
 	$principal_ip = db_get_sql ("SELECT direccion FROM tagente WHERE id_agente = $id_agente");
 	
 	$list_address = db_get_all_rows_sql ("select id_a from taddress_agent where id_agent = " . $id_agente);
-	foreach ($list_address as $address){
+	foreach ($list_address as $address) {
 		$ids []= join(",",$address);
 	}
 	$ids_address = implode(",",$ids);
 	$ips = db_get_all_rows_sql ("select ip from taddress where id_a in (" . $ids_address . ")");
-
+	
 	if ($ips == "") {
 		echo "<div class='error' style='margin-top:5px'>" . __('The agent hasn\'t got IP') . "</div>";
 		return;
@@ -100,11 +100,11 @@ function main_net_tools () {
 		<script type='text/javascript'>
 			function mostrarColumns(ValueSelect){
 				value = ValueSelect.value;
-				if ( value==3 ) {
+				if (value == 3) {
 					$('netToolTable').css('width','100%');
 					$('#snmpcolumn').show();
 				}
-				else{
+				else {
 					$('netToolTable').css('width','100%');
 					$('#snmpcolumn').hide();
 				}
@@ -116,7 +116,8 @@ function main_net_tools () {
 	echo "<table class='databox filters' width=100% id=netToolTable>";
 	echo "<tr><td>";
 	echo __("Operation");
-	ui_print_help_tip(__('You can set the command path in the menu Administration -&gt; Extensions -&gt; Config Network Tools'));
+	ui_print_help_tip(
+		__('You can set the command path in the menu Administration -&gt; Extensions -&gt; Config Network Tools'));
 	echo "</td><td>";
 	echo "<select name='operation' onChange='mostrarColumns(this);'>";
 	echo "<option value='1'>" . __("Traceroute");
@@ -131,9 +132,10 @@ function main_net_tools () {
 	echo "</td><td>";
 	echo "<select name='select_ips'>";
 	foreach($ips as $ip){
-		if ($ip['ip'] == $principal_ip){
+		if ($ip['ip'] == $principal_ip) {
 			echo "<option value='". $ip['ip'] ."' selected = 'selected'>" . $ip['ip'];
-		}else{
+		}
+		else {
 			echo "<option value='". $ip['ip'] ."'>" . $ip['ip'];
 		}
 	}
@@ -172,7 +174,7 @@ function main_net_tools () {
 				ui_print_error_message(__('Ping executable does not exist.'));
 			}
 			else {
-				echo "<h3>".__("Ping to "). $ip. "</h3>";
+				echo "<h3>" . __("Ping to %s", $ip) . "</h3>";
 				echo "<pre>";
 				echo system ("$ping -c 5 $ip");
 				echo "</pre>";

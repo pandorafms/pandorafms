@@ -317,7 +317,7 @@ if (defined("METACONSOLE")) {
 	$table->data[13][1] .= html_print_input_hidden('tag_without',
 		$tag_without_base64, true);
 }
-else{
+else {
 	
 	$table->colspan[13][0] = '2';
 	$table->data[13][0] = '<b>' . __('Events with following tags') . '</b>';

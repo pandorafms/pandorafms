@@ -168,7 +168,7 @@ if ($tiny) {
 if ($tiny) {
 	ui_toggle(html_print_table ($table,true), __('Tactical server information'));
 }
-else{
+else {
 	html_print_table ($table);
 }
 ?>

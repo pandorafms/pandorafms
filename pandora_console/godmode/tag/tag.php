@@ -140,7 +140,8 @@ if (!defined('METACONSOLE')) {
 	echo "</td>";
 	echo "</tr>";
 	echo "</table>";
-}else{
+}
+else {
 	
 	$filters = '<form method=post class="filters_form" action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag=0">';
 	$filters .=  "<table border=0 cellpadding=0 cellspacing=0 class=databox_filters width=70%>";

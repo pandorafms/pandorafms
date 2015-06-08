@@ -363,8 +363,6 @@ function config_update_config () {
 						$error_update[] = __('Batch statistics period (secs)');
 					if (!config_update_value ('agentaccess', (int) get_parameter ('agentaccess')))
 						$error_update[] = __('Use agent access graph');
-					if (!config_update_value ('compact_header', (bool) get_parameter ('compact_header')))
-						$error_update[] = 'Deprecated compact_header';
 					if (!config_update_value ('num_files_attachment', (int) get_parameter ('num_files_attachment')))
 						$error_update[] = __('Max. recommended number of files in attachment directory');
 					if (!config_update_value ('delete_notinit', get_parameter ('delete_notinit')))
@@ -688,10 +686,6 @@ function config_process_config () {
 		// Sets whether or not we want to enforce https. We don't want to go to a
 		// potentially unexisting config by default
 		config_update_value ('https', false);
-	}
-	
-	if (!isset ($config["compact_header"])) {
-		config_update_value ('compact_header', false);
 	}
 	
 	if (!isset ($config["num_files_attachment"])) {

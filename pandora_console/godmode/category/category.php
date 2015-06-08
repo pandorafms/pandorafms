@@ -138,7 +138,7 @@ if (!empty($result)) {
 			$data[1] = "<a href='index.php?sec=advanced&sec2=godmode/category/edit_category&action=update&id_category=".$category["id"] . "&pure=" . (int)$config['pure'] . "'>" . html_print_image("images/config.png", true, array("title" => "Edit")) . "</a>&nbsp;&nbsp;";
 			$data[1] .= '<a  href="index.php?sec=advanced&sec2=godmode/category/category&delete_category='.$category["id"] . '&pure='.(int)$config['pure'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">' . html_print_image("images/cross.png", true, array("title" => "Delete")) . '</a>';
 		}
-		else{
+		else {
 			$data[0] = "<a href='index.php?sec=gmodules&sec2=godmode/category/edit_category&action=update&id_category=" . $category["id"] . "&pure=" . (int)$config['pure'] . "'>" . $category["name"] . "</a>";  
 			$data[1] = "<a href='index.php?sec=gmodules&sec2=godmode/category/edit_category&action=update&id_category=".$category["id"] . "&pure=" . (int)$config['pure'] . "'>" . html_print_image("images/config.png", true, array("title" => "Edit")) . "</a>&nbsp;&nbsp;";
 			$data[1] .= '<a  href="index.php?sec=gmodules&sec2=godmode/category/category&delete_category='.$category["id"] . '&pure='.(int)$config['pure'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">' . html_print_image("images/cross.png", true, array("title" => "Delete")) . '</a>';

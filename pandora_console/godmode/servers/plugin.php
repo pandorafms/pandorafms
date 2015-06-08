@@ -276,8 +276,9 @@ if (($create != "") OR ($view != "")) {
 		$table->headstyle[0] = 'text-align: center';
 		echo '<br>';
 		html_print_table($table);
-	}else{
-		echo '<fieldset style="width:96%"><legend>'.__('General').'</legend>';
+	}
+	else {
+		echo '<fieldset style="width:96%"><legend>' . __('General') . '</legend>';
 		html_print_table($table);
 		echo '</fieldset>';
 	}
@@ -338,8 +339,9 @@ if (($create != "") OR ($view != "")) {
 		$table->headstyle[0] = 'text-align: center';
 		echo '<br>';
 		html_print_table($table);
-	}else{
-		echo '<fieldset style="width:96%"><legend>'.__('Command').'</legend>';
+	}
+	else {
+		echo '<fieldset style="width:96%"><legend>' . __('Command') . '</legend>';
 		html_print_table($table);
 		echo '</fieldset>';
 	}
@@ -457,8 +459,10 @@ if (($create != "") OR ($view != "")) {
 		$table->headstyle[0] = 'text-align: center';
 		echo '<br>';
 		html_print_table($table);
-	}else{
-		echo '<fieldset style="width:96%"><legend>'.__('Parameters macros').ui_print_help_icon ('macros', true).'</legend>';
+	}
+	else {
+		echo '<fieldset style="width:96%">' .
+			'<legend>' . __('Parameters macros') .ui_print_help_icon ('macros', true) . '</legend>';
 		html_print_table($table);
 		echo '</fieldset>';
 	}

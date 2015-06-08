@@ -1380,19 +1380,10 @@ function ui_process_page_head ($string, $bitfield) {
 			continue;
 		
 		array_push ($loaded, $name);
-		if (!empty ($config["compact_header"])) {
-			$output .= '<style type="text/css">';
-			$style = file_get_contents ($config["homedir"] . "/" . $filename);
-			//Replace paths
-			$style = str_replace (array ("@import url(", "../../images"), array ("@import url(include/styles/", "images"), $style);
-			//Remove comments
-			$output .= preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $style);
-			$output .= '</style>';
-		}
-		else {
-			$url_css = ui_get_full_url($filename);
-			$output .= '<link rel="stylesheet" href="' . $url_css . '" type="text/css" />'."\n\t";
-		}
+		
+		$url_css = ui_get_full_url($filename);
+		$output .= '<link rel="stylesheet" href="' . $url_css . '" type="text/css" />'."\n\t";
+		
 	}
 	////////////////////////////////////////////////////////////////////
 	//End load CSS
@@ -1430,15 +1421,9 @@ function ui_process_page_head ($string, $bitfield) {
 			continue;
 		
 		array_push ($loaded, $name);
-		if (!empty ($config["compact_header"])) {
-			$output .= '<script type="text/javascript">/* <![CDATA[ */'."\n";
-			$output .= file_get_contents ($config["homedir"]."/".$filename);
-			$output .= "\n".'/* ]]> */</script>';
-		}
-		else {
-			$url_js = ui_get_full_url($filename);
-			$output .= '<script type="text/javascript" src="' . $url_js . '"></script>'."\n\t";
-		}
+		
+		$url_js = ui_get_full_url($filename);
+		$output .= '<script type="text/javascript" src="' . $url_js . '"></script>'."\n\t";
 	}
 	////////////////////////////////////////////////////////////////////
 	//End load JS
@@ -1488,15 +1473,9 @@ function ui_process_page_head ($string, $bitfield) {
 			continue;
 		
 		array_push ($loaded, $name);
-		if (!empty ($config["compact_header"])) {
-			$output .= '<script type="text/javascript">/* <![CDATA[ */'."\n";
-			$output .= file_get_contents ($config["homedir"]."/".$filename);
-			$output .= "\n".'/* ]]> */</script>';
-		}
-		else {
-			$url_js = ui_get_full_url($filename);
-			$output .= '<script type="text/javascript" src="' . $url_js . '"></script>'."\n\t";
-		}
+		
+		$url_js = ui_get_full_url($filename);
+		$output .= '<script type="text/javascript" src="' . $url_js . '"></script>'."\n\t";
 	}
 	////////////////////////////////////////////////////////////////////
 	//End load JQuery
@@ -1518,10 +1497,6 @@ function ui_process_page_head ($string, $bitfield) {
 	
 	$output .= $string;
 	
-	if (!empty ($config["compact_header"])) {
-		$output = str_replace(array("\r\n", "\r", "\n", "\t", '  ',
-			'    ', '    '), '', $output);
-	}
 	
 	return $output;
 }
@@ -1545,14 +1520,9 @@ function ui_process_page_body ($string, $bitfield) {
 	// Show custom background
 	$output = '<body'.($config["pure"] ? ' class="pure"' : '').'>';
 	
-	if (!empty ($config["compact_header"])) {
-		require_once ($config["homedir"]."/include/htmlawed.php");
-		$htmLawedconfig = array ("valid_xhtml" => 1, "tidy" => -1);
-		$output .= htmLawed ($string, $htmLawedconfig);
-	}
-	else {
-		$output .= $string;
-	}
+	
+	$output .= $string;
+	
 	
 	$output .= '</body>';
 	

@@ -42,7 +42,7 @@ if(defined('METACONSOLE')) {
 			'text' => '<a href="index.php?sec=advanced&sec2=godmode/category/category&tab=list&pure='.(int)$config['pure'].'">' . 
 				html_print_image ("images/list.png", true, array ("title" => __('List categories'))) .'</a>'));
 }
-else{
+else {
 	$buttons = array(
 		'list' => array(
 			'active' => false,

@@ -142,7 +142,8 @@ if ( defined("METACONSOLE") ) {
 	$form_filter .= "</td>";
 	$form_filter .= "</tr>";
 	$form_filter .= "</table>";
-}else{
+}
+else {
 	$form_filter .= "</table>";
 	$form_filter .= "<div  style='text-align:right; height:100%;'>";
 	$form_filter .= html_print_submit_button (__('Update'), '', false, 'class="sub upd"', true);

@@ -30,30 +30,30 @@ if ($servers === false) {
 	$servers = array ();
 	return;
 }
-else{
+else {
 	$recon_task = db_get_all_rows_sql('SELECT * FROM trecon_task');
 	if ($recon_task === false) {
 		ui_print_page_header (__('Recon View'), "images/op_recon.png", false, "", false);
 		require_once ($config['homedir'] . "/general/firts_task/recon_view.php");
 		return;
 	}
-	else{
+	else {
 		require_once ($config["homedir"] . '/include/functions_graph.php');
 		require_once ($config["homedir"] . '/include/functions_servers.php');
 		require_once ($config['homedir'] . "/include/functions_network_profiles.php");
-
+		
 		if (check_acl ($config['id_user'], 0, "AW")) {
 			$options['manage']['text'] = "<a href='index.php?sec=estado&sec2=godmode/servers/manage_recontask'>" . html_print_image("images/setup.png", true, array('title' => __('Manage'))) . "</a>";
 		}
-
+		
 		$options[]['text'] = "<a href='index.php?sec=estado&sec2=operation/servers/recon_view'>" . html_print_image("images/refresh_mc.png", true, array('title' => __('Refresh'))) . "</a>";
-
+		
 		ui_print_page_header (__('Recon View'), "images/op_recon.png", false, "", false, $options);
-
+		
 		$modules_server = 0;
 		$total_modules = 0;
 		$total_modules_data = 0;
-
+		
 		// --------------------------------
 		// FORCE A RECON TASK
 		// --------------------------------
@@ -63,17 +63,17 @@ else{
 				servers_force_recon_task($id);
 			}
 		}
-
+		
 		foreach ($servers as $serverItem) {
 			$id_server = $serverItem["id_server"];
 			$server_name = servers_get_name ($id_server);
 			$recon_tasks = db_get_all_rows_field_filter ("trecon_task", "id_recon_server", $id_server);
-
+			
 			// Show network tasks for Recon Server
 			if ($recon_tasks === false) {
 				$recon_tasks = array ();
 			}
-
+			
 			$table->cellpadding = 4;
 			$table->cellspacing = 4;
 			$table->width = "99%";
@@ -81,34 +81,34 @@ else{
 			$table->head = array ();
 			$table->data = array ();
 			$table->align = array ();
-
+			
 			$table->head[0] = __('Force');
 			$table->align[0] = "center";
-
+			
 			$table->head[1] = __('Task name');
 			$table->align[1] = "center";
-
+			
 			$table->head[2] = __('Interval');
 			$table->align[2] = "center";
-
+			
 			$table->head[3] = __('Network');
 			$table->align[3] = "center";
-
+			
 			$table->head[4] = __('Status');
 			$table->align[4] = "center";
-
+			
 			$table->head[5] = __('Template');
 			$table->align[5] = "center";
-
+			
 			$table->head[6] = __('Progress');
 			$table->align[6] = "center";
-
+			
 			$table->head[7] = __('Updated at');
 			$table->align[7] = "center";
-
+			
 			$table->head[8] = __('Edit');
 			$table->align[8] = "center";
-
+			
 			foreach ($recon_tasks as $task) {
 				$data = array ();
 				
@@ -122,9 +122,9 @@ else{
 				}
 				
 				$data[1] = '<b>'. $task["name"].'</b>';
-
+				
 				$data[2] = human_time_description_raw ($task["interval_sweep"]);
-
+				
 				if ($task["id_recon_script"] == 0){
 					$data[3] = $task["subnet"];
 				}
@@ -138,7 +138,7 @@ else{
 				else {
 					$data[4] = __('Pending');
 				}
-
+				
 				if ($task["id_recon_script"] == 0){
 					// Network recon task
 					$data[5] = html_print_image ("images/network.png", true, array ("title" => __('Network recon task')))."&nbsp;&nbsp;";
@@ -149,7 +149,7 @@ else{
 					$data[5] = html_print_image ("images/plugin.png", true). "&nbsp;&nbsp;";
 					$data[5] .= db_get_sql (sprintf("SELECT name FROM trecon_script WHERE id_recon_script = %d", $task["id_recon_script"]));
 				}
-					
+				
 				if ($task["status"] <= 0 || $task["status"] > 100) {
 					$data[6] = "-";
 				}
@@ -158,7 +158,7 @@ else{
 				}
 				
 				$data[7] = ui_print_timestamp ($task["utimestamp"], true);
-
+				
 				if (check_acl ($config["id_user"], $task["id_group"], "PM")) {
 					$data[8] = '<a href="index.php?sec=gservers&amp;sec2=godmode/servers/manage_recontask_form&amp;update='.$task["id_rt"].'">'.html_print_image ("images/wrench_orange.png", true).'</a>';
 				}
@@ -167,7 +167,7 @@ else{
 				}
 				array_push ($table->data, $data);
 			}
-
+			
 			if (empty ($table->data)) {
 				echo '<div class="nf">'.__("Server") . " " . $server_name . " " . __("has no recon tasks assigned").'</div>';
 			}

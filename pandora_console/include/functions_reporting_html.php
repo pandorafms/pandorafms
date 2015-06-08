@@ -2600,7 +2600,7 @@ function reporting_get_agents_by_status ($data, $graph_width = 250, $graph_heigh
 					'</legend>' . 
 					html_print_table($table_agent, true) . '</fieldset>';
 	}
-	else{
+	else {
 		$table_agent->style=array();
 		$table_agent->class = "tactical_view";
 		$agents_data = '<fieldset class="tactical_set">
@@ -2652,7 +2652,8 @@ function reporting_get_total_servers ($num_servers) {
 						__('Node overview') . 
 					'</legend>' . 
 					html_print_table($table_node, true) . '</fieldset>';
-	}else{
+	}
+	else {
 		$table_node->style = array();
 		$table_node->class = "tactical_view";
 		$node_overview = '<fieldset class="tactical_set">
@@ -2691,7 +2692,7 @@ function reporting_get_events ($data, $links = false) {
 		$table_events->data[0][3] .= "&nbsp;&nbsp;&nbsp;" .
 			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['unknown'] . "'>" . format_numeric($data['unknown'])."</a>";
 		}
-	else{
+	else {
 		$table_events->data[0][0] = html_print_image('images/module_critical.png', true, array('title' => __('Critical events')));
 		$table_events->data[0][0] .= "&nbsp;&nbsp;&nbsp;" .
 			"<a style='color: #FC4444;" . $style . "' href='" . $links['critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FC4444;'>".
@@ -2717,7 +2718,7 @@ function reporting_get_events ($data, $links = false) {
 					'</legend>' . 
 					html_print_table($table_events, true) . '</fieldset>';
 	}
-	else{
+	else {
 		$table_events->class="tactical_view";
 		$table_events->styleTable="text-align:center;";
 		$table_events->size[0]="10%";
@@ -2915,7 +2916,7 @@ function reporting_get_event_histogram ($events) {
 					'</legend>' . 
 					html_print_table($table, true) . '</fieldset>';
 	}
-	else{
+	else {
 		$table->class='tactical_view';
 		$event_graph = '<fieldset id="event_tactical" class="tactical_set">' . 
 					html_print_table($table, true) . '</fieldset>';

@@ -376,7 +376,7 @@ if ($print_agent) {
 	if(defined('METACONSOLE')){
 		ui_toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, $tag_filter, true, $strict_user),__('Show Options'));;
 	}
-	else{
+	else {
 		ui_toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, $tag_filter, true, $strict_user),__('Alert control filter'), __('Toggle filter(s)'));
 	}
 }

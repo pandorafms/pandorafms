@@ -5292,7 +5292,8 @@ function reporting_get_stats_alerts($data, $links = false) {
 						__('Defined and fired alerts') . 
 					'</legend>' . 
 					html_print_table($table_al, true) . '</fieldset>';
-	}else{
+	}
+	else {
 		$table_al->class = "tactical_view";
 		$table_al->style = array();
 		$output = '<fieldset class="tactical_set">
@@ -5391,7 +5392,7 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 				html_print_table($table_mbs, true) .
 			'</fieldset>';
 	}
-	else{
+	else {
 		$table_mbs->class = "tactical_view";
 		$table_mbs->style=array();
 		$output = '

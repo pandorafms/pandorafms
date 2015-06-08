@@ -2246,7 +2246,7 @@ function print_audit_csv ($data) {
 			echo io_safe_output($line['id_usuario']) . ';' .  io_safe_output($line['accion']) . ';' .  $line['fecha'] . ';' .  $line['ip_origen'] . ';'.  io_safe_output($line['descripcion']). "\n";
 		}
 	}
-	else{
+	else {
 		echo __('No data found to export');
 	}
 }

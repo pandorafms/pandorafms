@@ -144,7 +144,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	if ($layouts === false) {
 		$layouts = array ();
 	}
-	else{
+	else {
 		
 		$id = (int) get_parameter ('id', -1);
 		
@@ -416,7 +416,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 								$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]["enterprise"] = $extension['enterprise'];
 								$menu_operation[$extension_menu['fatherId']]['hasExtensions'] = true;
 							}
-							else{
+							else {
 								$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["text"] = __($extension_menu['name']);
 								$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["refr"] = 0;
 								$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["icon"] = $extension_menu['icon'];
@@ -426,7 +426,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 								$menu_operation[$extension_menu['fatherId']]['hasExtensions'] = true;
 							}
 						}
-						else{
+						else {
 							$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["text"] = __($extension_menu['name']);
 							$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["refr"] = 0;
 							$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["icon"] = $extension_menu['icon'];

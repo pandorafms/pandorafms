@@ -1292,14 +1292,14 @@ class Tree {
 			$module['serverID'] = $server['id'];
 			$module['serverName'] = $server['server_name'];
 		}
-		else{
+		else {
 			$module['serverName'] = false;
 			$module['serverID'] = false;
 		}
 		
 		if (!isset($module['value']))
 			$module['value'] = modules_get_last_value($module['id']);
-
+		
 		// Status
 		switch ($module['status']) {
 			case AGENT_MODULE_STATUS_CRITICAL_ALERT:

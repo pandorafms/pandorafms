@@ -180,7 +180,8 @@ enterprise_hook('open_meta_frame');
 
 if (defined ('METACONSOLE')){
 	$class = "databox data";
-}else{
+}
+else {
 	$class = "databox filters";
 }
 

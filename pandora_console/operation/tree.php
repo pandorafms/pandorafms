@@ -183,7 +183,8 @@ if (defined('METACONSOLE')) {
 	echo "<div class='view_tree'>";
 	ui_toggle($form_html, __('Show Options'));
 	echo "<br>";
-}else{
+}
+else {
 	//echo "<br>";
 	ui_toggle($form_html, __('Tree search'));
 }

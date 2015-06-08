@@ -299,7 +299,7 @@ function parse_oracle_dump($connection, $url, $debug = false) {
 				$query .= $clean_line . ' ';
 				$plsql_block = true;
 			}
-			else{
+			else {
 				$query .= $clean_line;
 			}
 			

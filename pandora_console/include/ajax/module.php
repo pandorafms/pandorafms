@@ -181,14 +181,15 @@ if ($get_module_detail) {
 			"modules_format_time",
 			"align" => "left",
 			"width" => "50px");
-	}else{
+	}
+	else {
 		$columns["Timestamp"] = array(
 			"utimestamp",
 			"modules_format_timestamp",
 			"align" => "left",
 			"width" => "50px");
 	}
-
+	
 	if ($selection_mode == "fromnow") {
 		$date = get_system_time();
 		$period = $period;
@@ -499,10 +500,10 @@ if ($list_modules) {
 		$status_filter_sql = 'tagente_estado.estado = ' . $status_filter_monitor;
 	}
 	
-	if($status_module_group != -1){
+	if ($status_module_group != -1) {
 	$status_module_group_filter = 'id_module_group = ' . $status_module_group;
 	}
-	else{
+	else {
 		$status_module_group_filter = 'id_module_group >= 0';
 	}
 	
@@ -900,15 +901,16 @@ if ($list_modules) {
 							else
 								$salida = 'FAIL';
 							break;
-						default:	
+						default:
 							$salida = format_numeric($module["datos"]);
 						break;
 					}
-				}else{
+				}
+				else {
 					$salida = format_numeric($module["datos"]);
 				}
 				// Show units ONLY in numeric data types
-				if (isset($module["unit"])){
+				if (isset($module["unit"])) {
 					$salida .= "&nbsp;" . '<i>'. io_safe_output($module["unit"]) . '</i>';
 				}
 			}

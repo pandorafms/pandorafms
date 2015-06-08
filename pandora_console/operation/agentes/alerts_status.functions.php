@@ -106,7 +106,7 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 		$table->rowspan[0][7] = 2;
 	    $data = '<form style="background-color: #ECECEC;" method="post" action="'.$url.'">';
 	}
-	else{
+	else {
 		$data = '<form method="post" action="'.$url.'">';
 	}
 	$data .= html_print_table ($table, true);

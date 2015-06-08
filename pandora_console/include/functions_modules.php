@@ -1627,23 +1627,27 @@ function modules_get_agentmodule_data ($id_agent_module, $period,
 		case 21:
 		case 31:
 			if ( $config["render_proc"] ) {
-				$sql = sprintf ("SELECT IF(datos >= 1, 'OK', 'FAIL') as data, utimestamp
+				$sql = sprintf ("
+					SELECT IF(datos >= 1, 'OK', 'FAIL') as data, utimestamp
 					FROM tagente_datos
 					WHERE id_agente_modulo = %d
 						AND utimestamp > %d AND utimestamp <= %d
 					ORDER BY utimestamp %s",
 					$id_agent_module, $datelimit, $date, $order);
-			}else{
-				$sql = sprintf ("SELECT datos AS data, utimestamp
-				FROM tagente_datos
-				WHERE id_agente_modulo = %d
-					AND utimestamp > %d AND utimestamp <= %d
-				ORDER BY utimestamp %s",
-				$id_agent_module, $datelimit, $date, $order);
+			}
+			else {
+				$sql = sprintf ("
+					SELECT datos AS data, utimestamp
+					FROM tagente_datos
+					WHERE id_agente_modulo = %d
+						AND utimestamp > %d AND utimestamp <= %d
+					ORDER BY utimestamp %s",
+					$id_agent_module, $datelimit, $date, $order);
 			}
 			break;
 		default:
-			$sql = sprintf ("SELECT datos AS data, utimestamp
+			$sql = sprintf ("
+				SELECT datos AS data, utimestamp
 				FROM tagente_datos
 				WHERE id_agente_modulo = %d
 					AND utimestamp > %d AND utimestamp <= %d

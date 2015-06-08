@@ -28,7 +28,7 @@ if (! check_acl ($config["id_user"], 0, "EW")) {
 $delete = (bool) get_parameter ('delete', 0);
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);
 
-if ($delete){
+if ($delete) {
 	
 	$id = (int) get_parameter('id');
 	

@@ -31,26 +31,29 @@
  * 
  * @return array Void array or prediction of the module data.
  */
-function forecast_projection_graph($module_id, $period = 5184000, $prediction_period, $max_value = false, $min_value = false, $csv = false){
+function forecast_projection_graph($module_id,
+	$period = SECONDS_2MONTHS, $prediction_period, $max_value = false,
+	$min_value = false, $csv = false) {
+	
 	global $config;
-
+	
 	$max_exec_time = ini_get('max_execution_time'); 
-
+	
 	if ($max_exec_time !== false) {
-
+		
 		$max_exec_time = (int)$max_exec_time; 
-
+	
 	}
-
+	
 	$begin_time = time();
-
+	
 	$module_data=grafico_modulo_sparse ($module_id, $period, 0,
-				300, 300 , '', null,
-				false, 0, false,
-				0, '', 0, 1, false,
-				true, '', 1, true);
-
-	if (empty($module_data)){
+		300, 300 , '', null,
+		false, 0, false,
+		0, '', 0, 1, false,
+		true, '', 1, true);
+	
+	if (empty($module_data)) {
 		return array();	
 	}
 	// Prevents bad behaviour over image error 
@@ -245,7 +248,7 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
 			//html_debug_print(" Date " . $timestamp_f . " data: " . $output_data[$timestamp_f]);
 			
 			// Found it
-			if ($max_value >= $output_data[$timestamp_f] and $min_value <= $output_data[$timestamp_f]){
+			if ($max_value >= $output_data[$timestamp_f] and $min_value <= $output_data[$timestamp_f]) {
 				return $current_ts;
 			}
 		}
@@ -269,7 +272,8 @@ function forecast_projection_graph($module_id, $period = 5184000, $prediction_pe
  * 
  * @return mixed timestamp with the prediction date or false
  */
-function forecast_prediction_date ($module_id, $period = 5184000, $max_value = 0, $min_value = 0){
+function forecast_prediction_date ($module_id,
+	$period = SECONDS_2MONTHS, $max_value = 0, $min_value = 0) {
 	// Checks interval
 	if ($min_value > $max_value) {
 		return false;

@@ -2422,7 +2422,7 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 	if ($return_all_fields) {
 		return $user_agents;
 	}
-	if (!$meta){
+	if (!$meta) {
 		$user_agents_aux = array();
 		
 		foreach ($user_agents as $ua) {

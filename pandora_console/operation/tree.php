@@ -329,15 +329,29 @@ enterprise_hook('close_meta_frame');
 		period = $('#period').val();
 		
 		params.selection_mode = $('input[name=selection_mode]:checked').val();
-		if(!params.selection_mode){params.selection_mode='fromnow';}
+		if (!params.selection_mode) {
+			params.selection_mode='fromnow';
+		}
+		
 		params.date_from = $('#text-date_from').val();
-		if(!params.date_from){params.date_from = f.getFullYear() + "/" + (f.getMonth() +1) + "/" + f.getDate();}
+		if (!params.date_from) {
+			params.date_from = f.getFullYear() + "/" + (f.getMonth() +1) + "/" + f.getDate();
+		}
+		
 		params.time_from = $('#text-time_from').val();
-		if(!params.time_from){params.time_from = f.getHours() + ":"  + f.getMinutes();}
+		if (!params.time_from) {
+			params.time_from = f.getHours() + ":"  + f.getMinutes();
+		}
+		
 		params.date_to = $('#text-date_to').val();
-		if(!params.date_to){params.date_to =f.getFullYear() + "/" + (f.getMonth() +1) + "/" + f.getDate();}
+		if (!params.date_to) {
+			params.date_to =f.getFullYear() + "/" + (f.getMonth() +1) + "/" + f.getDate();
+		}
+		
 		params.time_to = $('#text-time_to').val();
-		if(!params.time_to){params.time_to = f.getHours() + ":"  + f.getMinutes();}
+		if (!params.time_to) {
+			params.time_to = f.getHours() + ":"  + f.getMinutes();
+		}
 		
 		params.page = "include/ajax/module";
 		params.get_module_detail = 1;

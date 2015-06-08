@@ -212,7 +212,7 @@ $(document).ready (function () {
 	$("#left").click (function () {
 		jQuery.each($("select[name='fields_selected[]'] option:selected"), function (key, value) {
 				field_name = $(value).html();
-				if (field_name != <?php echo "'".__('None')."'"; ?>){
+				if (field_name != <?php echo "'".__('None')."'"; ?>) {
 					id_field = $(value).attr('value');
 					$("select[name='fields_available[]']").append($("<option></option>").val(id_field).html('<i>' + field_name + '</i>'));
 					$("#fields_selected").find("option[value='" + id_field + "']").remove();

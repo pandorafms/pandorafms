@@ -138,7 +138,7 @@ if (!empty($result_groups)) {
 		foreach ($result_groups as $data) {
 			
 			// Calculate entire row color
-			if ($data["_monitors_alerts_fired_"] > 0){
+			if ($data["_monitors_alerts_fired_"] > 0) {
 				$color_class = 'group_view_alrm';
 				$status_image = ui_print_status_image ('agent_alertsfired_ball.png', "", true);
 			}
@@ -321,7 +321,7 @@ if (!empty($result_groups)) {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/alerts_status&tag_filter=".$data['_id_']."&filter=fired'>";
 			}
-			if ($data["_monitors_alerts_fired_"] > 0){
+			if ($data["_monitors_alerts_fired_"] > 0) {
 				echo $link . $data["_monitors_alerts_fired_"] . "</a>";
 			}
 			echo '</td>';

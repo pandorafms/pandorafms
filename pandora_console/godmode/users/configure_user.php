@@ -415,7 +415,7 @@ if ($delete_profile) {
 
 $table->id = 'user_configuration_table';
 $table->width = '98%';
-if (defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$table->width = '100%';
 	$table->class = 'databox data';
 	if ($id) {
@@ -596,7 +596,7 @@ if (!empty ($id) && !$new_user) {
 		echo '<h4>'. __('Profiles/Groups assigned to this user') . '</h4>';
 
 	$table->width = '98%';
-	if (defined("METACONSOLE")){
+	if (defined("METACONSOLE")) {
 		$table->head_colspan[0] = 0;
 		$table->width = '100%';
 		$table->class = 'databox_tactical data';
@@ -606,7 +606,7 @@ if (!empty ($id) && !$new_user) {
 	$table->head = array ();
 	$table->align = array ();
 	$table->style = array ();
-	if (!defined("METACONSOLE")){
+	if (!defined("METACONSOLE")) {
 		$table->style[0] = 'font-weight: bold';
 		$table->style[1] = 'font-weight: bold';
 	}

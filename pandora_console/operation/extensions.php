@@ -34,7 +34,7 @@ if (sizeof ($config['extensions']) == 0) {
 $delete = get_parameter ("delete", "");
 $name = get_parameter ("name", "");
 
-if ($delete != ""){
+if ($delete != "") {
 	if (!file_exists($config["homedir"]."/extensions/ext_backup"))
 		mkdir($config["homedir"]."/extensions/ext_backup");
 	$source = $config["homedir"]."/$delete.php";

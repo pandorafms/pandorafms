@@ -98,7 +98,7 @@ function main_net_tools () {
 	}
 	echo "
 		<script type='text/javascript'>
-			function mostrarColumns(ValueSelect){
+			function mostrarColumns(ValueSelect) {
 				value = ValueSelect.value;
 				if (value == 3) {
 					$('netToolTable').css('width','100%');
@@ -131,7 +131,7 @@ function main_net_tools () {
 	echo __("IP address");
 	echo "</td><td>";
 	echo "<select name='select_ips'>";
-	foreach($ips as $ip){
+	foreach ($ips as $ip) {
 		if ($ip['ip'] == $principal_ip) {
 			echo "<option value='". $ip['ip'] ."' selected = 'selected'>" . $ip['ip'];
 		}

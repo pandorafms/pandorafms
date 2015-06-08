@@ -905,7 +905,7 @@ if ($get_element_status) {
 	return;
 }
 
-if ($get_image_path_status){
+if ($get_image_path_status) {
 	$img_src = get_parameter("img_src");
 	$only_src = get_parameter("only_src", 0);
 	

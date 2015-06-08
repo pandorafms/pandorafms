@@ -442,12 +442,12 @@ $search_id_group = (int) get_parameter ('search_id_group');
 $search_string = (string) get_parameter ('search_string');
 
 $table->width = '98%';
-if(defined("METACONSOLE")){
+if(defined("METACONSOLE")) {
 	$table->width = '50%';
 	$table->class = 'databox_filters';
 }
 $table->style = array ();
-if (!defined('METACONSOLE')){
+if (!defined('METACONSOLE')) {
 	$table->style[0] = 'font-weight: bold';
 	$table->style[2] = 'font-weight: bold';
 }
@@ -501,7 +501,7 @@ $table->data[0][4] .= html_print_submit_button (__('Search'), 'search', false,
 	'class="sub search"', true);
 $table->data[0][4] .= '</div>';
 
-if(defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	$filter = '<form class="filters_form" method="post" action="'.$url.'">';
 	$filter .= html_print_table ($table,true);
 	$filter .= '</form>';

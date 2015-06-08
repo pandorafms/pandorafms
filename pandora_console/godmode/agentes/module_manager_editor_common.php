@@ -725,13 +725,13 @@ $(document).ready (function () {
 	});
 	
 	$("#submit-updbutton").click(function () {
-		$('#id_tag_selected option').map(function(){
+		$('#id_tag_selected option').map(function() {
 			$(this).attr('selected','selected');
 		});
 	});
 	
 	$("#submit-crtbutton").click(function () {
-		$('#id_tag_selected option').map(function(){
+		$('#id_tag_selected option').map(function() {
 			$(this).attr('selected','selected');
 		});
 	});
@@ -770,7 +770,7 @@ $(document).ready (function () {
 	$("#id_module_type").trigger('change');
 
 	// Prevent the form submission when the user hits the enter button from the relationship autocomplete inputs
-	$("#text-autocomplete_agent_name").keydown(function(event){
+	$("#text-autocomplete_agent_name").keydown(function(event) {
 		if(event.keyCode == 13) { // key code 13 is the enter button
 			event.preventDefault();
 		}
@@ -839,7 +839,7 @@ function change_modules_autocomplete_input () {
 				if (data) {
 					module_autocomplete.html(data);
 					// Prevent the form submission when the user hits the enter button from the relationship autocomplete inputs
-					$("#text-autocomplete_module_name").keydown(function(event){
+					$("#text-autocomplete_module_name").keydown(function(event) {
 						if(event.keyCode == 13) { // key code 13 is the enter button
 							event.preventDefault();
 						}

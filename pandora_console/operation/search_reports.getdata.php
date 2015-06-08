@@ -35,21 +35,23 @@ foreach($userreports as $userreport) {
 	$userreports_id[] = $userreport['id_report'];
 }
 
-if(!$userreports_id){
+if (!$userreports_id) {
 	$reports_condition = " AND 1<>1";
 }
 else {
 	$reports_condition = " AND id_report IN (".implode(',',$userreports_id).")";
 }
-	
+
 $reports = false;
 
-if($searchReports) {
-	$sql = "SELECT id_report, name, description
+if ($searchReports) {
+	$sql = "
+		SELECT id_report, name, description
 		FROM treport
 		WHERE (name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%')".$reports_condition.
 		" LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
-	$sql_count = "SELECT COUNT(id_report) AS count
+	$sql_count = "
+		SELECT COUNT(id_report) AS count
 		FROM treport
 		WHERE (name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%')".$reports_condition;
 		

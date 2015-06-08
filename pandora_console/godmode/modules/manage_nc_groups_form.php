@@ -45,7 +45,7 @@ else {
 }
 
 $table->width = '98%';
-if (defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$table->width = '100%';
 	$table->class = 'databox data';
 	if ($id) {

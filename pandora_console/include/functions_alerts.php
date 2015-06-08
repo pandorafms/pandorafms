@@ -676,7 +676,7 @@ function alerts_get_alert_template ($id_alert_template) {
 				FROM user_tab_columns
 				WHERE table_name = \'TALERT_TEMPLATES\'
 					AND column_name NOT IN (\'TIME_FROM\',\'TIME_TO\')');
-			foreach ($fields_select as $field_select){
+			foreach ($fields_select as $field_select) {
 				$select_field[] = $field_select['column_name'];
 			}
 			$select_stmt = implode(',', $select_field);

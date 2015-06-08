@@ -373,11 +373,17 @@ if ($pure) {
 
 // Filter form
 if ($print_agent) {
-	if(defined('METACONSOLE')){
-		ui_toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, $tag_filter, true, $strict_user),__('Show Options'));;
+	if(defined('METACONSOLE')) {
+		ui_toggle(
+			printFormFilterAlert($id_group, $filter, $free_search,
+				$url, $filter_standby, $tag_filter, true, $strict_user),
+			__('Show Options'));;
 	}
 	else {
-		ui_toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, $tag_filter, true, $strict_user),__('Alert control filter'), __('Toggle filter(s)'));
+		ui_toggle(
+			printFormFilterAlert($id_group, $filter, $free_search,
+				$url, $filter_standby, $tag_filter, true, $strict_user),
+			__('Alert control filter'), __('Toggle filter(s)'));
 	}
 }
 
@@ -386,7 +392,7 @@ $table->width = '100%';
 $table->class = "databox data";
 $table->cellpadding = '0';
 $table->cellspacing = '0';
-if(defined('METACONSOLE')){
+if(defined('METACONSOLE')) {
 	$table->class = "databox";
 	$table->cellpadding = '0';
 	$table->cellspacing = '0';
@@ -622,23 +628,26 @@ $(document).ready (function () {
 	}
 });
 
-	
-$('#ag_group').change (function (){
+
+$('#ag_group').change (function () {
 	strict_user = $("#text-strict_user_hidden").val();
 	is_meta = $("#text-is_meta_hidden").val();
-
+	
 	if (($("#ag_group").val() != 0) && (strict_user != 0)) {
 		$("#tag_filter").css('display', 'none');
 		if (is_meta) {
 			$("#table1-0-4").css('display', 'none');
-		} else {
+		}
+		else {
 			$("#table2-0-4").css('display', 'none');
 		}
-	} else {
+	}
+	else {
 		$("#tag_filter").css('display', '');
 		if (is_meta) {
 			$("#table1-0-4").css('display', '');
-		} else {
+		}
+		else {
 			$("#table2-0-4").css('display', '');
 		}
 	}

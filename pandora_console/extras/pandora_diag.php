@@ -27,10 +27,10 @@ function render_info_data ($query, $label) {
 	render_row ($info, $label);
 }
 
-function render_row ($data, $label){
+function render_row ($data, $label) {
 	global $console_mode;
 	
-	if ($console_mode == 1){
+	if ($console_mode == 1) {
 		echo $label;
 		echo "|";
 		echo $data;

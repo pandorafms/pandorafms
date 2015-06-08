@@ -538,16 +538,18 @@ if ($step == 2) {
 	
 	$table->data[4][0] = __('Default action');
 	$usr_groups = implode(',', array_keys(users_get_groups($config['id_user'], 'LM', true)));
-	switch ($config['dbtype']){
+	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":
-			$sql_query = sprintf('SELECT id, name
+			$sql_query = sprintf('
+				SELECT id, name
 				FROM talert_actions
 				WHERE id_group IN (%s)
 				ORDER BY name', $usr_groups);
 			break;
 		case "oracle":
-			$sql_query = sprintf('SELECT id,
+			$sql_query = sprintf('
+				SELECT id,
 					dbms_lob.substr(name,4000,1) AS nombre
 				FROM talert_actions
 				WHERE id_group IN (%s)
@@ -557,7 +559,8 @@ if ($step == 2) {
 	$table->data[4][1] = html_print_select_from_sql ($sql_query,
 			'default_action', $default_action, '', __('None'), 0,
 			true, false, false) .
-		ui_print_help_tip (__('In case you fill any Field 1, Field 2 or Field 3 above, those will replace the corresponding fields of this associated "Default action".'), true);
+		ui_print_help_tip (
+			__('In case you fill any Field 1, Field 2 or Field 3 above, those will replace the corresponding fields of this associated "Default action".'), true);
 	
 	$table->data[5][0] = __('Condition type');
 	$table->data[5][1] = html_print_select (alerts_get_alert_templates_types (), 'type',

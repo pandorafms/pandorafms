@@ -63,13 +63,13 @@ if (is_ajax()) {
 	}
 
 	// Get critical events (realtime update)
-	if ($get_alerts_fired){
+	if ($get_alerts_fired) {
 		echo sc_get_alerts_fired();
 		return;
 	}
 	
 	// Get critical events (realtime update)
-	if ($get_critical_events){
+	if ($get_critical_events) {
 		echo sc_get_critical_events();
 		return;
 	}
@@ -107,18 +107,18 @@ function sc_get_critical_events () {
 		$shortcut_events_update = array();
 	
 	$critical_events_update = 0;
-	foreach($shortcut_events_update as $event_update){
+	foreach ($shortcut_events_update as $event_update) {
 		if ($event_update['criticity'] == 4 and $event_update['estado'] == 0) {
 			$critical_events_update++;
 		}
 	}
-
+	
 	return $critical_events_update;
 }
 
 function sc_get_opened_incidents () {
 	global $config;
-
+	
 	$own_info = get_user_info ($config['id_user']);
 	
 	if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM")) {

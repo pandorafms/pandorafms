@@ -2131,8 +2131,9 @@ function visual_map_get_layoutdata_x ($id_layoutdata) {
  *
  * @return int The Y axis coordinate value.
  */
-function visual_map_get_layoutdata_y ($id_layoutdata){
-	return (float) db_get_value ('pos_y', 'tlayout_data', 'id', (int) $id_layoutdata);
+function visual_map_get_layoutdata_y ($id_layoutdata) {
+	return (float) db_get_value ('pos_y', 'tlayout_data', 'id',
+		(int)$id_layoutdata);
 }
 
 function visual_map_type_in_js($type) {

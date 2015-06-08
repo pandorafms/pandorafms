@@ -693,10 +693,10 @@ $(document).ready( function() {
 						// Remove row due to new state
 						if (($("#status").val() == 0) || ($("#status").val() == 1)) {
 							
-							$.each($tr, function(index, value){
+							$.each($tr, function(index, value) {
 								row = value;
 								
-								if ($(row).attr('id') != ''){
+								if ($(row).attr('id') != '') {
 									
 									row_id_name = $(row).attr('id').split('-').shift();
 									row_id_number = $(row).attr('id').split('-').pop() - 1;

@@ -150,7 +150,7 @@ class Tactical {
 				$ui->contentCollapsibleAddItem($table->getHTML());
 			$ui->contentEndCollapsible();
 			$ui->contentAddHtml("<script type=\"text/javascript\">
-			$(document).ready(function(){
+			$(document).ready(function() {
 				function set_same_heigth() {
 					//Set same height to boxes
 					var max_height = 0;

@@ -29,10 +29,11 @@ if (! check_acl ($config['id_user'], 0, "DM")) {
 # ADQUIRE DATA PASSED AS FORM PARAMETERS
 # ======================================
 # Purge data using dates
-if (isset ($_POST["date_purge"])){
+if (isset ($_POST["date_purge"])) {
 	$from_date = (int) get_parameter_post ("date_purge");
 	
-	$deleted = db_process_sql_delete('tevento', array('utimestamp' => '< ' . $from_date));
+	$deleted = db_process_sql_delete('tevento',
+		array('utimestamp' => '< ' . $from_date));
 	
 	if ($deleted !== false) {
 		ui_print_success_message(__('Successfully deleted old events'));
@@ -43,7 +44,11 @@ if (isset ($_POST["date_purge"])){
 }
 # End of get parameters block
 
-$row = db_get_row_sql ("SELECT COUNT(*) AS total, MIN(timestamp) AS first_date, MAX(timestamp) AS latest_date FROM tevento");
+$row = db_get_row_sql ("
+	SELECT COUNT(*) AS total,
+		MIN(timestamp) AS first_date,
+		MAX(timestamp) AS latest_date
+	FROM tevento");
 
 $table->data = array ();
 $table->cellpadding = 4;

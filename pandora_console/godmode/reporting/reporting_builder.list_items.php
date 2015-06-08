@@ -148,7 +148,7 @@ if (!defined("METACONSOLE"))
 			array("title" => __('Toggle filter(s)'),
 			"id" => 'image_form_filter')) . '</a>';
 
-if (!defined("METACONSOLE")){
+if (!defined("METACONSOLE")) {
 	$table = new stdClass();
 	$table->width = '100%';
 	$table->data[0][0] = __('Agents');
@@ -260,7 +260,7 @@ $table->style[0] = 'text-align: right;';
 
 if ($items) {
 	$table->width = '98%';
-	if (defined("METACONSOLE")){
+	if (defined("METACONSOLE")) {
 		$table->width = '100%';
 		$table->class = "databox data";
 	}
@@ -429,7 +429,7 @@ foreach ($items as $item) {
 		metaconsole_restore_db();
 	}
 }
-if (defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	if ($items != false) {
 		ui_pagination ($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
 		html_print_table($table);
@@ -475,7 +475,7 @@ $table->size[0] = '25%';
 $table->size[1] = '25%';
 $table->size[2] = '25%';
 $table->size[3] = '25%';
-if (defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	$table->class = "databox data";
 	$table->head[0] = __("Sort items");
 	$table->head_colspan[0] = 4;
@@ -506,7 +506,7 @@ $table->size[0] = '25%';
 $table->size[1] = '25%';
 $table->size[2] = '25%';
 $table->size[3] = '25%';
-if (defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	$table->class = "databox data";
 	$table->head[0] = __("Delete items");
 	$table->head_colspan[0] = 4;

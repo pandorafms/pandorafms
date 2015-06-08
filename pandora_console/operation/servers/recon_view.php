@@ -125,7 +125,7 @@ else {
 				
 				$data[2] = human_time_description_raw ($task["interval_sweep"]);
 				
-				if ($task["id_recon_script"] == 0){
+				if ($task["id_recon_script"] == 0) {
 					$data[3] = $task["subnet"];
 				}
 				else {
@@ -139,7 +139,7 @@ else {
 					$data[4] = __('Pending');
 				}
 				
-				if ($task["id_recon_script"] == 0){
+				if ($task["id_recon_script"] == 0) {
 					// Network recon task
 					$data[5] = html_print_image ("images/network.png", true, array ("title" => __('Network recon task')))."&nbsp;&nbsp;";
 					$data[5] .= network_profiles_get_name ($task["id_network_profile"]);

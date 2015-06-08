@@ -546,7 +546,7 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 		$table->class = 'databox data';
 		$table->title = '<span>' . __('Index of %s', $relative_directory) . '</span>';
 	}
-	if (defined('METACONSOLE')){
+	if (defined('METACONSOLE')) {
 		$table->width = '100%';
 		$table->class = 'databox_tactical';
 		$table->title = '<span>' . __('Index of images') . '</span>';

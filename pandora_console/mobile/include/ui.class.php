@@ -700,9 +700,9 @@ class Ui {
 			}
 		}
 		echo "<script type='text/javascript'>
-			$(document).bind('mobileinit', function(){
+			$(document).bind('mobileinit', function() {
 				//Disable ajax link
-				$('.disable-ajax').click(function(event){
+				$('.disable-ajax').click(function(event) {
 					$.mobile.ajaxFormsEnabled = false;
 				});
 			});
@@ -725,7 +725,7 @@ class Ui {
 					}
 				});
 			}
-			$(document).ready(function(){
+			$(document).ready(function() {
 				refresh_link_listener_" . $table_name . "();
 			});
 		</script>");

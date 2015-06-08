@@ -40,7 +40,7 @@ $display_on_front = (int) get_parameter ('display_on_front', 0);
 /* Create field */
 if ($create_field) {
 	/*Check if name field is empty*/
-	if ($name == ""){
+	if ($name == "") {
 		ui_print_error_message(__('The name must not be empty'));
 	}
 	else if ($name == db_get_value ('name', 'tagent_custom_fields', 'name', $name)) {

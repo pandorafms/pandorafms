@@ -5286,7 +5286,7 @@ function reporting_get_stats_alerts($data, $links = false) {
 	$table_al->rowclass[] = '';
 	$table_al->data[] = $tdata;
 	
-	if(!defined('METACONSOLE')){
+	if(!defined('METACONSOLE')) {
 		$output = '<fieldset class="databox tactical_set">
 					<legend>' . 
 						__('Defined and fired alerts') . 
@@ -5383,7 +5383,7 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 		$table_mbs->data[] = $tdata;
 	}
 	
-	if(!defined("METACONSOLE")){
+	if(!defined("METACONSOLE")) {
 		$output = '
 			<fieldset class="databox tactical_set">
 				<legend>' . 
@@ -7568,7 +7568,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	// Get module type
 	$id_module_type = db_get_value('id_tipo_modulo', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
 	// If module is boolean don't create translation intervals (on the edge intervals)
-	// if ($id_module_type == 2 or $id_module_type == 6 or $id_module_type == 9 or $id_module_type == 18){
+	// if ($id_module_type == 2 or $id_module_type == 6 or $id_module_type == 9 or $id_module_type == 18) {
 	//      $percent = 0;
 	// }
 	// else {

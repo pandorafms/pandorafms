@@ -119,7 +119,7 @@ function custom_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGr
 			continue;
 		
 		if ($graph["id_group"] > 0)
-			if (!isset($groups[$graph["id_group"]])){
+			if (!isset($groups[$graph["id_group"]])) {
 				continue;
 			}
 		

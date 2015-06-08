@@ -633,7 +633,7 @@ function modules_format_data($data)
  *
  * @return string HTML string data with verbatim format.
  */
-function modules_format_verbatim($data){
+function modules_format_verbatim($data) {
 	// We need to replace \n by <br> to create a "similar" output to
 	// information recolected in logs.
 	$data2 = preg_replace ("/\\n/", "<br>", $data);
@@ -731,8 +731,9 @@ function modules_get_agentmodule ($id_agentmodule) {
 			return db_get_row ('tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
 			break;
 		case "oracle":
-			$fields = db_get_all_rows_filter('USER_TAB_COLUMNS', 'TABLE_NAME = \'TAGENTE_MODULO\' AND COLUMN_NAME <> \'MAX_CRITICAL\' AND COLUMN_NAME <> \'MIN_CRITICAL\' AND COLUMN_NAME <> \'POST_PROCESS\' AND COLUMN_NAME <> \'MAX_WARNING\' AND COLUMN_NAME <> \'MIN_WARNING\'', 'COLUMN_NAME');
-			foreach ($fields as $field){
+			$fields = db_get_all_rows_filter('USER_TAB_COLUMNS',
+				'TABLE_NAME = \'TAGENTE_MODULO\' AND COLUMN_NAME <> \'MAX_CRITICAL\' AND COLUMN_NAME <> \'MIN_CRITICAL\' AND COLUMN_NAME <> \'POST_PROCESS\' AND COLUMN_NAME <> \'MAX_WARNING\' AND COLUMN_NAME <> \'MIN_WARNING\'', 'COLUMN_NAME');
+			foreach ($fields as $field) {
 				$fields_[] = $field['column_name'];
 			}
 			$fields = implode(',', $fields_);

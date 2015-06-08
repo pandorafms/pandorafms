@@ -244,7 +244,7 @@ if (!empty($result)) {
 	
 	html_print_table ($table);
 }
-if(defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	echo "<table border=0 cellpadding=0 cellspacing=0 width=100%>";
 		echo "<tr>";
 			echo "<td align=right>";

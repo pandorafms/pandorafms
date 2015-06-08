@@ -851,7 +851,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 	$result = db_get_all_rows_sql ($sql);
 	
 	if ($result === false) {
-		if ($return){
+		if ($return) {
 			$returned = ui_print_info_message ( __('No events'),'',true );
 			return $returned;
 		}
@@ -1386,12 +1386,12 @@ function events_get_module ($id_agent_module, $period, $date = 0) {
  *
  * @return string Type description.
  */
-function events_get_event_types ($type_id){
+function events_get_event_types ($type_id) {
 	
 	$diferent_types = get_event_types ();
 	
 	$type_desc = '';
-	switch($type_id) {
+	switch ($type_id) {
 		case 'unknown':
 			$type_desc = __('Unknown');
 			break;
@@ -1434,7 +1434,7 @@ function events_get_event_types ($type_id){
 		default:
 			if (isset($config['text_char_long'])) {
 				foreach ($diferent_types as $key => $type) {
-					if ($key == $type_id){
+					if ($key == $type_id) {
 						$type_desc = ui_print_truncate_text($type, $config['text_char_long'], false, true, false);
 					}
 				}
@@ -1453,7 +1453,7 @@ function events_get_event_types ($type_id){
  *
  * @return string Severity description.
  */
-function events_get_severity_types ($severity_id){
+function events_get_severity_types ($severity_id) {
 	
 	$diferent_types = get_priorities ();
 	
@@ -1477,8 +1477,9 @@ function events_get_severity_types ($severity_id){
 		default:
 			if (isset($config['text_char_long'])) {
 				foreach ($diferent_types as $key => $type) {
-					if ($key == $severity_id){
-						$severity_desc = ui_print_truncate_text($type, $config['text_char_long'], false, true, false);
+					if ($key == $severity_id) {
+						$severity_desc = ui_print_truncate_text($type,
+							$config['text_char_long'], false, true, false);
 					}
 				}
 			}
@@ -1634,7 +1635,7 @@ function events_get_event_filter_select($manage = true) {
 	}
 	else {
 		$result = array();
-		foreach ($event_filters as $event_filter){
+		foreach ($event_filters as $event_filter) {
 			$result[$event_filter['id_filter']] = $event_filter['id_name'];
 		}
 	}

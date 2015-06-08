@@ -133,7 +133,7 @@ if ($config["integria_enabled"]) {
 	$table->data[20][0] = __('Integria URL') . ui_print_help_icon ("integria_url", true);
 	$table->data[20][1] = html_print_input_text ('integria_url', $config["integria_url"], '', 25, 255, true); 
 	// If something goes wrong
-	if ($bad_input){
+	if ($bad_input) {
 		$table->data[20][1] .= html_print_image('images/error.png', true, array('title' => __('URL and/or Integria password are incorrect')));
 	}
 	
@@ -309,18 +309,18 @@ function show_timezone () {
 		url: "ajax.php",
 		data: "page=<?php echo $_GET['sec2']; ?>&select_timezone=1&zone=" + zone,
 		dataType: "json",
-		success: function(data){
-				$("#timezone").empty();
-				jQuery.each (data, function (id, value) {
-					timezone = value;
-					$("select[name='timezone']").append($("<option>").val(timezone).html(timezone));
-				});	
-			}
-		});
+		success: function(data) {
+			$("#timezone").empty();
+			jQuery.each (data, function (id, value) {
+				timezone = value;
+				$("select[name='timezone']").append($("<option>").val(timezone).html(timezone));
+			});
+		}
+	});
 }
 
 $(document).ready (function () {
-
+	
 	$("#zone").attr("hidden", true);
 	$("#timezone").attr("hidden", true);
 	

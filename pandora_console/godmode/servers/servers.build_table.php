@@ -89,8 +89,8 @@ foreach ($servers as $server) {
 	}
 	
 	// Type
-	$data[2] = '<span style="white-space:nowrap;">'.$server["img"];
-		if ($server["master"] == 1){
+	$data[2] = '<span style="white-space:nowrap;">' . $server["img"];
+		if ($server["master"] == 1) {
 			$data[2] .= ui_print_help_tip (__("This is a master server"), true);
 		}
 	//$data[2] .= '</span> <span style="font-size:8px;"> v' .. '</span>';
@@ -116,7 +116,7 @@ foreach ($servers as $server) {
 	}
 	
 	$data[6] = $server['threads'].' : '.$server['queued_modules'];
-	if ($server['queued_modules'] > 200){
+	if ($server['queued_modules'] > 200) {
 		$data[6] .= clippy_context_help("server_queued_modules");
 	}
 	$data[7] = ui_print_timestamp ($server['keepalive'], true);

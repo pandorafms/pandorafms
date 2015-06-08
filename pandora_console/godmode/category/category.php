@@ -89,13 +89,14 @@ $result = false;
 $result = categories_get_all_categories ();
 
 // Form to add new categories or search categories
-if(!defined('METACONSOLE')){
+if (!defined('METACONSOLE')) {
 	echo "<table border=0 cellpadding=4 cellspacing=4 class='databox' width=98%>";
 	echo "<tr>";
 	echo "<td align=right>";
 		echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action=new&pure='.(int)$config['pure'].'">';
 		html_print_input_hidden ("create_category", "1", true);
-		html_print_submit_button (__('Create category'), 'create_button', false, 'class="sub next"');
+		html_print_submit_button (__('Create category'),
+			'create_button', false, 'class="sub next"');
 		echo "</form>";
 	echo "</td>";
 	echo "</tr>";
@@ -133,7 +134,7 @@ if (!empty($result)) {
 		
 		$data = array ();
 		
-		if(defined('METACONSOLE')){
+		if (defined('METACONSOLE')) {
 			$data[0] = "<a href='index.php?sec=advanced&sec2=godmode/category/edit_category&action=update&id_category=" . $category["id"] . "&pure=" . (int)$config['pure'] . "'>" . $category["name"] . "</a>";  
 			$data[1] = "<a href='index.php?sec=advanced&sec2=godmode/category/edit_category&action=update&id_category=".$category["id"] . "&pure=" . (int)$config['pure'] . "'>" . html_print_image("images/config.png", true, array("title" => "Edit")) . "</a>&nbsp;&nbsp;";
 			$data[1] .= '<a  href="index.php?sec=advanced&sec2=godmode/category/category&delete_category='.$category["id"] . '&pure='.(int)$config['pure'].'"onclick="if (! confirm (\''.__('Are you sure?').'\')) return false">' . html_print_image("images/cross.png", true, array("title" => "Delete")) . '</a>';
@@ -148,7 +149,7 @@ if (!empty($result)) {
 	
 	html_print_table ($table);
 	
-	if(defined('METACONSOLE')){
+	if (defined('METACONSOLE')) {
 		echo "<table border=0 cellpadding=0 cellspacing=0 class='' width=100%>";
 		echo "<tr>";
 		echo "<td align=right>";

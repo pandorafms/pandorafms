@@ -112,7 +112,7 @@ if ($filters === false)
 	$filters = array ();
 
 $table->width = '90%';
-if (defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$table->width = '100%';
 }
 $table->head = array ();

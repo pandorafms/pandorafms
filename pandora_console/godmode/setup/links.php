@@ -136,9 +136,9 @@ else {  // Main list view for Links editor
 		echo "<th width='180px'>".__('Link name')."</th>";
 		echo "<th width='80px'>".__('Delete')."</th>";
 		
-		$color=1;
+		$color = 1;
 		foreach ($rows as $row) {
-			if ($color == 1){
+			if ($color == 1) {
 				$tdcolor = "datos";
 				$color = 0;
 			}

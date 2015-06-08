@@ -193,7 +193,7 @@ if ($layers != false) {
 // Resize GIS map on fullscreen
 ?>
 <script type="text/javascript">
-	$().ready(function(){
+	$().ready(function() {
 		
 		var new_height = $(document).height();
 		$("#map").css("height", new_height - 60);

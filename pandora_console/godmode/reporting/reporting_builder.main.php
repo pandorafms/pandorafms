@@ -47,7 +47,7 @@ $table->id = 'add_alert_table';
 $table->class = 'databox';
 $table->head = array ();
 
-if(defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	$table->width = '100%';
 	$table->class = 'databox data';
 	$table->head[0] = __('Main data');

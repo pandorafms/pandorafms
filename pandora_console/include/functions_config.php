@@ -842,7 +842,7 @@ function config_process_config () {
 	// the first time make a conenction and disable itself
 	// Not Managed here !
 	
-	// if (!isset ($config["autoupdate"])){
+	// if (!isset ($config["autoupdate"])) {
 	// 	config_update_value ('autoupdate', true);
 	// }
 	

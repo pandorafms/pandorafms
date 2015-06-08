@@ -1031,11 +1031,14 @@ $(document).ready (function () {
 	});
 	
 	$("#submit-create_modules_btn").click(function () {
-		if($("#module option").length == 0 || ($("#module option").length == 1 && $("#module option").eq(0).val() == 0)) {
+		if ($("#module option").length == 0
+			|| ($("#module option").length == 1
+			&& $("#module option").eq(0).val() == 0)) {
+			
 			alert('<?php echo __('Modules list is empty'); ?>');
 			return false;
 		}
-		$('#module option').map(function(){
+		$('#module option').map(function() {
 			$(this).attr('selected','selected');
 		});
 	});

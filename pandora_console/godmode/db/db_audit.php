@@ -61,7 +61,7 @@ $time["3month"] = $time["all"] - SECONDS_3MONTHS;
 # ADQUIRE DATA PASSED AS FORM PARAMETERS
 # ======================================
 # Purge data using dates
-if (isset($_POST["purgedb"])){	# Fixed 2005-1-13, nil
+if (isset($_POST["purgedb"])) {	# Fixed 2005-1-13, nil
 	$from_date = get_parameter_post("date_purge");
 	
 	$deleted = db_process_sql_delete('tsesion', array('utimestamp' => '< ' . $from_date));

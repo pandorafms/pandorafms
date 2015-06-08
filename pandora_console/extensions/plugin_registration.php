@@ -76,11 +76,15 @@ function pluginreg_extension_main () {
 			
 			$file_exec_path = $exec_path;
 			
-			if (isset($ini_array["plugin_definition"]["execution_command"]) && ($ini_array["plugin_definition"]["execution_command"] != "")){
+			if (isset($ini_array["plugin_definition"]["execution_command"])
+				&& ($ini_array["plugin_definition"]["execution_command"] != "")) {
+				
 				$exec_path = $ini_array["plugin_definition"]["execution_command"] . " " . $config["plugin_store"] . "/" . $ini_array["plugin_definition"]["filename"];
 			}
 			
-			if (isset($ini_array["plugin_definition"]["execution_postcommand"]) && ($ini_array["plugin_definition"]["execution_postcommand"] != "")){
+			if (isset($ini_array["plugin_definition"]["execution_postcommand"])
+				&& ($ini_array["plugin_definition"]["execution_postcommand"] != "")) {
+				
 				$exec_path = $exec_path . " " .$ini_array["plugin_definition"]["execution_postcommand"];
 			}
 			

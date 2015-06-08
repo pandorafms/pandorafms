@@ -277,7 +277,7 @@ function clippy_context_help($help = null) {
 		}
 		
 		$(document).ready(function() {
-			(function pulse_' . $id . '(){
+			(function pulse_' . $id . '() {
 				$("#' . $id . ' img")
 					.delay(100)
 					.animate({\'opacity\': 1})

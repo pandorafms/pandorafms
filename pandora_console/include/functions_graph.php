@@ -374,7 +374,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 		$timestamp_short = date($time_format, $timestamp);
 		$long_index[$timestamp_short] = date(
 			html_entity_decode($config['date_format'], ENT_QUOTES, "UTF-8"), $timestamp);
-		if (!$projection){
+		if (!$projection) {
 			$timestamp = $timestamp_short;
 		}
 		
@@ -924,13 +924,13 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	if ($projection != false) {
 		$j = $datelimit;
 		$in_range = true;
-		while ($in_range){
+		while ($in_range) {
 			$timestamp_f = graph_get_formatted_date($j, $time_format, $time_format_2);
 			
 			//$timestamp_f = date('d M Y H:i:s', $j);
 			$before_projection[$timestamp_f] = 0;
 			
-			if ($j > $date){
+			if ($j > $date) {
 				$in_range = false;
 			}
 			$j = $j + $interval;
@@ -2001,17 +2001,19 @@ function graph_db_agentes_modulos($width, $height) {
 	
 	$data = array ();
 	
-	switch ($config['dbtype']){
+	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":
-			$modules = db_get_all_rows_sql ('SELECT COUNT(id_agente_modulo), id_agente
+			$modules = db_get_all_rows_sql ('
+				SELECT COUNT(id_agente_modulo), id_agente
 				FROM tagente_modulo
 				WHERE delete_pending = 0
 				GROUP BY id_agente
 				ORDER BY 1 DESC LIMIT 10');
 			break;
 		case "oracle":
-			$modules = db_get_all_rows_sql ('SELECT COUNT(id_agente_modulo), id_agente
+			$modules = db_get_all_rows_sql ('
+				SELECT COUNT(id_agente_modulo), id_agente
 				FROM tagente_modulo
 				WHERE rownum <= 10
 				AND delete_pending = 0
@@ -2029,7 +2031,7 @@ function graph_db_agentes_modulos($width, $height) {
 		if (empty($agent_name)) {
 			continue;
 		}
-		switch ($config['dbtype']){
+		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":
 				$data[$agent_name]['g'] = $module['COUNT(id_agente_modulo)'];
@@ -2678,7 +2680,7 @@ function graph_custom_sql_graph ($id, $width, $height,
 	global $config;
 	
 	$report_content = db_get_row ('treport_content', 'id_rc', $id);
-	if ($report_content["external_source"] != ""){
+	if ($report_content["external_source"] != "") {
 		$sql = io_safe_output ($report_content["external_source"]);
 	}
 	else {
@@ -4056,7 +4058,7 @@ function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,
 	$rows = 0;
 	
 	$first = true;
-	while ($row = get_db_all_row_by_steps_sql($first, $result, $sql1)){
+	while ($row = get_db_all_row_by_steps_sql($first, $result, $sql1)) {
 		$first = false;
 		
 		$rows++;
@@ -4135,7 +4137,7 @@ function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,
 	
 	grafico_modulo_log4x_trace(__LINE__);
 	
-	if ($pure == 0){
+	if ($pure == 0) {
 		$Graph->add(
 			Image_Graph::horizontal(
 				Image_Graph::vertical(
@@ -4179,7 +4181,7 @@ function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,
 		$dataset[$i] = Image_Graph::factory('dataset');
 		$dataset[$i]->setName($severity);
 		
-		if (isset($valores[$severity])){
+		if (isset($valores[$severity])) {
 			$data =& $valores[$severity];
 			while (list($index, $data2) = each($data)) {
 				$count = $data2['count'];
@@ -4275,7 +4277,7 @@ function grafico_modulo_log4x ($id_agente_modulo, $periodo, $show_event,
 	//$AxisY_Weather =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
 	
 	// Show events !
-	if ($show_event == 1){
+	if ($show_event == 1) {
 		$Plot =& $Plotarea->addNew('Plot_Impulse', array($dataset_event));
 		$Plot->setLineColor( 'red' );
 		$Marker_event =& Image_Graph::factory('Image_Graph_Marker_Cross');

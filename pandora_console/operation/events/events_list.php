@@ -184,7 +184,7 @@ if (!defined("METACONSOLE")) {
 	$table->data[0][1] = '<a id="events_graph_link" href="javascript: show_events_graph_dialog()">' . html_print_image('images/chart_curve.png', true, array('title' => __('Show events graph'))) . '</a>';
 	$table->cellstyle[0][1] = 'background: #ECECEC;';
 
-	if(defined('METACONSOLE')){
+	if(defined('METACONSOLE')) {
 		$table->width = '100%';
 		$table->class='events_list';
 	}
@@ -212,14 +212,14 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$table->cellspacing = 4;
 	$table->cellpadding = 4;
 	$table->class = 'databox';
-	if(defined('METACONSOLE')){
+	if (defined('METACONSOLE')) {
 		$table->width = '100%';
 		$table->class = 'databox data';
 		$table->cellspacing = 0;
 		$table->cellpadding = 0;
 	}
 	$table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
-	if(!defined("METACONSOLE"))
+	if (!defined("METACONSOLE"))
 		$table->style[0] = 'width: 50%; width:50%;';
 	
 	$data = array();

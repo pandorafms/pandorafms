@@ -189,7 +189,7 @@ switch ($action) {
 					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 					$period = $item['period'];
 					// 'top_n_value' field will be reused for projection report
-					if ($type == 'projection_graph'){
+					if ($type == 'projection_graph') {
 						$projection_period = $item['top_n_value'];
 						$period_pg = $item['period'];
 					}
@@ -531,16 +531,16 @@ else
 ?>
 <table style="" class="<?php echo $class;?>" id="" border="0" cellpadding="4" cellspacing="4" width="100%">
 	<?php 
-			if (defined("METACONSOLE")){
-				echo "<thead>
-						<tr>
-							<th align=center colspan=5>
-								" . __('Item Editor') . "
-							</th>
-						</tr>
-					</thead>";
-			}
-		?>
+	if (defined("METACONSOLE")) {
+		echo "<thead>
+				<tr>
+					<th align=center colspan=5>
+						" . __('Item Editor') . "
+					</th>
+				</tr>
+			</thead>";
+	}
+	?>
 	<tbody>
 		<tr id="row_type" style="" class="datos">
 			<td style="vertical-align: top; width: 220px;"><?php echo __('Type'); ?></td>
@@ -945,8 +945,10 @@ else
 							$metaconsole_connections = array();
 						}
 						$result_servers = array();
-						foreach ($metaconsole_connections as $metaconsole_element){
-							$connection_data = enterprise_hook('metaconsole_get_connection', array($metaconsole_element));
+						foreach ($metaconsole_connections as $metaconsole_element) {
+							$connection_data = enterprise_hook(
+								'metaconsole_get_connection',
+								array($metaconsole_element));
 							$result_servers[$connection_data['server_name']] = $connection_data['server_name'];
 						}
 						// Print select combo with metaconsole servers
@@ -1665,7 +1667,7 @@ function edit_custom_graph() {
 		var id_element_graph;
 		var id_server;
 		
-		if (id_graph.indexOf("|") != -1){
+		if (id_graph.indexOf("|") != -1) {
 			agent_server_temp = id_graph.split('|');
 			id_element_graph = agent_server_temp[0];
 			id_server = agent_server_temp[1];

@@ -73,9 +73,9 @@ if ($copy_action) {
 
 	$al_action = alerts_get_alert_action ($id);
 
-	if ($al_action !== false){
+	if ($al_action !== false) {
 		// If user tries to copy an action with group=ALL
-		if ($al_action['id_group'] == 0){
+		if ($al_action['id_group'] == 0) {
 			// then must have "PM" access privileges
 			if (! check_acl ($config['id_user'], 0, "PM")) {
 				db_pandora_audit("ACL Violation",

@@ -420,7 +420,7 @@ function db_get_sql ($sql, $field = 0, $search_history_db = false) {
 		return false;
 	
 	$ax = 0;
-	foreach ($result[0] as $f){
+	foreach ($result[0] as $f) {
 		if ($field == $ax)
 		return $f;
 		$ax++;

@@ -214,7 +214,7 @@ class Agent {
 		$ui->contentAddLinkListener('list_agent_Modules');
 
 		$ui->contentAddHtml("<script type=\"text/javascript\">
-			$(document).ready(function(){
+			$(document).ready(function() {
 				function set_same_heigth() {
 					//Set same height to boxes
 					var max_height = 0;

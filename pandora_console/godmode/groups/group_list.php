@@ -323,11 +323,12 @@ foreach ($all_parents as $parent) {
 $groups_count = count($groups);
 
 if (check_acl($config['id_user'], 0, "PM")) {
-	if (!defined("METACONSOLE")){
+	if (!defined("METACONSOLE")) {
 		echo '<br />';
 		echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group&pure='.$pure.'">';
 		echo '<div class="action-buttons" style="width: '.$table->width.'">';
-		html_print_submit_button (__('Create group'), 'crt', false, 'class="sub next"');
+		html_print_submit_button(__('Create group'), 'crt', false,
+			'class="sub next"');
 		echo '</div>';
 		echo '</form>';
 	}

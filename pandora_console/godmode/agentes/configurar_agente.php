@@ -205,10 +205,11 @@ if ($create_agent) {
 			// Create custom fields for this agent
 			foreach ($field_values as $key => $value) {
 				db_process_sql_insert ('tagent_custom_data',
-				 array('id_field' => $key,'id_agent' => $id_agente, 'description' => $value));
+				 array('id_field' => $key, 'id_agent' => $id_agente,
+					'description' => $value));
 			}
 			// Create address for this agent in taddress
-			if ( $direccion_agente != ''){
+			if ( $direccion_agente != '') {
 				agents_add_address ($id_agente, $direccion_agente);
 			}
 			

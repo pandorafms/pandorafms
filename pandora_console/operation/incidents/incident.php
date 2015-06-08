@@ -173,7 +173,7 @@ if ($prioridad != -1) //-1 = All
 	$filter .= sprintf (" AND prioridad = %d", $prioridad);
 
 $agent_search = (int) get_parameter("agent_search");
-if ($agent_search != 0){
+if ($agent_search != 0) {
 	$filter .= sprintf(" AND id_agent = %d", $agent_search);
 }
 
@@ -247,7 +247,7 @@ echo '</td></tr><tr><td>';
 
 $agents_incidents = agents_get_agents(false, array('id_agente', 'nombre'));
 
-if ($agents_incidents === false){
+if ($agents_incidents === false) {
 	$agents_incidents = array();
 }
 

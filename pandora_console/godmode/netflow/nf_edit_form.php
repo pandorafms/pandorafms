@@ -173,7 +173,7 @@ $table->border = 0;
 $table->cellspacing = 3;
 $table->cellpadding = 5;
 $table->class = "databox_color";
-if (defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$table->width = '100%';
 	$table->class = 'databox data';
 	if($id)

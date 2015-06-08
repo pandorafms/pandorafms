@@ -541,7 +541,7 @@ foreach ($result as $event) {
 	}
 	
 	if (in_array('ack_utimestamp',$show_fields)) {
-		if($event["ack_utimestamp"] == 0){
+		if ($event["ack_utimestamp"] == 0) {
 			$data[$i] = '';
 		}
 		else {

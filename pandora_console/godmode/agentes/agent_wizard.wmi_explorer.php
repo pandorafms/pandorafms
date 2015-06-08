@@ -490,7 +490,7 @@ $(document).ready (function () {
 			alert('<?php echo __('Modules list is empty'); ?>');
 			return false;
 		}
-		$('#module option').map(function(){
+		$('#module option').map(function() {
 			$(this).attr('selected','selected');
 		});
 	});

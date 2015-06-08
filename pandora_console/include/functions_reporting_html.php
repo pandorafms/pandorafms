@@ -2533,7 +2533,7 @@ function reporting_template_graphs_get_user ($id_user = 0, $only_names = false, 
 			continue;
 		
 		if ($template["id_group"] > 0)
-			if (!isset($groups[$template["id_group"]])){
+			if (!isset($groups[$template["id_group"]])) {
 				continue;
 			}
 		
@@ -2646,7 +2646,7 @@ function reporting_get_total_servers ($num_servers) {
 	$node_data[1] = "<b><span style='font-size: 12pt; font-weight: bold; color: black;'>".format_numeric($num_servers)."</span></b>";
 	$table_node->data[] = $node_data;
 	
-	if (!defined('METACONSOLE')){
+	if (!defined('METACONSOLE')) {
 		$node_overview = '<fieldset class="databox tactical_set">
 					<legend>' . 
 						__('Node overview') . 
@@ -2674,7 +2674,7 @@ function reporting_get_events ($data, $links = false) {
 		$style = " vertical-align:middle;";
 	else
 		$style = "";
-	if (defined('METACONSOLE')){
+	if (defined('METACONSOLE')) {
 		$table_events->style[0] = "background-color:#FC4444";
 		$table_events->data[0][0] = html_print_image('images/module_event_critical.png', true, array('title' => __('Critical events')));
 		$table_events->data[0][0] .= "&nbsp;&nbsp;&nbsp;" .

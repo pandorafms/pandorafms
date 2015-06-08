@@ -175,7 +175,7 @@ if ($get_module_detail) {
 			"width" => "230px"),
 	);
 	
-	if($config['prominent_time']=='comparation'){
+	if($config['prominent_time']=='comparation') {
 		$columns["Time"] = array(
 			"utimestamp",
 			"modules_format_time",
@@ -887,8 +887,8 @@ if ($list_modules) {
 			$salida = "<span style='$style'>$salida</span>";
 		}
 		else {
-			if (is_numeric($module["datos"]) && !modules_is_string_type($module['id_tipo_modulo'])){
-				if ( $config["render_proc"] ){
+			if (is_numeric($module["datos"]) && !modules_is_string_type($module['id_tipo_modulo'])) {
+				if ( $config["render_proc"] ) {
 					switch($module["id_tipo_modulo"]) {
 						case 2:
 						case 6:

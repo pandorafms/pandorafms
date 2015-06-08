@@ -235,7 +235,7 @@ $table->data[0][4] = html_print_submit_button(__('Search'), 'search',
 	false, array('class' => 'sub search'), true);
 
 
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$table->width = '96%';
 	$form_filter = "<form class='filters_form' method='post'>";
 	$form_filter .= html_print_table($table, true);
@@ -251,7 +251,7 @@ else {
 }
 
 $table = null;
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$table->cellpadding = 0;
 	$table->cellspacing = 0;
 	$table->width = '100%';
@@ -431,7 +431,7 @@ foreach ($info as $user_id => $user_info) {
 	$data[4] = "";
 	$result = db_get_all_rows_field_filter ("tusuario_perfil", "id_usuario", $user_id);
 	if ($result !== false) {
-		if (defined("METACONSOLE")){
+		if (defined("METACONSOLE")) {
 			$data[4] .= "<div width='100%'>";
 			foreach ($result as $row) {
 				$data[4] .= "<div style='float:left;'>";

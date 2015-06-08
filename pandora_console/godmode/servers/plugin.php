@@ -263,12 +263,12 @@ if (($create != "") OR ($view != "")) {
 	$table->colspan['plugin_desc'][1] = 3;
 	$table->data['plugin_desc'] = $data;
 	
-	if (!defined("METACONSOLE")){
+	if (!defined("METACONSOLE")) {
 		echo '<br>';
 		echo '<table class="databox" style="margin: 0 auto; width: 98%;"><tr><td>';
 	}
 	
-	if (defined("METACONSOLE")){
+	if (defined("METACONSOLE")) {
 		$table->width = '100%';
 		$table->class = 'databox data';
 		$table->head[0] = __('General');
@@ -331,7 +331,7 @@ if (($create != "") OR ($view != "")) {
 	$data[1] = '<div id="command_preview" style="font-style:italic"></div>';
 	$table->data['plugin_preview'] = $data;
 	
-	if (defined("METACONSOLE")){
+	if (defined("METACONSOLE")) {
 		$table->width = '100%';
 		$table->class = 'databox data';
 		$table->head[0] = __('Command');
@@ -451,7 +451,7 @@ if (($create != "") OR ($view != "")) {
 		$table->data['plugin_action'] = $datam;
 	}
 	
-	if (defined("METACONSOLE")){
+	if (defined("METACONSOLE")) {
 		$table->width = '100%';
 		$table->class = 'databox data';
 		$table->head[0] = __('Parameters macros');

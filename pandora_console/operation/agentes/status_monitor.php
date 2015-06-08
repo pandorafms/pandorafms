@@ -91,7 +91,7 @@ if ($id_module) {
 
 enterprise_hook('open_meta_frame');
 
-if (!defined('METACONSOLE')){
+if (!defined('METACONSOLE')) {
 	$filters = '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;ag_group=' . 
 			$ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . 
 				$sortField . '&amp;sort=' . $sort .'&amp;pure=' . $config['pure'] . $ag_custom_fields_params . '">';
@@ -403,7 +403,7 @@ if (defined('METACONSOLE')) {
 	if ($key_group_all !== false)
 		unset($groups_select[$key_group_all]);
 }
-if(defined("METACONSOLE")){
+if(defined("METACONSOLE")) {
 	$table->style[0] = 'vertical-align:middle; font-weight: bold;';
 	$table->style[1] = 'vertical-align:middle; font-weight: bold;';
 	$table->style[2] = 'vertical-align:middle; font-weight: bold;';
@@ -495,7 +495,7 @@ else {
 $table_custom_fields = new stdClass();
 $table_custom_fields->class = 'filters';
 $table_custom_fields->width = '100%';
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 		$table_custom_fields->width = '100%';
 		$table_custom_fields->class = 'filters';
 		$table_custom_fields->styleTable = 'margin-left:0px; margin-top:15px;';
@@ -529,9 +529,11 @@ foreach ($custom_fields as $custom_field) {
 	$table_custom_fields->data[] = $row;
 }
 
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$table->colspan[2][0] = 7;
-	$table->data[2][0] = ui_toggle(html_print_table($table_custom_fields, true), __('Advanced Options'),'',true,true);
+	$table->data[2][0] = ui_toggle(
+		html_print_table($table_custom_fields, true),
+		__('Advanced Options'), '', true, true);
 	
 	$filters .= html_print_table($table, true);
 	$filters .= "</form>";
@@ -904,7 +906,7 @@ $table->cellpadding = 0;
 $table->cellspacing = 0;
 $table->width = "100%";
 $table->class = "databox data";
-if(defined('METACONSOLE')){
+if(defined('METACONSOLE')) {
 	$table->width = "100%";
 	$table->cellpadding = '0';
 	$table->cellspacing = '0';
@@ -1230,7 +1232,7 @@ foreach ($result as $row) {
 		$row['min_critical'], $row['str_critical']);
 	
 	if (is_numeric($row["datos"])) {
-		if ( $config["render_proc"] ){
+		if ( $config["render_proc"] ) {
 				switch($row["module_type"]) {
 					case 2:
 					case 6:
@@ -1379,9 +1381,9 @@ ui_require_javascript_file('pandora_modules');
 		}
 	});
 	
-	$('#ag_group').change (function (){
+	$('#ag_group').change (function () {
 		strict_user = $("#text-strict_user_hidden").val();
-
+		
 		if (($("#ag_group").val() != 0) && (strict_user != 0)) {
 			$("#tag_filter").css('display', 'none');
 			$("#tag_td").css('display', 'none');

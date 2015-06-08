@@ -67,7 +67,7 @@ if ($create != "") {
 // SHOW THE FORM
 // =================================================================
 
-if (($create != "") OR ($view != "")){
+if (($create != "") OR ($view != "")) {
 	
 	if ($create != "")
 		ui_print_page_header (__('Recon script creation'), "images/gm_servers.png", false, "reconscript_definition", true);
@@ -215,7 +215,7 @@ if (($create != "") OR ($view != "")){
 	echo '<table width=98%>';
 	echo '<tr><td align="right">';
 	
-	if ($create != ""){
+	if ($create != "") {
 		echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
 	}
 	else {
@@ -332,7 +332,7 @@ else {
 		else {
 			ui_print_success_message(__('reconscript deleted successfully'));
 		}
-		if ($reconscript_id != 0){
+		if ($reconscript_id != 0) {
 			$result = db_process_sql_delete('trecon_task',
 				array('id_recon_script' => $reconscript_id));
 		}

@@ -209,6 +209,8 @@ function config_update_config () {
 							if (!config_update_value ('show_events_in_local', (string)get_parameter('show_events_in_local')))
 								$error_update[] = __('Show events list in local console (read only)');
 						}
+						if (!config_update_value ('replication_dbengine', (string)get_parameter('replication_dbengine')))
+							$error_update[] = __('Replication DB engine');
 						if (!config_update_value ('replication_dbhost', (string)get_parameter('replication_dbhost')))
 							$error_update[] = __('Replication DB host');
 						if (!config_update_value ('replication_dbname', (string)get_parameter('replication_dbname')))
@@ -776,6 +778,10 @@ function config_process_config () {
 	
 	if (!isset ($config["replication_interval"])) {
 		config_update_value ('replication_interval', 120);
+	}
+	
+	if (!isset ($config["replication_dbengine"])) {
+		config_update_value ('replication_dbengine', 'mysql');
 	}
 	
 	if (!isset ($config["replication_dbhost"])) {

@@ -57,6 +57,7 @@ our @EXPORT = qw(
 		get_alert_template_module_id
 		get_alert_template_name
 		get_db_rows
+		get_db_rows_limit
 		get_db_single_row
 		get_db_value
 		get_db_value_limit
@@ -706,6 +707,38 @@ sub get_db_rows ($$;@) {
 	return @rows;
 }
 
+########################################################################
+## Get all rows (with a limit clause) returned by an SQL query
+## as a hash reference array.
+########################################################################
+sub get_db_rows_limit ($$$;@) {
+	my ($dbh, $query, $limit, @values) = @_;
+	my @rows;
+	
+	# Cache statements
+	my $sth;
+	if ($RDBMS ne 'oracle') {
+		$sth = $dbh->prepare_cached($query . ' LIMIT ' . $limit);
+	} else {
+		$sth = $dbh->prepare_cached('SELECT * FROM (' . $query . ') WHERE ROWNUM <= ' . $limit);
+	}
+	
+	$sth->execute(@values);
+	
+	# Save returned rows
+	while (my $row = $sth->fetchrow_hashref()) {
+		if ($RDBMS eq 'oracle') {
+			push (@rows, {map { lc ($_) => $row->{$_} } keys (%{$row})});
+		}
+		else {
+			push (@rows, $row);
+		}
+	}
+	
+	$sth->finish();
+	return @rows;
+}
+
 ##########################################################################
 ## SQL insert. Returns the ID of the inserted row.
 ##########################################################################
@@ -819,8 +852,17 @@ sub db_process_update($$$$) {
 		if ($i > 0 && $i <= $#values_array) {
 			$fields = $fields.',';
 		}
-		$fields = $fields .
-			" " . $RDBMS_QUOTE . "$columns_array[$i]" . $RDBMS_QUOTE . " = ?";
+		
+		# Avoid the use of quotes on the column names in oracle, cause the quotes
+		# force the engine to be case sensitive and the column names created without
+		# quotes are stores in uppercase.
+		# The quotes should be introduced manually for every item created with it.
+		if ($RDBMS eq 'oracle') {
+			$fields = $fields . " " . $columns_array[$i] . " = ?";
+		}
+		else {
+			$fields = $fields . " " . $RDBMS_QUOTE . "$columns_array[$i]" . $RDBMS_QUOTE . " = ?";
+		}
 	}
 
 	# WHERE...
@@ -832,8 +874,17 @@ sub db_process_update($$$$) {
 		if ($i > 0 && $i <= $#where_values) {
 			$where = $where.' AND ';
 		}
-		$where = $where .
-			" " . $RDBMS_QUOTE . "$where_columns[$i]" . $RDBMS_QUOTE . " = ?";
+		
+		# Avoid the use of quotes on the column names in oracle, cause the quotes
+		# force the engine to be case sensitive and the column names created without
+		# quotes are stores in uppercase.
+		# The quotes should be introduced manually for every item created with it.
+		if ($RDBMS eq 'oracle') {
+			$where = $where . " " . $where_columns[$i] . " = ?";
+		}
+		else {
+			$where = $where . " " . $RDBMS_QUOTE . "$where_columns[$i]" . $RDBMS_QUOTE . " = ?";
+		}
 	}
 
 	my $res = db_update ($dbh, "UPDATE $table

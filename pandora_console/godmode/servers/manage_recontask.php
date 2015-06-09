@@ -85,14 +85,14 @@ if ((isset ($_GET["update"])) OR ((isset ($_GET["create"])))) {
 	$recon_ports = get_parameter_post ("recon_ports", "");
 	$id_os = get_parameter_post ("id_os", 10);
 	$snmp_community = get_parameter_post ("snmp_community", "public");
-	$id_recon_script = get_parameter ("id_recon_script", 'NULL');
+	$id_recon_script = get_parameter ("id_recon_script", 0);
 	$mode = get_parameter ("mode", "");
 	$field1 = get_parameter ("field1", "");
 	$field2 = get_parameter ("field2", "");
 	$field3 = get_parameter ("field3", "");
 	$field4 = get_parameter ("field4", "");
 	if ($mode == "network_sweep")
-		$id_recon_script = 'NULL';
+		$id_recon_script = 0;
 	else
 		$id_network_profile = 0;
 	
@@ -149,9 +149,9 @@ if (isset($_GET["update"])) {
 	
 	$reason = '';
 	if ($name != "") {
-		if (($id_recon_script == 'NULL') && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
+		if ((empty($id_recon_script)) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
 			$result = db_process_sql_update('trecon_task', $values, $where);
-		elseif ($id_recon_script != 'NULL')
+		elseif (!empty($id_recon_script))
 			$result = db_process_sql_update('trecon_task', $values, $where);
 		else  {
 			if (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
@@ -201,13 +201,13 @@ if (isset($_GET["create"])) {
 	
 	$reason = "";
 	if ($name != "") {
-		if (($id_recon_script == 'NULL') && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
+		if (empty($id_recon_script) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
 		{
 			$result = db_process_sql_insert('trecon_task', $values);
 			
 			$reason = __("Network provided is not correct");
 		}
-		elseif ($id_recon_script != 'NULL') {
+		elseif (!empty($id_recon_script)) {
 			$result = db_process_sql_insert('trecon_task', $values);
 		}
 		else {

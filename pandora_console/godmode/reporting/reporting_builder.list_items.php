@@ -578,6 +578,11 @@ function added_ids_sorted_items_to_hidden_input() {
 function only_numbers(name) {
 	var value = $("input[name='" + name + "']").val();
 	
+	if (value == "") {
+		// Do none it is a empty field.
+		return;
+	}
+	
 	value = parseInt(value);
 	
 	if (isNaN(value)) {

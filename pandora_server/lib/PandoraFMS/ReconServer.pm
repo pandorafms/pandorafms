@@ -287,8 +287,7 @@ sub data_consumer ($$) {
 		# Assign the new address to the agent
 		my $agent_addr_id = get_agent_addr_id ($dbh, $addr_id, $agent_id);
 		if ($agent_addr_id <= 0) {
-			db_do ($dbh, 'INSERT INTO taddress_agent (' . $RDBMS_QUOTE . 'id_a' . $RDBMS_QUOTE . ', ' .
-				$RDBMS_QUOTE . 'id_agent' . $RDBMS_QUOTE . ')
+			db_do ($dbh, 'INSERT INTO taddress_agent (id_a, id_agent)
 				VALUES (?, ?)', $addr_id, $agent_id);
 		}
 		
@@ -395,8 +394,7 @@ sub get_host_parent {
 		# Create the host
 		my $agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $host_name, $host_addr, $group, $parent_id, $id_os, '', 300, $dbh);
 		$agent_id = 0 unless defined ($parent_id);
-		db_do ($dbh, 'INSERT INTO taddress_agent (' . $RDBMS_QUOTE . 'id_a' . $RDBMS_QUOTE . ',' .
-			$RDBMS_QUOTE . 'id_agent' . $RDBMS_QUOTE . ')
+		db_do ($dbh, 'INSERT INTO taddress_agent (id_a, id_agent)
 			VALUES (?, ?)', $addr_id, $agent_id);
 		
 		# Move to the next host

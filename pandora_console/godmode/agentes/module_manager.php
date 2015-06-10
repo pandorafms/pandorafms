@@ -169,10 +169,8 @@ if ($multiple_delete) {
 		// error. NOTICE that we don't delete all data here, just marking for deletion
 		// and delete some simple data.
 		$status = '';
-		$module = db_get_row_sql ('SELECT *
-			FROM tagente_modulo, tagente_estado
-			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-				AND tagente_modulo.id_agente_modulo=' . (int)$id_agent_module_del);
+		$agent_id_of_module = db_get_value('id_agente', 'tagente_modulo', 'id_agente_modulo', (int)$id_agent_module_del);
+		
 		if (db_process_sql("UPDATE tagente_modulo
 			SET nombre = 'pendingdelete', disabled = 1, delete_pending = 1
 			WHERE id_agente_modulo = " . $id_agent_module_del, "affected_rows", '', true, $status, false) === false) {
@@ -180,10 +178,10 @@ if ($multiple_delete) {
 		}
 		else {
 			// Set flag to update module status count
-			if ($module !== false) {
+			if ($agent_id_of_module !== false) {
 				db_process_sql ('UPDATE tagente
 					SET update_module_count = 1, update_alert_count = 1
-					WHERE id_agente = ' . $module['id_agente']);
+					WHERE id_agente = ' . $agent_id_of_module);
 			}
 		}
 		

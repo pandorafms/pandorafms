@@ -1257,10 +1257,10 @@ if ($create_module) {
 // =================
 if ($delete_module) { // DELETE agent module !
 	$id_borrar_modulo = (int) get_parameter_get ("delete_module",0);
-	$module_data = db_get_row_sql ('SELECT *
-		FROM tagente_modulo, tagente_estado
-		WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-			AND tagente_modulo.id_agente_modulo=' . $id_borrar_modulo);
+	$module_data = db_get_row_sql ('SELECT tam.id_agente, tam.nombre
+		FROM tagente_modulo tam, tagente_estado tae
+		WHERE tam.id_agente_modulo = tae.id_agente_modulo
+			AND tam.id_agente_modulo = ' . $id_borrar_modulo);
 	$id_grupo = (int) agents_get_agent_group($id_agente);
 	
 	if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
@@ -1271,7 +1271,7 @@ if ($delete_module) { // DELETE agent module !
 		exit;
 	}
 	
-	if ($id_borrar_modulo < 1) {
+	if (empty($module_data) || $id_borrar_modulo < 1) {
 		db_pandora_audit("HACK Attempt",
 			"Expected variable from form is not correct");
 		require ("general/noaccess.php");

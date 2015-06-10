@@ -1100,10 +1100,10 @@ function agents_get_modules ($id_agent = null, $details = false,
 							array_push ($fields, $field.' = \''.$value.'\'');
 							break;
 						case "oracle":
-							if (is_int ($value) ||is_float ($value)||is_double ($value))
+							if (is_int ($value) || is_float ($value) || is_double ($value))
 								array_push ($fields, $field.' = '.$value.'');
 							else
-								array_push ($fields, $field.' = "'.$value.'"');
+								array_push ($fields, $field.' = \''.$value.'\'');
 							break;
 					}
 				}
@@ -1119,27 +1119,7 @@ function agents_get_modules ($id_agent = null, $details = false,
 		$details = "nombre";
 	}
 	else { 
-		if ($config['dbtype'] == 'oracle') {
-			$details_new = array();
-			if (is_array($details)) {
-				foreach ($details as $detail) {
-					if ($detail == 'nombre')
-						$details_new[] = 'dbms_lob.substr(nombre,4000,1) as nombre';
-					else
-						$details_new[] = $detail;
-				}
-			}
-			else {
-				if ($details == 'nombre')
-					$details_new = 'dbms_lob.substr(nombre,4000,1) as nombre';
-				else
-					$details_new = $details;
-			}
-			
-			$details = io_safe_input ($details);
-		}
-		else
-			$details = io_safe_input ($details);
+		$details = io_safe_input ($details);
 	}
 	
 	//$where .= " AND id_policy_module = 0 ";
@@ -1150,30 +1130,14 @@ function agents_get_modules ($id_agent = null, $details = false,
 	
 	$where .= "\n\n" . $where_tags;
 	
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-			$sql = sprintf ('SELECT %s%s
-				FROM tagente_modulo
-				WHERE
-					%s
-				ORDER BY nombre',
-				($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
-				io_safe_output(implode (",", (array) $details)),
-				$where);
-			break;
-		case "oracle":
-			$sql = sprintf ('SELECT %s%s
-				FROM tagente_modulo
-				WHERE
-					%s
-				ORDER BY dbms_lob.substr(nombre, 4000, 1)',
-				($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
-				io_safe_output(implode (",", (array) $details)),
-				$where);
-			break;
-	}
-	
+	$sql = sprintf ('SELECT %s%s
+					FROM tagente_modulo
+					WHERE
+						%s
+					ORDER BY nombre',
+					($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
+					io_safe_output(implode (",", (array) $details)),
+					$where);
 	
 	$result = db_get_all_rows_sql ($sql);
 	

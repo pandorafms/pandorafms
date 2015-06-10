@@ -77,6 +77,7 @@ else {
 					INNER JOIN tagente t5
 						ON (t4.id_agent = t5.id_agente OR t4.id_agente = t5.id_agente)
 				WHERE t4.id_report = ' . $idReport);
+			
 			break;
 	}
 	
@@ -164,7 +165,7 @@ if (!defined("METACONSOLE"))
 			array("title" => __('Toggle filter(s)'),
 			"id" => 'image_form_filter')) . '</a>';
 
-if (!defined("METACONSOLE")){
+if (!defined("METACONSOLE")) {
 	$table = new stdClass();
 	$table->width = '100%';
 	$table->data[0][0] = __('Agents');
@@ -185,21 +186,25 @@ if (!defined("METACONSOLE")){
 		echo '</form>';
 	echo '</div>';
 }
-else{
+else {
 	$table = null;
 	$table->width = '96%';
 	$table->class = "databox_filters";
 	$table->cellpadding = 0;
 	$table->cellspacing = 0;
 	$table->data[0][0] = __('Agents');
-	$table->data[0][1] = html_print_select($agents, 'agent_filter', $agentFilter, '', __('All'), 0, true);
+	$table->data[0][1] = html_print_select($agents, 'agent_filter',
+		$agentFilter, '', __('All'), 0, true);
 	$table->data[0][2] = __('Modules');
-	$table->data[0][3] = html_print_select($modules, 'module_filter', $moduleFilter, '', __('All'), 0, true);
+	$table->data[0][3] = html_print_select($modules, 'module_filter',
+		$moduleFilter, '', __('All'), 0, true);
 	$table->data[0][4] = __('Type');
-	$table->data[0][5] = html_print_select($types, 'type_filter', $typeFilter, '', __('All'), 0, true);
+	$table->data[0][5] = html_print_select($types, 'type_filter',
+		$typeFilter, '', __('All'), 0, true);
 	$table->style[6] = "text-align:right;";
-	$table->data[0][6] = html_print_submit_button(__('Filter'), 'filter', false, 'class="sub upd"',true) . 
-							html_print_input_hidden('action', 'filter',true);
+	$table->data[0][6] = html_print_submit_button(__('Filter'),
+		'filter', false, 'class="sub upd"',true) . 
+		html_print_input_hidden('action', 'filter',true);
 	
 	$filters = '<form class="filters_form" method="post" action ="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=
 				list_items&action=filter&id_report=' . $idReport . '">';
@@ -226,10 +231,12 @@ if ($moduleFilter != 0) {
 
 // Filter report items created from metaconsole in normal console list and the opposite
 if (defined('METACONSOLE') and $config['metaconsole'] == 1) {
-	$where .= ' AND ((server_name IS NOT NULL AND length(server_name) != 0) OR ' . $type_escaped . ' IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
+	$where .= ' AND ((server_name IS NOT NULL AND length(server_name) != 0) ' .
+		'OR ' . $type_escaped . ' IN (\'general\', \'SLA\', \'exception\', \'availability\', \'top_n\'))';
 }
 else
-	$where .= ' AND ((server_name IS NULL OR length(server_name) = 0) OR ' . $type_escaped . ' IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
+	$where .= ' AND ((server_name IS NULL OR length(server_name) = 0) ' .
+		'OR ' . $type_escaped . ' IN (\'general\', \'SLA\', \'exception\', \'availability\', \'top_n\'))';
 
 switch ($config["dbtype"]) {
 	case "mysql":

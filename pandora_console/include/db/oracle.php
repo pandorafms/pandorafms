@@ -859,6 +859,7 @@ function oracle_recode_query ($sql, $values, $join = 'AND', $return = true) {
 		return $result;
 	}
 	else {
+		
 		$result = oracle_db_process_sql($result);
 		if ($result !== false) {
 			for ($i=0; $i < count($result); $i++) {

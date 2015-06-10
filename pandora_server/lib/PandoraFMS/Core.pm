@@ -647,25 +647,38 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 	
 	# Simple alert
 	if (defined ($alert->{'id_template_module'})) {
+		# Avoid the use of something like "SELECT *, <column that exists in the *>" cause
+		# it will make an error on oracle databases. It's better to filter the wildcards
+		# by table and add (one by one) all the columns of the table which will have columns
+		# that will be modified with an alias or something.
+		
 		if ($alert_mode == RECOVERED_ALERT) {
-			@actions = get_db_rows ($dbh, 'SELECT *, talert_template_module_actions.id AS id_alert_template_module_actions
-						FROM talert_template_module_actions, talert_actions, talert_commands
-						WHERE talert_template_module_actions.id_alert_action = talert_actions.id
-						AND talert_actions.id_alert_command = talert_commands.id
-						AND talert_template_module_actions.id_alert_template_module = ?
-						AND ((fires_min = 0 AND fires_max = 0)
+			# Avoid the use of alias bigger than 30 characters.
+			@actions = get_db_rows ($dbh,
+				'SELECT taa.*, tac.*, tatma.id AS id_alert_templ_module_actions,
+					tatma.id_alert_template_module, tatma.id_alert_action, tatma.fires_min,
+					tatma.fires_max, tatma.module_action_threshold, tatma.last_execution
+				FROM talert_template_module_actions tatma, talert_actions taa, talert_commands tac
+				WHERE tatma.id_alert_action = taa.id
+					AND taa.id_alert_command = tac.id
+					AND tatma.id_alert_template_module = ?
+					AND ((fires_min = 0 AND fires_max = 0)
 						OR ? >= fires_min)',
-						$alert->{'id_template_module'}, $alert->{'times_fired'});	
+				$alert->{'id_template_module'}, $alert->{'times_fired'});	
 		} else {
-			@actions = get_db_rows ($dbh, 'SELECT *, talert_template_module_actions.id AS id_alert_template_module_actions
-						FROM talert_template_module_actions, talert_actions, talert_commands
-						WHERE talert_template_module_actions.id_alert_action = talert_actions.id
-						AND talert_actions.id_alert_command = talert_commands.id
-						AND talert_template_module_actions.id_alert_template_module = ?
-						AND ((fires_min = 0 AND fires_max = 0)
+			# Avoid the use of alias bigger than 30 characters.
+			@actions = get_db_rows ($dbh, 
+				'SELECT taa.*, tac.*, tatma.id AS id_alert_templ_module_actions,
+					tatma.id_alert_template_module, tatma.id_alert_action, tatma.fires_min,
+					tatma.fires_max, tatma.module_action_threshold, tatma.last_execution
+				FROM talert_template_module_actions tatma, talert_actions taa, talert_commands tac
+				WHERE tatma.id_alert_action = taa.id
+					AND taa.id_alert_command = tac.id
+					AND tatma.id_alert_template_module = ?
+					AND ((fires_min = 0 AND fires_max = 0)
 						OR (fires_min <= fires_max AND ? >= fires_min AND ? <= fires_max)
 						OR (fires_min > fires_max AND ? >= fires_min))', 
-						$alert->{'id_template_module'}, $alert->{'times_fired'}, $alert->{'times_fired'}, $alert->{'times_fired'});	
+				$alert->{'id_template_module'}, $alert->{'times_fired'}, $alert->{'times_fired'}, $alert->{'times_fired'});	
 		}
 
 		# Get default action
@@ -1189,9 +1202,9 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	}
 	
 	# Update action last execution date
-	if (defined ($action->{'last_execution'}) && defined ($action->{'id_alert_template_module_actions'})) {
+	if (defined ($action->{'last_execution'}) && defined ($action->{'id_alert_templ_module_actions'})) {
 		db_do ($dbh, 'UPDATE talert_template_module_actions SET last_execution = ?
- WHERE id = ?', time (), $action->{'id_alert_template_module_actions'});
+ 			WHERE id = ?', time (), $action->{'id_alert_templ_module_actions'});
 	}
 }
 

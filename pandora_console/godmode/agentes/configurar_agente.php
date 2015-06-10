@@ -598,12 +598,23 @@ if (isset( $_GET["fix_module"])) {
 	$media = reporting_get_agentmodule_data_average ($id_module, 30758400); //Get average over the year
 	$media *= 1.3;
 	$error = "";
+	$result = true;
+	
 	//If the value of media is 0 or something went wrong, don't delete
 	if (!empty ($media)) {
 		$where = array(
 			'datos' => '>' . $media,
 			'id_agente_modulo' => $id_module);
-		db_process_sql_delete('tagente_datos', $where);
+		$res = db_process_sql_delete('tagente_datos', $where);
+		
+		if ($res === false) {
+			$result = false;
+			$error = modules_get_agentmodule_name($id_module);
+		}
+		else if ($res <= 0) {
+			$result = false;
+			$error = " - " . __('No data to normalize');
+		}
 	}
 	else {
 		$result = false;
@@ -611,7 +622,7 @@ if (isset( $_GET["fix_module"])) {
 	}
 	
 	ui_print_result_message ($result,
-		__('Deleted data above %d', $media),
+		__('Deleted data above %f', $media),
 		__('Error normalizing module %s', $error));
 }
 

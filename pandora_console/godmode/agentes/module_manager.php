@@ -204,7 +204,7 @@ if ($multiple_delete) {
 				if ($result === false)
 					$error++;
 				$result = db_process_delete_temp('tagente_datos_inc',
-					'id_agente_modulo', $id_agent_module_del);		
+					'id_agente_modulo', $id_agent_module_del);
 				if ($result === false)
 					$error++;
 				break;

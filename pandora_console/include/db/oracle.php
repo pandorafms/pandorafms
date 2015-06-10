@@ -654,16 +654,28 @@ function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefi
 		else {
 			if ($value[0] == ">") {
 				$value = substr($value,1,strlen($value)-1);
-				$query .= sprintf ("%s > '%s'", $field, $value);
+				
+				if (is_nan($value))
+					$query .= sprintf ("%s > '%s'", $field, $value);
+				else
+					$query .= sprintf ("%s > %s", $field, $value);
 			}
 			else if ($value[0] == "<") {
 				if ($value[1] == ">") {
 					$value = substr($value,2,strlen($value)-2);
-					$query .= sprintf ("%s <> '%s'", $field, $value);
+					
+					if (is_nan($value))
+						$query .= sprintf ("%s <> '%s'", $field, $value);
+					else
+						$query .= sprintf ("%s <> %s", $field, $value);
 				}
 				else {
 					$value = substr($value,1,strlen($value)-1);
-					$query .= sprintf ("%s < '%s'", $field, $value);
+					
+					if (is_nan($value))
+						$query .= sprintf ("%s < '%s'", $field, $value);
+					else
+						$query .= sprintf ("%s < %s", $field, $value);
 				}
 			}
 			else if ($value[0] == '%') {

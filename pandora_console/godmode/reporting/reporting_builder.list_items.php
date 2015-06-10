@@ -105,6 +105,8 @@ else {
 		$modules[$row['id_agent_module']] = $row['nombre'];
 	}
 	
+	
+	
 	// Filter report items created from metaconsole in normal console list and the opposite
 	if (defined('METACONSOLE') and $config['metaconsole'] == 1) {
 		$where_types = ' AND ((server_name IS NOT NULL AND length(server_name) != 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
@@ -128,6 +130,8 @@ else {
 			$types[$row['type']] = get_report_name($row['type']);
 	}
 }
+
+
 
 $agentFilter = get_parameter('agent_filter', 0);
 $moduleFilter = get_parameter('module_filter', 0);

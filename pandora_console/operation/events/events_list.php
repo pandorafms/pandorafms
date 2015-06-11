@@ -1184,8 +1184,6 @@ $(document).ready( function() {
 				data: params.join ("&"),
 				type: 'POST',
 				url: action="<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-				async: false,
-				timeout: 10000,
 				success: function (data) {
 					$("#toggle_arrow").attr('src', data);
 				}
@@ -1201,8 +1199,6 @@ $(document).ready( function() {
 				data: params.join ("&"),
 				type: 'POST',
 				url: action="<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-				async: false,
-				timeout: 10000,
 				success: function (data) {
 					$("#toggle_arrow").attr('src', data);
 				}

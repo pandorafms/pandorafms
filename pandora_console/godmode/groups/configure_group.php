@@ -214,8 +214,6 @@ function icon_changed () {
 				data: params.join ("&"),
 				type: 'POST',
 				url: action="<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-				async: false,
-				timeout: 10000,
 				success: function (result) {
 					$('#icon_preview').append ($('<img />').attr ('src', result));
 				}
@@ -234,7 +232,6 @@ function parent_changed () {
 		data: inputs.join ("&"),
 		type: 'GET',
 		url: action="<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-		timeout: 10000,
 		dataType: 'json',
 		success: function (data) {
 			var data_ = data;
@@ -253,8 +250,6 @@ function parent_changed () {
 						data: params.join ("&"),
 						type: 'POST',
 						url: action="<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-						async: false,
-						timeout: 10000,
 						success: function (result) {
 							$('#parent_preview').append ($('<img />').attr ('src', result));
 						}

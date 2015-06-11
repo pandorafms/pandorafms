@@ -159,7 +159,6 @@ function show_response_dialog(event_id, response_id, response) {
 		data: params.join ("&"),
 		type: 'POST',
 		url: action=ajax_file,
-		timeout: 10000,
 		dataType: 'html',
 		success: function (data) {
 			$("#event_response_window").hide ()

@@ -169,9 +169,7 @@ ui_toggle($html_toggle,
 			data: parameters,
 			type: 'POST',
 			url: "ajax.php",
-			timeout: 10000,
 			dataType: 'html',
-			async: false,
 			success: function (data) {
 				$("#module_list_loading").hide();
 				
@@ -205,9 +203,7 @@ ui_toggle($html_toggle,
 			data: parameters,
 			type: 'POST',
 			url: "ajax.php",
-			timeout: 10000,
 			dataType: 'html',
-			async: false,
 			success: function (data) {
 				$("#module_list_loading").hide();
 				
@@ -244,9 +240,7 @@ ui_toggle($html_toggle,
 			data: parameters,
 			type: 'POST',
 			url: "ajax.php",
-			timeout: 10000,
 			dataType: 'html',
-			async: false,
 			success: function (data) {
 				$("#module_list_loading").hide();
 				
@@ -288,9 +282,7 @@ ui_toggle($html_toggle,
 			data: parameters,
 			type: 'POST',
 			url: "ajax.php",
-			timeout: 10000,
 			dataType: 'html',
-			async: false,
 			success: function (data) {
 				$("#module_list_loading").hide();
 				

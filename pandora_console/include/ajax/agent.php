@@ -15,9 +15,13 @@
 // GNU General Public License for more details.
 
 global $config;
-require_once ('include/functions_agents.php');
-include_once ('include/functions_reporting.php');
+
+require_once ($config['homedir'] . '/include/functions_agents.php');
+include_once ($config['homedir'] . '/include/functions_reporting.php');
 enterprise_include_once ('include/functions_metaconsole.php');
+
+// Clean the possible blanks introduced by the included files
+ob_clean();
 
 // Get list of agent + ip
 // Params:
@@ -30,9 +34,10 @@ $get_agents_group = (bool) get_parameter('get_agents_group', false);
 $force_local = (bool) get_parameter('force_local', false);
 
 if ($get_agents_group) {
-	$id_group = (int)get_parameter('id_group', -1);
-	$mode = (string)get_parameter('mode', 'json');
-	$id_server = (int)get_parameter('id_server', 0);
+	
+	$id_group = (int) get_parameter('id_group', -1);
+	$mode = (string) get_parameter('mode', 'json');
+	$id_server = (int) get_parameter('id_server', 0);
 	
 	$return = array();
 	if ($id_group != -1) {
@@ -54,10 +59,9 @@ if ($get_agents_group) {
 }
 
 if ($search_agents && ((!defined('METACONSOLE')) || $force_local)) {
-	require_once ('include/functions_agents.php');
 	
-	$id_agent = (int) get_parameter ('id_agent');
-	$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
+	$id_agent = (int) get_parameter('id_agent');
+	$string = (string) get_parameter('q'); /* q is what autocomplete plugin gives */
 	$id_group = (int) get_parameter('id_group', -1);
 	$addedItems = html_entity_decode((string) get_parameter('add'));
 	$addedItems = json_decode($addedItems);
@@ -159,7 +163,6 @@ if ($search_agents && ((!defined('METACONSOLE')) || $force_local)) {
 	}
 	
 	echo json_encode($data);
-	
 	return;
 }
 elseif ($search_agents && ($config['metaconsole'] == 1) && defined('METACONSOLE')) {
@@ -288,4 +291,7 @@ elseif ($search_agents && ($config['metaconsole'] == 1) && defined('METACONSOLE'
 	echo json_encode($data);
 	return;
 }
+
+return;
+
 ?>

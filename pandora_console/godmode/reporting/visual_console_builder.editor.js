@@ -2780,7 +2780,7 @@ function showPreviewStaticGraph(staticGraph) {
 			dataType: 'json',
 			timeout: 10000,
 			error: function (xhr, textStatus, errorThrown) {
-				$("#preview").empty();console.log(errorThrown);
+				$("#preview").empty();
 			},
 			success: function (data) {
 				$("#preview").empty();

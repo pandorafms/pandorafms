@@ -66,33 +66,33 @@ define ('EVENT_STATUS_INPROCESS',	2);
 define ('EVENT_STATUS_VALIDATED',	1);
 
 /* Seconds in a time unit constants */
-define('SECONDS_1MINUTE',			60);
-define('SECONDS_2MINUTES',			120);
-define('SECONDS_5MINUTES',			300);
-define('SECONDS_10MINUTES',			600);
-define('SECONDS_15MINUTES',			900);
-define('SECONDS_30MINUTES',			1800);
-define('SECONDS_1HOUR',				3600);
-define('SECONDS_2HOUR',				7200);
-define('SECONDS_3HOUR',				10800);
-define('SECONDS_5HOUR',				18000);
-define('SECONDS_6HOURS',			21600);
-define('SECONDS_12HOURS',			43200);
-define('SECONDS_1DAY',				86400);
-define('SECONDS_2DAY',				172800);
-define('SECONDS_4DAY',				345600);
-define('SECONDS_5DAY',				432000);
-define('SECONDS_1WEEK',				604800);
-define('SECONDS_10DAY',				864000);
-define('SECONDS_2WEEK',				1209600);
-define('SECONDS_15DAYS',			1296000);
-define('SECONDS_1MONTH',			2592000);
-define('SECONDS_2MONTHS',			5184000);
-define('SECONDS_3MONTHS',			7776000);
-define('SECONDS_6MONTHS',			15552000);
-define('SECONDS_1YEAR',				31104000);
-define('SECONDS_2YEARS',			62208000);
-define('SECONDS_3YEARS',			93312000);
+define('SECONDS_1MINUTE',	60);
+define('SECONDS_2MINUTES',	120);
+define('SECONDS_5MINUTES',	300);
+define('SECONDS_10MINUTES',	600);
+define('SECONDS_15MINUTES',	900);
+define('SECONDS_30MINUTES',	1800);
+define('SECONDS_1HOUR',		3600);
+define('SECONDS_2HOUR',		7200);
+define('SECONDS_3HOUR',		10800);
+define('SECONDS_5HOUR',		18000);
+define('SECONDS_6HOURS',	21600);
+define('SECONDS_12HOURS',	43200);
+define('SECONDS_1DAY',		86400);
+define('SECONDS_2DAY',		172800);
+define('SECONDS_4DAY',		345600);
+define('SECONDS_5DAY',		432000);
+define('SECONDS_1WEEK',		604800);
+define('SECONDS_10DAY',		864000);
+define('SECONDS_2WEEK',		1209600);
+define('SECONDS_15DAYS',	1296000);
+define('SECONDS_1MONTH',	2592000);
+define('SECONDS_2MONTHS',	5184000);
+define('SECONDS_3MONTHS',	7776000);
+define('SECONDS_6MONTHS',	15552000);
+define('SECONDS_1YEAR',		31104000);
+define('SECONDS_2YEARS',	62208000);
+define('SECONDS_3YEARS',	93312000);
 
 
 
@@ -205,7 +205,7 @@ define('PROCESS_VALUE_AVG',		3);
 //Status
 define('VISUAL_MAP_STATUS_CRITICAL_BAD',	1);
 define('VISUAL_MAP_STATUS_CRITICAL_ALERT',	4);
-define('VISUAL_MAP_STATUS_NORMAL', 			0);
+define('VISUAL_MAP_STATUS_NORMAL',			0);
 define('VISUAL_MAP_STATUS_WARNING',			2);
 define('VISUAL_MAP_STATUS_UNKNOWN',			3);
 define('VISUAL_MAP_STATUS_WARNING_ALERT',	10);
@@ -263,169 +263,174 @@ define ('STATUS_SERVER_DOWN',		'server_down.png');
 
 /* Status images (ball) */
 //For modules
-define ('STATUS_MODULE_OK_BALL', 'module_ok_ball.png');
-define ('STATUS_MODULE_CRITICAL_BALL', 'module_critical_ball.png');
-define ('STATUS_MODULE_WARNING_BALL', 'module_warning_ball.png');
-define ('STATUS_MODULE_NO_DATA_BALL', 'module_no_data_ball.png');
-define ('STATUS_MODULE_UNKNOWN_BALL', 'module_unknown_ball.png');
+define ('STATUS_MODULE_OK_BALL',			'module_ok_ball.png');
+define ('STATUS_MODULE_CRITICAL_BALL',		'module_critical_ball.png');
+define ('STATUS_MODULE_WARNING_BALL',		'module_warning_ball.png');
+define ('STATUS_MODULE_NO_DATA_BALL',		'module_no_data_ball.png');
+define ('STATUS_MODULE_UNKNOWN_BALL',		'module_unknown_ball.png');
 //For agents
-define ('STATUS_AGENT_CRITICAL_BALL', 'agent_critical_ball.png');
-define ('STATUS_AGENT_WARNING_BALL', 'agent_warning_ball.png');
-define ('STATUS_AGENT_DOWN_BALL', 'agent_down_ball.png');
-define ('STATUS_AGENT_UNKNOWN_BALL', 'agent_unknown_ball.png');
-define ('STATUS_AGENT_OK_BALL', 'agent_ok_ball.png');
-define ('STATUS_AGENT_NO_DATA_BALL', 'agent_no_data_ball.png');
-define ('STATUS_AGENT_NO_MONITORS_BALL', 'agent_no_monitors_ball.png');
-define ('STATUS_AGENT_NOT_INIT_BALL', 'agent_notinit_ball.png');
+define ('STATUS_AGENT_CRITICAL_BALL',		'agent_critical_ball.png');
+define ('STATUS_AGENT_WARNING_BALL',		'agent_warning_ball.png');
+define ('STATUS_AGENT_DOWN_BALL',			'agent_down_ball.png');
+define ('STATUS_AGENT_UNKNOWN_BALL',		'agent_unknown_ball.png');
+define ('STATUS_AGENT_OK_BALL',				'agent_ok_ball.png');
+define ('STATUS_AGENT_NO_DATA_BALL',		'agent_no_data_ball.png');
+define ('STATUS_AGENT_NO_MONITORS_BALL',	'agent_no_monitors_ball.png');
+define ('STATUS_AGENT_NOT_INIT_BALL',		'agent_notinit_ball.png');
 //For alerts
-define ('STATUS_ALERT_FIRED_BALL', 'alert_fired_ball.png');
-define ('STATUS_ALERT_NOT_FIRED_BALL', 'alert_not_fired_ball.png');
-define ('STATUS_ALERT_DISABLED_BALL', 'alert_disabled_ball.png');
+define ('STATUS_ALERT_FIRED_BALL',			'alert_fired_ball.png');
+define ('STATUS_ALERT_NOT_FIRED_BALL',		'alert_not_fired_ball.png');
+define ('STATUS_ALERT_DISABLED_BALL',		'alert_disabled_ball.png');
 //For servers
-define ('STATUS_SERVER_OK_BALL', 'server_ok_ball.png');
-define ('STATUS_SERVER_DOWN_BALL', 'server_down_ball.png');
+define ('STATUS_SERVER_OK_BALL',			'server_ok_ball.png');
+define ('STATUS_SERVER_DOWN_BALL',			'server_down_ball.png');
 
 
 
 /* Events criticity */
-define ('EVENT_CRIT_MAINTENANCE', 0);
-define ('EVENT_CRIT_INFORMATIONAL', 1);
-define ('EVENT_CRIT_NORMAL', 2);
-define ('EVENT_CRIT_MINOR', 5);
-define ('EVENT_CRIT_WARNING', 3);
-define ('EVENT_CRIT_MAJOR', 6);
-define ('EVENT_CRIT_CRITICAL', 4);
-define ('EVENT_CRIT_WARNING_OR_CRITICAL', 34);
-define ('EVENT_CRIT_NOT_NORMAL', 20);
+define ('EVENT_CRIT_MAINTENANCE',			0);
+define ('EVENT_CRIT_INFORMATIONAL',			1);
+define ('EVENT_CRIT_NORMAL',				2);
+define ('EVENT_CRIT_MINOR',					5);
+define ('EVENT_CRIT_WARNING',				3);
+define ('EVENT_CRIT_MAJOR',					6);
+define ('EVENT_CRIT_CRITICAL',				4);
+define ('EVENT_CRIT_WARNING_OR_CRITICAL',	34);
+define ('EVENT_CRIT_NOT_NORMAL',			20);
 
 /* Id Module (more use in component)*/
-define ('MODULE_DATA', 1);
-define ('MODULE_NETWORK', 2);
-define ('MODULE_SNMP', 2);
-define ('MODULE_PLUGIN', 4);
-define ('MODULE_PREDICTION', 5);
-define ('MODULE_WMI', 6);
-define ('MODULE_WEB', 7);
+define ('MODULE_DATA',			1);
+define ('MODULE_NETWORK',		2);
+define ('MODULE_SNMP',			2);
+define ('MODULE_PLUGIN',		4);
+define ('MODULE_PREDICTION',	5);
+define ('MODULE_WMI',			6);
+define ('MODULE_WEB',			7);
 
 /* Type of Modules of Prediction */
-define ('MODULE_PREDICTION_SERVICE', 2);
-define ('MODULE_PREDICTION_SYNTHETIC', 3);
-define ('MODULE_PREDICTION_NETFLOW', 4);
+define ('MODULE_PREDICTION_SERVICE',	2);
+define ('MODULE_PREDICTION_SYNTHETIC',	3);
+define ('MODULE_PREDICTION_NETFLOW',	4);
 
 /* SNMP CONSTANTS */
-define('SNMP_DIR_MIBS', "attachment/mibs");
-define('SNMP_TRAP_TYPE_NONE', -1);
-define('SNMP_TRAP_TYPE_COLD_START',	0);
-define('SNMP_TRAP_TYPE_WARM_START', 1);
-define('SNMP_TRAP_TYPE_LINK_DOWN',  2);
-define('SNMP_TRAP_TYPE_LINK_UP', 3);
-define('SNMP_TRAP_TYPE_AUTHENTICATION_FAILURE', 4);
-define('SNMP_TRAP_TYPE_OTHER', 5);
+define('SNMP_DIR_MIBS',		"attachment/mibs");
+
+define('SNMP_TRAP_TYPE_NONE',					-1);
+define('SNMP_TRAP_TYPE_COLD_START',				0);
+define('SNMP_TRAP_TYPE_WARM_START',				1);
+define('SNMP_TRAP_TYPE_LINK_DOWN',				2);
+define('SNMP_TRAP_TYPE_LINK_UP',				3);
+define('SNMP_TRAP_TYPE_AUTHENTICATION_FAILURE',	4);
+define('SNMP_TRAP_TYPE_OTHER',					5);
 
 /* PASSWORD POLICIES */
-define('PASSSWORD_POLICIES_OK', 0);
-define('PASSSWORD_POLICIES_FIRST_CHANGE', 1);
-define('PASSSWORD_POLICIES_EXPIRED', 2);
+define('PASSSWORD_POLICIES_OK',				0);
+define('PASSSWORD_POLICIES_FIRST_CHANGE',	1);
+define('PASSSWORD_POLICIES_EXPIRED',		2);
 
 /* SERVER TYPES */
-define('SERVER_TYPE_DATA', 0);
-define('SERVER_TYPE_NETWORK', 1);
-define('SERVER_TYPE_SNMP', 2);
-define('SERVER_TYPE_RECON', 3);
-define('SERVER_TYPE_PLUGIN', 4);
-define('SERVER_TYPE_PREDICTION', 5);
-define('SERVER_TYPE_WMI', 6);
-define('SERVER_TYPE_EXPORT', 7);
-define('SERVER_TYPE_INVENTORY', 8);
-define('SERVER_TYPE_WEB', 9);
-define('SERVER_TYPE_EVENT', 10);
-define('SERVER_TYPE_ENTERPRISE_ICMP', 11);
-define('SERVER_TYPE_ENTERPRISE_SNMP', 12);
+define('SERVER_TYPE_DATA',				0);
+define('SERVER_TYPE_NETWORK',			1);
+define('SERVER_TYPE_SNMP',				2);
+define('SERVER_TYPE_RECON',				3);
+define('SERVER_TYPE_PLUGIN',			4);
+define('SERVER_TYPE_PREDICTION',		5);
+define('SERVER_TYPE_WMI',				6);
+define('SERVER_TYPE_EXPORT',			7);
+define('SERVER_TYPE_INVENTORY',			8);
+define('SERVER_TYPE_WEB',				9);
+define('SERVER_TYPE_EVENT',				10);
+define('SERVER_TYPE_ENTERPRISE_ICMP',	11);
+define('SERVER_TYPE_ENTERPRISE_SNMP',	12);
 
 /* REPORTS */
-define('REPORT_TOP_N_MAX', 1);
-define('REPORT_TOP_N_MIN', 2);
-define('REPORT_TOP_N_AVG', 0);
+define('REPORT_TOP_N_MAX',	1);
+define('REPORT_TOP_N_MIN',	2);
+define('REPORT_TOP_N_AVG',	0);
 
-define('REPORT_TOP_N_ONLY_GRAPHS', 2);
-define('REPORT_TOP_N_SHOW_TABLE_GRAPS', 1);
-define('REPORT_TOP_N_ONLY_TABLE', 0);
+define('REPORT_TOP_N_ONLY_GRAPHS',		2);
+define('REPORT_TOP_N_SHOW_TABLE_GRAPS',	1);
+define('REPORT_TOP_N_ONLY_TABLE',		0);
 
-define('REPORT_EXCEPTION_CONDITION_EVERYTHING', 0);
-define('REPORT_EXCEPTION_CONDITION_GE', 1);
-define('REPORT_EXCEPTION_CONDITION_LE', 5);
-define('REPORT_EXCEPTION_CONDITION_L', 2);
-define('REPORT_EXCEPTION_CONDITION_G', 6);
-define('REPORT_EXCEPTION_CONDITION_E', 7);
-define('REPORT_EXCEPTION_CONDITION_NE', 8);
-define('REPORT_EXCEPTION_CONDITION_OK', 3);
-define('REPORT_EXCEPTION_CONDITION_NOT_OK', 4);
+define('REPORT_EXCEPTION_CONDITION_EVERYTHING',	0);
+define('REPORT_EXCEPTION_CONDITION_GE',			1);
+define('REPORT_EXCEPTION_CONDITION_LE',			5);
+define('REPORT_EXCEPTION_CONDITION_L',			2);
+define('REPORT_EXCEPTION_CONDITION_G',			6);
+define('REPORT_EXCEPTION_CONDITION_E',			7);
+define('REPORT_EXCEPTION_CONDITION_NE',			8);
+define('REPORT_EXCEPTION_CONDITION_OK',			3);
+define('REPORT_EXCEPTION_CONDITION_NOT_OK',		4);
 
-define('REPORT_ITEM_ORDER_BY_AGENT_NAME', 3);
-define('REPORT_ITEM_ORDER_BY_ASCENDING', 2);
-define('REPORT_ITEM_ORDER_BY_DESCENDING', 1);
-define('REPORT_ITEM_ORDER_BY_UNSORT', 0);
+define('REPORT_ITEM_ORDER_BY_AGENT_NAME',	3);
+define('REPORT_ITEM_ORDER_BY_ASCENDING',	2);
+define('REPORT_ITEM_ORDER_BY_DESCENDING',	1);
+define('REPORT_ITEM_ORDER_BY_UNSORT',		0);
 
-define('REPORT_OLD_TYPE_SIMPLE_GRAPH', 1);
-define('REPORT_OLD_TYPE_CUSTOM_GRAPH', 2);
-define('REPORT_OLD_TYPE_SLA', 3);
-define('REPORT_OLD_TYPE_MONITOR_REPORT', 6);
-define('REPORT_OLD_TYPE_AVG_VALUE', 7);
-define('REPORT_OLD_TYPE_MAX_VALUE', 8);
-define('REPORT_OLD_TYPE_MIN_VALUE', 9);
-define('REPORT_OLD_TYPE_SUMATORY', 10);
+define('REPORT_OLD_TYPE_SIMPLE_GRAPH',		1);
+define('REPORT_OLD_TYPE_CUSTOM_GRAPH',		2);
+define('REPORT_OLD_TYPE_SLA',				3);
+define('REPORT_OLD_TYPE_MONITOR_REPORT',	6);
+define('REPORT_OLD_TYPE_AVG_VALUE',			7);
+define('REPORT_OLD_TYPE_MAX_VALUE',			8);
+define('REPORT_OLD_TYPE_MIN_VALUE',			9);
+define('REPORT_OLD_TYPE_SUMATORY',			10);
 
-define('REPORT_GENERAL_NOT_GROUP_BY_AGENT', 0);
-define('REPORT_GENERAL_GROUP_BY_AGENT', 1);
+define('REPORT_GENERAL_NOT_GROUP_BY_AGENT',	0);
+define('REPORT_GENERAL_GROUP_BY_AGENT',		1);
 
-define('REPORTING_CUSTOM_GRAPH_LEGEND_EACH_MODULE_VERTICAL_SIZE', 15);
+define('REPORTING_CUSTOM_GRAPH_LEGEND_EACH_MODULE_VERTICAL_SIZE',	15);
 
 /* POLICIES */
 
-define("POLICY_UPDATED", 0);
-define("POLICY_PENDING_DATABASE", 1);
-define("POLICY_PENDING_ALL", 2);
+define("POLICY_UPDATED",			0);
+define("POLICY_PENDING_DATABASE",	1);
+define("POLICY_PENDING_ALL",		2);
 
-define("STATUS_IN_QUEUE_OUT", 0);
-define("STATUS_IN_QUEUE_IN", 1);
-define("STATUS_IN_QUEUE_APPLYING", 2);
+define("STATUS_IN_QUEUE_OUT",		0);
+define("STATUS_IN_QUEUE_IN",		1);
+define("STATUS_IN_QUEUE_APPLYING",	2);
 
-define("MODULE_UNLINKED", 0);
-define("MODULE_LINKED", 1);
-define("MODULE_PENDING_UNLINK", 10);
-define("MODULE_PENDING_LINK", 11);
+define("MODULE_UNLINKED",		0);
+define("MODULE_LINKED",			1);
+define("MODULE_PENDING_UNLINK",	10);
+define("MODULE_PENDING_LINK",	11);
 
 /* EVENTS */
-define("EVENTS_GOING_UNKNOWN" , 'going_unknown');
-define("EVENTS_UNKNOWN", 'unknown');
-define("EVENTS_ALERT_FIRED", 'alert_fired');
-define("EVENTS_ALERT_RECOVERED", 'alert_recovered');
-define("EVENTS_ALERT_CEASED", 'alert_ceased');
-define("EVENTS_ALERT_MANUAL_VALIDATION", 'alert_manual_validation');
-define("EVENTS_RECON_HOST_DETECTED", 'recon_host_detected');
-define("EVENTS_SYSTEM", 'system');
-define("EVENTS_ERROR", 'error');
-define("EVENTS_NEW_AGENT", 'new_agent');
-define("EVENTS_GOING_UP_WARNING", 'going_up_warning');
-define("EVENTS_GOING_UP_CRITICAL", 'going_up_critical');
-define("EVENTS_GOING_DOWN_WARNING", 'going_down_warning');
-define("EVENTS_GOING_DOWN_NORMAL", 'going_down_normal');
-define("EVENTS_GOING_DOWN_CRITICAL", 'going_down_critical');
-define("EVENTS_GOING_UP_NORMAL", 'going_up_normal');
-define("EVENTS_CONFIGURATION_CHANGE", 'configuration_change');
+define("EVENTS_GOING_UNKNOWN" ,				'going_unknown');
+define("EVENTS_UNKNOWN",					'unknown');
+define("EVENTS_ALERT_FIRED",				'alert_fired');
+define("EVENTS_ALERT_RECOVERED",			'alert_recovered');
+define("EVENTS_ALERT_CEASED",				'alert_ceased');
+define("EVENTS_ALERT_MANUAL_VALIDATION",	'alert_manual_validation');
+define("EVENTS_RECON_HOST_DETECTED",		'recon_host_detected');
+define("EVENTS_SYSTEM",						'system');
+define("EVENTS_ERROR",						'error');
+define("EVENTS_NEW_AGENT",					'new_agent');
+define("EVENTS_GOING_UP_WARNING",			'going_up_warning');
+define("EVENTS_GOING_UP_CRITICAL",			'going_up_critical');
+define("EVENTS_GOING_DOWN_WARNING",			'going_down_warning');
+define("EVENTS_GOING_DOWN_NORMAL",			'going_down_normal');
+define("EVENTS_GOING_DOWN_CRITICAL",		'going_down_critical');
+define("EVENTS_GOING_UP_NORMAL",			'going_up_normal');
+define("EVENTS_CONFIGURATION_CHANGE",		'configuration_change');
 
 /* CUSTOM GRAPHS */
-define("CUSTOM_GRAPH_AREA", 0);
-define("CUSTOM_GRAPH_STACKED_AREA", 1);
-define("CUSTOM_GRAPH_LINE", 2);
-define("CUSTOM_GRAPH_STACKED_LINE", 3);
+define("CUSTOM_GRAPH_AREA",			0);
+define("CUSTOM_GRAPH_STACKED_AREA",	1);
+define("CUSTOM_GRAPH_LINE",			2);
+define("CUSTOM_GRAPH_STACKED_LINE",	3);
 
 /* COLLECTIONS */
-define("COLLECTION_PENDING_APPLY", 0);
-define("COLLECTION_CORRECT", 1);
-define("COLLECTION_ERROR_LOST_DIRECTORY", 2);
-define("COLLECTION_UNSAVED", 3);
+define("COLLECTION_PENDING_APPLY",			0);
+define("COLLECTION_CORRECT",				1);
+define("COLLECTION_ERROR_LOST_DIRECTORY",	2);
+define("COLLECTION_UNSAVED",				3);
 
 /* PAGINATION */
-define("PAGINATION_BLOCKS_LIMIT", 15);
+define("PAGINATION_BLOCKS_LIMIT",	15);
+
+/* CHARTS */
+define("CHART_DEFAULT_WIDTH",	150);
+define("CHART_DEFAULT_HEIGHT",	110);
 ?>

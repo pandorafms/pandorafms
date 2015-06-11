@@ -2778,7 +2778,6 @@ function showPreviewStaticGraph(staticGraph) {
 			url: url_ajax,
 			data: parameter,
 			dataType: 'json',
-			timeout: 10000,
 			error: function (xhr, textStatus, errorThrown) {
 				$("#preview").empty();
 			},
@@ -2821,7 +2820,6 @@ function showPreviewIcon(icon) {
 			data: params.join ("&"),
 			type: 'POST',
 			url: url_ajax,
-			timeout: 10000,
 			error: function (xhr, textStatus, errorThrown) {
 				$("#preview").empty();
 			},

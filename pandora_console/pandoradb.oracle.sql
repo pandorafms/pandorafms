@@ -765,7 +765,7 @@ CREATE OR REPLACE TRIGGER tmodule_relationship_inc BEFORE INSERT ON tmodule_rela
 -- ----------------------------------------------------------------------
 CREATE TABLE tnetwork_component (
 	id_nc NUMBER(10, 0) PRIMARY KEY,
-	name CLOB,
+	name VARCHAR2(4000) DEFAULT '',
 	description VARCHAR2(300) DEFAULT NULL,
 	id_group NUMBER(10, 0) DEFAULT 1,
 	type NUMBER(10, 0) DEFAULT 6,

@@ -317,6 +317,15 @@ $table->data[$row][1] .= __('No') . '&nbsp;' .
 	html_print_radio_button ('short_module_graph_data', 0, '',
 		$config["short_module_graph_data"], true);
 $row++;
+
+$table->data[$row][0] = __('Type of module charts');
+$table->data[$row][1] = __('Area').'&nbsp;' .
+	html_print_radio_button ('type_module_charts', 'area', '',
+		$config["type_module_charts"] == 'area', true).'&nbsp;&nbsp;';
+$table->data[$row][1] .= __('Line').'&nbsp;' .
+	html_print_radio_button ('type_module_charts', 'line', '',
+		$config["type_module_charts"] != 'area', true);
+$row++;
 //----------------------------------------------------------------------
 
 
@@ -326,6 +335,24 @@ $row++;
 $table->colspan[$row][0] = 2;
 $table->data[$row][0] = __('Other configuration') . '<hr>';
 $row++;
+
+if (empty($config["vc_line_thickness"])) $config["vc_line_thickness"] = 2;
+$table->data[$row][0] = __('Default line thickness for the Visual Console') . ui_print_help_tip(__('This interval will affect to the lines between elements on the Visual Console'), true);
+$table->data[$row][1] = html_print_input_text ('vc_line_thickness', $config["vc_line_thickness"], '', 5, 5, true);
+$row++;
+
+// For 5.1 Autohidden menu feature
+$table->data['autohidden'][0] = __('Autohidden menu');
+$table->data['autohidden'][1] = html_print_checkbox('autohidden_menu',
+	1, $config['autohidden_menu'], true);
+
+// Juanma (07/05/2014) New feature: Table for custom front page for reports  
+$table->data[$row][0] = __('Custom report front page') .
+	ui_print_help_tip(
+		__('Custom report front page. It will be applied to all reports and templates by default.'), true);
+$table->data[$row][1] = html_print_checkbox('custom_report_front', 1,
+	$config['custom_report_front'], true);
+$row++;
 //----------------------------------------------------------------------
 
 
@@ -337,10 +364,6 @@ $row++;
 
 
 
-if (empty($config["vc_line_thickness"])) $config["vc_line_thickness"] = 2;
-$table->data[$row][0] = __('Default line thickness for the Visual Console') . ui_print_help_tip(__('This interval will affect to the lines between elements on the Visual Console'), true);
-$table->data[$row][1] = html_print_input_text ('vc_line_thickness', $config["vc_line_thickness"], '', 5, 5, true);
-$row++;
 
 
 
@@ -349,23 +372,12 @@ $row++;
 
 
 
-// For 5.1 Autohidden menu feature
 
-$table->data['autohidden'][0] = __('Autohidden menu');
-$table->data['autohidden'][1] = html_print_checkbox('autohidden_menu',
-	1, $config['autohidden_menu'], true);
 
-// Juanma (07/05/2014) New feature: Table for custom front page for reports  
 
-$table->data[$row][0] = __('Custom report front page') .
-	ui_print_help_tip(__('Custom report front page. It will be applied to all reports and templates by default.'), true);
-$table->data[$row][1] = html_print_checkbox('custom_report_front', 1,
-	$config['custom_report_front'], true);
 
-$row++;
 
 $dirItems = scandir($config['homedir'] . '/images/custom_logo');
-
 foreach ($dirItems as $entryDir) {
 	if (strstr($entryDir, '.jpg') !== false) {
 		$customLogos['images/custom_logo/' . $entryDir] = $entryDir;

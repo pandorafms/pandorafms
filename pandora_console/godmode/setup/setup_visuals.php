@@ -288,8 +288,8 @@ $table->data[$row][1] = html_print_input_text ('graph_res', $config["graph_res"]
 $row++;
 
 $table->data[$row][0] = __('Default line thickness for the Custom Graph.');
-$table->data[$row][1] = html_print_input_text ('custom_graph_widht',
-	$config["custom_graph_widht"], '', 5, 5, true);
+$table->data[$row][1] = html_print_input_text ('custom_graph_width',
+	$config["custom_graph_width"], '', 5, 5, true);
 $row++;
 
 $table->data[$row][0] = __('Use round corners');

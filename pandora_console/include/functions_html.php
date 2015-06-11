@@ -118,8 +118,8 @@ function html_print_side_layer ($params) {
 	// Check mandatory values, if any of them is missed, return ''
 	$mandatory = array('icon_closed', 'body_text');
 	
-	foreach($mandatory as $man) {
-		if(!isset($params[$man])) {
+	foreach ($mandatory as $man) {
+		if (!isset($params[$man])) {
 			return '';
 		}
 	}
@@ -141,15 +141,15 @@ function html_print_side_layer ($params) {
 		'icon_open' => $params['icon_closed']
 		);
 	
-	foreach($defaults as $token => $value) {
-		if(!isset($params[$token])) {
+	foreach ($defaults as $token => $value) {
+		if (!isset($params[$token])) {
 			$params[$token] = $value;
 		}
 	}
 	
 	//z-index is 1 because 2 made the calendar show under the side_layer
 	
-	switch($params['position']) {
+	switch ($params['position']) {
 		case 'left':
 			$round_class = 'menu_sidebar_radius_right';
 			$body_float = 'left';
@@ -166,29 +166,36 @@ function html_print_side_layer ($params) {
 			$button_float = 'left';
 			break;
 	}
-		
+	
 	$out_html = '<div id="side_layer" class="menu_sidebar ' . $round_class . '" style="display:none; z-index:1; overflow: hidden; height: ' . $params['height'] . '; width: ' . $params['width'] . ';">';
-
+	
 	$table->id = 'side_layer_layout';
 	$table->width = $params['width'] . 'px';
 	$table->cellspacing = 2;
 	$table->cellpadding = 2;
 	$table->class = 'none';
-
-	$top = '<div id="side_top_text" style="width: 100%";">' . $params['top_text'] . '</div>';
+	
+	$top = '<div id="side_top_text" style="width: 100%";">' .
+		$params['top_text'] . '</div>';
 	
 	$button = '<div id="show_menu" style="vertical-align: middle; position: relative; width: ' . $params['icon_width'] . 'px;  padding-right: 17px; text-align: right; height: ' . $params['icon_height'] . 'px;">';
-	$button .= html_print_image($params['position'] == 'left' ? $params['icon_open'] : $params['icon_closed'], true, array('id' => 'graph_menu_arrow'));
+	$button .= html_print_image(
+			$params['position'] == 'left' ?
+			$params['icon_open']
+			:
+			$params['icon_closed'],
+		true, array('id' => 'graph_menu_arrow'));
 	$button .= '</div>';
 	
 	$body = '<div id="side_body_text" style="width: 100%;">' . $params['body_text'] . '</div>';
 	
-	$bottom = '<div id="side_bottom_text" style="text-align: ' . $params['position'] . ';">' . $params['bottom_text'] . '</div>';
-
-	switch($params['position']) {
+	$bottom = '<div id="side_bottom_text" style="text-align: ' . $params['position'] . ';">' .
+		$params['bottom_text'] . '</div>';
+	
+	switch ($params['position']) {
 		case 'left':
 			$table->size[1] = '15%';
-
+			
 			$table->data[0][0] = $top;
 			$table->data[0][1] = '';
 			$table->rowclass[0] = '';
@@ -197,7 +204,7 @@ function html_print_side_layer ($params) {
 			
 			$table->data[1][1] = $button;
 			$table->rowclass[1] = '';
-
+			
 			$table->data[2][0] = $bottom;
 			$table->data[2][1] = '';
 			$table->rowclass[2] = '';
@@ -213,7 +220,7 @@ function html_print_side_layer ($params) {
 			
 			$table->data[1][1] = $body;
 			$table->rowclass[1] = '';
-
+			
 			$table->data[2][0] = '';
 			$table->data[2][1] = $bottom;
 			$table->rowclass[2] = '';
@@ -222,23 +229,23 @@ function html_print_side_layer ($params) {
 			$table->data[0][0] = $button;
 			$table->cellstyle[0][0] = 'text-align: center;';
 			$table->rowclass[0] = '';
-
+			
 			$table->data[1][0] = $top;
 			$table->rowclass[1] = '';
 			
 			
 			$table->data[2][0] = $body;
 			$table->rowclass[2] = '';
-
+			
 			$table->data[3][0] = $bottom;
 			$table->rowclass[3] = '';
 			break;
 	}
-
+	
 	$out_html .= html_print_table($table, true);
 	
 	$out_html .= '</div>';
-		
+	
 	$out_js = "<script type='text/javascript'>
 			<!--
 			hidded_sidebar('" . $params['position'] . "', " . $params['width'] . ", '" . $params['height'] . "', " . $params['icon_width'] . ", 

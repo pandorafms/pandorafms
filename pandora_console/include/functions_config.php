@@ -457,7 +457,7 @@ function config_update_config () {
 						$error_update[] = __('Shortened module graph data');
 					if (!config_update_value ('show_group_name', get_parameter('show_group_name')))
 						$error_update[] = __('Show the group name instead the group icon.');
-					if (!config_update_value ('custom_graph_widht', (int) get_parameter('custom_graph_widht', 1)))
+					if (!config_update_value ('custom_graph_width', (int) get_parameter('custom_graph_width', 1)))
 						$error_update[] = __('Default line thickness for the Custom Graph.');
 					if (!config_update_value ('render_proc', (bool) get_parameter('render_proc', false)))
 						$error_update[] = __('Render data of module type is proc.');
@@ -1248,8 +1248,8 @@ function config_process_config () {
 		config_update_value ('show_group_name', 0);
 	}
 	
-	if (!isset($config['custom_graph_widht'])) {
-		config_update_value ('custom_graph_widht', 1);
+	if (!isset($config['custom_graph_width'])) {
+		config_update_value ('custom_graph_width', 1);
 	}
 	if (!isset($config['render_proc'])) {
 		config_update_value ('render_proc', 0);

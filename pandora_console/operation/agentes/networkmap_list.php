@@ -155,9 +155,9 @@ $table->style[3] = 'text-align: left;';
 $table->style[4] = 'text-align: left;';
 
 $table->size = array();
-$table->size[0] = '80%';
+$table->size[0] = '60%';
 $table->size[1] = '60px';
-$table->size[2] = '30px';
+$table->size[2] = '70px';
 
 if ($networkmaps_write || $networkmaps_manage) {
 	$table->size[3] = '30px';
@@ -241,7 +241,7 @@ if ($networkmaps_write || $networkmaps_manage) {
 	$table_manage->style = array();
 	$table_manage->style[0] = 'font-weight: bold';
 	$table_manage->style[2] = 'font-weight: bold';
-	$table_manage->style[4] = 'text-align: right';
+	$table_manage->style[4] = 'text-align: center';
 	$table_manage->size = array();
 	$table_manage->head = array();
 	$table_manage->data = array();

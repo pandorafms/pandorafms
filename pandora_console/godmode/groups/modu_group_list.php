@@ -173,7 +173,7 @@ switch ($config["dbtype"]) {
 
 $groups = db_get_all_rows_sql($sql);
 
-$table->width = '98%';
+$table->width = '100%';
 
 if (!empty($groups)) {
 	$table->head = array ();
@@ -182,7 +182,8 @@ if (!empty($groups)) {
 	$table->head[2] = __('Delete');
 	$table->align = array ();
 	$table->align[1] = 'left';
-	$table->align[2] = 'center';
+	$table->align[2] = 'left';
+	$table->size[2] = '5%';
 	$table->data = array ();
 	
 	foreach ($groups as $id_group ) {

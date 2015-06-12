@@ -552,15 +552,13 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 	$files = filemanager_list_dir ($real_directory);
 	
 	$table = new stdClass();
-	$table->width = '98%';
+	$table->width = '100%';
 	$table->id = 'table_filemanager';
 	if (!defined('METACONSOLE')) {
-		$table->width = '100%';
 		$table->class = 'databox data';
 		$table->title = '<span>' . __('Index of %s', $relative_directory) . '</span>';
 	}
 	if (defined('METACONSOLE')) {
-		$table->width = '100%';
 		$table->class = 'databox_tactical';
 		$table->title = '<span>' . __('Index of images') . '</span>';
 	}
@@ -582,11 +580,11 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 	$table->head[3] = __('Size');
 	$table->head[4] = __('Actions');
 	if (!defined('METACONSOLE')) {
-		$table->headstyle[0] = 'background-color:#80BA27';
-		$table->headstyle[1] = 'background-color:#80BA27';
-		$table->headstyle[2] = 'background-color:#80BA27';
-		$table->headstyle[3] = 'background-color:#80BA27';
-		$table->headstyle[4] = 'background-color:#80BA27';
+		$table->headstyle[0] = 'background-color:#82B92E';
+		$table->headstyle[1] = 'background-color:#82B92E';
+		$table->headstyle[2] = 'background-color:#82B92E';
+		$table->headstyle[3] = 'background-color:#82B92E';
+		$table->headstyle[4] = 'background-color:#82B92E';
 	}
 	$prev_dir = explode ("/", $relative_directory);
 	$prev_dir_str = "";
@@ -613,7 +611,7 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 		
 		$table->data[1][1] .= '<div id="create_folder" style="display: none;">';
 		$table->data[1][1] .= '<form method="post" action="' . $url . '">';
-		$table->data[1][1] .= html_print_input_text ('dirname', '', '', 15, 255, true);
+		$table->data[1][1] .= html_print_input_text ('dirname', '', '', 30, 255, true);
 		$table->data[1][1] .= '&nbsp;&nbsp;' . html_print_submit_button (__('Create'), 'crt', false, 'class="sub next"', true);
 		
 		$table->data[1][1] .= '&nbsp;&nbsp;' . html_print_button(__('Close'), 'close',
@@ -768,7 +766,7 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 			if (defined("METACONSOLE"))
 				echo "<div style='text-align: left; width: " . $table->width . ";'>";
 			else
-				echo "<div style='text-align: right; width: " . $table->width . ";'>";
+				echo "<div style='text-align: right; width: " . $table->width . "; margin-bottom:5px;'>";
 			
 			echo "<a href='javascript: show_form_create_folder();' style='margin-right: 3px; margin-bottom: 5px;'>";
 			echo html_print_image('images/create_directory.png', true,

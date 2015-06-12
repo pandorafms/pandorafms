@@ -325,8 +325,8 @@ div#head {
 	padding-top: 0px;
 	margin-bottom: 20px;
 	border-bottom-style: solid;
-	border-bottom-width: 4px;
-	border-color: #80BA27;
+	border-bottom-width: 3px;
+	border-color: #82B92E;
 	min-width: 882px;
 	background-color: #333;
 	color: white;
@@ -675,9 +675,9 @@ input.datos_readonly {
 input.sub {
 	font-weight: normal;
 
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
 
 	font-size: 8pt;
 
@@ -785,8 +785,9 @@ input.camera {
 	margin-top: 13px;
 }
 input.visual_editor_button_toolbox {
-	padding-right: 25px;
-	padding-top: 13px;
+	padding-right: 15px;
+	padding-top: 10px;
+	margin-top:5px;
 }
 input.delete_min {
 	background: #fefefe url(../../images/cross.png) no-repeat center !important;
@@ -3008,9 +3009,13 @@ table#policy_modules td * {
 }
 .databox.data td>img,.databox.data th>img, .databox.data td>div>a>img, 
 .databox.data td>span>img, .databox.data td>span>a>img,
-.databox.data td>a>img{
+.databox.data td>a>img {
 	vertical-align: middle;
-	margin-left: 5px;
+
+}
+
+.databox.filters td>a>img {
+	vertical-align: middle;
 }
 
 .databox_color td{
@@ -3031,6 +3036,31 @@ table#policy_modules td * {
 	border-right-style: solid;
 	border-right-width: 0px;
 }
+
+.green_title{
+	background-color: #82B92E;
+	font-weight:normal;
+	text-align: center;
+}
+
+.dashboard{
+	top: 23px;
+}
+
+.dashboard li{
+#	width: 150px !important;
+}
+
+.dashboard li a{
+	width: 160px !important;
+}
+
+.text_subDashboard{
+	float: left;
+	margin-top: 5%;
+	margin-left: 3%;
+}
+
 /* The items with the class 'spinner' will rotate */
 /* Not supported on IE9 and below */
 .spinner {

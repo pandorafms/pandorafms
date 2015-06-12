@@ -110,44 +110,53 @@ $table->width = '100%';
 $table->class = 'databox filters';
 
 $table->style[0] = 'font-weight: bolder; text-align: left;';
-$table->style[1] = '';
+$table->size[0] = '10%';
+$table->style[1] = 'font-weight: bolder; text-align: left;';
+$table->size[1] = '15%';
 $table->style[2] = 'font-weight: bolder; text-align: left;';
+$table->size[2] = '10%';
+$table->style[3] = 'font-weight: bolder; text-align: left;';
+$table->size[3] = '20%';
 
-$table->rowspan[0][0] = 6;
-$table->rowspan[0][1] = 6;
+$table->rowspan[0][0] = 7;
+$table->rowspan[0][1] = 7;
 
 $table->data[0][0] = __('Modules');
 $table->data[0][1] = html_print_select($list_modules, 'modules[]',
 	$modules, '', '', 0, true, true,
 	true, '', false, "width: 100%; height: 200px;");
 
-$table->data[0][2] = __('Begin date');
-$table->data[0][3] = html_print_input_text ("start_date", substr ($start_date, 0, 10),'', 10, 40, true);
-$table->data[0][3] .= html_print_image ("images/calendar_view_day.png", true, array ("onclick" => "scwShow(scwID('text-start_date'),this);"));
+$table->rowspan[2][0] = 7;
+$table->data[2][0] = "";
 
-$table->data[1][2] = __('Zoom factor');
+
+$table->data[2][1] = __('Begin date');
+$table->data[2][2] = html_print_input_text ("start_date", substr ($start_date, 0, 10),'', 10, 40, true);
+$table->data[2][2] .= html_print_image ("images/calendar_view_day.png", true, array ("onclick" => "scwShow(scwID('text-start_date'),this);"));
+
+$table->data[3][1] = __('Zoom factor');
 $options = array ();
 $options[$zoom] = 'x' . $zoom;
 $options[1] = 'x1';
 $options[2] = 'x2';
 $options[3] = 'x3';
 $options[4] = 'x4';
-$table->data[1][3] = html_print_select ($options, "zoom", $zoom, '', '', 0, true);
+$table->data[3][2] = html_print_select ($options, "zoom", $zoom, '', '', 0, true);
 
-$table->data[2][2] = __('Time range');
+$table->data[4][1] = __('Time range');
 
-$table->data[2][3] = html_print_extended_select_for_time('period', $period, '', '', 0, 7, true);
+$table->data[4][2] = html_print_extended_select_for_time('period', $period, '', '', 0, 7, true);
 
-$table->data[3][2] = __('Show events');
-$table->data[3][3] = html_print_checkbox ("draw_events", 1, (bool) $draw_events, true);
-$table->data[4][2] = __('Show alerts') .
+$table->data[5][2] = __('Show events');
+$table->data[5][3] = html_print_checkbox ("draw_events", 1, (bool) $draw_events, true);
+$table->data[6][2] = __('Show alerts') .
 	ui_print_help_tip(__('the combined graph does not show the alerts into this graph'), true);
-$table->data[4][3] = html_print_checkbox ("draw_alerts", 1, (bool) $draw_alerts, true);
-$table->data[5][2] = __('Show as one combined graph');
-$table->data[5][3] = 
+$table->data[6][3] = html_print_checkbox ("draw_alerts", 1, (bool) $draw_alerts, true);
+$table->data[7][2] = __('Show as one combined graph');
+$table->data[7][3] = 
 	html_print_radio_button('combined', 1, __('one combined graph'),
 		$combined, true);
-$table->data[5][3] .= 
+$table->data[7][3] .= 
 	html_print_radio_button('combined', 0, __('several graphs for each module'),
 		$combined, true);
 
@@ -156,8 +165,8 @@ $htmlForm .= html_print_table($table, true);
 $htmlForm .= html_print_input_hidden('filter', 1, true);
 $htmlForm .= '<div class="action-buttons" style="width: '.$table->width.'">';
 $htmlForm .= html_print_button(__('Save as custom graph'), 'save_custom_graph',
-		false, 'save_custom_graph();', 'class="sub add" style="margin-top:10px"',true) . '&nbsp;&nbsp;' .
-		 html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub upd" style="margin-top:10px"', true);
+		false, 'save_custom_graph();', 'class="sub add" style=""',true) . '&nbsp;&nbsp;' .
+		 html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub upd" style=""', true);
 $htmlForm .= '</div>';
 $htmlForm .= '</form>';
 

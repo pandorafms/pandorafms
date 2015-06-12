@@ -65,10 +65,11 @@ foreach ($all_images as $image_file) {
 
 if (!defined('METACONSOLE')) {
 	$table->width = '100%';
+	$table->class = 'databox filters';
 }
 else {
 	$table->width = '100%';
-	$table->class = 'databox';
+	$table->class = 'databox data';
 }
 $table->head = array();
 $table->head['icon'] = '';
@@ -78,9 +79,9 @@ $table->head[2] = __('Width x Height<br>Max value');
 $table->head[3] = __('Period') . ' / ' . __('Position');
 $table->head[4] = __('Parent') . ' / ' . __('Map linked');
 $table->head[5] = "";
-$table->head[5] .= html_print_checkbox('head_multiple_delete',
+$table->head[5] .= '&nbsp;&nbsp;&nbsp;' . html_print_checkbox('head_multiple_delete',
 	'', false, true, false, 'toggle_checkbox_multiple_delete();');
-$table->head[5] .= '<span title="' . __('Action') . '">' .
+$table->head[5] .= '&nbsp;&nbsp;&nbsp;<span title="' . __('Action') . '">' .
 	__('A.') . '</span>';
 
 $table->size = array();
@@ -89,12 +90,18 @@ $table->size[0] = '25%';
 $table->align = array();
 
 if (!defined('METACONSOLE')) {
+	$table->headstyle[0] = "text-align:left;";
+	$table->headstyle[1] = "text-align:left";
+	$table->headstyle[2] = "text-align:left";
+	$table->headstyle[3] = "text-align:left";
+	$table->headstyle[4] = "text-align:left";
+	$table->headstyle[5] = "text-align:left";
 	$table->align[0] = "left";
-	$table->align[1] = "right";
-	$table->align[2] = "center";
-	$table->align[3] = "center";
-	$table->align[4] = "right";
-	$table->align[5] = "center";
+	$table->align[1] = "left";
+	$table->align[2] = "left";
+	$table->align[3] = "left";
+	$table->align[4] = "left";
+	$table->align[5] = "left";
 }
 $table->data = array();
 
@@ -103,7 +110,7 @@ $table->data[0]['icon'] = '';
 $table->data[0][0] = __('Background');
 $table->data[0][1] = html_print_select($backgrounds_list, 'background', $visualConsole['background'], '', 'None', '', true, false, true, '', false, 'width: 120px;');
 $table->data[0][2] = html_print_input_text('width', $visualConsole['width'], '', 3, 5, true) .
-	'x' .
+	' x ' .
 	html_print_input_text('height', $visualConsole['height'], '', 3, 5, true);
 $table->data[0][3] = $table->data[0][4] = $table->data[0][5] = '';
 
@@ -236,7 +243,7 @@ foreach ($layoutDatas as $layoutData) {
 			break;
 		default:
 			$table->data[$i + 1][2] = html_print_input_text('width_' . $idLayoutData, $layoutData['width'], '', 2, 5, true) .
-				'x' .
+				' x ' .
 				html_print_input_text('height_' . $idLayoutData, $layoutData['height'], '', 2, 5, true);
 			break;
 	}
@@ -248,9 +255,9 @@ foreach ($layoutDatas as $layoutData) {
 			$table->data[$i + 1][3] = '';
 			break;
 		default:
-			$table->data[$i + 1][3] = '(' . html_print_input_text('left_' . $idLayoutData, $layoutData['pos_x'], '', 2, 5, true) .
-				',' . html_print_input_text('top_' . $idLayoutData, $layoutData['pos_y'], '', 2, 5, true) .
-				')';
+			$table->data[$i + 1][3] = '( ' . html_print_input_text('left_' . $idLayoutData, $layoutData['pos_x'], '', 2, 5, true) .
+				' , ' . html_print_input_text('top_' . $idLayoutData, $layoutData['pos_y'], '', 2, 5, true) .
+				' )';
 			break;
 	}
 	
@@ -472,22 +479,14 @@ else {
 	echo "<form method='post' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console=" . $idVisualConsole . "'>";
 }
 if (!defined('METACONSOLE')) 
-	echo '<div class="action-buttons" style="width: ' . $table->width . '">';
+	echo '<div class="action-buttons" style="width: ' . $table->width . '; margin-bottom:15px;">';
 if (!defined('METACONSOLE')) {
 	html_print_input_hidden ('action', 'update');
 }
 else {
 	html_print_input_hidden ('action2', 'update');
 }
-if (!defined('METACONSOLE')) {
-	echo "<br>";
 
-	html_print_input_hidden ('id_visual_console', $visualConsole["id"]);
-	html_print_submit_button (__('Update'), 'go', false, 'class="sub next"');
-	echo "&nbsp;";
-	html_print_button(__('Delete'), 'delete', false, 'submit_delete_multiple_items();', 'class="sub delete"');
-	echo '</div>';
-}
 html_print_table($table);
 
 echo '<div class="action-buttons" style="width: ' . $table->width . '">';

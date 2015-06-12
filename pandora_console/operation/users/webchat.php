@@ -73,6 +73,7 @@ ui_print_page_header (__('Webchat'), "images/comments.png", false, "", false, ""
 $table = null;
 
 $table->width = '100%';
+$table->class = 'databox filters';
 $table->style[0][1] = 'text-align: right; vertical-align: top;';
 
 $table->data[0][0] = '<div id="chat_box" style="width: 95%;
@@ -81,13 +82,14 @@ $table->data[0][0] = '<div id="chat_box" style="width: 95%;
 $table->data[0][1] = '<h4>' . __('Users Online') . '</h4>' .
 	'<div id="userlist_box" style="width: 90% !important; height: 200px !important;
 		height: 300px; background: #ffffff; border: 1px inset black;
-		overflow: auto; padding: 10px;"></div>';
-$table->data[1][0] = html_print_input_text('message_box', '', '',
+		overflow: auto; padding-right: 10px;"></div>';
+$table->data[1][0] = "<b>" . __('Message') . "</b> &nbsp;&nbsp;" . html_print_input_text('message_box', '', '',
 	100, 150, true);
-$table->data[1][1] = html_print_button(__('Send message'), 'send', false, 'send_message()',
-	'class="sub next" style="width: 100%"', true);
-
 html_print_table($table);
+
+echo "<div style='width:100%'>" . html_print_button(__('Send message'), 'send', false, 'send_message()',
+	'class="sub next" style="float:right"', true) . "</div>";
+
 ?>
 <script type="text/javascript">
 	var global_counter_chat = 0;

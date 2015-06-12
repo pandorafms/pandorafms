@@ -520,7 +520,8 @@ switch ($action) {
 					
 				//$table->size = array ();
 				$table->size[$next] = '5%';
-				$table->style[$next] = 'text-align:center;';
+				$table->align[$next] = 'center';
+				$table->headstyle[$next] = 'text-align:center;';
 			
 			}
 			

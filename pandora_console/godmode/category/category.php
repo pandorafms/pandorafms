@@ -88,21 +88,6 @@ $result = false;
 
 $result = categories_get_all_categories ();
 
-// Form to add new categories or search categories
-if (!defined('METACONSOLE')) {
-	echo "<table border=0 cellpadding=4 cellspacing=4 class='databox' width=98%>";
-	echo "<tr>";
-	echo "<td align=right>";
-		echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action=new&pure='.(int)$config['pure'].'">';
-		html_print_input_hidden ("create_category", "1", true);
-		html_print_submit_button (__('Create category'),
-			'create_button', false, 'class="sub next"');
-		echo "</form>";
-	echo "</td>";
-	echo "</tr>";
-	echo "</table>";
-}
-
 // Prepare pagination
 ui_pagination ($total_categories, $url);
 
@@ -112,7 +97,8 @@ $iterator = 0;
 
 if (!empty($result)) {
 	
-	$table->width = '98%';
+	$table->width = '100%';
+	$table->class = 'databox data';
 	if(defined('METACONSOLE'))
 		$table->width = '100%';
 	$table->data = array ();
@@ -169,7 +155,20 @@ else {
 	// No categories available or selected
 	echo "<div class='nf'>".__('No categories found')."</div>";
 }
-
+// Form to add new categories or search categories
+if (!defined('METACONSOLE')) {
+	echo "<table border=0 cellpadding=4 cellspacing=4 class='' width=100%>";
+	echo "<tr>";
+	echo "<td align=right>";
+		echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action=new&pure='.(int)$config['pure'].'">';
+		html_print_input_hidden ("create_category", "1", true);
+		html_print_submit_button (__('Create category'),
+			'create_button', false, 'class="sub next"');
+		echo "</form>";
+	echo "</td>";
+	echo "</tr>";
+	echo "</table>";
+}
 enterprise_hook('close_meta_frame');
 
 ?>

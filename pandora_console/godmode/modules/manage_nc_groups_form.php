@@ -44,7 +44,8 @@ else {
 	$parent = '';
 }
 
-$table->width = '98%';
+$table->width = '100%';
+	$table->class = 'databox filters';
 if (defined('METACONSOLE')) {
 	$table->width = '100%';
 	$table->class = 'databox data';

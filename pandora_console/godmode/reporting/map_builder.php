@@ -179,6 +179,7 @@ if ($delete_layout || $copy_layout) {
 }
 
 $table->width = '100%';
+$table->class = 'databox data';
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Map name');
@@ -190,6 +191,8 @@ $table->head[2] = __('Items');
 if ($vconsoles_write || $vconsoles_manage) {
 	$table->head[3] = __('Copy');
 	$table->head[4] = __('Delete');
+	$table->size[3] = "6%";
+	$table->size[4] = "6%";
 }
 
 $table->align = array ();

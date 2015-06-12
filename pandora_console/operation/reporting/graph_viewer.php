@@ -147,14 +147,22 @@ if ($view_graph) {
 		__('Custom graphs') . " - " . $graph['name'],
 		"images/chart.png", false, "", false, $options);
 	
-	echo "<table class='databox_frame' cellpadding='0' cellspacing='0' width='98%'>";
-	echo "<tr><td>";
-	custom_graphs_print($id_graph, $height, $width, $period, $stacked,
-		false, $unixdate);
-	echo "</td></tr></table>";
+	$graph_return = custom_graphs_print($id_graph, $height, $width, $period, $stacked,
+		true, $unixdate);
+	
+	if ($graph_return){
+		echo "<table class='databox filters' cellpadding='0' cellspacing='0' width='100%'>";
+		echo "<tr><td>";
+		echo $graph_return;
+		echo "</td></tr></table>";
+	}
+	else {
+		ui_print_info_message ( array ( 'no_close' => true, 'message' =>  __('No data.') ) );
+	}
+	
 	$period_label = human_time_description_raw ($period);
 	echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id_graph'>";
-	echo "<table class='databox_frame' cellpadding='4' cellspacing='4' style='width: 98%'>";
+	echo "<table class='databox filters' cellpadding='4' cellspacing='4' style='width: 100%'>";
 	echo "<tr>";
 	
 	echo "<td>";

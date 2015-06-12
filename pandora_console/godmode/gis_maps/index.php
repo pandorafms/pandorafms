@@ -64,7 +64,8 @@ switch ($action) {
 
 ui_print_page_header (__('GIS Maps builder'), "images/gm_gis.png", false, "gis_map_builder", true);
 
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox data';
 $table->head[0] = __('Map name');
 $table->head[1] = __('Group');
 $table->head[2] = __('View');
@@ -72,12 +73,12 @@ if ($display_default_column)
 	$table->head[3] = __('Default');
 $table->head[4] = '<span title="Operations">' . __('Op.') . '</span>';
 
-$table->align[1] = 'center';
-$table->align[2] = 'center';
-$table->align[3] = 'center';
-$table->align[4] = 'center';
+$table->align[1] = 'left';
+$table->align[2] = 'left';
+$table->align[3] = 'left';
+$table->headstyle[4] = 'text-align:center';
 $table->size = array();
-$table->size[4] = '60px';
+$table->size[4] = '80px';
 
 $maps = db_get_all_rows_in_table ('tgis_map','map_name');
 

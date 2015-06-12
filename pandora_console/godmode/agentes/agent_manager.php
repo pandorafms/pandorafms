@@ -279,7 +279,8 @@ $table->class = "databox filters";
 
 $table->head = array ();
 $table->style = array ();
-$table->style[0] = 'font-weight: bold; width: 150px;';
+$table->style[0] = 'font-weight: bold; ';
+$table->style[2] = 'font-weight: bold;';
 $table->data = array ();
 
 // Custom ID
@@ -338,7 +339,7 @@ foreach ($listIcons as $index => $value)
 	$arraySelectIcon[$index] = $index;
 
 $path = 'images/gis_map/icons/'; //TODO set better method the path
-$table->data[4][0] = __('Agent icon') . ui_print_help_tip(__('Agent icon for GIS Maps.'), true);
+$table->data[0][2] = __('Agent icon') . ui_print_help_tip(__('Agent icon for GIS Maps.'), true);
 if ($icon_path == '') {
 	$display_icons = 'none';
 	// Hack to show no icon. Use any given image to fix not found image errors
@@ -357,7 +358,7 @@ else {
 	$path_warning = $path . $icon_path . ".warning.png";
 }
 
-$table->data[4][1] = html_print_select($arraySelectIcon, "icon_path",
+$table->data[0][3] = html_print_select($arraySelectIcon, "icon_path",
 	$icon_path, "changeIcons();", __('None'), '', true) .
 	'&nbsp;' . html_print_image($path_ok, true,
 		array("id" => "icon_ok", "style" => "display:".$display_icons.";")) .
@@ -367,23 +368,23 @@ $table->data[4][1] = html_print_select($arraySelectIcon, "icon_path",
 		array("id" => "icon_warning", "style" => "display:".$display_icons.";"));
 
 if ($config['activate_gis']) {
-	$table->data[5][0] = __('Ignore new GIS data:');
-	$table->data[5][1] = __('Yes') . ' ' .
+	$table->data[1][2] = __('Ignore new GIS data:');
+	$table->data[1][3] = __('Yes') . ' ' .
 		html_print_radio_button_extended ("update_gis_data", 0, '',
 			$update_gis_data, false, '', 'style="margin-right: 40px;"', true);
-	$table->data[5][1] .= __('No') . ' ' .
+	$table->data[1][3] .= __('No') . ' ' .
 		html_print_radio_button_extended ("update_gis_data", 1, '',
 			$update_gis_data, false, '', 'style="margin-right: 40px;"', true);
 }
 
-$table->data[6][0] = __('Url address');
-$table->data[6][1] = html_print_input_text ('url_description',
+$table->data[2][2] = __('Url address');
+$table->data[2][3] = html_print_input_text ('url_description',
 	$url_description, '', 45, 255, true);
 
-$table->data[7][0] = __('Quiet');
-$table->data[7][0] .= ui_print_help_tip(
+$table->data[3][2] = __('Quiet');
+$table->data[3][3] .= ui_print_help_tip(
 	__('The agent still runs but the alerts and events will be stop'), true);
-$table->data[7][1] = html_print_checkbox('quiet', 1, $quiet, true);
+$table->data[3][3] = html_print_checkbox('quiet', 1, $quiet, true);
 
 ui_toggle(html_print_table ($table, true), __('Advanced options'));
 unset($table);
@@ -393,7 +394,7 @@ $table->class = "databox filters";
 
 $table->head = array ();
 $table->style = array ();
-$table->style[0] = 'font-weight: bold; width: 150px;';
+$table->style[0] = 'font-weight: bold; width: 100px;';
 $table->data = array ();
 
 $fields = db_get_all_fields_in_table('tagent_custom_fields');
@@ -413,7 +414,7 @@ foreach ($fields as $field) {
 	}
 	
 	$data[1] = html_print_textarea ('customvalue_'.$field['id_field'],
-		2, 65, $custom_value, 'style="min-height: 30px;"', true);
+		2, 65, $custom_value, 'style="min-height: 30px; width:96%;"', true);
 	
 	array_push ($table->data, $data);
 }
@@ -529,7 +530,7 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 			
 			echo '"' . implode(', ', $elements) . '"';
 			?>,
-			width: '100%',
+			width: '95%',
 			theme : "advanced",
 			theme_advanced_path : false,
 			statusbar : false,

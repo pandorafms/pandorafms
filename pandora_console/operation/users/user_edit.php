@@ -180,10 +180,10 @@ if ($status != -1) {
 }
 $jump = "<br />";
 $table->id = 'user_form';
-$table->width = '98%';
+$table->width = '100%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
-$table->class = 'vertical_fields';
+$table->class = 'databox filters';
 if (defined('METACONSOLE')) {
 	$jump = "&nbsp;&nbsp;";
 	$table->width = '100%';
@@ -396,7 +396,8 @@ unset($table);
 if (!defined('METACONSOLE'))
 	echo '<h4>'.__('Profiles/Groups assigned to this user').'</h4>';
 
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox data';
 if (defined('METACONSOLE')) {
 	echo '<br />';
 	$table->width = '100%';
@@ -417,7 +418,7 @@ $table->head[0] = __('Profile name');
 $table->head[1] = __('Group');
 $table->head[2] = __('Tags');
 $table->align = array();
-$table->align[1] = 'center';
+$table->align[1] = 'left';
 
 $table->data = array ();
 

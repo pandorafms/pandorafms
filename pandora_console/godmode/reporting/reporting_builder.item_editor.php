@@ -526,7 +526,7 @@ html_print_input_hidden('id_item', $idItem);
 if (defined("METACONSOLE"))
 	$class = 'databox data';
 else
-	$class = 'databox';
+	$class = 'databox filters';
 
 ?>
 <table style="" class="<?php echo $class;?>" id="" border="0" cellpadding="4" cellspacing="4" width="100%">
@@ -1210,8 +1210,8 @@ else
 <br />
 <br />
 <?php
-print_SLA_list('95%', $action, $idItem);
-print_General_list('95%', $action, $idItem, $type);
+print_SLA_list('100%', $action, $idItem);
+print_General_list('100%', $action, $idItem, $type);
 echo '<div class="action-buttons" style="width: 100%">';
 if ($action == 'new') {
 	html_print_submit_button(__('Create item'), 'create_item', false, 'class="sub wand"');
@@ -1240,7 +1240,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 	$report_item_type = db_get_value('type', 'treport_content', 'id_rc',
 		$idItem);
 	?>
-	<table class="databox" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="100%">
+	<table class="databox data" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="100%">
 		<thead>
 			<tr>
 				<th class="header sla_list_agent_col" scope="col"><?php echo __('Agent');?></th>
@@ -1405,7 +1405,7 @@ function print_General_list($width, $action, $idItem = null, $type = 'general') 
 	
 	include_once($config['homedir'] . '/include/functions_html.php');
 	?>
-	<table class="databox" id="general_list" border="0" cellpadding="4" cellspacing="4" width="100%">
+	<table class="databox data" id="general_list" border="0" cellpadding="4" cellspacing="4" width="100%">
 		<thead>
 			<tr>
 				<?php

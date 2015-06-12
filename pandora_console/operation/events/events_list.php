@@ -35,12 +35,8 @@ if (! check_acl ($config["id_user"], 0, "ER")) {
 	return;
 }
 
-if (defined('METACONSOLE')) {
-	$jump = '&nbsp;&nbsp;';
-}
-else {
-	$jump = "<br>";
-}
+
+$jump = '&nbsp;&nbsp;';
 
 if (is_ajax()) {
 	$get_filter_values = get_parameter('get_filter_values', 0);
@@ -162,10 +158,6 @@ require('events.build_query.php');
 
 $id_name = get_parameter('id_name', '');
 
-if (!defined("METACONSOLE"))
-	echo "<br>";
-
-
 // Trick to catch if any filter button has been pushed (don't collapse filter)
 // or the filter was open before click or autorefresh is in use (collapse filter)
 $update_pressed = get_parameter_post('update', '');
@@ -174,22 +166,7 @@ $update_pressed = (int) !empty($update_pressed);
 if ($update_pressed || $open_filter) {
 	$open_filter = true;
 }
-if (!defined("METACONSOLE")) {
-	$table = html_get_predefined_table('transparent', 2);
-	$table->styleTable = 'width: 23px; float: right; background: #ECECEC;';
-	$table->width = '98%';
-	$table->style[0] = 'text-align: left;';
-	$table->style[1] = 'text-align: right;';
 
-	$table->data[0][1] = '<a id="events_graph_link" href="javascript: show_events_graph_dialog()">' . html_print_image('images/chart_curve.png', true, array('title' => __('Show events graph'))) . '</a>';
-	$table->cellstyle[0][1] = 'background: #ECECEC;';
-
-	if(defined('METACONSOLE')) {
-		$table->width = '100%';
-		$table->class='events_list';
-	}
-	html_print_table($table);
-}
 unset($table);
 
 $filters = events_get_event_filter_select();
@@ -208,7 +185,7 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	// Save filter div for dialog
 	echo '<div id="save_filter_layer" style="display: none">';
 	$table->id = 'save_filter_form';
-	$table->width = '98%';
+	$table->width = '100%';
 	$table->cellspacing = 4;
 	$table->cellpadding = 4;
 	$table->class = 'databox';
@@ -271,7 +248,7 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 // Load filter div for dialog
 echo '<div id="load_filter_layer" style="display: none">';
 $table->id = 'load_filter_form';
-$table->width = '98%';
+$table->width = '100%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'databox';
@@ -340,21 +317,17 @@ if (defined('METACONSOLE')) {
 
 
 $data = array();
-if (!defined("METACONSOLE"))
-	$data[0] = html_print_select ($tags_select_with, 'select_with', '', '', '', 0,
-		true, true, true, '', false, 'width: 120px; height: 70px;') . '<br>';
-else
-	$data[0] = html_print_select ($tags_select_with, 'select_with', '', '', '', 0,
-		true, true, true, '', false, 'width: auto; height: 70px;') . '<br>';
+
+$data[0] = html_print_select ($tags_select_with, 'select_with', '', '', '', 0,
+	true, true, true, '', false, 'width: 120px; height: 70px;') . $jump;
+
 $data[1] = html_print_image('images/darrowright.png', true, array('id' => 'button-add_with', 'style' => 'cursor: pointer;', 'title' => __('Add')));
 $data[1] .= html_print_input_hidden('tag_with', $tag_with_base64, true);
 $data[1] .= '<br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'button-remove_with', 'style' => 'cursor: pointer;', 'title' => __('Remove')));
-if(!defined("METACONSOLE"))
-	$data[2] = html_print_select ($tag_with_temp, 'tag_with_temp', array(), '', '',
-		0, true, true, true, '', false, "width: 120px; height: 70px;");
-else
-	$data[2] = html_print_select ($tag_with_temp, 'tag_with_temp', array(), '', '',
-		0, true, true, true, '', false, "width: auto; height: 70px;");
+
+$data[2] = html_print_select ($tag_with_temp, 'tag_with_temp', array(), '', '',
+	0, true, true, true, '', false, "width: 120px; height: 70px;");
+	
 $tabletags_with->data[] = $data;
 $tabletags_with->rowclass[] = '';
 
@@ -375,7 +348,7 @@ $tabletags_without->styleTable = 'border: 0px;';
 
 $data = array();
 $data[0] = html_print_select ($tags_select_without, 'select_without', '', '', '', 0,
-	true, true, true, '', false, 'width: 200px; height: 70px;') . '<br>';
+	true, true, true, '', false, 'width: 200px; height: 70px;') . $jump;
 $data[1] = html_print_image('images/darrowright.png', true, array('id' => 'button-add_without', 'style' => 'cursor: pointer;', 'title' => __('Add')));
 $data[1] .= html_print_input_hidden('tag_without', $tag_without_base64, true);
 $data[1] .= '<br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'button-remove_without', 'style' => 'cursor: pointer;', 'title' => __('Remove')));
@@ -414,7 +387,7 @@ else {
 //- INI ADVANCE FILTER -------------------------------------------------
 $table_advanced = new stdClass();
 $table_advanced->id = 'events_filter_form_advanced';
-$table_advanced->width = '98%';
+$table_advanced->width = '100%';
 $table_advanced->cellspacing = 4;
 $table_advanced->cellpadding = 4;
 $table_advanced->class = 'transparent';
@@ -541,7 +514,7 @@ $table->id = 'events_filter_form';
 $table->width = '100%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
-$table->class = 'databox';
+$table->class = 'databox filters';
 if (defined('METACONSOLE')) {
 	$table->width = '96%';
 	$table->class = 'databox_filters';
@@ -609,43 +582,27 @@ if (check_acl ($config["id_user"], 0, "EW")) {
 	$data[0] .= '<a href="javascript:" onclick="show_save_filter_dialog();">' . 
 				html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
 }
-if (defined("METACONSOLE")) {
-	$data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . 
+
+$data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . 
 				html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a> &nbsp;';
-	$data[0] .= '<a id="events_graph_link" href="javascript: show_events_graph_dialog()">' . 
-						html_print_image('images/chart_curve.png', true, array('title' => __('Show events graph'))) . '</a> <br />';
-}
-else
-	$data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . 
-				html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a> <br />';
-if (defined("METACONSOLE")) {
-	if (empty($id_name)) {
-		$data[0] .= '<div id="filter_loaded_span" style="font-weight: normal">[' .
-			__('No filter loaded') .
-			']</div>';
-	}
-	else {
-		$data[0] .= '<div id="filter_loaded_span" style="font-weight: normal">[' .
-			__('Filter loaded') . ': ' . $id_name .
-			']</div>';
-	}
+$data[0] .= '<a id="events_graph_link" href="javascript: show_events_graph_dialog()">' . 
+				html_print_image('images/chart_curve.png', true, array('title' => __('Show events graph'))) . '</a> <br />';
+
+
+if (empty($id_name)) {
+	$data[0] .= '<div id="filter_loaded_span" style="font-weight: normal">[' .
+		__('No filter loaded') .
+		']</div>';
 }
 else {
-	if (empty($id_name)) {
-		$data[0] .= '<span id="filter_loaded_span" style="font-weight: normal">[' .
-			__('No filter loaded') .
-			']</span>';
-	}
-	else {
-		$data[0] .= '[<span id="filter_loaded_span" style="font-weight: normal">' .
-			__('Filter loaded') . ': ' . $id_name .
-			'</span>]';
-	}
-
+	$data[0] .= '<div id="filter_loaded_span" style="font-weight: normal">[' .
+		__('Filter loaded') . ': ' . $id_name .
+		']</div>';
 }
+
 $data[0] .= '</div>';
 
-$data[1] = html_print_submit_button (__('Update'), 'update', false, 'class="sub upd"', true);
+
 $table->colspan[count($table->data)][1] = 4;
 $table->rowstyle[count($table->data)] = 'text-align:right;';
 $table->data[] = $data;
@@ -654,6 +611,12 @@ $table->rowclass[] = '';
 $events_filter .= html_print_table($table, true);
 
 unset($table);
+
+$botom_update = "<div style='width:100%;float:right;'>";
+$botom_update .= html_print_submit_button (__('Update'), 'update', false, 'class="sub upd"  style="float:right;"', true);
+$botom_update .= "</div>";
+
+$events_filter .= $botom_update;
 
 $events_filter .= "</form>"; //This is the filter div
 

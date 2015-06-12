@@ -187,9 +187,8 @@ foreach ($groups as $group_key => $group_val) {
 // Format component groups in tree form
 $groups = component_groups_get_groups_tree_recursive($groups_clean,0,0);
 
-$table->width = '98%';
-if (defined('METACONSOLE'))
-	$table->width = '100%';
+$table->width = '100%';
+$table->class = 'databox data';
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Action') .
@@ -197,7 +196,7 @@ $table->head[1] = __('Action') .
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->align = array ();
-$table->align[1] = 'center';
+$table->align[1] = 'left';
 $table->size = array ();
 $table->size[0] = '80%';
 $table->size[1] = '50px';

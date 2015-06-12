@@ -419,7 +419,6 @@ if ($agents !== false) {
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=up&disabled=$disabled">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp)) . '</a>' .
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=name&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown)) . '</a>';
 	echo "</th>";
-	echo "<th title='".__('Remote agent configuration')."'>".__('R')."</th>";
 	echo "<th>".__('OS'). ' ' .
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=up&disabled=$disabled">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp)) . '</a>' .
 		'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=os&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown)) . '</a>';
@@ -429,7 +428,7 @@ if ($agents !== false) {
 			'<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id='.$ag_group.'&recursion='.$recursion.'&search='.$search .'&offset='.$offset.'&sort_field=group&sort=down&disabled=$disabled">' . html_print_image("images/sort_down.png", true, array("style" => $selectGroupDown)) . '</a>';
 		echo "</th>";
 	echo "<th>" . __('Description') . "</th>";
-	echo "<th>" . __('Actions') . "</th>";
+	echo "<th style='text-align:left'>" . __('Actions') . "</th>";
 	$color=1;
 	
 	$rowPair = true;
@@ -505,31 +504,14 @@ if ($agents !== false) {
 			&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
 		
 		echo '</div>';
-		echo "</td>";
-		
-		echo "<td align='center' class='$tdcolor'>";
-		// Has remote configuration ?
-		if (enterprise_installed()) {
-			enterprise_include_once('include/functions_config_agents.php');
-			if (config_agents_has_remote_configuration($agent["id_agente"])) {
-				echo "<a href='index.php?" .
-					"sec=gagente&" .
-					"sec2=godmode/agentes/configurar_agente&" .
-					"tab=remote_configuration&" .
-					"id_agente=" . $agent["id_agente"] . "&disk_conf=1'>";
-				echo html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Edit remote config')));		
-				echo "</a>";
-			}
-		}
-		echo "</td>";
-		
+		echo "</td>";		
 		
 		// Operating System icon
-		echo "<td class='$tdcolor' align='center' valign='middle'>";
+		echo "<td class='$tdcolor' align='left' valign='middle'>";
 		ui_print_os_icon ($agent["id_os"], false);
 		echo "</td>";
 		// Group icon and name
-		echo "<td class='$tdcolor' align='center' valign='middle'>" . ui_print_group_icon ($id_grupo, true)."</td>";
+		echo "<td class='$tdcolor' align='left' valign='middle'>" . ui_print_group_icon ($id_grupo, true)."</td>";
 		// Description
 		echo "<td class='".$tdcolor."f9'>" .
 			ui_print_truncate_text($agent["comentarios"], 'description', true, true, true, '[&hellip;]', 'font-size: 6.5pt;')."</td>";
@@ -540,7 +522,7 @@ if ($agents !== false) {
 		else
 			$offsetArg = $offset;
 		
-		echo "<td class='$tdcolor' align='center' valign='middle'>";
+		echo "<td class='$tdcolor' align='left' style='width:7%' valign='middle'>";
 		
 		if ($agent['disabled']) {
 			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&

@@ -168,11 +168,11 @@ if ($create) {
 }
 
 $table->id = 'table1';
-$table->width = '80%';
+$table->width = '100%';
 $table->border = 0;
 $table->cellspacing = 3;
 $table->cellpadding = 5;
-$table->class = "databox_color";
+$table->class = "databox filters";
 if (defined('METACONSOLE')) {
 	$table->width = '100%';
 	$table->class = 'databox data';

@@ -94,6 +94,7 @@ if (defined('METACONSOLE')) {
 	$table->align[0] = 'left';
 	$table->align[1] = 'left';
 }
+$table->class = 'databox filters';
 $table->data = array ();
 $table->data[0][0] = __('Name:'). ui_print_help_tip (__("Use [ or ( as first character, for example '[*] Map name', to render this map name in main menu"), true);
 
@@ -125,7 +126,7 @@ else {
 
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+echo '<div class="action-buttons" style="width: '.$table->width.'; margin-top: 15px;">';
 html_print_submit_button ($textButtonSubmit, 'update_layout', false, 'class="' . $classButtonSubmit . '"');
 echo '</div>';
 

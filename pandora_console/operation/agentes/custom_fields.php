@@ -59,10 +59,10 @@ else {
 	$table->size[0] = "20%";
 	$table->head[1] = __('Display on front') .
 		ui_print_help_tip (__('The fields with display on front enabled will be displayed into the agent details'), true);
-	$table->size[1] = "10%";
+	$table->size[1] = "20%";
 	$table->head[2] = __('Description');
 	$table->align = array ();
-	$table->align[1] = 'center';
+	$table->align[1] = 'left';
 	$table->align[2] = 'left';
 	$table->data = array ();
 	

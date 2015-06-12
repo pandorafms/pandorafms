@@ -121,8 +121,8 @@ if (tags_has_user_acl_tags()) {
 				//////////////////NEWS BOARD/////////////////////////////
 				echo '<div id="news_board">';
 				
-				echo '<table cellpadding="4" width=100% cellspacing="4" class="databox">';
-				echo '<tr><th><span>' . __('News board') . '</span></th></tr>';
+				echo '<table cellpadding="0" width=100% cellspacing="0" class="databox filters">';
+				echo '<tr><th style="text-align:center;"><span >' . __('News board') . '</span></th></tr>';
 				if ($config["prominent_time"] == "timestamp") {
 					$comparation_suffix = "";
 				}
@@ -133,7 +133,7 @@ if (tags_has_user_acl_tags()) {
 					$text = io_safe_output($article["text"]);
 					
 					
-					echo '<tr><th><b>'.$article["subject"].'</b></th></tr>';
+					echo '<tr><th class="green_title">'.$article["subject"].'</th></tr>';
 					echo '<tr><td>' . __('by') . ' <b>' .
 						$article["author"] . '</b> <i>' . ui_print_timestamp ($article["timestamp"], true).'</i> ' . $comparation_suffix . '</td></tr>';
 					echo '<tr><td class="datos">';

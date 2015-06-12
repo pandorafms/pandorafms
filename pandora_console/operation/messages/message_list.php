@@ -93,8 +93,8 @@ if (empty ($messages)) {
 	echo '<div class="nf">'.__('There are no messages').'</div>';
 }
 else {
-	$table->width = "98%";
-	$table->class = "databox";
+	$table->width = '100%';
+	$table->class = 'databox data';
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
 	$table->head = array ();
@@ -102,11 +102,11 @@ else {
 	$table->align = array ();
 	$table->size = array ();
 	
-	$table->align[0] = "center";
-	$table->align[1] = "center";
-	$table->align[2] = "center";
-	$table->align[3] = "center";
-	$table->align[4] = "center";
+	$table->align[0] = "left";
+	$table->align[1] = "left";
+	$table->align[2] = "left";
+	$table->align[3] = "left";
+	$table->align[4] = "left";
 	
 	$table->size[0] = "20px";
 	$table->size[1] = "100px";
@@ -200,14 +200,14 @@ else {
 	else
 		echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/messages/message_list&amp;multiple_delete=1">';
 			html_print_table($table);
-			echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+			echo "<div style='text-align: right; width:" . $table->width . "'>";
 				html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 			echo "</div>";
 	echo "</form>";
 }
 
 echo '<form method="post" action="index.php?sec=workspace&sec2=operation/messages/message_edit">';
-echo '<div class="action-buttons" style="width: 98%; margin-top: 5px;">';
+echo '<div class="action-buttons" style="width: 100%; ">';
 html_print_submit_button (__('Create message'), 'create', false, 'class="sub next"');
 echo "</div>";
 echo "</form>";

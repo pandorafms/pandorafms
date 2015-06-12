@@ -848,10 +848,11 @@ function db_format_array_where_clause_sql ($values, $join = 'AND', $prefix = fal
  * @param string Table name
  * @param string Field of the filter condition
  * @param string Value of the filter
+ * @param bool The value will be appended without quotes
  *
  * @result Rows deleted or false if something goes wrong
  */
-function db_process_delete_temp ($table, $row, $value) {
+function db_process_delete_temp ($table, $row, $value, $custom_value = false) {
 	global $error; //Globalize the errors variable
 	global $config;
 	
@@ -861,8 +862,8 @@ function db_process_delete_temp ($table, $row, $value) {
 			$result = db_process_sql_delete ($table, $row.' = '.$value);
 			break;
 		case "oracle":
-			if (is_int ($value) || is_bool ($value) ||
-				is_float ($value) || is_double ($value)) {
+			if ($custom_value || is_int ($value) || is_bool ($value) ||
+					is_float ($value) || is_double ($value)) {
 				$result = oracle_db_process_sql_delete_temp ($table, $row . ' = ' . $value);
 			}
 			else {

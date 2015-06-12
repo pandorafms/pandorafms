@@ -1681,7 +1681,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		
 		//Alert
 		db_process_delete_temp ("talert_template_modules",
-			"id_agent_module", $where_modules);
+			"id_agent_module", $where_modules, true);
 		
 		//Events (up/down monitors)
 		// Dont delete here, could be very time-exausting, let the daily script
@@ -1690,11 +1690,11 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		
 		//Graphs, layouts, reports & networkmapenterprise
 		db_process_delete_temp ("tgraph_source",
-			"id_agent_module", $where_modules);
+			"id_agent_module", $where_modules, true);
 		db_process_delete_temp ("tlayout_data",
-			"id_agente_modulo", $where_modules);
+			"id_agente_modulo", $where_modules, true);
 		db_process_delete_temp ("treport_content",
-			"id_agent_module", $where_modules);
+			"id_agent_module", $where_modules, true);
 		if (enterprise_installed()) {
 			$nodes = db_get_all_rows_filter(
 				"tnetworkmap_enterprise_nodes",
@@ -1743,7 +1743,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		
 		// tagente_datos_inc
 		// Dont delete here, this records are deleted later, in database script
-		// db_process_delete_temp ("tagente_datos_inc", "id_agente_modulo", $where_modules);
+		// db_process_delete_temp ("tagente_datos_inc", "id_agente_modulo", $where_modules, true);
 		
 		// Delete remote configuration
 		if (enterprise_installed()) {

@@ -290,12 +290,21 @@ sub chmodr {
 ################################################################################
 # Open the agent logfile and start logging.
 ################################################################################
-sub start_log (;$) {
+sub start_log (;$$) {
 	my $quiet = shift;
+	my $logfile;
+	if ($quiet ne 'quiet') {
+		$logfile = $quiet;
+		$quiet = shift;
+	} else {
+		$logfile = shift;
+	}
+	
+	$logfile = read_config ('logfile') unless defined $logfile;
+	$logfile = '/var/log/pandora/pandora_agent.log' unless defined $logfile;
 
 	# Get the logfile
-	$Conf{'logfile'} = read_config ('logfile');
-	$Conf{'logfile'} = '/var/log/pandora/pandora_agent.log' unless defined ($Conf{'logfile'});
+	$Conf{'logfile'} = $logfile;
 
 	# Open it
 	if ($Conf{'logfile'} eq 'syslog') {
@@ -2214,6 +2223,7 @@ while (1) {
 	my @dynamic_brokers = read_config ('dynamic_broker');
 	foreach my $dynamic_broker_plugin (@dynamic_brokers) {
 		my @dynamic_agents = `$dynamic_broker_plugin`;
+		chomp @dynamic_agents;
 		foreach my $dynamic_agent (@dynamic_agents) {
 			$main_agent = fork ();
 				
@@ -2222,10 +2232,17 @@ while (1) {
 			
 				# Set the configuration file
 				$ConfFile = "${dynamic_agent}.conf";
+
+				my $logfile = $Conf{'logfile'};
+
+				if ($logfile ne 'syslog') {
+					$logfile = dirname($logfile)."/$dynamic_agent.log";
+					$Conf{'logfile'} = $logfile;
+				}
 				
 				# Log to a new file
 				stop_log ();
-				start_log ('quiet');
+				start_log ('quiet', $logfile);
 					
 				# Read configuration file
 				$Conf{'parent_agent_name'} = $Conf{'agent_name'};

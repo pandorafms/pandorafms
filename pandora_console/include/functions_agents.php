@@ -2161,6 +2161,8 @@ function agents_update_gis($idAgente, $latitude, $longitude, $altitude,
  * @return array A list of network interfaces information by agents.
  */
 function agents_get_network_interfaces ($agents = false, $agents_filter = false) {
+	global $config;
+
 	if ($agents === false) {
 		$filter = false;
 		if ($agents_filter !== false) {
@@ -2202,9 +2204,14 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 		$columns = array(
 				"id_agente_modulo",
 				"nombre",
-				"descripcion",
 				"ip_target"
 			);
+
+		if ($config['dbtype'] == 'oracle')
+			$columns[] = 'TO_CHAR(descripcion) AS descripcion';
+		else
+			$columns[] = 'descripcion';
+
 		$filter = " id_agente = $agent_id AND disabled = 0 AND id_tipo_modulo IN (".implode(",", $accepted_module_types).") AND nombre LIKE 'ifOperStatus_%'";
 		
 		$modules = agents_get_modules($agent_id, $columns, $filter, true, false);
@@ -2243,7 +2250,7 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 				
 				$ip_target = "--";
 				// Trying to get something like an IP from the description
-				if (preg_match ("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", $module_description, $matches)
+				if (preg_match ("/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/", $module_description, $matches)
 						|| preg_match ("/(((?=(?>.*?(::))(?!.+\3)))\3?|([\dA-F]{1,4}(\3|:?)|\2))(?4){5}((?4){2}|(25[0-5]|
 							(2[0-4]|1\d|[1-9])?\d)(\.(?7)){3})/i", $module_description, $matches) && $matches[0]) {
 					

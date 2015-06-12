@@ -476,6 +476,7 @@ function reporting_html_event_report_group($table, $item) {
 		$table->data['events']['cell'] = $item['failed'];
 	}
 	else {
+		$table1 = new stdClass();
 		$table1->width = '99%';
 		
 		$table1->align = array();
@@ -554,7 +555,7 @@ function reporting_html_event_report_group($table, $item) {
 		
 		
 		if (!empty($item['chart']['by_agent'])) {
-			$table1 = null;
+			$table1 = new stdClass();
 			$table1->width = '99%';
 			$table1->head = array ();
 			$table1->head[0] = __('Events by agent');
@@ -566,7 +567,7 @@ function reporting_html_event_report_group($table, $item) {
 		}
 		
 		if (!empty($item['chart']['by_user_validator'])) {
-			$table1 = null;
+			$table1 = new stdClass();
 			$table1->width = '99%';
 			$table1->head = array ();
 			$table1->head[0] = __('Events by user validator');
@@ -578,7 +579,7 @@ function reporting_html_event_report_group($table, $item) {
 		}
 		
 		if (!empty($item['chart']['by_criticity'])) {
-			$table1 = null;
+			$table1 = new stdClass();
 			$table1->width = '99%';
 			$table1->head = array ();
 			$table1->head[0] = __('Events by criticity');
@@ -590,7 +591,7 @@ function reporting_html_event_report_group($table, $item) {
 		}
 		
 		if (!empty($item['chart']['validated_vs_unvalidated'])) {
-			$table1 = null;
+			$table1 = new stdClass();
 			$table1->width = '99%';
 			$table1->head = array ();
 			$table1->head[0] = __('Events validated vs unvalidated');
@@ -612,6 +613,7 @@ function reporting_html_event_report_module($table, $item) {
 		$table->data['events']['cell'] = $item['failed'];
 	}
 	else {
+		$table1 = new stdClass();
 		$table1->width = '99%';
 		$table1->data = array ();
 		$table1->head = array ();
@@ -1074,6 +1076,7 @@ function reporting_html_group_report($table, $item) {
 function reporting_html_event_report_agent($table, $item) {
 	global $config;
 	
+	$table1 = new stdClass();
 	$table1->width = '99%';
 	
 	$table1->align = array();
@@ -1147,7 +1150,7 @@ function reporting_html_event_report_agent($table, $item) {
 	$table->data['event_list']['cell'] = html_print_table($table1, true);
 	
 	if (!empty($item['chart']['by_user_validator'])) {
-		$table1 = null;
+		$table1 = new stdClass();
 		$table1->width = '99%';
 		$table1->head = array ();
 		$table1->head[0] = __('Events validated by user');
@@ -1159,7 +1162,7 @@ function reporting_html_event_report_agent($table, $item) {
 	}
 	
 	if (!empty($item['chart']['by_criticity'])) {
-		$table1 = null;
+		$table1 = new stdClass();
 		$table1->width = '99%';
 		$table1->head = array ();
 		$table1->head[0] = __('Events by criticity');
@@ -1171,7 +1174,7 @@ function reporting_html_event_report_agent($table, $item) {
 	}
 	
 	if (!empty($item['chart']['validated_vs_unvalidated'])) {
-		$table1 = null;
+		$table1 = new stdClass();
 		$table1->width = '99%';
 		$table1->head = array ();
 		$table1->head[0] = __('Amount events validated');
@@ -1208,11 +1211,13 @@ function reporting_html_database_serialized($table, $item) {
 
 function reporting_html_group_configuration($table, $item) {
 	
+	$table1 = new stdClass();
 	$table1->width = '100%';
 	$table1->head = array ();
 	$table1->data = array ();
 	$cell = "";
 	foreach ($item['data'] as $agent) {
+		$table2 = new stdClass();
 		$table2->width = '100%';
 		$table2->data = array ();
 		reporting_html_agent_configuration($table2, array('data' => $agent));
@@ -1328,6 +1333,7 @@ function reporting_html_alert_report_agent($table, $item) {
 	$table->colspan['alerts']['cell'] = 3;
 	$table->cellstyle['alerts']['cell'] = 'text-align: left;';
 	
+	$table1 = new stdClass();
 	$table1->width = '99%';
 	$table1->head = array ();
 	$table1->head['module'] = __('Module');
@@ -1364,6 +1370,7 @@ function reporting_html_alert_report_module($table, $item) {
 	$table->colspan['alerts']['cell'] = 3;
 	$table->cellstyle['alerts']['cell'] = 'text-align: left;';
 	
+	$table1 = new stdClass();
 	$table1->width = '99%';
 	$table1->head = array ();
 	$table1->head['template'] = __('Template');
@@ -1451,6 +1458,7 @@ function reporting_html_agent_configuration(&$table, $item) {
 	$table->colspan['agent']['cell'] = 3;
 	$table->cellstyle['agent']['cell'] = 'text-align: left;';
 	
+	$table1 = new stdClass();
 	$table1->width = '99%';
 	$table1->head = array ();
 	$table1->head['name'] = __('Agent name');

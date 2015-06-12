@@ -885,13 +885,16 @@ else
 			<td>
 				<?php 
 					html_print_select(array(), 'inventory_modules[]', '', $script = '', __('None'), 0, false, true, true, '', false, "min-width: 180px");
+					
 					if (empty($inventory_modules)) {
 						$array_inventory_modules = array(0 => 0);
 					}
-					else {
-						$array_inventory_modules = implode(',', $inventory_modules);
-					}
-					html_print_input_hidden('inventory_modules_selected', $array_inventory_modules);
+					$array_inventory_modules =
+						implode(',', $inventory_modules);
+					
+					html_print_input_hidden(
+						'inventory_modules_selected',
+						$array_inventory_modules);
 				?>
 			</td>
 		</tr>

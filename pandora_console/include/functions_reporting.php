@@ -2400,7 +2400,15 @@ function reporting_group_configuration($report, $content) {
 	
 	
 	if ($content['id_group'] == 0) {
-		$sql = "SELECT * FROM tagente;";
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$sql = "SELECT * FROM tagente;";
+				break;
+			case "oracle":
+				$sql = "SELECT * FROM tagente";
+				break;
+		}
 	}
 	else {
 		$sql = "SELECT * FROM tagente WHERE id_grupo=" . $content['id_group'];
@@ -2700,11 +2708,27 @@ function reporting_alert_report_agent($report, $content) {
 			array('id' => $alert['id_alert_template']));
 		
 		
-		$actions = db_get_all_rows_sql('SELECT name 
-			FROM talert_actions 
-			WHERE id IN (SELECT id_alert_action 
-				FROM talert_template_module_actions 
-				WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ');');
+		
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$actions = db_get_all_rows_sql('SELECT name 
+					FROM talert_actions 
+					WHERE id IN (SELECT id_alert_action 
+						FROM talert_template_module_actions 
+						WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ');');
+				break;
+			case "oracle":
+				$actions = db_get_all_rows_sql('SELECT name 
+					FROM talert_actions 
+					WHERE id IN (SELECT id_alert_action 
+						FROM talert_template_module_actions 
+						WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ')');
+				break;
+		}
+		
+		
+		
 		
 		if (!empty($actions)) {
 			$row = db_get_row_sql('SELECT id_alert_action
@@ -2737,10 +2761,13 @@ function reporting_alert_report_agent($report, $content) {
 		
 		$data_row['fired'] = array();
 		$firedTimes = get_module_alert_fired(
-			$content['id_agent_module'],
+			$alert['id_agent_module'],
 			$alert['id_alert_template'],
 			(int) $content['period'],
 			(int) $report["datetime"]);
+		
+		
+		
 		if (empty($firedTimes)) {
 			$firedTimes = array();
 		}
@@ -2788,10 +2815,26 @@ function reporting_alert_report_module($report, $content) {
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	
-	$alerts = db_get_all_rows_sql('SELECT *, t1.id as id_alert_template_module
-		FROM talert_template_modules t1
-			INNER JOIN talert_templates t2 ON t1.id_alert_template = t2.id
-		WHERE id_agent_module = ' . $content['id_agent_module']);
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$alerts = db_get_all_rows_sql('
+				SELECT *, t1.id as id_alert_template_module
+				FROM talert_template_modules t1
+				INNER JOIN talert_templates t2
+					ON t1.id_alert_template = t2.id
+				WHERE id_agent_module = ' . $content['id_agent_module']);
+			break;
+		case "oracle":
+			$alerts = db_get_all_rows_sql('
+				SELECT t1.*, t2.*, t1.id as id_alert_template_module
+				FROM talert_template_modules t1
+				INNER JOIN talert_templates t2
+					ON t1.id_alert_template = t2.id
+				WHERE id_agent_module = ' . $content['id_agent_module']);
+			break;
+	}
+	
 	
 	if ($alerts === false) {
 		$alerts = array();
@@ -2805,11 +2848,26 @@ function reporting_alert_report_module($report, $content) {
 		
 		$data_row['template'] = db_get_value_filter('name',
 			'talert_templates', array('id' => $alert['id_alert_template']));
-		$actions = db_get_all_rows_sql('SELECT name 
-			FROM talert_actions 
-			WHERE id IN (SELECT id_alert_action 
-				FROM talert_template_module_actions 
-				WHERE id_alert_template_module = ' . $alert['id_alert_template_module'] . ');');
+		
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$actions = db_get_all_rows_sql('SELECT name 
+					FROM talert_actions 
+					WHERE id IN (SELECT id_alert_action 
+						FROM talert_template_module_actions 
+						WHERE id_alert_template_module = ' . $alert['id_alert_template_module'] . ');');
+				break;
+			case "oracle":
+				$actions = db_get_all_rows_sql('SELECT name 
+					FROM talert_actions 
+					WHERE id IN (SELECT id_alert_action 
+						FROM talert_template_module_actions 
+						WHERE id_alert_template_module = ' . $alert['id_alert_template_module'] . ')');
+				break;
+		}
+		
+		
 		
 		if (!empty($actions)) {
 			$row = db_get_row_sql('SELECT id_alert_action
@@ -2846,6 +2904,9 @@ function reporting_alert_report_module($report, $content) {
 			$alert['id_alert_template_module'],
 			(int) $content['period'],
 			(int) $report["datetime"]);
+		
+		
+		
 		if (empty($firedTimes)) {
 			$firedTimes = array();
 		}
@@ -4578,6 +4639,7 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 		$date = get_system_time ();
 	}
 	
+	$table = new stdClass();
 	$table->width = '99%';
 	
 	$table->align = array();
@@ -4704,17 +4766,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 		$date = get_system_time ();
 	}
 	
-	$table->width = '99%';
-	$table->data = array ();
-	$table->head = array ();
-	$table->head[0] = __('Status');
-	$table->head[1] = __('Event name');
-	$table->head[2] = __('Event type');
-	$table->head[3] = __('Criticity');
-	$table->head[4] = __('Count');
-	$table->head[5] = __('Timestamp');
-	$table->style[0] = 'text-align: center;';
-	$table->style[4] = 'text-align: center;';
+	
 	
 	$events = array ();
 	
@@ -4819,23 +4871,7 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 		$date = get_system_time ();
 	}
 	
-	$table->width = '99%';
 	
-	$table->align = array();
-	$table->align[0] = 'center';
-	$table->align[1] = 'center';
-	$table->align[3] = 'center';
-	
-	$table->data = array ();
-	
-	$table->head = array ();
-	$table->head[0] = __('Status');
-	$table->head[1] = __('Count');
-	$table->head[2] = __('Name');
-	$table->head[3] = __('Type');
-	$table->head[4] = __('Criticity');
-	$table->head[5] = __('Val. by');
-	$table->head[6] = __('Timestamp');
 	
 	$events = array ();
 	

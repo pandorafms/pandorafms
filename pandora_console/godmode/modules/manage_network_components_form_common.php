@@ -195,20 +195,20 @@ else {
 
 $table->data[$next_row][1] = '<b>' . __('Tags available') . '</b><br>';
 $table->data[$next_row][1] .= html_print_select_from_sql (
-	"SELECT name, name
+	"SELECT name AS name1, name AS name2
 	FROM ttag 
 	WHERE $tags_condition_not
-		ORDER BY name", 'id_tag_available[]', '', '','','',
+	ORDER BY name", 'id_tag_available[]', '', '','','',
 	true, true, false, false, 'width: 200px', '5');
 $table->data[$next_row][2] =  html_print_image('images/darrowright.png', true, array('id' => 'right', 'title' => __('Add tags to module'))); //html_print_input_image ('add', 'images/darrowright.png', 1, '', true, array ('title' => __('Add tags to module')));
 $table->data[$next_row][2] .= '<br><br><br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'left', 'title' => __('Delete tags to module'))); //html_print_input_image ('add', 'images/darrowleft.png', 1, '', true, array ('title' => __('Delete tags to module')));
 
 $table->data[$next_row][3] = '<b>' . __('Tags selected') . '</b><br>';
 $table->data[$next_row][3] .=  html_print_select_from_sql (
-	"SELECT name, name
+	"SELECT name AS name1, name AS name2
 	FROM ttag 
 	WHERE $tags_condition_in
-		ORDER BY name",
+	ORDER BY name",
 	'id_tag_selected[]', '', '','','', true, true, false,
 	false, 'width: 200px', '5');
 	

@@ -606,7 +606,7 @@ sub write_broker_conf($){
 
 	# I don't think the following should be copied either: proxy_*
 	my %ignored_tokens = (
-		'broker_agent' => 1, 'agent_name_cmd' => 1, 'udp_server' => 1, 'cron_mode' => 1
+		'broker_agent' => 1, 'dynamic_broker' => 1, 'agent_name_cmd' => 1, 'udp_server' => 1, 'cron_mode' => 1
 	);
 
 	open (CONF_FILE, "$ConfDir/$ConfFile") or error ("Could not open file '$ConfDir/$ConfFile': $!.");
@@ -691,7 +691,7 @@ sub read_config (;$) {
 			$Conf{$1} = $2;
 			
 			# Look for broker agents.
-			if ($1 eq 'broker_agent') {
+			if ($1 eq 'broker_agent' || $1 eq 'dynamic_broker') {
 				$BrokerEnabled = 1;
 			}
 
@@ -2208,6 +2208,44 @@ while (1) {
 			last;
 		} else {
 			push (@BrokerPid, $main_agent);
+		}
+	}
+
+	my @dynamic_brokers = read_config ('dynamic_broker');
+	foreach my $dynamic_broker_plugin (@dynamic_brokers) {
+		my @dynamic_agents = `$dynamic_broker_plugin`;
+		foreach my $dynamic_agent (@dynamic_agents) {
+			$main_agent = fork ();
+				
+			# Broker agent
+			if ($main_agent == 0) {
+			
+				# Set the configuration file
+				$ConfFile = "${dynamic_agent}.conf";
+				
+				# Log to a new file
+				stop_log ();
+				start_log ('quiet');
+					
+				# Read configuration file
+				$Conf{'parent_agent_name'} = $Conf{'agent_name'};
+				$Conf{'agent_name'} .= "/${dynamic_agent}";
+				%Macros = ();
+				@Modules = ();
+				%Collections = ();
+				read_config ();
+						
+				# Check for a new configuration
+				check_remote_config () unless ($Conf{'debug'} eq '1');
+					
+				# Check file collections
+				check_collections () unless ($Conf{'debug'} eq '1');
+						
+				# Execute
+				last;
+			} else {
+				push (@BrokerPid, $main_agent);
+			}
 		}
 	}
 

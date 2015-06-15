@@ -341,13 +341,13 @@ $id = get_parameter('id');
 			case 'boolean':
 			case 'sparse':
 				$data = array();
-				$data[0] = __('Time compare') . ' (' . __('Overlapped') . ')';
+				$data[0] = __('Time compare (Overlapped)');
 				$data[1] = html_print_checkbox ("time_compare_overlapped", 1, (bool) $time_compare_overlapped, true);
 				$table->data[] = $data;
 				$table->rowclass[] = '';
 				
 				$data = array();
-				$data[0] = __('Time compare') . ' (' . __('Separated') . ')';
+				$data[0] = __('Time compare (Separated)');
 				$data[1] = html_print_checkbox ("time_compare_separated", 1, (bool) $time_compare_separated, true);
 				$table->data[] = $data;
 				$table->rowclass[] = '';
@@ -371,7 +371,7 @@ $id = get_parameter('id');
 		$table->class = 'databox';
 		
 		$data = array();
-		$data[0] = html_print_div(array('content' => $form_table,
+		$data[0] = html_print_div(array('id' => 'field_list', 'content' => $form_table,
 			'style' => 'overflow: auto; height: 220px'), true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
@@ -448,4 +448,12 @@ $id = get_parameter('id');
 	?>
 	
 	forced_title_callback();
+	
+	$(window).ready(function() {
+		$("#field_list").css('height', ($(window).height() - 160) + 'px');
+	});
+	
+	$(window).resize(function() {
+		$("#field_list").css('height', ($(window).height() - 160) + 'px');
+	});
 </script>

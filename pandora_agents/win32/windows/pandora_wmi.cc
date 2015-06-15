@@ -116,11 +116,8 @@ Pandora_Wmi::isServiceRunning (string service_name) {
 			if (str_state == "Running") {
 				retval = 1;
 			}
-			else if (str_state == "Stopped") {
-				retval = 0;
-			}
 			else {
-				retval = -1;
+				retval = 0;
 			}
 			dhFreeString (state);
 

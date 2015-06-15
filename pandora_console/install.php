@@ -63,7 +63,7 @@
 		<div style='height: 10px'>
 			<?php
 $version = '6.0dev';
-$build = '150611';
+$build = '150615';
 			$banner = "v$version Build $build";
 			
 			error_reporting(0);
@@ -404,7 +404,8 @@ function adjust_paths_for_freebsd($engine, $connection = false) {
 			"update talert_commands set command = REPLACE(command,'/usr/bin','/usr/local/bin');",
 			"update talert_commands set command = REPLACE(command,'/usr/share', '/usr/local/share');",
 			"update tplugin set execute = REPLACE(execute,'/usr/share','/usr/local/share');",
-			"update tevent_response set target = REPLACE(target,'/usr/share','/usr/local/share');"
+			"update tevent_response set target = REPLACE(target,'/usr/share','/usr/local/share');",
+			"insert into tconfig (token, value) VALUES ('graphviz_bin_dir', '/usr/local/bin');"
 			);
 
 	for ($i = 0; $i < count ($adjust_sql); $i++) {

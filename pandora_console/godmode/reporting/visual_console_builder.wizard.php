@@ -97,7 +97,8 @@ $table->data["staticgraph"][1] = html_print_select($images_list,
 $table->rowstyle["all_1"] = 'display: none;';
 $table->data["all_1"][0] = __('Range between elements (px)');
 $table->colspan["all_1"][1] = "3";
-$table->data["all_1"][1] = html_print_input_text('range', 50, '', 5, 5, true);
+$table->data["all_1"][1] = html_print_input_text('range', 50, '', 5, 5,
+	true);
 
 
 $table->rowstyle["staticgraph_modulegraph"] = 'display: none;';
@@ -106,14 +107,16 @@ $table->colspan["staticgraph_modulegraph"][1] = "3";
 $table->data["staticgraph_modulegraph"][1] = __('Width').': ' .
 	html_print_input_text ('width', 0, '', 5, 5, true);
 $table->data["staticgraph_modulegraph"][1] .= '&nbsp;&nbsp;&nbsp;' .
-	__('Height').': '.html_print_input_text ('height', 0, '', 5, 5, true);
+	__('Height').': '.html_print_input_text ('height', 0, '', 5, 5,
+		true);
 
 
 $table->rowstyle["modulegraph_simplevalue"] = 'display: none;';
 $table->data["modulegraph_simplevalue"][0] = __('Period');
 $table->colspan["modulegraph_simplevalue"][1] = "3";
 $table->data["modulegraph_simplevalue"][1] =
-	html_print_extended_select_for_time ('period', '', '', '', '', false, true);
+	html_print_extended_select_for_time ('period', '', '', '', '',
+		false, true);
 
 
 $table->rowstyle["simplevalue"] = 'display: none;';
@@ -141,9 +144,11 @@ $table->rowstyle["percentileitem_3"] = 'display: none;';
 $table->data["percentileitem_3"][0] = __('Type');
 $table->data["percentileitem_3"][1] =
 	html_print_radio_button_extended('type_percentile', 'percentile',
-		('Percentile'), 'percentile', false, '', 'style="float: left;"', true) .
+		('Percentile'), 'percentile', false, '', 'style="float: left;"',
+		true) .
 	html_print_radio_button_extended('type_percentile', 'bubble',
-		('Bubble'), 'percentile', false, '', 'style="float: left;"', true);
+		('Bubble'), 'percentile', false, '', 'style="float: left;"',
+		true);
 
 
 $table->rowstyle["percentileitem_4"] = 'display: none;';
@@ -179,7 +184,8 @@ $table->data["all_one_item_per_agent"][1] = __('Yes') .
 		'item_per_agent_change(1)', '', true).'&nbsp;&nbsp;';
 $table->data["all_one_item_per_agent"][1] .= __('No') .
 	'&nbsp;&nbsp;&nbsp;' . html_print_radio_button_extended(
-		'item_per_agent', 0, '', 0, false, 'item_per_agent_change(0)', '', true);
+		'item_per_agent', 0, '', 0, false, 'item_per_agent_change(0)',
+		'', true);
 $table->data["all_one_item_per_agent"][1] .= html_print_input_hidden(
 	'item_per_agent_test', 0, true);
 
@@ -209,10 +215,12 @@ $table->data["all_6"][1] = html_print_select ($label_type, 'label_type',
 $table->data["all_7"][0] = __('Enable link agent');
 $table->colspan["all_7"][1] = "3";
 $table->data["all_7"][1] = __('Yes') . '&nbsp;&nbsp;&nbsp;' .
-	html_print_radio_button_extended('enable_link', 1, '', 1, false, '', '', true) .
+	html_print_radio_button_extended('enable_link', 1, '', 1, false, '',
+		'', true) .
 	'&nbsp;&nbsp;';
 $table->data["all_7"][1] .= __('No') . '&nbsp;&nbsp;&nbsp;' .
-	html_print_radio_button_extended('enable_link', 0, '', 1, false, '', '', true);
+	html_print_radio_button_extended('enable_link', 0, '', 1, false, '',
+		'', true);
 
 
 $parents = visual_map_get_items_parents($visualConsole["id"]);
@@ -220,10 +228,15 @@ if (empty($parents))
 	$parents = array();
 $table->data["all_8"][0] = __('Set Parent');
 $table->data["all_8"][1] = html_print_select(
-	array (VISUAL_MAP_WIZARD_PARENTS_ITEM_MAP => __('Item created in the visualmap'),
-	VISUAL_MAP_WIZARD_PARENTS_AGENT_RELANTIONSHIP => __('Use the agents relationship (from selected agents)')), 'kind_relationship',
-	0, '', __('None'), VISUAL_MAP_WIZARD_PARENTS_NONE, true);
-$table->data["all_8"][2] = '<span id="parent_column_2_item_in_visual_map">' .
+	array (
+		VISUAL_MAP_WIZARD_PARENTS_ITEM_MAP =>
+			__('Item created in the visualmap'),
+		VISUAL_MAP_WIZARD_PARENTS_AGENT_RELANTIONSHIP =>
+			__('Use the agents relationship (from selected agents)')),
+	'kind_relationship', 0, '', __('None'),
+	VISUAL_MAP_WIZARD_PARENTS_NONE, true);
+$table->data["all_8"][2] =
+	'<span id="parent_column_2_item_in_visual_map">' .
 	__('Item in the map') . '</span>' .
 	'<span id="parent_column_2_relationship">' .
 	ui_print_help_tip(
@@ -235,11 +248,12 @@ $table->data["all_8"][3] = '<span id="parent_column_3_item_in_visual_map">' .
 
 
 
-if (defined('METACONSOLE')) {
+
+if ($config['metaconsole'] == 1 && $config['enterprise_installed'] == 1) {
 	$pure = get_parameter('pure', 0);
 	
 	echo '<form method="post"
-		action="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&tab=wizard&id_visual_console=' . $visualConsole["id"] . '"
+		action="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&tab=wizard&id_visualmap=' . $visualConsole["id"] . '"
 		onsubmit="if (! confirm(\''.__('Are you sure to add many elements\nin visual map?').'\')) return false; else return check_fields();">';
 }
 else {
@@ -265,7 +279,8 @@ echo '</form>';
 //Trick for it have a traduct text for javascript.
 echo '<span id="any_text" style="display: none;">' . __('Any') . '</span>';
 echo '<span id="none_text" style="display: none;">' . __('None') . '</span>';
-echo '<span id="loading_text" style="display: none;">' . __('Loading...') . '</span>';
+echo '<span id="loading_text" style="display: none;">' .
+	__('Loading...') . '</span>';
 ?>
 <script type="text/javascript">
 var show_only_enabled_modules = true;
@@ -286,17 +301,21 @@ $(document).ready (function () {
 		selected = $("#process_value").val();
 		
 		if (selected == <?php echo PROCESS_VALUE_NONE;?>) {
-			$("tr", "#wizard_table").filter(function () {return /^.*modulegraph_simplevalue.*/.test(this.id); }).hide();
+			$("tr", "#wizard_table")
+				.filter(function () {return /^.*modulegraph_simplevalue.*/.test(this.id); }).hide();
 		}
 		else {
-			$("tr", "#wizard_table").filter(function () {return /^.*modulegraph_simplevalue.*/.test(this.id); }).show();
+			$("tr", "#wizard_table")
+				.filter(function () {return /^.*modulegraph_simplevalue.*/.test(this.id); }).show();
 		}
 	});
 	
 	$("#groups").change (function () {
 		$('#id_agents').attr('disabled', true);
 		$('#id_agents').empty ();
-		$('#id_agents').append ($('<option></option>').html($("#loading_text").html()));
+		$('#id_agents')
+			.append($('<option></option>')
+			.html($("#loading_text").html()));
 		$('#id_agents').css ("width", "auto");
 		$('#id_agents').css ("max-width", "");
 		
@@ -324,12 +343,17 @@ $(document).ready (function () {
 				if (isEmptyObject(data)) {
 					var noneText = $("#none_text").html(); //Trick for catch the translate text.
 					
-					$('#id_agents').append ($('<option></option>').html (noneText).attr ("None", "").attr('value', -1).attr('selected', true));
+					$('#id_agents')
+						.append($('<option></option>')
+						.html(noneText).attr ("None", "")
+						.attr('value', -1).attr('selected', true));
 				}
 				else {
 					jQuery.each (data, function (i, val) {
 						s = js_html_entity_decode(val);
-						$('#id_agents').append ($('<option></option>').html (s).attr("value", i));
+						$('#id_agents')
+							.append($('<option></option>')
+							.html(s).attr("value", i));
 					});
 				}
 				

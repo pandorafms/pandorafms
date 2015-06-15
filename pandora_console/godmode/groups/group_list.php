@@ -294,9 +294,7 @@ if (($delete_group) && (check_acl($config['id_user'], 0, "PM"))) {
 db_clean_cache();
 $groups = users_get_groups_tree ($config['id_user'], "AR", true);
 
-$table->width = '98%';
-if (defined("METACONSOLE"))
-	$table->width = '100%';
+$table->width = '100%';
 
 $all_parents = array();
 $groups_count = 0;
@@ -322,19 +320,8 @@ foreach ($all_parents as $parent) {
 
 $groups_count = count($groups);
 
-if (check_acl($config['id_user'], 0, "PM")) {
-	if (!defined("METACONSOLE")) {
-		echo '<br />';
-		echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/groups/configure_group&pure='.$pure.'">';
-		echo '<div class="action-buttons" style="width: '.$table->width.'">';
-		html_print_submit_button(__('Create group'), 'crt', false,
-			'class="sub next"');
-		echo '</div>';
-		echo '</form>';
-	}
-}
-
 if (!empty($groups)) {
+	$table->class = "databox data";
 	$table->head = array ();
 	$table->head[0] = __('Name');
 	$table->head[1] = __('ID');
@@ -343,8 +330,8 @@ if (!empty($groups)) {
 	$table->head[4] = __('Description');
 	$table->head[5] = __('Actions');
 	$table->align = array ();
-	$table->align[2] = 'center';
-	$table->align[5] = 'center';
+	$table->align[2] = 'left';
+	$table->align[5] = 'left';
 	$table->data = array ();
 	
 	$offset = (int)get_parameter('offset', 0);
@@ -388,7 +375,7 @@ if (!empty($groups)) {
 	echo $pagination;
 }
 else {
-	echo "<div class='nf'>".__('There are no defined groups')."</div>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined groups') ) );
 }
 
 if (check_acl($config['id_user'], 0, "PM")) {

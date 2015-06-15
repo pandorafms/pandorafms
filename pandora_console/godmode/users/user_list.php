@@ -220,7 +220,7 @@ if (($filter_group == 0) && ($filter_search == '')) {
 
 $table = null;
 $table->width = '100%';
-$table->class = "databox";
+$table->class = "databox filters";
 if(defined('METACONSOLE'))
 	$table->class = "databox_filters";
 $table->rowclass[0] = '';
@@ -258,10 +258,10 @@ if (defined('METACONSOLE')) {
 	$table->class = "databox";
 }
 else {
-	$table->cellpadding = 4;
-	$table->cellspacing = 4;
-	$table->width = '99%';
-	$table->class = "databox";
+	$table->cellpadding = 0;
+	$table->cellspacing = 0;
+	$table->width = '100%';
+	$table->class = "databox data";
 }
 $table->head = array ();
 $table->data = array ();
@@ -283,7 +283,7 @@ $table->head[4] = __('Profile');
 $table->head[5] = __('Description');
 $table->head[6] = '<span title="Operations">' . __('Op.') . '</span>';
 if (!defined('METACONSOLE')) {
-	$table->align[2] = "right";
+	$table->align[2] = "";
 	$table->size[2] = '150px';
 }
 

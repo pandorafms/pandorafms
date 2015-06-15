@@ -549,8 +549,7 @@ if ($agents !== false) {
 	echo "<table width='100%'><tr><td align='right'>";
 }
 else {
-	echo "<div class='nf'>" . __('There are no defined agents') . "</div>";
-	echo "&nbsp;</td></tr><tr><td>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined agents') ) );
 }
 
 if (check_acl ($config["id_user"], 0, "AW")) {

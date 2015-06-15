@@ -76,7 +76,7 @@ foreach ($rows as $row) {
 	}
 	echo "
 	<tr>
-		<td class='$tdcolor' align='center'>" .
+		<td class='$tdcolor' align=''>" .
 		html_print_image("images/".$row["icon"], true, array("border" => '0')) .
 		"</td>
 		<td class='$tdcolor'>

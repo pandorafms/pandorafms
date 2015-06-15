@@ -441,7 +441,9 @@ $url = ui_get_url_refresh (array ('offset' => false,
 $search_id_group = (int) get_parameter ('search_id_group');
 $search_string = (string) get_parameter ('search_string');
 
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox filters';
+
 if(defined("METACONSOLE")) {
 	$table->width = '50%';
 	$table->class = 'databox_filters';

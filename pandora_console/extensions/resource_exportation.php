@@ -341,16 +341,16 @@ function resource_exportation_extension_main() {
 	echo "<br /><br />";
 	
 	$table = null;
-	$table->width = '98%';
+	$table->width = '100%';
 	$table->style[0] = 'width: 30%;';
 	$table->style[1] = 'width: 10%;';
-	$table->class = "databox_color";
+	$table->class = "databox filters";
 	$table->data[0][0] = __('Report');
 	$table->data[0][1] = html_print_select_from_sql('SELECT id_report, name FROM treport', 'report', '', '', '', 0, true);
-	$table->data[0][2] = html_print_button(__('Export'), '', false, 'export_to_ptr(\'report\');', 'class="sub"', true);
+	$table->data[0][2] = html_print_button(__('Export'), '', false, 'export_to_ptr(\'report\');', 'class="sub config"', true);
 	$table->data[1][0] = __('Visual console');
 	$table->data[1][1] = html_print_select_from_sql('SELECT id, name FROM tlayout', 'visual_console', '', '', '', 0, true);
-	$table->data[1][2] = html_print_button(__('Export'), '', false, 'export_to_ptr(\'visual_console\');', 'class="sub"', true);
+	$table->data[1][2] = html_print_button(__('Export'), '', false, 'export_to_ptr(\'visual_console\');', 'class="sub config"', true);
 	
 	if ($hook_enterprise === true)
 		add_rows_for_enterprise($table->data);

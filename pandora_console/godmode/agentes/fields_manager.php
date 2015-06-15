@@ -102,7 +102,7 @@ if ($fields) {
 	$table->data = array ();
 }
 else {
-	echo '<div class="nf">'. __('No fields defined') .'</div>';
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No fields defined') ) );
 }
 
 if ($fields === false) $fields = array();

@@ -170,9 +170,11 @@ if ($create) {
 $table->id = 'table1';
 $table->width = '100%';
 $table->border = 0;
-$table->cellspacing = 3;
-$table->cellpadding = 5;
+$table->cellspacing = 0;
+$table->cellpadding = 0;
 $table->class = "databox filters";
+$table->style[0] = 'font-weight: bold';
+
 if (defined('METACONSOLE')) {
 	$table->width = '100%';
 	$table->class = 'databox data';
@@ -182,9 +184,6 @@ if (defined('METACONSOLE')) {
 		$table->head[0] = __("Create filter");
 	$table->head_colspan[0] = 5;
 	$table->headstyle[0] = 'text-align: center';
-}
-else {
-	$table->style[0] = 'vertical-align: top;';
 }
 
 $table->data = array ();

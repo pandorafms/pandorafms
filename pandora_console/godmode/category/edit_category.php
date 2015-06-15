@@ -152,7 +152,7 @@ else
 		}
 	}
 	echo "<tr>";
-		echo "<td>";
+		echo "<td style='font-weight: bold'>";
 		
 		html_print_label (__("Name"),'name');
 		echo "</td>";

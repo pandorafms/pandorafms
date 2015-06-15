@@ -462,7 +462,7 @@ function config_update_config () {
 					if (!config_update_value ('type_module_charts', (string) get_parameter('type_module_charts', 'area')))
 						$error_update[] = __('Default type of module charts.');
 					if (!config_update_value ('render_proc', (bool) get_parameter('render_proc', false)))
-						$error_update[] = __('Render data of module type is proc.');
+						$error_update[] = __('Display proc modules in binary format (OK/FAIL)');
 					
 					
 					

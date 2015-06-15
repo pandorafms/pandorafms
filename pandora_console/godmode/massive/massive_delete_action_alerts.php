@@ -122,10 +122,11 @@ else
 	$return_all_group = true;
 
 $table->id = 'delete_table';
-$table->width = '98%';
+$table->class = 'databox filters';
+$table->width = '100%';
 $table->data = array ();
 $table->style = array ();
-$table->style[0] = 'font-weight: bold; vertical-align:top';
+$table->style[0] = 'font-weight: bold;';
 $table->style[2] = 'font-weight: bold';
 $table->size = array ();
 $table->size[0] = '15%';

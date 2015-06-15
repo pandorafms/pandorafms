@@ -88,14 +88,14 @@ $result = false;
 
 $result = categories_get_all_categories ();
 
-// Prepare pagination
-ui_pagination ($total_categories, $url);
-
 // Display categories previously filtered or not
 $rowPair = true;
 $iterator = 0;
 
 if (!empty($result)) {
+	
+	// Prepare pagination
+	ui_pagination ($total_categories, $url);
 	
 	$table->width = '100%';
 	$table->class = 'databox data';
@@ -153,7 +153,7 @@ if (!empty($result)) {
 }
 else {
 	// No categories available or selected
-	echo "<div class='nf'>".__('No categories found')."</div>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No categories found') ) );
 }
 // Form to add new categories or search categories
 if (!defined('METACONSOLE')) {

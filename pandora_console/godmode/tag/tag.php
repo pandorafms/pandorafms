@@ -119,7 +119,7 @@ else {
 
 // Form to add new tags or search tags
 if (!defined('METACONSOLE')) {
-	echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
+	echo "<table border=0 cellpadding=4 cellspacing=4 class='databox data' width=100%>";
 	echo "<tr>";
 	echo "<td>";
 		echo '<b>' . __("Name") . "/" . __("Description") . '</b>';
@@ -170,16 +170,18 @@ $iterator = 0;
 
 if (!empty($result)) {
 	
-	$table->width = '98%';
-	if (defined("METACONSOLE"))
-		$table->width = '100%';
+	$table->width = '100%';
+	$table->class = 'databox data';
+	
 	$table->data = array ();
 	$table->head = array ();
 	$table->align = array ();
-	$table->style = array ();
+	$table->style = array ();	
+	$table->size = array("15%","30%","15%","15%","","","8%");	
+	
 	$table->style[0] = 'font-weight: bold;';
-	$table->style[3] = 'text-align:center';
-	$table->style[6] = 'text-align:center';
+	$table->style[3] = 'text-align:left';
+	$table->style[6] = 'text-align:left';
 	$table->head[0] = __('Tag name');
 	$table->head[1] = __('Description');
 	$table->head[2] = __('Detail information');

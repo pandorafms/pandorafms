@@ -232,6 +232,8 @@ else {
 
 echo '<form name="component" method="post">';
 
+$table->width = '100%';
+$table->class = 'databox filters';
 /* $table came from manage_network_components_form_common.php */
 if (defined('METACONSOLE')) {
 	$table->width = '100%';

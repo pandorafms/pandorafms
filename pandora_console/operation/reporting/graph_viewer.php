@@ -103,7 +103,7 @@ if ($view_graph) {
 		include ("general/noaccess.php");
 		exit;
 	}
-	html_print_input_hidden ('lineWidhtGraph', $config['custom_graph_width']);
+	html_print_input_hidden ('lineWidhtGraph', $config['custom_graph_widht']);
 	$url = "index.php?" .
 		"sec=reporting&" .
 		"sec2=operation/reporting/graph_viewer&" .

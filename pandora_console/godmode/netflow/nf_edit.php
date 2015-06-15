@@ -112,9 +112,8 @@ if ($filters === false)
 	$filters = array ();
 
 $table->width = '100%';
-if (defined('METACONSOLE')) {
-	$table->width = '100%';
-}
+$table->class = 'databox data';
+
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Group');
@@ -124,10 +123,7 @@ $table->head[2] = __('Action') .
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->align = array ();
-if (!defined('METACONSOLE'))
-	$table->align[1] = 'center';
 
-$table->align[2] = 'center';
 $table->size = array ();
 $table->size[0] = '60%';
 $table->size[1] = '30%';
@@ -156,21 +152,18 @@ if (isset($data)) {
 	echo "<form method='post' action='" . $config['homeurl'] . "index.php?sec=netf&sec2=godmode/netflow/nf_edit&pure=$pure'>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
-	if (defined('METACONSOLE'))
-		echo "<div style='text-align: right; width:100%'>";
-	else
-		echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+	echo "<div style=' text-align: right; width:" . $table->width . "'>";
 
 	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 	echo "</div>";
 	echo "</form>";
 }
 else {
-	echo "<div class='nf'>".__('There are no defined filters')."</div>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined filters') ) );
 }
 
 echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&pure='.$pure.'">';
-echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+echo "<div style='padding-top: 20px; text-align: right; width:" . $table->width . "'>";
 html_print_submit_button (__('Create filter'), 'crt', false, 'class="sub wand"');
 echo "</div>";
 echo "</form>";

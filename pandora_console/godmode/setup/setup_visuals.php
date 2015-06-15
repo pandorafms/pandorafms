@@ -80,7 +80,7 @@ $table->data[$row][1] = html_print_checkbox('paginate_module', 1,
 	$config['paginate_module'], true);
 $row++;
 
-$table->data[$row][0] = __('Render data of module type is proc.');
+$table->data[$row][0] = __('Display proc modules in binary format (OK/FAIL).');
 $table->data[$row][1] = __('Yes') . '&nbsp;' . 
 		html_print_radio_button ('render_proc', 1, '',
 		$config["render_proc"], true) .

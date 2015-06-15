@@ -57,11 +57,11 @@ if ($do_operation) {
 
 $groups = users_get_groups ();
 
-$table->class = 'databox';
-$table->width = '98%';
+$table->class = 'databox filters';
+$table->width = '100%';
 $table->data = array ();
 $table->style = array ();
-$table->style[0] = 'font-weight: bold; vertical-align:top';
+$table->style[0] = 'font-weight: bold;';
 $table->style[2] = 'font-weight: bold';
 $table->style[4] = 'font-weight: bold';
 $table->style[6] = 'font-weight: bold';
@@ -113,6 +113,7 @@ echo '</fieldset>';
 
 /* Target selection */
 $table->id = 'target_table';
+$table->class = 'databox filters';
 $table->data = array ();
 
 $modules = array ();
@@ -171,6 +172,7 @@ echo '</fieldset>';
 
 /* Destiny selection */
 $table->id = 'destiny_table';
+$table->class = 'databox filters';
 $table->data = array ();
 $table->size[0] = '20%';
 $table->size[1] = '30%';

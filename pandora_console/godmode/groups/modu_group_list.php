@@ -174,6 +174,7 @@ switch ($config["dbtype"]) {
 $groups = db_get_all_rows_sql($sql);
 
 $table->width = '100%';
+$table->class = 'databox data';
 
 if (!empty($groups)) {
 	$table->head = array ();
@@ -199,7 +200,7 @@ if (!empty($groups)) {
 	html_print_table ($table);
 }
 else {
-	echo "<div class='nf'>".__('There are no defined module groups')."</div>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined module groups') ) );
 }
 
 echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/groups/configure_modu_group">';

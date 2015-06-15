@@ -187,7 +187,7 @@ if (!defined("METACONSOLE")) {
 	echo '</div>';
 }
 else {
-	$table = null;
+	$table = new stdClass();
 	$table->width = '96%';
 	$table->class = "databox_filters";
 	$table->cellpadding = 0;

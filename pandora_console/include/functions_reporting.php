@@ -5647,7 +5647,30 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period=0, $d
 			$period = $date - $previous_data['utimestamp'];
 		}
 	}
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			// Do none
+			break;
+		case "oracle":
+			$previous_data['datos'] = 
+				oracle_format_float_to_php($previous_data['datos']);
+			break;
+	}
+	
 	foreach ($interval_data as $data) {
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				// Do none
+				break;
+			case "oracle":
+				$data['datos'] =
+					oracle_format_float_to_php($data['datos']);
+				break;
+		}
+		
 		if (! $uncompressed_module) {
 			$total += $previous_data['datos'] * ($data['utimestamp'] - $previous_data['utimestamp']);
 			$previous_data = $data;
@@ -5722,7 +5745,8 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period = 0, $date = 
 	if ($interval_data === false) $interval_data = array ();
 	
 	// Get previous data
-	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
+	$previous_data = modules_get_previous_data(
+		$id_agent_module, $datelimit);
 	if ($previous_data !== false) {
 		$previous_data['utimestamp'] = $datelimit;
 		array_unshift ($interval_data, $previous_data);
@@ -5750,6 +5774,18 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period = 0, $date = 
 	$critical_period = 0;
 	$first_data = array_shift ($interval_data);
 	$previous_utimestamp = $first_data['utimestamp'];
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			// Do none
+			break;
+		case "oracle":
+			$first_data['datos'] =
+				oracle_format_float_to_php($first_data['datos']);
+			break;
+	}
+	
 	if ((($critical_max > $critical_min AND ($first_data['datos'] > $critical_max OR $first_data['datos'] < $critical_min))) OR
 		($critical_max <= $critical_min AND $first_data['datos'] < $critical_min)) {
 		$previous_status = 1;
@@ -5761,6 +5797,17 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period = 0, $date = 
 	}
 	
 	foreach ($interval_data as $data) {
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				// Do none
+				break;
+			case "oracle":
+				$data['datos'] =
+					oracle_format_float_to_php($data['datos']);
+				break;
+		}
+		
 		// Previous status was critical
 		if ($previous_status == 1) {
 			$critical_period += $data['utimestamp'] - $previous_utimestamp;
@@ -5863,6 +5910,18 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period = 0, $date = 
 	$critical_period = 0;
 	$first_data = array_shift ($interval_data);
 	$previous_utimestamp = $first_data['utimestamp'];
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			// Do none
+			break;
+		case "oracle":
+			$first_data['datos'] =
+				oracle_format_float_to_php($first_data['datos']);
+			break;
+	}
+	
 	if ((($critical_max > $critical_min AND ($first_data['datos'] > $critical_max OR $first_data['datos'] < $critical_min))) OR
 			($critical_max <= $critical_min AND $first_data['datos'] < $critical_min)) {
 		$previous_status = 1;
@@ -5877,6 +5936,17 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period = 0, $date = 
 		// Previous status was critical
 		if ($previous_status == 1) {
 			$critical_period += $data['utimestamp'] - $previous_utimestamp;
+		}
+		
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				// Do none
+				break;
+			case "oracle":
+				$data['datos'] =
+					oracle_format_float_to_php($data['datos']);
+				break;
 		}
 		
 		// Re-calculate previous status for the next data
@@ -6927,7 +6997,30 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period=0, $date 
 		}
 	}
 	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			// Do none
+			break;
+		case "oracle":
+			$max = oracle_format_float_to_php($max);
+			break;
+	}
+	
+	
+	
 	foreach ($interval_data as $data) {
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				// Do none
+				break;
+			case "oracle":
+				$data['datos'] =
+					oracle_format_float_to_php($data['datos']);
+				break;
+		}
+		
 		if ($data['datos'] > $max) {
 			$max = $data['datos'];
 		}
@@ -7003,7 +7096,28 @@ function reporting_get_agentmodule_data_min ($id_agent_module, $period=0, $date 
 	// Set initial conditions
 	$min = $interval_data[0]['datos'];
 	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			// Do none
+			break;
+		case "oracle":
+			$min = oracle_format_float_to_php($min);
+			break;
+	}
+	
 	foreach ($interval_data as $data) {
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				// Do none
+				break;
+			case "oracle":
+				$data['datos'] =
+					oracle_format_float_to_php($data['datos']);
+				break;
+		}
+		
 		if ($data['datos'] < $min) {
 			$min = $data['datos'];
 		}
@@ -7098,6 +7212,17 @@ function reporting_get_agentmodule_data_sum ($id_agent_module,
 	}
 	
 	foreach ($interval_data as $data) {
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				// Do none
+				break;
+			case "oracle":
+				$data['datos'] =
+					oracle_format_float_to_php($data['datos']);
+				break;
+		}
+		
 		if ($uncompressed_module) {
 			$total += $data['datos'];
 		}

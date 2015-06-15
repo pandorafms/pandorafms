@@ -1259,7 +1259,7 @@ CREATE TABLE treport_content (
 	style CLOB DEFAULT '',
 	id_group NUMBER(10, 0) DEFAULT 0,
 	id_module_group NUMBER(10, 0) DEFAULT 0,
-	server_name CLOB DEFAULT ''
+	server_name VARCHAR2(1000) default ''
 );
 
 CREATE SEQUENCE treport_content_s INCREMENT BY 1 START WITH 1;

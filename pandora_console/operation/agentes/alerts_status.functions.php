@@ -39,12 +39,13 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	global $config;
 	require_once ($config['homedir'] . "/include/functions_tags.php");
 	
+	$table = new StdClass();
 	$table->width = '100%';
-	$table->class = 'databox filters';
+	$table->class = 'databox filters alert-status-filter';
 	$table->cellpadding = '0';
 	$table->cellspacing = '0';
-	if(defined('METACONSOLE')){
-		$table->class = 'databox_filters';
+	if (defined('METACONSOLE')) {
+		$table->class = 'databox_filters alert-status-filter';
 		$table->width = '96%';
 		$table->cellpadding = '0';
 		$table->cellspacing = '0';

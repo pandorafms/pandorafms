@@ -319,11 +319,11 @@ $options_simple = array('offset' => $offset_simple,
 	'limit' => $config['block_size'], 'order' => $order);
 
 $filter_alert = array();
-if($filter_standby == 'standby_on') {
+if ($filter_standby == 'standby_on') {
 	$filter_alert['disabled'] = $filter;
 	$filter_alert['standby'] = '1';
 }
-else if($filter_standby == 'standby_off') {
+else if ($filter_standby == 'standby_off') {
 	$filter_alert['disabled'] = $filter;
 	$filter_alert['standby'] = '0';
 }
@@ -373,11 +373,11 @@ if ($pure) {
 
 // Filter form
 if ($print_agent) {
-	if(defined('METACONSOLE')){
-		ui_toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, $tag_filter, true, $strict_user),__('Show Options'));;
+	if (defined('METACONSOLE')) {
+		ui_toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, $tag_filter, true, $strict_user), __('Show Options'));
 	}
-	else{
-		ui_toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, $tag_filter, true, $strict_user),__('Alert control filter'), __('Toggle filter(s)'));
+	else {
+		ui_toggle(printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby, $tag_filter, true, $strict_user), __('Alert control filter'), __('Toggle filter(s)'));
 	}
 }
 
@@ -556,13 +556,8 @@ $table->data = array ();
 $rowPair = true;
 $iterator = 0;
 foreach ($alerts['alerts_simple'] as $alert) {
-	if ($rowPair)
-		$table->rowclass[$iterator] = 'rowPair';
-	else
-		$table->rowclass[$iterator] = 'rowOdd';
-	$rowPair = !$rowPair;
-	
-	array_push ($table->data, ui_format_alert_row ($alert, $print_agent, $url, 'font-size: 7pt;'));
+	$row = ui_format_alert_row ($alert, $print_agent, $url, 'font-size: 7pt;');
+	$table->data[] = $row;
 }
 
 if (!empty ($table->data)) {
@@ -607,40 +602,36 @@ ui_require_jquery_file('cluetip');
 ?>
 
 <script type="text/javascript">
-$(document).ready (function () {
-	$("a.template_details").cluetip ({
-		arrows: true,
-		attribute: 'href',
-		cluetipClass: 'default'
-	}).click (function () {
-		return false;
+	
+	$(document).ready (function () {
+		$("a.template_details").cluetip ({
+			arrows: true,
+			attribute: 'href',
+			cluetipClass: 'default'
+		}).click (function () {
+			return false;
+		});
 	});
-	
-	if ($('#ag_group').val() != 0) {
-		$("#tag_filter").css('display', 'none');
-		$("#table2-0-4").css('display', 'none');
-	}
-});
 
-	
-$('#ag_group').change (function (){
-	strict_user = $("#text-strict_user_hidden").val();
-	is_meta = $("#text-is_meta_hidden").val();
+	$('table.alert-status-filter #ag_group').change (function () {
+		var strict_user = $("#text-strict_user_hidden").val();
+		var is_meta = $("#text-is_meta_hidden").val();
 
-	if (($("#ag_group").val() != 0) && (strict_user != 0)) {
-		$("#tag_filter").css('display', 'none');
-		if (is_meta) {
-			$("#table1-0-4").css('display', 'none');
+		if (($(this).val() != 0) && (strict_user != 0)) {
+			$("table.alert-status-filter #tag_filter").hide();
+			if (is_meta) {
+				$("table.alert-status-filter #table1-0-4").hide();
+			} else {
+				$("table.alert-status-filter #table2-0-4").hide();
+			}
 		} else {
-			$("#table2-0-4").css('display', 'none');
+			$("#tag_filter").show();
+			if (is_meta) {
+				$("table.alert-status-filter #table1-0-4").show();
+			} else {
+				$("table.alert-status-filter #table2-0-4").show();
+			}
 		}
-	} else {
-		$("#tag_filter").css('display', '');
-		if (is_meta) {
-			$("#table1-0-4").css('display', '');
-		} else {
-			$("#table2-0-4").css('display', '');
-		}
-	}
-}).change();
+	}).change();
+	
 </script>

@@ -2387,9 +2387,15 @@ function set_when_empty (&$var, $default) {
 	}
 }
 
-function sort_by_column (&$array_ref, $column) {
+function sort_by_column (&$array_ref, $column_parameter) {
+	global $column;
+	
+	$column = $column_parameter;
+	
 	if (!empty($column)) {
 		usort($array_ref, function ($a, $b) {
+			global $column;
+			
 			return strcmp($a[$column], $b[$column]);
 		});
 	}

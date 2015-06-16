@@ -115,8 +115,6 @@ $id_agent = get_parameter('id_agent', null);
 $id_metaconsole = get_parameter('id_metaconsole', null);
 $id_group = (int)get_parameter('id_group', 0);
 $id_custom_graph = get_parameter('id_custom_graph', null);
-$height_module_graph = get_parameter('id_custom_graph', null);
-$width_module_graph = get_parameter('id_custom_graph', null);
 $border_width = get_parameter('border_width', 0);
 $border_color = get_parameter('border_color', '');
 $fill_color = get_parameter('fill_color', '');
@@ -455,13 +453,13 @@ switch ($action) {
 					$values['id_layout_linked'] = $map_linked;
 				}
 				switch ($type) {
-					// -- line_item --
+					// -- line_item ------------------------------------
 					case 'handler_start':
 					case 'handler_end':
-					// ---------------
 						$values['border_width'] = $line_width;
 						$values['border_color'] = $line_color;
 						break;
+					// -------------------------------------------------
 					case 'box_item':
 						$values['border_width'] = $border_width;
 						$values['border_color'] = $border_color;
@@ -817,6 +815,7 @@ switch ($action) {
 				}
 				break;
 		}
+		
 		$idData = db_process_sql_insert('tlayout_data', $values);
 		
 		$return = array();

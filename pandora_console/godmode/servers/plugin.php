@@ -230,9 +230,9 @@ if (($create != "") OR ($view != "")) {
 		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create_plugin=1&pure=" . $config['pure'] . "'>";
 	}
 	
-	$table->width = '98%';
+	$table->width = '100%';
 	$table->id = 'table-form';
-	$table->class = 'databox_color';
+	$table->class = 'databox filters';
 	$table->style = array ();
 	$table->style[0] = 'font-weight: bold';
 	$table->style[2] = 'font-weight: bold';
@@ -265,7 +265,7 @@ if (($create != "") OR ($view != "")) {
 	
 	if (!defined("METACONSOLE")) {
 		echo '<br>';
-		echo '<table class="databox" style="margin: 0 auto; width: 98%;"><tr><td>';
+		echo '<table class="databox" style="margin: 0 auto; width: 100%;"><tr><td>';
 	}
 	
 	if (defined("METACONSOLE")) {
@@ -668,7 +668,7 @@ else {
 		if(defined('METACONSOLE'))
 			echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox">';
 		else
-			echo '<table width="98%" cellspacing="4" cellpadding="4" class="databox">';
+			echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox data">';
 			
 		echo "<th>" . __('Name') . "</th>";
 		echo "<th>" . __('Type') . "</th>";
@@ -724,15 +724,10 @@ else {
 		echo "</table>";
 	}
 	else {
-		echo '<div class="nf">' .
-			__('There are no plugins in the system') .
-			'</div>';
-		echo "<br>";
+		ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no plugins in the system') ) );
 	}
-	if(defined('METACONSOLE'))
-		echo "<table width='100%'>";
-	else
-		echo "<table width='98%'>";
+	
+	echo "<table width='100%'>";
 
 	echo "<tr><td align=right>";
 	echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create=1&pure=" . $config['pure'] . "'>";

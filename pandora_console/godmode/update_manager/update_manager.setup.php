@@ -54,9 +54,10 @@ if ($action_update_url_update_manager) {
 
 echo '<form method="post" action="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=setup">';
 $table = null;
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox filters';
 
-$table->style[0] = 'font-weight: bolder; vertical-align: top;';
+$table->style[0] = 'font-weight: bolder;';
 
 $table->data[0][0] = __('URL update manager:');
 $table->data[0][1] = html_print_input_text('url_update_manager',

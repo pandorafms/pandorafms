@@ -26,9 +26,10 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 
 echo '<form id="form_setup" method="post">';
 $table = null;
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox filters';
 
-$table->style[0] = 'font-weight: bolder; vertical-align: top;';
+$table->style[0] = 'font-weight: bolder;';
 
 $table->data[0][0] = __('Name:');
 $table->data[0][1] = html_print_input_text('name', $name, __('Name'), 20, 30, true);

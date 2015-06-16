@@ -26,7 +26,9 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 
 $table = null;
 
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox data';
+
 $table->head[0] = '';
 $table->head[1] = __('ID');
 $table->head[2] = __('Name');
@@ -64,6 +66,6 @@ if (isset($data)) {
 	html_print_table($table);
 }
 else {
-	echo "<div class='nf'>".__('There are no defined operating systems')."</div>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined operating systems') ) );
 }
 ?>

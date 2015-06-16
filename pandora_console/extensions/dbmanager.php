@@ -113,7 +113,8 @@ function dbmgr_extension_main () {
 	echo "<form method='post' action=''>";
 	html_print_textarea ('sql', 5, 40, html_entity_decode($sql, ENT_QUOTES));
 	echo '<br />';
-	echo '<div class="action-buttons" style="width: 96%">';
+	echo '<div class="action-buttons" style="width: 100%">';
+	echo '<br />';
 	html_print_submit_button (__('Execute SQL'), '', false, 'class="sub next"');
 	echo '</div>';
 	echo "</form>";
@@ -147,8 +148,8 @@ function dbmgr_extension_main () {
 	}
 	
 	echo "<div style='overflow: auto;'>";
-	$table->width = '90%';
-	$table->class = 'dbmanager';
+	$table->width = '100%';
+	$table->class = 'databox data';
 	$table->head = array_keys ($result[0]);
 	
 	$table->data = $result;

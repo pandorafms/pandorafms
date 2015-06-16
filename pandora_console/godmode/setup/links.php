@@ -91,7 +91,7 @@ if ((isset($_GET["form_add"])) or (isset($_GET["form_edit"]))) {
 		$nombre = "";
 		$link = "";
 	}
-	echo '<table class="databox" cellpadding="4" cellspacing="4" width="98%">';
+	echo '<table class="databox filters" cellpadding="4" cellspacing="4" width="100%">';
 	echo '<form name="ilink" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/links">';
 	if ($creation_mode == 1)
 		echo "<input type='hidden' name='create' value='1'>";
@@ -108,10 +108,10 @@ if ((isset($_GET["form_add"])) or (isset($_GET["form_edit"]))) {
 	echo '</tr><tr>
 	<td class="datos2">'.__('Link').'</td>
 	<td class="datos2">
-	<input type="text" name="link" size="35" value="'.$link.'"></td>';
+	<input type="text" name="link" size="150" value="'.$link.'"></td>';
 	echo '</tr>';
 	echo "</table>";
-	echo "<table width='98%'>";
+	echo "<table width='100%'>";
 	echo "<tr><td align='right'>";
 	if (isset($_GET["form_add"])) {
 		echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
@@ -129,12 +129,12 @@ else {  // Main list view for Links editor
 	}
 	
 	if (empty($rows)) {
-		echo '<div class="nf">'.__("There isn't links").'</div>';
+		ui_print_info_message ( array('no_close'=>true, 'message'=>  __("There isn't links") ) );
 	}
 	else {
-		echo "<table cellpadding='4' cellspacing='4' class='databox' style='width:98%'>";
+		echo "<table cellpadding='4' cellspacing='4' class='databox data' style='width:100%'>";
 		echo "<th width='180px'>".__('Link name')."</th>";
-		echo "<th width='80px'>".__('Delete')."</th>";
+		echo "<th width='10px'>".__('Delete')."</th>";
 		
 		$color = 1;
 		foreach ($rows as $row) {
@@ -147,12 +147,12 @@ else {  // Main list view for Links editor
 				$color = 1;
 			}
 			echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=gsetup&sec2=godmode/setup/links&form_edit=1&id_link=".$row["id_link"]."'>".$row["name"]."</a></b></td>";
-			echo '<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row["id_link"].'&borrar='.$row["id_link"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true) . '</a></td></tr>';
+			echo '<td class="'.$tdcolor.'"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row["id_link"].'&borrar='.$row["id_link"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">' . html_print_image("images/cross.png", true) . '</a></td></tr>';
 		}
 		echo "</table>";
 	}
 	
-	echo "<table width='98%'>";
+	echo "<table width='100%'>";
 	echo "<tr><td align='right'>";
 	echo "<form method='post' action='index.php?sec=gsetup&sec2=godmode/setup/links&form_add=1'>";
 	echo "<input type='submit' class='sub next' name='form_add' value='".__('Add')."'>";

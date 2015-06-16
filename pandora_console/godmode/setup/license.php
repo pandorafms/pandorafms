@@ -53,7 +53,9 @@ echo '</script>';
 
 echo '<form method="post">';
 
-$table->width = '95%';
+$table->width = '100%';
+$table->class = 'databox filters';
+
 $table->data = array ();
 
 $table->data[0][0] = '<strong>'.__('Customer key').'</strong>';
@@ -76,6 +78,7 @@ if (enterprise_installed()) {
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 	html_print_input_hidden ('update_settings', 1);
 	html_print_submit_button (__('Validate'), 'update_button', false, 'class="sub upd"');
+	echo "&nbsp;&nbsp;";
 	html_print_button(__('Request new license'), '', false, 'generate_request_code()', 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub next"');
 	echo '</div>';
 }

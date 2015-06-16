@@ -55,7 +55,8 @@ else {
 	$event_response['params'] = '';
 }
 
-$table->width = '90%';
+$table->width = '100%';
+$table->class = 'databox filters';
 
 if(defined('METACONSOLE')) {
 	$table->width = '100%';
@@ -128,7 +129,7 @@ if ($event_response_id == 0) {
 	echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=create_response&amp;pure='.$config['pure'].'">';
 	html_print_table($table);
 	if(!defined('METACONSOLE'))
-		echo '<br><br><div style="width:90%;text-align:right;">';
+		echo '<div style="width:100%;text-align:right;">';
 	else
 		echo '<br><br><div style="width:100%;text-align:right;">';
 	html_print_submit_button(__('Create'), 'create_response_button', false, array('class' => 'sub next'));
@@ -139,7 +140,7 @@ else {
 	echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=list&action=update_response&amp;pure='.$config['pure'].'">';
 	html_print_table($table);
 	if(!defined('METACONSOLE'))
-		echo '<br><br><div style="width:90%;text-align:right;">';
+		echo '<div style="width:100%;text-align:right;">';
 	else
 		echo '<br><br><div style="width:100%;text-align:right;">';
 	html_print_submit_button(__('Update'), 'update_response_button', false, array('class' => 'sub next'));

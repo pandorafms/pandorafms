@@ -145,7 +145,9 @@ if ($delete_special_day) {
 		__('Could not be deleted'));
 }
 
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox data';
+
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Date');
@@ -162,8 +164,8 @@ $table->size[2] = '55%';
 $table->size[3] = '5%';
 $table->size[4] = '5%';
 $table->align = array ();
-$table->align[3] = 'center';
-$table->align[4] = 'center';
+$table->align[3] = 'left';
+$table->align[4] = 'left';
 
 $filter = array();
 if (!is_user_admin($config['id_user']))
@@ -217,7 +219,7 @@ if(isset($data)) {
 	html_print_table ($table);
 }
 else {
-	echo "<div class='nf'>".__('No special days configured')."</div>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No special days configured') ) );
 }
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

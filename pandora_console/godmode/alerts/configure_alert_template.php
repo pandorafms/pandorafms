@@ -470,7 +470,8 @@ if ($id && ! $create_template) {
 print_alert_template_steps ($step, $id);
 
 $table->id = 'template';
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox filters';
 if(defined("METACONSOLE")) {
 	$table->width = '100%';
 	$table->class = 'databox data';
@@ -480,8 +481,8 @@ if(defined("METACONSOLE")) {
 }
 $table->style = array ();
 if(!defined("METACONSOLE")) {
-	$table->style[0] = 'font-weight: bold; vertical-align: top';
-	$table->style[2] = 'font-weight: bold; vertical-align: top';
+	$table->style[0] = 'font-weight: bold;';
+	$table->style[2] = 'font-weight: bold;';
 }
 $table->size = array ();
 $table->size[0] = '20%';

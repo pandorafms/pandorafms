@@ -35,7 +35,8 @@ if (isset($file_id) && $file_id > 0) {
 }
 
 $table = new stdClass();
-$table->width = '99.5%';
+$table->width = '100%';
+$table->class = 'databox filters';
 $table->style = array();
 $table->style[0] = "font-weight: bold;";
 $table->style[2] = "text-align: center;";

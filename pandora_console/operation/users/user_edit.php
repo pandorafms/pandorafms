@@ -178,14 +178,14 @@ if ($status != -1) {
 		__('User info successfully updated'),
 		__('Error updating user info'));
 }
-$jump = "<br />";
+$jump = "&nbsp;&nbsp;";
 $table->id = 'user_form';
 $table->width = '100%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'databox filters';
 if (defined('METACONSOLE')) {
-	$jump = "&nbsp;&nbsp;";
+
 	$table->width = '100%';
 	$table->class = 'databox data';
 	$table->head[0] = __('Edit my User');

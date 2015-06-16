@@ -144,11 +144,11 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 	
 	// Create news
 	
-	$table->width = '98%%';
+	$table->width = '100%';
 	$table->id = "news";
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
-	$table->class = "databox";
+	$table->class = "databox filters";
 	$table->head = array ();
 	$table->data = array ();
 	$table->style[0] = 'font-weight: bold;';
@@ -212,11 +212,11 @@ else {
 	$rows = db_get_all_rows_in_table("tnews", "timestamp");
 	if ($rows === false) {
 		$rows = array();
-		echo "<div class='nf'>".__('There are no defined news')."</div>";
+		ui_print_info_message ( array('no_close'=>true, 'message'=>  __("There are no defined news") ) );
 	} 
 	else {
 		// Main list view for Links editor
-		echo "<table cellpadding='4' cellspacing='4' class='databox' width=98%>";
+		echo "<table cellpadding='4' cellspacing='4' class='databox data' width=100%>";
 		echo "<th>".__('Subject')."</th>";
 		echo "<th>".__('Type')."</th>";
 		echo "<th>".__('Author')."</th>";
@@ -269,7 +269,7 @@ else {
 		echo "</table>";
 	}
 	
-	echo "<table width='98%'>";
+	echo "<table width='100%'>";
 	echo "<tr><td align='right'>";
 	echo "<form method='post' action='index.php?sec=gsetup&sec2=godmode/setup/news&form_add=1'>";
 	echo "<input type='submit' class='sub next' name='form_add' value='".__('Add')."'>";

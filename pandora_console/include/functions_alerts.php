@@ -662,30 +662,38 @@ function alerts_get_alert_templates ($filter = false, $fields = false) {
 function alerts_get_alert_template ($id_alert_template) {
 	global $config;
 	
+	$alert_templates = false;
 	$id_alert_template = safe_int ($id_alert_template, 1);
-	if (empty ($id_alert_template))
-		return false;
 	
-	switch ($config['dbtype']) {
-		case "mysql":
-		case "postgresql":
-			return db_get_row ('talert_templates', 'id', $id_alert_template);
-			break;
-		case "oracle":
-			$fields_select = db_get_all_rows_sql('SELECT column_name
-				FROM user_tab_columns
-				WHERE table_name = \'TALERT_TEMPLATES\'
-					AND column_name NOT IN (\'TIME_FROM\',\'TIME_TO\')');
-			foreach ($fields_select as $field_select){
-				$select_field[] = $field_select['column_name'];
-			}
-			$select_stmt = implode(',', $select_field);
-			return db_get_row_sql("SELECT $select_stmt,
-					to_char(time_from, 'hh24:mi:ss') AS time_from,
-					to_char(time_to, 'hh24:mi:ss') AS time_to
-				FROM talert_templates");	
-			break;
+	if (!empty ($id_alert_template)) {
+		switch ($config['dbtype']) {
+			case "mysql":
+			case "postgresql":
+				$alert_templates = db_get_row ('talert_templates', 'id', $id_alert_template);
+				break;
+			case "oracle":
+				$sql = "SELECT column_name
+						FROM user_tab_columns
+						WHERE table_name = 'TALERT_TEMPLATES'
+							AND column_name NOT IN ('TIME_FROM','TIME_TO')";
+				$fields_select = db_get_all_rows_sql($sql);
+				
+				$column_names = array_map(function($item) {
+					return $item['column_name'];
+				}, $fields_select);
+				$column_names_str = implode(',', $column_names);
+				
+				$sql = "SELECT $column_names_str,
+							to_char(time_from, 'hh24:mi:ss') AS time_from,
+							to_char(time_to, 'hh24:mi:ss') AS time_to
+						FROM talert_templates
+						WHERE id = $id_alert_template";
+				$alert_templates = db_get_row_sql($sql);
+				break;
+		}
 	}
+	
+	return $alert_templates;
 }
 
 /**

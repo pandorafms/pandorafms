@@ -176,7 +176,8 @@ function update_button_palette_callback() {
 			break;
 		case 'module_graph':
 			$("#text_" + idItem).html(values['label']);
-			$("#image_" + idItem).attr('src', getModuleGraph(idItem));
+			$("#image_" + idItem).attr("src", "images/spinner.gif");
+			setModuleGraph(idItem);
 			break;
 		case 'simple_value':
 			$("#text_" + idItem).html(values['label']);
@@ -1098,7 +1099,7 @@ function cleanFields(item) {
 	
 }
 
-function getModuleGraph(id_data) {
+function setModuleGraph(id_data) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	var url_ajax = "ajax.php";
@@ -1116,7 +1117,6 @@ function getModuleGraph(id_data) {
 			value: id_visual_console});
 	
 	jQuery.ajax({
-		async: false,
 		url: url_ajax,
 		data: parameter,
 		type: "POST",
@@ -1133,39 +1133,38 @@ function getModuleGraph(id_data) {
 			if (metaconsole != 0) {
 				id_metaconsole = data['id_metaconsole'];
 			}
+			
+			//Cleaned array
+			parameter = Array();
+			
+			parameter.push ({name: "page",
+				value: "include/ajax/visual_console_builder.ajax"});
+			parameter.push ({name: "action", value: "get_image_sparse"});
+			parameter.push ({name: "id_agent_module", value: id_agente_modulo});
+			parameter.push ({name: "id_custom_graph", value: id_custom_graph});
+			if (metaconsole != 0) {
+				parameter.push ({name: "id_metaconsole", value: id_metaconsole});
+			}
+			parameter.push ({name: "height", value: height});
+			parameter.push ({name: "width", value: width});
+			parameter.push ({name: "period", value: period});
+			parameter.push ({name: "background_color", value: background_color});
+			parameter.push ({name: "id_visual_console",
+					value: id_visual_console});
+			jQuery.ajax({
+				url: url_ajax,
+				data: parameter,
+				type: "POST",
+				dataType: 'text', //The ajax return the data as text.
+				success: function (data)
+				{
+					$("#image_" + id_data).attr('src', data);
+				}
+			});
 		}
 	});
 	
-	//Cleaned array
-	parameter = Array();
 	
-	parameter.push ({name: "page",
-		value: "include/ajax/visual_console_builder.ajax"});
-	parameter.push ({name: "action", value: "get_image_sparse"});
-	parameter.push ({name: "id_agent_module", value: id_agente_modulo});
-	parameter.push ({name: "id_custom_graph", value: id_custom_graph});
-	if (metaconsole != 0) {
-		parameter.push ({name: "id_metaconsole", value: id_metaconsole});
-	}
-	parameter.push ({name: "height", value: height});
-	parameter.push ({name: "width", value: width});
-	parameter.push ({name: "period", value: period});
-	parameter.push ({name: "background_color", value: background_color});
-	parameter.push ({name: "id_visual_console",
-			value: id_visual_console});
-	jQuery.ajax({
-		async: false,
-		url: url_ajax,
-		data: parameter,
-		type: "POST",
-		dataType: 'text', //The ajax return the data as text.
-		success: function (data)
-		{
-			img = data;
-		}
-	});
-	
-	return img;
 }
 
 function getModuleValue(id_data, process_simple_value, period) {
@@ -1574,9 +1573,10 @@ function createItem(type, values, id_data) {
 			
 			item = $('<div id="' + id_data + '" class="item module_graph" style="text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' +
-					'<img class="image" id="image_' + id_data + '" src="' + getModuleGraph(id_data)  + '" style="border:1px solid #808080;" />' +
+					'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="border:1px solid #808080;" />' +
 				'</div>'
 			);
+			setModuleGraph(id_data);
 			break;
 		case 'simple_value':
 			sizeStyle = '';
@@ -1856,8 +1856,10 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'icon':
 		case 'module_graph':
 			
-			if (type == 'module_graph')
-				$("#image_" + idElement).attr("src", getModuleGraph(idElement));
+			if (type == 'module_graph') {
+				$("#image_" + idElement).attr("src", "images/spinner.gif");
+				setModuleGraph(idElement);
+			}
 			
 			if ((typeof(values['mov_left']) != 'undefined') &&
 					(typeof(values['mov_top']) != 'undefined')) {

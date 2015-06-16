@@ -3002,6 +3002,7 @@ sub pandora_exec_forced_alerts {
 				FROM talert_template_modules, talert_templates
 				WHERE talert_template_modules.id_alert_template = talert_templates.id
 				AND force_execution = 1');
+	
 	foreach my $alert (@alerts) {
 		
 		# Get the agent and module associated with the alert

@@ -35,7 +35,9 @@ if (defined('METACONSOLE'))
 	$hack_metaconsole = '../../';
 
 if (!defined('METACONSOLE')) {
-	ui_print_page_header (__('Reporting') .' &raquo; ' . __('Visual Console'), "images/op_reporting.png", false, "map_builder");
+	ui_print_page_header(
+		__('Reporting') .' &raquo; ' . __('Visual Console'),
+		"images/op_reporting.png", false, "map_builder");
 }
 
 $id_layout = (int) get_parameter ('id_layout');
@@ -64,7 +66,7 @@ if ($delete_layout || $copy_layout) {
 	// $vconsole_read = check_acl ($config['id_user'], $group_id, "VR");
 	$vconsole_write = check_acl ($config['id_user'], $group_id, "VW");
 	$vconsole_manage = check_acl ($config['id_user'], $group_id, "VM");
-
+	
 	if (!$vconsole_write && !$vconsole_manage) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access map builder");
@@ -73,29 +75,36 @@ if ($delete_layout || $copy_layout) {
 	}
 	
 	if ($delete_layout) {
-		db_process_sql_delete ('tlayout_data', array ('id_layout' => $id_layout));
-		$result = db_process_sql_delete ('tlayout', array ('id' => $id_layout));
+		db_process_sql_delete('tlayout_data',
+			array ('id_layout' => $id_layout));
+		$result = db_process_sql_delete('tlayout',
+			array ('id' => $id_layout));
 		if ($result) {
-			db_pandora_audit( "Visual console builder", "Delete visual console #$id_layout");
+			db_pandora_audit(
+				"Visual console builder", "Delete visual console #$id_layout");
 			ui_print_success_message(__('Successfully deleted'));
 			db_clean_cache();
 		}
 		else {
-			db_pandora_audit( "Visual console builder", "Fail try to delete visual console #$id_layout");
-			ui_print_error_message(__('Not deleted. Error deleting data'));
+			db_pandora_audit(
+				"Visual console builder", "Fail try to delete visual console #$id_layout");
+			ui_print_error_message(
+				__('Not deleted. Error deleting data'));
 		}
 		$id_layout = 0;
 	}
-
+	
 	if ($copy_layout) {	
 		// Number of inserts
 		$ninsert = (int) 0;
 		
 		// Return from DB the source layout
-		$layout_src = db_get_all_rows_filter ("tlayout","id = " . $id_layout);
+		$layout_src = db_get_all_rows_filter("tlayout",
+			array("id" => $id_layout));
 		
 		// Name of dst
-		$name_dst = get_parameter ("name_dst", $layout_src[0]['name'] . " copy");
+		$name_dst = get_parameter ("name_dst",
+			$layout_src[0]['name'] . " copy");
 		
 		// Create the new Console
 		$idGroup = $layout_src[0]['id_group'];
@@ -104,7 +113,12 @@ if ($delete_layout || $copy_layout) {
 		$width = $layout_src[0]['width'];
 		$visualConsoleName = $name_dst;
 		
-		$values = array('name' => $visualConsoleName, 'id_group' => $idGroup, 'background' => $background, 'height' => $height, 'width' => $width);
+		$values = array(
+			'name' => $visualConsoleName,
+			'id_group' => $idGroup,
+			'background' => $background,
+			'height' => $height,
+			'width' => $width);
 		$result = db_process_sql_insert('tlayout', $values);
 		
 		$idNewVisualConsole = $result;
@@ -113,14 +127,16 @@ if ($delete_layout || $copy_layout) {
 			$ninsert = 1;
 			
 			// Return from DB the items of the source layout
-			$data_layout_src = db_get_all_rows_filter ("tlayout_data", "id_layout = " . $id_layout);
+			$data_layout_src = db_get_all_rows_filter(
+				"tlayout_data",
+				array("id_layout" => $id_layout));
 			
 			if (!empty($data_layout_src)) {
 				
 				//By default the id parent 0 is always 0.
 				$id_relations = array(0 => 0);
 				
-				for ($a=0; $a < count($data_layout_src); $a++) { 
+				for ($a = 0; $a < count($data_layout_src); $a++) { 
 					
 					// Changing the source id by the new visual console id
 					$data_layout_src[$a]['id_layout'] = $idNewVisualConsole;
@@ -131,7 +147,8 @@ if ($delete_layout || $copy_layout) {
 					unset($data_layout_src[$a]['id']);
 				
 					// Configure the cloned Console
-					$result = db_process_sql_insert('tlayout_data', $data_layout_src[$a]);
+					$result = db_process_sql_insert('tlayout_data',
+						$data_layout_src[$a]);
 					
 					$id_relations[$old_id] = 0;
 					
@@ -149,13 +166,15 @@ if ($delete_layout || $copy_layout) {
 				if ($ninsert == $inserts) {
 					
 					//Update the ids of parents
-					$items = db_get_all_rows_filter ("tlayout_data", "id_layout = " . $idNewVisualConsole);
+					$items = db_get_all_rows_filter("tlayout_data",
+						array("id_layout" => $idNewVisualConsole));
 					
 					foreach ($items as $item) {
 						$new_parent = $id_relations[$item['parent_item']];
 						
 						db_process_sql_update('tlayout_data',
-							array('parent_item' => $new_parent), array('id' => $item['id']));
+							array('parent_item' => $new_parent),
+							array('id' => $item['id']));
 					}
 					
 					
@@ -178,6 +197,7 @@ if ($delete_layout || $copy_layout) {
 	}
 }
 
+$table = new stdClass();
 $table->width = '100%';
 $table->data = array ();
 $table->head = array ();
@@ -205,16 +225,21 @@ $own_info = get_user_info ($config['id_user']);
 if ($own_info['is_admin'] || $vconsoles_read)
 	$maps = visual_map_get_user_layouts ();	
 else
-	$maps = visual_map_get_user_layouts ($config['id_user'], false, false, false);
+	$maps = visual_map_get_user_layouts ($config['id_user'], false,
+		false, false);
 
 if (!$maps) {
-	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No maps defined') ) );
+	ui_print_info_message (
+		array('no_close'=>true,
+			'message'=> __('No maps defined')));
 }
 else {
 	foreach ($maps as $map) {
 		// ACL for the visual console permission
-		$vconsole_write = check_acl ($config['id_user'], $map['id_group'], "VW");
-		$vconsole_manage = check_acl ($config['id_user'], $map['id_group'], "VM");
+		$vconsole_write = check_acl ($config['id_user'],
+			$map['id_group'], "VW");
+		$vconsole_manage = check_acl ($config['id_user'],
+			$map['id_group'], "VM");
 		
 		$data = array ();
 		
@@ -257,13 +282,15 @@ else {
 }
 
 if ($vconsoles_write || $vconsoles_manage) {
-	if (!defined('METACONSOLE'))
+	if (!defined('METACONSOLE')) {
 		echo '<form action="index.php?sec=reporting&amp;sec2=godmode/reporting/visual_console_builder" method="post">';
-	else {		
+	}
+	else {
 		echo '<form action="index.php?sec=screen&sec2=screens/screens&action=visualmap&action2=new&operation=new_visualmap&tab=data&pure=' . $pure . '" method="post">';
 	}
 	html_print_input_hidden ('edit_layout', 1);
-	html_print_submit_button (__('Create'), '', false, 'class="sub next"');
+	html_print_submit_button (__('Create'), '', false,
+		'class="sub next"');
 	echo '</form>';
 }
 echo '</div>';

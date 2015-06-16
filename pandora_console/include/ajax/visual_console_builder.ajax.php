@@ -17,6 +17,8 @@ global $config;
 
 check_login ();
 
+
+
 $get_image_path_status = get_parameter('get_image_path_status', 0);
 if ($get_image_path_status){
 	$img_src = get_parameter("img_src");

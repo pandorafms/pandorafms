@@ -29,9 +29,11 @@ if (empty($visualConsole)) {
 // if (!isset($vconsole_read))
 // 	$vconsole_read = check_acl ($config['id_user'], $visualConsole['id_group'], "VR");
 if (!isset($vconsole_write))
-	$vconsole_write = check_acl ($config['id_user'], $visualConsole['id_group'], "VW");
+	$vconsole_write = check_acl($config['id_user'],
+		$visualConsole['id_group'], "VW");
 if (!isset($vconsole_manage))
-	$vconsole_manage = check_acl ($config['id_user'], $visualConsole['id_group'], "VM");
+	$vconsole_manage = check_acl($config['id_user'],
+		$visualConsole['id_group'], "VM");
 
 if (!$vconsole_write && !$vconsole_manage) {
 	db_pandora_audit("ACL Violation",
@@ -47,11 +49,14 @@ enterprise_include_once('meta/include/functions_agents_meta.php');
 enterprise_include_once('meta/include/functions_users_meta.php');
 
 //Arrays for select box.
-$backgrounds_list = list_files($config['homedir'] . '/images/console/background/', "jpg", 1, 0);
-$backgrounds_list = array_merge($backgrounds_list, list_files ($config['homedir'] . '/images/console/background/', "png", 1, 0));
+$backgrounds_list = list_files(
+	$config['homedir'] . '/images/console/background/', "jpg", 1, 0);
+$backgrounds_list = array_merge($backgrounds_list,
+	list_files($config['homedir'] . '/images/console/background/', "png", 1, 0));
 
 $images_list = array ();
-$all_images = list_files ($config['homedir'] . '/images/console/icons/', "png", 1, 0);
+$all_images = list_files ($config['homedir'] . '/images/console/icons/',
+	"png", 1, 0);
 foreach ($all_images as $image_file) {
 	if (strpos ($image_file, "_bad"))
 		continue;
@@ -63,6 +68,7 @@ foreach ($all_images as $image_file) {
 	$images_list[$image_file] = $image_file;
 }
 
+$table = new stdClass();
 if (!defined('METACONSOLE')) {
 	$table->width = '100%';
 }
@@ -101,8 +107,11 @@ $table->data = array();
 //Background
 $table->data[0]['icon'] = '';
 $table->data[0][0] = __('Background');
-$table->data[0][1] = html_print_select($backgrounds_list, 'background', $visualConsole['background'], '', 'None', '', true, false, true, '', false, 'width: 120px;');
-$table->data[0][2] = html_print_input_text('width', $visualConsole['width'], '', 3, 5, true) .
+$table->data[0][1] = html_print_select($backgrounds_list, 'background',
+	$visualConsole['background'], '', 'None', '', true, false, true, '',
+	false, 'width: 120px;');
+$table->data[0][2] = html_print_input_text('width',
+		$visualConsole['width'], '', 3, 5, true) .
 	'x' .
 	html_print_input_text('height', $visualConsole['height'], '', 3, 5, true);
 $table->data[0][3] = $table->data[0][4] = $table->data[0][5] = '';
@@ -126,51 +135,63 @@ foreach ($layoutDatas as $layoutData) {
 	switch ($layoutData['type']) {
 		case STATIC_GRAPH:
 			$table->data[$i + 1]['icon'] =
-				html_print_image('images/camera.png', true, array('title' => __('Static Graph')));
+				html_print_image('images/camera.png', true,
+					array('title' => __('Static Graph')));
 			break;
 		case PERCENTILE_BAR:
 			$table->data[$i + 1]['icon'] =
-				html_print_image('images/chart_bar.png', true, array('title' => __('Percentile Bar')));
+				html_print_image('images/chart_bar.png', true,
+					array('title' => __('Percentile Bar')));
 			break;
 		case PERCENTILE_BUBBLE:
 			$table->data[$i + 1]['icon'] =
-				html_print_image('images/dot_red.png', true, array('title' => __('Percentile Bubble')));
+				html_print_image('images/dot_red.png', true,
+					array('title' => __('Percentile Bubble')));
 			break;
 		case MODULE_GRAPH:
 			$table->data[$i + 1]['icon'] =
-				html_print_image('images/chart_curve.png', true, array('title' => __('Module Graph')));
+				html_print_image('images/chart_curve.png', true,
+					array('title' => __('Module Graph')));
 			break;
 		case SIMPLE_VALUE:
 			$table->data[$i + 1]['icon'] =
-				html_print_image('images/binary.png', true, array('title' => __('Simple Value')));
+				html_print_image('images/binary.png', true,
+					array('title' => __('Simple Value')));
 			break;
 		case SIMPLE_VALUE_MAX:
 			$table->data[$i + 1]['icon'] =
-				html_print_image('images/binary.png', true, array('title' => __('Simple Value (Process Max)')));
+				html_print_image('images/binary.png', true,
+					array('title' => __('Simple Value (Process Max)')));
 			break;
 		case SIMPLE_VALUE_MIN:
 			$table->data[$i + 1]['icon'] =
-				html_print_image('images/binary.png', true, array('title' => __('Simple Value (Process Min)')));
+				html_print_image('images/binary.png', true,
+					array('title' => __('Simple Value (Process Min)')));
 			break;
 		case SIMPLE_VALUE_AVG:
 			$table->data[$i + 1]['icon'] =
-				html_print_image('images/binary.png', true, array('title' => __('Simple Value (Process Avg)')));
+				html_print_image('images/binary.png', true,
+					array('title' => __('Simple Value (Process Avg)')));
 			break;
 		case LABEL:
 			$table->data[$i + 1]['icon'] =
-				html_print_image('images/tag_red.png', true, array('title' => __('Label')));
+				html_print_image('images/tag_red.png', true,
+					array('title' => __('Label')));
 			break;
 		case ICON:
 			$table->data[$i + 1]['icon'] =
-				html_print_image('images/photo.png', true, array('title' => __('Icon')));
+				html_print_image('images/photo.png', true,
+					array('title' => __('Icon')));
 			break;
 		case BOX_ITEM:
 			$table->data[$i + 1]['icon'] =
-				html_print_image('images/box_item.png', true, array('title' => __('Box')));
+				html_print_image('images/box_item.png', true,
+					array('title' => __('Box')));
 			break;
 		case GROUP_ITEM:
 			$table->data[$i + 1]['icon'] =
-				html_print_image('images/group_green.png', true, array('title' => __('Group')));
+				html_print_image('images/group_green.png', true,
+					array('title' => __('Group')));
 			break;
 		case LINE_ITEM:
 			$table->data[$i + 1]['icon'] =
@@ -235,7 +256,8 @@ foreach ($layoutDatas as $layoutData) {
 			$table->data[$i + 1][2] = '';
 			break;
 		default:
-			$table->data[$i + 1][2] = html_print_input_text('width_' . $idLayoutData, $layoutData['width'], '', 2, 5, true) .
+			$table->data[$i + 1][2] = html_print_input_text(
+					'width_' . $idLayoutData, $layoutData['width'], '', 2, 5, true) .
 				'x' .
 				html_print_input_text('height_' . $idLayoutData, $layoutData['height'], '', 2, 5, true);
 			break;
@@ -248,7 +270,9 @@ foreach ($layoutDatas as $layoutData) {
 			$table->data[$i + 1][3] = '';
 			break;
 		default:
-			$table->data[$i + 1][3] = '(' . html_print_input_text('left_' . $idLayoutData, $layoutData['pos_x'], '', 2, 5, true) .
+			$table->data[$i + 1][3] = '(' .
+				html_print_input_text('left_' . $idLayoutData,
+					$layoutData['pos_x'], '', 2, 5, true) .
 				',' . html_print_input_text('top_' . $idLayoutData, $layoutData['pos_y'], '', 2, 5, true) .
 				')';
 			break;
@@ -327,7 +351,8 @@ foreach ($layoutDatas as $layoutData) {
 		default:
 			$cell_content_enterprise = false;
 			if (enterprise_installed()) {
-				$cell_content_enterprise = enterprise_visual_map_print_list_element('agent', $layoutData);
+				$cell_content_enterprise =
+					enterprise_visual_map_print_list_element('agent', $layoutData);
 			}
 			if ($cell_content_enterprise === false) {
 				$params = array();
@@ -505,7 +530,8 @@ if (!defined('METACONSOLE')) {
 		"tab=" . $activeTab  . "&" .
 		"id_visual_console=" . $visualConsole["id"];
 	
-	echo '<form id="form_multiple_delete" method="post" action="' . $url_multiple_delete . '">';
+	echo '<form id="form_multiple_delete" method="post" action="' .
+		$url_multiple_delete . '">';
 }
 else {
 	$url_multiple_delete = "index.php?" .
@@ -517,7 +543,8 @@ else {
 		"tab=list_elements&" .
 		"id_visual_console=" . $idVisualConsole;
 	
-	echo "<form id='form_multiple_delete' method='post' action=" . $url_multiple_delete . ">";
+	echo "<form id='form_multiple_delete' method='post' action=" .
+		$url_multiple_delete . ">";
 }
 if (!defined('METACONSOLE')) {
 	html_print_input_hidden ('action', 'multiple_delete');
@@ -557,10 +584,12 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 			theme : "advanced",
 			<?php
 			if ($config['style'] == 'pandora_legacy') {
-				echo 'content_css: "' . ui_get_full_url('include/styles/pandora_legacy.css', false, false, false) . '",' . "\n";
+				echo 'content_css: "' .
+					ui_get_full_url('include/styles/pandora_legacy.css', false, false, false) . '",' . "\n";
 			}
 			else {
-				echo 'content_css: "' . ui_get_full_url('include/styles/pandora.css', false, false, false) . '",' . "\n";
+				echo 'content_css: "' .
+					ui_get_full_url('include/styles/pandora.css', false, false, false) . '",' . "\n";
 			}
 			?>
 			theme_advanced_font_sizes :
@@ -626,9 +655,11 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 	
 	function submit_delete_multiple_items() {
 		delete_items = [];
-		jQuery.each($("input[name='multiple_delete_items']:checked"), function(i, item) {
-			delete_items.push($(item).val());
-		});
+		jQuery.each($("input[name='multiple_delete_items']:checked"),
+			function(i, item) {
+				delete_items.push($(item).val());
+			}
+		);
 		
 		
 		$("input[name='id_item_json']").val(JSON.stringify(delete_items));

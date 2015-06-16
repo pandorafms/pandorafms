@@ -84,6 +84,7 @@ switch ($action) {
 		break;
 }
 
+$table = new stdClass();
 $table->width = '100%';
 if (defined('METACONSOLE')) {
 	$table->width = '100%';
@@ -95,9 +96,11 @@ if (defined('METACONSOLE')) {
 	$table->align[1] = 'left';
 }
 $table->data = array ();
-$table->data[0][0] = __('Name:'). ui_print_help_tip (__("Use [ or ( as first character, for example '[*] Map name', to render this map name in main menu"), true);
+$table->data[0][0] = __('Name:') .
+	ui_print_help_tip(__("Use [ or ( as first character, for example '[*] Map name', to render this map name in main menu"), true);
 
-$table->data[0][1] = html_print_input_text ('name', $visualConsoleName, '', 80, 100, true);
+$table->data[0][1] = html_print_input_text('name', $visualConsoleName,
+	'', 80, 100, true);
 $table->data[1][0] = __('Group:');
 $groups = users_get_groups ($config['id_user'], 'RW');
 
@@ -109,11 +112,15 @@ if ($own_info['is_admin'] || $vconsole_write || $vconsole_manage)
 else
 	$display_all_group = false;
 
-$table->data[1][1] = html_print_select_groups($config['id_user'], "RW", $display_all_group, 'id_group', $idGroup, '', '', '', true);
-$backgrounds_list = list_files ($config['homedir'] . '/images/console/background/', "jpg", 1, 0);
-$backgrounds_list = array_merge ($backgrounds_list, list_files ($config['homedir'] . '/images/console/background/', "png", 1, 0));
+$table->data[1][1] = html_print_select_groups($config['id_user'], "RW",
+	$display_all_group, 'id_group', $idGroup, '', '', '', true);
+$backgrounds_list = list_files(
+	$config['homedir'] . '/images/console/background/', "jpg", 1, 0);
+$backgrounds_list = array_merge($backgrounds_list,
+	list_files($config['homedir'] . '/images/console/background/', "png", 1, 0));
 $table->data[2][0] = __('Background');
-$table->data[2][1] = html_print_select ($backgrounds_list, 'background', $background, '', '', 0, true);
+$table->data[2][1] = html_print_select($backgrounds_list, 'background',
+	$background, '', '', 0, true);
 if ($action == 'new') {
 	$textButtonSubmit = __('Save');
 	$classButtonSubmit = 'sub wand';
@@ -126,7 +133,8 @@ else {
 html_print_table($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_submit_button ($textButtonSubmit, 'update_layout', false, 'class="' . $classButtonSubmit . '"');
+html_print_submit_button ($textButtonSubmit, 'update_layout', false,
+	'class="' . $classButtonSubmit . '"');
 echo '</div>';
 
 echo "</form>";

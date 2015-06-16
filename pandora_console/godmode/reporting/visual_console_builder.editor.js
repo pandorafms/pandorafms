@@ -1112,14 +1112,16 @@ function getModuleGraph(id_data) {
 		value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_layout_data"});
 	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "id_visual_console",
+			value: id_visual_console});
+	
 	jQuery.ajax({
 		async: false,
 		url: url_ajax,
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
-		success: function (data)
-		{
+		success: function (data) {
 			id_agente_modulo = data['id_agente_modulo'];
 			id_custom_graph = data['id_custom_graph'];
 			label = data['label'];
@@ -1149,6 +1151,8 @@ function getModuleGraph(id_data) {
 	parameter.push ({name: "width", value: width});
 	parameter.push ({name: "period", value: period});
 	parameter.push ({name: "background_color", value: background_color});
+	parameter.push ({name: "id_visual_console",
+			value: id_visual_console});
 	jQuery.ajax({
 		async: false,
 		url: url_ajax,
@@ -2085,7 +2089,6 @@ function copyDB(idItem) {
 	
 	jQuery.ajax({
 		url: url_ajax,
-		async: false,
 		data: parameter,
 		type: "POST",
 		dataType: 'json',

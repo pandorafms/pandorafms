@@ -2392,6 +2392,8 @@ function reporting_group_configuration($report, $content) {
 	
 	$group_name = groups_get_name($content['id_group'], true);
 	
+	
+	
 	$return['title'] = $content['name'];
 	$return['subtitle'] = $group_name;
 	$return["description"] = $content["description"];
@@ -2411,21 +2413,40 @@ function reporting_group_configuration($report, $content) {
 		}
 	}
 	else {
-		$sql = "SELECT * FROM tagente WHERE id_grupo=" . $content['id_group'];
+		$sql = "
+			SELECT *
+			FROM tagente
+			WHERE id_grupo=" . $content['id_group'];
 	}
+	
+	
 	
 	$agents_list = db_get_all_rows_sql($sql);
 	if ($agents_list === false)
 		$agents_list = array();
 	
+	
+	
 	$return['data'] = array();
 	foreach ($agents_list as $agent) {
 		$content_agent = $content;
 		$content_agent['id_agent'] = $agent['id_agente'];
-		$agent_report = reporting_agent_configuration($report, $content_agent);
+		
+		// Restore the connection to metaconsole
+		// because into the function reporting_agent_configuration
+		// connect to metaconsole.
+		
+		if ($config['metaconsole']) {
+			metaconsole_restore_db();
+		}
+		$agent_report = reporting_agent_configuration(
+			$report, $content_agent);
+		
 		
 		$return['data'][] = $agent_report['data'];
 	}
+	
+	
 	
 	if ($config['metaconsole']) {
 		metaconsole_restore_db();
@@ -2600,11 +2621,14 @@ function reporting_alert_report_group($report, $content) {
 			array('id' => $alert['id_alert_template']));
 		
 		
+		
 		$actions = db_get_all_rows_sql('SELECT name 
 			FROM talert_actions 
 			WHERE id IN (SELECT id_alert_action 
 				FROM talert_template_module_actions 
-				WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ');');
+				WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ')');
+		
+		
 		
 		if (!empty($actions)) {
 			$row = db_get_row_sql('SELECT id_alert_action
@@ -2629,6 +2653,8 @@ function reporting_alert_report_group($report, $content) {
 				$actions = array();
 			}
 		}
+		
+		
 		
 		$data_row['action'] = array();
 		foreach ($actions as $action) {
@@ -3320,6 +3346,8 @@ function reporting_agent_configuration($report, $content) {
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	
+	
+	
 	if ($config['metaconsole']) {
 		$id_meta = metaconsole_get_id_server($content["server_name"]);
 		
@@ -3348,6 +3376,8 @@ function reporting_agent_configuration($report, $content) {
 	$agent_configuration['group'] = $report["group"];
 	
 	$modules = agents_get_modules ($content['id_agent']);
+	
+	
 	
 	$agent_configuration['modules'] = array();
 	//Agent's modules

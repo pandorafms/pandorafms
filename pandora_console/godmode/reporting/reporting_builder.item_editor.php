@@ -462,7 +462,21 @@ switch ($action) {
 					$description = $item['description'];
 					$period = $item['period'];
 					$exception_condition = $item['exception_condition'];
-					$exception_condition_value = $item['exception_condition_value'];
+					
+					switch ($config['dbtype']) {
+						case "mysql":
+						case "postgresql":
+							$exception_condition_value =
+								$item['exception_condition_value'];
+							break;
+						case "oracle":
+							$exception_condition_value =
+								oracle_format_float_to_php(
+									$item['exception_condition_value']);
+							break;
+					}
+					
+					
 					$show_resume = $item['show_resume'];
 					$show_graph = $item['show_graph'];
 					$order_uptodown = $item['order_uptodown'];
@@ -1076,7 +1090,12 @@ else
 		</tr>
 		<tr id="row_exception_condition_value" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Value'); ?></td>
-			<td style=""><?php html_print_input_text('exception_condition_value', $exception_condition_value, '', 5, 5); ?></td>
+			<td style="">
+				<?php
+				html_print_input_text('exception_condition_value',
+					$exception_condition_value, '', 5, 5);
+				?>
+			</td>
 		</tr>
 		<tr id="row_exception_condition" style="" class="datos">
 			<td><?php echo __('Condition');?></td>

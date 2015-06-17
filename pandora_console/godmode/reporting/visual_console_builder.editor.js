@@ -1436,34 +1436,6 @@ function get_image_url(img_src) {
 	return img_url;
 }
 
-function getImageElement(id_data) {
-	metaconsole = $("input[name='metaconsole']").val();
-	
-	
-	
-	var parameter = Array();
-	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
-	parameter.push ({name: "action", value: "get_image"});
-	parameter.push ({name: "id_element", value: id_data});
-	parameter.push ({name: "id_visual_console",
-		value: id_visual_console});
-	
-	var img = null;
-	
-	jQuery.ajax({
-		async: false,
-		url: get_url_ajax(),
-		data: parameter,
-		type: "POST",
-		dataType: 'json',
-		success: function (data) {
-			img = data['image'];
-		}
-	});
-	
-	return img;
-}
-
 function set_color_line_status(lines, line, id_data, values) {
 	metaconsole = $("input[name='metaconsole']").val();
 	

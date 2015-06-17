@@ -126,6 +126,8 @@ function update_button_palette_callback() {
 			params.push("img_src=images/console/background/" + values['background']);
 			params.push("page=include/ajax/skins.ajax");
 			params.push("only_src=1");
+			parameter.push ({name: "id_visual_console",
+				value: id_visual_console});
 			jQuery.ajax ({
 				data: params.join ("&"),
 				type: 'POST',
@@ -192,6 +194,8 @@ function update_button_palette_callback() {
 			params.push("img_src=images/console/icons/" + values['image'] + ".png");
 			params.push("page=include/ajax/skins.ajax");
 			params.push("only_src=1");
+			parameter.push ({name: "id_visual_console",
+				value: id_visual_console});
 			jQuery.ajax ({
 				data: params.join ("&"),
 				type: 'POST',
@@ -1099,6 +1103,84 @@ function cleanFields(item) {
 	
 }
 
+function set_static_graph_status(idElement, status) {
+	$("#image_" + idElement).attr('src', "images/spinner.gif");
+	
+	if (typeof(status) == 'undefined') {
+		var parameter = Array();
+		parameter.push ({
+			name: "page",
+			value: "include/ajax/visual_console_builder.ajax"});
+		parameter.push ({
+			name: "get_element_status",
+			value: "1"});
+		parameter.push ({
+			name: "id_element",
+			value: idElement});
+		parameter.push ({name: "id_visual_console",
+			value: id_visual_console});
+		
+		if (metaconsole != 0) {
+			parameter.push ({name: "metaconsole", value: 1});
+		}
+		else {
+			parameter.push ({name: "metaconsole", value: 0});
+		}
+		
+		$('#hidden-status_' + idElement).val(3);
+		jQuery.ajax ({
+			type: 'POST',
+			url: url_ajax,
+			data: parameter,
+			success: function (data) {
+				set_static_graph_status(idElement, data);
+			}
+		});
+	}
+	else {
+		switch (status) {
+			case '1':
+				//Critical (BAD)
+				suffix = "_bad.png";
+				break;
+			case '4':
+				//Critical (ALERT)
+				suffix = "_bad.png";
+				break;
+			case '0':
+				//Normal (OK)
+				suffix = "_ok.png";
+				break;
+			case '2':
+				//Warning
+				suffix = "_warning.png";
+				break;
+			case '3':
+			default:
+				//Unknown
+				suffix = ".png";
+				break;
+		}
+		
+		var params = [];
+		params.push("get_image_path=1");
+		params.push("img_src=" +
+			"images/console/icons/" + values['image'] + suffix);
+		params.push("page=include/ajax/skins.ajax");
+		params.push("only_src=1");
+		parameter.push ({name: "id_visual_console",
+			value: id_visual_console});
+		jQuery.ajax ({
+			data: params.join ("&"),
+			type: 'POST',
+			url: url_ajax,
+			success: function (data) {
+				$("#image_" + idElement).attr('src', data);
+			}
+		});
+	}
+}
+
 function setModuleGraph(id_data) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
@@ -1357,6 +1439,8 @@ function get_image_url(img_src) {
 	parameter.push ({name: "get_image_path", value: "1"});
 	parameter.push ({name: "img_src", value: img_src});
 	parameter.push ({name: "only_src", value: "1"});
+	parameter.push ({name: "id_visual_console",
+		value: id_visual_console});
 	
 	var url_ajax = "ajax.php";
 	if (metaconsole != 0) {
@@ -1390,6 +1474,8 @@ function getImageElement(id_data) {
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_image"});
 	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "id_visual_console",
+		value: id_visual_console});
 	
 	var img = null;
 	
@@ -1477,21 +1563,14 @@ function createItem(type, values, id_data) {
 			break;
 		case 'group_item':
 		case 'static_graph':
-			if ((values['width'] == 0) && (values['height'] == 0)) {
-				sizeStyle = '';
-				imageSize = '';
-			}
-			else {
-				sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
-				imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
-			}
-			
 			var element_status= null;
 			var parameter = Array();
 			parameter.push ({name: "page",
 				value: "include/ajax/visual_console_builder.ajax"});
 			parameter.push ({name: "get_element_status", value: "1"});
 			parameter.push ({name: "id_element", value: id_data});
+			parameter.push ({name: "id_visual_console",
+				value: id_visual_console});
 			
 			if (metaconsole != 0) {
 				parameter.push ({name: "metaconsole", value: 1});
@@ -1517,6 +1596,8 @@ function createItem(type, values, id_data) {
 			parameter.push ({name: "get_image_path", value: "1"});
 			parameter.push ({name: "img_src", value: getImageElement(id_data)});
 			parameter.push ({name: "only_src", value: "1"});
+			parameter.push ({name: "id_visual_console",
+				value: id_visual_console});
 			
 			jQuery.ajax ({
 				type: 'POST',
@@ -1538,14 +1619,49 @@ function createItem(type, values, id_data) {
 					break;
 			}
 			
-			item = $('<div id="' + id_data
-				+ '" class="item ' + class_type + '" '
-				+ 'style="text-align: center; position: absolute; display: inline-block; '
-				+ sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
-				'<img id="image_' + id_data + '" class="image" src="' + img_src + '" ' + imageSize + ' /><br />' +
-				'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span>' + 
-				'</div><input id="hidden-status_' + id_data + '" type="hidden" value="' + element_status + '" name="status_' + id_data + '">'
-			);
+			item = $('<div></div>')
+				.attr('class', 'item ' + class_type)
+				.css('text-align', 'center')
+				.css('position', 'absolute')
+				.css('display', 'inline-block')
+				.css('top', values['top'] + 'px')
+				.css('left', values['left'] + 'px');
+			if ((values['width'] == 0) && (values['height'] == 0)) {
+				// Do none
+			}
+			else {
+				item.css('width', values['width']  + 'px')
+					.css('height', values['height'] + 'px');
+			}
+			
+			var $image = $('<img></img>')
+				.attr('id', 'image_' + id_data)
+				.attr('class', 'image')
+				.attr('src', img_src);
+			if ((values['width'] == 0) && (values['height'] == 0)) {
+				// Do none
+			}
+			else {
+				$image.attr('width', values['width'])
+					.attr('height', values['height']);
+			}
+			
+			var $span = $('<span></span>')
+				.attr('id', 'text_' + id_data)
+				.attr('class', 'text')
+				.append(values['label']);
+			
+			var $input = $('<input></input>')
+				.attr('id', 'hidden-status_' + id_data)
+				.attr('type', 'hidden')
+				.attr('value', element_status)
+				.attr('name', 'status_' + id_data);
+			
+			item
+				.append($image)
+				.append($image)
+				.append($span)
+				.append($input);
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':
@@ -1614,6 +1730,8 @@ function createItem(type, values, id_data) {
 			parameter.push ({name: "get_image_path", value: "1"});
 			parameter.push ({name: "img_src", value: getImageElement(id_data)});
 			parameter.push ({name: "only_src", value: "1"});
+			parameter.push ({name: "id_visual_console",
+				value: id_visual_console});
 			
 			jQuery.ajax ({
 				type: 'POST',
@@ -1779,76 +1897,9 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'static_graph':
 			if ((event != 'resizestop') && (event != 'show_grid')
 				&& (event != 'dragstop')) {
-				var element_status= null;
-				var parameter = Array();
-				parameter.push ({
-					name: "page",
-					value: "include/ajax/visual_console_builder.ajax"});
-				parameter.push ({
-					name: "get_element_status",
-					value: "1"});
-				parameter.push ({
-					name: "id_element",
-					value: idElement});
 				
-				if (metaconsole != 0) {
-					parameter.push ({name: "metaconsole", value: 1});
-				}
-				else {
-					parameter.push ({name: "metaconsole", value: 0});
-				}
+				set_static_graph_status(idElement);
 				
-				jQuery.ajax ({
-					type: 'POST',
-					url: url_ajax,
-					data: parameter,
-					async: false,
-					timeout: 10000,
-					success: function (data) {
-						$('#hidden-status_' + idElement).val(data);
-					}
-				});
-				
-				switch ($('#hidden-status_' + idElement).val()) {
-					case '1':
-						//Critical (BAD)
-						suffix = "_bad.png";
-						break;
-					case '4':
-						//Critical (ALERT)
-						suffix = "_bad.png";
-						break;
-					case '0':
-						//Normal (OK)
-						suffix = "_ok.png";
-						break;
-					case '2':
-						//Warning
-						suffix = "_warning.png";
-						break;
-					case '3':
-					default:
-						//Unknown
-						suffix = ".png";
-						break;
-				}
-				
-				var params = [];
-				params.push("get_image_path=1");
-				params.push("img_src=" +
-					"images/console/icons/" + values['image'] + suffix);
-				params.push("page=include/ajax/skins.ajax");
-				params.push("only_src=1");
-				jQuery.ajax ({
-					data: params.join ("&"),
-					type: 'POST',
-					url: url_ajax,
-					async: false,
-					timeout: 10000,
-					success: function (data) {
-						$("#image_" + idElement).attr('src', data);
-					}
-				});
 			}
 		case 'percentile_item':
 		case 'simple_value':
@@ -2777,6 +2828,8 @@ function showPreviewStaticGraph(staticGraph) {
 		parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 		parameter.push ({name: "get_image_path_status", value: "1"});
 		parameter.push ({name: "img_src", value: imgBase });
+		parameter.push ({name: "id_visual_console",
+			value: id_visual_console});
 		
 		jQuery.ajax ({
 			type: 'POST',
@@ -2821,6 +2874,8 @@ function showPreviewIcon(icon) {
 		params.push("get_image_path=1");
 		params.push("img_src=" + imgBase + ".png");
 		params.push("page=include/ajax/skins.ajax");
+		parameter.push ({name: "id_visual_console",
+			value: id_visual_console});
 		jQuery.ajax ({
 			data: params.join ("&"),
 			type: 'POST',

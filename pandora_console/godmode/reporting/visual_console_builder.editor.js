@@ -1144,49 +1144,50 @@ function set_static_graph_status(idElement, image, status) {
 				set_static_graph_status(idElement, image, data);
 			}
 		});
-	}
-	else {
-		switch (status) {
-			case '1':
-				//Critical (BAD)
-				suffix = "_bad.png";
-				break;
-			case '4':
-				//Critical (ALERT)
-				suffix = "_bad.png";
-				break;
-			case '0':
-				//Normal (OK)
-				suffix = "_ok.png";
-				break;
-			case '2':
-				//Warning
-				suffix = "_warning.png";
-				break;
-			case '3':
-			default:
-				//Unknown
-				suffix = ".png";
-				break;
-		}
 		
-		var params = [];
-		params.push("get_image_path=1");
-		params.push("img_src=" +
-			"images/console/icons/" + image + suffix);
-		params.push("page=include/ajax/skins.ajax");
-		params.push("only_src=1");
-		params.push ({name: "id_visual_console",
-			value: id_visual_console});
-		jQuery.ajax ({
-			data: params.join ("&"),
-			type: 'POST',
-			url: get_url_ajax(),
-			success: function (data) {
-				$("#image_" + idElement).attr('src', data);
-			}
-		});
+		return;
 	}
+	
+	switch (status) {
+		case '1':
+			//Critical (BAD)
+			suffix = "_bad.png";
+			break;
+		case '4':
+			//Critical (ALERT)
+			suffix = "_bad.png";
+			break;
+		case '0':
+			//Normal (OK)
+			suffix = "_ok.png";
+			break;
+		case '2':
+			//Warning
+			suffix = "_warning.png";
+			break;
+		case '3':
+		default:
+			//Unknown
+			suffix = ".png";
+			break;
+	}
+	
+	var params = [];
+	params.push("get_image_path=1");
+	params.push("img_src=" +
+		"images/console/icons/" + image + suffix);
+	params.push("page=include/ajax/skins.ajax");
+	params.push("only_src=1");
+	params.push ({name: "id_visual_console",
+		value: id_visual_console});
+	jQuery.ajax ({
+		data: params.join ("&"),
+		type: 'POST',
+		url: get_url_ajax(),
+		success: function (data) {
+			$("#image_" + idElement).attr('src', data);
+		}
+	});
 }
 
 function setModuleGraph(id_data) {
@@ -1540,53 +1541,6 @@ function createItem(type, values, id_data) {
 			break;
 		case 'group_item':
 		case 'static_graph':
-			var element_status= null;
-			var parameter = Array();
-			parameter.push ({name: "page",
-				value: "include/ajax/visual_console_builder.ajax"});
-			parameter.push ({name: "get_element_status", value: "1"});
-			parameter.push ({name: "id_element", value: id_data});
-			parameter.push ({name: "id_visual_console",
-				value: id_visual_console});
-			
-			if (is_metaconsole()) {
-				parameter.push ({name: "metaconsole", value: 1});
-			}
-			else {
-				parameter.push ({name: "metaconsole", value: 0});
-			}
-			
-			jQuery.ajax ({
-				type: 'POST',
-				url: get_url_ajax(),
-				data: parameter,
-				async: false,
-				timeout: 10000,
-				success: function (data) {
-					element_status = data;
-				}
-			});
-			
-			var img_src= null;
-			var parameter = Array();
-			parameter.push ({name: "page", value: "include/ajax/skins.ajax"});
-			parameter.push ({name: "get_image_path", value: "1"});
-			parameter.push ({name: "img_src", value: getImageElement(id_data)});
-			parameter.push ({name: "only_src", value: "1"});
-			parameter.push ({name: "id_visual_console",
-				value: id_visual_console});
-			
-			jQuery.ajax ({
-				type: 'POST',
-				url: get_url_ajax(),
-				data: parameter,
-				async: false,
-				timeout: 10000,
-				success: function (data) {
-					img_src = data;
-				}
-			});
-			
 			switch (type) {
 				case 'group_item':
 					class_type = "group_item";
@@ -1595,6 +1549,8 @@ function createItem(type, values, id_data) {
 					class_type = "static_graph";
 					break;
 			}
+			
+			img_src = "images/spinner.gif";
 			
 			item = $('<div></div>')
 				.attr('class', 'item ' + class_type)
@@ -1631,7 +1587,7 @@ function createItem(type, values, id_data) {
 			var $input = $('<input></input>')
 				.attr('id', 'hidden-status_' + id_data)
 				.attr('type', 'hidden')
-				.attr('value', element_status)
+				.attr('value', -1)
 				.attr('name', 'status_' + id_data);
 			
 			item
@@ -1639,6 +1595,9 @@ function createItem(type, values, id_data) {
 				.append($image)
 				.append($span)
 				.append($input);
+			
+			set_static_graph_status(id_data, values['image']);
+			
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':

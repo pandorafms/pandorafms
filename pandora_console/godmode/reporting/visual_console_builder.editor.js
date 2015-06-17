@@ -1356,7 +1356,6 @@ function setPercentileBubble(id_data, values) {
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "value_show", value: values['value_show']});
 	jQuery.ajax({
-		async: false,
 		url: get_url_ajax(),
 		data: parameter,
 		type: "POST",

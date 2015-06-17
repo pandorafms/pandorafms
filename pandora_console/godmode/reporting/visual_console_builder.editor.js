@@ -1464,7 +1464,7 @@ function getImageElement(id_data) {
 	return img;
 }
 
-function visual_map_get_color_line_status(id) {
+function set_color_line_status(lines, line, id_data, values) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	
@@ -1477,19 +1477,30 @@ function visual_map_get_color_line_status(id) {
 	var color = null;
 	
 	jQuery.ajax({
-		async: false,
 		url: get_url_ajax(),
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
-		success: function (data)
-			{
-				color = data['color_line'];
-			}
+		success: function (data) {
+			color = data['color_line'];
+			
+			var line = {
+				"id": id_data,
+				"node_begin":  values['parent'],
+				"node_end": id_data,
+				"color": color };
+			
+			
+			lines.push(line);
+			
+			refresh_lines(lines, 'background', true);
+		}
 	});
 	
-	return color;
 }
+
+
+
 
 function createItem(type, values, id_data) {
 	var sizeStyle = '';
@@ -1669,15 +1680,7 @@ function createItem(type, values, id_data) {
 	$(".box_item").css('z-index', '1');
 	
 	if (values['parent'] != 0) {
-		var line = {"id": id_data,
-			"node_begin":  values['parent'],
-			"node_end": id_data,
-			"color": visual_map_get_color_line_status(id_data) };
-		
-		
-		lines.push(line);
-		
-		refresh_lines(lines, 'background', true);
+		set_color_line_status(lines, line, id_data, values);
 	}
 }
 
@@ -1845,18 +1848,9 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 			
 			if (typeof(values['parent']) != 'undefined') {
 				if (!found) {
-					var line = {"id": idElement,
-						"node_begin":  values['parent'],
-						"node_end": idElement,
-						"color": visual_map_get_color_line_status(idElement) };
-					
-					
-					
-					lines.push(line);
+					set_color_line_status(lines, line, idElement, values);
 				}
 			}
-			
-			refresh_lines(lines, 'background', true);
 			break;
 		case 'background':
 			if(values['width'] == '0' || values['height'] == '0'){

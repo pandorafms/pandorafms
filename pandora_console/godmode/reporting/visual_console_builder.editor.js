@@ -683,6 +683,19 @@ function fill_parent_select(id_item) {
 }
 
 function loadFieldsFromDB(item) {
+	$("#loading_in_progress_dialog").dialog({
+		resizable: true,
+		draggable: true,
+		modal: true,
+		height: 100,
+		width: 200,
+		overlay: {
+			opacity: 0.5,
+			background: "black"
+		}
+	});
+	
+	
 	parameter = Array();
 	parameter.push ({name: "page",
 		value: "include/ajax/visual_console_builder.ajax"});
@@ -695,190 +708,190 @@ function loadFieldsFromDB(item) {
 	set_label = false;
 	
 	jQuery.ajax({
-		async: false,
 		url: get_url_ajax(),
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
-		success: function (data)
-			{
-				var moduleId = 0;
+		success: function (data) {
+			var moduleId = 0;
+			
+			fill_parent_select(idItem);
+			
+			jQuery.each(data, function(key, val) {
+				if (key == 'background')
+					$("#background_image").val(val);
+				if (key == 'width') $("input[name=width]").val(val);
+				if (key == 'height')
+					$("input[name=height]").val(val);
 				
-				fill_parent_select(idItem);
+				if (key == 'label') {
+					tinymce.get('text-label')
+						.setContent("");
+					$("input[name=label]").val("");
+					
+					tinymce.get('text-label').setContent(val);
+					$("input[name=label]").val(val);
+				}
 				
-				jQuery.each(data, function(key, val) {
-					if (key == 'background')
-						$("#background_image").val(val);
-					if (key == 'width') $("input[name=width]").val(val);
-					if (key == 'height')
-						$("input[name=height]").val(val);
-					
-					if (key == 'label') {
-						tinymce.get('text-label')
-							.setContent("");
-						$("input[name=label]").val("");
-						
-						tinymce.get('text-label').setContent(val);
-						$("input[name=label]").val(val);
-					}
-					
-					if (key == 'enable_link') {
-						if (val == "1") {
-							$("input[name=enable_link]")
-								.prop("checked", true);
-						}
-						else {
-							$("input[name=enable_link]")
-								.prop("checked", false);
-						}
-					}
-					
-					if (key == 'image') {
-						//Load image preview
-						$("select[name=image]").val(val);
-						$("select[name=background_color]").val(val);
-						showPreview(val);
-					}
-					
-					if (key == 'pos_x') $("input[name=left]").val(val);
-					if (key == 'pos_y') $("input[name=top]").val(val);
-					if (key == 'agent_name') {
-						$("input[name=agent]").val(val);
-						//Reload no-sincrone the select of modules
-					}
-					if (key == 'modules_html') {
-						$("select[name=module]").empty().html(val);
-						$("select[name=module]").val(moduleId);
-					}
-					if (key == 'id_agente_modulo') {
-						moduleId = val;
-						$("select[name=module]").val(val);
-					}
-					if (key == 'process_value')
-						$("select[name=process_value]").val(val);
-					if (key == 'period') {
-						var anySelected = false;
-						var periodId = $('#hidden-period').attr('class');
-						$('#' + periodId + '_select option')
-							.each(function() {
-							
-							if($(this).val() == val) {
-								$(this).attr('selected',true);
-								$(this).trigger('change');
-								anySelected = true;
-							}
-						});
-						if (anySelected == false) {
-							$('#' + periodId + '_select option')
-								.eq(0).attr('selected',true);
-							$('#' + periodId + '_units option')
-								.eq(0).attr('selected',true);
-							$('#hidden-period').val(val);
-							$('#text-' + periodId + '_text').val(val);
-							adjustTextUnits(periodId);
-							$('#' + periodId + '_default').hide();
-							$('#' + periodId + '_manual').show();
-						}
-					}
-					if (key == 'width')
-						$("input[name=width]").val(val);
-					if (key == 'height')
-						$("input[name=height]").val(val);
-					if (key == 'parent_item')
-						$("select[name=parent]").val(val);
-					if (key == 'id_layout_linked')
-						$("select[name=map_linked]").val(val);
-					if (key == 'width_percentile')
-						$("input[name=width_percentile]").val(val);
-					if (key == 'max_percentile')
-						$("input[name=max_percentile]").val(val);
-					if (key == 'width_module_graph')
-						$("input[name=width_module_graph]").val(val);
-					if (key == 'height_module_graph')
-						$("input[name=height_module_graph]").val(val);
-					
-					if (key == 'type_percentile') {
-						if (val == 'percentile') {
-							$("input[name=type_percentile][value=percentile]")
-								.attr("checked", "checked");
-						}
-						else {
-							$("input[name=type_percentile][value=bubble]")
-								.attr("checked", "checked");
-						}
-					}
-					
-					if (key == 'value_show') {
-						if (val == 'percent') {
-							$("input[name=value_show][value=percent]")
-								.attr("checked", "checked");
-						}
-						else {
-							$("input[name=value_show][value=value]")
-								.attr("checked", "checked");
-						}
-					}
-					
-					if (key == 'id_group') {
-						$("select[name=group]").val(val);
-					}
-					
-					
-					if (is_metaconsole()) {
-						if (key == 'id_agent') {
-							$("#hidden-agent").val(val);
-						}
-						if (key == 'id_server_name') {
-							$("#id_server_name").val(val);
-						}
-					}
-					
-					if (key == 'width_box')
-						$("input[name='width_box']").val(val);
-					if (key == 'height_box')
-						$("input[name='height_box']").val(val);
-					if (key == 'border_color') {
-						$("input[name='border_color']").val(val);
-						$("#border_color_row .ColorPickerDivSample")
-							.css('background-color', val);
-					}
-					if (key == 'border_width')
-						$("input[name='border_width']").val(val);
-					if (key == 'fill_color') {
-						$("input[name='fill_color']").val(val);
-						$("#fill_color_row .ColorPickerDivSample")
-							.css('background-color', val);
-					}
-					if (key == 'line_width')
-						$("input[name='line_width']").val(val);
-					if (key == 'line_color') {
-						$("input[name='line_color']").val(val);
-						$("#line_color_row .ColorPickerDivSample")
-							.css('background-color', val);
-					}
-					
-				});
-				
-				if (data.type == 1) {
-					if (data.id_custom_graph > 0) {
-						$("input[name='radio_choice'][value='custom_graph']")
-							.prop('checked', true);
-						$("input[name='radio_choice']").trigger('change');
-						$("#custom_graph option[value=" + data.id_custom_graph + "]")
-							.prop("selected", true);
+				if (key == 'enable_link') {
+					if (val == "1") {
+						$("input[name=enable_link]")
+							.prop("checked", true);
 					}
 					else {
-						$("input[name='radio_choice'][value='module_graph']")
-							.prop('checked', true);
-						$("input[name='radio_choice']").trigger('change');
+						$("input[name=enable_link]")
+							.prop("checked", false);
 					}
 				}
 				
-				if (typeof(enterprise_loadFieldsFromDB) == 'function') {
-					enterprise_loadFieldsFromDB(data);
+				if (key == 'image') {
+					//Load image preview
+					$("select[name=image]").val(val);
+					$("select[name=background_color]").val(val);
+					showPreview(val);
+				}
+				
+				if (key == 'pos_x') $("input[name=left]").val(val);
+				if (key == 'pos_y') $("input[name=top]").val(val);
+				if (key == 'agent_name') {
+					$("input[name=agent]").val(val);
+					//Reload no-sincrone the select of modules
+				}
+				if (key == 'modules_html') {
+					$("select[name=module]").empty().html(val);
+					$("select[name=module]").val(moduleId);
+				}
+				if (key == 'id_agente_modulo') {
+					moduleId = val;
+					$("select[name=module]").val(val);
+				}
+				if (key == 'process_value')
+					$("select[name=process_value]").val(val);
+				if (key == 'period') {
+					var anySelected = false;
+					var periodId = $('#hidden-period').attr('class');
+					$('#' + periodId + '_select option')
+						.each(function() {
+						
+						if($(this).val() == val) {
+							$(this).attr('selected',true);
+							$(this).trigger('change');
+							anySelected = true;
+						}
+					});
+					if (anySelected == false) {
+						$('#' + periodId + '_select option')
+							.eq(0).attr('selected',true);
+						$('#' + periodId + '_units option')
+							.eq(0).attr('selected',true);
+						$('#hidden-period').val(val);
+						$('#text-' + periodId + '_text').val(val);
+						adjustTextUnits(periodId);
+						$('#' + periodId + '_default').hide();
+						$('#' + periodId + '_manual').show();
+					}
+				}
+				if (key == 'width')
+					$("input[name=width]").val(val);
+				if (key == 'height')
+					$("input[name=height]").val(val);
+				if (key == 'parent_item')
+					$("select[name=parent]").val(val);
+				if (key == 'id_layout_linked')
+					$("select[name=map_linked]").val(val);
+				if (key == 'width_percentile')
+					$("input[name=width_percentile]").val(val);
+				if (key == 'max_percentile')
+					$("input[name=max_percentile]").val(val);
+				if (key == 'width_module_graph')
+					$("input[name=width_module_graph]").val(val);
+				if (key == 'height_module_graph')
+					$("input[name=height_module_graph]").val(val);
+				
+				if (key == 'type_percentile') {
+					if (val == 'percentile') {
+						$("input[name=type_percentile][value=percentile]")
+							.attr("checked", "checked");
+					}
+					else {
+						$("input[name=type_percentile][value=bubble]")
+							.attr("checked", "checked");
+					}
+				}
+				
+				if (key == 'value_show') {
+					if (val == 'percent') {
+						$("input[name=value_show][value=percent]")
+							.attr("checked", "checked");
+					}
+					else {
+						$("input[name=value_show][value=value]")
+							.attr("checked", "checked");
+					}
+				}
+				
+				if (key == 'id_group') {
+					$("select[name=group]").val(val);
+				}
+				
+				
+				if (is_metaconsole()) {
+					if (key == 'id_agent') {
+						$("#hidden-agent").val(val);
+					}
+					if (key == 'id_server_name') {
+						$("#id_server_name").val(val);
+					}
+				}
+				
+				if (key == 'width_box')
+					$("input[name='width_box']").val(val);
+				if (key == 'height_box')
+					$("input[name='height_box']").val(val);
+				if (key == 'border_color') {
+					$("input[name='border_color']").val(val);
+					$("#border_color_row .ColorPickerDivSample")
+						.css('background-color', val);
+				}
+				if (key == 'border_width')
+					$("input[name='border_width']").val(val);
+				if (key == 'fill_color') {
+					$("input[name='fill_color']").val(val);
+					$("#fill_color_row .ColorPickerDivSample")
+						.css('background-color', val);
+				}
+				if (key == 'line_width')
+					$("input[name='line_width']").val(val);
+				if (key == 'line_color') {
+					$("input[name='line_color']").val(val);
+					$("#line_color_row .ColorPickerDivSample")
+						.css('background-color', val);
+				}
+				
+			});
+			
+			if (data.type == 1) {
+				if (data.id_custom_graph > 0) {
+					$("input[name='radio_choice'][value='custom_graph']")
+						.prop('checked', true);
+					$("input[name='radio_choice']").trigger('change');
+					$("#custom_graph option[value=" + data.id_custom_graph + "]")
+						.prop("selected", true);
+				}
+				else {
+					$("input[name='radio_choice'][value='module_graph']")
+						.prop('checked', true);
+					$("input[name='radio_choice']").trigger('change');
 				}
 			}
-		});
+			
+			if (typeof(enterprise_loadFieldsFromDB) == 'function') {
+				enterprise_loadFieldsFromDB(data);
+			}
+			
+			$("#loading_in_progress_dialog").dialog("close");
+		}
+	});
 }
 
 function setAspectRatioBackground(side) {
@@ -1647,6 +1660,17 @@ function addItemSelectParents(id_data, text) {
 function insertDB(type, values) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
+	$("#saving_in_progress_dialog").dialog({
+		resizable: true,
+		draggable: true,
+		modal: true,
+		height: 100,
+		width: 200,
+		overlay: {
+			opacity: 0.5,
+			background: "black"
+		}
+	});
 	
 	
 	var id = null;
@@ -1662,70 +1686,70 @@ function insertDB(type, values) {
 	
 	jQuery.ajax({
 		url: get_url_ajax(),
-		async: false,
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
-		success: function (data)
-			{
-				if (data['correct']) {
-					id = data['id_data'];
-					createItem(type, values, id);
-					addItemSelectParents(id, data['text']);
-					//Reload all events for the item and new item.
-					eventsItems();
-					
-					switch (type) {
-						case 'line_item':
-							var line = {
-								"id": id,
-								"start_x":		values['line_start_x'],
-								"start_y":		values['line_start_y'],
-								"end_x":		values['line_end_x'],
-								"end_y":		values['line_end_y'],
-								"line_width":	values['line_width'],
-								"line_color":	values['line_color']};
-							
-							user_lines.push(line);
-							
-							// Draw handlers
-							radious_handle = 6;
-							
-							// Draw handler start
-							item = $('<div id="handler_start_' + id + '" ' +
-								'class="item handler_start" ' +
-								'style="text-align: center; ' +
-									'position: absolute; ' +
-									'top: ' + (values['line_start_y']  - radious_handle) + 'px; ' +
-									'left: ' + (values['line_start_x']  - radious_handle) + 'px;">' +
-									
-									'<img src="' + img_handler_start + '" />' + 
-									
-								'</div>'
-							);
-							$("#background").append(item);
-							
-							// Draw handler stop
-							item = $('<div id="handler_end_' + id + '" ' +
-								'class="item handler_end" ' +
-								'style="text-align: center; ' +
-									'position: absolute; ' +
-									'top: ' + (values['line_end_y']  - radious_handle) + 'px; ' +
-									'left: ' + (values['line_end_x']  - radious_handle) + 'px;">' +
-									
-									'<img src="' + img_src + '" />' + 
-									
-								'</div>'
-							);
-							$("#background").append(item);
-							break;
-					}
+		success: function (data) {
+			if (data['correct']) {
+				id = data['id_data'];
+				createItem(type, values, id);
+				addItemSelectParents(id, data['text']);
+				//Reload all events for the item and new item.
+				eventsItems();
+				
+				switch (type) {
+					case 'line_item':
+						var line = {
+							"id": id,
+							"start_x":		values['line_start_x'],
+							"start_y":		values['line_start_y'],
+							"end_x":		values['line_end_x'],
+							"end_y":		values['line_end_y'],
+							"line_width":	values['line_width'],
+							"line_color":	values['line_color']};
+						
+						user_lines.push(line);
+						
+						// Draw handlers
+						radious_handle = 6;
+						
+						// Draw handler start
+						item = $('<div id="handler_start_' + id + '" ' +
+							'class="item handler_start" ' +
+							'style="text-align: center; ' +
+								'position: absolute; ' +
+								'top: ' + (values['line_start_y']  - radious_handle) + 'px; ' +
+								'left: ' + (values['line_start_x']  - radious_handle) + 'px;">' +
+								
+								'<img src="' + img_handler_start + '" />' + 
+								
+							'</div>'
+						);
+						$("#background").append(item);
+						
+						// Draw handler stop
+						item = $('<div id="handler_end_' + id + '" ' +
+							'class="item handler_end" ' +
+							'style="text-align: center; ' +
+								'position: absolute; ' +
+								'top: ' + (values['line_end_y']  - radious_handle) + 'px; ' +
+								'left: ' + (values['line_end_x']  - radious_handle) + 'px;">' +
+								
+								'<img src="' + img_src + '" />' + 
+								
+							'</div>'
+						);
+						$("#background").append(item);
+						break;
 				}
-				else {
-					//TODO
-				}
+				
+				$("#saving_in_progress_dialog").dialog("close");
 			}
-		});
+			else {
+				//TODO
+			}
+		}
+	});
 }
 
 function updateDB_visual(type, idElement , values, event, top, left) {
@@ -2004,7 +2028,17 @@ function copyDB(idItem) {
 function deleteDB(idElement) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
-	
+	$("#delete_in_progress_dialog").dialog({
+		resizable: true,
+		draggable: true,
+		modal: true,
+		height: 100,
+		width: 200,
+		overlay: {
+			opacity: 0.5,
+			background: "black"
+		}
+	});
 	
 	parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
@@ -2014,7 +2048,6 @@ function deleteDB(idElement) {
 	
 	jQuery.ajax({
 		url: get_url_ajax(),
-		async: false,
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
@@ -2054,6 +2087,8 @@ function deleteDB(idElement) {
 					
 					$('#' + idElement).remove();
 					activeToolboxButton('delete_item', false);
+					
+					$("#delete_in_progress_dialog").dialog("close");
 				}
 				else {
 					//TODO
@@ -2590,6 +2625,18 @@ function click_button_toolbox(id) {
 			}
 			break;
 		case 'save_visualmap':
+			$("#saving_in_progress_dialog").dialog({
+				resizable: true,
+				draggable: true,
+				modal: true,
+				height: 100,
+				width: 200,
+				overlay: {
+					opacity: 0.5,
+					background: "black"
+				}
+			});
+		
 			var status = true;
 			activeToolboxButton('save', false);
 			jQuery.each(list_actions_pending_save, function(key, action_pending_save) {
@@ -2597,24 +2644,26 @@ function click_button_toolbox(id) {
 					type: 'POST',
 					url: action="ajax.php",
 					data: action_pending_save,
-					async: false,
 					dataType: 'json',
-					timeout: 10000,
 					success: function (data) {
 						if (data == '0') {
 							status = false;
 						}
+						
+						$("#saving_in_progress_dialog").dialog("close");
+						
+						if (status) {
+							alert($('#hack_translation_correct_save').html());
+						}
+						else {
+							alert($('#hack_translation_incorrect_save').html());
+						}
+						activeToolboxButton('save', true);
 					}
 				});
 			});
 			
-			if (status) {
-				alert($('#hack_translation_correct_save').html());
-			}
-			else {
-				alert($('#hack_translation_incorrect_save').html());
-			}
-			activeToolboxButton('save', true);
+			
 			break;
 		default:
 			//Maybe click in any Enterprise button in toolbox.

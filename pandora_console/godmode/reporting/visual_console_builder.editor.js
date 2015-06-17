@@ -28,6 +28,9 @@ var obj_js_user_lines = null;
 
 var SIZE_GRID = 16; //Const the size (for width and height) of grid.
 
+var img_handler_start;
+var img_handler_end;
+
 function toggle_advance_options_palette(close) {
 	if ($("#advance_options").css('display') == 'none') {
 		$("#advance_options").css('display', '');
@@ -43,6 +46,8 @@ function toggle_advance_options_palette(close) {
 
 // Main function, execute in event documentReady
 function visual_map_main() {
+	img_handler_start= get_image_url("images/dot_red.png");
+	img_handler_end= get_image_url("images/dot_green.png");
 	
 	//Get the list of posible parents
 	parents = Base64.decode($("input[name='parents_load']").val());
@@ -136,23 +141,8 @@ function update_button_palette_callback() {
 			
 			//$("#background").css('background', 'url(images/console/background/' + values['background'] + ')');
 			
-			var params = [];
-			params.push("get_image_path=1");
-			params.push("img_src=images/console/background/" + values['background']);
-			params.push("page=include/ajax/skins.ajax");
-			params.push("only_src=1");
-			params.push ({name: "id_visual_console",
-				value: id_visual_console});
-			jQuery.ajax ({
-				data: params.join ("&"),
-				type: 'POST',
-				url: get_url_ajax(),
-				async: false,
-				timeout: 10000,
-				success: function (data) {
-					$("#background_img").attr('src', data);
-				}
-			});
+			$("#background_img").attr('src', "images/spinner.gif");
+			set_image("background", null, image);
 			
 			idElement = 0;
 			break;
@@ -204,23 +194,7 @@ function update_button_palette_callback() {
 			$("#text_" + idItem).html(values['label']);
 			break;
 		case 'icon':
-			var params = [];
-			params.push("get_image_path=1");
-			params.push("img_src=images/console/icons/" + values['image'] + ".png");
-			params.push("page=include/ajax/skins.ajax");
-			params.push("only_src=1");
-			params.push ({name: "id_visual_console",
-				value: id_visual_console});
-			jQuery.ajax ({
-				data: params.join ("&"),
-				type: 'POST',
-				url: get_url_ajax(),
-				async: false,
-				timeout: 10000,
-				success: function (data) {
-					$("#image_" + idItem).attr('src', data);
-				}
-			});
+			$("#image_" + idItem).attr('src', "images/spinner.gif");
 			
 			if ((values['width'] != 0) && (values['height'] != 0)) {
 				$("#image_" + idItem).attr('width', values['width']);
@@ -234,6 +208,8 @@ function update_button_palette_callback() {
 				$("#" + idItem).css('width', '');
 				$("#" + idItem).css('height', '');
 			}
+			
+			set_image("image", idItem, values['image']);
 			break;
 		default:
 			//Maybe save in any Enterprise item.
@@ -1172,10 +1148,22 @@ function set_static_graph_status(idElement, image, status) {
 			break;
 	}
 	
+	set_image("image", idElement, image  + suffix);
+}
+
+function set_image(type, idElement, image) {
+	if (type == "image") {
+		item = "#image_" + idElement;
+		img_src = "images/console/icons/" + image;
+	}
+	else if (type == "background") {
+		item = "background_img";
+		img_src = "images/console/background/" + image;
+	}
+	
 	var params = [];
 	params.push("get_image_path=1");
-	params.push("img_src=" +
-		"images/console/icons/" + image + suffix);
+	params.push("img_src=" + img_src);
 	params.push("page=include/ajax/skins.ajax");
 	params.push("only_src=1");
 	params.push ({name: "id_visual_console",
@@ -1185,7 +1173,7 @@ function set_static_graph_status(idElement, image, status) {
 		type: 'POST',
 		url: get_url_ajax(),
 		success: function (data) {
-			$("#image_" + idElement).attr('src', data);
+			$(item).attr('src', data);
 		}
 	});
 }
@@ -1440,8 +1428,6 @@ function get_image_url(img_src) {
 		type: 'POST',
 		url: get_url_ajax(),
 		data: parameter,
-		async: false,
-		timeout: 10000,
 		success: function (data) {
 			img_url = data;
 		}
@@ -1660,30 +1646,12 @@ function createItem(type, values, id_data) {
 				imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 			}
 			
-			var img_src= null;
-			var parameter = Array();
-			parameter.push ({name: "page", value: "include/ajax/skins.ajax"});
-			parameter.push ({name: "get_image_path", value: "1"});
-			parameter.push ({name: "img_src", value: getImageElement(id_data)});
-			parameter.push ({name: "only_src", value: "1"});
-			parameter.push ({name: "id_visual_console",
-				value: id_visual_console});
-			
-			jQuery.ajax ({
-				type: 'POST',
-				url: get_url_ajax(),
-				data: parameter,
-				async: false,
-				timeout: 10000,
-				success: function (data) {
-					img_src = data;
-				}
-			});
-			
 			item = $('<div id="' + id_data + '" class="item icon" style="text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
-				'<img id="image_' + id_data + '" class="image" src="' + img_src + '" ' + imageSize + ' /><br />' + 
+				'<img id="image_' + id_data + '" class="image" src="images/spinner.gif" ' + imageSize + ' /><br />' + 
 				'</div>'
 			);
+			
+			set_image("image", id_data, values['image']);
 			break;
 		default:
 			//Maybe create in any Enterprise item.
@@ -1766,8 +1734,6 @@ function insertDB(type, values) {
 							radious_handle = 6;
 							
 							// Draw handler start
-							var img_src= get_image_url("images/dot_red.png");
-							
 							item = $('<div id="handler_start_' + id + '" ' +
 								'class="item handler_start" ' +
 								'style="text-align: center; ' +
@@ -1775,15 +1741,13 @@ function insertDB(type, values) {
 									'top: ' + (values['line_start_y']  - radious_handle) + 'px; ' +
 									'left: ' + (values['line_start_x']  - radious_handle) + 'px;">' +
 									
-									'<img src="' + img_src + '" />' + 
+									'<img src="' + img_handler_start + '" />' + 
 									
 								'</div>'
 							);
 							$("#background").append(item);
 							
 							// Draw handler stop
-							var img_src= get_image_url("images/dot_green.png");
-							
 							item = $('<div id="handler_end_' + id + '" ' +
 								'class="item handler_end" ' +
 								'style="text-align: center; ' +

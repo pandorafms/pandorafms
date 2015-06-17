@@ -31,6 +31,8 @@ var SIZE_GRID = 16; //Const the size (for width and height) of grid.
 var img_handler_start;
 var img_handler_end;
 
+var font;
+
 function toggle_advance_options_palette(close) {
 	if ($("#advance_options").css('display') == 'none') {
 		$("#advance_options").css('display', '');
@@ -48,6 +50,23 @@ function toggle_advance_options_palette(close) {
 function visual_map_main() {
 	img_handler_start= get_image_url("images/dot_red.png");
 	img_handler_end= get_image_url("images/dot_green.png");
+	
+	//Get the actual system font.
+	parameter = Array();
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_font"});
+	parameter.push ({name: "id_visual_console",
+		value: id_visual_console});
+	jQuery.ajax({
+		url: get_url_ajax(),
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data)
+		{
+			font = data['font'];
+		}
+	});
 	
 	//Get the list of posible parents
 	parents = Base64.decode($("input[name='parents_load']").val());
@@ -173,11 +192,12 @@ function update_button_palette_callback() {
 		case 'percentile_bar':
 		case 'percentile_item':
 			$("#text_" + idItem).html(values['label']);
+			$("#image_" + idItem).attr("src", "images/spinner.gif");
 			if (values['type_percentile'] == 'bubble') {
-				$("#image_" + idItem).attr('src', getPercentileBubble(idItem, values));
+				setPercentileBubble(idItem, values);
 			}
 			else {
-				$("#image_" + idItem).attr('src', getPercentileBar(idItem, values));
+				setPercentileBar(idItem, values);
 			}
 			
 			break;
@@ -188,7 +208,9 @@ function update_button_palette_callback() {
 			break;
 		case 'simple_value':
 			$("#text_" + idItem).html(values['label']);
-			$("#simplevalue_" + idItem).html(getModuleValue(idItem,values['process_simple_value'], values['period']));
+			$("#simplevalue_" + idItem)
+				.html($('<img></img>').attr('src', "images/spinner.gif"));
+			setModuleValue(idItem,values['process_simple_value'], values['period']);
 			break;
 		case 'label':
 			$("#text_" + idItem).html(values['label']);
@@ -860,13 +882,14 @@ function loadFieldsFromDB(item) {
 }
 
 function setAspectRatioBackground(side) {
+	toggle_item_palette();
+	
 	parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_original_size_background"});
 	parameter.push ({name: "background", value: $("#background_img").attr('src')});
 	
 	jQuery.ajax({
-		async: false,
 		url: "ajax.php",
 		data: parameter,
 		type: "POST",
@@ -905,7 +928,7 @@ function setAspectRatioBackground(side) {
 		}
 	});
 	
-	toggle_item_palette();
+	
 }
 
 function hiddenFields(item) {
@@ -1239,31 +1262,28 @@ function setModuleGraph(id_data) {
 	
 }
 
-function getModuleValue(id_data, process_simple_value, period) {
+function setModuleValue(id_data, process_simple_value, period) {
 	var parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_value"});
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "period", value: period});
-	if(process_simple_value != undefined) {
+	if (process_simple_value != undefined) {
 		parameter.push ({name: "process_simple_value", value: process_simple_value});
 	}
 	jQuery.ajax({
-		async: false,
 		url: get_url_ajax(),
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
 		success: function (data)
 		{
-			module_value = data['value'];
+			$("#simplevalue_" + id_data).html(data['value']);
 		}
 	});
-	
-	return module_value;
 }
 
-function getPercentileBar(id_data, values) {
+function setPercentileBar(id_data, values) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	var url_hack_metaconsole = '';
@@ -1281,13 +1301,11 @@ function getPercentileBar(id_data, values) {
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "value_show", value: values['value_show']});
 	jQuery.ajax({
-		async: false,
 		url: get_url_ajax(),
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
-		success: function (data)
-		{
+		success: function (data) {
 			module_value = data['value'];
 			//max_percentile = data['max_percentile'];
 			//width_percentile = data['width_percentile'];
@@ -1298,47 +1316,29 @@ function getPercentileBar(id_data, values) {
 			}
 			
 			colorRGB = data['colorRGB'];
+			
+			if ( max_percentile > 0)
+				var percentile = Math.round(module_value / max_percentile * 100);
+			else
+				var percentile = 100;
+			
+			if (unit_text == false && typeof(unit_text) == 'boolean') {
+				value_text = percentile + "%";
+			}
+			else {
+				value_text = module_value + " " + unit_text;
+			}
+			
+			var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&height=15&' + 
+				'width=' + width_percentile + '&mode=1&progress=' + percentile +
+				'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
+			
+			$("#image_" + idItem).attr('src', img);
 		}
 	});
-	
-	
-	//Get the actual system font.
-	parameter = Array();
-	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
-	parameter.push ({name: "action", value: "get_font"});
-	jQuery.ajax({
-		async: false,
-		url: get_url_ajax(),
-		data: parameter,
-		type: "POST",
-		dataType: 'json',
-		success: function (data)
-		{
-			font = data['font'];
-		}
-	});
-	
-	
-	if ( max_percentile > 0)
-		var percentile = Math.round(module_value / max_percentile * 100);
-	else
-		var percentile = 100;
-	
-	if (unit_text == false && typeof(unit_text) == 'boolean') {
-		value_text = percentile + "%";
-	}
-	else {
-		value_text = module_value + " " + unit_text;
-	}
-	
-	var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&height=15&' + 
-		'width=' + width_percentile + '&mode=1&progress=' + percentile +
-		'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
-	
-	return img;
 }
 
-function getPercentileBubble(id_data, values) {
+function setPercentileBubble(id_data, values) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	var url_hack_metaconsole = '';
@@ -1361,8 +1361,7 @@ function getPercentileBubble(id_data, values) {
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
-		success: function (data)
-		{
+		success: function (data) {
 			module_value = data['value'];
 			//max_percentile = data['max_percentile'];
 			//width_percentile = data['width_percentile'];
@@ -1370,45 +1369,26 @@ function getPercentileBubble(id_data, values) {
 			if ((data['unit_text'] != false) || typeof(data['unit_text']) != 'boolean')
 				unit_text = data['unit_text'];
 			colorRGB = data['colorRGB'];
+			
+			if ( max_percentile > 0)
+				var percentile = Math.round(module_value / max_percentile * 100);
+			else
+				var percentile = 100;
+			
+			if (unit_text == false && typeof(unit_text) == 'boolean') {
+				value_text = percentile + "%";
+			}
+			else {
+				value_text = module_value + " " + unit_text;
+			}
+			
+			var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble&height=' + width_percentile + '&' + 
+				'width=' + width_percentile + '&mode=1&progress=' + percentile +
+				'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
+			
+			$("#image_" + idItem).attr('src', img);
 		}
 	});
-	
-	
-	//Get the actual system font.
-	parameter = Array();
-	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
-	parameter.push ({name: "action", value: "get_font"});
-	jQuery.ajax({
-		async: false,
-		url: get_url_ajax(),
-		data: parameter,
-		type: "POST",
-		dataType: 'json',
-		success: function (data)
-		{
-			font = data['font'];
-		}
-	});
-	
-	
-	if ( max_percentile > 0)
-		var percentile = Math.round(module_value / max_percentile * 100);
-	else
-		var percentile = 100;
-	
-	if (unit_text == false && typeof(unit_text) == 'boolean') {
-		value_text = percentile + "%";
-	}
-	else {
-		value_text = module_value + " " + unit_text;
-	}
-	
-	var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble&height=' + width_percentile + '&' + 
-		'width=' + width_percentile + '&mode=1&progress=' + percentile +
-		'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
-	
-	
-	return img;
 }
 
 function get_image_url(img_src) {
@@ -1576,16 +1556,20 @@ function createItem(type, values, id_data) {
 			if (values['type_percentile'] == 'percentile') {
 				item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: center; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 						'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
-						'<img class="image" id="image_' + id_data + '" src="' + getPercentileBar(id_data, values)  + '" />' +
+						'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
 						'</div>'
 				);
+				
+				setPercentileBar(id_data, values);
 			}
 			else {
 				item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: center; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 						'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
-						'<img class="image" id="image_' + id_data + '" src="' + getPercentileBubble(id_data, values)  + '" />' +
+						'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
 						'</div>'
 				);
+				
+				setPercentileBubble(id_data, values);
 			}
 			break;
 		case 'module_graph':

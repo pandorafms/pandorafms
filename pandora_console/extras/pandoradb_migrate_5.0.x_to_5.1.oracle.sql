@@ -237,3 +237,9 @@ INSERT INTO talert_actions (name, id_alert_command, field1, field2, field3, fiel
 -- Table `tconfig`
 -- ---------------------------------------------------------------------
 DELETE FROM tconfig WHERE token='sla_period';
+
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_component`
+-- ---------------------------------------------------------------------
+
+UPDATE tnetwork_component SET snmp_oid ='SELECT&#x20;DNSHostName&#x20;FROM&#x20;Win32_ComputerSystem' WHERE id_nc = 204 AND name = 'Hostname';

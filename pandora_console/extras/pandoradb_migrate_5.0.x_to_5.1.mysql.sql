@@ -268,3 +268,9 @@ ALTER TABLE `tnetwork_component` MODIFY COLUMN `post_process` DOUBLE(24,15)  DEF
 -- Table `tagente_modulo`
 -- ---------------------------------------------------------------------
 ALTER TABLE `tagente_modulo` MODIFY COLUMN `post_process` DOUBLE(24,15)  DEFAULT 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_component`
+-- ---------------------------------------------------------------------
+
+UPDATE tnetwork_component SET snmp_oid ='SELECT&#x20;DNSHostName&#x20;FROM&#x20;Win32_ComputerSystem' WHERE id_nc = 204 AND name = 'Hostname';

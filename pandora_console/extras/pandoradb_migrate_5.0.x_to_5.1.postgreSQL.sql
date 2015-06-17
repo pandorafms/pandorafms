@@ -207,3 +207,9 @@ INSERT INTO "talert_commands" ("name", "command", "description", "internal", "fi
 -- Table `talert_actions`
 -- ---------------------------------------------------------------------
 INSERT INTO "talert_actions" ("name", "id_alert_command", "field1", "field2", "field3", "field4", "field5", "field6", "field7", "field8", "field9", "field10", "id_group", "action_threshold") VALUES ('Create&#x20;a&#x20;ticket&#x20;in&#x20;Integria&#x20;IMS',13,'http://localhost/integria/include/api.php','1234','admin','_agent_:&#x20;_alert_name_','1','3','_alert_description_','','','',0,0);
+
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_component`
+-- ---------------------------------------------------------------------
+
+UPDATE tnetwork_component SET snmp_oid ='SELECT&#x20;DNSHostName&#x20;FROM&#x20;Win32_ComputerSystem' WHERE id_nc = 204 AND name = 'Hostname';

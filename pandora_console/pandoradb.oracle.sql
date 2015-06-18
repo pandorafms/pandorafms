@@ -1632,28 +1632,25 @@ CREATE SEQUENCE tgis_map_connection_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tgis_map_connection_inc BEFORE INSERT ON tgis_map_connection REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tgis_map_connection_s.nextval INTO :NEW.id_tmap_connection FROM dual; END tgis_map_connection_inc;;
 
 -- -----------------------------------------------------
--- Table `tgis_map_has_tgis_map_connection`
+-- Table `tgis_map_has_tgis_map_con` (tgis_map_has_tgis_map_connection)
 -- -----------------------------------------------------
-
--- This table is commented because table name length is more 30 chars. TODO: Change it's name 
-
---Table to asociate a connection to ais map
---CREATE TABLE tgis_map_has_tgis_map_connection (
+--Table to associate a connection to gis map
+CREATE TABLE tgis_map_has_tgis_map_con (
 	--reference to tgis_map
---	tgis_map_id_tgis_map NUMBER(10, 0) REFERENCES tgis_map(id_tgis_map) ON DELETE CASCADE, 
+	tgis_map_id_tgis_map NUMBER(10, 0) REFERENCES tgis_map(id_tgis_map) ON DELETE CASCADE, 
 	--reference to tgis_map_connection
---	tgis_map_connection_id_tmap_connection NUMBER(10, 0) REFERENCES tgis_map_connection (id_tmap_connection) ON DELETE CASCADE, 
+	tgis_map_con_id_tmap_con NUMBER(10, 0) REFERENCES tgis_map_connection (id_tmap_connection) ON DELETE CASCADE, 
 	--Last Modification Time of the Connection
---	modification_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-	--Flag to mark the DEFAULT map connection of a map
---	DEFAULT_map_connection NUMBER(5, 0) DEFAULT 0,
---  PRIMARY KEY (tgis_map_id_tgis_map, tgis_map_connection_id_tmap_connection)
---);
---CREATE INDEX tgis_map_has_tgis_map_connection_map_tgis_map_id_tgis_map_idx ON tgis_map_has_tgis_map_connection(tgis_map_id_tgis_map);
---CREATE INDEX tgis_map_has_tgis_map_connection_map_tgis_map_connection_id_tmap_connection_idx ON tgis_map_has_tgis_map_connection(tgis_map_connection_id_tmap_connection);
+	modification_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+	--Flag to mark the default map connection of a map
+	default_map_connection NUMBER(5, 0) DEFAULT 0,
+	PRIMARY KEY (tgis_map_id_tgis_map, tgis_map_con_id_tmap_con)
+);
+CREATE INDEX tgis_map_has_tgis_map_con1_idx ON tgis_map_has_tgis_map_con(tgis_map_id_tgis_map);
+CREATE INDEX tgis_map_has_tgis_map_con2_idx ON tgis_map_has_tgis_map_con(tgis_map_con_id_tmap_con);
 
 --This trigger is for tranlate on update CURRENT_TIMESTAMP of MySQL.
---CREATE OR REPLACE TRIGGER tgis_map_has_tgis_map_connection_ts BEFORE UPDATE ON tgis_map_has_tgis_map_connection FOR EACH ROW BEGIN select CURRENT_TIMESTAMP into :NEW.modification_time from dual; END;;
+CREATE OR REPLACE TRIGGER tgis_map_has_tgis_map_con_ts BEFORE UPDATE ON tgis_map_has_tgis_map_con FOR EACH ROW BEGIN SELECT CURRENT_TIMESTAMP INTO :NEW.modification_time FROM DUAL; END;;
 
 -- -----------------------------------------------------
 -- Table `tgis_map_layer`

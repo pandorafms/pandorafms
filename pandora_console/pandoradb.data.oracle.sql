@@ -1167,18 +1167,14 @@ END;;
 
 -- This table is commented because table name length is more 30 chars. TODO: Change it's name
 
---BEGIN
---LOCK TABLE tgis_map_has_tgis_map_connection IN EXCLUSIVE MODE;
+BEGIN
+LOCK TABLE tgis_map_has_tgis_map_con IN EXCLUSIVE MODE;
 
---EXECUTE IMMEDIATE 'ALTER TRIGGER tgis_map_has_tgis_map_connection_inc DISABLE';
+INSERT INTO tgis_map_has_tgis_map_con VALUES (1,1,'1970-01-01 00:00:00',1);
 
---INSERT INTO tgis_map_has_tgis_map_connection VALUES (1,1,'2010-03-01 09:46:48',1);
+COMMIT;
+END;;
 
---EXECUTE IMMEDIATE 'ALTER TRIGGER tgis_map_has_tgis_map_connection_inc ENABLE';
-
---COMMIT;
---END;
---/
 
 BEGIN
 LOCK TABLE tgis_map_layer IN EXCLUSIVE MODE;

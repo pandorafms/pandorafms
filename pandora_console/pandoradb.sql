@@ -1429,24 +1429,24 @@ ENGINE = InnoDB
 COMMENT = 'Table to store the map connection information';
 
 -- -----------------------------------------------------
--- Table `tgis_map_has_tgis_map_connection`
+-- Table `tgis_map_has_tgis_map_con` (tgis_map_has_tgis_map_connection)
 -- -----------------------------------------------------
-CREATE  TABLE IF NOT EXISTS `tgis_map_has_tgis_map_connection` (
-	`tgis_map_id_tgis_map` INT NOT NULL COMMENT 'reference to tgis_map' ,
-	`tgis_map_connection_id_tmap_connection` INT NOT NULL COMMENT 'reference to tgis_map_connection' ,
-	`modification_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last Modification Time of the Connection' ,
-	`default_map_connection` TINYINT(1) NULL DEFAULT FALSE COMMENT 'Flag to mark the default map connection of a map' ,
-	PRIMARY KEY (`tgis_map_id_tgis_map`, `tgis_map_connection_id_tmap_connection`) ,
-	INDEX `fk_tgis_map_has_tgis_map_connection_tgis_map1` (`tgis_map_id_tgis_map` ASC) ,
-	INDEX `fk_tgis_map_has_tgis_map_connection_tgis_map_connection1` (`tgis_map_connection_id_tmap_connection` ASC) ,
+CREATE  TABLE IF NOT EXISTS `tgis_map_has_tgis_map_con` (
+	`tgis_map_id_tgis_map` INT NOT NULL COMMENT 'reference to tgis_map',
+	`tgis_map_con_id_tmap_con` INT NOT NULL COMMENT 'reference to tgis_map_connection',
+	`modification_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last Modification Time of the Connection',
+	`default_map_connection` TINYINT(1) NULL DEFAULT FALSE COMMENT 'Flag to mark the default map connection of a map',
+	PRIMARY KEY (`tgis_map_id_tgis_map`, `tgis_map_con_id_tmap_con`),
+	INDEX `fk_tgis_map_has_tgis_map_connection_tgis_map1` (`tgis_map_id_tgis_map` ASC),
+	INDEX `fk_tgis_map_has_tgis_map_connection_tgis_map_connection1` (`tgis_map_con_id_tmap_con` ASC),
 	CONSTRAINT `fk_tgis_map_has_tgis_map_connection_tgis_map1`
-		FOREIGN KEY (`tgis_map_id_tgis_map` )
-		REFERENCES `tgis_map` (`id_tgis_map` )
+		FOREIGN KEY (`tgis_map_id_tgis_map`)
+		REFERENCES `tgis_map` (`id_tgis_map`)
 		ON DELETE CASCADE
 		ON UPDATE NO ACTION,
 	CONSTRAINT `fk_tgis_map_has_tgis_map_connection_tgis_map_connection1`
-		FOREIGN KEY (`tgis_map_connection_id_tmap_connection` )
-		REFERENCES `tgis_map_connection` (`id_tmap_connection` )
+		FOREIGN KEY (`tgis_map_con_id_tmap_con`)
+		REFERENCES `tgis_map_connection` (`id_tmap_connection`)
 		ON DELETE CASCADE
 		ON UPDATE NO ACTION)
 ENGINE = InnoDB

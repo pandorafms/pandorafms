@@ -181,7 +181,16 @@ function forced_title_callback() {
 		// Put title in the layer
 		///////////////////////////////////////////
 		
-		var title = $('#forced_title_'+img_id).html();
+		// If the '.forced_title' element has 'use_title_for_force_title' = 1
+		// into their 'data' prop, the element title will be used for the
+		// content.
+		if ($(this).data("use_title_for_force_title")) {
+			var title = $(this).prop("title");
+		}
+		else {
+			var title = $('#forced_title_'+img_id).html();
+		}
+		
 		$('#forced_title_layer').html(title);
 		
 		///////////////////////////////////////////

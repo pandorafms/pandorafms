@@ -126,7 +126,7 @@ class Visualmaps {
 		$id_user = $system->getConfig('id_user');
 		$own_info = get_user_info ($id_user);
 		if ($own_info['is_admin'] || $system->checkACL($this->acl))
-			$maps = visual_map_get_user_layouts ();	
+			$maps = visual_map_get_user_layouts ();
 		else
 			$maps = visual_map_get_user_layouts ($id_user, false, false, false);
 		

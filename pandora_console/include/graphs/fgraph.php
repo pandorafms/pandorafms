@@ -216,13 +216,13 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
-	// ATTENTION: The min size is 110x150 
+	// ATTENTION: The min size is in constants.php
 	// It's not the same minsize for all graphs, but we are choosed a prudent minsize for all
-	if ($height <= 110) {
-		$height = 110;
+	if ($height <= CHART_DEFAULT_HEIGHT) {
+		$height = CHART_DEFAULT_HEIGHT;
 	}
-	if ($width < 150) {
-		$width = 150;
+	if ($width < CHART_DEFAULT_WIDTH) {
+		$width = CHART_DEFAULT_WIDTH;
 	}
 	
 	if (empty($chart_data)) {

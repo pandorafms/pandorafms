@@ -88,7 +88,7 @@ if (empty($data)) {
 }
 
 echo '{
-    "label": "' . $graph_title . '",
-    "data": [["' . time() . '", ' . $data . ']]
+	"label": "' . $graph_title . '",
+	"data": [["' . time() . '", ' . $data . ']]
 }';
 ?>

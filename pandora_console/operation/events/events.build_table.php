@@ -541,7 +541,7 @@ foreach ($result as $event) {
 	}
 	
 	if (in_array('ack_utimestamp',$show_fields)) {
-		if($event["ack_utimestamp"] == 0){
+		if ($event["ack_utimestamp"] == 0) {
 			$data[$i] = '';
 		}
 		else {
@@ -650,7 +650,7 @@ if (!empty ($table->data)) {
 	}
 	
 	if ($allow_action) {
-		echo '<form method="post" id="form_events" action="'.$url.'">';	
+		echo '<form method="post" id="form_events" action="'.$url.'">';
 		echo "<input type='hidden' name='delete' id='hidden_delete_events' value='0' />";
 	}
 	

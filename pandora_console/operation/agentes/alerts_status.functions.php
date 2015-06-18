@@ -57,7 +57,7 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	$table->style[2] = 'font-weight: bold;';
 	$table->style[3] = 'font-weight: bold;';
 	$table->style[4] = 'font-weight: bold;';
-	if(defined('METACONSOLE')){
+	if (defined('METACONSOLE')) {
 		$table->style[0] = 'vertical-align:middle; font-weight: bold;';
 		$table->style[1] = 'vertical-align:middle; font-weight: bold;';
 		$table->style[2] = 'vertical-align:middle; font-weight: bold;';
@@ -102,12 +102,12 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	$table->data[1][2] = __('Standby');
 	$table->data[1][3] = html_print_select ($alert_standby, "filter_standby", $filter_standby, '', '', '', true);
 	
-	if(defined('METACONSOLE')){
+	if (defined('METACONSOLE')) {
 		$table->data[0][7] = html_print_submit_button(__('Filter'), 'filter_button', false, 'class="sub filter"', true);
 		$table->rowspan[0][7] = 2;
 	    $data = '<form style="background-color: #ECECEC;" method="post" action="'.$url.'">';
 	}
-	else{
+	else {
 		$data = '<form method="post" action="'.$url.'">';
 	}
 	$data .= html_print_table ($table, true);

@@ -18,7 +18,7 @@
 // Load global vars
 global $config;
 
-require_once ($config["homedir"] . '/include/functions_graph.php'); 
+require_once ($config["homedir"] . '/include/functions_graph.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
 require_once($config['homedir'] . "/include/functions_modules.php");
 
@@ -61,9 +61,9 @@ $time["3month"] = $time["all"] - SECONDS_3MONTHS;
 $data["1day"] = 0;
 $data["3day"] = 0;
 $data["1week"] = 0;
-$data["2week"] = 0; 
-$data["1month"] = 0; 
-$data["3month"] = 0; 
+$data["2week"] = 0;
+$data["1month"] = 0;
+$data["3month"] = 0;
 $data["total"] = 0;
 
 
@@ -164,7 +164,7 @@ if (isset($_POST["purgedb"])) {
 # Select Agent for further operations.
 $agents = agents_get_group_agents (0, true);
 $agents[-1] = __('Choose agent');
-$agents[0] = __('All agents'); 
+$agents[0] = __('All agents');
 
 echo '<form action="index.php?sec=gdbman&sec2=godmode/db/db_purge" method="post">';
 echo '<div style="width:100%;">';
@@ -172,7 +172,7 @@ html_print_select ($agents, "agent", $id_agent, "this.form.submit();", "", "", f
 ui_print_help_tip (__("Select the agent you want information about"));
 echo '<noscript>';
 html_print_submit_button (__('Get data'), 'purgedb_ag', false, 'class="sub upd"');
-ui_print_help_tip (__("Click here to get the data from the agent specified in the select box")); 
+ui_print_help_tip (__("Click here to get the data from the agent specified in the select box"));
 echo '</noscript><br />';
 
 if ($id_agent > 0) {

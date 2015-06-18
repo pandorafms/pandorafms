@@ -205,11 +205,11 @@ $table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion,
 
 
 $status_list = array ();
-$status_list[AGENT_STATUS_NORMAL] = __('Normal'); 
+$status_list[AGENT_STATUS_NORMAL] = __('Normal');
 $status_list[AGENT_STATUS_WARNING] = __('Warning');
 $status_list[AGENT_STATUS_CRITICAL] = __('Critical');
 $status_list[AGENT_STATUS_UNKNOWN] = __('Unknown');
-$status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal'); 
+$status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
 $status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
 $table->data[1][0] = __('Status');
 $table->data[1][1] = html_print_select($status_list, 'status_agents', 'selected',

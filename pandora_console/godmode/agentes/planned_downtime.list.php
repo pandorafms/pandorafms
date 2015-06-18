@@ -503,7 +503,7 @@ else {
 							$data[5] .= __('Sun');
 							$data[5] .= "&nbsp;";
 						}
-						$data[5] .= "&nbsp;(" . $downtime['periodically_time_from']; 
+						$data[5] .= "&nbsp;(" . $downtime['periodically_time_from'];
 						$data[5] .= "-" . $downtime['periodically_time_to'] . ")";
 						break;
 					case 'monthly':
@@ -544,10 +544,13 @@ else {
 				'&delete_downtime=1&id_downtime=' . $downtime['id'] . '&' . $filter_params_str . '">' .
 				html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
 		}
-		elseif ($downtime["executed"] == 1 && $downtime['type_execution'] == 'once'){
+		elseif ($downtime["executed"] == 1
+			&& $downtime['type_execution'] == 'once') {
+			
 			$data[8] = '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor&amp;' .
-				'edit_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
-			html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
+				'edit_downtime=1&amp;id_downtime=' . $downtime['id'] . '">' .
+				html_print_image("images/config.png", true,
+					array("border" => '0', "alt" => __('Update'))) . '</a>';
 			$data[9]= "N/A";
 		}
 		else {

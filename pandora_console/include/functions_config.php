@@ -365,8 +365,6 @@ function config_update_config () {
 						$error_update[] = __('Batch statistics period (secs)');
 					if (!config_update_value ('agentaccess', (int) get_parameter ('agentaccess')))
 						$error_update[] = __('Use agent access graph');
-					if (!config_update_value ('compact_header', (bool) get_parameter ('compact_header')))
-						$error_update[] = 'Deprecated compact_header';
 					if (!config_update_value ('num_files_attachment', (int) get_parameter ('num_files_attachment')))
 						$error_update[] = __('Max. recommended number of files in attachment directory');
 					if (!config_update_value ('delete_notinit', get_parameter ('delete_notinit')))
@@ -461,8 +459,10 @@ function config_update_config () {
 						$error_update[] = __('Shortened module graph data');
 					if (!config_update_value ('show_group_name', get_parameter('show_group_name')))
 						$error_update[] = __('Show the group name instead the group icon.');
-					if (!config_update_value ('custom_graph_widht', (int) get_parameter('custom_graph_widht', 1)))
+					if (!config_update_value ('custom_graph_width', (int) get_parameter('custom_graph_width', 1)))
 						$error_update[] = __('Default line thickness for the Custom Graph.');
+					if (!config_update_value ('type_module_charts', (string) get_parameter('type_module_charts', 'area')))
+						$error_update[] = __('Default type of module charts.');
 					if (!config_update_value ('render_proc', (bool) get_parameter('render_proc', false)))
 						$error_update[] = __('Render data of module type is proc.');
 					
@@ -692,10 +692,6 @@ function config_process_config () {
 		config_update_value ('https', false);
 	}
 	
-	if (!isset ($config["compact_header"])) {
-		config_update_value ('compact_header', false);
-	}
-	
 	if (!isset ($config["num_files_attachment"])) {
 		config_update_value ('num_files_attachment', 100);
 	}
@@ -854,7 +850,7 @@ function config_process_config () {
 	// the first time make a conenction and disable itself
 	// Not Managed here !
 	
-	// if (!isset ($config["autoupdate"])){
+	// if (!isset ($config["autoupdate"])) {
 	// 	config_update_value ('autoupdate', true);
 	// }
 	
@@ -1260,9 +1256,14 @@ function config_process_config () {
 		config_update_value ('show_group_name', 0);
 	}
 	
-	if (!isset($config['custom_graph_widht'])) {
-		config_update_value ('custom_graph_widht', 1);
+	if (!isset($config['custom_graph_width'])) {
+		config_update_value ('custom_graph_width', 1);
 	}
+	
+	if (!isset($config['type_module_charts'])) {
+		config_update_value ('type_module_charts', 'area');
+	}
+	
 	if (!isset($config['render_proc'])) {
 		config_update_value ('render_proc', 0);
 	}

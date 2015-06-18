@@ -27,7 +27,7 @@
 --\c "pandora"
 
 -- For previous PostgreSQL version 9.0
-CREATE LANGUAGE plpgsql;
+CREATE OR REPLACE LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION unix_timestamp(TIMESTAMP without time zone = CURRENT_TIMESTAMP) RETURNS double precision AS 'SELECT ceil(date_part(''epoch'', $1)); ' LANGUAGE SQL;
 
@@ -1118,8 +1118,8 @@ CREATE TABLE "tlayout_data" (
 	"id_group" INTEGER NOT NULL default 0,
 	"id_custom_graph" INTEGER NOT NULL default 0,
 	"border_width" INTEGER NOT NULL default 0,
-	"border_color" varchar(200) DEFAULT "",
-	"fill_color" varchar(200) DEFAULT ""
+	"border_color" varchar(200) DEFAULT '',
+	"fill_color" varchar(200) DEFAULT '' 
 );
 
 -- ---------------------------------------------------------------------

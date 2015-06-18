@@ -267,10 +267,18 @@ if ($id_np > 0) {
 	$group_filter .= '</div></form>';
 	
 	if ($ncgroup > 0) {
-		$sql = sprintf ("SELECT id_nc, name, id_group FROM tnetwork_component WHERE id_group = %d AND name LIKE '%".$ncfilter."%' ORDER BY name", $ncgroup);
+		$sql = sprintf ("
+			SELECT id_nc, name, id_group
+			FROM tnetwork_component
+			WHERE id_group = %d AND name LIKE '%" . $ncfilter . "%'
+			ORDER BY name", $ncgroup);
 	}
 	else {
-		$sql = "SELECT id_nc, name, id_group FROM tnetwork_component WHERE name LIKE '%".$ncfilter."%' ORDER BY name"; 
+		$sql = "
+			SELECT id_nc, name, id_group
+			FROM tnetwork_component
+			WHERE name LIKE '%" . $ncfilter . "%'
+			ORDER BY name";
 	}
 	
 	$result = db_get_all_rows_sql ($sql);

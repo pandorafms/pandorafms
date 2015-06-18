@@ -182,9 +182,9 @@ foreach ($extensions as $file => $extension) {
 	$data = array();
 	
 	$on = html_print_image("images/dot_green.png", true);
-	$off = html_print_image("images/dot_red.png", true); 
+	$off = html_print_image("images/dot_red.png", true);
 	if (!$extension['enabled']) {
-		$on = html_print_image("images/dot_green.disabled.png", true); 
+		$on = html_print_image("images/dot_green.disabled.png", true);
 		$off = html_print_image("images/dot_red.disabled.png", true);
 		$data[] = '<i style="color: grey;">' . $file . '</i>';
 		

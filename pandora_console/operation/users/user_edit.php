@@ -53,11 +53,11 @@ else {
 	$view_mode = true;
 }
 
-if (is_ajax ()){
+if (is_ajax ()) {
 	
 	$shortcut_update = get_parameter("shortcut_update", 0);
 	
-	// Update of user to show/don't show shortcut bar	
+	// Update of user to show/don't show shortcut bar
 	if ($shortcut_update) {
 		
 		// First we get the actual state
@@ -184,7 +184,7 @@ $table->width = '98%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'vertical_fields';
-if (defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$jump = "&nbsp;&nbsp;";
 	$table->width = '100%';
 	$table->class = 'databox data';
@@ -397,7 +397,7 @@ if (!defined('METACONSOLE'))
 	echo '<h4>'.__('Profiles/Groups assigned to this user').'</h4>';
 
 $table->width = '98%';
-if (defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	echo '<br />';
 	$table->width = '100%';
 	$table->class = 'databox_tactical data';
@@ -409,7 +409,7 @@ $table->data = array ();
 $table->head = array ();
 $table->align = array ();
 $table->style = array ();
-if (!defined('METACONSOLE')){
+if (!defined('METACONSOLE')) {
 	$table->style[0] = 'font-weight: bold';
 	$table->style[1] = 'font-weight: bold';
 }

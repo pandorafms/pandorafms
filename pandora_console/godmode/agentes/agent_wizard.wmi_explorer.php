@@ -307,7 +307,7 @@ if ($wmiexplore && !$fail) {
 	$table->data[1][0] .= html_print_select ($modes,
 		'wmi_wizard_modes', '', '', '', '', true, false, false);
 	$table->cellstyle[1][0] = 'vertical-align: middle;';
-
+	
 	$table->colspan[1][0] = 2;
 	$table->data[1][2] = '<b>'.__('Modules').'</b>';
 	$table->cellstyle[1][2] = 'vertical-align: middle;';
@@ -321,13 +321,13 @@ if ($wmiexplore && !$fail) {
 	$table->data[2][0] .= html_print_select (array (), 'network_component', '', '',
 		'', '', true, true, true, '', false, 'width: 300px;');
 	$table->data[2][0] .= '</div>';
-
+	
 	// Services list
 	$table->data[2][0] .= '<div class="wizard_mode_form wizard_mode_services">';
 	$table->data[2][0] .= html_print_select ($services, 'services', '', '',
 		'', '', true, true, true, '', false, 'width: 300px;');
 	$table->data[2][0] .= '</div>';
-
+	
 	// Processes list
 	$table->data[2][0] .= '<div class="wizard_mode_form wizard_mode_processes">';
 	$table->data[2][0] .= html_print_select ($processes, 'processes', '', '',
@@ -343,8 +343,8 @@ if ($wmiexplore && !$fail) {
 		'', '', true, true, true, '', false, 'width: 300px;');
 	$table->data[2][0] .= '</div>';
 	$table->cellstyle[2][0] = 'vertical-align: top; text-align: center;';
-
-
+	
+	
 	// Components arrow
 	$table->data[2][1] = '<div class="wizard_mode_form wizard_mode_components wizard_mode_components_arrow clickable">' . html_print_image('images/darrowright.png', true, array('title' => __('Add to modules list'))) . '</div>';
 	// Services arrow
@@ -355,13 +355,15 @@ if ($wmiexplore && !$fail) {
 	$table->data[2][1] .= '<div class="wizard_mode_form wizard_mode_disks wizard_mode_disks_arrow clickable">' . html_print_image('images/darrowright.png', true, array('title' => __('Add to modules list'))) . '</div>';
 	
 	
-	$table->data[2][1] .= '<br><br><div class="wizard_mode_delete_arrow clickable">' . html_print_image('images/cross.png', true, array('title' => __('Remove from modules list'))) . '</div>'; 
+	$table->data[2][1] .= '<br><br><div class="wizard_mode_delete_arrow clickable">' .
+		html_print_image('images/cross.png', true, array('title' => __('Remove from modules list'))) .
+		'</div>';
 	$table->cellstyle[2][1] = 'vertical-align: middle; text-align: center;';
-
+	
 	$table->data[2][2] = html_print_select (array (), 'module[]', 0, false, '', 0, true, true, true, '', false, 'width:300px; height: 100%;');
 	$table->data[2][2] .= html_print_input_hidden('agent', $id_agent, true);
 	$table->cellstyle[2][2] = 'vertical-align: top; text-align: center;';
-
+	
 	html_print_table($table);
 	
 	echo "<div style='text-align:right; width:".$table->width."'>";
@@ -373,7 +375,7 @@ if ($wmiexplore && !$fail) {
 	echo "</form>";
 	echo '</div>';
 }
-	
+
 ui_require_jquery_file ('pandora.controls');
 ui_require_jquery_file ('ajaxqueue');
 ui_require_jquery_file ('bgiframe');
@@ -383,7 +385,7 @@ ui_require_javascript_file ('pandora_modules');
 <script language="javascript" type="text/javascript">
 /* <![CDATA[ */
 
-$(document).ready (function () {	
+$(document).ready (function () {
 	$("#wmi_form").submit(function() {
 		$("#oid_loading").show ();
 	});
@@ -479,7 +481,7 @@ $(document).ready (function () {
 				$(value).remove();
 			}
 		});
-
+		
 		if($("#module option").length == 0) {
 			$("select[name='module[]']").append($("<option></option>").val(0).html(<?php echo "'".__('None')."'"; ?>));
 		}
@@ -490,7 +492,7 @@ $(document).ready (function () {
 			alert('<?php echo __('Modules list is empty'); ?>');
 			return false;
 		}
-		$('#module option').map(function(){
+		$('#module option').map(function() {
 			$(this).attr('selected','selected');
 		});
 	});

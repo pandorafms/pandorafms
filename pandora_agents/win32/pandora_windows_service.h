@@ -61,19 +61,22 @@ namespace Pandora {
 						     string port,
 						     string ssl,
 						     string pass,
-						     string opts);
+						     string opts,
+						     int timeout);
 		int           copyScpDataFile (string host,
 						string remote_path,
 						string filename);
 		int           copyFtpDataFile (string host,
 						string remote_path,
 						string filename,
-						string password);
+					        string password,
+					        int timeout);
 		int           copyLocalDataFile (string remote_path,
 						string filename);
 		void           recvDataFile (string filename);
 		void           recvTentacleDataFile (string host,
-						     string filename);
+						     string filename,
+						     int timeout);
 
 		int	       unzipCollection(string zip_path, string dest_dir);
 		void	       checkCollections ();

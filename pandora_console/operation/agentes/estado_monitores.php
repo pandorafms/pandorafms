@@ -439,7 +439,7 @@ function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 		FROM tmodule_group ORDER BY name");
 	$rows = io_safe_output($rows);
 	$rows_select = array();
-	if (!empty($rows)){
+	if (!empty($rows)) {
 		$rows_select[-1] = __('All');
 		foreach ($rows as $module_group)
 			$rows_select[$module_group['id_mg']] = __($module_group['name']);

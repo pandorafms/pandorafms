@@ -167,13 +167,17 @@ if($searchAlerts) {
 			)';
 			break;
 	}
-		
-	$alertsraw = agents_get_alerts_simple ($agents, "all_enabled", array('offset' => get_parameter ('offset',0), 'limit' => $config['block_size'], 'order' => $order['field'] . " " . $order['order']), $whereAlerts);
-
+	
+	$alertsraw = agents_get_alerts_simple($agents, "all_enabled",
+		array('offset' => get_parameter ('offset', 0),
+			'limit' => $config['block_size'],
+			'order' => $order['field'] . " " . $order['order']),
+		$whereAlerts);
+	
 	$stringSearchPHP = substr($stringSearchSQL,1,strlen($stringSearchSQL)-2);
-
+	
 	$alerts = array();
-	foreach($alertsraw as $key => $alert){
+	foreach ($alertsraw as $key => $alert) {
 		$finded = false;
 		$alerts[$key]['disabled'] = $alert['disabled'];
 		$alerts[$key]['id_agente'] = modules_get_agentmodule_agent($alert['id_agent_module']);
@@ -189,7 +193,7 @@ if($searchAlerts) {
 		
 		$alerts[$key]['actions'] = implode(',',$actions_name);
 	}
-
+	
 	$totalAlerts = count($alerts);
 	
 	if ($only_count) {

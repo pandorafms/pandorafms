@@ -263,12 +263,12 @@ if (($create != "") OR ($view != "")) {
 	$table->colspan['plugin_desc'][1] = 3;
 	$table->data['plugin_desc'] = $data;
 	
-	if (!defined("METACONSOLE")){
+	if (!defined("METACONSOLE")) {
 		echo '<br>';
 		echo '<table class="databox" style="margin: 0 auto; width: 98%;"><tr><td>';
 	}
 	
-	if (defined("METACONSOLE")){
+	if (defined("METACONSOLE")) {
 		$table->width = '100%';
 		$table->class = 'databox data';
 		$table->head[0] = __('General');
@@ -276,8 +276,9 @@ if (($create != "") OR ($view != "")) {
 		$table->headstyle[0] = 'text-align: center';
 		echo '<br>';
 		html_print_table($table);
-	}else{
-		echo '<fieldset style="width:96%"><legend>'.__('General').'</legend>';
+	}
+	else {
+		echo '<fieldset style="width:96%"><legend>' . __('General') . '</legend>';
 		html_print_table($table);
 		echo '</fieldset>';
 	}
@@ -330,7 +331,7 @@ if (($create != "") OR ($view != "")) {
 	$data[1] = '<div id="command_preview" style="font-style:italic"></div>';
 	$table->data['plugin_preview'] = $data;
 	
-	if (defined("METACONSOLE")){
+	if (defined("METACONSOLE")) {
 		$table->width = '100%';
 		$table->class = 'databox data';
 		$table->head[0] = __('Command');
@@ -338,8 +339,9 @@ if (($create != "") OR ($view != "")) {
 		$table->headstyle[0] = 'text-align: center';
 		echo '<br>';
 		html_print_table($table);
-	}else{
-		echo '<fieldset style="width:96%"><legend>'.__('Command').'</legend>';
+	}
+	else {
+		echo '<fieldset style="width:96%"><legend>' . __('Command') . '</legend>';
 		html_print_table($table);
 		echo '</fieldset>';
 	}
@@ -449,7 +451,7 @@ if (($create != "") OR ($view != "")) {
 		$table->data['plugin_action'] = $datam;
 	}
 	
-	if (defined("METACONSOLE")){
+	if (defined("METACONSOLE")) {
 		$table->width = '100%';
 		$table->class = 'databox data';
 		$table->head[0] = __('Parameters macros');
@@ -457,8 +459,10 @@ if (($create != "") OR ($view != "")) {
 		$table->headstyle[0] = 'text-align: center';
 		echo '<br>';
 		html_print_table($table);
-	}else{
-		echo '<fieldset style="width:96%"><legend>'.__('Parameters macros').ui_print_help_icon ('macros', true).'</legend>';
+	}
+	else {
+		echo '<fieldset style="width:96%">' .
+			'<legend>' . __('Parameters macros') .ui_print_help_icon ('macros', true) . '</legend>';
 		html_print_table($table);
 		echo '</fieldset>';
 	}
@@ -552,11 +556,12 @@ else {
 			'execute' => $plugin_execute, 
 			'plugin_type' => $plugin_plugin_type,
 			'parameters' => $parameters,
-			'macros' => $macros); 
+			'macros' => $macros);
 		
 		$result = false;
 		if ($values['name'] != '' && $values['execute'] != '')
-			$result = db_process_sql_update('tplugin', $values, array('id' => $plugin_id));
+			$result = db_process_sql_update('tplugin', $values,
+				array('id' => $plugin_id));
 		
 		if (! $result) {
 			ui_print_error_message(__('Problem updating plugin'));

@@ -894,7 +894,7 @@ if (!$fail) {
 	if ($arrow) {
 		$table->data[2][1] .= '<div class="wizard_mode_form wizard_mode_snmpdata wizard_mode_snmpdata_arrow clickable">' . html_print_image('images/darrowright.png', true, array('title' => __('Add to modules list'))) . '</div>';
 	}
-	$table->data[2][1] .= '<br><br><div class="wizard_mode_delete_arrow clickable">' . html_print_image('images/cross.png', true, array('title' => __('Remove from modules list'))) . '</div>'; 
+	$table->data[2][1] .= '<br><br><div class="wizard_mode_delete_arrow clickable">' . html_print_image('images/cross.png', true, array('title' => __('Remove from modules list'))) . '</div>';
 	$table->cellstyle[2][1] = 'vertical-align: middle; text-align: center;';
 	
 	$table->data[2][2] = html_print_select (array (), 'module[]', 0, false, '', 0, true, true, true, '', false, 'width:300px; height: 100%;');
@@ -1052,11 +1052,14 @@ $(document).ready (function () {
 	});
 	
 	$("#submit-create_modules_btn").click(function () {
-		if($("#module option").length == 0 || ($("#module option").length == 1 && $("#module option").eq(0).val() == 0)) {
+		if ($("#module option").length == 0
+			|| ($("#module option").length == 1
+			&& $("#module option").eq(0).val() == 0)) {
+			
 			alert('<?php echo __('Modules list is empty'); ?>');
 			return false;
 		}
-		$('#module option').map(function(){
+		$('#module option').map(function() {
 			$(this).attr('selected','selected');
 		});
 	});

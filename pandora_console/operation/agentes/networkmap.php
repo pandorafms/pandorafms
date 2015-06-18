@@ -24,7 +24,7 @@ require_once ('include/functions_clippy.php');
 
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
-$name = '';	
+$name = '';
 $pure = (int) get_parameter ('pure', 0);
 $activeTab = get_parameter ('tab', 'topology');
 $id_networkmap = get_parameter ('id_networkmap', 0);

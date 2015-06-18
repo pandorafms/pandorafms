@@ -235,13 +235,14 @@ $table->data[0][4] = html_print_submit_button(__('Search'), 'search',
 	false, array('class' => 'sub search'), true);
 
 
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$table->width = '96%';
 	$form_filter = "<form class='filters_form' method='post'>";
 	$form_filter .= html_print_table($table, true);
 	$form_filter .= "</form>";
 	ui_toggle($form_filter, __('Show Options'));
-}else{
+}
+else {
 	$form_filter = "<form method='post'>";
 	$form_filter .= html_print_table($table, true);
 	$form_filter .= "</form>";
@@ -250,13 +251,13 @@ if(defined('METACONSOLE')){
 }
 
 $table = null;
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$table->cellpadding = 0;
 	$table->cellspacing = 0;
 	$table->width = '100%';
 	$table->class = "databox";
 }
-else{
+else {
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
 	$table->width = '99%';
@@ -430,7 +431,7 @@ foreach ($info as $user_id => $user_info) {
 	$data[4] = "";
 	$result = db_get_all_rows_field_filter ("tusuario_perfil", "id_usuario", $user_id);
 	if ($result !== false) {
-		if (defined("METACONSOLE")){
+		if (defined("METACONSOLE")) {
 			$data[4] .= "<div width='100%'>";
 			foreach ($result as $row) {
 				$data[4] .= "<div style='float:left;'>";
@@ -444,7 +445,7 @@ foreach ($info as $user_id => $user_info) {
 			}
 			$data[4] .= "</div>";
 		}
-		else{
+		else {
 			$data[4] .= "<table width='100%'>";
 			foreach ($result as $row) {
 				$data[4] .= "<tr>";
@@ -475,7 +476,7 @@ foreach ($info as $user_id => $user_info) {
 	if ($config["admin_can_delete_user"] && $user_info['id_user'] != $config['id_user']) {
 		$data[6] .= "<a href='index.php?sec=".$sec."&sec2=godmode/users/user_list&user_del=1&pure=".$pure."&delete_user=".$user_info['id_user']."'>".html_print_image('images/cross.png', true, array ('title' => __('Delete'), 'onclick' => "if (! confirm ('" .__('Deleting User'). " ". $user_info['id_user'] . ". " . __('Are you sure?') ."')) return false"))."</a>";
 		if (defined('METACONSOLE')) {
-			$data[6] .= "<a href='index.php?sec=".$sec."&sec2=godmode/users/user_list&user_del=1&pure=".$pure."&delete_user=".$user_info['id_user']."&delete_all=1'>".html_print_image('images/cross_double.png', true, array ('title' => __('Delete from all consoles'), 'onclick' => "if (! confirm ('" .__('Deleting User %s from all consoles', $user_info['id_user']) . ". " . __('Are you sure?') ."')) return false"))."</a>";	
+			$data[6] .= "<a href='index.php?sec=" . $sec . "&sec2=godmode/users/user_list&user_del=1&pure=".$pure."&delete_user=".$user_info['id_user']."&delete_all=1'>".html_print_image('images/cross_double.png', true, array ('title' => __('Delete from all consoles'), 'onclick' => "if (! confirm ('" .__('Deleting User %s from all consoles', $user_info['id_user']) . ". " . __('Are you sure?') ."')) return false"))."</a>";
 		}
 	}
 	else {

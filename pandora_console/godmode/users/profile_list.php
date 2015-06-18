@@ -335,10 +335,10 @@ if ($profiles === false) {
 	$profiles = array();
 }
 
-$img = html_print_image ("images/ok.png", true, array ("border" => 0)); 
+$img = html_print_image ("images/ok.png", true, array ("border" => 0));
 
 foreach ($profiles as $profile) {
-	$data['profiles'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'&pure='.$pure.'"><b>'.$profile["name"].'</b></a>';
+	$data['profiles'] = '<a href="index.php?sec=' . $sec . '&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'&pure='.$pure.'"><b>'.$profile["name"].'</b></a>';
 	$data['IR'] = ($profile["incident_view"] ? $img : '');
 	$data['IW'] = ($profile["incident_edit"] ? $img : '');
 	$data['IM'] = ($profile["incident_management"] ? $img : '');

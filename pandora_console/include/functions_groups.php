@@ -1118,7 +1118,7 @@ function groups_get_group_by_id($id_group) {
  * @return mixed Return group_id or false if something goes wrong
  * 
  */
-function groups_create_group($group_name, $rest_values){
+function groups_create_group($group_name, $rest_values) {
 	
 	if ($group_name == "") {
 		return false;
@@ -1992,7 +1992,7 @@ function groups_monitor_fired_alerts ($group_array, $strict_user = false, $id_gr
 		return 0;
 		
 	}
-	else if (!is_array ($group_array)){
+	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
 	}
 	
@@ -2069,7 +2069,7 @@ function groups_agent_disabled ($group_array) {
 		return 0;
 		
 	}
-	else if (!is_array ($group_array)){
+	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
 	}
 	

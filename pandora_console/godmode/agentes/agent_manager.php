@@ -66,7 +66,7 @@ if (is_ajax ()) {
 		$oid_snmp = array();
 		$out = false;
 		foreach ($idSNMP as $id) {
-			foreach ($snmp[$id] as $key => $value){
+			foreach ($snmp[$id] as $key => $value) {
 				
 				// Check if it has "ifXXXX" syntax and skip it
 				if (! preg_match  ( "/if/", $key)) {
@@ -246,7 +246,7 @@ $table->data[3][1] = html_print_select_groups(false, "AR", false, 'grupo', $grup
 $table->data[4][0] = __('Interval');
 
 $table->data[4][1] = html_print_extended_select_for_time ('intervalo', $intervalo, '', '', '0', 10, true);
-if($intervalo<300){
+if ($intervalo < SECONDS_5MINUTES) {
 	$table->data[4][1] .= clippy_context_help("interval_agent_min");
 }
 $table->data[5][0] = __('OS');

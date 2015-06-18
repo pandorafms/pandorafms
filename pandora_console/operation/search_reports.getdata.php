@@ -35,13 +35,13 @@ foreach($userreports as $userreport) {
 	$userreports_id[] = $userreport['id_report'];
 }
 
-if(!$userreports_id){
+if (!$userreports_id) {
 	$reports_condition = " AND 1<>1";
 }
 else {
 	$reports_condition = " AND id_report IN (".implode(',',$userreports_id).")";
 }
-	
+
 $reports = false;
 
 if($searchReports) {

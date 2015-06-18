@@ -179,11 +179,11 @@ html_print_input_text ("search", $search, '', 12);
 echo '</td><td style="white-space:nowrap;">';
 
 $fields = array ();
-$fields[AGENT_STATUS_NORMAL] = __('Normal'); 
+$fields[AGENT_STATUS_NORMAL] = __('Normal');
 $fields[AGENT_STATUS_WARNING] = __('Warning');
 $fields[AGENT_STATUS_CRITICAL] = __('Critical');
 $fields[AGENT_STATUS_UNKNOWN] = __('Unknown');
-$fields[AGENT_STATUS_NOT_NORMAL] = __('Not normal'); 
+$fields[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
 $fields[AGENT_STATUS_NOT_INIT] = __('Not init');
 
 echo __('Status') . '&nbsp;';

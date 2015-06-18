@@ -266,9 +266,9 @@ if ($filter_status != -1)
 	$whereSubquery .= ' AND status = ' . $filter_status;
 	
 if ($trap_type == 5) {
-	$whereSubquery .= ' AND type NOT IN (0, 1, 2, 3, 4)';	
+	$whereSubquery .= ' AND type NOT IN (0, 1, 2, 3, 4)';
 }
-else if ($trap_type != -1){
+else if ($trap_type != -1) {
 	$whereSubquery .= ' AND type = ' . $trap_type;
 }
 
@@ -457,7 +457,7 @@ if ($traps !== false) {
 	
 	foreach ($traps as $trap) {
 		$data = array ();
-		if (empty($trap["description"])){
+		if (empty($trap["description"])) {
 			$trap["description"]="";
 		}
 		$severity = enterprise_hook ('get_severity', array ($trap));

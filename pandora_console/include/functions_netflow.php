@@ -91,7 +91,7 @@ function netflow_check_filter_group ($id_sg) {
 	$groups_id = array();
 	$has_permission = false;
 	
-	foreach($groups_user as $key => $groups){
+	foreach($groups_user as $key => $groups) {
 		if ($groups['id_grupo'] == $id_group)
 			return true;
 	}
@@ -117,7 +117,7 @@ function netflow_check_report_group ($id_report, $mode=false) {
 	$groups_id = array();
 	$has_permission = false;
 	
-	foreach($groups_user as $key => $groups){
+	foreach ($groups_user as $key => $groups) {
 		if ($groups['id_grupo'] == $id_group)
 			return true;
 	}
@@ -162,7 +162,7 @@ function netflow_reports_get_reports ($id_report, $filter = false, $fields = fal
 	return db_get_row_filter ('tnetflow_report', $filter, $fields);
 }
 
-function netflow_reports_get_content ($id_rc, $filter = false, $fields = false){
+function netflow_reports_get_content ($id_rc, $filter = false, $fields = false) {
 	if (empty ($id_rc))
 		return false;
 	if (! is_array ($filter))
@@ -205,9 +205,9 @@ function sort_netflow_data (&$netflow_data) {
  *
  * @return The statistics table.
  */
-function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit){
+function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit) {
 	global $nfdump_date_format;
-
+	
 	$start_date = date ($nfdump_date_format, $start_date);
 	$end_date = date ($nfdump_date_format, $end_date);
 	$values = array();
@@ -223,10 +223,10 @@ function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit){
 	$table->head[1] = '<b>' . netflow_format_unit ($unit) . '</b>';
 	$table->style[0] = 'padding: 6px';
 	$table->style[1] = 'padding: 6px';
-
+	
 	while (isset ($data[$j])) {
 		$agg = $data[$j]['agg'];
-		if (!isset($values[$agg])){
+		if (!isset($values[$agg])) {
 			$values[$agg] = $data[$j]['data'];
 			$table->data[$x][0] = $agg;
 			$table->data[$x][1] = format_numeric ($data[$j]['data']) . '&nbsp;' . netflow_format_unit ($unit);
@@ -467,7 +467,7 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 		$string[0] = '';
 		
 		// Parse aggregates
-		foreach($string as $line){
+		foreach ($string as $line) {
 			if ($line=='') {
 				continue;
 			}
@@ -502,7 +502,8 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 		if (isset ($filter[$extra_filter]) && $filter[$extra_filter] != '') {
 			$filter[$extra_filter] .= ',';
 		}
-		$filter[$extra_filter] = implode (',', array_keys ($values['sources']));
+		$filter[$extra_filter] = implode (',',
+			array_keys($values['sources']));
 	}
 	else {
 		$values = array ();
@@ -513,7 +514,7 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 	if ($address_resolution && ($aggregate == "srcip" || $aggregate == "dstip")) {
 		$get_hostnames = true;
 		global $hostnames;
-
+		
 		$sources = array();
 		foreach ($values['sources'] as $source => $value) {
 			if (!isset($hostnames[$source])) {
@@ -531,9 +532,9 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 		$values['sources'] = $sources;
 	}
 	// Address resolution end
-
+	
 	$interval_start = $start_date;
-	for ($i = 0; $i < $num_intervals; $i++, $interval_start+=$interval_length+1) {
+	for ($i = 0; $i < $num_intervals; $i++, $interval_start += $interval_length + 1) {
 		$interval_end = $interval_start + $interval_length;
 		if ($interval_end > $end_date) {
 			$interval_end = $end_date;
@@ -570,10 +571,14 @@ function netflow_get_data ($start_date, $end_date, $interval_length, $filter, $a
 			foreach ($values['sources'] as $source => $discard) {
 				$values['data'][$interval_start][$source] = 0;
 			}
-
-			$data = netflow_get_stats ($interval_start, $interval_end, $filter, $aggregate, $max, $unit, $connection_name);
+			
+			
+			$data = netflow_get_stats($interval_start,
+				$interval_end, $filter, $aggregate, $max, $unit,
+				$connection_name);
+			
 			foreach ($data as $line) {
-
+				
 				// Address resolution start
 				if ($get_hostnames) {
 					if (!isset($hostnames[$line['agg']])) {
@@ -693,7 +698,7 @@ function netflow_get_stats ($start_date, $end_date, $filter, $aggregate, $max, $
 			return array ();
 		}
 		
-		switch ($unit){
+		switch ($unit) {
 			case "megabytes":
 				$values[$i]['data'] = $val[9] / 1048576;
 				break;
@@ -818,8 +823,8 @@ function netflow_get_record ($start_date, $end_date, $filter, $max, $unit, $addr
 		$data['source_port'] = $items[5];
 		$data['destination_port'] = $items[6];
 		$data['protocol'] = $items[7];
-
-		switch ($unit){
+		
+		switch ($unit) {
 			case "megabytes":
 				$data['data'] = $items[12] / 1048576;
 				break;
@@ -921,7 +926,7 @@ function netflow_get_filter_arguments ($filter) {
 	if ($filter['ip_dst'] != '') {
 		$filter_args .= ' "(';
 		$val_ipdst = explode(',', io_safe_output ($filter['ip_dst']));
-		for($i = 0; $i < count ($val_ipdst); $i++){
+		for ($i = 0; $i < count ($val_ipdst); $i++) {
 			if ($i > 0) {
 				$filter_args .= ' or ';
 			}
@@ -1619,22 +1624,22 @@ function netflow_summary_xml ($data) {
  * @param string Netflow unit.
  */
 function netflow_format_unit ($unit) {
-		switch ($unit){
-			case 'megabytes':
-				return __('MB');
-			case 'megabytespersecond':
-				return __('MB/s');
-			case 'kilobytes':
-				return __('kB');
-			case 'kilobytespersecond':
-				return __('kB/s');
-			case 'bytes':
-				return __('Bytes');
-			case 'bytespersecond':
-				return __('B/s');
-			default:
-				return '';
-		}
+	switch ($unit) {
+		case 'megabytes':
+			return __('MB');
+		case 'megabytespersecond':
+			return __('MB/s');
+		case 'kilobytes':
+			return __('kB');
+		case 'kilobytespersecond':
+			return __('kB/s');
+		case 'bytes':
+			return __('Bytes');
+		case 'bytespersecond':
+			return __('B/s');
+		default:
+			return '';
+	}
 }
 
 /**
@@ -1643,20 +1648,20 @@ function netflow_format_unit ($unit) {
  * @param string Netflow aggregate.
  */
 function netflow_format_aggregate ($aggregate) {
-		switch ($aggregate){
-			case 'dstport':
-				return __('Dst port');
-			case 'dstip':
-				return __('Dst IP');
-			case 'proto':
-				return __('Protocol');
-			case 'srcip':
-				return __('Src IP');
-			case 'srcport':
-				return __('Src port');
-			default:
-				return '';
-		}
+	switch ($aggregate) {
+		case 'dstport':
+			return __('Dst port');
+		case 'dstip':
+			return __('Dst IP');
+		case 'proto':
+			return __('Protocol');
+		case 'srcip':
+			return __('Src IP');
+		case 'srcport':
+			return __('Src port');
+		default:
+			return '';
+	}
 }
 
 /**

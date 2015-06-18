@@ -153,7 +153,7 @@ if ($delete_layout || $copy_layout) {
 					$id_relations[$old_id] = 0;
 					
 					if ($result !== false) {
-						$id_relations[$old_id] = $result; 
+						$id_relations[$old_id] = $result;
 					}
 					
 					if ($result)
@@ -223,7 +223,7 @@ $table->align[4] = 'left';
 // or has "VR" privileges, otherwise show only maps of user group
 $own_info = get_user_info ($config['id_user']);
 if ($own_info['is_admin'] || $vconsoles_read)
-	$maps = visual_map_get_user_layouts ();	
+	$maps = visual_map_get_user_layouts ();
 else
 	$maps = visual_map_get_user_layouts ($config['id_user'], false,
 		false, false);

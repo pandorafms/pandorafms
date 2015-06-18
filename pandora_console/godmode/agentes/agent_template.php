@@ -27,9 +27,9 @@ require_once($config['homedir'] . "/include/functions_modules.php");
 // ==========================
 if (isset ($_POST["template_id"])) {
 	// Take agent data
-	$row = db_get_row ("tagente", "id_agente", $id_agente);	
+	$row = db_get_row ("tagente", "id_agente", $id_agente);
 	if ($row !== false) {
-		$intervalo = $row["intervalo"]; 
+		$intervalo = $row["intervalo"];
 		$nombre_agente = $row["nombre"];
 		$direccion_agente =$row["direccion"];
 		$ultima_act = $row["ultimo_contacto"];

@@ -73,7 +73,7 @@ if ($editGraph) {
 }
 
 // Modules table
-if(count($module_array) > 0){
+if (count($module_array) > 0) {
 	echo "<table width='98%' cellpadding=4 cellpadding=4 class='databox'>";
 	echo "<tr>
 	<th>".__('Agent')."</th>
@@ -81,9 +81,9 @@ if(count($module_array) > 0){
 	<th>".__('Weight')."</th>
 	<th>".__('Delete')."</th>";
 	$color = 0;
-	for ($a = 0; $a < count($module_array); $a++){
+	for ($a = 0; $a < count($module_array); $a++) {
 		// Calculate table line color
-		if ($color == 1){
+		if ($color == 1) {
 			$tdcolor = "datos";
 			$color = 0;
 		}
@@ -91,7 +91,7 @@ if(count($module_array) > 0){
 			$tdcolor = "datos2";
 			$color = 1;
 		}
-
+		
 		echo "<tr><td class='$tdcolor'>" . $agent_array[$a] . "</td>";
 		echo "<td class='$tdcolor'>";
 		echo modules_get_agentmodule_name ($module_array[$a])."</td>";

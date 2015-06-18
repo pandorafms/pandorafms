@@ -483,7 +483,7 @@ foreach ($layoutDatas as $layoutData) {
 		$table->rowclass[$i + 1] = 'rowPair';
 		$table->rowclass[$i + 2] = 'rowPair';
 	}
-	$alternativeStyle = !$alternativeStyle; 
+	$alternativeStyle = !$alternativeStyle;
 	
 	$i = $i + 3;
 }

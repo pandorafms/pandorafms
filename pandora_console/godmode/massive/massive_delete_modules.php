@@ -303,11 +303,11 @@ $table->rowclass['form_agents_2'] = 'select_agents_row';
 $table->data['form_agents_2'][0] = __('Status');
 $table->colspan['form_agents_2'][1] = 2;
 $status_list = array ();
-$status_list[AGENT_STATUS_NORMAL] = __('Normal'); 
+$status_list[AGENT_STATUS_NORMAL] = __('Normal');
 $status_list[AGENT_STATUS_WARNING] = __('Warning');
 $status_list[AGENT_STATUS_CRITICAL] = __('Critical');
 $status_list[AGENT_STATUS_UNKNOWN] = __('Unknown');
-$status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal'); 
+$status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
 $status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
 $table->data['form_agents_2'][1] = html_print_select($status_list,
 	'status_agents', 'selected', '', __('All'), AGENT_STATUS_ALL, true);

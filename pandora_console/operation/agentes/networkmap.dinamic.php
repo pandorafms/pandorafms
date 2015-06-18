@@ -176,8 +176,7 @@ var svg = d3.select("#dinamic_networkmap").append("svg")
 	.attr("pointer-events", "all")
 	.call(zoom_obj)
 	.append('svg:g')
-    
-    
+
 ///Added default zoom buttom
 d3.select("#dinamic_networkmap svg")
 	.append("g")

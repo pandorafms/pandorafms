@@ -879,7 +879,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 		$actionText = '<div><ul class="action_list">';
 		foreach ($actions as $action) {
 			$actionText .= '<div style="margin-bottom: 5px;" ><span class="action_name"><li>' . $action['name'];
-			if ($action["fires_min"] != $action["fires_max"]){
+			if ($action["fires_min"] != $action["fires_max"]) {
 				$actionText .=  " (".$action["fires_min"] . " / ". $action["fires_max"] . ")";
 			}
 			$actionText .= '</li></span></div>';
@@ -1338,7 +1338,7 @@ function ui_process_page_head ($string, $bitfield) {
 	if ($login_ok and $isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
 		//Checks if user's skin is available 
 		$exists_skin = enterprise_hook('skins_is_path_set');
-		if ($exists_skin){
+		if ($exists_skin) {
 			$skin_path = enterprise_hook('skins_get_skin_path');
 			$skin_styles = themes_get_css ($skin_path . 'include/styles/');
 			$exists_css = !empty($skin_styles);
@@ -1346,7 +1346,7 @@ function ui_process_page_head ($string, $bitfield) {
 	}
 	//If skin's css files exists then add them
 	if ($exists_css) {
-		foreach ($skin_styles as $filename => $name){
+		foreach ($skin_styles as $filename => $name) {
 			$style = substr ($filename, 0, strlen ($filename) - 4);
 			$config['css'][$style] = $skin_path . 'include/styles/' . $filename; 
 		}
@@ -1380,19 +1380,10 @@ function ui_process_page_head ($string, $bitfield) {
 			continue;
 		
 		array_push ($loaded, $name);
-		if (!empty ($config["compact_header"])) {
-			$output .= '<style type="text/css">';
-			$style = file_get_contents ($config["homedir"] . "/" . $filename);
-			//Replace paths
-			$style = str_replace (array ("@import url(", "../../images"), array ("@import url(include/styles/", "images"), $style);
-			//Remove comments
-			$output .= preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $style);
-			$output .= '</style>';
-		}
-		else {
-			$url_css = ui_get_full_url($filename);
-			$output .= '<link rel="stylesheet" href="' . $url_css . '" type="text/css" />'."\n\t";
-		}
+		
+		$url_css = ui_get_full_url($filename);
+		$output .= '<link rel="stylesheet" href="' . $url_css . '" type="text/css" />'."\n\t";
+		
 	}
 	////////////////////////////////////////////////////////////////////
 	//End load CSS
@@ -1430,15 +1421,9 @@ function ui_process_page_head ($string, $bitfield) {
 			continue;
 		
 		array_push ($loaded, $name);
-		if (!empty ($config["compact_header"])) {
-			$output .= '<script type="text/javascript">/* <![CDATA[ */'."\n";
-			$output .= file_get_contents ($config["homedir"]."/".$filename);
-			$output .= "\n".'/* ]]> */</script>';
-		}
-		else {
-			$url_js = ui_get_full_url($filename);
-			$output .= '<script type="text/javascript" src="' . $url_js . '"></script>'."\n\t";
-		}
+		
+		$url_js = ui_get_full_url($filename);
+		$output .= '<script type="text/javascript" src="' . $url_js . '"></script>'."\n\t";
 	}
 	////////////////////////////////////////////////////////////////////
 	//End load JS
@@ -1488,15 +1473,9 @@ function ui_process_page_head ($string, $bitfield) {
 			continue;
 		
 		array_push ($loaded, $name);
-		if (!empty ($config["compact_header"])) {
-			$output .= '<script type="text/javascript">/* <![CDATA[ */'."\n";
-			$output .= file_get_contents ($config["homedir"]."/".$filename);
-			$output .= "\n".'/* ]]> */</script>';
-		}
-		else {
-			$url_js = ui_get_full_url($filename);
-			$output .= '<script type="text/javascript" src="' . $url_js . '"></script>'."\n\t";
-		}
+		
+		$url_js = ui_get_full_url($filename);
+		$output .= '<script type="text/javascript" src="' . $url_js . '"></script>'."\n\t";
 	}
 	////////////////////////////////////////////////////////////////////
 	//End load JQuery
@@ -1518,10 +1497,6 @@ function ui_process_page_head ($string, $bitfield) {
 	
 	$output .= $string;
 	
-	if (!empty ($config["compact_header"])) {
-		$output = str_replace(array("\r\n", "\r", "\n", "\t", '  ',
-			'    ', '    '), '', $output);
-	}
 	
 	return $output;
 }
@@ -1545,14 +1520,9 @@ function ui_process_page_body ($string, $bitfield) {
 	// Show custom background
 	$output = '<body'.($config["pure"] ? ' class="pure"' : '').'>';
 	
-	if (!empty ($config["compact_header"])) {
-		require_once ($config["homedir"]."/include/htmlawed.php");
-		$htmLawedconfig = array ("valid_xhtml" => 1, "tidy" => -1);
-		$output .= htmLawed ($string, $htmLawedconfig);
-	}
-	else {
-		$output .= $string;
-	}
+	
+	$output .= $string;
+	
 	
 	$output .= '</body>';
 	
@@ -2392,7 +2362,7 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
  * @return string Header HTML
  */
 
-function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = ""){
+function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = "") {
 	$title = io_safe_input_html($title);
 	if (($icon == "") && ($godmode == true)) {
 		$icon = "images/gm_setup.png";

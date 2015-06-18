@@ -71,7 +71,7 @@ if ($create_group) {
 			$result = db_process_sql_insert('tmodule_group', array('name' => $name));
 			
 			if ($result) {
-				ui_print_success_message(__('Group successfully created')); 
+				ui_print_success_message(__('Group successfully created'));
 			}
 			else {
 				ui_print_error_message(__('There was a problem creating group'));
@@ -132,7 +132,7 @@ if ($delete_group) {
 	}
 	
 	if (! $result)
-		ui_print_error_message(__('There was a problem deleting group')); 
+		ui_print_error_message(__('There was a problem deleting group'));
 	else
 		ui_print_success_message(__('Group successfully deleted'));
 }

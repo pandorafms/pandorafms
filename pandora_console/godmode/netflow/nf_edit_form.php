@@ -68,7 +68,7 @@ else {
 	
 	ui_meta_print_page_header($nav_bar);
 	
-	ui_meta_print_header(__("Netflow filters"));	
+	ui_meta_print_header(__("Netflow filters"));
 }
 
 if ($id) {
@@ -91,7 +91,7 @@ else {
 	$dst_port = '';
 	$src_port = '';
 	$aggregate = 'none';
-	$output = 'bytes';	
+	$output = 'bytes';
 	$advanced_filter = '';
 }
 
@@ -173,7 +173,7 @@ $table->border = 0;
 $table->cellspacing = 3;
 $table->cellpadding = 5;
 $table->class = "databox_color";
-if (defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$table->width = '100%';
 	$table->class = 'databox data';
 	if($id)
@@ -183,7 +183,7 @@ if (defined('METACONSOLE')){
 	$table->head_colspan[0] = 5;
 	$table->headstyle[0] = 'text-align: center';
 }
-else{
+else {
 	$table->style[0] = 'vertical-align: top;';
 }
 

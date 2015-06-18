@@ -38,7 +38,7 @@ $buttons['graph_list'] = array('active' => true,
 	'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs">' .
 	html_print_image("images/list.png", true, array ("title" => __('Graph list'))) .'</a>');
 
-if ($enterpriseEnable){
+if ($enterpriseEnable) {
 	$buttons = reporting_enterprise_add_template_graph_tabs($buttons);
 }
 

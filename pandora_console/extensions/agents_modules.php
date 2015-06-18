@@ -140,15 +140,17 @@ function mainAgentsModules() {
 		$filter_module_group['id_module_group'] = $modulegroup;
 	}
 	$count = 0;
-	foreach ($agents as $agent){
-		$module = agents_get_modules($agent, false, $filter_module_group, true, false);
-		if ($module == false){
+	foreach ($agents as $agent) {
+		$module = agents_get_modules($agent, false,
+			$filter_module_group, true, false);
+		if ($module == false) {
 			unset($agents[$count]);
 		}
 		$count++;
 	}
 	$total_pagination = count($agents);
-	$all_modules = agents_get_modules($agents, false, $filter_module_group, true, false);
+	$all_modules = agents_get_modules($agents, false,
+		$filter_module_group, true, false);
 	
 	$modules_by_name = array();
 	$name = '';

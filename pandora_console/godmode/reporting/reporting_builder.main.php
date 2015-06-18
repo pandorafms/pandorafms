@@ -31,13 +31,13 @@ switch ($action) {
 	case 'new':
 		$actionButtonHtml = html_print_submit_button(__('Save'),
 			'add', false, 'class="sub wand"', true);
-		$hiddenFieldAction = 'save'; 
+		$hiddenFieldAction = 'save';
 		break;
 	case 'update':
 	case 'edit':
 		$actionButtonHtml = html_print_submit_button(__('Update'),
 			'edit', false, 'class="sub upd"', true);
-		$hiddenFieldAction = 'update'; 
+		$hiddenFieldAction = 'update';
 		break;
 }
 
@@ -47,7 +47,7 @@ $table->id = 'add_alert_table';
 $table->class = 'databox';
 $table->head = array ();
 
-if(defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	$table->width = '100%';
 	$table->class = 'databox data';
 	$table->head[0] = __('Main data');

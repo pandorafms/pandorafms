@@ -54,15 +54,15 @@ if ($id) {
 	$event_view_hr = $filter['event_view_hr'];
 	$id_user_ack = $filter['id_user_ack'];
 	$group_rep = $filter['group_rep'];
-
-	$tag_with_json = $filter['tag_with'];	
+	
+	$tag_with_json = $filter['tag_with'];
 	$tag_with_json_clean = io_safe_output($tag_with_json);
 	$tag_with_base64 = base64_encode($tag_with_json_clean) ;
 	
 	$tag_without_json = $filter['tag_without'];
 	$tag_without_json_clean = io_safe_output($tag_without_json);
 	$tag_without_base64 = base64_encode($tag_without_json_clean) ;
-
+	
 	$filter_only_alert = $filter['filter_only_alert'];
 }
 else {
@@ -317,7 +317,7 @@ if (defined("METACONSOLE")) {
 	$table->data[13][1] .= html_print_input_hidden('tag_without',
 		$tag_without_base64, true);
 }
-else{
+else {
 	
 	$table->colspan[13][0] = '2';
 	$table->data[13][0] = '<b>' . __('Events with following tags') . '</b>';

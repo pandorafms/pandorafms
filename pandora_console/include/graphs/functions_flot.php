@@ -356,7 +356,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		$labels_long = $labels;
 	}
 	if (!empty($legend)) {
-		$legend = io_safe_output(implode($separator,$legend));
+		$legend = io_safe_output(implode($separator, $legend));
 	}
 	$serie_types  = implode($separator, $serie_types2);
 	$colors  = implode($separator, $colors);

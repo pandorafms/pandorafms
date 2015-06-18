@@ -74,11 +74,11 @@ $table->data[0][1] = html_print_select_groups(false, "AW", true, 'source_id_grou
 $table->data[0][2] = __('Group recursion');
 $table->data[0][3] = html_print_checkbox ("source_recursion", 1, $source_recursion, true, false);
 $status_list = array ();
-$status_list[AGENT_STATUS_NORMAL] = __('Normal'); 
+$status_list[AGENT_STATUS_NORMAL] = __('Normal');
 $status_list[AGENT_STATUS_WARNING] = __('Warning');
 $status_list[AGENT_STATUS_CRITICAL] = __('Critical');
 $status_list[AGENT_STATUS_UNKNOWN] = __('Unknown');
-$status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal'); 
+$status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
 $status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
 $table->data[0][4] = __('Status');
 $table->data[0][5] = html_print_select($status_list,
@@ -185,11 +185,11 @@ $table->data[0][3] = html_print_checkbox ("destiny_recursion", 1,
 	$destiny_recursion, true, false);
 
 $status_list = array ();
-$status_list[AGENT_STATUS_NORMAL] = __('Normal'); 
+$status_list[AGENT_STATUS_NORMAL] = __('Normal');
 $status_list[AGENT_STATUS_WARNING] = __('Warning');
 $status_list[AGENT_STATUS_CRITICAL] = __('Critical');
 $status_list[AGENT_STATUS_UNKNOWN] = __('Unknown');
-$status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal'); 
+$status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
 $status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
 $table->data[1][0] = __('Status');
 $table->data[1][1] = html_print_select($status_list,

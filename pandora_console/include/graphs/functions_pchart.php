@@ -803,7 +803,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	
 	if (isset($size['Height'])) {
 		/* Define the chart area */
-		//if ($yaxisname != ''){
+		//if ($yaxisname != '') {
 		//}
 		$myPicture->setGraphArea($chart_size,$size['Height'],$width - $water_mark_width,$height - $margin_bottom);
 	}

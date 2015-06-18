@@ -79,10 +79,16 @@ Pandora_FTP_Test::test () {
 	char             *err;
 	DIR              *dir;
 	FILE             *conf_fh = NULL;
+	int		  timeout;
 
 	remote_host = this->conf->getValue ("server_ip");
 	cout << "Connecting with " << remote_host << "..." << endl;
 	password = this->conf->getValue ("server_pwd");
+	timeout = atoi (conf->getValue ("transfer_timeout").c_str ());
+	if (timeout == 0) {
+		timeout = 30;
+	}
+	
 	if (password == "") {
 		cout << "FTP password not found in configuration file." << endl;
 		cout << "Check that server_pwd variable is set." << endl;
@@ -136,7 +142,7 @@ Pandora_FTP_Test::test () {
 
 	try {
 		ftp_client->ftpFileFilename (remote_filepath + tmp_filename,
-					     tmp_filepath);
+					     tmp_filepath, timeout);
 	} catch (FTP::Unknown_Host e) {
 		cout << "Failed when copying to " << remote_host << " (" <<
 			ftp_client->getError () << ")" << endl;

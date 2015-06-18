@@ -403,7 +403,8 @@ $table_advanced->colspan[4][4] = 3;
 
 $table_advanced->data[5][0] = __('FF interval') . ' ' . ui_print_help_icon ('ff_interval', true);
 $table_advanced->data[5][1] = html_print_input_text ('module_ff_interval', $ff_interval,
-       '', 5, 10, true, $disabledBecauseInPolicy).ui_print_help_tip (__('Module execution flip flop time interval (in secs).'), true);
+	'', 5, 10, true, $disabledBecauseInPolicy) .
+	ui_print_help_tip (__('Module execution flip flop time interval (in secs).'), true);
 $table_advanced->colspan[5][1] = 2;
 
 $table_advanced->data[5][3] = __('FF timeout') . ' ' . ui_print_help_icon ('ff_timeout', true);
@@ -544,7 +545,8 @@ $table_advanced->colspan[12][4] = 3;
 
 if (check_acl ($config['id_user'], 0, "PM")) {
 	$table_advanced->data[13][0] = __('Category');
-	$table_advanced->data[13][1] = html_print_select(categories_get_all_categories('forselect'), 'id_category', $id_category, '', __('None'), 0, true); 
+	$table_advanced->data[13][1] = html_print_select(
+		categories_get_all_categories('forselect'), 'id_category', $id_category, '', __('None'), 0, true);
 	$table_advanced->colspan[13][1] = 6;
 }
 else {
@@ -725,13 +727,13 @@ $(document).ready (function () {
 	});
 	
 	$("#submit-updbutton").click(function () {
-		$('#id_tag_selected option').map(function(){
+		$('#id_tag_selected option').map(function() {
 			$(this).attr('selected','selected');
 		});
 	});
 	
 	$("#submit-crtbutton").click(function () {
-		$('#id_tag_selected option').map(function(){
+		$('#id_tag_selected option').map(function() {
 			$(this).attr('selected','selected');
 		});
 	});
@@ -770,7 +772,7 @@ $(document).ready (function () {
 	$("#id_module_type").trigger('change');
 	
 	// Prevent the form submission when the user hits the enter button from the relationship autocomplete inputs
-	$("#text-autocomplete_agent_name").keydown(function(event){
+	$("#text-autocomplete_agent_name").keydown(function(event) {
 		if(event.keyCode == 13) { // key code 13 is the enter button
 			event.preventDefault();
 		}
@@ -839,7 +841,7 @@ function change_modules_autocomplete_input () {
 				if (data) {
 					module_autocomplete.html(data);
 					// Prevent the form submission when the user hits the enter button from the relationship autocomplete inputs
-					$("#text-autocomplete_module_name").keydown(function(event){
+					$("#text-autocomplete_module_name").keydown(function(event) {
 						if(event.keyCode == 13) { // key code 13 is the enter button
 							event.preventDefault();
 						}

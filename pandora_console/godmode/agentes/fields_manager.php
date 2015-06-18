@@ -33,21 +33,22 @@ ui_print_page_header (__("Agents custom fields manager"), "images/custom_field.p
 $create_field = (bool) get_parameter ('create_field');
 $update_field = (bool) get_parameter ('update_field');
 $delete_field = (bool) get_parameter ('delete_field');
-$id_field = (int) get_parameter ('id_field', 0);	
+$id_field = (int) get_parameter ('id_field', 0);
 $name = (string) get_parameter ('name', '');
 $display_on_front = (int) get_parameter ('display_on_front', 0);
 
 /* Create field */
 if ($create_field) {
 	/*Check if name field is empty*/
-	if ($name == ""){
+	if ($name == "") {
 		ui_print_error_message(__('The name must not be empty'));
 	}
 	else if ($name == db_get_value ('name', 'tagent_custom_fields', 'name', $name)) {
 		ui_print_error_message(__('The name must be unique'));
 	}
 	else {
-		$result = db_process_sql_insert('tagent_custom_fields', array('name' => $name, 'display_on_front' => $display_on_front));
+		$result = db_process_sql_insert('tagent_custom_fields',
+			array('name' => $name, 'display_on_front' => $display_on_front));
 		ui_print_success_message(__('Field successfully created'));
 	}
 }
@@ -74,12 +75,13 @@ if ($update_field) {
 
 /* Delete field */
 if ($delete_field) {
-	$result = db_process_sql_delete('tagent_custom_fields', array('id_field' => $id_field));
+	$result = db_process_sql_delete('tagent_custom_fields',
+		array('id_field' => $id_field));
 	
 	if (!$result)
-		ui_print_error_message(__('There was a problem deleting field')); 
+		ui_print_error_message(__('There was a problem deleting field'));
 	else
-		ui_print_success_message(__('Field successfully deleted'));	 
+		ui_print_success_message(__('Field successfully deleted'));
 }
 
 $fields = db_get_all_fields_in_table('tagent_custom_fields');

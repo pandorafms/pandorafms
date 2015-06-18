@@ -262,7 +262,7 @@ if ($update_component) {
 		$custom_string_1 = $snmp3_privacy_method;
 		$custom_string_2 = $snmp3_privacy_pass;
 		$custom_string_3 = $snmp3_security_level;
-		//$name_check = db_get_value ('name', 'tnetwork_component', 'name', $name); 
+		//$name_check = db_get_value ('name', 'tnetwork_component', 'name', $name);
 	}
 	
 	if (!empty($name)) { 
@@ -442,12 +442,12 @@ $search_id_group = (int) get_parameter ('search_id_group');
 $search_string = (string) get_parameter ('search_string');
 
 $table->width = '98%';
-if(defined("METACONSOLE")){
+if(defined("METACONSOLE")) {
 	$table->width = '50%';
 	$table->class = 'databox_filters';
 }
 $table->style = array ();
-if (!defined('METACONSOLE')){
+if (!defined('METACONSOLE')) {
 	$table->style[0] = 'font-weight: bold';
 	$table->style[2] = 'font-weight: bold';
 }
@@ -501,14 +501,14 @@ $table->data[0][4] .= html_print_submit_button (__('Search'), 'search', false,
 	'class="sub search"', true);
 $table->data[0][4] .= '</div>';
 
-if(defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	$filter = '<form class="filters_form" method="post" action="'.$url.'">';
 	$filter .= html_print_table ($table,true);
 	$filter .= '</form>';
 	ui_toggle($filter, __("Show Options"));
 }
-else{
-	echo '<form method="post" action="'.$url.'">';
+else {
+	echo '<form method="post" action="' . $url . '">';
 	html_print_table ($table);
 	echo '</form>';
 }
@@ -517,7 +517,10 @@ $filter = array ();
 if ($search_id_group)
 	$filter['id_group'] = $search_id_group;
 if ($search_string != '')
-	$filter[] = '(name LIKE "%'.$search_string.'%" OR description LIKE "%'.$search_string.'%" OR tcp_send LIKE "%'.$search_string.'%" OR tcp_rcv LIKE "%'.$search_string.'%")';
+	$filter[] = '(name LIKE "%' . $search_string . '%" ' .
+		'OR description LIKE "%'. $search_string . '%" ' .
+		'OR tcp_send LIKE "%' . $search_string . '%" ' .
+		'OR tcp_rcv LIKE "%' . $search_string . '%")';
 
 $total_components = network_components_get_network_components (false, $filter, 'COUNT(*) AS total');
 $total_components = $total_components[0]['total'];

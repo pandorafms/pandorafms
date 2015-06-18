@@ -430,9 +430,9 @@ function filemanager_delete_directory($dir) {
  * 
  * @return array The files in the dirs, empty array for empty dir of files.
  */
-function filemanager_read_recursive_dir($dir, $relative_path = '') {
+function filemanager_read_recursive_dir($dir, $relative_path = '', $add_empty_dirs = false) {
 	$return = array();
-
+	
 	// Windows compatibility
 	$dir = str_replace("\\", "/", $dir);
 	$relative_path = str_replace("\\", "/", $relative_path);
@@ -442,10 +442,21 @@ function filemanager_read_recursive_dir($dir, $relative_path = '') {
 		while (false !== ($entry = readdir($handle))) {
 			if (($entry != ".") && ($entry != "..")) {
 				if (is_dir($dir . $entry)) {
-					$return = array_merge($return, filemanager_read_recursive_dir($dir . $entry . '/', $relative_path . $entry . '/' ));
+					$return[] = array(
+						'relative' => $relative_path . $entry,
+						'absolute' => $dir . $entry,
+						'dir' => true);
+					
+					$return = array_merge($return,
+						filemanager_read_recursive_dir(
+							$dir . $entry . '/', $relative_path . $entry . '/',
+							'', $add_empty_dirs));
 				}
 				else {
-					$return[] = array('relative' => $relative_path . $entry, 'absolute' => $dir . $entry);
+					$return[] = array(
+						'relative' => $relative_path . $entry,
+						'absolute' => $dir . $entry,
+						'dir' => false);
 				}
 			}
 		}
@@ -540,13 +551,15 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 	
 	$files = filemanager_list_dir ($real_directory);
 	
+	$table = new stdClass();
+	$table->width = '98%';
 	$table->id = 'table_filemanager';
 	if (!defined('METACONSOLE')) {
 		$table->width = '100%';
 		$table->class = 'databox data';
 		$table->title = '<span>' . __('Index of %s', $relative_directory) . '</span>';
 	}
-	if (defined('METACONSOLE')){
+	if (defined('METACONSOLE')) {
 		$table->width = '100%';
 		$table->class = 'databox_tactical';
 		$table->title = '<span>' . __('Index of images') . '</span>';

@@ -42,7 +42,7 @@ if(defined('METACONSOLE')) {
 			'text' => '<a href="index.php?sec=advanced&sec2=godmode/category/category&tab=list&pure='.(int)$config['pure'].'">' . 
 				html_print_image ("images/list.png", true, array ("title" => __('List categories'))) .'</a>'));
 }
-else{
+else {
 	$buttons = array(
 		'list' => array(
 			'active' => false,
@@ -112,7 +112,7 @@ if ($create_category) {
 // Get results when update action is performed
 if ($action == "update" && $id_category != 0) {
 	$result_category = db_get_row_filter('tcategory', array('id' => $id_category));
-	$name_category = $result_category["name"]; 
+	$name_category = $result_category["name"];
 } // If current action is create (new) or somethig goes wrong fields are filled with void value
 else {
 	$name_category = "";
@@ -131,7 +131,7 @@ if(!defined('METACONSOLE'))
 	echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=100%>";
 else
 	echo "<table border=0 cellpadding=4 cellspacing=4 class='databox data' width=100%>";
-	if (defined("METACONSOLE")){
+	if (defined("METACONSOLE")) {
 		if ($action == "update") {
 			echo "<thead>
 					<tr>
@@ -162,17 +162,18 @@ else
 			echo "<td>";
 		else
 			echo "<td align=center>";
-		html_print_input_text ('name_category', $name_category); 
+		html_print_input_text ('name_category', $name_category);
 		echo "</td>";
 	echo "</tr>";
-	if(!defined('METACONSOLE')){
+	if (!defined('METACONSOLE')) {
 		echo "<tr>";
 			if ($action == "update") {
 				echo "<td align=center>";
 				html_print_input_hidden ('update_category', 1);
 				echo "</td>";
 				echo "<td align=right>";
-				html_print_submit_button (__('Update'), 'update_button', false, 'class="sub next"');
+				html_print_submit_button (__('Update'), 'update_button',
+					false, 'class="sub next"');
 				echo "</td>";
 			}
 			if ($action == "new") {
@@ -186,17 +187,19 @@ else
 		echo "</tr>";
 	}
 echo "</table>";
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	echo "<table border=0 cellpadding=0 cellspacing=0 class='' width=100%>";
 	echo "<tr>";
 	echo "<td align=right>";
 	if ($action == "update") {
 		html_print_input_hidden ('update_category', 1);
-		html_print_submit_button (__('Update'), 'update_button', false, 'class="sub next"');
+		html_print_submit_button (__('Update'), 'update_button', false,
+			'class="sub next"');
 	}
 	if ($action == "new") {
 		html_print_input_hidden ('create_category', 1);
-		html_print_submit_button (__('Create'), 'create_button', false, 'class="sub next"');
+		html_print_submit_button (__('Create'), 'create_button', false,
+			'class="sub next"');
 	}
 	echo "</td>";
 	echo "</tr>";

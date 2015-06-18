@@ -105,7 +105,7 @@ function menu_print_menu (&$menu) {
 			
 			$subsec2 = io_safe_output($subsec2);
 			// Choose valid suboptions (sec2)
-			if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $subsec2)) == false){
+			if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $subsec2)) == false) {
 				continue;
 			}
 			
@@ -341,7 +341,7 @@ function menu_print_menu (&$menu) {
 		}
 		
 		// Choose valid section (sec)
-		if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $main["sec2"])) == false){
+		if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $main["sec2"])) == false) {
 			if ($count_sub_access > 0) {
 				// If any susection have access but main section not, we change main link to first subsection found
 				$main["sec2"] = $first_sub_sec2;

@@ -27,6 +27,9 @@ my $ALLIFACES = '';
 # Keep our own ARP cache to connect hosts to switches/routers.
 my %ARP_CACHE;
 
+# IP address of a host given the MAC of one of its interfaces.
+my %IF_CACHE;
+
 # Default configuration values.
 my $OSNAME = $^O;
 my %CONF;
@@ -36,6 +39,7 @@ if ($OSNAME eq "freebsd") {
 		'nmap' => '/usr/local/bin/nmap',
 		'pandora_path' => '/usr/local/etc/pandora/pandora_server.conf',
 		'icmp_checks' => 1,
+		'icmp_packets' => 1,
 		'networktimeout' => 2,
 		'snmp_checks' => 2,
 		'snmp_timeout' => 2,
@@ -48,6 +52,7 @@ if ($OSNAME eq "freebsd") {
 		'nmap' => '/usr/bin/nmap',
 		'pandora_path' => '/etc/pandora/pandora_server.conf',
 		'icmp_checks' => 1,
+		'icmp_packets' => 1,
 		'networktimeout' => 2,
 		'snmp_timeout' => 2,
 		'recon_timing_template' => 3,
@@ -72,9 +77,14 @@ my $DBH;
 my $GROUP_ID;
 
 # Devices by type.
-my %HOSTS;
+my @HOSTS;
 my @ROUTERS;
 my @SWITCHES;
+
+# Switch to switch connections. Used to properly connect hosts
+# that are connected to a switch wich is in turn connected to another switch,
+# since the hosts will show up in the latter's switch AFT too.
+my %SWITCH_TO_SWITCH;
 
 # MAC addresses.
 my %MAC;
@@ -145,13 +155,49 @@ sub mac_to_dec($) {
 	my $mac = shift;
 
 	my $dec_mac = '';
-	my @elements = split(/ /, $mac);
+	my @elements = split(/:/, $mac);
 	foreach my $element (@elements) {
         $dec_mac .= unpack('s', pack 's', hex($element)) .  '.'
 	}
 	chop($dec_mac);
 
 	return $dec_mac;
+}
+
+########################################################################################
+# Make sure all MAC addresses are in the same format (00 11 22 33 44 55 66).
+########################################################################################
+sub parse_mac($) {
+    my ($mac) = @_;
+
+    # Remove leading and trailing whitespaces.
+    $mac =~ s/(^\s+)|(\s+$)//g;
+
+    # Replace whitespaces and dots with colons.
+    $mac =~ s/\s+|\./:/g;
+
+    # Convert hex digits to uppercase.
+    $mac =~ s/([a-f])/\U$1/g;
+
+    # Add a leading 0 to single digits.
+    $mac =~ s/^([0-9A-F]):/0$1:/g;
+    $mac =~ s/:([0-9A-F]):/:0$1:/g;
+    $mac =~ s/:([0-9A-F])$/:0$1/g;
+
+    return $mac;
+}
+
+########################################################################################
+# Returns 1 if the two given MAC addresses are the same.
+########################################################################################
+sub mac_matches($$) {
+    my ($mac_1, $mac_2) = @_;
+
+    if (parse_mac($mac_1) eq parse_mac($mac_2)) {
+        return 1;
+    }
+
+    return 0;
 }
 
 ########################################################################################
@@ -280,8 +326,9 @@ sub get_if_from_mac($$$) {
 	my @output = snmp_get($device, $community, $IFPHYSADDRESS);
 	foreach my $line (@output) {
 		chomp($line);
-		next unless $line =~ /^$IFPHYSADDRESS.(\S+)\s+=\s+\S+:\s+$mac$/;
-		my $if_index = $1;
+		next unless $line =~ /^$IFPHYSADDRESS.(\S+)\s+=\s+\S+:\s+(.*)$/;
+		my ($if_index, $if_mac) = ($1, $2);
+		next unless (mac_matches($mac, $if_mac) == 1);
 
 		# Get the name of the interface associated to the port.
 		my $if_name = snmp_get_value($device, $community, "$IFNAME.$if_index");
@@ -310,7 +357,7 @@ sub get_if_from_aft($$$) {
 
 	# Get the interface name.
 	my $if_name = snmp_get_value($switch, $COMMUNITIES{$switch}, "$IFNAME.$if_index");
-	return '' unless defined($if_name);
+	return "if$if_index" unless defined($if_name);
 
 	$if_name =~ s/"//g;
 	return $if_name;
@@ -342,8 +389,7 @@ sub get_if_mac($$$) {
 	return '' unless defined($mac);
 
 	# Clean-up the MAC address.
-	$mac =~ s/ /:/g;
-	chop($mac);
+	$mac = parse_mac($mac);
 
 	return $mac;
 }
@@ -415,6 +461,7 @@ sub arp_cache_discovery {
 		foreach my $line (@output) {
 			next unless ($line =~ /^$IPNETTOMEDIAPHYSADDRESS.\d+.(\S+)\s+=\s+\S+:\s+(.*)$/);
 			my ($ip_addr, $mac_addr) = ($1, $2);
+			$mac_addr = parse_mac($mac_addr);
 
 			# Save the mac to connect hosts to switches/routers.
 			$ARP_CACHE{$mac_addr} = $ip_addr;
@@ -428,7 +475,7 @@ sub arp_cache_discovery {
 	if ($device_type eq 'host' || $device_type eq 'printer') {
 
 		# Hosts are indexed to help find router/switch to host connectivity.
-		$HOSTS{$device} = '';
+		push(@HOSTS, $device);
 	}
 	elsif ($device_type eq 'switch') {
 		push(@SWITCHES, $device);
@@ -457,7 +504,7 @@ sub find_synonyms($$$) {
 
 		# There is no need to access switches or routers from different IP addresses.
 		if ($device_type eq 'host' || $device_type eq 'printer') {
-			$HOSTS{$ip_address} = '';
+			push(@HOSTS, $device);
 		}
 	}
 }
@@ -534,17 +581,34 @@ sub guess_device_type($$) {
 ########################################################################################
 sub switch_to_switch_connectivity($$) {
 	my ($switch_1, $switch_2) = @_;
+	my (%mac_temp, @aft_temp);
 
 	# Make sure both switches respond to SNMP.
 	return unless defined($COMMUNITIES{$switch_1} && $COMMUNITIES{$switch_2});
 
 	# Get the list of MAC addresses of each switch.
-	my %mac_1 = snmp_get_value_hash($switch_1, $COMMUNITIES{$switch_1}, $IFPHYSADDRESS);
-	my %mac_2 = snmp_get_value_hash($switch_2, $COMMUNITIES{$switch_2}, $IFPHYSADDRESS);
+	my %mac_1;
+	%mac_temp = snmp_get_value_hash($switch_1, $COMMUNITIES{$switch_1}, $IFPHYSADDRESS);
+	foreach my $mac (keys(%mac_temp)) {
+		$mac_1{parse_mac($mac)} = '';
+	}
+	my %mac_2;
+	%mac_temp = snmp_get_value_hash($switch_2, $COMMUNITIES{$switch_2}, $IFPHYSADDRESS);
+	foreach my $mac (keys(%mac_temp)) {
+		$mac_2{parse_mac($mac)} = '';
+	}
 
 	# Get the address forwarding table (AFT) of each switch.
-	my @aft_1 = snmp_get_value_array($switch_1, $COMMUNITIES{$switch_1}, $DOT1DTPFDBADDRESS);
-	my @aft_2 = snmp_get_value_array($switch_2, $COMMUNITIES{$switch_2}, $DOT1DTPFDBADDRESS);
+	my @aft_1;
+	@aft_temp = snmp_get_value_array($switch_1, $COMMUNITIES{$switch_1}, $DOT1DTPFDBADDRESS);
+	foreach my $mac (@aft_temp) {
+		push(@aft_1, parse_mac($mac));
+	}
+	my @aft_2;
+	@aft_temp = snmp_get_value_array($switch_2, $COMMUNITIES{$switch_2}, $DOT1DTPFDBADDRESS);
+	foreach my $mac (@aft_temp) {
+		push(@aft_2, parse_mac($mac));
+	}
 
 	# Search for matching entries.
 	foreach my $aft_mac_1 (@aft_1) {
@@ -552,9 +616,15 @@ sub switch_to_switch_connectivity($$) {
 			foreach my $aft_mac_2 (@aft_2) {
 				if (defined($mac_1{$aft_mac_2})) {
 					my $if_name_1 = get_if_from_aft($switch_1, $COMMUNITIES{$switch_1}, $aft_mac_1);
+					next unless ($if_name_1) ne '';
 					my $if_name_2 = get_if_from_aft($switch_2, $COMMUNITIES{$switch_2}, $aft_mac_2);
+					next unless ($if_name_2) ne '';
 					message("Switch $switch_1 (if $if_name_1) is connected to switch $switch_2 (if $if_name_2).");
 					connect_pandora_agents($switch_1, $if_name_1, $switch_2, $if_name_2);
+
+					# Mark switch to switch connections.
+					$SWITCH_TO_SWITCH{"$switch_1$if_name_1"} = 1;
+					$SWITCH_TO_SWITCH{"$switch_2$if_name_2"} = 1;
 					return;
 				}
 			}
@@ -567,15 +637,24 @@ sub switch_to_switch_connectivity($$) {
 ########################################################################################
 sub router_to_switch_connectivity($$) {
 	my ($router, $switch) = @_;
+	my (%mac_temp, @aft_temp);
 
 	# Make sure both routers respond to SNMP.
 	return unless defined($COMMUNITIES{$router} && $COMMUNITIES{$switch});
 
 	# Get the list of MAC addresses of the router.
-	my %mac_router = snmp_get_value_hash($router, $COMMUNITIES{$router}, $IFPHYSADDRESS);
+	my %mac_router;
+	%mac_temp = snmp_get_value_hash($router, $COMMUNITIES{$router}, $IFPHYSADDRESS);
+	foreach my $mac (keys(%mac_temp)) {
+		$mac_router{parse_mac($mac)} = '';
+	}
 
 	# Get the address forwarding table (AFT) of the switch.
-	my @aft = snmp_get_value_array($switch, $COMMUNITIES{$switch}, $DOT1DTPFDBADDRESS);
+	my @aft;
+	@aft_temp = snmp_get_value_array($switch, $COMMUNITIES{$switch}, $DOT1DTPFDBADDRESS);
+	foreach my $mac (@aft_temp) {
+		push(@aft, parse_mac($mac));
+	}
 
 	# Search for matching entries in the AFT.
 	foreach my $aft_mac (@aft) {
@@ -586,9 +665,14 @@ sub router_to_switch_connectivity($$) {
 
 			# Get the switch interface.
 			my $switch_if_name = get_if_from_aft($switch, $COMMUNITIES{$switch}, $aft_mac);
+			next unless ($switch_if_name ne '');
 
 			message("Router $router (if $router_if_name) is connected to switch $switch (if $switch_if_name).");
 			connect_pandora_agents($router, $router_if_name, $switch, $switch_if_name);
+
+			# Mark connections in case the routers are switches too.
+			$SWITCH_TO_SWITCH{"$switch$switch_if_name"} = 1;
+			$SWITCH_TO_SWITCH{"$router$router_if_name"} = 1;
 			return;
 		}
 	}
@@ -616,6 +700,10 @@ sub router_to_router_connectivity($$) {
 					my $if_2 = get_if_from_ip($router_2, $COMMUNITIES{$router_2}, $ip_addr_1);
 					message("Router $ip_addr_1 (if $if_2) is connected to router $ip_addr_2 (if $if_2).");
 					connect_pandora_agents($router_1, $if_1, $router_2, $if_2);
+					
+					# Mark connections in case the routers are switches too.
+					$SWITCH_TO_SWITCH{"$router_1$if_1"} = 1;
+					$SWITCH_TO_SWITCH{"$router_2$if_2"} = 1;
 					return;
 				}
 			}
@@ -635,15 +723,25 @@ sub host_connectivity($) {
 	# Get the address forwarding table (AFT) of the device.
 	my @aft = snmp_get_value_array($device, $COMMUNITIES{$device}, $DOT1DTPFDBADDRESS);
 	foreach my $mac (@aft) {
-		next unless defined ($ARP_CACHE{$mac});
-		my $host = $ARP_CACHE{$mac};
-		next unless defined ($HOSTS{$host});
+		$mac = parse_mac($mac);
+		my $host;
+		if (defined ($ARP_CACHE{$mac})) {
+			$host = $ARP_CACHE{$mac};
+		} elsif (defined ($IF_CACHE{$mac})) {
+			$host = $IF_CACHE{$mac};
+		} else {
+			next;
+		}
+		next unless defined ($VISITED_DEVICES{$host});
 		my $device_if_name = get_if_from_aft($device, $COMMUNITIES{$device}, $mac);
+		next unless ($device_if_name ne '');
 		my $host_if_name = defined($COMMUNITIES{$host}) ? get_if_from_mac($host, $COMMUNITIES{$host}, $mac) : '';
 		if ($VISITED_DEVICES{$device}->{'type'} eq 'router') {
+			next if defined ($SWITCH_TO_SWITCH{"$device$device_if_name"}); # The switch is probably connected to another router/switch.
 			message("Host $host " . ($host_if_name ne '' ? "(if $host_if_name)" : '') . " is connected to router $device (if $device_if_name).");
 		}
 		elsif ($VISITED_DEVICES{$device}->{'type'} eq 'switch') {
+			next if defined ($SWITCH_TO_SWITCH{"$device$device_if_name"}); # The switch is probably connected to another switch.
 			message("Host $host " . ($host_if_name ne '' ? "(if $host_if_name)" : '') . " is connected to switch $device (if $device_if_name).");
 		}
 		else {
@@ -722,15 +820,18 @@ sub create_pandora_agent($) {
 			next unless $if_status == 1;
 		}
 
-		# Get the name of the network interface.
-		my $if_name = snmp_get_value($device, $COMMUNITIES{$device}, "$IFNAME.$if_index");
-		next unless defined($if_name);
-		$if_name =~ s/"//g;
-
 		# Fill the module description with the IP and MAC addresses.
 		my $mac = get_if_mac($device, $COMMUNITIES{$device}, $if_index);
 		my $ip = get_if_ip($device, $COMMUNITIES{$device}, $if_index);
 		my $if_desc = ($mac ne '' ? "MAC $mac " : '') . ($ip ne '' ? "IP $ip" : '');
+
+		# Fill the interface cache.
+		$IF_CACHE{$mac} = $ip;
+
+		# Get the name of the network interface.
+		my $if_name = snmp_get_value($device, $COMMUNITIES{$device}, "$IFNAME.$if_index");
+		$if_name = "if$if_index" unless defined ($if_name);
+		$if_name =~ s/"//g;
 
 		# Check whether the module already exists.
 		my $module_id = get_agent_module_id($DBH, "ifOperStatus_${if_name}", $agent_id);
@@ -833,9 +934,8 @@ sub connect_pandora_agents($$$$) {
 		db_do($DBH, 'INSERT INTO tmodule_relationship (`module_a`, `module_b`, `id_rt`) VALUES(?, ?, ?)', $module_id_1, $module_id_2, $TASK_ID);
 	}
 
-	# Unset parents (otherwise the map will look broken).
-	db_do($DBH, 'UPDATE tagente SET id_parent=0 WHERE id_agente=?', $agent_1->{'id_agente'});
-	db_do($DBH, 'UPDATE tagente SET id_parent=0 WHERE id_agente=?', $agent_2->{'id_agente'});
+	# Update parents.
+	db_do($DBH, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $agent_1->{'id_agente'}, $agent_2->{'id_agente'});
 }
 
 
@@ -990,6 +1090,10 @@ else {
 	my @scanned_hosts = $np->all_hosts();
 	foreach my $host (@scanned_hosts) {
 		next unless defined($host->addr()) and defined($host->status()) and ($host->status() eq 'up');
+
+		# Make sure the host is up (nmap gives false positives!).
+		next if (pandora_ping(\%CONF, $host->addr(), 1, 1) == 0);
+
 		arp_cache_discovery($host->addr());
 	}
 }
@@ -1028,10 +1132,10 @@ update_recon_task($DBH, $TASK_ID, 75);
 
 # Find switch/router to host connections.
 message("[6/6] Finding switch/router to end host connectivity...");
-foreach my $device ((@ROUTERS, @SWITCHES)) {
+foreach my $device (@ROUTERS, @SWITCHES, @HOSTS) {
 	host_connectivity($device);
 }
-foreach my $host (keys(%HOSTS)) {
+foreach my $host (@HOSTS) {
 	next unless (ref($VISITED_DEVICES{$host}) eq 'HASH'); # Skip aliases.
 	next if ($VISITED_DEVICES{$host}->{'connected'} == 1); # Skip already connected hosts.
 	traceroute_connectivity($host);

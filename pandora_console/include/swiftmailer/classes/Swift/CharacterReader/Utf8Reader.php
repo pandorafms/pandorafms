@@ -114,7 +114,7 @@ class Swift_CharacterReader_Utf8Reader
    	      ++$foundChars;
    	      $invalid=false;
    	  	}
-   	  	if (($i+$size) > $strlen){
+   	  	if (($i+$size) > $strlen) {
    	  		$ignoredChars=substr($string, $i);
    	  		break;
    	  	}

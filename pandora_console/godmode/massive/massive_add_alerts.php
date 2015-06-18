@@ -262,11 +262,11 @@ $(document).ready (function () {
 	
 	$("#id_group").click (
 	function () {
-		$(this).css ("width", "auto"); 
+		$(this).css ("width", "auto");
 	});
 	
 	$("#id_group").blur (function () {
-		$(this).css ("width", "180px"); 
+		$(this).css ("width", "180px");
 	});
 	
 	$("#id_agents").click (
@@ -275,16 +275,16 @@ $(document).ready (function () {
 	});
 	
 	$("#id_agents").blur (function () {
-		$(this).css ("width", "180px"); 
+		$(this).css ("width", "180px");
 	});
 	
 	$("#module").click (
 	function () {
-		$(this).css ("width", "auto"); 
+		$(this).css ("width", "auto");
 	});
 	
 	$("#module").blur (function () {
-		$(this).css ("width", "180px"); 
+		$(this).css ("width", "180px");
 	});
 	
 	$("#modules_selection_mode").change (function() {

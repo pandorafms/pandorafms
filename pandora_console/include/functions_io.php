@@ -336,10 +336,10 @@ function io_safe_output_xml ($string) {
 	static $replace;
 	
 	if (empty ($table)) {
-		$table = get_html_translation_table (HTML_ENTITIES, ENT_QUOTES);	
+		$table = get_html_translation_table (HTML_ENTITIES, ENT_QUOTES);
 		$replace = array ();
 		
-		foreach ($table as $key => $value){
+		foreach ($table as $key => $value) {
 			$table[$key] = "/".$value."/";
 			$char = htmlentities ($key, ENT_QUOTES, "UTF-8");
 			$replace[$char] = "&#".ord ($key).";";
@@ -431,7 +431,7 @@ function __ ($string /*, variable arguments */) {
  *
  * @param string Text string to be encoded.
 */
-function io_json_mb_encode($string){
+function io_json_mb_encode($string) {
 	$v = json_encode($string);
 	$v = preg_replace_callback("/\\\\u([0-9a-zA-Z]{4})/",
 		create_function('$matches', 'return mb_convert_encoding(pack("H*", $matches[1]), "UTF-8", "UTF-16");'

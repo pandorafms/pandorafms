@@ -573,7 +573,7 @@ if ($action == 'new' || $idVisualConsole === false) {
 }
 
 $buttons[$activeTab]['active'] = true;
- 
+
 if (!defined('METACONSOLE')) {
 	ui_print_page_header($visualConsoleName,
 		"images/visual_console.png", false,

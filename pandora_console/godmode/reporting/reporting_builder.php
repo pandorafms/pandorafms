@@ -374,7 +374,7 @@ switch ($action) {
 		$table_aux->class = 'databox filters';
 		$table_aux->cellpadding = 0;
 		$table_aux->cellspacing = 0;
-		if(defined('METACONSOLE')){
+		if (defined('METACONSOLE')) {
 			$table_aux->class = 'databox_filters';
 			$table_aux->width = '96%';
 			$table_aux->cellpadding = 0;
@@ -390,14 +390,14 @@ switch ($action) {
 		
 		$table_aux->data[0][6] = html_print_submit_button(__('Search'), 'search_submit', false, 'class="sub upd"', true);
 		
-		if(defined('METACONSOLE')){
+		if (defined('METACONSOLE')) {
 			$filter = "<form class ='filters_form' action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&id_group=$id_group&pure=$pure'
 				method='post'>";
 			$filter .= html_print_table($table_aux,true);
 			$filter .= "</form>";
 			ui_toggle($filter, __("Show Option"));
 		}
-		else{
+		else {
 			echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&id_group=$id_group&pure=$pure'
 				method='post'>";
 			html_print_table($table_aux);
@@ -471,7 +471,7 @@ switch ($action) {
 			$table->class = 'databox data';
 			$table->cellpadding = 0;
 			$table->cellspacing = 0;
-			if(defined('METACONSOLE')){
+			if (defined('METACONSOLE')) {
 				$table->class = 'databox';
 				$table->width = '100%';
 			}
@@ -579,7 +579,7 @@ switch ($action) {
 					
 					
 					$data[$next] = ui_print_group_icon(
-						$report['id_group'], true, "groups_small", '', !defined('METACONSOLE')); 
+						$report['id_group'], true, "groups_small", '', !defined('METACONSOLE'));
 					$next++;
 				}
 				
@@ -656,7 +656,7 @@ switch ($action) {
 			}
 			html_print_table ($table);
 		}
-		else{
+		else {
 			ui_print_info_message ( array ( 'no_close' => true, 'message' =>  __('No data found.') ) );
 		}
 		if (check_acl ($config['id_user'], 0, "RW")) {
@@ -853,7 +853,7 @@ switch ($action) {
 								$interval_max = get_parameter('max_interval');
 								$interval_min = get_parameter('min_interval');
 								// Checks intervals fields
-								if (preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_max) and preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_min)){
+								if (preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_max) and preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_min)) {
 									$good_format = true;
 								}
 								$intervals = get_parameter('max_interval') . ';' . get_parameter('min_interval');
@@ -1115,7 +1115,7 @@ switch ($action) {
 								$interval_max = get_parameter('max_interval');
 								$interval_min = get_parameter('min_interval');
 								// Checks intervals fields
-								if (preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_max) and preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_min)){
+								if (preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_max) and preg_match('/^(\-)*[0-9]*\.?[0-9]+$/', $interval_min)) {
 									$good_format = true;
 								}
 								$intervals = get_parameter('max_interval') . ';' . get_parameter('min_interval');

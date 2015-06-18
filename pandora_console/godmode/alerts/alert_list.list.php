@@ -142,7 +142,8 @@ if ( defined("METACONSOLE") ) {
 	$form_filter .= "</td>";
 	$form_filter .= "</tr>";
 	$form_filter .= "</table>";
-}else{
+}
+else {
 	$form_filter .= "</table>";
 	$form_filter .= "<div  style='text-align:right; height:100%;'>";
 	$form_filter .= html_print_submit_button (__('Update'), '', false, 'class="sub upd"', true);
@@ -372,7 +373,7 @@ else {
 /*	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->size[4] = '25%';
 	}  */
-	$table->size[3] = '1%';	
+	$table->size[3] = '1%';
 	$table->size[4] = '10%';
 }
 
@@ -497,7 +498,7 @@ foreach ($simple_alerts as $alert) {
 					else
 						$data[2] .= __('On').' '.$action['fires_min'];
 				}
-				else if ($action['fires_min'] < $action['fires_max']){
+				else if ($action['fires_min'] < $action['fires_max']) {
 					if ($action['fires_min'] == 0)
 						$data[2] .= __('Until').' '.$action['fires_max'];
 					else
@@ -659,7 +660,7 @@ foreach ($simple_alerts as $alert) {
 	
 	// To manage alert is necessary LW permissions in the agent group 
 	if(check_acl ($config['id_user'], $agent_group, "LW")) {
-		$data[4] .= '&nbsp;&nbsp;<form class="delete_alert_form" action="' . $url . '" method="post" style="display: inline;">';	
+		$data[4] .= '&nbsp;&nbsp;<form class="delete_alert_form" action="' . $url . '" method="post" style="display: inline;">';
 		if ($alert['disabled']) {
 			$data[4] .= html_print_image('images/add.disabled.png',
 			true, array('title' => __("Add action")));
@@ -698,7 +699,7 @@ if (isset($dont_display_alert_create_bttn))
 	if ($dont_display_alert_create_bttn)
 		$display_create = false;
 
-if ($display_create && check_acl ($config['id_user'], 0, "LW")){
+if ($display_create && check_acl ($config['id_user'], 0, "LW")) {
 	echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 	echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">';
 	html_print_submit_button (__('Create'), 'crtbtn', false, 'class="sub next"');

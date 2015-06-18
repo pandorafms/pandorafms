@@ -259,7 +259,7 @@ if (!empty($addresses)) {
 $data = array();
 $data[0] = '<b>' . __('Parent') . '</b>';
 if ($agent["id_parent"] == 0) {
-	$data[1] = '<em>' . __('N/A') . '</em>'; 
+	$data[1] = '<em>' . __('N/A') . '</em>';
 }
 else {
 	$data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent["id_parent"].'">'.agents_get_name ($agent["id_parent"]).'</a>';
@@ -273,7 +273,7 @@ if (enterprise_installed()) {
 	$data = array();
 	$data[0] = '<b>' . __('Remote configuration') . '</b>';
 	if (!$has_remote_conf) {
-		$data[1] = __('Disabled'); 
+		$data[1] = __('Disabled');
 	}
 	else {
 		$data[1] = __('Enabled');

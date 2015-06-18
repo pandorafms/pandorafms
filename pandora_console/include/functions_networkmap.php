@@ -409,19 +409,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		}
 	}
 	
-	// Addded the relationship of parents of agents
-	foreach ($agents as $agent) {
-		if ($agent['id_parent'] != "0" &&
-			array_key_exists($agent['id_parent'], $node_ref)) {
-			
-			
-			$parents[$node_ref[$agent['id_agente']]] = $node_ref[$agent['id_parent']];
-		}
-		else {
-			$orphans[$node_ref[$agent['id_agente']]] = 1;
-		}
-	}
-	
 	// Drop the modules without a partner if l2_network is true
 	// and the snmp interfaces token is false
 	if ($l2_network) {
@@ -448,6 +435,19 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 					unset($orphans[$node_count]);
 					unset($parents[$node_count]);
 				}
+			}
+		}
+	} else {
+		// Addded the relationship of parents of agents
+		foreach ($agents as $agent) {
+			if ($agent['id_parent'] != "0" &&
+				array_key_exists($agent['id_parent'], $node_ref)) {
+				
+				
+				$parents[$node_ref[$agent['id_agente']]] = $node_ref[$agent['id_parent']];
+			}
+			else {
+				$orphans[$node_ref[$agent['id_agente']]] = 1;
 			}
 		}
 	}
@@ -1577,24 +1577,24 @@ function networkmap_get_networkmaps ($id_user = '', $type = '', $optgrouped = tr
 	if ($id_user == '') {
 		$id_user = $config['id_user'];
 	}
-
+	
 	// Configure filters
-    $where = array ();
+	$where = array ();
 	$where['id_group'] = array_keys (users_get_groups($id_user));
-    if ($type != '') {
+	if ($type != '') {
 		$where['type'] = $type;
 	}
-
+	
 	$where['order'][0]['field'] = 'type';
 	$where['order'][0]['order'] = 'DESC';
 	$where['order'][1]['field'] = 'name';
 	$where['order'][1]['order'] = 'ASC';
-
+	
 	$networkmaps_raw =  db_get_all_rows_filter('tnetwork_map', $where);
 	if ($networkmaps_raw === false) {
 		return false;
 	}
-
+	
 	$networkmaps = array();
 	foreach ($networkmaps_raw as $key => $networkmapitem) {
 		if ($optgrouped) {

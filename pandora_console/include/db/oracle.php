@@ -223,7 +223,7 @@ function oracle_db_process_sql($sql, $rettype = "affected_rows", $dbconnection =
 	
 	if ($sql == '')
 		return false;
-	$cache = false;
+	
 	if ($cache && ! empty ($sql_cache[$sql])) {
 		$retval = $sql_cache[$sql];
 		$sql_cache['saved']++;
@@ -433,9 +433,6 @@ function oracle_db_process_sql_insert($table, $values, $autocommit = true) {
 	$query .= ' VALUES (' . $values_str . ')';
 	$status = '';
 	
-	
-	
-	
 	return db_process_sql($query, 'insert_id', '', true, $status, $autocommit);
 }
 
@@ -613,7 +610,7 @@ function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefi
 		if ($i == 1) {
 			$query .= ' ( ';
 		}
-		if ($field == '1' AND $value == '1'){
+		if ($field == '1' AND $value == '1') {
 			$query .= sprintf("'%s' = '%s'", $field, $value);
 			
 			if ($i < $max) {
@@ -835,17 +832,17 @@ function oracle_recode_query ($sql, $values, $join = 'AND', $return = true) {
 			$query .= sprintf ("%s IN ('%s')", $field, implode ("', '", $value));
 		}
 		else {
-			if ($value[0] == ">"){
-				$value = substr($value,1,strlen($value)-1);
+			if ($value[0] == ">") {
+				$value = substr($value,1,strlen($value) - 1);
 				$query .= sprintf ("%s > '%s'", $field, $value);
 			}
-			else if ($value[0] == "<"){
-				if ($value[1] == ">"){
-					$value = substr($value,2,strlen($value)-2);
+			else if ($value[0] == "<") {
+				if ($value[1] == ">") {
+					$value = substr($value,2,strlen($value) - 2);
 					$query .= sprintf ("%s <> '%s'", $field, $value);
 				}
 				else {
-					$value = substr($value,1,strlen($value)-1);
+					$value = substr($value,1,strlen($value) - 1);
 					$query .= sprintf ("%s < '%s'", $field, $value);
 				}
 			}
@@ -1156,7 +1153,7 @@ function oracle_db_format_array_to_update_sql ($values) {
 			if (isset ($value[0]) && $value[0] == '`')
 				/* Don't round with quotes if it references a field */
 				$sql = sprintf ("%s = %s", $field, str_replace('`', '', $value));
-			else if (substr($value, 0,1) == '#'){
+			else if (substr($value, 0,1) == '#') {
 				$sql = sprintf ("%s = %s", $field, substr($value,1));
 			}
 			else {
@@ -1208,10 +1205,6 @@ function oracle_db_process_sql_update($table, $values, $where = false, $where_jo
 		}
 	}
 	$status = '';
-	
-	
-	
-	
 	
 	return db_process_sql ($query, "affected_rows", '', true, $status, $autocommit);
 }
@@ -1265,7 +1258,7 @@ function oracle_db_process_sql_delete($table, $where, $where_join = 'AND') {
 	return db_process_sql ($query);
 }
 
-function oracle_db_process_sql_delete_temp ($table, $where, $where_join = 'AND'){
+function oracle_db_process_sql_delete_temp ($table, $where, $where_join = 'AND') {
 	if (empty ($where))
 		/* Should avoid any mistake that lead to deleting all data */
 		return false;
@@ -1451,7 +1444,7 @@ function oracle_db_get_type_field_table($table, $field) {
  * 
  * @return mixed Return an array/string of table fields or false if something goes wrong.
  */
-function oracle_list_all_field_table($table_name, $return_mode = 'array'){
+function oracle_list_all_field_table($table_name, $return_mode = 'array') {
 	if (empty($table_name)) {
 		return false;
 	}

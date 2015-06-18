@@ -54,12 +54,12 @@ enterprise_include_once ('include/functions_setup.php');
 enterprise_include_once ('godmode/setup/setup.php');
 
 /*
- NOTICE FOR DEVELOPERS:
- 
- Update operation is done in config_process.php
- This is done in that way so the user can see the changes inmediatly.
- If you added a new token, please check config_update_config() in functions_config.php
- to add it there.
+NOTICE FOR DEVELOPERS:
+
+Update operation is done in config_process.php
+This is done in that way so the user can see the changes inmediatly.
+If you added a new token, please check config_update_config() in functions_config.php
+to add it there.
 */
 
 // Gets section to jump to another section

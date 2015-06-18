@@ -179,7 +179,7 @@ if (!empty($downtimes)) {
 							$execution_date .= __('Sun');
 							$execution_date .= "&nbsp;";
 						}
-						$execution_date .= "&nbsp;(" . $downtime['periodically_time_from']; 
+						$execution_date .= "&nbsp;(" . $downtime['periodically_time_from'];
 						$execution_date .= "-" . $downtime['periodically_time_to'] . ")";
 						break;
 					case 'monthly':

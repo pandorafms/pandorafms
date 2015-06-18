@@ -150,7 +150,7 @@ class Tactical {
 				$ui->contentCollapsibleAddItem($table->getHTML());
 			$ui->contentEndCollapsible();
 			$ui->contentAddHtml("<script type=\"text/javascript\">
-			$(document).ready(function(){
+			$(document).ready(function() {
 				function set_same_heigth() {
 					//Set same height to boxes
 					var max_height = 0;
@@ -240,7 +240,7 @@ class Tactical {
 		$sessions = db_get_all_rows_sql ($sql);
 		
 		if ($sessions === false)
-			$sessions = array (); 
+			$sessions = array ();
 		
 		$return = array();
 		foreach ($sessions as $session) {

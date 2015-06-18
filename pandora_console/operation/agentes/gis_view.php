@@ -154,7 +154,7 @@ else {
 			sprintf(__('%s Km'), $distance),
 			$row['number_of_packages'],
 			$row['manual_placement']);
-	array_push($table->data, $rowdata); 
+	array_push($table->data, $rowdata);
 	}
 	$table->head = array(
 		__("Longitude"),

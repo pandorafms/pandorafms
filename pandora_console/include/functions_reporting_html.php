@@ -2526,55 +2526,7 @@ function reporting_header_content($mini, $content, $report, &$table,
 
 
 
-/**
- * Get all the template graphs a user can see.
- *
- * @param $id_user User id to check.
- * @param $only_names Wheter to return only graphs names in an associative array
- * or all the values.
- * @param $returnAllGroup Wheter to return graphs of group All or not.
- * @param $privileges Privileges to check in user group
- *
- * @return template graphs of a an user. Empty array if none.
- */
-function reporting_template_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGroup = true, $privileges = 'RR') {
-	global $config;
-	
-	if (!$id_user) {
-		$id_user = $config['id_user'];
-	}
-	
-	$groups = users_get_groups ($id_user, $privileges, $returnAllGroup);
-	
-	$all_templates = db_get_all_rows_in_table ('tgraph_template', 'name');
-	if ($all_templates === false)
-		return array ();
-	
-	$templates = array ();
-	foreach ($all_templates as $template) {
-		if (!in_array($template['id_group'], array_keys($groups)))
-			continue;
-		
-		if ($template["id_user"] != $id_user && $template['private'])
-			continue;
-		
-		if ($template["id_group"] > 0)
-			if (!isset($groups[$template["id_group"]])){
-				continue;
-			}
-		
-		if ($only_names) {
-			$templates[$template['id_graph_template']] = $template['name'];
-		}
-		else {
-			$templates[$template['id_graph_template']] = $template;
-			$templatesCount = db_get_value_sql("SELECT COUNT(id_gs_template) FROM tgraph_source_template WHERE id_template = " . $template['id_graph_template']);
-			$templates[$template['id_graph_template']]['graphs_template_count'] = $templatesCount;
-		}
-	}
-	
-	return $templates;
-}
+
 
 
 
@@ -2626,7 +2578,7 @@ function reporting_get_agents_by_status ($data, $graph_width = 250, $graph_heigh
 					'</legend>' . 
 					html_print_table($table_agent, true) . '</fieldset>';
 	}
-	else{
+	else {
 		$table_agent->style=array();
 		$table_agent->class = "tactical_view";
 		$agents_data = '<fieldset class="tactical_set">
@@ -2672,13 +2624,14 @@ function reporting_get_total_servers ($num_servers) {
 	$node_data[1] = "<b><span style='font-size: 12pt; font-weight: bold; color: black;'>".format_numeric($num_servers)."</span></b>";
 	$table_node->data[] = $node_data;
 	
-	if (!defined('METACONSOLE')){
+	if (!defined('METACONSOLE')) {
 		$node_overview = '<fieldset class="databox tactical_set">
 					<legend>' . 
 						__('Node overview') . 
 					'</legend>' . 
 					html_print_table($table_node, true) . '</fieldset>';
-	}else{
+	}
+	else {
 		$table_node->style = array();
 		$table_node->class = "tactical_view";
 		$node_overview = '<fieldset class="tactical_set">
@@ -2699,7 +2652,7 @@ function reporting_get_events ($data, $links = false) {
 		$style = " vertical-align:middle;";
 	else
 		$style = "";
-	if (defined('METACONSOLE')){
+	if (defined('METACONSOLE')) {
 		$table_events->style[0] = "background-color:#FC4444";
 		$table_events->data[0][0] = html_print_image('images/module_event_critical.png', true, array('title' => __('Critical events')));
 		$table_events->data[0][0] .= "&nbsp;&nbsp;&nbsp;" .
@@ -2717,7 +2670,7 @@ function reporting_get_events ($data, $links = false) {
 		$table_events->data[0][3] .= "&nbsp;&nbsp;&nbsp;" .
 			"<a style='color:#FFF; font-size: 12pt; font-weight: bold;" . $style . "' href='" . $links['unknown'] . "'>" . format_numeric($data['unknown'])."</a>";
 		}
-	else{
+	else {
 		$table_events->data[0][0] = html_print_image('images/module_critical.png', true, array('title' => __('Critical events')));
 		$table_events->data[0][0] .= "&nbsp;&nbsp;&nbsp;" .
 			"<a style='color: #FC4444;" . $style . "' href='" . $links['critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FC4444;'>".
@@ -2743,7 +2696,7 @@ function reporting_get_events ($data, $links = false) {
 					'</legend>' . 
 					html_print_table($table_events, true) . '</fieldset>';
 	}
-	else{
+	else {
 		$table_events->class="tactical_view";
 		$table_events->styleTable="text-align:center;";
 		$table_events->size[0]="10%";
@@ -2941,7 +2894,7 @@ function reporting_get_event_histogram ($events) {
 					'</legend>' . 
 					html_print_table($table, true) . '</fieldset>';
 	}
-	else{
+	else {
 		$table->class='tactical_view';
 		$event_graph = '<fieldset id="event_tactical" class="tactical_set">' . 
 					html_print_table($table, true) . '</fieldset>';

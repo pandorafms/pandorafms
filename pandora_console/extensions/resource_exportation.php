@@ -83,7 +83,7 @@ function output_xml_report($id) {
 	
 	$report = db_get_row('treport', 'id_report', $id);
 	
-	echo '<?xml version="1.0" encoding="UTF-8" ?>' . "\n"; 
+	echo '<?xml version="1.0" encoding="UTF-8" ?>' . "\n";
 	echo "<report>\n";
 	echo "<name><![CDATA[" . io_safe_output($report['name']) . "]]></name>\n";
 	if (isset($report['description']))
@@ -200,7 +200,7 @@ function output_xml_report($id) {
 				case 'event_report_module':
 					break;
 				case 'alert_report_module':
-					break; 
+					break;
 				case 'alert_report_agent':
 					break;
 				case 'alert_report_group':
@@ -230,7 +230,7 @@ function output_xml_report($id) {
 function output_xml_visual_console($id) {
 	$visual_map = db_get_row('tlayout', 'id', $id);
 	
-	echo '<?xml version="1.0" encoding="UTF-8" ?>' . "\n"; 
+	echo '<?xml version="1.0" encoding="UTF-8" ?>' . "\n";
 	echo "<visual_map>\n";
 	echo "<name><![CDATA[" . io_safe_output($visual_map['name']) . "]]></name>\n";
 	if ($visual_map['id_group'] != 0) {

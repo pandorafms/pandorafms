@@ -233,7 +233,7 @@ else {
 echo '<form name="component" method="post">';
 
 /* $table came from manage_network_components_form_common.php */
-if (defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$table->width = '100%';
 	$table->class = 'databox data';
 	if ($id) {

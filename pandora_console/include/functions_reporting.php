@@ -481,8 +481,6 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 		'treport_content_sla_combined',
 		'id_report_content', $content['id_rc']);
 	
-	
-	
 	if (empty($slas)) {
 		$return['failed'] = __('There are no SLAs defined');
 	}
@@ -502,8 +500,6 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 		$malformed_planned_downtimes_empty = true;
 		
 		$return['planned_downtimes'] = array();
-		
-		
 		
 		if ($metaconsole_on) {
 			$id_agent_modules_by_server = array();
@@ -622,9 +618,6 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			}
 		}
 		else {
-			
-			
-			
 			$id_agent_modules = array();
 			foreach ($slas as $sla) {
 				if (!empty($sla['id_agent_module']))
@@ -632,12 +625,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			}
 			
 			$planned_downtimes = reporting_get_planned_downtimes(($report['datetime']-$content['period']), $report['datetime'], $id_agent_modules);
-			
-			
-			
 			$malformed_planned_downtimes = planned_downtimes_get_malformed();
-			
-			
 			
 			if (!empty($planned_downtimes))
 				$planned_downtimes_empty = false;
@@ -733,8 +721,6 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			$sla_showed = array();
 			$sla_showed_values = array();
 			
-			
-			
 			foreach ($slas as $sla) {
 				$server_name = $sla ['server_name'];
 				//Metaconsole connection
@@ -754,8 +740,6 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 					
 					continue;
 				}
-				
-				
 				
 				//Get the sla_value in % and store it on $sla_value
 				$sla_value = reporting_get_agentmodule_sla(
@@ -794,8 +778,6 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 				asort($sla_showed_values);
 			}
 		}
-		
-		
 		
 		$return['data'] = array();
 		$return['charts'] = null;
@@ -873,14 +855,11 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			}
 			
 			
-			
 			// Slice graphs calculation
 			if ($show_graphs) {
 				$dataslice = array();
 				$dataslice['agent'] = modules_get_agentmodule_agent_name ($sla['id_agent_module']);
 				$dataslice['module'] = modules_get_agentmodule_name ($sla['id_agent_module']);
-				
-				
 				
 				$dataslice['chart'] = graph_sla_slicebar(
 					$sla['id_agent_module'],
@@ -901,8 +880,6 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 				$return['charts'][] = $dataslice;
 			}
 			
-			
-			
 			if ($config ['metaconsole'] == 1 && defined('METACONSOLE')) {
 				//Restore db connection
 				metaconsole_restore_db();
@@ -911,7 +888,6 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 		
 		
 	}
-	
 	
 	return reporting_check_structure_content($return);
 }
@@ -1103,7 +1079,7 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 					
 					
 					
-					$data_hbar[$item_name]['g'] = $dt; 
+					$data_hbar[$item_name]['g'] = $dt;
 					$data_pie_graph[$item_name] = $dt;
 					
 					if ($show_graph == 0 || $show_graph == 1) {
@@ -2392,8 +2368,6 @@ function reporting_group_configuration($report, $content) {
 	
 	$group_name = groups_get_name($content['id_group'], true);
 	
-	
-	
 	$return['title'] = $content['name'];
 	$return['subtitle'] = $group_name;
 	$return["description"] = $content["description"];
@@ -2419,13 +2393,9 @@ function reporting_group_configuration($report, $content) {
 			WHERE id_grupo=" . $content['id_group'];
 	}
 	
-	
-	
 	$agents_list = db_get_all_rows_sql($sql);
 	if ($agents_list === false)
 		$agents_list = array();
-	
-	
 	
 	$return['data'] = array();
 	foreach ($agents_list as $agent) {
@@ -2445,8 +2415,6 @@ function reporting_group_configuration($report, $content) {
 		
 		$return['data'][] = $agent_report['data'];
 	}
-	
-	
 	
 	if ($config['metaconsole']) {
 		metaconsole_restore_db();
@@ -2621,14 +2589,11 @@ function reporting_alert_report_group($report, $content) {
 			array('id' => $alert['id_alert_template']));
 		
 		
-		
 		$actions = db_get_all_rows_sql('SELECT name 
 			FROM talert_actions 
 			WHERE id IN (SELECT id_alert_action 
 				FROM talert_template_module_actions 
 				WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ')');
-		
-		
 		
 		if (!empty($actions)) {
 			$row = db_get_row_sql('SELECT id_alert_action
@@ -2653,8 +2618,6 @@ function reporting_alert_report_group($report, $content) {
 				$actions = array();
 			}
 		}
-		
-		
 		
 		$data_row['action'] = array();
 		foreach ($actions as $action) {
@@ -3346,8 +3309,6 @@ function reporting_agent_configuration($report, $content) {
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	
-	
-	
 	if ($config['metaconsole']) {
 		$id_meta = metaconsole_get_id_server($content["server_name"]);
 		
@@ -3376,8 +3337,6 @@ function reporting_agent_configuration($report, $content) {
 	$agent_configuration['group'] = $report["group"];
 	
 	$modules = agents_get_modules ($content['id_agent']);
-	
-	
 	
 	$agent_configuration['modules'] = array();
 	//Agent's modules
@@ -3812,8 +3771,6 @@ function reporting_availability($report, $content) {
 		
 		$text = "";
 		
-		
-		
 		// HACK it is saved in show_graph field.
 		// Show interfaces instead the modules
 		if ($content['show_graph']) {
@@ -3837,7 +3794,6 @@ function reporting_availability($report, $content) {
 			$item['id_agent_module'],
 			$report["datetime"] - $content['period'],
 			$report["datetime"]);
-		
 		
 		
 		if (empty($count_checks)) {
@@ -4797,7 +4753,6 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 	}
 	
 	
-	
 	$events = array ();
 	
 	foreach ($id_modules as $id_module) {
@@ -5499,7 +5454,7 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 		$table_mbs->data[] = $tdata;
 	}
 	
-	if(!defined("METACONSOLE")){
+	if(!defined("METACONSOLE")) {
 		$output = '
 			<fieldset class="databox tactical_set">
 				<legend>' . 
@@ -5508,7 +5463,7 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 				html_print_table($table_mbs, true) .
 			'</fieldset>';
 	}
-	else{
+	else {
 		$table_mbs->class = "tactical_view";
 		$table_mbs->style=array();
 		$output = '
@@ -5725,7 +5680,7 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period=0, $d
 		return 0;
 	}
 	
-	return $total / $count;	
+	return $total / $count;
 }
 
 
@@ -6635,8 +6590,6 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0,
 			$timeTo);
 	}
 	else {
-		
-		
 		// Extract the data each day
 		
 		$sla = 0;
@@ -7509,8 +7462,6 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 			AND utimestamp > %d AND utimestamp <= %d',
 		$id_agent_module, $datelimit, $date);
 	
-	
-	
 	//Add the working times (mon - tue - wed ...) and from time to time
 	$days = array();
 	//Translate to mysql week days
@@ -7562,21 +7513,14 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 	
 	
 	$sql .= ' ORDER BY utimestamp ASC';
-	
-	
-	
 	$interval_data = db_get_all_rows_sql ($sql, $search_in_history_db);
 	
 	if ($interval_data === false) {
 		$interval_data = array ();
 	}
 	
-	
-	
 	// Calculate planned downtime dates
 	$downtime_dates = reporting_get_planned_downtimes_intervals($id_agent_module, $datelimit, $date);
-	
-	
 	
 	// Get previous data
 	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
@@ -7600,8 +7544,6 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 		$next_data['utimestamp'] = $date;
 		array_push ($interval_data, $next_data);
 	}
-	
-	
 	
 	if (count ($interval_data) < 2) {
 		return false;
@@ -7706,8 +7648,6 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 			AND utimestamp > %d AND utimestamp <= %d',
 		$id_agent_module, $datelimit, $date);
 	
-	
-	
 	//Add the working times (mon - tue - wed ...) and from time to time
 	$days = array();
 	//Translate to mysql week days
@@ -7761,8 +7701,6 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	
 	$sql .= ' ORDER BY utimestamp ASC';
 	$interval_data = db_get_all_rows_sql ($sql, $search_in_history_db);
-	
-	
 	
 	if ($interval_data === false) {
 		$interval_data = array ();
@@ -7913,7 +7851,7 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	// Get module type
 	$id_module_type = db_get_value('id_tipo_modulo', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
 	// If module is boolean don't create translation intervals (on the edge intervals)
-	// if ($id_module_type == 2 or $id_module_type == 6 or $id_module_type == 9 or $id_module_type == 18){
+	// if ($id_module_type == 2 or $id_module_type == 6 or $id_module_type == 9 or $id_module_type == 18) {
 	//      $percent = 0;
 	// }
 	// else {
@@ -8149,5 +8087,55 @@ function reporting_get_stats_servers($tiny = true) {
 				html_print_table($table_srv, true) . '</fieldset>';
 	
 	return $output;
+}
+
+/**
+ * Get all the template graphs a user can see.
+ *
+ * @param $id_user User id to check.
+ * @param $only_names Wheter to return only graphs names in an associative array
+ * or all the values.
+ * @param $returnAllGroup Wheter to return graphs of group All or not.
+ * @param $privileges Privileges to check in user group
+ *
+ * @return template graphs of a an user. Empty array if none.
+ */
+function reporting_template_graphs_get_user ($id_user = 0, $only_names = false, $returnAllGroup = true, $privileges = 'RR') {
+	global $config;
+	
+	if (!$id_user) {
+		$id_user = $config['id_user'];
+	}
+	
+	$groups = users_get_groups ($id_user, $privileges, $returnAllGroup);
+	
+	$all_templates = db_get_all_rows_in_table ('tgraph_template', 'name');
+	if ($all_templates === false)
+		return array ();
+	
+	$templates = array ();
+	foreach ($all_templates as $template) {
+		if (!in_array($template['id_group'], array_keys($groups)))
+			continue;
+		
+		if ($template["id_user"] != $id_user && $template['private'])
+			continue;
+		
+		if ($template["id_group"] > 0)
+			if (!isset($groups[$template["id_group"]])) {
+				continue;
+			}
+		
+		if ($only_names) {
+			$templates[$template['id_graph_template']] = $template['name'];
+		}
+		else {
+			$templates[$template['id_graph_template']] = $template;
+			$templatesCount = db_get_value_sql("SELECT COUNT(id_gs_template) FROM tgraph_source_template WHERE id_template = " . $template['id_graph_template']);
+			$templates[$template['id_graph_template']]['graphs_template_count'] = $templatesCount;
+		}
+	}
+	
+	return $templates;
 }
 ?>

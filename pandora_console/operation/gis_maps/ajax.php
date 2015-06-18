@@ -217,9 +217,9 @@ switch ($opt) {
 		$returnJSON['content'] .= __('Position (Lat, Long, Alt)') . ': (' . $row['latitude'] . ', ' . $row['longitude'] . ', ' . $row['altitude'] . ') <br />';
 		$returnJSON['content'] .= __('Start contact') . ': ' . $row['start_timestamp'] . '<br />';
 		$returnJSON['content'] .= __('Last contact') . ': ' . $row['end_timestamp'] . '<br />';
-		$returnJSON['content'] .= __('Num reports') . ': '.$row['number_of_packages'].'<br />'; 
+		$returnJSON['content'] .= __('Num reports') . ': '.$row['number_of_packages'].'<br />';
 		if ($row['manual_placemen'])
-			$returnJSON['content'] .= '<br />' . __('Manual placement') . '<br />'; 
+			$returnJSON['content'] .= '<br />' . __('Manual placement') . '<br />';
 		
 		echo json_encode($returnJSON);
 		

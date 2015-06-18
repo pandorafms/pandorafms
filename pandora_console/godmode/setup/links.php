@@ -38,7 +38,7 @@ if (isset($_POST["create"])) { // If create
 	if (! $result)
 		ui_print_error_message(__('There was a problem creating link'));
 	else {
-		ui_print_success_message(__('Successfully created')); 
+		ui_print_success_message(__('Successfully created'));
 		$id_link = $result;
 	}
 }
@@ -66,8 +66,8 @@ if (isset($_GET["borrar"])) { // if delete
 	if (! $result)
 		ui_print_error_message(__('There was a problem deleting link'));
 	else
-		ui_print_success_message(__('Successfully deleted')); 
-
+		ui_print_success_message(__('Successfully deleted'));
+	
 }
 
 // Main form view for Links edit
@@ -136,9 +136,9 @@ else {  // Main list view for Links editor
 		echo "<th width='180px'>".__('Link name')."</th>";
 		echo "<th width='80px'>".__('Delete')."</th>";
 		
-		$color=1;
+		$color = 1;
 		foreach ($rows as $row) {
-			if ($color == 1){
+			if ($color == 1) {
 				$tdcolor = "datos";
 				$color = 0;
 			}

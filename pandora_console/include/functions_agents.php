@@ -1548,7 +1548,7 @@ function agents_get_status($id_agent = 0, $noACLs = false) {
 		$result_modules = array();
 		// Skip non init modules
 		foreach ($all_modules as $module) {
-			if (modules_get_agentmodule_is_init($module['id_agente_modulo'])){
+			if (modules_get_agentmodule_is_init($module['id_agente_modulo'])) {
 				$modules[] = $module['id_agente_modulo'];
 			}
 		}

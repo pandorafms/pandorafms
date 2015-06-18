@@ -687,14 +687,14 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 					       string port,
 					       string ssl,
 					       string pass,
-					       string opts)
+					       string opts,
+					       int timeout)
 {
 	DWORD    rc;
 	string  var, filepath;
 	string	tentacle_cmd, working_dir;
 	PROCESS_INFORMATION pi;
 	STARTUPINFO         si;
-	int tentacle_timeout = 0;
 
 	var = conf->getValue ("temporal");
 	if (var[var.length () - 1] != '\\') {
@@ -740,24 +740,25 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 	CloseHandle (pi.hThread);
 	
 	/* Timeout */
-	tentacle_timeout = atoi (conf->getValue ("tentacle_timeout").c_str ());
-	if (tentacle_timeout <= 0) {
-		tentacle_timeout = INFINITE;
-	} else {
-		/* Convert to milliseconds */
-		tentacle_timeout *= 1000;
-	}
+	if (timeout <= 0) {
+		timeout = 30;
+ 	}
+	/* Convert to milliseconds */
+	timeout *= 1000;
 
-    if (WaitForSingleObject(pi.hProcess, tentacle_timeout) == WAIT_TIMEOUT) {
+	if (WaitForSingleObject(pi.hProcess, timeout) == WAIT_TIMEOUT) {
 		TerminateProcess(pi.hProcess, STILL_ACTIVE);
 		CloseHandle (pi.hProcess);
+		pandoraLog ("Pandora Agent: Failed when copying to %s (tentacle timeout)", host.c_str ());
 		return -1;
 	}
 
 	/* Get the return code of the tentacle client*/	
-    GetExitCodeProcess (pi.hProcess, &rc);
+	GetExitCodeProcess (pi.hProcess, &rc);
 	if (rc != 0) {
 		CloseHandle (pi.hProcess);
+		pandoraLog ("Pandora Agent: Failed when copying to %s",
+			    host.c_str ());
 		return -1;
 	}
 
@@ -770,6 +771,8 @@ Pandora_Windows_Service::copyScpDataFile (string host,
 					  string remote_path,
 					  string filename)
 {
+	/* TODO: timeout implementation */
+
 	int rc = 0;
 	SSH::Pandora_Ssh_Client ssh_client;
 	string                  tmp_dir, filepath,port_str;
@@ -830,7 +833,8 @@ int
 Pandora_Windows_Service::copyFtpDataFile (string host,
 					  string remote_path,
 					  string filename,
-					  string password)
+					  string password,
+					  int timeout)
 {
 	int rc = 0;
 	FTP::Pandora_Ftp_Client ftp_client;
@@ -856,7 +860,7 @@ Pandora_Windows_Service::copyFtpDataFile (string host,
 			    password);
 
 	rc = ftp_client.ftpFileFilename (remote_path + filename,
-					    filepath);
+					 filepath, timeout);
 	if (rc == UNKNOWN_HOST) {
 		pandoraLog ("Pandora Agent: Failed when copying to %s (%s)",
 			    host.c_str (), ftp_client.getError ().c_str ());
@@ -882,13 +886,18 @@ Pandora_Windows_Service::copyFtpDataFile (string host,
 int
 Pandora_Windows_Service::copyDataFile (string filename)
 {
-	int rc = 0;
+	int rc = 0, timeout;
 	unsigned char copy_to_secondary = 0;
 	string mode, host, remote_path;
 
 	mode = conf->getValue ("transfer_mode");
 	host = conf->getValue ("server_ip");
 	remote_path = conf->getValue ("server_path");
+	timeout = atoi (conf->getValue ("transfer_timeout").c_str ());
+	if (timeout == 0) {
+		timeout = 30;
+	}
+
 	// Fix remote path
 	if (mode != "local" && remote_path[remote_path.length () - 1] != '/') {
 		remote_path += "/";
@@ -897,11 +906,11 @@ Pandora_Windows_Service::copyDataFile (string filename)
 	}
 
 	if (mode == "ftp") {
-		rc = copyFtpDataFile (host, remote_path, filename, conf->getValue ("server_pwd"));
+		rc = copyFtpDataFile (host, remote_path, filename, conf->getValue ("server_pwd"), timeout);
 	} else if (mode == "tentacle" || mode == "") {
 		rc = copyTentacleDataFile (host, filename, conf->getValue ("server_port"),
 			                      conf->getValue ("server_ssl"), conf->getValue ("server_pwd"),
-			                      conf->getValue ("server_opts"));
+					   conf->getValue ("server_opts"), timeout);
 	} else if (mode == "ssh") {
 		rc =copyScpDataFile (host, remote_path, filename);
 	} else if (mode == "local") {
@@ -932,6 +941,10 @@ Pandora_Windows_Service::copyDataFile (string filename)
 	mode = conf->getValue ("secondary_transfer_mode");
 	host = conf->getValue ("secondary_server_ip");
 	remote_path = conf->getValue ("secondary_server_path");
+	timeout = atoi (conf->getValue ("secondary_transfer_timeout").c_str ());
+	if (timeout == 0) {
+		timeout = 30;
+	}
 
 	// Fix remote path
 	if (mode != "local" && remote_path[remote_path.length () - 1] != '/') {
@@ -942,11 +955,11 @@ Pandora_Windows_Service::copyDataFile (string filename)
 
 	// Send the file to the secondary server
 	if (mode == "ftp") {
-		rc = copyFtpDataFile (host, remote_path, filename, conf->getValue ("secondary_server_pwd"));
+		rc = copyFtpDataFile (host, remote_path, filename, conf->getValue ("secondary_server_pwd"), timeout);
 	} else if (mode == "tentacle" || mode == "") {
 		rc = copyTentacleDataFile (host, filename, conf->getValue ("secondary_server_port"),
 			                      conf->getValue ("secondary_server_ssl"), conf->getValue ("secondary_server_pwd"),
-			                      conf->getValue ("secondary_server_opts"));
+					   conf->getValue ("secondary_server_opts"), timeout);
 	} else if (mode == "ssh") {
 		rc = copyScpDataFile (host, remote_path, filename);
 	} else {
@@ -965,11 +978,14 @@ Pandora_Windows_Service::copyDataFile (string filename)
 
 void
 Pandora_Windows_Service::recvTentacleDataFile (string host,
-					       string filename)
+					       string filename,
+					       int timeout)
 {
-	int     rc;
+	DWORD	rc;
 	string  var;
 	string	tentacle_cmd;
+	PROCESS_INFORMATION pi;
+	STARTUPINFO         si;
 
 	/* Change directory to "temporal" */
 	var = conf->getValue ("temporal");
@@ -1008,42 +1024,58 @@ Pandora_Windows_Service::recvTentacleDataFile (string host,
 		      filename.c_str (), host.c_str ());
 	pandoraDebug ("Command %s", tentacle_cmd.c_str());
 
-	rc = system (tentacle_cmd.c_str());
-	switch (rc) {
-	
-		/* system() error */
-	case -1:
-		pandoraLog ("Unable to receive file %s", filename.c_str ());
-		throw Pandora_Exception ();
-	
-		/* tentacle_client.exe returned OK */
-	case 0:
-		break;
-	
-		/* tentacle_client.exe error */
-	default:
-		pandoraDebug ("Tentacle client was unable to receive file %s",
-			      filename.c_str ());
-		throw Pandora_Exception ();
+	ZeroMemory (&si, sizeof (si));
+	ZeroMemory (&pi, sizeof (pi));
+	if (CreateProcess (NULL , (CHAR *)tentacle_cmd.c_str (), NULL, NULL, FALSE,
+			   CREATE_NO_WINDOW, NULL, NULL, &si, &pi) == 0) {
+		return;
 	}
 
+	/* close thread handle, because it won't be used */
+	CloseHandle (pi.hThread);
+
+	/* Timeout */
+	if (timeout <= 0) {
+		timeout = 30;
+	}
+	/* Convert to milliseconds */
+	timeout *= 1000;
+
+	if (WaitForSingleObject(pi.hProcess, timeout) == WAIT_TIMEOUT) {
+		TerminateProcess(pi.hProcess, STILL_ACTIVE);
+		CloseHandle (pi.hProcess);
+		pandoraLog ("Unable to receive file %s (tentacle timeout)", filename.c_str ());
+		return;
+	}
+
+	/* Get the return code of the tentacle client*/
+	GetExitCodeProcess (pi.hProcess, &rc);
+	if (rc != 0) {
+		CloseHandle (pi.hProcess);
+		pandoraLog ("Unable to receive file %s", filename.c_str ());
+		return;
+	}
+
+	CloseHandle (pi.hProcess);
 	return;
 }
 
 void
 Pandora_Windows_Service::recvDataFile (string filename) {
 	string mode, host, remote_path;
+	int timeout;
 
 	mode = conf->getValue ("transfer_mode");
 	host = conf->getValue ("server_ip");
 	remote_path = conf->getValue ("server_path");
+	timeout = atoi (conf->getValue ("transfer_timeout").c_str ());
 	if (remote_path[remote_path.length () - 1] != '/') {
 		remote_path += "/";
 	}
 
 	try {
 		if (mode == "tentacle") {
-			recvTentacleDataFile (host, filename);
+			recvTentacleDataFile (host, filename, timeout);
 		} else {
 			pandoraLog ("Transfer mode %s does not support file retrieval.", mode.c_str () );
 			throw Pandora_Exception ();

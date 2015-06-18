@@ -279,7 +279,7 @@ $table->style[0] = 'text-align: right;';
 
 if ($items) {
 	$table->width = '98%';
-	if (defined("METACONSOLE")){
+	if (defined("METACONSOLE")) {
 		$table->width = '100%';
 		$table->class = "databox data";
 	}
@@ -448,7 +448,7 @@ foreach ($items as $item) {
 		metaconsole_restore_db();
 	}
 }
-if (defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	if ($items != false) {
 		ui_pagination ($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
 		html_print_table($table);
@@ -491,13 +491,13 @@ $table->size[0] = '25%';
 $table->size[1] = '25%';
 $table->size[2] = '25%';
 $table->size[3] = '25%';
-if (defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	$table->class = "databox data";
 	$table->head[0] = __("Sort items");
 	$table->head_colspan[0] = 4;
 	$table->headstyle[0] = 'text-align: center';
 }
-else{
+else {
 	$table->data[0][0] = "<b>". __("Sort items") . "</b>";
 }
 $table->data[1][0] = __('Sort selected items from position: ');
@@ -522,13 +522,13 @@ $table->size[0] = '25%';
 $table->size[1] = '25%';
 $table->size[2] = '25%';
 $table->size[3] = '25%';
-if (defined("METACONSOLE")){
+if (defined("METACONSOLE")) {
 	$table->class = "databox data";
 	$table->head[0] = __("Delete items");
 	$table->head_colspan[0] = 4;
 	$table->headstyle[0] = 'text-align: center';
 }
-else{
+else {
 	$table->data[0][0] = "<b>". __("Delete items") . "</b>";
 }
 $table->data[1][0] = __('Delete selected items from position: ');
@@ -593,6 +593,11 @@ function added_ids_sorted_items_to_hidden_input() {
 
 function only_numbers(name) {
 	var value = $("input[name='" + name + "']").val();
+	
+	if (value == "") {
+		// Do none it is a empty field.
+		return;
+	}
 	
 	value = parseInt(value);
 	

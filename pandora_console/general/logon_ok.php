@@ -58,7 +58,7 @@ if (tags_has_user_acl_tags()) {
 			$table->headstyle[0] = 'text-align:center;';
 			$table->width = "100%";
 			$table->head[0] = '<span>' . __('Pandora FMS Overview') . '</span>';
-			$table->head_colspan[0] = 4; 
+			$table->head_colspan[0] = 4;
 			
 			// Indicators
 			$tdata = array();
@@ -195,7 +195,7 @@ if (tags_has_user_acl_tags()) {
 			$sessions = db_get_all_rows_sql ($sql);
 			
 			if ($sessions === false)
-				$sessions = array (); 
+				$sessions = array ();
 			
 			foreach ($sessions as $session) {
 				$data = array ();
@@ -262,7 +262,7 @@ $table->data = array ();
 $table->style[0] = 'text-align:center;';
 $table->width = "100%";
 $table->head[0] = '<span>' . __('Pandora FMS Overview') . '</span>';
-$table->head_colspan[0] = 4; 
+$table->head_colspan[0] = 4;
 
 // Indicators
 $tdata = array();
@@ -395,7 +395,7 @@ $options = array();
 	$sessions = db_get_all_rows_sql ($sql);
 	
 	if ($sessions === false)
-		$sessions = array (); 
+		$sessions = array ();
 	
 	foreach ($sessions as $session) {
 		$data = array ();

@@ -91,7 +91,7 @@ if ($id_module) {
 
 enterprise_hook('open_meta_frame');
 
-if (!defined('METACONSOLE')){
+if (!defined('METACONSOLE')) {
 	$filters = '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;ag_group=' . 
 			$ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . 
 				$sortField . '&amp;sort=' . $sort .'&amp;pure=' . $config['pure'] . $ag_custom_fields_params . '">';
@@ -100,7 +100,8 @@ if (!defined('METACONSOLE')){
 	$table->cellspacing = 0;
 	$table->cellpadding = 0;
 	$table->class = "databox filters";
-}else{
+}
+else {
 	$filters = '<form class="filters_form" method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;ag_group=' . 
 			$ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . 
 				$sortField . '&amp;sort=' . $sort .'&amp;pure=' . $config['pure'] . $ag_custom_fields_params . '">';
@@ -156,7 +157,7 @@ else {
 if (defined('METACONSOLE')) {
 	if ($modulegroup != '-1')
 		$sql_conditions .= sprintf (" AND tagente_modulo.id_module_group IN (SELECT id_mg 
-			FROM tmodule_group WHERE name = '%s')", $modulegroup);	
+			FROM tmodule_group WHERE name = '%s')", $modulegroup);
 }
 else if ($modulegroup > -1) {
 	$sql_conditions .= sprintf (" AND tagente_modulo.id_module_group = '%d'", $modulegroup);
@@ -186,7 +187,7 @@ elseif ($status == AGENT_MODULE_STATUS_CRITICAL_BAD) { //Critical
 	$sql_conditions .= " AND tagente_estado.estado = 1 AND utimestamp > 0";
 }
 elseif ($status == AGENT_MODULE_STATUS_WARNING) { //Warning
-	$sql_conditions .= " AND tagente_estado.estado = 2 AND utimestamp > 0";	
+	$sql_conditions .= " AND tagente_estado.estado = 2 AND utimestamp > 0";
 }
 elseif ($status == AGENT_MODULE_STATUS_NOT_NORMAL) { //Not normal
 	$sql_conditions .= " AND tagente_estado.estado <> 0";
@@ -242,9 +243,14 @@ if ($tag_filter !== 0) {
 $groups = users_get_groups($config["id_user"]);
 
 if ($ag_group !== 0) {
-	$sql_conditions_tags = tags_get_acl_tags($config['id_user'], $ag_group, 'AR', 'module_condition', 'AND', 'tagente_modulo', true, array(), true); 
+	$sql_conditions_tags = tags_get_acl_tags($config['id_user'],
+		$ag_group, 'AR', 'module_condition', 'AND', 'tagente_modulo',
+		true, array(), true);
 } else {
-	$sql_conditions_tags = tags_get_acl_tags($config['id_user'], array_keys($groups), 'AR', 'module_condition', 'AND', 'tagente_modulo', true, array(), true); 
+	$sql_conditions_tags = tags_get_acl_tags(
+		$config['id_user'], array_keys($groups), 'AR',
+		'module_condition', 'AND', 'tagente_modulo', true, array(),
+		true);
 }
 
 if (is_numeric($sql_conditions_tags)) {
@@ -402,14 +408,14 @@ if (defined('METACONSOLE')) {
 	if ($key_group_all !== false)
 		unset($groups_select[$key_group_all]);
 }
-if(defined("METACONSOLE")){
+if(defined("METACONSOLE")) {
 	$table->style[0] = 'vertical-align:middle; font-weight: bold;';
 	$table->style[1] = 'vertical-align:middle; font-weight: bold;';
 	$table->style[2] = 'vertical-align:middle; font-weight: bold;';
 	$table->style[3] = 'vertical-align:middle; font-weight: bold;';
 	$table->style[4] = 'vertical-align:middle; font-weight: bold;';
 }
-else{
+else {
 	$table->style[0] = 'font-weight: bold;';
 	$table->style[1] = 'font-weight: bold;';
 	$table->style[2] = 'font-weight: bold;';
@@ -427,7 +433,7 @@ $table->data[0][2] = __('Monitor status');
 
 
 $fields = array ();
-$fields[AGENT_MODULE_STATUS_NORMAL] = __('Normal'); 
+$fields[AGENT_MODULE_STATUS_NORMAL] = __('Normal');
 $fields[AGENT_MODULE_STATUS_WARNING] = __('Warning');
 $fields[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
 $fields[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
@@ -494,7 +500,7 @@ else {
 $table_custom_fields = new stdClass();
 $table_custom_fields->class = 'filters';
 $table_custom_fields->width = '100%';
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 		$table_custom_fields->width = '100%';
 		$table_custom_fields->class = 'filters';
 		$table_custom_fields->styleTable = 'margin-left:0px; margin-top:15px;';
@@ -528,15 +534,17 @@ foreach ($custom_fields as $custom_field) {
 	$table_custom_fields->data[] = $row;
 }
 
-if(defined('METACONSOLE')){
+if (defined('METACONSOLE')) {
 	$table->colspan[2][0] = 7;
-	$table->data[2][0] = ui_toggle(html_print_table($table_custom_fields, true), __('Advanced Options'),'',true,true);
+	$table->data[2][0] = ui_toggle(
+		html_print_table($table_custom_fields, true),
+		__('Advanced Options'), '', true, true);
 	
 	$filters .= html_print_table($table, true);
 	$filters .= "</form>";
 	ui_toggle($filters, __('Show Options'));
 }
-else{
+else {
 	$table->colspan[2][0] = 7;
 	$table->data[2][0] = ui_toggle(html_print_table($table_custom_fields, true), __('Agent custom fields'),'',true,true);
 	
@@ -903,7 +911,7 @@ $table->cellpadding = 0;
 $table->cellspacing = 0;
 $table->width = "100%";
 $table->class = "databox data";
-if(defined('METACONSOLE')){
+if(defined('METACONSOLE')) {
 	$table->width = "100%";
 	$table->cellpadding = '0';
 	$table->cellspacing = '0';
@@ -917,7 +925,7 @@ $table->align = array ();
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK)
 	$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 
-$table->head[1] = __('Agent'); 
+$table->head[1] = __('Agent');
 if (! defined ('METACONSOLE')) {
 	$table->head[1] .=' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=agent_name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectAgentNameUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=agent_name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentNameDown, "alt" => "down")) . '</a>';
@@ -930,7 +938,7 @@ if (! defined ('METACONSOLE')) {
 }
 $table->align[2] = "left";
 
-$table->head[3] = __('Module name'); 
+$table->head[3] = __('Module name');
 if (! defined ('METACONSOLE')) {
 	$table->head[3] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=module_name&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleNameUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=module_name&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleNameDown, "alt" => "down")) . '</a>';
@@ -940,7 +948,7 @@ if (! defined ('METACONSOLE')) {
 $table->head[4] = __('Tags');
 */
 
-$table->head[5] = __('Interval'); 
+$table->head[5] = __('Interval');
 if (! defined ('METACONSOLE')) {
 	$table->head[5] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=interval&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=interval&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectIntervalDown, "alt" => "down")) . '</a>';
@@ -1059,7 +1067,7 @@ foreach ($result as $row) {
 				'id_agente='. $row["id_agent"] . '&amp;' .
 				'loginhash=auto&amp;' .
 				'loginhash_data=' . $row["hashdata"] . '&amp;' .
-				'loginhash_user=' . str_rot13($row["user"]) . '">'; 
+				'loginhash_user=' . str_rot13($row["user"]) . '">';
 		$agent_name = ui_print_truncate_text($row["agent_name"],
 			'agent_small', false, true, false, '[&hellip;]',
 			'font-size:7.5pt;');
@@ -1229,7 +1237,7 @@ foreach ($result as $row) {
 		$row['min_critical'], $row['str_critical']);
 	
 	if (is_numeric($row["datos"])) {
-		if ( $config["render_proc"] ){
+		if ( $config["render_proc"] ) {
 				switch($row["module_type"]) {
 					case 2:
 					case 6:
@@ -1247,7 +1255,8 @@ foreach ($result as $row) {
 						$salida = format_numeric($row["datos"]);
 						break;
 				}
-		}else{
+		}
+		else {
 			$salida = format_numeric($row["datos"]);
 		}
 		
@@ -1277,7 +1286,7 @@ foreach ($result as $row) {
 			$link = "winopeng_var('operation/agentes/snapshot_view.php?" .
 				"id=" . $row["id_agente_modulo"] .
 				"&refr=" . $row["current_interval"] .
-				"&label=" . rawurlencode(urlencode(io_safe_output($row["module_name"]))) . "','" . $win_handle . "', 700,480)"; 
+				"&label=" . rawurlencode(urlencode(io_safe_output($row["module_name"]))) . "','" . $win_handle . "', 700,480)";
 			
 			$salida = '<a href="javascript:' . $link . '">' .
 				html_print_image("images/default_list.png", true,
@@ -1377,9 +1386,9 @@ ui_require_javascript_file('pandora_modules');
 		}
 	});
 	
-	$('#ag_group').change (function (){
+	$('#ag_group').change (function () {
 		strict_user = $("#text-strict_user_hidden").val();
-
+		
 		if (($("#ag_group").val() != 0) && (strict_user != 0)) {
 			$("#tag_filter").css('display', 'none');
 			$("#tag_td").css('display', 'none');

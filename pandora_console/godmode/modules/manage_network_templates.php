@@ -225,7 +225,7 @@ else {
 
 echo '<form method="post" action="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form">';
 echo '<div style="width: '.$table->width.'" class="action-buttons">';
-html_print_submit_button (__('Create'), "crt", '', 'class="sub next"'); 
+html_print_submit_button (__('Create'), "crt", '', 'class="sub next"');
 echo '</div></form>';
 
 ?>

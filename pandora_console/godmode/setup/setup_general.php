@@ -98,7 +98,11 @@ $table->data[18][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('i
 
 if ($config["integria_enabled"]) {
 	require_once('include/functions_incidents.php');
-	$invent = incidents_call_api($config['integria_url']."/include/api.php?user=".$config['id_user']."&pass=".io_output_password($config['integria_api_password'])."&op=get_inventories"); 
+	$invent = incidents_call_api(
+		$config['integria_url'] . "/include/api.php?" .
+		"user=" . $config['id_user'] . "&" .
+		"pass=" . io_output_password($config['integria_api_password']) ."&" .
+		"op=get_inventories");
 	$bad_input = false;
 	// Wrong connection to api, bad password
 	if (empty($invent)) {
@@ -125,21 +129,24 @@ if ($config["integria_enabled"]) {
 			if ((stristr($inv, 'ERROR 404') !== false)
 				OR (stristr($inv, 'Status 404') !== false)
 				OR (stristr($inv, 'Internal Server Error') !== false)) {
-				$inventories[""] = __('None'); 
-				$bad_input = true; 
+				$inventories[""] = __('None');
+				$bad_input = true;
 				break;
 			}
 		}
 	}
 	$table->data[20][0] = __('Integria URL') . ui_print_help_icon ("integria_url", true);
-	$table->data[20][1] = html_print_input_text ('integria_url', $config["integria_url"], '', 25, 255, true); 
+	$table->data[20][1] = html_print_input_text('integria_url',
+		$config["integria_url"], '', 25, 255, true);
 	// If something goes wrong
-	if ($bad_input){
-		$table->data[20][1] .= html_print_image('images/error.png', true, array('title' => __('URL and/or Integria password are incorrect')));
+	if ($bad_input) {
+		$table->data[20][1] .= html_print_image('images/error.png',
+			true, array('title' => __('URL and/or Integria password are incorrect')));
 	}
 	
 	$table->data[21][0] = __('Integria API password');
-	$table->data[21][1] = html_print_input_text ('integria_api_password', io_output_password($config["integria_api_password"]), '', 25, 25, true);
+	$table->data[21][1] = html_print_input_text('integria_api_password',
+		io_output_password($config["integria_api_password"]), '', 25, 25, true);
 	
 	if (!$bad_input) {
 		foreach ($invent as $inv) {
@@ -190,8 +197,11 @@ foreach ($timezones as $timezone) {
 	}
 }
 
-$table->data[23][0] = __('Timezone setup'). ' ' . ui_print_help_tip (__('Must have the same time zone as the system or database to avoid mismatches of time.'), true);
-$table->data[23][1] = html_print_input_text_extended ('timezone_text', $config["timezone"], 'text-timezone_text', '', 25, 25, false, '', 'readonly', true); 
+$table->data[23][0] = __('Timezone setup'). ' ' . ui_print_help_tip(
+	__('Must have the same time zone as the system or database to avoid mismatches of time.'), true);
+$table->data[23][1] = html_print_input_text_extended(
+	'timezone_text', $config["timezone"], 'text-timezone_text', '', 25,
+	25, false, '', 'readonly', true);
 $table->data[23][1] .= '<a id="change_timezone">'.html_print_image ('images/pencil.png', true, array ('title' => __('Change timezone'))).'</a>';
 $table->data[23][1] .= "&nbsp;&nbsp;". html_print_select($zone_name, 'zone', $zone_selected, 'show_timezone();', '', '', true);
 $table->data[23][1] .= "&nbsp;&nbsp;". html_print_select($timezone_n, 'timezone', $config["timezone"], '', '', '', true);
@@ -310,18 +320,18 @@ function show_timezone () {
 		url: "ajax.php",
 		data: "page=<?php echo $_GET['sec2']; ?>&select_timezone=1&zone=" + zone,
 		dataType: "json",
-		success: function(data){
-				$("#timezone").empty();
-				jQuery.each (data, function (id, value) {
-					timezone = value;
-					$("select[name='timezone']").append($("<option>").val(timezone).html(timezone));
-				});	
-			}
-		});
+		success: function(data) {
+			$("#timezone").empty();
+			jQuery.each (data, function (id, value) {
+				timezone = value;
+				$("select[name='timezone']").append($("<option>").val(timezone).html(timezone));
+			});
+		}
+	});
 }
 
 $(document).ready (function () {
-
+	
 	$("#zone").attr("hidden", true);
 	$("#timezone").attr("hidden", true);
 	

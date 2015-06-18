@@ -170,6 +170,29 @@ my %DefaultConf = (
 );
 my %Conf = %DefaultConf;
 
+# Configuration tokens which should not be inherited from the main agent,
+# only the keys are actually used
+my %BrokerIgnoredConfig = (
+	# Neither of these should be copied but they are handled specially while creating
+	# the brokers.
+	#'logfile' => 1,
+	#'agent_name' => 1,
+	'agent_name_cmd' => 1,
+	'description' => 1,
+	'cron_mode' => 1,
+	'udp_server_port' => 1,
+	'udp_server_auth_address' => 1,
+	'udp_server' => 1,
+	'proxy_mode' => 1,
+	'proxy_max_connection' => 1,
+	'proxy_timeout' => 1,
+	'custom_id' => 1,
+	'url_address' => 1,
+	'address' => 1,
+	'broker_agent' => 1,
+	'dynamic_broker' => 1
+);
+
 # Modules
 my @Modules;
 
@@ -613,11 +636,6 @@ sub write_broker_conf($){
 	my ($broker_agent) = @_;
 	my $content = '';
 
-	# I don't think the following should be copied either: proxy_*
-	my %ignored_tokens = (
-		'broker_agent' => 1, 'dynamic_broker' => 1, 'agent_name_cmd' => 1, 'udp_server' => 1, 'cron_mode' => 1
-	);
-
 	open (CONF_FILE, "$ConfDir/$ConfFile") or error ("Could not open file '$ConfDir/$ConfFile': $!.");
 	open (BROKER_FILE, ">$ConfDir/${broker_agent}.conf") or error ("Could not write configuration file: $!");
 
@@ -625,7 +643,7 @@ sub write_broker_conf($){
 
 		my ( $token ) = $line =~ m/^\s*(\S+)(\s.*)?$/;
 		# Skip tokens which should not be copied to broker configuration
-		next if defined $ignored_tokens{$token};
+		next if defined $BrokerIgnoredConfig{$token};
 
 		# Change the agent name
 		if ($line =~ m/^\s*#*\s*agent_name\s+/) {
@@ -2233,6 +2251,15 @@ while (1) {
 				# Set the configuration file
 				$ConfFile = "${dynamic_agent}.conf";
 
+				# Reset config items which should not be inherited to defaults
+				foreach my $token (keys %BrokerIgnoredConfig) {
+					if (defined $DefaultConf{$token}) {
+						$Conf{$token} = $DefaultConf{$token};
+					} else {
+						delete $Conf{$token};
+					}
+				}
+
 				my $logfile = $Conf{'logfile'};
 
 				if ($logfile ne 'syslog') {
@@ -2244,12 +2271,13 @@ while (1) {
 				stop_log ();
 				start_log ('quiet', $logfile);
 					
-				# Read configuration file
+				# Setup configuration
 				$Conf{'parent_agent_name'} = $Conf{'agent_name'};
 				$Conf{'agent_name'} .= "/${dynamic_agent}";
 				%Macros = ();
 				@Modules = ();
 				%Collections = ();
+
 				read_config ();
 						
 				# Check for a new configuration

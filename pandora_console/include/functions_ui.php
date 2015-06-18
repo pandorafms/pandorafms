@@ -2298,7 +2298,7 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	$buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
 	
 	
-	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . html_print_image($icon, true, array("style" => "vertical-align:middle;", "class" => "bottom", "border" => "0", "alt" => "")) . '&nbsp; ';
+	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . html_print_image($icon, true, array("style" => "vertical-align:middle;", "class" => "bottom", "border" => "0", "alt" => "", "title" => $title)) . '&nbsp; ';
 	$buffer .= '<span style="display: inline-block; vertical-align: top; margin-top: 2px;">' . 
 		ui_print_truncate_text($title, 38);
 	if ($help != "")

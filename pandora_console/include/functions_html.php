@@ -1858,7 +1858,7 @@ function html_print_image ($src, $return = false, $options = false,
 			}
 
 			// New way to show the force_title (cleaner and better performance)
-			$output .= 'title="'.io_safe_input_html($options["title"]).'" ';
+			$output .= 'data-title="'.io_safe_input_html($options["title"]).'" ';
 			$output .= 'data-use_title_for_force_title="1" ';
 		}
 		

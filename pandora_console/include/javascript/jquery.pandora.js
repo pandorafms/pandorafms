@@ -185,7 +185,7 @@ function forced_title_callback() {
 		// into their 'data' prop, the element title will be used for the
 		// content.
 		if ($(this).data("use_title_for_force_title")) {
-			var title = $(this).prop("title");
+			var title = $(this).data("title");
 		}
 		else {
 			var title = $('#forced_title_'+img_id).html();

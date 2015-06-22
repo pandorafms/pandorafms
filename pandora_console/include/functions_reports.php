@@ -500,7 +500,8 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 	$types['simple_baseline_graph'] = array('optgroup' => __('Graphs'),
 		'name' => __('Simple baseline graph'));
 	if ($not_editor == false)
-		$types['automatic_custom_graph'] = array('optgroup' => __('Graphs'),
+		$types['automatic_custom_graph'] = array(
+			'optgroup' => __('Graphs'),
 			'name' => __('Custom graph'));
 	$types['custom_graph'] = array('optgroup' => __('Graphs'),
 		'name' => __('Custom graph'));

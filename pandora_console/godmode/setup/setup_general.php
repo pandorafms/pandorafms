@@ -54,7 +54,7 @@ $table->data[0][1] = html_print_select_from_sql (
 $table->data[1][0] = __('Remote config directory') .
 	ui_print_help_tip (__("Directory where agent remote configuration is stored."), true);
 
-$table->data[1][1] = html_print_input_text ('remote_config', $config["remote_config"], '', 30, 100, true);
+$table->data[1][1] = html_print_input_text ('remote_config', io_safe_output($config["remote_config"]), '', 30, 100, true);
 
 $table->data[6][0] = __('Auto login (hash) password');
 $table->data[6][1] = html_print_input_text ('loginhash_pwd', io_output_password($config["loginhash_pwd"]), '', 15, 15, true);
@@ -73,7 +73,7 @@ $table->data[11][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_ext
 $table->data[11][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('https', 0, '', $config["https"], true);
 
 $table->data[14][0] = __('Attachment store') . ui_print_help_tip (__("Directory where temporary data is stored."), true);
-$table->data[14][1] = html_print_input_text ('attachment_store', $config["attachment_store"], '', 50, 255, true);
+$table->data[14][1] = html_print_input_text ('attachment_store', io_safe_output($config["attachment_store"]), '', 50, 255, true);
 
 $table->data[15][0] = __('IP list with API access') . ui_print_help_icon ("ip_api_list", true);
 if (isset($_POST["list_ACL_IPs_for_API"])) {

@@ -187,7 +187,7 @@ $row++;
 
 $table->data[$row][0] = __('Font path');
 $fonts = load_fonts();
-$table->data[$row][1] = html_print_select($fonts, 'fontpath', $config["fontpath"], '', '', 0, true);
+$table->data[$row][1] = html_print_select($fonts, 'fontpath', io_safe_output($config["fontpath"]), '', '', 0, true);
 
 $row++;
 

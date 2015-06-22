@@ -1530,6 +1530,21 @@ function oracle_db_process_file ($path, $handle_error = true) {
 		// Begin the transaction
 		oracle_db_process_sql_begin();
 		
+		$datetime_tz_format = oci_parse($connection, 'alter session set NLS_TIMESTAMP_TZ_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
+		$datetime_format = oci_parse($connection, 'alter session set NLS_TIMESTAMP_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
+		$date_format = oci_parse($connection, 'alter session set NLS_DATE_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
+		$decimal_separator = oci_parse($connection, 'alter session set NLS_NUMERIC_CHARACTERS =\',.\'');
+
+		oci_execute($datetime_tz_format);
+		oci_execute($datetime_format);
+		oci_execute($date_format);
+		oci_execute($decimal_separator);
+
+		oci_free_statement($datetime_tz_format);
+		oci_free_statement($datetime_format);
+		oci_free_statement($date_format);
+		oci_free_statement($decimal_separator);
+		
 		foreach ($file_content as $sql_line) {
 			$clean_line = trim($sql_line);
 			$comment = preg_match("/^(\s|\t)*--.*$/", $clean_line);

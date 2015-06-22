@@ -466,11 +466,14 @@ if (defined("METACONSOLE")) {
 			echo "</div>";
 		echo "</form>";
 	}
-}else{
-	ui_pagination ($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
+}
+else {
+	ui_pagination ($countItems,
+		'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
 	html_print_table($table);
-	ui_pagination ($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
-
+	ui_pagination ($countItems,
+		'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
+	
 	echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items&id_report=" . $idReport . "'
 		method='post' onSubmit='return added_ids_deleted_items_to_hidden_input();'>";
 		if (defined("METACONSOLE"))

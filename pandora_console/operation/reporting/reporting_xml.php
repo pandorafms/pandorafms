@@ -19,38 +19,6 @@ include_once ('include/functions_groups.php');
 include_once ('include/functions_netflow.php');
 enterprise_include_once ('include/functions_metaconsole.php');
 
-function array2XML($data, $root = null, $xml = NULL) {
-	if ($xml == null) {
-		$xml = simplexml_load_string(
-			"<?xml version='1.0' encoding='UTF-8'?>\n<" . $root . " />");
-	}
-	
-	foreach($data as $key => $value) {
-		if (is_numeric($key)) {
-			$key = "item_" . $key;
-		}
-		
-		if (is_array($value)) {
-			$node = $xml->addChild($key);
-			array2XML($value, $root, $node);
-		}
-		else {
-			$value = htmlentities($value);
-			
-			if (!is_numeric($value) && !is_bool($value)) {
-				if (!empty($value)) {
-					$xml->addChild($key, $value);
-				}
-			}
-			else {
-				$xml->addChild($key, $value);
-			}
-		}
-	}
-	
-	return html_entity_decode($xml->asXML());
-}
-
 
 // Login check
 if (isset ($_GET["direct"])) {

@@ -95,35 +95,42 @@ function reporting_get_name($id_report) {
 	return db_get_value('name', 'treport', 'id_report', $id_report);
 }
 
-function reporting_make_reporting_data($id_report, $date, $time,
-	$period = null, $type = 'dinamic', $force_width_chart = null,
-	$force_height_chart = null) {
+function reporting_make_reporting_data($report = null, $id_report,
+	$date, $time, $period = null, $type = 'dinamic',
+	$force_width_chart = null, $force_height_chart = null) {
 	
 	global $config;
 	
 	$return = array();
 	
-	$report = db_get_row ('treport', 'id_report', $id_report);
+	if (!empty($report)) {
+		$contents = $report['contents'];
+	}
+	else {
+		$report = db_get_row ('treport', 'id_report', $id_report);
+		
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$contents = db_get_all_rows_field_filter ("treport_content",
+					"id_report", $id_report, "`order`");
+				break;
+			case "postgresql":
+				$contents = db_get_all_rows_field_filter ("treport_content",
+					"id_report", $id_report, '"order"');
+				break;
+			case "oracle":
+				$contents = db_get_all_rows_field_filter ("treport_content",
+					"id_report", $id_report, '"order"');
+				break;
+		}
+	}
+	
+	$datetime = strtotime($date . ' ' . $time);
+	$report["datetime"] = $datetime;
 	$report["group"] = $report['id_group'];
 	$report["group_name"] = groups_get_name ($report['id_group']);
 	$report['contents'] = array();
-	$datetime = strtotime($date . ' ' . $time);
-	$report["datetime"] = $datetime;
 	
-	switch ($config["dbtype"]) {
-		case "mysql":
-			$contents = db_get_all_rows_field_filter ("treport_content",
-				"id_report", $id_report, "`order`");
-			break;
-		case "postgresql":
-			$contents = db_get_all_rows_field_filter ("treport_content",
-				"id_report", $id_report, '"order"');
-			break;
-		case "oracle":
-			$contents = db_get_all_rows_field_filter ("treport_content",
-				"id_report", $id_report, '"order"');
-			break;
-	}
 	if ($contents === false) {
 		return reporting_check_structure_report($report);
 	}

@@ -176,7 +176,8 @@ $table->size[0] = '60px';
 $table->colspan[0][1] = 2;
 $table->style[0] = 'text-align:center;';
 $table->data = array ();
-$table->data[0][0] = html_print_image("images/reporting32.png", true, array("width" => "32", "height" => "32")); 
+$table->data[0][0] = html_print_image("images/reporting32.png", true,
+	array("width" => "32", "height" => "32")); 
 if (defined("METACONSOLE")) {
 	if ($report['description'] != '') {
 		$table->data[0][1] = '<div style="">' . __("Description: ") . $report['description'] . '</div>';
@@ -215,7 +216,8 @@ else {
 	}
 	
 	$table->data[0][1] .= '<div style="text-align:right; width:100%; margin-right:50px">'.__('Set initial date') . html_print_checkbox('enable_init_date', 1, $enable_init_date, true);
-	$html_enterprise = enterprise_hook('reporting_print_button_PDF', array($id_report));
+	$html_enterprise = enterprise_hook('reporting_print_button_PDF',
+		array($id_report));
 	if ($html_enterprise !== ENTERPRISE_NOT_HOOK) {
 		$table->data[0][1] .= $html_enterprise;
 	}
@@ -245,7 +247,9 @@ if ($enable_init_date) {
 	}
 }
 
-$report = reporting_make_reporting_data($id_report, $date, $time, $period, 'dinamic');
+$report = reporting_make_reporting_data(null, $id_report, $date, $time,
+	$period, 'dinamic');
+html_debug_print($report);
 reporting_html_print_report($report);
 
 echo "<br>";

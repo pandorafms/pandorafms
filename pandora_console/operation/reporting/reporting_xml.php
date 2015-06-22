@@ -120,7 +120,7 @@ switch ($date_mode) {
 }
 
 
-$report = reporting_make_reporting_data($id_report, $date, $time,
+$report = reporting_make_reporting_data(null, $id_report, $date, $time,
 	$period, 'static');
 
 //------- Removed the unused fields ------------------------------------

@@ -1442,6 +1442,9 @@ function html_print_table (&$table, $return = false) {
 	}
 	
 	if (empty ($table->border)) {
+		if (empty($table)) {
+			$table = new stdClass();
+		}
 		$table->border = '0';
 	}
 	

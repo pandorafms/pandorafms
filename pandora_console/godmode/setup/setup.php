@@ -51,6 +51,7 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 }
 // Load enterprise extensions
 enterprise_include_once ('include/functions_setup.php');
+enterprise_include_once ('include/functions_io.php');
 enterprise_include_once ('godmode/setup/setup.php');
 
 /*

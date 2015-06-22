@@ -254,14 +254,6 @@ echo "<br>";
 //----------------------------------------------------------------------
 
 
-// Get Report record (to get id_group)
-$report = db_get_row ('treport', 'id_report', $id_report);
-$report["datetime"] = $datetime;
-
-
-
-
-
 
 
 // The rowspan of the first row is only 2 in controls table. Why is used the same code here and in the items??

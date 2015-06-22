@@ -36,11 +36,10 @@ if ($searchGraphs) {
 	$filter['id_graph'] = $usergraphs_id;
 	
 	$columns = array('id_graph', 'name', 'description');
-	$count_columns = array('COUNT(id_graph) AS count');
 	
-	$totalGraphs = db_get_value_filter('tgraph', $filter, $count_columns);
+	$totalGraphs = (int) db_get_value_filter('COUNT(id_graph) AS count', 'tgraph', $filter);
 	
-	if (! $only_count && (int)$totalGraphs > 0) {
+	if (! $only_count && $totalGraphs > 0) {
 		$filter['limit'] = $config['block_size'];
 		$filter['offset'] = (int)  get_parameter('offset');
 		$graphs = db_get_all_rows_filter('tgraph', $filter, $columns);

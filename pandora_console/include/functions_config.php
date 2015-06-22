@@ -51,7 +51,7 @@ function config_update_value ($token, $value) {
 	
 	if (!isset ($config[$token])) {
 		$config[$token] = $value;
-		return (bool) config_create_value ($token, $value);
+		return (bool) config_create_value ($token, io_safe_input($value));
 	}
 	
 	/* If it has not changed */
@@ -59,9 +59,10 @@ function config_update_value ($token, $value) {
 		return true;
 	
 	$config[$token] = $value;
+	$value = io_safe_output($value);
 	
 	$result = db_process_sql_update ('tconfig', 
-		array ('value' => $value),
+		array ('value' => io_safe_input($value)),
 		array ('token' => $token));
 	
 	if ($result === 0)
@@ -119,7 +120,7 @@ function config_update_config () {
 				case 'general':
 					if (!config_update_value ('language', (string) get_parameter ('language')))
 						$error_update[] = __('Language code for Pandora');
-					if (!config_update_value ('remote_config', io_safe_input((string) get_parameter ('remote_config'))))
+					if (!config_update_value ('remote_config', (string) get_parameter ('remote_config')))
 						$error_update[] = __('Remote config directory');
 					if (!config_update_value ('loginhash_pwd', io_input_password((string) get_parameter ('loginhash_pwd'))))
 						$error_update[] = __('Auto login (hash) password');
@@ -130,7 +131,7 @@ function config_update_config () {
 						$error_update[] = __('Automatic check for updates');
 					if (!config_update_value ('https', (bool) get_parameter ('https')))
 						$error_update[] = __('Enforce https');
-					if (!config_update_value ('attachment_store', io_safe_input((string) get_parameter ('attachment_store'))))
+					if (!config_update_value ('attachment_store', (string) get_parameter ('attachment_store')))
 						$error_update[] = __('Attachment store');
 					if (!config_update_value ('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API')))
 						$error_update[] = __('IP list with API access');
@@ -413,7 +414,7 @@ function config_update_config () {
 						$error_update[] = __('Show QR code header');
 					if (!config_update_value ('status_images_set', (string) get_parameter ('status_images_set')))
 						$error_update[] = __('Status icon set');
-					if (!config_update_value ('fontpath', io_safe_input((string) get_parameter ('fontpath'))))
+					if (!config_update_value ('fontpath', (string) get_parameter ('fontpath')))
 						$error_update[] = __('Font path');
 					if (!config_update_value ('font_size', get_parameter('font_size')))
 						$error_update[] = __('Font size');
@@ -451,7 +452,7 @@ function config_update_config () {
 						$error_update[] = __('Fixed menu');
 					if (!config_update_value ('paginate_module', get_parameter('paginate_module')))
 						$error_update[] = __('Paginate module');
-					if (!config_update_value ('graphviz_bin_dir', io_safe_input(get_parameter('graphviz_bin_dir'))))
+					if (!config_update_value ('graphviz_bin_dir', get_parameter('graphviz_bin_dir')))
 						$error_update[] = __('Custom graphviz directory');
 					if (!config_update_value ('networkmap_max_width', get_parameter('networkmap_max_width')))
 						$error_update[] = __('Networkmap max width');
@@ -627,7 +628,7 @@ function config_update_config () {
 	enterprise_include_once('include/functions_policies.php');
 	$enterprise = enterprise_include_once ('include/functions_skins.php');
 	if ($enterprise !== ENTERPRISE_NOT_HOOK) {
-		$config['relative_path'] = get_parameter('relative_path', io_safe_input($config['relative_path']));
+		$config['relative_path'] = get_parameter('relative_path', $config['relative_path']);
 	}
 }
 
@@ -655,7 +656,7 @@ function config_process_config () {
 	
 	if (isset ($config['homeurl']) && (strlen($config['homeurl']) > 0)) {
 		if ($config['homeurl'][0] != '/') {
-			$config['homeurl'] = '/'.io_safe_input($config['homeurl']);
+			$config['homeurl'] = '/'.$config['homeurl'];
 		}
 	}
 	
@@ -872,14 +873,14 @@ function config_process_config () {
 		//after the first uses.
 		if (!is_dir($config['attachment_store'])) {
 			config_update_value('attachment_store',
-				io_safe_input($config['homedir']) . '/attachment');
+				$config['homedir'] . '/attachment');
 		}
 	}
 	
 	
 	if (!isset ($config['fontpath'])) {
 		config_update_value('fontpath',
-			io_safe_input($config['homedir']) . '/include/fonts/smallfont.ttf');
+			$config['homedir'] . '/include/fonts/smallfont.ttf');
 	}
 	
 	if (!isset ($config['style'])) {

@@ -654,14 +654,6 @@ function add_macro_field(macro, row_model_id) {
 		field_desc = field_desc.replace('macro_desc',macro_desc);
 		field_desc = field_desc.replace('macro_help',macro_help);
 		
-		// Get the cloned forced title id and replace for a uniq id
-		regex = /forced_title_(\w+)/;
-		var forced_title_id = field_desc.match(regex)[1];
-		var uniq_id = 'id' + (new Date()).getTime();
-		
-		field_desc = field_desc.replace(forced_title_id, uniq_id);
-		field_desc = field_desc.replace(forced_title_id, uniq_id);
-		
 		$('#'+row_id).children().eq(0).html(field_desc);
 	}
 	

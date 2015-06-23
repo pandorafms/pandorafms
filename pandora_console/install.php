@@ -545,6 +545,9 @@ function install_step2() {
 			else if (PHP_OS == "NetBSD") {
 				$res += check_exists ("/usr/pkg/bin/twopi","Graphviz Binary");
 			}
+			else if ( substr(PHP_OS, 0, 3) == 'WIN' ) {
+				$res += check_exists ("..\\..\\..\\Graphviz\\bin\\twopi.exe", "Graphviz Binary");
+			}
 			else {
 				$res += check_exists ("/usr/bin/twopi","Graphviz Binary");
 			}

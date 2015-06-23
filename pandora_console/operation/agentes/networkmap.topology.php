@@ -85,13 +85,20 @@ else {
 			io_safe_output($config['graphviz_bin_dir'] . "/")
 			:
 			"";
-		
+		$is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
+		if ($is_windows) {
+			$graphviz_path = str_replace("/", "\\", $graphviz_path );
+			$filename_map = str_replace("/", "\\", $filename_map );
+			$filename_img = str_replace("/", "\\", $filename_img );
+			$filename_dot = str_replace("/", "\\", $filename_dot );
+			$filter = $filter . '.exe';
+		}
 		$cmd = escapeshellarg($graphviz_path . $filter) .
 			" -Tcmapx " . escapeshellarg("-o$filename_map") .
 			" -Tpng ". escapeshellarg("-o$filename_img") .
 			" " . escapeshellarg($filename_dot);
+			
 		$result = system ($cmd);
-		
 		fclose ($fh);
 		unlink ($filename_dot);
 		//~ html_debug_print($cmd);

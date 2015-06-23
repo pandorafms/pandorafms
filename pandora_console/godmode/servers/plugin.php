@@ -712,7 +712,7 @@ else {
 				'tnetwork_component',
 				array('id_plugin' => $row["id"]));
 			if (($components_using_plugin + $modules_using_plugin) > 0) {
-				echo "<a href='javascript: show_locked_dialog(" . $row['id'] . ");'>";
+				echo '<a href="javascript: show_locked_dialog(' . $row['id'] . ', \'' . $row["name"] . '\');">';
 				html_print_image('images/lock.png');
 				echo "</a>";
 			}
@@ -739,8 +739,9 @@ else {
 	echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";
 	echo "</td></tr></table>";
 	
+	// The '%s' will be replaced in the javascript code of the function 'show_locked_dialog'
 	echo "<div id='dialog_locked' title='" .
-		sprintf(__('List of modules and components created by "%s" '), $row["name"]) .
+		__('List of modules and components created by "%s" ') .
 		"' style='display: none; text-align: left;'>";
 	echo "</div>";
 	
@@ -784,7 +785,7 @@ ui_require_javascript_file('pandora_modules');
 		
 	});
 	
-	function show_locked_dialog(id_plugin) {
+	function show_locked_dialog(id_plugin, plugin_name) {
 		var parameters = {};
 		parameters['page'] = "godmode/servers/plugin";
 		parameters["get_list_modules_and_component_locked_plugin"] = 1;
@@ -796,7 +797,10 @@ ui_require_javascript_file('pandora_modules');
 			data: parameters,
 			dataType: "html",
 			success: function(data) {
+				var title = $("#dialog_locked").prop('title').replace(/%s/, plugin_name);
+				
 				$("#dialog_locked")
+					.prop('title', title)
 					.html(data);
 				$("#dialog_locked")
 					.dialog ({

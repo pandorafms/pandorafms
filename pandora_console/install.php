@@ -63,7 +63,7 @@
 		<div style='height: 10px'>
 			<?php
 $version = '6.0dev';
-$build = '150623';
+$build = '150624';
 			$banner = "v$version Build $build";
 			
 			error_reporting(0);
@@ -561,6 +561,9 @@ function install_step2() {
 			}
 			else if (PHP_OS == "NetBSD") {
 				$res += check_exists ("/usr/pkg/bin/twopi","Graphviz Binary");
+			}
+			else if ( substr(PHP_OS, 0, 3) == 'WIN' ) {
+				$res += check_exists ("..\\..\\..\\Graphviz\\bin\\twopi.exe", "Graphviz Binary");
 			}
 			else {
 				$res += check_exists ("/usr/bin/twopi","Graphviz Binary");

@@ -14,6 +14,7 @@
 global $config;
 
 require_once ($config['homedir'] . '/include/functions_custom_graphs.php');
+require_once ($config['homedir'] . '/include/db/oracle.php');
 
 // Login check
 check_login ();

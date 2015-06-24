@@ -48,6 +48,9 @@ if (!empty($graph_type)) {
 // Clean the output buffer and turn off output buffering
 ob_end_clean ();
 
+// Functions_flot must be included when $flash_chart is defined
+include_once($homeurl . 'include/graphs/functions_flot.php');
+
 switch($graph_type) {
 	case 'histogram': 
 		$width = get_parameter('width');

@@ -1411,6 +1411,8 @@ function ui_process_page_head ($string, $bitfield) {
 	//Load intro.js library (for bubbles and clippy)
 	$config['js']['intro'] = "include/javascript/intro.js";
 	$config['js']['clippy'] = "include/javascript/clippy.js";
+	//Load Underscore.js library
+	$config['js']['underscore'] = "include/javascript/underscore-min.js";
 	
 	
 	//Load other javascript

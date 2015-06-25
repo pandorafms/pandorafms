@@ -118,6 +118,7 @@ if (!empty($fields_values)) {
 	$fields_values = json_decode($fields_values, true);
 }
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 

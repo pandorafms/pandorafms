@@ -39,6 +39,7 @@ else {
 	ui_print_page_header (__("Create agent custom field"), "images/custom_field.png", false, "", true, "");
 }
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 $table->style[0] = 'font-weight: bold';

@@ -105,7 +105,7 @@ if (empty($modules)) {
 	$modules = $module_ids;
 }
 
-$table = null;
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 

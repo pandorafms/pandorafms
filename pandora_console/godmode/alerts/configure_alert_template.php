@@ -469,11 +469,11 @@ if ($id && ! $create_template) {
 
 print_alert_template_steps ($step, $id);
 
+$table = new stdClass();
 $table->id = 'template';
 $table->width = '100%';
 $table->class = 'databox filters';
 if(defined("METACONSOLE")) {
-	$table->width = '100%';
 	$table->class = 'databox data';
 	$table->head[0] = __('Create Template');
 	$table->head_colspan[0] = 4;

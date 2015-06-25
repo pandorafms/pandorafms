@@ -108,40 +108,6 @@ if ($delete_networkmap) {
 $group_search = (int) get_parameter('group_search');
 $type_search = get_parameter('type_filter', '0');
 
-?>
-<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/networkmap_list">
-	<table style='width: 100%' class='databox filters'>
-		<tr>
-			<td class='datos' style="font-weight:bold;">
-				<?php echo __('Group'); ?>
-			</td>
-			<td class='datos'>
-				<?php
-				html_print_select_groups($config['id_user'], 'AR',
-					true, 'group_search', $group_search);
-				?>
-			</td>
-			<td class='datos' style="font-weight:bold;">
-				<?php echo __('Type'); ?>
-			</td>
-			<td class='datos'>
-				<?php
-				$networkmap_filter_types = networkmap_get_filter_types($strict_user);
-				html_print_select($networkmap_filter_types, 'type_filter',
-					$type_search, '', __('All'), 0, false);
-				?>
-			</td>
-			<td class='datos'>
-				<?php
-				html_print_submit_button (__('Filter'), 'crt', false,
-					'class="sub search"');
-				?>
-			</td>
-		</tr>
-	</table>
-</form>
-<?php
-
 // Display table
 $table = new StdClass();
 $table->width = "100%";
@@ -193,9 +159,43 @@ $user_info = users_get_user_by_id($config['id_user']);
 $network_maps = db_get_all_rows_filter('tnetwork_map', $where);
 
 if ($network_maps === false) {
-	ui_print_info_message ( array('no_close'=>true, 'message'=> __('Not networkmap defined.') ) );
+	require($config['homedir']."/general/firts_task/network_map.php");
 }
 else {
+	?>
+	<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/networkmap_list">
+		<table style='width: 100%' class='databox filters'>
+			<tr>
+				<td class='datos' style="font-weight:bold;">
+					<?php echo __('Group'); ?>
+				</td>
+				<td class='datos'>
+					<?php
+					html_print_select_groups($config['id_user'], 'AR',
+						true, 'group_search', $group_search);
+					?>
+				</td>
+				<td class='datos' style="font-weight:bold;">
+					<?php echo __('Type'); ?>
+				</td>
+				<td class='datos'>
+					<?php
+					$networkmap_filter_types = networkmap_get_filter_types($strict_user);
+					html_print_select($networkmap_filter_types, 'type_filter',
+						$type_search, '', __('All'), 0, false);
+					?>
+				</td>
+				<td class='datos'>
+					<?php
+					html_print_submit_button (__('Filter'), 'crt', false,
+						'class="sub search"');
+					?>
+				</td>
+			</tr>
+		</table>
+	</form>
+	<?php
+
 	$table->data = array();
 	foreach ($network_maps as $network_map) {
 		// ACL
@@ -231,46 +231,45 @@ else {
 	}
 	
 	html_print_table($table);
-}
+	// Create networkmap form
+	if ($networkmaps_write || $networkmaps_manage) {
+		$table_manage = new StdClass();
+		$table_manage->width = "100%";
+		$table_manage->class = "databox filters";
+		$table_manage->style = array();
+		$table_manage->style[0] = 'font-weight: bold';
+		$table_manage->style[2] = 'font-weight: bold';
+		$table_manage->style[4] = 'text-align: center';
+		$table_manage->size = array();
+		$table_manage->head = array();
+		$table_manage->data = array();
 
-// Create networkmap form
-if ($networkmaps_write || $networkmaps_manage) {
-	$table_manage = new StdClass();
-	$table_manage->width = "100%";
-	$table_manage->class = "databox filters";
-	$table_manage->style = array();
-	$table_manage->style[0] = 'font-weight: bold';
-	$table_manage->style[2] = 'font-weight: bold';
-	$table_manage->style[4] = 'text-align: center';
-	$table_manage->size = array();
-	$table_manage->head = array();
-	$table_manage->data = array();
+		$actions = array(
+				'create' => __('Create'),
+				'delete' => __('Delete')
+			);
+		$networkmap_types = networkmap_get_types($strict_user);
+		$delete_options = array(
+				'selected' => __('Delete selected')
+			);
 
-	$actions = array(
-			'create' => __('Create'),
-			'delete' => __('Delete')
-		);
-	$networkmap_types = networkmap_get_types($strict_user);
-	$delete_options = array(
-			'selected' => __('Delete selected')
-		);
+		$row = array();
+		$row[] = __('Action');
+		$row[] = html_print_select($actions, 'action', 'create', '', '', 0, true, false, false);
+		$row[] = __('Type');
+		$row[] = html_print_select($networkmap_types, 'tab', 'topology', '', '', 0, true)
+			. html_print_select($delete_options, 'delete_options', 'selected', '', '', 0, true, false, false);
+		$row[] = html_print_submit_button (__('Execute'), 'crt', false, 'class="sub next"', true)
+			. html_print_image("images/spinner.gif", true, array('id' => 'action-loading', 'style' => 'display: none;'));
 
-	$row = array();
-	$row[] = __('Action');
-	$row[] = html_print_select($actions, 'action', 'create', '', '', 0, true, false, false);
-	$row[] = __('Type');
-	$row[] = html_print_select($networkmap_types, 'tab', 'topology', '', '', 0, true)
-		. html_print_select($delete_options, 'delete_options', 'selected', '', '', 0, true, false, false);
-	$row[] = html_print_submit_button (__('Execute'), 'crt', false, 'class="sub next"', true)
-		. html_print_image("images/spinner.gif", true, array('id' => 'action-loading', 'style' => 'display: none;'));
+		$table_manage->data[] = $row;
 
-	$table_manage->data[] = $row;
-
-	echo '<form id="networkmap_action" method="post" action="index.php?sec=network&amp;sec2=operation/agentes/networkmap">';
-	html_print_table($table_manage);
-	html_print_input_hidden('add_networkmap', 0);
-	html_print_input_hidden('delete_networkmaps', 0);
-	echo "</form>";
+		echo '<form id="networkmap_action" method="post" action="index.php?sec=network&amp;sec2=operation/agentes/networkmap">';
+		html_print_table($table_manage);
+		html_print_input_hidden('add_networkmap', 0);
+		html_print_input_hidden('delete_networkmaps', 0);
+		echo "</form>";
+	}
 }
 ?>
 

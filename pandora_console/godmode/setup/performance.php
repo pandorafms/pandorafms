@@ -35,8 +35,8 @@ If you added a new token, please check config_update_config() in functions_confi
 to add it there.
 */
 
-
-$table->width = '98%';
+$table = new StdClass();
+$table->width = '100%';
 $table->data = array ();
 
 $table->size[0] = '70%';
@@ -66,8 +66,9 @@ $table->data[7][1] = html_print_input_text ('days_compact', $config["days_compac
 $table->data[8][0] = __('Max. days before delete unknown modules');
 $table->data[8][1] = html_print_input_text ('days_delete_unknown', $config["days_delete_unknown"], '', 5, 5, true);
 
-
-$table_other->width = '98%';
+$table_other = new StdClass();
+$table_other->width = '100%';
+$table_other->class = 'databox filters';
 $table_other->data = array ();
 
 $table_other->size[0] = '70%';

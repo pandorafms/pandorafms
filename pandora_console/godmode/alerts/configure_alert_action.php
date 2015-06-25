@@ -88,6 +88,7 @@ html_print_div(
 		'content' => ui_print_help_icon ('alert_macros', true),
 	'hidden' => true));
 
+$table = new stdClass();
 $table->id = 'table_macros';
 $table->width = '100%';
 $table->class = 'databox filters';

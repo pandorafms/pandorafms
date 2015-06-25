@@ -150,28 +150,30 @@ if ($is_windows) {
 	echo '</div>';
 }
 
-$table->id='table_recon';
-$table->width='100%';
-$table->cellspacing=4;
-$table->cellpadding=4;
-$table->class="databox filters";
-$table->rowclass[3]="network_sweep";
-$table->rowclass[5]="network_sweep";
-$table->rowclass[7]="network_sweep";
-$table->rowclass[8]="network_sweep";
-$table->rowclass[11]="network_sweep";
-$table->rowclass[17]="network_sweep";
-$table->rowclass[18]="network_sweep";
-$table->rowclass[19]="network_sweep";
-$table->rowclass[20]="network_sweep";
-$table->rowclass[21]="network_sweep";
+$table = new stdClass();
+$table->id = 'table_recon';
+$table->width = '100%';
+$table->cellspacing = 4;
+$table->cellpadding = 4;
+$table->class = "databox filters";
 
-$table->rowclass[6]="recon_script";
-$table->rowclass[12]="recon_script";
-$table->rowclass[13]="recon_script";
-$table->rowclass[14]="recon_script";
-$table->rowclass[15]="recon_script";
-$table->rowclass[16]="recon_script";
+$table->rowclass[3] = "network_sweep";
+$table->rowclass[5] = "network_sweep";
+$table->rowclass[7] = "network_sweep";
+$table->rowclass[8] = "network_sweep";
+$table->rowclass[11] = "network_sweep";
+$table->rowclass[17] = "network_sweep";
+$table->rowclass[18] = "network_sweep";
+$table->rowclass[19] = "network_sweep";
+$table->rowclass[20] = "network_sweep";
+$table->rowclass[21] = "network_sweep";
+
+$table->rowclass[6] = "recon_script";
+$table->rowclass[12] = "recon_script";
+$table->rowclass[13] = "recon_script";
+$table->rowclass[14] = "recon_script";
+$table->rowclass[15] = "recon_script";
+$table->rowclass[16] = "recon_script";
 // Name
 $table->data[0][0] = "<b>" . __('Task name') . "</b>";
 $table->data[0][1] = html_print_input_text ('name', $name, '', 25, 0, true);
@@ -181,11 +183,11 @@ $table->data[1][0] = "<b>" . __('Recon server') .
 	ui_print_help_tip(
 		__('You must select a Recon Server for the Task, otherwise the Recon Task will never run'), true);
 
-$table->data[1][1] = html_print_select_from_sql ('SELECT id_server, name
-	FROM tserver
-	WHERE server_type = 3
-	ORDER BY name', "id_recon_server", $id_recon_server, '', '', '', true);
-
+$sql = 'SELECT id_server, name
+		FROM tserver
+		WHERE server_type = 3
+		ORDER BY name';
+$table->data[1][1] = html_print_select_from_sql ($sql, "id_recon_server", $id_recon_server, '', '', '', true);
 
 $fields['network_sweep'] = __("Network sweep");
 if (!$is_windows)
@@ -217,8 +219,11 @@ $table->data[4][1] .= '</span>';
 
 // Module template
 $table->data[5][0] = "<b>".__('Module template');
-$table->data[5][1] = html_print_select_from_sql ('SELECT id_np, name FROM tnetwork_profile',
-	"id_network_profile", $id_network_profile, '', __('None'), 0, true);
+
+$sql = 'SELECT id_np, name
+		FROM tnetwork_profile
+		ORDER BY name';
+$table->data[5][1] = html_print_select_from_sql ($sql, "id_network_profile", $id_network_profile, '', __('None'), 0, true);
 
 // Recon script
 $data[1] = '';
@@ -231,8 +236,11 @@ $table->data[6][1] .= $data[1] .= html_print_input_hidden('macros',
 
 // OS
 $table->data[7][0] = "<b>".__('OS');
-$table->data[7][1] = html_print_select_from_sql ('SELECT id_os, name FROM tconfig_os ORDER BY name',
-	"id_os", $id_os, '', __('Any'), -1, true);
+
+$sql = 'SELECT id_os, name
+		FROM tconfig_os
+		ORDER BY name';
+$table->data[7][1] = html_print_select_from_sql ($sql, "id_os", $id_os, '', __('Any'), -1, true);
 
 // Recon ports
 $table->data[8][0] = "<b>".__('Ports');

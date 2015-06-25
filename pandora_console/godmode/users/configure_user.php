@@ -413,6 +413,7 @@ if ($delete_profile) {
 		__('Could not be deleted'));
 }
 
+$table = new stdClass();
 $table->id = 'user_configuration_table';
 $table->width = '100%';
 $table->class = 'databox filters';

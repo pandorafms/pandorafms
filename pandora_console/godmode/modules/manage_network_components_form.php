@@ -236,7 +236,6 @@ $table->width = '100%';
 $table->class = 'databox filters';
 /* $table came from manage_network_components_form_common.php */
 if (defined('METACONSOLE')) {
-	$table->width = '100%';
 	$table->class = 'databox data';
 	if ($id) {
 		$table->head[0] = __('Update Network Component');

@@ -333,11 +333,14 @@ if (!$id_agente) {
 else {
 	$url = 'index.php?sec='.$sec.'&sec2=godmode/agentes/configurar_agente&pure='.$pure.'&tab=alert&id_agente=' . $id_agente . '&offset=' . $offset . $form_params;
 }
+
+$table = new stdClass();
+
 if ( defined("METACONSOLE") )
 	$table->class = 'alert_list databox';
 else
 	$table->class = 'databox filters';
-	
+
 $table->width = '100%';
 $table->cellpadding = 0;
 $table->cellspacing = 0;

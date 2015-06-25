@@ -138,6 +138,7 @@ if ($disk_conf_delete) {
 
 echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente">';
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = "databox filters";
 
@@ -274,6 +275,7 @@ $table->data[7][1] = html_print_input_text ('comentarios', $comentarios,
 html_print_table ($table);
 unset($table);
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = "databox filters";
 
@@ -389,6 +391,7 @@ $table->data[3][3] = html_print_checkbox('quiet', 1, $quiet, true);
 ui_toggle(html_print_table ($table, true), __('Advanced options'));
 unset($table);
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = "databox filters";
 

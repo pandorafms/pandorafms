@@ -82,6 +82,7 @@ if (($create != "") OR ($view != "")) {
 	else
 		echo "<form name=reconscript method='post' action='index.php?sec=gservers&sec2=godmode/servers/recon_script&create_reconscript=1'>";
 	
+	$table = new stdClass();
 	$table->width = '100%';
 	$table->id = 'table-form';
 	$table->class = 'databox filters';

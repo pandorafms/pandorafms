@@ -93,6 +93,7 @@ if (empty ($messages)) {
 	echo '<div class="nf">'.__('There are no messages').'</div>';
 }
 else {
+	$table = new stdClass();
 	$table->width = '100%';
 	$table->class = 'databox data';
 	$table->cellpadding = 4;

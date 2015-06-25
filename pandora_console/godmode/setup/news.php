@@ -143,7 +143,7 @@ if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 	}
 	
 	// Create news
-	
+	$table = new stdClass();
 	$table->width = '100%';
 	$table->id = "news";
 	$table->cellpadding = 4;

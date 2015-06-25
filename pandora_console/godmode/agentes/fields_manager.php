@@ -86,6 +86,7 @@ if ($delete_field) {
 
 $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox data';
 if ($fields) {

@@ -51,6 +51,7 @@ $row = db_get_row_sql ("
 		MAX(timestamp) AS latest_date
 	FROM tevento");
 
+$table = new stdClass();
 $table->data = array ();
 $table->cellpadding = 4;
 $table->cellspacing = 4;

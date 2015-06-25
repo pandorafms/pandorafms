@@ -29,9 +29,10 @@ include_once($config['homedir'] . "/include/functions_profile.php");
 // Load enterprise extensions
 enterprise_include ('godmode/setup/setup_auth.php');
 
-
+$table = new StdClass();
 $table->data = array ();
-$table->width = '98%';
+$table->width = '100%';
+$tablw->class = 'databox filters';
 $table->size[0] = '30%';
 
 $table->data[0][0] = __('Authentication method');

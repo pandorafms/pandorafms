@@ -218,7 +218,7 @@ if (($filter_group == 0) && ($filter_search == '')) {
 	$search = false;
 }
 
-$table = null;
+$table = new stdClass();
 $table->width = '100%';
 $table->class = "databox filters";
 if(defined('METACONSOLE'))

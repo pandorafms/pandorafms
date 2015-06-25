@@ -145,6 +145,7 @@ if ($delete_special_day) {
 		__('Could not be deleted'));
 }
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox data';
 

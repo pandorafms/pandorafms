@@ -25,7 +25,7 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 }
 
 echo '<form id="form_setup" method="post">';
-$table = null;
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 

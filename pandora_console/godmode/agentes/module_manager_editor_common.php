@@ -112,7 +112,7 @@ if (strstr($page, "policy_modules") === false && $id_agent_module) {
 }
 
 $update_module_id = (int) get_parameter_get ('update_module');
-
+$table_simple = new stdClass();
 $table_simple->id = 'simple';
 $table_simple->width = '100%';
 $table_simple->class = 'databox';
@@ -291,6 +291,7 @@ else {
 }
 
 /* Advanced form part */
+$table_advanced = new stdClass();
 $table_advanced->id = 'advanced';
 $table_advanced->width = '100%';
 $table_advanced->class = 'databox filters';
@@ -555,6 +556,7 @@ else {
 }
 
 /* Advanced form part */
+$table_macros = new stdClass();
 $table_macros->id = 'module_macros';
 $table_macros->width = '100%';
 $table_macros->class = 'databox filters';
@@ -744,7 +746,7 @@ $(document).ready (function () {
 		
 		var type_name_selected = type_names[type_selected];
 		
-		if(type_name_selected.match(/_string$/) == null) {
+		if (type_name_selected.match(/_string$/) == null) {
 			// Numeric types
 			$('#string_critical').hide();
 			$('#string_warning').hide();
@@ -758,8 +760,8 @@ $(document).ready (function () {
 			$('#minmax_critical').hide();
 			$('#minmax_warning').hide();
 		}
-
-		if(type_name_selected.match(/async/) == null) {
+		
+		if (type_name_selected.match(/async/) == null) {
 			$('#ff_timeout').hide();
 			$('#ff_timeout_disable').show();
 		}
@@ -770,7 +772,7 @@ $(document).ready (function () {
 	});
 	
 	$("#id_module_type").trigger('change');
-
+	
 	// Prevent the form submission when the user hits the enter button from the relationship autocomplete inputs
 	$("#text-autocomplete_agent_name").keydown(function(event) {
 		if(event.keyCode == 13) { // key code 13 is the enter button
@@ -846,7 +848,8 @@ function change_modules_autocomplete_input () {
 							event.preventDefault();
 						}
 					});
-				} else {
+				}
+				else {
 					module_autocomplete.html(error_icon);
 				}
 			},
@@ -940,12 +943,12 @@ function change_lock_relation (num_row, id_relation) {
 	var button = row.find("#disable_updates_button");
 	var oldSrc = button.find("img").prop("src");
 	var isEnabled = button.hasClass('alpha50');
-
+	
 	if (row.length > 0 && !button.hasClass('working')) {
 		button.addClass('working');
 		button.removeClass('alpha50');
 		button.find("img").prop("src", 'images/spinner.gif');
-
+		
 		$.ajax({
 			type: "POST",
 			url: "ajax.php",
@@ -978,11 +981,11 @@ function delete_relation (num_row, id_relation) {
 	var row = $("#module_relations-" + num_row);
 	var button = row.find("#delete_relation_button");
 	var oldSrc = button.find("img").prop("src");
-
+	
 	if (row.length > 0 && !button.hasClass('working')) {
 		button.addClass('working');
 		button.find("img").prop("src", 'images/spinner.gif');
-
+		
 		$.ajax({
 			type: "POST",
 			url: "ajax.php",

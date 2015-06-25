@@ -30,9 +30,10 @@ $get_agents_group = (bool) get_parameter('get_agents_group', false);
 $force_local = (bool) get_parameter('force_local', false);
 
 if ($get_agents_group) {
-	$id_group = (int)get_parameter('id_group', -1);
-	$mode = (string)get_parameter('mode', 'json');
-	$id_server = (int)get_parameter('id_server', 0);
+	
+	$id_group = (int) get_parameter('id_group', -1);
+	$mode = (string) get_parameter('mode', 'json');
+	$id_server = (int) get_parameter('id_server', 0);
 	
 	$return = array();
 	if ($id_group != -1) {
@@ -56,8 +57,8 @@ if ($get_agents_group) {
 if ($search_agents && ((!defined('METACONSOLE')) || $force_local)) {
 	require_once ('include/functions_agents.php');
 	
-	$id_agent = (int) get_parameter ('id_agent');
-	$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */
+	$id_agent = (int) get_parameter('id_agent');
+	$string = (string) get_parameter('q'); /* q is what autocomplete plugin gives */
 	$id_group = (int) get_parameter('id_group', -1);
 	$addedItems = html_entity_decode((string) get_parameter('add'));
 	$addedItems = json_decode($addedItems);

@@ -70,7 +70,7 @@ check_login ();
 
 ui_print_page_header (__('Webchat'), "images/comments.png", false, "", false, "");
 
-$table = null;
+$table = new stdClass();
 
 $table->width = '100%';
 $table->class = 'databox filters';

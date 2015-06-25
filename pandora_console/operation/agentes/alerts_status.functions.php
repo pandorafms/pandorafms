@@ -39,6 +39,7 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	global $config;
 	require_once ($config['homedir'] . "/include/functions_tags.php");
 	
+	$table = new StdClass();
 	$table->width = '100%';
 	$table->class = 'databox filters';
 	$table->cellpadding = '0';

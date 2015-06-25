@@ -133,6 +133,7 @@ echo '&nbsp;<a href="index.php?sec=geventos&sec2=godmode/events/events&section=f
 html_print_image ('images/clean.png', false, array ('title' => __('Load default event fields'), 'onclick' => "if (! confirm ('" . __('Default event fields will be loaded. Do you want to continue?') ."')) return false"));
 echo '</a></h3>';
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 

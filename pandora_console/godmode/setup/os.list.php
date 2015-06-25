@@ -24,7 +24,7 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 	return;
 }
 
-$table = null;
+$table = new stdClass();
 
 $table->width = '100%';
 $table->class = 'databox data';

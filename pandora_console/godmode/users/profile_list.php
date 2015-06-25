@@ -288,6 +288,7 @@ if ($create_profile) {
 	$id_profile = 0;
 }
 
+$table = new stdClass();
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 $table->class = 'databox data';

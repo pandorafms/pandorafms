@@ -51,6 +51,7 @@ if ($date == '') {
 // Header
 ui_print_page_header (__('Alerts').' &raquo; '.__('Configure special day'), "images/gm_alerts.png", false, "", true);
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 

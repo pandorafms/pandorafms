@@ -40,6 +40,7 @@ if(empty($event_responses)) {
 	return;
 }
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox data';
 

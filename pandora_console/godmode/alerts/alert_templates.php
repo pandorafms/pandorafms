@@ -229,7 +229,7 @@ $url = ui_get_url_refresh (array ('offset' => false));
 
 $search_string = (string) get_parameter ('search_string');
 $search_type = (string) get_parameter ('search_type');
-
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 if (defined("METACONSOLE")) {
@@ -288,7 +288,7 @@ $templates = alerts_get_alert_templates ($filter,
 	array ('id', 'name', 'description', 'type', 'id_group'));
 if ($templates === false)
 	$templates = array ();
-
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox data';
 $table->data = array ();

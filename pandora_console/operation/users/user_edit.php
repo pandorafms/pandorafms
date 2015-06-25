@@ -179,6 +179,7 @@ if ($status != -1) {
 		__('Error updating user info'));
 }
 $jump = "&nbsp;&nbsp;";
+$table = new stdClass();
 $table->id = 'user_form';
 $table->width = '100%';
 $table->cellspacing = 4;

@@ -71,6 +71,7 @@ if ($read_message) {
 		$dst_name = $message["id_usuario_destino"];
 	}
 	
+	$table = new stdClass();
 	$table->width = '100%';
 	$table->class = 'databox filters';
 	$table->data = array();

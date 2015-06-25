@@ -52,6 +52,7 @@ if ($fields === false) {
 	ui_print_empty_data ( __("No fields defined") );
 }
 else {
+	$table = new stdClass();
 	$table->width = '100%';
 	$table->class = 'databox data';
 	$table->head = array ();

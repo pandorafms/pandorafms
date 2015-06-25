@@ -219,6 +219,7 @@ if ($id_profile || $new_profile) {
 		$page_title = __('Update profile');
 	}
 	
+	$table = new stdClass();
 	$table->width = '100%';
 	$table->class = 'databox filters';
 	if (defined("METACONSOLE")) {

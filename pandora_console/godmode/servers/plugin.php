@@ -230,6 +230,7 @@ if (($create != "") OR ($view != "")) {
 		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create_plugin=1&pure=" . $config['pure'] . "'>";
 	}
 	
+	$table = new stdClass();
 	$table->width = '100%';
 	$table->id = 'table-form';
 	$table->class = 'databox filters';
@@ -712,7 +713,7 @@ else {
 				'tnetwork_component',
 				array('id_plugin' => $row["id"]));
 			if (($components_using_plugin + $modules_using_plugin) > 0) {
-				echo "<a href='javascript: show_locked_dialog(" . $row['id'] . ");'>";
+				echo '<a href="javascript: show_locked_dialog(' . $row['id'] . ', \'' . $row["name"] . '\');">';
 				html_print_image('images/lock.png');
 				echo "</a>";
 			}
@@ -734,8 +735,9 @@ else {
 	echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";
 	echo "</td></tr></table>";
 	
+	// The '%s' will be replaced in the javascript code of the function 'show_locked_dialog'
 	echo "<div id='dialog_locked' title='" .
-		sprintf(__('List of modules and components created by "%s" '), $row["name"]) .
+		__('List of modules and components created by "%s" ') .
 		"' style='display: none; text-align: left;'>";
 	echo "</div>";
 	

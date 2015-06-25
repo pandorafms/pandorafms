@@ -96,11 +96,11 @@ if (!empty($result)) {
 	
 	// Prepare pagination
 	ui_pagination ($total_categories, $url);
-	
+
+	$table = new stdClass();	
 	$table->width = '100%';
 	$table->class = 'databox data';
-	if(defined('METACONSOLE'))
-		$table->width = '100%';
+
 	$table->data = array ();
 	$table->head = array ();
 	$table->align = array ();

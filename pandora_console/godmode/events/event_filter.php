@@ -96,6 +96,7 @@ $filters = db_get_all_rows_sql($sql);
 if ($filters === false)
 	$filters = array ();
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox data';
 

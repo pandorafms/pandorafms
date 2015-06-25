@@ -53,7 +53,8 @@ if ($action_update_url_update_manager) {
 }
 
 echo '<form method="post" action="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=setup">';
-$table = null;
+
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 

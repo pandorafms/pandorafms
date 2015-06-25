@@ -27,6 +27,7 @@ ui_print_page_header(__('GIS Maps')." &raquo; ".__('Summary'), "images/op_gis.pn
 
 $maps = gis_get_maps();
 
+$table = new stdClass();
 $table->width = "100%";
 $table->class = "databox data";
 $table->data = array ();

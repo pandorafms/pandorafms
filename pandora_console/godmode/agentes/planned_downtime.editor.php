@@ -318,8 +318,9 @@ if ($id_downtime > 0) {
 // when the planned down time is in execution, only action to postpone on once type is enabled and the other are disabled.
 $disabled_in_execution = $executed ? 1 : 0;
 
-$table->class = 'databox_color';
-$table->width = '98%';
+$table = new StdClass();
+$table->class = 'databox filters';
+$table->width = '100%';
 $table->data = array ();
 $table->data[0][0] = __('Name');
 $table->data[0][1] = html_print_input_text ('name', $name, '', 25, 40, true, $disabled_in_execution);
@@ -463,8 +464,8 @@ if ($id_downtime > 0) {
 html_print_table ($table);
 
 html_print_input_hidden ('id_agent', $id_agent);
-echo '<div class="action-buttons" style="width: 90%">';
-if ($id_downtime) {
+echo '<div class="action-buttons" style="width: 100%">';
+if ($id_downtime > 0) {
 	html_print_input_hidden ('update_downtime', 1);
 	html_print_input_hidden ('id_downtime', $id_downtime);
 	html_print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
@@ -485,18 +486,18 @@ if ($id_downtime > 0) {
 	$filter_group = get_parameter("filter_group", 0);
 	
 	$filter_cond = '';
-	if($filter_group > 0)
+	if ($filter_group > 0)
 		$filter_cond = " AND id_grupo = $filter_group ";
 	$sql = sprintf ("SELECT tagente.id_agente, tagente.nombre,
-			tagente.id_grupo
-		FROM tagente
-		WHERE tagente.id_agente NOT IN (
-				SELECT tagente.id_agente
-				FROM tagente, tplanned_downtime_agents
-				WHERE tplanned_downtime_agents.id_agent = tagente.id_agente
-					AND tplanned_downtime_agents.id_downtime = %d
-			) AND disabled = 0 $filter_cond
-		ORDER by tagente.nombre", $id_downtime);
+						tagente.id_grupo
+					FROM tagente
+					WHERE tagente.id_agente NOT IN (
+							SELECT tagente.id_agente
+							FROM tagente, tplanned_downtime_agents
+							WHERE tplanned_downtime_agents.id_agent = tagente.id_agente
+								AND tplanned_downtime_agents.id_downtime = %d
+						) AND disabled = 0 $filter_cond
+					ORDER by tagente.nombre", $id_downtime);
 	$downtimes = db_get_all_rows_sql ($sql);
 	$data = array ();
 	if ($downtimes) {
@@ -541,11 +542,11 @@ if ($id_downtime > 0) {
 	echo '<h4>'.__('Agents planned for this downtime').':</h4>';
 	
 	$sql = sprintf ("SELECT tagente.nombre, tplanned_downtime_agents.id,
-			tagente.id_os, tagente.id_agente, tagente.id_grupo,
-			tagente.ultimo_contacto, tplanned_downtime_agents.all_modules
-		FROM tagente, tplanned_downtime_agents
-		WHERE tplanned_downtime_agents.id_agent = tagente.id_agente
-			AND tplanned_downtime_agents.id_downtime = %d ", $id_downtime);
+						tagente.id_os, tagente.id_agente, tagente.id_grupo,
+						tagente.ultimo_contacto, tplanned_downtime_agents.all_modules
+					FROM tagente, tplanned_downtime_agents
+					WHERE tplanned_downtime_agents.id_agent = tagente.id_agente
+						AND tplanned_downtime_agents.id_downtime = %d ", $id_downtime);
 	
 	$downtimes = db_get_all_rows_sql ($sql);
 	if ($downtimes === false) {
@@ -553,9 +554,10 @@ if ($id_downtime > 0) {
 			__('There are no scheduled downtimes') . '</div>';
 	}
 	else {
+		$table = new stdClass();
 		$table->id = 'list';
-		$table->class = 'databox';
-		$table->width = '98%';
+		$table->class = 'databox data';
+		$table->width = '100%';
 		$table->data = array ();
 		$table->head = array ();
 		$table->head[0] = __('Name');
@@ -563,9 +565,12 @@ if ($id_downtime > 0) {
 		$table->head[2] = __('OS');
 		$table->head[3] = __('Last contact');
 		$table->head['count_modules'] = __('Modules');
-		$table->head[5] = __('Actions');
-		$table->align[5] = "center";
-		$table->size[5] = "5%";
+		
+		if (!$executed) {
+			$table->head[5] = __('Actions');
+			$table->align[5] = "center";
+			$table->size[5] = "5%";
+		}
 		
 		foreach ($downtimes as $downtime) {
 			$data = array ();
@@ -573,8 +578,8 @@ if ($id_downtime > 0) {
 			$data[0] = $downtime['nombre'];
 			
 			$data[1] = db_get_sql ("SELECT nombre
-				FROM tgrupo
-				WHERE id_grupo = " . $downtime["id_grupo"]);
+									FROM tgrupo
+									WHERE id_grupo = " . $downtime["id_grupo"]);
 			
 			$data[2] = ui_print_os_icon($downtime["id_os"], true, true);
 			
@@ -619,8 +624,9 @@ if ($id_downtime > 0) {
 	}
 }
 
-$table = null;
+$table = new stdClass();
 $table->id = 'loading';
+$table->width = '100%';
 $table->colspan['loading'][0] = '6';
 $table->style[0] = 'text-align: center;';
 $table->data = array();
@@ -630,8 +636,9 @@ echo "<div style='display: none;'>";
 html_print_table ($table);
 echo "</div>";
 
-$table = null;
+$table = new stdClass();
 $table->id = 'editor';
+$table->width = '100%';
 $table->colspan['module'][1] = '5';
 $table->data = array();
 $table->data['module'] = array();
@@ -640,7 +647,7 @@ $table->data['module'][1] = "<h4>" . __('Modules') . "</h4>";
 
 //List of modules, empty, it is populated by javascript.
 $table->data['module'][1] = "
-	<table cellspacing='4' cellpadding='4' border='0' width='98%'
+	<table cellspacing='4' cellpadding='4' border='0' width='100%'
 		id='modules_in_agent' class='databox_color'>
 		<thead>
 			<tr>
@@ -651,7 +658,7 @@ $table->data['module'][1] = "
 		<tbody>
 			<tr class='datos' id='template' style='display: none;'>
 				<td class='name_module' style=''></td>
-				<td class='cell_delete_button' style='text-align: center; width:10%;' id=''>"
+				<td class='cell_delete_button' style='text-align: right; width:10%;' id=''>"
 					. '<a class="link_delete"
 						onclick="if(!confirm(\'' . __('Are you sure?') . '\')) return false;"
 						href="">'
@@ -665,7 +672,7 @@ $table->data['module'][1] = "
 					. html_print_select(array(),
 						'modules', '', '', '', 0, true)
 				. "</td>
-				<td class='datos2 button_cell' style='text-align: center; width:10%;' id=''>"
+				<td class='datos2 button_cell' style='text-align: right; width:10%;' id=''>"
 					. '<div id="add_button_div">'
 					. '<a class="add_button" href="">'
 					. html_print_image("images/add.png", true,
@@ -976,8 +983,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 		$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 		
 		
-		$("#filter_group").click (
-		function () {
+		$("#filter_group").click (function () {
 			$(this).css ("width", "auto");
 		});
 		
@@ -985,8 +991,7 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 			$(this).css ("width", "180px");
 		});
 		
-		$("#id_agent").click (
-		function () {
+		$("#id_agent").click (function () {
 			$(this).css ("width", "auto");
 		});
 		

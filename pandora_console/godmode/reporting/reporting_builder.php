@@ -466,6 +466,7 @@ switch ($action) {
 		$table = new stdClass();
 		$table->width = '0px';
 		if (sizeof ($reports)) {
+			$table = new stdClass();
 			$table->id = 'report_list';
 			$table->width = '100%';
 			$table->class = 'databox data';
@@ -512,7 +513,7 @@ switch ($action) {
 				$next++;
 				$table->head[$next] = __('Group');
 				$table->size[$next] = '15%';
-
+				
 				$next++;
 				if(!defined('METACONSOLE'))
 					$table->head[$next] = '<span title="Operations">' .

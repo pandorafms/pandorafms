@@ -64,6 +64,7 @@ switch ($action) {
 
 ui_print_page_header (__('GIS Maps builder'), "images/gm_gis.png", false, "gis_map_builder", true);
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox data';
 $table->head[0] = __('Map name');

@@ -307,7 +307,7 @@ switch ($action) {
 		break;
 }
 
-
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 

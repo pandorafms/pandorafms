@@ -247,6 +247,7 @@ else {
 }
 $color=1;
 if ($result !== false) {
+	$table = new StdClass();
 	$table->head = array  (__('Name'), __('Network'), __('Mode'), __('Group'), __('Incident'), __('OS'), __('Interval'), __('Ports'), __('Action'));
 	$table->align = array ("left","left","left","left","left","left","left","left");
 	$table->width = "100%";

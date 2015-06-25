@@ -185,13 +185,13 @@ switch ($config["dbtype"]) {
 		
 		render_info_data ("SELECT value
 			FROM tupdate_settings
-			WHERE key = 'customer_key'", "Update Key");
+			WHERE \"key\" = 'customer_key'", "Update Key");
 		render_info_data ("SELECT value
 			FROM tupdate_settings
-			WHERE key = 'updating_code_path'", "Updating code path");
+			WHERE \"key\" = 'updating_code_path'", "Updating code path");
 		render_info_data ("SELECT value
 			FROM tupdate_settings
-			WHERE key = 'current_update'", "Current Update #");
+			WHERE \"key\" = 'current_update'", "Current Update #");
 		break;
 }
 

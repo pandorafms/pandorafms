@@ -33,7 +33,7 @@ switch ($config['dbtype']) {
 		$type_escaped = "type";
 		break;
 	case "oracle":
-		$type_escaped = db_encapsule_fields_with_same_name_to_instructions(
+		$type_escaped = db_escape_key_identifier(
 			"type");
 		break;
 }

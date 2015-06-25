@@ -1956,7 +1956,7 @@ CREATE OR REPLACE TRIGGER tcategory_inc BEFORE INSERT ON tcategory REFERENCING N
 -- Table `tupdate_settings`
 -- ---------------------------------------------------------------------
 CREATE TABLE tupdate_settings ( 
-	key VARCHAR2(255) DEFAULT '' PRIMARY KEY, 
+	"key" VARCHAR2(255) DEFAULT '' PRIMARY KEY, 
 	value VARCHAR2(255) DEFAULT ''
 );
 

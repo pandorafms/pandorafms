@@ -167,7 +167,7 @@ function config_update_config () {
 						$license_info_key = get_parameter('license_info_key', '');
 						if (!empty($license_info_key)) {
 							$values = array("value" => $license_info_key);
-							$where = array("key" => 'customer_key');
+							$where = array(db_escape_key_identifier('key') => 'customer_key');
 							$update_manage_settings_result = db_process_sql_update('tupdate_settings', $values, $where);
 							if ($update_manage_settings_result === false)
 								$error_update[] = __('License information');

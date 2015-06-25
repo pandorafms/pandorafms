@@ -28,6 +28,11 @@ var obj_js_user_lines = null;
 
 var SIZE_GRID = 16; //Const the size (for width and height) of grid.
 
+var img_handler_start;
+var img_handler_end;
+
+var font;
+
 function toggle_advance_options_palette(close) {
 	if ($("#advance_options").css('display') == 'none') {
 		$("#advance_options").css('display', '');
@@ -43,6 +48,25 @@ function toggle_advance_options_palette(close) {
 
 // Main function, execute in event documentReady
 function visual_map_main() {
+	img_handler_start= get_image_url("images/dot_red.png");
+	img_handler_end= get_image_url("images/dot_green.png");
+	
+	//Get the actual system font.
+	parameter = Array();
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
+	parameter.push ({name: "action", value: "get_font"});
+	parameter.push ({name: "id_visual_console",
+		value: id_visual_console});
+	jQuery.ajax({
+		url: get_url_ajax(),
+		data: parameter,
+		type: "POST",
+		dataType: 'json',
+		success: function (data)
+		{
+			font = data['font'];
+		}
+	});
 	
 	//Get the list of posible parents
 	parents = Base64.decode($("input[name='parents_load']").val());
@@ -95,13 +119,28 @@ function cancel_button_palette_callback() {
 	}
 }
 
-function update_button_palette_callback() {
-	metaconsole = $("input[name='metaconsole']").val();
-	
-	var url_ajax = "ajax.php";
-	if (metaconsole != 0) {
-		url_ajax = "../../ajax.php";
+function get_url_ajax() {
+	if (is_metaconsole()) {
+		return "../../ajax.php";
 	}
+	else {
+		return "ajax.php";
+	}
+}
+
+var metaconsole = null;
+function is_metaconsole() {
+	if (metaconsole === null)
+		metaconsole = $("input[name='metaconsole']").val();
+	
+	if (metaconsole != 0)
+		return true;
+	else
+		return false;
+}
+
+function update_button_palette_callback() {
+	
 	
 	var values = {};
 	
@@ -121,21 +160,8 @@ function update_button_palette_callback() {
 			
 			//$("#background").css('background', 'url(images/console/background/' + values['background'] + ')');
 			
-			var params = [];
-			params.push("get_image_path=1");
-			params.push("img_src=images/console/background/" + values['background']);
-			params.push("page=include/ajax/skins.ajax");
-			params.push("only_src=1");
-			jQuery.ajax ({
-				data: params.join ("&"),
-				type: 'POST',
-				url: url_ajax,
-				async: false,
-				timeout: 10000,
-				success: function (data) {
-					$("#background_img").attr('src', data);
-				}
-			});
+			$("#background_img").attr('src', "images/spinner.gif");
+			set_image("background", null, image);
 			
 			idElement = 0;
 			break;
@@ -166,41 +192,31 @@ function update_button_palette_callback() {
 		case 'percentile_bar':
 		case 'percentile_item':
 			$("#text_" + idItem).html(values['label']);
+			$("#image_" + idItem).attr("src", "images/spinner.gif");
 			if (values['type_percentile'] == 'bubble') {
-				$("#image_" + idItem).attr('src', getPercentileBubble(idItem, values));
+				setPercentileBubble(idItem, values);
 			}
 			else {
-				$("#image_" + idItem).attr('src', getPercentileBar(idItem, values));
+				setPercentileBar(idItem, values);
 			}
 			
 			break;
 		case 'module_graph':
 			$("#text_" + idItem).html(values['label']);
-			$("#image_" + idItem).attr('src', getModuleGraph(idItem));
+			$("#image_" + idItem).attr("src", "images/spinner.gif");
+			setModuleGraph(idItem);
 			break;
 		case 'simple_value':
 			$("#text_" + idItem).html(values['label']);
-			$("#simplevalue_" + idItem).html(getModuleValue(idItem,values['process_simple_value'], values['period']));
+			$("#simplevalue_" + idItem)
+				.html($('<img></img>').attr('src', "images/spinner.gif"));
+			setModuleValue(idItem,values['process_simple_value'], values['period']);
 			break;
 		case 'label':
 			$("#text_" + idItem).html(values['label']);
 			break;
 		case 'icon':
-			var params = [];
-			params.push("get_image_path=1");
-			params.push("img_src=images/console/icons/" + values['image'] + ".png");
-			params.push("page=include/ajax/skins.ajax");
-			params.push("only_src=1");
-			jQuery.ajax ({
-				data: params.join ("&"),
-				type: 'POST',
-				url: url_ajax,
-				async: false,
-				timeout: 10000,
-				success: function (data) {
-					$("#image_" + idItem).attr('src', data);
-				}
-			});
+			$("#image_" + idItem).attr('src', "images/spinner.gif");
 			
 			if ((values['width'] != 0) && (values['height'] != 0)) {
 				$("#image_" + idItem).attr('width', values['width']);
@@ -214,6 +230,8 @@ function update_button_palette_callback() {
 				$("#" + idItem).css('width', '');
 				$("#" + idItem).css('height', '');
 			}
+			
+			set_image("image", idItem, values['image']);
 			break;
 		default:
 			//Maybe save in any Enterprise item.
@@ -274,7 +292,7 @@ function readFields() {
 		$("input[name='line_width']").val());
 	values['line_color'] = $("input[name='line_color']").val();
 	
-	if (metaconsole != 0) {
+	if (is_metaconsole()) {
 		values['metaconsole'] = 1;
 		values['id_agent'] = $("#hidden-agent").val();
 		values['server_name'] = $("#id_server_name").val();
@@ -665,12 +683,18 @@ function fill_parent_select(id_item) {
 }
 
 function loadFieldsFromDB(item) {
-	metaconsole = $("input[name='metaconsole']").val();
+	$("#loading_in_progress_dialog").dialog({
+		resizable: true,
+		draggable: true,
+		modal: true,
+		height: 100,
+		width: 200,
+		overlay: {
+			opacity: 0.5,
+			background: "black"
+		}
+	});
 	
-	var url_ajax = "ajax.php";
-	if (metaconsole != 0) {
-		url_ajax = "../../ajax.php";
-	}
 	
 	parameter = Array();
 	parameter.push ({name: "page",
@@ -684,200 +708,201 @@ function loadFieldsFromDB(item) {
 	set_label = false;
 	
 	jQuery.ajax({
-		async: false,
-		url: url_ajax,
+		url: get_url_ajax(),
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
-		success: function (data)
-			{
-				var moduleId = 0;
+		success: function (data) {
+			var moduleId = 0;
+			
+			fill_parent_select(idItem);
+			
+			jQuery.each(data, function(key, val) {
+				if (key == 'background')
+					$("#background_image").val(val);
+				if (key == 'width') $("input[name=width]").val(val);
+				if (key == 'height')
+					$("input[name=height]").val(val);
 				
-				fill_parent_select(idItem);
+				if (key == 'label') {
+					tinymce.get('text-label')
+						.setContent("");
+					$("input[name=label]").val("");
+					
+					tinymce.get('text-label').setContent(val);
+					$("input[name=label]").val(val);
+				}
 				
-				jQuery.each(data, function(key, val) {
-					if (key == 'background')
-						$("#background_image").val(val);
-					if (key == 'width') $("input[name=width]").val(val);
-					if (key == 'height')
-						$("input[name=height]").val(val);
-					
-					if (key == 'label') {
-						tinymce.get('text-label')
-							.setContent("");
-						$("input[name=label]").val("");
-						
-						tinymce.get('text-label').setContent(val);
-						$("input[name=label]").val(val);
-					}
-					
-					if (key == 'enable_link') {
-						if (val == "1") {
-							$("input[name=enable_link]")
-								.prop("checked", true);
-						}
-						else {
-							$("input[name=enable_link]")
-								.prop("checked", false);
-						}
-					}
-					
-					if (key == 'image') {
-						//Load image preview
-						$("select[name=image]").val(val);
-						$("select[name=background_color]").val(val);
-						showPreview(val);
-					}
-					
-					if (key == 'pos_x') $("input[name=left]").val(val);
-					if (key == 'pos_y') $("input[name=top]").val(val);
-					if (key == 'agent_name') {
-						$("input[name=agent]").val(val);
-						//Reload no-sincrone the select of modules
-					}
-					if (key == 'modules_html') {
-						$("select[name=module]").empty().html(val);
-						$("select[name=module]").val(moduleId);
-					}
-					if (key == 'id_agente_modulo') {
-						moduleId = val;
-						$("select[name=module]").val(val);
-					}
-					if (key == 'process_value')
-						$("select[name=process_value]").val(val);
-					if (key == 'period') {
-						var anySelected = false;
-						var periodId = $('#hidden-period').attr('class');
-						$('#' + periodId + '_select option')
-							.each(function() {
-							
-							if($(this).val() == val) {
-								$(this).attr('selected',true);
-								$(this).trigger('change');
-								anySelected = true;
-							}
-						});
-						if (anySelected == false) {
-							$('#' + periodId + '_select option')
-								.eq(0).attr('selected',true);
-							$('#' + periodId + '_units option')
-								.eq(0).attr('selected',true);
-							$('#hidden-period').val(val);
-							$('#text-' + periodId + '_text').val(val);
-							adjustTextUnits(periodId);
-							$('#' + periodId + '_default').hide();
-							$('#' + periodId + '_manual').show();
-						}
-					}
-					if (key == 'width')
-						$("input[name=width]").val(val);
-					if (key == 'height')
-						$("input[name=height]").val(val);
-					if (key == 'parent_item')
-						$("select[name=parent]").val(val);
-					if (key == 'id_layout_linked')
-						$("select[name=map_linked]").val(val);
-					if (key == 'width_percentile')
-						$("input[name=width_percentile]").val(val);
-					if (key == 'max_percentile')
-						$("input[name=max_percentile]").val(val);
-					if (key == 'width_module_graph')
-						$("input[name=width_module_graph]").val(val);
-					if (key == 'height_module_graph')
-						$("input[name=height_module_graph]").val(val);
-					
-					if (key == 'type_percentile') {
-						if (val == 'percentile') {
-							$("input[name=type_percentile][value=percentile]")
-								.attr("checked", "checked");
-						}
-						else {
-							$("input[name=type_percentile][value=bubble]")
-								.attr("checked", "checked");
-						}
-					}
-					
-					if (key == 'value_show') {
-						if (val == 'percent') {
-							$("input[name=value_show][value=percent]")
-								.attr("checked", "checked");
-						}
-						else {
-							$("input[name=value_show][value=value]")
-								.attr("checked", "checked");
-						}
-					}
-					
-					if (key == 'id_group') {
-						$("select[name=group]").val(val);
-					}
-					
-					
-					if (metaconsole != 0) {
-						if (key == 'id_agent') {
-							$("#hidden-agent").val(val);
-						}
-						if (key == 'id_server_name') {
-							$("#id_server_name").val(val);
-						}
-					}
-					
-					if (key == 'width_box')
-						$("input[name='width_box']").val(val);
-					if (key == 'height_box')
-						$("input[name='height_box']").val(val);
-					if (key == 'border_color') {
-						$("input[name='border_color']").val(val);
-						$("#border_color_row .ColorPickerDivSample")
-							.css('background-color', val);
-					}
-					if (key == 'border_width')
-						$("input[name='border_width']").val(val);
-					if (key == 'fill_color') {
-						$("input[name='fill_color']").val(val);
-						$("#fill_color_row .ColorPickerDivSample")
-							.css('background-color', val);
-					}
-					if (key == 'line_width')
-						$("input[name='line_width']").val(val);
-					if (key == 'line_color') {
-						$("input[name='line_color']").val(val);
-						$("#line_color_row .ColorPickerDivSample")
-							.css('background-color', val);
-					}
-					
-				});
-				
-				if (data.type == 1) {
-					if (data.id_custom_graph > 0) {
-						$("input[name='radio_choice'][value='custom_graph']")
-							.prop('checked', true);
-						$("input[name='radio_choice']").trigger('change');
-						$("#custom_graph option[value=" + data.id_custom_graph + "]")
-							.prop("selected", true);
+				if (key == 'enable_link') {
+					if (val == "1") {
+						$("input[name=enable_link]")
+							.prop("checked", true);
 					}
 					else {
-						$("input[name='radio_choice'][value='module_graph']")
-							.prop('checked', true);
-						$("input[name='radio_choice']").trigger('change');
+						$("input[name=enable_link]")
+							.prop("checked", false);
 					}
 				}
 				
-				if (typeof(enterprise_loadFieldsFromDB) == 'function') {
-					enterprise_loadFieldsFromDB(data);
+				if (key == 'image') {
+					//Load image preview
+					$("select[name=image]").val(val);
+					$("select[name=background_color]").val(val);
+					showPreview(val);
+				}
+				
+				if (key == 'pos_x') $("input[name=left]").val(val);
+				if (key == 'pos_y') $("input[name=top]").val(val);
+				if (key == 'agent_name') {
+					$("input[name=agent]").val(val);
+					//Reload no-sincrone the select of modules
+				}
+				if (key == 'modules_html') {
+					$("select[name=module]").empty().html(val);
+					$("select[name=module]").val(moduleId);
+				}
+				if (key == 'id_agente_modulo') {
+					moduleId = val;
+					$("select[name=module]").val(val);
+				}
+				if (key == 'process_value')
+					$("select[name=process_value]").val(val);
+				if (key == 'period') {
+					var anySelected = false;
+					var periodId = $('#hidden-period').attr('class');
+					$('#' + periodId + '_select option')
+						.each(function() {
+						
+						if($(this).val() == val) {
+							$(this).attr('selected',true);
+							$(this).trigger('change');
+							anySelected = true;
+						}
+					});
+					if (anySelected == false) {
+						$('#' + periodId + '_select option')
+							.eq(0).attr('selected',true);
+						$('#' + periodId + '_units option')
+							.eq(0).attr('selected',true);
+						$('#hidden-period').val(val);
+						$('#text-' + periodId + '_text').val(val);
+						adjustTextUnits(periodId);
+						$('#' + periodId + '_default').hide();
+						$('#' + periodId + '_manual').show();
+					}
+				}
+				if (key == 'width')
+					$("input[name=width]").val(val);
+				if (key == 'height')
+					$("input[name=height]").val(val);
+				if (key == 'parent_item')
+					$("select[name=parent]").val(val);
+				if (key == 'id_layout_linked')
+					$("select[name=map_linked]").val(val);
+				if (key == 'width_percentile')
+					$("input[name=width_percentile]").val(val);
+				if (key == 'max_percentile')
+					$("input[name=max_percentile]").val(val);
+				if (key == 'width_module_graph')
+					$("input[name=width_module_graph]").val(val);
+				if (key == 'height_module_graph')
+					$("input[name=height_module_graph]").val(val);
+				
+				if (key == 'type_percentile') {
+					if (val == 'percentile') {
+						$("input[name=type_percentile][value=percentile]")
+							.attr("checked", "checked");
+					}
+					else {
+						$("input[name=type_percentile][value=bubble]")
+							.attr("checked", "checked");
+					}
+				}
+				
+				if (key == 'value_show') {
+					if (val == 'percent') {
+						$("input[name=value_show][value=percent]")
+							.attr("checked", "checked");
+					}
+					else {
+						$("input[name=value_show][value=value]")
+							.attr("checked", "checked");
+					}
+				}
+				
+				if (key == 'id_group') {
+					$("select[name=group]").val(val);
+				}
+				
+				
+				if (is_metaconsole()) {
+					if (key == 'id_agent') {
+						$("#hidden-agent").val(val);
+					}
+					if (key == 'id_server_name') {
+						$("#id_server_name").val(val);
+					}
+				}
+				
+				if (key == 'width_box')
+					$("input[name='width_box']").val(val);
+				if (key == 'height_box')
+					$("input[name='height_box']").val(val);
+				if (key == 'border_color') {
+					$("input[name='border_color']").val(val);
+					$("#border_color_row .ColorPickerDivSample")
+						.css('background-color', val);
+				}
+				if (key == 'border_width')
+					$("input[name='border_width']").val(val);
+				if (key == 'fill_color') {
+					$("input[name='fill_color']").val(val);
+					$("#fill_color_row .ColorPickerDivSample")
+						.css('background-color', val);
+				}
+				if (key == 'line_width')
+					$("input[name='line_width']").val(val);
+				if (key == 'line_color') {
+					$("input[name='line_color']").val(val);
+					$("#line_color_row .ColorPickerDivSample")
+						.css('background-color', val);
+				}
+				
+			});
+			
+			if (data.type == 1) {
+				if (data.id_custom_graph > 0) {
+					$("input[name='radio_choice'][value='custom_graph']")
+						.prop('checked', true);
+					$("input[name='radio_choice']").trigger('change');
+					$("#custom_graph option[value=" + data.id_custom_graph + "]")
+						.prop("selected", true);
+				}
+				else {
+					$("input[name='radio_choice'][value='module_graph']")
+						.prop('checked', true);
+					$("input[name='radio_choice']").trigger('change');
 				}
 			}
-		});
+			
+			if (typeof(enterprise_loadFieldsFromDB) == 'function') {
+				enterprise_loadFieldsFromDB(data);
+			}
+			
+			$("#loading_in_progress_dialog").dialog("close");
+		}
+	});
 }
 
 function setAspectRatioBackground(side) {
+	toggle_item_palette();
+	
 	parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_original_size_background"});
 	parameter.push ({name: "background", value: $("#background_img").attr('src')});
 	
 	jQuery.ajax({
-		async: false,
 		url: "ajax.php",
 		data: parameter,
 		type: "POST",
@@ -916,7 +941,7 @@ function setAspectRatioBackground(side) {
 		}
 	});
 	
-	toggle_item_palette();
+	
 }
 
 function hiddenFields(item) {
@@ -1098,28 +1123,113 @@ function cleanFields(item) {
 	
 }
 
-function getModuleGraph(id_data) {
-	metaconsole = $("input[name='metaconsole']").val();
+function set_static_graph_status(idElement, image, status) {
+	$("#image_" + idElement).attr('src', "images/spinner.gif");
 	
-	var url_ajax = "ajax.php";
-	if (metaconsole != 0) {
-		url_ajax = "../../ajax.php";
+	if (typeof(status) == 'undefined') {
+		var parameter = Array();
+		parameter.push ({
+			name: "page",
+			value: "include/ajax/visual_console_builder.ajax"});
+		parameter.push ({
+			name: "get_element_status",
+			value: "1"});
+		parameter.push ({
+			name: "id_element",
+			value: idElement});
+		parameter.push ({name: "id_visual_console",
+			value: id_visual_console});
+		
+		if (is_metaconsole()) {
+			parameter.push ({name: "metaconsole", value: 1});
+		}
+		else {
+			parameter.push ({name: "metaconsole", value: 0});
+		}
+		
+		$('#hidden-status_' + idElement).val(3);
+		jQuery.ajax ({
+			type: 'POST',
+			url: get_url_ajax(),
+			data: parameter,
+			success: function (data) {
+				set_static_graph_status(idElement, image, data);
+			}
+		});
+		
+		return;
 	}
 	
+	switch (status) {
+		case '1':
+			//Critical (BAD)
+			suffix = "_bad.png";
+			break;
+		case '4':
+			//Critical (ALERT)
+			suffix = "_bad.png";
+			break;
+		case '0':
+			//Normal (OK)
+			suffix = "_ok.png";
+			break;
+		case '2':
+			//Warning
+			suffix = "_warning.png";
+			break;
+		case '3':
+		default:
+			//Unknown
+			suffix = ".png";
+			break;
+	}
+	
+	set_image("image", idElement, image  + suffix);
+}
+
+function set_image(type, idElement, image) {
+	if (type == "image") {
+		item = "#image_" + idElement;
+		img_src = "images/console/icons/" + image;
+	}
+	else if (type == "background") {
+		item = "background_img";
+		img_src = "images/console/background/" + image;
+	}
+	
+	var params = [];
+	params.push("get_image_path=1");
+	params.push("img_src=" + img_src);
+	params.push("page=include/ajax/skins.ajax");
+	params.push("only_src=1");
+	params.push ({name: "id_visual_console",
+		value: id_visual_console});
+	jQuery.ajax ({
+		data: params.join ("&"),
+		type: 'POST',
+		url: get_url_ajax(),
+		success: function (data) {
+			$(item).attr('src', data);
+		}
+	});
+}
+
+function setModuleGraph(id_data) {
 	var parameter = Array();
 	
 	parameter.push ({name: "page",
 		value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_layout_data"});
 	parameter.push ({name: "id_element", value: id_data});
+	parameter.push ({name: "id_visual_console",
+			value: id_visual_console});
+	
 	jQuery.ajax({
-		async: false,
-		url: url_ajax,
+		url: get_url_ajax(),
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
-		success: function (data)
-		{
+		success: function (data) {
 			id_agente_modulo = data['id_agente_modulo'];
 			id_custom_graph = data['id_custom_graph'];
 			label = data['label'];
@@ -1128,80 +1238,69 @@ function getModuleGraph(id_data) {
 			period = data['period'];
 			background_color = data['image'];
 			
-			if (metaconsole != 0) {
+			if (is_metaconsole()) {
 				id_metaconsole = data['id_metaconsole'];
 			}
+			
+			//Cleaned array
+			parameter = Array();
+			
+			parameter.push ({name: "page",
+				value: "include/ajax/visual_console_builder.ajax"});
+			parameter.push ({name: "action", value: "get_image_sparse"});
+			parameter.push ({name: "id_agent_module", value: id_agente_modulo});
+			parameter.push ({name: "id_custom_graph", value: id_custom_graph});
+			if (is_metaconsole()) {
+				parameter.push ({name: "id_metaconsole", value: id_metaconsole});
+			}
+			parameter.push ({name: "height", value: height});
+			parameter.push ({name: "width", value: width});
+			parameter.push ({name: "period", value: period});
+			parameter.push ({name: "background_color", value: background_color});
+			parameter.push ({name: "id_visual_console",
+					value: id_visual_console});
+			jQuery.ajax({
+				url: get_url_ajax(),
+				data: parameter,
+				type: "POST",
+				dataType: 'text', //The ajax return the data as text.
+				success: function (data)
+				{
+					$("#image_" + id_data).attr('src', data);
+				}
+			});
 		}
 	});
 	
-	//Cleaned array
-	parameter = Array();
 	
-	parameter.push ({name: "page",
-		value: "include/ajax/visual_console_builder.ajax"});
-	parameter.push ({name: "action", value: "get_image_sparse"});
-	parameter.push ({name: "id_agent_module", value: id_agente_modulo});
-	parameter.push ({name: "id_custom_graph", value: id_custom_graph});
-	if (metaconsole != 0) {
-		parameter.push ({name: "id_metaconsole", value: id_metaconsole});
-	}
-	parameter.push ({name: "height", value: height});
-	parameter.push ({name: "width", value: width});
-	parameter.push ({name: "period", value: period});
-	parameter.push ({name: "background_color", value: background_color});
-	jQuery.ajax({
-		async: false,
-		url: url_ajax,
-		data: parameter,
-		type: "POST",
-		dataType: 'text', //The ajax return the data as text.
-		success: function (data)
-		{
-			img = data;
-		}
-	});
-	
-	return img;
 }
 
-function getModuleValue(id_data, process_simple_value, period) {
-	metaconsole = $("input[name='metaconsole']").val();
-	
-	var url_ajax = "ajax.php";
-	if (metaconsole != 0) {
-		url_ajax = "../../ajax.php";
-	}
-	
+function setModuleValue(id_data, process_simple_value, period) {
 	var parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_value"});
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "period", value: period});
-	if(process_simple_value != undefined) {
+	if (process_simple_value != undefined) {
 		parameter.push ({name: "process_simple_value", value: process_simple_value});
 	}
 	jQuery.ajax({
-		async: false,
-		url: url_ajax,
+		url: get_url_ajax(),
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
 		success: function (data)
 		{
-			module_value = data['value'];
+			$("#simplevalue_" + id_data).html(data['value']);
 		}
 	});
-	
-	return module_value;
 }
 
-function getPercentileBar(id_data, values) {
+function setPercentileBar(id_data, values) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
-	var url_ajax = "ajax.php";
 	var url_hack_metaconsole = '';
-	if (metaconsole != 0) {
-		url_ajax = "../../ajax.php";
+	if (is_metaconsole()) {
 		url_hack_metaconsole = '../../';
 	}
 	
@@ -1215,13 +1314,11 @@ function getPercentileBar(id_data, values) {
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "value_show", value: values['value_show']});
 	jQuery.ajax({
-		async: false,
-		url: url_ajax,
+		url: get_url_ajax(),
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
-		success: function (data)
-		{
+		success: function (data) {
 			module_value = data['value'];
 			//max_percentile = data['max_percentile'];
 			//width_percentile = data['width_percentile'];
@@ -1232,53 +1329,33 @@ function getPercentileBar(id_data, values) {
 			}
 			
 			colorRGB = data['colorRGB'];
+			
+			if ( max_percentile > 0)
+				var percentile = Math.round(module_value / max_percentile * 100);
+			else
+				var percentile = 100;
+			
+			if (unit_text == false && typeof(unit_text) == 'boolean') {
+				value_text = percentile + "%";
+			}
+			else {
+				value_text = module_value + " " + unit_text;
+			}
+			
+			var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&height=15&' + 
+				'width=' + width_percentile + '&mode=1&progress=' + percentile +
+				'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
+			
+			$("#image_" + idItem).attr('src', img);
 		}
 	});
-	
-	
-	//Get the actual system font.
-	parameter = Array();
-	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
-	parameter.push ({name: "action", value: "get_font"});
-	jQuery.ajax({
-		async: false,
-		url: url_ajax,
-		data: parameter,
-		type: "POST",
-		dataType: 'json',
-		success: function (data)
-		{
-			font = data['font'];
-		}
-	});
-	
-	
-	if ( max_percentile > 0)
-		var percentile = Math.round(module_value / max_percentile * 100);
-	else
-		var percentile = 100;
-	
-	if (unit_text == false && typeof(unit_text) == 'boolean') {
-		value_text = percentile + "%";
-	}
-	else {
-		value_text = module_value + " " + unit_text;
-	}
-	
-	var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&height=15&' + 
-		'width=' + width_percentile + '&mode=1&progress=' + percentile +
-		'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
-	
-	return img;
 }
 
-function getPercentileBubble(id_data, values) {
+function setPercentileBubble(id_data, values) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
-	var url_ajax = "ajax.php";
 	var url_hack_metaconsole = '';
-	if (metaconsole != 0) {
-		url_ajax = "../../ajax.php";
+	if (is_metaconsole()) {
 		url_hack_metaconsole = '../../';
 	}
 	
@@ -1292,13 +1369,11 @@ function getPercentileBubble(id_data, values) {
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "value_show", value: values['value_show']});
 	jQuery.ajax({
-		async: false,
-		url: url_ajax,
+		url: get_url_ajax(),
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
-		success: function (data)
-		{
+		success: function (data) {
 			module_value = data['value'];
 			//max_percentile = data['max_percentile'];
 			//width_percentile = data['width_percentile'];
@@ -1306,45 +1381,26 @@ function getPercentileBubble(id_data, values) {
 			if ((data['unit_text'] != false) || typeof(data['unit_text']) != 'boolean')
 				unit_text = data['unit_text'];
 			colorRGB = data['colorRGB'];
+			
+			if ( max_percentile > 0)
+				var percentile = Math.round(module_value / max_percentile * 100);
+			else
+				var percentile = 100;
+			
+			if (unit_text == false && typeof(unit_text) == 'boolean') {
+				value_text = percentile + "%";
+			}
+			else {
+				value_text = module_value + " " + unit_text;
+			}
+			
+			var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble&height=' + width_percentile + '&' + 
+				'width=' + width_percentile + '&mode=1&progress=' + percentile +
+				'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
+			
+			$("#image_" + idItem).attr('src', img);
 		}
 	});
-	
-	
-	//Get the actual system font.
-	parameter = Array();
-	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
-	parameter.push ({name: "action", value: "get_font"});
-	jQuery.ajax({
-		async: false,
-		url: url_ajax,
-		data: parameter,
-		type: "POST",
-		dataType: 'json',
-		success: function (data)
-		{
-			font = data['font'];
-		}
-	});
-	
-	
-	if ( max_percentile > 0)
-		var percentile = Math.round(module_value / max_percentile * 100);
-	else
-		var percentile = 100;
-	
-	if (unit_text == false && typeof(unit_text) == 'boolean') {
-		value_text = percentile + "%";
-	}
-	else {
-		value_text = module_value + " " + unit_text;
-	}
-	
-	var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble&height=' + width_percentile + '&' + 
-		'width=' + width_percentile + '&mode=1&progress=' + percentile +
-		'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
-	
-	
-	return img;
 }
 
 function get_image_url(img_src) {
@@ -1354,19 +1410,16 @@ function get_image_url(img_src) {
 	parameter.push ({name: "get_image_path", value: "1"});
 	parameter.push ({name: "img_src", value: img_src});
 	parameter.push ({name: "only_src", value: "1"});
+	parameter.push ({name: "id_visual_console",
+		value: id_visual_console});
 	
-	var url_ajax = "ajax.php";
-	if (metaconsole != 0) {
-		url_ajax = "../../ajax.php";
-	}
+	
 	
 	
 	jQuery.ajax ({
 		type: 'POST',
-		url: url_ajax,
+		url: get_url_ajax(),
 		data: parameter,
-		async: false,
-		timeout: 10000,
 		success: function (data) {
 			img_url = data;
 		}
@@ -1375,43 +1428,10 @@ function get_image_url(img_src) {
 	return img_url;
 }
 
-function getImageElement(id_data) {
+function set_color_line_status(lines, line, id_data, values) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
-	var url_ajax = "ajax.php";
-	if (metaconsole != 0) {
-		url_ajax = "../../ajax.php";
-	}
 	
-	var parameter = Array();
-	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
-	parameter.push ({name: "action", value: "get_image"});
-	parameter.push ({name: "id_element", value: id_data});
-	
-	var img = null;
-	
-	jQuery.ajax({
-		async: false,
-		url: url_ajax,
-		data: parameter,
-		type: "POST",
-		dataType: 'json',
-		success: function (data)
-			{
-				img = data['image'];
-			}
-	});
-	
-	return img;
-}
-
-function visual_map_get_color_line_status(id) {
-	metaconsole = $("input[name='metaconsole']").val();
-	
-	var url_ajax = "ajax.php";
-	if (metaconsole != 0) {
-		url_ajax = "../../ajax.php";
-	}
 	
 	var parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
@@ -1421,19 +1441,30 @@ function visual_map_get_color_line_status(id) {
 	var color = null;
 	
 	jQuery.ajax({
-		async: false,
-		url: url_ajax,
+		url: get_url_ajax(),
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
-		success: function (data)
-			{
-				color = data['color_line'];
-			}
+		success: function (data) {
+			color = data['color_line'];
+			
+			var line = {
+				"id": id_data,
+				"node_begin":  values['parent'],
+				"node_end": id_data,
+				"color": color };
+			
+			
+			lines.push(line);
+			
+			refresh_lines(lines, 'background', true);
+		}
 	});
 	
-	return color;
 }
+
+
+
 
 function createItem(type, values, id_data) {
 	var sizeStyle = '';
@@ -1441,10 +1472,7 @@ function createItem(type, values, id_data) {
 	var item = null;
 	
 	metaconsole = $("input[name='metaconsole']").val();
-	var url_ajax = "ajax.php";
-	if (metaconsole != 0) {
-		url_ajax = "../../ajax.php";
-	}
+	
 	
 	switch (type) {
 		case 'box_item':
@@ -1474,58 +1502,6 @@ function createItem(type, values, id_data) {
 			break;
 		case 'group_item':
 		case 'static_graph':
-			if ((values['width'] == 0) && (values['height'] == 0)) {
-				sizeStyle = '';
-				imageSize = '';
-			}
-			else {
-				sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
-				imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
-			}
-			
-			var element_status= null;
-			var parameter = Array();
-			parameter.push ({name: "page",
-				value: "include/ajax/visual_console_builder.ajax"});
-			parameter.push ({name: "get_element_status", value: "1"});
-			parameter.push ({name: "id_element", value: id_data});
-			
-			if (metaconsole != 0) {
-				parameter.push ({name: "metaconsole", value: 1});
-			}
-			else {
-				parameter.push ({name: "metaconsole", value: 0});
-			}
-			
-			jQuery.ajax ({
-				type: 'POST',
-				url: url_ajax,
-				data: parameter,
-				async: false,
-				timeout: 10000,
-				success: function (data) {
-					element_status = data;
-				}
-			});
-			
-			var img_src= null;
-			var parameter = Array();
-			parameter.push ({name: "page", value: "include/ajax/skins.ajax"});
-			parameter.push ({name: "get_image_path", value: "1"});
-			parameter.push ({name: "img_src", value: getImageElement(id_data)});
-			parameter.push ({name: "only_src", value: "1"});
-			
-			jQuery.ajax ({
-				type: 'POST',
-				url: url_ajax,
-				data: parameter,
-				async: false,
-				timeout: 10000,
-				success: function (data) {
-					img_src = data;
-				}
-			});
-			
 			switch (type) {
 				case 'group_item':
 					class_type = "group_item";
@@ -1535,14 +1511,54 @@ function createItem(type, values, id_data) {
 					break;
 			}
 			
-			item = $('<div id="' + id_data
-				+ '" class="item ' + class_type + '" '
-				+ 'style="text-align: center; position: absolute; display: inline-block; '
-				+ sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
-				'<img id="image_' + id_data + '" class="image" src="' + img_src + '" ' + imageSize + ' /><br />' +
-				'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span>' + 
-				'</div><input id="hidden-status_' + id_data + '" type="hidden" value="' + element_status + '" name="status_' + id_data + '">'
-			);
+			img_src = "images/spinner.gif";
+			
+			item = $('<div></div>')
+				.attr('class', 'item ' + class_type)
+				.css('text-align', 'center')
+				.css('position', 'absolute')
+				.css('display', 'inline-block')
+				.css('top', values['top'] + 'px')
+				.css('left', values['left'] + 'px');
+			if ((values['width'] == 0) && (values['height'] == 0)) {
+				// Do none
+			}
+			else {
+				item.css('width', values['width']  + 'px')
+					.css('height', values['height'] + 'px');
+			}
+			
+			var $image = $('<img></img>')
+				.attr('id', 'image_' + id_data)
+				.attr('class', 'image')
+				.attr('src', img_src);
+			if ((values['width'] == 0) && (values['height'] == 0)) {
+				// Do none
+			}
+			else {
+				$image.attr('width', values['width'])
+					.attr('height', values['height']);
+			}
+			
+			var $span = $('<span></span>')
+				.attr('id', 'text_' + id_data)
+				.attr('class', 'text')
+				.append(values['label']);
+			
+			var $input = $('<input></input>')
+				.attr('id', 'hidden-status_' + id_data)
+				.attr('type', 'hidden')
+				.attr('value', -1)
+				.attr('name', 'status_' + id_data);
+			
+			item
+				.append($image)
+				.append($image)
+				.append($span)
+				.append($input);
+			
+			set_static_graph_status(id_data, values['image']);
+			
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':
@@ -1552,16 +1568,20 @@ function createItem(type, values, id_data) {
 			if (values['type_percentile'] == 'percentile') {
 				item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: center; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 						'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
-						'<img class="image" id="image_' + id_data + '" src="' + getPercentileBar(id_data, values)  + '" />' +
+						'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
 						'</div>'
 				);
+				
+				setPercentileBar(id_data, values);
 			}
 			else {
 				item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: center; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 						'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
-						'<img class="image" id="image_' + id_data + '" src="' + getPercentileBubble(id_data, values)  + '" />' +
+						'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
 						'</div>'
 				);
+				
+				setPercentileBubble(id_data, values);
 			}
 			break;
 		case 'module_graph':
@@ -1570,9 +1590,10 @@ function createItem(type, values, id_data) {
 			
 			item = $('<div id="' + id_data + '" class="item module_graph" style="text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' +
-					'<img class="image" id="image_' + id_data + '" src="' + getModuleGraph(id_data)  + '" style="border:1px solid #808080;" />' +
+					'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="border:1px solid #808080;" />' +
 				'</div>'
 			);
+			setModuleGraph(id_data);
 			break;
 		case 'simple_value':
 			sizeStyle = '';
@@ -1604,28 +1625,12 @@ function createItem(type, values, id_data) {
 				imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 			}
 			
-			var img_src= null;
-			var parameter = Array();
-			parameter.push ({name: "page", value: "include/ajax/skins.ajax"});
-			parameter.push ({name: "get_image_path", value: "1"});
-			parameter.push ({name: "img_src", value: getImageElement(id_data)});
-			parameter.push ({name: "only_src", value: "1"});
-			
-			jQuery.ajax ({
-				type: 'POST',
-				url: url_ajax,
-				data: parameter,
-				async: false,
-				timeout: 10000,
-				success: function (data) {
-					img_src = data;
-				}
-			});
-			
 			item = $('<div id="' + id_data + '" class="item icon" style="text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
-				'<img id="image_' + id_data + '" class="image" src="' + img_src + '" ' + imageSize + ' /><br />' + 
+				'<img id="image_' + id_data + '" class="image" src="images/spinner.gif" ' + imageSize + ' /><br />' + 
 				'</div>'
 			);
+			
+			set_image("image", id_data, values['image']);
 			break;
 		default:
 			//Maybe create in any Enterprise item.
@@ -1643,15 +1648,7 @@ function createItem(type, values, id_data) {
 	$(".box_item").css('z-index', '1');
 	
 	if (values['parent'] != 0) {
-		var line = {"id": id_data,
-			"node_begin":  values['parent'],
-			"node_end": id_data,
-			"color": visual_map_get_color_line_status(id_data) };
-		
-		
-		lines.push(line);
-		
-		refresh_lines(lines, 'background', true);
+		set_color_line_status(lines, line, id_data, values);
 	}
 }
 
@@ -1663,10 +1660,18 @@ function addItemSelectParents(id_data, text) {
 function insertDB(type, values) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
-	var url_ajax = "ajax.php";
-	if (metaconsole != 0) {
-		url_ajax = "../../ajax.php";
-	}
+	$("#saving_in_progress_dialog").dialog({
+		resizable: true,
+		draggable: true,
+		modal: true,
+		height: 100,
+		width: 200,
+		overlay: {
+			opacity: 0.5,
+			background: "black"
+		}
+	});
+	
 	
 	var id = null;
 	
@@ -1680,83 +1685,76 @@ function insertDB(type, values) {
 	});
 	
 	jQuery.ajax({
-		url: url_ajax,
-		async: false,
+		url: get_url_ajax(),
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
-		success: function (data)
-			{
-				if (data['correct']) {
-					id = data['id_data'];
-					createItem(type, values, id);
-					addItemSelectParents(id, data['text']);
-					//Reload all events for the item and new item.
-					eventsItems();
-					
-					switch (type) {
-						case 'line_item':
-							var line = {
-								"id": id,
-								"start_x":		values['line_start_x'],
-								"start_y":		values['line_start_y'],
-								"end_x":		values['line_end_x'],
-								"end_y":		values['line_end_y'],
-								"line_width":	values['line_width'],
-								"line_color":	values['line_color']};
-							
-							user_lines.push(line);
-							
-							// Draw handlers
-							radious_handle = 6;
-							
-							// Draw handler start
-							var img_src= get_image_url("images/dot_red.png");
-							
-							item = $('<div id="handler_start_' + id + '" ' +
-								'class="item handler_start" ' +
-								'style="text-align: center; ' +
-									'position: absolute; ' +
-									'top: ' + (values['line_start_y']  - radious_handle) + 'px; ' +
-									'left: ' + (values['line_start_x']  - radious_handle) + 'px;">' +
-									
-									'<img src="' + img_src + '" />' + 
-									
-								'</div>'
-							);
-							$("#background").append(item);
-							
-							// Draw handler stop
-							var img_src= get_image_url("images/dot_green.png");
-							
-							item = $('<div id="handler_end_' + id + '" ' +
-								'class="item handler_end" ' +
-								'style="text-align: center; ' +
-									'position: absolute; ' +
-									'top: ' + (values['line_end_y']  - radious_handle) + 'px; ' +
-									'left: ' + (values['line_end_x']  - radious_handle) + 'px;">' +
-									
-									'<img src="' + img_src + '" />' + 
-									
-								'</div>'
-							);
-							$("#background").append(item);
-							break;
-					}
+		success: function (data) {
+			if (data['correct']) {
+				id = data['id_data'];
+				createItem(type, values, id);
+				addItemSelectParents(id, data['text']);
+				//Reload all events for the item and new item.
+				eventsItems();
+				
+				switch (type) {
+					case 'line_item':
+						var line = {
+							"id": id,
+							"start_x":		values['line_start_x'],
+							"start_y":		values['line_start_y'],
+							"end_x":		values['line_end_x'],
+							"end_y":		values['line_end_y'],
+							"line_width":	values['line_width'],
+							"line_color":	values['line_color']};
+						
+						user_lines.push(line);
+						
+						// Draw handlers
+						radious_handle = 6;
+						
+						// Draw handler start
+						item = $('<div id="handler_start_' + id + '" ' +
+							'class="item handler_start" ' +
+							'style="text-align: center; ' +
+								'position: absolute; ' +
+								'top: ' + (values['line_start_y']  - radious_handle) + 'px; ' +
+								'left: ' + (values['line_start_x']  - radious_handle) + 'px;">' +
+								
+								'<img src="' + img_handler_start + '" />' + 
+								
+							'</div>'
+						);
+						$("#background").append(item);
+						
+						// Draw handler stop
+						item = $('<div id="handler_end_' + id + '" ' +
+							'class="item handler_end" ' +
+							'style="text-align: center; ' +
+								'position: absolute; ' +
+								'top: ' + (values['line_end_y']  - radious_handle) + 'px; ' +
+								'left: ' + (values['line_end_x']  - radious_handle) + 'px;">' +
+								
+								'<img src="' + img_src + '" />' + 
+								
+							'</div>'
+						);
+						$("#background").append(item);
+						break;
 				}
-				else {
-					//TODO
-				}
+				
+				$("#saving_in_progress_dialog").dialog("close");
 			}
-		});
+			else {
+				//TODO
+			}
+		}
+	});
 }
 
 function updateDB_visual(type, idElement , values, event, top, left) {
 	metaconsole = $("input[name='metaconsole']").val();
-	var url_ajax = "ajax.php";
-	if (metaconsole != 0) {
-		url_ajax = "../../ajax.php";
-	}
+	
 	
 	radious_handle = 6;
 	
@@ -1775,76 +1773,9 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'static_graph':
 			if ((event != 'resizestop') && (event != 'show_grid')
 				&& (event != 'dragstop')) {
-				var element_status= null;
-				var parameter = Array();
-				parameter.push ({
-					name: "page",
-					value: "include/ajax/visual_console_builder.ajax"});
-				parameter.push ({
-					name: "get_element_status",
-					value: "1"});
-				parameter.push ({
-					name: "id_element",
-					value: idElement});
 				
-				if (metaconsole != 0) {
-					parameter.push ({name: "metaconsole", value: 1});
-				}
-				else {
-					parameter.push ({name: "metaconsole", value: 0});
-				}
+				set_static_graph_status(idElement, values['image']);
 				
-				jQuery.ajax ({
-					type: 'POST',
-					url: url_ajax,
-					data: parameter,
-					async: false,
-					timeout: 10000,
-					success: function (data) {
-						$('#hidden-status_' + idElement).val(data);
-					}
-				});
-				
-				switch ($('#hidden-status_' + idElement).val()) {
-					case '1':
-						//Critical (BAD)
-						suffix = "_bad.png";
-						break;
-					case '4':
-						//Critical (ALERT)
-						suffix = "_bad.png";
-						break;
-					case '0':
-						//Normal (OK)
-						suffix = "_ok.png";
-						break;
-					case '2':
-						//Warning
-						suffix = "_warning.png";
-						break;
-					case '3':
-					default:
-						//Unknown
-						suffix = ".png";
-						break;
-				}
-				
-				var params = [];
-				params.push("get_image_path=1");
-				params.push("img_src=" +
-					"images/console/icons/" + values['image'] + suffix);
-				params.push("page=include/ajax/skins.ajax");
-				params.push("only_src=1");
-				jQuery.ajax ({
-					data: params.join ("&"),
-					type: 'POST',
-					url: url_ajax,
-					async: false,
-					timeout: 10000,
-					success: function (data) {
-						$("#image_" + idElement).attr('src', data);
-					}
-				});
 			}
 		case 'percentile_item':
 		case 'simple_value':
@@ -1852,8 +1783,10 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'icon':
 		case 'module_graph':
 			
-			if (type == 'module_graph')
-				$("#image_" + idElement).attr("src", getModuleGraph(idElement));
+			if (type == 'module_graph') {
+				$("#image_" + idElement).attr("src", "images/spinner.gif");
+				setModuleGraph(idElement);
+			}
 			
 			if ((typeof(values['mov_left']) != 'undefined') &&
 					(typeof(values['mov_top']) != 'undefined')) {
@@ -1894,18 +1827,9 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 			
 			if (typeof(values['parent']) != 'undefined') {
 				if (!found) {
-					var line = {"id": idElement,
-						"node_begin":  values['parent'],
-						"node_end": idElement,
-						"color": visual_map_get_color_line_status(idElement) };
-					
-					
-					
-					lines.push(line);
+					set_color_line_status(lines, line, idElement, values);
 				}
 			}
-			
-			refresh_lines(lines, 'background', true);
 			break;
 		case 'background':
 			if(values['width'] == '0' || values['height'] == '0'){
@@ -1928,10 +1852,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 function updateDB(type, idElement , values, event) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
-	var url_ajax = "ajax.php";
-	if (metaconsole != 0) {
-		url_ajax = "../../ajax.php";
-	}
+	
 	
 	var top = 0;
 	var left = 0;
@@ -2058,7 +1979,7 @@ function updateDB(type, idElement , values, event) {
 	}
 	else {
 		jQuery.ajax({
-			url: url_ajax,
+			url: get_url_ajax(),
 			data: parameter,
 			type: "POST",
 			dataType: 'text',
@@ -2072,10 +1993,7 @@ function updateDB(type, idElement , values, event) {
 function copyDB(idItem) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
-	var url_ajax = "ajax.php";
-	if (metaconsole != 0) {
-		url_ajax = "../../ajax.php";
-	}
+	
 	
 	parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
@@ -2084,8 +2002,7 @@ function copyDB(idItem) {
 	parameter.push ({name: "id_element", value: idItem});
 	
 	jQuery.ajax({
-		url: url_ajax,
-		async: false,
+		url: get_url_ajax(),
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
@@ -2111,10 +2028,17 @@ function copyDB(idItem) {
 function deleteDB(idElement) {
 	metaconsole = $("input[name='metaconsole']").val();
 	
-	var url_ajax = "ajax.php";
-	if (metaconsole != 0) {
-		url_ajax = "../../ajax.php";
-	}
+	$("#delete_in_progress_dialog").dialog({
+		resizable: true,
+		draggable: true,
+		modal: true,
+		height: 100,
+		width: 200,
+		overlay: {
+			opacity: 0.5,
+			background: "black"
+		}
+	});
 	
 	parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
@@ -2123,8 +2047,7 @@ function deleteDB(idElement) {
 	parameter.push ({name: "id_element", value: idElement});
 	
 	jQuery.ajax({
-		url: url_ajax,
-		async: false,
+		url: get_url_ajax(),
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
@@ -2164,6 +2087,8 @@ function deleteDB(idElement) {
 					
 					$('#' + idElement).remove();
 					activeToolboxButton('delete_item', false);
+					
+					$("#delete_in_progress_dialog").dialog("close");
 				}
 				else {
 					//TODO
@@ -2700,6 +2625,18 @@ function click_button_toolbox(id) {
 			}
 			break;
 		case 'save_visualmap':
+			$("#saving_in_progress_dialog").dialog({
+				resizable: true,
+				draggable: true,
+				modal: true,
+				height: 100,
+				width: 200,
+				overlay: {
+					opacity: 0.5,
+					background: "black"
+				}
+			});
+		
 			var status = true;
 			activeToolboxButton('save', false);
 			jQuery.each(list_actions_pending_save, function(key, action_pending_save) {
@@ -2707,24 +2644,26 @@ function click_button_toolbox(id) {
 					type: 'POST',
 					url: action="ajax.php",
 					data: action_pending_save,
-					async: false,
 					dataType: 'json',
-					timeout: 10000,
 					success: function (data) {
 						if (data == '0') {
 							status = false;
 						}
+						
+						$("#saving_in_progress_dialog").dialog("close");
+						
+						if (status) {
+							alert($('#hack_translation_correct_save').html());
+						}
+						else {
+							alert($('#hack_translation_incorrect_save').html());
+						}
+						activeToolboxButton('save', true);
 					}
 				});
 			});
 			
-			if (status) {
-				alert($('#hack_translation_correct_save').html());
-			}
-			else {
-				alert($('#hack_translation_incorrect_save').html());
-			}
-			activeToolboxButton('save', true);
+			
 			break;
 		default:
 			//Maybe click in any Enterprise button in toolbox.
@@ -2751,14 +2690,17 @@ function showPreview(image) {
 
 function showPreviewStaticGraph(staticGraph) {
 	metaconsole = $("input[name='metaconsole']").val();
+	var $spinner = $("<img />");
+	$spinner.prop("src", "images/spinner.gif");
 	
-	var url_ajax = "ajax.php";
-	if (metaconsole != 0) {
-		url_ajax = "../../ajax.php";
+	if (is_metaconsole()) {
+		$spinner.prop("src", "../../images/spinner.gif");
 	}
 	
-	$("#preview").empty();
-	$("#preview").css('text-align', 'right');
+	$("#preview")
+		.empty()
+		.css('text-align', 'right')
+		.append($spinner);
 	
 	if (staticGraph != '') {
 		imgBase = "images/console/icons/" + staticGraph;
@@ -2767,33 +2709,42 @@ function showPreviewStaticGraph(staticGraph) {
 		parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 		parameter.push ({name: "get_image_path_status", value: "1"});
 		parameter.push ({name: "img_src", value: imgBase });
+		parameter.push ({name: "id_visual_console",
+			value: id_visual_console});
 		
 		jQuery.ajax ({
 			type: 'POST',
-			url: url_ajax,
+			url: get_url_ajax(),
 			data: parameter,
-			async: false,
 			dataType: 'json',
-			timeout: 10000,
+			error: function (xhr, textStatus, errorThrown) {
+				$("#preview").empty();
+			},
 			success: function (data) {
+				$("#preview").empty();
+				
 				jQuery.each(data, function(i, line) {
 					$("#preview").append(line);
 				});
 			}
 		});
+		
 	}
 }
 
 function showPreviewIcon(icon) {
-	metaconsole = $("input[name='metaconsole']").val();
+	var metaconsole = $("input[name='metaconsole']").val();
+	var $spinner = $("<img />");
+	$spinner.prop("src", "images/spinner.gif");
 	
-	var url_ajax = "ajax.php";
-	if (metaconsole != 0) {
-		url_ajax = "../../ajax.php";
+	if (is_metaconsole()) {
+		$spinner.prop("src", "../../images/spinner.gif");
 	}
 	
-	$("#preview").empty();
-	$("#preview").css('text-align', 'left');
+	$("#preview")
+		.empty()
+		.css('text-align', 'left')
+		.append($spinner);
 	
 	if (icon != '') {
 		imgBase = "images/console/icons/" + icon;
@@ -2802,14 +2753,19 @@ function showPreviewIcon(icon) {
 		params.push("get_image_path=1");
 		params.push("img_src=" + imgBase + ".png");
 		params.push("page=include/ajax/skins.ajax");
+		parameter.push ({name: "id_visual_console",
+			value: id_visual_console});
 		jQuery.ajax ({
 			data: params.join ("&"),
 			type: 'POST',
-			url: url_ajax,
-			async: false,
-			timeout: 10000,
+			url: get_url_ajax(),
+			error: function (xhr, textStatus, errorThrown) {
+				$("#preview").empty();
+			},
 			success: function (data) {
-				$("#preview").append(data);
+				$("#preview")
+					.empty()
+					.append(data);
 			}
 		});
 	}
@@ -2823,7 +2779,7 @@ function showGrid() {
 	metaconsole = $("input[name='metaconsole']").val();
 	
 	var url_hack_metaconsole = '';
-	if (metaconsole != 0) {
+	if (is_metaconsole()) {
 		url_hack_metaconsole = '../../';
 	}
 	

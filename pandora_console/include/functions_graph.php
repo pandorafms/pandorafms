@@ -1792,6 +1792,7 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 	global $config;
 	global $graphic_type;
 	
+	$filter = array();
 	
 	if ($id_agent < 1) {
 		$query = "";
@@ -1799,18 +1800,9 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 	else {
 		$modules = agents_get_modules($id_agent);
 		$module_ids = array_keys($modules);
-
-		if (!empty($module_ids)) {
-			$module_ids_str = implode(",", $module_ids);
-			
-			if (empty($module_ids_str))
-				$module_ids_str = "0";
-		}
-		else {
-			$module_ids_str = "0";
-		}
-
-		$query = sprintf (" AND id_agente_modulo IN (%s)", $module_ids_str);
+		
+		if (!empty($module_ids))
+			$filter['id_agente_modulo'] = $module_ids;
 	}
 	
 	// All data (now)
@@ -1829,101 +1821,73 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 	$time_3months = $time_now - SECONDS_3MONTHS;
 	
 	$query_error = false;
-
+	
 	// Data from 1 day ago
-	$sql_1day = sprintf("SELECT COUNT(*)
-								+ (SELECT COUNT(*)
-									FROM tagente_datos_string
-									WHERE utimestamp >= %d %s)
-								+ (SELECT COUNT(*)
-									FROM tagente_datos_log4x
-									WHERE utimestamp >= %d %s)
-						FROM tagente_datos
-						WHERE utimestamp > %d %s",
-						$time_1day, $query,
-						$time_1day, $query,
-						$time_1day, $query);
-	$num_1day = db_get_sql($sql_1day);
-
+	$filter['utimestamp'] = '>' . $time_1day;
+	$num_1day = 0;
+	$num_1day += (int) db_get_value_filter('COUNT(*)', 'tagente_datos', $filter);
+	$num_1day += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_string', $filter);
+	$num_1day += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_log4x', $filter);
+	
 	if ($num_1day !== false) {
 		// Data from 1 week ago
-		$sql_1week = sprintf("SELECT COUNT(*)
-									+ (SELECT COUNT(*)
-										FROM tagente_datos_string
-										WHERE utimestamp >= %d %s)
-									+ (SELECT COUNT(*)
-										FROM tagente_datos_log4x
-										WHERE utimestamp >= %d %s)
-							FROM tagente_datos
-							WHERE utimestamp >= %d %s",
-							$time_1week, $query,
-							$time_1week, $query,
-							$time_1week, $query);
-		$num_1week = db_get_sql($sql_1week);
-
+		$filter['utimestamp'] = '>' . $time_1week;
+		$num_1week = 0;
+		$num_1week += (int) db_get_value_filter('COUNT(*)', 'tagente_datos', $filter);
+		$num_1week += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_string', $filter);
+		$num_1week += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_log4x', $filter);
+		
 		if ($num_1week !== false) {
 			// Data from 1 month ago
-			$sql_1month = sprintf("SELECT COUNT(*)
-										+ (SELECT COUNT(*)
-											FROM tagente_datos_string
-											WHERE utimestamp >= %d %s)
-										+ (SELECT COUNT(*)
-											FROM tagente_datos_log4x
-											WHERE utimestamp >= %d %s)
-								FROM tagente_datos
-								WHERE utimestamp >= %d %s",
-								$time_1month, $query,
-								$time_1month, $query,
-								$time_1month, $query);
-			$num_1month = db_get_sql($sql_1month);
-
+			$filter['utimestamp'] = '>' . $time_1month;
+			$num_1month = 0;
+			$num_1month += (int) db_get_value_filter('COUNT(*)', 'tagente_datos', $filter);
+			$num_1month += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_string', $filter);
+			$num_1month += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_log4x', $filter);
+			
 			if ($num_1month !== false) {
 				// Data from 3 months ago
-				$sql_3months = sprintf("SELECT COUNT(*)
-												+ (SELECT COUNT(*)
-													FROM tagente_datos_string
-													WHERE utimestamp >= %d %s)
-												+ (SELECT COUNT(*)
-													FROM tagente_datos_log4x
-													WHERE utimestamp >= %d %s)
-										FROM tagente_datos
-										WHERE utimestamp >= %d %s",
-										$time_3months, $query,
-										$time_3months, $query,
-										$time_3months, $query);
-				$num_3months = db_get_sql($sql_3months);
-
+				$filter['utimestamp'] = '>' . $time_3months;
+				$num_3months = 0;
+				$num_3months += (int) db_get_value_filter('COUNT(*)', 'tagente_datos', $filter);
+				$num_3months += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_string', $filter);
+				$num_3months += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_log4x', $filter);
+				
 				if ($num_3months !== false) {
 					// All data
-					$sql_all = sprintf("SELECT COUNT(*)
-												+ (SELECT COUNT(*)
-													FROM tagente_datos_string
-													WHERE 1=1 %s)
-												+ (SELECT COUNT(*)
-													FROM tagente_datos_log4x
-													WHERE 1=1 %s)
-										FROM tagente_datos
-										WHERE 1=1 %s",
-										$query, $query, $query);
-					$num_all = db_get_sql($sql_all);
-
+					unset($filter['utimestamp']);
+					
+					if (empty($filter)) {
+						$num_all = 0;
+						$num_all += (int) db_get_value_sql('SELECT COUNT(*) FROM tagente_datos');
+						$num_all += (int) db_get_value_sql('SELECT COUNT(*) FROM tagente_datos_string');
+						$num_all += (int) db_get_value_sql('SELECT COUNT(*) FROM tagente_datos_log4x');
+					}
+					else {
+						$num_all = 0;
+						$num_all += (int) db_get_value_filter('COUNT(*)', 'tagente_datos', $filter);
+						$num_all += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_string', $filter);
+						$num_all += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_log4x', $filter);
+					}
+					
 					if ($num_all !== false) {
 						$num_older = $num_all - $num_3months;
-
+						
 						if ($config['history_db_enabled'] == 1) {
 							// All data in common and history database
-							$sql_all_w_history = sprintf("SELECT COUNT(*)
-																+ (SELECT COUNT(*)
-																	FROM tagente_datos_string
-																	WHERE 1=1 %s)
-																+ (SELECT COUNT(*)
-																	FROM tagente_datos_log4x
-																	WHERE 1=1 %s)
-														FROM tagente_datos
-														WHERE 1=1 %s",
-														$query, $query, $query);
-							$num_all_w_history = db_get_sql($sql_all_w_history, 0, true);
-
+							if (empty($filter)) {
+								$num_all_w_history = 0;
+								$num_all_w_history += (int) db_get_value_sql('SELECT COUNT(*) FROM tagente_datos', true);
+								$num_all_w_history += (int) db_get_value_sql('SELECT COUNT(*) FROM tagente_datos_string', true);
+								$num_all_w_history += (int) db_get_value_sql('SELECT COUNT(*) FROM tagente_datos_log4x', true);
+							}
+							else {
+								$num_all_w_history = 0;
+								$num_all_w_history += (int) db_get_value_filter('COUNT(*)', 'tagente_datos', $filter, 'AND', true);
+								$num_all_w_history += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_string', $filter, 'AND', true);
+								$num_all_w_history += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_log4x', $filter, 'AND', true);
+							}
+							
 							if ($num_all_w_history !== false) {
 								$num_history = $num_all_w_history - $num_all;
 							} else {
@@ -1945,7 +1909,7 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 	} else {
 		$query_error = true;
 	}
-
+	
 	// Error
 	if ($query_error || $num_older < 0 || ($config['history_db_enabled'] == 1 && $num_history < 0)
 			|| (empty($num_1day) && empty($num_1week) && empty($num_1month)
@@ -2438,22 +2402,21 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	//is required if both DISTINCT() and COUNT() are in the statement 
 	switch ($config["dbtype"]) {
 		case "mysql":
+		case "postgresql":
 			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente,
 					COUNT(id_agente) AS count'.$field_extra.'
 				FROM '.$event_table.'
 				WHERE 1=1 %s %s
 				GROUP BY id_agente'.$groupby_extra.'
 				ORDER BY count DESC LIMIT 8', $url, $tags_condition);
-			
 			break;
-		case "postgresql":
 		case "oracle":
 			$sql = sprintf ('SELECT DISTINCT(id_agente) AS id_agente,
 					id_grupo, COUNT(id_agente) AS count'.$field_extra.'
 				FROM '.$event_table.'
-				WHERE 1=1 %s %s
+				WHERE rownum <= 8 %s %s
 				GROUP BY id_agente, id_grupo'.$groupby_extra.'
-				ORDER BY count DESC LIMIT 8', $url, $tags_condition); 
+				ORDER BY count DESC', $url, $tags_condition); 
 			break;
 	}
 	
@@ -2739,6 +2702,17 @@ function graph_custom_sql_graph ($id, $width, $height,
 			return false;
 		}
 	}
+	
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			break;
+		case "oracle":
+			$sql = str_replace(";", "", $sql);
+			break;
+	}
+	
 	
 	$data_result = db_get_all_rows_sql ($sql);
 	

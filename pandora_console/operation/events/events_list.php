@@ -137,12 +137,10 @@ $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_use
 // Get the tags where the user have permissions in Events reading tasks
 $tags = tags_get_user_tags($config['id_user'], 'ER');
 
-if ($id_agent == 0 && $text_agent != __('All')) {
+
+if ($id_agent == 0 && !empty($text_agent)) {
 	$id_agent = -1;
 }
-
-
-
 
 /////////////////////////////////////////////
 // Build the condition of the events query
@@ -215,7 +213,7 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	else
 		$data[1] = __('Filter group') . $jump;
 	# Fix : Only admin users can see group ALL
-	$data[1] .= html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group", $id_group, '', '', 0, true, false, false, 'w130', false, '', false, false, 'id_grupo', $strict_user);
+	$data[1] .= html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group_filter", $id_group_filter, '', '', 0, true, false, false, 'w130', false, '', false, false, 'id_grupo', $strict_user);
 	$table->data[] = $data;
 	$table->rowclass[] = '';
 	
@@ -666,7 +664,7 @@ if ($group_rep == 0) {
 			$set = array();
 			$set['limit'] = $pagination;
 			$set['offset'] = $offset;
-			$sql = "SELECT *, 1 event_rep
+			$sql = "SELECT $event_table.*, 1 event_rep
 				FROM $event_table
 				WHERE 1=1 " . $sql_post . "
 				ORDER BY utimestamp DESC"; 
@@ -693,12 +691,23 @@ if (!empty($result)) {
 			WHERE 1=1 " . $sql_post;
 	}
 	else {
-		
-		$sql = "SELECT COUNT(1)
-			FROM (SELECT 1
-				FROM $event_table
-				WHERE 1=1 " . $sql_post . "
-				GROUP BY evento, id_agentmodule) AS t";
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$sql = "SELECT COUNT(1)
+						FROM (SELECT 1
+							FROM $event_table
+							WHERE 1=1 " . $sql_post . "
+							GROUP BY evento, id_agentmodule) t";
+				break;
+			case "oracle":
+				$sql = "SELECT COUNT(1)
+						FROM (SELECT 1
+							FROM $event_table
+							WHERE 1=1 " . $sql_post . "
+							GROUP BY to_char(evento), id_agentmodule) t";
+				break;
+		}
 	}
 	$limit = (int) db_get_sql ($sql);
 	
@@ -720,7 +729,7 @@ if (!empty($result)) {
 				$set = array();
 				$set['limit'] = $pagination;
 				$set['offset'] = $offset;
-				$sql = "SELECT *, 1 event_rep
+				$sql = "SELECT $event_table.*, 1 event_rep
 					FROM $event_table
 					WHERE 1=1 " . $sql_post . "
 					ORDER BY utimestamp DESC"; 
@@ -772,15 +781,27 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 
 if ($group_rep == 0) {
 	$sql = "SELECT COUNT(id_evento)
-		FROM $event_table
-		WHERE 1=1 " . $sql_post;
+			FROM $event_table
+			WHERE 1=1 $sql_post";
 }
 else {
-	$sql = "SELECT COUNT(1)
-		FROM (SELECT 1
-			FROM $event_table
-			WHERE 1=1 " . $sql_post . "
-			GROUP BY evento, id_agentmodule) AS t";
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = "SELECT COUNT(1)
+				FROM (SELECT 1
+					FROM $event_table
+					WHERE 1=1 $sql_post
+					GROUP BY evento, id_agentmodule) t";
+			break;
+		case "oracle":
+			$sql = "SELECT COUNT(1)
+					FROM (SELECT 1
+						FROM $event_table
+						WHERE 1=1 $sql_post
+						GROUP BY to_char(evento), id_agentmodule) t";
+			break;
+	}
 }
 
 
@@ -896,18 +917,14 @@ $(document).ready( function() {
 							$("#id_user_ack").val(val);
 						if (i == 'group_rep')
 							$("#group_rep").val(val);
-						if (i == 'tag_with') {
+						if (i == 'tag_with')
 							$("#hidden-tag_with").val(val);
-						}
-						if (i == 'tag_without') {
+						if (i == 'tag_without')
 							$("#hidden-tag_without").val(val);
-						}
 						if (i == 'filter_only_alert')
 							$("#filter_only_alert").val(val);
 						if (i == 'id_group_filter')
-							$("#id_group").val(val);
-						if (i == 'id_group1')
-							$("#id_group1").val(val);
+							$("#id_group_filter").val(val);
 					});
 					reorder_tags_inputs();
 					// Update the info with the loaded filter
@@ -956,7 +973,7 @@ $(document).ready( function() {
 				"page" : "operation/events/events_list",
 				"save_event_filter" : 1,
 				"id_name" : $("#text-id_name").val(),
-				"id_group" : $("#id_group").val(),
+				"id_group" : $("select#id_group").val(),
 				"event_type" : $("#event_type").val(),
 				"severity" : $("#severity").val(),
 				"status" : $("#status").val(),
@@ -969,7 +986,7 @@ $(document).ready( function() {
 				"tag_with": Base64.decode($("#hidden-tag_with").val()),
 				"tag_without": Base64.decode($("#hidden-tag_without").val()),
 				"filter_only_alert" : $("#filter_only_alert").val(),
-				"id_group_filter": $("#id_group").val()
+				"id_group_filter": $("#id_group_filter").val()
 			},
 			function (data) {
 				$(".info_box").hide();
@@ -1048,8 +1065,8 @@ $(document).ready( function() {
 		jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
 			{"page" : "operation/events/events_list",
 			"update_event_filter" : 1,
-			"id" : $("#filter_id").val(),
-			"id_group" : $("#id_group").val(),
+			"id" : $("#overwrite_filter").val(),
+			"id_group" : $("select#id_group").val(),
 			"event_type" : $("#event_type").val(),
 			"severity" : $("#severity").val(),
 			"status" : $("#status").val(),
@@ -1062,7 +1079,7 @@ $(document).ready( function() {
 			"tag_with" : Base64.decode($("#hidden-tag_with").val()),
 			"tag_without" : Base64.decode($("#hidden-tag_without").val()),
 			"filter_only_alert" : $("#filter_only_alert").val(),
-			"id_group_filter": $("#id_group").val()
+			"id_group_filter": $("#id_group_filter").val()
 			},
 			function (data) {
 				$(".info_box").hide();
@@ -1130,8 +1147,6 @@ $(document).ready( function() {
 				data: params.join ("&"),
 				type: 'POST',
 				url: action="<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-				async: false,
-				timeout: 10000,
 				success: function (data) {
 					$("#toggle_arrow").attr('src', data);
 				}
@@ -1147,8 +1162,6 @@ $(document).ready( function() {
 				data: params.join ("&"),
 				type: 'POST',
 				url: action="<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-				async: false,
-				timeout: 10000,
 				success: function (data) {
 					$("#toggle_arrow").attr('src', data);
 				}

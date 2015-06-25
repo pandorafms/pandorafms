@@ -2980,7 +2980,6 @@ function ui_print_agent_autocomplete_input($parameters) {
 				data: inputs.join ("&"),
 				type: "POST",
 				url: action="' . $javascript_ajax_page . '",
-				timeout: 10000,
 				dataType: "json",
 				success: function (data) {
 					if (' . ((int)$add_none_module) . ') {
@@ -3150,7 +3149,6 @@ function ui_print_agent_autocomplete_input($parameters) {
 						data: data_params,
 						type: "POST",
 						url: action="' . $javascript_ajax_page . '",
-						timeout: 10000,
 						dataType: "json",
 						success: function (data) {
 								cache_' . $input_name . '[term] = data; //Save the cache
@@ -3363,7 +3361,6 @@ function ui_print_agent_autocomplete_input($parameters) {
 				data: data_params,
 				type: "POST",
 				url: action="' . $javascript_ajax_page . '",
-				timeout: 10000,
 				dataType: "json",
 				success: function (data) {
 						if (data.length == 0) {

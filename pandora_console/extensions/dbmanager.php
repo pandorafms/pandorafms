@@ -64,6 +64,10 @@ function dbmanager_query ($sql, &$error) {
 				$backtrace = debug_backtrace();
 				$error = db_get_last_error();
 				
+				if (empty($error)) {
+					return "Empty";
+				}
+				
 				return false;
 			}
 			

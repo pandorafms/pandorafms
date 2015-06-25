@@ -286,8 +286,6 @@ echo "</div>";
 			dataType: "json",
 			type: "POST",
 			url: "ajax.php",
-			async: false,
-			timeout: 10000,
 			success: function (data) {
 				$(".loading_save").hide();
 				if (data.correct) {

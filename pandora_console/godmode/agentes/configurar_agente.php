@@ -357,7 +357,7 @@ if ($id_agente) {
 		. '</a>';
 	
 	// Hidden subtab layer
-	$agent_wizard['sub_menu'] .=  '<ul class="mn subsubmenu" style="display:none; float:none;">';
+	$agent_wizard['sub_menu'] =  '<ul class="mn subsubmenu" style="display:none; float:none;">';
 	$agent_wizard['sub_menu'] .=  '<li class="nomn tab_godmode" style="text-align: center;">';
 	$agent_wizard['sub_menu'] .=  '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_explorer&id_agente='.$id_agente.'">'
 			. html_print_image ("images/wand_snmp.png", true, array ( "title" => __('SNMP Wizard')))
@@ -599,12 +599,23 @@ if (isset( $_GET["fix_module"])) {
 	$media = reporting_get_agentmodule_data_average ($id_module, 30758400); //Get average over the year
 	$media *= 1.3;
 	$error = "";
+	$result = true;
+	
 	//If the value of media is 0 or something went wrong, don't delete
 	if (!empty ($media)) {
 		$where = array(
 			'datos' => '>' . $media,
 			'id_agente_modulo' => $id_module);
-		db_process_sql_delete('tagente_datos', $where);
+		$res = db_process_sql_delete('tagente_datos', $where);
+		
+		if ($res === false) {
+			$result = false;
+			$error = modules_get_agentmodule_name($id_module);
+		}
+		else if ($res <= 0) {
+			$result = false;
+			$error = " - " . __('No data to normalize');
+		}
 	}
 	else {
 		$result = false;
@@ -612,7 +623,7 @@ if (isset( $_GET["fix_module"])) {
 	}
 	
 	ui_print_result_message ($result,
-		__('Deleted data above %d', $media),
+		__('Deleted data above %f', $media),
 		__('Error normalizing module %s', $error));
 }
 
@@ -1258,10 +1269,10 @@ if ($create_module) {
 // =================
 if ($delete_module) { // DELETE agent module !
 	$id_borrar_modulo = (int) get_parameter_get ("delete_module",0);
-	$module_data = db_get_row_sql ('SELECT *
-		FROM tagente_modulo, tagente_estado
-		WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-			AND tagente_modulo.id_agente_modulo=' . $id_borrar_modulo);
+	$module_data = db_get_row_sql ('SELECT tam.id_agente, tam.nombre
+		FROM tagente_modulo tam, tagente_estado tae
+		WHERE tam.id_agente_modulo = tae.id_agente_modulo
+			AND tam.id_agente_modulo = ' . $id_borrar_modulo);
 	$id_grupo = (int) agents_get_agent_group($id_agente);
 	
 	if (! check_acl ($config["id_user"], $id_grupo, "AW")) {
@@ -1272,7 +1283,7 @@ if ($delete_module) { // DELETE agent module !
 		exit;
 	}
 	
-	if ($id_borrar_modulo < 1) {
+	if (empty($module_data) || $id_borrar_modulo < 1) {
 		db_pandora_audit("HACK Attempt",
 			"Expected variable from form is not correct");
 		require ("general/noaccess.php");

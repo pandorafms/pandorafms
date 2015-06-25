@@ -598,6 +598,7 @@ if (!empty ($id) && !$new_user) {
 	if (!defined("METACONSOLE"))
 		echo '<h4>'. __('Profiles/Groups assigned to this user') . '</h4>';
 
+	$table = new stdClass();
 	$table->width = '100%';
 	$table->class = 'databox data';
 	if (defined("METACONSOLE")) {

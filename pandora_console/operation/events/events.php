@@ -224,13 +224,13 @@ $server_id = (int)get_parameter('server_id', 0);
 
 
 
-$text_agent = (string) get_parameter("text_agent", __('All'));
+$text_agent = (string) get_parameter("text_agent");
 
 $id_agent = get_parameter('id_agent', 0);
 if ($id_agent != 0) {
 	$text_agent = db_get_value('nombre', 'tagente', 'id_agente', $id_agent);
 	if ($text_agent == false) {
-		$text_agent =  __('All');
+		$text_agent =  '';
 		$id_agent = 0;
 	}
 }

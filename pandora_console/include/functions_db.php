@@ -271,18 +271,18 @@ function db_get_value($field, $table, $field_search = 1, $condition = 1, $search
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function db_get_value_filter ($field, $table, $filter, $where_join = 'AND') {
+function db_get_value_filter ($field, $table, $filter, $where_join = 'AND', $search_history_db = false) {
 	global $config;
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
-			return mysql_db_get_value_filter($field, $table, $filter, $where_join);
+			return mysql_db_get_value_filter($field, $table, $filter, $where_join, $search_history_db);
 			break;
 		case "postgresql":
-			return postgresql_db_get_value_filter($field, $table, $filter, $where_join);
+			return postgresql_db_get_value_filter($field, $table, $filter, $where_join, $search_history_db);
 			break;
 		case "oracle":
-			return oracle_db_get_value_filter($field, $table, $filter, $where_join);
+			return oracle_db_get_value_filter($field, $table, $filter, $where_join, $search_history_db);
 			break;
 	}
 }
@@ -641,7 +641,7 @@ function db_process_sql($sql, $rettype = "affected_rows", $dbconnection = '', $c
 			return @postgresql_db_process_sql($sql, $rettype, $dbconnection, $cache, $status);
 			break;
 		case "oracle":
-			return @oracle_db_process_sql($sql, $rettype, $dbconnection, $cache, $status, $autocommit);
+			return oracle_db_process_sql($sql, $rettype, $dbconnection, $cache, $status, $autocommit);
 			break;
 	}
 }
@@ -848,10 +848,11 @@ function db_format_array_where_clause_sql ($values, $join = 'AND', $prefix = fal
  * @param string Table name
  * @param string Field of the filter condition
  * @param string Value of the filter
+ * @param bool The value will be appended without quotes
  *
  * @result Rows deleted or false if something goes wrong
  */
-function db_process_delete_temp ($table, $row, $value) {
+function db_process_delete_temp ($table, $row, $value, $custom_value = false) {
 	global $error; //Globalize the errors variable
 	global $config;
 	
@@ -861,8 +862,8 @@ function db_process_delete_temp ($table, $row, $value) {
 			$result = db_process_sql_delete ($table, $row.' = '.$value);
 			break;
 		case "oracle":
-			if (is_int ($value) || is_bool ($value) ||
-				is_float ($value) || is_double ($value)) {
+			if ($custom_value || is_int ($value) || is_bool ($value) ||
+					is_float ($value) || is_double ($value)) {
 				$result = oracle_db_process_sql_delete_temp ($table, $row . ' = ' . $value);
 			}
 			else {
@@ -1206,6 +1207,32 @@ function db_search_in_history_db ($utimestamp) {
 	}
 
 	return $search_in_history_db;
+}
+
+/**
+ * Process a file with an oracle schema sentences.
+ * Based on the function which installs the pandoradb.sql schema.
+ * 
+ * @param string $path File path.
+ * @param bool $handle_error Whether to handle the oci_execute errors or throw an exception.
+ * 
+ * @return bool Return the final status of the operation.
+ */
+function db_process_file ($path, $handle_error = true) {
+	global $config;
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			return mysql_db_process_file($path, $handle_error);
+			break;
+		case "postgresql":
+			// Not supported
+			//return postgresql_db_process_file($path, $handle_error);
+			break;
+		case "oracle":
+			return oracle_db_process_file($path, $handle_error);
+			break;
+	}
 }
 
 ?>

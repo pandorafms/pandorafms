@@ -56,9 +56,9 @@ if (is_ajax ()) {
 						$default_action = false;
 						// Try to get actions for the current alert	
 						$sql = 'SELECT t2.name
-							FROM talert_template_module_actions AS t1
-								INNER JOIN talert_actions AS t2
-								INNER JOIN talert_template_modules AS t3
+							FROM talert_template_module_actions t1
+								INNER JOIN talert_actions t2
+								INNER JOIN talert_template_modules t3
 								ON t3.id = t1.id_alert_template_module
 								AND t1.id_alert_action = t2.id
 							WHERE (t3.id_alert_template = ' . $template['id'] . ' AND
@@ -130,7 +130,7 @@ function mainModuleGroups() {
 	//The big query
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$sql = "SELECT COUNT(id_agente) AS count, estado 
+			$sql = "SELECT COUNT(id_agente) AS count, case utimestamp when 0 then 5 else estado end as estado 
 				FROM tagente_estado
 				WHERE id_agente IN
 					(SELECT id_agente FROM tagente WHERE id_grupo = %d AND disabled IS FALSE)
@@ -141,7 +141,8 @@ function mainModuleGroups() {
 				GROUP BY estado";
 			break;
 		case "postgresql":
-			$sql = "SELECT COUNT(id_agente) AS count, estado
+			$sql = "SELECT COUNT(id_agente) AS count,
+					case utimestamp when 0 then 5 else estado end as estado
 				FROM tagente_estado
 				WHERE id_agente IN
 					(SELECT id_agente FROM tagente WHERE id_grupo = %d AND disabled = 0)
@@ -152,7 +153,7 @@ function mainModuleGroups() {
 				GROUP BY estado, utimestamp";
 			break;
 		case "oracle":
-			$sql = "SELECT COUNT(id_agente) AS count, estado
+			$sql = "SELECT COUNT(id_agente) AS count, (case when utimestamp = 0 then 5 else estado end) AS estado
 				FROM tagente_estado
 				WHERE id_agente IN
 					(SELECT id_agente FROM tagente WHERE id_grupo = %d AND (disabled IS NOT NULL AND disabled <> 0))
@@ -160,7 +161,7 @@ function mainModuleGroups() {
 					(SELECT id_agente_modulo 
 						FROM tagente_modulo 
 						WHERE id_module_group = %d AND (disabled IS NOT NULL AND disabled <> 0) AND (delete_pending IS NOT NULL AND delete_pending <> 0))
-				GROUP BY estado";
+				GROUP BY (case when utimestamp = 0 then 5 else estado end)";
 			break;
 	}
 	

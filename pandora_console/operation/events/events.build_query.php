@@ -68,20 +68,19 @@ switch ($status) {
 }
 
 if ($search != "") {
-	$sql_post .= ' AND (evento LIKE "%'. io_safe_input($search) . '%"'. ' OR id_evento LIKE "%$search%")';
+	$sql_post .= " AND (evento LIKE '%". io_safe_input($search) . "%' OR id_evento LIKE '%$search%')";
 }
 
 if ($event_type != "") {
 	// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
 	// for the user so for him is presented only "warning, critical and normal"
-	if ($event_type == "warning" || $event_type == "critical"
-		|| $event_type == "normal") {
+	if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal") {
 		$sql_post .= " AND event_type LIKE '%$event_type%' ";
 	}
-	elseif ($event_type == "not_normal") {
+	else if ($event_type == "not_normal") {
 		$sql_post .= " AND (event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%') ";
 	}
-	elseif ($event_type != "all") {
+	else if ($event_type != "all") {
 		$sql_post .= " AND event_type = '" . $event_type."'";
 	}
 	
@@ -130,11 +129,11 @@ if ($meta) {
 }
 else {
 	if (!empty($text_module)) {
-		$sql_post .= ' AND id_agentmodule IN (
+		$sql_post .= " AND id_agentmodule IN (
 				SELECT id_agente_modulo
 				FROM tagente_modulo
-				WHERE nombre = "' . $text_module . '"
-			)';
+				WHERE nombre = '$text_module'
+			)";
 	}
 }
 

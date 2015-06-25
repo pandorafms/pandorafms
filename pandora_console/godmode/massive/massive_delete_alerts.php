@@ -98,10 +98,10 @@ function process_manage_delete ($id_alert_template, $id_agents, $module_names) {
 	if (count($module_names) == 1 && $module_names[0] == '0') {
 		if ($module_selection_mode == 'common') {
 			$sql = 'SELECT t1.id_agente_modulo
-				FROM tagente_modulo AS t1
+				FROM tagente_modulo t1
 				WHERE t1.id_agente_modulo IN (
 						SELECT t2.id_agent_module
-						FROM talert_template_modules AS t2
+						FROM talert_template_modules t2
 						WHERE
 							t2.id_alert_template = ' . $id_alert_template . ')
 					AND t1.id_agente IN (' . implode(',', $id_agents) . ');';

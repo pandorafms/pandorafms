@@ -24,11 +24,23 @@ function update_manager_get_config_values() {
 	global $build_version;
 	global $pandora_version;
 	
-	$license = db_get_value(
-		db_encapsule_fields_with_same_name_to_instructions('value'),
-		'tupdate_settings',
-		db_encapsule_fields_with_same_name_to_instructions('key'),
-		'customer_key');
+	switch ($config["dbtype"]) {
+		case "postgresql":
+		case "mysql":
+			$license = db_get_value(
+				db_encapsule_fields_with_same_name_to_instructions('value'),
+				'tupdate_settings',
+				db_encapsule_fields_with_same_name_to_instructions('key'),
+				'customer_key');
+			break;
+		case 'oracle':
+			$license = db_get_value(
+				'value',
+				'tupdate_settings',
+				'key',
+				'customer_key');
+			break;
+	}
 	
 	$limit_count = db_get_value_sql("SELECT count(*) FROM tagente");
 	
@@ -485,18 +497,20 @@ function update_manager_set_current_package($current_package) {
 		$token = 'current_package';
 	}
 	
-	$value = db_get_value('`value`',
-		'tupdate_settings', '`key`', $token);
+	$col_value = db_encapsule_fields_with_same_name_to_instructions('value');
+	$col_key = db_encapsule_fields_with_same_name_to_instructions('key');
+	
+	$value = db_get_value($col_value,
+		'tupdate_settings', $col_key, $token);
 	
 	if ($value === false) {
 		db_process_sql_insert('tupdate_settings',
-			array('`value`' => $current_package,
-				'`key`' => $token));
+			array($col_value => $current_package, $col_key => $token));
 	}
 	else {
 		db_process_sql_update('tupdate_settings',
-			array('`value`' => $current_package),
-			array('`key`' => $token));
+			array($col_value => $current_package),
+			array($col_key => $token));
 	}
 }
 
@@ -510,11 +524,25 @@ function update_manager_get_current_package() {
 		$token = 'current_package';
 	}
 	
-	$current_update = db_get_value(
-		db_encapsule_fields_with_same_name_to_instructions('value'),
-		'tupdate_settings',
-		db_encapsule_fields_with_same_name_to_instructions('key'),
-		$token);
+	switch ($config["dbtype"]) {
+		case "postgresql":
+		case "mysql":
+			$current_update = db_get_value(
+				db_encapsule_fields_with_same_name_to_instructions('value'),
+				'tupdate_settings',
+				db_encapsule_fields_with_same_name_to_instructions('key'),
+				$token);
+			break;
+		case "oracle":
+			$current_update = db_get_value(
+				'value',
+				'tupdate_settings',
+				'key',
+				$token);
+			break;
+	}
+	
+	
 	
 	if ($current_update === false) {
 		$current_update = 0;

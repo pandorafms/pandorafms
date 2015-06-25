@@ -946,8 +946,17 @@ switch ($action) {
 						$values['friday'] = get_parameter('friday', 0);
 						$values['saturday'] = get_parameter('saturday', 0);
 						$values['sunday'] = get_parameter('sunday', 0);
-						$values['time_from'] = get_parameter('time_from');
-						$values['time_to'] = get_parameter('time_to');
+						switch ($config['dbtype']) {
+							case "mysql":
+							case "postgresql":
+								$values['time_from'] = get_parameter('time_from');
+								$values['time_to'] = get_parameter('time_to');
+								break;
+							case "oracle":
+								$values['time_from'] = '#to_date(\'' . get_parameter('time_from') . '\',\'hh24:mi:ss\')';
+								$values['time_to'] = '#to_date(\'' . get_parameter('time_to') . '\', \'hh24:mi:ss\')';
+								break;
+						}
 						$values['group_by_agent'] = get_parameter ('checkbox_row_group_by_agent');
 						$values['show_resume'] = get_parameter ('checkbox_show_resume');
 						$values['order_uptodown'] = get_parameter ('radiobutton_order_uptodown');
@@ -1064,7 +1073,22 @@ switch ($action) {
 						$values['style'] = io_safe_input(json_encode($style));
 						
 						if ($good_format) {
-							$resultOperationDB = db_process_sql_update('treport_content', $values, array('id_rc' => $idItem));
+							switch ($config["dbtype"]) {
+								case "oracle":
+									if (isset($values['type'])) {
+										$values[
+											db_encapsule_fields_with_same_name_to_instructions(
+												"type")] = $values['type'];
+										unset($values['type']);
+									}
+									break;
+							}
+							
+							
+							$resultOperationDB = db_process_sql_update(
+								'treport_content',
+								$values,
+								array('id_rc' => $idItem));
 						}
 						else {
 							$resultOperationDB = false;
@@ -1203,8 +1227,8 @@ switch ($action) {
 								$values['time_to'] = get_parameter('time_to');
 								break;
 							case "oracle":
-								$values['time_from'] = '#to_date(\'' . get_parameter('time_from') . '\',\'hh24:mi\')';
-								$values['time_to'] = '#to_date(\'' . get_parameter('time_to') . '\', \'hh24:mi\')';
+								$values['time_from'] = '#to_date(\'' . get_parameter('time_from') . '\',\'hh24:mi:ss\')';
+								$values['time_to'] = '#to_date(\'' . get_parameter('time_to') . '\', \'hh24:mi:ss\')';
 								break;
 						}
 						$values['group_by_agent'] = get_parameter ('checkbox_row_group_by_agent',0);
@@ -1307,6 +1331,17 @@ switch ($action) {
 						$values['style'] = io_safe_input(json_encode($style));
 						
 						if ($good_format) {
+							switch ($config["dbtype"]) {
+								case "oracle":
+									if (isset($values['type'])) {
+										$values[
+											db_encapsule_fields_with_same_name_to_instructions(
+												"type")] = $values['type'];
+										unset($values['type']);
+									}
+									break;
+							}
+							
 							$result = db_process_sql_insert(
 								'treport_content', $values);
 							
@@ -1339,11 +1374,15 @@ switch ($action) {
 								}
 								switch ($config["dbtype"]) {
 									case "mysql":
-										db_process_sql_update('treport_content', array('`order`' => $max + 1), array('id_rc' => $idItem));
+										db_process_sql_update('treport_content',
+											array('`order`' => $max + 1),
+											array('id_rc' => $idItem));
 										break;
 									case "postgresql":
 									case "oracle":
-										db_process_sql_update('treport_content', array('"order"' => $max + 1), array('id_rc' => $idItem));
+										db_process_sql_update('treport_content',
+											array('"order"' => $max + 1),
+											array('id_rc' => $idItem));
 										break;
 								}
 								$resultOperationDB = true;
@@ -1415,8 +1454,8 @@ switch ($action) {
 						case 'module':
 							$sql = "
 								SELECT t1.id_rc, t2.nombre
-								FROM treport_content AS t1
-									LEFT JOIN tagente_modulo AS t2
+								FROM treport_content t1
+									LEFT JOIN tagente_modulo t2
 										ON t1.id_agent_module = t2.id_agente_modulo
 								WHERE %s
 								ORDER BY nombre %s
@@ -1428,11 +1467,11 @@ switch ($action) {
 								FROM
 									(
 									SELECT t1.*, id_agente
-									FROM treport_content AS t1
-										LEFT JOIN tagente_modulo AS t2
+									FROM treport_content t1
+										LEFT JOIN tagente_modulo t2
 											ON t1.id_agent_module = id_agente_modulo
-									) AS t4
-									LEFT JOIN tagente AS t5
+									) t4
+									LEFT JOIN tagente t5
 										ON (t4.id_agent = t5.id_agente OR t4.id_agente = t5.id_agente)
 								WHERE %s
 								ORDER BY t5.nombre %s

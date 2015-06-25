@@ -184,33 +184,26 @@ function events_get_events_grouped($sql_post, $offset = 0,
 		case "oracle":
 			if ($total) {
 				$sql = "SELECT COUNT(*)
-					FROM $table te
-					WHERE 1=1 " . $sql_post . " 
-					GROUP BY estado, to_char(evento), id_agentmodule" . $groupby_extra . ") b ";
+						FROM $table te
+						WHERE 1=1 $sql_post
+						GROUP BY estado, to_char(evento), id_agentmodule" . $groupby_extra . ") b ";
 			}
 			else {
 				$set = array();
 				$set['limit'] = $pagination;
 				$set['offset'] = $offset;
-				// TODO: Remove duplicate user comments
-				$sql = "SELECT a.*, b.event_rep, b.timestamp_rep
-					FROM (SELECT * FROM $table WHERE 1=1 " . $sql_post . ") a, 
-					(SELECT MAX (id_evento) AS id_evento,  to_char(evento) AS evento, 
-					id_agentmodule, COUNT(*) AS event_rep,
-					LISTAGG(user_comment, '') AS user_comment, MAX(utimestamp) AS timestamp_rep, 
-					LISTAGG(id_evento, '') AS similar_ids,
-					MIN(utimestamp) AS timestamp_rep_min,
-					(SELECT owner_user FROM $table WHERE id_evento = MAX(te.id_evento)) owner_user,
-					(SELECT id_usuario FROM $table WHERE id_evento = MAX(te.id_evento)) id_usuario,
-					(SELECT id_agente FROM $table WHERE id_evento = MAX(te.id_evento)) id_agente,
-					(SELECT criticity FROM $table WHERE id_evento = MAX(te.id_evento)) AS criticity,
-					(SELECT ack_utimestamp FROM $table WHERE id_evento = MAX(te.id_evento)) AS ack_utimestamp
-					FROM $table te
-					WHERE 1=1 " . $sql_post . " 
-					GROUP BY estado, to_char(evento), id_agentmodule" . $groupby_extra . ") b 
-					WHERE a.id_evento=b.id_evento AND 
-					to_char(a.evento)=to_char(b.evento) 
-					AND a.id_agentmodule=b.id_agentmodule";
+				
+				$sql = "SELECT ta.*, tb.event_rep, tb.timestamp_rep, tb.timestamp_rep_min, tb.user_comments, tb.similar_ids
+						FROM $table ta
+						INNER JOIN (SELECT MAX(id_evento) AS id_evento, COUNT(id_evento) AS event_rep,
+										MAX(utimestamp) AS timestamp_rep, MIN(utimestamp) AS timestamp_rep_min,
+										TAB_TO_STRING(CAST(COLLECT(TO_CHAR(user_comment) ORDER BY id_evento ASC) AS t_varchar2_tab), '<br>') AS user_comments,
+										TAB_TO_STRING(CAST(COLLECT(CAST(id_evento AS VARCHAR2(4000)) ORDER BY id_evento ASC) AS t_varchar2_tab)) AS similar_ids
+									FROM $table te
+									WHERE 1=1 $sql_post
+									GROUP BY estado, to_char(evento), id_agentmodule$groupby_extra) tb
+							ON ta.id_evento = tb.id_evento
+						ORDER BY tb.timestamp_rep DESC";
 				$sql = oracle_recode_query ($sql, $set);
 			}
 			break;
@@ -223,6 +216,13 @@ function events_get_events_grouped($sql_post, $offset = 0,
 		return reset($events[0]);
 	}
 	else {
+		// Override the column 'user_comment' with the column 'user_comments' when oracle
+		if (!empty($events) && $config["dbtype"] == "oracle") {
+			array_walk($events, function(&$value, $key) {
+				set_if_defined($value['user_comments'], $value['user_comments']);
+			});
+		}
+		
 		return $events;
 	}
 }
@@ -740,8 +740,7 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 						critical_instructions, warning_instructions,
 						unknown_instructions, source, tags, custom_data,
 						server_id) 
-					VALUES (%d, %d, "%s", CURRENT_TIMESTAMP, %d,
-						ceil((sysdate - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (' . SECONDS_1DAY . ')),
+					VALUES (%d, %d, "%s", CURRENT_TIMESTAMP, %d, UNIX_TIMESTAMP,
 						"%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s",
 						"%s", "%s", %d)',
 					$id_agent, $id_group, $event, $status, $id_user,
@@ -762,8 +761,7 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 						critical_instructions, warning_instructions,
 						unknown_instructions, source, tags, custom_data) 
 					VALUES (%d, %d, "%s", NOW(), %d, UNIX_TIMESTAMP(NOW()),
-						"%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s",
-						"%s", "%s")',
+						"%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s", "%s")',
 					$id_agent, $id_group, $event, $status, $id_user,
 					$event_type, $priority, $id_agent_module, $id_aam,
 					$critical_instructions, $warning_instructions,
@@ -778,24 +776,21 @@ function events_create_event ($event, $id_group, $id_agent, $status = 0,
 						unknown_instructions, source, tags, custom_data) 
 					VALUES (%d, %d, "%s", NOW(), %d,
 						ceil(date_part(\'epoch\', CURRENT_TIMESTAMP)), "%s",
-						"%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s",
-						"%s")',
+						"%s", %d, %d, %d, "%s", "%s", "%s", "%s", "%s", "%s")',
 					$id_agent, $id_group, $event, $status, $id_user,
 					$event_type, $priority, $id_agent_module, $id_aam,
 					$critical_instructions, $warning_instructions,
 					$unknown_instructions, $source, $tags, $custom_data);
 				break;
 			case "oracle":
-				$sql = sprintf ('
-					INSERT INTO ' . $table_events . ' (id_agente, id_grupo, evento,
+				$sql = sprintf ("
+					INSERT INTO " . $table_events . " (id_agente, id_grupo, evento,
 						timestamp, estado, utimestamp, id_usuario,
 						event_type, criticity, id_agentmodule, id_alert_am,
 						critical_instructions, warning_instructions,
 						unknown_instructions, source, tags, custom_data) 
-					VALUES (%d, %d, "%s", CURRENT_TIMESTAMP, %d,
-						ceil((sysdate - to_date(\'19700101000000\',\'YYYYMMDDHH24MISS\')) * (' . SECONDS_1DAY . ')),
-						"%s", "%s", %d, %d, %d, "%s", "%s", "%s", "%s",
-						"%s", "%s")',
+					VALUES (%d, %d, '%s', CURRENT_TIMESTAMP, %d, UNIX_TIMESTAMP,
+						'%s', '%s', %d, %d, %d, '%s', '%s', '%s', '%s', '%s', '%s')",
 					$id_agent, $id_group, $event, $status, $id_user,
 					$event_type, $priority, $id_agent_module, $id_aam,
 					$critical_instructions, $warning_instructions,
@@ -852,11 +847,12 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 	
 	if ($result === false) {
 		if ($return) {
-			$returned = ui_print_info_message ( __('No events'),'',true );
+			$returned = ui_print_info_message (__('No events'), '', true);
 			return $returned;
 		}
-		else
-			echo ui_print_info_message ( __('No events') );
+		else {
+			echo ui_print_info_message (__('No events'));
+		}
 	}
 	else {
 		$table = new stdClass();
@@ -1281,12 +1277,12 @@ function events_get_group_events_steps ($begin, &$result, $id_group, $period, $d
 	
 	$sql = sprintf ('SELECT *,
 			(SELECT t2.nombre
-				FROM tagente AS t2
+				FROM tagente t2
 				WHERE t2.id_agente = t3.id_agente) AS agent_name,
 			(SELECT t2.fullname
-				FROM tusuario AS t2
+				FROM tusuario t2
 				WHERE t2.id_user = t3.id_usuario) AS user_name
-		FROM tevento AS t3
+		FROM tevento t3
 		WHERE utimestamp > %d AND utimestamp <= %d
 			AND id_grupo IN (%s) ' . $sql_where . '
 		ORDER BY utimestamp ASC',
@@ -2603,10 +2599,10 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
 	
 	$sql = sprintf ('SELECT id_agente,
 		(SELECT t2.nombre
-			FROM tagente AS t2
+			FROM tagente t2
 			WHERE t2.id_agente = t3.id_agente) AS agent_name,
 		COUNT(*) AS count
-		FROM tevento AS t3
+		FROM tevento t3
 		WHERE utimestamp > %d AND utimestamp <= %d
 			AND id_grupo IN (%s) ' . $sql_where . '
 		GROUP BY id_agente',
@@ -2692,10 +2688,10 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
 	
 	$sql = sprintf ('SELECT id_usuario,
 		(SELECT t2.fullname
-			FROM tusuario AS t2
+			FROM tusuario t2
 			WHERE t2.id_user = t3.id_usuario) AS user_name,
 		COUNT(*) AS count
-		FROM tevento AS t3
+		FROM tevento t3
 		WHERE utimestamp > %d AND utimestamp <= %d
 			%s ' . $sql_where . '
 		GROUP BY id_usuario',
@@ -2811,14 +2807,14 @@ function events_get_count_events_by_criticity ($filter, $period, $date,
  *
  * @return array An array with all the events happened.
  */
-function events_get_count_events_validated ($filter, $period, $date,
+function events_get_count_events_validated ($filter, $period = null, $date = null,
 	$filter_event_validated = false, $filter_event_critical = false,
 	$filter_event_warning = false, $filter_event_no_validated = false,
 	$filter_event_search = false) {
 	
 	global $config;
 	
-	$sql_filter = ' 1=1 ';
+	$sql_filter = ' AND 1=1 ';
 	if (isset($filter['id_group'])) {
 		$id_group = groups_safe_acl ($config["id_user"], $filter['id_group'], "AR");
 		
@@ -2835,9 +2831,25 @@ function events_get_count_events_validated ($filter, $period, $date,
 			sprintf(' AND id_agente = %d ', $filter['id_agent']);
 	}
 	
-	$datelimit = $date - $period;
+	$date_filter = '';
+	if (!empty($date) && !empty($period)) {
+		$datelimit = $date - $period;
+		
+		$date_filter .= sprintf (' AND utimestamp > %d AND utimestamp <= %d ',
+			$datelimit, $date);
+	}
+	else if (!empty($period)) {
+		$date = time();
+		$datelimit = $date - $period;
+		
+		$date_filter .= sprintf (' AND utimestamp > %d AND utimestamp <= %d ',
+			$datelimit, $date);
+	}
+	else if (!empty($date)) {
+		$date_filter .= sprintf (' AND utimestamp <= %d ', $date);
+	}
 	
-	$sql_where = ' AND 1 = 1 ';
+	$sql_where = ' AND 1=1 ';
 	$criticities = array();
 	if ($filter_event_critical) {
 		$criticities[] = 4;
@@ -2873,17 +2885,20 @@ function events_get_count_events_validated ($filter, $period, $date,
 	if ($rows == false)
 		$rows = array();
 	
-	$return = array();
-	$return[__('Validated')] = 0;
-	$return[__('Not validated')] = 0;
-	foreach ($rows as $row) {
-		if ($row['estado'] == 1) {
-			$return[__('Validated')] += $row['count'];
+	$return = array_reduce($rows, function($carry, $item) {
+		$status = (int) $item['estado'];
+		$count = (int) $item['count'];
+		
+		if ($status === 1) {
+			$carry[__('Validated')] += $count;
 		}
-		else {
-			$return[__('Not validated')] += $row['count'];
+		else if ($status === 0) {
+			$carry[__('Not validated')] += $count;
 		}
-	}
+		
+		return $carry;
+		
+	}, array(__('Validated') => 0, __('Not validated') => 0));
 	
 	return $return;
 }

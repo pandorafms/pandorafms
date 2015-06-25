@@ -781,7 +781,7 @@ ui_require_javascript_file('pandora_modules');
 		
 	});
 	
-	function show_locked_dialog(id_plugin) {
+	function show_locked_dialog(id_plugin, plugin_name) {
 		var parameters = {};
 		parameters['page'] = "godmode/servers/plugin";
 		parameters["get_list_modules_and_component_locked_plugin"] = 1;
@@ -793,7 +793,10 @@ ui_require_javascript_file('pandora_modules');
 			data: parameters,
 			dataType: "html",
 			success: function(data) {
+				var title = $("#dialog_locked").prop('title').replace(/%s/, plugin_name);
+				
 				$("#dialog_locked")
+					.prop('title', title)
 					.html(data);
 				$("#dialog_locked")
 					.dialog ({

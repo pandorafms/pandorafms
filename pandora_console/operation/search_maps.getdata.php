@@ -19,41 +19,46 @@ global $config;
 $searchMaps = check_acl($config["id_user"], 0, "IR");
 
 $maps = false;
+$totalMaps = 0;
+
 if ($searchMaps) {
-	$sql = "SELECT t1.id, t1.name, t1.id_group,
-			(SELECT COUNT(*) FROM tlayout_data AS t2 WHERE t2.id_layout = t1.id) AS count 
-		FROM tlayout AS t1 WHERE t1.name LIKE '%" . $stringSearchSQL . "%'
-		LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
+	$user_groups = users_get_groups($config['id_user'], 'AR', false);
+	$id_user_groups = array_keys($user_groups);
+	$id_user_groups_str = implode(',', $id_user_groups);
+	
+	if (empty($id_user_groups))
+		return;
+	
+	$sql = "SELECT tl.id, tl.name, tl.id_group, COUNT(tld.id_layout) AS count
+			FROM tlayout tl
+			LEFT JOIN tlayout_data tld
+				ON tl.id = tld.id_layout
+			WHERE tl.name LIKE '%$stringSearchSQL%'
+				AND tl.id_group IN ($id_user_groups_str)
+			GROUP BY tl.id, tl.name, tl.id_group";
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql .= " LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
+			break;
+		case "oracle":
+			$set = array();
+			$set['limit'] = $config['block_size'];
+			$set['offset'] = (int) get_parameter('offset');
+			
+			$sql = oracle_recode_query ($sql, $set);
+			break;
+	}
+	
 	$maps = db_process_sql($sql);
 	
-	if($maps !== false) {
-		$maps_id = array();
-		foreach($maps as $key => $map) {
-			if (!check_acl ($config["id_user"], $map["id_group"], "AR")) {
-				unset($maps[$key]);
-			}
-			else {
-				$maps_id[] = $map['id'];
-			}
-		}
+	if ($maps !== false) {
+		$totalMaps = count($maps);
 		
-		if(!$maps_id) {
-			$maps_condition = "";
-		}
-		else {
-			// Condition with the visible agents
-			$maps_condition = " AND id IN (\"".implode('","',$maps_id)."\")";
-		}
-		
-		$sql = "SELECT COUNT(id) AS count FROM tlayout WHERE name LIKE '%" . $stringSearchSQL . "%'".$maps_condition;
-		$totalMaps = db_get_value_sql($sql);
-		
-		if($only_count) {
+		if ($only_count) {
 			unset($maps);
 		}
-	}
-	else {
-		$totalMaps = 0;
 	}
 }
 ?>

@@ -48,7 +48,16 @@ $snmpwalk = (int) get_parameter("snmpwalk", 0);
 $create_modules = (int) get_parameter("create_modules", 0);
 
 // Get the plugin
-$plugin = db_get_row_sql('SELECT * FROM tplugin WHERE execute LIKE "%/snmp_remote.pl"');
+switch ($config['dbtype']) {
+	case 'mysql':
+	case 'postgresql':
+		$plugin = db_get_row_sql("SELECT id, macros FROM tplugin WHERE execute LIKE '%/snmp_remote.pl'");
+		break;
+	case 'oracle':
+		$plugin = db_get_row_sql("SELECT id, TO_CHAR(macros) AS macros FROM tplugin WHERE execute LIKE '%/snmp_remote.pl'");
+		break;
+}
+
 
 if (empty($plugin)) {
 	ui_print_info_message(array('message' => __('The SNMP remote plugin doesnt seem to be installed') . '. ' . __('It is necessary to use some features') . '.<br><br>' . __('Please, install the SNMP remote plugin (The name of the plugin must be snmp_remote.pl)'), 'no_close' => true));
@@ -465,7 +474,10 @@ if ($create_modules) {
 					$module_values['id_modulo'] = MODULE_PLUGIN;
 					$module_values['id_plugin'] = $plugin['id'];
 					
-					$macros = json_decode($plugin['macros'], true);
+					// Avoid the return of a string containing the word 'null' if the macros column is not defined
+					$macros = array();
+					if (isset($plugin['macros']) && !empty($plugin['macros']))
+						$macros = json_decode($plugin['macros'], true);
 					
 					foreach ($macros as $k => $macro) {
 						switch($macro['macro']) {
@@ -518,7 +530,8 @@ if ($create_modules) {
 						}
 					}
 					
-					$module_values['macros'] = io_json_mb_encode($macros);
+					if (!empty($macros))
+						$module_values['macros'] = io_json_mb_encode($macros);
 					
 					unset($module_values['snmp_community']); //snmp_community
 					unset($module_values['ip_target']); //ip_target
@@ -545,7 +558,10 @@ if ($create_modules) {
 			$module_values['id_modulo'] = MODULE_PLUGIN;
 			$module_values['id_plugin'] = $plugin['id'];
 			
-			$macros = json_decode($plugin['macros'], true);
+			// Avoid the return of a string containing the word 'null' if the macros column is not defined
+			$macros = array();
+			if (isset($plugin['macros']) && !empty($plugin['macros']))
+				$macros = json_decode($plugin['macros'], true);
 			
 			foreach ($macros as $k => $macro) {
 				switch($macro['macro']) {
@@ -591,7 +607,8 @@ if ($create_modules) {
 				}
 			}
 			
-			$module_values['macros'] = io_json_mb_encode($macros);
+			if (!empty($macros))
+				$module_values['macros'] = io_json_mb_encode($macros);
 			
 			unset($module_values['snmp_community']); //snmp_community
 			unset($module_values['ip_target']); //ip_target
@@ -612,7 +629,10 @@ if ($create_modules) {
 			$module_values['id_modulo'] = MODULE_PLUGIN;
 			$module_values['id_plugin'] = $plugin['id'];
 			
-			$macros = json_decode($plugin['macros'], true);
+			// Avoid the return of a string containing the word 'null' if the macros column is not defined
+			$macros = array();
+			if (isset($plugin['macros']) && !empty($plugin['macros']))
+				$macros = json_decode($plugin['macros'], true);
 			
 			foreach ($macros as $k => $macro) {
 				switch($macro['macro']) {
@@ -657,7 +677,8 @@ if ($create_modules) {
 				}
 			}
 			
-			$module_values['macros'] = io_json_mb_encode($macros);
+			if (!empty($macros))
+				$module_values['macros'] = io_json_mb_encode($macros);
 			
 			unset($module_values['snmp_community']); //snmp_community
 			unset($module_values['ip_target']); //ip_target

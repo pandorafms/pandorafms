@@ -647,25 +647,38 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 	
 	# Simple alert
 	if (defined ($alert->{'id_template_module'})) {
+		# Avoid the use of something like "SELECT *, <column that exists in the *>" cause
+		# it will make an error on oracle databases. It's better to filter the wildcards
+		# by table and add (one by one) all the columns of the table which will have columns
+		# that will be modified with an alias or something.
+		
 		if ($alert_mode == RECOVERED_ALERT) {
-			@actions = get_db_rows ($dbh, 'SELECT *, talert_template_module_actions.id AS id_alert_template_module_actions
-						FROM talert_template_module_actions, talert_actions, talert_commands
-						WHERE talert_template_module_actions.id_alert_action = talert_actions.id
-						AND talert_actions.id_alert_command = talert_commands.id
-						AND talert_template_module_actions.id_alert_template_module = ?
-						AND ((fires_min = 0 AND fires_max = 0)
+			# Avoid the use of alias bigger than 30 characters.
+			@actions = get_db_rows ($dbh,
+				'SELECT taa.*, tac.*, tatma.id AS id_alert_templ_module_actions,
+					tatma.id_alert_template_module, tatma.id_alert_action, tatma.fires_min,
+					tatma.fires_max, tatma.module_action_threshold, tatma.last_execution
+				FROM talert_template_module_actions tatma, talert_actions taa, talert_commands tac
+				WHERE tatma.id_alert_action = taa.id
+					AND taa.id_alert_command = tac.id
+					AND tatma.id_alert_template_module = ?
+					AND ((fires_min = 0 AND fires_max = 0)
 						OR ? >= fires_min)',
-						$alert->{'id_template_module'}, $alert->{'times_fired'});	
+				$alert->{'id_template_module'}, $alert->{'times_fired'});	
 		} else {
-			@actions = get_db_rows ($dbh, 'SELECT *, talert_template_module_actions.id AS id_alert_template_module_actions
-						FROM talert_template_module_actions, talert_actions, talert_commands
-						WHERE talert_template_module_actions.id_alert_action = talert_actions.id
-						AND talert_actions.id_alert_command = talert_commands.id
-						AND talert_template_module_actions.id_alert_template_module = ?
-						AND ((fires_min = 0 AND fires_max = 0)
+			# Avoid the use of alias bigger than 30 characters.
+			@actions = get_db_rows ($dbh, 
+				'SELECT taa.*, tac.*, tatma.id AS id_alert_templ_module_actions,
+					tatma.id_alert_template_module, tatma.id_alert_action, tatma.fires_min,
+					tatma.fires_max, tatma.module_action_threshold, tatma.last_execution
+				FROM talert_template_module_actions tatma, talert_actions taa, talert_commands tac
+				WHERE tatma.id_alert_action = taa.id
+					AND taa.id_alert_command = tac.id
+					AND tatma.id_alert_template_module = ?
+					AND ((fires_min = 0 AND fires_max = 0)
 						OR (fires_min <= fires_max AND ? >= fires_min AND ? <= fires_max)
 						OR (fires_min > fires_max AND ? >= fires_min))', 
-						$alert->{'id_template_module'}, $alert->{'times_fired'}, $alert->{'times_fired'}, $alert->{'times_fired'});	
+				$alert->{'id_template_module'}, $alert->{'times_fired'}, $alert->{'times_fired'}, $alert->{'times_fired'});	
 		}
 
 		# Get default action
@@ -1189,9 +1202,9 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	}
 	
 	# Update action last execution date
-	if (defined ($action->{'last_execution'}) && defined ($action->{'id_alert_template_module_actions'})) {
+	if (defined ($action->{'last_execution'}) && defined ($action->{'id_alert_templ_module_actions'})) {
 		db_do ($dbh, 'UPDATE talert_template_module_actions SET last_execution = ?
- WHERE id = ?', time (), $action->{'id_alert_template_module_actions'});
+ 			WHERE id = ?', time (), $action->{'id_alert_templ_module_actions'});
 	}
 }
 
@@ -1418,10 +1431,10 @@ sub pandora_planned_downtime_disabled_once_stop($$) {
 	# Stop executed downtimes (enable agents and disable_agents_alerts)
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_downtime != ' . $RDBMS_QUOTE_STRING. 'quiet' . $RDBMS_QUOTE_STRING. '
-			AND type_execution = ' . $RDBMS_QUOTE_STRING. 'once' . $RDBMS_QUOTE_STRING. '
+		WHERE type_downtime != ?
+			AND type_execution = ?
 			AND executed = 1
-			AND date_to <= ?', $utimestamp);
+			AND date_to <= ?', 'quiet', 'once', $utimestamp);
 	
 	foreach my $downtime (@downtimes) {
 		
@@ -1453,10 +1466,10 @@ sub pandora_planned_downtime_disabled_once_start($$) {
 	# Start pending downtimes (disable agents and disable_agents_alerts)
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_downtime != ' . $RDBMS_QUOTE_STRING . 'quiet' . $RDBMS_QUOTE_STRING . '
-			AND type_execution = ' . $RDBMS_QUOTE_STRING . 'once' . $RDBMS_QUOTE_STRING . '
+		WHERE type_downtime != ?
+			AND type_execution = ?
 			AND executed = 0 AND date_from <= ?
-			AND date_to >= ?', $utimestamp, $utimestamp);
+			AND date_to >= ?', 'quiet', 'once', $utimestamp, $utimestamp);
 	
 	foreach my $downtime (@downtimes) {
 		if (!defined($downtime->{'description'})) {
@@ -1651,9 +1664,9 @@ sub pandora_planned_downtime_quiet_once_stop($$) {
 	# Stop pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_downtime = ' . $RDBMS_QUOTE_STRING . 'quiet' . $RDBMS_QUOTE_STRING . '
-			AND type_execution = ' . $RDBMS_QUOTE_STRING. 'once' . $RDBMS_QUOTE_STRING . '
-			AND executed = 1 AND date_to <= ?', $utimestamp);
+		WHERE type_downtime = ?
+			AND type_execution = ?
+			AND executed = 1 AND date_to <= ?', 'quiet', 'once', $utimestamp);
 	
 	foreach my $downtime (@downtimes) {
 		if (!defined($downtime->{'description'})) {
@@ -1692,10 +1705,10 @@ sub pandora_planned_downtime_quiet_once_start($$) {
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_downtime = ' . $RDBMS_QUOTE_STRING . 'quiet' . $RDBMS_QUOTE_STRING . '
-			AND type_execution = ' . $RDBMS_QUOTE_STRING . 'once' . $RDBMS_QUOTE_STRING . '
+		WHERE type_downtime = ?
+			AND type_execution = ?
 			AND executed = 0 AND date_from <= ?
-			AND date_to >= ?', $utimestamp, $utimestamp);
+			AND date_to >= ?', 'quiet', 'once', $utimestamp, $utimestamp);
 	
 	foreach my $downtime (@downtimes) {
 		if (!defined($downtime->{'description'})) {
@@ -1743,11 +1756,12 @@ sub pandora_planned_downtime_monthly_start($$) {
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_periodicity = ' . $RDBMS_QUOTE_STRING . 'monthly' . $RDBMS_QUOTE_STRING . '
+		WHERE type_periodicity = ?
 			AND executed = 0
 			AND ((periodically_day_from = ? AND periodically_time_from <= ?) OR (periodically_day_from < ?))
 			AND ((periodically_day_to = ? AND periodically_time_to >= ?) OR (periodically_day_to > ?))',
-			$number_day_month, $time, $number_day_month,
+			'monthly', 'number_day_month',
+			$time, $number_day_month,
 			$number_day_month, $time, $number_day_month);
 	
 	foreach my $downtime (@downtimes) {	
@@ -1817,11 +1831,12 @@ sub pandora_planned_downtime_monthly_stop($$) {
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_periodicity = ' . $RDBMS_QUOTE_STRING . 'monthly' . $RDBMS_QUOTE_STRING . '
+		WHERE type_periodicity = ?
 			AND executed = 1
-			AND type_execution <> ' . $RDBMS_QUOTE_STRING . 'once' . $RDBMS_QUOTE_STRING . '
+			AND type_execution <> ?
 			AND (((periodically_day_from = ? AND periodically_time_from > ?) OR (periodically_day_from > ?))
 				OR ((periodically_day_to = ? AND periodically_time_to < ?) OR (periodically_day_to < ?)))',
+			'monthly', 'once',
 			$number_day_month, $time, $number_day_month,
 			$number_day_month, $time, $number_day_month);
 	
@@ -1876,8 +1891,8 @@ sub pandora_planned_downtime_weekly_start($$) {
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_periodicity = ' . $RDBMS_QUOTE_STRING . 'weekly' . $RDBMS_QUOTE_STRING . '
-			AND executed = 0');
+		WHERE type_periodicity = ?
+			AND executed = 0', 'weekly');
 	
 	foreach my $downtime (@downtimes) {
 		my $across_date = $downtime->{'periodically_time_from'} gt $downtime->{'periodically_time_to'} ? 1 : 0 ;
@@ -1985,9 +2000,9 @@ sub pandora_planned_downtime_weekly_stop($$) {
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_periodicity = ' . $RDBMS_QUOTE_STRING . 'weekly' . $RDBMS_QUOTE_STRING . '
-			AND type_execution <> ' . $RDBMS_QUOTE_STRING . 'once' . $RDBMS_QUOTE_STRING . '
-			AND executed = 1');
+		WHERE type_periodicity = ?
+			AND type_execution <> ?
+			AND executed = 1', 'weekly', 'once');
 	
 	foreach my $downtime (@downtimes) {
 		my $across_date = $downtime->{'periodically_time_from'} gt $downtime->{'periodically_time_to'} ? 1 : 0;
@@ -2311,13 +2326,12 @@ sub pandora_create_template_module ($$$$;$$$) {
 	
 	return db_insert ($dbh,
 		'id',
-		"INSERT INTO talert_template_modules(
-			" . $RDBMS_QUOTE . "id_agent_module" . $RDBMS_QUOTE . ",
-			" . $RDBMS_QUOTE . "id_alert_template" . $RDBMS_QUOTE . ",
-			" . $RDBMS_QUOTE . "id_policy_alerts" . $RDBMS_QUOTE . ",
-			" . $RDBMS_QUOTE . "disabled" . $RDBMS_QUOTE . ",
-			" . $RDBMS_QUOTE . "standby" . $RDBMS_QUOTE . ",
-			" . $RDBMS_QUOTE . "last_reference" . $RDBMS_QUOTE . ")
+		"INSERT INTO talert_template_modules(id_agent_module,
+		                                     id_alert_template,
+		                                     id_policy_alerts,
+		                                     disabled,
+		                                     standby,
+		                                     last_reference)
 		VALUES (?, ?, ?, ?, ?, ?)",
 		$id_agent_module, $id_alert_template, $id_policy_alerts, $disabled, $standby, time);
 }
@@ -2339,9 +2353,9 @@ sub pandora_update_template_module ($$$;$$$) {
 	
 	db_do ($dbh,
 		"UPDATE talert_template_modules
-		SET " . $RDBMS_QUOTE . "id_policy_alerts" . $RDBMS_QUOTE . " = ?,
-			" . $RDBMS_QUOTE . "disabled" . $RDBMS_QUOTE . " =  ?,
-			" . $RDBMS_QUOTE . "standby" . $RDBMS_QUOTE . " = ?
+		SET id_policy_alerts = ?,
+			disabled =  ?,
+			standby = ?
 		WHERE id = ?",
 		$id_policy_alerts, $disabled, $standby, $id_alert);
 }
@@ -2706,9 +2720,7 @@ sub pandora_create_module_tags ($$$$) {
 		
 		db_insert ($dbh,
 			'id_tag',
-			"INSERT INTO ttag_module(
-				" . $RDBMS_QUOTE . "id_tag" . $RDBMS_QUOTE . ",
-				" . $RDBMS_QUOTE . "id_agente_modulo" . $RDBMS_QUOTE . ")
+			"INSERT INTO ttag_module(id_tag, id_agente_modulo)
 			VALUES (?, ?)",
 			$tag_id, $id_agent_module);
 	}
@@ -2957,7 +2969,7 @@ sub pandora_update_module_on_error ($$$) {
 
 	# Set tagente_estado.current_interval to make sure it is not 0
 	my $current_interval;
-	if ($module->{'cron_interval'} ne '' && $module->{'cron_interval'} ne '* * * * *') {
+	if (defined($module->{'cron_interval'}) && $module->{'cron_interval'} ne '' && $module->{'cron_interval'} ne '* * * * *') {
 		$current_interval = cron_next_execution ($module->{'cron_interval'});
 	}
 	elsif ($module->{'module_interval'} == 0) {
@@ -2990,6 +3002,7 @@ sub pandora_exec_forced_alerts {
 				FROM talert_template_modules, talert_templates
 				WHERE talert_template_modules.id_alert_template = talert_templates.id
 				AND force_execution = 1');
+	
 	foreach my $alert (@alerts) {
 		
 		# Get the agent and module associated with the alert
@@ -4318,6 +4331,12 @@ sub pandora_self_monitoring ($$) {
 			WHERE token = 'db_maintance'
 				AND NULLIF(value, '')::int > UNIX_TIMESTAMP() - 86400");
 	}
+	elsif ($RDBMS eq 'oracle') {
+		$dbmaintance = get_db_value ($dbh,
+			"SELECT COUNT(*)
+			FROM tconfig
+			WHERE token = 'db_maintance' AND DBMS_LOB.substr(value, 100, 1) > UNIX_TIMESTAMP() - 86400");
+	}
 	else {
 		$dbmaintance = get_db_value ($dbh,
 			"SELECT COUNT(*)
@@ -4380,9 +4399,9 @@ Set the current master server.
 sub pandora_set_master ($$) {
 	my ($pa_config, $dbh) = @_;
 	
-	my $current_master = get_db_value ($dbh, 'SELECT name FROM tserver 
+	my $current_master = get_db_value_limit ($dbh, 'SELECT name FROM tserver 
 	                                  WHERE master <> 0 AND status = 1
-									  ORDER BY master DESC LIMIT 1');
+									  ORDER BY master DESC', 1);
 	return unless defined($current_master) and ($current_master ne $Master);
 
 	logger($pa_config, "Server $current_master is the current master.", 1);
@@ -4503,7 +4522,7 @@ sub pandora_module_unknown ($$) {
 			}
 			
 			my $do_event = 0;
-			if ($module->{'disabled_types_event'} eq "") {
+			if (!defined($module->{'disabled_types_event'}) || $module->{'disabled_types_event'} eq "") {
 				$do_event = 1;
 			}
 			else {
@@ -4777,6 +4796,8 @@ sub pandora_get_os ($$) {
 sub load_module_macros ($$) {
 	my ($macros, $macro_hash) = @_;
 	
+	return if (!defined($macros));
+
 	# Decode and parse module macros
 	my $decoded_macros = {};
 	eval {
@@ -4991,7 +5012,7 @@ sub pandora_output_password($$) {
 	my ($pa_config, $password) = @_;
 
 	# Do not attemp to decrypt empty passwords.
-	return '' if ($password eq '');
+	return '' if (! defined($password) || $password eq '');
 
 	# Encryption disabled.
 	return $password if (! defined($pa_config->{'encryption_key'}) || $pa_config->{'encryption_key'} eq '');

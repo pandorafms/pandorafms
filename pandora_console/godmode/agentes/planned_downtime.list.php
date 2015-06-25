@@ -197,32 +197,19 @@ if ($delete_downtime) {
 
 // Filter parameters
 $offset = (int) get_parameter('offset');
-$search_text = (string) get_parameter('search_text');
-$date_from = (string) get_parameter('date_from');
-$date_to = (string) get_parameter('date_to');
-$execution_type = (string) get_parameter('execution_type');
-$show_archived = (bool) get_parameter('archived');
-$agent_id = (int) get_parameter('agent_id');
-$agent_name = !empty($agent_id) ? (string) get_parameter('agent_name') : "";
-$module_id = (int) get_parameter('module_name_hidden');
-$module_name = !empty($module_id) ? (string) get_parameter('module_name') : "";
-
 $filter_params = array();
-$filter_params['search_text'] = $search_text;
-$filter_params['date_from'] = $date_from;
-$filter_params['date_to'] = $date_to;
-$filter_params['execution_type'] = $execution_type;
-$filter_params['archived'] = $show_archived;
-$filter_params['agent_id'] = $agent_id;
-$filter_params['agent_name'] = $agent_name;
-$filter_params['module_id'] = $module_id;
-$filter_params['module_name'] = $module_name;
 
-$filter_params_aux = array();
-foreach ($filter_params as $name => $value) {
-	$filter_params_aux[] = is_bool($value) ? $name."=".(int)$value : "$name=$value";
-}
-$filter_params_str = !empty($filter_params_aux) ? implode("&", $filter_params_aux) : "";
+$search_text 	= $filter_params['search_text'] 	= (string) get_parameter('search_text');
+$date_from 		= $filter_params['date_from'] 		= (string) get_parameter('date_from');
+$date_to 		= $filter_params['date_to'] 		= (string) get_parameter('date_to');
+$execution_type = $filter_params['execution_type'] 	= (string) get_parameter('execution_type');
+$show_archived 	= $filter_params['archived'] 		= (bool) get_parameter('archived');
+$agent_id 		= $filter_params['agent_id'] 		= (int) get_parameter('agent_id');
+$agent_name 	= $filter_params['agent_name'] 		= (string) (!empty($agent_id) ? get_parameter('agent_name') : '');
+$module_id 		= $filter_params['module_id'] 		= (int) get_parameter('module_name_hidden');
+$module_name 	= $filter_params['module_name'] 	= (string) (!empty($module_id) ? get_parameter('module_name') : '');
+
+$filter_params_str = http_build_query($filter_params);
 
 // Table filter
 $table = new StdClass();
@@ -271,8 +258,7 @@ $agent_input = __('Agent') . '&nbsp;' . ui_print_agent_autocomplete_input($param
 $row[] = $agent_input;
 
 // Module
-$module_input = __('Module') . '&nbsp;' . html_print_autocomplete_modules('module_name', $module_name, false, true, '', array(), true);
-$row[] = $module_input;
+$row[] = __('Module') . '&nbsp;' . html_print_autocomplete_modules('module_name', $module_name, false, true, '', array(), true);
 
 $row[] = html_print_submit_button('Search', 'search', false, 'class="sub search"', true);
 
@@ -307,7 +293,7 @@ $table->align[8] = "center";
 $table->align[9] = "center";
 
 $groups = users_get_groups ();
-if(!empty($groups)) {
+if (!empty($groups)) {
 	$where_values = "1=1";
 
 	$groups_string = implode (",", array_keys ($groups));
@@ -372,16 +358,77 @@ if(!empty($groups)) {
 									  	AND tam.id_agente_modulo = $module_id
 									  	AND tpda.all_modules = 1))";
 	}
+	
+	// Columns of the table tplanned_downtime
+	$columns = array(
+			'id',
+			'name',
+			'description',
+			'date_from',
+			'date_to',
+			'executed',
+			'id_group',
+			'only_alerts',
+			'monday',
+			'tuesday',
+			'wednesday',
+			'thursday',
+			'friday',
+			'saturday',
+			'sunday',
+			'periodically_time_from',
+			'periodically_time_to',
+			'periodically_day_from',
+			'periodically_day_to',
+			'type_downtime',
+			'type_execution',
+			'type_periodicity',
+			'id_user',
+		);
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$columns_str = implode(',', $columns);
+			$sql = "SELECT $columns_str
+					FROM tplanned_downtime
+					WHERE $where_values
+					ORDER BY type_execution DESC, date_from DESC
+					LIMIT ".$config["block_size"]."
+					OFFSET $offset";
+			break;
+		case "oracle":
+			// Oracle doesn't have TIME type, so we should transform the DATE value
+			$new_time_from = "TO_CHAR(periodically_time_from, 'HH24:MI:SS') AS periodically_time_from";
+			$new_time_to = "TO_CHAR(periodically_time_to, 'HH24:MI:SS') AS periodically_time_to";
+			
+			$time_from_key = array_search('periodically_time_from', $columns);
+			$time_to_key = array_search('periodically_time_to', $columns);
+			
+			if ($time_from_key !== false)
+				$columns[$time_from_key] = $new_time_from;
+			if ($time_to_key !== false)
+				$columns[$time_to_key] = $new_time_to;
+			
+			$columns_str = implode(',', $columns);
+			
+			$set = array ();
+			$set['limit'] = $config["block_size"];
+			$set['offset'] = $offset;
+			
+			$sql = "SELECT $columns_str
+					FROM tplanned_downtime
+					WHERE $where_values
+					ORDER BY type_execution DESC, date_from DESC";
+			
+			$sql = oracle_recode_query ($sql, $set);
+			break;
+	}
 
-	$sql = "SELECT *
-			FROM tplanned_downtime
-			WHERE $where_values
-			ORDER BY type_execution DESC, date_from DESC
-			LIMIT ".$config["block_size"]."
-			OFFSET $offset";
 	$sql_count = "SELECT COUNT(id) AS num
 				  FROM tplanned_downtime
 				  WHERE $where_values";
+	
 	$downtimes = db_get_all_rows_sql ($sql);
 	$downtimes_number_res = db_get_all_rows_sql($sql_count);
 	$downtimes_number = $downtimes_number_res != false ? $downtimes_number_res[0]['num'] : 0;
@@ -419,9 +466,9 @@ else {
 		
 		switch ($downtime['type_execution']) {
 			case 'once':
-				$data[5] = date ("Y-m-d H:i", $downtime['date_from']) .
+				$data[5] = date ("Y-m-d H:i:s", $downtime['date_from']) .
 					"&nbsp;" . __('to') . "&nbsp;".
-					date ("Y-m-d H:i", $downtime['date_to']);
+					date ("Y-m-d H:i:s", $downtime['date_to']);
 				break;
 			case 'periodically':
 				switch ($downtime['type_periodicity']) {
@@ -482,9 +529,8 @@ else {
 		
 		if ($downtime['type_execution'] == 'once' && $downtime["executed"] == 1) {
 			
-			$data[7] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.list&amp;' .
-				'stop_downtime=1&amp;' .
-				'id_downtime=' . $downtime['id'] . '">' .
+			$data[7] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list' .
+				'&stop_downtime=1&id_downtime=' . $downtime['id'] . '&' . $filter_params_str . '">' .
 			html_print_image("images/cancel.png", true, array("border" => '0', "alt" => __('Stop downtime')));
 		}
 		else {
@@ -492,12 +538,11 @@ else {
 		}
 		
 		if ($downtime["executed"] == 0) {
-			$data[8] = '<a
-				href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor&amp;edit_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
+			$data[8] = '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor&amp;edit_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
 			html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
-			$data[9] = '<a id="delete_downtime" href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.list&amp;'.
-				'delete_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
-			html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
+			$data[9] = '<a id="delete_downtime" href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list'.
+				'&delete_downtime=1&id_downtime=' . $downtime['id'] . '&' . $filter_params_str . '">' .
+				html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
 		}
 		elseif ($downtime["executed"] == 1
 			&& $downtime['type_execution'] == 'once') {

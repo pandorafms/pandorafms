@@ -1100,10 +1100,10 @@ function agents_get_modules ($id_agent = null, $details = false,
 							array_push ($fields, $field.' = \''.$value.'\'');
 							break;
 						case "oracle":
-							if (is_int ($value) ||is_float ($value)||is_double ($value))
+							if (is_int ($value) || is_float ($value) || is_double ($value))
 								array_push ($fields, $field.' = '.$value.'');
 							else
-								array_push ($fields, $field.' = "'.$value.'"');
+								array_push ($fields, $field.' = \''.$value.'\'');
 							break;
 					}
 				}
@@ -1119,27 +1119,7 @@ function agents_get_modules ($id_agent = null, $details = false,
 		$details = "nombre";
 	}
 	else { 
-		if ($config['dbtype'] == 'oracle') {
-			$details_new = array();
-			if (is_array($details)) {
-				foreach ($details as $detail) {
-					if ($detail == 'nombre')
-						$details_new[] = 'dbms_lob.substr(nombre,4000,1) as nombre';
-					else
-						$details_new[] = $detail;
-				}
-			}
-			else {
-				if ($details == 'nombre')
-					$details_new = 'dbms_lob.substr(nombre,4000,1) as nombre';
-				else
-					$details_new = $details;
-			}
-			
-			$details = io_safe_input ($details);
-		}
-		else
-			$details = io_safe_input ($details);
+		$details = io_safe_input ($details);
 	}
 	
 	//$where .= " AND id_policy_module = 0 ";
@@ -1150,30 +1130,14 @@ function agents_get_modules ($id_agent = null, $details = false,
 	
 	$where .= "\n\n" . $where_tags;
 	
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-			$sql = sprintf ('SELECT %s%s
-				FROM tagente_modulo
-				WHERE
-					%s
-				ORDER BY nombre',
-				($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
-				io_safe_output(implode (",", (array) $details)),
-				$where);
-			break;
-		case "oracle":
-			$sql = sprintf ('SELECT %s%s
-				FROM tagente_modulo
-				WHERE
-					%s
-				ORDER BY dbms_lob.substr(nombre, 4000, 1)',
-				($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
-				io_safe_output(implode (",", (array) $details)),
-				$where);
-			break;
-	}
-	
+	$sql = sprintf ('SELECT %s%s
+					FROM tagente_modulo
+					WHERE
+						%s
+					ORDER BY nombre',
+					($details != '*' && $indexed) ? 'id_agente_modulo,' : '',
+					io_safe_output(implode (",", (array) $details)),
+					$where);
 	
 	$result = db_get_all_rows_sql ($sql);
 	
@@ -1717,7 +1681,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		
 		//Alert
 		db_process_delete_temp ("talert_template_modules",
-			"id_agent_module", $where_modules);
+			"id_agent_module", $where_modules, true);
 		
 		//Events (up/down monitors)
 		// Dont delete here, could be very time-exausting, let the daily script
@@ -1726,11 +1690,11 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		
 		//Graphs, layouts, reports & networkmapenterprise
 		db_process_delete_temp ("tgraph_source",
-			"id_agent_module", $where_modules);
+			"id_agent_module", $where_modules, true);
 		db_process_delete_temp ("tlayout_data",
-			"id_agente_modulo", $where_modules);
+			"id_agente_modulo", $where_modules, true);
 		db_process_delete_temp ("treport_content",
-			"id_agent_module", $where_modules);
+			"id_agent_module", $where_modules, true);
 		if (enterprise_installed()) {
 			$nodes = db_get_all_rows_filter(
 				"tnetworkmap_enterprise_nodes",
@@ -1740,9 +1704,9 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 			}
 			
 			foreach ($nodes as $node) {
-				db_process_delete_temp ("tnetworkmap_enterprise_relation_nodes",
+				db_process_delete_temp ("tnetworkmap_ent_rel_nodes",
 					"parent", $node['id']);
-				db_process_delete_temp ("tnetworkmap_enterprise_relation_nodes",
+				db_process_delete_temp ("tnetworkmap_ent_rel_nodes",
 					"child", $node['id']);
 			}
 			
@@ -1779,7 +1743,7 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		
 		// tagente_datos_inc
 		// Dont delete here, this records are deleted later, in database script
-		// db_process_delete_temp ("tagente_datos_inc", "id_agente_modulo", $where_modules);
+		// db_process_delete_temp ("tagente_datos_inc", "id_agente_modulo", $where_modules, true);
 		
 		// Delete remote configuration
 		if (enterprise_installed()) {
@@ -2197,6 +2161,8 @@ function agents_update_gis($idAgente, $latitude, $longitude, $altitude,
  * @return array A list of network interfaces information by agents.
  */
 function agents_get_network_interfaces ($agents = false, $agents_filter = false) {
+	global $config;
+
 	if ($agents === false) {
 		$filter = false;
 		if ($agents_filter !== false) {
@@ -2238,9 +2204,14 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 		$columns = array(
 				"id_agente_modulo",
 				"nombre",
-				"descripcion",
 				"ip_target"
 			);
+
+		if ($config['dbtype'] == 'oracle')
+			$columns[] = 'TO_CHAR(descripcion) AS descripcion';
+		else
+			$columns[] = 'descripcion';
+
 		$filter = " id_agente = $agent_id AND disabled = 0 AND id_tipo_modulo IN (".implode(",", $accepted_module_types).") AND nombre LIKE 'ifOperStatus_%'";
 		
 		$modules = agents_get_modules($agent_id, $columns, $filter, true, false);
@@ -2279,7 +2250,7 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 				
 				$ip_target = "--";
 				// Trying to get something like an IP from the description
-				if (preg_match ("/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/", $module_description, $matches)
+				if (preg_match ("/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/", $module_description, $matches)
 						|| preg_match ("/(((?=(?>.*?(::))(?!.+\3)))\3?|([\dA-F]{1,4}(\3|:?)|\2))(?4){5}((?4){2}|(25[0-5]|
 							(2[0-4]|1\d|[1-9])?\d)(\.(?7)){3})/i", $module_description, $matches) && $matches[0]) {
 					

@@ -524,10 +524,10 @@ function tags_get_agents($id_tag, $id_policy_module = 0) {
 		FROM tagente
 		WHERE id_agente IN (
 			SELECT t1.id_agente
-			FROM tagente_modulo AS t1
+			FROM tagente_modulo t1
 			WHERE t1.id_agente_modulo IN (
 				SELECT t2.id_agente_modulo
-				FROM ttag_module AS t2
+				FROM ttag_module t2
 				WHERE id_tag = " . $id_tag . "
 					AND id_policy_module = " . $id_policy_module . "))");
 	
@@ -924,14 +924,29 @@ function tags_get_user_tags($id_user = false, $access = 'AR') {
 		return array();
 	}
 	
-	$query = sprintf("
-		SELECT count(*) 
-		FROM tusuario_perfil, tperfil
-		WHERE tperfil.id_perfil = tusuario_perfil.id_perfil
-			AND tusuario_perfil.id_usuario = '%s'
-			AND tperfil.%s = 1
-			AND tags <> ''", 
-		$id_user, $acl_column);
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$query = sprintf("
+				SELECT count(*) 
+				FROM tusuario_perfil, tperfil
+				WHERE tperfil.id_perfil = tusuario_perfil.id_perfil
+					AND tusuario_perfil.id_usuario = '%s'
+					AND tperfil.%s = 1
+					AND tags <> ''", 
+				$id_user, $acl_column);
+			break;
+		case "oracle":
+			$query = sprintf("
+				SELECT count(*) 
+				FROM tusuario_perfil, tperfil
+				WHERE tperfil.id_perfil = tusuario_perfil.id_perfil
+					AND tusuario_perfil.id_usuario = '%s'
+					AND tperfil.%s = 1
+					AND dbms_lob.getlength(tags) > 0", 
+				$id_user, $acl_column);
+			break;
+	}
 	
 	$profiles_without_tags = db_get_value_sql($query);
 	
@@ -1435,7 +1450,7 @@ function tags_get_agents_counter ($id_tag, $groups_and_tags = array(), $agent_fi
 				$module_status_array = array_unique($module_status_array);
 				$status_str = implode(",", $module_status_array);
 				
-				$module_status_filter = "INNER JOIN tagente_estado AS tae
+				$module_status_filter = "INNER JOIN tagente_estado tae
 											ON tam.id_agente_modulo = tae.id_agente_modulo
 												AND tae.estado IN ($status_str)";
 			}
@@ -1445,13 +1460,13 @@ function tags_get_agents_counter ($id_tag, $groups_and_tags = array(), $agent_fi
 	$count = 0;
 	if ($realtime) {
 		$sql = "SELECT DISTINCT ta.id_agente
-				FROM tagente AS ta
-				INNER JOIN tagente_modulo AS tam
+				FROM tagente ta
+				INNER JOIN tagente_modulo tam
 					ON ta.id_agente = tam.id_agente
 						AND tam.disabled = 0
 						$module_name_filter
 				$module_status_filter
-				INNER JOIN ttag_module AS ttm
+				INNER JOIN ttag_module ttm
 					ON ttm.id_tag = $id_tag
 						AND tam.id_agente_modulo = ttm.id_agente_modulo
 				WHERE ta.disabled = 0
@@ -1608,13 +1623,13 @@ function tags_get_agents_counter ($id_tag, $groups_and_tags = array(), $agent_fi
 			}
 			
 			$sql = "SELECT COUNT(DISTINCT ta.id_agente) 
-					FROM tagente AS ta
-					INNER JOIN tagente_modulo AS tam
+					FROM tagente ta
+					INNER JOIN tagente_modulo tam
 						ON ta.id_agente = tam.id_agente
 							AND tam.disabled = 0
 							$module_name_filter
 					$module_status_filter
-					INNER JOIN ttag_module AS ttm
+					INNER JOIN ttag_module ttm
 						ON ttm.id_tag = $id_tag
 							AND tam.id_agente_modulo = ttm.id_agente_modulo
 					WHERE ta.disabled = 0
@@ -1898,14 +1913,14 @@ function tags_get_monitors_counter ($id_tag, $groups_and_tags = array(), $agent_
 	}
 	
 	$sql = "SELECT COUNT(DISTINCT tam.id_agente_modulo)
-			FROM tagente_modulo AS tam
-			INNER JOIN tagente_estado AS tae
+			FROM tagente_modulo tam
+			INNER JOIN tagente_estado tae
 				ON tam.id_agente_modulo = tae.id_agente_modulo
 					$modules_clause
-			INNER JOIN ttag_module AS ttm
+			INNER JOIN ttag_module ttm
 				ON ttm.id_tag = $id_tag
 					AND tam.id_agente_modulo = ttm.id_agente_modulo
-			INNER JOIN tagente AS ta
+			INNER JOIN tagente ta
 				ON tam.id_agente = ta.id_agente
 					AND ta.disabled = 0
 					$agent_name_filter

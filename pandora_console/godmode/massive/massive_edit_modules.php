@@ -81,7 +81,7 @@ if ($update) {
 			
 			$agents_ = db_get_all_rows_sql('
 				SELECT DISTINCT(t1.id_agente)
-				FROM tagente AS t1, tagente_modulo AS t2
+				FROM tagente t1, tagente_modulo t2
 				WHERE t1.id_agente = t2.id_agente
 					AND t2.delete_pending = 0 ' . $condition);
 			foreach ($agents_ as $id_agent) {
@@ -112,7 +112,8 @@ if ($update) {
 					$module_name = array();
 				}
 				foreach($module_name as $mod_name) {
-					$result = process_manage_edit($mod_name['nombre'], $id_agent);
+					$result = process_manage_edit($mod_name['nombre'],
+						$id_agent);
 					$count ++;
 					$success += (int)$result;
 				}
@@ -122,6 +123,8 @@ if ($update) {
 		// We empty the agents array to skip the standard procedure
 		$agents_ = array();
 	}
+	
+	
 	
 	foreach ($agents_ as $agent_) {
 		
@@ -141,12 +144,15 @@ if ($update) {
 			"(" . $success . "/" . $count . ")",
 		__('Could not be updated'));
 	
-	$info = 'Modules: ' . json_encode($modules_) . ' Agents: ' . json_encode($agents_);
+	$info = 'Modules: ' . json_encode($modules_) .
+		' Agents: ' . json_encode($agents_);
 	if ($success > 0) {
-		db_pandora_audit("Massive management", "Edit module", false, false, $info);
+		db_pandora_audit("Massive management", "Edit module", false,
+			false, $info);
 	}
 	else {
-		db_pandora_audit("Massive management", "Fail try to edit module", false, false, $info);
+		db_pandora_audit("Massive management",
+			"Fail try to edit module", false, false, $info);
 	}
 }
 
@@ -174,7 +180,8 @@ if (! $module_type) {
 	$table->rowstyle['edit6'] = 'display: none';
 	$table->rowstyle['edit7'] = 'display: none';
 }
-$agents = agents_get_group_agents (array_keys (users_get_groups ()), false, "none");
+$agents = agents_get_group_agents (array_keys (users_get_groups ()),
+	false, "none");
 switch ($config["dbtype"]) {
 	case "mysql":
 	case "oracle":
@@ -235,7 +242,8 @@ $table->data['form_modules_1'][1] = html_print_select ($types,
 	'module_type', '', false, __('Select'), -1, true, false, true);
 
 $table->data['form_modules_1'][3] = __('Select all modules of this type') . ' ' .
-	html_print_checkbox_extended ("force_type", 'type', '', '', false, '', 'style="margin-right: 40px;"', true);
+	html_print_checkbox_extended ("force_type", 'type', '', '', false,
+		'', 'style="margin-right: 40px;"', true);
 
 $modules = array ();
 if ($module_type != '') {
@@ -263,7 +271,8 @@ $table->data['form_agents_1'][1] = html_print_select ($groups, 'groups_select',
 	' ' . __('Group recursion') . ' ' .
 	html_print_checkbox ("recursion", 1, false, true, false);
 $table->data['form_agents_1'][3] = __('Select all modules of this group') . ' ' .
-	html_print_checkbox_extended ("force_group", 'group', '', '', false, '', 'style="margin-right: 40px;"', true);
+	html_print_checkbox_extended ("force_group", 'group', '', '', false,
+		'', 'style="margin-right: 40px;"', true);
 
 
 
@@ -327,8 +336,8 @@ $table->data['edit1'][1] = '<table width="100%">';
 			$table->data['edit1'][1] .= '<em>' . __('Min.') . '</em>';
 		$table->data['edit1'][1] .= '</td>';
 		$table->data['edit1'][1] .= '<td align="right">';
-			$table->data['edit1'][1] .= html_print_input_text('min_warning',
-				'', '', 5, 15, true);
+			$table->data['edit1'][1] .= html_print_input_text(
+				'min_warning', '', '', 5, 15, true);
 		$table->data['edit1'][1] .= '</td>';
 	$table->data['edit1'][1] .= '</tr>';
 	$table->data['edit1'][1] .= '<tr>';
@@ -336,25 +345,29 @@ $table->data['edit1'][1] = '<table width="100%">';
 			$table->data['edit1'][1] .= '<em>' . __('Max.') . '</em>';
 		$table->data['edit1'][1] .= '</td>';
 		$table->data['edit1'][1] .= '<td align="right">';
-			$table->data['edit1'][1] .= html_print_input_text ('max_warning', '', '', 5, 15, true);
+			$table->data['edit1'][1] .= html_print_input_text (
+				'max_warning', '', '', 5, 15, true);
 		$table->data['edit1'][1] .= '</td>';
 	$table->data['edit1'][1] .= '</tr>';
 	$table->data['edit1'][1] .= '<tr>';
 		$table->data['edit1'][1] .= '<td>';
-			$table->data['edit1'][1] .= '<em>'.__('Str.').'</em>';
+			$table->data['edit1'][1] .= '<em>' . __('Str.') . '</em>';
 		$table->data['edit1'][1] .= '</td>';
 		$table->data['edit1'][1] .= '<td align="right">';
-			$table->data['edit1'][1] .= html_print_input_text ('str_warning', '', '', 5, 15, true);
+			$table->data['edit1'][1] .= html_print_input_text (
+				'str_warning', '', '', 5, 15, true);
 		$table->data['edit1'][1] .= '</td>';
 	$table->data['edit1'][1] .= '</tr>';
 	$table->data['edit1'][1] .= '<tr>';
 		$table->data['edit1'][1] .= '<td>';
-			$table->data['edit1'][1] .= '<em>'.__('Inverse interval').'</em>';
+			$table->data['edit1'][1] .= '<em>' .
+				__('Inverse interval') . '</em>';
 		$table->data['edit1'][1] .= '</td>';
 		$table->data['edit1'][1] .= '<td align="right">';
 			$table->data['edit1'][1] .= 
 				html_print_select(
-					array('' => __('No change'),
+					array(
+						'' => __('No change'),
 						'1' => __('Yes'),
 						'0' => __('No')),
 					'warning_inverse','','','', '', true);
@@ -369,8 +382,8 @@ $table->data['edit1'][3] = '<table width="100%">';
 			$table->data['edit1'][3] .= '<em>' . __('Min.') . '</em>';
 		$table->data['edit1'][3] .= '</td>';
 		$table->data['edit1'][3] .= '<td align="right">';
-			$table->data['edit1'][3] .= html_print_input_text('min_critical',
-				'', '', 5, 15, true);
+			$table->data['edit1'][3] .= html_print_input_text(
+				'min_critical', '', '', 5, 15, true);
 		$table->data['edit1'][3] .= '</td>';
 	$table->data['edit1'][3] .= '</tr>';
 	$table->data['edit1'][3] .= '<tr>';
@@ -378,7 +391,8 @@ $table->data['edit1'][3] = '<table width="100%">';
 			$table->data['edit1'][3] .= '<em>' . __('Max.') . '</em>';
 		$table->data['edit1'][3] .= '</td>';
 		$table->data['edit1'][3] .= '<td align="right">';
-			$table->data['edit1'][3] .= html_print_input_text ('max_critical', '', '', 5, 15, true);
+			$table->data['edit1'][3] .= html_print_input_text(
+				'max_critical', '', '', 5, 15, true);
 		$table->data['edit1'][3] .= '</td>';
 	$table->data['edit1'][3] .= '</tr>';
 	$table->data['edit1'][3] .= '<tr>';
@@ -386,12 +400,14 @@ $table->data['edit1'][3] = '<table width="100%">';
 			$table->data['edit1'][3] .= '<em>'.__('Str.').'</em>';
 		$table->data['edit1'][3] .= '</td>';
 		$table->data['edit1'][3] .= '<td align="right">';
-			$table->data['edit1'][3] .= html_print_input_text ('str_critical', '', '', 5, 15, true);
+			$table->data['edit1'][3] .= html_print_input_text(
+				'str_critical', '', '', 5, 15, true);
 		$table->data['edit1'][3] .= '</td>';
 	$table->data['edit1'][3] .= '</tr>';
 	$table->data['edit1'][3] .= '<tr>';
 		$table->data['edit1'][3] .= '<td>';
-			$table->data['edit1'][3] .= '<em>'.__('Inverse interval').'</em>';
+			$table->data['edit1'][3] .= '<em>' .
+				__('Inverse interval') . '</em>';
 		$table->data['edit1'][3] .= '</td>';
 		$table->data['edit1'][3] .= '<td align="right">';
 			$table->data['edit1'][3] .=
@@ -405,27 +421,40 @@ $table->data['edit1'][3] = '<table width="100%">';
 $table->data['edit1'][3] .= '</table>';
 
 $table->data['edit1_1'][0] = '<b>'.__('Description'). '</b>';
-$table->data['edit1_1'][1] = html_print_textarea ('descripcion', 2, 50, '', '', true);
+$table->data['edit1_1'][1] = html_print_textarea ('descripcion', 2, 50,
+	'', '', true);
 $table->colspan['edit1_1'][1] = 3;
 
 $table->data['edit2'][0] = __('Interval');
-$table->data['edit2'][1] = html_print_extended_select_for_time ('module_interval', 0, '', __('No change'), '0', 10, true, 'width: 150px');
+$table->data['edit2'][1] = html_print_extended_select_for_time(
+	'module_interval', 0, '', __('No change'), '0', 10, true, 'width: 150px');
 $table->data['edit2'][2] = __('Disabled');
-$table->data['edit2'][3] = html_print_select(array('' => __('No change'), '1' => __('Yes'), '0' => __('No')),'disabled','','','', '', true);
+$table->data['edit2'][3] = html_print_select(
+	array(
+		'' => __('No change'),
+		'1' => __('Yes'),
+		'0' => __('No')),
+	'disabled', '', '', '', '', true);
 
 $table->data['edit3'][0] = __('Post process') .
 	ui_print_help_icon ('postprocess', true);
-$table->data['edit3'][1] = html_print_input_text ('post_process', '', '', 10, 15, true);
+$table->data['edit3'][1] = html_print_input_text ('post_process', '',
+	'', 10, 15, true);
 $table->data['edit3'][2] = __('SMNP community');
-$table->data['edit3'][3] = html_print_input_text ('snmp_community', '', '', 10, 15, true);
+$table->data['edit3'][3] = html_print_input_text ('snmp_community', '',
+	'', 10, 15, true);
 
 $table->data['edit35'][0] = __('Target IP');
-$table->data['edit35'][1] = html_print_input_text ('ip_target', '', '', 15, 60, true);
+$table->data['edit35'][1] = html_print_input_text ('ip_target', '', '',
+	15, 60, true);
 $table->data['edit35'][2] = __('SNMP version');
-$table->data['edit35'][3] = html_print_select ($snmp_versions, 'tcp_send', '', '', __('No change'), '', true, false, false, '');
+$table->data['edit35'][3] = html_print_select ($snmp_versions,
+	'tcp_send', '', '', __('No change'), '', true, false, false, '');
 $table->data['edit36'][0] = __('Auth user');
-$table->data['edit36'][1] = html_print_input_text ('plugin_user_snmp', '', '', 15, 60, true);
-$table->data['edit36'][2] = __('Auth password') . ui_print_help_tip(__("The pass length must be eight character minimum."), true);
+$table->data['edit36'][1] = html_print_input_text ('plugin_user_snmp',
+	'', '', 15, 60, true);
+$table->data['edit36'][2] = __('Auth password') .
+	ui_print_help_tip(__("The pass length must be eight character minimum."), true);
 $table->data['edit36'][3] = html_print_input_text ('plugin_pass_snmp', '', '', 15, 60, true);
 $table->data['edit37'][0] = __('Privacy method');
 $table->data['edit37'][1] = html_print_select(array('DES' => __('DES'), 'AES' => __('AES')), 'custom_string_1', '', '', __('No change'), '', true);
@@ -922,6 +951,7 @@ $(document).ready (function () {
 </script>
 <?php
 function process_manage_edit ($module_name, $agents_select = null) {
+	
 	if (is_int ($module_name) && $module_name < 0) {
 		ui_print_error_message(__('No modules selected'));
 		
@@ -1026,7 +1056,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		else {
 			$modules = db_get_all_rows_filter ('tagente_modulo',
 				array ('id_agente' => $agents_select,
-					'nombre' => io_safe_input($module_name)),
+					'nombre' => $module_name),
 				array ('id_agente_modulo'));
 		}
 	}

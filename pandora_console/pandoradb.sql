@@ -661,7 +661,6 @@ CREATE TABLE IF NOT EXISTS `tmodule_relationship` (
 	`module_a` int(10) unsigned NOT NULL,
 	`module_b` int(10) unsigned NOT NULL,
 	`disable_update` tinyint(1) unsigned NOT NULL default '0',
-	`id_rt` int(10) unsigned NOT NULL DEFAULT 0,
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`module_a`) REFERENCES tagente_modulo(`id_agente_modulo`)
 		ON DELETE CASCADE,
@@ -1430,24 +1429,24 @@ ENGINE = InnoDB
 COMMENT = 'Table to store the map connection information';
 
 -- -----------------------------------------------------
--- Table `tgis_map_has_tgis_map_connection`
+-- Table `tgis_map_has_tgis_map_con` (tgis_map_has_tgis_map_connection)
 -- -----------------------------------------------------
-CREATE  TABLE IF NOT EXISTS `tgis_map_has_tgis_map_connection` (
-	`tgis_map_id_tgis_map` INT NOT NULL COMMENT 'reference to tgis_map' ,
-	`tgis_map_connection_id_tmap_connection` INT NOT NULL COMMENT 'reference to tgis_map_connection' ,
-	`modification_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last Modification Time of the Connection' ,
-	`default_map_connection` TINYINT(1) NULL DEFAULT FALSE COMMENT 'Flag to mark the default map connection of a map' ,
-	PRIMARY KEY (`tgis_map_id_tgis_map`, `tgis_map_connection_id_tmap_connection`) ,
-	INDEX `fk_tgis_map_has_tgis_map_connection_tgis_map1` (`tgis_map_id_tgis_map` ASC) ,
-	INDEX `fk_tgis_map_has_tgis_map_connection_tgis_map_connection1` (`tgis_map_connection_id_tmap_connection` ASC) ,
+CREATE  TABLE IF NOT EXISTS `tgis_map_has_tgis_map_con` (
+	`tgis_map_id_tgis_map` INT NOT NULL COMMENT 'reference to tgis_map',
+	`tgis_map_con_id_tmap_con` INT NOT NULL COMMENT 'reference to tgis_map_connection',
+	`modification_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last Modification Time of the Connection',
+	`default_map_connection` TINYINT(1) NULL DEFAULT FALSE COMMENT 'Flag to mark the default map connection of a map',
+	PRIMARY KEY (`tgis_map_id_tgis_map`, `tgis_map_con_id_tmap_con`),
+	INDEX `fk_tgis_map_has_tgis_map_connection_tgis_map1` (`tgis_map_id_tgis_map` ASC),
+	INDEX `fk_tgis_map_has_tgis_map_connection_tgis_map_connection1` (`tgis_map_con_id_tmap_con` ASC),
 	CONSTRAINT `fk_tgis_map_has_tgis_map_connection_tgis_map1`
-		FOREIGN KEY (`tgis_map_id_tgis_map` )
-		REFERENCES `tgis_map` (`id_tgis_map` )
+		FOREIGN KEY (`tgis_map_id_tgis_map`)
+		REFERENCES `tgis_map` (`id_tgis_map`)
 		ON DELETE CASCADE
 		ON UPDATE NO ACTION,
 	CONSTRAINT `fk_tgis_map_has_tgis_map_connection_tgis_map_connection1`
-		FOREIGN KEY (`tgis_map_connection_id_tmap_connection` )
-		REFERENCES `tgis_map_connection` (`id_tmap_connection` )
+		FOREIGN KEY (`tgis_map_con_id_tmap_con`)
+		REFERENCES `tgis_map_connection` (`id_tmap_connection`)
 		ON DELETE CASCADE
 		ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -1549,6 +1548,8 @@ CREATE TABLE IF NOT EXISTS `tnetwork_map` (
 	`server_name` VARCHAR(100)  NOT NULL,
 	`show_modulegroup` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 	`l2_network` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+	`id_tag` int(11) DEFAULT 0,
+	`store_group` int(11) DEFAULT 0,
 	PRIMARY KEY  (`id_networkmap`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

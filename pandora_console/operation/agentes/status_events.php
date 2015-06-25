@@ -45,9 +45,7 @@ ui_toggle(
 			data: parameters,
 			type: 'POST',
 			url: "ajax.php",
-			timeout: 10000,
 			dataType: 'html',
-			async: false,
 			success: function (data) {
 				$("#event_list").empty();
 				$("#event_list").html(data);

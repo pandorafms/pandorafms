@@ -192,9 +192,20 @@ class Tree {
 	}
 
 	protected function getAgentCountersSql ($agent_table) {
+		global $config;
+		
 		$columns = $this->getAgentCounterColumnsSql($agent_table);
-		$columns = "SELECT $columns FROM dual LIMIT 1";
-
+		
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$columns = "SELECT $columns FROM dual LIMIT 1";
+				break;
+			case "oracle":
+				$columns = "SELECT $columns FROM dual WHERE rownum <= 1";
+				break;
+		}
+		
 		return $columns;
 	}
 
@@ -237,7 +248,7 @@ class Tree {
 		// Agents join
 		$agents_join = "";
 		if (!empty($agent_search_filter) || !empty($agent_status_filter)) {
-			$agents_join = "INNER JOIN tagente AS ta
+			$agents_join = "INNER JOIN tagente ta
 								ON ta.disabled = 0
 									AND tam.id_agente = ta.id_agente
 									$agent_search_filter
@@ -288,13 +299,13 @@ class Tree {
 		if (!empty($module_search_filter) || !empty($module_status_filter)) {
 			
 			if (!empty($module_status_filter)) {
-				$module_status_join = "INNER JOIN tagente_estado AS tae
+				$module_status_join = "INNER JOIN tagente_estado tae
 										ON tam.id_agente_modulo IS NOT NULL
 											AND tam.id_agente_modulo = tae.id_agente_modulo
 											$module_status_filter";
 			}
 
-			$modules_join = "INNER JOIN tagente_modulo AS tam
+			$modules_join = "INNER JOIN tagente_modulo tam
 								ON tam.disabled = 0
 									AND ta.id_agente = tam.id_agente
 									$module_search_filter
@@ -302,7 +313,7 @@ class Tree {
 		}
 		
 		if (empty($module_status_join)) {
-			$module_status_join = "LEFT JOIN tagente_estado AS tae
+			$module_status_join = "LEFT JOIN tagente_estado tae
 									ON tam.id_agente_modulo = tae.id_agente_modulo";
 		}
 
@@ -311,15 +322,13 @@ class Tree {
 		switch ($rootType) {
 			case 'group':
 				// ACL Group
+				$user_groups_str = "-1";
 				$group_acl =  "";
 				if (!$this->strictACL) {
 					if (!empty($this->userGroups)) {
 						$user_groups_str = implode(",", array_keys($this->userGroups));
-						$group_acl = "AND ta.id_grupo IN ($user_groups_str)";
 					}
-					else {
-						$group_acl = "AND ta.id_grupo = -1";
-					}
+					$group_acl = "AND ta.id_grupo IN ($user_groups_str)";
 				}
 				else {
 					if (!empty($this->acltags)) {
@@ -333,16 +342,10 @@ class Tree {
 						if (!empty($groups)) {
 							if (array_search(0, $groups) === false) {
 								$user_groups_str = implode(",", $groups);
-								$group_acl = " AND ta.id_grupo IN ($user_groups_str) ";
 							}
 						}
-						else {
-							$group_acl = "AND ta.id_grupo = -1";
-						}
 					}
-					else {
-						$group_acl = "AND ta.id_grupo = -1";
-					}
+					$group_acl = "AND ta.id_grupo IN ($user_groups_str)";
 				}
 
 				switch ($type) {
@@ -356,63 +359,50 @@ class Tree {
 							$order_fields = 'tg.nombre ASC, tg.id_grupo ASC';
 							
 							if (! defined('METACONSOLE')) {
-								// Add the agent counters to the columns
-								$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
-												FROM tagente AS ta
-												LEFT JOIN tagente_modulo AS tam
-													ON tam.disabled = 0
-														AND ta.id_agente = tam.id_agente
-														$module_search_filter
-												$module_status_join
-												WHERE ta.disabled = 0
-													AND ta.id_grupo = tg.id_grupo
-													$group_acl
-													$agent_search_filter
-													$agent_status_filter";
-								$counter_columns = $this->getAgentCounterColumnsSql($agent_table);
-								if (!empty($counter_columns))
-									$columns .= ", $counter_columns";
-								
-								$sql = "SELECT $columns
-										FROM tgrupo AS tg
-										LEFT JOIN tagente AS ta
-												LEFT JOIN tagente_modulo AS tam
-													ON tam.disabled = 0
-														AND ta.id_agente = tam.id_agente
-														$module_search_filter
-												$module_status_join
-											ON ta.disabled = 0
-												AND tg.id_grupo = ta.id_grupo
-												$group_acl
-												$agent_search_filter
-												$agent_status_filter
-										GROUP BY tg.id_grupo
-										ORDER BY $order_fields";
+								// Groups SQL
+								if ($item_for_count === false) {
+									$sql = "SELECT $columns
+											FROM tgrupo tg
+											WHERE tg.id_grupo IN ($user_groups_str)
+											ORDER BY $order_fields";
+								}
+								// Counters SQL
+								else {
+									$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
+													FROM tagente ta
+													LEFT JOIN tagente_modulo tam
+														ON tam.disabled = 0
+															AND ta.id_agente = tam.id_agente
+															$module_search_filter
+													$module_status_join
+													WHERE ta.disabled = 0
+														AND ta.id_grupo = $item_for_count
+														$group_acl
+														$agent_search_filter
+														$agent_status_filter";
+									$sql = $this->getAgentCountersSql($agent_table);
+								}
 							}
 							// Metaconsole
 							else {
-								// Add the agent counters to the columns
-								$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
-												FROM tmetaconsole_agent AS ta
-												WHERE ta.disabled = 0
-													AND ta.id_grupo = tg.id_grupo
-													$group_acl
-													$agent_search_filter
-													$agent_status_filter";
-								$counter_columns = $this->getAgentCounterColumnsSql($agent_table);
-								if (!empty($counter_columns))
-									$columns .= ", $counter_columns";
-								
-								$sql = "SELECT $columns
-										FROM tgrupo AS tg
-										LEFT JOIN tagente AS ta
-											ON ta.disabled = 0
-												AND tg.id_grupo = ta.id_grupo
-												$group_acl
-												$agent_search_filter
-												$agent_status_filter
-										GROUP BY tg.id_grupo
-										ORDER BY $order_fields";
+								// Groups SQL
+								if ($item_for_count === false) {
+									$sql = "SELECT $columns
+											FROM tgrupo tg
+											WHERE tg.id_grupo IN ($user_groups_str)
+											ORDER BY $order_fields";
+								}
+								// Counters SQL
+								else {
+									$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
+													FROM tmetaconsole_agent ta
+													WHERE ta.disabled = 0
+														AND ta.id_grupo = $item_for_count
+														$group_acl
+														$agent_search_filter
+														$agent_status_filter";
+									$sql = $this->getAgentCountersSql($agent_table);
+								}
 							}
 						}
 						else {
@@ -421,11 +411,15 @@ class Tree {
 									ta.fired_count, ta.normal_count, ta.warning_count,
 									ta.critical_count, ta.unknown_count, ta.notinit_count,
 									ta.total_count, ta.quiet';
+								$group_by_fields = 'ta.id_agente, ta.nombre, 
+									ta.fired_count, ta.normal_count, ta.warning_count,
+									ta.critical_count, ta.unknown_count, ta.notinit_count,
+									ta.total_count, ta.quiet';
 								$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
 
 								$sql = "SELECT $columns
-										FROM tagente AS ta
-										LEFT JOIN tagente_modulo AS tam
+										FROM tagente ta
+										LEFT JOIN tagente_modulo tam
 											ON tam.disabled = 0
 												AND ta.id_agente = tam.id_agente
 												$module_search_filter
@@ -435,7 +429,7 @@ class Tree {
 											$group_acl
 											$agent_search_filter
 											$agent_status_filter
-										GROUP BY ta.id_agente
+										GROUP BY $group_by_fields
 										ORDER BY $order_fields";
 							}
 							else {
@@ -446,13 +440,12 @@ class Tree {
 								$order_fields = 'ta.nombre ASC, ta.id_tagente ASC';
 								
 								$sql = "SELECT $columns
-										FROM tmetaconsole_agent AS ta
+										FROM tmetaconsole_agent ta
 										WHERE ta.disabled = 0
 											AND ta.id_grupo = $rootID
 											$group_acl
 											$agent_search_filter
 											$agent_status_filter
-										GROUP BY ta.id_tagente
 										ORDER BY $order_fields";
 							}
 						}
@@ -464,9 +457,9 @@ class Tree {
 						$order_fields = 'tam.nombre ASC, tam.id_agente_modulo ASC';
 						
 						$sql = "SELECT $columns
-								FROM tagente_modulo AS tam
+								FROM tagente_modulo tam
 								$module_status_join
-								INNER JOIN tagente AS ta
+								INNER JOIN tagente ta
 									ON ta.disabled = 0
 										AND tam.id_agente = ta.id_agente
 										AND ta.id_grupo = $rootID
@@ -476,7 +469,6 @@ class Tree {
 								WHERE tam.disabled = 0
 									AND tam.id_agente = $parent
 									$module_search_filter
-								GROUP BY tam.id_agente_modulo
 								ORDER BY $order_fields";
 						break;
 				}
@@ -535,39 +527,40 @@ class Tree {
 							}
 							
 							$columns = 'tt.id_tag AS id, tt.name AS name';
+							$group_by_fields = 'tt.id_tag, tt.name';
 							$order_fields = 'tt.name ASC, tt.id_tag ASC';
 							
 							// Tags SQL
 							if ($item_for_count === false) {
 								$sql = "SELECT $columns
-										FROM ttag AS tt
-										INNER JOIN ttag_module AS ttm
+										FROM ttag tt
+										INNER JOIN ttag_module ttm
 											ON tt.id_tag = ttm.id_tag
-										INNER JOIN tagente_modulo AS tam
+										INNER JOIN tagente_modulo tam
 											ON tam.disabled = 0
 												AND ttm.id_agente_modulo = tam.id_agente_modulo
 												$module_search_filter
 										$module_status_join
-										INNER JOIN tagente AS ta
+										INNER JOIN tagente ta
 											ON ta.disabled = 0
 											AND tam.id_agente = ta.id_agente
 											$group_acl
 											$agent_search_filter
 											$agent_status_filter
 										$tag_filter
-										GROUP BY tt.id_tag
+										GROUP BY $group_by_fields
 										ORDER BY $order_fields";
 							}
 							// Counters SQL
 							else {
 								$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
-												FROM tagente AS ta
-												INNER JOIN tagente_modulo AS tam
+												FROM tagente ta
+												INNER JOIN tagente_modulo tam
 													ON tam.disabled = 0
 														AND ta.id_agente = tam.id_agente
 														$module_search_filter
 												$module_status_join
-												INNER JOIN ttag_module AS ttm
+												INNER JOIN ttag_module ttm
 													ON tam.id_agente_modulo = ttm.id_agente_modulo
 														AND ttm.id_tag = $item_for_count
 												WHERE ta.disabled = 0
@@ -582,23 +575,27 @@ class Tree {
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
+							$group_by_fields = 'ta.id_agente, ta.nombre, 
+								ta.fired_count, ta.normal_count, ta.warning_count,
+								ta.critical_count, ta.unknown_count, ta.notinit_count,
+								ta.total_count, ta.quiet';
 							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
 
 							$sql = "SELECT $columns
-									FROM tagente AS ta
-									INNER JOIN tagente_modulo AS tam
+									FROM tagente ta
+									INNER JOIN tagente_modulo tam
 										ON tam.disabled = 0
 											AND ta.id_agente = tam.id_agente
 											$module_search_filter
 									$module_status_join
-									INNER JOIN ttag_module AS ttm
+									INNER JOIN ttag_module ttm
 										ON tam.id_agente_modulo = ttm.id_agente_modulo
 											AND ttm.id_tag = $rootID
 									WHERE ta.disabled = 0
 										$group_acl
 										$agent_search_filter
 										$agent_status_filter
-									GROUP BY ta.id_agente
+									GROUP BY $group_by_fields
 									ORDER BY $order_fields";
 						}
 						break;
@@ -609,12 +606,12 @@ class Tree {
 						$order_fields = 'tam.nombre ASC, tam.id_agente_modulo ASC';
 
 						$sql = "SELECT $columns
-								FROM tagente_modulo AS tam
-								INNER JOIN ttag_module AS ttm
+								FROM tagente_modulo tam
+								INNER JOIN ttag_module ttm
 									ON tam.id_agente_modulo = ttm.id_agente_modulo
 										AND ttm.id_tag = $rootID
 								$module_status_join
-								INNER JOIN tagente AS ta
+								INNER JOIN tagente ta
 									ON ta.disabled = 0
 										AND tam.id_agente = ta.id_agente
 										$group_acl
@@ -623,7 +620,6 @@ class Tree {
 								WHERE tam.disabled = 0
 									AND tam.id_agente = $parent
 									$module_search_filter
-								GROUP BY tam.id_agente_modulo
 								ORDER BY $order_fields";
 						break;
 				}
@@ -644,26 +640,27 @@ class Tree {
 					case 'os':
 						if (empty($rootID) || $rootID == -1) {
 							$columns = 'tos.id_os AS id, tos.name AS name, tos.icon_name AS os_icon';
+							$group_by_fields = 'tos.id_os, tos.name, tos.icon_name';
 							$order_fields = 'tos.icon_name ASC, tos.id_os ASC';
 
 							// OS SQL
 							if ($item_for_count === false) {
 								$sql = "SELECT $columns
-										FROM tconfig_os AS tos
-										INNER JOIN tagente AS ta
+										FROM tconfig_os tos
+										INNER JOIN tagente ta
 											ON ta.disabled = 0
 												AND ta.id_os = tos.id_os
 												$agent_search_filter
 												$agent_status_filter
 												$group_acl
 										$modules_join
-										GROUP BY tos.id_os
+										GROUP BY $group_by_fields
 										ORDER BY $order_fields";
 							}
 							// Counters SQL
 							else {
 								$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
-												FROM tagente AS ta
+												FROM tagente ta
 												$modules_join
 												WHERE ta.disabled = 0
 													AND ta.id_os = $item_for_count
@@ -678,17 +675,21 @@ class Tree {
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
+							$group_by_fields = 'ta.id_agente, ta.nombre, 
+								ta.fired_count, ta.normal_count, ta.warning_count,
+								ta.critical_count, ta.unknown_count, ta.notinit_count,
+								ta.total_count, ta.quiet';
 							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
 
 							$sql = "SELECT $columns
-									FROM tagente AS ta
+									FROM tagente ta
 									$modules_join
 									WHERE ta.disabled = 0
 										AND ta.id_os = $rootID
 										$group_acl
 										$agent_search_filter
 										$agent_status_filter
-									GROUP BY ta.id_agente
+									GROUP BY $group_by_fields
 									ORDER BY $order_fields";
 						}
 						break;
@@ -702,9 +703,9 @@ class Tree {
 						$agent_filter = "AND ta.id_agente = $parent";
 
 						$sql = "SELECT $columns
-								FROM tagente_modulo AS tam
+								FROM tagente_modulo tam
 								$module_status_join
-								INNER JOIN tagente AS ta
+								INNER JOIN tagente ta
 									ON ta.disabled = 0
 										AND tam.id_agente = ta.id_agente
 										$os_filter
@@ -714,7 +715,6 @@ class Tree {
 								WHERE tam.disabled = 0
 									$agent_filter
 									$module_search_filter
-								GROUP BY tam.id_agente_modulo
 								ORDER BY $order_fields";
 						break;
 				}
@@ -735,31 +735,32 @@ class Tree {
 					case 'module_group':
 						if (empty($rootID) || $rootID == -1) {
 							$columns = 'tmg.id_mg AS id, tmg.name AS name';
+							$group_by_fields = 'tmg.id_mg, tmg.name';
 							$order_fields = 'tmg.name ASC, tmg.id_mg ASC';
-
+							
 							// Module groups SQL
 							if ($item_for_count === false) {
 								$sql = "SELECT $columns
-										FROM tmodule_group AS tmg
-										INNER JOIN tagente_modulo AS tam
+										FROM tmodule_group tmg
+										INNER JOIN tagente_modulo tam
 											ON tam.disabled = 0
 												AND tam.id_module_group = tmg.id_mg
 												$module_search_filter
 										$module_status_join
-										INNER JOIN tagente AS ta
+										INNER JOIN tagente ta
 											ON ta.disabled = 0
 												AND tam.id_agente = ta.id_agente
 												$group_acl
 												$agent_search_filter
 												$agent_status_filter
-										GROUP BY tmg.id_mg
+										GROUP BY $group_by_fields
 										ORDER BY $order_fields";
 							}
 							// Counters SQL
 							else {
 								$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
-												FROM tagente AS ta
-												INNER JOIN tagente_modulo AS tam
+												FROM tagente ta
+												INNER JOIN tagente_modulo tam
 													ON tam.disabled = 0
 														AND ta.id_agente = tam.id_agente
 														AND tam.id_module_group = $item_for_count
@@ -777,11 +778,15 @@ class Tree {
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
+							$group_by_fields = 'ta.id_agente, ta.nombre, 
+								ta.fired_count, ta.normal_count, ta.warning_count,
+								ta.critical_count, ta.unknown_count, ta.notinit_count,
+								ta.total_count, ta.quiet';
 							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
-
+							
 							$sql = "SELECT $columns
-									FROM tagente AS ta
-									INNER JOIN tagente_modulo AS tam
+									FROM tagente ta
+									INNER JOIN tagente_modulo tam
 										ON tam.disabled = 0
 											AND ta.id_agente = tam.id_agente
 											AND tam.id_module_group = $rootID
@@ -791,7 +796,7 @@ class Tree {
 										$group_acl
 										$agent_search_filter
 										$agent_status_filter
-									GROUP BY ta.id_agente
+									GROUP BY $group_by_fields
 									ORDER BY $order_fields";
 						}
 						break;
@@ -800,14 +805,14 @@ class Tree {
 						$columns = 'tam.id_agente_modulo AS id, tam.nombre AS name,
 							tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos';
 						$order_fields = 'tam.nombre ASC, tam.id_agente_modulo ASC';
-
+						
 						$module_group_filter = "AND tam.id_module_group = $rootID";
 						$agent_filter = "AND tam.id_agente = $parent";
-
+						
 						$sql = "SELECT $columns
-								FROM tagente_modulo AS tam
+								FROM tagente_modulo tam
 								$module_status_join
-								INNER JOIN tagente AS ta
+								INNER JOIN tagente ta
 									ON ta.disabled = 0
 										AND tam.id_agente = ta.id_agente
 										$group_acl
@@ -817,7 +822,6 @@ class Tree {
 									$agent_filter
 									$module_group_filter
 									$module_search_filter
-								GROUP BY tam.id_agente_modulo
 								ORDER BY $order_fields";
 						break;
 				}
@@ -832,19 +836,19 @@ class Tree {
 				else {
 					$group_acl = "AND ta.id_grupo = -1";
 				}
-
+				
 				switch ($type) {
 					// Get the agents of a module
 					case 'module':
 						if (empty($rootID) || $rootID == -1) {
 							$columns = 'tam.nombre AS name';
 							$order_fields = 'tam.nombre ASC';
-								
+							
 							// Modules SQL
 							if ($item_for_count === false) {
 								$sql = "SELECT $columns
-										FROM tagente_modulo AS tam
-										INNER JOIN tagente AS ta
+										FROM tagente_modulo tam
+										INNER JOIN tagente ta
 											ON ta.disabled = 0
 												AND tam.id_agente = ta.id_agente
 												$group_acl
@@ -859,8 +863,8 @@ class Tree {
 							// Counters SQL
 							else {
 								$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
-												FROM tagente AS ta
-												INNER JOIN tagente_modulo AS tam
+												FROM tagente ta
+												INNER JOIN tagente_modulo tam
 													ON tam.disabled = 0
 														AND ta.id_agente = tam.id_agente
 														AND tam.nombre = '$item_for_count'
@@ -879,8 +883,12 @@ class Tree {
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
+							$group_by_fields = 'ta.id_agente, ta.nombre, 
+								ta.fired_count, ta.normal_count, ta.warning_count,
+								ta.critical_count, ta.unknown_count, ta.notinit_count,
+								ta.total_count, ta.quiet';
 							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
-
+							
 							$symbols = ' !"#$%&\'()*+,./:;<=>?@[\\]^{|}~';
 							$name = $rootID;
 							for ($i = 0; $i < strlen($symbols); $i++) {
@@ -889,10 +897,10 @@ class Tree {
 									substr($symbols, $i, 1), $name);
 							}
 							$name = io_safe_input($name);
-
+							
 							$sql = "SELECT $columns
-									FROM tagente AS ta
-									INNER JOIN tagente_modulo AS tam
+									FROM tagente ta
+									INNER JOIN tagente_modulo tam
 										ON tam.disabled = 0
 											AND ta.id_agente = tam.id_agente
 											AND tam.nombre = '$name'
@@ -903,7 +911,7 @@ class Tree {
 										$group_acl
 										$agent_search_filter
 										$agent_status_filter
-									GROUP BY ta.id_agente
+									GROUP BY $group_by_fields
 									ORDER BY $order_fields";
 						}
 						break;
@@ -912,7 +920,7 @@ class Tree {
 						$columns = 'tam.id_agente_modulo AS id, tam.nombre AS name,
 							tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos';
 						$order_fields = 'tam.nombre ASC, tam.id_agente_modulo ASC';
-
+						
 						$symbols = ' !"#$%&\'()*+,./:;<=>?@[\\]^{|}~';
 						$name = $rootID;
 						for ($i = 0; $i < strlen($symbols); $i++) {
@@ -921,13 +929,13 @@ class Tree {
 								substr($symbols, $i, 1), $name);
 						}
 						$name = io_safe_input($name);
-
+						
 						$module_name_filter = "AND tam.nombre = '$name'";
 						$agent_filter = "AND tam.id_agente = $parent";
-
+						
 						// We need the agents table
 						if (empty($agents_join)) {
-							$agents_join = "INNER JOIN tagente AS ta
+							$agents_join = "INNER JOIN tagente ta
 												ON ta.disabled = 0
 													AND tam.id_agente = ta.id_agente
 													$group_acl";
@@ -935,11 +943,11 @@ class Tree {
 						else {
 							$agents_join .= " $group_acl";
 						}
-
+						
 						$sql = "SELECT $columns
-								FROM tagente_modulo AS tam
+								FROM tagente_modulo tam
 								$module_status_join
-								INNER JOIN tagente AS ta
+								INNER JOIN tagente ta
 									ON ta.disabled = 0
 										AND tam.id_agente = ta.id_agente
 										$group_acl
@@ -948,7 +956,6 @@ class Tree {
 									$module_name_filter
 									$module_group_filter
 									$module_search_filter
-								GROUP BY tam.id_agente_modulo
 								ORDER BY $order_fields";
 						break;
 				}
@@ -962,7 +969,7 @@ class Tree {
 		
 		return $sql;
 	}
-
+	
 	// Override this method
 	protected function getSqlExtended ($item_for_count, $type, $rootType, $parent, $rootID, 
 										$agent_search_filter, $agent_status_filter, $agents_join,
@@ -970,7 +977,7 @@ class Tree {
 										$module_status_join) {
 		return false;
 	}
-
+	
 	protected function getItems ($item_for_count = false) {
 		$sql = $this->getSql($item_for_count);
 		if (empty($sql))
@@ -1952,6 +1959,13 @@ class Tree {
 			// Build the group hierarchy
 			foreach ($items as $key => $item) {
 				if (empty($item['parent'])) {
+					
+					$counters = $this->getCounters($item['id']);
+					if (!empty($counters)) {
+						foreach ($counters as $type => $value) {
+							$item[$type] = $value;
+						}
+					}
 					
 					unset($items[$key]);
 					$items_tmp = array();

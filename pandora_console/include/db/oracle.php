@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-function oracle_connect_db($host = null, $db = null, $user = null, $pass = null, $port = null) {
+function oracle_connect_db($host = null, $db = null, $user = null, $pass = null, $port = null, $new_connection = true) {
 	global $config;
 	
 	if ($host === null)
@@ -30,7 +30,11 @@ function oracle_connect_db($host = null, $db = null, $user = null, $pass = null,
 	
 	// Non-persistent connection: This will help to avoid mysql errors like "has gone away" or locking problems
 	// If you want persistent connections change it to oci_pconnect().
-	$connect_id = oci_new_connect($user, $pass, '//' . $host . ':' . $port . '/' . $db);
+	if ($new_connection)
+		$connect_id = oci_new_connect($user, $pass, '//' . $host . ':' . $port . '/' . $db);
+	else
+		$connect_id = oci_connect($user, $pass, '//' . $host . ':' . $port . '/' . $db);
+	
 	if (! $connect_id) {
 		return false;
 	}
@@ -90,15 +94,13 @@ function oracle_db_get_value ($field, $table, $field_search = 1, $condition = 1,
 	if ($result === false)
 		return false;
 	
-	if ($field[0] == '`')
-		$field = str_replace ('`', '', $field);
+	$row = array_shift($result);
+	$value = array_shift($row);
 	
-	if (!isset($result[0][$field])) {
-		return reset($result[0]);
-	}
-	else {
-		return $result[0][$field];
-	}
+	if ($value === null)
+		return false;
+	
+	return $value;
 }
 
 /** 
@@ -229,40 +231,32 @@ function oracle_db_process_sql($sql, $rettype = "affected_rows", $dbconnection =
 	}
 	else {
 		$id = 0;
-		$parse_query = explode(' ',trim(preg_replace('/\s\s+/',' ',$sql)));
-		$table_name = preg_replace('/\((\w*|,\w*)*\)|\(\w*|,\w*/','',preg_replace('/\s/','',$parse_query[2]));
-		$type = explode(' ',strtoupper(trim($sql)));
+		$parse_query = explode(' ', trim(preg_replace('/\s\s+/', ' ', $sql)));
+		$table_name = preg_replace('/\((\w*|,\w*)*\)|\(\w*|,\w*/', '', preg_replace('/\s/', '', $parse_query[2]));
+		$type = explode(' ', strtoupper(trim($sql)));
 		
 		$start = microtime (true);
-		if ($dbconnection !== '') {
-			if ($type[0] == 'INSERT') {
-				$query = oci_parse($dbconnection, 'begin insert_id(:table_name, :sql, :out); end;');
-			}
-			// Prevent execution of insert_id stored procedure
-			else if ($type[0] == '/INSERT') {
-				$query = oci_parse($dbconnection, substr($sql,1));			
-			}
-			else {
-				$query = oci_parse($dbconnection, $sql);
-			}
+		
+		if (empty($dbconnection)) {
+			$dbconnection = $config['dbconnection'];
+		}
+		
+		if ($type[0] == 'INSERT') {
+			$query = oci_parse($dbconnection, 'BEGIN insert_id(:table_name, :sql, :out); END;');
+		}
+		// Prevent execution of insert_id stored procedure
+		else if ($type[0] == '/INSERT') {
+			$query = oci_parse($dbconnection, substr($sql,1));
 		}
 		else {
-			if ($type[0] == 'INSERT') {
-				$query = oci_parse($config['dbconnection'], 'begin insert_id(:table_name, :sql, :out); end;');
-			}
-			// Prevent execution of insert_id stored procedure
-			else if ($type[0] == '/INSERT') {
-				$query = oci_parse($config['dbconnection'], substr($sql,1));
-			}
-			else {
-				$query = oci_parse($config['dbconnection'], $sql);
-			}
+			$query = oci_parse($dbconnection, $sql);
 		}
+		
 		//If query is an insert retrieve Id field
 		if ($type[0] == 'INSERT') {
-			oci_bind_by_name($query,":table_name", $table_name ,32);
-			oci_bind_by_name($query,":sql", $sql, 1000);
-			oci_bind_by_name($query,":out", $id, 32);
+			oci_bind_by_name($query, ":table_name", $table_name, 32);
+			oci_bind_by_name($query, ":sql", $sql, -1);
+			oci_bind_by_name($query, ":out", $id, 32);
 		}
 		
 		if (!$autocommit) {
@@ -273,9 +267,14 @@ function oracle_db_process_sql($sql, $rettype = "affected_rows", $dbconnection =
 		}
 		$time = microtime (true) - $start;
 		
+		$config['oracle_error_query'] = null;
 		if ($result === false) {
 			$backtrace = debug_backtrace ();
 			$e = oci_error($query);
+			
+			$config['oracle_error_query'] = $query;
+			
+			
 			$error = sprintf ('%s (\'%s\') in <strong>%s</strong> on line %d',
 				htmlentities($e['message'], ENT_QUOTES), $sql, $backtrace[0]['file'], $backtrace[0]['line']);
 			db_add_database_debug_trace ($sql, htmlentities($e['message'], ENT_QUOTES));
@@ -453,6 +452,8 @@ function oracle_encapsule_fields_with_same_name_to_instructions($field) {
 	
 	if (is_string($return)) {
 		if ($return[0] !== '"') {
+			// The columns declared without quotes are converted to uppercase in oracle.
+			// A column named asd is equal to asd, ASD or "ASD", but no to "asd".
 			$return = '"' . $return . '"';
 		}
 	}
@@ -489,7 +490,7 @@ function oracle_encapsule_fields_with_same_name_to_instructions($field) {
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function oracle_db_get_value_filter ($field, $table, $filter, $where_join = 'AND') {
+function oracle_db_get_value_filter ($field, $table, $filter, $where_join = 'AND', $search_history_db = false) {
 	if (! is_array ($filter) || empty ($filter))
 		return false;
 	
@@ -500,14 +501,18 @@ function oracle_db_get_value_filter ($field, $table, $filter, $where_join = 'AND
 	$sql = sprintf ("SELECT * FROM (SELECT %s FROM %s WHERE %s) WHERE rownum < 2",
 		$field, $table,
 		db_format_array_where_clause_sql ($filter, $where_join));
-	$result = db_get_all_rows_sql ($sql);
+	$result = db_get_all_rows_sql ($sql, $search_history_db);
 	
 	if ($result === false)
 		return false;
 	
-	$fieldClean = str_replace('`', '', $field);
+	$row = array_shift($result);
+	$value = array_shift($row);
 	
-	return $result[0][$fieldClean];
+	if ($value === null)
+		return false;
+	
+	return $value;
 }
 
 /**
@@ -646,16 +651,28 @@ function oracle_db_format_array_where_clause_sql ($values, $join = 'AND', $prefi
 		else {
 			if ($value[0] == ">") {
 				$value = substr($value,1,strlen($value)-1);
-				$query .= sprintf ("%s > '%s'", $field, $value);
+				
+				if (is_nan($value))
+					$query .= sprintf ("%s > '%s'", $field, $value);
+				else
+					$query .= sprintf ("%s > %s", $field, $value);
 			}
 			else if ($value[0] == "<") {
 				if ($value[1] == ">") {
 					$value = substr($value,2,strlen($value)-2);
-					$query .= sprintf ("%s <> '%s'", $field, $value);
+					
+					if (is_nan($value))
+						$query .= sprintf ("%s <> '%s'", $field, $value);
+					else
+						$query .= sprintf ("%s <> %s", $field, $value);
 				}
 				else {
 					$value = substr($value,1,strlen($value)-1);
-					$query .= sprintf ("%s < '%s'", $field, $value);
+					
+					if (is_nan($value))
+						$query .= sprintf ("%s < '%s'", $field, $value);
+					else
+						$query .= sprintf ("%s < %s", $field, $value);
 				}
 			}
 			else if ($value[0] == '%') {
@@ -851,6 +868,7 @@ function oracle_recode_query ($sql, $values, $join = 'AND', $return = true) {
 		return $result;
 	}
 	else {
+		
 		$result = oracle_db_process_sql($result);
 		if ($result !== false) {
 			for ($i=0; $i < count($result); $i++) {
@@ -876,8 +894,13 @@ function oracle_db_get_value_sql($sql, $dbconnection = false) {
 	if ($result === false)
 		return false;
 	
-	foreach ($result[0] as $f)
-		return $f;
+	$row = array_shift($result);
+	$value = array_shift($row);
+	
+	if ($value === null)
+		return false;
+	
+	return $value;
 }
 
 /**
@@ -1355,7 +1378,13 @@ function oracle_safe_sql_string($string) {
  * @return string Return the string error.
  */
 function oracle_db_get_last_error() {
-	$ora_erno = oci_error();
+	global $config;
+	
+	if (empty($config['oracle_error_query'])) {
+		return null;
+	}
+	
+	$ora_erno = oci_error($config['oracle_error_query']);
 	
 	return $ora_erno['message'];
 }
@@ -1478,5 +1507,115 @@ function oracle_db_get_table_count($sql, $search_history_db = false) {
 	$count += $history_count;
 	
 	return $count;
+}
+
+/**
+ * Process a file with an oracle schema sentences.
+ * Based on the function which installs the pandoradb.sql schema.
+ * 
+ * @param string $path File path.
+ * @param bool $handle_error Whether to handle the oci_execute errors or throw an exception.
+ * 
+ * @return bool Return the final status of the operation.
+ */
+function oracle_db_process_file ($path, $handle_error = true) {
+	global $config;
+	
+	if (file_exists($path)) {
+		$file_content = file($path);
+		
+		$query = "";
+		$plsql_block = false;
+		
+		// Begin the transaction
+		oracle_db_process_sql_begin();
+		
+		$datetime_tz_format = oci_parse($connection, 'alter session set NLS_TIMESTAMP_TZ_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
+		$datetime_format = oci_parse($connection, 'alter session set NLS_TIMESTAMP_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
+		$date_format = oci_parse($connection, 'alter session set NLS_DATE_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
+		$decimal_separator = oci_parse($connection, 'alter session set NLS_NUMERIC_CHARACTERS =\',.\'');
+
+		oci_execute($datetime_tz_format);
+		oci_execute($datetime_format);
+		oci_execute($date_format);
+		oci_execute($decimal_separator);
+
+		oci_free_statement($datetime_tz_format);
+		oci_free_statement($datetime_format);
+		oci_free_statement($date_format);
+		oci_free_statement($decimal_separator);
+		
+		foreach ($file_content as $sql_line) {
+			$clean_line = trim($sql_line);
+			$comment = preg_match("/^(\s|\t)*--.*$/", $clean_line);
+			if ($comment) {
+				continue;
+			}
+			
+			if (empty($clean_line)) {
+				continue;
+			}
+			
+			//Support for PL/SQL blocks
+			if (preg_match("/^BEGIN$/", $clean_line)) {
+				$query .= $clean_line . ' ';
+				$plsql_block = true;
+			}
+			else{
+				$query .= $clean_line;
+			}
+			
+			//Check query's end with a back slash and any returns in the end of line or if it's a PL/SQL block 'END;;' string
+			if ((preg_match("/;[\040]*\$/", $clean_line) && !$plsql_block) || 
+				(preg_match("/^END;;[\040]*\$/", $clean_line) && $plsql_block)) {
+				$plsql_block = false;
+				//Execute and clean buffer
+				
+				//Delete the last semicolon from current query
+				$query = substr($query, 0, strlen($query) - 1);
+				$sql = oci_parse($config['dbconnection'], $query);
+				$result = oci_execute($sql, OCI_NO_AUTO_COMMIT);
+				
+				if (!$result) {
+					// Error. Rollback the transaction
+					oracle_db_process_sql_rollback();
+					
+					$e = oci_error($sql);
+					
+					// Handle the error
+					if ($handle_error) {
+						$backtrace = debug_backtrace();
+						$error = sprintf('%s (\'%s\') in <strong>%s</strong> on line %d',
+							htmlentities($e['message'], ENT_QUOTES), $query, $backtrace[0]['file'], $backtrace[0]['line']);
+						db_add_database_debug_trace ($query, htmlentities($e['message'], ENT_QUOTES));
+						set_error_handler('db_sql_error_handler');
+						trigger_error($error);
+						restore_error_handler();
+						
+						return false;
+					}
+					// Throw an exception with the error message
+					else {
+						throw new Exception($e['message']);
+					}
+				}
+				
+				$query = "";
+				oci_free_statement($sql);
+			}
+		}
+		
+		// No errors. Commit the transaction
+		oracle_db_process_sql_commit();
+		
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+function oracle_format_float_to_php($val) {
+	return floatval(str_replace(',', '.', $val));
 }
 ?>

@@ -14,6 +14,7 @@
 global $config;
 
 require_once ($config['homedir'] . '/include/functions_custom_graphs.php');
+require_once ($config['homedir'] . '/include/db/oracle.php');
 
 // Login check
 check_login ();
@@ -462,7 +463,21 @@ switch ($action) {
 					$description = $item['description'];
 					$period = $item['period'];
 					$exception_condition = $item['exception_condition'];
-					$exception_condition_value = $item['exception_condition_value'];
+					
+					switch ($config['dbtype']) {
+						case "mysql":
+						case "postgresql":
+							$exception_condition_value =
+								$item['exception_condition_value'];
+							break;
+						case "oracle":
+							$exception_condition_value =
+								oracle_format_float_to_php(
+									$item['exception_condition_value']);
+							break;
+					}
+					
+					
 					$show_resume = $item['show_resume'];
 					$show_graph = $item['show_graph'];
 					$order_uptodown = $item['order_uptodown'];
@@ -885,13 +900,16 @@ else
 			<td>
 				<?php 
 					html_print_select(array(), 'inventory_modules[]', '', $script = '', __('None'), 0, false, true, true, '', false, "min-width: 180px");
+					
 					if (empty($inventory_modules)) {
 						$array_inventory_modules = array(0 => 0);
 					}
-					else {
-						$array_inventory_modules = implode(',', $inventory_modules);
-					}
-					html_print_input_hidden('inventory_modules_selected', $array_inventory_modules);
+					$array_inventory_modules =
+						implode(',', $inventory_modules);
+					
+					html_print_input_hidden(
+						'inventory_modules_selected',
+						$array_inventory_modules);
 				?>
 			</td>
 		</tr>
@@ -1075,7 +1093,12 @@ else
 		</tr>
 		<tr id="row_exception_condition_value" style="" class="datos">
 			<td style="vertical-align: top;"><?php echo __('Value'); ?></td>
-			<td style=""><?php html_print_input_text('exception_condition_value', $exception_condition_value, '', 5, 5); ?></td>
+			<td style="">
+				<?php
+				html_print_input_text('exception_condition_value',
+					$exception_condition_value, '', 5, 5);
+				?>
+			</td>
 		</tr>
 		<tr id="row_exception_condition" style="" class="datos">
 			<td><?php echo __('Condition');?></td>
@@ -1237,8 +1260,9 @@ function print_SLA_list($width, $action, $idItem = null) {
 	global $config;
 	global $meta;
 	
-	$report_item_type = db_get_value('type', 'treport_content', 'id_rc',
-		$idItem);
+	$report_item_type = db_get_value(
+		oracle_encapsule_fields_with_same_name_to_instructions('type'),
+		'treport_content', 'id_rc', $idItem);
 	?>
 	<table class="databox data" id="sla_list" border="0" cellpadding="4" cellspacing="4" width="100%">
 		<thead>
@@ -1265,7 +1289,9 @@ function print_SLA_list($width, $action, $idItem = null) {
 				case 'update':
 				case 'edit':
 					echo '<tbody id="list_sla">';
-					$itemsSLA = db_get_all_rows_filter('treport_content_sla_combined', array('id_report_content' => $idItem));
+					$itemsSLA = db_get_all_rows_filter(
+						'treport_content_sla_combined',
+						array('id_report_content' => $idItem));
 					if ($itemsSLA === false) {
 						$itemsSLA = array();
 					}
@@ -1301,9 +1327,29 @@ function print_SLA_list($width, $action, $idItem = null) {
 							echo '<td class="sla_list_service_col">' . printSmallFont($nameService) . '</th>';
 						}
 						
-						echo 	'<td class="sla_list_sla_min_col">' . $item['sla_min'] . '</td>';
-						echo 	'<td class="sla_list_sla_max_col">' . $item['sla_max'] . '</td>';
-						echo 	'<td class="sla_list_sla_limit_col">' . $item['sla_limit'] . '</td>';
+						switch ($config['dbtype']) {
+							case "mysql":
+							case "postgresql":
+								$item_sla_min = $item['sla_min'];
+								$item_sla_max = $item['sla_max'];
+								$item_sla_limit = $item['sla_limit'];
+								break;
+							case "oracle":
+								$item_sla_min =
+									oracle_format_float_to_php($item['sla_min']);
+								$item_sla_max =
+									oracle_format_float_to_php($item['sla_max']);
+								$item_sla_limit =
+									oracle_format_float_to_php($item['sla_limit']);
+								break;
+						}
+						
+						echo 	'<td class="sla_list_sla_min_col">' .
+							$item_sla_min . '</td>';
+						echo 	'<td class="sla_list_sla_max_col">' .
+							$item_sla_max . '</td>';
+						echo 	'<td class="sla_list_sla_limit_col">' .
+							$item_sla_limit . '</td>';
 						echo 	'<td class="sla_list_action_col" style="text-align: center;">
 									<a href="javascript: deleteSLARow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>';

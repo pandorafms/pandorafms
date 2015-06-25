@@ -253,7 +253,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 				break;
 			case "oracle":
 				$filter[] =
-					'(upper(nombre) LIKE upper("%' . $text_filter . '%"))';
+					'(upper(nombre) LIKE upper(\'%' . $text_filter . '%\'))';
 				break;
 		}
 	}
@@ -663,7 +663,7 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 				break;
 			case "oracle":
 				$filter[] =
-					'(upper(nombre) LIKE upper("%' . $text_filter . '%"))';
+					'(upper(nombre) LIKE upper(\'%' . $text_filter . '%\'))';
 				break;
 		}
 	}

@@ -84,18 +84,19 @@ function gis_print_map($idDiv, $iniZoom, $latCenter, $lonCenter, $baselayers, $c
 	echo "var baselayer = null;";
 	
 	foreach ($baselayers as $baselayer) {
-		echo "baselayer = {
-			bb_bottom: null,
-			bb_left: null,
-			bb_right: null,
-			bb_top: null,
-			gmap_type: null,
-			image_height: null,
-			image_width: null,
-			num_zoom_levels: null,
-			name: null,
-			type: null,
-			url: null};";
+		echo "baselayer = {";
+		echo 	"bb_bottom: null,";
+		echo 	"bb_left: null,";
+		echo 	"bb_right: null,";
+		echo 	"bb_top: null,";
+		echo 	"gmap_type: null,";
+		echo 	"image_height: null,";
+		echo 	"image_width: null,";
+		echo 	"num_zoom_levels: null,";
+		echo 	"name: null,";
+		echo 	"type: null,";
+		echo 	"url: null";
+		echo "};";
 		
 		echo "baselayer['type'] = '" . $baselayer['typeBaseLayer'] . "';";
 		echo "baselayer['name'] = '" . $baselayer['name'] . "';";
@@ -122,32 +123,31 @@ function gis_print_map($idDiv, $iniZoom, $latCenter, $lonCenter, $baselayers, $c
 		echo "baselayerList.push(baselayer);";
 	}
 	
-	echo "js_printMap(idDiv, initialZoom, centerLatitude, centerLongitude,
-		baselayerList, controlsList)";
+	echo "js_printMap(idDiv, initialZoom, centerLatitude, centerLongitude, baselayerList, controlsList);";
 	
 	echo "</script>";
 	
 	?>
 	<script type="text/javascript">
+		
 		$(document).ready(function() {
 			setInterval(
-		function() {
+				function() {
+						
+						$("img")
+							.filter(function() { return this.src.match(/mapcnt3/);})
+							.css('display', 'none');
+							
+						$("img")
+							.filter(function() { return this.src.match(/cb_scout2/);})
+							.css('display', 'none');
+						
+						$(".gm-style-mtc").css('display', 'none');
+						$(".olControlMousePosition").css("background", "white");
+					}
 				
-				$("img")
-					.filter(function() { return this.src.match(/mapcnt3/);})
-					.css('display', 'none');
-					
-				$("img")
-					.filter(function() { return this.src.match(/cb_scout2/);})
-					.css('display', 'none');
-				
-				$(".gm-style-mtc").css('display', 'none');
-				$(".olControlMousePosition").css("background", "white");
-			}
-		
-		,3000);
+				,3000);
 		});
-		
 		
 	</script>
 	<?php
@@ -201,50 +201,50 @@ function gis_make_layer($name, $visible = true, $dot = null, $idLayer = null, $p
 						var long_lat = featureData.long_lat;
 						var popup;
 						
-						var img_src= null;
-						var parameter = Array();
-						parameter.push ({name: "page", value: "include/ajax/skins.ajax"});
-						parameter.push ({name: "get_image_path", value: "1"});
-						parameter.push ({name: "img_src", value: "images/spinner.gif"});
+						var img_src = null;
 						
 						jQuery.ajax ({
-							type: 'POST',
 							url: "<?php echo ui_get_full_url('ajax.php', false, false, false, false); ?>",
-							data: parameter,
-							async: false,
-							timeout: 10000,
+							data: {
+								page: "include/ajax/skins.ajax",
+								get_image_path: 1,
+								img_src: "images/spinner.gif"
+							},
+							type: 'GET',
+							dataType: 'html',
 							success: function (data) {
 								img_src = data;
-							}
-						});
-						
-						popup = new OpenLayers.Popup.FramedCloud('cloud00',
-								long_lat,
-								null,
-								'<div class="cloudContent' + featureData.id + '" style="text-align: center;">' + img_src + '</div>',
-								null,
-								true,
-								function () { popup.destroy(); });
-						feature.popup = popup;
-						map.addPopup(popup);
-						
-						jQuery.ajax ({
-							data: "page=operation/gis_maps/ajax"
-								+ "&opt=" + featureData.type
-								+ "&id=" + featureData.id
-								+ "&hash=<?php echo $hash; ?>"
-								+ "&id_user=<?php echo $config["id_user"]; ?>"
-								+ "&map_id=<?php echo $id_map; ?>",
-							type: "GET",
-							dataType: 'json',
-							url: "<?php echo ui_get_full_url('ajax.php', false, false, false, false); ?>",
-							timeout: 10000,
-							success: function (data) {
-								if (data.correct) {
-									$('.cloudContent' + featureData.id).css('text-align', 'left');
+								
+								popup = new OpenLayers.Popup.FramedCloud('cloud00',
+										long_lat,
+										null,
+										'<div class="cloudContent' + featureData.id + '" style="text-align: center;">' + img_src + '</div>',
+										null,
+										true,
+										function () { popup.destroy(); });
+								feature.popup = popup;
+								map.addPopup(popup);
+								
+								jQuery.ajax ({
+									url: "<?php echo ui_get_full_url('ajax.php', false, false, false, false); ?>",
+									data: {
+										page: "operation/gis_maps/ajax",
+										opt: featureData.type,
+										id: featureData.id,
+										hash: "<?php echo $hash; ?>",
+										id_user: "<?php echo $config['id_user']; ?>",
+										map_id: <?php echo (int)$id_map; ?>
+									},
+									type: "GET",
+									dataType: 'json',
+									success: function (data) {
+										if (data.correct) {
+											$('.cloudContent' + featureData.id).css('text-align', 'left');
 											$('.cloudContent' + featureData.id).html(data.content);
 											popup.updateSize();
-								}
+										}
+									}
+								});
 							}
 						});
 					}
@@ -334,7 +334,6 @@ function gis_activate_ajax_refresh($layers = null, $lastTimeOfData = null, $publ
 				type: "GET",
 				dataType: 'json',
 				url: "ajax.php",
-				timeout: 10000,
 				success: function (data) {
 					if (data.correct) {
 						content = $.evalJSON(data.content);
@@ -430,9 +429,7 @@ function gis_add_agent_point($layerName, $pointName, $lat, $lon, $icon = null, $
 				<?php
 				if ($icon != null) {
 					//echo "js_addPointExtent('$layerName', '$pointName', $lon, $lat, '$icon', $width, $height, $point_id, '$type_string', $status);";
-					echo "js_addAgentPointExtent('$layerName',
-						'$pointName', $lon, $lat, '$icon', $width,
-						$height, $point_id, '$type_string', $status, $idParent);";
+					echo "js_addAgentPointExtent('$layerName', '$pointName', $lon, $lat, '$icon', $width, $height, $point_id, '$type_string', $status, $idParent);";
 				}
 				else {
 					//echo "js_addPoint('$layerName', '$pointName', $lon, $lat, $point_id, '$type_string', $status);";
@@ -462,12 +459,13 @@ function gis_get_agents_layer($idLayer, $fields = null) {
 		$select = implode(',',$fields);
 	}
 	
-	$agents = db_get_all_rows_sql('SELECT ' . $select . '
-		FROM tagente
-		WHERE id_agente IN (
-			SELECT tagente_id_agente
-			FROM tgis_map_layer_has_tagente
-			WHERE tgis_map_layer_id_tmap_layer = ' . $idLayer . ');');
+	$sql = "SELECT $select
+			FROM tagente
+			WHERE id_agente IN (
+				SELECT tagente_id_agente
+				FROM tgis_map_layer_has_tagente
+				WHERE tgis_map_layer_id_tmap_layer = $idLayer)";
+	$agents = db_get_all_rows_sql($sql);
 	
 	if ($agents !== false) {
 		foreach ($agents as $index => $agent) {
@@ -477,7 +475,6 @@ function gis_get_agents_layer($idLayer, $fields = null) {
 	else {
 		return array();
 	}
-	
 	
 	return $agents;
 }
@@ -505,10 +502,12 @@ function gis_get_maps() {
  * @return An array of arrays of configuration parameters
  */
 function gis_get_map_conf($idMap) {
-	$mapConfs= db_get_all_rows_sql('SELECT tconn.*, trel.default_map_connection
-		FROM tgis_map_connection AS tconn, tgis_map_has_tgis_map_connection AS trel
-		WHERE trel.tgis_map_connection_id_tmap_connection = tconn.id_tmap_connection
-			AND trel.tgis_map_id_tgis_map = ' . $idMap);
+	$sql = 'SELECT tconn.*, trel.default_map_connection
+			FROM tgis_map_connection tconn, tgis_map_has_tgis_map_con trel
+			WHERE trel.tgis_map_con_id_tmap_con = tconn.id_tmap_connection
+				AND trel.tgis_map_id_tgis_map = ' . $idMap;
+	$mapConfs = db_get_all_rows_sql($sql);
+	
 	return $mapConfs;
 }
 
@@ -517,9 +516,10 @@ function gis_get_map_connection($idMapConnection) {
 }
 
 function gis_get_layers($idMap) {
-	$layers = db_get_all_rows_sql('SELECT *
-		FROM tgis_map_layer
-		WHERE tgis_map_id_tgis_map = ' . $idMap);
+	$sql = 'SELECT *
+			FROM tgis_map_layer
+			WHERE tgis_map_id_tgis_map = ' . $idMap;
+	$layers = db_get_all_rows_sql($sql);
 	
 	return $layers;
 }
@@ -527,12 +527,12 @@ function gis_get_layers($idMap) {
 function gis_get_agent_icon_map($idAgent, $state = false, $status = null) {
 	global $config;
 	
-	$row = db_get_row_sql('
-		SELECT id_grupo, icon_path
-		FROM tagente
-		WHERE id_agente = ' . $idAgent);
+	$sql = 'SELECT id_grupo, icon_path
+			FROM tagente
+			WHERE id_agente = ' . $idAgent;
+	$row = db_get_row_sql($sql);
 	
-	if (($row['icon_path'] === null) || (strlen($row['icon_path']) == 0)) {
+	if ($row['icon_path'] === null || strlen($row['icon_path']) == 0) {
 		if ($config['gis_default_icon'] != "") {
 			$icon = "images/gis_map/icons/" . $config['gis_default_icon'];
 		}
@@ -609,12 +609,12 @@ function gis_add_path($layerName, $idAgent, $lastPosition = null, $history_time 
 		}
 	}
 	
-	$listPoints = db_get_all_rows_sql('SELECT *
-		FROM tgis_data_history
-		WHERE
-			tagente_id_agente = ' . $idAgent . ' AND
-			' . $where . '
-		ORDER BY end_timestamp ASC');
+	$sql = "SELECT *
+			FROM tgis_data_history
+			WHERE tagente_id_agente = $idAgent
+				AND $where
+			ORDER BY end_timestamp ASC";
+	$listPoints = db_get_all_rows_sql($sql);
 	
 	//If the agent is empty the history
 	if ($listPoints === false) {
@@ -731,7 +731,7 @@ function gis_delete_map($idMap) {
 		}
 	}
 	db_process_sql_delete('tgis_map_layer', array('tgis_map_id_tgis_map' => $idMap));
-	db_process_sql_delete('tgis_map_has_tgis_map_connection', array('tgis_map_id_tgis_map' => $idMap));
+	db_process_sql_delete('tgis_map_has_tgis_map_con', array('tgis_map_id_tgis_map' => $idMap));
 	db_process_sql_delete('tgis_map', array('id_tgis_map' => $idMap));
 	
 	$numMaps = db_get_num_rows('SELECT * FROM tgis_map');
@@ -741,7 +741,7 @@ function gis_delete_map($idMap) {
 
 /**
  * Save the map into DB, tgis_map and with id_map save the connetions in 
- * tgis_map_has_tgis_map_connection, and with id_map save the layers in 
+ * tgis_map_has_tgis_map_con, and with id_map save the layers in 
  * tgis_map_layer and witch each id_layer save the agent in this layer in
  * table tgis_map_layer_has_tagente.
  * 
@@ -783,10 +783,10 @@ function gis_save_map($map_name, $map_initial_longitude, $map_initial_latitude,
 		db_process_sql_update('tgis_map', array('default_map' => 1), array('id_tgis_map' => $idMap));
 	
 	foreach ($map_connection_list as $map_connection) {
-		db_process_sql_insert('tgis_map_has_tgis_map_connection',
+		db_process_sql_insert('tgis_map_has_tgis_map_con',
 			array(
 				'tgis_map_id_tgis_map' => $idMap,
-				'tgis_map_connection_id_tmap_connection' => $map_connection['id_conection'],
+				'tgis_map_con_id_tmap_con' => $map_connection['id_conection'],
 				'default_map_connection' => $map_connection['default']
 			)
 		);
@@ -834,20 +834,22 @@ function gis_update_map($idMap, $map_name, $map_initial_longitude, $map_initial_
 		),
 		array('id_tgis_map' => $idMap));
 		
-	db_process_sql_delete('tgis_map_has_tgis_map_connection', array('tgis_map_id_tgis_map' => $idMap));
+	db_process_sql_delete('tgis_map_has_tgis_map_con', array('tgis_map_id_tgis_map' => $idMap));
 	
 	foreach ($map_connection_list as $map_connection) {
-		db_process_sql_insert('tgis_map_has_tgis_map_connection',
+		db_process_sql_insert('tgis_map_has_tgis_map_con',
 			array(
 				'tgis_map_id_tgis_map' => $idMap,
-				'tgis_map_connection_id_tmap_connection' => $map_connection['id_conection'], 
+				'tgis_map_con_id_tmap_con' => $map_connection['id_conection'], 
 				'default_map_connection' => $map_connection['default']
 			)
 		);
 	}
 	
-	$listOldIdLayers = db_get_all_rows_sql('SELECT id_tmap_layer
-		FROM tgis_map_layer WHERE tgis_map_id_tgis_map = ' . $idMap);
+	$sql = 'SELECT id_tmap_layer
+			FROM tgis_map_layer
+			WHERE tgis_map_id_tgis_map = ' . $idMap;
+	$listOldIdLayers = db_get_all_rows_sql($sql);
 	if ($listOldIdLayers == false)
 		$listOldIdLayers = array();
 	
@@ -888,8 +890,6 @@ function gis_update_map($idMap, $map_name, $map_initial_longitude, $map_initial_
 			);
 		}
 		
-		
-		
 		if (array_key_exists('layer_agent_list', $layer)) {
 			if (count($layer['layer_agent_list']) > 0) {
 				foreach ($layer['layer_agent_list'] as $agent_name) {
@@ -904,7 +904,6 @@ function gis_update_map($idMap, $map_name, $map_initial_longitude, $map_initial_
 				}
 			}
 		}
-		
 	}
 	
 	//Delete layers that not carry the $arrayLayers
@@ -922,7 +921,11 @@ function gis_update_map($idMap, $map_name, $map_initial_longitude, $map_initial_
  * @result: An array with all the configuration parameters
  */
 function gis_get_conection_conf($idConnection) {
-	$confParameters = db_get_row_sql('SELECT * FROM tgis_map_connection WHERE id_tmap_connection = ' . $idConnection);
+	$sql = 'SELECT *
+			FROM tgis_map_connection
+			WHERE id_tmap_connection = ' . $idConnection;
+	$confParameters = db_get_row_sql($sql);
+	
 	return $confParameters;
 }
 
@@ -939,18 +942,17 @@ function gis_get_conection_conf($idConnection) {
  * @return boolean True ok and false fail. 
  */
 function gis_get_agent_map($agent_id, $heigth, $width, $show_history = false, $centerInAgent = true, $history_time = SECONDS_1DAY) {
-	$defaultMap = db_get_all_rows_sql("
-		SELECT t1.*, t3.conection_name, t3.connection_type,
-			t3.conection_data, t3.num_zoom_levels
-		FROM tgis_map AS t1, 
-			tgis_map_has_tgis_map_connection AS t2, 
-			tgis_map_connection AS t3
-		WHERE t1.default_map = 1
-			AND t2.tgis_map_id_tgis_map = t1.id_tgis_map
-			AND t2.default_map_connection = 1
-			AND t3.id_tmap_connection = t2.tgis_map_connection_id_tmap_connection");
 	
-	
+	$sql = "SELECT t1.*, t3.conection_name, t3.connection_type,
+				t3.conection_data, t3.num_zoom_levels
+			FROM tgis_map t1, 
+				tgis_map_has_tgis_map_con t2, 
+				tgis_map_connection t3
+			WHERE t1.default_map = 1
+				AND t2.tgis_map_id_tgis_map = t1.id_tgis_map
+				AND t2.default_map_connection = 1
+				AND t3.id_tmap_connection = t2.tgis_map_con_id_tmap_con";
+	$defaultMap = db_get_all_rows_sql($sql);
 	
 	if ($defaultMap === false) {
 		return false;
@@ -1180,49 +1182,66 @@ function gis_validate_map_data($map_name, $map_zoom_level,
 function gis_get_map_data($idMap) {
 	global $config;
 	
+	$idMap = (int) $idMap;
 	$returnVar = array();
 	
 	$map = db_get_row('tgis_map', 'id_tgis_map', $idMap);
 	
+	if (empty($map))
+		return $returnVar;
+	
+	$connections = false;
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$connections = db_get_all_rows_sql('SELECT t1.tgis_map_connection_id_tmap_connection AS id_conection,
-					t1.default_map_connection AS `default`, (
-						SELECT t2.num_zoom_levels
-						FROM tgis_map_connection AS t2
-						WHERE t2.id_tmap_connection = t1.tgis_map_connection_id_tmap_connection) AS num_zoom_levels
-				FROM tgis_map_has_tgis_map_connection AS t1
-				WHERE t1.tgis_map_id_tgis_map = '. $map['id_tgis_map']);
+			$sql = "SELECT t1.tgis_map_con_id_tmap_con AS id_conection
+						t1.default_map_connection AS `default`,
+						SUM(t2.num_zoom_levels) AS num_zoom_levels
+					FROM tgis_map_has_tgis_map_con t1
+					INNER JOIN tgis_map_connection t2
+						ON t1.tgis_map_con_id_tmap_con = t2.id_tmap_connection
+					WHERE t1.tgis_map_id_tgis_map = $idMap
+					GROUP BY t1.tgis_map_con_id_tmap_con, t1.default_map_connection";
+			$connections = db_get_all_rows_sql($sql);
 			break;
 		case "postgresql":
 		case "oracle":
-			$connections = db_get_all_rows_sql('SELECT t1.tgis_map_connection_id_tmap_connection AS id_conection,
-					t1.default_map_connection AS "default", (
-						SELECT t2.num_zoom_levels
-						FROM tgis_map_connection AS t2
-						WHERE t2.id_tmap_connection = t1.tgis_map_connection_id_tmap_connection) AS num_zoom_levels
-				FROM tgis_map_has_tgis_map_connection AS t1
-				WHERE t1.tgis_map_id_tgis_map = '. $map['id_tgis_map']);
+			$sql = "SELECT t1.tgis_map_con_id_tmap_con AS id_conection
+						t1.default_map_connection AS \"default\",
+						SUM(t2.num_zoom_levels) AS num_zoom_levels
+					FROM tgis_map_has_tgis_map_con t1
+					INNER JOIN tgis_map_connection t2
+						ON t1.tgis_map_con_id_tmap_con = t2.id_tmap_connection
+					WHERE t1.tgis_map_id_tgis_map = $idMap
+					GROUP BY t1.tgis_map_con_id_tmap_con, t1.default_map_connection";
+			$connections = db_get_all_rows_sql($sql);
 			break;
 	}
-	$layers = db_get_all_rows_sql('SELECT id_tmap_layer, layer_name,
-			tgrupo_id_grupo AS layer_group, view_layer AS layer_visible
-		FROM tgis_map_layer
-		WHERE tgis_map_id_tgis_map = ' . $map['id_tgis_map'] . '
-		ORDER BY layer_stack_order ASC;');
+	
+	$sql = "SELECT id_tmap_layer, layer_name,
+				tgrupo_id_grupo AS layer_group,
+				view_layer AS layer_visible
+			FROM tgis_map_layer
+			WHERE tgis_map_id_tgis_map = $idMap
+			ORDER BY layer_stack_order ASC";
+	$layers = db_get_all_rows_sql($sql);
 	if ($layers === false) $layers = array();
 	
 	foreach ($layers as $index => $layer) {
-		$agents = db_get_all_rows_sql('SELECT nombre
-			FROM tagente
-			WHERE id_agente IN (
-				SELECT tagente_id_agente
-				FROM tgis_map_layer_has_tagente
-				WHERE tgis_map_layer_id_tmap_layer = ' . $layer['id_tmap_layer'] . ')');
-		if ($agents !== false)
-			$layers[$index]['layer_agent_list'] = $agents;
-		else
-			$layers[$index]['layer_agent_list'] = array();
+		if (!isset($layer['id_tmap_layer']))
+			continue;
+		
+		$id_tmap_layer = (int) $layer['id_tmap_layer'];
+		
+		$sql = "SELECT nombre
+				FROM tagente
+				WHERE id_agente IN (
+					SELECT tagente_id_agente
+					FROM tgis_map_layer_has_tagente
+					WHERE tgis_map_layer_id_tmap_layer = $id_tmap_layer)";
+		$agents = db_get_all_rows_sql($sql);
+		if ($agents === false) $agents = array();
+		
+		$layers[$index]['layer_agent_list'] = $agents;
 	}
 	
 	$returnVar['map'] = $map;

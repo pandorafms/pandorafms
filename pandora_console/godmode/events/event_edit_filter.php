@@ -73,7 +73,7 @@ else {
 	$severity = '';
 	$status = '';
 	$search = '';
-	$text_agent = __('All');
+	$text_agent = '';
 	$pagination = '';
 	$event_view_hr = '';
 	$id_user_ack = '';
@@ -93,7 +93,7 @@ if($update || $create) {
 	$severity = get_parameter('severity', '');
 	$status = get_parameter('status', '');
 	$search = get_parameter('search', '');
-	$text_agent = get_parameter('text_agent', __('All'));
+	$text_agent = get_parameter('text_agent', '');
 	$pagination = get_parameter('pagination', '');
 	$event_view_hr = get_parameter('event_view_hr', '');
 	$id_user_ack = get_parameter('id_user_ack', '');
@@ -183,11 +183,11 @@ $table->data[0][0] = '<b>'.__('Filter name').'</b>';
 $table->data[0][1] = html_print_input_text ('id_name', $id_name, false, 20, 80, true);
 
 $table->data[1][0] = '<b>'.__('Save in group').'</b>' . ui_print_help_tip(__('This group will be use to restrict the visibility of this filter with ACLs'), true);
-$table->data[1][1] = html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group_filter", $id_group_filter, '', '', -1, true, false, false, '', false, '', false, false, 'id_group_filter', $strict_user);
+$table->data[1][1] = html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group_filter", $id_group_filter, '', '', -1, true, false, false, '', false, '', false, false, 'id_grupo', $strict_user);
 
 $table->data[2][0] = '<b>'.__('Group').'</b>';
 $table->data[2][1] = html_print_select_groups($config["id_user"], "ER", true, 
-	'id_group', $id_group, '', '', -1, true, false, false, '', false, false, false, false, 'id_group', $strict_user);
+	'id_group', $id_group, '', '', -1, true, false, false, '', false, false, false, false, 'id_grupo', $strict_user);
 
 $types = get_event_types ();
 // Expand standard array to add not_normal (not exist in the array, used only for searches)

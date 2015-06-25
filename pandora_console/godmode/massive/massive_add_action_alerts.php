@@ -60,8 +60,8 @@ if ($add) {
 		ui_print_result_message (false, '', __('Could not be added').". ".__('No agents selected'));
 	else {
 		$actions = get_parameter ('action');
-		$fires_min = get_parameter ('fires_min');
-		$fires_max = get_parameter ('fires_max');
+		$fires_min = (int) get_parameter ('fires_min');
+		$fires_max = (int) get_parameter ('fires_max');
 		
 		if (!empty($actions)) {
 			$agent_alerts = agents_get_alerts($id_agents);

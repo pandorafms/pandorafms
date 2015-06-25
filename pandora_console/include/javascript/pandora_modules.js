@@ -665,8 +665,6 @@ function load_plugin_macros_fields(row_model_id) {
 		data: params.join ("&"),
 		type: 'POST',
 		url: action = get_php_value('absolute_homeurl') + "ajax.php",
-		async: false,
-		timeout: 10000,
 		dataType: 'json',
 		success: function (data) {
 			// Delete all the macro fields

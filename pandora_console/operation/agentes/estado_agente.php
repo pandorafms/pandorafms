@@ -53,10 +53,10 @@ if (is_ajax ()) {
 			case "mysql":
 				$sql = sprintf ("SELECT t1.id, t1.name,
 						(SELECT COUNT(t2.id) 
-							FROM talert_templates AS t2 
+							FROM talert_templates t2 
 							WHERE t2.id =  %d 
 								AND t2.id_alert_action = t1.id) as 'sort_order'
-					FROM talert_actions AS t1
+					FROM talert_actions t1
 					WHERE id_group IN (%s) 
 					ORDER BY sort_order DESC", $id_template, $filter_groups);
 				break;
@@ -73,10 +73,10 @@ if (is_ajax ()) {
 			case "postgresql":
 				$sql = sprintf ("SELECT t1.id, t1.name,
 						(SELECT COUNT(t2.id) 
-							FROM talert_templates AS t2 
+							FROM talert_templates t2 
 							WHERE t2.id =  %d 
 								AND t2.id_alert_action = t1.id) as sort_order
-					FROM talert_actions AS t1
+					FROM talert_actions t1
 					WHERE id_group IN (%s) 
 					ORDER BY sort_order DESC", $id_template, $filter_groups);
 				break;

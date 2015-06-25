@@ -293,9 +293,9 @@ switch ($config["dbtype"]) {
 	case "mysql":
 	case "postgresql":
 		$profiles = db_get_all_rows_sql('SELECT id_grupo
-			FROM tusuario_perfil AS t1
-				INNER JOIN tperfil AS t2 ON t1.id_perfil = t2.id_perfil
-			WHERE t2.agent_view = 1 AND t1.id_usuario = \'' . $config['id_user'] .  '\';');
+			FROM tusuario_perfil t1
+				INNER JOIN tperfil t2 ON t1.id_perfil = t2.id_perfil
+			WHERE t2.agent_view = 1 AND t1.id_usuario = \'' . $config['id_user'] .  '\'');
 		if ($profiles === false)
 			$profiles = array();
 		
@@ -311,14 +311,14 @@ switch ($config["dbtype"]) {
 		//The check of is_admin
 		$flag_is_admin = (bool)db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
 		
-		$sql = ' SELECT distinct(tagente_modulo.nombre)
+		$sql = 'SELECT distinct(tagente_modulo.nombre)
 			'. $sql_from . $sql_conditions_acl;
 		break;
 	case "oracle":
 		$profiles = db_get_all_rows_sql('SELECT id_grupo
 			FROM tusuario_perfil t1
 				INNER JOIN tperfil t2 ON t1.id_perfil = t2.id_perfil
-			WHERE t2.agent_view = 1 AND t1.id_usuario = \'' . $config['id_user'] .  '\';');
+			WHERE t2.agent_view = 1 AND t1.id_usuario = \'' . $config['id_user'] .  '\'');
 		if ($profiles === false)
 			$profiles = array();
 		
@@ -335,7 +335,7 @@ switch ($config["dbtype"]) {
 		$flag_is_admin = (bool)db_get_value('is_admin', 'tusuario',
 			'id_user', $config['id_user']);
 		
-		$sql = ' SELECT DISTINCT dbms_lob.substr(nombre,4000,1) AS nombre' .
+		$sql = 'SELECT DISTINCT(tagente_modulo.nombre)' .
 			$sql_from . $sql_conditions_acl;
 		break;
 }
@@ -778,7 +778,7 @@ switch ($config["dbtype"]) {
 		$set['limit'] = $limit_sql;
 		$set['offset'] = $offset;
 		$sql = "SELECT
-			(SELECT  wmsys.wm_concat(ttag.name)
+			(SELECT LISTAGG(ttag.name, ',') WITHIN GROUP (ORDER BY ttag.name) 
 				FROM ttag
 				WHERE ttag.id_tag IN (
 					SELECT ttag_module.id_tag

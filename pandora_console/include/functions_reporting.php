@@ -743,10 +743,14 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 				
 				//Get the sla_value in % and store it on $sla_value
 				$sla_value = reporting_get_agentmodule_sla(
-					$sla['id_agent_module'], $content['period'],
-					$sla['sla_min'], $sla['sla_max'],
-					$report["datetime"], $content,
-					$content['time_from'], $content['time_to']);
+					$sla['id_agent_module'],
+					$content['period'],
+					$sla['sla_min'],
+					$sla['sla_max'],
+					$report["datetime"],
+					$content,
+					$content['time_from'],
+					$content['time_to']);
 				
 				if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
 					//Restore db connection
@@ -798,9 +802,21 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 					$sla['id_agent_module']);
 				$data['module'] = modules_get_agentmodule_name(
 					$sla['id_agent_module']);
-				$data['max'] = $sla['sla_max'];
-				$data['min'] = $sla['sla_min'];
-				$data['sla_limit'] = $sla['sla_limit'];
+				
+				
+				switch ($config["dbtype"]) {
+					case "mysql":
+					case "postgresql":
+						$data['max'] = $sla['sla_max'];
+						$data['min'] = $sla['sla_min'];
+						$data['sla_limit'] = $sla['sla_limit'];
+						break;
+					case "oracle":
+						$data['max'] = oracle_format_float_to_php($sla['sla_max']);
+						$data['min'] = oracle_format_float_to_php($sla['sla_min']);
+						$data['sla_limit'] = oracle_format_float_to_php($sla['sla_limit']);
+						break;
+				}
 				
 				$data['sla_value_unknown'] = 0;
 				$data['sla_status'] = 0;
@@ -1194,14 +1210,6 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 				}
 				$avg = $avg / $i;
 				
-				unset($table_summary);
-				
-				$table_summary->width = '99%';
-				$table_summary->data = array ();
-				$table_summary->head = array ();
-				$table_summary->head[0] = __('Min Value');
-				$table_summary->head[1] = __('Average Value');
-				$table_summary->head[2] = __('Max Value');
 				
 				$return['resume']['min']['value'] = $min;
 				$return['resume']['min']['formated_value'] = format_for_graph($min, 2);
@@ -2368,10 +2376,21 @@ function reporting_group_configuration($report, $content) {
 	
 	
 	if ($content['id_group'] == 0) {
-		$sql = "SELECT * FROM tagente;";
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$sql = "SELECT * FROM tagente;";
+				break;
+			case "oracle":
+				$sql = "SELECT * FROM tagente";
+				break;
+		}
 	}
 	else {
-		$sql = "SELECT * FROM tagente WHERE id_grupo=" . $content['id_group'];
+		$sql = "
+			SELECT *
+			FROM tagente
+			WHERE id_grupo=" . $content['id_group'];
 	}
 	
 	$agents_list = db_get_all_rows_sql($sql);
@@ -2382,7 +2401,17 @@ function reporting_group_configuration($report, $content) {
 	foreach ($agents_list as $agent) {
 		$content_agent = $content;
 		$content_agent['id_agent'] = $agent['id_agente'];
-		$agent_report = reporting_agent_configuration($report, $content_agent);
+		
+		// Restore the connection to metaconsole
+		// because into the function reporting_agent_configuration
+		// connect to metaconsole.
+		
+		if ($config['metaconsole']) {
+			metaconsole_restore_db();
+		}
+		$agent_report = reporting_agent_configuration(
+			$report, $content_agent);
+		
 		
 		$return['data'][] = $agent_report['data'];
 	}
@@ -2564,7 +2593,7 @@ function reporting_alert_report_group($report, $content) {
 			FROM talert_actions 
 			WHERE id IN (SELECT id_alert_action 
 				FROM talert_template_module_actions 
-				WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ');');
+				WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ')');
 		
 		if (!empty($actions)) {
 			$row = db_get_row_sql('SELECT id_alert_action
@@ -2668,11 +2697,27 @@ function reporting_alert_report_agent($report, $content) {
 			array('id' => $alert['id_alert_template']));
 		
 		
-		$actions = db_get_all_rows_sql('SELECT name 
-			FROM talert_actions 
-			WHERE id IN (SELECT id_alert_action 
-				FROM talert_template_module_actions 
-				WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ');');
+		
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$actions = db_get_all_rows_sql('SELECT name 
+					FROM talert_actions 
+					WHERE id IN (SELECT id_alert_action 
+						FROM talert_template_module_actions 
+						WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ');');
+				break;
+			case "oracle":
+				$actions = db_get_all_rows_sql('SELECT name 
+					FROM talert_actions 
+					WHERE id IN (SELECT id_alert_action 
+						FROM talert_template_module_actions 
+						WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ')');
+				break;
+		}
+		
+		
+		
 		
 		if (!empty($actions)) {
 			$row = db_get_row_sql('SELECT id_alert_action
@@ -2705,10 +2750,13 @@ function reporting_alert_report_agent($report, $content) {
 		
 		$data_row['fired'] = array();
 		$firedTimes = get_module_alert_fired(
-			$content['id_agent_module'],
+			$alert['id_agent_module'],
 			$alert['id_alert_template'],
 			(int) $content['period'],
 			(int) $report["datetime"]);
+		
+		
+		
 		if (empty($firedTimes)) {
 			$firedTimes = array();
 		}
@@ -2756,10 +2804,26 @@ function reporting_alert_report_module($report, $content) {
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	
-	$alerts = db_get_all_rows_sql('SELECT *, t1.id as id_alert_template_module
-		FROM talert_template_modules AS t1
-			INNER JOIN talert_templates AS t2 ON t1.id_alert_template = t2.id
-		WHERE id_agent_module = ' . $content['id_agent_module']);
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$alerts = db_get_all_rows_sql('
+				SELECT *, t1.id as id_alert_template_module
+				FROM talert_template_modules t1
+				INNER JOIN talert_templates t2
+					ON t1.id_alert_template = t2.id
+				WHERE id_agent_module = ' . $content['id_agent_module']);
+			break;
+		case "oracle":
+			$alerts = db_get_all_rows_sql('
+				SELECT t1.*, t2.*, t1.id as id_alert_template_module
+				FROM talert_template_modules t1
+				INNER JOIN talert_templates t2
+					ON t1.id_alert_template = t2.id
+				WHERE id_agent_module = ' . $content['id_agent_module']);
+			break;
+	}
+	
 	
 	if ($alerts === false) {
 		$alerts = array();
@@ -2773,11 +2837,26 @@ function reporting_alert_report_module($report, $content) {
 		
 		$data_row['template'] = db_get_value_filter('name',
 			'talert_templates', array('id' => $alert['id_alert_template']));
-		$actions = db_get_all_rows_sql('SELECT name 
-			FROM talert_actions 
-			WHERE id IN (SELECT id_alert_action 
-				FROM talert_template_module_actions 
-				WHERE id_alert_template_module = ' . $alert['id_alert_template_module'] . ');');
+		
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$actions = db_get_all_rows_sql('SELECT name 
+					FROM talert_actions 
+					WHERE id IN (SELECT id_alert_action 
+						FROM talert_template_module_actions 
+						WHERE id_alert_template_module = ' . $alert['id_alert_template_module'] . ');');
+				break;
+			case "oracle":
+				$actions = db_get_all_rows_sql('SELECT name 
+					FROM talert_actions 
+					WHERE id IN (SELECT id_alert_action 
+						FROM talert_template_module_actions 
+						WHERE id_alert_template_module = ' . $alert['id_alert_template_module'] . ')');
+				break;
+		}
+		
+		
 		
 		if (!empty($actions)) {
 			$row = db_get_row_sql('SELECT id_alert_action
@@ -2814,6 +2893,9 @@ function reporting_alert_report_module($report, $content) {
 			$alert['id_alert_template_module'],
 			(int) $content['period'],
 			(int) $report["datetime"]);
+		
+		
+		
 		if (empty($firedTimes)) {
 			$firedTimes = array();
 		}
@@ -4078,6 +4160,18 @@ function reporting_general($report, $content) {
 					$data['value'] = null;
 				}
 				else {
+					
+					switch ($config["dbtype"]) {
+						case "mysql":
+						case "postgresql":
+							break;
+						case "oracle":
+							if (preg_match("/[0-9]+,[0-9]E+[+-][0-9]+/", $d)) {
+								$d = oracle_format_float_to_php($d);
+							}
+							break;
+					}
+					
 					if (!is_numeric($d)) {
 						$data['value'] = $d;
 					}
@@ -4531,6 +4625,7 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 		$date = get_system_time ();
 	}
 	
+	$table = new stdClass();
 	$table->width = '99%';
 	
 	$table->align = array();
@@ -4657,17 +4752,6 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 		$date = get_system_time ();
 	}
 	
-	$table->width = '99%';
-	$table->data = array ();
-	$table->head = array ();
-	$table->head[0] = __('Status');
-	$table->head[1] = __('Event name');
-	$table->head[2] = __('Event type');
-	$table->head[3] = __('Criticity');
-	$table->head[4] = __('Count');
-	$table->head[5] = __('Timestamp');
-	$table->style[0] = 'text-align: center;';
-	$table->style[4] = 'text-align: center;';
 	
 	$events = array ();
 	
@@ -4772,23 +4856,7 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 		$date = get_system_time ();
 	}
 	
-	$table->width = '99%';
 	
-	$table->align = array();
-	$table->align[0] = 'center';
-	$table->align[1] = 'center';
-	$table->align[3] = 'center';
-	
-	$table->data = array ();
-	
-	$table->head = array ();
-	$table->head[0] = __('Status');
-	$table->head[1] = __('Count');
-	$table->head[2] = __('Name');
-	$table->head[3] = __('Type');
-	$table->head[4] = __('Criticity');
-	$table->head[5] = __('Val. by');
-	$table->head[6] = __('Timestamp');
 	
 	$events = array ();
 	
@@ -5286,7 +5354,7 @@ function reporting_get_stats_alerts($data, $links = false) {
 	$table_al->rowclass[] = '';
 	$table_al->data[] = $tdata;
 	
-	if(!defined('METACONSOLE')) {
+	if (!defined('METACONSOLE')) {
 		$output = '<fieldset class="databox tactical_set">
 					<legend>' . 
 						__('Defined and fired alerts') . 
@@ -5294,11 +5362,14 @@ function reporting_get_stats_alerts($data, $links = false) {
 					html_print_table($table_al, true) . '</fieldset>';
 	}
 	else {
+		// Remove the defined alerts cause with the new cache table is difficult to retrieve them
+		unset($table_al->data[0][0], $table_al->data[0][1]);
+		
 		$table_al->class = "tactical_view";
 		$table_al->style = array();
 		$output = '<fieldset class="tactical_set">
 					<legend>' . 
-						__('Defined and fired alerts') . 
+						__('Fired alerts') . 
 					'</legend>' . 
 					html_print_table($table_al, true) . '</fieldset>';
 	}
@@ -5561,7 +5632,30 @@ function reporting_get_agentmodule_data_average ($id_agent_module, $period=0, $d
 			$period = $date - $previous_data['utimestamp'];
 		}
 	}
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			// Do none
+			break;
+		case "oracle":
+			$previous_data['datos'] = 
+				oracle_format_float_to_php($previous_data['datos']);
+			break;
+	}
+	
 	foreach ($interval_data as $data) {
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				// Do none
+				break;
+			case "oracle":
+				$data['datos'] =
+					oracle_format_float_to_php($data['datos']);
+				break;
+		}
+		
 		if (! $uncompressed_module) {
 			$total += $previous_data['datos'] * ($data['utimestamp'] - $previous_data['utimestamp']);
 			$previous_data = $data;
@@ -5636,7 +5730,8 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period = 0, $date = 
 	if ($interval_data === false) $interval_data = array ();
 	
 	// Get previous data
-	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
+	$previous_data = modules_get_previous_data(
+		$id_agent_module, $datelimit);
 	if ($previous_data !== false) {
 		$previous_data['utimestamp'] = $datelimit;
 		array_unshift ($interval_data, $previous_data);
@@ -5664,6 +5759,18 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period = 0, $date = 
 	$critical_period = 0;
 	$first_data = array_shift ($interval_data);
 	$previous_utimestamp = $first_data['utimestamp'];
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			// Do none
+			break;
+		case "oracle":
+			$first_data['datos'] =
+				oracle_format_float_to_php($first_data['datos']);
+			break;
+	}
+	
 	if ((($critical_max > $critical_min AND ($first_data['datos'] > $critical_max OR $first_data['datos'] < $critical_min))) OR
 		($critical_max <= $critical_min AND $first_data['datos'] < $critical_min)) {
 		$previous_status = 1;
@@ -5675,6 +5782,17 @@ function reporting_get_agentmodule_mttr ($id_agent_module, $period = 0, $date = 
 	}
 	
 	foreach ($interval_data as $data) {
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				// Do none
+				break;
+			case "oracle":
+				$data['datos'] =
+					oracle_format_float_to_php($data['datos']);
+				break;
+		}
+		
 		// Previous status was critical
 		if ($previous_status == 1) {
 			$critical_period += $data['utimestamp'] - $previous_utimestamp;
@@ -5777,6 +5895,18 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period = 0, $date = 
 	$critical_period = 0;
 	$first_data = array_shift ($interval_data);
 	$previous_utimestamp = $first_data['utimestamp'];
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			// Do none
+			break;
+		case "oracle":
+			$first_data['datos'] =
+				oracle_format_float_to_php($first_data['datos']);
+			break;
+	}
+	
 	if ((($critical_max > $critical_min AND ($first_data['datos'] > $critical_max OR $first_data['datos'] < $critical_min))) OR
 			($critical_max <= $critical_min AND $first_data['datos'] < $critical_min)) {
 		$previous_status = 1;
@@ -5791,6 +5921,17 @@ function reporting_get_agentmodule_mtbf ($id_agent_module, $period = 0, $date = 
 		// Previous status was critical
 		if ($previous_status == 1) {
 			$critical_period += $data['utimestamp'] - $previous_utimestamp;
+		}
+		
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				// Do none
+				break;
+			case "oracle":
+				$data['datos'] =
+					oracle_format_float_to_php($data['datos']);
+				break;
 		}
 		
 		// Re-calculate previous status for the next data
@@ -6490,34 +6631,70 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0,
  */
 function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_date, $end_date, $check_services = false) {
 	global $config;
-
+	
 	if (empty($id_agent_module))
 		return false;
-
+	
 	require_once ($config['homedir'] . '/include/functions_planned_downtimes.php');
-
+	
 	$malformed_planned_downtimes = planned_downtimes_get_malformed();
 	if (empty($malformed_planned_downtimes))
 		$malformed_planned_downtimes = array();
-
-	$sql_downtime = "SELECT DISTINCT(tpdr.id), tpdr.*
-					FROM (
-							SELECT tpd.*
-							FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tagente_modulo tam
-							WHERE tpd.id = tpda.id_downtime
-								AND tpda.all_modules = 1
-								AND tpda.id_agent = tam.id_agente
-								AND tam.id_agente_modulo = $id_agent_module
-						UNION ALL
-							SELECT tpd.*
-							FROM tplanned_downtime tpd, tplanned_downtime_modules tpdm
-							WHERE tpd.id = tpdm.id_downtime
-								AND tpdm.id_agent_module = $id_agent_module
-					) tpdr
-					ORDER BY tpdr.id";
-
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$tpdr_description = "tpdr.description";
+			break;
+		case "oracle":
+			$tpdr_description = "to_char(tpdr.description)";
+			break;
+	}
+	
+	
+	$sql_downtime = "
+		SELECT DISTINCT(tpdr.id),
+				tpdr.name,
+				" . $tpdr_description . ",
+				tpdr.date_from,
+				tpdr.date_to,
+				tpdr.executed,
+				tpdr.id_group,
+				tpdr.only_alerts,
+				tpdr.monday,
+				tpdr.tuesday,
+				tpdr.wednesday,
+				tpdr.thursday,
+				tpdr.friday,
+				tpdr.saturday,
+				tpdr.sunday,
+				tpdr.periodically_time_from,
+				tpdr.periodically_time_to,
+				tpdr.periodically_day_from,
+				tpdr.periodically_day_to,
+				tpdr.type_downtime,
+				tpdr.type_execution,
+				tpdr.type_periodicity,
+				tpdr.id_user
+		FROM (
+				SELECT tpd.*
+				FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tagente_modulo tam
+				WHERE tpd.id = tpda.id_downtime
+					AND tpda.all_modules = 1
+					AND tpda.id_agent = tam.id_agente
+					AND tam.id_agente_modulo = $id_agent_module
+			UNION ALL
+				SELECT tpd.*
+				FROM tplanned_downtime tpd, tplanned_downtime_modules tpdm
+				WHERE tpd.id = tpdm.id_downtime
+					AND tpdm.id_agent_module = $id_agent_module
+		) tpdr
+		ORDER BY tpdr.id";
+	
+	
+	
 	$downtimes = db_get_all_rows_sql($sql_downtime);
-
+	
 	if ($downtimes == false) {
 		$downtimes = array();
 	}
@@ -6534,7 +6711,7 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 			$downtime_dates[] = $dates;
 		}
 		else if ($downtime_type == 'periodically') {
-
+			
 			// If a planned downtime have malformed dates, its intervals aren't taken account
 			$downtime_malformed = false;
 			foreach ($malformed_planned_downtimes as $malformed_planned_downtime) {
@@ -6547,28 +6724,28 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 				continue;
 			}
 			// If a planned downtime have malformed dates, its intervals aren't taken account
-
+			
 			$downtime_time_from = $downtime['periodically_time_from'];
 			$downtime_time_to = $downtime['periodically_time_to'];
-
+			
 			$downtime_hour_from = date("H", strtotime($downtime_time_from));
 			$downtime_minute_from = date("i", strtotime($downtime_time_from));
 			$downtime_second_from = date("s", strtotime($downtime_time_from));
 			$downtime_hour_to = date("H", strtotime($downtime_time_to));
 			$downtime_minute_to = date("i", strtotime($downtime_time_to));
 			$downtime_second_to = date("s", strtotime($downtime_time_to));
-
+			
 			if ($downtime_periodicity == "monthly") {
 				$downtime_day_from = $downtime['periodically_day_from'];
 				$downtime_day_to = $downtime['periodically_day_to'];
-
+				
 				$date_aux = strtotime(date("Y-m-01", $start_date));
 				$year_aux = date("Y", $date_aux);
 				$month_aux = date("m", $date_aux);
-
+				
 				$end_year = date("Y", $end_date);
 				$end_month = date("m", $end_date);
-
+				
 				while ($year_aux < $end_year || ($year_aux == $end_year && $month_aux <= $end_month)) {
 					
 					if ($downtime_day_from > $downtime_day_to) {
@@ -6576,7 +6753,7 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 						$dates['date_from'] = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
 						$dates['date_to'] = strtotime(date("Y-m-t H:i:s", strtotime("$year_aux-$month_aux-28 23:59:59")));
 						$downtime_dates[] = $dates;
-
+						
 						$dates = array();
 						if ($month_aux + 1 <= 12) {
 							$dates['date_from'] = strtotime("$year_aux-".($month_aux + 1)."-01 00:00:00");
@@ -6592,14 +6769,14 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 						if ($downtime_day_from == $downtime_day_to && strtotime($downtime_time_from) > strtotime($downtime_time_to)) {
 							$date_aux_from = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
 							$max_day_num = date('t', $date_aux);
-
+							
 							$dates = array();
 							$dates['date_from'] = strtotime("$year_aux-$month_aux-$downtime_day_from $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
 							$dates['date_to'] = strtotime("$year_aux-$month_aux-$downtime_day_from 23:59:59");
 							$downtime_dates[] = $dates;
-
+							
 							if ($downtime_day_to + 1 > $max_day_num) {
-
+								
 								$dates = array();
 								if ($month_aux + 1 <= 12) {
 									$dates['date_from'] = strtotime("$year_aux-".($month_aux + 1)."-01 00:00:00");
@@ -6625,7 +6802,7 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 							$downtime_dates[] = $dates;
 						}
 					}
-
+					
 					$month_aux++;
 					if ($month_aux > 12) {
 						$month_aux = 1;
@@ -6643,7 +6820,7 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 				$active_days[4] = ($downtime['thursday'] == 1) ? true : false;
 				$active_days[5] = ($downtime['friday'] == 1) ? true : false;
 				$active_days[6] = ($downtime['saturday'] == 1) ? true : false;
-
+				
 				while ($date_aux <= $end_date) {
 					$weekday_num = date('w', $date_aux);
 					
@@ -6651,15 +6828,15 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 						$day_num = date('d', $date_aux);
 						$month_num = date('m', $date_aux);
 						$year_num = date('Y', $date_aux);
-
+						
 						$max_day_num = date('t', $date_aux);
-
+						
 						if (strtotime($downtime_time_from) > strtotime($downtime_time_to)) {
 							$dates = array();
 							$dates['date_from'] = strtotime("$year_num-$month_num-$day_num $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
 							$dates['date_to'] = strtotime("$year_num-$month_num-$day_num 23:59:59");
 							$downtime_dates[] = $dates;
-
+							
 							$dates = array();
 							if ($day_num + 1 > $max_day_num) {
 								if ($month_num + 1 > 12) {
@@ -6684,20 +6861,20 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 							$downtime_dates[] = $dates;
 						}
 					}
-
+					
 					$date_aux += SECONDS_1DAY;
 				}
 			}
 		}
 	}
-
+	
 	if ($check_services) {
 		enterprise_include_once("include/functions_services.php");
 		if (function_exists("services_get_planned_downtimes_intervals")) {
 			services_get_planned_downtimes_intervals($downtime_dates, $start_date, $end_date, false, $id_agent_module);
 		}
 	}
-
+	
 	return $downtime_dates;
 }
 
@@ -6803,7 +6980,30 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period=0, $date 
 		}
 	}
 	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			// Do none
+			break;
+		case "oracle":
+			$max = oracle_format_float_to_php($max);
+			break;
+	}
+	
+	
+	
 	foreach ($interval_data as $data) {
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				// Do none
+				break;
+			case "oracle":
+				$data['datos'] =
+					oracle_format_float_to_php($data['datos']);
+				break;
+		}
+		
 		if ($data['datos'] > $max) {
 			$max = $data['datos'];
 		}
@@ -6879,7 +7079,28 @@ function reporting_get_agentmodule_data_min ($id_agent_module, $period=0, $date 
 	// Set initial conditions
 	$min = $interval_data[0]['datos'];
 	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			// Do none
+			break;
+		case "oracle":
+			$min = oracle_format_float_to_php($min);
+			break;
+	}
+	
 	foreach ($interval_data as $data) {
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				// Do none
+				break;
+			case "oracle":
+				$data['datos'] =
+					oracle_format_float_to_php($data['datos']);
+				break;
+		}
+		
 		if ($data['datos'] < $min) {
 			$min = $data['datos'];
 		}
@@ -6974,6 +7195,17 @@ function reporting_get_agentmodule_data_sum ($id_agent_module,
 	}
 	
 	foreach ($interval_data as $data) {
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				// Do none
+				break;
+			case "oracle":
+				$data['datos'] =
+					oracle_format_float_to_php($data['datos']);
+				break;
+		}
+		
 		if ($uncompressed_module) {
 			$total += $data['datos'];
 		}
@@ -7000,6 +7232,8 @@ function reporting_get_agentmodule_data_sum ($id_agent_module,
  * agent modules selected.
  */
 function reporting_get_planned_downtimes ($start_date, $end_date, $id_agent_modules = false) {
+	global $config;
+	
 	$start_time = date("H:i:s", $start_date);
 	$end_time = date("H:i:s", $end_date);
 	
@@ -7103,35 +7337,69 @@ function reporting_get_planned_downtimes ($start_date, $end_date, $id_agent_modu
 		
 		$id_agent_modules_str = implode(",", $id_agent_modules);
 		
-		$sql_downtime = "SELECT DISTINCT(tpdr.id), tpdr.*
-						FROM (
-								SELECT tpd.*
-								FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tagente_modulo tam
-								WHERE (tpd.id = tpda.id_downtime
-										AND tpda.all_modules = 1
-										AND tpda.id_agent = tam.id_agente
-										AND tam.id_agente_modulo IN ($id_agent_modules_str))
-									AND ((type_execution = 'periodically'
-											AND $periodically_condition)
-										OR (type_execution = 'once'
-											AND ((date_from >= '$start_date' AND date_to <= '$end_date')
-												OR (date_from <= '$start_date' AND date_to >= '$end_date')
-												OR (date_from <= '$start_date' AND date_to >= '$start_date')
-												OR (date_from <= '$end_date' AND date_to >= '$end_date'))))
-							UNION ALL
-								SELECT tpd.*
-								FROM tplanned_downtime tpd, tplanned_downtime_modules tpdm
-								WHERE (tpd.id = tpdm.id_downtime
-										AND tpdm.id_agent_module IN ($id_agent_modules_str))
-									AND ((type_execution = 'periodically'
-											AND $periodically_condition)
-										OR (type_execution = 'once'
-											AND ((date_from >= '$start_date' AND date_to <= '$end_date')
-												OR (date_from <= '$start_date' AND date_to >= '$end_date')
-												OR (date_from <= '$start_date' AND date_to >= '$start_date')
-												OR (date_from <= '$end_date' AND date_to >= '$end_date'))))
-						) tpdr
-						ORDER BY tpdr.id";
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$tpdr_description = "tpdr.description";
+				break;
+			case "oracle":
+				$tpdr_description = "to_char(tpdr.description)";
+				break;
+		}
+		
+		$sql_downtime = "
+			SELECT
+				DISTINCT(tpdr.id),
+				tpdr.name,
+				" . $tpdr_description . ",
+				tpdr.date_from,
+				tpdr.date_to,
+				tpdr.executed,
+				tpdr.id_group,
+				tpdr.only_alerts,
+				tpdr.monday,
+				tpdr.tuesday,
+				tpdr.wednesday,
+				tpdr.thursday,
+				tpdr.friday,
+				tpdr.saturday,
+				tpdr.sunday,
+				tpdr.periodically_time_from,
+				tpdr.periodically_time_to,
+				tpdr.periodically_day_from,
+				tpdr.periodically_day_to,
+				tpdr.type_downtime,
+				tpdr.type_execution,
+				tpdr.type_periodicity,
+				tpdr.id_user
+			FROM (
+					SELECT tpd.*
+					FROM tplanned_downtime tpd, tplanned_downtime_agents tpda, tagente_modulo tam
+					WHERE (tpd.id = tpda.id_downtime
+							AND tpda.all_modules = 1
+							AND tpda.id_agent = tam.id_agente
+							AND tam.id_agente_modulo IN ($id_agent_modules_str))
+						AND ((type_execution = 'periodically'
+								AND $periodically_condition)
+							OR (type_execution = 'once'
+								AND ((date_from >= '$start_date' AND date_to <= '$end_date')
+									OR (date_from <= '$start_date' AND date_to >= '$end_date')
+									OR (date_from <= '$start_date' AND date_to >= '$start_date')
+									OR (date_from <= '$end_date' AND date_to >= '$end_date'))))
+				UNION ALL
+					SELECT tpd.*
+					FROM tplanned_downtime tpd, tplanned_downtime_modules tpdm
+					WHERE (tpd.id = tpdm.id_downtime
+							AND tpdm.id_agent_module IN ($id_agent_modules_str))
+						AND ((type_execution = 'periodically'
+								AND $periodically_condition)
+							OR (type_execution = 'once'
+								AND ((date_from >= '$start_date' AND date_to <= '$end_date')
+									OR (date_from <= '$start_date' AND date_to >= '$end_date')
+									OR (date_from <= '$start_date' AND date_to >= '$start_date')
+									OR (date_from <= '$end_date' AND date_to >= '$end_date'))))
+			) tpdr
+			ORDER BY tpdr.id";
 	}
 	else {
 		$sql_downtime = "SELECT *
@@ -7225,16 +7493,25 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 		}
 	}
 	
-	if (count($days) > 0) {
-		$sql .= ' AND DAYOFWEEK(FROM_UNIXTIME(utimestamp)) NOT IN (' . implode(',', $days) . ')';
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			if (count($days) > 0) {
+				$sql .= ' AND DAYOFWEEK(FROM_UNIXTIME(utimestamp)) NOT IN (' . implode(',', $days) . ')';
+			}
+			if ($timeFrom < $timeTo) {
+				$sql .= ' AND (TIME(FROM_UNIXTIME(utimestamp)) >= "' . $timeFrom . '" AND TIME(FROM_UNIXTIME(utimestamp)) <= "'. $timeTo . '")';
+			}
+			elseif ($timeFrom > $timeTo) {
+				$sql .= ' AND (TIME(FROM_UNIXTIME(utimestamp)) >= "' . $timeFrom . '" OR TIME(FROM_UNIXTIME(utimestamp)) <= "'. $timeTo . '")';
+			}
+			break;
+		case "oracle":
+			break;
 	}
 	
-	if ($timeFrom < $timeTo) {
-		$sql .= ' AND (TIME(FROM_UNIXTIME(utimestamp)) >= "' . $timeFrom . '" AND TIME(FROM_UNIXTIME(utimestamp)) <= "'. $timeTo . '")';
-	}
-	elseif ($timeFrom > $timeTo) {
-		$sql .= ' AND (TIME(FROM_UNIXTIME(utimestamp)) >= "' . $timeFrom . '" OR TIME(FROM_UNIXTIME(utimestamp)) <= "'. $timeTo . '")';
-	}
+	
 	$sql .= ' ORDER BY utimestamp ASC';
 	$interval_data = db_get_all_rows_sql ($sql, $search_in_history_db);
 	
@@ -7409,10 +7686,16 @@ function reporting_get_agentmodule_sla_array ($id_agent_module, $period = 0, $mi
 	
 	if ($timeFrom != $timeTo) {
 		if ($timeFrom < $timeTo) {
-			$sql .= ' AND (TIME(FROM_UNIXTIME(utimestamp)) >= "' . $timeFrom . '" AND TIME(FROM_UNIXTIME(utimestamp)) <= "'. $timeTo . '")';
+			$sql .= ' AND (TIME(FROM_UNIXTIME(utimestamp)) >= \'' .
+				$timeFrom . '\'
+				AND TIME(FROM_UNIXTIME(utimestamp)) <= \'' .
+				$timeTo . '\')';
 		}
 		elseif ($timeFrom > $timeTo) {
-			$sql .= ' AND (TIME(FROM_UNIXTIME(utimestamp)) >= "' . $timeFrom . '" OR TIME(FROM_UNIXTIME(utimestamp)) <= "'. $timeTo . '")';
+			$sql .= ' AND (TIME(FROM_UNIXTIME(utimestamp)) >= \'' .
+				$timeFrom . '\'
+				OR TIME(FROM_UNIXTIME(utimestamp)) <= \''.
+				$timeTo . '\')';
 		}
 	}
 	

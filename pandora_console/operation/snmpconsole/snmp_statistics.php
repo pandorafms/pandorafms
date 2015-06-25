@@ -74,17 +74,36 @@ if (!empty($user_groups)) {
 
 $last_month_timestamp = date("Y-m-d H:i:s", time() - SECONDS_1MONTH);
 
-$sql_traps_generated = "SELECT %s, COUNT(id_trap) AS num
-						FROM ttrap
-						WHERE timestamp >= '%s'
-							AND (source = ''
-								OR source NOT IN (SELECT direccion FROM tagente)
-								OR source IN (SELECT direccion
-											  FROM tagente
-											  WHERE id_grupo IN (%s)))
-						GROUP BY %s
-						ORDER BY num DESC, timestamp DESC
-						LIMIT 25";
+switch ($config["dbtype"]) {
+	case "mysql":
+	case "postgresql":
+		$sql_traps_generated = "SELECT %s, COUNT(id_trap) AS num, MAX(timestamp) AS timestamp
+								FROM ttrap
+								WHERE timestamp >= '%s'
+									AND (source = ''
+										OR source NOT IN (SELECT direccion FROM tagente)
+										OR source IN (SELECT direccion
+													  FROM tagente
+													  WHERE id_grupo IN (%s)))
+								GROUP BY %s
+								ORDER BY num DESC, timestamp DESC
+								LIMIT 25";
+		break;
+	case "oracle":
+		// MAX(timestamp) AS timestamp is needed to do the magic with oracle
+		$sql_traps_generated = "SELECT %s, COUNT(id_trap) AS num, MAX(timestamp) AS timestamp
+								FROM ttrap
+								WHERE timestamp >= '%s'
+									AND (source = ''
+										OR source NOT IN (SELECT direccion FROM tagente)
+										OR source IN (SELECT direccion
+													  FROM tagente
+													  WHERE id_grupo IN (%s)))
+								GROUP BY %s
+								ORDER BY num DESC, timestamp DESC";
+		$sql_traps_generated = "SELECT * FROM ($sql_traps_generated) WHERE rownum <= 25";
+		break;
+}
 
 $sql_traps_generated_by_source = sprintf($sql_traps_generated, "source", $last_month_timestamp, $user_groups_str, "source");
 $sql_traps_generated_by_oid = sprintf($sql_traps_generated, "oid", $last_month_timestamp, $user_groups_str, "oid");

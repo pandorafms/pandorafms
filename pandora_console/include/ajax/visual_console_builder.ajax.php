@@ -17,6 +17,25 @@ global $config;
 
 check_login ();
 
+
+
+$get_image_path_status = get_parameter('get_image_path_status', 0);
+if ($get_image_path_status){
+	$img_src = get_parameter("img_src");
+	$only_src = get_parameter("only_src", 0);
+	
+	$result = array();
+	
+	$result['bad'] = html_print_image($img_src . '_bad.png', true, '', $only_src);
+	$result['ok'] = html_print_image($img_src . '_ok.png', true, '', $only_src);
+	$result['warning'] = html_print_image($img_src . '_warning.png', true, '', $only_src);
+	$result['ok'] = html_print_image($img_src . '_ok.png', true, '', $only_src);
+	$result['normal'] = html_print_image($img_src . '.png', true, '', $only_src);
+	
+	echo json_encode($result);
+	return;
+}
+
 $id_visual_console = get_parameter('id_visual_console', null);
 
 // WARNING: CHECK THE ENTIRE FUNCTIONALITY
@@ -96,8 +115,6 @@ $id_agent = get_parameter('id_agent', null);
 $id_metaconsole = get_parameter('id_metaconsole', null);
 $id_group = (int)get_parameter('id_group', 0);
 $id_custom_graph = get_parameter('id_custom_graph', null);
-$height_module_graph = get_parameter('id_custom_graph', null);
-$width_module_graph = get_parameter('id_custom_graph', null);
 $border_width = get_parameter('border_width', 0);
 $border_color = get_parameter('border_color', '');
 $fill_color = get_parameter('fill_color', '');
@@ -111,7 +128,6 @@ $line_width = (int)get_parameter('line_width', 0);
 $line_color = get_parameter('line_color', '');
 
 $get_element_status = get_parameter('get_element_status', 0);
-$get_image_path_status = get_parameter('get_image_path_status', 0);
 
 $enable_link = get_parameter('enable_link', 1);
 
@@ -437,13 +453,13 @@ switch ($action) {
 					$values['id_layout_linked'] = $map_linked;
 				}
 				switch ($type) {
-					// -- line_item --
+					// -- line_item ------------------------------------
 					case 'handler_start':
 					case 'handler_end':
-					// ---------------
 						$values['border_width'] = $line_width;
 						$values['border_color'] = $line_color;
 						break;
+					// -------------------------------------------------
 					case 'box_item':
 						$values['border_width'] = $border_width;
 						$values['border_color'] = $border_color;
@@ -799,6 +815,7 @@ switch ($action) {
 				}
 				break;
 		}
+		
 		$idData = db_process_sql_insert('tlayout_data', $values);
 		
 		$return = array();
@@ -903,21 +920,6 @@ if ($get_element_status) {
 	echo $res;
 	
 	return;
-}
-
-if ($get_image_path_status) {
-	$img_src = get_parameter("img_src");
-	$only_src = get_parameter("only_src", 0);
-	
-	$result = array();
-	
-	$result['bad'] = html_print_image($img_src . '_bad.png', true, '', $only_src);
-	$result['ok'] = html_print_image($img_src . '_ok.png', true, '', $only_src);
-	$result['warning'] = html_print_image($img_src . '_warning.png', true, '', $only_src);
-	$result['ok'] = html_print_image($img_src . '_ok.png', true, '', $only_src);
-	$result['normal'] = html_print_image($img_src . '.png', true, '', $only_src);
-	
-	echo json_encode($result);
 }
 
 ?>

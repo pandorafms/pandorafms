@@ -325,6 +325,7 @@ function reporting_html_SLA($table, $item, $mini) {
 			$table->data['planned_downtime']['cell'] = html_print_table($table1, true);
 		}
 		
+		$table1 = new stdClass();
 		$table1->width = '99%';
 		
 		$table1->align = array();
@@ -380,7 +381,7 @@ function reporting_html_SLA($table, $item, $mini) {
 		$table->data['sla']['cell'] = html_print_table($table1, true);
 		
 		if (!empty($item['charts'])) {
-			$table1 = null;
+			$table1 = new stdClass();
 			$table1->width = '99%';
 			
 			$table1->data = array ();
@@ -403,6 +404,7 @@ function reporting_html_top_n($table, $item) {
 		$table->data['top_n']['cell'] = $item['failed'];
 	}
 	else {
+		$table1 = new stdClass();
 		$table1->width = '99%';
 		
 		$table1->align = array();
@@ -439,7 +441,7 @@ function reporting_html_top_n($table, $item) {
 		}
 		
 		if (!empty($item['resume'])) {
-			$table1 = null;
+			$table1 = new stdClass();
 			$table1->width = '99%';
 			
 			$table1->align = array();
@@ -474,6 +476,7 @@ function reporting_html_event_report_group($table, $item) {
 		$table->data['events']['cell'] = $item['failed'];
 	}
 	else {
+		$table1 = new stdClass();
 		$table1->width = '99%';
 		
 		$table1->align = array();
@@ -552,7 +555,7 @@ function reporting_html_event_report_group($table, $item) {
 		
 		
 		if (!empty($item['chart']['by_agent'])) {
-			$table1 = null;
+			$table1 = new stdClass();
 			$table1->width = '99%';
 			$table1->head = array ();
 			$table1->head[0] = __('Events by agent');
@@ -564,7 +567,7 @@ function reporting_html_event_report_group($table, $item) {
 		}
 		
 		if (!empty($item['chart']['by_user_validator'])) {
-			$table1 = null;
+			$table1 = new stdClass();
 			$table1->width = '99%';
 			$table1->head = array ();
 			$table1->head[0] = __('Events by user validator');
@@ -576,7 +579,7 @@ function reporting_html_event_report_group($table, $item) {
 		}
 		
 		if (!empty($item['chart']['by_criticity'])) {
-			$table1 = null;
+			$table1 = new stdClass();
 			$table1->width = '99%';
 			$table1->head = array ();
 			$table1->head[0] = __('Events by criticity');
@@ -588,7 +591,7 @@ function reporting_html_event_report_group($table, $item) {
 		}
 		
 		if (!empty($item['chart']['validated_vs_unvalidated'])) {
-			$table1 = null;
+			$table1 = new stdClass();
 			$table1->width = '99%';
 			$table1->head = array ();
 			$table1->head[0] = __('Events validated vs unvalidated');
@@ -610,6 +613,7 @@ function reporting_html_event_report_module($table, $item) {
 		$table->data['events']['cell'] = $item['failed'];
 	}
 	else {
+		$table1 = new stdClass();
 		$table1->width = '99%';
 		$table1->data = array ();
 		$table1->head = array ();
@@ -802,28 +806,30 @@ function reporting_html_agent_module($table, $item) {
 				"</th>";
 		}
 		
+		
+		
 		foreach ($item['data'] as $row) {
 			$table_data .= "<tr style='height: 35px;'>";
 			switch ($row['agent_status']) {
-				case 4: // Alert fired status
+				case AGENT_STATUS_ALERT_FIRED:
 					$rowcolor = COL_ALERTFIRED;
 					$textcolor = '#000';
 					break;
-				case 1: // Critical status
+				case AGENT_STATUS_CRITICAL:
 					$rowcolor = COL_CRITICAL;
 					$textcolor = '#FFF';
 					break;
-				case 2: // Warning status
+				case AGENT_STATUS_WARNING:
 					$rowcolor = COL_WARNING;
 					$textcolor = '#000';
 					break;
-				case 0: // Normal status
+				case AGENT_STATUS_NORMAL:
 					$rowcolor = COL_NORMAL;
 					$textcolor = '#FFF';
 					break;
-				case 3: 
-				case -1: 
-				default: // Unknown status
+				case AGENT_STATUS_UNKNOWN:
+				case AGENT_STATUS_ALL:
+				default:
 					$rowcolor = COL_UNKNOWN;
 					$textcolor = '#FFF';
 					break;
@@ -837,50 +843,50 @@ function reporting_html_agent_module($table, $item) {
 				html_print_image($file_name, true,
 					array('title' => $row['agent_name'])) . "</td>";
 			
-			foreach ($row['modules'] as $module) {
+			foreach ($row['modules'] as $module_name => $module) {
 				if (is_null($module)) {
 					$table_data .= "<td style='background-color: #DDD;'></td>";
 				}
 				else {
 					$table_data .= "<td style='text-align: center; background-color: #DDD;'>";
 					switch ($module) {
-						case 0:
+						case AGENT_STATUS_NORMAL:
 							$table_data .= ui_print_status_image(
 								'module_ok.png',
 								__("%s in %s : NORMAL",
-									$module['name'],
+									$module_name,
 									$row['agent_name']),
 								true, array('width' => '20px', 'height' => '20px'));
 							break;
-						case 1:
+						case AGENT_STATUS_CRITICAL:
 							$table_data .= ui_print_status_image(
 								'module_critical.png',
 								__("%s in %s : CRITICAL",
-									$module['name'],
+									$module_name,
 									$row['agent_name']),
 								true, array('width' => '20px', 'height' => '20px'));
 							break;
-						case 2:
+						case AGENT_STATUS_WARNING:
 							$table_data .= ui_print_status_image(
 								'module_warning.png',
 								__("%s in %s : WARNING",
-									$module['name'],
+									$module_name,
 									$row['agent_name']),
 								true, array('width' => '20px', 'height' => '20px'));
 							break;
-						case 3:
+						case AGENT_STATUS_UNKNOWN:
 							$table_data .= ui_print_status_image(
 								'module_unknown.png',
 								__("%s in %s : UNKNOWN",
-									$module['name'],
+									$module_name,
 									$row['agent_name']),
 								true, array('width' => '20px', 'height' => '20px'));
 							break;
-						case 4:
+						case AGENT_STATUS_ALERT_FIRED:
 							$table_data .= ui_print_status_image(
 								'module_alertsfired.png',
 								__("%s in %s : ALERTS FIRED",
-									$module['name'],
+									$module_name,
 									$row['agent_name']),
 								true, array('width' => '20px', 'height' => '20px'));
 							break;
@@ -1070,6 +1076,7 @@ function reporting_html_group_report($table, $item) {
 function reporting_html_event_report_agent($table, $item) {
 	global $config;
 	
+	$table1 = new stdClass();
 	$table1->width = '99%';
 	
 	$table1->align = array();
@@ -1143,7 +1150,7 @@ function reporting_html_event_report_agent($table, $item) {
 	$table->data['event_list']['cell'] = html_print_table($table1, true);
 	
 	if (!empty($item['chart']['by_user_validator'])) {
-		$table1 = null;
+		$table1 = new stdClass();
 		$table1->width = '99%';
 		$table1->head = array ();
 		$table1->head[0] = __('Events validated by user');
@@ -1155,7 +1162,7 @@ function reporting_html_event_report_agent($table, $item) {
 	}
 	
 	if (!empty($item['chart']['by_criticity'])) {
-		$table1 = null;
+		$table1 = new stdClass();
 		$table1->width = '99%';
 		$table1->head = array ();
 		$table1->head[0] = __('Events by criticity');
@@ -1167,7 +1174,7 @@ function reporting_html_event_report_agent($table, $item) {
 	}
 	
 	if (!empty($item['chart']['validated_vs_unvalidated'])) {
-		$table1 = null;
+		$table1 = new stdClass();
 		$table1->width = '99%';
 		$table1->head = array ();
 		$table1->head[0] = __('Amount events validated');
@@ -1204,11 +1211,13 @@ function reporting_html_database_serialized($table, $item) {
 
 function reporting_html_group_configuration($table, $item) {
 	
+	$table1 = new stdClass();
 	$table1->width = '100%';
 	$table1->head = array ();
 	$table1->data = array ();
 	$cell = "";
 	foreach ($item['data'] as $agent) {
+		$table2 = new stdClass();
 		$table2->width = '100%';
 		$table2->data = array ();
 		reporting_html_agent_configuration($table2, array('data' => $agent));
@@ -1324,6 +1333,7 @@ function reporting_html_alert_report_agent($table, $item) {
 	$table->colspan['alerts']['cell'] = 3;
 	$table->cellstyle['alerts']['cell'] = 'text-align: left;';
 	
+	$table1 = new stdClass();
 	$table1->width = '99%';
 	$table1->head = array ();
 	$table1->head['module'] = __('Module');
@@ -1360,6 +1370,7 @@ function reporting_html_alert_report_module($table, $item) {
 	$table->colspan['alerts']['cell'] = 3;
 	$table->cellstyle['alerts']['cell'] = 'text-align: left;';
 	
+	$table1 = new stdClass();
 	$table1->width = '99%';
 	$table1->head = array ();
 	$table1->head['template'] = __('Template');
@@ -1407,6 +1418,7 @@ function reporting_html_monitor_report($table, $item, $mini) {
 	$table->colspan['module']['cell'] = 3;
 	$table->cellstyle['module']['cell'] = 'text-align: center;';
 	
+	$table1 = new stdClass();
 	$table1->width = '99%';
 	$table1->head = array ();
 	$table1->data = array ();
@@ -1446,6 +1458,7 @@ function reporting_html_agent_configuration(&$table, $item) {
 	$table->colspan['agent']['cell'] = 3;
 	$table->cellstyle['agent']['cell'] = 'text-align: left;';
 	
+	$table1 = new stdClass();
 	$table1->width = '99%';
 	$table1->head = array ();
 	$table1->head['name'] = __('Agent name');
@@ -1610,6 +1623,7 @@ function reporting_html_text(&$table, $item) {
 function reporting_html_availability(&$table, $item) {
 	
 	if (!empty($item["data"])) {
+		$table1 = new stdClass();
 		$table1->width = '99%';
 		$table1->data = array ();
 		$table1->head = array ();
@@ -1699,6 +1713,7 @@ function reporting_html_general(&$table, $item) {
 	if (!empty($item["data"])) {
 		switch ($item['subtype']) {
 			case REPORT_GENERAL_NOT_GROUP_BY_AGENT:
+				$table1 = new stdClass();
 				$table1->width = '99%';
 				$table1->data = array ();
 				$table1->head = array ();
@@ -1714,10 +1729,19 @@ function reporting_html_general(&$table, $item) {
 				$table1->style[3] = 'text-align: left';
 				
 				foreach ($item['data'] as $row) {
-					$table1->data[] = array(
-						$row['agent'],
-						$row['module'],
-						$row['value']);
+					if ($item['date']['period'] != 0) {
+						$table1->data[] = array(
+							$row['agent'],
+							$row['module'],
+							$row['operator'],
+							$row['value']);
+					}
+					else {
+						$table1->data[] = array(
+							$row['agent'],
+							$row['module'],
+							$row['value']);
+					}
 				}
 				break;
 			case REPORT_GENERAL_GROUP_BY_AGENT:
@@ -1762,6 +1786,7 @@ function reporting_html_general(&$table, $item) {
 	}
 	
 	if ($item['resume'] && !empty($item["data"])) {
+		$table_summary = new stdClass();
 		$table_summary->width = '99%';
 		
 		$table_summary->data = array ();
@@ -1802,6 +1827,7 @@ function reporting_html_sql(&$table, $item) {
 	else {
 		$first = true;
 		
+		$table2 = new stdClass();
 		$table2->class = 'databox';
 		$table2->width = '100%';
 		

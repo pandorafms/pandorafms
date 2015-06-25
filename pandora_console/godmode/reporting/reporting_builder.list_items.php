@@ -26,6 +26,18 @@ if (! check_acl ($config['id_user'], 0, "RW")) {
 include_once($config['homedir'] . "/include/functions_agents.php");
 enterprise_include_once ('include/functions_metaconsole.php');
 
+
+switch ($config['dbtype']) {
+	case "mysql":
+	case "postgresql":
+		$type_escaped = "type";
+		break;
+	case "oracle":
+		$type_escaped = db_encapsule_fields_with_same_name_to_instructions(
+			"type");
+		break;
+}
+
 if ($config ['metaconsole'] == 1 and defined('METACONSOLE')) {
 	$agents = array();
 	$agents = metaconsole_get_report_agents($idReport);
@@ -44,11 +56,11 @@ else {
 				FROM
 					(
 					SELECT t1.*, id_agente
-					FROM treport_content AS t1
-						LEFT JOIN tagente_modulo AS t2
+					FROM treport_content t1
+						LEFT JOIN tagente_modulo t2
 							ON t1.id_agent_module = id_agente_modulo
-					) AS t4
-					INNER JOIN tagente AS t5
+					) t4
+					INNER JOIN tagente t5
 						ON (t4.id_agent = t5.id_agente OR t4.id_agente = t5.id_agente)
 				WHERE t4.id_report = ' . $idReport);
 			break;
@@ -65,6 +77,7 @@ else {
 					INNER JOIN tagente t5
 						ON (t4.id_agent = t5.id_agente OR t4.id_agente = t5.id_agente)
 				WHERE t4.id_report = ' . $idReport);
+			
 			break;
 	}
 	
@@ -82,8 +95,8 @@ else {
 		case "postgresql":
 			$rows = db_get_all_rows_sql('
 				SELECT t1.id_agent_module, t2.nombre
-				FROM treport_content AS t1
-					INNER JOIN tagente_modulo AS t2
+				FROM treport_content t1
+					INNER JOIN tagente_modulo t2
 						ON t1.id_agent_module = t2.id_agente_modulo
 				WHERE t1.id_report = ' . $idReport);
 			break;
@@ -107,13 +120,13 @@ else {
 	
 	// Filter report items created from metaconsole in normal console list and the opposite
 	if (defined('METACONSOLE') and $config['metaconsole'] == 1) {
-		$where_types = ' AND ((server_name IS NOT NULL AND length(server_name) != 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
+		$where_types = ' AND ((server_name IS NOT NULL AND length(server_name) != 0) OR ' . $type_escaped . ' IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
 	}
 	else
-		$where_types = ' AND ((server_name IS NULL OR length(server_name) = 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
+		$where_types = ' AND ((server_name IS NULL OR length(server_name) = 0) OR ' . $type_escaped . ' IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
 	
 	$rows = db_get_all_rows_sql('
-		SELECT DISTINCT(type)
+		SELECT DISTINCT(' . $type_escaped . ')
 		FROM treport_content
 		WHERE id_report = ' . $idReport . $where_types);
 	if ($rows === false) {
@@ -165,7 +178,7 @@ if (!defined("METACONSOLE")) {
 	ui_toggle($form, __("Filters") );
 }
 else {
-	$table = null;
+	$table = new stdClass();
 	$table->width = '96%';
 	$table->class = "databox_filters";
 	$table->cellpadding = 0;
@@ -209,10 +222,12 @@ if ($moduleFilter != 0) {
 
 // Filter report items created from metaconsole in normal console list and the opposite
 if (defined('METACONSOLE') and $config['metaconsole'] == 1) {
-	$where .= ' AND ((server_name IS NOT NULL AND length(server_name) != 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
+	$where .= ' AND ((server_name IS NOT NULL AND length(server_name) != 0) ' .
+		'OR ' . $type_escaped . ' IN (\'general\', \'SLA\', \'exception\', \'availability\', \'top_n\'))';
 }
 else
-	$where .= ' AND ((server_name IS NULL OR length(server_name) = 0) OR type IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
+	$where .= ' AND ((server_name IS NULL OR length(server_name) = 0) ' .
+		'OR ' . $type_escaped . ' IN (\'general\', \'SLA\', \'exception\', \'availability\', \'top_n\'))';
 
 switch ($config["dbtype"]) {
 	case "mysql":

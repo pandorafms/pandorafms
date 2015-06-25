@@ -181,7 +181,6 @@ switch ($config["dbtype"]) {
 			LIMIT %d,%d";
 		break;
 	case "postgresql":
-	case "oracle":
 		$sql = "SELECT *
 			FROM ttrap
 			WHERE (source IN (
@@ -190,6 +189,15 @@ switch ($config["dbtype"]) {
 					) OR source='' OR source NOT IN (SELECT direccion FROM tagente)) %s
 			ORDER BY timestamp DESC
 			LIMIT %d OFFSET %d";
+		break;
+	case "oracle":
+		$sql = "SELECT *
+			FROM ttrap
+			WHERE (source IN (
+					SELECT direccion FROM tagente
+					WHERE id_grupo IN ($str_user_groups)
+					) OR source='' OR source NOT IN (SELECT direccion FROM tagente)) %s
+			ORDER BY timestamp DESC";
 		break;
 }
 $sql_all = "SELECT *
@@ -264,7 +272,8 @@ else if ($trap_type != -1) {
 	$whereSubquery .= ' AND type = ' . $trap_type;
 }
 
-if ($group_by) {
+// Disable this feature (time will decide if temporarily) in Oracle cause the group by is very confictive
+if ($group_by && $config['dbtype'] != 'oracle') {
 	$where_without_group = $whereSubquery;
 	$whereSubquery .= ' GROUP BY source,oid';
 }
@@ -279,6 +288,7 @@ switch ($config["dbtype"]) {
 		$set = array();
 		$set['limit'] = $pagination;
 		$set['offset'] = $offset;
+		$sql = sprintf($sql, $whereSubquery);
 		$sql = oracle_recode_query ($sql, $set);
 		break;
 }
@@ -327,12 +337,15 @@ $table->data[4][1] = '<strong>'.__('Trap type').'</strong>' . ui_print_help_tip(
 $trap_types = array(-1 => __('None'), 0 => __('Cold start (0)'), 1 => __('Warm start (1)'), 2 => __('Link down (2)'), 3 => __('Link up (3)'), 4 => __('Authentication failure (4)'), 5 => __('Other'));
 $table->data[4][2] = html_print_select ($trap_types, 'trap_type', $trap_type, 'this.form.submit();', '', '', true, false, false);
 
-$table->data[3][3] = '<strong>'.__('Group by Enterprise String/IP').'</strong>';
-$table->data[3][4] = __('Yes') . '&nbsp;'.
-	html_print_radio_button ('group_by', 1, '', $group_by, true) .
-	'&nbsp;&nbsp;';
-$table->data[3][4] .= __('No') . '&nbsp;' .
-	html_print_radio_button ('group_by', 0, '', $group_by, true);
+// Disable this feature (time will decide if temporarily) in Oracle cause the group by is very confictive
+if ($config['dbtype'] != 'oracle') {
+	$table->data[3][3] = '<strong>'.__('Group by Enterprise String/IP').'</strong>';
+	$table->data[3][4] = __('Yes') . '&nbsp;'.
+		html_print_radio_button ('group_by', 1, '', $group_by, true) .
+		'&nbsp;&nbsp;';
+	$table->data[3][4] .= __('No') . '&nbsp;' .
+		html_print_radio_button ('group_by', 0, '', $group_by, true);
+}
 
 $filter = '<form method="POST" action="index.php?' .
 	'sec=snmpconsole&' .

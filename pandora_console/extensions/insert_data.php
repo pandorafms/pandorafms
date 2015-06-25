@@ -216,7 +216,6 @@ function mainInsertData() {
 			data: inputs.join ("&"),
 			type: 'GET',
 			url: action="ajax.php",
-			timeout: 10000,
 			dataType: 'json',
 			success: function (data) {
 				$('#id_agent_module').append ($('<option></option>').attr ('value', 0).text ("--"));

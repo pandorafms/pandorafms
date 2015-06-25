@@ -151,6 +151,7 @@ if (($new_msg) && ($dst_group!='') && (!$reply)) {
 //user info
 $own_info = get_user_info ($config['id_user']);
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 

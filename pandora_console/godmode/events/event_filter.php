@@ -32,7 +32,7 @@ if ($delete) {
 	
 	$id = (int) get_parameter('id');
 	
-	$id_filter = db_get_value('id_name', 'tevent_filter', 'id_filter', $id);
+	$id_filter = db_get_value('id_filter', 'tevent_filter', 'id_filter', $id);
 	
 	if ($id_filter === false) {
 		$result = false;

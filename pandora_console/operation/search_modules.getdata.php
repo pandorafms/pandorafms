@@ -95,12 +95,12 @@ if ($searchModules) {
 	switch ($config["dbtype"]) {
 		case "mysql":
 			$chunk_sql = '
-				FROM tagente_modulo AS t1
-					INNER JOIN tagente AS t2
+				FROM tagente_modulo t1
+					INNER JOIN tagente t2
 						ON t2.id_agente = t1.id_agente
-					INNER JOIN tgrupo AS t3
+					INNER JOIN tgrupo t3
 						ON t3.id_grupo = t2.id_grupo
-					INNER JOIN tagente_estado AS t4
+					INNER JOIN tagente_estado t4
 						ON t4.id_agente_modulo = t1.id_agente_modulo
 				WHERE
 					' . $sql_tags . '
@@ -119,17 +119,17 @@ if ($searchModules) {
 						)
 					)
 					AND
-					t1.nombre COLLATE utf8_general_ci LIKE "%' . $stringSearchSQL . '%" OR
-					t3.nombre LIKE "%' . $stringSearchSQL . '%"';
+					(t1.nombre COLLATE utf8_general_ci LIKE "%' . $stringSearchSQL . '%" OR
+					t3.nombre LIKE "%' . $stringSearchSQL . '%")';
 			break;
 		case "postgresql":
 			$chunk_sql = '
-				FROM tagente_modulo AS t1
-					INNER JOIN tagente AS t2
+				FROM tagente_modulo t1
+					INNER JOIN tagente t2
 						ON t2.id_agente = t1.id_agente
-					INNER JOIN tgrupo AS t3
+					INNER JOIN tgrupo t3
 						ON t3.id_grupo = t2.id_grupo
-					INNER JOIN tagente_estado AS t4
+					INNER JOIN tagente_estado t4
 						ON t4.id_agente_modulo = t1.id_agente_modulo
 				WHERE
 					' . $sql_tags . '
@@ -147,24 +147,24 @@ if ($searchModules) {
 							) 
 						)
 					) AND
-					t1.nombre LIKE \'%' . $stringSearchSQL . '%\' OR
-					t3.nombre LIKE \'%' . $stringSearchSQL . '%\'';
+					(t1.nombre LIKE \'%' . $stringSearchSQL . '%\' OR
+					t3.nombre LIKE \'%' . $stringSearchSQL . '%\')';
 			break;
 		case "oracle":
 			$chunk_sql = '
-				FROM tagente_modulo AS t1
-					INNER JOIN tagente AS t2
+				FROM tagente_modulo t1
+					INNER JOIN tagente t2
 						ON t2.id_agente = t1.id_agente
-					INNER JOIN tgrupo AS t3
+					INNER JOIN tgrupo t3
 						ON t3.id_grupo = t2.id_grupo
-					INNER JOIN tagente_estado AS t4
+					INNER JOIN tagente_estado t4
 						ON t4.id_agente_modulo = t1.id_agente_modulo
 				WHERE
 					' . $sql_tags . '
 					
 					AND
 					
-					' . $subquery_enterprise . ' (t2.id_grupo IN (' . implode(',', $id_userGroups) . ')
+					(t2.id_grupo IN (' . implode(',', $id_userGroups) . ')
 						OR 0 IN (
 							SELECT id_grupo
 							FROM tusuario_perfil
@@ -175,21 +175,35 @@ if ($searchModules) {
 							) 
 						)
 					) AND
-					UPPER(t1.nombre) LIKE UPPER(\'%' . $stringSearchSQL . '%\') OR
-					t3.nombre LIKE \'%' . $stringSearchSQL . '%\'';
+					(UPPER(t1.nombre) LIKE UPPER(\'%' . $stringSearchSQL . '%\') OR
+					t3.nombre LIKE \'%' . $stringSearchSQL . '%\')';
 			break;
 	}
 	
-	$totalModules = db_get_value_sql("
-		SELECT COUNT(t1.id_agente_modulo) AS count_modules " .
-		$chunk_sql);
+	$totalModules = db_get_value_sql("SELECT COUNT(t1.id_agente_modulo) AS count_modules " . $chunk_sql);
 	
 	if (!$only_count) {
-		$select = "SELECT *, t1.nombre AS module_name, t2.nombre AS agent_name ";
-		$limit = " ORDER BY " . $order['field'] . " " . $order['order'] . 
-			" LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
+		$select = "SELECT t1.*, t1.nombre AS module_name, t2.nombre AS agent_name ";
+		$order_by = " ORDER BY " . $order['field'] . " " . $order['order'];
+		$limit = " LIMIT " . $config['block_size'] . " OFFSET " . (int) get_parameter ('offset');
 		
-		$modules = db_get_all_rows_sql($select . $chunk_sql . $limit);
+		$query = $select . $chunk_sql . $order_by;
+		
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$query .= $limit;
+				break;
+			case "oracle":
+				$set = array();
+				$set['limit'] = $config['block_size'];
+				$set['offset'] = (int) get_parameter('offset');
+				
+				$query = oracle_recode_query ($query, $set);
+				break;
+		}
+		
+		$modules = db_get_all_rows_sql($query);
 	}
 }
 ?>

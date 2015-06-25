@@ -2205,7 +2205,7 @@ function get_news($arguments) {
 		case "oracle":
 			$sql = sprintf("SELECT subject,timestamp,text,author
 				FROM tnews
-				WHERE rownum <= %limit AND id_group IN (%s) AND 
+				WHERE rownum <= %s AND id_group IN (%s) AND 
 								modal = %s AND 
 								(expire = 0 OR (expire = 1 AND expire_timestamp > '%s'))
 				ORDER BY timestamp DESC", $limit, $id_group, $modal, $current_datetime);
@@ -2318,12 +2318,11 @@ function clear_pandora_error_for_header() {
 function set_pandora_error_for_header($message, $title = null) {
 	global $config;
 	
-	if (!isset($config["alert_cnt"])) {
-		$config["alert_cnt"] = 0;
-	}
-	if (!isset($_SESSION["alert_msg"])) {
-		$_SESSION["alert_msg"] = "";
-	}
+	if (!isset($config['alert_cnt']))
+		$config['alert_cnt'] = 0;
+	
+	if (!isset($_SESSION['alert_msg']))
+		$_SESSION['alert_msg'] = array();
 	
 	$message_config = array();
 	if (isset($title))
@@ -2331,10 +2330,32 @@ function set_pandora_error_for_header($message, $title = null) {
 	$message_config['message'] = $message;
 	$message_config['no_close'] = true;
 	
+	$config['alert_cnt']++;
+	$_SESSION['alert_msg'][] = array('type' => 'error', 'message' => $message_config);
+}
+
+function get_pandora_error_for_header() {
+	$result = '';
 	
-	$config["alert_cnt"]++;
-	$_SESSION["alert_msg"] .= ui_print_error_message($message_config,
-		'', true);
+	if (isset($_SESSION['alert_msg']) && is_array($_SESSION['alert_msg'])) {
+		foreach ($_SESSION['alert_msg'] as $key => $value) {
+			if (!isset($value['type']) || !isset($value['message']))
+				continue;
+			
+			switch ($value['type']) {
+				case 'error':
+					$result .= ui_print_error_message($value['message'], '', true);
+					break;
+				case 'info':
+					$result .= ui_print_info_message($value['message'], '', true);
+					break;
+				default:
+					break;
+			}
+		}
+	}
+	
+	return $result;
 }
 
 function set_if_defined (&$var, $test) {
@@ -2357,5 +2378,62 @@ function set_unless_defined (&$var, $default) {
 	else {
 		return false;
 	}
+}
+
+function set_when_empty (&$var, $default) {
+	if (empty($var)) {
+		$var = $default;
+		
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+function sort_by_column (&$array_ref, $column_parameter) {
+	global $column;
+	
+	$column = $column_parameter;
+	
+	if (!empty($column)) {
+		usort($array_ref, function ($a, $b) {
+			global $column;
+			
+			return strcmp($a[$column], $b[$column]);
+		});
+	}
+}
+
+function array2XML($data, $root = null, $xml = NULL) {
+	if ($xml == null) {
+		$xml = simplexml_load_string(
+			"<?xml version='1.0' encoding='UTF-8'?>\n<" . $root . " />");
+	}
+	
+	foreach($data as $key => $value) {
+		if (is_numeric($key)) {
+			$key = "item_" . $key;
+		}
+		
+		if (is_array($value)) {
+			$node = $xml->addChild($key);
+			array2XML($value, $root, $node);
+		}
+		else {
+			$value = htmlentities($value);
+			
+			if (!is_numeric($value) && !is_bool($value)) {
+				if (!empty($value)) {
+					$xml->addChild($key, $value);
+				}
+			}
+			else {
+				$xml->addChild($key, $value);
+			}
+		}
+	}
+	
+	return html_entity_decode($xml->asXML());
 }
 ?>

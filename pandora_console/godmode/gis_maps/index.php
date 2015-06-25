@@ -145,7 +145,6 @@ function setDefault(id_tgis_map) {
 			type: "POST",
 			dataType: 'json',
 			url: "ajax.php",
-			timeout: 10000,
 			success: function (data) {
 				if (data.correct == 0) {
 					alert('<?php echo __('There was error on setup the default map.');?>');

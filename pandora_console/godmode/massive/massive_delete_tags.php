@@ -64,7 +64,7 @@ if (is_ajax ()) {
 				WHERE id_agente IN (" . implode(',', $id_agents) . ")
 					AND id_agente_modulo IN (
 						SELECT t1.id_agente_modulo
-						FROM ttag_module AS t1
+						FROM ttag_module t1
 						WHERE id_tag = " . $id_tag . "
 							AND id_policy_module = 0)
 				GROUP BY nombre;");

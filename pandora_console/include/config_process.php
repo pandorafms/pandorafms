@@ -22,7 +22,7 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC150616';
+$build_version = 'PC150624';
 $pandora_version = 'v6.0dev';
 
 // Do not overwrite default timezone set if defined.
@@ -255,6 +255,9 @@ switch ($config["dbtype"]) {
 		}
 		break;
 	case "oracle":
+		if (!isset($config['quote_string'])) {
+			$config['db_quote_string'] = "'";
+		}
 		break;
 }
 //======================================================================

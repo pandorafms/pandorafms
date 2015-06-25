@@ -33,7 +33,7 @@ if (is_ajax ()) {
 				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%' . $string . '%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
 				break;
 			case "oracle":
-				$filter[] = '(upper(nombre) LIKE upper("%' . $string . '%") OR upper(direccion) LIKE upper("%'.$string.'%") OR upper(comentarios) LIKE upper("%'.$string.'%"))';
+				$filter[] = '(upper(nombre) LIKE upper(\'%'.$string.'%\') OR upper(direccion) LIKE upper(\'%'.$string.'%\') OR upper(comentarios) LIKE upper(\'%'.$string.'%\'))';
 				break;
 		}
 		$filter[] = 'id_agente != ' . $id_agent;
@@ -115,8 +115,10 @@ if ($new_agent) {
 		$nombre_agente = $direccion_agente;
 	
 	$servers = servers_get_names();
-	if (!empty($servers))
-		$server_name = reset(array_keys($servers));
+	if (!empty($servers)) {
+		$array_keys_servers = array_keys($servers);
+		$server_name = reset($array_keys_servers);
+	}
 }
 
 if (!$new_agent) {
@@ -262,7 +264,9 @@ if (!array_key_exists($server_name, $servers)) {
 $table->data[6][0] = __('Server');
 if ($new_agent) {
 	//Set first server by default.
-	$server_name = reset(array_keys(servers_get_names()));
+	$servers_get_names = servers_get_names();
+	$array_keys_servers_get_names = array_keys($servers_get_names);
+	$server_name = reset($array_keys_servers_get_names);
 }
 $table->data[6][1] = html_print_select (servers_get_names (),
 	'server_name', $server_name, '', __('None'), 0, true). ' ' . ui_print_help_icon ('agent_server', true);

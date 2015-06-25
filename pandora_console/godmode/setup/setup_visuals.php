@@ -46,7 +46,7 @@ require_once ('include/functions_themes.php');
 require_once ('include/functions_gis.php');
 
 $table = new stdClass();
-$table->width = '98%';
+$table->width = '100%';
 $table->data = array ();
 
 $row = 0;
@@ -187,7 +187,7 @@ $row++;
 
 $table->data[$row][0] = __('Font path');
 $fonts = load_fonts();
-$table->data[$row][1] = html_print_select($fonts, 'fontpath', $config["fontpath"], '', '', 0, true);
+$table->data[$row][1] = html_print_select($fonts, 'fontpath', io_safe_output($config["fontpath"]), '', '', 0, true);
 
 $row++;
 

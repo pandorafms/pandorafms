@@ -57,8 +57,10 @@ our @EXPORT = qw(
 		get_alert_template_module_id
 		get_alert_template_name
 		get_db_rows
+		get_db_rows_limit
 		get_db_single_row
 		get_db_value
+		get_db_value_limit
 		get_first_server_name
 		get_group_id
 		get_group_name
@@ -138,15 +140,20 @@ sub db_connect ($$$$$$) {
 	elsif ($rdbms eq 'oracle') {
 		$RDBMS = 'oracle';
 		$RDBMS_QUOTE = '"';
-		$RDBMS_QUOTE_STRING = '"';
+		$RDBMS_QUOTE_STRING = '\'';
 		
 		# Connect to Oracle
-		my $dbh = DBI->connect("DBI:Oracle:dbname=$db_name;host=$db_host;port=$db_port;sid=pandora", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
+		my $dbh = DBI->connect("DBI:Oracle:dbname=$db_name;host=$db_host;port=$db_port;sid=$db_name", $db_user, $db_pass, { RaiseError => 1, AutoCommit => 1 });
 		return undef unless defined ($dbh);
 		
 		# Set date format
 		$dbh->do("ALTER SESSION SET NLS_TIMESTAMP_FORMAT='YYYY-MM-DD HH24:MI:SS'");
 		$dbh->do("ALTER SESSION SET NLS_NUMERIC_CHARACTERS='.,'");
+		
+		# Configuration to avoid errors when working with CLOB columns
+		$dbh->{'LongReadLen'} = 66000;
+		$dbh->{'LongTruncOk'} = 1;
+		
 		return $dbh;
 	}
 	
@@ -604,13 +611,40 @@ sub get_group_name ($$) {
 ########################################################################
 sub get_db_value ($$;@) {
 	my ($dbh, $query, @values) = @_;
-	#my @rows;
 	
 	# Cache statements
 	my $sth = $dbh->prepare_cached($query);
 	
 	$sth->execute(@values);
 	
+	# Save returned rows
+	while (my $row = $sth->fetchrow_arrayref()) {
+		$sth->finish();
+		return defined ($row->[0]) ? $row->[0] : undef;
+	}
+	
+	$sth->finish();
+	
+	return undef;
+}
+
+########################################################################
+## Get a single column returned by an SQL query with a LIMIT statement
+## as a hash reference.
+########################################################################
+sub get_db_value_limit ($$$;@) {
+	my ($dbh, $query, $limit, @values) = @_;
+	
+	# Cache statements
+	my $sth;
+	if ($RDBMS ne 'oracle') {
+		$sth = $dbh->prepare_cached($query . ' LIMIT ' . $limit);
+	} else {
+		$sth = $dbh->prepare_cached('SELECT * FROM (' . $query . ') WHERE ROWNUM <= ' . $limit);
+	}
+
+	$sth->execute(@values);
+
 	# Save returned rows
 	while (my $row = $sth->fetchrow_arrayref()) {
 		$sth->finish();
@@ -656,6 +690,38 @@ sub get_db_rows ($$;@) {
 	
 	# Cache statements
 	my $sth = $dbh->prepare_cached($query);
+	
+	$sth->execute(@values);
+	
+	# Save returned rows
+	while (my $row = $sth->fetchrow_hashref()) {
+		if ($RDBMS eq 'oracle') {
+			push (@rows, {map { lc ($_) => $row->{$_} } keys (%{$row})});
+		}
+		else {
+			push (@rows, $row);
+		}
+	}
+	
+	$sth->finish();
+	return @rows;
+}
+
+########################################################################
+## Get all rows (with a limit clause) returned by an SQL query
+## as a hash reference array.
+########################################################################
+sub get_db_rows_limit ($$$;@) {
+	my ($dbh, $query, $limit, @values) = @_;
+	my @rows;
+	
+	# Cache statements
+	my $sth;
+	if ($RDBMS ne 'oracle') {
+		$sth = $dbh->prepare_cached($query . ' LIMIT ' . $limit);
+	} else {
+		$sth = $dbh->prepare_cached('SELECT * FROM (' . $query . ') WHERE ROWNUM <= ' . $limit);
+	}
 	
 	$sth->execute(@values);
 	
@@ -751,12 +817,11 @@ sub db_process_insert($$$$;@) {
 	}
 	$wildcards = '('.$wildcards.')';
 	
-	my $columns_string = join($RDBMS_QUOTE . ',' . $RDBMS_QUOTE,
-		@columns_array);
+	my $columns_string = join(',', @columns_array);
 	
 	my $res = db_insert ($dbh,
 		$index,
-		"INSERT INTO $table (" . $RDBMS_QUOTE . $columns_string . $RDBMS_QUOTE . ") VALUES " . $wildcards, @values_array);
+		"INSERT INTO $table ($columns_string) VALUES " . $wildcards, @values_array);
 	
 	
 	return $res;
@@ -787,8 +852,17 @@ sub db_process_update($$$$) {
 		if ($i > 0 && $i <= $#values_array) {
 			$fields = $fields.',';
 		}
-		$fields = $fields .
-			" " . $RDBMS_QUOTE . "$columns_array[$i]" . $RDBMS_QUOTE . " = ?";
+		
+		# Avoid the use of quotes on the column names in oracle, cause the quotes
+		# force the engine to be case sensitive and the column names created without
+		# quotes are stores in uppercase.
+		# The quotes should be introduced manually for every item created with it.
+		if ($RDBMS eq 'oracle') {
+			$fields = $fields . " " . $columns_array[$i] . " = ?";
+		}
+		else {
+			$fields = $fields . " " . $RDBMS_QUOTE . "$columns_array[$i]" . $RDBMS_QUOTE . " = ?";
+		}
 	}
 
 	# WHERE...
@@ -800,8 +874,17 @@ sub db_process_update($$$$) {
 		if ($i > 0 && $i <= $#where_values) {
 			$where = $where.' AND ';
 		}
-		$where = $where .
-			" " . $RDBMS_QUOTE . "$where_columns[$i]" . $RDBMS_QUOTE . " = ?";
+		
+		# Avoid the use of quotes on the column names in oracle, cause the quotes
+		# force the engine to be case sensitive and the column names created without
+		# quotes are stores in uppercase.
+		# The quotes should be introduced manually for every item created with it.
+		if ($RDBMS eq 'oracle') {
+			$where = $where . " " . $where_columns[$i] . " = ?";
+		}
+		else {
+			$where = $where . " " . $RDBMS_QUOTE . "$where_columns[$i]" . $RDBMS_QUOTE . " = ?";
+		}
 	}
 
 	my $res = db_update ($dbh, "UPDATE $table
@@ -826,10 +909,8 @@ sub add_address ($$) {
 sub add_new_address_agent ($$$) {
 	my ($dbh, $addr_id, $agent_id) = @_;
 	
-	db_do ($dbh, 'INSERT INTO taddress_agent (' .
-		$RDBMS_QUOTE . 'id_a' . $RDBMS_QUOTE . ', ' .
-		$RDBMS_QUOTE. 'id_agent' . $RDBMS_QUOTE. ')
-		VALUES (?, ?)', $addr_id, $agent_id);
+	db_do ($dbh, 'INSERT INTO taddress_agent (id_a, id_agent)
+	              VALUES (?, ?)', $addr_id, $agent_id);
 }
 
 ########################################################################
@@ -1000,7 +1081,7 @@ sub db_insert_get_values ($) {
 		# Not value for the given column
 		next if (! defined ($value));
 		
-		$columns .= $PandoraFMS::DB::RDBMS_QUOTE . "$key" . $PandoraFMS::DB::RDBMS_QUOTE . ",";
+		$columns .= $key . ",";
 		push (@values, $value);
 	}
 	

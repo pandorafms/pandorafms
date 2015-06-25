@@ -1013,6 +1013,7 @@ function delete_relation (num_row, id_relation) {
 function validate_post_process() {
 	var post_process = $("#text-post_process").val();
 	var new_post_process = post_process.replace(',', '.');
+	
 	$("#text-post_process").val(new_post_process);
 }
 

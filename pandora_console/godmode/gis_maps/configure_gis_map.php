@@ -525,7 +525,6 @@ function refreshMapView() {
 		type: "GET",
 		dataType: 'json',
 		url: "ajax.php",
-		timeout: 10000,
 		success: function (data) {
 			if (data.correct) {
 				mapConnection = data.content;
@@ -781,7 +780,6 @@ function setFieldsRequestAjax(id_conexion) {
 			type: "GET",
 			dataType: 'json',
 			url: "ajax.php",
-			timeout: 10000,
 			success: function (data) {
 				if (data.correct) {
 					$("input[name=map_initial_longitude]").val(data.content.initial_longitude);

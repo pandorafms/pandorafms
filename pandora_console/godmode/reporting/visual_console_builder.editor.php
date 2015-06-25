@@ -114,7 +114,8 @@ foreach ($layoutDatas as $layoutData) {
 	
 	
 	
-	html_print_input_hidden('status_' . $layoutData['id'], $layoutData['status_calculated']);
+	html_print_input_hidden('status_' . $layoutData['id'],
+		$layoutData['status_calculated']);
 	
 }
 
@@ -126,10 +127,27 @@ echo '</div>';
 html_print_input_hidden('background_width', $widthBackground);
 html_print_input_hidden('background_height', $heightBackground);
 
-$backgroundSizes = getimagesize($config['homedir'] . '/images/console/background/' . $background);
+$backgroundSizes = getimagesize(
+	$config['homedir'] . '/images/console/background/' . $background);
 html_print_input_hidden('background_original_width', $backgroundSizes[0]);
 html_print_input_hidden('background_original_height', $backgroundSizes[1]);
 
+
+// Loading dialog
+echo "<div id='loading_in_progress_dialog' style='display: none; text-align: center;' title='" . __('Action in progress') . "'>" .
+	__('Loading in progress') . '<br />' .
+	html_print_image("images/spinner.gif", true) .
+	"</div>";
+
+echo "<div id='saving_in_progress_dialog' style='display: none; text-align: center;' title='" . __('Action in progress') . "'>" .
+	__('Saving in progress') . '<br />' .
+	html_print_image("images/spinner.gif", true) .
+	"</div>";
+
+echo "<div id='delete_in_progress_dialog' style='display: none; text-align: center;' title='" . __('Action in progress') . "'>" .
+	__('Deletion in progress') . '<br />' .
+	html_print_image("images/spinner.gif", true) .
+	"</div>";
 
 //CSS
 ui_require_css_file ('color-picker');

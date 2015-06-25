@@ -130,8 +130,22 @@ if ($searchUsers) {
 			lastname LIKE '%" . $stringSearchSQL . "%' OR
 			middlename LIKE '%" . $stringSearchSQL . "%' OR
 			email LIKE '%" . $stringSearchSQL . "%'
-		ORDER BY " . $order['field'] . " " . $order['order'] . " 
-		LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
+		ORDER BY " . $order['field'] . " " . $order['order'];
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql .= " LIMIT " . $config['block_size'] . " OFFSET " . get_parameter ('offset',0);
+			break;
+		case "oracle":
+			$set = array();
+			$set['limit'] = $config['block_size'];
+			$set['offset'] = (int) get_parameter('offset');
+			
+			$sql = oracle_recode_query ($sql, $set);
+			break;
+	}
+	
 	$users = db_process_sql($sql);
 	
 	if ($users !== false) {

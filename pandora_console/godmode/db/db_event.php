@@ -51,11 +51,12 @@ $row = db_get_row_sql ("
 		MAX(timestamp) AS latest_date
 	FROM tevento");
 
+$table = new stdClass();
 $table->data = array ();
 $table->cellpadding = 4;
 $table->cellspacing = 4;
-$table->class = "databox";
-$table->width = '98%';
+$table->class = "databox filters";
+$table->width = '100%';
 
 $table->data[0][0] = '<b>'.__('Total').':</b>';
 $table->data[0][1] = $row["total"].' '.__('Records');
@@ -72,7 +73,7 @@ unset ($table);
 echo '<h4>'.__('Purge data').'</h4>';
 
 echo '<form name="db_audit" method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_event">';
-echo '<table width="98%" cellpadding="4" cellspacing="4" class="databox">
+echo '<table width="100%" cellpadding="4" cellspacing="4" class="databox filters">
 	<tr><td class="datos">';
 
 $time = get_system_time ();

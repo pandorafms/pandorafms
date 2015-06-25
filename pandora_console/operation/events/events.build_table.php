@@ -18,11 +18,12 @@ if(!isset($table->width)) {
 	$table->width = '100%';
 }
 
+$table = new stdClass();
 $table->id = "eventtable";
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 if(!isset($table->class)) {
-	$table->class = "databox";
+	$table->class = "databox data";
 }
 $table->head = array ();
 $table->data = array ();
@@ -38,10 +39,9 @@ else {
 //headers
 $i = 0;
 $table->head[$i] = __('ID');
-if(defined("METACONSOLE"))
-		$table->align[$i] = 'left';
-	else
-		$table->align[$i] = 'center';
+
+$table->align[$i] = 'left';
+
 $i++;
 if (in_array('server_name', $show_fields)) {
 	$table->head[$i] = __('Server');
@@ -55,10 +55,8 @@ if (in_array('estado', $show_fields)) {
 }
 if (in_array('id_evento', $show_fields)) {
 	$table->head[$i] = __('Event ID');
-	if(defined("METACONSOLE"))
-		$table->align[$i] = 'left';
-	else
-		$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
+
 	$i++;
 }
 if (in_array('evento', $show_fields)) {
@@ -75,129 +73,99 @@ if (in_array('id_agente', $show_fields)) {
 }
 if (in_array('timestamp', $show_fields)) {
 	$table->head[$i] = __('Timestamp');
-	if(defined("METACONSOLE"))
-		$table->align[$i] = 'left';
-	else
-		$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
+	
 	$i++;
 }
 if (in_array('id_usuario', $show_fields)) {
 	$table->head[$i] = __('User');
-	if(defined("METACONSOLE"))
-		$table->align[$i] = 'left';
-	else
-		$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
+	
 	$i++;
 }
 if (in_array('owner_user', $show_fields)) {
 	$table->head[$i] = __('Owner');
-	if(defined("METACONSOLE"))
-		$table->align[$i] = 'left';
-	else
-		$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
+	
 	$i++;
 }
 if (in_array('id_grupo', $show_fields)) {
 	$table->head[$i] = __('Group');
-	if(defined("METACONSOLE"))
-		$table->align[$i] = 'left';
-	else
-		$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
+	
 	$i++;
 }
 if (in_array('event_type', $show_fields)) {
 	$table->head[$i] = __('Event type');
-	if(defined("METACONSOLE"))
-		$table->align[$i] = 'left';
-	else
-		$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
+	
 	$table->style[$i] = 'min-width: 85px;';
 	$i++;
 }
 if (in_array('id_agentmodule', $show_fields)) {
 	$table->head[$i] = __('Agent Module');
-	if(defined("METACONSOLE"))
-		$table->align[$i] = 'left';
-	else
-		$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
+	
 	$i++;
 }
 if (in_array('id_alert_am', $show_fields)) {
 	$table->head[$i] = __('Alert');
-	if(defined("METACONSOLE"))
-		$table->align[$i] = 'left';
-	else
-		$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
+	
 	$i++;
 }
 
 if (in_array('criticity', $show_fields)) {
 	$table->head[$i] = __('Severity');
-	if(defined("METACONSOLE"))
-		$table->align[$i] = 'left';
-	else
-		$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
+	
 	$i++;
 }
 if (in_array('user_comment', $show_fields)) {
 	$table->head[$i] = __('Comment');
-	if(defined("METACONSOLE"))
-		$table->align[$i] = 'left';
-	else
-		$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
+	
 	$i++;
 }
 if (in_array('tags', $show_fields)) {
 	$table->head[$i] = __('Tags');
-	if(defined("METACONSOLE"))
-		$table->align[$i] = 'left';
-	else
-		$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
+	
 	$i++;
 }
 if (in_array('source', $show_fields)) {
 	$table->head[$i] = __('Source');
-	if(defined("METACONSOLE"))
-		$table->align[$i] = 'left';
-	else
-		$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
+	
 	$i++;
 }
 if (in_array('id_extra', $show_fields)) {
 	$table->head[$i] = __('Extra ID');
-	if(defined("METACONSOLE"))
-		$table->align[$i] = 'left';
-	else
-		$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
+	
 	$i++;
 }
 if (in_array('ack_utimestamp', $show_fields)) {
 	$table->head[$i] = __('ACK Timestamp');
-	if(defined("METACONSOLE"))
-		$table->align[$i] = 'left';
-	else
-		$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
+	
 	$i++;
 }
 if (in_array('instructions', $show_fields)) {
 	$table->head[$i] = __('Instructions');
-	if(defined("METACONSOLE"))
-		$table->align[$i] = 'left';
-	else
-		$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
+	
 	$i++;
 }
 if ($i != 0 && $allow_action) {
 	$table->head[$i] = __('Action');
-	if(defined("METACONSOLE"))
-		$table->align[$i] = 'left';
-	else
-		$table->align[$i] = 'center';
-	$table->size[$i] = '80px';
+	$table->align[$i] = 'left';
+	
+	$table->size[$i] = '90px';
 	$i++;
 	if (check_acl ($config["id_user"], 0, "EW") == 1 && !$readonly) {
 		$table->head[$i] = html_print_checkbox ("all_validate_box", "1", false, true);
-		$table->align[$i] = 'center';
+		$table->align[$i] = 'left';
 	}
 }
 
@@ -644,7 +612,7 @@ foreach ($result as $event) {
 
 echo '<div id="events_list">';
 if (!empty ($table->data)) {
-	echo '<div style="clear:both"></div>';
+	
 	if ($allow_pagination) {
 		ui_pagination ($total_events, $url, $offset, $pagination);
 	}

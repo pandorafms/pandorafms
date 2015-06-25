@@ -307,11 +307,11 @@ switch ($action) {
 		break;
 }
 
-
-$table->width = '98%';
+$table = new stdClass();
+$table->width = '100%';
+$table->class = 'databox filters';
 
 $table->data = array ();
-$table->valign[0] = 'top';
 
 $table->data[0][0] = __('Map Name') . ui_print_help_tip (__('Descriptive name for the map'), true). ':';
 $table->data[0][1] = html_print_input_text ('map_name', $map_name, '', 30, 60, true);
@@ -333,12 +333,12 @@ foreach ($listConnectionTemp as $connectionTemp) {
 }
 
 $table->data[1][0] = __("Add Map connection") . ui_print_help_tip (__('At least one map connection must be defined, it will be possible to change between the connections in the map'), true). ": " . $iconError;
-$table->data[1][1] = "<table class='databox' border='0' id='map_connection'>
+$table->data[1][1] = "<table style='padding:0px;' class='no-class' border='0' id='map_connection'>
 	<tr>
-		<td>
+		<td style='padding:0px;' >
 			" . html_print_select($listConnection, 'map_connection', '', '', '', '0', true) ."
 		</td>
-		<td>
+		<td style='padding:0px;' >
 			<a href='javascript: addConnectionMap();'>" . html_print_image ("images/add.png", true) . "</a>
 			<input type='hidden' name='map_connection_list' value='' id='map_connection_list' />
 			<input type='hidden' name='layer_list' value='' id='layer_list' />
@@ -374,27 +374,13 @@ $table->data[8][1] = html_print_input_text ('map_default_longitude', $map_defaul
 $table->data[9][0] = __('Default Altitude') . ':';
 $table->data[9][1] = html_print_input_text ('map_default_altitude', $map_default_altitude, '', 8, 8, true);
 
-echo '<div class="action-buttons" style="margin-top: 20px; width: '.$table->width.'">';
-switch ($action) {
-	case 'save_new':
-	case 'edit_map':
-	case 'update_saved':
-		html_print_submit_button(_('Update map'), 'update_button', false, 'class="sub upd"');
-		break;
-	case 'new_map':
-		html_print_submit_button(_('Save map'), 'save_button', false, 'class="sub wand"');
-		break;
-}
-echo '</div>';
-
 html_print_table($table);
 
 echo "<h3>" . __('Layers') . ui_print_help_tip (__('Each layer can show agents from one group or the agents added to that layer or both.'), true). "</h3>";
 
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox filters';
 $table->data = array ();
-$table->valign[0] = 'top';
-$table->valign[1] = 'top';
 
 $table->data[0][0] = "<h4>" .__('List of layers') . ui_print_help_tip (__('It is possible to edit, delete and reorder the layers.'), true) . "</h4>";
 $table->data[0][1] = '<div style="text-align: right;">' . html_print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub add"', true) . '</div>';
@@ -403,7 +389,7 @@ $table->data[1][0] = '<table class="databox" border="0" cellpadding="4" cellspac
 	gis_add_layer_list($layer_list) . 
 	'</table>';
 $table->data[1][1] = '<div id="form_layer">
-		<table id="form_layer_table" class="databox" border="0" cellpadding="4" cellspacing="4" style="visibility: hidden;">
+		<table id="form_layer_table" class="" border="0" cellpadding="4" cellspacing="4" style="visibility: hidden;">
 			<tr>
 				<td>' . __('Layer name') . ':</td>
 				<td>' . html_print_input_text ('layer_name_form', '', '', 20, 40, true) . '</td>

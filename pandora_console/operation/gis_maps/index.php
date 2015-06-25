@@ -27,13 +27,15 @@ ui_print_page_header(__('GIS Maps')." &raquo; ".__('Summary'), "images/op_gis.pn
 
 $maps = gis_get_maps();
 
-$table->width = "98%";
+$table = new stdClass();
+$table->width = "100%";
+$table->class = "databox data";
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Group');
 $table->align = array ();
-$table->align[1] = 'center';
+$table->align[1] = 'left';
 
 $rowPair = true;
 $iterator = 0;

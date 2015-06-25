@@ -142,7 +142,8 @@ else
 	$return_all_group = true;
 
 $table->id = 'add_table';
-$table->width = '98%';
+$table->class = 'databox filters';
+$table->width = '100%';
 $table->data = array ();
 $table->style = array ();
 $table->style[0] = 'font-weight: bold; vertical-align:top';

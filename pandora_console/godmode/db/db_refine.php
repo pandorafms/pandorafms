@@ -76,7 +76,7 @@ if ((isset ($_GET["operacion"])) && (!isset ($_POST["update_agent"]))) {
 	ui_print_success_message(__('Filtering completed'));
 }
 echo '<form method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_refine&operacion=1">';
-echo "<table width='98%' border='0' cellspacing='4' cellpadding='4' class='databox'>";
+echo "<table width='100%' border='0' cellspacing='4' cellpadding='4' class='databox filters'>";
 
 echo '<tr><td class="datost">';
 echo '<div style="float:left; width: 250px;">';

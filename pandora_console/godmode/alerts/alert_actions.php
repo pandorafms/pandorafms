@@ -333,9 +333,8 @@ if ($delete_action) {
 		__('Could not be deleted'));
 }
 
-$table->width = '98%';
-if (defined('METACONSOLE')) 
-	$table->width = '100%';
+$table->width = '100%';
+$table->class = 'databox data';
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Name');
@@ -349,9 +348,9 @@ $table->size[1] = '30px';
 $table->size[2] = '40px';
 $table->size[3] = '40px';
 $table->align = array ();
-$table->align[1] = 'center';
-$table->align[2] = 'center';
-$table->align[3] = 'center';
+$table->align[1] = 'left';
+$table->align[2] = 'left';
+$table->align[3] = 'left';
 
 $filter = array();
 if (!is_user_admin($config['id_user']))
@@ -396,7 +395,7 @@ if (isset($data)) {
 	html_print_table ($table);
 }
 else {
-	echo "<div class='nf'>".__('No alert actions configured')."</div>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No alert actions configured') ) );
 }
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

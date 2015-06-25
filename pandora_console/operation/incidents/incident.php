@@ -211,11 +211,12 @@ if (empty ($result)) {
 
 echo '<form name="visualizacion" method="post" action="index.php?sec=workspace&amp;sec2=operation/incidents/incident">';
 
-echo '<table class="databox" cellpadding="4" cellspacing="4" width="95%"><tr>
+echo '<table class="databox filters" cellpadding="4" cellspacing="4" width="100%"><tr>
 <td valign="middle"><h3>'.__('Filter').'</h3>';
 
 $fields = incidents_get_status ();
-html_print_select ($fields, "estado", $estado, 'javascript:this.form.submit();', __('All incidents'), -1, false, false, false, 'w155');
+echo __("Incidents:") . '&nbsp;&nbsp;';
+ html_print_select ($fields, "estado", $estado, 'javascript:this.form.submit();', __('All incidents'), -1, false, false, false, 'w155');
 
 //Legend
 echo '</td><td valign="middle"><noscript>';
@@ -237,10 +238,12 @@ echo '</td></tr><tr><td>';
 
 $fields = incidents_get_priorities ();
 
+echo __("Priorities:") . '&nbsp;&nbsp;';
 html_print_select ($fields, "prioridad", $prioridad, 'javascript:this.form.submit();', __('All priorities'), -1,false,false,false,'w155');
 
 echo '</td></tr><tr><td>';
 
+echo __("Users:") . '&nbsp;&nbsp;';
 html_print_select (users_get_info (), "usuario", $usuario, 'javascript:this.form.submit();', __('All users'), "", false, false, false, "w155");
 
 echo '</td></tr><tr><td>';
@@ -256,16 +259,20 @@ foreach ($agents_incidents as $agent_incident) {
 	$result_agent_incidents[$agent_incident['id_agente']] = $agent_incident['nombre'];
 }
 
+echo __("Agents:") . '&nbsp;&nbsp;';
 html_print_select ($result_agent_incidents, "agent_search",
 	$agent_search, 'javascript:this.form.submit();', __('All agents'),
 	"", false, false, false, "w155");
 
 echo '</td></tr><tr><td colspan=3>';
-	
+
+echo __("Groups:") . '&nbsp;&nbsp;';
 html_print_select_groups($config["id_user"], "IR", true, "grupo", $grupo, 'javascript:this.form.submit();', '', '',false,false,false,'w155');
 
-echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+//echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+echo '</td></tr><tr><td colspan=3>';
 
+echo __("Free text:") . '&nbsp;&nbsp;';
 html_print_input_text ('texto', $texto, '', 45);
 echo '&nbsp;';
 html_print_input_image ("submit", "images/zoom.png", __('Search'), 'padding:0;', false, array ("alt" => __('Search'))); 
@@ -300,7 +307,7 @@ else {
 	
 	// Show headers
 	$table->width = "100%";
-	$table->class = "databox";
+	$table->class = "databox data";
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
 	$table->head = array ();
@@ -321,10 +328,10 @@ else {
 	$table->size[0] = 43;
 	$table->size[7] = 50;
 	
-	$table->align[1] = "center";
-	$table->align[3] = "center";
-	$table->align[4] = "center";
-	$table->align[8] = "center";
+	$table->align[1] = "left";
+	$table->align[3] = "left";
+	$table->align[4] = "left";
+	$table->align[8] = "left";
 	
 	$rowPair = true;
 	$iterator = 0;

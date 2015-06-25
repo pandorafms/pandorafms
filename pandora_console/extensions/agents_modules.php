@@ -191,7 +191,7 @@ function mainAgentsModules() {
 	
 	echo "<tr>";
 	
-	echo "<th width='140px' style='text-align: right !important;'>" . __("Agents") . " / " . __("Modules") . "</th>";
+	echo "<th width='140px' style='text-align: right !important; padding-right:13px;'>" . __("Agents") . " / " . __("Modules") . "</th>";
 	
 	if ($hor_offset > 0) {
 		$new_hor_offset = $hor_offset-$block;
@@ -224,7 +224,7 @@ function mainAgentsModules() {
 		
 		echo '<th align="center" width="20px" id="th_module_r_' . $nmodules . '" class="th_class_module_r">
 				<div style="width: 30px;">
-					<div id="div_module_r_' . $nmodules . '" style="display: none;" class="rotate_text_module">' .
+					<div id="div_module_r_' . $nmodules . '" style="display: none;padding-left:10px" class="rotate_text_module">' .
 						$text .
 					'</div>
 				</div>

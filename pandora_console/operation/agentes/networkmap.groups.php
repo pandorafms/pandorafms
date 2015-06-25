@@ -109,8 +109,16 @@ else {
 			io_safe_output($config['graphviz_bin_dir'] . "/")
 			:
 			"";
+		$is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
+		if ($is_windows) {
+			$graphviz_path = str_replace("/", "\\", $graphviz_path );
+			$filter = $filter . '.exe';
+		}
 		
-		$cmd = escapeshellarg($graphviz_path.$filter) . " -Tcmapx " . escapeshellarg("-o$filename_map") . " -Tpng ". escapeshellarg("-o$filename_img") . " " . escapeshellarg($filename_dot);
+		$cmd = escapeshellarg($graphviz_path.$filter) . " -Tcmapx " .
+					escapeshellarg("-o$filename_map") . " -Tpng ". 
+					escapeshellarg("-o$filename_img") . " " . 
+					escapeshellarg($filename_dot);
 		$result = system ($cmd);
 		fclose ($fh);
 		unlink ($filename_dot);
@@ -128,7 +136,10 @@ if ($result !== false) {
 		return;
 	}
 	echo "<div style='text-align:center'>";
-	$image_url = str_replace(realpath(io_safe_output($config['homedir'])), "", realpath($filename_img));
+	if ($is_windows) 
+		$image_url =  str_replace('\\',"/",str_replace($config['homedir'], "", $filename_img));
+	else
+		$image_url = str_replace(realpath(io_safe_output($config['homedir'])), "", realpath($filename_img));
 	html_print_image ($image_url, false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
 	echo "</div>";
 	require ($filename_map);

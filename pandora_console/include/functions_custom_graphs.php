@@ -202,8 +202,13 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 	
 	
 	if ($sources === false) {
-		echo "<div class='nf'>" . __('Empty graph') . "</div>";
-		return;
+		if ($return){
+			return false;
+		}
+		else{	
+			ui_print_info_message ( array ( 'no_close' => true, 'message' =>  __('No items.') ) );
+			return;
+		}
 	}
 	
 	if (empty($homeurl)) {

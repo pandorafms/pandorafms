@@ -118,8 +118,6 @@ else {
 		$modules[$row['id_agent_module']] = $row['nombre'];
 	}
 	
-	
-	
 	// Filter report items created from metaconsole in normal console list and the opposite
 	if (defined('METACONSOLE') and $config['metaconsole'] == 1) {
 		$where_types = ' AND ((server_name IS NOT NULL AND length(server_name) != 0) OR ' . $type_escaped . ' IN (\'general\',\'SLA\',\'exception\',\'top_n\'))';
@@ -144,8 +142,6 @@ else {
 	}
 }
 
-
-
 $agentFilter = get_parameter('agent_filter', 0);
 $moduleFilter = get_parameter('module_filter', 0);
 $typeFilter = get_parameter('type_filter', 0);
@@ -158,33 +154,28 @@ if (($agentFilter == 0) && ($moduleFilter == 0) && ($typeFilter == 0)) {
 
 $urlFilter = '&agent_filter=' . $agentFilter . '&module_filter=' . $moduleFilter . '&type_filter=' . $typeFilter;
 
-if (!defined("METACONSOLE"))
-	echo '<a href="javascript: toggleFormFilter();"><b>' .
-		__('Items filter') . '</b> ' .
-		html_print_image("images/down.png", true,
-			array("title" => __('Toggle filter(s)'),
-			"id" => 'image_form_filter')) . '</a>';
-
 if (!defined("METACONSOLE")) {
 	$table = new stdClass();
 	$table->width = '100%';
+	$table->class = 'databox filters';
 	$table->data[0][0] = __('Agents');
-	$table->data[0][1] = html_print_select($agents, 'agent_filter', $agentFilter, '', __('All'), 0, true);
-	$table->data[0][2] = __('Modules');
-	$table->data[0][3] = html_print_select($modules, 'module_filter', $moduleFilter, '', __('All'), 0, true);
-	$table->data[1][0] = __('Type');
-	$table->data[1][1] = html_print_select($types, 'type_filter', $typeFilter, '', __('All'), 0, true);
-	$table->data[1][2] = $table->data[1][3] = '';
+	$table->data[0][0] .= html_print_select($agents, 'agent_filter', $agentFilter, '', __('All'), 0, true);
+	$table->data[0][1] = __('Modules');
+	$table->data[0][1] .= html_print_select($modules, 'module_filter', $moduleFilter, '', __('All'), 0, true);
+	$table->data[0][2] = __('Type');
+	$table->data[0][2] .= html_print_select($types, 'type_filter', $typeFilter, '', __('All'), 0, true);
+	//$table->data[1][2] = $table->data[1][3] = '';
 	
-	echo '<div id="form_filter" style="display: none;">';
-		echo '<form method="post" action ="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=filter&id_report=' . $idReport . '">';
-			html_print_table ($table);
-			echo '<div class="action-buttons" style="width: '.$table->width.'">';
-				html_print_submit_button(__('Filter'), 'filter', false, 'class="sub upd"');
-				html_print_input_hidden('action', 'filter');
-			echo '</div>';
-		echo '</form>';
-	echo '</div>';
+	
+	$form = '<form method="post" action ="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=filter&id_report=' . $idReport . '">';
+	$form .= html_print_table ($table,true);
+	$form .= '<div class="action-buttons" style="width: '.$table->width.'">';
+	$form .= html_print_submit_button(__('Filter'), 'filter', false, 'class="sub upd"',true);
+	$form .= html_print_input_hidden('action', 'filter',true);
+	$form .= '</div>';
+	$form .= '</form>';
+	
+	ui_toggle($form, __("Filters") );
 }
 else {
 	$table = new stdClass();
@@ -318,7 +309,7 @@ if ($items) {
 	$table->align[7] = 'center';
 }
 else {
-	echo '<br><br><div class="nf">'. __('No items') . '</div>';
+	ui_print_info_message ( array ( 'no_close' => true, 'message' =>  __('No items.') ) );
 }
 
 $lastPage = true;
@@ -455,10 +446,8 @@ if (defined("METACONSOLE")) {
 		ui_pagination ($countItems, 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
 		echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items&id_report=" . $idReport . "'
 		method='post' onSubmit='return added_ids_deleted_items_to_hidden_input();'>";
-			if (defined("METACONSOLE"))
-				echo "<div style='text-align: right; width:100%'>";
-			else
-				echo "<div style='padding-bottom: 20px; text-align: right; width:100%'>";
+			echo "<div style='text-align: right; width:100%'>";
+			
 			if (check_acl ($config['id_user'], 0, "RM")) {
 				html_print_input_hidden('ids_items_to_delete', '');
 				html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
@@ -468,23 +457,22 @@ if (defined("METACONSOLE")) {
 	}
 }
 else {
-	ui_pagination ($countItems,
-		'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
-	html_print_table($table);
-	ui_pagination ($countItems,
-		'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
-	
-	echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items&id_report=" . $idReport . "'
-		method='post' onSubmit='return added_ids_deleted_items_to_hidden_input();'>";
-		if (defined("METACONSOLE"))
-			echo "<div style='text-align: right; width:100%'>";
-		else
-			echo "<div style='padding-bottom: 20px; text-align: right; width:100%'>";
+	if ($items != false) {
+		ui_pagination ($countItems,
+			'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
+		html_print_table($table);
+		ui_pagination ($countItems,
+			'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=edit&id_report=' . $idReport . $urlFilter);
 		
-		html_print_input_hidden('ids_items_to_delete', '');
-		html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
-		echo "</div>";
-	echo "</form>";
+		echo "<form action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=list_items&action=delete_items&id_report=" . $idReport . "'
+			method='post' onSubmit='return added_ids_deleted_items_to_hidden_input();'>";
+			echo "<div style='padding-bottom: 20px; text-align: right; width:100%'>";
+			
+			html_print_input_hidden('ids_items_to_delete', '');
+			html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+			echo "</div>";
+		echo "</form>";
+	}
 }
 $table = new stdClass();
 $table->width = '100%';

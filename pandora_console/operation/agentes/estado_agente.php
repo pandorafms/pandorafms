@@ -191,7 +191,8 @@ html_print_select ($fields, "status", $status, 'this.form.submit()', __('All'), 
 
 echo '</td><td style="white-space:nowrap;">';
 
-html_print_submit_button (__('Search'), "srcbutton", '', array ("class" => "sub search")); 
+html_print_submit_button (__('Search'), "srcbutton", '',
+	array ("class" => "sub search"));
 
 echo '</td><td style="width:5%;">&nbsp;</td>';
 
@@ -435,7 +436,7 @@ ui_pagination ($total_agents,
 ui_get_url_refresh (array ('group_id' => $group_id, 'recursion' => $recursion, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status)));
 
 // Show data.
-$table = new StdClass();
+$table = new stdClass();
 $table->cellpadding = 0;
 $table->cellspacing = 0;
 $table->width = "100%";
@@ -451,12 +452,12 @@ $table->head[1] = __('Description'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=description&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=description&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
 
-$table->size[1] = "30%";
+$table->size[1] = "25%";
 
 $table->head[2] = __('OS'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=os&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=os&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectOsDown, "alt" => "down")) . '</a>';
-$table->size[2] = "4%";
+$table->size[2] = "8%";
 
 $table->head[3] = __('Interval'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=interval&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectIntervalUp, "alt" => "up")) . '</a>' .
@@ -484,12 +485,12 @@ $table->size[8] = "15%";
 
 $table->align = array ();
 
-$table->align[2] = "center";
+$table->align[2] = "left";
 $table->align[3] = "left";
 $table->align[4] = "left";
 $table->align[5] = "left";
-$table->align[6] = "center";
-$table->align[7] = "center";
+$table->align[6] = "left";
+$table->align[7] = "left";
 $table->align[8] = "left";
 
 $table->style = array();

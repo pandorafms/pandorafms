@@ -91,7 +91,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 		case "avg":
 		default:
 			//HTML output - don't style or use XHTML just in case somebody needs to copy/paste it. (Office doesn't handle <thead> and <tbody>)
-			$datastart = '<table style="width:98%;">' .
+			$datastart = '<table style="width:100%;">' .
 				'<tr>' .
 					'<th>' . __('Agent') . '</th>' .
 					'<th>' . __('Module') . '</th>' .
@@ -212,11 +212,11 @@ elseif (!empty ($export_btn) && empty ($module)) {
 if (empty($export_btn) || $show_form) {
 	echo '<form method="post" action="index.php?sec=reporting&amp;sec2=operation/agentes/exportdata" name="export_form" id="export_form">';
 	
-	$table->width = '98%';
+	$table->width = '100%';
 	$table->border = 0;
 	$table->cellspacing = 3;
 	$table->cellpadding = 5;
-	$table->class = "databox_color";
+	$table->class = "databox filters";
 	$table->style[0] = 'vertical-align: top;';
 	
 	$table->data = array ();
@@ -327,7 +327,7 @@ if (empty($export_btn) || $show_form) {
 	html_print_table ($table);
 	
 	// Submit button
-	echo '<div class="action-buttons" style="width:98%;">';
+	echo '<div class="action-buttons" style="width:100%;">';
 		html_print_button (__('Export'), 'export_btn', false, 'change_action()', 'class="sub wand"');
 	echo '</div></form>';
 }

@@ -83,7 +83,7 @@ else {
 // CREATE/EDIT GRAPH FORM
 // -----------------------
 
-echo "<table width='98%' cellpadding=4 cellspacing=4 class='databox_color'>";
+echo "<table width='100%' cellpadding=4 cellspacing=4 class='databox filters'>";
 
 if ($edit_graph)
 	echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&update_graph=1&id=" . $id_graph . "'>";
@@ -144,12 +144,12 @@ $stackeds = array(
 html_print_select ($stackeds, 'stacked', $stacked);
 echo "</td>";
 
-echo "<tr><td colspan='4' align='right'>";
+echo "</table>";
+
 if ($edit_graph) {
-	echo "<input type=submit name='store' class='sub upd' value='".__('Update')."'>";
+	echo "<div style='width:100%'><input style='float:right;' type=submit name='store' class='sub upd' value='".__('Update')."'></div>";
 }
 else {
-	echo "<input type=submit name='store' class='sub next' value='".__('Create')."'>";
+	echo "<div style='width:100%'><input style='float:right;' type=submit name='store' class='sub next' value='".__('Create')."'></div>";
 }
-echo "</td></tr></table>";
 echo "</form>";

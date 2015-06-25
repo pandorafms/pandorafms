@@ -184,10 +184,11 @@ $id_group = 0;
 $groups = users_get_groups();
 
 $table->id = 'delete_table';
-$table->width = '98%';
+$table->class = 'databox filters';
+$table->width = '100%';
 $table->data = array ();
 $table->style = array ();
-$table->style[0] = 'font-weight: bold; vertical-align:top';
+$table->style[0] = 'font-weight: bold;';
 $table->style[2] = 'font-weight: bold';
 $table->size = array ();
 $table->size[0] = '15%';
@@ -241,8 +242,8 @@ $description = "";
 
 echo '<div id="form_agents" style="display: none;">';
 
-$table->width = '95%';
-$table->class = "databox_color";
+$table->width = '100%';
+$table->class = "databox filters";
 
 $table->head = array ();
 $table->style = array ();
@@ -300,8 +301,8 @@ $update_gis_data = -1;
 $cascade_protection = -1;
 $quiet_select = -1;
 
-$table->width = '95%';
-$table->class = "databox_color";
+$table->width = '100%';
+$table->class = "databox filters";
 
 $table->head = array ();
 $table->style = array ();
@@ -382,8 +383,8 @@ $table->data[6][1] = html_print_select(array(-1 => __('No change'),
 ui_toggle(html_print_table ($table, true), __('Advanced options'));
 unset($table);
 
-$table->width = '95%';
-$table->class = "databox_color";
+$table->width = '100%';
+$table->class = "databox filters";
 
 $table->head = array ();
 $table->style = array ();

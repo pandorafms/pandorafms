@@ -288,12 +288,11 @@ if ($create_profile) {
 	$id_profile = 0;
 }
 
+$table = new stdClass();
 $table->cellpadding = 4;
 $table->cellspacing = 4;
-$table->class = 'databox';
-$table->width = '98%';
-if (defined("METACONSOLE"))
-	$table->width = '100%';
+$table->class = 'databox data';
+$table->width = '100%';
 
 $table->head = array ();
 $table->data = array ();
@@ -362,7 +361,7 @@ foreach ($profiles as $profile) {
 	$data['VW'] = ($profile["vconsole_edit"] ? $img : '');
 	$data['VM'] = ($profile["vconsole_management"] ? $img : '');
 	$data['PM'] = ($profile["pandora_management"] ? $img : '');
-	$data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'&pure='.$pure.'"><b>'. html_print_image('images/config.png', true, array('title' => __('Edit'))) .'</b></a>';
+	$data['operations'] = '<a href="index.php?sec='.$sec.'&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'&pure='.$pure.'">'. html_print_image('images/config.png', true, array('title' => __('Edit'))) .'</a>';
 	$data['operations'] .= '&nbsp;&nbsp;<a href="index.php?sec='.$sec.'&sec2=godmode/users/profile_list&delete_profile=1&id='.$profile["id_perfil"].'&pure='.$pure.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'. html_print_image("images/cross.png", true) . '</a>';
 	array_push ($table->data, $data);
 }

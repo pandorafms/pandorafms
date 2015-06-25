@@ -82,9 +82,10 @@ if (($create != "") OR ($view != "")) {
 	else
 		echo "<form name=reconscript method='post' action='index.php?sec=gservers&sec2=godmode/servers/recon_script&create_reconscript=1'>";
 	
-	$table->width = '98%';
+	$table = new stdClass();
+	$table->width = '100%';
 	$table->id = 'table-form';
-	$table->class = 'databox_color';
+	$table->class = 'databox filters';
 	$table->style = array ();
 	$table->style[0] = 'font-weight: bold';
 	$table->style[2] = 'font-weight: bold';
@@ -212,7 +213,7 @@ if (($create != "") OR ($view != "")) {
 	
 	html_print_table($table);
 	
-	echo '<table width=98%>';
+	echo '<table width=100%>';
 	echo '<tr><td align="right">';
 	
 	if ($create != "") {
@@ -343,7 +344,7 @@ else {
 	$rows = db_get_all_rows_in_table('trecon_script');
 	
 	if ($rows !== false) {
-		echo '<table width="98%" cellspacing="4" cellpadding="4" class="databox alternate">';
+		echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox data">';
 		echo "<th>" . __('Name') . "</th>";
 		echo "<th>" . __('Description') . "</th>";
 		echo "<th>" . __('Delete') . "</th>";
@@ -374,11 +375,9 @@ else {
 		echo "</table>";
 	}
 	else {
-		echo '<div class="nf">'.
-			__('There are no recon scripts in the system') . '</div>';
-		echo "<br>";
+		ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no recon scripts in the system') ) );
 	}
-	echo "<table width=98%>";
+	echo "<table width=100%>";
 	echo "<tr><td align=right>";
 	echo "<form name=reconscript method='post' action='index.php?sec=gservers&sec2=godmode/servers/recon_script&create=1'>";
 	echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";

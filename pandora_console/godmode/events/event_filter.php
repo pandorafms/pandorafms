@@ -96,9 +96,10 @@ $filters = db_get_all_rows_sql($sql);
 if ($filters === false)
 	$filters = array ();
 
-$table->width = '98%';
-if(defined("METACONSOLE"))
-	$table->width = '100%';
+$table = new stdClass();
+$table->width = '100%';
+$table->class = 'databox data';
+
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Group');
@@ -113,7 +114,7 @@ $table->align = array ();
 $table->align[1] = 'center';
 $table->align[2] = 'center';
 if(!defined("METACONSOLE"))
-	$table->align[3] = 'center';
+	$table->align[3] = 'left';
 $table->align[4] = 'center';
 $table->align[5] = 'center';
 $table->size = array ();
@@ -159,8 +160,7 @@ if (isset($data)) {
 	echo "</form>";
 }
 else {
-	echo "<div class='nf'>" .
-		__('There are no defined filters') . "</div>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined filters') ) );
 }
 
 echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&amp;pure='.$config['pure'].'">';

@@ -36,7 +36,7 @@ to add it there.
 */
 
 $table = new StdClass();
-$table->width = '98%';
+$table->width = '100%';
 $table->data = array ();
 
 $table->size[0] = '70%';
@@ -67,7 +67,8 @@ $table->data[8][0] = __('Max. days before delete unknown modules');
 $table->data[8][1] = html_print_input_text ('days_delete_unknown', $config["days_delete_unknown"], '', 5, 5, true);
 
 $table_other = new StdClass();
-$table_other->width = '98%';
+$table_other->width = '100%';
+$table_other->class = 'databox filters';
 $table_other->data = array ();
 
 $table_other->size[0] = '70%';

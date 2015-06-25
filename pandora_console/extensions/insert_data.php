@@ -131,13 +131,14 @@ function mainInsertData() {
 		}
 	}
 	
-	echo '<div class="notify">';
+	echo '<div class="notify" style="margin-bottom:15px;">';
 	echo sprintf(__("Please check that the directory \"%s\" is writeable by the apache user. <br /><br />The CSV file format is date;value&lt;newline&gt;date;value&lt;newline&gt;... The date in CSV is in format Y/m/d H:i:s."),
 		$config['remote_config']);
 	echo '</div>';
 	
 	$table = null;
-	$table->width = '98%';
+	$table->width = '100%';
+	$table->class = 'databox filters';
 	$table->style = array();
 	$table->style[0] = 'font-weight: bolder;';
 	

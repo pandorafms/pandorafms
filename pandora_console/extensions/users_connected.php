@@ -68,8 +68,8 @@ function users_extension_main_god ($god = true) {
 	else {
 		$table->cellpadding = 4;
 		$table->cellspacing = 4;
-		$table->width = '98%';
-		$table->class = "databox";
+		$table->width = '100%';
+		$table->class = "databox data";
 		$table->size = array ();
 		$table->data = array ();
 		$table->head = array ();

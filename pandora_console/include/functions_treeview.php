@@ -57,6 +57,7 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 	
 	$table = new StdClass();
 	$table->width = "100%";
+	$table->class = "databox data";
 	$table->style = array();
 	$table->style['title'] = 'font-weight: bold;';
 	$table->head = array();

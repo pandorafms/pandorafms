@@ -77,38 +77,38 @@ else {
 			$table = new StdClass();
 			$table->cellpadding = 4;
 			$table->cellspacing = 4;
-			$table->width = "99%";
-			$table->class = "databox";
+			$table->width = "100%";
+			$table->class = "databox data";
 			$table->head = array ();
 			$table->data = array ();
 			$table->align = array ();
 			
 			$table->head[0] = __('Force');
-			$table->align[0] = "center";
+			$table->align[0] = "left";
 			
 			$table->head[1] = __('Task name');
-			$table->align[1] = "center";
+			$table->align[1] = "left";
 			
 			$table->head[2] = __('Interval');
-			$table->align[2] = "center";
+			$table->align[2] = "left";
 			
 			$table->head[3] = __('Network');
-			$table->align[3] = "center";
+			$table->align[3] = "left";
 			
 			$table->head[4] = __('Status');
-			$table->align[4] = "center";
+			$table->align[4] = "left";
 			
 			$table->head[5] = __('Template');
-			$table->align[5] = "center";
+			$table->align[5] = "left";
 			
 			$table->head[6] = __('Progress');
-			$table->align[6] = "center";
+			$table->align[6] = "left";
 			
 			$table->head[7] = __('Updated at');
-			$table->align[7] = "center";
+			$table->align[7] = "left";
 			
 			$table->head[8] = __('Edit');
-			$table->align[8] = "center";
+			$table->align[8] = "left";
 			
 			foreach ($recon_tasks as $task) {
 				$data = array ();

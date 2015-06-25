@@ -71,7 +71,9 @@ if ($read_message) {
 		$dst_name = $message["id_usuario_destino"];
 	}
 	
-	$table->width = '98%';
+	$table = new stdClass();
+	$table->width = '100%';
+	$table->class = 'databox filters';
 	$table->data = array();
 	
 	$table->data[0][0] = __('Sender');
@@ -103,7 +105,7 @@ if ($read_message) {
 	
 	echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/messages/message_list&show_sent=1&amp;delete_message=1&amp;id='.$message_id.'">';
 		html_print_table($table);
-		echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+		echo "<div style=' text-align: right; width:" . $table->width . "'>";
 			html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 		echo "</div>";
 	echo "</form>";
@@ -113,7 +115,7 @@ if ($read_message) {
 		html_print_input_hidden ("subject", $new_subj);
 		html_print_input_hidden ("message", $new_msg);
 		html_print_input_hidden ("orig_user", $message["id_usuario_destino"]);
-		echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+		echo "<div style='text-align: right; width:" . $table->width . "'>";
 			html_print_submit_button (__('Reply'), 'reply', false, 'class="sub next"');
 		echo '</div>';
 	echo '</form>';
@@ -149,7 +151,9 @@ if (($new_msg) && ($dst_group!='') && (!$reply)) {
 //user info
 $own_info = get_user_info ($config['id_user']);
 
-$table->width = '98%';
+$table = new stdClass();
+$table->width = '100%';
+$table->class = 'databox filters';
 
 $table->data = array();
 

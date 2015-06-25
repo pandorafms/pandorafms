@@ -249,14 +249,15 @@ $color=1;
 if ($result !== false) {
 	$table = new StdClass();
 	$table->head = array  (__('Name'), __('Network'), __('Mode'), __('Group'), __('Incident'), __('OS'), __('Interval'), __('Ports'), __('Action'));
-	$table->align = array ("","","","center","","","center","center");
-	$table->width = "99%";
+	$table->align = array ("left","left","left","left","left","left","left","left");
+	$table->width = "100%";
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
-	$table->class = "databox";
+	$table->class = "databox data";
 	$table->data = array ();
 	
-	$table->style[8] = 'text-align: center;';
+	$table->style[8] = 'text-align: left;';
+	$table->size[8] = '15%';
 	
 	foreach ($result as $row) {
 		$data = array();

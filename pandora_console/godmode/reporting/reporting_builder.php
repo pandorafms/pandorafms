@@ -466,6 +466,7 @@ switch ($action) {
 		$table = new stdClass();
 		$table->width = '0px';
 		if (sizeof ($reports)) {
+			$table = new stdClass();
 			$table->id = 'report_list';
 			$table->width = '100%';
 			$table->class = 'databox data';
@@ -520,7 +521,8 @@ switch ($action) {
 					
 				//$table->size = array ();
 				$table->size[$next] = '5%';
-				$table->style[$next] = 'text-align:center;';
+				$table->align[$next] = 'center';
+				$table->headstyle[$next] = 'text-align:center;';
 			
 			}
 			

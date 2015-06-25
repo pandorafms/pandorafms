@@ -172,10 +172,10 @@ if($result === false) {
 	$result = array();
 }
 
-$table->cellpadding = 4;
-$table->cellspacing = 4;
-$table->width = "98%";
-$table->class = "databox";
+$table->cellpadding = 0;
+$table->cellspacing = 0;
+$table->width = "100%";
+$table->class = "databox data";
 
 $table->head = array ();
 $table->head[0] = __('Name');
@@ -187,7 +187,7 @@ $table->size[1] = '65%';
 $table->size[2] = '15%';
 
 $table->align = array ();
-$table->align[2] = "center";
+$table->align[2] = "left";
 
 $table->data = array ();
 
@@ -220,7 +220,7 @@ if (!empty ($table->data)) {
 	echo "</form>";
 }
 else {
-	echo '<div class="nf" style="width:'.$table->width.'">'.__('There are no defined network profiles').'</div>';
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined network profiles') ) );
 }
 
 echo '<form method="post" action="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form">';

@@ -77,7 +77,8 @@ html_print_table ($table);
 
 unset($table);
 
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox filters';
 $table->data = array ();
 $table->head = array ();
 $table->align = array ();
@@ -87,7 +88,7 @@ $table->style[1] = 'font-weight: bold';
 $table->head[0] = __('Profile name');
 $table->head[1] = __('Group');
 $table->head[2] = __('Users');
-$table->align[2] = 'center';
+$table->align[2] = 'left';
 $table->size[0] = '34%';
 $table->size[1] = '33%';
 $table->size[2] = '33%';

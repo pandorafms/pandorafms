@@ -221,8 +221,8 @@ function getLastLog($numLines = 2000) {
 function show_array($title, $anchor, $array = array()) {
 	
 	$table = new StdClass();
-	$table->width = '98%';
-	$table->class = "databox";
+	$table->width = '100%';
+	$table->class = "databox filters";
 	$table->head = array();
 	$table->head[0] = $title;
 	$table->data = array();
@@ -417,8 +417,9 @@ function mainSystemInfo() {
 	echo __("This extension can run as PHP script in a shell for extract more information, but it must be run as root or across sudo. For example: <i>sudo php /var/www/pandora_console/extensions/system_info.php -d -s -c</i>");
 	echo '</div>';
 	
-	$table = null;
-	$table->width = '99%';
+	$table = new StdClass();
+	$table->width = '100%';
+	$table->class = 'databox filters';
 	$table->align = array();
 	$table->align[1] = 'right';
 	if ($pandora_diag) {
@@ -452,7 +453,8 @@ function mainSystemInfo() {
 
 	$table_file = new StdClass();
 	$table_file->id = "table_file";
-	$table_file->width = '99%';
+	$table_file->class = "databox filters";
+	$table_file->width = '100%';
 	$table_file->style = array();
 	$table_file->style[0] = "font-weight: bold";
 	$table_file->data = array();
@@ -487,7 +489,6 @@ function mainSystemInfo() {
 	html_print_table($table_file);
 	echo "</div>";
 
-	echo "<br>";
 	echo "<div style='width: " . $table->width . "; text-align: right;'>";
 	html_print_submit_button(__('Generate file'), 'generate', false, 'class="sub next"');
 	html_print_image('images/spinner.gif', false, array('id' => 'spinner_img', 'title' => __('Loading'), 'style' => 'display: none;'));

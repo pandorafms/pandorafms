@@ -92,13 +92,13 @@ html_print_table ($table);
 
 unset($table);
 
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox filters';
 $table->data = array ();
 $table->head = array ();
 $table->align = array ();
 $table->style = array ();
-$table->style[0] = 'vertical-align: top';
-$table->style[1] = 'vertical-align: top';
+
 $table->head[0] = __('Profile name');
 $table->head[1] = __('Group');
 $table->head[2] = __('Users');

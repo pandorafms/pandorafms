@@ -413,8 +413,10 @@ if ($delete_profile) {
 		__('Could not be deleted'));
 }
 
+$table = new stdClass();
 $table->id = 'user_configuration_table';
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox filters';
 if (defined('METACONSOLE')) {
 	$table->width = '100%';
 	$table->class = 'databox data';
@@ -433,7 +435,7 @@ $table->size = array ();
 $table->size[0] = '35%';
 $table->size[1] = '65%';
 $table->style = array ();
-$table->style[0] = 'font-weight: bold; vertical-align: top';
+$table->style[0] = 'font-weight: bold;';
 
 $table->data[0][0] = __('User ID');
 $table->data[0][1] = html_print_input_text_extended ('id_user', $id, '', '', 20, 60,
@@ -596,7 +598,9 @@ if (!empty ($id) && !$new_user) {
 	if (!defined("METACONSOLE"))
 		echo '<h4>'. __('Profiles/Groups assigned to this user') . '</h4>';
 
-	$table->width = '98%';
+	$table = new stdClass();
+	$table->width = '100%';
+	$table->class = 'databox data';
 	if (defined("METACONSOLE")) {
 		$table->head_colspan[0] = 0;
 		$table->width = '100%';

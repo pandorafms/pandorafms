@@ -34,10 +34,11 @@
 	width: 70%;
 	float: right;
 	height: 100%;
+	padding-right: 25px;
 }
 .text_task>p
 {
-	margin-top: 7%;
+	margin-top: 4%;
 }
 
 .button_task

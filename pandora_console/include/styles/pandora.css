@@ -314,7 +314,6 @@ div#menu_container {
 div#menu {
 	width: 45px;
 	float: left;
-	height: 828px;
 	z-index: 2000;
 	position: absolute;
 }
@@ -1232,7 +1231,7 @@ div.title_line {
 	color: #fff;
 	font-size: 8.5pt;
 	font-weight: bold;
-	line-height: 18px;
+	line-height: 20px;
 }
 #menu_tab_left .mn li a {
 	display: block;

@@ -941,12 +941,19 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 	$top_n_value = $content['top_n_value'];
 	$show_graph = $content['show_graph'];
 	
-	//Get all the related data
-	$sql = sprintf("SELECT id_agent_module, server_name
-		FROM treport_content_item
-		WHERE id_report_content = %d", $content['id_rc']);
 	
-	$tops = db_process_sql ($sql);
+	
+	if (empty($content['subitems'])) {
+		//Get all the related data
+		$sql = sprintf("SELECT id_agent_module, server_name
+			FROM treport_content_item
+			WHERE id_report_content = %d", $content['id_rc']);
+		
+		$tops = db_process_sql ($sql);
+	}
+	else {
+		$tops = $content['subitems'];
+	}
 	
 	// Get chart
 	reporting_set_conf_charts($width, $height, $only_image, $type,
@@ -1739,13 +1746,22 @@ function reporting_exception($report, $content, $type = 'dinamic',
 	
 	
 	
-	//Get all the related data
-	$sql = sprintf("
-		SELECT id_agent_module, server_name, operation
-		FROM treport_content_item
-		WHERE id_report_content = %d", $content['id_rc']);
 	
-	$exceptions = db_process_sql ($sql);
+	
+	if (empty($content['subitems'])) {
+		//Get all the related data
+		$sql = sprintf("
+			SELECT id_agent_module, server_name, operation
+			FROM treport_content_item
+			WHERE id_report_content = %d", $content['id_rc']);
+		
+		$exceptions = db_process_sql ($sql);
+	}
+	else {
+		$exceptions = $content['subitems'];
+	}
+	
+	
 	if ($exceptions === false) {
 		$return['failed'] = __('There are no Agent/Modules defined');
 	}
@@ -3741,14 +3757,21 @@ function reporting_availability($report, $content) {
 	}
 	
 	
-	$sql = sprintf("
-		SELECT id_agent_module,
-			server_name, operation
-		FROM treport_content_item
-		WHERE id_report_content = %d",
-		$content['id_rc']);
+	if (empty($content['subitems'])) {
+		$sql = sprintf("
+			SELECT id_agent_module,
+				server_name, operation
+			FROM treport_content_item
+			WHERE id_report_content = %d",
+			$content['id_rc']);
+		
+		$items = db_process_sql ($sql);
+	}
+	else {
+		$items = $content['subitems'];
+	}
 	
-	$items = db_process_sql ($sql);
+
 	
 	
 	$data = array();

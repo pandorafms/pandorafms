@@ -112,7 +112,7 @@ if (strstr($page, "policy_modules") === false && $id_agent_module) {
 }
 
 $update_module_id = (int) get_parameter_get ('update_module');
-
+$table_simple = new stdClass();
 $table_simple->id = 'simple';
 $table_simple->width = '100%';
 $table_simple->class = 'databox';
@@ -291,9 +291,10 @@ else {
 }
 
 /* Advanced form part */
+$table_advanced = new stdClass();
 $table_advanced->id = 'advanced';
 $table_advanced->width = '100%';
-$table_advanced->class = 'databox';
+$table_advanced->class = 'databox filters';
 $table_advanced->data = array ();
 $table_advanced->style = array ();
 $table_advanced->style[0] =
@@ -555,13 +556,14 @@ else {
 }
 
 /* Advanced form part */
+$table_macros = new stdClass();
 $table_macros->id = 'module_macros';
-$table_macros->width = '98%';
-$table_macros->class = 'databox_color';
+$table_macros->width = '100%';
+$table_macros->class = 'databox filters';
 $table_macros->data = array ();
 $table_macros->style = array ();
-$table_macros->style[0] = 'font-weight: bold; vertical-align: top';
-$table_macros->style[2] = 'font-weight: bold; vertical-align: top';
+$table_macros->style[0] = 'font-weight: bold;';
+$table_macros->style[2] = 'font-weight: bold;';
 $table_macros->style[5] = 'width: 10px';
 $table_macros->colspan = array ();
 
@@ -588,8 +590,8 @@ html_print_input_hidden ('module_macro_count', $macro_count);
 // Add relationships
 $table_new_relations = new stdClass();
 $table_new_relations->id = 'module_new_relations';
-$table_new_relations->width = '98%';
-$table_new_relations->class = 'databox_color';
+$table_new_relations->width = '100%';
+$table_new_relations->class = 'databox filters';
 $table_new_relations->data = array ();
 $table_new_relations->style = array ();
 $table_new_relations->style[0] = 'width: 10%; font-weight: bold;';
@@ -616,8 +618,8 @@ $table_new_relations->data[0][4] .= "&nbsp;&nbsp;<div id='add_relation_status' s
 // Relationship list
 $table_relations = new stdClass();
 $table_relations->id = 'module_relations';
-$table_relations->width = '98%';
-$table_relations->class = 'databox';
+$table_relations->width = '100%';
+$table_relations->class = 'databox data';
 $table_relations->head = array ();
 $table_relations->data = array ();
 $table_relations->rowstyle = array ();

@@ -3,42 +3,21 @@ global $config;
 check_login ();
 ui_require_css_file ('firts_task');
 ?>
+<?php ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no recon task defined yet.') ) ); ?>
 
-<div class="Table">
-	<div class="Title">
-		<p>This is a Table</p>
+<div class="new_task">
+	<div class="image_task">
+		<?php echo html_print_image('images/firts_task/icono_grande_reconserver.png', true, array("alt" => __('Recon server')));?>
 	</div>
-	<div class="Heading">
-		<div class="Cell">
-			<p>Heading 1</p>
-		</div>
-		<div class="Cell">
-			<p>Heading 2</p>
-		</div>
-		<div class="Cell">
-			<p>Heading 3</p>
-		</div>
-	</div>
-	<div class="Row">
-		<div class="Cell">
-			<a href="?sec=gservers&sec2=godmode/reporting/visual_console_builder">Crear un mapa de consola</a>
-		</div>
-		<div class="Cell">
-			<p>Row 1 Column 2</p>
-		</div>
-		<div class="Cell">
-			<p>Row 1 Column 3</p>
-		</div>
-	</div>
-	<div class="Row">
-		<div class="Cell">
-			<p>Row 2 Column 1</p>
-		</div>
-		<div class="Cell">
-			<p>Row 2 Column 2</p>
-		</div>
-		<div class="Cell">
-			<p>Row 2 Column 3</p>
-		</div>
+	<div class="text_task">
+		<h3> <?php echo __('Create Recon Task'); ?></h3>
+		<p id="description_task"> <?php echo __('The Recon Task definition of Pandora FMS is used to find new elements in the network. 
+		If it detects any item, it will add that item to the monitoring, and if that item it is already being monitored, then it will 
+		ignore it or will update its information.There are three types of detection: Based on <strong id="fuerte"> ICMP </strong>(pings), 
+		<strong id="fuerte">SNMP</strong> (detecting the topology of networks and their interfaces), and other <strong id="fuerte"> customized </strong>
+		type. You can define your own customized recon script.'); ?></p>
+		<form action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create" method="post">
+			<input type="submit" class="button_task" value="<?php echo __('Create Recon Task'); ?>" />
+		</form>
 	</div>
 </div>

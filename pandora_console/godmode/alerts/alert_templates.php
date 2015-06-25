@@ -229,8 +229,9 @@ $url = ui_get_url_refresh (array ('offset' => false));
 
 $search_string = (string) get_parameter ('search_string');
 $search_type = (string) get_parameter ('search_type');
-
-$table->width = '98%';
+$table = new stdClass();
+$table->width = '100%';
+$table->class = 'databox filters';
 if (defined("METACONSOLE")) {
 	$table->width = '96%';
 	$table->class = 'databox_filters';
@@ -287,10 +288,9 @@ $templates = alerts_get_alert_templates ($filter,
 	array ('id', 'name', 'description', 'type', 'id_group'));
 if ($templates === false)
 	$templates = array ();
-
-$table->width = '98%';
-if (defined("METACONSOLE"))
-	$table->width = '100%';
+$table = new stdClass();
+$table->width = '100%';
+$table->class = 'databox data';
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Name');
@@ -303,8 +303,8 @@ $table->style[0] = 'font-weight: bold';
 $table->size = array ();
 $table->size[4] = '85px';
 $table->align = array ();
-$table->align[1] = 'center';
-$table->align[4] = 'center';
+$table->align[1] = 'left';
+$table->align[4] = 'left';
 
 $rowPair = true;
 $iterator = 0;
@@ -354,8 +354,7 @@ if (isset($data)) {
 	html_print_table ($table);
 }
 else {
-	echo "<div class='nf'>" . __('No alert templates defined') .
-		"</div>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No alert templates defined') ) );
 }
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';

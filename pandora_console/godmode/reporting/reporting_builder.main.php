@@ -42,9 +42,9 @@ switch ($action) {
 }
 
 $table = new stdClass();
-$table->width = '98%';
+$table->width = '100%';
 $table->id = 'add_alert_table';
-$table->class = 'databox';
+$table->class = 'databox filters';
 $table->head = array ();
 
 if (defined("METACONSOLE")) {

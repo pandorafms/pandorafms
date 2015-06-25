@@ -74,7 +74,7 @@ if ($editGraph) {
 
 // Modules table
 if (count($module_array) > 0) {
-	echo "<table width='98%' cellpadding=4 cellpadding=4 class='databox'>";
+	echo "<table width='100%' cellpadding=4 cellpadding=4 class='databox filters'>";
 	echo "<tr>
 	<th>".__('Agent')."</th>
 	<th>".__('Module')."</th>
@@ -118,7 +118,7 @@ if (count($module_array) > 0) {
 echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
 echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&add_module=1&edit_graph=1&id=" . $id_graph . "'>";
 
-echo "<table width='98%' cellpadding='4' cellpadding='4' class='databox_color'>";
+echo "<table width='100%' cellpadding='4' cellpadding='4' class='databox filters'>";
 echo "<tr>";
 echo "<td colspan='3'>".__('Filter group')."</td>";
 echo "</tr><tr>";
@@ -139,8 +139,9 @@ echo "<td><input type='text' name='weight' value='1' size=3></td>";
 echo "</tr></table>";
 echo "</td>";
 echo "</tr><tr>";
-echo "<td colspan='3' align='right'><input type=submit name='store' class='sub add' value='".__('Add')."'></td>";
-echo "</tr></table></form>";
+echo "<td colspan='3' align='right'></td>";
+echo "</tr></table>";
+echo "<div style='width:100%'><input style='float:right;' type=submit name='store' class='sub add' value='".__('Add')."'></div></form>";
 
 ui_require_jquery_file ('pandora.controls');
 ui_require_jquery_file ('ajaxqueue');

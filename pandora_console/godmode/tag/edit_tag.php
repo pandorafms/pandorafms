@@ -153,7 +153,7 @@ echo '<div align=left style="width: 100%" class="pandora_form">';
 if (defined('METACONSOLE')) 
 	echo "<table border=0 cellpadding=0 cellspacing=0 class='databox data' width=100%>";
 else
-	echo "<table border=0 cellpadding=4 cellspacing=4 class=databox width=98%>";
+	echo "<table border=0 cellpadding=4 cellspacing=4 class='databox filters' width=100%>";
 	if (defined('METACONSOLE')) {
 		if ($action == "update") {
 			echo "<th colspan=8 style='text-align:center'>" . __("Update Tag") . "</th>";
@@ -164,7 +164,7 @@ else
 	}
 	echo "<tr>";
 		echo "<td align='left'>";
-		html_print_label (__("Name"), 'name');
+		echo "<b>" . __("Name") . "</b>";
 		echo "</td>";
 		echo "<td align='left'>";
 		html_print_input_text ('name_tag', $name_tag);
@@ -172,7 +172,7 @@ else
 	echo "</tr>";
 	echo "<tr>";
 		echo "<td align='left'>";
-		html_print_label (__("Description"), 'name');
+		echo "<b>" . __("Description") . "</b>";
 		echo "</td>";
 		echo "<td align='left'>";
 		html_print_input_text ('description_tag', $description_tag);
@@ -208,51 +208,31 @@ else
 		html_print_textarea('phone_tag', 5, 20, $phone_tag);
 		echo "</td>";
 	echo "</tr>";
-	if (!defined('METACONSOLE')) {
-		echo "<tr>";
-			if ($action == "update") {
-				echo "<td align='center'>";
-				html_print_input_hidden ('update_tag', 1);
-				echo "</td>";
-				echo "<td align=right>";
-				html_print_submit_button (__('Update'), 'update_button', false, 'class="sub next"');
-				echo "</td>";
-			}
-			if ($action == "new") {
-				echo "<td align=center>";
-				html_print_input_hidden ('create_tag', 1);
-				echo "</td>";
-				echo "<td align=right>";
-				html_print_submit_button (__('Create'), 'create_button', false, 'class="sub next"');
-				echo "</td>";
-			}
-		echo "</tr>";
-	}
 echo "</table>";
 
 echo '</div>';
-if (defined('METACONSOLE')) {
-	echo "<table border=0 cellpadding=0 cellspacing=0 class='' width=100%>";
-	echo "<tr>";
-		if ($action == "update") {
-			echo "<td align='center'>";
-			html_print_input_hidden ('update_tag', 1);
-			echo "</td>";
-			echo "<td align=right>";
-			html_print_submit_button (__('Update'), 'update_button', false, 'class="sub next"');
-			echo "</td>";
-		}
-		if ($action == "new") {
-			echo "<td align=center>";
-			html_print_input_hidden ('create_tag', 1);
-			echo "</td>";
-			echo "<td align=right>";
-			html_print_submit_button (__('Create'), 'create_button', false, 'class="sub next"');
-			echo "</td>";
-		}
-	echo "</tr>";
-	echo "</table>";
-}
+
+echo "<table border=0 cellpadding=0 cellspacing=0 class='' width=100%>";
+echo "<tr>";
+	if ($action == "update") {
+		echo "<td align='center'>";
+		html_print_input_hidden ('update_tag', 1);
+		echo "</td>";
+		echo "<td align=right>";
+		html_print_submit_button (__('Update'), 'update_button', false, 'class="sub next"');
+		echo "</td>";
+	}
+	if ($action == "new") {
+		echo "<td align=center>";
+		html_print_input_hidden ('create_tag', 1);
+		echo "</td>";
+		echo "<td align=right>";
+		html_print_submit_button (__('Create'), 'create_button', false, 'class="sub next"');
+		echo "</td>";
+	}
+echo "</tr>";
+echo "</table>";
+
 echo '</form>';
 
 enterprise_hook('close_meta_frame');

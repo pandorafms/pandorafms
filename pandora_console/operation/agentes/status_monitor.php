@@ -471,11 +471,7 @@ if (!defined('METACONSOLE'))
 $table->data[1][1] = html_print_select (index_array ($modules, 'nombre', 'nombre'), "ag_modulename",
 	$ag_modulename, '', __('All'), '', true, false, true, '', false, 'width: 150px;');
 
-if (!defined('METACONSOLE'))
-	$table->data[1][2] = __('Search');
-else
-	$table->data[1][2] = __('Search');
-
+$table->data[1][2] = __('Search');
 
 $table->data[1][3] = html_print_input_text ("ag_freestring", $ag_freestring, '', 20,30, true);
 
@@ -546,6 +542,7 @@ if (defined('METACONSOLE')) {
 }
 else {
 	$table->colspan[2][0] = 7;
+	$table->cellstyle[2][0] = "padding-left: 10px;";
 	$table->data[2][0] = ui_toggle(html_print_table($table_custom_fields, true), __('Agent custom fields'),'',true,true);
 	
 	$filters .= html_print_table($table, true);
@@ -955,7 +952,7 @@ if (! defined ('METACONSOLE')) {
 }
 
 if (! defined ('METACONSOLE'))
-	$table->align[5] = "center";
+	$table->align[5] = "left";
 
 $table->head[6] = __('Status');
 if (! defined ('METACONSOLE')) {
@@ -963,10 +960,10 @@ if (! defined ('METACONSOLE')) {
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=status&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
 }
 
-$table->align[6] = "center";
+$table->align[6] = "left";
 
 $table->head[7] = __('Graph');
-$table->align[7] = "center";
+$table->align[7] = "left";
 
 $table->head[8] = __('Warn');
 $table->align[8] = "left";

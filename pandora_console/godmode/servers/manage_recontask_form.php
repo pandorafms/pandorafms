@@ -168,12 +168,12 @@ if ($is_windows) {
 	echo '</div>';
 }
 
-$table = new StdClass();
+$table = new stdClass();
 $table->id = 'table_recon';
-$table->width = '98%';
+$table->width = '100%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
-$table->class = "databox_color";
+$table->class = "databox filters";
 
 $table->rowclass[3] = "network_sweep";
 $table->rowclass[5] = "network_sweep";

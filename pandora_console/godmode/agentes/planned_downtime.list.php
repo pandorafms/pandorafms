@@ -213,8 +213,8 @@ $filter_params_str = http_build_query($filter_params);
 
 // Table filter
 $table = new StdClass();
-$table->class = 'databox';
-$table->width = '99%';
+$table->class = 'databox filters';
+$table->width = '100%';
 $table->rowstyle = array();
 $table->rowstyle[0] = "background-color: #f9faf9;";
 $table->rowstyle[1] = "background-color: #f9faf9;";
@@ -270,9 +270,9 @@ echo "</form>";
 
 // View available downtimes present in database (if any of them)
 $table = new StdClass();
-$table->class = 'databox';
+$table->class = 'databox data';
 //Start Overview of existing planned downtime
-$table->width = '98%';
+$table->width = '100%';
 $table->cellstyle = array();
 $table->data = array();
 $table->head = array();

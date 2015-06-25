@@ -173,7 +173,8 @@ switch ($config["dbtype"]) {
 
 $groups = db_get_all_rows_sql($sql);
 
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox data';
 
 if (!empty($groups)) {
 	$table->head = array ();
@@ -182,7 +183,8 @@ if (!empty($groups)) {
 	$table->head[2] = __('Delete');
 	$table->align = array ();
 	$table->align[1] = 'left';
-	$table->align[2] = 'center';
+	$table->align[2] = 'left';
+	$table->size[2] = '5%';
 	$table->data = array ();
 	
 	foreach ($groups as $id_group ) {
@@ -198,7 +200,7 @@ if (!empty($groups)) {
 	html_print_table ($table);
 }
 else {
-	echo "<div class='nf'>".__('There are no defined module groups')."</div>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined module groups') ) );
 }
 
 echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/groups/configure_modu_group">';

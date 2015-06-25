@@ -266,9 +266,9 @@ if ($delete_command) {
 	
 }
 
-$table->width = '98%';
-if (defined('METACONSOLE'))
-	$table->width = '100%';
+$table->width = '100%';
+$table->class = 'databox data';
+
 $table->data = array ();
 $table->head = array ();
 $table->head[0] = __('Name');
@@ -280,7 +280,7 @@ $table->style[0] = 'font-weight: bold';
 $table->size = array ();
 $table->size[3] = '40px';
 $table->align = array ();
-$table->align[3] = 'center';
+$table->align[3] = 'left';
 
 $commands = db_get_all_rows_in_table ('talert_commands');
 if ($commands === false)
@@ -313,9 +313,7 @@ if (isset($data)) {
 	html_print_table ($table);
 }
 else {
-	echo "<div class='nf'>" .
-		__('No alert commands configured') .
-	"</div>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No alert commands configured') ) );
 }
 
 echo '<div class="action-buttons" style="width: ' . $table->width . '">';

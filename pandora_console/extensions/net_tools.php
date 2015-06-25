@@ -293,7 +293,7 @@ function godmode_net_tools() {
 	}
 	
 	$table = null;
-	$table->width = "80%";
+	$table->width = "100%";
 	
 	$table->data = array();
 	

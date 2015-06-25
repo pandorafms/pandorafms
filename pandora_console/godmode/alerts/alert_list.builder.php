@@ -98,7 +98,7 @@ $table->data[0][3] .= ' <a class="template_details invisible" href="#">' .
 if (check_acl ($config['id_user'], 0, "LM")) {
 	$table->data[0][3] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';
 	$table->data[0][3] .= html_print_image ('images/add.png', true);
-	$table->data[0][3] .= __('Create Template');
+	$table->data[0][3] .= "<div style='float:right;padding-top:5px;' >" . __('Create Template') . "</div>";
 	$table->data[0][3] .= '</a>';
 }
 
@@ -124,9 +124,9 @@ $table->data[1][1] .= ui_print_help_icon ("alert-matches", true,
 	ui_get_full_url(false, false, false, false));
 $table->data[1][1] .= '</span>';
 if (check_acl ($config['id_user'], 0, "LM")) {
-	$table->data[1][1] .= '' . html_print_image ('images/add.png', true);
+	
 	$table->data[1][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
-	$table->data[1][1] .= __('Create Action');
+	$table->data[1][1] .= '  ' . __('Create Action');
 	$table->data[1][1] .= '</a>';
 }
 $table->data[1][2] = __('Threshold');

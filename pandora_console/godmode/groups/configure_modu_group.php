@@ -58,7 +58,9 @@ if ($id_group) {
 }
 
 
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox filters';
+$table->style[0] = 'font-weight: bold';
 $table->data = array ();
 $table->data[0][0] = __('Name');
 $table->data[0][1] = html_print_input_text ('name', $name, '', 35, 100, true);

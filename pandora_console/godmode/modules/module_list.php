@@ -53,7 +53,7 @@ if ($update_module) {
 }
 
 
-echo "<table cellpadding='4' cellspacing='4' width='98%' class='databox'>";
+echo "<table cellpadding='4' cellspacing='4' width='100%' class='databox data'>";
 echo "<th>".__('Icon')."</th>";
 echo "<th>".__('ID')."</th>";
 echo "<th>".__('Name')."</th>";
@@ -76,7 +76,7 @@ foreach ($rows as $row) {
 	}
 	echo "
 	<tr>
-		<td class='$tdcolor' align='center'>" .
+		<td class='$tdcolor' align=''>" .
 		html_print_image("images/".$row["icon"], true, array("border" => '0')) .
 		"</td>
 		<td class='$tdcolor'>

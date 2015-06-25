@@ -25,14 +25,6 @@ if (! check_acl($config['id_user'], 0, "PM")) {
 	return;
 }
 
-if(!defined('METACONSOLE')) {
-	echo '<br><br><div style="width:99%;text-align:right;">';
-	echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&amp;pure='.$config['pure'].'">';
-	html_print_submit_button(__('Create response'), 'create_response_button', false, array('class' => 'sub next'));
-	echo '</form>';
-	echo '</div>';
-}
-
 if (!is_user_admin($config['id_user'])) {
 	$id_groups = array_keys(users_get_groups(false, "PM"));
 	$event_responses = db_get_all_rows_filter('tevent_response',
@@ -43,21 +35,21 @@ else {
 }
 
 if(empty($event_responses)) {
-	ui_print_info_message(__('No responses found'));
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No responses found') ) );
 	$event_responses = array();
 	return;
 }
 
-$table->width = '99%';
-if(defined('METACONSOLE'))
-	$table->width = '100%';
+$table = new stdClass();
+$table->width = '100%';
+$table->class = 'databox data';
+
 $table->size = array();
 $table->size[0] = '200px';
-$table->size[2] = '70px';
+$table->size[2] = '100px';
 $table->size[3] = '70px';
 
-$table->style[2] = 'text-align:center;';
-$table->style[2] = 'text-align:center;';
+$table->style[2] = 'text-align:left;';
 
 $table->head[0] = __('Name');
 $table->head[1] = __('Description');
@@ -78,11 +70,11 @@ foreach($event_responses as $response) {
 
 html_print_table($table);
 
-if(defined('METACONSOLE')) {
-	echo '<br><br><div style="width:100%;text-align:right;">';
-	echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&amp;pure='.$config['pure'].'">';
-	html_print_submit_button(__('Create response'), 'create_response_button', false, array('class' => 'sub next'));
-	echo '</form>';
-	echo '</div>';
-}
+
+echo '<div style="width:100%;text-align:right;">';
+echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&amp;pure='.$config['pure'].'">';
+html_print_submit_button(__('Create response'), 'create_response_button', false, array('class' => 'sub next'));
+echo '</form>';
+echo '</div>';
+
 ?>

@@ -63,7 +63,7 @@
 		<div style='height: 10px'>
 			<?php
 $version = '6.0dev';
-$build = '150622';
+$build = '150625';
 			$banner = "v$version Build $build";
 			
 			error_reporting(0);
@@ -282,6 +282,21 @@ function parse_oracle_dump($connection, $url, $debug = false) {
 		
 		$query = "";
 		$plsql_block = false;
+		
+		$datetime_tz_format = oci_parse($connection, 'alter session set NLS_TIMESTAMP_TZ_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
+		$datetime_format = oci_parse($connection, 'alter session set NLS_TIMESTAMP_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
+		$date_format = oci_parse($connection, 'alter session set NLS_DATE_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
+		$decimal_separator = oci_parse($connection, 'alter session set NLS_NUMERIC_CHARACTERS =\',.\'');
+
+		oci_execute($datetime_tz_format);
+		oci_execute($datetime_format);
+		oci_execute($date_format);
+		oci_execute($decimal_separator);
+
+		oci_free_statement($datetime_tz_format);
+		oci_free_statement($datetime_format);
+		oci_free_statement($date_format);
+		oci_free_statement($decimal_separator);
 		
 		foreach ($file_content as $sql_line) {
 			$clean_line = trim($sql_line);
@@ -546,6 +561,9 @@ function install_step2() {
 			}
 			else if (PHP_OS == "NetBSD") {
 				$res += check_exists ("/usr/pkg/bin/twopi","Graphviz Binary");
+			}
+			else if ( substr(PHP_OS, 0, 3) == 'WIN' ) {
+				$res += check_exists ("..\\..\\..\\Graphviz\\bin\\twopi.exe", "Graphviz Binary");
 			}
 			else {
 				$res += check_exists ("/usr/bin/twopi","Graphviz Binary");

@@ -67,7 +67,8 @@ function extension_uploader_extensions() {
 	
 	$table = null;
 	
-	$table->width = '98%';
+	$table->width = '100%';
+	$table->class = 'databox filters';
 	$table->data = array();
 	$table->data[0][0] = __('Upload extension');
 	$table->data[0][1] = html_print_input_file('extension', true) .

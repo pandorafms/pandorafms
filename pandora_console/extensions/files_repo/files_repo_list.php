@@ -32,8 +32,6 @@ $files = files_repo_get_files($filter);
 
 if (!empty($files)) {
 	
-	echo "<br>";
-	
 	if (!isset($manage)) {
 		$manage = false;
 	}
@@ -49,7 +47,8 @@ if (!empty($files)) {
 	ui_pagination($total_files, $url, $offset);
 	
 	$table = new stdClass();
-	$table->width = '98%';
+	$table->width = '100%';
+	$table->class = 'databox data';
 	$table->style = array();
 	$table->style[1] = "max-width: 200px;";
 	$table->style[2] = "text-align: center;";

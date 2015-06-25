@@ -441,7 +441,9 @@ $url = ui_get_url_refresh (array ('offset' => false,
 $search_id_group = (int) get_parameter ('search_id_group');
 $search_string = (string) get_parameter ('search_string');
 
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox filters';
+
 if(defined("METACONSOLE")) {
 	$table->width = '50%';
 	$table->class = 'databox_filters';
@@ -537,6 +539,7 @@ unset ($table);
 
 $table->width = '100%';
 $table->head = array ();
+$table->class = 'databox data';
 $table->head[0] = __('Module name');
 $table->head[1] = __('Type');
 $table->head[3] = __('Description');
@@ -548,7 +551,7 @@ $table->head[6] = __('Action') .
 $table->size = array ();
 $table->size[1] = '75px';
 $table->size[6] = '80px';
-$table->align[6] = 'center';
+$table->align[6] = 'left';
 $table->data = array ();
 
 foreach ($components as $component) {
@@ -606,8 +609,7 @@ if (isset($data)) {
 	echo "</form>";
 }
 else {
-	echo "<div class='nf'>" .
-		__('There are no defined network components') . "</div>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined network components') ) );
 }
 
 echo '<form method="post" action="' . $url . '">';

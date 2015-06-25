@@ -44,9 +44,10 @@ else {
 	$parent = '';
 }
 
-$table->width = '98%';
+$table->width = '100%';
+$table->class = 'databox filters';
+
 if (defined('METACONSOLE')) {
-	$table->width = '100%';
 	$table->class = 'databox data';
 	if ($id) {
 		$table->head[0] = __('Update Group Component');
@@ -59,13 +60,14 @@ if (defined('METACONSOLE')) {
 }
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
+$table->style[2] = 'font-weight: bold';
 $table->data = array ();
 
 $table->data[0][0] = __('Name');
 $table->data[0][1] = html_print_input_text ('name', $name, '', 15, 255, true);
 
-$table->data[1][0] = __('Parent');
-$table->data[1][1] = html_print_select (network_components_get_groups (),
+$table->data[0][2] = __('Parent');
+$table->data[0][3] = html_print_select (network_components_get_groups (),
 	'parent', $parent, false, __('None'), 0, true, false, false);
 
 echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/modules/manage_nc_groups">';

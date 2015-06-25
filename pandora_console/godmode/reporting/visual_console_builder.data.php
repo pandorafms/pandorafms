@@ -87,7 +87,6 @@ switch ($action) {
 $table = new stdClass();
 $table->width = '100%';
 if (defined('METACONSOLE')) {
-	$table->width = '100%';
 	$table->class = 'databox data';
 	$table->head[0] = __("Create visual console");
 	$table->head_colspan[0] = 5;
@@ -95,6 +94,7 @@ if (defined('METACONSOLE')) {
 	$table->align[0] = 'left';
 	$table->align[1] = 'left';
 }
+$table->class = 'databox filters';
 $table->data = array ();
 $table->data[0][0] = __('Name:') .
 	ui_print_help_tip(__("Use [ or ( as first character, for example '[*] Map name', to render this map name in main menu"), true);

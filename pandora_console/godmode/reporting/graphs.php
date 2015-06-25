@@ -135,20 +135,21 @@ $graphs = custom_graphs_get_user ($config['id_user'], false, true, "RR");
 
 if (!empty ($graphs)) {
 	$table = new stdClass();
-	$table->width = '98%';
-	$table->class = 'databox_frame';
+	$table->width = '100%';
+	$table->class = 'databox data';
 	$table->align = array ();
 	$table->head = array ();
 	$table->head[0] = __('Graph name');
 	$table->head[1] = __('Description');
 	$table->head[2] = __('Number of Graphs');
 	$table->head[3] = __('Group');
-	$table->size[2] = '80px';
-	$table->size[3] = '50px';
-	$table->align[2] = 'center';
-	$table->align[3] = 'center';
+	$table->size[0] = '30%';
+	$table->size[2] = '200px';
+	$table->size[3] = '200px';
+	$table->align[2] = 'left';
+	$table->align[3] = 'left';
 	if (check_acl ($config['id_user'], 0, "RW")) {
-		$table->align[4] = 'center';
+		$table->align[4] = 'left';
 		$table->head[4] = __('Op.');
 		$table->size[4] = '90px';
 	}
@@ -194,7 +195,7 @@ else {
 
 if (check_acl ($config['id_user'], 0, "RW")) {
 	echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/graph_builder">';
-	echo '<div class="action-buttons" style="width: 98%;">';
+	echo '<div class="action-buttons" style="width: 100%;">';
 	html_print_submit_button (__('Create graph'), 'create', false, 'class="sub next"');
 	echo "</div>";
 	echo "</form>";

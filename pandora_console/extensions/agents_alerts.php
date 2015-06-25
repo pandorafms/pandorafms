@@ -211,7 +211,7 @@ function mainAgentsAlerts() {
 		if ($tname == '') {
 			continue;
 		}
-		echo '<th width="20px" >'. io_safe_output($tname) . html_print_image('images/information.png', true, array('title' => io_safe_output($tname))) ."</th>";
+		echo '<th width="20px" >'. io_safe_output($tname) . html_print_image('images/information_alerts.png', true, array('title' => io_safe_output($tname),'style' => 'margin-left:5px' )) ."</th>";
 	}
 	
 	if (($hor_offset + $block) < $ntemplates) {

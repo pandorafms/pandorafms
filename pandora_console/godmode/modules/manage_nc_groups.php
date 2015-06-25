@@ -187,9 +187,8 @@ foreach ($groups as $group_key => $group_val) {
 // Format component groups in tree form
 $groups = component_groups_get_groups_tree_recursive($groups_clean,0,0);
 
-$table->width = '98%';
-if (defined('METACONSOLE'))
-	$table->width = '100%';
+$table->width = '100%';
+$table->class = 'databox data';
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Action') .
@@ -197,7 +196,7 @@ $table->head[1] = __('Action') .
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
 $table->align = array ();
-$table->align[1] = 'center';
+$table->align[1] = 'left';
 $table->size = array ();
 $table->size[0] = '80%';
 $table->size[1] = '50px';
@@ -229,13 +228,13 @@ if (isset($data)) {
 	echo "<form method='post' action='index.php?sec=".$sec."&sec2=godmode/modules/manage_nc_groups'>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
-	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+	echo "<div style='padding-bottom: 10px; text-align: right; width:" . $table->width . "'>";
 	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 	echo "</div>";
 	echo "</form>";
 }
 else {
-	echo "<div class='nf'>".__('There are no defined component groups')."</div>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined component groups') ) );
 }
 
 

@@ -86,7 +86,9 @@ if ($delete_field) {
 
 $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
-$table->width = '98%';
+$table = new stdClass();
+$table->width = '100%';
+$table->class = 'databox data';
 if ($fields) {
 	$table->head = array ();
 	$table->head[0] = __('ID');
@@ -94,13 +96,14 @@ if ($fields) {
 	$table->head[2] = __('Display on front').ui_print_help_tip (__('The fields with display on front enabled will be displayed into the agent details'), true);
 	$table->head[3] = __('Actions');
 	$table->align = array ();
-	$table->align[0] = 'right';
-	$table->align[2] = 'center';
-	$table->align[3] = 'center';
+	$table->align[0] = 'left';
+	$table->align[2] = 'left';
+	$table->align[3] = 'left';
+	$table->size[3] = '8%';
 	$table->data = array ();
 }
 else {
-	echo '<div class="nf">'. __('No fields defined') .'</div>';
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No fields defined') ) );
 }
 
 if ($fields === false) $fields = array();

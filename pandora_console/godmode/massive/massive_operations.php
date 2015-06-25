@@ -140,25 +140,33 @@ if ($option == '') {
 	$option = array_shift(array_keys($options));
 }
 
-$alertstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts">'
-	. html_print_image ('images/op_alerts.png', true,
-		array ('title' => __('Alerts operations')))
-	. '</a>', 'active' => $tab == 'massive_alerts');
+$alertstab = array(
+	'text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts">'
+		. html_print_image ('images/op_alerts.png', true,
+			array ('title' => __('Alerts operations')))
+	. '</a>',
+	'active' => $tab == 'massive_alerts');
 
-$userstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users">'
-	. html_print_image ('images/op_workspace.png', true,
-		array ('title' => __('Users operations')))
-	. '</a>', 'active' => $tab == 'massive_users');
+$userstab = array(
+	'text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users">'
+		. html_print_image ('images/op_workspace.png', true,
+			array ('title' => __('Users operations')))
+	. '</a>',
+	'active' => $tab == 'massive_users');
 
-$agentstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_agents">'
-	. html_print_image ('images/bricks.png', true,
-		array ('title' => __('Agents operations')))
-	. '</a>', 'active' => $tab == 'massive_agents');
+$agentstab = array(
+	'text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_agents">'
+		. html_print_image ('images/bricks.png', true,
+			array ('title' => __('Agents operations')))
+	. '</a>',
+	'active' => $tab == 'massive_agents');
 
-$modulestab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_modules">'
-	. html_print_image ('images/brick.png', true,
-		array ('title' => __('Modules operations')))
-	. '</a>', 'active' => $tab == 'massive_modules');
+$modulestab = array(
+	'text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_modules">'
+		. html_print_image ('images/brick.png', true,
+			array ('title' => __('Modules operations')))
+		. '</a>',
+	'active' => $tab == 'massive_modules');
 
 
 
@@ -213,7 +221,8 @@ $submit_template_standby = get_parameter('id_alert_template_standby');
 $submit_add = get_parameter('crtbutton');
 
 echo '<div id="loading" display="none">';
-echo html_print_image("images/wait.gif", true, array("border" => '0')) . '<br />';
+echo html_print_image("images/wait.gif", true, array("border" => '0')) .
+	'<br />';
 echo '<strong>' . __('Please wait...') . '</strong>';
 echo '</div>';
 ?>
@@ -245,14 +254,19 @@ echo '</div>';
 <?php
 echo "<br />";
 echo '<form method="post" id="form_options" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations">';
-echo '<table border="0"><tr><td>';
+echo '<table border="0">';
+echo '<tr>';
+echo '<td>';
 echo __("Action");
-echo '</td><td>';
+echo '</td>';
+echo '<td>';
 html_print_select($options, 'option', $option, 'this.form.submit()', '',
 	0, false, false, false);
 if ($option == 'edit_agents' || $option == 'edit_modules') 
 	ui_print_help_tip(__("The blank fields will not be updated"));
-echo '</td></tr></table>';
+echo '</td>';
+echo '</tr>';
+echo '</table>';
 echo '</form>';
 echo "<br />";
 

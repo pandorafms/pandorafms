@@ -139,7 +139,7 @@ else {
 	echo '<form name="mod_temp" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&update='.$id_np.'">';
 }
 
-echo '<table width="98%" cellpadding="4" cellspacing="4" class="databox_color">';
+echo '<table width="100%" cellpadding="4" cellspacing="4" class="databox filters">';
 
 echo '<tr><td class="datos">'.__('Name').'</td><td class="datos">';
 html_print_input_text ("name", $name, '', 63);
@@ -181,26 +181,26 @@ if ($id_np > 0) {
 	$result = db_get_all_rows_sql ($sql);
 
 	if (empty ($result)) {
-		echo '<div style="width:550px;" class="error">' . __("No modules for this profile") . '</div>';
+		ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No modules for this profile') ) );
 		$result = array ();
 	}
 
 	$table->head = array ();
 	$table->data = array ();
 	$table->align = array ();
-	$table->width = '98%';
+	$table->width = '100%';
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
-	$table->class = "databox";
+	$table->class = "databox data";
 	
 	$table->head[0] = __('Module name');
 	$table->head[1] = __('Type');
 	$table->align[1] = "center";
 	$table->head[2] = __('Description');
 	$table->head[3] = __('Group');
-	$table->align[3] = "center";
+	$table->align[3] = "left";
 	$table->head[4] = html_print_checkbox_extended ('allbox', '', false, false, 'CheckAll();', '', true);
-	$table->align[4] = "center";
+	$table->align[4] = "left";
 	
 	foreach ($result as $row) {
 		$data = array ();
@@ -228,10 +228,10 @@ if ($id_np > 0) {
 	$table->head = array ();
 	$table->data = array ();
 	$table->align = array ();
-	$table->width = '98%';
-	$table->cellpadding = 4;
-	$table->cellspacing = 4;
-	$table->class = "databox";
+	$table->width = '100%';
+	$table->cellpadding = 0;
+	$table->cellspacing = 0;
+	$table->class = "databox filters";
 	
 	//The form to submit when adding a list of components
 	

@@ -230,9 +230,10 @@ if (($create != "") OR ($view != "")) {
 		echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create_plugin=1&pure=" . $config['pure'] . "'>";
 	}
 	
-	$table->width = '98%';
+	$table = new stdClass();
+	$table->width = '100%';
 	$table->id = 'table-form';
-	$table->class = 'databox_color';
+	$table->class = 'databox filters';
 	$table->style = array ();
 	$table->style[0] = 'font-weight: bold';
 	$table->style[2] = 'font-weight: bold';
@@ -265,7 +266,7 @@ if (($create != "") OR ($view != "")) {
 	
 	if (!defined("METACONSOLE")) {
 		echo '<br>';
-		echo '<table class="databox" style="margin: 0 auto; width: 98%;"><tr><td>';
+		echo '<table class="databox" style="margin: 0 auto; width: 100%;"><tr><td>';
 	}
 	
 	if (defined("METACONSOLE")) {
@@ -668,7 +669,7 @@ else {
 		if(defined('METACONSOLE'))
 			echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox">';
 		else
-			echo '<table width="98%" cellspacing="4" cellpadding="4" class="databox">';
+			echo '<table width="100%" cellspacing="4" cellpadding="4" class="databox data">';
 			
 		echo "<th>" . __('Name') . "</th>";
 		echo "<th>" . __('Type') . "</th>";
@@ -712,7 +713,7 @@ else {
 				'tnetwork_component',
 				array('id_plugin' => $row["id"]));
 			if (($components_using_plugin + $modules_using_plugin) > 0) {
-				echo "<a href='javascript: show_locked_dialog(" . $row['id'] . ");'>";
+				echo '<a href="javascript: show_locked_dialog(' . $row['id'] . ', \'' . $row["name"] . '\');">';
 				html_print_image('images/lock.png');
 				echo "</a>";
 			}
@@ -724,23 +725,19 @@ else {
 		echo "</table>";
 	}
 	else {
-		echo '<div class="nf">' .
-			__('There are no plugins in the system') .
-			'</div>';
-		echo "<br>";
+		ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no plugins in the system') ) );
 	}
-	if(defined('METACONSOLE'))
-		echo "<table width='100%'>";
-	else
-		echo "<table width='98%'>";
+	
+	echo "<table width='100%'>";
 
 	echo "<tr><td align=right>";
 	echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&tab=$tab&create=1&pure=" . $config['pure'] . "'>";
 	echo "<input name='crtbutton' type='submit' class='sub next' value='".__('Add')."'>";
 	echo "</td></tr></table>";
 	
+	// The '%s' will be replaced in the javascript code of the function 'show_locked_dialog'
 	echo "<div id='dialog_locked' title='" .
-		sprintf(__('List of modules and components created by "%s" '), $row["name"]) .
+		__('List of modules and components created by "%s" ') .
 		"' style='display: none; text-align: left;'>";
 	echo "</div>";
 	
@@ -784,7 +781,7 @@ ui_require_javascript_file('pandora_modules');
 		
 	});
 	
-	function show_locked_dialog(id_plugin) {
+	function show_locked_dialog(id_plugin, plugin_name) {
 		var parameters = {};
 		parameters['page'] = "godmode/servers/plugin";
 		parameters["get_list_modules_and_component_locked_plugin"] = 1;
@@ -796,7 +793,10 @@ ui_require_javascript_file('pandora_modules');
 			data: parameters,
 			dataType: "html",
 			success: function(data) {
+				var title = $("#dialog_locked").prop('title').replace(/%s/, plugin_name);
+				
 				$("#dialog_locked")
+					.prop('title', title)
 					.html(data);
 				$("#dialog_locked")
 					.dialog ({

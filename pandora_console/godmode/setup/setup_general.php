@@ -19,6 +19,7 @@ global $config;
 check_login ();
 
 $table = new StdClass();
+$table->class = 'databox filters';
 $table->width = '100%';
 $table->data = array ();
 $table->size = array();

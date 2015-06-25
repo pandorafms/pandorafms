@@ -239,8 +239,10 @@ foreach ($module_types as $type) {
 	$types[$type['id_tipo']] = $type['description'];
 }
 
-$table->width = '99%';
+$table->width = '100%';
+$table->class = 'databox filters';
 $table->data = array ();
+$table->style[0] = 'font-weight: bold';
 $table->style[2] = 'font-weight: bold';
 
 
@@ -248,8 +250,7 @@ $table->style[2] = 'font-weight: bold';
 $table->data['selection_mode'][0] = __('Selection mode');
 $table->data['selection_mode'][1] = __('Select modules first') . ' ' .
 	html_print_radio_button_extended ("selection_mode", 'modules', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
-$table->data['selection_mode'][2] = '';
-$table->data['selection_mode'][3] = __('Select agents first') . ' ' .
+$table->data['selection_mode'][1] .= __('Select agents first') . ' ' .
 	html_print_radio_button_extended ("selection_mode", 'agents', '', $selection_mode, false, '', 'style="margin-right: 40px;"', true);
 
 

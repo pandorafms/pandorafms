@@ -131,7 +131,7 @@ function reporting_make_reporting_data($report = null, $id_report,
 	$report["group_name"] = groups_get_name ($report['id_group']);
 	$report['contents'] = array();
 	
-	if ($contents === false) {
+	if (empty($contents)) {
 		return reporting_check_structure_report($report);
 	}
 	
@@ -484,9 +484,14 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 	
 	$edge_interval = 10;
 	
-	$slas = db_get_all_rows_field_filter (
-		'treport_content_sla_combined',
-		'id_report_content', $content['id_rc']);
+	if (empty($content['subitems'])) {
+		$slas = db_get_all_rows_field_filter (
+			'treport_content_sla_combined',
+			'id_report_content', $content['id_rc']);
+	}
+	else {
+		$slas = $content['subitems'];
+	}
 	
 	if (empty($slas)) {
 		$return['failed'] = __('There are no SLAs defined');
@@ -3971,9 +3976,16 @@ function reporting_general($report, $content) {
 	$return["max"]["agent"] = null;
 	$return["max"]["module"] = null;
 	
-	$generals = db_get_all_rows_filter(
-		'treport_content_item',
-		array('id_report_content' => $content['id_rc']));
+	if (empty($content['subitems'])) {
+		$generals = db_get_all_rows_filter(
+			'treport_content_item',
+			array('id_report_content' => $content['id_rc']));
+	}
+	else {
+		$generals = $content['subitems'];
+	}
+	
+	
 	if (empty($generals)) {
 		$generals = array();
 	}

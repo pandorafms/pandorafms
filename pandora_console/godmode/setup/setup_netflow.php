@@ -30,11 +30,11 @@ if (! check_acl ($config["id_user"], 0, "IR")) {
 
 $update = (bool) get_parameter ("update");
 
-$table->width = '98%';
+$table->width = '100%';
 $table->border = 0;
 $table->cellspacing = 3;
 $table->cellpadding = 5;
-$table->class = "databox_color";
+$table->class = "databox filters";
 
 $table->data = array ();
 
@@ -76,7 +76,7 @@ echo '<form id="netflow_setup" method="post">';
 html_print_table ($table);
 
 // Update button
-echo '<div class="action-buttons" style="width:98%;">';
+echo '<div class="action-buttons" style="width:100%;">';
 	html_print_input_hidden ('update_config', 1);
 	html_print_submit_button (__('Update'), 'upd_button', false, 'class="sub upd"');
 echo '</div></form>';

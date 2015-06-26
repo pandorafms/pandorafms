@@ -89,7 +89,7 @@ else {
 	// Header
 	ui_print_page_header (__('Pandora FMS Diagnostic tool'), "", false, "", true);
 
-	echo "<table with='98%' cellpadding='4' cellspacing='4'>";
+	echo "<table with='100%' class='databox data' cellpadding='4' cellspacing='4'>";
 	echo "<tr><th align=left>".__("Item")."</th>";
 	echo "<th>".__("Data value")."</th></tr>";
 }

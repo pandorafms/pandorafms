@@ -215,7 +215,7 @@ echo '<table class="databox filters" cellpadding="4" cellspacing="4" width="100%
 <td valign="middle"><h3>'.__('Filter').'</h3>';
 
 $fields = incidents_get_status ();
-echo __("Incidents:") . '&nbsp;&nbsp;';
+echo "<b>" . __("Incidents:") . "</b>" . '&nbsp;&nbsp;';
  html_print_select ($fields, "estado", $estado, 'javascript:this.form.submit();', __('All incidents'), -1, false, false, false, 'w155');
 
 //Legend
@@ -238,12 +238,12 @@ echo '</td></tr><tr><td>';
 
 $fields = incidents_get_priorities ();
 
-echo __("Priorities:") . '&nbsp;&nbsp;';
+echo "<b>" . __("Priorities:") . "</b>" . '&nbsp;&nbsp;';
 html_print_select ($fields, "prioridad", $prioridad, 'javascript:this.form.submit();', __('All priorities'), -1,false,false,false,'w155');
 
 echo '</td></tr><tr><td>';
 
-echo __("Users:") . '&nbsp;&nbsp;';
+echo "<b>" . __("Users:") . "</b>" . '&nbsp;&nbsp;';
 html_print_select (users_get_info (), "usuario", $usuario, 'javascript:this.form.submit();', __('All users'), "", false, false, false, "w155");
 
 echo '</td></tr><tr><td>';
@@ -259,20 +259,20 @@ foreach ($agents_incidents as $agent_incident) {
 	$result_agent_incidents[$agent_incident['id_agente']] = $agent_incident['nombre'];
 }
 
-echo __("Agents:") . '&nbsp;&nbsp;';
+echo "<b>" . __("Agents:") .  "</b>" . '&nbsp;&nbsp;';
 html_print_select ($result_agent_incidents, "agent_search",
 	$agent_search, 'javascript:this.form.submit();', __('All agents'),
 	"", false, false, false, "w155");
 
 echo '</td></tr><tr><td colspan=3>';
 
-echo __("Groups:") . '&nbsp;&nbsp;';
+echo "<b>" . __("Groups:") . "</b>" . '&nbsp;&nbsp;';
 html_print_select_groups($config["id_user"], "IR", true, "grupo", $grupo, 'javascript:this.form.submit();', '', '',false,false,false,'w155');
 
 //echo "&nbsp;&nbsp;&nbsp;&nbsp;";
 echo '</td></tr><tr><td colspan=3>';
 
-echo __("Free text:") . '&nbsp;&nbsp;';
+echo "<b>" . __("Free text:") . "</b>" . '&nbsp;&nbsp;';
 html_print_input_text ('texto', $texto, '', 45);
 echo '&nbsp;';
 html_print_input_image ("submit", "images/zoom.png", __('Search'), 'padding:0;', false, array ("alt" => __('Search'))); 
@@ -281,7 +281,7 @@ echo "</td></tr></table>";
 echo '</form>';
 
 if ($count < 1) {
-	echo '<div class="nf">'.__('No incidents match your search filter').'</div><br />';
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No incidents match your search filter.') ) );
 }
 else {
 	// TOTAL incidents
@@ -377,10 +377,9 @@ else {
 	
 	echo '<form method="post" action="'.$url.'&amp;action=mass" style="margin-bottom: 0px;">';
 	html_print_table ($table);
-	echo '<div style="text-align:right; float:right; padding-right: 2px;">';
-	echo '<b>'.__('Action').': </b>' ;
+	echo '<div style="text-align:right; float:right;">';
 	if (check_acl ($config["id_user"], 0, "IW")) {
-		html_print_submit_button (__('Delete incidents'), 'delete_btn', false, 'class="sub delete"');
+		html_print_submit_button (__('Delete incidents'), 'delete_btn', false, 'class="sub delete" style="margin-right: 5px;"');
 	}
 	
 	if (check_acl ($config["id_user"], 0, "IM")) {
@@ -391,10 +390,8 @@ else {
 	unset ($table);
 }
 
-echo '<br><br>';
-
 if (check_acl ($config["id_user"], 0, "IW")) {
-	echo '<div style="text-align:right; float:right; padding-right: 2px;">';
+	echo '<div style="text-align:right; float:right; padding-right: 5px;">';
 	echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;insert_form=1">';
 	html_print_submit_button (__('Create incident'), 'crt', false, 'class="sub next"');
 	echo '</form>';

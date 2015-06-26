@@ -239,7 +239,7 @@ else {
 	echo '<form name="accion_form" method="POST" action="index.php?sec=workspace&sec2=operation/incidents/incident&action=insert">';
 }
 
-echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%">';
+echo '<table cellpadding="4" cellspacing="4" class="databox filters" width="100%">';
 echo '<tr>
 		<td class="datos"><b>'.__('Incident').'</b></td>
 		<td colspan="3" class="datos">';
@@ -369,7 +369,7 @@ else {
 	html_print_textarea ("descripcion", 15, 80, $texto, 'style="height:200px;" disabled');
 }
 
-echo '</td></tr></table><div style="width: 98%; text-align:right;">';
+echo '</td></tr></table><div style="width: 100%; text-align:right;">';
 
 // Only if user is the used who opened incident or (s)he is admin
 if (isset ($id_inc) AND ((check_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"]))) {
@@ -396,8 +396,10 @@ if (isset ($id_inc)) {
 	echo __('Add note');
 	echo '</a>';
 	echo '</div><div>';
-	echo '<form id="add_note" name="nota" method="POST" action="index.php?sec=workspace&sec2=operation/incidents/incident_detail&insertar_nota=1&id='.$id_inc.'"><h4>'.__('Add note').'</h4>';
-	echo '<table cellpadding="4" cellspacing="4" class="databox" width="98%">
+	echo '<form id="add_note" name="nota" method="POST" action="index.php?sec=workspace&sec2=operation/incidents/incident_detail&insertar_nota=1&id='.
+																	$id_inc.'"><h4>'.__('Add note').'</h4>';
+	
+	echo '<table cellpadding="4" cellspacing="4" class="databox" width="100%">
 		<tr><td class="datos2"><textarea name="nota" rows="5" cols="70" style="height: 100px;"></textarea></td>
 		<td valign="bottom"><input name="addnote" type="submit" class="sub wand" value="'.__('Add').'"></td></tr>
 		</table></form></div><div>';

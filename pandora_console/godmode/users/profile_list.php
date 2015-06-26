@@ -289,8 +289,8 @@ if ($create_profile) {
 }
 
 $table = new stdClass();
-$table->cellpadding = 4;
-$table->cellspacing = 4;
+$table->cellpadding = 0;
+$table->cellspacing = 0;
 $table->class = 'databox data';
 $table->width = '100%';
 
@@ -327,7 +327,7 @@ $table->head['PM'] = "PM" . ui_print_help_tip (__('Systems management'), true);
 $table->head['operations'] = '<span title="Operations">' . __('Op.') . '</span>';
 
 $table->align = array_fill (1, 11, "center");
-$table->size = array_fill (1, 10, 40);
+$table->size = array_fill ("1%", "10%", "40%");
 
 $profiles = db_get_all_rows_in_table ("tperfil");
 if ($profiles === false) {
@@ -337,7 +337,7 @@ if ($profiles === false) {
 $img = html_print_image ("images/ok.png", true, array ("border" => 0));
 
 foreach ($profiles as $profile) {
-	$data['profiles'] = '<a href="index.php?sec=' . $sec . '&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'&pure='.$pure.'"><b>'.$profile["name"].'</b></a>';
+	$data['profiles'] = '<a href="index.php?sec=' . $sec . '&amp;sec2=godmode/users/configure_profile&id='.$profile["id_perfil"].'&pure='.$pure.'">'.$profile["name"].'</a>';
 	$data['IR'] = ($profile["incident_view"] ? $img : '');
 	$data['IW'] = ($profile["incident_edit"] ? $img : '');
 	$data['IM'] = ($profile["incident_management"] ? $img : '');
@@ -366,13 +366,14 @@ foreach ($profiles as $profile) {
 	array_push ($table->data, $data);
 }
 
-echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/users/configure_profile&pure='.$pure.'">';
 if (isset($data)) {
 	html_print_table ($table);
 }
 else {
 	echo "<div class='nf'>".__('There are no defined profiles')."</div>";
 }
+
+echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/users/configure_profile&pure='.$pure.'">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_input_hidden ('new_profile', 1);
 html_print_submit_button (__('Create'), "crt", false, 'class="sub next"');

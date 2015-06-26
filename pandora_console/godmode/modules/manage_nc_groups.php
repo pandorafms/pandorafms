@@ -199,7 +199,7 @@ $table->align = array ();
 $table->align[1] = 'left';
 $table->size = array ();
 $table->size[0] = '80%';
-$table->size[1] = '50px';
+$table->size[1] = '10%';
 $table->data = array ();
 
 $total_groups = db_get_all_rows_filter ('tnetwork_component_group', false, 'COUNT(*) AS total');

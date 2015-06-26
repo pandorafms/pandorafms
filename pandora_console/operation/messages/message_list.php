@@ -90,7 +90,7 @@ else { //messages received
 }
 
 if (empty ($messages)) {
-	echo '<div class="nf">'.__('There are no messages').'</div>';
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no messages.') ) );
 }
 else {
 	$table = new stdClass();
@@ -196,22 +196,28 @@ else {
 		}
 		array_push ($table->data, $data);
 	}
-	if ($show_sent)
-		echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/messages/message_list&show_sent=1&amp;multiple_delete=1">';
-	else
-		echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/messages/message_list&amp;multiple_delete=1">';
-			html_print_table($table);
-			echo "<div style='text-align: right; width:" . $table->width . "'>";
-				html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
-			echo "</div>";
-	echo "</form>";
+	html_print_table($table);
 }
+echo "<table width='100%'>";
+	echo "<tr>";
+		echo "<td>";
+			echo "<div style='float: right;'>";
+				if (!empty($messages)){
+					if ($show_sent)
+						echo '<form method="post" style="float:right;" action="index.php?sec=workspace&amp;sec2=operation/messages/message_list&show_sent=1&amp;multiple_delete=1">';
+					else
+						echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/messages/message_list&amp;multiple_delete=1">';
+								html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+					echo "</form>";
+				}
+				echo '<form method="post" style="float:right;" action="index.php?sec=workspace&sec2=operation/messages/message_edit">';
+					html_print_submit_button (__('Create message'), 'create', false, 'class="sub next" style="margin-right:5px;"');
+				echo "</form>";
+			echo "</div>";
+		echo "</td>";
+	echo "</tr>";
+echo "</table>";
 
-echo '<form method="post" action="index.php?sec=workspace&sec2=operation/messages/message_edit">';
-echo '<div class="action-buttons" style="width: 100%; ">';
-html_print_submit_button (__('Create message'), 'create', false, 'class="sub next"');
-echo "</div>";
-echo "</form>";
 ?>
 
 <script type="text/javascript">

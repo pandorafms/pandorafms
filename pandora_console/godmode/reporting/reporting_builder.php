@@ -520,9 +520,9 @@ switch ($action) {
 						__('Op.') . '</span>';
 					
 				//$table->size = array ();
-				$table->size[$next] = '5%';
-				$table->align[$next] = 'center';
-				$table->headstyle[$next] = 'text-align:center;';
+				$table->size[$next] = '10%';
+				$table->align[$next] = 'left';
+				$table->headstyle[$next] = 'text-align:left;';
 			
 			}
 			

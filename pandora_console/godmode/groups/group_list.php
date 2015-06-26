@@ -332,6 +332,8 @@ if (!empty($groups)) {
 	$table->align = array ();
 	$table->align[2] = 'left';
 	$table->align[5] = 'left';
+	$table->size[4] = '30%';
+	$table->size[5] = '10%';
 	$table->data = array ();
 	
 	$offset = (int)get_parameter('offset', 0);

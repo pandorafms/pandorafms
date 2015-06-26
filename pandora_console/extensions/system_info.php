@@ -421,7 +421,7 @@ function mainSystemInfo() {
 	$table->width = '100%';
 	$table->class = 'databox filters';
 	$table->align = array();
-	$table->align[1] = 'right';
+	
 	if ($pandora_diag) {
 		$table->data[0][0] = '<a href="#diag_info">' .
 			__('Pandora Diagnostic info') . "</a>";
@@ -429,23 +429,24 @@ function mainSystemInfo() {
 	else {
 		$table->data[0][0] = __('Pandora Diagnostic info');
 	}
-	$table->data[0][1] = html_print_checkbox('pandora_diag', 1, $pandora_diag, true);
+	$table->data[0][0] .= html_print_checkbox('pandora_diag', 1, $pandora_diag, true);
 	if ($system_info) {
-		$table->data[1][0] = '<a href="#system_info">' . __('System info') . '</a>';
+		$table->data[0][2] = '<a href="#system_info">' . __('System info') . '</a>';
 	}
 	else {
-		$table->data[1][0] = __('System info');
+		$table->data[0][2] = __('System info');
 	}
-	$table->data[1][1] = html_print_checkbox('system_info', 1, $system_info, true);
+	$table->data[0][2] .= html_print_checkbox('system_info', 1, $system_info, true);
+	
 	if ($log_info) {
-		$table->data[2][0] = '<a href="#log_info">' . __('Log Info') . '</a>';
+		$table->data[0][3] = '<a href="#log_info">' . __('Log Info') . '</a>';
 	}
 	else {
-		$table->data[2][0] = __('Log Info');
+		$table->data[0][3] = __('Log Info');
 	}
-	$table->data[2][1] = html_print_checkbox('log_info', 1, $log_info, true);
-	$table->data[3][0] = __('Number lines of log');
-	$table->data[3][1] = html_print_input_text('log_num_lines', $log_num_lines, __('Number lines of log'), 5, 10, true);
+	$table->data[0][3] .= html_print_checkbox('log_info', 1, $log_info, true);
+	$table->data[0][4] = __('Number lines of log');
+	$table->data[0][4] .= html_print_input_text('log_num_lines', $log_num_lines, __('Number lines of log'), 5, 10, true);
 	
 
 	$default_location = $config['attachment_store'] . '/last_info.zip';

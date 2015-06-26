@@ -120,25 +120,19 @@ else {
 // Form to add new tags or search tags
 if (!defined('METACONSOLE')) {
 	echo "<table border=0 cellpadding=4 cellspacing=4 class='databox data' width=100%>";
-	echo "<tr>";
-	echo "<td>";
-		echo '<b>' . __("Name") . "/" . __("Description") . '</b>';
-	echo "</td>";
-	echo "<td align=center>";
-		echo '<form method=post action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag=0">';
-		html_print_input_hidden ("search_tag", "1");
-		html_print_input_text ('tag_name', $tag_name, '', 30, 255, false);
-		echo "&nbsp;&nbsp;&nbsp;";
-		html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub search"');
-		echo "</form>";
-	echo "</td>";
-	echo "<td align=right>";
-		echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/tag/edit_tag&action=new">';
-		html_print_input_hidden ("create_tag", "1", true);
-		html_print_submit_button (__('Create tag'), 'create_button', false, 'class="sub next"');
-		echo "</form>";
-	echo "</td>";
-	echo "</tr>";
+		echo "<tr>";
+			echo "<td>";
+				echo '<b>' . __("Name") . "/" . __("Description") . '</b>';
+			echo "</td>";
+			echo "<td align=center>";
+				echo '<form method=post action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag=0">';
+				html_print_input_hidden ("search_tag", "1");
+				html_print_input_text ('tag_name', $tag_name, '', 30, 255, false);
+				echo "&nbsp;&nbsp;&nbsp;";
+				html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub search"');
+				echo "</form>";
+			echo "</td>";
+		echo "</tr>";
 	echo "</table>";
 }
 else {
@@ -247,18 +241,18 @@ if (!empty($result)) {
 	
 	html_print_table ($table);
 }
-if (defined("METACONSOLE")) {
-	echo "<table border=0 cellpadding=0 cellspacing=0 width=100%>";
-		echo "<tr>";
-			echo "<td align=right>";
-				echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/tag/edit_tag&action=new">';
-					html_print_input_hidden ("create_tag", "1", true);
-					html_print_submit_button (__('Create tag'), 'create_button', false, 'class="sub next"');
-				echo "</form>";
-			echo "</td>";
-		echo "</tr>";
-	echo "</table>";
-}
+
+echo "<table border=0 cellpadding=0 cellspacing=0 width=100%>";
+	echo "<tr>";
+		echo "<td align=right>";
+			echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/tag/edit_tag&action=new">';
+				html_print_input_hidden ("create_tag", "1", true);
+				html_print_submit_button (__('Create tag'), 'create_button', false, 'class="sub next"');
+			echo "</form>";
+		echo "</td>";
+	echo "</tr>";
+echo "</table>";
+
 
 enterprise_hook('close_meta_frame');
 

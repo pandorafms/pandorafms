@@ -181,25 +181,35 @@ if (!empty ($graphs)) {
 		array_push ($table->data, $data);
 	}
 	
-	echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graphs'>";
-	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
-	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
-	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
-	echo "</div>";
-	echo "</form>";
 }
 else {
-	echo "<div class='nf'>".__('There are no defined graphs')."</div>";
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined graphs.') ) );
 }
 
-if (check_acl ($config['id_user'], 0, "RW")) {
-	echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/graph_builder">';
-	echo '<div class="action-buttons" style="width: 100%;">';
-	html_print_submit_button (__('Create graph'), 'create', false, 'class="sub next"');
-	echo "</div>";
-	echo "</form>";
-}
+echo "<table width='100%'>";
+	echo "<tr>";
+		echo "<td>";
+			echo "<div style='float: right;'>";
+				if (!empty($graphs)){
+					echo "<form method='post' style='float:right;' action='index.php?sec=reporting&sec2=godmode/reporting/graphs'>";
+						html_print_input_hidden('multiple_delete', 1);
+						html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+					echo "</form>";
+				}
+				if (check_acl ($config['id_user'], 0, "RW")) {
+					echo '<form method="post" style="float:right;" action="index.php?sec=reporting&sec2=godmode/reporting/graph_builder">';
+						html_print_submit_button (__('Create graph'), 'create', false, 'class="sub next" style="margin-right:5px;"');
+					echo "</form>";
+				}
+			echo "</div>";
+		echo "</td>";
+	echo "</tr>";
+echo "</table>";
+
+
+
+
 ?>
 
 <script type="text/javascript">

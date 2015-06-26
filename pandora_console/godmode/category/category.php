@@ -136,9 +136,7 @@ if (!empty($result)) {
 	html_print_table ($table);
 	
 	if (defined('METACONSOLE')) {
-		echo "<table border=0 cellpadding=0 cellspacing=0 class='' width=100%>";
-		echo "<tr>";
-		echo "<td align=right>";
+		echo "<div style='width=100%; float:right;'>";
 			if(defined('METACONSOLE'))
 				echo '<form method="post" action="index.php?sec=advanced&sec2=godmode/category/edit_category&action=new&pure='.(int)$config['pure'].'">';
 			else
@@ -146,9 +144,7 @@ if (!empty($result)) {
 			html_print_input_hidden ("create_category", "1", true);
 			html_print_submit_button (__('Create category'), 'create_button', false, 'class="sub next"');
 			echo "</form>";
-		echo "</td>";
-		echo "</tr>";
-		echo "</table>";
+		echo "</div>";
 	}
 }
 else {
@@ -157,17 +153,13 @@ else {
 }
 // Form to add new categories or search categories
 if (!defined('METACONSOLE')) {
-	echo "<table border=0 cellpadding=4 cellspacing=4 class='' width=100%>";
-	echo "<tr>";
-	echo "<td align=right>";
+	echo "<div style='width=100%; float:right;'>";
 		echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action=new&pure='.(int)$config['pure'].'">';
 		html_print_input_hidden ("create_category", "1", true);
 		html_print_submit_button (__('Create category'),
 			'create_button', false, 'class="sub next"');
 		echo "</form>";
-	echo "</td>";
-	echo "</tr>";
-	echo "</table>";
+	echo "</div>";
 }
 enterprise_hook('close_meta_frame');
 

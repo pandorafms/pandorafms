@@ -152,7 +152,7 @@ if (isset($data)) {
 	echo "<form method='post' action='" . $config['homeurl'] . "index.php?sec=netf&sec2=godmode/netflow/nf_edit&pure=$pure'>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
-	echo "<div style=' text-align: right; width:" . $table->width . "'>";
+	echo "<div style=' float: right;'>";
 
 	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 	echo "</div>";
@@ -163,7 +163,7 @@ else {
 }
 
 echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=godmode/netflow/nf_edit_form&pure='.$pure.'">';
-echo "<div style='padding-top: 20px; text-align: right; width:" . $table->width . "'>";
+echo "<div style='margin-right: 5px; float: right;'>";
 html_print_submit_button (__('Create filter'), 'crt', false, 'class="sub wand"');
 echo "</div>";
 echo "</form>";

@@ -1077,7 +1077,7 @@ switch ($action) {
 								case "oracle":
 									if (isset($values['type'])) {
 										$values[
-											db_encapsule_fields_with_same_name_to_instructions(
+											db_escape_key_identifier(
 												"type")] = $values['type'];
 										unset($values['type']);
 									}
@@ -1335,7 +1335,7 @@ switch ($action) {
 								case "oracle":
 									if (isset($values['type'])) {
 										$values[
-											db_encapsule_fields_with_same_name_to_instructions(
+											db_escape_key_identifier(
 												"type")] = $values['type'];
 										unset($values['type']);
 									}

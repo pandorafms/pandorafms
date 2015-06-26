@@ -44,6 +44,9 @@ function config_create_value ($token, $value) {
 function config_update_value ($token, $value) {
 	global $config;
 	
+	// Include functions_io to can call __() function
+	include_once($config['homedir'] . '/include/functions_io.php');
+	
 	if ($token == 'list_ACL_IPs_for_API') {
 		$value = str_replace(array("\r\n", "\r", "\n"), ";",
 			io_safe_output($value));
@@ -167,7 +170,7 @@ function config_update_config () {
 						$license_info_key = get_parameter('license_info_key', '');
 						if (!empty($license_info_key)) {
 							$values = array("value" => $license_info_key);
-							$where = array("key" => 'customer_key');
+							$where = array(db_escape_key_identifier('key') => 'customer_key');
 							$update_manage_settings_result = db_process_sql_update('tupdate_settings', $values, $where);
 							if ($update_manage_settings_result === false)
 								$error_update[] = __('License information');

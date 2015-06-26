@@ -125,6 +125,11 @@ function db_encapsule_fields_with_same_name_to_instructions($field) {
 	}
 }
 
+// Alias for 'db_encapsule_fields_with_same_name_to_instructions'
+function db_escape_key_identifier($field) {
+	return db_encapsule_fields_with_same_name_to_instructions($field);
+}
+
 /**
  * Adds an audit log entry (new function in 3.0)
  *

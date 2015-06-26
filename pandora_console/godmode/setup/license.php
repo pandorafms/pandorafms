@@ -28,8 +28,10 @@ ui_print_page_header (__('License management'), "images/extensions.png", false, 
 
 if ($update_settings) {
 	foreach ($_POST['keys'] as $key => $value) {
-		db_process_sql_update('tupdate_settings',
-			array('value' => $value), array('key' => $key));
+		db_process_sql_update(
+			'tupdate_settings',
+			array('value' => $value),
+			array(db_escape_key_identifier('key') => $key));
 	}
 	
 	ui_print_success_message(__('License updated'));

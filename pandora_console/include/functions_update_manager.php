@@ -24,30 +24,13 @@ function update_manager_get_config_values() {
 	global $build_version;
 	global $pandora_version;
 	
-	switch ($config["dbtype"]) {
-		case "postgresql":
-		case "mysql":
-			$license = db_get_value(
-				db_encapsule_fields_with_same_name_to_instructions('value'),
-				'tupdate_settings',
-				db_encapsule_fields_with_same_name_to_instructions('key'),
-				'customer_key');
-			break;
-		case 'oracle':
-			$license = db_get_value(
-				'value',
-				'tupdate_settings',
-				'key',
-				'customer_key');
-			break;
-	}
+	$license = db_get_value(
+		'value',
+		'tupdate_settings',
+		db_escape_key_identifier('key'),
+		'customer_key');
 	
 	$limit_count = db_get_value_sql("SELECT count(*) FROM tagente");
-	
-	
-	
-	
-	
 	
 	return array(
 		'license' => $license,
@@ -497,8 +480,8 @@ function update_manager_set_current_package($current_package) {
 		$token = 'current_package';
 	}
 	
-	$col_value = db_encapsule_fields_with_same_name_to_instructions('value');
-	$col_key = db_encapsule_fields_with_same_name_to_instructions('key');
+	$col_value = 'value';
+	$col_key = db_escape_key_identifier('key');
 	
 	$value = db_get_value($col_value,
 		'tupdate_settings', $col_key, $token);
@@ -523,26 +506,11 @@ function update_manager_get_current_package() {
 	else {
 		$token = 'current_package';
 	}
-	
-	switch ($config["dbtype"]) {
-		case "postgresql":
-		case "mysql":
-			$current_update = db_get_value(
-				db_encapsule_fields_with_same_name_to_instructions('value'),
-				'tupdate_settings',
-				db_encapsule_fields_with_same_name_to_instructions('key'),
-				$token);
-			break;
-		case "oracle":
-			$current_update = db_get_value(
-				'value',
-				'tupdate_settings',
-				'key',
-				$token);
-			break;
-	}
-	
-	
+	$current_update = db_get_value(
+		'value',
+		'tupdate_settings',
+		db_escape_key_identifier('key'),
+		$token);
 	
 	if ($current_update === false) {
 		$current_update = 0;

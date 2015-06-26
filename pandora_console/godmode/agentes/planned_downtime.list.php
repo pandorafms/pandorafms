@@ -212,14 +212,14 @@ $module_name 	= $filter_params['module_name'] 	= (string) (!empty($module_id) ? 
 $filter_params_str = http_build_query($filter_params);
 
 // Table filter
-$table = new StdClass();
-$table->class = 'databox filters';
-$table->width = '100%';
-$table->rowstyle = array();
-$table->rowstyle[0] = "background-color: #f9faf9;";
-$table->rowstyle[1] = "background-color: #f9faf9;";
-$table->rowstyle[2] = "background-color: #f9faf9;";
-$table->data = array();
+$table_form = new StdClass();
+$table_form->class = 'databox filters';
+$table_form->width = '100%';
+$table_form->rowstyle = array();
+$table_form->rowstyle[0] = "background-color: #f9faf9;";
+$table_form->rowstyle[1] = "background-color: #f9faf9;";
+$table_form->rowstyle[2] = "background-color: #f9faf9;";
+$table_form->data = array();
 
 $row = array();
 
@@ -231,7 +231,7 @@ $date_inputs .= "&nbsp;&nbsp;";
 $date_inputs .= __('To') . '&nbsp;' . html_print_input_text('date_to', $date_to, '', 10, 10, true);
 $row[] = $date_inputs;
 
-$table->data[] = $row;
+$table_form->data[] = $row;
 
 $row = array();
 
@@ -241,7 +241,7 @@ $row[] = __('Execution type') . '&nbsp;' . html_print_select($execution_type_fie
 // Show past downtimes
 $row[] = __('Show past downtimes') . '&nbsp;' . html_print_checkbox ("archived", 1, $show_archived, true);
 
-$table->data[] = $row;
+$table_form->data[] = $row;
 
 $row = array();
 
@@ -262,11 +262,8 @@ $row[] = __('Module') . '&nbsp;' . html_print_autocomplete_modules('module_name'
 
 $row[] = html_print_submit_button('Search', 'search', false, 'class="sub search"', true);
 
-$table->data[] = $row;
+$table_form->data[] = $row;
 
-echo "<form method='post' action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list'>";
-html_print_table($table);
-echo "</form>";
 
 // View available downtimes present in database (if any of them)
 $table = new StdClass();
@@ -438,9 +435,13 @@ else {
 }
 
 if (!$downtimes) {
-	echo '<div class="nf">'.__('No planned downtime').'</div>';
+	require_once ($config['homedir'] . "/general/firts_task/planned_downtime.php");
 }
 else {
+	echo "<form method='post' action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list'>";
+		html_print_table($table_form);
+	echo "</form>";
+	
 	ui_pagination($downtimes_number, "index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list&$filter_params_str", $offset);
 
 	foreach ($downtimes as $downtime) {
@@ -571,18 +572,20 @@ else {
 		array_push ($table->data, $data);
 	}
 	html_print_table ($table);
-}
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 
-echo '<br>';
-echo '<div style="display: inline;">';
-html_print_button(__('Export to CSV'), 'csv_export', false, "location.href='godmode/agentes/planned_downtime.export_csv.php?$filter_params_str'", 'class="sub next"');
-echo '</div>';
-echo '&nbsp;';
-echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
-html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
-echo '</form>';
-echo '</div>';
+	echo '<br>';
+	echo '<div style="display: inline;">';
+		html_print_button(__('Export to CSV'), 'csv_export', false, 
+			"location.href='godmode/agentes/planned_downtime.export_csv.php?$filter_params_str'", 'class="sub next"');
+	echo '</div>';
+	echo '&nbsp;';
+	echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
+	html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
+	echo '</form>';
+	echo '</div>';
+}
+
 
 
 ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");

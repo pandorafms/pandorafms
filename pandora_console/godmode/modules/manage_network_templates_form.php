@@ -141,11 +141,11 @@ else {
 
 echo '<table width="100%" cellpadding="4" cellspacing="4" class="databox filters">';
 
-echo '<tr><td class="datos">'.__('Name').'</td><td class="datos">';
+echo '<tr><td class="datos">' . "<b>" . __('Name') . "</b>" . '</td><td class="datos">';
 html_print_input_text ("name", $name, '', 63);
 echo '</td></tr>';
 
-echo '<tr><td class="datos2">'.__('Description').'</td>';
+echo '<tr><td class="datos2">' . "<b>" . __('Description') . "</b>" . '</td>';
 echo '<td class="datos2">';
 html_print_textarea ("description", 2, 60, $description);
 echo "</td></tr>";
@@ -233,11 +233,13 @@ if ($id_np > 0) {
 	$table->cellspacing = 0;
 	$table->class = "databox filters";
 	
+	$table->style[0] = 'font-weight: bold';
+	
 	//The form to submit when adding a list of components
 	
 	$filter = '<form name="filter_component" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&ncgroup='.$ncgroup.'&id_np='.$id_np.'#filter">';
 	$filter .= html_print_input_text ('ncfilter', $ncfilter, '', 50, 255, true);
-	$filter .= '&nbsp;'.html_print_submit_button (__('Filter'), 'ncgbutton', false, 'class="sub search"', true);
+	$filter .= '&nbsp;&nbsp;'.html_print_submit_button (__('Filter'), 'ncgbutton', false, 'class="sub search"', true);
 	$filter .= '</form>';
 	
 	$group_filter = '<form name="filter_group" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'#filter">';

@@ -208,80 +208,81 @@ if (empty ($result)) {
 	$result = array ();
 	$count = 0;
 }
+if ($count >= 1) {
+	echo '<form name="visualizacion" method="post" action="index.php?sec=workspace&amp;sec2=operation/incidents/incident">';
 
-echo '<form name="visualizacion" method="post" action="index.php?sec=workspace&amp;sec2=operation/incidents/incident">';
+	echo '<table class="databox filters" cellpadding="4" cellspacing="4" width="100%"><tr>
+	<td valign="middle"><h3>'.__('Filter').'</h3>';
 
-echo '<table class="databox filters" cellpadding="4" cellspacing="4" width="100%"><tr>
-<td valign="middle"><h3>'.__('Filter').'</h3>';
+	$fields = incidents_get_status ();
+	echo "<b>" . __("Incidents:") . "</b>" . '&nbsp;&nbsp;';
+	 html_print_select ($fields, "estado", $estado, 'javascript:this.form.submit();', __('All incidents'), -1, false, false, false, 'w155');
 
-$fields = incidents_get_status ();
-echo "<b>" . __("Incidents:") . "</b>" . '&nbsp;&nbsp;';
- html_print_select ($fields, "estado", $estado, 'javascript:this.form.submit();', __('All incidents'), -1, false, false, false, 'w155');
+	//Legend
+	echo '</td><td valign="middle"><noscript>';
+	html_print_submit_button (__('Show'), 'submit-estado', false, array ("class" => "sub"));
 
-//Legend
-echo '</td><td valign="middle"><noscript>';
-html_print_submit_button (__('Show'), 'submit-estado', false, array ("class" => "sub"));
+	echo '</noscript></td><td rowspan="7" class="f9" style="padding-left: 30px; vertical-align: top;"><h3>'.__('Status').'</h3>';
+	foreach (incidents_get_status () as $id => $str) {
+		incidents_print_status_img ($id);
+		echo ' - ' . $str . '<br />';
+	}
 
-echo '</noscript></td><td rowspan="7" class="f9" style="padding-left: 30px; vertical-align: top;"><h3>'.__('Status').'</h3>';
-foreach (incidents_get_status () as $id => $str) {
-	incidents_print_status_img ($id);
-	echo ' - ' . $str . '<br />';
+	echo '</td><td rowspan="7" class="f9" style="padding-left: 30px; vertical-align: top;"><h3>'.__('Priority').'</h3>';
+	foreach (incidents_get_priorities () as $id => $str) {
+		incidents_print_priority_img ($id);
+		echo ' - ' . $str . '<br />';
+	}
+
+	echo '</td></tr><tr><td>';
+
+	$fields = incidents_get_priorities ();
+
+	echo "<b>" . __("Priorities:") . "</b>" . '&nbsp;&nbsp;';
+	html_print_select ($fields, "prioridad", $prioridad, 'javascript:this.form.submit();', __('All priorities'), -1,false,false,false,'w155');
+
+	echo '</td></tr><tr><td>';
+
+	echo "<b>" . __("Users:") . "</b>" . '&nbsp;&nbsp;';
+	html_print_select (users_get_info (), "usuario", $usuario, 'javascript:this.form.submit();', __('All users'), "", false, false, false, "w155");
+
+	echo '</td></tr><tr><td>';
+
+	$agents_incidents = agents_get_agents(false, array('id_agente', 'nombre'));
+
+	if ($agents_incidents === false) {
+		$agents_incidents = array();
+	}
+
+	$result_agent_incidents = array();
+	foreach ($agents_incidents as $agent_incident) {
+		$result_agent_incidents[$agent_incident['id_agente']] = $agent_incident['nombre'];
+	}
+
+	echo "<b>" . __("Agents:") .  "</b>" . '&nbsp;&nbsp;';
+	html_print_select ($result_agent_incidents, "agent_search",
+		$agent_search, 'javascript:this.form.submit();', __('All agents'),
+		"", false, false, false, "w155");
+
+	echo '</td></tr><tr><td colspan=3>';
+
+	echo "<b>" . __("Groups:") . "</b>" . '&nbsp;&nbsp;';
+	html_print_select_groups($config["id_user"], "IR", true, "grupo", $grupo, 'javascript:this.form.submit();', '', '',false,false,false,'w155');
+
+	//echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+	echo '</td></tr><tr><td colspan=3>';
+
+	echo "<b>" . __("Free text:") . "</b>" . '&nbsp;&nbsp;';
+	html_print_input_text ('texto', $texto, '', 45);
+	echo '&nbsp;';
+	html_print_input_image ("submit", "images/zoom.png", __('Search'), 'padding:0;', false, array ("alt" => __('Search'))); 
+
+	echo "</td></tr></table>";
+	echo '</form>';
 }
-
-echo '</td><td rowspan="7" class="f9" style="padding-left: 30px; vertical-align: top;"><h3>'.__('Priority').'</h3>';
-foreach (incidents_get_priorities () as $id => $str) {
-	incidents_print_priority_img ($id);
-	echo ' - ' . $str . '<br />';
-}
-
-echo '</td></tr><tr><td>';
-
-$fields = incidents_get_priorities ();
-
-echo "<b>" . __("Priorities:") . "</b>" . '&nbsp;&nbsp;';
-html_print_select ($fields, "prioridad", $prioridad, 'javascript:this.form.submit();', __('All priorities'), -1,false,false,false,'w155');
-
-echo '</td></tr><tr><td>';
-
-echo "<b>" . __("Users:") . "</b>" . '&nbsp;&nbsp;';
-html_print_select (users_get_info (), "usuario", $usuario, 'javascript:this.form.submit();', __('All users'), "", false, false, false, "w155");
-
-echo '</td></tr><tr><td>';
-
-$agents_incidents = agents_get_agents(false, array('id_agente', 'nombre'));
-
-if ($agents_incidents === false) {
-	$agents_incidents = array();
-}
-
-$result_agent_incidents = array();
-foreach ($agents_incidents as $agent_incident) {
-	$result_agent_incidents[$agent_incident['id_agente']] = $agent_incident['nombre'];
-}
-
-echo "<b>" . __("Agents:") .  "</b>" . '&nbsp;&nbsp;';
-html_print_select ($result_agent_incidents, "agent_search",
-	$agent_search, 'javascript:this.form.submit();', __('All agents'),
-	"", false, false, false, "w155");
-
-echo '</td></tr><tr><td colspan=3>';
-
-echo "<b>" . __("Groups:") . "</b>" . '&nbsp;&nbsp;';
-html_print_select_groups($config["id_user"], "IR", true, "grupo", $grupo, 'javascript:this.form.submit();', '', '',false,false,false,'w155');
-
-//echo "&nbsp;&nbsp;&nbsp;&nbsp;";
-echo '</td></tr><tr><td colspan=3>';
-
-echo "<b>" . __("Free text:") . "</b>" . '&nbsp;&nbsp;';
-html_print_input_text ('texto', $texto, '', 45);
-echo '&nbsp;';
-html_print_input_image ("submit", "images/zoom.png", __('Search'), 'padding:0;', false, array ("alt" => __('Search'))); 
-
-echo "</td></tr></table>";
-echo '</form>';
 
 if ($count < 1) {
-	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No incidents match your search filter.') ) );
+	require_once ($config['homedir'] . "/general/firts_task/incidents.php");
 }
 else {
 	// TOTAL incidents
@@ -388,14 +389,15 @@ else {
 	echo '</div>';
 	echo '</form>';
 	unset ($table);
+	if (check_acl ($config["id_user"], 0, "IW")) {
+		echo '<div style="text-align:right; float:right; padding-right: 5px;">';
+		echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;insert_form=1">';
+		html_print_submit_button (__('Create incident'), 'crt', false, 'class="sub next"');
+		echo '</form>';
+		echo '</div>';
+	}
 }
 
-if (check_acl ($config["id_user"], 0, "IW")) {
-	echo '<div style="text-align:right; float:right; padding-right: 5px;">';
-	echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;insert_form=1">';
-	html_print_submit_button (__('Create incident'), 'crt', false, 'class="sub next"');
-	echo '</form>';
-	echo '</div>';
-}
+
 echo '<div style="clear:both">&nbsp;</div>';
 ?>

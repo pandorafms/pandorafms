@@ -182,33 +182,30 @@ if (!empty ($graphs)) {
 	}
 	
 	html_print_table ($table);
+	
+	echo "<table width='100%'>";
+		echo "<tr>";
+			echo "<td>";
+				echo "<div style='float: right;'>";
+					if (!empty($graphs)){
+						echo "<form method='post' style='float:right;' action='index.php?sec=reporting&sec2=godmode/reporting/graphs'>";
+							html_print_input_hidden('multiple_delete', 1);
+							html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+						echo "</form>";
+					}
+					if (check_acl ($config['id_user'], 0, "RW")) {
+						echo '<form method="post" style="float:right;" action="index.php?sec=reporting&sec2=godmode/reporting/graph_builder">';
+							html_print_submit_button (__('Create graph'), 'create', false, 'class="sub next" style="margin-right:5px;"');
+						echo "</form>";
+					}
+				echo "</div>";
+			echo "</td>";
+		echo "</tr>";
+	echo "</table>";
 }
 else {
-	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no defined graphs.') ) );
+	require_once ($config['homedir'] . "/general/firts_task/custom_graphs.php");
 }
-
-echo "<table width='100%'>";
-	echo "<tr>";
-		echo "<td>";
-			echo "<div style='float: right;'>";
-				if (!empty($graphs)){
-					echo "<form method='post' style='float:right;' action='index.php?sec=reporting&sec2=godmode/reporting/graphs'>";
-						html_print_input_hidden('multiple_delete', 1);
-						html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
-					echo "</form>";
-				}
-				if (check_acl ($config['id_user'], 0, "RW")) {
-					echo '<form method="post" style="float:right;" action="index.php?sec=reporting&sec2=godmode/reporting/graph_builder">';
-						html_print_submit_button (__('Create graph'), 'create', false, 'class="sub next" style="margin-right:5px;"');
-					echo "</form>";
-				}
-			echo "</div>";
-		echo "</td>";
-	echo "</tr>";
-echo "</table>";
-
-
-
 
 ?>
 

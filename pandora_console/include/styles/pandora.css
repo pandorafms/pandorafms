@@ -460,7 +460,7 @@ div#login_in, #login_f {
 	height: 0px;
 	border-right: 13px solid transparent;
 	border-left: 25px solid transparent;
-	border-bottom: 18px solid #80BA27;
+	border-bottom: 18px solid #82B92E;
 	left: 16px;
 	position: relative;
 }
@@ -559,17 +559,18 @@ DIV.login_nick, DIV.login_pass {
 }
 
 DIV.login_nick>input, DIV.login_pass>input {
-	height: 25px;
+	height: 20px;
 	border-radius:0px;
 	margin-left: 10px;
 }
 
 DIV.login_nick>input:focus,DIV.login_pass>input:focus {
     outline-width: 0px;
-    border-color: #373737;
-    background-color: #373737;
-    font-size: 12px;
-    box-shadow: 0px 0px 3px 3px #e2e2e2;
+	border-color: #82B92E;
+	background-color: #82B92E;
+	font-size: 12px;
+	height: 20px;
+	box-shadow: 0px 0px 3px 3px #82B92E;
 }
 
 DIV.login_nick>img, DIV.login_pass>img {
@@ -632,7 +633,7 @@ input.login_password {
 	padding-left: 8px;
 	width: 179px;
 	color: #222;
-	height: 18px;
+	height: 20px;
 }
 .databox_error {
 	width: 657px !important;
@@ -1386,7 +1387,6 @@ table.databox {
 	padding: 9px 7px;
 	font-weight: normal;
 	color: #fff;
-	padding-left: 10px;
 }
 .databox td {
 	#border-bottom: 1px solid #E2E2E2;
@@ -2909,7 +2909,6 @@ table#policy_modules td * {
 }
 
 .databox.data td{
-	padding-left: 10px;
 	border-bottom: 1px solid #E2E2E2;
 }
 
@@ -2923,8 +2922,8 @@ table#policy_modules td * {
 }
 
 .databox td{
-	padding-left: 10px;
-	padding-right: 10px;
+	padding-left: 9px;
+	padding-right: 9px;
 	padding-top: 7px;
 	padding-bottom: 7px;
 }

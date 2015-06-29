@@ -95,36 +95,43 @@ function reporting_get_name($id_report) {
 	return db_get_value('name', 'treport', 'id_report', $id_report);
 }
 
-function reporting_make_reporting_data($id_report, $date, $time,
-	$period = null, $type = 'dinamic', $force_width_chart = null,
-	$force_height_chart = null) {
+function reporting_make_reporting_data($report = null, $id_report,
+	$date, $time, $period = null, $type = 'dinamic',
+	$force_width_chart = null, $force_height_chart = null) {
 	
 	global $config;
 	
 	$return = array();
 	
-	$report = db_get_row ('treport', 'id_report', $id_report);
+	if (!empty($report)) {
+		$contents = $report['contents'];
+	}
+	else {
+		$report = db_get_row ('treport', 'id_report', $id_report);
+		
+		switch ($config["dbtype"]) {
+			case "mysql":
+				$contents = db_get_all_rows_field_filter ("treport_content",
+					"id_report", $id_report, "`order`");
+				break;
+			case "postgresql":
+				$contents = db_get_all_rows_field_filter ("treport_content",
+					"id_report", $id_report, '"order"');
+				break;
+			case "oracle":
+				$contents = db_get_all_rows_field_filter ("treport_content",
+					"id_report", $id_report, '"order"');
+				break;
+		}
+	}
+	
+	$datetime = strtotime($date . ' ' . $time);
+	$report["datetime"] = $datetime;
 	$report["group"] = $report['id_group'];
 	$report["group_name"] = groups_get_name ($report['id_group']);
 	$report['contents'] = array();
-	$datetime = strtotime($date . ' ' . $time);
-	$report["datetime"] = $datetime;
 	
-	switch ($config["dbtype"]) {
-		case "mysql":
-			$contents = db_get_all_rows_field_filter ("treport_content",
-				"id_report", $id_report, "`order`");
-			break;
-		case "postgresql":
-			$contents = db_get_all_rows_field_filter ("treport_content",
-				"id_report", $id_report, '"order"');
-			break;
-		case "oracle":
-			$contents = db_get_all_rows_field_filter ("treport_content",
-				"id_report", $id_report, '"order"');
-			break;
-	}
-	if ($contents === false) {
+	if (empty($contents)) {
 		return reporting_check_structure_report($report);
 	}
 	
@@ -477,9 +484,14 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 	
 	$edge_interval = 10;
 	
-	$slas = db_get_all_rows_field_filter (
-		'treport_content_sla_combined',
-		'id_report_content', $content['id_rc']);
+	if (empty($content['subitems'])) {
+		$slas = db_get_all_rows_field_filter (
+			'treport_content_sla_combined',
+			'id_report_content', $content['id_rc']);
+	}
+	else {
+		$slas = $content['subitems'];
+	}
 	
 	if (empty($slas)) {
 		$return['failed'] = __('There are no SLAs defined');
@@ -929,12 +941,19 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 	$top_n_value = $content['top_n_value'];
 	$show_graph = $content['show_graph'];
 	
-	//Get all the related data
-	$sql = sprintf("SELECT id_agent_module, server_name
-		FROM treport_content_item
-		WHERE id_report_content = %d", $content['id_rc']);
 	
-	$tops = db_process_sql ($sql);
+	
+	if (empty($content['subitems'])) {
+		//Get all the related data
+		$sql = sprintf("SELECT id_agent_module, server_name
+			FROM treport_content_item
+			WHERE id_report_content = %d", $content['id_rc']);
+		
+		$tops = db_process_sql ($sql);
+	}
+	else {
+		$tops = $content['subitems'];
+	}
 	
 	// Get chart
 	reporting_set_conf_charts($width, $height, $only_image, $type,
@@ -1727,13 +1746,22 @@ function reporting_exception($report, $content, $type = 'dinamic',
 	
 	
 	
-	//Get all the related data
-	$sql = sprintf("
-		SELECT id_agent_module, server_name, operation
-		FROM treport_content_item
-		WHERE id_report_content = %d", $content['id_rc']);
 	
-	$exceptions = db_process_sql ($sql);
+	
+	if (empty($content['subitems'])) {
+		//Get all the related data
+		$sql = sprintf("
+			SELECT id_agent_module, server_name, operation
+			FROM treport_content_item
+			WHERE id_report_content = %d", $content['id_rc']);
+		
+		$exceptions = db_process_sql ($sql);
+	}
+	else {
+		$exceptions = $content['subitems'];
+	}
+	
+	
 	if ($exceptions === false) {
 		$return['failed'] = __('There are no Agent/Modules defined');
 	}
@@ -3729,14 +3757,21 @@ function reporting_availability($report, $content) {
 	}
 	
 	
-	$sql = sprintf("
-		SELECT id_agent_module,
-			server_name, operation
-		FROM treport_content_item
-		WHERE id_report_content = %d",
-		$content['id_rc']);
+	if (empty($content['subitems'])) {
+		$sql = sprintf("
+			SELECT id_agent_module,
+				server_name, operation
+			FROM treport_content_item
+			WHERE id_report_content = %d",
+			$content['id_rc']);
+		
+		$items = db_process_sql ($sql);
+	}
+	else {
+		$items = $content['subitems'];
+	}
 	
-	$items = db_process_sql ($sql);
+
 	
 	
 	$data = array();
@@ -3964,9 +3999,16 @@ function reporting_general($report, $content) {
 	$return["max"]["agent"] = null;
 	$return["max"]["module"] = null;
 	
-	$generals = db_get_all_rows_filter(
-		'treport_content_item',
-		array('id_report_content' => $content['id_rc']));
+	if (empty($content['subitems'])) {
+		$generals = db_get_all_rows_filter(
+			'treport_content_item',
+			array('id_report_content' => $content['id_rc']));
+	}
+	else {
+		$generals = $content['subitems'];
+	}
+	
+	
 	if (empty($generals)) {
 		$generals = array();
 	}

@@ -22,14 +22,29 @@ function pluginreg_extension_main () {
 		require ("general/noaccess.php");
 		return;
 	}
-	
+	ui_require_css_file ('firts_task');
 	ui_print_page_header (__('Plugin registration'), "images/extensions.png", false, "", true, "" );
 	
-	echo "<div class=notify>";
-	printf(__("This extension makes registration of server plugins more easy. Here you can upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please refer to documentation on how to obtain and use Pandora FMS Server Plugins.<br><br>You can get more plugins in our <a href='%s'>Public Resource Library</a>") , "http://pandorafms.com/Library/Library/");
-	echo "</div>";
-	
-	echo "<br><br>";
+	echo '<div class="new_task">
+			<div class="image_task">';
+				echo html_print_image("images/firts_task/icono_grande_import.png", true, array("title" => __("") ));
+			echo '</div>';
+				echo '<div class="text_task">';
+					echo '<h3>' . __("Plugin registration") . '</h3>';
+					echo '<p id="description_task">' . 
+					__("This extension makes registration of server plugins more easy. 
+						Here you can upload a server plugin in Pandora FMS 3.x zipped format (.pspz). 
+						Please refer to documentation on how to obtain and use Pandora FMS Server Plugins.
+						<br><br>You can get more plugins in our <a href='http://pandorafms.com/Library/Library/'>Public Resource Library</a> ") . '</p>';
+						// Upload form
+					echo "<form name='submit_plugin' method='post' enctype='multipart/form-data'>";
+					echo '<table class="" id="table1" width="100%" border="0" cellpadding="4" cellspacing="4">';
+					echo "<tr><td class='datos'><input type='file' name='plugin_upload' />";
+					echo "<td class='datos'><input type='submit' class='sub next' value='".__('Upload')."' />";
+					echo "</form></table>";
+				echo '</div>';
+	echo '</div>';
+
 	
 	$zip = null;
 	$upload = false;
@@ -408,15 +423,6 @@ function pluginreg_extension_main () {
 			}
 		}
 	}
-	
-	// Upload form
-	echo "<form name='submit_plugin' method='post' enctype='multipart/form-data'>";
-	echo '<table class="databox" id="table1" width="100%" border="0" cellpadding="4" cellspacing="4">';
-	echo "<tr><td class='datos'><input type='file' name='plugin_upload' />";
-	echo "<td class='datos'><input type='submit' class='sub next' value='".__('Upload')."' />";
-	echo "</form></table>";
-	
-	return;
 }
 
 extensions_add_godmode_menu_option (__('Register plugin'), 'PM','gservers', null, "v1r1");

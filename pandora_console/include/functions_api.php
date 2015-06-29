@@ -8049,40 +8049,46 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-
+	
 	if (is_nan($id_module) || $id_module <= 0) {
 		returnError('error_module_graph', __(''));
 		return;
 	}
-
+	
 	$id_exist = (bool) db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
-
+	
 	if (!$id_exist) {
 		// returnError('id_not_found');
 		return;
 	}
-
-	$graph_seconds =(!empty($other) && isset($other['data'])) ? $other['data'] : 3600; // 1 hour by default
-
+	
+	$graph_seconds =
+		(!empty($other) && isset($other['data']))
+		?
+		$other['data']
+		:
+		SECONDS_1HOUR; // 1 hour by default
+	
 	if (is_nan($graph_seconds) || $graph_seconds <= 0) {
 		// returnError('error_module_graph', __(''));
 		return;
 	}
 	
 	// Get the html item
-	$graph_html = grafico_modulo_sparse($id_module, $graph_seconds, false, 600, 300, '',
-									'', false, false, true, time(), '', 0, 0, true, true,
-									ui_get_full_url(false) . '/', 1, false, '', false, true);
-
+	$graph_html = grafico_modulo_sparse(
+		$id_module, $graph_seconds, false, 600, 300, '',
+		'', false, false, true, time(), '', 0, 0, true, true,
+		ui_get_full_url(false) . '/', 1, false, '', false, true);
+	
 	$graph_image_file_encoded = false;
-
+	
 	// Get the src of the html item
 	if (preg_match("/<img src='(.+)'>/", $graph_html, $matches)) {
 		if (isset($matches) && isset($matches[1])) {
 			$file_url = $matches[1];
 			// Get the file
 			$graph_image_file = file_get_contents($file_url);
-
+			
 			if ($graph_image_file !== false) {
 				// Encode the file
 				$graph_image_file_encoded = base64_encode($graph_image_file);

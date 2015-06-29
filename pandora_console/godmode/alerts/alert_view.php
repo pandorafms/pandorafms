@@ -255,9 +255,9 @@ if ($template['time_from'] == $template['time_to']) {
 }
 else {
 	$from_array = explode(':', $template['time_from']);
-	$from = $from_array[0] * 3600 + $from_array[1] * 60 + $from_array[2];
+	$from = $from_array[0] * SECONDS_1HOUR + $from_array[1] * SECONDS_1MINUTE + $from_array[2];
 	$to_array = explode(':', $template['time_to']);
-	$to = $to_array[0] * 3600 + $to_array[1] * 60 + $to_array[2];
+	$to = $to_array[0] * SECONDS_1HOUR + $to_array[1] * SECONDS_1MINUTE + $to_array[2];
 	if ($to > $from) {
 		if ($template['time_from'] != '00:00:00') {
 			$table_time->head[0] = '00:00:00<br>-<br>' . $template['time_from'];
@@ -296,7 +296,11 @@ unset($table_time);
 $table_conditions->data[] = $data;
 
 $data[0] = __('Use special days list');
-$data[1] = (isset($alert['special_day']) && $alert['special_day'] == 1) ? __('Yes') : __('No');
+$data[1] = (isset($alert['special_day']) && $alert['special_day'] == 1)
+	?
+	__('Yes')
+	:
+	__('No');
 $table_conditions->data[] = $data;
 
 $data[0] = __('Time threshold');
@@ -372,7 +376,7 @@ else {
 				else {
 					$table->head[$k] = '#' . $k;
 				}
-			}			
+			}
 		}
 		
 		$action_threshold = $action['module_action_threshold'] > 0 ? $action['module_action_threshold'] : $action['action_threshold'];
@@ -523,21 +527,21 @@ else {
 	$table->style[3] = 'width: 25%;';
 	$table->style[3] = 'font-weight: bold; width: 25%;';
 	$table->title = __('Recovering fields') . ui_print_help_tip(__('Fields passed to the command executed by this action when the alert is recovered'), true);
-
+	
 	$table->head[0] = __('Field') . ui_print_help_tip(__('Fields configured on the command associated to the action'), true);
 	$table->head[1] = __('Firing fields') . ui_print_help_tip(__('Fields used on execution when the alert is fired'), true);
 	$table->head[2] = __('Template recovery fields') . ui_print_help_tip(__('Recovery fields configured in alert template'), true);
 	$table->head[3] = __('Action recovery fields') . ui_print_help_tip(__('Recovery fields configured in alert action'), true);
 	$table->head[4] = __('Executed on recovery') . ui_print_help_tip(__('Fields used on execution when the alert is recovered'), true);
 	$table->style[4] = 'font-weight: bold;';
-
+	
 	foreach($firing_fields as $kaction => $firing) {
 		$data = array();
 		$command_preview = $firing_fields[$kaction]['command'];
 		$fieldn = 1;
 		foreach ($firing['description'] as $field => $desc) {
 			$data[0] = $desc;
-
+			
 			if (!empty($data[0])) {
 				$data[0] = '<b>' . $data[0] . '</b><br>';
 			}
@@ -609,7 +613,7 @@ $('#firing_action_select').change(function() {
 		$('.action_details').show();
 	}
 	
-
+	
 	$('.firing_action').hide();
 	if($(this).val() != -1) {
 		$('.firing_action_' + $(this).val()).show();

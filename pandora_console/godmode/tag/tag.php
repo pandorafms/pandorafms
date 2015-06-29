@@ -117,52 +117,53 @@ else {
 	$result = tags_search_tag(false, $filter);
 }
 
-// Form to add new tags or search tags
-if (!defined('METACONSOLE')) {
-	echo "<table border=0 cellpadding=4 cellspacing=4 class='databox data' width=100%>";
-		echo "<tr>";
-			echo "<td>";
-				echo '<b>' . __("Name") . "/" . __("Description") . '</b>';
-			echo "</td>";
-			echo "<td align=center>";
-				echo '<form method=post action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag=0">';
-				html_print_input_hidden ("search_tag", "1");
-				html_print_input_text ('tag_name', $tag_name, '', 30, 255, false);
-				echo "&nbsp;&nbsp;&nbsp;";
-				html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub search"');
-				echo "</form>";
-			echo "</td>";
-		echo "</tr>";
-	echo "</table>";
-}
-else {
-	
-	$filters = '<form method=post class="filters_form" action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag=0">';
-	$filters .=  "<table border=0 cellpadding=0 cellspacing=0 class=databox_filters width=70%>";
-	$filters .= "<tr>";
-	$filters .= "<td>";
-	$filters .= __("Name") . "/" . __("Description");
-	$filters .= "&nbsp;&nbsp;";
-	$filters .= html_print_input_hidden ("search_tag", "1",true);
-	$filters .= html_print_input_text ('tag_name', $tag_name, '', 30, 255, true);
-	$filters .= "</td>";
-	$filters .= "<td>";
-	$filters .= html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub search"',true);
-	$filters .= "</td>";
-	$filters .= "</tr>";
-	$filters .= "</table>";
-	$filters .= "</form>";
-	ui_toggle($filters, __("Show Options"));
-}
-
-// Prepare pagination
-ui_pagination ($total_tags, $url);
-
-// Display tags previously filtered or not
-$rowPair = true;
-$iterator = 0;
-
 if (!empty($result)) {
+	// Form to add new tags or search tags
+	if (!defined('METACONSOLE')) {
+		echo "<table border=0 cellpadding=4 cellspacing=4 class='databox data' width=100%>";
+			echo "<tr>";
+				echo "<td>";
+					echo '<b>' . __("Name") . "/" . __("Description") . '</b>';
+				echo "</td>";
+				echo "<td align=center>";
+					echo '<form method=post action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag=0">';
+					html_print_input_hidden ("search_tag", "1");
+					html_print_input_text ('tag_name', $tag_name, '', 30, 255, false);
+					echo "&nbsp;&nbsp;&nbsp;";
+					html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub search"');
+					echo "</form>";
+				echo "</td>";
+			echo "</tr>";
+		echo "</table>";
+	}
+	else {
+		
+		$filters = '<form method=post class="filters_form" action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag=0">';
+		$filters .=  "<table border=0 cellpadding=0 cellspacing=0 class=databox_filters width=70%>";
+		$filters .= "<tr>";
+		$filters .= "<td>";
+		$filters .= __("Name") . "/" . __("Description");
+		$filters .= "&nbsp;&nbsp;";
+		$filters .= html_print_input_hidden ("search_tag", "1",true);
+		$filters .= html_print_input_text ('tag_name', $tag_name, '', 30, 255, true);
+		$filters .= "</td>";
+		$filters .= "<td>";
+		$filters .= html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub search"',true);
+		$filters .= "</td>";
+		$filters .= "</tr>";
+		$filters .= "</table>";
+		$filters .= "</form>";
+		ui_toggle($filters, __("Show Options"));
+	}
+
+	// Prepare pagination
+	ui_pagination ($total_tags, $url);
+
+	// Display tags previously filtered or not
+	$rowPair = true;
+	$iterator = 0;
+
+
 	
 	$table = new stdClass();
 	$table->width = '100%';
@@ -241,7 +242,10 @@ if (!empty($result)) {
 	
 	html_print_table ($table);
 }
-
+else{
+	require_once ($config['homedir'] . "/general/firts_task/tags.php");
+	return;
+}
 echo "<table border=0 cellpadding=0 cellspacing=0 width=100%>";
 	echo "<tr>";
 		echo "<td align=right>";

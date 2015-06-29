@@ -249,7 +249,7 @@ if ($enable_init_date) {
 
 $report = reporting_make_reporting_data(null, $id_report, $date, $time,
 	$period, 'dinamic');
-html_debug_print($report);
+
 reporting_html_print_report($report);
 
 echo "<br>";

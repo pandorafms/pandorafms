@@ -11,12 +11,11 @@ ui_require_css_file ('firts_task');
 	</div>
 	<div class="text_task">
 		<h3> <?php echo __('Create Planned Downtime'); ?></h3>
-		<p id="description_task"> <?php echo __('The Recon Task definition of Pandora FMS is used to find new elements in the network. 
-		If it detects any item, it will add that item to the monitoring, and if that item it is already being monitored, then it will 
-		ignore it or will update its information.There are three types of detection: Based on <strong id="fuerte"> ICMP </strong>(pings), 
-		<strong id="fuerte">SNMP</strong> (detecting the topology of networks and their interfaces), and other <strong id="fuerte"> customized </strong>
-		type. You can define your own customized recon script.'); ?></p>
-		<form action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create" method="post">
+		<p id="description_task"> <?php echo __("Pandora FMS contains a scheduled downtime management system. 
+						This system was designed to deactivate the alerts in the intervals whenever there is down time by deactivating the agent.
+						If an agent is deactivated, it doesn't collect information. In a down time, the down-time intervals aren't taken into 
+						account for most of the metrics or types of reports, because the agents don't contain any data within those intervals. "); ?></p>
+		<form action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor" method="post">
 			<input type="submit" class="button_task" value="<?php echo __('Create Planned Downtime'); ?>" />
 		</form>
 	</div>

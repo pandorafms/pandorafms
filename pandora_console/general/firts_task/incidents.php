@@ -10,16 +10,18 @@ ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no in
 
 <div class="new_task">
 	<div class="image_task">
-		<?php echo html_print_image('images/firts_task/icono_grande_custom_reporting.png', true, array("title" => __('Incidents')));?>
+		<?php echo html_print_image('images/firts_task/icono_grande_incidencia.png', true, array("title" => __('Incidents')));?>
 	</div>
 	<div class="text_task">
 		<h3> <?php echo __('Create Incidents'); ?></h3>
-		<p id="description_task"> <?php echo __('The Recon Task definition of Pandora FMS is used to find new elements in the network. 
-		If it detects any item, it will add that item to the monitoring, and if that item it is already being monitored, then it will 
-		ignore it or will update its information.There are three types of detection: Based on <strong id="fuerte"> ICMP </strong>(pings), 
-		<strong id="fuerte">SNMP</strong> (detecting the topology of networks and their interfaces), and other <strong id="fuerte"> customized </strong>
-		type. You can define your own customized recon script.'); ?></p>
-		<form action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create" method="post">
+		<p id="description_task"> <?php echo __("Besides receiving and processing data to monitor systems or applications, 
+			you're also required to monitor possible incidents which might take place on these systems within the system monitoring process.
+			For it, the Pandora FMS team has designed an incident manager within which any user is able to open incidents, 
+			explaining what's happened on the network and to update them with comments and files any time in case there is a need to do so.
+			This system allows the users to work as a team, along with different roles and work-flow systems which allows an incident to be 
+			moved from one group to another, and that members from different groups and different people could work on the same incident, sharing information and files.
+		"); ?></p>
+		<form action="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;insert_form=1" method="post">
 			<input type="submit" class="button_task" value="<?php echo __('Create Incidents'); ?>" />
 		</form>
 	</div>

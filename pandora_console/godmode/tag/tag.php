@@ -243,8 +243,10 @@ if (!empty($result)) {
 	html_print_table ($table);
 }
 else{
-	require_once ($config['homedir'] . "/general/firts_task/tags.php");
-	return;
+	if(!defined("METACONSOLE")){
+		require_once ($config['homedir'] . "/general/firts_task/tags.php");
+		return;
+	}
 }
 echo "<table border=0 cellpadding=0 cellspacing=0 width=100%>";
 	echo "<tr>";

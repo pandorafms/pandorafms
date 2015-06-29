@@ -797,7 +797,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			}));
 		
 		$('#menu_cancelzoom_' + graph_id)
-			.attr('src', homeurl + '/images/zoom_cross.png');
+			.attr('src', homeurl + '/images/zoom_cross_grey.png');
 		
 		currentRanges = ranges;
 		// don't fire event on the overview to prevent eternal loop
@@ -1250,7 +1250,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				}));
 			
 			$('#menu_cancelzoom_' + graph_id)
-				.attr('src', homeurl + '/images/zoom_cross.disabled.png');
+				.attr('src', homeurl + '/images/zoom_cross_grey.disabled.png');
 			overview.clearSelection();
 			currentRanges = null;
 		});

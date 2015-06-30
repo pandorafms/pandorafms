@@ -1,6 +1,11 @@
 var correct_install_progress = true;
 
-function form_upload () {
+function form_upload (homeurl) {
+	if (typeof homeurl !== 'undefined')
+		homeurl += '/';
+	else
+		homeurl = '';
+	
 	//Thanks to: http://tutorialzine.com/2013/05/mini-ajax-file-upload-form/
 	var ul = $('#form-offline_update ul');
 	
@@ -18,7 +23,7 @@ function form_upload () {
 	// Initialize the jQuery File Upload plugin
 	$('#form-offline_update').fileupload({
 		
-		url: 'ajax.php?page=include/ajax/update_manager.ajax&upload_file=true',
+		url: homeurl + 'ajax.php?page=include/ajax/update_manager.ajax&upload_file=true',
 		
 		// This element will accept file drag/drop uploading
 		dropZone: $('#drop_file'),
@@ -31,8 +36,8 @@ function form_upload () {
 			var tpl = $('<li>' +
 					'<input type="text" id="input-progress" ' +
 						'value="0" data-width="55" data-height="55" '+
-						'data-fgColor="#FF9933" data-readOnly="1" ' +
-						'data-bgColor="#3e4043" />' +
+						'data-fgColor="#80BA27" data-readOnly="1" ' +
+						'data-bgColor="#3E4043" />' +
 					'<p></p><span></span>' +
 				'</li>');
 			
@@ -139,7 +144,7 @@ function form_upload () {
 					data.context.find('input').val(0).change();
 					
 					// Begin the installation
-					install_package(res.package, 'filename');
+					install_package(res.package, homeurl);
 				});
 			}
 			else {
@@ -188,30 +193,12 @@ function formatFileSize(bytes) {
 	return (bytes / 1000).toFixed(2) + ' KB';
 }
 
-function install_package(package) {
-	var parameters = {};
-	parameters['page'] = 'include/ajax/update_manager.ajax';
-	parameters['install_package'] = 1;
-	parameters['package'] = package;
+function install_package (package, homeurl) {
+	if (typeof homeurl !== 'undefined')
+		homeurl += '/';
+	else
+		homeurl = '';
 	
-	jQuery.post(
-		"ajax.php",
-		parameters,
-		function (data) {
-			if (data["status"] == "success") {
-				install_package_step2(package);
-			}
-			else {
-				$("#box_online .loading").hide();
-				$("#box_online .content").html(data['message']);
-				stop_check_progress = 1;
-			}
-		},
-		"json"
-	);
-}
-
-function install_package (package) {
 	var parameters = {};
 	parameters['page'] = 'include/ajax/update_manager.ajax';
 	parameters['install_package'] = 1;
@@ -222,7 +209,7 @@ function install_package (package) {
 	
 	$.ajax({
 		type: 'POST',
-		url: 'ajax.php',
+		url: homeurl + 'ajax.php',
 		data: parameters,
 		dataType: "json",
 		success: function (data) {
@@ -245,10 +232,10 @@ function install_package (package) {
 	});
 	
 	// Check the status of the update
-	check_install_package(package);
+	check_install_package(package, homeurl);
 }
 
-function check_install_package(package) {
+function check_install_package(package, homeurl) {
 	var parameters = {};
 	parameters['page'] = 'include/ajax/update_manager.ajax';
 	parameters['check_install_package'] = 1;
@@ -256,7 +243,7 @@ function check_install_package(package) {
 	
 	$.ajax({
 		type: 'POST',
-		url: 'ajax.php',
+		url: homeurl + 'ajax.php',
 		data: parameters,
 		dataType: "json",
 		success: function(data) {
@@ -275,13 +262,18 @@ function check_install_package(package) {
 			var isInstalling = $('#form-offline_update ul').find('li').hasClass('loading');
 			if (data.progress < 100 && isInstalling) {
 				// Recursive call to check the update status
-				check_install_package(package);
+				check_install_package(package, homeurl);
 			}
 		}
 	})
 }
 
-function check_online_free_packages() {
+function check_online_free_packages(homeurl) {
+	if (typeof homeurl !== 'undefined')
+		homeurl += '/';
+	else
+		homeurl = '';
+	
 	$("#box_online .checking_package").show();
 	
 	var parameters = {};
@@ -289,7 +281,7 @@ function check_online_free_packages() {
 	parameters['check_online_free_packages'] = 1;
 	
 	jQuery.post(
-		"ajax.php",
+		homeurl + "ajax.php",
 		parameters,
 		function (data) {
 			$("#box_online .checking_package").hide();
@@ -301,7 +293,12 @@ function check_online_free_packages() {
 	);
 }
 
-function update_last_package(package, version) {
+function update_last_package(package, version, homeurl) {
+	if (typeof homeurl !== 'undefined')
+		homeurl += '/';
+	else
+		homeurl = '';
+	
 	version_update = version;
 	
 	$("#box_online .content").html("");
@@ -316,7 +313,7 @@ function update_last_package(package, version) {
 	parameters['version'] = version;
 	
 	jQuery.post(
-		"ajax.php",
+		homeurl + "ajax.php",
 		parameters,
 		function (data) {
 			if (data['in_progress']) {
@@ -325,8 +322,10 @@ function update_last_package(package, version) {
 				
 				$("#box_online .content").html(data['message']);
 				
-				install_free_package(package,version);
-				setTimeout(check_progress_update, 1000);
+				install_free_package(package, version, homeurl);
+				setTimeout(function () {
+					check_progress_update(homeurl);	
+				}, 1000);
 			}
 			else {
 				$("#box_online .content").html(data['message']);
@@ -336,7 +335,12 @@ function update_last_package(package, version) {
 	);
 }
 
-function check_progress_update() {
+function check_progress_update(homeurl) {
+	if (typeof homeurl !== 'undefined')
+		homeurl += '/';
+	else
+		homeurl = '';
+	
 	if (stop_check_progress) {
 		return;
 	}
@@ -346,7 +350,7 @@ function check_progress_update() {
 	parameters['check_update_free_package'] = 1;
 	
 	jQuery.post(
-		"ajax.php",
+		homeurl + "ajax.php",
 		parameters,
 		function (data) {
 			if (stop_check_progress) {
@@ -363,7 +367,9 @@ function check_progress_update() {
 					$("#box_online .progressbar .progressbar_img").attr('src',
 						data['progressbar']);
 					
-					setTimeout(check_progress_update, 1000);
+					setTimeout(function () {
+						check_progress_update(homeurl);	
+					}, 1000);
 				}
 			}
 			else {
@@ -375,7 +381,12 @@ function check_progress_update() {
 	);
 }
 
-function install_free_package(package,version) {
+function install_free_package(package, version, homeurl) {
+	if (typeof homeurl !== 'undefined')
+		homeurl += '/';
+	else
+		homeurl = '';
+	
 	var parameters = {};
 	parameters['page'] = 'include/ajax/update_manager.ajax';
 	parameters['install_free_package'] = 1;
@@ -385,7 +396,7 @@ function install_free_package(package,version) {
 	jQuery.ajax ({
 		data: parameters,
 		type: 'POST',
-		url: "ajax.php",
+		url: homeurl + "ajax.php",
 		timeout: 600000,
 		dataType: "json",
 		error: function(data) {
@@ -393,7 +404,7 @@ function install_free_package(package,version) {
 			stop_check_progress = 1;
 			
 			$("#box_online .loading").hide();
-					$("#box_online .progressbar").hide();
+			$("#box_online .progressbar").hide();
 			$("#box_online .content").html(unknown_error_update_manager);
 		},
 		success: function (data) {

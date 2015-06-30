@@ -103,7 +103,8 @@ if ($fields) {
 	$table->data = array ();
 }
 else {
-	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No fields defined') ) );
+	require_once ($config['homedir'] . "/general/firts_task/custom_fields.php");
+	return;
 }
 
 if ($fields === false) $fields = array();

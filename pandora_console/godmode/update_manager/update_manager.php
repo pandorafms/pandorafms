@@ -53,14 +53,14 @@ ui_print_page_header($title,
 
 switch ($tab) {
 	case 'setup':
-		require("update_manager.setup.php");
+		require($config['homedir'] . "/godmode/update_manager/update_manager.setup.php");
 		break;
 	case 'offline':
-		require("update_manager.offline.php");
+		require($config['homedir'] . "/godmode/update_manager/update_manager.offline.php");
 		break;
 	case 'online':
 	default:
-		require("update_manager.online.php");
+		require($config['homedir'] . "/godmode/update_manager/update_manager.online.php");
 		break;
 }
 ?>

@@ -312,7 +312,7 @@ if (($create != "") OR ($view != "")) {
 	$data[0] = __('Plugin command');
 	$data[1] = '<input type="text" name="form_execute" id="form_execute" class="command_component command_advanced_conf" size=100 value="'.$form_execute.'" '.$disabled.'>';
 	if ($locked) {
-		$data[1] .= html_print_image('images/lock.png', true, array('class' => 'command_advanced_conf'));
+		$data[1] .= html_print_image('images/lock.png', true, array('class' => 'command_advanced_conf lock'));
 	}
 	$data[1] .= ' <a href="index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin=' . $form_id . '" style="vertical-align: bottom;">';
 	$data[1] .= html_print_image('images/file.png', true);
@@ -323,7 +323,7 @@ if (($create != "") OR ($view != "")) {
 	$data[0] = __('Plug-in parameters').ui_print_help_icon ('plugin_parameters', true);
 	$data[1] = '<input type="text" name="form_parameters" id="form_parameters" class="command_component command_advanced_conf" size=100 value="'.$parameters.'" '.$disabled.'>';
 	if ($locked) {
-		$data[1] .= html_print_image('images/lock.png', true, array('class' => 'command_advanced_conf'));
+		$data[1] .= html_print_image('images/lock.png', true, array('class' => 'command_advanced_conf lock'));
 	}
 	$table->data['plugin_parameters'] = $data;
 	
@@ -358,7 +358,7 @@ if (($create != "") OR ($view != "")) {
 	$i = 1;
 	while (1) {
 		// Always print at least one macro
-		if((!isset($macros[$i]) || $macros[$i]['desc'] == '') && $i > 1) {
+		if ((!isset($macros[$i]) || $macros[$i]['desc'] == '') && $i > 1) {
 			break;
 		}
 		$macro_desc_name = 'field'.$i.'_desc';
@@ -372,19 +372,19 @@ if (($create != "") OR ($view != "")) {
 		$macro_hide_value_name = 'field'.$i.'_hide';
 		$macro_hide_value_value = 0;
 		
-		if(isset($macros[$i]['desc'])) {
+		if (isset($macros[$i]['desc'])) {
 			$macro_desc_value = $macros[$i]['desc'];
 		}
 		
-		if(isset($macros[$i]['help'])) {
+		if (isset($macros[$i]['help'])) {
 			$macro_help_value = $macros[$i]['help'];
 		}
 		
-		if(isset($macros[$i]['value'])) {
+		if (isset($macros[$i]['value'])) {
 			$macro_value_value = $macros[$i]['value'];
 		}
 		
-		if(isset($macros[$i]['hide'])) {
+		if (isset($macros[$i]['hide'])) {
 			$macro_hide_value_value = $macros[$i]['hide'];
 
 			// Decrypt hidden macros.
@@ -394,15 +394,15 @@ if (($create != "") OR ($view != "")) {
 		$datam = array ();
 		$datam[0] = __('Description')."<span style='font-weight: normal'> ($macro_name)</span>";
 		$datam[0] .= html_print_input_hidden($macro_name_name, $macro_name, true);
-		$datam[1] = html_print_input_text_extended ($macro_desc_name, $macro_desc_value, 'text-'.$macro_desc_name, '', 30, 255, $locked, '', "class='command_advanced_conf'", true);
-		if($locked) {
-			$datam[1] .= html_print_image('images/lock.png', true, array('class' => 'command_advanced_conf'));
+		$datam[1] = html_print_input_text_extended ($macro_desc_name, $macro_desc_value, 'text-'.$macro_desc_name, '', 30, 255, $locked, '', "class='command_macro'", true);
+		if ($locked) {
+			$datam[1] .= html_print_image('images/lock.png', true, array('class' => 'command_macro lock'));
 		}
 		
 		$datam[2] = __('Default value')."<span style='font-weight: normal'> ($macro_name)</span>";
-		$datam[3] = html_print_input_text_extended ($macro_value_name, $macro_value_value, 'text-'.$macro_value_name, '', 30, 255, $locked, '', "class='command_component command_advanced_conf'", true);
-		if($locked) {
-			$datam[3] .= html_print_image('images/lock.png', true, array('class' => 'command_advanced_conf'));
+		$datam[3] = html_print_input_text_extended ($macro_value_name, $macro_value_value, 'text-'.$macro_value_name, '', 30, 255, $locked, '', "class='command_component command_macro'", true);
+		if ($locked) {
+			$datam[3] .= html_print_image('images/lock.png', true, array('class' => 'command_macro lock'));
 		}
 		
 		$table->data['plugin_'.$next_name_number] = $datam;
@@ -413,7 +413,7 @@ if (($create != "") OR ($view != "")) {
 		
 		$datam = array ();
 		$datam[0] = __('Hide value') . ui_print_help_tip(__('This field will show up as dots like a password'), true);
-		$datam[1] = html_print_checkbox_extended ($macro_hide_value_name, 1, $macro_hide_value_value, 0, '', array('class' => 'command_advanced_conf'), true, 'checkbox-'.$macro_hide_value_name);
+		$datam[1] = html_print_checkbox_extended ($macro_hide_value_name, 1, $macro_hide_value_value, 0, '', array('class' => 'command_macro'), true, 'checkbox-'.$macro_hide_value_name);
 
 		$table->data['plugin_'.$next_name_number] = $datam;
 		$next_name_number++;
@@ -423,10 +423,10 @@ if (($create != "") OR ($view != "")) {
 		$datam = array ();
 		$datam[0] = __('Help')."<span style='font-weight: normal'> ($macro_name)</span><br><br><br>";
 		$tadisabled = $locked === true ? ' disabled' : '';
-		$datam[1] = html_print_textarea ($macro_help_name, 6, 100, $macro_help_value, 'class="command_advanced_conf" style="width: 97%;"' . $tadisabled, true);
+		$datam[1] = html_print_textarea ($macro_help_name, 6, 100, $macro_help_value, 'class="command_macro" style="width: 97%;"' . $tadisabled, true);
 		
-		if($locked) {
-			$datam[1] .= html_print_image('images/lock.png', true, array('class' => 'command_advanced_conf'));
+		if ($locked) {
+			$datam[1] .= html_print_image('images/lock.png', true, array('class' => 'command_macro lock'));
 		}
 		$datam[1] .= "<br><br><br>";
 		
@@ -435,22 +435,41 @@ if (($create != "") OR ($view != "")) {
 		$i++;
 	}
 	
+	// Add/Delete buttons
+	$datam = array ();
+	$datam[0] = '<a id="add_macro_btn" href="javascript:;">' .
+					'<span style="font-weight: bold;">' .
+						__('Add macro') .
+					'</span>' . '&nbsp;' .
+					html_print_image('images/add.png',true) .
+				'</a>';
+	$datam[0] .= '<div id="next_macro" style="display:none">'.$i.'</div>';
+	$datam[0] .= '<div id="next_row" style="display:none">'.$next_name_number.'</div>';
+	
 	if (!$locked) {
-		$datam = array ();
-		$datam[0] = '<span style="font-weight: bold">'.__('Add macro').'</span> <a href="javascript:new_macro(\'table-form-plugin_\');update_preview();">'.html_print_image('images/add.png',true).'</a>';
-		$datam[0] .= '<div id="next_macro" style="display:none">'.$i.'</div>';
-		$datam[0] .= '<div id="next_row" style="display:none">'.$next_name_number.'</div>';
 		$delete_macro_style = '';
-		if($i <= 2) {
+		if ($i <= 2) {
 			$delete_macro_style = 'display:none;';
 		}
-		$datam[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">'.__('Delete macro').' <a href="javascript:delete_macro(\'table-form-plugin_\');update_preview();">'.html_print_image('images/delete.png',true).'</a></div>';
+		$datam[2] = '<div id="delete_macro_button" style="'.$delete_macro_style.'">' .
+						'<a href="javascript:;">' .
+							'<span style="font-weight: bold;">' .
+								__('Delete macro') .
+							'</span>' . '&nbsp;' .
+							html_print_image('images/delete.png',true) .
+						'</a>' .
+					'</div>';
 		
 		$table->colspan['plugin_action'][0] = 2;
-		$table->rowstyle['plugin_action'] = 'text-align:center';
 		$table->colspan['plugin_action'][2] = 2;
-		$table->data['plugin_action'] = $datam;
 	}
+	else {
+		$table->colspan['plugin_action'][0] = 4;
+	}
+	
+	$table->rowstyle['plugin_action'] = 'text-align:center';
+	$table->data['plugin_action'] = $datam;
+	
 	
 	if (defined("METACONSOLE")) {
 		$table->width = '100%';
@@ -749,37 +768,31 @@ ui_require_javascript_file('pandora_modules');
 ?>
 
 <script type="text/javascript">
-	$(document).ready(function() {
-		function update_preview() {
-			var command = $('#form_execute').val();
-			var parameters = $('#form_parameters').val();
-			
-			var i = 1;
-			
-			while (1) {
-				if ($('#text-field' + i + '_value').val() == undefined) {
-					break;
-				}
-				
-				if ($('#text-field'+i+'_value').val() != '') {
-					parameters = parameters
-						.replace('_field' + i + '_',
-							$('#text-field' + i + '_value').val());
-				}
-				
-				i++;
+	
+	var locked = <?php echo (int)json_encode((int)$locked); ?>;
+	
+	function update_preview() {
+		var command = $('#form_execute').val();
+		var parameters = $('#form_parameters').val();
+		
+		var i = 1;
+		
+		while (1) {
+			if ($('#text-field' + i + '_value').val() == undefined) {
+				break;
 			}
 			
-			$('#command_preview').html(command+' '+parameters);
+			if ($('#text-field'+i+'_value').val() != '') {
+				parameters = parameters
+					.replace('_field' + i + '_',
+						$('#text-field' + i + '_value').val());
+			}
+			
+			i++;
 		}
 		
-		update_preview();
-		
-		$('.command_component').keyup(function() {
-			update_preview();
-		});
-		
-	});
+		$('#command_preview').html(command+' '+parameters);
+	}
 	
 	function show_locked_dialog(id_plugin, plugin_name) {
 		var parameters = {};
@@ -797,8 +810,7 @@ ui_require_javascript_file('pandora_modules');
 				
 				$("#dialog_locked")
 					.prop('title', title)
-					.html(data);
-				$("#dialog_locked")
+					.html(data)
 					.dialog ({
 						resizable: true,
 						draggable: true,
@@ -815,16 +827,93 @@ ui_require_javascript_file('pandora_modules');
 		});
 	}
 	
-	<?php
-	if (!isset($locked)) {
-		$locked = false;
-	}
-	if ($locked) {
-		?>
-		$('.command_advanced_conf').click(function() {
-			alert('<?php echo __("The plugin command cannot be updated because some modules or components are using the plugin."); ?>');
+	
+	$(document).ready(function() {
+		// Add macro
+		var add_macro_click_event = function (event) {
+			new_macro('table-form-plugin_', function () {
+				// Remove the locked images and enable the inputs
+				if (arguments.length > 0) {
+					var rows = _.toArray(arguments);
+					_.each(rows, function(row, index) {
+						row.find('input.command_macro, textarea.command_macro')
+							.prop('readonly', false)
+							.prop('disabled', false)
+							.siblings('img.command_macro.lock')
+								.remove();
+					});
+				}
+			});
+			update_preview();
+		}
+		$('a#add_macro_btn').click(add_macro_click_event);
+		
+		// Delete macro
+		var delete_macro_click_event = function (event) {
+			delete_macro('table-form-plugin_');
+			update_preview();
+		}
+		$('div#delete_macro_button>a').click(delete_macro_click_event);
+		
+		update_preview();
+		
+		$('.command_component').keyup(function() {
+			update_preview();
 		});
-	<?php
+	});
+	
+	
+	var add_macro_click_locked_event = function (event) {
+		var message = '<?php echo __("Some modules or components are using the plugin"); ?>.'
+					+ '\n' + '<?php echo __("The modules or components should be updated manually or using the bulk operations for plugins after this change"); ?>.'
+					+ '\n'
+					+ '\n' + '<?php echo __("Are you sure you want to perform this action?"); ?>';
+		
+		if (!confirm(message)) {
+			event.stopImmediatePropagation();
+			event.preventDefault();
+		}
 	}
-	?>
+	
+	var command_click_locked_event = function (event) {
+		var $element = $(this);
+		
+		if (!$element.is('input') || ($element.is('input') && ($element.prop('readonly') || $element.prop('disabled')))) {
+			if ($element.prop('id') === 'form_parameters') {
+				var message = '<?php echo __("Some modules or components are using the plugin"); ?>'
+					+ '.\n' + '<?php echo __("Are you sure you want to unlock this item?"); ?>';
+				
+				if (confirm(message)) {
+					if ($element.is('input')) {
+						$element
+							.prop('readonly', false)
+							.prop('disabled', false)
+							.siblings('img.command_advanced_conf.lock')
+								.remove();
+					}
+					else {
+						$element
+							.siblings('input.command_advanced_conf')
+								.prop('readonly', false)
+								.prop('disabled', false)
+						$element.remove();
+					}
+				}
+			}
+			else {
+				alert('<?php echo __("The plugin command cannot be updated because some modules or components are using the plugin."); ?>');
+			}
+		}
+	}
+	
+	var macros_click_locked_event = function (event) {
+		alert('<?php echo __("The plugin macros cannot be updated because some modules or components are using the plugin"); ?>');
+	}
+	
+	if (locked) {
+		$('a#add_macro_btn').click(add_macro_click_locked_event);
+		$('.command_advanced_conf').click(command_click_locked_event);
+		$('.command_macro').click(macros_click_locked_event);
+	}
+	
 </script>

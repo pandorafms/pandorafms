@@ -58,6 +58,10 @@ $options_modules = array(
 	'edit_modules' => __('Bulk module edit'), 
 	'copy_modules' => __('Bulk module copy'));
 
+$options_plugins = array(
+		'edit_plugins' => __('Bulk plugin edit')
+	);
+
 if (! check_acl ($config['id_user'], 0, "PM")) {
 	unset($options_modules['edit_modules']);
 }
@@ -107,6 +111,9 @@ elseif (in_array($option, array_keys($options_snmp))) {
 elseif (in_array($option, array_keys($options_satellite))) {
 	$tab = 'massive_satellite';
 }
+elseif (in_array($option, array_keys($options_plugins))) {
+	$tab = 'massive_plugins';
+}
 else {
 	$option = '';
 }
@@ -133,6 +140,9 @@ switch ($tab) {
 	case 'massive_satellite':
 		$options = $options_satellite;
 		break;
+	case 'massive_plugins':
+		$options = $options_plugins;
+		break;
 }
 
 // Set the default option of the category
@@ -140,35 +150,30 @@ if ($option == '') {
 	$option = array_shift(array_keys($options));
 }
 
-$alertstab = array(
-	'text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts">'
-		. html_print_image ('images/op_alerts.png', true,
-			array ('title' => __('Alerts operations')))
-	. '</a>',
-	'active' => $tab == 'massive_alerts');
+$alertstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_alerts">'
+	. html_print_image ('images/op_alerts.png', true,
+		array ('title' => __('Alerts operations')))
+	. '</a>', 'active' => $tab == 'massive_alerts');
 
-$userstab = array(
-	'text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users">'
-		. html_print_image ('images/op_workspace.png', true,
-			array ('title' => __('Users operations')))
-	. '</a>',
-	'active' => $tab == 'massive_users');
+$userstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_users">'
+	. html_print_image ('images/op_workspace.png', true,
+		array ('title' => __('Users operations')))
+	. '</a>', 'active' => $tab == 'massive_users');
 
-$agentstab = array(
-	'text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_agents">'
-		. html_print_image ('images/bricks.png', true,
-			array ('title' => __('Agents operations')))
-	. '</a>',
-	'active' => $tab == 'massive_agents');
+$agentstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_agents">'
+	. html_print_image ('images/bricks.png', true,
+		array ('title' => __('Agents operations')))
+	. '</a>', 'active' => $tab == 'massive_agents');
 
-$modulestab = array(
-	'text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_modules">'
-		. html_print_image ('images/brick.png', true,
-			array ('title' => __('Modules operations')))
-		. '</a>',
-	'active' => $tab == 'massive_modules');
+$modulestab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_modules">'
+	. html_print_image ('images/brick.png', true,
+		array ('title' => __('Modules operations')))
+	. '</a>', 'active' => $tab == 'massive_modules');
 
-
+$pluginstab = array('text' => '<a href="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&tab=massive_plugins">'
+	. html_print_image ('images/plugin.png', true,
+		array ('title' => __('Plugins operations')))
+	. '</a>', 'active' => $tab == 'massive_plugins');
 
 $policiestab = enterprise_hook('massive_policies_tab');
 
@@ -189,6 +194,7 @@ if ($satellitetab == ENTERPRISE_NOT_HOOK)
 $onheader = array();
 $onheader['massive_agents'] = $agentstab;
 $onheader['massive_modules'] = $modulestab;
+$onheader['massive_plugins'] = $pluginstab;
 if (check_acl ($config['id_user'], 0, "PM")) {
 	$onheader['user_agents'] = $userstab;
 }
@@ -221,8 +227,7 @@ $submit_template_standby = get_parameter('id_alert_template_standby');
 $submit_add = get_parameter('crtbutton');
 
 echo '<div id="loading" display="none">';
-echo html_print_image("images/wait.gif", true, array("border" => '0')) .
-	'<br />';
+echo html_print_image("images/wait.gif", true, array("border" => '0')) . '<br />';
 echo '<strong>' . __('Please wait...') . '</strong>';
 echo '</div>';
 ?>
@@ -254,19 +259,14 @@ echo '</div>';
 <?php
 echo "<br />";
 echo '<form method="post" id="form_options" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations">';
-echo '<table border="0">';
-echo '<tr>';
-echo '<td>';
+echo '<table border="0"><tr><td>';
 echo __("Action");
-echo '</td>';
-echo '<td>';
+echo '</td><td>';
 html_print_select($options, 'option', $option, 'this.form.submit()', '',
 	0, false, false, false);
 if ($option == 'edit_agents' || $option == 'edit_modules') 
 	ui_print_help_tip(__("The blank fields will not be updated"));
-echo '</td>';
-echo '</tr>';
-echo '</table>';
+echo '</td></tr></table>';
 echo '</form>';
 echo "<br />";
 
@@ -309,6 +309,9 @@ switch ($option) {
 		break;
 	case 'copy_modules':
 		require_once ('godmode/massive/massive_copy_modules.php');
+		break;
+	case 'edit_plugins':
+		require_once ('godmode/massive/massive_edit_plugins.php');
 		break;
 	default:
 		if (!enterprise_hook('massive_operations', array($option))) {

@@ -105,6 +105,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 		$sub2 = array ();
 		$sub2["godmode/massive/massive_operations&amp;tab=massive_agents"]["text"] = __('Agents operations');
 		$sub2["godmode/massive/massive_operations&amp;tab=massive_modules"]["text"] = __('Modules operations');
+		$sub2["godmode/massive/massive_operations&amp;tab=massive_plugins"]["text"] = __('Plugins operations');
 		if (check_acl ($config['id_user'], 0, "PM")) {
 			$sub2["godmode/massive/massive_operations&amp;tab=massive_users"]["text"] = __('Users operations');
 		}

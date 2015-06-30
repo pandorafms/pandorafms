@@ -16,21 +16,25 @@
 
 global $config;
 
-ui_require_css_file('update_manager', 'godmode/update_manager/');
+// ui_require_css_file('update_manager', 'godmode/update_manager/');
+
+$baseurl = ui_get_full_url(false, false, false, false);
 
 ?>
+
+<!-- Add the stylesheet here cause somehow the 'ui_require_css_file' is not working on the metaconsole and there is no time to fix it -->
+<link rel="stylesheet" type="text/css" href="<?php echo $baseurl; ?>/godmode/update_manager/update_manager.css">
+
 <script type="text/javascript">
-	<?php
-	echo "var drop_the_package_here_or ='" . __('Drop the package here or') . "';\n";
-	echo "var browse_it ='" . __('browse it') . "';\n";
-	echo "var the_package_has_been_uploaded_successfully ='" . __('The package has been uploaded successfully.') . "';\n";
-	echo "var remember_that_this_package_will =\"" . __('Remember that this package will override the actual Pandora FMS files and it is recommended to do a backup before continue with the update.') . "\";\n";
-	echo "var click_on_the_file_below_to_begin ='" . __('Click on the file below to begin.') . "';\n";
-	echo "var updating ='" . __('Updating') . "';\n";
-	echo "var package_updated_successfully ='" . __('Package updated successfully.') . "';\n";
-	echo "var if_there_are_any_database_change ='" . __('If there are any database change, it will be applied on the next login.') . "';\n";
-	echo "var package_not_updated ='" . __('Package not updated.') . "';\n";
-	?>
+	var drop_the_package_here_or = "<?php echo __('Drop the package here or'); ?>\n";
+	var browse_it = "<?php echo __('browse it'); ?>\n";
+	var the_package_has_been_uploaded_successfully = "<?php echo __('The package has been uploaded successfully.'); ?>\n";
+	var remember_that_this_package_will = "<?php echo __('Remember that this package will override the actual Pandora FMS files and it is recommended to do a backup before continue with the update.'); ?>\n";
+	var click_on_the_file_below_to_begin = "<?php echo __('Click on the file below to begin.'); ?>\n";
+	var updating = "<?php echo __('Updating'); ?>\n";
+	var package_updated_successfully = "<?php echo __('Package updated successfully.'); ?>\n";
+	var if_there_are_any_database_change = "<?php echo __('If there are any database change, it will be applied on the next login.'); ?>\n";
+	var package_not_updated = "<?php echo __('Package not updated.'); ?>\n";
 </script>
 
 <form id="form-offline_update" method="post" enctype="multipart/form-data" class="fileupload_form">
@@ -38,12 +42,12 @@ ui_require_css_file('update_manager', 'godmode/update_manager/');
 	<ul></ul>
 </form>
 
-<script src="include/javascript/jquery.fileupload.js"></script>
-<script src="include/javascript/jquery.iframe-transport.js"></script>
-<script src="include/javascript/jquery.knob.js"></script>
+<script src="<?php echo $baseurl; ?>/include/javascript/jquery.fileupload.js"></script>
+<script src="<?php echo $baseurl; ?>/include/javascript/jquery.iframe-transport.js"></script>
+<script src="<?php echo $baseurl; ?>/include/javascript/jquery.knob.js"></script>
 
-<script src="include/javascript/update_manager.js"></script>
+<script src="<?php echo $baseurl; ?>/include/javascript/update_manager.js"></script>
 
 <script type="text/javascript">
-	form_upload();
+	form_upload("<?php echo $baseurl; ?>");
 </script>

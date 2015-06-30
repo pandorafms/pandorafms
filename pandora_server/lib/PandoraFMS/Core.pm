@@ -2856,9 +2856,10 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh,
 		$source, $user_name, $comment, $id_extra, $tags,
 		$critical_instructions, $warning_instructions, $unknown_instructions, $custom_data) = @_;
-	
+	my $event_table = is_metaconsole($pa_config) ? 'tmetaconsole_event' : 'tevento';
+
 	my $agent = undef;
-	if ($id_agente != 0) {
+	if (defined($id_agente) && $id_agente != 0) {
 		$agent = get_db_single_row ($dbh, 'SELECT *	FROM tagente WHERE id_agente = ?', $id_agente);
 		if (defined ($agent) && $agent->{'quiet'} == 1) {
 			logger($pa_config, "Generate Event. The agent '" . $agent->{'nombre'} . "' is in quiet mode.", 10);
@@ -2867,7 +2868,7 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	}
 	
 	my $module = undef;
-	if ($id_agentmodule != 0) {
+	if (defined($id_agentmodule) && $id_agentmodule != 0) {
 		$module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ?', $id_agentmodule);
 		if (defined ($module) && $module->{'quiet'} == 1) {
 			logger($pa_config, "Generate Event. The module '" . $module->{'nombre'} . "' is in quiet mode.", 10);
@@ -2912,12 +2913,12 @@ sub pandora_event ($$$$$$$$$$;$$$$$$$$$) {
 	# Validate events with the same event id
 	if (defined ($id_extra) && $id_extra ne '') {
 		logger($pa_config, "Updating events with extended id '$id_extra'.", 10);
-		db_do ($dbh, 'UPDATE tevento SET estado = 1, ack_utimestamp = ? WHERE estado = 0 AND id_extra=?', $utimestamp, $id_extra);
+		db_do ($dbh, 'UPDATE ' . $event_table . ' SET estado = 1, ack_utimestamp = ? WHERE estado = 0 AND id_extra=?', $utimestamp, $id_extra);
 	}
 	
 	# Create the event
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
-	db_do ($dbh, 'INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data)
+	db_do ($dbh, 'INSERT INTO ' . $event_table . ' (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, user_comment, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data)
 	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $comment, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data);
 	
 	# Do not write to the event file

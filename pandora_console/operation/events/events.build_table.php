@@ -13,17 +13,18 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+$table = new stdClass();
 if(!isset($table->width)) {
-	$table = new stdClass();
 	$table->width = '100%';
 }
-
-$table = new stdClass();
 $table->id = "eventtable";
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 if(!isset($table->class)) {
-	$table->class = "databox data";
+	if (defined("METACONSOLE"))
+		$table->class = "databox";
+	else
+		$table->class = "databox data";
 }
 $table->head = array ();
 $table->data = array ();

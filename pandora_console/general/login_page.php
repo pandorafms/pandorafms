@@ -115,16 +115,13 @@ echo '<div id="login_in">';
 			
 			echo '<div class="login_nick">';
 			html_print_image ("/images/usuario_login.png", false);
-			html_print_input_text_extended ("nick", __('User'), "nick", '', '', '' , false,
-									array('onfocus' => "javascript:if ( $('.login_user').val() == 'User') $('.login_user').val('');",
-									'onblur'=>"javascript: if ( $('.login_user').val() == false) $('.login_user').val('". __('User')."');"), 'class="login login_user"  ');
+			html_print_input_text_extended ("nick", '', "nick", '', '', '' , false,
+				'', 'class="login login_user" placeholder="'.__('User').'"');
 			echo '</div><br />';
 			echo '<div class="login_pass">';
 			html_print_image ("/images/candado_login.png", false);
-			html_print_input_text_extended ("pass", 'pass', "pass", '', '', '' ,false,
-									array('onfocus' => "javascript:if ( $('.login_password').val() == 'pass')  $('.login_password').val('');",
-											'onblur'=>"javascript:if ( $('.login_password').val() == false) $('.login_password').val('". __('pass')."');"),
-								 'class="login login_password"', false, true);
+			html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false,
+				'', 'class="login login_password" placeholder="'.__('Password').'"', false, true);
 			echo '</div>';
 			echo '<div class="login_button">';
 			html_print_submit_button(__("Login"), "login_button", false, 'class="sub next_login"');

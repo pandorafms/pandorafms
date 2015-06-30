@@ -48,31 +48,31 @@ if (!$strict_acl) {
 			html_print_image("images/tag.png", true,
 				array("title" => __('Tags'))) . "</a>",
 		'active' => ($tab == "tag"));
-
+	
 	$tabs['os'] = array(
 		'text' => "<a href='" . sprintf($url, "os") . "'>" .
 			html_print_image("images/operating_system.png", true,
 				array("title" => __('OS'))) . "</a>",
 		'active' => ($tab == "os"));
-
+	
 	$tabs['group'] = array(
 		'text' => "<a href='" . sprintf($url, "group") . "'>" .
 			html_print_image("images/group.png", true,
 				array("title" => __('Groups'))) . "</a>",
 		'active' => ($tab == "group"));
-
+	
 	$tabs['module_group'] = array(
 		'text' => "<a href='" . sprintf($url, "module_group") . "'>" .
 			html_print_image("images/module_group.png", true,
 				array("title" => __('Module groups'))) . "</a>",
 		'active' => ($tab == "module_group"));
-
+	
 	$tabs['module'] = array(
 		'text' => "<a href='" . sprintf($url, "module") . "'>" .
 			html_print_image("images/brick.png", true,
 				array("title" => __('Modules'))) . "</a>",
 		'active' => ($tab == "module"));
-
+	
 	if ($enterpriseEnable) {
 		$tabs['policies'] = array(
 			'text' => "<a href='" . sprintf($url, "policies") . "'>" .
@@ -111,7 +111,7 @@ switch ($tab) {
 if (!defined('METACONSOLE')) {
 	if (!$strict_acl)
 		$header_title = $header_title ." - ". $header_sub_title;
-
+	
 	ui_print_page_header($header_title, "images/extensions.png", false, "", false, $tabs);
 }
 // ---------------------Tabs -------------------------------------------
@@ -142,7 +142,7 @@ if (defined('METACONSOLE'))
 	$row[] = html_print_input_text("search_agent", $search_agent, '', 70, 30, true);
 else
 	$row[] = html_print_input_text("search_agent", $search_agent, '', 40, 30, true);
-	
+
 // Button
 $row[] = html_print_submit_button(__('Filter'), "uptbutton", false, 'class="sub search"', true);
 $table->rowspan[][count($row)-1] = 2;
@@ -158,13 +158,13 @@ if (!defined('METACONSOLE')) {
 	$module_status_arr[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
 	$module_status_arr[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
 	$module_status_arr[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
-
+	
 	$row = array();
 	$row[] = __('Module status');
 	$row[] = html_print_select($module_status_arr, "status_module", $status_module, '', '', 0, true);
 	$row[] = __('Search module');
 	$row[] = html_print_input_text("search_module", $search_module, '', 40, 30, true);
-
+	
 	$table->data[] = $row;
 }
 
@@ -240,7 +240,7 @@ enterprise_hook('close_meta_frame');
 		// Clear the tree
 		if (typeof treeController.recipient != 'undefined' && treeController.recipient.length > 0)
 			treeController.recipient.empty();
-
+		
 		$(".loading_tree").show();
 		
 		var parameters = {};
@@ -315,14 +315,14 @@ enterprise_hook('close_meta_frame');
 			dataType: "json"
 		});
 	}
-
+	
 	// Show the modal window of an module
 	var moduleDetailsWindow = $("<div></div>");
 	moduleDetailsWindow
 		.hide()
 		.prop("id", "module_details_window")
 		.appendTo('body');
-
+	
 	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period, module_name) {
 		var params = {};
 		var f = new Date();
@@ -401,7 +401,7 @@ enterprise_hook('close_meta_frame');
 			secondText: '<?php echo __('Second');?>',
 			currentText: '<?php echo __('Now');?>',
 			closeText: '<?php echo __('Close');?>'});
-			
+		
 		$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 		$("#text-date_from, #text-date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
 		
@@ -423,5 +423,5 @@ enterprise_hook('close_meta_frame');
 			return false;
 		});
 	}
-
+	
 </script>

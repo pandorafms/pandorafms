@@ -68,7 +68,7 @@ if (!isset($write_groups[$idGroupReport])) {
 }
 
 $table->data['group'][1] = html_print_select($write_groups, 'id_group',
-	$idGroupReport, false, '', '', true);
+	$idGroupReport, false, '', '', true,false,false);
 
 if ($report_id_user == $config['id_user'] ||
 	is_user_admin ($config["id_user"])) {

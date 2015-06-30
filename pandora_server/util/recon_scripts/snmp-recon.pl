@@ -89,6 +89,9 @@ my %SWITCH_TO_SWITCH;
 # MAC addresses.
 my %MAC;
 
+# Parent-child relationships (in Pandora).
+my %PARENTS;
+
 # Entry router.
 my $ROUTER;
 
@@ -461,6 +464,8 @@ sub arp_cache_discovery {
 		foreach my $line (@output) {
 			next unless ($line =~ /^$IPNETTOMEDIAPHYSADDRESS.\d+.(\S+)\s+=\s+\S+:\s+(.*)$/);
 			my ($ip_addr, $mac_addr) = ($1, $2);
+			next if ($ip_addr =~ m/\.255$|\.0$|127\.0\.0\.1$/);
+
 			$mac_addr = parse_mac($mac_addr);
 
 			# Save the mac to connect hosts to switches/routers.
@@ -497,6 +502,8 @@ sub find_synonyms($$$) {
 	# Get ARP cache.
 	my @ip_addresses = snmp_get_value_array($device, $community, $IPENTADDR);
 	foreach my $ip_address (@ip_addresses) {
+		next if ($ip_address =~ m/\.255$|\.0$|127\.0\.0\.1$/);
+
 		$VISITED_DEVICES{$device}->{'addr'}->{$ip_address} = '';
 
 		# Link the two addresses.
@@ -737,7 +744,6 @@ sub host_connectivity($) {
 		next unless ($device_if_name ne '');
 		my $host_if_name = defined($COMMUNITIES{$host}) ? get_if_from_mac($host, $COMMUNITIES{$host}, $mac) : '';
 		if ($VISITED_DEVICES{$device}->{'type'} eq 'router') {
-			next if defined ($SWITCH_TO_SWITCH{"$device$device_if_name"}); # The switch is probably connected to another router/switch.
 			message("Host $host " . ($host_if_name ne '' ? "(if $host_if_name)" : '') . " is connected to router $device (if $device_if_name).");
 		}
 		elsif ($VISITED_DEVICES{$device}->{'type'} eq 'switch') {
@@ -882,10 +888,32 @@ sub create_pandora_agent($) {
 }
 
 ##########################################################################
+# Check for switches that are connected to other switches/routers and show
+# up in a switche/router's port.
+##########################################################################
+sub switch_already_connected ($$$$) {
+	my ($dev_1, $if_1, $dev_2, $if_2) = @_;
+
+	if ($VISITED_DEVICES{$dev_1}->{'type'} eq 'router' ||
+	    $VISITED_DEVICES{$dev_1}->{'type'} eq 'switch') {
+		return 1 if defined ($SWITCH_TO_SWITCH{"$dev_1$if_1"}); # The switch is probably connected to another router/switch.
+	}
+	elsif ($VISITED_DEVICES{$dev_2}->{'type'} eq 'router' ||
+	    $VISITED_DEVICES{$dev_2}->{'type'} eq 'switch') {
+		return 1 if defined ($SWITCH_TO_SWITCH{"$dev_2$if_2"}); # The switch is probably connected to another router/switch.
+	}
+
+	return 0;
+}
+
+##########################################################################
 # Connect the given devices in the Pandora FMS database.
 ##########################################################################
 sub connect_pandora_agents($$$$) {
 	my ($dev_1, $if_1, $dev_2, $if_2) = @_;
+
+	# Check switch connectivy.
+	return if (switch_already_connected($dev_1, $if_1, $dev_2, $if_2) == 1);
 
 	# Get the agent for the first device.
 	my $agent_1 = get_agent_from_addr($DBH, $dev_1);
@@ -901,7 +929,7 @@ sub connect_pandora_agents($$$$) {
 	}
 	return unless defined($agent_2);
 
-	# Check wether the modules exists.
+	# Check whether the modules exists.
 	my $module_name_1 = safe_input($if_1 eq '' ? 'ping' : "ifOperStatus_$if_1");
 	my $module_name_2 = safe_input($if_2 eq '' ? 'ping' : "ifOperStatus_$if_2");
 	my $module_id_1 = get_agent_module_id($DBH, $module_name_1, $agent_1->{'id_agente'});
@@ -913,6 +941,13 @@ sub connect_pandora_agents($$$$) {
 	if ($module_id_2 <= 0) {
 		message("ERROR: Module " . safe_output($module_name_2) . " does not exist for agent $dev_2.");
 		return;
+	}
+
+	# Make sure the modules are not already connected.
+	if (defined($CONNECTIONS{"${module_id_1}_${module_id_2}"}) ||
+	    defined($CONNECTIONS{"${module_id_2}_${module_id_1}"})) {
+			message("Devices $dev_1 and $dev_2 are already connected.");
+			return;
 	}
 
 	# Mark the two devices as connected.
@@ -935,7 +970,13 @@ sub connect_pandora_agents($$$$) {
 	}
 
 	# Update parents.
-	db_do($DBH, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $agent_1->{'id_agente'}, $agent_2->{'id_agente'});
+	if (!defined($PARENTS{$agent_2->{'id_agente'}})) {
+		$PARENTS{$agent_2->{'id_agente'}} = $agent_1->{'id_agente'};
+		db_do($DBH, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $agent_1->{'id_agente'}, $agent_2->{'id_agente'});
+	} elsif (!defined($PARENTS{$agent_1->{'id_agente'}})) {
+		$PARENTS{$agent_1->{'id_agente'}} = $agent_2->{'id_agente'};
+		db_do($DBH, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $agent_2->{'id_agente'}, $agent_1->{'id_agente'});
+	}
 }
 
 
@@ -1131,12 +1172,35 @@ for (my $i = 0; defined($ROUTERS[$i]); $i++) {
 update_recon_task($DBH, $TASK_ID, 75);
 
 # Find switch/router to host connections.
+my @hosts = (@ROUTERS, @SWITCHES, @HOSTS);
 message("[6/6] Finding switch/router to end host connectivity...");
-foreach my $device (@ROUTERS, @SWITCHES, @HOSTS) {
+foreach my $device (@hosts) {
 	host_connectivity($device);
 }
-foreach my $host (@HOSTS) {
-	next unless (ref($VISITED_DEVICES{$host}) eq 'HASH'); # Skip aliases.
+
+# Retry all known connectivity methods by brute force.
+for (my $i = 0; defined($hosts[$i]); $i++) {
+	my $switch_1 = $hosts[$i];
+	for (my $j = $i + 1; defined($hosts[$j]); $j++) {
+		my $switch_2 = $hosts[$j];
+		switch_to_switch_connectivity($switch_1, $switch_2) if ($switch_1 ne $switch_2);
+	}
+}
+foreach my $router (@hosts) {
+	foreach my $switch (@hosts) {
+		router_to_switch_connectivity($router, $switch) if ($router ne $switch);
+	}
+}
+for (my $i = 0; defined($hosts[$i]); $i++) {
+	my $router_1 = $hosts[$i];
+	for (my $j = $i + 1; defined($hosts[$j]); $j++) {
+		my $router_2 = $hosts[$j];
+		router_to_router_connectivity($router_1, $router_2) if ($router_1 ne $router_2);
+	}
+}
+
+# Connect hosts that are still unconnected using traceroute.
+foreach my $host (@hosts) {
 	next if ($VISITED_DEVICES{$host}->{'connected'} == 1); # Skip already connected hosts.
 	traceroute_connectivity($host);
 }

@@ -10,14 +10,14 @@ msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-05-26 09:46+0200\n"
-"PO-Revision-Date: 2015-05-26 07:55+0000\n"
-"Last-Translator: MIguel Lopez ARTICA <miguel.lopez@artica.es>\n"
+"PO-Revision-Date: 2015-06-30 13:27+0000\n"
+"Last-Translator: Carlos Moreno <carlos.moreno@artica.es>\n"
 "Language-Team: Español; Castellano <>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-05-26 07:56+0000\n"
-"X-Generator: Launchpad (build 17514)\n"
+"X-Launchpad-Export-Date: 2015-06-30 14:01+0000\n"
+"X-Generator: Launchpad (build 17578)\n"
 "Language: \n"
 
 #: ../../godmode/groups/configure_group.php:68
@@ -850,6 +850,8 @@ msgid ""
 "When you change the Agent position, the agent automatically activates the "
 "'Ignore new GIS data' option"
 msgstr ""
+"Cuando se cambia la posición de agente, el agente activa automáticamente la "
+"opción 'Ignorar nuevos datos GIS  '"
 
 #: ../../godmode/agentes/agent_conf_gis.php:60
 msgid "Agent position"
@@ -2654,7 +2656,7 @@ msgstr "metodo de autenticación y privacidad"
 #: ../../godmode/agentes/planned_downtime.list.php:40
 msgid "An error occurred while migrating the malformed planned downtimes"
 msgstr ""
-"Ha ocurrido un error mientras se migrabam paradas planificadas mal formadas"
+"Ha ocurrido un error mientras se migraban paradas planificadas mal formadas"
 
 #: ../../godmode/agentes/planned_downtime.list.php:41
 msgid "Please run the migration again or contact with the administrator"
@@ -4139,7 +4141,7 @@ msgstr "No se proporcionó ningún nombre de módulo"
 
 #: ../../godmode/agentes/module_manager_editor.php:516
 msgid "No target IP provided"
-msgstr "No se proporcionó ninguna IP de desino"
+msgstr "No se proporcionó ninguna IP de destino"
 
 #: ../../godmode/agentes/module_manager_editor.php:517
 msgid "No SNMP OID provided"
@@ -5732,6 +5734,8 @@ msgid ""
 "Your PHP environment is setted with %d max_input_vars. Maybe you must not "
 "set this value with upper values."
 msgstr ""
+"Tu entorno PHP fue establecido con % de max_input_vars. Tal vez no deba "
+"establecer este valor con valores superiores"
 
 #: ../../godmode/setup/setup_general.php:271
 msgid "General options"
@@ -6205,7 +6209,7 @@ msgstr "Espesor de la línea predeterminada para el gráfico personalizado."
 #: ../../godmode/setup/setup_visuals.php:498
 #: ../../include/functions_config.php:465
 msgid "Render data of module type is proc."
-msgstr ""
+msgstr "Devuelve datos del módulo tipo proc"
 
 #: ../../godmode/setup/setup_visuals.php:690
 msgid "Logo preview"
@@ -8435,7 +8439,7 @@ msgid ""
 "Unsucessful delete profile. Because the profile is used by some admin users."
 msgstr ""
 "La eliminación del perfil no ha tenido éxito. Porque el perfil está siendo "
-"usado por algún administrador de usuarios."
+"usado por algunos usuarios administradores."
 
 #: ../../godmode/users/profile_list.php:226
 msgid "There was a problem updating this profile"
@@ -10184,11 +10188,11 @@ msgstr "Mostrar gráfico"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1114
 msgid "Show address instead module name."
-msgstr ""
+msgstr "Mostrar la dirección en vez del nombre del módulo"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1115
 msgid "Show the main address of agent."
-msgstr "Muestra la dirección principal del agente"
+msgstr "Muestra la dirección principal del agente."
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1126
 msgid "Show resume"
@@ -10409,7 +10413,7 @@ msgstr "Puerto del proxy"
 
 #: ../../godmode/update_manager/update_manager.setup.php:73
 msgid "Proxy user:"
-msgstr "usuario de proxy"
+msgstr "Usuario del Proxy:"
 
 #: ../../godmode/update_manager/update_manager.setup.php:75
 msgid "Proxy user"
@@ -10758,8 +10762,8 @@ msgid ""
 "This field contains a substring, could be part of a IP address, a numeric "
 "OID, or a plain substring"
 msgstr ""
-"Este campo contiene una subcadena , podría ser parte de una dirección IP , "
-"un OID numérico o una subcadena simple"
+"Este campo contiene una subcadena, que podría ser parte de una dirección IP "
+", un OID numérico o una subcadena simple"
 
 #: ../../godmode/snmpconsole/snmp_filters.php:117
 msgid "There are no SNMP filters"
@@ -10919,7 +10923,7 @@ msgstr "Valor único"
 #: ../../godmode/snmpconsole/snmp_alert.php:732
 #: ../../godmode/snmpconsole/snmp_alert.php:740
 msgid "Variable bindings/Data"
-msgstr ""
+msgstr "Variables enlaces/ Datos"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:806
 msgid "Other value"
@@ -10949,7 +10953,7 @@ msgstr "No hay definida ninguna alerta SNMP"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:985
 msgid "Custom Value/Enterprise String"
-msgstr ""
+msgstr "Valor personalizado / Cadena Enterprise"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:990
 #: ../../include/functions_reporting_html.php:1977
@@ -12365,7 +12369,7 @@ msgstr "Lista de módulos"
 #: ../../operation/agentes/status_monitor.php:1411
 #: ../../operation/tree.php:348
 msgid "Module: "
-msgstr ""
+msgstr "Módulo: "
 
 #: ../../operation/agentes/estado_monitores.php:428
 msgid "Status:"
@@ -13101,7 +13105,7 @@ msgstr "Nuevo filtro"
 
 #: ../../operation/events/events_list.php:237
 msgid "Save in Group"
-msgstr ""
+msgstr "Guardar en el grupo"
 
 #: ../../operation/events/events_list.php:256
 msgid "Overwrite filter"
@@ -13288,7 +13292,7 @@ msgstr "Consola visual"
 
 #: ../../operation/menu.php:143
 msgid "List of visual console"
-msgstr ""
+msgstr "Lista de la consola visual"
 
 #: ../../operation/menu.php:187 ../../operation/gis_maps/index.php:26
 msgid "GIS Maps"
@@ -13296,7 +13300,7 @@ msgstr "Mapas GIS"
 
 #: ../../operation/menu.php:191
 msgid "List of Gis maps"
-msgstr ""
+msgstr "Lista de mapas Gis"
 
 #: ../../operation/menu.php:273
 msgid "RSS"
@@ -13325,7 +13329,7 @@ msgstr "Chat de la Web"
 
 #: ../../operation/menu.php:344
 msgid "List of Incidents"
-msgstr ""
+msgstr "Lista de incidentes"
 
 #: ../../operation/menu.php:353 ../../operation/messages/message_edit.php:46
 #: ../../operation/messages/message_list.php:43
@@ -13334,7 +13338,7 @@ msgstr "Mensajes"
 
 #: ../../operation/menu.php:358
 msgid "Messages List"
-msgstr ""
+msgstr "Lista de mensages"
 
 #: ../../operation/menu.php:359
 msgid "New message"
@@ -13525,7 +13529,7 @@ msgstr "Resolución de dirección IP"
 
 #: ../../operation/netflow/nf_live_view.php:321
 msgid "Select a filter"
-msgstr ""
+msgstr "Selecciona un filtro"
 
 #: ../../operation/netflow/nf_live_view.php:389
 #: ../../include/functions_netflow.php:1632
@@ -13550,7 +13554,7 @@ msgstr "Actualizar filtro actual"
 
 #: ../../operation/netflow/nf_live_view.php:419
 msgid "No filter selected"
-msgstr ""
+msgstr "No se ha seleccionado ningún filtro"
 
 #: ../../operation/tree.php:80 ../../include/ajax/networkmap.ajax.php:50
 msgid "Policies"
@@ -14079,6 +14083,8 @@ msgstr "Periodo de elementos antes de"
 #: ../../operation/reporting/reporting_viewer.php:244
 msgid "Invalid date selected. Initial date must be before end date."
 msgstr ""
+"Fecha seleccionada no válida. La fecha inicial debe ser anterior a la fecha "
+"de finalización."
 
 #: ../../operation/reporting/reporting_viewer.php:352
 #: ../../operation/reporting/graph_viewer.php:242
@@ -14225,7 +14231,7 @@ msgstr "Búsqueda por tipo de trap"
 
 #: ../../operation/snmpconsole/snmp_view.php:330
 msgid "Group by Enterprise String/IP"
-msgstr ""
+msgstr "Agrupado por cadena Enterprise/IP"
 
 #: ../../operation/snmpconsole/snmp_view.php:357
 #: ../../operation/snmpconsole/snmp_statistics.php:97
@@ -14242,7 +14248,7 @@ msgstr "Número"
 
 #: ../../operation/snmpconsole/snmp_view.php:413
 msgid "Trap subtype"
-msgstr ""
+msgstr "Subtipo trap"
 
 #: ../../operation/snmpconsole/snmp_view.php:476
 #: ../../operation/snmpconsole/snmp_statistics.php:137
@@ -14259,7 +14265,7 @@ msgstr "Ver más detalles"
 
 #: ../../operation/snmpconsole/snmp_view.php:593
 msgid "Enterprise String:"
-msgstr ""
+msgstr "Cadena Enterprise"
 
 #: ../../operation/snmpconsole/snmp_view.php:599
 msgid "Description:"
@@ -14303,11 +14309,11 @@ msgstr "Número"
 
 #: ../../operation/snmpconsole/snmp_statistics.php:166
 msgid "Traps received by Enterprise String"
-msgstr ""
+msgstr "Traps recibidos por cadena Enterprise"
 
 #: ../../operation/snmpconsole/snmp_statistics.php:179
 msgid "Trap Enterprise String"
-msgstr ""
+msgstr "Traps Enterprise de cadena"
 
 #: ../../operation/snmpconsole/snmp_mib_uploader.php:66
 msgid ""
@@ -15182,9 +15188,9 @@ msgid ""
 msgstr ""
 "El acceso a esta página está restringido a usuarios autorizados solamente, "
 "por favor póngase en contacto con el administrador del sistema si necesita "
-"ayuda.<br/> <br/\n"
-"\t\t\t  Por favor, sepa que todos los intentos de acceso a esta página son "
-"registrados en los registros de seguridad de la base de datos del Sistema de "
+"ayuda.<br/> <br/>\n"
+"\t\t\tPor favor, sepa que todos los intentos de acceso a esta página son "
+"guardados en los registros de seguridad de la base de datos de Sistema de "
 "Pandora"
 
 #: ../../general/login_page.php:35
@@ -15197,7 +15203,7 @@ msgstr "Ir a la pantalla de inicio"
 
 #: ../../general/login_page.php:125
 msgid "pass"
-msgstr ""
+msgstr "pass"
 
 #: ../../general/login_page.php:133
 msgid "Logged out"
@@ -15490,11 +15496,12 @@ msgstr "El complemento ya está registrado: Abortando."
 
 #: ../../extensions/plugin_registration.php:272
 msgid "Plug-in Remote Registered unsuccessfull"
-msgstr ""
+msgstr "Registro del plug-in remoto sin éxito"
 
 #: ../../extensions/plugin_registration.php:274
 msgid "Please check the syntax of file \"plugin_definition.ini\""
 msgstr ""
+"Por favor verifique la sintaxis del archivo \"plugin_definition.ini\""
 
 #: ../../extensions/plugin_registration.php:394
 msgid "Module plugin registered"
@@ -16089,10 +16096,13 @@ msgid ""
 "This extension checks the DB is correct. Because sometimes the old DB from a "
 "migration has not some fields in the tables or the data is changed."
 msgstr ""
+"Esta extensión comprueba que la Base de datos es correcta.  Algunas veces la "
+"antigua Base de datos al hacer una migración no tiene algunos campos en la "
+"tabla o los datos han sido cambiados."
 
 #: ../../extensions/db_status.php:58
 msgid "At the moment the checks is for MySQL/MariaDB."
-msgstr ""
+msgstr "Por el momento las verificaciones son para MySQL / MariaDB"
 
 #: ../../extensions/db_status.php:63
 msgid "DB settings"
@@ -16108,58 +16118,64 @@ msgstr "Password BD para este usuario"
 
 #: ../../extensions/db_status.php:73
 msgid "DB Hostname"
-msgstr ""
+msgstr "Nombre del host de la base de datos"
 
 #: ../../extensions/db_status.php:75
 msgid "DB Name (temporal for testing)"
-msgstr ""
+msgstr "Nombre de la base de datos"
 
 #: ../../extensions/db_status.php:83
 msgid "Execute Test"
-msgstr ""
+msgstr "Ejecutar la prueba"
 
 #: ../../extensions/db_status.php:110
 msgid "Unsuccessful connected to the DB"
-msgstr ""
+msgstr "Conexión a la base de datos sin éxito"
 
 #: ../../extensions/db_status.php:117
 msgid "Unsuccessful created the testing DB"
-msgstr ""
+msgstr "Creación de la BD testeada sin éxito"
 
 #: ../../extensions/db_status.php:128
 msgid "Unsuccessful installed tables into the testing DB"
 msgstr ""
+"Instalación de las tablas en la base de datos de prueba no ha tenido éxito"
 
 #: ../../extensions/db_status.php:139
 msgid "Unsuccessful installed enterprise tables into the testing DB"
 msgstr ""
+"Instalación de las tablas  enterprise en la base de datos de prueba sin éxito"
 
 #: ../../extensions/db_status.php:190
 msgid "Successful the DB Pandora has all tables"
-msgstr ""
+msgstr "La base de datos de Pandora tiene todas las tablas"
 
 #: ../../extensions/db_status.php:191
 #, php-format
 msgid ""
 "Unsuccessful the DB Pandora has not all tables. The tables lost are (%s)"
 msgstr ""
+"Sin éxito, la base de datos de Pandora no tiene todas las tablas. Las tablas "
+"perdidas son (%s)"
 
 #: ../../extensions/db_status.php:201 ../../extensions/db_status.php:258
 #: ../../extensions/db_status.php:278 ../../extensions/db_status.php:290
 #: ../../extensions/db_status.php:298
 msgid "You can execute this SQL query for to fix."
-msgstr ""
+msgstr "Puede ejecutar esta consulta SQL para arreglarlo"
 
 #: ../../extensions/db_status.php:255
 #, php-format
 msgid "Unsuccessful the table %s has not the field %s"
-msgstr ""
+msgstr "Sin éxito, la tabla %s no tiene todos los campos %s"
 
 #: ../../extensions/db_status.php:275
 #, php-format
 msgid ""
 "Unsuccessful the field %s in the table %s must be setted the type with %s."
 msgstr ""
+"Sin éxito, los campos %s de la tabla %s debe tener establecidos el tipo con "
+"%s"
 
 #: ../../extensions/db_status.php:286
 #, php-format
@@ -16167,6 +16183,8 @@ msgid ""
 "Unsuccessful the field %s in the table %s must be setted the null values "
 "with %s."
 msgstr ""
+"Sin éxito,  el campo% s en la tabla % s debe establecer los valores nulos "
+"con % s ."
 
 #: ../../extensions/db_status.php:308
 #, php-format
@@ -16174,10 +16192,14 @@ msgid ""
 "Unsuccessful the field %s in the table %s must be setted the key as defined "
 "in the SQL file."
 msgstr ""
+"Sin éxito, el campo% s en la tabla % s debe establecer la clave tal como se "
+"define en el archivo SQL ."
 
 #: ../../extensions/db_status.php:311
 msgid "Please check the SQL file for to know the kind of key needed."
 msgstr ""
+"Por favor, consulte el archivo de SQL para conocer el tipo de clave "
+"necesaria."
 
 #: ../../extensions/db_status.php:315
 #, php-format
@@ -16185,11 +16207,15 @@ msgid ""
 "Unsuccessful the field %s in the table %s must be setted the default value "
 "as %s."
 msgstr ""
+"Sin éxito, el campo% s en la tabla % s debe establecer el valor por defecto "
+"como% s ."
 
 #: ../../extensions/db_status.php:318
 msgid ""
 "Please check the SQL file for to know the kind of default value needed."
 msgstr ""
+"Por favor, consulte el archivo de SQL para conocer el tipo de valor "
+"predeterminado es necesario."
 
 #: ../../extensions/db_status.php:322
 #, php-format
@@ -16197,15 +16223,19 @@ msgid ""
 "Unsuccessful the field %s in the table %s must be setted as defined in the "
 "SQL file."
 msgstr ""
+"Sin éxito, el campo% s en la tabla % s debe establecese como se define en el "
+"archivo SQL ."
 
 #: ../../extensions/db_status.php:325
 msgid ""
 "Please check the SQL file for to know the kind of extra config needed."
 msgstr ""
+"Por favor, comprueba el archivo SQL para conocer el tipo de configuración "
+"adicional necesaria."
 
 #: ../../extensions/db_status.php:336
 msgid "Successful all the tables have the correct fields"
-msgstr ""
+msgstr "Todas las tablas tienen los campos correctos"
 
 #: ../../extensions/agents_modules.php:119
 #: ../../include/functions_reports.php:577
@@ -16572,6 +16602,9 @@ msgid ""
 "This item is affected by a malformed planned downtime. Go to the planned "
 "downtimes section to solve this."
 msgstr ""
+"Este item se ve afectado por un tiempo de inactividad planificado con "
+"formato incorrecto. Ir a la sección de los tiempos de parada planificada "
+"para resolver esto."
 
 #: ../../include/functions_reporting.php:882
 msgid "Top N"
@@ -16633,15 +16666,15 @@ msgstr "Valor máximo"
 
 #: ../../include/functions_reporting.php:1226
 msgid "Event Report Group"
-msgstr ""
+msgstr "Evento Grupo del Informe"
 
 #: ../../include/functions_reporting.php:1402
 msgid "Event Report Module"
-msgstr ""
+msgstr "Evento módulo del Informe"
 
 #: ../../include/functions_reporting.php:1445
 msgid "Inventory Changes"
-msgstr ""
+msgstr "Cambios de Inventario"
 
 #: ../../include/functions_reporting.php:1476
 msgid "No changes found."
@@ -16649,7 +16682,7 @@ msgstr "No se han encontrado cambios."
 
 #: ../../include/functions_reporting.php:1550
 msgid "Agent/Modules"
-msgstr ""
+msgstr "Agentes / módulos"
 
 #: ../../include/functions_reporting.php:1649
 #: ../../include/functions_reports.php:574
@@ -16700,41 +16733,41 @@ msgstr "Excepción - Módulos en estado crítico o de advertencia"
 
 #: ../../include/functions_reporting.php:1881
 msgid "There are no Modules under those conditions."
-msgstr ""
+msgstr "No hay módulos bajo esas condiciones"
 
 #: ../../include/functions_reporting.php:1884
 #, php-format
 msgid "There are no Modules over or equal to %s."
-msgstr ""
+msgstr "No hay módulos mayores o iguales a %s"
 
 #: ../../include/functions_reporting.php:1887
 #, php-format
 msgid "There are no Modules less or equal to %s."
-msgstr ""
+msgstr "No hay módulos menores o igual a %s"
 
 #: ../../include/functions_reporting.php:1890
 #, php-format
 msgid "There are no Modules less %s."
-msgstr ""
+msgstr "No hay módulos menores %s"
 
 #: ../../include/functions_reporting.php:1893
 #, php-format
 msgid "There are no Modules over %s."
-msgstr ""
+msgstr "No hay módulos mayores %s"
 
 #: ../../include/functions_reporting.php:1896
 #, php-format
 msgid "There are no Modules equal to %s"
-msgstr ""
+msgstr "No hay módules iguales a %s"
 
 #: ../../include/functions_reporting.php:1899
 #, php-format
 msgid "There are no Modules not equal to %s"
-msgstr ""
+msgstr "No hay módulos no iguales a %s"
 
 #: ../../include/functions_reporting.php:1902
 msgid "There are no Modules normal status"
-msgstr ""
+msgstr "No hay módulos en estado normal"
 
 #: ../../include/functions_reporting.php:1905
 msgid "There are no Modules at critial or warning status"
@@ -16742,15 +16775,15 @@ msgstr "No hay módulos en estado crítico o de advertencia"
 
 #: ../../include/functions_reporting.php:2048
 msgid "Group Report"
-msgstr ""
+msgstr "Informe del grupo"
 
 #: ../../include/functions_reporting.php:2100
 msgid "Event Report Agent"
-msgstr ""
+msgstr "Evento Agente de Informe"
 
 #: ../../include/functions_reporting.php:2243
 msgid "Database Serialized"
-msgstr ""
+msgstr "Base de datos serializada"
 
 #: ../../include/functions_reporting.php:2345
 #: ../../include/functions_reports.php:629
@@ -16759,7 +16792,7 @@ msgstr "Configuración del grupo"
 
 #: ../../include/functions_reporting.php:2400
 msgid "Network interfaces report"
-msgstr ""
+msgstr "Informe de las interfaces de red"
 
 #: ../../include/functions_reporting.php:2419
 msgid ""
@@ -16768,31 +16801,31 @@ msgstr "El grupo no tiene agentes o los agentes no tienen interfaz de red"
 
 #: ../../include/functions_reporting.php:2469
 msgid "bytes/s"
-msgstr ""
+msgstr "bytes/s"
 
 #: ../../include/functions_reporting.php:2498
 msgid "Alert Report Group"
-msgstr ""
+msgstr "Grupo de informe de alerta"
 
 #: ../../include/functions_reporting.php:2625
 msgid "Alert Report Agent"
-msgstr ""
+msgstr "Agente informe de alerta"
 
 #: ../../include/functions_reporting.php:2733
 msgid "Alert Report Module"
-msgstr ""
+msgstr "Módulo informe de alerta"
 
 #: ../../include/functions_reporting.php:2851
 msgid "SQL Graph Vertical Bars"
-msgstr ""
+msgstr "Barras de gráficas verticales SQL"
 
 #: ../../include/functions_reporting.php:2854
 msgid "SQL Graph Horizontal Bars"
-msgstr ""
+msgstr "Barras de gráficas horizontales SQL"
 
 #: ../../include/functions_reporting.php:2857
 msgid "SQL Graph Pie"
-msgstr ""
+msgstr "Gráfica SQL circular"
 
 #: ../../include/functions_reporting.php:2904
 msgid "Monitor Report"
@@ -16800,23 +16833,23 @@ msgstr "Informe de monitores"
 
 #: ../../include/functions_reporting.php:2972
 msgid "Netflow Area"
-msgstr ""
+msgstr "Área de netflow"
 
 #: ../../include/functions_reporting.php:2975
 msgid "Netflow Pie"
-msgstr ""
+msgstr "Tarta Netflow"
 
 #: ../../include/functions_reporting.php:2978
 msgid "Netflow Data"
-msgstr ""
+msgstr "Datos de netflow"
 
 #: ../../include/functions_reporting.php:2981
 msgid "Netflow Statistics"
-msgstr ""
+msgstr "Estadísticas de netflow"
 
 #: ../../include/functions_reporting.php:2984
 msgid "Netflow Summary"
-msgstr ""
+msgstr "Resumen de netflow"
 
 #: ../../include/functions_reporting.php:3047
 #: ../../include/functions_reports.php:501
@@ -16825,7 +16858,7 @@ msgstr "Gráfica simple de línea base"
 
 #: ../../include/functions_reporting.php:3107
 msgid "Prediction Date"
-msgstr ""
+msgstr "Fecha de predicción."
 
 #: ../../include/functions_reporting.php:3148
 msgid "Projection Graph"
@@ -16876,15 +16909,18 @@ msgid ""
 "cannot use: *, delete, drop, alter, modify, union, password, pass, insert or "
 "update."
 msgstr ""
+"Consulta ilegal: Debido a restricciones de seguridad, hay algunos símbolos o "
+"palabras que usted no puede utilizar: * , delete, drop, alter, modify, "
+"union, password, pass, insert o update."
 
 #: ../../include/functions_reporting.php:3628
 #: ../../include/functions_reports.php:588
 msgid "Availability"
-msgstr ""
+msgstr "Disponibilidad"
 
 #: ../../include/functions_reporting.php:3689
 msgid "No Address"
-msgstr ""
+msgstr "Sin dirección"
 
 #: ../../include/functions_reporting.php:4056
 msgid "Minimal"
@@ -17253,7 +17289,7 @@ msgstr "¿Quieres salir de la ayuda guiada?"
 
 #: ../../include/help/clippy/server_queued_modules.php:39
 msgid "Excesive Queued."
-msgstr ""
+msgstr "Encolamiento excesivo"
 
 #: ../../include/help/clippy/server_queued_modules.php:44
 msgid ""
@@ -17353,7 +17389,7 @@ msgstr ""
 
 #: ../../include/help/clippy/interval_agent_min.php:39
 msgid "Interval Agent."
-msgstr ""
+msgstr "Intervalo de agente"
 
 #: ../../include/help/clippy/interval_agent_min.php:44
 msgid ""
@@ -17364,6 +17400,13 @@ msgid ""
 "unknown modules is higher, and the impact on the server is higher because it "
 "requires a shorter response time."
 msgstr ""
+"Por favor, tenga en cuenta que no se recomienda que tengan los agentes con "
+"un intervalo de monitorización por debajo de 300 segundos. Esto tendrá un "
+"impacto serio en el rendimiento del servidor. Por ejemplo, tener 200 agentes "
+"con un intervalo de un minuto, es lo mismo que tener 1.000 agentes con un "
+"intervalo de 5 minutos. La probabilidad de obtener módulos desconocidos es "
+"más alto, y el impacto en el servidor es mayor, ya que requiere un tiempo de "
+"respuesta más corto."
 
 #: ../../include/help/clippy/godmode_alerts_configure_alert_action.php:35
 msgid "Fill the name of your action."
@@ -17512,6 +17555,13 @@ msgid ""
 "from the agent, this applies for example for crit/warn thresholds, interval, "
 "module group, min/max value, tags, etc."
 msgstr ""
+"Por favor, tenga en cuenta que la información aquí proporcionada afecta la "
+"forma de cómo el agente  recoge la información y genera el XML de datos. "
+"Cualquier dato / configuración enviado por el agente, a diferencia de los "
+"enviados desde datos o descripción que son descartados, y la configuración "
+"mostrada en la consola prevalece sobre cualquier configuración procedente "
+"del agente, esto se aplica por ejemplo para umbrales críticos / advertencia "
+", intervalo , grupo módulo, valor  mínimo / máximo, etiquetas , etc."
 
 #: ../../include/help/clippy/data_configuration_module.php:50
 msgid ""
@@ -17519,10 +17569,13 @@ msgid ""
 "can see in the console, but after the first import, system will ignore any "
 "update coming from the XML/Agent."
 msgstr ""
+"Información importada la PRIMERA vez   desde el XML llenará la información "
+"que se puede ver en la consola, pero después de la primera importación , el "
+"sistema ignorará cualquier actualización que viene del XML / Agente ."
 
 #: ../../include/help/clippy/topology_group.php:39
 msgid "Topology Group"
-msgstr ""
+msgstr "Tipología de grupo"
 
 #: ../../include/help/clippy/topology_group.php:44
 msgid ""
@@ -17530,10 +17583,13 @@ msgid ""
 "between nodes, it only shows the group parentship and the agent distribution "
 "inside them. "
 msgstr ""
+"Tenga en cuenta que el grupo mapas de topología no muestran la relación "
+"padre entre los nodos , sólo muestra el grupo padre y el agente de "
+"distribución dentro de ellos "
 
 #: ../../include/help/clippy/servers_down.php:39
 msgid "All servers down"
-msgstr ""
+msgstr "Todo los servidores están caídos"
 
 #: ../../include/help/clippy/servers_down.php:44
 msgid ""
@@ -17541,6 +17597,9 @@ msgid ""
 "command: \"sudo /etc/init.d/pandora_server restart\". It's possible need "
 "introduce root pass."
 msgstr ""
+"Usted puede activar todos los servidores. Tiene que ir al terminal de linux "
+"y ejecutar el siguiente comando: \"sudo /etc/init.d/pandora_server "
+"restart\". Es posible que necesite introducir la contraseña de root."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:35
 msgid "Now you must go to Modules. Don't worry I'll lead you."
@@ -18033,12 +18092,15 @@ msgstr "Resumen del mapa"
 msgid ""
 "This is the private code that you should use with your authenticator app"
 msgstr ""
+"Este es la clave privada que debería usar con su aplicación de autenticación"
 
 #: ../../include/ajax/double_auth.ajax.php:147
 #: ../../include/ajax/double_auth.ajax.php:283
 msgid ""
 "You could enter the code manually or use the QR code to add it automatically"
 msgstr ""
+"Puede introducir el código manualmente o usar el código QR para añadirlo "
+"automáticamente"
 
 #: ../../include/ajax/double_auth.ajax.php:151
 #: ../../include/ajax/double_auth.ajax.php:287
@@ -18048,11 +18110,11 @@ msgstr "Código"
 #: ../../include/ajax/double_auth.ajax.php:153
 #: ../../include/ajax/double_auth.ajax.php:289
 msgid "QR"
-msgstr ""
+msgstr "QR"
 
 #: ../../include/ajax/double_auth.ajax.php:189
 msgid "You are about to activate the double authentication"
-msgstr ""
+msgstr "Esta a punto de activar la doble autenticación"
 
 #: ../../include/ajax/double_auth.ajax.php:190
 msgid ""
@@ -18060,15 +18122,19 @@ msgid ""
 "\t\tcause a code generated by other application will be required after the "
 "login"
 msgstr ""
+"Con esta opción habilitada, su acceso a la cuenta será más seguro,\n"
+"\t\t porque el código generado por otra aplicación se generará despues de "
+"conectarse"
 
 #: ../../include/ajax/double_auth.ajax.php:194
 msgid ""
 "You will need to install the app from the following link before continue"
 msgstr ""
+"Necesitará instalar la aplicación desde el siguiente link antes de continuar"
 
 #: ../../include/ajax/double_auth.ajax.php:199
 msgid "Download the app"
-msgstr ""
+msgstr "Descargue la aplicación"
 
 #: ../../include/ajax/double_auth.ajax.php:203
 #: ../../include/ajax/double_auth.ajax.php:294
@@ -18077,44 +18143,46 @@ msgstr "Continuar"
 
 #: ../../include/ajax/double_auth.ajax.php:219
 msgid "Are you installed the app yet?"
-msgstr ""
+msgstr "¿Ya ha instalado la aplicación?"
 
 #: ../../include/ajax/double_auth.ajax.php:277
 msgid "A private code has been generated"
-msgstr ""
+msgstr "Un código privado ha sido generado"
 
 #: ../../include/ajax/double_auth.ajax.php:282
 msgid ""
 "Before continue, you should create a new entry into the authenticator app"
 msgstr ""
+"Antes de continuar, debería crear una nueva entrada dentro de la aplicación "
+"de autenticación"
 
 #: ../../include/ajax/double_auth.ajax.php:292
 msgid "Refresh code"
-msgstr ""
+msgstr "Refrescar el código"
 
 #: ../../include/ajax/double_auth.ajax.php:358
 msgid "Are you introduced the code in the authenticator app yet?"
-msgstr ""
+msgstr "¿ Ya ha introducido el código en la aplicación de autenticación?"
 
 #: ../../include/ajax/double_auth.ajax.php:420
 msgid "Introduce a code generated by the app"
-msgstr ""
+msgstr "Introduce el código generado por la aplicación"
 
 #: ../../include/ajax/double_auth.ajax.php:421
 msgid "If the code is valid, the double authentication will be activated"
-msgstr ""
+msgstr "Si el código es válido, la doble autenticación se activará"
 
 #: ../../include/ajax/double_auth.ajax.php:430
 msgid "Validate code"
-msgstr ""
+msgstr "Validar código"
 
 #: ../../include/ajax/double_auth.ajax.php:481
 msgid "The code is valid, you can exit now"
-msgstr ""
+msgstr "El código es válido, puede salir ahora"
 
 #: ../../include/ajax/double_auth.ajax.php:497
 msgid "The code is valid, but it was an error saving the data"
-msgstr ""
+msgstr "El código es válido, pero hubo un error guardando los datos"
 
 #: ../../include/ajax/update_manager.ajax.php:73
 msgid "There was an error extracting the file '"
@@ -18352,7 +18420,7 @@ msgstr "El directorio %s no existe"
 
 #: ../../include/functions_filemanager.php:552
 msgid "Index of images"
-msgstr ""
+msgstr "Índice de imágenes"
 
 #: ../../include/functions_filemanager.php:590
 msgid "Parent directory"
@@ -18912,7 +18980,7 @@ msgstr "Identificacion del agente"
 
 #: ../../include/functions_events.php:1576
 msgid "Module Agent address"
-msgstr ""
+msgstr "Dirección del módulo de agente"
 
 #: ../../include/functions_events.php:1668
 msgid "Change owner"
@@ -20281,7 +20349,7 @@ msgstr "Puerto de la BD de réplica"
 
 #: ../../include/functions_config.php:223
 msgid "Metaconsole agent cache"
-msgstr ""
+msgstr "Cache agente metaconsola"
 
 #: ../../include/functions_config.php:225
 msgid "Activate Log Collector"
@@ -20374,7 +20442,7 @@ msgstr "Servidor de Integria"
 
 #: ../../include/functions_config.php:331
 msgid "Session timeout"
-msgstr ""
+msgstr "Sesión expirada"
 
 #: ../../include/functions_config.php:413
 msgid "Show QR code header"
@@ -20622,10 +20690,12 @@ msgid ""
 "Variable disable_functions containts functions system() or exec(), in PHP "
 "configuration file (php.ini)"
 msgstr ""
+"La variable disable_functions contiene las funciones system() o exec() en el "
+"fichero de configuración de php (php.ini)"
 
 #: ../../include/functions_config.php:1511
 msgid "Problems with disable functions in PHP.INI"
-msgstr ""
+msgstr "Problemas para desactivar funciones en PHP.INI"
 
 #: ../../include/functions_custom_graphs.php:205
 msgid "Empty graph"
@@ -20716,7 +20786,7 @@ msgstr "Eventos por agente"
 
 #: ../../include/functions_reporting_html.php:570
 msgid "Events by user validator"
-msgstr ""
+msgstr "Eventos por usuario validador"
 
 #: ../../include/functions_reporting_html.php:582
 #: ../../include/functions_reporting_html.php:1161
@@ -20726,7 +20796,7 @@ msgstr "Eventos por criticidad"
 
 #: ../../include/functions_reporting_html.php:594
 msgid "Events validated vs unvalidated"
-msgstr ""
+msgstr "Eventos validados vs no validados"
 
 #: ../../include/functions_reporting_html.php:696
 msgid "Added"
@@ -20735,27 +20805,27 @@ msgstr "Añadido"
 #: ../../include/functions_reporting_html.php:850
 #, php-format
 msgid "%s in %s : NORMAL"
-msgstr ""
+msgstr "%s en %s : NORMAL"
 
 #: ../../include/functions_reporting_html.php:858
 #, php-format
 msgid "%s in %s : CRITICAL"
-msgstr ""
+msgstr "%s en %s : CRITICAL"
 
 #: ../../include/functions_reporting_html.php:866
 #, php-format
 msgid "%s in %s : WARNING"
-msgstr ""
+msgstr "%s en %s : WARNING"
 
 #: ../../include/functions_reporting_html.php:874
 #, php-format
 msgid "%s in %s : UNKNOWN"
-msgstr ""
+msgstr "%s en %s : DESCONOCIDO"
 
 #: ../../include/functions_reporting_html.php:882
 #, php-format
 msgid "%s in %s : ALERTS FIRED"
-msgstr ""
+msgstr "%s en %s : ALERTA ENVIADA"
 
 #: ../../include/functions_reporting_html.php:1027
 #: ../../include/functions_reporting_html.php:2367
@@ -20765,7 +20835,7 @@ msgstr "Monitores"
 #: ../../include/functions_reporting_html.php:1059
 #, php-format
 msgid "Last %s"
-msgstr ""
+msgstr "Último %s"
 
 #: ../../include/functions_reporting_html.php:1149
 msgid "Events validated by user"
@@ -20791,35 +20861,35 @@ msgstr "Estado actual"
 
 #: ../../include/functions_reporting_html.php:1478
 msgid "Empty modules"
-msgstr ""
+msgstr "Módulos vacíos"
 
 #: ../../include/functions_reporting_html.php:1485
 msgid "Warning<br/>Critical"
-msgstr ""
+msgstr "Warning<br/>Critical"
 
 #: ../../include/functions_reporting_html.php:1625
 msgid "# Checks"
-msgstr ""
+msgstr "# Chequeos"
 
 #: ../../include/functions_reporting_html.php:1626
 msgid "# Failed"
-msgstr ""
+msgstr "# Fallidos"
 
 #: ../../include/functions_reporting_html.php:1627
 msgid "% Fail"
-msgstr ""
+msgstr "% Fallo"
 
 #: ../../include/functions_reporting_html.php:1628
 msgid "Poling time"
-msgstr ""
+msgstr "tiempo poling"
 
 #: ../../include/functions_reporting_html.php:1629
 msgid "Time unavailable"
-msgstr ""
+msgstr "Tiempo indisponible"
 
 #: ../../include/functions_reporting_html.php:1630
 msgid "% Ok"
-msgstr ""
+msgstr "% Ok"
 
 #: ../../include/functions_reporting_html.php:1976
 msgid "Alert description"
@@ -20932,5629 +21002,3 @@ msgid "File is missing in disk storage. Please contact the administrator."
 msgstr ""
 "El archivo no se encuentra en disco, por favor, contacte con el "
 "administrador."
-
-#~ msgid "Module component management"
-#~ msgstr "Gestión de componentes de red"
-
-#~ msgid "TCP port"
-#~ msgstr "Puerto TCP"
-
-#~ msgid "Map builder"
-#~ msgstr "Creador de mapas"
-
-#~ msgid "Two Months"
-#~ msgstr "Dos meses"
-
-#~ msgid "Six Months"
-#~ msgstr "Seis meses"
-
-#~ msgid "Label color"
-#~ msgstr "Color de etiqueta"
-
-#~ msgid "Combined image render"
-#~ msgstr "Visualización de imágenes combinadas"
-
-#~ msgid "Factor"
-#~ msgstr "Factor"
-
-#~ msgid "Render now"
-#~ msgstr "Ver ahora"
-
-#~ msgid "Redraw"
-#~ msgstr "Redibujar"
-
-#~ msgid "Store"
-#~ msgstr "Guardar"
-
-#~ msgid "There was a problem creating reporting"
-#~ msgstr "Hubo un problema al crear el informe"
-
-#~ msgid "Custom reporting builder"
-#~ msgstr "Creador de informes personalizados"
-
-#~ msgid "Add item to report"
-#~ msgstr "Añadir elemento al informe"
-
-#~ msgid "Reporting type"
-#~ msgstr "Tipo de informe"
-
-#~ msgid "Up"
-#~ msgstr "Activo"
-
-#~ msgid "User successfully deleted"
-#~ msgstr "Usuario eliminado correctamente"
-
-#~ msgid "Standard user"
-#~ msgstr "Usuario estándar"
-
-#~ msgid "Database Maintenance"
-#~ msgstr "Mantenimiento de la Base de Datos"
-
-#~ msgid "Total data"
-#~ msgstr "Datos totales"
-
-#~ msgid "Event Database cleanup"
-#~ msgstr "Limpieza de la Base de Datos de eventos"
-
-#~ msgid "Database Audit purge"
-#~ msgstr "Depuración de la Base de Datos de auditoría"
-
-#~ msgid "Data from agent "
-#~ msgstr "Datos del agente "
-
-#~ msgid "Database Information"
-#~ msgstr "Información de la Base de Datos"
-
-#~ msgid "Modules per agent"
-#~ msgstr "Módulos por agente"
-
-#~ msgid "Packets per agent"
-#~ msgstr "Paquetes por agente"
-
-#~ msgid "Pandora Setup"
-#~ msgstr "Configuración"
-
-#~ msgid "General configuration"
-#~ msgstr "Configuración general"
-
-#~ msgid "Link successfully created"
-#~ msgstr "El enlace se ha creado correctamente"
-
-#~ msgid "Link successfully updated"
-#~ msgstr "Enlace actualizado correctamente"
-
-#~ msgid "Manage modules"
-#~ msgstr "Gestionar módulos"
-
-#~ msgid "Report builder"
-#~ msgstr "Creador de informes"
-
-#~ msgid "Modules successfully added "
-#~ msgstr "Módulos añadidos correctamente "
-
-#~ msgid "Assigned modules"
-#~ msgstr "Módulos asignados"
-
-#~ msgid "Alert successfully deleted"
-#~ msgstr "Alerta eliminada correctamente"
-
-#~ msgid "Alert successfully created"
-#~ msgstr "Alerta creada correctamente"
-
-#~ msgid "Agent successfully updated"
-#~ msgstr "Agente actualizado correctamente"
-
-#~ msgid "There was a problem adding module"
-#~ msgstr "Ha habido un problema al añadir el módulo"
-
-#~ msgid "Alert type"
-#~ msgstr "Tipo de alerta"
-
-#~ msgid "Field #1 (Alias, name)"
-#~ msgstr "Campo #1 (Alias, nombre)"
-
-#~ msgid "Field #2 (Single Line)"
-#~ msgstr "Campo #2 (Línea sencilla)"
-
-#~ msgid "Field #3 (Full Text)"
-#~ msgstr "Campo #3 (Texto completo)"
-
-#~ msgid "Data Copy"
-#~ msgstr "Copia de datos"
-
-#~ msgid "No selected agents to copy"
-#~ msgstr "No se han seleccionado agentes destino para la copia"
-
-#~ msgid "Configuration Management"
-#~ msgstr "Gestión de Configuraciones"
-
-#~ msgid "To Agent(s):"
-#~ msgstr "Agente(s) destino"
-
-#~ msgid "Update agent"
-#~ msgstr "Actualizar agente"
-
-#~ msgid "Network Server"
-#~ msgstr "Servidor de red"
-
-#~ msgid "This agent doesn't have any module"
-#~ msgstr "Este agente no tiene ningún módulo definido"
-
-#~ msgid "Profile successfully deleted"
-#~ msgstr "Perfil eliminado correctamente"
-
-#~ msgid "Profile successfully created"
-#~ msgstr "Perfil creado correctamente"
-
-#~ msgid "Profile successfully updated"
-#~ msgstr "Perfil actualizado correctamente"
-
-#~ msgid "Alert successfully updated"
-#~ msgstr "Alerta actualizada correctamente"
-
-#~ msgid "Network profile"
-#~ msgstr "Perfil de red"
-
-#~ msgid "day"
-#~ msgstr "día"
-
-#~ msgid "week"
-#~ msgstr "semana"
-
-#~ msgid "month"
-#~ msgstr "mes"
-
-#~ msgid "Master"
-#~ msgstr "Principal"
-
-#~ msgid "Data Server"
-#~ msgstr "Servidor de datos"
-
-#~ msgid "MD5 Check"
-#~ msgstr "Comprobación MD5"
-
-#~ msgid "Event report"
-#~ msgstr "Informe de eventos"
-
-#~ msgid "Alert report"
-#~ msgstr "Informe de alertas"
-
-#~ msgid "Pandora users"
-#~ msgstr "Usuarios de Pandora"
-
-#~ msgid "User activity statistics"
-#~ msgstr "Estadísticas de actividad de los usuarios"
-
-#~ msgid "Event graph by group"
-#~ msgstr "Gráfica de eventos por grupo"
-
-#~ msgid "Validated event"
-#~ msgstr "Evento validado"
-
-#~ msgid "View users"
-#~ msgstr "Ver usuarios"
-
-#~ msgid "Agent general information"
-#~ msgstr "Información general del agente"
-
-#~ msgid "Thurdsday"
-#~ msgstr "Jueves"
-
-#~ msgid "Hr"
-#~ msgstr "Hr"
-
-#~ msgid " from "
-#~ msgstr " desde "
-
-#~ msgid " to "
-#~ msgstr " hasta "
-
-#~ msgid "Download file"
-#~ msgstr "Descargar fichero"
-
-#~ msgid "No module has been selected"
-#~ msgstr "No se ha seleccionado ningún módulo"
-
-#~ msgid "Begin date (*)"
-#~ msgstr "Fecha comienzo (*)"
-
-#~ msgid "End date (*)"
-#~ msgstr "Fecha fin (*)"
-
-#~ msgid "Standalone CSV ascii file"
-#~ msgstr "Formato CSV"
-
-#~ msgid "Full list of Monitors"
-#~ msgstr "Lista completa de monitores"
-
-#~ msgid "Load"
-#~ msgstr "Carga"
-
-#~ msgid "Change between Green/Red state"
-#~ msgstr "Cambia entre los estados verde y rojo"
-
-#~ msgid "At least one monitor fails"
-#~ msgstr "Al menos un monitor falla"
-
-#~ msgid "Agent without monitors"
-#~ msgstr "Agente sin monitores"
-
-#~ msgid "Agent down"
-#~ msgstr "Agente caído"
-
-#~ msgid "There are no agents included in this group"
-#~ msgstr "No hay ningún agente incluido en este grupo"
-
-#~ msgid "Display of last data modules received by agent"
-#~ msgstr "Contenido de los últimos paquetes enviados por el agente"
-
-#~ msgid "int"
-#~ msgstr "Itv."
-
-#~ msgid "Raw Data"
-#~ msgstr "Datos"
-
-#~ msgid "Times Fired"
-#~ msgstr "Número de veces lanzada"
-
-#~ msgid "Configuration detail"
-#~ msgstr "Detalle de configuración"
-
-#~ msgid "General information"
-#~ msgstr "Información general"
-
-#~ msgid "You don't have access"
-#~ msgstr "No tiene acceso"
-
-#~ msgid "You don't have enough permission to access this resource"
-#~ msgstr "No tiene suficientes permisos para acceder a este recurso"
-
-#~ msgid "Software agent data"
-#~ msgstr "Datos del agente de software"
-
-#~ msgid "Software agent monitor"
-#~ msgstr "Monitores del agente de software"
-
-#~ msgid "Network agent data"
-#~ msgstr "Datos del agente de red"
-
-#~ msgid "Network agent monitor"
-#~ msgstr "Monitores del agente de red"
-
-#~ msgid "Wrong module type"
-#~ msgstr "Tipo módulo"
-
-#~ msgid "Id"
-#~ msgstr "ID"
-
-#~ msgid "Settings"
-#~ msgstr "Ajustes"
-
-#~ msgid "Update server host"
-#~ msgstr "Actualizar servidor"
-
-#~ msgid "preview"
-#~ msgstr "vista previa"
-
-#~ msgid "Module deleted successfully"
-#~ msgstr "Módulo borrado correctamente"
-
-#~ msgid "Link successfully deleted"
-#~ msgstr "Enlace borrado correctamente"
-
-#~ msgid "WMI Query"
-#~ msgstr "Consulta WMI"
-
-#~ msgid "Module assignment"
-#~ msgstr "Asignación de módulos"
-
-#~ msgid "Global health"
-#~ msgstr "Salud global"
-
-#~ msgid "Map element editor"
-#~ msgstr "Editor de elementos"
-
-#~ msgid "Map element trash"
-#~ msgstr "Papelera de elementos"
-
-#~ msgid "Planned Downtime Form"
-#~ msgstr "Formulario de desconexión planificada"
-
-#~ msgid "Create a new prediction Server module"
-#~ msgstr "Crear un nuevo módulo de servidor de predicción"
-
-#~ msgid "Checking database consistency"
-#~ msgstr "Comprobando consistencia de la base de datos"
-
-#~ msgid "General group report"
-#~ msgstr "Informe general del grupo"
-
-#~ msgid "Port option"
-#~ msgstr "Opción de puerto"
-
-#~ msgid "Agents in group"
-#~ msgstr "Agentes en el grupo"
-
-#~ msgid "Delete non-initialized modules now"
-#~ msgstr "Eliminar ahora módulos no inicializados"
-
-#~ msgid "Sanitize my database now"
-#~ msgstr "Comprobar ahora mi base de datos"
-
-#~ msgid "Desc"
-#~ msgstr "Descripción"
-
-#~ msgid "Agents down"
-#~ msgstr "Agentes caídos"
-
-#~ msgid "from"
-#~ msgstr "desde"
-
-#~ msgid "SLA view"
-#~ msgstr "Vista SLA"
-
-#~ msgid "Autorefresh"
-#~ msgstr "Autorefresco"
-
-#~ msgid "Automatic SLA for monitors"
-#~ msgstr "SLA Automáticos para los monitores"
-
-#~ msgid "Drag an element here to edit the properties"
-#~ msgstr "Arrastre un elemento aquí para editar sus propiedades"
-
-#~ msgid "User option"
-#~ msgstr "Opción de usuario"
-
-#~ msgid "Password option"
-#~ msgstr "Opción de contraseña"
-
-#~ msgid "Logged Out"
-#~ msgstr "Desconectado"
-
-#~ msgid ""
-#~ "This is the Web Management System for Pandora FMS. From here you can manage "
-#~ "its agents, alerts and incidents. Session is open while activity exists."
-#~ msgstr ""
-#~ "Esta es la Consola de administración de Pandora FMS. Desde aquí puede "
-#~ "gestionar sus agentes, alertas e incidentes. La sesión permanecerá abierta "
-#~ "mientras exista actividad."
-
-#~ msgid "Authentication Error"
-#~ msgstr "Error de autenticación"
-
-#~ msgid "Drag an element here to delete from the map"
-#~ msgstr "Arrastre un elemento aquí para borrarlo del mapa"
-
-#~ msgid "Last Month"
-#~ msgstr "Último mes"
-
-#~ msgid "Graph builder module list"
-#~ msgstr "Lista de módulos del creador de gráficas"
-
-#~ msgid "Reporting successfully created"
-#~ msgstr "Informe se creó correctamente"
-
-#~ msgid "SLA was successfully created"
-#~ msgstr "SLA creado correctamente"
-
-#~ msgid "There was a problem creating SLA"
-#~ msgstr "Hubo un problema al crear el SLA"
-
-#~ msgid "Module is not set"
-#~ msgstr "El módulo no está establecido"
-
-#~ msgid "SLA was successfully delete"
-#~ msgstr "SLA borrado correctamente"
-
-#~ msgid "There was a problem deleting SLA"
-#~ msgstr "Hubo un problema al borrar el SLA"
-
-#~ msgid "SLAs defined"
-#~ msgstr "SLA definidos"
-
-#~ msgid "SLA report construction"
-#~ msgstr "Creador de informes SLA"
-
-#~ msgid "Custom graph name"
-#~ msgstr "Nombre de gráfica personalizada"
-
-#~ msgid "Duplicate config"
-#~ msgstr "Duplicar configuración"
-
-#~ msgid "Max.Timeout"
-#~ msgstr "Máx. tiempo de expiración"
-
-#~ msgid "Group management"
-#~ msgstr "Gestionar grupos"
-
-#~ msgid "Manage profiles"
-#~ msgstr "Gestionar perfiles"
-
-#~ msgid "DB Maintenance"
-#~ msgstr "Mantenimiento BB. DD."
-
-#~ msgid "DB Information"
-#~ msgstr "Información BB. DD."
-
-#~ msgid "Manage Database"
-#~ msgstr "Gestionar la BB. DD."
-
-#~ msgid "Net. Templates"
-#~ msgstr "Plantillas de red"
-
-#~ msgid "There was a problem updating agent"
-#~ msgstr "Hubo un problema al actualizar el agente"
-
-#~ msgid "There was a problem updating module"
-#~ msgstr "Hubo un problema al actualizar el módulo"
-
-#~ msgid "Source group"
-#~ msgstr "Grupo origen"
-
-#~ msgid "Plugin parameters"
-#~ msgstr "Parámetros del complemento"
-
-#~ msgid "Oper"
-#~ msgstr "Operador"
-
-#~ msgid "Delete agents"
-#~ msgstr "Borrar agentes"
-
-#~ msgid "Plugin Server"
-#~ msgstr "Servidor de complementos"
-
-#~ msgid "WMI Server"
-#~ msgstr "Servidor WMI"
-
-#~ msgid "Prediction Server"
-#~ msgstr "Servidor de predicción"
-
-#~ msgid "Create a new plugin Server module"
-#~ msgstr "Crear un nuevo módulo de servidor de complementos"
-
-#~ msgid "Create a new WMI Server module"
-#~ msgstr "Crear un nuevo módulo de servidor WMI"
-
-#~ msgid "S"
-#~ msgstr "S"
-
-#~ msgid "NC.Group"
-#~ msgstr "Grupo C.R."
-
-#~ msgid "WMI component management"
-#~ msgstr "Gestionar componentes WMI"
-
-#~ msgid "Module Interval"
-#~ msgstr "Intervalo del módulo"
-
-#~ msgid "Minimum Data"
-#~ msgstr "Datos mín."
-
-#~ msgid "Maximum Data"
-#~ msgstr "Datos máx."
-
-#~ msgid "Database sanity tool"
-#~ msgstr "Herramienta de salud de la BB. DD."
-
-#~ msgid "Deleting non-init data"
-#~ msgstr "Borrando datos no inicializados"
-
-#~ msgid "Sumatory"
-#~ msgstr "Sumatorio"
-
-#~ msgid "Agents detailed view"
-#~ msgstr "Vista detallada de agentes"
-
-#~ msgid "Unmanaged error"
-#~ msgstr "Error no gestionable"
-
-#~ msgid "Monitor down"
-#~ msgstr "Monitor caído"
-
-#~ msgid "Tt"
-#~ msgstr "UT"
-
-#~ msgid "MinMax.Al"
-#~ msgstr "Alertas Mín/Máx"
-
-#~ msgid "St"
-#~ msgstr "Es"
-
-#~ msgid "Network Map"
-#~ msgstr "Mapa de red"
-
-#~ msgid "Free text"
-#~ msgstr "Texto libre"
-
-#~ msgid "Events generated -by module-"
-#~ msgstr "Eventos generados (por módulo)"
-
-#~ msgid "Database export results"
-#~ msgstr "Resultados de la exportación de datos de la BB. DD."
-
-#~ msgid "Older"
-#~ msgstr "Más antiguo"
-
-#~ msgid "Pandora FMS Help System"
-#~ msgstr "Sistema de ayuda de Pandora FMS"
-
-#~ msgid "Pandora FMS Web Console"
-#~ msgstr "Consola web de Pandora FMS"
-
-#~ msgid "Keygen file is not executable"
-#~ msgstr "El fichero generador de claves no se puede ejecutar"
-
-#~ msgid ""
-#~ "Update Manager sends anonymous information about Pandora FMS usage (number "
-#~ "of agents and modules running). To disable it, just delete extension or "
-#~ "remove remote server address from Update Manager plugin setup."
-#~ msgstr ""
-#~ "El Update Manager envía información anónima acerca del uso de Pandora FMS "
-#~ "(número de agentes y módulos en ejecución). Para desactivarlo, simplemente "
-#~ "borre la extensión o quite la dirección del servidor remoto de la "
-#~ "configuración del complemento de Update Manager."
-
-#~ msgid "Your system is up-to-date"
-#~ msgstr "Su sistema está actualizado"
-
-#~ msgid "Server connection failed"
-#~ msgstr "Falló la conexión con el servidor"
-
-#~ msgid "Server authorization rejected"
-#~ msgstr "Se rechazó la autorización del servidor"
-
-#~ msgid "There's a new update for Pandora"
-#~ msgstr "Existe una nueva actualización para Pandora FMS"
-
-#~ msgid "Overwrite local changes"
-#~ msgstr "Sobreescribir cambios locales"
-
-#~ msgid "Your system version number is"
-#~ msgstr "El número de versión de su sistema es"
-
-#~ msgid "Update manager settings updated"
-#~ msgstr "Ajustes del Update Manager actualizados"
-
-#~ msgid "Update server path"
-#~ msgstr "Actualizar ruta del servidor"
-
-#~ msgid "Update server port"
-#~ msgstr "Actualizar puerto del servidor"
-
-#~ msgid "Binary input path"
-#~ msgstr "Directorio de entrada de binarios"
-
-#~ msgid "Keygen path"
-#~ msgstr "Ruta de generación de clave"
-
-#~ msgid "Development"
-#~ msgstr "Desarrollo"
-
-#~ msgid "Testing"
-#~ msgstr "Pruebas"
-
-#~ msgid "Code / binary directory"
-#~ msgstr "Directorio de código / binario"
-
-#~ msgid "More info"
-#~ msgstr "Más info."
-
-#~ msgid "Update manager settings"
-#~ msgstr "Ajustes del Update Manager"
-
-#~ msgid "Update layout successful"
-#~ msgstr "Diseño actualizado correctamente"
-
-#~ msgid "Update layout failed"
-#~ msgstr "Falló la actualización del diseño"
-
-#~ msgid "3 hours"
-#~ msgstr "3 horas"
-
-#~ msgid "4 days"
-#~ msgstr "días"
-
-#~ msgid "Read Incidents"
-#~ msgstr "Incidentes rechazados"
-
-#~ msgid "Create Incidents"
-#~ msgstr "Crear incidente"
-
-#~ msgid "Manage Incidents"
-#~ msgstr "Gestionar incidentes"
-
-#~ msgid "Read Agent Information"
-#~ msgstr "Configuración de agentes"
-
-#~ msgid "Manage Agents"
-#~ msgstr "Gestionar agentes"
-
-#~ msgid "Edit Alerts"
-#~ msgstr "Editar alertas"
-
-#~ msgid "Manage User Rights"
-#~ msgstr "Gestionar usuarios"
-
-#~ msgid "Database Management"
-#~ msgstr "BB. DD. de eventos"
-
-#~ msgid "Alerts Management"
-#~ msgstr "Gestión de alertas"
-
-#~ msgid "Pandora System Management"
-#~ msgstr "Gestionar Pandora FMS"
-
-#~ msgid "Del"
-#~ msgstr "Borrar"
-
-#~ msgid "Upd"
-#~ msgstr "Activo"
-
-#~ msgid "Press here to get database information as text"
-#~ msgstr "Pulse aquí para ver de la BB. DD. como texto"
-
-#~ msgid "Press here to get database information as a graph"
-#~ msgstr "Pulse aquí para ver de la BB. DD. como texto"
-
-#~ msgid "Purge task launched for agent"
-#~ msgstr "Tarea de borrado lanzada para el agente"
-
-#~ msgid "Data older than"
-#~ msgstr "Salud de los datos"
-
-#~ msgid "Deleting records for module"
-#~ msgstr "Borrando registros para el módulo"
-
-#~ msgid "Total Agents"
-#~ msgstr "Total agentes"
-
-#~ msgid "Uninitialized modules"
-#~ msgstr "Módulos no inic."
-
-#~ msgid ""
-#~ "The new <a href=\"http://updatemanager.sourceforge.net\">Update Manager</a> "
-#~ "client is shipped with Pandora FMS 2.0. It helps system administrators to "
-#~ "update their Pandora FMS automatically, since the Update Manager does the "
-#~ "task of getting new modules, new plugins and new features (even full "
-#~ "migrations tools for future versions) automatically."
-#~ msgstr ""
-#~ "El nuevo cliente de <a href=\"http://updatemanager.sourceforge.net\">Update "
-#~ "Manager</a> viene con la nueva versión de Pandora FMS 2.0. Permite que los "
-#~ "administradores actualicen sus Pandora FMS automáticamente, ya que el Update "
-#~ "Manager obtendrá los módulos complementos y otras características nuevas "
-#~ "(incluso migraciones completas de herramientas para futuras versiones) de "
-#~ "forma automática."
-
-#~ msgid ""
-#~ "Update Manager is one of the most advanced features of Pandora FMS 2.0 "
-#~ "Enterprise version, for more information visit <a "
-#~ "href=\"http://pandorafms.com\">http://pandorafms.com</a>."
-#~ msgstr ""
-#~ "El Update Manager es una de las características más avanzadas de Pandora FMS "
-#~ "2.0 Enterprise, para obtener más información visite <a "
-#~ "href=\"http://pandorafms.com\">http://pandorafms.com</a>."
-
-#~ msgid "There's a new update for Pandora FMS"
-#~ msgstr "Existe una nueva actualización para Pandora FMS"
-
-#~ msgid "Error updating export target"
-#~ msgstr "Error al actualizar el servidor de exportación"
-
-#~ msgid "Successfully updated export target"
-#~ msgstr "Servidor de exportación actualizado correctamente"
-
-#~ msgid "Error deleting export target"
-#~ msgstr "Error al borrar el servidor de exportación"
-
-#~ msgid "Succesfully deleted export target"
-#~ msgstr "Servidor de exportación borrado correctamente"
-
-#~ msgid "Error creating export target"
-#~ msgstr "Error al crear el servidor de exportación"
-
-#~ msgid "Successfully created export target"
-#~ msgstr "Servidor de exportación creado correctamente"
-
-#~ msgid "export targets"
-#~ msgstr "Servidor de exportación"
-
-#~ msgid "There are no export targets configured"
-#~ msgstr "No existe ningún servidor de exportación configurado"
-
-#~ msgid "Preffix"
-#~ msgstr "Prefijo"
-
-#~ msgid "Transfer Mode"
-#~ msgstr "Modo de transferencia"
-
-#~ msgid "Succesfully deleted recon task"
-#~ msgstr "Tarea de reconocimiento borrada correctamente>"
-
-#~ msgid "Recon Server"
-#~ msgstr "Servidor de exploración de red"
-
-#~ msgid "Transfer mode"
-#~ msgstr "Modo de transferencia"
-
-#~ msgid "Target directory"
-#~ msgstr "Directorio objetivo"
-
-#~ msgid "Extra options"
-#~ msgstr "Opciones adicionales"
-
-#~ msgid "Export targets"
-#~ msgstr "Servidores de exportación"
-
-#~ msgid "SLA period (seconds)"
-#~ msgstr "Periodo del SLA (segundos)"
-
-#~ msgid "Automatic update check"
-#~ msgstr "Comprobación automática de actualizaciones"
-
-#~ msgid "Status init unsuccessful"
-#~ msgstr "Inicialización de estado incorrecta"
-
-#~ msgid "Available templates"
-#~ msgstr "Plantillas disponibles"
-
-#~ msgid "Available Agents"
-#~ msgstr "Agentes disponibles"
-
-#~ msgid "Add Modules"
-#~ msgstr "Añadir módulos"
-
-#~ msgid "Checking tagente_estado table"
-#~ msgstr "Comprobando tabla «tagente_estado»"
-
-#~ msgid "No layouts found"
-#~ msgstr "No se encontraron diseños"
-
-#~ msgid "Alert trigger"
-#~ msgstr "Disparador de alerta"
-
-#~ msgid "Custom Value"
-#~ msgstr "Valor personalizado"
-
-#~ msgid "Alert Overview"
-#~ msgstr "Vista general de alertas"
-
-#~ msgid "User-defined SLA items"
-#~ msgstr "Elementos SLA definidos por el usuario"
-
-#~ msgid "System Events"
-#~ msgstr "Eventos del sistema"
-
-#~ msgid "There was a problem loading alert"
-#~ msgstr "Ha habido un error al cargar la configuración de la alerta"
-
-#~ msgid "Search text"
-#~ msgstr "Buscar texto"
-
-#~ msgid "SNMP server"
-#~ msgstr "Servidor SNMP"
-
-#~ msgid "Seconds"
-#~ msgstr "Segundos"
-
-#~ msgid "Alerts Fired"
-#~ msgstr "Alertas disparadas"
-
-#~ msgid "Alerts defined"
-#~ msgstr "Alertas definidas"
-
-#~ msgid "You are"
-#~ msgstr "Conectado como"
-
-#~ msgid "MD5 check"
-#~ msgstr "Comprobación MD5"
-
-#~ msgid "Search value"
-#~ msgstr "Buscar valor"
-
-#~ msgid "Pandora Agents"
-#~ msgstr "Agentes de Pandora FMS"
-
-#~ msgid "Flag"
-#~ msgstr "Bandera"
-
-#~ msgid "No news articles at this moment"
-#~ msgstr "En estos momentos no hay artículos de noticias"
-
-#~ msgid "Users defined"
-#~ msgstr "Usuarios definidos"
-
-#~ msgid "Monitor up"
-#~ msgstr "Monitor funcionando"
-
-#~ msgid "This agent doesn't have any active monitors"
-#~ msgstr "Este agente no tienen ningún monitor activo"
-
-#~ msgid "Keygen file does not exists"
-#~ msgstr "El fichero generador de claves no existe"
-
-#~ msgid "Your IP"
-#~ msgstr "Su IP"
-
-#~ msgid "Error adding module"
-#~ msgstr "Error al añadir el módulo"
-
-#~ msgid "matches of the alert"
-#~ msgstr "coincidencias de la alerta"
-
-#~ msgid ""
-#~ "This user has permissions to manage all. This is admin user and overwrites "
-#~ "all permissions given in profiles/groups"
-#~ msgstr ""
-#~ "Este usuario tiene permisos para gestionar todo. Este es el usuario "
-#~ "administrador y sobreescribe todos los permisos otorgados en los "
-#~ "perfiles/grupos"
-
-#~ msgid "Field 1"
-#~ msgstr "Campo 1"
-
-#~ msgid "Field 2"
-#~ msgstr "Campo 2"
-
-#~ msgid "Field 3"
-#~ msgstr "Campo 3"
-
-#~ msgid "Modules critical"
-#~ msgstr "Módulos críticos"
-
-#~ msgid "Modules normal"
-#~ msgstr "Módulos normales"
-
-#~ msgid "Modules warning"
-#~ msgstr "Módulos en advertencia"
-
-#~ msgid "Single alerts"
-#~ msgstr "Alertas simples"
-
-#~ msgid "No simple alerts found"
-#~ msgstr "No se encontró ninguna alerta simple"
-
-#~ msgid "minute"
-#~ msgstr "minuto"
-
-#~ msgid "First name"
-#~ msgstr "Nombre"
-
-#~ msgid "Last name"
-#~ msgstr "Apellido"
-
-#~ msgid "Group name"
-#~ msgstr "Nombre del grupo"
-
-#~ msgid ""
-#~ "The alert would fire when the value doesn't match <span id=\\\"value\\"
-#~ "\"></span>"
-#~ msgstr ""
-#~ "La alerta se disparará cuando el valor no coincida con <span id=\\\"value\\"
-#~ "\"></span>"
-
-#~ msgid "The alert would fire when the value is <span id=\\\"value\\\"></span>"
-#~ msgstr ""
-#~ "La alerta se disparará cuando el valor sea <span id=\\\"value\\\"></span>"
-
-#~ msgid ""
-#~ "The alert would fire when the value is not <span id=\\\"value\\\"></span>"
-#~ msgstr ""
-#~ "La alerta se disparará cuando el valor no sea <span id=\\\"value\\\"></span>"
-
-#~ msgid ""
-#~ "The alert would fire when the value is between <span id=\\\"min\\\"></span> "
-#~ "and <span id=\\\"max\\\"></span>"
-#~ msgstr ""
-#~ "La alerta se disparará cuando el valor esté entre <span id=\\\"min\\"
-#~ "\"></span> y <span id=\\\"max\\\"></span>"
-
-#~ msgid ""
-#~ "The alert would fire when the value is not between <span id=\\\"min\\"
-#~ "\"></span> and <span id=\\\"max\\\"></span>"
-#~ msgstr ""
-#~ "La alerta se disparará cuando el valor no esté entre <span id=\\\"min\\"
-#~ "\"></span> y <span id=\\\"max\\\"></span>"
-
-#~ msgid "Monitors normal"
-#~ msgstr "Monitores en normal"
-
-#~ msgid "Monitors warning"
-#~ msgstr "Monitores en advertencia"
-
-#~ msgid "Monitors critical"
-#~ msgstr "Monitores en crítico"
-
-#~ msgid "Monitors unknown"
-#~ msgstr "Monitores en desconocido"
-
-#~ msgid "Monitors not init"
-#~ msgstr "Monitores no inicializados"
-
-#~ msgid ""
-#~ "The alert would fire when the value matches <span id=\\\"value\\\"></span>"
-#~ msgstr ""
-#~ "La alerta se disparará cuando el valor coincida con <span id=\\\"value\\"
-#~ "\"></span>"
-
-#~ msgid "Agent keepalive monitor"
-#~ msgstr "Monitor keepalive del agente"
-
-#~ msgid "Compound alerts"
-#~ msgstr "Alertas compuestas"
-
-#~ msgid "Assigned actions"
-#~ msgstr "Acciones asignadas"
-
-#~ msgid "Assigned to"
-#~ msgstr "Asignada a"
-
-#~ msgid "Operator"
-#~ msgstr "Operador"
-
-#~ msgid "Add condition"
-#~ msgstr "Añadir condición"
-
-#~ msgid "No name was given"
-#~ msgstr "No se proporcionó ningún nombre"
-
-#~ msgid "No agent was given"
-#~ msgstr "No se proporcionó ningún agente"
-
-#~ msgid "No conditions were given"
-#~ msgstr "No se proporcionó ninguna condición"
-
-#~ msgid "Last hour"
-#~ msgstr "Última hora"
-
-#, php-format
-#~ msgid "Last %s days"
-#~ msgstr "Últimos %s días"
-
-#~ msgid "No layout with this id found"
-#~ msgstr "No se encontró una distribución con este ID"
-
-#~ msgid "Event not validated"
-#~ msgstr "Evento no validado"
-
-#~ msgid "-Select user-"
-#~ msgstr "-Seleccionar usuario-"
-
-#~ msgid "-Select group-"
-#~ msgstr "-Seleccionar grupo-"
-
-#~ msgid "Read message"
-#~ msgstr "Leer mensaje"
-
-#~ msgid "Visual map wizard"
-#~ msgstr "Asistente de mapas visuales"
-
-#~ msgid "Image range (px)"
-#~ msgstr "Rango de la imagen (px)"
-
-#~ msgid "Image size (px)"
-#~ msgstr "Tamaño de la imagen (px)"
-
-#~ msgid "Correlation"
-#~ msgstr "Correlación"
-
-#~ msgid "Compact CSS and JS into header"
-#~ msgstr "Compactar CSS y JS en la cabecera"
-
-#~ msgid "Deleting file"
-#~ msgstr "Borrando fichero"
-
-#~ msgid "Deleting"
-#~ msgstr "Borrando"
-
-#~ msgid "Alerts disabled"
-#~ msgstr "Alertas desactivadas"
-
-#~ msgid "There are no servers configured in the database"
-#~ msgstr "No existen servidores configurados en la base de datos"
-
-#~ msgid "Go to alert overview"
-#~ msgstr "Ir a la vista general de alertas"
-
-#~ msgid "Create incident from event"
-#~ msgstr "Crear incidente desde un evento"
-
-#, php-format
-#~ msgid "%d hour"
-#~ msgstr "%d hora"
-
-#, php-format
-#~ msgid "%d hours"
-#~ msgstr "%d horas"
-
-#, php-format
-#~ msgid "%d day"
-#~ msgstr "%d día"
-
-#, php-format
-#~ msgid "%d days"
-#~ msgstr "%d días"
-
-#, php-format
-#~ msgid "%d week"
-#~ msgstr "%d semana"
-
-#, php-format
-#~ msgid "%d weeks"
-#~ msgstr "%d semanas"
-
-#, php-format
-#~ msgid "%d month"
-#~ msgstr "%d mes"
-
-#~ msgid "attach_error"
-#~ msgstr "error_de_adjunto"
-
-#, php-format
-#~ msgid "Created directory %s"
-#~ msgstr "Directorio %s creado"
-
-#~ msgid "Current directory is not writable by HTTP Server"
-#~ msgstr "El servidor HTTP no puede escribir el directorio actual"
-
-#~ msgid "Please check that current directory has write rights for HTTP server"
-#~ msgstr ""
-#~ "Compruebe que el servidor HTTP tiene permisos para escribir el directorio "
-#~ "actual"
-
-#~ msgid "Visual configuration"
-#~ msgstr "Configuración visual"
-
-#~ msgid "Making copy of configuration file for"
-#~ msgstr "Creando una copia del archivo de configuración de"
-
-#~ msgid "Remote configuration management"
-#~ msgstr "Gestión de configuración remota"
-
-#~ msgid "Edit modules"
-#~ msgstr "Editar módulos"
-
-#~ msgid "Delete modules"
-#~ msgstr "Borrar módulos"
-
-#~ msgid "Delete alerts"
-#~ msgstr "Borrar alertas"
-
-#~ msgid "Massive agent deletion"
-#~ msgstr "Borrado masivo de agentes"
-
-#~ msgid ""
-#~ "There was an error deleting the agent, the operation has been cancelled"
-#~ msgstr "Hubo un error al borrar el agente; se canceló la operación"
-
-#~ msgid "Could not delete agent"
-#~ msgstr "No se pudo borrar el agente"
-
-#~ msgid "Correlated alerts"
-#~ msgstr "Alertas correladas"
-
-#~ msgid "Configure correlated alert"
-#~ msgstr "Configurar alerta correlada"
-
-#~ msgid ""
-#~ "The alert would fire when the value is below <span id=\\\"min\\\"></span>"
-#~ msgstr ""
-#~ "La alerta se disparará cuando el valor esté por debajo de <span id=\\\"min\\"
-#~ "\"></span>"
-
-#~ msgid "Agent detailed event"
-#~ msgstr "Evento detallado del agente"
-
-#~ msgid "Agents detailed event"
-#~ msgstr "Eventos detallados de agentes"
-
-#~ msgid "There are no modules to evaluate the S.L.A. from"
-#~ msgstr "No existen módulos en los que evaluar el S.L.A."
-
-#~ msgid "Module Down"
-#~ msgstr "Módulo caído"
-
-#~ msgid "Successfully deleted export target"
-#~ msgstr "Servidor de exportación borrado correctamente"
-
-#~ msgid "To agent(s):"
-#~ msgstr "Agente(s) destino:"
-
-#~ msgid ""
-#~ "There was an error deleting the alerts, the operation has been cancelled"
-#~ msgstr "Hubo un error al borrar las alertas, se canceló la operación"
-
-#~ msgid "Could not delete alerts"
-#~ msgstr "No se pudieron borrar las alertas"
-
-#~ msgid "Could not delete modules"
-#~ msgstr "No se pudieron borrar los módulos"
-
-#~ msgid "N/A\t"
-#~ msgstr "N/A\t"
-
-#~ msgid "Plugin component"
-#~ msgstr "Componente de complemento"
-
-#~ msgid "Network component"
-#~ msgstr "Componente de red"
-
-#~ msgid ""
-#~ "The alert would fire when the value is above <span id=\\\"max\\\"></span>"
-#~ msgstr ""
-#~ "La alerta se disparará cuando el valor esté por encima de <span id=\\\"max\\"
-#~ "\"></span>"
-
-#~ msgid "Modules delayed / Max. Delay (sec)"
-#~ msgstr "Módulos retrasados / Máx. retraso (seg)"
-
-#~ msgid "Invalid method supplied"
-#~ msgstr "Método proporcionado no válido"
-
-#~ msgid "Module Up"
-#~ msgstr "Módulo activo"
-
-#~ msgid "IP address option"
-#~ msgstr "Opción de dirección IP"
-
-#~ msgid "Read incidents"
-#~ msgstr "Leer incidentes"
-
-#~ msgid "Create incidents"
-#~ msgstr "Crear incidentes"
-
-#~ msgid "Read agent information"
-#~ msgstr "Leer configuración de agentes"
-
-#~ msgid "Manage user rights"
-#~ msgstr "Gestionar usuarios"
-
-#~ msgid "Pandora system management"
-#~ msgstr "Gestionar Pandora FMS"
-
-#~ msgid "Configuration management"
-#~ msgstr "Gestión de la configuración"
-
-#~ msgid "Pandora agents"
-#~ msgstr "Agentes de Pandora"
-
-#~ msgid "Custom graph store"
-#~ msgstr "Almacenamiento de la gráfica personalizada"
-
-#~ msgid "Flash charts"
-#~ msgstr "Gráficas en flash"
-
-#~ msgid "Replicate configuration"
-#~ msgstr "Replicar configuración"
-
-#~ msgid "Timestamp from"
-#~ msgstr "Fecha/Hora desde"
-
-#~ msgid "Timestamp to"
-#~ msgstr "Fecha/Hora hasta"
-
-#~ msgid "Planned Downtime present on system"
-#~ msgstr "Desconexión planificada presente en los sistemas"
-
-#~ msgid "Info"
-#~ msgstr "Info."
-
-#~ msgid "E/D"
-#~ msgstr "H/D"
-
-#~ msgid " seconds."
-#~ msgstr " segundos."
-
-#~ msgid "The list of IPs separate with carriage return."
-#~ msgstr "La lista de IPs debe estar separada con retorno de carro."
-
-#~ msgid "Graphs management"
-#~ msgstr "Gestión de gráficas"
-
-#~ msgid "No selected agent, please select any agent."
-#~ msgstr "No se ha elegido ningun agente, por favor elija un agente"
-
-#~ msgid "Event validate"
-#~ msgstr "Evento validado"
-
-#~ msgid "Event not validate"
-#~ msgstr "Evento no validado"
-
-#~ msgid "The colours meaning:"
-#~ msgstr "Significado de los colores:"
-
-#~ msgid "G."
-#~ msgstr "G."
-
-#~ msgid "T."
-#~ msgstr "T."
-
-#~ msgid "None agent in this category"
-#~ msgstr "Sin agentes en esta categoría"
-
-#~ msgid ""
-#~ "Update Manager is one of the most advanced features of Pandora FMS 3.0 "
-#~ "Enterprise version, for more information visit <a "
-#~ "href=\"http://pandorafms.com\">http://pandorafms.com</a>."
-#~ msgstr ""
-#~ "Update Manager es una de las características más avanzadas de la versión 3.0 "
-#~ "de Pandora FMS Enterprise, para obtener más información, visite <a "
-#~ "href=\"http://pandorafms.com\"> http://pandorafms.com </ a>."
-
-#~ msgid "Local modules rate"
-#~ msgstr "Tasa de módulos locales"
-
-#~ msgid "Remote modules rate"
-#~ msgstr "Tasa de módulos remotos"
-
-#~ msgid "secs."
-#~ msgstr "segs."
-
-#~ msgid "Select an element to delete:"
-#~ msgstr "Seleccione un elemento a eliminar"
-
-#~ msgid "Please, choose an image or type a name for the element."
-#~ msgstr "Por favor, elija una imagen o escriba un nombre para el elemento"
-
-#~ msgid "Type at least two characters to search"
-#~ msgstr "Escriba al menos dos carácteres para buscar"
-
-#~ msgid "From the last"
-#~ msgstr "Desde el último"
-
-#~ msgid ""
-#~ "The new <a href=\"http://updatemanager.sourceforge.net\">Update Manager</a> "
-#~ "client is shipped with Pandora FMS 3.0. It helps system administrators to "
-#~ "update their Pandora FMS automatically, since the Update Manager does the "
-#~ "task of getting new modules, new plugins and new features (even full "
-#~ "migrations tools for future versions) automatically."
-#~ msgstr ""
-#~ "El nuevo cliente de <a href=\"http://updatemanager.sourceforge.net\"> Update "
-#~ "Manager </ a> se suministra con Pandora FMS 3.0. Ayuda a los administradores "
-#~ "para actualizar su sistema de Pandora FMS automáticamente, desde el "
-#~ "Administrador de actualización puede conseguir nuevos módulos, complementos "
-#~ "y nuevas características (incluso realizar una migracion de futuras "
-#~ "versiones) de forma automática."
-
-#~ msgid ""
-#~ "This extension makes registration of server plugins more easy. Here you can "
-#~ "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
-#~ "refer to documentation on how to obtain and use Pandora FMS Server "
-#~ "Plugins.<br><br>You can get more plugins in our <a "
-#~ "href='http://pandorafms.org/index.php?sec=community&sec2=repository&lng=en'>P"
-#~ "ublic Resource Library</A>"
-#~ msgstr ""
-#~ "Esta extensión hace el registro de complementos de servidor más fácil. Puede "
-#~ "subir un complemento en el servidor de Pandora FMS 3.x, en formato "
-#~ "comprimido (. Pspz). Por favor, consulte la documentación sobre cómo obtener "
-#~ "y usar servidor de complementos de Pandora FMS. <br> <br> Puede obtener más "
-#~ "complementos en nuestra <a href = "
-#~ "'http://pandorafms.org/index.php?sec=community&sec2=repository&lng = es \"> "
-#~ "Biblioteca Pública </ A>"
-
-#~ msgid "Report name is empty"
-#~ msgstr "El nombre del informe está vacío"
-
-#~ msgid "No items defined"
-#~ msgstr "No se han definido elementos"
-
-#~ msgid ""
-#~ "Red cell when the module group and agent have at least one module in "
-#~ "critical state and the others in any state."
-#~ msgstr ""
-#~ "celda roja cuando el  grupo de módulo y el agente tienen al menos un módulo "
-#~ "en estado crítico y el resto en cualquier otro estado"
-
-#~ msgid ""
-#~ "Yellow cell when the module group and agent have at least one in warning "
-#~ "state and the others in green state."
-#~ msgstr ""
-#~ "celda amarilla cuando el grupo de modulo y el agente tienen al menos uno en "
-#~ "estado de alerta y los otros en estado verde"
-
-#~ msgid ""
-#~ "Green cell when the module group and agent have all modules in OK state."
-#~ msgstr ""
-#~ "celda verde cuando el grupo de módulo y el agente tienen todos los módulos "
-#~ "en estado OK"
-
-#~ msgid "Modules groups"
-#~ msgstr "grupo de módulos"
-
-#~ msgid "Grey cell when the module group and agent don't have any modules."
-#~ msgstr ""
-#~ "celda gris cuando el grupo de modulo y agente no tienen ningún módulo"
-
-#~ msgid "hour"
-#~ msgstr "hora"
-
-#~ msgid "Decrease Weight"
-#~ msgstr "Reducir el peso"
-
-#~ msgid "Increase Weight"
-#~ msgstr "Incrementar el peso"
-
-#~ msgid "ALERTS FIRED"
-#~ msgstr "Alertas lanzadas"
-
-#~ msgid "Group detailed event"
-#~ msgstr "Evento detallado de grupo"
-
-#~ msgid ""
-#~ "Warning: When you change the Agent position, the agent automatically "
-#~ "activates the 'Ignore new GIS data' option"
-#~ msgstr ""
-#~ "Atencion: Cuando cambia la posición de un agente, el agente automáticamente "
-#~ "activa el modo \"Ignorar nuevos datos GIS\"."
-
-#~ msgid "Module detailed event"
-#~ msgstr "Eventos detallados del módulo."
-
-#~ msgid ""
-#~ "Due security restrictions, there are some tokens or words you cannot use"
-#~ msgstr ""
-#~ "Por razones de seguridad, hay algunos token o palabras que no se pueden usar"
-
-#~ msgid "Illegal query"
-#~ msgstr "Consulta ilegal"
-
-#~ msgid "or"
-#~ msgstr "o"
-
-#~ msgid "User defined graph"
-#~ msgstr "Use la gráfica definida"
-
-#~ msgid "Manage SNMP console"
-#~ msgstr "Consola SNMP"
-
-#~ msgid "On the edge"
-#~ msgstr "En el límite"
-
-#~ msgid "Inside limits"
-#~ msgstr "Dentro de los límites"
-
-#~ msgid "Config"
-#~ msgstr "Config"
-
-#~ msgid "Create networkmap"
-#~ msgstr "Crear mapa de red"
-
-#~ msgid "Modules over or equal to"
-#~ msgstr "Módulos sobre o igual a"
-
-#~ msgid "Modules at critial or warning status"
-#~ msgstr "Módulos en estado de advertencia o crítico"
-
-#~ msgid "Modules under those conditions"
-#~ msgstr "Módulos bajo esas condiciones"
-
-#~ msgid "There are no"
-#~ msgstr "No hay"
-
-#~ msgid "Last 8 hours"
-#~ msgstr "Últimas 8 horas"
-
-#~ msgid "Upload file"
-#~ msgstr "Subir archivo"
-
-#~ msgid ""
-#~ "Pandora FMS Sanity tool is used to remove bad database structure data, "
-#~ "created modules with missing status, or modules that cannot be initialized "
-#~ "(and don't report any valid data) but retry each its own interval to get "
-#~ "data. This kind of bad modules could degrade performance of Pandora FMS. "
-#~ "This database sanity tool is also implemented in the <b>pandora_db.pl</b> "
-#~ "that you should be running each day or week. This console sanity DONT "
-#~ "compact your database, only delete bad structured data."
-#~ msgstr ""
-#~ "La herramienta «Pandora FMS sanity» se usa para eliminar la estructura "
-#~ "corrupta de la base de datos, los módulos que no tienen estado o módulos que "
-#~ "no pueden ser inicializados (y no proveen datos validos) pero siguen "
-#~ "requiriendo su intervalo de tiempo. Estos módulos pueden pueden afectar al "
-#~ "rendimiento de Pandora FMS. La herramienta de saneamiento de la base de "
-#~ "datos esta también implementada en <b>Pandora_db.pl</b> de modo que debería "
-#~ "ejecutarla cada día o cada semana. Esta herramienta no COMPACTA O REDUCE su "
-#~ "base de datos, solo elimina las estructuras corruptas."
-
-#~ msgid "Only pending"
-#~ msgstr "Solo pendientes"
-
-#~ msgid "This server has no recon tasks assigned"
-#~ msgstr "Este servidor no tiene ninguna tarea de reconocimiento asignada"
-
-#~ msgid "Tree View"
-#~ msgstr "Vista de árbol"
-
-#~ msgid "License Info"
-#~ msgstr "Información sobre la licencia"
-
-#~ msgid "License info"
-#~ msgstr "Información sobre la licencia"
-
-#~ msgid "Configuration report for group "
-#~ msgstr "Informe de configuración por grupo "
-
-#~ msgid "Configuration report for agent "
-#~ msgstr "Informe de configuración por agente "
-
-#~ msgid "SO"
-#~ msgstr "SO"
-
-#~ msgid "Plannified downtime"
-#~ msgstr "Tiempo de parada planificado"
-
-#~ msgid "Average"
-#~ msgstr "Medio"
-
-#~ msgid "Modules over"
-#~ msgstr "Módulos por encima"
-
-#~ msgid "Modules less or equal to"
-#~ msgstr "Módulos por debajo o iguales a"
-
-#~ msgid "Modules not equal to"
-#~ msgstr "Modulos no iguales a"
-
-#~ msgid "Modules equal to"
-#~ msgstr "Módulos iguales a"
-
-#~ msgid "Modules less"
-#~ msgstr "Módulos por debajo"
-
-#~ msgid "Modules normal status"
-#~ msgstr "Módulos en estado normal"
-
-#~ msgid "Group configuration: "
-#~ msgstr "Grupo de la configuración: "
-
-#~ msgid " MODULES"
-#~ msgstr " MODULOS"
-
-#~ msgid "Agent configuration: "
-#~ msgstr "Configuración del agente: "
-
-#~ msgid "Module macros"
-#~ msgstr "Macros de módulos"
-
-#~ msgid ""
-#~ "Search by these fields description, OID, Custom Value, SNMP Agent (IP), "
-#~ "Single value, each Custom OIDs/Datas."
-#~ msgstr ""
-#~ "Búsqueda por descripción de los campos, OIS, Valores personalizados, Agentes "
-#~ "(IP) SNMP, Valor único, cada OIDs/Datas personalizado."
-
-#~ msgid "Policies operations"
-#~ msgstr "Operaciones de las políticas"
-
-#~ msgid "Log Collector"
-#~ msgstr "Colector de Logs"
-
-#~ msgid "Event alerts"
-#~ msgstr "Alertas de eventos"
-
-#~ msgid "Inventory modules"
-#~ msgstr "Módulos de inventario"
-
-#~ msgid "Local components"
-#~ msgstr "Componentes locales"
-
-#~ msgid "SNMP operations"
-#~ msgstr "Operaciones SNMP"
-
-#~ msgid "Collections"
-#~ msgstr "Colecciones"
-
-#~ msgid "Manage policies"
-#~ msgstr "Gestionar políticas"
-
-#~ msgid "Service updated successfully"
-#~ msgstr "Servicio actualizado correctamente"
-
-#~ msgid "Error creating service"
-#~ msgstr "Error al crear servicio"
-
-#~ msgid "Service created successfully"
-#~ msgstr "Servicio creado correctamente"
-
-#~ msgid "Create Service"
-#~ msgstr "Crear Servicio"
-
-#~ msgid "Not found"
-#~ msgstr "No encontrado"
-
-#~ msgid "Error updating service"
-#~ msgstr "Error al actualizar el sevicio"
-
-#~ msgid "New Service"
-#~ msgstr "Nuevo servicio"
-
-#~ msgid "Config Service"
-#~ msgstr "Configurar Servicios"
-
-#~ msgid "Config Elements"
-#~ msgstr "Configurar Elementos"
-
-#~ msgid "Please set limit between 0 to 100."
-#~ msgstr "Por favor, introduzca un límite de 0 a 100"
-
-#~ msgid "View Service"
-#~ msgstr "Ver Servicio"
-
-#~ msgid "Service map"
-#~ msgstr "Mapa del Servicio"
-
-#~ msgid "Agent to store data"
-#~ msgstr "Agentes para almacenar datos"
-
-#~ msgid "S.L.A. interval"
-#~ msgstr "Intervalo SLA"
-
-#~ msgid "S.L.A. limit"
-#~ msgstr "Límite SLA"
-
-#~ msgid "Error creating service element"
-#~ msgstr "Error al crear elemento de servicio"
-
-#~ msgid "Service element created successfully"
-#~ msgstr "Elemento del servicio creado correctamente"
-
-#~ msgid "Error empty module"
-#~ msgstr "Error al vaciar los módulos"
-
-#~ msgid "Edit service elements"
-#~ msgstr "Editar elementos del servicio"
-
-#~ msgid "Error empty service"
-#~ msgstr "Error al vaciar el servicio"
-
-#~ msgid "Error empty agent"
-#~ msgstr "Error al vaciar el agente"
-
-#~ msgid "Service element deleted successfully"
-#~ msgstr "Elemento de servicio eliminado correctamente"
-
-#~ msgid "Error deleting service element"
-#~ msgstr "Error al eliminar el elemento de servicio"
-
-#~ msgid "Service element updated successfully"
-#~ msgstr "Elemento de servicio actualizado correctamente"
-
-#~ msgid "Error updating service element"
-#~ msgstr "Error al actualizar el elemento de sevicio"
-
-#~ msgid "Security check is ok."
-#~ msgstr "La comprobación de seguridad está ok"
-
-#~ msgid "Show extended info"
-#~ msgstr "Mostrar más info"
-
-#~ msgid "Ok weight"
-#~ msgstr "Peso correcto"
-
-#~ msgid "Unknown weight"
-#~ msgstr "Peso desconocido"
-
-#~ msgid "First select an agent"
-#~ msgstr "Primero, seleccione un agente"
-
-#~ msgid "Critical weight"
-#~ msgstr "Peso crítico"
-
-#~ msgid "Edit element service"
-#~ msgstr "Editar elemento de servicio"
-
-#~ msgid "Create element service"
-#~ msgstr "Crear elemento de sevicio"
-
-#~ msgid "Using local component"
-#~ msgstr "Usando componente local"
-
-#~ msgid "The changes on this field are linked with the configuration data."
-#~ msgstr "Los cambios en este campo están unidos con la configuración de datos"
-
-#~ msgid "Extended info:"
-#~ msgstr "Información extendida"
-
-#~ msgid "Security check is fail."
-#~ msgstr "La comprobación de seguridad ha fallado"
-
-#~ msgid "Hide configuration data"
-#~ msgstr "Ocultar datos de configuración"
-
-#~ msgid "Data configuration"
-#~ msgstr "Configuración de datos"
-
-#~ msgid "Load basic"
-#~ msgstr "cargar básicos"
-
-#~ msgid "Load a basic structure on data configuration"
-#~ msgstr "Cargar una estructura básica en la configuración de datos"
-
-#~ msgid "Check"
-#~ msgstr "Comprobar"
-
-#~ msgid "Show configuration data"
-#~ msgstr "Mostrar datos de configuración"
-
-#~ msgid "Error in the syntax, please check the data configuration."
-#~ msgstr ""
-#~ "Error en la sintaxis, compruebe la configuración de datos, por favor."
-
-#~ msgid "Data configuration are built correctly"
-#~ msgstr "La configuración de datos se ha construido correctamente"
-
-#~ msgid "Type is wrong. Please set a correct type"
-#~ msgstr "El tipo es incorrecto. Por favor, introduzca un tipo correcto"
-
-#~ msgid "There is a line with a unknown token 'token_fail'."
-#~ msgstr "Hay una línea con un token desconocido \"token_fail\"."
-
-#~ msgid "Check the correct structure of the data configuration"
-#~ msgstr "Comprobar la estructura correcta de la configuración de datos"
-
-#~ msgid "First line must be \"module_begin\""
-#~ msgstr "La primera línea tiene que ser \"module_begin\""
-
-#~ msgid "Data configuration is empty"
-#~ msgstr "La configuración de datos está vacía"
-
-#~ msgid "Last line must be \"module_end\""
-#~ msgstr "La última línea tiene que ser \"module_end\""
-
-#~ msgid ""
-#~ "Name is missed. Please add a line with \"module_name yourmodulename\" to "
-#~ "data configuration"
-#~ msgstr ""
-#~ "Falta el nombre. Por favor, introduzca una línea con  \"module_name "
-#~ "yourmodulename\" a la configuración de datos"
-
-#~ msgid ""
-#~ "Type is missed. Please add a line with \"module_type yourmoduletype\" to "
-#~ "data configuration"
-#~ msgstr ""
-#~ "Falta el tipo. Por favor, introduzca una línea con \"module_type "
-#~ "yourmoduletype\" a la configuración de datos"
-
-#~ msgid "Plug-in added succesfully"
-#~ msgstr "Plugin añadido correctamente"
-
-#~ msgid "Plug-in cannot be added"
-#~ msgstr "El plugin no se puede añadir"
-
-#~ msgid "Plug-in deleted succesfully"
-#~ msgstr "Plugin eliminado correctamente"
-
-#~ msgid "Plug-in cannot be deleted"
-#~ msgstr "El plugin no se puede eliminar"
-
-#~ msgid "Plug-in cannot be enabled"
-#~ msgstr "El plugin no puede ser habilitado"
-
-#~ msgid "Plug-in disabled succesfully"
-#~ msgstr "Plugin inhabilitado correctamente"
-
-#~ msgid "Plug-in cannot be disabled"
-#~ msgstr "El plugin no puede ser inhabilitado"
-
-#~ msgid "Plug-in enabled succesfully"
-#~ msgstr "Plugin habilitado correctamente"
-
-#~ msgid "New plug-in"
-#~ msgstr "Nuevo plugin"
-
-#~ msgid "Successfully updated inventory module"
-#~ msgstr "Módulo del inventario actualizado correctamente"
-
-#~ msgid "Error updating inventory module"
-#~ msgstr "Error al actualizar el módulo del inventario"
-
-#~ msgid "Inventory module error"
-#~ msgstr "Error del módulo del inventario"
-
-#~ msgid "Target"
-#~ msgstr "Target"
-
-#~ msgid "Error adding inventory module"
-#~ msgstr "Error al añadir el módulo al inventario"
-
-#~ msgid "Successfully added inventory module"
-#~ msgstr "Módulo añadido al inventario con éxito"
-
-#~ msgid "Error deleting inventory module"
-#~ msgstr "Erro al eliminar el módulo del inventario"
-
-#~ msgid "Successfully deleted inventory module"
-#~ msgstr "Módulo del inventario eliminado correctamente"
-
-#~ msgid "Unable to create the collection"
-#~ msgstr "Imposible crear la colección"
-
-#~ msgid "Another collection with the same short name"
-#~ msgstr "Otra colección con el mismo nombre corto"
-
-#~ msgid "7 days"
-#~ msgstr "7 días"
-
-#~ msgid "Update all"
-#~ msgstr "Actualizar todo"
-
-#~ msgid "Manager configuration &gt; New"
-#~ msgstr "Gestionar la configuración &gt; New"
-
-#~ msgid "Manager configuration &gt; Edit "
-#~ msgstr "Gestionar la configuración &gt; Edit "
-
-#~ msgid "Unable to create the collection."
-#~ msgstr "Imposible crear la colección"
-
-#~ msgid "Empty name"
-#~ msgstr "Nombre vacío"
-
-#~ msgid "Invalid characters in short name"
-#~ msgstr "Caracteres inválidos en el nombre"
-
-#~ msgid "Short name:"
-#~ msgstr "Nombre corto:"
-
-#~ msgid "Recreate file"
-#~ msgstr "Volver a crear archivo"
-
-#~ msgid "Unable to edit the collection."
-#~ msgstr "Imposible editar colección"
-
-#~ msgid "Unable to edit the collection, empty name."
-#~ msgstr "Imposible crear colección. Nombre vacío."
-
-#~ msgid "Remove selected modules"
-#~ msgstr "Eliminar los módulos seleccionados"
-
-#~ msgid "Fixed value"
-#~ msgstr "Valor fijo"
-
-#~ msgid "Add module to average operation"
-#~ msgstr "Añadir módulo al promedio de la operación"
-
-#~ msgid "Remove selected modules from operations stack"
-#~ msgstr "Eliminar los módulos de las operaciones"
-
-#~ msgid "No module was found"
-#~ msgstr "No se encontraron módulos"
-
-#~ msgid "Delete remote conf agent files in Pandora"
-#~ msgstr ""
-#~ "Eliminar los archivos de configuración remota de agentes en Pandora FMS"
-
-#~ msgid "This agent have not a remote configuration, please set it."
-#~ msgstr "Este agente no se ha configurado remotamente, por favor, configúrelo"
-
-#~ msgid "Succesful add the collection"
-#~ msgstr "Añadido a la colección correctamente"
-
-#~ msgid "Add module"
-#~ msgstr "Añadir módulo"
-
-#~ msgid "Error: The conf file of agent is not writable."
-#~ msgstr "Error: En el archivo de configuración no se puede escribir"
-
-#~ msgid "Netflow filter"
-#~ msgstr "Filtro de netflow"
-
-#~ msgid "Select Service"
-#~ msgstr "Seleccionar servicio"
-
-#~ msgid "Error: The conf file of agent is not readble."
-#~ msgstr "Error: El archivo de configuración no se puede leer"
-
-#~ msgid "Select filter"
-#~ msgstr "Seleccionar filtro"
-
-#~ msgid "Unsuccesful add the collection"
-#~ msgstr "No se ha podido añadir a la colección"
-
-#~ msgid "Short Name"
-#~ msgstr "Nombre Corto"
-
-#~ msgid "Show files"
-#~ msgstr "Mostrar archivos"
-
-#~ msgid "Outdate"
-#~ msgstr "Obsoleto"
-
-#~ msgid "Dir"
-#~ msgstr "Dir"
-
-#~ msgid "Create a new web Server module"
-#~ msgstr "Crear un nuevo módulo de servidor web"
-
-#~ msgid "Correct update file."
-#~ msgstr "Actualización correcta del archivo"
-
-#~ msgid "Compatibility mode"
-#~ msgstr "Modo de compatibilidad"
-
-#~ msgid "Files in "
-#~ msgstr "Archivos en "
-
-#~ msgid "Error copying md5 file "
-#~ msgstr "Error al copiar fichero MD5 "
-
-#~ msgid "No source agent selected"
-#~ msgstr "No ha seleccionado ningún agente de origen"
-
-#~ msgid "Please, first save a new collection before to upload files."
-#~ msgstr "Por favor, antes de subir archivos, guarde una nueva colección"
-
-#~ msgid "Incorrect update file."
-#~ msgstr "Archivo NO actualizado correctamente"
-
-#~ msgid "Copied "
-#~ msgstr "Copiado "
-
-#~ msgid " md5 file"
-#~ msgstr " fichero MD5"
-
-#~ msgid "Web server module"
-#~ msgstr "Módulo del servidor web"
-
-#~ msgid "Web checks"
-#~ msgstr "Comprobaciones web"
-
-#~ msgid "Error copying "
-#~ msgstr "Error al copiar "
-
-#~ msgid " config file"
-#~ msgstr " fichero de configuración"
-
-#~ msgid "HTTP auth (server)"
-#~ msgstr "HTTP aut. (servidor)"
-
-#~ msgid "HTTP auth (pass)"
-#~ msgstr "HTTP aut. (contraseña)"
-
-#~ msgid "First line must be \"task_begin\""
-#~ msgstr "La primera línea tiene que ser \"task_begin\""
-
-#~ msgid "HTTP auth (realm)"
-#~ msgstr "HTTP aut. (campo)"
-
-#~ msgid "Proxy URL"
-#~ msgstr "Proxy URL"
-
-#~ msgid "HTTP auth (login)"
-#~ msgstr "HTTP aut. (login)"
-
-#~ msgid "Requests"
-#~ msgstr "Peticiones"
-
-#~ msgid "Load a basic structure on Web Checks"
-#~ msgstr "Cargar una estructura básica en las comprobaciones web"
-
-#~ msgid "Check the correct structure of the WebCheck"
-#~ msgstr "Cargar la estructura correcta de las comprobaciones web"
-
-#~ msgid "Error: recreate file "
-#~ msgstr "Error: volver a crear archivo "
-
-#~ msgid "Manager collection"
-#~ msgstr "Gestor de colecciones"
-
-#~ msgid "Collections Management"
-#~ msgstr "Gestión de colecciones"
-
-#~ msgid "No files in collection"
-#~ msgstr "No hay archivos en la colección"
-
-#~ msgid "Last line must be \"task_end\""
-#~ msgstr "La última línea tiene que ser \"task_end\""
-
-#~ msgid "Webchecks configuration is empty"
-#~ msgstr "La configuración de chequeos web está vacía"
-
-#, php-format
-#~ msgid "Fail create the directory: %s"
-#~ msgstr "Fallo al crear el directorio: %s"
-
-#~ msgid "Web checks are built correctly"
-#~ msgstr "Los chequeos webs se han construido correctamente"
-
-#~ msgid "File of collection is bigger than the limit ("
-#~ msgstr "El archivo de la colección es mayor que el límite"
-
-#~ msgid "Apply changes"
-#~ msgstr "Aplicar Cambios"
-
-#~ msgid "Re-Apply changes"
-#~ msgstr "Volver a aplicar los cambios"
-
-#~ msgid "Can not create collection package."
-#~ msgstr "No se puede crear paquete de la colección"
-
-#~ msgid "Successful create collection package."
-#~ msgstr "Paquete de la colección creado correctamente"
-
-#~ msgid "Delete collection"
-#~ msgstr "Eliminar colección"
-
-#~ msgid "Are you sure to delete?"
-#~ msgstr "¿Está seguro de que quiere eliminarlo?"
-
-#~ msgid "List templates"
-#~ msgstr "Lista de plantillas"
-
-#~ msgid "Edit template"
-#~ msgstr "Editar plantilla"
-
-#~ msgid "Create template"
-#~ msgstr "Crear plantilla"
-
-#~ msgid "SLA max value"
-#~ msgstr "Valor máximo SLA"
-
-#~ msgid "SLA min Value"
-#~ msgstr "Valor mínimo de SLA"
-
-#~ msgid "SLA min value"
-#~ msgstr "Valor mínimo de SLA"
-
-#~ msgid "Elements to apply"
-#~ msgstr "Elementos para aplicar"
-
-#~ msgid "Graph template editor"
-#~ msgstr "Editor de plantillas gráficas"
-
-#~ msgid "Exact match"
-#~ msgstr "Coincidencia exacta"
-
-#~ msgid "Sum"
-#~ msgstr "Suma"
-
-#~ msgid "SLA Limit Value"
-#~ msgstr "Valor límite SLA"
-
-#~ msgid "SLA Limit %"
-#~ msgstr "Límite % SLA"
-
-#~ msgid "SLA max Value"
-#~ msgstr "Valor máximo SLA"
-
-#~ msgid "<"
-#~ msgstr "<"
-
-#~ msgid ">="
-#~ msgstr ">="
-
-#~ msgid "Graph template management"
-#~ msgstr "Gestión de plantillas gráficas"
-
-#~ msgid "There are no defined graph templates"
-#~ msgstr "No hay plantillas gráficas definidas"
-
-#~ msgid "Cleanup sucessfully"
-#~ msgstr "Limpieza correcta"
-
-#~ msgid "Add agents to template"
-#~ msgstr "Añadir agentes a la plantilla"
-
-#~ msgid "Undo agents to template"
-#~ msgstr "Deshacer añadir agentes a la plantilla"
-
-#~ msgid "Please set template distinct than "
-#~ msgstr "Por favor, introduzca una plantilla distinta a "
-
-#~ msgid "Apply template"
-#~ msgstr "Aplicar plantilla"
-
-#~ msgid "Wizard template"
-#~ msgstr "Plantilla de Wizard"
-
-#~ msgid "Filter agent"
-#~ msgstr "Filtrar agente"
-
-#~ msgid "Agents available"
-#~ msgstr "Agentes disponibles"
-
-#~ msgid "Select all"
-#~ msgstr "Seleccionar todo"
-
-#~ msgid "Successfully operation"
-#~ msgstr "Operación realizada con éxito"
-
-#~ msgid ": Edit: "
-#~ msgstr ": Editar: "
-
-#~ msgid ""
-#~ "This will be delete all reports created in previous template applications. "
-#~ "Do you want to continue?"
-#~ msgstr ""
-#~ "Esta acción eliminará todos los informes creados en aplicaciones anteriores "
-#~ "de plantillas. ¿Quiere continuar?"
-
-#~ msgid "Create custom SQL"
-#~ msgstr "Crear SQL personalizado"
-
-#~ msgid "reports"
-#~ msgstr "Informes"
-
-#~ msgid "items"
-#~ msgstr "elementos"
-
-#~ msgid "Sucessfully applied"
-#~ msgstr "Aplicado correctamente"
-
-#~ msgid "Could not be applied"
-#~ msgstr "No se pudo aplicar"
-
-#~ msgid "Create report per agent"
-#~ msgstr "Crear informe por agente"
-
-#~ msgid "SQL preview"
-#~ msgstr "Previsualización del SQL"
-
-#~ msgid "Query SQL"
-#~ msgstr "Consulta SQL"
-
-#~ msgid "Free text to filter the modules of agents when apply this template."
-#~ msgstr ""
-#~ "Texto libre para filtrar los módulos de los agentes cuando se use esta "
-#~ "plantilla"
-
-#~ msgid "Create a graph for each agent"
-#~ msgstr "Crear una gráfica por cada agente"
-
-#~ msgid "Template updated successfully"
-#~ msgstr "Plantilla actualizada con éxito"
-
-#~ msgid "Error updating template"
-#~ msgstr "Error al actualizar la plantilla"
-
-#~ msgid "Please save the template to start adding items into the list."
-#~ msgstr ""
-#~ "Por favor, guarde la plantilla para empezar a añadir elementos a la lista"
-
-#~ msgid "Policies Management"
-#~ msgstr "Gestión de políticas"
-
-#~ msgid "a"
-#~ msgstr "a"
-
-#~ msgid "Delete all agents"
-#~ msgstr "Eliminar todos los agentes"
-
-#~ msgid "All the policy agents will be deleted"
-#~ msgstr "Todos los agentes de las políticas serán eliminados"
-
-#~ msgid "A policy with agents cannot be deleted. Purge it first"
-#~ msgstr "Una política con agentes no se puede eliminar. Púrguela primero."
-
-#~ msgid "Deleting all policy agents"
-#~ msgstr "Eliminando todas los agentes de las políticas"
-
-#~ msgid "Policy updated"
-#~ msgstr "Política actualizada"
-
-#~ msgid "Linking"
-#~ msgstr "Enlazando"
-
-#~ msgid "Pending update policy"
-#~ msgstr "Pendiente actualizar política"
-
-#~ msgid "Queue"
-#~ msgstr "Cola"
-
-#~ msgid "External alerts"
-#~ msgstr "Alertas externas"
-
-#~ msgid "Could not be added module."
-#~ msgstr "El módulo no se pudo añadir"
-
-#~ msgid "Could not be added module(s). You must select a policy"
-#~ msgstr "El módulo no se pudo añadir. Debe seleccionar una política."
-
-#, php-format
-#~ msgid "Successfully added module(s) (%s/%s) to policy %s"
-#~ msgstr "Módulo añadido correctamente (%s/%s) a la política %s"
-
-#, php-format
-#~ msgid "Could not be added module(s) (%s/%s) to policy %s"
-#~ msgstr "El módulo no se pudo añadir (%s/%s) a la política %s"
-
-#~ msgid "Successfully added module."
-#~ msgstr "Módulo añadido correctamente"
-
-#~ msgid "Successfully reverted deletion"
-#~ msgstr "Eliminación revertida correctamente"
-
-#~ msgid "Could not be reverted"
-#~ msgstr "No pudo ser revertido"
-
-#~ msgid "Local component"
-#~ msgstr "Componente local"
-
-#~ msgid "Undo deletion"
-#~ msgstr "Deshacer eliminación"
-
-#~ msgid "Copy selected modules to policy: "
-#~ msgstr "Copiar módulos seleccionados a la política: "
-
-#~ msgid "Variable"
-#~ msgstr "Variable"
-
-#~ msgid "Successfully added to delete queue"
-#~ msgstr "Correctamente añadido a la lista de eliminación"
-
-#~ msgid ""
-#~ "Successfully added to delete pending agents. Will be deleted in the next "
-#~ "policy application."
-#~ msgstr ""
-#~ "Añadido correctamente a los agentes pendientes de eliminación. Será "
-#~ "eliminado en la próxima aplicación de políticas."
-
-#~ msgid "Please select any module to copy"
-#~ msgstr "Por favor, seleccione algún modulo para copiar"
-
-#~ msgid "Are you sure to copy modules into policy?\\n"
-#~ msgstr "¿Está seguro de que quiere copiar los módulos en la política?\\n"
-
-#~ msgid "Agents in Policy"
-#~ msgstr "Agentes en la política"
-
-#~ msgid "Could not be added to delete queue"
-#~ msgstr "No se pudo añadir a la lista de eliminación"
-
-#~ msgid "Delete agents from policy"
-#~ msgstr "Eliminar agentes de la política"
-
-#~ msgid "Add agents to policy"
-#~ msgstr "Añadir agentes a la política"
-
-#~ msgid "R."
-#~ msgstr "R."
-
-#~ msgid "Unlinked modules"
-#~ msgstr "Módulos sin enlazar"
-
-#~ msgid "Applied"
-#~ msgstr "Aplicado"
-
-#~ msgid "Not applied"
-#~ msgstr "No aplicado"
-
-#~ msgid "Applying policy"
-#~ msgstr "Aplicando política"
-
-#~ msgid "Deleting from policy"
-#~ msgstr "Eliminando de la política"
-
-#~ msgid "This agent can not be remotely configured"
-#~ msgstr "Este agente no puede ser configurado remotamente"
-
-#~ msgid "Add to apply queue"
-#~ msgstr "Añadir para aplicar cola"
-
-#~ msgid "Policy applied"
-#~ msgstr "Política aplicada"
-
-#~ msgid "Add to delete queue"
-#~ msgstr "Añadir a la lista de eliminación"
-
-#~ msgid "U."
-#~ msgstr "U."
-
-#~ msgid "Last application"
-#~ msgstr "Última aplicación"
-
-#~ msgid "Added action successfuly"
-#~ msgstr "Acción añadida correctamente"
-
-#~ msgid ""
-#~ "Successfully added to delete pending alerts. Will be deleted in the next "
-#~ "policy application."
-#~ msgstr ""
-#~ "Correctamente añadido a las alertas pendientes de eliminación. Será "
-#~ "eliminado en la próxima aplicación de políticas."
-
-#~ msgid "Created successfuly"
-#~ msgstr "Creado correctamente"
-
-#~ msgid "Deleted action successfuly"
-#~ msgstr "Acción eliminada correctamente"
-
-#~ msgid "Module is not selected"
-#~ msgstr "No ha seleccionado ningún módulo"
-
-#~ msgid "Policy module"
-#~ msgstr "Módulo de la política"
-
-#~ msgid "Select inventory module"
-#~ msgstr "Seleccionar módulo de inventario"
-
-#~ msgid "Operation cannot be deleted from the queue"
-#~ msgstr "La operación no puede ser eliminada de la cola"
-
-#~ msgid "Operation successfully deleted from the queue"
-#~ msgstr "Operación eliminada correctamente de la cola"
-
-#~ msgid "Add policy"
-#~ msgstr "Añadir política"
-
-#~ msgid "List of modules unlinked"
-#~ msgstr "Lista de módulos sin enlazar"
-
-#~ msgid "Link pending modules"
-#~ msgstr "Enlazar módulos pendientes"
-
-#~ msgid "Update pending agents"
-#~ msgstr "Actualizar agentes pendientes"
-
-#~ msgid "Update pending"
-#~ msgstr "Actualización pendiente"
-
-#~ msgid "Operations cannot be deleted from the queue"
-#~ msgstr "Las operaciones no pueden ser eliminadas de la cola"
-
-#~ msgid "Operations successfully deleted from the queue"
-#~ msgstr "Operaciones eliminadas correctamente de la cola"
-
-#~ msgid "Will be unlinked in the next policy application"
-#~ msgstr "Será desenlazado en la siguiente aplicación de políticas"
-
-#~ msgid "Delete pending"
-#~ msgstr "Eliminación pendiente"
-
-#~ msgid "Will be linked in the next policy application"
-#~ msgstr "Se enlazará en la siguiente aplicación de políticas"
-
-#~ msgid "Unlink pending modules"
-#~ msgstr "Desenlazar módulos pendientes"
-
-#~ msgid "Delete pending plugins"
-#~ msgstr "Eliminar plugins pendientes"
-
-#~ msgid "Delete pending file collections"
-#~ msgstr "Eliminar colecciones de archivos pendientes"
-
-#~ msgid "Queue summary"
-#~ msgstr "Resumen de cola"
-
-#~ msgid "Advices"
-#~ msgstr "Consejos"
-
-#~ msgid "Delete pending modules"
-#~ msgstr "Eliminar módulos pendientes"
-
-#~ msgid "Delete pending inventory modules"
-#~ msgstr "Eliminar módulos de inventario pendientes"
-
-#~ msgid "Delete pending agents"
-#~ msgstr "Eliminar agentes pendientes"
-
-#~ msgid "Will be deleted in the next policy application"
-#~ msgstr "Se eliminará en la siguiente aplicación de políticas"
-
-#~ msgid "Delete pending alerts"
-#~ msgstr "Eliminar alertas pendientes"
-
-#~ msgid "Delete pending external alerts"
-#~ msgstr "Eliminar alertas externas pendientes"
-
-#~ msgid "Delete from queue"
-#~ msgstr "Eliminar de la cola"
-
-#~ msgid "Empty queue"
-#~ msgstr "Vaciar cola"
-
-#~ msgid "Delete all"
-#~ msgstr "Eliminar todo"
-
-#~ msgid "Finished"
-#~ msgstr "Terminado"
-
-#~ msgid "Apply (database and files)"
-#~ msgstr "Aplicar (base de datos y archivos)"
-
-#~ msgid "This operation could take a long time"
-#~ msgstr "Esta operación podría tardar bastante tiempo"
-
-#~ msgid "Complete"
-#~ msgstr "Completo"
-
-#~ msgid "Apply (only database)"
-#~ msgstr "Aplicar (sólo en la base de datos)"
-
-#~ msgid "Queue filter"
-#~ msgstr "Filtros de cola"
-
-#~ msgid "Incomplete"
-#~ msgstr "Incompleto"
-
-#~ msgid "Duplicated or incompatible operation in the queue"
-#~ msgstr "Operación duplicada o incompatible en la cola"
-
-#~ msgid ""
-#~ "Successfully added to delete pending plugins. Will be deleted in the next "
-#~ "policy application."
-#~ msgstr ""
-#~ "Correctamente añadido a los plugins pendientes de eliminar. Será eliminado "
-#~ "en la próxima aplicación de políticas."
-
-#~ msgid "Operation successfully added to the queue"
-#~ msgstr "Operación añadida correctamente a la cola"
-
-#~ msgid "Operation cannot be added to the queue"
-#~ msgstr "La operación no se puede añadir a la cola"
-
-#~ msgid "Duplicated alert"
-#~ msgstr "Alerta duplicada"
-
-#~ msgid "Cannot be added to delete pending plugins."
-#~ msgstr "No se puede añadir a los plugins pendientes de eliminar"
-
-#~ msgid "Val."
-#~ msgstr "Val."
-
-#~ msgid "Ac."
-#~ msgstr "Ac."
-
-#~ msgid "Error validating alert(s)"
-#~ msgstr "Error al validar la alerta"
-
-#~ msgid "Error processing action"
-#~ msgstr "Error al procesar la acción"
-
-#~ msgid "List event alerts"
-#~ msgstr "Lista de alertas de eventos"
-
-#~ msgid "Alert Template"
-#~ msgstr "Plantilla de alerta"
-
-#~ msgid "View associated rules"
-#~ msgstr "Ver reglas asociadas"
-
-#~ msgid "Could not be created, please fill alert name"
-#~ msgstr "No se pudo crear, por favor, introduzca un nombre de alerta"
-
-#~ msgid "Please Read"
-#~ msgstr "Por favor, lea"
-
-#~ msgid "Rule evaluation mode"
-#~ msgstr "Modo de evaluación de reglas"
-
-#~ msgid "This field will be processed with regexp"
-#~ msgstr "Este campo será procesado con regexp"
-
-#~ msgid "User comment"
-#~ msgstr "Comentario de usuario"
-
-#~ msgid "Configure event rule"
-#~ msgstr "Configurar regla de evento"
-
-#~ msgid "List event rules"
-#~ msgstr "Lista de reglas de eventos"
-
-#~ msgid "Configure event alert"
-#~ msgstr "Configurar alerta de eventos"
-
-#~ msgid "Window"
-#~ msgstr "ventana"
-
-#~ msgid "Successfully update rule operators"
-#~ msgstr "Operadores actualizados correctamente"
-
-#~ msgid "Error updating rule operators"
-#~ msgstr "Error al actualizar los operadores de reglas"
-
-#~ msgid "Group by"
-#~ msgstr "Agrupar por"
-
-#~ msgid "Event rules"
-#~ msgstr "Reglas de eventos"
-
-#~ msgid "Error creating rule"
-#~ msgstr "Error al crear regla"
-
-#~ msgid "Successfully created rule"
-#~ msgstr "Regla creada correctamente"
-
-#~ msgid "Error updating rule"
-#~ msgstr "Error al actualizar la regla"
-
-#~ msgid "Successfully updating rule"
-#~ msgstr "Regla actualizada correctamente"
-
-#~ msgid "Logic expression for these rules:"
-#~ msgstr "Expresión lógica para estas reglas"
-
-#~ msgid "(Agent)"
-#~ msgstr "(Agente)"
-
-#~ msgid "Success: create the alerts."
-#~ msgstr "Alertas creadas exitosamente"
-
-#~ msgid "Update operators"
-#~ msgstr "Actualizar operadores"
-
-#~ msgid "Synthetic average"
-#~ msgstr "Media sintética"
-
-#~ msgid "Group filter"
-#~ msgstr "Filtro de grupo"
-
-#~ msgid "Synthetic arithmetic"
-#~ msgstr "Aritmética sintética"
-
-#~ msgid "Short name must contain only alphanumeric characters, - or _ ."
-#~ msgstr ""
-#~ "Los nombres cortos deben contener sólo caracteres alfanuméricos, - o _."
-
-#~ msgid "Back to file explorer"
-#~ msgstr "Volver al explorador de archivos"
-
-#~ msgid ""
-#~ "Successfully added to delete pending modules. Will be deleted in the next "
-#~ "policy application."
-#~ msgstr ""
-#~ "Añadido correctamente a la cola de módulos pendientes de eliminación, Será "
-#~ "eliminado en la próxima aplicación de políticas."
-
-#~ msgid ""
-#~ "If you change this description, you must change into the text of Data "
-#~ "configuration."
-#~ msgstr ""
-#~ "Si cambia esta descripción, tiene que cambiarla en el texto de la "
-#~ "configuración de datos."
-
-#~ msgid "All policy agents added to delete queue"
-#~ msgstr "Todos los agentes de las políticas añadidos a la cola de eliminación"
-
-#~ msgid "Policy agents cannot be added to the delete queue"
-#~ msgstr ""
-#~ "Los agentes de las políticas no se pudieron añadir a la cola de eliminación"
-
-#~ msgid "Could not be deleted from delete pending agents"
-#~ msgstr "No se pudo eliminar de los agentes pendientes de eliminación"
-
-#~ msgid "Successfully deleted from delete pending agents"
-#~ msgstr "Eliminado correctamente de los agentes pendientes de eliminación"
-
-#~ msgid "Free text for filter"
-#~ msgstr "Texto libre para filtro"
-
-#~ msgid "Free text for filter (*)"
-#~ msgstr "Texto libre para filtro (*)"
-
-#~ msgid "Custom OID"
-#~ msgstr "OID personalizado"
-
-#, php-format
-#~ msgid "Unsuccessfully updated alerts (%s / %s)"
-#~ msgstr "No se han podido actualizar las alertas (%s / %s)"
-
-#~ msgid "SNMP Alerts to be edit"
-#~ msgstr "Alertas SNMP para editar"
-
-#, php-format
-#~ msgid "Successfully updated alerts (%s / %s)"
-#~ msgstr "Alertas actualizadas correctamente (%s / %s)"
-
-#~ msgid "Massive alert SNMP deletion"
-#~ msgstr "Eliminación masiva de alertas SNMP"
-
-#~ msgid "Massive alert SNMP edition"
-#~ msgstr "Edición masiva de alertas SNMP"
-
-#~ msgid "Massive alerts policy deletion"
-#~ msgstr "Borrado masivo de políticas de alertas"
-
-#~ msgid "Error parsing MIB"
-#~ msgstr "Error al analizar MIB"
-
-#~ msgid "No change in data"
-#~ msgstr "No hay cambios en los datos"
-
-#, php-format
-#~ msgid "Fail uploaded %s/%s traps"
-#~ msgstr "Fallo al actualizar %s/%s traps"
-
-#, php-format
-#~ msgid "Uploaded %s/%s traps"
-#~ msgstr "Actualizados %s/%s traps"
-
-#~ msgid "Error deleting trap custom values"
-#~ msgstr "Error al eliminar valores personalizados trap"
-
-#~ msgid "Successfully deleted trap custom values"
-#~ msgstr "Valores personalizados trap eliminados correctamente"
-
-#~ msgid "Error updating trap custom values"
-#~ msgstr "Error al actualizar los valores personalizados trap"
-
-#~ msgid "Successfully updated trap custom values"
-#~ msgstr "Los valores personalizados trap se han añadido correctamente"
-
-#~ msgid "Error adding trap custom values"
-#~ msgstr "Error al añadir los valores personalizados trap"
-
-#~ msgid "Successfully added trap custom values"
-#~ msgstr "Añadidos correctamente a los valores personalizados trap"
-
-#~ msgid "Page"
-#~ msgstr "Página"
-
-#~ msgid "Filter by profile"
-#~ msgstr "Filtrar por perfil"
-
-#~ msgid "Sets the maximum lifetime for log data in days."
-#~ msgstr "Establece la duración máxima de los datos de registro en días"
-
-#~ msgid "Enterprise ACL setup"
-#~ msgstr "Configuración ACL Enterprise"
-
-#~ msgid "Add new ACL element to profile"
-#~ msgstr "Añadir nuevo elemento ACL al perfil"
-
-#~ msgid "Section"
-#~ msgstr "Sección"
-
-#~ msgid "Load MIB"
-#~ msgstr "Cargar MIB"
-
-#~ msgid "Upload MIB"
-#~ msgstr "Actualizar MIB"
-
-#~ msgid "Log storage directory"
-#~ msgstr "Directorio de almacenamiento de logs"
-
-#~ msgid "Directory where log data will be stored."
-#~ msgstr "Directorio donde los datos de log se almacenarán"
-
-#~ msgid "Successfully updated skin"
-#~ msgstr "Skin actualizada correctamente"
-
-#~ msgid "Successfully created skin"
-#~ msgstr "Skin creado correctamente"
-
-#~ msgid "Error creating skin"
-#~ msgstr "Error al crear skin"
-
-#~ msgid "Error deleting skin"
-#~ msgstr "Error al borrar skin"
-
-#~ msgid "Skins configuration"
-#~ msgstr "Configuración skins"
-
-#~ msgid "Create skin"
-#~ msgstr "Crear skin"
-
-#~ msgid "Successfully deleted skin"
-#~ msgstr "Skin eliminado correctamente"
-
-#~ msgid "Relative path"
-#~ msgstr "Ruta relativa"
-
-#~ msgid "Error updating skin"
-#~ msgstr "Error al actualizar skin"
-
-#~ msgid "Skin name"
-#~ msgstr "Nombre del skin"
-
-#~ msgid ""
-#~ "Token previously configured on the destination Pandora console in order to "
-#~ "use delegated authentification."
-#~ msgstr ""
-#~ "Token configurado anteriormente en la consola de destino de Pandora FMS con "
-#~ "el fin de utilizar autentificación delegada."
-
-#~ msgid "Auth token"
-#~ msgstr "Aut. token"
-
-#~ msgid "Could not be update"
-#~ msgstr "No se pudo actualizar"
-
-#~ msgid "Pandora FMS Metaconsole item edition"
-#~ msgstr "Edición de elementos de la metaconsola de Pandora FMS"
-
-#~ msgid "Metaconsole setup"
-#~ msgstr "Configuración de la Metaconsola"
-
-#~ msgid "Successfully update"
-#~ msgstr "Actualizado correctamente"
-
-#~ msgid ""
-#~ "Zip file with skin subdirectory. The name of the zip file only can have "
-#~ "alphanumeric characters."
-#~ msgstr ""
-#~ "Archivo zip con subdirectorio skin. El nombre del archivo zip solo puede "
-#~ "tener caracteres alfanuméricos."
-
-#~ msgid "Group/s"
-#~ msgstr "Grupo/s"
-
-#~ msgid "Console URL"
-#~ msgstr "Consola URL"
-
-#~ msgid "DB Host"
-#~ msgstr "Host DB"
-
-#~ msgid "Number of days before data is transfered to history database."
-#~ msgstr ""
-#~ "Número de días antes de que los datos se transfieran a la base de datos "
-#~ "histórica."
-
-#~ msgid "Console User"
-#~ msgstr "Usuario de la consola"
-
-#~ msgid "DB Password"
-#~ msgstr "Contraseña BD"
-
-#~ msgid "DB User"
-#~ msgstr "Usuario de base de datos"
-
-#~ msgid "DB Name"
-#~ msgstr "Nombre BD"
-
-#~ msgid "Compatibility"
-#~ msgstr "Compatibilidad"
-
-#~ msgid "API"
-#~ msgstr "API"
-
-#~ msgid "DB"
-#~ msgstr "BD"
-
-#~ msgid "Console Password"
-#~ msgstr "Contraseña de la consola"
-
-#~ msgid "Pop selected modules out of blacklist"
-#~ msgstr "Sacar los módulos seleccionados de la lista negra"
-
-#~ msgid "Enterprise options"
-#~ msgstr "Opciones Enterprise"
-
-#~ msgid "Time interval between data transfer."
-#~ msgstr "Intervalo de tiempo entre transferencias de datos"
-
-#~ msgid ""
-#~ "Before activating this option check your ACL Setup. You may lose access to "
-#~ "the console."
-#~ msgstr ""
-#~ "Antes de activar esta opción compruebe su configuración ACL. Puede que "
-#~ "pierda el acceso a la consola."
-
-#~ msgid " Bytes"
-#~ msgstr " Bytes"
-
-#~ msgid "Only validated events"
-#~ msgstr "Sólo eventos validados"
-
-#~ msgid ""
-#~ "The inventory modules included in the changes blacklist will not generate "
-#~ "events when change."
-#~ msgstr ""
-#~ "Los módulos de inventario incluidos en la lista negra de cambios no "
-#~ "generarán eventos cuando cambien."
-
-#~ msgid "Out of black list"
-#~ msgstr "Fuera de la lista negra"
-
-#~ msgid "In black list"
-#~ msgstr "En la lista negra"
-
-#~ msgid "Push selected modules into blacklist"
-#~ msgstr "Mover los módulos seleccionados a la lista negra"
-
-#~ msgid ""
-#~ "Rules applied to the management of passwords. This policy applies to all "
-#~ "users except the administrator."
-#~ msgstr ""
-#~ "Reglas aplicadas a la gestión de contraseñas. Esta política se aplica a "
-#~ "todos los usuarios excepto al administrador"
-
-#~ msgid "Active directory"
-#~ msgstr "Directorio activo"
-
-#~ msgid "Remote Pandora FMS"
-#~ msgstr "Pandora FMS remota"
-
-#~ msgid " Days"
-#~ msgstr " Días"
-
-#~ msgid " Minutes"
-#~ msgstr " Minutos"
-
-#~ msgid " Caracters"
-#~ msgstr " Caracteres"
-
-#~ msgid "Set 0 if never expire."
-#~ msgstr "Introduzca 0 para que nunca expire"
-
-#~ msgid "Enterprise password policy"
-#~ msgstr "Política de contraseña Enterprise"
-
-#~ msgid "Two attempts minimum"
-#~ msgstr "2 intentos mínimo"
-
-#~ msgid " Attempts"
-#~ msgstr " Intentos"
-
-#~ msgid "separate fields with "
-#~ msgstr "Separar campos con "
-
-#~ msgid "Error creating inventory module"
-#~ msgstr "Error al crear módulo del inventario"
-
-#~ msgid "Successfully created inventory module"
-#~ msgstr "Inventario de módulo creado correctamente"
-
-#~ msgid "Interpreter"
-#~ msgstr "Intérprete"
-
-#~ msgid "Remote Integria"
-#~ msgstr "Integria IMs remoto"
-
-#~ msgid "Remote Babel Enterprise"
-#~ msgstr "Babel Enterprise remoto"
-
-#~ msgid "Local component management"
-#~ msgstr "Gestión de componentes locales"
-
-#~ msgid "Macros"
-#~ msgstr "Macros"
-
-#~ msgid "Renew"
-#~ msgstr "Renovar"
-
-#~ msgid "Please, configure this widget before use"
-#~ msgstr "Por favor, configure este widget antes de usarlo"
-
-#~ msgid "Or disable Pandora FMS enterprise"
-#~ msgstr "O desactive Pandora FMS Enterprise"
-
-#~ msgid ""
-#~ "<strong style=\"font-size: 11pt\">This license has expired.</strong> "
-#~ "<br><br>You can not get updates until you renew the license."
-#~ msgstr ""
-#~ "<strong style=\"font-size: 11pt\">This license has expired.</strong> "
-#~ "<br><br>No podrá actualizar Pandora FMS hasta que no renueve la licencia."
-
-#, php-format
-#~ msgid ""
-#~ "<strong style=\"font-size: 11pt\">License out of limits</strong> <br><br> "
-#~ "This license allows %d agents and you have %d agents configured."
-#~ msgstr ""
-#~ "<strong style=\"font-size: 11pt\">License out of limits</strong> "
-#~ "<br><br>Esta licencia es para %d agentes y tiene %d agentes configurados."
-
-#~ msgid ""
-#~ "To continue using Pandora FMS, please disable enterprise by renaming the "
-#~ "Enterprise directory in the console.<br><br>Or contact Artica at "
-#~ "info@artica.es for a valid license:"
-#~ msgstr ""
-#~ "Para continuar usando Pandora FMS, por favor, desactive Pandora FMS "
-#~ "Enterprise cambiando el nombre de la Enteprise en el directorio de la "
-#~ "consola.<br><br>o contacte con Ártica ST para obtener una licencia válida "
-#~ "(info@artica.es)"
-
-#~ msgid "Please contact Artica at info@artica.es to renew the license."
-#~ msgstr ""
-#~ "Por favor, contacte con Ártica ST (info@artica.es) para renovar la licencia."
-
-#~ msgid "Show a map made by user"
-#~ msgstr "Mostrar un mapa hecho por el usuario"
-
-#~ msgid "Map made by user"
-#~ msgstr "Mapa hecho por el usuario"
-
-#~ msgid "Limit"
-#~ msgstr "Límite"
-
-#~ msgid "Latest events list"
-#~ msgstr "Última lista de eventos"
-
-#~ msgid "Show a graph of an agent module"
-#~ msgstr "Mostrar una gráfica de un módulo de agente"
-
-#~ msgid "Single graph"
-#~ msgstr "Gráfico simple"
-
-#~ msgid "Show a report made by user"
-#~ msgstr "Mostrar un informe hecho por el usuario"
-
-#~ msgid "Alerts Fired report"
-#~ msgstr "Informe de alertas lanzadas"
-
-#~ msgid "Height in px (zero for auto)"
-#~ msgstr "Altura en px (cero para auto)"
-
-#~ msgid "Show the URL content"
-#~ msgstr "Mostrar el contenido URL"
-
-#~ msgid ""
-#~ "To delete this message, click on the delete button on top right corner of "
-#~ "this element."
-#~ msgstr ""
-#~ "Para eliminar este mensaje, haga clic sobre el botón de la esquina derecha "
-#~ "de este elemento."
-
-#~ msgid ""
-#~ "To do so, just click on the title and drag and drop it to the desired place."
-#~ msgstr ""
-#~ "Para hacer eso, haga clic en el título, arrastre y suelte el elemento en el "
-#~ "lugar que desee."
-
-#~ msgid ""
-#~ "This is an example of a dashboard widget. A widget may contain elements"
-#~ msgstr ""
-#~ "Éste es un ejemplo de un widget del dashboard. Un widget puede contener "
-#~ "elementos"
-
-#~ msgid ""
-#~ "To add more elements, click on \"<em>Add widgets</em>\" on the top of this "
-#~ "page."
-#~ msgstr ""
-#~ "Para añadir más elementos, haga clic en \"<em>Add widgets</em>\" en la parte "
-#~ "superior de esta página"
-
-#~ msgid "Welcome message to Pandora FMS"
-#~ msgstr "Mensaje de bienvenida de Pandora FMS"
-
-#~ msgid "Welcome"
-#~ msgstr "Bienvenido/a"
-
-#~ msgid "My URL"
-#~ msgstr "Mi URL"
-
-#~ msgid "Invalid URL"
-#~ msgstr "URL no válida"
-
-#~ msgid "Thanks for using Pandora FMS"
-#~ msgstr "Gracias por usar Pandora FMS"
-
-#~ msgid "Show a map of the monitored network"
-#~ msgstr "Mostrar un mapa de la red monitorizada"
-
-#~ msgid "Panel with a message"
-#~ msgstr "panel con un mensaje"
-
-#~ msgid "8"
-#~ msgstr "8"
-
-#~ msgid "No overlap"
-#~ msgstr "No solapar"
-
-#~ msgid "10"
-#~ msgstr "10"
-
-#~ msgid "9"
-#~ msgstr "9"
-
-#~ msgid "12"
-#~ msgstr "12"
-
-#~ msgid "11"
-#~ msgstr "11"
-
-#~ msgid "General and quick visual maps report"
-#~ msgstr "Informe rápido y general de los mapas visuales"
-
-#~ msgid "Maps status"
-#~ msgstr "Estado de los mapas"
-
-#~ msgid "Source user's group"
-#~ msgstr "Grupo de usuarios de origen"
-
-#~ msgid "Destination user's group"
-#~ msgstr "Grupo de usuarios de destino"
-
-#~ msgid "Dashboard replicate"
-#~ msgstr "Réplica del dashboard"
-
-#~ msgid "Not copyed. Error copying data. You must select a dashboard"
-#~ msgstr ""
-#~ "No se ha copiado. Error al copiar datos. Debe seleccionar un dashboard"
-
-#~ msgid "Not copyed. Error copying data"
-#~ msgstr "No se ha copiado. Error al copiar datos."
-
-#~ msgid "Successfully copyed"
-#~ msgstr "Copiado correctamente"
-
-#~ msgid "Show a defined custom graph"
-#~ msgstr "Mostrar una gráfica personalizada definida"
-
-#~ msgid "Groups status"
-#~ msgstr "Estado de los grupos"
-
-#~ msgid "General and quick group status report"
-#~ msgstr "Informe general y rápido del estado de los grupos"
-
-#~ msgid "Show a list of global monitor health"
-#~ msgstr "Mostrar una lista global de la salud de los monitores"
-
-#~ msgid "Dashboard successfuly created"
-#~ msgstr "Dashboard creado correctamente"
-
-#~ msgid "Could not create dashboard"
-#~ msgstr "Dashboard no se pudo crear"
-
-#~ msgid "Could not update dashboard"
-#~ msgstr "El dashboard no se puede actualizar"
-
-#~ msgid "Dashboard successfuly updated"
-#~ msgstr "El dashboard se ha actualizado correctamente"
-
-#~ msgid "Please, configure the widget again to recover it"
-#~ msgstr "Por favor, configure el widget otra vez para recuperarlo"
-
-#~ msgid "Widget cannot be loaded"
-#~ msgstr "El widget no se puede cargar"
-
-#~ msgid "Delete widget"
-#~ msgstr "Eliminar widget"
-
-#~ msgid "Replicate Dashboard"
-#~ msgstr "Replicar dashboards"
-
-#~ msgid "Group Dashboards"
-#~ msgstr "Agrupar dashboards"
-
-#~ msgid "Configure widget"
-#~ msgstr "Configurar widget"
-
-#~ msgid "Play"
-#~ msgstr "Reproducir"
-
-#~ msgid "Previous Dashboard"
-#~ msgstr "Dashboard anterior"
-
-#~ msgid "Slides mode"
-#~ msgstr "Modo diapositivas"
-
-#~ msgid "Next Dashboard"
-#~ msgstr "Siguiente dashboard"
-
-#~ msgid "Add dashboard"
-#~ msgstr "Añadir dashboard"
-
-#~ msgid "Add widget"
-#~ msgstr "Agregar widget"
-
-#~ msgid "Pause"
-#~ msgstr "Pausar"
-
-#~ msgid "Next slide in"
-#~ msgstr "Siguiente diapositiva"
-
-#~ msgid "Update dashboard"
-#~ msgstr "Actualizar dashboard"
-
-#~ msgid "Delete dashboard"
-#~ msgstr "Eliminar dashboard"
-
-#~ msgid "Search results for"
-#~ msgstr "Buscar resultados para"
-
-#~ msgid "Create visualmap"
-#~ msgstr "Crear mapa visual"
-
-#~ msgid "Screens"
-#~ msgstr "Pantallas"
-
-#~ msgid "Private dashboard"
-#~ msgstr "Dashboard privado"
-
-#~ msgid "Dashboard options"
-#~ msgstr "Opciones del dashboard"
-
-#~ msgid "Add new widget"
-#~ msgstr "Añadir nuevo widget"
-
-#~ msgid "Add new dashboard view"
-#~ msgstr "Añadir nueva vista del dashboard"
-
-#~ msgid "The user is not in neither group with EW profile"
-#~ msgstr "El usuario no se encuentra en ninguno de los grupos con el perfil EW"
-
-#~ msgid "Succesful updated"
-#~ msgstr "Actualizado correctamente"
-
-#~ msgid "Unsucessful updated"
-#~ msgstr "Actualización fallida"
-
-#~ msgid "Fields"
-#~ msgstr "Campos"
-
-#~ msgid "Tactical View"
-#~ msgstr "Vista táctica"
-
-#~ msgid "Web check"
-#~ msgstr "Comprobación web"
-
-#~ msgid "More events"
-#~ msgstr "Más eventos"
-
-#~ msgid "Module description"
-#~ msgstr "Descripción del módulo"
-
-#~ msgid "Can't connect to Pandora FMS instance"
-#~ msgstr "No se puede conectar a la instancia de Pandora FMS"
-
-#~ msgid "Create module"
-#~ msgstr "Crear módulo"
-
-#~ msgid "Step by step wizard"
-#~ msgstr "Wizard paso a paso"
-
-#~ msgid "Click Create to continue"
-#~ msgstr "haga clic en Crear para continuar"
-
-#~ msgid "Warning Service alert"
-#~ msgstr "Alerta de advertencia del servicio"
-
-#~ msgid ""
-#~ "Can't be created export target: User and password must be filled with FTP "
-#~ "mode"
-#~ msgstr ""
-#~ "No puede crearse target de exportación: El usuario y la contraseña deben ser "
-#~ "completadas con el modo de FTP"
-
-#~ msgid "Skins"
-#~ msgstr "Skins"
-
-#~ msgid ""
-#~ "This values are by default because the service is auto calculate mode."
-#~ msgstr ""
-#~ "Estos valores están por defecto porque el servicio está en modo auto-cálculo"
-
-#~ msgid "Critical Service alert"
-#~ msgstr "Alerta crítica del servicio"
-
-#~ msgid "Error forcing inventory module"
-#~ msgstr "Error al forzar un módulo del inventario"
-
-#~ msgid "Successfully forced inventory module"
-#~ msgstr "Módulo del inventario forzado correctamente"
-
-#~ msgid ""
-#~ "The collection's short name is the name of dir in attachment dir and the "
-#~ "package collection."
-#~ msgstr ""
-#~ "El nombre corto de la colección es el nombre del directorio en el directorio "
-#~ "attachment y la colección de paquetes."
-
-#~ msgid ""
-#~ "Successfully added to delete the collection. Will be deleted in the next "
-#~ "policy application."
-#~ msgstr ""
-#~ "Añadido correctamente a la colección. Se eliminará en la próxima aplicación "
-#~ "de política."
-
-#~ msgid "Preview"
-#~ msgstr "Vista previa"
-
-#~ msgid "The alert you are trying to add is already in the list of alerts"
-#~ msgstr "La alerta que está intentando añadir está ya en la lista de alertas"
-
-#~ msgid "Please, select an alert"
-#~ msgstr "Por favor, seleccione una alerta"
-
-#~ msgid "Please, select a module"
-#~ msgstr "Por favor, seleccione un módulo"
-
-#~ msgid "Edit module"
-#~ msgstr "Editar módulo"
-
-#~ msgid "Another agent already exists with the same name"
-#~ msgstr "Ya hay otro agente con ese nombre"
-
-#~ msgid "Please, select an agent"
-#~ msgstr "Por favor, seleccione un agente"
-
-#~ msgid "String"
-#~ msgstr "Cadena"
-
-#~ msgid "Select the agent to be edited or deleted"
-#~ msgstr "Seleccionar el agente que quiera editar o eliminar"
-
-#~ msgid "Please, set an interval"
-#~ msgstr "Por favor, introduzca un intervalo"
-
-#~ msgid "Please, set a valid IP address"
-#~ msgstr "Por favor, introduzca una dirección IP válida"
-
-#~ msgid "Edit agent"
-#~ msgstr "Editar agente"
-
-#~ msgid "Please, set a name"
-#~ msgstr "Por favor, introduzca un nombre"
-
-#~ msgid "Advanced configuration"
-#~ msgstr "Configuración avanzada"
-
-#, php-format
-#~ msgid "Could not be update: Error in %s"
-#~ msgstr "No se puede actualizar: error en %s"
-
-#~ msgid "Customize sections"
-#~ msgstr "Personalizar secciones"
-
-#~ msgid "Groups synchronization"
-#~ msgstr "Sincronización de grupos"
-
-#~ msgid "Alerts synchronization"
-#~ msgstr "Sincronización de alertas"
-
-#~ msgid "Components synchronization"
-#~ msgstr "Sincronización de componentes"
-
-#~ msgid "Tags synchronization"
-#~ msgstr "Sincronización de tags"
-
-#~ msgid "Select the alert to be edited or deleted"
-#~ msgstr "Seleccione la alerta que quiere editar o eliminar"
-
-#~ msgid "Group View"
-#~ msgstr "Vista de grupo"
-
-#~ msgid "Synchronizing"
-#~ msgstr "Sincronizando"
-
-#~ msgid "Users synchronization"
-#~ msgstr "Sincronización de usuarios"
-
-#, php-format
-#~ msgid "Updated user %s"
-#~ msgstr "Usuario actualizado %s"
-
-#, php-format
-#~ msgid ""
-#~ "Error creating/updating the followings elements groups/profiles/user "
-#~ "profiles (%d/%d/%d)"
-#~ msgstr ""
-#~ "Error al crear/actualizar los siguientes elementos grupos/perfiles/usuarios "
-#~ "(%d/%d/%d)"
-
-#, php-format
-#~ msgid "Created user %s"
-#~ msgstr "Usuario creado %s"
-
-#, php-format
-#~ msgid "Error creating user %s"
-#~ msgstr "Error al crear usuario %s"
-
-#, php-format
-#~ msgid "Error updating user %s"
-#~ msgstr "Error al actualizar usuario %s"
-
-#~ msgid "Passwords"
-#~ msgstr "Contraseñas"
-
-#~ msgid "Enabled sections"
-#~ msgstr "Activar secciones"
-
-#~ msgid "Disabled sections"
-#~ msgstr "Secciones desactivadas"
-
-#~ msgid "Copy profile"
-#~ msgstr "Copiar perfil"
-
-#~ msgid "Check this to copy user original profiles"
-#~ msgstr "Comprobar esto para copiar los perfiles originales de los usuarios"
-
-#~ msgid "Profile synchronization mode."
-#~ msgstr "Modo de perfil de sincronización"
-
-#~ msgid "New profile"
-#~ msgstr "Nuevo perfil"
-
-#~ msgid "This metaconsole"
-#~ msgstr "Esta metaconsola"
-
-#~ msgid "Profile mode"
-#~ msgstr "Modo de perfil"
-
-#, php-format
-#~ msgid ""
-#~ "The followings elements groups/profiles/user profiles were created/updated "
-#~ "sucessfully (%d/%d/%d)"
-#~ msgstr ""
-#~ "Los perfiles de los siguientes elementos grupos/perfiles/usuarios han sido "
-#~ "actualizados correctamente (%d/%d/%d)"
-
-#~ msgid "Sync"
-#~ msgstr "Sincr."
-
-#, php-format
-#~ msgid "Error connecting to %s"
-#~ msgstr "Error al conectar con %s"
-
-#, php-format
-#~ msgid "Error creating %s components groups "
-#~ msgstr "Error al crear %s  grupos de componentes "
-
-#~ msgid ""
-#~ "Complete path to Pandora console without last \"/\" character. Example "
-#~ msgstr ""
-#~ "Completar ruta a la consola de Pandora FMS sin el último \"/\" carácter. "
-#~ "Ejemplo "
-
-#~ msgid "Could not be delete"
-#~ msgstr "No se puede eliminar"
-
-#, php-format
-#~ msgid "Error creating/updating %s/%s local components "
-#~ msgstr "Error al crear/actualizar %s/%s componentes locales "
-
-#, php-format
-#~ msgid "Created %s component groups"
-#~ msgstr "Creados %s componentes de grupos"
-
-#, php-format
-#~ msgid "Error creating/updating %s/%s network components "
-#~ msgstr "Error al crear/actualizar %s/%s componentes de red "
-
-#, php-format
-#~ msgid "Created/Updated %s/%s local components"
-#~ msgstr "Creados/actualizados %s/%s componentes locales"
-
-#~ msgid "Metaconsole elements"
-#~ msgstr "Elementos de la Metaconsola"
-
-#, php-format
-#~ msgid "Created/Updated %s/%s network components"
-#~ msgstr "Creados/actualizados %s/%s componentes de red"
-
-#~ msgid "The number of elements retrieved for each instance in some views."
-#~ msgstr ""
-#~ "El número de elementos recuperados para cada instancia en algunas vistas."
-
-#~ msgid "Visual"
-#~ msgstr "visual"
-
-#, php-format
-#~ msgid "Error creating/updating %s/%s templates"
-#~ msgstr "Error al crear/actualizar %s/%s plantillas"
-
-#~ msgid "Only database"
-#~ msgstr "Sólo bases de datos"
-
-#, php-format
-#~ msgid "Error creating/updating %s/%s tags"
-#~ msgstr "Error al crear/actualizar %s/%s tags"
-
-#~ msgid "There aren't server added to metaconsole"
-#~ msgstr "No hay servidores añadidos a la metaconsola"
-
-#, php-format
-#~ msgid "Error creating/updating %s/%s comamnds"
-#~ msgstr "Error al crear/actualizar %s/%s comandos"
-
-#, php-format
-#~ msgid "Created/Updated %s/%s commands"
-#~ msgstr "Creados/actualizados %s/%s comandos"
-
-#, php-format
-#~ msgid "Error creating/updating %s/%s actions"
-#~ msgstr "Error al crear/actualizar %s/%s acciones"
-
-#, php-format
-#~ msgid "Created/Updated %s/%s actions"
-#~ msgstr "Creados/actualizados %s/%s acciones"
-
-#, php-format
-#~ msgid "Created/Updated %s/%s templates"
-#~ msgstr "Creadas/actualizadas %s/%s plantillas"
-
-#~ msgid "Propagation"
-#~ msgstr "Propagación"
-
-#~ msgid "General setup"
-#~ msgstr "Configuración general"
-
-#~ msgid "Visual setup"
-#~ msgstr "Configuración visual"
-
-#~ msgid "Passwords setup"
-#~ msgstr "Configuración de contraseñas"
-
-#~ msgid "Original string"
-#~ msgstr "Cadena original"
-
-#~ msgid "Active events history"
-#~ msgstr "Historial de eventos activo"
-
-#, php-format
-#~ msgid "Created/Updated %s/%s tags"
-#~ msgstr "Creados/actualizados %s/%s tags"
-
-#~ msgid "Consoles Setup"
-#~ msgstr "Configuración de consolas"
-
-#~ msgid "Customize translation"
-#~ msgstr "Personalizar traducción"
-
-#~ msgid "Translation in selected language"
-#~ msgstr "Traducción en el idioma seleccionado"
-
-#~ msgid "created alerts actions in destination DB"
-#~ msgstr "Acciones de alertas en la BD de destino"
-
-#~ msgid "created agent alerts in destination DB"
-#~ msgstr "Alertas de agentes creadas en la BD de destino"
-
-#~ msgid "Strings translation"
-#~ msgstr "Traducción de cadenas"
-
-#~ msgid "Performance setup"
-#~ msgstr "Configuración del rendimiento"
-
-#, php-format
-#~ msgid "Error creating/updating %s/%s groups"
-#~ msgstr "Error al crear/actualizar grupos %s/%s"
-
-#~ msgid "Consoles setup"
-#~ msgstr "Configuración de las consolas"
-
-#~ msgid "redirected ip server in conf into source DB"
-#~ msgstr "Servidor IP redirigido en la configuración a la BD de origen"
-
-#, php-format
-#~ msgid "Created/Updated %s/%s groups"
-#~ msgstr "Creados/actualizados grupos %s/%s"
-
-#~ msgid "created agent in destination DB"
-#~ msgstr "Agente creado en la BD de destino"
-
-#~ msgid "created agent modules in destination DB"
-#~ msgstr "Módulos de agente creados en la BD de destino"
-
-#~ msgid "disabled agent in source DB"
-#~ msgstr "Agente desactivado en la BD de origen"
-
-#~ msgid "Add agents to destination server"
-#~ msgstr "Añadir agentes al servidor de destino"
-
-#~ msgid "Move"
-#~ msgstr "Mover"
-
-#~ msgid "Source Server"
-#~ msgstr "Servidor de origen"
-
-#~ msgid "Destination Server"
-#~ msgstr "Servidor de destino"
-
-#~ msgid "Successfully moved"
-#~ msgstr "Movido satisfactoriamente"
-
-#~ msgid "Could not be moved"
-#~ msgstr "No se puede mover"
-
-#~ msgid "Policy Manager"
-#~ msgstr "Gestor de políticas"
-
-#~ msgid "Apply policies"
-#~ msgstr "Aplicar políticas"
-
-#, php-format
-#~ msgid "Created %s policy alerts"
-#~ msgstr "Creadas %s alertas de políticas"
-
-#, php-format
-#~ msgid "Deleted %s policy modules"
-#~ msgstr "Eliminadas %s módulos de políticas"
-
-#, php-format
-#~ msgid "Created/Updated %s/%s policy modules"
-#~ msgstr "Creadas/actualizadas %s/%s módulos de políticas"
-
-#, php-format
-#~ msgid "Error creating/updating %s/%s policy modules"
-#~ msgstr "Error al crear/actualizar %s/%s módulos de políticas"
-
-#, php-format
-#~ msgid "Created %s policies"
-#~ msgstr "Políticas %s creadas"
-
-#, php-format
-#~ msgid "Error creating %s policies"
-#~ msgstr "Error al crear políticas %s"
-
-#~ msgid "Policies queue"
-#~ msgstr "Cola de políticas"
-
-#, php-format
-#~ msgid "Error creating %s policy alerts"
-#~ msgstr "Error al crear %s alertas de políticas"
-
-#, php-format
-#~ msgid "Error deleting %s policy modules"
-#~ msgstr "Error al eliminar %s módulos de políticas"
-
-#~ msgid ""
-#~ "In order to have the best user experience with Pandora FMS, we <b>strongly "
-#~ "recommend</b> to use"
-#~ msgstr ""
-#~ "Para conseguir la mejor experiencia de usuario con Pandora FMS, le "
-#~ "<b>recomendamos encarecidamente<br> usar"
-
-#~ msgid ""
-#~ "<a href='http://www.mozilla.org/en-US/firefox/fx/'>Mozilla Firefox</a> or <a "
-#~ "href='https://www.google.com/chrome'>Google Chrome</a> browsers."
-#~ msgstr ""
-#~ "<a href='http://www.mozilla.org/en-US/firefox/fx/'>Mozilla Firefox</a> o <a "
-#~ "href='https://www.google.com/chrome'>Google Chrome</a> browsers."
-
-#, php-format
-#~ msgid "Error deleting %s policy alerts"
-#~ msgstr "Error al eliminar %s alertas de políticas"
-
-#, php-format
-#~ msgid "Deleted %s policy alerts"
-#~ msgstr "Eliminadas %s alertas de políticas"
-
-#~ msgid ""
-#~ "Metaconsole needs previous activation from regular console, please contact "
-#~ "system administrator if you need assistance. <br>"
-#~ msgstr ""
-#~ "La metaconsola necesita una activación previa desde una consola regular, por "
-#~ "favor, contacte con su administrador de sistemas si necesita asistencia. <br>"
-
-#~ msgid "Network traffic"
-#~ msgstr "Tráfico de la red"
-
-#~ msgid "Create new report"
-#~ msgstr "Crear un nuevo informe"
-
-#~ msgid "Metasetup"
-#~ msgstr "Metasetup"
-
-#~ msgid "Tag management"
-#~ msgstr "Gestión de Tags"
-
-#~ msgid "Alert management"
-#~ msgstr "Gestión de alertas"
-
-#~ msgid "Category management"
-#~ msgstr "Gestión de categorías"
-
-#~ msgid "Policy management"
-#~ msgstr "Gestión de políticas"
-
-#~ msgid "Agent management"
-#~ msgstr "Gestión de agentes"
-
-#~ msgid "Live view"
-#~ msgstr "Vista en vivo"
-
-#~ msgid "Show modulegroup"
-#~ msgstr "Mostrar los grupos de módulos"
-
-#~ msgid "Unnamed "
-#~ msgstr "Sin nombre "
-
-#~ msgid "Agents movement"
-#~ msgstr "Movimiento de agentes"
-
-#~ msgid "Show modules"
-#~ msgstr "Mostrar módulos"
-
-#~ msgid "Filter by agents"
-#~ msgstr "Filtrar por agente"
-
-#~ msgid "Filter by modules"
-#~ msgstr "Filtrar por módulo"
-
-#~ msgid "Show children Metaconsole"
-#~ msgstr "Mostrar los hijos de la Metaconsola"
-
-#~ msgid "Back to login"
-#~ msgstr "Volver a identificarse"
-
-#~ msgid "Undo changes"
-#~ msgstr "Deshacer los cambios"
-
-#~ msgid "Add selected modules to agent"
-#~ msgstr "Añadir los módulos seleccionados al agente"
-
-#~ msgid "Agent modules"
-#~ msgstr "Modulos de agentes"
-
-#, php-format
-#~ msgid "Cannot connect to %s Pandora to generate networkmap."
-#~ msgstr "No se puede conectar a %s Pandora FMS para generar networkmap."
-
-#~ msgid "String to check"
-#~ msgstr "Cadena a comprobar"
-
-#~ msgid "Check type"
-#~ msgstr "Compruebe el tipo"
-
-#~ msgid "Response"
-#~ msgstr "Respuesta"
-
-#~ msgid "Latency"
-#~ msgstr "Latencia"
-
-#~ msgid "There is no group selected"
-#~ msgstr "No ha seleccionado ningún grupo"
-
-#~ msgid "Add check"
-#~ msgstr "Añadir comprobación"
-
-#~ msgid "Delete check"
-#~ msgstr "Eliminar comprobación"
-
-#~ msgid "Deleted modules"
-#~ msgstr "Módulos eliminados"
-
-#, php-format
-#~ msgid "Error adding module %s"
-#~ msgstr "Error al añadir módulo %s"
-
-#~ msgid "Various"
-#~ msgstr "Varios"
-
-#~ msgid "Thresholds"
-#~ msgstr "Thresholds"
-
-#~ msgid "Web configuration"
-#~ msgstr "Configuración web"
-
-#~ msgid "Alerts in module"
-#~ msgstr "Alertas en el módulo"
-
-#~ msgid "Checks"
-#~ msgstr "Comprobaciones"
-
-#~ msgid ""
-#~ "There was an error creating the alerts, the operation has been cancelled"
-#~ msgstr ""
-#~ "Se produjo un error al crear las alertas, la operación ha sido cancelada"
-
-#, php-format
-#~ msgid "Could not create agent %s"
-#~ msgstr "No se pudieron crear agentes %s"
-
-#~ msgid "Agent successfully added"
-#~ msgstr "Agentes añadidos correctamente"
-
-#, php-format
-#~ msgid "Could not update agent %s"
-#~ msgstr "No se pudo actualizar el agente %s"
-
-#, php-format
-#~ msgid "%s Modules created"
-#~ msgstr "%s Módulos creados"
-
-#, php-format
-#~ msgid "Error updating module %s"
-#~ msgstr "Erro al actualizar el módulo %s"
-
-#~ msgid "Successfully updated module."
-#~ msgstr "Módulo actualizado correctamente"
-
-#~ msgid ""
-#~ "There was an error updating the alerts, the operation has been cancelled"
-#~ msgstr ""
-#~ "Se produjo un error al actualizar las alertas, la operación ha sido cancelada"
-
-#~ msgid "No admin user"
-#~ msgstr "No hay usuario administrador"
-
-#~ msgid "Manage agent modules"
-#~ msgstr "Gestionar módulos de agentes"
-
-#, php-format
-#~ msgid "%s Modules deleted"
-#~ msgstr "%s Módulos eliminados"
-
-#~ msgid "Log viewer"
-#~ msgstr "Visor de logs"
-
-#~ msgid "Delete alert"
-#~ msgstr "Eliminar alerta"
-
-#~ msgid "There was a problem loading tag"
-#~ msgstr "Se produjo un problema al cargar tags"
-
-#~ msgid "Go to Alert detail"
-#~ msgstr "Ir a los detalles de la alerta"
-
-#~ msgid "Plugin management"
-#~ msgstr "Gestión de plugins"
-
-#~ msgid "Edit plugin"
-#~ msgstr "Editar plugin"
-
-#~ msgid "Create plugin"
-#~ msgstr "Crear plugin"
-
-#~ msgid "Copy Dashboard"
-#~ msgstr "Copiar Dashboard"
-
-#~ msgid "Start date"
-#~ msgstr "Fecha de inicio"
-
-#~ msgid "Custom SQL"
-#~ msgstr "SQL personalizado"
-
-#~ msgid "Export this list to CSV"
-#~ msgstr "Exportar esta lista a CSV"
-
-#~ msgid "Could not be updated."
-#~ msgstr "No se puede actualizar"
-
-#~ msgid "Success be updated."
-#~ msgstr "Actualizado correctamente"
-
-#~ msgid "Service Map"
-#~ msgstr "Mapa de servicio"
-
-#~ msgid "List of elements"
-#~ msgstr "Lista de elementos"
-
-#~ msgid "Error deleting service"
-#~ msgstr "Error al eliminar el servicio"
-
-#~ msgid "Service deleted successfully"
-#~ msgstr "Servicio eliminado correctamente"
-
-#~ msgid "Succesfully updated"
-#~ msgstr "Actualizado correctamente"
-
-#~ msgid "Last contact: "
-#~ msgstr "Último contacto: "
-
-#~ msgid "Networkmap enterprise"
-#~ msgstr "Networkmap enterprise"
-
-#~ msgid "Not found networkmap."
-#~ msgstr "No se encontró ningún networkmap."
-
-#, php-format
-#~ msgid "Networkmap enterprise - %s"
-#~ msgstr "Networmap Enterprise - %s"
-
-#~ msgid "Succesfully created"
-#~ msgstr "Creado correctamente"
-
-#~ msgid "Policy: "
-#~ msgstr "Política: "
-
-#~ msgid "Succesfully duplicate"
-#~ msgstr "Duplicado correctamente"
-
-#~ msgid "Data: "
-#~ msgstr "Datos: "
-
-#~ msgid "Status: "
-#~ msgstr "Estado: "
-
-#~ msgid "Resize the networkmap"
-#~ msgstr "Redimensionar el networkmap"
-
-#~ msgid "Succesfully deleted"
-#~ msgstr "Eliminado correctamente"
-
-#~ msgid "No collection assigned to this agent"
-#~ msgstr "No se ha asignado ninguna colección a este agente"
-
-#~ msgid "Could not be duplicated"
-#~ msgstr "No se puede duplicar"
-
-#~ msgid "x"
-#~ msgstr "x"
-
-#~ msgid "Size of networkmap (Width x Height)"
-#~ msgstr "Tamaño del networkmap (ancho x alto)"
-
-#~ msgid "The networkmap has been generated already."
-#~ msgstr "El networkmap ya había sido generado"
-
-#~ msgid "Refresh networkmap state"
-#~ msgstr "Refrescar el estado del networkmap"
-
-#~ msgid "Descripttion"
-#~ msgstr "Descripción"
-
-#~ msgid "Policy outdate"
-#~ msgstr "Política obsoleta"
-
-#~ msgid "Toggle the collection table"
-#~ msgstr "Cambiar la tabla de la colección"
-
-#~ msgid "Details of node:"
-#~ msgstr "Detalles del nodo"
-
-#~ msgid "This agent has no policy assigned"
-#~ msgstr "Este agente no tiene ninguna política asignada"
-
-#~ msgid "Networkmap resized."
-#~ msgstr "Networkmap redimensionada"
-
-#~ msgid "Error process map"
-#~ msgstr "Error al procesar mapa"
-
-#~ msgid "This operation can't be undone, because it is on DB."
-#~ msgstr "Esta operación no se puede deshacer porque está en la BD"
-
-#~ msgid "Toggle the module table"
-#~ msgstr "Cambiar a la tabla de alertas"
-
-#~ msgid "Show Modules"
-#~ msgstr "Mostrar módulos"
-
-#~ msgid "Toggle the alert table"
-#~ msgstr "Cambie a la tabla de alertas"
-
-#~ msgid "Show Alert"
-#~ msgstr "Mostrar alertas"
-
-#~ msgid "Relationship"
-#~ msgstr "Relación"
-
-#~ msgid "Show Collection"
-#~ msgstr "Mostrar colecciones"
-
-#~ msgid "PDF"
-#~ msgstr "PDF"
-
-#~ msgid "Backup"
-#~ msgstr "Copia de seguridad"
-
-#~ msgid "Export to PDF"
-#~ msgstr "Exportar a PDF"
-
-#~ msgid "Create backup"
-#~ msgstr "Crear copia de seguridad"
-
-#~ msgid "Pandora database backup utility"
-#~ msgstr "Utilidad de la copia de seguridad de BD de Pandora FMS"
-
-#~ msgid "Lost"
-#~ msgstr "Perdido"
-
-#~ msgid "Backups list"
-#~ msgstr "Lista de copias de seguridad"
-
-#, php-format
-#~ msgid "Error add '%s' collection."
-#~ msgstr "Error al añadir colección '%s'."
-
-#, php-format
-#~ msgid "Success add '%s' collection."
-#~ msgstr "Colección '%s' añadida correctamente"
-
-#, php-format
-#~ msgid "Error add '%s' agent."
-#~ msgstr "Error al añadir agente '%s'."
-
-#, php-format
-#~ msgid "Success add '%s' agent."
-#~ msgstr "Agente '%s' añadido correctamente"
-
-#, php-format
-#~ msgid "Error create '%s' policy."
-#~ msgstr "Error al crear la política '%s'."
-
-#, php-format
-#~ msgid "Success create '%s' policy."
-#~ msgstr "Política '%s' creada correctamente"
-
-#~ msgid "Error the policy haven't name."
-#~ msgstr "Error la política no tiene nombre."
-
-#, php-format
-#~ msgid "Error create '%s' policy, the name exist and there aren't free name."
-#~ msgstr ""
-#~ "Error al crear política '%s', el nombre ya existe. Ese nombre no está libre."
-
-#, php-format
-#~ msgid ""
-#~ "Warning create '%s' policy, the name exist, the policy have a name %s."
-#~ msgstr ""
-#~ "Política de advertencia creada '%s', el nombre existe, la política tiene un "
-#~ "nombre %s."
-
-#~ msgid "Error add the module, haven't type."
-#~ msgstr "Error al añadir el módulo. No tiene tipo"
-
-#, php-format
-#~ msgid "Success add '%s' module."
-#~ msgstr "Módulo '%s' añadido correctamente"
-
-#, php-format
-#~ msgid "Error add the alert, the module '%s' don't exist."
-#~ msgstr "Error al añadir la alerta, el módulo  '%s' no existe"
-
-#, php-format
-#~ msgid "Success add '%s' alert."
-#~ msgstr "Alerta  '%s' añadida correctamente"
-
-#, php-format
-#~ msgid "Error add '%s' module."
-#~ msgstr "Error al añadir el módulo '%s'"
-
-#, php-format
-#~ msgid "Error add the alert, the template '%s' don't exist."
-#~ msgstr "Error al añadir la alerta, la plantilla '%s' no existe"
-
-#, php-format
-#~ msgid "Success add '%s' action."
-#~ msgstr "Acción añadida correctamente '%s'."
-
-#, php-format
-#~ msgid "Error add the alert, the action '%s' don't exist."
-#~ msgstr "Error al añadir alerta, la acción '%s' no existe."
-
-#, php-format
-#~ msgid "Error add '%s' alert."
-#~ msgstr "Error al añadir alerta  '%s'."
-
-#~ msgid "Error add the module, error in tag component."
-#~ msgstr "Error al añadir el módulo, error en el componente tag."
-
-#~ msgid "Yearly"
-#~ msgstr "Anualmente"
-
-#~ msgid "This is the automatic generated report"
-#~ msgstr "Éste es el informe generado automáticamente"
-
-#~ msgid "Send custom report by email"
-#~ msgstr "Enviar un informe personalizado por correo"
-
-#~ msgid "Backup Pandora database"
-#~ msgstr "Copia de seguridad de la BD de Pandora FMS"
-
-#~ msgid "Hourly"
-#~ msgstr "Cada hora"
-
-#~ msgid "Send to email"
-#~ msgstr "Enviar a correo-e"
-
-#~ msgid "Save to disk into path"
-#~ msgstr "Guardar disco en la ruta"
-
-#~ msgid "Save custom report to disk"
-#~ msgstr "Guardar el informe personalizado en el disco"
-
-#~ msgid "Report to build"
-#~ msgstr "Informe a construir"
-
-#~ msgid "Not scheduled"
-#~ msgstr "No programada"
-
-#~ msgid "Please do not answer or reply to this email"
-#~ msgstr "No responda a este correo-e"
-
-#~ msgid "Open the attached file to view it"
-#~ msgstr "Abra el fichero adjunto para verlo"
-
-#~ msgid "Path doesn't exists or is not writable"
-#~ msgstr "La ruta no existe o no se puede escribir en ella"
-
-#~ msgid ""
-#~ "This extension relies on a proper setup of cron, the time-based scheduling "
-#~ "service"
-#~ msgstr ""
-#~ "Esta extensión se basa en una correcta configuración de cron, el servicio de "
-#~ "planificación basado en el tiempo"
-
-#~ msgid "Please, add the following line to your crontab file"
-#~ msgstr "Añada la siguiente linea a su archivo crontab"
-
-#~ msgid "Force run"
-#~ msgstr "Forzar ejecución"
-
-#~ msgid "Scheduled jobs"
-#~ msgstr "Tareas programadas"
-
-#~ msgid "Cron extension is running"
-#~ msgstr "La extensión Cron se está ejecutando"
-
-#~ msgid "Last execution"
-#~ msgstr "Última ejecución"
-
-#~ msgid "Path"
-#~ msgstr "Ruta"
-
-#~ msgid "Task"
-#~ msgstr "Tarea"
-
-#~ msgid "Scheduled"
-#~ msgstr "Programado"
-
-#~ msgid "First_execution"
-#~ msgstr "First_execution"
-
-#~ msgid ""
-#~ "Maybe the first run is not exactly equal to this value because the cron "
-#~ "configuration is diferent."
-#~ msgstr ""
-#~ "Quizá la primera ejecución no es exactamente igual a este valor porque la "
-#~ "configuración de cron es diferente."
-
-#~ msgid "Last run"
-#~ msgstr "Última ejecución"
-
-#~ msgid "Separator"
-#~ msgstr "Separador"
-
-#~ msgid "Upload CSV file"
-#~ msgstr "Subir archivo CSV"
-
-#~ msgid "Wizard SLA"
-#~ msgstr "Wizard SLA"
-
-#~ msgid "File processed"
-#~ msgstr "Archivo procesado"
-
-#, php-format
-#~ msgid "Created agent %s"
-#~ msgstr "Agente creado %s"
-
-#~ msgid "The CSV file must have the fields in the following order"
-#~ msgstr "El archivo CSV tiene que tener los campos en el siguiente orden"
-
-#~ msgid "CSV format"
-#~ msgstr "Formato CVS"
-
-#~ msgid "Translate string"
-#~ msgstr "Traducir cadena"
-
-#~ msgid "CSV import"
-#~ msgstr "Importar CSV"
-
-#~ msgid "First execution"
-#~ msgstr "Primera ejecución"
-
-#~ msgid "Global"
-#~ msgstr "Global"
-
-#~ msgid "Templates list"
-#~ msgstr "Lista de Plantillas"
-
-#~ msgid "Advance options"
-#~ msgstr "Opciones avanzadas"
-
-#, php-format
-#~ msgid "Graph agents(%s) - %s"
-#~ msgstr "Gráficas de agentes (%s) - %s"
-
-#~ msgid "Generated"
-#~ msgstr "Generado"
-
-#~ msgid "Template editor"
-#~ msgstr "Editor de Plantillas"
-
-#~ msgid "Get PDF file"
-#~ msgstr "Obtener archivo PDF"
-
-#~ msgid "MIN Value"
-#~ msgstr "Valor MIN"
-
-#~ msgid "MAX Value"
-#~ msgstr "Valor MAX"
-
-#~ msgid "% Wrong"
-#~ msgstr "% Incorrecto"
-
-#~ msgid "% OK"
-#~ msgstr "% OK"
-
-#~ msgid "Report type"
-#~ msgstr "Tipo de informe"
-
-#~ msgid "Simple Graph"
-#~ msgstr "Gráfica simple"
-
-#~ msgid "% Limit"
-#~ msgstr "% Límite"
-
-#~ msgid "Last 8 hours events"
-#~ msgstr "Eventos de las últimas 8 horas"
-
-#~ msgid "Modules under"
-#~ msgstr "Módulos bajo"
-
-#~ msgid "Modules at normal status"
-#~ msgstr "Módulos en estado normal"
-
-#~ msgid "Uknown agents"
-#~ msgstr "Agentes desconocidos"
-
-#~ msgid "Modules at critical or warning status"
-#~ msgstr "Módulos en estado crítico o de advertencia"
-
-#, php-format
-#~ msgid "There are no Modules over or equal to %s"
-#~ msgstr "No hay módulos por encima o igual a %s"
-
-#, php-format
-#~ msgid "There are no Modules under %s"
-#~ msgstr "No hay módulos por debajo de %s"
-
-#~ msgid "There are no data."
-#~ msgstr "No hay datos"
-
-#~ msgid "There are no Modules at normal status"
-#~ msgstr "No hay módulos en estado normal"
-
-#~ msgid "Serialized data "
-#~ msgstr "Datos serializados "
-
-#~ msgid "There are no Modules under those conditions"
-#~ msgstr "No hay módulos bajo esas condiciones"
-
-#~ msgid "Crit:"
-#~ msgstr "Crit."
-
-#~ msgid "Warn:"
-#~ msgstr "Advert."
-
-#~ msgid "Ok:"
-#~ msgstr "Ok:"
-
-#~ msgid "Value:"
-#~ msgstr "Valor:"
-
-#~ msgid "Color"
-#~ msgstr "Color"
-
-#~ msgid "Network map linked"
-#~ msgstr "Mapa Network enlazado"
-
-#~ msgid "Shape"
-#~ msgstr "Forma"
-
-#~ msgid "Radius"
-#~ msgstr "Radio"
-
-#~ msgid "Open Minimap"
-#~ msgstr "Abrir Minimapa"
-
-#~ msgid "Square"
-#~ msgstr "Cuadrado"
-
-#~ msgid "Rhombus"
-#~ msgstr "Rombo"
-
-#~ msgid "Circle"
-#~ msgstr "Círculo"
-
-#~ msgid "Show modules:"
-#~ msgstr "Mostrar módulos:"
-
-#~ msgid "Copy of "
-#~ msgstr "Copiar de "
-
-#~ msgid "Module alert"
-#~ msgstr "Alerta de módulos"
-
-#~ msgid "Empty configuration"
-#~ msgstr "Configuración vacía"
-
-#~ msgid "Empty OS"
-#~ msgstr "SO vacío"
-
-#~ msgid "Lines"
-#~ msgstr "Líneas"
-
-#~ msgid "Metaconsole"
-#~ msgstr "Metaconsola"
-
-#~ msgid "Period: "
-#~ msgstr "Periodo: "
-
-#~ msgid "There are no agents with modules."
-#~ msgstr "No hay agentes con módulos"
-
-#~ msgid "There are no Agent/Modules defined."
-#~ msgstr "No hay agentes/módulos definidos."
-
-#~ msgid "Modules detailed event"
-#~ msgstr "Evento detallados de módulos"
-
-#~ msgid "There are no events for this module."
-#~ msgstr "No hay eventos para este módulo"
-
-#~ msgid "There are no events in group."
-#~ msgstr "No hay eventos en este grupo"
-
-#~ msgid "There are no Events."
-#~ msgstr "No hay eventos"
-
-#~ msgid "There are no alerts for this module."
-#~ msgstr "No hay alertas para este módulo"
-
-#~ msgid "Exception - Equal to"
-#~ msgstr "Excepción - Igual a"
-
-#~ msgid "Restoring a backup"
-#~ msgstr "Restaurar una copia de seguridad"
-
-#~ msgid "No description"
-#~ msgstr "Sin descripción"
-
-#~ msgid "There are no modules."
-#~ msgstr "No hay módulos"
-
-#~ msgid "Untitled"
-#~ msgstr "Sin título"
-
-#~ msgid "CONTENTS"
-#~ msgstr "CONTENIDOS"
-
-#~ msgid "Report date: "
-#~ msgstr "Fecha del informe: "
-
-#~ msgid "Generated: "
-#~ msgstr "Generado: "
-
-#~ msgid "Agent:"
-#~ msgstr "Agente:"
-
-#~ msgid "Module:"
-#~ msgstr "Módulo:"
-
-#~ msgid ""
-#~ "It's a complex operation that needs human intervation to avoid system "
-#~ "failures and data loosing"
-#~ msgstr ""
-#~ "Esta operación es compleja y necesita intervención humana para evitar fallos "
-#~ "en el sistema y pérdida de datos"
-
-#~ msgid "Restoring a Pandora database backup must be done manually"
-#~ msgstr ""
-#~ "Debe restaurar la copia de seguridad de la base de datos de Pandora FMS "
-#~ "manualmente."
-
-#~ msgid "Open configuration file"
-#~ msgstr "Abrir el archivo de configuración"
-
-#~ msgid "Find"
-#~ msgstr "Encontrar"
-
-#~ msgid "Restore the backup"
-#~ msgstr "Restaurar la copia de seguridad"
-
-#~ msgid "Modify console configuration to use this new database"
-#~ msgstr ""
-#~ "Modifique la configuración de la consola para usar esta nueva base de datos"
-
-#~ msgid "Connect to MySQL database using the following command"
-#~ msgstr "Use el siguiente comando para conectar con la base de datos de MySQL"
-
-#~ msgid "Create a new database"
-#~ msgstr "Crear una nueva base de datos"
-
-#~ msgid "To restore the selected backup, please follow these steps"
-#~ msgstr ""
-#~ "Para restaurar la copia de seguridad seleccionada, por favor, siga los "
-#~ "siguientes pasos"
-
-#~ msgid "Open a root shell in your system located at "
-#~ msgstr "Abra un root shell en su sistema localizado en "
-
-#~ msgid "Restart the servers and login again into the console"
-#~ msgstr "Reinicie los servidores y vuelva a identificarse en la consola"
-
-#~ msgid "Find servers configuration file and replace the following lines"
-#~ msgstr ""
-#~ "Acceda al archivo de configuración de los servidores y reemplácelo por las "
-#~ "siguientes líneas"
-
-#~ msgid "Into your destination database."
-#~ msgstr "En su base de datos de destino"
-
-#~ msgid "Run import command using the following command"
-#~ msgstr "Ejecute el comando de importación mediante el siguiente comando"
-
-#~ msgid "Log collector"
-#~ msgstr "Colector de logs"
-
-#~ msgid "Error connecting to the specified host"
-#~ msgstr "Error al conectar con el host especificado"
-
-#~ msgid "Database credentials not found"
-#~ msgstr "Los credenciales de la base de datos no se han encontrado"
-
-#~ msgid "and replace with"
-#~ msgstr "y reemplazar con"
-
-#~ msgid "Modify servers configuration to use this new database"
-#~ msgstr ""
-#~ "Modifique la configuración de los servidores para usar esta nueva base de "
-#~ "datos"
-
-#~ msgid ""
-#~ "\"Translate string\" extension is missed in the server. This extension is "
-#~ "mandatory to be configured on metaconsole."
-#~ msgstr ""
-#~ "En el servidor, falta la extensión \"Translate string\". Esta extensión es "
-#~ "imprescindible para configurar la metaconsola."
-
-#~ msgid "Connected to the host, but cannot found the specified database"
-#~ msgstr ""
-#~ "Conectado al host, pero no se puede encontrar la base de datos especificada"
-
-#~ msgid ""
-#~ "Server name doesnt match. Check the node server name and configure the same "
-#~ "one on metasetup"
-#~ msgstr ""
-#~ "El nombre del servidor no coincide. Compruebe el nombre del servidor del "
-#~ "nodo y configure el mismo nombre en el metasetup"
-
-#~ msgid "Last event replication"
-#~ msgstr "Replicación del último evento"
-
-#~ msgid "Tree view by tags"
-#~ msgstr "Vista de árbol por tags"
-
-#~ msgid "No changes found"
-#~ msgstr "No se han encontrado cambios"
-
-#~ msgid "Get CSV file"
-#~ msgstr "Obtener archivo CSV"
-
-#~ msgid "Alert warning service does not exist."
-#~ msgstr "El servicio de alerta de advertencia no existe"
-
-#~ msgid "Agent store the service does not exist."
-#~ msgstr "El agente que almacena el servicio no existe"
-
-#~ msgid "Module store SLA service does not exist."
-#~ msgstr "El módulo que almacena el servicio SLA no existe"
-
-#~ msgid "Module store the service does not exist."
-#~ msgstr "El módulo que almacena los servicios no existe"
-
-#~ msgid "Service does not exist."
-#~ msgstr "El servicio no existe"
-
-#~ msgid "Alert critical service does not exist."
-#~ msgstr "El servicio de alertas críticas no existe"
-
-#~ msgid "Alert critical SLA service does not exist."
-#~ msgstr "El servicio de alerta crítica de SLA no existe"
-
-#~ msgid "Agent store SLA service does not exist."
-#~ msgstr "El agente que almacena el sevicio de SLA no existe"
-
-#~ msgid "There are no service elements defined"
-#~ msgstr "No hay servicios de elementos definidos"
-
-#~ msgid "Weight Critical"
-#~ msgstr "Peso crítico"
-
-#~ msgid "Critical (Alert)"
-#~ msgstr "Crítica (Alerta)"
-
-#~ msgid "Unknow"
-#~ msgstr "Desconocido"
-
-#~ msgid "Weight Ok"
-#~ msgstr "Peso Ok"
-
-#~ msgid "Delete service element"
-#~ msgstr "Eliminar elemento de servicio"
-
-#~ msgid "Weight Warning"
-#~ msgstr "Peso de advertencia"
-
-#~ msgid "Weight Unknown"
-#~ msgstr "Peso desconocido"
-
-#, php-format
-#~ msgid "Module automatic create for the service %s"
-#~ msgstr "Módulo automático creado para el servicio %s"
-
-#~ msgid "Alert unknown service does not exist."
-#~ msgstr "El servicio de alertas desconocidas no existe"
-
-#~ msgid "FAIL"
-#~ msgstr "FALLO"
-
-#~ msgid "Module pending to unlink"
-#~ msgstr "Módulo pendiente para desenlazar"
-
-#~ msgid "Module pending to link"
-#~ msgstr "Módulo pendiente para enlazar"
-
-#~ msgid "You must change password"
-#~ msgstr "Tiene que cambiar la contraseña"
-
-#~ msgid "Create a new policy map"
-#~ msgstr "Crear un nuevo mapa de políticas"
-
-#~ msgid "Unlink from policy"
-#~ msgstr "Módulo desenlazado de la política"
-
-#~ msgid "Module linked"
-#~ msgstr "Módulo enlazado"
-
-#~ msgid "Relink to policy"
-#~ msgstr "Volver a unir a la política"
-
-#~ msgid "Module unlinked"
-#~ msgstr "Módulo desenlazado"
-
-#~ msgid "Password must contain numbers"
-#~ msgstr "La contraseña tiene que contener números"
-
-#~ msgid " previous changes."
-#~ msgstr " Cambios anteriores"
-
-#~ msgid "Password must be different"
-#~ msgstr "La contraseña tiene que ser diferente"
-
-#~ msgid "Password too short"
-#~ msgstr "La contraseña es demasiado corta"
-
-#~ msgid "Change"
-#~ msgstr "Cambiar"
-
-#~ msgid "User has been blocked. Try again in "
-#~ msgstr "Su usuario ha sido bloqueado. Vuelva a intentarlo en "
-
-#~ msgid " minutes"
-#~ msgstr " minutos"
-
-#~ msgid "Password must be different from the "
-#~ msgstr "La contraseña debe ser diferente de "
-
-#~ msgid "CONFIRM: "
-#~ msgstr "CONFIRMAR: "
-
-#~ msgid "NEW PASS: "
-#~ msgstr "NUEVA CONTRASEÑA: "
-
-#~ msgid "Password empty"
-#~ msgstr "La contraseña está vacía"
-
-#~ msgid "Password confirm does not match"
-#~ msgstr "Las contraseñas no coinciden"
-
-#~ msgid "Error updating user pass (no change?)"
-#~ msgstr "Error al actualizar la contraseña (¿no ha cambiado?)"
-
-#~ msgid "Password must contain symbols"
-#~ msgstr "La contraseña tiene que contener símbolos"
-
-#~ msgid "User pass successfully updated"
-#~ msgstr "La contraseña se ha actualizado correctamente"
-
-#~ msgid ""
-#~ "Maybe delete the extended data or the audit data is previous to table "
-#~ "tsession_extended."
-#~ msgstr ""
-#~ "Puede que se haya borrado información exntendida, o que la información de "
-#~ "auditoría sea previa a la instalación enterprise."
-
-#~ msgid "SLA critical service alert"
-#~ msgstr "Alerta crítica de servicio SLA."
-
-#~ msgid "Warning weight"
-#~ msgstr "Advertencia de peso"
-
-#~ msgid "Correct create collection"
-#~ msgstr "Creado con éxito colección de ficheros."
-
-#~ msgid "Add module to operations as divide"
-#~ msgstr "Añadir módulo a la operacion como divisor"
-
-#~ msgid "Empty for default short name fc_X where X is the collection id."
-#~ msgstr ""
-#~ "Déjelo vacío para el nombre corto por defecto (fc_X) donde X es el ID de la "
-#~ "colección."
-
-#~ msgid "Add module to operations as deduct"
-#~ msgstr "Añadir módulo a la operacion como resta"
-
-#~ msgid "Add module to operations as multiplicate "
-#~ msgstr "Añadir módulo a la operacion como multiplicador "
-
-#~ msgid "Add module to operation as add"
-#~ msgstr "Añadir módulo a la operación como suma"
-
-#~ msgid "Clean up template"
-#~ msgstr "Vaciar la plantilla"
-
-#~ msgid "Move down selected modules"
-#~ msgstr "Mover hacia abajo los módulos seleccionados"
-
-#~ msgid "Move up selected modules"
-#~ msgstr "Mover hacia arriba los módulos seleccionados"
-
-#~ msgid "Cleanup error"
-#~ msgstr "Error al borrar contenido"
-
-#~ msgid "Agent browser id"
-#~ msgstr "ID del navegador (Agent Browser)"
-
-#~ msgid "Select the modules to match when create a report for agents"
-#~ msgstr ""
-#~ "Seleccione los módulos a comparar cuando cree el informe para cada agente"
-
-#~ msgid "Modules to match"
-#~ msgstr "Módulos a comparar"
-
-#~ msgid "Custom Mysql template builder"
-#~ msgstr "Creador de plantillas personailizadas para MySQL"
-
-#~ msgid "Module exact match"
-#~ msgstr "Coincidencia exacta de modulo"
-
-#~ msgid ""
-#~ "Case insensitive regular expression or string for module name. For example: "
-#~ "if you use this field with \"Module exact match\" enabled then this field "
-#~ "has to be fulfilled with the literally string of the module name, if not you "
-#~ "can use a regular expression. Example: .*usage.* will match: cpu_usage, vram "
-#~ "usage in matchine 1."
-#~ msgstr ""
-#~ "Expresión regular, no sensible a mayúsculas/minúsculas, para buscar el "
-#~ "módulo. Por ejemplo: si usa este campo con \"Coincidencia exacta de modulo\" "
-#~ "activado, entonces este campo tiene que rellenarse con la cadena literal del "
-#~ "nombre del modulo, sino, usará una expresion regular, p.e: .*usage.* "
-#~ "coincidiría con : cpu_usage, vram usage in machine 1."
-
-#~ msgid ""
-#~ "Case insensitive regular expression for agent name. For example: Network.* "
-#~ "will match with the following agent names: network_agent1, NetworK CHECKS"
-#~ msgstr ""
-#~ "Expresión regular, no sensible a mayúsculas/minúsculas, para buscar el "
-#~ "agente. Por ejemplo: Network.* coincidiría con los siguientes nombres de "
-#~ "agentes: network_agent1, NetworK CHECKS"
-
-#~ msgid "Check it if you want to match module name literally"
-#~ msgstr ""
-#~ "Actívela si desea que haya una coincidencia exacta y literal en el nombre "
-#~ "del módulo"
-
-#~ msgid ": Create new custom"
-#~ msgstr ": Crear nueva consulta personalizada"
-
-#~ msgid "Could not be operation"
-#~ msgstr "La operación no puedo completarse"
-
-#~ msgid "Agents to apply"
-#~ msgstr "Agentes para aplicar"
-
-#~ msgid ""
-#~ "The module type in Data configuration is empty, take from combo box of form."
-#~ msgstr ""
-#~ "El tipo de datos en la configuración está vacío, elija uno del combo del "
-#~ "formulario."
-
-#~ msgid ""
-#~ "The module name in Data configuration is empty, take from text field of form."
-#~ msgstr ""
-#~ "El nombre del módulo en la configuración está vacío, elija uno del combo del "
-#~ "formulario."
-
-#~ msgid "Not literally"
-#~ msgstr "No literal"
-
-#~ msgid ""
-#~ "Case insensitive regular expression for agent name. For example: Network* "
-#~ "will match with the following agent names: network_agent1, NetworK CHECKS"
-#~ msgstr ""
-#~ "Expresión regular no sensible a mayúsculas. Por ejemplo: Network* hará "
-#~ "coincidencia con los siguientes nombres de módulos: network_agent1, NetworK "
-#~ "CHECKS"
-
-#~ msgid "Modules to match (Free text)"
-#~ msgstr "Modulos a comparar (Texto libre)"
-
-#~ msgid ""
-#~ "If it is checked, the regexp or name of modules match only each to each to "
-#~ "agent, instead create a big graph with all modules from all agents."
-#~ msgstr ""
-#~ "Si se activa, la expresión regular o el nombre de modulo hará coincidencia "
-#~ "en cada módulo de cada agente, y creará una gráfica que contenga módulos de "
-#~ "todos los agentes."
-
-#~ msgid "Need apply"
-#~ msgstr "Necesita aplicar"
-
-#~ msgid "Pending update policy only database"
-#~ msgstr ""
-#~ "Pendiente de actualizar política, sólo para cambios en base de datos."
-
-#~ msgid "Linking modules"
-#~ msgstr "Modulos enlazados"
-
-#~ msgid ""
-#~ "Since the alert can have multiple actions. You can edit them from the alert "
-#~ "list of events."
-#~ msgstr ""
-#~ "Debido a que la alerta puede tener múltiples acciones, debe editarlas desde "
-#~ "la lista de alertas de eventos."
-
-#~ msgid "Builder event alert"
-#~ msgstr "Creador de alertas de eventos"
-
-#~ msgid "Add to apply queue only for database"
-#~ msgstr "Añadir a la cola de aplicación, sólo de cambios de base de datos"
-
-#~ msgid "Modules in policy agents"
-#~ msgstr "Modulos en agentes de política"
-
-#~ msgid "Move down"
-#~ msgstr "Bajar"
-
-#~ msgid "Move up"
-#~ msgstr "Subir"
-
-#~ msgid "Error: Update linking modules to policy"
-#~ msgstr "Error: Actualizando modulos enlazados a la política"
-
-#~ msgid "Success: Update linking modules to policy"
-#~ msgstr "Completado: Actualizando modulos enlazados a la política"
-
-#~ msgid "Failed: remove the alerts for this modules, please check."
-#~ msgstr "Falló: borrado de alertas para estos modulos."
-
-#~ msgid "Massive alerts policy addition"
-#~ msgstr "Adición masiva de alertas a políticas"
-
-#~ msgid "Success: remove the alerts."
-#~ msgstr "Completado: borrado de alertas."
-
-#~ msgid "SNMP Alerts to be deleted"
-#~ msgstr "Alertas SNMP para añadir"
-
-#~ msgid "Modules agents in policy"
-#~ msgstr "Modulos de agentes en la política"
-
-#~ msgid "Failed: create the alerts for this modules, please check."
-#~ msgstr ""
-#~ "Falló: Creación de alertas para estos modulos, compruebe el problema."
-
-#~ msgid "Fail uploaded file"
-#~ msgstr "Fallo al subir el archivo"
-
-#~ msgid "My Post"
-#~ msgstr "Mi página"
-
-#~ msgid ""
-#~ "Data size of mechanism used to transfer data (similar to a data buffer.)"
-#~ msgstr "Tamaño del sistema de transferencia de datos (similar al un buffer)"
-
-#~ msgid "Please search for anything text."
-#~ msgstr "Por favor haga una búsqueda de cualquier cadena de texto"
-
-#~ msgid "Select the module where the alert will be created"
-#~ msgstr "Seleccione el módulo donde se creará la alerta"
-
-#~ msgid "Select the module to be edited or deleted"
-#~ msgstr "Seleccione el módulo para editar o borrar"
-
-#~ msgid "Create Module"
-#~ msgstr "Crear módulo"
-
-#~ msgid "Select the agent where the module will be created"
-#~ msgstr "Seleccione el agente donde crear el modulo"
-
-#~ msgid ""
-#~ "Not set metaconsole IP in the \"IP list with API access\" guess Pandora "
-#~ "Console."
-#~ msgstr ""
-#~ "Si no establece la IP de la metaconsola en \"Lista de IP's con acceso a la "
-#~ "API\", no se podrá conectar"
-
-#~ msgid "Pop selected sections to disable it"
-#~ msgstr "Desapriete la secciones seleccionadas para desactivarlo"
-
-#~ msgid "Push selected sections to enable it"
-#~ msgstr "Apriete las secciones elegidas para activarlo"
-
-#~ msgid "Policies apply"
-#~ msgstr "Aplicar políticas"
-
-#~ msgid "Go to agent detail"
-#~ msgstr "Ir al detalle del agente"
-
-#~ msgid "Create new module"
-#~ msgstr "Crear nuevo módulo"
-
-#~ msgid "User synchronization"
-#~ msgstr "Sincronización de usuarios"
-
-#~ msgid "Group synchronization"
-#~ msgstr "Sincronización de grupos"
-
-#~ msgid "Go to module detail"
-#~ msgstr "Ir al detalle del módulo"
-
-#~ msgid "Customizable section"
-#~ msgstr "Sección personalizable"
-
-#~ msgid "Netflow disable custom live view filters"
-#~ msgstr "Desactivar filtros personalizados en la vista en vivo de netflow"
-
-#~ msgid "Report templates"
-#~ msgstr "Plantillas de informes"
-
-#~ msgid "(Un-adopted)"
-#~ msgstr "(Des-adoptados)"
-
-#~ msgid "(Un-adopted) (Unlinked)"
-#~ msgstr "(Des-adoptados)(Desvinculados)"
-
-#~ msgid "(Adopted)"
-#~ msgstr "(Adoptados)"
-
-#~ msgid "(Adopted) (Unlinked)"
-#~ msgstr "(Adoptados)(Desvinculados)"
-
-#~ msgid "Stand By"
-#~ msgstr "En espera"
-
-#~ msgid "Create new alert"
-#~ msgstr "Crear nueva alerta"
-
-#~ msgid "Method generation networkmap"
-#~ msgstr "Método de generación de mapas de red"
-
-#~ msgid "Cron jobs"
-#~ msgstr "Tareas programadas"
-
-#~ msgid "Cron extension is not running"
-#~ msgstr "La extensión de tareas programadas (cron) no está ejecutándose"
-
-#~ msgid "Edit job"
-#~ msgstr "Editar tarea"
-
-#~ msgid "Add new job"
-#~ msgstr "Añadir nueva tarea"
-
-#~ msgid "Cron extension has never run or it's not configured well"
-#~ msgstr ""
-#~ "La extensión de tareas programadas (cron) no se ha ejecutado nunca o no está "
-#~ "configurada correctamente"
-
-#~ msgid "Add fictional point"
-#~ msgstr "Añadir punto ficticio"
-
-#~ msgid "Automated Pandora FMS report for user defined report"
-#~ msgstr "Informe automatizado de Pandora FMS para informes personalizados."
-
-#~ msgid "Policy linkation"
-#~ msgstr "Vinculación de políticas"
-
-#~ msgid "Invalid characters founded in module name"
-#~ msgstr "Se han encontrado caracteres inválidos en el nombre del módulo"
-
-#~ msgid "Please save the SLA template for start to add items in this list."
-#~ msgstr ""
-#~ "Por favor, guarde la plantilla SLA para empezar a añadir elementos a la lista"
-
-#~ msgid "Form filter"
-#~ msgstr "Filtro"
-
-#~ msgid "Network console"
-#~ msgstr "Consola de red"
-
-#~ msgid "Top N events by module."
-#~ msgstr "Top N de eventos por módulo"
-
-#~ msgid "Top N Events by module."
-#~ msgstr "Top N de eventos por módulo"
-
-#~ msgid ""
-#~ "Please could you fill the widget data previous to filling the list items."
-#~ msgstr "Por favor, rellene el Widget de datos antes de la lista de items"
-
-#~ msgid "There is not data to show."
-#~ msgstr "No hay datos que mostrar"
-
-#~ msgid "Please select one or more groups."
-#~ msgstr "Por favor, seleccione uno o más grupos"
-
-#~ msgid "Amount to show"
-#~ msgstr "Cantidad a mostrar"
-
-#~ msgid "Show a top n of agents modules."
-#~ msgstr "Mostrar el top N de módulos"
-
-#~ msgid "Top N events by agent."
-#~ msgstr "Top N de eventos por agente"
-
-#~ msgid "Selection several modules"
-#~ msgstr "Selección múltiple de módulos"
-
-#~ msgid "Regex for to filter modules"
-#~ msgstr "Expresión regular para filtrar módulos"
-
-#~ msgid "avg"
-#~ msgstr "media"
-
-#~ msgid "Selection module one by one"
-#~ msgstr "Selección de módulos uno en uno"
-
-#~ msgid "Unsuccessful added modules"
-#~ msgstr "Error añadiendo módulos"
-
-#~ msgid "Filter modules"
-#~ msgstr "Filtrar módulos"
-
-#~ msgid "Successful added modules"
-#~ msgstr "Módulos añadidos con éxito"
-
-#~ msgid "Top N Events by agent."
-#~ msgstr "Top N de eventos por agente"
-
-#~ msgid "Success: recreate file"
-#~ msgstr "Éxito: al volver a crear el archivo"
-
-#~ msgid "Filter module"
-#~ msgstr "Filtro de módulo"
-
-#~ msgid "No associated actions"
-#~ msgstr "No hay acciones asociadas"
-
-#~ msgid "Satellite operations"
-#~ msgstr "Operaciones satélite"
-
-#~ msgid "Successfully duplicate the module."
-#~ msgstr "Módulo duplicado con éxito"
-
-#~ msgid "Updated modules on database"
-#~ msgstr "Módulos actualizados en la base de datos"
-
-#~ msgid ""
-#~ "Left in blank if you want to use default name: Template name - agents (num "
-#~ "agents) - Date"
-#~ msgstr ""
-#~ "Dejar en blanco si quieres usar el nombre por defecto: Nombre plantilla - "
-#~ "agentes (num agentes) - Fecha"
-
-#~ msgid "Massive Satellite modules edition"
-#~ msgstr "Edición masiva de módulos satélite"
-
-#~ msgid "Agent configuration files updated"
-#~ msgstr "Actualizado fichero de configuración del agente"
-
-#~ msgid " Inverse interval "
-#~ msgstr " Intervalo inverso "
-
-#~ msgid "Service forced successfully"
-#~ msgstr "Forzado servicio con éxito"
-
-#~ msgid "Error service forced"
-#~ msgstr "Error forzando servicio"
-
-#~ msgid "Remote/Local"
-#~ msgstr "Remoto/Local"
-
-#~ msgid "Local module"
-#~ msgstr "Módulo local"
-
-#~ msgid "Show only the task with the recon script \"SNMP L2 Recon\"."
-#~ msgstr "Mostrar solo las tareas recon con el script \"SNMP L2 Recon\""
-
-#~ msgid ""
-#~ "It is setted any recon task, the nodes get from the recontask IP mask "
-#~ "instead from the group."
-#~ msgstr ""
-#~ "Si está seleccionada alguna tarea recon, los nodos se obtendrán de la "
-#~ "máscara IP de la recontask en lugar del grupo"
-
-#~ msgid "Example:"
-#~ msgstr "Ejemplo:"
-
-#~ msgid "ID Report"
-#~ msgstr "ID Informe"
-
-#~ msgid "Send to emails (separated by comma)"
-#~ msgstr "Enviar a emails (separados por comas)"
-
-#~ msgid "Incorrect mask format"
-#~ msgstr "Formato de máscara incorrecto"
-
-#~ msgid "Network mask"
-#~ msgstr "Máscara de red"
-
-#~ msgid "Calculate"
-#~ msgstr "Calcular"
-
-#~ msgid "Address field is empty"
-#~ msgstr "El campo Dirección está vacío"
-
-#~ msgid "Mask format"
-#~ msgstr "Formato de máscara"
-
-#~ msgid "Mask"
-#~ msgstr "Máscara"
-
-#~ msgid "Bit mask"
-#~ msgstr "Bit de máscara"
-
-#~ msgid "Net mask"
-#~ msgstr "Máscara de red"
-
-#~ msgid "Mask field is empty"
-#~ msgstr "El campo Máscara está vacío"
-
-#~ msgid "Incorrect address format"
-#~ msgstr "Formato de dirección incorrecto"
-
-#~ msgid "Last valid IP"
-#~ msgstr "Última IP válida"
-
-#~ msgid "Hosts/Net"
-#~ msgstr "Hosts/Red"
-
-#~ msgid "Broadcast address"
-#~ msgstr "Dirección de difusión"
-
-#~ msgid "First valid IP"
-#~ msgstr "Primera IP válida"
-
-#~ msgid "Network address"
-#~ msgstr "Dirección de red"
-
-#~ msgid "Operating system"
-#~ msgstr "Sistema operativo"
-
-#~ msgid "Generate events"
-#~ msgstr "Generar eventos"
-
-#~ msgid "This agent has other IPs"
-#~ msgstr "Este agente tiene otras IPs"
-
-#~ msgid "Hostname"
-#~ msgstr "Nombre de máquina"
-
-#~ msgid "For example: Central Data Center"
-#~ msgstr "Por ejemplo: Central General de Datos"
-
-#~ msgid "Examples"
-#~ msgstr "Ejemplos"
-
-#~ msgid "Format: IP/Mask"
-#~ msgstr "Formato: IP/Máscara"
-
-#~ msgid "Managed"
-#~ msgstr "Gestionado"
-
-#~ msgid "Ping"
-#~ msgstr "Ping"
-
-#~ msgid "Edited"
-#~ msgstr "Modificado"
-
-#~ msgid "Network not found"
-#~ msgstr "Red no encontrada"
-
-#~ msgid "Ping to host"
-#~ msgstr "Ping a una máquina"
-
-#~ msgid "Addresses view"
-#~ msgstr "Vista de direcciones"
-
-#~ msgid "Edit network"
-#~ msgstr "Modificar red"
-
-#~ msgid "Alive"
-#~ msgstr "Activo"
-
-#~ msgid "No networks found"
-#~ msgstr "No se ha encontrado ninguna red"
-
-#~ msgid "IPs"
-#~ msgstr "IPs"
-
-#~ msgid "Manage addresses"
-#~ msgstr "Administrar direcciones"
-
-#~ msgid "Successfully updated."
-#~ msgstr "Actualizado con éxito."
-
-#~ msgid "Delete network"
-#~ msgstr "Eliminar red"
-
-#~ msgid "Not managed"
-#~ msgstr "No gestionado"
-
-#~ msgid "Not alive"
-#~ msgstr "Inactivo"
-
-#~ msgid "A -> Z"
-#~ msgstr "A -> Z"
-
-#~ msgid "Z -> A"
-#~ msgstr "Z -> A"
-
-#~ msgid "ASC"
-#~ msgstr "ASC"
-
-#~ msgid "DESC"
-#~ msgstr "DESC"
-
-#~ msgid "Subnet"
-#~ msgstr "Subred"
-
-#~ msgid "No addresses found on this network"
-#~ msgstr "No se han encontrado direcciones en esta red"
-
-#~ msgid "Export to Excel"
-#~ msgstr "Exportar a Excel"
-
-#~ msgid "Exact address match"
-#~ msgstr "Coincide la dirección exacta"
-
-#~ msgid "Big"
-#~ msgstr "Grande"
-
-#~ msgid "Last check"
-#~ msgstr "Ultima comprobación"
-
-#~ msgid "Show not alive hosts"
-#~ msgstr "Mostrar máquinas inactivas"
-
-#~ msgid "Show only managed addresses"
-#~ msgstr "Mostrar solo direcciones administradas"
-
-#~ msgid "Tiny"
-#~ msgstr "Pequeño"
-
-#~ msgid "Icons style"
-#~ msgstr "Estilo de iconos"
-
-#~ msgid "Newer -> Older"
-#~ msgstr "Actual -> Antiguo"
-
-#~ msgid "Older -> Newer"
-#~ msgstr "Antiguo -> Actual"
-
-#~ msgid "Edit address"
-#~ msgstr "Modificar dirección"
-
-#~ msgid "Change to manual mode"
-#~ msgstr "Cambiar a modo manual"
-
-#~ msgid "Subnetworks calculator"
-#~ msgstr "Calculadora de subredes"
-
-#~ msgid "Add comments"
-#~ msgstr "Añadir comentarios"
-
-#~ msgid "Update agent address"
-#~ msgstr "Actualizar direción de agente"
-
-#~ msgid "This address will not be updated by the server"
-#~ msgstr "Esta direción no se actualizará por el servidor"
-
-#~ msgid "Disabled address"
-#~ msgstr "Deshabilitar direción"
-
-#~ msgid "Change to automatic mode"
-#~ msgstr "Cambiar a modo automático"
-
-#~ msgid "SLA Compliance per days"
-#~ msgstr "Cumplimiento de SLA por días"
-
-#~ msgid "IPAM"
-#~ msgstr "IPAM"
-
-#~ msgid "Day"
-#~ msgstr "Día"
-
-#~ msgid "Summary of SLA Fails"
-#~ msgstr "Resumen de fallos de SLA"
-
-#, php-format
-#~ msgid "Edit node %s"
-#~ msgstr "Modificar nodo %s"
-
-#~ msgid "Edit node"
-#~ msgstr "Modificar nodo"
-
-#~ msgid "Add node"
-#~ msgstr "Añadir nodo"
-
-#~ msgid "Show details"
-#~ msgstr "Ver detalles"
-
-#~ msgid "Relations"
-#~ msgstr "Relaciones"
-
-#~ msgid "There are not relations"
-#~ msgstr "No hay relaciones"
-
-#~ msgid "Str: "
-#~ msgstr "Cadena "
-
-#~ msgid "Filter options"
-#~ msgstr "Opciones de filtro"
-
-#~ msgid "Set parent"
-#~ msgstr "Establecer como padre"
-
-#~ msgid "Please, uncheck auto option to set manual agent."
-#~ msgstr "Desmarcar la opción auto para establecer agente manual"
-
-#~ msgid "Set as children"
-#~ msgstr "Establecer como hijo"
-
-#~ msgid "Set center"
-#~ msgstr "Fijar centro"
-
-#~ msgid "Update fictional node"
-#~ msgstr "Actualizar nodo ficticio"
-
-#~ msgid "name fictional node"
-#~ msgstr "Nombre de nodo ficticio"
-
-#~ msgid "Node source"
-#~ msgstr "Nodo origen"
-
-#~ msgid "Node options"
-#~ msgstr "Opciones de nodo"
-
-#~ msgid "Add agent node (filter by group)"
-#~ msgstr "Añadir nodo de agente (filtro por grupo)"
-
-#~ msgid "Add agent node"
-#~ msgstr "Añadir nodo de agente"
-
-#~ msgid "Node target"
-#~ msgstr "Nodo objetivo"
-
-#~ msgid "Interface source"
-#~ msgstr "Interfaz origen"
-
-#~ msgid "Interface Target"
-#~ msgstr "Interfaz objetivo"
-
-#~ msgid "Add fictional node"
-#~ msgstr "Añadir nodo ficticio"
-
-#~ msgid "Scan interval"
-#~ msgstr "Comprobar intervalo"
-
-#~ msgid "Total IPs"
-#~ msgstr "IPs totales"
-
-#~ msgid "0 for manually scan"
-#~ msgstr "0 para comprobación manual"
-
-#~ msgid "Source data"
-#~ msgstr "Datos de origen"
-
-#~ msgid "Unsucessful get module inventory data."
-#~ msgstr "No se han podido obtener datos del módulo de inventario"
-
-#~ msgid "Diff view"
-#~ msgstr "Vista de diferencia"
-
-#~ msgid "Start empty networkmap"
-#~ msgstr "Networkmap comienza vacío"
-
-#~ msgid "Client"
-#~ msgstr "Cliente"
-
-#, php-format
-#~ msgid "There are %s updates, and the first to update is:"
-#~ msgstr "Hay %s actualizaciones y la primera actualización es:"
-
-#~ msgid "Version number:"
-#~ msgstr "Número de versión:"
-
-#~ msgid "Trial"
-#~ msgstr "Prueba"
-
-#~ msgid "Refresh Holding area"
-#~ msgstr "Actualizar buffer de procesamiento"
-
-#~ msgid "Block Mode"
-#~ msgstr "Modo bloqueo"
-
-#~ msgid "CIDR IP mask"
-#~ msgstr "Máscara CIDR"
-
-#~ msgid "Holding Area"
-#~ msgstr "Buffer de procesamiento"
-
-#~ msgid "Source from CIDR IP mask"
-#~ msgstr "Origen de máscara CIDR"
-
-#~ msgid "Source from recon task"
-#~ msgstr "Origen de tarea recon"
-
-#~ msgid "Network wildcard"
-#~ msgstr "Red wildcard"
-
-#~ msgid "Manage plugins"
-#~ msgstr "Gestionar plugins"
-
-#~ msgid "Modules running on this server / Total modules of this type"
-#~ msgstr "Módulos ejecutándose en este servidor / Total módulos de este tipo"
-
-#~ msgid "Available"
-#~ msgstr "Disponible"
-
-#~ msgid "Selected"
-#~ msgstr "Seleccionado"
-
-#~ msgid "The services list is empty"
-#~ msgstr "La lista de servicios esta vacía"
-
-#~ msgid "Icon preview"
-#~ msgstr "Pre visualización del icono"
-
-#~ msgid "Remove the services from the list"
-#~ msgstr "Elimina los servicios de la lista"
-
-#~ msgid "Pending to generate"
-#~ msgstr "Pendiente de generar"
-
-#~ msgid "No services selected"
-#~ msgstr "Ningún servicio seleccionado"
-
-#, php-format
-#~ msgid "There is a error: %s"
-#~ msgstr "Hay un error: %s"
-
-#~ msgid "There was an error retrieving the visual map information"
-#~ msgstr "Se ha producido un error al recuperar la información del mapa visual"
-
-#~ msgid "Abort the action of set relationship"
-#~ msgstr "Cancela la acción de relacionar por parentesco"
-
-#, php-format
-#~ msgid "%d services couldn't be added"
-#~ msgstr "%d servicios no se han podido añadir"
-
-#~ msgid "Push the selected services into the list"
-#~ msgstr "Añade los servicios seleccionados a la lista"
-
-#~ msgid "None of the services was added"
-#~ msgstr "Ninguno de los servicios se añadió"
-
-#~ msgid ""
-#~ "There is a new update please go to menu Administration and into extensions "
-#~ "<a style=\"font-weight:bold;\" "
-#~ "href=\"index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=on"
-#~ "line\">go to Update Manager</a> for more details."
-#~ msgstr ""
-#~ "Hay una nueva actualización por favor vaya al menú Administración y en "
-#~ "extensiones  <a style=\"font-weight:bold;\" "
-#~ "href=\"index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=on"
-#~ "line\">Administración actualizaciones</a>para mas detalles."
-
-#~ msgid ""
-#~ "MIB files will be loaded and searched for SNMP trap definitions. They will "
-#~ "not be installed on the system! You can use the MIB uploader for that "
-#~ "purpose."
-#~ msgstr ""
-#~ "Los ficheros MIB se cargarán y buscaron las definiciones de SNMP trap. ¡No "
-#~ "van a ser instalados en el sistema!  Puede usar el cargador de MIB para ese "
-#~ "propósito."
-
-#~ msgid ""
-#~ "Here are described the alert templates, which will use their default "
-#~ "actions.\n"
-#~ "\t\tYou can modify the default behaviour editing alerts in the agent who "
-#~ "stores data and alert definitions about the service and the SLA status."
-#~ msgstr ""
-#~ "Aquí se describen las plantillas de alertas, que utilizarán sus acciones por "
-#~ "defecto.\n"
-#~ "\t\tPuedes modificar el comportambiento de las alertas de edición de "
-#~ "comportamiento por defecto en el agente que almacena definiciones de datos y "
-#~ "alerta sobre el servicio y el estado de SLA."
-
-#~ msgid "This SLA has been affected by the following planned downtimes"
-#~ msgstr "Las siguientes paradas planificadas han modificado este SLA"
-
-#~ msgid ""
-#~ "Only the critical elements are relevant to calculate the service status"
-#~ msgstr ""
-#~ "Solo los elementos críticos son relevantes para calcular el estado del "
-#~ "servicio"
-
-#~ msgid ""
-#~ "In manual mode you should set the weights manually. In auto mode the weights "
-#~ "have default values.\n"
-#~ "\t\tIn simple mode only the elements configured as \"critical element\" are "
-#~ "used to calculate the service status."
-#~ msgstr ""
-#~ "En modo manual, se deben establecer los pesos de forma manual. En modo "
-#~ "automático, los pesos tienen un valor por defecto.\n"
-#~ "En modo simple, sólo se utilizarán los elementos configurados como "
-#~ "'elementos críticos' para calcular el estado del servicio."
-
-#~ msgid "Are you sure? All the visual map services will be recreated"
-#~ msgstr "Está seguro? Todos los mapas visuales serán creados."
-
-#~ msgid "Error: The main directory of collections does not exist."
-#~ msgstr "Error: El directorio principal de las colecciones no existe."
-
-#~ msgid "Error: The collection directory does not exist."
-#~ msgstr "Error: El directorio donde se almacenan las colecciones no existe."
-
-#~ msgid "The collection directory does not exist."
-#~ msgstr "El directorio donde se guardan las colecciones no existe."
-
-#~ msgid "Reserve this IP now"
-#~ msgstr "Reservar esta IP ahora"
-
-#~ msgid "Manage this IP now"
-#~ msgstr "Gestionar esta IP ahora"
-
-#~ msgid ""
-#~ "Destination group is the same than in the original server, if there is not "
-#~ "any group with that name, will be created if check box is selected. "
-#~ "Destination group filter is just used to check agents in that group"
-#~ msgstr ""
-#~ "El grupo de destino es el mismo que en el servidor original. Si no hay otro "
-#~ "grupo con el mismo nombre, será creado si la casilla está seleccionada. El "
-#~ "grupo de destino del filtro es utilizado para comprobrar los agentes de ese "
-#~ "grupo."
-
-#~ msgid "Create group if doesnât exist in destination"
-#~ msgstr "Crear grupo si no existe en el destino"
-
-#~ msgid "Based on name"
-#~ msgstr "Basado en el nombre"
-
-#~ msgid "SLA graph"
-#~ msgstr "Gráfica SLA"
-
-#~ msgid "Next available IP Address is:"
-#~ msgstr "La siguiente IP disponible es:"
-
-#~ msgid "There is not an available IP."
-#~ msgstr "No hay una IP disponible"
-
-#~ msgid "Assign next free IP"
-#~ msgstr "Asignar la siguiente IP libre"
-
-#~ msgid "Group does not exist. Agent "
-#~ msgstr "El grupo no existe. Agente "
-
-#~ msgid "Unreserved"
-#~ msgstr "No reservado"
-
-#~ msgid "Operator users"
-#~ msgstr "Usuarios del operador"
-
-#~ msgid "Reserved"
-#~ msgstr "Reservado"
-
-#~ msgid "Addresses"
-#~ msgstr "Direcciones"
-
-#~ msgid ""
-#~ "The list of users can manage the networks in the IPAM. Only the admin users "
-#~ "can manage networks and edit the networks."
-#~ msgstr ""
-#~ "Los usuarios de la lista pueden gestionar las redes en IPAM. Solo los "
-#~ "usuarios administradores pueden gestionar y modificar las redes."
-
-#~ msgid "Next available IP"
-#~ msgstr "Siguiente IP disponible"
-
-#~ msgid "Reserved addresses"
-#~ msgstr "Direcciones reservadas"
-
-#~ msgid "Not Reserved"
-#~ msgstr "No reservado"
-
-#~ msgid "Group already exists in destination DB"
-#~ msgstr "El grupo ya existe en la base de datos destino"
-
-#~ msgid "Created group in destination DB"
-#~ msgstr "Creado el grupo en la base de datos destino"
-
-#~ msgid "Error creating group. Agent "
-#~ msgstr "Error creando grupo. Agente "
-
-#~ msgid "Send by email"
-#~ msgstr "Enviar por correo-e"
-
-#~ msgid "Send by email "
-#~ msgstr "Enviar por correo-e "
-
-#, php-format
-#~ msgid "Group \"%s\""
-#~ msgstr "Grupo \"%s\""
-
-#~ msgid "Need to regenerate"
-#~ msgstr "Necesita volver a regenerarse"
-
-#~ msgid "This item is affected by a malformed planned downtime"
-#~ msgstr "A este elemento le afecta una parada planificada mal formada"
-
-#~ msgid "Open for more details in update"
-#~ msgstr "Abrir para obtener más detalles de actualización"
-
-#~ msgid "None update or create group"
-#~ msgstr "NInguna actualización o creación de grupo"
-
-#, php-format
-#~ msgid "Error updating %s groups"
-#~ msgstr "Error actualizando %s grupos"
-
-#~ msgid "Open for more details in creation"
-#~ msgstr "Abrir para obtener más detalles de creación"
-
-#~ msgid "Open for more details"
-#~ msgstr "Abrir para obtener más detalles"
-
-#, php-format
-#~ msgid "Error creating %s groups"
-#~ msgstr "Error creando %s grupos"
-
-#~ msgid "Mobile"
-#~ msgstr "Móvil"
-
-#, php-format
-#~ msgid "(Error Duplicate ID (%d) ) "
-#~ msgstr "(Error: ID duplicado (%d)) "
-
-#~ msgid "Error accesing to API."
-#~ msgstr "Error al acceder a la API"
-
-#~ msgid "Error accesing to API, auth error."
-#~ msgstr "Error al acceder a la API. Error de autenticación."
-
-#~ msgid "Go to the planned downtimes section to solve this"
-#~ msgstr ""
-#~ "Ir a la sección de paradas planificadas para solucionar este problema"
-
-#~ msgid "This element should be deleted"
-#~ msgstr "Este elemento debería ser borrado"
-
-#~ msgid "Nonexistent"
-#~ msgstr "No existe"
-
-#~ msgid "Templates Wizard"
-#~ msgstr "Asistente de plantillas"
-
-#~ msgid "Templates wizard"
-#~ msgstr "Asistente de plantillas"
-
-#~ msgid "Monitors view"
-#~ msgstr "Vista de monitores"
-
-#~ msgid "Target group"
-#~ msgstr "Grupo de destino"
-
-#~ msgid "Filter by"
-#~ msgstr "Filtrar por"
-
-#~ msgid "E-mail:"
-#~ msgstr "E-mail:"
-
-#~ msgid "Contact:"
-#~ msgstr "Contacto:"
-
-#~ msgid "Group or Tag"
-#~ msgstr "Grupo o Etiqueta"
-
-#~ msgid "Advance Options"
-#~ msgstr "Opciones Avanzadas"
-
-#~ msgid "Tags used"
-#~ msgstr "Etiquetas usadas"
-
-#~ msgid "Tags unused"
-#~ msgstr "Etiquetas sin usar"
-
-#~ msgid "Create template report wizard"
-#~ msgstr "Creación de informe con Asistente de Plantillas"
-
-#~ msgid "Filter tag"
-#~ msgstr "Filtro etiqueta"
-
-#~ msgid "There are no maps defined."
-#~ msgstr "No hay mapas definidos."
-
-#~ msgid "Report of events (last hour)"
-#~ msgstr "Informe de eventos (última hora)"
-
-#~ msgid "Report of state"
-#~ msgstr "Informe de estado"
-
-#~ msgid "ERROR:"
-#~ msgstr "ERROR:"
-
-#~ msgid "Move Agents"
-#~ msgstr "Mover Agentes"
-
-#~ msgid "Info of state in events (last hour)"
-#~ msgstr "Información del estado en los eventos (última hora)"
-
-#~ msgid "Synchronizing Groups"
-#~ msgstr "Sincronizando Grupos"
-
-#~ msgid "Synchronizing Tags"
-#~ msgstr "Sincronizando Etiquetas"
-
-#~ msgid "Synchronizing Users"
-#~ msgstr "Sincronizando Usuarios"
-
-#~ msgid "Synchronizing Alerts"
-#~ msgstr "Sincronizando Alertas"
-
-#~ msgid "Apply Policies"
-#~ msgstr "Aplicar Políticas"
-
-#~ msgid "Show the tree view"
-#~ msgstr "Mostrar la vista de árbol"
-
-#~ msgid "Advance Reporting"
-#~ msgstr "Opciones Avanzadas"
-
-#~ msgid "Invalid licence."
-#~ msgstr "Licencia inválida"
-
-#~ msgid "Please contact Artica at info@artica.es for a valid licence."
-#~ msgstr ""
-#~ "Por favor contacte con Ártica en info@artica.es para una licencia válida."
-
-#~ msgid "There are no defined users"
-#~ msgstr "No hay usuarios definidos"
-
-#~ msgid "ACL users for this agent"
-#~ msgstr "Usuarios ACL para este agente"
-
-#~ msgid "Check ACL"
-#~ msgstr "Chequear ACL"
-
-#~ msgid "Successful update the networkmap."
-#~ msgstr "Mapa de red actualizado correctamente"
-
-#~ msgid "Update networkmap"
-#~ msgstr "Actualizar mapa de red"
-
-#~ msgid "Save networkmap"
-#~ msgstr "Guardar mapa de red"
-
-#~ msgid "Networkmap to link"
-#~ msgstr "Enlace a mapa de red"
-
-#~ msgid "Unsuccessful update the networkmap."
-#~ msgstr "El mapa de red no se ha podido actualizar"
-
-#~ msgid "Successful update the tags"
-#~ msgstr "Etiquetas actualizadas correctamente"
-
-#~ msgid "Unsuccessful update the tags"
-#~ msgstr "Las etiquetas no se han actualizado correctamente"
-
-#~ msgid "Networkmap list"
-#~ msgstr "Listado mapas de red"
-
-#~ msgid "% Monitors OK"
-#~ msgstr "% Monitores Ok"
-
-#~ msgid "% Monitors Critical"
-#~ msgstr "% Monitores críticos"
-
-#~ msgid "% Monitors Warning"
-#~ msgstr "% Monitores de advertencia"
-
-#~ msgid "Summary by status"
-#~ msgstr "Resumen por estado"
-
-#~ msgid "% Agents Unknown"
-#~ msgstr "% Agentes Desconocidos"
-
-#~ msgid "Filter by tag"
-#~ msgstr "Filtrar por etiqueta"
-
-#~ msgid "Modules unused"
-#~ msgstr "Módulos sin usar"
-
-#~ msgid "Modules used"
-#~ msgstr "Módulos usados"
-
-#~ msgid "Masive tags module policy edition"
-#~ msgstr "Edición masiva de de módulos por política"
-
-#~ msgid "Masive modules policy tags edition"
-#~ msgstr "Edición masiva de etiquetas por política"
-
-#~ msgid "This agent has not modules inventory"
-#~ msgstr "Este agente no tiene módulos de inventario"
-
-#~ msgid "The start date cannot be greater than the end date"
-#~ msgstr "La fecha de inicio no puede ser posterior a la fecha fin"
-
-#~ msgid "Password policy"
-#~ msgstr "Política de contraseñas"
-
-#~ msgid "Module successfully added."
-#~ msgstr "Módulo añadido con éxito."
-
-#~ msgid "Only admin users can see this section."
-#~ msgstr "Solo los usuarios administradores pueden ver esta sección."
-
-#~ msgid ""
-#~ "Show a resume table with max, min, average of total modules on the report "
-#~ "bottom:"
-#~ msgstr ""
-#~ "Mostrar un resumen de la tabla con máximo, mínimo, media del total de "
-#~ "modulos en la parte inferior del informe"
-
-#~ msgid "Order:"
-#~ msgstr "orden"
-
-#~ msgid "Show address instead module name"
-#~ msgstr "Muestra dirección en vez del nombre del módulo"
-
-#~ msgid "Request new licence"
-#~ msgstr "Solicitar una nueva licencia"
-
-#~ msgid "Last replication at"
-#~ msgstr "Última replicación a"
-
-#~ msgid "Create Local Component"
-#~ msgstr "Crear el componente local"
-
-#~ msgid "Update Local Component"
-#~ msgstr "Actualizar el componente local"
-
-#~ msgid ""
-#~ "Here is placed the script for the REMOTE inventory modules Local inventory "
-#~ "modules don't use this field"
-#~ msgstr ""
-#~ "Aquí se coloca el script de los módulos de inventario remoto, los módulos de "
-#~ "inventario locales no utilizan este campo."
-
-#~ msgid "Left blank for the LOCAL inventory modules"
-#~ msgstr "Espacio izquierdo Aen blanco para los módulos de inventario LOCALES"
-
-#~ msgid "Could not be added to deleted all modules."
-#~ msgstr "No puede ser añadido a borrar todos los módulos"
-
-#~ msgid "Enterprise ACL Setup"
-#~ msgstr "Configurar ACL Enterprise"
-
-#~ msgid "Please choose other server."
-#~ msgstr "Por favor, elija otro servidor"
-
-#~ msgid "When connecting to Artica server."
-#~ msgstr "Cuando se conecta al servidor de Ártica"
-
-#~ msgid "Could not be create, duplicated server name."
-#~ msgstr "No puede ser creado, el nombre del servidor está duplicado"
-
-#~ msgid "Online validation"
-#~ msgstr "Validación en línea"
-
-#~ msgid "Synchronizing Components"
-#~ msgstr "Componentes de sincronización"
-
-#, php-format
-#~ msgid ""
-#~ "You can activate it manually <a href=\"%s\" target=\"_blank\">here</a> or "
-#~ "automatically filling the form below:"
-#~ msgstr ""
-#~ "Lo puede activar manualmente <a href=\"%s\" target= \"_blank\"> aqui </a> u "
-#~ "automáticamente rellenando el siguiente formulario:"
-
-#~ msgid "Auth Key:"
-#~ msgstr "Clave de autenticación"
-
-#~ msgid "Activate licence"
-#~ msgstr "Activar la licencia"
-
-#~ msgid "Your <b>request key</b> is:"
-#~ msgstr "Su <b> clave </b> es:"
-
-#~ msgid "ACL module tags for the modules in this agent"
-#~ msgstr "Etiquetas del módulo de ACL para los módulos de este agente"
-
-#~ msgid ""
-#~ "There was an error creating the alerts, the operation has been cancelled ."
-#~ msgstr ""
-#~ "Ha habido un error creando las alertas, la operación ha sido cancelada."
-
-#~ msgid ""
-#~ "The user doesn't have permission to read agents. Please contact with your "
-#~ "pandora administrator."
-#~ msgstr ""
-#~ "El usuario no tiene permiso para leer los agentes. Por favor contacte con su "
-#~ "administrador de Pandora"

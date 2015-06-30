@@ -213,25 +213,30 @@ if (($tags_acls_condition != ERR_WRONG_PARAMETERS) && ($tags_acls_condition != E
 
 // Metaconsole fitlers
 if ($meta) {
-	$enabled_nodes = db_get_all_rows_sql('
-		SELECT id
-		FROM tmetaconsole_setup
-		WHERE disabled = 0');
-	
-	if (empty($enabled_nodes)) {
-		$sql_post .= ' AND 1 = 0';
-	}
-	else {
-		$enabled_nodes_id = array();
-		foreach ($enabled_nodes as $en) {
-			$enabled_nodes_id[] = $en['id'];
-		}
-		$sql_post .= ' AND server_id IN (' .
-			implode(',',$enabled_nodes_id) . ')';
-	}
 	
 	if ($server_id) {
 		$sql_post .= " AND server_id = " . $server_id;
+	} else {
+		$enabled_nodes = db_get_all_rows_sql('
+			SELECT id
+			FROM tmetaconsole_setup
+			WHERE disabled = 0');
+		
+		if (empty($enabled_nodes)) {
+			$sql_post .= ' AND 1 = 0';
+		}
+		else {
+			if ($strict_user == 1) {
+				$enabled_nodes_id = array();
+			} else {
+				$enabled_nodes_id = array(0);
+			}
+			foreach ($enabled_nodes as $en) {
+				$enabled_nodes_id[] = $en['id'];
+			}
+			$sql_post .= ' AND server_id IN (' .
+				implode(',',$enabled_nodes_id) . ')';
+		}
 	}
 }
 ?>

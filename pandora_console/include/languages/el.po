@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-el\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-05-26 09:46+0200\n"
-"PO-Revision-Date: 2012-03-15 17:08+0000\n"
+"PO-Revision-Date: 2015-06-29 18:38+0000\n"
 "Last-Translator: Minas Salapatas <msalap@gmail.com>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-05-26 07:58+0000\n"
-"X-Generator: Launchpad (build 17514)\n"
+"X-Launchpad-Export-Date: 2015-06-30 14:01+0000\n"
+"X-Generator: Launchpad (build 17578)\n"
 "Language: el\n"
 
 #: ../../godmode/groups/configure_group.php:68
@@ -20237,171 +20237,3 @@ msgstr ""
 #: ../../include/get_file.php:54
 msgid "File is missing in disk storage. Please contact the administrator."
 msgstr ""
-
-#~ msgid "Id"
-#~ msgstr "Ταυτότητα (ID)"
-
-#~ msgid "Settings"
-#~ msgstr "Ρυθμίσεις"
-
-#~ msgid "Development"
-#~ msgstr "Ανάπτυξη εφαρμογών"
-
-#~ msgid "preview"
-#~ msgstr "Προεπισκόπηση"
-
-#~ msgid "Factor"
-#~ msgstr "Συντελεστής"
-
-#~ msgid "Up"
-#~ msgstr "Επάνω"
-
-#~ msgid "Master"
-#~ msgstr "Πρωτεύων"
-
-#~ msgid "hour"
-#~ msgstr "ώρα"
-
-#~ msgid "day"
-#~ msgstr "ημέρα"
-
-#~ msgid "week"
-#~ msgstr "εβδομάδα"
-
-#~ msgid "month"
-#~ msgstr "μήνας"
-
-#~ msgid "Del"
-#~ msgstr "Del"
-
-#~ msgid "Oper"
-#~ msgstr "Oper"
-
-#~ msgid "S"
-#~ msgstr "Σ"
-
-#~ msgid "Info"
-#~ msgstr "Πληροφορίες"
-
-#~ msgid "Load"
-#~ msgstr "Φόρτος"
-
-#~ msgid "SNMP server"
-#~ msgstr "Εξυπηρετητής SNMP"
-
-#~ msgid "Seconds"
-#~ msgstr "Δευτερόλεπτα"
-
-#~ msgid "from"
-#~ msgstr "από"
-
-#~ msgid " to "
-#~ msgstr " με "
-
-#~ msgid "minute"
-#~ msgstr "λεπτό"
-
-#~ msgid "Group name"
-#~ msgstr "Όνομα ομάδας"
-
-#~ msgid "Last name"
-#~ msgstr "Επώνυμο:"
-
-#~ msgid "First name"
-#~ msgstr "Όνομα:"
-
-#, php-format
-#~ msgid "%d hour"
-#~ msgstr "%d ώρα"
-
-#, php-format
-#~ msgid "%d weeks"
-#~ msgstr "%d εβδομάδες"
-
-#, php-format
-#~ msgid "%d week"
-#~ msgstr "%d εβδομάδα"
-
-#, php-format
-#~ msgid "%d day"
-#~ msgstr "%d ημέρα"
-
-#~ msgid "Autorefresh"
-#~ msgstr "Αυτόματη ανανέωση"
-
-#~ msgid "No news articles at this moment"
-#~ msgstr "Δεν υπάρχουν νέα άρθρα για την ώρα"
-
-#~ msgid "Your IP"
-#~ msgstr "Η διευθυνση IP σας"
-
-#~ msgid "Users defined"
-#~ msgstr "Καθορίστηκαν χρήστες"
-
-#~ msgid "Visual map wizard"
-#~ msgstr "Βοηθός οπτικού χάρτη"
-
-#~ msgid "Image size (px)"
-#~ msgstr "Μέγεθος εικόνας"
-
-#~ msgid "Image range (px)"
-#~ msgstr "Εύρος εικόνας"
-
-#~ msgid "There was a problem creating reporting"
-#~ msgstr "Υπήρξε πρόβλημα στην δημιουργία της αναφοράς"
-
-#~ msgid "Reporting successfully created"
-#~ msgstr "Η αναφορά δημιουργήθηκε επιτυχώς"
-
-#~ msgid ""
-#~ "This is the Web Management System for Pandora FMS. From here you can manage "
-#~ "its agents, alerts and incidents. Session is open while activity exists."
-#~ msgstr ""
-#~ "Αυτο είναι το Σύστημα ηλεκτρονικής διαχείρησης για την Pandora FMS. Από εδώ "
-#~ "μπορείτε να διαχειριστείτε τους πράκτορες, τις προειδοποιησεις και τα "
-#~ "συμβάντα. Η συνεδρία είναι ενεργή όσο υπάρχει δραστηριότητα."
-
-#~ msgid "Alerts defined"
-#~ msgstr "Ορίστηκαν οι προειδοποιήσεις"
-
-#~ msgid "Map builder"
-#~ msgstr "Σχεδιαστής χάρτη"
-
-#~ msgid "No layout with this id found"
-#~ msgstr "Δε βρέθηκε διάταξη με αυτή την ταυτότητα"
-
-#~ msgid "There was a problem creating SLA"
-#~ msgstr "Παρουσιάστηκε πρόβλημα στη δημιουργία του SLA"
-
-#~ msgid "SLA was successfully created"
-#~ msgstr "το SLA δημιουργήθηκε επιτυχώς"
-
-#~ msgid "SLA was successfully delete"
-#~ msgstr "To SLA διαγράφθηκε επιτυχώς"
-
-#~ msgid "SLAs defined"
-#~ msgstr "Τα SLAs δημιοργήθηκαν"
-
-#~ msgid "There was a problem deleting SLA"
-#~ msgstr "Παρουσιάστηκε πρόβλημα κατά τη διαγραφή του SLA"
-
-#~ msgid "Label color"
-#~ msgstr "Χρώμα ετικέτας"
-
-#~ msgid "Older"
-#~ msgstr "Παλαιότερο"
-
-#~ msgid "You are"
-#~ msgstr "Είστε"
-
-#~ msgid "Monitors critical"
-#~ msgstr "Κρίσιμες Παρακολουθήσεις"
-
-#~ msgid "Monitors normal"
-#~ msgstr "κανονικές Οθόνες"
-
-#~ msgid "Monitors warning"
-#~ msgstr "Οθόνες προειδοποίησης"
-
-#~ msgid "Monitors unknown"
-#~ msgstr "Αγνωστες οθόνες"

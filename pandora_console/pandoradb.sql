@@ -658,6 +658,7 @@ CREATE TABLE IF NOT EXISTS `tmodule_group` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmodule_relationship` (
 	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_rt` int(10) unsigned NOT NULL DEFAULT 0,
 	`module_a` int(10) unsigned NOT NULL,
 	`module_b` int(10) unsigned NOT NULL,
 	`disable_update` tinyint(1) unsigned NOT NULL default '0',
@@ -665,6 +666,8 @@ CREATE TABLE IF NOT EXISTS `tmodule_relationship` (
 	FOREIGN KEY (`module_a`) REFERENCES tagente_modulo(`id_agente_modulo`)
 		ON DELETE CASCADE,
 	FOREIGN KEY (`module_b`) REFERENCES tagente_modulo(`id_agente_modulo`)
+		ON DELETE CASCADE,
+	FOREIGN KEY (`id_rt`) REFERENCES trecon_task(`id_rt`)
 		ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

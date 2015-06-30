@@ -42,7 +42,7 @@ if ($add_networkmap) {
 	// $networkmap_read = check_acl ($config['id_user'], 0, "MR");
 	$networkmap_write = check_acl ($config['id_user'], 0, "MW");
 	$networkmap_manage = check_acl ($config['id_user'], 0, "MM");
-
+	
 	if (!$networkmap_write && !$networkmap_manage) {
 		db_pandora_audit("ACL Violation",
 			"Trying to accessnode graph builder");
@@ -151,7 +151,7 @@ else if ($delete_networkmap || $save_networkmap || $update_networkmap) {
 		$networkmap_write = check_acl ($config['id_user'], $store_group, "MW");
 	if (!isset($networkmap_manage))
 		$networkmap_manage = check_acl ($config['id_user'], $store_group, "MM");
-
+	
 	if (!$networkmap_write && !$networkmap_manage) {
 		db_pandora_audit("ACL Violation",
 			"Trying to accessnode graph builder");

@@ -10,21 +10,15 @@ msgstr ""
 "Project-Id-Version: pandora-cs\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-05-26 09:46+0200\n"
-"PO-Revision-Date: 2013-07-15 21:44+0000\n"
-"Last-Translator: Zbyněk Schwarz <Unknown>\n"
+"PO-Revision-Date: 2015-06-29 18:36+0000\n"
+"Last-Translator: MIguel Lopez ARTICA <miguel.lopez@artica.es>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-05-26 07:57+0000\n"
-"X-Generator: Launchpad (build 17514)\n"
+"X-Launchpad-Export-Date: 2015-06-30 14:01+0000\n"
+"X-Generator: Launchpad (build 17578)\n"
 "Language: cs\n"
-
-#: ../../include/functions_graph.php:2125
-#: ../../include/functions_incidents.php:32
-#: ../../include/functions_incidents.php:63
-msgid "Serious"
-msgstr "Skutečně"
 
 #: ../../godmode/groups/configure_group.php:68
 #: ../../godmode/groups/configure_modu_group.php:47
@@ -1739,19 +1733,19 @@ msgstr "Žádná plánovaná odstávka"
 
 #: ../../godmode/agentes/agent_template.php:69
 msgid "Created by template "
-msgstr ""
+msgstr "Vytvořeno šablonou "
 
 #: ../../godmode/agentes/agent_template.php:152
 msgid "Error adding modules"
-msgstr ""
+msgstr "Chyba při přidávání modulů"
 
 #: ../../godmode/agentes/agent_template.php:154
 msgid "Error adding modules. The following errors already exists: "
-msgstr ""
+msgstr "Chyba při přidávání modulů. Následující chyby již existují: "
 
 #: ../../godmode/agentes/agent_template.php:157
 msgid "Modules successfully added"
-msgstr ""
+msgstr "MOduly úspěšně přidány"
 
 #: ../../godmode/agentes/agent_template.php:184
 msgid "Assign"
@@ -1872,7 +1866,7 @@ msgstr "Akce"
 #: ../../godmode/agentes/agent_template.php:258
 #: ../../mobile/operation/modules.php:555
 msgid "No modules"
-msgstr ""
+msgstr "Žádné moduly"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:34
 #: ../../godmode/agentes/planned_downtime.list.php:48
@@ -2006,7 +2000,7 @@ msgstr ""
 #: ../../include/functions_reporting_html.php:63
 #: ../../include/functions_reporting_html.php:2489
 msgid "From:"
-msgstr ""
+msgstr "Od:"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:356
 #: ../../godmode/agentes/planned_downtime.editor.php:367
@@ -2030,7 +2024,7 @@ msgstr ""
 #: ../../include/functions_reporting_html.php:64
 #: ../../include/functions_reporting_html.php:2490
 msgid "To:"
-msgstr ""
+msgstr "Do:"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:377
 msgid "Type Periodicity:"
@@ -2838,7 +2832,7 @@ msgstr "Běží"
 #: ../../godmode/agentes/planned_downtime.list.php:300
 #: ../../godmode/agentes/planned_downtime.list.php:488
 msgid "Stop downtime"
-msgstr ""
+msgstr "Zastavit odstávku"
 
 #: ../../godmode/agentes/planned_downtime.list.php:415
 msgid "once"
@@ -2915,25 +2909,25 @@ msgstr "Vytvořit nový serverový modul předpovědi"
 
 #: ../../godmode/agentes/module_manager.php:132
 msgid "Get more modules in Pandora FMS Library"
-msgstr ""
+msgstr "Získejte další moduly v knihovně Pandora FMS"
 
 #: ../../godmode/agentes/module_manager.php:159
 msgid "Nice try buddy"
-msgstr ""
+msgstr "Dobrý pokus kámo"
 
 #: ../../godmode/agentes/module_manager.php:258
 #, php-format
 msgid "There was a problem deleting %s modules, none deleted."
-msgstr ""
+msgstr "Při mazání %s modulů nastal problém, žádný nebyl smazán."
 
 #: ../../godmode/agentes/module_manager.php:263
 msgid "All Modules deleted succesfully"
-msgstr ""
+msgstr "Všechny moduly úspěšně smazány"
 
 #: ../../godmode/agentes/module_manager.php:267
 #, php-format
 msgid "There was a problem only deleted %s modules of %s total."
-msgstr ""
+msgstr "Nastal problém, bylo smazáno %s modulů z %s celkem."
 
 #: ../../godmode/agentes/module_manager.php:482
 #: ../../operation/agentes/datos_agente.php:286
@@ -3253,7 +3247,7 @@ msgstr "Ikona agenta pro mapy GIS"
 #: ../../operation/agentes/ver_agente.php:966
 #: ../../include/functions_treeview.php:474
 msgid "Url address"
-msgstr ""
+msgstr "Adresa Url"
 
 #: ../../godmode/agentes/agent_manager.php:385
 #: ../../godmode/massive/massive_edit_agents.php:377
@@ -4465,7 +4459,7 @@ msgstr "Skupinové události"
 #: ../../operation/events/events_list.php:519
 #: ../../operation/events/events_list.php:533
 msgid "Events with following tags"
-msgstr ""
+msgstr "Události s následujícími značkami:"
 
 #: ../../godmode/events/event_edit_filter.php:302
 #: ../../godmode/events/event_edit_filter.php:315
@@ -4481,7 +4475,7 @@ msgstr "Odstranit"
 #: ../../operation/events/events_list.php:525
 #: ../../operation/events/events_list.php:539
 msgid "Events without following tags"
-msgstr ""
+msgstr "Události bez následujících značek"
 
 #: ../../godmode/events/event_edit_filter.php:353
 #: ../../operation/events/events_list.php:489
@@ -4719,7 +4713,7 @@ msgstr ""
 
 #: ../../godmode/menu.php:46
 msgid "Module types"
-msgstr ""
+msgstr "Typy modulů"
 
 #: ../../godmode/menu.php:49 ../../operation/tree.php:67
 #: ../../extensions/module_groups.php:324
@@ -5573,13 +5567,15 @@ msgstr ""
 #: ../../godmode/setup/setup_general.php:219
 #: ../../include/functions_config.php:178
 msgid "Referer security"
-msgstr ""
+msgstr "Zabezpečení odkazujícího"
 
 #: ../../godmode/setup/setup_general.php:220
 msgid ""
 "When it is set as \"yes\" in some important sections check if the user have "
 "gone from url Pandora."
 msgstr ""
+"Při nastavení na \"ano\" bude v některých důležitých částech kontrolováno, "
+"zda uživatel přichází z URL z Pandory."
 
 #: ../../godmode/setup/setup_general.php:227
 #: ../../include/functions_config.php:180
@@ -5595,11 +5591,11 @@ msgstr ""
 #: ../../godmode/setup/setup_general.php:236
 #: ../../include/functions_config.php:182
 msgid "Command Snapshot"
-msgstr ""
+msgstr "Snímek příkazu"
 
 #: ../../godmode/setup/setup_general.php:237
 msgid "The string modules with several lines show as command output"
-msgstr ""
+msgstr "Moduly řetězce s několika řádky zobrazenými jako výstup příkazu"
 
 #: ../../godmode/setup/setup_general.php:241
 #: ../../include/functions_config.php:184
@@ -5657,7 +5653,7 @@ msgstr ""
 
 #: ../../godmode/setup/setup_general.php:271
 msgid "General options"
-msgstr ""
+msgstr "Obecné možnosti"
 
 #: ../../godmode/setup/setup_general.php:331
 msgid ""
@@ -5818,7 +5814,7 @@ msgstr "měsíců"
 #: ../../godmode/setup/setup_visuals.php:174 ../../include/functions.php:407
 #: ../../include/functions.php:551 ../../include/functions_html.php:707
 msgid "years"
-msgstr ""
+msgstr "let"
 
 #: ../../godmode/setup/setup_visuals.php:175
 msgid "Add new custom value to intervals"
@@ -5918,77 +5914,89 @@ msgstr ""
 #: ../../include/functions_config.php:431
 #: ../../include/functions_config.php:433
 msgid "Agent size text"
-msgstr ""
+msgstr "Délka textu agenta"
 
 #: ../../godmode/setup/setup_visuals.php:295
 msgid ""
 "When the agent name have a lot of characters, in some places in Pandora "
 "Console it is necesary truncate to N characters."
 msgstr ""
+"Když název agenta má hodně znaků, je třeba ho v některých místech konzole "
+"Pandora zkrátit na N znaků."
 
 #: ../../godmode/setup/setup_visuals.php:296
 #: ../../godmode/setup/setup_visuals.php:302
 msgid "Small:"
-msgstr ""
+msgstr "Malé:"
 
 #: ../../godmode/setup/setup_visuals.php:297
 #: ../../godmode/setup/setup_visuals.php:303
 msgid "Normal:"
-msgstr ""
+msgstr "Normální:"
 
 #: ../../godmode/setup/setup_visuals.php:301
 #: ../../include/functions_config.php:435
 msgid "Module size text"
-msgstr ""
+msgstr "Délka textu modulu"
 
 #: ../../godmode/setup/setup_visuals.php:301
 msgid ""
 "When the module name have a lot of characters, in some places in Pandora "
 "Console it is necesary truncate to N characters."
 msgstr ""
+"Když název modulu má hodně znaků, je třeba ho v některých místech konzole "
+"Pandora zkrátit na N znaků."
 
 #: ../../godmode/setup/setup_visuals.php:307
 #: ../../include/functions_config.php:437
 #: ../../include/functions_config.php:439
 msgid "Description size text"
-msgstr ""
+msgstr "Délka textu popisu"
 
 #: ../../godmode/setup/setup_visuals.php:307
 msgid ""
 "When the description name have a lot of characters, in some places in "
 "Pandora Console it is necesary truncate to N characters."
 msgstr ""
+"Když název popisu má hodně znaků, je třeba ho v některých místech konzole "
+"Pandora zkrátit na N znaků."
 
 #: ../../godmode/setup/setup_visuals.php:312
 #: ../../include/functions_config.php:441
 msgid "Item title size text"
-msgstr ""
+msgstr "Délka textu názvu položky"
 
 #: ../../godmode/setup/setup_visuals.php:313
 msgid ""
 "When the item title name have a lot of characters, in some places in Pandora "
 "Console it is necesary truncate to N characters."
 msgstr ""
+"Když název položky má hodně znaků, je třeba ho v některých místech konzole "
+"Pandora zkrátit na N znaků."
 
 #: ../../godmode/setup/setup_visuals.php:319
 #: ../../include/functions_config.php:443
 msgid "GIS Labels"
-msgstr ""
+msgstr "Popisky GIS"
 
 #: ../../godmode/setup/setup_visuals.php:320
 msgid ""
 "This enabling this, you get a label with agent name in GIS maps. If you have "
 "lots of agents in the map, will be unreadable. Disabled by default."
 msgstr ""
+"Zapnutím získáte v mapách GIS jmenovku s názvem agenta. Pokud máte v mapě "
+"mnoho agentů, bude nepřehledná. Standardně vypnuto."
 
 #: ../../godmode/setup/setup_visuals.php:333
 #: ../../include/functions_config.php:445
 msgid "Default icon in GIS"
-msgstr ""
+msgstr "Výchozí ikona v GIS"
 
 #: ../../godmode/setup/setup_visuals.php:333
 msgid "Agent icon for GIS Maps. If set to \"none\", group icon will be used"
 msgstr ""
+"Ikona agenta pro mapy GIS. Pokud nastaveno na \"žádné\", bude použita ikona "
+"skupiny"
 
 #: ../../godmode/setup/setup_visuals.php:343
 #: ../../include/functions_config.php:447
@@ -6258,19 +6266,19 @@ msgstr "Klíč zákazníka"
 
 #: ../../godmode/setup/license.php:62
 msgid "Expires"
-msgstr ""
+msgstr "Platnost do"
 
 #: ../../godmode/setup/license.php:65
 msgid "Platform Limit"
-msgstr ""
+msgstr "Limit platforem"
 
 #: ../../godmode/setup/license.php:68
 msgid "Current Platform Count"
-msgstr ""
+msgstr "Současný počet platforem"
 
 #: ../../godmode/setup/license.php:71
 msgid "License Mode"
-msgstr ""
+msgstr "Režim licence"
 
 #: ../../godmode/setup/license.php:78
 #: ../../operation/agentes/alerts_status.php:423
@@ -6786,7 +6794,7 @@ msgstr "Použít graf přístupů agenta"
 #: ../../godmode/setup/performance.php:104
 #: ../../include/functions_config.php:369
 msgid "Max. recommended number of files in attachment directory"
-msgstr ""
+msgstr "Max. doporučený počet souborů v adresáři příloh"
 
 #: ../../godmode/setup/performance.php:104
 msgid ""
@@ -6794,6 +6802,9 @@ msgid ""
 "number is reached then a warning message will appear in the header "
 "notification space."
 msgstr ""
+"Toto číslo je maximální počet souborů v adresáři příloh. Pokud je toto číslo "
+"překročeno, pak bude zobrazena varovná zpráva v oznamovacím prostoru v "
+"záhlaví."
 
 #: ../../godmode/setup/performance.php:107
 #: ../../include/functions_config.php:371
@@ -6802,12 +6813,12 @@ msgstr ""
 
 #: ../../godmode/setup/performance.php:113
 msgid "Database maintenance options"
-msgstr ""
+msgstr "Možnosti údržby databáze"
 
 #: ../../godmode/setup/performance.php:119
 #: ../../include/functions_graph.php:2533
 msgid "Others"
-msgstr ""
+msgstr "Jiné"
 
 #: ../../godmode/setup/os.php:70
 msgid "Fail creating OS"
@@ -7703,7 +7714,7 @@ msgstr "Naposledy vysláno"
 #: ../../mobile/operation/alerts.php:96 ../../mobile/operation/alerts.php:97
 #: ../../mobile/operation/alerts.php:203 ../../mobile/operation/alerts.php:204
 msgid "Stand by"
-msgstr ""
+msgstr "Vyčkejte"
 
 #: ../../godmode/alerts/alert_view.php:113
 #: ../../godmode/modules/manage_network_components.php:555
@@ -8665,7 +8676,7 @@ msgstr ""
 #: ../../godmode/users/configure_profile.php:339
 #: ../../include/functions_menu.php:445
 msgid "View visual console"
-msgstr ""
+msgstr "Zobrazit vizuální konzoli"
 
 #: ../../godmode/users/configure_profile.php:343
 msgid "Edit visual console"
@@ -8674,7 +8685,7 @@ msgstr ""
 #: ../../godmode/users/configure_profile.php:347
 #: ../../include/functions_menu.php:473
 msgid "Manage visual console"
-msgstr ""
+msgstr "Správa vizuální konzole"
 
 #: ../../godmode/users/configure_profile.php:353
 msgid "Pandora management"
@@ -8737,7 +8748,7 @@ msgstr "Rekurze skupiny"
 #: ../../godmode/massive/massive_delete_action_alerts.php:143
 #: ../../godmode/massive/massive_add_action_alerts.php:142
 msgid "Agents with templates"
-msgstr ""
+msgstr "Agenti s šablonami"
 
 #: ../../godmode/massive/massive_add_alerts.php:81
 #: ../../godmode/massive/massive_delete_modules.php:58
@@ -8762,21 +8773,21 @@ msgstr "Nevybrána žádná výstraha"
 #: ../../godmode/massive/massive_delete_alerts.php:225
 #: ../../godmode/massive/massive_edit_modules.php:310
 msgid "When select agents"
-msgstr ""
+msgstr "Při zvolení agentů"
 
 #: ../../godmode/massive/massive_add_alerts.php:176
 #: ../../godmode/massive/massive_delete_modules.php:342
 #: ../../godmode/massive/massive_delete_alerts.php:227
 #: ../../godmode/massive/massive_edit_modules.php:313
 msgid "Show common modules"
-msgstr ""
+msgstr "Zobrazit společné moduly"
 
 #: ../../godmode/massive/massive_add_alerts.php:176
 #: ../../godmode/massive/massive_delete_modules.php:342
 #: ../../godmode/massive/massive_delete_alerts.php:227
 #: ../../godmode/massive/massive_edit_modules.php:314
 msgid "Show all modules"
-msgstr ""
+msgstr "Zobrazit všechny moduly"
 
 #: ../../godmode/massive/massive_add_alerts.php:181
 #: ../../godmode/massive/massive_enable_disable_alerts.php:147
@@ -8923,17 +8934,17 @@ msgstr "Nezavedeno"
 #: ../../godmode/massive/massive_delete_modules.php:324
 #: ../../godmode/massive/massive_edit_modules.php:275
 msgid "When select modules"
-msgstr ""
+msgstr "Při zvolení modulů"
 
 #: ../../godmode/massive/massive_delete_modules.php:327
 #: ../../godmode/massive/massive_edit_modules.php:278
 msgid "Show common agents"
-msgstr ""
+msgstr "Zobrazit společné agenty"
 
 #: ../../godmode/massive/massive_delete_modules.php:328
 #: ../../godmode/massive/massive_edit_modules.php:279
 msgid "Show all agents"
-msgstr ""
+msgstr "Zobrazit všechny agenty"
 
 #: ../../godmode/massive/massive_edit_agents.php:95
 msgid "No values changed"
@@ -9182,7 +9193,7 @@ msgstr ""
 
 #: ../../godmode/massive/massive_add_tags.php:43
 msgid "No tags selected"
-msgstr ""
+msgstr "Žádné značky nevybrány"
 
 #: ../../godmode/reporting/visual_console_builder.php:148
 msgid "Successfully update."
@@ -9301,19 +9312,19 @@ msgstr "Žádná položka"
 #: ../../godmode/reporting/reporting_builder.list_items.php:473
 #: ../../godmode/reporting/reporting_builder.list_items.php:478
 msgid "Sort items"
-msgstr ""
+msgstr "Seřadit položky"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:480
 msgid "Sort selected items from position: "
-msgstr ""
+msgstr "Seřadit zvolené položky od umístění: "
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:482
 msgid "Move before to"
-msgstr ""
+msgstr "Přesunout před"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:482
 msgid "Move after to"
-msgstr ""
+msgstr "Přesunout za"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:504
 #: ../../godmode/reporting/reporting_builder.list_items.php:509
@@ -9337,10 +9348,12 @@ msgid ""
 "Are you sure to sort the items into the report?\\nThis action change the "
 "sorting of items into data base."
 msgstr ""
+"Opravdu chcete seřadit položky v tomto hlášení?\\nTato činnost změní "
+"seřazení položek v databázi."
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:562
 msgid "Please select any item to order"
-msgstr ""
+msgstr "Prosím zvolte jakoukoli položku pro seřazení"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:587
 msgid "Are you sure to delete the items into the report?\\n"
@@ -9358,7 +9371,7 @@ msgstr "Editor grafu"
 #: ../../godmode/reporting/graph_builder.php:187
 #: ../../operation/reporting/graph_viewer.php:128
 msgid "View graph"
-msgstr ""
+msgstr "Zobrazit graf"
 
 #: ../../godmode/reporting/graph_builder.php:199
 msgid "Graph builder"
@@ -9429,7 +9442,7 @@ msgstr "Statický graf"
 #: ../../include/functions_visual_map_editor.php:55
 #: ../../include/functions_visual_map_editor.php:539
 msgid "Percentile Item"
-msgstr ""
+msgstr "Percentilní položka"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:100
 #: ../../mobile/operation/home.php:92
@@ -9452,11 +9465,11 @@ msgstr "Obrázek"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:119
 msgid "Range between elements (px)"
-msgstr ""
+msgstr "Rozsah mezi prvky (px)"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:125
 msgid "Size (px)"
-msgstr ""
+msgstr "Velikost (px)"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:143
 #: ../../include/functions_visual_map_editor.php:313
@@ -9477,12 +9490,12 @@ msgstr "Prům hodnota"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:150
 msgid "Width (px)"
-msgstr ""
+msgstr "Šířka (px)"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:171
 #: ../../include/functions_visual_map_editor.php:372
 msgid "Value to show"
-msgstr ""
+msgstr "Hodnota k zobrazení"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:188
 #: ../../operation/agentes/networkmap.php:476 ../../operation/tree.php:61
@@ -9495,7 +9508,7 @@ msgstr "Skupiny"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:195
 msgid "One item per agent"
-msgstr ""
+msgstr "Jedna položka na agenta"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:224
 #: ../../godmode/reporting/visual_console_builder.elements.php:75
@@ -9510,7 +9523,7 @@ msgstr "Popisek"
 #: ../../godmode/reporting/visual_console_builder.wizard.php:225
 #: ../../godmode/reporting/visual_console_builder.wizard.php:493
 msgid "Agent - Module"
-msgstr ""
+msgstr "Agent - Modul"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:234
 msgid "Enable link agent"
@@ -9549,11 +9562,11 @@ msgstr "Jste si jisti přidáním mnoha prvků\\ndo vizuální mapy?"
 #: ../../mobile/operation/modules.php:593
 #: ../../mobile/operation/events.php:787
 msgid "Loading..."
-msgstr ""
+msgstr "Načítání..."
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:428
 msgid "Please select any module or modules."
-msgstr ""
+msgstr "Prosím vyberte jakýkoliv modul nebo moduly"
 
 #: ../../godmode/reporting/reporting_builder.php:77
 msgid ""
@@ -9733,7 +9746,7 @@ msgstr "Filtrovat akupinu"
 
 #: ../../godmode/reporting/map_builder.php:38
 msgid "Visual Console"
-msgstr ""
+msgstr "Vizuální konzole"
 
 #: ../../godmode/reporting/map_builder.php:166
 #: ../../godmode/reporting/map_builder.php:176
@@ -9882,7 +9895,7 @@ msgstr "Vlastní graf"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:955
 msgid "Target server"
-msgstr ""
+msgstr "Cílový agent"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:979
 msgid "Custom SQL template"
@@ -9957,7 +9970,7 @@ msgstr "Prùm"
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1063
 #: ../../mobile/operation/module_graph.php:420
 msgid "Time compare (Overlapped)"
-msgstr ""
+msgstr "Časové porovnání (Přesahující)"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1071
 msgid "Only average"
@@ -10033,11 +10046,11 @@ msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1135
 msgid "Event filter"
-msgstr ""
+msgstr "Filtr událostí"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1138
 msgid "No Validated"
-msgstr ""
+msgstr "Neověřeno"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1140
 #: ../../operation/snmpconsole/snmp_view.php:318
@@ -10056,23 +10069,23 @@ msgstr "Potvrzeno"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1151
 msgid "Event graphs"
-msgstr ""
+msgstr "Grafy událostí"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1155
 msgid "By agent"
-msgstr ""
+msgstr "Podle agenta"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1161
 msgid "By user validator"
-msgstr ""
+msgstr "Podle ověřovatele uživatele"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1167
 msgid "By criticity"
-msgstr ""
+msgstr "Podle vážnosti"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1173
 msgid "Validated vs unvalidated"
-msgstr ""
+msgstr "Ověřeno/neověřeno"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1180
 msgid "Show in two columns"
@@ -10089,7 +10102,7 @@ msgstr "Zobrazit na šířku"
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1218
 #: ../../include/functions_visual_map_editor.php:554
 msgid "Update item"
-msgstr ""
+msgstr "Aktualizovat položku"
 
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1247
 msgid "SLA Min. (value)"
@@ -10161,7 +10174,7 @@ msgstr "Procentuální lišta"
 
 #: ../../godmode/reporting/visual_console_builder.elements.php:137
 msgid "Percentile Bubble"
-msgstr ""
+msgstr "Procentuální bublina"
 
 #: ../../godmode/reporting/visual_console_builder.elements.php:141
 #: ../../mobile/operation/events.php:501
@@ -10177,15 +10190,15 @@ msgstr "Jednoduchá hodnota"
 
 #: ../../godmode/reporting/visual_console_builder.elements.php:149
 msgid "Simple Value (Process Max)"
-msgstr ""
+msgstr "Jednoduchá hodnota (Max procesů)"
 
 #: ../../godmode/reporting/visual_console_builder.elements.php:153
 msgid "Simple Value (Process Min)"
-msgstr ""
+msgstr "Jednoduchá hodnota (Min procesů)"
 
 #: ../../godmode/reporting/visual_console_builder.elements.php:157
 msgid "Simple Value (Process Avg)"
-msgstr ""
+msgstr "Jednoduchá hodnota (Prům procesů)"
 
 #: ../../godmode/reporting/visual_console_builder.elements.php:169
 #: ../../include/functions_visual_map.php:2037
@@ -11006,11 +11019,11 @@ msgstr "Smazat kontrolní databázi"
 
 #: ../../godmode/db/db_audit.php:70
 msgid "Success data deleted"
-msgstr ""
+msgstr "Data úspěšně smazána"
 
 #: ../../godmode/db/db_audit.php:72
 msgid "Error deleting data"
-msgstr ""
+msgstr "Chyba při mazání dat"
 
 #: ../../godmode/db/db_audit.php:88
 msgid "Latest date"
@@ -11293,7 +11306,7 @@ msgstr "Chyba při aktualizaci průzkumného úkolu"
 #: ../../godmode/servers/manage_recontask.php:158
 #: ../../godmode/servers/manage_recontask.php:215
 msgid "Incorrect format in Subnet field"
-msgstr ""
+msgstr "Nesprávný formát v poli podsítě"
 
 #: ../../godmode/servers/manage_recontask.php:208
 msgid "Network provided is not correct"
@@ -11375,7 +11388,7 @@ msgstr "Určeno"
 
 #: ../../godmode/servers/manage_recontask_form.php:214
 msgid "The minimum recomended interval for Recon Task is 5 minutes"
-msgstr ""
+msgstr "Minimální doporučený interval pro průzkumný úkol během 5 minut"
 
 #: ../../godmode/servers/manage_recontask_form.php:219
 msgid "Module template"
@@ -11708,7 +11721,7 @@ msgstr "Žádné výstrahy nenalezeny"
 
 #: ../../operation/agentes/snapshot_view.php:65
 msgid "Current data at"
-msgstr ""
+msgstr "Současná data v"
 
 #: ../../operation/agentes/exportdata.csv.php:68
 #: ../../operation/agentes/exportdata.php:82
@@ -11743,7 +11756,7 @@ msgstr "Obdržena data od"
 
 #: ../../operation/agentes/datos_agente.php:172
 msgid "Main database"
-msgstr ""
+msgstr "Hlavní databáze"
 
 #: ../../operation/agentes/datos_agente.php:172
 msgid "History database"
@@ -11754,6 +11767,7 @@ msgid ""
 "Switch between the main database and the history database to retrieve module "
 "data"
 msgstr ""
+"Přepínat mezi hlavní databází a databází historie pro získání dat modulu"
 
 #: ../../operation/agentes/datos_agente.php:185
 #: ../../include/ajax/module.php:127
@@ -11768,12 +11782,12 @@ msgstr "Zadejte časové období"
 #: ../../operation/agentes/datos_agente.php:189
 #: ../../include/ajax/module.php:140
 msgid "Timestamp from:"
-msgstr ""
+msgstr "Časové razítko od:"
 
 #: ../../operation/agentes/datos_agente.php:195
 #: ../../include/ajax/module.php:148
 msgid "Timestamp to:"
-msgstr ""
+msgstr "Časové razítko do:"
 
 #: ../../operation/agentes/datos_agente.php:202
 #: ../../operation/agentes/alerts_status.functions.php:96
@@ -11900,20 +11914,20 @@ msgstr ""
 #: ../../operation/agentes/stat_win.php:344
 #: ../../operation/agentes/stat_win.php:350
 msgid "Time compare"
-msgstr ""
+msgstr "Porovnat čas"
 
 #: ../../operation/agentes/stat_win.php:344
 msgid "Overlapped"
-msgstr ""
+msgstr "Přesahuje"
 
 #: ../../operation/agentes/stat_win.php:350
 msgid "Separated"
-msgstr ""
+msgstr "Oddělené"
 
 #: ../../operation/agentes/stat_win.php:356
 #: ../../mobile/operation/module_graph.php:428
 msgid "Show unknown graph"
-msgstr ""
+msgstr "Zobrazit neznámý graf"
 
 #: ../../operation/agentes/stat_win.php:381
 #: ../../operation/agentes/interface_traffic_graph_win.php:256
@@ -11934,7 +11948,7 @@ msgstr "Exportovat data"
 
 #: ../../operation/agentes/exportdata.php:266
 msgid "No modules of type string. You can not calculate their average"
-msgstr ""
+msgstr "Žádný modul typu řetězec. Nelze spočítat jejich průměr"
 
 #: ../../operation/agentes/exportdata.php:309
 msgid "End date"
@@ -11981,7 +11995,7 @@ msgstr ""
 #: ../../operation/agentes/estado_generalagente.php:146
 #: ../../mobile/operation/agent.php:131 ../../extensions/net_tools.php:130
 msgid "IP address"
-msgstr ""
+msgstr "IP adresy"
 
 #: ../../operation/agentes/estado_generalagente.php:158
 #: ../../operation/gis_maps/ajax.php:315
@@ -12056,7 +12070,7 @@ msgstr ""
 #: ../../mobile/operation/agent.php:169
 #: ../../include/functions_treeview.php:528
 msgid "Events (24h)"
-msgstr ""
+msgstr "Události (24h)"
 
 #: ../../operation/agentes/estado_generalagente.php:516
 #: ../../include/functions_treeview.php:520
@@ -12209,11 +12223,11 @@ msgstr ""
 
 #: ../../operation/agentes/estado_agente.php:153
 msgid "Sucessfully deleted agent"
-msgstr ""
+msgstr "Agent úspěšně smazán"
 
 #: ../../operation/agentes/estado_agente.php:155
 msgid "There was an error message deleting the agent"
-msgstr ""
+msgstr "Při mazání agenta se vyskytla chybová zpráva"
 
 #: ../../operation/agentes/alerts_status.functions.php:32
 msgid "Alert(s) validated"
@@ -12250,7 +12264,7 @@ msgstr "Nevysláno"
 #: ../../operation/agentes/status_monitor.php:478
 #: ../../operation/agentes/status_monitor.php:481
 msgid "Only it is show tags in use."
-msgstr ""
+msgstr "Zobrazit pouze používané značky"
 
 #: ../../operation/agentes/alerts_status.functions.php:90
 #: ../../operation/agentes/status_monitor.php:486
@@ -12384,7 +12398,7 @@ msgstr "Poslední stav"
 #: ../../operation/agentes/status_monitor.php:1286
 #: ../../operation/search_modules.php:198 ../../include/ajax/module.php:943
 msgid "Snapshot view"
-msgstr ""
+msgstr "Zobrazení snímků"
 
 #: ../../operation/agentes/status_monitor.php:1356
 msgid "This group doesn't have any monitor"
@@ -12692,12 +12706,12 @@ msgstr "Možnosti mapy"
 #: ../../mobile/operation/events.php:464
 #: ../../include/functions_events.php:2300
 msgid "Event ID"
-msgstr ""
+msgstr "ID události"
 
 #: ../../operation/events/events.build_table.php:65
 #: ../../mobile/operation/events.php:107
 msgid "Event Name"
-msgstr ""
+msgstr "Název události"
 
 #: ../../operation/events/events.build_table.php:118
 msgid "Agent Module"
@@ -12803,7 +12817,7 @@ msgstr "Graf události podle uživatele"
 #: ../../operation/events/event_statistics.php:65
 #: ../../include/functions_reporting_html.php:1173
 msgid "Amount events validated"
-msgstr ""
+msgstr "Množství ověřených událostí"
 
 #: ../../operation/events/events_rss.php:32
 msgid "Your IP is not into the IP list with API access."
@@ -12823,7 +12837,7 @@ msgstr "Zvukové události"
 
 #: ../../operation/events/sound_events.php:64
 msgid "Sound console"
-msgstr ""
+msgstr "Zvuková konzole"
 
 #: ../../operation/events/sound_events.php:77
 #: ../../include/functions_reporting.php:5334
@@ -13011,7 +13025,7 @@ msgstr "Událost úspěšně smazána"
 
 #: ../../operation/menu.php:31
 msgid "Monitoring"
-msgstr ""
+msgstr "Monitorování"
 
 #: ../../operation/menu.php:37
 msgid "Views"
@@ -13082,7 +13096,7 @@ msgstr "Marquee"
 
 #: ../../operation/menu.php:307
 msgid "Workspace"
-msgstr ""
+msgstr "Pracovní prostor"
 
 #: ../../operation/menu.php:314 ../../general/header.php:273
 #: ../../general/header.php:275
@@ -13091,7 +13105,7 @@ msgstr "Upravit mého uživatele"
 
 #: ../../operation/menu.php:319
 msgid "WebChat"
-msgstr ""
+msgstr "WebChat"
 
 #: ../../operation/menu.php:344
 msgid "List of Incidents"
@@ -13120,7 +13134,7 @@ msgstr "Naplánovaná odstávka"
 
 #: ../../operation/menu.php:385
 msgid "Recon view"
-msgstr ""
+msgstr "Průzkumné zobrazení"
 
 #: ../../operation/messages/message_edit.php:35
 #: ../../operation/messages/message_list.php:32
@@ -13130,13 +13144,13 @@ msgstr ""
 #: ../../operation/messages/message_edit.php:39
 #: ../../operation/messages/message_list.php:36
 msgid "Sent messages"
-msgstr ""
+msgstr "Poslané zprávy"
 
 #: ../../operation/messages/message_edit.php:43
 #: ../../operation/messages/message_list.php:40
 #: ../../operation/messages/message_list.php:211
 msgid "Create message"
-msgstr ""
+msgstr "Vytvořit zprávu"
 
 #: ../../operation/messages/message_edit.php:60
 msgid "This message does not exist in the system"
@@ -13156,7 +13170,7 @@ msgstr "v"
 #: ../../operation/messages/message_edit.php:165
 #: ../../operation/messages/message_list.php:118
 msgid "Destination"
-msgstr ""
+msgstr "Cíl"
 
 #: ../../operation/messages/message_edit.php:90
 #: ../../operation/messages/message_edit.php:206
@@ -13192,7 +13206,7 @@ msgstr "Chyba při posílání zpráv skupině %s"
 
 #: ../../operation/messages/message_edit.php:199
 msgid "Select user"
-msgstr ""
+msgstr "Vyberte uživatele"
 
 #: ../../operation/messages/message_edit.php:200
 msgid "OR"
@@ -13200,7 +13214,7 @@ msgstr "OR"
 
 #: ../../operation/messages/message_edit.php:201
 msgid "Select group"
-msgstr ""
+msgstr "Vyberte skupinu"
 
 #: ../../operation/messages/message_edit.php:213
 #: ../../operation/users/webchat.php:87
@@ -13209,7 +13223,7 @@ msgstr "Poslání zprávy"
 
 #: ../../operation/messages/message_list.php:74
 msgid "Not deleted. Error deleting messages"
-msgstr ""
+msgstr "Nesmazáno. Chyba při mazání zpráv."
 
 #: ../../operation/messages/message_list.php:80
 #: ../../operation/messages/message_list.php:87
@@ -13218,7 +13232,7 @@ msgstr "Máte"
 
 #: ../../operation/messages/message_list.php:80
 msgid "sent message(s)"
-msgstr ""
+msgstr "poslané zprávy"
 
 #: ../../operation/messages/message_list.php:87
 msgid "unread message(s)"
@@ -13230,7 +13244,7 @@ msgstr "Nejsou žádné zprávy"
 
 #: ../../operation/messages/message_list.php:131
 msgid "Click to read"
-msgstr ""
+msgstr "Klikněte pro přečtení"
 
 #: ../../operation/messages/message_list.php:136
 msgid "Mark as unread"
@@ -13336,19 +13350,19 @@ msgstr ""
 
 #: ../../operation/tree.php:97
 msgid "groups"
-msgstr ""
+msgstr "skupiny"
 
 #: ../../operation/tree.php:100
 msgid "module groups"
-msgstr ""
+msgstr "skupiny modulu"
 
 #: ../../operation/tree.php:103
 msgid "modules"
-msgstr ""
+msgstr "moduly"
 
 #: ../../operation/tree.php:107
 msgid "policies"
-msgstr ""
+msgstr "zásady"
 
 #: ../../operation/tree.php:138
 msgid "Agent status"
@@ -13526,22 +13540,24 @@ msgstr "Správa incidentů"
 
 #: ../../operation/integria_incidents/incident.php:98
 msgid "Incident updated"
-msgstr ""
+msgstr "Incident aktualizován"
 
 #: ../../operation/integria_incidents/incident.php:101
 msgid ""
 "There was a problem updating the incident, please check if any field was "
 "modified and the values are correct."
 msgstr ""
+"Při aktualizaci incidentu nastal problém, prosím zkontrolujte pole, která "
+"byla změněna a správnost hodnot."
 
 #: ../../operation/integria_incidents/incident.php:125
 #: ../../operation/incidents/incident.php:141
 msgid "Incident created"
-msgstr ""
+msgstr "Incident vytvořen"
 
 #: ../../operation/integria_incidents/incident.php:128
 msgid "There was a problem creating incident"
-msgstr ""
+msgstr "Při vytváření incidentu nastal problém"
 
 #: ../../operation/integria_incidents/incident.php:141
 #: ../../operation/incidents/incident_detail.php:120
@@ -13555,7 +13571,7 @@ msgstr "Soubor nahrán"
 
 #: ../../operation/integria_incidents/incident.php:158
 msgid "There was a problem uploading file"
-msgstr ""
+msgstr "Při nahrávání souboru nastal problém"
 
 #: ../../operation/integria_incidents/incident.php:164
 msgid "File is too big"
@@ -13576,27 +13592,27 @@ msgstr "Obecná chyba nahrání"
 
 #: ../../operation/integria_incidents/incident.php:192
 msgid "File deleted"
-msgstr ""
+msgstr "Soubor smazán"
 
 #: ../../operation/integria_incidents/incident.php:195
 msgid "You user doesn't have enough rights to delete this file"
-msgstr ""
+msgstr "Váš uživatel nemá dostatečná práva ke smazání tohoto souboru"
 
 #: ../../operation/integria_incidents/incident.php:210
 msgid "Incident deleted"
-msgstr ""
+msgstr "Incident smazán"
 
 #: ../../operation/integria_incidents/incident.php:213
 msgid "There was a problem deteling incident"
-msgstr ""
+msgstr "Při mazání incidentu nastal problém"
 
 #: ../../operation/integria_incidents/incident.php:237
 msgid "Workunit added"
-msgstr ""
+msgstr "Pracovní jednotka přidána"
 
 #: ../../operation/integria_incidents/incident.php:240
 msgid "There was a problem adding workunit"
-msgstr ""
+msgstr "Při přidávání pracovní jednotky nastal problém"
 
 #: ../../operation/integria_incidents/incident.php:339
 msgid ""
@@ -13773,27 +13789,27 @@ msgstr ""
 
 #: ../../operation/users/webchat.php:71
 msgid "Webchat"
-msgstr ""
+msgstr "Webchat"
 
 #: ../../operation/users/webchat.php:81
 msgid "Users Online"
-msgstr ""
+msgstr "Uživatelé online"
 
 #: ../../operation/users/webchat.php:155
 msgid "Connection established...get last 24h messages..."
-msgstr ""
+msgstr "Připojení navazáno...získávání zpráv za posledních 24h"
 
 #: ../../operation/users/webchat.php:166
 msgid "Error in connection."
-msgstr ""
+msgstr "Chyba ve spojení."
 
 #: ../../operation/users/webchat.php:247
 msgid "Error sendding message."
-msgstr ""
+msgstr "Chyba při odesílání zprávy."
 
 #: ../../operation/users/webchat.php:275
 msgid "Error login."
-msgstr ""
+msgstr "Chyba při přihlašování."
 
 #: ../../operation/search_maps.php:33
 msgid "Elements"
@@ -13824,12 +13840,12 @@ msgstr ""
 #: ../../operation/reporting/reporting_viewer.php:188
 #: ../../operation/reporting/reporting_viewer.php:217
 msgid "Set initial date"
-msgstr ""
+msgstr "Nastavit počáteční datum"
 
 #: ../../operation/reporting/reporting_viewer.php:198
 #: ../../operation/reporting/reporting_viewer.php:227
 msgid "Items period before"
-msgstr ""
+msgstr "Období položek před"
 
 #: ../../operation/reporting/reporting_viewer.php:244
 msgid "Invalid date selected. Initial date must be before end date."
@@ -14183,7 +14199,7 @@ msgstr "Incidenty podle zdroje"
 
 #: ../../operation/search_results.php:63 ../../mobile/operation/home.php:161
 msgid "Global search"
-msgstr ""
+msgstr "Globální hledání"
 
 #: ../../operation/search_results.php:113
 #: ../../include/functions_groups.php:120
@@ -14201,7 +14217,7 @@ msgstr ""
 #: ../../operation/servers/recon_view.php:36
 #: ../../operation/servers/recon_view.php:51
 msgid "Recon View"
-msgstr ""
+msgstr "Průzkumné zobrazení"
 
 #: ../../operation/servers/recon_view.php:103
 #: ../../operation/servers/recon_view.php:157
@@ -14346,7 +14362,7 @@ msgstr ""
 #: ../../mobile/operation/modules.php:261
 #: ../../mobile/operation/events.php:654
 msgid "Apply Filter"
-msgstr ""
+msgstr "Použít filtr"
 
 #: ../../mobile/operation/networkmaps.php:202
 #: ../../mobile/operation/networkmap.php:164
@@ -14358,7 +14374,7 @@ msgstr ""
 #: ../../mobile/operation/modules.php:674
 #: ../../mobile/operation/events.php:1060
 msgid "(Default)"
-msgstr ""
+msgstr "(Výchozí)"
 
 #: ../../mobile/operation/networkmaps.php:222
 #: ../../mobile/operation/agents.php:432 ../../mobile/operation/alerts.php:316
@@ -14376,11 +14392,11 @@ msgstr ""
 
 #: ../../mobile/operation/agent.php:104
 msgid "PandoraFMS: Agents"
-msgstr ""
+msgstr "PandoraFMS: Agenti"
 
 #: ../../mobile/operation/agent.php:109
 msgid "No agent found"
-msgstr ""
+msgstr "Žádný agent nenalezen"
 
 #: ../../mobile/operation/agent.php:161
 msgid "Modules by status"
@@ -14389,7 +14405,7 @@ msgstr ""
 #: ../../mobile/operation/agent.php:205
 #, php-format
 msgid "Last %s Events"
-msgstr ""
+msgstr "Posledních %s událostí"
 
 #: ../../mobile/operation/groups.php:102 ../../mobile/operation/groups.php:103
 #: ../../mobile/operation/groups.php:104
@@ -14405,11 +14421,11 @@ msgstr "Neznámí agenti"
 #: ../../mobile/operation/agents.php:166
 #, php-format
 msgid "Filter Agents by %s"
-msgstr ""
+msgstr "Filtrovat agenty podle %s"
 
 #: ../../mobile/operation/agents.php:333
 msgid "No agents"
-msgstr ""
+msgstr "Žádní agenti"
 
 #: ../../mobile/operation/agents.php:436 ../../mobile/operation/alerts.php:320
 #: ../../mobile/operation/modules.php:693
@@ -14444,20 +14460,20 @@ msgstr "Odhlásit"
 
 #: ../../mobile/operation/home.php:154 ../../mobile/include/ui.class.php:185
 msgid "Home"
-msgstr ""
+msgstr "Domů"
 
 #: ../../mobile/operation/alerts.php:162
 #, php-format
 msgid "Filter Alerts by %s"
-msgstr ""
+msgstr "Filtrovat agenty podle %s"
 
 #: ../../mobile/operation/alerts.php:272
 msgid "Last Fired"
-msgstr ""
+msgstr "Naposledy vysláno"
 
 #: ../../mobile/operation/alerts.php:282
 msgid "No alerts"
-msgstr ""
+msgstr "Žádné výstrahy"
 
 #: ../../mobile/operation/alerts.php:312
 #, php-format
@@ -14466,46 +14482,46 @@ msgstr ""
 
 #: ../../mobile/operation/tactical.php:146
 msgid "Last activity"
-msgstr ""
+msgstr "Poslední aktivita"
 
 #: ../../mobile/operation/module_graph.php:366
 #: ../../mobile/operation/module_graph.php:375
 #, php-format
 msgid "PandoraFMS: %s"
-msgstr ""
+msgstr "PandoraFMS: %s"
 
 #: ../../mobile/operation/module_graph.php:389
 #, php-format
 msgid "Options for %s : %s"
-msgstr ""
+msgstr "Volby pro %s : %s"
 
 #: ../../mobile/operation/module_graph.php:396
 msgid "Show Alerts"
-msgstr ""
+msgstr "Zobrazit výstrahy"
 
 #: ../../mobile/operation/module_graph.php:404
 msgid "Show Events"
-msgstr ""
+msgstr "Zobrazit události"
 
 #: ../../mobile/operation/module_graph.php:412
 msgid "Time compare (Separated)"
-msgstr ""
+msgstr "Časové porovnání (Oddělené)"
 
 #: ../../mobile/operation/module_graph.php:436
 msgid "Avg Only"
-msgstr ""
+msgstr "Pouze průměr"
 
 #: ../../mobile/operation/module_graph.php:441
 msgid "Time range (hours)"
-msgstr ""
+msgstr "Časový rozsah (hodiny)"
 
 #: ../../mobile/operation/module_graph.php:461
 msgid "Update graph"
-msgstr ""
+msgstr "Aktualizovat graf"
 
 #: ../../mobile/operation/module_graph.php:470
 msgid "Error get the graph"
-msgstr ""
+msgstr "Chyba při získání grafu"
 
 #: ../../mobile/operation/modules.php:151
 #: ../../mobile/operation/modules.php:152
@@ -14517,15 +14533,15 @@ msgstr "Značka"
 #: ../../mobile/operation/modules.php:194
 #, php-format
 msgid "Filter Modules by %s"
-msgstr ""
+msgstr "Filtrovat moduly podle %s"
 
 #: ../../mobile/operation/modules.php:470
 msgid "Interval."
-msgstr ""
+msgstr "Interval."
 
 #: ../../mobile/operation/modules.php:476
 msgid "Last update."
-msgstr ""
+msgstr "Poslední aktualizace."
 
 #: ../../mobile/operation/modules.php:689
 #, php-format
@@ -14544,33 +14560,33 @@ msgstr ""
 
 #: ../../mobile/operation/events.php:438
 msgid "ERROR: Event detail"
-msgstr ""
+msgstr "CHYBA: Podrobnosti události"
 
 #: ../../mobile/operation/events.php:440
 msgid "Error connecting to DB pandora."
-msgstr ""
+msgstr "Chyba při připojování k DB pandora"
 
 #: ../../mobile/operation/events.php:453
 msgid "Event detail"
-msgstr ""
+msgstr "Podrobnosti události"
 
 #: ../../mobile/operation/events.php:492
 #: ../../include/functions_events.php:2388
 msgid "Acknowledged by"
-msgstr ""
+msgstr "Uznáno"
 
 #: ../../mobile/operation/events.php:536
 msgid "Sucessful validate"
-msgstr ""
+msgstr "Úspěšné ověření"
 
 #: ../../mobile/operation/events.php:538
 msgid "Fail validate"
-msgstr ""
+msgstr "Ověření selhalo"
 
 #: ../../mobile/operation/events.php:570
 #, php-format
 msgid "Filter Events by %s"
-msgstr ""
+msgstr "Filtrovat události podle %s"
 
 #: ../../mobile/operation/events.php:1066
 #, php-format
@@ -14617,15 +14633,15 @@ msgstr ""
 
 #: ../../mobile/include/user.class.php:211
 msgid "Login Failed"
-msgstr ""
+msgstr "Přihlášení selhalo"
 
 #: ../../mobile/include/user.class.php:212
 msgid "User not found in database or incorrect password."
-msgstr ""
+msgstr "Uživatel nenalezen v databázi nebo nesprávné heslo."
 
 #: ../../mobile/include/user.class.php:220
 msgid "Login out"
-msgstr ""
+msgstr "Odhlášení"
 
 #: ../../mobile/include/user.class.php:221 ../../general/login_page.php:135
 msgid ""
@@ -14636,11 +14652,11 @@ msgstr ""
 
 #: ../../mobile/include/user.class.php:238
 msgid "user"
-msgstr ""
+msgstr "uživatel"
 
 #: ../../mobile/include/user.class.php:245
 msgid "password"
-msgstr ""
+msgstr "heslo"
 
 #: ../../mobile/include/user.class.php:250 ../../general/login_page.php:129
 msgid "Login"
@@ -14657,7 +14673,7 @@ msgstr ""
 
 #: ../../mobile/include/ui.class.php:87 ../../mobile/include/ui.class.php:168
 msgid "Pandora FMS mobile"
-msgstr ""
+msgstr "Pandora FMS mobilní"
 
 #: ../../mobile/include/ui.class.php:257
 #: ../../mobile/include/functions_web.php:81 ../../general/footer.php:30
@@ -14672,27 +14688,27 @@ msgstr "Vytvořeno"
 
 #: ../../mobile/include/ui.class.php:630
 msgid "Not found header."
-msgstr ""
+msgstr "Záhlaví nenalezeno."
 
 #: ../../mobile/include/ui.class.php:633
 msgid "Not found content."
-msgstr ""
+msgstr "Obsah nenalezen."
 
 #: ../../mobile/include/ui.class.php:636
 msgid "Not found footer."
-msgstr ""
+msgstr "Zápatí nenalezeno."
 
 #: ../../mobile/include/ui.class.php:639
 msgid "Incorrect form."
-msgstr ""
+msgstr "Nesprávný formulář."
 
 #: ../../mobile/include/ui.class.php:642
 msgid "Incorrect grid."
-msgstr ""
+msgstr "Nesprávná síť."
 
 #: ../../mobile/include/ui.class.php:645
 msgid "Incorrect collapsible."
-msgstr ""
+msgstr "Nesprávná skládací."
 
 #: ../../mobile/include/functions_web.php:23
 #: ../../include/functions_reporting_html.php:2130
@@ -14793,7 +14809,7 @@ msgstr "Máte nepřečteno %d zpráv"
 
 #: ../../general/header.php:298
 msgid "Blank characters are used as AND conditions"
-msgstr ""
+msgstr "Prázdné znaky jsou použity jako operace AND"
 
 #: ../../general/footer.php:32
 msgid "Page generated at"
@@ -14813,30 +14829,30 @@ msgstr ""
 #: ../../general/login_help_dialog.php:51
 #: ../../general/login_help_dialog.php:53
 msgid "Online help"
-msgstr ""
+msgstr "Nápověda online"
 
 #: ../../general/login_help_dialog.php:59
 #: ../../general/login_help_dialog.php:61
 msgid "Enterprise version"
-msgstr ""
+msgstr "Verze pro podniky"
 
 #: ../../general/login_help_dialog.php:67
 #: ../../general/login_help_dialog.php:69 ../../general/login_page.php:83
 msgid "Support"
-msgstr ""
+msgstr "Podpora"
 
 #: ../../general/login_help_dialog.php:69
 msgid "Forums"
-msgstr ""
+msgstr "Fóra"
 
 #: ../../general/login_help_dialog.php:75
 #: ../../general/login_help_dialog.php:77
 msgid "Documentation"
-msgstr ""
+msgstr "Dokumentace"
 
 #: ../../general/login_help_dialog.php:86
 msgid "Click here to don't show again this message"
-msgstr ""
+msgstr "Klikněte sem, aby tato zpráva již nikdy nebyla zobrazena"
 
 #: ../../general/logon_ok.php:31
 msgid "Welcome to Pandora FMS Web Console"
@@ -15085,11 +15101,11 @@ msgstr "Spustitelný soubor SNMPget neexistuje."
 
 #: ../../extensions/net_tools.php:224
 msgid "Uptime"
-msgstr ""
+msgstr "Doba běhu"
 
 #: ../../extensions/net_tools.php:228
 msgid "Device info"
-msgstr ""
+msgstr "Informace o zařízení"
 
 #: ../../extensions/net_tools.php:236
 msgid "Interface"
@@ -15157,7 +15173,7 @@ msgstr "Rozhraní DB"
 
 #: ../../extensions/ssh_gateway.php:52
 msgid "You need to specify a user and a host address"
-msgstr ""
+msgstr "Musíte zadat uživatele a adresu hostitele"
 
 #: ../../extensions/ssh_gateway.php:59
 #, php-format
@@ -15166,15 +15182,15 @@ msgstr ""
 
 #: ../../extensions/ssh_gateway.php:60
 msgid "Connect"
-msgstr ""
+msgstr "Připojit"
 
 #: ../../extensions/ssh_gateway.php:63
 msgid "Port (use 0 for default)"
-msgstr ""
+msgstr "Port (použijte 0 pro výchozí)"
 
 #: ../../extensions/ssh_gateway.php:65
 msgid "Connect mode"
-msgstr ""
+msgstr "Režim připojení"
 
 #: ../../extensions/plugin_registration.php:26
 msgid "Plugin registration"
@@ -15574,6 +15590,8 @@ msgid ""
 "Blue cell when the module group and agent have all modules in not init "
 "status."
 msgstr ""
+"Modrá buňka  když skupina modulu a agent mají všechny moduly mimo stav "
+"zavedení."
 
 #: ../../extensions/module_groups.php:306
 msgid "There are no defined groups or module groups"
@@ -15695,7 +15713,7 @@ msgstr "Nahrát rozšíření jako soubor zip"
 
 #: ../../extensions/extension_uploader.php:76
 msgid "Upload enterprise extension"
-msgstr ""
+msgstr "Nahrát rozšíření enterprise"
 
 #: ../../extensions/extension_uploader.php:89
 msgid "Extension uploader"
@@ -16061,7 +16079,7 @@ msgstr ""
 #: ../../include/functions_db.php:75
 #, php-format
 msgid "Error connecting to database %s at %s."
-msgstr ""
+msgstr "Chyba při připojování k databázi %s v %s."
 
 #: ../../include/functions_db.php:1077
 msgid "SQL sentence"
@@ -16085,11 +16103,11 @@ msgstr "Klikněte zde pro otevření vyskakovacího okna s URL značkou"
 
 #: ../../include/functions_ui.php:226
 msgid "Information"
-msgstr ""
+msgstr "Informace"
 
 #: ../../include/functions_ui.php:232
 msgid "Success"
-msgstr ""
+msgstr "Úspěch"
 
 #: ../../include/functions_ui.php:366
 msgid "Request successfully processed"
@@ -16248,7 +16266,7 @@ msgstr "Nejsou určeni žádní Agenti/Moduly"
 
 #: ../../include/functions_reporting.php:985
 msgid "Insuficient data"
-msgstr ""
+msgstr "Nedostatečná data"
 
 #: ../../include/functions_reporting.php:1142
 #: ../../include/functions_reporting.php:1306
@@ -16307,7 +16325,7 @@ msgstr ""
 
 #: ../../include/functions_reporting.php:1476
 msgid "No changes found."
-msgstr ""
+msgstr "Nenalezeny žádné změny"
 
 #: ../../include/functions_reporting.php:1550
 msgid "Agent/Modules"
@@ -16571,7 +16589,7 @@ msgstr "Jednoduchý graf"
 #: ../../include/functions_reporting_html.php:491
 #: ../../include/functions_reporting_html.php:1088
 msgid "Val. by"
-msgstr ""
+msgstr "Val. podle"
 
 #: ../../include/functions_reporting.php:4554
 #: ../../include/functions_reporting.php:4679
@@ -16583,7 +16601,7 @@ msgstr ""
 #: ../../include/functions_events.php:2623
 #: ../../include/functions_reporting_html.php:534
 msgid "Pandora System"
-msgstr ""
+msgstr "Systém Pandora"
 
 #: ../../include/functions_reporting.php:5186
 #: ../../include/functions_reporting.php:5223
@@ -16593,7 +16611,7 @@ msgstr "Stav serveru"
 #: ../../include/functions_reporting.php:5186
 #, php-format
 msgid "%d Downed servers"
-msgstr ""
+msgstr "%d serverů mimo provoz"
 
 #: ../../include/functions_reporting.php:5194
 #: ../../include/functions_reporting.php:5226
@@ -16603,7 +16621,7 @@ msgstr "Sledování zdraví"
 #: ../../include/functions_reporting.php:5194
 #, php-format
 msgid "%d Not Normal monitors"
-msgstr ""
+msgstr "%d nenormálních monitorů"
 
 #: ../../include/functions_reporting.php:5196
 #: ../../include/functions_reporting.php:5227
@@ -16618,7 +16636,7 @@ msgstr "Funkčnost modulu"
 #: ../../include/functions_reporting.php:5202
 #, php-format
 msgid "%d Not inited monitors"
-msgstr ""
+msgstr "%d nezavedených monitorů"
 
 #: ../../include/functions_reporting.php:5204
 #: ../../include/functions_reporting.php:5230
@@ -16636,7 +16654,7 @@ msgstr "Stupeň výstrahy"
 #: ../../include/functions_reporting.php:6136
 #, php-format
 msgid "%d Fired alerts"
-msgstr ""
+msgstr "%d vyslaných výstrah"
 
 #: ../../include/functions_reporting.php:5212
 #: ../../include/functions_reporting.php:5233
@@ -16650,24 +16668,24 @@ msgstr "Určené výstrahy"
 #: ../../include/functions_reporting.php:5283
 #: ../../include/functions_reporting.php:5291
 msgid "Defined and fired alerts"
-msgstr ""
+msgstr "Zadané a vyslané výstrahy"
 
 #: ../../include/functions_reporting.php:5345
 msgid "Monitor normal"
-msgstr ""
+msgstr "Monitor ve stavu normální"
 
 #: ../../include/functions_reporting.php:5349
 msgid "Monitor unknown"
-msgstr ""
+msgstr "Neznámý monitor"
 
 #: ../../include/functions_reporting.php:5356
 msgid "Monitor not init"
-msgstr ""
+msgstr "Nezavedený monitor"
 
 #: ../../include/functions_reporting.php:5380
 #: ../../include/functions_reporting.php:5391
 msgid "Monitors by status"
-msgstr ""
+msgstr "Monitor bodle stavu"
 
 #: ../../include/functions_reporting.php:5429
 #: ../../include/functions_reporting_html.php:2627
@@ -16677,7 +16695,7 @@ msgstr "Zjištění monitoru"
 #: ../../include/functions_reporting.php:5437
 #: ../../include/functions_reporting_html.php:2632
 msgid "Total agents and monitors"
-msgstr ""
+msgstr "Celkem agentů a monitorů"
 
 #: ../../include/functions_reporting.php:5460
 msgid "Defined users"
@@ -16719,56 +16737,56 @@ msgstr "Všechny monitory OK"
 #: ../../include/functions_reporting.php:6122
 #, php-format
 msgid "%d Total modules"
-msgstr ""
+msgstr "%d modulů celkem"
 
 #: ../../include/functions_reporting.php:6116
 #: ../../include/functions_reporting.php:6123
 #, php-format
 msgid "%d Normal modules"
-msgstr ""
+msgstr "%d normálních modulů"
 
 #: ../../include/functions_reporting.php:6117
 #: ../../include/functions_reporting.php:6124
 #, php-format
 msgid "%d Critical modules"
-msgstr ""
+msgstr "%d modulů v kritickém stavu"
 
 #: ../../include/functions_reporting.php:6118
 #: ../../include/functions_reporting.php:6125
 #, php-format
 msgid "%d Warning modules"
-msgstr ""
+msgstr "%d modulů ve varovném stavu"
 
 #: ../../include/functions_reporting.php:6119
 #: ../../include/functions_reporting.php:6126
 #, php-format
 msgid "%d Unknown modules"
-msgstr ""
+msgstr "%d neznámých modulů"
 
 #: ../../include/functions_reporting.php:6130
 #, php-format
 msgid "%d Total agents"
-msgstr ""
+msgstr "%d agentů celkem"
 
 #: ../../include/functions_reporting.php:6131
 #, php-format
 msgid "%d Normal agents"
-msgstr ""
+msgstr "%d normálních agentů"
 
 #: ../../include/functions_reporting.php:6132
 #, php-format
 msgid "%d Critical agents"
-msgstr ""
+msgstr "%d agentů v kritickém stavu"
 
 #: ../../include/functions_reporting.php:6133
 #, php-format
 msgid "%d Warning agents"
-msgstr ""
+msgstr "%d agentů ve varovném stavu"
 
 #: ../../include/functions_reporting.php:6134
 #, php-format
 msgid "%d Unknown agents"
-msgstr ""
+msgstr "%d Neznámých agentů"
 
 #: ../../include/functions_reporting.php:6135
 #, php-format
@@ -16836,17 +16854,17 @@ msgstr "Výkon serveru"
 #: ../../include/functions_users.php:380
 #, php-format
 msgid "User %s login at %s"
-msgstr ""
+msgstr "Uživatel %s přihlášen v %s"
 
 #: ../../include/functions_users.php:441
 #, php-format
 msgid "User %s was deleted in the DB at %s"
-msgstr ""
+msgstr "Uživatel %s byl smazán v DB v %s"
 
 #: ../../include/functions_users.php:446
 #, php-format
 msgid "User %s logout at %s"
-msgstr ""
+msgstr "Uživatel %s odhlášen v %s"
 
 #: ../../include/functions_servers.php:363
 msgid "Data server"
@@ -17297,12 +17315,12 @@ msgstr "Hodnota jednotek"
 #: ../../include/functions_graph.php:742
 #: ../../include/functions_graph.php:3286
 msgid "Previous"
-msgstr ""
+msgstr "Předchozí"
 
 #: ../../include/functions_graph.php:1009
 #, php-format
 msgid "projection for %s"
-msgstr ""
+msgstr "projekce pro %s"
 
 #: ../../include/functions_graph.php:1490
 msgid "Not fired alerts"
@@ -17353,6 +17371,12 @@ msgstr "Nízká"
 #: ../../include/functions_incidents.php:60
 msgid "Medium"
 msgstr "Střední"
+
+#: ../../include/functions_graph.php:2125
+#: ../../include/functions_incidents.php:32
+#: ../../include/functions_incidents.php:63
+msgid "Serious"
+msgstr "Skutečně"
 
 #: ../../include/functions_graph.php:2126
 #: ../../include/functions_incidents.php:33
@@ -17465,7 +17489,7 @@ msgstr "M"
 
 #: ../../include/functions.php:416 ../../include/functions.php:560
 msgid "Y"
-msgstr ""
+msgstr "R"
 
 #: ../../include/functions.php:417 ../../include/functions.php:561
 msgid "m"
@@ -17524,7 +17548,7 @@ msgstr ""
 
 #: ../../include/functions.php:1970
 msgid "custom"
-msgstr ""
+msgstr "vlastní"
 
 #: ../../include/functions.php:1975 ../../include/functions.php:1976
 #, php-format
@@ -17611,7 +17635,7 @@ msgstr ""
 #: ../../include/ajax/networkmap.ajax.php:74
 #: ../../include/ajax/networkmap.ajax.php:94
 msgid "Map summary"
-msgstr ""
+msgstr "Souhrn mapy"
 
 #: ../../include/ajax/double_auth.ajax.php:146
 msgid ""
@@ -17802,7 +17826,7 @@ msgstr ""
 
 #: ../../include/ajax/events.php:307
 msgid "Custom data"
-msgstr ""
+msgstr "Vlastní data"
 
 #: ../../include/ajax/events.php:375
 msgid "Error adding comment"
@@ -17882,7 +17906,7 @@ msgstr ""
 #: ../../include/functions_filemanager.php:298
 #: ../../include/functions_filemanager.php:380
 msgid "Security error"
-msgstr ""
+msgstr "Bezpečnostní chyba"
 
 #: ../../include/functions_filemanager.php:183
 msgid "Upload error"
@@ -17902,16 +17926,16 @@ msgstr ""
 
 #: ../../include/functions_filemanager.php:252
 msgid "Error creating file"
-msgstr ""
+msgstr "Chyba při vytváření souboru"
 
 #: ../../include/functions_filemanager.php:265
 #: ../../include/functions_filemanager.php:360
 msgid "Error creating file with empty name"
-msgstr ""
+msgstr "Chyba při vytváření souboru s prázdným názvem"
 
 #: ../../include/functions_filemanager.php:310
 msgid "Attach error"
-msgstr ""
+msgstr "Chyba přílohy"
 
 #: ../../include/functions_filemanager.php:346
 msgid "Security error."
@@ -17919,12 +17943,12 @@ msgstr "Bezpečnostní chyba."
 
 #: ../../include/functions_filemanager.php:355
 msgid "Directory created"
-msgstr ""
+msgstr "Adresář vytvořen"
 
 #: ../../include/functions_filemanager.php:383
 #: ../../include/functions_reporting_html.php:705
 msgid "Deleted"
-msgstr ""
+msgstr "Smazáno"
 
 #: ../../include/functions_filemanager.php:537
 #, php-format
@@ -18026,13 +18050,13 @@ msgstr ""
 #: ../../include/functions_reports.php:527
 #: ../../include/functions_reports.php:529
 msgid "ITIL"
-msgstr ""
+msgstr "ITIL"
 
 #: ../../include/functions_reports.php:534
 #: ../../include/functions_reports.php:537
 #: ../../include/functions_reports.php:541
 msgid "SLA"
-msgstr ""
+msgstr "SLA"
 
 #: ../../include/functions_reports.php:538
 msgid "Monthly S.L.A."
@@ -18045,7 +18069,7 @@ msgstr ""
 #: ../../include/functions_reports.php:547
 #: ../../include/functions_reports.php:549
 msgid "Forecasting"
-msgstr ""
+msgstr "Předpovídání"
 
 #: ../../include/functions_reports.php:548
 msgid "Prediction date"
@@ -18072,7 +18096,7 @@ msgstr "Serializovat data"
 #: ../../include/functions_reports.php:585
 #: ../../include/functions_reports.php:587
 msgid "Grouped"
-msgstr ""
+msgstr "Seskupené"
 
 #: ../../include/functions_reports.php:572
 msgid "Group report"
@@ -18089,7 +18113,7 @@ msgstr ""
 #: ../../include/functions_reports.php:591
 #: ../../include/functions_reports.php:593
 msgid "Text/HTML "
-msgstr ""
+msgstr "Text/HTML "
 
 #: ../../include/functions_reports.php:594
 msgid "Import text from URL"
@@ -18105,7 +18129,7 @@ msgstr "Agent hlášení výstrahy"
 
 #: ../../include/functions_reports.php:604
 msgid "Alert report group"
-msgstr ""
+msgstr "Skupina hlášení o výstraze"
 
 #: ../../include/functions_reports.php:610
 msgid "Event report agent"
@@ -18121,7 +18145,7 @@ msgstr "Skupina záznamu události"
 
 #: ../../include/functions_reports.php:621
 msgid "Inventory changes"
-msgstr ""
+msgstr "Změny inventáře"
 
 #: ../../include/functions_reports.php:631
 msgid "Netflow area chart"
@@ -18145,11 +18169,11 @@ msgstr ""
 
 #: ../../include/functions_networkmap.php:1685
 msgid "Create a new topology map"
-msgstr ""
+msgstr "Vytvořit novou topologickou mapu"
 
 #: ../../include/functions_networkmap.php:1686
 msgid "Create a new group map"
-msgstr ""
+msgstr "Vytvořit novou mapu skupiny"
 
 #: ../../include/functions_networkmap.php:1687
 msgid "Create a new dynamic map"
@@ -18161,7 +18185,7 @@ msgstr ""
 
 #: ../../include/functions_networkmap.php:1711
 msgid "Topology"
-msgstr ""
+msgstr "Topologie"
 
 #: ../../include/functions_networkmap.php:1713
 msgid "Dynamic"
@@ -18198,7 +18222,7 @@ msgstr "Moduly úspěšně přidány do rozvržení"
 
 #: ../../include/functions_visual_map.php:1484
 msgid "Agents successfully added to layout"
-msgstr ""
+msgstr "Agenti úspěšně přidány do rozvržení"
 
 #: ../../include/functions_visual_map.php:1735
 msgid "Cannot load the visualmap"
@@ -18609,55 +18633,55 @@ msgstr ""
 
 #: ../../include/functions_menu.php:427
 msgid "Configure user"
-msgstr ""
+msgstr "Nastavit uživatele"
 
 #: ../../include/functions_menu.php:428
 msgid "Configure profile"
-msgstr ""
+msgstr "Nastavit profil"
 
 #: ../../include/functions_menu.php:432
 msgid "Module templates management"
-msgstr ""
+msgstr "Správa šablon modulu"
 
 #: ../../include/functions_menu.php:433
 msgid "Inventory modules management"
-msgstr ""
+msgstr "Správa modulů inventáře"
 
 #: ../../include/functions_menu.php:434
 msgid "Tags management"
-msgstr ""
+msgstr "Správa značek"
 
 #: ../../include/functions_menu.php:438
 msgid "View agent"
-msgstr ""
+msgstr "Zobrazit agenta"
 
 #: ../../include/functions_menu.php:442
 msgid "Manage network map"
-msgstr ""
+msgstr "Správa síťové mapy"
 
 #: ../../include/functions_menu.php:444
 msgid "View reporting"
-msgstr ""
+msgstr "Zobrazit hlášení"
 
 #: ../../include/functions_menu.php:446
 msgid "Manage custom graphs"
-msgstr ""
+msgstr "Spravovat vlastni grafy"
 
 #: ../../include/functions_menu.php:447
 msgid "Copy dashboard"
-msgstr ""
+msgstr "Kopírovat nástěnku"
 
 #: ../../include/functions_menu.php:450
 msgid "Manage GIS Maps"
-msgstr ""
+msgstr "Spravovat mapy GIS"
 
 #: ../../include/functions_menu.php:452
 msgid "Incidents statistics"
-msgstr ""
+msgstr "Statistiky incidentů"
 
 #: ../../include/functions_menu.php:453
 msgid "Manage messages"
-msgstr ""
+msgstr "Spravovat zprávy"
 
 #: ../../include/functions_menu.php:455
 msgid "Manage groups"
@@ -18665,31 +18689,31 @@ msgstr "Správa skupin"
 
 #: ../../include/functions_menu.php:456
 msgid "Manage module groups"
-msgstr ""
+msgstr "Spravovat skupiny modulů"
 
 #: ../../include/functions_menu.php:457
 msgid "Manage custom field"
-msgstr ""
+msgstr "Spravovat vlastní pole"
 
 #: ../../include/functions_menu.php:459
 msgid "Manage alert actions"
-msgstr ""
+msgstr "Spravovat činnosti výstrahy"
 
 #: ../../include/functions_menu.php:460
 msgid "Manage commands"
-msgstr ""
+msgstr "Spravovat příkazy"
 
 #: ../../include/functions_menu.php:461
 msgid "Manage event alerts"
-msgstr ""
+msgstr "Správa události výstrah"
 
 #: ../../include/functions_menu.php:463
 msgid "Manage export targets"
-msgstr ""
+msgstr "Správa cílů exportu"
 
 #: ../../include/functions_menu.php:465
 msgid "Manage services"
-msgstr ""
+msgstr "Správa služeb"
 
 #: ../../include/functions_menu.php:468
 msgid "SNMP trap editor"
@@ -18697,7 +18721,7 @@ msgstr "Editor zachycení SNMP"
 
 #: ../../include/functions_menu.php:471
 msgid "Manage incident"
-msgstr ""
+msgstr "Správa incidentu"
 
 #: ../../include/functions_menu.php:523
 msgid "Administration"
@@ -18729,13 +18753,15 @@ msgstr "Správné smazání"
 
 #: ../../include/functions_api.php:1563
 msgid "Error in creation network module. Agent name doesn't exists."
-msgstr ""
+msgstr "Chyba při vytváření síťového modulu. Název agenta neexistuje."
 
 #: ../../include/functions_api.php:1569
 msgid ""
 "Error in creation network module. Id_module_type is not correct for network "
 "modules."
 msgstr ""
+"Chyba při vytváření síťového modulu. Id_module_type není pro síťové moduly "
+"správné."
 
 #: ../../include/functions_api.php:1615
 msgid "Error in creation network module."
@@ -18744,87 +18770,94 @@ msgstr "Chyba při vytváření síťového modulu."
 #: ../../include/functions_api.php:1647
 msgid "Error updating network module. Module name cannot be left blank."
 msgstr ""
+"Chyba při aktualizaci síťového modulu. Název modulu nemůže být prázdný."
 
 #: ../../include/functions_api.php:1654
 msgid "Error updating network module. Id_module doesn't exists."
-msgstr ""
+msgstr "Chyba při aktualizaci síťového modulu. Id_module neexistuje."
 
 #: ../../include/functions_api.php:1667
 msgid "Error updating network module. Id_module exists in the new agent."
 msgstr ""
+"Chyba při aktualizaci síťového modulu. Id_module se vyskytuje v novém "
+"agentovi."
 
 #: ../../include/functions_api.php:1716
 msgid "Network module updated."
-msgstr ""
+msgstr "Síťový modul aktualizován"
 
 #: ../../include/functions_api.php:1745
 msgid "Error in creation plugin module. Id_plugin cannot be left blank."
-msgstr ""
+msgstr "Chyba při vytváření zásuvného modulu. Id_plugin nemůže být prázdné."
 
 #: ../../include/functions_api.php:1752
 msgid "Error in creation plugin module. Agent name doesn't exists."
-msgstr ""
+msgstr "Chyba při vytváření zásuvného modulu. Název agenta neexistuje"
 
 #: ../../include/functions_api.php:1803
 msgid "Error in creation plugin module."
-msgstr ""
+msgstr "Chyba při vytváření zásuvného modulu."
 
 #: ../../include/functions_api.php:1834
 msgid "Error updating plugin module. Id_module cannot be left blank."
 msgstr ""
+"Chyba při aktualizaci zásuvného modulu. Id_module nemůže být prázdné."
 
 #: ../../include/functions_api.php:1841
 msgid "Error updating plugin module. Id_module doesn't exists."
-msgstr ""
+msgstr "Chyba při aktualizaci zásuvného modulu. Id_module neexistuje."
 
 #: ../../include/functions_api.php:1853
 msgid "Error updating plugin module. Id_module exists in the new agent."
 msgstr ""
+"Chyba při aktualizaci zásuvného modulu. Id_module existuje v novém agentovi."
 
 #: ../../include/functions_api.php:1911
 msgid "Plugin module updated."
-msgstr ""
+msgstr "Zásuvný modul aktualizován."
 
 #: ../../include/functions_api.php:1940
 msgid "Error in creation data module. Module_name cannot be left blank."
-msgstr ""
+msgstr "Chyba při vytváření datového modulu. Module_name nemůže být prázdné."
 
 #: ../../include/functions_api.php:1947
 msgid "Error in creation data module. Agent name doesn't exists."
-msgstr ""
+msgstr "Chyba při vytváření datového modulu. Název agenta neexistuje."
 
 #: ../../include/functions_api.php:1989
 msgid "Error in creation data module."
-msgstr ""
+msgstr "Chyba při vytváření datového modulu."
 
 #: ../../include/functions_api.php:2021
 msgid "Error updating data module. Id_module cannot be left blank."
-msgstr ""
+msgstr "Chyba při aktualizaci datového modulu. Id_module nemůže být prázdné."
 
 #: ../../include/functions_api.php:2028
 msgid "Error updating data module. Id_module doesn't exists."
-msgstr ""
+msgstr "Chyba při aktualizaci datového modulu. Id_module neexistuje."
 
 #: ../../include/functions_api.php:2040
 msgid "Error updating data module. Id_module exists in the new agent."
 msgstr ""
+"Chyba při aktualizaci datového modulu. Id_module existuje v novém agentovi."
 
 #: ../../include/functions_api.php:2085
 msgid "Data module updated."
-msgstr ""
+msgstr "Datový modul aktualizován."
 
 #: ../../include/functions_api.php:2122
 msgid "Error in creation SNMP module. Module_name cannot be left blank."
-msgstr ""
+msgstr "Chyba při vytváření modulu SNMP. Module_name nemůže být prázdné."
 
 #: ../../include/functions_api.php:2127
 msgid ""
 "Error in creation SNMP module. Invalid id_module_type for a SNMP module."
 msgstr ""
+"Chyba při vytváření modulu SNMP. Neplatný id_module_type pro modul SNMP."
 
 #: ../../include/functions_api.php:2134
 msgid "Error in creation SNMP module. Agent name doesn't exists."
-msgstr ""
+msgstr "Chyba při vytváření modulu SNMP. Název agenta neexistuje."
 
 #: ../../include/functions_api.php:2149 ../../include/functions_api.php:2301
 #: ../../include/functions_api.php:4485
@@ -18832,6 +18865,8 @@ msgid ""
 "Error in creation SNMP module. snmp3_priv_method doesn't exists. Set it to "
 "'AES' or 'DES'. "
 msgstr ""
+"Chyba při vytváření modulu SNMP. snmp3_priv_method neexistuje. Nastavte ji "
+"na 'AES' nebo 'DES'. "
 
 #: ../../include/functions_api.php:2154 ../../include/functions_api.php:2306
 #: ../../include/functions_api.php:4490
@@ -18839,6 +18874,8 @@ msgid ""
 "Error in creation SNMP module. snmp3_sec_level doesn't exists. Set it to "
 "'authNoPriv' or 'authPriv' or 'noAuthNoPriv'. "
 msgstr ""
+"Chyba při vytváření modulu SNMP. snmp3_sec_level neexistuje, Nastavte ji na "
+"'authNoPriv', 'authPriv' nebo 'noAuthNoPriv'. "
 
 #: ../../include/functions_api.php:2159 ../../include/functions_api.php:2311
 #: ../../include/functions_api.php:4495
@@ -18846,326 +18883,376 @@ msgid ""
 "Error in creation SNMP module. snmp3_auth_method doesn't exists. Set it to "
 "'MD5' or 'SHA'. "
 msgstr ""
+"Chyba při vytváření modulu SNMP.  snmp3_auth_method neexistuje. Nastavte ji "
+"na 'MD5' nebo 'SHA'. "
 
 #: ../../include/functions_api.php:2239
 msgid "Error in creation SNMP module."
-msgstr ""
+msgstr "Chyba při vytváření modulu SNMP."
 
 #: ../../include/functions_api.php:2272
 msgid "Error updating SNMP module. Id_module cannot be left blank."
-msgstr ""
+msgstr "Chyba při aktualizaci modulu SNMP. Id_module nemůže být prázdné."
 
 #: ../../include/functions_api.php:2279
 msgid "Error updating SNMP module. Id_module doesn't exists."
-msgstr ""
+msgstr "Chyba při aktualizaci modulu SNMP. Id_module neexistuje."
 
 #: ../../include/functions_api.php:2291
 msgid "Error updating SNMP module. Id_module exists in the new agent."
 msgstr ""
+"Chyba při aktualizaci modulu SNMP. Id_module existuje v novém agentovi."
 
 #: ../../include/functions_api.php:2394
 msgid "SNMP module updated."
-msgstr ""
+msgstr "Modul SNMP aktualizován."
 
 #: ../../include/functions_api.php:2422
 msgid ""
 "Error creating network component. Network component name cannot be left "
 "blank."
 msgstr ""
+"Chyba při vytváření součásti sítě. Název součásti sítě nemůže být prázdný."
 
 #: ../../include/functions_api.php:2427
 msgid ""
 "Error creating network component. Incorrect value for Network component type "
 "field."
 msgstr ""
+"Chyba při vytváření součásti sítě. Nesprávná hodnota pro pole Typ síťové "
+"součásti."
 
 #: ../../include/functions_api.php:2432
 msgid ""
 "Error creating network component. Network component group cannot be left "
 "blank."
-msgstr ""
+msgstr "Chyba při vytváření součásti sítě. Skupina součásti sítě je prázdná."
 
 #: ../../include/functions_api.php:2468
 msgid ""
 "Error creating network component. This network component already exists."
-msgstr ""
+msgstr "Chyba při vytváření součásti sítě. Tato součást sítě již existuje."
 
 #: ../../include/functions_api.php:2507
 msgid ""
 "Error creating plugin component. Plugin component name cannot be left blank."
 msgstr ""
+"Chyba při vytváření komponenty zásuvného modulu. Název komponenty modulu "
+"nemůže být prázdný."
 
 #: ../../include/functions_api.php:2512
 msgid "Error creating plugin component. Incorrect value for Id plugin."
 msgstr ""
+"Chyba při vytváření komponenty zásuvného modulu. Nesprávná hodnota pro Id "
+"modulu."
 
 #: ../../include/functions_api.php:2517
 msgid ""
 "Error creating plugin component. Plugin component group cannot be left blank."
 msgstr ""
+"Chyba při vytváření komponenty zásuvného modulu. Skupina modulu komponenty "
+"nemůže být prázdná."
 
 #: ../../include/functions_api.php:2557
 msgid ""
 "Error creating plugin component. This plugin component already exists."
 msgstr ""
+"Chyba při vytváření komponenty zásuvného modulu. Tato komponenta již "
+"existuje."
 
 #: ../../include/functions_api.php:2595
 msgid ""
 "Error creating SNMP component. SNMP component name cannot be left blank."
 msgstr ""
+"Chyba při vytváření komponenty SNMP. Název komponenty SNMP nemůže být "
+"prázdný."
 
 #: ../../include/functions_api.php:2600
 msgid ""
 "Error creating SNMP component. Incorrect value for Snmp component type field."
 msgstr ""
+"Chyba při vytváření komponenty SNMP. Nesprávná hodnota pro pole typu "
+"komponenty."
 
 #: ../../include/functions_api.php:2605
 msgid ""
 "Error creating SNMP component. Snmp component group cannot be left blank."
 msgstr ""
+"Chyba při vytváření komponenty SNMP. Skupina komponenty Snmp nemůže být "
+"prázdná."
 
 #: ../../include/functions_api.php:2617
 msgid ""
 "Error creating SNMP component. snmp3_priv_method doesn't exists. Set it to "
 "'AES' or 'DES'. "
 msgstr ""
+"Chyba při vytváření komponenty SNMP. snmp3_priv_method neexistuje. Nastavte "
+"ji na 'AES' nebo 'DES'. "
 
 #: ../../include/functions_api.php:2622
 msgid ""
 "Error creating SNMP component. snmp3_sec_level doesn't exists. Set it to "
 "'authNoPriv' or 'authPriv' or 'noAuthNoPriv'. "
 msgstr ""
+"Chyba při vytváření komponenty SNMP.  snmp3_sec_level neexistuje. Nastavte "
+"ji na 'authNoPriv', 'authPriv' nebo 'noAuthNoPriv'. "
 
 #: ../../include/functions_api.php:2627
 msgid ""
 "Error creating SNMP component. snmp3_auth_method doesn't exists. Set it to "
 "'MD5' or 'SHA'. "
 msgstr ""
+"Chyba při vytváření komponenty SNMP. snmp3_auth_method neexistuje. Nastavte "
+"ji na 'MD5' nebo 'SHA'. "
 
 #: ../../include/functions_api.php:2702
 msgid "Error creating SNMP component. This SNMP component already exists."
-msgstr ""
+msgstr "Chyba při vytváření komponenty SNMP. Tato komponenta již existuje."
 
 #: ../../include/functions_api.php:2739
 msgid ""
 "Error creating local component. Local component name cannot be left blank."
 msgstr ""
+"Chyba při vytváření místní komponenty. Název místní komponenty nemůže být "
+"prázdný."
 
 #: ../../include/functions_api.php:2745
 msgid ""
 "Error creating local component. Local component group cannot be left blank."
 msgstr ""
+"Chyba při vytváření místní komponenty. Skupina místní komponenty nemůže být "
+"prázdná."
 
 #: ../../include/functions_api.php:2769
 msgid "Error creating local component."
-msgstr ""
+msgstr "Chyba při vytváření místní komponenty."
 
 #: ../../include/functions_api.php:2775
 msgid "Error creating local component. This local component already exists."
-msgstr ""
+msgstr "Chyba při vytváření místní komponenty. Tato komponenta již existuje."
 
 #: ../../include/functions_api.php:2808
 msgid ""
 "Error getting module value from all agents. Module name cannot be left blank."
 msgstr ""
+"Chyba při získávání hodnoty modulu od všech agentů. Název modulu nemůže být "
+"prázdný."
 
 #: ../../include/functions_api.php:2816
 msgid ""
 "Error getting module value from all agents. Module name doesn't exists."
 msgstr ""
+"Chyba při získávání hodnoty modulu od všech agentů. Název modulu neexistuje."
 
 #: ../../include/functions_api.php:2861
 msgid "Error creating alert template. Template name cannot be left blank."
 msgstr ""
+"Chyba při vytváření šablony výstrahy. Název šablony nemůže být prázdný."
 
 #: ../../include/functions_api.php:2933
 msgid "Error creating alert template."
-msgstr ""
+msgstr "Chyba při vytváření šablony výstrahy."
 
 #: ../../include/functions_api.php:2964
 msgid "Error updating alert template. Id_template cannot be left blank."
 msgstr ""
+"Chyba při aktualizaci šablony výstrahy. ID šablony nemůže být prázdné."
 
 #: ../../include/functions_api.php:2972
 msgid "Error updating alert template. Id_template doesn't exists."
-msgstr ""
+msgstr "Chyba při aktualizaci šablony výstrahy. ID šablony neexistuje."
 
 #: ../../include/functions_api.php:2998
 msgid "Error updating alert template."
-msgstr ""
+msgstr "Chyba při aktualizaci šablony výstrahy."
 
 #: ../../include/functions_api.php:3003
 msgid "Correct updating of alert template"
-msgstr ""
+msgstr "Opravit aktualizaci šablony výstrahy"
 
 #: ../../include/functions_api.php:3027
 msgid "Error deleting alert template. Id_template cannot be left blank."
-msgstr ""
+msgstr "Chyba při mazání šablony výstrahy. ID šablony nemůže být prázdné."
 
 #: ../../include/functions_api.php:3036
 msgid "Error deleting alert template."
-msgstr ""
+msgstr "Chyba při mazání šablony výstrahy."
 
 #: ../../include/functions_api.php:3040
 msgid "Correct deleting of alert template."
-msgstr ""
+msgstr "Opravit mazání šablony výstrahy."
 
 #: ../../include/functions_api.php:3077
 msgid "Error getting all alert templates."
-msgstr ""
+msgstr "Chyba při získávání všech šablon výstrah."
 
 #: ../../include/functions_api.php:3109
 msgid "Error getting alert template. Id_template doesn't exists."
-msgstr ""
+msgstr "Chyba při získávání šablony výstrahy. ID šablony neexistuje."
 
 #: ../../include/functions_api.php:3126
 msgid "Error getting alert template."
-msgstr ""
+msgstr "Chyba při získávání šablony výstrahy."
 
 #: ../../include/functions_api.php:3165
 msgid "Error getting module groups."
-msgstr ""
+msgstr "Chyba při získávání skupin modulu."
 
 #: ../../include/functions_api.php:3204
 msgid "Error getting plugins."
-msgstr ""
+msgstr "Chyba při získávání zásuvných modulů."
 
 #: ../../include/functions_api.php:3227
 msgid "Error creating module from network component. Agent doesn't exists."
-msgstr ""
+msgstr "Chyba při vytváření modulu ze síťové komponenty. Agent neexistuje."
 
 #: ../../include/functions_api.php:3234
 msgid ""
 "Error creating module from network component. Network component doesn't "
 "exists."
 msgstr ""
+"Chyba při vytváření modulu ze síťové komponenty. Komponenta neexistuje."
 
 #: ../../include/functions_api.php:3252
 msgid "Error creating module from network component. Error creating module."
 msgstr ""
+"Chyba při vytváření modulu ze síťové komponenty. Chyba pro vytváření modulu."
 
 #: ../../include/functions_api.php:3278
 msgid "Error assigning module to template. Id_template cannot be left blank."
 msgstr ""
+"Chyba při přidělování modulu k šabloně. ID šablony nemůže být prázdné."
 
 #: ../../include/functions_api.php:3283
 msgid "Error assigning module to template. Id_module cannot be left blank."
 msgstr ""
+"Chyba při přidělování modulu k šabloně. ID modulu nemůže být prázdné."
 
 #: ../../include/functions_api.php:3288
 msgid "Error assigning module to template. Id_agent cannot be left blank."
 msgstr ""
+"Chyba při přidělování modulu k šabloně. ID agenta nemůže být prázdné."
 
 #: ../../include/functions_api.php:3295
 msgid "Error assigning module to template. Id_template doensn't exists."
-msgstr ""
+msgstr "Chyba při přidělování modulu k šabloně. ID šablony neexistuje."
 
 #: ../../include/functions_api.php:3305
 msgid "Error assigning module to template. Id_agent doesn't exists."
-msgstr ""
+msgstr "Chyba při přidělování modulu k šabloně. ID agenta neexistuje."
 
 #: ../../include/functions_api.php:3312
 msgid "Error assigning module to template. Id_module doesn't exists."
-msgstr ""
+msgstr "Chyba při přidělování modulu k šabloně. ID modulu neexistuje."
 
 #: ../../include/functions_api.php:3320
 msgid "Error assigning module to template."
-msgstr ""
+msgstr "Chyba při přidělování modulu k šabloně."
 
 #: ../../include/functions_api.php:3346
 msgid ""
 "Error deleting module template. Id_module_template cannot be left blank."
 msgstr ""
+"Chyba při mazání šablony modulu. ID modulu šablony nemůže být prázdné."
 
 #: ../../include/functions_api.php:3353
 msgid "Error deleting module template. Id_module_template doesn't exists."
-msgstr ""
+msgstr "Chyba při mazání šablony modulu. ID modulu šablony neexistuje."
 
 #: ../../include/functions_api.php:3361 ../../include/functions_api.php:3420
 msgid "Error deleting module template."
-msgstr ""
+msgstr "Chyba při mazání šablony modulu."
 
 #: ../../include/functions_api.php:3364 ../../include/functions_api.php:3423
 msgid "Correct deleting of module template."
-msgstr ""
+msgstr "Opravit mazání šablony modulu."
 
 #: ../../include/functions_api.php:3499
 msgid "Error validate all alerts. Failed "
-msgstr ""
+msgstr "Chyba při ověřování všech výstrah. Selhalo "
 
 #: ../../include/functions_api.php:3502
 msgid "Correct validating of all alerts."
-msgstr ""
+msgstr "Opravit ověření všech výstrah."
 
 #: ../../include/functions_api.php:3529
 msgid "Error validating all alert policies."
-msgstr ""
+msgstr "Chyba při ověřování všech zásad výstrah."
 
 #: ../../include/functions_api.php:3586
 msgid "Error validate all policy alerts. Failed "
-msgstr ""
+msgstr "Chyba při ověřování všech zásad výstrah. Selhalo "
 
 #: ../../include/functions_api.php:3589
 msgid "Correct validating of all policy alerts."
-msgstr ""
+msgstr "Opravit ověřování všech zásad výstrah."
 
 #: ../../include/functions_api.php:3612
 msgid "Error stopping downtime. Id_downtime cannot be left blank."
-msgstr ""
+msgstr "Chyba při zastavování odstávky. Id_downtime"
 
 #: ../../include/functions_api.php:3628
 msgid "Downtime stopped."
-msgstr ""
+msgstr "Odstávka zastavena."
 
 #: ../../include/functions_api.php:3731
 msgid "Error adding agent to policy. Id_policy cannot be left blank."
-msgstr ""
+msgstr "Chyba při přidávání agenta k zásadám. Id_policy nemůže být prázdné."
 
 #: ../../include/functions_api.php:3736
 msgid "Error adding agent to policy. Id_agent cannot be left blank."
-msgstr ""
+msgstr "Chyba při přidávání agenta k zásadám. Id_agent nemůže být prázdné."
 
 #: ../../include/functions_api.php:3744
 msgid "Error adding agent to policy. Id_agent doesn't exists."
-msgstr ""
+msgstr "Chyba při přidávání agenta k zásadám. Id_agent neexistuje."
 
 #: ../../include/functions_api.php:3752
 msgid "Error adding agent to policy."
-msgstr ""
+msgstr "Chyba při přidávání agenta k zásadám."
 
 #: ../../include/functions_api.php:3760
 msgid "Error adding agent to policy. The agent is already in the policy."
 msgstr ""
+"Chyba při přidávání agenta k zásadám. Agent již je v zásadách umístěn."
 
 #: ../../include/functions_api.php:3795
 msgid "Error adding data module to policy. Id_policy cannot be left blank."
 msgstr ""
+"Chyba při přidávání datového modulu k zásadám. Id_policy nemůže být prázdné."
 
 #: ../../include/functions_api.php:3800
 msgid "Error adding data module to policy. Module_name cannot be left blank."
 msgstr ""
+"Chyba při přidávání datového modulu k zásadám. Module_name nemůže být "
+"prázdné."
 
 #: ../../include/functions_api.php:3808
 msgid "Error adding data module to policy."
-msgstr ""
+msgstr "Chyba při přidávání datového modulu k zásadám."
 
 #: ../../include/functions_api.php:3844
 msgid ""
 "Error adding data module to policy. The module is already in the policy."
 msgstr ""
+"Chyba při přidávání datového modulu k zásadám. Modul již je v zásadách."
 
 #: ../../include/functions_api.php:3884
 msgid "Error updating data module in policy. Id_policy cannot be left blank."
 msgstr ""
+"Chyba při aktualizaci datového modulu v zásadách. Id_policy nemůže být "
+"prázdné."
 
 #: ../../include/functions_api.php:3889
 msgid ""
 "Error updating data module in policy. Id_policy_module cannot be left blank."
 msgstr ""
+"Chyba při aktualizaci datového modulu v zásadách. Id_policy_module nemůže "
+"být prázdné."
 
 #: ../../include/functions_api.php:3897
 msgid "Error updating data module in policy. Module doesn't exists."
-msgstr ""
+msgstr "Chyba při aktualizaci datového modulu v zásadách. Modul neexistuje."
 
 #: ../../include/functions_api.php:3902
 msgid ""
@@ -19174,196 +19261,229 @@ msgstr ""
 
 #: ../../include/functions_api.php:3926
 msgid "Data policy module updated."
-msgstr ""
+msgstr "Modul zásad dat byl aktualizován."
 
 #: ../../include/functions_api.php:3955
 msgid ""
 "Error adding network module to policy. Id_policy cannot be left blank."
 msgstr ""
+"Chyba při přidávání síťového modulu do zásad. Id_policy nemůže být prázdné."
 
 #: ../../include/functions_api.php:3961
 msgid ""
 "Error adding network module to policy. Module_name cannot be left blank."
 msgstr ""
+"Chyba při přidávání síťového modulu do zásad. Module_name nemůže být prázdné."
 
 #: ../../include/functions_api.php:3967
 msgid ""
 "Error adding network module to policy. Id_module_type is not correct for "
 "network modules."
 msgstr ""
+"Chyba při přidávání síťového modulu do zásad. Id_module_type není správné "
+"pro síťové moduly."
 
 #: ../../include/functions_api.php:3977
 msgid "Error adding network module to policy."
-msgstr ""
+msgstr "Chyba při přidávání síťového modulu do zásad."
 
 #: ../../include/functions_api.php:4015
 msgid ""
 "Error adding network module to policy. The module is already in the policy."
 msgstr ""
+"Chyba při přidávání síťového modulu do zásad. Modul již je v zásadách."
 
 #: ../../include/functions_api.php:4053
 msgid ""
 "Error updating network module in policy. Id_policy cannot be left blank."
 msgstr ""
+"Chyba při aktualizaci síťového modulu v zásadách. Id_policy nemůže být "
+"prázdné."
 
 #: ../../include/functions_api.php:4059
 msgid ""
 "Error updating network module in policy. Id_policy_module cannot be left "
 "blank."
 msgstr ""
+"Chyba při aktualizaci síťového modulu v zásadách. Id_policy_module nemůže "
+"být prázdné."
 
 #: ../../include/functions_api.php:4068
 msgid "Error updating network module in policy. Module doesn't exists."
-msgstr ""
+msgstr "Chyba při aktualizaci síťového modulu v zásadách. Modul neexistuje."
 
 #: ../../include/functions_api.php:4074
 msgid ""
 "Error updating network module in policy. Module type is not network type."
 msgstr ""
+"Chyba při aktualizaci síťového modulu v zásadách. Typ modulu není síťový."
 
 #: ../../include/functions_api.php:4100
 msgid "Network policy module updated."
-msgstr ""
+msgstr "Modul síťových zásad byl aktualizován."
 
 #: ../../include/functions_api.php:4127
 msgid "Error adding plugin module to policy. Id_policy cannot be left blank."
 msgstr ""
+"Chyba při přidávání zásuvného modulu do zásad. Id_policy nemůže být prázdné."
 
 #: ../../include/functions_api.php:4132
 msgid ""
 "Error adding plugin module to policy. Module_name cannot be left blank."
 msgstr ""
+"Chyba při přidávání zásuvného modulu do zásad. Module_name nemůže být "
+"prázdné."
 
 #: ../../include/functions_api.php:4137
 msgid "Error adding plugin module to policy. Id_plugin cannot be left blank."
 msgstr ""
+"Chyba při přidávání zásuvného modulu do zásad. Id_plugin nemůže být prázdné."
 
 #: ../../include/functions_api.php:4145
 msgid "Error adding plugin module to policy."
-msgstr ""
+msgstr "Chyba při přidávání zásuvného modulu do zásad."
 
 #: ../../include/functions_api.php:4188
 msgid ""
 "Error adding plugin module to policy. The module is already in the policy."
 msgstr ""
+"Chyba při přidávání zásuvného modulu do zásad. Modul již je v zásadách."
 
 #: ../../include/functions_api.php:4227
 msgid ""
 "Error updating plugin module in policy. Id_policy cannot be left blank."
 msgstr ""
+"Chyba při aktualizaci zásuvného modulu v zásadách. Id_policy nemůže být "
+"prázdné."
 
 #: ../../include/functions_api.php:4233
 msgid ""
 "Error updating plugin module in policy. Id_policy_module cannot be left "
 "blank."
 msgstr ""
+"Chyba při aktualizaci zásuvného modulu v zásadách. Id_policy_module nemůže "
+"být prázdné."
 
 #: ../../include/functions_api.php:4242
 msgid "Error updating plugin module in policy. Module doesn't exists."
-msgstr ""
+msgstr "Chyba při aktualizaci zásuvného modulu v zásadách. Modul neexistuje."
 
 #: ../../include/functions_api.php:4248
 msgid ""
 "Error updating plugin module in policy. Module type is not network type."
 msgstr ""
+"Chyba při aktualizaci zásuvného modulu v zásadách. Typ modulu není síťový."
 
 #: ../../include/functions_api.php:4280
 msgid "Plugin policy module updated."
-msgstr ""
+msgstr "Zásuvný modul zásad byl aktualizován."
 
 #: ../../include/functions_api.php:4455
 msgid "Error adding SNMP module to policy. Id_policy cannot be left blank."
 msgstr ""
+"Chyba při přidávání modulu SNMP do zásad. Id_policy nemůže být prázdné."
 
 #: ../../include/functions_api.php:4460
 msgid "Error adding SNMP module to policy. Module_name cannot be left blank."
 msgstr ""
+"Chyba při přidávání modulu SNMP do zásad. Module_name nemůže být prázdné."
 
 #: ../../include/functions_api.php:4468
 msgid "Error adding SNMP module to policy."
-msgstr ""
+msgstr "Chyba při přidávání modulu SNMP do zásad."
 
 #: ../../include/functions_api.php:4473
 msgid ""
 "Error adding SNMP module to policy. Id_module_type is not correct for SNMP "
 "modules."
 msgstr ""
+"Chyba při přidávání modulu SNMP do zásad. Id_module_type není správný pro "
+"moduly SNMP."
 
 #: ../../include/functions_api.php:4567
 msgid ""
 "Error adding SNMP module to policy. The module is already in the policy."
-msgstr ""
+msgstr "Chyba při přidávání modulu SNMP do zásad. Modul již je v zásadách."
 
 #: ../../include/functions_api.php:4606
 msgid "Error updating SNMP module in policy. Id_policy cannot be left blank."
 msgstr ""
+"Chyba při aktualizaci modulu SNMP v zásadách. Id_policy nemůže být prázdné."
 
 #: ../../include/functions_api.php:4611
 msgid ""
 "Error updating SNMP module in policy. Id_policy_module cannot be left blank."
 msgstr ""
+"Chyba při aktualizaci modulu SNMP v zásadách. Id_policy_name nemůže být "
+"prázdné."
 
 #: ../../include/functions_api.php:4619
 msgid "Error updating SNMP module in policy. Module doesn't exists."
-msgstr ""
+msgstr "Chyba při aktualizaci modulu SNMP v zásadách. Modul neexistuje."
 
 #: ../../include/functions_api.php:4624
 msgid "Error updating SNMP module in policy. Module type is not SNMP type."
-msgstr ""
+msgstr "Chyba při aktualizaci modulu SNMP v zásadách. Typ modulu není SNMP."
 
 #: ../../include/functions_api.php:4633
 msgid ""
 "Error updating SNMP module. snmp3_priv_method doesn't exists. Set it to "
 "'AES' or 'DES'. "
 msgstr ""
+"Chyba při aktualizaci modulu SNMP. snmp3_priv_method neexistuje. Nastavte ji "
+"na 'AES' nebo 'DES'. "
 
 #: ../../include/functions_api.php:4639
 msgid ""
 "Error updating SNMP module. snmp3_sec_level doesn't exists. Set it to "
 "'authNoPriv' or 'authPriv' or 'noAuthNoPriv'. "
 msgstr ""
+"Chyba při aktualizaci modulu SNMP. snmp3_sec_level neexistuje. Nastavte ji "
+"na 'authNoPriv', 'authPriv' nebo 'noAuthNoPriv'. "
 
 #: ../../include/functions_api.php:4645
 msgid ""
 "Error updating SNMP module. snmp3_auth_method doesn't exists. Set it to "
 "'MD5' or 'SHA'. "
 msgstr ""
+"Chyba při aktualizaci modulu SNMP. snmp3_auth_method neexistuje. Nastavte ji "
+"na 'MD5' nebo 'SHA'. "
 
 #: ../../include/functions_api.php:4676
 msgid "SNMP policy module updated."
-msgstr ""
+msgstr "Modul zásad SNMP aktualizován."
 
 #: ../../include/functions_api.php:4699
 msgid "Error applying policy. Id_policy cannot be left blank."
-msgstr ""
+msgstr "Chyba při použití zásad. Id_policy nemůže být prázdné."
 
 #: ../../include/functions_api.php:4712 ../../include/functions_api.php:4736
 msgid "Error applying policy."
-msgstr ""
+msgstr "Chyba při použití zásad."
 
 #: ../../include/functions_api.php:4723
 msgid "Error applying policy. This policy is already pending to apply."
-msgstr ""
+msgstr "Chyba při použití zásad. Tato zásada čeká na použití."
 
 #: ../../include/functions_api.php:4781
 msgid "Error applying all policies."
-msgstr ""
+msgstr "Chyba při použití všech zásad."
 
 #: ../../include/functions_api.php:4833
 msgid "Error in group creation. Group_name cannot be left blank."
-msgstr ""
+msgstr "Chyba při vytváření skupiny. Group_name nemůže být prázdné."
 
 #: ../../include/functions_api.php:4838
 msgid "Error in group creation. Icon_name cannot be left blank."
-msgstr ""
+msgstr "Chyba při vytváření skupiny. Icon_name nemůže být prázdné."
 
 #: ../../include/functions_api.php:4848 ../../include/functions_api.php:4965
 msgid "Error in group creation. Id_parent_group doesn't exists."
-msgstr ""
+msgstr "Chyba při vytváření skupiny. Id_parent_group neexistuje."
 
 #: ../../include/functions_api.php:4876
 msgid "Error in group creation."
-msgstr ""
+msgstr "Chyba při vytváření skupiny."
 
 #: ../../include/functions_api.php:4953
 msgid "Error in netflow filter creation. Filter name cannot be left blank."
@@ -19395,31 +19515,31 @@ msgstr "Vytvořit uživatele."
 
 #: ../../include/functions_api.php:5177
 msgid "Error updating user. Id_user cannot be left blank."
-msgstr ""
+msgstr "Chyba při aktualizaci uživatele. Id_user nemůže být prázdné."
 
 #: ../../include/functions_api.php:5185
 msgid "Error updating user. Id_user doesn't exists."
-msgstr ""
+msgstr "Chyba při aktualizaci uživatele. Id_user neexistuje."
 
 #: ../../include/functions_api.php:5201
 msgid "Error updating user. Password info incorrect."
-msgstr ""
+msgstr "Chyba při aktualizaci uživatele. Údaje o hesle nesprávné."
 
 #: ../../include/functions_api.php:5209
 msgid "Updated user."
-msgstr ""
+msgstr "Uživatel aktualizován."
 
 #: ../../include/functions_api.php:5258
 msgid "Error in user enabling/disabling."
-msgstr ""
+msgstr "Chyba v povolení/zákazu uživatele."
 
 #: ../../include/functions_api.php:5262
 msgid "Enabled user."
-msgstr ""
+msgstr "Uživatel povolen."
 
 #: ../../include/functions_api.php:5265
 msgid "Disabled user."
-msgstr ""
+msgstr "Uživatel zakázán."
 
 #: ../../include/functions_api.php:6731
 msgid "Delete user."
@@ -19662,7 +19782,7 @@ msgstr ""
 
 #: ../../include/functions_config.php:172
 msgid "License information"
-msgstr ""
+msgstr "Informace o licenci"
 
 #: ../../include/functions_config.php:195
 msgid "Forward SNMP traps to agent (if exist)"
@@ -19964,7 +20084,7 @@ msgstr "Režim vývojáře je povolen"
 
 #: ../../include/functions_config.php:1455
 msgid "Error first setup Open update"
-msgstr ""
+msgstr "Chyba nejdříve nastavte otevřené aktualizace"
 
 #: ../../include/functions_config.php:1461
 msgid ""
@@ -19975,7 +20095,7 @@ msgstr ""
 
 #: ../../include/functions_config.php:1462
 msgid "New update of Pandora Console"
-msgstr ""
+msgstr "Nová aktualizace konzole Pandora"
 
 #: ../../include/functions_config.php:1476
 msgid ""
@@ -19995,7 +20115,7 @@ msgstr ""
 #: ../../include/functions_config.php:1482
 #: ../../include/functions_config.php:1488
 msgid "Unlimited"
-msgstr ""
+msgstr "Bez omezení"
 
 #: ../../include/functions_config.php:1482
 #: ../../include/functions_config.php:1488
@@ -20120,7 +20240,7 @@ msgstr "Limit SLA"
 
 #: ../../include/functions_reporting_html.php:345
 msgid "SLA Compliance"
-msgstr ""
+msgstr "Dodržení SLA"
 
 #: ../../include/functions_reporting_html.php:373
 msgid "Fail"
@@ -20128,7 +20248,7 @@ msgstr "Neúspěšný"
 
 #: ../../include/functions_reporting_html.php:558
 msgid "Events by agent"
-msgstr ""
+msgstr "Události podle agenta"
 
 #: ../../include/functions_reporting_html.php:570
 msgid "Events by user validator"
@@ -20138,7 +20258,7 @@ msgstr ""
 #: ../../include/functions_reporting_html.php:1161
 #: ../../include/functions_reporting_html.php:2716
 msgid "Events by criticity"
-msgstr ""
+msgstr "Události podle vážnosti"
 
 #: ../../include/functions_reporting_html.php:594
 msgid "Events validated vs unvalidated"
@@ -20185,7 +20305,7 @@ msgstr ""
 
 #: ../../include/functions_reporting_html.php:1149
 msgid "Events validated by user"
-msgstr ""
+msgstr "Události ověřené uživatelem"
 
 #: ../../include/functions_reporting_html.php:1238
 #, php-format
@@ -20268,7 +20388,7 @@ msgstr "Monitory NE OK"
 #: ../../include/functions_reporting_html.php:2178
 #, php-format
 msgid "Agents in group: %s"
-msgstr ""
+msgstr "Agenti ve skupinách: %s"
 
 #: ../../include/functions_reporting_html.php:2271
 msgid "Last failure"
@@ -20346,1427 +20466,3 @@ msgstr "Chyba zabezpečení. Prosím kontaktujte správce."
 #: ../../include/get_file.php:54
 msgid "File is missing in disk storage. Please contact the administrator."
 msgstr "Soubor chybí v úložišti disku. Prosím kontaktujte správce."
-
-#~ msgid "Id"
-#~ msgstr "Id"
-
-#~ msgid "Settings"
-#~ msgstr "Nastavení"
-
-#~ msgid "Development"
-#~ msgstr "Vývoj"
-
-#~ msgid "Factor"
-#~ msgstr "Faktor"
-
-#~ msgid "Store"
-#~ msgstr "Uložit"
-
-#~ msgid "Up"
-#~ msgstr "Nahoru"
-
-#~ msgid "Master"
-#~ msgstr "Master"
-
-#~ msgid "hour"
-#~ msgstr "hodina"
-
-#~ msgid "day"
-#~ msgstr "den"
-
-#~ msgid "week"
-#~ msgstr "týden"
-
-#~ msgid "month"
-#~ msgstr "měsíc"
-
-#~ msgid "Del"
-#~ msgstr "Del"
-
-#~ msgid "Oper"
-#~ msgstr "Oper"
-
-#~ msgid "S"
-#~ msgstr "S"
-
-#~ msgid "Load"
-#~ msgstr "Načíst"
-
-#~ msgid "SNMP server"
-#~ msgstr "Server SNMP"
-
-#~ msgid "Seconds"
-#~ msgstr "Sekundy"
-
-#~ msgid "Raw Data"
-#~ msgstr "Syrová data"
-
-#~ msgid "from"
-#~ msgstr "z alba"
-
-#~ msgid " from "
-#~ msgstr " od "
-
-#~ msgid " to "
-#~ msgstr " do "
-
-#~ msgid "Info"
-#~ msgstr "Informace"
-
-#~ msgid "Last hour"
-#~ msgstr "Poslední hodinu"
-
-#~ msgid "Older"
-#~ msgstr "Starší"
-
-#~ msgid "Your IP"
-#~ msgstr "Vaše IP"
-
-#~ msgid "Logged Out"
-#~ msgstr "Odhlášen"
-
-#~ msgid "No news articles at this moment"
-#~ msgstr "Žádné novinky"
-
-#~ msgid "You are"
-#~ msgstr "Jste"
-
-#~ msgid "General information"
-#~ msgstr "Důležitá informace"
-
-#~ msgid "Monitors warning"
-#~ msgstr "Monitory - varování"
-
-#~ msgid "Monitors normal"
-#~ msgstr "Monitory - varování"
-
-#~ msgid "Monitors unknown"
-#~ msgstr "Monitory - neznámé"
-
-#~ msgid "Monitors critical"
-#~ msgstr "Monitory - kritické"
-
-#~ msgid "Alerts defined"
-#~ msgstr "Určené výstrahou"
-
-#~ msgid "Users defined"
-#~ msgstr "Určené uživatelem"
-
-#~ msgid "minute"
-#~ msgstr "minuta"
-
-#~ msgid "Autorefresh"
-#~ msgstr "Autoobnovování"
-
-#~ msgid "Local modules rate"
-#~ msgstr "Množství místních modulů"
-
-#~ msgid "Monitors not init"
-#~ msgstr "Monitor nezaveden"
-
-#~ msgid "Global health"
-#~ msgstr "Globální zdraví"
-
-#~ msgid "Remote modules rate"
-#~ msgstr "Množství vzdálených modulů"
-
-#~ msgid "Uninitialized modules"
-#~ msgstr "Nezavedené moduly"
-
-#~ msgid "ALERTS FIRED"
-#~ msgstr "VYSLANÉ VÝSTRAHY"
-
-#~ msgid "The colours meaning:"
-#~ msgstr "Barvy znamenají:"
-
-#~ msgid "Update manager settings updated"
-#~ msgstr "Nastavení správce aktualizací změněno"
-
-#~ msgid "Update server host"
-#~ msgstr "Hostitel aktualizačního serveru"
-
-#~ msgid "Update server path"
-#~ msgstr "Cesta aktualizačního serveru"
-
-#~ msgid "Update server port"
-#~ msgstr "Port aktualizačního serveru"
-
-#~ msgid "Binary input path"
-#~ msgstr "Cesta binárního vstupu"
-
-#~ msgid "Testing"
-#~ msgstr "Zkouška"
-
-#~ msgid ""
-#~ "Update Manager sends anonymous information about Pandora FMS usage (number "
-#~ "of agents and modules running). To disable it, just delete extension or "
-#~ "remove remote server address from Update Manager plugin setup."
-#~ msgstr ""
-#~ "Správce aktualizací odesílá anonymní informace o používání Pandora FMS "
-#~ "(počet spuštěných agentů a modulů. Abyste toto zakázali, stačí rozšíření "
-#~ "smazat nebo odstranit adresu vzdáleného serveru z nastavení modulu Správce "
-#~ "aktualizací."
-
-#~ msgid "Your system is up-to-date"
-#~ msgstr "Váš systém je aktuální"
-
-#~ msgid "Server authorization rejected"
-#~ msgstr "Ověření na serveru zamítnuto"
-
-#~ msgid "Server connection failed"
-#~ msgstr "Připojení k serveru selhalo"
-
-#~ msgid "Keygen file is not executable"
-#~ msgstr "Soubor generátoru klíče není spustitelný"
-
-#~ msgid "Keygen file does not exists"
-#~ msgstr "Soubor generátoru klíče neexistuje"
-
-#~ msgid "There's a new update for Pandora FMS"
-#~ msgstr "Existuje nová aktualizace pro Pandora FMS"
-
-#~ msgid "Your system version number is"
-#~ msgstr "Vaše číslo verze systému je"
-
-#~ msgid "Overwrite local changes"
-#~ msgstr "Přepsat místní změny"
-
-#~ msgid "Type at least two characters to search"
-#~ msgstr "Zadejte alespoň dva znaky pro hledání"
-
-#~ msgid "There's a new update for Pandora"
-#~ msgstr "Existuje nová aktualizace pro Pandora"
-
-#~ msgid "More info"
-#~ msgstr "Další informace"
-
-#~ msgid "Update manager settings"
-#~ msgstr "Nastavení správce aktualizací"
-
-#~ msgid "Modules groups"
-#~ msgstr "Skupiny modulů"
-
-#~ msgid "Create incident from event"
-#~ msgstr "Vytvořit incident z události"
-
-#~ msgid "Event graph by group"
-#~ msgstr "Graf události pdole skupiny"
-
-#~ msgid "MD5 check"
-#~ msgstr "Kontrola MD5"
-
-#~ msgid "Modules delayed / Max. Delay (sec)"
-#~ msgstr "Zpožděné moduly / Max. zpoždění (sek)"
-
-#~ msgid "Modules running on this server / Total modules of this type"
-#~ msgstr "Moduly běžící na tomto serveru / Celkem modulů tohoto typu"
-
-#~ msgid "This server has no recon tasks assigned"
-#~ msgstr "Tento server nemá přiděleny žádné úkoly průzkumu"
-
-#~ msgid "Flash charts"
-#~ msgstr "Flash grafy"
-
-#~ msgid "Module Up"
-#~ msgstr "Přesunout modul nahoru"
-
-#~ msgid "Module Down"
-#~ msgstr "Přesunout modul dolů"
-
-#~ msgid "There are no modules to evaluate the S.L.A. from"
-#~ msgstr "Neexistují žádné moduly pro vyhodnocením S.I.A. od"
-
-#~ msgid "There are no servers configured in the database"
-#~ msgstr "V databázi nejsou nastaveny žádné servery"
-
-#~ msgid "User-defined SLA items"
-#~ msgstr "Uživatelem zadané položky SLA"
-
-#~ msgid "Invalid method supplied"
-#~ msgstr "Zadána neplatná metoda"
-
-#~ msgid "This agent doesn't have any active monitors"
-#~ msgstr "Tento agent nemá žádné aktivní monitory"
-
-#~ msgid "Compound alerts"
-#~ msgstr "Složené výstrahy"
-
-#~ msgid " seconds."
-#~ msgstr " sekund"
-
-#~ msgid "Timestamp from"
-#~ msgstr "Časové razítko od"
-
-#~ msgid "No simple alerts found"
-#~ msgstr "Nenalezeny žádné výstrahy"
-
-#~ msgid "Single alerts"
-#~ msgstr "Jednoduché výstrahy"
-
-#~ msgid "Events generated -by module-"
-#~ msgstr "Události vytvořené -modulem-"
-
-#~ msgid "Timestamp to"
-#~ msgstr "Časové razítko do"
-
-#~ msgid "Flag"
-#~ msgstr "Označit"
-
-#~ msgid "secs."
-#~ msgstr "sek."
-
-#~ msgid "This agent doesn't have any module"
-#~ msgstr "Tento agent nemá žádný modul"
-
-#~ msgid "int"
-#~ msgstr "číslo"
-
-#~ msgid "Agent down"
-#~ msgstr "Agent mimo provoz"
-
-#~ msgid "Alerts disabled"
-#~ msgstr "Výstrahy zakázány"
-
-#~ msgid "At least one monitor fails"
-#~ msgstr "Alespoň jeden monitor selhal"
-
-#~ msgid "Change between Green/Red state"
-#~ msgstr "Změna mezi Zeleným/Červeným stavem"
-
-#~ msgid "Read message"
-#~ msgstr "Přečíst zprávu"
-
-#~ msgid "-Select group-"
-#~ msgstr "-Vyberte skupinu-"
-
-#~ msgid "-Select user-"
-#~ msgstr "-Vyberte uživatele-"
-
-#~ msgid "No layouts found"
-#~ msgstr "Nenalezena žádná rozržení"
-
-#~ msgid "Search value"
-#~ msgstr "Hledaná hodnota"
-
-#~ msgid "Group detailed event"
-#~ msgstr "Podrobná událost skupiny"
-
-#~ msgid "Sumatory"
-#~ msgstr "Suma"
-
-#~ msgid "Agent detailed event"
-#~ msgstr "Podrobná událost agenta"
-
-#~ msgid "Agents detailed event"
-#~ msgstr "Podrobná událost agentů"
-
-#~ msgid "Combined image render"
-#~ msgstr "Kombinované vykreslení obrázku"
-
-#~ msgid ""
-#~ "There was an error deleting the agent, the operation has been cancelled"
-#~ msgstr "Při mazání tohoto agenta došlo k chybě, operace byla zrušena"
-
-#~ msgid "Could not delete agent"
-#~ msgstr "Nelze smazat agenta"
-
-#~ msgid "Could not delete modules"
-#~ msgstr "Nelze smazat moduly"
-
-#~ msgid "N/A\t"
-#~ msgstr "N/A\t"
-
-#~ msgid "Plugin component"
-#~ msgstr "Komponenta zásuvného modulu"
-
-#~ msgid "Plugin parameters"
-#~ msgstr "Parametry zásuvného modulu"
-
-#~ msgid "Module Interval"
-#~ msgstr "Interval modulu"
-
-#~ msgid "WMI component management"
-#~ msgstr "Správa komponenty WMI"
-
-#~ msgid "Minimum Data"
-#~ msgstr "Minimum dat"
-
-#~ msgid "Maximum Data"
-#~ msgstr "Maximum dat"
-
-#~ msgid "You don't have access"
-#~ msgstr "Nemáte přístup"
-
-#~ msgid "Only pending"
-#~ msgstr "Pouze nevyřízené"
-
-#~ msgid "Config"
-#~ msgstr "Nastavení"
-
-#~ msgid "Create networkmap"
-#~ msgstr "Vytvořit mapu sítě"
-
-#~ msgid "Software agent data"
-#~ msgstr "Data softwarového agenta"
-
-#~ msgid "Software agent monitor"
-#~ msgstr "Monitor softwarového agenta"
-
-#~ msgid "Network agent data"
-#~ msgstr "Data síťového agenta"
-
-#~ msgid "Network agent monitor"
-#~ msgstr "Monitor síťového agenta"
-
-#~ msgid "Agents in group"
-#~ msgstr "Agenti ve skupině"
-
-#~ msgid "On the edge"
-#~ msgstr "Na hraně"
-
-#~ msgid "Inside limits"
-#~ msgstr "Uvnitř limitů"
-
-#~ msgid "Last 8 hours"
-#~ msgstr "Posledních 8 hodin"
-
-#~ msgid ""
-#~ "Due security restrictions, there are some tokens or words you cannot use"
-#~ msgstr ""
-#~ "Kvůli bezpečnostním omezením jsou jisté příznaky či slova, která nemůžete "
-#~ "použít"
-
-#~ msgid "Illegal query"
-#~ msgstr "Neplatný dotaz"
-
-#~ msgid "or"
-#~ msgstr "nebo"
-
-#~ msgid "User defined graph"
-#~ msgstr "Uživatelem zadaný graf"
-
-#~ msgid "Module detailed event"
-#~ msgstr "Podrobná událost modulu"
-
-#~ msgid "Modules over or equal to"
-#~ msgstr "Moduly přes nebo rovné"
-
-#~ msgid "Modules at critial or warning status"
-#~ msgstr "Moduly v kritickém nebo varovném stavu"
-
-#~ msgid "Modules under those conditions"
-#~ msgstr "Moduly v těchto podmínkách"
-
-#~ msgid "There are no"
-#~ msgstr "Neexistují žádné"
-
-#~ msgid "Current directory is not writable by HTTP Server"
-#~ msgstr "Do současného adresáře nemůže HTTP server zapisovat"
-
-#~ msgid "Please check that current directory has write rights for HTTP server"
-#~ msgstr ""
-#~ "Prosím zkontrolujte, že HTTP server má oprávnění k zápisu do současného "
-#~ "adresáře"
-
-#~ msgid "Upload file"
-#~ msgstr "Nahrát soubor"
-
-#~ msgid "Agent keepalive monitor"
-#~ msgstr "Agent udržení monitoru"
-
-#~ msgid "Unmanaged error"
-#~ msgstr "Nespravovaná chyba"
-
-#~ msgid "You don't have enough permission to access this resource"
-#~ msgstr "Nemáte dostatečné oprávnění pro přístup k tomuto zdroji"
-
-#~ msgid "Field #1 (Alias, name)"
-#~ msgstr "Pole #1 (Zkratka, název)"
-
-#~ msgid "Field #3 (Full Text)"
-#~ msgstr "Pole #2 (Full Text)"
-
-#~ msgid "Field #2 (Single Line)"
-#~ msgstr "Pole #2 (Jeden řádek)"
-
-#~ msgid "Duplicate config"
-#~ msgstr "Duplikovat nastavení"
-
-#~ msgid "Manage modules"
-#~ msgstr "Správa modulů"
-
-#~ msgid "Correlation"
-#~ msgstr "Korelace"
-
-#~ msgid "Manage plugins"
-#~ msgstr "Správa zásuvných modulů"
-
-#~ msgid "Manage profiles"
-#~ msgstr "Správa profilů"
-
-#~ msgid "Field 1"
-#~ msgstr "Pole 1"
-
-#~ msgid "Field 2"
-#~ msgstr "Pole 2"
-
-#~ msgid "Correlated alerts"
-#~ msgstr "Korelované výstrahy"
-
-#~ msgid "Field 3"
-#~ msgstr "Pole 3"
-
-#~ msgid "Assigned actions"
-#~ msgstr "Přidělené volby"
-
-#~ msgid "Configure correlated alert"
-#~ msgstr "Nastavit korelovanou výstrahu"
-
-#~ msgid "No name was given"
-#~ msgstr "Nebylo zadán název"
-
-#~ msgid "Add condition"
-#~ msgstr "Přidat podmínku"
-
-#~ msgid "Operator"
-#~ msgstr "Operátor"
-
-#~ msgid "Assigned to"
-#~ msgstr "Přiřazené k"
-
-#~ msgid "No agent was given"
-#~ msgstr "Nebyl zadán agent"
-
-#~ msgid "No conditions were given"
-#~ msgstr "Nebyly zadány podmínky"
-
-#~ msgid ""
-#~ "The alert would fire when the value doesn't match <span id=\\\"value\\"
-#~ "\"></span>"
-#~ msgstr ""
-#~ "Výstraha bude vyslána, když hodnota neodpovídá <span id=\\\"value\\\"></span>"
-
-#~ msgid "The alert would fire when the value is <span id=\\\"value\\\"></span>"
-#~ msgstr ""
-#~ "Výstraha bude vyslána, když hodnota je <span id=\\\"value\\\"></span>"
-
-#~ msgid ""
-#~ "The alert would fire when the value matches <span id=\\\"value\\\"></span>"
-#~ msgstr ""
-#~ "Výstraha bude vyslána, když hodnota odpovídá <span id=\\\"value\\\"></span>"
-
-#~ msgid ""
-#~ "The alert would fire when the value is not <span id=\\\"value\\\"></span>"
-#~ msgstr ""
-#~ "Výstraha bude vyslána, když hodnota není <span id=\\\"value\\\"></span>"
-
-#~ msgid ""
-#~ "The alert would fire when the value is above <span id=\\\"max\\\"></span>"
-#~ msgstr ""
-#~ "Výstraha bude vyslána, když hodnota je nad <span id=\\\"max\\\"></span>"
-
-#~ msgid ""
-#~ "The alert would fire when the value is between <span id=\\\"min\\\"></span> "
-#~ "and <span id=\\\"max\\\"></span>"
-#~ msgstr ""
-#~ "Výstraha bude vyslána, když hodnota je mezi <span id=\\\"min\\\"></span> a "
-#~ "<span id=\\\"max\\\"></span>"
-
-#~ msgid ""
-#~ "The alert would fire when the value is not between <span id=\\\"min\\"
-#~ "\"></span> and <span id=\\\"max\\\"></span>"
-#~ msgstr ""
-#~ "Výstraha bude vyslána, když hodnota není mezi <span id=\\\"min\\\"></span> a "
-#~ "<span id=\\\"max\\\"></span>"
-
-#~ msgid ""
-#~ "The alert would fire when the value is below <span id=\\\"min\\\"></span>"
-#~ msgstr ""
-#~ "Výstraha bude vyslána, když hodnota je pod <span id=\\\"min\\\"></span>"
-
-#~ msgid ""
-#~ "Warning: When you change the Agent position, the agent automatically "
-#~ "activates the 'Ignore new GIS data' option"
-#~ msgstr ""
-#~ "Varování: Když změníte pozici agenta, agent automaticky aktivuje volbu "
-#~ "'Ignorovat nová data GIS'"
-
-#~ msgid "Error adding module"
-#~ msgstr "Chyba při přidávání modulu"
-
-#~ msgid "Modules successfully added "
-#~ msgstr "Moduly úspěšně přidány "
-
-#~ msgid "There was a problem adding module"
-#~ msgstr "Při přidávání modulu se vyskytl problém"
-
-#~ msgid "There was a problem updating module"
-#~ msgstr "Při aktualizaci modulu se vyskytl problém"
-
-#~ msgid "First name"
-#~ msgstr "Jméno"
-
-#~ msgid "Last name"
-#~ msgstr "Příjmení"
-
-#~ msgid ""
-#~ "This user has permissions to manage all. This is admin user and overwrites "
-#~ "all permissions given in profiles/groups"
-#~ msgstr ""
-#~ "Tento uživatel má oprávnění vše spravovat. Toto je správce a přepisuje "
-#~ "všechna oprávnění daná ve skupinách/profilech."
-
-#~ msgid "Manage Database"
-#~ msgstr "Správa databáze"
-
-#, php-format
-#~ msgid "%d hour"
-#~ msgstr "%d hodina"
-
-#, php-format
-#~ msgid "%d hours"
-#~ msgstr "%d hodin"
-
-#, php-format
-#~ msgid "%d month"
-#~ msgstr "%d měsíc"
-
-#, php-format
-#~ msgid "%d weeks"
-#~ msgstr "%d týdnů"
-
-#, php-format
-#~ msgid "%d week"
-#~ msgstr "%d týden"
-
-#, php-format
-#~ msgid "%d days"
-#~ msgstr "%d dnů"
-
-#, php-format
-#~ msgid "%d day"
-#~ msgstr "%d den"
-
-#~ msgid "IP address option"
-#~ msgstr "Volba IP adresy"
-
-#~ msgid "User option"
-#~ msgstr "Volba uživatele"
-
-#~ msgid "Password option"
-#~ msgstr "Volba hesla"
-
-#~ msgid "Port option"
-#~ msgstr "Volba portu"
-
-#~ msgid "Database sanity tool"
-#~ msgstr "Nástroj soudržnosti databáze"
-
-#~ msgid "Checking database consistency"
-#~ msgstr "Kontrola konzistence databáze"
-
-#~ msgid "Deleting non-init data"
-#~ msgstr "Mazání nezavádějících dat"
-
-#~ msgid "Checking tagente_estado table"
-#~ msgstr "Kontrola tabulky  tagente_estado"
-
-#~ msgid "Data older than"
-#~ msgstr "Data starší než"
-
-#~ msgid "Purge task launched for agent"
-#~ msgstr "Vyčistit úkoly spuštěné pro agenta"
-
-#~ msgid "Deleting records for module"
-#~ msgstr "Mazání záznamů modulu"
-
-#~ msgid "Delete non-initialized modules now"
-#~ msgstr "Smazat nezavedené moduly"
-
-#~ msgid "Sanitize my database now"
-#~ msgstr "Ošetřit databázi"
-
-#~ msgid ""
-#~ "Pandora FMS Sanity tool is used to remove bad database structure data, "
-#~ "created modules with missing status, or modules that cannot be initialized "
-#~ "(and don't report any valid data) but retry each its own interval to get "
-#~ "data. This kind of bad modules could degrade performance of Pandora FMS. "
-#~ "This database sanity tool is also implemented in the <b>pandora_db.pl</b> "
-#~ "that you should be running each day or week. This console sanity DONT "
-#~ "compact your database, only delete bad structured data."
-#~ msgstr ""
-#~ "Nástroj pro údržbu Pandora FMS je použitý pro odstranění špatných "
-#~ "databázových struktur dat, vytvořených modulů s prázdným stavem, nebo "
-#~ "moduly, které nemohou být zavedeny (a nezaznamenává žádná platná data) ale "
-#~ "při každém intervalu se snaží získat data. Tento druh špatných modulů by "
-#~ "mohl snížit výkon Pandora FMS.  Tento nástroj je také zaveden v "
-#~ "<b>pandora_db.pl</b>, který by měl být spuštěn každý den nebo týden. Toto "
-#~ "fungování databáze NEZHUŠŤUJE vaší databázi, pouze maže špatně strukturovaná "
-#~ "data."
-
-#~ msgid "Press here to get database information as text"
-#~ msgstr "Stiskněte zde pro získání informací o databázi jako text"
-
-#~ msgid "Press here to get database information as a graph"
-#~ msgstr "Stiskněte zde pro získání informací o databázi jako graf"
-
-#~ msgid "Modules per agent"
-#~ msgstr "Moduly na agenta"
-
-#~ msgid "Packets per agent"
-#~ msgstr "Pakety na agenta"
-
-#~ msgid "Total data"
-#~ msgstr "Dat celkem"
-
-#~ msgid "Assigned modules"
-#~ msgstr "Přidělené moduly"
-
-#~ msgid "Decrease Weight"
-#~ msgstr "Snížit váhu"
-
-#~ msgid "Increase Weight"
-#~ msgstr "Zvýšit váhu"
-
-#~ msgid "Label color"
-#~ msgstr "Barva štítku"
-
-#~ msgid "Visual configuration"
-#~ msgstr "Vizuální nastavení"
-
-#~ msgid "General configuration"
-#~ msgstr "Obecné nastavení"
-
-#~ msgid "SLA period (seconds)"
-#~ msgstr "Období SLA (sekundy)"
-
-#~ msgid "There are no agents included in this group"
-#~ msgstr "V této skupině nejsou zařazeni žádní agenti"
-
-#~ msgid "Export targets"
-#~ msgstr "Exportovat cíle"
-
-#~ msgid "No selected agents to copy"
-#~ msgstr "Nejsou zvoleni žádní agenti ke kopírování"
-
-#~ msgid "Data Copy"
-#~ msgstr "Kopie dat"
-
-#~ msgid "Making copy of configuration file for"
-#~ msgstr "Vytváření kopie souboru nastavení pro"
-
-#~ msgid "Remote configuration management"
-#~ msgstr "Správa vzdáleného nastavení"
-
-#~ msgid "To agent(s):"
-#~ msgstr "Pro agenty:"
-
-#~ msgid "Source group"
-#~ msgstr "Zdrojová skupina"
-
-#~ msgid "Replicate configuration"
-#~ msgstr "Kopírovat nastavení"
-
-#~ msgid "E/D"
-#~ msgstr "E/D"
-
-#~ msgid "Error updating export target"
-#~ msgstr "Chyba při aktualizaci cíle exportu"
-
-#~ msgid "Successfully updated export target"
-#~ msgstr "Cíl exportu úspěšně aktualizován"
-
-#~ msgid "Error deleting export target"
-#~ msgstr "Chyba při mazání cíle exportu"
-
-#~ msgid "Successfully deleted export target"
-#~ msgstr "Cíl exportu úspěšně smazán"
-
-#~ msgid "Preffix"
-#~ msgstr "Předpona"
-
-#~ msgid "Transfer mode"
-#~ msgstr "Režim přenosu"
-
-#~ msgid "Extra options"
-#~ msgstr "Další volby"
-
-#~ msgid "Target directory"
-#~ msgstr "Cílový adresář"
-
-#~ msgid "There are no export targets configured"
-#~ msgstr "Nejsou nastaveny žádné cíle exportu"
-
-#~ msgid "Keygen path"
-#~ msgstr "Cesta generátoru klíče"
-
-#~ msgid "Code / binary directory"
-#~ msgstr "Kódový / binární adresář"
-
-#~ msgid "Custom graph name"
-#~ msgstr "Vlastní název grafu"
-
-#~ msgid "Update layout successful"
-#~ msgstr "Aktualizace rozvržení úspěšná"
-
-#~ msgid "Update layout failed"
-#~ msgstr "Aktualizace rozvržení selhala"
-
-#~ msgid "preview"
-#~ msgstr "náhled"
-
-#~ msgid "Render now"
-#~ msgstr "Vykreslit nyní"
-
-#~ msgid "No items defined"
-#~ msgstr "Neurčeny žádné položky"
-
-#~ msgid "Redraw"
-#~ msgstr "Překreslit"
-
-#~ msgid "Custom graph store"
-#~ msgstr "Uložení vlstního grafu"
-
-#~ msgid "Pandora FMS Help System"
-#~ msgstr "Systém nápovědy FMS Pandora"
-
-#~ msgid "Two Months"
-#~ msgstr "Dva měsíce"
-
-#~ msgid "Map builder"
-#~ msgstr "Stavitel mapy"
-
-#~ msgid "Last Month"
-#~ msgstr "Minulý měsíc"
-
-#~ msgid "Authentication Error"
-#~ msgstr "Chyba při ověřování"
-
-#~ msgid "Map element editor"
-#~ msgstr "Editor prvku mapy"
-
-#~ msgid "Six Months"
-#~ msgstr "Šest měsíců"
-
-#~ msgid "3 hours"
-#~ msgstr "3 hodiny"
-
-#~ msgid "4 days"
-#~ msgstr "4 dny"
-
-#~ msgid "Reporting type"
-#~ msgstr "Typ hlášení"
-
-#~ msgid "Add item to report"
-#~ msgstr "Přidat položku k hlášení"
-
-#~ msgid "Module is not set"
-#~ msgstr "Modul není nastaven"
-
-#~ msgid "Network Server"
-#~ msgstr "Síťový server"
-
-#~ msgid "Data Server"
-#~ msgstr "Datový server"
-
-#~ msgid "Succesfully deleted export target"
-#~ msgstr "Cíl exportu úspěšně smazán"
-
-#~ msgid "export targets"
-#~ msgstr "exportovaných cílů"
-
-#~ msgid "MD5 Check"
-#~ msgstr "Kontrola MD5"
-
-#~ msgid "Transfer Mode"
-#~ msgstr "Režim přenosu"
-
-#~ msgid "DB Maintenance"
-#~ msgstr "Údržba DB"
-
-#~ msgid "Pandora Setup"
-#~ msgstr "Nastavení Pandora"
-
-#~ msgid "Group management"
-#~ msgstr "Správa skupiny"
-
-#~ msgid "Network profile"
-#~ msgstr "Síťový server"
-
-#~ msgid "DB Information"
-#~ msgstr "Informace o DB"
-
-#~ msgid "Automatic update check"
-#~ msgstr "Automatická kontrola aktualizací"
-
-#~ msgid "Manage Agents"
-#~ msgstr "Správa výstrah"
-
-#~ msgid "Manage User Rights"
-#~ msgstr "Správa práv uživatelů"
-
-#~ msgid "Edit Alerts"
-#~ msgstr "Upravit výstrahy"
-
-#~ msgid "Database Management"
-#~ msgstr "Správa databáze"
-
-#~ msgid "Pandora System Management"
-#~ msgstr "Správa systému Pandora"
-
-#~ msgid "Alerts Management"
-#~ msgstr "Správa výstrah"
-
-#~ msgid "Visual map wizard"
-#~ msgstr "Průvodce vizuální mapou"
-
-#~ msgid "Image range (px)"
-#~ msgstr "Rozsah obrázku (px)"
-
-#~ msgid "Image size (px)"
-#~ msgstr "Velikost obrázku (px)"
-
-#~ msgid "No layout with this id found"
-#~ msgstr "Žádné rozvržení s takovýmto ID"
-
-#~ msgid "Pandora users"
-#~ msgstr "Uživatelé Pandora"
-
-#~ msgid "Deleting file"
-#~ msgstr "Odstraňování souboru"
-
-#~ msgid "attach_error"
-#~ msgstr "attach_error"
-
-#~ msgid "Deleting"
-#~ msgstr "Mazání"
-
-#~ msgid "Group name"
-#~ msgstr "Název skupiny"
-
-#~ msgid "Graphs management"
-#~ msgstr "Správa grafů"
-
-#, php-format
-#~ msgid "Created directory %s"
-#~ msgstr "Vytvořen adresář %s"
-
-#~ msgid "Edit modules"
-#~ msgstr "Upravit moduly"
-
-#~ msgid "Delete alerts"
-#~ msgstr "Smazat výstrahy"
-
-#~ msgid "Delete modules"
-#~ msgstr "Smazat moduly"
-
-#~ msgid "Massive agent deletion"
-#~ msgstr "Hromadné mazání agentů"
-
-#~ msgid "Configuration management"
-#~ msgstr "Správa nastavení"
-
-#~ msgid "Delete agents"
-#~ msgstr "Smazat agenty"
-
-#~ msgid "Could not delete alerts"
-#~ msgstr "Nelze smazat výstrahy"
-
-#~ msgid "Available templates"
-#~ msgstr "Dostupné šablony"
-
-#~ msgid "Custom Value"
-#~ msgstr "Vlastní hodnota"
-
-#~ msgid "Module assignment"
-#~ msgstr "Přidělení modulu"
-
-#~ msgid "TCP port"
-#~ msgstr "Port TCP"
-
-#~ msgid "Manage SNMP console"
-#~ msgstr "Správa konzole SNMP"
-
-#~ msgid "Update agent"
-#~ msgstr "Aktualizovat agenta"
-
-#~ msgid "Pandora system management"
-#~ msgstr "Správa systému Pandora"
-
-#, php-format
-#~ msgid "Last %s days"
-#~ msgstr "Posledních %s dnů"
-
-#~ msgid "Manage user rights"
-#~ msgstr "Spravovat uživatelská oprávnění"
-
-#~ msgid "MinMax.Al"
-#~ msgstr "MinMax.Al"
-
-#~ msgid "Desc"
-#~ msgstr "Sest"
-
-#~ msgid "Wrong module type"
-#~ msgstr "Špatný typ modulu"
-
-#~ msgid "System Events"
-#~ msgstr "Události systému"
-
-#~ msgid "G."
-#~ msgstr "G."
-
-#~ msgid "T."
-#~ msgstr "T."
-
-#~ msgid "Pandora agents"
-#~ msgstr "Agenti Pandora"
-
-#~ msgid "User activity statistics"
-#~ msgstr "Statistiky aktivit uživatele"
-
-#~ msgid "None agent in this category"
-#~ msgstr "Žádný agent v této kategorii"
-
-#~ msgid "Total Agents"
-#~ msgstr "Celkem agentů"
-
-#~ msgid "Agent without monitors"
-#~ msgstr "Agenti bez monitorů"
-
-#~ msgid "SLA view"
-#~ msgstr "Zobrazení SLA"
-
-#~ msgid "Automatic SLA for monitors"
-#~ msgstr "Automatické SLA pro monitory"
-
-#~ msgid "Pandora Agents"
-#~ msgstr "Agenti Pandora"
-
-#~ msgid "Validated event"
-#~ msgstr "Ověřená událost"
-
-#~ msgid "Full list of Monitors"
-#~ msgstr "Úplný seznam monitorů"
-
-#~ msgid "Free text"
-#~ msgstr "Free text"
-
-#~ msgid "Thurdsday"
-#~ msgstr "Čtvrtek"
-
-#~ msgid "Data from agent "
-#~ msgstr "Data za agenta "
-
-#~ msgid "Hr"
-#~ msgstr "Hod"
-
-#~ msgid "No module has been selected"
-#~ msgstr "Nebyl vybrán žádný modul"
-
-#~ msgid "Download file"
-#~ msgstr "Stáhnout soubor"
-
-#~ msgid "Recon Server"
-#~ msgstr "Průzkumný server"
-
-#~ msgid "Profile successfully created"
-#~ msgstr "Profil úspěšně vytvořen"
-
-#~ msgid "Profile successfully updated"
-#~ msgstr "Profil úspěšně aktualizován"
-
-#~ msgid "Alert successfully deleted"
-#~ msgstr "Výstraha úspěšně smazána"
-
-#~ msgid "There was a problem updating agent"
-#~ msgstr "Při aktualizaci agenta nastal problém"
-
-#~ msgid "Alert successfully updated"
-#~ msgstr "Výstraha úspěšně aktualizována"
-
-#~ msgid "Agent successfully updated"
-#~ msgstr "Agent úspěšně vytvořen"
-
-#~ msgid "Alert successfully created"
-#~ msgstr "Výstraha úspěšně vytvořena"
-
-#~ msgid "Module deleted successfully"
-#~ msgstr "Modul úspěšně smazán"
-
-#~ msgid "To Agent(s):"
-#~ msgstr "Pro agenty:"
-
-#~ msgid "Configuration Management"
-#~ msgstr "Správa nastavení"
-
-#~ msgid "WMI Query"
-#~ msgstr "Dotaz WMI"
-
-#~ msgid "Status init unsuccessful"
-#~ msgstr "Zavedení stavu neúspěšné"
-
-#~ msgid "Available Agents"
-#~ msgstr "Dostupní agenti"
-
-#~ msgid "Prediction Server"
-#~ msgstr "Server předpovědi"
-
-#~ msgid "WMI Server"
-#~ msgstr "Server WMI"
-
-#~ msgid "Plugin Server"
-#~ msgstr "Server zásuvných modulů"
-
-#~ msgid "Alert type"
-#~ msgstr "Typ výstrahy"
-
-#~ msgid "Add Modules"
-#~ msgstr "Přidat moduly"
-
-#~ msgid "User successfully deleted"
-#~ msgstr "Uživatel úspěšně smazán"
-
-#~ msgid "Database Maintenance"
-#~ msgstr "Údržba databáze"
-
-#~ msgid "Database Information"
-#~ msgstr "Informace o databázi"
-
-#~ msgid "Standard user"
-#~ msgstr "Standardní uživatel"
-
-#~ msgid "Event report"
-#~ msgstr "Hlášení o události"
-
-#~ msgid "There was a problem loading alert"
-#~ msgstr "Při načítání výstrahy nastal problém"
-
-#~ msgid "Event Database cleanup"
-#~ msgstr "Vyčištění databáze událostí"
-
-#~ msgid "There was a problem creating SLA"
-#~ msgstr "Při vytváření SLA nastal problém"
-
-#~ msgid "SLA was successfully created"
-#~ msgstr "SLA bylo úspěšně vytvořeno"
-
-#~ msgid "There was a problem creating reporting"
-#~ msgstr "Při vytváření hlášení nastal problém"
-
-#~ msgid "Reporting successfully created"
-#~ msgstr "Hlášení úspěšně vytvořeno"
-
-#~ msgid ""
-#~ "This is the Web Management System for Pandora FMS. From here you can manage "
-#~ "its agents, alerts and incidents. Session is open while activity exists."
-#~ msgstr ""
-#~ "Toto je internetový systém správy Pandora FMS. Odsud můžete spravovat své "
-#~ "agenty, upozornění a incidenty. Sezení zůstane otevřeno, dokud existuje "
-#~ "aktivita účtu."
-
-#~ msgid "SLAs defined"
-#~ msgstr "SLA určeno"
-
-#~ msgid "There was a problem deleting SLA"
-#~ msgstr "Při mazání SLA nastal problém"
-
-#~ msgid "Custom reporting builder"
-#~ msgstr "Stavitel vlastního hlášení"
-
-#~ msgid "SLA was successfully delete"
-#~ msgstr "SLA bylo úspěšně smazáno"
-
-#~ msgid "SLA report construction"
-#~ msgstr "Vytváření hlášení SLA"
-
-#~ msgid "Drag an element here to edit the properties"
-#~ msgstr "Přesuňte prvek sem pro úpravu vlastností"
-
-#~ msgid "The list of IPs separate with carriage return."
-#~ msgstr "Seznam IP oddělených návratem vozíku."
-
-#~ msgid "matches of the alert"
-#~ msgstr "shody upozornění"
-
-#~ msgid "Map element trash"
-#~ msgstr "Koš prvků mapy"
-
-#~ msgid "Select an element to delete:"
-#~ msgstr "Vyberte prvek ke smazání:"
-
-#~ msgid "Please, choose an image or type a name for the element."
-#~ msgstr "Prosím zvolte obrázek nebo zadejte název prvku"
-
-#~ msgid "Graph builder module list"
-#~ msgstr "Seznam modulů stavitele grafů"
-
-#~ msgid "Compact CSS and JS into header"
-#~ msgstr "Shluknout CSS a JS do hlavičky"
-
-#~ msgid "Report name is empty"
-#~ msgstr "Název hlášení je prázdný"
-
-#~ msgid "No selected agent, please select any agent."
-#~ msgstr "Není vybrán agent, prosím vyberte nějakého agenta"
-
-#~ msgid "Read agent information"
-#~ msgstr "Přečíst informace o agentovi"
-
-#~ msgid "Create incidents"
-#~ msgstr "Vytvořit incidenty"
-
-#~ msgid "Read incidents"
-#~ msgstr "Číst incidenty"
-
-#~ msgid "Error creating export target"
-#~ msgstr "Chyba při vytváření cíle exportu"
-
-#~ msgid "Report builder"
-#~ msgstr "Stavitel hlášení"
-
-#~ msgid "Planned Downtime Form"
-#~ msgstr "Formulář plánované údržby"
-
-#~ msgid "Planned Downtime present on system"
-#~ msgstr "V systému je přítomna plánovaná údržba"
-
-#~ msgid "Network component"
-#~ msgstr "Síťová komponenta"
-
-#~ msgid ""
-#~ "There was an error deleting the alerts, the operation has been cancelled"
-#~ msgstr "Při mazání výstrah nastala chyba, operace byla zrušena"
-
-#~ msgid "Module component management"
-#~ msgstr "Správa součástí modulů"
-
-#~ msgid ""
-#~ "Red cell when the module group and agent have at least one module in "
-#~ "critical state and the others in any state."
-#~ msgstr ""
-#~ "Červená buňka když skupina modulu a agent mají alespoň jeden modul v "
-#~ "kritickém stavu a ostatní v kterémkoliv stavu."
-
-#~ msgid ""
-#~ "Yellow cell when the module group and agent have at least one in warning "
-#~ "state and the others in green state."
-#~ msgstr ""
-#~ "Žlutá buňka když skupina modulu a agent mají alespoň jeden modul ve stavu "
-#~ "varování a ostatní v zeleném stavu."
-
-#~ msgid "General group report"
-#~ msgstr "Obecné hlášení skupiny"
-
-#~ msgid "Agents detailed view"
-#~ msgstr "Podrobné zobrazení agentů"
-
-#~ msgid "Tt"
-#~ msgstr "Tt"
-
-#~ msgid "Event not validate"
-#~ msgstr "Událost neověřena"
-
-#~ msgid "Event validate"
-#~ msgstr "Ověření události"
-
-#~ msgid "Successfully created export target"
-#~ msgstr "Cíl exportu úspěšně vytvořen"
-
-#~ msgid ""
-#~ "This extension makes registration of server plugins more easy. Here you can "
-#~ "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
-#~ "refer to documentation on how to obtain and use Pandora FMS Server "
-#~ "Plugins.<br><br>You can get more plugins in our <a "
-#~ "href='http://pandorafms.org/index.php?sec=community&sec2=repository&lng=en'>P"
-#~ "ublic Resource Library</A>"
-#~ msgstr ""
-#~ "Toto rozšíření usnadňuje registraci zásuvných modulů na serveru. Zde můžete "
-#~ "moduly nahrát v zabaleném formátu Pandora FMS 3.x (.pspz). Pro získání "
-#~ "modulů si prosím přečtěte dokumentaci.<br><br>Další moduly můžete získat v "
-#~ "naší <a "
-#~ "href='http://pandorafms.org/index.php?sec=community&sec2=repository&lng=en'>K"
-#~ "nihovně veřejných zdrojů</A>"
-
-#~ msgid "Alert report"
-#~ msgstr "Hlášení výstrahy"
-
-#~ msgid ""
-#~ "Green cell when the module group and agent have all modules in OK state."
-#~ msgstr ""
-#~ "Zelená buňka pokud skupina modulu a agent mají všechny moduly ve stavu OK."
-
-#~ msgid "Grey cell when the module group and agent don't have any modules."
-#~ msgstr "Šedá buňka když skupina modulu a agent nemají žádné moduly."
-
-#~ msgid "Agent general information"
-#~ msgstr "Obecné informace o agentovi"
-
-#~ msgid ""
-#~ "Update Manager is one of the most advanced features of Pandora FMS 3.0 "
-#~ "Enterprise version, for more information visit <a "
-#~ "href=\"http://pandorafms.com\">http://pandorafms.com</a>."
-#~ msgstr ""
-#~ "Správce aktualizací je jedna z nejpokročilejších funkcí Pandora FMS 3.0 "
-#~ "Edice pro podniky, pro další informace navštivte  <a "
-#~ "href=\"http://pandorafms.com\">http://pandorafms.com</a>."
-
-#~ msgid "Modules critical"
-#~ msgstr "Moduly ve stavu kritické"
-
-#~ msgid "Go to alert overview"
-#~ msgstr "Přejít na přehled výstrah"
-
-#~ msgid "Modules warning"
-#~ msgstr "Moduly ve stavu varování"
-
-#~ msgid "Modules normal"
-#~ msgstr "Moduly ve stavu normální"
-
-#~ msgid "Event not validated"
-#~ msgstr "Událost neověřena"
-
-#~ msgid ""
-#~ "The new <a href=\"http://updatemanager.sourceforge.net\">Update Manager</a> "
-#~ "client is shipped with Pandora FMS 3.0. It helps system administrators to "
-#~ "update their Pandora FMS automatically, since the Update Manager does the "
-#~ "task of getting new modules, new plugins and new features (even full "
-#~ "migrations tools for future versions) automatically."
-#~ msgstr ""
-#~ "Pandora FMS 3.0 obsahuje nového klienta <a "
-#~ "href=\"http://updatemanager.sourceforge.net\">Správce aktualizací</a>. "
-#~ "Pomáhá správcům automaticky aktualizovat jejich systém Pandora FMS, Správce "
-#~ "aktualizací se stará o získávání nových modulů, nových zásuvných modulů a "
-#~ "nových funkcí (i nástroje pro celkový přechod na budoucí verze)."
-
-#~ msgid "View users"
-#~ msgstr "Zobrazit uživatele"
-
-#~ msgid "Display of last data modules received by agent"
-#~ msgstr "Zobrazení posledních datových modulů obdržených od agenta"
-
-#~ msgid "Agents down"
-#~ msgstr "Agenti mimo provoz"
-
-#~ msgid "From the last"
-#~ msgstr "Od posledního"
-
-#~ msgid "Configuration detail"
-#~ msgstr "Podrobnosti nastavení"
-
-#~ msgid "Drag an element here to delete from the map"
-#~ msgstr "Přetáhněte zde prvek pro jeho smazání z mapy"
-
-#~ msgid "Pandora FMS Web Console"
-#~ msgstr "Internetová konzole Pandora FMS"
-
-#~ msgid ""
-#~ "The new <a href=\"http://updatemanager.sourceforge.net\">Update Manager</a> "
-#~ "client is shipped with Pandora FMS 2.0. It helps system administrators to "
-#~ "update their Pandora FMS automatically, since the Update Manager does the "
-#~ "task of getting new modules, new plugins and new features (even full "
-#~ "migrations tools for future versions) automatically."
-#~ msgstr ""
-#~ "Nový klient <a href=\"http://updatemanager.sourceforge.net\">Správce "
-#~ "aktualizací</a> dodávaný v Pandora FMS 2.0 vydání pro podniky. Pomáhá "
-#~ "správcům automaticky aktualizovat jejich instalace Pandora FMS, správce se "
-#~ "stará o stažení nových modulů, nových zásuvných modulů a nových funkcí "
-#~ "(včetně nástrojů zajišťující přechod na budoucí verze)."
-
-#~ msgid ""
-#~ "Update Manager is one of the most advanced features of Pandora FMS 2.0 "
-#~ "Enterprise version, for more information visit <a "
-#~ "href=\"http://pandorafms.com\">http://pandorafms.com</a>."
-#~ msgstr ""
-#~ "Správce aktualizací je jedna z nejpokročilejších funkcí Pandora FMS 2.0 "
-#~ "vydání pro podniky, pro další informace navštivte <a "
-#~ "href=\"http://pandorafms.com\">http://pandorafms.com</a>."
-
-#~ msgid "Max.Timeout"
-#~ msgstr "Max. časový limit"
-
-#~ msgid "Link successfully deleted"
-#~ msgstr "Propojení úspěšně smazáno"
-
-#~ msgid "Succesfully deleted recon task"
-#~ msgstr "Úkol sledování úspěšně smazán"
-
-#~ msgid "Link successfully created"
-#~ msgstr "Propojení úspěšně vytvořeno"
-
-#~ msgid "Profile successfully deleted"
-#~ msgstr "Profil úspěšně smazán"
-
-#~ msgid "Link successfully updated"
-#~ msgstr "Propojení úspěšně aktualizováno"
-
-#~ msgid "Read Agent Information"
-#~ msgstr "Přečíst informace o agentovi"
-
-#~ msgid "Manage Incidents"
-#~ msgstr "Spravovat incidenty"
-
-#~ msgid "Create Incidents"
-#~ msgstr "Vytvořit incidenty"
-
-#~ msgid "Read Incidents"
-#~ msgstr "Přečíst incidenty"
-
-#~ msgid "Net. Templates"
-#~ msgstr "Síťové šablony"
-
-#~ msgid "Upd"
-#~ msgstr "Akt"
-
-#~ msgid "Create a new prediction Server module"
-#~ msgstr "Vytvořit nový modul serveru předpovědí"
-
-#~ msgid "Create a new WMI Server module"
-#~ msgstr "Vytvořit nový modul serveru WMI"
-
-#~ msgid "Create a new plugin Server module"
-#~ msgstr "Vytvořit nový modul serveru zásuvných modulů"
-
-#~ msgid "NC.Group"
-#~ msgstr "NC. skupina"
-
-#~ msgid "Database Audit purge"
-#~ msgstr "Vyčištění kontroly databáze"
-
-#~ msgid "Monitor down"
-#~ msgstr "Monitor není v provozu"
-
-#~ msgid "Monitor up"
-#~ msgstr "Monitor je v provozu"
-
-#~ msgid "St"
-#~ msgstr "St"
-
-#~ msgid "Times Fired"
-#~ msgstr "Kolikrát vysláno"
-
-#~ msgid "Search text"
-#~ msgstr "Hledaný text"
-
-#~ msgid "Alert Overview"
-#~ msgstr "Přehled výstrahy"
-
-#~ msgid "Alert trigger"
-#~ msgstr "Spouštěč výstrahy"
-
-#~ msgid "Network Map"
-#~ msgstr "Mapa sítě"
-
-#~ msgid "Standalone CSV ascii file"
-#~ msgstr "Samostatný ascii CSV soubor"
-
-#~ msgid "Database export results"
-#~ msgstr "Výsledky exportu databáze"
-
-#~ msgid "End date (*)"
-#~ msgstr "Konečné datum (*)"
-
-#~ msgid "Begin date (*)"
-#~ msgstr "Počáteční datum (*)"
-
-#~ msgid "Alerts Fired"
-#~ msgstr "Výstrahy vyslány"

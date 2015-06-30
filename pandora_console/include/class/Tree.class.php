@@ -982,7 +982,7 @@ class Tree {
 		$sql = $this->getSql($item_for_count);
 		if (empty($sql))
 			return array();
-
+		
 		$data = db_process_sql($sql);
 		if (empty($data))
 			return array();
@@ -1141,6 +1141,16 @@ class Tree {
 		if (defined("METACONSOLE") && !empty($server)) {
 			$processed_item['serverID'] = $server['id'];
 		}
+		
+		// Get the counters of the group (special case)
+		if ($processed_item['type'] == 'group') {
+			$counters = $this->getCounters($item['id']);
+			if (!empty($counters)) {
+				foreach ($counters as $type => $value) {
+					$item[$type] = $value;
+				}
+			}
+		}
 
 		$counters = array();
 		if (isset($item['total_unknown_count']))
@@ -1158,8 +1168,8 @@ class Tree {
 		if (isset($item['total_fired_count']))
 			$counters['alerts'] = $item['total_fired_count'];
 		
+		// Get the children of the group (special case)
 		if ($processed_item['type'] == 'group') {
-
 			$children = $this->getGroupsChildren($items, $items_tmp, $item['id'], $server, $remove_empty);
 			if (!empty($children)) {
 				$processed_item['children'] = $children;
@@ -1959,13 +1969,6 @@ class Tree {
 			// Build the group hierarchy
 			foreach ($items as $key => $item) {
 				if (empty($item['parent'])) {
-					
-					$counters = $this->getCounters($item['id']);
-					if (!empty($counters)) {
-						foreach ($counters as $type => $value) {
-							$item[$type] = $value;
-						}
-					}
 					
 					unset($items[$key]);
 					$items_tmp = array();

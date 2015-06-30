@@ -33,7 +33,7 @@
     float: none;
 }
 #drop_file a {
-    background-color: #FF9933;
+    background-color: #80BA27;
     border-radius: 2px;
     color: #FFFFFF;
     cursor: pointer;
@@ -43,7 +43,7 @@
     padding: 12px 26px;
 }
 #drop_file a:hover {
-    background-color: #FFB972;
+    background-color: #A6CE67;
     text-decoration: none;
 }
 #drop_file input {

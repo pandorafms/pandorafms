@@ -36,8 +36,8 @@ function form_upload (homeurl) {
 			var tpl = $('<li>' +
 					'<input type="text" id="input-progress" ' +
 						'value="0" data-width="55" data-height="55" '+
-						'data-fgColor="#FF9933" data-readOnly="1" ' +
-						'data-bgColor="#3e4043" />' +
+						'data-fgColor="#80BA27" data-readOnly="1" ' +
+						'data-bgColor="#3E4043" />' +
 					'<p></p><span></span>' +
 				'</li>');
 			

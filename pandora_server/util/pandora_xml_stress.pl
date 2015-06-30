@@ -150,8 +150,9 @@ sub generate_xml_files ($$$$$$) {
 			my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", @localtime);
 			my $xml_data = "<?xml version='$xml_version' encoding='$encoding'?>\n";
 			my $sign = int rand(2);
+			my $agent_name_converted = convert_xml_agent_name($agent_name);
 			$ag_timezone_offset += ($sign*(-1)+(1-$sign)) * int rand($ag_timezone_offset_range);
-			$xml_data .= "<agent_data os_name='$os_name' os_version='$os_version' interval='$interval' group='$group' version='$os_version' timestamp='$timestamp' agent_name='$agent_name' timezone_offset='$ag_timezone_offset' longitude='$ag_longitude' latitude='$ag_latitude' altitude='$ag_altitude'>\n";
+			$xml_data .= "<agent_data os_name='$os_name' os_version='$os_version' interval='$interval' group='$group' version='$os_version' timestamp='$timestamp' agent_name='$agent_name_converted' timezone_offset='$ag_timezone_offset' longitude='$ag_longitude' latitude='$ag_latitude' altitude='$ag_altitude'>\n";
 			
 			foreach my $module (@{$modules}) {
 				# Skip unnamed modules
@@ -371,6 +372,26 @@ sub generate_scatter_data ($$$$$$) {
 	else {
 		return $avg;
 	}
+}
+
+################################################################################
+# Converts special characteres to properly xml escaping characters
+################################################################################
+sub convert_xml_agent_name($$$) {
+
+	my ($agent_name_xml) = @_;
+	$_ = $agent_name_xml;
+	if(/&/){
+		s/&/&amp;/g;
+	}
+
+	if (/['"?<>]/){
+		s/"/&quot;/g;
+		s/'/&apos;/g;
+		s/</&lt;/g;
+		s/>/&gt;/g;
+	}
+	return $_;
 }
 
 ################################################################################
@@ -735,6 +756,7 @@ sub recv_file ($$) {
 # Get the send agent conf and generate modules.
 ################################################################################
 sub get_and_send_agent_conf(\@\%\@\%) {
+
 	my ($agents, $conf, $modules, $local_conf) = @_;
 	
 	my $get_and_send_agent_conf = get_conf_token($conf, 'get_and_send_agent_conf', '0');
@@ -746,7 +768,6 @@ sub get_and_send_agent_conf(\@\%\@\%) {
 	if ($get_and_send_agent_conf == 1) {
 		foreach my $agent (@{$agents}) {
 			$md5_agent_name = md5($agent);
-			
 			if (open (CONF_FILE, "$directory_confs/$agent.conf")) {
 				binmode(CONF_FILE);
 				my $conf_md5 = md5 (join ('', <CONF_FILE>));
@@ -929,7 +950,6 @@ sub parse_local_conf($$) {
 	
 	return \@return;
 }
-
 
 ################################################################################
 # Main

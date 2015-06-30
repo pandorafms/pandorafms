@@ -15,8 +15,8 @@
 
 global $config;
 
-require_once("include/functions_update_manager.php");
-require_once("include/functions_graph.php");
+require_once($config['homedir'] . "/include/functions_update_manager.php");
+require_once($config['homedir'] . "/include/functions_graph.php");
 enterprise_include_once("include/functions_update_manager.php");
 
 $upload_file = (boolean) get_parameter("upload_file");
@@ -131,7 +131,7 @@ if ($install_package) {
 				if (file_exists($config["homedir"]."/".$line)) {
 					rename($config["homedir"]."/".$line, $package."/backup/".$line);
 				}
-				// Tries to move the new file to the Integria directory
+				// Tries to move the new file to the Pandora directory
 				$dirname = dirname($line);
 				if (!file_exists($config["homedir"]."/".$dirname)) {
 					$dir_array = explode("/", $dirname);

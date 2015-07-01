@@ -104,8 +104,8 @@ function reporting_html_print_report($report, $mini = false) {
 		$table = new stdClass();
 		$table->size = array ();
 		$table->style = array ();
-		$table->width = '98%';
-		$table->class = 'databox';
+		$table->width = '100%';
+		$table->class = 'databox filters';
 		$table->rowclass = array ();
 		$table->rowclass[0] = 'datos3';
 		$table->data = array ();
@@ -271,7 +271,7 @@ function reporting_html_print_report($report, $mini = false) {
 		}
 		
 		if ($item['type'] == 'agent_module')
-			echo '<div style="width: 99%; overflow: auto;">';
+			echo '<div style="width: 100%; overflow: auto;">';
 		
 		html_print_table($table);
 		

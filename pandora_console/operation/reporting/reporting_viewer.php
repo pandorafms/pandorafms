@@ -143,11 +143,11 @@ else {
 //------------------------ INIT FORM -----------------------------------
 $table = new stdClass();
 $table->id = 'controls_table';
-$table->width = '99%';
+$table->width = '100%';
 $table->class = 'databox';
 if (defined("METACONSOLE")) {
 	$table->width = '100%';
-	$table->class = 'databox data';
+	$table->class = 'databox filters';
 	
 	$table->head[0] = __('View Report');
 	$table->head_colspan[0] = 5;
@@ -251,8 +251,6 @@ $report = reporting_make_reporting_data(null, $id_report, $date, $time,
 	$period, 'dinamic');
 
 reporting_html_print_report($report);
-
-echo "<br>";
 
 
 //----------------------------------------------------------------------

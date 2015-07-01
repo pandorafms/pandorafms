@@ -533,7 +533,11 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 function visual_map_editor_print_toolbox() {
 	global $config;
 	
-	echo '<div id="editor" style="margin-top: -10px;">';
+	if (defined("METACONSOLE"))
+		echo '<div id="editor" style="">';
+	else
+		echo '<div id="editor" style="margin-top: -10px;">';
+	
 	echo '<div id="toolbox">';
 		visual_map_print_button_editor('static_graph', __('Static Graph'), 'left', false, 'camera_min', true);
 		visual_map_print_button_editor('percentile_item', __('Percentile Item'), 'left', false, 'percentile_item_min', true);

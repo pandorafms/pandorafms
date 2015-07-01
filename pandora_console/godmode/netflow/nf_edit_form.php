@@ -176,8 +176,6 @@ $table->class = "databox filters";
 $table->style[0] = 'font-weight: bold';
 
 if (defined('METACONSOLE')) {
-	$table->width = '100%';
-	$table->class = 'databox data';
 	if($id)
 		$table->head[0] = __("Update filter");
 	else

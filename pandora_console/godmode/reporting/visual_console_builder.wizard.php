@@ -25,6 +25,8 @@ if (empty($visualConsole)) {
 	exit;
 }
 
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+
 // ACL for the existing visual console
 // if (!isset($vconsole_read))
 // 	$vconsole_read = check_acl ($config['id_user'], $visualConsole['id_group'], "VR");
@@ -53,8 +55,8 @@ if (!defined('METACONSOLE')) {
 else {
 	$metaconsole_hack = '../../';
 	$table->width = '100%';
-	$table->class = 'databox data';
-	$table->styleTable = 'padding-top: 15px; margin-top:0px';
+	$table->class = 'databox filters';
+	$table->styleTable = ' margin-top:0px';
 	require_once($config['homedir'] .
 		"/enterprise/meta/include/functions_html_meta.php");
 }
@@ -62,7 +64,7 @@ else {
 $table->style = array ();
 
 $table->style[0] = 'font-weight: bold; ';
-$table->style[1] = 'font-weight: bold; ';
+
 $table->style[2] = 'font-weight: bold; ';
 
 $table->size = array ();
@@ -179,8 +181,13 @@ $table->data["percentileitem_4"][1] = html_print_radio_button_extended(
 if (defined('METACONSOLE')) {
 	$table->rowstyle["all_2"] = 'display: none;';
 	$table->data["all_2"][0] = __('Servers');
-	$table->data["all_2"][1] = html_meta_print_select_servers(false,
-		false, 'servers', '', 'metaconsole_init();', '', 0, true);
+	if ($strict_user)
+		$table->data["all_2"][1] = html_print_select('','server_id',
+						$server_id, 'metaconsole_init();', __('All'), '0', true);
+	else
+		$table->data["all_2"][1] = html_print_select_from_sql(
+						'SELECT id, server_name FROM tmetaconsole_setup',
+						'server_id', $server_id, 'metaconsole_init();', __('All'), '0', true);
 }
 
 

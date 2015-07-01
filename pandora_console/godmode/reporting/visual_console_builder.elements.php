@@ -69,14 +69,9 @@ foreach ($all_images as $image_file) {
 }
 
 $table = new stdClass();
-if (!defined('METACONSOLE')) {
-	$table->width = '100%';
-	$table->class = 'databox filters';
-}
-else {
-	$table->width = '100%';
-	$table->class = 'databox';
-}
+$table->width = '100%';
+$table->class = 'databox data';
+
 $table->head = array();
 $table->head['icon'] = '';
 $table->head[0] = __('Label') . ' / ' . __('Agent') . ' / ' . __('Group');

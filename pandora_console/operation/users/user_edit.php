@@ -186,9 +186,6 @@ $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'databox filters';
 if (defined('METACONSOLE')) {
-
-	$table->width = '100%';
-	$table->class = 'databox data';
 	$table->head[0] = __('Edit my User');
 	$table->head_colspan[0] = 5;
 	$table->headstyle[0] = 'text-align: center';
@@ -400,11 +397,13 @@ if (!defined('METACONSOLE'))
 $table->width = '100%';
 $table->class = 'databox data';
 if (defined('METACONSOLE')) {
-	echo '<br />';
 	$table->width = '100%';
-	$table->class = 'databox_tactical data';
+	$table->class = 'databox data';
 	$table->title = __('Profiles/Groups assigned to this user');
 	$table->head_colspan[0] = 0;
+	$table->headstyle[] = "background-color: #82B93C";
+	$table->headstyle[] = "background-color: #82B93C";
+	$table->headstyle[] = "background-color: #82B93C";
 }
 
 $table->data = array ();

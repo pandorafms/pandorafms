@@ -97,9 +97,6 @@ function reporting_html_header(&$table, $mini, $title, $subtitle,
 
 function reporting_html_print_report($report, $mini = false) {
 	
-	
-	
-	
 	foreach ($report['contents'] as $key => $item) {
 		$table = new stdClass();
 		$table->size = array ();
@@ -295,34 +292,12 @@ function reporting_html_SLA($table, $item, $mini) {
 	else {
 		
 		if (!empty($item['planned_downtimes'])) {
-			$table1->width = '99%';
+			$downtimes_table = reporting_html_planned_downtimes_table($item['planned_downtimes']);
 			
-			$table1->align = array();
-			$table1->align[0] = 'left';
-			$table1->align[1] = 'left';
-			$table1->align[2] = 'left';
-			$table1->align[3] = 'left';
-			
-			$table1->data = array ();
-			
-			$table1->head = array ();
-			$table1->head[0] = __('Name');
-			$table1->head[1] = __('Description');
-			$table1->head[2] = __('Execution');
-			$table1->head[3] = __('Dates');
-			
-			foreach ($item['planned_downtimes'] as $downtime) {
-				$row = array();
-				$row[] = $downtime['name'];
-				$row[] = $downtime['description'];
-				$row[] = $downtime['execution'];
-				$row[] = $downtime['dates'];
-				
-				$table1->data[] = $row;
+			if (!empty($downtimes_table)) {
+				$table->colspan['planned_downtime']['cell'] = 3;
+				$table->data['planned_downtime']['cell'] = $downtimes_table;
 			}
-			
-			$table->colspan['planned_downtime']['cell'] = 3;
-			$table->data['planned_downtime']['cell'] = html_print_table($table1, true);
 		}
 		
 		$table1 = new stdClass();
@@ -346,30 +321,28 @@ function reporting_html_SLA($table, $item, $mini) {
 		$table1->head[4] = __('SLA Compliance');
 		$table1->head[5] = __('Status');
 		
-		
-		
 		foreach ($item['data'] as $sla) {
 			$row = array();
 			$row[] = $sla['agent'];
 			$row[] = $sla['module'];
 			$row[] = $sla['max'] . " / " . $sla['min'];
-			$row[] = $sla['sla_limit'] . "%";
+			$row[] = round($sla['sla_limit'], 2) . "%";
 			
 			if ($sla['sla_value_unknown']) {
 				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
-					' - ' . '</span>';
+					__('N/A') . '</span>';
 				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
 					__('Unknown') . '</span>';
 			}
 			elseif ($sla['sla_status']) {
 				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
-					$sla['sla_value'] . "%" . '</span>';
+					round($sla['sla_value'], 2) . "%" . '</span>';
 				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
 					__('OK') . '</span>';
 			}
 			else {
 				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
-					$sla['sla_value'] . "%" . '</span>';
+					round($sla['sla_value'], 2) . "%" . '</span>';
 				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
 					__('Fail') . '</span>';
 			}
@@ -2902,4 +2875,74 @@ function reporting_get_event_histogram ($events) {
 	
 	return $event_graph;
 }
+
+function reporting_html_planned_downtimes_table ($planned_downtimes) {
+	global $config;
+	
+	if (empty($planned_downtimes))
+		return false;
+	
+	require_once ($config['homedir'] . '/include/functions_planned_downtimes.php');
+	
+	$downtime_malformed = false;
+	$malformed_planned_downtimes = planned_downtimes_get_malformed();
+
+	$table = new StdClass();
+	$table->width = '99%';
+	$table->title = __('This SLA has been affected by the following planned downtimes');
+	$table->head = array();
+	$table->head[0] = __('Name');
+	$table->head[1] = __('Description');
+	$table->head[2] = __('Execution');
+	$table->head[3] = __('Dates');
+	$table->headstyle = array();
+	$table->style = array();
+	$table->data = array();
+
+	if ($for_pdf) {
+		$table->titlestyle = 'background: #373737; color: #FFF; display: table-cell; font-size: 12px; border: 1px solid grey';
+		$table->class = 'table_sla table_beauty';
+
+		for ($i = 0; $i < count($table->head); $i++) {
+			$table->headstyle[$i] = 'background: #666; color: #FFF; display: table-cell; font-size: 11px; border: 1px solid grey';
+		}
+		for ($i = 0; $i < count($table->head); $i++) {
+			$table->style[$i] = 'display: table-cell; font-size: 10px;';
+		}
+	}
+
+	foreach ($planned_downtimes as $planned_downtime) {
+		$data = array();
+		$data[0] = $planned_downtime['name'];
+		$data[1] = $planned_downtime['description'];
+		$data[2] = $planned_downtime['execution'];
+		$data[3] = $planned_downtime['dates'];
+		
+		if (!empty($malformed_planned_downtimes) && isset($malformed_planned_downtimes[$planned_downtime['id']])) {
+			$next_row_num = count($table->data);
+			$table->cellstyle[$next_row_num][0] = 'color: red';
+			$table->cellstyle[$next_row_num][1] = 'color: red';
+			$table->cellstyle[$next_row_num][2] = 'color: red';
+			$table->cellstyle[$next_row_num][3] = 'color: red';
+
+			if (!$downtime_malformed)
+				$downtime_malformed = true;
+		}
+
+		$table->data[] = $data;
+	}
+	
+	$downtimes_table = '';
+	
+	if ($downtime_malformed) {
+		$info_malformed = ui_print_error_message(__('This item is affected by a malformed planned downtime') . ". " .
+			__('Go to the planned downtimes section to solve this') . ".", '', true);
+		$downtimes_table .= $info_malformed;
+	}
+
+	$downtimes_table .= html_print_table($table, true);
+	
+	return $downtimes_table;
+}
+
 ?>

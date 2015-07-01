@@ -691,7 +691,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 										$data['dates'] .= __('Sun');
 										$data['dates'] .= "&nbsp;";
 									}
-									$data['dates'] .= "&nbsp;(" . $planned_downtime['periodically_time_from']; 
+									$data['dates'] .= "(" . $planned_downtime['periodically_time_from']; 
 									$data['dates'] .= "-" . $planned_downtime['periodically_time_to'] . ")";
 									break;
 								case 'monthly':

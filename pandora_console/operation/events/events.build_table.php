@@ -21,10 +21,7 @@ $table->id = "eventtable";
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 if(!isset($table->class)) {
-	if (defined("METACONSOLE"))
-		$table->class = "databox";
-	else
-		$table->class = "databox data";
+	$table->class = "databox data";
 }
 $table->head = array ();
 $table->data = array ();

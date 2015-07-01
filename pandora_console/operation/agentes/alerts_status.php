@@ -392,11 +392,6 @@ $table->width = '100%';
 $table->class = "databox data";
 $table->cellpadding = '0';
 $table->cellspacing = '0';
-if(defined('METACONSOLE')) {
-	$table->class = "databox";
-	$table->cellpadding = '0';
-	$table->cellspacing = '0';
-}
 $table->size = array ();
 $table->head = array ();
 $table->align = array ();

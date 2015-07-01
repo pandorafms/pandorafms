@@ -408,20 +408,14 @@ if (defined('METACONSOLE')) {
 	if ($key_group_all !== false)
 		unset($groups_select[$key_group_all]);
 }
-if(defined("METACONSOLE")) {
-	$table->style[0] = 'vertical-align:middle; font-weight: bold;';
-	$table->style[1] = 'vertical-align:middle; font-weight: bold;';
-	$table->style[2] = 'vertical-align:middle; font-weight: bold;';
-	$table->style[3] = 'vertical-align:middle; font-weight: bold;';
-	$table->style[4] = 'vertical-align:middle; font-weight: bold;';
-}
-else {
-	$table->style[0] = 'font-weight: bold;';
-	$table->style[1] = 'font-weight: bold;';
-	$table->style[2] = 'font-weight: bold;';
-	$table->style[3] = 'font-weight: bold;';
-	$table->style[4] = 'font-weight: bold;';
-}
+
+
+$table->style[0] = 'font-weight: bold;';
+$table->style[1] = 'font-weight: bold;';
+$table->style[2] = 'font-weight: bold;';
+$table->style[3] = 'font-weight: bold;';
+$table->style[4] = 'font-weight: bold;';
+
 $table->data[0][0] = __('Group');
 
 $table->data[0][1] = html_print_select_groups($config['id_user'], "AR", true, "ag_group",
@@ -496,6 +490,7 @@ else {
 $table_custom_fields = new stdClass();
 $table_custom_fields->class = 'filters';
 $table_custom_fields->width = '100%';
+
 if (defined('METACONSOLE')) {
 		$table_custom_fields->width = '100%';
 		$table_custom_fields->class = 'filters';
@@ -908,12 +903,6 @@ $table->cellpadding = 0;
 $table->cellspacing = 0;
 $table->width = "100%";
 $table->class = "databox data";
-if(defined('METACONSOLE')) {
-	$table->width = "100%";
-	$table->cellpadding = '0';
-	$table->cellspacing = '0';
-	$table->class = "databox";
-}
 $table->head = array ();
 $table->data = array ();
 $table->size = array ();

@@ -821,17 +821,17 @@ sub get_and_send_agent_conf(\@\%\@\%) {
 				
 				# Create the block of modules.
 				foreach my $module (@{$modules}) {
+
+							
 					$temp = $temp . "
-module_begin
-module_name " . $module->{'module_name'} . "
-module_type " . $module->{'module_type'} . "
-module_exec " . $module->{'module_exec'} . "
-module_min " . $module->{'module_min'} . "
-module_max " . $module->{'module_max'} . "
-module_end
-";
+module_begin";
+					while ( my ($key, $value) = each %$module ) {
+						$temp = $temp . "\n$key $value";
+					}
+					$temp = $temp . "
+module_end\n";
 				}
-				
+				print ($temp);
 				my $default_conf = 
 "# General Parameters
 # ==================

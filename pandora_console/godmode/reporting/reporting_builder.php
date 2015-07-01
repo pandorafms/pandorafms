@@ -472,16 +472,12 @@ switch ($action) {
 			$table->class = 'databox data';
 			$table->cellpadding = 0;
 			$table->cellspacing = 0;
-			if (defined('METACONSOLE')) {
-				$table->class = 'databox';
-				$table->width = '100%';
-			}
 			
 			$table->head = array ();
 			$table->align = array ();
-			$table->align[2] = 'center';
-			$table->align[3] = 'center';
-			$table->align[4] = 'center';
+			$table->align[2] = 'left';
+			$table->align[3] = 'left';
+			$table->align[4] = 'left';
 			$table->data = array ();
 			$table->head[0] = __('Report name');
 			$table->head[1] = __('Description');
@@ -509,7 +505,7 @@ switch ($action) {
 				if(defined('METACONSOLE'))
 					$table->align[$next] = '';
 				else
-					$table->align[$next] = 'center';
+					$table->align[$next] = 'left';
 				$next++;
 				$table->head[$next] = __('Group');
 				$table->size[$next] = '15%';

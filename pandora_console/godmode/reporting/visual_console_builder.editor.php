@@ -119,7 +119,8 @@ foreach ($layoutDatas as $layoutData) {
 	
 }
 
-echo "<img style='position: absolute; top: 0px; left: 0px;' id='background_img' src='" . $metaconsole_hack . "images/console/background/" . $background . "' width='100%' height='100%' />";
+echo "<img style='position: absolute; top: 0px; left: 0px;' id='background_img' src='" . $metaconsole_hack .
+			"images/console/background/" . $background . "' width='100%' height='100%' />";
 
 echo '</div>';
 echo '</div>';

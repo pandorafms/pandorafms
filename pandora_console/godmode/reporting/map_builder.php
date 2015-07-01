@@ -206,6 +206,9 @@ $table->head[0] = __('Map name');
 $table->head[1] = __('Group');
 $table->head[2] = __('Items');
 
+if (defined("METACONSOLE"))
+	$table->styleTable = "margin-top:0px";
+
 // Fix: IW was the old ACL for report editing, now is RW
 //Only for RW flag
 if ($vconsoles_write || $vconsoles_manage) {

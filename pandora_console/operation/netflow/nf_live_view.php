@@ -178,12 +178,7 @@ if (isset($config['netflow_disable_custom_lvfilters'])) {
 
 enterprise_hook('open_meta_frame');
 
-if (defined ('METACONSOLE')) {
-	$class = "databox data";
-}
-else {
-	$class = "databox filters";
-}
+$class = "databox filters";
 
 echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&sec2=operation/netflow/nf_live_view&pure='.$pure.'">';
 	echo "<table class='".$class."' width='100%'>";
@@ -398,7 +393,7 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	
 	echo "<table class='' width='100%' style='border: 0px; text-align:right;'><tr><td>";
 
-	echo html_print_submit_button (__('Draw'), 'draw_button', false, 'class="sub upd"',true) . "&nbsp;&nbsp;" ;
+	echo html_print_submit_button (__('Draw'), 'draw_button', false, 'class="sub upd"',true) ;
 	
 	if (!$netflow_disable_custom_lvfilters) {
 		if (check_acl ($config["id_user"], 0, "AW")) {

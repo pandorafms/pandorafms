@@ -538,10 +538,7 @@ $urlForm = $config['homeurl'] .
 echo '<form action="' . $urlForm . '" method="post">';
 html_print_input_hidden('id_item', $idItem);
 
-if (defined("METACONSOLE"))
-	$class = 'databox data';
-else
-	$class = 'databox filters';
+$class = 'databox filters';
 
 ?>
 <table style="" class="<?php echo $class;?>" id="" border="0" cellpadding="4" cellspacing="4" width="100%">
@@ -558,7 +555,7 @@ else
 	?>
 	<tbody>
 		<tr id="row_type" style="" class="datos">
-			<td style="vertical-align: top; width: 220px;"><?php echo __('Type'); ?></td>
+			<td style="font-weight:bold; width: 220px;"><?php echo __('Type'); ?></td>
 			<td style="">
 				<?php
 				if ($action == 'new') { 
@@ -576,7 +573,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_name" style="" class="datos">
-			<td style="vertical-align: top;">
+			<td style="font-weight:bold;">
 				<?php echo __('Name'); ?>
 			</td>
 			<td style="">
@@ -586,7 +583,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_netflow_filter" style="" class="datos">
-			<td><?php echo __('Filter');?></td>
+			<td style="font-weight:bold;"><?php echo __('Filter');?></td>
 			<td>
 				<?php
 				$own_info = get_user_info ($config['id_user']);
@@ -604,7 +601,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_description" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Description'); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Description'); ?></td>
 			<td style="">
 				<?php
 				echo html_print_textarea('description', 3, 25, $description);
@@ -612,7 +609,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_period" style="" class="datos">
-			<td style="vertical-align: top;">
+			<td style="font-weight:bold;">
 				<?php
 				echo __('Period');
 				?>
@@ -625,7 +622,7 @@ else
 		</tr>
 		
 		<tr id="row_last_value" style="" class="datos">
-			<td style="vertical-align: top;" class="datos">
+			<td style="font-weight:bold;" class="datos">
 				<?php
 				echo __('Last value');
 				ui_print_help_tip(__('Warning: period 0 reports cannot be used to show information back in time. Information contained in this kind of reports will be always reporting the most recent information'));
@@ -640,7 +637,7 @@ else
 		</tr>
 		
 		<tr id="row_resolution" style="" class="datos">
-			<td style="vertical-align: top;">
+			<td style="font-weight:bold;">
 				<?php
 				echo __('Resolution');
 				?>
@@ -651,7 +648,7 @@ else
 				?></td>
 		</tr>
 		<tr id="row_period1" style="" class="datos">
-			<td style="vertical-align: top;">
+			<td style="font-weight:bold;">
 				<?php
 				echo __('Period');
 				if ($type == 'projection_graph') {
@@ -669,7 +666,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_estimate" style="" class="datos">
-			<td style="vertical-align: top;">
+			<td style="font-weight:bold;">
 				<?php
 				echo __('Projection period') . ui_print_help_icon('projection_graph', true);
 				?>
@@ -681,7 +678,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_interval" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Data range') . ui_print_help_icon('prediction_date', true); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Data range') . ui_print_help_icon('prediction_date', true); ?></td>
 			<td><?php
 				echo __('Max') . "&nbsp;";
 				html_print_input_text('max_interval', $max_interval, '', 5, 10);
@@ -690,7 +687,7 @@ else
 				?></td>
 		</tr>
 		<tr id="row_only_display_wrong" style="" class="datos">
-			<td><?php echo __('Only display wrong SLAs');?></td>
+			<td style="font-weight:bold;"><?php echo __('Only display wrong SLAs');?></td>
 			<td>
 				<?php
 				html_print_checkbox('checkbox_only_display_wrong', 1, $only_display_wrong);
@@ -698,7 +695,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_working_time">
-			<td style="vertical-align: top;">
+			<td style="font-weight:bold;">
 				<?php echo __('Working time');?>
 			</td>
 			<td>
@@ -769,7 +766,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_group" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Group');?></td>
+			<td style="font-weight:bold;"><?php echo __('Group');?></td>
 			<td style="">
 				<?php
 				html_print_select_groups($config['id_user'],
@@ -778,7 +775,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_module_group" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Module group');?></td>
+			<td style="font-weight:bold;"><?php echo __('Module group');?></td>
 			<td style="">
 				<?php
 				html_print_select_from_sql(
@@ -788,7 +785,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_agent" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Agent'); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Agent'); ?></td>
 			<td style="">
 				<?php
 				if ($meta) {
@@ -838,7 +835,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_module" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Module'); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Module'); ?></td>
 			<td style="max-width: 180px">
 				<?php
 				if ($idAgent) {
@@ -881,7 +878,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_agent_multi" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Agents'); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Agents'); ?></td>
 			<td>
 				<?php 
 					$agents = enterprise_hook('inventory_get_agents');
@@ -896,7 +893,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_module_multi" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Modules'); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Modules'); ?></td>
 			<td>
 				<?php 
 					html_print_select(array(), 'inventory_modules[]', '', $script = '', __('None'), 0, false, true, true, '', false, "min-width: 180px");
@@ -914,7 +911,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_date" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Date'); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Date'); ?></td>
 			<td style="max-width: 180px">
 				<?php
 				$dates = enterprise_hook(
@@ -931,7 +928,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_custom_graph" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Custom graph'); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Custom graph'); ?></td>
 			<td style="">
 				<?php
 				if ($meta) {
@@ -992,15 +989,15 @@ else
 			</td>
 		</tr>
 		<tr id="row_text" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Text'); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Text'); ?></td>
 			<td style=""><?php html_print_textarea('text', 5, 25, $text); ?></td>
 		</tr>
 		<tr id="row_custom" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Custom SQL template'); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Custom SQL template'); ?></td>
 			<td style=""><?php html_print_select_from_sql('SELECT id, name FROM treport_custom_sql', 'id_custom', $idCustom, 'chooseSQLquery()', '--', '0'); ?></td>
 		</tr>
 		<tr id="row_query" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('SQL query'); ?></td>
+			<td style="font-weight:bold;"><?php echo __('SQL query'); ?></td>
 			<td style="" id="sql_entry">
 				<?php
 				html_print_textarea('sql', 5, 25, $sql);
@@ -1012,7 +1009,7 @@ else
 		if ($meta) {
 		?>
 		<tr id="row_servers" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Server'); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Server'); ?></td>
 			<td style="">
 				<?php
 					html_print_select ($servers, 'combo_server', $server_name, '', __('Select server'), 0);
@@ -1023,27 +1020,27 @@ else
 		}
 		?>
 		<tr id="row_header" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Serialized header') . ui_print_help_tip(__("The separator character is |"), true);?></td>
+			<td style="font-weight:bold;"><?php echo __('Serialized header') . ui_print_help_tip(__("The separator character is |"), true);?></td>
 			<td style=""><?php html_print_input_text('header', $header, '', 90, 250); ?></td>
 		</tr>
 		<tr id="row_url" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('URL'); ?></td>
+			<td style="font-weight:bold;"><?php echo __('URL'); ?></td>
 			<td style=""><?php html_print_input_text('url', $url, '', 90, 250); ?></td>
 		</tr>
 		<tr id="row_field_separator" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Field separator') . ui_print_help_tip(__("Separator for different fields in the serialized text chain"), true); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Field separator') . ui_print_help_tip(__("Separator for different fields in the serialized text chain"), true); ?></td>
 			<td style=""><?php html_print_input_text('field', $field, '', 2, 4); ?></td>
 		</tr>
 		<tr id="row_line_separator" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Line separator') . ui_print_help_tip(__("Separator in different lines (composed by fields) of the serialized text chain"), true); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Line separator') . ui_print_help_tip(__("Separator in different lines (composed by fields) of the serialized text chain"), true); ?></td>
 			<td style=""><?php html_print_input_text('line', $line, '', 2, 4); ?></td>
 		</tr>
 		<tr id="row_group_by_agent" style="" class="datos">
-			<td><?php echo __('Group by agent');?></td>
+			<td style="font-weight:bold;"><?php echo __('Group by agent');?></td>
 			<td><?php html_print_checkbox('checkbox_row_group_by_agent', 1, $group_by_agent);?></td>
 		</tr>
 		<tr id="row_order_uptodown" style="" class="datos">
-			<td><?php echo __('Order');?></td>
+			<td style="font-weight:bold;"><?php echo __('Order');?></td>
 			<td>
 				<?php
 				echo __('Ascending');
@@ -1059,15 +1056,15 @@ else
 			</td>
 		</tr>
 		<tr id="row_quantity" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Quantity (n)'); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Quantity (n)'); ?></td>
 			<td style=""><?php html_print_input_text('quantity', $top_n_value, '', 5, 5); ?></td>
 		</tr>
 		<tr id="row_max_values" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Max. values'); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Max. values'); ?></td>
 			<td style=""><?php html_print_input_text('max_values', $max_values, '', 5, 5); ?></td>
 		</tr>
 		<tr id="row_max_min_avg" style="" class="datos">
-			<td><?php echo __('Display');?></td>
+			<td style="font-weight:bold;"><?php echo __('Display');?></td>
 			<td>
 				<?php
 				echo __('Max');
@@ -1080,7 +1077,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_time_compare_overlapped" style="" class="datos">
-			<td><?php echo __('Time compare (Overlapped)');?></td>
+			<td style="font-weight:bold;"><?php echo __('Time compare (Overlapped)');?></td>
 			<td>
 				<?php
 				html_print_checkbox('time_compare_overlapped', 1, $time_compare_overlapped);
@@ -1088,11 +1085,11 @@ else
 			</td>
 		</tr>
 		<tr id="row_only_avg" style="" class="datos">
-			<td><?php echo __('Only average');?></td>
+			<td style="font-weight:bold;"><?php echo __('Only average');?></td>
 			<td><?php html_print_checkbox('only_avg', 1, $only_avg);?></td>
 		</tr>
 		<tr id="row_exception_condition_value" style="" class="datos">
-			<td style="vertical-align: top;"><?php echo __('Value'); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Value'); ?></td>
 			<td style="">
 				<?php
 				html_print_input_text('exception_condition_value',
@@ -1101,7 +1098,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_exception_condition" style="" class="datos">
-			<td><?php echo __('Condition');?></td>
+			<td style="font-weight:bold;"><?php echo __('Condition');?></td>
 			<td><?php
 				$list_exception_condition = array(
 					REPORT_EXCEPTION_CONDITION_EVERYTHING => __('Everything'),
@@ -1129,12 +1126,12 @@ else
 				*/?></td>
 		</tr>
 		<tr id="row_show_graph" style="" class="datos">
-			<td><?php echo __('Show graph');?></td>
+			<td style="font-weight:bold;"><?php echo __('Show graph');?></td>
 			<td><?php html_print_select ($show_graph_options, 'combo_graph_options', $show_graph);?></td>
 			
 		</tr>
 		<tr id="row_show_address_agent" style="" class="datos">
-			<td>
+			<td style="font-weight:bold;">
 				<?php
 				echo __('Show address instead module name.') .
 					ui_print_help_tip(__('Show the main address of agent.'), true);
@@ -1148,7 +1145,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_show_resume" style="" class="datos">
-			<td><?php echo __('Show resume') . ui_print_help_tip(__('Show a resume table with max, min, average of total modules on the report bottom'), true);?></td>
+			<td style="font-weight:bold;"><?php echo __('Show resume') . ui_print_help_tip(__('Show a resume table with max, min, average of total modules on the report bottom'), true);?></td>
 			<td>
 				<?php
 				html_print_checkbox('checkbox_show_resume', 1,
@@ -1157,7 +1154,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_event_filter" style="" class="datos">
-			<td><?php echo __('Event filter'); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Event filter'); ?></td>
 			<td>
 				<?php
 				echo __('No Validated');
@@ -1173,7 +1170,7 @@ else
 		</tr>
 		</tr>
 		<tr id="row_event_graphs" style="" class="datos">
-			<td><?php echo __('Event graphs'); ?></td>
+			<td style="font-weight:bold;"><?php echo __('Event graphs'); ?></td>
 			<td>
 				<span id="row_event_graph_by_agent">
 				<?php
@@ -1202,16 +1199,16 @@ else
 			</td>
 		</tr>
 		<tr id="row_show_in_two_columns" style="" class="datos">
-			<td><?php echo __('Show in two columns');?></td>
+			<td style="font-weight:bold;"><?php echo __('Show in two columns');?></td>
 			<td><?php html_print_checkbox('show_in_two_columns', 1, $show_in_two_columns, false,
 				false, 'if ($(\'input[name=show_in_two_columns]\').is(\':checked\')) $(\'input[name=show_in_landscape]\').attr(\'checked\', false);');?></td>
 		</tr>
 		<tr id="row_sort" style="" class="datos">
-			<td><?php echo __('Order') . ui_print_help_tip(__('SLA items sorted by fulfillment value'), true);?></td>
+			<td style="font-weight:bold;"><?php echo __('Order') . ui_print_help_tip(__('SLA items sorted by fulfillment value'), true);?></td>
 			<td><?php html_print_select ($show_sort_options, 'combo_sla_sort_options', $sla_sorted_by, '', __('None'), 0); ?></td>
 		</tr>
 		<tr id="row_show_in_landscape" style="" class="datos">
-			<td><?php echo __('Show in landscape');?></td>
+			<td style="font-weight:bold;"><?php echo __('Show in landscape');?></td>
 			<td>
 				<?php
 				html_print_checkbox('show_in_landscape', 1,
@@ -1221,7 +1218,7 @@ else
 			</td>
 		</tr>
 		<tr id="row_filter_search" style="" class="datos">
-			<td><?php echo __('Free search');?></td>
+			<td style="font-weight:bold;"><?php echo __('Free search');?></td>
 			<td>
 				<?php
 				html_print_input_text('filter_search', $filter_search);
@@ -1230,8 +1227,7 @@ else
 		</tr>
 	</tbody>
 </table>
-<br />
-<br />
+
 <?php
 print_SLA_list('100%', $action, $idItem);
 print_General_list('100%', $action, $idItem, $type);

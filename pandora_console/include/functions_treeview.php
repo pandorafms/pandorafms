@@ -339,6 +339,7 @@ function treeview_printTable($id_agente, $server_data = array()) {
 
 	$table = new StdClass();
 	$table->width = "100%";
+	$table->class = "databox data";
 	$table->style = array();
 	$table->style['title'] = 'font-weight: bold;';
 	$table->head = array();

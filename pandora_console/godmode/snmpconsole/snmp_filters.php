@@ -89,7 +89,8 @@ if ($edit_filter > -1) {
 // Create/update form
 if ($edit_filter > -2) {
 	$table->data = array ();
-	$table->width = '98%';
+	$table->width = '100%';
+	$table->class = 'databox filters';
 	$table->data[0][0] = __('Description');
 	$table->data[0][1] = html_print_input_text ('description', $description, '', 60, 100, true);
 	$table->data[1][0] = __('Filter');
@@ -114,7 +115,8 @@ else {
 	$result = db_get_all_rows_in_table ("tsnmp_filter");
 	if ($result === false) {
 		$result = array ();
-		echo "<div class='nf'>".__('There are no SNMP filters')."</div>";
+		require_once ($config['homedir'] . "/general/firts_task/snmp_filters.php");
+		return;
 	}
 	
 	$table->data = array ();
@@ -122,8 +124,8 @@ else {
 	$table->size = array ();
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
-	$table->width = "98%";
-	$table->class= "databox";
+	$table->width = "100%";
+	$table->class= "databox data";
 	$table->align = array ();
 	
 	$table->head[0] = __('Description');
@@ -149,7 +151,7 @@ else {
 	
 	unset ($table);
 	
-	echo '<div style="text-align:right; width:98%">';
+	echo '<div style="text-align:right; width:100%">';
 	echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter=-1">';
 	html_print_submit_button (__('Create'), 'submit_button', false, 'class="sub next"');
 	echo '</form></div>';

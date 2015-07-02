@@ -487,7 +487,7 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 	$interval_data = db_get_all_rows_sql ($sql, $search_in_history_db);
 	
 	if ($interval_data === false) {
-		return false;
+		$interval_data = array ();
 	}
 	
 	// Calculate planned downtime dates

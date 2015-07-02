@@ -1361,6 +1361,7 @@ table.databox {
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
 	border: 0px solid #fff;
+	max-width: 200px;
 }
 
 .databox th {

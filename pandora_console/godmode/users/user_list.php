@@ -251,18 +251,12 @@ else {
 }
 
 $table = null;
-if (defined('METACONSOLE')) {
-	$table->cellpadding = 0;
-	$table->cellspacing = 0;
-	$table->width = '100%';
-	$table->class = "databox";
-}
-else {
-	$table->cellpadding = 0;
-	$table->cellspacing = 0;
-	$table->width = '100%';
-	$table->class = "databox data";
-}
+
+$table->cellpadding = 0;
+$table->cellspacing = 0;
+$table->width = '100%';
+$table->class = "databox data";
+
 $table->head = array ();
 $table->data = array ();
 $table->align = array ();
@@ -287,7 +281,7 @@ if (!defined('METACONSOLE')) {
 	$table->size[2] = '150px';
 }
 
-$table->align[3] = "center";
+$table->align[3] = "left";
 
 if (defined('METACONSOLE')) {
 	$table->size[6] = '110px';

@@ -451,7 +451,7 @@ if (!empty ($table->data)) {
 	html_print_table ($table);
 }
 else {
-	echo '<div class="nf">'.__('This user doesn\'t have any assigned profile/group').'</div>'; 
+		ui_print_info_message ( array('no_close'=>true, 'message'=>  __('This user doesn\'t have any assigned profile/group.') ) ); 
 }
 
 enterprise_hook('close_meta_frame');

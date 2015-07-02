@@ -100,8 +100,6 @@ else {
 $table->width = '100%';
 $table->class = 'databox filters';
 if (defined("METACONSOLE")) {
-
-	$table->class = 'databox data';
 	if ($id_group)
 		$table->head[0] = __('Update Group');
 	else
@@ -109,6 +107,9 @@ if (defined("METACONSOLE")) {
 	$table->head_colspan[0] = 4;
 	$table->headstyle[0] = 'text-align: center';
 }
+
+$table->style[0] = 'font-weight: bold';
+
 $table->data = array ();
 $table->data[0][0] = __('Name');
 $table->data[0][1] = html_print_input_text ('name', $name, '', 35, 100, true);

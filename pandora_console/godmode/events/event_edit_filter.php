@@ -151,11 +151,11 @@ if ($create) {
 
 $own_info = get_user_info ($config['id_user']);
 
-$table->width = '98%';
+$table->width = '100%';
 $table->border = 0;
-$table->cellspacing = 3;
-$table->cellpadding = 5;
-$table->class = "databox";
+$table->cellspacing = 0;
+$table->cellpadding = 0;
+$table->class = "databox filters";
 $table->style[0] = 'vertical-align: top;';
 
 $table->valign[1] = 'top';
@@ -163,8 +163,6 @@ $table->valign[1] = 'top';
 if (defined('METACONSOLE')) {
 	$table->width = '100%';
 	$table->border = 0;
-	$table->cellspacing = 3;
-	$table->cellpadding = 5;
 	if ($id) {
 		$table->head[0] = __('Update Filter');
 	}
@@ -174,7 +172,6 @@ if (defined('METACONSOLE')) {
 	
 	$table->head_colspan[0] = 4;
 	$table->headstyle[0] = 'text-align: center';
-	$table->class = "databox data";
 	$table->style[0] = '';
 	$table->valign[1] = '';
 }

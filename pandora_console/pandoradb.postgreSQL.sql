@@ -600,11 +600,47 @@ CREATE TABLE "tmodule_group" (
 	"name" varchar(150) NOT NULL default ''
 );
 
+-- This table was moved cause the "tmodule_relationship" will add
+-- a foreign key for the trecon_task(id_rt)
+-- ---------------------------------------------------------------------
+-- Table `trecon_task`
+-- ---------------------------------------------------------------------
+CREATE TABLE "trecon_task" (
+	"id_rt" SERIAL NOT NULL PRIMARY KEY,
+	"name" varchar(100) NOT NULL default '',
+	"description" varchar(250) NOT NULL default '',
+	"subnet" TEXT default NULL,
+	"id_network_profile" INTEGER NOT NULL default 0,
+	"create_incident" INTEGER NOT NULL default 0,
+	"id_group" INTEGER NOT NULL default 1,
+	"utimestamp" BIGINT NOT NULL default 0,
+	"status" INTEGER NOT NULL default 0,
+	"interval_sweep" INTEGER NOT NULL default 0,
+	"id_recon_server" INTEGER NOT NULL default 0,
+	"id_os" INTEGER NOT NULL default 0,
+	"recon_ports" varchar(250) NOT NULL default '',
+	"snmp_community" varchar(64) NOT NULL default 'public',
+	"id_recon_script" INTEGER,
+	"field1" TEXT default NULL,
+	"field2" varchar(250) NOT NULL default '',
+	"field3" varchar(250) NOT NULL default '',
+	"field4" varchar(250) NOT NULL default '',
+	"os_detect" SMALLINT NOT NULL default 1,
+	"resolve_names" SMALLINT NOT NULL default 1,
+	"parent_detection" SMALLINT NOT NULL default 1,
+	"parent_recursion" SMALLINT NOT NULL default 1,
+	"disabled" SMALLINT NOT NULL default 1,
+	"macros" TEXT NOT NULL default ''
+);
+CREATE INDEX "trecon_task_id_recon_server_idx" ON "trecon_task"("id_recon_server");
+
 -- ----------------------------------------------------------------------
 -- Table `tmodule_relationship`
 -- ----------------------------------------------------------------------
 CREATE TABLE "tmodule_relationship" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
+	"id_rt" INTEGER NOT NULL REFERENCES trecon_task("id_rt")
+		ON DELETE CASCADE,
 	"module_a" INTEGER NOT NULL REFERENCES tagente_modulo("id_agente_modulo")
 		ON DELETE CASCADE,
 	"module_b" INTEGER NOT NULL REFERENCES tagente_modulo("id_agente_modulo")
@@ -757,38 +793,6 @@ CREATE TABLE "trecon_script" (
 	"script" varchar(250) default '',
 	"macros" TEXT NOT NULL default ''
 );
-
--- ---------------------------------------------------------------------
--- Table `trecon_task`
--- ---------------------------------------------------------------------
-CREATE TABLE "trecon_task" (
-	"id_rt" SERIAL NOT NULL PRIMARY KEY,
-	"name" varchar(100) NOT NULL default '',
-	"description" varchar(250) NOT NULL default '',
-	"subnet" TEXT default NULL,
-	"id_network_profile" INTEGER NOT NULL default 0,
-	"create_incident" INTEGER NOT NULL default 0,
-	"id_group" INTEGER NOT NULL default 1,
-	"utimestamp" BIGINT NOT NULL default 0,
-	"status" INTEGER NOT NULL default 0,
-	"interval_sweep" INTEGER NOT NULL default 0,
-	"id_recon_server" INTEGER NOT NULL default 0,
-	"id_os" INTEGER NOT NULL default 0,
-	"recon_ports" varchar(250) NOT NULL default '',
-	"snmp_community" varchar(64) NOT NULL default 'public',
-	"id_recon_script" INTEGER,
-	"field1" TEXT default NULL,
-	"field2" varchar(250) NOT NULL default '',
-	"field3" varchar(250) NOT NULL default '',
-	"field4" varchar(250) NOT NULL default '',
-	"os_detect" SMALLINT NOT NULL default 1,
-	"resolve_names" SMALLINT NOT NULL default 1,
-	"parent_detection" SMALLINT NOT NULL default 1,
-	"parent_recursion" SMALLINT NOT NULL default 1,
-	"disabled" SMALLINT NOT NULL default 1,
-	"macros" TEXT NOT NULL default ''
-);
-CREATE INDEX "trecon_task_id_recon_server_idx" ON "trecon_task"("id_recon_server");
 
 CREATE TABLE "tserver" (
 	"id_server" SERIAL NOT NULL PRIMARY KEY,

@@ -143,3 +143,6 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_has_tgis_map_con` (
 INSERT INTO `tgis_map_has_tgis_map_con` SELECT * FROM `tgis_map_has_tgis_map_connection`;
 DROP TABLE `tgis_map_has_tgis_map_connection`;
 
+ALTER TABLE `tmodule_relationship`
+	ADD COLUMN `id_rt` int(10) unsigned NOT NULL DEFAULT 0,
+	ADD FOREIGN KEY (`id_rt`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE;

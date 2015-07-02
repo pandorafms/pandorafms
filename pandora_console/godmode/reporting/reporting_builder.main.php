@@ -48,6 +48,7 @@ $table->class = 'databox filters';
 $table->head = array ();
 
 if (defined("METACONSOLE")) {
+	$table->styleTable = "margin-top:0px";
 	$table->head[0] = __('Main data');
 	$table->head_colspan[0] = 4;
 	$table->headstyle[0] = 'text-align: center';

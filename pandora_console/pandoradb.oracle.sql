@@ -747,11 +747,49 @@ CREATE TABLE tmodule_group (
 CREATE SEQUENCE tmodule_group_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER tmodule_group_inc BEFORE INSERT ON tmodule_group REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmodule_group_s.nextval INTO :NEW.id_mg FROM dual; END;;
 
+-- This table was moved cause the `tmodule_relationship` will add
+-- a foreign key for the trecon_task(id_rt)
+-- ----------------------------------------------------------------------
+-- Table `trecon_task`
+-- ----------------------------------------------------------------------
+CREATE TABLE trecon_task (
+	id_rt NUMBER(10, 0) PRIMARY KEY,
+	name VARCHAR2(100) DEFAULT '',
+	description VARCHAR2(250) DEFAULT '',
+	subnet CLOB DEFAULT NULL,
+	id_network_profile NUMBER(10, 0) DEFAULT 0,
+	create_incident NUMBER(10, 0) DEFAULT 0,
+	id_group NUMBER(10, 0) DEFAULT 1,
+	utimestamp NUMBER(19, 0) DEFAULT 0,
+	status NUMBER(10, 0) DEFAULT 0,
+	interval_sweep NUMBER(10, 0) DEFAULT 0,
+	id_recon_server NUMBER(10, 0) DEFAULT 0,
+	id_os NUMBER(10, 0) DEFAULT 0,
+	recon_ports VARCHAR2(250) DEFAULT '',
+	snmp_community VARCHAR2(64) DEFAULT 'public',
+	id_recon_script NUMBER(10, 0),
+	field1 CLOB DEFAULT NULL,
+	field2 VARCHAR2(250) DEFAULT '',
+	field3 VARCHAR2(250) DEFAULT '',
+	field4 VARCHAR2(250) DEFAULT '',
+	os_detect NUMBER(5, 0) DEFAULT 1,
+	resolve_names NUMBER(5, 0) DEFAULT 1,
+	parent_detection NUMBER(5, 0) DEFAULT 1,
+	parent_recursion NUMBER(5, 0) DEFAULT 1,
+	disabled NUMBER(5, 0) DEFAULT 1,
+	macros CLOB DEFAULT ''
+);
+CREATE INDEX trecon_task_id_rec_serv_idx ON trecon_task(id_recon_server);
+
+CREATE SEQUENCE trecon_task_s INCREMENT BY 1 START WITH 1;
+CREATE OR REPLACE TRIGGER trecon_task_inc BEFORE INSERT ON trecon_task REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT trecon_task_s.nextval INTO :NEW.id_rt FROM dual; END trecon_task_inc;;
+
 -- ----------------------------------------------------------------------
 -- Table `tmodule_relationship`
 -- ----------------------------------------------------------------------
 CREATE TABLE tmodule_relationship (
 	id NUMBER(10, 0) PRIMARY KEY,
+	id_rt NUMBER(10, 0) DEFAULT 0 REFERENCES trecon_task(id_rt) ON DELETE CASCADE,
 	module_a NUMBER(10, 0) REFERENCES tagente_modulo(id_agente_modulo) ON DELETE CASCADE,
 	module_b NUMBER(10, 0) REFERENCES tagente_modulo(id_agente_modulo) ON DELETE CASCADE,
 	disable_update NUMBER(1, 0) DEFAULT 0
@@ -926,41 +964,6 @@ CREATE TABLE trecon_script (
 
 CREATE SEQUENCE trecon_script_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER trecon_script_inc BEFORE INSERT ON trecon_script REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT trecon_script_s.nextval INTO :NEW.id_recon_script FROM dual; END;;
-
--- ----------------------------------------------------------------------
--- Table `trecon_task`
--- ----------------------------------------------------------------------
-CREATE TABLE trecon_task (
-	id_rt NUMBER(10, 0) PRIMARY KEY,
-	name VARCHAR2(100) DEFAULT '',
-	description VARCHAR2(250) DEFAULT '',
-	subnet CLOB DEFAULT NULL,
-	id_network_profile NUMBER(10, 0) DEFAULT 0,
-	create_incident NUMBER(10, 0) DEFAULT 0,
-	id_group NUMBER(10, 0) DEFAULT 1,
-	utimestamp NUMBER(19, 0) DEFAULT 0,
-	status NUMBER(10, 0) DEFAULT 0,
-	interval_sweep NUMBER(10, 0) DEFAULT 0,
-	id_recon_server NUMBER(10, 0) DEFAULT 0,
-	id_os NUMBER(10, 0) DEFAULT 0,
-	recon_ports VARCHAR2(250) DEFAULT '',
-	snmp_community VARCHAR2(64) DEFAULT 'public',
-	id_recon_script NUMBER(10, 0),
-	field1 CLOB DEFAULT NULL,
-	field2 VARCHAR2(250) DEFAULT '',
-	field3 VARCHAR2(250) DEFAULT '',
-	field4 VARCHAR2(250) DEFAULT '',
-	os_detect NUMBER(5, 0) DEFAULT 1,
-	resolve_names NUMBER(5, 0) DEFAULT 1,
-	parent_detection NUMBER(5, 0) DEFAULT 1,
-	parent_recursion NUMBER(5, 0) DEFAULT 1,
-	disabled NUMBER(5, 0) DEFAULT 1,
-	macros CLOB DEFAULT ''
-);
-CREATE INDEX trecon_task_id_rec_serv_idx ON trecon_task(id_recon_server);
-
-CREATE SEQUENCE trecon_task_s INCREMENT BY 1 START WITH 1;
-CREATE OR REPLACE TRIGGER trecon_task_inc BEFORE INSERT ON trecon_task REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT trecon_task_s.nextval INTO :NEW.id_rt FROM dual; END trecon_task_inc;;
 
 -- ----------------------------------------------------------------------
 -- Table `tserver`

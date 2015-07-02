@@ -653,6 +653,41 @@ CREATE TABLE IF NOT EXISTS `tmodule_group` (
 	PRIMARY KEY  (`id_mg`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- This table was moved cause the `tmodule_relationship` will add
+-- a foreign key for the trecon_task(id_rt)
+-- ----------------------------------------------------------------------
+-- Table `trecon_task`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `trecon_task` (
+	`id_rt` int(10) unsigned NOT NULL auto_increment,
+	`name` varchar(100) NOT NULL default '',
+	`description` varchar(250) NOT NULL default '',
+	`subnet` text NOT NULL,
+	`id_network_profile` int(10) unsigned NOT NULL default '0',
+	`create_incident` tinyint(3) unsigned NOT NULL default '0',
+	`id_group` int(10) unsigned NOT NULL default '1',
+	`utimestamp` bigint(20) unsigned NOT NULL default '0',
+	`status` tinyint(4) NOT NULL default '0',
+	`interval_sweep` int(10) unsigned NOT NULL default '0',
+	`id_recon_server` int(10) unsigned NOT NULL default '0',
+	`id_os` tinyint(4) NOT NULL default '0',
+	`recon_ports` varchar(250) NOT NULL default '',
+	`snmp_community` varchar(64) NOT NULL default 'public',
+	`id_recon_script` int(10),
+	`field1` text NOT NULL,
+	`field2` varchar(250) NOT NULL default '',
+	`field3` varchar(250) NOT NULL default '',
+	`field4` varchar(250) NOT NULL default '',
+	`os_detect` tinyint(1) unsigned default '0',
+	`resolve_names` tinyint(1) unsigned default '0',
+	`parent_detection` tinyint(1) unsigned default '0',
+	`parent_recursion` tinyint(1) unsigned default '0',
+	`disabled` tinyint(1) unsigned NOT NULL DEFAULT '0',
+	`macros` TEXT,
+	PRIMARY KEY  (`id_rt`),
+	KEY `recon_task_daemon` (`id_recon_server`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
 -- ----------------------------------------------------------------------
 -- Table `tmodule_relationship`
 -- ----------------------------------------------------------------------
@@ -821,39 +856,6 @@ CREATE TABLE IF NOT EXISTS `trecon_script` (
 	`macros` TEXT,
 	PRIMARY KEY  (`id_recon_script`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------------------------------------------------
--- Table `trecon_task`
--- ----------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `trecon_task` (
-	`id_rt` int(10) unsigned NOT NULL auto_increment,
-	`name` varchar(100) NOT NULL default '',
-	`description` varchar(250) NOT NULL default '',
-	`subnet` text NOT NULL,
-	`id_network_profile` int(10) unsigned NOT NULL default '0',
-	`create_incident` tinyint(3) unsigned NOT NULL default '0',
-	`id_group` int(10) unsigned NOT NULL default '1',
-	`utimestamp` bigint(20) unsigned NOT NULL default '0',
-	`status` tinyint(4) NOT NULL default '0',
-	`interval_sweep` int(10) unsigned NOT NULL default '0',
-	`id_recon_server` int(10) unsigned NOT NULL default '0',
-	`id_os` tinyint(4) NOT NULL default '0',
-	`recon_ports` varchar(250) NOT NULL default '',
-	`snmp_community` varchar(64) NOT NULL default 'public',
-	`id_recon_script` int(10),
-	`field1` text NOT NULL,
-	`field2` varchar(250) NOT NULL default '',
-	`field3` varchar(250) NOT NULL default '',
-	`field4` varchar(250) NOT NULL default '',
-	`os_detect` tinyint(1) unsigned default '0',
-	`resolve_names` tinyint(1) unsigned default '0',
-	`parent_detection` tinyint(1) unsigned default '0',
-	`parent_recursion` tinyint(1) unsigned default '0',
-	`disabled` tinyint(1) unsigned NOT NULL DEFAULT '0',
-	`macros` TEXT,
-	PRIMARY KEY  (`id_rt`),
-	KEY `recon_task_daemon` (`id_recon_server`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ----------------------------------------------------------------------
 -- Table `tserver`

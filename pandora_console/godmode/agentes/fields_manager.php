@@ -103,7 +103,7 @@ if ($fields) {
 	$table->data = array ();
 }
 else {
-	require_once ($config['homedir'] . "/general/firts_task/custom_fields.php");
+	require_once ($config['homedir'] . "/general/firts_task/fields_manager.php");
 	return;
 }
 

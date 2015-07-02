@@ -27,7 +27,7 @@ function pluginreg_extension_main () {
 	
 	echo '<div class="new_task">
 			<div class="image_task">';
-				echo html_print_image("images/firts_task/icono_grande_import.png", true, array("title" => __("") ));
+				echo html_print_image("images/firts_task/icono_grande_import.png", true, array("title" => __("Plugin Registration") ));
 			echo '</div>';
 				echo '<div class="text_task">';
 					echo '<h3>' . __("Plugin registration") . '</h3>';

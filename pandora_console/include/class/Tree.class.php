@@ -1901,7 +1901,7 @@ class Tree {
 			
 			if (!empty($processed_items)) {
 				if (!empty($this->filter["groupID"])) {
-					$result = self::extractItemWithID($processed_items, $this->filter["groupID"], "group");
+					$result = self::extractItemWithID($processed_items, $this->filter["groupID"], "group", $this->strictACL);
 					
 					if ($result === false)
 						$processed_items = array();
@@ -1909,7 +1909,7 @@ class Tree {
 						$processed_items = array($result);
 				}
 				else if (!empty($this->filter["tagID"])) {
-					$result = self::extractItemWithID($processed_items, $this->filter["tagID"], "tag");
+					$result = self::extractItemWithID($processed_items, $this->filter["tagID"], "tag", $this->strictACL);
 					
 					if ($result === false)
 						$processed_items = array();

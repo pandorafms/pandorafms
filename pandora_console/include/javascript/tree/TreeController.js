@@ -145,7 +145,7 @@ TreeController = {
 								}
 								if (title.length > 0) {
 									container
-										.prop("title", title)
+										.data("title", title)
 										.addClass("forced_title")
 										.data("use_title_for_force_title", 1); // Trick to make easier the 'force title' output
 								}

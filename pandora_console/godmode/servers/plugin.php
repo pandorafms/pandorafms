@@ -264,14 +264,15 @@ if (($create != "") OR ($view != "")) {
 	$table->colspan['plugin_desc'][1] = 3;
 	$table->data['plugin_desc'] = $data;
 	
-	if (!defined("METACONSOLE")) {
-		echo '<br>';
-		echo '<table class="databox" style="margin: 0 auto; width: 100%;"><tr><td>';
-	}
+	//if (!defined("METACONSOLE")) {
+		//echo '<br>';
+		//echo '<table class="databox" style="margin: 0 auto; width: 100%;"><tr><td>';
+	//}
+	
+	$table->width = '100%';
+	$table->class = 'databox filters';
 	
 	if (defined("METACONSOLE")) {
-		$table->width = '100%';
-		$table->class = 'databox data';
 		$table->head[0] = __('General');
 		$table->head_colspan[0] = 4;
 		$table->headstyle[0] = 'text-align: center';
@@ -279,7 +280,7 @@ if (($create != "") OR ($view != "")) {
 		html_print_table($table);
 	}
 	else {
-		echo '<fieldset style="width:96%"><legend>' . __('General') . '</legend>';
+		echo '<fieldset><legend>' . __('General') . '</legend>';
 		html_print_table($table);
 		echo '</fieldset>';
 	}
@@ -332,9 +333,9 @@ if (($create != "") OR ($view != "")) {
 	$data[1] = '<div id="command_preview" style="font-style:italic"></div>';
 	$table->data['plugin_preview'] = $data;
 	
+	$table->width = '100%';
+	$table->class = 'databox filters';
 	if (defined("METACONSOLE")) {
-		$table->width = '100%';
-		$table->class = 'databox data';
 		$table->head[0] = __('Command');
 		$table->head_colspan[0] = 4;
 		$table->headstyle[0] = 'text-align: center';
@@ -342,7 +343,7 @@ if (($create != "") OR ($view != "")) {
 		html_print_table($table);
 	}
 	else {
-		echo '<fieldset style="width:96%"><legend>' . __('Command') . '</legend>';
+		echo '<fieldset><legend>' . __('Command') . '</legend>';
 		html_print_table($table);
 		echo '</fieldset>';
 	}
@@ -481,16 +482,14 @@ if (($create != "") OR ($view != "")) {
 		html_print_table($table);
 	}
 	else {
-		echo '<fieldset style="width:96%">' .
+		echo '<fieldset>' .
 			'<legend>' . __('Parameters macros') .ui_print_help_icon ('macros', true) . '</legend>';
 		html_print_table($table);
 		echo '</fieldset>';
 	}
 	
-	if (defined("METACONSOLE"))
-		echo '<table width="100%">';
-	else
-		echo '<table width="98%">';
+	echo '<table width="100%">';
+	
 	echo '<tr><td align="right">';
 	
 	if ($create != "") {
@@ -505,8 +504,6 @@ if (($create != "") OR ($view != "")) {
 	
 	if (defined("METACONSOLE"))
 		echo '</td></tr>';
-	else
-		echo '</td></tr></table>';
 	
 	enterprise_hook('close_meta_frame');
 }

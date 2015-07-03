@@ -3017,6 +3017,10 @@ table#policy_modules td * {
 	vertical-align: middle;
 }
 
+.databox.data td>input[type="checkbox"] {
+	margin: 0px;
+}
+
 .databox_color td{
 	padding-left: 10px;
 }

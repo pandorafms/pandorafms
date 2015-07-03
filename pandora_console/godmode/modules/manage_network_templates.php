@@ -214,7 +214,7 @@ if (!empty ($table->data)) {
 	echo '<form method="post" action="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates">';
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
-	echo "<div style='padding-bottom: 20px; text-align: right; width:" . $table->width . "'>";
+	echo "<div style='padding-left: 5px; float: right; '>";
 	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 	echo "</div>";
 	echo "</form>";
@@ -224,7 +224,7 @@ else {
 }
 
 echo '<form method="post" action="index.php?sec=gmodules&amp;sec2=godmode/modules/manage_network_templates_form">';
-echo '<div style="width: '.$table->width.'" class="action-buttons">';
+echo '<div style="float:right;" class="">';
 html_print_submit_button (__('Create'), "crt", '', 'class="sub next"');
 echo '</div></form>';
 

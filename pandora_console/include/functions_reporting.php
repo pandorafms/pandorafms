@@ -558,60 +558,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 						$data['name'] = $planned_downtime['name'];
 						$data['description'] = $planned_downtime['description'];
 						$data['execution'] = ucfirst($planned_downtime['type_execution']);
-						$data['dates'] = "";
-						switch ($planned_downtime['type_execution']) {
-							case 'once':
-								$data['dates'] = date ("Y-m-d H:i", $planned_downtime['date_from']) .
-									"&nbsp;" . __('to') . "&nbsp;".
-									date ("Y-m-d H:i", $planned_downtime['date_to']);
-								break;
-							case 'periodically':
-								switch ($planned_downtime['type_periodicity']) {
-									case 'weekly':
-										$data['dates'] = __('Weekly:');
-										$data['dates'] .= "&nbsp;";
-										if ($planned_downtime['monday']) {
-											$data['dates'] .= __('Mon');
-											$data['dates'] .= "&nbsp;";
-										}
-										if ($planned_downtime['tuesday']) {
-											$data['dates'] .= __('Tue');
-											$data['dates'] .= "&nbsp;";
-										}
-										if ($planned_downtime['wednesday']) {
-											$data['dates'] .= __('Wed');
-											$data['dates'] .= "&nbsp;";
-										}
-										if ($planned_downtime['thursday']) {
-											$data['dates'] .= __('Thu');
-											$data['dates'] .= "&nbsp;";
-										}
-										if ($planned_downtime['friday']) {
-											$data['dates'] .= __('Fri');
-											$data['dates'] .= "&nbsp;";
-										}
-										if ($planned_downtime['saturday']) {
-											$data['dates'] .= __('Sat');
-											$data['dates'] .= "&nbsp;";
-										}
-										if ($planned_downtime['sunday']) {
-											$data['dates'] .= __('Sun');
-											$data['dates'] .= "&nbsp;";
-										}
-										$data['dates'] .= "&nbsp;(" . $planned_downtime['periodically_time_from']; 
-										$data['dates'] .= "-" . $planned_downtime['periodically_time_to'] . ")";
-										break;
-									case 'monthly':
-										$data['dates'] = __('Monthly:') . "&nbsp;";
-										$data['dates'] .= __('From day') . "&nbsp;" . $planned_downtime['periodically_day_from'];
-										$data['dates'] .= "&nbsp;" . strtolower(__('To day')) . "&nbsp;";
-										$data['dates'] .= $planned_downtime['periodically_day_to'];
-										$data['dates'] .= "&nbsp;(" . $planned_downtime['periodically_time_from'];
-										$data['dates'] .= "-" . $planned_downtime['periodically_time_to'] . ")";
-										break;
-								}
-								break;
-						}
+						$data['dates'] = reporting_format_planned_downtime_dates($planned_downtime);
 						
 						$data['malformed'] = 0;
 						if (!$malformed_planned_downtimes_empty
@@ -8180,4 +8127,78 @@ function reporting_template_graphs_get_user ($id_user = 0, $only_names = false, 
 	
 	return $templates;
 }
+
+/**
+ * Get a human readable representation of the planned downtime date.
+ *
+ * @param array $planned_downtime Planned downtime row.
+ *
+ * @return string Representation of the date.
+ */
+function reporting_format_planned_downtime_dates ($planned_downtime) {
+	$dates = '';
+	
+	if (!isset($planned_downtime) || !isset($planned_downtime['type_execution']))
+		return '';
+	
+	switch ($planned_downtime['type_execution']) {
+		case 'once':
+			$dates = date ("Y-m-d H:i", $planned_downtime['date_from']) .
+				"&nbsp;" . __('to') . "&nbsp;".
+				date ("Y-m-d H:i", $planned_downtime['date_to']);
+			break;
+		case 'periodically':
+			if (!isset($planned_downtime['type_periodicity']))
+				return '';
+			
+			switch ($planned_downtime['type_periodicity']) {
+				case 'weekly':
+					$dates = __('Weekly:');
+					$dates .= "&nbsp;";
+					if ($planned_downtime['monday']) {
+						$dates .= __('Mon');
+						$dates .= "&nbsp;";
+					}
+					if ($planned_downtime['tuesday']) {
+						$dates .= __('Tue');
+						$dates .= "&nbsp;";
+					}
+					if ($planned_downtime['wednesday']) {
+						$dates .= __('Wed');
+						$dates .= "&nbsp;";
+					}
+					if ($planned_downtime['thursday']) {
+						$dates .= __('Thu');
+						$dates .= "&nbsp;";
+					}
+					if ($planned_downtime['friday']) {
+						$dates .= __('Fri');
+						$dates .= "&nbsp;";
+					}
+					if ($planned_downtime['saturday']) {
+						$dates .= __('Sat');
+						$dates .= "&nbsp;";
+					}
+					if ($planned_downtime['sunday']) {
+						$dates .= __('Sun');
+						$dates .= "&nbsp;";
+					}
+					$dates .= "&nbsp;(" . $planned_downtime['periodically_time_from']; 
+					$dates .= "-" . $planned_downtime['periodically_time_to'] . ")";
+					break;
+				case 'monthly':
+					$dates = __('Monthly:') . "&nbsp;";
+					$dates .= __('From day') . "&nbsp;" . $planned_downtime['periodically_day_from'];
+					$dates .= "&nbsp;" . strtolower(__('To day')) . "&nbsp;";
+					$dates .= $planned_downtime['periodically_day_to'];
+					$dates .= "&nbsp;(" . $planned_downtime['periodically_time_from'];
+					$dates .= "-" . $planned_downtime['periodically_time_to'] . ")";
+					break;
+			}
+			break;
+	}
+	
+	return $dates;
+}
+
 ?>

@@ -311,7 +311,10 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["text"] = __($extmenu['name']);
 								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = 0;
 								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["icon"] = $extmenu['icon'];
-								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["sec"] = 'gextensions';
+								if ($extmenu["name"] == 'Cron jobs') 
+									$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["sec"] = 'extensions';
+								else
+									$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["sec"] = 'gextensions';
 								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["extension"] = true;
 								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["enterprise"] = $extension['enterprise'];
 								$menu_godmode[$extmenu['fatherId']]['hasExtensions'] = true;

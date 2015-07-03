@@ -1731,11 +1731,13 @@ function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek 
 			$sla_min, $sla_max, $date, $daysWeek, $time_from, $time_to);
 	}
 	
+	$col_planned_downtime = '#20973F';
+	
 	$colors = array(1 => COL_NORMAL,
 		2 => COL_WARNING,
 		3 => COL_CRITICAL,
 		4 => COL_UNKNOWN,
-		5 => COL_NOTINIT);
+		5 => $col_planned_downtime);
 	
 	return slicesbar_graph($data, $period, $width, $height, $colors,
 		$config['fontpath'], $round_corner, $home_url, $ttl);

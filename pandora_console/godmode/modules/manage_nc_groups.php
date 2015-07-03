@@ -228,7 +228,7 @@ if (isset($data)) {
 	echo "<form method='post' action='index.php?sec=".$sec."&sec2=godmode/modules/manage_nc_groups'>";
 	html_print_input_hidden('multiple_delete', 1);
 	html_print_table ($table);
-	echo "<div style='padding-bottom: 10px; text-align: right; width:" . $table->width . "'>";
+	echo "<div style='padding-left: 10px; float: right;'>";
 	html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
 	echo "</div>";
 	echo "</form>";
@@ -239,7 +239,7 @@ else {
 
 
 echo '<form method="post">';
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+echo '<div class="" style="float:right">';
 html_print_input_hidden ('new', 1);
 html_print_submit_button (__('Create'), 'crt', false, 'class="sub next"');
 echo '</div>';

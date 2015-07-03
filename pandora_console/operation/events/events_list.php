@@ -254,7 +254,7 @@ if (defined('METACONSOLE')) {
 	$table->width = '100%';
 	$table->cellspacing = 0;
 	$table->cellpadding = 0;
-	$table->class = 'databox data';
+	$table->class = 'databox filters';
 }
 
 $table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
@@ -279,17 +279,17 @@ $tag_with_temp = array();
 $tag_without_temp = array();
 foreach ($tags as $id_tag => $tag) {
 	if (array_search($id_tag, $tag_with) === false) {
-		$tags_select_with[$id_tag] = ui_print_truncate_text ($tag, 16, false);
+		$tags_select_with[$id_tag] = ui_print_truncate_text ($tag, 50, true);
 	}
 	else {
-		$tag_with_temp[$id_tag] = ui_print_truncate_text ($tag, 16, false);
+		$tag_with_temp[$id_tag] = ui_print_truncate_text ($tag, 50, true);
 	}
 	
 	if (array_search($id_tag, $tag_without) === false) {
-		$tags_select_without[$id_tag] = ui_print_truncate_text ($tag, 16, false);
+		$tags_select_without[$id_tag] = ui_print_truncate_text ($tag, 50, true);
 	}
 	else {
-		$tag_without_temp[$id_tag] = ui_print_truncate_text ($tag, 16, false);
+		$tag_without_temp[$id_tag] = ui_print_truncate_text ($tag, 50, true);
 	}
 }
 
@@ -317,14 +317,14 @@ if (defined('METACONSOLE')) {
 $data = array();
 
 $data[0] = html_print_select ($tags_select_with, 'select_with', '', '', '', 0,
-	true, true, true, '', false, 'width: 120px; height: 70px;') . $jump;
+	true, true, true, '', false, 'width: 400px;');
 
 $data[1] = html_print_image('images/darrowright.png', true, array('id' => 'button-add_with', 'style' => 'cursor: pointer;', 'title' => __('Add')));
 $data[1] .= html_print_input_hidden('tag_with', $tag_with_base64, true);
 $data[1] .= '<br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'button-remove_with', 'style' => 'cursor: pointer;', 'title' => __('Remove')));
 
 $data[2] = html_print_select ($tag_with_temp, 'tag_with_temp', array(), '', '',
-	0, true, true, true, '', false, "width: 120px; height: 70px;");
+	0, true, true, true, '', false, "width: 400px;");
 	
 $tabletags_with->data[] = $data;
 $tabletags_with->rowclass[] = '';
@@ -346,12 +346,12 @@ $tabletags_without->styleTable = 'border: 0px;';
 
 $data = array();
 $data[0] = html_print_select ($tags_select_without, 'select_without', '', '', '', 0,
-	true, true, true, '', false, 'width: 200px; height: 70px;') . $jump;
+	true, true, true, '', false, 'width: 400px;');
 $data[1] = html_print_image('images/darrowright.png', true, array('id' => 'button-add_without', 'style' => 'cursor: pointer;', 'title' => __('Add')));
 $data[1] .= html_print_input_hidden('tag_without', $tag_without_base64, true);
 $data[1] .= '<br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'button-remove_without', 'style' => 'cursor: pointer;', 'title' => __('Remove')));
 $data[2] = html_print_select ($tag_without_temp, 'tag_without_temp', array(), '', '',
-	0, true, true, true, '', false, "width: 200px; height: 70px;");
+	0, true, true, true, '', false, "width: 400px;");
 $tabletags_without->data[] = $data;
 $tabletags_without->rowclass[] = '';
 
@@ -475,13 +475,13 @@ $table_advanced->rowclass[] = '';
 $data = array();
 if (defined('METACONSOLE'))
 {
-	$data[0] = '<fieldset class="" style="width: 310px;">' .
+	$data[0] = '<fieldset class="" style="padding:0px; width: 510px;">' .
 			'<legend>' .
 				__('Events with following tags') .
 			'</legend>' .
 			html_print_table($tabletags_with, true) .
 		'</fieldset>';
-	$data[1] = '<fieldset class="" style="width: 310px;">' .
+	$data2[1] = '<fieldset class="" style="padding:0px; width: 310px;">' .
 			'<legend>' .
 				__('Events without following tags') .
 			'</legend>' .
@@ -489,13 +489,13 @@ if (defined('METACONSOLE'))
 		'</fieldset>';
 }
 else {
-	$data[0] = '<fieldset class="databox" style="width: 310px;">' .
+	$data[0] = '<fieldset class="databox" style="padding:0px; width: 510px; ">' .
 			'<legend>' .
 				__('Events with following tags') .
 			'</legend>' .
 			html_print_table($tabletags_with, true) .
 		'</fieldset>';
-	$data[1] = '<fieldset class="databox" style="width: 310px;">' .
+	$data[1] = '<fieldset class="databox" style="padding:0px; width: 310px;">' .
 			'<legend>' .
 				__('Events without following tags') .
 			'</legend>' .
@@ -503,6 +503,7 @@ else {
 		'</fieldset>';
 }
 $table_advanced->data[] = $data;
+$table_advanced->data[] = $data2;
 $table_advanced->rowclass[] = '';
 //- END ADVANCE FILTER -------------------------------------------------
 

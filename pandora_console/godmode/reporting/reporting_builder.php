@@ -1774,15 +1774,15 @@ else {
 // Page header for metaconsole
 if ($enterpriseEnable and defined('METACONSOLE')) {
 	// Bread crumbs
-	//ui_meta_add_breadcrumb(
-		//array('link' =>
-		//	'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure=' . $pure,
-		//'text' => __('Reporting')));
+	ui_meta_add_breadcrumb(
+		array('link' =>
+			'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&pure=' . $pure,
+		'text' => __('Reporting')));
 	
-	//ui_meta_print_page_header($nav_bar);
+	ui_meta_print_page_header($nav_bar);
 	
-	// Print header
-	//ui_meta_print_header(__('Reporting'). $textReportName, "", $buttons);
+	//Print header
+	ui_meta_print_header(__('Reporting'). $textReportName, "", $buttons);
 }
 else {
 	ui_print_page_header(__('Reporting') . $textReportName,

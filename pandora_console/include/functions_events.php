@@ -1540,7 +1540,7 @@ function events_get_status ($status_id) {
 function events_check_event_filter_group ($id_filter) {
 	global $config;
 	
-	$id_group = db_get_value('id_group', 'tevent_filter', 'id_filter', $id_filter);	
+	$id_group = db_get_value('id_group_filter', 'tevent_filter', 'id_filter', $id_filter);
 	$own_info = get_user_info ($config['id_user']);
 	// Get group list that user has access
 	$groups_user = users_get_groups ($config['id_user'], "EW", $own_info['is_admin'], true);
@@ -1622,7 +1622,7 @@ function events_get_event_filter_select($manage = true) {
 	$sql = "
 		SELECT id_filter, id_name
 		FROM tevent_filter
-		WHERE id_group IN (" . implode(',', array_keys ($user_groups)) . ")";
+		WHERE id_group_filter IN (" . implode(',', array_keys ($user_groups)) . ")";
 	
 	$event_filters = db_get_all_rows_sql($sql);
 	

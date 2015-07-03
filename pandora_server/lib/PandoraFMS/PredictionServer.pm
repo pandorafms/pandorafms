@@ -105,7 +105,7 @@ sub data_producer ($) {
 				AND tagente_modulo.id_modulo = 5
 				AND (tagente_modulo.flag = 1
 				OR (tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP())
-			ORDER BY last_execution_try ASC ', safe_input($pa_config->{'servername'}));
+			ORDER BY last_execution_try ASC ', (is_metaconsole($pa_config) ? '' : safe_input($pa_config->{'servername'})));
 	}
 	else {
 		@rows = get_db_rows ($dbh, 'SELECT DISTINCT(tagente_modulo.id_agente_modulo),
@@ -123,7 +123,7 @@ sub data_producer ($) {
 				AND tagente_modulo.id_modulo = 5
 				AND (tagente_modulo.flag = 1
 				OR (tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP())
-			ORDER BY last_execution_try ASC', safe_input($pa_config->{'servername'}), PREDICTIONSERVER);
+			ORDER BY last_execution_try ASC', (is_metaconsole($pa_config) ? '' : safe_input($pa_config->{'servername'})), PREDICTIONSERVER);
 	}
 	
 	foreach my $row (@rows) {
@@ -166,9 +166,8 @@ sub exec_prediction_module ($$$$) {
 		if ($agent_module->{'custom_string_1'} eq 'SLA') {
 			logger ($pa_config, "Executing service module SLA " .
 				$agent_module->{'id_agente_modulo'} . " " .
-				$agent_module->{'nombre'}, 5);
+				$agent_module->{'nombre'}, 10);
 			enterprise_hook ('exec_service_module_sla', [$pa_config, $agent_module, $server_id, $dbh]);
-			logger ($pa_config, "End execution", 5);
 		}
 		elsif ($agent_module->{'custom_string_1'} eq 'SLA_Value')  {
 			#Do none
@@ -176,9 +175,8 @@ sub exec_prediction_module ($$$$) {
 		else {
 			logger ($pa_config, "Executing service module " .
 				$agent_module->{'id_agente_modulo'} . " " .
-				$agent_module->{'nombre'}, 5);
+				$agent_module->{'nombre'}, 10);
 			enterprise_hook ('exec_service_module', [$pa_config, $agent_module, $server_id, $dbh]);
-			logger ($pa_config, "End execution", 5);
 		}
 		
 		return;

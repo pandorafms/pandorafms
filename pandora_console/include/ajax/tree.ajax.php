@@ -55,6 +55,7 @@ if (is_ajax ()) {
 		}
 		
 		$tree->setFilter($filter);
+		ob_clean();
 		echo json_encode(array('success' => 1, 'tree' => $tree->getArray()));
 		return;
 	}

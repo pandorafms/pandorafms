@@ -57,9 +57,9 @@ TreeController = {
 
 					container.append($group);
 					
-					elements.forEach(function(element, index) {
+					_.each(elements, function(element) {
 						element.jqObject = _processNode($group, element);
-					}, $group);
+					});
 					
 					return $group;
 				}
@@ -560,9 +560,9 @@ TreeController = {
 													$node.append($group);
 												}
 												
-												data.tree.forEach(function(element, index) {
+												_.each(data.tree, function(element) {
 													element.jqObject = _processNode($group, element);
-												}, $group);
+												});
 
 												$group.slideDown();
 

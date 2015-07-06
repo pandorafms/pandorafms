@@ -1029,6 +1029,10 @@ class Tree {
 	}
 
 	protected function getProcessedItem ($item, $server = false, &$items = array(), &$items_tmp = array(), $remove_empty = false) {
+		
+		if (isset($processed_item['is_processed']) && $processed_item['is_processed'])
+			return $item;
+		
 		// For strict items
 		if (isset($item['_id_'])) {
 			$item['id'] = $item['_id_'];
@@ -1171,6 +1175,7 @@ class Tree {
 		// Get the children of the group (special case)
 		if ($processed_item['type'] == 'group') {
 			$children = $this->getGroupsChildren($items, $items_tmp, $item['id'], $server, $remove_empty);
+			
 			if (!empty($children)) {
 				$processed_item['children'] = $children;
 
@@ -1193,6 +1198,9 @@ class Tree {
 					|| empty($processed_item['counters']['total']))) {
 			$processed_item = array();
 		}
+		
+		if (!empty($processed_item))
+			$processed_item['is_processed'] = true;
 
 		return $processed_item;
 	}
@@ -1967,20 +1975,16 @@ class Tree {
 			$items = $this->getItems();
 			
 			// Build the group hierarchy
-			foreach ($items as $key => $item) {
-				if (empty($item['parent'])) {
-					
-					unset($items[$key]);
-					$items_tmp = array();
-					$processed_item = $this->getProcessedItem($item, false, $items, $items_tmp, true);
-					
-					if (!empty($processed_item)
-							&& isset($processed_item['counters'])
-							&& isset($processed_item['counters']['total'])
-							&& !empty($processed_item['counters']['total']))
-						$processed_items[] = $processed_item;
-				}
+			while (($item = array_shift($items)) !== null) {
+				$processed_item = $this->getProcessedItem($item, false, $items, $processed_items, true);
+				
+				if (!empty($processed_item)
+						&& isset($processed_item['counters'])
+						&& isset($processed_item['counters']['total'])
+						&& !empty($processed_item['counters']['total']))
+					$processed_items[] = $processed_item;
 			}
+			
 			// groupID filter. To access the view from tactical views f.e.
 			if (!empty($processed_items) && !empty($this->filter['groupID'])) {
 				$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group", $this->strictACL);

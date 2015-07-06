@@ -2436,4 +2436,29 @@ function array2XML($data, $root = null, $xml = NULL) {
 	
 	return html_entity_decode($xml->asXML());
 }
+
+/**
+ * Returns an array by extracting a column or columns.
+ *
+ * @param array Array
+ * @param mixed (string/array) Column name/s
+ *
+ * @return array Array formed by the extracted columns of every array iteration.
+ */
+function extract_column ($array, $column) {
+	$column_is_arr = is_array($column);
+	
+	return array_map(function($item) {
+		if ($column_is_arr) {
+			return array_reduce($column, function($carry, $col) use ($item) {
+				$carry[$col] = $item[$col];
+				return $item[$col];
+			}, array());
+		}
+		else {
+			return $item[$column];
+		}
+	}, $array);
+}
+
 ?>

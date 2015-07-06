@@ -68,91 +68,92 @@ if ($update) {
 	$success = 0;
 	$count = 0;
 	
-	if ($agents_ == false) {
+	if ($agents_ == false)
 		$agents_ = array();
-	}
 	
 	// If the option to select all of one group or module type is checked
 	if ($force) {
 		if ($force == 'type') {
-			$condition = '';
+			$type_condition = '';
 			if ($module_type != 0)
-				$condition = ' AND t2.id_tipo_modulo = ' . $module_type;
+				$type_condition = "AND tam.id_tipo_modulo = $module_type";
 			
-			$agents_ = db_get_all_rows_sql('
-				SELECT DISTINCT(t1.id_agente)
-				FROM tagente t1, tagente_modulo t2
-				WHERE t1.id_agente = t2.id_agente
-					AND t2.delete_pending = 0 ' . $condition);
+			$sql = "SELECT ta.id_agente
+					FROM tagente ta
+					INNER JOIN tagente_modulo tam
+						ON ta.id_agente = tam.id_agente
+							AND tam.delete_pending = 0
+							$type_condition
+					GROUP BY ta.id_agente";
+			$agents_ = db_get_all_rows_sql($sql);
+			if ($agents_ === false)
+				$agents_ = array();
+			
+			// Create an array of agent ids
+			$agents_ = extract_column($agents_, 'id_agente');
+			
 			foreach ($agents_ as $id_agent) {
-				$module_name = db_get_all_rows_filter('tagente_modulo',
-					array('id_agente' => $id_agent,
-						'id_tipo_modulo' =>  $module_type,
-						'delete_pending' => 0),
-					'nombre');
+				$filter = array(
+						'id_agente' => $id_agent,
+						'delete_pending' => 0
+					);
+				if ($module_type != 0)
+					$filter['id_tipo_modulo'] = $module_type;
 				
-				if ($module_name == false) {
+				$module_name = db_get_all_rows_filter('tagente_modulo', $filter, 'nombre');
+				if ($module_name === false)
 					$module_name = array();
-				}
+				
 				foreach ($module_name as $mod_name) {
-					$result = process_manage_edit($mod_name['nombre'],
-						$id_agent['id_agente']);
+					$result = process_manage_edit($mod_name['nombre'], $id_agent);
 					$count++;
 					$success += (int)$result;
 				}
 			}
 		}
 		else if ($force == 'group') {
-			$agents_ = array_keys(agents_get_group_agents($group_select,
-				false, "none"));
+			$agents_ = array_keys(agents_get_group_agents($group_select, false, 'none'));
+			
 			foreach ($agents_ as $id_agent) {
-				$module_name = db_get_all_rows_filter('tagente_modulo',
-					array('id_agente' => $id_agent),'nombre');
-				if ($module_name == false) {
+				$filter = array('id_agente' => $id_agent);
+				$module_name = db_get_all_rows_filter('tagente_modulo', $filter, 'nombre');
+				if ($module_name === false)
 					$module_name = array();
-				}
+				
 				foreach($module_name as $mod_name) {
-					$result = process_manage_edit($mod_name['nombre'],
-						$id_agent);
-					$count ++;
+					$result = process_manage_edit($mod_name['nombre'], $id_agent);
+					$count++;
 					$success += (int)$result;
 				}
 			}
 		}
-		
-		// We empty the agents array to skip the standard procedure
-		$agents_ = array();
 	}
-	
-	
-	
-	foreach ($agents_ as $agent_) {
-		
-		if ($modules_ == false) {
-			$modules_ = array();
-		}
-		
-		foreach ($modules_ as $module_) {
-			$result = process_manage_edit ($module_, $agents_);
-			$count ++;
-			$success += (int)$result;
+	else {
+		// Standard procedure
+		foreach ($agents_ as $agent_) {
+			
+			if ($modules_ == false)
+				$modules_ = array();
+			
+			foreach ($modules_ as $module_) {
+				$result = process_manage_edit ($module_, $agents_);
+				$count++;
+				$success += (int)$result;
+			}
 		}
 	}
 	
 	ui_print_result_message ($success > 0,
-		__('Successfully updated') .
-			"(" . $success . "/" . $count . ")",
+		__('Successfully updated') . "(" . $success . "/" . $count . ")",
 		__('Could not be updated'));
 	
 	$info = 'Modules: ' . json_encode($modules_) .
 		' Agents: ' . json_encode($agents_);
 	if ($success > 0) {
-		db_pandora_audit("Massive management", "Edit module", false,
-			false, $info);
+		db_pandora_audit("Massive management", "Edit module", false, false, $info);
 	}
 	else {
-		db_pandora_audit("Massive management",
-			"Fail try to edit module", false, false, $info);
+		db_pandora_audit("Massive management", "Fail try to edit module", false, false, $info);
 	}
 }
 

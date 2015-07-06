@@ -30,7 +30,7 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 	require ("general/noaccess.php");
 	return;
 }
- 
+
 $is_admin = check_acl ($config['id_user'], 0, "PM");
 $user_strict = (bool) db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 

@@ -17,8 +17,12 @@
 global $config;
 check_login ();
 ui_require_css_file ('firts_task');
+
+ui_print_info_message(
+	array(
+		'no_close'=>true,
+		'message'=>  __('There are no visual console defined yet.')));
 ?>
-<?php ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no visual console defined yet.') ) ); ?>
 
 <div class="new_task">
 	<div class="image_task">

@@ -234,8 +234,14 @@ else
 	$maps = visual_map_get_user_layouts ($config['id_user'], false,
 		false, false);
 
-if (!$maps) {
+if (!$maps && !defined("METACONSOLE")) {
 	require_once ($config['homedir'] . "/general/firts_task/map_builder.php");
+}
+elseif (!$maps && defined("METACONSOLE")) {
+	ui_print_info_message(
+		array(
+			'no_close'=>true,
+			'message'=>  __('There are no visual console defined yet.')));
 }
 else {
 	foreach ($maps as $map) {
@@ -281,7 +287,7 @@ if ($maps) {
 	else
 		echo '<div class="" style="width: 100%; text-align: right;">';
 }
-if ($maps) {
+if ($maps || defined("METACONSOLE")) {
 	if ($vconsoles_write || $vconsoles_manage) {
 		if (!defined('METACONSOLE')) {
 			echo '<form action="index.php?sec=reporting&amp;sec2=godmode/reporting/visual_console_builder" method="post">';

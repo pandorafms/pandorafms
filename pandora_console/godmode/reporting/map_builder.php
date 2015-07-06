@@ -279,7 +279,7 @@ if ($maps) {
 	if (!defined('METACONSOLE'))
 		echo '<div class="action-buttons" style="width: 0px;">';
 	else
-		echo '<div class="action-buttons" style="width: 500px; text-align: right;">';
+		echo '<div class="" style="width: 100%; text-align: right;">';
 }
 if ($maps) {
 	if ($vconsoles_write || $vconsoles_manage) {

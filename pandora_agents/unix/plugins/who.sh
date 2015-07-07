@@ -1,7 +1,7 @@
 #!/bin/sh
 echo "<module>";
-echo "<name>who</name>";
-echo "<type>async_string</type>";
+echo "<name><![CDATA[who]]></name>";
+echo "<type><![CDATA[async_string]]></type>";
 echo "<data><![CDATA["
 WHO=`who`
 if [ "$WHO" = "" ]; then

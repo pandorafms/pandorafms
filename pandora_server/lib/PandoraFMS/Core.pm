@@ -569,7 +569,7 @@ sub pandora_process_alert ($$$$$$$$;$) {
 			db_do($dbh, 'UPDATE talert_template_module_actions SET last_execution = 0 WHERE id_alert_template_module = ?', $id);
 		}
 
-		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, $extra_macros);
+		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh, $timestamp, 0, $extra_macros);
 		return;
 	}
 
@@ -609,21 +609,21 @@ sub pandora_process_alert ($$$$$$$$;$) {
 				last_fired = ?, internal_counter = ? ' . $new_interval . ' WHERE id = ?',
 			$alert->{'times_fired'}, $utimestamp, $alert->{'internal_counter'}, $id);
 		
-		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1, $dbh, $timestamp, $extra_macros);
+		pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1, $dbh, $timestamp, 0, $extra_macros);
 		return;
 	}
 }
 
 ##########################################################################
-=head2 C<< pandora_execute_alert (I<$pa_config>, I<$data>, I<$agent>, I<$module>, I<$alert>, I<$alert_mode>, I<$dbh>, I<$timestamp>) >> 
+=head2 C<< pandora_execute_alert (I<$pa_config>, I<$data>, I<$agent>, I<$module>, I<$alert>, I<$alert_mode>, I<$dbh>, I<$timestamp>, I<$forced_alert>) >> 
 
 Execute the given alert.
 
 =cut
 ##########################################################################
-sub pandora_execute_alert ($$$$$$$$;$) {
+sub pandora_execute_alert ($$$$$$$$$;$) {
 	my ($pa_config, $data, $agent, $module,
-		$alert, $alert_mode, $dbh, $timestamp, $extra_macros) = @_;
+		$alert, $alert_mode, $dbh, $timestamp, $forced_alert, $extra_macros) = @_;
 	
 	# Alerts in stand-by are not executed
 	if ($alert->{'standby'} == 1) {
@@ -667,18 +667,31 @@ sub pandora_execute_alert ($$$$$$$$;$) {
 				$alert->{'id_template_module'}, $alert->{'times_fired'});	
 		} else {
 			# Avoid the use of alias bigger than 30 characters.
-			@actions = get_db_rows ($dbh, 
-				'SELECT taa.*, tac.*, tatma.id AS id_alert_templ_module_actions,
-					tatma.id_alert_template_module, tatma.id_alert_action, tatma.fires_min,
-					tatma.fires_max, tatma.module_action_threshold, tatma.last_execution
-				FROM talert_template_module_actions tatma, talert_actions taa, talert_commands tac
-				WHERE tatma.id_alert_action = taa.id
-					AND taa.id_alert_command = tac.id
-					AND tatma.id_alert_template_module = ?
-					AND ((fires_min = 0 AND fires_max = 0)
-						OR (fires_min <= fires_max AND ? >= fires_min AND ? <= fires_max)
-						OR (fires_min > fires_max AND ? >= fires_min))', 
-				$alert->{'id_template_module'}, $alert->{'times_fired'}, $alert->{'times_fired'}, $alert->{'times_fired'});	
+			if ($forced_alert){
+				@actions = get_db_rows ($dbh, 
+					'SELECT taa.*, tac.*, tatma.id AS id_alert_templ_module_actions,
+						tatma.id_alert_template_module, tatma.id_alert_action, tatma.fires_min,
+						tatma.fires_max, tatma.module_action_threshold, tatma.last_execution
+					FROM talert_template_module_actions tatma, talert_actions taa, talert_commands tac
+					WHERE tatma.id_alert_action = taa.id
+						AND taa.id_alert_command = tac.id
+						AND tatma.id_alert_template_module = ?', 
+					$alert->{'id_template_module'});	
+	
+			} else {		
+				@actions = get_db_rows ($dbh, 
+					'SELECT taa.*, tac.*, tatma.id AS id_alert_templ_module_actions,
+						tatma.id_alert_template_module, tatma.id_alert_action, tatma.fires_min,
+						tatma.fires_max, tatma.module_action_threshold, tatma.last_execution
+					FROM talert_template_module_actions tatma, talert_actions taa, talert_commands tac
+					WHERE tatma.id_alert_action = taa.id
+						AND taa.id_alert_command = tac.id
+						AND tatma.id_alert_template_module = ?
+						AND ((fires_min = 0 AND fires_max = 0)
+							OR (fires_min <= fires_max AND ? >= fires_min AND ? <= fires_max)
+							OR (fires_min > fires_max AND ? >= fires_min))', 
+					$alert->{'id_template_module'}, $alert->{'times_fired'}, $alert->{'times_fired'}, $alert->{'times_fired'});			
+			}
 		}
 
 		# Get default action
@@ -3018,7 +3031,7 @@ sub pandora_exec_forced_alerts {
 			next;
 		}
 
-		pandora_execute_alert ($pa_config, 'N/A', $agent, $module, $alert, 1, $dbh, undef);
+		pandora_execute_alert ($pa_config, 'N/A', $agent, $module, $alert, 1, $dbh, undef, 1, undef);
 
 		# Reset the force_execution flag, even if the alert could not be executed
 		db_do ($dbh, "UPDATE talert_template_modules SET force_execution = 0 WHERE id = " . $alert->{'id_template_module'});

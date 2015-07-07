@@ -127,10 +127,8 @@ if(!defined('METACONSOLE'))
 else
 	echo '<div align=left style="width: 100%" class="pandora_form">';
 
-if(!defined('METACONSOLE'))
-	echo "<table border=0 cellpadding=4 cellspacing=4 class='databox filters' width=100%>";
-else
-	echo "<table border=0 cellpadding=4 cellspacing=4 class='databox data' width=100%>";
+echo "<table border=0 cellpadding=4 cellspacing=4 class='databox filters' width=100%>";
+
 	if (defined("METACONSOLE")) {
 		if ($action == "update") {
 			echo "<thead>

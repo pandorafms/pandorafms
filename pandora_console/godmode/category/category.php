@@ -134,33 +134,23 @@ if (!empty($result)) {
 	}
 	
 	html_print_table ($table);
-	
-	if (defined('METACONSOLE')) {
-		echo "<div style='width=100%; float:right;'>";
-			if(defined('METACONSOLE'))
-				echo '<form method="post" action="index.php?sec=advanced&sec2=godmode/category/edit_category&action=new&pure='.(int)$config['pure'].'">';
-			else
-				echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action=new&pure='.(int)$config['pure'].'">';
-			html_print_input_hidden ("create_category", "1", true);
-			html_print_submit_button (__('Create category'), 'create_button', false, 'class="sub next"');
-			echo "</form>";
-		echo "</div>";
-	}
+
 }
 else {
 	// No categories available or selected
 	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('No categories found') ) );
 }
 // Form to add new categories or search categories
-if (!defined('METACONSOLE')) {
-	echo "<div style='width=100%; float:right;'>";
+echo "<div style='width=100%; float:right;'>";
+	if(defined('METACONSOLE'))
+		echo '<form method="post" action="index.php?sec=advanced&sec2=godmode/category/edit_category&action=new&pure='.(int)$config['pure'].'">';
+	else
 		echo '<form method="post" action="index.php?sec=gmodules&sec2=godmode/category/edit_category&action=new&pure='.(int)$config['pure'].'">';
-		html_print_input_hidden ("create_category", "1", true);
-		html_print_submit_button (__('Create category'),
-			'create_button', false, 'class="sub next"');
-		echo "</form>";
-	echo "</div>";
-}
+	html_print_input_hidden ("create_category", "1", true);
+	html_print_submit_button (__('Create category'), 'create_button', false, 'class="sub next"');
+	echo "</form>";
+echo "</div>";
+
 enterprise_hook('close_meta_frame');
 
 ?>

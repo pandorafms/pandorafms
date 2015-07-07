@@ -474,16 +474,14 @@ $table->id = 'template';
 $table->width = '100%';
 $table->class = 'databox filters';
 if(defined("METACONSOLE")) {
-	$table->class = 'databox data';
 	$table->head[0] = __('Create Template');
 	$table->head_colspan[0] = 4;
 	$table->headstyle[0] = 'text-align: center';
 }
 $table->style = array ();
-if(!defined("METACONSOLE")) {
-	$table->style[0] = 'font-weight: bold;';
-	$table->style[2] = 'font-weight: bold;';
-}
+$table->style[0] = 'font-weight: bold;';
+$table->style[2] = 'font-weight: bold;';
+
 $table->size = array ();
 $table->size[0] = '20%';
 $table->size[2] = '20%';

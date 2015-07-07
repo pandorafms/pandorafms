@@ -204,6 +204,7 @@ if ($create_network_from_snmp_browser) {
  * You can see this values in file godmode/modules/manage_network_components.php
  * in the last lines (in the call function "html_print_select").
  */
+$table = new stdClass();
 
 if ($id_component_type == 6) {
 	$categories = array (0, 1, 2);
@@ -236,7 +237,6 @@ $table->width = '100%';
 $table->class = 'databox filters';
 /* $table came from manage_network_components_form_common.php */
 if (defined('METACONSOLE')) {
-	$table->class = 'databox data';
 	if ($id) {
 		$table->head[0] = __('Update Network Component');
 	}

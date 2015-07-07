@@ -91,26 +91,15 @@ if ($id_module) {
 
 enterprise_hook('open_meta_frame');
 
-if (!defined('METACONSOLE')) {
-	$filters = '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;ag_group=' . 
-			$ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . 
-				$sortField . '&amp;sort=' . $sort .'&amp;pure=' . $config['pure'] . $ag_custom_fields_params . '">';
-	//echo '<table cellspacing="4" cellpadding="4" width="100%" class="databox"><tr>';
-	$table->width = "100%";
-	$table->cellspacing = 0;
-	$table->cellpadding = 0;
-	$table->class = "databox filters";
-}
-else {
-	$filters = '<form class="filters_form" method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;ag_group=' . 
-			$ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . 
-				$sortField . '&amp;sort=' . $sort .'&amp;pure=' . $config['pure'] . $ag_custom_fields_params . '">';
-	//echo '<table cellspacing="0" cellpadding="0" width="96%" class="databox_filters"><tr>';
-	$table->width = "96%";
-	$table->cellspacing = 0;
-	$table->cellpadding = 0;
-	$table->class = "databox_filters";
-}
+$filters = '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;ag_group=' . 
+		$ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . 
+			$sortField . '&amp;sort=' . $sort .'&amp;pure=' . $config['pure'] . $ag_custom_fields_params . '">';
+//echo '<table cellspacing="4" cellpadding="4" width="100%" class="databox"><tr>';
+$table->width = "100%";
+$table->cellspacing = 0;
+$table->cellpadding = 0;
+$table->class = "databox filters";
+
 
 // Get Groups and profiles from user
 $user_groups = implode (",", array_keys (users_get_groups ()));
@@ -527,6 +516,7 @@ foreach ($custom_fields as $custom_field) {
 
 if (defined('METACONSOLE')) {
 	$table->colspan[2][0] = 7;
+	$table->cellstyle[2][0] = 'padding: 10px;';
 	$table->data[2][0] = ui_toggle(
 		html_print_table($table_custom_fields, true),
 		__('Advanced Options'), '', true, true);

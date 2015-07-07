@@ -45,8 +45,8 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	$table->cellpadding = '0';
 	$table->cellspacing = '0';
 	if (defined('METACONSOLE')) {
-		$table->class = 'databox_filters';
-		$table->width = '96%';
+		$table->class = 'databox filters';
+		$table->width = '100%';
 		$table->cellpadding = '0';
 		$table->cellspacing = '0';
 	}
@@ -58,11 +58,11 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	$table->style[3] = 'font-weight: bold;';
 	$table->style[4] = 'font-weight: bold;';
 	if (defined('METACONSOLE')) {
-		$table->style[0] = 'vertical-align:middle; font-weight: bold;';
-		$table->style[1] = 'vertical-align:middle; font-weight: bold;';
-		$table->style[2] = 'vertical-align:middle; font-weight: bold;';
-		$table->style[3] = 'vertical-align:middle; font-weight: bold;';
-		$table->style[4] = 'vertical-align:middle; font-weight: bold;';
+		$table->style[0] = 'font-weight: bold;';
+		$table->style[1] = 'font-weight: bold;';
+		$table->style[2] = 'font-weight: bold;';
+		$table->style[3] = 'font-weight: bold;';
+		$table->style[4] = 'font-weight: bold;';
 	}
 	
 	$table->data[0][0] = __('Group');

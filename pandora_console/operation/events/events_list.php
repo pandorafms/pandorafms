@@ -189,18 +189,18 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$table->class = 'databox';
 	if (defined('METACONSOLE')) {
 		$table->width = '100%';
-		$table->class = 'databox data';
+		$table->class = 'databox filters';
 		$table->cellspacing = 0;
 		$table->cellpadding = 0;
 	}
-	$table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
+	$table->styleTable = 'font-weight: bold; text-align:left;';
 	if (!defined("METACONSOLE"))
 		$table->style[0] = 'width: 50%; width:50%;';
 	
 	$data = array();
 	$table->rowid[0] = 'update_save_selector';
-	$data[0] = html_print_radio_button('filter_mode', 'new', '', true, true) . __('New filter') . '<br><br>';
-	$data[1] = html_print_radio_button('filter_mode', 'update', '', false, true) . __('Update filter') . '<br><br>';
+	$data[0] = html_print_radio_button('filter_mode', 'new', '', true, true) . __('New filter') . '';
+	$data[1] = html_print_radio_button('filter_mode', 'update', '', false, true) . __('Update filter') . '';
 	$table->data[] = $data;
 	$table->rowclass[] = '';
 	
@@ -213,16 +213,14 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	else
 		$data[1] = __('Filter group') . $jump;
 	# Fix : Only admin users can see group ALL
-	$data[1] .= html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group_filter", $id_group_filter, '', '', 0, true, false, false, 'w130', false, '', false, false, 'id_grupo', $strict_user);
+	$data[1] .= html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group_filter",
+				$id_group_filter, '', '', 0, true, false, false, 'w130', false, '', false, false, 'id_grupo', $strict_user);
 	$table->data[] = $data;
 	$table->rowclass[] = '';
 	
 	$data = array();
 	$table->rowid[2] = 'save_filter_row2';
-	$data[0] = html_print_submit_button (__('Save filter'), 'save_filter', false, 'class="sub upd"', true);
-	$table->colspan[2][0] = 2;
-	if(!defined("METACONSOLE"))
-		$table->cellstyle[2][0] = 'text-align:right;';
+	
 	$table->data[] = $data;
 	$table->rowclass[] = '';
 	
@@ -240,6 +238,9 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	
 	html_print_table($table);
 	unset($table);
+	echo '<div>';	
+		echo html_print_submit_button (__('Save filter'), 'save_filter', false, 'class="sub upd" style="float:right;"', true);
+	echo '</div>';
 	echo '</div>';
 }
 
@@ -317,14 +318,14 @@ if (defined('METACONSOLE')) {
 $data = array();
 
 $data[0] = html_print_select ($tags_select_with, 'select_with', '', '', '', 0,
-	true, true, true, '', false, 'width: 400px;');
+	true, true, true, '', false, 'width: 335px;');
 
 $data[1] = html_print_image('images/darrowright.png', true, array('id' => 'button-add_with', 'style' => 'cursor: pointer;', 'title' => __('Add')));
 $data[1] .= html_print_input_hidden('tag_with', $tag_with_base64, true);
 $data[1] .= '<br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'button-remove_with', 'style' => 'cursor: pointer;', 'title' => __('Remove')));
 
 $data[2] = html_print_select ($tag_with_temp, 'tag_with_temp', array(), '', '',
-	0, true, true, true, '', false, "width: 400px;");
+	0, true, true, true, '', false, "width: 335px;");
 	
 $tabletags_with->data[] = $data;
 $tabletags_with->rowclass[] = '';
@@ -346,12 +347,12 @@ $tabletags_without->styleTable = 'border: 0px;';
 
 $data = array();
 $data[0] = html_print_select ($tags_select_without, 'select_without', '', '', '', 0,
-	true, true, true, '', false, 'width: 400px;');
+	true, true, true, '', false, 'width: 335px;');
 $data[1] = html_print_image('images/darrowright.png', true, array('id' => 'button-add_without', 'style' => 'cursor: pointer;', 'title' => __('Add')));
 $data[1] .= html_print_input_hidden('tag_without', $tag_without_base64, true);
 $data[1] .= '<br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'button-remove_without', 'style' => 'cursor: pointer;', 'title' => __('Remove')));
 $data[2] = html_print_select ($tag_without_temp, 'tag_without_temp', array(), '', '',
-	0, true, true, true, '', false, "width: 400px;");
+	0, true, true, true, '', false, "width: 335px;");
 $tabletags_without->data[] = $data;
 $tabletags_without->rowclass[] = '';
 
@@ -476,13 +477,13 @@ $data = array();
 if (defined('METACONSOLE'))
 {
 	$data[0] = '<fieldset class="" style="padding:0px; width: 510px;">' .
-			'<legend>' .
+			'<legend style="padding:0px;">' .
 				__('Events with following tags') .
 			'</legend>' .
 			html_print_table($tabletags_with, true) .
 		'</fieldset>';
 	$data2[1] = '<fieldset class="" style="padding:0px; width: 310px;">' .
-			'<legend>' .
+			'<legend style="padding:0px;">' .
 				__('Events without following tags') .
 			'</legend>' .
 			html_print_table($tabletags_without, true) .
@@ -503,7 +504,9 @@ else {
 		'</fieldset>';
 }
 $table_advanced->data[] = $data;
-$table_advanced->data[] = $data2;
+if (defined('METACONSOLE'))
+	$table_advanced->data[] = $data2;
+
 $table_advanced->rowclass[] = '';
 //- END ADVANCE FILTER -------------------------------------------------
 
@@ -514,10 +517,7 @@ $table->width = '100%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'databox filters';
-if (defined('METACONSOLE')) {
-	$table->width = '96%';
-	$table->class = 'databox_filters';
-}
+
 $table->styleTable = 'font-weight: bold; color: #555;';
 $table->data = array();
 
@@ -564,7 +564,7 @@ $data = array();
 $data[0] = ui_toggle(html_print_table($table_advanced, true),
 	__('Advanced options'), '', true, true);
 $table->colspan[count($table->data)][0] = 3;
-$table->cellstyle[count($table->data)][0] = 'padding-top: 15px;';
+$table->cellstyle[count($table->data)][0] = 'padding: 10px;';
 $table->data[] = $data;
 $table->rowclass[] = '';
 

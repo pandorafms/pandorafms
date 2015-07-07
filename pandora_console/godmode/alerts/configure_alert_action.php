@@ -94,8 +94,6 @@ $table->width = '100%';
 $table->class = 'databox filters';
 
 if (defined('METACONSOLE')) {
-	$table->class = 'databox data';
-	$table->width = '100%';
 	if ($id) {
 		$table->head[0] = __('Update Action');
 	}

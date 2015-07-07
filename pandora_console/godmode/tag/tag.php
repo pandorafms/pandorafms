@@ -138,8 +138,8 @@ if (!empty($result)) {
 	}
 	else {
 		
-		$filters = '<form method=post class="filters_form" action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag=0">';
-		$filters .=  "<table border=0 cellpadding=0 cellspacing=0 class=databox_filters width=70%>";
+		$filters = '<form method=post class="" action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag=0">';
+		$filters .=  "<table border=0 cellpadding=0 cellspacing=0 class='databox filters' width=100%>";
 		$filters .= "<tr>";
 		$filters .= "<td>";
 		$filters .= __("Name") . "/" . __("Description");
@@ -246,6 +246,9 @@ else{
 	if(!defined("METACONSOLE")){
 		require_once ($config['homedir'] . "/general/firts_task/tags.php");
 		return;
+	}
+	else{
+		ui_print_info_message(array("no_close"=>true,"message"=>__("No tags defined.")));
 	}
 }
 echo "<table border=0 cellpadding=0 cellspacing=0 width=100%>";

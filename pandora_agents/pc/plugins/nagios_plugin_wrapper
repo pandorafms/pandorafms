@@ -59,11 +59,11 @@ if ($command ne ""){
     elsif ($ReturnCode == 4){
 	    $module_data = 3; # need to be managed on module thresholds
     }
-
+	
     print "<module>";
-    print "<name>".$module_name."</name>\n";
-    print "<type>generic_proc</type>\n";
-    print "<data>".$module_data."</data>\n";
+    print "<name><![CDATA[".$module_name."]]></name>\n";
+    print "<type><![CDATA[generic_proc]]></type>\n";
+    print "<data><![CDATA[".$module_data."]]></data>\n";
     print "<description><![CDATA[" . $module_description . "]]></description>\n";
     print "</module>\n";
 

@@ -1917,7 +1917,7 @@ function reporting_get_stats_agents_monitors($data) {
 	return $output;
 }
 
-function reporting_get_stats_indicators($data, $width = 280, $height = 20, $html = true) {
+function reporting_get_stats_indicators($data, $width = 160, $height = 20, $html = true) {
 	$table_ind = html_get_predefined_table();
 	
 	$servers = array();

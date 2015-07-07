@@ -48,7 +48,7 @@ if (in_array('server_name', $show_fields)) {
 }
 if (in_array('estado', $show_fields)) {
 	$table->head[$i] = __('Status');
-	$table->align[$i] = 'center';
+	$table->align[$i] = 'left';
 	$i++;
 }
 if (in_array('id_evento', $show_fields)) {

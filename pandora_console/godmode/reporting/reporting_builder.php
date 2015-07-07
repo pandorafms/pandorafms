@@ -375,8 +375,8 @@ switch ($action) {
 		$table_aux->cellpadding = 0;
 		$table_aux->cellspacing = 0;
 		if (defined('METACONSOLE')) {
-			$table_aux->class = 'databox_filters';
-			$table_aux->width = '96%';
+			$table_aux->class = 'databox filters';
+			$table_aux->width = '100%';
 			$table_aux->cellpadding = 0;
 			$table_aux->cellspacing = 0;
 		}
@@ -391,7 +391,7 @@ switch ($action) {
 		$table_aux->data[0][6] = html_print_submit_button(__('Search'), 'search_submit', false, 'class="sub upd"', true);
 		
 		if (defined('METACONSOLE')) {
-			$filter = "<form class ='filters_form' action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&id_group=$id_group&pure=$pure'
+			$filter = "<form class ='' action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&id_group=$id_group&pure=$pure'
 				method='post'>";
 			$filter .= html_print_table($table_aux,true);
 			$filter .= "</form>";

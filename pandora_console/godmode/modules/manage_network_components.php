@@ -441,18 +441,14 @@ $url = ui_get_url_refresh (array ('offset' => false,
 $search_id_group = (int) get_parameter ('search_id_group');
 $search_string = (string) get_parameter ('search_string');
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 
-if(defined("METACONSOLE")) {
-	$table->width = '50%';
-	$table->class = 'databox_filters';
-}
 $table->style = array ();
-if (!defined('METACONSOLE')) {
-	$table->style[0] = 'font-weight: bold';
-	$table->style[2] = 'font-weight: bold';
-}
+$table->style[0] = 'font-weight: bold';
+$table->style[2] = 'font-weight: bold';
+
 $table->data = array ();
 
 $table->data[0][0] = __('Group');

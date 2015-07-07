@@ -67,12 +67,12 @@ while (my ($filesystem, $use) = each (%filesystems)) {
 	print "<name><![CDATA[Disk_" . $filesystem . "]]></name>\n";
 	print "<type><![CDATA[generic_data]]></type>\n";
 	print "<data><![CDATA[" . $free . "]]></data>\n";
-	print "<min_critical>0</min_critical>\n";
-	print "<unit>%</unit>\n";
-	print "<max_critical>5</max_critical>\n";
-	print "<min_warning>5</min_warning>\n";
-	print "<max_warning>10</max_warning>\n";
-	print "<description>% of free space in this volume</description>\n";
+	print "<min_critical><![CDATA[0]]></min_critical>\n";
+	print "<unit><![CDATA[%]]></unit>\n";
+	print "<max_critical><![CDATA[5]]></max_critical>\n";
+	print "<min_warning><![CDATA[5]]></min_warning>\n";
+	print "<max_warning><![CDATA[10]]></max_warning>\n";
+	print "<description><![CDATA[% of free space in this volume]]></description>\n";
 	print "</module>\n";
 }
 

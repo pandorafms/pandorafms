@@ -233,8 +233,6 @@ $table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 if (defined("METACONSOLE")) {
-	$table->width = '96%';
-	$table->class = 'databox_filters';
 	$table->cellspacing = 0;
 	$table->cellpadding = 0;
 	
@@ -243,10 +241,9 @@ $table->data = array ();
 $table->head = array ();
 $table->style = array ();
 
-if (!defined("METACONSOLE")) {
-	$table->style[0] = 'font-weight: bold';
-	$table->style[2] = 'font-weight: bold';
-}
+$table->style[0] = 'font-weight: bold';
+$table->style[2] = 'font-weight: bold';
+
 
 $table->data[0][0] = __('Type');
 $table->data[0][1] = html_print_select (alerts_get_alert_templates_types (), 'search_type',
@@ -260,7 +257,7 @@ $table->data[0][4] .= html_print_submit_button (__('Search'), 'search', false,
 $table->data[0][4] .= '</div>';
 
 if (defined("METACONSOLE")) {
-	$filter = '<form class="filters_form" method="post" action="' . $url . '">';
+	$filter = '<form class="" method="post" action="' . $url . '">';
 	$filter .= html_print_table ($table,true);
 	$filter .= '</form>';
 	ui_toggle($filter, __("Show Options"));

@@ -40,15 +40,15 @@ echo $CURRENT > $DIRETMP
 
 echo "<module>
     <name><![CDATA[FS_$DIRE]]></name>
-    <description>Number of files in directory</description>
-    <type>generic_proc</type>
-    <data>$DISPARA</data>
+    <description><![CDATA[Number of files in directory]]></description>
+    <type><![CDATA[generic_proc]]></type>
+    <data><![CDATA[$DISPARA]]></data>
 </module>
 
 <module>
     <name><![CDATA[NumFiles_FS_$DIRE]]></name>
-    <description>Number of files</description>
-    <type>generic_data</type>
-    <data>$CURRENT</data>
+    <description><![CDATA[Number of files]]></description>
+    <type><![CDATA[generic_data]]></type>
+    <data><![CDATA[$CURRENT]]></data>
 </module>"
 

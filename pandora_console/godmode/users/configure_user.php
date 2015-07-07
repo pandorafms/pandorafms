@@ -418,8 +418,6 @@ $table->id = 'user_configuration_table';
 $table->width = '100%';
 $table->class = 'databox filters';
 if (defined('METACONSOLE')) {
-	$table->width = '100%';
-	$table->class = 'databox data';
 	if ($id) {
 		$table->head[0] = __('Update User');
 	}
@@ -605,7 +603,7 @@ if (!empty ($id) && !$new_user) {
 		$table->head_colspan[0] = 0;
 		$table->width = '100%';
 		$table->class = 'databox_tactical data';
-		$table->title = '<span>' . __('Profiles/Groups assigned to this user') . '</span>';
+		$table->title = __('Profiles/Groups assigned to this user');
 	}
 	$table->data = array ();
 	$table->head = array ();

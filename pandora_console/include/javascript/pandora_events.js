@@ -92,7 +92,7 @@ function show_save_filter_dialog() {
 						opacity: 0.5,
 						background: "black"
 					},
-					width: 420,
+					width: 688,
 					height: 200
 				})
 				.show ();
@@ -109,8 +109,8 @@ function show_load_filter_dialog() {
 						opacity: 0.5,
 						background: "black"
 					},
-					width: 420,
-					height: 200
+					width: 520,
+					height: 300
 				})
 				.show ();
 	return false;

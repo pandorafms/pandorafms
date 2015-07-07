@@ -60,8 +60,6 @@ $table->width = '100%';
 $table->class = 'databox filters';
 
 if(defined('METACONSOLE')) {
-	$table->width = '100%';
-	$table->class = 'databox data';
 	$table->head[0] = __('Edit event responses');
 	$table->head_colspan[0] = 5;
 	$table->headstyle[0] = 'text-align: center';
@@ -132,7 +130,7 @@ if ($event_response_id == 0) {
 	if(!defined('METACONSOLE'))
 		echo '<div style="width:100%;text-align:right;">';
 	else
-		echo '<br><br><div style="width:100%;text-align:right;">';
+		echo '<div style="width:100%;text-align:right;">';
 	html_print_submit_button(__('Create'), 'create_response_button', false, array('class' => 'sub next'));
 	echo '</div>';
 	echo '</form>';
@@ -143,7 +141,7 @@ else {
 	if(!defined('METACONSOLE'))
 		echo '<div style="width:100%;text-align:right;">';
 	else
-		echo '<br><br><div style="width:100%;text-align:right;">';
+		echo '<div style="width:100%;text-align:right;">';
 	html_print_submit_button(__('Update'), 'update_response_button', false, array('class' => 'sub next'));
 	echo '</div>';
 	echo '</form>';

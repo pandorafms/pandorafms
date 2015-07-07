@@ -285,67 +285,35 @@ $remove_with_tag_disabled = empty($tag_with_temp);
 $add_without_tag_disabled = empty($tags_select_without);
 $remove_without_tag_disabled = empty($tag_without_temp);
 
+$table->colspan[13][0] = '2';
+$table->data[13][0] = '<b>' . __('Events with following tags') . '</b>';
+$table->data[14][0] = html_print_select ($tags_select_with, 'select_with',
+	'', '', '', 0, true, false, true, '', false, 'width: 220px;');
+$table->data[14][1] = html_print_button(__('Add'), 'add_whith', $add_with_tag_disabled,
+	'', 'class="add sub"', true);
 
-if (defined("METACONSOLE")) {
-	
-	$table->data[13][0] = '<b>' . __('Events with following tags') . '</b>';
-	$table->data[13][0] .= '<br>' . html_print_select ($tags_select_with, 'select_with',
-		'', '', '', 0, true, false, true, '', false, 'width: 120px;');
-	$table->data[13][0] .= '&nbsp;' . html_print_button(__('Add'), 'add_whith', $add_with_tag_disabled,
-		'', 'class="add sub"', true);
-	$table->data[13][0] .= '<br>' . html_print_select ($tag_with_temp,
-		'tag_with_temp', array(), '', '', 0, true, true,
-		true, '', false, "width: 120px; height: 50px;");
-	$table->data[13][0] .= '&nbsp;' . html_print_button(__('Remove'),
-		'remove_whith', $remove_with_tag_disabled, '', 'class="delete sub"', true);
-	$table->data[13][0] .= html_print_input_hidden('tag_with',
-		$tag_with_base64, true);
+$table->data[15][0] = html_print_select ($tag_with_temp,
+	'tag_with_temp', array(), '', '', 0, true, true,
+	true, '', false, "width: 220px; height: 50px;");
+$table->data[15][0] .= html_print_input_hidden('tag_with',
+	$tag_with_base64, true);
+$table->data[15][1] = html_print_button(__('Remove'),
+	'remove_whith', $remove_with_tag_disabled, '', 'class="delete sub"', true);
 
-	$table->data[13][1] = '<b>' . __('Events without following tags') . '</b>';
-	$table->data[13][1] .= '<br>' . html_print_select ($tags_select_without, 'select_without',
-		'', '', '', 0, true, false, true, '', false, 'width: 120px;');
-	$table->data[13][1] .= '&nbsp;' . html_print_button(__('Add'), 'add_whithout', $add_without_tag_disabled,
-		'', 'class="add sub"', true);
-	$table->data[13][1] .= '<br>' . html_print_select ($tag_without_temp,
-		'tag_without_temp', array(), '', '', 0, true, true,
-		true, '', false, "width: 120px; height: 50px;");
-	$table->data[13][1] .= '&nbsp;' . html_print_button(__('Remove'), 'remove_whithout', $remove_without_tag_disabled,
-		'', 'class="delete sub"', true);
-	$table->data[13][1] .= html_print_input_hidden('tag_without',
-		$tag_without_base64, true);
-}
-else {
-	
-	$table->colspan[13][0] = '2';
-	$table->data[13][0] = '<b>' . __('Events with following tags') . '</b>';
-	$table->data[14][0] = html_print_select ($tags_select_with, 'select_with',
-		'', '', '', 0, true, false, true, '', false, 'width: 120px;');
-	$table->data[14][1] = html_print_button(__('Add'), 'add_whith', $add_with_tag_disabled,
-		'', 'class="add sub"', true);
+$table->colspan[16][0] = '2';
+$table->data[16][0] = '<b>' . __('Events without following tags') . '</b>';
+$table->data[17][0] = html_print_select ($tags_select_without, 'select_without',
+	'', '', '', 0, true, false, true, '', false, 'width: 220px;');
+$table->data[17][1] = html_print_button(__('Add'), 'add_whithout', $add_without_tag_disabled,
+	'', 'class="add sub"', true);
 
-	$table->data[15][0] = html_print_select ($tag_with_temp,
-		'tag_with_temp', array(), '', '', 0, true, true,
-		true, '', false, "width: 120px; height: 50px;");
-	$table->data[15][0] .= html_print_input_hidden('tag_with',
-		$tag_with_base64, true);
-	$table->data[15][1] = html_print_button(__('Remove'),
-		'remove_whith', $remove_with_tag_disabled, '', 'class="delete sub"', true);
-
-	$table->colspan[16][0] = '2';
-	$table->data[16][0] = '<b>' . __('Events without following tags') . '</b>';
-	$table->data[17][0] = html_print_select ($tags_select_without, 'select_without',
-		'', '', '', 0, true, false, true, '', false, 'width: 120px;');
-	$table->data[17][1] = html_print_button(__('Add'), 'add_whithout', $add_without_tag_disabled,
-		'', 'class="add sub"', true);
-
-	$table->data[18][0] = html_print_select ($tag_without_temp,
-		'tag_without_temp', array(), '', '', 0, true, true,
-		true, '', false, "width: 120px; height: 50px;");
-	$table->data[18][0] .= html_print_input_hidden('tag_without',
-		$tag_without_base64, true);
-	$table->data[18][1] = html_print_button(__('Remove'), 'remove_whithout', $remove_without_tag_disabled,
-		'', 'class="delete sub"', true);
-}
+$table->data[18][0] = html_print_select ($tag_without_temp,
+	'tag_without_temp', array(), '', '', 0, true, true,
+	true, '', false, "width: 220px; height: 50px;");
+$table->data[18][0] .= html_print_input_hidden('tag_without',
+	$tag_without_base64, true);
+$table->data[18][1] = html_print_button(__('Remove'), 'remove_whithout', $remove_without_tag_disabled,
+	'', 'class="delete sub"', true);
 
 $table->data[19][0] = '<b>' . __('Alert events') . '</b>';
 $table->data[19][1] = html_print_select(

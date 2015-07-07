@@ -648,6 +648,11 @@ function config_process_config () {
 		exit;
 	}
 	
+	$is_windows = false;
+	if (substr(strtolower(PHP_OS), 0, 3) === 'win') {
+		$is_windows = true;
+	}
+	
 	/* Compatibility fix */
 	foreach ($configs as $c) {
 		$config[$c['token']] = $c['value'];
@@ -661,6 +666,15 @@ function config_process_config () {
 		if ($config['homeurl'][0] != '/') {
 			$config['homeurl'] = '/'.$config['homeurl'];
 		}
+	}
+	
+	if (!isset ($config['remote_config'])) {
+		if ($is_windows)
+			$default = 'C:\\PandoraFMS\\Pandora_Server\\data_in';
+		else
+			$default = '/var/spool/pandora/data_in';
+	
+		config_update_value ('remote_config', $default);
 	}
 	
 	if (!isset ($config['date_format'])) {
@@ -821,7 +835,12 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config["log_dir"])) {
-		config_update_value ('log_dir', '/var/spool/pandora/data_in/log');
+		if ($is_windows)
+			$default = 'C:\\PandoraFMS\\Pandora_Server\\data_in\\log';
+		else
+			$default = '/var/spool/pandora/data_in/log';
+			
+		config_update_value ('log_dir', $default);
 	}
 	
 	if (!isset ($config["log_max_lifetime"])) {
@@ -963,7 +982,12 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config['netflow_path'])) {
-		config_update_value ( 'netflow_path', '/var/spool/pandora/data_in/netflow');
+		if ($is_windows)
+			$default = 'C:\\PandoraFMS\\Pandora_Server\\data_in\\netflow';
+		else
+			$default = '/var/spool/pandora/data_in/netflow';
+	
+		config_update_value ( 'netflow_path', $default);
 	}
 	
 	if (!isset ($config['netflow_interval'])) {

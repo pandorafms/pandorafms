@@ -765,18 +765,18 @@ function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
  * 
  * @return string SQL condition for tagente_module
  */
- 
-function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group_and_tag = false, $force_equal = false) {
 
+function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group_and_tag = false, $force_equal = false) {
+	
 	global $config;
 	$condition = '';
-
+	
 	// Get all tags of the system
 	$all_tags = tags_get_all_tags(false);
 	
 	// Juanma (08/05/2014) Fix : Will have all groups  retrieved (also propagated ones)
 	$_groups_not_in = '';
-
+	
 	foreach ($acltags as $group_id => $group_tags) {
 		// Group condition (The module belongs to an agent of the group X)
 		// Juanma (08/05/2014) Fix : Get all groups (children also, Propagate ACL func!)
@@ -818,7 +818,7 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group
 							$tags_condition .= "(tags LIKE '%".io_safe_input($all_tags[$tag])."%'";
 						}
 						$childrens = groups_get_childrens($group_id, null, true);
-
+						
 						if (empty($childrens)) {
 							$tags_condition .= sprintf(' AND id_grupo = %d )', $group_id);
 						} else {
@@ -827,7 +827,7 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group
 								$childrens_ids[] = (int)$child['id_grupo'];
 							}
 							$ids_str = implode(',', $childrens_ids);
-
+							
 							$tags_condition .= sprintf(' AND id_grupo IN (%s) )', $ids_str);
 						}
 					} else {
@@ -1175,11 +1175,11 @@ function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p =
 	if (is_array($id_group)) {
 		
 		foreach ($id_group  as $group) {
-			if($group > 0) {
-				if(isset($acls[$group])) {
-					foreach($tags as $tag) {
+			if ($group > 0) {
+				if (isset($acls[$group])) {
+					foreach ($tags as $tag) {
 						$tag = tags_get_id($tag);
-						if(in_array($tag, $acls[$group])) {
+						if (in_array($tag, $acls[$group])) {
 							return true;
 						}
 					}
@@ -1190,13 +1190,13 @@ function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p =
 				}
 			}
 			else {
-				foreach($acls as $acl_tags) {
-						foreach($tags as $tag) {
-								$tag = tags_get_id($tag);
-								if(in_array($tag, $acl_tags)) {
-										return true;
-								}
+				foreach ($acls as $acl_tags) {
+					foreach ($tags as $tag) {
+						$tag = tags_get_id($tag);
+						if (in_array($tag, $acl_tags)) {
+							return true;
 						}
+					}
 				}
 			}
 			
@@ -1204,12 +1204,12 @@ function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p =
 		
 	}
 	else {
-		if($id_group > 0) {
-			if(isset($acls[$id_group])) {
-				foreach($tags as $tag) {
+		if ($id_group > 0) {
+			if (isset($acls[$id_group])) {
+				foreach ($tags as $tag) {
 					$tag = tags_get_id($tag);
 					
-					if(in_array($tag, $acls[$id_group])) {
+					if (in_array($tag, $acls[$id_group])) {
 						return true;
 					}
 				}
@@ -1220,16 +1220,16 @@ function tags_check_acl_event($id_user, $id_group, $access, $tags = array(),$p =
 			}
 		}
 		else {
-			foreach($acls as $acl_tags) {
-				foreach($tags as $tag) {
+			foreach ($acls as $acl_tags) {
+				foreach ($tags as $tag) {
 					$tag = tags_get_id($tag);
-					if(in_array($tag, $acl_tags)) {
+					if (in_array($tag, $acl_tags)) {
 						return true;
 					}
 				}
 			}
 		}
-	}	
+	}
 	//return false;
 	$return = false;
 	

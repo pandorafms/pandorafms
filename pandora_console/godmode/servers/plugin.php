@@ -276,7 +276,6 @@ if (($create != "") OR ($view != "")) {
 		$table->head[0] = __('General');
 		$table->head_colspan[0] = 4;
 		$table->headstyle[0] = 'text-align: center';
-		echo '<br>';
 		html_print_table($table);
 	}
 	else {
@@ -339,7 +338,6 @@ if (($create != "") OR ($view != "")) {
 		$table->head[0] = __('Command');
 		$table->head_colspan[0] = 4;
 		$table->headstyle[0] = 'text-align: center';
-		echo '<br>';
 		html_print_table($table);
 	}
 	else {
@@ -473,12 +471,9 @@ if (($create != "") OR ($view != "")) {
 	
 	
 	if (defined("METACONSOLE")) {
-		$table->width = '100%';
-		$table->class = 'databox data';
 		$table->head[0] = __('Parameters macros');
 		$table->head_colspan[0] = 4;
 		$table->headstyle[0] = 'text-align: center';
-		echo '<br>';
 		html_print_table($table);
 	}
 	else {

@@ -150,10 +150,7 @@ echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/tag/edit_t
 
 echo '<div align=left style="width: 100%" class="pandora_form">';
 
-if (defined('METACONSOLE')) 
-	echo "<table border=0 cellpadding=0 cellspacing=0 class='databox data' width=100%>";
-else
-	echo "<table border=0 cellpadding=4 cellspacing=4 class='databox filters' width=100%>";
+echo "<table border=0 cellpadding=4 cellspacing=4 class='databox filters' width=100%>";
 	if (defined('METACONSOLE')) {
 		if ($action == "update") {
 			echo "<th colspan=8 style='text-align:center'>" . __("Update Tag") . "</th>";

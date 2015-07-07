@@ -133,9 +133,20 @@ if ($update) {
 		}
 		
 		foreach ($modules_ as $module_) {
-			$result = process_manage_edit ($module_, $agents_);
-			$count ++;
-			$success += (int)$result;
+			$filter = array('id_agente' => $agent_);
+			
+			if (!is_numeric($module_))
+				$filter['nombre'] = $module_;
+			else
+				$filter['id_agente_modulo'] = $module_;
+			
+			$exists = (bool) db_get_value_filter('id_agente', 'tagente_modulo', $filter);
+			
+			if ($exists) {
+				$result = process_manage_edit ($module_, $agent_);
+				$count++;
+				$success += (int)$result;
+			}
 		}
 	}
 	

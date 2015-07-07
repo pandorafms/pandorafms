@@ -2495,19 +2495,6 @@ function reporting_header_content($mini, $content, $report, &$table,
 	array_push ($table->data, $data);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 function reporting_get_agents_by_status ($data, $graph_width = 250, $graph_height = 150, $links = false) {
 	global $config;
 	
@@ -2519,25 +2506,25 @@ function reporting_get_agents_by_status ($data, $graph_width = 250, $graph_heigh
 	
 	$agent_data = array();
 	$agent_data[0] = html_print_image('images/agent_critical.png', true, array('title' => __('Agents critical')));
-	$agent_data[1] = "<a style='color: #FC4444;' href='" . $links['agents_critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FC4444;'>".format_numeric($data['agent_critical'])."</span></b></a>";
+	$agent_data[1] = "<a style='color: ".COL_CRITICAL.";' href='" . $links['agents_critical'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FC4444;'>".format_numeric($data['agent_critical'])."</span></b></a>";
 	
 	$agent_data[2] = html_print_image('images/agent_warning.png', true, array('title' => __('Agents warning')));
-	$agent_data[3] = "<a style='color: #FAD403;' href='" . $links['agents_warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FAD403;'>".format_numeric($data['agent_warning'])."</span></b></a>";
+	$agent_data[3] = "<a style='color: ".COL_WARNING.";' href='" . $links['agents_warning'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #FAD403;'>".format_numeric($data['agent_warning'])."</span></b></a>";
 	
 	$table_agent->data[] = $agent_data;
 	
 	$agent_data = array();
 	$agent_data[0] = html_print_image('images/agent_ok.png', true, array('title' => __('Agents ok')));
-	$agent_data[1] = "<a style='color: #80BA27;' href='" . $links['agents_ok'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #80BA27;'>".format_numeric($data['agent_ok'])."</span></b></a>";
+	$agent_data[1] = "<a style='color: ".COL_NORMAL.";' href='" . $links['agents_ok'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #80BA27;'>".format_numeric($data['agent_ok'])."</span></b></a>";
 	
 	$agent_data[2] = html_print_image('images/agent_unknown.png', true, array('title' => __('Agents unknown')));
-	$agent_data[3] = "<a style='color: #B2B2B2;' href='" . $links['agents_unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #B2B2B2;'>".format_numeric($data['agent_unknown'])."</span></b></a>";
+	$agent_data[3] = "<a style='color: ".COL_UNKNOWN.";' href='" . $links['agents_unknown'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #B2B2B2;'>".format_numeric($data['agent_unknown'])."</span></b></a>";
 	
 	$table_agent->data[] = $agent_data;
 	
 	$agent_data = array();
 	$agent_data[0] = html_print_image('images/agent_notinit.png', true, array('title' => __('Agents not init')));
-	$agent_data[1] = "<a style='color: #5BB6E5;' href='" . $links['agents_not_init'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #5BB6E5;'>".format_numeric($data['agent_not_init'])."</span></b></a>";
+	$agent_data[1] = "<a style='color: ".COL_NOTINIT.";' href='" . $links['agents_not_init'] . "'><b><span style='font-size: 12pt; font-weight: bold; color: #5BB6E5;'>".format_numeric($data['agent_not_init'])."</span></b></a>";
 	
 	$agent_data[2] = "";
 	$agent_data[3] = "";

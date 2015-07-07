@@ -2406,8 +2406,7 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 									FROM $cache_table
 									WHERE disabled = 0
 										AND id_grupo IN ($user_groups_ids)
-										AND critical_count = 0
-										AND warning_count > 0
+										AND critical_count > 0
 									GROUP BY id_grupo";
 			$data_stats_critical = db_get_all_rows_sql($sql_stats_critical);
 		}

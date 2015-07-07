@@ -34,6 +34,7 @@ $table->data = array ();
 $table->width = '100%';
 $table->class = 'databox filters';
 $table->size[0] = '30%';
+$table->style[0] = "font-weight: bold";
 
 $table->data[0][0] = __('Authentication method');
 $auth_methods = array ('mysql' => __('Local Pandora FMS'), 'ldap' => __('ldap'));

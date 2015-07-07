@@ -48,9 +48,14 @@ function pandora_realtime_graphs () {
 	$table->style = array ();
 	$table->cellpadding = '0';
 	$table->cellspacing = '0';
-	$table->style[0] = 'font-weight: bold;';
-	$table->style[1] = 'font-weight: bold;';
-	$table->style[2] = 'font-weight: bold;';
+	$table->style['graph'] = 'font-weight: bold;';
+	$table->style['refresh'] = 'font-weight: bold;';
+	$table->style['incremental'] = 'font-weight: bold;';
+	$table->style['reset'] = 'font-weight: bold;';
+	$table->style['snmp_address'] = 'font-weight: bold;';
+	$table->style['snmp_community'] = 'font-weight: bold;';
+	$table->style['snmp_oid'] = 'font-weight: bold;';
+	$table->style['snmp_oid'] = 'font-weight: bold;';
 	$table->data = array ();
 	
 	$graph_fields['cpu_load'] = __('Pandora Server CPU');

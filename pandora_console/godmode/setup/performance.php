@@ -39,6 +39,7 @@ $table = new StdClass();
 $table->width = '100%';
 $table->class = "databox filters";
 $table->data = array ();
+$table->style[0] = "font-weight: bold";
 
 $table->size[0] = '70%';
 $table->size[1] = '30%';
@@ -71,6 +72,7 @@ $table_other = new stdClass();
 $table_other->width = '100%';
 $table_other->class = 'databox filters';
 $table_other->data = array ();
+$table_other->style[0] = "font-weight: bold";
 
 $table_other->size[0] = '70%';
 $table_other->size[1] = '30%';

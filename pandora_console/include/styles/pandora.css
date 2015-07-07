@@ -1738,12 +1738,10 @@ ol.steps li.visited {
 }
 
 fieldset {
-	background-color:#fafafa;
-	border: 1px solid #f2f2f2;
+	background-color:#F9FAF9;
+	border: 1px solid #E2E2E2;
 	padding:0.5em;
-	margin-top:0.5em;
-	margin-right: -1px;
-	margin-bottom:1em;
+	margin-bottom:20px;
 	position:relative;
 }
 fieldset legend {
@@ -2991,13 +2989,32 @@ table#policy_modules td * {
 	margin-top: 0px !important ;
 }
 
-.databox.filters, .databox.data{
+.agents_modules_table{
+	border: 1px solid #E2E2E2;
+	border-spacing: 0px;
+}
+.agents_modules_table td{
+	border: 1px solid #E2E2E2;
+}
+.agents_modules_table th{
+	border: 1px solid #E2E2E2;
+}
+
+.databox.filters, .databox.data, .databox.profile_list{
 	margin-bottom: 20px;
 }
 
 .databox.filters td{
 	padding: 10px;
 	padding-left:20px;
+}
+.databox.profile_list td{
+	padding: 4px 1px;
+	padding-left: 5px;
+	border-bottom: 1px solid #E2E2E2;
+}
+.databox.profile_list a.tip > img{
+	margin: 0px;
 }
 
 .databox.filters td>img, .databox.filters td>div>a>img, 

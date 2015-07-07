@@ -291,7 +291,7 @@ if ($create_profile) {
 $table = new stdClass();
 $table->cellpadding = 0;
 $table->cellspacing = 0;
-$table->class = 'databox data';
+$table->class = 'databox profile_list';
 $table->width = '100%';
 
 $table->head = array ();
@@ -327,7 +327,32 @@ $table->head['PM'] = "PM" . ui_print_help_tip (__('Systems management'), true);
 $table->head['operations'] = '<span title="Operations">' . __('Op.') . '</span>';
 
 $table->align = array_fill (1, 11, "center");
-$table->size = array_fill ("1%", "10%", "40%");
+
+$table->size['profiles'] = "200px";
+$table->size['IR'] = "10px";
+$table->size['IW'] = "10px";
+$table->size['IM'] = "10px";
+$table->size['AR'] = "10px";
+$table->size['AW'] = "10px";
+$table->size['AD'] = "10px";
+$table->size['LW'] = "10px";
+$table->size['LM'] = "10px";
+$table->size['UM'] = "10px";
+$table->size['DM'] = "10px";
+$table->size['ER'] = "10px";
+$table->size['EW'] = "10px";
+$table->size['EM'] = "10px";
+$table->size['RR'] = "10px";
+$table->size['RW'] = "10px";
+$table->size['RM'] = "10px";
+$table->size['MR'] = "10px";
+$table->size['MW'] = "10px";
+$table->size['MM'] = "10px";
+$table->size['VR'] = "10px";
+$table->size['VW'] = "10px";
+$table->size['VM'] = "10px";
+$table->size['PM'] = "10px";
+$table->size['operations'] = "5%";
 
 $profiles = db_get_all_rows_in_table ("tperfil");
 if ($profiles === false) {

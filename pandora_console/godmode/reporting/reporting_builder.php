@@ -374,12 +374,7 @@ switch ($action) {
 		$table_aux->class = 'databox filters';
 		$table_aux->cellpadding = 0;
 		$table_aux->cellspacing = 0;
-		if (defined('METACONSOLE')) {
-			$table_aux->class = 'databox filters';
-			$table_aux->width = '100%';
-			$table_aux->cellpadding = 0;
-			$table_aux->cellspacing = 0;
-		}
+		
 		$table_aux->colspan[0][0] = 4;
 		$table_aux->data[0][0] = "<b>". __("Group") . "</b>";
 		
@@ -521,7 +516,7 @@ switch ($action) {
 				$table->headstyle[$next] = 'text-align:left;';
 			
 			}
-			
+			$columnview = false;
 			foreach ($reports as $report) {
 				
 				if (!is_user_admin ($config["id_user"])) {
@@ -623,11 +618,12 @@ switch ($action) {
 				}
 				
 				if ($edit || $delete) {
+					$columnview = true;
 					if (!isset($table->head[$next])) {
 						$table->head[$next] = '<span title="Operations">' . __('Op.') . '</span>';
 						$table->size = array ();
 						$table->size[$next] = '80px';
-						$table->style[$next] = 'text-align:center;';
+						$table->style[$next] = 'text-align:left;';
 					}
 					
 					if ($edit) {
@@ -651,6 +647,15 @@ switch ($action) {
 				
 				array_push ($table->data, $data);
 				
+			}
+			
+			if ($columnview){
+				$count = 0;
+				foreach ($table->data as $datos) {
+					if (!isset($datos[9]))
+						$table->data[$count][9] = '';
+					$count++;
+				}
 			}
 			html_print_table ($table);
 		}

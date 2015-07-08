@@ -35,7 +35,8 @@ ui_print_info_message(
 		ignore it or will update its information.There are three types of detection: Based on <strong id="fuerte"> ICMP </strong>(pings), 
 		<strong id="fuerte">SNMP</strong> (detecting the topology of networks and their interfaces), and other <strong id="fuerte"> customized </strong>
 		type. You can define your own customized recon script.'); ?></p>
-		<form action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create" method="post">
+		<form action="index.php?sec=reporting&amp;sec2=godmode/reporting/visual_console_builder" method="post">
+			<?php html_print_input_hidden ('edit_layout', 1); ?>
 			<input type="submit" class="button_task" value="<?php echo __('Create Visual Console'); ?>" />
 		</form>
 	</div>

@@ -1874,8 +1874,6 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 	if (! is_array ($filter))
 		$filter = array ();
 	
-	$where = db_format_array_where_clause_sql ($filter);
-	
 	if ($returnAllGroup)
 		$groups = users_get_groups ($id_user, 'RR');
 	else
@@ -1887,6 +1885,8 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 		}
 		$where .= sprintf ('id_group IN (%s)', implode (",", array_keys ($groups)));
 	}
+	
+	$where .= db_format_array_where_clause_sql ($filter);
 	
 	if ($where == '') {
 		$where = array();

@@ -46,11 +46,11 @@ define ('_MPDF_TTFONTPATH', 'include/fonts/');
 $activeTab = get_parameter('tab', 'main');
 $action = get_parameter('action', 'list');
 $idReport = get_parameter('id_report', 0);
-$offset = get_parameter('offset', 0);
+$offset = (int) get_parameter('offset', 0);
 $idItem = get_parameter('id_item', 0);
 $pure = get_parameter('pure',0);
 $schedule_report = get_parameter('schbutton', '');
-
+$pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
 if ($schedule_report != '') {
@@ -440,7 +440,8 @@ switch ($action) {
 		else {
 			$group = false;
 		}
-		
+		$filter['offset'] = $offset;
+		$filter['limit'] = $pagination;
 		
 		// Filter normal and metaconsole reports
 		if ($config['metaconsole'] == 1 and defined('METACONSOLE'))
@@ -458,9 +459,17 @@ switch ($action) {
 				'id_group',
 				'non_interactive'), $return_all_group, 'RR', $group, $strict_user);
 		
-		$table = new stdClass();
-		$table->width = '0px';
+		
+		unset($filter['offset']);
+		unset($filter['limit']);
+		$total_reports = (int) count(reports_get_reports ($filter,
+			array ('name'), $return_all_group, 'RR', $group, $strict_user));
+		
+		
 		if (sizeof ($reports)) {
+			$url = "index.php?sec=reporting&sec2=godmode/reporting/reporting_builder";
+			ui_pagination ($total_reports, $url, $offset, $pagination);
+			
 			$table = new stdClass();
 			$table->id = 'report_list';
 			$table->width = '100%';

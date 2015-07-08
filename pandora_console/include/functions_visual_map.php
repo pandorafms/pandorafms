@@ -1167,14 +1167,16 @@ function visual_map_process_wizard_add ($id_agents, $image, $id_layout, $range,
  * 
  * @return string Return the message status to insert DB.
  */
-function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
-	$range, $width = 0, $height = 0, $period, $process_value, $percentileitem_width,
-	$max_value, $type_percentile, $value_show, $label_type, $type, $enable_link = true,
+function visual_map_process_wizard_add_modules ($id_modules, $image,
+	$id_layout, $range, $width = 0, $height = 0, $period,
+	$process_value, $percentileitem_width, $max_value, $type_percentile,
+	$value_show, $label_type, $type, $enable_link = true,
 	$id_server = 0, $kind_relationship = VISUAL_MAP_WIZARD_PARENTS_NONE,
 	$item_in_the_map = 0) {
 	
 	if (empty ($id_modules)) {
-		$return = ui_print_error_message (__('No modules selected'), '', true);
+		$return = ui_print_error_message(
+			__('No modules selected'), '', true);
 		return $return;
 	}
 	
@@ -1189,6 +1191,7 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
 			$pos_x = 10;
 			$pos_y = $pos_y + $range;
 		}
+		
 		
 		if ($id_server != 0) {
 			$connection = db_get_row_filter('tmetaconsole_setup',
@@ -1310,20 +1313,23 @@ function visual_map_process_wizard_add_modules ($id_modules, $image, $id_layout,
  * 
  * @return string Return the message status to insert DB.
  */
-function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
-	$range, $width = 0, $height = 0, $period, $process_value, $percentileitem_width,
-	$max_value, $type_percentile, $value_show, $label_type, $type, $enable_link = 1,
-	$id_server = 0, $kind_relationship = VISUAL_MAP_WIZARD_PARENTS_NONE,
+function visual_map_process_wizard_add_agents ($id_agents, $image,
+	$id_layout, $range, $width = 0, $height = 0, $period,
+	$process_value, $percentileitem_width, $max_value, $type_percentile,
+	$value_show, $label_type, $type, $enable_link = 1, $id_server = 0,
+	$kind_relationship = VISUAL_MAP_WIZARD_PARENTS_NONE,
 	$item_in_the_map = 0) {
 	
 	global $config;
 	
 	if (empty ($id_agents)) {
-		$return = ui_print_error_message (__('No agents selected'), '', true);
+		$return = ui_print_error_message(
+			__('No agents selected'), '', true);
+		
 		return $return;
 	}
 	
-	$id_agents = (array) $id_agents;
+	$id_agents = (array)$id_agents;
 	
 	$error = false;
 	$pos_y = 10;
@@ -1339,7 +1345,14 @@ function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
 		$relationship = false;
 	}
 	
+	
 	foreach ($id_agents as $id_agent) {
+		if (is_array($id_agent)) {
+			$id_a = $id_agent['id_agent'];
+			$id_server = $id_agent['id_server'];
+			$id_agent = $id_a;
+		}
+		
 		if ($pos_x > 600) {
 			$pos_x = 10;
 			$pos_y = $pos_y + $range;
@@ -1383,6 +1396,7 @@ function visual_map_process_wizard_add_agents ($id_agents, $image, $id_layout,
 		}
 		
 		if ($id_server != 0) {
+			
 			$connection = db_get_row_filter('tmetaconsole_setup',
 				array('id' => $id_server));
 			if (metaconsole_load_external_db($connection) != NOERR) {

@@ -297,12 +297,6 @@ foreach ($layoutDatas as $layoutData) {
 			"action=delete&" .
 			"id_visual_console=" . $visualConsole["id"] . "&" .
 			"id_element=" . $idLayoutData;
-		
-		$table->data[$i + 1][5] = "";
-		$table->data[$i + 1][5] .= html_print_checkbox('multiple_delete_items', $idLayoutData, false, true);
-		$table->data[$i + 1][5] .= '<a href="' . $url_delete . '" ' . 
-			'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' .
-				html_print_image('images/cross.png', true) . '</a>';
 	}
 	else {
 		$url_delete = "index.php?" .
@@ -316,11 +310,13 @@ foreach ($layoutDatas as $layoutData) {
 			"id_visual_console=" . $visualConsole["id"] . "&" .
 			"id_element=" . $idLayoutData;
 		
-		$table->data[$i + 1][5] = '<a href="' . $url_delete . '" ' . 
-			'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' .
-				html_print_image('images/cross.png', true) . '</a>';
 	}
 	
+	$table->data[$i + 1][5] = "";
+	$table->data[$i + 1][5] .= html_print_checkbox('multiple_delete_items', $idLayoutData, false, true);
+	$table->data[$i + 1][5] .= '<a href="' . $url_delete . '" ' . 
+		'onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' .
+			html_print_image('images/cross.png', true) . '</a>';
 	
 	//Second row
 	$table->data[$i + 2]['icon'] = '';

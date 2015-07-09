@@ -61,10 +61,10 @@ if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && !$is_extra) {
 // START: TABLE AGENT BUILD
 $table_agent = new stdClass();
 $table_agent->id = 'agent_details_main';
-$table_agent->width = '82%';
+$table_agent->width = '95%';
 $table_agent->cellspacing = 0;
 $table_agent->cellpadding = 0;
-$table_agent->class = 'databox';
+$table_agent->class = 'databox filters';
 $table_agent->style[0] = 'width: 16px; text-align:center; padding: 0px;';
 $table_agent->style[5] = 'width: 16px; text-align:center; padding: 0px;';
 $table_agent->styleTable = 'padding:0px;';
@@ -495,7 +495,7 @@ $table->style = array_fill(0, 3, 'vertical-align: top;');
 $data = array();
 $data[0] = html_print_table($table_agent, true);
 $data[0] .=
-	'<br /> <table width=455px class="databox" style="">
+	'<br /> <table width=95% class="databox agente" style="">
 		<tr><th>' . 
 			__('Events (24h)') . 
 		'</th></tr>' . 
@@ -511,7 +511,7 @@ $access_agent = db_get_value_sql("SELECT COUNT(id_agent)
 
 if ($config["agentaccess"] && $access_agent > 0) {
 	$data[0] .=
-		'<br /><table width=82% class="databox" style="">
+		'<br /><table width=90% class="databox agente" style="">
 		<tr><th>' . 
 				__('Agent access rate (24h)') . 
 			'</th></tr>' . 

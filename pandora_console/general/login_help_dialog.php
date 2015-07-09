@@ -45,7 +45,7 @@ echo '<div id="login_help_dialog" title="' .
 	echo '<div style="">';
 		echo '<table cellspacing=0 cellpadding=0 style="border:1px solid #FFF; width:100%; height: 100%">';
 		echo '<tr>';
-			echo '<td style="border:1px solid #FFF;">';
+			echo '<td style="border:1px solid #FFF; text_align:center;">';
 				echo '<a href="' . ui_get_full_url(false) . 'general/pandora_help.php?id=main_help" target="_blank" style="text-decoration:none;">' .
 					html_print_image('images/online_help.png', true,
 						array("alt" => __('Online help'), "border" => 0)) . '</a>';
@@ -53,7 +53,7 @@ echo '<div id="login_help_dialog" title="' .
 				echo '<a style="font-size: 9pt;" href="' . ui_get_full_url(false) . 'general/pandora_help.php?id=main_help" target="_blank">' . __('Online help') . '</a>';
 			echo '</td>';
 			
-			echo '<td style="border:1px solid #FFF;">';
+			echo '<td style="border:1px solid #FFF; text_align:center;">';
 				echo '<a href="http://pandorafms.com/" target="_blank" style="text-decoration:none;">' .
 					html_print_image('images/enterprise_version.png', true,
 						array("alt" => __('Enterprise version'), "border" => 0)) . '</a>';
@@ -61,7 +61,7 @@ echo '<div id="login_help_dialog" title="' .
 				echo '<a style="font-size: 9pt;" href="http://pandorafms.com/" target="_blank">' . __('Enterprise version') . '</a>';
 			echo '</td>';
 			
-			echo '<td style="border:1px solid #FFF">';
+			echo '<td style="border:1px solid #FFF; text_align:center;">';
 				echo '<a href="http://openideas.info/smf/" target="_blank" style="text-decoration:none;">' .
 					html_print_image('images/support.png', true,
 						array("alt" => __('Support'), "border" => 0)) . '</a>';
@@ -69,7 +69,7 @@ echo '<div id="login_help_dialog" title="' .
 				echo '<a style="font-size: 9pt;" href="http://openideas.info/smf/" target="_blank">' . __('Support') . ' / ' . __('Forums') . '</a>';
 			echo '</td>';
 			
-			echo '<td style="border:1px solid #FFF">';
+			echo '<td style="border:1px solid #FFF; text_align:center;">';
 				echo '<a href="http://pandorafms.com/pandora/doc/en" target="_blank" style="text-decoration:none;">' .
 					html_print_image('images/documentation.png', true,
 						array("alt" => __('Documentation'), "border" => 0)) . '</a>';

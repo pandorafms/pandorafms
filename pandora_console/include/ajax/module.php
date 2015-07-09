@@ -1179,12 +1179,10 @@ if ($list_modules) {
 	<?php
 	if (empty ($table->data)) {
 		if ($filter_monitors) {
-			echo '<div class="nf">' .
-				__('Any monitors aren\'t with this filter.') . '</div>';
+			ui_print_info_message(array( 'no_close'=>true, "message" => __('Any monitors aren\'t with this filter.') ) );
 		}
 		else {
-			echo '<div class="nf">' .
-				__('This agent doesn\'t have any active monitors.') . '</div>';
+			ui_print_info_message( array( 'no_close'=>true, "message" => __('This agent doesn\'t have any active monitors.') ) );
 		}
 	}
 	else {

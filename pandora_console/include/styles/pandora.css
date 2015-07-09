@@ -2155,7 +2155,7 @@ div.cellBig {
 
 
 tr.group_view_data, .group_view_data {
-	color: #003a3a;
+	color: #3F3F3F;
 }
 
 tr.group_view_crit, .group_view_crit {
@@ -3040,6 +3040,15 @@ table#policy_modules td * {
 
 .databox_color td{
 	padding-left: 10px;
+}
+
+.databox.agente td>div>canvas{
+	width: 100% !important;
+	text-align: left !important;
+}
+.databox.agente td>div.graph{
+	width: 100% !important;
+	text-align: left !important;
 }
 
 .godmode, .menu_icon ul li{

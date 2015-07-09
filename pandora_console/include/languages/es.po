@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-07-01 11:30+0200\n"
-"PO-Revision-Date: 2015-07-01 10:34+0000\n"
+"PO-Revision-Date: 2015-07-07 16:12+0000\n"
 "Last-Translator: Carlos Moreno <carlos.moreno@artica.es>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-07-01 10:37+0000\n"
-"X-Generator: Launchpad (build 17590)\n"
+"X-Launchpad-Export-Date: 2015-07-09 07:54+0000\n"
+"X-Generator: Launchpad (build 17608)\n"
 
 #: ../../enterprise_bk/mobile/include/functions_web.php:15
 #: ../../enterprise_bk/meta/general/main_header.php:125
@@ -3864,7 +3864,7 @@ msgstr "No se pudo actualizar"
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_advanced.php:107
 #: ../../enterprise/godmode/reporting/reporting_builder.template_advanced.php:107
 msgid "Advance Options"
-msgstr ""
+msgstr "Opciones avanzadas"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_advanced.php:118
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.advanced.php:83
@@ -4999,12 +4999,12 @@ msgstr ""
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:283
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:283
 msgid "Target group"
-msgstr ""
+msgstr "Grupo objetivo"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:310
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:310
 msgid "Filter by"
-msgstr ""
+msgstr "Filtrar por"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:313
 #: ../../enterprise_bk/godmode/alerts/alert_events_rules.php:400
@@ -5036,7 +5036,7 @@ msgstr "Filtrar agente"
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:373
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:373
 msgid "Filter tag"
-msgstr ""
+msgstr "Filtro por tag"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:385
 #: ../../enterprise_bk/godmode/reporting/graph_template_wizard.php:173
@@ -8573,7 +8573,7 @@ msgstr "Dir"
 #: ../../enterprise_bk/godmode/agentes/collection_manager.php:231
 #: ../../enterprise/godmode/agentes/collection_manager.php:231
 msgid "No colections for this agent"
-msgstr ""
+msgstr "El agente no tiene colecciones"
 
 #: ../../enterprise_bk/godmode/agentes/collections.php:48
 #: ../../enterprise/godmode/agentes/collections.php:48
@@ -12785,7 +12785,7 @@ msgstr "Desconocido"
 #: ../../enterprise_bk/operation/services/services.service.php:86
 #: ../../enterprise/operation/services/services.service.php:86
 msgid "No Services"
-msgstr ""
+msgstr "Sin servicios"
 
 #: ../../enterprise_bk/operation/services/services.list.php:196
 #: ../../enterprise_bk/operation/services/services.service.php:124
@@ -12868,7 +12868,7 @@ msgstr "PDF"
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:291
 #: ../../enterprise/operation/reporting/custom_reporting.php:19
 msgid "JSON"
-msgstr ""
+msgstr "JSON"
 
 #: ../../enterprise_bk/operation/reporting/custom_reporting.php:21
 #: ../../enterprise_bk/operation/reporting/custom_reporting.php:63
@@ -12891,7 +12891,7 @@ msgstr "Exportar a PDF"
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:341
 #: ../../enterprise/operation/reporting/custom_reporting.php:44
 msgid "Export to JSON"
-msgstr ""
+msgstr "Exportar a JSON"
 
 #: ../../enterprise_bk/operation/reporting/custom_reporting.php:47
 #: ../../enterprise_bk/operation/reporting/custom_reporting.php:70
@@ -12913,7 +12913,7 @@ msgstr "Enviar por correo-e "
 #: ../../enterprise_bk/operation/menu.php:36
 #: ../../enterprise/operation/menu.php:36
 msgid "List of Services"
-msgstr ""
+msgstr "Lista de servicios"
 
 #: ../../enterprise_bk/operation/menu.php:83
 #: ../../mobile/include/functions_web.php:21
@@ -14074,7 +14074,7 @@ msgstr "Vista de alertas"
 #: ../../enterprise_bk/meta/general/main_header.php:102
 #: ../../enterprise/meta/general/main_header.php:102
 msgid "Monitors view"
-msgstr "Vista de monitories"
+msgstr "Vista de monitores"
 
 #: ../../enterprise_bk/meta/general/main_header.php:116
 #: ../../enterprise_bk/meta/general/logon_ok.php:43
@@ -14119,7 +14119,7 @@ msgstr "Plantillas de informes"
 #: ../../enterprise/meta/general/main_header.php:148
 #: ../../enterprise/include/functions_reporting.php:62
 msgid "Templates wizard"
-msgstr "Plantillas de wizard"
+msgstr "Asistente de plantillas"
 
 #: ../../enterprise_bk/meta/general/main_header.php:155
 #: ../../enterprise_bk/meta/general/logon_ok.php:60
@@ -14442,32 +14442,32 @@ msgstr "Vista de grupo"
 #: ../../enterprise_bk/meta/monitoring/group_view.php:74
 #: ../../enterprise/meta/monitoring/group_view.php:74
 msgid "Summary by status"
-msgstr ""
+msgstr "Resumen por estados"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:78
 #: ../../enterprise/meta/monitoring/group_view.php:78
 msgid "% Monitors Critical"
-msgstr ""
+msgstr "% Monitores en critico"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:79
 #: ../../enterprise/meta/monitoring/group_view.php:79
 msgid "% Monitors Warning"
-msgstr ""
+msgstr "% Monitores en alarma"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:80
 #: ../../enterprise/meta/monitoring/group_view.php:80
 msgid "% Monitors OK"
-msgstr ""
+msgstr "% Monitores en ok"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:81
 #: ../../enterprise/meta/monitoring/group_view.php:81
 msgid "% Agents Unknown"
-msgstr ""
+msgstr "% Monitores en desconocido"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:101
 #: ../../enterprise/meta/monitoring/group_view.php:101
 msgid "Group or Tag"
-msgstr ""
+msgstr "Grupo o Etiqueta"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:105
 #: ../../enterprise_bk/meta/monitoring/tactical.php:325
@@ -14869,17 +14869,17 @@ msgstr "No inicializados"
 #: ../../enterprise_bk/meta/monitoring/tactical.php:336
 #: ../../enterprise/meta/monitoring/tactical.php:337
 msgid "Report of state"
-msgstr ""
+msgstr "Informe de estado"
 
 #: ../../enterprise_bk/meta/monitoring/tactical.php:365
 #: ../../enterprise/meta/monitoring/tactical.php:366
 msgid "Report of events"
-msgstr ""
+msgstr "Informe de eventos"
 
 #: ../../enterprise_bk/meta/monitoring/tactical.php:370
 #: ../../enterprise/meta/monitoring/tactical.php:371
 msgid "Info of state in events"
-msgstr ""
+msgstr "Información de estado en eventos"
 
 #: ../../enterprise_bk/meta/monitoring/tactical.php:386
 #: ../../enterprise/meta/monitoring/tactical.php:387
@@ -15484,7 +15484,7 @@ msgstr "Error al conectar con %s"
 #: ../../enterprise_bk/meta/advanced/synchronizing.component.php:302
 #: ../../enterprise/meta/advanced/synchronizing.component.php:302
 msgid "Synchronizing Components"
-msgstr ""
+msgstr "Sincronizar componentes"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.component.php:309
 #: ../../enterprise_bk/meta/advanced/synchronizing.user.php:505
@@ -15875,7 +15875,7 @@ msgstr "Sólo bases de datos"
 #: ../../enterprise_bk/meta/advanced/policymanager.apply.php:188
 #: ../../enterprise/meta/advanced/policymanager.apply.php:188
 msgid "Apply Policies"
-msgstr ""
+msgstr "Aplicar politicas"
 
 #: ../../enterprise_bk/meta/advanced/policymanager.apply.php:202
 #: ../../mobile/include/functions_web.php:27
@@ -15936,7 +15936,7 @@ msgstr ""
 #: ../../enterprise_bk/meta/advanced/synchronizing.user.php:498
 #: ../../enterprise/meta/advanced/synchronizing.user.php:498
 msgid "Synchronizing Users"
-msgstr ""
+msgstr "Sincronizar usuarios"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.user.php:526
 #: ../../godmode/massive/massive_delete_profiles.php:104
@@ -16121,7 +16121,7 @@ msgstr "Creadas/actualizadas %s/%s plantillas"
 #: ../../enterprise_bk/meta/advanced/synchronizing.alert.php:324
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:324
 msgid "Synchronizing Alerts"
-msgstr ""
+msgstr "Sincronizar alertas"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:103
 #: ../../enterprise/meta/advanced/synchronizing.group.php:103
@@ -16186,7 +16186,7 @@ msgstr "Ninguna actualización o grupo creado"
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:227
 #: ../../enterprise/meta/advanced/synchronizing.group.php:227
 msgid "Synchronizing Groups"
-msgstr ""
+msgstr "Sincronizar grupos"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.tag.php:124
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:124
@@ -16203,7 +16203,7 @@ msgstr "Creados/actualizados %s/%s tags"
 #: ../../enterprise_bk/meta/advanced/synchronizing.tag.php:138
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:138
 msgid "Synchronizing Tags"
-msgstr ""
+msgstr "Sincronizar tags"
 
 #: ../../enterprise_bk/meta/advanced/metasetup.php:49
 #: ../../enterprise/meta/advanced/metasetup.php:54
@@ -16768,7 +16768,7 @@ msgstr "Filtrar por grupo"
 #: ../../enterprise_bk/meta/include/functions_networkmap_meta.php:515
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:515
 msgid "Filter by tag"
-msgstr ""
+msgstr "Filtrar por tag"
 
 #: ../../enterprise_bk/meta/include/functions_networkmap_meta.php:515
 #: ../../operation/agentes/alerts_status.functions.php:86
@@ -17454,7 +17454,7 @@ msgstr "Consola visual"
 #: ../../enterprise_bk/meta/screens/screens.networkmap.php:53
 #: ../../enterprise/meta/screens/screens.networkmap.php:53
 msgid "Networkmap list"
-msgstr ""
+msgstr "Lista de mapas de red"
 
 #: ../../enterprise_bk/dashboard/main_dashboard.php:84
 #: ../../enterprise/dashboard/main_dashboard.php:84
@@ -18559,7 +18559,7 @@ msgstr "Lista de Plantillas"
 #: ../../enterprise_bk/include/functions_reporting.php:82
 #: ../../enterprise/include/functions_reporting.php:82
 msgid "Templates Wizard"
-msgstr "Plantillas Wizard"
+msgstr "Asistente de plantillas"
 
 #: ../../enterprise_bk/include/functions_reporting.php:545
 #: ../../enterprise/include/functions_reporting.php:578
@@ -18657,84 +18657,84 @@ msgstr "Fechas"
 #: ../../enterprise/include/functions_reporting.php:1173
 #: ../../enterprise/include/functions_reporting_pdf.php:1700
 msgid "January"
-msgstr ""
+msgstr "Enero"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1108
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1733
 #: ../../enterprise/include/functions_reporting.php:1176
 #: ../../enterprise/include/functions_reporting_pdf.php:1703
 msgid "February"
-msgstr ""
+msgstr "Febrero"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1111
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1736
 #: ../../enterprise/include/functions_reporting.php:1179
 #: ../../enterprise/include/functions_reporting_pdf.php:1706
 msgid "March"
-msgstr ""
+msgstr "Marzo"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1114
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1739
 #: ../../enterprise/include/functions_reporting.php:1182
 #: ../../enterprise/include/functions_reporting_pdf.php:1709
 msgid "April"
-msgstr ""
+msgstr "Abril"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1117
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1742
 #: ../../enterprise/include/functions_reporting.php:1185
 #: ../../enterprise/include/functions_reporting_pdf.php:1712
 msgid "May"
-msgstr ""
+msgstr "Mayo"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1120
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1745
 #: ../../enterprise/include/functions_reporting.php:1188
 #: ../../enterprise/include/functions_reporting_pdf.php:1715
 msgid "June"
-msgstr ""
+msgstr "Junio"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1123
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1748
 #: ../../enterprise/include/functions_reporting.php:1191
 #: ../../enterprise/include/functions_reporting_pdf.php:1718
 msgid "July"
-msgstr ""
+msgstr "Julio"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1126
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1751
 #: ../../enterprise/include/functions_reporting.php:1194
 #: ../../enterprise/include/functions_reporting_pdf.php:1721
 msgid "August"
-msgstr ""
+msgstr "Agosto"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1129
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1754
 #: ../../enterprise/include/functions_reporting.php:1197
 #: ../../enterprise/include/functions_reporting_pdf.php:1724
 msgid "September"
-msgstr ""
+msgstr "Septiembre"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1132
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1757
 #: ../../enterprise/include/functions_reporting.php:1200
 #: ../../enterprise/include/functions_reporting_pdf.php:1727
 msgid "October"
-msgstr ""
+msgstr "Octubre"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1135
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1760
 #: ../../enterprise/include/functions_reporting.php:1203
 #: ../../enterprise/include/functions_reporting_pdf.php:1730
 msgid "November"
-msgstr ""
+msgstr "Noviembre"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1138
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1763
 #: ../../enterprise/include/functions_reporting.php:1206
 #: ../../enterprise/include/functions_reporting_pdf.php:1733
 msgid "December"
-msgstr ""
+msgstr "Diciembre"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1154
 #: ../../enterprise_bk/include/functions_reporting.php:2295
@@ -21616,7 +21616,7 @@ msgstr "Servidor de exploración de red"
 #: ../../general/firts_task/collections.php:13
 #: ../../general/firts_task/collections.php:22
 msgid "Create Collections"
-msgstr ""
+msgstr "Crear colecciones"
 
 #: ../../general/firts_task/collections.php:14
 msgid ""
@@ -21682,7 +21682,7 @@ msgstr "Incidentes"
 #: ../../general/firts_task/incidents.php:16
 #: ../../general/firts_task/incidents.php:25
 msgid "Create Incidents"
-msgstr ""
+msgstr "Crear incidentes"
 
 #: ../../general/firts_task/incidents.php:17
 msgid ""
@@ -21747,7 +21747,7 @@ msgstr ""
 
 #: ../../general/firts_task/tags.php:13 ../../general/firts_task/tags.php:18
 msgid "Create Tags"
-msgstr ""
+msgstr "Crear tags"
 
 #: ../../general/firts_task/tags.php:14
 msgid ""
@@ -21814,7 +21814,7 @@ msgstr ""
 
 #: ../../general/firts_task/network_map.php:15
 msgid "Network Map"
-msgstr ""
+msgstr "Mapa de red"
 
 #: ../../general/firts_task/network_map.php:18
 #: ../../general/firts_task/network_map.php:34
@@ -31006,12 +31006,12 @@ msgstr "Generado"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2096
 msgid "Report date"
-msgstr ""
+msgstr "Fecha del informe"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2122
 #: ../../enterprise/include/functions_netflow_pdf.php:56
 msgid "Contents"
-msgstr ""
+msgstr "Contenido"
 
 #: ../../enterprise/include/functions_services.php:1100
 #: ../../enterprise/include/functions_services.php:1115

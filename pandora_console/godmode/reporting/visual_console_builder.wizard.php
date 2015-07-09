@@ -25,15 +25,18 @@ if (empty($visualConsole)) {
 	exit;
 }
 
-$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user',
+	$config['id_user']);
 
 // ACL for the existing visual console
 // if (!isset($vconsole_read))
 // 	$vconsole_read = check_acl ($config['id_user'], $visualConsole['id_group'], "VR");
 if (!isset($vconsole_write))
-	$vconsole_write = check_acl ($config['id_user'], $visualConsole['id_group'], "VW");
+	$vconsole_write = check_acl(
+		$config['id_user'], $visualConsole['id_group'], "VW");
 if (!isset($vconsole_manage))
-	$vconsole_manage = check_acl ($config['id_user'], $visualConsole['id_group'], "VM");
+	$vconsole_manage = check_acl(
+		$config['id_user'], $visualConsole['id_group'], "VM");
 
 if (!$vconsole_write && !$vconsole_manage) {
 	db_pandora_audit("ACL Violation",
@@ -120,7 +123,8 @@ $table->data["staticgraph"][1] = html_print_select($images_list,
 $table->rowstyle["all_1"] = 'display: none;';
 $table->data["all_1"][0] = __('Range between elements (px)');
 $table->colspan["all_1"][1] = "3";
-$table->data["all_1"][1] = html_print_input_text('range', 50, '', 5, 5, true);
+$table->data["all_1"][1] = html_print_input_text('range', 50, '', 5, 5,
+	true);
 
 
 $table->rowstyle["staticgraph_modulegraph"] = 'display: none;';
@@ -129,23 +133,27 @@ $table->colspan["staticgraph_modulegraph"][1] = "3";
 $table->data["staticgraph_modulegraph"][1] = __('Width').': ' .
 	html_print_input_text ('width', 0, '', 5, 5, true);
 $table->data["staticgraph_modulegraph"][1] .= '&nbsp;&nbsp;&nbsp;' .
-	__('Height').': '.html_print_input_text ('height', 0, '', 5, 5, true);
+	__('Height') . ': ' .
+	html_print_input_text('height', 0, '', 5, 5, true);
 
 
 $table->rowstyle["modulegraph_simplevalue"] = 'display: none;';
 $table->data["modulegraph_simplevalue"][0] = __('Period');
 $table->colspan["modulegraph_simplevalue"][1] = "3";
 $table->data["modulegraph_simplevalue"][1] =
-	html_print_extended_select_for_time ('period', '', '', '', '', false, true);
+	html_print_extended_select_for_time('period', '', '', '', '', false,
+		true);
 
 
 $table->rowstyle["simplevalue"] = 'display: none;';
 $table->data["simplevalue"][0] = __('Process');
 $table->data["simplevalue"][1] = html_print_select (
-	array (PROCESS_VALUE_MIN => __('Min value'), 
-	PROCESS_VALUE_MAX => __('Max value'),
-	PROCESS_VALUE_AVG => __('Avg value')), 'process_value',
-	PROCESS_VALUE_AVG, '', __('None'), PROCESS_VALUE_NONE, true);
+	array (
+		PROCESS_VALUE_MIN => __('Min value'), 
+		PROCESS_VALUE_MAX => __('Max value'),
+		PROCESS_VALUE_AVG => __('Avg value')),
+	'process_value', PROCESS_VALUE_AVG, '', __('None'),
+	PROCESS_VALUE_NONE, true);
 
 
 $table->rowstyle["percentileitem_1"] = 'display: none;';
@@ -164,9 +172,11 @@ $table->rowstyle["percentileitem_3"] = 'display: none;';
 $table->data["percentileitem_3"][0] = __('Type');
 $table->data["percentileitem_3"][1] =
 	html_print_radio_button_extended('type_percentile', 'percentile',
-		('Percentile'), 'percentile', false, '', 'style="float: left;"', true) .
+		('Percentile'), 'percentile', false, '', 'style="float: left;"',
+		true) .
 	html_print_radio_button_extended('type_percentile', 'bubble',
-		('Bubble'), 'percentile', false, '', 'style="float: left;"', true);
+		('Bubble'), 'percentile', false, '', 'style="float: left;"',
+		true);
 
 
 $table->rowstyle["percentileitem_4"] = 'display: none;';
@@ -183,11 +193,12 @@ if (defined('METACONSOLE')) {
 	$table->data["all_2"][0] = __('Servers');
 	if ($strict_user)
 		$table->data["all_2"][1] = html_print_select('','server_id',
-						$server_id, 'metaconsole_init();', __('All'), '0', true);
+			$server_id, 'metaconsole_init();', __('All'), '0', true);
 	else
 		$table->data["all_2"][1] = html_print_select_from_sql(
-						'SELECT id, server_name FROM tmetaconsole_setup',
-						'server_id', $server_id, 'metaconsole_init();', __('All'), '0', true);
+			'SELECT id, server_name FROM tmetaconsole_setup',
+			'server_id', $server_id, 'metaconsole_init();', __('All'),
+			'0', true);
 }
 
 
@@ -204,10 +215,12 @@ $table->colspan["all_one_item_per_agent"][1] = "3";
 $table->data["all_one_item_per_agent"][1] = __('Yes') . 
 	'&nbsp;&nbsp;&nbsp;' .
 	html_print_radio_button_extended('item_per_agent', 1, '', '', false,
-		'item_per_agent_change(1)', '', true).'&nbsp;&nbsp;';
+		'item_per_agent_change(1)', '', true) .
+	'&nbsp;&nbsp;';
 $table->data["all_one_item_per_agent"][1] .= __('No') .
 	'&nbsp;&nbsp;&nbsp;' . html_print_radio_button_extended(
-		'item_per_agent', 0, '', 0, false, 'item_per_agent_change(0)', '', true);
+		'item_per_agent', 0, '', 0, false, 'item_per_agent_change(0)',
+		'', true);
 $table->data["all_one_item_per_agent"][1] .= html_print_input_hidden(
 	'item_per_agent_test', 0, true);
 
@@ -217,7 +230,9 @@ $table->data["all_4"][0] = __('Agents');
 
 $agents_list = array();
 if (!defined('METACONSOLE'))
-	$agents_list = agents_get_group_agents(0, false, "none", false, true);
+	$agents_list = agents_get_group_agents(0, false, "none", false,
+		true);
+
 
 $table->data["all_4"][1] = html_print_select($agents_list,
 	'id_agents[]', 0, false, '', '', true, true);
@@ -281,7 +296,8 @@ else {
 }
 
 if (defined("METACONSOLE")) {
-	echo "<div class='title_tactical' style='margin-top: 15px; '>" . __('Wizard') . "</div>";
+	echo "<div class='title_tactical' style='margin-top: 15px; '>" .
+		__('Wizard') . "</div>";
 }
 
 html_print_table ($table);
@@ -299,9 +315,12 @@ echo '</div>';
 echo '</form>';
 
 //Trick for it have a traduct text for javascript.
-echo '<span id="any_text" style="display: none;">' . __('Any') . '</span>';
-echo '<span id="none_text" style="display: none;">' . __('None') . '</span>';
-echo '<span id="loading_text" style="display: none;">' . __('Loading...') . '</span>';
+echo '<span id="any_text" style="display: none;">' . __('Any') .
+	'</span>';
+echo '<span id="none_text" style="display: none;">' . __('None') .
+	'</span>';
+echo '<span id="loading_text" style="display: none;">' .
+	__('Loading...') . '</span>';
 ?>
 <script type="text/javascript">
 
@@ -360,12 +379,19 @@ $(document).ready (function () {
 				if (isEmptyObject(data)) {
 					var noneText = $("#none_text").html(); //Trick for catch the translate text.
 					
-					$('#id_agents').append ($('<option></option>').html (noneText).attr ("None", "").attr('value', -1).attr('selected', true));
+					$('#id_agents')
+						.append($('<option></option>')
+							.html(noneText)
+							.attr("None", "")
+							.attr('value', -1)
+							.attr('selected', true));
 				}
 				else {
 					jQuery.each (data, function (i, val) {
 						s = js_html_entity_decode(val);
-						$('#id_agents').append ($('<option></option>').html (s).attr("value", i));
+						$('#id_agents')
+							.append($('<option></option>')
+								.html(s).attr("value", i));
 					});
 				}
 				
@@ -476,11 +502,20 @@ function item_per_agent_change(itemPerAgent) {
 			.attr('disabled', false);
 		
 		$('#module').empty();
-		$('#module').append ($('<option></option>').html (<?php echo "'" . __('None') . "'"; ?>).attr("value", -1));
+		$('#module')
+			.append($('<option></option>')
+				.html (<?php echo "'" . __('None') . "'"; ?>)
+				.attr("value", -1));
 		$('#module').attr('disabled', true);
 		$('#label_type').empty();
-		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('Agent') . "'"; ?>).attr('value', 'agent').attr('selected', true));
-		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('None') . "'"; ?>).attr('value', 'none'));
+		$('#label_type')
+			.append($('<option></option>')
+				.html(<?php echo "'" . __('Agent') . "'"; ?>)
+				.attr('value', 'agent').attr('selected', true));
+		$('#label_type')
+			.append($('<option></option>')
+				.html(<?php echo "'" . __('None') . "'"; ?>)
+				.attr('value', 'none'));
 		
 		$('#hidden-item_per_agent_test').val(1);
 	}
@@ -496,10 +531,23 @@ function item_per_agent_change(itemPerAgent) {
 		$('#module').removeAttr('disabled');
 		$('#hidden-item_per_agent_test').val(0);
 		$('#label_type').empty();
-		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('Agent') . "'"; ?>).attr('value', 'agent'));
-		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('Agent - Module') . "'"; ?>).attr('value', 'agent_module').attr('selected', true));
-		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('Module') . "'"; ?>).attr('value', 'module'));
-		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('None') . "'"; ?>).attr('value', 'none'));
+		$('#label_type')
+			.append($('<option></option>')
+				.html(<?php echo "'" . __('Agent') . "'"; ?>)
+				.attr('value', 'agent'));
+		$('#label_type')
+			.append($('<option></option>')
+				.html(<?php echo "'" . __('Agent - Module') . "'"; ?>)
+				.attr('value', 'agent_module')
+				.attr('selected', true));
+		$('#label_type')
+			.append($('<option></option>')
+				.html(<?php echo "'" . __('Module') . "'"; ?>)
+				.attr('value', 'module'));
+		$('#label_type')
+			.append($('<option></option>')
+				.html(<?php echo "'" . __('None') . "'"; ?>)
+				.attr('value', 'none'));
 	
 	}
 }

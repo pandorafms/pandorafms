@@ -759,7 +759,9 @@ function agents_common_modules ($id_agent, $filter = false, $indexed = true, $ge
  *
  * @return array An array with all agents in the group or an empty array
  */
-function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower", $noACL = false, $childGroups = false) {
+function agents_get_group_agents ($id_group = 0, $search = false,
+	$case = "lower", $noACL = false, $childGroups = false) {
+	
 	global $config;
 	
 	$filter = array();
@@ -772,6 +774,8 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 			return array ();
 		}
 	}
+	
+	
 	
 	if ($childGroups) {
 		if (is_array($id_group)) {
@@ -858,6 +862,11 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 		if (defined('METACONSOLE') && isset($search['id_server'])) {
 			$filter['id_tmetaconsole_setup'] = $search['id_server'];
 			
+			if ($filter['id_tmetaconsole_setup'] == 0)	{
+				// All nodes
+				unset ($filter['id_tmetaconsole_setup']);
+			}
+			
 			unset ($search["id_server"]);
 		}
 		
@@ -888,6 +897,8 @@ function agents_get_group_agents ($id_group = 0, $search = false, $case = "lower
 	}
 	
 	$result = db_get_all_rows_filter($table_name, $filter, $fields);
+	
+	
 	
 	if ($result === false)
 		return array (); //Return an empty array
@@ -1139,7 +1150,9 @@ function agents_get_modules ($id_agent = null, $details = false,
 					io_safe_output(implode (",", (array) $details)),
 					$where);
 	
+	
 	$result = db_get_all_rows_sql ($sql);
+	
 	
 	if (empty ($result)) {
 		return array ();

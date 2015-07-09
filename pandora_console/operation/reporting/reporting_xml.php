@@ -21,7 +21,7 @@ enterprise_include_once ('include/functions_metaconsole.php');
 
 
 // Login check
-if (isset ($_GET["direct"])) {
+if (isset ($_GET["direct"]) && $_GET["direct"]) {
 	/* 
 	This is in case somebody wants to access the XML directly without
 	having the possibility to login and handle sessions
@@ -57,7 +57,7 @@ if (isset ($_GET["direct"])) {
 	*/
 	require_once ("../../include/config.php");
 	require_once ("../../include/functions_reporting.php");
-	require_once ("../../include/auth/mysql.php");
+	require_once ("../../include/functions_db.php");
 	
 	$nick = get_parameter ("nick");
 	$pass = get_parameter ("pass");
@@ -84,7 +84,7 @@ if (isset ($_GET["direct"])) {
 else {
 	require_once ("include/config.php");
 	require_once ("include/functions_reporting.php");
-	require_once ("include/auth/mysql.php");
+	require_once ("include/functions_db.php");
 }
 
 global $config;
@@ -92,6 +92,10 @@ global $config;
 check_login ();
 
 $id_report = (int) get_parameter ('id');
+$filename = (string) get_parameter ('filename');
+
+if (empty($filename))
+	$filename = 'pandorafms_report_' . date('Y-m-d_His');
 
 $date_mode = get_parameter('date_mode', 'none');
 
@@ -138,11 +142,16 @@ unset($report['custom_logo']);
 
 $xml = null;
 $xml = array2XML($report, "report", $xml);
-//~ $xml = preg_replace("/(<\/[^>]+>)/", "$1\n", $xml);
 $xml = preg_replace("/(<[^>]+>)(<[^>]+>)(<[^>]+>)/", "$1\n$2\n$3", $xml);
 $xml = preg_replace("/(<[^>]+>)(<[^>]+>)/", "$1\n$2", $xml);
 
-header("Content-Type: application/xml; charset=utf-8");
+header ('Content-Type: application/xml; charset=UTF-8');
+header ('Content-Disposition: attachment; filename="'.$filename.'.xml"');
+
+// Clean the output buffer
+ob_clean();
 
 echo $xml;
+
+exit;
 ?>

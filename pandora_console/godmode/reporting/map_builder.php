@@ -44,6 +44,8 @@ $id_layout = (int) get_parameter ('id_layout');
 $copy_layout = (bool) get_parameter ('copy_layout');
 $delete_layout = (bool) get_parameter ('delete_layout');
 $refr = (int) get_parameter('refr');
+$offset = (int) get_parameter('offset', 0);
+$pagination = (int) get_parameter ("pagination", $config["block_size"]);
 
 if ($delete_layout || $copy_layout) {
 	// Visual console required
@@ -206,9 +208,6 @@ $table->head[0] = __('Map name');
 $table->head[1] = __('Group');
 $table->head[2] = __('Items');
 
-if (defined("METACONSOLE"))
-	$table->styleTable = "margin-top:0px";
-
 // Fix: IW was the old ACL for report editing, now is RW
 //Only for RW flag
 if ($vconsoles_write || $vconsoles_manage) {
@@ -227,13 +226,24 @@ $table->align[4] = 'left';
 
 // Only display maps of "All" group if user is administrator
 // or has "VR" privileges, otherwise show only maps of user group
+$filters['offset'] = $offset;
+$filters['limit'] = $pagination;
 $own_info = get_user_info ($config['id_user']);
-if ($own_info['is_admin'] || $vconsoles_read)
-	$maps = visual_map_get_user_layouts ();
-else
+if (!defined('METACONSOLE')) {
+	$url = 'index.php?sec=reporting&amp;sec2=godmode/reporting/map_builder&pagination='.$pagination;
+}
+else {
+	$url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pagination='.$pagination;
+}
+if ($own_info['is_admin'] || $vconsoles_read) {
+	$maps = visual_map_get_user_layouts (0,false,$filters);
+	$total_maps = count(visual_map_get_user_layouts());
+} else {
 	$maps = visual_map_get_user_layouts ($config['id_user'], false,
-		false, false);
-
+		$filters, false);
+	$total_maps = count(visual_map_get_user_layouts ($config['id_user'], false,
+		false, false));
+}
 if (!$maps && !defined("METACONSOLE")) {
 	require_once ($config['homedir'] . "/general/firts_task/map_builder.php");
 }
@@ -244,6 +254,8 @@ elseif (!$maps && defined("METACONSOLE")) {
 			'message'=>  __('There are no visual console defined yet.')));
 }
 else {
+	ui_pagination ($total_maps, $url, $offset, $pagination);
+	
 	foreach ($maps as $map) {
 		// ACL for the visual console permission
 		$vconsole_write = check_acl ($config['id_user'],

@@ -37,7 +37,9 @@ $action = get_parameterBetweenListValues($action_name_parameter,
 	array('new', 'save', 'edit', 'update', 'delete', 'multiple_delete'),
 	'new');
 
-$activeTab = get_parameterBetweenListValues('tab', array('data', 'list_elements', 'wizard', 'wizard_services', 'editor'), 'data');
+$activeTab = get_parameterBetweenListValues('tab',
+	array('data', 'list_elements', 'wizard', 'wizard_services', 'editor'),
+	'data');
 
 // Visual console creation tab and actions
 if (empty($idVisualConsole)) {
@@ -348,8 +350,22 @@ switch ($activeTab) {
 				// One item per agent
 				if ($item_per_agent == 1) {
 					$id_agents_result = array();
-					foreach ($id_agents as $id_agent_key => $id_agent_id)
-						$id_agents_result[] = $id_agent_id;
+					foreach ($id_agents as $id_agent_key => $id_agent_id) {
+						if (defined("METACONSOLE")) {
+							$row = db_get_row_filter(
+								'tmetaconsole_agent',
+								array('id_tagente' => $id_agent_id));
+							$id_server = $row['id_tmetaconsole_setup'];
+							$id_agent_id = $row['id_tagente'];
+							
+							$id_agents_result[] = array(
+								'id_agent' => $id_agent_id,
+								'id_server' => $id_server);
+						}
+						else {
+							$id_agents_result[] = $id_agent_id;
+						}
+					}
 					
 					$message .= visual_map_process_wizard_add_agents(
 						$id_agents_result,
@@ -376,6 +392,8 @@ switch ($activeTab) {
 					
 				}
 				else {
+					
+					
 					// One item per module
 					if (empty($name_modules)) {
 						$statusProcessInDB = array('flag' => true,
@@ -383,30 +401,53 @@ switch ($activeTab) {
 								__('No modules selected'), '', true));
 					}
 					else {
+						
+						
+						if (defined("METACONSOLE")) {
+							$rows = db_get_all_rows_filter(
+								'tmetaconsole_agent',
+								array('id_tagente' => $id_agents));
+							
+							$agents = array();
+							foreach ($rows as $row) {
+								$agents[$row['id_tmetaconsole_setup']][] =
+									$row['id_tagente'];
+							}
+						}
+						else {
+							$agents[0] = $id_agents;
+						}
+					}
+					
+					
+					
+					foreach ($agents as $id_server => $id_agents) {
+						
+						
+						
 						//Any module
 						if ($name_modules[0] == '0') {
 							$id_modules = array();
 							
 							if ($id_server != 0) {
-								foreach ($name_modules as $serial_data) {
-									$modules_serial = explode(';', $serial_data);
-									
-									foreach ($modules_serial as $data_serialized) {
-										$data = explode('|', $data_serialized);
-										$id_modules[] = $data[0];
-									}
+								if (metaconsole_connect(null, $id_server) != NOERR) {
+									continue;
 								}
 							}
-							else {
-								foreach ($id_agents as $id_agent) {
-									$id_modulo = agents_get_modules($id_agent, array('id_agente_modulo'));
-									if (empty($id_modulo)) $id_modulo = array();
-									
-									foreach ($id_modulo as $id) {
-										$id_modules[] = $id['id_agente_modulo'];
-									}
+							
+							foreach ($id_agents as $id_agent) {
+								$id_modulo = agents_get_modules($id_agent, array('id_agente_modulo'));
+								if (empty($id_modulo)) $id_modulo = array();
+								
+								foreach ($id_modulo as $id) {
+									$id_modules[] = $id['id_agente_modulo'];
 								}
 							}
+							
+							if ($id_server != 0) {
+								metaconsole_restore_db();
+							}
+							
 							
 							$message .= visual_map_process_wizard_add_modules(
 								$id_modules,
@@ -427,37 +468,43 @@ switch ($activeTab) {
 								$id_server,
 								$kind_relationship,
 								$item_in_the_map);
+							
+							
 						}
 						else {
 							$id_modules = array();
 							
 							if ($id_server != 0) {
-								foreach ($name_modules as $serial_data) {
-									$modules_serial = explode(';', $serial_data);
-									
-									foreach ($modules_serial as $data_serialized) {
-										$data = explode('|', $data_serialized);
-										$id_modules[] = $data[0];
-									}
+								if (metaconsole_connect(null, $id_server) != NOERR) {
+									continue;
 								}
 							}
-							else {
-								foreach ($name_modules as $mod) {
-									foreach ($id_agents as $ag) {
-										$id_module = agents_get_modules($ag,
-											array('id_agente_modulo'),
-											array('nombre' => $mod));
-										
-										if (empty($id_module))
-											continue;
-										else {
-											$id_module = reset($id_module);
-											$id_module = $id_module['id_agente_modulo'];
-										}
-										
-										$id_modules[] = $id_module;
+							
+							foreach ($name_modules as $mod) {
+								
+								
+								
+								foreach ($id_agents as $ag) {
+									
+									$id_module = agents_get_modules($ag,
+										array('id_agente_modulo'),
+										array('nombre' => $mod));
+									
+									
+									
+									if (empty($id_module))
+										continue;
+									else {
+										$id_module = reset($id_module);
+										$id_module = $id_module['id_agente_modulo'];
 									}
+									
+									$id_modules[] = $id_module;
 								}
+							}
+							
+							if ($id_server != 0) {
+								metaconsole_restore_db();
 							}
 							
 							$message .= visual_map_process_wizard_add_modules(
@@ -480,8 +527,12 @@ switch ($activeTab) {
 								$kind_relationship,
 								$item_in_the_map);
 						}
-						$statusProcessInDB = array('flag' => true, 'message' => $message);
+						
+						
 					}
+					
+					$statusProcessInDB = array(
+						'flag' => true, 'message' => $message);
 				}
 				$action = 'edit';
 				break;

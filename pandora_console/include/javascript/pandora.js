@@ -201,7 +201,7 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 	
 	jQuery.post (homedir + '/ajax.php', 
 		{
-			"page": "operation/agentes/ver_agente",
+			"page": "include/ajax/module",
 			"get_agent_modules_json_for_multiple_agents": 1,
 			"id_agent[]": idAgents,
 			"all": find_modules,

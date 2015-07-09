@@ -581,16 +581,24 @@ sub enterprise_load ($) {
 	if ($^O eq 'MSWin32') {
 		# If the Windows service dies the service is stopped, even inside an eval ($RUN is set to 0)!
 		eval 'local $SIG{__DIE__}; require PandoraFMS::Enterprise;';
-	} else {
+	}
+	else {
 		eval 'require PandoraFMS::Enterprise;';
 	}
 	
+	
+	
 	# Ops
-	return 0 if ($@);
-
+	if ($@) {
+		open (STDERR, ">> " . $pa_config->{'errorlogfile'});
+		print STDERR $@;
+		close (STDERR);
+		return 0;
+	}
+	
 	# Initialize the enterprise module.
 	PandoraFMS::Enterprise::init($pa_config);
-
+	
 	return 1;
 }
 

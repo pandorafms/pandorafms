@@ -115,7 +115,10 @@ if ($update) {
 			$agents_ = array_keys(agents_get_group_agents($group_select, false, 'none'));
 			
 			foreach ($agents_ as $id_agent) {
-				$filter = array('id_agente' => $id_agent);
+				$filter = array(
+						'id_agente' => $id_agent,
+						'delete_pending' => 0
+					);
 				$module_name = db_get_all_rows_filter('tagente_modulo', $filter, 'nombre');
 				if ($module_name === false)
 					$module_name = array();
@@ -136,9 +139,20 @@ if ($update) {
 				$modules_ = array();
 			
 			foreach ($modules_ as $module_) {
-				$result = process_manage_edit ($module_, $agents_);
-				$count++;
-				$success += (int)$result;
+				$filter = array('id_agente' => $agent_);
+				
+				if (!is_numeric($module_))
+					$filter['nombre'] = $module_;
+				else
+					$filter['id_agente_modulo'] = $module_;
+				
+				$exists = (bool) db_get_value_filter('id_agente', 'tagente_modulo', $filter);
+				
+				if ($exists) {
+					$result = process_manage_edit ($module_, $agent_);
+					$count++;
+					$success += (int)$result;
+				}
 			}
 		}
 	}
@@ -147,8 +161,7 @@ if ($update) {
 		__('Successfully updated') . "(" . $success . "/" . $count . ")",
 		__('Could not be updated'));
 	
-	$info = 'Modules: ' . json_encode($modules_) .
-		' Agents: ' . json_encode($agents_);
+	$info = 'Modules: ' . json_encode($modules_) . ' Agents: ' . json_encode($agents_);
 	if ($success > 0) {
 		db_pandora_audit("Massive management", "Edit module", false, false, $info);
 	}

@@ -46,11 +46,11 @@ define ('_MPDF_TTFONTPATH', 'include/fonts/');
 $activeTab = get_parameter('tab', 'main');
 $action = get_parameter('action', 'list');
 $idReport = get_parameter('id_report', 0);
-$offset = get_parameter('offset', 0);
+$offset = (int) get_parameter('offset', 0);
 $idItem = get_parameter('id_item', 0);
 $pure = get_parameter('pure',0);
 $schedule_report = get_parameter('schbutton', '');
-
+$pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
 if ($schedule_report != '') {
@@ -374,12 +374,7 @@ switch ($action) {
 		$table_aux->class = 'databox filters';
 		$table_aux->cellpadding = 0;
 		$table_aux->cellspacing = 0;
-		if (defined('METACONSOLE')) {
-			$table_aux->class = 'databox filters';
-			$table_aux->width = '100%';
-			$table_aux->cellpadding = 0;
-			$table_aux->cellspacing = 0;
-		}
+		
 		$table_aux->colspan[0][0] = 4;
 		$table_aux->data[0][0] = "<b>". __("Group") . "</b>";
 		
@@ -445,7 +440,8 @@ switch ($action) {
 		else {
 			$group = false;
 		}
-		
+		$filter['offset'] = $offset;
+		$filter['limit'] = $pagination;
 		
 		// Filter normal and metaconsole reports
 		if ($config['metaconsole'] == 1 and defined('METACONSOLE'))
@@ -463,9 +459,17 @@ switch ($action) {
 				'id_group',
 				'non_interactive'), $return_all_group, 'RR', $group, $strict_user);
 		
-		$table = new stdClass();
-		$table->width = '0px';
+		
+		unset($filter['offset']);
+		unset($filter['limit']);
+		$total_reports = (int) count(reports_get_reports ($filter,
+			array ('name'), $return_all_group, 'RR', $group, $strict_user));
+		
+		
 		if (sizeof ($reports)) {
+			$url = "index.php?sec=reporting&sec2=godmode/reporting/reporting_builder";
+			ui_pagination ($total_reports, $url, $offset, $pagination);
+			
 			$table = new stdClass();
 			$table->id = 'report_list';
 			$table->width = '100%';
@@ -521,7 +525,7 @@ switch ($action) {
 				$table->headstyle[$next] = 'text-align:left;';
 			
 			}
-			
+			$columnview = false;
 			foreach ($reports as $report) {
 				
 				if (!is_user_admin ($config["id_user"])) {
@@ -623,11 +627,12 @@ switch ($action) {
 				}
 				
 				if ($edit || $delete) {
+					$columnview = true;
 					if (!isset($table->head[$next])) {
 						$table->head[$next] = '<span title="Operations">' . __('Op.') . '</span>';
 						$table->size = array ();
 						$table->size[$next] = '80px';
-						$table->style[$next] = 'text-align:center;';
+						$table->style[$next] = 'text-align:left;';
 					}
 					
 					if ($edit) {
@@ -651,6 +656,15 @@ switch ($action) {
 				
 				array_push ($table->data, $data);
 				
+			}
+			
+			if ($columnview){
+				$count = 0;
+				foreach ($table->data as $datos) {
+					if (!isset($datos[9]))
+						$table->data[$count][9] = '';
+					$count++;
+				}
 			}
 			html_print_table ($table);
 		}

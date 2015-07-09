@@ -43,8 +43,9 @@ if ($get_agents_group) {
 	if ($id_group != -1) {
 		$filter = array();
 		
-		if (defined('METACONSOLE'))
+		if (defined('METACONSOLE')) {
 			$filter['id_server'] = $id_server;
+		}
 		
 		$return = agents_get_group_agents($id_group, $filter,  "none");
 	}

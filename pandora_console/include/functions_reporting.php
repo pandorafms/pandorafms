@@ -31,6 +31,7 @@ include_once($config['homedir'] . "/include/functions_modules.php");
 include_once($config['homedir'] . "/include/functions_events.php");
 include_once($config['homedir'] . "/include/functions_alerts.php");
 include_once($config['homedir'] . '/include/functions_users.php');
+enterprise_include_once('include/functions_reporting.php');
 enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('include/functions_inventory.php');
 include_once($config['homedir'] . "/include/functions_forecast.php");

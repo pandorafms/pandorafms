@@ -38,7 +38,7 @@ function files_repo_check_directory ($print_messages = false) {
 			}
 			if (!is_writable($files_repo_path)) {
 				$messages .= ui_print_error_message(array('message' => __('Attachment directory is not writable by HTTP Server')
-					.'</h3>'.'<p>'.sprinf(__('Please check that the web server has write rights on the %s directory'), $attachment_path),
+					.'</h3>'.'<p>'.sprintf(__('Please check that the web server has write rights on the %s directory'), $attachment_path),
 						'no_close' => true, 'force_style' => 'color: #000000 !important'), '', true);
 			} else {
 				$result = true;

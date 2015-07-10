@@ -98,31 +98,37 @@ if ($insert_downtime_agent === 1) {
 			$all_modules = true;
 	}
 	
-	$num_agents = count($agents);
-	for ($a = 0; $a < $num_agents; $a++) {
-		$id_agente_dt = $agents[$a];
-		
-		$values = array(
-				'id_downtime' => $id_downtime,
-				'id_agent' => $id_agente_dt,
-				'all_modules' => $all_modules
-			);
-		
-		$result = db_process_sql_insert('tplanned_downtime_agents', $values);
-		if ($result && !$all_modules) {
-			foreach ($module_names as $module_name) {
-				$module = modules_get_agentmodule_id($module_name, $id_agente_dt);
-				$values = array(
-						'id_downtime' => $id_downtime,
-						'id_agent' => $id_agente_dt,
-						'id_agent_module' => $module["id_agente_modulo"]
-					);
-				$result = db_process_sql_insert('tplanned_downtime_modules', $values);
-				
-				if ($result) {
-					$values = array('id_user' => $config['id_user']);
-					$result = db_process_sql_update('tplanned_downtime',
-						$values, array('id' => $id_downtime));
+	$executed = db_get_value ('executed', 'tplanned_downtime', 'id', $id_downtime);
+	if ($executed == 1) {
+		ui_print_error_message(__("This elements cannot be modified while the downtime is being executed"));
+	}
+	else {
+		$num_agents = count($agents);
+		for ($a = 0; $a < $num_agents; $a++) {
+			$id_agente_dt = $agents[$a];
+			
+			$values = array(
+					'id_downtime' => $id_downtime,
+					'id_agent' => $id_agente_dt,
+					'all_modules' => $all_modules
+				);
+			
+			$result = db_process_sql_insert('tplanned_downtime_agents', $values);
+			if ($result && !$all_modules) {
+				foreach ($module_names as $module_name) {
+					$module = modules_get_agentmodule_id($module_name, $id_agente_dt);
+					$values = array(
+							'id_downtime' => $id_downtime,
+							'id_agent' => $id_agente_dt,
+							'id_agent_module' => $module["id_agente_modulo"]
+						);
+					$result = db_process_sql_insert('tplanned_downtime_modules', $values);
+					
+					if ($result) {
+						$values = array('id_user' => $config['id_user']);
+						$result = db_process_sql_update('tplanned_downtime',
+							$values, array('id' => $id_downtime));
+					}
 				}
 			}
 		}
@@ -134,15 +140,21 @@ if ($delete_downtime_agent === 1) {
 	
 	$id_da = (int) get_parameter ('id_downtime_agent');
 	
-	$row_to_delete = db_get_row('tplanned_downtime_agents', 'id', $id_da);
-	
-	$result = db_process_sql_delete('tplanned_downtime_agents', array('id' => $id_da));
-	
-	if ($result) {
-		//Delete modules in downtime
-		db_process_sql_delete('tplanned_downtime_modules',
-			array('id_downtime' => $row_to_delete['id_downtime'],
-				'id_agent' => $id_agent));
+	$executed = db_get_value ('executed', 'tplanned_downtime', 'id', $id_downtime);
+	if ($executed == 1) {
+		ui_print_error_message(__("This elements cannot be modified while the downtime is being executed"));
+	}
+	else {
+		$row_to_delete = db_get_row('tplanned_downtime_agents', 'id', $id_da);
+		
+		$result = db_process_sql_delete('tplanned_downtime_agents', array('id' => $id_da));
+		
+		if ($result) {
+			//Delete modules in downtime
+			db_process_sql_delete('tplanned_downtime_modules',
+				array('id_downtime' => $row_to_delete['id_downtime'],
+					'id_agent' => $id_agent));
+		}
 	}
 }
 
@@ -218,7 +230,22 @@ if ($create_downtime || $update_downtime) {
 			}
 		}
 		else if ($update_downtime) {
-			if (trim(io_safe_output($name)) != '') {
+			$has_been_executed = db_get_value ('executed', 'tplanned_downtime', 'name', $name);
+			$values = array();
+			if (trim(io_safe_output($name)) == '') {
+				ui_print_error_message(__('Planned downtime must have a name'));
+			}
+			else if ($has_been_executed == 1 && $type_execution == 'once') {
+				$values = array(
+					'description' => $description,
+					'date_to' => $datetime_to,
+					'id_user' => $config['id_user']
+				);
+			}
+			else if ($has_been_executed == 1) {
+				ui_print_error_message(__('No updates. Planned Downtime has been executed'));
+			}
+			else {
 				$values = array(
 					'name' => $name,
 					'description' => $description,
@@ -246,12 +273,9 @@ if ($create_downtime || $update_downtime) {
 					$values['periodically_time_from'] = '1970/01/01 ' . $values['periodically_time_from'];
 					$values['periodically_time_to'] = '1970/01/01 ' . $values['periodically_time_to'];
 				}
-				
-				$result = db_process_sql_update('tplanned_downtime', $values, array('id' => $id_downtime));
 			}
-			else {
-				ui_print_error_message(
-					__('Planned downtime must have a name'));
+			if (!empty($values)) {
+				$result = db_process_sql_update('tplanned_downtime', $values, array('id' => $id_downtime));
 			}
 		}
 		
@@ -958,6 +982,9 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 						$("#spinner_add", $('#module_editor_' + id_agent))
 							.toggle();
 					}
+					else if (data['executed']) {
+						show_executing_alert();
+					}
 					
 					action_in_progress = false;
 				},
@@ -995,6 +1022,9 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 							+ '-count_modules').html(
 								$("#all_modules_text").html());
 					}
+				}
+				else if (data['executed']) {
+					show_executing_alert();
 				}
 				else {
 					$(".cell_delete_button", "#row_module_in_downtime_" + id_module)

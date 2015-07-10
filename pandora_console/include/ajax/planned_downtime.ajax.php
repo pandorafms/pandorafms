@@ -71,6 +71,13 @@ if ($delete_module_from_downtime) {
 	$id_module = (int)get_parameter('id_module', 0);
 	$id_downtime = (int)get_parameter('id_downtime', 0);
 	
+	$executed = db_get_value ('executed', 'tplanned_downtime', 'id', $id_downtime);
+	if ($executed) {
+		$return['executed'] = 1;
+		echo json_encode($return);
+		exit;
+	}
+
 	$row = db_get_row_filter('tplanned_downtime_modules',
 		array('id_agent_module' => $id_module,
 			'id_downtime' => $id_downtime));
@@ -111,6 +118,13 @@ if ($add_module_into_downtime) {
 	$id_module = (int)get_parameter('id_module', 0);
 	$id_downtime = (int)get_parameter('id_downtime', 0);
 	
+	$executed = db_get_value ('executed', 'tplanned_downtime', 'id', $id_downtime);
+	if ($executed) {
+		$return['executed'] = 1;
+		echo json_encode($return);
+		exit;
+	}
+
 	$values = array();
 	$values['id_agent'] = $id_agent;
 	$values['id_agent_module'] = $id_module;
@@ -133,3 +147,4 @@ if ($add_module_into_downtime) {
 	exit;
 }
 ?>
+

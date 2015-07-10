@@ -1315,6 +1315,15 @@ function safe_sql_string($string) {
 	}
 }
 
+function is_metaconsole() {
+	global $config;
+	
+	if ($config['metaconsole'])
+		return true;
+	else
+		return false;
+}
+
 /**
  * Checks if current execution is under an AJAX request.
  *

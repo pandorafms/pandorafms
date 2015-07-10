@@ -493,7 +493,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 		
 		// Table Planned Downtimes
 		require_once ($config['homedir'] . '/include/functions_planned_downtimes.php');
-		$metaconsole_on = ($config['metaconsole'] == 1) && defined('METACONSOLE');
+		$metaconsole_on = is_metaconsole();
 		$downtime_malformed = false;
 		
 		$planned_downtimes_empty = true;
@@ -618,7 +618,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			foreach ($slas as $sla) {
 				$server_name = $sla ['server_name'];
 				//Metaconsole connection
-				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+				if ($metaconsole_on && $server_name != '') {
 					$connection = metaconsole_get_connection($server_name);
 					if (!metaconsole_load_external_db($connection)) {
 						//ui_print_error_message ("Error connecting to ".$server_name);
@@ -627,7 +627,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 				}
 				
 				if (modules_is_disable_agent($sla['id_agent_module'])) {
-					if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
+					if ($metaconsole_on) {
 						//Restore db connection
 						metaconsole_restore_db();
 					}
@@ -646,7 +646,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 					$content['time_from'],
 					$content['time_to']);
 				
-				if (($config ['metaconsole'] == 1) && defined('METACONSOLE')) {
+				if ($metaconsole_on) {
 					//Restore db connection
 					metaconsole_restore_db();
 				}
@@ -681,7 +681,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 			
 			$server_name = $sla ['server_name'];
 			//Metaconsole connection
-			if (($config ['metaconsole'] == 1) && ($server_name != '') && defined('METACONSOLE')) {
+			if ($metaconsole_on && $server_name != '') {
 				$connection = metaconsole_get_connection($server_name);
 				if (metaconsole_connect($connection) != NOERR) {
 					continue;
@@ -774,13 +774,11 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 				$return['charts'][] = $dataslice;
 			}
 			
-			if ($config ['metaconsole'] == 1 && defined('METACONSOLE')) {
+			if ($metaconsole_on) {
 				//Restore db connection
 				metaconsole_restore_db();
 			}
 		}
-		
-		
 	}
 	
 	return reporting_check_structure_content($return);

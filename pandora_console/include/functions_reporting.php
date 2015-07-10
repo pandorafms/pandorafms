@@ -109,21 +109,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 	}
 	else {
 		$report = db_get_row ('treport', 'id_report', $id_report);
-		
-		switch ($config["dbtype"]) {
-			case "mysql":
-				$contents = db_get_all_rows_field_filter ("treport_content",
-					"id_report", $id_report, "`order`");
-				break;
-			case "postgresql":
-				$contents = db_get_all_rows_field_filter ("treport_content",
-					"id_report", $id_report, '"order"');
-				break;
-			case "oracle":
-				$contents = db_get_all_rows_field_filter ("treport_content",
-					"id_report", $id_report, '"order"');
-				break;
-		}
+		$contents = db_get_all_rows_field_filter ('treport_content',
+			'id_report', $id_report, db_escape_key_identifier('order'));
 	}
 	
 	$datetime = strtotime($date . ' ' . $time);

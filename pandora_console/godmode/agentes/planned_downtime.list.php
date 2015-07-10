@@ -18,7 +18,7 @@ global $config;
 
 check_login();
 
-if (! check_acl ($config['id_user'], 0, "AW")) {
+if (! check_acl ($config['id_user'], 0, "AR")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access downtime scheduler");
 	require ("general/noaccess.php");
@@ -299,7 +299,9 @@ $table->head[5] = __('Configuration');
 $table->head[6] = __('Running');
 $table->head[7] = __('Stop downtime');
 $table->head[8] = __('Edit');
-$table->head[9] = __('Delete');
+if (check_acl ($config['id_user'], 0, "AW")) {
+	$table->head[9] = __('delete');
+}
 $table->align[2] = "center";
 $table->align[6] = "center";
 $table->align[7] = "center";
@@ -495,9 +497,11 @@ else {
 			$data[8] = '<a
 				href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor&amp;edit_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
 			html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
-			$data[9] = '<a id="delete_downtime" href="index.php?sec=gagente&amp;sec2=godmode/agentes/planned_downtime.list&amp;'.
-				'delete_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
-			html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
+			if (check_acl ($config['id_user'], 0, "AW")) {
+				$data[9] = '<a id="delete_downtime" href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list'.
+					'&delete_downtime=1&id_downtime=' . $downtime['id'] . '&' . $filter_params_str . '">' .
+					html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
+			}
 		}
 		else {
 			$data[8]= "N/A";
@@ -525,9 +529,11 @@ echo '<div style="display: inline;">';
 html_print_button(__('Export to CSV'), 'csv_export', false, "location.href='godmode/agentes/planned_downtime.export_csv.php?$filter_params_str'", 'class="sub next"');
 echo '</div>';
 echo '&nbsp;';
-echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
-html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
-echo '</form>';
+if (check_acl ($config['id_user'], 0, "AW")) {
+		echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
+		html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
+		echo '</form>';
+}
 echo '</div>';
 
 

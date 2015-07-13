@@ -528,38 +528,56 @@ else {
 				array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
 		}
 		
-		if ($downtime['type_execution'] == 'once' && $downtime["executed"] == 1) {
+		//If user have writting permissions
+		if ( check_acl ($config['id_user'], 0, "AW")) {
+			if ($downtime['type_execution'] == 'once' && $downtime["executed"] == 1) {
+				
+				$data[7] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list' .
+					'&stop_downtime=1&id_downtime=' . $downtime['id'] . '&' . $filter_params_str . '">' .
+				html_print_image("images/cancel.png", true, array("border" => '0', "alt" => __('Stop downtime')));
+			}
+			else {
+				$data[7] = "";
+			}
 			
-			$data[7] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list' .
-				'&stop_downtime=1&id_downtime=' . $downtime['id'] . '&' . $filter_params_str . '">' .
-			html_print_image("images/cancel.png", true, array("border" => '0', "alt" => __('Stop downtime')));
+			if ($downtime["executed"] == 0) {
+				$data[8] = '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor&amp;edit_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
+				html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
+				if (check_acl ($config['id_user'], 0, "AW")) {
+					$data[9] = '<a id="delete_downtime" href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list'.
+						'&delete_downtime=1&id_downtime=' . $downtime['id'] . '&' . $filter_params_str . '">' .
+						html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
+				}
+			}
+			elseif ($downtime["executed"] == 1
+				&& $downtime['type_execution'] == 'once') {
+				
+				$data[8] = '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor&amp;' .
+					'edit_downtime=1&amp;id_downtime=' . $downtime['id'] . '">' .
+					html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
+				$data[9]= "N/A";
+			}
+			else {
+				$data[8]= "N/A";
+				$data[9]= "N/A";
+			}
 		}
-		else {
-			$data[7] = "";
-		}
-		
-		if ($downtime["executed"] == 0) {
-			$data[8] = '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor&amp;edit_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
-			html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
-			if (check_acl ($config['id_user'], 0, "AW")) {
-				$data[9] = '<a id="delete_downtime" href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list'.
-					'&delete_downtime=1&id_downtime=' . $downtime['id'] . '&' . $filter_params_str . '">' .
-					html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
+		else{
+			if ($downtime['type_execution'] == 'once' && $downtime["executed"] == 1) {
+				$data[7] .= '';
 			}
 		}
 		elseif ($downtime["executed"] == 1
 			&& $downtime['type_execution'] == 'once') {
 			
-			$data[8] = '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor&amp;' .
-				'edit_downtime=1&amp;id_downtime=' . $downtime['id'] . '">' .
-				html_print_image("images/config.png", true,
-					array("border" => '0', "alt" => __('Update'))) . '</a>';
-			$data[9]= "N/A";
-		}
-		else {
-			$data[8]= "N/A";
-			$data[9]= "N/A";
-		
+			if ($downtime["executed"] == 0) {
+				$data[8] = '';
+				$data[9] = '';
+			}
+			elseif ($downtime["executed"] == 1 && $downtime['type_execution'] == 'once') {
+				$data[8] = '';
+				$data[9]= '';
+			}
 		}
 
 		if (!empty($malformed_downtimes_exist) && isset($malformed_downtimes[$downtime['id']])) {

@@ -874,7 +874,7 @@ function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxle
 		"title", "xml:lang", "onfocus", "onblur", "onselect",
 		"onchange", "onclick", "ondblclick", "onmousedown",
 		"onmouseup", "onmouseover", "onmousemove", "onmouseout",
-		"onkeypress", "onkeydown", "onkeyup");
+		"onkeypress", "onkeydown", "onkeyup", "required");
 	
 	$output = '<input '.($password ? 'type="password" autocomplete="off" ' : 'type="text" ');
 	
@@ -918,7 +918,7 @@ function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxle
 		*/
 		
 		/* Exact operator because we want to show "0" on the value */
-		if ($$attribute !== '') {
+		if ($attribute !== '') {
 			$output .= $attribute.'="'.$$attribute.'" ';
 		}
 		elseif ($default != '') {
@@ -1012,11 +1012,16 @@ function html_print_div ($options, $return = false) {
  * @return string HTML code if return parameter is true.
  */
 function html_print_input_password ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false) {
-	$output = html_print_input_text_extended ($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', '', true, true);
+	if ($maxlength == 0)
+		$maxlength = 255;
 	
-	if ($return)
-		return $output;
-	echo $output;
+	if ($size == 0)
+		$size = 10;
+	
+	if ($required)
+		$attr = array('required' => 'required');
+	
+	return html_print_input_text_extended ($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true);
 }
 
 /**
@@ -1034,14 +1039,17 @@ function html_print_input_password ($name, $value, $alt = '', $size = 50, $maxle
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false) {
+function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false, $required = false) {
 	if ($maxlength == 0)
 		$maxlength = 255;
 	
 	if ($size == 0)
 		$size = 10;
 	
-	return html_print_input_text_extended ($name, $value, 'text-'.$name, $alt, $size, $maxlength, $disabled, '', '', $return);
+	if ($required)
+		$attr = array('required' => 'required');
+	
+	return html_print_input_text_extended ($name, $value, 'text-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return);
 }
 
 /**

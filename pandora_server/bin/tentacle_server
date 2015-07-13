@@ -684,7 +684,7 @@ sub accept_connections {
 	my $pid;
 	my $t_server_socket;
 
-	# Ignore SIGPIPE errors (happens on FreeBSD when SSL is enabled ¿?)
+	# Ignore SIGPIPE
 	$SIG{PIPE} = 'IGNORE';
 
 	# Start server
@@ -736,9 +736,6 @@ sub accept_connections {
 sub serve_client() {
 
 	eval {		
-		local $SIG{__DIE__} = sub {
-			print STDERR $_[0];
-		};
 		# Add client socket to select queue
 		$t_select = IO::Select->new ();
 		$t_select->add ($t_client_socket);
@@ -977,8 +974,10 @@ sub print_log {
 sub error {
 
 	if ($t_quiet == 0) {
-		die("[err] $_[0]\n\n");
+		print (STDERR "[err] $_[0]\n");
 	}
+
+	die("\n");
 }
 
 ################################################################################

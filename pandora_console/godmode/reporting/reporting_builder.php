@@ -769,16 +769,14 @@ switch ($action) {
 					else {
 						$resultOperationDB = false;
 					}
+					
+					$action = 'edit';
 				}
 				else if ($action == 'save') {
 					if ($reportName != "" && $idGroupReport != "") {
 						
 						// This flag allow to differentiate between normal console and metaconsole reports 
-						if (defined('METACONSOLE') and
-							$config['metaconsole'] == 1)
-							$metaconsole_report = 1;
-						else
-							$metaconsole_report = 0;
+						$metaconsole_report = (int) is_metaconsole();
 						
 						// Juanma (07/05/2014) New feature: Custom front page for reports  
 						if ($config['custom_report_front']) {
@@ -830,8 +828,9 @@ switch ($action) {
 						$idReport = $idOrResult;
 						$report_id_user = $config['id_user'];
 					}
+					
+					$action = $resultOperationDB ? 'edit' : 'new';
 				}
-				$action = 'edit';
 				break;
 			case 'item_editor':
 				$resultOperationDB = null;

@@ -736,6 +736,9 @@ sub accept_connections {
 sub serve_client() {
 
 	eval {		
+		local $SIG{__DIE__} = sub {
+			print STDERR $_[0];
+		};
 		# Add client socket to select queue
 		$t_select = IO::Select->new ();
 		$t_select->add ($t_client_socket);

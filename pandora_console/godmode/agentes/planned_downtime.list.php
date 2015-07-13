@@ -18,7 +18,7 @@ global $config;
 
 check_login();
 
-if (! check_acl ($config['id_user'], 0, "AW")) {
+if (! check_acl ($config['id_user'], 0, "AR")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access downtime scheduler");
 	require ("general/noaccess.php");
@@ -541,9 +541,11 @@ else {
 		if ($downtime["executed"] == 0) {
 			$data[8] = '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor&amp;edit_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
 			html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
-			$data[9] = '<a id="delete_downtime" href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list'.
-				'&delete_downtime=1&id_downtime=' . $downtime['id'] . '&' . $filter_params_str . '">' .
-				html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
+			if (check_acl ($config['id_user'], 0, "AW")) {
+				$data[9] = '<a id="delete_downtime" href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list'.
+					'&delete_downtime=1&id_downtime=' . $downtime['id'] . '&' . $filter_params_str . '">' .
+					html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
+			}
 		}
 		elseif ($downtime["executed"] == 1
 			&& $downtime['type_execution'] == 'once') {
@@ -580,8 +582,10 @@ else {
 			"location.href='godmode/agentes/planned_downtime.export_csv.php?$filter_params_str'", 'class="sub next"');
 	echo '</div>';
 	echo '&nbsp;';
-	echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
-	html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
+	if (check_acl ($config['id_user'], 0, "AW")) {
+		echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
+		html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
+	}
 	echo '</form>';
 	echo '</div>';
 }

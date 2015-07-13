@@ -47,7 +47,7 @@ $table->id = 'add_alert_table';
 $table->class = 'databox filters';
 $table->head = array ();
 
-if (defined("METACONSOLE")) {
+if (is_metaconsole()) {
 	$table->head[0] = __('Main data');
 	$table->head_colspan[0] = 4;
 	$table->headstyle[0] = 'text-align: center';
@@ -58,13 +58,13 @@ $table->size = array ();
 $table->size = array ();
 $table->size[0] = '15%';
 $table->size[1] = '90%';
-if(!defined("METACONSOLE"))
+if(!is_metaconsole())
 	$table->style[0] = 'font-weight: bold; vertical-align: top;';
 else
 	$table->style[0] = 'font-weight: bold;';
 $table->data['name'][0] = __('Name');
 $table->data['name'][1] = html_print_input_text('name', $reportName,
-	__('Name'), 80, 100, true);
+	__('Name'), 80, 100, true, false, true);
 
 $table->data['group'][0] = __('Group');
 

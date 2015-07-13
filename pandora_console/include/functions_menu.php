@@ -59,6 +59,9 @@ function menu_print_menu (&$menu) {
 		if ($mainsec == 'class')
 			continue;
 		
+		if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec)) == false)
+			continue;
+
 		if (! isset ($main['id'])) {
 			$id = 'menu_'.++$idcounter;
 		}

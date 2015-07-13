@@ -55,7 +55,7 @@ $table->style[0] = 'font-weight: bold; vertical-align: top;';
 
 $table->data['name'][0] = __('Name');
 $table->data['name'][1] = html_print_input_text('name', $reportName,
-	__('Name'), 80, 100, true);
+	__('Name'), 80, 100, true, false, true);
 
 $table->data['group'][0] = __('Group');
 

@@ -88,11 +88,11 @@ function agent_changed (event, id_agent, selected) {
 					$('#module').empty ();
 					
 					if (typeof($(document).data('text_for_module')) != 'undefined') {
-						$('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
+						$('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).prop('selected', true));
 					}
 					else {
 						if (typeof(data['any_text']) != 'undefined') {
-							$('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
+							$('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).prop('selected', true));
 						}
 						else {
 							var anyText = $("#any_text").html(); //Trick for catch the translate text.
@@ -101,7 +101,7 @@ function agent_changed (event, id_agent, selected) {
 								anyText = 'Any';
 							}
 							
-							$('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
+							$('#module').append ($('<option></option>').html (anyText).attr ("value", 0).prop('selected', true));
 						}
 					}
 					jQuery.each (data, function (i, val) {
@@ -224,7 +224,7 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 					.append ($('<option></option>')
 						.html(noneText)
 						.attr ("None", "")
-						.attr('selected', true));
+						.prop('selected', true));
 				
 				return;
 			}
@@ -235,7 +235,7 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 						.html ($(document)
 						.data('text_for_module'))
 						.attr("value", 0)
-						.attr('selected', true));
+						.prop('selected', true));
 			}
 			else {
 				if (typeof(data['any_text']) != 'undefined') {
@@ -243,7 +243,7 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 						.append ($('<option></option>')
 							.html (data['any_text'])
 							.attr ("value", 0)
-							.attr('selected', true));
+							.prop('selected', true));
 				}
 				else {
 					var anyText = $("#any_text").html(); //Trick for catch the translate text.
@@ -256,7 +256,7 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 						.append ($('<option></option>')
 							.html (anyText)
 							.attr ("value", 0)
-							.attr('selected', true));
+							.prop('selected', true));
 				}
 			}
 			jQuery.each (data, function (i, val) {
@@ -322,11 +322,11 @@ function agent_changed_by_multiple_agents_with_alerts (event, id_agent, selected
 					$('#module').empty ();
 					
 					if (typeof($(document).data('text_for_module')) != 'undefined') {
-						$('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
+						$('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).prop('selected', true));
 					}
 					else {
 						if (typeof(data['any_text']) != 'undefined') {
-							$('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
+							$('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).prop('selected', true));
 						}
 						else {
 							var anyText = $("#any_text").html(); //Trick for catch the translate text.
@@ -335,7 +335,7 @@ function agent_changed_by_multiple_agents_with_alerts (event, id_agent, selected
 								anyText = 'Any';
 							}
 							
-							$('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
+							$('#module').append ($('<option></option>').html (anyText).attr ("value", 0).prop('selected', true));
 						}
 					}
 					jQuery.each (data, function (i, val) {
@@ -395,19 +395,19 @@ function module_changed_by_multiple_modules (event, id_module, selected) {
 				}
 				
 				$('#agents')
-					.append($('<option></option>').html (noneText).attr ("None", "").attr('selected', true));
+					.append($('<option></option>').html (noneText).attr ("None", "").prop('selected', true));
 				
 				return;
 			}
 			
 			if (typeof($(document).data('text_for_module')) != 'undefined') {
 				$('#agents')
-					.append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
+					.append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).prop('selected', true));
 			}
 			else {
 				if (typeof(data['any_text']) != 'undefined') {
 					$('#agents')
-						.append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
+						.append ($('<option></option>').html (data['any_text']).attr ("value", 0).prop('selected', true));
 				}
 				else {
 					var anyText = $("#any_text").html(); //Trick for catch the translate text.
@@ -417,7 +417,7 @@ function module_changed_by_multiple_modules (event, id_module, selected) {
 					}
 					
 					$('#agents')
-						.append($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
+						.append($('<option></option>').html (anyText).attr ("value", 0).prop('selected', true));
 				}
 			}
 			jQuery.each (data, function (i, val) {
@@ -462,11 +462,11 @@ function agent_changed_by_multiple_agents_id (event, id_agent, selected) {
 			$('#module').empty ();
 			
 			if (typeof($(document).data('text_for_module')) != 'undefined') {
-				$('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
+				$('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).prop('selected', true));
 			}
 			else {
 				if (typeof(data['any_text']) != 'undefined') {
-					$('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
+					$('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).prop('selected', true));
 				}
 				else {
 					var anyText = $("#any_text").html(); //Trick for catch the translate text.
@@ -475,7 +475,7 @@ function agent_changed_by_multiple_agents_id (event, id_agent, selected) {
 						anyText = 'Any';
 					}
 					
-					$('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
+					$('#module').append ($('<option></option>').html (anyText).attr ("value", 0).prop('selected', true));
 				}
 			}
 			
@@ -575,15 +575,15 @@ function period_select_init(name) {
 		$('.' + name).val(300);
 		if ($('#' + name + '_select option:eq(0)').val() == 0) {
 			$('#' + name + '_select option:eq(2)')
-				.attr('selected', 'selected');
+				.prop('selected', true);
 		}
 		else {
 			$('#' + name + '_select option:eq(1)')
-				.attr('selected', 'selected');
+				.prop('selected', true);
 		}
 	}
 	else if ($('#text-' + name + '_text').val() == 0) {
-		$('#' + name + '_units option:last').removeAttr('selected');
+		$('#' + name + '_units option:last').prop('selected', false);
 		$('#' + name + '_manual').show();
 		$('#' + name + '_default').hide();
 	}
@@ -658,10 +658,10 @@ function period_set_value(name, value) {
  */
 function selectFirst(name) {
 	if ($('#'+name+' option:eq(0)').val() == 0) {
-		$('#'+name+' option:eq(1)').attr('selected', 'selected');
+		$('#'+name+' option:eq(1)').prop('selected', true);
 	}
 	else {
-		$('#'+name+' option:eq(0)').attr('selected', 'selected');
+		$('#'+name+' option:eq(0)').prop('selected', true);
 	}
 }
 
@@ -729,7 +729,7 @@ function adjustTextUnits(name) {
 		var restInt = parseInt(rest).toString();
 		
 		if(rest != restInt && unitsSelected == false) {
-			$('#'+name+'_units option:eq('+($(this).index()-1)+')').attr('selected', true);
+			$('#'+name+'_units option:eq('+($(this).index()-1)+')').prop('selected', true);
 			$('#text-'+name+'_text').val(restPrev);
 			unitsSelected = true;
 		}
@@ -738,7 +738,7 @@ function adjustTextUnits(name) {
 	});
 	
 	if(unitsSelected == false) {
-		$('#'+name+'_units option:last').attr('selected', true);
+		$('#'+name+'_units option:last').prop('selected', true);
 		$('#text-'+name+'_text').val(restPrev);
 	}
 	

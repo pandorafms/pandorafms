@@ -493,7 +493,7 @@ $(document).ready (function () {
 			return false;
 		}
 		$('#module option').map(function() {
-			$(this).attr('selected','selected');
+			$(this).prop('selected', true);
 		});
 	});
 });

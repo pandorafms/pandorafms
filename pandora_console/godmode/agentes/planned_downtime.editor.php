@@ -81,8 +81,6 @@ $id_agent 				= (int) get_parameter ('id_agent');
 $insert_downtime_agent 	= (int) get_parameter ('insert_downtime_agent');
 $delete_downtime_agent 	= (int) get_parameter ('delete_downtime_agent');
 
-$groups = users_get_groups ();
-
 // INSERT A NEW DOWNTIME_AGENT ASSOCIATION
 if ($insert_downtime_agent === 1) {
 	$agents = (array) get_parameter ('id_agents');
@@ -356,10 +354,14 @@ if ($id_downtime > 0) {
 			break;
 	}
 	
+	$groupsAW = users_get_groups($config['id_user'], 'AW', true, false, null, 'id_grupo');
+	$groupsAW = array_keys($groupsAW);
+
 	$result = db_get_row_sql ($sql);
 	
 	$name 					= (string) $result["name"];
 	$id_group 				= (int) $result['id_group'];
+
 	$description 			= (string) $result["description"];
 	
 	$type_downtime 			= (string) $result['type_downtime'];
@@ -385,6 +387,13 @@ if ($id_downtime > 0) {
 	$sunday 				= (bool) $result['sunday'];
 	
 	$executed 				= (bool) $result['executed'];
+
+	if ( !in_array($id_group, $groupsAW) ){
+		db_pandora_audit("ACL Violation",
+		"Trying to access downtime scheduler");
+		require ("general/noaccess.php");
+		return;
+	}
 }
 
 // when the planned down time is in execution, only action to postpone on once type is enabled and the other are disabled.

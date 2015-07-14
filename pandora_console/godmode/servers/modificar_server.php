@@ -39,8 +39,8 @@ if (isset($_GET["server"])) {
 	
 	$table->cellpadding=4;
 	$table->cellspacing=4;
-	$table->width='98%';
-	$table->class="databox_color";
+	$table->width='100%';
+	$table->class="databox filters";
 	
 	$table->data[] = array (__('Name'),$row["name"]);
 	$table->data[] = array (__('IP Address'),html_print_input_text ('address',$row["ip_address"],'',50,0,true));
@@ -48,7 +48,7 @@ if (isset($_GET["server"])) {
 	html_print_table ($table);
 	
 	
-	echo '<div class="action-buttons" style="width: 98%">';
+	echo '<div class="action-buttons" style="width: 100%">';
 	echo '<input type="submit" class="sub upd" value="'.__('Update').'">';
 	echo "</div>";
 

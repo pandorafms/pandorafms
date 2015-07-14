@@ -24,6 +24,7 @@ $table->width = '100%';
 $table->data = array ();
 $table->size = array();
 $table->size[0] = '30%';
+$table->style[0] = 'font-weight:bold';
 $table->size[1] = '70%';
 
 // Current config["language"] could be set by user, not taken from global setup !

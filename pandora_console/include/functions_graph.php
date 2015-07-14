@@ -2473,6 +2473,10 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 		$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
+	else
+	{
+		$water_mark = array();
+	}
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Other'), '', $water_mark,
@@ -2606,6 +2610,9 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWat
 		$water_mark = array(
 			'file' => $config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("/images/logo_vertical_water.png", false, false, false));
+	}
+	else {
+		$water_mark = array();
 	}
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,

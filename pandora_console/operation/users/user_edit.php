@@ -190,7 +190,7 @@ if (defined('METACONSOLE')) {
 	$table->head_colspan[0] = 5;
 	$table->headstyle[0] = 'text-align: center';
 }
-$table->style[2] = 'width: 175px;';
+$table->style[2] = 'width: 200px;';
 
 $data = array();
 $data[0] = '<b>' . __('User ID') . '</b>';
@@ -350,7 +350,7 @@ $data[0] = __('Double authentication');
 $data[0] .= $jump;
 $data[0] .= html_print_checkbox('double_auth', 1, $double_auth_enabled, true);
 if ($double_auth_enabled) {
-	$data[0] .= '&nbsp;&nbsp;';
+	$data[0] .= $jump;
 	$data[0] .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
 }
 // Dialog
@@ -410,10 +410,12 @@ $table->data = array ();
 $table->head = array ();
 $table->align = array ();
 $table->style = array ();
+
 if (!defined('METACONSOLE')) {
 	$table->style[0] = 'font-weight: bold';
 	$table->style[1] = 'font-weight: bold';
 }
+
 $table->head[0] = __('Profile name');
 $table->head[1] = __('Group');
 $table->head[2] = __('Tags');

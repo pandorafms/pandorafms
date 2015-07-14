@@ -444,6 +444,9 @@ else {
 	
 	ui_pagination($downtimes_number, "index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list&$filter_params_str", $offset);
 
+	$groupsAW = users_get_groups($config['id_user'], 'AW', true, false, null, 'id_grupo');
+	$groupsAW = array_keys($groupsAW);
+
 	foreach ($downtimes as $downtime) {
 		$data = array();
 		$total  = db_get_sql ("SELECT COUNT(id_agent)
@@ -528,8 +531,9 @@ else {
 				array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
 		}
 		
+		$downtimeGroup = $downtime['id_group'];
 		//If user have writting permissions
-		if ( check_acl ($config['id_user'], 0, "AW")) {
+		if ( in_array($downtimeGroup, $groupsAW) ){
 			if ($downtime['type_execution'] == 'once' && $downtime["executed"] == 1) {
 				
 				$data[7] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list' .

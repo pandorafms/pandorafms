@@ -557,6 +557,14 @@ if ($id_downtime > 0) {
 	
 	$filter_group = get_parameter("filter_group", 0);
 	
+	$groupsAW = users_get_groups($config['id_user'], 'AW', true, false, null, 'id_grupo');
+	$groupsAW = array_keys($groupsAW);
+	$id_groups_list = implode(",", $groupsAW);
+
+	if (empty($id_groups_list)){
+		$id_groups_list = -1;
+	}
+
 	$filter_cond = '';
 	if ($filter_group > 0)
 		$filter_cond = " AND id_grupo = $filter_group ";
@@ -569,7 +577,8 @@ if ($id_downtime > 0) {
 							WHERE tplanned_downtime_agents.id_agent = tagente.id_agente
 								AND tplanned_downtime_agents.id_downtime = %d
 						) AND disabled = 0 $filter_cond
-					ORDER by tagente.nombre", $id_downtime);
+						AND tagente.id_grupo IN (%s)
+					ORDER by tagente.nombre", $id_downtime, $id_groups_list);
 	$downtimes = db_get_all_rows_sql ($sql);
 	$data = array ();
 	if ($downtimes) {

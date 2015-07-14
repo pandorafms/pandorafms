@@ -447,6 +447,10 @@ else {
 	$groupsAW = users_get_groups($config['id_user'], 'AW', true, false, null, 'id_grupo');
 	$groupsAW = array_keys($groupsAW);
 
+	if (empty($groupsAW)){
+		$groupsAW = -1;
+	}
+
 	foreach ($downtimes as $downtime) {
 		$data = array();
 		$total  = db_get_sql ("SELECT COUNT(id_agent)

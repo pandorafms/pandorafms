@@ -121,7 +121,7 @@
 									selected = $('#hidden-'+config.moduleSelect.attr('id')+'_selected').val();
 									if (selected == i) {
 										option = $("<option></option>")
-											.attr ("selected", "selected")
+											.prop ("selected", true)
 											.attr ("value", value['id_agente_modulo'])
 											.html (js_html_entity_decode (value['nombre']));
 									}

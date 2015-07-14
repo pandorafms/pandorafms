@@ -508,11 +508,11 @@ function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
 			
 			if (c == 0) {
 				if (typeof($(document).data('text_for_module')) != 'undefined') {
-					$('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).attr('selected', true));
+					$('#module').append ($('<option></option>').html ($(document).data('text_for_module')).attr("value", 0).prop('selected', true));
 				}
 				else {
 					if (typeof(data['any_text']) != 'undefined') {
-						$('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).attr('selected', true));
+						$('#module').append ($('<option></option>').html (data['any_text']).attr ("value", 0).prop('selected', true));
 					}
 					else {
 						var anyText = $("#any_text").html(); //Trick for catch the translate text.
@@ -521,7 +521,7 @@ function snmp_changed_by_multiple_snmp (event, id_snmp, selected) {
 							anyText = 'Any';
 						}
 						
-						$('#module').append ($('<option></option>').html (anyText).attr ("value", 0).attr('selected', true));
+						$('#module').append ($('<option></option>').html (anyText).attr ("value", 0).prop('selected', true));
 					}
 				}
 			}

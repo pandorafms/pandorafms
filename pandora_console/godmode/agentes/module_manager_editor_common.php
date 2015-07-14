@@ -704,13 +704,13 @@ $(document).ready (function () {
 	
 	$("#submit-updbutton").click(function () {
 		$('#id_tag_selected option').map(function(){
-			$(this).attr('selected','selected');
+			$(this).prop('selected', true);
 		});
 	});
 	
 	$("#submit-crtbutton").click(function () {
 		$('#id_tag_selected option').map(function(){
-			$(this).attr('selected','selected');
+			$(this).prop('selected', true);
 		});
 	});
 	

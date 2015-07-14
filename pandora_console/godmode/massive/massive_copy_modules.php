@@ -397,7 +397,7 @@ $(document).ready (function () {
 		jQuery.each ($(this).fieldValue (), function () {
 			if (module_alerts[this] != undefined)
 				$("#target_modules option[value="+module_alerts[this]+"]")
-					.attr ("selected", "selected");
+					.prop ("selected", true);
 		});
 	});
 	

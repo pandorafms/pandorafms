@@ -346,7 +346,7 @@ $(document).ready (function () {
 					$('#id_agents')
 						.append($('<option></option>')
 						.html(noneText).attr ("None", "")
-						.attr('value', -1).attr('selected', true));
+						.attr('value', -1).prop('selected', true));
 				}
 				else {
 					jQuery.each (data, function (i, val) {
@@ -470,7 +470,7 @@ function item_per_agent_change(itemPerAgent) {
 		$('#module').append ($('<option></option>').html (<?php echo "'" . __('None') . "'"; ?>).attr("value", -1));
 		$('#module').attr('disabled', true);
 		$('#label_type').empty();
-		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('Agent') . "'"; ?>).attr('value', 'agent').attr('selected', true));
+		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('Agent') . "'"; ?>).attr('value', 'agent').prop('selected', true));
 		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('None') . "'"; ?>).attr('value', 'none'));
 		
 		$('#hidden-item_per_agent_test').val(1);
@@ -488,7 +488,7 @@ function item_per_agent_change(itemPerAgent) {
 		$('#hidden-item_per_agent_test').val(0);
 		$('#label_type').empty();
 		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('Agent') . "'"; ?>).attr('value', 'agent'));
-		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('Agent - Module') . "'"; ?>).attr('value', 'agent_module').attr('selected', true));
+		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('Agent - Module') . "'"; ?>).attr('value', 'agent_module').prop('selected', true));
 		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('Module') . "'"; ?>).attr('value', 'module'));
 		$('#label_type').append ($('<option></option>').html (<?php echo "'" . __('None') . "'"; ?>).attr('value', 'none'));
 	

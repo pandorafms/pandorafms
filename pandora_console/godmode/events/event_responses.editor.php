@@ -142,7 +142,7 @@ $('#type').change(function() {
 	switch ($(this).val()) {
 		case 'command':
 			$('#new_window option[value="0"]')
-				.attr('selected','selected');
+				.prop('selected', true);
 			$('#new_window').attr('disabled','disabled');
 			break;
 		case 'url':

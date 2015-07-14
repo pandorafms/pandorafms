@@ -221,7 +221,7 @@ $(document).ready (function () {
 	
 	$("#submit-upd_button").click(function () {
 		$('#fields_selected option').map(function() {
-			$(this).attr('selected','selected');
+			$(this).prop('selected', true);
 		});
 	});
 });

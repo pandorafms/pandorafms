@@ -41,10 +41,10 @@ $save_alert = (bool)get_parameter('save_alert', false);
 $modify_alert = (bool)get_parameter('modify_alert', false);
 $delete_alert = (bool)get_parameter('delete_alert', false);
 $multiple_delete = (bool)get_parameter('multiple_delete', false);
-$add_action = get_parameter('addbutton', '');
+$add_action = (bool)get_parameter('add_alert', 0);
 $delete_action = get_parameter('delete_action', 0);
 
-if ($add_action == "Add") {
+if ($add_action) {
 	$values['id_alert_snmp'] = get_parameter('id_alert_snmp');
 	$values['alert_type'] = get_parameter('alert_type');
 	$values['al_field1'] = get_parameter('field1_value');
@@ -57,12 +57,12 @@ if ($add_action == "Add") {
 	$values['al_field8'] = get_parameter('field8_value');
 	$values['al_field9'] = get_parameter('field9_value');
 	$values['al_field10'] = get_parameter('field10_value');
-
+	
 	$result = db_process_sql_insert('talert_snmp_action', $values);
 }
 
 if ($delete_action) {
-
+	
 	$action_id = get_parameter('action_id');
 	
 	$result = db_process_sql_delete('talert_snmp_action', array('id'=>$action_id));
@@ -466,10 +466,12 @@ if ($multiple_delete) {
 	}
 	
 	if ($count == $total) {
-		ui_print_success_message(__('Successfully deleted alerts (%s / %s)', $count, $total));
+		ui_print_success_message(
+			__('Successfully deleted alerts (%s / %s)', $count, $total));
 	}
 	else {
-		ui_print_error_message(__('Unsuccessfully deleted alerts (%s / %s)', $count, $total));
+		ui_print_error_message(
+			__('Unsuccessfully deleted alerts (%s / %s)', $count, $total));
 	}
 }
 
@@ -506,16 +508,19 @@ if ($create_alert || $update_alert) {
 	echo '<table cellpadding="4" cellspacing="4" width="98%" class="databox" style="font-weight: bold">';
 	
 	// Description
-	echo '<tr><td class="datos" valign="top">'.__('Description').'</td><td class="datos">';
-	html_print_textarea('description', 3, 2, $description, 'style="width:400px;"');
-	
-	//html_print_input_text ("description", $description, '', 60);
-	echo '</td></tr>';
+	echo '<tr>' .
+		'<td class="datos" valign="top">' . __('Description') . '</td>' .
+		'<td class="datos">';
+			html_print_textarea('description', 3, 2, $description, 'style="width:400px;"');
+	echo '</td>' .
+		'</tr>';
 	
 	//echo '<tr><td class="datos"><b>' . __('Alert filters') . ui_print_help_icon("snmp_alert_filters", true) . '</b></td></tr>';
 	
 	// OID
-	echo '<tr id="tr-oid"><td class="datos2">'.__('Enterprise String').'</td><td class="datos2">';
+	echo '<tr id="tr-oid">' .
+		'<td class="datos2">' . __('Enterprise String') . '</td>' .
+		'<td class="datos2">';
 	html_print_input_text ("oid", $oid, '', 50, 255);
 	echo '</td></tr>';
 	
@@ -1125,6 +1130,7 @@ else {
 				html_print_div(array('id' => 'help_snmp_alert_hint', 'content' => ui_print_help_icon ("snmp_alert_field1", true), 'hidden' => true));
 
 			echo '</table>';
+			html_print_input_hidden('add_alert', 1);
 			echo html_print_submit_button (__('Add'), 'addbutton', false, array('class' => "sub next", 'style' => "float:right"), true);
 		echo '</form>';
 	echo '</div>';

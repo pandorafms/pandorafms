@@ -22,8 +22,6 @@ enterprise_include_once ('meta/include/functions_alerts_meta.php');
 
 check_login ();
 
-enterprise_hook('open_meta_frame');
-
 if (! check_acl ($config['id_user'], 0, "LM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
@@ -31,7 +29,7 @@ if (! check_acl ($config['id_user'], 0, "LM")) {
 	exit;
 }
 
-if (defined('METACONSOLE'))
+if (is_metaconsole())
 	$sec = 'advanced';
 else
 	$sec = 'galertas';
@@ -180,6 +178,7 @@ if (is_ajax ()) {
 	return;
 }
 
+enterprise_hook('open_meta_frame');
 
 if ($update_command) {
 	require_once("configure_alert_command.php");

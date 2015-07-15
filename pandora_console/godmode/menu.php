@@ -191,7 +191,9 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$sub = array ();
 
 	// Options Setup
-	$sub["general"]["text"] = __('General Setup');
+	$sub["general"]["text"] = __('Setup');
+	$sub["general"]["type"] = "direct";
+	$sub["general"]["subtype"] = "nolink";
 	$sub2 = array ();
 	
 	$sub2["godmode/setup/setup&amp;section=general"]["text"] = __('General Setup');

@@ -19,8 +19,6 @@ global $config;
 // Check login and ACLs
 check_login ();
 
-enterprise_hook('open_meta_frame');
-
 if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 	db_pandora_audit("ACL Violation", "Trying to access Tag Management");
 	require ("general/noaccess.php");
@@ -32,12 +30,20 @@ require_once ($config['homedir'].'/include/functions_tags.php');
 
 // Get parameters
 $delete = (int) get_parameter ("delete_tag", 0);
-$search = (int) get_parameter ("search_tag", 0);
 $tag_name = (string) get_parameter ("tag_name","");
 $tab = (string) get_parameter ("tab", "list");
 
+// Metaconsole nodes
+$servers = false;
+if (is_metaconsole()) {
+	enterprise_include_once('include/functions_metaconsole.php');
+	$servers = metaconsole_get_servers();
+}
+
 //Ajax tooltip to deploy module's count info of a tag.
 if (is_ajax ()) {
+	ob_clean();
+	
 	$get_tag_tooltip = (bool) get_parameter ('get_tag_tooltip', 0);
 	
 	if ($get_tag_tooltip) {
@@ -46,19 +52,43 @@ if (is_ajax ()) {
 		if ($tag === false)
 			return;
 		
+		$local_modules_count = 0;
+		if (is_metaconsole() && !empty($servers)) {
+			$local_modules_count = array_reduce($servers, function($counter, $server) use ($id_tag) {
+				if (metaconsole_connect($server) === NOERR)
+					$counter += tags_get_local_modules_count($id_tag);
+				return $counter;
+			}, 0);
+		}
+		else {
+			$local_modules_count = tags_get_local_modules_count($id_tag);
+		}
+		
+		$policy_modules_count = 0;
+		if (is_metaconsole() && !empty($servers)) {
+			$policy_modules_count = array_reduce($servers, function($counter, $server) use ($id_tag) {
+				if (metaconsole_connect($server) === NOERR)
+					$counter += tags_get_policy_modules_count($id_tag);
+				return $counter;
+			}, 0);
+		}
+		else {
+			$policy_modules_count = tags_get_policy_modules_count($id_tag);
+		}
+		
 		echo '<h3>'.$tag['name'].'</h3>';
-		echo '<strong>'.__('Number of modules').': </strong> ' . 
-		tags_get_local_modules_count($id_tag);
+		echo '<strong>'.__('Number of modules').': </strong> ' . $local_modules_count;
 		echo '<br>';
-		echo '<strong>'.__('Number of policy modules').': </strong>' . 
-		tags_get_policy_modules_count($id_tag);
+		echo '<strong>'.__('Number of policy modules').': </strong>' . $policy_modules_count;
 		
 		return;
 	}
 	return;
 }
 
-if (defined('METACONSOLE')) 
+enterprise_hook('open_meta_frame');
+
+if (is_metaconsole())
 	$sec = 'advanced';
 else
 	$sec = 'gmodules';
@@ -71,19 +101,14 @@ $buttons = array(
 
 $buttons[$tab]['active'] = true;
 
-if (defined('METACONSOLE')) {
-	
+if (is_metaconsole()) {
 	// Print header
 	ui_meta_print_header(__('Tags'), "", $buttons);
-	
 }
 else {
-	
 	// Header
 	ui_print_page_header (__('Tags configuration'), "images/tag.png", false, "tags_config", true, $buttons);
-	
 }
-
 
 // Two actions can performed in this page: search and delete tags
 
@@ -101,59 +126,54 @@ if ($delete != 0) {
 	}
 }
 
-// statements for pagination
-$url = ui_get_url_refresh ();
-$total_tags = tags_get_tag_count();
+// Search action: This will filter the display tag view
+$filter = array();
+// Filtered view? 
+if (!empty($tag_name)) {
+	$filter['name'] = $tag_name;
+}
+
+// If the user has filtered the view
+$filter_performed = !empty($filter);
 
 $filter['offset'] = (int) get_parameter ('offset');
 $filter['limit'] = (int) $config['block_size'];
-// Search action: This will filter the display tag view
-$result = false;
-// Filtered view? 
-if ($search != 0) {
-	$result = tags_search_tag($tag_name, $filter);
-}
-else {
-	$result = tags_search_tag(false, $filter);
-}
+
+// statements for pagination
+$url = ui_get_url_refresh ();
+$total_tags = tags_get_tag_count($filter);
+
+$result = tags_search_tag(false, $filter);
+
+// Filter form
+$table = new StdClass();
+$table->class = 'databox filters';
+$table->width = '100%';
+$table->data = array();
+
+$row = array();
+
+$name_input = __("Name") . " / " . __("Description");
+$name_input .= "&nbsp;&nbsp;";
+$name_input .= html_print_input_text ('tag_name', $tag_name, '', 30, 255, true);
+$row[] = $name_input;
+
+$filter_button = html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub search"',true);
+$row[] = $filter_button;
+
+$table->data[] = $row;
+
+$filter_form = '<form method="POST" action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag=0">';
+$filter_form .= html_print_table($table, true);
+$filter_form .= "</form>";
+// End of filter form
 
 if (!empty($result)) {
-	// Form to add new tags or search tags
-	if (!defined('METACONSOLE')) {
-		echo "<table border=0 cellpadding=4 cellspacing=4 class='databox data' width=100%>";
-			echo "<tr>";
-				echo "<td>";
-					echo '<b>' . __("Name") . "/" . __("Description") . '</b>';
-				echo "</td>";
-				echo "<td align=center>";
-					echo '<form method=post action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag=0">';
-					html_print_input_hidden ("search_tag", "1");
-					html_print_input_text ('tag_name', $tag_name, '', 30, 255, false);
-					echo "&nbsp;&nbsp;&nbsp;";
-					html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub search"');
-					echo "</form>";
-				echo "</td>";
-			echo "</tr>";
-		echo "</table>";
+	if (!is_metaconsole()) {
+		echo $filter_form;
 	}
 	else {
-		
-		$filters = '<form method=post class="" action="index.php?sec='.$sec.'&sec2=godmode/tag/tag&delete_tag=0">';
-		$filters .=  "<table border=0 cellpadding=0 cellspacing=0 class='databox filters' width=100%>";
-		$filters .= "<tr>";
-		$filters .= "<td>";
-		$filters .= __("Name") . "/" . __("Description");
-		$filters .= "&nbsp;&nbsp;";
-		$filters .= html_print_input_hidden ("search_tag", "1",true);
-		$filters .= html_print_input_text ('tag_name', $tag_name, '', 30, 255, true);
-		$filters .= "</td>";
-		$filters .= "<td>";
-		$filters .= html_print_submit_button (__('Filter'), 'filter_button', false, 'class="sub search"',true);
-		$filters .= "</td>";
-		$filters .= "</tr>";
-		$filters .= "</table>";
-		$filters .= "</form>";
-		ui_toggle($filters, __("Show Options"));
+		ui_toggle($filter_form, __("Show Options"));
 	}
 
 	// Prepare pagination
@@ -162,8 +182,6 @@ if (!empty($result)) {
 	// Display tags previously filtered or not
 	$rowPair = true;
 	$iterator = 0;
-
-
 	
 	$table = new stdClass();
 	$table->width = '100%';
@@ -199,11 +217,27 @@ if (!empty($result)) {
 		$data[0] = "<a href='index.php?sec=".$sec."&sec2=godmode/tag/edit_tag&action=update&id_tag=" . $tag["id_tag"] . "'>" . $tag["name"] . "</a>";  
 		$data[1] = ui_print_truncate_text($tag["description"], 'description', false);
 		$data[2] = '<a href="' . $tag["url"] . '">' . $tag["url"] . '</a>';
-		$data[3] = ' <a class="tag_details"
-			href="' . ui_get_full_url(false, false, false, false) . '/ajax.php?page=godmode/tag/tag&get_tag_tooltip=1&id_tag=' . $tag['id_tag'] . '">' .
-			html_print_image("images/zoom.png", true, array("id" => 'tag-details-'.$tag['id_tag'], "class" => "img_help")) . '</a> ';
 		
-		$data[3] .= tags_get_modules_count($tag["id_tag"]);
+		// The tooltip needs a title on the item, don't delete the title
+		$data[3] = '<a class="tag_details img_help" title="'.__('Tag details').'"
+			href="' . ui_get_full_url(false, false, false, false) . '/ajax.php?page=godmode/tag/tag&get_tag_tooltip=1&id_tag=' . $tag['id_tag'] . '">' .
+			html_print_image("images/zoom.png", true) . '</a> ';
+		
+		$modules_count = 0;
+		if (is_metaconsole() && !empty($servers)) {
+			$tag_id = $tag['id_tag'];
+			$modules_count = array_reduce($servers, function($counter, $server) use ($tag_id) {
+				if (metaconsole_connect($server) === NOERR)
+					$counter += tags_get_modules_count($tag_id);
+				
+				return $counter;
+			}, 0);
+		}
+		else {
+			$modules_count = tags_get_modules_count($tag["id_tag"]);
+		}
+		
+		$data[3] .= $modules_count;
 		
 		$email_large = io_safe_output($tag["email"]);
 		$email_small = substr($email_large,0, 24);
@@ -242,15 +276,20 @@ if (!empty($result)) {
 	
 	html_print_table ($table);
 }
-else{
-	if(!defined("METACONSOLE")){
-		require_once ($config['homedir'] . "/general/firts_task/tags.php");
+else {
+	if (is_metaconsole()) {
+		ui_toggle($filter_form, __("Show Options"));
+		ui_print_info_message(array("no_close" => true, "message" => __("No tags defined")));
+	}
+	else if ($filter_performed) {
+		echo $filter_form;
+	}
+	else {
+		require ($config['homedir'] . "/general/firts_task/tags.php");
 		return;
 	}
-	else{
-		ui_print_info_message(array("no_close"=>true,"message"=>__("No tags defined.")));
-	}
 }
+
 echo "<table border=0 cellpadding=0 cellspacing=0 width=100%>";
 	echo "<tr>";
 		echo "<td align=right>";
@@ -265,44 +304,55 @@ echo "</table>";
 
 enterprise_hook('close_meta_frame');
 
-ui_require_css_file ('cluetip');
-ui_require_jquery_file ('cluetip');
-
 ?>
 
 <script type="text/javascript">
-/* <![CDATA[ */
-	$("a.tag_details").cluetip ({
-		arrows: true,
-		attribute: 'href',
-		cluetipClass: 'default'
-	})
-	.click (function () {
-		return false;
+	
+	$("a.tag_details")
+		.tooltip({
+			track: true,
+			content: '<?php html_print_image("images/spinner.gif"); ?>',
+			open: function (evt, ui) {
+				var elem = $(this);
+				var uri = elem.prop('href');
+				
+				if (typeof uri !== 'undefined' && uri.length > 0) {
+					var jqXHR = $.ajax(uri).done(function(data) {
+						elem.tooltip('option', 'content', data);
+					});
+					// Store the connection handler
+					elem.data('jqXHR', jqXHR);
+				}
+				
+				$(".ui-tooltip>.ui-tooltip-content:not(.cluetip-default)")
+					.addClass("cluetip-default");
+			},
+			close: function (evt, ui) {
+				var elem = $(this);
+				var jqXHR = elem.data('jqXHR');
+				
+				// Close the connection handler
+				if (typeof jqXHR !== 'undefined')
+					jqXHR.abort();
+			}
+		})
+		.click (function (event) {
+			event.preventDefault();
+		})
+		.css('cursor', 'help');
+	
+	$(".email_large, .phone_large").dialog({
+		autoOpen: false,
+		resizable: true,
+		width: 400,
+		height: 200
 	});
-/* ]]> */
-</script>
-<script type="text/javascript">
-	$(document).ready(function () {
-		$(".email_large").dialog(
-			{
-				autoOpen: false,
-				resizable: true,
-				width: 400,
-				height: 200
-			});
-		$(".phone_large").dialog(
-			{
-				autoOpen: false,
-				resizable: true,
-				width: 400,
-				height: 200
-			});
-	});
+	
 	function show_dialog(id) {
 		$("#email_large_" + id).dialog("open");
 	}
 	function show_phone_dialog(id) {
 		$("#phone_large_" + id).dialog("open");
 	}
+	
 </script>

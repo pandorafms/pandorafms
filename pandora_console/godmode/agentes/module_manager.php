@@ -40,7 +40,7 @@ echo "</td>";
 echo "<td class='datos' style='width:20%'>";
 html_print_submit_button (__('Filter'), 'filter', false, 'class="sub search"');
 echo "</td>";
-echo "<td class='datos' style='width:20%'>";
+echo "<td class='datos' style='width:25%'>";
 echo '</form>';
 // Check if there is at least one server of each type available to assign that
 // kind of modules. If not, do not show server type in combo

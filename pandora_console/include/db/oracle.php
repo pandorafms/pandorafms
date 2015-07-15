@@ -43,7 +43,7 @@ function oracle_connect_db($host = null, $db = null, $user = null, $pass = null,
 	$datetime_tz_format = oci_parse($connect_id , 'alter session set NLS_TIMESTAMP_TZ_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
 	$datetime_format = oci_parse($connect_id , 'alter session set NLS_TIMESTAMP_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
 	$date_format = oci_parse($connect_id , 'alter session set NLS_DATE_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
-	$decimal_separator = oci_parse($connect_id , 'alter session set NLS_NUMERIC_CHARACTERS =\',.\'');
+	$decimal_separator = oci_parse($connect_id , 'alter session set NLS_NUMERIC_CHARACTERS =\'.,\'');
 	
 	oci_execute($datetime_tz_format);
 	oci_execute($datetime_format);

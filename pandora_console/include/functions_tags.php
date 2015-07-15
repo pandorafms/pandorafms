@@ -25,58 +25,61 @@
  * @param string $tag_name_description Name or description of the tag that it's currently searched. 
  * @param array $filter Array with pagination parameters. 
  * @param bool $only_names Whether to return only names or all fields.
+ * @param bool $count To return the number of items.
  * 
  * @return mixed Returns an array with the tag selected by name or false.
+ * When the count parameter is enabled, returns an integer.
  */
-function tags_search_tag ($tag_name_description = false, $filter = false, $only_names = false) {
+function tags_search_tag ($tag_name_description = false, $filter = false, $only_names = false, $count = false) {
 	global $config;
+	
+	if ($filter === false)
+		$filter = array();
+	
+	if (isset($filter['name'])) {
+		if (empty($tag_name_description))
+			$tag_name_description = $filter['name'];
+		unset($filter['name']);
+	}
 	
 	if ($tag_name_description) {
 		switch ($config["dbtype"]) {
 			case "mysql":
-				$sql = 'SELECT *
-					FROM ttag
-					WHERE ((name COLLATE utf8_general_ci LIKE "%'. $tag_name_description .'%") OR 
-						(description COLLATE utf8_general_ci LIKE "%'. $tag_name_description .'%")) ORDER BY name';
+				$filter[] = '((name COLLATE utf8_general_ci LIKE "%'. $tag_name_description .'%") OR 
+						(description COLLATE utf8_general_ci LIKE "%'. $tag_name_description .'%"))';
 				break;
 			case "postgresql":
-				$sql = 'SELECT *
-					FROM ttag
-					WHERE ((name COLLATE utf8_general_ci LIKE \'%'. $tag_name_description .'%\') OR
-						(description COLLATE utf8_general_ci LIKE \'%'. $tag_name_description .'%\')) ORDER BY name';
+				$filter[] = '((name LIKE \'%'. $tag_name_description .'%\') OR
+						(description LIKE \'%'. $tag_name_description .'%\'))';
 				break;
 			case "oracle":
-				$sql = 'SELECT *
-					FROM ttag
-					WHERE (UPPER(name) LIKE UPPER (\'%'. $tag_name_description .'%\') OR
-						UPPER(dbms_lob.substr(description, 4000, 1)) LIKE UPPER (\'%'. $tag_name_description .'%\')) ORDER BY name';
+				$filter[] = '(UPPER(name) LIKE UPPER (\'%'. $tag_name_description .'%\') OR
+						UPPER(dbms_lob.substr(description, 4000, 1)) LIKE UPPER (\'%'. $tag_name_description .'%\'))';
 				break;
 		}
 	}
-	else {
-		$sql = 'SELECT * FROM ttag ORDER BY name';
+	
+	// Default order
+	set_unless_defined($filter['order'], 'name');
+	
+	$fields = '*';
+	if ($only_names) {
+		$fields = array('id_tag', 'name');
 	}
-	if ($filter !== false) {
-		switch ($config["dbtype"]) {
-			case "mysql":
-				$result = db_get_all_rows_sql ($sql . ' LIMIT ' . $filter['offset'] . ',' . $filter['limit']);
-				break;
-			case "postgresql":
-				$result = db_get_all_rows_sql ($sql . ' OFFSET ' . $filter['offset'] . ' LIMIT ' . $filter['limit']);
-				break;
-			case "oracle":
-				$result = oracle_recode_query ($sql, $filter, 'AND', false);
-				if ($components != false) {
-					for ($i=0; $i < count($components); $i++) {
-						unset($result[$i]['rnum']);
-					}
-				}
-				break;
-		}
+	
+	// It will return the count
+	if ($count) {
+		unset($filter['order']);
+		unset($filter['limit']);
+		unset($filter['offset']);
+		
+		if (!empty($filter))
+			return (int) db_get_value_filter('COUNT(id_tag)', 'ttag', $filter);
+		else
+			return (int) db_get_value('COUNT(id_tag)', 'ttag');
 	}
-	else {
-		$result = db_get_all_rows_sql ($sql);
-	}
+	
+	$result = db_get_all_rows_filter('ttag', $filter, $fields);
 	
 	if ($result === false)
 		$result = array();
@@ -172,11 +175,11 @@ function tags_get_url($id) {
  * 
  * @param array $id Int with tag id info. 
  *
- * @return mixed Int with the tag's count or false.
+ * @return int Tag's count.
  */
-function tags_get_modules_count($id) {
-	$num_modules = (int)db_get_value_filter('count(*)', 'ttag_module', array('id_tag' => $id));
-	$num_policy_modules = (int)db_get_value_filter('count(*)', 'ttag_policy_module', array('id_tag' => $id));
+function tags_get_modules_count ($id) {
+	$num_modules = tags_get_local_modules_count($id);
+	$num_policy_modules = tags_get_policy_modules_count($id);
 	
 	return $num_modules + $num_policy_modules;
 }
@@ -186,23 +189,29 @@ function tags_get_modules_count($id) {
  * 
  * @param array $id Int with tag id info. 
  *
- * @return mixed Int with the tag's count or false.
+ * @return int Local module tag's count.
  */
-function tags_get_local_modules_count($id) {
-	$num_modules = (int)db_get_value_filter('count(*)', 'ttag_module', array('id_tag' => $id));
+function tags_get_local_modules_count ($id) {
+	$field = 'COUNT(id_tag)';
+	$filter = array('id_tag' => $id);
+	
+	$num_modules = (int) db_get_value_filter($field, 'ttag_module', $filter);
 
 	return $num_modules;
 }
 
 /**
- * Get tag's local module count. 
+ * Get module tag's count. 
  * 
- * @param array $id Int with tag id info. 
+ * @param array $id Int with agent module id info. 
  *
- * @return mixed Int with the tag's count or false.
+ * @return int Module tag's count.
  */
-function tags_get_modules_tag_count($id) {
-	$num_modules = (int)db_get_value_filter('count(*)', 'ttag_module', array('id_agente_modulo' => $id));
+function tags_get_modules_tag_count ($id) {
+	$field = 'COUNT(id_agente_modulo)';
+	$filter = array('id_agente_modulo' => $id);
+	
+	$num_modules = (int) db_get_value_filter($field, 'ttag_module', $filter);
 	
 	return $num_modules;
 }
@@ -212,15 +221,16 @@ function tags_get_modules_tag_count($id) {
  * 
  * @param array $id Int with tag id info. 
  *
- * @return mixed Int with the tag's count or false.
+ * @return int Policy module tag's count.
  */
-function tags_get_policy_modules_count($id) {
-	$num_policy_modules = (int)db_get_value_filter('count(*)', 'ttag_policy_module', array('id_tag' => $id));
+function tags_get_policy_modules_count ($id) {
+	$field = 'COUNT(id_tag)';
+	$filter = array('id_tag' => $id);
+	
+	$num_policy_modules = (int) db_get_value_filter($field, 'ttag_policy_module', $filter);
 	
 	return $num_policy_modules;
 }
-
-
 
 /**
  * Updates a tag by id. 
@@ -278,8 +288,15 @@ function tags_remove_tag($id_tag, $id_module) {
  *
  * @return mixed Int with the tag's count.
  */
-function tags_get_tag_count() {
-	return (int)db_get_value('count(*)', 'ttag');
+function tags_get_tag_count($filter = false) {
+	
+	$tag_name = false;
+	if (isset($filter['name'])) {
+		$tag_name = $filter['name'];
+		unset($filter['name']);
+	}
+	
+	return tags_search_tag($tag_name, $filter, false, true);
 }
 
 /**

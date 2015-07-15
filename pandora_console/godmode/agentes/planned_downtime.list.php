@@ -18,7 +18,10 @@ global $config;
 
 check_login();
 
-if (! check_acl ($config['id_user'], 0, "AR")) {
+$read_permisson = check_acl ($config['id_user'], 0, "AR");
+$write_permisson = check_acl ($config['id_user'], 0, "AW");
+
+if (! $read_permisson) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access downtime scheduler");
 	require ("general/noaccess.php");
@@ -28,6 +31,7 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 require_once ('include/functions_users.php');
 require_once ('include/functions_events.php');
 require_once ('include/functions_planned_downtimes.php');
+require_once ('include/functions_reporting.php');
 
 $malformed_downtimes = planned_downtimes_get_malformed();
 $malformed_downtimes_exist = !empty($malformed_downtimes) ? true : false;
@@ -52,7 +56,6 @@ ui_print_page_header(
 	true,
 	"");
 
-$delete_downtime = (int) get_parameter ('delete_downtime');
 $id_downtime = (int) get_parameter ('id_downtime', 0);
 
 $stop_downtime = (bool) get_parameter ('stop_downtime');
@@ -60,138 +63,47 @@ $stop_downtime = (bool) get_parameter ('stop_downtime');
 if ($stop_downtime) {
 	$downtime = db_get_row('tplanned_downtime', 'id', $id_downtime);
 	
-	switch ($downtime['type_execution']) {
-		case 'once':
-			$date_stop = date ("Y-m-j", get_system_time ());
-			$time_stop = date ("h:iA", get_system_time ());
-			
-			$values = array(
-				'executed' => 0,
-				'date_to' => strtotime($date_stop . ' ' . $time_stop)
-				);
-			
-			$result = db_process_sql_update('tplanned_downtime',
-				$values, array ('id' => $id_downtime));
-			break;
-		case 'periodically':
-			break;
+	// Check AW permission on the downtime
+	if (empty($downtime) || ! check_acl ($config['id_user'], $downtime['id_group'], "AW")) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access downtime scheduler");
+		require ("general/noaccess.php");
+		return;
 	}
 	
-	ui_print_result_message($result,
-		__('Succesful stopped the Downtime'),
-		__('Unsuccesful stopped the Downtime'));
+	$result = planned_downtimes_stop($downtime);
 	
-	if ($result) {
-		events_create_event ("Manual stop downtime  ".
-			$downtime['name'] . " (" . $downtime['id'] . ") by " .
-			$config['id_user'], 0, 0, EVENT_STATUS_NEW, $config["id_user"],
-			"system", 1);
-		db_pandora_audit("Planned Downtime management",
-			"Manual stop downtime " . $downtime['name'] . " (ID " . $downtime['id'] . ")",
-			false, true);
-		
-		//Reenabled the Agents or Modules or alerts...depends of type
-		$downtime = db_get_row('tplanned_downtime', 'id', $id_downtime);
-		
-		switch ($downtime['type_downtime']) {
-			case 'quiet':
-				$agents = db_get_all_rows_filter(
-					'tplanned_downtime_agents',
-					array('id_downtime' => $id_downtime));
-				if (empty($agents))
-					$agents = array();
-				
-				$count = 0;
-				foreach ($agents as $agent) {
-					if ($agent['all_modules']) {
-						$result = db_process_sql_update('tagente',
-							array('quiet' => 0),
-							array('id_agente' => $agent['id_agent']));
-						
-						if ($result)
-							$count++;
-					}
-					else {
-						$modules = db_get_all_rows_filter(
-							'tplanned_downtime_modules',
-							array('id_agent' => $agent['id_agent'],
-								'id_downtime' => $id_downtime));
-						if (empty($modules))
-							$modules = array();
-						
-						foreach ($modules as $module) {
-							$result = db_process_sql_update(
-								'tagente_modulo',
-								array('quiet' => 0),
-								array('id_agente_modulo' =>
-									$module['id_agent_module']));
-							
-							if ($result)
-								$count++;
-						}
-					}
-				}
-				break;
-			case 'disable_agents':
-				$agents = db_get_all_rows_filter(
-					'tplanned_downtime_agents',
-					array('id_downtime' => $id_downtime));
-				if (empty($agents))
-					$agents = array();
-				
-				$count = 0;
-				foreach ($agents as $agent) {
-					$result = db_process_sql_update('tagente',
-						array('disabled' => 0),
-						array('id_agente' => $agent['id_agent']));
-					
-					if ($result)
-						$count++;
-				}
-				break;
-			case 'disable_agents_alerts':
-				$agents = db_get_all_rows_filter(
-					'tplanned_downtime_agents',
-					array('id_downtime' => $id_downtime));
-				if (empty($agents))
-					$agents = array();
-				
-				$count = 0;
-				foreach ($agents as $agent) {
-					$modules = db_get_all_rows_filter(
-						'tagente_modulo',
-						array('id_agente' => $agent['id_agent']));
-					if (empty($modules))
-						$modules = array();
-					
-					foreach ($modules as $module) {
-						$result = db_process_sql_update(
-							'talert_template_modules',
-							array('disabled' => 0),
-							array('id_agent_module' =>
-								$module['id_agente_modulo']));
-						
-						if ($result)
-							$count++;
-					}
-				}
-				break;
-		}
-		
-		ui_print_info_message(
-			sprintf(__('Enabled %s elements from the downtime'), $count));
+	if ($result === false) {
+		ui_print_error_message(__('An error occurred stopping the planned downtime'));
+	}
+	else {
+		echo $result['message'];
 	}
 }
 
+$delete_downtime = (int) get_parameter ('delete_downtime');
 // DELETE WHOLE DOWNTIME!
 if ($delete_downtime) {
-	$result = db_process_sql_delete('tplanned_downtime', array('id' => $id_downtime));
+	$downtime = db_get_row('tplanned_downtime', 'id', $id_downtime);
 	
-	if ($result === false) {
-		ui_print_error_message(__('Not deleted. Error deleting data'));
+	// Check AW permission on the downtime
+	if (empty($downtime) || ! check_acl ($config['id_user'], $downtime['id_group'], "AW")) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access downtime scheduler");
+		require ("general/noaccess.php");
+		return;
+	}
+	
+	// The downtime shouldn't be running!!
+	if ($downtime['executed']) {
+		ui_print_error_message(__('This planned downtime is running'));
 	}
 	else {
-		ui_print_success_message(__('Successfully deleted'));
+		$result = db_process_sql_delete('tplanned_downtime', array('id' => $id_downtime));
+		
+		ui_print_result_message($result,
+			__('Successfully deleted'),
+			__('Not deleted. Error deleting data'));
 	}
 }
 
@@ -263,31 +175,7 @@ $row[] = __('Module') . '&nbsp;' . html_print_autocomplete_modules('module_name'
 $row[] = html_print_submit_button('Search', 'search', false, 'class="sub search"', true);
 
 $table_form->data[] = $row;
-
-
-// View available downtimes present in database (if any of them)
-$table = new StdClass();
-$table->class = 'databox data';
-//Start Overview of existing planned downtime
-$table->width = '100%';
-$table->cellstyle = array();
-$table->data = array();
-$table->head = array();
-$table->head[0] = __('Name #Ag.');
-$table->head[1] = __('Description');
-$table->head[2] = __('Group');
-$table->head[3] = __('Type');
-$table->head[4] = __('Execution');
-$table->head[5] = __('Configuration');
-$table->head[6] = __('Running');
-$table->head[7] = __('Stop downtime');
-$table->head[8] = __('Edit');
-$table->head[9] = __('Delete');
-$table->align[2] = "center";
-$table->align[6] = "center";
-$table->align[7] = "center";
-$table->align[8] = "center";
-$table->align[9] = "center";
+// End of table filter
 
 $groups = users_get_groups ();
 if (!empty($groups)) {
@@ -443,149 +331,115 @@ else {
 	echo "</form>";
 	
 	ui_pagination($downtimes_number, "index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list&$filter_params_str", $offset);
-
-	$groupsAW = users_get_groups($config['id_user'], 'AW', true, false, null, 'id_grupo');
+	
+	// User groups with AW permission
+	$groupsAW = users_get_groups($config['id_user'], 'AW');
 	$groupsAW = array_keys($groupsAW);
-
-	if (empty($groupsAW)){
-		$groupsAW = -1;
+	
+	// View available downtimes present in database (if any of them)
+	$table = new StdClass();
+	$table->class = 'databox data';
+	$table->width = '100%';
+	$table->cellstyle = array();
+	
+	$table->head = array();
+	$table->head['name'] = __('Name #Ag.');
+	$table->head['description'] = __('Description');
+	$table->head['group'] = __('Group');
+	$table->head['type'] = __('Type');
+	$table->head['execution'] = __('Execution');
+	$table->head['configuration'] = __('Configuration');
+	$table->head['running'] = __('Running');
+	
+	if ($write_permisson) {
+		$table->head['stop'] = __('Stop downtime');
+		$table->head['edit'] = __('Edit');
+		$table->head['delete'] = __('Delete');
 	}
-
+	
+	$table->align = array();
+	$table->align['group'] = "center";
+	$table->align['running'] = "center";
+	
+	if ($write_permisson) {
+		$table->align['stop'] = "center";
+		$table->align['edit'] = "center";
+		$table->align['delete'] = "center";
+	}
+	
+	$table->data = array();
+	
 	foreach ($downtimes as $downtime) {
 		$data = array();
 		$total  = db_get_sql ("SELECT COUNT(id_agent)
 			FROM tplanned_downtime_agents
 			WHERE id_downtime = ".$downtime["id"]);
 		
-		$data[0] = $downtime['name']. " ($total)";
-		$data[1] = $downtime['description'];
-		$data[2] = ui_print_group_icon ($downtime['id_group'], true);
+		$data['name'] = $downtime['name']. " ($total)";
+		$data['description'] = $downtime['description'];
+		$data['group'] = ui_print_group_icon ($downtime['id_group'], true);
 		
 		$type_text = array('quiet' => __('Quiet'),
 			'disable_agents' => __('Disabled Agents'),
 			'disable_agents_alerts' => __('Disabled only Alerts'));
 		
-		$data[3] = $type_text[$downtime['type_downtime']];
+		$data['type'] = $type_text[$downtime['type_downtime']];
 		
 		$execution_text = array('once' => __('once'),
 			'periodically' => __('Periodically'));
 		
-		$data[4] = $execution_text[$downtime['type_execution']];
+		$data['execution'] = $execution_text[$downtime['type_execution']];
 		
-		switch ($downtime['type_execution']) {
-			case 'once':
-				$data[5] = date ("Y-m-d H:i:s", $downtime['date_from']) .
-					"&nbsp;" . __('to') . "&nbsp;".
-					date ("Y-m-d H:i:s", $downtime['date_to']);
-				break;
-			case 'periodically':
-				switch ($downtime['type_periodicity']) {
-					case 'weekly':
-						$data[5] = __('Weekly:');
-						$data[5] .= "&nbsp;";
-						if ($downtime['monday']) {
-							$data[5] .= __('Mon');
-							$data[5] .= "&nbsp;";
-						}
-						if ($downtime['tuesday']) {
-							$data[5] .= __('Tue');
-							$data[5] .= "&nbsp;";
-						}
-						if ($downtime['wednesday']) {
-							$data[5] .= __('Wed');
-							$data[5] .= "&nbsp;";
-						}
-						if ($downtime['thursday']) {
-							$data[5] .= __('Thu');
-							$data[5] .= "&nbsp;";
-						}
-						if ($downtime['friday']) {
-							$data[5] .= __('Fri');
-							$data[5] .= "&nbsp;";
-						}
-						if ($downtime['saturday']) {
-							$data[5] .= __('Sat');
-							$data[5] .= "&nbsp;";
-						}
-						if ($downtime['sunday']) {
-							$data[5] .= __('Sun');
-							$data[5] .= "&nbsp;";
-						}
-						$data[5] .= "&nbsp;(" . $downtime['periodically_time_from'];
-						$data[5] .= "-" . $downtime['periodically_time_to'] . ")";
-						break;
-					case 'monthly':
-						$data[5] = __('Monthly:');
-						$data[5] .= __('From day') . "&nbsp;" . $downtime['periodically_day_from'];
-						$data[5] .= "/" . __('To day') . "&nbsp;";
-						$data[5] .= $downtime['periodically_day_to'];
-						$data[5] .= "&nbsp;(" . $downtime['periodically_time_from'];
-						$data[5] .= "-" . $downtime['periodically_time_to'] . ")";
-						break;
-				}
-				break;
-		}
+		$data['configuration'] = reporting_format_planned_downtime_dates($downtime);
 		
 		if ($downtime["executed"] == 0) {
-			$data[6] = html_print_image ("images/pixel_red.png", true,
-				array ('width' => 20, 'height' => 20, 'alt' => __('Executed')));
+			$data['running'] = html_print_image ("images/pixel_red.png", true,
+				array ('width' => 20, 'height' => 20, 'title' => __('Not running')));
 		}
 		else {
-			$data[6] = html_print_image ("images/pixel_green.png", true,
-				array ('width' => 20, 'height' => 20, 'alt' => __('Not executed')));
+			$data['running'] = html_print_image ("images/pixel_green.png", true,
+				array ('width' => 20, 'height' => 20, 'title' => __('Running')));
 		}
 		
-		$downtimeGroup = $downtime['id_group'];
-		//If user have writting permissions
-		if ( in_array($downtimeGroup, $groupsAW) ){
+		// If user have writting permissions
+		if (in_array($downtime['id_group'], $groupsAW)) {
+			// Stop button
 			if ($downtime['type_execution'] == 'once' && $downtime["executed"] == 1) {
 				
-				$data[7] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list' .
+				$data['stop'] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list' .
 					'&stop_downtime=1&id_downtime=' . $downtime['id'] . '&' . $filter_params_str . '">' .
-				html_print_image("images/cancel.png", true, array("border" => '0', "alt" => __('Stop downtime')));
+				html_print_image("images/cancel.png", true, array("title" => __('Stop downtime')));
 			}
 			else {
-				$data[7] = "";
+				$data['stop'] = "";
 			}
 			
+			// Edit & delete buttons
 			if ($downtime["executed"] == 0) {
-				$data[8] = '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor&amp;edit_downtime=1&amp;id_downtime='.$downtime['id'].'">' .
-				html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
-				if (check_acl ($config['id_user'], 0, "AW")) {
-					$data[9] = '<a id="delete_downtime" href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list'.
-						'&delete_downtime=1&id_downtime=' . $downtime['id'] . '&' . $filter_params_str . '">' .
-						html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete')));
-				}
+				// Edit
+				$data['edit'] = '<a href="index.php?sec=estado&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime='.$downtime['id'].'">' .
+					html_print_image("images/config.png", true, array("title" => __('Update'))) . '</a>';
+				// Delete
+				$data['delete'] = '<a id="delete_downtime" href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime.list'.
+					'&delete_downtime=1&id_downtime=' . $downtime['id'] . '&' . $filter_params_str . '">' .
+					html_print_image("images/cross.png", true, array("title" => __('Delete')));
 			}
-			elseif ($downtime["executed"] == 1
-				&& $downtime['type_execution'] == 'once') {
-				
-				$data[8] = '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor&amp;' .
-					'edit_downtime=1&amp;id_downtime=' . $downtime['id'] . '">' .
-					html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Update'))) . '</a>';
-				$data[9]= "N/A";
+			else if ($downtime["executed"] == 1 && $downtime['type_execution'] == 'once') {
+				// Edit
+				$data['edit'] = '<a href="index.php?sec=estado&sec2=godmode/agentes/planned_downtime.editor&edit_downtime=1&id_downtime=' . $downtime['id'] . '">' .
+					html_print_image("images/config.png", true, array("title" => __('Update'))) . '</a>';
+				// Delete
+				$data['delete']= __('N/A');
 			}
 			else {
-				$data[8]= "N/A";
-				$data[9]= "N/A";
+				$data['edit']= '';
+				$data['delete']= '';
 			}
 		}
-		else{
-			if ($downtime['type_execution'] == 'once' && $downtime["executed"] == 1) {
-				$data[7] .= '';
-			}
-		}
-		elseif ($downtime["executed"] == 1
-			&& $downtime['type_execution'] == 'once') {
-			
-			if ($downtime["executed"] == 0) {
-				$data[8] = '';
-				$data[9] = '';
-			}
-			elseif ($downtime["executed"] == 1 && $downtime['type_execution'] == 'once') {
-				$data[8] = '';
-				$data[9]= '';
-			}
+		else {
+			$data['stop'] = '';
+			$data['edit'] = '';
+			$data['delete'] = '';
 		}
 
 		if (!empty($malformed_downtimes_exist) && isset($malformed_downtimes[$downtime['id']])) {
@@ -599,24 +453,27 @@ else {
 
 		array_push ($table->data, $data);
 	}
+	
 	html_print_table ($table);
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 
 	echo '<br>';
+	// CSV export button
 	echo '<div style="display: inline;">';
 		html_print_button(__('Export to CSV'), 'csv_export', false, 
 			"location.href='godmode/agentes/planned_downtime.export_csv.php?$filter_params_str'", 'class="sub next"');
 	echo '</div>';
-	echo '&nbsp;';
-	if (check_acl ($config['id_user'], 0, "AW")) {
+	
+	// Create button
+	if ($write_permisson) {
+		echo '&nbsp;';
 		echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
 		html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
+		echo '</form>';
 	}
-	echo '</form>';
+	
 	echo '</div>';
 }
-
-
 
 ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
 

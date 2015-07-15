@@ -121,6 +121,9 @@ if (isset($_GET["update"]) || (isset($_GET["crt"]))) {
 		$parent_detection = $row["parent_detection"];
 		$parent_recursion = $row["parent_recursion"];
 		$macros = $row["macros"];
+		
+		$name_script = db_get_value('name',
+			'trecon_script', 'id_recon_script', $id_recon_script);
 	}
 }
 elseif (isset($_GET["create"]) || isset($_GET["crt"])) {
@@ -217,7 +220,7 @@ $table->data[2][1] = html_print_select ($fields, "mode", $mode, '', '', 0, true)
 
 
 // Network 
-$table->data[3][0] = "<b>".__('Network');
+$table->data[3][0] = "<b>" . __('Network') . "</b>";
 $table->data[3][1] = html_print_input_text ('network', $network, '', 25, 0, true);
 
 // Interval
@@ -236,7 +239,7 @@ $table->data[4][1] .= '</span>';
 
 
 // Module template
-$table->data[5][0] = "<b>".__('Module template');
+$table->data[5][0] = "<b>" . __('Module template') . "</b>";
 
 $sql = 'SELECT id_np, name
 		FROM tnetwork_profile
@@ -245,17 +248,23 @@ $table->data[5][1] = html_print_select_from_sql ($sql, "id_network_profile", $id
 
 // Recon script
 $data[1] = '';
-$table->data[6][0] = "<b>".__('Recon script');
+$table->data[6][0] = "<b>" . __('Recon script') . "</b>";
 
 $sql = 'SELECT id_recon_script, name
 		FROM trecon_script
+		WHERE name <> "IPAM Recon"
 		ORDER BY name';
-$table->data[6][1] = html_print_select_from_sql ($sql, "id_recon_script", $id_recon_script, '', '', '', true);
-$table->data[6][1] .= "<span id='spinner_recon_script' style='display: none;'>" . html_print_image ("images/spinner.gif", true) . "</span>";
-$table->data[6][1] .= $data[1] .= html_print_input_hidden('macros', base64_encode($macros),true);
+if ($name_script != "IPAM Recon") {
+	$table->data[6][1] = html_print_select_from_sql ($sql, "id_recon_script", $id_recon_script, '', '', '', true);
+	$table->data[6][1] .= "<span id='spinner_recon_script' style='display: none;'>" . html_print_image ("images/spinner.gif", true) . "</span>";
+	$table->data[6][1] .= $data[1] .= html_print_input_hidden('macros', base64_encode($macros),true);
+}
+else {
+	$table->data[6][1] = "IPAM Recon";
+}
 
 // OS
-$table->data[7][0] = "<b>".__('OS');
+$table->data[7][0] = "<b>" . __('OS') . "</b>";
 
 $sql = 'SELECT id_os, name
 		FROM tconfig_os
@@ -263,7 +272,7 @@ $sql = 'SELECT id_os, name
 $table->data[7][1] = html_print_select_from_sql ($sql, "id_os", $id_os, '', __('Any'), -1, true);
 
 // Recon ports
-$table->data[8][0] = "<b>".__('Ports');
+$table->data[8][0] = "<b>" . __('Ports') . "</b>";
 $table->data[8][1] =  html_print_input_text ('recon_ports', $recon_ports, '', 25, 0, true);
 $table->data[8][1] .= ui_print_help_tip(
 	__('Ports defined like: 80 or 80,443,512 or even 0-1024 (Like Nmap command line format). If dont want to do a sweep using portscan, left it in blank'), true);
@@ -346,10 +355,15 @@ $table->data[21][1] =  html_print_input_text ('parent_recursion', $parent_recurs
 echo '<form name="modulo" method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&'.(($id_rt != -1) ? 'update='.$id_rt : 'create=1').'">';
 html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-if ($id_rt != -1) 
-	html_print_submit_button (__('Update'), "crt", false, 'class="sub upd"');
-else
+
+if ($id_rt != -1) {
+	if ($name_script != "IPAM Recon") {
+		html_print_submit_button (__('Update'), "crt", false, 'class="sub upd"');
+	}
+}
+else {
 	html_print_submit_button (__('Add'), "crt", false, 'class="sub wand"');
+}
 echo "</div>";
 
 echo "</form>";

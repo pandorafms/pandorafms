@@ -835,7 +835,7 @@ if ($update_module || $create_module) {
 	// where are very big and PHP uses scientific notation, p.e:
 	// 1.23E-10 is 0.000000000123
 	
-	$post_process = (string) get_parameter ('post_process', 0.0);
+	$post_process = (string) get_parameter ('post_process');
 	//$prediction_module = 0;
 	
 	$max_timeout = (int) get_parameter ('max_timeout');

@@ -57,7 +57,7 @@ if ($get_agent_modules_json_for_multiple_agents) {
 	$result = array();
 	
 	
-	if (defined("METACONSOLE")) {
+	if (is_metaconsole()) {
 		
 		$rows = db_get_all_rows_filter('tmetaconsole_agent',
 			array("id_tagente" => $idAgents),
@@ -194,7 +194,7 @@ if ($get_module_detail) {
 	$agentId = (int) get_parameter("id_agent");
 	$server_name = (string) get_parameter('server_name');
 	
-	if (defined ('METACONSOLE')) {
+	if (is_metaconsole()) {
 		$server = metaconsole_get_connection ($server_name);
 		
 		if (metaconsole_connect($server) != NOERR)
@@ -381,10 +381,15 @@ if ($get_module_detail) {
 			else {
 				// Just a string of alphanumerical data... just do print
 				//Fixed the data from Selenium Plugin
-				if ($row[$attr[0]] != strip_tags($row[$attr[0]]))
+				if ($row[$attr[0]] != strip_tags($row[$attr[0]])) {
 					$data[] = io_safe_input($row[$attr[0]]);
-				else
+				}
+				else if (is_numeric($row[$attr[0]])) {
+					$data[] = (double) $row[$attr[0]];
+				}
+				else {
 					$data[] = $row[$attr[0]];
+				}
 			}
 		}
 		
@@ -401,7 +406,7 @@ if ($get_module_detail) {
 		html_print_table($table);
 	}
 	
-	if (defined ('METACONSOLE'))
+	if (is_metaconsole())
 		metaconsole_restore_db();
 	
 	return;

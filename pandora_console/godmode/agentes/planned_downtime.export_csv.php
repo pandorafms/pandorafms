@@ -20,6 +20,7 @@ require_once ("../../include/functions.php");
 require_once ("../../include/functions_db.php");
 require_once ("../../include/functions_users.php");
 require_once ("../../include/functions_groups.php");
+require_once ("../../include/functions_reporting.php");
 
 $config["id_user"] = $_SESSION["id_usuario"];
 if (! check_acl ($config['id_user'], 0, "AR")) {
@@ -43,78 +44,80 @@ $module_name = !empty($module_id) ? (string) get_parameter('module_name') : "";
 $separator = (string) get_parameter("separator", ";");
 $items_separator = (string) get_parameter("items_separator", ",");
 
-// SQL QUERY CREATION
-$where_values = "1=1";
-
 $groups = users_get_groups();
-$groups_string = implode (",", array_keys ($groups));
-$where_values .= " AND id_group IN ($groups_string)";
+if (!empty($groups)) {
+	// SQL QUERY CREATION
+	$where_values = "1=1";
 
-if (!empty($search_text)) {
-	$where_values .= " AND (name LIKE '%$search_text%' OR description LIKE '%$search_text%')";
-}
+	$groups_string = implode (",", array_keys ($groups));
+	$where_values .= " AND id_group IN ($groups_string)";
 
-if (!empty($execution_type)) {
-	$where_values .= " AND type_execution = '$execution_type'";
-}
+	if (!empty($search_text)) {
+		$where_values .= " AND (name LIKE '%$search_text%' OR description LIKE '%$search_text%')";
+	}
 
-if (!empty($date_from)) {
-	$where_values .= " AND (type_execution = 'periodically' OR (type_execution = 'once' AND date_from >= '".strtotime("$date_from 00:00:00")."'))";
-}
+	if (!empty($execution_type)) {
+		$where_values .= " AND type_execution = '$execution_type'";
+	}
 
-if (!empty($date_to)) {
-	$periodically_monthly_w = "type_periodicity = 'monthly'
+	if (!empty($date_from)) {
+		$where_values .= " AND (type_execution = 'periodically' OR (type_execution = 'once' AND date_from >= '".strtotime("$date_from 00:00:00")."'))";
+	}
+
+	if (!empty($date_to)) {
+		$periodically_monthly_w = "type_periodicity = 'monthly'
 			AND ((periodically_day_from <= '".date('d', strtotime($date_from))."' AND periodically_day_to >= '".date('d', strtotime($date_to))."')
 				OR (periodically_day_from > periodically_day_to
 					AND (periodically_day_from <= '".date('d', strtotime($date_from))."' OR periodically_day_to >= '".date('d', strtotime($date_to))."')))";
-	
-	$periodically_weekly_days = array();
-	$date_from_aux = strtotime($date_from);
-	$date_end = strtotime($date_to);
-	$days_number = 0;
-
-	while ($date_from_aux <= $date_end && $days_number < 7) {
-		$weekday_actual = strtolower(date('l', $date_from_aux));
 		
-		$periodically_weekly_days[] = "$weekday_actual = 1";
+		$periodically_weekly_days = array();
+		$date_from_aux = strtotime($date_from);
+		$date_end = strtotime($date_to);
+		$days_number = 0;
 
-		$date_from_aux = $date_from_aux + SECONDS_1DAY;
-		$days_number++;
+		while ($date_from_aux <= $date_end && $days_number < 7) {
+			$weekday_actual = strtolower(date('l', $date_from_aux));
+			
+			$periodically_weekly_days[] = "$weekday_actual = 1";
+
+			$date_from_aux = $date_from_aux + SECONDS_1DAY;
+			$days_number++;
+		}
+
+		$periodically_weekly_w = "type_periodicity = 'weekly' AND (".implode(" OR ", $periodically_weekly_days).")";
+		
+		$periodically_w = "type_execution = 'periodically' AND (($periodically_monthly_w) OR ($periodically_weekly_w))";
+		
+		$once_w = "type_execution = 'once' AND date_to <= '".strtotime("$date_to 23:59:59")."'";
+		
+		$where_values .= " AND (($periodically_w) OR ($once_w))";
 	}
 
-	$periodically_weekly_w = "type_periodicity = 'weekly' AND (".implode(" OR ", $periodically_weekly_days).")";
-	
-	$periodically_w = "type_execution = 'periodically' AND (($periodically_monthly_w) OR ($periodically_weekly_w))";
-	
-	$once_w = "type_execution = 'once' AND date_to <= '".strtotime("$date_to 23:59:59")."'";
-	
-	$where_values .= " AND (($periodically_w) OR ($once_w))";
-}
+	if (!$show_archived) {
+		$where_values .= " AND (type_execution = 'periodically' OR (type_execution = 'once' AND date_to >= '".time()."'))";
+	}
 
-if (!$show_archived) {
-	$where_values .= " AND (type_execution = 'periodically' OR (type_execution = 'once' AND date_to >= '".time()."'))";
-}
+	if (!empty($agent_id)) {
+		$where_values .= " AND id IN (SELECT id_downtime FROM tplanned_downtime_agents WHERE id_agent = $agent_id)";
+	}
 
-if (!empty($agent_id)) {
-	$where_values .= " AND id IN (SELECT id_downtime FROM tplanned_downtime_agents WHERE id_agent = $agent_id)";
-}
+	if (!empty($module_id)) {
+		$where_values .= " AND (id IN (SELECT id_downtime
+									   FROM tplanned_downtime_modules
+									   WHERE id_agent_module = $module_id)
+							OR id IN (SELECT id_downtime
+									  FROM tplanned_downtime_agents tpda, tagente_modulo tam
+									  WHERE tpda.id_agent = tam.id_agente
+									  	AND tam.id_agente_modulo = $module_id
+									  	AND tpda.all_modules = 1))";
+	}
 
-if (!empty($module_id)) {
-	$where_values .= " AND (id IN (SELECT id_downtime
-								   FROM tplanned_downtime_modules
-								   WHERE id_agent_module = $module_id)
-						OR id IN (SELECT id_downtime
-								  FROM tplanned_downtime_agents tpda, tagente_modulo tam
-								  WHERE tpda.id_agent = tam.id_agente
-								  	AND tam.id_agente_modulo = $module_id
-								  	AND tpda.all_modules = 1))";
+	$sql = "SELECT *
+			FROM tplanned_downtime
+			WHERE $where_values
+			ORDER BY type_execution DESC, date_from DESC";
+	$downtimes = @db_get_all_rows_sql($sql);
 }
-
-$sql = "SELECT *
-		FROM tplanned_downtime
-		WHERE $where_values
-		ORDER BY type_execution DESC, date_from DESC";
-$downtimes = @db_get_all_rows_sql($sql);
 
 if (!empty($downtimes)) {
 	ob_clean();
@@ -142,61 +145,8 @@ if (!empty($downtimes)) {
 		$group = ucfirst(io_safe_output(groups_get_name($downtime['id_group'])));
 		$type = ucfirst(io_safe_output($downtime['type_downtime']));
 		$execution_type = ucfirst(io_safe_output($downtime['type_execution']));
-
-		switch ($downtime['type_execution']) {
-			case 'once':
-				$execution_date = date ("Y-m-d H:i", $downtime['date_from']) .
-					"&nbsp;" . __('to') . "&nbsp;".
-					date ("Y-m-d H:i", $downtime['date_to']);
-				break;
-			case 'periodically':
-				switch ($downtime['type_periodicity']) {
-					case 'weekly':
-						$execution_date = __('Weekly:');
-						$execution_date .= "&nbsp;";
-						if ($downtime['monday']) {
-							$execution_date .= __('Mon');
-							$execution_date .= "&nbsp;";
-						}
-						if ($downtime['tuesday']) {
-							$execution_date .= __('Tue');
-							$execution_date .= "&nbsp;";
-						}
-						if ($downtime['wednesday']) {
-							$execution_date .= __('Wed');
-							$execution_date .= "&nbsp;";
-						}
-						if ($downtime['thursday']) {
-							$execution_date .= __('Thu');
-							$execution_date .= "&nbsp;";
-						}
-						if ($downtime['friday']) {
-							$execution_date .= __('Fri');
-							$execution_date .= "&nbsp;";
-						}
-						if ($downtime['saturday']) {
-							$execution_date .= __('Sat');
-							$execution_date .= "&nbsp;";
-						}
-						if ($downtime['sunday']) {
-							$execution_date .= __('Sun');
-							$execution_date .= "&nbsp;";
-						}
-						$execution_date .= "&nbsp;(" . $downtime['periodically_time_from'];
-						$execution_date .= "-" . $downtime['periodically_time_to'] . ")";
-						break;
-					case 'monthly':
-						$execution_date = __('Monthly:');
-						$execution_date .= __('From day') . "&nbsp;" . $downtime['periodically_day_from'];
-						$execution_date .= "/" . __('To day') . "&nbsp;";
-						$execution_date .= $downtime['periodically_day_to'];
-						$execution_date .= "&nbsp;(" . $downtime['periodically_time_from'];
-						$execution_date .= "-" . $downtime['periodically_time_to'] . ")";
-						break;
-				}
-				break;
-		}
-		$execution_date = io_safe_output($execution_date);
+		
+		$execution_date = io_safe_output(reporting_format_planned_downtime_dates($downtime));
 
 		$affected_items = array();
 

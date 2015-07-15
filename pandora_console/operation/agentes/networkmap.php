@@ -341,7 +341,7 @@ if ($networkmap_write || $networkmap_manage) {
 			"simple" => $simple,
 			"regen" => $regen,
 			"zoom" => $zoom,
-			"ranksep" => $$ranksep,
+			"ranksep" => $ranksep,
 			"font_size" => $font_size,
 			"depth" => $depth,
 			"modwithalerts" => $modwithalerts,

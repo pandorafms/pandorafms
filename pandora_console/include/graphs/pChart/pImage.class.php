@@ -2,9 +2,9 @@
  /*
      pDraw - pChart core class
 
-     Version     : 2.1.4
+     Version     : 2.1.0
      Made by     : Jean-Damien POGOLOTTI
-     Last Update : 19/01/2014
+     Last Update : 26/01/11
 
      This file can be distributed under the license you can find at :
 
@@ -20,71 +20,54 @@
    exit();
   }
 
- /* Image map handling */
- define("IMAGE_MAP_STORAGE_FILE"	, 680001);
- define("IMAGE_MAP_STORAGE_SESSION"	, 680002);
-
- /* Last generated chart layout */
- define("CHART_LAST_LAYOUT_REGULAR"	, 680011);
- define("CHART_LAST_LAYOUT_STACKED"	, 680012);
-
- /* ImageMap string delimiter */
- define("IMAGE_MAP_DELIMITER"		, chr(1));
-
  class pImage extends pDraw
   {
    /* Image settings, size, quality, .. */
-   var $XSize		= NULL;				// Width of the picture
-   var $YSize		= NULL;				// Height of the picture
-   var $Picture		= NULL;				// GD picture object
-   var $Antialias	= TRUE;				// Turn antialias on or off
+   var $XSize             = NULL;			// Width of the picture
+   var $YSize             = NULL;			// Height of the picture
+   var $Picture           = NULL;			// GD picture object
+   var $Antialias         = TRUE;			// Turn antialias on or off
    var $AntialiasQuality  = 0;				// Quality of the antialiasing implementation (0-1)
-   var $Mask		= "";				// Already drawn pixels mask (Filled circle implementation)
+   var $Mask              = "";				// Already drawn pixels mask (Filled circle implementation)
    var $TransparentBackground = FALSE;			// Just to know if we need to flush the alpha channels when rendering
 
    /* Graph area settings */
-   var $GraphAreaX1	= NULL;				// Graph area X origin
-   var $GraphAreaY1	= NULL;				// Graph area Y origin
-   var $GraphAreaX2	= NULL;				// Graph area bottom right X position
-   var $GraphAreaY2	= NULL;				// Graph area bottom right Y position
+   var $GraphAreaX1       = NULL;			// Graph area X origin
+   var $GraphAreaY1       = NULL;			// Graph area Y origin
+   var $GraphAreaX2       = NULL;			// Graph area bottom right X position
+   var $GraphAreaY2       = NULL;			// Graph area bottom right Y position
 
    /* Scale settings */
    var $ScaleMinDivHeight = 20;				// Minimum height for scame divs
 
    /* Font properties */
-   var $FontName	= "fonts/GeosansLight.ttf";	// Default font file
-   var $FontSize	= 12;				// Default font size
-   var $FontBox		= NULL;				// Return the bounding box of the last written string
-   var $FontColorR	= 0;				// Default color settings
-   var $FontColorG	= 0;				// Default color settings
-   var $FontColorB	= 0;				// Default color settings
-   var $FontColorA	= 100;				// Default transparency
+   var $FontName          = "fonts/GeosansLight.ttf";	// Default font file
+   var $FontSize          = 12;				// Default font size
+   var $FontBox           = NULL;			// Return the bounding box of the last written string
+   var $FontColorR        = 0;				// Default color settings
+   var $FontColorG        = 0;				// Default color settings
+   var $FontColorB        = 0;				// Default color settings
+   var $FontColorA        = 100;			// Default transparency
 
    /* Shadow properties */
-   var $Shadow		= FALSE;			// Turn shadows on or off
-   var $ShadowX		= NULL;				// X Offset of the shadow
-   var $ShadowY		= NULL;				// Y Offset of the shadow
-   var $ShadowR		= NULL;				// R component of the shadow
-   var $ShadowG		= NULL;				// G component of the shadow
-   var $ShadowB		= NULL;				// B component of the shadow
-   var $Shadowa		= NULL;				// Alpha level of the shadow
-
-   /* Image map */
-   var $ImageMap	= NULL;				// Aray containing the image map
-   var $ImageMapIndex	= "pChart";			// Name of the session array
-   var $ImageMapStorageMode = NULL;			// Save the current imagemap storage mode
-   var $ImageMapAutoDelete  = TRUE;			// Automatic deletion of the image map temp files
+   var $Shadow            = TRUE;			// Turn shadows on or off
+   var $ShadowX           = NULL;			// X Offset of the shadow
+   var $ShadowY           = NULL;			// Y Offset of the shadow
+   var $ShadowR           = NULL;			// R component of the shadow
+   var $ShadowG           = NULL;			// G component of the shadow
+   var $ShadowB           = NULL;			// B component of the shadow
+   var $Shadowa           = NULL;			// Alpha level of the shadow
 
    /* Data Set */
-   var $DataSet		= NULL;				// Attached dataset
-
-   /* Last generated chart info */
-   var $LastChartLayout	= CHART_LAST_LAYOUT_REGULAR;	// Last layout : regular or stacked
+   var $DataSet           = NULL;			// Attached dataset
 
    /* Class constructor */
-   function pImage($XSize,$YSize,$DataSet=NULL,$TransparentBackground=FALSE)
+   function pImage($XSize,$YSize,$DataSet=NULL,$TransparentBackground=FALSE, $ColorBackground = 'white', $FontColor = array('R' => 0, 'G' => 0, 'B' => 0))
     {
      $this->TransparentBackground = $TransparentBackground;
+     $this->FontColorR = $FontColor['R'];
+     $this->FontColorG = $FontColor['G'];
+     $this->FontColorB = $FontColor['B'];
 
      if ( $DataSet != NULL ) { $this->DataSet = $DataSet; }
 
@@ -101,8 +84,16 @@
       }
      else
       {
-       $C_White = $this->AllocateColor($this->Picture,255,255,255);
-       imagefilledrectangle($this->Picture,0,0,$XSize,$YSize,$C_White);
+	   switch($ColorBackground) {
+			case 'black':
+				$C = $this->AllocateColor($this->Picture,0,0,0);
+				break;
+			case 'white':
+			default:
+				$C = $this->AllocateColor($this->Picture,255,255,255);
+				break;
+	   }
+       imagefilledrectangle($this->Picture,0,0,$XSize,$YSize,$C);
       }
     }
 
@@ -152,16 +143,9 @@
     }
 
    /* Render the picture to a web browser stream */
-   function stroke($BrowserExpire=FALSE)
+   function stroke()
     {
      if ( $this->TransparentBackground ) { imagealphablending($this->Picture,false); imagesavealpha($this->Picture,true); }
-
-     if ( $BrowserExpire )
-      {
-       header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-       header("Cache-Control: no-cache");
-       header("Pragma: no-cache");
-      }
 
      header('Content-type: image/png');
      imagepng($this->Picture);
@@ -266,207 +250,5 @@
    /* Print attached dataset contents to STDOUT */
    function printDataSet()
     { print_r($this->DataSet); }
-
-   /* Initialise the image map methods */
-   function initialiseImageMap($Name="pChart",$StorageMode=IMAGE_MAP_STORAGE_SESSION,$UniqueID="imageMap",$StorageFolder="tmp")
-    {
-     $this->ImageMapIndex 		= $Name;
-     $this->ImageMapStorageMode		= $StorageMode;
-
-     if ($StorageMode == IMAGE_MAP_STORAGE_SESSION)
-      {
-       if(!isset($_SESSION)) { session_start(); }
-       $_SESSION[$this->ImageMapIndex]    = NULL;
-      }
-     elseif($StorageMode == IMAGE_MAP_STORAGE_FILE)
-      {
-       $this->ImageMapFileName 		= $UniqueID;
-       $this->ImageMapStorageFolder	= $StorageFolder;
-
-       if (file_exists($StorageFolder."/".$UniqueID.".map")) { unlink($StorageFolder."/".$UniqueID.".map"); }
-      }
-    }
-
-   /* Add a zone to the image map */
-   function addToImageMap($Type,$Plots,$Color=NULL,$Title=NULL,$Message=NULL,$HTMLEncode=FALSE)
-    {
-     if ( $this->ImageMapStorageMode == NULL ) { $this->initialiseImageMap(); }
-
-     /* Encode the characters in the imagemap in HTML standards */
-     $Title   = str_replace("&#8364;","\u20AC",$Title);
-     $Title   = htmlentities($Title,ENT_QUOTES,"ISO-8859-15");
-     if ( $HTMLEncode )
-      {
-       $Message = htmlentities($Message,ENT_QUOTES,"ISO-8859-15");
-       $Message = str_replace("&lt;","<",$Message);
-       $Message = str_replace("&gt;",">",$Message);
-      }
-
-     if ( $this->ImageMapStorageMode == IMAGE_MAP_STORAGE_SESSION )
-      {
-       if(!isset($_SESSION)) { $this->initialiseImageMap(); }
-       $_SESSION[$this->ImageMapIndex][] = array($Type,$Plots,$Color,$Title,$Message);
-      }
-     elseif($this->ImageMapStorageMode == IMAGE_MAP_STORAGE_FILE)
-      {
-       $Handle = fopen($this->ImageMapStorageFolder."/".$this->ImageMapFileName.".map", 'a');
-       fwrite($Handle, $Type.IMAGE_MAP_DELIMITER.$Plots.IMAGE_MAP_DELIMITER.$Color.IMAGE_MAP_DELIMITER.$Title.IMAGE_MAP_DELIMITER.$Message."\r\n");
-       fclose($Handle);
-      }
-    }
-
-   /* Remove VOID values from an imagemap custom values array */
-   function removeVOIDFromArray($SerieName, $Values)
-    {
-     if ( !isset($this->DataSet->Data["Series"][$SerieName]) ) { return(-1); }
-
-     $Result = "";
-     foreach($this->DataSet->Data["Series"][$SerieName]["Data"] as $Key => $Value)
-      { if ( $Value != VOID && isset($Values[$Key]) ) { $Result[] = $Values[$Key]; } }
-     return($Result);
-    }
-
-   /* Replace the title of one image map serie */
-   function replaceImageMapTitle($OldTitle, $NewTitle)
-    {
-     if ( $this->ImageMapStorageMode == NULL ) { return(-1); }
-
-     if ( is_array($NewTitle) ) { $NewTitle = $this->removeVOIDFromArray($OldTitle, $NewTitle); }
- 
-     if ( $this->ImageMapStorageMode == IMAGE_MAP_STORAGE_SESSION )
-      {
-       if(!isset($_SESSION)) { return(-1); }
-       if ( is_array($NewTitle) )
-        { $ID = 0; foreach($_SESSION[$this->ImageMapIndex] as $Key => $Settings) { if ( $Settings[3] == $OldTitle && isset($NewTitle[$ID])) { $_SESSION[$this->ImageMapIndex][$Key][3] = $NewTitle[$ID]; $ID++; } } }
-       else
-        { foreach($_SESSION[$this->ImageMapIndex] as $Key => $Settings) { if ( $Settings[3] == $OldTitle ) { $_SESSION[$this->ImageMapIndex][$Key][3] = $NewTitle; } } }
-      }
-     elseif( $this->ImageMapStorageMode == IMAGE_MAP_STORAGE_FILE )
-      {
-       $TempArray = "";
-       $Handle    = @fopen($this->ImageMapStorageFolder."/".$this->ImageMapFileName.".map", "r");
-       if ($Handle)
-        {
-         while (($Buffer = fgets($Handle, 4096)) !== false)
-          {
-           $Fields      = preg_split("/".IMAGE_MAP_DELIMITER."/",str_replace(array(chr(10),chr(13)),"",$Buffer));
-           $TempArray[] = array($Fields[0],$Fields[1],$Fields[2],$Fields[3],$Fields[4]);
-          }
-         fclose($Handle);
-
-         if ( is_array($NewTitle) )
-          { $ID = 0; foreach($TempArray as $Key => $Settings) { if ( $Settings[3] == $OldTitle && isset($NewTitle[$ID]) ) { $TempArray[$Key][3] = $NewTitle[$ID]; $ID++; } } }
-         else
-          { foreach($TempArray as $Key => $Settings) { if ( $Settings[3] == $OldTitle ) { $TempArray[$Key][3] = $NewTitle; } } }
-
-         $Handle = fopen($this->ImageMapStorageFolder."/".$this->ImageMapFileName.".map", 'w');
-         foreach($TempArray as $Key => $Settings)
-          { fwrite($Handle, $Settings[0].IMAGE_MAP_DELIMITER.$Settings[1].IMAGE_MAP_DELIMITER.$Settings[2].IMAGE_MAP_DELIMITER.$Settings[3].IMAGE_MAP_DELIMITER.$Settings[4]."\r\n"); }
-         fclose($Handle);
-        }
-      }
-    }
-
-   /* Replace the values of the image map contents */
-   function replaceImageMapValues($Title, $Values)
-    {
-     if ( $this->ImageMapStorageMode == NULL ) { return(-1); }
-
-     $Values = $this->removeVOIDFromArray($Title, $Values);
-     $ID = 0; 
-     if ( $this->ImageMapStorageMode == IMAGE_MAP_STORAGE_SESSION )
-      {
-       if(!isset($_SESSION)) { return(-1); }
-       foreach($_SESSION[$this->ImageMapIndex] as $Key => $Settings) { if ( $Settings[3] == $Title ) { if ( isset($Values[$ID]) ) { $_SESSION[$this->ImageMapIndex][$Key][4] = $Values[$ID]; } $ID++; } }
-      }
-     elseif( $this->ImageMapStorageMode == IMAGE_MAP_STORAGE_FILE )
-      {
-       $TempArray = "";
-       $Handle    = @fopen($this->ImageMapStorageFolder."/".$this->ImageMapFileName.".map", "r");
-       if ($Handle)
-        {
-         while (($Buffer = fgets($Handle, 4096)) !== false)
-          {
-           $Fields      = preg_split("/".IMAGE_MAP_DELIMITER."/",str_replace(array(chr(10),chr(13)),"",$Buffer));
-           $TempArray[] = array($Fields[0],$Fields[1],$Fields[2],$Fields[3],$Fields[4]);
-          }
-         fclose($Handle);
-
-         foreach($TempArray as $Key => $Settings) { if ( $Settings[3] == $Title ) { if ( isset($Values[$ID]) ) { $TempArray[$Key][4] = $Values[$ID]; } $ID++; } }
-
-         $Handle = fopen($this->ImageMapStorageFolder."/".$this->ImageMapFileName.".map", 'w');
-         foreach($TempArray as $Key => $Settings)
-          { fwrite($Handle, $Settings[0].IMAGE_MAP_DELIMITER.$Settings[1].IMAGE_MAP_DELIMITER.$Settings[2].IMAGE_MAP_DELIMITER.$Settings[3].IMAGE_MAP_DELIMITER.$Settings[4]."\r\n"); }
-         fclose($Handle);
-        }
-      }
-    }
-
-   /* Dump the image map */
-   function dumpImageMap($Name="pChart",$StorageMode=IMAGE_MAP_STORAGE_SESSION,$UniqueID="imageMap",$StorageFolder="tmp")
-    {
-     $this->ImageMapIndex 		= $Name;
-     $this->ImageMapStorageMode		= $StorageMode;
-
-     if ( $this->ImageMapStorageMode == IMAGE_MAP_STORAGE_SESSION )
-      {
-       if(!isset($_SESSION)) { session_start(); }
-       if ( $_SESSION[$Name] != NULL )
-        {
-         foreach($_SESSION[$Name] as $Key => $Params)
-          { echo $Params[0].IMAGE_MAP_DELIMITER.$Params[1].IMAGE_MAP_DELIMITER.$Params[2].IMAGE_MAP_DELIMITER.$Params[3].IMAGE_MAP_DELIMITER.$Params[4]."\r\n"; }
-        }
-      }
-     elseif( $this->ImageMapStorageMode == IMAGE_MAP_STORAGE_FILE )
-      {
-       if (file_exists($StorageFolder."/".$UniqueID.".map"))
-        {
-         $Handle = @fopen($StorageFolder."/".$UniqueID.".map", "r");
-         if ($Handle) { while (($Buffer = fgets($Handle, 4096)) !== false) { echo $Buffer; } }
-         fclose($Handle);
-
-         if ( $this->ImageMapAutoDelete ) { unlink($StorageFolder."/".$UniqueID.".map"); }
-        }
-      }
-
-     /* When the image map is returned to the client, the script ends */
-     exit();
-    }
-
-   /* Return the HTML converted color from the RGB composite values */
-   function toHTMLColor($R,$G,$B)
-    {
-     $R=intval($R); $G=intval($G); $B=intval($B);
-     $R=dechex($R<0?0:($R>255?255:$R)); $G=dechex($G<0?0:($G>255?255:$G));$B=dechex($B<0?0:($B>255?255:$B));
-     $Color="#".(strlen($R) < 2?'0':'').$R; $Color.=(strlen($G) < 2?'0':'').$G; $Color.= (strlen($B) < 2?'0':'').$B;
-     return($Color);
-    }
-
-   /* Reverse an array of points */
-   function reversePlots($Plots)
-    {
-     $Result = "";
-     for($i=count($Plots)-2;$i>=0;$i=$i-2) { $Result[] = $Plots[$i]; $Result[] = $Plots[$i+1]; }
-     return($Result);
-    }
-
-   /* Mirror Effect */
-   function drawAreaMirror($X,$Y,$Width,$Height,$Format="")
-    {
-     $StartAlpha	= isset($Format["StartAlpha"]) ? $Format["StartAlpha"] : 80;
-     $EndAlpha		= isset($Format["EndAlpha"]) ? $Format["EndAlpha"] : 0;
-
-     $AlphaStep = ($StartAlpha-$EndAlpha)/$Height;
-
-     $Picture = imagecreatetruecolor($this->XSize,$this->YSize);
-     imagecopy($Picture,$this->Picture,0,0,0,0,$this->XSize,$this->YSize);
-     
-     for($i=1;$i<=$Height;$i++)
-      {
-       if ( $Y+($i-1) < $this->YSize && $Y-$i > 0 ) { imagecopymerge($Picture,$this->Picture,$X,$Y+($i-1),$X,$Y-$i,$Width,1,$StartAlpha-$AlphaStep*$i); }
-      }
-
-     imagecopy($this->Picture,$Picture,0,0,0,0,$this->XSize,$this->YSize);
-    }
   }
 ?>

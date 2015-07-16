@@ -217,8 +217,6 @@ switch($graph_type) {
 	case 'radar':
 	case 'pie3d':
 	case 'pie2d':
-	case 'ring3d':
-	case 'ring2d':
 		break;
 }
 
@@ -228,8 +226,6 @@ switch($graph_type) {
 	case 'radar':
 	case 'pie3d':
 	case 'pie2d':
-	case 'ring3d':
-	case 'ring2d':
 		break;
 	default:
 		if (!is_array(reset($data_values))) {
@@ -289,8 +285,6 @@ ob_get_clean(); //HACK TO EAT ANYTHING THAT CORRUPS THE IMAGE FILE
 switch($graph_type) {
 	case 'pie3d':
 	case 'pie2d':
-	case 'ring3d':
-	case 'ring2d':
 		pch_pie_graph($graph_type, array_values($data), array_keys($data),
 			$width, $height, $font, $water_mark, $font_size, $legend_position, $colors);
 		break;
@@ -394,13 +388,13 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	$MyData = new pData();   
 	$MyData->addPoints($data_values,"ScoreA");  
 	$MyData->setSerieDescription("ScoreA","Application A");
-
+	
 	/* Define the absissa serie */
 	$MyData->addPoints($legend_values,"Labels");
 	$MyData->setAbscissa("Labels");
 	
 	/* Create the pChart object */
-	$myPicture = new pImage($width,$height,$MyData);
+	$myPicture = new pImage($width,$height,$MyData,TRUE);
 	
 	/* Set the default font properties */ 
 	$myPicture->setFontProperties(array("FontName"=>$font,"FontSize"=>$font_size,"R"=>80,"G"=>80,"B"=>80));
@@ -437,13 +431,7 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 			$PieChart->draw2DPie($width/4,$height/2,array("DataGapAngle"=>0,"DataGapRadius"=>0, "Border"=>FALSE, "BorderR"=>200, "BorderG"=>200, "BorderB"=>200, "Radius"=>$width/4, "ValueR"=>0, "ValueG"=>0, "ValueB"=>0, "WriteValues"=>TRUE));
 			break;
 		case "pie3d":
-			$PieChart->draw3DRing($width/4, $height/2,array("Border"=>TRUE, "Radius"=>$width/4, "ValueR"=>0, "ValueG"=>0, "ValueB"=>0, "WriteValues"=>TRUE, "SecondPass"=>FALSE));
-			break;
-		case "ring2d":
-			$PieChart->draw2DPie($width/3,$height/2,array("DataGapAngle"=>0,"DataGapRadius"=>0, "Border"=>FALSE, "ValueR"=>200, "ValueG"=>211, "ValueB"=>115, "WriteValues"=>PIE_VALUE_PERCENTAGE));
-			break;
-		case "ring3d":
-			$PieChart->draw3DRing($width/2, $height/2,array("DataGapAngle"=>10,"DataGapRadius"=>10,"DrawLabels"=>TRUE,"LabelStacked"=>FALSE,"Border"=>FALSE,"RecordImageMap"=>FALSE,"WriteValues"=>PIE_VALUE_PERCENTAGE));
+			$PieChart->draw3DPie($width/4, $height/2,array("DataGapAngle"=>5,"DataGapRadius"=>6, "Border"=>TRUE, "Radius"=>$width/4, "ValueR"=>0, "ValueG"=>0, "ValueB"=>0, "WriteValues"=>TRUE, "SecondPass"=>FALSE));
 			break;
 	}
 	
@@ -453,10 +441,9 @@ function pch_pie_graph ($graph_type, $data_values, $legend_values, $width,
 	
 	if ($legend_position != 'hidden') {
 		// This is a hardcore adjustment to match most of the graphs, please don't alter
-		//$legend_with_aprox = 32 + (4.5 * $max_chars);
+		$legend_with_aprox = 32 + (4.5 * $max_chars);
 		
-		$PieChart->drawPieLegend(0,$width/2, array("R"=>255,"G"=>255,"B"=>255, "BoxSize"=>10));
-		//$PieChart->drawPieLegend(0, $width/2,array("Mode"=>LEGEND_HORIZONTAL,"Style"=>LEGEND_NOBORDER,"Alpha"=>20));
+		$PieChart->drawPieLegend($width - $legend_with_aprox, 5, array("R"=>255,"G"=>255,"B"=>255, "BoxSize"=>10)); 
 	}
 	
 	/* Enable shadow computing */ 

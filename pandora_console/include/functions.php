@@ -2457,7 +2457,7 @@ function array2XML($data, $root = null, $xml = NULL) {
 function extract_column ($array, $column) {
 	$column_is_arr = is_array($column);
 	
-	return array_map(function($item) {
+	return array_map(function($item) use ($column_is_arr, $column) {
 		if ($column_is_arr) {
 			return array_reduce($column, function($carry, $col) use ($item) {
 				$carry[$col] = $item[$col];

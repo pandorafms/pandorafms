@@ -339,7 +339,7 @@ else {
 	// View available downtimes present in database (if any of them)
 	$table = new StdClass();
 	$table->class = 'databox data';
-	$table->width = '100%';
+	$table->width = '98%';
 	$table->cellstyle = array();
 	
 	$table->head = array();

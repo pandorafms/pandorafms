@@ -804,7 +804,7 @@ function toggleCommentForm(id_event) {
 		$('.event_form_' + id_event).css('display', 'none');
 		// Hide All showed rows
 		$('.event_form').css('display', 'none');
-		$(".select_validate").find('option:first').attr('selected', 'selected').parent('select');
+		$(".select_validate").find('option:first').prop('selected', true).parent('select');
 	}
 	else {
 		$('.event_form_' + id_event).css('display', '');

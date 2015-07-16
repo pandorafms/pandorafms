@@ -594,7 +594,7 @@ html_print_table ($table_other);
 echo "</fieldset>";
 
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
+echo '<div class="action-buttons" style="width: '.$table_other->width.'">';
 html_print_submit_button (__('Update'), 'update_button', false, 'class="sub upd"');
 echo '</div>';
 echo '</form>';

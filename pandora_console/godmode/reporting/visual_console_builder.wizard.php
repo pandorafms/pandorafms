@@ -384,7 +384,7 @@ $(document).ready (function () {
 							.html(noneText)
 							.attr("None", "")
 							.attr('value', -1)
-							.attr('selected', true));
+							.prop('selected', true));
 				}
 				else {
 					jQuery.each (data, function (i, val) {
@@ -511,7 +511,7 @@ function item_per_agent_change(itemPerAgent) {
 		$('#label_type')
 			.append($('<option></option>')
 				.html(<?php echo "'" . __('Agent') . "'"; ?>)
-				.attr('value', 'agent').attr('selected', true));
+				.attr('value', 'agent').prop('selected', true));
 		$('#label_type')
 			.append($('<option></option>')
 				.html(<?php echo "'" . __('None') . "'"; ?>)
@@ -539,7 +539,7 @@ function item_per_agent_change(itemPerAgent) {
 			.append($('<option></option>')
 				.html(<?php echo "'" . __('Agent - Module') . "'"; ?>)
 				.attr('value', 'agent_module')
-				.attr('selected', true));
+				.prop('selected', true));
 		$('#label_type')
 			.append($('<option></option>')
 				.html(<?php echo "'" . __('Module') . "'"; ?>)

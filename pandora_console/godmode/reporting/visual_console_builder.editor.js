@@ -774,16 +774,16 @@ function loadFieldsFromDB(item) {
 						.each(function() {
 						
 						if($(this).val() == val) {
-							$(this).attr('selected',true);
+							$(this).prop('selected', true);
 							$(this).trigger('change');
 							anySelected = true;
 						}
 					});
 					if (anySelected == false) {
 						$('#' + periodId + '_select option')
-							.eq(0).attr('selected',true);
+							.eq(0).prop('selected', true);
 						$('#' + periodId + '_units option')
-							.eq(0).attr('selected',true);
+							.eq(0).prop('selected', true);
 						$('#hidden-period').val(val);
 						$('#text-' + periodId + '_text').val(val);
 						adjustTextUnits(periodId);

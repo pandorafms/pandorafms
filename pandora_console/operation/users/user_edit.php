@@ -190,7 +190,7 @@ if (defined('METACONSOLE')) {
 	$table->head_colspan[0] = 5;
 	$table->headstyle[0] = 'text-align: center';
 }
-$table->style[2] = 'width: 175px;';
+$table->style[2] = 'width: 200px;';
 
 $data = array();
 $data[0] = '<b>' . __('User ID') . '</b>';
@@ -350,7 +350,7 @@ $data[0] = __('Double authentication');
 $data[0] .= $jump;
 $data[0] .= html_print_checkbox('double_auth', 1, $double_auth_enabled, true);
 if ($double_auth_enabled) {
-	$data[0] .= '&nbsp;&nbsp;';
+	$data[0] .= $jump;
 	$data[0] .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
 }
 // Dialog
@@ -410,10 +410,12 @@ $table->data = array ();
 $table->head = array ();
 $table->align = array ();
 $table->style = array ();
+
 if (!defined('METACONSOLE')) {
 	$table->style[0] = 'font-weight: bold';
 	$table->style[1] = 'font-weight: bold';
 }
+
 $table->head[0] = __('Profile name');
 $table->head[1] = __('Group');
 $table->head[2] = __('Tags');
@@ -451,7 +453,7 @@ if (!empty ($table->data)) {
 	html_print_table ($table);
 }
 else {
-		ui_print_info_message ( array('no_close'=>true, 'message'=>  __('This user doesn\'t have any assigned profile/group.') ) ); 
+	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('This user doesn\'t have any assigned profile/group.') ) );
 }
 
 enterprise_hook('close_meta_frame');
@@ -492,42 +494,42 @@ function show_data_section () {
 	section = $("#section").val();
 	
 	switch (section) {
-		case <?php echo "'" . __('Dashboard') . "'"; ?>:
+		case <?php echo "'" . 'Dashboard' . "'"; ?>:
 			$("#text-data_section").css("display", "none");
 			$("#dashboard").css("display", "");
 			$("#visual_console").css("display", "none");
 			break;
-		case <?php echo "'" . __('Visual console') . "'"; ?>:
+		case <?php echo "'" . 'Visual console' . "'"; ?>:
 			$("#text-data_section").css("display", "none");
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "");
 			break;
-		case <?php echo "'" . __('Event list') . "'"; ?>:
+		case <?php echo "'" . 'Event list' . "'"; ?>:
 			$("#text-data_section").css("display", "none");
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "none");
 			break;
-		case <?php echo "'" . __('Group view') . "'"; ?>:
+		case <?php echo "'" . 'Group view' . "'"; ?>:
 			$("#text-data_section").css("display", "none");
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "none");
 			break;
-		case <?php echo "'" . __('Tactical view') . "'"; ?>:
+		case <?php echo "'" . 'Tactical view' . "'"; ?>:
 			$("#text-data_section").css("display", "none");
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "none");
 			break;
-		case <?php echo "'" . __('Alert detail') . "'"; ?>:
+		case <?php echo "'" . 'Alert detail' . "'"; ?>:
 			$("#text-data_section").css("display", "none");
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "none");
 			break;
-		case <?php echo "'" . __('Other') . "'"; ?>:
+		case <?php echo "'" . 'Other' . "'"; ?>:
 			$("#text-data_section").css("display", "");
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "none");
 			break;
-		case <?php echo "'" . __('Default') . "'"; ?>:
+		case <?php echo "'" . 'Default' . "'"; ?>:
 			$("#text-data_section").css("display", "none");
 			$("#dashboard").css("display", "none");
 			$("#visual_console").css("display", "none");

@@ -402,7 +402,7 @@ div#foot {
 		background-position: center center;
 	}
 }
-@media screen and (max-width: 2500px) { /* Specific to this particular image */
+@media screen and (min-width: 2000px) { /* Specific to this particular image */
 	#login_body {
 		background-image: url("../../images/backgrounds/fondo_madera_bn_2500.jpg");
 		background-repeat: repeat;
@@ -2259,46 +2259,7 @@ ul.operation li a:hover  {
 .sub_subMenu:hover{
 	background-color: #585858 !important;
 }
-/*
-ul.operation ul.submenu li a:hover {
-	background: #373737 url('../../images/menu_op_mark.png') repeat-y right;
-	#font-weight: bold;
-}
 
-ul.operation ul.submenu li .SubNoLink:hover {
-	background: url('../../images/menu_op_mark.png') repeat-y right !important;
-}
-
-ul.operation ul.submenu li.selected>a {
-	background: #222 url('../../images/menu_op_mark.png') repeat-y right;
-}
-
-ul.operation ul.submenu li.selected .SubNoLink {
-	background: url('../../images/menu_op_mark.png') repeat-y right !important;
-}
-
-ul.godmode li a:hover  {
-	#font-weight: bold;
-}
-
-ul.godmode ul.submenu li a:hover {
-	background: #222 url('../../images/menu_gm_mark.png') repeat-y right;
-	#font-weight: bold;
-}
-
-ul.godmode ul.submenu li .SubNoLink:hover {
-	background: url('../../images/menu_gm_mark.png') repeat-y right !important;
-	#font-weight: bold;
-}
-
-ul.godmode ul.submenu li.selected>a {
-	background: #222 url('../../images/menu_gm_mark.png') repeat-y right;
-}
-
-ul.godmode ul.submenu li.selected .SubNoLink {
-	background: url('../../images/menu_gm_mark.png') repeat-y right !important;
-}
-*/
 li.links a:hover  {
 	#font-weight: bold;
 }
@@ -2486,7 +2447,6 @@ a.tip {
 }
 
 a.tip>img {
-	vertical-align: top !important;
 	margin-left: 2px;
 	margin-right: 2px;
 }

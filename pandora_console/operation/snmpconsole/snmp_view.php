@@ -41,7 +41,8 @@ $trap_type = (int) get_parameter ('trap_type', -1);
 $group_by = (int)get_parameter('group_by', 0);
 $refr = (int)get_parameter("refr", 0);
 
-$user_groups = users_get_groups ($config['id_user'],"AR", false);
+$user_groups = users_get_groups ($config['id_user'], "AR", false);
+
 $str_user_groups = '';
 $i = 0;
 foreach ($user_groups as $id=>$name) {
@@ -150,6 +151,7 @@ if (isset ($_POST["updatebt"])) {
 
 // All traps 
 $all_traps = db_get_all_rows_sql ("SELECT DISTINCT source FROM ttrap");
+
 if (empty($all_traps))
 	$all_traps = array();
 
@@ -168,25 +170,56 @@ foreach ($all_traps as $trap) {
 	$oids[$oid] = $oid;
 }
 
+
+
+
+
+
+$rows = db_get_all_rows_filter('tagente',
+	array('id_grupo' => array_keys($user_groups)),
+	array('id_agente'));
+$id_agents = array();
+foreach ($rows as $row)
+	$id_agents[] = $row['id_agente'];
+$address_by_user_groups = agents_get_addresses($id_agents);
+foreach ($address_by_user_groups as $i => $a)
+	$address_by_user_groups[$i] = '"' . $a . '"';
+
+$rows = db_get_all_rows_filter('tagente',
+	array(),
+	array('id_agente'));
+$id_agents = array();
+foreach ($rows as $row)
+	$id_agents[] = $row['id_agente'];
+$all_address_agents = agents_get_addresses($id_agents);
+foreach ($all_address_agents as $i => $a)
+	$all_address_agents[$i] = '"' . $a . '"';
+
+
+
 //Make query to extract traps of DB.
 switch ($config["dbtype"]) {
 	case "mysql":
 		$sql = "SELECT *
 			FROM ttrap
-			WHERE (`source` IN (
-					SELECT direccion FROM tagente
-					WHERE id_grupo IN ($str_user_groups)
-					) OR `source`='' OR `source` NOT IN (SELECT direccion FROM tagente)) %s
+			WHERE (
+				`source` IN (" . implode(",", $address_by_user_groups) . ") OR
+				`source`='' OR
+				`source` NOT IN (" . implode(",", $all_address_agents) . ")
+				)
+				%s
 			ORDER BY timestamp DESC
 			LIMIT %d,%d";
 		break;
 	case "postgresql":
 		$sql = "SELECT *
 			FROM ttrap
-			WHERE (source IN (
-					SELECT direccion FROM tagente
-					WHERE id_grupo IN ($str_user_groups)
-					) OR source='' OR source NOT IN (SELECT direccion FROM tagente)) %s
+			WHERE (
+				source IN (" . implode(",", $address_by_user_groups) . ") OR
+				source='' OR
+				source NOT IN (" . implode(",", $all_address_agents) . ")
+				)
+				%s
 			ORDER BY timestamp DESC
 			LIMIT %d OFFSET %d";
 		break;
@@ -202,19 +235,21 @@ switch ($config["dbtype"]) {
 }
 $sql_all = "SELECT *
 	FROM ttrap
-	WHERE (source IN (
-			SELECT direccion FROM tagente
-			WHERE id_grupo IN ($str_user_groups)
-			)
-	OR source='' OR source NOT IN (SELECT direccion FROM tagente)) %s
+	WHERE (
+		source IN (" . implode(",", $address_by_user_groups) . ") OR
+		source='' OR
+		source NOT IN (" . implode(",", $all_address_agents) . ")
+		)
+		%s
 	ORDER BY timestamp DESC";
 $sql_count = "SELECT COUNT(id_trap)
 	FROM ttrap
-	WHERE (source IN (
-			SELECT direccion FROM tagente
-			WHERE id_grupo IN ($str_user_groups)
-			)
-	OR source='' OR source NOT IN (SELECT direccion FROM tagente)) %s";
+	WHERE (
+		source IN (" . implode(",", $address_by_user_groups) . ") OR
+		source='' OR
+		source NOT IN (" . implode(",", $all_address_agents) . ")
+		)
+		%s";
 //$whereSubquery = 'WHERE 1=1';
 $whereSubquery = '';
 
@@ -266,9 +301,9 @@ if ($filter_status != -1)
 	$whereSubquery .= ' AND status = ' . $filter_status;
 	
 if ($trap_type == 5) {
-	$whereSubquery .= ' AND type NOT IN (0, 1, 2, 3, 4)';
+	$whereSubquery .= ' AND type NOT IN (0, 1, 2, 3, 4)';	
 }
-else if ($trap_type != -1) {
+else if ($trap_type != -1){
 	$whereSubquery .= ' AND type = ' . $trap_type;
 }
 
@@ -304,42 +339,59 @@ $table->size[0] = '120px';
 $table->data = array ();
 
 // Alert status select
-$table->data[1][0] = '<strong>'.__('Alert').'</strong>';
-$table->data[1][1] = html_print_select ($alerted, "filter_fired", $filter_fired, 'javascript:this.form.submit();', __('All'), '-1', true);
+$table->data[1][0] = '<strong>' . __('Alert') . '</strong>';
+$table->data[1][1] = html_print_select($alerted, "filter_fired",
+	$filter_fired, 'javascript:this.form.submit();', __('All'), '-1',
+	true);
 
 // Block size for pagination select
-$table->data[2][0] = '<strong>'.__('Block size for pagination').'</strong>';
+$table->data[2][0] = '<strong>' . __('Block size for pagination') . '</strong>';
 $paginations[25] = 25;
 $paginations[50] = 50;
 $paginations[100] = 100;
 $paginations[200] = 200;
 $paginations[500] = 500;
-$table->data[2][1] = html_print_select ($paginations, "pagination", $pagination, 'this.form.submit();', __('Default'), $config["block_size"], true);
+$table->data[2][1] = html_print_select($paginations, "pagination",
+	$pagination, 'this.form.submit();', __('Default'),
+	$config["block_size"], true);
 
 // Severity select
-$table->data[1][2] = '<strong>'.__('Severity').'</strong>';
-$table->data[1][3] = html_print_select ($severities, 'filter_severity', $filter_severity, 'this.form.submit();', __('All'), -1, true);
+$table->data[1][2] = '<strong>' . __('Severity') . '</strong>';
+$table->data[1][3] = html_print_select($severities, 'filter_severity',
+	$filter_severity, 'this.form.submit();', __('All'), -1, true);
 
 // Status
-$table->data[3][0] = '<strong>'.__('Status').'</strong>';
+$table->data[3][0] = '<strong>' . __('Status') . '</strong>';
 
 $status_array[-1] = __('All');
 $status_array[0] = __('Not validated');
 $status_array[1] = __('Validated');
-$table->data[3][1] = html_print_select ($status_array, 'filter_status', $filter_status, 'this.form.submit();', '', '', true);
+$table->data[3][1] = html_print_select($status_array, 'filter_status',
+	$filter_status, 'this.form.submit();', '', '', true);
 
 // Free search (search by all alphanumeric fields)
-$table->data[2][3] = '<strong>'.__('Free search').'</strong>' . ui_print_help_tip(__('Search by any alphanumeric field in the trap'), true);
-$table->data[2][4] = html_print_input_text ('free_search_string', $free_search_string, '', 40, 0, true);
+$table->data[2][3] = '<strong>' . __('Free search') . '</strong>' .
+	ui_print_help_tip(__('Search by any alphanumeric field in the trap'), true);
+$table->data[2][4] = html_print_input_text('free_search_string',
+	$free_search_string, '', 40, 0, true);
 
 // Type filter (ColdStart, WarmStart, LinkDown, LinkUp, authenticationFailure, Other)
-$table->data[4][1] = '<strong>'.__('Trap type').'</strong>' . ui_print_help_tip(__('Search by trap type'), true);
-$trap_types = array(-1 => __('None'), 0 => __('Cold start (0)'), 1 => __('Warm start (1)'), 2 => __('Link down (2)'), 3 => __('Link up (3)'), 4 => __('Authentication failure (4)'), 5 => __('Other'));
-$table->data[4][2] = html_print_select ($trap_types, 'trap_type', $trap_type, 'this.form.submit();', '', '', true, false, false);
+$table->data[4][1] = '<strong>' . __('Trap type') . '</strong>' .
+	ui_print_help_tip(__('Search by trap type'), true);
+$trap_types = array(
+	-1 => __('None'),
+	0 => __('Cold start (0)'),
+	1 => __('Warm start (1)'),
+	2 => __('Link down (2)'),
+	3 => __('Link up (3)'),
+	4 => __('Authentication failure (4)'),
+	5 => __('Other'));
+$table->data[4][2] = html_print_select($trap_types, 'trap_type',
+	$trap_type, 'this.form.submit();', '', '', true, false, false);
 
 // Disable this feature (time will decide if temporarily) in Oracle cause the group by is very confictive
 if ($config['dbtype'] != 'oracle') {
-	$table->data[3][3] = '<strong>'.__('Group by Enterprise String/IP').'</strong>';
+	$table->data[3][3] = '<strong>' . __('Group by Enterprise String/IP') . '</strong>';
 	$table->data[3][4] = __('Yes') . '&nbsp;'.
 		html_print_radio_button ('group_by', 1, '', $group_by, true) .
 		'&nbsp;&nbsp;';
@@ -362,8 +414,12 @@ ui_toggle($filter, __('Toggle filter(s)'));
 
 unset ($table);
 
+
+
 $traps = db_get_all_rows_sql($sql);
 $trapcount = (int) db_get_value_sql($sql_count);
+
+
 
 // No traps 
 if (empty ($traps)) {
@@ -372,7 +428,7 @@ if (empty ($traps)) {
 }
 
 if (($config['dbtype'] == 'oracle') && ($traps !== false)) {
-	for ($i=0; $i < count($traps); $i++) {
+	for ($i = 0; $i < count($traps); $i++) {
 		unset($traps[$i]['rnum']);
 	}
 }
@@ -467,10 +523,12 @@ if ($traps !== false) {
 		
 		//Status
 		if ($trap["status"] == 0) {
-			$data[0] = html_print_image("images/pixel_red.png", true, array("title" => __('Not validated'), "width" => "20", "height" => "20"));
+			$data[0] = html_print_image("images/pixel_red.png", true,
+				array("title" => __('Not validated'), "width" => "20", "height" => "20"));
 		}
 		else {
-			$data[0] = html_print_image("images/pixel_green.png", true, array("title" => __('Validated'), "width" => "20", "height" => "20"));
+			$data[0] = html_print_image("images/pixel_green.png", true,
+				array("title" => __('Validated'), "width" => "20", "height" => "20"));
 		}
 		
 		// Agent matching source address
@@ -558,7 +616,8 @@ if ($traps !== false) {
 			if ($is_admin) {
 				$data[8] .= '<a href="' . $url_snmp . '&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . html_print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a> ';
 			}
-		} else {
+		}
+		else {
 			$agent_trap_group = db_get_value('id_grupo', 'tagente', 'nombre', $trap['source']);
 			if ((check_acl ($config["id_user"], $agent_trap_group, "AW"))) {
 				$data[8] .= '<a href="' . $url_snmp . '&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:return confirm(\''.__('Are you sure?').'\')">' . html_print_image("images/cross.png", true, array("border" => "0", "title" => __('Delete'))) . '</a> ';
@@ -719,15 +778,19 @@ echo "</div></form>";
 
 echo '<div style="float:left; padding-left:30px; line-height: 17px; vertical-align: top; width:120px;">';
 echo '<h3>' . __('Status') . '</h3>';
-echo html_print_image("images/pixel_green.png", true, array("width" => "20", "height" => "20")) . ' - ' . __('Validated');
+echo html_print_image("images/pixel_green.png", true,
+	array("width" => "20", "height" => "20")) . ' - ' . __('Validated');
 echo '<br />';
-echo html_print_image("images/pixel_red.png", true, array("width" => "20", "height" => "20")) . ' - ' . __('Not validated');
+echo html_print_image("images/pixel_red.png", true,
+	array("width" => "20", "height" => "20")) . ' - ' . __('Not validated');
 echo '</div>';
 echo '<div style="float:left; padding-left:30px; line-height: 17px; vertical-align: top; width:120px;">';
 echo '<h3>' . __('Alert') . '</h3>';
-echo html_print_image("images/pixel_yellow.png", true, array("width" => "20", "height" => "20")) . ' - ' .__('Fired');
+echo html_print_image("images/pixel_yellow.png", true,
+	array("width" => "20", "height" => "20")) . ' - ' .__('Fired');
 echo '<br />';
-echo html_print_image("images/pixel_gray.png", true, array("width" => "20", "height" => "20")) . ' - ' . __('Not fired');
+echo html_print_image("images/pixel_gray.png", true,
+	array("width" => "20", "height" => "20")) . ' - ' . __('Not fired');
 echo '</div>';
 echo '<div style="float:left; padding-left:30px; line-height: 19px; vertical-align: top; width:120px;">';
 echo '<h3>' . __('Action') . '</h3>';

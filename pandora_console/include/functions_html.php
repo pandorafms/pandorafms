@@ -37,6 +37,7 @@ if (!isset($config)) {
 	}
 }
 
+require_once ($config['homedir'].'/include/functions.php');
 require_once ($config['homedir'].'/include/functions_users.php');
 require_once ($config['homedir'].'/include/functions_groups.php');
 require_once ($config['homedir'].'/include/functions_ui.php');
@@ -1018,8 +1019,9 @@ function html_print_input_password ($name, $value, $alt = '', $size = 50, $maxle
 	if ($size == 0)
 		$size = 10;
 	
+	$attr = array();
 	if ($required)
-		$attr = array('required' => 'required');
+		$attr['required'] = 'required';
 	
 	return html_print_input_text_extended ($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true);
 }
@@ -1046,8 +1048,9 @@ function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength
 	if ($size == 0)
 		$size = 10;
 	
+	$attr = array();
 	if ($required)
-		$attr = array('required' => 'required');
+		$attr['required'] = 'required';
 	
 	return html_print_input_text_extended ($name, $value, 'text-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return);
 }
@@ -1081,7 +1084,7 @@ function html_print_input_image ($name, $src, $value, $style = '', $return = fal
 	}
 	
 	// If metaconsole is activated and image doesn't exists try to search on normal console
-	if (defined('METACONSOLE')) {
+	if (is_metaconsole()) {
 		if (false === @file_get_contents($src, 0, null, 0, 1)) {
 			$src = '../../' . $src;
 		}
@@ -1764,7 +1767,7 @@ function html_print_image ($src, $return = false, $options = false,
 	global $config;
 	
 	// If metaconsole is in use then don't use skins
-	if (!defined('METACONSOLE')) {
+	if (!is_metaconsole()) {
 		
 		/* Checks if user's skin is available */
 		$isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
@@ -1780,7 +1783,7 @@ function html_print_image ($src, $return = false, $options = false,
 	
 	
 	// If metaconsole is activated and image doesn't exists try to search on normal console
-	if (defined('METACONSOLE')) {
+	if (is_metaconsole()) {
 		if (!$relative) {
 			$working_dir = str_replace("\\", "/", getcwd()); // Windows compatibility
 			if (strstr($working_dir, 'enterprise/meta') === false) {

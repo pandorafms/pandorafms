@@ -469,13 +469,13 @@ $(document).ready (function () {
 	
 	$("#submit-crt").click(function () {
 		$('#id_tag_selected option').map(function() {
-			$(this).attr('selected','selected');
+			$(this).prop('selected', true);
 		});
 	});
 	
 	$("#submit-upd").click(function () {
 		$('#id_tag_selected option').map(function() {
-			$(this).attr('selected','selected');
+			$(this).prop('selected', true);
 		});
 	});
 	

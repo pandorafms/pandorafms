@@ -215,6 +215,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}
 	
+	
 	$sql = sprintf ("SELECT %s
 		FROM talert_template_modules
 			INNER JOIN tagente_modulo t2
@@ -226,7 +227,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		WHERE id_agent_module in (%s) %s %s %s",
 		$selectText, $subQuery, $where, $filter, $orderbyText);
 	$alerts = db_get_all_rows_sql ($sql);
-
+	
 	if ($alerts === false)
 		return array ();
 	
@@ -1468,10 +1469,18 @@ function agents_get_agent_with_ip ($ip_address) {
  * @return array Array with the IP address of the given agent or an empty array.
  */
 function agents_get_addresses ($id_agent) {
-	$sql = sprintf ("SELECT ip
-		FROM taddress_agent, taddress
-		WHERE taddress_agent.id_a = taddress.id_a
-			AND id_agent = %d", $id_agent);
+	if (is_array($id_agent)) {
+		$sql = sprintf ("SELECT ip
+			FROM taddress_agent, taddress
+			WHERE taddress_agent.id_a = taddress.id_a
+				AND id_agent IN (%s)", implode(",", $id_agent));
+	}
+	else {
+		$sql = sprintf ("SELECT ip
+			FROM taddress_agent, taddress
+			WHERE taddress_agent.id_a = taddress.id_a
+				AND id_agent = %d", $id_agent);
+	}
 	
 	$ips = db_get_all_rows_sql ($sql);
 	

@@ -2,9 +2,9 @@
  /*
      pRadar - class to draw radar charts
 
-     Version     : 2.1.0
+     Version     : 2.1.4
      Made by     : Jean-Damien POGOLOTTI
-     Last Update : 26/01/11
+     Last Update : 19/01/2014
 
      This file can be distributed under the license you can find at :
 
@@ -35,6 +35,7 @@
     {
      $this->pChartObject = $Object;
 
+     $FixedMax		= isset($Format["FixedMax"]) ? $Format["FixedMax"] : VOID;
      $AxisR		= isset($Format["AxisR"]) ? $Format["AxisR"] : 60;
      $AxisG		= isset($Format["AxisG"]) ? $Format["AxisG"] : 60;
      $AxisB		= isset($Format["AxisB"]) ? $Format["AxisB"] : 60;
@@ -44,8 +45,22 @@
      $TicksLength	= isset($Format["TicksLength"]) ? $Format["TicksLength"] : 2;
      $DrawAxisValues	= isset($Format["DrawAxisValues"]) ? $Format["DrawAxisValues"] : TRUE;
      $AxisBoxRounded	= isset($Format["AxisBoxRounded"]) ? $Format["AxisBoxRounded"] : TRUE;
-     $AxisFontName	= isset($Format["FontName"]) ? $Format["FontName"] : $this->pChartObject->FontName;
-     $AxisFontSize	= isset($Format["FontSize"]) ? $Format["FontSize"] : $this->pChartObject->FontSize;
+     $AxisFontName	= isset($Format["AxisFontName"]) ? $Format["AxisFontName"] : $this->pChartObject->FontName;
+     $AxisFontSize	= isset($Format["AxisFontSize"]) ? $Format["AxisFontSize"] : $this->pChartObject->FontSize;
+     $WriteValues	= isset($Format["WriteValues"]) ? $Format["WriteValues"] : FALSE;
+     $WriteValuesInBubble = isset($Format["WriteValuesInBubble"]) ? $Format["WriteValuesInBubble"] : TRUE;
+     $ValueFontName	= isset($Format["ValueFontName"]) ? $Format["ValueFontName"] : $this->pChartObject->FontName;
+     $ValueFontSize	= isset($Format["ValueFontSize"]) ? $Format["ValueFontSize"] : $this->pChartObject->FontSize;
+     $ValuePadding	= isset($Format["ValuePadding"]) ? $Format["ValuePadding"] : 4;
+     $OuterBubbleRadius	= isset($Format["OuterBubbleRadius"]) ? $Format["OuterBubbleRadius"] : 2;
+     $OuterBubbleR	= isset($Format["OuterBubbleR"]) ? $Format["OuterBubbleR"] : VOID;
+     $OuterBubbleG	= isset($Format["OuterBubbleG"]) ? $Format["OuterBubbleG"] : VOID;
+     $OuterBubbleB	= isset($Format["OuterBubbleB"]) ? $Format["OuterBubbleB"] : VOID;
+     $OuterBubbleAlpha	= isset($Format["OuterBubbleAlpha"]) ? $Format["OuterBubbleAlpha"] : 100;
+     $InnerBubbleR	= isset($Format["InnerBubbleR"]) ? $Format["InnerBubbleR"] : 255;
+     $InnerBubbleG	= isset($Format["InnerBubbleG"]) ? $Format["InnerBubbleG"] : 255;
+     $InnerBubbleB	= isset($Format["InnerBubbleB"]) ? $Format["InnerBubbleB"] : 255;
+     $InnerBubbleAlpha	= isset($Format["InnerBubbleAlpha"]) ? $Format["InnerBubbleAlpha"] : 100;
      $DrawBackground	= isset($Format["DrawBackground"]) ? $Format["DrawBackground"] : TRUE;
      $BackgroundR	= isset($Format["BackgroundR"]) ? $Format["BackgroundR"] : 255;
      $BackgroundG	= isset($Format["BackgroundG"]) ? $Format["BackgroundG"] : 255;
@@ -77,8 +92,7 @@
      $Y1		= $Object->GraphAreaY1;
      $X2		= $Object->GraphAreaX2;
      $Y2		= $Object->GraphAreaY2;
-
-     // if ( $AxisBoxRounded ) { $DrawAxisValues = TRUE; }
+     $RecordImageMap	= isset($Format["RecordImageMap"]) ? $Format["RecordImageMap"] : FALSE;
 
      /* Cancel default tick length if ticks not enabled */
      if ( $DrawTicks == FALSE ) { $TicksLength = 0; }
@@ -109,12 +123,17 @@
      /* Determine the scale if set to automatic */
      if ( $SegmentHeight == SEGMENT_HEIGHT_AUTO)
       {
-       $Max = 0;
-       foreach($Data["Series"] as $SerieName => $DataArray)
+       if ( $FixedMax != VOID )
+        $Max = $FixedMax;
+       else
         {
-         if ( $SerieName != $LabelSerie )
+         $Max = 0;
+         foreach($Data["Series"] as $SerieName => $DataArray)
           {
-           if ( max($DataArray["Data"]) > $Max ) { $Max = max($DataArray["Data"]); }
+           if ( $SerieName != $LabelSerie )
+            {
+             if ( max($DataArray["Data"]) > $Max ) { $Max = max($DataArray["Data"]); }
+            }
           }
         }
        $MaxSegments = $EdgeHeight/20;
@@ -298,12 +317,12 @@
 
      /* Compute the plots position */
      $ID = 0; $Plot = "";
-     foreach($Data["Series"] as $SerieName => $Data)
+     foreach($Data["Series"] as $SerieName => $DataS)
       {
        if ( $SerieName != $LabelSerie )
         {
          $Color = array("R"=>$Palette[$ID]["R"],"G"=>$Palette[$ID]["G"],"B"=>$Palette[$ID]["B"],"Alpha"=>$Palette[$ID]["Alpha"],"Surrounding"=>$PointSurrounding);
-         foreach($Data["Data"] as $Key => $Value)
+         foreach($DataS["Data"] as $Key => $Value)
           {
            $Angle  = (360/$Points) * $Key;
            $Length = ($EdgeHeight/($Segments*$SegmentHeight))*$Value;
@@ -311,7 +330,9 @@
            $X = cos(deg2rad($Angle+$AxisRotation)) * $Length  + $CenterX;
            $Y = sin(deg2rad($Angle+$AxisRotation)) * $Length  + $CenterY;
 
-           $Plot[$ID][] = array($X,$Y);
+           $Plot[$ID][] = array($X,$Y,$Value);
+
+           if ( $RecordImageMap ) { $this->pChartObject->addToImageMap("CIRCLE",floor($X).",".floor($Y).",".floor($PointRadius),$this->pChartObject->toHTMLColor($Palette[$ID]["R"],$Palette[$ID]["G"],$Palette[$ID]["B"]),$DataS["Description"],$Data["Series"][$LabelSerie]["Data"][$Key]." = ".$Value); }
           }
          $ID++;
         }
@@ -336,6 +357,18 @@
 
        $Color = array("R"=>$Palette[$ID]["R"],"G"=>$Palette[$ID]["G"],"B"=>$Palette[$ID]["B"],"Alpha"=>$Palette[$ID]["Alpha"],"Surrounding"=>$PointSurrounding);
 
+       /* Bubble and labels settings */
+       $TextSettings = array("Align"=>TEXT_ALIGN_MIDDLEMIDDLE,"FontName"=>$ValueFontName,"FontSize"=>$ValueFontSize,"R"=>$Palette[$ID]["R"],"G"=>$Palette[$ID]["G"],"B"=>$Palette[$ID]["B"]);
+       $InnerColor = array("R"=>$InnerBubbleR,"G"=>$InnerBubbleG,"B"=>$InnerBubbleB,"Alpha"=>$InnerBubbleAlpha);
+       if ( $OuterBubbleR != VOID )
+        $OuterColor = array("R"=>$OuterBubbleR,"G"=>$OuterBubbleG,"B"=>$OuterBubbleB,"Alpha"=>$OuterBubbleAlpha);
+       else
+        $OuterColor = array("R"=>$Palette[$ID]["R"]+20,"G"=>$Palette[$ID]["G"]+20,"B"=>$Palette[$ID]["B"]+20,"Alpha"=>$Palette[$ID]["Alpha"]);
+
+       /* Loop to the starting points if asked */
+       if ( $LineLoopStart && $DrawLines )
+        $Object->drawLine($Points[count($Points)-1][0],$Points[count($Points)-1][1],$Points[0][0],$Points[0][1],$Color);
+
        /* Draw the lines & points */
        for($i=0; $i<count($Points);$i++) 
         {
@@ -344,12 +377,19 @@
 
          if ( $DrawPoints )
           $Object->drawFilledCircle($Points[$i][0],$Points[$i][1],$PointRadius,$Color);
+
+         if ( $WriteValuesInBubble && $WriteValues )
+          {
+           $TxtPos = $this->pChartObject->getTextBox($Points[$i][0],$Points[$i][1],$ValueFontName,$ValueFontSize,0,$Points[$i][2]);
+           $Radius = floor(($TxtPos[1]["X"] - $TxtPos[0]["X"] + $ValuePadding*2)/2);
+
+           $this->pChartObject->drawFilledCircle($Points[$i][0],$Points[$i][1],$Radius+$OuterBubbleRadius,$OuterColor);
+           $this->pChartObject->drawFilledCircle($Points[$i][0],$Points[$i][1],$Radius,$InnerColor);
+          }
+
+         if ( $WriteValues )
+          $this->pChartObject->drawText($Points[$i][0]-1,$Points[$i][1]-1,$Points[$i][2],$TextSettings);
         }
-
-       /* Loop to the starting points if asked */
-       if ( $LineLoopStart && $DrawLines )
-        $Object->drawLine($Points[$i-1][0],$Points[$i-1][1],$Points[0][0],$Points[0][1],$Color);
-
       }
     }
 
@@ -360,6 +400,7 @@
     {
      $this->pChartObject = $Object;
 
+     $FixedMax		= isset($Format["FixedMax"]) ? $Format["FixedMax"] : VOID;
      $AxisR		= isset($Format["AxisR"]) ? $Format["AxisR"] : 60;
      $AxisG		= isset($Format["AxisG"]) ? $Format["AxisG"] : 60;
      $AxisB		= isset($Format["AxisB"]) ? $Format["AxisB"] : 60;
@@ -371,6 +412,20 @@
      $AxisBoxRounded	= isset($Format["AxisBoxRounded"]) ? $Format["AxisBoxRounded"] : TRUE;
      $AxisFontName	= isset($Format["FontName"]) ? $Format["FontName"] : $this->pChartObject->FontName;
      $AxisFontSize	= isset($Format["FontSize"]) ? $Format["FontSize"] : $this->pChartObject->FontSize;
+     $WriteValues	= isset($Format["WriteValues"]) ? $Format["WriteValues"] : FALSE;
+     $WriteValuesInBubble = isset($Format["WriteValuesInBubble"]) ? $Format["WriteValuesInBubble"] : TRUE;
+     $ValueFontName	= isset($Format["ValueFontName"]) ? $Format["ValueFontName"] : $this->pChartObject->FontName;
+     $ValueFontSize	= isset($Format["ValueFontSize"]) ? $Format["ValueFontSize"] : $this->pChartObject->FontSize;
+     $ValuePadding	= isset($Format["ValuePadding"]) ? $Format["ValuePadding"] : 4;
+     $OuterBubbleRadius	= isset($Format["OuterBubbleRadius"]) ? $Format["OuterBubbleRadius"] : 2;
+     $OuterBubbleR	= isset($Format["OuterBubbleR"]) ? $Format["OuterBubbleR"] : VOID;
+     $OuterBubbleG	= isset($Format["OuterBubbleG"]) ? $Format["OuterBubbleG"] : VOID;
+     $OuterBubbleB	= isset($Format["OuterBubbleB"]) ? $Format["OuterBubbleB"] : VOID;
+     $OuterBubbleAlpha	= isset($Format["OuterBubbleAlpha"]) ? $Format["OuterBubbleAlpha"] : 100;
+     $InnerBubbleR	= isset($Format["InnerBubbleR"]) ? $Format["InnerBubbleR"] : 255;
+     $InnerBubbleG	= isset($Format["InnerBubbleG"]) ? $Format["InnerBubbleG"] : 255;
+     $InnerBubbleB	= isset($Format["InnerBubbleB"]) ? $Format["InnerBubbleB"] : 255;
+     $InnerBubbleAlpha	= isset($Format["InnerBubbleAlpha"]) ? $Format["InnerBubbleAlpha"] : 100;
      $DrawBackground	= isset($Format["DrawBackground"]) ? $Format["DrawBackground"] : TRUE;
      $BackgroundR	= isset($Format["BackgroundR"]) ? $Format["BackgroundR"] : 255;
      $BackgroundG	= isset($Format["BackgroundG"]) ? $Format["BackgroundG"] : 255;
@@ -400,6 +455,7 @@
      $Y1		= $Object->GraphAreaY1;
      $X2		= $Object->GraphAreaX2;
      $Y2		= $Object->GraphAreaY2;
+     $RecordImageMap	= isset($Format["RecordImageMap"]) ? $Format["RecordImageMap"] : FALSE;
 
      if ( $AxisBoxRounded ) { $DrawAxisValues = TRUE; }
 
@@ -432,14 +488,19 @@
      /* Determine the scale if set to automatic */
      if ( $SegmentHeight == SEGMENT_HEIGHT_AUTO)
       {
-       $Max = 0;
-       foreach($Data["Series"] as $SerieName => $DataArray)
+       if ( $FixedMax != VOID )
+        $Max = $FixedMax;
+       else
         {
-         if ( $SerieName != $LabelSerie )
+         $Max = 0;
+         foreach($Data["Series"] as $SerieName => $DataArray)
           {
-           if ( max($DataArray["Data"]) > $Max ) { $Max = max($DataArray["Data"]); }
+           if ( $SerieName != $LabelSerie )
+            {
+             if ( max($DataArray["Data"]) > $Max ) { $Max = max($DataArray["Data"]); }
+            }
           }
-        }
+         }
        $MaxSegments = $EdgeHeight/20;
        $Scale = $Object->computeScale(0,$Max,$MaxSegments,array(1,2,5));
 
@@ -553,7 +614,9 @@
            $X = cos(deg2rad($Angle+$AxisRotation)) * $Length  + $CenterX;
            $Y = sin(deg2rad($Angle+$AxisRotation)) * $Length  + $CenterY;
 
-           $Plot[$ID][] = array($X,$Y);
+           if ( $RecordImageMap ) { $this->pChartObject->addToImageMap("CIRCLE",floor($X).",".floor($Y).",".floor($PointRadius),$this->pChartObject->toHTMLColor($Palette[$ID]["R"],$Palette[$ID]["G"],$Palette[$ID]["B"]),$DataSet["Description"],$Data["Series"][$LabelSerie]["Data"][$Key]."&deg = ".$Value); }
+
+           $Plot[$ID][] = array($X,$Y,$Value);
           }
          $ID++;
         }
@@ -578,6 +641,18 @@
         }
 
        $Color = array("R"=>$Palette[$ID]["R"],"G"=>$Palette[$ID]["G"],"B"=>$Palette[$ID]["B"],"Alpha"=>$Palette[$ID]["Alpha"],"Surrounding"=>$PointSurrounding);
+
+       /* Bubble and labels settings */
+       $TextSettings = array("Align"=>TEXT_ALIGN_MIDDLEMIDDLE,"FontName"=>$ValueFontName,"FontSize"=>$ValueFontSize,"R"=>$Palette[$ID]["R"],"G"=>$Palette[$ID]["G"],"B"=>$Palette[$ID]["B"]);
+       $InnerColor = array("R"=>$InnerBubbleR,"G"=>$InnerBubbleG,"B"=>$InnerBubbleB,"Alpha"=>$InnerBubbleAlpha);
+       if ( $OuterBubbleR != VOID )
+        $OuterColor = array("R"=>$OuterBubbleR,"G"=>$OuterBubbleG,"B"=>$OuterBubbleB,"Alpha"=>$OuterBubbleAlpha);
+       else
+        $OuterColor = array("R"=>$Palette[$ID]["R"]+20,"G"=>$Palette[$ID]["G"]+20,"B"=>$Palette[$ID]["B"]+20,"Alpha"=>$Palette[$ID]["Alpha"]);
+
+       /* Loop to the starting points if asked */
+       if ( $LineLoopStart && $DrawLines )
+        $Object->drawLine($Points[count($Points)-1][0],$Points[count($Points)-1][1],$Points[0][0],$Points[0][1],$Color);
        
        /* Draw the lines & points */
        for($i=0; $i<count($Points);$i++) 
@@ -587,11 +662,19 @@
 
          if ( $DrawPoints )
           $Object->drawFilledCircle($Points[$i][0],$Points[$i][1],$PointRadius,$Color);
-        }
 
-       /* Loop to the starting points if asked */
-       if ( $LineLoopStart && $DrawLines )
-        $Object->drawLine($Points[$i-1][0],$Points[$i-1][1],$Points[0][0],$Points[0][1],$Color);
+         if ( $WriteValuesInBubble && $WriteValues )
+          {
+           $TxtPos = $this->pChartObject->getTextBox($Points[$i][0],$Points[$i][1],$ValueFontName,$ValueFontSize,0,$Points[$i][2]);
+           $Radius = floor(($TxtPos[1]["X"] - $TxtPos[0]["X"] + $ValuePadding*2)/2);
+
+           $this->pChartObject->drawFilledCircle($Points[$i][0],$Points[$i][1],$Radius+$OuterBubbleRadius,$OuterColor);
+           $this->pChartObject->drawFilledCircle($Points[$i][0],$Points[$i][1],$Radius,$InnerColor);
+          }
+
+         if ( $WriteValues )
+          $this->pChartObject->drawText($Points[$i][0]-1,$Points[$i][1]-1,$Points[$i][2],$TextSettings);
+        }
       }
     }
   }

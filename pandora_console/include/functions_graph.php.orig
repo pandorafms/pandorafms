@@ -2477,6 +2477,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 	{
 		$water_mark = array();
 	}
+<<<<<<< HEAD
 	if ($tactical_view) {
 		return ring3d_graph(false, $data, $width, $height,
 			__('Other'), '', $water_mark,
@@ -2487,6 +2488,12 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 			__('Other'), '', $water_mark,
 			$config['fontpath'], $config['font_size'], 1, 'bottom');
 	}
+=======
+	
+	return pie3d_graph($config['flash_charts'], $data, $width, $height,
+		__('Other'), '', $water_mark,
+		$config['fontpath'], $config['font_size'], 1, 'bottom');
+>>>>>>> develop
 }
 
 function grafico_eventos_agente ($width = 300, $height = 200, $result = false, $meta = false, $history = false) {

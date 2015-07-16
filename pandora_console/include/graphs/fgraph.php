@@ -523,6 +523,24 @@ function pie2d_graph($flash_chart, $chart_data, $width, $height,
 		$legend_position, $colors);
 }
 
+function ring3d_graph($flash_chart, $chart_data, $width, $height,
+	$others_str = "other", $homedir = "", $water_mark = "", $font = '',
+	$font_size = '', $ttl = 1, $legend_position = false, $colors = '') {
+	
+	return ring_graph('3d', $flash_chart, $chart_data, $width, $height,
+		$others_str, $homedir, $water_mark, $font, $font_size, $ttl,
+		$legend_position, $colors);
+}
+
+function ring2d_graph($flash_chart, $chart_data, $width, $height,
+	$others_str = "other", $homedir = "", $water_mark = "", $font = '',
+	$font_size = '', $ttl = 1, $legend_position = false, $colors = '') {
+	
+	return ring_graph('2d', $flash_chart, $chart_data, $width, $height,
+		$others_str, $homedir, $water_mark, $font, $font_size, $ttl,
+		$legend_position, $colors);
+}
+
 function pie_graph($graph_type, $flash_chart, $chart_data, $width,
 	$height, $others_str = "other", $homedir="", $water_mark = "",
 	$font = '', $font_size = '', $ttl = 1, $legend_position = false,
@@ -593,4 +611,67 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width,
 	}
 }
 
+function ring_graph($graph_type, $flash_chart, $chart_data, $width,
+	$height, $others_str = "other", $homedir="", $water_mark = "",
+	$font = '', $font_size = '', $ttl = 1, $legend_position = false,
+	$colors = '') {
+	
+	if (empty($chart_data)) {
+		return graph_nodata_image($width, $height, 'pie');
+	}
+	
+	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+	
+	// This library allows only 8 colors
+	$max_values = 5;
+	
+	//Remove the html_entities
+	$temp = array();
+	foreach ($chart_data as $key => $value) {
+		$temp[io_safe_output($key)] = $value;
+	}
+	$chart_data = $temp;
+	
+	if (count($chart_data) > $max_values) {
+		$chart_data_trunc = array();
+		$n = 1;
+		foreach ($chart_data as $key => $value) {
+			if ($n < $max_values) {
+				$chart_data_trunc[$key] = $value;
+			}
+			else {
+				if (!isset($chart_data_trunc[$others_str])) {
+					$chart_data_trunc[$others_str] = 0;
+				}
+				$chart_data_trunc[$others_str] += $value;
+			}
+			$n++;
+		}
+		$chart_data = $chart_data_trunc;
+	}
+	
+	
+	//TODO SET THE LEGEND POSITION
+	
+	$graph = array();
+	$graph['data'] = $chart_data;
+	$graph['width'] = $width;
+	$graph['height'] = $height;
+	$graph['water_mark'] = $water_mark_file;
+	$graph['font'] = $font;
+	$graph['font_size'] = $font_size;
+	$graph['legend_position'] = $legend_position;
+	$graph['color'] = $colors;
+	
+	$id_graph = serialize_in_temp($graph, null, $ttl);
+	
+	switch ($graph_type) {
+		case "2d":
+			return "<img src='" . $homedir . "include/graphs/functions_pchart.php?static_graph=1&graph_type=ring2d&ttl=".$ttl."&id_graph=".$id_graph."'>";
+			break;
+		case "3d":
+			return "<img src='" . $homedir . "include/graphs/functions_pchart.php?static_graph=1&graph_type=ring3d&ttl=".$ttl."&id_graph=".$id_graph."'>";
+			break;
+	}
+}
 ?>

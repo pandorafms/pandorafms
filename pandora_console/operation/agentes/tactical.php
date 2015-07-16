@@ -248,13 +248,13 @@ $out = '<table cellpadding=0 cellspacing=0 class="databox pies"  style="margin-t
 			<legend>' . 
 				__('Event graph') . 
 			'</legend>' . 
-			grafico_eventos_total("", 250, 150, false) . '</fieldset>';
+			grafico_eventos_total("", 450, 285, false, true) . '</fieldset>';
 	$out .="</td><td>";
 	$out .= '<fieldset class="databox tactical_set">
 			<legend>' . 
 				__('Event graph by agent') . 
 			'</legend>' . 
-			grafico_eventos_grupo(250, 150, "", false, false, false) . '</fieldset>';
+			grafico_eventos_grupo(450, 285, "", false, false, false, true) . '</fieldset>';
 	$out .= '</td></tr></table>';
 echo $out;
 

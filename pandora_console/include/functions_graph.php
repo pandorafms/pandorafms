@@ -2348,7 +2348,7 @@ function graph_events_validated($width = 300, $height = 200, $url = "", $meta = 
  * @param bool if the graph required is or not for metaconsole
  * @param bool if the graph required is or not for history table
  */
-function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = false, $history = false, $noWaterMark = true) {
+function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = false, $history = false, $noWaterMark = true, $tactical_view = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -2473,10 +2473,20 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 		$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
-	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Other'), '', $water_mark,
-		$config['fontpath'], $config['font_size'], 1, 'bottom');
+	else
+	{
+		$water_mark = array();
+	}
+	if ($tactical_view) {
+		return ring3d_graph(false, $data, $width, $height,
+			__('Other'), '', $water_mark,
+			$config['fontpath'], $config['font_size'], 1, 'bottom');
+	}
+	else {
+		return pie3d_graph($config['flash_charts'], $data, $width, $height,
+			__('Other'), '', $water_mark,
+			$config['fontpath'], $config['font_size'], 1, 'bottom');
+	}
 }
 
 function grafico_eventos_agente ($width = 300, $height = 200, $result = false, $meta = false, $history = false) {
@@ -2545,7 +2555,7 @@ function grafico_eventos_agente ($width = 300, $height = 200, $result = false, $
  * 
  * @param string filter Filter for query in DB
  */
-function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWaterMark = true) {
+function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWaterMark = true, $tactical_view = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -2607,10 +2617,20 @@ function grafico_eventos_total($filter = "", $width = 320, $height = 200, $noWat
 			'file' => $config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("/images/logo_vertical_water.png", false, false, false));
 	}
+	else {
+		$water_mark = array();
+	}
 	
-	return pie3d_graph($config['flash_charts'], $data, $width, $height,
-		__('Other'), '', $water_mark,
-		$config['fontpath'], $config['font_size'], 1, 'bottom', $colors);
+	if ($tactical_view) {
+		return ring3d_graph($config['flash_charts'], $data, $width, $height,
+			__('Other'), '', $water_mark,
+			$config['fontpath'], $config['font_size'], 1, 'bottom', $colors);
+	}
+	else {
+		return pie3d_graph($config['flash_charts'], $data, $width, $height,
+			__('Other'), '', $water_mark,
+			$config['fontpath'], $config['font_size'], 1, 'bottom', $colors);
+	}
 }
 
 /**

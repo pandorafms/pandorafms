@@ -2443,7 +2443,7 @@ function array2XML($data, $root = null, $xml = NULL) {
 		}
 	}
 	
-	return html_entity_decode($xml->asXML());
+	return $xml->asXML();
 }
 
 /**

@@ -25,7 +25,8 @@ if (! check_acl ($config['id_user'], 0, "AW")) {
 	return;
 }
 
-$config["past_planned_downtimes"] = isset($config["past_planned_downtimes"]) ? $config["past_planned_downtimes"] : 1;
+// Default
+set_unless_defined ($config["past_planned_downtimes"], 1);
 
 require_once ('include/functions_users.php');
 
@@ -81,43 +82,59 @@ $id_agent 				= (int) get_parameter ('id_agent');
 $insert_downtime_agent 	= (int) get_parameter ('insert_downtime_agent');
 $delete_downtime_agent 	= (int) get_parameter ('delete_downtime_agent');
 
+// User groups with AW permission for ACL checks
+$user_groups_aw = array_keys(users_get_groups($config['id_user'], 'AW'));
+
 // INSERT A NEW DOWNTIME_AGENT ASSOCIATION
 if ($insert_downtime_agent === 1) {
+	
+	// Check AW permission on downtime
+	$downtime_group = db_get_value('id_group', 'tplanned_downtime', 'id', $id_downtime);
+	
+	if ($downtime_group === false || !in_array($downtime_group, $user_groups_aw)) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access downtime scheduler");
+		require ("general/noaccess.php");
+		return;
+	}
+	
 	$agents = (array) get_parameter ('id_agents');
 	$module_names = (array) get_parameter ('module');
 	
-	$all_modules = false;
-	if (empty($module_names)) {
-		$all_modules = true;
-	}
-	else {
-		//It is empty.
-		if ($module_names[0] == "0")
-			$all_modules = true;
-	}
+	$all_modules = (empty($module_names) || in_array(0, $module_names));
 	
-	$executed = db_get_value ('executed', 'tplanned_downtime', 'id', $id_downtime);
-	if ($executed == 1) {
+	// 'Is running' check
+	$is_running = (bool) db_get_value ('executed', 'tplanned_downtime', 'id', $id_downtime);
+	if ($is_running) {
 		ui_print_error_message(__("This elements cannot be modified while the downtime is being executed"));
 	}
 	else {
-		$num_agents = count($agents);
-		for ($a = 0; $a < $num_agents; $a++) {
-			$id_agente_dt = $agents[$a];
+		foreach ($agents as $agent_id) {
+			
+			// Check AW permission on agent
+			$agent_group = db_get_value('id_grupo', 'tagente', 'id_agente', $agent_id);
+			
+			if ($agent_group === false || !in_array($agent_group, $user_groups_aw)) {
+				continue;
+			}
 			
 			$values = array(
 					'id_downtime' => $id_downtime,
-					'id_agent' => $id_agente_dt,
+					'id_agent' => $agent_id,
 					'all_modules' => $all_modules
 				);
-			
 			$result = db_process_sql_insert('tplanned_downtime_agents', $values);
+			
 			if ($result && !$all_modules) {
 				foreach ($module_names as $module_name) {
-					$module = modules_get_agentmodule_id($module_name, $id_agente_dt);
+					$module = modules_get_agentmodule_id($module_name, $agent_id);
+					
+					if (empty($module))
+						continue;
+					
 					$values = array(
 							'id_downtime' => $id_downtime,
-							'id_agent' => $id_agente_dt,
+							'id_agent' => $agent_id,
 							'id_agent_module' => $module["id_agente_modulo"]
 						);
 					$result = db_process_sql_insert('tplanned_downtime_modules', $values);
@@ -138,8 +155,29 @@ if ($delete_downtime_agent === 1) {
 	
 	$id_da = (int) get_parameter ('id_downtime_agent');
 	
-	$executed = db_get_value ('executed', 'tplanned_downtime', 'id', $id_downtime);
-	if ($executed == 1) {
+	// Check AW permission on downtime
+	$downtime_group = db_get_value('id_group', 'tplanned_downtime', 'id', $id_downtime);
+	
+	if ($downtime_group === false || !in_array($downtime_group, $user_groups_aw)) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access downtime scheduler");
+		require ("general/noaccess.php");
+		return;
+	}
+	
+	// Check AW permission on agent
+	$agent_group = db_get_value('id_grupo', 'tagente', 'id_agente', $id_agent);
+	
+	if ($agent_group === false || !in_array($agent_group, $user_groups_aw)) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access downtime scheduler");
+		require ("general/noaccess.php");
+		return;
+	}
+	
+	// 'Is running' check
+	$is_running = (bool) db_get_value ('executed', 'tplanned_downtime', 'id', $id_downtime);
+	if ($is_running) {
 		ui_print_error_message(__("This elements cannot be modified while the downtime is being executed"));
 	}
 	else {
@@ -158,11 +196,11 @@ if ($delete_downtime_agent === 1) {
 
 // UPDATE OR CREATE A DOWNTIME (MAIN DATA, NOT AGENT ASSOCIATION)
 if ($create_downtime || $update_downtime) {
-	$check = db_get_value ('name', 'tplanned_downtime', 'name', $name);
+	$check = (bool) db_get_value ('name', 'tplanned_downtime', 'name', $name);
 	
 	$datetime_from = strtotime ($once_date_from . ' ' . $once_time_from);
 	$datetime_to = strtotime ($once_date_to . ' ' . $once_time_to);
-	$now = strtotime(date(DATE_FORMAT). ' ' . date(TIME_FORMAT));
+	$now = time();
 	
 	if ($type_execution == 'once' && !$config["past_planned_downtimes"] && $datetime_from < $now) {
 		ui_print_error_message(__('Not created. Error inserting data. Start time must be higher than the current time' ));
@@ -184,6 +222,15 @@ if ($create_downtime || $update_downtime) {
 	else {
 		$sql = '';
 		if ($create_downtime) {
+			
+			// Check AW permission on new downtime
+			if (!in_array($id_group, $user_groups_aw)) {
+				db_pandora_audit("ACL Violation",
+					"Trying to access downtime scheduler");
+				require ("general/noaccess.php");
+				return;
+			}
+			
 			if (trim(io_safe_output($name)) != '') {
 				if (!$check) {
 					$values = array(
@@ -228,44 +275,65 @@ if ($create_downtime || $update_downtime) {
 			}
 		}
 		else if ($update_downtime) {
-			$has_been_executed = db_get_value ('executed', 'tplanned_downtime', 'name', $name);
+			$old_downtime = db_get_row('tplanned_downtime', 'id', $id_downtime);
+			
+			// Check AW permission on OLD downtime
+			if (empty($old_downtime) || !in_array($old_downtime['id_group'], $user_groups_aw)) {
+				db_pandora_audit("ACL Violation",
+					"Trying to access downtime scheduler");
+				require ("general/noaccess.php");
+				return;
+			}
+			
+			// Check AW permission on NEW downtime group
+			if (!in_array($id_group, $user_groups_aw)) {
+				db_pandora_audit("ACL Violation",
+					"Trying to access downtime scheduler");
+				require ("general/noaccess.php");
+				return;
+			}
+			
+			// 'Is running' check
+			$is_running = (bool) $old_downtime['executed'];
+			
 			$values = array();
 			if (trim(io_safe_output($name)) == '') {
 				ui_print_error_message(__('Planned downtime must have a name'));
 			}
-			else if ($has_been_executed == 1 && $type_execution == 'once') {
+			// When running only certain items can be modified for the 'once' type
+			else if ($is_running && $type_execution == 'once') {
 				$values = array(
 					'description' => $description,
 					'date_to' => $datetime_to,
 					'id_user' => $config['id_user']
 				);
 			}
-			else if ($has_been_executed == 1) {
-				ui_print_error_message(__('No updates. Planned Downtime has been executed'));
+			else if ($is_running) {
+				ui_print_error_message(__('Cannot be modified while the downtime is being executed'));
 			}
 			else {
 				$values = array(
-					'name' => $name,
-					'description' => $description,
-					'date_from' => $datetime_from,
-					'date_to' => $datetime_to,
-					'id_group' => $id_group,
-					'only_alerts' => 0,
-					'monday' => $monday,
-					'tuesday' => $tuesday,
-					'wednesday' => $wednesday,
-					'thursday' => $thursday,
-					'friday' => $friday,
-					'saturday' => $saturday,
-					'sunday' => $sunday,
-					'periodically_time_from' => $periodically_time_from,
-					'periodically_time_to' => $periodically_time_to,
-					'periodically_day_from' => $periodically_day_from,
-					'periodically_day_to' => $periodically_day_to,
-					'type_downtime' => $type_downtime,
-					'type_execution' => $type_execution,
-					'type_periodicity' => $type_periodicity,
-					'id_user' => $config['id_user']
+						'name' => $name,
+						'description' => $description,
+						'date_from' => $datetime_from,
+						'date_to' => $datetime_to,
+						'id_group' => $id_group,
+						'only_alerts' => 0,
+						'monday' => $monday,
+						'tuesday' => $tuesday,
+						'wednesday' => $wednesday,
+						'thursday' => $thursday,
+						'friday' => $friday,
+						'saturday' => $saturday,
+						'sunday' => $sunday,
+						'periodically_time_from' => $periodically_time_from,
+						'periodically_time_to' => $periodically_time_to,
+						'periodically_day_from' => $periodically_day_from,
+						'periodically_day_to' => $periodically_day_to,
+						'type_downtime' => $type_downtime,
+						'type_execution' => $type_execution,
+						'type_periodicity' => $type_periodicity,
+						'id_user' => $config['id_user']
 					);
 				if ($config["dbtype"] == 'oracle') {
 					$values['periodically_time_from'] = '1970/01/01 ' . $values['periodically_time_from'];
@@ -354,10 +422,15 @@ if ($id_downtime > 0) {
 			break;
 	}
 	
-	$groupsAW = users_get_groups($config['id_user'], 'AW', true, false, null, 'id_grupo');
-	$groupsAW = array_keys($groupsAW);
-
 	$result = db_get_row_sql ($sql);
+	
+	// Permission check for the downtime with the AW user groups
+	if (empty($result) || !in_array($result['id_group'], $user_groups_aw) ){
+		db_pandora_audit("ACL Violation",
+		"Trying to access downtime scheduler");
+		require ("general/noaccess.php");
+		return;
+	}
 	
 	$name 					= (string) $result["name"];
 	$id_group 				= (int) $result['id_group'];
@@ -386,18 +459,11 @@ if ($id_downtime > 0) {
 	$saturday 				= (bool) $result['saturday'];
 	$sunday 				= (bool) $result['sunday'];
 	
-	$executed 				= (bool) $result['executed'];
-
-	if ( !in_array($id_group, $groupsAW) ){
-		db_pandora_audit("ACL Violation",
-		"Trying to access downtime scheduler");
-		require ("general/noaccess.php");
-		return;
-	}
+	$running 				= (bool) $result['executed'];
 }
 
-// when the planned down time is in execution, only action to postpone on once type is enabled and the other are disabled.
-$disabled_in_execution = $executed ? 1 : 0;
+// when the planned downtime is in execution, only action to postpone on once type is enabled and the other are disabled.
+$disabled_in_execution = (int) $running;
 
 $table = new StdClass();
 $table->class = 'databox filters';
@@ -564,42 +630,42 @@ if ($id_downtime > 0) {
 	// Show available agents to include into downtime
 	echo '<h4>' . __('Available agents') . ':</h4>';
 	
-	$filter_group = get_parameter("filter_group", 0);
+	$filter_group = (int) get_parameter("filter_group", 0);
 	
-	$groupsAW = users_get_groups($config['id_user'], 'AW', true, false, null, 'id_grupo');
-	$groupsAW = array_keys($groupsAW);
-	$id_groups_list = implode(",", $groupsAW);
-
-	if (empty($id_groups_list)){
-		$id_groups_list = -1;
+	// User AW groups to str for the filter
+	$id_groups_str = implode(",", $user_groups_aw);
+	
+	if (empty($id_groups_str)) {
+		// Restrictive filter on error. This will filter all the downtimes
+		$id_groups_str = '-1';
 	}
-
+	
 	$filter_cond = '';
 	if ($filter_group > 0)
 		$filter_cond = " AND id_grupo = $filter_group ";
-	$sql = sprintf ("SELECT tagente.id_agente, tagente.nombre,
-						tagente.id_grupo
+	$sql = sprintf("SELECT tagente.id_agente, tagente.nombre
 					FROM tagente
 					WHERE tagente.id_agente NOT IN (
 							SELECT tagente.id_agente
 							FROM tagente, tplanned_downtime_agents
 							WHERE tplanned_downtime_agents.id_agent = tagente.id_agente
 								AND tplanned_downtime_agents.id_downtime = %d
-						) AND disabled = 0 $filter_cond
+						) AND disabled = 0 %s
 						AND tagente.id_grupo IN (%s)
-					ORDER by tagente.nombre", $id_downtime, $id_groups_list);
-	$downtimes = db_get_all_rows_sql ($sql);
-	$data = array ();
-	if ($downtimes) {
-		foreach ($downtimes as $downtime) {
-			if (check_acl ($config["id_user"], $downtime['id_grupo'], "AW")) {
-				$data[$downtime['id_agente']] = $downtime['nombre'];
-			}
-		}
-	}
+					ORDER BY tagente.nombre", $id_downtime, $filter_cond, $id_groups_str);
+	$agents = db_get_all_rows_sql ($sql);
+	if (empty($agents))
+		$agents = array();
+	
+	$agent_ids = extract_column($agents, 'id_agente');
+	$agent_names = extract_column($agents, 'nombre');
+	// item[<id>] = <name>;
+	$agents = array_combine($agent_ids, $agent_names);
+	if ($agents === false)
+		$agents = array();
 	
 	$disabled_add_button = false;
-	if (empty($data) || $disabled_in_execution) {
+	if (empty($agents) || $disabled_in_execution) {
 		$disabled_add_button = true;
 	}
 	
@@ -613,7 +679,7 @@ if ($id_downtime > 0) {
 	
 	echo "<form method=post action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.editor&insert_downtime_agent=1&id_downtime=$id_downtime'>";
 	
-	echo html_print_select ($data, "id_agents[]", '', '', '', 0, false, true, true, '', false, 'width: 180px;');
+	echo html_print_select ($agents, "id_agents[]", '', '', '', 0, false, true, true, '', false, 'width: 180px;');
 	echo '<h4>' . __('Available modules:') . 
 		ui_print_help_tip (__('Only for type Quiet for downtimes.'), true) . '</h4>';
 	
@@ -631,17 +697,20 @@ if ($id_downtime > 0) {
 	//Start Overview of existing planned downtime
 	echo '<h4>'.__('Agents planned for this downtime').':</h4>';
 	
-	$sql = sprintf ("SELECT tagente.nombre, tplanned_downtime_agents.id,
-						tagente.id_os, tagente.id_agente, tagente.id_grupo,
-						tagente.ultimo_contacto, tplanned_downtime_agents.all_modules
-					FROM tagente, tplanned_downtime_agents
-					WHERE tplanned_downtime_agents.id_agent = tagente.id_agente
-						AND tplanned_downtime_agents.id_downtime = %d ", $id_downtime);
+	// User the $id_groups_str built before
+	$sql = sprintf("SELECT ta.nombre, tpda.id,
+						ta.id_os, ta.id_agente, ta.id_grupo,
+						ta.ultimo_contacto, tpda.all_modules
+					FROM tagente ta
+					INNER JOIN tplanned_downtime_agents tpda
+						ON ta.id_agente = tpda.id_agent
+							AND tpda.id_downtime = %d
+					WHERE ta.id_grupo IN (%s)",
+					$id_downtime, $id_groups_str);
+	$downtimes_agents = db_get_all_rows_sql ($sql);
 	
-	$downtimes = db_get_all_rows_sql ($sql);
-	if ($downtimes === false) {
-		echo '<div class="nf">' .
-			__('There are no scheduled downtimes') . '</div>';
+	if (empty($downtimes_agents)) {
+		echo '<div class="nf">' . __('There are no agents') . '</div>';
 	}
 	else {
 		$table = new stdClass();
@@ -656,24 +725,24 @@ if ($id_downtime > 0) {
 		$table->head[3] = __('Last contact');
 		$table->head['count_modules'] = __('Modules');
 		
-		if (!$executed) {
+		if (!$running) {
 			$table->head[5] = __('Actions');
 			$table->align[5] = "center";
 			$table->size[5] = "5%";
 		}
 		
-		foreach ($downtimes as $downtime) {
+		foreach ($downtimes_agents as $downtime_agent) {
 			$data = array ();
 			
-			$data[0] = $downtime['nombre'];
+			$data[0] = $downtime_agent['nombre'];
 			
 			$data[1] = db_get_sql ("SELECT nombre
 									FROM tgrupo
-									WHERE id_grupo = " . $downtime["id_grupo"]);
+									WHERE id_grupo = " . $downtime_agent["id_grupo"]);
 			
-			$data[2] = ui_print_os_icon($downtime["id_os"], true, true);
+			$data[2] = ui_print_os_icon($downtime_agent["id_os"], true, true);
 			
-			$data[3] = $downtime["ultimo_contacto"];
+			$data[3] = $downtime_agent["ultimo_contacto"];
 			
 			if ($type_downtime == 'disable_agents_alerts') {
 				$data['count_modules'] = __("All alerts");
@@ -682,7 +751,7 @@ if ($id_downtime > 0) {
 				$data['count_modules'] = __("Entire agent");
 			}
 			else {
-				if ($downtime["all_modules"]) {
+				if ($downtime_agent["all_modules"]) {
 					$data['count_modules'] = __("All modules");
 				}
 				else {
@@ -690,19 +759,19 @@ if ($id_downtime > 0) {
 				}
 			}
 			
-			if (!$executed) {
+			if (!$running) {
 				$data[5] = '';
 				if ($type_downtime != 'disable_agents_alerts' && $type_downtime != 'disable_agents') {
-					$data[5] = '<a href="javascript:show_editor_module(' . $downtime["id_agente"] . ');">' .
+					$data[5] = '<a href="javascript:show_editor_module(' . $downtime_agent["id_agente"] . ');">' .
 						html_print_image("images/config.png", true, array("border" => '0', "alt" => __('Delete'))) . "</a>";
 				}
 				
-				$data[5] .= '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor&id_agent=' . $downtime["id_agente"] . 
-					'&delete_downtime_agent=1&id_downtime_agent=' . $downtime["id"] . '&id_downtime=' . $id_downtime . '">' .
+				$data[5] .= '<a href="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor&id_agent=' . $downtime_agent["id_agente"] . 
+					'&delete_downtime_agent=1&id_downtime_agent=' . $downtime_agent["id"] . '&id_downtime=' . $id_downtime . '">' .
 					html_print_image("images/cross.png", true, array("border" => '0', "alt" => __('Delete'))) . "</a>";
 			}
 			
-			$table->data['agent_' . $downtime["id_agente"]] = $data;
+			$table->data['agent_' . $downtime_agent["id_agente"]] = $data;
 		}
 		html_print_table ($table);
 	}

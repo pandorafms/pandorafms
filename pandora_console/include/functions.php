@@ -2220,4 +2220,84 @@ function print_audit_csv ($data) {
 	}
 }
 
+function is_metaconsole() {
+	global $config;
+	
+	if ($config['metaconsole'])
+		return true;
+	else
+		return false;
+}
+
+function set_if_defined (&$var, $test) {
+	if (isset($test)) {
+		$var = $test;
+		
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+function set_unless_defined (&$var, $default) {
+	if (! isset($var)) {
+		$var = $default;
+		
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+function set_when_empty (&$var, $default) {
+	if (empty($var)) {
+		$var = $default;
+		
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+function sort_by_column (&$array_ref, $column_parameter) {
+	global $column;
+	
+	$column = $column_parameter;
+	
+	if (!empty($column)) {
+		usort($array_ref, function ($a, $b) {
+			global $column;
+			
+			return strcmp($a[$column], $b[$column]);
+		});
+	}
+}
+
+/**
+ * Returns an array by extracting a column or columns.
+ *
+ * @param array Array
+ * @param mixed (string/array) Column name/s
+ *
+ * @return array Array formed by the extracted columns of every array iteration.
+ */
+function extract_column ($array, $column) {
+	$column_is_arr = is_array($column);
+	
+	return array_map(function($item) use ($column_is_arr, $column) {
+		if ($column_is_arr) {
+			return array_reduce($column, function($carry, $col) use ($item) {
+				$carry[$col] = $item[$col];
+				return $item[$col];
+			}, array());
+		}
+		else {
+			return $item[$column];
+		}
+	}, $array);
+}
+
 ?>

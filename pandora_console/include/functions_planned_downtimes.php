@@ -532,6 +532,8 @@ function planned_downtimes_stop ($downtime) {
 	if (empty($downtime))
 		return false;
 	
+	$id_downtime = $downtime['id'];
+	
 	switch ($downtime['type_execution']) {
 		case 'once':
 			$values = array(

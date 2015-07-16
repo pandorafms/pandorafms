@@ -43,7 +43,7 @@ if (!defined('METACONSOLE')) {
 $id_layout = (int) get_parameter ('id_layout');
 $copy_layout = (bool) get_parameter ('copy_layout');
 $delete_layout = (bool) get_parameter ('delete_layout');
-$refr = (int) get_parameter('refr');
+$refr = (int) get_parameter('refr', 60);
 $offset = (int) get_parameter('offset', 0);
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 
@@ -238,7 +238,8 @@ else {
 if ($own_info['is_admin'] || $vconsoles_read) {
 	$maps = visual_map_get_user_layouts (0,false,$filters);
 	$total_maps = count(visual_map_get_user_layouts());
-} else {
+}
+else {
 	$maps = visual_map_get_user_layouts ($config['id_user'], false,
 		$filters, false);
 	$total_maps = count(visual_map_get_user_layouts ($config['id_user'], false,

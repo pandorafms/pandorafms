@@ -14,19 +14,20 @@
 // GNU General Public License for more details.
 
 
-
-// Global & session management
-require_once ('../../include/config.php');
-require_once ('../../include/auth/mysql.php');
-
 if (! isset($_SESSION['id_usuario'])) {
 	session_start();
-	session_write_close();
+	//session_write_close();
 }
 
+require_once ('../../include/config.php');
+require_once ($config['homedir'] . '/include/auth/mysql.php');
 require_once ($config['homedir'] . '/include/functions.php');
 require_once ($config['homedir'] . '/include/functions_db.php');
-require_once ($config['homedir'] . '/include/functions_ui.php');
+require_once ($config['homedir'] . '/include/functions_reporting.php');
+require_once ($config['homedir'] . '/include/functions_graph.php');
+require_once ($config['homedir'] . '/include/functions_modules.php');
+require_once ($config['homedir'] . '/include/functions_agents.php');
+require_once ($config['homedir'] . '/include/functions_tags.php');
 
 check_login ();
 

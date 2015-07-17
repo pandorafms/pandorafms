@@ -1486,7 +1486,7 @@ div#main_pure {
 	margin-top: 10px;
 	margin-left: 10px;
 	margin-right: 10px;
-	height: auto;
+	height: 1000px;
 	width: 98%;
 	position: static;
 }

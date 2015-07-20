@@ -805,9 +805,9 @@ switch ($config["dbtype"]) {
 if (! defined ('METACONSOLE')) {
 	$result = db_get_all_rows_sql ($sql);
 	
-	if ($count > $config["block_size"]) {
+	//if ($count > $config["block_size"]) {
 		ui_pagination ($count, false, $offset);
-	}
+	//}
 	
 	if ($result === false) {
 		$result = array ();
@@ -875,9 +875,9 @@ else {
 		
 	}
 	
-	if ($count_modules > $config["block_size"]) {
+	//if ($count_modules > $config["block_size"]) {
 		ui_pagination ($count_modules, false, $offset);
-	}
+	//}
 	
 	// Get number of elements of the pagination
 	$result = ui_meta_get_subset_array($result, $inferior_limit, $superior_limit);

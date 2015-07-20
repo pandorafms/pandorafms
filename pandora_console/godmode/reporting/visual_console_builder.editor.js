@@ -48,9 +48,15 @@ function toggle_advance_options_palette(close) {
 
 // Main function, execute in event documentReady
 function visual_map_main() {
-	img_handler_start= get_image_url("images/dot_red.png");
-	img_handler_end= get_image_url("images/dot_green.png");
-	
+	img_handler_start = "images/dot_red.png";
+	img_handler_end = "images/dot_green.png";
+	get_image_url(img_handler_start).success(function (data) {
+		img_handler_start = data;
+	});
+	get_image_url(img_handler_end).success(function (data) {
+		img_handler_end = data;
+	});
+
 	//Get the actual system font.
 	parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
@@ -450,7 +456,8 @@ function update_user_line(type, idElement, top, left) {
 
 function draw_user_lines(color, thickness, start_x, start_y , end_x,
 	end_y, only_defined_lines) {
-	
+		
+		
 	obj_js_user_lines.clear();
 	
 	// Draw the previous lines
@@ -490,7 +497,6 @@ function create_line(step, values) {
 	$('#background').unbind('click');
 	$('#background').unbind('dblclick');
 	
-	
 	switch (step) {
 		case 'step_1':
 			$("#background *").css("cursor", "crosshair");
@@ -498,17 +504,16 @@ function create_line(step, values) {
 			
 			$("#background *")
 				.on('mousemove', function(e) {
+					
 					$('#div_step_1').css({
-						left:	e.pageX,
-						top:	e.pageY
+						left:	e.offsetX,
+						top:	e.offsetY
 					});
 					$('#div_step_1').show();
 					
 					// 2 for the black border of background
-					values['line_start_x'] =
-						e.pageX - $("#background").position().left - 2;
-					values['line_start_y'] =
-						e.pageY - $("#background").position().top - 2;
+					values['line_start_x'] = e.offsetX;
+					values['line_start_y'] = e.offsetY;
 					
 				});
 			
@@ -527,25 +532,24 @@ function create_line(step, values) {
 			
 			$("#background *")
 				.on('mousemove', function(e) {
+					
 					$('#div_step_2').css({
-						left:	e.pageX,
-						top:	e.pageY
+						left:	e.offsetX,
+						top:	e.offsetY
 					});
 					$('#div_step_2').show();
 					
 					// 2 for the black border of background
-					values['line_end_x'] =
-						e.pageX - $("#background").position().left - 2;
-					values['line_end_y'] =
-						e.pageY - $("#background").position().top - 2;
+					values['line_end_x'] = e.offsetX;
+					values['line_end_y'] = e.offsetY;
 					
 					draw_user_lines(
 						values['line_color'],
 						values['line_width'],
 						values['line_start_x'],
 						values['line_start_y'],
-						values['line_end_x'] - 3,
-						values['line_end_y'] - 3);
+						values['line_end_x'],
+						values['line_end_y']);
 				});
 			
 			$("#background *")
@@ -941,7 +945,7 @@ function setAspectRatioBackground(side) {
 		}
 	});
 	
-	
+	toggle_item_palette();
 }
 
 function hiddenFields(item) {
@@ -1407,25 +1411,16 @@ function get_image_url(img_src) {
 	var img_url= null;
 	var parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/skins.ajax"});
-	parameter.push ({name: "get_image_path", value: "1"});
+	parameter.push ({name: "get_image_path", value: true});
 	parameter.push ({name: "img_src", value: img_src});
-	parameter.push ({name: "only_src", value: "1"});
-	parameter.push ({name: "id_visual_console",
-		value: id_visual_console});
+	parameter.push ({name: "only_src", value: true});	
 	
-	
-	
-	
-	jQuery.ajax ({
-		type: 'POST',
+	return $.ajax ({
+		type: 'GET',
 		url: get_url_ajax(),
-		data: parameter,
-		success: function (data) {
-			img_url = data;
-		}
+		cache: false,
+		data: parameter
 	});
-	
-	return img_url;
 }
 
 function set_color_line_status(lines, line, id_data, values) {
@@ -1436,7 +1431,7 @@ function set_color_line_status(lines, line, id_data, values) {
 	var parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_color_line"});
-	parameter.push ({name: "id_element", value: id});
+	parameter.push ({name: "id_element", value: id_data});
 	
 	var color = null;
 	
@@ -1496,7 +1491,7 @@ function createItem(type, values, id_data) {
 					+ '</div>'
 				+ '</div>'
 				+ '<input id="hidden-status_' + id_data + '" '
-					+ 'type="hidden" value="' + element_status + '" '
+					+ 'type="hidden" value="0" '
 					+ 'name="status_' + id_data + '">'
 			);
 			break;
@@ -1648,6 +1643,13 @@ function createItem(type, values, id_data) {
 	$(".box_item").css('z-index', '1');
 	
 	if (values['parent'] != 0) {
+		var line = {"id": id_data,
+			"node_begin":  values['parent'],
+			"node_end": id_data,
+			"color": false };
+		
+		lines.push(line);
+
 		set_color_line_status(lines, line, id_data, values);
 	}
 }
@@ -1735,7 +1737,7 @@ function insertDB(type, values) {
 								'top: ' + (values['line_end_y']  - radious_handle) + 'px; ' +
 								'left: ' + (values['line_end_x']  - radious_handle) + 'px;">' +
 								
-								'<img src="' + img_src + '" />' + 
+								'<img src="' + img_handler_end + '" />' + 
 								
 							'</div>'
 						);
@@ -1761,13 +1763,14 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 	switch (type) {
 		case 'handler_start':
 			$("#handler_start_" + idElement)
-				.css('top', top + 'px');
+				.css('top', (top - radious_handle) + 'px');
 			$("#handler_start_" + idElement)
 				.css('left', left + 'px');
 			break;
 		case 'handler_end':
+			
 			$("#handler_end_" + idElement).css('top', (top - radious_handle) + 'px');
-			$("#handler_end_" + idElement).css('left', (left - radious_handle) + 'px');
+			$("#handler_end_" + idElement).css('left', (left) + 'px');
 			break;
 		case 'group_item':
 		case 'static_graph':
@@ -1845,7 +1848,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 			refresh_lines(lines, 'background', true);
 			break;
 	}
-	
+	refresh_lines(lines, 'background', true);
 	draw_user_lines("", 0, 0, 0 , 0, 0, true);
 }
 
@@ -1900,6 +1903,7 @@ function updateDB(type, idElement , values, event) {
 		// -- line_item --
 		case 'handler_start':
 		// ---------------
+		
 			if ((typeof(values['mov_left']) != 'undefined') &&
 				(typeof(values['mov_top']) != 'undefined')) {
 				top = parseInt($("#handler_start_" + idElement)

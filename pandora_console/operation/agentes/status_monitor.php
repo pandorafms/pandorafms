@@ -816,9 +816,7 @@ switch ($config["dbtype"]) {
 if (! defined ('METACONSOLE')) {
 	$result = db_get_all_rows_sql ($sql);
 	
-	if ($count > $config["block_size"]) {
-		ui_pagination ($count, false, $offset);
-	}
+	ui_pagination ($count, false, $offset);
 	
 	if ($result === false) {
 		$result = array ();

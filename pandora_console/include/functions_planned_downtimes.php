@@ -25,7 +25,7 @@ global $config;
 /**
  * Include the usual functions
  */
-// require_once($config["homedir"] . "/include/functions.php");
+require_once($config["homedir"] . "/include/functions_ui.php");
 // enterprise_include_once('include/functions_inventory.php');
 
 function planned_downtimes_check_dates ($type_execution = 'once', $type_periodicity = '', $datetime_from = false, $datetime_to = false, $periodically_time_from = false, $periodically_time_to = false, $periodically_day_from = false, $periodically_day_to = false) {
@@ -516,6 +516,144 @@ function planned_downtimes_migrate_malformed_downtimes_copy_items ($original_dow
 	}
 
 	return $new_planned_downtimes_exists;
+}
+
+/** 
+ * Stop a planned downtime.
+ *
+ * @param array Planned downtime data.
+ * 
+ * @return mixes False on error or an array with the result and a message of the operation.
+ */
+function planned_downtimes_stop ($downtime) {
+	$result = false;
+	$message = '';
+	
+	if (empty($downtime))
+		return false;
+	
+	$id_downtime = $downtime['id'];
+	
+	switch ($downtime['type_execution']) {
+		case 'once':
+			$values = array(
+					'executed' => 0,
+					'date_to' => time()
+				);
+			
+			$result = db_process_sql_update('tplanned_downtime',
+				$values, array ('id' => $id_downtime));
+			break;
+		case 'periodically':
+			return false;
+			break;
+	}
+	
+	$message .= ui_print_result_message($result,
+		__('Succesful stopped the Downtime'),
+		__('Unsuccesful stopped the Downtime'),
+		true);
+	
+	if ($result) {
+		events_create_event ("Manual stop downtime  ".
+			$downtime['name'] . " (" . $downtime['id'] . ") by " .
+			$config['id_user'], 0, 0, EVENT_STATUS_NEW, $config["id_user"],
+			"system", 1);
+		db_pandora_audit("Planned Downtime management",
+			"Manual stop downtime " . $downtime['name'] . " (ID " . $downtime['id'] . ")",
+			false, true);
+		
+		//Reenabled the Agents or Modules or alerts...depends of type
+		switch ($downtime['type_downtime']) {
+			case 'quiet':
+				$agents = db_get_all_rows_filter(
+					'tplanned_downtime_agents',
+					array('id_downtime' => $id_downtime));
+				if (empty($agents))
+					$agents = array();
+				
+				$count = 0;
+				foreach ($agents as $agent) {
+					if ($agent['all_modules']) {
+						$result = db_process_sql_update('tagente',
+							array('quiet' => 0),
+							array('id_agente' => $agent['id_agent']));
+						
+						if ($result)
+							$count++;
+					}
+					else {
+						$modules = db_get_all_rows_filter(
+							'tplanned_downtime_modules',
+							array('id_agent' => $agent['id_agent'],
+								'id_downtime' => $id_downtime));
+						if (empty($modules))
+							$modules = array();
+						
+						foreach ($modules as $module) {
+							$result = db_process_sql_update(
+								'tagente_modulo',
+								array('quiet' => 0),
+								array('id_agente_modulo' =>
+									$module['id_agent_module']));
+							
+							if ($result)
+								$count++;
+						}
+					}
+				}
+				break;
+			case 'disable_agents':
+				$agents = db_get_all_rows_filter(
+					'tplanned_downtime_agents',
+					array('id_downtime' => $id_downtime));
+				if (empty($agents))
+					$agents = array();
+				
+				$count = 0;
+				foreach ($agents as $agent) {
+					$result = db_process_sql_update('tagente',
+						array('disabled' => 0),
+						array('id_agente' => $agent['id_agent']));
+					
+					if ($result)
+						$count++;
+				}
+				break;
+			case 'disable_agents_alerts':
+				$agents = db_get_all_rows_filter(
+					'tplanned_downtime_agents',
+					array('id_downtime' => $id_downtime));
+				if (empty($agents))
+					$agents = array();
+				
+				$count = 0;
+				foreach ($agents as $agent) {
+					$modules = db_get_all_rows_filter(
+						'tagente_modulo',
+						array('id_agente' => $agent['id_agent']));
+					if (empty($modules))
+						$modules = array();
+					
+					foreach ($modules as $module) {
+						$result = db_process_sql_update(
+							'talert_template_modules',
+							array('disabled' => 0),
+							array('id_agent_module' =>
+								$module['id_agente_modulo']));
+						
+						if ($result)
+							$count++;
+					}
+				}
+				break;
+		}
+		
+		$message .= ui_print_info_message(
+			sprintf(__('Enabled %s elements from the downtime'), $count), true);
+	}
+	
+	return array('result' => $result, 'message' => $message);
 }
 
 ?>

@@ -1894,6 +1894,9 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 		$groups = users_get_groups ($id_user, 'RR', false);
 	
 	if (!empty($groups)) {
+		if (empty($where))
+			$where = "";
+		
 		if ($where != '') {
 			$where .= ' AND ';
 		}

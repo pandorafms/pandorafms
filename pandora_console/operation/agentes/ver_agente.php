@@ -35,6 +35,7 @@ if (is_ajax ()) {
 	$get_agent_modules_json = (bool) get_parameter ('get_agent_modules_json');
 	$get_agent_status_tooltip = (bool) get_parameter ("get_agent_status_tooltip");
 	$get_agents_group_json = (bool) get_parameter ("get_agents_group_json");
+	$get_agent_modules_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_json_for_multiple_agents");
 	$get_agent_modules_alerts_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_alerts_json_for_multiple_agents");
 	$get_agents_json_for_multiple_modules = (bool) get_parameter("get_agents_json_for_multiple_modules");
 	$get_agent_modules_json_for_multiple_agents_id = (bool) get_parameter("get_agent_modules_json_for_multiple_agents_id");
@@ -171,6 +172,219 @@ if (is_ajax ()) {
 		return;
 	}
 	
+	if ($get_agent_modules_alerts_json_for_multiple_agents) {
+		$idAgents = get_parameter('id_agent');
+		$id_template = get_parameter('template');
+		
+		$selection_mode = get_parameter('selection_mode','common');
+		
+		$sql = 'SELECT DISTINCT(nombre)
+			FROM tagente_modulo t1, talert_template_modules t2
+			WHERE t2.id_agent_module = t1.id_agente_modulo
+				AND delete_pending = 0
+				AND id_alert_template = '.$id_template.'
+				AND id_agente IN (' . implode(',', $idAgents) . ')';
+			
+		if ($selection_mode == 'common') {
+			$sql .= ' AND (
+					SELECT count(nombre)
+					FROM tagente_modulo t3, talert_template_modules t4
+					WHERE t4.id_agent_module = t3.id_agente_modulo
+						AND delete_pending = 0 AND t1.nombre = t3.nombre
+						AND id_agente IN (' . implode(',', $idAgents) . ')
+						AND id_alert_template = '.$id_template.') = (' . count($idAgents) . ')';
+		}
+		
+		$sql .= ' ORDER BY t1.nombre';
+		
+		$nameModules = db_get_all_rows_sql($sql);
+		
+		if ($nameModules == false) {
+			$nameModules = array();
+		}
+		
+		$result = array();
+		foreach($nameModules as $nameModule) {
+			$result[] = io_safe_output($nameModule['nombre']);
+		}
+		
+		echo json_encode($result);
+		return;
+	}
+	
+	if ($get_agent_modules_json_for_multiple_agents) {
+		$idAgents = get_parameter('id_agent');
+		$custom_condition = get_parameter('custom_condition', '');
+		$selection_mode = get_parameter('selection_mode', 'common');
+		$serialized = get_parameter('serialized', '');
+		$id_server = (int) get_parameter('id_server', 0);
+		$metaconsole_server_name = null;
+		if ($id_server != 0) {
+			$metaconsole_server_name = db_get_value('server_name',
+				'tmetaconsole_setup', 'id', $id_server);
+		}
+		
+		$all = (string)get_parameter('all', 'all');
+		switch ($all) {
+			default:
+			case 'all':
+				$enabled = '1 = 1';
+				break;
+			case 'enabled':
+				$enabled = 'disabled = 0';
+				break;
+		}
+		
+		if (is_metaconsole()) {
+			$result = array();
+			$nameModules = array();
+			$temp = array();
+			$first = true;
+			$temp_element = array();
+			$counter = 0;
+			$first_elements = array();
+			
+			$array_mapped = array_map(function($item) use ($metaconsole_server_name) {
+				if (empty($metaconsole_server_name)) {
+					if (strstr($item, "|@_@|")) {
+							$row = explode ('|@_@|', $item);
+					}
+					else {
+						$row = explode ('|', $item);
+					}
+					$server_name = array_shift($row);
+					$id_agent = array_shift($row);
+				}
+				else {
+					$server_name = $metaconsole_server_name;
+					$id_agent = $item;
+				}
+				
+				return array(
+						'server_name' => $server_name,
+						'id_agent' => $id_agent
+					);
+				
+			}, $idAgents);
+			
+			$array_reduced = array_reduce($array_mapped, function($carry, $item) {
+				
+				if (!isset($carry[$item['server_name']]))
+					$carry[$item['server_name']] = array();
+				
+				$carry[$item['server_name']][] = $item['id_agent'];
+				
+				return $carry;
+				
+			}, array());
+			
+			$last_modules_set = array();
+			
+			foreach ($array_reduced as $server_name => $id_agents) {
+				//Metaconsole db connection
+				$connection = metaconsole_get_connection($server_name);
+				if (metaconsole_load_external_db($connection) != NOERR) {
+					continue;
+				}
+				
+				//Get agent's modules
+				$sql = sprintf('SELECT t1.id_agente, t1.id_agente_modulo, t1.nombre
+								FROM tagente_modulo t1
+								WHERE %s
+									AND t1.delete_pending = 0
+									AND t1.id_agente IN (%s)
+									AND (
+										SELECT COUNT(nombre)
+										FROM tagente_modulo t2
+										WHERE t2.delete_pending = 0
+											AND t1.nombre = t2.nombre
+											AND t2.id_agente IN (%s)) = (%d)',
+					$enabled, implode(',', $id_agents),
+					implode(',', $id_agents), count($id_agents));
+				
+				$modules = db_get_all_rows_sql($sql);
+				if (empty($modules))
+					$modules = array();
+				
+				$modules_aux = array();
+				foreach ($modules as $key => $module) {
+					// Don't change this order, is used in the serialization
+					$module_data = array(
+							'id_module' => $module['id_agente_modulo'],
+							'id_agent' => $module['id_agente'],
+							'server_name' => $server_name
+						);
+					if (!isset($modules_aux[$module['nombre']]))
+						$modules_aux[$module['nombre']] = array();
+					$modules_aux[$module['nombre']][] = $module_data;
+				}
+				$modules = $modules_aux;
+				
+				// Build the next array using the common values
+				if (!empty($last_modules_set)) {
+					$modules = array_intersect_key($modules, $last_modules_set);
+					
+					array_walk($modules, function(&$module_data, $module_name) use ($last_modules_set) {
+						$module_data = array_merge($module_data, $last_modules_set[$module_name]);
+					});
+				}
+				$last_modules_set = $modules;
+				
+				//Restore db connection
+				metaconsole_restore_db();
+			}
+			
+			$result = array();
+			foreach ($last_modules_set as $module_name => $module_data) {
+				$value = ui_print_truncate_text(io_safe_output($module_name), 'module_medium', false, true);
+				
+				$module_data_processed = array_map(function($item) {
+					// data: -> id_module  |  id_agent  |  server_name;
+					return implode('|', $item);
+				}, $module_data);
+				$key = implode(';', $module_data_processed);
+				
+				$result[$key] = $value;
+			}
+		}
+		else {
+			$sql = 'SELECT DISTINCT(nombre)
+				FROM tagente_modulo t1
+				WHERE ' . $enabled .
+					io_safe_output($custom_condition) . '
+					AND delete_pending = 0
+					AND id_agente IN (' . implode(',', $idAgents) . ')';
+			
+			if ($selection_mode == 'common') {
+				$sql .= ' AND (
+							SELECT count(nombre)
+							FROM tagente_modulo t2
+							WHERE delete_pending = 0 AND t1.nombre = t2.nombre
+								AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')';
+			}
+			
+			$sql .= ' ORDER BY nombre';
+			
+			$nameModules = db_get_all_rows_sql($sql);
+			
+			if ($nameModules == false) {
+				$nameModules = array();
+			}
+			
+			$result = array();
+			foreach ($nameModules as $nameModule) {
+				if (empty($serialized))
+					$result[io_safe_output($nameModule['nombre'])] =
+						ui_print_truncate_text(
+							io_safe_output($nameModule['nombre']), 'module_medium', false, true);
+				else
+					$result[io_safe_output($nameModule['nombre']).'$*$'.implode('|', $idAgents)] = ui_print_truncate_text(io_safe_output($nameModule['nombre']), 'module_medium', false, true);
+			}
+		}
+		
+		echo json_encode($result);
+		return;
+	}
 	
 	if ($get_agent_modules_json) {
 		$id_agent = (int) get_parameter ('id_agent');

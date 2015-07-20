@@ -32,114 +32,6 @@ $change_module_relation_updates = (bool) get_parameter('change_module_relation_u
 $get_id_tag = (bool) get_parameter('get_id_tag', 0);
 $list_modules = (bool) get_parameter('list_modules', 0);
 
-$get_agent_modules_json_for_multiple_agents = (bool)get_parameter(
-	"get_agent_modules_json_for_multiple_agents");
-
-if ($get_agent_modules_json_for_multiple_agents) {
-	$idAgents = (array)get_parameter('id_agent');
-	$custom_condition = get_parameter('custom_condition', '');
-	$selection_mode = get_parameter('selection_mode', 'common');
-	$serialized = get_parameter('serialized', '');
-	$id_server = (int)get_parameter('id_server', 0);
-	$metaconsole_server_name = null;
-	
-	$all = (string)get_parameter('all', 'all');
-	switch ($all) {
-		default:
-		case 'all':
-			$enabled = '1 = 1';
-			break;
-		case 'enabled':
-			$enabled = 'disabled = 0';
-			break;
-	}
-	
-	$result = array();
-	
-	
-	if (defined("METACONSOLE")) {
-		
-		$rows = db_get_all_rows_filter('tmetaconsole_agent',
-			array("id_tagente" => $idAgents),
-			array('id_agente', 'id_tmetaconsole_setup'));
-		
-		$agents = array();
-		foreach ($rows as $row) {
-			$agents[$row['id_tmetaconsole_setup']][] =
-				$row['id_agente'];
-		}
-		
-		foreach ($idAgents as $id_agent) {
-			$id_tmetaconsole_setup = db_get_value_filter(
-				'id_tmetaconsole_setup', 'tmetaconsole_agent',
-				array("id_tagente" => $idAgents));
-			
-			if (metaconsole_connect(null, $id_tmetaconsole_setup) != NOERR) {
-				continue;
-			}
-			
-			
-			
-			metaconsole_restore_db();
-		}
-	}
-	else {
-		$agents[0] = $idAgents;
-	}
-	
-	$result = array();
-	foreach ($agents as $id_server => $agents) {
-		if ($id_server) {
-			if (metaconsole_connect(null, $id_server) != NOERR) {
-				continue;
-			}
-		}
-		
-		$sql = 'SELECT DISTINCT(nombre)
-			FROM tagente_modulo t1
-			WHERE ' . $enabled .
-				io_safe_output($custom_condition) . '
-				AND delete_pending = 0
-				AND id_agente IN (' . implode(',', $idAgents) . ')';
-		
-		if ($selection_mode == 'common') {
-			$sql .= ' AND (
-						SELECT count(nombre)
-						FROM tagente_modulo t2
-						WHERE delete_pending = 0 AND t1.nombre = t2.nombre
-							AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')';
-		}
-		
-		$sql .= ' ORDER BY nombre';
-		
-		$nameModules = db_get_all_rows_sql($sql);
-		
-		if ($nameModules == false) {
-			$nameModules = array();
-		}
-		
-		$temp = array();
-		foreach ($nameModules as $nameModule) {
-			if (empty($serialized))
-				$temp[io_safe_output($nameModule['nombre'])] =
-					ui_print_truncate_text(
-						io_safe_output($nameModule['nombre']), 'module_medium', false, true);
-			else
-				$temp[io_safe_output($nameModule['nombre']).'$*$'.implode('|', $idAgents)] = ui_print_truncate_text(io_safe_output($nameModule['nombre']), 'module_medium', false, true);
-		}
-		
-		if ($id_server) {
-			metaconsole_restore_db();
-		}
-		
-		foreach ($temp as $i => $t) {
-			$result[$i] = $t;
-		}
-	}
-	
-	echo json_encode($result);
-	return;
-}
 
 if ($get_plugin_macros) {
 	$id_plugin = get_parameter('id_plugin', 0);
@@ -194,7 +86,7 @@ if ($get_module_detail) {
 	$agentId = (int) get_parameter("id_agent");
 	$server_name = (string) get_parameter('server_name');
 	
-	if (defined ('METACONSOLE')) {
+	if (is_metaconsole()) {
 		$server = metaconsole_get_connection ($server_name);
 		
 		if (metaconsole_connect($server) != NOERR)
@@ -381,10 +273,15 @@ if ($get_module_detail) {
 			else {
 				// Just a string of alphanumerical data... just do print
 				//Fixed the data from Selenium Plugin
-				if ($row[$attr[0]] != strip_tags($row[$attr[0]]))
+				if ($row[$attr[0]] != strip_tags($row[$attr[0]])) {
 					$data[] = io_safe_input($row[$attr[0]]);
-				else
+				}
+				else if (is_numeric($row[$attr[0]])) {
+					$data[] = (double) $row[$attr[0]];
+				}
+				else {
 					$data[] = $row[$attr[0]];
+				}
 			}
 		}
 		
@@ -401,7 +298,7 @@ if ($get_module_detail) {
 		html_print_table($table);
 	}
 	
-	if (defined ('METACONSOLE'))
+	if (is_metaconsole())
 		metaconsole_restore_db();
 	
 	return;

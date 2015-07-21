@@ -201,9 +201,13 @@ if (isset($_GET["create"])) {
 		'parent_recursion' => $parent_recursion,
 		'macros' => $macros
 		);
+
+	$name = io_safe_output($name);
+	$name = trim($name, ' ');
+	$name = io_safe_input($name);
 	
 	$reason = "";
-	if ($name != "") {
+	if (($name != "") && (! db_get_value_filter ('name', 'trecon_task', array ('name' => $name)))) {
 		if (($id_recon_script == 'NULL') && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
 		{
 			$result = db_process_sql_insert('trecon_task', $values);
@@ -220,6 +224,11 @@ if (isset($_GET["create"])) {
 		}
 	}
 	else {
+		$result = false;
+	}
+
+	if (db_get_value_filter ('name', 'trecon_task', array ('name' => $name))){
+		$reason = __('Recon-task name already exists');
 		$result = false;
 	}
 	

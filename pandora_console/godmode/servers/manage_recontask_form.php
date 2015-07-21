@@ -27,6 +27,9 @@ if (! check_acl ($config['id_user'], 0, "AW")) {
 
 require_once ($config['homedir'].'/include/functions_users.php');
 
+$user_groups = users_get_groups(false, 'AW', true, false, null, 'id_grupo');
+$user_groups = array_keys($user_groups);
+
 if (is_ajax ()) {
 	$get_explanation = (bool) get_parameter('get_explanation', 0);
 	
@@ -124,6 +127,13 @@ if (isset($_GET["update"]) || (isset($_GET["crt"]))) {
 		
 		$name_script = db_get_value('name',
 			'trecon_script', 'id_recon_script', $id_recon_script);
+
+		if (! in_array($id_group, $user_groups)){
+			db_pandora_audit("ACL Violation",
+			"Trying to access Recon Task Management");
+			require ("general/noaccess.php");
+			return;
+		}
 	}
 }
 elseif (isset($_GET["create"]) || isset($_GET["crt"])) {

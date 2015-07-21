@@ -2924,7 +2924,7 @@ function group_get_groups_list($id_user = false, $user_strict = false, $access =
 	
 	$acltags = tags_get_user_module_and_tags ($id_user, $access, $user_strict);
 	
-	if (! $user_strict) {
+	if (! is_metaconsole()) {
 		$result_list = group_get_data ($id_user, $user_strict, $acltags,
 			$returnAllGroup, $mode);
 		

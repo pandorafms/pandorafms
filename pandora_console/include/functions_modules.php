@@ -2156,63 +2156,8 @@ function modules_get_count_datas($id_agent_module, $date_init, $date_end) {
 	
 	$diff = $date_end - $date_init;
 	
+	
 	return ($diff / $interval);
-}
-
-function modules_get_count_data_with_value($id_agent_module, $date_init,
-	$date_end, $value) {
-	
-	global $config;
-	
-	if (!is_numeric($date_init)) {
-		$date_init = strtotime($date_init);
-	}
-	
-	if (!is_numeric($date_end)) {
-		$date_end = strtotime($date_end);
-	}
-	
-	$sql = "SELECT *
-		FROM tagente_datos
-		WHERE
-			id_agente_modulo = " . (int)$id_agent_module . "
-			AND (utimestamp >= " . $date_init . " AND utimestamp <= " . $date_end . ")";
-	
-	$data = db_get_all_rows_sql($sql, $config['history_db_enabled']);
-	
-	if (empty($data)) {
-		$data = array();
-	}
-	
-	$interval = modules_get_interval($id_agent_module);
-	
-	$total_time_with_value = 0;
-	$on_value_detected = false;
-	$timestamp_with_value = null;
-	
-	foreach ($data as $row) {
-		if ($row['datos'] == $value) {
-			if (!$on_value_detected) {
-				$timestamp_with_value = $row['utimestamp'];
-				$on_value_detected = true;
-			}
-		}
-		else {
-			if ($on_value_detected) {
-				$total_time_with_value 
-					+= $row['utimestamp'] - $timestamp_with_value;
-				
-				$on_value_detected = false;
-			}
-		}
-	}
-	
-	if ($on_value_detected && !empty($data)) {
-		$total_time_with_value 
-			+= $date_end - $timestamp_with_value;
-	}
-	
-	return $total_time_with_value / $interval;
 }
 
 

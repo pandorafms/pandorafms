@@ -5666,13 +5666,11 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 					}
 				}
 				
-				if (modules_is_disable_agent($item['id_agent_module']) ||
-					modules_is_not_init($item['id_agent_module'])) {
+				if (modules_is_disable_agent($item['id_agent_module'])) {
 					//Restore dbconnection
 					if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 						metaconsole_restore_db();
 					}
-					
 					
 					continue;
 				}
@@ -5684,67 +5682,79 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				// HACK it is saved in show_graph field.
 				// Show interfaces instead the modules
 				if ($content['show_graph']) {
-					$text = $row['ip_address'] = agents_get_address(
+					$text = $row['availability_item'] = agents_get_address(
 						modules_get_agentmodule_agent($item['id_agent_module']));
+					
+					if (empty($text)) {
+						$text = $row['availability_item'] = __('No Address');
+					}
 				}
 				else {
-					$text = $row['module'] = modules_get_agentmodule_name(
+					$text = $row['availability_item'] = modules_get_agentmodule_name(
 						$item['id_agent_module']);
 				}
+				
 				$row['agent'] = modules_get_agentmodule_agent_name(
 					$item['id_agent_module']);
 				
 				$text = $row['agent'] . " (" . $text . ")";
 				
-				
-				$monitor_value = reporting_get_agentmodule_sla(
+				$sla_value = reporting_get_agentmodule_sla(
 					$item['id_agent_module'],
 					$content['period'],
-					1,
-					false,
+					0.50,
+					1.50,
+					$report["datetime"],
+					null,
+					$content['time_from'],
+					$content['time_to']);
+				
+				$count_checks = modules_get_count_datas(
+					$item['id_agent_module'],
+					$report["datetime"] - $content['period'],
 					$report["datetime"]);
 				
-				if ($monitor_value === false) {
+				
+				if ($sla_value === false) {
 					$row['checks'] = __('Unknown');
 					$row['failed'] = __('Unknown');
 					$row['fail'] = __('Unknown');
 					$row['poling_time'] = __('Unknown');
 					$row['time_unavaliable'] = __('Unknown');
 					$row['ok'] = __('Unknown');
+					
+					$percent_ok = 0;
 				}
 				else {
-					$count_checks = modules_get_count_datas(
-						$item['id_agent_module'],
-						$report["datetime"] - $content['period'],
-						$report["datetime"]);
-					$count_fails = modules_get_count_data_with_value(
-						$item['id_agent_module'],
-							$report["datetime"] - $content['period'],
-							$report["datetime"],
-							0);
+					$percent_ok = format_numeric($sla_value, 2);
+					$percent_fail = (100 - $percent_ok);
 					
-					$percent_ok = (($count_checks - $count_fails) * 100) / $count_checks;
-					$percent_fail = 100 - $percent_ok;
+					$row['checks'] = format_numeric($count_checks, 0);
+					$row['ok'] = $percent_ok . " %";
+					$row['fail'] = $percent_fail . " %";
+					$row['failed'] =
+						format_numeric($percent_fail * $count_checks / 100, 0);
 					
-					$row['ok'] = format_numeric($percent_ok, 2) . " %";
-					$row['fail'] = format_numeric($percent_fail, 2) . " %";
-					$row['checks'] = format_numeric($count_checks, 2);
-					$row['failed'] = format_numeric($count_fails ,2);
-					$row['poling_time'] = human_time_description_raw(
-						($count_checks - $count_fails) * modules_get_interval($item['id_agent_module']),
+					
+					$row['poling_time'] =
+						human_time_description_raw(
+							($percent_ok * $count_checks / 100) * modules_get_interval($item['id_agent_module']),
 						true);
+					
 					$row['time_unavaliable'] = "-";
-					if ($count_fails > 0) {
-						$row['time_unavaliable'] = human_time_description_raw(
-							$count_fails * modules_get_interval($item['id_agent_module']),
+					if ($percent_fail > 0) {
+						$row['time_unavaliable'] =
+							human_time_description_raw(
+								($percent_fail * $count_checks / 100) * modules_get_interval($item['id_agent_module']),
 							true);
 					}
+					
 				}
 				
 				$data[] = $row;
 				
 				
-				$avg = (($avg * $count) + $monitor_value) / ($count + 1);
+				$avg = (($avg * $count) + $percent_ok) / ($count + 1);
 				if (is_null($min)) {
 					$min = $percent_ok;
 					$min_text = $text;
@@ -5765,6 +5775,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						$max_text = $text;
 					}
 				}
+				
 				
 				//Restore dbconnection
 				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {

@@ -626,7 +626,8 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 					}
 				}
 				
-				if (modules_is_disable_agent($sla['id_agent_module'])) {
+				if (modules_is_disable_agent($sla['id_agent_module'])
+					|| modules_is_not_init($item['id_agent_module'])) {
 					if ($metaconsole_on) {
 						//Restore db connection
 						metaconsole_restore_db();
@@ -3673,7 +3674,10 @@ function reporting_availability($report, $content) {
 			}
 		}
 		
-		if (modules_is_disable_agent($item['id_agent_module'])) {
+		
+		
+		if (modules_is_disable_agent($item['id_agent_module'])
+			|| modules_is_not_init($item['id_agent_module'])) {
 			//Restore dbconnection
 			if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 				metaconsole_restore_db();
@@ -3905,7 +3909,14 @@ function reporting_general($report, $content) {
 			}
 		}
 		
-		if (modules_is_disable_agent($row['id_agent_module'])) {
+		if (modules_is_disable_agent($row['id_agent_module']) ||
+			modules_is_not_init($item['id_agent_module'])) {
+			
+			if (is_metaconsole()) {
+				//Restore db connection
+				metaconsole_restore_db();
+			}
+			
 			continue;
 		}
 		

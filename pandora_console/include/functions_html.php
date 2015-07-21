@@ -798,31 +798,39 @@ function html_print_extended_select_for_time ($name, $selected = '',
  * @return string HTML code if return parameter is true.
  */
 function html_print_extended_select_for_cron ($hour = '*', $minute = '*', $mday = '*', $month = '*', $wday = '*', $return = false) {
-
+	
 	# Hours
 	for ($i = 0; $i < 24; $i++) {
 		$hours[$i] = $i;
 	}
-
+	
 	# Minutes
 	for ($i = 0; $i < 60; $i+=5) {
 		$minutes[$i] = $i;
 	}
-
+	
 	# Month days
 	for ($i = 0; $i < 31; $i++) {
 		$mdays[$i] = $i;
 	}
-
+	
 	# Months
 	for ($i = 0; $i < 12; $i++) {
 		$months[$i] = date('F', mktime (0, 0, 0, $i, 1));
 	}
-
+	
 	# Days of the week
-	$wdays = array(__('Sunday'), __('Monday'), __('Tuesday'), __('Wednesday'), __('Thursday'), __('Friday'), __('Saturday'));
-
+	$wdays = array(
+		__('Sunday'),
+		__('Monday'),
+		__('Tuesday'),
+		__('Wednesday'),
+		__('Thursday'),
+		__('Friday'),
+		__('Saturday'));
+	
 	# Print selectors
+	$table = new stdClass();
 	$table->id = 'cron';
 	$table->width = '100%';
 	$table->class = 'databox data';
@@ -831,7 +839,7 @@ function html_print_extended_select_for_cron ($hour = '*', $minute = '*', $mday 
 	$table->head[2] = __('Month day');
 	$table->head[3] = __('Month');
 	$table->head[4] = __('Week day');
-
+	
 	$table->data[0][0] = html_print_select ($hours, 'hour', $hour, '', __('Any'), '*', true, false, false);	
 	$table->data[0][1] = html_print_select ($minutes, 'minute', $minute, '', __('Any'), '*', true, false, false);
 	$table->data[0][2] = html_print_select ($mdays, 'mday', $mday, '', __('Any'), '*', true, false, false);
@@ -1012,7 +1020,10 @@ function html_print_div ($options, $return = false) {
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_password ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false) {
+function html_print_input_password ($name, $value, $alt = '',
+	$size = 50, $maxlength = 255, $return = false, $disabled = false,
+	$required = false) {
+	
 	if ($maxlength == 0)
 		$maxlength = 255;
 	

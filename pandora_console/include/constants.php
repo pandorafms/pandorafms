@@ -298,6 +298,7 @@ define ('EVENT_CRIT_MAJOR',					6);
 define ('EVENT_CRIT_CRITICAL',				4);
 define ('EVENT_CRIT_WARNING_OR_CRITICAL',	34);
 define ('EVENT_CRIT_NOT_NORMAL',			20);
+define ('EVENT_CRIT_OR_NORMAL',				21);
 
 /* Id Module (more use in component)*/
 define ('MODULE_DATA',			1);

@@ -29,11 +29,13 @@ $id = (int) get_parameter ('id');
 $update = (string)get_parameter('update', 0);
 $create = (string)get_parameter('create', 0);
 
-$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+$strict_user = db_get_value('strict_acl', 'tusuario', 'id_user',
+	$config['id_user']);
 
 if ($id) {
 	$permission = events_check_event_filter_group ($id);
-	if (!$permission) { // User doesn't have permissions to see this filter
+	if (!$permission) {
+		// User doesn't have permissions to see this filter
 		require ("general/noaccess.php");
 		
 		return;
@@ -101,10 +103,10 @@ if($update || $create) {
 	
 	$tag_with_base64 = get_parameter('tag_with', json_encode(array()));
 	$tag_with_json = io_safe_input(base64_decode($tag_with_base64));
-
+	
 	$tag_without_base64 = get_parameter('tag_without', json_encode(array()));
 	$tag_without_json = io_safe_input(base64_decode($tag_without_base64));
-
+	
 	$filter_only_alert = get_parameter('filter_only_alert','');
 	
 	$values = array (
@@ -130,7 +132,8 @@ if ($update) {
 		ui_print_error_message (__('Not updated. Blank name'));
 	}
 	else {
-		$result = db_process_sql_update ('tevent_filter', $values, array ('id_filter' => $id));
+		$result = db_process_sql_update ('tevent_filter', $values,
+			array ('id_filter' => $id));
 		
 		ui_print_result_message ($result,
 			__('Successfully updated'),
@@ -138,7 +141,7 @@ if ($update) {
 	}
 }
 
-if ($create) {	
+if ($create) {
 	$id = db_process_sql_insert('tevent_filter', $values);
 	
 	if ($id === false) {
@@ -151,6 +154,7 @@ if ($create) {
 
 $own_info = get_user_info ($config['id_user']);
 
+$table = new stdClass();
 $table->width = '100%';
 $table->border = 0;
 $table->cellspacing = 0;
@@ -177,32 +181,42 @@ if (defined('METACONSOLE')) {
 }
 $table->data = array ();
 $table->data[0][0] = '<b>'.__('Filter name').'</b>';
-$table->data[0][1] = html_print_input_text ('id_name', $id_name, false, 20, 80, true);
+$table->data[0][1] =
+	html_print_input_text('id_name', $id_name, false, 20, 80, true);
 
-$table->data[1][0] = '<b>'.__('Save in group').'</b>' . ui_print_help_tip(__('This group will be use to restrict the visibility of this filter with ACLs'), true);
-$table->data[1][1] = html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group_filter", $id_group_filter, '', '', -1, true, false, false, '', false, '', false, false, 'id_grupo', $strict_user);
+$table->data[1][0] = '<b>' . __('Save in group') . '</b>' .
+	ui_print_help_tip(__('This group will be use to restrict the visibility of this filter with ACLs'), true);
+$table->data[1][1] = html_print_select_groups(
+	$config['id_user'], "ER", users_can_manage_group_all(),
+	"id_group_filter", $id_group_filter, '', '', -1, true, false, false,
+	'', false, '', false, false, 'id_grupo', $strict_user);
 
-$table->data[2][0] = '<b>'.__('Group').'</b>';
-$table->data[2][1] = html_print_select_groups($config["id_user"], "ER", true, 
-	'id_group', $id_group, '', '', -1, true, false, false, '', false, false, false, false, 'id_grupo', $strict_user);
+$table->data[2][0] = '<b>' . __('Group').'</b>';
+$table->data[2][1] = html_print_select_groups($config["id_user"], "ER",
+	true, 'id_group', $id_group, '', '', -1, true, false, false, '',
+	false, false, false, false, 'id_grupo', $strict_user);
 
 $types = get_event_types ();
 // Expand standard array to add not_normal (not exist in the array, used only for searches)
 $types["not_normal"] = __("Not normal");
 
 $table->data[3][0] = '<b>' . __('Event type') . '</b>';
-$table->data[3][1] = html_print_select ($types, 'event_type', $event_type, '', __('All'), '', true);
+$table->data[3][1] = html_print_select(
+	$types, 'event_type', $event_type, '', __('All'), '', true);
 
 $table->data[4][0] = '<b>' . __('Severity') . '</b>';
-$table->data[4][1] = html_print_select (get_priorities (), "severity", $severity, '', __('All'), '-1', true);
+$table->data[4][1] = html_print_select(
+	get_priorities(), "severity", $severity, '', __('All'), '-1', true);
 
 $fields = events_get_all_status();
 
 $table->data[5][0] = '<b>' . __('Event status') . '</b>';
-$table->data[5][1] = html_print_select ($fields, 'status', $status, '', '', '', true);
+$table->data[5][1] = html_print_select(
+	$fields, 'status', $status, '', '', '', true);
 
 $table->data[6][0] = '<b>' . __('Free search') . '</b>';
-$table->data[6][1] = html_print_input_text ('search', io_safe_output($search), '', 15, 255, true);
+$table->data[6][1] = html_print_input_text(
+	'search', io_safe_output($search), '', 15, 255, true);
 
 $table->data[7][0] = '<b>' . __('Agent search') . '</b>';
 $params = array();
@@ -212,7 +226,7 @@ $params['input_name'] = 'text_agent';
 $params['value'] = $text_agent;
 $params['selectbox_group'] = 'id_group';
 
-if(defined('METACONSOLE')) {
+if (defined('METACONSOLE')) {
 	$params['javascript_page'] = 'enterprise/meta/include/ajax/events.ajax';
 }
 
@@ -226,33 +240,41 @@ $lpagination[100] = 100;
 $lpagination[200] = 200;
 $lpagination[500] = 500;
 $table->data[8][0] = '<b>' . __('Block size for pagination') . '</b>';
-$table->data[8][1] = html_print_select ($lpagination, "pagination", $pagination, '', __('Default'), $config["block_size"], true);
+$table->data[8][1] = html_print_select(
+	$lpagination, "pagination", $pagination, '', __('Default'),
+	$config["block_size"], true);
 
 $table->data[9][0] = '<b>' . __('Max. hours old') . '</b>';
-$table->data[9][1] = html_print_input_text ('event_view_hr', $event_view_hr, '', 5, 255, true);
+$table->data[9][1] = html_print_input_text(
+	'event_view_hr', $event_view_hr, '', 5, 255, true);
 
-$table->data[10][0] = '<b>' . __('User ack.') . '</b>'. ' ' . ui_print_help_tip (__('Choose between the users who have validated an event. '), true);
+$table->data[10][0] = '<b>' . __('User ack.') . '</b>'. ' ' .
+	ui_print_help_tip (__('Choose between the users who have validated an event. '), true);
 
 if ($strict_user) {
-	$users = array($config['id_user']=>$config['id_user']);
-} else {
-	$users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
+	$users = array($config['id_user'] => $config['id_user']);
+}
+else {
+	$users = users_get_user_users($config['id_user'], "ER",
+		users_can_manage_group_all(0));
 }
 
-$table->data[10][1] =  html_print_select($users, "id_user_ack", $id_user_ack, '', __('Any'), 0, true);
-	
+$table->data[10][1] =  html_print_select($users, "id_user_ack",
+	$id_user_ack, '', __('Any'), 0, true);
+
 $repeated_sel[0] = __("All events");
 $repeated_sel[1] = __("Group events");
 $table->data[11][0] = '<b>' . __('Repeated') . '</b>';
-$table->data[11][1] = html_print_select ($repeated_sel, "group_rep", $group_rep, '', '', '', true);
+$table->data[11][1] = html_print_select ($repeated_sel, "group_rep",
+	$group_rep, '', '', '', true);
 
 
 $tag_with = json_decode($tag_with_json_clean, true);
-if(empty($tag_with)) {
+if (empty($tag_with)) {
 	$tag_with = array();
 }
 $tag_without = json_decode($tag_without_json_clean, true);
-if(empty($tag_without)) {
+if (empty($tag_without)) {
 	$tag_without = array();
 }
 
@@ -289,8 +311,8 @@ $table->colspan[13][0] = '2';
 $table->data[13][0] = '<b>' . __('Events with following tags') . '</b>';
 $table->data[14][0] = html_print_select ($tags_select_with, 'select_with',
 	'', '', '', 0, true, false, true, '', false, 'width: 220px;');
-$table->data[14][1] = html_print_button(__('Add'), 'add_whith', $add_with_tag_disabled,
-	'', 'class="add sub"', true);
+$table->data[14][1] = html_print_button(__('Add'), 'add_whith',
+	$add_with_tag_disabled, '', 'class="add sub"', true);
 
 $table->data[15][0] = html_print_select ($tag_with_temp,
 	'tag_with_temp', array(), '', '', 0, true, true,
@@ -304,20 +326,21 @@ $table->colspan[16][0] = '2';
 $table->data[16][0] = '<b>' . __('Events without following tags') . '</b>';
 $table->data[17][0] = html_print_select ($tags_select_without, 'select_without',
 	'', '', '', 0, true, false, true, '', false, 'width: 220px;');
-$table->data[17][1] = html_print_button(__('Add'), 'add_whithout', $add_without_tag_disabled,
-	'', 'class="add sub"', true);
+$table->data[17][1] = html_print_button(__('Add'), 'add_whithout',
+	$add_without_tag_disabled, '', 'class="add sub"', true);
 
 $table->data[18][0] = html_print_select ($tag_without_temp,
 	'tag_without_temp', array(), '', '', 0, true, true,
 	true, '', false, "width: 220px; height: 50px;");
 $table->data[18][0] .= html_print_input_hidden('tag_without',
 	$tag_without_base64, true);
-$table->data[18][1] = html_print_button(__('Remove'), 'remove_whithout', $remove_without_tag_disabled,
-	'', 'class="delete sub"', true);
+$table->data[18][1] = html_print_button(__('Remove'), 'remove_whithout',
+	$remove_without_tag_disabled, '', 'class="delete sub"', true);
 
 $table->data[19][0] = '<b>' . __('Alert events') . '</b>';
 $table->data[19][1] = html_print_select(
-	array('-1' => __('All'),
+	array(
+		'-1' => __('All'),
 		'0' => __('Filter alert events'),
 		'1' => __('Only alert events')),
 	"filter_only_alert", $filter_only_alert, '', '', '', true);
@@ -466,12 +489,14 @@ function click_button_add_tag(what_button) {
 		}
 	}
 	
-	$(id_select_destiny).append($("<option value='" + without_val + "'>" + without_text + "</option>"));
+	$(id_select_destiny)
+		.append($("<option value='" + without_val + "'>" + without_text + "</option>"));
 	$(id_select_origin + " option:selected").remove();
 	$(id_button_remove).removeAttr('disabled');
 	
 	if ($(id_select_origin + " option").length == 0) {
-		$(id_select_origin).append($("<option value='" + val_none + "'>" + text_none + "</option>"));
+		$(id_select_origin)
+			.append($("<option value='" + val_none + "'>" + text_none + "</option>"));
 		$(id_button_add).attr('disabled', 'true');
 		
 		if (what_button == 'with') {

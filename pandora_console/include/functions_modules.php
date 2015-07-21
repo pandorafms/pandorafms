@@ -23,6 +23,15 @@ include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 include_once($config['homedir'] . '/include/functions_tags.php');
 
+function modules_is_not_init($id_agent_module) {
+	$row = db_get_row('tagente_estado', 'id_agente_modulo', $id_agent_module);
+	
+	if ($row['estado'] == AGENT_MODULE_STATUS_NO_DATA)
+		return true;
+	else
+		return false;
+}
+
 function modules_is_disable_agent($id_agent_module) {
 	$sql = "
 		SELECT disabled

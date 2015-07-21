@@ -32,6 +32,9 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	$options[]['text'] = "<a href='index.php?sec=estado&sec2=operation/servers/recon_view'>" . html_print_image ("images/operation.png", true, array ("title" =>__('View'))) . "</a>";
 }
 
+$user_groups = users_get_groups(false, 'AW', true, false, null, 'id_grupo');
+$user_groups = array_keys($user_groups);
+
 // Headers
 //ui_print_page_header (__('Manage recontask'), "images/gm_servers.png", false, "", true);
 ui_print_page_header (__('Manage recontask'), "images/gm_servers.png", false, "", true, $options);
@@ -259,8 +262,9 @@ if ($result !== false) {
 	
 	foreach ($result as $row) {
 		$data = array();
-		$data[0] = '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&crt=update&update='.$row["id_rt"].'&upd='.$row["id_rt"].'"><b>'.$row["name"].'</b></a>';
-		
+		//$data[0] = '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&crt=update&update='.$row["id_rt"].'&upd='.$row["id_rt"].'"><b>'.$row["name"].'</b></a>';
+		$data[0] = $row["name"];
+
 		if ($row["id_recon_script"] == 0)
 			$data[1] = $row["subnet"];
 		else
@@ -311,6 +315,20 @@ if ($result !== false) {
 			$data[7] = "-";
 		}
 		
+		$task_group = $row["id_group"];
+
+		if (in_array($task_group, $user_groups)){
+			$data[8] = '<a href="index.php?sec=estado&sec2=operation/servers/recon_view">' . html_print_image("images/eye.png", true) . '</a>';
+			$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
+			$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">' .html_print_image("images/config.png", true) . '</a>';
+			
+			if($row["disabled"] == 0) {
+				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&id='.$row["id_rt"].'&disabled=1">' .html_print_image("images/lightbulb.png", true) . '</a>';
+			}
+			else {
+				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&id='.$row["id_rt"].'&disabled=0">' .html_print_image("images/lightbulb_off.png", true) . '</a>';
+			}
+		}
 		// ACTION
 		$data[8] = '<a href="index.php?sec=estado&sec2=operation/servers/recon_view">' . html_print_image("images/eye.png", true) . '</a>';
 		$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';

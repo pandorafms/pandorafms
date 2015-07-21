@@ -132,6 +132,7 @@ $backgroundSizes = getimagesize(
 	$config['homedir'] . '/images/console/background/' . $background);
 html_print_input_hidden('background_original_width', $backgroundSizes[0]);
 html_print_input_hidden('background_original_height', $backgroundSizes[1]);
+html_print_input_hidden('id_visual_console', $visualConsole['id']);
 
 
 // Loading dialog
@@ -156,7 +157,7 @@ ui_require_css_file ('jquery-ui-1.8.17.custom');
 
 
 //Javascript
-ui_require_jquery_file('jquery-ui-1.8.17.custom.min');
+//ui_require_jquery_file('jquery-ui-1.8.17.custom.min');
 ui_require_jquery_file('colorpicker');
 ui_require_javascript_file('wz_jsgraphics');
 ui_require_javascript_file('pandora_visual_console');
@@ -175,7 +176,7 @@ ui_require_javascript_file ('encode_decode_base64');
 </style>
 <script type="text/javascript">
 	id_visual_console = <?php echo $visualConsole['id']; ?>;
-	$(document).ready (visual_map_main);
+	visual_map_main();
 	
 	tinyMCE.init({
 		mode : "exact",

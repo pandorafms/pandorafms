@@ -1057,6 +1057,7 @@ function get_priorities ($priority_param = false) {
 	$priorities[EVENT_CRIT_CRITICAL] = __('Critical');
 	$priorities[EVENT_CRIT_WARNING_OR_CRITICAL] = __('Warning').'/'.__('Critical');
 	$priorities[EVENT_CRIT_NOT_NORMAL] = __('Not normal');
+	$priorities[EVENT_CRIT_OR_NORMAL] = __('Critical') . '/' . __('Normal');
 	
 	foreach ($priorities as $key => $priority) {
 		$priorities[$key] = ui_print_truncate_text($priority, GENERIC_SIZE_TEXT, false, true, false);

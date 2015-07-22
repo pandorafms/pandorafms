@@ -51,7 +51,7 @@ if ($add_action) {
 	$values['al_field2'] = get_parameter('field2_value');
 	$values['al_field3'] = get_parameter('field3_value');
 	$values['al_field4'] = get_parameter('field4_value');
-	$values['al_field5'] = get_parameter('field5_value');
+	//$values['al_field5'] = get_parameter('field5_value');
 	$values['al_field6'] = get_parameter('field6_value');
 	$values['al_field7'] = get_parameter('field7_value');
 	$values['al_field8'] = get_parameter('field8_value');
@@ -95,7 +95,7 @@ if ($save_alert || $modify_alert) {
 	$al_field2 = (string) get_parameter_post ("field2_value");
 	$al_field3 = (string) get_parameter_post ("field3_value");
 	$al_field4 = (string) get_parameter_post ("field4_value");
-	$al_field5 = (string) get_parameter_post ("field5_value");
+	//$al_field5 = (string) get_parameter_post ("field5_value");
 	$al_field6 = (string) get_parameter_post ("field6_value");
 	$al_field7 = (string) get_parameter_post ("field7_value");
 	$al_field8 = (string) get_parameter_post ("field8_value");
@@ -161,7 +161,7 @@ if ($save_alert || $modify_alert) {
 			'al_field2' => $al_field2,
 			'al_field3' => $al_field3,
 			'al_field4' => $al_field4,
-			'al_field5' => $al_field5,
+			//'al_field5' => $al_field5,
 			'al_field6' => $al_field6,
 			'al_field7' => $al_field7,
 			'al_field8' => $al_field8,
@@ -236,7 +236,7 @@ if ($save_alert || $modify_alert) {
 		$sql = sprintf ("UPDATE talert_snmp SET
 			priority = %d, id_alert = %d, al_field1 = '%s',
 			al_field2 = '%s', al_field3 = '%s', al_field4 = '%s',
-			al_field5 = '%s', al_field6 = '%s',al_field7 = '%s',
+		/*	al_field5 = '%s',*/ al_field6 = '%s',al_field7 = '%s',    
 			al_field8 = '%s', al_field9 = '%s',al_field10 = '%s',
 			description = '%s',
 			agent = '%s', custom_oid = '%s', oid = '%s',
@@ -258,7 +258,7 @@ if ($save_alert || $modify_alert) {
 			single_value = '%s', position = '%s', id_group ='%s'
 			WHERE id_as = %d",
 			$priority, $alert_type, $al_field1, $al_field2, $al_field3,
-			$al_field4, $al_field5, $al_field6, $al_field7, $al_field8,
+			$al_field4, /*$al_field5,*/ $al_field6, $al_field7, $al_field8,
 			$al_field9, $al_field10,
 			$description, $source_ip, $custom_value, $oid, $time_threshold,
 			$max_alerts, $min_alerts, $custom_oid_data_1, $custom_oid_data_2,
@@ -304,7 +304,7 @@ if ($update_alert) {
 	$al_field2 = $alert["al_field2"];
 	$al_field3 = $alert["al_field3"];
 	$al_field4 = $alert["al_field4"];
-	$al_field5 = $alert["al_field5"];
+	//$al_field5 = $alert["al_field5"];
 	$al_field6 = $alert["al_field6"];
 	$al_field7 = $alert["al_field7"];
 	$al_field8 = $alert["al_field8"];
@@ -371,7 +371,7 @@ elseif ($create_alert) {
 	$al_field2 = "";
 	$al_field3 = "";
 	$al_field4 = "";
-	$al_field5 = "";
+	//$al_field5 = "";
 	$al_field6 = "";
 	$al_field7 = "";
 	$al_field8 = "";
@@ -768,7 +768,7 @@ if ($create_alert || $update_alert) {
 		'al_field2' => $al_field2,
 		'al_field3' => $al_field3,
 		'al_field4' => $al_field4,
-		'al_field5' => $al_field5,
+		//'al_field5' => $al_field5,
 		'al_field6' => $al_field6,
 		'al_field7' => $al_field7,
 		'al_field8' => $al_field8,
@@ -779,6 +779,9 @@ if ($create_alert || $update_alert) {
 	html_print_div(array('id' => 'help_snmp_alert_hint', 'content' => ui_print_help_icon ("snmp_alert_field1", true), 'hidden' => true));
 	
 	for ($i = 1; $i <= 10; $i++) {
+		if ($i == 5){
+			continue;
+		}
 		echo '<tr id="table_macros-field'.$i.'"><td class="datos" valign="top">'.html_print_image('images/spinner.gif',true);
 		echo '<td class="datos">' . html_print_image('images/spinner.gif',true);
 		html_print_input_hidden('field'.$i.'_value', isset($al['al_field'.$i]) ? $al['al_field'.$i] : '');
@@ -1113,7 +1116,7 @@ else {
 				'al_field2' => $al_field2,
 				'al_field3' => $al_field3,
 				'al_field4' => $al_field4,
-				'al_field5' => $al_field5,
+				//'al_field5' => $al_field5,
 				'al_field6' => $al_field6,
 				'al_field7' => $al_field7,
 				'al_field8' => $al_field8,
@@ -1121,6 +1124,9 @@ else {
 				'al_field10' => $al_field10);
 				
 				for ($i = 1; $i <= 10; $i++) {
+					if ($i == 5){
+						continue;
+					}
 					echo '<tr id="table_macros-field'.$i.'"><td class="datos" valign="top">'.html_print_image('images/spinner.gif',true);
 					echo '<td class="datos">' . html_print_image('images/spinner.gif',true);
 					html_print_input_hidden('field'.$i.'_value', isset($al['al_field'.$i]) ? $al['al_field'.$i] : '');
@@ -1257,6 +1263,7 @@ $(document).ready (function () {
 						$('#table_macros-field').show();
 					}
 				}
+				
 			},
 			"json"
 		);

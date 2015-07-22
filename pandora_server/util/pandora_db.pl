@@ -33,7 +33,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "6.0dev PS150722";
+my $version = "6.0dev PS150701";
 
 # Pandora server configuration
 my %conf;
@@ -87,7 +87,7 @@ sub pandora_purgedb ($$) {
 	# Delete extended session data
 	if (enterprise_load (\%conf) != 0) {
 		db_do ($dbh, "DELETE FROM tsesion_extended
-			WHERE id_sesion NOT IN ( SELECT id_sesion FROM tsesion );");
+			WHERE id_sesion NOT IN ( SELECT id_sesion FROM tsesion )");
 		log_message ('PURGE', 'Deleting old extended session data.');
 	}
 		
@@ -113,7 +113,7 @@ sub pandora_purgedb ($$) {
 			# steps (100 fixed by default)
 			# Starting from the oldest record on the table
 
-			$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos_inventory ORDER BY utimestamp ASC LIMIT 1');
+			$first_mark =  get_db_value_limit ($dbh, 'SELECT utimestamp FROM tagente_datos_inventory ORDER BY utimestamp ASC', 1);
 			if (defined ($first_mark)) {
 				$total_time = $ulimit_timestamp - $first_mark;
 				$purge_steps = int($total_time / $BIG_OPERATION_STEP);
@@ -137,7 +137,7 @@ sub pandora_purgedb ($$) {
 		#
 		# Now the log4x data
 		#
-		$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagente_datos_log4x ORDER BY utimestamp ASC LIMIT 1');
+		$first_mark =  get_db_value_limit ($dbh, 'SELECT utimestamp FROM tagente_datos_log4x ORDER BY utimestamp ASC', 1);
 		if (defined ($first_mark)) {
 			$total_time = $ulimit_timestamp - $first_mark;
 			$purge_steps = int($total_time / $BIG_OPERATION_STEP);
@@ -206,7 +206,7 @@ sub pandora_purgedb ($$) {
 		# Delete with buffer to avoid problems with performance
 		my $events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM $events_table WHERE utimestamp < ?", $event_limit);
 		while($events_to_delete > 0) {
-			db_do($dbh, "DELETE FROM $events_table WHERE utimestamp < ? LIMIT ?", $event_limit, $BIG_OPERATION_STEP);
+			db_delete_limit($dbh, $events_table, "utimestamp < ?", $BIG_OPERATION_STEP, $event_limit);
 			$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
 			
 			# Mark the progress
@@ -222,7 +222,7 @@ sub pandora_purgedb ($$) {
 			log_message ('PURGE', "Deleting validated events from tmetaconsole_event_history.", '');
 			$events_to_delete = get_db_value ($dbh, "SELECT COUNT(*) FROM tmetaconsole_event_history WHERE estado = 1");
 			while($events_to_delete > 0) {
-				db_do($dbh, "DELETE FROM tmetaconsole_event_history WHERE estado = 1 LIMIT ?", $BIG_OPERATION_STEP);
+				db_delete_limit($dbh, 'tmetaconsole_event_history',  'estado = 1', $BIG_OPERATION_STEP);
 				$events_to_delete = $events_to_delete - $BIG_OPERATION_STEP;
 			
 				# Mark the progress
@@ -292,7 +292,7 @@ sub pandora_purgedb ($$) {
 			my $nstate = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_estado WHERE id_agente_modulo=?', $id_module);			
 			last if($nstate == 0);
 			
-			db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+			db_delete_limit ($dbh, 'tagente_estado', 'id_agente_modulo=?', $buffer, $id_module);
 		}
 	}
 	log_message ('', "\n");
@@ -303,7 +303,7 @@ sub pandora_purgedb ($$) {
 
 	log_message ('PURGE', "Deleting old access data (More than 24hr)");
 
-	$first_mark =  get_db_value ($dbh, 'SELECT utimestamp FROM tagent_access ORDER BY utimestamp ASC LIMIT 1');
+	$first_mark =  get_db_value_limit ($dbh, 'SELECT utimestamp FROM tagent_access ORDER BY utimestamp ASC', 1);
 	if (defined ($first_mark)) {
 		$total_time = $ulimit_access_timestamp - $first_mark;
 		$purge_steps = int( $total_time / $BIG_OPERATION_STEP);
@@ -339,31 +339,31 @@ sub pandora_purgedb ($$) {
 		db_do ($dbh, "DELETE FROM treport_content
 					  WHERE id_agent_module != 0
 						AND id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo)
-						AND type NOT IN ($blacklist_types_str);");
+						AND ${RDBMS_QUOTE}type${RDBMS_QUOTE} NOT IN ($blacklist_types_str)");
 		db_do ($dbh, "DELETE FROM treport_content_item
 					  WHERE id_agent_module != 0
 						AND id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo)
-						AND id_report_content NOT IN (SELECT id_rc FROM treport_content WHERE type IN ($blacklist_types_str));");
+						AND id_report_content NOT IN (SELECT id_rc FROM treport_content WHERE ${RDBMS_QUOTE}type${RDBMS_QUOTE} IN ($blacklist_types_str))");
 		db_do ($dbh, "DELETE FROM treport_content_sla_combined
 					  WHERE id_agent_module != 0
 						AND id_agent_module NOT IN (SELECT id_agente_modulo FROM tagente_modulo)
-						AND id_report_content NOT IN (SELECT id_rc FROM treport_content WHERE type = 'SLA_services');");
+						AND id_report_content NOT IN (SELECT id_rc FROM treport_content WHERE ${RDBMS_QUOTE}type${RDBMS_QUOTE} = 'SLA_services')");
 		
 		# Deleted agents
 		log_message ('PURGE', "Delete contents in report that have some deleted agents.");
 		db_do ($dbh, "DELETE FROM treport_content
 					  WHERE id_agent != 0
 						AND id_agent NOT IN (SELECT id_agente FROM tagente)
-						AND type NOT IN ($blacklist_types_str);");
+						AND ${RDBMS_QUOTE}type${RDBMS_QUOTE} NOT IN ($blacklist_types_str)");
 		
 		# Empty contents
 		log_message ('PURGE', "Delete empty contents in report (like SLA or Exception).");
 		db_do ($dbh, "DELETE FROM treport_content
-					  WHERE type LIKE 'exception'
-						AND id_rc NOT IN (SELECT id_report_content FROM treport_content_item);");
+					  WHERE ${RDBMS_QUOTE}type${RDBMS_QUOTE} LIKE 'exception'
+						AND id_rc NOT IN (SELECT id_report_content FROM treport_content_item)");
 		db_do ($dbh, "DELETE FROM treport_content
-					  WHERE type IN ('SLA', 'SLA_monthly', 'SLA_services')
-						AND id_rc NOT IN (SELECT id_report_content FROM treport_content_sla_combined);");
+					  WHERE ${RDBMS_QUOTE}type${RDBMS_QUOTE} IN ('SLA', 'SLA_monthly', 'SLA_services')
+						AND id_rc NOT IN (SELECT id_report_content FROM treport_content_sla_combined)");
 	}
 	
 	
@@ -913,7 +913,7 @@ sub pandora_delete_old_module_data {
 	# you alter code and you don't know exactly what are you doing. Please take in mind this code executes each hour
 	# and has been patches MANY times. Before altering anything, think twice !
 
-	$first_mark =  get_db_value ($dbh, "SELECT utimestamp FROM $table ORDER BY utimestamp ASC LIMIT 1");
+	$first_mark =  get_db_value_limit ($dbh, "SELECT utimestamp FROM $table ORDER BY utimestamp ASC", 1);
 	if (defined ($first_mark)) {
 		$total_time = $ulimit_timestamp - $first_mark;
 		$purge_steps = int($total_time / $BIG_OPERATION_STEP);
@@ -926,7 +926,7 @@ sub pandora_delete_old_module_data {
 				# Let's split the intervals in $SMALL_OPERATION_STEP deletes each
 				$purge_count = get_db_value ($dbh, "SELECT COUNT(id_agente_modulo) FROM $table WHERE utimestamp < $mark1 AND utimestamp >= $mark2");
 				while ($purge_count > 0){
-					db_do ($dbh, "DELETE FROM $table WHERE utimestamp < $mark1 AND utimestamp >= $mark2 LIMIT $SMALL_OPERATION_STEP");
+					db_delete_limit ($dbh, $table,  'utimestamp < ? AND utimestamp >= ?', $SMALL_OPERATION_STEP, $mark1, $mark2);
 					# Do a nanosleep here for 0,001 sec
 					usleep (10000);
 					$purge_count = $purge_count - $SMALL_OPERATION_STEP;
@@ -950,7 +950,8 @@ sub pandora_delete_old_export_data {
 	my ($dbh, $ulimit_timestamp) = @_;
 
 	log_message ('PURGE', "Deleting old export data from tserver_export_data\n");
-	while(db_do ($dbh, "DELETE FROM tserver_export_data WHERE UNIX_TIMESTAMP(timestamp) < ? LIMIT $SMALL_OPERATION_STEP", $ulimit_timestamp) ne '0E0') {
+	while((my $rc = db_delete_limit ($dbh, 'tserver_export_data', 'UNIX_TIMESTAMP(timestamp) < ?', $SMALL_OPERATION_STEP, $ulimit_timestamp)) ne '0E0') {
+		print "RC:$rc\n";
 		usleep (10000);
 	};
 }
@@ -962,7 +963,7 @@ sub pandora_delete_old_session_data {
 	my ($dbh, $ulimit_timestamp) = @_;
 
 	log_message ('PURGE', "Deleting old session data from tsessions_php\n");
-	while(db_do ($dbh, "DELETE FROM tsessions_php WHERE last_active < ? LIMIT $SMALL_OPERATION_STEP", $ulimit_timestamp) ne '0E0') {
+	while(db_delete_limit ($dbh, 'tsessions_php', 'last_active < ?', $SMALL_OPERATION_STEP, $ulimit_timestamp) ne '0E0') {
 		usleep (10000);
 	};
 }

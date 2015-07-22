@@ -34,6 +34,7 @@ our @EXPORT = qw(
 		add_new_address_agent
 		db_concat
 		db_connect
+		db_delete_limit
 		db_disconnect
 		db_do
 		db_get_lock
@@ -638,9 +639,9 @@ sub get_db_value_limit ($$$;@) {
 	# Cache statements
 	my $sth;
 	if ($RDBMS ne 'oracle') {
-		$sth = $dbh->prepare_cached($query . ' LIMIT ' . $limit);
+		$sth = $dbh->prepare_cached($query . ' LIMIT ' . int($limit));
 	} else {
-		$sth = $dbh->prepare_cached('SELECT * FROM (' . $query . ') WHERE ROWNUM <= ' . $limit);
+		$sth = $dbh->prepare_cached('SELECT * FROM (' . $query . ') WHERE ROWNUM <= ' . int($limit));
 	}
 
 	$sth->execute(@values);
@@ -737,6 +738,29 @@ sub get_db_rows_limit ($$$;@) {
 	
 	$sth->finish();
 	return @rows;
+}
+
+##########################################################################
+## SQL delete with a LIMIT clause.
+##########################################################################
+sub db_delete_limit ($$$$;@) {
+	my ($dbh, $from, $where, $limit, @values) = @_;
+	my $sth;
+
+	# MySQL
+	if ($RDBMS eq 'mysql') {
+		$sth = $dbh->prepare_cached("DELETE FROM $from WHERE $where LIMIT " . int($limit));
+	}
+	# PostgreSQL
+	elsif ($RDBMS eq 'postgresql') {
+		$sth = $dbh->prepare_cached("DELETE FROM $from WHERE $where LIMIT " . int($limit));
+	}
+	# Oracle
+	elsif ($RDBMS eq 'oracle') {
+		$sth = $dbh->prepare_cached("DELETE FROM (SELECT * FROM $from WHERE $where) WHERE ROWNUM <= " . int($limit));
+	}
+
+	$sth->execute(@values);
 }
 
 ##########################################################################
@@ -1109,7 +1133,10 @@ sub db_insert_get_values ($) {
 ########################################################################
 sub db_get_lock($$;$) {
 	my ($dbh, $lock_name, $lock_timeout) = @_;
-	
+
+	# Only supported in MySQL.
+	return 1 unless ($RDBMS eq 'mysql');
+
 	# Set a default lock timeout of 1 second
 	$lock_timeout = 1 if (! defined ($lock_timeout));
 	
@@ -1130,6 +1157,9 @@ sub db_get_lock($$;$) {
 sub db_release_lock($$) {
 	my ($dbh, $lock_name) = @_;
 	
+	# Only supported in MySQL.
+	return unless ($RDBMS eq 'mysql');
+
 	my $sth = $dbh->prepare('SELECT RELEASE_LOCK(?)');
 	$sth->execute($lock_name);
 	my ($lock) = $sth->fetchrow;

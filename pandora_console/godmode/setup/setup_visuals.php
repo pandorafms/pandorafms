@@ -81,7 +81,7 @@ $table_behaviour->data[$row][1] = html_print_checkbox('paginate_module', 1,
 	$config['paginate_module'], true);
 $row++;
 
-$table_behaviour->data[$row][0] = __('Display proc modules in binary format (OK/FAIL).');
+$table_behaviour->data[$row][0] = __('Display data of proc modules in other format');
 $table_behaviour->data[$row][1] = __('Yes') . '&nbsp;' . 
 		html_print_radio_button ('render_proc', 1, '',
 		$config["render_proc"], true) .
@@ -90,6 +90,15 @@ $table_behaviour->data[$row][1] .= __('No') . '&nbsp;' .
 	html_print_radio_button ('render_proc', 0, '',
 		$config["render_proc"], true);
 $row++;
+
+$table_behaviour->data[$row][0] = __('Display text proc modules have state is ok');
+$table_behaviour->data[$row][1] = html_print_input_text ('render_proc_ok', $config["render_proc_ok"], '', 25, 25, true);
+$row++;
+
+$table_behaviour->data[$row][0] = __('Display text when proc modules have state critical');
+$table_behaviour->data[$row][1] = html_print_input_text ('render_proc_fail', $config["render_proc_fail"], '', 25, 25, true);
+$row++;
+
 echo "<fieldset>";
 echo "<legend>" . __('Behaviour configuration') . "</legend>";
 html_print_table ($table_behaviour);

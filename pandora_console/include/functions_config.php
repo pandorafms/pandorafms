@@ -468,7 +468,11 @@ function config_update_config () {
 					if (!config_update_value ('type_module_charts', (string) get_parameter('type_module_charts', 'area')))
 						$error_update[] = __('Default type of module charts.');
 					if (!config_update_value ('render_proc', (bool) get_parameter('render_proc', false)))
-						$error_update[] = __('Display proc modules in binary format (OK/FAIL)');
+						$error_update[] = __('Display dara of proc modules in other format');
+					if (!config_update_value ('render_proc_ok', (string) get_parameter('render_proc_ok', __('Ok') )))
+						$error_update[] = __('Display text proc modules have state is ok');
+					if (!config_update_value ('render_proc_fail', (string) get_parameter('render_proc_fail', __('Fail') )))
+						$error_update[] = __('Display text when proc modules have state critical');
 					
 					
 					
@@ -1294,6 +1298,13 @@ function config_process_config () {
 	
 	if (!isset($config['render_proc'])) {
 		config_update_value ('render_proc', 0);
+	}
+	
+	if (!isset($config["render_proc_ok"])) {
+		config_update_value ('render_proc_ok', __('Ok') );
+	}
+	if (!isset($config["render_proc_fail"])) {
+		config_update_value ('render_proc_fail', __('Fail') );
 	}
 	
 	if (!isset($config['command_snapshot'])) {

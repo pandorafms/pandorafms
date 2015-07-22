@@ -123,7 +123,10 @@ switch ($config["dbtype"]) {
 	case "mysql":
 		render_info_data ("SELECT `value`
 			FROM tconfig
-			WHERE `token` = 'db_scheme_version'", "DB Schema Version");
+			WHERE `token` = 'db_scheme_first_version'", "DB Schema Version (first installed)");
+		render_info_data ("SELECT `value`
+			FROM tconfig
+			WHERE `token` = 'db_scheme_version'", "DB Schema Version (actual)");
 		render_info_data ("SELECT `value`
 			FROM tconfig
 			WHERE `token` = 'db_scheme_build'", "DB Schema Build");

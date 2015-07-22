@@ -492,7 +492,7 @@ $table->data[$row][1] = html_print_input_text ('custom_graph_widht',
 
 $row++;
 
-$table->data[$row][0] = __('Display proc modules in binary format (OK/FAIL)');
+$table->data[$row][0] = __('Display data of proc modules in other format');
 $table->data[$row][1] = __('Yes') . '&nbsp;' . 
 		html_print_radio_button ('render_proc', 1, '',
 		$config["render_proc"], true) .
@@ -501,6 +501,13 @@ $table->data[$row][1] .= __('No') . '&nbsp;' .
 	html_print_radio_button ('render_proc', 0, '',
 		$config["render_proc"], true);
 
+$row++;
+$table->data[$row][0] = __('Display text proc modules have state is ok');
+$table->data[$row][1] = html_print_input_text ('render_proc_ok', $config["render_proc_ok"], '', 25, 25, true);
+$row++;
+
+$table->data[$row][0] = __('Display text when proc modules have state critical');
+$table->data[$row][1] = html_print_input_text ('render_proc_fail', $config["render_proc_fail"], '', 25, 25, true);
 $row++;
 
 echo '<form id="form_setup" method="post">';

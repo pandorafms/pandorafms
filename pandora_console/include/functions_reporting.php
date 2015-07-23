@@ -571,7 +571,11 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 					$id_agent_modules[] = $sla['id_agent_module'];
 			}
 			
-			$planned_downtimes = reporting_get_planned_downtimes(($report['datetime']-$content['period']), $report['datetime'], $id_agent_modules);
+			$planned_downtimes =
+				reporting_get_planned_downtimes(
+					($report['datetime'] - $content['period']),
+					$report['datetime'],
+					$id_agent_modules);
 			$malformed_planned_downtimes = planned_downtimes_get_malformed();
 			
 			if (!empty($planned_downtimes))
@@ -586,7 +590,8 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 					$data['name'] = $planned_downtime['name'];
 					$data['description'] = $planned_downtime['description'];
 					$data['execution'] = ucfirst($planned_downtime['type_execution']);
-					$data['dates'] = reporting_format_planned_downtime_dates($planned_downtime);
+					$data['dates'] =
+						reporting_format_planned_downtime_dates($planned_downtime);
 					
 					$data['malformed'] = 0;
 					if (!$malformed_planned_downtimes_empty && isset($malformed_planned_downtimes[$planned_downtime['id']])) {
@@ -635,6 +640,8 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 					
 					continue;
 				}
+				
+				
 				
 				//Get the sla_value in % and store it on $sla_value
 				$sla_value = reporting_get_agentmodule_sla(
@@ -6367,6 +6374,8 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0,
 	
 	global $config;
 	
+	
+	
 	if (empty($id_agent_module))
 		return false;
 	
@@ -6385,8 +6394,11 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0,
 	}
 	
 	
+	
+	
 	// Calculate the SLA for large time without hours
 	if ($timeFrom == $timeTo) {
+		
 		// Get interval data
 		$sql = sprintf ('SELECT *
 			FROM tagente_datos
@@ -6438,7 +6450,8 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0,
 		}
 		
 		// Calculate planned downtime dates
-		$downtime_dates = reporting_get_planned_downtimes_intervals($id_agent_module, $datelimit, $date);
+		$downtime_dates = reporting_get_planned_downtimes_intervals(
+			$id_agent_module, $datelimit, $date);
 		
 		// Get previous data
 		$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
@@ -6476,12 +6489,27 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0,
 		}
 		
 		$previous_utimestamp = $first_data['utimestamp'];
-		if ((($max_value > $min_value AND ($first_data['datos'] > $max_value OR $first_data['datos'] < $min_value))) OR
-			($max_value <= $min_value AND $first_data['datos'] < $min_value)) {
+		if (
+			(
+				(
+					$max_value > $min_value AND (
+						$first_data['datos'] > $max_value OR
+						$first_data['datos'] < $min_value
+					)
+				)
+			) OR
+			(
+				$max_value <= $min_value AND
+				$first_data['datos'] < $min_value
+			)
+		) {
 			
 			$previous_status = 1;
 			foreach ($downtime_dates as $date_dt) {
-				if (($date_dt['date_from'] <= $previous_utimestamp) AND ($date_dt['date_to'] >= $previous_utimestamp)) {
+				
+				if (($date_dt['date_from'] <= $previous_utimestamp) AND
+					($date_dt['date_to'] >= $previous_utimestamp)) {
+					
 					$previous_status = 0;
 				}
 			}
@@ -6537,13 +6565,14 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0,
 			$timeTo);
 	}
 	else {
+		
 		// Extract the data each day
 		
 		$sla = 0;
 		
 		$i = 0;
-		for ($interval = 0; $interval <= $period; $interval = $interval + SECONDS_1DAY) {
-			$datelimit = $date - $interval;
+		for ($interval = SECONDS_1DAY; $interval <= $period; $interval = $interval + SECONDS_1DAY) {
+			
 			
 			$sla_day = reporting_get_agentmodule_sla(
 				$id_agent_module,
@@ -6555,8 +6584,12 @@ function reporting_get_agentmodule_sla ($id_agent_module, $period = 0,
 				$timeFrom, $timeTo);
 			
 			
-			$sla += $sla_day;
-			$i++;
+			
+			// Avoid to add the period of module not init
+			if ($sla_day !== false) {
+				$sla += $sla_day;
+				$i++;
+			}
 		}
 		
 		$sla = $sla / $i;
@@ -7400,13 +7433,16 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 	// Limit date to start searching data
 	$datelimit = $date - $period;
 	
+	
+	
 	$search_in_history_db = db_search_in_history_db($datelimit);
 	
 	// Get interval data
 	$sql = sprintf ('SELECT *
 		FROM tagente_datos
 		WHERE id_agente_modulo = %d
-			AND utimestamp > %d AND utimestamp <= %d',
+			AND utimestamp > %d
+			AND utimestamp <= %d',
 		$id_agent_module, $datelimit, $date);
 	
 	//Add the working times (mon - tue - wed ...) and from time to time
@@ -7467,10 +7503,11 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 	}
 	
 	// Calculate planned downtime dates
-	$downtime_dates = reporting_get_planned_downtimes_intervals($id_agent_module, $datelimit, $date);
+	$downtime_dates =
+		reporting_get_planned_downtimes_intervals($id_agent_module, $datelimit, $date);
 	
 	// Get previous data
-	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
+	$previous_data = modules_get_previous_data($id_agent_module, $datelimit);
 	
 	if ($previous_data !== false) {
 		$previous_data['utimestamp'] = $datelimit;
@@ -7547,6 +7584,7 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 		
 		$previous_utimestamp = $data['utimestamp'];
 	}
+	
 	
 	// Return the percentage of SLA compliance
 	return (float) (100 - ($bad_period / $period) * 100);

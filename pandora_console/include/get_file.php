@@ -13,21 +13,22 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+if (! isset($_SESSION['id_usuario'])) {
+	session_start();
+}
+
 require_once('functions.php');
 require_once('functions_filemanager.php');
-
-session_start();
-
 require_once ("config.php");
 global $config;
+
+check_login ();
 
 $auth_method = db_get_value('value', 'tconfig', 'token', 'auth');
 
 require_once("auth/" . $auth_method . ".php");
 
-session_write_close ();
 
-check_login ();
 
 $styleError = "background:url(\"../images/err.png\") no-repeat scroll 0 0 transparent; padding:4px 1px 6px 30px; color:#CC0000;";
 

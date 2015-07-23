@@ -217,7 +217,7 @@ else {
 		
 		$data = array();
 		$data[0] = '<b><a href="index.php?sec=network&sec2=operation/agentes/networkmap&tab=' . $network_map['type']
-			. '&id_networkmap=' . $network_map['id_networkmap'] . '">' . $network_map['name'] . '</a></b>';
+			. '&id_networkmap=' . $network_map['id_networkmap'] . '">' . io_safe_output($network_map['name']) . '</a></b>';
 		$data[1] = $network_map['type'];
 		$data[2] = ui_print_group_icon ($network_map['store_group'], true);
 		

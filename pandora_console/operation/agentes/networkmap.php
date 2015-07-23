@@ -268,7 +268,7 @@ if (!$update_networkmap && !$save_networkmap) {
 	$group = $networkmap_data['id_group'];
 	$module_group = $networkmap_data['id_module_group'];
 	$center = $networkmap_data['center'];
-	$name = $networkmap_data['name'];
+	$name = io_safe_output($networkmap_data['name']);
 	$activeTab = $networkmap_data['type'];
 	$l2_network = $networkmap_data['l2_network'];
 }
@@ -435,7 +435,7 @@ $form_elems = array();
 
 // Name
 $element = __('Name') . '&nbsp;' .
-	html_print_input_text ('name', $name, '', 25, 50, true);
+	html_print_input_text ('name', io_safe_output($name), '', 25, 50, true);
 if ($activeTab == 'groups')
 	$element .= clippy_context_help("topology_group");
 $form_elems[] = $element;

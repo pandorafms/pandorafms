@@ -161,14 +161,8 @@ switch($graph_type) {
 				$data_values[$name][] = $val;
 			}
 			
-			if (($c % $step) == 0) {
-				$data_keys[] = $i;
-			}
-			else {
-				$data_keys[] = "";
-			}
-			
-			$c++;
+			$data_keys[] = $i;
+
 		}
 		$fine_colors = array();
 		

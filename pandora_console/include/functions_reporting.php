@@ -626,7 +626,8 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 					}
 				}
 				
-				if (modules_is_disable_agent($sla['id_agent_module'])) {
+				if (modules_is_disable_agent($sla['id_agent_module'])
+					|| modules_is_not_init($item['id_agent_module'])) {
 					if ($metaconsole_on) {
 						//Restore db connection
 						metaconsole_restore_db();
@@ -3673,7 +3674,10 @@ function reporting_availability($report, $content) {
 			}
 		}
 		
-		if (modules_is_disable_agent($item['id_agent_module'])) {
+		
+		
+		if (modules_is_disable_agent($item['id_agent_module'])
+			|| modules_is_not_init($item['id_agent_module'])) {
 			//Restore dbconnection
 			if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 				metaconsole_restore_db();
@@ -3700,10 +3704,21 @@ function reporting_availability($report, $content) {
 			$text = $row['availability_item'] = modules_get_agentmodule_name(
 				$item['id_agent_module']);
 		}
+		
 		$row['agent'] = modules_get_agentmodule_agent_name(
 			$item['id_agent_module']);
 		
 		$text = $row['agent'] . " (" . $text . ")";
+		
+		$sla_value = reporting_get_agentmodule_sla(
+			$item['id_agent_module'],
+			$content['period'],
+			0.50,
+			1.50,
+			$report["datetime"],
+			null,
+			$content['time_from'],
+			$content['time_to']);
 		
 		$count_checks = modules_get_count_datas(
 			$item['id_agent_module'],
@@ -3711,7 +3726,7 @@ function reporting_availability($report, $content) {
 			$report["datetime"]);
 		
 		
-		if (empty($count_checks)) {
+		if ($sla_value === false) {
 			$row['checks'] = __('Unknown');
 			$row['failed'] = __('Unknown');
 			$row['fail'] = __('Unknown');
@@ -3722,27 +3737,29 @@ function reporting_availability($report, $content) {
 			$percent_ok = 0;
 		}
 		else {
-			$count_fails = modules_get_count_data_with_value(
-				$item['id_agent_module'],
-				$report["datetime"] - $content['period'],
-				$report["datetime"],
-				0);
-			$percent_ok = (($count_checks - $count_fails) * 100) / $count_checks;
-			$percent_fail = 100 - $percent_ok;
+			$percent_ok = format_numeric($sla_value, 2);
+			$percent_fail = (100 - $percent_ok);
 			
-			$row['ok'] = format_numeric($percent_ok, 2) . " %";
-			$row['fail'] = format_numeric($percent_fail, 2) . " %";
-			$row['checks'] = format_numeric($count_checks, 2);
-			$row['failed'] = format_numeric($count_fails ,2);
-			$row['poling_time'] = human_time_description_raw(
-				($count_checks - $count_fails) * modules_get_interval($item['id_agent_module']),
+			$row['checks'] = format_numeric($count_checks, 0);
+			$row['ok'] = $percent_ok . " %";
+			$row['fail'] = $percent_fail . " %";
+			$row['failed'] =
+				format_numeric($percent_fail * $count_checks / 100, 0);
+			
+			
+			$row['poling_time'] =
+				human_time_description_raw(
+					($percent_ok * $count_checks / 100) * modules_get_interval($item['id_agent_module']),
 				true);
+			
 			$row['time_unavaliable'] = "-";
-			if ($count_fails > 0) {
-				$row['time_unavaliable'] = human_time_description_raw(
-					$count_fails * modules_get_interval($item['id_agent_module']),
+			if ($percent_fail > 0) {
+				$row['time_unavaliable'] =
+					human_time_description_raw(
+						($percent_fail * $count_checks / 100) * modules_get_interval($item['id_agent_module']),
 					true);
 			}
+			
 		}
 		
 		$data[] = $row;
@@ -3769,6 +3786,7 @@ function reporting_availability($report, $content) {
 				$max_text = $text;
 			}
 		}
+		
 		
 		//Restore dbconnection
 		if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
@@ -3905,7 +3923,14 @@ function reporting_general($report, $content) {
 			}
 		}
 		
-		if (modules_is_disable_agent($row['id_agent_module'])) {
+		if (modules_is_disable_agent($row['id_agent_module']) ||
+			modules_is_not_init($item['id_agent_module'])) {
+			
+			if (is_metaconsole()) {
+				//Restore db connection
+				metaconsole_restore_db();
+			}
+			
 			continue;
 		}
 		

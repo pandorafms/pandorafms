@@ -1746,29 +1746,41 @@ class Tree {
 	}
 	
 	public function getData() {
-		
 		if (! defined('METACONSOLE')) {
-			switch ($this->type) {
-				case 'os':
-					$this->getDataOS();
-					break;
-				case 'group':
-					$this->getDataGroup();
-					break;
-				case 'module_group':
-					$this->getDataModuleGroup();
-					break;
-				case 'module':
-					$this->getDataModules();
-					break;
-				case 'tag':
-					$this->getDataTag();
-					break;
-				case 'agent':
-					$this->getDataAgent();
-					break;
-				default:
-					$this->getDataExtended();
+			if ($this->strictACL) {
+				switch ($this->type) {
+					case 'group':
+					case 'tag':
+						$this->getDataStrict();
+						break;
+					case 'agent':
+						$this->getDataAgent();
+						break;
+				}
+			}
+			else{
+				switch ($this->type) {
+					case 'os':
+						$this->getDataOS();
+						break;
+					case 'group':
+						$this->getDataGroup();
+						break;
+					case 'module_group':
+						$this->getDataModuleGroup();
+						break;
+					case 'module':
+						$this->getDataModules();
+						break;
+					case 'tag':
+						$this->getDataTag();
+						break;
+					case 'agent':
+						$this->getDataAgent();
+						break;
+					default:
+						$this->getDataExtended();
+				}
 			}
 		}
 		else if ($this->strictACL) {

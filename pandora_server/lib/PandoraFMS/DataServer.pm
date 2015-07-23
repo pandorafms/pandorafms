@@ -162,6 +162,7 @@ sub data_consumer ($$) {
 		$AgentSem->down ();
 		delete ($Agents{$agent_name});
 		$AgentSem->up ();
+		return;
 	}
 
 	# Try to parse the XML 2 times, with a delay between tries of 2 seconds
@@ -192,6 +193,7 @@ sub data_consumer ($$) {
 			$AgentSem->down ();
 			delete ($Agents{$agent_name});
 			$AgentSem->up ();
+			return;
 		}
 
 		unlink ($file_name);

@@ -495,6 +495,7 @@ if ($paginate_module) {
 	ui_pagination($total_modules, $url);
 }
 
+$table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox data';
 $table->head = array ();

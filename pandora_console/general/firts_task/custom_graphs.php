@@ -32,7 +32,7 @@ ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no cu
 		<p id="description_task"> <?php echo __("Graphs are designed to show the data collected by Pandora FMS in a temporary scale defined by the user.
 				Pandora FMS Graphs display data in real time. They are generated every time the operator requires any of them and display the up-to-date state.
 				There are two types of graphs: The agent's automated graphs and the graphs the user customizes by using one or more modules to do so."); ?></p>
-		<form action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create" method="post">
+		<form action="index.php?sec=reporting&sec2=godmode/reporting/graph_builder" method="post">
 			<input type="submit" class="button_task" value="<?php echo __('Create Custom Graph'); ?>" />
 		</form>
 	</div>

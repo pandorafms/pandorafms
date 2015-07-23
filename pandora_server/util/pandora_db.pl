@@ -33,7 +33,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "6.0dev PS150721";
+my $version = "6.0dev PS150722";
 
 # Pandora server configuration
 my %conf;
@@ -639,7 +639,7 @@ sub pandora_load_config ($) {
 	$conf->{'claim_back_snmp_modules'} = '1' unless defined ($conf->{'claim_back_snmp_modules'});
 
 	# Read additional tokens from the DB
-	my $dbh = db_connect ('mysql', $conf->{'dbname'}, $conf->{'dbhost'}, $conf->{'dbport'}, $conf->{'dbuser'}, $conf->{'dbpass'});
+	my $dbh = db_connect ($conf->{'dbengine'}, $conf->{'dbname'}, $conf->{'dbhost'}, $conf->{'dbport'}, $conf->{'dbuser'}, $conf->{'dbpass'});
 
 	$conf->{'_event_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'event_purge'");
 	$conf->{'_trap_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'trap_purge'");

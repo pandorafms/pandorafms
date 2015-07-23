@@ -32,8 +32,11 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	$options[]['text'] = "<a href='index.php?sec=estado&sec2=operation/servers/recon_view'>" . html_print_image ("images/operation.png", true, array ("title" =>__('View'))) . "</a>";
 }
 
-$user_groups = users_get_groups(false, 'AW', true, false, null, 'id_grupo');
-$user_groups = array_keys($user_groups);
+$user_groups_w = users_get_groups(false, 'AW', true, false, null, 'id_grupo');
+$user_groups_w = array_keys($user_groups_w);
+
+$user_groups_r = users_get_groups(false, 'AR', true, false, null, 'id_grupo');
+$user_groups_r = array_keys($user_groups_r);
 
 // Headers
 //ui_print_page_header (__('Manage recontask'), "images/gm_servers.png", false, "", true);
@@ -207,8 +210,21 @@ if (isset($_GET["create"])) {
 	$name = io_safe_input($name);
 	
 	$reason = "";
-	if (($name != "") && (! db_get_value_filter ('name', 'trecon_task', array ('name' => $name)))) {
-		if (empty($id_recon_script) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
+
+	if ($name != "") {
+		if ((db_get_value_filter ('name', 'trecon_task', array ('name' => $name))) && (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))){
+			$reason = __('Recon-task name already exists and incorrect format in Subnet field');
+			$result = false;
+		}
+		else if (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network)){
+			$reason = __('Incorrect format in Subnet field');
+			$result = false;
+		}
+		else if (db_get_value_filter ('name', 'trecon_task', array ('name' => $name))){
+			$reason = __('Recon-task name already exists');
+			$result = false;
+		}
+		else if (empty($id_recon_script) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
 		{
 			$result = db_process_sql_insert('trecon_task', $values);
 			
@@ -217,18 +233,13 @@ if (isset($_GET["create"])) {
 		elseif (!empty($id_recon_script)) {
 			$result = db_process_sql_insert('trecon_task', $values);
 		}
-		else {
-			if (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
-				$reason = __('Incorrect format in Subnet field');
+		else{
+			$reason = __('Error');
 			$result = false;
 		}
 	}
 	else {
-		$result = false;
-	}
-
-	if (db_get_value_filter ('name', 'trecon_task', array ('name' => $name))){
-		$reason = __('Recon-task name already exists');
+		$reason = 'The field "Task name" is empty';
 		$result = false;
 	}
 
@@ -272,76 +283,82 @@ if ($result !== false) {
 	$table->size[8] = '15%';
 	
 	foreach ($result as $row) {
-		$data = array();
-		//$data[0] = '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&crt=update&update='.$row["id_rt"].'&upd='.$row["id_rt"].'"><b>'.$row["name"].'</b></a>';
-		$data[0] = $row["name"];
-		if ($row["id_recon_script"] == 0)
-			$data[1] = $row["subnet"];
-		else
-			$data[1] =__("N/A");
-		
-		
-		if ($row["id_recon_script"] == 0) {
-			// Network recon task
-			$data[2] = html_print_image ("images/network.png", true, array ("title" => __('Network recon task')))."&nbsp;&nbsp;";
-			$data[2] .= network_profiles_get_name ($row["id_network_profile"]);
-		}
-		else {
-			// APP recon task
-			$data[2] = html_print_image ("images/plugin.png", true). "&nbsp;&nbsp;";
-			$data[2] .= db_get_sql (sprintf("SELECT name FROM trecon_script WHERE id_recon_script = %d", $row["id_recon_script"]));
-		}
-		
-		
-		// GROUP
-		if ($row["id_recon_script"] == 0) {
-			$data[3] = ui_print_group_icon ($row["id_group"], true);
-		}
-		else {
-			$data[3] = "-";
-		}
-		
-		// INCIDENT
-		$data[4] = (($row["create_incident"] == 1) ? __('Yes') : __('No'));
-		
-		// OS
-		if ($row["id_recon_script"] == 0) {
-			$data[5] =(($row["id_os"] > 0) ? ui_print_os_icon ($row["id_os"], false, true) : __('Any'));
-		}
-		else {
-			$data[5] = "-";
-		}
-		// INTERVAL
-		if ($row["interval_sweep"]==0)
-			$data[6] = __("Manual");
-		else
-			$data[6] =human_time_description_raw($row["interval_sweep"]);
-		
-		// PORTS
-		if ($row["id_recon_script"] == 0) {
-			$data[7] = substr($row["recon_ports"],0,15);
-		}
-		else {
-			$data[7] = "-";
-		}
-		
-		// ACTION
-		$task_group = $row["id_group"];
-
-		if (in_array($task_group, $user_groups)){
-			$data[8] = '<a href="index.php?sec=estado&sec2=operation/servers/recon_view">' . html_print_image("images/eye.png", true) . '</a>';
-			$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
-			$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">' .html_print_image("images/config.png", true) . '</a>';
-		
-			if($row["disabled"] == 0) {
-				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&id='.$row["id_rt"].'&disabled=1">' .html_print_image("images/lightbulb.png", true) . '</a>';
+		if (in_array($row["id_group"], $user_groups_r)){
+			$data = array();
+			if (in_array($row["id_group"], $user_groups_w)){
+				$data[0] = '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&crt=update&update='.$row["id_rt"].'&upd='.$row["id_rt"].'"><b>'.$row["name"].'</b></a>';
+			}
+			else{
+				$data[0] = $row["name"];
+			}
+			if ($row["id_recon_script"] == 0)
+				$data[1] = $row["subnet"];
+			else
+				$data[1] =__("N/A");
+			
+			
+			if ($row["id_recon_script"] == 0) {
+				// Network recon task
+				$data[2] = html_print_image ("images/network.png", true, array ("title" => __('Network recon task')))."&nbsp;&nbsp;";
+				$data[2] .= network_profiles_get_name ($row["id_network_profile"]);
 			}
 			else {
-				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&id='.$row["id_rt"].'&disabled=0">' .html_print_image("images/lightbulb_off.png", true) . '</a>';
+				// APP recon task
+				$data[2] = html_print_image ("images/plugin.png", true). "&nbsp;&nbsp;";
+				$data[2] .= db_get_sql (sprintf("SELECT name FROM trecon_script WHERE id_recon_script = %d", $row["id_recon_script"]));
 			}
+			
+			
+			// GROUP
+			if ($row["id_recon_script"] == 0) {
+				$data[3] = ui_print_group_icon ($row["id_group"], true);
+			}
+			else {
+				$data[3] = "-";
+			}
+			
+			// INCIDENT
+			$data[4] = (($row["create_incident"] == 1) ? __('Yes') : __('No'));
+			
+			// OS
+			if ($row["id_recon_script"] == 0) {
+				$data[5] =(($row["id_os"] > 0) ? ui_print_os_icon ($row["id_os"], false, true) : __('Any'));
+			}
+			else {
+				$data[5] = "-";
+			}
+			// INTERVAL
+			if ($row["interval_sweep"]==0)
+				$data[6] = __("Manual");
+			else
+				$data[6] =human_time_description_raw($row["interval_sweep"]);
+			
+			// PORTS
+			if ($row["id_recon_script"] == 0) {
+				$data[7] = substr($row["recon_ports"],0,15);
+			}
+			else {
+				$data[7] = "-";
+			}
+			
+			// ACTION
+			$task_group = $row["id_group"];
+
+			if (in_array($task_group, $user_groups_w)){
+				$data[8] = '<a href="index.php?sec=estado&sec2=operation/servers/recon_view">' . html_print_image("images/eye.png", true) . '</a>';
+				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
+				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">' .html_print_image("images/config.png", true) . '</a>';
+			
+				if($row["disabled"] == 0) {
+					$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&id='.$row["id_rt"].'&disabled=1">' .html_print_image("images/lightbulb.png", true) . '</a>';
+				}
+				else {
+					$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&id='.$row["id_rt"].'&disabled=0">' .html_print_image("images/lightbulb_off.png", true) . '</a>';
+				}
+			}
+			
+			$table->data[] = $data;
 		}
-		
-		$table->data[] = $data;
 	}
 	
 	html_print_table ($table);

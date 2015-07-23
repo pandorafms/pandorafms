@@ -295,12 +295,7 @@ if ($result !== false) {
 	foreach ($result as $row) {
 		if (in_array($row["id_group"], $user_groups_r)){
 			$data = array();
-			if (in_array($row["id_group"], $user_groups_w)){
-				$data[0] = '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&crt=update&update='.$row["id_rt"].'&upd='.$row["id_rt"].'"><b>'.$row["name"].'</b></a>';
-			}
-			else{
-				$data[0] = $row["name"];
-			}
+			$data[0] = $row["name"];
 			if ($row["id_recon_script"] == 0)
 				$data[1] = $row["subnet"];
 			else

@@ -23,6 +23,15 @@ include_once($config['homedir'] . "/include/functions_agents.php");
 include_once($config['homedir'] . '/include/functions_users.php');
 include_once($config['homedir'] . '/include/functions_tags.php');
 
+function modules_is_not_init($id_agent_module) {
+	$row = db_get_row('tagente_estado', 'id_agente_modulo', $id_agent_module);
+	
+	if ($row['estado'] == AGENT_MODULE_STATUS_NO_DATA)
+		return true;
+	else
+		return false;
+}
+
 function modules_is_disable_agent($id_agent_module) {
 	$sql = "
 		SELECT disabled
@@ -1715,7 +1724,8 @@ function modules_get_agentmodule_data ($id_agent_module, $period,
 		case 21:
 		case 31:
 			if ( $config["render_proc"] ) {
-				$sql = sprintf ("SELECT IF(datos >= 1, 'OK', 'FAIL') as data, utimestamp
+				$sql = sprintf ("SELECT IF(datos >= 1, '" . $config["render_proc_ok"] .
+				 "', '"	. $config["render_proc_fail"] . "') as data, utimestamp
 					FROM tagente_datos
 					WHERE id_agente_modulo = %d
 						AND utimestamp > %d AND utimestamp <= %d

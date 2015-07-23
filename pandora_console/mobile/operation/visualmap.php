@@ -96,7 +96,7 @@ class Visualmap {
 					'href' => 'index.php?page=visualmaps')));
 		$ui->showFooter(false);
 		$ui->beginContent();
-
+		
 		ob_start();
 		$rendered_map = '<div id="rendered_visual_map">';
 		$rendered_map .= html_print_image('images/spinner.gif', true);
@@ -106,11 +106,12 @@ class Visualmap {
 		$ui->contentAddHtml($rendered_map);
 		$ui->contentAddHtml("<script type=\"text/javascript\">
 				function ajax_load_map() {
-					$('#rendered_visual_map').html('<div style=\"text-align: center\"> " . __('Loading...') . "<br /><img src=\"images/ajax-loader.gif\" /></div>');
+					$('#rendered_visual_map').html('<div style=\"text-align: center\"> " .
+						__('Loading...') . "<br /><img src=\"images/ajax-loader.gif\" /></div>');
 					
 					var map_max_width = window.innerWidth * 0.90;
 					var map_max_height = (window.innerHeight - 47) * 0.90;
-
+					
 					var original_width = " . $this->visualmap['width'] . ";
 					var original_height = " . $this->visualmap['height'] . ";
 					
@@ -121,7 +122,7 @@ class Visualmap {
 						map_height = map_max_height;
 						map_width = original_width / (original_height / map_height);
 					}
-
+					
 					postvars = {};
 					postvars[\"action\"] = \"ajax\";
 					postvars[\"parameter1\"] = \"visualmap\";

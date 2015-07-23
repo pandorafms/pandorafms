@@ -31,7 +31,8 @@ $create = (string)get_parameter('create', 0);
 
 if ($id) {
 	$permission = events_check_event_filter_group ($id);
-	if (!$permission) { // User doesn't have permissions to see this filter
+	if (!$permission) {
+		// User doesn't have permissions to see this filter
 		require ("general/noaccess.php");
 		
 		return;
@@ -52,15 +53,15 @@ if ($id) {
 	$event_view_hr = $filter['event_view_hr'];
 	$id_user_ack = $filter['id_user_ack'];
 	$group_rep = $filter['group_rep'];
-
-	$tag_with_json = $filter['tag_with'];	
+	
+	$tag_with_json = $filter['tag_with'];
 	$tag_with_json_clean = io_safe_output($tag_with_json);
 	$tag_with_base64 = base64_encode($tag_with_json_clean) ;
 	
 	$tag_without_json = $filter['tag_without'];
 	$tag_without_json_clean = io_safe_output($tag_without_json);
 	$tag_without_base64 = base64_encode($tag_without_json_clean) ;
-
+	
 	$filter_only_alert = $filter['filter_only_alert'];
 }
 else {
@@ -99,10 +100,10 @@ if($update || $create) {
 	
 	$tag_with_base64 = get_parameter('tag_with', json_encode(array()));
 	$tag_with_json = io_safe_input(base64_decode($tag_with_base64));
-
+	
 	$tag_without_base64 = get_parameter('tag_without', json_encode(array()));
 	$tag_without_json = io_safe_input(base64_decode($tag_without_base64));
-
+	
 	$filter_only_alert = get_parameter('filter_only_alert','');
 	
 	$values = array (
@@ -231,11 +232,11 @@ $table->data[11][1] = html_print_select ($repeated_sel, "group_rep", $group_rep,
 
 
 $tag_with = json_decode($tag_with_json_clean, true);
-if(empty($tag_with)) {
+if (empty($tag_with)) {
 	$tag_with = array();
 }
 $tag_without = json_decode($tag_without_json_clean, true);
-if(empty($tag_without)) {
+if (empty($tag_without)) {
 	$tag_without = array();
 }
 
@@ -303,7 +304,8 @@ $table->data[18][1] = html_print_button(__('Remove'), 'remove_whithout', $remove
 
 $table->data[19][0] = '<b>' . __('Alert events') . '</b>';
 $table->data[19][1] = html_print_select(
-	array('-1' => __('All'),
+	array(
+		'-1' => __('All'),
 		'0' => __('Filter alert events'),
 		'1' => __('Only alert events')),
 	"filter_only_alert", $filter_only_alert, '', '', '', true);

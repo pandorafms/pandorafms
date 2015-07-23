@@ -607,9 +607,9 @@ foreach ($modules as $module) {
 						case 21:
 						case 31:
 							if ($module["datos"]>=1) 
-								$salida ='OK';
+								$salida = $config["render_proc_ok"];
 							else
-								$salida = 'FAIL';
+								$salida = $config["render_proc_fail"];
 							break;
 						default:	
 							$salida = format_numeric($module["datos"]);

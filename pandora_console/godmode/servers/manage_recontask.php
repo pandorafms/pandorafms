@@ -155,10 +155,20 @@ if (isset($_GET["update"])) {
 	
 	$reason = '';
 	if ($name != "") {
-		if ((empty($id_recon_script)) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
+		if ((db_get_value_filter ('name', 'trecon_task', array ('name' => $name))) && (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))){
+			$reason = __('Recon-task name already exists and incorrect format in Subnet field');
+			$result = false;
+		}
+		else if(db_get_value_filter ('name', 'trecon_task', array ('name' => $name))){
+			$reason = __('Recon-task name already exists');
+			$result = false;
+		}
+		else if ((empty($id_recon_script)) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network)){
 			$result = db_process_sql_update('trecon_task', $values, $where);
-		elseif (!empty($id_recon_script))
+		}
+		elseif (!empty($id_recon_script)){
 			$result = db_process_sql_update('trecon_task', $values, $where);
+		}
 		else  {
 			if (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
 				$reason = __('Incorrect format in Subnet field');

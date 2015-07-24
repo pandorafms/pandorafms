@@ -87,7 +87,7 @@ function visual_map_print_user_line_handles($layoutData) {
 }
 
 function visual_map_print_item($mode = "read", $layoutData,
-	$proportion = 1, $show_links = true) {
+	$proportion = null, $show_links = true) {
 	global $config;
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
@@ -111,6 +111,12 @@ function visual_map_print_item($mode = "read", $layoutData,
 	$sizeStyle = '';
 	$borderStyle = '';
 	$imageSize = '';
+	
+	
+	if (!empty($proportion)) {
+		$top = $top * $proportion['proportion_height'];
+		$left = $left * $proportion['proportion_width'];
+	}
 	
 	
 	$text = '<span id="text_' . $id . '" class="text">' . $label . '</span>';
@@ -695,9 +701,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		case MODULE_GRAPH:
 			$width =
-				((integer)($proportion * $width));
+				((integer)($proportion['proportion_width'] * $width));
 			$height =
-				((integer)($proportion * $height));
+				((integer)($proportion['proportion_height'] * $height));
+			
 			
 			//Metaconsole db connection
 			if ($layoutData['id_metaconsole'] != 0) {
@@ -773,9 +780,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 	}
 	
-	$top = (int)($proportion * $top);
-	$left = (int)($proportion * $left);
-	
 	echo '<div id="' . $id . '" class="' . $class . '" ' .
 		'style="z-index: ' .$z_index . ';' .
 			'position: absolute; top: ' . $top . 'px; ' .
@@ -790,8 +794,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 	switch ($type) {
 		case BOX_ITEM:
 			$style = "";
-			$style .= "width: " . ($width * $proportion) . "px; ";
-			$style .= "height: " . ($height * $proportion) . "px; ";
+			$style .= "width: " . ($width * $proportion['proportion_width']) . "px; ";
+			$style .= "height: " . ($height * $proportion['proportion_height']) . "px; ";
 			$style .= "border-style: solid; ";
 			$style .= "border-width: " . $border_width . "px; ";
 			$style .= "border-color: " . $border_color . "; ";
@@ -826,22 +830,22 @@ function visual_map_print_item($mode = "read", $layoutData,
 					}
 				}
 				
-				if ($proportion != 1) {
+				if (!empty($proportion)) {
 					if (is_file($config['homedir'] . '/' . $img))
 						$infoImage = getimagesize($config['homedir'] . '/' . $img);
 					
 					if ($width != 0) {
-						$width = (integer)($proportion * $width);
+						$width = (integer)($proportion['proportion_width'] * $width);
 					}
 					else {
-						$width = (integer)($proportion * $infoImage[0]);
+						$width = (integer)($proportion['proportion_width'] * $infoImage[0]);
 					}
 					
 					if ($height != 0) {
-						$height = (integer)($proportion * $height);
+						$height = (integer)($proportion['proportion_height'] * $height);
 					}
 					else {
-						$height = (integer)($proportion * $infoImage[1]);
+						$height = (integer)($proportion['proportion_height'] * $infoImage[1]);
 					}
 				}
 				
@@ -938,22 +942,22 @@ function visual_map_print_item($mode = "read", $layoutData,
 					echo '<a href="' . $label . '">' . '</a>' . '<br />';
 				}
 				
-				if ($proportion != 1) {
+				if (empty($proportion)) {
 					if (is_file($config['homedir'] . '/' . $img))
 						$infoImage = getimagesize($config['homedir'] . '/' . $img);
 					
 					if ($width != 0) {
-						$width = (integer)($proportion * $width);
+						$width = (integer)($proportion['proportion_width'] * $width);
 					}
 					else {
-						$width = (integer)($proportion * $infoImage[0]);
+						$width = (integer)($proportion['proportion_width'] * $infoImage[0]);
 					}
 					
 					if ($height != 0) {
-						$height = (integer)($proportion * $height);
+						$height = (integer)($proportion['proportion_height'] * $height);
 					}
 					else {
-						$height = (integer)($proportion * $infoImage[1]);
+						$height = (integer)($proportion['proportion_height'] * $infoImage[1]);
 					}
 				}
 				
@@ -1702,15 +1706,25 @@ function visual_map_get_status_element($layoutData) {
 	return $status;
 }
 
-function visual_map_print_user_lines($mode = "read", $layout_data, $proportion = 1) {
+function visual_map_print_user_lines($mode = "read", $layout_data, $proportion = null) {
+	
+	if (!empty($proportion)) {
+		$proportion_width = $proportion['proportion_width'];
+		$proportion_height = $proportion['proportion_height'];
+		
+		$proportion_line = $proportion_height;
+		if ($proportion_width > $proportion_height) {
+			$proportion_line = $proportion_width;
+		}
+	}
 	
 	$line = array();
 	$line["id"] = $layout_data['id'];
-	$line["start_x"] = $layout_data['pos_x'] * $proportion;
-	$line["start_y"] = $layout_data['pos_y'] * $proportion;
-	$line["end_x"] = $layout_data['width'] * $proportion;
-	$line["end_y"] = $layout_data['height'] * $proportion;
-	$line["line_width"] = $layout_data['border_width'] * $proportion;
+	$line["start_x"] = $layout_data['pos_x'] * $proportion_width;
+	$line["start_y"] = $layout_data['pos_y'] * $proportion_height;
+	$line["end_x"] = $layout_data['width'] * $proportion_width;
+	$line["end_y"] = $layout_data['height'] * $proportion_height;
+	$line["line_width"] = $layout_data['border_width'] * $proportion_line;
 	$line["line_color"] = $layout_data['border_color'];
 	
 	echo '<script type="text/javascript">';
@@ -1769,20 +1783,29 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 	<?php
 	
 	$resizedMap = false;
-	$proportion = 1;
-	if (!is_null($width)) {
+	
+	$dif_height = 0;
+	$dif_width = 0;
+	$proportion_height = 0;
+	$proportion_width = 0;
+	
+	
+	
+	if (!is_null($height) && !is_null($width)) {
 		$resizedMap = true;
-		if (!is_null($height)) {
-			$mapWidth = $width;
-			$mapHeight = $height;
-		}
-		else {
-			$mapWidth = $width;
-			$proportion = $width / $layout["width"];
-			$mapHeight = $proportion * $layout["height"];
-		}
 		
-		if (defined('METACONSOLE')) {
+		$mapWidth = $width;
+		$mapHeight = $height;
+		
+		$dif_height = $layout["height"] - $height;
+		$dif_width = $layout["width"] - $width;
+		
+		
+		$proportion_height = $height / $layout["height"];
+		$proportion_width = $width / $layout["width"];
+		
+		
+		if (is_metaconsole()) {
 			$backgroundImage =
 				'/include/Image/image_functions.php?getFile=1&thumb=1&thumb_size=' . $mapWidth . 'x' . $mapHeight . '&file=' .
 				$config['homeurl'] . 'images/console/background/' .
@@ -1824,6 +1847,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 	
 	$lines = array ();
 	
+	
 	foreach ($layout_datas as $layout_data) {
 		
 		if ($resizedMap) {
@@ -1852,11 +1876,17 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		switch ($layout_data['type']) {
 			case LINE_ITEM:
 				visual_map_print_user_lines("read", $layout_data,
-					$proportion);
+					array('dif_height' => $dif_height,
+						'dif_width' => $dif_width,
+						'proportion_height' => $proportion_height,
+						'proportion_width' => $proportion_width));
 				break;
 			default:
 				visual_map_print_item("read", $layout_data,
-					$proportion, $show_links);
+					array('dif_height' => $dif_height,
+						'dif_width' => $dif_width,
+						'proportion_height' => $proportion_height,
+						'proportion_width' => $proportion_width), $show_links);
 				break;
 		}
 	}

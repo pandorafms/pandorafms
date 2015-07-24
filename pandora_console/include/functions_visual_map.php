@@ -1750,6 +1750,24 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		return;
 	}
 	
+	?>
+	<script language="javascript" type="text/javascript">
+		/* <![CDATA[ */
+		
+		var lines = Array();
+		
+		var user_lines = Array();
+		
+		//Fixed to wait the load of images.
+		$(window).load(function() {
+				draw_lines(lines, 'background');
+				draw_user_lines_read();
+			}
+		);
+		/* ]]> */
+	</script>
+	<?php
+	
 	$resizedMap = false;
 	$proportion = 1;
 	if (!is_null($width)) {
@@ -1807,6 +1825,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 	$lines = array ();
 	
 	foreach ($layout_datas as $layout_data) {
+		
 		if ($resizedMap) {
 			//Hack to resize the text
 			$layout_data["label"] = str_replace(
@@ -1850,23 +1869,6 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 	if (defined('METACONSOLE')) {
 		echo "</div>";
 	}
-	?>
-	<script language="javascript" type="text/javascript">
-		/* <![CDATA[ */
-		
-		var lines = Array();
-		
-		var user_lines = Array();
-		
-		//Fixed to wait the load of images.
-		$(window).load(function() {
-				draw_lines(lines, 'background');
-				draw_user_lines_read();
-			}
-		);
-		/* ]]> */
-	</script>
-	<?php
 }
 //End function
 

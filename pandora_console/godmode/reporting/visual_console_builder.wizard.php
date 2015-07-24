@@ -48,6 +48,7 @@ if (!$vconsole_write && !$vconsole_manage) {
 require_once ($config['homedir'] . '/include/functions_visual_map.php');
 require_once($config['homedir'] . "/include/functions_agents.php");
 
+$table = new stdClass();
 $table->id = 'wizard_table';
 $table->head = array ();
 if (!defined('METACONSOLE')) {

@@ -135,6 +135,7 @@ if (!empty($result_groups)) {
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Critical") . "</th>";
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Alert fired") . "</th>";
 		echo "</tr>";
+		
 		foreach ($result_groups as $data) {
 			
 			// Calculate entire row color
@@ -150,13 +151,14 @@ if (!empty($result_groups)) {
 				$color_class = 'group_view_warn';
 				$status_image = ui_print_status_image ('agent_warning_ball.png', "", true);
 			}
+			elseif ($data["_monitors_ok_"] > 0)  {
+				
+				$color_class = 'group_view_ok';
+				$status_image = ui_print_status_image ('agent_ok_ball.png', "", true);
+			}
 			elseif (($data["_monitors_unknown_"] > 0) ||  ($data["_agents_unknown_"] > 0)) {
 				$color_class = 'group_view_unk';
 				$status_image = ui_print_status_image ('agent_no_monitors_ball.png', "", true);
-			}
-			elseif ($data["_monitors_ok_"] > 0)  {
-				$color_class = 'group_view_ok';
-				$status_image = ui_print_status_image ('agent_ok_ball.png', "", true);
 			}
 			else {
 				$color_class = '';

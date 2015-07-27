@@ -1638,7 +1638,8 @@ function modules_get_agentmodule_data ($id_agent_module, $period,
 		case 31:
 			if ( $config["render_proc"] ) {
 				$sql = sprintf ("
-					SELECT IF(datos >= 1, 'OK', 'FAIL') as data, utimestamp
+					SELECT IF(datos >= 1, '" . $config["render_proc_ok"] . "', '" . 
+					$config["render_proc_fail"] . "') as data, utimestamp
 					FROM tagente_datos
 					WHERE id_agente_modulo = %d
 						AND utimestamp > %d AND utimestamp <= %d

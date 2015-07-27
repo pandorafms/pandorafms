@@ -86,6 +86,8 @@ function visual_map_main() {
 			draw_lines(lines, 'background', true);
 			
 			draw_user_lines("", 0, 0, 0 , 0, 0, true);
+			
+			//~ center_labels();
 		}
 	);
 	

@@ -113,6 +113,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 	$imageSize = '';
 	
 	
+	
 	if (!empty($proportion)) {
 		$top = $top * $proportion['proportion_height'];
 		$left = $left * $proportion['proportion_width'];
@@ -782,9 +783,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 	
 	echo '<div id="' . $id . '" class="' . $class . '" ' .
 		'style="z-index: ' .$z_index . ';' .
-			'position: absolute; top: ' . $top . 'px; ' .
+			'position: absolute; ' .
+			'top: ' . $top . 'px; ' .
 			'left: ' . $left . 'px;' .
-			'text-align: center;' .
+			'text-align: left;' .
 			'display: inline-block; ' . $sizeStyle . '">';
 	
 	if ($link) {
@@ -804,7 +806,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		case STATIC_GRAPH:
 		case GROUP_ITEM:
-			echo "<div style='width:150px'>";
+			echo "<div>";
 			if ($layoutData['image'] != null) {
 				
 				
@@ -1776,6 +1778,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		$(window).load(function() {
 				draw_lines(lines, 'background');
 				draw_user_lines_read();
+				center_labels();
 			}
 		);
 		/* ]]> */
@@ -1873,20 +1876,25 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				continue;
 		}
 		
+		if (($dif_height === 0) && ($dif_width === 0)) {
+			$proportion = null;
+		}
+		else {
+			$proportion = array(
+				'dif_height' => $dif_height,
+				'dif_width' => $dif_width,
+				'proportion_height' => $proportion_height,
+				'proportion_width' => $proportion_width);
+		}
+		
 		switch ($layout_data['type']) {
 			case LINE_ITEM:
 				visual_map_print_user_lines("read", $layout_data,
-					array('dif_height' => $dif_height,
-						'dif_width' => $dif_width,
-						'proportion_height' => $proportion_height,
-						'proportion_width' => $proportion_width));
+					$proportion);
 				break;
 			default:
 				visual_map_print_item("read", $layout_data,
-					array('dif_height' => $dif_height,
-						'dif_width' => $dif_width,
-						'proportion_height' => $proportion_height,
-						'proportion_width' => $proportion_width), $show_links);
+					$proportion, $show_links);
 				break;
 		}
 	}

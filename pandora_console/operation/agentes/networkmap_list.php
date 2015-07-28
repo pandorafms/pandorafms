@@ -157,8 +157,8 @@ if ($type_search != '0')
 $user_info = users_get_user_by_id($config['id_user']);
 
 $network_maps = db_get_all_rows_filter('tnetwork_map', $where);
-
-if ($network_maps === false) {
+$count_maps  = db_get_all_rows_filter('tnetwork_map');
+if ($count_maps === false) {
 	require($config['homedir']."/general/firts_task/network_map.php");
 }
 else {

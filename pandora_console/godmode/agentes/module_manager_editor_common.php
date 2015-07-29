@@ -220,10 +220,16 @@ else {
 	$table_simple->data[1][1] .= html_print_input_hidden('type_names',base64_encode(io_json_mb_encode($type_names_hash)),true);
 }
 
+
 $table_simple->data[1][2] = __('Module group');
 $table_simple->data[1][3] = html_print_select_from_sql ('SELECT id_mg, name FROM tmodule_group ORDER BY name',
 	'id_module_group', $id_module_group, '', __('Not assigned'), '0',
 	true, false, true, $disabledBecauseInPolicy);
+
+if($disabledBecauseInPolicy){
+ 	$table_simple->data[1][3] .= html_print_input_hidden ('id_module_group', $id_module_group, true);
+}
+
 
 $table_simple->data[2][0] = __('Warning status').' ' . ui_print_help_icon ('warning_status', true);
 

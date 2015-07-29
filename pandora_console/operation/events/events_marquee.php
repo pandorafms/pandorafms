@@ -13,6 +13,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+session_start ();
+
 error_reporting(1);
 
 // Local settings for marquee extension
@@ -31,16 +33,12 @@ require_once ('../../include/functions_users.php');
 
 global $config;
 
-session_start ();
 
 $config["id_user"] = $_SESSION["id_usuario"];
 
 // http://es2.php.net/manual/en/ref.session.php#64525
 // Session locking concurrency speedup!
 check_login ();
-
-session_write_close (); 
-
 
 if (!isInACL($_SERVER['REMOTE_ADDR'])) {
 	db_pandora_audit("ACL Violation",

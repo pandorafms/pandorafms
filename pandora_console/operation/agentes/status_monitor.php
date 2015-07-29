@@ -650,6 +650,22 @@ switch ($sortField) {
 				break;
 		}
 		break;
+	case 'data':
+		switch ($sort) {
+			case 'up':
+				$selectTimestampUp = $selected;
+				$order = array(
+					'field' => 'tagente_estado.datos',
+					'order' => 'ASC');
+				break;
+			case 'down':
+				$selectTimestampDown = $selected;
+				$order = array(
+					'field' => 'tagente_estado.datos',
+					'order' => 'DESC');
+				break;
+		}
+		break;
 	default:
 		$selectAgentNameUp = $selected;
 		$selectAgentNameDown = '';
@@ -947,6 +963,10 @@ $table->align[8] = "left";
 
 $table->head[9] = __('Data');
 $table->align[9] = "left";
+if ( defined ('METACONSOLE') ) {
+$table->head[9] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=data&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=data&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
+}
 
 $table->head[10] = __('Timestamp');
 if (! defined ('METACONSOLE')) {

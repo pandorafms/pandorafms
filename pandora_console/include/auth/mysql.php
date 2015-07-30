@@ -513,10 +513,13 @@ function ldap_process_user_login ($login, $password) {
 		}
 	}
 	
+	$ldap_login_attr  = isset($config["ldap_login_attr"]) ? io_safe_output($config["ldap_login_attr"]) . "=" : '';
+	$ldap_base_dn  = isset($config["ldap_base_dn"]) ? "," . io_safe_output($config["ldap_base_dn"]) : '';
+	
 	if (strlen($password) == 0 ||
 		!@ldap_bind($ds,
-			io_safe_output($config["ldap_login_attr"]) . "=" . $login . "," . io_safe_output($config["ldap_base_dn"]),
-			$password)) {
+			$ldap_login_attr. io_safe_output($login) . $ldap_base_dn, 
+				$password)) {
 		
 		$config["auth_error"] = 'User not found in database or incorrect password';
 		@ldap_close ($ds);

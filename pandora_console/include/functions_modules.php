@@ -1676,11 +1676,13 @@ function modules_get_agentmodule_data ($id_agent_module, $period,
 	$module_name = modules_get_agentmodule_name ($id_agent_module);
 	$agent_id = modules_get_agentmodule_agent ($id_agent_module);
 	$agent_name = modules_get_agentmodule_agent_name ($id_agent_module);
+	$module_type = modules_get_agentmodule_type ($id_agent_module);
 	
 	foreach ($values as $key => $data) {
 		$values[$key]["module_name"] = $module_name;
 		$values[$key]["agent_id"] = $agent_id;
 		$values[$key]["agent_name"] = $agent_name;
+		$values[$key]["module_type"] = $module_type;
 	}
 	
 	if ($search_in_history_db) {

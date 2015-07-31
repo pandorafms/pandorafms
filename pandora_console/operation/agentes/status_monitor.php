@@ -1229,8 +1229,8 @@ foreach ($result as $row) {
 	$data[8] = ui_print_module_warn_value($row['max_warning'],
 		$row['min_warning'], $row['str_warning'], $row['max_critical'],
 		$row['min_critical'], $row['str_critical']);
-	
-	if (is_numeric($row["datos"])) {
+
+	if (is_numeric($row["datos"]) && !modules_is_string_type($row['module_type'])) {
 		if ( $config["render_proc"] ) {
 				switch($row["module_type"]) {
 					case 2:
@@ -1256,7 +1256,7 @@ foreach ($result as $row) {
 		
 		// Show units ONLY in numeric data types
 		if (isset($row["unit"])) {
-			$salida .= "&nbsp;" . '<i>'. io_safe_output($row["unit"]) . '</i>';
+			$salida .= "&nbsp;" . '<i>' . io_safe_output($row["unit"]) . '</i>';
 			$salida = ui_print_truncate_text($salida, 'agent_small', true, true, false, '[&hellip;]', 'font-size:7.5pt;');
 		}
 	}
@@ -1292,7 +1292,26 @@ foreach ($result as $row) {
 			
 			$sub_string = substr(io_safe_output($row["datos"]), 0, 12);
 			if ($module_value == $sub_string) {
-				$salida = $module_value;
+				$intDays = $module_value / 8640000;
+				$dias = $intDays - (integer)$intDays;
+				$intDays = (integer)$intDays;
+				
+				$intHours = $dias * 24;
+				$Hours = $intHours - (integer)$intHours;
+				$intHours = (integer)$intHours;
+				
+				$intMinutes = $Hours * 60;
+				$minutos = $intMinutes - (integer)$intMinutes;
+				$intMinutes = (integer)$intMinutes;
+				
+				$intSeconds = $minutos * 60;
+				$ConvertSeconds = $intDays . " Days - ". $intHours ." Hours - ". $intMinutes . " Mins";
+				if ($ConvertSeconds) {
+					$salida = $ConvertSeconds;
+				}
+				else {
+					$salida = $module_value;
+				}
 			}
 			else {
 				//Fixed the goliat sends the strings from web
@@ -1314,7 +1333,26 @@ foreach ($result as $row) {
 				
 				
 				if ($module_value == $sub_string) {
-					$salida = $module_value;
+					$intDays = $module_value / 8640000;
+					$dias = $intDays - (integer)$intDays;
+					$intDays = (integer)$intDays;
+					
+					$intHours = $dias * 24;
+					$Hours = $intHours - (integer)$intHours;
+					$intHours = (integer)$intHours;
+					
+					$intMinutes = $Hours * 60;
+					$minutos = $intMinutes - (integer)$intMinutes;
+					$intMinutes = (integer)$intMinutes;
+					
+					$intSeconds = $minutos * 60;
+					$ConvertSeconds = $intDays . " Days - ". $intHours ." Hours - ". $intMinutes . " Mins";
+					if ($ConvertSeconds) {
+						$salida = $ConvertSeconds;
+					}
+					else {
+						$salida = $module_value;
+					}
 				}
 				else {
 					$salida = "<span " .

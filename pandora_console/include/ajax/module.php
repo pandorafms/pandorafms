@@ -274,13 +274,35 @@ if ($get_module_detail) {
 				// Just a string of alphanumerical data... just do print
 				//Fixed the data from Selenium Plugin
 				if ($row[$attr[0]] != strip_tags($row[$attr[0]])) {
+					
 					$data[] = io_safe_input($row[$attr[0]]);
 				}
-				else if (is_numeric($row[$attr[0]])) {
+				else if (is_numeric($row[$attr[0]]) && !modules_is_string_type($row['module_type']) ) {
+					
 					$data[] = (double) $row[$attr[0]];
 				}
 				else {
-					$data[] = $row[$attr[0]];
+					
+					$intDays = $row[$attr[0]] / 8640000;
+					$dias = $intDays - (integer)$intDays;
+					$intDays = (integer)$intDays;
+					
+					$intHours = $dias * 24;
+					$Hours = $intHours - (integer)$intHours;
+					$intHours = (integer)$intHours;
+					
+					$intMinutes = $Hours * 60;
+					$minutos = $intMinutes - (integer)$intMinutes;
+					$intMinutes = (integer)$intMinutes;
+					
+					$intSeconds = $minutos * 60;
+					$ConvertSeconds = $intDays . " Days - ". $intHours ." Hours - ". $intMinutes . " Mins";
+					if ($ConvertSeconds) {
+						$data[] = $ConvertSeconds;
+					}
+					else {
+						$data[] = $row[$attr[0]];
+					}
 				}
 			}
 		}
@@ -969,7 +991,27 @@ if ($list_modules) {
 					
 					
 					if ($module_value == $sub_string) {
-						$salida = $module_value;
+						$intDays = $module_value / 8640000;
+						$dias = $intDays - (integer)$intDays;
+						$intDays = (integer)$intDays;
+						
+						$intHours = $dias * 24;
+						$Hours = $intHours - (integer)$intHours;
+						$intHours = (integer)$intHours;
+						
+						$intMinutes = $Hours * 60;
+						$minutos = $intMinutes - (integer)$intMinutes;
+						$intMinutes = (integer)$intMinutes;
+						
+						$intSeconds = $minutos * 60;
+						$ConvertSeconds = $intDays . " Days - ". $intHours ." Hours - ". $intMinutes . " Mins";
+						
+						if ($ConvertSeconds) {
+							$salida = $ConvertSeconds;
+						}
+						else {
+							$salida = $module_value;
+						}
 					}
 					else {
 						$salida = "<span " .

@@ -145,7 +145,7 @@ h1#log_title {
 	font-size: 18px;
 	margin-bottom: 0px;
 	color: #FFF !important;
-	width:70%
+	width:54%
 }
 div#log_msg {
 	display: none;
@@ -413,7 +413,7 @@ div#foot {
 p.log_in {
 	color: #FFF !important;
 	padding: 0px 10px;
-	width:70%;
+	width:57%;
 }
 h1#log_f {
 	color: #c00;

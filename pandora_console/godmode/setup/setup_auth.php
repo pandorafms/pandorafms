@@ -56,37 +56,43 @@ if ($profile_list === false) {
 }
 $table->data[3][1] = html_print_select ($profile_list, 'default_remote_profile', $config['default_remote_profile'], '', '', '', true, false, true, '', $config['autocreate_remote_users'] == 0);
 $table->data[4][0] = __('Autocreate profile group');
-$table->data[4][1] = html_print_select_groups ($config['id_user'], "AR", true, 'default_remote_group', $config['default_remote_group'], '', '', '', true, false, true, '', $config['autocreate_remote_users'] == 0);
-$table->data[5][0] = __('Autocreate blacklist') . ui_print_help_icon ('autocreate_blacklist', true);
-$table->data[5][1] = html_print_input_text ('autocreate_blacklist', $config['autocreate_blacklist'], '', 60, 100, true);
+$table->data[4][1] = html_print_select_groups ($config['id_user'], "AR", 
+		true, 'default_remote_group', $config['default_remote_group'],
+			'', '', '', true, false, true, '', 
+			$config['autocreate_remote_users'] == 0);
+$tags = tags_get_all_tags();
+$table->data[5][0] = __('Autocreate profile tags');
+$table->data[5][1] = html_print_select($tags, 'default_assign_tags[]', explode(",",$config['default_assign_tags']), '', __('Any'), '', true, true);
+$table->data[6][0] = __('Autocreate blacklist') . ui_print_help_icon ('autocreate_blacklist', true);
+$table->data[6][1] = html_print_input_text ('autocreate_blacklist', $config['autocreate_blacklist'], '', 60, 100, true);
 for ($i = 1; $i <= 4; $i++) {
 	$table->rowstyle[$i] = $config['auth'] != 'mysql' ? '' : 'display: none;';
 	$table->rowclass[$i] = 'remote';
 }
 
-$table->data[6][0] = __('LDAP server');
-$table->data[6][1] = html_print_input_text ('ldap_server', $config['ldap_server'], '', 30, 100, true);
-$table->data[7][0] = __('LDAP port');
-$table->data[7][1] = html_print_input_text ('ldap_port', $config['ldap_port'], '', 10, 100, true);
-$table->data[8][0] = __('LDAP version');
+$table->data[7][0] = __('LDAP server');
+$table->data[7][1] = html_print_input_text ('ldap_server', $config['ldap_server'], '', 30, 100, true);
+$table->data[8][0] = __('LDAP port');
+$table->data[8][1] = html_print_input_text ('ldap_port', $config['ldap_port'], '', 10, 100, true);
+$table->data[9][0] = __('LDAP version');
 $ldap_versions = array (1 => 'LDAPv1', 2 => 'LDAPv2', 3 => 'LDAPv3');
-$table->data[8][1] = html_print_select ($ldap_versions, 'ldap_version', $config['ldap_version'], '', '', 0, true);
-$table->data[9][0] = __('Start TLS');
-$table->data[9][1] = __('Yes').'&nbsp;'.html_print_radio_button ('ldap_start_tls', 1, '', $config['ldap_start_tls'], true).'&nbsp;&nbsp;';
-$table->data[9][1] .= __('No').'&nbsp;'.html_print_radio_button ('ldap_start_tls', 0, '', $config['ldap_start_tls'], true);
-$table->data[10][0] = __('Base DN');
-$table->data[10][1] = html_print_input_text ('ldap_base_dn', $config['ldap_base_dn'], '', 60, 100, true);
-$table->data[11][0] = __('Login attribute');
-$table->data[11][1] = html_print_input_text ('ldap_login_attr', $config['ldap_login_attr'], '', 60, 100, true);
+$table->data[9][1] = html_print_select ($ldap_versions, 'ldap_version', $config['ldap_version'], '', '', 0, true);
+$table->data[10][0] = __('Start TLS');
+$table->data[10][1] = __('Yes').'&nbsp;'.html_print_radio_button ('ldap_start_tls', 1, '', $config['ldap_start_tls'], true).'&nbsp;&nbsp;';
+$table->data[10][1] .= __('No').'&nbsp;'.html_print_radio_button ('ldap_start_tls', 0, '', $config['ldap_start_tls'], true);
+$table->data[11][0] = __('Base DN');
+$table->data[11][1] = html_print_input_text ('ldap_base_dn', $config['ldap_base_dn'], '', 60, 100, true);
+$table->data[12][0] = __('Login attribute');
+$table->data[12][1] = html_print_input_text ('ldap_login_attr', $config['ldap_login_attr'], '', 60, 100, true);
 
 // Hide LDAP configuration options
-for ($i = 2; $i <= 11; $i++) {
+for ($i = 2; $i <= 12; $i++) {
 	$table->rowstyle[$i] = $config['auth'] == 'ldap' ? '' : 'display: none;';
 	$table->rowclass[$i] = 'ldap';
 }
 
 // Set the rows autocreation for Active Directory
-for ($i = 2; $i <= 5; $i++) {
+for ($i = 2; $i <= 6; $i++) {
 	$table->rowclass[$i] .= ' ' . 'ad';
 }
 

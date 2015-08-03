@@ -217,7 +217,8 @@ function process_user_login_remote ($login, $pass, $api = false) {
 		
 		// Unknown authentication method
 		default:
-			$config["auth_error"] = "User not found in database or incorrect password";
+			$config["auth_error"] = "User not found in database 
+							or incorrect password";
 			return false;
 			break;
 	}
@@ -227,24 +228,54 @@ function process_user_login_remote ($login, $pass, $api = false) {
 		if (!user_can_login($login)) {
 			return false;
 		}
-		
+		if ($config["auth"] == 'ad'){
+			$return = enterprise_hook ('prepare_permissions_groups_of_user_ad',
+				array ($login, $pass, false, true));
+			
+			if (!$return) {
+				$config["auth_error"] = __("Problems with configuration
+						permissions. Please contact with Administrator");
+				return false;
+			}
+		}
 		return $login;
 	}
 	
 	// The user does not exist and can not be created
 	if ($config['autocreate_remote_users'] == 0 || is_user_blacklisted ($login)) {
-		$config["auth_error"] = "Ooops User not found in database or incorrect password";
+		$config["auth_error"] = __("Ooops User not found in 
+				database or incorrect password");
 		
 		return false;
 	}
 	
 	// Create the user in the local database
-	if (create_user ($login, $pass, array ('fullname' => $login, 'comments' => 'Imported from ' . $config['auth'])) === false) {
-		$config["auth_error"] = "User not found in database or incorrect password";
-		return false;
+	if (isset($config['ad_advanced_config']) && $config['ad_advanced_config']) {
+		// Create the user in the local database enterprise_hook ('prepare_permissions_groups_of_user_ad', array ($login, $pass))
+		if (enterprise_hook ('prepare_permissions_groups_of_user_ad',
+				array ($login, $pass, array ('fullname' => $login, 
+					'comments' => 'Imported from ' .
+						$config['auth']))) === false) {
+			
+			$config["auth_error"] = __("User not found in database 
+					or incorrect password");
+					
+			return false;
+		}
 	}
-	
-	profile_create_user_profile ($login, $config['default_remote_profile'], $config['default_remote_group']);	
+	else{
+		// Create the user in the local database
+		if (create_user ($login, $pass,
+				array ('fullname' => $login, 
+				'comments' => 'Imported from ' . $config['auth'])
+			) === false) {
+			$config["auth_error"] = __("User not found in database or incorrect password");
+			return false;
+		}
+		profile_create_user_profile ($login, 
+				$config['default_remote_profile'], 
+					$config['default_remote_group']);	
+	}
 	return $login;
 }
 	

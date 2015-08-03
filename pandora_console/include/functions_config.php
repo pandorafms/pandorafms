@@ -49,6 +49,15 @@ function config_update_value ($token, $value) {
 			io_safe_output($value));
 	}
 	
+	if ($token == 'ad_adv_perms') {
+		$value = str_replace(array("\r\n", "\r", "\n"), ";",
+			io_safe_output($value));
+	}
+	
+	if ($token == 'default_assign_tags') {
+		$value = ($value);
+	}
+	
 	if (!isset ($config[$token])) {
 		$config[$token] = $value;
 		return (bool) config_create_value ($token, io_safe_input($value));
@@ -264,6 +273,8 @@ function config_update_config () {
 						$error_update[] = __('Autocreate profile');
 					if (!config_update_value ('default_remote_group', get_parameter ('default_remote_group')))
 						$error_update[] = __('Autocreate profile group');
+					if (!config_update_value ('default_assign_tags', implode(",",get_parameter ('default_assign_tags'))))
+						$error_update[] = __('Autocreate profile tags');
 					if (!config_update_value ('autocreate_blacklist', get_parameter ('autocreate_blacklist')))
 						$error_update[] = __('Autocreate blacklist');
 					
@@ -273,8 +284,12 @@ function config_update_config () {
 						$error_update[] = __('Active directory port');
 					if (!config_update_value ('ad_start_tls', get_parameter ('ad_start_tls')))
 						$error_update[] = __('Start TLS');
+					if (!config_update_value ('ad_advanced_config', get_parameter ('ad_advanced_config')))
+						$error_update[] = __('Advance Config AD');
 					if (!config_update_value ('ad_domain', get_parameter ('ad_domain')))
 						$error_update[] = __('Domain');
+					if (!config_update_value ('ad_adv_perms', get_parameter ('ad_adv_perms')))
+						$error_update[] = __('Advanced Permisions AD');
 					
 					if (!config_update_value ('ldap_server', get_parameter ('ldap_server')))
 						$error_update[] = __('LDAP server');
@@ -958,6 +973,10 @@ function config_process_config () {
 		config_update_value ('default_remote_group', 0);
 	}
 	
+	if (!isset ($config['default_assign_tags'])) {
+		config_update_value ( 'default_assign_tags', '');
+	}
+	
 	if (!isset ($config['ldap_server'])) {
 		config_update_value ( 'ldap_server', 'localhost');
 	}
@@ -999,10 +1018,22 @@ function config_process_config () {
 		config_update_value ( 'ad_start_tls', 0);
 	}
 	
+	if (!isset ($config['ad_advanced_config'])) {
+		config_update_value ( 'ad_advanced_config', 0);
+	}
+	
 	if (!isset ($config['ad_domain'])) {
 		config_update_value ( 'ad_domain', '');
 	}
 	
+	$temp_ad_adv_perms = array();
+	if (isset($config['ad_adv_perms'])) {
+		if (!empty($config['ad_adv_perms'])) {
+			$temp_ad_adv_perms = explode(';', io_safe_output($config['ad_adv_perms']));
+		}
+	}
+	$config['ad_adv_perms'] = $temp_ad_adv_perms;
+
 	if (!isset ($config['rpandora_server'])) {
 		config_update_value ( 'rpandora_server', 'localhost');
 	}

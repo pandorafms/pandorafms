@@ -141,12 +141,20 @@ function isEmptyObject(obj) {
  * @param selected Which module(s) have to be selected
  */
 function agent_changed_by_multiple_agents (event, id_agent, selected) {
-	// Hack to add custom condition
-	if ($("#hidden-custom_condition").val() != undefined) {
-		custom_condition = $("#hidden-custom_condition").val();
-	}
-	else {
-		custom_condition = '';
+	// Hack to avoid certain module types
+	var module_types_excluded = [];
+	if (typeof $("input.module_types_excluded") !== 'undefined') {
+		try {
+			$("input.module_types_excluded").each(function(index, el) {
+				var module_type = parseInt($(el).val());
+				
+				if (module_type !== NaN)
+					module_types_excluded.push(module_type);
+			});
+		}
+		catch (error) {
+			
+		}
 	}
 	
 	var idAgents = Array();
@@ -205,7 +213,7 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 			"get_agent_modules_json_for_multiple_agents": 1,
 			"id_agent[]": idAgents,
 			"all": find_modules,
-			"custom_condition": custom_condition,
+			"module_types_excluded[]": module_types_excluded,
 			"selection_mode": selection_mode,
 			"serialized": serialized,
 			"id_server": id_server

@@ -1110,13 +1110,19 @@ function config_process_config () {
 		config_update_value ( 'ad_domain', '');
 	}
 	
-	$temp_ad_adv_perms = array();
-	if (isset($config['ad_adv_perms'])) {
-		if (!empty($config['ad_adv_perms'])) {
-			$temp_ad_adv_perms = explode(';', io_safe_output($config['ad_adv_perms']));
-		}
+	if (!isset ($config["ad_adv_perms"])) {
+		config_update_value ('ad_adv_perms', '');
 	}
-	$config['ad_adv_perms'] = $temp_ad_adv_perms;
+	else{
+		$temp_ad_adv_perms = array();
+		if (isset($config['ad_adv_perms'])) {
+			if (!empty($config['ad_adv_perms'])) {
+				$temp_ad_adv_perms = explode(';', io_safe_output($config['ad_adv_perms']));
+			}
+		}
+		$config['ad_adv_perms'] = $temp_ad_adv_perms;
+		$keysConfig = array_keys($config);
+	}
 	
 	if (!isset ($config['rpandora_server'])) {
 		config_update_value ( 'rpandora_server', 'localhost');

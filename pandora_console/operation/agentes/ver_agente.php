@@ -214,7 +214,7 @@ if (is_ajax ()) {
 	
 	if ($get_agent_modules_json_for_multiple_agents) {
 		$idAgents = get_parameter('id_agent');
-		$custom_condition = get_parameter('custom_condition', '');
+		$module_types_excluded = get_parameter('module_types_excluded', array());
 		$selection_mode = get_parameter('selection_mode', 'common');
 		$serialized = get_parameter('serialized', '');
 		$id_server = (int) get_parameter('id_server', 0);
@@ -224,16 +224,21 @@ if (is_ajax ()) {
 				'tmetaconsole_setup', 'id', $id_server);
 		}
 		
+		$filter = '1 = 1';
+		
 		$all = (string)get_parameter('all', 'all');
 		switch ($all) {
 			default:
 			case 'all':
-				$enabled = '1 = 1';
+				$filter .= ' AND 1 = 1';
 				break;
 			case 'enabled':
-				$enabled = 'disabled = 0';
+				$filter .= ' AND disabled = 0';
 				break;
 		}
+		
+		if (!empty($module_types_excluded) && is_array($module_types_excluded))
+			$filter .= ' AND id_tipo_modulo NOT IN (' . implode($module_types_excluded) . ')';
 		
 		if (is_metaconsole()) {
 			$result = array();
@@ -299,7 +304,7 @@ if (is_ajax ()) {
 										WHERE t2.delete_pending = 0
 											AND t1.nombre = t2.nombre
 											AND t2.id_agente IN (%s)) = (%d)',
-					$enabled, implode(',', $id_agents),
+					$filter, implode(',', $id_agents),
 					implode(',', $id_agents), count($id_agents));
 				
 				$modules = db_get_all_rows_sql($sql);
@@ -346,20 +351,21 @@ if (is_ajax ()) {
 				
 				$result[$key] = $value;
 			}
+			asort($result);
 		}
 		else {
 			$sql = 'SELECT DISTINCT(nombre)
 				FROM tagente_modulo t1
-				WHERE ' . $enabled .
-					io_safe_output($custom_condition) . '
-					AND delete_pending = 0
+				WHERE ' . $filter .
+					'AND delete_pending = 0
 					AND id_agente IN (' . implode(',', $idAgents) . ')';
 			
 			if ($selection_mode == 'common') {
 				$sql .= ' AND (
 							SELECT count(nombre)
 							FROM tagente_modulo t2
-							WHERE delete_pending = 0 AND t1.nombre = t2.nombre
+							WHERE delete_pending = 0
+								AND t1.nombre = t2.nombre
 								AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')';
 			}
 			

@@ -316,8 +316,8 @@ $(document).ready (function () {
 			{"page" : "operation/agentes/ver_agente",
 			"get_agent_modules_json" : 1,
 			"id_agent" : this.value,
-			"filter" : "disabled = 0",
-			"fields" : "id_agente_modulo,nombre"
+			"disabled" : 0,
+			"get_id_and_name" : 1
 			},
 			function (data, status) {
 				if (data.length == 0) {

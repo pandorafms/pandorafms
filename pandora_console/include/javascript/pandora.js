@@ -157,6 +157,9 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 		}
 	}
 	
+	// Module name
+	var module_name = $("#text-module_filter").val();
+	
 	var idAgents = Array();
 	
 	jQuery.each ($("#id_agents option:selected"), function (i, val) {
@@ -214,6 +217,7 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 			"id_agent[]": idAgents,
 			"all": find_modules,
 			"module_types_excluded[]": module_types_excluded,
+			"name": module_name,
 			"selection_mode": selection_mode,
 			"serialized": serialized,
 			"id_server": id_server

@@ -46,7 +46,8 @@ if (is_ajax ()) {
 	if ($get_agents_group_json) {
 		$id_group = (int) get_parameter('id_group');
 		$recursion = (int) get_parameter ('recursion', 0);
-		$custom_condition = get_parameter('custom_condition', '');
+		$id_os = get_parameter('id_os', '');
+		$agent_name = get_parameter('name', '');
 		$privilege = (string) get_parameter ('privilege', "AR");
 		
 		// Is is possible add keys prefix to avoid auto sorting in js object conversion
@@ -65,41 +66,46 @@ if (is_ajax ()) {
 			$groups = array_keys($groups_orig);
 		}
 		
+		// Build filter
+		$filter = array();
+		$filter['id_grupo'] = $groups;
 		
-		$filter = " WHERE id_grupo IN (" . implode(',', $groups) . ") ";
-		$filter .= io_safe_output($custom_condition);
+		if (!empty($id_os))
+			$filter['id_os'] = $id_os;
+		if (!empty($agent_name))
+			$filter['nombre'] = '%' . $agent_name . '%';
 		
 		switch ($status_agents) {
 			case AGENT_STATUS_NORMAL:
-				$filter .=
-					" AND normal_count = total_count";
+				$filter[] = "(normal_count = total_count)";
 				break;
 			case AGENT_STATUS_WARNING:
-				$filter .=
-					" AND critical_count = 0 AND warning_count > 0";
+				$filter[] = "(critical_count = 0 AND warning_count > 0)";
 				break;
 			case AGENT_STATUS_CRITICAL:
-				$filter .=
-					" AND critical_count > 0";
+				$filter[] = "(critical_count > 0)";
 				break;
 			case AGENT_STATUS_UNKNOWN:
-				$filter .=
-					" AND critical_count = 0 AND warning_count = 0
-						AND unknown_count > 0";
+				$filter[] = "(critical_count = 0 AND warning_count = 0 AND unknown_count > 0)";
 				break;
 			case AGENT_STATUS_NOT_NORMAL:
-				$filter .= " AND normal_count <> total_count";
+				$filter[] = "(normal_count <> total_count)";
 				break;
 			case AGENT_STATUS_NOT_INIT:
-				$filter .= " AND notinit_count = total_count";
+				$filter[] = "(notinit_count = total_count)";
 				break;
 		}
-		$filter .= " ORDER BY nombre ASC";
-		$agents = db_get_all_rows_sql("SELECT id_agente, nombre
-			FROM tagente" . $filter);
+		$filter['order'] = "nombre ASC";
+		
+		// Build fields
+		$fields = array('id_agente', 'nombre');
+		
+		// Perform search
+		$agents = db_get_all_rows_filter('tagente', $filter, $fields);
+		if (empty($agents)) $agents = array();
 		
 		// Add keys prefix
-		if ($keys_prefix !== "") {
+		if ($keys_prefix !== '') {
 			foreach ($agents as $k => $v) {
 				$agents[$keys_prefix . $k] = $v;
 				unset($agents[$k]);
@@ -215,6 +221,7 @@ if (is_ajax ()) {
 	if ($get_agent_modules_json_for_multiple_agents) {
 		$idAgents = get_parameter('id_agent');
 		$module_types_excluded = get_parameter('module_types_excluded', array());
+		$module_name = (string) get_parameter('name');
 		$selection_mode = get_parameter('selection_mode', 'common');
 		$serialized = get_parameter('serialized', '');
 		$id_server = (int) get_parameter('id_server', 0);
@@ -233,12 +240,26 @@ if (is_ajax ()) {
 				$filter .= ' AND 1 = 1';
 				break;
 			case 'enabled':
-				$filter .= ' AND disabled = 0';
+				$filter .= ' AND t1.disabled = 0';
 				break;
 		}
 		
 		if (!empty($module_types_excluded) && is_array($module_types_excluded))
-			$filter .= ' AND id_tipo_modulo NOT IN (' . implode($module_types_excluded) . ')';
+			$filter .= ' AND t1.id_tipo_modulo NOT IN (' . implode($module_types_excluded) . ')';
+		
+		if (!empty($module_name)) {
+			switch ($config['dbtype']) {
+				case "mysql":
+					$filter .= " AND t1.nombre COLLATE utf8_general_ci LIKE '%$module_name%'";
+					break;
+				case "postgresql":
+					$filter .= " AND t1.nombre LIKE '%$module_name%'";
+					break;
+				case "oracle":
+					$filter .= " AND UPPER(t1.nombre) LIKE UPPER('%$module_name%')";
+					break;
+			}
+		}
 		
 		if (is_metaconsole()) {
 			$result = array();
@@ -356,17 +377,17 @@ if (is_ajax ()) {
 		else {
 			$sql = 'SELECT DISTINCT(nombre)
 				FROM tagente_modulo t1
-				WHERE ' . $filter .
-					'AND delete_pending = 0
-					AND id_agente IN (' . implode(',', $idAgents) . ')';
+				WHERE ' . $filter . '
+					AND t1.delete_pending = 0
+					AND t1.id_agente IN (' . implode(',', $idAgents) . ')';
 			
 			if ($selection_mode == 'common') {
 				$sql .= ' AND (
 							SELECT count(nombre)
 							FROM tagente_modulo t2
-							WHERE delete_pending = 0
+							WHERE t2.delete_pending = 0
 								AND t1.nombre = t2.nombre
-								AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')';
+								AND t2.id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')';
 			}
 			
 			$sql .= ' ORDER BY nombre';

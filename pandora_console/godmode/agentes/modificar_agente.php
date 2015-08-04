@@ -23,7 +23,7 @@ $ag_group = get_parameter ("ag_group_refresh", -1);
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
 $recursion = get_parameter('recursion');
-$disabled = get_parameter('disabled');
+$disabled = get_parameter('disabled', 0);
 
 if ($ag_group == -1 )
 	$ag_group = (int) get_parameter ("ag_group", -1);

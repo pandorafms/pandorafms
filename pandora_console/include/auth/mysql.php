@@ -232,10 +232,17 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			$return = enterprise_hook ('prepare_permissions_groups_of_user_ad',
 				array ($login, $pass, false, true));
 			
-			if (!$return) {
+			if ($return === "error_permissions") {
 				$config["auth_error"] = __("Problems with configuration
 						permissions. Please contact with Administrator");
 				return false;
+			}
+			else
+			{
+				if ($return === "permissions_changed") {
+					$config["auth_error"] = __("Please your permmission has change. Login Again");
+					return false;
+				}
 			}
 		}
 		return $login;

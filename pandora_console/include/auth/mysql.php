@@ -218,7 +218,7 @@ function process_user_login_remote ($login, $pass, $api = false) {
 		// Unknown authentication method
 		default:
 			$config["auth_error"] = "User not found in database 
-							or incorrect password";
+					or incorrect password";
 			return false;
 			break;
 	}
@@ -232,14 +232,22 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			$return = enterprise_hook ('prepare_permissions_groups_of_user_ad',
 				array ($login, $pass, false, true));
 			
-			if (!$return) {
+			if ($return === "error_permissions") {
 				$config["auth_error"] = __("Problems with configuration
 						permissions. Please contact with Administrator");
 				return false;
 			}
+			else
+			{
+				if ($return === "permissions_changed") {
+					$config["auth_error"] = __("Please your permmission has change. Login Again");
+					return false;
+				}
+			}
 		}
 		return $login;
 	}
+	
 	
 	// The user does not exist and can not be created
 	if ($config['autocreate_remote_users'] == 0 || is_user_blacklisted ($login)) {
@@ -274,8 +282,9 @@ function process_user_login_remote ($login, $pass, $api = false) {
 		}
 		profile_create_user_profile ($login, 
 				$config['default_remote_profile'], 
-					$config['default_remote_group']);	
+					$config['default_remote_group']);
 	}
+	
 	return $login;
 }
 	

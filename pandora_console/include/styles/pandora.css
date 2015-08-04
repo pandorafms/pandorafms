@@ -2986,7 +2986,7 @@ table#policy_modules td * {
 }
 .databox.data td>img,.databox.data th>img, .databox.data td>div>a>img, 
 .databox.data td>span>img, .databox.data td>span>a>img,
-.databox.data td>a>img {
+.databox.data td>a>img, .databox.data td>form>a>img {
 	vertical-align: middle;
 
 }

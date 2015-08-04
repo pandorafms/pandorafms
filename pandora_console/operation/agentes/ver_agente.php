@@ -415,8 +415,34 @@ if (is_ajax ()) {
 	
 	if ($get_agent_modules_json) {
 		$id_agent = (int) get_parameter ('id_agent');
-		$filter = io_safe_output((string) get_parameter ('filter'));
-		$fields = io_safe_output((string) get_parameter ('fields'));
+		
+		// Use -1 as not received
+		$disabled = (int) get_parameter ('disabled', -1);
+		$delete_pending = (int) get_parameter ('delete_pending', -1);
+		// Use 0 as not received
+		$id_tipo_modulo = (int) get_parameter ('id_tipo_modulo', 0);
+		
+		// Filter
+		$filter = array();
+		if ($disabled !== -1)
+			$filter['disabled'] = $disabled;
+		if ($delete_pending !== -1)
+			$filter['delete_pending'] = $delete_pending;
+		if (!empty($id_tipo_modulo))
+			$filter['id_tipo_modulo'] = $id_tipo_modulo;
+		if (empty($filter))
+			$filter = false;
+		
+		$get_id_and_name = (bool) get_parameter ('get_id_and_name');
+		$get_distinct_name = (bool) get_parameter ('get_distinct_name');
+		
+		// Fields
+		$fields = '*';
+		if ($get_id_and_name)
+			$fields = array('id_agente_modulo', 'nombre');
+		if ($get_distinct_name)
+			$fields = array('DISTINCT(nombre)');
+		
 		$indexed = (bool) get_parameter ('indexed', true);
 		$agentName = (string) get_parameter ('agent_name', null);
 		$server_name = (string) get_parameter ('server_name', null);
@@ -431,7 +457,7 @@ if (is_ajax ()) {
 		else
 			$search = false;
 		
-		if ($config ['metaconsole'] == 1 and !$force_local_modules and defined('METACONSOLE')) {
+		if (is_metaconsole() && !$force_local_modules) {
 			if (enterprise_include_once ('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
 				$connection = metaconsole_get_connection($server_name);
 				
@@ -448,9 +474,7 @@ if (is_ajax ()) {
 							agents_get_group_agents(
 								array_keys (users_get_groups ()), $search, "none"));
 					
-					$agent_modules = agents_get_modules ($id_agent,
-						($fields != '' ? explode (',', $fields) : "*"),
-						($filter != '' ? $filter : false), $indexed);
+					$agent_modules = agents_get_modules ($id_agent, $fields, $filter, $indexed);
 				}
 				// Restore db connection
 				metaconsole_restore_db();
@@ -463,9 +487,7 @@ if (is_ajax ()) {
 					agents_get_group_agents(
 						array_keys(users_get_groups ()), $search, "none"));
 			
-			$agent_modules = agents_get_modules ($id_agent,
-				($fields != '' ? explode (',', $fields) : "*"),
-				($filter != '' ? $filter : false), $indexed);
+			$agent_modules = agents_get_modules ($id_agent, $fields, $filter, $indexed);
 		}
 		
 		if (empty($agent_modules))

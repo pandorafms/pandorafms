@@ -675,24 +675,22 @@ $(document).ready (function () {
 			"tr#delete_table-edit13, " +
 			"tr#delete_table-edit14").hide ();
 		
-		if (this.value == '0') {
-			filter = '';
-		}
-		else {
-			filter = "id_tipo_modulo="+this.value;
-		}
+		var params = {
+			"page" : "operation/agentes/ver_agente",
+			"get_agent_modules_json" : 1,
+			"get_distinct_name" : 1,
+			"indexed" : 0
+		};
+		
+		if (this.value != '0')
+			params['id_tipo_modulo'] = this.value;
 		
 		$("#module_loading").show ();
 		$("tr#delete_table-edit1, tr#delete_table-edit2").hide ();
 		$("#module_name").attr ("disabled", "disabled")
 		$("#module_name option[value!=0]").remove ();
 		jQuery.post ("ajax.php",
-			{"page" : "operation/agentes/ver_agente",
-			"get_agent_modules_json" : 1,
-			"filter" : filter,
-			"fields" : "DISTINCT(nombre)",
-			"indexed" : 0
-			},
+			params,
 			function (data, status) {
 				jQuery.each (data, function (id, value) {
 					option = $("<option></option>").attr ("value", value["nombre"]).html (value["nombre"]);

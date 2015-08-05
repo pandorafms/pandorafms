@@ -2346,7 +2346,7 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 	 * Agent cache for metaconsole.
 	 * Retrieve the statistic data from the cache table.
 	 */
-	if (!$user_strict && defined('METACONSOLE') && !empty($list_groups)) {
+	if (!$user_strict && is_metaconsole() && !empty($list_groups)) {
 		$cache_table = 'tmetaconsole_agent';
 		
 		$sql_stats = "SELECT id_grupo, COUNT(id_agente) AS agents_total,
@@ -2476,7 +2476,7 @@ function group_get_data ($id_user = false, $user_strict = false, $acltags, $retu
 	foreach ($list_groups as $key => $item) {
 		$id = $item['id_grupo'];
 		
-		if (!$user_strict && defined('METACONSOLE')) { // Agent cache
+		if (!$user_strict && is_metaconsole()) { // Agent cache
 			$group_stat = array();
 			if (isset($stats_by_group[$id]))
 				$group_stat = $stats_by_group[$id];
@@ -2924,21 +2924,9 @@ function group_get_groups_list($id_user = false, $user_strict = false, $access =
 	
 	$acltags = tags_get_user_module_and_tags ($id_user, $access, $user_strict);
 	
-	if (! is_metaconsole()) {
-		$result_list = group_get_data ($id_user, $user_strict, $acltags,
-			$returnAllGroup, $mode);
-		
-		return $result_list;
-	}
-	else {
-		$servers = db_get_all_rows_sql ("
-			SELECT *
-			FROM tmetaconsole_setup
-			WHERE disabled = 0");
-		
-		if ($servers === false) {
-			$servers = array();
-		}
+	// If using metaconsole, the strict users will use the agent table of every node
+	if (is_metaconsole() && $user_strict) {
+		$servers = metaconsole_get_servers();
 		
 		$result_list = array ();
 		foreach ($servers as $server) {
@@ -2986,6 +2974,13 @@ function group_get_groups_list($id_user = false, $user_strict = false, $access =
 			metaconsole_restore_db();
 			
 		}
+		
+		return $result_list;
+	}
+	// If using metaconsole, the not strict users will use the metaconsole's agent cache table
+	else {
+		$result_list = group_get_data ($id_user, $user_strict, $acltags,
+			$returnAllGroup, $mode);
 		
 		return $result_list;
 	}

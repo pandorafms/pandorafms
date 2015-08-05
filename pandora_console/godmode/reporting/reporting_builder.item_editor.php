@@ -313,6 +313,13 @@ switch ($action) {
 					$idAgentModule = $item['id_agent_module'];
 					$period = $item['period'];
 					break;
+				case 'historical_data':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$idAgentModule = $item['id_agent_module'];
+					$period = $item['period'];
+					break;
 				case 'text':
 					$description = $item['description'];
 					$text = $item['text'];
@@ -2295,6 +2302,14 @@ function chooseType() {
 			break;
 		
 		case 'sumatory':
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
+			break;
+		
+		case 'historical_data':
 			$("#row_description").show();
 			$("#row_agent").show();
 			$("#row_module").show();

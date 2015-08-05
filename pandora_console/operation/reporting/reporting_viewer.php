@@ -304,6 +304,8 @@ if ($contents === false) {
 	return;
 }
 
+
+
 foreach ($contents as $content) {
 	$table->data = array ();
 	$table->head = array ();

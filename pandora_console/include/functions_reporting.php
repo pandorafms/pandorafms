@@ -3716,6 +3716,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 	
 	$item_title = $content['name'];
 	
+	
+	
 	switch ($content["type"]) {
 		case 1:
 		case 'simple_graph':
@@ -4013,7 +4015,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			
 			$table->colspan[1][0] = 3;
 			$data = array();
-
+			
 			require_once ($config["homedir"] . '/include/functions_graph.php');
 			$data[0] = 	graphic_combined_module(
 				$modules,
@@ -4737,6 +4739,50 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			array_push ($table->data, $data);
 			
 			break;
+		case 'historical_data':
+			if (empty($item_title)) {
+				$item_title = __('Historical data');
+			}
+			reporting_header_content($mini, $content, $report, $table, $item_title,
+				ui_print_truncate_text($agent_name, 'agent_medium', false) .
+				' <br> ' . ui_print_truncate_text($module_name, 'module_medium', false));
+			
+			//RUNNING
+			
+			$next_row = 1;
+			
+			// Put description at the end of the module (if exists)
+			if ($content["description"] != "") {
+				$data_desc = array();
+				$data_desc[0] = $content["description"];
+				array_push ($table->data, $data_desc);
+				$table->colspan[$next_row][0] = 3;
+				$next_row++;
+			}
+			
+			$table->colspan[$next_row][0] = 3;
+			
+			$table2->class = 'databox alternate';
+			$table2->width = '100%';
+			
+			$table2->head = array(__('Date'), __('Data'));
+			
+			$table2->data = array();
+			
+			$datelimit = $report["datetime"] - $content['period'];
+			
+			$result = modules_get_raw_data($content['id_agent_module'],
+				$datelimit, $report["datetime"]);
+			
+			foreach ($result as $row) {
+				$table2->data[] = array(
+					date ($config["date_format"], $row['utimestamp']),
+					$row['datos']);
+			}
+			
+			$cellContent = html_print_table($table2, true);
+			array_push($table->data, array($cellContent));
+			break;
 		case 10:
 		case 'sumatory':
 			if (empty($item_title)) {
@@ -4760,7 +4806,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$table->colspan[$next_row][0] = 3;
-
+			
 			$data = array ();
 			$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
 			

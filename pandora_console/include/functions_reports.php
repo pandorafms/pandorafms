@@ -564,6 +564,8 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 		'name' => __('Serialize data'));
 	$types['sumatory'] = array('optgroup' => __('Modules'),
 		'name' => __('Summatory'));
+	$types['historical_data'] = array('optgroup' => __('Modules'),
+		'name' => __('Historical Data'));
 	
 	
 	
@@ -622,6 +624,8 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 				'name' => __('Inventory changes'));
 		}
 	}
+	
+	
 	
 	if (!$template) {
 		$types['agent_configuration'] = array('optgroup' => __('Configuration'),

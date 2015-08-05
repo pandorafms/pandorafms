@@ -225,6 +225,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'group_configuration':
 				reporting_html_group_configuration($table, $item);
 				break;
+			case 'historical_data':
+				reporting_html_historical_data($table, $item);
+				break;
 			case 'database_serialized':
 				reporting_html_database_serialized($table, $item);
 				break;
@@ -1157,6 +1160,22 @@ function reporting_html_event_report_agent($table, $item) {
 		$table->cellstyle['chart_validated_vs_unvalidated']['cell'] = 'text-align: center;';
 		$table->data['chart_validated_vs_unvalidated']['cell'] = html_print_table($table1, true);
 	}
+}
+
+function reporting_html_historical_data($table, $item) {
+	$table1->width = '100%';
+	$table1->head = array (__('Date'), __('Data'));
+	
+	$table1->data = array ();
+	foreach ($item['data'] as $data) {
+			$row = array($data[__('date')], $data[__('Data')]);
+			$table1->data[] = $row;
+		}
+	}
+	
+	$table->colspan['database_serialized']['cell'] = 3;
+	$table->cellstyle['database_serialized']['cell'] = 'text-align: center;';
+	$table->data['database_serialized']['cell'] = html_print_table($table1, true);
 }
 
 function reporting_html_database_serialized($table, $item) {

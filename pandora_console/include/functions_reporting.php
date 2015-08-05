@@ -204,6 +204,11 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$content,
 					'sum');
 				break;
+			case 'historical_data':
+				$report['contents'][] = reporting_historical_data(
+					$report,
+					$content);
+				break;
 			case 'MTTR':
 				$report['contents'][] = reporting_value(
 					$report,
@@ -2158,6 +2163,33 @@ function reporting_event_report_agent($report, $content,
 	if ($config['metaconsole']) {
 		metaconsole_restore_db();
 	}
+	
+	return reporting_check_structure_content($return);
+}
+
+function reporting_historical_data($report, $content) {
+	global $config;
+	
+	$return['type'] = 'historical_data';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Historical data');
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	$return['keys'] = array(__('Date'), __('Data'));
+	
+	$data = array();
+	foreach ($result as $row) {
+		$data[] = array(
+			__('Date') => date ($config["date_format"], $row['utimestamp']),
+			__('Data') => $row['datos']);
+	}
+	
+	$return["data"] = $data;
 	
 	return reporting_check_structure_content($return);
 }

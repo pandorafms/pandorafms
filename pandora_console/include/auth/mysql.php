@@ -228,7 +228,8 @@ function process_user_login_remote ($login, $pass, $api = false) {
 		if (!user_can_login($login)) {
 			return false;
 		}
-		if ($config["auth"] == 'ad'){
+		
+		if ($config["auth"] === 'ad'){
 			$return = enterprise_hook ('prepare_permissions_groups_of_user_ad',
 				array ($login, $pass, false, true));
 			

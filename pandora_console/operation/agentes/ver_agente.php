@@ -226,7 +226,7 @@ if (is_ajax ()) {
 		$serialized = get_parameter('serialized', '');
 		$id_server = (int) get_parameter('id_server', 0);
 		$metaconsole_server_name = null;
-		if ($id_server != 0) {
+		if (!empty($id_server)) {
 			$metaconsole_server_name = db_get_value('server_name',
 				'tmetaconsole_setup', 'id', $id_server);
 		}
@@ -308,7 +308,14 @@ if (is_ajax ()) {
 			
 			foreach ($array_reduced as $server_name => $id_agents) {
 				//Metaconsole db connection
-				$connection = metaconsole_get_connection($server_name);
+				// $server_name can be the server id (ugly hack, I know)
+				if (is_numeric($server_name)) {
+					$connection = metaconsole_get_connection_by_id($server_name);
+				}
+				else {
+					$connection = metaconsole_get_connection($server_name);
+				}
+				
 				if (metaconsole_load_external_db($connection) != NOERR) {
 					continue;
 				}

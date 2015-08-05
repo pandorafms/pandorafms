@@ -50,7 +50,7 @@ require_once($config['homedir'] . "/include/functions_agents.php");
 
 $table->id = 'wizard_table';
 $table->head = array ();
-if (!defined('METACONSOLE')) {
+if (!is_metaconsole()) {
 	$metaconsole_hack = '';
 	$table->width = '100%';
 	$table->class = 'databox filters';
@@ -188,16 +188,17 @@ $table->data["percentileitem_4"][1] = html_print_radio_button_extended(
 		'value', false, '', 'style="float: left;"', true);
 
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole()) {
 	$table->rowstyle["all_2"] = 'display: none;';
 	$table->data["all_2"][0] = __('Servers');
 	if ($strict_user)
-		$table->data["all_2"][1] = html_print_select('','server_id',
-			$server_id, 'metaconsole_init();', __('All'), '0', true);
+		$table->data["all_2"][1] = html_print_select('','servers',
+			'', 'metaconsole_init();', __('All'), '0', true);
 	else
+		$sql = 'SELECT id, server_name
+				FROM tmetaconsole_setup';
 		$table->data["all_2"][1] = html_print_select_from_sql(
-			'SELECT id, server_name FROM tmetaconsole_setup',
-			'server_id', $server_id, 'metaconsole_init();', __('All'),
+			$sql, 'servers', '', 'metaconsole_init();', __('All'),
 			'0', true);
 }
 
@@ -229,7 +230,7 @@ $table->rowstyle["all_4"] = 'display: none;';
 $table->data["all_4"][0] = __('Agents');
 
 $agents_list = array();
-if (!defined('METACONSOLE'))
+if (!is_metaconsole())
 	$agents_list = agents_get_group_agents(0, false, "none", false,
 		true);
 
@@ -282,7 +283,7 @@ $table->data["all_8"][3] = '<span id="parent_column_3_item_in_visual_map">' .
 
 
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole()) {
 	$pure = get_parameter('pure', 0);
 	
 	echo '<form method="post"
@@ -303,7 +304,7 @@ if (defined("METACONSOLE")) {
 html_print_table ($table);
 
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-if (defined('METACONSOLE')) {
+if (is_metaconsole()) {
 	html_print_input_hidden ('action2', 'update');
 }
 else {
@@ -324,7 +325,7 @@ echo '<span id="loading_text" style="display: none;">' .
 ?>
 <script type="text/javascript">
 
-var metaconsole_enabled = <?php echo json_encode(defined('METACONSOLE')); ?>;
+var metaconsole_enabled = <?php echo (int) is_metaconsole(); ?>;
 var show_only_enabled_modules = true;
 var url_ajax = "ajax.php";
 
@@ -333,6 +334,8 @@ if (metaconsole_enabled) {
 }
 
 $(document).ready (function () {
+	var noneText = $("#none_text").html(); //Trick for catch the translate text.
+	
 	hidden_rows();
 	
 	$("#process_value").change(function () {
@@ -351,8 +354,17 @@ $(document).ready (function () {
 	});
 	
 	$("#groups").change (function () {
+		$('#module')
+			.prop('disabled', true)
+			.empty()
+			.append($('<option></option>')
+				.html(noneText)
+				.attr("None", "")
+				.attr('value', -1)
+				.prop('selected', true));
+		
 		$('#id_agents')
-			.attr('disabled', true)
+			.prop('disabled', true)
 			.empty ()
 			.css ("width", "auto")
 			.css ("max-width", "")
@@ -362,6 +374,7 @@ $(document).ready (function () {
 			page: "include/ajax/agent",
 			get_agents_group: 1,
 			id_group: $("#groups").val(),
+			serialized: 1,
 			mode: "json"
 		};
 		
@@ -377,8 +390,6 @@ $(document).ready (function () {
 				$('#id_agents').empty();
 				
 				if (isEmptyObject(data)) {
-					var noneText = $("#none_text").html(); //Trick for catch the translate text.
-					
 					$('#id_agents')
 						.append($('<option></option>')
 							.html(noneText)
@@ -388,14 +399,14 @@ $(document).ready (function () {
 				}
 				else {
 					jQuery.each (data, function (i, val) {
-						s = js_html_entity_decode(val);
+						var s = js_html_entity_decode(val);
 						$('#id_agents')
 							.append($('<option></option>')
 								.html(s).attr("value", i));
 					});
 				}
 				
-				$('#id_agents').removeAttr('disabled');
+				$('#id_agents').prop('disabled', false);
 			}
 		});
 	});

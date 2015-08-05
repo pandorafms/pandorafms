@@ -170,43 +170,40 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 	//Hack to find only enabled modules
 	//Pass a flag as global var
 	find_modules = 'all';
-	if (typeof(show_only_enabled_modules) != "undefined") {
-		if (show_only_enabled_modules == true) {
-			find_modules = 'enabled';
-		}
+	if (typeof show_only_enabled_modules !== 'undefined'
+			&& show_only_enabled_modules) {
+		find_modules = 'enabled';
 	}
 	
 	var selection_mode = $('#modules_selection_mode').val();
-	if (selection_mode == undefined) {
+	if (typeof selection_mode === 'undefined') {
 		selection_mode = 'common';
 	}
 	
 	var serialized = $('#hidden-serialized').val();
-	if (serialized == undefined) {
+	if (typeof serialized === 'undefined') {
 		serialized = '';
 	}
 	
-	$('#module').attr ('disabled', 1);
-	$('#module').empty ();
-	$('#module').append ($('<option></option>')
-		.html ("Loading...").attr ("value", 0));
-	
+	$('#module')
+		.prop('disabled', true)
+		.empty()
+		.append($('<option></option>')
+			.html("Loading...")
+			.attr("value", 0));
 	
 	// Check if homedir was received like a JSON
-	homedir = '';
-	id_server = 0;
-	if (typeof(event) == 'undefined') {
-		homedir += '.';
-	}
-	else {
-		if (event.data == null)
-			homedir += '.';
-		else {
-			homedir  = event.data.homedir;
-		
-			if (event.data.metaconsole != null) {
-				id_server = $("#" + event.data.id_server).val();
-			}
+	var homedir = '.';
+	var id_server = 0;
+	if (typeof event !== 'undefined' && typeof event.data !== 'undefined') {
+			
+		if (typeof event.data.homedir !== 'undefined') {
+			homedir = event.data.homedir;
+		}
+	
+		if (typeof event.data.metaconsole !== 'undefined'
+				&& event.data.metaconsole) {
+			id_server = $("#" + event.data.id_server).val();
 		}
 	}
 	
@@ -272,7 +269,7 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 				}
 			}
 			jQuery.each (data, function (i, val) {
-					s = js_html_entity_decode(val);
+					var  s = js_html_entity_decode(val);
 					
 					$('#module')
 						.append ($('<option></option>')
@@ -282,20 +279,18 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 					
 					$('#module').fadeIn ('normal');
 				});
-			if (selected != undefined)
+			if (typeof selected !== 'undefined')
 				$('#module').attr ('value', selected);
 			
-			$('#module').css ("max-width", "");
-			
-			
-			$('#module').removeAttr('disabled');
+			$('#module')
+				.css ("max-width", "")
+				.prop('disabled', false);
 			
 			if (typeof(function_hook_loaded_module_list) == 'function') {
 				function_hook_loaded_module_list();
 			}
 		},
-		"json"
-		);
+		"json");
 }
 
 /**

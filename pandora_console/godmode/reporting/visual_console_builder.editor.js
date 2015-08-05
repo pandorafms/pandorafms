@@ -1746,6 +1746,8 @@ function insertDB(type, values) {
 				}
 				
 				$("#saving_in_progress_dialog").dialog("close");
+				//Reload all events for the item and new item.
+				eventsItems();
 			}
 			else {
 				//TODO

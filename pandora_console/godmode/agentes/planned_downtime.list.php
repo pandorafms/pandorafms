@@ -322,9 +322,29 @@ else {
 	$downtimes = array();
 }
 
+// No downtimes
 if (!$downtimes) {
+	// Filter form
+	echo "<form method='post' action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list'>";
+		html_print_table($table_form);
+	echo "</form>";
+	
+	// Info message
 	echo '<div class="nf">'.__('No planned downtime').'</div>';
+	
+	echo '<div class="action-buttons" style="width: 98%">';
+
+	// Create button
+	if ($write_permisson) {
+		echo '&nbsp;';
+		echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
+		html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
+		echo '</form>';
+	}
+	
+	echo '</div>';
 }
+// Has downtimes
 else {
 	echo "<form method='post' action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list'>";
 		html_print_table($table_form);

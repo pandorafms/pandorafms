@@ -177,26 +177,39 @@ $row[] = html_print_submit_button('Search', 'search', false, 'class="sub search"
 $table_form->data[] = $row;
 // End of table filter
 
+// Useful to know if the user has done a form filtering
+$filter_performed = false;
+
 $groups = users_get_groups ();
 if (!empty($groups)) {
 	$where_values = "1=1";
 
 	$groups_string = implode (",", array_keys ($groups));
 	$where_values .= " AND id_group IN ($groups_string)";
+	
+	// WARNING: add $filter_performed = true; to any future filter
 
 	if (!empty($search_text)) {
+		$filter_performed = true;
+		
 		$where_values .= " AND (name LIKE '%$search_text%' OR description LIKE '%$search_text%')";
 	}
 
 	if (!empty($execution_type)) {
+		$filter_performed = true;
+		
 		$where_values .= " AND type_execution = '$execution_type'";
 	}
 
 	if (!empty($date_from)) {
+		$filter_performed = true;
+		
 		$where_values .= " AND (type_execution = 'periodically' OR (type_execution = 'once' AND date_from >= '".strtotime("$date_from 00:00:00")."'))";
 	}
 
 	if (!empty($date_to)) {
+		$filter_performed = true;
+		
 		$periodically_monthly_w = "type_periodicity = 'monthly'
 			AND ((periodically_day_from <= '".date('d', strtotime($date_from))."' AND periodically_day_to >= '".date('d', strtotime($date_to))."')
 				OR (periodically_day_from > periodically_day_to
@@ -226,14 +239,20 @@ if (!empty($groups)) {
 	}
 
 	if (!$show_archived) {
+		$filter_performed = true;
+		
 		$where_values .= " AND (type_execution = 'periodically' OR (type_execution = 'once' AND date_to >= '".time()."'))";
 	}
 
 	if (!empty($agent_id)) {
+		$filter_performed = true;
+		
 		$where_values .= " AND id IN (SELECT id_downtime FROM tplanned_downtime_agents WHERE id_agent = $agent_id)";
 	}
 
 	if (!empty($module_id)) {
+		$filter_performed = true;
+		
 		$where_values .= " AND (id IN (SELECT id_downtime
 									   FROM tplanned_downtime_modules
 									   WHERE id_agent_module = $module_id)
@@ -322,9 +341,33 @@ else {
 	$downtimes = array();
 }
 
-if (!$downtimes) {
+// No downtimes cause the user has not anyone
+if (!$downtimes && !$filter_performed) {
 	require_once ($config['homedir'] . "/general/firts_task/planned_downtime.php");
 }
+// No downtimes cause the user performed a search
+else if (!$downtimes) {
+	// Filter form
+	echo "<form method='post' action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list'>";
+		html_print_table($table_form);
+	echo "</form>";
+	
+	// Info message
+	echo '<div class="nf">'.__('No planned downtime').'</div>';
+	
+	echo '<div class="action-buttons" style="width: 100%">';
+
+	// Create button
+	if ($write_permisson) {
+		echo '&nbsp;';
+		echo '<form method="post" action="index.php?sec=estado&amp;sec2=godmode/agentes/planned_downtime.editor" style="display: inline;">';
+		html_print_submit_button (__('Create'), 'create', false, 'class="sub next"');
+		echo '</form>';
+	}
+	
+	echo '</div>';
+}
+// Has downtimes
 else {
 	echo "<form method='post' action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list'>";
 		html_print_table($table_form);

@@ -757,11 +757,13 @@ function agents_common_modules ($id_agent, $filter = false, $indexed = true, $ge
  * @param string $case Which case to return the agentname as (lower, upper, none)
  * @param boolean $noACL jump the ACL test.
  * @param boolean $childGroups The flag to get agents in the child group of group parent passed. By default false.
+ * @param boolean $serialized Only in metaconsole. Return the key as <server id><SEPARATOR><agent id>. By default false.
+ * @param string $separator Only in metaconsole. Separator for the serialized data. By default |.
  *
  * @return array An array with all agents in the group or an empty array
  */
 function agents_get_group_agents ($id_group = 0, $search = false,
-	$case = "lower", $noACL = false, $childGroups = false) {
+	$case = "lower", $noACL = false, $childGroups = false, $serialized = false, $separator = '|') {
 	
 	global $config;
 	
@@ -775,8 +777,6 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 			return array ();
 		}
 	}
-	
-	
 	
 	if ($childGroups) {
 		if (is_array($id_group)) {
@@ -860,7 +860,7 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 			unset($search['status']);
 		}
 		
-		if (defined('METACONSOLE') && isset($search['id_server'])) {
+		if (is_metaconsole() && isset($search['id_server'])) {
 			$filter['id_tmetaconsole_setup'] = $search['id_server'];
 			
 			if ($filter['id_tmetaconsole_setup'] == 0)	{
@@ -882,41 +882,54 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 	
 	$filter['order'] = 'nombre';
 	
-	if (defined('METACONSOLE')) {
+	if (is_metaconsole()) {
 		$table_name = 'tmetaconsole_agent';
 		
 		$fields = array(
-				'id_tagente AS id_agente', 'nombre'
+				'id_tagente AS id_agente',
+				'nombre',
+				'id_tmetaconsole_setup AS id_server'
 			);
 	}
 	else {
 		$table_name = 'tagente';
 		
 		$fields = array(
-				'id_agente', 'nombre'
+				'id_agente',
+				'nombre'
 			);
 	}
 	
 	$result = db_get_all_rows_filter($table_name, $filter, $fields);
-	
-	
 	
 	if ($result === false)
 		return array (); //Return an empty array
 	
 	$agents = array ();
 	foreach ($result as $row) {
+		if (!isset($row["id_agente"]) || !isset($row["nombre"]))
+			continue;
+		
+		if ($serialized && isset($row["id_server"])) {
+			$key = $row["id_server"] . $separator . $row["id_agente"];
+		}
+		else {
+			$key = $row["id_agente"];
+		}
+		
 		switch ($case) {
 			case "lower":
-				$agents[$row["id_agente"]] = mb_strtolower ($row["nombre"], "UTF-8");
+				$value = mb_strtolower ($row["nombre"], "UTF-8");
 				break;
 			case "upper":
-				$agents[$row["id_agente"]] = mb_strtoupper ($row["nombre"], "UTF-8");
+				$value = mb_strtoupper ($row["nombre"], "UTF-8");
 				break;
 			default:
-				$agents[$row["id_agente"]] = $row["nombre"];
+				$value = $row["nombre"];
 				break;
 		}
+		
+		$agents[$key] = $value;
 	}
 	return ($agents);
 }

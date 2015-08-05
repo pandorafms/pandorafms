@@ -38,20 +38,22 @@ if ($get_agents_group) {
 	$id_group = (int) get_parameter('id_group', -1);
 	$mode = (string) get_parameter('mode', 'json');
 	$id_server = (int) get_parameter('id_server', 0);
+	$serialized = (bool) get_parameter('serialized');
 	
 	$return = array();
 	if ($id_group != -1) {
 		$filter = array();
 		
-		if (defined('METACONSOLE')) {
+		if (is_metaconsole() && !empty($id_server)) {
 			$filter['id_server'] = $id_server;
 		}
 		
-		$return = agents_get_group_agents($id_group, $filter,  "none");
+		$return = agents_get_group_agents($id_group, $filter,  "none", false, false, $serialized);
 	}
 	
 	switch ($mode) {
 		case 'json':
+		default:
 			echo json_encode($return);
 			break;
 	}
@@ -59,7 +61,7 @@ if ($get_agents_group) {
 	return;
 }
 
-if ($search_agents && ((!defined('METACONSOLE')) || $force_local)) {
+if ($search_agents && (!is_metaconsole() || $force_local)) {
 	
 	$id_agent = (int) get_parameter('id_agent');
 	$string = (string) get_parameter('q'); /* q is what autocomplete plugin gives */
@@ -166,7 +168,7 @@ if ($search_agents && ((!defined('METACONSOLE')) || $force_local)) {
 	echo json_encode($data);
 	return;
 }
-elseif ($search_agents && ($config['metaconsole'] == 1) && defined('METACONSOLE')) {
+elseif ($search_agents && is_metaconsole()) {
 	
 	$id_agent = (int) get_parameter ('id_agent');
 	$string = (string) get_parameter ('q'); /* q is what autocomplete plugin gives */

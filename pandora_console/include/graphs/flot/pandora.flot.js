@@ -1183,6 +1183,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				.prop('method', 'POST')
 				.prop('action', homeurl + '/include/graphs/export_data.php')
 				.append($dataInput, $typeInput, $separatorInput, $excelInput)
+				.hide()
+				// Firefox made me write into the DOM for this :(
+				.appendTo('body')
 				.submit();
 		}
 		catch (e) {

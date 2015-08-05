@@ -371,6 +371,10 @@ if ($pure) {
 	$url .= '&pure=' . $pure;
 }
 
+if ($free_search != ''){
+	$url .= '&free_search=' . $free_search;
+}
+
 // Filter form
 if ($print_agent) {
 	if(defined('METACONSOLE')) {

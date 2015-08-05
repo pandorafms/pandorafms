@@ -2271,11 +2271,15 @@ function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $stric
 	$acltags = array();
 	
 	// Change the 'All' group with all groups
-	$all_group_ids = array();
-	$all_groups = groups_get_all();
-	if (!empty($all_groups))
-		$all_group_ids = array_keys($all_groups);
+	$user_groups = users_get_groups($id_user, $access, false);
+	$user_groups_ids = array();
+	if (!empty($user_groups) && is_array($user_groups)) {
+		$user_groups_ids = array_keys($user_groups);
+	}
 	
+	// If the user is admin, he should have access to the all group with the required permission
+	if (is_user_admin($id_user))
+		array_unshift($tags_and_groups, array('id_grupo' => 0, 'tags' => ''));
 	
 	$tags_and_groups_aux = array();
 	foreach ($tags_and_groups as $data) {
@@ -2283,7 +2287,7 @@ function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $stric
 		if ((int)$data['id_grupo'] === 0) {
 			// All group with empty tags. All groups without tags permission!
 			if (empty($data['tags'])) {
-				foreach ($all_group_ids as $group_id) {
+				foreach ($user_groups_ids as $group_id) {
 					$acltags[$group_id] = '';
 				}
 				
@@ -2291,7 +2295,7 @@ function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $stric
 			}
 			// Create a new element for every group with the tags
 			else {
-				foreach ($all_group_ids as $group_id) {
+				foreach ($user_groups_ids as $group_id) {
 					$tags_and_groups_aux[] = array(
 							'id_grupo' => $group_id,
 							'tags' => $data['tags']

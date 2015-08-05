@@ -454,6 +454,12 @@ div#login_in, #login_f {
 
 .version_login{
 	transform: rotate(36deg);
+	/* Old browser support */
+	-ms-transform: rotate(36deg); /* IE */
+	-moz-transform: rotate(36deg); /* FF */
+	-o-transform: rotate(36deg); /* Opera */
+	-webkit-transform: rotate(36deg); /* Safari and Chrome */
+	
 	float: right;
 	margin-top: 18px;
 	width: 80px;
@@ -3056,22 +3062,34 @@ table#policy_modules td * {
 
 @-webkit-keyframes spinner {
 	0% {
-		-webkit-transform: rotate(0deg);
+		-ms-transform: rotate(0deg); /* IE */
+		-moz-transform: rotate(0deg); /* FF */
+		-o-transform: rotate(0deg); /* Opera */
+		-webkit-transform: rotate(0deg); /* Safari and Chrome */
 		transform: rotate(0deg);
 	}
 	100% {
-		-webkit-transform: rotate(359deg);
+		-ms-transform: rotate(359deg); /* IE */
+		-moz-transform: rotate(359deg); /* FF */
+		-o-transform: rotate(359deg); /* Opera */
+		-webkit-transform: rotate(359deg); /* Safari and Chrome */
 		transform: rotate(359deg);
 	}
 }
 
 @keyframes spinner {
 	0% {
-		-webkit-transform: rotate(0deg);
+		-ms-transform: rotate(0deg); /* IE */
+		-moz-transform: rotate(0deg); /* FF */
+		-o-transform: rotate(0deg); /* Opera */
+		-webkit-transform: rotate(0deg); /* Safari and Chrome */
 		transform: rotate(0deg);
 	}
 	100% {
-		-webkit-transform: rotate(359deg);
+		-ms-transform: rotate(359deg); /* IE */
+		-moz-transform: rotate(359deg); /* FF */
+		-o-transform: rotate(359deg); /* Opera */
+		-webkit-transform: rotate(359deg); /* Safari and Chrome */
 		transform: rotate(359deg);
 	}
 }

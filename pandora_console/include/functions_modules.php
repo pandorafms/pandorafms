@@ -762,6 +762,56 @@ function modules_get_agentmodule ($id_agentmodule) {
 	}
 }
 
+function modules_get_table_data($id_agent_module) {
+	$id_type = db_get_value('id_tipo_modulo',
+		'tagente_modulo', 'id_agente_modulo', $id_agent_module);
+	
+	$name_type = db_get_value('nombre', 'ttipo_modulo', 'id_tipo', $id_type);
+	
+	$chunks = explode('_', $name_type);
+	$subtype = end($chunks);
+	
+	
+	switch ($subtype) {
+		case 'data':
+		case 'proc':
+		case 'icmp':
+		case 'tcp':
+		case 'snmp':
+		case 'inc':
+			// Numeric
+			return "tagente_datos";
+			break;
+		case 'log4x':
+			// Log4x
+			return "tagente_datos_log4x";
+			break;
+		case 'string':
+			// String
+			return "tagente_datos_string";
+			break;
+		default:
+			return null;
+			break;
+	}
+}
+
+function modules_get_raw_data($id_agent_module, $date_init, $date_end) {
+	$table = modules_get_table_data($id_agent_module);
+	
+	$datelimit = $date_init - $date_end;
+	$search_in_history_db = db_search_in_history_db($datelimit);
+	
+	$data = db_get_all_rows_sql('
+		SELECT *
+		FROM ' . $table . '
+		WHERE id_agente_modulo = ' . $id_agent_module . '
+			AND utimestamp >= ' . $date_init . '
+			AND utimestamp <= ' . $date_end, $search_in_history_db);
+	
+	return $data;
+}
+
 function modules_get_agent_group($id_agent_module) {
 	$return = false;
 	

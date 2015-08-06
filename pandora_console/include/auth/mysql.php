@@ -241,7 +241,7 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			else
 			{
 				if ($return === "permissions_changed") {
-					$config["auth_error"] = __("Please your permmission has change. Login Again");
+					$config["auth_error"] = __("Your permmission have been change. Please, login again");
 					return false;
 				}
 			}

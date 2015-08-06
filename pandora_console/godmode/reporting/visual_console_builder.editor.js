@@ -1194,11 +1194,11 @@ function set_static_graph_status(idElement, image, status) {
 function set_image(type, idElement, image) {
 	if (type == "image") {
 		item = "#image_" + idElement;
-		img_src = "images/console/icons/" + image;
+		img_src = "images/console/icons/" + image + ".png";
 	}
 	else if (type == "background") {
 		item = "background_img";
-		img_src = "images/console/background/" + image;
+		img_src = "images/console/background/" + image + ".png";
 	}
 	
 	var params = [];

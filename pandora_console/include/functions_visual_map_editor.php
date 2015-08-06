@@ -188,12 +188,15 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'module_graph',
 				'simple_value',
 				'datos',
-				'icon',
-				'group_item');
+				'icon');
+				
+			if (!is_metaconsole())
+				$form_items['enable_link_row']['items'][] = 'group_item';
+				
 			$form_items['enable_link_row']['html'] =
 				'<td align="left" style="">' . __('Enable link') . '</td>
 				<td align="left" style="">' .
-				html_print_checkbox('enable_link', '', 'enable_link', true) . '</td>';
+				html_print_checkbox('enable_link', '', !is_metaconsole(), true) . '</td>';
 			
 			
 			$form_items['preview_row'] = array();

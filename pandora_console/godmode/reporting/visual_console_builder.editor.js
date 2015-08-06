@@ -2691,6 +2691,8 @@ function showPreview(image) {
 		case 'icon':
 			showPreviewIcon(image);
 			break;
+		case 'service':
+			showPreviewIcon(image);	
 	}
 }
 

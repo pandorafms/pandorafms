@@ -236,8 +236,8 @@ function update_button_palette_callback() {
 				$("#" + idItem).css('width', '');
 				$("#" + idItem).css('height', '');
 			}
-			
-			set_image("image", idItem, values['image']);
+			var image = values['image'] + ".png";
+			set_image("image", idItem, image);
 			break;
 		default:
 			//Maybe save in any Enterprise item.
@@ -1194,11 +1194,11 @@ function set_static_graph_status(idElement, image, status) {
 function set_image(type, idElement, image) {
 	if (type == "image") {
 		item = "#image_" + idElement;
-		img_src = "images/console/icons/" + image + ".png";
+		img_src = "images/console/icons/" + image;
 	}
 	else if (type == "background") {
 		item = "background_img";
-		img_src = "images/console/background/" + image + ".png";
+		img_src = "images/console/background/" + image;
 	}
 	
 	var params = [];
@@ -1624,8 +1624,8 @@ function createItem(type, values, id_data) {
 				'<img id="image_' + id_data + '" class="image" src="images/spinner.gif" ' + imageSize + ' /><br />' + 
 				'</div>'
 			);
-			
-			set_image("image", id_data, values['image']);
+			var image = values['image'] + ".png";
+			set_image("image", id_data, image);
 			break;
 		default:
 			//Maybe create in any Enterprise item.

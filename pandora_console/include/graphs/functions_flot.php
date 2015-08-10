@@ -212,7 +212,8 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		if ($threshold) {
 			$return .= " <a href='javascript:'><img id='menu_threshold_$graph_id' src='".$homeurl."images/chart_curve_threshold.png' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";
 		}
-		$return .= " <a href='javascript:'><img id='menu_overview_$graph_id' src='".$homeurl."images/chart_curve_overview.png' alt='".__('Overview graph')."' title='".__('Overview graph')."'></a>";
+		$return .= " <a href='javascript:'>
+			<img id='menu_overview_$graph_id' class='menu_overview' src='" . $homeurl . "images/chart_curve_overview.png' alt='" . __('Overview graph') . "' title='".__('Overview graph')."'></a>";
 		
 		// Export buttons
 		$return .= " <a href='javascript:'><img id='menu_export_csv_$graph_id' src='".$homeurl."images/csv_grey.png' alt='".__('Export to CSV')."' title='".__('Export to CSV')."'></a>";

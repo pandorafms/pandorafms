@@ -297,11 +297,11 @@ max_log_size 1048576
 # max_log_generation: Specify max generation count (between 1 and 9) of Pandora FMS server log files.
 max_log_generation 1
 
-# max_queue_files (500 by default)
+# max_queue_files (5000 by default)
 # When server have more than max_queue_files in incoming directory, skips the read   
 # the directory to avoid filesystem overhead.
 
-max_queue_files 500
+max_queue_files 5000
 
 # Use the XML file last modification time as timestamp.
 

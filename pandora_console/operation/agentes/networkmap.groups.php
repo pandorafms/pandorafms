@@ -65,7 +65,8 @@ $filter = networkmap_get_filter ($layout);
 $graph = networkmap_generate_dot_groups (__('Pandora FMS'), $group,
 	$simple, $font_size, $layout, $nooverlap, $zoom, $ranksep, $center,
 	$regen, $pure, $modwithalerts, $module_group, $hidepolicymodules,
-	$depth, $id_networkmap, $dont_show_subgroups, $text_filter, $strict_user);
+	$depth, $id_networkmap, $dont_show_subgroups, $text_filter,
+	$strict_user, $size_canvas);
 
 if ($graph === false) {
 	ui_print_error_message (__('Map could not be generated'));
@@ -140,7 +141,7 @@ if ($result !== false) {
 		$image_url =  str_replace('\\',"/",str_replace($config['homedir'], "", $filename_img));
 	else
 		$image_url = str_replace(realpath(io_safe_output($config['homedir'])), "", realpath($filename_img));
-	html_print_image ($image_url, false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
+	html_print_image ($image_url . "?" . (microtime(true) * 10000), false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
 	echo "</div>";
 	require ($filename_map);
 }

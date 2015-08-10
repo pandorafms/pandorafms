@@ -64,11 +64,14 @@ if (!isset($text_filter)) {
 	$text_filter = '';
 }
 
+
+
 // Generate dot file
 $graph = networkmap_generate_dot(__('Pandora FMS'), $group, $simple,
 	$font_size, $layout, $nooverlap, $zoom, $ranksep, $center, $regen,
 	$pure, $id_networkmap, $show_snmp_modules, true, true,
-	$text_filter, $l2_network, null, $dont_show_subgroups, $strict_user);
+	$text_filter, $l2_network, null, $dont_show_subgroups, $strict_user,
+	$size_canvas);
 
 if ($graph === false) {
 	ui_print_error_message (__('Map could not be generated'));
@@ -146,7 +149,7 @@ if ($result !== false) {
 	}
 	echo "<div style='text-align:center'>";
 	$image_url = str_replace(realpath(io_safe_output($config['homedir'])), "", realpath($filename_img));
-	html_print_image ($image_url, false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
+	html_print_image ($image_url . "?" . (microtime(true) * 10000), false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
 	echo "</div>";
 	require ($filename_map);
 }

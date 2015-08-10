@@ -1077,13 +1077,21 @@ function ui_require_css_file ($name, $path = 'include/styles/') {
  * ui_require_javascript_file ('pandora');
  * // Would include include/javascript/pandora.js
  * </code>
+ * @param bool Just echo the script tag of the file.
  *
  * @return bool True if the file was added. False if the file doesn't exist.
  */
-function ui_require_javascript_file ($name, $path = 'include/javascript/') {
+function ui_require_javascript_file ($name, $path = 'include/javascript/', $echo_tag = false) {
 	global $config;
 	
 	$filename = $path . $name . '.js';
+	
+	if ($echo_tag) {
+		echo '<script type="text/javascript" src="' .
+			ui_get_full_url(false, false, false, false) .
+			$filename . '"></script>';
+		return;
+	}
 	
 	if (! isset ($config['js']))
 		$config['js'] = array ();
@@ -1163,13 +1171,21 @@ function ui_require_javascript_file_enterprise($name, $disabled_metaconsole = fa
  * ui_require_jquery_file ('form');
  * // Would include include/javascript/jquery.form.js
  * </code>
+ * @param bool Just echo the script tag of the file.
  *
  * @return bool True if the file was added. False if the file doesn't exist.
  */
-function ui_require_jquery_file ($name, $path = 'include/javascript/') {
+function ui_require_jquery_file ($name, $path = 'include/javascript/', $echo_tag = false) {
 	global $config;
 	
 	$filename = $path.'jquery.'.$name.'.js';
+	
+	if ($echo_tag) {
+		echo '<script type="text/javascript" src="' .
+			ui_get_full_url(false, false, false, false) .
+			$filename . '"></script>';
+		return;
+	}
 	
 	if (! isset ($config['jquery']))
 		$config['jquery'] = array ();
@@ -3479,8 +3495,8 @@ function ui_get_error ($error_code) {
 	return array('title' => $title, 'message' => $message);
 }
 
-function ui_include_time_picker() {
-	if (is_ajax ()) {
+function ui_include_time_picker($echo_tags = false) {
+	if (is_ajax () || $echo_tags) {
 		echo '<script type="text/javascript" src="' .
 			ui_get_full_url(false, false, false, false) .
 			'include/javascript/jquery.ui-timepicker-addon.js' . '"></script>';

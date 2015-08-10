@@ -73,10 +73,11 @@ $label = base64_decode(get_parameter('label', ''));
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>Pandora FMS Graph (<?php echo modules_get_agentmodule_agent_name ($id) . ' - ' . $label; ?>)</title>
 		<link rel="stylesheet" href="../../include/styles/pandora_minimal.css" type="text/css" />
-		<script type='text/javaScript' src='../../include/javascript/calendar.js'></script>
+		<link rel="stylesheet" href="../../include/styles/jquery-ui-1.10.0.custom.css" type="text/css" />
 		<script type='text/javascript' src='../../include/javascript/pandora.js'></script>
-		<script type='text/javascript' src='../../include/javascript/jquery-1.7.1.js'></script>
+		<script type='text/javascript' src='../../include/javascript/jquery-1.9.0.js'></script>
 		<script type='text/javascript' src='../../include/javascript/jquery.pandora.js'></script>
+		<script type='text/javascript' src='../../include/javascript/jquery.jquery-ui-1.10.0.custom.js'></script>
 		<script type='text/javascript'>
 			<!--
 			window.onload = function() {
@@ -134,7 +135,8 @@ $label = base64_decode(get_parameter('label', ''));
 		$width = get_parameter ("width", 555);
 		$height = get_parameter ("height", 245);
 		$label = get_parameter ("label", "");
-		$start_date = get_parameter ("start_date", date("Y-m-d"));
+		$start_date = get_parameter ("start_date", date("Y/m/d"));
+		$start_time = get_parameter ("start_time", date("H:i:s"));
 		$draw_events = get_parameter ("draw_events", 0);
 		$graph_type = get_parameter ("type", "sparse");
 		$zoom = get_parameter ("zoom", 1);
@@ -160,13 +162,12 @@ $label = base64_decode(get_parameter('label', ''));
 			echo "<script type='text/javascript'>window.resizeTo($width + 80, $height + 120);</script>";
 		}
 		
-		$utime = get_system_time ();
-		$current = date("Y-m-d", $utime);
+		// Build date
+		$date = strtotime("$start_date $start_time");
+		$now = time();
 		
-		if ($start_date != $current)
-			$date = strtotime($start_date);
-		else
-			$date = $utime;
+		if ($date > $now)
+			$date = $now;
 		
 		$urlImage = ui_get_full_url(false, false, false, false);
 		
@@ -271,12 +272,13 @@ $label = base64_decode(get_parameter('label', ''));
 		
 		$data = array();
 		$data[0] = __('Begin date');
-		$data[1] = html_print_input_text ("start_date",
-			substr($start_date, 0, 10),'', 15, 255, true);
-		$data[1] .= html_print_image ("images/calendar_view_day.png",
-			true, array(
-				"onclick" => "scwShow(scwID('text-start_date'),this);",
-				"style" => 'vertical-align: bottom;'));
+		$data[1] = html_print_input_text ("start_date", $start_date,'', 10, 20, true);
+		$table->data[] = $data;
+		$table->rowclass[] = '';
+		
+		$data = array();
+		$data[0] = __('Begin time');
+		$data[1] = html_print_input_text ("start_time", $start_time,'', 10, 10, true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 		
@@ -399,6 +401,15 @@ $label = base64_decode(get_parameter('label', ''));
 		
 	</body>
 </html>
+
+<?php
+// Echo the script tags of the datepicker and the timepicker
+// Modify the user language cause the ui.datepicker language files use - instead _
+$custom_user_language = str_replace('_', '-', $user_language);
+ui_require_jquery_file("ui.datepicker-" . $custom_user_language, "include/javascript/i18n/", true);
+ui_include_time_picker(true);
+?>
+
 <script>
 	$('#checkbox-time_compare_separated').click(function() {
 		$('#checkbox-time_compare_overlapped').removeAttr('checked');
@@ -438,6 +449,24 @@ $label = base64_decode(get_parameter('label', ''));
 	<?php
 	}
 	?>
+	
+	// Add datepicker and timepicker
+	$("#text-start_date").datepicker({
+		dateFormat: "<?php echo DATE_FORMAT_JS; ?>"
+	});
+	$("#text-start_time").timepicker({
+		showSecond: true,
+		timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+		timeOnlyTitle: '<?php echo __('Choose time');?>',
+		timeText: '<?php echo __('Time');?>',
+		hourText: '<?php echo __('Hour');?>',
+		minuteText: '<?php echo __('Minute');?>',
+		secondText: '<?php echo __('Second');?>',
+		currentText: '<?php echo __('Now');?>',
+		closeText: '<?php echo __('Close');?>'
+	});
+	
+	$.datepicker.setDefaults($.datepicker.regional["<?php echo $custom_user_language; ?>"]);
 	
 	forced_title_callback();
 </script>

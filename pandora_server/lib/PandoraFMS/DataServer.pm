@@ -96,6 +96,7 @@ sub data_producer ($) {
 
 	my @tasks;
 	my @files;
+	my @sorted;
 
 	# Open the incoming directory
 	opendir (DIR, $pa_config->{'incomingdir'})
@@ -104,12 +105,37 @@ sub data_producer ($) {
 	# Do not read more than max_queue_files files
  	my $file_count = 0;
  	while (my $file = readdir (DIR)) {
-		
+
 		# Data files must have the extension .data
+		next if ($file !~ /^.*[\._]\d+\.data$/);
+
+		# Do not queue more than max_queue_files files
+		if ($file_count >= $pa_config->{"max_queue_files"}) {
+			last;
+		}
+
+		push (@files, $file);
+		$file_count++;
+	}
+	closedir(DIR);
+
+	# Sort the queue
+	{
+		# Temporarily disable warnings (some files may have been deleted)
+		no warnings;
+		if ($pa_config->{'dataserver_lifo'} == 0) {
+			@sorted = sort { -M $pa_config->{'incomingdir'} . "/$b" <=> -M $pa_config->{'incomingdir'} . "/$a" } (@files);
+		} else {
+			@sorted = sort { -M $pa_config->{'incomingdir'} . "/$a" <=> -M $pa_config->{'incomingdir'} . "/$b" } (@files);
+		}
+	}
+
+	# Do not process more than one XML from the same agent at the same time
+	foreach my $file (@sorted) {
+
 		next if ($file !~ /^(.*)[\._]\d+\.data$/);
-		
-		# Do not process more than one XML from the same agent at the same time
-		my $agent_name = $1;		
+		my $agent_name = $1;
+
 		$AgentSem->down ();
 		if (defined ($Agents{$agent_name})) {
 			$AgentSem->up ();
@@ -118,24 +144,7 @@ sub data_producer ($) {
 		$Agents{$agent_name} = 1;
 		$AgentSem->up ();
 
-		push (@files, $file);
-		$file_count++;
-		
-		# Do not queue more than max_queue_files files
-		if ($file_count >= $pa_config->{"max_queue_files"}) {
-			last;
-		}
-	}
-	closedir(DIR);
-
-	# Temporarily disable warnings (some files may have been deleted)
-	{
-		no warnings;
-		if ($pa_config->{'dataserver_lifo'} == 0) {
-			@tasks = sort { -C $pa_config->{'incomingdir'} . "/$b" <=> -C $pa_config->{'incomingdir'} . "/$a" } (@files);
-		} else {
-			@tasks = sort { -C $pa_config->{'incomingdir'} . "/$a" <=> -C $pa_config->{'incomingdir'} . "/$b" } (@files);
-		}
+		push (@tasks, $file);
 	}
 
 	return @tasks;

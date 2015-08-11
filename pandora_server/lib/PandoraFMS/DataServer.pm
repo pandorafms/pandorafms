@@ -124,9 +124,9 @@ sub data_producer ($) {
 		# Temporarily disable warnings (some files may have been deleted)
 		no warnings;
 		if ($pa_config->{'dataserver_lifo'} == 0) {
-			@sorted = sort { -M $pa_config->{'incomingdir'} . "/$b" <=> -M $pa_config->{'incomingdir'} . "/$a" } (@files);
+			@sorted = sort { -M $pa_config->{'incomingdir'} . "/$b" <=> -M $pa_config->{'incomingdir'} . "/$a" || $a cmp $b } (@files);
 		} else {
-			@sorted = sort { -M $pa_config->{'incomingdir'} . "/$a" <=> -M $pa_config->{'incomingdir'} . "/$b" } (@files);
+			@sorted = sort { -M $pa_config->{'incomingdir'} . "/$a" <=> -M $pa_config->{'incomingdir'} . "/$b" || $b cmp $a } (@files);
 		}
 	}
 

@@ -3309,6 +3309,11 @@ sub process_data ($$$$$$$) {
 	# If is a number, we need to replace "," for "."
 	$data =~ s/\,/\./;
 
+	# Post process
+	if (is_numeric ($module->{'post_process'}) && $module->{'post_process'} != 0) {
+		$data = $data * $module->{'post_process'};
+	}
+
 	# Out of bounds
 	if (($module->{'max'} != $module->{'min'}) && ($data > $module->{'max'} || $data < $module->{'min'})) {
 		logger($pa_config, "Received invalid data '" . $data_object->{'data'} . "' from agent '" . $agent->{'nombre'} . "' module '" . $module->{'nombre'} . "' agent " . (defined ($agent) ? "'" . $agent->{'nombre'} . "'" : 'ID ' . $module->{'id_agente'}) . ".", 3);
@@ -3321,11 +3326,6 @@ sub process_data ($$$$$$$) {
 		
 		# No previous data or error.
 		return undef unless defined ($data);
-	}
-
-	# Post process
-	if (is_numeric ($module->{'post_process'}) && $module->{'post_process'} != 0) {
-		$data = $data * $module->{'post_process'};
 	}
 
 	# TODO: Float precission should be adjusted here in the future with a global

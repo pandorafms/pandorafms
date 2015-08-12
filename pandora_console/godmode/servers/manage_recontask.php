@@ -155,29 +155,23 @@ if (isset($_GET["update"])) {
 	
 	$reason = '';
 	if ($name != "") {
-		if ((db_get_value_filter ('name', 'trecon_task', array ('name' => $name))) && (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))){
-			$reason = __('Recon-task name already exists and incorrect format in Subnet field');
-			$result = false;
+		if (empty($id_recon_script)) {
+			if (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network)){
+				$reason = __('Wrong format in Subnet field');
+				$result = false;
+			}
+			else{
+				$result = db_process_sql_update('trecon_task', $values, $where);
+			}
 		}
-		else if(db_get_value_filter ('name', 'trecon_task', array ('name' => $name))){
-			$reason = __('Recon-task name already exists');
-			$result = false;
-		}
-		else if ((empty($id_recon_script)) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network)){
+		else {
 			$result = db_process_sql_update('trecon_task', $values, $where);
-		}
-		elseif (!empty($id_recon_script)){
-			$result = db_process_sql_update('trecon_task', $values, $where);
-		}
-		else  {
-			if (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
-				$reason = __('Incorrect format in Subnet field');
-			$result = false;
 		}
 	}
-	else
+	else {
 		$result = false;
-	
+	}
+
 	if ($result !== false) {
 		ui_print_success_message(__('Successfully updated recon task'));
 	}
@@ -222,30 +216,28 @@ if (isset($_GET["create"])) {
 	$reason = "";
 
 	if ($name != "") {
-		if ((db_get_value_filter ('name', 'trecon_task', array ('name' => $name))) && (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))){
-			$reason = __('Recon-task name already exists and incorrect format in Subnet field');
-			$result = false;
+
+		$name_exists = (bool) db_get_value ('name', 'trecon_task', 'name', $name);
+
+		if (empty($id_recon_script)) {
+			if ($name_exists && (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))){
+				$reason = __('Recon-task name already exists and incorrect format in Subnet field');
+				$result = false;
+			}
+			else if (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network)){
+				$reason = __('Wrong format in Subnet field');
+				$result = false;
+			}
+			else if ($name_exists){
+				$reason = __('Recon-task name already exists');
+				$result = false;
+			}
+			else{
+				$result = db_process_sql_insert('trecon_task', $values);
+			}
 		}
-		else if (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network)){
-			$reason = __('Incorrect format in Subnet field');
-			$result = false;
-		}
-		else if (db_get_value_filter ('name', 'trecon_task', array ('name' => $name))){
-			$reason = __('Recon-task name already exists');
-			$result = false;
-		}
-		else if (empty($id_recon_script) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
-		{
+		else {
 			$result = db_process_sql_insert('trecon_task', $values);
-			
-			$reason = __("Network provided is not correct");
-		}
-		elseif (!empty($id_recon_script)) {
-			$result = db_process_sql_insert('trecon_task', $values);
-		}
-		else{
-			$reason = __('Error');
-			$result = false;
 		}
 	}
 	else {

@@ -238,8 +238,8 @@ function update_button_palette_callback() {
 				$("#" + idItem).css('width', '');
 				$("#" + idItem).css('height', '');
 			}
-			
-			set_image("image", idItem, values['image']);
+			var image = values['image'] + ".png";
+			set_image("image", idItem, image);
 			break;
 		default:
 			//Maybe save in any Enterprise item.
@@ -1626,8 +1626,8 @@ function createItem(type, values, id_data) {
 				'<img id="image_' + id_data + '" class="image" src="images/spinner.gif" ' + imageSize + ' /><br />' + 
 				'</div>'
 			);
-			
-			set_image("image", id_data, values['image']);
+			var image = values['image'] + ".png";
+			set_image("image", id_data, image);
 			break;
 		default:
 			//Maybe create in any Enterprise item.
@@ -1748,6 +1748,8 @@ function insertDB(type, values) {
 				}
 				
 				$("#saving_in_progress_dialog").dialog("close");
+				//Reload all events for the item and new item.
+				eventsItems();
 			}
 			else {
 				//TODO
@@ -2691,6 +2693,8 @@ function showPreview(image) {
 		case 'icon':
 			showPreviewIcon(image);
 			break;
+		case 'service':
+			showPreviewIcon(image);	
 	}
 }
 

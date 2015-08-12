@@ -650,6 +650,22 @@ switch ($sortField) {
 				break;
 		}
 		break;
+	case 'data':
+		switch ($sort) {
+			case 'up':
+				$selectTimestampUp = $selected;
+				$order = array(
+					'field' => 'tagente_estado.datos',
+					'order' => 'ASC');
+				break;
+			case 'down':
+				$selectTimestampDown = $selected;
+				$order = array(
+					'field' => 'tagente_estado.datos',
+					'order' => 'DESC');
+				break;
+		}
+		break;
 	default:
 		$selectAgentNameUp = $selected;
 		$selectAgentNameDown = '';
@@ -947,6 +963,10 @@ $table->align[8] = "left";
 
 $table->head[9] = __('Data');
 $table->align[9] = "left";
+if ( defined ('METACONSOLE') ) {
+$table->head[9] .= ' <a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=data&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectStatusUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;modulegroup='.$modulegroup . '&amp;offset=' . $offset . '&amp;ag_group=' . $ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . $ag_custom_fields_params . '&amp;sort_field=data&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectStatusDown, "alt" => "down")) . '</a>';
+}
 
 $table->head[10] = __('Timestamp');
 if (! defined ('METACONSOLE')) {
@@ -1209,8 +1229,8 @@ foreach ($result as $row) {
 	$data[8] = ui_print_module_warn_value($row['max_warning'],
 		$row['min_warning'], $row['str_warning'], $row['max_critical'],
 		$row['min_critical'], $row['str_critical']);
-	
-	if (is_numeric($row["datos"])) {
+
+	if (is_numeric($row["datos"]) && !modules_is_string_type($row['module_type'])) {
 		if ( $config["render_proc"] ) {
 				switch($row["module_type"]) {
 					case 2:
@@ -1221,9 +1241,9 @@ foreach ($result as $row) {
 					case 31:
 						
 						if ( $row["datos"] >= 1 ) 
-							$salida ='OK';
+							$salida = $config["render_proc_ok"];
 						else
-							$salida = 'FAIL';
+							$salida = $config["render_proc_fail"];
 						break;
 					default:	
 						$salida = format_numeric($row["datos"]);
@@ -1236,7 +1256,7 @@ foreach ($result as $row) {
 		
 		// Show units ONLY in numeric data types
 		if (isset($row["unit"])) {
-			$salida .= "&nbsp;" . '<i>'. io_safe_output($row["unit"]) . '</i>';
+			$salida .= "&nbsp;" . '<i>' . io_safe_output($row["unit"]) . '</i>';
 			$salida = ui_print_truncate_text($salida, 'agent_small', true, true, false, '[&hellip;]', 'font-size:7.5pt;');
 		}
 	}
@@ -1272,7 +1292,26 @@ foreach ($result as $row) {
 			
 			$sub_string = substr(io_safe_output($row["datos"]), 0, 12);
 			if ($module_value == $sub_string) {
-				$salida = $module_value;
+				$intDays = $module_value / 8640000;
+				$dias = $intDays - (integer)$intDays;
+				$intDays = (integer)$intDays;
+				
+				$intHours = $dias * 24;
+				$Hours = $intHours - (integer)$intHours;
+				$intHours = (integer)$intHours;
+				
+				$intMinutes = $Hours * 60;
+				$minutos = $intMinutes - (integer)$intMinutes;
+				$intMinutes = (integer)$intMinutes;
+				
+				$intSeconds = $minutos * 60;
+				$ConvertSeconds = $intDays . " Days - ". $intHours ." Hours - ". $intMinutes . " Mins";
+				if ($ConvertSeconds) {
+					$salida = $ConvertSeconds;
+				}
+				else {
+					$salida = $module_value;
+				}
 			}
 			else {
 				//Fixed the goliat sends the strings from web
@@ -1294,7 +1333,26 @@ foreach ($result as $row) {
 				
 				
 				if ($module_value == $sub_string) {
-					$salida = $module_value;
+					$intDays = $module_value / 8640000;
+					$dias = $intDays - (integer)$intDays;
+					$intDays = (integer)$intDays;
+					
+					$intHours = $dias * 24;
+					$Hours = $intHours - (integer)$intHours;
+					$intHours = (integer)$intHours;
+					
+					$intMinutes = $Hours * 60;
+					$minutos = $intMinutes - (integer)$intMinutes;
+					$intMinutes = (integer)$intMinutes;
+					
+					$intSeconds = $minutos * 60;
+					$ConvertSeconds = $intDays . " Days - ". $intHours ." Hours - ". $intMinutes . " Mins";
+					if ($ConvertSeconds) {
+						$salida = $ConvertSeconds;
+					}
+					else {
+						$salida = $module_value;
+					}
 				}
 				else {
 					$salida = "<span " .

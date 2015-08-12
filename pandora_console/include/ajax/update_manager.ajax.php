@@ -353,6 +353,16 @@ if ($update_last_free_package) {
 	//curl_setopt($curlObj, CURLOPT_POST, true);
 	//curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);
 	curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, false);
+	if (isset($config['update_manager_proxy_server'])) {
+		curl_setopt($curlObj, CURLOPT_PROXY, $config['update_manager_proxy_server']);
+	}
+	if (isset($config['update_manager_proxy_port'])) {
+		curl_setopt($curlObj, CURLOPT_PROXYPORT, $config['update_manager_proxy_port']);
+	}
+	if (isset($config['update_manager_proxy_user'])) {
+		curl_setopt($curlObj, CURLOPT_PROXYUSERPWD, $config['update_manager_proxy_user'] . ':' . $config['update_manager_proxy_password']);
+	}
+	
 	$result = curl_exec($curlObj);
 	$http_status = curl_getinfo($curlObj, CURLINFO_HTTP_CODE);
 	

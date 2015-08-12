@@ -26,11 +26,11 @@ ui_require_css_file ('firts_task');
 	</div>
 	<div class="text_task">
 		<h3> <?php echo __('Create SNMP Filter'); ?></h3>
-		<p id="description_task"> <?php echo __('The Recon Task definition of Pandora FMS is used to find new elements in the network. 
-		If it detects any item, it will add that item to the monitoring, and if that item it is already being monitored, then it will 
-		ignore it or will update its information.There are three types of detection: Based on <strong id="fuerte"> ICMP </strong>(pings), 
-		<strong id="fuerte">SNMP</strong> (detecting the topology of networks and their interfaces), and other <strong id="fuerte"> customized </strong>
-		type. You can define your own customized recon script.'); ?></p>
+		<p id="description_task"> <?php echo __("Some systems receive a high number of traps. 
+				We're only interested in monitoring a tiny percentage of them. From Pandora FMS versions 3.2 and above, 
+				it's possible to filter the traps that the server obtains in order to avoid straining the application unnecessarily.
+				In order to define different filters, please go to 'Administration' -> 'Manage SNMP Console' and 'SNMP Filters'. 
+				One trap which is going to run in conjunction with any of them - just the ones for the server are going to get ruled out automatically. "); ?></p>
 		<form action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_filters&edit_filter=-1" method="post">
 			<input type="submit" class="button_task" value="<?php echo __('Create SNMP Filter'); ?>" />
 		</form>

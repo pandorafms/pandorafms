@@ -2,8 +2,8 @@
 #Pandora FMS Linux Agent
 #
 %define name        pandorafms_agent_unix
-%define version     6.0dev
-%define release     150724
+%define version     6.0RC1
+%define release     150812
 
 Summary:            Pandora FMS Linux agent, PERL version
 Name:               %{name}

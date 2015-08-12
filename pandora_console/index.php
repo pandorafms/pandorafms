@@ -41,6 +41,14 @@ if ($develop_bypass != 1) {
 		include ("install.php");
 		exit;
 	}
+
+	if (isset($_POST["rename_file"])){
+		$rename_file_install = (bool)$_POST["rename_file"];
+		if ($rename_file_install) {
+			$salida_rename = rename("/var/www/html/pandora_console/install.php", "/var/www/html/pandora_console/install_old.php");
+		}
+	}
+
 	// Check for installer presence
 	if (file_exists ("install.php")) {
 		$login_screen = 'error_install';
@@ -117,6 +125,11 @@ $config["pure"] = (bool) get_parameter ("pure");
 // Auto Refresh page (can now be disabled anywhere in the script)
 if (get_parameter ("refr"))
 	$config["refr"] = (int) get_parameter ("refr");
+
+$delete_file = get_parameter("del_file");
+if ($delete_file == 'yes_delete'){
+	$salida_delete = shell_exec('rm /var/www/html/pandora_console/install.php');
+}
 
 ob_start ();
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' .

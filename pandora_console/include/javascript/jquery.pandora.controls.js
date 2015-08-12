@@ -89,7 +89,10 @@
 				callbackPre: dummyFunc,
 				callbackPost: dummyFunc,
 				callbackAfter: dummyFunc,
-				moduleFilter: 'disabled=0 AND delete_pending=0',
+				moduleFilter: {
+					disabled: 0,
+					deletePending: 0
+				},
 				debug: false
 			};
 			
@@ -107,12 +110,14 @@
 						$("option[value!=0]", $select).remove ();
 						if (! config.callbackBefore (this))
 							return;
+						
 						jQuery.post ('ajax.php', 
-							{"page": "operation/agentes/ver_agente",
-							"get_agent_modules_json": 1,
-							"id_agent": this.value,
-							"filter" : config.moduleFilter,
-							"fields" : "id_agente_modulo,nombre"
+							{
+								"page": "operation/agentes/ver_agente",
+								"get_agent_modules_json": 1,
+								"id_agent": this.value,
+								"disabled": config.moduleFilter.disabled,
+								"delete_pending": config.moduleFilter.deletePending
 							},
 							function (data) {
 								jQuery.each (data, function (i, value) {

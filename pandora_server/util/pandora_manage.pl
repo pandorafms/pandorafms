@@ -35,7 +35,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "6.0dev PS150724";
+my $version = "6.0RC1 PS150812";
 
 # save program name for logging
 my $progname = basename($0);
@@ -1597,8 +1597,29 @@ sub cli_create_plugin_module($) {
 	$parameters{'id_plugin'} = $plugin_id;
 	$parameters{'plugin_user'} = $user;
 	$parameters{'plugin_pass'} = $password;
-	$parameters{'plugin_parameter'} = safe_input($params);
-	
+	#$parameters{'plugin_parameter'} = safe_input($params);
+
+	my @user_params = split(/\s+/, $params);
+
+	my $plug_params = get_db_value ($dbh, 'SELECT macros FROM tplugin WHERE id =?', $plugin_id);
+
+	if ($plug_params eq undef) {
+   		print "[ERROR] Error to create module\n\n";
+  		help_screen();
+	}
+
+	my $decode_params = decode_json($plug_params);
+
+	my $user_params_size = scalar(@user_params);
+
+	foreach (my $i=1; $i <= $user_params_size; $i++){
+		$decode_params->{$i}->{'value'} = $user_params[$i-1];
+	}
+
+	my $p_params = encode_json($decode_params);
+
+	$parameters{'macros'} = $p_params;
+
 	# Optional parameters
 	$parameters{'id_module_group'} = $module_group_id unless !defined ($module_group);
 	$parameters{'min_warning'} = $warning_min unless !defined ($warning_min);

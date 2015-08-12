@@ -124,7 +124,7 @@ if (!empty($result_groups)) {
 		
 		echo "<tr>";
 			echo "<th style='width: 26px;'>" . __("Force") . "</th>";
-			echo "<th width='30%' style='min-width: 60px;'>" . __("Group") . "</th>";
+			echo "<th width='30%' style='min-width: 60px;'>" . __("Group") . "/" . __("Tags") . "</th>";
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Total") . "</th>";
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Unknown") . "</th>";
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Not init") . "</th>";
@@ -135,6 +135,7 @@ if (!empty($result_groups)) {
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Critical") . "</th>";
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Alert fired") . "</th>";
 		echo "</tr>";
+		
 		foreach ($result_groups as $data) {
 			
 			// Calculate entire row color
@@ -150,13 +151,14 @@ if (!empty($result_groups)) {
 				$color_class = 'group_view_warn';
 				$status_image = ui_print_status_image ('agent_warning_ball.png', "", true);
 			}
+			elseif ($data["_monitors_ok_"] > 0)  {
+				
+				$color_class = 'group_view_ok';
+				$status_image = ui_print_status_image ('agent_ok_ball.png', "", true);
+			}
 			elseif (($data["_monitors_unknown_"] > 0) ||  ($data["_agents_unknown_"] > 0)) {
 				$color_class = 'group_view_unk';
 				$status_image = ui_print_status_image ('agent_no_monitors_ball.png', "", true);
-			}
-			elseif ($data["_monitors_ok_"] > 0)  {
-				$color_class = 'group_view_ok';
-				$status_image = ui_print_status_image ('agent_ok_ball.png', "", true);
 			}
 			else {
 				$color_class = '';
@@ -180,11 +182,11 @@ if (!empty($result_groups)) {
 				}
 			}
 			
-			// Groupname
+			// Groupname and Tags
 			echo "<td>";
 			if (isset($data['_is_tag_'])) {
 				$deep = "";
-				$link = "";
+				$link = "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
 			} else {
 				$deep = groups_get_group_deep ($data['_id_']);
 				$link = "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
@@ -200,6 +202,10 @@ if (!empty($result_groups)) {
 				echo $deep . $link . $group_name . "</a>";
 			else
 				echo $link . $group_name . "</a>";
+
+			if (isset($data['_is_tag_'])){
+				echo '<a>' . html_print_image("images/tag.png", true, array("border" => '0', "style" => 'width:18px;margin-left:5px', "title" => __('Tag'))) . '</a>' ;
+			}
 
 			echo "</td>";
 			

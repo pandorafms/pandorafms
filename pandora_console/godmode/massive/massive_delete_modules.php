@@ -412,25 +412,23 @@ $(document).ready (function () {
 		$("tr#delete_table-edit1, tr#delete_table-edit2, tr#delete_table-edit3, tr#delete_table-edit35, tr#delete_table-edit4, tr#delete_table-edit5, tr#delete_table-edit6, tr#delete_table-edit7, tr#delete_table-edit8")
 			.hide ();
 		
-		if (this.value == '0') {
-			filter = '';
-		}
-		else {
-			filter = "id_tipo_modulo="+this.value;
-		}
+		var params = {
+			"page" : "operation/agentes/ver_agente",
+			"get_agent_modules_json" : 1,
+			"get_distinct_name" : 1,
+			"indexed" : 0,
+			"privilege" : "AW"
+		};
+		
+		if (this.value != '0')
+			params['id_tipo_modulo'] = this.value;
 		
 		$("#module_loading").show ();
 		$("tr#delete_table-edit1, tr#delete_table-edit2").hide ();
 		$("#module_name").attr ("disabled", "disabled")
 		$("#module_name option[value!=0]").remove ();
 		jQuery.post ("ajax.php",
-			{"page" : "operation/agentes/ver_agente",
-				"get_agent_modules_json" : 1,
-				"filter" : filter,
-				"fields" : "DISTINCT(nombre)",
-				"indexed" : 0,
-				"privilege" : "AW"
-			},
+			params,
 			function (data, status) {
 				jQuery.each (data, function (id, value) {
 					option = $("<option></option>")

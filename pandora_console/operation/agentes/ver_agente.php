@@ -46,7 +46,8 @@ if (is_ajax ()) {
 	if ($get_agents_group_json) {
 		$id_group = (int) get_parameter('id_group');
 		$recursion = (int) get_parameter ('recursion', 0);
-		$custom_condition = get_parameter('custom_condition', '');
+		$id_os = get_parameter('id_os', '');
+		$agent_name = get_parameter('name', '');
 		$privilege = (string) get_parameter ('privilege', "AR");
 		
 		// Is is possible add keys prefix to avoid auto sorting in js object conversion
@@ -65,41 +66,46 @@ if (is_ajax ()) {
 			$groups = array_keys($groups_orig);
 		}
 		
+		// Build filter
+		$filter = array();
+		$filter['id_grupo'] = $groups;
 		
-		$filter = " WHERE id_grupo IN (" . implode(',', $groups) . ") ";
-		$filter .= io_safe_output($custom_condition);
+		if (!empty($id_os))
+			$filter['id_os'] = $id_os;
+		if (!empty($agent_name))
+			$filter['nombre'] = '%' . $agent_name . '%';
 		
 		switch ($status_agents) {
 			case AGENT_STATUS_NORMAL:
-				$filter .=
-					" AND normal_count = total_count";
+				$filter[] = "(normal_count = total_count)";
 				break;
 			case AGENT_STATUS_WARNING:
-				$filter .=
-					" AND critical_count = 0 AND warning_count > 0";
+				$filter[] = "(critical_count = 0 AND warning_count > 0)";
 				break;
 			case AGENT_STATUS_CRITICAL:
-				$filter .=
-					" AND critical_count > 0";
+				$filter[] = "(critical_count > 0)";
 				break;
 			case AGENT_STATUS_UNKNOWN:
-				$filter .=
-					" AND critical_count = 0 AND warning_count = 0
-						AND unknown_count > 0";
+				$filter[] = "(critical_count = 0 AND warning_count = 0 AND unknown_count > 0)";
 				break;
 			case AGENT_STATUS_NOT_NORMAL:
-				$filter .= " AND normal_count <> total_count";
+				$filter[] = "(normal_count <> total_count)";
 				break;
 			case AGENT_STATUS_NOT_INIT:
-				$filter .= " AND notinit_count = total_count";
+				$filter[] = "(notinit_count = total_count)";
 				break;
 		}
-		$filter .= " ORDER BY nombre ASC";
-		$agents = db_get_all_rows_sql("SELECT id_agente, nombre
-			FROM tagente" . $filter);
+		$filter['order'] = "nombre ASC";
+		
+		// Build fields
+		$fields = array('id_agente', 'nombre');
+		
+		// Perform search
+		$agents = db_get_all_rows_filter('tagente', $filter, $fields);
+		if (empty($agents)) $agents = array();
 		
 		// Add keys prefix
-		if ($keys_prefix !== "") {
+		if ($keys_prefix !== '') {
 			foreach ($agents as $k => $v) {
 				$agents[$keys_prefix . $k] = $v;
 				unset($agents[$k]);
@@ -214,25 +220,45 @@ if (is_ajax ()) {
 	
 	if ($get_agent_modules_json_for_multiple_agents) {
 		$idAgents = get_parameter('id_agent');
-		$custom_condition = get_parameter('custom_condition', '');
+		$module_types_excluded = get_parameter('module_types_excluded', array());
+		$module_name = (string) get_parameter('name');
 		$selection_mode = get_parameter('selection_mode', 'common');
 		$serialized = get_parameter('serialized', '');
 		$id_server = (int) get_parameter('id_server', 0);
 		$metaconsole_server_name = null;
-		if ($id_server != 0) {
+		if (!empty($id_server)) {
 			$metaconsole_server_name = db_get_value('server_name',
 				'tmetaconsole_setup', 'id', $id_server);
 		}
+		
+		$filter = '1 = 1';
 		
 		$all = (string)get_parameter('all', 'all');
 		switch ($all) {
 			default:
 			case 'all':
-				$enabled = '1 = 1';
+				$filter .= ' AND 1 = 1';
 				break;
 			case 'enabled':
-				$enabled = 'disabled = 0';
+				$filter .= ' AND t1.disabled = 0';
 				break;
+		}
+		
+		if (!empty($module_types_excluded) && is_array($module_types_excluded))
+			$filter .= ' AND t1.id_tipo_modulo NOT IN (' . implode($module_types_excluded) . ')';
+		
+		if (!empty($module_name)) {
+			switch ($config['dbtype']) {
+				case "mysql":
+					$filter .= " AND t1.nombre COLLATE utf8_general_ci LIKE '%$module_name%'";
+					break;
+				case "postgresql":
+					$filter .= " AND t1.nombre LIKE '%$module_name%'";
+					break;
+				case "oracle":
+					$filter .= " AND UPPER(t1.nombre) LIKE UPPER('%$module_name%')";
+					break;
+			}
 		}
 		
 		if (is_metaconsole()) {
@@ -282,7 +308,14 @@ if (is_ajax ()) {
 			
 			foreach ($array_reduced as $server_name => $id_agents) {
 				//Metaconsole db connection
-				$connection = metaconsole_get_connection($server_name);
+				// $server_name can be the server id (ugly hack, I know)
+				if (is_numeric($server_name)) {
+					$connection = metaconsole_get_connection_by_id($server_name);
+				}
+				else {
+					$connection = metaconsole_get_connection($server_name);
+				}
+				
 				if (metaconsole_load_external_db($connection) != NOERR) {
 					continue;
 				}
@@ -299,7 +332,7 @@ if (is_ajax ()) {
 										WHERE t2.delete_pending = 0
 											AND t1.nombre = t2.nombre
 											AND t2.id_agente IN (%s)) = (%d)',
-					$enabled, implode(',', $id_agents),
+					$filter, implode(',', $id_agents),
 					implode(',', $id_agents), count($id_agents));
 				
 				$modules = db_get_all_rows_sql($sql);
@@ -346,21 +379,22 @@ if (is_ajax ()) {
 				
 				$result[$key] = $value;
 			}
+			asort($result);
 		}
 		else {
 			$sql = 'SELECT DISTINCT(nombre)
 				FROM tagente_modulo t1
-				WHERE ' . $enabled .
-					io_safe_output($custom_condition) . '
-					AND delete_pending = 0
-					AND id_agente IN (' . implode(',', $idAgents) . ')';
+				WHERE ' . $filter . '
+					AND t1.delete_pending = 0
+					AND t1.id_agente IN (' . implode(',', $idAgents) . ')';
 			
 			if ($selection_mode == 'common') {
 				$sql .= ' AND (
 							SELECT count(nombre)
 							FROM tagente_modulo t2
-							WHERE delete_pending = 0 AND t1.nombre = t2.nombre
-								AND id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')';
+							WHERE t2.delete_pending = 0
+								AND t1.nombre = t2.nombre
+								AND t2.id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')';
 			}
 			
 			$sql .= ' ORDER BY nombre';
@@ -388,8 +422,34 @@ if (is_ajax ()) {
 	
 	if ($get_agent_modules_json) {
 		$id_agent = (int) get_parameter ('id_agent');
-		$filter = io_safe_output((string) get_parameter ('filter'));
-		$fields = io_safe_output((string) get_parameter ('fields'));
+		
+		// Use -1 as not received
+		$disabled = (int) get_parameter ('disabled', -1);
+		$delete_pending = (int) get_parameter ('delete_pending', -1);
+		// Use 0 as not received
+		$id_tipo_modulo = (int) get_parameter ('id_tipo_modulo', 0);
+		
+		// Filter
+		$filter = array();
+		if ($disabled !== -1)
+			$filter['disabled'] = $disabled;
+		if ($delete_pending !== -1)
+			$filter['delete_pending'] = $delete_pending;
+		if (!empty($id_tipo_modulo))
+			$filter['id_tipo_modulo'] = $id_tipo_modulo;
+		if (empty($filter))
+			$filter = false;
+		
+		$get_id_and_name = (bool) get_parameter ('get_id_and_name');
+		$get_distinct_name = (bool) get_parameter ('get_distinct_name');
+		
+		// Fields
+		$fields = '*';
+		if ($get_id_and_name)
+			$fields = array('id_agente_modulo', 'nombre');
+		if ($get_distinct_name)
+			$fields = array('DISTINCT(nombre)');
+		
 		$indexed = (bool) get_parameter ('indexed', true);
 		$agentName = (string) get_parameter ('agent_name', null);
 		$server_name = (string) get_parameter ('server_name', null);
@@ -404,7 +464,7 @@ if (is_ajax ()) {
 		else
 			$search = false;
 		
-		if ($config ['metaconsole'] == 1 and !$force_local_modules and defined('METACONSOLE')) {
+		if (is_metaconsole() && !$force_local_modules) {
 			if (enterprise_include_once ('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
 				$connection = metaconsole_get_connection($server_name);
 				
@@ -421,9 +481,7 @@ if (is_ajax ()) {
 							agents_get_group_agents(
 								array_keys (users_get_groups ()), $search, "none"));
 					
-					$agent_modules = agents_get_modules ($id_agent,
-						($fields != '' ? explode (',', $fields) : "*"),
-						($filter != '' ? $filter : false), $indexed);
+					$agent_modules = agents_get_modules ($id_agent, $fields, $filter, $indexed);
 				}
 				// Restore db connection
 				metaconsole_restore_db();
@@ -436,9 +494,7 @@ if (is_ajax ()) {
 					agents_get_group_agents(
 						array_keys(users_get_groups ()), $search, "none"));
 			
-			$agent_modules = agents_get_modules ($id_agent,
-				($fields != '' ? explode (',', $fields) : "*"),
-				($filter != '' ? $filter : false), $indexed);
+			$agent_modules = agents_get_modules ($id_agent, $fields, $filter, $indexed);
 		}
 		
 		if (empty($agent_modules))

@@ -128,6 +128,7 @@ if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0,
 
 	if (check_acl ($config['id_user'], 0, "LM")) {
 		$sub = array ();
+		$sub["godmode/alerts/alert_list"]["text"] = __('List of Alerts');
 		$sub["godmode/alerts/alert_templates"]["text"] = __('Templates');
 		$sub["godmode/alerts/alert_actions"]["text"] = __('Actions');
 

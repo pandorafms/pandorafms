@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-07-01 11:30+0200\n"
-"PO-Revision-Date: 2015-07-07 16:12+0000\n"
-"Last-Translator: Carlos Moreno <carlos.moreno@artica.es>\n"
+"PO-Revision-Date: 2015-07-29 09:42+0000\n"
+"Last-Translator: MIguel Lopez ARTICA <miguel.lopez@artica.es>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-07-09 07:54+0000\n"
-"X-Generator: Launchpad (build 17608)\n"
+"X-Launchpad-Export-Date: 2015-07-29 09:44+0000\n"
+"X-Generator: Launchpad (build 17646)\n"
 
 #: ../../enterprise_bk/mobile/include/functions_web.php:15
 #: ../../enterprise_bk/meta/general/main_header.php:125
@@ -555,7 +555,7 @@ msgstr "Servicios"
 #: ../../enterprise_bk/godmode/services/services.service.php:181
 #: ../../enterprise/godmode/services/services.service.php:181
 msgid "No Services or concrete action"
-msgstr ""
+msgstr "Sin Servicios o acción concreta"
 
 #: ../../enterprise_bk/godmode/services/services.service.php:191
 #: ../../enterprise/godmode/services/services.service.php:192
@@ -4007,7 +4007,7 @@ msgstr "Pie de página"
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.advanced.php:69
 #: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:70
 msgid "Advance Reporting"
-msgstr ""
+msgstr "Informes Avanzados"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_editor.php:35
 #: ../../enterprise_bk/godmode/servers/manage_export.php:105
@@ -6435,11 +6435,11 @@ msgstr "Borrado masivo de políticas de alertas"
 
 #: ../../enterprise_bk/godmode/massive/massive_operations.php:80
 msgid "Masive tags module policy edition"
-msgstr ""
+msgstr "Edición masiva de etiquetas de módulo de política"
 
 #: ../../enterprise_bk/godmode/massive/massive_operations.php:81
 msgid "Masive modules policy tags edition"
-msgstr ""
+msgstr "Edición masiva de módulos de política por etiquetas"
 
 #: ../../enterprise_bk/godmode/massive/massive_operations.php:89
 msgid "Massive alert SNMP deletion"
@@ -6458,14 +6458,14 @@ msgstr "Edición masiva de módulos satélite"
 #: ../../enterprise/godmode/massive/massive_edit_tags_policy.php:62
 #: ../../enterprise/godmode/massive/massive_tags_edit_policy.php:62
 msgid "Successful update the tags"
-msgstr ""
+msgstr "Actualización de etiquetas con éxito"
 
 #: ../../enterprise_bk/godmode/massive/massive_edit_tags_policy.php:63
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:63
 #: ../../enterprise/godmode/massive/massive_edit_tags_policy.php:63
 #: ../../enterprise/godmode/massive/massive_tags_edit_policy.php:63
 msgid "Unsuccessful update the tags"
-msgstr ""
+msgstr "Actualización de etiquetas sin éxito"
 
 #: ../../enterprise_bk/godmode/massive/massive_edit_tags_policy.php:83
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:83
@@ -6512,7 +6512,7 @@ msgstr "Política"
 #: ../../enterprise_bk/godmode/massive/massive_edit_tags_policy.php:102
 #: ../../enterprise/godmode/massive/massive_edit_tags_policy.php:102
 msgid "Tags unused"
-msgstr ""
+msgstr "Etiquetas sin usar"
 
 #: ../../enterprise_bk/godmode/massive/massive_edit_tags_policy.php:115
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:114
@@ -6534,7 +6534,7 @@ msgstr "Eliminar"
 #: ../../enterprise_bk/godmode/massive/massive_edit_tags_policy.php:118
 #: ../../enterprise/godmode/massive/massive_edit_tags_policy.php:118
 msgid "Tags used"
-msgstr ""
+msgstr "Etiquetas usadas"
 
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:93
 #: ../../enterprise_bk/godmode/modules/configure_local_component.php:355
@@ -6570,12 +6570,12 @@ msgstr "Etiquetas"
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:101
 #: ../../enterprise/godmode/massive/massive_tags_edit_policy.php:100
 msgid "Modules unused"
-msgstr ""
+msgstr "Módulos sin usar"
 
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:117
 #: ../../enterprise/godmode/massive/massive_tags_edit_policy.php:116
 msgid "Modules used"
-msgstr ""
+msgstr "Módulos usados"
 
 #: ../../enterprise_bk/godmode/massive/massive_delete_alerts_snmp.php:28
 #: ../../enterprise_bk/godmode/massive/massive_modify_alerts_snmp.php:29
@@ -7549,12 +7549,12 @@ msgstr "Remoto/Local"
 #: ../../enterprise_bk/godmode/modules/configure_local_component.php:128
 #: ../../enterprise/godmode/modules/configure_local_component.php:127
 msgid "Update Local Component"
-msgstr ""
+msgstr "Actualizar Componente Local"
 
 #: ../../enterprise_bk/godmode/modules/configure_local_component.php:131
 #: ../../enterprise/godmode/modules/configure_local_component.php:130
 msgid "Create Local Component"
-msgstr ""
+msgstr "Crear Componente Local"
 
 #: ../../enterprise_bk/godmode/modules/configure_local_component.php:148
 #: ../../godmode/modules/manage_network_components_form_common.php:56
@@ -8232,7 +8232,7 @@ msgstr "BBDD de histórico"
 #: ../../enterprise_bk/godmode/menu.php:82
 #: ../../enterprise/godmode/menu.php:82
 msgid "Enterprise ACL Setup"
-msgstr ""
+msgstr "Configuración ACL Enterprise"
 
 #: ../../enterprise_bk/godmode/menu.php:88
 #: ../../enterprise/godmode/menu.php:88
@@ -8269,7 +8269,7 @@ msgstr "Colector de Logs"
 #: ../../enterprise_bk/godmode/menu.php:118
 #: ../../enterprise/godmode/menu.php:118
 msgid "Password policy"
-msgstr ""
+msgstr "Política de contraseñas"
 
 #: ../../enterprise_bk/godmode/menu.php:124
 #: ../../enterprise_bk/include/functions_setup.php:27
@@ -8515,7 +8515,7 @@ msgstr "Mostrar archivos"
 #: ../../enterprise/godmode/agentes/collections.data.php:339
 #: ../../enterprise/godmode/agentes/collections.data.php:340
 msgid "Need to regenerate"
-msgstr "Necesario regenerar"
+msgstr "Necesita volver a regenerarse"
 
 #: ../../enterprise_bk/godmode/agentes/collection_manager.php:141
 #: ../../enterprise_bk/godmode/agentes/collection_manager.php:142
@@ -8543,7 +8543,7 @@ msgstr "El directorio donde se guardan las colecciones no existe."
 #: ../../enterprise_bk/godmode/agentes/collection_manager.php:153
 #: ../../enterprise/godmode/agentes/collection_manager.php:153
 msgid "No colections"
-msgstr ""
+msgstr "Sin colecciones"
 
 #: ../../enterprise_bk/godmode/agentes/collection_manager.php:160
 #: ../../enterprise_bk/godmode/agentes/inventory_manager.php:230
@@ -9170,7 +9170,7 @@ msgstr "Imposible crear la colección"
 
 #: ../../enterprise_bk/godmode/agentes/collections.data.php:127
 msgid "Another collection with the same short name"
-msgstr ""
+msgstr "Otra colección con el mismo nombre corto"
 
 #: ../../enterprise_bk/godmode/agentes/collections.data.php:143
 #: ../../enterprise/godmode/agentes/collections.data.php:148
@@ -10225,7 +10225,7 @@ msgstr "Segundos"
 #: ../../enterprise_bk/godmode/setup/setup.php:62
 #: ../../enterprise/godmode/setup/setup.php:70
 msgid "Last replication at"
-msgstr "Ultima replicación a"
+msgstr "Última replicación a"
 
 #: ../../enterprise_bk/godmode/setup/setup.php:66
 #: ../../enterprise/godmode/setup/setup.php:88
@@ -10255,27 +10255,27 @@ msgstr "Activado"
 #: ../../enterprise_bk/godmode/setup/setup.php:72
 #: ../../enterprise/godmode/setup/setup.php:104
 msgid "Metaconsole DB host"
-msgstr ""
+msgstr "Host BD Metaconsola"
 
 #: ../../enterprise_bk/godmode/setup/setup.php:76
 #: ../../enterprise/godmode/setup/setup.php:111
 msgid "Metaconsole DB name"
-msgstr ""
+msgstr "Nombre BD Metaconsola"
 
 #: ../../enterprise_bk/godmode/setup/setup.php:80
 #: ../../enterprise/godmode/setup/setup.php:118
 msgid "Metaconsole DB user"
-msgstr ""
+msgstr "Usuario BD Metaconsola"
 
 #: ../../enterprise_bk/godmode/setup/setup.php:84
 #: ../../enterprise/godmode/setup/setup.php:125
 msgid "Metaconsole DB password"
-msgstr ""
+msgstr "Password BD Metaconsola"
 
 #: ../../enterprise_bk/godmode/setup/setup.php:88
 #: ../../enterprise/godmode/setup/setup.php:132
 msgid "Metaconsole DB port"
-msgstr ""
+msgstr "Puerto BD Metaconsola"
 
 #: ../../enterprise_bk/godmode/setup/setup.php:92
 #: ../../enterprise/godmode/setup/setup.php:81
@@ -12926,7 +12926,7 @@ msgstr "Dashboard"
 #: ../../enterprise_bk/operation/menu.php:88
 #: ../../enterprise/operation/menu.php:88
 msgid "Main dashboard"
-msgstr ""
+msgstr "Cuadro de mando principal"
 
 #: ../../enterprise_bk/operation/menu.php:89
 #: ../../enterprise/operation/menu.php:89
@@ -13037,7 +13037,7 @@ msgstr "Exportar a CSV"
 #: ../../enterprise_bk/operation/log/log_viewer.php:335
 #: ../../enterprise/operation/log/log_viewer.php:340
 msgid "The start date cannot be greater than the end date"
-msgstr ""
+msgstr "La fecha de inicio no puede ser después que la fecha de finalización"
 
 #: ../../enterprise_bk/operation/log/log_viewer.php:413
 #: ../../enterprise_bk/operation/inventory/inventory.php:248
@@ -13312,12 +13312,12 @@ msgstr "Procesar"
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:345
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:345
 msgid "Save networkmap"
-msgstr "Guardar networkmap"
+msgstr "Guardar mapa de red"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:351
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:351
 msgid "Update networkmap"
-msgstr "Actualizar networkmap"
+msgstr "Actualizar mapa de red"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:390
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:390
@@ -13332,7 +13332,7 @@ msgstr "Error al procesar mapa"
 #: ../../enterprise_bk/operation/agentes/agent_inventory.php:56
 #: ../../enterprise/operation/agentes/agent_inventory.php:56
 msgid "This agent has not modules inventory"
-msgstr "Este agente no tiene módulos de inventario."
+msgstr "Este agente no tiene módulos de inventario"
 
 #: ../../enterprise_bk/operation/agentes/agent_inventory.php:159
 #: ../../enterprise_bk/operation/agentes/agent_inventory.php:160
@@ -13646,7 +13646,7 @@ msgstr "Pantalla completa"
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.view.php:1130
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:1130
 msgid "List of networkmap Enterprise"
-msgstr ""
+msgstr "Lista de mapas de red Enterprise"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.view.php:1134
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:1134
@@ -13876,7 +13876,7 @@ msgstr "Licencia inválida"
 #: ../../enterprise/load_enterprise.php:319
 msgid "Please contact Artica at info@artica.es for a valid licence."
 msgstr ""
-"Por favor contacte con nosotros en info@artica.es para una licencia válida"
+"Por favor contacte con Ártica en info@artica.es para una licencia válida."
 
 #: ../../enterprise_bk/load_enterprise.php:309
 #: ../../enterprise/load_enterprise.php:321
@@ -13888,7 +13888,7 @@ msgstr "O desactive Pandora FMS Enterprise"
 #: ../../enterprise/load_enterprise.php:423
 #: ../../enterprise/load_enterprise.php:614
 msgid "Request new licence"
-msgstr "Solicitar nueva licencia"
+msgstr "Solicitar una nueva licencia"
 
 #: ../../enterprise_bk/load_enterprise.php:445
 #: ../../enterprise/load_enterprise.php:471
@@ -13934,12 +13934,12 @@ msgstr "Renovar"
 
 #: ../../enterprise_bk/load_enterprise.php:658
 msgid "Activate licence"
-msgstr "Activar licencia"
+msgstr "Activar la licencia"
 
 #: ../../enterprise_bk/load_enterprise.php:659
 #: ../../enterprise/load_enterprise.php:698
 msgid "Your <b>request key</b> is:"
-msgstr "Tu <b>Request key</b> es:"
+msgstr "Su <b> clave </b> es:"
 
 #: ../../enterprise_bk/load_enterprise.php:661
 #: ../../enterprise/load_enterprise.php:700
@@ -13948,8 +13948,8 @@ msgid ""
 "You can activate it manually <a href=\"%s\" target=\"_blank\">here</a> or "
 "automatically filling the form below:"
 msgstr ""
-"Puede activarla manualmente <a href=\"%s\" target=\"_blank\">aquí</a> o "
-"automáticamente, si rellena el siguiente formulario"
+"Lo puede activar manualmente <a href=\"%s\" target= \"_blank\"> aqui </a> o "
+"automáticamente rellenando el siguiente formulario:"
 
 #: ../../enterprise_bk/load_enterprise.php:666
 #: ../../enterprise/load_enterprise.php:705
@@ -13964,14 +13964,14 @@ msgstr "Contacto:"
 #: ../../enterprise_bk/load_enterprise.php:674
 #: ../../enterprise/load_enterprise.php:713
 msgid "Auth Key:"
-msgstr "Auth key:"
+msgstr "Clave de autenticación"
 
 #: ../../enterprise_bk/load_enterprise.php:681
 #: ../../enterprise_bk/load_enterprise.php:697
 #: ../../enterprise/load_enterprise.php:720
 #: ../../enterprise/load_enterprise.php:736
 msgid "Online validation"
-msgstr "Validación online"
+msgstr "Validación en línea"
 
 #: ../../enterprise_bk/load_enterprise.php:690
 #: ../../enterprise/load_enterprise.php:729
@@ -13981,7 +13981,7 @@ msgstr "ERROR:"
 #: ../../enterprise_bk/load_enterprise.php:690
 #: ../../enterprise/load_enterprise.php:729
 msgid "When connecting to Artica server."
-msgstr "Al conectar al servidor de Artica"
+msgstr "Cuando se conecta al servidor de Ártica."
 
 #: ../../enterprise_bk/meta/agentsearch.php:26
 #: ../../enterprise_bk/meta/general/logon_ok.php:15
@@ -14419,7 +14419,7 @@ msgstr ""
 #: ../../enterprise/meta/general/footer.php:26
 #, php-format
 msgid "&reg; Ãrtica soluciones Pandora FMS %s - Build %s"
-msgstr ""
+msgstr "&reg; Ãrtica soluciones Pandora FMS %s - Build %s"
 
 #: ../../enterprise_bk/meta/general/footer.php:27 ../../general/footer.php:32
 #: ../../enterprise/meta/general/footer.php:27
@@ -14891,7 +14891,7 @@ msgstr "Más eventos"
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:83
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:126
 msgid "Could not be create, duplicated server name."
-msgstr "No pudo ser creado, nombre del servidor duplicado."
+msgstr "No puede ser creado, el nombre del servidor está duplicado"
 
 #: ../../enterprise_bk/meta/advanced/metasetup.consoles.php:167
 #: ../../operation/events/events.php:776
@@ -15050,7 +15050,7 @@ msgstr "No se puede mover"
 #: ../../enterprise_bk/meta/advanced/agents_setup.move_agents.php:124
 #: ../../enterprise/meta/advanced/agents_setup.move_agents.php:124
 msgid "Move Agents"
-msgstr ""
+msgstr "Mover Agentes"
 
 #: ../../enterprise_bk/meta/advanced/agents_setup.move_agents.php:137
 #: ../../enterprise/meta/advanced/agents_setup.move_agents.php:137
@@ -15077,7 +15077,7 @@ msgstr ""
 #: ../../enterprise_bk/meta/advanced/agents_setup.move_agents.php:155
 #: ../../enterprise/meta/advanced/agents_setup.move_agents.php:155
 msgid "Create group if doesnât exist in destination"
-msgstr ""
+msgstr "Crear grupo si no existe en destino"
 
 #: ../../enterprise_bk/meta/advanced/agents_setup.move_agents.php:155
 #: ../../enterprise/meta/advanced/agents_setup.move_agents.php:155
@@ -16138,7 +16138,7 @@ msgstr "(Error ID Duplicado (%d) ) "
 #: ../../enterprise/meta/advanced/synchronizing.group.php:175
 #: ../../enterprise/meta/advanced/synchronizing.group.php:176
 msgid "Open for more details"
-msgstr "Abrir para más detalles"
+msgstr "Abrir para obtener más detalles"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:166
 #: ../../enterprise/meta/advanced/synchronizing.group.php:166
@@ -16157,14 +16157,14 @@ msgstr "Error actualizando %s grupos"
 #: ../../enterprise/meta/advanced/synchronizing.group.php:188
 #: ../../enterprise/meta/advanced/synchronizing.group.php:189
 msgid "Open for more details in creation"
-msgstr "Abrir para más detalles en la creación"
+msgstr "Abrir para obtener más detalles de creación"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:194
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:195
 #: ../../enterprise/meta/advanced/synchronizing.group.php:194
 #: ../../enterprise/meta/advanced/synchronizing.group.php:195
 msgid "Open for more details in update"
-msgstr "Abrir para más detalles en la actualización"
+msgstr "Abrir para obtener más detalles de actualización"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:198
 #: ../../enterprise/meta/advanced/synchronizing.group.php:198
@@ -16181,7 +16181,7 @@ msgstr "Creados/actualizados grupos %s/%s"
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:217
 #: ../../enterprise/meta/advanced/synchronizing.group.php:217
 msgid "None update or create group"
-msgstr "Ninguna actualización o grupo creado"
+msgstr "Ninguna actualización o creación de grupo"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:227
 #: ../../enterprise/meta/advanced/synchronizing.group.php:227
@@ -16674,12 +16674,13 @@ msgstr "%s Módulos eliminados"
 #: ../../enterprise/meta/include/functions_wizard_meta.php:2444
 msgid ""
 "There was an error creating the alerts, the operation has been cancelled ."
-msgstr "Hubo un error creando las alertas, la operación ha sido cancelada."
+msgstr ""
+"Ha habido un error creando las alertas, la operación ha sido cancelada."
 
 #: ../../enterprise_bk/meta/include/functions_wizard_meta.php:2475
 #: ../../enterprise/meta/include/functions_wizard_meta.php:2475
 msgid "Module successfully added."
-msgstr "Módulo añadido con éxito"
+msgstr "Módulo añadido con éxito."
 
 #: ../../enterprise_bk/meta/include/functions_wizard_meta.php:2547
 #: ../../enterprise_bk/meta/include/functions_wizard_meta.php:2636
@@ -16740,12 +16741,12 @@ msgstr "No hay mapa de red definido."
 #: ../../enterprise_bk/meta/include/functions_networkmap_meta.php:411
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:411
 msgid "Successful update the networkmap."
-msgstr "Networkmaps actualizados correctamente"
+msgstr "Mapa de red actualizado correctamente"
 
 #: ../../enterprise_bk/meta/include/functions_networkmap_meta.php:412
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:412
 msgid "Unsuccessful update the networkmap."
-msgstr "El nerworkmap no se ha podido actualizar"
+msgstr "El mapa de red no se ha podido actualizar"
 
 #: ../../enterprise_bk/meta/include/functions_networkmap_meta.php:424
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:424
@@ -17611,7 +17612,7 @@ msgid ""
 "page."
 msgstr ""
 "Para añadir más elementos, haga clic en \"<em>Add widgets</em>\" en la parte "
-"superior de esta página"
+"superior de esta página."
 
 #: ../../enterprise_bk/dashboard/widgets/example.php:38
 #: ../../enterprise_bk/dashboard/widgets/example.php:40
@@ -17655,8 +17656,8 @@ msgid ""
 "The user doesn't have permission to read agents. Please contact with your "
 "pandora administrator."
 msgstr ""
-"El usuario no tiene permisos para leer agentes. Por favor contacte con su "
-"administrador de Pandora."
+"El usuario no tiene permiso para leer los agentes. Por favor contacte con su "
+"administrador de Pandora"
 
 #: ../../enterprise_bk/dashboard/widgets/custom_graph.php:24
 #: ../../enterprise/dashboard/widgets/custom_graph.php:24
@@ -17894,7 +17895,7 @@ msgstr "Elementos"
 #: ../../enterprise/dashboard/widgets/top_n.php:104
 msgid ""
 "Please could you fill the widget data previous to filling the list items."
-msgstr "Por favor, rellene el Widget de datos antes de la lista de items"
+msgstr "Por favor, rellene el Widget de datos antes de la lista de items."
 
 #: ../../enterprise_bk/dashboard/widgets/top_n.php:110
 #: ../../enterprise_bk/dashboard/widgets/top_n.php:293
@@ -18822,7 +18823,7 @@ msgstr "Cumplimiento de SLA por días"
 #: ../../enterprise/include/functions_reporting.php:1310
 #: ../../enterprise/include/functions_reporting_pdf.php:1842
 msgid "Summary of SLA Failures"
-msgstr ""
+msgstr "Resumen de los Fallos de SLA"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1243
 #: ../../enterprise_bk/include/functions_reporting.php:1839
@@ -18951,19 +18952,20 @@ msgstr "Las siguientes paradas planificadas han modificado este SLA"
 #: ../../enterprise/include/functions_reporting.php:2248
 #: ../../enterprise/include/functions_reporting.php:3500
 msgid "This item is affected by a malformed planned downtime"
-msgstr "Este elemento está afectado por una parada planificada malformada"
+msgstr "A este elemento le afecta una parada planificada mal formada"
 
 #: ../../enterprise_bk/include/functions_reporting.php:2164
 #: ../../enterprise_bk/include/functions_reporting.php:3410
 #: ../../enterprise/include/functions_reporting.php:2249
 #: ../../enterprise/include/functions_reporting.php:3501
 msgid "Go to the planned downtimes section to solve this"
-msgstr "Vaya a la seccion de paradas planificadas para solucionar esto"
+msgstr ""
+"Ir a la sección de paradas planificadas para solucionar este problema"
 
 #: ../../enterprise_bk/include/functions_reporting.php:2691
 #: ../../enterprise/include/functions_reporting.php:2778
 msgid "There are no SLAs defined."
-msgstr ""
+msgstr "No hay SLAs definidos."
 
 #: ../../enterprise_bk/include/functions_reporting.php:2869
 #: ../../enterprise_bk/include/functions_reporting.php:3525
@@ -19012,12 +19014,12 @@ msgstr "Obtener archivo PDF"
 #: ../../enterprise_bk/include/ajax/metaconsole.ajax.php:42
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:42
 msgid "Error accesing to API, auth error."
-msgstr "Error accediendo a la API, error de autenticación."
+msgstr "Error al acceder a la API. Error de autenticación."
 
 #: ../../enterprise_bk/include/ajax/metaconsole.ajax.php:46
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:46
 msgid "Error accesing to API."
-msgstr "Error accediendo a la API"
+msgstr "Error al acceder a la API"
 
 #: ../../enterprise_bk/include/ajax/metaconsole.ajax.php:57
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:61
@@ -19611,7 +19613,7 @@ msgstr "Nombre de nodo ficticio"
 #: ../../enterprise/include/functions_networkmap_enterprise.php:1554
 #: ../../enterprise/include/functions_networkmap_enterprise.php:1694
 msgid "Networkmap to link"
-msgstr "Enlace a networkmap"
+msgstr "Enlace a mapa de red"
 
 #: ../../enterprise_bk/include/functions_networkmap_enterprise.php:1560
 #: ../../enterprise/include/functions_networkmap_enterprise.php:1560
@@ -20009,7 +20011,7 @@ msgstr "Peso Ok"
 #: ../../enterprise_bk/include/functions_services.php:1120
 #: ../../enterprise/include/functions_services.php:1133
 msgid "This element should be deleted"
-msgstr "Este elemento debería ser eliminado."
+msgstr "Este elemento debería ser borrado"
 
 #: ../../enterprise_bk/include/functions_services.php:1184
 #: ../../operation/agentes/status_monitor.php:1292
@@ -20984,12 +20986,12 @@ msgstr "Etiquetas de modulos"
 #: ../../enterprise_bk/extensions/check_acls.php:188
 #: ../../enterprise/extensions/check_acls.php:188
 msgid "ACL module tags for the modules in this agent"
-msgstr "Etiquetas del módulo ACL para los módulos en este agente"
+msgstr "Etiquetas del módulo de ACL para los módulos de este agente"
 
 #: ../../enterprise_bk/extensions/check_acls.php:198
 #: ../../enterprise/extensions/check_acls.php:198
 msgid "Only admin users can see this section."
-msgstr "Solo usuarios administradores pueden ver esta sección."
+msgstr "Solo los usuarios administradores pueden ver esta sección."
 
 #: ../../enterprise_bk/extensions/check_acls.php:202
 #: ../../enterprise/extensions/check_acls.php:202
@@ -21600,7 +21602,7 @@ msgstr "Ésta es su última actividad en la consola de Pandora FMS"
 
 #: ../../general/firts_task/collections.php:6
 msgid "There are no collections defined yet."
-msgstr ""
+msgstr "No hay colecciones definidas todavía."
 
 #: ../../general/firts_task/collections.php:10
 #: ../../general/firts_task/tags.php:10
@@ -21636,15 +21638,31 @@ msgid ""
 "can see on \n"
 "\t\t the picture below. "
 msgstr ""
+"Una colección de archivos es un grupo de archivos (ej: scripts o ejecutable) "
+"los cuales son \n"
+"\t\t automáticamente copiados a un directorio específico del agente (bajo "
+"Windows o UNIX). Las colecciones de archivos permiten ser propagadas\n"
+"\t\t junto con las políticas con el fin de ser utilizado por un grupo de "
+"agentes, utilizando un \"paquete\" de scripts y módulos que los utilizan.\n"
+"\t\t lo primero nos enteramos de cómo utilizar las colecciones de archivos "
+"en la vista del agente, cómo llevarla a cabo de forma manual, agente por "
+"agente, sin necesidad de utilizar las colecciones,\n"
+"\t\t y hacer lo mismo usando políticas. Nuestra primera tarea es organizar "
+"una compilación de archivos. Para hacer esto, por favor vaya al "
+"administrador \n"
+"\t\t de agentes. Posteriormente, vamos a ver una 'sub opción' llamada "
+"'Colecciones'. Por favor pinche en ella para crear una nueva colección como "
+"puede ver en \n"
+"\t\t la imagen de abajo. "
 
 #: ../../general/firts_task/map_builder.php:6
 msgid "There are no visual console defined yet."
-msgstr ""
+msgstr "No hay consola visual definida todavía."
 
 #: ../../general/firts_task/map_builder.php:13
 #: ../../general/firts_task/map_builder.php:20
 msgid "Create Visual Console"
-msgstr ""
+msgstr "Crear Consola Viual"
 
 #: ../../general/firts_task/map_builder.php:14
 #: ../../general/firts_task/custom_fields.php:17
@@ -21664,10 +21682,20 @@ msgid ""
 "</strong>\n"
 "\t\ttype. You can define your own customized recon script."
 msgstr ""
+"La definición de la Tarea Recon de Pandora FMS es usada para encontrar "
+"nuevos elementos en el mapa de red. \n"
+"\t\t Si detecta algún elemento, lo añadirá a la monitorización, y si el "
+"elemento ya estaba siendo monitorizado, entonces lo \n"
+"\t\t ignorará o actualizará su información. Hay tres tipos de detección: "
+"Basado en  <strong id=\"fuerte\"> ICMP </strong>(pings), \n"
+"\t\t <strong id=\"fuerte\">SNMP</strong> (detectando la topología de las "
+"redes y sus interfaces), y otro tipo <strong id=\"fuerte\">  personalizado. "
+"</strong>\n"
+"\t\t Puede definir su propio script recon personalizado."
 
 #: ../../general/firts_task/incidents.php:8
 msgid "There are no incidents defined yet."
-msgstr ""
+msgstr "No hay incidentes definidos todavía."
 
 #: ../../general/firts_task/incidents.php:13
 #: ../../godmode/agentes/configurar_agente.php:389
@@ -21700,24 +21728,39 @@ msgid ""
 "information and files.\n"
 "\t\t"
 msgstr ""
+"Además de los datos recibidos y procesados para monitorizar sistemas o "
+"aplicaciones, \n"
+"\t\t\ttambién está obligado a monitorizar posibles incidentes los cuales "
+"podrían tener lugar en esos sistemas con el proceso de monitorización del "
+"sistema.\n"
+"\t\t\tPara ello, el equipo de Pandora FMS ha diseñado un gestor de "
+"incidentes con el cual cualquier usuario es capaz de abrir incidentes, \n"
+"\t\t\texplicando que ha sucedido en la red y actualizarlos con comentarios y "
+"archivos en cualquier momento que sea necesario.\n"
+"\t\t\tEste sistema permite a los usuarios trabajar como un equipo, junto con "
+"diferentes roles y sistemas de work-flow que permite a un incidente ser \n"
+"\t\t\tmovido de un grupo a otro, y que los miembros de los diferentes grupos "
+"y personas puedan trabajar en el mismo incidente, compartiendo información y "
+"archivos.\n"
+"\t\t"
 
 #: ../../general/firts_task/custom_fields.php:8
 msgid "There are no custom fields defined yet."
-msgstr ""
+msgstr "No hay campos personalizados definidos todavía."
 
 #: ../../general/firts_task/custom_fields.php:13
 #: ../../general/firts_task/custom_graphs.php:13
 msgid "Custom Graphs"
-msgstr ""
+msgstr "Gráficos Personalizados"
 
 #: ../../general/firts_task/custom_fields.php:16
 #: ../../general/firts_task/custom_fields.php:23
 msgid "Create Custom Fields"
-msgstr ""
+msgstr "Crear Campos Personalizados"
 
 #: ../../general/firts_task/planned_downtime.php:6
 msgid "There are no planned downtime defined yet."
-msgstr ""
+msgstr "No hay tiempo de inactividad planificado aún definido."
 
 #: ../../general/firts_task/planned_downtime.php:10
 #: ../../godmode/agentes/planned_downtime.editor.php:40
@@ -21728,7 +21771,7 @@ msgstr "Parada de servicio planificada"
 #: ../../general/firts_task/planned_downtime.php:13
 #: ../../general/firts_task/planned_downtime.php:19
 msgid "Create Planned Downtime"
-msgstr ""
+msgstr "Crear tiempo de inactividad planificado"
 
 #: ../../general/firts_task/planned_downtime.php:14
 msgid ""
@@ -21740,10 +21783,17 @@ msgid ""
 "\t\t\t\t\t\taccount for most of the metrics or types of reports, because the "
 "agents don't contain any data within those intervals. "
 msgstr ""
+"Pandora FMS contiene un sistema de  tiempo de inactividad planificado. \n"
+"\t\t\t\t\t\tEste sistema fue diseñado para desactivar las alertas en los "
+"intervalos cada vez que hay tiempo de inactividad desactivando el agente.\n"
+"\t\t\t\t\t\tSi un agente está desactivado, no recoge información. En el "
+"tiempo de inactividad, los intervalos de inactividad no se tienen \n"
+"\t\t\t\t\t\t en cuenta para la mayoría de las métricas o tipo de informes, "
+"porque el agente no contiene datos en esos intervalos. "
 
 #: ../../general/firts_task/tags.php:6
 msgid "There are no tags defined yet."
-msgstr ""
+msgstr "No hay etiquetas definidas todavía."
 
 #: ../../general/firts_task/tags.php:13 ../../general/firts_task/tags.php:18
 msgid "Create Tags"
@@ -21758,12 +21808,18 @@ msgid ""
 "\t\t\t\t\t\t\t\tThe user's access can be limited to modules with certain "
 "tags in this way. "
 msgstr ""
+"Desde la versión 5 y superior de Pandora FMS, el acceso a los módulo puede "
+"ser configurado por etiquetas del sistema.\n"
+"\t\t\t\t\t\t\t\tLas etiquetas son configuradas en el sistema y pueden ser "
+"asignadas a los módulos elegidos. \n"
+"\t\t\t\t\t\t\t\tDe esta manera, el acceso de los usuarios puede estar "
+"limitado a módulos con ciertas etiquetas. "
 
 #: ../../general/firts_task/snmp_filters.php:6
 #: ../../general/firts_task/recon_view.php:6
 #: ../../general/firts_task/fields_manager.php:6
 msgid "There are no recon task defined yet."
-msgstr ""
+msgstr "No hay tarea definida recon todavía."
 
 #: ../../general/firts_task/snmp_filters.php:13
 #: ../../general/firts_task/snmp_filters.php:20
@@ -21776,12 +21832,12 @@ msgstr "Crear tarea de descubrimiento"
 
 #: ../../general/firts_task/service_list.php:6
 msgid "There are no services defined yet."
-msgstr ""
+msgstr "No hay servicios definidos todavía."
 
 #: ../../general/firts_task/service_list.php:13
 #: ../../general/firts_task/service_list.php:21
 msgid "Create Services"
-msgstr ""
+msgstr "Crear Servicios"
 
 #: ../../general/firts_task/service_list.php:14
 msgid ""
@@ -21798,19 +21854,32 @@ msgid ""
 "\t\t\t\t\t\tHis company consists of three big departments: A management, an "
 "on-line shop and support."
 msgstr ""
+"Un servicio es una forma de agrupar tus recursos de IT basados en sus "
+"funcionalidades. \n"
+"\t\t\t\t\tUn servicio podría ser por ejemplo tu página web, tu sistema CRM, "
+"tu aplicación de soporte, o incluso tus impresoras.\n"
+"\t\t\t\t\t Los servicios son grupos lógicos en los que puedes incluir hosts, "
+"routers, switches, firewalls, CRMs, ERPs, páginas web y muchos otros "
+"servicios. \n"
+"\t\t\t\t\t Con el siguiente ejemplo, verás más claramente que es un "
+"servicio:\n"
+"\t\t\t\t\t\tUn fabricante de chips vende ordenadores por su página web por "
+"todo el mundo. \n"
+"\t\t\t\t\t\tSu empresa consiste en tres grandes departamentos: dirección, "
+"tienda online y soporte."
 
 #: ../../general/firts_task/custom_graphs.php:8
 msgid "There are no custom graphs defined yet."
-msgstr ""
+msgstr "No hay gráficos personalizados definidos todavía."
 
 #: ../../general/firts_task/custom_graphs.php:16
 #: ../../general/firts_task/custom_graphs.php:23
 msgid "Create Custom Graph"
-msgstr ""
+msgstr "Crear Gráfico Personalizado"
 
 #: ../../general/firts_task/network_map.php:8
 msgid "There are no network map defined yet."
-msgstr ""
+msgstr "No hay más de red definidos todavía."
 
 #: ../../general/firts_task/network_map.php:15
 msgid "Network Map"
@@ -21819,7 +21888,7 @@ msgstr "Mapa de red"
 #: ../../general/firts_task/network_map.php:18
 #: ../../general/firts_task/network_map.php:34
 msgid "Create Network Map"
-msgstr ""
+msgstr "Crear Mapa de Red"
 
 #: ../../general/firts_task/network_map.php:19
 msgid ""
@@ -21829,26 +21898,31 @@ msgid ""
 "\t\t\t\t\t\t\t\tThere are three types of network maps:\n"
 "\t\t\t"
 msgstr ""
+"Existe también una versión open-source del mapa de red. \n"
+"\t\t\t\t\t\t\t\tEsta funcionalidad permite visualizar gráficamente los nodos "
+"y sus relaciones, agentes, módulos y grupos disponibles para el usuario. \n"
+"\t\t\t\t\t\t\t\tHay tres tipos de mapas de red:\n"
+"\t\t\t"
 
 #: ../../general/firts_task/network_map.php:23
 msgid "Topology Map"
-msgstr ""
+msgstr "Mapa  de topología"
 
 #: ../../general/firts_task/network_map.php:24
 msgid "Group Map"
-msgstr ""
+msgstr "Mapa de gupo"
 
 #: ../../general/firts_task/network_map.php:25
 msgid "Radial Map (User without strict user)"
-msgstr ""
+msgstr "Mapa radial (sin usuario estricto)"
 
 #: ../../general/firts_task/network_map.php:26
 msgid "Dinamic Map"
-msgstr ""
+msgstr "Mapa dinámico"
 
 #: ../../general/firts_task/network_map.php:27
 msgid "Policy Map (Only Enterprise version)"
-msgstr ""
+msgstr "Mapa de políticas (Solo versión Enterprise)"
 
 #: ../../general/footer.php:30 ../../mobile/include/functions_web.php:81
 #: ../../mobile/include/ui.class.php:257
@@ -22452,24 +22526,24 @@ msgstr "Editar etiqueta"
 #: ../../godmode/reporting/visual_console_builder.editor.php:142
 #: ../../godmode/reporting/visual_console_builder.editor.php:147
 msgid "Action in progress"
-msgstr ""
+msgstr "Acción en curso"
 
 #: ../../godmode/reporting/visual_console_builder.editor.php:138
 msgid "Loading in progress"
-msgstr ""
+msgstr "Carga en curso"
 
 #: ../../godmode/reporting/visual_console_builder.editor.php:143
 msgid "Saving in progress"
-msgstr ""
+msgstr "Guardando en curso"
 
 #: ../../godmode/reporting/visual_console_builder.editor.php:148
 msgid "Deletion in progress"
-msgstr ""
+msgstr "Eliminando en curso"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:312
 #: ../../include/functions_custom_graphs.php:209
 msgid "No items."
-msgstr ""
+msgstr "Sin artículos."
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:487
 #: ../../godmode/reporting/reporting_builder.list_items.php:492
@@ -24289,7 +24363,7 @@ msgstr "Plantillas de módulos"
 
 #: ../../godmode/menu.php:102
 msgid "Bulk operations"
-msgstr ""
+msgstr "Operaciones masivas"
 
 #: ../../godmode/menu.php:137 ../../godmode/alerts/alert_special_days.php:43
 msgid "Special days list"
@@ -34201,7 +34275,7 @@ msgstr "Informe del grupo"
 
 #: ../../include/functions_reporting.php:2141
 msgid "Event Report Agent"
-msgstr "Evento Agente de Informe"
+msgstr "Informe de Eventos de Agentes"
 
 #: ../../include/functions_reporting.php:2284
 msgid "Database Serialized"
@@ -36161,3 +36235,99 @@ msgstr ""
 #: ../../extensions/pandora_logs.php:83
 msgid "System logfiles"
 msgstr "Logs sistema"
+
+#~ msgid "No incidents match your search filter"
+#~ msgstr "Ningún incidente coincide con su filtro de búsqueda"
+
+#~ msgid "There are no messages"
+#~ msgstr "No hay mensajes"
+
+#~ msgid "R"
+#~ msgstr "R"
+
+#~ msgid "Edit remote config"
+#~ msgstr "Editar configuración remota"
+
+#~ msgid "Items filter"
+#~ msgstr "Filtro de items"
+
+#~ msgid "Remote agent configuration"
+#~ msgstr "Configuración remota del agente"
+
+#~ msgid "Massive alerts addition"
+#~ msgstr "Creación de alertas de forma masiva"
+
+#~ msgid "Massive alerts deletion"
+#~ msgstr "Borrado masivo de alertas"
+
+#~ msgid "Massive alert actions addition"
+#~ msgstr "Creación de acciones de forma masiva"
+
+#~ msgid "Massive alert actions deletion"
+#~ msgstr "Borrado masivo de acciones"
+
+#~ msgid "Massive alert enable/disable"
+#~ msgstr "Activado/Desactivado masivo de alertas"
+
+#~ msgid "Massive alert setting standby"
+#~ msgstr "Establecimiento masivo de alertas en standby"
+
+#~ msgid "Massive agents edition"
+#~ msgstr "Edición masiva de agentes"
+
+#~ msgid "Massive agents deletion"
+#~ msgstr "Borrado masivo de agentes"
+
+#~ msgid "Massive profiles addition"
+#~ msgstr "Agregado masivo de perfiles"
+
+#~ msgid "Massive profiles deletion"
+#~ msgstr "Borrado masivo de perfiles"
+
+#~ msgid "Massive modules deletion"
+#~ msgstr "Borrado masivo de módulos"
+
+#~ msgid "Massive modules edition"
+#~ msgstr "Edición masiva de módulos"
+
+#~ msgid "Massive modules copy"
+#~ msgstr "Copia de módulos masiva"
+
+#, php-format
+#~ msgid ""
+#~ "This extension makes registration of server plugins more easy. Here you can "
+#~ "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
+#~ "refer to documentation on how to obtain and use Pandora FMS Server "
+#~ "Plugins.<br><br>You can get more plugins in our <a href='%s'>Public Resource "
+#~ "Library</a>"
+#~ msgstr ""
+#~ "Esta extensión hace el registro de los plugins del servidor más fácil. "
+#~ "Puedes descargar aqui un plugin del servidor en el formato zipp (.pspz) de "
+#~ "Pandora FMS version 3x. Por favor, consulta la documentación acerca de como "
+#~ "obtener y utilizar los plugins de servidor de Pandora FMS.<br><br> Puedes "
+#~ "obtener más plugins en nuestro<a href='%s'>Public Resource Library</a>"
+
+#~ msgid "Ping to "
+#~ msgstr "Ping a "
+
+#~ msgid "Empty graph"
+#~ msgstr "Gráfica vacía"
+
+#~ msgid "Time compare"
+#~ msgstr "Comparación en el tiempo"
+
+#~ msgid "Overlapped"
+#~ msgstr "Solapado"
+
+#~ msgid "Separated"
+#~ msgstr "Separado"
+
+#, php-format
+#~ msgid "Deleted data above %d"
+#~ msgstr "Los datos por encima %d han sido borrados"
+
+#~ msgid "There are no defined graphs"
+#~ msgstr "No existen gráficas definidas"
+
+#~ msgid "Paginate module view"
+#~ msgstr "Paginar vista de módulos"

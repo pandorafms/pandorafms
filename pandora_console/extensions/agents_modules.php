@@ -67,7 +67,7 @@ function mainAgentsModules() {
 	$group_id = (int)get_parameter('group_id', 0);
 	$offset = (int)get_parameter('offset', 0);
 	$hor_offset = (int)get_parameter('hor_offset', 0);
-	$block = 20;
+	$block = $config['block_size'];
 	
 	$groups = users_get_groups ();
 	
@@ -207,7 +207,7 @@ function mainAgentsModules() {
 				"offset=" . $offset . "&" .
 				"group_id=" . $group_id . "&" .
 				"modulegroup=" . $modulegroup . "'>" .
-				html_print_image("images/darrowleft.png", true,
+				html_print_image("images/arrow_left.png", true,
 					array('title' => __('Previous modules'))) . 
 			"</a>" .
 			"</th>";
@@ -245,7 +245,7 @@ function mainAgentsModules() {
 				"group_id=" . $group_id . "&" .
 				"modulegroup=" . $modulegroup . "'>" .
 				html_print_image(
-					"images/darrowright.png", true,
+					"images/arrow.png", true,
 					array('title' => __('More modules'))) .
 			"</a>" .
 			"</th>";

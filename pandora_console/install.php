@@ -62,8 +62,8 @@
 	<body>
 		<div style='height: 10px'>
 			<?php
-$version = '6.0dev';
-$build = '150724';
+$version = '6.0RC1';
+$build = '150812';
 			$banner = "v$version Build $build";
 			
 			error_reporting(0);
@@ -1228,9 +1228,15 @@ function install_step5() {
 			please change it both as soon as possible.</p>
 			<p>Don't forget to check <a href='http://pandorafms.com'>http://pandorafms.com</a> 
 			for updates.
+			<p>Select if you want to rename '<i>install.php</i>'.</p>
+			<form method='post' action='index.php'>
+				<input type='submit' name='rn_file' value='Yes, rename the file'>
+				<input type='hidden' name='rename_file' value='1'>
+			</form>
 			<p><br><b><a id='access_pandora' href='index.php'>Click here to access to your Pandora FMS console</a>.</b>
 			</p>
 		</div>";
+
 	echo "</div>
 	<div id='foot_install'>
 		<i>Pandora FMS is an OpenSource Software project registered at 

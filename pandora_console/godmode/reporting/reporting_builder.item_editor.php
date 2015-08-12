@@ -30,6 +30,13 @@ $meta = false;
 if (($config['metaconsole'] == 1) && (defined('METACONSOLE'))) {
 	$meta = true;
 }
+
+
+
+
+
+
+
 $show_graph_options = Array();
 $show_graph_options[0] = __('Only table');
 $show_graph_options[1] = __('Table & Graph');
@@ -126,6 +133,7 @@ switch ($action) {
 		
 		// If we are creating a new report item then clean interface and display creation view
 		$type = get_parameter('type', 'SLA');
+		
 		switch ($type) {
 			case 'SLA_monthly':
 			case 'SLA_services':
@@ -137,6 +145,7 @@ switch ($action) {
 			case 'availability':
 				$get_data_editor = true;
 				break;
+			
 			default:
 				$actionParameter = 'save';
 				$action = 'new';
@@ -180,6 +189,7 @@ switch ($action) {
 					$idAgentModule = $item['id_agent_module'];
 					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 					break;
+				
 				case 'simple_graph':
 					$only_avg = isset($style['only_avg']) ? (bool) $style['only_avg'] : true;
 					// The break hasn't be forgotten.
@@ -198,6 +208,7 @@ switch ($action) {
 					// HACK it is saved in show_graph field.
 					$time_compare_overlapped  = $item['show_graph'];
 					break;
+				
 				case 'prediction_date':
 					$description = $item['description'];
 					$idAgentModule = $item['id_agent_module'];
@@ -297,6 +308,13 @@ switch ($action) {
 					$period = $item['period'];
 					break;
 				case 'sumatory':
+					$description = $item['description'];
+					$idAgentModule = $item['id_agent_module'];
+					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$idAgentModule = $item['id_agent_module'];
+					$period = $item['period'];
+					break;
+				case 'historical_data':
 					$description = $item['description'];
 					$idAgentModule = $item['id_agent_module'];
 					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
@@ -497,6 +515,7 @@ switch ($action) {
 					$idAgent = $es['id_agents'];
 					$idAgentModule = $inventory_modules;
 					break;
+				
 				case 'inventory_changes':
 					$period = $item['period'];
 					$description = $item['description'];
@@ -504,12 +523,15 @@ switch ($action) {
 					$inventory_modules = $es['inventory_modules'];
 					$id_agents = $es['id_agents'];
 					break;
+				
 				case 'agent_configuration':
 					$idAgent = $item['id_agent'];
 					break;
+				
 				case 'group_configuration':
 					$group = $item['id_group'];
 					break;
+				
 				case 'netflow_area':
 				case 'netflow_pie':
 				case 'netflow_data':
@@ -531,6 +553,7 @@ switch ($action) {
 		
 		break;
 }
+
 
 $urlForm = $config['homeurl'] .
 	'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=item_editor&action=' . $actionParameter . '&id_report=' . $idReport;
@@ -555,10 +578,12 @@ $class = 'databox filters';
 	?>
 	<tbody>
 		<tr id="row_type" style="" class="datos">
-			<td style="font-weight:bold; width: 220px;"><?php echo __('Type'); ?></td>
+			<td style="font-weight:bold; width: 220px;">
+				<?php echo __('Type'); ?>
+			</td>
 			<td style="">
 				<?php
-				if ($action == 'new') { 
+				if ($action == 'new') {
 					html_print_select(reports_get_report_types(false, true), 'type', $type, 'chooseType();', '', '');
 				}
 				else {
@@ -572,6 +597,7 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_name" style="" class="datos">
 			<td style="font-weight:bold;">
 				<?php echo __('Name'); ?>
@@ -582,6 +608,7 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_netflow_filter" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Filter');?></td>
 			<td>
@@ -600,6 +627,7 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_description" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Description'); ?></td>
 			<td style="">
@@ -608,6 +636,7 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_period" style="" class="datos">
 			<td style="font-weight:bold;">
 				<?php
@@ -616,7 +645,8 @@ $class = 'databox filters';
 			</td>
 			<td style="">
 				<?php
-				html_print_extended_select_for_time ('period', $period, '', '', '0', 10);
+				html_print_extended_select_for_time('period', $period,
+					'', '', '0', 10);
 				?>
 			</td>
 		</tr>
@@ -645,8 +675,10 @@ $class = 'databox filters';
 			<td style="">
 				<?php
 				html_print_extended_select_for_time ('resolution', $resolution, '', '', '0', 10);
-				?></td>
+				?>
+			</td>
 		</tr>
+		
 		<tr id="row_period1" style="" class="datos">
 			<td style="font-weight:bold;">
 				<?php
@@ -679,12 +711,14 @@ $class = 'databox filters';
 		</tr>
 		<tr id="row_interval" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Data range') . ui_print_help_icon('prediction_date', true); ?></td>
-			<td><?php
+			<td>
+				<?php
 				echo __('Max') . "&nbsp;";
 				html_print_input_text('max_interval', $max_interval, '', 5, 10);
 				echo "&nbsp;" . __('Min') . "&nbsp;";
 				html_print_input_text('min_interval', $min_interval, '', 5, 10);
-				?></td>
+				?>
+			</td>
 		</tr>
 		<tr id="row_only_display_wrong" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Only display wrong SLAs');?></td>
@@ -765,6 +799,8 @@ $class = 'databox filters';
 				</table>
 			</td>
 		</tr>
+		
+		
 		<tr id="row_group" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Group');?></td>
 			<td style="">
@@ -784,6 +820,7 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_agent" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Agent'); ?></td>
 			<td style="">
@@ -834,8 +871,13 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_module" style="" class="datos">
-			<td style="font-weight:bold;"><?php echo __('Module'); ?></td>
+			<td style="font-weight:bold;">
+				<?php
+				echo __('Module');
+				?>
+			</td>
 			<td style="max-width: 180px">
 				<?php
 				if ($idAgent) {
@@ -877,6 +919,7 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_agent_multi" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Agents'); ?></td>
 			<td>
@@ -892,6 +935,7 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_module_multi" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Modules'); ?></td>
 			<td>
@@ -910,6 +954,7 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_date" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Date'); ?></td>
 			<td style="max-width: 180px">
@@ -927,6 +972,7 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_custom_graph" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Custom graph'); ?></td>
 			<td style="">
@@ -988,14 +1034,19 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_text" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Text'); ?></td>
 			<td style=""><?php html_print_textarea('text', 5, 25, $text); ?></td>
 		</tr>
+		
+		
+		
 		<tr id="row_custom" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Custom SQL template'); ?></td>
 			<td style=""><?php html_print_select_from_sql('SELECT id, name FROM treport_custom_sql', 'id_custom', $idCustom, 'chooseSQLquery()', '--', '0'); ?></td>
 		</tr>
+		
 		<tr id="row_query" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('SQL query'); ?></td>
 			<td style="" id="sql_entry">
@@ -1005,6 +1056,7 @@ $class = 'databox filters';
 			</td>
 			<td style="" id="sql_example"></td> 
 		</tr>
+		
 		<?php
 		if ($meta) {
 		?>
@@ -1019,10 +1071,12 @@ $class = 'databox filters';
 		<?php
 		}
 		?>
+		
 		<tr id="row_header" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Serialized header') . ui_print_help_tip(__("The separator character is |"), true);?></td>
 			<td style=""><?php html_print_input_text('header', $header, '', 90, 250); ?></td>
 		</tr>
+		
 		<tr id="row_url" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('URL'); ?></td>
 			<td style=""><?php html_print_input_text('url', $url, '', 90, 250); ?></td>
@@ -1055,14 +1109,17 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_quantity" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Quantity (n)'); ?></td>
 			<td style=""><?php html_print_input_text('quantity', $top_n_value, '', 5, 5); ?></td>
 		</tr>
+		
 		<tr id="row_max_values" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Max. values'); ?></td>
 			<td style=""><?php html_print_input_text('max_values', $max_values, '', 5, 5); ?></td>
 		</tr>
+		
 		<tr id="row_max_min_avg" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Display');?></td>
 			<td>
@@ -1076,6 +1133,7 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_time_compare_overlapped" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Time compare (Overlapped)');?></td>
 			<td>
@@ -1084,6 +1142,7 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_only_avg" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Only average');?></td>
 			<td><?php html_print_checkbox('only_avg', 1, $only_avg);?></td>
@@ -1099,7 +1158,9 @@ $class = 'databox filters';
 		</tr>
 		<tr id="row_exception_condition" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Condition');?></td>
-			<td><?php
+			<td>
+				<?php
+				
 				$list_exception_condition = array(
 					REPORT_EXCEPTION_CONDITION_EVERYTHING => __('Everything'),
 					REPORT_EXCEPTION_CONDITION_GE => __('Greater or equal (>=)'),
@@ -1113,7 +1174,9 @@ $class = 'databox filters';
 					);
 				html_print_select($list_exception_condition, 'exception_condition', $exception_condition);
 				
-				/*echo ;
+				
+				/*
+				echo ;
 				html_print_radio_button ('radiobutton_exception_condition', 0, '', $exception_condition);
 				echo __('>=');
 				html_print_radio_button ('radiobutton_exception_condition', 1, '', $exception_condition);
@@ -1123,13 +1186,17 @@ $class = 'databox filters';
 				html_print_radio_button ('radiobutton_exception_condition', 3, '', $exception_condition);
 				echo __('Not OK');
 				html_print_radio_button ('radiobutton_exception_condition', 4, '', $exception_condition);
-				*/?></td>
+				*/
+				?>
+			</td>
 		</tr>
+		
 		<tr id="row_show_graph" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Show graph');?></td>
 			<td><?php html_print_select ($show_graph_options, 'combo_graph_options', $show_graph);?></td>
 			
 		</tr>
+		
 		<tr id="row_show_address_agent" style="" class="datos">
 			<td style="font-weight:bold;">
 				<?php
@@ -1144,6 +1211,7 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
+		
 		<tr id="row_show_resume" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Show resume') . ui_print_help_tip(__('Show a resume table with max, min, average of total modules on the report bottom'), true);?></td>
 			<td>
@@ -1168,7 +1236,7 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
-		</tr>
+		
 		<tr id="row_event_graphs" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Event graphs'); ?></td>
 			<td>
@@ -1198,15 +1266,18 @@ $class = 'databox filters';
 				</span>
 			</td>
 		</tr>
+		
 		<tr id="row_show_in_two_columns" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Show in two columns');?></td>
 			<td><?php html_print_checkbox('show_in_two_columns', 1, $show_in_two_columns, false,
 				false, 'if ($(\'input[name=show_in_two_columns]\').is(\':checked\')) $(\'input[name=show_in_landscape]\').attr(\'checked\', false);');?></td>
 		</tr>
+		
 		<tr id="row_sort" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Order') . ui_print_help_tip(__('SLA items sorted by fulfillment value'), true);?></td>
 			<td><?php html_print_select ($show_sort_options, 'combo_sla_sort_options', $sla_sorted_by, '', __('None'), 0); ?></td>
 		</tr>
+		
 		<tr id="row_show_in_landscape" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Show in landscape');?></td>
 			<td>
@@ -1217,6 +1288,9 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
+		
+		
+		
 		<tr id="row_filter_search" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Free search');?></td>
 			<td>
@@ -1243,6 +1317,7 @@ echo '</form>';
 
 ui_include_time_picker();
 ui_require_javascript_file('pandora');
+
 
 if ($enterpriseEnable) {
 	reporting_enterprise_text_box();
@@ -1301,6 +1376,8 @@ function print_SLA_list($width, $action, $idItem = null) {
 								continue;
 							}
 						}
+						
+						
 						$idAgent = db_get_value_filter('id_agente',
 							'tagente_modulo',
 							array('id_agente_modulo' => $item['id_agent_module']));
@@ -1350,6 +1427,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 									<a href="javascript: deleteSLARow(' . $item['id'] . ');">' . html_print_image("images/cross.png", true) . '</a>
 								</td>';
 						echo '</tr>';
+						
 						if ($meta) {
 							//Restore db connection
 							metaconsole_restore_db();
@@ -1369,11 +1447,13 @@ function print_SLA_list($width, $action, $idItem = null) {
 							<td class="sla_list_sla_min_col sla_min"></td>
 							<td class="sla_list_sla_max_col sla_max"></td>
 							<td class="sla_list_sla_limit_col sla_limit"></td>
+							
 							<td class="sla_list_action_col" style="text-align: center;">
 								<a class="delete_button" href="javascript: deleteSLARow(0);"><?php html_print_image("images/cross.png", false); ?></a>
 							</td>
 						</tr>
 					</tbody>
+					
 					<tbody>
 						<tr id="sla_form" style="" class="datos">
 							<td class="sla_list_agent_col">
@@ -1418,7 +1498,10 @@ function print_SLA_list($width, $action, $idItem = null) {
 							<td class="sla_list_sla_min_col"><input name="sla_min" id="text-sla_min" size="10" maxlength="10" type="text"></td>
 							<td class="sla_list_sla_max_col"><input name="sla_max" id="text-sla_max" size="10" maxlength="10" type="text"></td>
 							<td class="sla_list_sla_limit_col"><input name="sla_limit" id="text-sla_limit" size="10" maxlength="10" type="text"></td>
-							<td class="sla_list_action_col" style="text-align: center;"><a href="javascript: addSLARow();"><?php html_print_image("images/disk.png", false); ?></a></td>
+							
+							<td class="sla_list_action_col" style="text-align: center;">
+								<a href="javascript: addSLARow();"><?php html_print_image("images/disk.png", false); ?></a>
+							</td>
 						</tr>
 					</tbody>
 					<?php
@@ -1475,7 +1558,11 @@ function print_General_list($width, $action, $idItem = null, $type = 'general') 
 				case 'new':
 					?>
 					<tr id="general_template" style="" class="datos">
-						<td colspan="3"><?php echo __('Please save the report to start adding items into the list.');?></td>
+						<td colspan="3">
+							<?php
+							echo __('Please save the report to start adding items into the list.');
+							?>
+						</td>
 					</tr>
 					<?php
 					break;
@@ -1500,6 +1587,8 @@ function print_General_list($width, $action, $idItem = null, $type = 'general') 
 								continue;
 							}
 						}
+						
+						
 						$idAgent = db_get_value_filter(
 							'id_agente', 'tagente_modulo',
 							array('id_agente_modulo' => $item['id_agent_module']));
@@ -1542,6 +1631,7 @@ function print_General_list($width, $action, $idItem = null, $type = 'general') 
 					}
 					echo '</tbody>';
 					?>
+					
 					<tbody id="general_template">
 						<tr id="row" style="display: none;" class="datos">
 							<td class="agent_name"></td>
@@ -1556,6 +1646,7 @@ function print_General_list($width, $action, $idItem = null, $type = 'general') 
 							<td style="text-align: center;"><a class="delete_button" href="javascript: deleteGeneralRow(0);"><?php html_print_image("images/cross.png", false); ?></a></td>
 						</tr>
 					</tbody>
+					
 					<tbody>
 						<tr id="general_form" style="" class="datos">
 							<td>
@@ -1601,6 +1692,7 @@ function print_General_list($width, $action, $idItem = null, $type = 'general') 
 							<td style="text-align: center;"><a href="javascript: addGeneralRow();"><?php html_print_image("images/disk.png", false); ?></a></td>
 						</tr>
 					</tbody>
+					
 					<?php
 					break;
 				default:
@@ -2155,6 +2247,7 @@ function chooseType() {
 			
 			$("#row_filter_search").show();
 			break;
+		
 		case 'simple_graph':
 			$("#row_time_compare_overlapped").show();
 			$("#row_only_avg").show();
@@ -2169,6 +2262,7 @@ function chooseType() {
 			$("#row_show_in_landscape").show();
 			$("#row_time_compare_overlapped").show();
 			break;
+		
 		case 'projection_graph':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2178,6 +2272,7 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
 			break;
+		
 		case 'prediction_date':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2186,6 +2281,7 @@ function chooseType() {
 			$("#row_interval").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'custom_graph':
 		case 'automatic_custom_graph':
 			$("#row_description").show();
@@ -2194,6 +2290,7 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_show_in_landscape").show();
 			break;
+		
 		case 'SLA':
 			$("#row_description").show();
 			$("#row_period").show();
@@ -2204,6 +2301,7 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_sort").show();
 			break;
+		
 		case 'SLA_monthly':
 			$("#row_description").show();
 			$("#sla_list").show();
@@ -2211,6 +2309,7 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_sort").show();
 			break;
+		
 		case 'SLA_services':
 			$("#row_description").show();
 			$("#row_period").show();
@@ -2226,6 +2325,7 @@ function chooseType() {
 			$(".sla_list_sla_limit_col").hide();
 			$("#sla_list").show();
 			break;
+		
 		case 'monitor_report':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2233,6 +2333,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'avg_value':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2240,6 +2341,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'max_value':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2247,6 +2349,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'min_value':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2254,6 +2357,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'sumatory':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2261,17 +2365,28 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
+		case 'historical_data':
+			$("#row_description").show();
+			$("#row_agent").show();
+			$("#row_module").show();
+			$("#row_period").show();
+			$("#row_show_in_two_columns").show();
+			break;
+		
 		case 'agent_detailed':
 			$("#row_description").show();
 			$("#row_agent").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'text':
 			$("#row_description").show();
 			$("#row_text").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'sql':
 			$("#row_description").show();
 			$("#row_query").show();
@@ -2281,6 +2396,7 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'sql_graph_pie':
 			$("#row_description").show();
 			$("#row_query").show();
@@ -2288,6 +2404,7 @@ function chooseType() {
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'sql_graph_hbar':
 			$("#row_description").show();
 			$("#row_query").show();
@@ -2295,6 +2412,7 @@ function chooseType() {
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'sql_graph_vbar':
 			$("#row_description").show();
 			$("#row_query").show();
@@ -2302,10 +2420,12 @@ function chooseType() {
 			$("#row_show_in_landscape").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'url':
 			$("#row_description").show();
 			$("#row_url").show();
 			break;
+		
 		case 'database_serialized':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2316,6 +2436,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'TTRT':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2323,6 +2444,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'TTO':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2330,6 +2452,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'MTBF':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2337,6 +2460,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'MTTR':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2344,6 +2468,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'alert_report_module':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2351,6 +2476,7 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'alert_report_group':
 			$("#row_description").show();
 			$("#row_period").show();
@@ -2358,12 +2484,14 @@ function chooseType() {
 			$("#row_group").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'alert_report_agent':
 			$("#row_description").show();
 			$("#row_agent").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'event_report_agent':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2379,6 +2507,7 @@ function chooseType() {
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();
 			break;
+		
 		case 'event_report_module':
 			$("#row_description").show();
 			$("#row_agent").show();
@@ -2394,6 +2523,7 @@ function chooseType() {
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();
 			break;
+		
 		case 'general':
 			$("#row_description").show();
 			$("#row_group_by_agent").show();
@@ -2409,6 +2539,7 @@ function chooseType() {
 				$("input[name='last_value']").prop("checked", true);
 			}
 			break;
+		
 		case 'availability':
 			$("#row_description").show();
 			$("#row_period").show();
@@ -2418,16 +2549,19 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_show_resume").show();
 			break;
+		
 		case 'group_report':
 			$("#row_group").show();
 			$("#row_servers").show();
 			$("#row_description").show();
 			break;
+		
 		case 'network_interfaces_report':
 			$("#row_group").show();
 			$("#row_description").show();
 			$("#row_period").show();
 			break;
+		
 		case 'top_n':
 			$("#row_description").show();
 			$("#row_period").show();
@@ -2439,6 +2573,7 @@ function chooseType() {
 			$("#row_show_graph").show();
 			$("#row_show_in_two_columns").show();
 			break;
+		
 		case 'exception':
 			$("#row_description").show();
 			$("#row_period").show();
@@ -2456,11 +2591,13 @@ function chooseType() {
 				$("input[name='last_value']").prop("checked", true);
 			}
 			break;
+		
 		case 'agent_module':
 			$("#row_description").show();
 			$("#row_group").show();
 			$("#row_module_group").show();
 			break;
+		
 		case 'inventory_changes':
 			$("#row_description").show();
 			$("#row_period").show();
@@ -2477,6 +2614,7 @@ function chooseType() {
 			});
 			
 			break;
+		
 		case 'inventory':
 			$("#row_description").show();
 			$("#row_group").show();
@@ -2485,7 +2623,9 @@ function chooseType() {
 			$("#row_date").show();
 			$("#row_show_in_two_columns").show();
 			
-			$("#id_agents").change(event_change_id_agent_inventory);
+			
+			$("#id_agents")
+				.change(event_change_id_agent_inventory);
 			$("#id_agents").trigger('change');
 			
 			$("#row_servers").show();
@@ -2507,15 +2647,19 @@ function chooseType() {
 			if (!$("#hidden-date_selected").val())
 				updateInventoryDates(<?php echo '"' . ui_get_full_url(false, false, false, false) . '"'; ?>);
 			break;
+		
 		case 'inventory_changes':
 			break;
+		
 		case 'agent_configuration':
 			$("#row_agent").show();
 			break;
+		
 		case 'group_configuration':
 			$("#row_group").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'netflow_area':
 			$("#row_netflow_filter").show();
 			$("#row_description").show();
@@ -2524,6 +2668,7 @@ function chooseType() {
 			$("#row_resolution").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'netflow_pie':
 			$("#row_netflow_filter").show();
 			$("#row_description").show();
@@ -2532,6 +2677,7 @@ function chooseType() {
 			$("#row_resolution").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'netflow_data':
 			$("#row_netflow_filter").show();
 			$("#row_description").show();
@@ -2540,6 +2686,7 @@ function chooseType() {
 			$("#row_resolution").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'netflow_summary':
 			$("#row_netflow_filter").show();
 			$("#row_description").show();
@@ -2547,6 +2694,7 @@ function chooseType() {
 			$("#row_resolution").show();
 			$("#row_servers").show();
 			break;
+		
 		case 'netflow_statistics':
 			$("#row_netflow_filter").show();
 			$("#row_description").show();
@@ -2555,6 +2703,7 @@ function chooseType() {
 			$("#row_resolution").show();
 			$("#row_servers").show();
 			break;
+		
 	}
 }
 

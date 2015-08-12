@@ -30,11 +30,11 @@ ui_print_info_message(
 	</div>
 	<div class="text_task">
 		<h3> <?php echo __('Create Visual Console'); ?></h3>
-		<p id="description_task"> <?php echo __('The Recon Task definition of Pandora FMS is used to find new elements in the network. 
-		If it detects any item, it will add that item to the monitoring, and if that item it is already being monitored, then it will 
-		ignore it or will update its information.There are three types of detection: Based on <strong id="fuerte"> ICMP </strong>(pings), 
-		<strong id="fuerte">SNMP</strong> (detecting the topology of networks and their interfaces), and other <strong id="fuerte"> customized </strong>
-		type. You can define your own customized recon script.'); ?></p>
+		<p id="description_task"> <?php echo __("Pandora FMS allows you to create visual maps in which each user is able to create his own monitoring map.
+			The new visual console editor is much more practical, although the old visual console editor had its advantages. 
+			Within the new visual console, we've been successful in imitating the sensation and touch of a drawing application like GIMP. 
+			We've also simplified the editor by dividing it into several subject-matter tabs named 'Data', 'Preview', 'Wizard', 'List of Elements' and 'Editor'.
+			The elements the Pandora FMS Visual Map was designed to handle are 'static image', 'percentage bar', 'module graph' and 'simple value'. "); ?></p>
 		<form action="index.php?sec=reporting&amp;sec2=godmode/reporting/visual_console_builder" method="post">
 			<?php html_print_input_hidden ('edit_layout', 1); ?>
 			<input type="submit" class="button_task" value="<?php echo __('Create Visual Console'); ?>" />

@@ -240,7 +240,7 @@ if (isset($_GET["create"])) {
 			
 			$reason = __("Network provided is not correct");
 		}
-		elseif ($id_recon_script != 'NULL') {
+		elseif (!empty($id_recon_script)) {
 			$result = db_process_sql_insert('trecon_task', $values);
 		}
 		else{

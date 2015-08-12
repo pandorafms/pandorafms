@@ -155,29 +155,20 @@ if (isset($_GET["update"])) {
 	
 	$reason = '';
 	if ($name != "") {
-		if ((db_get_value_filter ('name', 'trecon_task', array ('name' => $name))) && (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))){
-			$reason = __('Recon-task name already exists and incorrect format in Subnet field');
-			$result = false;
+		if ($id_recon_script == 0){
+			if ((!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))){
+				$reason = __('Wrong format in Subnet field');
+				$result = false;
+			}
+			else {
+				$result = db_process_sql_update('trecon_task', $values, $where);
+			}
 		}
-		else if(db_get_value_filter ('name', 'trecon_task', array ('name' => $name))){
-			$reason = __('Recon-task name already exists');
-			$result = false;
-		}
-		else if ((empty($id_recon_script)) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network)){
+		else {
 			$result = db_process_sql_update('trecon_task', $values, $where);
-		}
-		elseif (!empty($id_recon_script)){
-			$result = db_process_sql_update('trecon_task', $values, $where);
-		}
-		else  {
-			if (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
-				$reason = __('Incorrect format in Subnet field');
-			$result = false;
 		}
 	}
-	else
-		$result = false;
-	
+
 	if ($result !== false) {
 		ui_print_success_message(__('Successfully updated recon task'));
 	}
@@ -222,30 +213,28 @@ if (isset($_GET["create"])) {
 	$reason = "";
 
 	if ($name != "") {
-		if ((db_get_value_filter ('name', 'trecon_task', array ('name' => $name))) && (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))){
-			$reason = __('Recon-task name already exists and incorrect format in Subnet field');
-			$result = false;
+
+		$name_exists = (bool) db_get_value ('name', 'trecon_task', 'name', $name);
+		if ($id_recon_script == 0) {
+			if ($name_exists && (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))){
+				$reason = __('Recon-task name already exists and incorrect format in Subnet field');
+				$result = false;
+			}
+			else if (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network)){
+				$reason = __('Wrong format in Subnet field');
+				$result = false;
+			}
+			else if ($name_exists){
+				$reason = __('Recon-task name already exists');
+				$result = false;
+			}
+			else{
+				$result = db_process_sql_insert('trecon_task', $values);
+				//$reason = __("Network provided is not correct");
+			}
 		}
-		else if (!preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network)){
-			$reason = __('Incorrect format in Subnet field');
-			$result = false;
-		}
-		else if (db_get_value_filter ('name', 'trecon_task', array ('name' => $name))){
-			$reason = __('Recon-task name already exists');
-			$result = false;
-		}
-		else if (empty($id_recon_script) && preg_match("/[0-9]+.+[0-9]+.+[0-9]+.+[0-9]+\/+[0-9]/", $network))
-		{
+		else {
 			$result = db_process_sql_insert('trecon_task', $values);
-			
-			$reason = __("Network provided is not correct");
-		}
-		elseif (!empty($id_recon_script)) {
-			$result = db_process_sql_insert('trecon_task', $values);
-		}
-		else{
-			$reason = __('Error');
-			$result = false;
 		}
 	}
 	else {
@@ -359,17 +348,7 @@ if ($result !== false) {
 					$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&id='.$row["id_rt"].'&disabled=0">' .html_print_image("images/lightbulb_off.png", true) . '</a>';
 				}
 			}
-			// ACTION
-			$data[8] = '<a href="index.php?sec=estado&sec2=operation/servers/recon_view">' . html_print_image("images/eye.png", true) . '</a>';
-			$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
-			$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">' .html_print_image("images/config.png", true) . '</a>';
-		
-			if($row["disabled"] == 0) {
-				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&id='.$row["id_rt"].'&disabled=1">' .html_print_image("images/lightbulb.png", true) . '</a>';
-			}
-			else {
-				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&id='.$row["id_rt"].'&disabled=0">' .html_print_image("images/lightbulb_off.png", true) . '</a>';
-			}
+
 			$table->data[] = $data;
 		}
 	}

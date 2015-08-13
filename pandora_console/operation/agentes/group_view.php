@@ -212,7 +212,8 @@ if (!empty($result_groups)) {
 			// Total agents
 			echo "<td style='font-weight: bold; font-size: 18px;' align='center' class='$color_class'>";
 			if (isset($data['_is_tag_'])) {
-				$link = "";
+				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'
+				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_']. "'>";
 			} else {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";

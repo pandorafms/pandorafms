@@ -241,13 +241,13 @@ echo '</form>';
 		return option.value;
 	});
 	
-	// Add the auth select change event and perform it once
-	// for process the action on the section load
-	$('select#auth').change(show_selected_rows).change();
-	
 	// Add the click event and perform it once
 	// for process the action on the section load
 	$('input[name="autocreate_remote_users"]').change(show_autocreate_options).change();
+	
+	// Add the auth select change event and perform it once
+	// for process the action on the section load
+	$('select#auth').change(show_selected_rows).change();
 	
 	// Event callback for the auth select
 	function show_selected_rows (event) {

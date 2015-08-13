@@ -186,7 +186,7 @@ if (!empty($result_groups)) {
 			echo "<td>";
 			if (isset($data['_is_tag_'])) {
 				$deep = "";
-				$link = "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
+				$link = "<a href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_']. "'>";
 			} else {
 				$deep = groups_get_group_deep ($data['_id_']);
 				$link = "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
@@ -226,7 +226,8 @@ if (!empty($result_groups)) {
 			// Agents unknown
 			echo "<td class='group_view_data group_view_data_unk $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 			if (isset($data['_is_tag_'])) {
-				$link = "";
+				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'
+				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_']. "&status=" . AGENT_STATUS_UNKNOWN ."'>";
 			} else {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_UNKNOWN ."'>";
@@ -239,7 +240,8 @@ if (!empty($result_groups)) {
 			// Agents not init
 			echo "<td class='group_view_data group_view_data_unk $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'>";
 			if (isset($data['_is_tag_'])) {
-				$link = "";
+				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;'
+				href='index.php?sec=monitoring&sec2=operation/tree&tag_id=".$data['_id_']. "&status=" . AGENT_STATUS_NOT_INIT ."'>";
 			} else {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_NOT_INIT ."'>";

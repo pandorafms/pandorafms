@@ -271,7 +271,7 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			return false;
 		}
 	}
-	else{
+	else {
 		// Create the user in the local database
 		if (create_user ($login, $pass,
 				array ('fullname' => $login, 
@@ -280,9 +280,8 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			$config["auth_error"] = __("User not found in database or incorrect password");
 			return false;
 		}
-		profile_create_user_profile ($login, 
-				$config['default_remote_profile'], 
-					$config['default_remote_group']);
+		profile_create_user_profile ($login, $config['default_remote_profile'], 
+			$config['default_remote_group'], false, $config['default_assign_tags']);
 	}
 	
 	return $login;

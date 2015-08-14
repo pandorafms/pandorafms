@@ -1168,9 +1168,8 @@ function reporting_html_historical_data($table, $item) {
 	
 	$table1->data = array ();
 	foreach ($item['data'] as $data) {
-			$row = array($data[__('date')], $data[__('Data')]);
-			$table1->data[] = $row;
-		}
+		$row = array($data[__('date')], $data[__('Data')]);
+		$table1->data[] = $row;
 	}
 	
 	$table->colspan['database_serialized']['cell'] = 3;

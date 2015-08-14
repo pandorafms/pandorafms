@@ -526,7 +526,7 @@ Pandora_Module::getXml () {
 				try {
 					data_clean = strreplace (this->getDataOutput (data),
 								 "%", "%%" );
-				} catch (Output_Error e) {
+				} catch (Module_Exception e) {
 					continue;
 				}
 				
@@ -538,7 +538,7 @@ Pandora_Module::getXml () {
 				data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
 				module_xml += data_clean;
 
-			} catch (Output_Error e) {
+			} catch (Module_Exception e) {
 			}
 		}
 		module_xml += "]]></data></log_module>";
@@ -741,7 +741,7 @@ Pandora_Module::getXml () {
 			try {
 				data_clean = strreplace (this->getDataOutput (data),
 							 "%", "%%" );
-			} catch (Output_Error e) {
+			} catch (Module_Exception e) {
 				continue;
 			}
 			
@@ -760,7 +760,7 @@ Pandora_Module::getXml () {
 			module_xml += "\t<data><![CDATA[";
 			module_xml += data_clean;
 			module_xml += "]]></data>\n";
-		} catch (Output_Error e) {
+		} catch (Module_Exception e) {
 		}
 	}
 		

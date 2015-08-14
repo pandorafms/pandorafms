@@ -196,14 +196,19 @@ function agent_changed_by_multiple_agents (event, id_agent, selected) {
 	var homedir = '.';
 	var id_server = 0;
 	if (typeof event !== 'undefined' && typeof event.data !== 'undefined') {
-			
-		if (typeof event.data.homedir !== 'undefined') {
-			homedir = event.data.homedir;
-		}
-	
-		if (typeof event.data.metaconsole !== 'undefined'
-				&& event.data.metaconsole) {
-			id_server = $("#" + event.data.id_server).val();
+		
+		
+		if (event.data != null) {
+			if (typeof event.data !== 'undefined') {
+				if (typeof event.data.homedir !== 'undefined') {
+					homedir = event.data.homedir;
+				}
+				
+				if (typeof event.data.metaconsole !== 'undefined'
+						&& event.data.metaconsole) {
+					id_server = $("#" + event.data.id_server).val();
+				}
+			}
 		}
 	}
 	

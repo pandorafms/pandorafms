@@ -849,6 +849,7 @@ $class = 'databox filters';
 				
 				//////////////////
 				$params = array();
+				
 				$params['show_helptip'] = false;
 				$params['input_name'] = 'agent';
 				$params['value'] = $agent_name;
@@ -906,7 +907,7 @@ $class = 'databox filters';
 						metaconsole_restore_db();
 					}
 					else {
-						html_print_select_from_sql($sql, 'id_agent_module', $idAgentModule, '', '', '0');					
+						html_print_select_from_sql($sql, 'id_agent_module', $idAgentModule, '', '', '0');
 					}
 				}
 				else {

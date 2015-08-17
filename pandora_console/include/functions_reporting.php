@@ -1287,7 +1287,7 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 							$downtime_dates[] = $dates;
 						}
 					}
-
+					
 					$month_aux++;
 					if ($month_aux > 12) {
 						$month_aux = 1;
@@ -1305,7 +1305,7 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 				$active_days[4] = ($downtime['thursday'] == 1) ? true : false;
 				$active_days[5] = ($downtime['friday'] == 1) ? true : false;
 				$active_days[6] = ($downtime['saturday'] == 1) ? true : false;
-
+				
 				while ($date_aux <= $end_date) {
 					$weekday_num = date('w', $date_aux);
 					
@@ -1313,15 +1313,15 @@ function reporting_get_planned_downtimes_intervals ($id_agent_module, $start_dat
 						$day_num = date('d', $date_aux);
 						$month_num = date('m', $date_aux);
 						$year_num = date('Y', $date_aux);
-
+						
 						$max_day_num = date('t', $date_aux);
-
+						
 						if (strtotime($downtime_time_from) > strtotime($downtime_time_to)) {
 							$dates = array();
 							$dates['date_from'] = strtotime("$year_num-$month_num-$day_num $downtime_hour_from:$downtime_minute_from:$downtime_second_from");
 							$dates['date_to'] = strtotime("$year_num-$month_num-$day_num 23:59:59");
 							$downtime_dates[] = $dates;
-
+							
 							$dates = array();
 							if ($day_num + 1 > $max_day_num) {
 								if ($month_num + 1 > 12) {

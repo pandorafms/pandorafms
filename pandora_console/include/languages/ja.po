@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-07-01 11:30+0200\n"
-"PO-Revision-Date: 2015-07-01 09:38+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2015-08-15 07:48+0000\n"
+"Last-Translator: Junichi Satoh <junichi@rworks.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-07-09 07:53+0000\n"
-"X-Generator: Launchpad (build 17608)\n"
+"X-Launchpad-Export-Date: 2015-08-15 07:52+0000\n"
+"X-Generator: Launchpad (build 17686)\n"
 
 #: ../../enterprise_bk/mobile/include/functions_web.php:15
 #: ../../enterprise_bk/meta/general/main_header.php:125
@@ -555,12 +555,12 @@ msgstr "サービス"
 #: ../../enterprise_bk/godmode/services/services.service.php:181
 #: ../../enterprise/godmode/services/services.service.php:181
 msgid "No Services or concrete action"
-msgstr ""
+msgstr "サービスまたは具体的なアクションがありません"
 
 #: ../../enterprise_bk/godmode/services/services.service.php:191
 #: ../../enterprise/godmode/services/services.service.php:192
 msgid "General Data"
-msgstr ""
+msgstr "一般データ"
 
 #: ../../enterprise_bk/godmode/services/services.service.php:201
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_editor.php:115
@@ -3851,7 +3851,7 @@ msgstr "更新に失敗しました。"
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_advanced.php:107
 #: ../../enterprise/godmode/reporting/reporting_builder.template_advanced.php:107
 msgid "Advance Options"
-msgstr ""
+msgstr "拡張オプション"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_advanced.php:118
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.advanced.php:83
@@ -3993,7 +3993,7 @@ msgstr "フッター"
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.advanced.php:69
 #: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:70
 msgid "Advance Reporting"
-msgstr ""
+msgstr "拡張レポート"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_editor.php:35
 #: ../../enterprise_bk/godmode/servers/manage_export.php:105
@@ -4926,7 +4926,7 @@ msgstr ""
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:221
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:221
 msgid "Create template report wizard"
-msgstr ""
+msgstr "レポートウィザードテンプレート作成"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:256
 #: ../../enterprise_bk/godmode/reporting/graph_template_wizard.php:137
@@ -4983,7 +4983,7 @@ msgstr "対象グループ"
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:310
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:310
 msgid "Filter by"
-msgstr ""
+msgstr "フィルタ"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:313
 #: ../../enterprise_bk/godmode/alerts/alert_events_rules.php:400
@@ -5015,7 +5015,7 @@ msgstr "エージェントのフィルタ"
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:373
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:373
 msgid "Filter tag"
-msgstr ""
+msgstr "タグフィルタ"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:385
 #: ../../enterprise_bk/godmode/reporting/graph_template_wizard.php:173
@@ -8465,7 +8465,7 @@ msgstr "ファイル表示"
 #: ../../enterprise/godmode/agentes/collections.data.php:339
 #: ../../enterprise/godmode/agentes/collections.data.php:340
 msgid "Need to regenerate"
-msgstr "再生成が必要"
+msgstr "再生成が必要です"
 
 #: ../../enterprise_bk/godmode/agentes/collection_manager.php:141
 #: ../../enterprise_bk/godmode/agentes/collection_manager.php:142
@@ -9117,7 +9117,7 @@ msgstr "コレクションを作成できません"
 
 #: ../../enterprise_bk/godmode/agentes/collections.data.php:127
 msgid "Another collection with the same short name"
-msgstr ""
+msgstr "同一の短縮名で別のコレクションがあります"
 
 #: ../../enterprise_bk/godmode/agentes/collections.data.php:143
 #: ../../enterprise/godmode/agentes/collections.data.php:148
@@ -12795,7 +12795,7 @@ msgstr "PDF にエクスポート"
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:341
 #: ../../enterprise/operation/reporting/custom_reporting.php:44
 msgid "Export to JSON"
-msgstr ""
+msgstr "JSONへエクスポート"
 
 #: ../../enterprise_bk/operation/reporting/custom_reporting.php:47
 #: ../../enterprise_bk/operation/reporting/custom_reporting.php:70
@@ -13234,7 +13234,7 @@ msgstr "マップの処理エラー"
 #: ../../enterprise_bk/operation/agentes/agent_inventory.php:56
 #: ../../enterprise/operation/agentes/agent_inventory.php:56
 msgid "This agent has not modules inventory"
-msgstr "エージェントにインベントリモジュールがありません"
+msgstr "このエージェントにはインベントリモジュールがありません"
 
 #: ../../enterprise_bk/operation/agentes/agent_inventory.php:159
 #: ../../enterprise_bk/operation/agentes/agent_inventory.php:160
@@ -13772,7 +13772,7 @@ msgstr "ネットワークマップ"
 #: ../../enterprise_bk/load_enterprise.php:306
 #: ../../enterprise/load_enterprise.php:318
 msgid "Invalid licence."
-msgstr "不正なライセンス"
+msgstr "不正なライセンス。"
 
 #: ../../enterprise_bk/load_enterprise.php:307
 #: ../../enterprise/load_enterprise.php:319
@@ -13846,8 +13846,7 @@ msgid ""
 "You can activate it manually <a href=\"%s\" target=\"_blank\">here</a> or "
 "automatically filling the form below:"
 msgstr ""
-"<a href=\"%s\" "
-"target=\"_blank\">こちら</a>から手動で有効化するか、または以下のフォームに入力することにより自動でできます:"
+"<a href=\"%s\" target=\"_blank\">ここ</a>から手動で有効化するか、以下のフォームから自動入力できます:"
 
 #: ../../enterprise_bk/load_enterprise.php:666
 #: ../../enterprise/load_enterprise.php:705
@@ -14334,27 +14333,27 @@ msgstr "グループ"
 #: ../../enterprise_bk/meta/monitoring/group_view.php:74
 #: ../../enterprise/meta/monitoring/group_view.php:74
 msgid "Summary by status"
-msgstr ""
+msgstr "状態ごとのまとめ"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:78
 #: ../../enterprise/meta/monitoring/group_view.php:78
 msgid "% Monitors Critical"
-msgstr ""
+msgstr "% の監視項目が障害状態"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:79
 #: ../../enterprise/meta/monitoring/group_view.php:79
 msgid "% Monitors Warning"
-msgstr ""
+msgstr "% の監視項目が警告状態"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:80
 #: ../../enterprise/meta/monitoring/group_view.php:80
 msgid "% Monitors OK"
-msgstr ""
+msgstr "% の監視項目が正常状態"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:81
 #: ../../enterprise/meta/monitoring/group_view.php:81
 msgid "% Agents Unknown"
-msgstr ""
+msgstr "% のエージェントが不明状態"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:101
 #: ../../enterprise/meta/monitoring/group_view.php:101
@@ -14771,7 +14770,7 @@ msgstr "イベントレポート"
 #: ../../enterprise_bk/meta/monitoring/tactical.php:370
 #: ../../enterprise/meta/monitoring/tactical.php:371
 msgid "Info of state in events"
-msgstr ""
+msgstr "イベントの状態"
 
 #: ../../enterprise_bk/meta/monitoring/tactical.php:386
 #: ../../enterprise/meta/monitoring/tactical.php:387
@@ -14783,7 +14782,7 @@ msgstr "イベント追加"
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:83
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:126
 msgid "Could not be create, duplicated server name."
-msgstr "作成できませんでした。サーバ名が重複しています。"
+msgstr "作成できませんでした。同じサーバ名があります。"
 
 #: ../../enterprise_bk/meta/advanced/metasetup.consoles.php:167
 #: ../../operation/events/events.php:776
@@ -15368,7 +15367,7 @@ msgstr "%s への接続エラー"
 #: ../../enterprise_bk/meta/advanced/synchronizing.component.php:302
 #: ../../enterprise/meta/advanced/synchronizing.component.php:302
 msgid "Synchronizing Components"
-msgstr ""
+msgstr "コンポーネントの同期中"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.component.php:309
 #: ../../enterprise_bk/meta/advanced/synchronizing.user.php:505
@@ -15809,7 +15808,7 @@ msgstr "グループ/プロファイル/ユーザの要素を作成・更新し�
 #: ../../enterprise_bk/meta/advanced/synchronizing.user.php:498
 #: ../../enterprise/meta/advanced/synchronizing.user.php:498
 msgid "Synchronizing Users"
-msgstr ""
+msgstr "ユーザの同期中"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.user.php:526
 #: ../../godmode/massive/massive_delete_profiles.php:104
@@ -15994,13 +15993,13 @@ msgstr "テンプレートを作成(%s)/更新(%s)しました。"
 #: ../../enterprise_bk/meta/advanced/synchronizing.alert.php:324
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:324
 msgid "Synchronizing Alerts"
-msgstr ""
+msgstr "アラートの同期中"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:103
 #: ../../enterprise/meta/advanced/synchronizing.group.php:103
 #, php-format
 msgid "(Error Duplicate ID (%d) ) "
-msgstr "(重複 ID エラー (%d) ) "
+msgstr "(重複 ID (%d) エラー) "
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:162
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:163
@@ -16059,7 +16058,7 @@ msgstr "更新または作成したグループがありません"
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:227
 #: ../../enterprise/meta/advanced/synchronizing.group.php:227
 msgid "Synchronizing Groups"
-msgstr ""
+msgstr "グループの同期中"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.tag.php:124
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:124
@@ -16076,7 +16075,7 @@ msgstr "タグを作成(%s)/更新(%s)しました"
 #: ../../enterprise_bk/meta/advanced/synchronizing.tag.php:138
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:138
 msgid "Synchronizing Tags"
-msgstr ""
+msgstr "タグの同期中"
 
 #: ../../enterprise_bk/meta/advanced/metasetup.php:49
 #: ../../enterprise/meta/advanced/metasetup.php:54
@@ -16546,7 +16545,7 @@ msgstr "%s モジュールを削除しました"
 #: ../../enterprise/meta/include/functions_wizard_meta.php:2444
 msgid ""
 "There was an error creating the alerts, the operation has been cancelled ."
-msgstr "アラート作成でエラーが発生しました。操作はキャンセルされました。"
+msgstr "アラート作成エラーです。操作はキャンセルされました。"
 
 #: ../../enterprise_bk/meta/include/functions_wizard_meta.php:2475
 #: ../../enterprise/meta/include/functions_wizard_meta.php:2475
@@ -16639,7 +16638,7 @@ msgstr "グループでフィルタする"
 #: ../../enterprise_bk/meta/include/functions_networkmap_meta.php:515
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:515
 msgid "Filter by tag"
-msgstr ""
+msgstr "タグによるフィルタ"
 
 #: ../../enterprise_bk/meta/include/functions_networkmap_meta.php:515
 #: ../../operation/agentes/alerts_status.functions.php:86
@@ -18681,7 +18680,7 @@ msgstr "日ごとの SLA 準拠"
 #: ../../enterprise/include/functions_reporting.php:1310
 #: ../../enterprise/include/functions_reporting_pdf.php:1842
 msgid "Summary of SLA Failures"
-msgstr ""
+msgstr "条件を満たさない SLA の概要"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1243
 #: ../../enterprise_bk/include/functions_reporting.php:1839
@@ -18814,7 +18813,7 @@ msgstr "この要素は不正な計画停止の影響を受けます"
 #: ../../enterprise/include/functions_reporting.php:2249
 #: ../../enterprise/include/functions_reporting.php:3501
 msgid "Go to the planned downtimes section to solve this"
-msgstr "問題解決のためには計画停止設定画面へ行きます"
+msgstr "これを解決するために計画停止画面へ行く"
 
 #: ../../enterprise_bk/include/functions_reporting.php:2691
 #: ../../enterprise/include/functions_reporting.php:2778
@@ -18844,7 +18843,7 @@ msgstr "定義済のSLAがありません。"
 #: ../../enterprise/include/functions_services.php:936
 #: ../../enterprise/include/functions_services.php:1133
 msgid "Nonexistent"
-msgstr "存在しません"
+msgstr "なし"
 
 #: ../../enterprise_bk/include/functions_reporting.php:4062
 #: ../../enterprise/include/functions_reporting.php:4153
@@ -18873,7 +18872,7 @@ msgstr "APIアクセス認証エラー"
 #: ../../enterprise_bk/include/ajax/metaconsole.ajax.php:46
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:46
 msgid "Error accesing to API."
-msgstr "APIアクセスエラー"
+msgstr "APIアクセスエラー。"
 
 #: ../../enterprise_bk/include/ajax/metaconsole.ajax.php:57
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:61
@@ -21446,6 +21445,13 @@ msgid ""
 "can see on \n"
 "\t\t the picture below. "
 msgstr ""
+"ファイルコレクションは、次のような(スクリプトや実行形式の)ファイルのグループです。\n"
+"\t\t(WindowsまたはUNIXの)エージェントの特定のディレクトリに自動的にコピーされます。ファイルコレクションは、\n"
+"\t\tスクリプトとそれを使うモジュールのパッケージをエージェントのグループで使えるようにするためにポリシーでまとめることができます。\n"
+"\t\t最初にエージェント表示画面でファイルコレクションの使い方を学びます。コレクションを利用せずにエージェントごとに手動で\n"
+"\t\t行う方法と、同じことをポリシーを使って行う方法があります。最初に行うことは、編集ファイルの配置です。これを行うには、\n"
+"\t\tエージェント管理画面へ行ってください。次に、\"コレクション\" というサブオプションへ行きます。以下の画像で示すように、\n"
+"\t\t新たなコレクションを作成するにはそれをクリックします。 "
 
 #: ../../general/firts_task/map_builder.php:6
 msgid "There are no visual console defined yet."
@@ -21474,6 +21480,11 @@ msgid ""
 "</strong>\n"
 "\t\ttype. You can define your own customized recon script."
 msgstr ""
+"Pandora FMS の自動検出タスクは、ネットワーク上の新たな対象を検出するために利用します。\n"
+"\t\t検出すると、監視対象として追加します。すでに監視対象の場合は無視するか情報を更新します。\n"
+"\t\t検出には 3つの種類があります。<strong id=\"fuerte\"> ICMP </strong>(ping)、<strong "
+"id=\"fuerte\">SNMP</strong>(ネットワークとインタフェースのトポロジ検出)、\n"
+"\t\tおよび<strong id=\"fuerte\"> カスタム</strong>タイプです。独自の検出スクリプトを定義することもできます。"
 
 #: ../../general/firts_task/incidents.php:8
 msgid "There are no incidents defined yet."
@@ -21510,6 +21521,13 @@ msgid ""
 "information and files.\n"
 "\t\t"
 msgstr ""
+"システムやアプリケーションを監視するためにデータを受信し処理するほかに、\n"
+"\t\t\tシステム監視処理内ではインシデントも処理され、それも見る必要があります。\n"
+"\t\t\tそのために、Pandora FMS チームではインシデント管理機能を用意しました。ユーザはいつでもインシデントをオープンし、\n"
+"\t\t\tネットワークで何が発生したかを説明しコメントすることができます。このシステムにより、ユーザがチームとして動くことが\n"
+"\t\t\tでき、異なる権限を持たせたり、ワークフローとしてインシデントをあるグループから他のグループへ移したり、異なる\n"
+"\t\t\tグループの異なるメンバーが同じインシデントに対して対処したり、情報やファイルを共有したりできます。\n"
+"\t\t"
 
 #: ../../general/firts_task/custom_fields.php:8
 msgid "There are no custom fields defined yet."
@@ -21550,6 +21568,10 @@ msgid ""
 "\t\t\t\t\t\taccount for most of the metrics or types of reports, because the "
 "agents don't contain any data within those intervals. "
 msgstr ""
+"Pandora FMS には、計画停止を管理するシステムがあります。\n"
+"\t\t\t\t\t\tこのシステムは、エージェントの停止がある場合に、指定の期間アラートを無効化するように設計されています。\n"
+"\t\t\t\t\t\tエージェントが無効化されると情報収集が行われません。停止期間中のデータは、多くのレポートの計算に\n"
+"\t\t\t\t\t\t含まれません。なぜなら、停止期間中はエージェントにデータが無いためです。 "
 
 #: ../../general/firts_task/tags.php:6
 msgid "There are no tags defined yet."
@@ -21568,6 +21590,9 @@ msgid ""
 "\t\t\t\t\t\t\t\tThe user's access can be limited to modules with certain "
 "tags in this way. "
 msgstr ""
+"Pandora FMS バージョン 5 以降では、タグの機能によってモジュールへのアクセスを設定できます。\n"
+"\t\t\t\t\t\t\t\tタグは、システム上で設定し、選択したモジュールに割り当てます。\n"
+"\t\t\t\t\t\t\t\tこれにより、ユーザアクセスを特定のタグがついたモジュールに限定することができます。 "
 
 #: ../../general/firts_task/snmp_filters.php:6
 #: ../../general/firts_task/recon_view.php:6
@@ -21608,6 +21633,13 @@ msgid ""
 "\t\t\t\t\t\tHis company consists of three big departments: A management, an "
 "on-line shop and support."
 msgstr ""
+"サービスは、機能に基づく IT リソースをグループ化するものです。\n"
+"\t\t\t\t\t例えばサービスは、公式ウェブサイト、CRMシステム、サポートアプリケーション、プリンタなどです。\n"
+"\t\t\t\t\t"
+"サービスは、ホスト、ルータ、スイッチ、ファイアーウォール、CRM、ERP、ウェブサイトおよびその他さまざまな機能を含んだ論理的なグループです。\n"
+"\t\t\t\t\t次の例で、サービスが何かがよりわかるでしょう。\n"
+"\t\t\t\t\t\tあるチップメーカーは、ウェブサイトを通して世界中にコンピュータを販売しています。\n"
+"\t\t\t\t\t\tその会社は、管理、オンラインショップ、サポートの 3つの大きな部門から成っています。"
 
 #: ../../general/firts_task/custom_graphs.php:8
 msgid "There are no custom graphs defined yet."
@@ -21639,6 +21671,10 @@ msgid ""
 "\t\t\t\t\t\t\t\tThere are three types of network maps:\n"
 "\t\t\t"
 msgstr ""
+"オープンソース版のネットワークマップもあります。\n"
+"\t\t\t\t\t\t\t\tこの機能では、ノードとその関係、エージェント、モジュールおよびグループをユーザにグラフィカルに表示できます。\n"
+"\t\t\t\t\t\t\t\tネットワークマップには 3つのタイプがあります。\n"
+"\t\t\t"
 
 #: ../../general/firts_task/network_map.php:23
 msgid "Topology Map"
@@ -21650,11 +21686,11 @@ msgstr "グループマップ"
 
 #: ../../general/firts_task/network_map.php:25
 msgid "Radial Map (User without strict user)"
-msgstr ""
+msgstr "放射状マップ (制限ユーザを除く)"
 
 #: ../../general/firts_task/network_map.php:26
 msgid "Dinamic Map"
-msgstr ""
+msgstr "ダイナミックマップ"
 
 #: ../../general/firts_task/network_map.php:27
 msgid "Policy Map (Only Enterprise version)"
@@ -22259,24 +22295,24 @@ msgstr "ラベル編集"
 #: ../../godmode/reporting/visual_console_builder.editor.php:142
 #: ../../godmode/reporting/visual_console_builder.editor.php:147
 msgid "Action in progress"
-msgstr ""
+msgstr "アクション実行中"
 
 #: ../../godmode/reporting/visual_console_builder.editor.php:138
 msgid "Loading in progress"
-msgstr ""
+msgstr "読み込み中"
 
 #: ../../godmode/reporting/visual_console_builder.editor.php:143
 msgid "Saving in progress"
-msgstr ""
+msgstr "保存中"
 
 #: ../../godmode/reporting/visual_console_builder.editor.php:148
 msgid "Deletion in progress"
-msgstr ""
+msgstr "削除中"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:312
 #: ../../include/functions_custom_graphs.php:209
 msgid "No items."
-msgstr ""
+msgstr "アイテムがありません。"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:487
 #: ../../godmode/reporting/reporting_builder.list_items.php:492
@@ -23454,7 +23490,7 @@ msgstr "新規マクロ作成エラー"
 #: ../../godmode/massive/massive_edit_plugins.php:246
 #, php-format
 msgid "%d modules updated"
-msgstr ""
+msgstr "%d個のモジュールを更新しました。"
 
 #: ../../godmode/massive/massive_edit_plugins.php:265
 msgid "There are not registered plugins"
@@ -23485,11 +23521,11 @@ msgstr "コマンド"
 
 #: ../../godmode/massive/massive_edit_plugins.php:521
 msgid "Clear"
-msgstr ""
+msgstr "消去"
 
 #: ../../godmode/massive/massive_edit_plugins.php:549
 msgid "Invalid macros array"
-msgstr ""
+msgstr "マクロ配列が不正です"
 
 #: ../../godmode/massive/massive_edit_plugins.php:574
 msgid "Multiple values"
@@ -23499,19 +23535,19 @@ msgstr "複数の値"
 #: ../../godmode/massive/massive_edit_plugins.php:743
 #: ../../godmode/massive/massive_edit_plugins.php:759
 msgid "Invalid agents array"
-msgstr ""
+msgstr "エージェント配列が不正です"
 
 #: ../../godmode/massive/massive_edit_plugins.php:622
 msgid "Invalid agent element"
-msgstr ""
+msgstr "エージェントの要素が不正です"
 
 #: ../../godmode/massive/massive_edit_plugins.php:633
 msgid "Invalid modules array"
-msgstr ""
+msgstr "モジュール配列が不正です"
 
 #: ../../godmode/massive/massive_edit_plugins.php:661
 msgid "Invalid module element"
-msgstr ""
+msgstr "モジュールの要素が不正です"
 
 #: ../../godmode/massive/massive_edit_plugins.php:869
 msgid "There are no modules using this plugin"
@@ -25246,7 +25282,7 @@ msgstr "正規化するデータがありません。"
 #: ../../godmode/agentes/configurar_agente.php:626
 #, php-format
 msgid "Deleted data above %f"
-msgstr ""
+msgstr "%f を超えるデータを削除しました。"
 
 #: ../../godmode/agentes/configurar_agente.php:627
 #, php-format
@@ -26316,14 +26352,14 @@ msgstr "リモートユーザの自動作成"
 #: ../../include/functions_config_bk.php:265
 #: ../../include/functions_config.php:273
 msgid "Autocreate profile"
-msgstr "プロフィールの自動作成"
+msgstr "プロファイルの自動作成"
 
 #: ../../godmode/setup/setup_auth_bk.php:58
 #: ../../godmode/setup/setup_auth.php:59
 #: ../../include/functions_config_bk.php:267
 #: ../../include/functions_config.php:275
 msgid "Autocreate profile group"
-msgstr "プロフィールグループの自動作成"
+msgstr "プロファイルグループの自動作成"
 
 #: ../../godmode/setup/setup_auth_bk.php:60
 #: ../../godmode/setup/setup_auth.php:61
@@ -26630,11 +26666,11 @@ msgstr "この間隔はビジュアルコンソールページで有効です"
 
 #: ../../godmode/setup/setup_visuals.php:79
 msgid "Paginated module view"
-msgstr ""
+msgstr "ページ区切りモジュール表示"
 
 #: ../../godmode/setup/setup_visuals.php:84
 msgid "Display proc modules in binary format (OK/FAIL)."
-msgstr ""
+msgstr "proc モジュールを二値(OK/FAIL)表示する"
 
 #: ../../godmode/setup/setup_visuals.php:94
 msgid "Behaviour configuration"
@@ -28927,7 +28963,7 @@ msgstr "グループ:"
 
 #: ../../operation/incidents/incident.php:275
 msgid "Free text:"
-msgstr ""
+msgstr "検索文字列:"
 
 #: ../../operation/incidents/incident.php:383
 msgid "Delete incidents"
@@ -30440,11 +30476,11 @@ msgstr "Enterprise文字列トラップ"
 
 #: ../../enterprise/godmode/reporting/mysql_builder.php:90
 msgid "Create new custom"
-msgstr ""
+msgstr "設定の新規作成"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:382
 msgid "Generate a dinamic report"
-msgstr ""
+msgstr "動的レポートの生成"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:437
 msgid "Add agents"
@@ -30452,11 +30488,11 @@ msgstr "エージェント追加"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:440
 msgid "Undo agents"
-msgstr ""
+msgstr "エージェント追加取り消し"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:448
 msgid "Generate"
-msgstr ""
+msgstr "生成"
 
 #: ../../enterprise/godmode/massive/massive_operations.php:78
 msgid "Bulk alerts policy add"
@@ -30509,7 +30545,7 @@ msgstr "隠す"
 
 #: ../../enterprise/godmode/setup/setup.php:72
 msgid "No replication yet"
-msgstr ""
+msgstr "複製されていません"
 
 #: ../../enterprise/godmode/setup/setup.php:97
 msgid "Metaconsole DB engine"
@@ -30553,7 +30589,7 @@ msgstr "ライセンスの有効化"
 
 #: ../../enterprise/meta/general/login_page.php:82
 msgid "Monitor all your systems with a single tool"
-msgstr ""
+msgstr "単一のツールえ全システムの監視をします"
 
 #: ../../enterprise/meta/advanced/metasetup.php:89
 #: ../../enterprise/meta/advanced/metasetup.php:118
@@ -30562,7 +30598,7 @@ msgstr "オフラインアップデートマネージャ"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:50
 msgid "Error could not resolve the host."
-msgstr ""
+msgstr "エラー。ホストの名前解決ができません。"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2093
 #: ../../enterprise/include/functions_netflow_pdf.php:157
@@ -30571,17 +30607,17 @@ msgstr "生成日"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2096
 msgid "Report date"
-msgstr ""
+msgstr "レポート日"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2122
 #: ../../enterprise/include/functions_netflow_pdf.php:56
 msgid "Contents"
-msgstr ""
+msgstr "目次"
 
 #: ../../enterprise/include/functions_services.php:1100
 #: ../../enterprise/include/functions_services.php:1115
 msgid "Nonexistent. This element should be deleted"
-msgstr ""
+msgstr "存在しません。要素が削除されています。"
 
 #: ../../extras/pandora_diag.php:90
 msgid "Pandora FMS Diagnostic tool"
@@ -32435,7 +32471,7 @@ msgstr "処理中のみ"
 #: ../../include/functions_events.php:1499
 #: ../../include/functions_events.php:1526
 msgid "Only not validated"
-msgstr "未承認のみ"
+msgstr "未承諾のみ"
 
 #: ../../include/functions_events.php:1570
 msgid "Agent address"
@@ -33308,7 +33344,7 @@ msgstr "Netflow サマリ表"
 
 #: ../../include/functions_config.php:217
 msgid "Replication DB engine"
-msgstr ""
+msgstr "複製 DB エンジン"
 
 #: ../../include/functions_config.php:337
 msgid "Session timeout"
@@ -35421,3 +35457,98 @@ msgstr "このツールは、コンソールから Pandora FMS のシステム�
 #: ../../extensions/pandora_logs.php:83
 msgid "System logfiles"
 msgstr "システムログファイル"
+
+#~ msgid "No incidents match your search filter"
+#~ msgstr "フィルタに適合するインシデントはありません。"
+
+#~ msgid "There are no messages"
+#~ msgstr "あなた宛のメッセージはありません。"
+
+#~ msgid "R"
+#~ msgstr "R"
+
+#~ msgid "Edit remote config"
+#~ msgstr "リモート設定"
+
+#~ msgid "Items filter"
+#~ msgstr "アイテムフィルタ"
+
+#~ msgid "Remote agent configuration"
+#~ msgstr "リモートエージェント設定"
+
+#, php-format
+#~ msgid "Deleted data above %d"
+#~ msgstr "%d 以上のデータを削除しました。"
+
+#~ msgid "Massive alerts addition"
+#~ msgstr "複数アラート追加"
+
+#~ msgid "Massive alerts deletion"
+#~ msgstr "複数アラート削除"
+
+#~ msgid "Massive alert actions addition"
+#~ msgstr "複数アラートアクション追加"
+
+#~ msgid "Massive alert actions deletion"
+#~ msgstr "複数アラートアクション削除"
+
+#~ msgid "Massive alert enable/disable"
+#~ msgstr "複数アラート有効化/無効化"
+
+#~ msgid "Massive alert setting standby"
+#~ msgstr "複数アラートスタンバイ状態設定"
+
+#~ msgid "Massive agents edition"
+#~ msgstr "複数エージェント編集"
+
+#~ msgid "Massive agents deletion"
+#~ msgstr "複数エージェント削除"
+
+#~ msgid "Massive profiles addition"
+#~ msgstr "複数プロファイル追加"
+
+#~ msgid "Massive profiles deletion"
+#~ msgstr "複数プロファイル削除"
+
+#~ msgid "Massive modules deletion"
+#~ msgstr "複数モジュール削除"
+
+#~ msgid "Massive modules edition"
+#~ msgstr "複数モジュール編集"
+
+#~ msgid "Massive modules copy"
+#~ msgstr "複数モジュールコピー"
+
+#, php-format
+#~ msgid ""
+#~ "This extension makes registration of server plugins more easy. Here you can "
+#~ "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
+#~ "refer to documentation on how to obtain and use Pandora FMS Server "
+#~ "Plugins.<br><br>You can get more plugins in our <a href='%s'>Public Resource "
+#~ "Library</a>"
+#~ msgstr ""
+#~ "この拡張インタフェースを使うことによって、サーバプラグインを簡単に登録することができます。アップロードは、Pandora FMS 3.x "
+#~ "の圧縮フォーマット(.pspz)で行ってください。Pandora FMS "
+#~ "サーバプラグインの入手方法についてはドキュメントを参照してください。<br><br>プラグインは、<a "
+#~ "href='%s'>パブリックリソースライブラリ</a>から入手できます。"
+
+#~ msgid "Ping to "
+#~ msgstr "以下へのping "
+
+#~ msgid "Empty graph"
+#~ msgstr "空のグラフ"
+
+#~ msgid "Overlapped"
+#~ msgstr "重ね合わせ"
+
+#~ msgid "Time compare"
+#~ msgstr "時間比較"
+
+#~ msgid "Separated"
+#~ msgstr "分割"
+
+#~ msgid "There are no defined graphs"
+#~ msgstr "定義済のグラフがありません"
+
+#~ msgid "Paginate module view"
+#~ msgstr "モジュール表示をページ分割"

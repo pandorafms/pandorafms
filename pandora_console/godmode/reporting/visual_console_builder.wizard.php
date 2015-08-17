@@ -171,22 +171,31 @@ $table->data["percentileitem_2"][1] =
 
 $table->rowstyle["percentileitem_3"] = 'display: none;';
 $table->data["percentileitem_3"][0] = __('Type');
-$table->data["percentileitem_3"][1] =
-	html_print_radio_button_extended('type_percentile', 'percentile',
-		('Percentile'), 'percentile', false, '', 'style="float: left;"',
-		true) .
-	html_print_radio_button_extended('type_percentile', 'bubble',
-		('Bubble'), 'percentile', false, '', 'style="float: left;"',
-		true);
-
+$table->colspan["percentileitem_3"][1] = "3";
+$table->data["percentileitem_3"][1] = __('Percentile') .
+	'&nbsp;&nbsp;&nbsp;' .
+	html_print_radio_button_extended('type_percentile', 'percentile', '', '', false,
+		'', '', true) .
+	'&nbsp;&nbsp;';
+$table->data["percentileitem_3"][1] .= __('Bubble') .
+	'&nbsp;&nbsp;&nbsp;' .
+	html_print_radio_button_extended('type_percentile', 'bubble', '', '', false,
+		'', '', true) .
+	'&nbsp;&nbsp;';
 
 $table->rowstyle["percentileitem_4"] = 'display: none;';
 $table->data["percentileitem_4"][0] = __('Value to show');
-$table->data["percentileitem_4"][1] = html_print_radio_button_extended(
-	'value_show', 'percent', ('Percent'), 'value', false, '',
-	'style="float: left;"', true) .
-	html_print_radio_button_extended('value_show', 'value', ('Value'),
-		'value', false, '', 'style="float: left;"', true);
+$table->colspan["percentileitem_4"][1] = "3";
+$table->data["percentileitem_4"][1] = __('Percent') .
+	'&nbsp;&nbsp;&nbsp;' .
+	html_print_radio_button_extended('value_show', 'percent', '', '', false,
+		'', '', true) .
+	'&nbsp;&nbsp;';
+$table->data["percentileitem_4"][1] .= __('Value') .
+	'&nbsp;&nbsp;&nbsp;' .
+	html_print_radio_button_extended('value_show', 'value', '', '', false,
+		'', '', true) .
+	'&nbsp;&nbsp;';
 
 
 if (is_metaconsole()) {

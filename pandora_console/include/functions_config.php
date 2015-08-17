@@ -44,6 +44,8 @@ function config_create_value ($token, $value) {
 function config_update_value ($token, $value) {
 	global $config;
 	
+	require_once ($config["homedir"] . "/include/functions_io.php");
+	
 	if ($token == 'list_ACL_IPs_for_API') {
 		$value = str_replace(array("\r\n", "\r", "\n"), ";",
 			io_safe_output($value));

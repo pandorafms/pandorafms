@@ -440,7 +440,9 @@ switch ($action) {
 				case 'event_report_module':
 					$description = $item['description'];
 					$idAgentModule = $item['id_agent_module'];
-					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
+					$idAgent = db_get_value_filter('id_agente',
+						'tagente_modulo',
+						array('id_agente_modulo' => $idAgentModule));
 					$period = $item['period'];
 					break;
 				case 'general':
@@ -849,6 +851,7 @@ $class = 'databox filters';
 				
 				//////////////////
 				$params = array();
+				
 				$params['show_helptip'] = false;
 				$params['input_name'] = 'agent';
 				$params['value'] = $agent_name;
@@ -906,7 +909,7 @@ $class = 'databox filters';
 						metaconsole_restore_db();
 					}
 					else {
-						html_print_select_from_sql($sql, 'id_agent_module', $idAgentModule, '', '', '0');					
+						html_print_select_from_sql($sql, 'id_agent_module', $idAgentModule, '', '', '0');
 					}
 				}
 				else {

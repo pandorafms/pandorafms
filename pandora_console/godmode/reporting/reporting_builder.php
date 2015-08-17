@@ -1192,14 +1192,38 @@ switch ($action) {
 								$values['period'] = get_parameter('period');
 								$good_format = true;
 								break;
-							default: 
+							default:
 								$values['period'] = get_parameter('period');
 								$values['top_n'] = get_parameter('radiobutton_max_min_avg',0);
 								$values['top_n_value'] = get_parameter('quantity');
 								$values['text'] = get_parameter('text');
 								$values['show_graph'] = get_parameter('combo_graph_options');
 								$good_format = true;
+								break;
 						}
+						
+						
+						
+						$values['server_name'] = get_parameter ('server_name');
+						$server_id = (int)get_parameter('server_id');
+						if ($server_id != 0) {
+							$connection = metaconsole_get_connection_by_id($server_id);
+							
+							$values['server_name'] = $connection['server_name'];
+						}
+						if ($values['server_name'] == '')
+							$values['server_name'] = get_parameter ('combo_server');
+						
+						
+						if (is_metaconsole()) {
+							// For SQL Query check if it is setted in the meta
+							if ($values['type'] == "sql") {
+								if (empty($values['server_name'])) {
+									$good_format = false;
+								}
+							}
+						}
+						
 						
 						$values['id_agent'] = get_parameter('id_agent');
 						$values['id_gs'] = get_parameter('id_custom_graph');
@@ -1247,15 +1271,7 @@ switch ($action) {
 						$values['exception_condition_value'] = get_parameter('exception_condition_value');
 						$values['id_module_group'] = get_parameter('combo_modulegroup');
 						$values['id_group'] = get_parameter ('combo_group');
-						$values['server_name'] = get_parameter ('server_name');
-						$server_id = (int)get_parameter('server_id');
-						if ($server_id != 0) {
-							$connection = metaconsole_get_connection_by_id($server_id);
-							
-							$values['server_name'] = $connection['server_name'];
-						}
-						if ($values['server_name'] == '')
-							$values['server_name'] = get_parameter ('combo_server');
+						
 						
 						if ((($values['type'] == 'custom_graph') or ($values['type'] == 'automatic_custom_graph')) && ($values['id_gs'] == 0 || $values['id_gs'] == '')) {
 							$resultOperationDB = false;

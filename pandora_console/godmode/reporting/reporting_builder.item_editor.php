@@ -457,6 +457,15 @@ switch ($action) {
 					// HACK it is saved in show_graph field.
 					// Show interfaces instead the modules
 					$show_address_agent = $item['show_graph'];
+					$monday = $item['monday'];
+					$tuesday = $item['tuesday'];
+					$wednesday = $item['wednesday'];
+					$thursday = $item['thursday'];
+					$friday = $item['friday'];
+					$saturday = $item['saturday'];
+					$sunday = $item['sunday'];
+					$time_from = $item['time_from'];
+					$time_to = $item['time_to'];
 					break;
 				case 'group_report':
 					$description = $item['description'];
@@ -2490,6 +2499,7 @@ function chooseType() {
 			$("#row_show_address_agent").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_show_resume").show();
+			$("#row_working_time").show();
 			break;
 		
 		case 'group_report':

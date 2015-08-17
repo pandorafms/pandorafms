@@ -234,7 +234,7 @@ $id = get_parameter('id');
 		$params = array();
 		// TOP TEXT
 		//Use the no_meta parameter because this image is only in the base console
-		$params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('images/config_mc.png', true, array('width' => '16px'), false, false, true) . ' ' . __('Pandora FMS Graph configuration menu') . "</div>";
+		$params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('images/wrench_blanco.png', true, array('width' => '16px'), false, false, true) . ' ' . __('Pandora FMS Graph configuration menu') . "</div>";
 		$params['body_text'] = "<div class='menu_sidebar_outer'>";
 		$params['body_text'] .=__('Please, make your changes and apply with the <i>Reload</i> button');
 		

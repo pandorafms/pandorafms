@@ -258,17 +258,18 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 	}
 	
 	$id = 'info_box_' . uniqid();
-	
+
+	//Use the no_meta parameter because this image is only in the base console
 	$output = '<table cellspacing="0" cellpadding="0" id="' . $id . '" ' . $attributes . '
 		class="info_box ' . $id . ' ' . $class . '" style="' . $force_style . '">
 		<tr>
-			<td class="icon" rowspan="2" style="padding-right: 10px; padding-top: 3px;">' . html_print_image($icon_image, true) . '</td>
+			<td class="icon" rowspan="2" style="padding-right: 10px; padding-top: 3px;">' . html_print_image($icon_image, true, false, false, false, true) . '</td>
 			<td class="title" style="text-transform: uppercase; padding-top: 10px;"><b>' . $text_title . '</b></td>
 			<td class="icon" style="text-align: right; padding-right: 3px;">';
 	if (!$no_close_bool) {
 		//Use the no_meta parameter because this image is only in the base console		
 		$output .= '<a href="javascript: close_info_box(\'' . $id . '\')">' .
-			html_print_image('images/blade.png', true, false, false, true) . '</a>';
+			html_print_image('images/blade.png', true, false, false, false, true) . '</a>';
 	}
 	
 	$output .= 	'</td>

@@ -1511,6 +1511,7 @@ function createItem(type, values, id_data) {
 			img_src = "images/spinner.gif";
 			
 			item = $('<div></div>')
+				.attr('id', id_data)
 				.attr('class', 'item ' + class_type)
 				.css('text-align', 'center')
 				.css('position', 'absolute')

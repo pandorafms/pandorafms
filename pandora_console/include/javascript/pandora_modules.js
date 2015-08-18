@@ -102,15 +102,17 @@ function configure_modules_form () {
 		}
 		$("#component_loading").show ();
 		$(".error").hide ();
-		jQuery.post ("ajax.php",
-			{"page" : "godmode/agentes/module_manager_editor",
+		jQuery.post ("ajax.php", {
+			"page" : "godmode/agentes/module_manager_editor",
 			"get_module_local_component" : 1,
 			"id_module_component" : this.value
 			},
 			function (data, status) {
 				configuration_data = js_html_entity_decode (data['data']);
-				$("#text-name").attr ("value", js_html_entity_decode (data["name"]));
-				$("#textarea_description").attr ("value", js_html_entity_decode (data["description"]));
+				$("#text-name").attr ("value",
+					js_html_entity_decode (data["name"]));
+				$("#textarea_description").attr ("value",
+					js_html_entity_decode (data["description"]));
 				$("#textarea_configuration_data").val(configuration_data);
 				$("#component_loading").hide ();
 				$("#id_module_type").val(data["type"]);
@@ -121,7 +123,8 @@ function configure_modules_form () {
 					period_select_module_interval_update(data["module_interval"]);
 				}
 				else {
-					period_select_update('module_interval', data["module_interval"]);
+					period_select_update('module_interval',
+						data["module_interval"]);
 				}
 				
 				$("#id_module_group").val (data["id_module_group"]);
@@ -130,12 +133,13 @@ function configure_modules_form () {
 					$("#checkbox-history_data").check ();
 				else
 					$("#checkbox-history_data").uncheck ();
+				
 				$("#text-min_warning").attr ("value", (data["min_warning"] == 0) ? 0 : data["min_warning"]);
 				$("#text-max_warning").attr ("value", (data["max_warning"] == 0) ? 0 : data["max_warning"]);
-				$("#text-str_warning").attr ("value", (data["str_warning"] == 0) ? 0 : data["str_warning"]);
+				$("#text-str_warning").attr ("value", data["str_warning"]);
 				$("#text-min_critical").attr ("value", (data["min_critical"] == 0) ? 0 : data["min_critical"]);
 				$("#text-max_critical").attr ("value", (data["max_critical"] == 0) ? 0 : data["max_critical"]);
-				$("#text-str_critical").attr ("value", (data["str_critical"] == 0) ? 0 : data["str_critical"]);
+				$("#text-str_critical").attr ("value", data["str_critical"]);
 				$("#text-ff_event").attr ("value", (data["min_ff_event"] == 0) ? 0 : data["min_ff_event"]);
 				$("#text-post_process").attr("value", (data["post_process"] == 0) ? 0 : data["post_process"]);
 				$("#text-unit").attr("value", (data["unit"] == '') ? '' : data["unit"])

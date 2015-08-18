@@ -540,7 +540,9 @@ if ($create_alert || $update_alert) {
 	
 	// Group
 	echo '<tr id="tr-group"><td class="datos2">'.__('Group').'</td><td class="datos2">';
-	html_print_select ($user_groups, "group", $group);
+	html_print_select_groups($config['id_user'], "AR",	true, "group", 
+			$group, '', '', 0, false, false, false, '', false, false, 
+			false, false, 'id_grupo', false);
 	echo '</td></tr>';
 	
 	// Trap type

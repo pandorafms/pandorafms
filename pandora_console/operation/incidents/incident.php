@@ -190,6 +190,9 @@ switch ($config["dbtype"]) {
 		$count_sql = "SELECT count(*) FROM tincidencia WHERE
 			id_grupo IN (".implode (",",array_keys ($groups)).")".$filter."
 			ORDER BY actualizacion DESC";
+		$total_sql = "SELECT count(*) FROM tincidencia WHERE
+			id_grupo IN (".implode (",",array_keys ($groups)).")
+			ORDER BY actualizacion DESC";
 		break;
 	case "postgresql":
 	case "oracle":
@@ -198,17 +201,20 @@ switch ($config["dbtype"]) {
 			ORDER BY actualizacion DESC OFFSET ".$offset." LIMIT ".$config["block_size"];
 		$count_sql = "SELECT count(*) FROM tincidencia WHERE
 			id_grupo IN (".implode (",",array_keys ($groups)).")".$filter;
+		$total_sql = "SELECT count(*) FROM tincidencia WHERE
+			id_grupo IN (".implode (",",array_keys ($groups)).")";
 		break;
 }
 
 $result = db_get_all_rows_sql ($sql);
 $count = db_get_value_sql ($count_sql);
+$count_total = db_get_value_sql ($total_sql);
 
 if (empty ($result)) {
 	$result = array ();
 	$count = 0;
 }
-if ($count >= 1) {
+if ($count_total >= 1) {
 	echo '<form name="visualizacion" method="post" action="index.php?sec=workspace&amp;sec2=operation/incidents/incident">';
 
 	echo '<table class="databox filters" cellpadding="4" cellspacing="4" width="100%"><tr>
@@ -281,7 +287,7 @@ if ($count >= 1) {
 	echo '</form>';
 }
 
-if ($count < 1) {
+if ($count_total < 1) {
 	require_once ($config['homedir'] . "/general/firts_task/incidents.php");
 }
 else {

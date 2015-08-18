@@ -358,27 +358,47 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 			$form_items['percentile_bar_row_2']['html'] = '<td align="left">' .
 				__('Max value') . '</td>
 				<td align="left">' . html_print_input_text('max_percentile', 0, '', 3, 5, true) . '</td>';
-			
-			
-			$form_items['percentile_item_row_3'] = array();
-			$form_items['percentile_item_row_3']['items'] = array('percentile_bar', 'percentile_item', 'datos');
-			$form_items['percentile_item_row_3']['html'] = '<td align="left">' .
-				__('Type') . '</td>
-				<td align="left">' . 
-				html_print_radio_button_extended('type_percentile', 'percentile', ('Percentile'), 'percentile', false, '', 'style="float: left;"', true) . 
-				html_print_radio_button_extended('type_percentile', 'bubble', ('Bubble'), 'percentile', false, '', 'style="float: left;"', true) . 
-				'</td>';
-			
-			
-			$form_items['percentile_item_row_4'] = array();
-			$form_items['percentile_item_row_4']['items'] = array('percentile_bar', 'percentile_item', 'datos');
-			$form_items['percentile_item_row_4']['html'] = '<td align="left">' . __('Value to show') . '</td>
-				<td align="left">' . 
-				html_print_radio_button_extended('value_show', 'percent', ('Percent'), 'value', false, '', 'style="float: left;"', true) .
-				html_print_radio_button_extended('value_show', 'value', ('Value'), 'value', false, '', 'style="float: left;"', true) . 
-				'</td>';
-			
-			
+
+			if (is_metaconsole()){
+				$form_items['percentile_item_row_3'] = array();
+				$form_items['percentile_item_row_3']['items'] = array('percentile_bar', 'percentile_item', 'datos');
+				$form_items['percentile_item_row_3']['html'] = '<td align="left">' .
+					__('Type') . '</td>
+					<td align="left">' .
+					html_print_radio_button_extended('type_percentile', 'percentile', ('Percentile'), 'percentile', false, '', 'style="float: left;"', true) .
+					html_print_radio_button_extended('type_percentile', 'bubble', ('Bubble'), 'percentile', false, '', 'style="float: left;"', true) .
+					'</td>';
+
+
+				$form_items['percentile_item_row_4'] = array();
+				$form_items['percentile_item_row_4']['items'] = array('percentile_bar', 'percentile_item', 'datos');
+				$form_items['percentile_item_row_4']['html'] = '<td align="left">' . __('Value to show') . '</td>
+					<td align="left">' .
+					html_print_radio_button_extended('value_show', 'percent', ('Percent'), 'value', false, '', 'style="float: left;"', true) .
+					html_print_radio_button_extended('value_show', 'value', ('Value'), 'value', false, '', 'style="float: left;"', true) .
+					'</td>';
+			}
+			else{
+				$form_items['percentile_item_row_3'] = array();
+				$form_items['percentile_item_row_3']['items'] = array('percentile_bar', 'percentile_item', 'datos');
+				$form_items['percentile_item_row_3']['html'] = '<td align="left">' .
+					__('Type') . '</td>
+					<td align="left">' .
+					html_print_radio_button_extended('type_percentile', 'percentile', ('Percentile'), 'percentile', false, '', '', true) .
+					html_print_radio_button_extended('type_percentile', 'bubble', ('Bubble'), 'percentile', false, '', '', true) .
+					'</td>';
+
+
+				$form_items['percentile_item_row_4'] = array();
+				$form_items['percentile_item_row_4']['items'] = array('percentile_bar', 'percentile_item', 'datos');
+				$form_items['percentile_item_row_4']['html'] = '<td align="left">' . __('Value to show') . '</td>
+					<td align="left">' .
+					html_print_radio_button_extended('value_show', 'percent', ('Percent'), 'value', false, '', '', true) .
+					html_print_radio_button_extended('value_show', 'value', ('Value'), 'value', false, '', '', true) .
+					'</td>';
+			}
+
+
 			$form_items['period_row'] = array();
 			$form_items['period_row']['items'] = array('module_graph', 'simple_value', 'datos');
 			$form_items['period_row']['html'] = '<td align="left">' . __('Period') . '</td>

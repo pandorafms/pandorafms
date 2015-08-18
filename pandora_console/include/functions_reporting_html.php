@@ -4438,7 +4438,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			reporting_header_content($mini, $content, $report, $table, $item_title,
 				ui_print_truncate_text($agent_name, 'agent_medium', false) .
-				' <br> '.ui_print_truncate_text($module_name, 'module_medium', false));
+				' <br> ' . ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			//RUNNING
 			
@@ -4488,7 +4488,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			}
 			
 			$table->colspan[$next_row][0] = 3;
-
+			
 			$data = array ();
 			$unit = db_get_value('unit', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
 			
@@ -4546,9 +4546,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$filter_event_warning,
 				$filter_event_no_validated);
 			
-			if(!empty($data[0])) {
+			if (!empty($data[0])) {
 				array_push ($table->data, $data);
-								
+				
 				$table->colspan[$next_row][0] = 3;
 				$next_row++;
 			}
@@ -4820,9 +4820,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$filter_event_critical,
 				$filter_event_warning,
 				$filter_event_no_validated);
-			if(!empty($data[0])) {
+			if (!empty($data[0])) {
 				array_push ($table->data, $data);
-								
+				
 				$table->colspan[$next_row][0] = 3;
 				$next_row++;
 			}
@@ -5052,7 +5052,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$item_title = __('Serialize data');
 			}
 			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text($module_name, 'module_medium', false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false) .
+				' <br> ' . ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			// Put description at the end of the module (if exists)
 			$next_row = 1;

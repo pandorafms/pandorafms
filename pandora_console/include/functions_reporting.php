@@ -5379,7 +5379,8 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				$item_title = __('Serialize data');
 			}
 			reporting_header_content($mini, $content, $report, $table, $item_title,
-				ui_print_truncate_text($module_name, 'module_medium', false));
+				ui_print_truncate_text($agent_name, 'agent_medium', false) .
+				' <br> ' . ui_print_truncate_text($module_name, 'module_medium', false));
 			
 			// Put description at the end of the module (if exists)
 			$next_row = 1;

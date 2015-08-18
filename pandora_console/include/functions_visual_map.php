@@ -59,7 +59,8 @@ function visual_map_print_item($layoutData) {
 	$left = $layoutData['pos_x'];
 	$id = $layoutData['id'];
 	$color = $layoutData['label_color'];
-	$label = $layoutData['label'];
+	//$label = $layoutData['label'];
+	$label = '';
 	$id_module = $layoutData['id_agente_modulo'];
 	$type = $layoutData['type'];
 	$period = $layoutData['period'];

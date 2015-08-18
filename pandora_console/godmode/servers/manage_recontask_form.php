@@ -146,9 +146,9 @@ elseif (isset($_GET["create"]) || isset($_GET["crt"])) {
 	
 	if ($create_recon) {
 		$id_rt = -1;
-		$name = "";
-		$network = "";
-		$description = "";
+		$name = get_parameter('name');
+		$network = get_parameter('network');
+		$description = get_parameter('description');
 		$id_recon_server = 0;
 		$interval = 0;
 		$id_group = 0;
@@ -169,10 +169,18 @@ elseif (isset($_GET["create"]) || isset($_GET["crt"])) {
 		$parent_recursion = 5;
 		$macros = '';
 	}
+
+	$modify = false;
+	if (($name != '') || ($network != '')){
+		$modify = true;
+	}
 }
 
-// Headers
-ui_print_page_header (__('Manage recontask'), "", false, "recontask", true);
+if (!$modify){
+	// Headers
+	ui_print_page_header (__('Manage recontask'), "", false, "recontask", true);
+}
+
 
 $is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
 if ($is_windows) {

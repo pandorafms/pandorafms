@@ -178,6 +178,8 @@ if (isset($_GET["update"])) {
 	else {
 		ui_print_error_message(__('Error updating recon task'));
 		echo $reason;
+		include('manage_recontask_form.php');
+		return;
 	}
 }
 
@@ -237,7 +239,13 @@ if (isset($_GET["create"])) {
 			}
 		}
 		else {
-			$result = db_process_sql_insert('trecon_task', $values);
+			if ($name_exists){
+				$reason = __('Recon-task name already exists');
+				$result = false;
+			}
+			else{
+				$result = db_process_sql_insert('trecon_task', $values);
+			}
 		}
 	}
 	else {
@@ -251,6 +259,8 @@ if (isset($_GET["create"])) {
 	else {
 		ui_print_error_message(__('Error creating recon task'));
 		echo $reason;
+		include('manage_recontask_form.php');
+		return;
 	}
 }
 

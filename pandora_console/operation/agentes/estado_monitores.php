@@ -431,7 +431,8 @@ function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 		'status_filter_monitor', $status_filter_monitor, '', '', 0,
 		true);
 	
-	$table->data[0][2] = __('Free text for search (*):');
+	$table->data[0][2] = __('Free text for search (*):') . ui_print_help_tip(
+	__('Search by module name, list matches.'),true);
 	
 	$table->data[0][3] = html_print_input_text('status_text_monitor', $status_text_monitor, '', 30, 100, true);
 	$table->data[0][4] = __('Module group');

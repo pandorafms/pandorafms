@@ -278,7 +278,8 @@ if ($count_total >= 1) {
 	//echo "&nbsp;&nbsp;&nbsp;&nbsp;";
 	echo '</td></tr><tr><td colspan=3>';
 
-	echo "<b>" . __("Free text:") . "</b>" . '&nbsp;&nbsp;';
+	echo "<b>" . __("Free text:") . "</b>". ui_print_help_tip(
+	__('Search by incident name or description, list matches.'),true) . '&nbsp;&nbsp;';
 	html_print_input_text ('texto', $texto, '', 45);
 	echo '&nbsp;';
 	html_print_input_image ("submit", "images/zoom.png", __('Search'), 'padding:0;', false, array ("alt" => __('Search'))); 

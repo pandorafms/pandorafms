@@ -380,7 +380,8 @@ switch ($action) {
 		
 		$table_aux->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group, '', '', '', true, false, true, '', false, 'width:150px', false, false, 'id_grupo', $strict_user). '<br>';
 		
-		$table_aux->data[0][2] = "<b>". __("Free text for search: ") . "</b>";
+		$table_aux->data[0][2] = "<b>". __("Free text for search: ") . ui_print_help_tip(
+	__('Search by report name or description, list matches.'),true) . "</b>";
 		$table_aux->data[0][3] = html_print_input_text ("search", $search, '', 30, '', true);
 		
 		$table_aux->data[0][6] = html_print_submit_button(__('Search'), 'search_submit', false, 'class="sub upd"', true);

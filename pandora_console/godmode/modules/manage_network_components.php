@@ -488,7 +488,8 @@ foreach ($component_groups as $component_group_key => $component_group_val) {
 
 $table->data[0][1] = html_print_select ($component_groups,
 	'search_id_group', $search_id_group, '', __('All'), 0, true, false, false);
-$table->data[0][2] = __('Search');
+$table->data[0][2] = __('Free Search') . ui_print_help_tip(
+	__('Search by name, description, tcp send or tcp rcv, list matches.'),true);
 $table->data[0][3] = html_print_input_text ('search_string', $search_string, '', 25,
 	255, true);
 if(defined("METACONSOLE"))

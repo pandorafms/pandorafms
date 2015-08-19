@@ -2255,6 +2255,15 @@ ul.operation li a:hover  {
 }
 
 
+
+.submenu_text {
+	color: #fff;
+}
+
+.submenu_not_selected {
+	color: #fff !important;
+}
+
 .operation .menu_icon:hover {
 	background-color: #d9fb86 !important;
 }
@@ -2273,15 +2282,6 @@ ul.operation li a:hover  {
 	background-color: #d9fb86 !important;
 	color: #585858 !important;
 }
-
-.submenu_text {
-	color: #fff;
-}
-
-.submenu_not_selected {
-	color: #fff !important;
-}
-
 .operation .selected .submenu_not_selected * {
 	color: #fff !important;
 }
@@ -2289,6 +2289,71 @@ ul.operation li a:hover  {
 .operation .selected .submenu_not_selected *:hover {
 	color: #585858 !important;
 }
+.operation {
+	background-color: #80ab51 !important;
+}
+.operation .selected {
+	background-color: #d9fb86 !important;
+}
+.operation li.selected {
+	box-shadow: inset 4px 0 #80ab51;
+}
+.operation .selected .submenu_text_middle {
+	color: #585858;
+}
+.operation .submenu_selected .selected .submenu_text {
+	color: #585858;
+}
+.operation .submenu_selected .selected {
+	color: #585858;
+}
+
+
+
+.godmode .menu_icon:hover {
+	background-color: #A77853 !important;
+}
+.godmode .submenu_text:hover {
+	color: #3f3f3f !important;
+}
+.godmode .submenu_not_selected:hover {
+	background-color: #A77853 !important;
+	color: #2f2f2f !important;
+}
+.godmode .submenu_selected:hover {
+	background-color: #A77853 !important;
+	color: #2f2f2f !important;
+}
+.godmode .sub_subMenu:hover {
+	background-color: #A77853 !important;
+	color: #2f2f2f !important;
+}
+.godmode .selected .submenu_not_selected * {
+	color: #fff !important;
+}
+
+.godmode .selected .submenu_not_selected *:hover {
+	color: #2f2f2f !important;
+}
+.godmode {
+	background-color: #e79b5d !important;
+}
+.godmode .selected {
+	background-color: #A77853 !important;
+}
+.godmode li.selected {
+	box-shadow: inset 4px 0 #e79b5d;
+}
+.godmode .selected .submenu_text_middle {
+	color: #2f2f2f;
+}
+.godmode .submenu_selected .selected .submenu_text {
+	color: #2f2f2f;
+}
+.godmode .submenu_selected .selected {
+	color: #2f2f2f;
+}
+
 
 
 li.links a:hover  {
@@ -2303,26 +2368,10 @@ li.links a:hover  {
 	background-color: #222222 !important;
 }
 
-.operation {
-	background-color: #80ab51 !important;
-}
 
-.operation .selected {
-	background-color: #d9fb86 !important;
-}
-.operation .selected .submenu_text_middle {
-	color: #585858;
-}
-.operation .submenu_selected .selected .submenu_text {
-	color: #585858;
-}
-.operation .submenu_selected .selected {
-	color: #585858;
-}
 
-.godmode {
-	background-color: #e79b5d !important;
-}
+
+
 
 .menu li, .menu .li.not_selected {
 	border-radius: 0px 0px 0px 0px;

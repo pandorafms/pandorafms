@@ -2270,6 +2270,10 @@ ul.operation li a:hover  {
 	color: #fff;
 }
 
+.menu li.selected {
+	box-shadow: inset 4px 0 #80BA27;
+}
+
 li.links a:hover  {
 	#font-weight: bold;
 }

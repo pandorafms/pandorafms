@@ -43,7 +43,13 @@ uninstall () {
         echo "Removing Pandora Agent..."
         rm -Rf $PANDORA_BIN
         rm -Rf $PANDORA_TEMP
-        rm -Rf $PANDORA_CFG
+        
+        # Skip delete of /etc/pandora if exists configuration of a server or satellite
+		if [ ! -f $PANDORA_CFG/pandora_server.conf -a ! -f $PANDORA_CFG/satellite_server.conf ]
+		then
+			rm -Rf $PANDORA_CFG 2> /dev/null
+		fi
+		
         rm -Rf $PANDORA_STARTUP
         rm -Rf $PANDORA_HOME
         rm -Rf $PANDORA_LOG

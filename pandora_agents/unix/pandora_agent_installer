@@ -197,8 +197,8 @@ uninstall () {
 	rm -Rf $PANDORA_BASE$PANDORA_MAN/{man1,cat1}/tentacle_client.1.gz 2> /dev/null
 	rm -Rf $PANDORA_BASE$PANDORA_MAN/{man1,cat1}/pandora_agent.1.gz 2> /dev/null
 
-	# Skip delete of /etc/pandora if exists configuration of a server
-	if [ ! -f $PANDORA_BASE/$PANDORA_CFG/pandora_server.conf ]
+	# Skip delete of /etc/pandora if exists configuration of a server or satellite
+	if [ ! -f $PANDORA_BASE/$PANDORA_CFG/pandora_server.conf -a ! -f $PANDORA_BASE/$PANDORA_CFG/satellite_server.conf ]
 	then
 		rm -Rf $PANDORA_BASE/$PANDORA_CFG 2> /dev/null
 	fi

@@ -28,23 +28,23 @@ Description: The default Pandora FMS theme layout
 	font-family: verdana, sans-serif;
 	letter-spacing: 0.03pt;
 	font-size: 8pt;
-	color: #3F3F3F;
+	color: #fff;
 }
 svg * {
 	font-size: 11pt;
 	}
 body {
-	background-color: #FFF;
+	background-color: #5b5b5b;
 	margin: 0 auto;
 }
 
 div#page {
-	background: #FFF;
+	background: #5b5b5b;
 	background-image: none;
 }
 
 body.pure {
-	background-color: #fff;
+	background-color: #5b5b5b;
 }
 input, textarea {
 	border: 1px solid #ddd;
@@ -81,7 +81,7 @@ select {
 input.button {
 	font-family: Arial,Sans-serif;
 	border: 4px solid #ccc;
-	background: #fff;
+	background: #5b5b5b;
 	padding: 2px 3px;
 	margin: 10px 15px;
 }
@@ -102,7 +102,7 @@ h1, h2, h3, h4 {
 	font-size: 1em;
 	font-family: Arial, Sans-serif;
 	text-transform: uppercase;
-	color: #3F3F3F;
+	color: #fff;
 	padding-bottom: 4px;
 	padding-top: 7px;
 }
@@ -118,15 +118,15 @@ h3 {
 h4 {
 	margin-bottom: 10px;
 	font-size: 13px;
-	color: #3F3F3F;
+	color: #fff;
 	text-transform: none;
 }
 a {
-	color: #3F3F3F;
+	color: #fff;
 	text-decoration: none;
 }
 a:hover {
-	color: #373737;
+	color: #fff;
 	text-decoration: underline;
 }
 a.white_bold {
@@ -162,7 +162,7 @@ div#error_buttons a{
 	margin-top:25px;
 	left: 15px;
 	padding-top: 5px;
-	background-color: #FFFFFF;
+	background-color: #5b5b5b;
 	border-top-left-radius: 2px;
 	border-top-right-radius: 2px;
 	border-bottom-left-radius: 2px;
@@ -174,7 +174,7 @@ div#error_buttons a{
 	font-weight: bold;
 	padding-top: 5px;
 	margin-left: 5px;
-	background: none repeat scroll 0% 0% #82B92E;
+	background: none repeat scroll 0% 0% #082c43;
 	border-top-left-radius: 2px;
 	border-top-right-radius: 2px;
 	border-bottom-left-radius: 2px;
@@ -226,7 +226,7 @@ div#container {
 	#border-top: solid 2px #000;
 	#margin-top: 5px;
 	height: 100%;
-	background: #FFF;
+	background: #5b5b5b;
 }
 div#page {
 	width: 960px;
@@ -243,7 +243,7 @@ div#main_help {
 	width: 100%;
 	padding-left: 0px;
 	padding-top: 0px;
-	background-color: #ffffff;
+	background-color: #5b5b5b;
 	margin-top: 0px;
 	margin-left: 0px;
 	margin-right: 0px;
@@ -326,10 +326,11 @@ div#head {
 	margin-bottom: 20px;
 	border-bottom-style: solid;
 	border-bottom-width: 3px;
-	border-color: #82B92E;
+	border-color: #082c43;
 	min-width: 882px;
 	background-color: #333;
 	color: white;
+	background-image: url("../../images/header_f2b.jpg");
 }
 
 .fixed_header {
@@ -466,7 +467,7 @@ div#login_in, #login_f {
 	height: 0px;
 	border-right: 13px solid transparent;
 	border-left: 25px solid transparent;
-	border-bottom: 18px solid #82B92E;
+	border-bottom: 18px solid #082c43;
 	left: 16px;
 	position: relative;
 }
@@ -572,11 +573,11 @@ DIV.login_nick>input, DIV.login_pass>input {
 
 DIV.login_nick>input:focus,DIV.login_pass>input:focus {
     outline-width: 0px;
-	border-color: #82B92E;
-	background-color: #82B92E;
+	border-color: #082c43;
+	background-color: #082c43;
 	font-size: 12px;
 	height: 20px;
-	box-shadow: 0px 0px 3px 3px #82B92E;
+	box-shadow: 0px 0px 3px 3px #082c43;
 }
 
 DIV.login_nick>img, DIV.login_pass>img {
@@ -903,7 +904,7 @@ div#cont {
 }
 
 .termframe{
-	background-color: #80BA27 !important;
+	background-color: #082c43 !important;
 }
 
 table, img {
@@ -970,7 +971,7 @@ tr.disabled_row_user * {
 }
 
 .bg { /* op menu */
-	background: #82b92e;
+	background: #082c43;
 }
 
 .bg2 { /* main page */
@@ -1131,7 +1132,7 @@ div.title_line {
 
 #menu_tab_frame, #menu_tab_frame_view {
 	display: block !important;
-	border-bottom: 1px solid #80BA27;
+	border-bottom: 1px solid #082c43;
 /*	float:left; */
 	margin-left: 0px !important;
 	max-height: 31px;
@@ -1186,7 +1187,7 @@ div.title_line {
 }
 
 #menu_tab li.nomn_high a {
-	/*background: #82b92e;*/
+	/*background: #082c43;*/
 	color: #fff;
 }
 #menu_tab .mn li a {
@@ -1198,7 +1199,7 @@ div.title_line {
 	width: 21px;
 }
 #menu_tab li.nomn:hover a, #menu_tab li:hover ul a:hover {
-	/*background: #82b92e;*/
+	/*background: #082c43;*/
 	color: #fff;
 }
 #menu_tab li:hover a {
@@ -1253,7 +1254,7 @@ div.title_line {
 }
 
 #menu_tab_left li.view {
-	background: #82b92e;
+	background: #082c43;
 	max-width: 40%;
 	min-width: 20%;
 	padding: 5px 5px 0px;
@@ -1374,7 +1375,7 @@ span.rmess, span.nrmess {
 }
 
 table.databox {
-	background-color: #f9faf9;
+	background-color: #5b5b5b;
 	border-spacing: 0px;
 	-moz-box-shadow: 0px 0px 0px #DDD !important;
 	-webkit-box-shadow: 0px 0px 0px #DDD !important;
@@ -1411,11 +1412,11 @@ table.databox {
 
 .tactical_set legend{
 	text-align:left;
-	color: #3F3F3F;
+	color: #fff;
 }
 
 .tactical_set{
-	background: #FFF;
+	background: #5b5b5b;
 	border: 1px solid #E2E2E2;
 	margin-left: auto;
 	margin-right: auto;
@@ -1441,7 +1442,7 @@ table.databox_grid td {
 
 
 table.alternate tr:nth-child(odd) td{
-	background-color: #ffffff;
+	background-color: #5b5b5b;
 }
 table.alternate tr:nth-child(even) td{
 	background-color: #e4e5e4;
@@ -1744,7 +1745,7 @@ ol.steps li.visited {
 }
 
 fieldset {
-	background-color:#F9FAF9;
+	background-color:#5b5b5b;
 	border: 1px solid #E2E2E2;
 	padding:0.5em;
 	margin-bottom:20px;
@@ -1979,7 +1980,7 @@ div#logo_text3 {
 
 /* Calendar background */
 table.scw {
-	background-color: #82b92e;
+	background-color: #082c43;
 	border: 0 !important;
 	border-radius: 4px;
 }
@@ -2013,12 +2014,12 @@ tfoot.scwFoot {
 }
 
 table.scwCells {
-	background-color: #fff !important;
+	background-color: #5b5b5b !important;
 	color: #3c3c3c !important;
 }
 
 table.scwCells:hover {
-	background-color: #fff !important;
+	background-color: #5b5b5b !important;
 }
 
 td.scwCellsExMonth {
@@ -2039,7 +2040,7 @@ td.scwInputDate {
 }
 
 td.scwFoot {
-	background-color: #fff !important;
+	background-color: #5b5b5b !important;
 	color: #3c3c3c !important;
 	border: 0 !important;
 }
@@ -2068,7 +2069,7 @@ div.cellCenter {
 div.cellWhite {
 	width: 100%;
 	height: 100%;
-	background: #fff;
+	background: #5b5b5b;
 	color: #111;
 }
 
@@ -2127,7 +2128,7 @@ div.cellBig {
 }
 
 .info_box {
-	background: #F9FAF9;
+	background: #5b5b5b;
 	margin-top: 10px !important;
 	margin-bottom: 10px !important;
 	padding: 0px 5px 5px 10px;
@@ -2170,10 +2171,10 @@ tr.group_view_crit, .group_view_crit {
 }
 
 tr.group_view_norm, .group_view_norm, tr.group_view_normal, .group_view_normal {
-	#background-color: #ffffff;
+	#background-color: #5b5b5b;
 }
 tr.group_view_ok, .group_view_ok {
-	background-color: #80BA27;
+	background-color: #082c43;
 	color: #fff;
 }
 
@@ -2203,7 +2204,7 @@ tr.group_view_unk, .group_view_unk {
 
 /* classes for event priorities. Sits now in functions.php */
 .datos_green, .datos_greenf9, .datos_green a, .datos_greenf9 a, .datos_green * {
-	background-color: #80BA27;
+	background-color: #082c43;
 	color: #fff;
 }
 .datos_red, .datos_redf9, .datos_red a, .datos_redf9 a, .datos_red *{
@@ -2271,7 +2272,7 @@ ul.operation li a:hover  {
 }
 
 .menu li.selected {
-	box-shadow: inset 4px 0 #80BA27;
+	box-shadow: inset 4px 0 #082c43;
 }
 
 li.links a:hover  {
@@ -2314,7 +2315,7 @@ li.links a:hover  {
 }
 
 input#text-id_parent.ac_input, input, textarea, select {
-	background-color: #ffffff !important;
+	background-color: #5b5b5b !important;
 	border: 1px solid #cbcbcb;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
@@ -2552,7 +2553,7 @@ div.nodata_container {
 	top:0;
 	right:20px;
 
-	#background-color: #fff;
+	#background-color: #5b5b5b;
 	#padding: 10px;
 }
 
@@ -2564,7 +2565,7 @@ div.nodata_container {
 	right:20px;
 	overflow: auto;
 
-	#background-color: #fff;
+	#background-color: #5b5b5b;
 	#padding: 10px;
 }
 
@@ -2610,7 +2611,7 @@ div#agent_wizard_subtabs {
 #container_servicemap_legend {
 	position: absolute;
 	width: 200px;
-	background: #FFF;
+	background: #5b5b5b;
 	margin-top: 10px;
 	right: 2px;
 	border: 1px solid #E2E2E2;
@@ -2832,7 +2833,7 @@ table#policy_modules td * {
 
 #clippy_head_title {
 	font-weight: bold;
-	background: #82b92e;
+	background: #082c43;
 	color: #ffffff;
 	margin-top: -15px;
 	margin-left: -15px;
@@ -2861,7 +2862,7 @@ table#policy_modules td * {
 	width: 100%;
 	margin-left: auto;
 	margin-right: auto;
-	background-color: #FFF !important;
+	background-color: #5b5b5b !important;
 	padding: 10px;
 	border: 1px solid #E2E2E2;
 	margin-top: 5%;
@@ -2944,7 +2945,7 @@ table#policy_modules td * {
 
 #menu_tab li.nomn_high, #menu_tab li.nomn_high span {
     color: #FFF;
-    background-color: #FFF;
+    background-color: #5b5b5b;
 }
 
 #menu_tab li.nomn img, #menu_tab li img {
@@ -3046,7 +3047,7 @@ table#policy_modules td * {
 }
 
 .green_title{
-	background-color: #82B92E;
+	background-color: #082c43;
 	font-weight:normal;
 	text-align: center;
 }

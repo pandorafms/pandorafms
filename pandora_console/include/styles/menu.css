@@ -31,14 +31,7 @@
 	border-bottom: 0px none #d4d4d4;
 	margin: 0;
 }
-<<<<<<< HEAD
-.menu li.selected {
-	box-shadow: inset 4px 0 #80BA27;
-	background-color: #585858 !important;
-}
-=======
 
->>>>>>> Continue with the fixes in the themes. TICKET: #435
 
 .menu li a {
 	/*background-color: inherit;*/

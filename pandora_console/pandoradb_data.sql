@@ -39,7 +39,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('step_compact','1'),
 ('db_scheme_first_version', '6.0dev'),
 ('db_scheme_version','6.0RC1'),
-('db_scheme_build','PD150819'),
+('db_scheme_build','PD150820'),
 ('show_unknown','0'),
 ('show_lastalerts','1'),
 ('style','pandora'),

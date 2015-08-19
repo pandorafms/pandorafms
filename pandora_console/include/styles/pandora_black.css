@@ -2266,6 +2266,14 @@ ul.operation li a:hover  {
 	background-color: #585858 !important;
 }
 
+.submenu_text {
+	color: #fff;
+}
+
+.menu li.selected {
+	box-shadow: inset 4px 0 #80BA27;
+}
+
 li.links a:hover  {
 	#font-weight: bold;
 }
@@ -2280,6 +2288,10 @@ li.links a:hover  {
 
 .operation {
 	background-color: #333 !important;
+}
+
+.operation .selected {
+	background-color: #585858 !important;
 }
 
 .menu li, .menu .li.not_selected {

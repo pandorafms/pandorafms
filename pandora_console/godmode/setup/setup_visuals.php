@@ -115,18 +115,22 @@ $table_styles->style[0] = 'font-weight: bold;';
 $table_styles->data = array ();
 
 $table_styles->data[$row][0] = __('Style template');
-$table_styles->data[$row][1] = html_print_select (themes_get_css (), 'style', $config["style"].'.css', '', '', '', true);
+$table_styles->data[$row][1] = html_print_select(themes_get_css(),
+	'style', $config["style"].'.css', '', '', '', true);
 $row++;
 
 $table_styles->data[$row][0] = __('Status icon set');
 $iconsets["default"] = __('Colors');
 $iconsets["faces"] = __('Faces');
 $iconsets["color_text"] = __('Colors and text');
-$table_styles->data[$row][1] = html_print_select ($iconsets, 'status_images_set', $config["status_images_set"], '', '', '', true);
-$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'status_set_preview', false, '', '', true);
+$table_styles->data[$row][1] = html_print_select($iconsets,
+	'status_images_set', $config["status_images_set"], '', '', '', true);
+$table_styles->data[$row][1] .= "&nbsp;" .
+	html_print_button(__("View"), 'status_set_preview', false, '', '', true);
 $row++;
 
-$table_styles->data[$row][0] = __('Login background') . ui_print_help_tip(__('You can place your custom images into the folder images/backgrounds/'), true);
+$table_styles->data[$row][0] = __('Login background') .
+	ui_print_help_tip(__('You can place your custom images into the folder images/backgrounds/'), true);
 $backgrounds_list_jpg = list_files("images/backgrounds", "jpg", 1, 0);
 $backgrounds_list_gif = list_files("images/backgrounds", "gif", 1, 0);
 $backgrounds_list_png = list_files("images/backgrounds", "png", 1, 0);
@@ -136,7 +140,8 @@ asort($backgrounds_list);
 $table_styles->data[$row][1] = html_print_select ($backgrounds_list,
 	'login_background', $config["login_background"], '', __('Default'),
 	'', true);
-$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'login_background_preview', false, '', 'class="sub camera"', true);
+$table_styles->data[$row][1] .= "&nbsp;" .
+	html_print_button(__("View"), 'login_background_preview', false, '', 'class="sub camera"', true);
 $row++;
 
 $table_styles->data[$row][0] = __('Custom logo') . ui_print_help_icon("custom_logo", true);
@@ -193,11 +198,13 @@ $listIcons = gis_get_array_list_icons();
 $arraySelectIcon = array();
 foreach ($listIcons as $index => $value)
 	$arraySelectIcon[$index] = $index;
-$table_gis->data[$row][0] = __('Default icon in GIS') . ui_print_help_tip(__('Agent icon for GIS Maps. If set to "none", group icon will be used'), true);
+$table_gis->data[$row][0] = __('Default icon in GIS') .
+	ui_print_help_tip(__('Agent icon for GIS Maps. If set to "none", group icon will be used'), true);
 $table_gis->data[$row][1] = html_print_select($arraySelectIcon,
 	"gis_default_icon", $config["gis_default_icon"], "", __('None'),
 		'', true);
-$table_gis->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'gis_icon_preview', false, '', '', true);
+$table_gis->data[$row][1] .= "&nbsp;" .
+	html_print_button(__("View"), 'gis_icon_preview', false, '', '', true);
 $row++;
 
 echo "<fieldset>";
@@ -217,7 +224,8 @@ $table_font->data = array ();
 
 $table_font->data[$row][0] = __('Font path');
 $fonts = load_fonts();
-$table_font->data[$row][1] = html_print_select($fonts, 'fontpath', io_safe_output($config["fontpath"]), '', '', 0, true);
+$table_font->data[$row][1] = html_print_select($fonts, 'fontpath',
+	io_safe_output($config["fontpath"]), '', '', 0, true);
 
 $row++;
 
@@ -244,14 +252,20 @@ $table_font->data[$row][1] = html_print_select($font_size_array, 'font_size',
 	$config["font_size"], '', '', 0, true);
 $row++;
 
-$table_font->data[$row][0] = __('Agent size text') . ui_print_help_tip(__('When the agent name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
-$table_font->data[$row][1] = __('Small:') . html_print_input_text ('agent_size_text_small', $config["agent_size_text_small"], '', 3, 3, true);
-$table_font->data[$row][1] .= ' ' . __('Normal:') . html_print_input_text ('agent_size_text_medium', $config["agent_size_text_medium"], '', 3, 3, true);
+$table_font->data[$row][0] = __('Agent size text') .
+	ui_print_help_tip(__('When the agent name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+$table_font->data[$row][1] = __('Small:') .
+	html_print_input_text ('agent_size_text_small', $config["agent_size_text_small"], '', 3, 3, true);
+$table_font->data[$row][1] .= ' ' . __('Normal:') .
+	html_print_input_text ('agent_size_text_medium', $config["agent_size_text_medium"], '', 3, 3, true);
 $row++;
 
-$table_font->data[$row][0] = __('Module size text') . ui_print_help_tip(__('When the module name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
-$table_font->data[$row][1] = __('Small:') . html_print_input_text ('module_size_text_small', $config["module_size_text_small"], '', 3, 3, true);
-$table_font->data[$row][1] .= ' ' . __('Normal:') . html_print_input_text ('module_size_text_medium', $config["module_size_text_medium"], '', 3, 3, true);
+$table_font->data[$row][0] = __('Module size text') .
+	ui_print_help_tip(__('When the module name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);
+$table_font->data[$row][1] = __('Small:') .
+	html_print_input_text ('module_size_text_small', $config["module_size_text_small"], '', 3, 3, true);
+$table_font->data[$row][1] .= ' ' . __('Normal:') .
+	html_print_input_text ('module_size_text_medium', $config["module_size_text_medium"], '', 3, 3, true);
 $row++;
 
 $table_font->data[$row][0] = __('Description size text') . ui_print_help_tip(__('When the description name have a lot of characters, in some places in Pandora Console it is necesary truncate to N characters.'), true);

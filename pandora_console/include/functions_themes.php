@@ -35,22 +35,22 @@ function themes_get_css ($path = false) {
 		$theme_dir = 'include/styles/';
 	
 	if ($path)
-		$files = list_files ($theme_dir, "pandora", 0, 0);
-	else	
-		$files = list_files ($theme_dir, "pandora", 1, 0);
+		$files = list_files($theme_dir, "pandora", 0, 0);
+	else
+		$files = list_files($theme_dir, "pandora", 1, 0);
 	
 	$retval = array ();
 	foreach ($files as $file) {
 		//Skip '..' and '.' entries and files not ended in '.css'
 		if ($path && ($file == '.' || $file == '..' || strtolower(substr ($file, strlen ($file) - 4)) !== '.css'))
 			continue;
-		$data = implode ('', file ($theme_dir.'/'.$file));
-		if (preg_match ('|Exclude css from visual styles|', $data)) {
+		$data = implode('', file ($theme_dir . '/' . $file));
+		if (preg_match('|Exclude css from visual styles|', $data)) {
 			continue;
 		}
 		preg_match ('|Name:(.*)$|mi', $data, $name);
-		if (isset ($name[1]))
-			$retval[$file] = trim ($name[1]);
+		if (isset($name[1]))
+			$retval[$file] = trim($name[1]);
 		else
 			$retval[$file] = $file;
 	}

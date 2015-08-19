@@ -1135,14 +1135,17 @@ div.title_line {
 	border-bottom: 1px solid #80BA27;
 /*	float:left; */
 	margin-left: 0px !important;
-	max-height: 31px;
-	min-height: 31px;
+	max-height: 42px;
+	min-height: 42px;
 	padding-right: 28px;
 	width: 100%;
 }
 
 #menu_tab {
 	margin: 0px 0px 0px 0px !important;
+	position: absolute;
+	right: 0px;
+	top: 10px;
 }
 
 #menu_tab .mn, #menu_tab ul, #menu_tab .mn ul {
@@ -1255,10 +1258,10 @@ div.title_line {
 
 #menu_tab_left li.view {
 	background: #80ab51;
-	max-width: 40%;
-	min-width: 20%;
+	max-width: 100%;
+	min-width: 100%;
 	padding: 5px 5px 0px;
-	text-align: center;
+	text-align: left;
 	-moz-border-top-right-radius: 3px;
 	-webkit-border-top-right-radius: 3px;
 	border-top-right-radius: 3px;

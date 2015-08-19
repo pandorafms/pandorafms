@@ -50,7 +50,7 @@ li:hover ul { display: block; }
 	padding: 11px;
 	margin-left: 0px;
 	color: #fff;
-	width: 86%;
+	width: 100%;
 }
 
 .menu li.subselected a{
@@ -68,19 +68,19 @@ li:hover ul { display: block; }
 	left: 44px;
 	min-height: 35px;
 	height: 35px;
-	width: 160px;
+	width: 180px;
 }
 
 .submenu2{
 	position: absolute;
 	z-index: 999;
-	left: 160px;
+	left: 180px;
 }
 
 .sub_subMenu{
 	min-height: 35px !important;
 	height: 35px;
-	width: 160px;
+	width: 180px;
 	font-weight: normal !important;
 }
 .sub_subMenu.selected{
@@ -100,11 +100,11 @@ li:hover ul { display: block; }
 }
 
 .menu li.has_submenu > a > div {
-	background: url(../../images/arrow.png) no-repeat 90% 50%;
+	background: url(../../images/arrow.png) no-repeat 80% 50%;
 	z-index: 1; /* Positions it on top of the rest */
 }
-.menu li.has_submenu .flecha {
-	background: url(../../images/arrow.png) no-repeat 90% 50%;
+.menu li.has_submenu>.SubNoLink{
+	background: url(../../images/arrow.png) no-repeat 80% 50%;
 	z-index: 1; /* Positions it on top of the rest */
 }
 

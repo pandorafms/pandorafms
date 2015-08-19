@@ -211,7 +211,7 @@ function menu_print_menu (&$menu) {
 				$submenu_output .= '<li id="'. str_replace(' ','_',$sub["text"]) . '" class="'.$class.'">';
 				
 				if (isset ($sub["subtype"]) && $sub["subtype"] == "nolink") {
-					$submenu_output .= '<div class="flecha"><div class=" SubNoLink ' . $sub_tree_class . '">'.$sub["text"].'</div></div>';
+					$submenu_output .= '<div class=" SubNoLink ' . $sub_tree_class . '">'.$sub["text"].'</div>';
 				}
 				else
 					$submenu_output .= '<a href="'.$subsec2.'"><div class="' . $sub_tree_class . '">'.$sub["text"].'</div></a>';

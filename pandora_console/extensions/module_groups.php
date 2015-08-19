@@ -186,12 +186,12 @@ function mainModuleGroups() {
 		
 		//Metaobject use in html_print_table
 		$table = null;
-		$table->align[0] = 'right'; //Align to right the first column.
+		$table->align[0] = 'left'; //Align to right the first column.
 		$table->style[0] = 'color: #ffffff; '.
 			'background-color: #373737; font-weight: bolder; padding-right: 10px;';
 		$table->head = $head;
-		$table->width = '98%';
-		
+		$table->width = '100%';
+
 		//The content of table
 		$tableData = array();
 		
@@ -199,9 +199,9 @@ function mainModuleGroups() {
 		foreach ($agentGroups as $idAgentGroup => $name) {
 			$fired = false;
 			$row = array();
-			
-			array_push($row, ui_print_truncate_text($name, GENERIC_SIZE_TEXT));
-			
+
+			array_push($row, ui_print_truncate_text($name, GENERIC_SIZE_TEXT, true, true, true, '&hellip;', 'color:#FFF'));
+
 			foreach ($modelGroups as $idModelGroup => $modelGroup) {
 				$fired = false;
 				$query = sprintf($sql, $idAgentGroup, $idModelGroup);

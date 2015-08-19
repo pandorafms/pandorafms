@@ -135,12 +135,9 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		$sub["godmode/reporting/map_builder"]["refr"] = 60;
 	}
 	
-	
-	$sub["godmode/reporting/map_builder"]["type"] = "direct";
-	$sub["godmode/reporting/map_builder"]["subtype"] = "nolink";
 	$layouts = db_get_all_rows_in_table ('tlayout', 'name');
 	$sub2 = array ();
-	$sub2["godmode/reporting/map_builder"]["text"] = __("List of visual console");
+	
 	if ($layouts === false) {
 		$layouts = array ();
 	}
@@ -177,8 +174,10 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 				$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = 0;
 			}
 		}
+		if (!empty($sub2))
+			$sub["godmode/reporting/map_builder"]["sub2"] = $sub2;
 	}
-	$sub["godmode/reporting/map_builder"]["sub2"] = $sub2;
+	
 	// Agent read, Server read
 	if (check_acl ($config['id_user'], 0, "AR")) {
 		

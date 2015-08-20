@@ -2471,4 +2471,18 @@ function extract_column ($array, $column) {
 	}, $array);
 }
 
+
+function get_percentile($percentile, $array) {
+	sort($array);
+	$index = ($percentile / 100) * count($array);
+	
+	if (floor($index) == $index) {
+		 $result = ($array[$index-1] + $array[$index]) / 2;
+	}
+	else {
+		$result = $array[floor($index)];
+	}
+	
+	return $result;
+}
 ?>

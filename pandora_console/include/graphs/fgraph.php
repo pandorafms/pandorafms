@@ -214,6 +214,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 	$red_threshold = 0, $adapt_key = '', $force_integer = false,
 	$series_suffix_str = '', $menu = true, $backgroundColor = 'white') {
 	
+	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
 	// ATTENTION: The min size is in constants.php

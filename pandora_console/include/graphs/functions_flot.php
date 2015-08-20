@@ -161,6 +161,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	
 	global $config;
 	
+	
 	include_javascript_dependencies_flot_graph();
 	
 	$font_size = '7';
@@ -269,12 +270,24 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		foreach($values as $key => $value) {
 			$jsvar = "data_" . $graph_id . "_" . $key;
 			
+			
 			if (!isset($serie_types[$key])) {
-				$serie_types2[$jsvar] = 'line';
+				switch ($type) {
+					case 'line_simple':
+					case 'line_stacked':
+						$serie_types2[$jsvar] = 'line';
+						break;
+					case 'area_simple':
+					case 'area_stacked':
+					default:
+						$serie_types2[$jsvar] = 'area';
+						break;
+				}
 			}
 			else {
 				$serie_types2[$jsvar] = $serie_types[$key];
 			}
+			
 			
 			if ($serie_types2[$jsvar] == 'points' && $value == 0) {
 				$data[$jsvar][] = 'null';
@@ -384,32 +397,32 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	$return .= "<script type='text/javascript'>";
 	$return .= "//<![CDATA[\n";
 	$return .= "pandoraFlotArea(" .
-		"'$graph_id', " .
-		"'$values', " .
-		"'$labels', " .
-		"'$labels_long', " .
-		"'$legend', " .
-		"'$colors', " .
-		"'$type', " .
-		"'$serie_types', " .
-		"$watermark, " .
-		"$width, " .
-		"$max_x, " .
-		"'" . $homeurl . "', " .
-		"'$unit', " .
-		"$font_size, " .
-		"$menu, " .
-		"'$events', " .
-		"'$event_ids', " .
-		"'$legend_events', " .
-		"'$alerts', " .
-		"'$alert_ids', " .
-		"'$legend_alerts', " .
-		"'$yellow_threshold', " .
-		"'$red_threshold', " .
-		"$force_integer, " .
-		"'$separator', " .
-		"'$separator2', " .
+		"'$graph_id', \n" .
+		"'$values', \n" .
+		"'$labels', \n" .
+		"'$labels_long', \n" .
+		"'$legend', \n" .
+		"'$colors', \n" .
+		"'$type', \n" .
+		"'$serie_types', \n" .
+		"$watermark, \n" .
+		"$width, \n" .
+		"$max_x, \n" .
+		"'" . $homeurl . "', \n" .
+		"'$unit', \n" .
+		"$font_size, \n" .
+		"$menu, \n" .
+		"'$events', \n" .
+		"'$event_ids', \n" .
+		"'$legend_events', \n" .
+		"'$alerts', \n" .
+		"'$alert_ids', \n" .
+		"'$legend_alerts', \n" .
+		"'$yellow_threshold', \n" .
+		"'$red_threshold', \n" .
+		"$force_integer, \n" .
+		"'$separator', \n" .
+		"'$separator2', \n" .
 		"'$series_suffix_str');";
 	$return .= "\n//]]>";
 	$return .= "</script>";

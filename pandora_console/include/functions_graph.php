@@ -230,7 +230,8 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				$data, $data_i, $previous_data, $resolution, $interval, $period, $datelimit, 
 				$projection, $avg_only = false, $uncompressed_module = false, 
 				$show_events = false, $show_alerts = false, $show_unknown = false, $baseline = false, 
-				$baseline_data = array(), $events = array(), $series_suffix = '', $start_unknown = false) {
+				$baseline_data = array(), $events = array(), $series_suffix = '', $start_unknown = false,
+				$percentil = null) {
 	
 	global $config;
 	global $chart_extra_data;
@@ -241,10 +242,10 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 	$max_value = 0;
 	$min_value = null;
 	$flash_chart = $config['flash_charts'];
-		
+	
 	// Event iterator
 	$event_i = 0;
-			
+	
 	// Is unknown flag
 	$is_unknown = $start_unknown;
 	
@@ -460,6 +461,18 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 			$chart_extra_data[count($chart)-1]['alerts'] = implode(',',$alert_ids);
 		}
 	}
+	
+	
+	if (!is_null($percentil)) {
+		$avg = array_map(function($item) { return $item['sum'];}, $chart);
+		
+		$percentil_result = get_percentile($percentil, $avg);
+		
+		//Fill the data of chart
+		array_walk($chart, function(&$item) use ($percentil_result, $series_suffix) {
+			$item['percentil' . $series_suffix] = $percentil_result; });
+		$series_type['percentil' . $series_suffix] = 'line';
+	}
 }
 
 
@@ -468,7 +481,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$show_alerts = false, $avg_only = 0, $date = 0, $unit = '',
 	$baseline = 0, $return_data = 0, $show_title = true, $projection = false, 
 	$adapt_key = '', $compare = false, $series_suffix = '', $series_suffix_str = '', 
-	$show_unknown = false) {
+	$show_unknown = false, $percentil = null) {
 	
 	global $config;
 	global $chart;
@@ -550,13 +563,15 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$data = array ();
 	}
 	
-	// Uncompressed module data
-	if ($uncompressed_module) {
-		$min_necessary = 1;
 	
-	// Compressed module data
+	if ($uncompressed_module) {
+		// Uncompressed module data
+		
+		$min_necessary = 1;
 	}
 	else {
+		// Compressed module data
+		
 		// Get previous data
 		$previous_data = modules_get_previous_data ($agent_module_id, $datelimit);
 		if ($previous_data !== false) {
@@ -626,7 +641,10 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$data, $data_i, $previous_data, $resolution, $interval, $period, $datelimit, 
 		$projection, $avg_only, $uncompressed_module, 
 		$show_events, $show_alerts, $show_unknown, $baseline, 
-		$baseline_data, $events, $series_suffix, $start_unknown);
+		$baseline_data, $events, $series_suffix, $start_unknown,
+		$percentil);
+	
+	
 	
 	// Return chart data and don't draw
 	if ($return_data == 1) {
@@ -647,34 +665,41 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	}
 	
 	foreach ($chart as $timestamp => $chart_data) {
-		if ($show_events && $chart_data['event'.$series_suffix] > 0) {
-			$chart[$timestamp]['event'.$series_suffix] = $event_max * 1.2;
+		if ($show_events && $chart_data['event' . $series_suffix] > 0) {
+			$chart[$timestamp]['event' . $series_suffix] = $event_max * 1.2;
 		}
-		if ($show_alerts && $chart_data['alert'.$series_suffix] > 0) {
-			$chart[$timestamp]['alert'.$series_suffix] = $event_max * 1.10;
+		if ($show_alerts && $chart_data['alert' . $series_suffix] > 0) {
+			$chart[$timestamp]['alert' . $series_suffix] = $event_max * 1.10;
 		}
-		if ($show_unknown && $chart_data['unknown'.$series_suffix] > 0) {
-			$chart[$timestamp]['unknown'.$series_suffix] = $event_max * 1.05;
+		if ($show_unknown && $chart_data['unknown' . $series_suffix] > 0) {
+			$chart[$timestamp]['unknown' . $series_suffix] = $event_max * 1.05;
 		}
 	}
 	
 	// Only show caption if graph is not small
 	if ($width > MIN_WIDTH_CAPTION && $height > MIN_HEIGHT)
 		//Flash chart
-		$caption = __('Max. Value') . $series_suffix_str . ': ' . $graph_stats['sum']['max'] . '    ' . __('Avg. Value').$series_suffix_str . ': ' .  $graph_stats['sum']['avg'] . '    ' . __('Min. Value').$series_suffix_str . ': ' . $graph_stats['sum']['min'] . '    ' . __('Units. Value').$series_suffix_str . ': ' . $unit;
+		$caption =
+			__('Max. Value') . $series_suffix_str . ': ' . $graph_stats['sum']['max'] . '    ' .
+			__('Avg. Value') . $series_suffix_str . ': ' .  $graph_stats['sum']['avg'] . '    ' .
+			__('Min. Value') . $series_suffix_str . ': ' . $graph_stats['sum']['min'] . '    ' .
+			__('Units. Value') . $series_suffix_str . ': ' . $unit;
 	else
 		$caption = array();
 	
 	///////
 	// Color commented not to restrict serie colors
 	if ($show_events) {
-		$color['event'.$series_suffix] = array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
+		$color['event' . $series_suffix] =
+			array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
 	}
 	if ($show_alerts) {
-		$color['alert'.$series_suffix] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
+		$color['alert' . $series_suffix] =
+			array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
 	}
 	if ($show_unknown) {
-		$color['unknown'.$series_suffix] = array('border' => '#999999', 'color' => '#999999', 'alpha' => 50);
+		$color['unknown' . $series_suffix] =
+			array('border' => '#999999', 'color' => '#999999', 'alpha' => 50);
 	}
 	$color['max'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
 	$color['sum'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
@@ -708,6 +733,14 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$legend['unknown'.$series_suffix] = __('Unknown').$series_suffix_str;
 		$chart_extra_data['legend_unknown'] = $legend['unknown'.$series_suffix_str];
 	}
+	
+	if (!is_null($percentil)) {
+		$first_data = reset($chart);
+		$percentil_value = format_for_graph($first_data['percentil'], 2);
+		
+		$legend['percentil'.$series_suffix] = __('Percentile %dº', $percentil)  .$series_suffix_str . " (" . $percentil_value . " " . $unit . ") ";
+		$chart_extra_data['legend_percentil'] = $legend['percentil'.$series_suffix_str];
+	}
 }
 
 function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
@@ -716,7 +749,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$unit = '', $baseline = 0, $return_data = 0, $show_title = true,
 	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
 	$adapt_key = '', $compare = false, $show_unknown = false,
-	$menu = true, $backgroundColor = 'white') {
+	$menu = true, $backgroundColor = 'white', $percentil = null) {
 	
 	global $config;
 	global $graphic_type;
@@ -747,7 +780,9 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$show_alerts, $avg_only, $date-$period, $unit, $baseline,
 			$return_data, $show_title, $projection, $adapt_key,
 			$compare, $series_suffix, $series_suffix_str,
-			$show_unknown);
+			$show_unknown, $percentil);
+		
+		
 		
 		switch ($compare) {
 			case 'separated':
@@ -773,13 +808,16 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		}
 	}
 	
+	
 	// Build the data of the current period
 	$data_returned = grafico_modulo_sparse_data ($agent_module_id,
 		$period, $show_events,
 		$width, $height , $title, $unit_name,
 		$show_alerts, $avg_only,
 		$date, $unit, $baseline, $return_data, $show_title,
-		$projection, $adapt_key, $compare, '', '', $show_unknown);
+		$projection, $adapt_key, $compare, '', '', $show_unknown,
+		$percentil);
+	
 	
 	if ($return_data) {
 		return $data_returned;

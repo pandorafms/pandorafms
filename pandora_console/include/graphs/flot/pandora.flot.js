@@ -569,11 +569,11 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	});
 	
 	switch(type) {
-		case 'line_simple': 
+		case 'line_simple':
 			stacked = null;
 			filled = false;
 			break;
-		case 'line_stacked': 
+		case 'line_stacked':
 			stacked = 'stack';
 			filled = false;
 			break;
@@ -606,11 +606,17 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			}
 		});
 		
-		switch(serie_types[i]) {
+		switch (serie_types[i]) {
+			case 'area':
+				line_show = true;
+				points_show = false;
+				filled = true;
+				break;
 			case 'line':
 			default:
 				line_show = true;
 				points_show = false;
+				filled = false;
 				break;
 			case 'points':
 				line_show = false;
@@ -645,7 +651,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			//~ { color: criticalw, yaxis: { from: vcritical_min } },
 			//~ { color: criticalw, yaxis: { to: -1 } }
 		//~ ];
-
+		
 		lineWidht = $('#hidden-lineWidhtGraph');
 		if (typeof(lineWidht[0])=='undefined'){
 			WidhtLine = 1;
@@ -653,7 +659,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		else{
 			WidhtLine = lineWidht[0].value;
 		}
-
+		
 		// Data
 		data_base.push({ 
 			id: 'serie_' + i,

@@ -116,7 +116,8 @@ $id = get_parameter('id');
 		// ACL
 		$permission = false;
 		$agent_group = (int) agents_get_agent_group($agent_id);
-		$strict_user = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
+		$strict_user = (bool) db_get_value("strict_acl", "tusuario",
+			"id_user", $config['id_user']);
 		
 		if (!empty($agent_group)) {
 			if ($strict_user) {
@@ -140,8 +141,8 @@ $id = get_parameter('id');
 		}
 		$period = get_parameter ("period", SECONDS_1DAY);
 		$id = get_parameter ("id", 0);
-		$width = get_parameter ("width", 555);
-		$height = get_parameter ("height", 245);
+		$width = get_parameter ("width", STATWIN_DEFAULT_CHART_WIDTH);
+		$height = get_parameter ("height", STATWIN_DEFAULT_CHART_HEIGHT);
 		$label = get_parameter ("label", "");
 		$start_date = get_parameter ("start_date", date("Y/m/d"));
 		$start_time = get_parameter ("start_time", date("H:i:s"));
@@ -150,6 +151,7 @@ $id = get_parameter('id');
 		$zoom = get_parameter ("zoom", 1);
 		$baseline = get_parameter ("baseline", 0);
 		$show_events_graph = get_parameter ("show_events_graph", 0);
+		$show_percentil_95 = get_parameter ("show_percentil_95", 0);
 		$time_compare_separated = get_parameter ("time_compare_separated", 0);
 		$time_compare_overlapped = get_parameter ("time_compare_overlapped", 0);
 		$unknown_graph = get_parameter_checkbox ("unknown_graph", 1);
@@ -190,33 +192,46 @@ $id = get_parameter('id');
 		
 		switch ($graph_type) {
 			case 'boolean':
-				echo grafico_modulo_boolean ($id, $period, $draw_events, $width, $height,
-					$label, $unit, $draw_alerts, $avg_only, false, $date, false, $urlImage, 'adapter_'.$graph_type, $time_compare, $unknown_graph);
+				echo grafico_modulo_boolean ($id, $period, $draw_events,
+					$width, $height, $label, $unit, $draw_alerts,
+					$avg_only, false, $date, false, $urlImage,
+					'adapter_' . $graph_type, $time_compare,
+					$unknown_graph);
 				echo '<br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height,
-						$period, $config['homeurl'], $zoom, 'adapted_'.$graph_type, $date);
+						$period, $config['homeurl'], $zoom,
+						'adapted_' . $graph_type, $date);
 				break;
 			case 'sparse':
-				echo grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
-					$label, $unit, $draw_alerts, $avg_only, false, $date, $unit, $baseline,
-					0, true, false, $urlImage, 1, false, 'adapter_'.$graph_type, $time_compare, $unknown_graph);
+				echo grafico_modulo_sparse ($id, $period, $draw_events,
+					$width, $height, $label, $unit, $draw_alerts,
+					$avg_only, false, $date, $unit, $baseline, 0, true,
+					false, $urlImage, 1, false,
+					'adapter_' . $graph_type, $time_compare,
+					$unknown_graph, true, 'white',
+					(($show_percentil_95)? 95 : null));
 				echo '<br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height,
-						$period, $config['homeurl'], $zoom, 'adapted_'.$graph_type, $date);
+						$period, $config['homeurl'], $zoom,
+						'adapted_' . $graph_type, $date);
 				break;
 			case 'string':
-				echo grafico_modulo_string ($id, $period, $draw_events, $width, $height,
-					$label, null, $draw_alerts, 1, false, $date, false, $urlImage, 'adapter_'.$graph_type);
+				echo grafico_modulo_string ($id, $period, $draw_events,
+					$width, $height, $label, null, $draw_alerts, 1,
+					false, $date, false, $urlImage,
+					'adapter_' . $graph_type);
 				echo '<br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height,
-						$period, $config['homeurl'], $zoom, 'adapted_'.$graph_type, $date);
+						$period, $config['homeurl'], $zoom,
+						'adapted_' . $graph_type, $date);
 				break;
 			case 'log4x':
-				echo grafico_modulo_log4x ($id, $period, $draw_events, $width, $height,
-					$label, $unit, $draw_alerts, 1, $pure, $date);
+				echo grafico_modulo_log4x ($id, $period, $draw_events,
+					$width, $height, $label, $unit, $draw_alerts, 1,
+					$pure, $date);
 				echo '<br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height,
@@ -339,10 +354,15 @@ $id = get_parameter('id');
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 		
-		
 		switch ($graph_type) {
 			case 'boolean':
 			case 'sparse':
+				$data = array();
+				$data[0] = __('Show percentil 95º');
+				$data[1] = html_print_checkbox ("show_percentil_95", 1, (bool) $show_percentil_95, true);
+				$table->data[] = $data;
+				$table->rowclass[] ='';
+				
 				$data = array();
 				$data[0] = __('Time compare (Overlapped)');
 				$data[1] = html_print_checkbox ("time_compare_overlapped", 1, (bool) $time_compare_overlapped, true);

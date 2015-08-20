@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-07-01 11:30+0200\n"
-"PO-Revision-Date: 2015-07-01 09:38+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2015-08-09 13:47+0000\n"
+"Last-Translator: Tobias Bannert <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-07-09 07:53+0000\n"
-"X-Generator: Launchpad (build 17608)\n"
+"X-Launchpad-Export-Date: 2015-08-20 13:49+0000\n"
+"X-Generator: Launchpad (build 17690)\n"
 
 #: ../../enterprise_bk/mobile/include/functions_web.php:15
 #: ../../enterprise_bk/meta/general/main_header.php:125
@@ -560,7 +560,7 @@ msgstr ""
 #: ../../enterprise_bk/godmode/services/services.service.php:191
 #: ../../enterprise/godmode/services/services.service.php:192
 msgid "General Data"
-msgstr ""
+msgstr "Allgemeine Daten"
 
 #: ../../enterprise_bk/godmode/services/services.service.php:201
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_editor.php:115
@@ -1271,7 +1271,7 @@ msgstr "SLA kritische Servicewarnung"
 #: ../../include/functions_filemanager.php:615
 #: ../../include/functions_filemanager.php:652
 msgid "Create"
-msgstr "Anlegen"
+msgstr "Erstellen"
 
 #: ../../enterprise_bk/godmode/services/services.service.php:301
 #: ../../enterprise_bk/godmode/services/services.elements.php:333
@@ -3077,7 +3077,7 @@ msgstr "Max"
 #: ../../operation/agentes/networkmap_list.php:253
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:211
 msgid "Delete selected"
-msgstr "Lösche ausgewählte"
+msgstr "Ausgewählte löschen"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.global.php:229
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_item.php:1445
@@ -3914,7 +3914,7 @@ msgstr "Schriftfamilie"
 #: ../../enterprise/dashboard/main_dashboard.php:462
 #: ../../include/functions_ui.php:891 ../../extensions/agents_alerts.php:311
 msgid "Default"
-msgstr "Standard"
+msgstr "Vorgabe"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_advanced.php:121
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.advanced.php:86
@@ -4845,7 +4845,7 @@ msgstr ""
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard.php:217
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:217
 msgid "Show address instead module name"
-msgstr ""
+msgstr "Adresse anstatt Modulname anzeigen"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard.php:218
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_item.php:1524
@@ -4853,7 +4853,7 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:218
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1558
 msgid "Show the main address of agent."
-msgstr ""
+msgstr "Hauptadresse des Agents anzeigen."
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard.php:231
 #: ../../mobile/operation/module_graph.php:420
@@ -4984,12 +4984,12 @@ msgstr ""
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:283
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:283
 msgid "Target group"
-msgstr ""
+msgstr "Zielgruppe"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:310
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:310
 msgid "Filter by"
-msgstr ""
+msgstr "Filtern nach"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:313
 #: ../../enterprise_bk/godmode/alerts/alert_events_rules.php:400
@@ -5880,7 +5880,7 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1139
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1557
 msgid "Show address instead module name."
-msgstr ""
+msgstr "Adresse anstatt Modulname anzeigen."
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_item.php:1545
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1160
@@ -6560,12 +6560,12 @@ msgstr "Schlagwörter"
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:101
 #: ../../enterprise/godmode/massive/massive_tags_edit_policy.php:100
 msgid "Modules unused"
-msgstr ""
+msgstr "Unbenutzte Module"
 
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:117
 #: ../../enterprise/godmode/massive/massive_tags_edit_policy.php:116
 msgid "Modules used"
-msgstr ""
+msgstr "Benutzte Module"
 
 #: ../../enterprise_bk/godmode/massive/massive_delete_alerts_snmp.php:28
 #: ../../enterprise_bk/godmode/massive/massive_modify_alerts_snmp.php:29
@@ -7538,12 +7538,12 @@ msgstr "Lokal / Entfernt"
 #: ../../enterprise_bk/godmode/modules/configure_local_component.php:128
 #: ../../enterprise/godmode/modules/configure_local_component.php:127
 msgid "Update Local Component"
-msgstr ""
+msgstr "Lokale Komponente aktualisieren"
 
 #: ../../enterprise_bk/godmode/modules/configure_local_component.php:131
 #: ../../enterprise/godmode/modules/configure_local_component.php:130
 msgid "Create Local Component"
-msgstr ""
+msgstr "Lokale Komponente erstellen"
 
 #: ../../enterprise_bk/godmode/modules/configure_local_component.php:148
 #: ../../godmode/modules/manage_network_components_form_common.php:56
@@ -7708,7 +7708,7 @@ msgstr "FF Schwelle"
 #: ../../godmode/agentes/module_manager_editor_common.php:273
 #: ../../enterprise/godmode/modules/configure_local_component.php:248
 msgid "All state changing"
-msgstr "Alle Stadien anpassen"
+msgstr "Alle Zustände werden geändert"
 
 #: ../../enterprise_bk/godmode/modules/configure_local_component.php:252
 #: ../../godmode/massive/massive_edit_modules.php:501
@@ -7717,7 +7717,7 @@ msgstr "Alle Stadien anpassen"
 #: ../../godmode/agentes/module_manager_editor_common.php:276
 #: ../../enterprise/godmode/modules/configure_local_component.php:251
 msgid "Each state changing"
-msgstr "Stadien einzeln anpassen"
+msgstr "Jeder Zustand wird geändert"
 
 #: ../../enterprise_bk/godmode/modules/configure_local_component.php:253
 #: ../../godmode/massive/massive_edit_modules.php:504
@@ -8257,7 +8257,7 @@ msgstr "Log-Sammler"
 #: ../../enterprise_bk/godmode/menu.php:118
 #: ../../enterprise/godmode/menu.php:118
 msgid "Password policy"
-msgstr ""
+msgstr "Passwortgrundsätze"
 
 #: ../../enterprise_bk/godmode/menu.php:124
 #: ../../enterprise_bk/include/functions_setup.php:27
@@ -11717,7 +11717,7 @@ msgstr "Aktion erfolgreich gelöscht."
 #: ../../include/functions_treeview.php:254
 #: ../../extensions/agents_alerts.php:343
 msgid "Template"
-msgstr "Schablone"
+msgstr "Vorlage"
 
 #: ../../enterprise_bk/godmode/policies/policy_alerts.php:516
 #: ../../enterprise/godmode/policies/policy_alerts.php:511
@@ -11889,7 +11889,7 @@ msgstr "Filter umschalten"
 #: ../../include/ajax/module.php:747 ../../extensions/agents_modules.php:86
 #: ../../extensions/agents_alerts.php:78
 msgid "Refresh"
-msgstr "aktualisiere"
+msgstr "Auffrischen"
 
 #: ../../enterprise_bk/godmode/policies/policy_queue.php:291
 #: ../../enterprise/godmode/policies/policy_queue.php:476
@@ -12877,7 +12877,7 @@ msgstr ""
 #: ../../enterprise/operation/reporting/custom_reporting.php:63
 #: ../../enterprise/extensions/cron/main.php:216
 msgid "Email"
-msgstr "Email"
+msgstr "E-Mail"
 
 #: ../../enterprise_bk/operation/reporting/custom_reporting.php:40
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:339
@@ -13209,7 +13209,7 @@ msgstr "Enterprise-Netzwerk-Karte"
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:237
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:1087
 msgid "Not found networkmap."
-msgstr "Netzwerk-Karte nicht gefunden."
+msgstr "Netzwerkkarte nicht gefunden."
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:262
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:262
@@ -13221,7 +13221,7 @@ msgstr "Quelldaten"
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:265
 #: ../../include/functions_groups.php:92
 msgid "Recon task"
-msgstr "Recon-Auftrag"
+msgstr "Aufklärungsauftrag"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:266
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:266
@@ -13231,7 +13231,7 @@ msgstr "CIDR IP Maske"
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:271
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:271
 msgid "Source from recon task"
-msgstr "Quell des Recon-Tasks"
+msgstr "Quelle des Aufklärungsauftrags"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:273
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:273
@@ -13239,14 +13239,13 @@ msgid ""
 "It is setted any recon task, the nodes get from the recontask IP mask "
 "instead from the group."
 msgstr ""
-"Wenn irgendein Recon Task konfiguriert wurde, erhalten die Knoten ihre IP "
-"von der Recon Task IP-Maske anstatt von der Gruppe."
+"Wenn irgendein Aufklärungsauftrag konfiguriert wurde, erhalten die Knoten "
+"ihre IP von der Aufklärungsauftrags-IP-Maske anstatt von der Gruppe."
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:277
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:277
 msgid "Show only the task with the recon script \"SNMP L2 Recon\"."
-msgstr ""
-"Zeige nur die Aufgabe, die das Recon Skript \"SNMP L2 Recon\" enthält."
+msgstr "Nur den Auftrag mit dem Aufklärungsskript »SNMP L2 Recon« anzeigen."
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:280
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:280
@@ -13262,17 +13261,17 @@ msgstr "Folgende Untergruppen nicht anzeigen :"
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:288
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:288
 msgid "Start empty networkmap"
-msgstr "Beginne leere Netzwerk-Karte"
+msgstr "Mit leerer Netzwerkkarte beginnen"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:291
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:291
 msgid "The networkmap has been generated already."
-msgstr "Die Netzwerk-Karte ist bereits erzeugt worden."
+msgstr "Die Netzwerkkarte wurde bereits erstellt."
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:304
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:304
 msgid "Size of networkmap (Width x Height)"
-msgstr "Größe der Netzwerk-Karte (Breite x Höhe)"
+msgstr "Größe der Netzwerkkarte (Breite x Höhe)"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:306
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:306
@@ -13287,7 +13286,7 @@ msgstr "Erzeugungs-Methode der Netzwerk-Karte"
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:321
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:321
 msgid "Refresh networkmap state"
-msgstr "Aktualisiere Status der Netzwerk-Karte"
+msgstr "Netzwerkkartenzustand auffrischen"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:325
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:325
@@ -13313,12 +13312,12 @@ msgstr "Prozess"
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:345
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:345
 msgid "Save networkmap"
-msgstr "Netzwerk-Karte speichern"
+msgstr "Netzwerkkarte speichern"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:351
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:351
 msgid "Update networkmap"
-msgstr "Netzwerk-Karte aktualisieren"
+msgstr "Netzwerkkarte aktualisieren"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:390
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:390
@@ -13340,7 +13339,7 @@ msgstr ""
 #: ../../enterprise/operation/agentes/agent_inventory.php:160
 #: ../../enterprise/operation/agentes/agent_inventory.php:161
 msgid "Diff view"
-msgstr "Unterschieds-Ansicht"
+msgstr "Unterschiedsansicht"
 
 #: ../../enterprise_bk/operation/agentes/agent_inventory.php:229
 #: ../../enterprise_bk/meta/monitoring/group_view.php:102
@@ -13422,7 +13421,7 @@ msgstr ""
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:232
 #: ../../enterprise/meta/screens/screens.networkmap.php:44
 msgid "Create networkmap"
-msgstr "Erzeuge Netzwerk-Karte"
+msgstr "Netzwerkkarte erstellen"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.view.php:342
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:342
@@ -13866,7 +13865,7 @@ msgstr "Keine Beauftragten gefunden."
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:748
 #: ../../enterprise/dashboard/widgets/network_map.php:25
 msgid "Network map"
-msgstr "Netzwerk-Karte"
+msgstr "Netzwerkkarte"
 
 #: ../../enterprise_bk/load_enterprise.php:306
 #: ../../enterprise/load_enterprise.php:318
@@ -14063,18 +14062,18 @@ msgstr "Taktische Ansicht"
 #: ../../operation/agentes/networkmap.php:389
 #: ../../enterprise/meta/general/main_header.php:92
 msgid "Groups view"
-msgstr "Gruppen anzeigen"
+msgstr "Gruppenansicht"
 
 #: ../../enterprise_bk/meta/general/main_header.php:97
 #: ../../operation/agentes/alerts_status.php:129
 #: ../../enterprise/meta/general/main_header.php:97
 msgid "Alerts view"
-msgstr "Alarm-Ansicht"
+msgstr "Alarmansicht"
 
 #: ../../enterprise_bk/meta/general/main_header.php:102
 #: ../../enterprise/meta/general/main_header.php:102
 msgid "Monitors view"
-msgstr "Überwachungs-Ansicht"
+msgstr "Überwachungsansicht"
 
 #: ../../enterprise_bk/meta/general/main_header.php:116
 #: ../../enterprise_bk/meta/general/logon_ok.php:43
@@ -14134,7 +14133,7 @@ msgstr "Bildschirme"
 #: ../../mobile/operation/home.php:98
 #: ../../enterprise/meta/general/main_header.php:161
 msgid "Networkmap"
-msgstr "Netzwerk-Karte"
+msgstr "Netzwerkkarte"
 
 #: ../../enterprise_bk/meta/general/main_header.php:168
 #: ../../enterprise_bk/include/functions_enterprise.php:250
@@ -14222,13 +14221,13 @@ msgstr "Meta-Einrichtung"
 #: ../../mobile/include/ui.class.php:175
 #: ../../enterprise/meta/general/main_header.php:287
 msgid "Logout"
-msgstr "Ausloggen"
+msgstr "Abmelden"
 
 #: ../../enterprise_bk/meta/general/main_header.php:298
 #: ../../general/header.php:192
 #: ../../enterprise/meta/general/main_header.php:298
 msgid "Configure autorefresh"
-msgstr "Konfiguriere Auto-Refresh"
+msgstr "Automatisches Auffrischen konfigurieren"
 
 #: ../../enterprise_bk/meta/general/main_header.php:302
 #: ../../general/header.php:201 ../../operation/gis_maps/render_view.php:123
@@ -14297,7 +14296,7 @@ msgstr "30 Minuten"
 #: ../../enterprise/meta/general/main_header.php:321
 #: ../../enterprise/meta/general/main_header.php:327
 msgid "Disabled autorefresh"
-msgstr "Deaktiviertes Autorefresh"
+msgstr "Deaktiviertes automatisches Auffrischen"
 
 #: ../../enterprise_bk/meta/general/main_header.php:336
 #: ../../enterprise_bk/meta/general/main_header.php:339
@@ -14431,7 +14430,7 @@ msgstr "Diese Seite wurde erstellt am"
 #: ../../enterprise_bk/meta/monitoring/group_view.php:33
 #: ../../enterprise/meta/monitoring/group_view.php:33
 msgid "Group View"
-msgstr "Gruppen-Ansicht"
+msgstr "Gruppenansicht"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:45
 #: ../../operation/users/user_edit.php:297
@@ -14635,7 +14634,7 @@ msgstr "Modultyp"
 #: ../../include/functions_reporting_html.php:2156
 #: ../../include/functions_reporting_html.php:2296
 msgid "Monitor"
-msgstr "Monitor"
+msgstr "Bildschirm"
 
 #: ../../enterprise_bk/meta/monitoring/wizard/wizard.create_module.php:148
 #: ../../enterprise/meta/monitoring/wizard/wizard.create_module.php:148
@@ -14876,7 +14875,7 @@ msgstr "Nicht initialisert"
 #: ../../enterprise_bk/meta/monitoring/tactical.php:336
 #: ../../enterprise/meta/monitoring/tactical.php:337
 msgid "Report of state"
-msgstr ""
+msgstr "Zustandsbericht"
 
 #: ../../enterprise_bk/meta/monitoring/tactical.php:365
 #: ../../enterprise/meta/monitoring/tactical.php:366
@@ -14886,7 +14885,7 @@ msgstr ""
 #: ../../enterprise_bk/meta/monitoring/tactical.php:370
 #: ../../enterprise/meta/monitoring/tactical.php:371
 msgid "Info of state in events"
-msgstr ""
+msgstr "Zustandsinfo der Ereignisse"
 
 #: ../../enterprise_bk/meta/monitoring/tactical.php:386
 #: ../../enterprise/meta/monitoring/tactical.php:387
@@ -16085,7 +16084,7 @@ msgstr "Max. Anzahl Tage, bevor Prüfungs-Ereignisse gelöscht werden."
 #: ../../include/functions_config_bk.php:355
 #: ../../include/functions_config.php:365
 msgid "Default hours for event view"
-msgstr "Standardwert (Stunden) um Event anzusehen"
+msgstr "Voreingestellte Stunde für Ereignisansicht"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.alert.php:294
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:294
@@ -16727,21 +16726,21 @@ msgstr "Beauftragten-Module verwalten"
 #: ../../operation/agentes/networkmap.php:168
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:72
 msgid "Network map deleted successfully"
-msgstr "Netzwerk-Karte gelöscht"
+msgstr "Netzwerkkarte erfolgreich gelöscht"
 
 #: ../../enterprise_bk/meta/include/functions_networkmap_meta.php:73
 #: ../../operation/agentes/networkmap_list.php:101
 #: ../../operation/agentes/networkmap.php:169
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:73
 msgid "Could not delete network map"
-msgstr "Netzwerk-Karte konnte nicht gelöscht werden"
+msgstr "Netzwerkkarte konnte nicht gelöscht werden"
 
 #: ../../enterprise_bk/meta/include/functions_networkmap_meta.php:134
 #: ../../enterprise_bk/meta/include/functions_networkmap_meta.php:217
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:134
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:217
 msgid "Not networkmap defined."
-msgstr "Keine Netzwerk-Karte definiert"
+msgstr "Keine Netzwerkkarte festgelegt"
 
 #: ../../enterprise_bk/meta/include/functions_networkmap_meta.php:411
 #: ../../enterprise/meta/include/functions_networkmap_meta.php:411
@@ -17302,7 +17301,7 @@ msgstr "Ereignis"
 #: ../../include/functions_reporting.php:4686
 #: ../../include/ajax/events.php:464
 msgid "Timestamp"
-msgstr "Datum und Uhrzeit"
+msgstr "Zeitstempel"
 
 #: ../../enterprise_bk/meta/include/functions_events_meta.php:79
 #: ../../godmode/events/custom_events.php:92
@@ -17703,7 +17702,7 @@ msgstr "Neueste Ereignisliste"
 #: ../../enterprise/dashboard/widgets/events_list.php:34
 #: ../../include/functions.php:1055 ../../include/functions_events.php:1428
 msgid "Not normal"
-msgstr "Nicht Normal"
+msgstr "Nicht normal"
 
 #: ../../enterprise_bk/dashboard/widgets/events_list.php:38
 #: ../../enterprise_bk/dashboard/widgets/top_n_events_by_group.php:33
@@ -19542,7 +19541,7 @@ msgstr "Mittelpunkt setzen"
 #: ../../enterprise_bk/include/functions_networkmap_enterprise.php:605
 #: ../../enterprise/include/functions_networkmap_enterprise.php:605
 msgid "Refresh Holding area"
-msgstr "Haltegebiet aktualisieren"
+msgstr "Haltegebiet auffrischen"
 
 #: ../../enterprise_bk/include/functions_networkmap_enterprise.php:1061
 #: ../../enterprise_bk/include/functions_networkmap_enterprise.php:1541
@@ -19714,7 +19713,7 @@ msgstr ""
 #: ../../enterprise_bk/include/functions_login.php:49
 #: ../../enterprise/include/functions_login.php:49
 msgid "NEW PASS: "
-msgstr "NEUES PASSWORT : "
+msgstr "NEUES PASSWORT: "
 
 #: ../../enterprise_bk/include/functions_login.php:51
 #: ../../enterprise/include/functions_login.php:51
@@ -20025,7 +20024,7 @@ msgstr "Dieses Element sollte gelöscht werden"
 #: ../../enterprise/include/functions_services.php:1214
 #: ../../include/ajax/module.php:945
 msgid "Snapshot view"
-msgstr "Schnappschuss-Ansicht"
+msgstr "Schnappschussansicht"
 
 #: ../../enterprise_bk/include/functions_services.php:1293
 #: ../../enterprise/include/functions_services.php:1323
@@ -20182,7 +20181,7 @@ msgstr "CRON-Jobs"
 #: ../../enterprise/extensions/ipam.php:293
 #: ../../extensions/files_repo.php:110 ../../extensions/files_repo.php:192
 msgid "Operation view"
-msgstr "Operations-Ansicht"
+msgstr "Vorgangsansicht"
 
 #: ../../enterprise_bk/extensions/ipam.php:187
 #: ../../enterprise_bk/extensions/ipam.php:301
@@ -20209,7 +20208,7 @@ msgstr "Massive Operationen"
 #: ../../enterprise/extensions/ipam.php:200
 #: ../../enterprise/extensions/ipam/ipam_list.php:101
 msgid "Addresses view"
-msgstr "Adress-Ansicht"
+msgstr "Adressansicht"
 
 #: ../../enterprise_bk/extensions/ipam.php:232
 #: ../../enterprise_bk/extensions/ipam.php:244
@@ -21079,7 +21078,7 @@ msgstr "Abzuliefernder Bericht"
 #: ../../enterprise_bk/extensions/cron/functions.php:23
 #: ../../enterprise/extensions/cron/functions.php:23
 msgid "Send to emails (separated by comma)"
-msgstr "An Email-Adressen senden (durch Kommas getrennt)"
+msgstr "An E-Mail-Adressen senden (durch Kommata getrennt)"
 
 #: ../../enterprise_bk/extensions/cron/functions.php:33
 #: ../../enterprise_bk/extensions/cron/functions.php:38
@@ -21110,7 +21109,7 @@ msgstr "Per E-Mail senden"
 #: ../../enterprise_bk/extensions/cron/functions.php:82
 #: ../../enterprise/extensions/cron/functions.php:82
 msgid "Send custom report by email"
-msgstr "Sende benutzerdefinierten Bericht per E-Mail"
+msgstr "Benutzerdefinierten Bericht per E-Mail senden"
 
 #: ../../enterprise_bk/extensions/cron/functions.php:97
 #: ../../enterprise_bk/extensions/cron/functions.php:138
@@ -21591,7 +21590,7 @@ msgstr "von"
 #: ../../operation/snmpconsole/snmp_statistics.php:140
 #: ../../include/functions_reporting_html.php:2733
 msgid "Source IP"
-msgstr "Quell-IP-Adresse"
+msgstr "Quell-IP"
 
 #: ../../general/logon_ok.php:172 ../../general/logon_ok.php:372
 msgid "This is your last activity in Pandora FMS console"
@@ -21610,7 +21609,7 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask_form.php:200
 #: ../../include/functions_servers.php:378
 msgid "Recon server"
-msgstr "Recon-Server"
+msgstr "Aufklärungsserver"
 
 #: ../../general/firts_task/collections.php:13
 #: ../../general/firts_task/collections.php:22
@@ -21762,7 +21761,7 @@ msgstr ""
 #: ../../general/firts_task/recon_view.php:6
 #: ../../general/firts_task/fields_manager.php:6
 msgid "There are no recon task defined yet."
-msgstr ""
+msgstr "Es wurden bisher keine Aufklärungsaufträge festgelegt."
 
 #: ../../general/firts_task/snmp_filters.php:13
 #: ../../general/firts_task/snmp_filters.php:20
@@ -21771,7 +21770,7 @@ msgstr ""
 #: ../../general/firts_task/fields_manager.php:13
 #: ../../general/firts_task/fields_manager.php:20
 msgid "Create Recon Task"
-msgstr ""
+msgstr "Aufklärungsauftrag erstellen"
 
 #: ../../general/firts_task/service_list.php:6
 msgid "There are no services defined yet."
@@ -22090,17 +22089,17 @@ msgstr "Kritische Module"
 #: ../../mobile/operation/networkmaps.php:112
 #: ../../mobile/operation/home.php:72
 msgid "Networkmaps"
-msgstr "Netzwerk-Karten"
+msgstr "Netzwerkkarten"
 
 #: ../../mobile/operation/networkmaps.php:120
 #, php-format
 msgid "Filter Networkmaps by %s"
-msgstr "Netzwerk-Karten filtern nach : %s"
+msgstr "Netzwerkkarten filtern nach : %s"
 
 #: ../../mobile/operation/networkmaps.php:202
 #: ../../mobile/operation/networkmap.php:164
 msgid "No networkmaps"
-msgstr "Keine Netzwerk-Karten"
+msgstr "Keine Netzwerkkarten"
 
 #: ../../mobile/operation/agents.php:166
 #, php-format
@@ -23230,7 +23229,7 @@ msgstr ""
 #: ../../godmode/users/configure_user.php:480
 #: ../../operation/users/user_edit.php:225
 msgid "Phone number"
-msgstr "Telefon-Nummer"
+msgstr "Telefonnummer"
 
 #: ../../godmode/users/configure_user.php:508
 #: ../../godmode/groups/configure_group.php:180
@@ -24063,7 +24062,7 @@ msgstr "Netzwerkkomponente erstellen"
 
 #: ../../godmode/modules/manage_network_components.php:42
 msgid "Network component management"
-msgstr "Netzwerk-Kompontenten Manager"
+msgstr "Netzwerkbestandteilverwaltung"
 
 #: ../../godmode/modules/manage_network_components.php:547
 msgid "Max/Min"
@@ -24071,7 +24070,7 @@ msgstr "Max/Min"
 
 #: ../../godmode/modules/manage_network_components.php:573
 msgid "Network module"
-msgstr "Netzwerk-Modul"
+msgstr "Netzwerkmodule"
 
 #: ../../godmode/modules/manage_network_components.php:577
 msgid "WMI module"
@@ -24311,7 +24310,7 @@ msgstr "Administriere Server"
 #: ../../godmode/menu.php:177
 #: ../../godmode/servers/manage_recontask_form.php:248
 msgid "Recon script"
-msgstr "Recon-Skript"
+msgstr "Aufklärungsskript"
 
 #: ../../godmode/menu.php:194 ../../godmode/menu.php:197
 msgid "General Setup"
@@ -24378,7 +24377,7 @@ msgstr "Ereignisse"
 
 #: ../../godmode/menu.php:259
 msgid "Diagnostic info"
-msgstr "Diagone Info"
+msgstr "Diagnoseinformation"
 
 #: ../../godmode/menu.php:260
 msgid "Site news"
@@ -25782,25 +25781,25 @@ msgstr "Als CSV exportieren "
 #: ../../godmode/servers/manage_recontask_form.php:162
 #: ../../include/functions_menu.php:430
 msgid "Manage recontask"
-msgstr "Verwalte 'recon' Augaben"
+msgstr "Aufklärungsaufträge verwalten"
 
 #: ../../godmode/servers/manage_recontask.php:49
 msgid "Successfully deleted recon task"
-msgstr "Recon Auftrag erfolgreich gelöscht"
+msgstr "Aufklärungsauftrag erfolgreich gelöscht"
 
 #: ../../godmode/servers/manage_recontask.php:52
 msgid "Error deleting recon task"
-msgstr "Recon Task onnte nicht gelöscht werden."
+msgstr "Fehler beim Löschen des Aufklärungsauftrags"
 
 #: ../../godmode/servers/manage_recontask.php:62
 #: ../../godmode/servers/manage_recontask.php:166
 msgid "Successfully updated recon task"
-msgstr "Recon Task wurde aktualisiert."
+msgstr "Aufklärungsauftrag erfolgreich aktualisiert"
 
 #: ../../godmode/servers/manage_recontask.php:69
 #: ../../godmode/servers/manage_recontask.php:169
 msgid "Error updating recon task"
-msgstr "Recon Task konnte nicht aktualisiert werden."
+msgstr "Fehler beim Aktualisieren des Aufklärungsauftrags"
 
 #: ../../godmode/servers/manage_recontask.php:208
 msgid "Network provided is not correct"
@@ -25808,11 +25807,11 @@ msgstr "Das angegebene Netzwerk ist nicht richtig"
 
 #: ../../godmode/servers/manage_recontask.php:224
 msgid "Successfully created recon task"
-msgstr "Recon Task wurde erfolgreich erstellt."
+msgstr "Aufklärungsauftrag wurde erfolgreich erstellt"
 
 #: ../../godmode/servers/manage_recontask.php:227
 msgid "Error creating recon task"
-msgstr "Recon Task konnte nicht erstellt werden."
+msgstr "Fehler beim Erstellen des Aufklärungsauftrags"
 
 #: ../../godmode/servers/manage_recontask.php:251
 #: ../../godmode/servers/manage_recontask_form.php:266
@@ -25822,11 +25821,11 @@ msgstr "Ports"
 #: ../../godmode/servers/manage_recontask.php:274
 #: ../../operation/servers/recon_view.php:145
 msgid "Network recon task"
-msgstr "Netzwerk Recon-Task"
+msgstr "Netzwerkaufklärungsauftrag"
 
 #: ../../godmode/servers/manage_recontask.php:334
 msgid "There are no recon task configured"
-msgstr "Keine 'recon' Aufgabe konfiguriert"
+msgstr "Es sind keine Aufklärungsaufträge konfiguriert"
 
 #: ../../godmode/servers/modificar_server.php:34
 msgid "Update Server"
@@ -25854,11 +25853,11 @@ msgstr "Server konnte nicht Aktualisiert werden"
 
 #: ../../godmode/servers/recon_script.php:73
 msgid "Recon script creation"
-msgstr "Recon-Skript erstellen"
+msgstr "Aufklärungsskript erstellen"
 
 #: ../../godmode/servers/recon_script.php:75
 msgid "Recon script update"
-msgstr "Recon-Skript aktualisieren"
+msgstr "Aufklärungsskript aktualisieren"
 
 #: ../../godmode/servers/recon_script.php:101
 msgid "Script fullpath"
@@ -25876,7 +25875,7 @@ msgstr "Dieses Feld wird nur Pünktchen wie ein Passwortfenster darstellen."
 
 #: ../../godmode/servers/recon_script.php:228
 msgid "Recon scripts registered in Pandora FMS"
-msgstr "In Pandora FMS registrierte Recon-Skripte"
+msgstr "In Pandora FMS registrierte Aufklärungsskripte"
 
 #: ../../godmode/servers/recon_script.php:271
 msgid "Problem updating"
@@ -25888,15 +25887,15 @@ msgstr "Problem beim Erstellen"
 
 #: ../../godmode/servers/recon_script.php:331
 msgid "Problem deleting reconscript"
-msgstr "Problem beim Löschen des Recon-Skripts"
+msgstr "Problem beim Löschen des Aufklärungsskriptes"
 
 #: ../../godmode/servers/recon_script.php:334
 msgid "reconscript deleted successfully"
-msgstr "Recon-Skript erfolgreich gelöscht"
+msgstr "Aufklärungsskripte erfolgreich gelöscht"
 
 #: ../../godmode/servers/recon_script.php:378
 msgid "There are no recon scripts in the system"
-msgstr "Es sind keine Recon-Skripte im System"
+msgstr "Es sind keine Aufklärungsskripte im System vorhanden"
 
 #: ../../godmode/servers/manage_recontask_form.php:167
 msgid ""
@@ -25914,8 +25913,8 @@ msgid ""
 "You must select a Recon Server for the Task, otherwise the Recon Task will "
 "never run"
 msgstr ""
-"Sie müssen einen ReconServer für diesen Task auswählen, sonst wird dieser "
-"nicht laufen."
+"Sie müssen einen Aufklärungsserver für diese Aufgabe auswählen, sonst wird "
+"dieser niemals laufen."
 
 #: ../../godmode/servers/manage_recontask_form.php:210
 msgid "Network sweep"
@@ -25928,7 +25927,8 @@ msgstr ""
 
 #: ../../godmode/servers/manage_recontask_form.php:234
 msgid "The minimum recomended interval for Recon Task is 5 minutes"
-msgstr "Der minimale empfohlene Intervall für Recon-Tasks beträgt 5 Minuten"
+msgstr ""
+"Der kleinste empfohlene Abstand für Aufklärungsaufträge beträgt 5 Minuten"
 
 #: ../../godmode/servers/manage_recontask_form.php:239
 msgid "Module template"
@@ -26421,7 +26421,7 @@ msgstr "Mitte"
 
 #: ../../godmode/setup/gis_step_2.php:413
 msgid "Refresh preview map"
-msgstr "Kartenvoransicht neu laden"
+msgstr "Kartenvoransicht auffrischen"
 
 #: ../../godmode/setup/os.list.php:69
 msgid "There are no defined operating systems"
@@ -26940,7 +26940,7 @@ msgstr ""
 #: ../../include/functions_config_bk.php:423
 #: ../../include/functions_config.php:431
 msgid "Default interval for refresh on Visual Console"
-msgstr "Voreingestellter Intervall für den Refresh der visuellen Konsole"
+msgstr "Voreingestellter Abstand für das Auffrischen der visuellen Konsole"
 
 #: ../../godmode/setup/setup_visuals.php:75
 msgid "This interval will affect to Visual Console pages"
@@ -29086,7 +29086,7 @@ msgstr "Meinen Benutzer bearbeiten"
 
 #: ../../operation/users/user_edit.php:234
 msgid "New Password"
-msgstr "neues Passwort"
+msgstr "Neues Passwort"
 
 #: ../../operation/users/user_edit.php:244
 msgid ""
@@ -29459,7 +29459,7 @@ msgstr "Geplante Ausfallzeit"
 
 #: ../../operation/menu.php:387
 msgid "Recon view"
-msgstr "Aufklärungs-Ansicht"
+msgstr "Aufklärungsansicht"
 
 #: ../../operation/events/events.build_table.php:107
 msgid "Agent Module"
@@ -29640,7 +29640,7 @@ msgstr "Verlauf"
 
 #: ../../operation/events/events.php:422
 msgid "Main event view"
-msgstr "Hauptereignis-Ansicht"
+msgstr "Hauptereignisansicht"
 
 #: ../../operation/events/events.php:440
 msgid "No events selected"
@@ -29691,11 +29691,11 @@ msgstr "10 Minuten"
 
 #: ../../operation/gis_maps/render_view.php:133
 msgid "Refresh: "
-msgstr "Aktualisierung: "
+msgstr "Auffrischen: "
 
 #: ../../operation/gis_maps/render_view.php:142
 msgid "Show agents by state: "
-msgstr "Zeige Beauftragte nach Status "
+msgstr "Beauftragte nach Zustand anzeigen: "
 
 #: ../../operation/gis_maps/index.php:70
 msgid "No maps found"
@@ -29928,7 +29928,7 @@ msgstr "Periode zum Anzeigen der Daten als Pfad"
 
 #: ../../operation/agentes/gis_view.php:102
 msgid "Refresh path"
-msgstr "Pfad aktualisieren"
+msgstr "Pfad auffrischen"
 
 #: ../../operation/agentes/gis_view.php:105
 msgid "Positional data from the last"
@@ -30037,7 +30037,7 @@ msgstr ""
 #: ../../operation/agentes/interface_traffic_graph_win.php:210
 #: ../../operation/agentes/stat_win.php:264
 msgid "Refresh time"
-msgstr "Wiederhol-Datum"
+msgstr "Auffrischzeit"
 
 #: ../../operation/agentes/interface_traffic_graph_win.php:229
 #: ../../operation/agentes/stat_win.php:292
@@ -30248,7 +30248,7 @@ msgstr "Topologische Karte anzeigen"
 
 #: ../../operation/agentes/networkmap.php:393
 msgid "Policies view"
-msgstr "Regeln anzeigen"
+msgstr "Regelansicht"
 
 #: ../../operation/agentes/networkmap.php:397
 msgid "Dynamic view"
@@ -30423,11 +30423,11 @@ msgstr "Beauftragten-Zugriffsrate (24h)"
 
 #: ../../operation/agentes/estado_generalagente.php:538
 msgid "Refresh data"
-msgstr "Aktualisiere Daten"
+msgstr "Daten auffrischen"
 
 #: ../../operation/agentes/tactical.php:176
 msgid "Report of State"
-msgstr "Statusbericht"
+msgstr "Zustandsbericht"
 
 #: ../../operation/agentes/tactical.php:234
 #: ../../include/functions_events.php:865
@@ -30436,7 +30436,7 @@ msgstr "Letzte Ereignisse"
 
 #: ../../operation/agentes/status_monitor.php:45
 msgid "Monitor view"
-msgstr "Überwachungs-Ansicht"
+msgstr "Überwachungsansicht"
 
 #: ../../operation/agentes/status_monitor.php:432
 msgid "Monitor status"
@@ -30453,7 +30453,7 @@ msgstr "Für diese Gruppe existiert kein Überwachungssystem"
 #: ../../operation/servers/recon_view.php:36
 #: ../../operation/servers/recon_view.php:51
 msgid "Recon View"
-msgstr "Aufklärungs-Ansicht"
+msgstr "Aufklärungsansicht"
 
 #: ../../operation/servers/recon_view.php:137
 #: ../../include/help/clippy/operation_agentes_ver_agente.php:42
@@ -30467,18 +30467,18 @@ msgstr "Noch nicht fertig"
 
 #: ../../operation/servers/recon_view.php:173
 msgid "has no recon tasks assigned"
-msgstr ""
+msgstr "hat keinen zugewiesenen Aufklärungsauftrag"
 
 #: ../../operation/visual_console/render_view.php:174
 #: ../../operation/visual_console/public_console.php:87
 msgid "Autorefresh time"
-msgstr "Automatische Aktualisierungszeit"
+msgstr "Automatische Auffrischzeit"
 
 #: ../../operation/visual_console/render_view.php:217
 #: ../../operation/visual_console/render_view.php:266
 #: ../../operation/visual_console/public_console.php:147
 msgid "Until refresh"
-msgstr "Bis zum Refresh"
+msgstr "Bis zum Auffrischen"
 
 #: ../../operation/search_main.php:52
 msgid "Agents found"
@@ -32817,7 +32817,7 @@ msgstr "Agent erstellt"
 
 #: ../../include/functions.php:1013 ../../include/functions_events.php:1416
 msgid "Recon host detected"
-msgstr "Recon-Host entdeckt"
+msgstr "Aufklärungsrechner entdeckt"
 
 #: ../../include/functions.php:1016 ../../include/functions_events.php:1155
 #: ../../include/functions_events.php:1425
@@ -33053,11 +33053,11 @@ msgstr "Von Kritisch auf Warnung setzen"
 
 #: ../../include/functions_events.php:1133
 msgid "Going down to critical state"
-msgstr "Gehe auf kritischen Status"
+msgstr "Zu kritischen Zustand gehen"
 
 #: ../../include/functions_events.php:1137
 msgid "Going up to normal state"
-msgstr "Normalen Status setzten"
+msgstr "Zu normalem Zustand gehen"
 
 #: ../../include/functions_events.php:1140
 msgid "Going down from normal to warning"
@@ -33071,7 +33071,7 @@ msgstr "System"
 
 #: ../../include/functions_events.php:1149
 msgid "Recon server detected a new host"
-msgstr "Reconserver hat einen neuen Host gefunden"
+msgstr "Aufklärungsserver hat einen neuen Rechner entdeckt"
 
 #: ../../include/functions_events.php:1152
 msgid "New agent created"
@@ -34608,7 +34608,7 @@ msgstr ""
 
 #: ../../include/ajax/double_auth.ajax.php:292
 msgid "Refresh code"
-msgstr "Code aktualisieren"
+msgstr "Code auffrischen"
 
 #: ../../include/ajax/double_auth.ajax.php:358
 msgid "Are you introduced the code in the authenticator app yet?"
@@ -34700,7 +34700,7 @@ msgstr "Beauftragten anzeigen"
 
 #: ../../include/functions_menu.php:442
 msgid "Manage network map"
-msgstr "Netzwerk-Karte verwalten"
+msgstr "Netzwerkkarte verwalten"
 
 #: ../../include/functions_menu.php:444
 msgid "View reporting"
@@ -35398,7 +35398,7 @@ msgstr "Schnittstelle"
 
 #: ../../extensions/net_tools.php:259 ../../extensions/net_tools.php:333
 msgid "Config Network Tools"
-msgstr "Konfiguriere Netzwerk-Werkzeuge"
+msgstr "Netzwerkwerkzeuge konfigurieren"
 
 #: ../../extensions/net_tools.php:280 ../../extensions/net_tools.php:281
 msgid "Set the paths."
@@ -35596,7 +35596,7 @@ msgstr "SNMP Schnittstellen-Durchsatz"
 
 #: ../../extensions/realtime_graphs.php:74
 msgid "Refresh interval"
-msgstr "Aktualisierungsintervall"
+msgstr "Auffrischabstand"
 
 #: ../../extensions/realtime_graphs.php:75
 msgid "Incremental"
@@ -35851,7 +35851,7 @@ msgstr ""
 #: ../../extensions/system_info.php:427 ../../extensions/system_info.php:430
 #: ../../extensions/system_info.php:503
 msgid "Pandora Diagnostic info"
-msgstr "Pandora Diagnostik-Info"
+msgstr "Pandora-Diagnoseinformation"
 
 #: ../../extensions/system_info.php:434 ../../extensions/system_info.php:437
 #: ../../extensions/system_info.php:509
@@ -35921,7 +35921,7 @@ msgstr "Mehr Vorlagen"
 
 #: ../../extensions/agents_alerts.php:346
 msgid "Agents/Alerts view"
-msgstr "Beauftragten- / Alarm-Ansicht"
+msgstr "Beauftragten-/Alarmansicht"
 
 #: ../../extensions/db_status.php:43 ../../extensions/db_status.php:365
 msgid "DB Status"
@@ -36104,3 +36104,99 @@ msgstr ""
 #: ../../extensions/pandora_logs.php:83
 msgid "System logfiles"
 msgstr "System-Log"
+
+#~ msgid "No incidents match your search filter"
+#~ msgstr "Keine Zwischenfälle zu Ihrer Sucheingabe gefunden"
+
+#~ msgid "There are no messages"
+#~ msgstr "Keine Nachricht vorhanden"
+
+#~ msgid "R"
+#~ msgstr "R"
+
+#~ msgid "Edit remote config"
+#~ msgstr "Bearbeite die Remote Konfiguration"
+
+#~ msgid "Items filter"
+#~ msgstr "Eintrag-Filter"
+
+#, php-format
+#~ msgid "Deleted data above %d"
+#~ msgstr "Gelöschte Dateien über %d"
+
+#~ msgid "Massive alerts addition"
+#~ msgstr "Masive Alarme Ergänzung"
+
+#~ msgid "Massive alerts deletion"
+#~ msgstr "Masive Alarme löschen"
+
+#~ msgid "Massive alert actions addition"
+#~ msgstr "Masive Alarme-Aktionen Ergänzung"
+
+#~ msgid "Massive alert actions deletion"
+#~ msgstr "Masive Alarme-Aktionen löschen"
+
+#~ msgid "Massive alert enable/disable"
+#~ msgstr "Masive Alarme aktivieren/deaktivieren"
+
+#~ msgid "Massive alert setting standby"
+#~ msgstr "Masive Alarme auf Standby setzen"
+
+#~ msgid "Massive profiles addition"
+#~ msgstr "Masive Profile Ergänzung"
+
+#~ msgid "Massive profiles deletion"
+#~ msgstr "Masive Profile löschen"
+
+#~ msgid "Massive modules deletion"
+#~ msgstr "Masive Module löschen"
+
+#~ msgid "Massive modules edition"
+#~ msgstr "Masive Module bearbeiten"
+
+#~ msgid "Massive modules copy"
+#~ msgstr "Masive Module kopieren"
+
+#, php-format
+#~ msgid ""
+#~ "This extension makes registration of server plugins more easy. Here you can "
+#~ "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
+#~ "refer to documentation on how to obtain and use Pandora FMS Server "
+#~ "Plugins.<br><br>You can get more plugins in our <a href='%s'>Public Resource "
+#~ "Library</a>"
+#~ msgstr ""
+#~ "Diese Funktion hilft Ihnen Module für PandoraFMS einfach über die "
+#~ "Weboberfläche hochzuladen und am System anzumelden. Laden Sie hier ihr "
+#~ "Server-Plugin im Pandora FMS 3.x ZIP-Format (.pspz) hoch. Weitere "
+#~ "Informationen und Hinweise zum verwenden von Server-Plugins finden Sie in "
+#~ "der <a href='%s'>Dokumentation.</a><br>"
+
+#~ msgid "Empty graph"
+#~ msgstr "Grafik leeren"
+
+#~ msgid "Time compare"
+#~ msgstr "Zeitvergleich"
+
+#~ msgid "Overlapped"
+#~ msgstr "Überlappend"
+
+#~ msgid "Separated"
+#~ msgstr "Getrennt"
+
+#~ msgid "Ping to "
+#~ msgstr "Ping an "
+
+#~ msgid "Remote agent configuration"
+#~ msgstr "Remote-Beauftragten konfigurieren"
+
+#~ msgid "There are no defined graphs"
+#~ msgstr "Es wurden keine Grafiken definiert"
+
+#~ msgid "Massive agents edition"
+#~ msgstr "Reihenweise Beauftragte bearbeiten"
+
+#~ msgid "Massive agents deletion"
+#~ msgstr "Reihenweise Beauftragte löschen"
+
+#~ msgid "Paginate module view"
+#~ msgstr "Seitenweise Modulansicht"

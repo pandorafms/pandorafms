@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-07-01 11:30+0200\n"
-"PO-Revision-Date: 2015-07-01 09:38+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2015-06-29 18:50+0000\n"
+"Last-Translator: MIguel Lopez ARTICA <miguel.lopez@artica.es>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-07-09 07:53+0000\n"
-"X-Generator: Launchpad (build 17608)\n"
+"X-Launchpad-Export-Date: 2015-08-20 13:49+0000\n"
+"X-Generator: Launchpad (build 17690)\n"
 
 #: ../../enterprise_bk/mobile/include/functions_web.php:15
 #: ../../enterprise_bk/meta/general/main_header.php:125
@@ -35324,3 +35324,81 @@ msgstr ""
 #: ../../extensions/pandora_logs.php:83
 msgid "System logfiles"
 msgstr "Registo de actividade do sistema"
+
+#~ msgid "No incidents match your search filter"
+#~ msgstr "Nenhum incidente corresponde à sua procura"
+
+#~ msgid "There are no messages"
+#~ msgstr "Não existem mensagens"
+
+#~ msgid "R"
+#~ msgstr "R"
+
+#~ msgid "Edit remote config"
+#~ msgstr "Editar configuração remota"
+
+#~ msgid "Items filter"
+#~ msgstr "Filtro por items"
+
+#~ msgid "Remote agent configuration"
+#~ msgstr "Configuração de agente remoto"
+
+#, php-format
+#~ msgid "Deleted data above %d"
+#~ msgstr "Dados apagados acima de %d"
+
+#~ msgid "Massive alerts addition"
+#~ msgstr "Adição massiva de alertas"
+
+#~ msgid "Massive alerts deletion"
+#~ msgstr "Remoção massiva de alertas"
+
+#~ msgid "Massive alert actions addition"
+#~ msgstr "Adição massiva de acções de alertas"
+
+#~ msgid "Massive alert actions deletion"
+#~ msgstr "Remoção massiva de acções de alertas"
+
+#~ msgid "Massive alert enable/disable"
+#~ msgstr "Activação/desactivação massiva de alertas"
+
+#~ msgid "Massive alert setting standby"
+#~ msgstr "Colocação massiva de 'em espera' de alertas"
+
+#~ msgid "Massive agents edition"
+#~ msgstr "Edição massiva de alertas"
+
+#~ msgid "Massive agents deletion"
+#~ msgstr "Remoção massiva de agentes"
+
+#~ msgid "Massive profiles addition"
+#~ msgstr "Adição massiva de perfis"
+
+#~ msgid "Massive profiles deletion"
+#~ msgstr "Remoção massiva de perfis"
+
+#~ msgid "Massive modules deletion"
+#~ msgstr "Remoção massiva de módulos"
+
+#~ msgid "Massive modules edition"
+#~ msgstr "Edição massiva de módulos"
+
+#~ msgid "Massive modules copy"
+#~ msgstr "Cópia massiva de módulos"
+
+#, php-format
+#~ msgid ""
+#~ "This extension makes registration of server plugins more easy. Here you can "
+#~ "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
+#~ "refer to documentation on how to obtain and use Pandora FMS Server "
+#~ "Plugins.<br><br>You can get more plugins in our <a href='%s'>Public Resource "
+#~ "Library</a>"
+#~ msgstr ""
+#~ "Esta extensão torna mais fácil o registo de plug-in's de servidor. Aqui pode "
+#~ "enviar um plug-in de servidor no formato zipado do Pandora FMS 3.x (.pspz). "
+#~ "Consulte a documentação para saber como obter e usar plug-in's de servidor "
+#~ "do Pandora FMS.<br><br>Pode obter mais plug-in's na nossa <a "
+#~ "href='%s'>Public Resource Library</a> (Biblioteca  de Recursos Publicos)."
+
+#~ msgid "Empty graph"
+#~ msgstr "Gráfico vazio"

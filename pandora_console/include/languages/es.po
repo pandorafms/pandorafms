@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-07-01 11:30+0200\n"
-"PO-Revision-Date: 2015-07-29 09:42+0000\n"
+"PO-Revision-Date: 2015-07-29 09:52+0000\n"
 "Last-Translator: MIguel Lopez ARTICA <miguel.lopez@artica.es>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-07-29 09:44+0000\n"
-"X-Generator: Launchpad (build 17646)\n"
+"X-Launchpad-Export-Date: 2015-08-20 13:50+0000\n"
+"X-Generator: Launchpad (build 17690)\n"
 
 #: ../../enterprise_bk/mobile/include/functions_web.php:15
 #: ../../enterprise_bk/meta/general/main_header.php:125
@@ -17603,7 +17603,7 @@ msgid ""
 "This is an example of a dashboard widget. A widget may contain elements"
 msgstr ""
 "Éste es un ejemplo de un widget del dashboard. Un widget puede contener "
-"elementos"
+"elementos."
 
 #: ../../enterprise_bk/dashboard/widgets/example.php:37
 #: ../../enterprise/dashboard/widgets/example.php:37
@@ -23376,59 +23376,59 @@ msgstr "Perfiles/Grupos asignados a este usuario"
 
 #: ../../godmode/massive/massive_operations.php:36
 msgid "Bulk alert add"
-msgstr ""
+msgstr "Añadir alerta masiva"
 
 #: ../../godmode/massive/massive_operations.php:37
 msgid "Bulk alert delete"
-msgstr ""
+msgstr "Eliminar alerta masiva"
 
 #: ../../godmode/massive/massive_operations.php:38
 msgid "Bulk alert actions add"
-msgstr ""
+msgstr "Añadir acciones de alerta masiva"
 
 #: ../../godmode/massive/massive_operations.php:39
 msgid "Bulk alert actions delete"
-msgstr ""
+msgstr "Eliminar acciones de alerta masiva"
 
 #: ../../godmode/massive/massive_operations.php:40
 msgid "Bulk alert enable/disable"
-msgstr ""
+msgstr "Habilitar/Deshabilitar alerta masiva"
 
 #: ../../godmode/massive/massive_operations.php:41
 msgid "Bulk alert setting standby"
-msgstr ""
+msgstr "Configuración de espera de alertas masiva"
 
 #: ../../godmode/massive/massive_operations.php:44
 msgid "Bulk agent edit"
-msgstr ""
+msgstr "Edición agentes masiva"
 
 #: ../../godmode/massive/massive_operations.php:45
 msgid "Bulk agent delete"
-msgstr ""
+msgstr "Eliminar agentes masivamente"
 
 #: ../../godmode/massive/massive_operations.php:49
 msgid "Bulk profile add"
-msgstr ""
+msgstr "Añadir perfiles masivamente"
 
 #: ../../godmode/massive/massive_operations.php:50
 msgid "Bulk profile delete"
-msgstr ""
+msgstr "Eliminar perfiles masivamente"
 
 #: ../../godmode/massive/massive_operations.php:57
 msgid "Bulk module delete"
-msgstr ""
+msgstr "Eliminar módulos masivamente"
 
 #: ../../godmode/massive/massive_operations.php:58
 msgid "Bulk module edit"
-msgstr ""
+msgstr "Editar módulos masivamente"
 
 #: ../../godmode/massive/massive_operations.php:59
 msgid "Bulk module copy"
-msgstr ""
+msgstr "Copiar módulos masivamente"
 
 #: ../../godmode/massive/massive_operations.php:62
 msgid "Bulk plugin edit"
-msgstr ""
+msgstr "Editar plugin masivamente"
 
 #: ../../godmode/massive/massive_operations.php:155 ../../godmode/menu.php:112
 msgid "Alerts operations"
@@ -23448,7 +23448,7 @@ msgstr "Operaciones sobre módulos"
 
 #: ../../godmode/massive/massive_operations.php:175 ../../godmode/menu.php:108
 msgid "Plugins operations"
-msgstr ""
+msgstr "Operaciones de plugins"
 
 #: ../../godmode/massive/massive_operations.php:231
 msgid "Please wait..."
@@ -23731,32 +23731,32 @@ msgstr "Ninguna etiqueta seleccionada"
 
 #: ../../godmode/massive/massive_edit_plugins.php:151
 msgid "Error retrieving the plugin macros"
-msgstr ""
+msgstr "Error al recuperar las macros de plugin"
 
 #: ../../godmode/massive/massive_edit_plugins.php:158
 msgid "Error retrieving the modified macros"
-msgstr ""
+msgstr "Error al recuperar las macros modificadas"
 
 #: ../../godmode/massive/massive_edit_plugins.php:171
 msgid "Error retrieving the module plugin macros"
-msgstr ""
+msgstr "Error al recuperar las macros del módulo de plugin"
 
 #: ../../godmode/massive/massive_edit_plugins.php:187
 msgid "Error retrieving the module plugin macros data"
-msgstr ""
+msgstr "Error al recuperar los datos de las macros del módulo de plugin"
 
 #: ../../godmode/massive/massive_edit_plugins.php:219
 msgid "Error building the new macros"
-msgstr ""
+msgstr "Error al construir las nuevas macros"
 
 #: ../../godmode/massive/massive_edit_plugins.php:246
 #, php-format
 msgid "%d modules updated"
-msgstr ""
+msgstr "%d módulos actualizados"
 
 #: ../../godmode/massive/massive_edit_plugins.php:265
 msgid "There are not registered plugins"
-msgstr ""
+msgstr "No hay plugins registrados"
 
 #: ../../godmode/massive/massive_edit_plugins.php:280
 #: ../../godmode/modules/manage_network_components_form_plugin.php:22
@@ -23767,7 +23767,7 @@ msgstr "Complemento"
 
 #: ../../godmode/massive/massive_edit_plugins.php:414
 msgid "Invalid plugin data"
-msgstr ""
+msgstr "Dato de plugin inválido"
 
 #: ../../godmode/massive/massive_edit_plugins.php:430
 #: ../../godmode/events/event_responses.editor.php:116
@@ -23783,41 +23783,42 @@ msgstr "Comando"
 
 #: ../../godmode/massive/massive_edit_plugins.php:521
 msgid "Clear"
-msgstr ""
+msgstr "Vaciar"
 
 #: ../../godmode/massive/massive_edit_plugins.php:549
 msgid "Invalid macros array"
-msgstr ""
+msgstr "Array de macros inválida"
 
 #: ../../godmode/massive/massive_edit_plugins.php:574
 msgid "Multiple values"
-msgstr ""
+msgstr "Valores múltiples"
 
 #: ../../godmode/massive/massive_edit_plugins.php:606
 #: ../../godmode/massive/massive_edit_plugins.php:743
 #: ../../godmode/massive/massive_edit_plugins.php:759
 msgid "Invalid agents array"
-msgstr ""
+msgstr "Array de agentes inválida"
 
 #: ../../godmode/massive/massive_edit_plugins.php:622
 msgid "Invalid agent element"
-msgstr ""
+msgstr "Elemento de agente inválido"
 
 #: ../../godmode/massive/massive_edit_plugins.php:633
 msgid "Invalid modules array"
-msgstr ""
+msgstr "Array de módulos inválido"
 
 #: ../../godmode/massive/massive_edit_plugins.php:661
 msgid "Invalid module element"
-msgstr ""
+msgstr "Elemento de módulo inválido"
 
 #: ../../godmode/massive/massive_edit_plugins.php:869
 msgid "There are no modules using this plugin"
-msgstr ""
+msgstr "No hay módulos usando este plugin"
 
 #: ../../godmode/massive/massive_edit_plugins.php:948
 msgid "There was a problem loading the module plugin macros data"
 msgstr ""
+"Hubo un problema al cargar los datos de las macros del módulo de plugin"
 
 #: ../../godmode/massive/massive_edit_agents.php:95
 msgid "No values changed"
@@ -24916,6 +24917,8 @@ msgstr "Añadir módulo:"
 #: ../../godmode/agentes/planned_downtime.editor.php:799
 msgid "This elements cannot be modified while the downtime is being executed"
 msgstr ""
+"Estos elementos no se pueden modificar mientras se está ejecutando el tiempo "
+"de inactividad"
 
 #: ../../godmode/agentes/planned_downtime.editor.php:929
 msgid "Please select a module."
@@ -25579,7 +25582,7 @@ msgstr "No hay datos para normalizar"
 #: ../../godmode/agentes/configurar_agente.php:626
 #, php-format
 msgid "Deleted data above %f"
-msgstr ""
+msgstr "Eliminar datos por encima de %f"
 
 #: ../../godmode/agentes/configurar_agente.php:627
 #, php-format
@@ -26173,21 +26176,23 @@ msgstr "Lista de los módulos y componentes creados por \"%s\" "
 
 #: ../../godmode/servers/plugin.php:867 ../../godmode/servers/plugin.php:883
 msgid "Some modules or components are using the plugin"
-msgstr ""
+msgstr "Algunos módulos o componentes están usando el plugin"
 
 #: ../../godmode/servers/plugin.php:868
 msgid ""
 "The modules or components should be updated manually or using the bulk "
 "operations for plugins after this change"
 msgstr ""
+"Los módulos o componentes deberían ser actualizados manualmente o usando las "
+"operaciones masivas para los plugins después de este cambio"
 
 #: ../../godmode/servers/plugin.php:870
 msgid "Are you sure you want to perform this action?"
-msgstr ""
+msgstr "¿Está seguro de querer realizar esta acción?"
 
 #: ../../godmode/servers/plugin.php:884
 msgid "Are you sure you want to unlock this item?"
-msgstr ""
+msgstr "¿Está seguro de querer desbloquear este elemento?"
 
 #: ../../godmode/servers/plugin.php:904
 msgid ""
@@ -26202,6 +26207,8 @@ msgid ""
 "The plugin macros cannot be updated because some modules or components are "
 "using the plugin"
 msgstr ""
+"Las macros del plugin no pueden ser actualizadas porque algunos módulos o "
+"componentes están usando el plugin"
 
 #: ../../godmode/servers/servers.build_table.php:36
 msgid "There are no servers configured into the database"
@@ -27031,15 +27038,15 @@ msgstr "Este intervalo afectará a todas las páginas de la consola visual"
 
 #: ../../godmode/setup/setup_visuals.php:79
 msgid "Paginated module view"
-msgstr ""
+msgstr "Vista del módulo paginada"
 
 #: ../../godmode/setup/setup_visuals.php:84
 msgid "Display proc modules in binary format (OK/FAIL)."
-msgstr ""
+msgstr "Mostrar los módulos proc en formato binario (OK/FALLO)"
 
 #: ../../godmode/setup/setup_visuals.php:94
 msgid "Behaviour configuration"
-msgstr ""
+msgstr "Configuración del comportamiento"
 
 #: ../../godmode/setup/setup_visuals.php:108
 #: ../../include/functions_config_bk.php:403
@@ -27096,7 +27103,7 @@ msgstr "Ocultar menú"
 
 #: ../../godmode/setup/setup_visuals.php:161
 msgid "Style configuration"
-msgstr ""
+msgstr "Configuración de estilo"
 
 #: ../../godmode/setup/setup_visuals.php:175
 #: ../../include/functions_config_bk.php:439
@@ -27127,7 +27134,7 @@ msgstr ""
 
 #: ../../godmode/setup/setup_visuals.php:195
 msgid "GIS configuration"
-msgstr ""
+msgstr "Configuración GIS"
 
 #: ../../godmode/setup/setup_visuals.php:209
 #: ../../include/functions_config_bk.php:413
@@ -27207,7 +27214,7 @@ msgstr ""
 
 #: ../../godmode/setup/setup_visuals.php:259
 msgid "Font and Text configuration"
-msgstr ""
+msgstr "Configuración Fuente y Texto"
 
 #: ../../godmode/setup/setup_visuals.php:285
 #: ../../include/functions_config_bk.php:384
@@ -27253,7 +27260,7 @@ msgstr "Color de la gráfica #10"
 
 #: ../../godmode/setup/setup_visuals.php:313
 msgid "Graph resolution (1-low, 5-high)"
-msgstr ""
+msgstr "Resolución gráfica (1-baja, 5-alta)"
 
 #: ../../godmode/setup/setup_visuals.php:317
 #: ../../include/functions_config_bk.php:459
@@ -27274,11 +27281,11 @@ msgstr ""
 
 #: ../../godmode/setup/setup_visuals.php:348
 msgid "Type of module charts"
-msgstr ""
+msgstr "Tipo de gráficas de módulos"
 
 #: ../../godmode/setup/setup_visuals.php:358
 msgid "Charts configuration"
-msgstr ""
+msgstr "Configuración de gráficas"
 
 #: ../../godmode/setup/setup_visuals.php:373
 #: ../../include/functions_config_bk.php:425
@@ -27327,7 +27334,7 @@ msgstr "Valores del intervalo"
 
 #: ../../godmode/setup/setup_visuals.php:592
 msgid "Other configuration"
-msgstr ""
+msgstr "Otra configuración"
 
 #: ../../godmode/setup/setup_visuals.php:773
 msgid "Logo preview"
@@ -29051,7 +29058,7 @@ msgstr "No hay informes definidos"
 
 #: ../../operation/reporting/graph_viewer.php:160
 msgid "No data."
-msgstr ""
+msgstr "Sin datos."
 
 #: ../../operation/reporting/graph_viewer.php:181
 #: ../../operation/agentes/interface_traffic_graph_win.php:223
@@ -29388,7 +29395,7 @@ msgstr "Incidente creado"
 
 #: ../../operation/incidents/incident.php:218
 msgid "Incidents:"
-msgstr ""
+msgstr "Incidentes:"
 
 #: ../../operation/incidents/incident.php:219
 msgid "All incidents"
@@ -29396,7 +29403,7 @@ msgstr "Todos los incidentes"
 
 #: ../../operation/incidents/incident.php:241
 msgid "Priorities:"
-msgstr ""
+msgstr "Prioridades:"
 
 #: ../../operation/incidents/incident.php:242
 msgid "All priorities"
@@ -29404,19 +29411,19 @@ msgstr "Todas las prioridades"
 
 #: ../../operation/incidents/incident.php:246
 msgid "Users:"
-msgstr ""
+msgstr "Usuarios:"
 
 #: ../../operation/incidents/incident.php:262
 msgid "Agents:"
-msgstr ""
+msgstr "Agentes:"
 
 #: ../../operation/incidents/incident.php:269
 msgid "Groups:"
-msgstr ""
+msgstr "Grupos:"
 
 #: ../../operation/incidents/incident.php:275
 msgid "Free text:"
-msgstr ""
+msgstr "Texto libre:"
 
 #: ../../operation/incidents/incident.php:383
 msgid "Delete incidents"
@@ -29835,7 +29842,7 @@ msgstr "mensaje(s) sin leer"
 
 #: ../../operation/messages/message_list.php:93
 msgid "There are no messages."
-msgstr ""
+msgstr "No hay mensajes."
 
 #: ../../operation/messages/message_list.php:119
 #: ../../operation/messages/message_edit.php:82
@@ -30947,55 +30954,55 @@ msgstr "Traps Enterprise de cadena"
 
 #: ../../enterprise/godmode/reporting/mysql_builder.php:90
 msgid "Create new custom"
-msgstr ""
+msgstr "Crear personalizada nueva"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:382
 msgid "Generate a dinamic report"
-msgstr ""
+msgstr "Generar un informe dinámico"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:437
 msgid "Add agents"
-msgstr ""
+msgstr "Añadir agentes"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:440
 msgid "Undo agents"
-msgstr ""
+msgstr "Anular agentes"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:448
 msgid "Generate"
-msgstr ""
+msgstr "Generar"
 
 #: ../../enterprise/godmode/massive/massive_operations.php:78
 msgid "Bulk alerts policy add"
-msgstr ""
+msgstr "Añadir políticas de alertas masivamente"
 
 #: ../../enterprise/godmode/massive/massive_operations.php:79
 msgid "Bulk alerts policy delete"
-msgstr ""
+msgstr "Eliminar políticas de alertas masivamente"
 
 #: ../../enterprise/godmode/massive/massive_operations.php:80
 msgid "Bulk tags module policy edit"
-msgstr ""
+msgstr "Editar políticas de módulos de etiquetas masivamente"
 
 #: ../../enterprise/godmode/massive/massive_operations.php:81
 msgid "Bulk modules policy tags edit"
-msgstr ""
+msgstr "Editar etiquetas de políticas de módulos masivamente"
 
 #: ../../enterprise/godmode/massive/massive_operations.php:89
 msgid "Bulk alert SNMP delete"
-msgstr ""
+msgstr "Eliminar alertas SNMP masivamente"
 
 #: ../../enterprise/godmode/massive/massive_operations.php:90
 msgid "Bulk alert SNMP edit"
-msgstr ""
+msgstr "Editar alertas SNMP masivamente"
 
 #: ../../enterprise/godmode/massive/massive_operations.php:98
 msgid "Bulk Satellite modules edit"
-msgstr ""
+msgstr "Editar módulos satélite masivamente"
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:200
 msgid "No inventory modules defined"
-msgstr ""
+msgstr "No hay módulos de inventario definidos"
 
 #: ../../enterprise/godmode/agentes/collections.data.php:130
 msgid ""
@@ -31006,11 +31013,11 @@ msgstr ""
 
 #: ../../enterprise/godmode/servers/manage_export.php:121
 msgid "There are no defined export targets"
-msgstr ""
+msgstr "No hay objetivos a exportar definidos"
 
 #: ../../enterprise/godmode/setup/setup_skins.php:143
 msgid "There are no defined skins"
-msgstr ""
+msgstr "No hay skins definidas"
 
 #: ../../enterprise/godmode/setup/setup_acl.php:97
 msgid "Hidden"
@@ -31018,60 +31025,60 @@ msgstr "Oculto"
 
 #: ../../enterprise/godmode/setup/setup.php:72
 msgid "No replication yet"
-msgstr ""
+msgstr "Sin replicación todavía"
 
 #: ../../enterprise/godmode/setup/setup.php:97
 msgid "Metaconsole DB engine"
-msgstr ""
+msgstr "Motor BD de la metaconsola"
 
 #: ../../enterprise/godmode/setup/setup.php:98
 msgid "MySQL"
-msgstr ""
+msgstr "MySQL"
 
 #: ../../enterprise/godmode/setup/setup.php:98
 msgid "Oracle"
-msgstr ""
+msgstr "Oracle"
 
 #: ../../enterprise/godmode/alerts/alert_events_rules.php:496
 msgid "There are no defined alert event rules"
-msgstr ""
+msgstr "No hay definidas reglas para alerta de eventos"
 
 #: ../../enterprise/godmode/alerts/alert_events_list.php:610
 msgid "There are no defined events alerts"
-msgstr ""
+msgstr "No hay definidas alerta de eventos"
 
 #: ../../enterprise/godmode/policies/policy_inventory_modules.php:235
 msgid "There are no defined inventory modules"
-msgstr ""
+msgstr "No hay definidos módulos de inventario"
 
 #: ../../enterprise/godmode/policies/policy_linking.php:143
 msgid "There are no defined modules unlinked"
-msgstr ""
+msgstr "No hay módulos definidos desvinculados"
 
 #: ../../enterprise/godmode/policies/policy_modules.php:1104
 msgid "There are no defined modules"
-msgstr ""
+msgstr "No hay módulos definidos"
 
 #: ../../enterprise/godmode/policies/policy_plugins.php:91
 msgid "There are no defined plugins"
-msgstr ""
+msgstr "No hay plugins definidos"
 
 #: ../../enterprise/load_enterprise.php:697
 msgid "Activate license"
-msgstr ""
+msgstr "Activar licencia"
 
 #: ../../enterprise/meta/general/login_page.php:82
 msgid "Monitor all your systems with a single tool"
-msgstr ""
+msgstr "Controlar todos tus sistemas con una sola herramienta"
 
 #: ../../enterprise/meta/advanced/metasetup.php:89
 #: ../../enterprise/meta/advanced/metasetup.php:118
 msgid "Offline Update Manager"
-msgstr ""
+msgstr "Gestionar actualización offline"
 
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:50
 msgid "Error could not resolve the host."
-msgstr ""
+msgstr "Error no pudo resolver el host."
 
 #: ../../enterprise/include/functions_reporting_pdf.php:2093
 #: ../../enterprise/include/functions_netflow_pdf.php:157
@@ -31090,7 +31097,7 @@ msgstr "Contenido"
 #: ../../enterprise/include/functions_services.php:1100
 #: ../../enterprise/include/functions_services.php:1115
 msgid "Nonexistent. This element should be deleted"
-msgstr ""
+msgstr "Inexistente. Este elemento debería eliminarse"
 
 #: ../../extras/pandora_diag.php:90
 msgid "Pandora FMS Diagnostic tool"
@@ -31950,14 +31957,17 @@ msgstr "Usuario actualizado."
 #: ../../include/functions_api.php:5285
 msgid "Error enable/disable user. Id_user cannot be left blank."
 msgstr ""
+"Error habilitar/deshabilitar usuario. Id_user no puede estar en blanco."
 
 #: ../../include/functions_api.php:5292
 msgid "Error enable/disable user. Enable/disable value cannot be left blank."
 msgstr ""
+"Error habilitar/deshabilitar usuario.. El valor de habilitar/deshabilitar no "
+"puede estar en blanco."
 
 #: ../../include/functions_api.php:5298
 msgid "Error enable/disable user. The user doesn't exists."
-msgstr ""
+msgstr "Error habilitar/deshabilitar usuario. El usuario no existe."
 
 #: ../../include/functions_api.php:5307
 msgid "Error in user enabling/disabling."
@@ -32006,15 +32016,18 @@ msgstr "Error al añadir el comentario en el evento."
 #: ../../include/functions_api.php:7752
 msgid "Error enable/disable agent. Id_agent cannot be left blank."
 msgstr ""
+"Error habilitar/deshabilitar agente. Id_agent no puede estar en blanco."
 
 #: ../../include/functions_api.php:7759
 msgid ""
 "Error enable/disable agent. Enable/disable value cannot be left blank."
 msgstr ""
+"Error habilitar/deshabilitar agente. El valor de habilitar/deshabilitar no "
+"puede estar en blanco."
 
 #: ../../include/functions_api.php:7765
 msgid "Error enable/disable agent. The agent doesn't exists."
-msgstr ""
+msgstr "Error habilitar/deshabilitar agente. El agente no existe."
 
 #: ../../include/functions_api.php:7776
 msgid "Error in agent enabling/disabling."
@@ -32467,6 +32480,10 @@ msgid ""
 "href=\"index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=on"
 "line\">go to Update Manager</a> for more details."
 msgstr ""
+"Hay una nueva actualización, por favor vaya al menú Administración y en las "
+"extensiones  <a style=\"font-weight:bold;\" "
+"href=\"index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=on"
+"line\">Ir al  Update Manager</a> para más detalles."
 
 #: ../../include/functions_config_bk.php:1437
 #: ../../include/functions_config.php:1473
@@ -34035,7 +34052,7 @@ msgstr "Tabla de resumen Netflow"
 
 #: ../../include/functions_config.php:217
 msgid "Replication DB engine"
-msgstr ""
+msgstr "Motor BD replicación"
 
 #: ../../include/functions_config.php:337
 msgid "Session timeout"
@@ -34043,7 +34060,7 @@ msgstr "Sesión expirada"
 
 #: ../../include/functions_config.php:469
 msgid "Default type of module charts."
-msgstr ""
+msgstr "Tipo de gráficas de módulos por defecto."
 
 #: ../../include/functions_config.php:471
 msgid "Display proc modules in binary format (OK/FAIL)"
@@ -34624,7 +34641,7 @@ msgstr "Grafica de vista general"
 #: ../../include/graphs/export_data.php:57
 #: ../../include/graphs/export_data.php:112
 msgid "An error occured exporting the data"
-msgstr ""
+msgstr "Ocurrió un error exportando los datos"
 
 #: ../../include/ajax/networkmap.ajax.php:74
 #: ../../include/ajax/networkmap.ajax.php:94
@@ -35286,6 +35303,14 @@ msgid ""
 "\t\t\t\t\t\t<br><br>You can get more plugins in our <a "
 "href='http://pandorafms.com/Library/Library/'>Public Resource Library</a> "
 msgstr ""
+"Esta extensión hace el registro de los plugins de servidor más fáciles. \n"
+"\t\t\t\t\t\tAquí puedes subir un plugin de servidor en Pandora FMS 3.x en "
+"formato comprimido (.pspz). \n"
+"\t\t\t\t\t\tPor favor consulte la documentación sobre como obtener y usar "
+"los plugins de Pandora FMS Server.\n"
+"\t\t\t\t\t\t<br><br>Puede conseguir más plugins en nuestra <a "
+"href='http://pandorafms.com/Library/Library/'>Librería de Recursos "
+"Públicos</a> "
 
 #: ../../extensions/plugin_registration.php:84
 msgid "Cannot load INI file"
@@ -35469,7 +35494,7 @@ msgstr "El ejecutable Ping no existe."
 #: ../../extensions/net_tools.php:177
 #, php-format
 msgid "Ping to %s"
-msgstr ""
+msgstr "Ping a %s"
 
 #: ../../extensions/net_tools.php:186
 msgid "Nmap executable does not exist."

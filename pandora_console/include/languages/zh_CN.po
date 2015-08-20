@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-07-01 11:30+0200\n"
-"PO-Revision-Date: 2015-07-01 09:38+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2015-06-29 18:47+0000\n"
+"Last-Translator: Yingxue Zhang <firefly1102@hotmail.com>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-07-09 07:54+0000\n"
-"X-Generator: Launchpad (build 17608)\n"
+"X-Launchpad-Export-Date: 2015-08-20 13:50+0000\n"
+"X-Generator: Launchpad (build 17690)\n"
 
 #: ../../enterprise_bk/mobile/include/functions_web.php:15
 #: ../../enterprise_bk/meta/general/main_header.php:125
@@ -35293,3 +35293,97 @@ msgstr "该工具仅用于直接从控制台查看 Pandora FMS 系统日志文�
 #: ../../extensions/pandora_logs.php:83
 msgid "System logfiles"
 msgstr "系统日志文件"
+
+#~ msgid "There are no messages"
+#~ msgstr "没有消息"
+
+#~ msgid "R"
+#~ msgstr "R"
+
+#~ msgid "Edit remote config"
+#~ msgstr "编辑远程设置"
+
+#~ msgid "Remote agent configuration"
+#~ msgstr "远程代理设置"
+
+#, php-format
+#~ msgid "Deleted data above %d"
+#~ msgstr "删除%d以上数据"
+
+#~ msgid "There are no defined graphs"
+#~ msgstr "无定义图表"
+
+#~ msgid "Items filter"
+#~ msgstr "项目过滤器"
+
+#~ msgid "Massive alerts addition"
+#~ msgstr "大量添加警告"
+
+#~ msgid "Massive alerts deletion"
+#~ msgstr "大量删除警告"
+
+#~ msgid "Massive alert actions addition"
+#~ msgstr "大量添加警告操作"
+
+#~ msgid "Massive alert actions deletion"
+#~ msgstr "大量删除警告操作"
+
+#~ msgid "Massive alert enable/disable"
+#~ msgstr "大量启用/禁用警告"
+
+#~ msgid "Massive alert setting standby"
+#~ msgstr "大量警告设置待用"
+
+#~ msgid "Massive agents edition"
+#~ msgstr "大量编辑代理"
+
+#~ msgid "Massive agents deletion"
+#~ msgstr "大量删除代理"
+
+#~ msgid "Massive profiles addition"
+#~ msgstr "大量添加简介"
+
+#~ msgid "Massive profiles deletion"
+#~ msgstr "大量删除简介"
+
+#~ msgid "Massive modules deletion"
+#~ msgstr "大量删除模块"
+
+#~ msgid "Massive modules edition"
+#~ msgstr "大量编辑模块"
+
+#~ msgid "Massive modules copy"
+#~ msgstr "大量复制模块"
+
+#~ msgid "Paginate module view"
+#~ msgstr "编页模块浏览"
+
+#~ msgid "Time compare"
+#~ msgstr "时间比较"
+
+#~ msgid "Overlapped"
+#~ msgstr "已重叠"
+
+#~ msgid "Separated"
+#~ msgstr "已分隔"
+
+#~ msgid "No incidents match your search filter"
+#~ msgstr "无事件匹配搜索过滤规则"
+
+#, php-format
+#~ msgid ""
+#~ "This extension makes registration of server plugins more easy. Here you can "
+#~ "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
+#~ "refer to documentation on how to obtain and use Pandora FMS Server "
+#~ "Plugins.<br><br>You can get more plugins in our <a href='%s'>Public Resource "
+#~ "Library</a>"
+#~ msgstr ""
+#~ "本次扩展允许更轻松地注册服务器插件注册。在此可上传 Pandora FMS 3.x "
+#~ "版本压缩格式的服务器插件（.pspz）。请参考文件以得知如何获取及使用 Pandora FMS 服务器插件。<br><br>您可以从我们的<a "
+#~ "href='%s'>公共资源库</a>获得更多插件。"
+
+#~ msgid "Ping to "
+#~ msgstr "Ping 至 "
+
+#~ msgid "Empty graph"
+#~ msgstr "空白图表"

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-07-01 11:30+0200\n"
-"PO-Revision-Date: 2015-07-01 09:38+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2015-06-29 18:52+0000\n"
+"Last-Translator: MIguel Lopez ARTICA <miguel.lopez@artica.es>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-07-09 07:54+0000\n"
-"X-Generator: Launchpad (build 17608)\n"
+"X-Launchpad-Export-Date: 2015-08-20 13:50+0000\n"
+"X-Generator: Launchpad (build 17690)\n"
 
 #: ../../enterprise_bk/mobile/include/functions_web.php:15
 #: ../../enterprise_bk/meta/general/main_header.php:125
@@ -35787,3 +35787,96 @@ msgstr ""
 #: ../../extensions/pandora_logs.php:83
 msgid "System logfiles"
 msgstr "Система журнал фйлов"
+
+#~ msgid "R"
+#~ msgstr "R"
+
+#, php-format
+#~ msgid "Deleted data above %d"
+#~ msgstr "Удаленные данные выше %d"
+
+#~ msgid "Remote agent configuration"
+#~ msgstr "Удаление конфигурации агента"
+
+#~ msgid "Edit remote config"
+#~ msgstr "Редактировать удаленную конфигурацию"
+
+#~ msgid "There are no defined graphs"
+#~ msgstr "Здесь нет определенных графиков"
+
+#~ msgid "Items filter"
+#~ msgstr "Фильтр элементов"
+
+#~ msgid "Massive alerts addition"
+#~ msgstr "Массовые оповещения сложения"
+
+#~ msgid "Massive alerts deletion"
+#~ msgstr "Массовые оповещения удаления"
+
+#~ msgid "Massive alert actions addition"
+#~ msgstr "Массовые оповещения действий дополнения"
+
+#~ msgid "Massive alert actions deletion"
+#~ msgstr "Массовые оповещения действий удаления"
+
+#~ msgid "Massive alert enable/disable"
+#~ msgstr "Массовые оповещения включения/выключения"
+
+#~ msgid "Massive alert setting standby"
+#~ msgstr "Массовые оповещения настройки режима ожидания"
+
+#~ msgid "Massive agents edition"
+#~ msgstr "Массовые агенты издания"
+
+#~ msgid "Massive agents deletion"
+#~ msgstr "Массовые агенты удаления"
+
+#~ msgid "Massive profiles addition"
+#~ msgstr "Массовые агенты добавления"
+
+#~ msgid "Massive profiles deletion"
+#~ msgstr "Массовые профили удаления"
+
+#~ msgid "Massive modules deletion"
+#~ msgstr "Массовые профили удления"
+
+#~ msgid "Massive modules edition"
+#~ msgstr "Массовые модули издания"
+
+#~ msgid "Massive modules copy"
+#~ msgstr "Массовые модули копирования"
+
+#~ msgid "Time compare"
+#~ msgstr "Сравнить время"
+
+#~ msgid "Overlapped"
+#~ msgstr "Перекрыты"
+
+#~ msgid "Separated"
+#~ msgstr "Разделены"
+
+#~ msgid "There are no messages"
+#~ msgstr "Сообщений нет"
+
+#~ msgid "No incidents match your search filter"
+#~ msgstr "Нет инцидентов, соответствующих вашему поисковому фильтру"
+
+#, php-format
+#~ msgid ""
+#~ "This extension makes registration of server plugins more easy. Here you can "
+#~ "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
+#~ "refer to documentation on how to obtain and use Pandora FMS Server "
+#~ "Plugins.<br><br>You can get more plugins in our <a href='%s'>Public Resource "
+#~ "Library</a>"
+#~ msgstr ""
+#~ "Это расширение облегчает регистрацию сервера плагинов. Здесь вы можете "
+#~ "загрузить сервер плагина в Pandora FMS 3.x  \tзаархивированный файл (.pspz). "
+#~ " Пожалуйста, обратитесь к документации о том, как получить и использовать "
+#~ "серверы плагинов Pandora FMS. <br><br>Вы можете получить больше плагинов в "
+#~ "нашей <a href='%s'> Общественной библиотеке ресурсов </a>"
+
+#~ msgid "Ping to "
+#~ msgstr "Перебросить в "
+
+#~ msgid "Empty graph"
+#~ msgstr "Пустой график"

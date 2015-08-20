@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-07-01 11:30+0200\n"
-"PO-Revision-Date: 2015-07-01 09:38+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2015-06-29 18:49+0000\n"
+"Last-Translator: MIguel Lopez ARTICA <miguel.lopez@artica.es>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-07-09 07:53+0000\n"
-"X-Generator: Launchpad (build 17608)\n"
+"X-Launchpad-Export-Date: 2015-08-20 13:49+0000\n"
+"X-Generator: Launchpad (build 17690)\n"
 
 #: ../../enterprise_bk/mobile/include/functions_web.php:15
 #: ../../enterprise_bk/meta/general/main_header.php:125
@@ -35295,3 +35295,31 @@ msgstr ""
 #: ../../extensions/pandora_logs.php:83
 msgid "System logfiles"
 msgstr "Logi Systemowe"
+
+#~ msgid "No incidents match your search filter"
+#~ msgstr "Żaden incydent nie pasuje do filtru wyszukiwania"
+
+#~ msgid "There are no messages"
+#~ msgstr "Brak wiadomości"
+
+#~ msgid "R"
+#~ msgstr "R"
+
+#~ msgid "Edit remote config"
+#~ msgstr "Edytuj zdalną konfig"
+
+#~ msgid "Remote agent configuration"
+#~ msgstr "Zdalna konfiguracja agenta"
+
+#, php-format
+#~ msgid "Deleted data above %d"
+#~ msgstr "Usunięto dane powyżej %d"
+
+#~ msgid "Massive alerts deletion"
+#~ msgstr "Masowe usuwanie powiadomień"
+
+#~ msgid "Massive modules deletion"
+#~ msgstr "Masowe usuwanie modułów"
+
+#~ msgid "Massive modules edition"
+#~ msgstr "Masowa edycja modułów"

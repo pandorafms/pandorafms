@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-07-01 11:30+0200\n"
-"PO-Revision-Date: 2015-07-01 09:38+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2015-08-20 11:54+0000\n"
+"Last-Translator: ana <ana.ferreiro@artica.es>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-07-09 07:53+0000\n"
-"X-Generator: Launchpad (build 17608)\n"
+"X-Launchpad-Export-Date: 2015-08-20 13:49+0000\n"
+"X-Generator: Launchpad (build 17690)\n"
 
 #: ../../enterprise_bk/mobile/include/functions_web.php:15
 #: ../../enterprise_bk/meta/general/main_header.php:125
@@ -555,12 +555,12 @@ msgstr "Services"
 #: ../../enterprise_bk/godmode/services/services.service.php:181
 #: ../../enterprise/godmode/services/services.service.php:181
 msgid "No Services or concrete action"
-msgstr ""
+msgstr "Pas de services ou actions concrètes"
 
 #: ../../enterprise_bk/godmode/services/services.service.php:191
 #: ../../enterprise/godmode/services/services.service.php:192
 msgid "General Data"
-msgstr ""
+msgstr "Donnée General"
 
 #: ../../enterprise_bk/godmode/services/services.service.php:201
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_editor.php:115
@@ -795,6 +795,10 @@ msgid ""
 "\t\tIn simple mode only the elements configured as \"critical element\" are "
 "used to calculate the service status."
 msgstr ""
+"En mode manuel, vous devez définir les poids manuellement. En mode "
+"automatique les poids ont des valeurs par défaut.\n"
+"\t\t En mode simple uniquement les éléments configurés comme \"critical "
+"element\" sont utilisés pour calculer l´état du service."
 
 #: ../../enterprise_bk/godmode/services/services.service.php:206
 #: ../../enterprise_bk/operation/services/services.list.php:134
@@ -1044,6 +1048,11 @@ msgid ""
 "\t\tYou can modify the default behaviour editing alerts in the agent who "
 "stores data and alert definitions about the service and the SLA status."
 msgstr ""
+"Ici sont décrits les modèles d´alerte, qui utiliseront leurs actions par "
+"défaut.\n"
+"\t\t Vous pouvez modifier le comportement par défaut en éditons les alertes "
+"dans l´agent qui garde les données et les définitions d´alerte sur le "
+"service et le status SLA"
 
 #: ../../enterprise_bk/godmode/services/services.service.php:260
 #: ../../enterprise_bk/godmode/alerts/alert_events_rules.php:84
@@ -1942,6 +1951,8 @@ msgstr "Ok poids"
 msgid ""
 "Only the critical elements are relevant to calculate the service status"
 msgstr ""
+"Seulement les élément critiques sont important pour calculer l´état du "
+"service."
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.global.php:44
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:44
@@ -3854,7 +3865,7 @@ msgstr "Mis à jour échouée"
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_advanced.php:107
 #: ../../enterprise/godmode/reporting/reporting_builder.template_advanced.php:107
 msgid "Advance Options"
-msgstr ""
+msgstr "Options Avancées"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_advanced.php:118
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.advanced.php:83
@@ -3997,7 +4008,7 @@ msgstr "Pied de page"
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.advanced.php:69
 #: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:70
 msgid "Advance Reporting"
-msgstr ""
+msgstr "Rapport Avancées"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_editor.php:35
 #: ../../enterprise_bk/godmode/servers/manage_export.php:105
@@ -4110,7 +4121,7 @@ msgstr "SLA Assistant"
 #: ../../enterprise/include/functions_reporting.php:1826
 #: ../../include/functions_reports.php:539
 msgid "Monthly S.L.A."
-msgstr ""
+msgstr "S.L.A. mensuel"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard_sla.php:115
 #: ../../enterprise_bk/include/functions_reporting.php:2661
@@ -4120,7 +4131,7 @@ msgstr ""
 #: ../../enterprise/include/functions_reporting.php:3325
 #: ../../include/functions_reports.php:543
 msgid "Services S.L.A."
-msgstr ""
+msgstr "S.L.A. services"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard_sla.php:190
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard.php:174
@@ -4836,7 +4847,7 @@ msgstr "Assistant"
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard.php:182
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:182
 msgid "Order:"
-msgstr ""
+msgstr "Ordre"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard.php:202
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:202
@@ -4844,11 +4855,13 @@ msgid ""
 "Show a resume table with max, min, average of total modules on the report "
 "bottom:"
 msgstr ""
+"Affiche une table résumer avec max, min, moyenne total de modules dans le "
+"fond du rapport:"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard.php:217
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:217
 msgid "Show address instead module name"
-msgstr ""
+msgstr "Montrer nom d´adresse au lieu du nom du module"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard.php:218
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_item.php:1524
@@ -4856,7 +4869,7 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:218
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1558
 msgid "Show the main address of agent."
-msgstr ""
+msgstr "Monter l´adresse principal de l´agent"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard.php:231
 #: ../../mobile/operation/module_graph.php:420
@@ -4933,7 +4946,7 @@ msgstr ""
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:221
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:221
 msgid "Create template report wizard"
-msgstr ""
+msgstr "Assistant de création de modèle de rapport"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:256
 #: ../../enterprise_bk/godmode/reporting/graph_template_wizard.php:137
@@ -4981,16 +4994,18 @@ msgid ""
 "Left in blank if you want to use default name: Template name - agents (num "
 "agents) - Date"
 msgstr ""
+"Gauche en blanc si vous voulez utiliser le nom par défaut: Nom du moddèle - "
+"(agents num) - Date"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:283
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:283
 msgid "Target group"
-msgstr ""
+msgstr "Groupe ciblé"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:310
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:310
 msgid "Filter by"
-msgstr ""
+msgstr "Filtrer par"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:313
 #: ../../enterprise_bk/godmode/alerts/alert_events_rules.php:400
@@ -5022,7 +5037,7 @@ msgstr "Agent de filtrage"
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:373
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:373
 msgid "Filter tag"
-msgstr ""
+msgstr "Filter tag"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:385
 #: ../../enterprise_bk/godmode/reporting/graph_template_wizard.php:173
@@ -5147,12 +5162,12 @@ msgstr "Sélectionnés"
 #: ../../enterprise_bk/godmode/reporting/visual_console_builder.wizard_services.php:140
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:140
 msgid "Push the selected services into the list"
-msgstr ""
+msgstr "Poussez les services sélectionnés dans la liste"
 
 #: ../../enterprise_bk/godmode/reporting/visual_console_builder.wizard_services.php:145
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:145
 msgid "Remove the services from the list"
-msgstr ""
+msgstr "Retirer les services de la liste"
 
 #: ../../enterprise_bk/godmode/reporting/visual_console_builder.wizard_services.php:199
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:199
@@ -36033,3 +36048,96 @@ msgstr ""
 #: ../../extensions/pandora_logs.php:83
 msgid "System logfiles"
 msgstr "Fichiers d'archive du sytème"
+
+#~ msgid "No incidents match your search filter"
+#~ msgstr "Aucun incident ne se correspond pas avec votre filtre"
+
+#~ msgid "There are no messages"
+#~ msgstr "Il n'y a pas de messages"
+
+#~ msgid "R"
+#~ msgstr "R"
+
+#~ msgid "Edit remote config"
+#~ msgstr "Editer la configuration distante"
+
+#~ msgid "Items filter"
+#~ msgstr "Filtre d'objets"
+
+#~ msgid "Remote agent configuration"
+#~ msgstr "Configuration d'agent a distance"
+
+#, php-format
+#~ msgid "Deleted data above %d"
+#~ msgstr "Données supprimés au-dessous de %d"
+
+#~ msgid "Massive alerts addition"
+#~ msgstr "Somme massif des alertes"
+
+#~ msgid "Massive alerts deletion"
+#~ msgstr "Elimination massif d'alertes"
+
+#~ msgid "Massive alert actions addition"
+#~ msgstr "Summe massif d'actions des alertes"
+
+#~ msgid "Massive alert actions deletion"
+#~ msgstr "Suppression massif d'actions des alertes"
+
+#~ msgid "Massive alert enable/disable"
+#~ msgstr "Alerte massif active/inactive"
+
+#~ msgid "Massive alert setting standby"
+#~ msgstr "Alerte massif qui configure standby"
+
+#~ msgid "Massive agents edition"
+#~ msgstr "Edition massif des agents"
+
+#~ msgid "Massive agents deletion"
+#~ msgstr "Suppression massif d'agents"
+
+#~ msgid "Massive profiles addition"
+#~ msgstr "Addition massif des profiles"
+
+#~ msgid "Massive profiles deletion"
+#~ msgstr "Suppresion massif des profiles"
+
+#~ msgid "Massive modules deletion"
+#~ msgstr "Suppresion massif de modules"
+
+#~ msgid "Massive modules edition"
+#~ msgstr "Edition de modules massif"
+
+#~ msgid "Massive modules copy"
+#~ msgstr "Copie massif de modules"
+
+#, php-format
+#~ msgid ""
+#~ "This extension makes registration of server plugins more easy. Here you can "
+#~ "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
+#~ "refer to documentation on how to obtain and use Pandora FMS Server "
+#~ "Plugins.<br><br>You can get more plugins in our <a href='%s'>Public Resource "
+#~ "Library</a>"
+#~ msgstr ""
+#~ "Cet extension fait enregistrement du plugins du serveur plus facile. Ici "
+#~ "vous pouvez télécharger  un plugin du serveur dans le format comprimé de "
+#~ "Pandora FMS 3.x (.pspz). Si vous plaît lire la documentation pour obtenir et "
+#~ "utiliser les plugins du serveur de Pandora FMS. <br><br> Vous pouvez obtenir "
+#~ "plus de plugins dans notre <a href='%s'>Public Resource Library</a>"
+
+#~ msgid "Ping to "
+#~ msgstr "Faire un ping dans "
+
+#~ msgid "Empty graph"
+#~ msgstr "Graphique vide"
+
+#~ msgid "There are no defined graphs"
+#~ msgstr "Il n'y a pas de graphiques définies"
+
+#~ msgid "Time compare"
+#~ msgstr "Comparer temps"
+
+#~ msgid "Overlapped"
+#~ msgstr "Chevauché"
+
+#~ msgid "Separated"
+#~ msgstr "Séparé"

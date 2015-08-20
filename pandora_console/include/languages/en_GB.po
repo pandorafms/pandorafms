@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-07-01 11:30+0200\n"
-"PO-Revision-Date: 2015-07-01 09:38+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2015-08-18 14:56+0000\n"
+"Last-Translator: antonio <antonio.sanchez@artica.es>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-07-09 07:54+0000\n"
-"X-Generator: Launchpad (build 17608)\n"
+"X-Launchpad-Export-Date: 2015-08-20 13:50+0000\n"
+"X-Generator: Launchpad (build 17690)\n"
 
 #: ../../enterprise_bk/mobile/include/functions_web.php:15
 #: ../../enterprise_bk/meta/general/main_header.php:125
@@ -555,12 +555,12 @@ msgstr "Services"
 #: ../../enterprise_bk/godmode/services/services.service.php:181
 #: ../../enterprise/godmode/services/services.service.php:181
 msgid "No Services or concrete action"
-msgstr ""
+msgstr "No Services or concrete action"
 
 #: ../../enterprise_bk/godmode/services/services.service.php:191
 #: ../../enterprise/godmode/services/services.service.php:192
 msgid "General Data"
-msgstr ""
+msgstr "General Data"
 
 #: ../../enterprise_bk/godmode/services/services.service.php:201
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_editor.php:115
@@ -1043,6 +1043,10 @@ msgid ""
 "\t\tYou can modify the default behaviour editing alerts in the agent who "
 "stores data and alert definitions about the service and the SLA status."
 msgstr ""
+"Here are described the alert templates, which will use their default "
+"actions.\n"
+"\t\tYou can modify the default behaviour editing alerts in the agent who "
+"stores data and alert definitions about the service and the SLA status."
 
 #: ../../enterprise_bk/godmode/services/services.service.php:260
 #: ../../enterprise_bk/godmode/alerts/alert_events_rules.php:84
@@ -1941,6 +1945,7 @@ msgstr "Ok weight"
 msgid ""
 "Only the critical elements are relevant to calculate the service status"
 msgstr ""
+"Only the critical elements are relevant to calculate the service status"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.global.php:44
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:44
@@ -3853,7 +3858,7 @@ msgstr "Could not be updated"
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_advanced.php:107
 #: ../../enterprise/godmode/reporting/reporting_builder.template_advanced.php:107
 msgid "Advance Options"
-msgstr ""
+msgstr "Advance Options"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_advanced.php:118
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.advanced.php:83
@@ -3996,7 +4001,7 @@ msgstr "Footer"
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.advanced.php:69
 #: ../../enterprise/godmode/reporting/reporting_builder.advanced.php:70
 msgid "Advance Reporting"
-msgstr ""
+msgstr "Advance Reporting"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_editor.php:35
 #: ../../enterprise_bk/godmode/servers/manage_export.php:105
@@ -4119,7 +4124,7 @@ msgstr "Monthly SLA"
 #: ../../enterprise/include/functions_reporting.php:3325
 #: ../../include/functions_reports.php:543
 msgid "Services S.L.A."
-msgstr ""
+msgstr "Services S.L.A."
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard_sla.php:190
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard.php:174
@@ -4835,7 +4840,7 @@ msgstr "Wizard"
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard.php:182
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:182
 msgid "Order:"
-msgstr ""
+msgstr "Order:"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard.php:202
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:202
@@ -4843,11 +4848,13 @@ msgid ""
 "Show a resume table with max, min, average of total modules on the report "
 "bottom:"
 msgstr ""
+"Show a resume table with max, min, average of total modules on the report "
+"bottom:"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard.php:217
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:217
 msgid "Show address instead module name"
-msgstr ""
+msgstr "Show address instead module name"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard.php:218
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_item.php:1524
@@ -4855,7 +4862,7 @@ msgstr ""
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:218
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1558
 msgid "Show the main address of agent."
-msgstr ""
+msgstr "Show the main address of agent."
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.wizard.php:231
 #: ../../mobile/operation/module_graph.php:420
@@ -4931,7 +4938,7 @@ msgstr ""
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:221
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:221
 msgid "Create template report wizard"
-msgstr ""
+msgstr "Create template report wizard"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:256
 #: ../../enterprise_bk/godmode/reporting/graph_template_wizard.php:137
@@ -4985,12 +4992,12 @@ msgstr ""
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:283
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:283
 msgid "Target group"
-msgstr ""
+msgstr "Target group"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:310
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:310
 msgid "Filter by"
-msgstr ""
+msgstr "Filter by"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:313
 #: ../../enterprise_bk/godmode/alerts/alert_events_rules.php:400
@@ -5022,7 +5029,7 @@ msgstr "Filter agent"
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:373
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:373
 msgid "Filter tag"
-msgstr ""
+msgstr "Filter tag"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_wizard.php:385
 #: ../../enterprise_bk/godmode/reporting/graph_template_wizard.php:173
@@ -5137,22 +5144,22 @@ msgstr "View"
 #: ../../enterprise_bk/godmode/reporting/visual_console_builder.wizard_services.php:131
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:131
 msgid "Available"
-msgstr ""
+msgstr "Available"
 
 #: ../../enterprise_bk/godmode/reporting/visual_console_builder.wizard_services.php:133
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:133
 msgid "Selected"
-msgstr ""
+msgstr "Selected"
 
 #: ../../enterprise_bk/godmode/reporting/visual_console_builder.wizard_services.php:140
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:140
 msgid "Push the selected services into the list"
-msgstr ""
+msgstr "Push the selected services into the list"
 
 #: ../../enterprise_bk/godmode/reporting/visual_console_builder.wizard_services.php:145
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:145
 msgid "Remove the services from the list"
-msgstr ""
+msgstr "Remove the services from the list"
 
 #: ../../enterprise_bk/godmode/reporting/visual_console_builder.wizard_services.php:199
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:199
@@ -5162,7 +5169,7 @@ msgstr "Icon preview"
 #: ../../enterprise_bk/godmode/reporting/visual_console_builder.wizard_services.php:256
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:256
 msgid "Are you sure? All the visual map services will be recreated"
-msgstr ""
+msgstr "Are you sure? All the visual map services will be recreated"
 
 #: ../../enterprise_bk/godmode/reporting/visual_console_builder.wizard_services.php:275
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:275
@@ -5790,7 +5797,7 @@ msgstr "SQL query"
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1026
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1450
 msgid "Serialized header"
-msgstr "Serialized header"
+msgstr "Serialised header"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_item.php:1416
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1026
@@ -5832,7 +5839,7 @@ msgstr "Field separator"
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1034
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1471
 msgid "Separator for different fields in the serialized text chain"
-msgstr "Separator for different fields in the serialized text chain"
+msgstr "Separator for different fields in the serialised text chain"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_item.php:1441
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1038
@@ -5847,7 +5854,7 @@ msgid ""
 "Separator in different lines (composed by fields) of the serialized text "
 "chain"
 msgstr ""
-"Separator in different lines (composed by fields) of the serialized text "
+"Separator in different lines (composed by fields) of the serialised text "
 "chain"
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_item.php:1479
@@ -6413,11 +6420,11 @@ msgstr "Massive alerts policy deletion"
 
 #: ../../enterprise_bk/godmode/massive/massive_operations.php:80
 msgid "Masive tags module policy edition"
-msgstr ""
+msgstr "Masive tags module policy edition"
 
 #: ../../enterprise_bk/godmode/massive/massive_operations.php:81
 msgid "Masive modules policy tags edition"
-msgstr ""
+msgstr "Masive modules policy tags edition"
 
 #: ../../enterprise_bk/godmode/massive/massive_operations.php:89
 msgid "Massive alert SNMP deletion"
@@ -6436,14 +6443,14 @@ msgstr "Massive Satellite Modules Editing"
 #: ../../enterprise/godmode/massive/massive_edit_tags_policy.php:62
 #: ../../enterprise/godmode/massive/massive_tags_edit_policy.php:62
 msgid "Successful update the tags"
-msgstr ""
+msgstr "Successful update the tags"
 
 #: ../../enterprise_bk/godmode/massive/massive_edit_tags_policy.php:63
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:63
 #: ../../enterprise/godmode/massive/massive_edit_tags_policy.php:63
 #: ../../enterprise/godmode/massive/massive_tags_edit_policy.php:63
 msgid "Unsuccessful update the tags"
-msgstr ""
+msgstr "Unsuccessful update the tags"
 
 #: ../../enterprise_bk/godmode/massive/massive_edit_tags_policy.php:83
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:83
@@ -6490,7 +6497,7 @@ msgstr "Policy"
 #: ../../enterprise_bk/godmode/massive/massive_edit_tags_policy.php:102
 #: ../../enterprise/godmode/massive/massive_edit_tags_policy.php:102
 msgid "Tags unused"
-msgstr ""
+msgstr "Tags unused"
 
 #: ../../enterprise_bk/godmode/massive/massive_edit_tags_policy.php:115
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:114
@@ -12861,7 +12868,7 @@ msgstr ""
 #: ../../enterprise/operation/reporting/custom_reporting.php:47
 #: ../../enterprise/operation/reporting/custom_reporting.php:70
 msgid "Send by email"
-msgstr ""
+msgstr "Send by e-mail"
 
 #: ../../enterprise_bk/operation/reporting/custom_reporting.php:55
 #: ../../enterprise/operation/reporting/custom_reporting.php:55
@@ -12871,7 +12878,7 @@ msgstr "Report ID"
 #: ../../enterprise_bk/operation/reporting/custom_reporting.php:94
 #: ../../enterprise/operation/reporting/custom_reporting.php:94
 msgid "Send by email "
-msgstr ""
+msgstr "Send by e-mail "
 
 #: ../../enterprise_bk/operation/menu.php:36
 #: ../../enterprise/operation/menu.php:36
@@ -21003,7 +21010,7 @@ msgstr "Report to build"
 #: ../../enterprise_bk/extensions/cron/functions.php:23
 #: ../../enterprise/extensions/cron/functions.php:23
 msgid "Send to emails (separated by comma)"
-msgstr "Send to email addresses (separated by comma)"
+msgstr "Send to e-mail addresses (separated by a comma)"
 
 #: ../../enterprise_bk/extensions/cron/functions.php:33
 #: ../../enterprise_bk/extensions/cron/functions.php:38
@@ -21029,12 +21036,12 @@ msgstr "Custom script"
 #: ../../enterprise_bk/extensions/cron/functions.php:81
 #: ../../enterprise/extensions/cron/functions.php:81
 msgid "Send to email"
-msgstr "Send to email"
+msgstr "Send to e-mail"
 
 #: ../../enterprise_bk/extensions/cron/functions.php:82
 #: ../../enterprise/extensions/cron/functions.php:82
 msgid "Send custom report by email"
-msgstr "Send custom report by email"
+msgstr "Send custom report by e-mail"
 
 #: ../../enterprise_bk/extensions/cron/functions.php:97
 #: ../../enterprise_bk/extensions/cron/functions.php:138
@@ -21105,7 +21112,7 @@ msgstr "Generated at"
 #: ../../enterprise_bk/extensions/cron/functions.php:372
 #: ../../enterprise/extensions/cron/functions.php:372
 msgid "Please do not answer or reply to this email"
-msgstr "Please do not answer or reply to this email"
+msgstr "Please do not answer or reply to this e-mail"
 
 #: ../../enterprise_bk/extensions/cron/main.php:43
 #: ../../enterprise/extensions/cron/main.php:43
@@ -22563,7 +22570,7 @@ msgid ""
 "Your report has been planned, and the system will email you a PDF with the "
 "report as soon as its finished"
 msgstr ""
-"Your report has been planned and the system will email you a PDF containing "
+"Your report has been planned and the system will e-mail you a PDF containing "
 "the report as soon as it's finished."
 
 #: ../../godmode/reporting/reporting_builder.php:78
@@ -22979,7 +22986,7 @@ msgstr "There was a problem enabling user"
 
 #: ../../godmode/users/user_list.php:231 ../../godmode/users/user_list.php:233
 msgid "Search by username, fullname or email"
-msgstr "Search by username, fullname or email"
+msgstr "Search by username, fullname or e-mail"
 
 #: ../../godmode/users/user_list.php:249
 msgid "Users control filter"
@@ -23200,7 +23207,9 @@ msgstr "Enable node access"
 
 #: ../../godmode/users/configure_user.php:568
 msgid "With this option enabled, the user will can access to nodes console"
-msgstr "With this option enabled, the user will can access to nodes console"
+msgstr ""
+"With this option enabled, the user will be able to access to the nodes "
+"console"
 
 #: ../../godmode/users/configure_user.php:599
 #: ../../godmode/users/configure_user.php:608
@@ -27221,7 +27230,7 @@ msgstr "Enter the <b>auth key</b> and the following <b>request key</b>:"
 
 #: ../../godmode/setup/license.php:105
 msgid "Enter your name (or a company name) and a contact email address."
-msgstr "Enter your name (or a company name) and a contact email address."
+msgstr "Enter your name (or a company name) and a contact e-mail address."
 
 #: ../../godmode/setup/license.php:108
 msgid "Click on <b>Generate</b>."
@@ -27278,7 +27287,7 @@ msgstr "Number of modules affected"
 #: ../../godmode/tag/tag.php:215
 #, php-format
 msgid "Emails for the tag: %s"
-msgstr "Emails for the tag: %s"
+msgstr "E-mails for the tag: %s"
 
 #: ../../godmode/tag/tag.php:230
 #, php-format
@@ -27320,7 +27329,7 @@ msgstr "Hyperlink to help information that has to exist previously."
 #: ../../godmode/tag/edit_tag.php:195
 msgid "Associated Email direction to use later in alerts associated to Tags."
 msgstr ""
-"Associated Email direction to use later in alerts associated to Tags."
+"Associated E-mail direction to use later in alerts associated to Tags."
 
 #: ../../godmode/tag/edit_tag.php:205
 msgid "Associated phone number to use later in alerts associated to Tags."
@@ -28658,7 +28667,7 @@ msgstr "Community"
 #: ../../godmode/snmpconsole/snmp_alert.php:982
 #: ../../operation/snmpconsole/snmp_view.php:416
 msgid "Enterprise String"
-msgstr ""
+msgstr "Enterprise String"
 
 #: ../../godmode/snmpconsole/snmp_trap_generator.php:81
 msgid "SNMP Type"
@@ -28869,7 +28878,7 @@ msgstr "Graphs"
 
 #: ../../operation/search_results.php:143
 msgid "Helps"
-msgstr ""
+msgstr "Helps"
 
 #: ../../operation/users/webchat.php:71
 msgid "Webchat"
@@ -29334,11 +29343,11 @@ msgstr "Validate selected"
 
 #: ../../operation/events/events_rss.php:32
 msgid "Your IP is not into the IP list with API access."
-msgstr ""
+msgstr "Your IP is not into the IP list with API access."
 
 #: ../../operation/events/events_rss.php:46
 msgid "The URL of your feed has bad hash."
-msgstr ""
+msgstr "The URL of your feed has a bad hash."
 
 #: ../../operation/events/events_list.php:174
 #: ../../operation/events/events_list.php:592
@@ -29378,7 +29387,7 @@ msgstr "Overwrite filter"
 
 #: ../../operation/events/events_list.php:431
 msgid "Module search"
-msgstr ""
+msgstr "Module search"
 
 #: ../../operation/events/events_list.php:463
 msgid "Date from"
@@ -29847,15 +29856,15 @@ msgstr ""
 #: ../../operation/agentes/interface_traffic_graph_win.php:48
 #: ../../operation/agentes/stat_win.php:44
 msgid "There was a problem connecting with the node"
-msgstr ""
+msgstr "There was a problem connecting with the node"
 
 #: ../../operation/agentes/interface_traffic_graph_win.php:66
 msgid "In"
-msgstr ""
+msgstr "In"
 
 #: ../../operation/agentes/interface_traffic_graph_win.php:67
 msgid "Out"
-msgstr ""
+msgstr "Out"
 
 #: ../../operation/agentes/interface_traffic_graph_win.php:191
 #: ../../operation/agentes/stat_win.php:235
@@ -30084,11 +30093,11 @@ msgstr "Policy view"
 
 #: ../../operation/agentes/networkmap.php:397
 msgid "Dynamic view"
-msgstr ""
+msgstr "Dynamic view"
 
 #: ../../operation/agentes/networkmap.php:401
 msgid "Radial dynamic view"
-msgstr ""
+msgstr "Radial dynamic view"
 
 #: ../../operation/agentes/networkmap.php:444
 msgid "Store group"
@@ -30129,31 +30138,31 @@ msgstr "L2 network interfaces"
 
 #: ../../operation/agentes/graphs.php:87
 msgid "Other modules"
-msgstr ""
+msgstr "Other modules"
 
 #: ../../operation/agentes/graphs.php:92
 msgid "Modules network no proc"
-msgstr ""
+msgstr "Modules network no proc"
 
 #: ../../operation/agentes/graphs.php:153
 msgid "the combined graph does not show the alerts into this graph"
-msgstr ""
+msgstr "the combined graph does not show the alerts into this graph"
 
 #: ../../operation/agentes/graphs.php:155
 msgid "Show as one combined graph"
-msgstr ""
+msgstr "Show as one combined graph"
 
 #: ../../operation/agentes/graphs.php:157
 msgid "one combined graph"
-msgstr ""
+msgstr "one combined graph"
 
 #: ../../operation/agentes/graphs.php:160
 msgid "several graphs for each module"
-msgstr ""
+msgstr "several graphs for each module"
 
 #: ../../operation/agentes/graphs.php:167
 msgid "Save as custom graph"
-msgstr ""
+msgstr "Save as custom graph"
 
 #: ../../operation/agentes/graphs.php:173
 msgid "Filter graphs"
@@ -30161,20 +30170,20 @@ msgstr "Filter graphs"
 
 #: ../../operation/agentes/graphs.php:185
 msgid "Combined graph"
-msgstr ""
+msgstr "Combined graph"
 
 #: ../../operation/agentes/graphs.php:229
 #: ../../operation/agentes/graphs.php:232
 msgid "Name custom graph"
-msgstr ""
+msgstr "Name custom graph"
 
 #: ../../operation/agentes/graphs.php:254
 msgid "Save custom graph"
-msgstr ""
+msgstr "Save custom graph"
 
 #: ../../operation/agentes/graphs.php:275
 msgid "Custom graph create from the tab graphs in the agent."
-msgstr ""
+msgstr "Custom graph create from the tab graphs in the agent."
 
 #: ../../operation/agentes/estado_monitores.php:35
 msgid "Tag's information"
@@ -30186,7 +30195,7 @@ msgstr "Relationship information"
 
 #: ../../operation/agentes/estado_monitores.php:124
 msgid "For to view the list modules paginated, set in setup visuals."
-msgstr ""
+msgstr "For to view the list modules paginated, set in setup visuals."
 
 #: ../../operation/agentes/estado_monitores.php:125
 msgid "Full list of monitors"
@@ -30245,7 +30254,7 @@ msgstr "Interface information"
 #: ../../operation/agentes/estado_generalagente.php:444
 #: ../../include/functions_treeview.php:581
 msgid "Interface traffic"
-msgstr ""
+msgstr "Interface traffic"
 
 #: ../../operation/agentes/estado_generalagente.php:516
 #: ../../include/functions_treeview.php:521
@@ -30349,7 +30358,7 @@ msgstr "Maps found"
 
 #: ../../operation/search_main.php:73
 msgid "Helps found"
-msgstr ""
+msgstr "Helps found"
 
 #: ../../operation/search_main.php:83
 #, php-format
@@ -30358,11 +30367,11 @@ msgstr "Show %s of %s. Show all matching entities."
 
 #: ../../operation/integria_incidents/incident_statistics.php:52
 msgid "Opened tickets"
-msgstr ""
+msgstr "Opened tickets"
 
 #: ../../operation/integria_incidents/incident_statistics.php:53
 msgid "Closed tickets"
-msgstr ""
+msgstr "Closed tickets"
 
 #: ../../operation/integria_incidents/incident.files.php:35
 msgid "Add a file"
@@ -30552,7 +30561,7 @@ msgstr "IP Address Resolution"
 
 #: ../../operation/netflow/nf_live_view.php:322
 msgid "Select a filter"
-msgstr ""
+msgstr "Select a filter"
 
 #: ../../operation/netflow/nf_live_view.php:390
 #: ../../include/functions_netflow.php:1637
@@ -30577,11 +30586,11 @@ msgstr "Update current filter"
 
 #: ../../operation/netflow/nf_live_view.php:420
 msgid "No filter selected"
-msgstr ""
+msgstr "No filter selected"
 
 #: ../../operation/search_helps.php:22
 msgid "Zero results found."
-msgstr ""
+msgstr "Zero results found."
 
 #: ../../operation/search_helps.php:23
 #, php-format
@@ -30589,10 +30598,12 @@ msgid ""
 "You can find more help in the <a style=\"text-decoration: underline;\" "
 "href=\"%s\">Pandora's wiki</a>"
 msgstr ""
+"You can find more help in the <a style=\"text-decoration: underline;\" "
+"href=\"%s\">Pandora's wiki</a>"
 
 #: ../../operation/search_helps.php:37
 msgid "Matches"
-msgstr ""
+msgstr "Matches"
 
 #: ../../operation/snmpconsole/snmp_view.php:327
 #: ../../operation/snmpconsole/snmp_view.php:470
@@ -30612,7 +30623,7 @@ msgstr "Search by trap type"
 
 #: ../../operation/snmpconsole/snmp_view.php:342
 msgid "Group by Enterprise String/IP"
-msgstr ""
+msgstr "Group by Enterprise String/IP"
 
 #: ../../operation/snmpconsole/snmp_view.php:370
 #: ../../operation/snmpconsole/snmp_statistics.php:116
@@ -30621,7 +30632,7 @@ msgstr "There are no SNMP traps in database"
 
 #: ../../operation/snmpconsole/snmp_view.php:426
 msgid "Trap subtype"
-msgstr ""
+msgstr "Trap subtype"
 
 #: ../../operation/snmpconsole/snmp_view.php:489
 #: ../../operation/snmpconsole/snmp_statistics.php:156
@@ -30630,7 +30641,7 @@ msgstr "View agent details"
 
 #: ../../operation/snmpconsole/snmp_view.php:580
 msgid "Variable bindings:"
-msgstr ""
+msgstr "Variable bindings:"
 
 #: ../../operation/snmpconsole/snmp_view.php:593
 msgid "See more details"
@@ -30638,11 +30649,11 @@ msgstr "See more details"
 
 #: ../../operation/snmpconsole/snmp_view.php:606
 msgid "Enterprise String:"
-msgstr ""
+msgstr "Enterprise String:"
 
 #: ../../operation/snmpconsole/snmp_view.php:644
 msgid "Trap type:"
-msgstr ""
+msgstr "Trap type:"
 
 #: ../../operation/snmpconsole/snmp_view.php:672
 msgid "Count:"
@@ -30681,20 +30692,20 @@ msgstr "Traps received by source"
 #: ../../include/functions_reporting.php:934
 #, php-format
 msgid "Top %d"
-msgstr ""
+msgstr "Top %d"
 
 #: ../../operation/snmpconsole/snmp_statistics.php:141
 #: ../../operation/snmpconsole/snmp_statistics.php:199
 msgid "Number"
-msgstr ""
+msgstr "Number"
 
 #: ../../operation/snmpconsole/snmp_statistics.php:185
 msgid "Traps received by Enterprise String"
-msgstr ""
+msgstr "Traps received by Enterprise String"
 
 #: ../../operation/snmpconsole/snmp_statistics.php:198
 msgid "Trap Enterprise String"
-msgstr ""
+msgstr "Trap Enterprise String"
 
 #: ../../enterprise/godmode/reporting/mysql_builder.php:90
 msgid "Create new custom"
@@ -32926,15 +32937,19 @@ msgid ""
 "force the action execution and after a few minutes you will receive the "
 "alert in your email."
 msgstr ""
+"The last step is to check the alert created. Click on the round icon to "
+"force the action execution and after a few minutes you will receive the "
+"alert in your e-mail."
 
 #: ../../include/help/clippy/operation_agentes_ver_agente.php:37
 msgid ""
 "And restart your pandora server to read again general configuration tokens."
 msgstr ""
+"And restart your pandora server to reread general configuration tokens."
 
 #: ../../include/help/clippy/homepage.php:59
 msgid "Hi, can I help you?"
-msgstr ""
+msgstr "Hi, can I help you?"
 
 #: ../../include/help/clippy/homepage.php:60
 msgid ""
@@ -32942,36 +32957,41 @@ msgid ""
 "FMS. You can follow my steps to do basic tasks in Pandora FMS or you can "
 "close me and never see me again."
 msgstr ""
+"Let me introduce my self: I am Pandorin, the annoying assistant of Pandora "
+"FMS. You can follow my steps to do basic tasks in Pandora FMS or you can "
+"close me and never see me again."
 
 #: ../../include/help/clippy/homepage.php:67
 msgid "Close this wizard and don't open it again."
-msgstr ""
+msgstr "Close this wizard and don't open it again."
 
 #: ../../include/help/clippy/homepage.php:81
 msgid "Which task would you like to do first?"
-msgstr ""
+msgstr "Which task would you like to do first?"
 
 #: ../../include/help/clippy/homepage.php:85
 msgid "Ping to a Linux or Windows server with a Pandora FMS agent"
-msgstr ""
+msgstr "Ping to a Linux or Windows server with a Pandora FMS agent"
 
 #: ../../include/help/clippy/homepage.php:90
 msgid "Create a alert by email in a critical module."
-msgstr ""
+msgstr "Create an alert by e-mail in a critical module."
 
 #: ../../include/help/clippy/homepage.php:209
 msgid ""
 "The first thing you have to do  is to setup the config email in the Pandora "
 "FMS Server."
 msgstr ""
+"The first thing you have to do  is to setup the e-mail config in the Pandora "
+"FMS Server."
 
 #: ../../include/help/clippy/homepage.php:213
 msgid "If you have it already configured you can go to the next step."
-msgstr ""
+msgstr "If you've already configured it, you can go to the next step."
 
 #: ../../include/help/clippy/homepage.php:218
 msgid "Now, pull down the Manage alerts menu and click on Actions. "
-msgstr ""
+msgstr "Now, pull down the Manage alerts menu and click on Actions. "
 
 #: ../../include/help/clippy/operation_agentes_status_monitor.php:35
 msgid ""
@@ -32997,11 +33017,11 @@ msgstr ""
 
 #: ../../include/help/clippy/extension_cron_send_email.php:39
 msgid "The configuration of email for the task email is in the file:"
-msgstr ""
+msgstr "The configuration of e-mail for the task e-mail is in the file:"
 
 #: ../../include/help/clippy/extension_cron_send_email.php:41
 msgid "Please check if the email configuration is correct."
-msgstr ""
+msgstr "Please check if the e-mail configuration is correct."
 
 #: ../../include/help/clippy/server_queued_modules.php:39
 msgid "Excesive Queued."
@@ -33020,6 +33040,8 @@ msgid ""
 "Please note that you have your agent setup to do not add new modules coming "
 "from the data XML."
 msgstr ""
+"Please note that you have your agent setup to do not add new modules coming "
+"from the data XML."
 
 #: ../../include/help/clippy/modules_not_learning_mode.php:41
 msgid ""
@@ -33028,12 +33050,18 @@ msgid ""
 "manually in the interface (with the exact name and type as coming in the XML "
 "file)."
 msgstr ""
+"That means if you have a local plugin or add manually new modules to the "
+"configuration file, you won't have it in your agent, unless you first create "
+"manually in the interface (with the exact name and type as coming in the XML "
+"file)."
 
 #: ../../include/help/clippy/modules_not_learning_mode.php:42
 msgid ""
 "You should use the \"normal\" mode (non learn) only when you don't intend to "
 "add more modules to the agent."
 msgstr ""
+"You should use the \"normal\" mode (non learn) only when you don't intend to "
+"add more modules to the agent."
 
 #: ../../include/help/clippy/data_configuration_module.php:39
 msgid "Data Configuration Module."
@@ -33097,18 +33125,24 @@ msgid ""
 "Let me show you how to create an email action: Click on Create button and "
 "fill the form showed in the following screen."
 msgstr ""
+"Let me show you how to create an e-mail action: Click on the Create button "
+"and fill the form shown in the following screen."
 
 #: ../../include/help/clippy/godmode_alerts_alert_actions.php:51
 msgid ""
 "Now, you have to go to the monitors list and look for a critical module to "
 "apply the alert."
 msgstr ""
+"Now, you have to go to the monitors list and look for a critical module to "
+"apply the alert."
 
 #: ../../include/help/clippy/godmode_alerts_alert_actions.php:56
 msgid ""
 "Click on the arrow to drop down the Monitoring submenu and select Monitor "
 "Detail."
 msgstr ""
+"Click on the arrow to drop down the Monitoring submenu and select Monitor "
+"Detail."
 
 #: ../../include/help/clippy/module_unknow.php:39
 msgid "You have unknown modules in this agent."
@@ -33134,45 +33168,55 @@ msgstr ""
 
 #: ../../include/help/clippy/godmode_alerts_configure_alert_action.php:35
 msgid "Fill the name of your action."
-msgstr ""
+msgstr "Fill the name of your action."
 
 #: ../../include/help/clippy/godmode_alerts_configure_alert_action.php:39
 msgid ""
 "Select the group in the drop-down list and filter for ACL (the user in this "
 "group can use your action to create an alert)."
 msgstr ""
+"Select the group in the drop-down list and filter for ACL (the user in this "
+"group can use your action to create an alert)."
 
 #: ../../include/help/clippy/godmode_alerts_configure_alert_action.php:43
 msgid "In the command field select \"email\"."
-msgstr ""
+msgstr "In the command field select \"email\"."
 
 #: ../../include/help/clippy/godmode_alerts_configure_alert_action.php:47
 msgid ""
 "In the threshold field enter the seconds. The help icon show more "
 "information."
 msgstr ""
+"In the threshold field, enter the seconds. The help icon shows more "
+"information."
 
 #: ../../include/help/clippy/godmode_alerts_configure_alert_action.php:53
 msgid ""
 "In the first field enter the email address/addresses where you want to "
 "receive the email alerts separated with comas ( , ) or white spaces."
 msgstr ""
+"In the first field, enter the e-mail address(es) where you want to receive "
+"the e-mail alerts, separated with commas ( , ) or blank spaces."
 
 #: ../../include/help/clippy/godmode_alerts_configure_alert_action.php:58
 msgid ""
 "In the \"Subject\"  field  you can use the macros _agent_ or _module_ for "
 "each name."
 msgstr ""
+"In the \"Subject\"  field,  you can use the macros _agent_ or _module_ for "
+"each name."
 
 #: ../../include/help/clippy/godmode_alerts_configure_alert_action.php:63
 msgid ""
 "In the text field, you can also use macros. Get more information about the "
 "macros by clicking on the help icon."
 msgstr ""
+"In the text field, you can also use macros. Get more information about the "
+"macros by clicking on the help icon."
 
 #: ../../include/help/clippy/godmode_alerts_configure_alert_action.php:69
 msgid "Click on Create button to create the action."
-msgstr ""
+msgstr "Click on Create button to create the action."
 
 #: ../../include/help/clippy/godmode_agentes_modificar_agente.php:35
 msgid "I'm going to show you how to monitor a server."
@@ -33184,7 +33228,7 @@ msgstr ""
 
 #: ../../include/help/clippy/godmode_agentes_modificar_agente.php:44
 msgid "If you have typed the name correctly you will see the agent."
-msgstr ""
+msgstr "If you have typed the name correctly, you will see the agent."
 
 #: ../../include/help/clippy/godmode_agentes_modificar_agente.php:60
 msgid "Now, please choose the agent you searched."
@@ -33196,7 +33240,7 @@ msgstr ""
 
 #: ../../include/help/clippy/modules_not_init.php:39
 msgid "You have non initialized modules"
-msgstr ""
+msgstr "You have non initialised modules"
 
 #: ../../include/help/clippy/modules_not_init.php:44
 msgid ""
@@ -33211,51 +33255,51 @@ msgstr ""
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:35
 msgid "Now you must go to Modules. Don't worry I'll lead you."
-msgstr ""
+msgstr "Now you must go to Modules. Don't worry, I'll lead you."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:40
 msgid "Click in this tab.."
-msgstr ""
+msgstr "Click on this tab.."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:56
 msgid "Now you must create the module. Don't worry, i'll teach you."
-msgstr ""
+msgstr "Now you must create the module. Don't worry, i'll teach you."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:60
 msgid "Choose the network server module."
-msgstr ""
+msgstr "Choose the network server module."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:64
 msgid "And click the button."
-msgstr ""
+msgstr "And click the button."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:80
 msgid "Now you must create the module. Don't worry, i'll teach you ."
-msgstr ""
+msgstr "Now you must create the module. Don't worry, i'll teach you ."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:84
 msgid "Now we are going to fill the form."
-msgstr ""
+msgstr "Now, we are going to fill the form."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:88
 msgid "Please choose Network Management."
-msgstr ""
+msgstr "Please choose Network Management."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:92
 msgid "Choose the component named \"Host alive\"."
-msgstr ""
+msgstr "Choose the component named \"Host alive\"."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:96
 msgid "You can change the name if you want."
-msgstr ""
+msgstr "You can change the name if you want."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:100
 msgid "Check if the IP showed is the IP of your machine."
-msgstr ""
+msgstr "Check if the IP showed is the IP of your machine."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:104
 msgid "And only to finish it is clicking this button."
-msgstr ""
+msgstr "And only to finish it is clicking this button."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:121
 msgid ""
@@ -33264,32 +33308,38 @@ msgid ""
 "the first time. In the next seconds, if there is no problem, the status "
 "color will turn into <b>red</b> or <b>green</b>."
 msgstr ""
+"Congrats! Your module has been created. <br /> and the status color is "
+"<b>blue.</b><br /> That color means that the module hasn't been executed for "
+"the first time. In the next seconds, if there is no problem, the status "
+"color will turn into <b>red</b> or <b>green</b>."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:137
 msgid "Click on alerts tab and then fill the form to add an alert."
-msgstr ""
+msgstr "Click on alerts tab and then fill the form to add an alert."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:152
 msgid "Select the critical module."
-msgstr ""
+msgstr "Select the critical module."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:156
 msgid "In template select \"Critical Condition\"."
-msgstr ""
+msgstr "In template select \"Critical Condition\"."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:160
 msgid "Now, select the action created before."
-msgstr ""
+msgstr "Now, select the action created before."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:165
 msgid "Click on Add Alert button to create the alert."
-msgstr ""
+msgstr "Click on Add Alert button to create the alert."
 
 #: ../../include/help/clippy/godmode_agentes_configurar_agente.php:181
 msgid ""
 "To test the alert you've just created go to the main view by clicking on the "
 "eye tab."
 msgstr ""
+"To test the alert you've just created go to the main view by clicking on the "
+"eye tab."
 
 #: ../../include/functions_reporting_html.php:906
 #: ../../extensions/agents_modules.php:359
@@ -33404,7 +33454,7 @@ msgstr ""
 
 #: ../../include/functions_reporting_html.php:2566
 msgid "Agents not init"
-msgstr ""
+msgstr "Agents not init"
 
 #: ../../include/functions_reporting_html.php:2577
 #: ../../include/functions_reporting_html.php:2586
@@ -33531,7 +33581,7 @@ msgstr "Monitor report"
 
 #: ../../include/functions_reports.php:564
 msgid "Serialize data"
-msgstr "Serialize data"
+msgstr "Serialise data"
 
 #: ../../include/functions_reports.php:566
 #: ../../include/functions_reporting.php:3490
@@ -35779,3 +35829,99 @@ msgstr ""
 #: ../../extensions/pandora_logs.php:83
 msgid "System logfiles"
 msgstr "System logfiles"
+
+#~ msgid "No incidents match your search filter"
+#~ msgstr "No incidents match your search filter"
+
+#~ msgid "There are no messages"
+#~ msgstr "There are no messages"
+
+#~ msgid "R"
+#~ msgstr "R"
+
+#~ msgid "Edit remote config"
+#~ msgstr "Edit remote config"
+
+#~ msgid "Items filter"
+#~ msgstr "Items filter"
+
+#~ msgid "Remote agent configuration"
+#~ msgstr "Remote agent configuration"
+
+#, php-format
+#~ msgid "Deleted data above %d"
+#~ msgstr "Deleted data above %d"
+
+#~ msgid "Massive alerts addition"
+#~ msgstr "Massive alerts addition"
+
+#~ msgid "Massive alerts deletion"
+#~ msgstr "Massive alerts deletion"
+
+#~ msgid "Massive alert actions deletion"
+#~ msgstr "Massive alert actions deletion"
+
+#~ msgid "Massive alert enable/disable"
+#~ msgstr "Massive alert enable/disable"
+
+#~ msgid "Massive alert setting standby"
+#~ msgstr "Massive alert setting standby"
+
+#~ msgid "Massive agents edition"
+#~ msgstr "Massive agents edition"
+
+#~ msgid "Massive agents deletion"
+#~ msgstr "Massive agents deletion"
+
+#~ msgid "Massive profiles addition"
+#~ msgstr "Massive profiles addition"
+
+#~ msgid "Massive profiles deletion"
+#~ msgstr "Massive profiles deletion"
+
+#~ msgid "Massive modules deletion"
+#~ msgstr "Massive modules deletion"
+
+#~ msgid "Massive modules edition"
+#~ msgstr "Massive modules edition"
+
+#~ msgid "Massive modules copy"
+#~ msgstr "Massive modules copy"
+
+#, php-format
+#~ msgid ""
+#~ "This extension makes registration of server plugins more easy. Here you can "
+#~ "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
+#~ "refer to documentation on how to obtain and use Pandora FMS Server "
+#~ "Plugins.<br><br>You can get more plugins in our <a href='%s'>Public Resource "
+#~ "Library</a>"
+#~ msgstr ""
+#~ "This extension makes registration of server plugins more easy. Here you can "
+#~ "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
+#~ "refer to documentation on how to obtain and use Pandora FMS Server "
+#~ "Plugins.<br><br>You can get more plugins in our <a href='%s'>Public Resource "
+#~ "Library</a>"
+
+#~ msgid "Ping to "
+#~ msgstr "Ping to "
+
+#~ msgid "Empty graph"
+#~ msgstr "Empty graph"
+
+#~ msgid "Time compare"
+#~ msgstr "Time compare"
+
+#~ msgid "Separated"
+#~ msgstr "Separated"
+
+#~ msgid "Overlapped"
+#~ msgstr "Overlapped"
+
+#~ msgid "There are no defined graphs"
+#~ msgstr "There are no defined graphs"
+
+#~ msgid "Massive alert actions addition"
+#~ msgstr "Massive alert actions addition"
+
+#~ msgid "Paginate module view"
+#~ msgstr "Paginated module view"

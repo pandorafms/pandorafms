@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-07-01 11:30+0200\n"
-"PO-Revision-Date: 2015-07-01 09:38+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2015-06-29 18:35+0000\n"
+"Last-Translator: nil <slerena@gmail.com>\n"
 "Language-Team: Catalan <ca@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-07-09 07:52+0000\n"
-"X-Generator: Launchpad (build 17608)\n"
+"X-Launchpad-Export-Date: 2015-08-20 13:49+0000\n"
+"X-Generator: Launchpad (build 17690)\n"
 
 #: ../../enterprise_bk/mobile/include/functions_web.php:15
 #: ../../enterprise_bk/meta/general/main_header.php:125
@@ -35832,3 +35832,97 @@ msgstr ""
 #: ../../extensions/pandora_logs.php:83
 msgid "System logfiles"
 msgstr "Registres del sistema"
+
+#~ msgid "There are no messages"
+#~ msgstr "No hi ha nous mensatges"
+
+#~ msgid "R"
+#~ msgstr "R"
+
+#~ msgid "Edit remote config"
+#~ msgstr "Editar la configuració remota"
+
+#~ msgid "No incidents match your search filter"
+#~ msgstr ""
+#~ "No es van registrar incidents coincideixen amb el seu filtre de recerca"
+
+#~ msgid "Time compare"
+#~ msgstr "Temps comparar"
+
+#~ msgid "Overlapped"
+#~ msgstr "Superposada"
+
+#~ msgid "Separated"
+#~ msgstr "Apartat"
+
+#~ msgid "Ping to "
+#~ msgstr "Ping a "
+
+#, php-format
+#~ msgid ""
+#~ "This extension makes registration of server plugins more easy. Here you can "
+#~ "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
+#~ "refer to documentation on how to obtain and use Pandora FMS Server "
+#~ "Plugins.<br><br>You can get more plugins in our <a href='%s'>Public Resource "
+#~ "Library</a>"
+#~ msgstr ""
+#~ "Aquesta extensió fa que el registre de plugins de servidor més fàcil. Aquí "
+#~ "podeu carregar un plug-in del servidor de Pandora FMS 3.x format comprimit "
+#~ "(. Pspz). Si us plau, consulteu la documentació sobre com obtenir i "
+#~ "utilitzar Pandora FMS Server Plugins. <br> Pot obtenir més plugins en el "
+#~ "nostre <a href = ' %s '> Biblioteca Pública </ a>"
+
+#~ msgid "Massive alerts addition"
+#~ msgstr "Alertes més Massive"
+
+#~ msgid "Massive alerts deletion"
+#~ msgstr "Alertes Massive eliminació"
+
+#~ msgid "Massive alert actions addition"
+#~ msgstr "Alerta Massive accions més"
+
+#~ msgid "Massive alert actions deletion"
+#~ msgstr "Alerta Massive accions eliminació"
+
+#~ msgid "Massive alert enable/disable"
+#~ msgstr "Alerta Massive activar / desactivar"
+
+#~ msgid "Massive alert setting standby"
+#~ msgstr "Configuració d'alerta massiva a espera"
+
+#~ msgid "Massive agents edition"
+#~ msgstr "Massive edició agents"
+
+#~ msgid "Massive agents deletion"
+#~ msgstr "Agents Massive eliminació"
+
+#~ msgid "Massive profiles addition"
+#~ msgstr "A més perfils Massive"
+
+#~ msgid "Massive profiles deletion"
+#~ msgstr "Perfils Massive eliminació"
+
+#~ msgid "Massive modules deletion"
+#~ msgstr "Mòduls Massive eliminació"
+
+#~ msgid "Massive modules edition"
+#~ msgstr "Massive edició mòduls"
+
+#~ msgid "Massive modules copy"
+#~ msgstr "Massive còpia mòduls"
+
+#~ msgid "Items filter"
+#~ msgstr "Filtra els elements"
+
+#~ msgid "There are no defined graphs"
+#~ msgstr "No hi ha gràfics definits"
+
+#~ msgid "Remote agent configuration"
+#~ msgstr "Configuració de l'agent remot"
+
+#, php-format
+#~ msgid "Deleted data above %d"
+#~ msgstr "Les dades esborrats per sobre de %d"
+
+#~ msgid "Empty graph"
+#~ msgstr "Graf buit"

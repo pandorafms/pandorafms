@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-07-01 11:30+0200\n"
-"PO-Revision-Date: 2015-07-01 09:38+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2015-06-29 18:36+0000\n"
+"Last-Translator: MIguel Lopez ARTICA <miguel.lopez@artica.es>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-07-09 07:52+0000\n"
-"X-Generator: Launchpad (build 17608)\n"
+"X-Launchpad-Export-Date: 2015-08-20 13:49+0000\n"
+"X-Generator: Launchpad (build 17690)\n"
 
 #: ../../enterprise_bk/mobile/include/functions_web.php:15
 #: ../../enterprise_bk/meta/general/main_header.php:125
@@ -35466,3 +35466,93 @@ msgstr ""
 #: ../../extensions/pandora_logs.php:83
 msgid "System logfiles"
 msgstr "Soubory záznamu systému"
+
+#~ msgid "R"
+#~ msgstr "R"
+
+#~ msgid "There are no messages"
+#~ msgstr "Nejsou žádné zprávy"
+
+#~ msgid "Edit remote config"
+#~ msgstr "Upravit vzdálené nastavení"
+
+#~ msgid "Overlapped"
+#~ msgstr "Přesahuje"
+
+#~ msgid "Time compare"
+#~ msgstr "Porovnat čas"
+
+#~ msgid "Separated"
+#~ msgstr "Oddělené"
+
+#~ msgid "Remote agent configuration"
+#~ msgstr "Nastavení vzdáleného agenta"
+
+#, php-format
+#~ msgid "Deleted data above %d"
+#~ msgstr "Byla smazána data nad %d"
+
+#~ msgid "Items filter"
+#~ msgstr "Filtr položek"
+
+#~ msgid "Massive alerts deletion"
+#~ msgstr "Hromadné mazání výstrah"
+
+#~ msgid "Massive alerts addition"
+#~ msgstr "Hromadné přidání výstrah"
+
+#~ msgid "Massive modules edition"
+#~ msgstr "Hromadná úprava modulů"
+
+#~ msgid "Massive alert actions addition"
+#~ msgstr "Hromadné přidání činností výstrah"
+
+#~ msgid "Massive alert actions deletion"
+#~ msgstr "Hromadné mazání činností výstrah"
+
+#~ msgid "Massive alert enable/disable"
+#~ msgstr "Povolení/Zakázání hromadných výstrah"
+
+#~ msgid "Massive alert setting standby"
+#~ msgstr "Nastavení pohotovostního režimu hromadných výstrah"
+
+#~ msgid "Massive agents edition"
+#~ msgstr "Hromadná úprava agentů"
+
+#~ msgid "Massive agents deletion"
+#~ msgstr "Hromadné mazání agentů"
+
+#~ msgid "Massive profiles addition"
+#~ msgstr "Hromadné přidání agentů"
+
+#~ msgid "Massive profiles deletion"
+#~ msgstr "Hromadné mazání profilů"
+
+#~ msgid "Massive modules deletion"
+#~ msgstr "Hromadné mazání modulů"
+
+#~ msgid "Massive modules copy"
+#~ msgstr "Hromadné kopírování modulů"
+
+#, php-format
+#~ msgid ""
+#~ "This extension makes registration of server plugins more easy. Here you can "
+#~ "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
+#~ "refer to documentation on how to obtain and use Pandora FMS Server "
+#~ "Plugins.<br><br>You can get more plugins in our <a href='%s'>Public Resource "
+#~ "Library</a>"
+#~ msgstr ""
+#~ "Toto rozšíření usnadňuje registraci zásuvných modulů serveru. Zde můžete "
+#~ "nahrát modul v komprimovaném formátu Pandora FMS 3.x (.pspz). Prosím "
+#~ "prohlédněte si dokumentaci o tom, jak získat a používat moduly serveru "
+#~ "Pandora FMS.<br><br>Další moduly můžete získat v naší <a href='%s'>Veřejné "
+#~ "knihovně zdrojů</a>"
+
+#~ msgid "Ping to "
+#~ msgstr "PIng do "
+
+#~ msgid "Empty graph"
+#~ msgstr "Vyprázdnit graf"
+
+#~ msgid "No incidents match your search filter"
+#~ msgstr "Žádné incidenty se neshodují s Vaším filtrem hledání"

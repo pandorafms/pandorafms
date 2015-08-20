@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-07-01 11:30+0200\n"
-"PO-Revision-Date: 2015-07-01 09:38+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2015-06-29 18:48+0000\n"
+"Last-Translator: Guido Leenders <guido.leenders@invantive.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-07-09 07:53+0000\n"
-"X-Generator: Launchpad (build 17608)\n"
+"X-Launchpad-Export-Date: 2015-08-20 13:49+0000\n"
+"X-Generator: Launchpad (build 17690)\n"
 
 #: ../../enterprise_bk/mobile/include/functions_web.php:15
 #: ../../enterprise_bk/meta/general/main_header.php:125
@@ -35818,3 +35818,96 @@ msgstr ""
 #: ../../extensions/pandora_logs.php:83
 msgid "System logfiles"
 msgstr "Systeem log bestanden"
+
+#~ msgid "There are no messages"
+#~ msgstr "Er zijn geen berichten"
+
+#~ msgid "R"
+#~ msgstr "R"
+
+#~ msgid "Empty graph"
+#~ msgstr "Lege grafiek"
+
+#~ msgid "Ping to "
+#~ msgstr "Ping naar "
+
+#, php-format
+#~ msgid ""
+#~ "This extension makes registration of server plugins more easy. Here you can "
+#~ "upload a server plugin in Pandora FMS 3.x zipped format (.pspz). Please "
+#~ "refer to documentation on how to obtain and use Pandora FMS Server "
+#~ "Plugins.<br><br>You can get more plugins in our <a href='%s'>Public Resource "
+#~ "Library</a>"
+#~ msgstr ""
+#~ "Deze extensie maakt registratie van server plugins makkelijker. Hier kunt u "
+#~ "een server plugin downloaden in Pandora FMS 3.x zipped indeling (.pspz). "
+#~ "Bekijk de documentatie voor informatie hoe u Pandora FMS Server Plugins moet "
+#~ "verkrijgen en gebruiken.<br><br>U kunt meer plugins krijgen in onze <a "
+#~ "href='%s'>Publieke Bron Bibliotheek</a>"
+
+#~ msgid "No incidents match your search filter"
+#~ msgstr "Geen incidenten komen overeen met uw zoek filter"
+
+#~ msgid "Edit remote config"
+#~ msgstr "Bewerk externe config"
+
+#~ msgid "Time compare"
+#~ msgstr "Tijd vergelijken"
+
+#~ msgid "Overlapped"
+#~ msgstr "Overlapt"
+
+#~ msgid "Separated"
+#~ msgstr "Gescheiden"
+
+#~ msgid "Remote agent configuration"
+#~ msgstr "Externe agent configuratie"
+
+#, php-format
+#~ msgid "Deleted data above %d"
+#~ msgstr "Gegevens hierboven verwijderd %d"
+
+#~ msgid "Massive alerts addition"
+#~ msgstr "Massale alarmen toevoeging"
+
+#~ msgid "Massive alerts deletion"
+#~ msgstr "Massale alarmen verwijdering"
+
+#~ msgid "Massive alert actions addition"
+#~ msgstr "Massale alarm acties toevoeging"
+
+#~ msgid "Massive alert actions deletion"
+#~ msgstr "Massale alarm acties verwijdering"
+
+#~ msgid "Massive alert enable/disable"
+#~ msgstr "Massale alarm inschakeling/uitschakeling"
+
+#~ msgid "Massive alert setting standby"
+#~ msgstr "Massale alarm instelling standby"
+
+#~ msgid "Massive agents edition"
+#~ msgstr "Massale agenten editie"
+
+#~ msgid "Massive agents deletion"
+#~ msgstr "Massale agenten verwijdering"
+
+#~ msgid "Massive profiles addition"
+#~ msgstr "Massieve profielen toevoeging"
+
+#~ msgid "Massive profiles deletion"
+#~ msgstr "Massieve profielen verwijdering"
+
+#~ msgid "Massive modules deletion"
+#~ msgstr "Massieve modules verwijdering"
+
+#~ msgid "Massive modules edition"
+#~ msgstr "Massieve modules editie"
+
+#~ msgid "Massive modules copy"
+#~ msgstr "Massieve modules kopie"
+
+#~ msgid "Items filter"
+#~ msgstr "Items filter"
+
+#~ msgid "There are no defined graphs"
+#~ msgstr "Er zijn geen gedefinieerde grafieken"

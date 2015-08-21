@@ -1366,8 +1366,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				"", "", $homeurl, $water_mark, $config['fontpath'],
-				$fixed_font_size, "", $ttl, array(), array(), 0,  0,  '', 
-				false, '', true, $background_color); 
+				$fixed_font_size, $unit, $ttl, array(), array(), 0,  0,  '',
+				false, '', true, $background_color);
 			break;
 		default:
 		case CUSTOM_GRAPH_STACKED_AREA: 

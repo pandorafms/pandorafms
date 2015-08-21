@@ -111,6 +111,9 @@ if (isset($graph['force_height'])) {
 if (isset($graph['period'])) { 
 	$period = $graph['period'];
 }
+if (isset($graph['unit'])){
+	$unit = $graph['unit'];
+}
 
 if (!$force_height) {
 	if ($height < (count($graph['data']) * 14)) {
@@ -307,7 +310,7 @@ switch($graph_type) {
 	case 'line':
 		pch_vertical_graph($graph_type, $data_keys, $data_values, $width,
 			$height, $rgb_color, $xaxisname, $yaxisname, false, $legend,
-			$font, $antialiasing, $water_mark, $font_size, $backgroundColor);
+			$font, $antialiasing, $water_mark, $font_size, $backgroundColor, $unit);
 		break;
 	case 'threshold':
 		pch_threshold_graph($graph_type, $data_keys, $data_values, $width,
@@ -624,9 +627,9 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 
 function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	$rgb_color = false, $xaxisname = "", $yaxisname = "", $show_values = false,
-	$legend = array(), $font, $antialiasing, $water_mark = '', $font_size, 
-	$backgroundColor = 'white') {
-	
+	$legend = array(), $font, $antialiasing, $water_mark = '', $font_size,
+	$backgroundColor = 'white', $unit = '') {
+
 	/* CAT:Vertical Charts */
 	if (!is_array($legend) || empty($legend)) {
 		unset($legend);
@@ -692,7 +695,8 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		
 		$MyData->setSerieWeight($point_id, 0);
 	}
-
+	$MyData->setAxisUnit(0, $unit);
+	$MyData->setAxisDisplay(0, AXIS_FORMAT_METRIC);
 	//$MyData->addPoints($data,"Yaxis");
 	$MyData->setAxisName(0,$yaxisname);
 	$MyData->addPoints($index,"Xaxis");

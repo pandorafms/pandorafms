@@ -267,7 +267,8 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 		$graph['font'] = $font;
 		$graph['font_size'] = $font_size;
 		$graph['backgroundColor'] = $backgroundColor;
-		
+		$graph['unit'] = $unit;
+
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
 		

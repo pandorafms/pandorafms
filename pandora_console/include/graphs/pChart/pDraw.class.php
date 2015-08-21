@@ -2783,13 +2783,13 @@
 
      if ( $Mode == AXIS_FORMAT_METRIC )
       {
-       if (abs($Value) > 1000000000)
-        return(round($Value/1000000000,$Format)."g".$Unit);
-       if (abs($Value) > 1000000)
-        return(round($Value/1000000,$Format)."m".$Unit);
+       if (abs($Value) >= 1000000000)
+        return(round($Value/1000000000,$Format)." G ".$Unit);
+       if (abs($Value) >= 1000000)
+        return(round($Value/1000000,$Format)." M ".$Unit);
        elseif (abs($Value) >= 1000)
-        return(round($Value/1000,$Format)."k".$Unit);
-       
+        return(round($Value/1000,$Format)." K ".$Unit);
+
       }
      return($Value.$Unit);
     }

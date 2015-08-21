@@ -2549,6 +2549,8 @@
    function modulo($Value1,$Value2)
     {
      if (floor($Value2) == 0) { return(0); }
+     // to evade zero division due to huge $Value2 >= 18446744073709550592
+     if ($Value1 > $Value2) { return(0); }
      if (floor($Value2) != 0) { return($Value1 % $Value2); }
 
      $MinValue = min($Value1,$Value2); $Factor = 10;

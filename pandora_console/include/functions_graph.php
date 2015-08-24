@@ -241,17 +241,20 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 	$max_value = 0;
 	$min_value = null;
 	$flash_chart = $config['flash_charts'];
-		
+	
 	// Event iterator
 	$event_i = 0;
-			
+	
 	// Is unknown flag
 	$is_unknown = $start_unknown;
 	
 	// Calculate chart data
 	$last_known = $previous_data;
-	for ($i = 0; $i < $resolution; $i++) {
+	
+	
+	for ($i = 0; $i <= $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
+		
 		
 		$total = 0;
 		$count = 0;
@@ -510,6 +513,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	
 	$flash_chart = $config['flash_charts'];
 	
+	
 	// Get event data (contains alert data too)
 	$events = array();
 	if ($show_unknown == 1 || $show_events == 1 || $show_alerts == 1) {
@@ -541,6 +545,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 			"utimestamp < $date",
 			'order' => 'utimestamp ASC'),
 		array ('datos', 'utimestamp'), 'AND', $search_in_history_db);
+	
 	
 	// Get module warning_min and critical_min
 	$warning_min = db_get_value('min_warning','tagente_modulo','id_agente_modulo',$agent_module_id);
@@ -610,7 +615,9 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	if ($baseline) {
 		$baseline_data = array ();
 		if ($baseline == 1) {
-			$baseline_data = enterprise_hook ('reporting_enterprise_get_baseline', array ($agent_module_id, $period, $width, $height , $title, $unit_name, $date));
+			$baseline_data = enterprise_hook(
+				'reporting_enterprise_get_baseline',
+				array ($agent_module_id, $period, $width, $height , $title, $unit_name, $date));
 			if ($baseline_data === ENTERPRISE_NOT_HOOK) {
 				$baseline_data = array ();
 			}
@@ -741,12 +748,16 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$series_suffix_str = ' (' . __('Previous') . ')';
 		// Build the data of the previous period
 		
+		
+		
 		grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 			$width, $height, $title, $unit_name,
 			$show_alerts, $avg_only,
 			$date-$period, $unit, $baseline, $return_data, $show_title,
 			$projection, $adapt_key, $compare,
 			$series_suffix, $series_suffix_str, $show_unknown);
+		
+		
 		
 		switch ($compare) {
 			case 'separated':
@@ -771,6 +782,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		}
 	}
 	
+	
 	// Build the data of the current period
 	$data_returned = grafico_modulo_sparse_data ($agent_module_id,
 		$period, $show_events,
@@ -778,6 +790,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$show_alerts, $avg_only,
 		$date, $unit, $baseline, $return_data, $show_title,
 		$projection, $adapt_key, $compare, '', '', $show_unknown);
+	
 	
 	if ($return_data) {
 		return $data_returned;
@@ -802,7 +815,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	}
 	
 	$water_mark = array('file' =>
-		$config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['homedir'] . "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	
 	if ($compare === 'separated') {
@@ -820,6 +833,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	}
 	else {
 		// Color commented not to restrict serie colors
+		
 		return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
 			$long_index, ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 			"", $unit, $homeurl, $water_mark, $config['fontpath'], $config['font_size'], $unit, $ttl, 
@@ -2935,7 +2949,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	
 	// Calculate chart data
 	$last_known = $previous_data;
-	for ($i = 0; $i < $resolution; $i++) {
+	for ($i = 0; $i <= $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
 		
 		$zero = 0;

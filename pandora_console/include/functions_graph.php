@@ -251,8 +251,11 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 	
 	// Calculate chart data
 	$last_known = $previous_data;
-	for ($i = 0; $i < $resolution; $i++) {
+	
+	
+	for ($i = 0; $i <= $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
+		
 		
 		$total = 0;
 		$count = 0;
@@ -523,6 +526,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	
 	$flash_chart = $config['flash_charts'];
 	
+	
 	// Get event data (contains alert data too)
 	$events = array();
 	if ($show_unknown == 1 || $show_events == 1 || $show_alerts == 1) {
@@ -554,6 +558,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 			"utimestamp < $date",
 			'order' => 'utimestamp ASC'),
 		array ('datos', 'utimestamp'), 'AND', $search_in_history_db);
+	
 	
 	// Get module warning_min and critical_min
 	$warning_min = db_get_value('min_warning','tagente_modulo','id_agente_modulo',$agent_module_id);
@@ -625,7 +630,9 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	if ($baseline) {
 		$baseline_data = array ();
 		if ($baseline == 1) {
-			$baseline_data = enterprise_hook ('reporting_enterprise_get_baseline', array ($agent_module_id, $period, $width, $height , $title, $unit_name, $date));
+			$baseline_data = enterprise_hook(
+				'reporting_enterprise_get_baseline',
+				array ($agent_module_id, $period, $width, $height , $title, $unit_name, $date));
 			if ($baseline_data === ENTERPRISE_NOT_HOOK) {
 				$baseline_data = array ();
 			}
@@ -842,7 +849,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	}
 	
 	$water_mark = array('file' =>
-		$config['homedir'] .  "/images/logo_vertical_water.png",
+		$config['homedir'] . "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	
 	if ($config['type_module_charts'] === 'area') {
@@ -1444,7 +1451,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				"", "", $homeurl, $water_mark, $config['fontpath'],
-				$fixed_font_size, $unit, $ttl, array(), array(), 0,  0,  '', 
+				$fixed_font_size, $unit, $ttl, array(), array(), 0,  0,  '',
 				false, '', true, $background_color);
 			break;
 		default:
@@ -3063,7 +3070,7 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	
 	// Calculate chart data
 	$last_known = $previous_data;
-	for ($i = 0; $i < $resolution; $i++) {
+	for ($i = 0; $i <= $resolution; $i++) {
 		$timestamp = $datelimit + ($interval * $i);
 		
 		$zero = 0;

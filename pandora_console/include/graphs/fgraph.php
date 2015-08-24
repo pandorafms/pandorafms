@@ -265,7 +265,8 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 		$graph['font'] = $font;
 		$graph['font_size'] = $font_size;
 		$graph['backgroundColor'] = $backgroundColor;
-		
+		$graph['unit'] = $unit;
+
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
 		// Warning: This string is used in the function "api_get_module_graph" from 'functions_api.php' with the regec patern "/<img src='(.+)'>/"

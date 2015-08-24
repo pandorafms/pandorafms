@@ -695,14 +695,13 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		
 		$MyData->setSerieWeight($point_id, 0);
 	}
-	$MyData->setAxisUnit(0, $unit);
-	$MyData->setAxisDisplay(0, AXIS_FORMAT_METRIC);
 	//$MyData->addPoints($data,"Yaxis");
-	$MyData->setAxisName(0,$yaxisname);
+	$MyData->setAxisName(0,$unit);
 	$MyData->addPoints($index,"Xaxis");
 	$MyData->setSerieDescription("Xaxis", $xaxisname);
 	$MyData->setAbscissa("Xaxis");
-		
+	$MyData->setAxisDisplay(0, AXIS_FORMAT_METRIC);
+
 	switch($backgroundColor) {
 		case 'white':
 			$transparent = false;

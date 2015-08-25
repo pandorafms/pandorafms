@@ -264,7 +264,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		}
 	}
 	
-	foreach($chart_data as $label => $values) {
+	foreach ($chart_data as $label => $values) {
 		$labels[] = io_safe_output($label);
 		
 		foreach($values as $key => $value) {
@@ -328,7 +328,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	
 	$extra_width = (int)($width / 3);
 	
-	$return .= "<div id='extra_$graph_id' style='font-size: ".$font_size."pt; display:none; position:absolute; overflow: auto; max-height: ".($height+50)."px; width: ".$extra_width."px; background:#fff; padding: 2px 2px 2px 2px; border: solid #000 1px;'></div>";
+	$return .= "<div id='extra_$graph_id' style='font-size: " . $font_size . "pt; display:none; position:absolute; overflow: auto; max-height: ".($height+50)."px; width: ".$extra_width."px; background:#fff; padding: 2px 2px 2px 2px; border: solid #000 1px;'></div>";
 	
 	// Process extra data
 	$events = array();

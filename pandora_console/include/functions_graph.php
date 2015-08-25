@@ -3223,6 +3223,8 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 			$series_type['unknown'.$series_suffix] = 'area';
 		}
 		
+		$series_type['sum' . $series_suffix] = 'boolean';
+		
 		//Boolean graph doesn't have min!!!
 		/*if (!$avg_only) {
 			$chart[$timestamp]['min'.$series_suffix] = 0;
@@ -3352,11 +3354,11 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 	$series_suffix_str = '';
 	if ($compare !== false) {
 		$series_suffix = '2';
-		$series_suffix_str = ' ('.__('Previous').')';
+		$series_suffix_str = ' (' . __('Previous') . ')';
 		// Build the data of the previous period
 		grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
-		$unit_name, $show_alerts, $avg_only, $date-$period, $series_suffix, 
-		$series_suffix_str, $show_unknown);
+			$unit_name, $show_alerts, $avg_only, $date-$period, $series_suffix, 
+			$series_suffix_str, $show_unknown);
 		switch ($compare) {
 			case 'separated':
 				// Store the chart calculated
@@ -3375,18 +3377,19 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 				$series_type_prev = $series_type;
 				$color_prev = $color;
 				foreach ($color_prev as $k => $col) {
-					$color_prev[$k]['color'] = '#'.get_complementary_rgb($color_prev[$k]['color']);
+					$color_prev[$k]['color'] = '#' . get_complementary_rgb($color_prev[$k]['color']);
 				}
 				break;
 		}
 	}
+	
 	grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
-	$unit_name, $show_alerts, $avg_only, $date, '', '', $show_unknown);
+		$unit_name, $show_alerts, $avg_only, $date, '', '', $show_unknown);
 	
 	if ($compare === 'overlapped') {
 		$i = 0;
-		foreach ($chart as $k=>$v) {
-			$chart[$k] = array_merge($v,$chart_prev[$i]);
+		foreach($chart as $k => $v) {
+			$chart[$k] = array_merge($v, $chart_prev[$i]);
 			$i++;
 		}
 		
@@ -3398,8 +3401,10 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		$flash_chart = false;
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("/images/logo_vertical_water.png", false, false, false));
+	$water_mark = array(
+		'file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+		'url' => ui_get_full_url("/images/logo_vertical_water.png",
+		false, false, false));
 	
 	if ($config['type_module_charts'] === 'area') {
 		if ($compare === 'separated') {

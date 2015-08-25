@@ -187,7 +187,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	// Parent layer
 	$return = "<div class='parent_graph' style='width: " . $width . "px; " . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
-	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:".$font_size."pt'></p>";
+	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:" . $font_size . "pt'></p>";
 	$return .= "<div id='timestamp_$graph_id' class='timestamp_graph' style='font-size:".$font_size."pt;display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px; z-index:1000;'></div>";
 	$return .= "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
 	if ($menu) {
@@ -229,7 +229,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		}
 	}
 	
-	foreach($chart_data as $label => $values) {
+	foreach ($chart_data as $label => $values) {
 		$labels[] = io_safe_output($label);
 		
 		foreach($values as $key => $value) {
@@ -308,7 +308,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	}
 	$extra_width = (int)($width / 3);
 	
-	$return .= "<div id='extra_$graph_id' style='font-size: ".$font_size."pt; display:none; position:absolute; overflow: auto; max-height: ".($height+50)."px; width: ".$extra_width."px; background:#fff; padding: 2px 2px 2px 2px; border: solid #000 1px;'></div>";
+	$return .= "<div id='extra_$graph_id' style='font-size: " . $font_size . "pt; display:none; position:absolute; overflow: auto; max-height: ".($height+50)."px; width: ".$extra_width."px; background:#fff; padding: 2px 2px 2px 2px; border: solid #000 1px;'></div>";
 	
 	// Process extra data
 	$events = array();

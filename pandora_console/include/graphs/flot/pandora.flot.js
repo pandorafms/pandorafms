@@ -568,7 +568,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		alertsz[alert_ids[i]] = v;
 	});
 	
-	switch(type) {
+	switch (type) {
 		case 'line_simple': 
 			stacked = null;
 			filled = false;
@@ -606,15 +606,22 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			}
 		});
 		
-		switch(serie_types[i]) {
+		switch (serie_types[i]) {
 			case 'line':
 			default:
 				line_show = true;
 				points_show = false;
+				steps_chart = false
 				break;
 			case 'points':
 				line_show = false;
 				points_show = true;
+				steps_chart = false
+				break;
+			case 'boolean':
+				line_show = true;
+				points_show = false;
+				steps_chart = true;
 				break;
 		}
 		
@@ -645,15 +652,15 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			//~ { color: criticalw, yaxis: { from: vcritical_min } },
 			//~ { color: criticalw, yaxis: { to: -1 } }
 		//~ ];
-
+		
 		lineWidht = $('#hidden-lineWidhtGraph');
-		if (typeof(lineWidht[0])=='undefined'){
+		if (typeof(lineWidht[0])=='undefined') {
 			WidhtLine = 1;
 		}
-		else{
+		else {
 			WidhtLine = lineWidht[0].value;
 		}
-
+		
 		// Data
 		data_base.push({ 
 			id: 'serie_' + i,
@@ -661,13 +668,15 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			label: legend[i],
 			color: serie_color,
 			//threshold: [{ below: 80, color: "rgb(200, 20, 30)" } , { below: 65, color: "rgb(30, 200, 30)" }, { below: 50, color: "rgb(30, 200, 30)" }],
-			lines: { show: line_show,
+			lines: {
+				show: line_show,
 				fill: filled,
 				fillColor: {
 					colors: [ { opacity: 0.9 }, { opacity: 0.9 } ]
 				},
 				lineWidth: WidhtLine,
-				steps: false },
+				steps: steps_chart
+			},
 			points: { show: points_show }
 		});
 		

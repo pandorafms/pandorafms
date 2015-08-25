@@ -701,7 +701,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	$MyData->setSerieDescription("Xaxis", $xaxisname);
 	$MyData->setAbscissa("Xaxis");
 	$MyData->setAxisDisplay(0, AXIS_FORMAT_METRIC);
-
+	
 	switch($backgroundColor) {
 		case 'white':
 			$transparent = false;

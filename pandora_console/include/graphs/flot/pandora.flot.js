@@ -569,7 +569,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	});
 	
 	switch (type) {
-		case 'line_simple': 
+		case 'line_simple':
 			stacked = null;
 			filled = false;
 			break;
@@ -1035,6 +1035,183 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		//return '<div style=color:#000;font-size:'+font_size+'pt><input type="checkbox" id="' + graph_id + '_' + item.id +'" checked="checked" class="check_serie_'+graph_id+'">'+v+'</div>';
 	}
 	
+	// Used to export the graph data to a file.
+	// Uses plot, labels and labels_long as scope variables.
+	function exportData (options) {
+		options = options || {};
+		
+		// Options
+		var type = options.type || 'csv';
+		type = type.toLowerCase().trim();
+		
+		var graphData,
+			dataObject,
+			dataObjects = plot.getData(),
+			result = [];
+		
+		// Throw errors
+		var retrieveDataOject = function (dataObjects) {
+			var result;
+			
+			if (typeof dataObjects === 'undefined')
+				throw new Error('Empty parameter');
+			
+			// Try to retrieve the avg set (not 100% reliable, I know)
+			if (dataObjects.length == 1) {
+				result = dataObjects.shift();
+			}
+			if (dataObjects.length > 1) {
+				dataObjects.forEach(function (element) {
+					if (/^Avg.:/i.test(element.label))
+						result = element;
+				});
+				
+				// If the avg set is missing, retrieve the first set
+				if (typeof result === 'undefined')
+					result = dataObjects.shift();
+			}
+			
+			if (typeof result === 'undefined')
+				throw new Error('Empty result');
+			
+			return result;
+		}
+		
+		// Throw errors
+		var processDataObject = function (dataObject) {
+			var result;
+			
+			if (typeof dataObject === 'undefined')
+				throw new Error('Empty parameter');
+			
+			if (typeof dataObject.data === 'undefined'
+					|| !(dataObject.data instanceof Array))
+				throw new Error('Object malformed');
+			
+			/* {
+			 *   head: [<column>,<column>,...,<column>],
+			 *   data: [
+			 *     [<data>,<data>,...,<data>],
+			 *     [<data>,<data>,...,<data>],
+			 *     ...,
+			 *     [<data>,<data>,...,<data>],
+			 *   ]
+			 * }
+			 */
+			if (type === 'csv') {
+				result = {
+					head: ['date', 'value'],
+					data: []
+				};
+				
+				dataObject.data.forEach(function (item, index) {
+					var date = '', value = item[1];
+					
+					// Long labels are preferred
+					if (typeof labels_long[index] !== 'undefined')
+						date = labels_long[index];
+					else if (typeof labels[index] !== 'undefined')
+						date = labels[index];
+					
+					result.data.push([date, value]);
+				});
+			}
+			/* [
+			 *   {
+			 *     'date': <date>,
+			 *     'value': <value>
+			 *   }
+			 * ],
+			 * [
+			 *   {
+			 *     'date': <date>,
+			 *     'value': <value>
+			 *   }
+			 * ],
+			 * ...,
+			 * [
+			 *   {
+			 *     'date': <date>,
+			 *     'value': <value>
+			 *   }
+			 * ]
+			 */
+			else if (type === 'json') {
+				result = [];
+				
+				dataObject.data.forEach(function (item, index) {
+					var date = '', value = item[1];
+					
+					// Long labels are preferred
+					if (typeof labels_long[index] !== 'undefined')
+						date = labels_long[index];
+					else if (typeof labels[index] !== 'undefined')
+						date = labels[index];
+					
+					result.push({
+						'date': date,
+						'value': value
+					});
+				});
+			}
+			
+			if (typeof result === 'undefined')
+				throw new Error('Empty result');
+			
+			return result;
+		}
+		
+		try {
+			dataObject = retrieveDataOject(dataObjects);
+			graphData = processDataObject(dataObject);
+			
+			// Transform the object data into a string
+			// cause PHP has limitations in the number
+			// of POST params received.
+			var graphDataStr = JSON.stringify(graphData);
+			
+			// Build form
+			var $form = $('<form></form>'),
+				$dataInput = $('<input>'),
+				$typeInput = $('<input>'),
+				$separatorInput = $('<input>'),
+				$excelInput = $('<input>');
+			
+			$dataInput
+				.prop('name', 'data')
+				.prop('type', 'text')
+				.prop('value', graphDataStr);
+			
+			$typeInput
+				.prop('name', 'type')
+				.prop('type', 'text')
+				.prop('value', type);
+			
+			$separatorInput
+				.prop('name', 'separator')
+				.prop('type', 'text')
+				.prop('value', ';');
+			
+			$excelInput
+				.prop('name', 'excel_encoding')
+				.prop('type', 'text')
+				.prop('value', false);
+			
+			$form
+				.prop('method', 'POST')
+				.prop('action', homeurl + '/include/graphs/export_data.php')
+				.append($dataInput, $typeInput, $separatorInput, $excelInput)
+				.hide()
+				// Firefox made me write into the DOM for this :(
+				.appendTo('body')
+				.submit();
+		}
+		catch (e) {
+			alert('There was an error exporting the data');
+			console.log(e);
+		}
+	}
+	
 	// Prepared to turn series with a checkbox
 	//~ $('.check_serie_'+graph_id).click(function() {
 		//~ // Format of the id is graph_3905jf93f03_serie_id
@@ -1050,6 +1227,14 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				$('#overview_' + graph_id).css('visibility','visible');
 			else
 				$('#overview_' + graph_id).css('visibility','hidden');
+		});
+		
+		$('#menu_export_csv_' + graph_id).click(function() {
+			exportData({ type: 'csv' });
+		});
+		
+		$('#menu_export_json_' + graph_id).click(function() {
+			exportData({ type: 'json' });
 		});
 		
 		$('#menu_threshold_' + graph_id).click(function() {

@@ -47,6 +47,8 @@ $colors = null;
 $font_size = 8;
 $force_steps = true; 
 $legend_position = null;
+$series_type = null;
+
 
 $graph_type = get_parameter('graph_type', '');
 
@@ -131,6 +133,12 @@ if (isset($graph['force_steps'])) {
 	$force_steps = $graph['force_steps'];
 }
 
+if (isset($graph['series_type'])) {
+	$series_type = $graph['series_type'];
+}
+
+
+
 /*
 $colors = array();
 $colors['pep1'] = array('border' => '#000000', 'color' => '#000000', 'alpha' => 50);
@@ -156,7 +164,7 @@ if ($force_steps) {
 
 $c = 1;
 
-switch($graph_type) {
+switch ($graph_type) {
 	case 'hbar':
 	case 'vbar':
 		foreach ($data as $i => $values) {
@@ -285,7 +293,7 @@ foreach ($colors as $i => $color) {
 
 ob_get_clean(); //HACK TO EAT ANYTHING THAT CORRUPS THE IMAGE FILE
 
-switch($graph_type) {
+switch ($graph_type) {
 	case 'pie3d':
 	case 'pie2d':
 		pch_pie_graph($graph_type, array_values($data), array_keys($data),
@@ -310,7 +318,8 @@ switch($graph_type) {
 	case 'line':
 		pch_vertical_graph($graph_type, $data_keys, $data_values, $width,
 			$height, $rgb_color, $xaxisname, $yaxisname, false, $legend,
-			$font, $antialiasing, $water_mark, $font_size, $backgroundColor, $unit);
+			$font, $antialiasing, $water_mark, $font_size,
+			$backgroundColor, $unit, $series_type);
 		break;
 	case 'threshold':
 		pch_threshold_graph($graph_type, $data_keys, $data_values, $width,
@@ -628,8 +637,8 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	$rgb_color = false, $xaxisname = "", $yaxisname = "", $show_values = false,
 	$legend = array(), $font, $antialiasing, $water_mark = '', $font_size,
-	$backgroundColor = 'white', $unit = '') {
-
+	$backgroundColor = 'white', $unit = '', $series_type = array()) {
+	
 	/* CAT:Vertical Charts */
 	if (!is_array($legend) || empty($legend)) {
 		unset($legend);
@@ -640,9 +649,9 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	*/
 	if (is_array(reset($data))) {
 		$data2 = array();
-		foreach($data as $i =>$values) {
+		foreach ($data as $i =>$values) {
 			$c = 0;
-			foreach($values as $i2 => $value) {
+			foreach ($values as $i2 => $value) {
 				$data2[$i2][$i] = $value;
 				$c++;
 			}
@@ -659,15 +668,26 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	foreach ($data as $i => $values) {
 		if (isset($legend)) {
 			$point_id = $legend[$i];
+			
+			// Translate the id of serie to legend of id
+			if (!empty($series_type)) {
+				if (!isset($series_type[$point_id])) {
+					$series_type[$point_id] = $series_type[$i];
+					unset($series_type[$i]);
+				}
+			}
 		}
 		else {
 			$point_id = $i;
 		}
 		
-		$MyData->addPoints($values,$point_id);
+		$MyData->addPoints($values, $point_id);
+		
+		
 		if (!empty($rgb_color)) {
 			$MyData->setPalette($point_id, 
-				array("R" => $rgb_color[$i]['color']["R"], 
+				array(
+					"R" => $rgb_color[$i]['color']["R"], 
 					"G" => $rgb_color[$i]['color']["G"], 
 					"B" => $rgb_color[$i]['color']["B"],
 					"BorderR" => $rgb_color[$i]['border']["R"], 
@@ -702,7 +722,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	$MyData->setAbscissa("Xaxis");
 	$MyData->setAxisDisplay(0, AXIS_FORMAT_METRIC);
 	
-	switch($backgroundColor) {
+	switch ($backgroundColor) {
 		case 'white':
 			$transparent = false;
 			$fontColor = array('R' => 0, 'G' => 0, 'B' => 0);
@@ -718,7 +738,8 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		
 	}
 	/* Create the pChart object */
-	$myPicture = new pImage($width,$height,$MyData,$transparent,$backgroundColor,$fontColor);
+	$myPicture = new pImage($width, $height, $MyData, $transparent,
+		$backgroundColor, $fontColor);
 	
 	/* Turn of Antialiasing */
 	$myPicture->Antialias = $antialiasing;
@@ -727,19 +748,22 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	//$myPicture->drawRectangle(0,0,$width,$height,array("R"=>0,"G"=>0,"B"=>0));
 	
 	/* Set the default font */
-	$myPicture->setFontProperties(array("FontName"=>$font, "FontSize"=>$font_size));
+	$myPicture->setFontProperties(
+		array("FontName" =>$font, "FontSize" => $font_size));
 	
 	if (isset($legend)) {
 		/* Set horizontal legend if is posible */
 		$legend_mode = LEGEND_HORIZONTAL;
-		$size = $myPicture->getLegendSize(array("Style"=>LEGEND_NOBORDER,"Mode"=>$legend_mode));
+		$size = $myPicture->getLegendSize(
+			array("Style" => LEGEND_NOBORDER,"Mode" => $legend_mode));
 		if ($size['Width'] > ($width - 5)) {
 			$legend_mode = LEGEND_VERTICAL;
 			$size = $myPicture->getLegendSize(array("Style"=>LEGEND_NOBORDER,"Mode"=>$legend_mode));
 		}
 		
 		/* Write the chart legend */
-		$myPicture->drawLegend($width-$size['Width'], 8,array("Style"=>LEGEND_NOBORDER,"Mode"=>$legend_mode));
+		$myPicture->drawLegend($width - $size['Width'], 8,
+			array("Style" => LEGEND_NOBORDER, "Mode" => $legend_mode));
 	}
 	
 	//Calculate the bottom margin from the size of string in each index
@@ -753,8 +777,10 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		$water_mark_height = $size_water_mark[1];
 		$water_mark_width = $size_water_mark[0];
 		
-		$myPicture->drawFromPNG(($width - $water_mark_width),
-			($height - $water_mark_height) - $margin_bottom, $water_mark);
+		$myPicture->drawFromPNG(
+			($width - $water_mark_width),
+			($height - $water_mark_height) - $margin_bottom,
+			$water_mark);
 	}
 	
 	// Get the max number of scale
@@ -808,11 +834,15 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		/* Define the chart area */
 		//if ($yaxisname != ''){
 		//}
-		$myPicture->setGraphArea($chart_size,$size['Height'],$width - $water_mark_width,$height - $margin_bottom);
+		$myPicture->setGraphArea($chart_size, $size['Height'], 
+			($width - $water_mark_width),
+			($height - $margin_bottom));
 	}
 	else {
 		/* Define the chart area */
-		$myPicture->setGraphArea($chart_size, 5,$width - $water_mark_width,$height - $margin_bottom);
+		$myPicture->setGraphArea($chart_size, 5,
+			($width - $water_mark_width),
+			($height - $margin_bottom));
 	}
 	
 	/*Get minimun value to draw axis properly*/
@@ -830,11 +860,12 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	}
 	
 	/* Draw the scale */
-	$scaleSettings = array("GridR"=>200,
-		"GridG"=>200,
-		"GridB"=>200,
-		"DrawSubTicks"=>TRUE,
-		"CycleBackground"=>TRUE, 
+	$scaleSettings = array(
+		"GridR" => 200,
+		"GridG" => 200,
+		"GridB" => 200,
+		"DrawSubTicks" => TRUE,
+		"CycleBackground" => TRUE, 
 		"Mode" => $mode,
 		"ManualScale" => $ManualScale,
 		"LabelRotation" => 40, 
@@ -865,25 +896,66 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	}
 	
 	/* Draw the chart */
-	$settings = array("ForceTransparency"=> $ForceTransparency, //
-		"Gradient"=>TRUE,
-		"GradientMode"=>GRADIENT_EFFECT_CAN,
-		"DisplayValues"=>$show_values,
-		"DisplayZeroValues"=>FALSE,
-		"DisplayR"=>100,
-		"DisplayZeros"=> FALSE,
-		"DisplayG"=>100,"DisplayB"=>100,"DisplayShadow"=>TRUE,"Surrounding"=>5,"AroundZero"=>TRUE);
+	$settings = array(
+		"ForceTransparency" => $ForceTransparency,
+		"Gradient" => TRUE,
+		"GradientMode" => GRADIENT_EFFECT_CAN,
+		"DisplayValues" => $show_values,
+		"DisplayZeroValues" => FALSE,
+		"DisplayR" => 100,
+		"DisplayZeros" => FALSE,
+		"DisplayG" => 100,
+		"DisplayB" => 100,
+		"DisplayShadow" => TRUE,
+		"Surrounding" => 5,
+		"AroundZero" => TRUE);
 	
 	
-	switch($graph_type) {
-		case "stacked_area":
-		case "area":
-			$myPicture->drawAreaChart($settings);
-			break;
-		case "line":
-			$myPicture->drawLineChart($settings);
-			break;
+	if (empty($series_type)) {
+		switch($graph_type) {
+			case "stacked_area":
+			case "area":
+				$myPicture->drawAreaChart($settings);
+				break;
+			case "line":
+				$myPicture->drawLineChart($settings);
+				break;
+		}
 	}
+	else {
+		// Hiden all series for to show each serie as type
+		foreach ($series_type as $id => $type) {
+			$MyData->setSerieDrawable($id, false);
+		}
+		foreach ($series_type as $id => $type) {
+			$MyData->setSerieDrawable($id, true); //Enable the serie to paint
+			switch ($type) {
+				default:
+				case 'area':
+					$myPicture->drawAreaChart($settings);
+					break;
+				//~ case "points":
+					//~ $myPicture->drawPlotChart($settings);
+					//~ break;
+				case "line":
+					$myPicture->drawLineChart($settings);
+					break;
+				case 'boolean':
+					switch($graph_type) {
+						case "stacked_area":
+						case "area":
+							$myPicture->drawFilledStepChart($settings);
+							break;
+						case "line":
+							$myPicture->drawStepChart($settings);
+							break;
+					}
+					break;
+			}
+			$MyData->setSerieDrawable($id, false); //Disable the serie to paint the rest
+		}
+	}
+	
 	
 	/* Render the picture */
 	$myPicture->stroke(); 

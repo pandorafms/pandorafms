@@ -1287,6 +1287,8 @@ function setModuleValue(id_data, process_simple_value, period) {
 	parameter.push ({name: "action", value: "get_module_value"});
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "period", value: period});
+	parameter.push ({name: "id_visual_console",
+		value: id_visual_console});
 	if (process_simple_value != undefined) {
 		parameter.push ({name: "process_simple_value", value: process_simple_value});
 	}
@@ -1319,6 +1321,8 @@ function setPercentileBar(id_data, values) {
 	parameter.push ({name: "action", value: "get_module_value"});
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "value_show", value: values['value_show']});
+	parameter.push ({name: "id_visual_console",
+		value: id_visual_console});
 	jQuery.ajax({
 		url: get_url_ajax(),
 		data: parameter,
@@ -1352,7 +1356,7 @@ function setPercentileBar(id_data, values) {
 				'width=' + width_percentile + '&mode=1&progress=' + percentile +
 				'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
 			
-			$("#image_" + idItem).attr('src', img);
+			$("#image_" + id_data).attr('src', img);
 		}
 	});
 }
@@ -1374,6 +1378,8 @@ function setPercentileBubble(id_data, values) {
 	parameter.push ({name: "action", value: "get_module_value"});
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "value_show", value: values['value_show']});
+	parameter.push ({name: "id_visual_console",
+		value: id_visual_console});
 	jQuery.ajax({
 		url: get_url_ajax(),
 		data: parameter,

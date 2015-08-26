@@ -179,7 +179,7 @@ switch ($action) {
 	case 'get_layout_data':
 		$layoutData = db_get_row_filter('tlayout_data',
 			array('id' => $id_element));
-				
+		
 		echo json_encode($layoutData);
 		break;
 	

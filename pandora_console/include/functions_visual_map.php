@@ -59,13 +59,7 @@ function visual_map_print_item($layoutData) {
 	$left = $layoutData['pos_x'];
 	$id = $layoutData['id'];
 	$color = $layoutData['label_color'];
-	//If it is simple value, label must be empty because if not, module value set the plane text '(_VALUE_)'
-	if ($layoutData['type'] == SIMPLE_VALUE){
-		$label = '';
-	}
-	else{
-		$label = io_safe_output($layoutData['label']);
-	}
+	$label = io_safe_output($layoutData['label']);
 	$id_module = $layoutData['id_agente_modulo'];
 	$type = $layoutData['type'];
 	$period = $layoutData['period'];

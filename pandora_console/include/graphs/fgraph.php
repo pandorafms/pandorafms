@@ -266,11 +266,22 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 		$graph['font_size'] = $font_size;
 		$graph['backgroundColor'] = $backgroundColor;
 		$graph['unit'] = $unit;
+		$graph['series_type'] = $series_type;
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
 		// Warning: This string is used in the function "api_get_module_graph" from 'functions_api.php' with the regec patern "/<img src='(.+)'>/"
-		return "<img src='" . ui_get_full_url (false, false, false, false) . "include/graphs/functions_pchart.php?static_graph=1&graph_type=area&ttl=".$ttl."&id_graph=" . $id_graph . "'>";
+		
+		
+		
+		
+		return "<img src='" .
+			ui_get_full_url (false, false, false, false) .
+			"include/graphs/functions_pchart.php?" .
+				"static_graph=1&" .
+				"graph_type=area&" .
+				"ttl=" . $ttl . "&" .
+				"id_graph=" . $id_graph . "'>";
 	}
 }
 

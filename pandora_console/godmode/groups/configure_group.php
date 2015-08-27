@@ -182,7 +182,12 @@ if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK && !defined('METACONSOLE')) {
 	$table->data[9][1] = skins_print_select($config["id_user"], 'skin', $skin, '', __('None'), 0, true);
 }
 
-echo '<form name="grupo" method="post" action="index.php?sec=gagente&sec2=godmode/groups/group_list&pure=' . $config['pure'] . '">';
+if (defined("METACONSOLE"))
+	$sec = "advanced";
+else
+	$sec = "gagente";
+
+echo '<form name="grupo" method="post" action="index.php?sec=' . $sec . '&sec2=godmode/groups/group_list&pure=' . $config['pure'] . '">';
 html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id_group) {

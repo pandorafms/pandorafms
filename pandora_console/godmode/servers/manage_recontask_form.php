@@ -268,10 +268,11 @@ $table->data[5][1] = html_print_select_from_sql ($sql, "id_network_profile", $id
 $data[1] = '';
 $table->data[6][0] = "<b>" . __('Recon script') . "</b>";
 
-$sql = 'SELECT id_recon_script, name
+
+$sql = "SELECT id_recon_script, name
 		FROM trecon_script
-		WHERE name <> "IPAM Recon"
-		ORDER BY name';
+		WHERE name <> 'IPAM Recon'
+		ORDER BY name";
 if ($name_script != "IPAM Recon") {
 	$table->data[6][1] = html_print_select_from_sql ($sql, "id_recon_script", $id_recon_script, '', '', '', true);
 	$table->data[6][1] .= "<span id='spinner_recon_script' style='display: none;'>" . html_print_image ("images/spinner.gif", true) . "</span>";

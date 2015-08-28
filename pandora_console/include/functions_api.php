@@ -31,6 +31,7 @@ include_once($config['homedir'] . "/include/functions_netflow.php");
 include_once($config['homedir'] . "/include/functions_servers.php");
 enterprise_include_once ('include/functions_local_components.php');
 enterprise_include_once ('include/functions_events.php');
+enterprise_include_once ('include/functions_agents.php');
 
 /**
  * Parse the "other" parameter.
@@ -210,6 +211,21 @@ function api_get_test() {
 	if (defined ('METACONSOLE')) {
 		echo ",meta";
 	}
+}
+
+//Return OK if agent cache is activated
+function api_get_test_agent_cache(){
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	$status = enterprise_hook('test_agent_cache', array());
+	if ($status === ENTERPRISE_NOT_HOOK) {
+		echo 'ERR';
+		return;
+	}
+	echo $status;
+
 }
 
 // Returs the string OK if a connection to the event replication DB can be established.

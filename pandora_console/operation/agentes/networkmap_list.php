@@ -198,6 +198,10 @@ else {
 
 	$table->data = array();
 	foreach ($network_maps as $network_map) {
+		$store_group = (int) db_get_value('store_group',
+			'tnetwork_map', 'id_networkmap',
+			$network_map['id_networkmap']);
+		
 		// ACL
 		$networkmap_read = check_acl ($config['id_user'], $store_group, "MR");
 		$networkmap_write = check_acl ($config['id_user'], $store_group, "MW");

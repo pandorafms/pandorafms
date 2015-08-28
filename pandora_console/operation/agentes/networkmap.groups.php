@@ -60,6 +60,9 @@ $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_use
 // Set filter
 $filter = networkmap_get_filter ($layout);
 
+if (!isset($size_canvas)) {
+	$size_canvas = null;
+}
 
 // Generate dot file
 $graph = networkmap_generate_dot_groups (__('Pandora FMS'), $group,

@@ -64,6 +64,9 @@ if (!isset($text_filter)) {
 	$text_filter = '';
 }
 
+if (!isset($size_canvas)) {
+	$size_canvas = null;
+}
 
 
 // Generate dot file

@@ -168,11 +168,10 @@ if($searchAlerts) {
 			break;
 	}
 	
-	$alertsraw = agents_get_alerts_simple($agents, "all_enabled",
+	$alertsraw = agents_get_alerts_simple(false, "all_enabled",
 		array('offset' => get_parameter ('offset', 0),
-			'limit' => $config['block_size'],
-			'order' => $order['field'] . " " . $order['order']),
-		$whereAlerts);
+			'limit' => $config['block_size']), $whereAlerts, false,
+		$order['field'] . " " . $order['order']);
 	
 	$stringSearchPHP = substr($stringSearchSQL,1,strlen($stringSearchSQL)-2);
 	

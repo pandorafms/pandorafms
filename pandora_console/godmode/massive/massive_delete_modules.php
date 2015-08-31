@@ -125,7 +125,7 @@ if ($delete) {
 			}
 			
 			foreach ($agents_select as $agent_name) {
-				$agents_[] = agents_get_agent_id($agent_name);
+				$agents_[] = agents_get_agent_id(io_safe_output($agent_name));
 			}
 			$modules_ = $module_name;
 			break;

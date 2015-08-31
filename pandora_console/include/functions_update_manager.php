@@ -25,7 +25,7 @@ function update_manager_get_config_values() {
 	global $pandora_version;
 	
 	$license = db_get_value(
-		'value',
+		db_escape_key_identifier('value'),
 		'tupdate_settings',
 		db_escape_key_identifier('key'),
 		'customer_key');
@@ -480,7 +480,7 @@ function update_manager_set_current_package($current_package) {
 		$token = 'current_package';
 	}
 	
-	$col_value = 'value';
+	$col_value = db_escape_key_identifier('value');
 	$col_key = db_escape_key_identifier('key');
 	
 	$value = db_get_value($col_value,
@@ -507,7 +507,7 @@ function update_manager_get_current_package() {
 		$token = 'current_package';
 	}
 	$current_update = db_get_value(
-		'value',
+		db_escape_key_identifier('value'),
 		'tupdate_settings',
 		db_escape_key_identifier('key'),
 		$token);

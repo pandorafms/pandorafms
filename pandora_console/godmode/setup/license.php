@@ -30,7 +30,7 @@ if ($update_settings) {
 	foreach ($_POST['keys'] as $key => $value) {
 		db_process_sql_update(
 			'tupdate_settings',
-			array('value' => $value),
+			array(db_escape_key_identifier('value') => $value),
 			array(db_escape_key_identifier('key') => $key));
 	}
 	

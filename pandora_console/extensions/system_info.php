@@ -86,13 +86,13 @@ function getPandoraDiagnostic(&$systemInfo) {
 			$systemInfo['current_update'] = db_get_sql("SELECT value FROM tupdate_settings WHERE \"key\" = 'current_update'");
 			break;
 		case "oracle":
-			$systemInfo['db_scheme_version'] = db_get_sql("SELECT value FROM tconfig WHERE token = 'db_scheme_version'");
-			$systemInfo['db_scheme_build'] = db_get_sql("SELECT value FROM tconfig WHERE token = 'db_scheme_build'");
-			$systemInfo['enterprise_installed'] = db_get_sql("SELECT value FROM tconfig WHERE token = 'enterprise_installed'");
-			$systemInfo['db_maintance'] = db_get_sql ("SELECT value FROM tconfig WHERE token = 'db_maintance'");
-			$systemInfo['customer_key'] = db_get_sql("SELECT value FROM tupdate_settings WHERE key = 'customer_key';");
-			$systemInfo['updating_code_path'] = db_get_sql("SELECT value FROM tupdate_settings WHERE key = 'updating_code_path'");
-			$systemInfo['current_update'] = db_get_sql("SELECT value FROM tupdate_settings WHERE key = 'current_update'");
+			$systemInfo['db_scheme_version'] = db_get_sql("SELECT \"value\" FROM tconfig WHERE \"token\" = 'db_scheme_version'");
+			$systemInfo['db_scheme_build'] = db_get_sql("SELECT \"value\" FROM tconfig WHERE \"token\" = 'db_scheme_build'");
+			$systemInfo['enterprise_installed'] = db_get_sql("SELECT \"value\" FROM tconfig WHERE \"token\" = 'enterprise_installed'");
+			$systemInfo['db_maintance'] = db_get_sql ("SELECT \"value\" FROM tconfig WHERE \"token\" = 'db_maintance'");
+			$systemInfo['customer_key'] = db_get_sql("SELECT \"value\" FROM tupdate_settings WHERE \"key =\" 'customer_key';");
+			$systemInfo['updating_code_path'] = db_get_sql("SELECT \"value\" FROM tupdate_settings WHERE \"key =\" 'updating_code_path'");
+			$systemInfo['current_update'] = db_get_sql("SELECT \"value\" FROM tupdate_settings WHERE \"key =\" 'current_update'");
 			break;
 	}
 }

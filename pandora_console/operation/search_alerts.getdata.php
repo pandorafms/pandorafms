@@ -165,10 +165,11 @@ if($searchAlerts) {
 						FROM tagente
 						WHERE nombre LIKE \'%' . $stringSearchSQL . '%\'  ' . $extra_sql . '))
 			)';
+			$agents = false;
 			break;
 	}
 	
-	$alertsraw = agents_get_alerts_simple(false, "all_enabled",
+	$alertsraw = agents_get_alerts_simple($agents, "all_enabled",
 		array('offset' => get_parameter ('offset', 0),
 			'limit' => $config['block_size']), $whereAlerts, false,
 		$order['field'] . " " . $order['order']);

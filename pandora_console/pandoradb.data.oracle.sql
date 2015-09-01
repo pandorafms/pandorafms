@@ -41,7 +41,7 @@ INSERT INTO talert_commands (id, name, command, description, internal, fields_de
 INSERT INTO talert_commands (id, name, command, description, internal, fields_descriptions, fields_values) VALUES (9,'SMS','sendsms&#x20;_field1_&#x20;_field2_','Send&#x20;SMS&#x20;using&#x20;the&#x20;Pandora&#x20;FMS&#x20;standard&#x20;SMS&#x20;device,&#x20;using&#x20;smstools.&#x20;&#x20;Uses&#x20;field2&#x20;as&#x20;text&#x20;message,&#x20;field1&#x20;as&#x20;destination&#x20;phone&#x20;&#40;include&#x20;international&#x20;prefix!&#41;',0,'[\Destination&#x20;number\",\Message\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
 INSERT INTO talert_commands (id, name, command, description, internal, fields_descriptions, fields_values) VALUES (10,'Validate&#x20;Event','Internal&#x20;type','This&#x20;alert&#x20;validate&#x20;the&#x20;events&#x20;matched&#x20;with&#x20;a&#x20;module&#x20;given&#x20;the&#x20;agent&#x20;name&#x20;&#40;_field1_&#41;&#x20;and&#x20;module&#x20;name&#x20;&#40;_field2_&#41;',1,'[\Agent&#x20;name\",\Module&#x20;name\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
 INSERT INTO talert_commands (id, name, command, description, internal, fields_descriptions, fields_values) VALUES (11,'Integria&#x20;IMS&#x20;Ticket','Internal&#x20;type','This&#x20;alert&#x20;create&#x20;a&#x20;ticket&#x20;into&#x20;your&#x20;Integria&#x20;IMS.',1,'[\Integria&#x20;IMS&#x20;API&#x20;path\",\Integria&#x20;IMS&#x20;API&#x20;pass\",\Integria&#x20;IMS&#x20;user\",\Ticket&#x20;title\",\Ticket&#x20;group&#x20;ID\",\Ticket&#x20;priority\",\Ticket&#x20;description\"]','[\"\",\"\",\"\",\"\",\"\",\"10,Maintenance;0,Informative;1,Low;2,Medium;3,Serious;4,Very&#x20;Serious\",\"\"]');
-INSERT INTO talert_commands (id, name, command, description, internal, fields_descriptions, fields_values) VALUES (12,'Remote&#x20;agent&#x20;control','/usr/share/pandora_server/util/udp_client.pl&#x20;_address_&#x20;41122&#x20;&quot;_field1_&quot;','This&#x20;command&#x20;is&#x20;used&#x20;to&#x20;send&#x20;commands&#x20;to&#x20;the&#x20;Pandora&#x20;FMS&#x20;agents&#x20;with&#x20;the&#x20;UDP&#x20;server&#x20;enabled.&#x20;The&#x20;UDP&#x20;server&#x20;is&#x20;used&#x20;to&#x20;order&#x20;agents&#x20;&#40;Windows&#x20;and&#x20;UNIX&#41;&#x20;to&#x20;&quot;refresh&quot;&#x20;the&#x20;agent&#x20;execution:&#x20;that&#x20;means,&#x20;to&#x20;force&#x20;the&#x20;agent&#x20;to&#x20;execute&#x20;and&#x20;send&#x20;data',0,'[\Command\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
+INSERT INTO talert_commands (id, name, command, description, internal, fields_descriptions, fields_values) VALUES (12,'Remote&#x20;agent&#x20;control','/usr/share/pandora_server/util/udp_client.pl&#x20;_address_&#x20;41122&#x20;&quot;_field1_&quot;','This&#x20;command&#x20;is&#x20;used&#x20;to&#x20;send&#x20;commands&#x20;to&#x20;the&#x20;Pandora&#x20;FMS&#x20;agents&#x20;with&#x20;the&#x20;UDP&#x20;server&#x20;enabled.&#x20;The&#x20;UDP&#x20;server&#x20;is&#x20;used&#x20;to&#x20;order&#x20;agents&#x20;&#40;Windows&#x20;and&#x20;UNIX&#41;&#x20;to&#x20;&quot;refresh&quot;&#x20;the&#x20;agent&#x20;execution:&#x20;that&#x20;means,&#x20;to&#x20;force&#x20;the&#x20;agent&#x20;to&#x20;execute&#x20;and&#x20;send&#x20;data',0,'[\"Command\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]','[\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"]');
 
 -- Update curr val of sequence
 update_currval('talert_commands', 'id');
@@ -58,13 +58,13 @@ BEGIN
 LOCK TABLE tconfig IN EXCLUSIVE MODE;
 INSERT INTO tconfig (token, value) VALUES ('language','en_GB');
 INSERT INTO tconfig (token, value) VALUES ('block_size','20');
-INSERT INTO tconfig (token, value) VALUES ('days_purge','60');
+INSERT INTO tconfig (token, value) VALUES ('days_purge','45');
 INSERT INTO tconfig (token, value) VALUES ('days_delete_unknown','0');
-INSERT INTO tconfig (token, value) VALUES ('days_compact','15');
+INSERT INTO tconfig (token, value) VALUES ('days_compact','0');
 INSERT INTO tconfig (token, value) VALUES ('graph_res','5');
 INSERT INTO tconfig (token, value) VALUES ('step_compact','1');
-INSERT INTO tconfig (token, value) VALUES ('db_scheme_version','4.0-dev');
-INSERT INTO tconfig (token, value) VALUES ('db_scheme_build','PD110122');
+INSERT INTO tconfig (token, value) VALUES ('db_scheme_version','6.0RC1');
+INSERT INTO tconfig (token, value) VALUES ('db_scheme_build','PD150901');
 INSERT INTO tconfig (token, value) VALUES ('show_unknown','0');
 INSERT INTO tconfig (token, value) VALUES ('show_lastalerts','1');
 INSERT INTO tconfig (token, value) VALUES ('style','pandora');
@@ -93,8 +93,8 @@ INSERT INTO tconfig (token, value) VALUES ('timezone', 'Europe/Berlin');
 INSERT INTO tconfig (token, value) VALUES ('string_purge', 7);
 INSERT INTO tconfig (token, value) VALUES ('audit_purge', 15);
 INSERT INTO tconfig (token, value) VALUES ('trap_purge', 7);
-INSERT INTO tconfig (token, value) VALUES ('event_purge', 15);
-INSERT INTO tconfig (token, value) VALUES ('gis_purge', 15);
+INSERT INTO tconfig (token, value) VALUES ('event_purge', 7);
+INSERT INTO tconfig (token, value) VALUES ('gis_purge', 7);
 INSERT INTO tconfig (token, value) VALUES ('sound_alert', 'include/sounds/air_shock_alarm.wav');
 INSERT INTO tconfig (token, value) VALUES ('sound_critical', 'include/sounds/Star_Trek_emergency_simulation.wav');
 INSERT INTO tconfig (token, value) VALUES ('sound_warning', 'include/sounds/negativebeep.wav');
@@ -123,7 +123,7 @@ INSERT INTO tconfig (token, value) VALUES ('meta_style', 'meta_pandora');
 INSERT INTO tconfig (token, value) VALUES ('enable_refr', 0);
 INSERT INTO tconfig (token, value) VALUES ('meta_num_elements', 100);
 INSERT INTO tconfig (token, value) VALUES ('update_manager_installed', 1);
-INSERT INTO tconfig (token, value) VALUES ('num_files_attachment', 100);
+INSERT INTO tconfig (token, value) VALUES ('num_files_attachment', 250);
 INSERT INTO tconfig (token, value) VALUES ('show_vc', 1);
 INSERT INTO tconfig (token, value) VALUES ('inventory_changes_blacklist', '1,2,20,21');
 INSERT INTO tconfig (token, value) VALUES ('custom_report_front', 0);
@@ -131,6 +131,8 @@ INSERT INTO tconfig (token, value) VALUES ('custom_report_front_font', 'FreeSans
 INSERT INTO tconfig (token, value) VALUES ('custom_report_front_logo', 'images/pandora_logo_white.jpg');
 INSERT INTO tconfig (token, value) VALUES ('custom_report_front_header', '');
 INSERT INTO tconfig (token, value) VALUES ('custom_report_front_footer', '');
+INSERT INTO tconfig (token, value) VALUES ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.0009765625":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}');
+
 COMMIT;
 END;;
 
@@ -334,8 +336,8 @@ END;;
 --
 BEGIN
 LOCK TABLE tusuario IN EXCLUSIVE MODE;
-INSERT INTO tusuario (id_user, fullname, firstname, lastname, middlename, password, comments, last_connect, registered, email, phone, is_admin, flash_chart, language, block_size, section) VALUES
-('admin', 'Pandora', 'Pandora', 'Admin', '', '1da7ee7d45b96d0e1f45ee4ee23da560', 'Admin Pandora', 1232642121, 0, 'admin@example.com', '555-555-5555', 1, -1, 'default', 0, 'Default');
+INSERT INTO tusuario (id_user, fullname, firstname, lastname, middlename, password, comments, last_connect, registered, email, phone, is_admin, flash_chart, language, block_size, section, data_section, metaconsole_access) VALUES
+('admin', 'Pandora', 'Pandora', 'Admin', '', '1da7ee7d45b96d0e1f45ee4ee23da560', 'Admin Pandora', 1232642121, 0, 'admin@example.com', '555-555-5555', 1, -1, 'default', 0, 'Default', '', 'advanced');
 COMMIT;
 END;;
 
@@ -344,8 +346,8 @@ END;;
 --
 BEGIN
 LOCK TABLE tusuario_perfil IN EXCLUSIVE MODE;
-INSERT INTO tusuario_perfil (id_up, id_usuario, id_perfil, id_grupo, assigned_by, id_policy) 
-VALUES (1,'admin',5,0,'admin',0);
+INSERT INTO tusuario_perfil (id_up, id_usuario, id_perfil, id_grupo, assigned_by, id_policy, tags) 
+VALUES (1,'admin',5,0,'admin',0,'');
 COMMIT;
 END;;
 
@@ -1088,6 +1090,7 @@ INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (45,'Solaris',
 INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (46,'AIX',5);
 INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (47,'BSD',5);
 INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (48,'MacOS',0);
+INSERT INTO tnetwork_component_group (id_sg, name, parent) VALUES (49,'DB2',15);
 
 -- Update curr val of sequence
 update_currval('tnetwork_component_group', 'id_sg');
@@ -1107,6 +1110,7 @@ EXECUTE IMMEDIATE 'ALTER TRIGGER tnetwork_profile_inc DISABLE';
 
 INSERT INTO tnetwork_profile (id_np, name, description) VALUES (2,'Basic Monitoring','Only ICMP check');
 INSERT INTO tnetwork_profile (id_np, name, description) VALUES (3,'Basic DMZ Server monitoring','This group of network checks, checks for default services located on DMZ servers...');
+INSERT INTO tnetwork_profile (id_np, name, description) VALUES (7,'Linux&#x20;Server&#x20;with&#x20;SNMP','Group&#x20;of&#x20;&quot;basic&quot;&#x20;modules&#x20;for&#x20;SNMP&#x20;monitoring&#x20;of&#x20;Linux&#x20;remote&#x20;devices.&#x20;This&#x20;includes&#x20;basic&#x20;conectivity&#x20;checks&#x20;and&#x20;a&#x20;full&#x20;range&#x20;of&#x20;System');
 
 -- Update curr val of sequence
 update_currval('tnetwork_profile', 'id_np');
@@ -1127,6 +1131,15 @@ INSERT INTO tnetwork_profile_component (id_nc, id_np) VALUES (34,3);
 INSERT INTO tnetwork_profile_component (id_nc, id_np) VALUES (37,3);
 INSERT INTO tnetwork_profile_component (id_nc, id_np) VALUES (39,3);
 INSERT INTO tnetwork_profile_component (id_nc, id_np) VALUES (38,3);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) VALUES (4,7);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) VALUES (34,7);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) VALUES (30,7);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) VALUES (27,7);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) VALUES (24,7);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) VALUES (49,7);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) VALUES (51,7);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) VALUES (36,2);
+INSERT INTO tnetwork_profile_component (id_nc, id_np) VALUES (36,3);
 
 COMMIT;
 END;;
@@ -1392,6 +1405,7 @@ INSERT INTO tevent_response VALUES (2,'SSH&#x20;to&#x20;host','Connect&#x20;via&
 INSERT INTO tevent_response VALUES (3,'Create&#x20;incident&#x20;from&#x20;event','Create&#x20;a&#x20;incident&#x20;from&#x20;the&#x20;event&#x20;with&#x20;the&#x20;standard&#x20;incidents&#x20;system&#x20;of&#x20;Pandora&#x20;FMS','index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;insert_form&amp;from_event=_event_id_','url',0,0,0,1,'');
 INSERT INTO tevent_response VALUES (4,'Create&#x20;Integria&#x20;IMS&#x20;incident&#x20;from&#x20;event','Create&#x20;a&#x20;incident&#x20;from&#x20;the&#x20;event&#x20;with&#x20;integria&#x20;incidents&#x20;system&#x20;of&#x20;Pandora&#x20;FMS.&#x20;&#x0d;&#x0a;&#x0d;&#x0a;Is&#x20;necessary&#x20;to&#x20;enable&#x20;and&#x20;configure&#x20;the&#x20;Integria&#x20;incidents&#x20;in&#x20;Pandora&#x20;FMS&#x20;setup.','index.php?sec=workspace&amp;sec2=operation/integria_incidents/incident&amp;tab=editor&amp;from_event=_event_id_','url',0,0,0,1,'');
 INSERT INTO tevent_response VALUES (5,'Restart&#x20;agent','Restart&#x20;the&#x20;agent&#x20;with&#x20;using&#x20;UDP&#x20;protocol.&#x0d;&#x0a;&#x0d;&#x0a;To&#x20;use&#x20;this&#x20;response&#x20;is&#x20;necessary&#x20;to&#x20;have&#x20;installed&#x20;Pandora&#x20;FMS&#x20;server&#x20;and&#x20;console&#x20;in&#x20;the&#x20;same&#x20;machine.','/usr/share/pandora_server/util/udp_client.pl&#x20;_agent_address_&#x20;41122&#x20;&quot;REFRESH&#x20;AGENT&quot;','command',0,620,500,0,'');
+INSERT INTO tevent_response VALUES (6,'Ping&#x20;to&#x20;module&#x20;agent&#x20;host','Ping&#x20;to&#x20;the&#x20;module&#x20;agent&#x20;host','ping&#x20;-c&#x20;5&#x20;_module_address_','command',0,620,500,0,'');
 
 -- Update curr val of sequence
 update_currval('tevent_response', 'id');

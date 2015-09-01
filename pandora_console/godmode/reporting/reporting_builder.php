@@ -441,8 +441,6 @@ switch ($action) {
 		else {
 			$group = false;
 		}
-		$filter['offset'] = $offset;
-		$filter['limit'] = $pagination;
 		
 		// Filter normal and metaconsole reports
 		if ($config['metaconsole'] == 1 and defined('METACONSOLE'))
@@ -460,9 +458,6 @@ switch ($action) {
 				'id_group',
 				'non_interactive'), $return_all_group, 'RR', $group, $strict_user);
 		
-		
-		unset($filter['offset']);
-		unset($filter['limit']);
 		$total_reports = (int) count(reports_get_reports ($filter,
 			array ('name'), $return_all_group, 'RR', $group, $strict_user));
 		
@@ -527,6 +522,9 @@ switch ($action) {
 			
 			}
 			$columnview = false;
+			
+			$reports = array_slice($reports, $offset, $pagination);
+			
 			foreach ($reports as $report) {
 				
 				if (!is_user_admin ($config["id_user"])) {

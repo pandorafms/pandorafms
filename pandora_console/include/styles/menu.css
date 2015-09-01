@@ -193,6 +193,13 @@ li:hover ul { display: block; }
 	
 }
 
+#subicon_god-setup {
+	top: -175px;
+}
+#subicon_god-extensions {
+	top: -315px;
+}
+
 #menu_container {
 	z-index: 3;
 	position: absolute;

@@ -477,8 +477,11 @@ $table_other->data['custom_report_front-header'][1] = html_print_textarea('custo
 
 // First page
 $table_other->data['custom_report_front-first_page'][0] =  __('Custom report front') . ' - ' . __('First page');
+$custom_report_front_firstpage = str_replace('(_URLIMAGE_)',
+		ui_get_full_url(false, true, false, false),
+		$config['custom_report_front_firstpage']);
 $table_other->data['custom_report_front-first_page'][1] = html_print_textarea('custom_report_front_firstpage', 15, 15,
-	$config['custom_report_front_firstpage'], 'style="width: 38em; height: 20em;"', true);
+	$custom_report_front_firstpage, 'style="width: 38em; height: 20em;"', true);
 
 // Footer
 $table_other->data['custom_report_front-footer'][0] =  __('Custom report front') . ' - ' . __('Footer');

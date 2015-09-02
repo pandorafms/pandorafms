@@ -194,12 +194,14 @@ li:hover ul { display: block; }
 }
 
 #subicon_god-setup {
-	top: -175px;
+	top: -140px;
 }
 #subicon_god-extensions {
 	top: -315px;
 }
-
+#subBulk_operations {
+	top: -210px;
+}
 #menu_container {
 	z-index: 3;
 	position: absolute;

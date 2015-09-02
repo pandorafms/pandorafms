@@ -198,7 +198,6 @@ $agents = agents_get_group_agents (array_keys (users_get_groups ()),
 	false, "none");
 switch ($config["dbtype"]) {
 	case "mysql":
-	case "oracle":
 		$module_types = db_get_all_rows_filter ('tagente_modulo,ttipo_modulo',
 			array ('tagente_modulo.id_tipo_modulo = ttipo_modulo.id_tipo',
 				'id_agente' => array_keys ($agents),
@@ -206,6 +205,15 @@ switch ($config["dbtype"]) {
 				'order' => 'ttipo_modulo.nombre'),
 			array ('DISTINCT(id_tipo)',
 				'CONCAT(ttipo_modulo.descripcion," (",ttipo_modulo.nombre,")") AS description'));
+		break;
+	case "oracle":
+		$module_types = db_get_all_rows_filter ('tagente_modulo,ttipo_modulo',
+			array ('tagente_modulo.id_tipo_modulo = ttipo_modulo.id_tipo',
+				'id_agente' => array_keys ($agents),
+				'disabled' => 0,
+				'order' => 'ttipo_modulo.nombre'),
+			array ('id_tipo',
+				'ttipo_modulo.descripcion || \' (\' || ttipo_modulo.nombre || \')\' AS description'));
 		break;
 	case "postgresql":
 		$module_types = db_get_all_rows_filter ('tagente_modulo,ttipo_modulo',

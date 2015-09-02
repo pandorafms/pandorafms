@@ -90,7 +90,7 @@ if (!empty($macros)) {
 			$m_hide = $m['hide'];
 		
 		if ($m_hide) {
-			$data[1] = html_print_input_password($m['macro'], $m['value'], '', 100, 255, true);
+			$data[1] = html_print_input_password($m['macro'], io_output_password($m['value']), '', 100, 255, true);
 		}
 		else {
 			$data[1] = html_print_input_text($m['macro'], $m['value'], '', 100, 255, true);

@@ -886,7 +886,11 @@ if ($update_module || $create_module) {
 		$macros = json_decode(base64_decode($macros), true);
 		
 		foreach($macros as $k => $m) {
-			$macros[$k]['value'] = get_parameter($m['macro'], '');
+			if ($m['hide'] == "1") {
+				$macros[$k]['value'] = io_input_password(get_parameter($m['macro'], ''));
+			} else {
+				$macros[$k]['value'] = get_parameter($m['macro'], '');
+			}
 		}
 		
 		$macros = io_json_mb_encode($macros);

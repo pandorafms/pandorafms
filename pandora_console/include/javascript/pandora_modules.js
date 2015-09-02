@@ -235,6 +235,7 @@ function configure_modules_form () {
 			return;
 		$("#component_loading").show ();
 		$(".error").hide ();
+		
 		jQuery.post ("ajax.php",
 			{
 				"page" : "godmode/agentes/module_manager_editor",
@@ -272,7 +273,7 @@ function configure_modules_form () {
 				if (data["id_plugin"] != undefined) {
 					$("#id_plugin").val(data["id_plugin"]);
 				}
-				$("#id_plugin").trigger('change');
+				//$("#id_plugin").trigger('change');
 				$("#text-plugin_user").attr ("value", js_html_entity_decode (data["plugin_user"]));
 				$("#password-plugin_pass").attr ("value", js_html_entity_decode (data["plugin_pass"]));
 				$("#text-plugin_parameter").attr ("value", js_html_entity_decode (data["plugin_parameter"]));

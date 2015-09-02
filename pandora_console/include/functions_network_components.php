@@ -123,31 +123,50 @@ function network_components_get_network_components ($id_module, $filter = false,
 		$filter = array ();
 	if (! empty ($id_module))
 		$filter['id_modulo'] = (int) $id_module;
+	if (isset($filter['offset'])) {
+		$offset = $filter['offset'];
+		unset($filter['offset']);
+	}
+	
+	if (isset($filter['limit'])) {
+		$limit = $filter['limit'];
+		unset($filter['limit']);
+	}
+	
+	$sql = @db_get_all_rows_filter ('tnetwork_component', $filter, $fields, 'AND', false, true);
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
+			$limit_sql = '';
+			if (isset($offset) && isset($limit)) {
+				$limit_sql = " LIMIT $offset, $limit "; 
+			}
+			$sql = sprintf("%s %s", $sql, $limit_sql);
+			
+			$components = db_get_all_rows_sql($sql);
+			break;
 		case "postgresql":
-			$components = db_get_all_rows_filter ('tnetwork_component',
-				$filter, $fields);
+			$limit_sql = '';
+			if (isset($offset) && isset($limit)) {
+				$limit_sql = " OFFSET $offset LIMIT $limit ";
+			}
+			$sql = sprintf("%s %s", $sql, $limit_sql);
+			
+			$components = db_get_all_rows_sql($sql);
+			
 			break;
 		case "oracle":
-			if (count ($fields) > 1) {
-				$fields = implode(',',$fields);
+			$set = array();
+			if (isset($offset) && isset($limit)) {
+				$set['limit'] = $limit;
+				$set['offset'] = $offset;
 			}
-			if (isset($filter['offset'])) {
-				$components = oracle_recode_query ('SELECT ' . $fields . ' FROM tnetwork_component', $filter, 'AND', false);		
-				if ($components != false) {
-					for ($i=0; $i < count($components); $i++) {
-						unset($components[$i]['rnum']);
-					}
-				}
-			}
-			else {
-				$components = db_get_all_rows_filter ('tnetwork_component',
-					$filter, $fields);
-			}
+			
+			$components = oracle_recode_query ($sql, $set, 'AND', false);
+			
 			break;
 	}
+	
 	if ($components === false)
 		return array ();
 	

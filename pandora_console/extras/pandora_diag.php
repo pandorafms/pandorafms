@@ -173,27 +173,27 @@ switch ($config["dbtype"]) {
 			WHERE \"key\" = 'current_update'", "Current Update #");
 		break;
 	case "oracle":
-		render_info_data ("SELECT value
-			FROM tconfig
+		render_info_data ("SELECT " . db_escape_key_identifier('value') .
+			" FROM tconfig
 			WHERE token = 'db_scheme_version'", "DB Schema Version");
-		render_info_data ("SELECT value
-			FROM tconfig
+		render_info_data ("SELECT " . db_escape_key_identifier('value') .
+			" FROM tconfig
 			WHERE token = 'db_scheme_build'", "DB Schema Build");
-		render_info_data ("SELECT value
-			FROM tconfig
+		render_info_data ("SELECT " . db_escape_key_identifier('value') .
+			" FROM tconfig
 			WHERE token = 'enterprise_installed'", "Enterprise installed");
-		render_row (db_get_sql ("SELECT value
-			FROM tconfig
+		render_row (db_get_sql ("SELECT " . db_escape_key_identifier('value') .
+			" FROM tconfig
 			WHERE token = 'db_maintance'"), "PandoraDB Last run");
 		
-		render_info_data ("SELECT value
-			FROM tupdate_settings
+		render_info_data ("SELECT " . db_escape_key_identifier('value') .
+			" FROM tupdate_settings
 			WHERE \"key\" = 'customer_key'", "Update Key");
-		render_info_data ("SELECT value
-			FROM tupdate_settings
+		render_info_data ("SELECT " . db_escape_key_identifier('value') .
+			" FROM tupdate_settings
 			WHERE \"key\" = 'updating_code_path'", "Updating code path");
-		render_info_data ("SELECT value
-			FROM tupdate_settings
+		render_info_data ("SELECT " . db_escape_key_identifier('value') .
+			" FROM tupdate_settings
 			WHERE \"key\" = 'current_update'", "Current Update #");
 		break;
 }

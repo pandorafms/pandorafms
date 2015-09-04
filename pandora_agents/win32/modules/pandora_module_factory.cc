@@ -1143,6 +1143,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		module = new Pandora_Module_Regexp (module_name, module_regexp, module_pattern, (unsigned char) atoi (module_noseekeof.c_str ()));
 	} else if (module_plugin != "") {
 		module = new Pandora_Module_Plugin (module_name, module_plugin);
+		if (module_timeout != ""){
+			module->setTimeout(atoi(module_timeout.c_str()));
+		}
 	} else if (module_ping != "") {
 		if (module_ping_count == "") {
 			module_ping_count = "1";

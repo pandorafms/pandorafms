@@ -201,6 +201,8 @@ function config_update_config () {
 						$error_update[] = __('Allow create planned downtimes in the past');
 					if (!config_update_value ('limit_parameters_massive', get_parameter('limit_parameters_massive')))
 						$error_update[] = __('Limit parameters massive');
+					if (!config_update_value ('throw_unknown_events', get_parameter('throw_unknown_events')))
+						$error_update[] = __('Unknown events would be thrown when the module is in unknown status');
 					break;
 				case 'enterprise':
 					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {

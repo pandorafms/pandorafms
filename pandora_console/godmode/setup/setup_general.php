@@ -277,6 +277,12 @@ $table->data[34][0] = __('Limit parameters massive') .
 $table->data[34][1] = html_print_input_text('limit_parameters_massive',
 	$config['limit_parameters_massive'], '', 10, 10, true);
 
+# unknown event
+$config["throw_unknown_events"] = isset($config["throw_unknown_events"]) ? $config["throw_unknown_events"] : 1;
+$table->data[35][0] = __('Throw unknown events') .
+	ui_print_help_tip(__('Unknown events would be thrown when the module is in unknown status'), true);
+$table->data[35][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('throw_unknown_events', 1, '', $config["throw_unknown_events"], true).'&nbsp;&nbsp;';
+$table->data[35][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('throw_unknown_events', 0, '', $config["throw_unknown_events"], true);
 
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 

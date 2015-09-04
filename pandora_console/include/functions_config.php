@@ -198,6 +198,8 @@ function config_update_config () {
 						$error_update[] = __('Tutorial mode');
 					if (!config_update_value ('past_planned_downtimes', get_parameter('past_planned_downtimes')))
 						$error_update[] = __('Allow create planned downtimes in the past');
+					if (!config_update_value ('throw_unknown_events', get_parameter('throw_unknown_events')))
+						$error_update[] = __('Unknown events would be thrown when the module is in unknown status');
 					break;
 				case 'enterprise':
 					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {

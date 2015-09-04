@@ -494,6 +494,7 @@ if ($paginate_module) {
 	ui_pagination($total_modules, $url);
 }
 
+$table = new StdClass;
 $table->width = '98%';
 $table->head = array ();
 $table->head[0] = __('Name') . ' ' .

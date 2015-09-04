@@ -34,6 +34,7 @@ if (!$agents || !$searchAgents) {
 	}
 }
 else {
+	$table = new StdClass;
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
 	$table->width = "98%";

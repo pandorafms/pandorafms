@@ -137,6 +137,7 @@ if ($copy_layout) {
 	
 }
 
+$table = new StdClass;
 $table->width = '98%';
 $table->data = array ();
 $table->head = array ();

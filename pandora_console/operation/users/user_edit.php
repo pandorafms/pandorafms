@@ -178,6 +178,7 @@ if ($status != -1) {
 		__('Error updating user info'));
 }
 
+$table = new StdClass;
 $table->id = 'user_form';
 $table->width = '98%';
 $table->cellspacing = 4;

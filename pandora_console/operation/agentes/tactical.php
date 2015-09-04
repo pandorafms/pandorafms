@@ -60,6 +60,7 @@ echo '<td style="vertical-align: top; min-width: 180px; width:25%; padding-right
 // ---------------------------------------------------------------------
 // The status horizontal bars (Global health, Monitor sanity...
 // ---------------------------------------------------------------------
+$table = new StdClass;
 $table->width = "100%";
 $table->class = "";
 $table->cellpadding = 2;

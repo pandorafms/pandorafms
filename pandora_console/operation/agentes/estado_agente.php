@@ -403,6 +403,7 @@ ui_pagination ($total_agents,
 	ui_get_url_refresh (array ('group_id' => $group_id, 'recursion' => $recursion, 'search' => $search, 'sort_field' => $sortField, 'sort' => $sort, 'status' => $status)));
 
 // Show data.
+$table = new StdClass;
 $table->cellpadding = 4;
 $table->cellspacing = 4;
 $table->width = "98%";

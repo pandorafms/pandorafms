@@ -58,6 +58,7 @@ if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && !$is_extra) {
 }
 
 // START: TABLE AGENT BUILD
+$table_agent = new StdClass;
 $table_agent->id = 'agent_details_main';
 $table_agent->width = '100%';
 $table_agent->cellspacing = 4;
@@ -176,6 +177,7 @@ $table_agent->rowclass[] = '';
 // END: TABLE AGENT BUILD
 
 // START: TABLE CONTACT BUILD
+$table_contact = new StdClass;
 $table_contact->id = 'agent_contact_main';
 $table_contact->width = '100%';
 $table_contact->cellspacing = 4;
@@ -219,6 +221,7 @@ $table_contact->data[] = $data;
 // END: TABLE CONTACT BUILD
 
 // START: TABLE DATA BUILD
+$table_data = new StdClass;
 $table_data->id = 'agent_data_main';
 $table_data->width = '100%';
 $table_data->cellspacing = 4;
@@ -347,6 +350,7 @@ $last_incident = db_get_row_sql("
 
 if ($last_incident != false) {
 	
+	$table_incident = new StdClass;
 	$table_incident->id = 'agent_incident_main';
 	$table_incident->width = '100%';
 	$table_incident->cellspacing = 4;
@@ -391,6 +395,7 @@ if (!empty($network_interfaces_by_agents) && !empty($network_interfaces_by_agent
 }
 
 if (!empty($network_interfaces)) {
+	
 	$table_interface = new stdClass();
 	$table_interface->id = 'agent_interface_info';
 	$table_interface->class = 'databox';
@@ -459,7 +464,7 @@ if (!empty($network_interfaces)) {
 
 // END: TABLE INTERFACES
 
-$table = null;
+$table = new StdClass;
 $table->id = 'agent_details';
 $table->width = '98%';
 $table->cellspacing = 4;

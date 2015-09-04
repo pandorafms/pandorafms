@@ -763,6 +763,7 @@ function events_print_event_table ($filter = "", $limit = 10, $width = 440, $ret
 		echo '<div class="nf">' . __('No events') . '</div>';
 	}
 	else {
+		$table = new StdClass;
 		$table->id = 'latest_events_table';
 		$table->cellpadding = 4;
 		$table->cellspacing = 4;

@@ -113,6 +113,7 @@ if (strstr($page, "policy_modules") === false && $id_agent_module) {
 
 $update_module_id = (int) get_parameter_get ('update_module');
 
+$table_simple = new StdClass;
 $table_simple->id = 'simple';
 $table_simple->width = '98%';
 $table_simple->class = 'databox_color';
@@ -297,6 +298,7 @@ else {
 }
 
 /* Advanced form part */
+$table_advanced = new StdClass;
 $table_advanced->id = 'advanced';
 $table_advanced->width = '98%';
 $table_advanced->class = 'databox_color';

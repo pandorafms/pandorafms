@@ -487,6 +487,7 @@ function snmp_browser_print_oid ($oid = array(), $custom_action = '',
 function snmp_browser_print_container ($return = false, $width = '95%', $height = '500px', $display = '') {
 	
 	// Target selection
+	$table = new StdClass;
 	$table->width = '100%';
 	$table->size = array ();
 	$table->data = array ();
@@ -511,6 +512,7 @@ function snmp_browser_print_container ($return = false, $width = '95%', $height 
 	$table->cellstyle[0][4] = 'vertical-align: bottom;';
 	
 	// SNMP v3 options
+	$table3 = new StdClass;
 	$table3->width = '98%';
 	
 	$table3->valign[0] = 'top';
@@ -534,6 +536,7 @@ function snmp_browser_print_container ($return = false, $width = '95%', $height 
 		'authNoPriv' => __('Auth and not privacy method'), 'authPriv' => __('Auth and privacy method')), 'snmp3_browser_security_level', '', '', '', '', true);
 	
 	// Search tools
+	$table2 = new StdClass;
 	$table2->width = '100%';
 	$table2->size = array ();
 	$table2->data = array ();

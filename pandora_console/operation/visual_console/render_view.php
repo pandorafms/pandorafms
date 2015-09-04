@@ -148,6 +148,7 @@ if ($config["pure"]) {
 	$values[SECONDS_10MINUTES] = human_time_description_raw(SECONDS_10MINUTES);
 	$values[SECONDS_30MINUTES] = human_time_description_raw(SECONDS_30MINUTES);
 	
+	$table = new StdClass;
 	$table->width = '90%';
 	$table->data = array ();
 	$table->style = array ();

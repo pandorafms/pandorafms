@@ -137,7 +137,9 @@ if (!empty($result_groups)) {
 		echo "</tr>";
 		
 		foreach ($result_groups as $data) {
-			
+
+			$groups_id = $data["_id_"];
+
 			// Calculate entire row color
 			if ($data["_monitors_alerts_fired_"] > 0) {
 				$color_class = 'group_view_alrm';
@@ -218,8 +220,9 @@ if (!empty($result_groups)) {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
 			}
+			$agent_counter = agents_get_group_agents($groups_id);
 			if ($data["_total_agents_"] > 0) {
-				echo $link . $data["_total_agents_"] . "</a>";
+				echo $link . count($agent_counter) . "</a>";
 			}
 			echo "</td>";
 			
@@ -232,8 +235,12 @@ if (!empty($result_groups)) {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_UNKNOWN ."'>";
 			}
+			$search = array(
+				'status' => AGENT_STATUS_UNKNOWN
+			);
+			$agent_counter_unknown = agents_get_group_agents($groups_id, $search);
 			if ($data["_agents_unknown_"] > 0) {
-				echo $link . $data["_agents_unknown_"] . "</a>";
+				echo $link . count($agent_counter_unknown) . "</a>";
 			}
 			echo "</td>";
 			
@@ -246,8 +253,12 @@ if (!empty($result_groups)) {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_NOT_INIT ."'>";
 			}
+			$search = array(
+				'status' => AGENT_STATUS_NOT_INIT
+			);
+			$agent_counter_not_init = agents_get_group_agents($groups_id, $search);
 			if ($data["_agents_not_init_"] > 0) {
-				echo $link . $data["_agents_not_init_"] . "</a>";
+				echo $link . count($agent_counter_not_init) . "</a>";
 			}
 			echo "</td>";
 			

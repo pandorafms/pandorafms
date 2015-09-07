@@ -2858,6 +2858,10 @@ table#policy_modules td * {
 	text-align: left;
 }
 
+.right_align {
+	text-align: right;
+}
+
 .status_tactical{
 	width: 100%;
 	margin-left: auto;

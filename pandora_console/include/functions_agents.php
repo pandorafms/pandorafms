@@ -152,7 +152,18 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 
 	if ($tag) {
 		$filter .= ' AND (id_agent_module IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN ('.$tag.')))';
-	}	
+	}
+	
+	if (isset($options['offset'])) {
+		$offset = $options['offset'];
+		unset($options['offset']);
+	}
+	
+	if (isset($options['limit'])) {
+		$limit = $options['limit'];
+		unset($options['limit']);
+	}
+	
 	if (is_array ($options)) {
 		$filter .= db_format_array_where_clause_sql ($options);
 	}
@@ -226,7 +237,37 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 				ON talert_template_modules.id_alert_template = t4.id
 		WHERE id_agent_module in (%s) %s %s %s",
 		$selectText, $subQuery, $where, $filter, $orderbyText);
-	$alerts = db_get_all_rows_sql ($sql);
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			$limit_sql = '';
+			if (isset($offset) && isset($limit)) {
+				$limit_sql = " LIMIT $offset, $limit "; 
+			}
+			$sql = sprintf("%s %s", $sql, $limit_sql);
+			
+			$alerts = db_get_all_rows_sql($sql);
+			break;
+		case "postgresql":
+			$limit_sql = '';
+			if (isset($offset) && isset($limit)) {
+				$limit_sql = " OFFSET $offset LIMIT $limit ";
+			}
+			$sql = sprintf("%s %s", $sql, $limit_sql);
+			
+			$alerts = db_get_all_rows_sql($sql);
+			
+			break;
+		case "oracle":
+			$set = array();
+			if (isset($offset) && isset($limit)) {
+				$set['limit'] = $limit;
+				$set['offset'] = $offset;
+			}
+			
+			$alerts = oracle_recode_query ($sql, $set, 'AND', false);
+			break;
+	}
 	
 	if ($alerts === false)
 		return array ();

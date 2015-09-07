@@ -200,7 +200,19 @@ if ($searchFlag) {
 		$where .= " AND talert_template_modules.standby = " . $standby;
 }
 
-$total = agents_get_alerts_simple (array_keys ($agents), false,
+switch ($config["dbtype"]) {
+	case "mysql":
+	case "postgresql":
+		$id_agents = array_keys ($agents);
+		break;
+	case "oracle":
+		$id_agents = false;
+		break;
+}
+
+
+
+$total = agents_get_alerts_simple ($id_agents, false,
 	false, $where, false, false, false, true);
 
 if (empty($total)) $total = 0;
@@ -321,7 +333,7 @@ if ($id_agente) {
 else {
 	ui_pagination ($total, 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list' . $form_params . $sort_params);
 }
-$simple_alerts = agents_get_alerts_simple (array_keys ($agents), false,
+$simple_alerts = agents_get_alerts_simple ($id_agents, false,
 	array ('offset' => (int) get_parameter ('offset'),
 		'limit' => $config['block_size'], 'order' => $order), $where, false);
 

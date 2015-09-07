@@ -318,15 +318,15 @@ if (defined('METACONSOLE')) {
 $data = array();
 
 $data[0] = html_print_select ($tags_select_with, 'select_with', '', '', '', 0,
-	true, true, true, '', false, 'width: 335px;');
+	true, true, true, '', false, 'width: 200px;');
 
 $data[1] = html_print_image('images/darrowright.png', true, array('id' => 'button-add_with', 'style' => 'cursor: pointer;', 'title' => __('Add')));
 $data[1] .= html_print_input_hidden('tag_with', $tag_with_base64, true);
 $data[1] .= '<br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'button-remove_with', 'style' => 'cursor: pointer;', 'title' => __('Remove')));
 
 $data[2] = html_print_select ($tag_with_temp, 'tag_with_temp', array(), '', '',
-	0, true, true, true, '', false, "width: 335px;");
-	
+	0, true, true, true, '', false, "width: 200px;");
+
 $tabletags_with->data[] = $data;
 $tabletags_with->rowclass[] = '';
 
@@ -347,12 +347,12 @@ $tabletags_without->styleTable = 'border: 0px;';
 
 $data = array();
 $data[0] = html_print_select ($tags_select_without, 'select_without', '', '', '', 0,
-	true, true, true, '', false, 'width: 335px;');
+	true, true, true, '', false, 'width: 200px;');
 $data[1] = html_print_image('images/darrowright.png', true, array('id' => 'button-add_without', 'style' => 'cursor: pointer;', 'title' => __('Add')));
 $data[1] .= html_print_input_hidden('tag_without', $tag_without_base64, true);
 $data[1] .= '<br><br>' . html_print_image('images/darrowleft.png', true, array('id' => 'button-remove_without', 'style' => 'cursor: pointer;', 'title' => __('Remove')));
 $data[2] = html_print_select ($tag_without_temp, 'tag_without_temp', array(), '', '',
-	0, true, true, true, '', false, "width: 335px;");
+	0, true, true, true, '', false, "width: 200px;");
 $tabletags_without->data[] = $data;
 $tabletags_without->rowclass[] = '';
 

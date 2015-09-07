@@ -23,6 +23,7 @@ Description: The default Pandora FMS theme layout
 
 /* Tree view styles */
 @import url(tree.css);
+@import url(fixed-bottom-box.css);
 
 * {
 	font-family: verdana, sans-serif;

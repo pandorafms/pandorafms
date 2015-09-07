@@ -67,7 +67,7 @@ if (is_ajax ()) {
 		$type = (string) get_parameter('type');
 		
 		$server = array();
-		if (defined ('METACONSOLE')) {
+		if (is_metaconsole()) {
 			$server_id = (int) get_parameter('serverID');
 			$server = metaconsole_get_servers($server_id);
 			
@@ -77,24 +77,26 @@ if (is_ajax ()) {
 		
 		ob_clean();
 		
+		echo '<div class="left_align">';
 		if (!empty($id) && !empty($type)) {
 			switch ($type) {
 				case 'agent':
-					treeview_printTable($id, $server);
+					treeview_printTable($id, $server, true);
 					break;
 				case 'module':
-					treeview_printModuleTable($id, $server);
+					treeview_printModuleTable($id, $server, true);
 					break;
 				case 'alert':
-					treeview_printAlertsTable($id, $server);
+					treeview_printAlertsTable($id, $server, true);
 					break;
 				default:
 					// Nothing
 					break;
 			}
 		}
+		echo '<br></div>';
 		
-		if (!empty($server) && defined ('METACONSOLE')) {
+		if (!empty($server) && is_metaconsole()) {
 			metaconsole_restore_db();
 		}
 		

@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-function treeview_printModuleTable($id_module, $server_data = false) {
+function treeview_printModuleTable($id_module, $server_data = false, $no_head = false) {
 	global $config;
 
 	if (empty($server_data)) {
@@ -60,8 +60,12 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 	$table->class = "databox data";
 	$table->style = array();
 	$table->style['title'] = 'font-weight: bold;';
-	$table->head = array();
-	$table->head[] = __('Module');
+	
+	if (!$no_head) {
+		$table->head = array();
+		$table->head[] = __('Module');
+	}
+	
 	$table->head_colspan[] = 2;
 	$table->data = array();
 
@@ -215,7 +219,7 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 	return;
 }
 
-function treeview_printAlertsTable($id_module, $server_data = array()) {
+function treeview_printAlertsTable($id_module, $server_data = array(), $no_head = false) {
 	global $config;
 
 	if (empty($server_data)) {
@@ -243,10 +247,15 @@ function treeview_printAlertsTable($id_module, $server_data = array()) {
 
 	$table = new StdClass();
 	$table->width = "100%";
-	$table->style = array();
-	$table->style['titles'] = 'font-weight: bold; background: #B3B3B3;';
-	$table->head = array();
-	$table->head[] = __('Alerts') . ": " . $module_name;
+	$table->class = "databox data";
+	$table->rowstyle = array();
+	$table->rowstyle['titles'] = 'font-weight: bold;';
+	
+	if (!$no_head) {
+		$table->head = array();
+		$table->head[] = __('Alerts') . ": " . $module_name;
+	}
+	
 	$table->head_colspan[] = 2;
 	$table->data = array();
 
@@ -255,7 +264,7 @@ function treeview_printAlertsTable($id_module, $server_data = array()) {
 	$row['actions'] = __('Actions');
 	$table->data['titles'] = $row;
 
-	foreach($module_alerts as $module_alert) {
+	foreach ($module_alerts as $module_alert) {
 		//Template name
 		$template_name = db_get_value('name','talert_templates','id',$module_alert['id_alert_template']);
 
@@ -292,7 +301,7 @@ function treeview_printAlertsTable($id_module, $server_data = array()) {
 	}
 }
 
-function treeview_printTable($id_agente, $server_data = array()) {
+function treeview_printTable($id_agente, $server_data = array(), $no_head = false) {
 	global $config;
 
 	if (empty($server_data)) {

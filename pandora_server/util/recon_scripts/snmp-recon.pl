@@ -632,7 +632,6 @@ sub switch_to_switch_connectivity($$) {
 					# Mark switch to switch connections.
 					$SWITCH_TO_SWITCH{"$switch_1$if_name_1"} = 1;
 					$SWITCH_TO_SWITCH{"$switch_2$if_name_2"} = 1;
-					return;
 				}
 			}
 		}
@@ -680,7 +679,6 @@ sub router_to_switch_connectivity($$) {
 			# Mark connections in case the routers are switches too.
 			$SWITCH_TO_SWITCH{"$switch$switch_if_name"} = 1;
 			$SWITCH_TO_SWITCH{"$router$router_if_name"} = 1;
-			return;
 		}
 	}
 }
@@ -711,7 +709,6 @@ sub router_to_router_connectivity($$) {
 					# Mark connections in case the routers are switches too.
 					$SWITCH_TO_SWITCH{"$router_1$if_1"} = 1;
 					$SWITCH_TO_SWITCH{"$router_2$if_2"} = 1;
-					return;
 				}
 			}
 		}

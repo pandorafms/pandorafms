@@ -290,7 +290,7 @@ function oracle_db_process_sql($sql, $rettype = "affected_rows", $dbconnection =
 			
 			if ($status !== 'SELECT') { //The query NOT IS a select
 				if ($rettype == "insert_id") {
-					$result = $id;
+					$result = $result;
 				}
 				elseif ($rettype == "info") {
 					//TODO: return debug information of the query $result = pg_result_status($result, PGSQL_STATUS_STRING);

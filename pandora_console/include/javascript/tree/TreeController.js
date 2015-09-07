@@ -12,10 +12,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-var TreeController;
-var TreeNodeDetailController;
-
-TreeController = {
+var TreeController = {
 	controllers: [],
 	getController: function () {
 		var controller = {
@@ -275,21 +272,58 @@ TreeController = {
 					}
 
 					return hasCounters;
-					// Load the counters asynchronously
-					// else if (typeof element.searchCounters != 'undefined' && element.searchCounters) {
-					// 	var $counters = $("<div></div>");
-					// 	$counters
-					// 		.addClass('tree-node-counters')
-					// 		.append(' (')
-					// 		.append('<img src="'+(controller.baseURL.length > 0 ? controller.baseURL : '')+'images/spinner.gif" />')
-					// 		.append(')');
-
-					// 	$content.append($counters);
-					// }
 				}
 
 				// Load leaf
 				function _processNode (container, element) {
+					
+					// type, [id], [serverID], callback
+					function _getTreeDetailData (type, id, serverID, callback) {
+						var lastParam = arguments[arguments.length - 1];
+						var callback;
+						if (typeof lastParam === 'function')
+							callback = lastParam;
+						
+						var serverID;
+						if (arguments.length >= 4)
+							serverID = arguments[2];
+						var id;
+						if (arguments.length >= 3)
+							id = arguments[1];
+						var type;
+						if (arguments.length >= 2)
+							type = arguments[0];
+						
+						if (typeof type === 'undefined')
+							throw new TypeError('Type required');
+						if (typeof callback === 'undefined')
+							throw new TypeError('Callback required');
+						
+						var postData = {
+							page: controller.ajaxPage,
+							getDetail: 1,
+							type: type
+						}
+						
+						if (typeof id !== 'undefined')
+							postData.id = id;
+						if (typeof serverID !== 'undefined')
+							postData.serverID = serverID;
+						
+						$.ajax({
+							url: controller.ajaxURL,
+							type: 'POST',
+							dataType: 'html',
+							data: postData,
+							success: function(data, textStatus, xhr) {
+								callback(null, data);
+							},
+							error: function(xhr, textStatus, errorThrown) {
+								callback(errorThrown);
+							}
+						});
+					}
+
 					var $node = $("<li></li>");
 					var $leafIcon = $("<div></div>");
 					var $content = $("<div></div>");
@@ -410,14 +444,13 @@ TreeController = {
 								$alertsImage
 									.addClass("module-alerts")
 									.click(function (e) {
-										TreeNodeDetailController.getController().init({
-											recipient: controller.detailRecipient,
-											type: 'alert',
-											id: element.id,
-											serverID: element.serverID,
-											baseURL: controller.baseURL,
-											ajaxURL: controller.ajaxURL,
-											ajaxPage: controller.ajaxPage
+										_getTreeDetailData('alert', element.id, element.serverID, function (error, data) {
+											if (error) {
+												// console.error(error);
+											}
+											else {
+												controller.detailRecipient.render(element.name, data).open();
+											}
 										});
 
 										// Avoid the execution of the module detail event
@@ -457,17 +490,16 @@ TreeController = {
 					var hasCounters = _processNodeCounters($content, element.counters, element.type);
 
 					// If exist the detail container, show the data
-					if (typeof controller.detailRecipient != 'undefined' && controller.detailRecipient.length > 0) {
+					if (typeof controller.detailRecipient !== 'undefined') {
 						if (element.type == 'agent' || element.type == 'module') {
 							$content.click(function (e) {
-									TreeNodeDetailController.getController().init({
-										recipient: controller.detailRecipient,
-										type: element.type,
-										id: element.id,
-										serverID: element.serverID,
-										baseURL: controller.baseURL,
-										ajaxURL: controller.ajaxURL,
-										ajaxPage: controller.ajaxPage
+									_getTreeDetailData(element.type, element.id, element.serverID, function (error, data) {
+										if (error) {
+											// console.error(error);
+										}
+										else {
+											controller.detailRecipient.render(element.name, data).open();
+										}
 									});
 								})
 								.css('cursor', 'pointer');
@@ -633,31 +665,31 @@ TreeController = {
 				this.reload();
 			},
 			init: function (data) {
-				if (typeof data.recipient != 'undefined' && data.recipient.length > 0) {
+				if (typeof data.recipient !== 'undefined' && data.recipient.length > 0) {
 					this.recipient = data.recipient;
 				}
-				if (typeof data.detailRecipient != 'undefined' && data.detailRecipient.length > 0) {
+				if (typeof data.detailRecipient !== 'undefined') {
 					this.detailRecipient = data.detailRecipient;
 				}
-				if (typeof data.tree != 'undefined') {
+				if (typeof data.tree !== 'undefined') {
 					this.tree = data.tree;
 				}
-				if (typeof data.emptyMessage != 'undefined' && data.emptyMessage.length > 0) {
+				if (typeof data.emptyMessage !== 'undefined' && data.emptyMessage.length > 0) {
 					this.emptyMessage = data.emptyMessage;
 				}
-				if (typeof data.errorMessage != 'undefined' && data.errorMessage.length > 0) {
+				if (typeof data.errorMessage !== 'undefined' && data.errorMessage.length > 0) {
 					this.errorMessage = data.errorMessage;
 				}
-				if (typeof data.baseURL != 'undefined' && data.baseURL.length > 0) {
+				if (typeof data.baseURL !== 'undefined' && data.baseURL.length > 0) {
 					this.baseURL = data.baseURL;
 				}
-				if (typeof data.ajaxURL != 'undefined' && data.ajaxURL.length > 0) {
+				if (typeof data.ajaxURL !== 'undefined' && data.ajaxURL.length > 0) {
 					this.ajaxURL = data.ajaxURL;
 				}
-				if (typeof data.ajaxPage != 'undefined' && data.ajaxPage.length > 0) {
+				if (typeof data.ajaxPage !== 'undefined' && data.ajaxPage.length > 0) {
 					this.ajaxPage = data.ajaxPage;
 				}
-				if (typeof data.filter != 'undefined') {
+				if (typeof data.filter !== 'undefined') {
 					this.filter = data.filter;
 				}
 				
@@ -675,232 +707,6 @@ TreeController = {
 		}
 		controller.index = TreeController.controllers.push(controller) - 1;
 
-		return controller;
-	}
-}
-
-// The controllers will be inside the 'controllers' object,
-// ordered by ['type']['id']
-TreeNodeDetailController = {
-	controllers: {},
-	controllerExist: function (type, id) {
-		if (typeof this.controllers[type][id] != 'undefined') {
-			return true;
-		}
-		else {
-			return false;
-		}
-	},
-	removeControllers: function () {
-		try {
-			$.each(TreeNodeDetailController.controllers, function(type, elements) {
-				$.each(elements, function(id, element) {
-					element.remove();
-				});
-			});
-		}
-		catch (error) {
-			// console.log(error);
-		}
-	},
-	getController: function () {
-		var controller = {
-			recipient: '',
-			type: 'none',
-			id: -1,
-			serverID: -1,
-			emptyMessage: "No data found.",
-			errorMessage: "Error",
-			baseURL: "",
-			ajaxURL: "ajax.php",
-			ajaxPage: "include/ajax/tree.ajax",
-			container: '',
-			reload: function () {
-				// Label
-				var $label = $("<div></div>");
-				$label
-					.addClass("tree-element-detail-label")
-					.click(function (e) {
-						if ($label.hasClass('tree-element-detail-loaded'))
-							controller.toggle();
-					});
-
-				// Content
-				var $content = $("<div></div>");
-				$content.addClass("tree-element-detail-content");
-
-				// Container
-				this.container = $("<div></div>");
-				this.container
-					.addClass("tree-element-detail")
-					.addClass("tree-element-detail-closed")
-					.append($label)
-					.data('label', $label)
-					.append($content)
-					.data('content', $content);
-
-				$label.addClass('tree-element-detail-loading');
-				$.ajax({
-					url: this.ajaxURL,
-					type: 'POST',
-					dataType: 'html',
-					async: true,
-					data: {
-						page: this.ajaxPage,
-						getDetail: 1,
-						type: this.type,
-						id: this.id,
-						serverID: this.serverID
-					},
-					complete: function(xhr, textStatus) {
-						$label.removeClass('tree-element-detail-loading');
-					},
-					success: function(data, textStatus, xhr) {
-						$label.addClass('tree-element-detail-loaded');
-						$content.html(data);
-
-						// Add again the hover event to the 'force_callback' elements
-						forced_title_callback();
-						
-						controller.open();
-					},
-					error: function(xhr, textStatus, errorThrown) {
-						$label.addClass('tree-element-detail-error');
-						$content.html(controller.errorMessage);
-					}
-				});
-				
-				this.recipient.append(this.container);
-			},
-			load: function () {
-				this.reload();
-			},
-			toggle: function () {
-				if (typeof this.container == 'undefined' || this.container.length <= 0) {
-					return false;
-				}
-				if (this.container.hasClass("tree-element-detail-closed")) {
-					this.open();
-				}
-				else {
-					this.close();
-				}
-			},
-			open: function () {
-				if (typeof this.container == 'undefined' || this.container.length <= 0) {
-					return false;
-				}
-				if (this.container.hasClass("tree-element-detail-closed")) {
-					this.container
-						.removeClass("tree-element-detail-closed")
-						.data('content').show();
-				}
-			},
-			close: function () {
-				if (typeof this.container == 'undefined' || this.container.length <= 0) {
-					return false;
-				}
-				if (!this.container.hasClass("tree-element-detail-closed")) {
-					this.container
-						.addClass("tree-element-detail-closed")
-						.data('content').hide();
-				}
-			},
-			init: function (data) {
-				// Remove the other controllers
-				TreeNodeDetailController.removeControllers();
-
-				// Required
-				if (typeof data.recipient != 'undefined' && data.recipient.length > 0) {
-					this.recipient = data.recipient;
-				}
-				else {
-					return false;
-				}
-				// Required
-				if (typeof data.type != 'undefined' && data.type.length > 0) {
-					this.type = data.type;
-				}
-				else {
-					return false;
-				}
-				// Required
-				if (typeof data.id != 'undefined' && (data.id.length > 0 || !isNaN(data.id))) {
-					this.id = data.id;
-				}
-				else {
-					return false;
-				}
-				if (typeof data.serverID != 'undefined' && (data.serverID.length > 0 || !isNaN(data.serverID))) {
-					this.serverID = data.serverID;
-				}
-				if (typeof data.emptyMessage != 'undefined' && data.emptyMessage.length > 0) {
-					this.emptyMessage = data.emptyMessage;
-				}
-				if (typeof data.errorMessage != 'undefined' && data.errorMessage.length > 0) {
-					this.errorMessage = data.errorMessage;
-				}
-				if (typeof data.baseURL != 'undefined' && data.baseURL.length > 0) {
-					this.baseURL = data.baseURL;
-				}
-				if (typeof data.ajaxURL != 'undefined' && data.ajaxURL.length > 0) {
-					this.ajaxURL = data.ajaxURL;
-				}
-				if (typeof data.ajaxPage != 'undefined' && data.ajaxPage.length > 0) {
-					this.ajaxPage = data.ajaxPage;
-				}
-				if (typeof data.counterTitles != 'undefined') {
-					this.counterTitles = data.counterTitles;
-				}
-				if (typeof data.shouldHaveCounters != 'undefined') {
-					this.shouldHaveCounters = data.shouldHaveCounters;
-				}
-
-				if (typeof TreeNodeDetailController.controllers[this.type] == 'undefined')
-					TreeNodeDetailController.controllers[this.type] = {};
-				TreeNodeDetailController.controllers[this.type][this.id] = this;
-				this.load();
-			},
-			remove: function () {
-				if (typeof this.recipient != 'undefined' && this.recipient.length > 0) {
-					this.recipient.empty();
-				}
-				if (this.type != 'none' && this.id > -1) {
-					try {
-						delete TreeNodeDetailController.controllers[this.type][this.id];
-					}
-					catch (error) {
-						// console.log('Item not deleted');
-					}
-				}
-			},
-			closeOther: function () {
-				try {
-					$.each(TreeNodeDetailController.controllers, function(type, elements) {
-						$.each(elements, function(id, element) {
-							if (controller.type != type && controller.id != id)
-								element.close();
-						});
-					});
-				}
-				catch (error) {
-					// console.log(error);
-				}
-			},
-			removeOther: function () {
-				try {
-					TreeNodeDetailController.controllers.forEach(function(elements, type) {
-						elements.forEach(function(element, id) {
-							if (controller.type != type && controller.id != id)
-								element.remove();
-						});
-					});
-				}
-				catch (error) {
-					// console.log(error);
-				}
-			}
-		}
 		return controller;
 	}
 }

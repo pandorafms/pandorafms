@@ -108,7 +108,7 @@ switch ($tab) {
 		break;
 }
 
-if (!defined('METACONSOLE')) {
+if (!is_metaconsole()) {
 	if (!$strict_acl)
 		$header_title = $header_title ." - ". $header_sub_title;
 	
@@ -138,7 +138,7 @@ $row = array();
 $row[] = __('Agent status');
 $row[] = html_print_select($agent_status_arr, "status_agent", $status_agent, '', '', 0, true);
 $row[] = __('Search agent');
-if (defined('METACONSOLE'))
+if (is_metaconsole())
 	$row[] = html_print_input_text("search_agent", $search_agent, '', 70, 30, true);
 else
 	$row[] = html_print_input_text("search_agent", $search_agent, '', 40, 30, true);
@@ -149,7 +149,7 @@ $table->rowspan[][count($row)-1] = 2;
 
 $table->data[] = $row;
 
-if (!defined('METACONSOLE')) {
+if (!is_metaconsole()) {
 	// Module filter
 	$module_status_arr = array();
 	$module_status_arr[-1] = __('All'); //default
@@ -168,7 +168,7 @@ if (!defined('METACONSOLE')) {
 	$table->data[] = $row;
 }
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole()) {
 	$table->width = "96%";
 	$table->cellpadding = "0";
 	$table->cellspacing = "0";
@@ -179,7 +179,7 @@ if (defined('METACONSOLE')) {
 $form_html = '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$tab.'&pure='.$config['pure'].'">';
 $form_html .= html_print_table($table, true);
 $form_html .= '</form>';
-if (defined('METACONSOLE')) {
+if (is_metaconsole()) {
 	echo "<div class='view_tree'>";
 	ui_toggle($form_html, __('Show Options'));
 	echo "<br>";
@@ -203,26 +203,22 @@ html_print_image('images/spinner.gif', false,
 	array('class' => "loading_tree",
 		'style' => 'display: none;'));
 
-echo "<div class='tree-table'>";
-echo 	"<div class='tree-table-row'>";
-echo 		"<div class='tree-table-cell tree-table-cell-tree'>";
-echo 			"<div id='tree-controller-recipient'>";
-echo 			"</div>";
-echo 		"</div>";
-echo 		"<div class='tree-table-cell tree-table-cell-detail'>";
-echo 			"<div id='tree-controller-detail-recipient'>";
-echo 			"</div>";
-echo 		"</div>";
-echo 	"</div>";
+echo "<div id='tree-controller-recipient'>";
 echo "</div>";
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole()) {
 	echo "</div>";
 }
 
 enterprise_hook('close_meta_frame');
 
 ?>
+
+<? if (!is_metaconsole()): ?>
+<script type="text/javascript" src="include/javascript/fixed-bottom-box.js"></script>
+<? else: ?>
+<script type="text/javascript" src="../../include/javascript/fixed-bottom-box.js"></script>
+<? endif; ?>
 
 <script type="text/javascript">
 	var treeController = TreeController.getController();
@@ -231,8 +227,6 @@ enterprise_hook('close_meta_frame');
 	
 	$("form#tree_search").submit(function(e) {
 		e.preventDefault();
-		$(".tree-element-detail-content").hide();
-		$(".tree-controller-detail-recipient").hide();
 		processTreeSearch();
 	});
 	
@@ -265,11 +259,11 @@ enterprise_hook('close_meta_frame');
 					
 					treeController.init({
 						recipient: $("div#tree-controller-recipient"),
-						detailRecipient: $("div#tree-controller-detail-recipient"),
+						detailRecipient: $.fixedBottomBox({ width: 400, height: 500 }),
 						page: parameters['page'],
 						emptyMessage: "<?php echo __('No data found'); ?>",
 						tree: data.tree,
-						baseURL: "<?php echo ui_get_full_url(false, false, false, defined('METACONSOLE')); ?>",
+						baseURL: "<?php echo ui_get_full_url(false, false, false, is_metaconsole()); ?>",
 						ajaxURL: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
 						filter: parameters['filter'],
 						counterTitles: {

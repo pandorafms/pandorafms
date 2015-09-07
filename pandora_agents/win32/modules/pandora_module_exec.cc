@@ -21,6 +21,7 @@
 #include "pandora_module_exec.h"
 #include "../pandora_strutils.h"
 #include <windows.h> 
+#include <algorithm>
 
 #define BUFSIZE 4096 
 
@@ -47,7 +48,7 @@ Pandora_Module_Exec::run () {
 	PROCESS_INFORMATION pi;
 	DWORD               retval, dwRet;
 	SECURITY_ATTRIBUTES attributes;
-	HANDLE              out, new_stdout, out_read, job;
+	HANDLE              new_stdout, out_read, new_stderr, err_read, job;
 	string              working_dir;
 
 	try {
@@ -74,10 +75,15 @@ Pandora_Module_Exec::run () {
 		return;
 	}
 
-	/* Get the handle to the current STDOUT. */
-	out = GetStdHandle (STD_OUTPUT_HANDLE); 
-
 	if (! CreatePipe (&out_read, &new_stdout, &attributes, 0)) {
+		pandoraLog ("CreatePipe failed. Err: %d", GetLastError ());
+		this->has_output = false;
+
+		CloseHandle (job);
+		return;
+	}
+
+	if (! CreatePipe (&err_read, &new_stderr, &attributes, 0)) {
 		pandoraLog ("CreatePipe failed. Err: %d", GetLastError ());
 		this->has_output = false;
 
@@ -87,6 +93,7 @@ Pandora_Module_Exec::run () {
 
 	/* Ensure the read handle to the pipe for STDOUT is not inherited */
 	SetHandleInformation (out_read, HANDLE_FLAG_INHERIT, 0);
+	SetHandleInformation (err_read, HANDLE_FLAG_INHERIT, 0);
 
 	/* Set up members of the STARTUPINFO structure. */
 	ZeroMemory (&si, sizeof (si));
@@ -95,7 +102,7 @@ Pandora_Module_Exec::run () {
 	si.cb = sizeof (si);
 	si.dwFlags     = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
 	si.wShowWindow = SW_HIDE;
-	si.hStdError   = new_stdout;
+	si.hStdError   = new_stderr;
 	si.hStdOutput  = new_stdout;
 
 	/* Set up members of the PROCESS_INFORMATION structure. */
@@ -127,6 +134,7 @@ Pandora_Module_Exec::run () {
 		ResumeThread (pi.hThread);
 	
 		string output;
+		string err_output;
 		int tickbase = GetTickCount();
 		while ( (dwRet = WaitForSingleObject (pi.hProcess, 500)) != WAIT_ABANDONED ) {
 			PeekNamedPipe (out_read, buffer, BUFSIZE, &read, &avail, NULL);
@@ -134,6 +142,13 @@ Pandora_Module_Exec::run () {
 				ReadFile (out_read, buffer, BUFSIZE, &read, NULL);
 				buffer[read] = '\0';
 				output += (char *) buffer;
+			}
+
+			PeekNamedPipe (err_read, buffer, BUFSIZE, &read, &avail, NULL);
+			if (avail > 0) {
+				ReadFile (err_read, buffer, BUFSIZE, &read, NULL);
+				buffer[read] = '\0';
+				err_output += (char *) buffer;
 			}
 
 			if (dwRet == WAIT_OBJECT_0) { 
@@ -148,13 +163,24 @@ Pandora_Module_Exec::run () {
 
 		GetExitCodeProcess (pi.hProcess, &retval);
 
+		if (!err_output.empty()) {
+			err_output.erase( std::remove(err_output.begin(), err_output.end(), '\r'), err_output.end() );
+			if (!err_output.empty()) {
+				string::iterator last = err_output.end() - 1;
+				if (*last == '\n') {
+					err_output.erase(last);
+				}
+			}
+			pandoraLog (err_output.c_str());
+		}
+
 		if (retval != 0) {
 			if (! TerminateJobObject (job, 0)) {
 				pandoraLog ("TerminateJobObject failed. (error %d)",
 					    GetLastError ());
 			}
 			if (retval != STILL_ACTIVE && this->proc == 0) {
-				pandoraLog ("Pandora_Module_Exec: %s did not executed well (retcode: %d)",
+				pandoraLog ("Pandora_Module_Exec: %s did not execute well (retcode: %d)",
 				this->module_name.c_str (), retval);
 			}
 			this->has_output = false;

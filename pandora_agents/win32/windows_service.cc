@@ -38,7 +38,7 @@ static void  SetWindowsServiceStatus             (DWORD dwCurrentState,
 						  DWORD dwWin32ExitCode,
 						  DWORD dwCheckPoint,
 						  DWORD dwWaitHint);
-static void  ErrorStopService                    (LPTSTR lpszAPI);
+static void  ErrorStopService                    (LPCTSTR lpszAPI);
 
 /**
  * Set the values of the service to run.
@@ -553,7 +553,7 @@ SetWindowsServiceStatus (DWORD dwCurrentState, DWORD dwWin32ExitCode,
 }
 
 static void
-ErrorStopService (LPTSTR lpszAPI)
+ErrorStopService (LPCTSTR lpszAPI)
 {
 	TCHAR   buffer[256]  = TEXT("");
 	TCHAR   error[1024]  = TEXT("");

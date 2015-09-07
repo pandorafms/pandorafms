@@ -729,10 +729,14 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 		      filepath.c_str (), host.c_str ());
 	pandoraDebug ("Command %s", tentacle_cmd.c_str());
 
+	/* Set the working directory of the process. It's "utils" directory
+	   to find the GNU W32 tools */
+	working_dir = getPandoraInstallDir ();
+
 	ZeroMemory (&si, sizeof (si));
 	ZeroMemory (&pi, sizeof (pi));
 	if (CreateProcess (NULL , (CHAR *)tentacle_cmd.c_str (), NULL, NULL, FALSE,
-	    CREATE_NO_WINDOW, NULL, NULL, &si, &pi) == 0) {
+	    CREATE_NO_WINDOW, NULL, working_dir.c_str(), &si, &pi) == 0) {
 		return -1;
 	}
 

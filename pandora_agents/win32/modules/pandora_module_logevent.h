@@ -73,7 +73,8 @@ namespace Pandora_Modules {
         void timestampToSystemtime (string timestamp, SYSTEMTIME *system_time);
         void getEventDescription (PEVENTLOGRECORD pevlr, char *message, DWORD flags);
 		string getEventDescriptionXPATH (PEVENTLOGRECORD pevlr);
-        int filterEvent (PEVENTLOGRECORD pevlr, string description);
+        int filterEvent (PEVENTLOGRECORD pevlr);
+        int filterEventDescription (PEVENTLOGRECORD pevlr, string description);
 		LPWSTR GetMessageString(EVT_HANDLE hMetadata, EVT_HANDLE hEvent, EVT_FORMAT_MESSAGE_FLAGS FormatId);
 
 	public:

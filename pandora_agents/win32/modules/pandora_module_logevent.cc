@@ -321,93 +321,95 @@ Pandora_Module_Logevent::getLogEvents (list<string> &event_list, unsigned char d
 
 		// Process read events
 		while (read > 0) {           
-	    
-			// Retrieve the event description (LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE)
-			description = getEventDescriptionXPATH (pevlr);
-			if (description == "") {				
-				getEventDescription (pevlr, message, 0x20 | 0x02);
-				if (message[0] == '\0') {
-					// Retrieve the event description (DONT_RESOLVE_DLL_REFERENCES)
-					getEventDescription (pevlr, message, DONT_RESOLVE_DLL_REFERENCES);
+
+			// Filter the event
+			if (filterEvent (pevlr) == 0) {
+			
+				// Retrieve the event description (LOAD_LIBRARY_AS_IMAGE_RESOURCE | LOAD_LIBRARY_AS_DATAFILE)
+				description = getEventDescriptionXPATH (pevlr);
+				if (description == "") {				
+					getEventDescription (pevlr, message, 0x20 | 0x02);
 					if (message[0] == '\0') {
-						description = "N/A";
+						// Retrieve the event description (DONT_RESOLVE_DLL_REFERENCES)
+						getEventDescription (pevlr, message, DONT_RESOLVE_DLL_REFERENCES);
+						if (message[0] == '\0') {
+							description = "N/A";
+						} else {
+							description = message;
+						}
 					} else {
 						description = message;
 					}
-				} else {
-					description = message;
 				}
-			}
-
-			// Filter the event
-			if (filterEvent (pevlr, description) == 0) {
-			
-			    // Generate a timestamp for the event
-			    epoch = pevlr->TimeGenerated;
-			    time_info = localtime (&epoch);
-			    strftime (timestamp, TIMESTAMP_LEN + 1, "%Y-%m-%d %H:%M:%S", time_info);
-
-
-				// Print the event timestamp
-			    std::stringstream event;
-				event << timestamp;
-				
-				// Print additional information for log modules
-			    if (this->getModuleType() == TYPE_LOG) {
-				
-					// Add the timestamp to the log (the previous timestamp will be stripped)
-					event << "[Timestamp: ";
+	
+				if (filterEventDescription (pevlr, description) == 0) {
+				    // Generate a timestamp for the event
+				    epoch = pevlr->TimeGenerated;
+				    time_info = localtime (&epoch);
+				    strftime (timestamp, TIMESTAMP_LEN + 1, "%Y-%m-%d %H:%M:%S", time_info);
+	
+	
+					// Print the event timestamp
+				    std::stringstream event;
 					event << timestamp;
-					event << "]";
 					
-					// Retrieve the event id
-				    event << "[ID: ";
-				    event << (pevlr->EventID & 0x3FFFFFFF);
-					event << "]";
+					// Print additional information for log modules
+				    if (this->getModuleType() == TYPE_LOG) {
 					
-					// Retrieve the source name
-					offset = sizeof(EVENTLOGRECORD);
-					event << " [Source: ";
-					event << (LPTSTR)((LPBYTE)pevlr + offset);
-					event << "]";
-					
-					// Retrieve the computer name
-					offset += strlen((LPTSTR)((LPBYTE)pevlr + offset)) + sizeof(TCHAR);
-					event << " [Computer: ";
-					event << (LPTSTR)((LPBYTE)pevlr + offset);
-					event << "]";
-					
-					// Retrieve the user name
-					event << " [User: ";
-					if(pevlr->UserSidLength > 0) {
-						if (LookupAccountSid(0, (PSID)((LPBYTE)pevlr + pevlr->UserSidOffset),
-	                        lp_name, &cch_name, lp_referenced_domain_name, &cch_referenced_domain_name, &pe_use) != 0) {
-							event << lp_name;	
+						// Add the timestamp to the log (the previous timestamp will be stripped)
+						event << "[Timestamp: ";
+						event << timestamp;
+						event << "]";
+						
+						// Retrieve the event id
+					    event << "[ID: ";
+					    event << (pevlr->EventID & 0x3FFFFFFF);
+						event << "]";
+						
+						// Retrieve the source name
+						offset = sizeof(EVENTLOGRECORD);
+						event << " [Source: ";
+						event << (LPTSTR)((LPBYTE)pevlr + offset);
+						event << "]";
+						
+						// Retrieve the computer name
+						offset += strlen((LPTSTR)((LPBYTE)pevlr + offset)) + sizeof(TCHAR);
+						event << " [Computer: ";
+						event << (LPTSTR)((LPBYTE)pevlr + offset);
+						event << "]";
+						
+						// Retrieve the user name
+						event << " [User: ";
+						if(pevlr->UserSidLength > 0) {
+							if (LookupAccountSid(0, (PSID)((LPBYTE)pevlr + pevlr->UserSidOffset),
+		                        lp_name, &cch_name, lp_referenced_domain_name, &cch_referenced_domain_name, &pe_use) != 0) {
+								event << lp_name;	
+							} else {
+								event << "N/A";
+							}
 						} else {
 							event << "N/A";
 						}
-					} else {
-						event << "N/A";
+						event << "]";						
 					}
-					event << "]";						
-				}
-				
-				
-				// Remove carriage returns and new lines in between the description.
-				output = "";
-				for (size_t i = 0; i < description.size(); i++) {
-					if (description[i] != '\n' && description[i] != '\r') {
-						output += description[i];
+					
+					
+					// Remove carriage returns and new lines in between the description.
+					output = "";
+					for (size_t i = 0; i < description.size(); i++) {
+						if (description[i] != '\n' && description[i] != '\r') {
+							output += description[i];
+						}
 					}
+					output += '\n';
+	
+					// Print the event description
+					event << " ";
+					event << output;
+				     
+				    // Add the event to the list
+				    event_list.push_back (event.str());
 				}
-				output += '\n';
-
-				// Print the event description
-				event << " ";
-				event << output;
-			     
-			    // Add the event to the list
-			    event_list.push_back (event.str());
 			}
 
 			// Move to the next event
@@ -555,7 +557,7 @@ Pandora_Module_Logevent::getEventDescriptionXPATH (PEVENTLOGRECORD pevlr) {
 	wstring pwsPath;
 	EVT_HANDLE hEvents[1];
 	DWORD dwReturned = 0;
-	LPWSTR ppValues[] = {L"Event/System/Provider/@Name"};
+	LPCWSTR ppValues[] = {L"Event/System/Provider/@Name"};
 	DWORD count = sizeof(ppValues)/sizeof(LPWSTR);
 	EVT_HANDLE hContext = NULL;
 	PEVT_VARIANT pRenderedValues = NULL;
@@ -714,7 +716,7 @@ Pandora_Module_Logevent::GetMessageString(EVT_HANDLE hMetadata, EVT_HANDLE hEven
  * @return Returns 0 if the event matches the filters, -1 otherwise.
  */
 int
-Pandora_Module_Logevent::filterEvent (PEVENTLOGRECORD pevlr, string description) {
+Pandora_Module_Logevent::filterEvent (PEVENTLOGRECORD pevlr) {
     LPCSTR source_name;
 
     // Event ID filter
@@ -732,7 +734,20 @@ Pandora_Module_Logevent::filterEvent (PEVENTLOGRECORD pevlr, string description)
     if (! this->application.empty () && this->application.compare (source_name) != 0) {
         return -1;
     }
+    
+    return 0;
+}
 
+
+/**
+ * Filters the given event according to the module parameters.
+ *
+ * @param event Event log record.
+ * @param event Event description.22
+ * @return Returns 0 if the event matches the filters, -1 otherwise.
+ */
+int
+Pandora_Module_Logevent::filterEventDescription (PEVENTLOGRECORD pevlr, string description) {
     // Pattern filter
     if (! this->pattern.empty () && regexec (&this->regexp, description.c_str (), 0, NULL, 0) != 0) {
         return -1;
@@ -740,3 +755,4 @@ Pandora_Module_Logevent::filterEvent (PEVENTLOGRECORD pevlr, string description)
     
     return 0;
 }
+

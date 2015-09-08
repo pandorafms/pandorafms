@@ -1170,7 +1170,7 @@ Pandora_Module::addGenericCondition (string condition, list<Condition *> **condi
 		cond->string_value = string_value;
 		cond->command = command;
 		cond->command = "cmd.exe /c \"" + cond->command + "\"";
-		if (regcomp (&(cond->regexp), string_value, 0) != 0) {
+		if (regcomp (&(cond->regexp), string_value, REG_EXTENDED) != 0) {
 			pandoraDebug ("Invalid regular expression %s", string_value);
 			delete (cond);
 			return;
@@ -1242,7 +1242,7 @@ Pandora_Module::addIntensiveCondition (string condition) {
 	} else if (sscanf (condition.c_str (), "=~ %1023s", string_value) == 1) {
 		cond->operation = "=~";
 		cond->string_value = string_value;
-		if (regcomp (&(cond->regexp), string_value, 0) != 0) {
+		if (regcomp (&(cond->regexp), string_value, REG_EXTENDED) != 0) {
 			pandoraDebug ("Invalid regular expression %s", string_value);
 			delete (cond);
 			return;

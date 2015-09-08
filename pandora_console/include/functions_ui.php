@@ -2873,7 +2873,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 			
 			var inputs = [];
 			inputs.push ("agent_name=" + agent_name);
-			inputs.push ("filter=delete_pending = 0");
+			inputs.push ("delete_pending=0");
 			inputs.push ("get_agent_modules_json=1");
 			inputs.push ("page=operation/agentes/ver_agente");
 			
@@ -2904,7 +2904,6 @@ function ui_print_agent_autocomplete_input($parameters) {
 				data: inputs.join ("&"),
 				type: "POST",
 				url: action="' . $javascript_ajax_page . '",
-				timeout: 10000,
 				dataType: "json",
 				success: function (data) {
 					if (' . ((int)$add_none_module) . ') {
@@ -3072,10 +3071,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 					
 					jQuery.ajax ({
 						data: data_params,
-						async: false,
 						type: "POST",
 						url: action="' . $javascript_ajax_page . '",
-						timeout: 10000,
 						dataType: "json",
 						success: function (data) {
 								cache_' . $input_name . '[term] = data; //Save the cache
@@ -3286,10 +3283,8 @@ function ui_print_agent_autocomplete_input($parameters) {
 			
 			jQuery.ajax ({
 				data: data_params,
-				async: false,
 				type: "POST",
 				url: action="' . $javascript_ajax_page . '",
-				timeout: 10000,
 				dataType: "json",
 				success: function (data) {
 						if (data.length == 0) {

@@ -121,8 +121,6 @@ function update_button_palette_callback() {
 				data: params.join ("&"),
 				type: 'POST',
 				url: url_ajax,
-				async: false,
-				timeout: 10000,
 				success: function (data) {
 					$("#background_img").attr('src', data);
 				}
@@ -183,8 +181,6 @@ function update_button_palette_callback() {
 				data: params.join ("&"),
 				type: 'POST',
 				url: url_ajax,
-				async: false,
-				timeout: 10000,
 				success: function (data) {
 					$("#image_" + idItem).attr('src', data);
 				}
@@ -235,7 +231,7 @@ function readFields() {
 	values['module'] = $("select[name=module]").val();
 	values['process_simple_value'] = $("select[name=process_value]").val();
 	values['background'] = $("#background_image").val();
-	values['period'] = $("#hidden-period").val();
+	values['period'] = $("select[name=period]").val();
 	values['width'] = $("input[name=width]").val();
 	values['height'] = $("input[name=height]").val();
 	values['parent'] = $("select[name=parent]").val();
@@ -634,7 +630,6 @@ function setAspectRatioBackground(side) {
 	parameter.push ({name: "background", value: $("#background_img").attr('src')});
 	
 	jQuery.ajax({
-		async: false,
 		url: "ajax.php",
 		data: parameter,
 		type: "POST",
@@ -842,7 +837,6 @@ function getModuleGraph(id_data) {
 	parameter.push ({name: "action", value: "get_layout_data"});
 	parameter.push ({name: "id_element", value: id_data});
 	jQuery.ajax({
-		async: false,
 		url: url_ajax,
 		data: parameter,
 		type: "POST",
@@ -879,7 +873,6 @@ function getModuleGraph(id_data) {
 	parameter.push ({name: "period", value: period});
 	parameter.push ({name: "background_color", value: background_color});
 	jQuery.ajax({
-		async: false,
 		url: url_ajax,
 		data: parameter,
 		type: "POST",
@@ -910,7 +903,6 @@ function getModuleValue(id_data, process_simple_value, period) {
 		parameter.push ({name: "process_simple_value", value: process_simple_value});
 	}
 	jQuery.ajax({
-		async: false,
 		url: url_ajax,
 		data: parameter,
 		type: "POST",
@@ -944,7 +936,6 @@ function getPercentileBar(id_data, values) {
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "value_show", value: values['value_show']});
 	jQuery.ajax({
-		async: false,
 		url: url_ajax,
 		data: parameter,
 		type: "POST",
@@ -970,7 +961,6 @@ function getPercentileBar(id_data, values) {
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_font"});
 	jQuery.ajax({
-		async: false,
 		url: url_ajax,
 		data: parameter,
 		type: "POST",
@@ -1021,7 +1011,6 @@ function getPercentileBubble(id_data, values) {
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "value_show", value: values['value_show']});
 	jQuery.ajax({
-		async: false,
 		url: url_ajax,
 		data: parameter,
 		type: "POST",
@@ -1044,7 +1033,6 @@ function getPercentileBubble(id_data, values) {
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_font"});
 	jQuery.ajax({
-		async: false,
 		url: url_ajax,
 		data: parameter,
 		type: "POST",
@@ -1092,7 +1080,6 @@ function getImageElement(id_data) {
 	var img = null;
 	
 	jQuery.ajax({
-		async: false,
 		url: url_ajax,
 		data: parameter,
 		type: "POST",
@@ -1122,7 +1109,6 @@ function visual_map_get_color_line_status(id) {
 	var color = null;
 	
 	jQuery.ajax({
-		async: false,
 		url: url_ajax,
 		data: parameter,
 		type: "POST",
@@ -1177,8 +1163,6 @@ function createItem(type, values, id_data) {
 				type: 'POST',
 				url: url_ajax,
 				data: parameter,
-				async: false,
-				timeout: 10000,
 				success: function (data) {
 					element_status = data;
 				}
@@ -1195,8 +1179,6 @@ function createItem(type, values, id_data) {
 				type: 'POST',
 				url: url_ajax,
 				data: parameter,
-				async: false,
-				timeout: 10000,
 				success: function (data) {
 					img_src = data;
 				}
@@ -1294,8 +1276,6 @@ function createItem(type, values, id_data) {
 				type: 'POST',
 				url: url_ajax,
 				data: parameter,
-				async: false,
-				timeout: 10000,
 				success: function (data) {
 					img_src = data;
 				}
@@ -1359,7 +1339,6 @@ function insertDB(type, values) {
 	
 	jQuery.ajax({
 		url: url_ajax,
-		async: false,
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
@@ -1408,8 +1387,6 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 					type: 'POST',
 					url: url_ajax,
 					data: parameter,
-					async: false,
-					timeout: 10000,
 					success: function (data) {
 						$('#hidden-status_' + idElement).val(data);
 					}
@@ -1448,8 +1425,6 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 					data: params.join ("&"),
 					type: 'POST',
 					url: url_ajax,
-					async: false,
-					timeout: 10000,
 					success: function (data) {
 						$("#image_" + idElement).attr('src', data);
 					}
@@ -1631,7 +1606,6 @@ function deleteDB(idElement) {
 	
 	jQuery.ajax({
 		url: url_ajax,
-		async: false,
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
@@ -2031,9 +2005,7 @@ function click_button_toolbox(id) {
 					type: 'POST',
 					url: action="ajax.php",
 					data: action_pending_save,
-					async: false,
 					dataType: 'json',
-					timeout: 10000,
 					success: function (data) {
 						if (data == '0') {
 							status = false;
@@ -2096,9 +2068,7 @@ function showPreviewStaticGraph(staticGraph) {
 			type: 'POST',
 			url: url_ajax,
 			data: parameter,
-			async: false,
 			dataType: 'json',
-			timeout: 10000,
 			success: function (data) {
 				jQuery.each(data, function(i, line) {
 					$("#preview").append(line);
@@ -2130,8 +2100,6 @@ function showPreviewIcon(icon) {
 			data: params.join ("&"),
 			type: 'POST',
 			url: url_ajax,
-			async: false,
-			timeout: 10000,
 			success: function (data) {
 				$("#preview").append(data);
 			}

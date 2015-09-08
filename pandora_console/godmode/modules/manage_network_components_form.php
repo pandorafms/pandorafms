@@ -277,43 +277,43 @@ function type_change () {
 	// type 1-4 - Generic_xxxxxx
 	if ((document.component.type.value > 0) && (document.component.type.value < 5)) {
 		
-		$("input[name=snmp_community]").css({backgroundColor: '#ddd'});
+		$("input[name=snmp_community]").css({backgroundColor: '#ddd !important'});
 		$("input[name=snmp_community]").attr("disabled", true);
 		
-		$("input[name=tcp_rcv]").css({backgroundColor: '#ddd'});
+		$("input[name=tcp_rcv]").css({backgroundColor: '#ddd !important'});
 		$("input[name=tcp_rcv]").attr("disabled", true);
 		
 		<?php
 		if ($id_component_type != MODULE_WMI) { 
 		?>
-			$("input[name=snmp_oid]").css({backgroundColor: '#ddd'});
+			$("input[name=snmp_oid]").css({backgroundColor: '#ddd !important'});
 			$("input[name=snmp_oid]").attr("disabled", true);
 			
-			$("input[name=tcp_send]").css({backgroundColor: '#ddd'});
+			$("input[name=tcp_send]").css({backgroundColor: '#ddd !important'});
 			$("input[name=tcp_send]").attr("disabled", true);
 			
-			$("input[name=tcp_port]").css({backgroundColor: '#ddd'});
+			$("input[name=tcp_port]").css({backgroundColor: '#ddd !important'});
 			$("input[name=tcp_port]").attr("disabled", true);
 		<?php
 		}
 		?>
 		
-		$("input[name=snmp3_auth_user]").css({backgroundColor: '#ddd'});
+		$("input[name=snmp3_auth_user]").css({backgroundColor: '#ddd !important'});
 		$("input[name=snmp3_auth_user]").attr("disabled", true);
 		
-		$("input[name=snmp3_auth_pass]").css({backgroundColor: '#ddd'});
+		$("input[name=snmp3_auth_pass]").css({backgroundColor: '#ddd !important'});
 		$("input[name=snmp3_auth_pass]").attr("disabled", true);
 		
-		$("#snmp3_privacy_method").css({backgroundColor: '#ddd'});
+		$("#snmp3_privacy_method").css({backgroundColor: '#ddd !important'});
 		$("#snmp3_privacy_method").attr("disabled", true);
 		
-		$("input[name=snmp3_privacy_pass]").css({backgroundColor: '#ddd'});
+		$("input[name=snmp3_privacy_pass]").css({backgroundColor: '#ddd !important'});
 		$("input[name=snmp3_privacy_pass]").attr("disabled", true);
 		
-		$("#snmp3_auth_method").css({backgroundColor: '#ddd'});
+		$("#snmp3_auth_method").css({backgroundColor: '#ddd !important'});
 		$("#snmp3_auth_method").attr("disabled", true);
 		
-		$("#snmp3_security_level").css({backgroundColor: '#ddd'});
+		$("#snmp3_security_level").css({backgroundColor: '#ddd !important'});
 		$("#snmp3_security_level").attr("disabled", true);
 	}
 	// type 15-18- SNMP
@@ -324,9 +324,9 @@ function type_change () {
 		document.component.snmp_community.disabled=false;
 		document.component.snmp_oid.style.background="#fff";
 		document.component.snmp_oid.disabled=false;
-		document.component.tcp_send.style.background="#ddd";
+		document.component.tcp_send.style.background="#ddd !important";
 		document.component.tcp_send.disabled=true;
-		document.component.tcp_rcv.style.background="#ddd";
+		document.component.tcp_rcv.style.background="#ddd !important";
 		document.component.tcp_rcv.disabled=true;
 		document.component.tcp_port.style.background="#fff";
 		document.component.tcp_port.disabled=false;
@@ -350,39 +350,39 @@ function type_change () {
 	}
 	// type 6-7 - ICMP
 	if ((document.component.type.value == 6) || (document.component.type.value == 7)) {
-		document.component.snmp_oid.style.background="#ddd";
+		document.component.snmp_oid.style.background="#ddd !important";
 		document.component.snmp_oid.disabled=true;
-		document.component.snmp_community.style.background="#ddd";
+		document.component.snmp_community.style.background="#ddd !important";
 		document.component.snmp_community.disabled=true;
-		document.component.snmp_oid.style.background="#ddd";
+		document.component.snmp_oid.style.background="#ddd !important";
 		document.component.snmp_oid.disabled=true;
-		document.component.tcp_send.style.background="#ddd";
+		document.component.tcp_send.style.background="#ddd !important";
 		document.component.tcp_send.disabled=true;
-		document.component.tcp_rcv.style.background="#ddd";
+		document.component.tcp_rcv.style.background="#ddd !important";
 		document.component.tcp_rcv.disabled=true;
-		document.component.tcp_port.style.background="#ddd";
+		document.component.tcp_port.style.background="#ddd !important";
 		document.component.tcp_port.disabled=true;
 		
-		document.component.snmp_version.style.background="#ddd";
+		document.component.snmp_version.style.background="#ddd !important";
 		document.component.snmp_version.disabled=true;
-		document.component.snmp3_auth_user.style.background="#ddd";
+		document.component.snmp3_auth_user.style.background="#ddd !important";
 		document.component.snmp3_auth_user.disabled=true;
-		document.component.snmp3_auth_pass.background="#ddd";
+		document.component.snmp3_auth_pass.background="#ddd !important";
 		document.component.snmp3_auth_pass.disabled=true;
-		document.component.snmp3_privacy_method.style.background="#ddd";
+		document.component.snmp3_privacy_method.style.background="#ddd !important";
 		document.component.snmp3_privacy_method.disabled=true;
-		document.component.snmp3_privacy_pass.style.background="#ddd";
+		document.component.snmp3_privacy_pass.style.background="#ddd !important";
 		document.component.snmp3_privacy_pass.disabled=true;
-		document.component.snmp3_auth_method.style.background="#ddd";
+		document.component.snmp3_auth_method.style.background="#ddd !important";
 		document.component.snmp3_auth_method.disabled=true;
-		document.component.snmp3_security_level.style.background="#ddd";
+		document.component.snmp3_security_level.style.background="#ddd !important";
 		document.component.snmp3_security_level.disabled=true;
 	}
 	// type 8-11 - TCP
 	if ((document.component.type.value > 7) && (document.component.type.value < 12)) {
-		document.component.snmp_oid.style.background="#ddd";
+		document.component.snmp_oid.style.background="#ddd !important";
 		document.component.snmp_oid.disabled=true;
-		document.component.snmp_community.style.background="#ddd";
+		document.component.snmp_community.style.background="#ddd !important";
 		document.component.snmp_community.disabled=true;
 		document.component.tcp_send.style.background="#fff";
 		document.component.tcp_send.disabled=false;
@@ -391,26 +391,26 @@ function type_change () {
 		document.component.tcp_port.style.background="#fff";
 		document.component.tcp_port.disabled=false;
 		
-		document.component.snmp_version.style.background="#ddd";
+		document.component.snmp_version.style.background="#ddd !important";
 		document.component.snmp_version.disabled=true;
-		document.component.snmp3_auth_user.style.background="#ddd";
+		document.component.snmp3_auth_user.style.background="#ddd !important";
 		document.component.snmp3_auth_user.disabled=true;
-		document.component.snmp3_auth_pass.background="#ddd";
+		document.component.snmp3_auth_pass.background="#ddd !important";
 		document.component.snmp3_auth_pass.disabled=true;
-		document.component.snmp3_privacy_method.style.background="#ddd";
+		document.component.snmp3_privacy_method.style.background="#ddd !important";
 		document.component.snmp3_privacy_method.disabled=true;
-		document.component.snmp3_privacy_pass.style.background="#ddd";
+		document.component.snmp3_privacy_pass.style.background="#ddd !important";
 		document.component.snmp3_privacy_pass.disabled=true;
-		document.component.snmp3_auth_method.style.background="#ddd";
+		document.component.snmp3_auth_method.style.background="#ddd !important";
 		document.component.snmp3_auth_method.disabled=true;
-		document.component.snmp3_security_level.style.background="#ddd";
+		document.component.snmp3_security_level.style.background="#ddd !important";
 		document.component.snmp3_security_level.disabled=true;
 	}
 	// type 12 - UDP
 	if (document.component.type.value == 12) {
-		document.component.snmp_oid.style.background="#ddd";
+		document.component.snmp_oid.style.background="#ddd !important";
 		document.component.snmp_oid.disabled=true;
-		document.component.snmp_community.style.background="#ddd";
+		document.component.snmp_community.style.background="#ddd !important";
 		document.component.snmp_community.disabled=true;
 		document.component.tcp_send.style.background="#fff";
 		document.component.tcp_send.disabled=false;
@@ -419,19 +419,19 @@ function type_change () {
 		document.component.tcp_port.style.background="#fff";
 		document.component.tcp_port.disabled=false;
 		
-		document.component.snmp_version.style.background="#ddd";
+		document.component.snmp_version.style.background="#ddd !important";
 		document.component.snmp_version.disabled=true;
-		document.component.snmp3_auth_user.style.background="#ddd";
+		document.component.snmp3_auth_user.style.background="#ddd !important";
 		document.component.snmp3_auth_user.disabled=true;
-		document.component.snmp3_auth_pass.background="#ddd";
+		document.component.snmp3_auth_pass.background="#ddd !important";
 		document.component.snmp3_auth_pass.disabled=true;
-		document.component.snmp3_privacy_method.style.background="#ddd";
+		document.component.snmp3_privacy_method.style.background="#ddd !important";
 		document.component.snmp3_privacy_method.disabled=true;
-		document.component.snmp3_privacy_pass.style.background="#ddd";
+		document.component.snmp3_privacy_pass.style.background="#ddd !important";
 		document.component.snmp3_privacy_pass.disabled=true;
-		document.component.snmp3_auth_method.style.background="#ddd";
+		document.component.snmp3_auth_method.style.background="#ddd !important";
 		document.component.snmp3_auth_method.disabled=true;
-		document.component.snmp3_security_level.style.background="#ddd";
+		document.component.snmp3_security_level.style.background="#ddd !important";
 		document.component.snmp3_security_level.disabled=true;
 	}
 }

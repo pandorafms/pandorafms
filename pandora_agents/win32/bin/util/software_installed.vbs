@@ -2,9 +2,8 @@
 ' (c) 2015 Sancho Lerena <slerena@artica.es>
 ' (c) 2015 Borja Sanchez <fborja.sanchez@artica.es>
 ' This plugin extends agent inventory feature. Only enterprise version
-' Warning: If the system has the WMI corrupted, call this script with nowmi argument
-' ------------------------------------------------------------------------------------
-on error resume next
+' --------------------------------------------------------------------------
+'on error resume next
 
 Class ObjectList
   Public List
@@ -32,63 +31,58 @@ Class ObjectList
 End Class
 
 class AppClass 
-  dim InstallDate,Caption,Version,Vendor
+	dim InstallDate,Caption,Version,Vendor
 end class
-
-' Print the XML structure
-Wscript.StdOut.WriteLine "<inventory>"
-Wscript.StdOut.WriteLine "<inventory_module>"
-Wscript.StdOut.WriteLine "<name>Software</name>"
-Wscript.StdOut.WriteLine "<type><![CDATA[generic_data_string]]></type>"
-Wscript.StdOut.WriteLine "<datalist>"
 
 '------ Checks if an item exists on the main collection
 function isItemInArray(objeto,coleccion)
-  for each id in coleccion.List
-    if (strComp(objeto,coleccion.List(id).caption) = 0) then
-      isItemInArray=true
-      exit function
-    end if
-  next
-  isItemInArray=false
+	for each id in coleccion.List
+		if (strComp(objeto,coleccion.List(id).caption) = 0) then
+			isItemInArray=true
+			exit function
+		end if
+	next
+	isItemInArray=false
 end function
 
 '------ main collection definition
 dim colObjSW : set colObjSW = new ObjectList
 strComputer = "."
 
-' Disable by arguments WMI queries - corrupted WMI host
-
-If (not WScript.Arguments(0) = "nowmi") Then
-  '------ Retrieve the WMI registers first
-  Set objWMIService = GetObject("winmgmts:" & "{impersonationLevel=impersonate}!\\" & strComputer & "\root\cimv2")
-  Set colSoftware = objWMIService.ExecQuery ("SELECT installstate,caption,installdate,Version,vendor FROM Win32_Product",,48)
+'------ Retrieve the WMI registers first
+Set objWMIService = GetObject("winmgmts:" & "{impersonationLevel=impersonate}!\\" & strComputer & "\root\cimv2")
+Set colSoftware = objWMIService.ExecQuery ("SELECT installstate,caption,installdate,Version,vendor FROM Win32_Product")
 
 
-  '------ Check all
-  '-- first) add all unique WMI (unique) entries to main collector
-  '-- second) add all unique REGISTRY items to main collector
+'------ Check all
+'-- first) add all unique WMI (unique) entries to main collector
+'-- second) add all unique REGISTRY items to main collector
 
-  for each objSoftware in colSoftware
-    if ( objSoftware.installstate = 5 ) then
-      if ( isItemInArray(objSoftware.caption, colObjSW) = false ) then
-        ' It doesn't exists, added.
-        With colObjSW.Append(New AppClass)
-          .caption = objSoftware.caption
-          .InstallDate = objSoftware.InstallDate
-          .version = objSoftware.version
-          .vendor = objSoftware.vendor
-        End with
-        ' Add to XML the verified ones
-        Wscript.StdOut.WriteLine "<data><![CDATA[" _
-          & objSoftware.caption & ";" _ 
-          & objSoftware.version _ 
-          & "]]></data>"
-      end if
-    end if
-  next
+on error resume next
+flag = colSoftware.Count
+If (err.number <> 0) Then
+	flag = true
+Else
+	flag = false
 End If
+on error goto 0	
 
+If (NOT flag) Then
+	for each objSoftware in colSoftware
+		if ( objSoftware.installstate = 5 ) then
+			if ( isItemInArray(objSoftware.caption, colObjSW) = false ) then
+				' It doesn't exists, added.
+				With colObjSW.Append(New AppClass)
+					.caption = objSoftware.caption
+					.InstallDate = objSoftware.InstallDate
+					.version = objSoftware.version
+					.vendor = objSoftware.vendor
+				End with
+				' Add to XML the verified ones
+			end if
+		end if
+	next
+End If
 ' ------ Getting the REGISTRY
 Const HKLM = &H80000002 'HKEY_LOCAL_MACHINE 
 
@@ -128,19 +122,33 @@ For Each strSubkey In arrSubkeys
     ' foreach registry item, check if exists in the main collector
     ' it it exists, it doesn't be added.
     if ( isItemInArray(appname, colObjSW) = false ) then
-    ' as item doesn't exist, we add it to main collector and to XML
-       With colObjSW.Append(New AppClass)
-      .caption = appname
-      .version = appversion
-    End with
-    Wscript.StdOut.WriteLine "<data><![CDATA[" & appname & ";" & appversion & "]]></data>"
+		' as item doesn't exist, we add it to main collector and to XML
+	     With colObjSW.Append(New AppClass)
+			.caption = appname
+			.version = appversion
+		End with
     end if
   end if
 next
 
+
+
+' Print the XML structure
+Wscript.StdOut.WriteLine "<inventory>"
+Wscript.StdOut.WriteLine "<inventory_module>"
+Wscript.StdOut.WriteLine "<name>Software</name>"
+Wscript.StdOut.WriteLine "<type><![CDATA[generic_data_string]]></type>"
+Wscript.StdOut.WriteLine "<datalist>"
+
+' Print software installed
+For Each i in colObjSW.List
+	Wscript.StdOut.WriteLine "<data><![CDATA[" _
+		& colObjSW.item(i).caption & ";" _ 
+		& colObjSW.item(i).version _ 
+		& "]]></data>"
+Next
 ' Closing the XML structure
 Wscript.StdOut.WriteLine "</datalist>"
 Wscript.StdOut.WriteLine "</inventory_module>"
 Wscript.StdOut.WriteLine "</inventory>"
-
 

@@ -2813,8 +2813,8 @@ function events_get_count_events_validated ($filter, $period = null, $date = nul
 	$filter_event_search = false) {
 	
 	global $config;
-	
-	$sql_filter = ' AND 1=1 ';
+
+	$sql_filter = " 1=1 ";
 	if (isset($filter['id_group'])) {
 		$id_group = groups_safe_acl ($config["id_user"], $filter['id_group'], "AR");
 		
@@ -2822,34 +2822,34 @@ function events_get_count_events_validated ($filter, $period = null, $date = nul
 			//An empty array means the user doesn't have access
 			return false;
 		}
-		
-		$sql_filter .= 
-			sprintf(' AND id_grupo IN (%s) ', implode (",", $id_group));
+
+		$sql_filter .=
+			sprintf(" AND id_grupo IN (%s) ", implode (",", $id_group));
 	}
 	if (!empty($filter['id_agent'])) {
-		$sql_filter .= 
-			sprintf(' AND id_agente = %d ', $filter['id_agent']);
+		$sql_filter .=
+			sprintf(" AND id_agente = %d ", $filter['id_agent']);
 	}
 	
 	$date_filter = '';
 	if (!empty($date) && !empty($period)) {
 		$datelimit = $date - $period;
-		
-		$date_filter .= sprintf (' AND utimestamp > %d AND utimestamp <= %d ',
+
+		$date_filter .= sprintf (" AND utimestamp > %d AND utimestamp <= %d ",
 			$datelimit, $date);
 	}
 	else if (!empty($period)) {
 		$date = time();
 		$datelimit = $date - $period;
-		
-		$date_filter .= sprintf (' AND utimestamp > %d AND utimestamp <= %d ',
+
+		$date_filter .= sprintf (" AND utimestamp > %d AND utimestamp <= %d ",
 			$datelimit, $date);
 	}
 	else if (!empty($date)) {
-		$date_filter .= sprintf (' AND utimestamp <= %d ', $date);
+		$date_filter .= sprintf (" AND utimestamp <= %d ", $date);
 	}
-	
-	$sql_where = ' AND 1=1 ';
+
+	$sql_where = " AND 1=1 ";
 	$criticities = array();
 	if ($filter_event_critical) {
 		$criticities[] = 4;
@@ -2858,28 +2858,23 @@ function events_get_count_events_validated ($filter, $period = null, $date = nul
 		$criticities[] = 3;
 	}
 	if (!empty($criticities)) {
-		$sql_where .= ' AND criticity IN (' . implode(', ', $criticities) . ')';
+		$sql_where .= " AND criticity IN (" . implode(",", $criticities) . ")";
 	}
 	
 	if ($filter_event_validated) {
-		$sql_where .= ' AND estado = 1 ';
+		$sql_where .= " AND estado = 1 ";
 	}
 	if ($filter_event_no_validated) {
-		$sql_where .= ' AND estado = 0 ';
+		$sql_where .= " AND estado = 0 ";
 	}
 	
 	if (!empty($filter_event_search)) {
-		$sql_where .= ' AND (evento LIKE "%%'. io_safe_input($filter_event_search) . '%%"'.
-			' OR id_evento LIKE "%%' . io_safe_input($filter_event_search) . '%%")';
+		$sql_where .= " AND (evento LIKE '%%" . io_safe_input($filter_event_search) . "%%'" .
+			" OR id_evento LIKE '%%" . io_safe_input($filter_event_search) . "%%')";
 	}
-	
-	$sql = sprintf ('SELECT estado,
-		COUNT(*) AS count
-		FROM tevento WHERE 
-			%s ' . $sql_where . '
-		GROUP BY estado',
-		$sql_filter);
-	
+
+	$sql = sprintf ("SELECT estado, COUNT(*) AS count FROM tevento WHERE %s " . $sql_where . " GROUP BY estado", $sql_filter);
+
 	$rows = db_get_all_rows_sql ($sql);
 	
 	if ($rows == false)

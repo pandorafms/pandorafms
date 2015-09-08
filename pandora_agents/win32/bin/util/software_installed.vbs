@@ -2,9 +2,8 @@
 ' (c) 2015 Sancho Lerena <slerena@artica.es>
 ' (c) 2015 Borja Sanchez <fborja.sanchez@artica.es>
 ' This plugin extends agent inventory feature. Only enterprise version
-' Warning: If the system has the WMI corrupted, call this script with nowmi argument
-' ------------------------------------------------------------------------------------
-on error resume next
+' --------------------------------------------------------------------------
+'on error resume next
 
 Class ObjectList
   Public List
@@ -35,13 +34,6 @@ class AppClass
   dim InstallDate,Caption,Version,Vendor
 end class
 
-' Print the XML structure
-Wscript.StdOut.WriteLine "<inventory>"
-Wscript.StdOut.WriteLine "<inventory_module>"
-Wscript.StdOut.WriteLine "<name>Software</name>"
-Wscript.StdOut.WriteLine "<type><![CDATA[generic_data_string]]></type>"
-Wscript.StdOut.WriteLine "<datalist>"
-
 '------ Checks if an item exists on the main collection
 function isItemInArray(objeto,coleccion)
   for each id in coleccion.List
@@ -57,18 +49,25 @@ end function
 dim colObjSW : set colObjSW = new ObjectList
 strComputer = "."
 
-' Disable by arguments WMI queries - corrupted WMI host
-
-If (not WScript.Arguments(0) = "nowmi") Then
-  '------ Retrieve the WMI registers first
-  Set objWMIService = GetObject("winmgmts:" & "{impersonationLevel=impersonate}!\\" & strComputer & "\root\cimv2")
-  Set colSoftware = objWMIService.ExecQuery ("SELECT installstate,caption,installdate,Version,vendor FROM Win32_Product",,48)
+'------ Retrieve the WMI registers first
+Set objWMIService = GetObject("winmgmts:" & "{impersonationLevel=impersonate}!\\" & strComputer & "\root\cimv2")
+Set colSoftware = objWMIService.ExecQuery ("SELECT installstate,caption,installdate,Version,vendor FROM Win32_Product")
 
 
-  '------ Check all
-  '-- first) add all unique WMI (unique) entries to main collector
-  '-- second) add all unique REGISTRY items to main collector
+'------ Check all
+'-- first) add all unique WMI (unique) entries to main collector
+'-- second) add all unique REGISTRY items to main collector
 
+on error resume next
+flag = colSoftware.Count
+If (err.number <> 0) Then
+  flag = true
+Else
+  flag = false
+End If
+on error goto 0 
+
+If (NOT flag) Then
   for each objSoftware in colSoftware
     if ( objSoftware.installstate = 5 ) then
       if ( isItemInArray(objSoftware.caption, colObjSW) = false ) then
@@ -80,15 +79,10 @@ If (not WScript.Arguments(0) = "nowmi") Then
           .vendor = objSoftware.vendor
         End with
         ' Add to XML the verified ones
-        Wscript.StdOut.WriteLine "<data><![CDATA[" _
-          & objSoftware.caption & ";" _ 
-          & objSoftware.version _ 
-          & "]]></data>"
       end if
     end if
   next
 End If
-
 ' ------ Getting the REGISTRY
 Const HKLM = &H80000002 'HKEY_LOCAL_MACHINE 
 
@@ -133,14 +127,28 @@ For Each strSubkey In arrSubkeys
       .caption = appname
       .version = appversion
     End with
-    Wscript.StdOut.WriteLine "<data><![CDATA[" & appname & ";" & appversion & "]]></data>"
     end if
   end if
 next
 
+
+
+' Print the XML structure
+Wscript.StdOut.WriteLine "<inventory>"
+Wscript.StdOut.WriteLine "<inventory_module>"
+Wscript.StdOut.WriteLine "<name>Software</name>"
+Wscript.StdOut.WriteLine "<type><![CDATA[generic_data_string]]></type>"
+Wscript.StdOut.WriteLine "<datalist>"
+
+' Print software installed
+For Each i in colObjSW.List
+  Wscript.StdOut.WriteLine "<data><![CDATA[" _
+    & colObjSW.item(i).caption & ";" _ 
+    & colObjSW.item(i).version _ 
+    & "]]></data>"
+Next
 ' Closing the XML structure
 Wscript.StdOut.WriteLine "</datalist>"
 Wscript.StdOut.WriteLine "</inventory_module>"
 Wscript.StdOut.WriteLine "</inventory>"
-
 

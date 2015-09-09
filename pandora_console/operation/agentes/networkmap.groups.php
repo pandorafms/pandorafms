@@ -111,7 +111,7 @@ if ($result !== false) {
 		$image_url =  str_replace('\\',"/",str_replace($config['homedir'], "", $filename_img));
 	else
 		$image_url = str_replace(realpath(io_safe_output($config['homedir'])), "", realpath($filename_img));
-	html_print_image ($image_url . "?" . (microtime(true) * 10000), false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
+	html_print_image ($image_url, false, array ("alt" => __('Network map'), "usemap" => "#networkmap"));
 	echo "</div>";
 	require ($filename_map);
 }

@@ -1799,7 +1799,10 @@ function html_print_image ($src, $return = false, $options = false,
 	if (is_metaconsole()) {
 		if (!$relative) {
 			$working_dir = str_replace("\\", "/", getcwd()); // Windows compatibility
-			if (strstr($working_dir, 'enterprise/meta') === false) {
+			if ($no_in_meta){
+				$src = '../../' . $src;
+			}
+			else if (strstr($working_dir, 'enterprise/meta') === false) {
 				if ($src[0] !== '/') {
 					$src = '/' . $src;
 				}

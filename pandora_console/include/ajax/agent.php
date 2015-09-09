@@ -28,6 +28,9 @@ enterprise_include_once ('include/functions_metaconsole.php');
 $search_agents = (bool) get_parameter ('search_agents');
 $get_agents_group = (bool) get_parameter('get_agents_group', false);
 $force_local = (bool) get_parameter('force_local', false);
+if ( https_is_running() ) {
+	header('Content-type: application/json');
+}
 
 if ($get_agents_group) {
 	$id_group = (int)get_parameter('id_group', -1);

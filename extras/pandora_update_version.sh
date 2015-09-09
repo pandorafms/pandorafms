@@ -108,8 +108,8 @@ echo "Updating Pandora Console DB version..."
 sed -e "s/\s*[(]\s*'db_scheme_version'\s*\,.*/('db_scheme_version'\,'$VERSION'),/" "$CONSOLE_DB_FILE_ORACLE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE_ORACLE"
 sed -e "s/\s*[(]\s*'db_scheme_build'\s*\,.*/('db_scheme_build'\,'PD$BUILD'),/" "$CONSOLE_DB_FILE_ORACLE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE_ORACLE"
 
-sed -e "s/\s*[(]\s*'db_scheme_version'\s*\,.*/('db_scheme_version'\,'$VERSION'),/" "$CONSOLE_DB_FILE_ORACLE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE_ORACLE"
-sed -e "s/\s*[(]\s*'db_scheme_build'\s*\,.*/('db_scheme_build'\,'PD$BUILD'),/" "$CONSOLE_DB_FILE_ORACLE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE_ORACLE"
+sed -e "s/\s*[(]\s*'db_scheme_version'\s*\,.*/('db_scheme_version'\,'$VERSION');/" "$CONSOLE_DB_FILE_ORACLE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE_ORACLE"
+sed -e "s/\s*[(]\s*'db_scheme_build'\s*\,.*/('db_scheme_build'\,'PD$BUILD');/" "$CONSOLE_DB_FILE_ORACLE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE_ORACLE"
 
 echo "Updating Pandora Console version..."
 sed -e "s/\s*\$pandora_version\s*=.*/\$pandora_version = 'v$VERSION';/" "$CONSOLE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_FILE"

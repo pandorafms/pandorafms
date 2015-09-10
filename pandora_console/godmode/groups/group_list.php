@@ -83,6 +83,10 @@ if (is_ajax ()) {
 			return;
 		}
 		
+		if ( https_is_running() ) {
+			header('Content-type: application/json');
+		}
+		
 		if ($filter_agents_json != '') {
 			$filter['id_agente'] = json_decode(io_safe_output($filter_agents_json), true);
 		}

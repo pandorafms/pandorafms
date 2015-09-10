@@ -10,6 +10,7 @@ use lib '/usr/lib/perl5';
 
 use POSIX qw/strftime/;
 use Socket qw/inet_aton/;
+use NetAddr::IP;
 
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
@@ -1117,15 +1118,18 @@ if (defined($ROUTER) && $ROUTER ne '') {
 	}
 }
 else {
-	my $np = new PandoraFMS::NmapParser;
-	if ($#SUBNETS >= 0) {
-		$np->parsescan($CONF{'nmap'}, '-nsL', @SUBNETS);
+	foreach my $subnet (@SUBNETS) {
+	    my $net_addr = new NetAddr::IP ($subnet);
+		if (!defined($net_addr)) {
+			message("Invalid network: $subnet");
+			exit 1;
+		}
 
-		my @scanned_hosts = $np->get_ips();
-		foreach my $host (@scanned_hosts) {
+		my @hosts = map { (split('/', $_))[0] } $net_addr->hostenum;
+		foreach my $host (@hosts) {
 
-			# Skip network and broadcast addresses.
-			next if ($host =~ m/(\.0$)|(\.255$)/);
+			# Check if the device has already been visited.
+			next if (defined($VISITED_DEVICES{$host}));
 
 			# Check if the host is up.
 			next if (pandora_ping(\%CONF, $host, 1, 1) == 0);

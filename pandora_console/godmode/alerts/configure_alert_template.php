@@ -220,7 +220,16 @@ function update_template ($step) {
 		$wizard_level = (string) get_parameter ('wizard_level');
 		$priority = (int) get_parameter ('priority');
 		$id_group = get_parameter ("id_group");
-		$name_check = db_get_value ('name', 'talert_templates', 'name', $name);
+		
+		switch ($config['dbtype']) {
+			case "mysql":
+			case "postgresql":
+				$name_check = db_get_value ('name', 'talert_templates', 'name', $name);
+				break;
+			case "oracle":
+				$name_check = db_get_value ('name', 'talert_templates', 'to_char(name)', $name);
+				break;
+		}
 		
 		$values = array ('name' => $name,
 			'description' => $description,
@@ -371,7 +380,16 @@ if ($create_template) {
 	$priority = (int) get_parameter ('priority');
 	$wizard_level = (string) get_parameter ('wizard_level');
 	$id_group = get_parameter ("id_group");
-	$name_check = db_get_value ('name', 'talert_templates', 'name', $name);
+	switch ($config["dbtype"]) {
+		case "mysql": 
+		case "postgresql": 
+			$name_check = db_get_value ('name', 'talert_templates', 'name', $name);
+			break;
+		case "oracle":
+			$name_check = db_get_value ('name', 'talert_templates', 'to_char(name)', $name);
+			break;
+	}
+	
 	
 	$values = array ('description' => $description,
 		'value' => $value,

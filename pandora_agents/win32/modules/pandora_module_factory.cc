@@ -118,6 +118,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_QUIET ("module_quiet ")
 #define TOKEN_MODULE_FF_INTERVAL ("module_ff_interval ")
 #define TOKEN_MACRO ("module_macro")
+#define TOKEN_NATIVE ("module_native")
 	
 string
 parseLine (string line, string token) {
@@ -170,6 +171,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_unit, module_group, module_custom_id, module_str_warning, module_str_critical;
 	string                 module_critical_instructions, module_warning_instructions, module_unknown_instructions, module_tags;
 	string                 module_critical_inverse, module_warning_inverse, module_quiet, module_ff_interval;
+	string				   module_native;
 	string                 macro;
 	Pandora_Module        *module;
 	bool                   numeric;
@@ -247,6 +249,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_warning_inverse = "";
 	module_quiet         = "";
 	module_ff_interval   = "";
+	module_native		 = "";
 	macro   = "";
     
 	stringtok (tokens, definition, "\n");
@@ -489,6 +492,11 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_quiet == "") {
 			module_quiet = parseLine (line, TOKEN_QUIET);
 		}
+		
+		if (module_native == "") {
+			module_native = parseLine (line, TOKEN_NATIVE);
+		}
+		
 		if (module_ff_interval == "") {
 			module_ff_interval = parseLine (line, TOKEN_MODULE_FF_INTERVAL);
 		}
@@ -1047,6 +1055,13 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 						module_quiet.replace(pos_macro, macro_name.size(), macro_value);
 					}
 				}
+				
+				if (module_native != "") {
+					pos_macro = module_native.find(macro_name);
+					if (pos_macro != string::npos){
+						module_native.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
 
 				if (module_ff_interval != "") {
 					pos_macro = module_ff_interval.find(macro_name);
@@ -1061,7 +1076,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	/* Create module objects */
 	if (module_exec != "") {
 		module = new Pandora_Module_Exec (module_name,
-						  module_exec);
+						  module_exec, module_native);
 		if (module_timeout != "") {
 			module->setTimeout (atoi (module_timeout.c_str ()));
 		}

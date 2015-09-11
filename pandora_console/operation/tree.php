@@ -259,7 +259,7 @@ enterprise_hook('close_meta_frame');
 					
 					treeController.init({
 						recipient: $("div#tree-controller-recipient"),
-						detailRecipient: $.fixedBottomBox({ width: 400, height: 500 }),
+						detailRecipient: $.fixedBottomBox({ width: 400, height: window.innerHeight * 0.9 }),
 						page: parameters['page'],
 						emptyMessage: "<?php echo __('No data found'); ?>",
 						tree: data.tree,

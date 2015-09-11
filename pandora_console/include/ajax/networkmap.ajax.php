@@ -45,28 +45,28 @@ switch($action) {
 		$summary = '<br>';
 		
 		if (isset($stats['policies'])) {
-			$summary .= count($stats['policies']) . " x " .
+			$summary .= $stats['policies'] . " x " .
 				html_print_image($hack_metaconsole . 'images/policies.png',true) . ' '.
 				__('Policies') . "<br>";
 		}
 		
 		if (isset($stats['groups'])) {
 			// TODO: GET STATUS OF THE GROUPS AND ADD IT TO SUMMARY
-			$summary .= count($stats['groups']) . " x " .
+			$summary .= $stats['groups'] . " x " .
 				html_print_image($hack_metaconsole . 'images/group.png',true) . ' ' .
 				__('Groups') . "<br>";
 		}
 		
 		if (isset($stats['agents'])) {
 			// TODO: GET STATUS OF THE AGENTS AND ADD IT TO SUMMARY
-			$summary .= count($stats['agents']) .
+			$summary .= $stats['agents'] .
 				" x " . html_print_image($hack_metaconsole . 'images/bricks.png',true) .
 				' ' . __('Agents') . "<br>";
 		}
 		
 		if (isset($stats['modules'])) {
 			// TODO: GET STATUS OF THE MODULES AND ADD IT TO SUMMARY
-			$summary .= count($stats['modules']) .
+			$summary .= $stats['modules'] .
 				" x " . html_print_image($hack_metaconsole . 'images/brick.png',true) .
 				' ' . __('Modules') . "<br>";
 		}

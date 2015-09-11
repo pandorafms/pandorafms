@@ -1332,7 +1332,24 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 	global $hack_networkmap_mobile;
 	global $config;
 	
-	$stats_json = base64_encode(json_encode($stats));
+	//$stats_json = base64_encode(json_encode($stats));
+	$summary = array();
+	if (isset($stats['policies'])) {
+			$summary['policies'] = count($stats['policies']);
+	}
+	if (isset($stats['groups'])) {
+		// TODO: GET STATUS OF THE GROUPS AND ADD IT TO SUMMARY
+		$summary['groups'] = count($stats['groups']);
+	}
+	if (isset($stats['agents'])) {
+		// TODO: GET STATUS OF THE AGENTS AND ADD IT TO SUMMARY
+		$summary['agents'] = count($stats['agents']);
+	}
+	if (isset($stats['modules'])) {
+		// TODO: GET STATUS OF THE MODULES AND ADD IT TO SUMMARY
+		$summary['modules'] = count($stats['modules']) ;
+	}
+	$stats_json = base64_encode(json_encode($summary));
 	
 	$img_src = "images/networkmap/pandora_node.png";
 	if (defined('METACONSOLE')) {
@@ -1343,12 +1360,12 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 			'stats='.$stats_json . '&' .
 			'metaconsole=1';
 		$url = '';
-		$color = "#052938";
+		$color = '#052938';
 	}
 	else {
 		$url_tooltip = 'ajax.php?page=include/ajax/networkmap.ajax&action=get_networkmap_summary&stats='.$stats_json.'", URL="index.php?sec=estado&sec2=operation/agentes/group_view';
 		$url = 'index.php?sec=estado&sec2=operation/agentes/group_view';
-		$color = "#373737";
+		$color = '#373737';
 	}
 	
 	if ($hack_networkmap_mobile) {
@@ -1357,10 +1374,12 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 			'</TD></TR>';
 	}
 	else {
-		$img = '<TR><TD>' . html_print_image("images/networkmap/pandora_node.png", true, false, false, true) . '</TD></TR>';
+		$image = html_print_image("images/networkmap/pandora_node.png", true, false, false, true);
+		$image = str_replace('"',"'",$image);
+		$img = '<TR><TD>' . $image . '</TD></TR>';
 	}
-	$name = '<TR><TD BGCOLOR="#FFFFFF">' . $name . '</TD></TR>';
-	$label = '<TABLE BORDER="0">' . $img.$name . '</TABLE>';
+	$name = "<TR><TD BGCOLOR='#FFFFFF'>" . $name . '</TD></TR>';
+	$label = "<TABLE BORDER='0'>" . $img.$name . '</TABLE>';
 	if ($simple == 1) {
 		$label = '';
 	}
@@ -1385,7 +1404,7 @@ function networkmap_open_group ($id) {
 	$name = groups_get_name ($id);
 	
 	$group = 'subgraph cluster_' . $id . 
-		' { style=filled; color=darkolivegreen3; label=<<TABLE BORDER="0">
+		' { style=filled; color=darkolivegreen3; label=<<TABLE BORDER=\'0\'>
 		<TR><TD>' . html_print_image($img, true) . '</TD><TD>'.$name.'</TD></TR>
 		</TABLE>>; tooltip="'.$name.'";
 		URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id='

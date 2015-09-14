@@ -70,21 +70,42 @@ if (is_ajax ()) {
 		
 		$fields_rows = array();
 		for ($i = 1; $i <= 10; $i++) {
-			
+
+			if (($i == 5) && ($command['id'] == 3)){
+				continue;
+			}
+
 			$field_description = $fields_descriptions[$i - 1];
 			$field_value = $fields_values[$i - 1];
 			
 			if (!empty($field_description)) {
-				$fdesc = $field_description .
-					' <br><span style="font-size:xx-small; font-weight:normal;">' . sprintf(__('Field %s'), $i) . '</span>';
+				//If the value is 5,  this because severity in snmp alerts is not permit to show
+				if (($i > 5) && ($command['id'] == 3)){
+					$fdesc = $field_description .
+						' <br><span style="font-size:xx-small; font-weight:normal;">' . sprintf(__('Field %s'), $i - 1) . '</span>';
+				}
+				else{
+					$fdesc = $field_description .
+						' <br><span style="font-size:xx-small; font-weight:normal;">' . sprintf(__('Field %s'), $i) . '</span>';
+				}
 			}
 			else {
 				// If the macro hasn't description and doesnt appear in command, set with empty description to dont show it
-				if (substr_count($command['command'], "_field" . $i . "_") > 0) {
-					$fdesc = sprintf(__('Field %s'), $i);
+				if (($i > 5) && ($command['id'] == 3)){
+					if (substr_count($command['command'], "_field" . $i - 1 . "_") > 0) {
+						$fdesc = sprintf(__('Field %s'), $i - 1);
+					}
+					else {
+						$fdesc = '';
+					}
 				}
-				else {
-					$fdesc = '';
+				else{
+					if (substr_count($command['command'], "_field" . $i . "_") > 0) {
+						$fdesc = sprintf(__('Field %s'), $i);
+					}
+					else {
+						$fdesc = '';
+					}
 				}
 			}
 			
@@ -170,7 +191,14 @@ if (is_ajax ()) {
 				$fields_rows[$i] .=	'</tr>';
 			}
 		}
-		
+
+		//If command is PandoraFMS event, field 5 must be empty because "severity" must be set by the alert
+		if ($command['id'] == 3){
+			$fields_rows[5] = '';
+		}
+
+		html_debug_print($fields_rows, true);
+
 		$command['fields_rows'] = $fields_rows;
 		
 		echo json_encode ($command);

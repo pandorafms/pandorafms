@@ -558,7 +558,7 @@ function reporting_html_event_report_group($table, $item) {
 			$table1 = new stdClass();
 			$table1->width = '99%';
 			$table1->head = array ();
-			$table1->head[0] = __('Events by criticity');
+			$table1->head[0] = __('Events by Severity');
 			$table1->data[0][0] = $item['chart']['by_criticity'];
 			
 			$table->colspan['chart_by_criticity']['cell'] = 3;
@@ -1141,7 +1141,7 @@ function reporting_html_event_report_agent($table, $item) {
 		$table1 = new stdClass();
 		$table1->width = '99%';
 		$table1->head = array ();
-		$table1->head[0] = __('Events by criticity');
+		$table1->head[0] = __('Events by severity');
 		$table1->data[0][0] = $item['chart']['by_criticity'];
 		
 		$table->colspan['chart_by_criticity']['cell'] = 3;
@@ -2669,9 +2669,9 @@ function reporting_get_events ($data, $links = false) {
 	}
 	if (!defined('METACONSOLE')) {
 		$event_view = '<fieldset class="databox tactical_set">
-					<legend>' . 
-						__('Events by criticity') . 
-					'</legend>' . 
+					<legend>' .
+						__('Events by severity') .
+					'</legend>' .
 					html_print_table($table_events, true) . '</fieldset>';
 	}
 	else {

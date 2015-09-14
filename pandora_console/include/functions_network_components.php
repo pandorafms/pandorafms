@@ -341,9 +341,18 @@ function network_components_create_network_component ($name, $type, $id_group, $
 	
 	switch ($config['dbtype']) {
 		case "oracle":
-			if (empty($values['tcp_rcv']))
-				$values['tcp_rcv'] = " ";
-			return;
+			switch ($type) {
+				case 8:
+				case 9:
+				case 10:
+				case 11:
+				case 12: 
+					if (empty($values['tcp_rcv']))
+						$values['tcp_rcv'] = " ";
+					break;
+				default:
+					break;
+			}
 			break;
 	}
 	

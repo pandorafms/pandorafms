@@ -13,8 +13,10 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-// Load global vars
+// Real start
+session_start ();
 
+// Load global vars
 if ((! file_exists("../../include/config.php")) || (! is_readable("../../include/config.php"))) {
 	exit;
 }
@@ -26,13 +28,9 @@ require_once ('../../include/auth/mysql.php');
 
 global $config;
 
-// Real start
-session_start ();
-
 // Check user
 check_login ();
 $config["id_user"] = $_SESSION["id_usuario"];
-
 
 if (! check_acl ($config['id_user'], 0, "ER")) {
 	db_pandora_audit("ACL Violation","Trying to access event viewer");

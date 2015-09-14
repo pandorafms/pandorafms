@@ -34,9 +34,17 @@ namespace Pandora_Modules {
 	class Pandora_Module_Exec : public Pandora_Module {
 	private:
 		string module_exec;        
+		UINT native_encoding;
+		string output_encoding;
+		UINT getNumberEncoding(string encoding);
+		void getOutputEncoding();
+		void changeInputEncoding();
+		void changeOutputEncoding(string * string_change);
 	public:
 		unsigned char proc;
-		Pandora_Module_Exec    (string name, string exec);
+		Pandora_Module_Exec	   (string name, string exec);
+		//overloaded constructor for module_exec
+		Pandora_Module_Exec    (string name, string exec, string native); 
 		
 		void   run       ();
 	};

@@ -34,6 +34,9 @@ $list_modules = (bool) get_parameter('list_modules', 0);
 
 
 if ($get_plugin_macros) {
+	if ( https_is_running() ) {
+		header('Content-type: application/json');
+	}
 	$id_plugin = get_parameter('id_plugin', 0);
 	
 	$plugin_macros = db_get_value('macros', 'tplugin', 'id',
@@ -49,6 +52,9 @@ if ($get_plugin_macros) {
 
 
 if ($search_modules) {
+	if ( https_is_running() ) {
+		header('Content-type: application/json');
+	}
 	$id_agents = json_decode(io_safe_output(get_parameter('id_agents')));
 	$filter =  '%' . get_parameter('q', '') . '%';
 	$other_filter = json_decode(io_safe_output(get_parameter('other_filter')), true);

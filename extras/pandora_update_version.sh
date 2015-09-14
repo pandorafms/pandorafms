@@ -41,6 +41,7 @@ SERVER_DB_FILE="$CODEHOME/pandora_server/util/pandora_db.pl"
 SERVER_CLI_FILE="$CODEHOME/pandora_server/util/pandora_manage.pl"
 SERVER_CONF_FILE="$CODEHOME/pandora_server/conf/pandora_server.conf.new"
 CONSOLE_DB_FILE="$CODEHOME/pandora_console/pandoradb_data.sql"
+CONSOLE_DB_FILE_ORACLE="$CODEHOME/pandora_console/pandoradb.data.oracle.sql"
 CONSOLE_FILE="$CODEHOME/pandora_console/include/config_process.php"
 CONSOLE_INSTALL_FILE="$CODEHOME/pandora_console/install.php"
 AGENT_BASE_DIR="$CODEHOME/pandora_agents/"
@@ -65,7 +66,7 @@ function update_spec_version {
 # Update version in debian dirs
 function update_deb_version {
 	DEBIAN_DIR=$1
-	
+
 	if [ $NB == 1 ]; then
 		LOCAL_VERSION="$VERSION-$BUILD"
 	else
@@ -104,8 +105,12 @@ sed -e "s/\s*use constant SATELLITE_BUILD.*/use constant SATELLITE_BUILD \=\> \"
 
 # Pandora Console
 echo "Updating Pandora Console DB version..."
-sed -e "s/\s*[(]\s*'db_scheme_version'\s*\,.*/('db_scheme_version'\,'$VERSION'),/" "$CONSOLE_DB_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE"
-sed -e "s/\s*[(]\s*'db_scheme_build'\s*\,.*/('db_scheme_build'\,'PD$BUILD'),/" "$CONSOLE_DB_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE"
+sed -e "s/\s*[(]\s*'db_scheme_version'\s*\,.*/('db_scheme_version'\,'$VERSION'),/" "$CONSOLE_DB_FILE_ORACLE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE_ORACLE"
+sed -e "s/\s*[(]\s*'db_scheme_build'\s*\,.*/('db_scheme_build'\,'PD$BUILD'),/" "$CONSOLE_DB_FILE_ORACLE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE_ORACLE"
+
+sed -e "s/\s*[(]\s*'db_scheme_version'\s*\,.*/('db_scheme_version'\,'$VERSION');/" "$CONSOLE_DB_FILE_ORACLE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE_ORACLE"
+sed -e "s/\s*[(]\s*'db_scheme_build'\s*\,.*/('db_scheme_build'\,'PD$BUILD');/" "$CONSOLE_DB_FILE_ORACLE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_DB_FILE_ORACLE"
+
 echo "Updating Pandora Console version..."
 sed -e "s/\s*\$pandora_version\s*=.*/\$pandora_version = 'v$VERSION';/" "$CONSOLE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_FILE"
 sed -e "s/\s*\$build_version\s*=.*/\$build_version = 'PC$BUILD';/" "$CONSOLE_FILE" > "$TEMP_FILE" && mv "$TEMP_FILE" "$CONSOLE_FILE"
@@ -137,4 +142,3 @@ for conf in `find $AGENT_BASE_DIR -name pandora_agent.conf`; do
 done
 
 rm -f "$TEMP_FILE"
-

@@ -716,6 +716,16 @@ input.cancel, input.default, input.filter, input.pdf {
 
 }
 
+input:disabled {
+	background-color: #DDD !important;
+}
+textarea:disabled {
+	background-color: #DDD !important;
+}
+select:disabled {
+	background-color: #DDD !important;
+}
+
 input.next {
 	background-image: url(../../images/input_go.png) !important;
 }

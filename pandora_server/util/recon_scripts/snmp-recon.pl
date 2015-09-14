@@ -10,6 +10,7 @@ use lib '/usr/lib/perl5';
 
 use POSIX qw/strftime/;
 use Socket qw/inet_aton/;
+use NetAddr::IP;
 
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
@@ -1102,14 +1103,6 @@ $DBH = db_connect ('mysql', $CONF{'dbname'}, $CONF{'dbhost'}, $CONF{'dbport'}, $
 # 0%
 update_recon_task($DBH, $TASK_ID, 1);
 
-# Populate ARP caches.
-message("Populating ARP caches...");
-my $nmap_args  = '-nsP --send-ip --max-retries '.$CONF{'icmp_checks'}.' --host-timeout '.$CONF{'networktimeout'}.'s -T'.$CONF{'recon_timing_template'};
-my $np = new PandoraFMS::NmapParser;
-if ($#SUBNETS >= 0) {
-	$np->parsescan($CONF{'nmap'}, $nmap_args, @SUBNETS);
-}
-
 # Find routers.
 message("[1/6] Searching for routers...");
 if (defined($ROUTER) && $ROUTER ne '') {
@@ -1125,14 +1118,24 @@ if (defined($ROUTER) && $ROUTER ne '') {
 	}
 }
 else {
-	my @scanned_hosts = $np->all_hosts();
-	foreach my $host (@scanned_hosts) {
-		next unless defined($host->addr()) and defined($host->status()) and ($host->status() eq 'up');
+	foreach my $subnet (@SUBNETS) {
+	    my $net_addr = new NetAddr::IP ($subnet);
+		if (!defined($net_addr)) {
+			message("Invalid network: $subnet");
+			exit 1;
+		}
 
-		# Make sure the host is up (nmap gives false positives!).
-		next if (pandora_ping(\%CONF, $host->addr(), 1, 1) == 0);
+		my @hosts = map { (split('/', $_))[0] } $net_addr->hostenum;
+		foreach my $host (@hosts) {
 
-		arp_cache_discovery($host->addr());
+			# Check if the device has already been visited.
+			next if (defined($VISITED_DEVICES{$host}));
+
+			# Check if the host is up.
+			next if (pandora_ping(\%CONF, $host, 1, 1) == 0);
+	
+			arp_cache_discovery($host);
+		}
 	}
 }
 update_recon_task($DBH, $TASK_ID, 30);

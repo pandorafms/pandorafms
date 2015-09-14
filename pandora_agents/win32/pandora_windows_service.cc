@@ -1028,7 +1028,7 @@ Pandora_Windows_Service::recvTentacleDataFile (string host,
 	ZeroMemory (&pi, sizeof (pi));
 	if (CreateProcess (NULL , (CHAR *)tentacle_cmd.c_str (), NULL, NULL, FALSE,
 			   CREATE_NO_WINDOW, NULL, NULL, &si, &pi) == 0) {
-		return;
+		throw Pandora_Exception ();
 	}
 
 	/* close thread handle, because it won't be used */
@@ -1045,7 +1045,7 @@ Pandora_Windows_Service::recvTentacleDataFile (string host,
 		TerminateProcess(pi.hProcess, STILL_ACTIVE);
 		CloseHandle (pi.hProcess);
 		pandoraLog ("Unable to receive file %s (tentacle timeout)", filename.c_str ());
-		return;
+		throw Pandora_Exception ();
 	}
 
 	/* Get the return code of the tentacle client*/
@@ -1053,7 +1053,7 @@ Pandora_Windows_Service::recvTentacleDataFile (string host,
 	if (rc != 0) {
 		CloseHandle (pi.hProcess);
 		pandoraLog ("Unable to receive file %s", filename.c_str ());
-		return;
+		throw Pandora_Exception ();
 	}
 
 	CloseHandle (pi.hProcess);

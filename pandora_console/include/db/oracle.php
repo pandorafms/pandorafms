@@ -256,7 +256,7 @@ function oracle_db_process_sql($sql, $rettype = "affected_rows", $dbconnection =
 		if ($type[0] == 'INSERT') {
 			oci_bind_by_name($query, ":table_name", $table_name, 32);
 			oci_bind_by_name($query, ":sql", $sql, -1);
-			oci_bind_by_name($query, ":out", $id, 32);
+			oci_bind_by_name($query, ":out", $id, 40);
 		}
 		
 		if (!$autocommit) {
@@ -278,6 +278,7 @@ function oracle_db_process_sql($sql, $rettype = "affected_rows", $dbconnection =
 			$error = sprintf ('%s (\'%s\') in <strong>%s</strong> on line %d',
 				htmlentities($e['message'], ENT_QUOTES), $sql, $backtrace[0]['file'], $backtrace[0]['line']);
 			db_add_database_debug_trace ($sql, htmlentities($e['message'], ENT_QUOTES));
+			
 			set_error_handler ('db_sql_error_handler');
 			trigger_error ($error);
 			restore_error_handler ();
@@ -290,7 +291,7 @@ function oracle_db_process_sql($sql, $rettype = "affected_rows", $dbconnection =
 			
 			if ($status !== 'SELECT') { //The query NOT IS a select
 				if ($rettype == "insert_id") {
-					$result = $result;
+					$result = $id;
 				}
 				elseif ($rettype == "info") {
 					//TODO: return debug information of the query $result = pg_result_status($result, PGSQL_STATUS_STRING);

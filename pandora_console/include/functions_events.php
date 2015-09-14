@@ -40,7 +40,7 @@ function events_get_all_fields() {
 	$columns['event_type'] = __('Event type');
 	$columns['id_agentmodule'] = __('Agent module');
 	$columns['id_alert_am'] = __('Alert');
-	$columns['criticity'] = __('Criticity');
+	$columns['criticity'] = __('Severity');
 	$columns['user_comment'] = __('Comment');
 	$columns['tags'] = __('Tags');
 	$columns['source'] = __('Source');

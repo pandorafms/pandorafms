@@ -4625,7 +4625,7 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 	$table->head[1] = __('Name');
 	$table->head[2] = __('Type');
 	$table->head[3] = __('Agent');
-	$table->head[4] = __('Criticity');
+	$table->head[4] = __('Severity');
 	$table->head[5] = __('Val. by');
 	$table->head[6] = __('Timestamp');
 	

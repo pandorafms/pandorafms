@@ -466,7 +466,7 @@ function reporting_html_event_report_group($table, $item) {
 		$table1->head[1] = __('Name');
 		$table1->head[2] = __('Type');
 		$table1->head[3] = __('Agent');
-		$table1->head[4] = __('Criticity');
+		$table1->head[4] = __('Severity');
 		$table1->head[5] = __('Val. by');
 		$table1->head[6] = __('Timestamp');
 		
@@ -596,7 +596,7 @@ function reporting_html_event_report_module($table, $item) {
 		$table1->head[0] = __('Status');
 		$table1->head[1] = __('Event name');
 		$table1->head[2] = __('Event type');
-		$table1->head[3] = __('Criticity');
+		$table1->head[3] = __('Severity');
 		$table1->head[4] = __('Count');
 		$table1->head[5] = __('Timestamp');
 		$table1->style[0] = 'text-align: center;';
@@ -1067,7 +1067,7 @@ function reporting_html_event_report_agent($table, $item) {
 	$table1->head[1] = __('Count');
 	$table1->head[2] = __('Name');
 	$table1->head[3] = __('Type');
-	$table1->head[4] = __('Criticity');
+	$table1->head[4] = __('Severity');
 	$table1->head[5] = __('Val. by');
 	$table1->head[6] = __('Timestamp');
 	

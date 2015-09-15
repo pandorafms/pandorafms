@@ -476,7 +476,7 @@ $table->data[1][1] = html_print_select_groups(false, "AW", true, 'id_group', $id
 $table->data[2][0] = __('Description');
 $table->data[2][1] = html_print_textarea ('description', 3, 35, $description, '', true);
 
-$table->data[3][0] = __('Type').ui_print_help_tip(__("Quiet: Disable modules that we indicate below.").'<br>'.
+$table->data[3][0] = __('Type').ui_print_help_tip(__("Quiet: Modules will not generate events or fire alerts.").'<br>'.
 	__("Disable Agents: Disables the selected agents.").'<br>'.
 	__("Disable Alerts: Disable alerts for the selected agents."), true);
 $table->data[3][1] = html_print_select(array('quiet' => __('Quiet'),

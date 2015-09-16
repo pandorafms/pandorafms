@@ -37,11 +37,9 @@ namespace Pandora_Modules {
 		UINT native_encoding;
 		string output_encoding;
 		UINT getNumberEncoding(string encoding);
-		UINT config_encoding;
 		void getOutputEncoding();
 		void changeInputEncoding();
 		void changeOutputEncoding(string * string_change);
-		void getConfigFileEncoding();
 	public:
 		unsigned char proc;
 		Pandora_Module_Exec	   (string name, string exec);

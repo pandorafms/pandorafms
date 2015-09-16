@@ -42,7 +42,6 @@ Pandora_Module_Exec::Pandora_Module_Exec (string name, string exec)
 	this->proc = 0;
 	this->setKind (module_exec_str);
 	this->native_encoding = -1;
-	this->config_encoding = -1;
 }
 
 /** 
@@ -80,10 +79,7 @@ Pandora_Module_Exec::Pandora_Module_Exec (string name, string exec, string nativ
 		
 	} else {
 		this->output_encoding = "";
-		this->native_encoding = -1;
 	}
-	
-	getConfigFileEncoding();
 }
 
 void
@@ -151,11 +147,9 @@ Pandora_Module_Exec::run () {
 	   to find the GNU W32 tools */
 	working_dir = getPandoraInstallDir () + "util\\";
 	
-	/*change input encoding if config_file_encoding token is present*/
-	if (this->config_encoding != -1){
-		changeInputEncoding();
-	}
-	
+	/*allways change input encoding from UTF-8 to ANSI*/
+	changeInputEncoding();
+		
 	/* Create the child process. */
 	if (! CreateProcess (NULL, (CHAR *) this->module_exec.c_str (), NULL,
 			     NULL, TRUE, CREATE_SUSPENDED | CREATE_NO_WINDOW, NULL,
@@ -439,47 +433,12 @@ void Pandora_Module_Exec::getOutputEncoding(){
 	file.close();
 }
 
-void Pandora_Module_Exec::getConfigFileEncoding(){
-	
-	string config_encoding_string;
-	config_encoding_string = "";
-	string       buffer, filename;
-	int pos;
-	filename = Pandora::getPandoraInstallDir ();
-	filename += "pandora_agent.conf";
-
-	ifstream file;
-	file.open (filename.c_str ());
-	bool token_found = false;
-	
-		while (!file.eof () && !token_found) {
-		/* Set the value from each line */
-			getline (file, buffer);
-		
-		/* Ignore blank or commented lines */
-			if (buffer[0] != '#' && buffer[0] != '\n' && buffer[0] != '\0') {
-				/*Check if is the encoding line*/
-				pos = buffer.find("config_file_encoding");
-				if (pos != string::npos){
-					config_encoding_string = buffer.substr (pos+21);
-					token_found = true;
-				}
-			}
-		}
-	if (token_found) {
-		this->config_encoding = getNumberEncoding (config_encoding_string);
-	} else {
-		this->config_encoding = -1;
-	}
-	file.close();
-}
-
 void Pandora_Module_Exec::changeInputEncoding(){
 	
-	int size_wchar = MultiByteToWideChar( this->config_encoding , 0 , this->module_exec.c_str () , -1, NULL , 0 );
+	int size_wchar = MultiByteToWideChar( CP_UTF8 , 0 , this->module_exec.c_str () , -1, NULL , 0 );
 	wchar_t* wstr = new wchar_t[size_wchar];
 	if (size_wchar != 0){
-		MultiByteToWideChar( this->config_encoding , 0 , this->module_exec.c_str () , -1, wstr , size_wchar );
+		MultiByteToWideChar( CP_UTF8 , 0 , this->module_exec.c_str () , -1, wstr , size_wchar );
 		char buf[BUFSIZE + 1];
 		wcstombs(buf, wstr, size_wchar);
 		buf[size_wchar] = '\0';

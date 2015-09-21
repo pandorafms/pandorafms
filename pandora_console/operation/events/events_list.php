@@ -36,6 +36,9 @@ if (! check_acl ($config["id_user"], 0, "ER")) {
 	return;
 }
 
+$events_EW = check_acl ($config["id_user"], 0, "EW");
+$events_EM = check_acl ($config["id_user"], 0, "EM");
+
 if (is_ajax()) {
 	$get_filter_values = get_parameter('get_filter_values', 0);
 	$save_event_filter = get_parameter('save_event_filter', 0);
@@ -185,7 +188,7 @@ html_print_div(array('hidden' => true,
 html_print_div(array('hidden' => true,
 	'id' => 'load_filter_text', 'content' => __('Load filter')));
 
-if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0, "EM") ) {
+if ($events_EW || $events_EM) {
 	// Save filter div for dialog
 	echo '<div id="save_filter_layer" style="display: none">';
 	$table->id = 'save_filter_form';
@@ -498,7 +501,7 @@ $table->rowclass[] = '';
 
 $data = array();
 $data[0] = '<div style="width:100%; text-align:left">';
-if (check_acl ($config["id_user"], 0, "EW")) {
+if ($events_EW) {
 	$data[0] .= '<a href="javascript:" onclick="show_save_filter_dialog();">' . html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
 }
 $data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a><br>';

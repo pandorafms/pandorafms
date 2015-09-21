@@ -13,7 +13,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-$groups = users_get_groups($id_user, 'ER');
+//$groups = users_get_groups($id_user, 'ER');
+$user_groups = users_get_groups($config["id_user"], 'ER');
+$user_group_all = false;
+//If user is in group 'All'
+if (in_array(0, $user_groups)){
+	$user_group_all = true;
+}
 
 $propagate = db_get_value('propagate','tgrupo','id_grupo',$id_group);
 
@@ -35,18 +41,20 @@ if ($id_group > 0) {
 	$childrens_ids = array_keys($groups);
 }
 
-//Group selection
-if ($id_group > 0 && in_array ($id_group, array_keys ($groups))) {
-	if ($propagate) {
-		$sql_post = " AND id_grupo IN (" . implode(',', $childrens_ids) . ")";
+if (!$user_group_all) {
+	//Group selection
+	if ($id_group > 0 && in_array ($id_group, array_keys ($groups))) {
+		if ($propagate) {
+			$sql_post = " AND id_grupo IN (" . implode(',', $childrens_ids) . ")";
+		}
+		else {
+			//If a group is selected and it's in the groups allowed
+			$sql_post = " AND id_grupo = $id_group";
+		}
 	}
 	else {
-		//If a group is selected and it's in the groups allowed
-		$sql_post = " AND id_grupo = $id_group";
+		$sql_post = " AND id_grupo IN (" . implode (",", array_keys ($groups)) . ")";
 	}
-}
-else {
-	$sql_post = " AND id_grupo IN (" . implode (",", array_keys ($groups)) . ")";
 }
 
 // Skip system messages if user is not PM

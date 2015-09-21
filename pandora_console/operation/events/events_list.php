@@ -571,11 +571,12 @@ if (!empty($result)) {
 	//~ Checking the event tags exactly. The event query filters approximated tags to keep events
 	//~ with several tags
 	$acltags = tags_get_user_module_and_tags ($config['id_user'],'ER', true);
-
-	foreach ($result as $key=>$event_data) {
-		$has_tags = events_checks_event_tags($event_data, $acltags);
-		if (!$has_tags) {
-			unset($result[$key]);
+	if ($acltags){
+		foreach ($result as $key=>$event_data) {
+			$has_tags = events_checks_event_tags($event_data, $acltags);
+			if (!$has_tags) {
+				unset($result[$key]);
+			}
 		}
 	}
 }

@@ -520,7 +520,7 @@ if ($config["agentaccess"] && $access_agent > 0) {
 			'</td></tr>' . 
 	'</table>';
 }
-$table->style[0] = 'width:40%;';
+$table->style[0] = 'width:40%; vertical-align:top;';
 $data[1] = html_print_table($table_contact, true);
 $data[1] .= empty($table_data->data) ?
 	'' :

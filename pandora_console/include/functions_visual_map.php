@@ -1708,9 +1708,18 @@ function visual_map_get_status_element($layoutData) {
 	return $status;
 }
 
-function visual_map_print_user_lines($mode = "read", $layout_data, $proportion = null) {
-	
-	if (!empty($proportion)) {
+function visual_map_print_user_lines($layout_data, $proportion = null) {
+	if (empty($proportion)) {
+		$line = array();
+		$line["id"] = $layout_data['id'];
+		$line["start_x"] = $layout_data['pos_x'];
+		$line["start_y"] = $layout_data['pos_y'];
+		$line["end_x"] = $layout_data['width'];
+		$line["end_y"] = $layout_data['height'];
+		$line["line_width"] = $layout_data['border_width'];
+		$line["line_color"] = $layout_data['border_color'];
+	}
+	else {
 		$proportion_width = $proportion['proportion_width'];
 		$proportion_height = $proportion['proportion_height'];
 		
@@ -1718,17 +1727,17 @@ function visual_map_print_user_lines($mode = "read", $layout_data, $proportion =
 		if ($proportion_width > $proportion_height) {
 			$proportion_line = $proportion_width;
 		}
+
+		$line = array();
+		$line["id"] = $layout_data['id'];
+		$line["start_x"] = $layout_data['pos_x'] * $proportion_width;
+		$line["start_y"] = $layout_data['pos_y'] * $proportion_height;
+		$line["end_x"] = $layout_data['width'] * $proportion_width;
+		$line["end_y"] = $layout_data['height'] * $proportion_height;
+		$line["line_width"] = $layout_data['border_width'] * $proportion_line;
+		$line["line_color"] = $layout_data['border_color'];
 	}
-	
-	$line = array();
-	$line["id"] = $layout_data['id'];
-	$line["start_x"] = $layout_data['pos_x'] * $proportion_width;
-	$line["start_y"] = $layout_data['pos_y'] * $proportion_height;
-	$line["end_x"] = $layout_data['width'] * $proportion_width;
-	$line["end_y"] = $layout_data['height'] * $proportion_height;
-	$line["line_width"] = $layout_data['border_width'] * $proportion_line;
-	$line["line_color"] = $layout_data['border_color'];
-	
+
 	echo '<script type="text/javascript">';
 	echo '$(document).ready (function() {
 		user_lines.push(' . json_encode($line) . ');
@@ -1889,8 +1898,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		
 		switch ($layout_data['type']) {
 			case LINE_ITEM:
-				visual_map_print_user_lines("read", $layout_data,
-					$proportion);
+				visual_map_print_user_lines($layout_data, $proportion);
 				break;
 			default:
 				visual_map_print_item("read", $layout_data,

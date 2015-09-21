@@ -104,7 +104,7 @@ foreach ($layoutDatas as $layoutData) {
 	switch ($layoutData['type']) {
 		case LINE_ITEM:
 			visual_map_print_user_line_handles($layoutData);
-			visual_map_print_user_lines("write", $layoutData);
+			visual_map_print_user_lines($layoutData);
 			break;
 		default:
 			visual_map_print_item("write", $layoutData);

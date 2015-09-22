@@ -15195,8 +15195,8 @@ msgstr ""
 #: ../../enterprise/load_enterprise.php:550
 msgid ""
 "Go to <a target=\"_blank\" "
-"href=\"http://artica.es/pandoraupdate5/request/index.php\">http://artica.es/p"
-"andoraupdate5/request/index.php</a>"
+"href=\"http://artica.es/pandoraupdate6/request/index.php\">http://artica.es/p"
+"andoraupdate6/request/index.php</a>"
 msgstr ""
 
 #: ../../enterprise/load_enterprise.php:361

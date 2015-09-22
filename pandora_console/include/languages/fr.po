@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-07-01 11:30+0200\n"
-"PO-Revision-Date: 2015-08-20 11:54+0000\n"
+"PO-Revision-Date: 2015-08-24 13:55+0000\n"
 "Last-Translator: ana <ana.ferreiro@artica.es>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-08-20 13:49+0000\n"
-"X-Generator: Launchpad (build 17690)\n"
+"X-Launchpad-Export-Date: 2015-09-22 13:49+0000\n"
+"X-Generator: Launchpad (build 17749)\n"
 
 #: ../../enterprise_bk/mobile/include/functions_web.php:15
 #: ../../enterprise_bk/meta/general/main_header.php:125
@@ -5172,17 +5172,17 @@ msgstr "Retirer les services de la liste"
 #: ../../enterprise_bk/godmode/reporting/visual_console_builder.wizard_services.php:199
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:199
 msgid "Icon preview"
-msgstr ""
+msgstr "Icône aperçu"
 
 #: ../../enterprise_bk/godmode/reporting/visual_console_builder.wizard_services.php:256
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:256
 msgid "Are you sure? All the visual map services will be recreated"
-msgstr ""
+msgstr "Êtes-vous sûr? Tous les services du plan visuelle seront recréés"
 
 #: ../../enterprise_bk/godmode/reporting/visual_console_builder.wizard_services.php:275
 #: ../../enterprise/godmode/reporting/visual_console_builder.wizard_services.php:275
 msgid "The services list is empty"
-msgstr ""
+msgstr "La liste des services est vide"
 
 #: ../../enterprise_bk/godmode/reporting/graph_template_item_editor.php:147
 #: ../../enterprise_bk/godmode/reporting/graph_template_item_editor.php:205
@@ -5895,7 +5895,7 @@ msgstr "seulement la moyenne"
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1139
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1557
 msgid "Show address instead module name."
-msgstr ""
+msgstr "Afficher l'adresse du  module au lieu du  nom."
 
 #: ../../enterprise_bk/godmode/reporting/reporting_builder.template_item.php:1545
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1160
@@ -6412,7 +6412,7 @@ msgstr "Dupliquer"
 #: ../../enterprise/godmode/massive/massive_operations.php:27
 #: ../../enterprise/godmode/menu.php:31
 msgid "Satellite operations"
-msgstr ""
+msgstr "Exploitation du satellite"
 
 #: ../../enterprise_bk/godmode/massive/massive_operations.php:47
 #: ../../enterprise_bk/godmode/menu.php:24
@@ -6438,11 +6438,11 @@ msgstr "Alertes Massive suppression de la politique"
 
 #: ../../enterprise_bk/godmode/massive/massive_operations.php:80
 msgid "Masive tags module policy edition"
-msgstr ""
+msgstr "Édition massive etiquette"
 
 #: ../../enterprise_bk/godmode/massive/massive_operations.php:81
 msgid "Masive modules policy tags edition"
-msgstr ""
+msgstr "Édition module masive des balises de polítique"
 
 #: ../../enterprise_bk/godmode/massive/massive_operations.php:89
 msgid "Massive alert SNMP deletion"
@@ -6454,21 +6454,21 @@ msgstr "Massive alerte SNMP édition"
 
 #: ../../enterprise_bk/godmode/massive/massive_operations.php:98
 msgid "Massive Satellite modules edition"
-msgstr ""
+msgstr "Édition module massive satellite"
 
 #: ../../enterprise_bk/godmode/massive/massive_edit_tags_policy.php:62
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:62
 #: ../../enterprise/godmode/massive/massive_edit_tags_policy.php:62
 #: ../../enterprise/godmode/massive/massive_tags_edit_policy.php:62
 msgid "Successful update the tags"
-msgstr ""
+msgstr "Mise à jour réussie des étiquettes"
 
 #: ../../enterprise_bk/godmode/massive/massive_edit_tags_policy.php:63
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:63
 #: ../../enterprise/godmode/massive/massive_edit_tags_policy.php:63
 #: ../../enterprise/godmode/massive/massive_tags_edit_policy.php:63
 msgid "Unsuccessful update the tags"
-msgstr ""
+msgstr "Échec de mise à jour des étiquettes"
 
 #: ../../enterprise_bk/godmode/massive/massive_edit_tags_policy.php:83
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:83
@@ -6515,7 +6515,7 @@ msgstr "Politique"
 #: ../../enterprise_bk/godmode/massive/massive_edit_tags_policy.php:102
 #: ../../enterprise/godmode/massive/massive_edit_tags_policy.php:102
 msgid "Tags unused"
-msgstr ""
+msgstr "Étiquettes inutilisés"
 
 #: ../../enterprise_bk/godmode/massive/massive_edit_tags_policy.php:115
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:114
@@ -6537,7 +6537,7 @@ msgstr "Supprimer"
 #: ../../enterprise_bk/godmode/massive/massive_edit_tags_policy.php:118
 #: ../../enterprise/godmode/massive/massive_edit_tags_policy.php:118
 msgid "Tags used"
-msgstr ""
+msgstr "Étiquettes utilisés"
 
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:93
 #: ../../enterprise_bk/godmode/modules/configure_local_component.php:355
@@ -6573,12 +6573,12 @@ msgstr "Étiquettes"
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:101
 #: ../../enterprise/godmode/massive/massive_tags_edit_policy.php:100
 msgid "Modules unused"
-msgstr ""
+msgstr "Modules ínutilisés"
 
 #: ../../enterprise_bk/godmode/massive/massive_tags_edit_policy.php:117
 #: ../../enterprise/godmode/massive/massive_tags_edit_policy.php:116
 msgid "Modules used"
-msgstr ""
+msgstr "Moduels utilisés"
 
 #: ../../enterprise_bk/godmode/massive/massive_delete_alerts_snmp.php:28
 #: ../../enterprise_bk/godmode/massive/massive_modify_alerts_snmp.php:29
@@ -7051,7 +7051,7 @@ msgstr "Sélectionner"
 #: ../../enterprise_bk/godmode/massive/massive_edit_modules_satellite.php:209
 #: ../../enterprise/godmode/massive/massive_edit_modules_satellite.php:207
 msgid "Filter module"
-msgstr ""
+msgstr "Filtre de module"
 
 #: ../../enterprise_bk/godmode/massive/massive_edit_modules_satellite.php:219
 #: ../../godmode/massive/massive_edit_modules.php:319
@@ -7176,12 +7176,12 @@ msgstr "État critique"
 #: ../../enterprise_bk/godmode/massive/massive_edit_modules_satellite.php:331
 #: ../../enterprise/godmode/massive/massive_edit_modules_satellite.php:329
 msgid "Updated modules on database"
-msgstr ""
+msgstr "Mise à jour des modules dans la base de données"
 
 #: ../../enterprise_bk/godmode/massive/massive_edit_modules_satellite.php:333
 #: ../../enterprise/godmode/massive/massive_edit_modules_satellite.php:331
 msgid "Agent configuration files updated"
-msgstr ""
+msgstr "Fichiers de configuration de l´agent mis à jour"
 
 #: ../../enterprise_bk/godmode/massive/massive_edit_modules_satellite.php:351
 #: ../../enterprise_bk/godmode/policies/policy_queue.php:401
@@ -7460,12 +7460,12 @@ msgstr "Interprète"
 #: ../../enterprise_bk/godmode/modules/manage_inventory_modules_form.php:87
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:88
 msgid "Left blank for the LOCAL inventory modules"
-msgstr ""
+msgstr "Laissée en blanc pour les modules LOCAUX d´inventaire"
 
 #: ../../enterprise_bk/godmode/modules/manage_inventory_modules_form.php:89
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:90
 msgid "Block Mode"
-msgstr ""
+msgstr "Mode Bloc"
 
 #: ../../enterprise_bk/godmode/modules/manage_inventory_modules_form.php:92
 #: ../../godmode/massive/massive_enable_disable_alerts.php:154
@@ -7494,6 +7494,8 @@ msgid ""
 "Here is placed the script for the REMOTE inventory modules Local inventory "
 "modules don't use this field"
 msgstr ""
+"Ici est placé le script pour les modules locaux  d´inventaire à DISTANCE, "
+"les modules d´inventaire n´utilise pas ce champs"
 
 #: ../../enterprise_bk/godmode/modules/manage_inventory_modules.php:67
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:67
@@ -7540,22 +7542,22 @@ msgstr "Erreur module d'inventaire suppression"
 #: ../../enterprise_bk/godmode/modules/manage_inventory_modules.php:216
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:217
 msgid "Local module"
-msgstr ""
+msgstr "Module local"
 
 #: ../../enterprise_bk/godmode/modules/manage_inventory_modules.php:219
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:220
 msgid "Remote/Local"
-msgstr ""
+msgstr "À distance/ Local"
 
 #: ../../enterprise_bk/godmode/modules/configure_local_component.php:128
 #: ../../enterprise/godmode/modules/configure_local_component.php:127
 msgid "Update Local Component"
-msgstr ""
+msgstr "Mise à jour élément local"
 
 #: ../../enterprise_bk/godmode/modules/configure_local_component.php:131
 #: ../../enterprise/godmode/modules/configure_local_component.php:130
 msgid "Create Local Component"
-msgstr ""
+msgstr "Créer élément local"
 
 #: ../../enterprise_bk/godmode/modules/configure_local_component.php:148
 #: ../../godmode/modules/manage_network_components_form_common.php:56
@@ -8233,7 +8235,7 @@ msgstr "Base de Données historique"
 #: ../../enterprise_bk/godmode/menu.php:82
 #: ../../enterprise/godmode/menu.php:82
 msgid "Enterprise ACL Setup"
-msgstr ""
+msgstr "Configuration ACL Enterprise"
 
 #: ../../enterprise_bk/godmode/menu.php:88
 #: ../../enterprise/godmode/menu.php:88
@@ -8270,7 +8272,7 @@ msgstr "Log Collector"
 #: ../../enterprise_bk/godmode/menu.php:118
 #: ../../enterprise/godmode/menu.php:118
 msgid "Password policy"
-msgstr ""
+msgstr "Politique de mot de mot de passe"
 
 #: ../../enterprise_bk/godmode/menu.php:124
 #: ../../enterprise_bk/include/functions_setup.php:27
@@ -8517,7 +8519,7 @@ msgstr "Afficher les fichiers"
 #: ../../enterprise/godmode/agentes/collections.data.php:339
 #: ../../enterprise/godmode/agentes/collections.data.php:340
 msgid "Need to regenerate"
-msgstr ""
+msgstr "Besoin de se régénérer"
 
 #: ../../enterprise_bk/godmode/agentes/collection_manager.php:141
 #: ../../enterprise_bk/godmode/agentes/collection_manager.php:142
@@ -8540,12 +8542,12 @@ msgstr ""
 #: ../../enterprise/operation/agentes/collection_view.php:105
 #: ../../enterprise/operation/agentes/collection_view.php:106
 msgid "The collection directory does not exist."
-msgstr ""
+msgstr "Le répertoire de collection n´existe pas"
 
 #: ../../enterprise_bk/godmode/agentes/collection_manager.php:153
 #: ../../enterprise/godmode/agentes/collection_manager.php:153
 msgid "No colections"
-msgstr ""
+msgstr "Pas de collection"
 
 #: ../../enterprise_bk/godmode/agentes/collection_manager.php:160
 #: ../../enterprise_bk/godmode/agentes/inventory_manager.php:230
@@ -8575,7 +8577,7 @@ msgstr "dir => {"
 #: ../../enterprise_bk/godmode/agentes/collection_manager.php:231
 #: ../../enterprise/godmode/agentes/collection_manager.php:231
 msgid "No colections for this agent"
-msgstr ""
+msgstr "Pas de colections pour cet agent"
 
 #: ../../enterprise_bk/godmode/agentes/collections.php:48
 #: ../../enterprise/godmode/agentes/collections.php:48
@@ -8604,7 +8606,7 @@ msgstr "collection Manager"
 #: ../../enterprise_bk/godmode/agentes/collections.php:154
 #: ../../enterprise/godmode/agentes/collections.php:160
 msgid "Error: The main directory of collections does not exist."
-msgstr ""
+msgstr "Erreur: Le principal répertoire de collections n´existe pas."
 
 #: ../../enterprise_bk/godmode/agentes/collections.php:180
 #: ../../enterprise_bk/operation/agentes/ver_agente.php:190
@@ -9171,7 +9173,7 @@ msgstr "Impossible de créer la collection"
 
 #: ../../enterprise_bk/godmode/agentes/collections.data.php:127
 msgid "Another collection with the same short name"
-msgstr ""
+msgstr "Une autre collection avec le même nom court"
 
 #: ../../enterprise_bk/godmode/agentes/collections.data.php:143
 #: ../../enterprise/godmode/agentes/collections.data.php:148
@@ -9212,7 +9214,7 @@ msgstr "Impossible de modifier la collection."
 #: ../../enterprise_bk/godmode/agentes/collections.data.php:299
 #: ../../enterprise/godmode/agentes/collections.data.php:306
 msgid "Error: The collection directory does not exist."
-msgstr ""
+msgstr "Erreur: le répertoire de collection n´existe pas"
 
 #: ../../enterprise_bk/godmode/agentes/collections.data.php:308
 #: ../../godmode/reporting/visual_console_builder.data.php:99
@@ -9850,7 +9852,7 @@ msgstr "SECTION"
 #: ../../enterprise/godmode/setup/setup_acl.php:81
 #: ../../enterprise/godmode/setup/setup_acl.php:217
 msgid "Mobile"
-msgstr ""
+msgstr "Portable"
 
 #: ../../enterprise_bk/godmode/setup/setup_acl.php:85
 #: ../../enterprise_bk/godmode/setup/setup_acl.php:103
@@ -10227,13 +10229,13 @@ msgstr "Secondes"
 #: ../../enterprise_bk/godmode/setup/setup.php:62
 #: ../../enterprise/godmode/setup/setup.php:70
 msgid "Last replication at"
-msgstr ""
+msgstr "Dernière réplication au"
 
 #: ../../enterprise_bk/godmode/setup/setup.php:66
 #: ../../enterprise/godmode/setup/setup.php:88
 #: ../../include/functions_config.php:229
 msgid "Metaconsole agent cache"
-msgstr ""
+msgstr "Metaconsole cache de l´agent"
 
 #: ../../enterprise_bk/godmode/setup/setup.php:68
 #: ../../enterprise_bk/meta/include/ajax/tree_view.ajax.php:892
@@ -10257,27 +10259,27 @@ msgstr "Activé"
 #: ../../enterprise_bk/godmode/setup/setup.php:72
 #: ../../enterprise/godmode/setup/setup.php:104
 msgid "Metaconsole DB host"
-msgstr ""
+msgstr "Metaconsole DB hôte"
 
 #: ../../enterprise_bk/godmode/setup/setup.php:76
 #: ../../enterprise/godmode/setup/setup.php:111
 msgid "Metaconsole DB name"
-msgstr ""
+msgstr "Metaconsole DB nom"
 
 #: ../../enterprise_bk/godmode/setup/setup.php:80
 #: ../../enterprise/godmode/setup/setup.php:118
 msgid "Metaconsole DB user"
-msgstr ""
+msgstr "Metaconsole BD utilisateur"
 
 #: ../../enterprise_bk/godmode/setup/setup.php:84
 #: ../../enterprise/godmode/setup/setup.php:125
 msgid "Metaconsole DB password"
-msgstr ""
+msgstr "Metaconsole BD mot de passe"
 
 #: ../../enterprise_bk/godmode/setup/setup.php:88
 #: ../../enterprise/godmode/setup/setup.php:132
 msgid "Metaconsole DB port"
-msgstr ""
+msgstr "Metaconsole  BD port"
 
 #: ../../enterprise_bk/godmode/setup/setup.php:92
 #: ../../enterprise/godmode/setup/setup.php:81
@@ -11013,7 +11015,7 @@ msgstr "Val."
 #: ../../enterprise_bk/godmode/alerts/alert_events_list.php:486
 #: ../../enterprise/godmode/alerts/alert_events_list.php:490
 msgid "No associated actions"
-msgstr ""
+msgstr "Pas d´action associée"
 
 #: ../../enterprise_bk/godmode/alerts/alert_events_list.php:501
 #: ../../enterprise_bk/godmode/policies/policy_alerts.php:331
@@ -12287,7 +12289,7 @@ msgstr ""
 #: ../../enterprise_bk/godmode/policies/policy_modules.php:903
 #: ../../enterprise/godmode/policies/policy_modules.php:903
 msgid "Could not be added to deleted all modules."
-msgstr ""
+msgstr "N´a pas pu être ajouté à supprimer tous les modules."
 
 #: ../../enterprise_bk/godmode/policies/policy_modules.php:959
 #: ../../godmode/agentes/configurar_agente.php:1391
@@ -12306,7 +12308,7 @@ msgstr "copie de %s ( %d )"
 #: ../../enterprise_bk/godmode/policies/policy_modules.php:988
 #: ../../enterprise/godmode/policies/policy_modules.php:988
 msgid "Successfully duplicate the module."
-msgstr ""
+msgstr "Succès en dupliquant le module"
 
 #: ../../enterprise_bk/godmode/policies/policy_modules.php:989
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.php:218
@@ -12658,6 +12660,9 @@ msgid ""
 "not be installed on the system! You can use the MIB uploader for that "
 "purpose."
 msgstr ""
+"Fichier MIBS seront chargés et cherché pour définir SNMP trap. Ils ne seront "
+"pas installés sur le système! Vous pouvez utiliser l´uploader MIB à cet "
+"effet."
 
 #: ../../enterprise_bk/godmode/snmpconsole/snmp_trap_editor.php:208
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:208
@@ -12682,12 +12687,12 @@ msgstr "Service suppression d'erreur"
 #: ../../enterprise_bk/operation/services/services.list.php:50
 #: ../../enterprise/operation/services/services.list.php:50
 msgid "Service forced successfully"
-msgstr ""
+msgstr "Service forcé avec succès"
 
 #: ../../enterprise_bk/operation/services/services.list.php:51
 #: ../../enterprise/operation/services/services.list.php:51
 msgid "Error service forced"
-msgstr ""
+msgstr "Erreur en forçant le service"
 
 #: ../../enterprise_bk/operation/services/services.list.php:116
 #: ../../enterprise_bk/operation/services/services.list.php:256
@@ -12791,7 +12796,7 @@ msgstr "Inconnu"
 #: ../../enterprise_bk/operation/services/services.service.php:86
 #: ../../enterprise/operation/services/services.service.php:86
 msgid "No Services"
-msgstr ""
+msgstr "Pas de sesrvices"
 
 #: ../../enterprise_bk/operation/services/services.list.php:196
 #: ../../enterprise_bk/operation/services/services.service.php:124
@@ -12835,7 +12840,7 @@ msgstr "Dernière mise à jour"
 #: ../../enterprise/operation/services/services.list.php:273
 #: ../../enterprise/operation/services/services.service.php:178
 msgid "SLA graph"
-msgstr ""
+msgstr "Graphe SLA"
 
 #: ../../enterprise_bk/operation/services/services.list.php:283
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.php:339
@@ -12874,7 +12879,7 @@ msgstr "PDF"
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:291
 #: ../../enterprise/operation/reporting/custom_reporting.php:19
 msgid "JSON"
-msgstr ""
+msgstr "JSON"
 
 #: ../../enterprise_bk/operation/reporting/custom_reporting.php:21
 #: ../../enterprise_bk/operation/reporting/custom_reporting.php:63
@@ -12897,7 +12902,7 @@ msgstr "Exporter au format PDF"
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:341
 #: ../../enterprise/operation/reporting/custom_reporting.php:44
 msgid "Export to JSON"
-msgstr ""
+msgstr "Exportation vers JSON"
 
 #: ../../enterprise_bk/operation/reporting/custom_reporting.php:47
 #: ../../enterprise_bk/operation/reporting/custom_reporting.php:70
@@ -12909,17 +12914,17 @@ msgstr "Envoyer par courriel"
 #: ../../enterprise_bk/operation/reporting/custom_reporting.php:55
 #: ../../enterprise/operation/reporting/custom_reporting.php:55
 msgid "ID Report"
-msgstr ""
+msgstr "Rapport ID"
 
 #: ../../enterprise_bk/operation/reporting/custom_reporting.php:94
 #: ../../enterprise/operation/reporting/custom_reporting.php:94
 msgid "Send by email "
-msgstr ""
+msgstr "Envoyer par mail "
 
 #: ../../enterprise_bk/operation/menu.php:36
 #: ../../enterprise/operation/menu.php:36
 msgid "List of Services"
-msgstr ""
+msgstr "Liste de services"
 
 #: ../../enterprise_bk/operation/menu.php:83
 #: ../../mobile/include/functions_web.php:21
@@ -12932,7 +12937,7 @@ msgstr "Tableau de bord"
 #: ../../enterprise_bk/operation/menu.php:88
 #: ../../enterprise/operation/menu.php:88
 msgid "Main dashboard"
-msgstr ""
+msgstr "Tableau de bord principal"
 
 #: ../../enterprise_bk/operation/menu.php:89
 #: ../../enterprise/operation/menu.php:89
@@ -13043,7 +13048,7 @@ msgstr "Exporter en CSV"
 #: ../../enterprise_bk/operation/log/log_viewer.php:335
 #: ../../enterprise/operation/log/log_viewer.php:340
 msgid "The start date cannot be greater than the end date"
-msgstr ""
+msgstr "La date de début ne peut pas être supérieure  à la date de fin"
 
 #: ../../enterprise_bk/operation/log/log_viewer.php:413
 #: ../../enterprise_bk/operation/inventory/inventory.php:248
@@ -13188,7 +13193,7 @@ msgstr "Détails du nœud:"
 #: ../../enterprise_bk/operation/agentes/agent_inventory.diff_view.php:40
 #: ../../enterprise/operation/agentes/agent_inventory.diff_view.php:40
 msgid "Unsucessful get module inventory data."
-msgstr ""
+msgstr "Échouer l´obtiens de données d´inventaire du module"
 
 #: ../../enterprise_bk/operation/agentes/agent_inventory.diff_view.php:149
 #: ../../enterprise_bk/operation/agentes/agent_inventory.diff_view.php:152
@@ -13222,7 +13227,7 @@ msgstr "Pas trouvé networkmap."
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:262
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:262
 msgid "Source data"
-msgstr ""
+msgstr "Source de données"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:265
 #: ../../godmode/menu.php:171
@@ -13234,12 +13239,12 @@ msgstr "Tâche de reconnaisance"
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:266
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:266
 msgid "CIDR IP mask"
-msgstr ""
+msgstr "Masque IP CIDR"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:271
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:271
 msgid "Source from recon task"
-msgstr ""
+msgstr "Source dès recon task"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:273
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:273
@@ -13247,16 +13252,19 @@ msgid ""
 "It is setted any recon task, the nodes get from the recontask IP mask "
 "instead from the group."
 msgstr ""
+"Il est paramétré toute recon task, les noeuds reçoivent la masque IP de la "
+"recon à la place du group."
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:277
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:277
 msgid "Show only the task with the recon script \"SNMP L2 Recon\"."
 msgstr ""
+"Afficher uniquement la tâche avec le script de recon \"SNMP L2 Recon\"."
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:280
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:280
 msgid "Source from CIDR IP mask"
-msgstr ""
+msgstr "Source de masque CIDR IP"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:284
 #: ../../operation/agentes/networkmap.php:543
@@ -13267,7 +13275,7 @@ msgstr "Ne pas montrer  les sous-groupes:"
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:288
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:288
 msgid "Start empty networkmap"
-msgstr ""
+msgstr "Commencez networkmap vide"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.editor.php:291
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:291
@@ -13336,14 +13344,14 @@ msgstr "Erreur dans le plan de traitement"
 #: ../../enterprise_bk/operation/agentes/agent_inventory.php:56
 #: ../../enterprise/operation/agentes/agent_inventory.php:56
 msgid "This agent has not modules inventory"
-msgstr ""
+msgstr "Cet agent n´a pas l´invntaire des modules"
 
 #: ../../enterprise_bk/operation/agentes/agent_inventory.php:159
 #: ../../enterprise_bk/operation/agentes/agent_inventory.php:160
 #: ../../enterprise/operation/agentes/agent_inventory.php:160
 #: ../../enterprise/operation/agentes/agent_inventory.php:161
 msgid "Diff view"
-msgstr ""
+msgstr "Voir les différences"
 
 #: ../../enterprise_bk/operation/agentes/agent_inventory.php:229
 #: ../../enterprise_bk/meta/monitoring/group_view.php:102
@@ -13411,12 +13419,12 @@ msgstr "Groupes"
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.php:319
 #: ../../enterprise/operation/agentes/networkmap_enterprise.php:321
 msgid "Pending to generate"
-msgstr ""
+msgstr "en attente de générer"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.php:355
 #: ../../enterprise/operation/agentes/networkmap_enterprise.php:357
 msgid "There are no maps defined."
-msgstr ""
+msgstr "Il n´y a pas de cartes définis."
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.php:363
 #: ../../enterprise_bk/meta/include/functions_networkmap_meta.php:232
@@ -13650,7 +13658,7 @@ msgstr "Plein écran"
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.view.php:1130
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:1130
 msgid "List of networkmap Enterprise"
-msgstr ""
+msgstr "Liste de carte de réseau Enterprise"
 
 #: ../../enterprise_bk/operation/agentes/networkmap_enterprise.view.php:1134
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:1134
@@ -13874,12 +13882,13 @@ msgstr "Carte réseau"
 #: ../../enterprise_bk/load_enterprise.php:306
 #: ../../enterprise/load_enterprise.php:318
 msgid "Invalid licence."
-msgstr ""
+msgstr "Licence non valide"
 
 #: ../../enterprise_bk/load_enterprise.php:307
 #: ../../enterprise/load_enterprise.php:319
 msgid "Please contact Artica at info@artica.es for a valid licence."
 msgstr ""
+"S´il vous plaît contacter à Artica info@artica.es pour une licence valide"
 
 #: ../../enterprise_bk/load_enterprise.php:309
 #: ../../enterprise/load_enterprise.php:321
@@ -13891,7 +13900,7 @@ msgstr "Ou désactiver Pandora FMS entreprise"
 #: ../../enterprise/load_enterprise.php:423
 #: ../../enterprise/load_enterprise.php:614
 msgid "Request new licence"
-msgstr ""
+msgstr "Demander une nouvelle licence"
 
 #: ../../enterprise_bk/load_enterprise.php:445
 #: ../../enterprise/load_enterprise.php:471
@@ -13937,12 +13946,12 @@ msgstr "Renouveler"
 
 #: ../../enterprise_bk/load_enterprise.php:658
 msgid "Activate licence"
-msgstr ""
+msgstr "Activer la licence"
 
 #: ../../enterprise_bk/load_enterprise.php:659
 #: ../../enterprise/load_enterprise.php:698
 msgid "Your <b>request key</b> is:"
-msgstr ""
+msgstr "La clé de votre demande est:"
 
 #: ../../enterprise_bk/load_enterprise.php:661
 #: ../../enterprise/load_enterprise.php:700
@@ -13951,6 +13960,8 @@ msgid ""
 "You can activate it manually <a href=\"%s\" target=\"_blank\">here</a> or "
 "automatically filling the form below:"
 msgstr ""
+"Vouz pouvez l´activer manuellement a href=\"%s\" target=\"_blank\"> ici </a> "
+"ou automatiquement en remplissant le formulaire ci-dessous:"
 
 #: ../../enterprise_bk/load_enterprise.php:666
 #: ../../enterprise/load_enterprise.php:705
@@ -13965,14 +13976,14 @@ msgstr "Contact :"
 #: ../../enterprise_bk/load_enterprise.php:674
 #: ../../enterprise/load_enterprise.php:713
 msgid "Auth Key:"
-msgstr ""
+msgstr "Clé automatique:"
 
 #: ../../enterprise_bk/load_enterprise.php:681
 #: ../../enterprise_bk/load_enterprise.php:697
 #: ../../enterprise/load_enterprise.php:720
 #: ../../enterprise/load_enterprise.php:736
 msgid "Online validation"
-msgstr ""
+msgstr "Validation en ligne"
 
 #: ../../enterprise_bk/load_enterprise.php:690
 #: ../../enterprise/load_enterprise.php:729
@@ -13982,7 +13993,7 @@ msgstr "ERREUR :"
 #: ../../enterprise_bk/load_enterprise.php:690
 #: ../../enterprise/load_enterprise.php:729
 msgid "When connecting to Artica server."
-msgstr ""
+msgstr "Lors de la connexion au serveur d´Artica"
 
 #: ../../enterprise_bk/meta/agentsearch.php:26
 #: ../../enterprise_bk/meta/general/logon_ok.php:15
@@ -14443,32 +14454,32 @@ msgstr "Affichage groupe"
 #: ../../enterprise_bk/meta/monitoring/group_view.php:74
 #: ../../enterprise/meta/monitoring/group_view.php:74
 msgid "Summary by status"
-msgstr ""
+msgstr "Résumé par statut"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:78
 #: ../../enterprise/meta/monitoring/group_view.php:78
 msgid "% Monitors Critical"
-msgstr ""
+msgstr "% Moniteurs critique"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:79
 #: ../../enterprise/meta/monitoring/group_view.php:79
 msgid "% Monitors Warning"
-msgstr ""
+msgstr "% Moniteurs advertissement"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:80
 #: ../../enterprise/meta/monitoring/group_view.php:80
 msgid "% Monitors OK"
-msgstr ""
+msgstr "%Moniteurs Ok"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:81
 #: ../../enterprise/meta/monitoring/group_view.php:81
 msgid "% Agents Unknown"
-msgstr ""
+msgstr "% Agents inconnu"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:101
 #: ../../enterprise/meta/monitoring/group_view.php:101
 msgid "Group or Tag"
-msgstr ""
+msgstr "Groupe ou Tag"
 
 #: ../../enterprise_bk/meta/monitoring/group_view.php:105
 #: ../../enterprise_bk/meta/monitoring/tactical.php:325
@@ -14870,17 +14881,17 @@ msgstr "Non commencé"
 #: ../../enterprise_bk/meta/monitoring/tactical.php:336
 #: ../../enterprise/meta/monitoring/tactical.php:337
 msgid "Report of state"
-msgstr ""
+msgstr "Rapport de l ´Etat"
 
 #: ../../enterprise_bk/meta/monitoring/tactical.php:365
 #: ../../enterprise/meta/monitoring/tactical.php:366
 msgid "Report of events"
-msgstr ""
+msgstr "Rapport d´événements"
 
 #: ../../enterprise_bk/meta/monitoring/tactical.php:370
 #: ../../enterprise/meta/monitoring/tactical.php:371
 msgid "Info of state in events"
-msgstr ""
+msgstr "Infos de l´Etat dans les événements"
 
 #: ../../enterprise_bk/meta/monitoring/tactical.php:386
 #: ../../enterprise/meta/monitoring/tactical.php:387
@@ -14892,7 +14903,7 @@ msgstr "Plus d'événements"
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:83
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:126
 msgid "Could not be create, duplicated server name."
-msgstr ""
+msgstr "Ne peut pas être créer, nom du serveur dupliqué."
 
 #: ../../enterprise_bk/meta/advanced/metasetup.consoles.php:167
 #: ../../operation/events/events.php:776
@@ -15051,7 +15062,7 @@ msgstr "Je n'aurais pas pu être déplacé"
 #: ../../enterprise_bk/meta/advanced/agents_setup.move_agents.php:124
 #: ../../enterprise/meta/advanced/agents_setup.move_agents.php:124
 msgid "Move Agents"
-msgstr ""
+msgstr "Agents de déplacement"
 
 #: ../../enterprise_bk/meta/advanced/agents_setup.move_agents.php:137
 #: ../../enterprise/meta/advanced/agents_setup.move_agents.php:137
@@ -15070,16 +15081,20 @@ msgid ""
 "any group with that name, will be created if check box is selected. "
 "Destination group filter is just used to check agents in that group"
 msgstr ""
+"Groupe de destination est le même que dans le serveur d´origine, s´il n´y a "
+"pas de groupe avec ce nom, il sera créé si la case est cochée. Le filtre de "
+"groupe de destination est simplement utilisée pour vérifier les agents de ce "
+"groupe."
 
 #: ../../enterprise_bk/meta/advanced/agents_setup.move_agents.php:155
 #: ../../enterprise/meta/advanced/agents_setup.move_agents.php:155
 msgid "Create group if doesnât exist in destination"
-msgstr ""
+msgstr "Créer un groupe s´il n´existe pas dans la destination"
 
 #: ../../enterprise_bk/meta/advanced/agents_setup.move_agents.php:155
 #: ../../enterprise/meta/advanced/agents_setup.move_agents.php:155
 msgid "Based on name"
-msgstr ""
+msgstr "Basé sur le nom"
 
 #: ../../enterprise_bk/meta/advanced/agents_setup.move_agents.php:164
 #: ../../enterprise/meta/advanced/agents_setup.move_agents.php:164
@@ -15094,7 +15109,7 @@ msgstr "Coup"
 #: ../../enterprise_bk/meta/advanced/agents_setup.move_agents.php:265
 #: ../../enterprise/meta/advanced/agents_setup.move_agents.php:265
 msgid "Please choose other server."
-msgstr ""
+msgstr "S´il vous plaît choisissez un autre serveur"
 
 #: ../../enterprise_bk/meta/advanced/agents_setup.php:37
 #: ../../enterprise/meta/advanced/agents_setup.php:37
@@ -15386,7 +15401,7 @@ msgstr "Montrer le nom du groupe à la place de l'icône du groupe"
 #: ../../include/functions_config.php:562
 #: ../../include/functions_config.php:565
 msgid "Custom report front"
-msgstr ""
+msgstr "Rapport personnalisé"
 
 #: ../../enterprise_bk/meta/advanced/metasetup.translate_string.php:132
 #: ../../enterprise_bk/extensions/translate_string.php:254
@@ -15482,7 +15497,7 @@ msgstr "Erreur de connexion à %s"
 #: ../../enterprise_bk/meta/advanced/synchronizing.component.php:302
 #: ../../enterprise/meta/advanced/synchronizing.component.php:302
 msgid "Synchronizing Components"
-msgstr ""
+msgstr "Synchronisation des composants"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.component.php:309
 #: ../../enterprise_bk/meta/advanced/synchronizing.user.php:505
@@ -15870,7 +15885,7 @@ msgstr "Seulement base de données"
 #: ../../enterprise_bk/meta/advanced/policymanager.apply.php:188
 #: ../../enterprise/meta/advanced/policymanager.apply.php:188
 msgid "Apply Policies"
-msgstr ""
+msgstr "Appliquer les politiques"
 
 #: ../../enterprise_bk/meta/advanced/policymanager.apply.php:202
 #: ../../mobile/include/functions_web.php:27
@@ -15931,7 +15946,7 @@ msgstr ""
 #: ../../enterprise_bk/meta/advanced/synchronizing.user.php:498
 #: ../../enterprise/meta/advanced/synchronizing.user.php:498
 msgid "Synchronizing Users"
-msgstr ""
+msgstr "Synchronisation des utilisateurs"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.user.php:526
 #: ../../godmode/massive/massive_delete_profiles.php:104
@@ -16116,13 +16131,13 @@ msgstr "Création / Mise à jour %s / %s modèles"
 #: ../../enterprise_bk/meta/advanced/synchronizing.alert.php:324
 #: ../../enterprise/meta/advanced/synchronizing.alert.php:324
 msgid "Synchronizing Alerts"
-msgstr ""
+msgstr "Synchronisation des alertes"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:103
 #: ../../enterprise/meta/advanced/synchronizing.group.php:103
 #, php-format
 msgid "(Error Duplicate ID (%d) ) "
-msgstr ""
+msgstr "(Erreur ID double (%d) ) "
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:162
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:163
@@ -16133,33 +16148,33 @@ msgstr ""
 #: ../../enterprise/meta/advanced/synchronizing.group.php:175
 #: ../../enterprise/meta/advanced/synchronizing.group.php:176
 msgid "Open for more details"
-msgstr ""
+msgstr "Ouvert pour plus de détails"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:166
 #: ../../enterprise/meta/advanced/synchronizing.group.php:166
 #, php-format
 msgid "Error creating %s groups"
-msgstr ""
+msgstr "Erreur de création de groupes %s"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:179
 #: ../../enterprise/meta/advanced/synchronizing.group.php:179
 #, php-format
 msgid "Error updating %s groups"
-msgstr ""
+msgstr "Erreur de mise à jour %s des groupes"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:188
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:189
 #: ../../enterprise/meta/advanced/synchronizing.group.php:188
 #: ../../enterprise/meta/advanced/synchronizing.group.php:189
 msgid "Open for more details in creation"
-msgstr ""
+msgstr "Ouvert pour plus de détails dans la création."
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:194
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:195
 #: ../../enterprise/meta/advanced/synchronizing.group.php:194
 #: ../../enterprise/meta/advanced/synchronizing.group.php:195
 msgid "Open for more details in update"
-msgstr ""
+msgstr "Ouvert pour plus de détails dans la mise à jour"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:198
 #: ../../enterprise/meta/advanced/synchronizing.group.php:198
@@ -16176,12 +16191,12 @@ msgstr "Création / Mise à jour %s / %s groupes"
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:217
 #: ../../enterprise/meta/advanced/synchronizing.group.php:217
 msgid "None update or create group"
-msgstr ""
+msgstr "Aucune mise à jour ou creation de groupe"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:227
 #: ../../enterprise/meta/advanced/synchronizing.group.php:227
 msgid "Synchronizing Groups"
-msgstr ""
+msgstr "Synchronisation de groupes"
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.tag.php:124
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:124
@@ -16198,7 +16213,7 @@ msgstr "Création / Mise à jour %s / %s balises"
 #: ../../enterprise_bk/meta/advanced/synchronizing.tag.php:138
 #: ../../enterprise/meta/advanced/synchronizing.tag.php:138
 msgid "Synchronizing Tags"
-msgstr ""
+msgstr "Synchronisation étiquettes"
 
 #: ../../enterprise_bk/meta/advanced/metasetup.php:49
 #: ../../enterprise/meta/advanced/metasetup.php:54
@@ -16303,19 +16318,19 @@ msgstr "Code non valide"
 #: ../../enterprise_bk/meta/index.php:247 ../../index.php:231
 #: ../../enterprise/meta/index.php:247
 msgid "The code shouldn't be empty"
-msgstr ""
+msgstr "Le code ne doit pas être vide"
 
 #: ../../enterprise_bk/meta/index.php:259 ../../index.php:243
 #: ../../enterprise/meta/index.php:259
 msgid "Expired login"
-msgstr ""
+msgstr "Connexion périmée"
 
 #: ../../enterprise_bk/meta/index.php:267
 #: ../../enterprise_bk/meta/index.php:273 ../../index.php:251
 #: ../../index.php:257 ../../enterprise/meta/index.php:267
 #: ../../enterprise/meta/index.php:273
 msgid "Login error"
-msgstr ""
+msgstr "Erreur dans la connexion"
 
 #: ../../enterprise_bk/meta/index.php:492
 #: ../../enterprise_bk/meta/index.php:505 ../../index.php:639
@@ -17657,6 +17672,8 @@ msgid ""
 "The user doesn't have permission to read agents. Please contact with your "
 "pandora administrator."
 msgstr ""
+"L´utilisateur n´a pas le droit de lecture sur l´agents. S´il vous plaît "
+"contacter votre administrateur de Pandora"
 
 #: ../../enterprise_bk/dashboard/widgets/custom_graph.php:24
 #: ../../enterprise/dashboard/widgets/custom_graph.php:24
@@ -17816,33 +17833,33 @@ msgstr "URL invalide"
 #: ../../enterprise_bk/dashboard/widgets/top_n_events_by_group.php:26
 #: ../../enterprise/dashboard/widgets/top_n_events_by_group.php:26
 msgid "Top N Events by agent."
-msgstr ""
+msgstr "Top N Événements par agent."
 
 #: ../../enterprise_bk/dashboard/widgets/top_n_events_by_group.php:28
 #: ../../enterprise/dashboard/widgets/top_n_events_by_group.php:28
 msgid "Top N events by agent."
-msgstr ""
+msgstr "Top N événements par agent."
 
 #: ../../enterprise_bk/dashboard/widgets/top_n_events_by_group.php:31
 #: ../../enterprise_bk/dashboard/widgets/top_n_events_by_module.php:31
 #: ../../enterprise/dashboard/widgets/top_n_events_by_group.php:31
 #: ../../enterprise/dashboard/widgets/top_n_events_by_module.php:31
 msgid "Amount to show"
-msgstr ""
+msgstr "Montant à montrer"
 
 #: ../../enterprise_bk/dashboard/widgets/top_n_events_by_group.php:50
 #: ../../enterprise_bk/dashboard/widgets/top_n_events_by_module.php:51
 #: ../../enterprise/dashboard/widgets/top_n_events_by_group.php:50
 #: ../../enterprise/dashboard/widgets/top_n_events_by_module.php:51
 msgid "Please select one or more groups."
-msgstr ""
+msgstr "S´il vous plaît sélectionner un ou plusieurs groupes."
 
 #: ../../enterprise_bk/dashboard/widgets/top_n_events_by_group.php:89
 #: ../../enterprise_bk/dashboard/widgets/top_n_events_by_module.php:90
 #: ../../enterprise/dashboard/widgets/top_n_events_by_group.php:89
 #: ../../enterprise/dashboard/widgets/top_n_events_by_module.php:90
 msgid "There is not data to show."
-msgstr ""
+msgstr "Il n´y a pas de données pour montrer"
 
 #: ../../enterprise_bk/dashboard/widgets/top_n_events_by_group.php:118
 #: ../../enterprise_bk/dashboard/widgets/top_n_events_by_module.php:132
@@ -17871,12 +17888,12 @@ msgstr "autre"
 #: ../../enterprise/dashboard/widgets/top_n.php:31
 #: ../../include/functions_reporting.php:915
 msgid "Top N"
-msgstr ""
+msgstr "Haut N"
 
 #: ../../enterprise_bk/dashboard/widgets/top_n.php:34
 #: ../../enterprise/dashboard/widgets/top_n.php:34
 msgid "Show a top n of agents modules."
-msgstr ""
+msgstr "Afficher un top n de modules d´agents."
 
 #: ../../enterprise_bk/dashboard/widgets/top_n.php:82
 #: ../../enterprise/dashboard/widgets/top_n.php:82
@@ -17895,6 +17912,8 @@ msgstr "Éléments"
 msgid ""
 "Please could you fill the widget data previous to filling the list items."
 msgstr ""
+"S´il vous plaît pourriez-vous remplir les données de widget précédentes pour "
+"remplir les éléments de la liste."
 
 #: ../../enterprise_bk/dashboard/widgets/top_n.php:110
 #: ../../enterprise_bk/dashboard/widgets/top_n.php:293
@@ -17903,7 +17922,7 @@ msgstr ""
 #: ../../enterprise/dashboard/widgets/top_n.php:291
 #: ../../enterprise/include/ajax/top_n_widget.ajax.php:76
 msgid "avg"
-msgstr ""
+msgstr "moyenne"
 
 #: ../../enterprise_bk/dashboard/widgets/top_n.php:111
 #: ../../enterprise_bk/dashboard/widgets/top_n.php:294
@@ -17938,22 +17957,22 @@ msgstr "sum"
 #: ../../enterprise_bk/dashboard/widgets/top_n.php:268
 #: ../../enterprise/dashboard/widgets/top_n.php:266
 msgid "Selection module one by one"
-msgstr ""
+msgstr "Sélection de module un par un"
 
 #: ../../enterprise_bk/dashboard/widgets/top_n.php:279
 #: ../../enterprise/dashboard/widgets/top_n.php:277
 msgid "Selection several modules"
-msgstr ""
+msgstr "Plusieurs modules de sélection"
 
 #: ../../enterprise_bk/dashboard/widgets/top_n.php:306
 #: ../../enterprise/dashboard/widgets/top_n.php:304
 msgid "Regex for to filter modules"
-msgstr ""
+msgstr "Regex pour filtrer modules"
 
 #: ../../enterprise_bk/dashboard/widgets/top_n.php:315
 #: ../../enterprise/dashboard/widgets/top_n.php:313
 msgid "Filter modules"
-msgstr ""
+msgstr "Modules filtrants"
 
 #: ../../enterprise_bk/dashboard/widgets/top_n.php:341
 #: ../../godmode/modules/manage_network_templates_form.php:224
@@ -17964,12 +17983,12 @@ msgstr "Ajouter modules"
 #: ../../enterprise_bk/dashboard/widgets/top_n.php:434
 #: ../../enterprise/dashboard/widgets/top_n.php:430
 msgid "Successful added modules"
-msgstr ""
+msgstr "Modules ajoutés, réussi."
 
 #: ../../enterprise_bk/dashboard/widgets/top_n.php:438
 #: ../../enterprise/dashboard/widgets/top_n.php:434
 msgid "Unsuccessful added modules"
-msgstr ""
+msgstr "Erreur en ajoutant les modules"
 
 #: ../../enterprise_bk/dashboard/widgets/top_n.php:460
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:797
@@ -17995,12 +18014,12 @@ msgstr "Données insuficient"
 #: ../../enterprise_bk/dashboard/widgets/top_n_events_by_module.php:26
 #: ../../enterprise/dashboard/widgets/top_n_events_by_module.php:26
 msgid "Top N Events by module."
-msgstr ""
+msgstr "Top N Événements par le module"
 
 #: ../../enterprise_bk/dashboard/widgets/top_n_events_by_module.php:28
 #: ../../enterprise/dashboard/widgets/top_n_events_by_module.php:28
 msgid "Top N events by module."
-msgstr ""
+msgstr "Top N événements par le module"
 
 #: ../../enterprise_bk/dashboard/widgets/maps_status.php:24
 #: ../../enterprise/dashboard/widgets/maps_status.php:24
@@ -18222,7 +18241,7 @@ msgstr "Veuillez reconfigurer le widget à récupérer"
 #: ../../include/functions_update_manager.php:320
 #: ../../include/functions_update_manager.php:323
 msgid "Could not connect to internet"
-msgstr ""
+msgstr "Impossible de se connecter à Internet"
 
 #: ../../enterprise_bk/include/functions_update_manager.php:143
 #: ../../enterprise/include/functions_update_manager.php:144
@@ -18237,13 +18256,13 @@ msgstr "Serveur introuvable."
 #: ../../enterprise/include/functions_update_manager.php:249
 #, php-format
 msgid "There is a error: %s"
-msgstr ""
+msgstr "Il y à un erreur: %s"
 
 #: ../../enterprise_bk/include/functions_update_manager.php:160
 #: ../../enterprise/include/functions_update_manager.php:161
 #, php-format
 msgid "There are %s updates, and the first to update is:"
-msgstr ""
+msgstr "Il y a %s mises à jour, et la première mise à jour est:"
 
 #: ../../enterprise_bk/include/functions_update_manager.php:165
 #: ../../enterprise/include/functions_update_manager.php:166
@@ -18267,13 +18286,13 @@ msgstr "Mettre à jour vers la dernière version"
 #: ../../enterprise/include/functions_update_manager.php:189
 #: ../../include/functions_update_manager.php:353
 msgid "There is no update available."
-msgstr ""
+msgstr "Il n´y a aucune mise à jour disponible."
 
 #: ../../enterprise_bk/include/functions_update_manager.php:243
 #: ../../enterprise/include/functions_update_manager.php:244
 #: ../../include/ajax/update_manager.ajax.php:368
 msgid "Fail to update to the last package."
-msgstr ""
+msgstr "Erreur dans la mise à jour du dernier paquet du logiciel"
 
 #: ../../enterprise_bk/include/functions_update_manager.php:258
 #: ../../enterprise/include/functions_update_manager.php:259
@@ -18416,12 +18435,12 @@ msgstr ""
 #: ../../enterprise_bk/include/functions_metaconsole.php:735
 #: ../../enterprise/include/functions_metaconsole.php:738
 msgid "Error creating group. Agent "
-msgstr ""
+msgstr "Erreur de création de group. Agent "
 
 #: ../../enterprise_bk/include/functions_metaconsole.php:741
 #: ../../enterprise/include/functions_metaconsole.php:744
 msgid "Group already exists in destination DB"
-msgstr ""
+msgstr "Groupe existe déjà dans la destination BD"
 
 #: ../../enterprise_bk/include/functions_license.php:35
 #: ../../enterprise_bk/include/functions_license.php:52
@@ -18566,12 +18585,12 @@ msgstr "Assistant Modèles"
 #: ../../include/functions_reports.php:589
 #: ../../include/functions_reporting.php:3743
 msgid "Availability"
-msgstr ""
+msgstr "Disponibilité"
 
 #: ../../enterprise_bk/include/functions_reporting.php:546
 #: ../../enterprise/include/functions_reporting.php:579
 msgid "Availability item created from wizard."
-msgstr ""
+msgstr "Disponibilité objet créé à partir de l´assistant"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1058
 #: ../../enterprise_bk/include/functions_reporting.php:1656
@@ -18657,84 +18676,84 @@ msgstr "Dates"
 #: ../../enterprise/include/functions_reporting.php:1173
 #: ../../enterprise/include/functions_reporting_pdf.php:1700
 msgid "January"
-msgstr ""
+msgstr "Janvier"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1108
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1733
 #: ../../enterprise/include/functions_reporting.php:1176
 #: ../../enterprise/include/functions_reporting_pdf.php:1703
 msgid "February"
-msgstr ""
+msgstr "Février"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1111
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1736
 #: ../../enterprise/include/functions_reporting.php:1179
 #: ../../enterprise/include/functions_reporting_pdf.php:1706
 msgid "March"
-msgstr ""
+msgstr "Mars"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1114
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1739
 #: ../../enterprise/include/functions_reporting.php:1182
 #: ../../enterprise/include/functions_reporting_pdf.php:1709
 msgid "April"
-msgstr ""
+msgstr "Avril"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1117
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1742
 #: ../../enterprise/include/functions_reporting.php:1185
 #: ../../enterprise/include/functions_reporting_pdf.php:1712
 msgid "May"
-msgstr ""
+msgstr "Mai"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1120
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1745
 #: ../../enterprise/include/functions_reporting.php:1188
 #: ../../enterprise/include/functions_reporting_pdf.php:1715
 msgid "June"
-msgstr ""
+msgstr "Juin"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1123
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1748
 #: ../../enterprise/include/functions_reporting.php:1191
 #: ../../enterprise/include/functions_reporting_pdf.php:1718
 msgid "July"
-msgstr ""
+msgstr "Juillet"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1126
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1751
 #: ../../enterprise/include/functions_reporting.php:1194
 #: ../../enterprise/include/functions_reporting_pdf.php:1721
 msgid "August"
-msgstr ""
+msgstr "Août"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1129
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1754
 #: ../../enterprise/include/functions_reporting.php:1197
 #: ../../enterprise/include/functions_reporting_pdf.php:1724
 msgid "September"
-msgstr ""
+msgstr "Septembre"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1132
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1757
 #: ../../enterprise/include/functions_reporting.php:1200
 #: ../../enterprise/include/functions_reporting_pdf.php:1727
 msgid "October"
-msgstr ""
+msgstr "Octobre"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1135
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1760
 #: ../../enterprise/include/functions_reporting.php:1203
 #: ../../enterprise/include/functions_reporting_pdf.php:1730
 msgid "November"
-msgstr ""
+msgstr "Novembre"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1138
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1763
 #: ../../enterprise/include/functions_reporting.php:1206
 #: ../../enterprise/include/functions_reporting_pdf.php:1733
 msgid "December"
-msgstr ""
+msgstr "Décembre"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1154
 #: ../../enterprise_bk/include/functions_reporting.php:2295
@@ -18815,14 +18834,14 @@ msgstr "Erreur"
 #: ../../enterprise/include/functions_reporting.php:1933
 #: ../../enterprise/include/functions_reporting_pdf.php:1784
 msgid "SLA Compliance per days"
-msgstr ""
+msgstr "Conformité des SLA par jours"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1241
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1872
 #: ../../enterprise/include/functions_reporting.php:1310
 #: ../../enterprise/include/functions_reporting_pdf.php:1842
 msgid "Summary of SLA Failures"
-msgstr ""
+msgstr "Résumé des échecs de SLA"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1243
 #: ../../enterprise_bk/include/functions_reporting.php:1839
@@ -18928,11 +18947,13 @@ msgid ""
 "This item is affected by a malformed planned downtime. Go to the planned "
 "downtimes section to solve this."
 msgstr ""
+"Cet item est affecté par un temps d'arrêt planifiés malformé. Allez à la "
+"section de temps d'arrêt prévu pour résoudre ce problème."
 
 #: ../../enterprise_bk/include/functions_reporting.php:1842
 #: ../../enterprise/include/functions_reporting.php:1927
 msgid "Summary of SLA Fails"
-msgstr ""
+msgstr "Résumé des SLA échoue"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1949
 #: ../../enterprise_bk/include/functions_reporting.php:2064
@@ -18941,26 +18962,26 @@ msgstr ""
 #: ../../enterprise/include/functions_reporting.php:2149
 #: ../../enterprise/include/functions_reporting.php:3401
 msgid "This SLA has been affected by the following planned downtimes"
-msgstr ""
+msgstr "Ce SLA a éte affectée par le temps d´arrêt planifiés."
 
 #: ../../enterprise_bk/include/functions_reporting.php:2163
 #: ../../enterprise_bk/include/functions_reporting.php:3409
 #: ../../enterprise/include/functions_reporting.php:2248
 #: ../../enterprise/include/functions_reporting.php:3500
 msgid "This item is affected by a malformed planned downtime"
-msgstr ""
+msgstr "Cet article est affecté par un temps d´arrêt planifiés malformé"
 
 #: ../../enterprise_bk/include/functions_reporting.php:2164
 #: ../../enterprise_bk/include/functions_reporting.php:3410
 #: ../../enterprise/include/functions_reporting.php:2249
 #: ../../enterprise/include/functions_reporting.php:3501
 msgid "Go to the planned downtimes section to solve this"
-msgstr ""
+msgstr "Allez à la section de temps d´arrêt pour le résoudre"
 
 #: ../../enterprise_bk/include/functions_reporting.php:2691
 #: ../../enterprise/include/functions_reporting.php:2778
 msgid "There are no SLAs defined."
-msgstr ""
+msgstr "Il n´y a pas les SLA définis"
 
 #: ../../enterprise_bk/include/functions_reporting.php:2869
 #: ../../enterprise_bk/include/functions_reporting.php:3525
@@ -18985,7 +19006,7 @@ msgstr ""
 #: ../../enterprise/include/functions_services.php:936
 #: ../../enterprise/include/functions_services.php:1133
 msgid "Nonexistent"
-msgstr ""
+msgstr "Inexistant"
 
 #: ../../enterprise_bk/include/functions_reporting.php:4062
 #: ../../enterprise/include/functions_reporting.php:4153
@@ -19009,12 +19030,12 @@ msgstr "Voir en PDF"
 #: ../../enterprise_bk/include/ajax/metaconsole.ajax.php:42
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:42
 msgid "Error accesing to API, auth error."
-msgstr ""
+msgstr "Erreur en accédant à l ´API, erreur d´authentification."
 
 #: ../../enterprise_bk/include/ajax/metaconsole.ajax.php:46
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:46
 msgid "Error accesing to API."
-msgstr ""
+msgstr "Erreur en accédant à l´API"
 
 #: ../../enterprise_bk/include/ajax/metaconsole.ajax.php:57
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:61
@@ -19074,35 +19095,35 @@ msgstr "Automated rapport FMS Pandora pour l'utilisateur rapport défini"
 #: ../../include/functions_reporting_html.php:856
 #, php-format
 msgid "%s in %s : NORMAL"
-msgstr ""
+msgstr "%s en %s: NORMAL"
 
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:604
 #: ../../enterprise/include/functions_reporting_pdf.php:606
 #: ../../include/functions_reporting_html.php:864
 #, php-format
 msgid "%s in %s : CRITICAL"
-msgstr ""
+msgstr "%s en %s: CRITIQUE"
 
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:612
 #: ../../enterprise/include/functions_reporting_pdf.php:614
 #: ../../include/functions_reporting_html.php:872
 #, php-format
 msgid "%s in %s : WARNING"
-msgstr ""
+msgstr "%s en %s: ATTENTION"
 
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:620
 #: ../../enterprise/include/functions_reporting_pdf.php:622
 #: ../../include/functions_reporting_html.php:880
 #, php-format
 msgid "%s in %s : UNKNOWN"
-msgstr ""
+msgstr "%s in %s: INCONNU"
 
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:628
 #: ../../enterprise/include/functions_reporting_pdf.php:630
 #: ../../include/functions_reporting_html.php:888
 #, php-format
 msgid "%s in %s : ALERTS FIRED"
-msgstr ""
+msgstr "%s in %s : ALERTE TIRÉ"
 
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:705
 #: ../../godmode/servers/manage_recontask_form.php:229
@@ -19135,7 +19156,7 @@ msgstr "Déclenché"
 #: ../../include/functions_reporting_html.php:1065
 #, php-format
 msgid "Last %s"
-msgstr ""
+msgstr "Dernier %s"
 
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:776
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:868
@@ -19292,7 +19313,7 @@ msgstr "Événements de criticité"
 #: ../../enterprise/include/functions_reporting_pdf.php:1408
 #: ../../include/functions_reporting_html.php:597
 msgid "Events validated vs unvalidated"
-msgstr ""
+msgstr "Evénements validés vs pas validés"
 
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1539
 #: ../../enterprise/include/functions_reporting_pdf.php:1518
@@ -19311,19 +19332,19 @@ msgstr "Événements Montant validés"
 #: ../../enterprise/include/functions_reporting_pdf.php:1889
 #: ../../include/functions_reporting_html.php:1639
 msgid "# Checks"
-msgstr ""
+msgstr "# Contrôles"
 
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1920
 #: ../../enterprise/include/functions_reporting_pdf.php:1890
 #: ../../include/functions_reporting_html.php:1640
 msgid "# Failed"
-msgstr ""
+msgstr "# Échoué"
 
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1921
 #: ../../enterprise/include/functions_reporting_pdf.php:1891
 #: ../../include/functions_reporting_html.php:1641
 msgid "% Fail"
-msgstr ""
+msgstr "% Échouer"
 
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1922
 #: ../../enterprise/include/functions_reporting_pdf.php:1892
@@ -19335,7 +19356,7 @@ msgstr ""
 #: ../../enterprise/include/functions_reporting_pdf.php:1893
 #: ../../include/functions_reporting_html.php:1643
 msgid "Time unavailable"
-msgstr ""
+msgstr "Durée indisponible"
 
 #: ../../enterprise_bk/include/functions_reporting_pdf.php:1924
 #: ../../enterprise/include/functions_reporting_pdf.php:1894

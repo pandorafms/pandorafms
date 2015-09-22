@@ -205,7 +205,7 @@ Pandora_Windows_Service::check_broker_agents(string *all_conf){
 
 void
 Pandora_Windows_Service::pandora_init () {
-	string conf_file, interval, debug, intensive_interval, util_dir, path, env;
+	string conf_file, interval, debug, disable_logfile, intensive_interval, util_dir, path, env;
 	string udp_server_enabled, udp_server_port, udp_server_addr, udp_server_auth_addr;
 	string name_agent, name;
 	string proxy_mode, server_ip;
@@ -264,6 +264,9 @@ Pandora_Windows_Service::pandora_init () {
 	
 	debug = conf->getValue ("debug");
 	setPandoraDebug (is_enabled (debug));
+	
+	disable_logfile = conf->getValue ("disable_logfile");
+	setPandoraLogDisable (is_enabled(disable_logfile));
 		
 	if (first_run == 1) {
 		first_run = 0;

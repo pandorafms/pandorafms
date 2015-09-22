@@ -35,6 +35,7 @@ using namespace Pandora_Strutils;
 string pandora_path;
 string pandora_dir;
 bool   pandora_debug;
+bool   pandora_log_disable;
 string pandora_version = PANDORA_VERSION;
 
 /**
@@ -143,14 +144,17 @@ pandoraWriteLog (string filename, string line) {
  */
 void
 Pandora::pandoraLog (const char *format, ...) {
-	va_list    args;
-	char       msg[5000];
+	if (!pandora_log_disable) {
+		va_list    args;
+		char       msg[5000];
 	
-	va_start (args, format);
-	vsprintf (msg, format, args);
-	va_end (args);
+		va_start (args, format);
+		vsprintf (msg, format, args);
+		va_end (args);
 	
-	pandoraWriteLog ("pandora_agent.log", (char *) msg);
+		pandoraWriteLog ("pandora_agent.log", (char *) msg);
+	}
+	return;
 }
 
 /**
@@ -275,6 +279,18 @@ Pandora::getPandoraDebug  () {
 	return pandora_debug;
 }
 
+/**
+ * Set the disable logfile flag.
+ *
+ * If the flag is true no logs will be written.
+ *
+ * @param dbg Turns the debug flag on/off.
+ * 
+ */
+void
+Pandora::setPandoraLogDisable  (bool dbg) {
+	pandora_log_disable = dbg;
+}
 
 /**
  * Get the version of the agent.

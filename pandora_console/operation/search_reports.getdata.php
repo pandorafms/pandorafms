@@ -45,10 +45,21 @@ else {
 $reports = false;
 
 if($searchReports) {
-	$sql = "SELECT id_report, name, description
-		FROM treport
-		WHERE (name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%')".$reports_condition;
-	
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = "SELECT id_report, name, description
+				FROM treport
+				WHERE (name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%')".$reports_condition;
+				break;
+		case "oracle":
+			$sql = "SELECT id_report, name, description
+				FROM treport
+				WHERE (upper(name) LIKE '%" . strtolower($stringSearchSQL) . "%' OR description LIKE '%" . strtolower($stringSearchSQL) . "%')".$reports_condition;
+			break;
+	}
+
+
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
@@ -62,11 +73,21 @@ if($searchReports) {
 			$sql = oracle_recode_query ($sql, $set);
 			break;
 	}
-	
-	$sql_count = "SELECT COUNT(id_report) AS count
-		FROM treport
-		WHERE (name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%')".$reports_condition;
-	
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+		$sql_count = "SELECT COUNT(id_report) AS count
+			FROM treport
+			WHERE (name LIKE '%" . $stringSearchSQL . "%' OR description LIKE '%" . $stringSearchSQL . "%')".$reports_condition;
+				break;
+		case "oracle":
+		$sql_count = "SELECT COUNT(id_report) AS count
+			FROM treport
+			WHERE (upper(name) LIKE '%" . strtolower($stringSearchSQL) . "%' OR upper(description) LIKE '%" . strtolower($stringSearchSQL) . "%')".$reports_condition;
+			break;
+	}
+
 	if($only_count) {
 		$totalReports = db_get_value_sql($sql_count);
 	}

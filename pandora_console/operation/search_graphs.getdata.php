@@ -32,7 +32,7 @@ if ($searchGraphs) {
 		return;
 	
 	$filter = array();
-	$filter[] = "(name LIKE '%$stringSearchSQL%' OR description LIKE '%$stringSearchSQL%')";
+	$filter[] = "(upper(name) LIKE '%" . strtolower($stringSearchSQL) . "%' OR upper(description) LIKE '%$" . strtolower($stringSearchSQL) . "%')";
 	$filter['id_graph'] = $usergraphs_id;
 	
 	$columns = array('id_graph', 'name', 'description');

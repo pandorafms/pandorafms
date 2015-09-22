@@ -28,15 +28,29 @@ if ($searchMaps) {
 	
 	if (empty($id_user_groups))
 		return;
-	
-	$sql = "SELECT tl.id, tl.name, tl.id_group, COUNT(tld.id_layout) AS count
-			FROM tlayout tl
-			LEFT JOIN tlayout_data tld
-				ON tl.id = tld.id_layout
-			WHERE tl.name LIKE '%$stringSearchSQL%'
-				AND tl.id_group IN ($id_user_groups_str)
-			GROUP BY tl.id, tl.name, tl.id_group";
-	
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$sql = "SELECT tl.id, tl.name, tl.id_group, COUNT(tld.id_layout) AS count
+					FROM tlayout tl
+					LEFT JOIN tlayout_data tld
+						ON tl.id = tld.id_layout
+					WHERE tl.name LIKE '%$stringSearchSQL%'
+						AND tl.id_group IN ($id_user_groups_str)
+					GROUP BY tl.id, tl.name, tl.id_group";
+					break;
+			case "oracle":
+				$sql = "SELECT tl.id, tl.name, tl.id_group, COUNT(tld.id_layout) AS count
+					FROM tlayout tl
+					LEFT JOIN tlayout_data tld
+						ON tl.id = tld.id_layout
+					WHERE upper(tl.name) LIKE '%" . strtolower($stringSearchSQL) . "%'
+						AND tl.id_group IN ($id_user_groups_str)
+					GROUP BY tl.id, tl.name, tl.id_group";
+					break;
+		}
+
+
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":

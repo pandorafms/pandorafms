@@ -171,9 +171,9 @@ if ($searchAgents) {
 							)
 					)
 					AND (
-						t1.nombre LIKE '%%" . $stringSearchSQL . "%%' OR
-						t2.nombre LIKE '%%" . $stringSearchSQL . "%%' OR
-						t1.direccion LIKE '%%" . $stringSearchSQL . "%%'
+						lower(t1.nombre) LIKE '%%" . strtolower($stringSearchSQL) . "%%' OR
+						lower(t2.nombre) LIKE '%%" . strtolower($stringSearchSQL) . "%%' OR
+						lower(t1.direccion) LIKE '%%" . strtolower($stringSearchSQL) . "%%'
 					)
 			";
 			break;

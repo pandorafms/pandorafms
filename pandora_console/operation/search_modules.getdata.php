@@ -175,8 +175,8 @@ if ($searchModules) {
 							) 
 						)
 					) AND
-					(UPPER(t1.nombre) LIKE UPPER(\'%' . $stringSearchSQL . '%\') OR
-					t3.nombre LIKE \'%' . $stringSearchSQL . '%\')';
+					(UPPER(t1.nombre) LIKE (\'%' . strtolower($stringSearchSQL) . '%\') OR
+					upper(t3.nombre) LIKE \'%' . strtolower($stringSearchSQL) . '%\')';
 			break;
 	}
 	

@@ -123,15 +123,30 @@ switch ($sortField) {
 }
 
 if ($searchUsers) {
-	$sql = "SELECT id_user, fullname, firstname, lastname, middlename, email, last_connect, is_admin, comments FROM tusuario
-		WHERE fullname LIKE '%" . $stringSearchSQL . "%' OR
-			id_user LIKE '%" . $stringSearchSQL . "%' OR
-			firstname LIKE '%" . $stringSearchSQL . "%' OR
-			lastname LIKE '%" . $stringSearchSQL . "%' OR
-			middlename LIKE '%" . $stringSearchSQL . "%' OR
-			email LIKE '%" . $stringSearchSQL . "%'
-		ORDER BY " . $order['field'] . " " . $order['order'];
-	
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$sql = "SELECT id_user, fullname, firstname, lastname, middlename, email, last_connect, is_admin, comments FROM tusuario
+				WHERE fullname LIKE '%" . $stringSearchSQL . "%' OR
+					id_user LIKE '%" . $stringSearchSQL . "%' OR
+					firstname LIKE '%" . $stringSearchSQL . "%' OR
+					lastname LIKE '%" . $stringSearchSQL . "%' OR
+					middlename LIKE '%" . $stringSearchSQL . "%' OR
+					email LIKE '%" . $stringSearchSQL . "%'
+				ORDER BY " . $order['field'] . " " . $order['order'];
+			break;
+		case "oracle":
+			$sql = "SELECT id_user, fullname, firstname, lastname, middlename, email, last_connect, is_admin, comments FROM tusuario
+				WHERE upper(fullname) LIKE '%" . strtolower($stringSearchSQL) . "%' OR
+					upper(id_user) LIKE '%" . strtolower($stringSearchSQL) . "%' OR
+					upper(firstname) LIKE '%" . strtolower($stringSearchSQL) . "%' OR
+					upper(lastname) LIKE '%" . strtolower($stringSearchSQL) . "%' OR
+					upper(middlename) LIKE '%" . strtolower($stringSearchSQL) . "%' OR
+					upper(email) LIKE '%" . strtolower($stringSearchSQL) . "%'
+					ORDER BY " . $order['field'] . " " . $order['order'];
+			break;
+	}
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
@@ -163,15 +178,28 @@ if ($searchUsers) {
 		if ($only_count) {
 			unset($users);
 		}
-		
-		
-		$sql = "SELECT COUNT(id_user) AS count FROM tusuario
-			WHERE id_user LIKE '%" . $stringSearchSQL . "%' OR
-				fullname LIKE '%" . $stringSearchSQL . "%' OR
-				firstname LIKE '%" . $stringSearchSQL . "%' OR
-				lastname LIKE '%" . $stringSearchSQL . "%' OR
-				middlename LIKE '%" . $stringSearchSQL . "%' OR
-				email LIKE '%" . $stringSearchSQL . "%'";
+
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$sql = "SELECT COUNT(id_user) AS count FROM tusuario
+					WHERE id_user LIKE '%" . $stringSearchSQL . "%' OR
+						fullname LIKE '%" . $stringSearchSQL . "%' OR
+						firstname LIKE '%" . $stringSearchSQL . "%' OR
+						lastname LIKE '%" . $stringSearchSQL . "%' OR
+						middlename LIKE '%" . $stringSearchSQL . "%' OR
+						email LIKE '%" . $stringSearchSQL . "%'";
+				break;
+			case "oracle":
+				$sql = "SELECT COUNT(id_user) AS count FROM tusuario
+					WHERE upper(id_user) LIKE '%" . strtolower($stringSearchSQL) . "%' OR
+						upper(fullname) LIKE '%" . strtolower($stringSearchSQL) . "%' OR
+						upper(firstname) LIKE '%" . strtolower($stringSearchSQL) . "%' OR
+						upper(lastname) LIKE '%" . strtolower($stringSearchSQL) . "%' OR
+						upper(middlename) LIKE '%" . strtolower($stringSearchSQL) . "%' OR
+						upper(email LIKE) '%" . strtolower($stringSearchSQL) . "%'";
+				break;
+		}
 		$totalUsers = db_get_value_sql($sql);
 	}
 	else {

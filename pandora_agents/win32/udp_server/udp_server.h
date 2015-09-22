@@ -37,20 +37,22 @@ namespace Pandora {
 			UDP_Server (Pandora_Windows_Service *service, string address, string auth_address, unsigned int port);
 			virtual ~UDP_Server ();
 			unsigned long getAddress ();
-			unsigned long getAuthAddress ();
 			unsigned long getPort ();
 			Pandora_Windows_Service *getService ();
 			unsigned char isRunning ();
+			bool isAddressAuth (unsigned long ip);
 
 			int start ();
 			int stop ();
 
 		private:
 			unsigned long address;
-			unsigned long auth_address;
+			list<unsigned long> auth_address;
+			list<unsigned long>::iterator it;
 			unsigned long port;
 			unsigned char running;
 			Pandora_Windows_Service *service;
+			void splitAuthAddress (string all_address);
 	};
 
 	void listen (UDP_Server *server);

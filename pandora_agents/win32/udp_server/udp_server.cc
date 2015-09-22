@@ -39,16 +39,6 @@ unsigned long UDP_Server::getAddress () {
 }
 
 /** 
- * Get the address authorized to send commands to
- * the server.
- * 
- * @return Authorized address.
- */
-unsigned long UDP_Server::getAuthAddress () {
-	return this->auth_address;
-}
-
-/** 
  * Get the port of the server.
  * 
  * @return Server port.
@@ -90,9 +80,9 @@ UDP_Server::UDP_Server (Pandora_Windows_Service *service, string address, string
 		this->address = inet_addr (address.c_str ());
 	}
 	if (auth_address.empty ()) {
-		this->auth_address = INADDR_ANY;
+		this->auth_address.push_front(INADDR_ANY);
 	} else {
-	   this->auth_address = inet_addr (auth_address.c_str ());
+	   splitAuthAddress (auth_address);
 	}
 	this->port = port;
 	this->running = 0;
@@ -169,25 +159,21 @@ void Pandora::listen (UDP_Server *server) {
 	servaddr.sin_port = htons (server->getPort ());
 	bind(sockfd, (struct sockaddr *)&servaddr, sizeof (servaddr));
 
-	/* Get authorised address */
-	auth_addr = server->getAuthAddress ();
-
 	while (server->isRunning () == 1) {
 		len = sizeof(cliaddr);
-		n = recvfrom(sockfd, mesg, MAX_PACKET_SIZE, 0, (struct sockaddr *)&cliaddr, &len);
+		n = recvfrom(sockfd, mesg, MAX_PACKET_SIZE, 0, (struct sockaddr *)&cliaddr, &len);		
 		if (n == SOCKET_ERROR) {
 			pandoraLog ("UDP Server: Error %d", WSAGetLastError ());
 			break;
 		}
 
 		/* Authenticate client */
-		if (auth_addr != INADDR_ANY && auth_addr != cliaddr.sin_addr.s_addr) {
+		if (server->isAddressAuth (cliaddr.sin_addr.s_addr)) {
+			mesg[n] = 0;
+			process_command (server->getService (), mesg);
+		} else {
 			pandoraLog ("UDP Server: Unauthorised access from %s", inet_ntoa (cliaddr.sin_addr));
-			continue;
 		}
-
-		mesg[n] = 0;
-		process_command (server->getService (), mesg);
 	}
 
 	WSACleanup ();
@@ -262,4 +248,36 @@ int Pandora::process_command (Pandora_Windows_Service *service, char *command) {
 	}
 
 	return 0;
+}
+
+void UDP_Server::splitAuthAddress (string all_address) {	
+	this->auth_address.clear();
+	size_t comma_pos;
+	string single_ip;
+	do {
+		single_ip.clear();
+		/*Splits ips with comma*/
+		comma_pos = all_address.find_first_of (',', 0);
+		if (comma_pos != string::npos){
+			single_ip = all_address.substr (0, comma_pos);
+		} else {
+			single_ip = all_address;
+		}
+		unsigned long single_ip_num = inet_addr (single_ip.c_str ());
+		if (single_ip_num != INADDR_NONE) {
+			this->auth_address.push_back (single_ip_num);
+		} else {
+			pandoraDebug ("Invalid UDP Server Auth Address: %s", single_ip.c_str ());
+		}
+		all_address = all_address.substr (comma_pos + 1, all_address.length ());
+	} while (comma_pos != string::npos);
+}
+
+bool UDP_Server::isAddressAuth (unsigned long ip){	
+	for (this->it=(this->auth_address).begin(); this->it != (this->auth_address).end(); ++it) {
+		if (*it == ip || *it == INADDR_ANY) {
+			return true;
+		}
+	}
+	return false;
 }

@@ -240,6 +240,9 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`min_ff_event_critical` int(4) unsigned default '0',
 	`each_ff` tinyint(1) unsigned default '0',
 	`ff_timeout` int(4) unsigned default '0',
+	`dynamic_interval` int(4) unsigned default '0',
+	`dynamic_max` bigint(20) default '0',
+	`dynamic_min` bigint(20) default '0',
 	PRIMARY KEY  (`id_agente_modulo`),
 	KEY `main_idx` (`id_agente_modulo`,`id_agente`),
 	KEY `tam_agente` (`id_agente`),
@@ -582,6 +585,7 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
 	`description` text,
 	`contact` text,
 	`other` text,
+	`password` varchar(45) default '',
  	PRIMARY KEY  (`id_grupo`),
  	KEY `parent_index` (`parent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

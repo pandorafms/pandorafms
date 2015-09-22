@@ -95,6 +95,7 @@ $filters = '<form method="post" action="index.php?sec=estado&amp;sec2=operation/
 		$ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . 
 			$sortField . '&amp;sort=' . $sort .'&amp;pure=' . $config['pure'] . $ag_custom_fields_params . '">';
 //echo '<table cellspacing="4" cellpadding="4" width="100%" class="databox"><tr>';
+$table = new StdClass();
 $table->width = "100%";
 $table->cellspacing = 0;
 $table->cellpadding = 0;
@@ -903,6 +904,7 @@ if (($config['dbtype'] == 'oracle') && ($result !== false)) {
 	}
 }
 
+$table = new StdClass();
 $table->cellpadding = 0;
 $table->cellspacing = 0;
 $table->width = "100%";

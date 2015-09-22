@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-07-07 02:56+0000\n"
-"X-Generator: Launchpad (build 17597)\n"
+"X-Launchpad-Export-Date: 2015-09-22 11:45+0000\n"
+"X-Generator: Launchpad (build 17749)\n"
 
 #: ../../extras/pandora_diag.php:90
 msgid "Pandora FMS Diagnostic tool"
@@ -13404,7 +13404,7 @@ msgstr "この要素は不正な計画停止の影響を受けます"
 #: ../../enterprise/include/functions_reporting.php:2249
 #: ../../enterprise/include/functions_reporting.php:3501
 msgid "Go to the planned downtimes section to solve this"
-msgstr "問題解決のためには計画停止設定画面へ行きます"
+msgstr "これを解決するために計画停止画面へ行く"
 
 #: ../../enterprise_bk/include/functions_reporting.php:1058
 #: ../../enterprise_bk/include/functions_reporting.php:1656
@@ -14659,14 +14659,14 @@ msgstr "リモートユーザの自動作成"
 #: ../../include/functions_config_bk.php:265
 #: ../../include/functions_config.php:273
 msgid "Autocreate profile"
-msgstr "プロフィールの自動作成"
+msgstr "プロファイルの自動作成"
 
 #: ../../godmode/setup/setup_auth_bk.php:58
 #: ../../godmode/setup/setup_auth.php:59
 #: ../../include/functions_config_bk.php:267
 #: ../../include/functions_config.php:275
 msgid "Autocreate profile group"
-msgstr "プロフィールグループの自動作成"
+msgstr "プロファイルグループの自動作成"
 
 #: ../../godmode/setup/setup_auth_bk.php:60
 #: ../../godmode/setup/setup_auth.php:61
@@ -17352,7 +17352,7 @@ msgstr "処理中のみ"
 #: ../../include/functions_events.php:1499
 #: ../../include/functions_events.php:1526
 msgid "Only not validated"
-msgstr "未承認のみ"
+msgstr "未承諾のみ"
 
 #: ../../include/functions_events.php:1570
 msgid "Agent address"
@@ -19265,7 +19265,7 @@ msgstr "未初期化モジュール"
 #: ../../enterprise_bk/operation/agentes/agent_inventory.php:56
 #: ../../enterprise/operation/agentes/agent_inventory.php:56
 msgid "This agent has not modules inventory"
-msgstr "エージェントにインベントリモジュールがありません"
+msgstr "このエージェントにはインベントリモジュールがありません"
 
 #: ../../enterprise_bk/operation/agentes/agent_inventory.php:159
 #: ../../enterprise_bk/operation/agentes/agent_inventory.php:160
@@ -19456,7 +19456,7 @@ msgstr "Eメールで送信 "
 #: ../../enterprise_bk/load_enterprise.php:306
 #: ../../enterprise/load_enterprise.php:318
 msgid "Invalid licence."
-msgstr "不正なライセンス"
+msgstr "不正なライセンス。"
 
 #: ../../enterprise_bk/load_enterprise.php:307
 #: ../../enterprise/load_enterprise.php:319
@@ -19521,8 +19521,7 @@ msgid ""
 "You can activate it manually <a href=\"%s\" target=\"_blank\">here</a> or "
 "automatically filling the form below:"
 msgstr ""
-"<a href=\"%s\" "
-"target=\"_blank\">こちら</a>から手動で有効化するか、または以下のフォームに入力することにより自動でできます:"
+"<a href=\"%s\" target=\"_blank\">ここ</a>から手動で有効化するか、以下のフォームから自動入力できます:"
 
 #: ../../enterprise_bk/load_enterprise.php:666
 #: ../../enterprise/load_enterprise.php:705
@@ -19769,7 +19768,7 @@ msgstr "日ごとの SLA 準拠"
 #: ../../enterprise/include/functions_services.php:936
 #: ../../enterprise/include/functions_services.php:1133
 msgid "Nonexistent"
-msgstr "存在しません"
+msgstr "なし"
 
 #: ../../enterprise_bk/include/functions_reporting.php:4062
 #: ../../enterprise/include/functions_reporting.php:4153
@@ -19922,7 +19921,7 @@ msgstr "APIアクセス認証エラー"
 #: ../../enterprise_bk/include/ajax/metaconsole.ajax.php:46
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:46
 msgid "Error accesing to API."
-msgstr "APIアクセスエラー"
+msgstr "APIアクセスエラー。"
 
 #: ../../enterprise_bk/include/ajax/metaconsole.ajax.php:57
 #: ../../enterprise/include/ajax/metaconsole.ajax.php:61
@@ -21353,7 +21352,7 @@ msgstr "%s モジュールを削除しました"
 #: ../../enterprise/meta/include/functions_wizard_meta.php:2444
 msgid ""
 "There was an error creating the alerts, the operation has been cancelled ."
-msgstr "アラート作成でエラーが発生しました。操作はキャンセルされました。"
+msgstr "アラート作成エラーです。操作はキャンセルされました。"
 
 #: ../../enterprise_bk/meta/include/functions_wizard_meta.php:2475
 #: ../../enterprise/meta/include/functions_wizard_meta.php:2475
@@ -22351,7 +22350,7 @@ msgstr "同期"
 #: ../../enterprise/meta/advanced/synchronizing.group.php:103
 #, php-format
 msgid "(Error Duplicate ID (%d) ) "
-msgstr "(重複 ID エラー (%d) ) "
+msgstr "(重複 ID (%d) エラー) "
 
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:162
 #: ../../enterprise_bk/meta/advanced/synchronizing.group.php:163
@@ -22448,7 +22447,7 @@ msgstr "テンプレートを作成(%s)/更新(%s)しました。"
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:83
 #: ../../enterprise/meta/advanced/metasetup.consoles.php:126
 msgid "Could not be create, duplicated server name."
-msgstr "作成できませんでした。サーバ名が重複しています。"
+msgstr "作成できませんでした。同じサーバ名があります。"
 
 #: ../../enterprise_bk/godmode/setup/setup_metaconsole.php:77
 #: ../../enterprise_bk/meta/advanced/metasetup.consoles.php:107
@@ -24087,7 +24086,7 @@ msgstr "短い名前"
 #: ../../enterprise/godmode/agentes/collections.data.php:339
 #: ../../enterprise/godmode/agentes/collections.data.php:340
 msgid "Need to regenerate"
-msgstr "再生成が必要"
+msgstr "再生成が必要です"
 
 #: ../../enterprise_bk/godmode/agentes/plugins_manager.php:41
 #: ../../enterprise/godmode/agentes/plugins_manager.php:41

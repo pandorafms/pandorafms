@@ -1904,8 +1904,9 @@ sub pandora_planned_downtime_weekly_start($$) {
 	# Start pending downtimes
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
-		WHERE type_periodicity = ?
-			AND executed = 0', 'weekly');
+		WHERE type_periodicity = ? 
+			AND type_execution <> ?
+			AND executed = 0', 'weekly', 'once');
 	
 	foreach my $downtime (@downtimes) {
 		my $across_date = $downtime->{'periodically_time_from'} gt $downtime->{'periodically_time_to'} ? 1 : 0 ;

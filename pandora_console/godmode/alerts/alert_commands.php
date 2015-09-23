@@ -88,6 +88,10 @@ if (is_ajax ()) {
 					$fdesc = $field_description .
 						' <br><span style="font-size:xx-small; font-weight:normal;">' . sprintf(__('Field %s'), $i) . '</span>';
 				}
+				//If the field is the number one, print the help message
+				if ($i == 1) {
+					$fdesc .= ui_print_help_icon ('snmp_alert_field1', true);
+				}
 			}
 			else {
 				// If the macro hasn't description and doesnt appear in command, set with empty description to dont show it
@@ -196,8 +200,6 @@ if (is_ajax ()) {
 		if ($command['id'] == 3){
 			$fields_rows[5] = '';
 		}
-
-		html_debug_print($fields_rows, true);
 
 		$command['fields_rows'] = $fields_rows;
 		

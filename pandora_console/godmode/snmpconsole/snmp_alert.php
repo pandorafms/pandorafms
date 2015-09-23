@@ -1241,9 +1241,10 @@ $(document).ready (function () {
 						// The row provided has a predefined class. We delete it
 						$('#table_macros-field' + i)
 							.removeAttr('class');
-						
+
+						//Remove this to put the help message in alert commands, to do it more general
 						// Add help hint only in first field
-						if (i == 1) {
+						/*if (i == 1) {
 							var td_content =
 								$('#table_macros-field' + i)
 									.find('td').eq(0);
@@ -1253,8 +1254,8 @@ $(document).ready (function () {
 									td_content.html() +
 									$('#help_snmp_alert_hint').html()
 								);
-						}
-						
+						}*/
+
 						$("[name=field" + i + "_value]").val(old_value);
 						$('#table_macros-field').show();
 					}

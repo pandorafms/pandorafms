@@ -165,6 +165,7 @@ if ($dialogue_event_response) {
 			echo "</div>";
 			break;
 		case 'url':
+			$command = str_replace("localhost",$_SERVER['SERVER_NAME'],$command);
 			echo "<iframe src='$command' id='divframe' style='width:100%;height:90%;'></iframe>";
 			break;
 	}

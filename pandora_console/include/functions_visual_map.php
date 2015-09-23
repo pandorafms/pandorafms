@@ -795,14 +795,27 @@ function visual_map_print_item($mode = "read", $layoutData,
 	
 	switch ($type) {
 		case BOX_ITEM:
-			$style = "";
-			$style .= "width: " . ($width * $proportion['proportion_width']) . "px; ";
-			$style .= "height: " . ($height * $proportion['proportion_height']) . "px; ";
-			$style .= "border-style: solid; ";
-			$style .= "border-width: " . $border_width . "px; ";
-			$style .= "border-color: " . $border_color . "; ";
-			$style .= "background-color: " . $fill_color . "; ";
-			echo "<div style='" . $style . "'></div>";
+			if (!empty($proportion)){
+				$style = "";
+				$style .= "width: " . ($width * $proportion['proportion_width']) . "px; ";
+				$style .= "height: " . ($height * $proportion['proportion_height']) . "px; ";
+				$style .= "border-style: solid; ";
+				$style .= "border-width: " . $border_width . "px; ";
+				$style .= "border-color: " . $border_color . "; ";
+				$style .= "background-color: " . $fill_color . "; ";
+				echo "<div style='" . $style . "'></div>";
+			}
+			else{
+				$style = "";
+				$style .= "width: " . $width . "px; ";
+				$style .= "height: " . $height . "px; ";
+				$style .= "border-style: solid; ";
+				$style .= "border-width: " . $border_width . "px; ";
+				$style .= "border-color: " . $border_color . "; ";
+				$style .= "background-color: " . $fill_color . "; ";
+				echo "<div style='" . $style . "'></div>";
+			}
+
 			break;
 		case STATIC_GRAPH:
 		case GROUP_ITEM:

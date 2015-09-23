@@ -1768,6 +1768,7 @@ sub pandora_planned_downtime_weekly_start($$) {
 	my @downtimes = get_db_rows($dbh, 'SELECT *
 		FROM tplanned_downtime
 		WHERE type_periodicity = ' . $RDBMS_QUOTE_STRING . 'weekly' . $RDBMS_QUOTE_STRING . '
+			AND type_execution <> ' . $RDBMS_QUOTE_STRING . 'once' . $RDBMS_QUOTE_STRING . '
 			AND executed = 0');
 	
 	foreach my $downtime (@downtimes) {

@@ -26,6 +26,9 @@ include_once($config['homedir'] . '/include/functions_tags.php');
 function modules_is_not_init($id_agent_module) {
 	$row = db_get_row('tagente_estado', 'id_agente_modulo', $id_agent_module);
 	
+	if (!$row)
+		return true;
+		
 	if ($row['estado'] == AGENT_MODULE_STATUS_NO_DATA || $row['estado'] == AGENT_MODULE_STATUS_NOT_INIT )
 		return true;
 	else

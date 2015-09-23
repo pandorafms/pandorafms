@@ -468,11 +468,10 @@ function draw_user_lines(color, thickness, start_x, start_y , end_x,
 		obj_js_user_lines.setStroke(user_lines[iterator]['line_width']);
 		obj_js_user_lines.setColor(user_lines[iterator]['line_color']);
 		obj_js_user_lines.drawLine(
-			user_lines[iterator]['start_x'],
-			user_lines[iterator]['start_y'],
-			user_lines[iterator]['end_x'],
-			user_lines[iterator]['end_y']);
-		
+			parseInt(user_lines[iterator]['start_x']),
+			parseInt(user_lines[iterator]['start_y']),
+			parseInt(user_lines[iterator]['end_x']),
+			parseInt(user_lines[iterator]['end_y']));
 	}
 	
 	

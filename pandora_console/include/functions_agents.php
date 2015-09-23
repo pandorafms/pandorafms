@@ -328,7 +328,8 @@ function agents_get_agents ($filter = false, $fields = false,
 		switch ($filter['status']) {
 			case AGENT_STATUS_NORMAL:
 				$status_sql =
-					"normal_count = total_count";
+					"normal_count = total_count 
+						AND notinit_count <> total_count";
 				break;
 			case AGENT_STATUS_WARNING:
 				$status_sql =

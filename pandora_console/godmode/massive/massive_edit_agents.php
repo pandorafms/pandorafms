@@ -133,6 +133,10 @@ if ($update_agents) {
 	$result = false;
 	foreach ($id_agents as $id_agent) {
 		if (!empty($values)) {
+			if ($config['metaconsole_agent_cache'] == 1 &&
+			    isset($values['id_grupo'])) {
+				$values['update_module_count'] = 1; // Force an update of the agent cache.
+			}
 			$result = db_process_sql_update ('tagente',
 				$values,
 				array ('id_agente' => $id_agent));

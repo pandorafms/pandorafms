@@ -719,8 +719,7 @@ if ($update_agent) { // if modified some agent paramenter
 			$direccion_agente = agents_delete_address($id_agente, $delete_ip);
 		}
 		
-		$result = db_process_sql_update ('tagente', 
-			array ('disabled' => $disabled,
+		$values = array ('disabled' => $disabled,
 				'id_parent' => $id_parent,
 				'id_os' => $id_os,
 				'modo' => $modo,
@@ -735,9 +734,14 @@ if ($update_agent) { // if modified some agent paramenter
 				'icon_path' => $icon_path,
 				'update_gis_data' => $update_gis_data,
 				'url_address' => $url_description,
-				'quiet' => $quiet),
-			array ('id_agente' => $id_agente));
-			
+				'url_address' => $url_description,
+				'quiet' => $quiet);
+
+		if ($config['metaconsole_agent_cache'] == 1) {
+			$values['update_module_count'] = 1; // Force an update of the agent cache.
+		}
+
+		$result = db_process_sql_update ('tagente', $values, array ('id_agente' => $id_agente));
 		if ($result === false) {
 			ui_print_error_message(
 				__('There was a problem updating the agent'));

@@ -404,9 +404,15 @@ switch ($activeTab) {
 						
 						
 						if (defined("METACONSOLE")) {
+							$agents_ids = array();
+							foreach ($id_agents as $id_agent_id) {
+								$server_and_agent = explode("|",$id_agent_id);
+								
+								$agents_ids[] = $server_and_agent[1];
+							}
 							$rows = db_get_all_rows_filter(
 								'tmetaconsole_agent',
-								array('id_tagente' => $id_agents));
+								array('id_tagente' => $agents_ids));
 							
 							$agents = array();
 							foreach ($rows as $row) {
@@ -475,36 +481,36 @@ switch ($activeTab) {
 							$id_modules = array();
 							
 							if ($id_server != 0) {
-								if (metaconsole_connect(null, $id_server) != NOERR) {
-									continue;
-								}
-							}
-							
-							foreach ($name_modules as $mod) {
-								
-								
-								
-								foreach ($id_agents as $ag) {
+								foreach ($name_modules as $serial_data) {
+									$modules_serial = explode(';', $serial_data);
 									
-									$id_module = agents_get_modules($ag,
-										array('id_agente_modulo'),
-										array('nombre' => $mod));
-									
-									
-									
-									if (empty($id_module))
-										continue;
-									else {
-										$id_module = reset($id_module);
-										$id_module = $id_module['id_agente_modulo'];
+									foreach ($modules_serial as $data_serialized) {
+										$data = explode('|', $data_serialized);
+										$id_modules[] = $data[0];
 									}
-									
-									$id_modules[] = $id_module;
 								}
 							}
-							
-							if ($id_server != 0) {
-								metaconsole_restore_db();
+							else {
+								foreach ($name_modules as $mod) {
+
+									foreach ($id_agents as $ag) {
+										
+										$id_module = agents_get_modules($ag,
+											array('id_agente_modulo'),
+											array('nombre' => $mod));
+										
+										
+										
+										if (empty($id_module))
+											continue;
+										else {
+											$id_module = reset($id_module);
+											$id_module = $id_module['id_agente_modulo'];
+										}
+										
+										$id_modules[] = $id_module;
+									}
+								}
 							}
 							
 							$message .= visual_map_process_wizard_add_modules(

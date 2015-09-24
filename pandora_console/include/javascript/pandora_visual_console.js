@@ -158,8 +158,8 @@ function draw_user_lines_read() {
 
 function center_labels() {
 	jQuery.each($(".item"), function(i, item) {
-		
-		if ($(item).width() > $("img", item).width()) {
+
+		if ($(item).width() > $("img", item).width() && ($("img", item).width() != null)) {
 			dif_width = $(item).width() - $("img", item).width();
 			
 			x = parseInt($(item).css("left"));

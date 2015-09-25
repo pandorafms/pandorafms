@@ -1863,9 +1863,7 @@ sub udp_server ($$) {
 	$sock = IO::Socket::INET->new(LocalPort => $udp_port, Proto => 'udp') or die "socket: $@";
 
 	while ($sock->recv($newmsg, $MAXLEN)) {
-		my($port, $ipaddr) = sockaddr_in($sock->peername);
-		$hishost = gethostbyaddr($ipaddr, AF_INET);
-
+		my $hishost = $sock->peerhost();
 		if (($udp_auth_address eq "0.0.0.0") || ($hishost eq $udp_auth_address)){
 			if ($newmsg =~ /REFRESH AGENT/){
 				# Send signal to restart agent

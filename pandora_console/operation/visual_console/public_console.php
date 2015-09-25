@@ -22,6 +22,15 @@ chdir ($config["homedir"]);
 
 session_start ();
 ob_start ();
+/* Enterprise support */
+if (file_exists (ENTERPRISE_DIR . "/load_enterprise.php")) {
+	include_once (ENTERPRISE_DIR . "/load_enterprise.php");
+}
+
+if (file_exists (ENTERPRISE_DIR . "/include/functions_login.php")) {
+	include_once (ENTERPRISE_DIR . "/include/functions_login.php");
+}
+
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
 echo '<html xmlns="http://www.w3.org/1999/xhtml">'."\n";
 echo '<head>';
@@ -31,7 +40,8 @@ $vc_public_view = true;
 // This starts the page head. In the call back function,
 // things from $page['head'] array will be processed into the head
 ob_start ('ui_process_page_head');
-
+// Enterprise main
+enterprise_include ('index.php');
 
 require ('include/functions_visual_map.php');
 

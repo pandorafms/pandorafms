@@ -2209,6 +2209,31 @@ function events_page_details ($event, $server = "") {
 			}
 			$table_details->data[] = $data;
 			break;
+		case 'system':
+			$data = array();
+			if ($event["critical_instructions"] != '') {
+				$data[0] = __('Instructions');
+				$data[1] = str_replace("\n","<br>", io_safe_output($event["critical_instructions"]));
+			}
+			else {
+				if ($event["warning_instructions"] != '') {
+					$data[0] = __('Instructions');
+					$data[1] = str_replace("\n","<br>", io_safe_output($event["warning_instructions"]));
+				}
+				else {
+					if ($event["unknown_instructions"] != '') {
+						$data[0] = __('Instructions');
+						$data[1] = str_replace("\n","<br>", io_safe_output($event["unknown_instructions"]));
+					}
+					else {
+						$data[0] = __('Instructions');
+						$data[1] = '<i>' . __('N/A') . '</i>';
+						
+					}
+				}
+			}
+			$table_details->data[] = $data;
+			break;
 	}
 	
 	$data = array();

@@ -1797,12 +1797,14 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'label':
 		case 'icon':
 		case 'module_graph':
-			
+
+			/*
 			if (type == 'module_graph') {
 				$("#image_" + idElement).attr("src", "images/spinner.gif");
 				setModuleGraph(idElement);
 			}
-			
+			*/
+
 			if ((typeof(values['mov_left']) != 'undefined') &&
 					(typeof(values['mov_top']) != 'undefined')) {
 				$("#" + idElement).css('top', '0px').css('top', top + 'px');

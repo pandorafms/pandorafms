@@ -30,6 +30,7 @@ if (!isset($ajax)) {
 require_once ($config['homedir'].'/include/functions_agents.php');
 require_once ($config['homedir'].'/include/functions_modules.php');
 require_once ($config['homedir'].'/include/functions_users.php');
+require_once ($config['homedir'].'/include/functions.php');
 
 function visual_map_print_item_toolbox($idDiv, $text, $float) {
 	if ($float == 'left') {
@@ -701,12 +702,12 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$percentile = 100;
 			break;
 		case MODULE_GRAPH:
-			$width =
-				((integer)($proportion['proportion_width'] * $width));
-			$height =
-				((integer)($proportion['proportion_height'] * $height));
-			
-			
+			if (!empty($proportion)) {
+				$width =
+					((integer)($proportion['proportion_width'] * $width));
+				$height =
+					((integer)($proportion['proportion_height'] * $height));
+			}
 			//Metaconsole db connection
 			if ($layoutData['id_metaconsole'] != 0) {
 				$connection = db_get_row_filter ('tmetaconsole_setup',

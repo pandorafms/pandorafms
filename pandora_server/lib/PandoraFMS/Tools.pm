@@ -183,7 +183,7 @@ sub safe_input($) {
 	foreach(keys(%$trans))
 	{
 		my $pattern = chr($_);
-		$value =~ s/$pattern/$trans->{$_}/gi;
+		$value =~ s/$pattern/$trans->{$_}/g;
 	}
 	
 	return $value;
@@ -236,7 +236,7 @@ sub safe_output($) {
 	foreach(keys(%$trans))
 	{
 		my $pattern = chr($_);
-		$value =~ s/$trans->{$_}/$pattern/gi;
+		$value =~ s/$trans->{$_}/$pattern/g;
 	}
 	
 	return $value;

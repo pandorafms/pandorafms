@@ -1408,8 +1408,8 @@ function setPercentileBubble(id_data, values) {
 			var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble&height=' + width_percentile + '&' + 
 				'width=' + width_percentile + '&mode=1&progress=' + percentile +
 				'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
-			
-			$("#image_" + idItem).attr('src', img);
+
+			$("#image_" + id_data).attr('src', img);
 		}
 	});
 }

@@ -54,7 +54,8 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'static_graph' => __('Static Graph'),
 				'percentile_item' => __('Percentile Item'),
 				'module_graph' => __('Graph'),
-				'simple_value' => __('Simple value'),
+				'simple_value' => __('Simple value') . ui_print_help_tip(__("To use 'label'field, you should write
+					a text to replace '(_VALUE_)' and the value of the module will be printed at the end."), true),
 				'label' => __('Label'),
 				'icon' => __('Icon'),
 				'group_item' => __('Group'),

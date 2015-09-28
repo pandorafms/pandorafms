@@ -637,7 +637,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 				}
 				
 				if (modules_is_disable_agent($sla['id_agent_module'])
-					|| modules_is_not_init($item['id_agent_module'])) {
+					|| modules_is_not_init($sla['id_agent_module'])) {
 					if ($metaconsole_on) {
 						//Restore db connection
 						metaconsole_restore_db();

@@ -53,20 +53,23 @@ $output_csv = function ($data, $filename) {
 	header ('Content-Disposition: attachment; filename="'.$filename.'.csv"');
 	
 	// Header
-	if (!isset($data['head']) || !isset($data['data']))
-		throw new Exception(__('An error occured exporting the data'));
-	
-	$head_line = implode($separator, $data['head']);
-	echo $head_line . "\n";
 	
 	// Item / data
-	foreach ($data['data'] as $items) {
-		$line = implode($separator, $items);
-		
-		if ($excel_encoding)
-			echo mb_convert_encoding($line, 'UTF-16LE', 'UTF-8') . "\n";
-		else
-			echo $line . "\n";
+	foreach ($data as $items) {
+		if (!isset($items['head']) || !isset($items['data']))
+				throw new Exception(__('An error occured exporting the data'));
+			
+		$head_line = implode($separator, $items['head']);
+		echo $head_line . "\n";
+		foreach ($items['data'] as $item) {
+			
+			$line = implode($separator, $item);
+			
+			if ($excel_encoding)
+				echo mb_convert_encoding($line, 'UTF-16LE', 'UTF-8') . "\n";
+			else
+				echo $line . "\n";
+		}
 	}
 };
 

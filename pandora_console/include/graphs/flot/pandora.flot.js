@@ -1099,8 +1099,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			 * }
 			 */
 			if (type === 'csv') {
+				
 				result = {
-					head: ['date', 'value'],
+					head: ['date', 'value','label'],
 					data: []
 				};
 				
@@ -1113,7 +1114,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 					else if (typeof labels[index] !== 'undefined')
 						date = labels[index];
 					
-					result.data.push([date, value]);
+					result.data.push([date, value,dataObject.label]);
 				});
 			}
 			/* [
@@ -1150,7 +1151,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 					
 					result.push({
 						'date': date,
-						'value': value
+						'value': value,
+						'label': dataObject.label
 					});
 				});
 			}
@@ -1162,8 +1164,21 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		}
 		
 		try {
-			dataObject = retrieveDataOject(dataObjects);
-			graphData = processDataObject(dataObject);
+			var elements = [];
+			var custom_graph = $('input:hidden[name=custom_graph]').value;
+			
+			if (custom_graph) {
+				dataObject = retrieveDataOject(dataObjects);
+				dataObjects.forEach(function (element) {
+					elements.push(processDataObject(element));
+				});
+				graphData = elements;
+			}
+			else {
+				dataObject = retrieveDataOject(dataObjects);
+				elements.push(processDataObject(dataObject));
+				graphData = elements;
+			}
 			
 			// Transform the object data into a string
 			// cause PHP has limitations in the number

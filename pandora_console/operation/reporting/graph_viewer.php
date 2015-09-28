@@ -104,6 +104,7 @@ if ($view_graph) {
 		exit;
 	}
 	html_print_input_hidden ('lineWidhtGraph', $config['custom_graph_width']);
+	html_print_input_hidden ('custom_graph', 1);
 	$url = "index.php?" .
 		"sec=reporting&" .
 		"sec2=operation/reporting/graph_viewer&" .

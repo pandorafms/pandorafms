@@ -1727,6 +1727,7 @@ function insertDB(type, values) {
 						item = $('<div id="handler_start_' + id + '" ' +
 							'class="item handler_start" ' +
 							'style="text-align: center; ' +
+								'z-index: 1;' +
 								'position: absolute; ' +
 								'top: ' + (values['line_start_y']  - radious_handle) + 'px; ' +
 								'left: ' + (values['line_start_x']  - radious_handle) + 'px;">' +
@@ -1741,6 +1742,7 @@ function insertDB(type, values) {
 						item = $('<div id="handler_end_' + id + '" ' +
 							'class="item handler_end" ' +
 							'style="text-align: center; ' +
+								'z-index: 1;' +
 								'position: absolute; ' +
 								'top: ' + (values['line_end_y']  - radious_handle) + 'px; ' +
 								'left: ' + (values['line_end_x']  - radious_handle) + 'px;">' +

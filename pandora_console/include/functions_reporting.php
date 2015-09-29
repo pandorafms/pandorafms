@@ -6081,7 +6081,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						}
 						
 						if (modules_is_disable_agent($row['id_agent_module'])
-							|| modules_is_not_init($item['id_agent_module'])) {
+							|| modules_is_not_init($row['id_agent_module'])) {
 							
 							//Restore dbconnection
 							if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
@@ -6283,7 +6283,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						}
 						
 						if (modules_is_disable_agent($g['id_agent_module'])
-							|| modules_is_not_init($item['id_agent_module'])) {
+							|| modules_is_not_init($g['id_agent_module'])) {
 							//Restore dbconnection
 							if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 								metaconsole_restore_db();

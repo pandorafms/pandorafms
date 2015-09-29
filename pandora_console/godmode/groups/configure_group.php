@@ -187,7 +187,15 @@ if (defined("METACONSOLE"))
 else
 	$sec = "gagente";
 
-echo '<form name="grupo" method="post" action="index.php?sec=' . $sec . '&sec2=godmode/groups/group_list&pure=' . $config['pure'] . '">';
+if (isset($config['metaconsole_node_id']) && $config['metaconsole_node_id'] > 0) {
+	$confirm_bottom = " onsubmit=' return message_check_create();'";
+}
+else
+{
+	$confirm_bottom = "";
+}
+
+echo '<form name="grupo" method="post" action="index.php?sec=' . $sec . '&sec2=godmode/groups/group_list&pure=' . $config['pure'] . '"'.$confirm_bottom.' >';
 html_print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id_group) {
@@ -206,6 +214,15 @@ enterprise_hook('close_meta_frame');
 
 ?>
 <script language="javascript" type="text/javascript">
+	
+function message_check_create() {
+	var return_value = false;
+
+	return_value = confirm("<?php echo __("WARNING: You\'re trying to create a group in a node member of a metaconsole.\\n\\nThis group and all of this contents will not be visible in the metaconsole.\\n\\nIf you want to create a visible group, you must do it from the metaconsole and propagate to the node. "); ?>");
+
+	return return_value;
+}
+	
 function icon_changed () {
 	var inputs = [];
 	var data = this.value;

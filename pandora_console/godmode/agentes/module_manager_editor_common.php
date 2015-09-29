@@ -365,7 +365,7 @@ $table_advanced->data[2][1] .= html_print_input_hidden ('moduletype', $moduletyp
 $table_advanced->data[2][3] = __('Post process').' ' . ui_print_help_icon ('postprocess', true);
 $table_advanced->data[2][4] =
 	html_print_extended_select_for_post_process('post_process',
-		$post_process, '', __('Empty'), '0', false, true, false, true,
+		$post_process, '', '', '0', false, true, false, true,
 		$disabledBecauseInPolicy);
 $table_advanced->colspan[2][4] = 3;
 

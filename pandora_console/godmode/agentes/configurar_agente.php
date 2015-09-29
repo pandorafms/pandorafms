@@ -838,8 +838,8 @@ if ($update_module || $create_module) {
 	// Don't read as (float) because it lost it's decimals when put into MySQL
 	// where are very big and PHP uses scientific notation, p.e:
 	// 1.23E-10 is 0.000000000123
-	
-	$post_process = (string) get_parameter ('post_process');
+
+	$post_process = (string) get_parameter ('post_process', 0.0);
 	//$prediction_module = 0;
 	
 	$max_timeout = (int) get_parameter ('max_timeout');

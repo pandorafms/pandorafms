@@ -91,15 +91,15 @@ if (!empty ($export_btn) && !empty ($module)) {
 		case "avg":
 		default:
 			//HTML output - don't style or use XHTML just in case somebody needs to copy/paste it. (Office doesn't handle <thead> and <tbody>)
-			$datastart = '<table style="width:100%;">' .
+			$datastart = '<table style="width:100%;" class="databox data">' .
 				'<tr>' .
 					'<th>' . __('Agent') . '</th>' .
 					'<th>' . __('Module') . '</th>' .
 					'<th>' . __('Data') . '</th>' .
 					'<th>' .__('Timestamp') . '</th>' .
 				'</tr>';
-			$rowstart = '<tr><td style="text-align: center">';
-			$divider = '</td><td style="text-align: center">';
+			$rowstart = '<tr><td>';
+			$divider = '</td><td>';
 			$rowend = '</td></tr>';
 			$dataend = '</table>';
 			break;

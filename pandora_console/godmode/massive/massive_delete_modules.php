@@ -289,19 +289,20 @@ $table->data['form_agents_1'][0] = __('Agent group');
 $groups = users_get_groups ($config["id_user"], "AW", false);
 $groups[0] = __('All');
 $table->colspan['form_agents_1'][1] = 2;
-$table->data['form_agents_1'][1] = html_print_select ($groups, 'groups_select',
-	'', true, __('Select'), -1, true, false, true, '', false, 'width:100%').
-	' ' . __('Group recursion') . ' ' .
-	html_print_checkbox ("recursion", 1, false, true, false);
+$table->data['form_agents_1'][1] = html_print_select_groups (false, 'AW', true, 'groups_select',
+	'', false, '', '', true);
+$table->data['form_agents_2'][2] = __('Group recursion');
+$table->data['form_agents_2'][3] = html_print_checkbox ("recursion", 1, $recursion, true, false);
+$table->data['form_agents_1'][3] = __('Select all modules of this group') . ' ' .
+	html_print_checkbox_extended ("force_group", 'group', '', '', false,
+		'', 'style="margin-right: 40px;"', true);
 $table->data['form_agents_1'][3] = __('Select all modules of this group') . ' ' .
 	html_print_checkbox_extended ("force_group", 'group', '', '', false,
 	'', 'style="margin-right: 40px;"', true);
 
-
-
-$table->rowclass['form_agents_2'] = 'select_agents_row';
-$table->data['form_agents_2'][0] = __('Status');
-$table->colspan['form_agents_2'][1] = 2;
+$table->rowclass['form_agents_3'] = 'select_agents_row';
+$table->data['form_agents_3'][0] = __('Status');
+$table->colspan['form_agents_3'][1] = 2;
 $status_list = array ();
 $status_list[AGENT_STATUS_NORMAL] = __('Normal'); 
 $status_list[AGENT_STATUS_WARNING] = __('Warning');
@@ -309,39 +310,37 @@ $status_list[AGENT_STATUS_CRITICAL] = __('Critical');
 $status_list[AGENT_STATUS_UNKNOWN] = __('Unknown');
 $status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal'); 
 $status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
-$table->data['form_agents_2'][1] = html_print_select($status_list,
+$table->data['form_agents_3'][1] = html_print_select($status_list,
 	'status_agents', 'selected', '', __('All'), AGENT_STATUS_ALL, true);
-$table->data['form_agents_2'][3] = '';
+$table->data['form_agents_3'][3] = '';
 
-
-
-$table->rowstyle['form_modules_2'] = 'vertical-align: top;';
-$table->rowclass['form_modules_2'] = 'select_modules_row select_modules_row_2';
-$table->data['form_modules_2'][0] = __('Modules');
-$table->data['form_modules_2'][1] = html_print_select ($modules, 'module_name[]',
+$table->rowstyle['form_modules_3'] = 'vertical-align: top;';
+$table->rowclass['form_modules_3'] = 'select_modules_row select_modules_row_2';
+$table->data['form_modules_3'][0] = __('Modules');
+$table->data['form_modules_3'][1] = html_print_select ($modules, 'module_name[]',
 	$module_name, false, __('Select'), -1, true, true, true, '', false, 'width:100%');
 
-$table->data['form_modules_2'][2] = __('When select modules');
-$table->data['form_modules_2'][2] .= '<br>';
-$table->data['form_modules_2'][2] .= html_print_select(
+$table->data['form_modules_3'][2] = __('When select modules');
+$table->data['form_modules_3'][2] .= '<br>';
+$table->data['form_modules_3'][2] .= html_print_select(
 	array('common' => __('Show common agents'),
 		'all' => __('Show all agents')), 'agents_selection_mode',
 	'common', false, '', '', true, false, true, '', false);
-$table->data['form_modules_2'][3] = html_print_select (array(), 'agents[]',
+$table->data['form_modules_3'][3] = html_print_select (array(), 'agents[]',
 	$agents_select, false, __('None'), 0, true, true, false, '', false, 'width:100%');
 
 
 
-$table->rowstyle['form_agents_3'] = 'vertical-align: top;';
-$table->rowclass['form_agents_3'] = 'select_agents_row select_agents_row_2';
-$table->data['form_agents_3'][0] = __('Agents');
-$table->data['form_agents_3'][1] = html_print_select ($agents, 'id_agents[]',
+$table->rowstyle['form_agents_4'] = 'vertical-align: top;';
+$table->rowclass['form_agents_4'] = 'select_agents_row select_agents_row_2';
+$table->data['form_agents_4'][0] = __('Agents');
+$table->data['form_agents_4'][1] = html_print_select ($agents, 'id_agents[]',
 	$agents_id, false, '', '', true, true, false, '', false, 'width:100%');
-$table->data['form_agents_3'][2] = __('When select agents');
-$table->data['form_agents_3'][2] .= '<br>';
-$table->data['form_agents_3'][2] .= html_print_select (array('common' => __('Show common modules'), 'all' => __('Show all modules')), 'modules_selection_mode',
+$table->data['form_agents_4'][2] = __('When select agents');
+$table->data['form_agents_4'][2] .= '<br>';
+$table->data['form_agents_4'][2] .= html_print_select (array('common' => __('Show common modules'), 'all' => __('Show all modules')), 'modules_selection_mode',
 	'common', false, '', '', true);
-$table->data['form_agents_3'][3] = html_print_select (array(), 'module[]',
+$table->data['form_agents_4'][3] = html_print_select (array(), 'module[]',
 	$modules_select, false, '', '', true, true, false, '', false, 'width:100%');
 
 
@@ -495,7 +494,15 @@ $(document).ready (function () {
 			$(".select_modules_row").css('display', '');
 		}
 	});
-	
+
+	var recursion;
+
+	$("#checkbox-recursion").click(function () {
+		recursion = this.checked ? 1 : 0;
+
+		$("#groups_select").trigger("change");
+	});
+
 	$("#groups_select").change (
 		function () {
 			$('#checkbox-force_group').attr('checked', false);
@@ -514,8 +521,7 @@ $(document).ready (function () {
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",
 					"get_agents_group_json" : 1,
-					"recursion" : $("#checkbox-recursion")
-						.attr("checked") ? 1 : 0,
+					"recursion" : recursion,
 					"id_group" : this.value,
 					"privilege" : "AW",
 					status_agents: function () {

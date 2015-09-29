@@ -124,6 +124,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 				}
 				
 				$work_end = $end - $period + $work_period;
+				$work_start = $end - $work_period;
 				//Buffer to get data, anyway this will report a memory exhaustin
 				
 				$flag_last_time_slice = false;
@@ -165,7 +166,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 						$output .= $divider;
 						$output .= $module['data'];
 						$output .= $divider;
-						$output .= date ("Y-m-d G:i:s", $module['utimestamp']);
+						$output .= date ("Y-m-d G:i:s", $work_start ) . ' - ' . date ("Y-m-d G:i:s", $module['utimestamp']);
 						$output .= $rowend;
 					}
 					
@@ -186,7 +187,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 					if ($flag_last_time_slice)
 						breaK;
 					
-					if (($work_end  + $work_period) > $end) {
+					if (($work_end  + $work_period) > $end || $work_period == 0) {
 						// Get the last timelapse
 						$work_period = $end - $work_end;
 						$work_end = $end;
@@ -301,13 +302,13 @@ if (empty($export_btn) || $show_form) {
 	
 	$table->data[3][1] = html_print_input_text ('start_date', date ("Y-m-d", get_system_time () - 86400), false, 10, 10, true);
 	$table->data[3][1] .= html_print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-start_date'),this);"));
-	$table->data[3][1] .= html_print_input_text ('start_time', date ("H:i", get_system_time () - 86400), false, 10, 5, true);
+	$table->data[3][1] .= html_print_input_text ('start_time', date ("H:i:s", get_system_time () - 86400), false, 10, 9, true);
 	
 	//End date selector
 	$table->data[4][0] = '<b>'.__('End date').'</b>';
 	$table->data[4][1] = html_print_input_text ('end_date', date ("Y-m-d", get_system_time ()), false, 10, 10, true);
 	$table->data[4][1] .= html_print_image ("images/calendar_view_day.png", true, array ("alt" => "calendar", "onclick" => "scwShow(scwID('text-end_date'),this);"));
-	$table->data[4][1] .= html_print_input_text ('end_time', date ("H:i", get_system_time ()), false, 10, 5, true);
+	$table->data[4][1] .= html_print_input_text ('end_time', date ("H:i:s", get_system_time ()), false, 10, 9, true);
 	
 	//Export type
 	$table->data[5][0] = '<b>'.__('Export type').'</b>';

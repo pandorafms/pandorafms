@@ -3963,8 +3963,8 @@ function reporting_general($report, $content) {
 		}
 		
 		if (modules_is_disable_agent($row['id_agent_module']) ||
-			modules_is_not_init($item['id_agent_module'])) {
-			
+			modules_is_not_init($row['id_agent_module'])) {
+
 			if (is_metaconsole()) {
 				//Restore db connection
 				metaconsole_restore_db();

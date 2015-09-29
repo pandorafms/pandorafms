@@ -1914,8 +1914,16 @@ sub module_plugin ($) {
 	return () if ($command eq '');
 
 	# Execute the plugin
-	my $output = `$command 2>$DevNull`;
 
+	my $output = "";
+	if ($plugin->{'timeout'} == 0) {
+		$output = `$command 2>$DevNull`;
+		log_message ('debug', "Executing plugin: " . $command) if ($Conf{'debug'} eq '1');
+	} else {
+		$output = `$Conf{'pandora_exec'} $plugin->{'timeout'} $command 2> $DevNull`;
+		log_message ('debug', "Executing plugin: (" . $command . ") with timeout: " . $plugin->{'timeout'} . "s") if ($Conf{'debug'} eq '1');
+	}
+	
 	# Do not save the output if there was an error
 	if ($? != 0) {
 		return ();

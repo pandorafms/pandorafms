@@ -298,8 +298,8 @@ $table->data['form_agents_1'][0] = __('Agent group');
 $groups = users_get_groups ($config["id_user"], "AW", false);
 $groups[0] = __('All');
 $table->colspan['form_agents_1'][1] = 2;
-$table->data['form_agents_1'][1] = html_print_select ($groups, 'groups_select',
-	'', true, __('Select'), -1, true, false, true, '', false, 'width:100%').
+$table->data['form_agents_1'][1] = html_print_select_groups (false, 'AW', true, 'groups_select',
+	'', false, '', '', true) .
 	' ' . __('Group recursion') . ' ' .
 	html_print_checkbox ("recursion", 1, false, true, false);
 $table->data['form_agents_1'][3] = __('Select all modules of this group') . ' ' .
@@ -503,7 +503,15 @@ $(document).ready (function () {
 			$(".select_modules_row").css('display', '');
 		}
 	});
-	
+
+	var recursion;
+
+	$("#checkbox-recursion").click(function () {
+		recursion = this.checked ? 1 : 0;
+
+		$("#groups_select").trigger("change");
+	});
+
 	$("#groups_select").change (
 		function () {
 			$('#checkbox-force_group').attr('checked', false);
@@ -522,8 +530,7 @@ $(document).ready (function () {
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",
 					"get_agents_group_json" : 1,
-					"recursion" : $("#checkbox-recursion")
-						.attr("checked") ? 1 : 0,
+					"recursion" : recursion,
 					"id_group" : this.value,
 					"privilege" : "AW",
 					status_agents: function () {

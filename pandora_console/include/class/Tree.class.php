@@ -28,7 +28,7 @@ class Tree {
 	protected $strictACL = false;
 	protected $acltags = false;
 	
-	public function  __construct($type, $rootType = '', $id = -1, $rootID = -1, $serverID = false, $childrenMethod = "on_demand") {
+	public function __construct($type, $rootType = '', $id = -1, $rootID = -1, $serverID = false, $childrenMethod = "on_demand") {
 		
 		$this->type = $type;
 		$this->rootType = !empty($rootType) ? $rootType : $type;
@@ -47,16 +47,14 @@ class Tree {
 		global $config;
 		include_once($config['homedir']."/include/functions_servers.php");
 		include_once($config['homedir']."/include/functions_modules.php");
+		require_once($config['homedir']."/include/functions_tags.php");
 
-		if (defined("METACONSOLE"))
+		if (is_metaconsole())
 			enterprise_include_once("meta/include/functions_ui_meta.php");
 
 		$this->strictACL = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
 
-		if ($this->strictACL) {
-			require_once($config['homedir']."/include/functions_tags.php");
-			$this->acltags = tags_get_user_module_and_tags($config['id_user'], 'AR');
-		}
+		$this->acltags = tags_get_user_module_and_tags($config['id_user'], 'AR');
 	}
 	
 	public function setType($type) {
@@ -358,7 +356,7 @@ class Tree {
 							$columns = 'tg.id_grupo AS id, tg.nombre AS name, tg.parent, tg.icon';
 							$order_fields = 'tg.nombre ASC, tg.id_grupo ASC';
 							
-							if (! defined('METACONSOLE')) {
+							if (! is_metaconsole()) {
 								// Groups SQL
 								if ($item_for_count === false) {
 									$sql = "SELECT $columns
@@ -406,7 +404,7 @@ class Tree {
 							}
 						}
 						else {
-							if (! defined('METACONSOLE') || $this->strictACL) {
+							if (! is_metaconsole() || $this->strictACL) {
 								$columns = 'ta.id_agente AS id, ta.nombre AS name, 
 									ta.fired_count, ta.normal_count, ta.warning_count,
 									ta.critical_count, ta.unknown_count, ta.notinit_count,
@@ -456,8 +454,28 @@ class Tree {
 							tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos';
 						$order_fields = 'tam.nombre ASC, tam.id_agente_modulo ASC';
 						
+						// Set for the common ACL only. The strict ACL case is different (groups and tags divided).
+						// The modules only have visibility in two cases:
+						// 1. The user has access to the group of its agent and this group hasn't tags.
+						// 2. The user has access to the group of its agent, this group has tags and the module
+						// has any of this tags.
+						$tag_join = '';
+						if (!$this->strictACL) {
+							// $rootID it the agent group id in this case
+							if (!empty($this->acltags) && isset($this->acltags[$rootID])) {
+								$tags_str = $this->acltags[$rootID];
+								
+								if (!empty($tags_str)) {
+									$tag_join = sprintf('INNER JOIN ttag_module ttm
+																ON tam.id_agente_modulo = ttm.id_agente_modulo
+																	AND ttm.id_tag IN (%s)', $tags_str);
+								}
+							}
+						}
+						
 						$sql = "SELECT $columns
 								FROM tagente_modulo tam
+								$tag_join
 								$module_status_join
 								INNER JOIN tagente ta
 									ON ta.disabled = 0
@@ -604,12 +622,35 @@ class Tree {
 						$columns = 'tam.id_agente_modulo AS id, tam.nombre AS name,
 							tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos';
 						$order_fields = 'tam.nombre ASC, tam.id_agente_modulo ASC';
-
+						
+						// Set for the common ACL only. The strict ACL case is different (groups and tags divided).
+						// The modules only have visibility in two cases:
+						// 1. The user has access to the group of its agent and this group hasn't tags.
+						// 2. The user has access to the group of its agent, this group has tags and the module
+						// has any of this tags.
+						$tag_filter = '';
+						if (!$this->strictACL) {
+							// $parent is the agent id
+							$group_id = (int) db_get_value('id_grupo', 'tagente', 'id_agente', $parent);
+							if (empty($group_id)) {
+								// ACL error, this will restrict (fuck) the module search
+								$tag_filter = 'AND 1=0';
+							}
+							else if (!empty($this->acltags) && isset($this->acltags[$group_id])) {
+								$tags_str = $this->acltags[$group_id];
+								
+								if (!empty($tags_str)) {
+									$tag_filter = sprintf('AND ttm.id_tag IN (%s)', $tags_str);
+								}
+							}
+						}
+						
 						$sql = "SELECT $columns
 								FROM tagente_modulo tam
 								INNER JOIN ttag_module ttm
 									ON tam.id_agente_modulo = ttm.id_agente_modulo
 										AND ttm.id_tag = $rootID
+										$tag_filter
 								$module_status_join
 								INNER JOIN tagente ta
 									ON ta.disabled = 0
@@ -680,7 +721,7 @@ class Tree {
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
 							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
-
+							
 							$sql = "SELECT $columns
 									FROM tagente ta
 									$modules_join
@@ -701,9 +742,35 @@ class Tree {
 
 						$os_filter = "AND ta.id_os = $rootID";
 						$agent_filter = "AND ta.id_agente = $parent";
-
+						
+						// Set for the common ACL only. The strict ACL case is different (groups and tags divided).
+						// The modules only have visibility in two cases:
+						// 1. The user has access to the group of its agent and this group hasn't tags.
+						// 2. The user has access to the group of its agent, this group has tags and the module
+						// has any of this tags.
+						$tag_join = '';
+						if (!$this->strictACL) {
+							// $parent is the agent id
+							$group_id = (int) db_get_value('id_grupo', 'tagente', 'id_agente', $parent);
+							if (empty($group_id)) {
+								// ACL error, this will restrict (fuck) the module search
+								$tag_join = 'INNER JOIN ttag_module tta
+												ON 1=0';
+							}
+							else if (!empty($this->acltags) && isset($this->acltags[$group_id])) {
+								$tags_str = $this->acltags[$group_id];
+								
+								if (!empty($tags_str)) {
+									$tag_join = sprintf('INNER JOIN ttag_module ttm
+																ON tam.id_agente_modulo = ttm.id_agente_modulo
+																	AND ttm.id_tag IN (%s)', $tags_str);
+								}
+							}
+						}
+						
 						$sql = "SELECT $columns
 								FROM tagente_modulo tam
+								$tag_join
 								$module_status_join
 								INNER JOIN tagente ta
 									ON ta.disabled = 0
@@ -809,8 +876,34 @@ class Tree {
 						$module_group_filter = "AND tam.id_module_group = $rootID";
 						$agent_filter = "AND tam.id_agente = $parent";
 						
+						// Set for the common ACL only. The strict ACL case is different (groups and tags divided).
+						// The modules only have visibility in two cases:
+						// 1. The user has access to the group of its agent and this group hasn't tags.
+						// 2. The user has access to the group of its agent, this group has tags and the module
+						// has any of this tags.
+						$tag_join = '';
+						if (!$this->strictACL) {
+							// $parent is the agent id
+							$group_id = (int) db_get_value('id_grupo', 'tagente', 'id_agente', $parent);
+							if (empty($group_id)) {
+								// ACL error, this will restrict (fuck) the module search
+								$tag_join = 'INNER JOIN ttag_module tta
+												ON 1=0';
+							}
+							else if (!empty($this->acltags) && isset($this->acltags[$group_id])) {
+								$tags_str = $this->acltags[$group_id];
+								
+								if (!empty($tags_str)) {
+									$tag_join = sprintf('INNER JOIN ttag_module ttm
+																ON tam.id_agente_modulo = ttm.id_agente_modulo
+																	AND ttm.id_tag IN (%s)', $tags_str);
+								}
+							}
+						}
+						
 						$sql = "SELECT $columns
 								FROM tagente_modulo tam
+								$tag_join
 								$module_status_join
 								INNER JOIN tagente ta
 									ON ta.disabled = 0
@@ -944,8 +1037,34 @@ class Tree {
 							$agents_join .= " $group_acl";
 						}
 						
+						// Set for the common ACL only. The strict ACL case is different (groups and tags divided).
+						// The modules only have visibility in two cases:
+						// 1. The user has access to the group of its agent and this group hasn't tags.
+						// 2. The user has access to the group of its agent, this group has tags and the module
+						// has any of this tags.
+						$tag_join = '';
+						if (!$this->strictACL) {
+							// $parent is the agent id
+							$group_id = (int) db_get_value('id_grupo', 'tagente', 'id_agente', $parent);
+							if (empty($group_id)) {
+								// ACL error, this will restrict (fuck) the module search
+								$tag_join = 'INNER JOIN ttag_module tta
+												ON 1=0';
+							}
+							else if (!empty($this->acltags) && isset($this->acltags[$group_id])) {
+								$tags_str = $this->acltags[$group_id];
+								
+								if (!empty($tags_str)) {
+									$tag_join = sprintf('INNER JOIN ttag_module ttm
+																ON tam.id_agente_modulo = ttm.id_agente_modulo
+																	AND ttm.id_tag IN (%s)', $tags_str);
+								}
+							}
+						}
+						
 						$sql = "SELECT $columns
 								FROM tagente_modulo tam
+								$tag_join
 								$module_status_join
 								INNER JOIN tagente ta
 									ON ta.disabled = 0
@@ -1142,7 +1261,7 @@ class Tree {
 				$processed_item['icon'] = "without_group.png";
 		}
 
-		if (defined("METACONSOLE") && !empty($server)) {
+		if (is_metaconsole() && !empty($server)) {
 			$processed_item['serverID'] = $server['id'];
 		}
 		
@@ -1313,7 +1432,7 @@ class Tree {
 		$module['status'] = $module['estado'];
 		$module['value'] = $module['datos'];
 
-		if (defined("METACONSOLE") && !empty($server)) {
+		if (is_metaconsole() && !empty($server)) {
 			$module['serverID'] = $server['id'];
 			$module['serverName'] = $server['server_name'];
 		}
@@ -1385,7 +1504,7 @@ class Tree {
 		$module["showGraphs"] = 0;
 		
 		// Avoid the check on the metaconsole. Too slow to show/hide an icon depending on the permissions
-		if (!empty($group_id) && !defined("METACONSOLE")) {
+		if (!empty($group_id) && !is_metaconsole()) {
 			if ($this->strictACL) {
 				$acl_graphs = tags_check_acl_by_module($module['id'], $config['id_user'], 'RR') === true;
 			}
@@ -1414,7 +1533,7 @@ class Tree {
 					"refresh" => SECONDS_10MINUTES
 				);
 			
-			if (defined('METACONSOLE') && !empty($server)) {
+			if (is_metaconsole() && !empty($server)) {
 				$graph_params["avg_only"] = 1;
 				// Set the server id
 				$graph_params["server"] = $module['serverID'];
@@ -1455,7 +1574,7 @@ class Tree {
 		$agent['rootID'] = $this->rootID;
 		$agent['rootType'] = $this->rootType;
 		
-		if (defined("METACONSOLE")) {
+		if (is_metaconsole()) {
 			if (isset($agent['server_id']))
 				$agent['serverID'] = $agent['server_id'];
 			else if (!empty($server))
@@ -1721,7 +1840,7 @@ class Tree {
 				continue;
 			
 			// Item found
-			if ($strictACL && defined("METACONSOLE")) {
+			if ($strictACL && is_metaconsole()) {
 				foreach ($item["id"] as $server_id => $id) {
 					if ($id == $item_id)
 						return $item;
@@ -1746,7 +1865,7 @@ class Tree {
 	}
 	
 	public function getData() {
-		if (! defined('METACONSOLE')) {
+		if (! is_metaconsole()) {
 			if ($this->strictACL) {
 				switch ($this->type) {
 					case 'group':
@@ -1817,7 +1936,7 @@ class Tree {
 		}
 		// Agents
 		else {
-			if (! defined ('METACONSOLE')) {
+			if (! is_metaconsole()) {
 				$items = $this->getItems();
 				$this->processModules($items);
 				$processed_items = $items;
@@ -1864,7 +1983,7 @@ class Tree {
 			if (isset($this->filter["searchModule"]))
 				$module_filter["name"] = $this->filter["searchModule"];
 			
-			if (! defined ('METACONSOLE')) {
+			if (! is_metaconsole()) {
 				$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree', $agent_filter, $module_filter);
 				
 				// Build the group and tag hierarchy
@@ -1940,7 +2059,7 @@ class Tree {
 		}
 		// Agents
 		else {
-			if (! defined ('METACONSOLE')) {
+			if (! is_metaconsole()) {
 				$items = $this->getItems();
 				$this->processAgents($items);
 				// Remove empty entrys
@@ -2022,7 +2141,7 @@ class Tree {
 		
 		// Tags
 		if ($this->id == -1) {
-			if (! defined ('METACONSOLE')) {
+			if (! is_metaconsole()) {
 				$items = $this->getItems();
 				
 				foreach ($items as $key => $item) {
@@ -2072,7 +2191,7 @@ class Tree {
 		}
 		// Agents
 		else {
-			if (! defined ('METACONSOLE')) {
+			if (! is_metaconsole()) {
 				$items = $this->getItems();
 				$this->processAgents($items);
 				$processed_items = $items;
@@ -2111,7 +2230,7 @@ class Tree {
 		
 		// Module names
 		if ($this->id == -1) {
-			if (! defined ('METACONSOLE')) {
+			if (! is_metaconsole()) {
 				$items = $this->getItems();
 				
 				foreach ($items as $key => $item) {
@@ -2193,7 +2312,7 @@ class Tree {
 		}
 		// Agents
 		else {
-			if (! defined ('METACONSOLE')) {
+			if (! is_metaconsole()) {
 				$items = $this->getItems();
 				$this->processAgents($items);
 				$processed_items = $items;
@@ -2232,7 +2351,7 @@ class Tree {
 		
 		// Module groups
 		if ($this->id == -1) {
-			if (! defined ('METACONSOLE')) {
+			if (! is_metaconsole()) {
 				$items = $this->getItems();
 				
 				foreach ($items as $key => $item) {
@@ -2282,7 +2401,7 @@ class Tree {
 		}
 		// Agents
 		else {
-			if (! defined ('METACONSOLE')) {
+			if (! is_metaconsole()) {
 				$items = $this->getItems();
 				$this->processAgents($items);
 				$processed_items = $items;
@@ -2321,7 +2440,7 @@ class Tree {
 		
 		// OS
 		if ($this->id == -1) {
-			if (! defined ('METACONSOLE')) {
+			if (! is_metaconsole()) {
 				$items = $this->getItems();
 				
 				foreach ($items as $key => $item) {
@@ -2373,7 +2492,7 @@ class Tree {
 		}
 		// Agents
 		else {
-			if (! defined ('METACONSOLE')) {
+			if (! is_metaconsole()) {
 				$items = $this->getItems();
 				$this->processAgents($items);
 				$processed_items = $items;

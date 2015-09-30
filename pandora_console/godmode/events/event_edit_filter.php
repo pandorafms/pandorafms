@@ -52,6 +52,8 @@ if ($id) {
 	$status = $filter['status'];
 	$search = $filter['search'];
 	$text_agent = $filter['text_agent'];
+	$id_agent = $filter['id_agent'];
+	$id_agent_module = $filter['id_agent_module'];
 	$pagination = $filter['pagination'];
 	$event_view_hr = $filter['event_view_hr'];
 	$id_user_ack = $filter['id_user_ack'];
@@ -66,6 +68,19 @@ if ($id) {
 	$tag_without_base64 = base64_encode($tag_without_json_clean) ;
 	
 	$filter_only_alert = $filter['filter_only_alert'];
+	
+	if ($id_agent_module != 0) {
+		$text_module = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
+		if ($text_module == false) {
+			$text_module = '';
+		}
+	}
+	if ($id_agent != 0) {
+		$text_agent = db_get_value('nombre', 'tagente', 'id_agente', $id_agent);
+		if ($text_agent == false) {
+			$text_agent =  '';
+		}
+	}
 }
 else {
 	$id_group = '';
@@ -96,6 +111,8 @@ if($update || $create) {
 	$status = get_parameter('status', '');
 	$search = get_parameter('search', '');
 	$text_agent = get_parameter('text_agent', '');
+	$id_agent_module = get_parameter('module_search_hidden', '');
+	$id_agent = get_parameter('id_agent', '');
 	$pagination = get_parameter('pagination', '');
 	$event_view_hr = get_parameter('event_view_hr', '');
 	$id_user_ack = get_parameter('id_user_ack', '');
@@ -118,6 +135,8 @@ if($update || $create) {
 		'status' => $status,
 		'search' => $search,
 		'text_agent' => $text_agent,
+		'id_agent_module' => $id_agent_module,
+		'id_agent' => $id_agent,
 		'pagination' => $pagination,
 		'event_view_hr' => $event_view_hr,
 		'id_user_ack' => $id_user_ack,
@@ -220,17 +239,19 @@ $table->data[6][1] = html_print_input_text(
 
 $table->data[7][0] = '<b>' . __('Agent search') . '</b>';
 $params = array();
-$params['return'] = true;
 $params['show_helptip'] = true;
 $params['input_name'] = 'text_agent';
 $params['value'] = $text_agent;
-$params['selectbox_group'] = 'id_group';
+$params['return'] = true;
 
 if (defined('METACONSOLE')) {
 	$params['javascript_page'] = 'enterprise/meta/include/ajax/events.ajax';
 }
-
-ui_print_agent_autocomplete_input($params);
+else {
+	$params['print_hidden_input_idagent'] = true;
+	$params['hidden_input_idagent_name'] = 'id_agent';
+	$params['hidden_input_idagent_value'] = $id_agent;
+}
 
 $table->data[7][1] = ui_print_agent_autocomplete_input($params);
 
@@ -344,6 +365,13 @@ $table->data[19][1] = html_print_select(
 		'0' => __('Filter alert events'),
 		'1' => __('Only alert events')),
 	"filter_only_alert", $filter_only_alert, '', '', '', true);
+
+if (!$meta) {
+	echo $id_agent_module;
+	$table->data[20][0] = '<b>' . __('Module search') . '</b>';
+	$table->data[20][1] .= html_print_autocomplete_modules('module_search',
+		$text_module, false, $id_agent_module, true, '', array(), true);
+}
 
 echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&pure='.$config['pure'].'">';
 html_print_table ($table);

@@ -115,3 +115,9 @@ WHERE "id_recon_script" = 2 AND "name" = 'IPMI&#x20;Recon';
 UPDATE tnetwork_component SET snmp_oid ='SELECT&#x20;DNSHostName&#x20;FROM&#x20;Win32_ComputerSystem' WHERE id_nc = 204 AND name = 'Hostname';
 UPDATE `tnetwork_component` set `tcp_port`=0 WHERE id_nc=207;
 UPDATE `tnetwork_component` set `tcp_port`=0 WHERE id_nc=219;
+
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_component`
+-- ---------------------------------------------------------------------
+ALTER TABLE tevent_filter ADD COLUMN id_agent_module int(25) DEFAULT 0;
+ALTER TABLE tevent_filter ADD COLUMN id_agent int(25) DEFAULT 0;

@@ -212,13 +212,14 @@ $id_agent = get_parameter('id_agent', 0);
 if ($id_agent != 0) {
 	$text_agent = db_get_value('nombre', 'tagente', 'id_agente', $id_agent);
 	if ($text_agent == false) {
-		$text_agent = '';
+		$text_agent =  '';
+		$id_agent = 0;
 	}
 }
 
 
 $text_module = (string) get_parameter('module_search', '');
-$id_agent_module = get_parameter('id_agent_module', 0);
+$id_agent_module = get_parameter('module_search_hidden', 0);
 if ($id_agent_module != 0) {
 	$text_module = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
 	if ($text_module == false) {
@@ -255,6 +256,7 @@ $params = "search=" . rawurlencode(io_safe_input($search)) .
 	"&amp;recursion=" . $recursion . 
 	"&amp;refr=" . (int)get_parameter("refr", 0) . 
 	"&amp;id_agent=" . $id_agent . 
+	"&amp;id_agent_module=" . $id_agent_module . 
 	"&amp;pagination=" . $pagination . 
 	"&amp;group_rep=" . $group_rep . 
 	"&amp;event_view_hr=" . $event_view_hr . 

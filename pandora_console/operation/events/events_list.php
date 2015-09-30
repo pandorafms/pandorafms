@@ -65,6 +65,8 @@ if (is_ajax()) {
 		$values['status'] = get_parameter('status');
 		$values['search'] = get_parameter('search');
 		$values['text_agent'] = get_parameter('text_agent');
+		$values['id_agent'] = get_parameter('id_agent');
+		$values['id_agent_module'] = get_parameter('id_agent_module');
 		$values['pagination'] = get_parameter('pagination');
 		$values['event_view_hr'] = get_parameter('event_view_hr');
 		$values['id_user_ack'] = get_parameter('id_user_ack');
@@ -93,6 +95,8 @@ if (is_ajax()) {
 		$values['status'] = get_parameter('status');
 		$values['search'] = get_parameter('search');
 		$values['text_agent'] = get_parameter('text_agent');
+		$values['id_agent'] = get_parameter('id_agent');
+		$values['id_agent_module'] = get_parameter('id_agent_module');
 		$values['pagination'] = get_parameter('pagination');
 		$values['event_view_hr'] = get_parameter('event_view_hr');	
 		$values['id_user_ack'] = get_parameter('id_user_ack');
@@ -386,7 +390,7 @@ $data[0] .= html_print_select($user_users, "id_user_ack", $id_user_ack, '',
 if (!$meta) {
 	$data[1] = __('Module search') . '<br>';
 	$data[1] .= html_print_autocomplete_modules('module_search',
-		$text_module, false, true, '', array(), true);
+		$text_module, false, $id_agent_module, true, '', array(), true);
 }
 else {
 	$data[1] .= '';
@@ -670,6 +674,8 @@ $(document).ready( function() {
 			$("#status").val(3);
 			$("#text-search").val('');
 			$("#text_id_agent").val( <?php echo '"' . __('All') . '"' ?> );
+			$('input:hidden[name=id_agent]').val();
+			$('input:hidden[name=module_search_hidden]').val();
 			$("#pagination").val(25);
 			$("#text-event_view_hr").val(8);
 			$("#id_user_ack").val(0);
@@ -710,6 +716,10 @@ $(document).ready( function() {
 							$("#text-search").val(val);
 						if (i == 'text_agent')
 							$("#text_id_agent").val(val);
+						if (i == 'id_agent')
+							$('input:hidden[name=id_agent]').val(val);
+						if (i == 'id_agent_module')
+							$('input:hidden[name=module_search_hidden]').val(val);
 						if (i == 'pagination')
 							$("#pagination").val(val);
 						if (i == 'event_view_hr')
@@ -772,23 +782,26 @@ $(document).ready( function() {
 		var id_filter_save;
 		
 		jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
-			{"page" : "operation/events/events_list",
-			"save_event_filter" : 1,
-			"id_name" : $("#text-id_name").val(),
-			"id_group" : $("#id_group").val(),
-			"event_type" : $("#event_type").val(),
-			"severity" : $("#severity").val(),
-			"status" : $("#status").val(),
-			"search" : $("#text-search").val(),
-			"text_agent" : $("#text_id_agent").val(),
-			"pagination" : $("#pagination").val(),
-			"event_view_hr" : $("#text-event_view_hr").val(),
-			"id_user_ack" : $("#id_user_ack").val(),
-			"group_rep" : $("#group_rep").val(),
-			"tag_with": Base64.decode($("#hidden-tag_with").val()),
-			"tag_without": Base64.decode($("#hidden-tag_without").val()),
-			"filter_only_alert" : $("#filter_only_alert").val(),
-			"id_group_filter": $("#id_group").val()
+			{
+				"page" : "operation/events/events_list",
+				"save_event_filter" : 1,
+				"id_name" : $("#text-id_name").val(),
+				"id_group" : $("#id_group").val(),
+				"event_type" : $("#event_type").val(),
+				"severity" : $("#severity").val(),
+				"status" : $("#status").val(),
+				"search" : $("#text-search").val(),
+				"text_agent" : $("#text_id_agent").val(),
+				"id_agent" : $('input:hidden[name=id_agent]').val(),
+				"id_agent_module" : $('input:hidden[name=module_search_hidden]').val(),
+				"pagination" : $("#pagination").val(),
+				"event_view_hr" : $("#text-event_view_hr").val(),
+				"id_user_ack" : $("#id_user_ack").val(),
+				"group_rep" : $("#group_rep").val(),
+				"tag_with": Base64.decode($("#hidden-tag_with").val()),
+				"tag_without": Base64.decode($("#hidden-tag_without").val()),
+				"filter_only_alert" : $("#filter_only_alert").val(),
+				"id_group_filter": $("#id_group").val()
 			},
 			function (data) {
 				if (data == 'error') {
@@ -851,6 +864,8 @@ $(document).ready( function() {
 			"status" : $("#status").val(),
 			"search" : $("#text-search").val(),
 			"text_agent" : $("#text_id_agent").val(),
+			"id_agent" : $('input:hidden[name=id_agent]').val(),
+			"id_agent_module" : $('input:hidden[name=module_search_hidden]').val(),
 			"pagination" : $("#pagination").val(),
 			"event_view_hr" : $("#text-event_view_hr").val(),
 			"id_user_ack" : $("#id_user_ack").val(),

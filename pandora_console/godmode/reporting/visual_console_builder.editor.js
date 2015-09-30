@@ -1221,14 +1221,12 @@ function set_image(type, idElement, image) {
 
 function setModuleGraph(id_data) {
 	var parameter = Array();
-	
-	parameter.push ({name: "page",
-		value: "include/ajax/visual_console_builder.ajax"});
+
+	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_layout_data"});
 	parameter.push ({name: "id_element", value: id_data});
-	parameter.push ({name: "id_visual_console",
-			value: id_visual_console});
-	
+	parameter.push ({name: "id_visual_console", value: id_visual_console});
+
 	jQuery.ajax({
 		url: get_url_ajax(),
 		data: parameter,
@@ -1258,6 +1256,7 @@ function setModuleGraph(id_data) {
 			if (is_metaconsole()) {
 				parameter.push ({name: "id_metaconsole", value: id_metaconsole});
 			}
+			parameter.push ({name: "type", value: 'module_graph'});
 			parameter.push ({name: "height", value: height});
 			parameter.push ({name: "width", value: width});
 			parameter.push ({name: "period", value: period});
@@ -1268,10 +1267,16 @@ function setModuleGraph(id_data) {
 				url: get_url_ajax(),
 				data: parameter,
 				type: "POST",
-				dataType: 'text', //The ajax return the data as text.
+				dataType: 'json', //The ajax return the data as text.
 				success: function (data)
 				{
-					$("#image_" + id_data).attr('src', data);
+					console.log(data);
+					if (data['no_data'] == true) {
+						$('#' + id_data).html(data['url']);
+					}
+					else {
+						$("#image_" + id_data).attr('src', data['url']);
+					}
 				}
 			});
 		}

@@ -733,8 +733,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 			if ($layoutData['id_metaconsole'] != 0) {
 				metaconsole_restore_db();
 			}
-			
-			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
+
+			//$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
+
 			break;
 		case LABEL:
 			$z_index = 4 + 1;

@@ -158,8 +158,8 @@ switch ($action) {
 		}
 		else {
 			$img = grafico_modulo_sparse($id_agent_module,
-				$period, false, $width, $height, '', null, false, 1,
-				false, 0, '', 0, 0, true, true, '', 1, false, '', 
+				$period, 0, $width, $height, '', null, false, 1,
+				false, 0, '', 0, 0, true, true, '', 1, false, '',
 				false, false, true, $background_color);
 		}
 		
@@ -167,11 +167,22 @@ switch ($action) {
 		if (!empty($id_metaconsole)) {
 			metaconsole_restore_db();
 		}
-		
+
+		$data_image = array();
 		preg_match("/src=[\'\"](.*)[\'\"]/", $img, $matches);
 		$url = $matches[1];
-		
-		echo $url;
+
+		if (empty($url) && ($type == 'module_graph')) {
+			$data_image['url'] = $img;
+			$data_image['no_data'] = true;
+			$data_image['message'] = __('No data to show');
+		}
+		else{
+			$data_image['url'] = $matches[1];
+			$data_image['no_data'] = false;
+		}
+
+		echo json_encode($data_image);
 		break;
 	
 	

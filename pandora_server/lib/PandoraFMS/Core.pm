@@ -977,8 +977,18 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		logger($pa_config, "Executing command '$command' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "'.", 8);
 		
 		eval {
-			system ($command);
-			logger($pa_config, "Command '$command' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "' returned with errorlevel " . ($? >> 8), 8);
+			if ($pa_config->{'global_alert_timeout'} == 0){
+				system ($command);
+				logger($pa_config, "Command '$command' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "' returned with errorlevel " . ($? >> 8), 8);
+			} else {
+				my $command_timeout = safe_output($pa_config->{'plugin_exec'}) . " " . $pa_config->{'global_alert_timeout'} . " " . $command;
+				system ($command_timeout);
+				my $return_code = ($? >> 8) & 0xff;
+				logger($pa_config, "Command '$command_timeout' for action '" . safe_output($action->{'name'}) . "' alert '". safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "' returned with errorlevel " . $return_code, 8);
+				if ($return_code != 0) {
+					logger ($pa_config, "Action '" . safe_output($action->{'name'}) . "' alert '" . safe_output($alert->{'name'}) . "' agent '" . (defined ($agent) ? safe_output($agent->{'nombre'}) : 'N/A') . "' exceeded the global alert timeout " . $pa_config->{'global_alert_timeout'} . " seconds" , 8);
+				}
+			}	
 		};
 		
 		if ($@){

@@ -382,6 +382,9 @@ sub pandora_load_config {
 	$pa_config->{"snmp_forward_secLevel"}= '';
 	$pa_config->{"snmp_forward_version"}= 2;
 	$pa_config->{"snmp_forward_ip"}= '';
+	
+	# Global Timeout for Custom Commands Alerts
+	$pa_config->{"global_alert_timeout"}= 15; # 6.0
 	                
 
 	# Check for UID0
@@ -850,6 +853,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^unknown_interval\s([0-9]*)/i) { # > 5.1SP2
 			$pa_config->{'unknown_interval'}= safe_input($1);
+		}
+		elsif ($parametro =~ m/^global_alert_timeout\s+([0-9]*)/i) {
+			$pa_config->{'global_alert_timeout'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

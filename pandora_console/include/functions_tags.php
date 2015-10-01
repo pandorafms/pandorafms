@@ -707,8 +707,54 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
  * 
  * @return string SQL condition for tagente_module
  */
-
 function tags_get_acl_tags_module_condition($acltags, $modules_table = '') {
+	if (!empty($modules_table))
+		$modules_table .= '.';
+	
+	$condition = '';
+	$group_conditions = array();
+	
+	// The acltags array contains the groups with the acl propagation applied
+	// after the changes done into the 'tags_get_user_module_and_tags' function.
+	foreach ($acltags as $group_id => $group_tags) {
+		$tag_join = '';
+		if (!empty($group_tags)) {
+			$tag_join = sprintf('INNER JOIN ttag_module ttmc
+									ON tamc.id_agente_modulo = ttmc.id_agente_modulo
+										AND ttmc.id_tag IN (%s)',
+								is_array($group_tags) ? implode(',', $group_tags) : $group_tags);
+		}
+		
+		$agent_condition = sprintf('SELECT tamc.id_agente_modulo
+									FROM tagente_modulo tamc
+									%s
+									INNER JOIN tagente tac
+										ON tamc.id_agente = tac.id_agente
+											AND tac.id_grupo = %d',
+									$tag_join, $group_id);
+		$sql_condition = sprintf('(%sid_agente_modulo IN (%s))', $modules_table, $agent_condition);
+		
+		$group_conditions[] = $sql_condition;
+		
+		$i++;
+	}
+	
+	if (!empty($group_conditions))
+		$condition = implode(' OR ', $group_conditions);
+	$condition = !empty($condition) ? "($condition)" : '';
+	
+	return $condition;
+}
+
+// The old function will be keeped to serve as reference of the changes done
+/**
+ * Transform the acl_groups data into a SQL condition
+ * 
+ * @param mixed acl_groups data calculated in tags_get_acl_tags function
+ * 
+ * @return string SQL condition for tagente_module
+ */
+function tags_get_acl_tags_module_condition_old($acltags, $modules_table = '') {
 	if (!empty($modules_table)) {
 		$modules_table .= '.';
 	}

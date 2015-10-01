@@ -232,29 +232,27 @@ if ($tag_filter !== 0) {
 // Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
 $groups = users_get_groups($config["id_user"]);
 
-if ($ag_group !== 0) {
-	$sql_conditions_tags = tags_get_acl_tags($config['id_user'],
-		$ag_group, 'AR', 'module_condition', 'AND', 'tagente_modulo',
-		true, array(), true);
-} else {
-	$sql_conditions_tags = tags_get_acl_tags(
-		$config['id_user'], array_keys($groups), 'AR',
-		'module_condition', 'AND', 'tagente_modulo', true, array(),
-		true);
-}
-
-if (is_numeric($sql_conditions_tags)) {
-	$sql_conditions_tags = ' AND 1 = 0';
+// Apply the module ACL with tags
+$sql_conditions_tags = '';
+if (!users_is_admin()) {
+	if ($ag_group !== 0) {
+		$sql_conditions_tags = tags_get_acl_tags($config['id_user'],
+			$ag_group, 'AR', 'module_condition', 'AND', 'tagente_modulo',
+			true, array(), true);
+	} else {
+		$sql_conditions_tags = tags_get_acl_tags(
+			$config['id_user'], array_keys($groups), 'AR',
+			'module_condition', 'AND', 'tagente_modulo', true, array(),
+			true);
+	}
+	if (is_numeric($sql_conditions_tags)) {
+		$sql_conditions_tags = ' AND 1 = 0';
+	}
 }
 
 // Two modes of filter. All the filters and only ACLs filter
 $sql_conditions_all = $sql_conditions_base . $sql_conditions . $sql_conditions_group . $sql_conditions_tags . $sql_conditions_custom_fields;
 $sql_conditions_acl = $sql_conditions_base . $sql_conditions_group . $sql_conditions_tags . $sql_conditions_custom_fields;
-
-if (!$strict_user) {
-	$sql_conditions_all =  $sql_conditions_base . $sql_conditions . $sql_conditions_group . $sql_conditions_custom_fields;
-	$sql_conditions_acl = $sql_conditions_base . $sql_conditions_group . $sql_conditions_custom_fields;
-}
 
 // Get count to paginate
 if (!defined('METACONSOLE')) 

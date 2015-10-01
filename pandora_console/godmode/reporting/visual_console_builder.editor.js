@@ -40,7 +40,7 @@ function toggle_advance_options_palette(close) {
 	else {
 		$("#advance_options").css('display', 'none');
 	}
-	
+
 	if (close == false) {
 		$("#advance_options").css('display', 'none');
 	}
@@ -73,29 +73,29 @@ function visual_map_main() {
 			font = data['font'];
 		}
 	});
-	
+
 	//Get the list of posible parents
 	parents = Base64.decode($("input[name='parents_load']").val());
 	parents = eval("(" + parents + ")");
-	
+
 	eventsBackground();
 	eventsItems();
-	
+
 	//Fixed to wait the load of images.
 	$(window).load(function() {
 			draw_lines(lines, 'background', true);
-			
+
 			draw_user_lines("", 0, 0, 0 , 0, 0, true);
-			
+
 			//~ center_labels();
 		}
 	);
-	
+
 	obj_js_user_lines = new jsGraphics("background");
-	
+
 	$("input[name='radio_choice']").on('change', function() {
 		var radio_value = $("input[name='radio_choice']:checked").val();
-		
+
 		if ((creationItem == 'module_graph') || (selectedItem == 'module_graph')) {
 			if (radio_value == "module_graph") {
 				$("#custom_graph_row").css('display', 'none');
@@ -109,7 +109,7 @@ function visual_map_main() {
 			}
 		}
 	});
-	
+
 	//Resize the view to adapt the screen size.
 	if ($("#main").length) {
 		//Console
@@ -140,7 +140,7 @@ var metaconsole = null;
 function is_metaconsole() {
 	if (metaconsole === null)
 		metaconsole = $("input[name='metaconsole']").val();
-	
+
 	if (metaconsole != 0)
 		return true;
 	else
@@ -148,12 +148,12 @@ function is_metaconsole() {
 }
 
 function update_button_palette_callback() {
-	
-	
+
+
 	var values = {};
-	
+
 	values = readFields();
-	
+
 	// TODO VALIDATE DATA
 	switch (selectedItem) {
 		case 'background':
@@ -165,12 +165,12 @@ function update_button_palette_callback() {
 			}
 			$("#background").css('width', values['width']);
 			$("#background").css('height', values['height']);
-			
+
 			//$("#background").css('background', 'url(images/console/background/' + values['background'] + ')');
-			
+
 			$("#background_img").attr('src', "images/spinner.gif");
 			set_image("background", null, image);
-			
+
 			idElement = 0;
 			break;
 		case 'box_item':
@@ -183,7 +183,7 @@ function update_button_palette_callback() {
 		case 'group_item':
 		case 'static_graph':
 			$("#text_" + idItem).html(values['label']);
-			
+
 			if ((values['width'] != 0) && (values['height'] != 0)) {
 				$("#image_" + idItem).attr('width', values['width']);
 				$("#image_" + idItem).attr('height', values['height']);
@@ -207,7 +207,7 @@ function update_button_palette_callback() {
 			else {
 				setPercentileBar(idItem, values);
 			}
-			
+
 			break;
 		case 'module_graph':
 			$("#text_" + idItem).html(values['label']);
@@ -225,7 +225,7 @@ function update_button_palette_callback() {
 			break;
 		case 'icon':
 			$("#image_" + idItem).attr('src', "images/spinner.gif");
-			
+
 			if ((values['width'] != 0) && (values['height'] != 0)) {
 				$("#image_" + idItem).attr('width', values['width']);
 				$("#image_" + idItem).attr('height', values['height']);
@@ -248,28 +248,28 @@ function update_button_palette_callback() {
 			}
 			break;
 	}
-	
+
 	updateDB(selectedItem, idItem , values);
-	
+
 	toggle_item_palette();
 }
 
 function readFields() {
 	metaconsole = $("input[name='metaconsole']").val();
-	
+
 	var values = {};
-	
+
 	values['label'] = $("input[name=label]").val();
-	
-	
+
+
 	var text = tinymce.get('text-label').getContent();
 	values['label'] = text;
-	
+
 	values['image'] = $("select[name=image]").val();
 	values['background_color'] = $("select[name=background_color]").val();
-	values['left'] = $("input[name=left]").val(); 
-	values['top'] = $("input[name=top]").val(); 
-	values['agent'] = $("input[name=agent]").val(); 
+	values['left'] = $("input[name=left]").val();
+	values['top'] = $("input[name=top]").val();
+	values['agent'] = $("input[name=agent]").val();
 	values['module'] = $("select[name=module]").val();
 	values['process_simple_value'] = $("select[name=process_value]").val();
 	values['background'] = $("#background_image").val();
@@ -299,7 +299,7 @@ function readFields() {
 	values['line_width'] = parseInt(
 		$("input[name='line_width']").val());
 	values['line_color'] = $("input[name='line_color']").val();
-	
+
 	if (is_metaconsole()) {
 		values['metaconsole'] = 1;
 		values['id_agent'] = $("#hidden-agent").val();
@@ -309,19 +309,19 @@ function readFields() {
 	else {
 		values['metaconsole'] = 0;
 	}
-	
+
 	if (typeof(enterprise_readFields) == 'function') {
 		//The parameter is a object and the function can change or add
 		//attributes.
 		enterprise_readFields(values);
 	}
-	
+
 	return values;
 }
 
 function create_button_palette_callback() {
 	var values = readFields();
-	
+
 	//VALIDATE DATA
 	var validate = true;
 	switch (creationItem) {
@@ -398,7 +398,7 @@ function create_button_palette_callback() {
 			}
 			break;
 	}
-	
+
 	if (validate) {
 		switch (creationItem) {
 			case 'line_item':
@@ -408,22 +408,22 @@ function create_button_palette_callback() {
 				insertDB(creationItem, values);
 				break;
 		}
-		
-		
+
+
 		toggle_item_palette();
 	}
 }
 
 function delete_user_line(idElement) {
 	var found = null;
-	
+
 	jQuery.each(user_lines, function(iterator, user_line) {
 		if (user_line['id'] == idElement) {
 			found = iterator;
 			return;
 		}
 	});
-	
+
 	if (found != null) {
 		user_lines.splice(found, 1);
 	}
@@ -431,26 +431,26 @@ function delete_user_line(idElement) {
 
 function update_user_line(type, idElement, top, left) {
 	jQuery.each(user_lines, function(iterator, user_line) {
-		
+
 		if (user_line['id'] != idElement)
 			return;
-		
+
 		switch (type) {
 			// -- line_item --
 			case 'handler_start':
 			// ---------------
-				
+
 				user_lines[iterator]['start_x'] = left;
 				user_lines[iterator]['start_y'] = top;
-				
+
 				break;
 			// -- line_item --
 			case 'handler_end':
 			// ---------------
-				
+
 				user_lines[iterator]['end_x'] = left;
 				user_lines[iterator]['end_y'] = top;
-				
+
 				break;
 		}
 	});
@@ -458,13 +458,13 @@ function update_user_line(type, idElement, top, left) {
 
 function draw_user_lines(color, thickness, start_x, start_y , end_x,
 	end_y, only_defined_lines) {
-		
-		
+
+
 	obj_js_user_lines.clear();
-	
+
 	// Draw the previous lines
 	for (iterator = 0; iterator < user_lines.length; iterator++) {
-		
+
 		obj_js_user_lines.setStroke(user_lines[iterator]['line_width']);
 		obj_js_user_lines.setColor(user_lines[iterator]['line_color']);
 		obj_js_user_lines.drawLine(
@@ -473,77 +473,77 @@ function draw_user_lines(color, thickness, start_x, start_y , end_x,
 			parseInt(user_lines[iterator]['end_x']),
 			parseInt(user_lines[iterator]['end_y']));
 	}
-	
-	
+
+
 	if (typeof(only_defined_lines) == "undefined") {
 		only_defined_lines = false;
 	}
-	
+
 	if (!only_defined_lines) {
 		obj_js_user_lines.setStroke(thickness);
 		obj_js_user_lines.setColor(color);
 		obj_js_user_lines.drawLine(start_x, start_y, end_x, end_y);
 	}
-	
+
 	obj_js_user_lines.paint();
 }
 
 function create_line(step, values) {
-	
+
 	$('.item').unbind('click');
 	$('.item').unbind('dblclick');
 	$('.item').unbind('dragstop');
 	$('.item').unbind('dragstart');
-	
+
 	$('#background').unbind('click');
 	$('#background').unbind('dblclick');
-	
+
 	switch (step) {
 		case 'step_1':
 			$("#background *").css("cursor", "crosshair");
-			
-			
+
+
 			$("#background *")
 				.on('mousemove', function(e) {
-					
+
 					$('#div_step_1').css({
 						left:	e.offsetX,
 						top:	e.offsetY
 					});
 					$('#div_step_1').show();
-					
+
 					// 2 for the black border of background
 					values['line_start_x'] = e.offsetX;
 					values['line_start_y'] = e.offsetY;
-					
+
 				});
-			
-			
+
+
 			$("#background *")
 				.on('click', function(e) {
 					create_line('step_2', values);
 				});
-			
+
 			break;
 		case 'step_2':
 			$('#div_step_1').hide();
 			$("#background *").off('mousemove');
 			$("#background *").off('click');
-			
-			
+
+
 			$("#background *")
 				.on('mousemove', function(e) {
-					
+
 					$('#div_step_2').css({
 						left:	e.offsetX,
 						top:	e.offsetY
 					});
 					$('#div_step_2').show();
-					
+
 					// 2 for the black border of background
 					values['line_end_x'] = e.offsetX;
 					values['line_end_y'] = e.offsetY;
-					
+
 					draw_user_lines(
 						values['line_color'],
 						values['line_width'],
@@ -552,7 +552,7 @@ function create_line(step, values) {
 						values['line_end_x'],
 						values['line_end_y']);
 				});
-			
+
 			$("#background *")
 				.on('click', function(e) {
 					create_line('step_3', values);
@@ -562,11 +562,11 @@ function create_line(step, values) {
 			$('#div_step_2').hide();
 			$("#background *").off('mousemove');
 			$("#background *").off('click');
-			
+
 			$("#background *").css("cursor", "");
-			
+
 			insertDB("line_item", values);
-			
+
 			eventsItems();
 			eventsBackground();
 			break;
@@ -575,10 +575,10 @@ function create_line(step, values) {
 
 function toggle_item_palette() {
 	var item = null;
-	
+
 	if (is_opened_palette) {
 		is_opened_palette = false;
-		
+
 		activeToolboxButton('static_graph', true);
 		activeToolboxButton('module_graph', true);
 		activeToolboxButton('simple_value', true);
@@ -588,23 +588,23 @@ function toggle_item_palette() {
 		activeToolboxButton('group_item', true);
 		activeToolboxButton('box_item', true);
 		activeToolboxButton('line_item', true);
-		
+
 		if (typeof(enterprise_activeToolboxButton) == 'function') {
 			enterprise_activeToolboxButton(true);
 		}
-		
+
 		$(".item").draggable("enable");
 		$("#background").resizable('enable');
 		$("#properties_panel").hide("fast");
-		
+
 		toggle_advance_options_palette(false);
 	}
 	else {
 		is_opened_palette = true;
-		
+
 		$(".item").draggable("disable");
 		$("#background").resizable('disable');
-		
+
 		activeToolboxButton('static_graph', false);
 		activeToolboxButton('module_graph', false);
 		activeToolboxButton('simple_value', false);
@@ -614,22 +614,22 @@ function toggle_item_palette() {
 		activeToolboxButton('group_item', false);
 		activeToolboxButton('box_item', false);
 		activeToolboxButton('line_item', false);
-		
+
 		activeToolboxButton('copy_item', false);
 		activeToolboxButton('edit_item', false);
 		activeToolboxButton('delete_item', false);
 		activeToolboxButton('show_grid', false);
-		
+
 		if (typeof(enterprise_activeToolboxButton) == 'function') {
 			enterprise_activeToolboxButton(false);
 		}
-		
-		
-		
-		
+
+
+
+
 		if (creationItem != null) {
 			//Create a item
-			
+
 			activeToolboxButton(creationItem, true);
 			item = creationItem;
 			$("#button_update_row").css('display', 'none');
@@ -639,10 +639,10 @@ function toggle_item_palette() {
 		}
 		else if (selectedItem != null) {
 			//Edit a item
-			
+
 			item = selectedItem;
 			toolbuttonActive = item;
-			
+
 			switch (item) {
 				case 'handler_start':
 				case 'handler_end':
@@ -652,19 +652,19 @@ function toggle_item_palette() {
 					activeToolboxButton(toolbuttonActive, true);
 					break;
 			}
-			
-			
+
+
 			$("#button_create_row").css('display', 'none');
 			$("#button_update_row").css('display', '');
 			cleanFields();
-			
+
 			loadFieldsFromDB(item);
 		}
-		
+
 		hiddenFields(item);
-		
-		
-		
+
+
+
 		$("#properties_panel").show("fast");
 	}
 }
@@ -681,7 +681,7 @@ function fill_parent_select(id_item) {
 		if (id_item == key) {
 			return; //continue
 		}
-		
+
 		$("#parent").append($('<option value="' + key + '">' +
 			value + '</option>'));
 	});
@@ -699,8 +699,8 @@ function loadFieldsFromDB(item) {
 			background: "black"
 		}
 	});
-	
-	
+
+
 	parameter = Array();
 	parameter.push ({name: "page",
 		value: "include/ajax/visual_console_builder.ajax"});
@@ -709,9 +709,9 @@ function loadFieldsFromDB(item) {
 		value: id_visual_console});
 	parameter.push ({name: "type", value: item});
 	parameter.push ({name: "id_element", value: idItem});
-	
+
 	set_label = false;
-	
+
 	jQuery.ajax({
 		url: get_url_ajax(),
 		data: parameter,
@@ -719,25 +719,25 @@ function loadFieldsFromDB(item) {
 		dataType: 'json',
 		success: function (data) {
 			var moduleId = 0;
-			
+
 			fill_parent_select(idItem);
-			
+
 			jQuery.each(data, function(key, val) {
 				if (key == 'background')
 					$("#background_image").val(val);
 				if (key == 'width') $("input[name=width]").val(val);
 				if (key == 'height')
 					$("input[name=height]").val(val);
-				
+
 				if (key == 'label') {
 					tinymce.get('text-label')
 						.setContent("");
 					$("input[name=label]").val("");
-					
+
 					tinymce.get('text-label').setContent(val);
 					$("input[name=label]").val(val);
 				}
-				
+
 				if (key == 'enable_link') {
 					if (val == "1") {
 						$("input[name=enable_link]")
@@ -748,14 +748,14 @@ function loadFieldsFromDB(item) {
 							.prop("checked", false);
 					}
 				}
-				
+
 				if (key == 'image') {
 					//Load image preview
 					$("select[name=image]").val(val);
 					$("select[name=background_color]").val(val);
 					showPreview(val);
 				}
-				
+
 				if (key == 'pos_x') $("input[name=left]").val(val);
 				if (key == 'pos_y') $("input[name=top]").val(val);
 				if (key == 'agent_name') {
@@ -777,7 +777,7 @@ function loadFieldsFromDB(item) {
 					var periodId = $('#hidden-period').attr('class');
 					$('#' + periodId + '_select option')
 						.each(function() {
-						
+
 						if($(this).val() == val) {
 							$(this).prop('selected', true);
 							$(this).trigger('change');
@@ -812,7 +812,7 @@ function loadFieldsFromDB(item) {
 					$("input[name=width_module_graph]").val(val);
 				if (key == 'height_module_graph')
 					$("input[name=height_module_graph]").val(val);
-				
+
 				if (key == 'type_percentile') {
 					if (val == 'percentile') {
 						$("input[name=type_percentile][value=percentile]")
@@ -823,7 +823,7 @@ function loadFieldsFromDB(item) {
 							.attr("checked", "checked");
 					}
 				}
-				
+
 				if (key == 'value_show') {
 					if (val == 'percent') {
 						$("input[name=value_show][value=percent]")
@@ -834,12 +834,12 @@ function loadFieldsFromDB(item) {
 							.attr("checked", "checked");
 					}
 				}
-				
+
 				if (key == 'id_group') {
 					$("select[name=group]").val(val);
 				}
-				
-				
+
+
 				if (is_metaconsole()) {
 					if (key == 'id_agent') {
 						$("#hidden-agent").val(val);
@@ -848,7 +848,7 @@ function loadFieldsFromDB(item) {
 						$("#id_server_name").val(val);
 					}
 				}
-				
+
 				if (key == 'width_box')
 					$("input[name='width_box']").val(val);
 				if (key == 'height_box')
@@ -872,9 +872,9 @@ function loadFieldsFromDB(item) {
 					$("#line_color_row .ColorPickerDivSample")
 						.css('background-color', val);
 				}
-				
+
 			});
-			
+
 			if (data.type == 1) {
 				if (data.id_custom_graph > 0) {
 					$("input[name='radio_choice'][value='custom_graph']")
@@ -889,11 +889,11 @@ function loadFieldsFromDB(item) {
 					$("input[name='radio_choice']").trigger('change');
 				}
 			}
-			
+
 			if (typeof(enterprise_loadFieldsFromDB) == 'function') {
 				enterprise_loadFieldsFromDB(data);
 			}
-			
+
 			$("#loading_in_progress_dialog").dialog("close");
 		}
 	});
@@ -901,12 +901,12 @@ function loadFieldsFromDB(item) {
 
 function setAspectRatioBackground(side) {
 	toggle_item_palette();
-	
+
 	parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_original_size_background"});
 	parameter.push ({name: "background", value: $("#background_img").attr('src')});
-	
+
 	jQuery.ajax({
 		url: "ajax.php",
 		data: parameter,
@@ -915,19 +915,19 @@ function setAspectRatioBackground(side) {
 		success: function(data) {
 			old_width = parseInt($("#background").css('width').replace('px', ''));
 			old_height = parseInt($("#background").css('height').replace('px', ''));
-			
+
 			img_width = data[0];
 			img_height = data[1];
-			
+
 			if (side == 'width') {
 				ratio = old_width / img_width;
-				
+
 				width = old_width;
 				height = img_height * ratio;
 			}
 			else if (side == 'height') {
 				ratio = old_height / img_height;
-				
+
 				width = img_width * ratio;
 				height = old_height;
 			}
@@ -935,22 +935,22 @@ function setAspectRatioBackground(side) {
 				width = img_width;
 				height = img_height;
 			}
-			
+
 			var values = {};
 			values['width'] = width;
 			values['height'] = height;
-			
+
 			updateDB('background', 0, values);
-			
+
 			move_elements_resize(old_width, old_height, width, height);
 		}
 	});
-	
+
 	toggle_item_palette();
 }
 
 function hiddenFields(item) {
-	
+
 	//The method to hidden and show is
 	//a row have a id and multiple class
 	//then the steps is
@@ -958,113 +958,113 @@ function hiddenFields(item) {
 	//  or hide <tr class="title_panel_span">...</tr>
 	//- unhide the row with <tr id="<id>" class="<item> ...">...</tr>
 	//  or <tr id="title_panel_span_<item>">...</tr>
-	
+
 	$(".title_panel_span").css('display', 'none');
-	$("#title_panel_span_" + item).css('display', 'inline'); 
-	
+	$("#title_panel_span_" + item).css('display', 'inline');
+
 	$("#label_row").css('display', 'none');
 	$("#label_row." + item).css('display', '');
-	
+
 	$("#image_row").css('display', 'none');
 	$("#image_row." + item).css('display', '');
-	
+
 	$("#enable_link_row").css('display', 'none');
 	$("#enable_link_row." + item).css('display', '');
-	
+
 	$("#preview_row").css('display', 'none');
 	$("#preview_row." + item).css('display', '');
-	
+
 	$("#position_row").css('display', 'none');
 	$("#position_row." + item).css('display', '');
-	
+
 	$("#agent_row").css('display', 'none');
 	$("#agent_row." + item).css('display', '');
-	
+
 	$("#module_row").css('display', 'none');
 	$("#module_row." + item).css('display', '');
-	
+
 	$("#group_row").css('display', 'none');
 	$("#group_row." + item).css('display', '');
-	
+
 	$("#process_value_row").css('display', 'none');
 	$("#process_value_row." + item).css('display', '');
-	
+
 	$("#background_row_1").css('display', 'none');
 	$("#background_row_1." + item).css('display', '');
-	
+
 	$("#background_row_2").css('display', 'none');
 	$("#background_row_2." + item).css('display', '');
-	
+
 	$("#background_row_3").css('display', 'none');
 	$("#background_row_3." + item).css('display', '');
-	
+
 	$("#background_row_4").css('display', 'none');
 	$("#background_row_4." + item).css('display', '');
-	
+
 	$("#percentile_bar_row_1").css('display', 'none');
 	$("#percentile_bar_row_1." + item).css('display', '');
-	
+
 	$("#percentile_bar_row_2").css('display', 'none');
 	$("#percentile_bar_row_2." + item).css('display', '');
-	
+
 	$("#percentile_item_row_3").css('display', 'none');
 	$("#percentile_item_row_3." + item).css('display', '');
-	
+
 	$("#percentile_item_row_4").css('display', 'none');
 	$("#percentile_item_row_4." + item).css('display', '');
-	
+
 	$("#period_row").css('display', 'none');
 	$("#period_row." + item).css('display', '');
-	
+
 	$("#size_row").css('display', 'none');
 	$("#size_row." + item).css('display', '');
-	
+
 	$("#parent_row").css('display', 'none');
 	$("#parent_row." + item).css('display', '');
-	
+
 	$("#map_linked_row").css('display', 'none');
 	$("#map_linked_row." + item).css('display', '');
-	
+
 	$("#module_graph_size_row").css('display', 'none');
 	$("#module_graph_size_row." + item).css('display', '');
-	
+
 	$("#background_color").css('display', 'none');
 	$("#background_color." + item).css('display', '');
-	
+
 	$("#radio_choice_graph").css('display', 'none');
 	$("#radio_choice_graph." + item).css('display', '');
-	
+
 	$("#custom_graph_row").css('display', 'none');
 	$("#custom_graph_row." + item).css('display', '');
-	
+
 	$("#box_size_row").css('display', 'none');
 	$("#box_size_row." + item).css('display', '');
-	
+
 	$("#border_color_row").css('display', 'none');
 	$("#border_color_row." + item).css('display', '');
-	
+
 	$("#border_width_row").css('display', 'none');
 	$("#border_width_row." + item).css('display', '');
-	
+
 	$("#fill_color_row").css('display', 'none');
 	$("#fill_color_row." + item).css('display', '');
-	
+
 	$("#line_color_row").css('display', 'none');
 	$("#line_color_row." + item).css('display', '');
-	
+
 	$("#line_width_row").css('display', 'none');
 	$("#line_width_row." + item).css('display', '');
-	
-	
-	
-	
-	
+
+
+
+
+
 	$("input[name='radio_choice']").trigger('change');
-	
+
 	if (typeof(enterprise_hiddenFields) == 'function') {
 		enterprise_hiddenFields(item);
 	}
-	
+
 	var code_control = tinyMCE.activeEditor.controlManager.controls['text-label_code'];
 	if (item == 'label') {
 		code_control.setDisabled(false);
@@ -1100,37 +1100,37 @@ function cleanFields(item) {
 	$("input[name='fill_color']").val('#ffffff');
 	$("input[name='line_width']").val(3);
 	$("input[name='line_color']").val('#000000');
-	
-	
+
+
 	$("#preview").empty();
-	
-	
+
+
 	if (item == "simple_value") {
 		$("input[name=label]").val('(_VALUE_)');
 		tinymce.get('text-label').setContent("(_VALUE_)");
 	}
-	
+
 	//fill_parent_select();
-	
+
 	var anyText = $("#any_text").html(); //Trick for catch the translate text.
 	$("#module")
 		.empty()
 		.append($('<option value="0" selected="selected">' + anyText + '</option></select>'));
-	
+
 	//Code for the graphs
 	$("input[name='radio_choice'][value='module_graph']")
 		.prop('checked', true);
 	$("input[name='radio_choice']").trigger('change');
-	
+
 	//Select none custom graph
 	$("#custom_graph option[value=0]")
 		.prop('selected', true);
-	
+
 }
 
 function set_static_graph_status(idElement, image, status) {
 	$("#image_" + idElement).attr('src', "images/spinner.gif");
-	
+
 	if (typeof(status) == 'undefined') {
 		var parameter = Array();
 		parameter.push ({
@@ -1144,14 +1144,14 @@ function set_static_graph_status(idElement, image, status) {
 			value: idElement});
 		parameter.push ({name: "id_visual_console",
 			value: id_visual_console});
-		
+
 		if (is_metaconsole()) {
 			parameter.push ({name: "metaconsole", value: 1});
 		}
 		else {
 			parameter.push ({name: "metaconsole", value: 0});
 		}
-		
+
 		$('#hidden-status_' + idElement).val(3);
 		jQuery.ajax ({
 			type: 'POST',
@@ -1161,10 +1161,10 @@ function set_static_graph_status(idElement, image, status) {
 				set_static_graph_status(idElement, image, data);
 			}
 		});
-		
+
 		return;
 	}
-	
+
 	switch (status) {
 		case '1':
 			//Critical (BAD)
@@ -1188,7 +1188,7 @@ function set_static_graph_status(idElement, image, status) {
 			suffix = ".png";
 			break;
 	}
-	
+
 	set_image("image", idElement, image  + suffix);
 }
 
@@ -1201,7 +1201,7 @@ function set_image(type, idElement, image) {
 		item = "background_img";
 		img_src = "images/console/background/" + image;
 	}
-	
+
 	var params = [];
 	params.push("get_image_path=1");
 	params.push("img_src=" + img_src);
@@ -1240,14 +1240,14 @@ function setModuleGraph(id_data) {
 			width = data['width'];
 			period = data['period'];
 			background_color = data['image'];
-			
+
 			if (is_metaconsole()) {
 				id_metaconsole = data['id_metaconsole'];
 			}
-			
+
 			//Cleaned array
 			parameter = Array();
-			
+
 			parameter.push ({name: "page",
 				value: "include/ajax/visual_console_builder.ajax"});
 			parameter.push ({name: "action", value: "get_image_sparse"});
@@ -1267,10 +1267,9 @@ function setModuleGraph(id_data) {
 				url: get_url_ajax(),
 				data: parameter,
 				type: "POST",
-				dataType: 'json', //The ajax return the data as text.
+				dataType: 'json',
 				success: function (data)
 				{
-					console.log(data);
 					if (data['no_data'] == true) {
 						$('#' + id_data).html(data['url']);
 					}
@@ -1281,8 +1280,8 @@ function setModuleGraph(id_data) {
 			});
 		}
 	});
-	
-	
+
+
 }
 
 function setModuleValue(id_data, process_simple_value, period) {
@@ -1310,17 +1309,17 @@ function setModuleValue(id_data, process_simple_value, period) {
 
 function setPercentileBar(id_data, values) {
 	metaconsole = $("input[name='metaconsole']").val();
-	
+
 	var url_hack_metaconsole = '';
 	if (is_metaconsole()) {
 		url_hack_metaconsole = '../../';
 	}
-	
+
 	max_percentile = values['max_percentile'];
 	width_percentile = values['width_percentile'];
-	
+
 	var parameter = Array();
-	
+
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_value"});
 	parameter.push ({name: "id_element", value: id_data});
@@ -1337,29 +1336,29 @@ function setPercentileBar(id_data, values) {
 			//max_percentile = data['max_percentile'];
 			//width_percentile = data['width_percentile'];
 			unit_text = false;
-			
+
 			if ((data['unit_text'] != false) || typeof(data['unit_text']) != 'boolean') {
 				unit_text = data['unit_text'];
 			}
-			
+
 			colorRGB = data['colorRGB'];
-			
+
 			if ( max_percentile > 0)
 				var percentile = Math.round(module_value / max_percentile * 100);
 			else
 				var percentile = 100;
-			
+
 			if (unit_text == false && typeof(unit_text) == 'boolean') {
 				value_text = percentile + "%";
 			}
 			else {
 				value_text = module_value + " " + unit_text;
 			}
-			
-			var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&height=15&' + 
+
+			var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbar&height=15&' +
 				'width=' + width_percentile + '&mode=1&progress=' + percentile +
 				'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
-			
+
 			$("#image_" + id_data).attr('src', img);
 		}
 	});
@@ -1367,17 +1366,17 @@ function setPercentileBar(id_data, values) {
 
 function setPercentileBubble(id_data, values) {
 	metaconsole = $("input[name='metaconsole']").val();
-	
+
 	var url_hack_metaconsole = '';
 	if (is_metaconsole()) {
 		url_hack_metaconsole = '../../';
 	}
-	
+
 	max_percentile = values['max_percentile'];
 	width_percentile = values['width_percentile'];
-	
+
 	var parameter = Array();
-	
+
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_module_value"});
 	parameter.push ({name: "id_element", value: id_data});
@@ -1397,20 +1396,20 @@ function setPercentileBubble(id_data, values) {
 			if ((data['unit_text'] != false) || typeof(data['unit_text']) != 'boolean')
 				unit_text = data['unit_text'];
 			colorRGB = data['colorRGB'];
-			
+
 			if ( max_percentile > 0)
 				var percentile = Math.round(module_value / max_percentile * 100);
 			else
 				var percentile = 100;
-			
+
 			if (unit_text == false && typeof(unit_text) == 'boolean') {
 				value_text = percentile + "%";
 			}
 			else {
 				value_text = module_value + " " + unit_text;
 			}
-			
-			var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble&height=' + width_percentile + '&' + 
+
+			var img = url_hack_metaconsole + 'include/graphs/fgraph.php?homeurl=../../&graph_type=progressbubble&height=' + width_percentile + '&' +
 				'width=' + width_percentile + '&mode=1&progress=' + percentile +
 				'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
 
@@ -1425,8 +1424,8 @@ function get_image_url(img_src) {
 	parameter.push ({name: "page", value: "include/ajax/skins.ajax"});
 	parameter.push ({name: "get_image_path", value: true});
 	parameter.push ({name: "img_src", value: img_src});
-	parameter.push ({name: "only_src", value: true});	
-	
+	parameter.push ({name: "only_src", value: true});
+
 	return $.ajax ({
 		type: 'GET',
 		url: get_url_ajax(),
@@ -1437,16 +1436,16 @@ function get_image_url(img_src) {
 
 function set_color_line_status(lines, line, id_data, values) {
 	metaconsole = $("input[name='metaconsole']").val();
-	
-	
-	
+
+
+
 	var parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "get_color_line"});
 	parameter.push ({name: "id_element", value: id_data});
-	
+
 	var color = null;
-	
+
 	jQuery.ajax({
 		url: get_url_ajax(),
 		data: parameter,
@@ -1454,20 +1453,20 @@ function set_color_line_status(lines, line, id_data, values) {
 		dataType: 'json',
 		success: function (data) {
 			color = data['color_line'];
-			
+
 			var line = {
 				"id": id_data,
 				"node_begin":  values['parent'],
 				"node_end": id_data,
 				"color": color };
-			
-			
+
+
 			lines.push(line);
-			
+
 			refresh_lines(lines, 'background', true);
 		}
 	});
-	
+
 }
 
 
@@ -1477,22 +1476,22 @@ function createItem(type, values, id_data) {
 	var sizeStyle = '';
 	var imageSize = '';
 	var item = null;
-	
+
 	metaconsole = $("input[name='metaconsole']").val();
-	
-	
+
+
 	switch (type) {
 		case 'box_item':
 			item = $('<div id="' + id_data + '" '
 				+ 'class="item box_item" '
 				+ 'style="text-align: center; '
-					+ 'position: absolute; ' 
+					+ 'position: absolute; '
 					+ 'display: inline-block; '
 					+ 'z-index: 1; '
 					+ 'top: ' + values['top'] + 'px; '
 					+ 'left: ' + values['left'] + 'px;">'
 					+ '<div '
-					+ 'style=" ' 
+					+ 'style=" '
 					+ 'width: ' + values['width_box'] + 'px;'
 					+ 'height: ' + values['height_box'] + 'px;'
 					+ 'border-style: solid;'
@@ -1517,9 +1516,9 @@ function createItem(type, values, id_data) {
 					class_type = "static_graph";
 					break;
 			}
-			
+
 			img_src = "images/spinner.gif";
-			
+
 			item = $('<div></div>')
 				.attr('id', id_data)
 				.attr('class', 'item ' + class_type)
@@ -1535,7 +1534,7 @@ function createItem(type, values, id_data) {
 				item.css('width', values['width']  + 'px')
 					.css('height', values['height'] + 'px');
 			}
-			
+
 			var $image = $('<img></img>')
 				.attr('id', 'image_' + id_data)
 				.attr('class', 'image')
@@ -1547,55 +1546,55 @@ function createItem(type, values, id_data) {
 				$image.attr('width', values['width'])
 					.attr('height', values['height']);
 			}
-			
+
 			var $span = $('<span></span>')
 				.attr('id', 'text_' + id_data)
 				.attr('class', 'text')
 				.append(values['label']);
-			
+
 			var $input = $('<input></input>')
 				.attr('id', 'hidden-status_' + id_data)
 				.attr('type', 'hidden')
 				.attr('value', -1)
 				.attr('name', 'status_' + id_data);
-			
+
 			item
 				.append($image)
 				.append($image)
 				.append($span)
 				.append($input);
-			
+
 			set_static_graph_status(id_data, values['image']);
-			
+
 			break;
 		case 'percentile_bar':
 		case 'percentile_item':
 			var sizeStyle = '';
 			var imageSize = '';
-			
+
 			if (values['type_percentile'] == 'percentile') {
 				item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: center; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
-						'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
+						'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' +
 						'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
 						'</div>'
 				);
-				
+
 				setPercentileBar(id_data, values);
 			}
 			else {
 				item = $('<div id="' + id_data + '" class="item percentile_item" style="text-align: center; position: absolute; display: inline-block; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
-						'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' + 
+						'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' +
 						'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" />' +
 						'</div>'
 				);
-				
+
 				setPercentileBubble(id_data, values);
 			}
 			break;
 		case 'module_graph':
 			sizeStyle = '';
 			imageSize = '';
-			
+
 			item = $('<div id="' + id_data + '" class="item module_graph" style="text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text">' + values['label'] + '</span><br />' +
 					'<img class="image" id="image_' + id_data + '" src="images/spinner.gif" style="border:1px solid #808080;" />' +
@@ -1606,7 +1605,7 @@ function createItem(type, values, id_data) {
 		case 'simple_value':
 			sizeStyle = '';
 			imageSize = '';
-			
+
 			item = $('<div id="' + id_data + '" class="item simple_value" style="text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span> ' +
 				'</div>'
@@ -1619,7 +1618,7 @@ function createItem(type, values, id_data) {
 					'>' +
 					'<span id="text_' + id_data + '" class="text">' +
 						values['label'] +
-					'</span>' + 
+					'</span>' +
 					'</div>'
 				);
 			break;
@@ -1632,9 +1631,9 @@ function createItem(type, values, id_data) {
 				sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';
 				imageSize = 'width="' + values['width']  + '" height="' + values['height'] + '"';
 			}
-			
+
 			item = $('<div id="' + id_data + '" class="item icon" style="text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
-				'<img id="image_' + id_data + '" class="image" src="images/spinner.gif" ' + imageSize + ' /><br />' + 
+				'<img id="image_' + id_data + '" class="image" src="images/spinner.gif" ' + imageSize + ' /><br />' +
 				'</div>'
 			);
 			var image = values['image'] + ".png";
@@ -1643,6 +1642,7 @@ function createItem(type, values, id_data) {
 		default:
 			//Maybe create in any Enterprise item.
 			if (typeof(enterprise_createItem) == 'function') {
+				values['image'] = 'visualmap.services';
 				temp_item = enterprise_createItem(type, values, id_data);
 				if (temp_item != false) {
 					item = temp_item;
@@ -1650,17 +1650,17 @@ function createItem(type, values, id_data) {
 			}
 			break;
 	}
-	
+
 	$("#background").append(item);
 	$(".item").css('z-index', '2');
 	$(".box_item").css('z-index', '1');
-	
+
 	if (values['parent'] != 0) {
 		var line = {"id": id_data,
 			"node_begin":  values['parent'],
 			"node_end": id_data,
 			"color": false };
-		
+
 		lines.push(line);
 
 		set_color_line_status(lines, line, id_data, values);
@@ -1674,7 +1674,7 @@ function addItemSelectParents(id_data, text) {
 
 function insertDB(type, values) {
 	metaconsole = $("input[name='metaconsole']").val();
-	
+
 	$("#saving_in_progress_dialog").dialog({
 		resizable: true,
 		draggable: true,
@@ -1686,10 +1686,10 @@ function insertDB(type, values) {
 			background: "black"
 		}
 	});
-	
-	
+
+
 	var id = null;
-	
+
 	parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "insert"});
@@ -1698,7 +1698,7 @@ function insertDB(type, values) {
 	jQuery.each(values, function(key, val) {
 		parameter.push ({name: key, value: val});
 	});
-	
+
 	jQuery.ajax({
 		url: get_url_ajax(),
 		data: parameter,
@@ -1711,7 +1711,7 @@ function insertDB(type, values) {
 				addItemSelectParents(id, data['text']);
 				//Reload all events for the item and new item.
 				eventsItems();
-				
+
 				switch (type) {
 					case 'line_item':
 						var line = {
@@ -1722,12 +1722,12 @@ function insertDB(type, values) {
 							"end_y":		values['line_end_y'],
 							"line_width":	values['line_width'],
 							"line_color":	values['line_color']};
-						
+
 						user_lines.push(line);
-						
+
 						// Draw handlers
 						radious_handle = 6;
-						
+
 						// Draw handler start
 						item = $('<div id="handler_start_' + id + '" ' +
 							'class="item handler_start" ' +
@@ -1736,13 +1736,13 @@ function insertDB(type, values) {
 								'position: absolute; ' +
 								'top: ' + (values['line_start_y']  - radious_handle) + 'px; ' +
 								'left: ' + (values['line_start_x']  - radious_handle) + 'px;">' +
-								
-								'<img src="' + img_handler_start + '" />' + 
-								
+
+								'<img src="' + img_handler_start + '" />' +
+
 							'</div>'
 						);
 						$("#background").append(item);
-						
+
 						// Draw handler stop
 						item = $('<div id="handler_end_' + id + '" ' +
 							'class="item handler_end" ' +
@@ -1751,15 +1751,15 @@ function insertDB(type, values) {
 								'position: absolute; ' +
 								'top: ' + (values['line_end_y']  - radious_handle) + 'px; ' +
 								'left: ' + (values['line_end_x']  - radious_handle) + 'px;">' +
-								
-								'<img src="' + img_handler_end + '" />' + 
-								
+
+								'<img src="' + img_handler_end + '" />' +
+
 							'</div>'
 						);
 						$("#background").append(item);
 						break;
 				}
-				
+
 				$("#saving_in_progress_dialog").dialog("close");
 				//Reload all events for the item and new item.
 				eventsItems();
@@ -1773,10 +1773,10 @@ function insertDB(type, values) {
 
 function updateDB_visual(type, idElement , values, event, top, left) {
 	metaconsole = $("input[name='metaconsole']").val();
-	
-	
+
+
 	radious_handle = 6;
-	
+
 	switch (type) {
 		case 'handler_start':
 			$("#handler_start_" + idElement)
@@ -1785,7 +1785,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				.css('left', left + 'px');
 			break;
 		case 'handler_end':
-			
+
 			$("#handler_end_" + idElement).css('top', (top - radious_handle) + 'px');
 			$("#handler_end_" + idElement).css('left', (left) + 'px');
 			break;
@@ -1793,9 +1793,9 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'static_graph':
 			if ((event != 'resizestop') && (event != 'show_grid')
 				&& (event != 'dragstop')) {
-				
+
 				set_static_graph_status(idElement, values['image']);
-				
+
 			}
 		case 'percentile_item':
 		case 'simple_value':
@@ -1820,7 +1820,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				$("#" + idElement).css('top', '0px').css('top', top + 'px');
 				$("#" + idElement).css('left', '0px').css('left', left + 'px');
 			}
-			
+
 			//Update the lines
 			end_foreach = false;
 			found = false;
@@ -1828,7 +1828,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				if (end_foreach) {
 					return;
 				}
-				
+
 				if (lines[i]['node_begin'] == idElement) {
 					found = true;
 					if (values['parent'] == 0) {
@@ -1838,7 +1838,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 					}
 					else {
 						if ((typeof(values['mov_left']) == 'undefined') &&
-							(typeof(values['mov_top']) == 'undefined') && 
+							(typeof(values['mov_top']) == 'undefined') &&
 							(typeof(values['absolute_left']) == 'undefined') &&
 							(typeof(values['absolute_top']) == 'undefined')) {
 							lines[i]['node_begin'] = values['parent'];
@@ -1846,7 +1846,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 					}
 				}
 			});
-			
+
 			if (typeof(values['parent']) != 'undefined') {
 				if (!found) {
 					set_color_line_status(lines, line, idElement, values);
@@ -1873,14 +1873,14 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 
 function updateDB(type, idElement , values, event) {
 	metaconsole = $("input[name='metaconsole']").val();
-	
-	
-	
+
+
+
 	var top = 0;
 	var left = 0;
-	
+
 	action = "update";
-	
+
 	//Check if the event parameter in function is passed in the call.
 	if (event != null) {
 		switch (event) {
@@ -1889,7 +1889,7 @@ function updateDB(type, idElement , values, event) {
 			//Force to move action when resize a background, for to avoid
 			//lost the label.
 			case 'dragstop':
-				
+
 				switch (type) {
 					case 'handler_start':
 						idElement = idElement.replace("handler_start_", "");
@@ -1898,12 +1898,12 @@ function updateDB(type, idElement , values, event) {
 						idElement = idElement.replace("handler_end_", "");
 						break;
 				}
-				
+
 				action = "move";
 				break;
 		}
 	}
-	
+
 	parameter = Array();
 	parameter.push({name: "page",
 		value: "include/ajax/visual_console_builder.ajax"});
@@ -1912,17 +1912,17 @@ function updateDB(type, idElement , values, event) {
 		value: id_visual_console});
 	parameter.push({name: "type", value: type});
 	parameter.push({name: "id_element", value: idElement});
-	
+
 	jQuery.each(values, function(key, val) {
 		parameter.push({name: key, value: val});
 	});
-	
-	
+
+
 	switch (type) {
 		// -- line_item --
 		case 'handler_start':
 		// ---------------
-		
+
 			if ((typeof(values['mov_left']) != 'undefined') &&
 				(typeof(values['mov_top']) != 'undefined')) {
 				top = parseInt($("#handler_start_" + idElement)
@@ -1935,11 +1935,11 @@ function updateDB(type, idElement , values, event) {
 				top = values['absolute_top'];
 				left = values['absolute_left'];
 			}
-			
+
 			//Added the radious of image point of handler
 			top = top + 6;
 			left = left + 6;
-			
+
 			update_user_line(type, idElement, top, left);
 			break;
 		// -- line_item --
@@ -1957,15 +1957,15 @@ function updateDB(type, idElement , values, event) {
 				top = values['absolute_top'];
 				left = values['absolute_left'];
 			}
-			
+
 			//Added the radious of image point of handler
 			top = top + 6;
 			left = left + 6;
-			
+
 			update_user_line(type, idElement, top, left);
 			break;
 		default:
-			
+
 			if ((typeof(values['mov_left']) != 'undefined') &&
 				(typeof(values['mov_top']) != 'undefined')) {
 				top = parseInt($("#" + idElement)
@@ -1980,7 +1980,7 @@ function updateDB(type, idElement , values, event) {
 			}
 			break;
 	}
-	
+
 	if ((typeof(top) != 'undefined') && (typeof(left) != 'undefined')) {
 		if ((typeof(values['top']) == 'undefined') &&
 			(typeof(values['left']) == 'undefined')) {
@@ -1992,8 +1992,8 @@ function updateDB(type, idElement , values, event) {
 			values['left'] = left;
 		}
 	}
-	
-	
+
+
 	success_update = false;
 	if (!autosave) {
 		list_actions_pending_save.push(parameter);
@@ -2015,15 +2015,15 @@ function updateDB(type, idElement , values, event) {
 
 function copyDB(idItem) {
 	metaconsole = $("input[name='metaconsole']").val();
-	
-	
-	
+
+
+
 	parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "copy"});
 	parameter.push ({name: "id_visual_console", value: id_visual_console});
 	parameter.push ({name: "id_element", value: idItem});
-	
+
 	jQuery.ajax({
 		url: get_url_ajax(),
 		data: parameter,
@@ -2034,10 +2034,10 @@ function copyDB(idItem) {
 				values = data['values'];
 				type = data['type'];
 				id = data['id_data'];
-				
+
 				createItem(type, values, id);
 				addItemSelectParents(id, data['text']);
-				
+
 				//Reload all events for the item and new item.
 				eventsItems();
 			}
@@ -2050,7 +2050,7 @@ function copyDB(idItem) {
 
 function deleteDB(idElement) {
 	metaconsole = $("input[name='metaconsole']").val();
-	
+
 	$("#delete_in_progress_dialog").dialog({
 		resizable: true,
 		draggable: true,
@@ -2062,13 +2062,13 @@ function deleteDB(idElement) {
 			background: "black"
 		}
 	});
-	
+
 	parameter = Array();
 	parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 	parameter.push ({name: "action", value: "delete"});
 	parameter.push ({name: "id_visual_console", value: id_visual_console});
 	parameter.push ({name: "id_element", value: idElement});
-	
+
 	jQuery.ajax({
 		url: get_url_ajax(),
 		data: parameter,
@@ -2078,39 +2078,39 @@ function deleteDB(idElement) {
 			{
 				if (data['correct']) {
 					$("#parent > option[value=" + idElement + "]").remove();
-					
-					
+
+
 					jQuery.each(lines, function(i, line) {
 						if (typeof(line) == 'undefined') {
 							return; //Continue
 						}
-						
+
 						if ((line['id'] == idElement)
 							|| (line['node_begin'] == idElement)) {
-							
+
 							lines.splice(i, 1);
 						}
 					});
-					
+
 					if ($("#handler_start_" + idElement).length ||
 						$("#handler_end_" + idElement).length) {
-						
+
 						// Line item
-						
+
 						$("#handler_start_" + idElement).remove();
 						$("#handler_end_" + idElement).remove();
-						
+
 						delete_user_line(idElement);
 					}
-					
-					
+
+
 					refresh_lines(lines, 'background', true);
-					
+
 					draw_user_lines("", 0, 0, 0 , 0, 0, true);
-					
+
 					$('#' + idElement).remove();
 					activeToolboxButton('delete_item', false);
-					
+
 					$("#delete_in_progress_dialog").dialog("close");
 				}
 				else {
@@ -2124,7 +2124,7 @@ function activeToolboxButton(id, active) {
 	if ($("input." + id + "[name=button_toolbox2]").length == 0) {
 		return;
 	}
-	
+
 	if (active) {
 		$("input." + id + "[name=button_toolbox2]")
 			.removeAttr('disabled');
@@ -2150,16 +2150,16 @@ function eventsItems(drag) {
 	if (typeof(drag) == 'undefined') {
 		drag = false;
 	}
-	
-	
+
+
 	$('.item').unbind('click');
 	$('.item').unbind('dragstop');
 	$('.item').unbind('dragstart');
-	
+
 	//$(".item").resizable(); //Disable but run in ff and in the waste (aka micro$oft IE) show ungly borders
-	
+
 	$('.item').bind('click', function(event, ui) {
-		
+
 		event.stopPropagation();
 		if (!is_opened_palette) {
 			var divParent = $(event.target);
@@ -2168,7 +2168,7 @@ function eventsItems(drag) {
 			}
 			unselectAll();
 			$(divParent).css('border', '2px blue dotted');
-			
+
 			if ($(divParent).hasClass('box_item')) {
 				creationItem = null;
 				selectedItem = 'box_item';
@@ -2259,34 +2259,34 @@ function eventsItems(drag) {
 				activeToolboxButton('delete_item', true);
 				activeToolboxButton('show_grid', false);
 			}
-			
+
 			//Maybe receive a click event any Enterprise item.
 			if (typeof(enterprise_click_item_callback) == 'function') {
 				enterprise_click_item_callback(divParent);
 			}
 		}
 	});
-	
+
 	//Double click in the item
 	$('.item').bind('dblclick', function(event, ui) {
-		
+
 		event.stopPropagation();
 		if ((!is_opened_palette) && (autosave)) {
 			toggle_item_palette();
 		}
 	});
-	
+
 	//Set the limit of draggable in the div with id "background" and set drag
 	//by default is false.
 	$(".item").draggable({containment: "#background", grid: drag});
-	
+
 	$('.item').bind('dragstart', function(event, ui) {
-		
+
 		event.stopPropagation();
 		if (!is_opened_palette) {
 			unselectAll();
 			$(event.target).css('border', '2px blue dotted');
-			
+
 			selectedItem = null;
 			if ($(event.target).hasClass('box_item')) {
 				selectedItem = 'box_item';
@@ -2318,17 +2318,17 @@ function eventsItems(drag) {
 			if ($(event.target).hasClass('handler_end')) {
 				selectedItem = 'handler_end';
 			}
-			
+
 			if (selectedItem == null) {
 				//Maybe receive a click event any Enterprise item.
 				if (typeof(enterprise_dragstart_item_callback) == 'function') {
 					selectedItem = enterprise_dragstart_item_callback(event);
 				}
 			}
-			
+
 			if (selectedItem != null) {
 				creationItem = null;
-				
+
 				switch (selectedItem) {
 					// -- line_item --
 					case 'handler_start':
@@ -2356,18 +2356,18 @@ function eventsItems(drag) {
 			}
 		}
 	});
-	
+
 	$('.item').bind('dragstop', function(event, ui) {
-		
+
 		event.stopPropagation();
-		
+
 		var values = {};
 		values['mov_left'] = ui.position.left;
-		values['mov_top'] = ui.position.top; 
-		
+		values['mov_top'] = ui.position.top;
+
 		updateDB(selectedItem, idItem, values, 'dragstop');
 	});
-	
+
 	$('.item').bind('drag', function(event, ui) {
 		if ($(event.target).hasClass('handler_start')) {
 			selectedItem = 'handler_start';
@@ -2375,11 +2375,11 @@ function eventsItems(drag) {
 		if ($(event.target).hasClass('handler_end')) {
 			selectedItem = 'handler_end';
 		}
-		
+
 		var values = {};
 		values['mov_left'] = ui.position.left;
-		values['mov_top'] = ui.position.top; 
-		
+		values['mov_top'] = ui.position.top;
+
 		switch (selectedItem) {
 			// -- line_item --
 			case 'handler_start':
@@ -2398,7 +2398,7 @@ function eventsItems(drag) {
 					.replace("handler_end_", "");
 				break;
 		}
-		
+
 		switch (selectedItem) {
 			// -- line_item --
 			case 'handler_start':
@@ -2415,13 +2415,13 @@ function eventsItems(drag) {
 					var top = values['absolute_top'];
 					var left = values['absolute_left'];
 				}
-				
+
 				//Added the radious of image point of handler
 				top = top + 6;
 				left = left + 6;
-				
+
 				update_user_line('handler_start', idElement, top, left);
-				
+
 				draw_user_lines("", 0, 0, 0 , 0, 0, true);
 				break;
 			// -- line_item --
@@ -2439,13 +2439,13 @@ function eventsItems(drag) {
 					top = values['absolute_top'];
 					left = values['absolute_left'];
 				}
-				
+
 				//Added the radious of image point of handler
 				top = top + 6;
 				left = left + 6;
-				
+
 				update_user_line('handler_end', idElement, top, left);
-				
+
 				draw_user_lines("", 0, 0, 0 , 0, 0, true);
 				break;
 		}
@@ -2457,36 +2457,36 @@ function eventsItems(drag) {
  */
 function eventsBackground() {
 	$("#background").resizable();
-	
+
 	$('#background').bind('resizestart', function(event, ui) {
 		if (!is_opened_palette) {
 			$("#background").css('border', '2px red solid');
 		}
 	});
-	
+
 	$('#background').bind('resizestop', function(event, ui) {
 		if (!is_opened_palette) {
 			unselectAll();
-			
+
 			var values = {};
 			values['width'] = $('#background').css('width').replace('px', '');
 			values['height'] = $('#background').css('height').replace('px', '');
-			
+
 			updateDB('background', 0, values, 'resizestop');
-			
+
 			width = ui.size['width'];
 			height = ui.size['height'];
-			
+
 			original_width = ui.originalSize['width'];
 			original_height = ui.originalSize['height'];
-			
+
 			move_elements_resize(original_width, original_height, width, height);
-			
+
 			$('#background_grid').css('width', width);
 			$('#background_grid').css('height', height);
 		}
 	});
-	
+
 	// Event click for background
 	$("#background").click(function(event) {
 		event.stopPropagation();
@@ -2497,13 +2497,13 @@ function eventsBackground() {
 			activeToolboxButton('edit_item', true);
 			activeToolboxButton('delete_item', false);
 			activeToolboxButton('show_grid', true);
-			
+
 			idItem = 0;
 			creationItem = null;
 			selectedItem = 'background';
 		}
 	});
-	
+
 	$('#background').bind('dblclick', function(event, ui) {
 		event.stopPropagation();
 		if ((!is_opened_palette) && (autosave)) {
@@ -2519,21 +2519,21 @@ function move_elements_resize(original_width, original_height, width, height) {
 		classItem = $(item).attr('class').replace('item', '')
 			.replace('ui-draggable', '').replace('ui-draggable-disabled', '')
 			.replace(/^\s+/g,'').replace(/\s+$/g,'');
-		
+
 		old_height = parseInt($(item).css('top').replace('px', ''));
 		old_width = parseInt($(item).css('left').replace('px', ''));
-		
+
 		ratio_width =  width / original_width;
 		ratio_height =  height / original_height;
-		
+
 		new_height = old_height * ratio_height;
 		new_width = old_width * ratio_width;
-		
+
 		var values = {};
-		
-		values['absolute_left'] = new_width; 
-		values['absolute_top'] = new_height; 
-		
+
+		values['absolute_left'] = new_width;
+		values['absolute_top'] = new_height;
+
 		updateDB(classItem, idItem, values, "resizestop");
 	});
 }
@@ -2582,9 +2582,9 @@ function click_button_toolbox(id) {
 			toolbuttonActive = creationItem = 'line_item';
 			toggle_item_palette();
 			break;
-		
-		
-		
+
+
+
 		case 'copy_item':
 			click_copy_item_callback();
 			break;
@@ -2601,7 +2601,7 @@ function click_button_toolbox(id) {
 			if (autosave) {
 				activeToolboxButton('save_visualmap', true);
 				autosave = false;
-				
+
 				//Disable all toolbox buttons.
 				//Because when it is not autosave only trace the movements
 				//the other actions need to contant with the apache server.
@@ -2615,7 +2615,7 @@ function click_button_toolbox(id) {
 				activeToolboxButton('icon', false);
 				activeToolboxButton('service', false);
 				activeToolboxButton('group_item', false);
-				
+
 				activeToolboxButton('copy_item', false);
 				activeToolboxButton('edit_item', false);
 				activeToolboxButton('delete_item', false);
@@ -2624,9 +2624,9 @@ function click_button_toolbox(id) {
 			else {
 				activeToolboxButton('save', false);
 				autosave = true;
-				
+
 				//Reactive the buttons.
-				
+
 				if ((selectedItem != 'background') && (selectedItem != null)) {
 					activeToolboxButton('delete_item', true);
 				}
@@ -2637,7 +2637,7 @@ function click_button_toolbox(id) {
 					activeToolboxButton('copy_item', true);
 					activeToolboxButton('edit_item', true);
 				}
-				
+
 				activeToolboxButton('static_graph', true);
 				activeToolboxButton('percentile_item', true);
 				activeToolboxButton('module_graph', true);
@@ -2659,7 +2659,7 @@ function click_button_toolbox(id) {
 					background: "black"
 				}
 			});
-		
+
 			var status = true;
 			activeToolboxButton('save', false);
 			jQuery.each(list_actions_pending_save, function(key, action_pending_save) {
@@ -2672,9 +2672,9 @@ function click_button_toolbox(id) {
 						if (data == '0') {
 							status = false;
 						}
-						
+
 						$("#saving_in_progress_dialog").dialog("close");
-						
+
 						if (status) {
 							alert($('#hack_translation_correct_save').html());
 						}
@@ -2685,8 +2685,8 @@ function click_button_toolbox(id) {
 					}
 				});
 			});
-			
-			
+
+
 			break;
 		default:
 			//Maybe click in any Enterprise button in toolbox.
@@ -2699,7 +2699,7 @@ function click_button_toolbox(id) {
 
 function showPreview(image) {
 	metaconsole = $("input[name='metaconsole']").val();
-	
+
 	switch (toolbuttonActive) {
 		case 'group_item':
 		case 'static_graph':
@@ -2709,7 +2709,8 @@ function showPreview(image) {
 			showPreviewIcon(image);
 			break;
 		case 'service':
-			showPreviewIcon(image);	
+			showPreviewIcon(image);
+			break;
 	}
 }
 
@@ -2717,26 +2718,26 @@ function showPreviewStaticGraph(staticGraph) {
 	metaconsole = $("input[name='metaconsole']").val();
 	var $spinner = $("<img />");
 	$spinner.prop("src", "images/spinner.gif");
-	
+
 	if (is_metaconsole()) {
 		$spinner.prop("src", "../../images/spinner.gif");
 	}
-	
+
 	$("#preview")
 		.empty()
 		.css('text-align', 'right')
 		.append($spinner);
-	
+
 	if (staticGraph != '') {
 		imgBase = "images/console/icons/" + staticGraph;
-		
+
 		var parameter = Array();
 		parameter.push ({name: "page", value: "include/ajax/visual_console_builder.ajax"});
 		parameter.push ({name: "get_image_path_status", value: "1"});
 		parameter.push ({name: "img_src", value: imgBase });
 		parameter.push ({name: "id_visual_console",
 			value: id_visual_console});
-		
+
 		jQuery.ajax ({
 			type: 'POST',
 			url: get_url_ajax(),
@@ -2747,13 +2748,13 @@ function showPreviewStaticGraph(staticGraph) {
 			},
 			success: function (data) {
 				$("#preview").empty();
-				
+
 				jQuery.each(data, function(i, line) {
 					$("#preview").append(line);
 				});
 			}
 		});
-		
+
 	}
 }
 
@@ -2761,19 +2762,19 @@ function showPreviewIcon(icon) {
 	var metaconsole = $("input[name='metaconsole']").val();
 	var $spinner = $("<img />");
 	$spinner.prop("src", "images/spinner.gif");
-	
+
 	if (is_metaconsole()) {
 		$spinner.prop("src", "../../images/spinner.gif");
 	}
-	
+
 	$("#preview")
 		.empty()
 		.css('text-align', 'left')
 		.append($spinner);
-	
+
 	if (icon != '') {
 		imgBase = "images/console/icons/" + icon;
-		
+
 		var params = [];
 		params.push("get_image_path=1");
 		params.push("img_src=" + imgBase + ".png");
@@ -2802,12 +2803,12 @@ function click_copy_item_callback() {
 
 function showGrid() {
 	metaconsole = $("input[name='metaconsole']").val();
-	
+
 	var url_hack_metaconsole = '';
 	if (is_metaconsole()) {
 		url_hack_metaconsole = '../../';
 	}
-	
+
 	var display = $("#background_grid").css('display');
 	if (display == 'none') {
 		$("#background_grid").css('display', '');
@@ -2815,7 +2816,7 @@ function showGrid() {
 		$("#background_img").css('filter', 'alpha(opacity=55)');
 		$("#background_grid").css('background',
 			'url("' + url_hack_metaconsole + 'images/console/background/white_boxed.jpg")');
-		
+
 		//Snap to grid all elements.
 		jQuery.each($(".item"), function(key, value) {
 			item = value;
@@ -2823,28 +2824,28 @@ function showGrid() {
 			classItem = $(item).attr('class').replace('item', '')
 				.replace('ui-draggable', '').replace('ui-draggable-disabled', '')
 				.replace(/^\s+/g,'').replace(/\s+$/g,'');
-			
+
 			pos_y = parseInt($(item).css('top').replace('px', ''));
 			pos_x = parseInt($(item).css('left').replace('px', ''));
-			
+
 			pos_y = Math.floor(pos_y / SIZE_GRID) * SIZE_GRID;
 			pos_x = Math.floor(pos_x / SIZE_GRID) * SIZE_GRID;
-			
+
 			var values = {};
-			
-			values['absolute_left'] = pos_x; 
-			values['absolute_top'] = pos_y; 
-			
+
+			values['absolute_left'] = pos_x;
+			values['absolute_top'] = pos_y;
+
 			updateDB(classItem, idItem, values, 'show_grid');
 		});
-		
+
 		eventsItems([SIZE_GRID, SIZE_GRID]);
 	}
 	else {
 		$("#background_grid").css('display', 'none');
 		$("#background_img").css('opacity', '1');
 		$("#background_img").css('filter', 'alpha(opacity=100)');
-		
+
 		eventsItems();
 	}
 }

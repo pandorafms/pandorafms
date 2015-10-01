@@ -163,12 +163,10 @@ function center_labels() {
 			dif_width = $(item).width() - $("img", item).width();
 			
 			x = parseInt($(item).css("left"));
-			
-			x = x - (dif_width / 2)
-			
-			$(item)
-				.css("left", x + "px")
-				.css("text-align", "center");
+
+			x = x - (dif_width / 2);
+
+			$(item).css("left", x + "px").css("text-align", "center");
 		}
 	});
 }

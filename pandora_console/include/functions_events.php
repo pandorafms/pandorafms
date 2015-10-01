@@ -2474,7 +2474,7 @@ function events_page_comments ($event, $childrens_ids = array()) {
 	$table_comments->style[1] = 'text-align: left;';
 	$table_comments->class = "alternate rounded_cells";
 	
-	$event_comments = io_safe_output($event["user_comment"]);
+	$event_comments = $event["user_comment"];
 	$event_comments = str_replace( array("\n", '&#x0a;'), "<br>", $event_comments);
 	
 	// If comments are not stored in json, the format is old
@@ -2489,7 +2489,6 @@ function events_page_comments ($event, $childrens_ids = array()) {
 	else {
 		$comments_format = 'new';
 	}
-			
 	
 	switch($comments_format) {
 		case 'new':

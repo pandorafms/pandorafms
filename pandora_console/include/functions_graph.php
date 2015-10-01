@@ -553,7 +553,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	
 	// Get module data
 	$data = db_get_all_rows_filter ('tagente_datos',
-		array ('id_agente_modulo' => $agent_module_id,
+		array ('id_agente_modulo' => (int)$agent_module_id,
 			"utimestamp > $datelimit",
 			"utimestamp < $date",
 			'order' => 'utimestamp ASC'),

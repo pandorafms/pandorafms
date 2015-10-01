@@ -273,7 +273,7 @@ function readFields() {
 	values['module'] = $("select[name=module]").val();
 	values['process_simple_value'] = $("select[name=process_value]").val();
 	values['background'] = $("#background_image").val();
-	values['period'] = $("select[name=period]").val();
+	values['period'] = $("#hidden-period").val();
 	values['width'] = $("input[name=width]").val();
 	values['height'] = $("input[name=height]").val();
 	values['parent'] = $("select[name=parent]").val();

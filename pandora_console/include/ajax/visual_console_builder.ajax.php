@@ -75,8 +75,7 @@ if (!$vconsole_write && !$vconsole_manage) {
 //Fix ajax to avoid include the file, 'functions_graph.php'.
 $ajax = true;
 
-
-require_once('include/functions_visual_map.php');
+require_once($config['homedir'] . "/include/functions_visual_map.php");
 require_once($config['homedir'] . "/include/functions_agents.php");
 require_once($config['homedir'] . '/include/functions_graph.php');
 require_once($config['homedir'] . '/include/functions_custom_graphs.php');
@@ -95,7 +94,7 @@ $left = get_parameter('left', null);
 $top = get_parameter('top', null);
 $agent = get_parameter('agent', null);
 $id_module = get_parameter('module', null);
-$period = (int)get_parameter('period', null);
+$period = get_parameter('period', null);
 $width = get_parameter('width', null);
 $height = get_parameter('height', null);
 $parent = get_parameter('parent', null);
@@ -159,7 +158,7 @@ switch ($action) {
 		else {
 			$img = grafico_modulo_sparse($id_agent_module,
 				$period, 0, $width, $height, '', null, false, 1,
-				false, 0, '', 0, 0, true, true, '', 1, false, '',
+				0, 0, '', 0, 0, true, true, '', 1, false, '',
 				false, false, true, $background_color);
 		}
 		

@@ -339,6 +339,8 @@ function config_update_config () {
 						$error_update[] = __('User');
 					if (!config_update_value ('rintegria_pass', get_parameter ('rintegria_pass')))
 						$error_update[] = __('Password');
+					if (!config_update_value ('session_timeout', get_parameter ('session_timeout')))
+						$error_update[] = __('Session timeout');
 					/////////////
 					break;
 				case 'perf':
@@ -1316,6 +1318,10 @@ function config_process_config () {
 	if (!isset($config['update_manager_proxy_password'])) {
 		config_update_value ('update_manager_proxy_password',
 			"");
+	}
+	
+	if (!isset ($config["session_timeout"])) {
+		config_update_value ('session_timeout', 90);
 	}
 	
 	/* Finally, check if any value was overwritten in a form */

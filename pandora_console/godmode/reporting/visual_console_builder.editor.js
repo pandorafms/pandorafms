@@ -1458,8 +1458,8 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				if (end_foreach) {
 					return;
 				}
-				
-				if (lines[i]['node_begin'] == idElement) {
+
+				if (lines[i]['node_end'] == idElement) {
 					found = true;
 					if (values['parent'] == 0) {
 						//Erased the line

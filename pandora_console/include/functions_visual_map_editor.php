@@ -46,7 +46,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 	echo '<div id="properties_panel" style="display: none; position: absolute; border: 2px solid #114105; padding: 5px; background: white; z-index: 90;">';
 	//----------------------------Hiden Form----------------------------
 	?>
-	<table class="databox" border="0" cellpadding="4" cellspacing="4" width="350">
+	<table class="databox" border="0" cellpadding="0" cellspacing="0" width="100%">
 		<caption>
 			<?php
 			$titles = array(
@@ -86,7 +86,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'datos',
 				'group_item');
 			$form_items['label_row']['html'] =
-				'<td align="left" valign="top" style="">' . __('Label') . '</td>
+				'<td align="left" valign="top" style="" width="25%">' . __('Label') . '</td>
 				<td align="left" style="">' .
 				html_print_input_text('label', '', '', 20, 200, true) . '</td>';
 			

@@ -28,13 +28,13 @@ if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0,
 	$menu_godmode["gagente"]["text"] = __('Resources');
 	$menu_godmode["gagente"]["sec2"] = "godmode/agentes/modificar_agente";
 	$menu_godmode["gagente"]["id"] = "god-resources";
-
+	
+	$sub = array ();
+	$sub['godmode/agentes/modificar_agente']['text'] = __('Manage agents');
+	$sub["godmode/agentes/modificar_agente"]["subsecs"] = array(
+		"godmode/agentes/configurar_agente");
+		
 	if (check_acl ($config['id_user'], 0, "AW")) {
-		$sub = array ();
-		$sub['godmode/agentes/modificar_agente']['text'] = __('Manage agents');
-		$sub["godmode/agentes/modificar_agente"]["subsecs"] = array(
-			"godmode/agentes/configurar_agente");
-
 		if (check_acl ($config["id_user"], 0, "PM")) {
 			$sub["godmode/agentes/fields_manager"]["text"] = __('Custom fields');
 		}
@@ -60,10 +60,8 @@ if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0,
 			//Netflow
 			$sub["godmode/netflow/nf_edit"]["text"] = __('Netflow filters');
 		}
-
-		$menu_godmode["gagente"]["sub"] = $sub;
 	}
-
+	$menu_godmode["gagente"]["sub"] = $sub;
 }
 
 if (check_acl ($config['id_user'], 0, "UM")) {
@@ -126,9 +124,9 @@ if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0,
 	$menu_godmode["galertas"]["sec2"] = "godmode/alerts/alert_list";
 	$menu_godmode["galertas"]["id"] = "god-alerts";
 
-	if (check_acl ($config['id_user'], 0, "LM")) {
-		$sub = array ();
+	$sub = array ();
 		$sub["godmode/alerts/alert_list"]["text"] = __('List of Alerts');
+	if (check_acl ($config['id_user'], 0, "LM")) {
 		$sub["godmode/alerts/alert_templates"]["text"] = __('Templates');
 		$sub["godmode/alerts/alert_actions"]["text"] = __('Actions');
 
@@ -138,9 +136,8 @@ if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0,
 		$sub["godmode/alerts/alert_special_days"]["text"] = __('Special days list');
 		enterprise_hook('eventalerts_submenu');
 		$sub["godmode/snmpconsole/snmp_alert"]["text"] = __("SNMP alerts");
-
-		$menu_godmode["galertas"]["sub"] = $sub;
 	}
+	$menu_godmode["galertas"]["sub"] = $sub;
 }
 
 if (check_acl ($config['id_user'], 0, "EW")) {

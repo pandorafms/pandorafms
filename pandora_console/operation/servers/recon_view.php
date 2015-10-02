@@ -130,7 +130,7 @@ else {
 					$data[3] = $task["subnet"];
 				}
 				else {
-					$data[3] = __("N/A");
+					$data[3] = "-";
 				}
 				
 				if ($task["status"] <= 0) {

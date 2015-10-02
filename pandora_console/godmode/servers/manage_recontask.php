@@ -93,10 +93,11 @@ if ((isset ($_GET["update"])) OR ((isset ($_GET["create"])))) {
 	$snmp_community = get_parameter_post ("snmp_community", "public");
 	$id_recon_script = get_parameter ("id_recon_script", 0);
 	$mode = get_parameter ("mode", "");
-	$field1 = get_parameter ("field1", "");
-	$field2 = get_parameter ("field2", "");
-	$field3 = get_parameter ("field3", "");
-	$field4 = get_parameter ("field4", "");
+	$field1 = get_parameter ("_field1_", "");
+	$field2 = get_parameter ("_field2_", "");
+	$field3 = get_parameter ("_field3_", "");
+	$field4 = get_parameter ("_field4_", "");
+	
 	if ($mode == "network_sweep")
 		$id_recon_script = 0;
 	else
@@ -301,7 +302,7 @@ if ($result !== false) {
 			if ($row["id_recon_script"] == 0)
 				$data[1] = $row["subnet"];
 			else
-				$data[1] =__("N/A");
+				$data[1] = "-";
 			
 			
 			if ($row["id_recon_script"] == 0) {

@@ -89,7 +89,7 @@ $form_filter .= "</tr>";
 
 $all_groups = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
 
-$groups_user = users_get_groups($config['id_user'], 'LW', $all_groups);
+$groups_user = users_get_groups($config['id_user'], 'AR', $all_groups);
 if ($groups_user === false) {
 	$groups_user = array();
 }

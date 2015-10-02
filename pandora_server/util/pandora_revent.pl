@@ -26,24 +26,23 @@ sub help_screen{
 
 	print "Options to create event: 
 
-\t$0 -p <path_to_consoleAPI> -create event <options> 
+\t$0 -p <path_to_consoleAPI> -u <credentials> -create_event <options> 
 
 Where options:\n
-	-u <credentials>
-	-create_event 
+	-u <credentials>			: API credentials separated by comma: <api_pass>,<user>,<pass>
 	-name <event_name>			: Free text
 	-group <id_group>			: Group ID (use 0 for 'all') 
-	-agent						: Agent ID
+	-agent					: Agent ID
 	
 Optional parameters:
 	
 	[-status <status>]			: 0 New, 1 Validated, 2 In process
 	[-user <id_user>]			: User comment (use in combination with -comment option)
-	[-type <event_type>]		: unknown, alert_fired, alert_recovered, alert_ceased
+	[-type <event_type>]			: unknown, alert_fired, alert_recovered, alert_ceased
 								  alert_manual_validation, system, error, new_agent
 								  configuration_change, going_unknown, going_down_critical,
 								  going_down_warning, going_up_normal
-	[-criticity <criticity>] 	: 0 Maintance,
+	[-severity <severity>] 					: 0 Maintance,
 								  1 Informative,
 								  2 Normal,
 								  3 Warning,
@@ -56,23 +55,20 @@ Optional parameters:
 	[-w_instructions <warning_instructions>]
 	[-u_instructions <unknown_instructions>]
 	[-user_comment <comment>]
-	[-owner_user <user for the event>]
+	[-owner_user <owner event>]	: Use the login name, not the descriptive
 	[-source <source>]			: (By default 'Pandora')
 	[-tag <tags>]				: Tag (must exist in the system to be imported)
 	[-custom_data <custom_data>]: Custom data should be a base 64 encoded JSON document
-	[-server_id <server_id>]	: The pandora node server_id";
-	
-	print "Credential/API syntax: \n\n\t";
-	print "<credentials>: API credentials separated by comma: <api_pass>,<user>,<pass>\n\n";
+	[-server_id <server_id>]	: The pandora node server_id\n\n";
 	
 	print "Example of event generation:\n\n";
 	
 	print "\t./pandora_revent.pl -p http://localhost/pandora_console/include/api.php -u 1234,admin,pandora \
 	\t-create_event -name \"SampleEvent\" -group 2 -agent 189 -status 0 -user \"admin\" -type \"system\" \
-	\t-criticity 3 -am 0 -alert 9 -c_instructions \"Critical instructions\" -w_instructions \"Warning instructions\" \
+	\t-severity 3 -am 0 -alert 9 -c_instructions \"Critical instructions\" -w_instructions \"Warning instructions\" \
 	\t-u_instructions \"Unknown instructions\" -source \"Commandline\" -tag \"Tags\"";
 	
-	print "\n\nOptions to validate event: \n\n\t";
+	print "\n\n\nOptions to validate event: \n\n\t";
 	print "$0 -p <path_to_consoleAPI> -u <credentials> -validate_event <options> -id <id_event>\n\n";
 	print "Sample of event validation: \n\n\t";
 	
@@ -119,17 +115,14 @@ sub tool_api_main () {
 	my $db_pass;
 	my @db_info;
 	my $id_agent;
-	my $agent_name;
 	my $id_user = '';
 	my $status = '';
 	my $id_agent_module = '';
-	my $module_name = '';
 	my $id_alert_am = '';
-	my $criticity = '';
+	my $severity = '';
 	my $user_comment = '';
 	my $tags = '';
 	my $source = '';
-	my $id_extra = '';
 	my $critical_instructions = '';
 	my $warning_instructions = '';
 	my $unknown_instructions = '';
@@ -193,9 +186,6 @@ sub tool_api_main () {
 			if ($line eq '-type') {
 				$event_type = $ARGV[$i + 1];
 			}
-			if ($line eq '-agent_name') {
-				$agent_name = $ARGV[$i + 1];
-			}
 			if ($line eq '-user') {
 				$id_user = $ARGV[$i + 1];
 			}
@@ -205,14 +195,11 @@ sub tool_api_main () {
 			if ($line eq '-am') {
 				$id_agent_module = $ARGV[$i + 1];
 			}
-			if ($line eq '-module_name') {
-				$module_name = $ARGV[$i + 1];
-			}
 			if ($line eq '-alert') {
 				$id_alert_am = $ARGV[$i + 1];
 			}
-			if ($line eq '-criticity') {
-				$criticity = $ARGV[$i + 1];
+			if ($line eq '-severity') {
+				$severity = $ARGV[$i + 1];
 			}
 			if ($line eq '-tag') {
 				$tags = $ARGV[$i + 1];
@@ -264,7 +251,7 @@ sub tool_api_main () {
 			"|" . $status .
 			"|" . $id_user .
 			"|" . $event_type .
-			"|" . $criticity .
+			"|" . $severity .
 			"|" . $id_agent_module .
 			"|" . $id_alert_am . 
 			"|" . $critical_instructions .

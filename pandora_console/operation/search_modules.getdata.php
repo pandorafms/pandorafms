@@ -64,8 +64,8 @@ $modules = false;
 if ($searchModules) {
 	$userGroups = users_get_groups($config['id_user'], 'AR', false);
 	$id_userGroups = array_keys($userGroups);
-	
-	$tags = tags_get_user_tags();
+
+	$tags = tags_get_tags_for_module_search();
 	$sql_tags = "'no_check_tags' = 'no_check_tags'";
 	if (!empty($tags)) {
 		

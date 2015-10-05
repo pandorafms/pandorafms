@@ -39,10 +39,11 @@ $tags_EM = false;
 $tags_EW = false;
 
 // Get the tags where the user have permissions in Events reading tasks
-$tags = tags_get_user_tags($config['id_user'], 'ER');
-$user_tags = false;
-if ($tags){
-	$user_tags = true;
+$tags = tags_get_tags_events_search($config['id_user'], 'ER');
+
+$user_tags = true;
+if (!$tags){
+	$user_tags = false;
 }
 
 //headers
@@ -542,6 +543,10 @@ foreach ($result as $event) {
 		if ($user_tags){
 			$tags_EM = tags_checks_event_acl ($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'], $childrens_ids);
 			$tags_EW = tags_checks_event_acl ($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'], $childrens_ids);
+		}
+		else {
+			$tags_EM = true;
+			$tags_EW = true;
 		}
 
 		if(!$readonly) {

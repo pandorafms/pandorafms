@@ -2171,7 +2171,8 @@ function reporting_historical_data($report, $content) {
 	global $config;
 	
 	$return['type'] = 'historical_data';
-	
+	$period = $content['period'];
+	$date_limit = time() - $period;
 	if (empty($content['name'])) {
 		$content['name'] = __('Historical data');
 	}
@@ -2181,7 +2182,15 @@ function reporting_historical_data($report, $content) {
 	$return["date"] = reporting_get_date_text($report, $content);
 	
 	$return['keys'] = array(__('Date'), __('Data'));
-	
+
+	$result = db_get_all_rows_sql 	(
+									'SELECT *
+									FROM tagente_datos
+									WHERE id_agente_modulo =' . $content['id_agent_module'] . '
+									 AND utimestamp >' . $date_limit . '
+									 AND utimestamp <=' . time()
+									);
+
 	$data = array();
 	foreach ($result as $row) {
 		$data[] = array(

@@ -1168,7 +1168,7 @@ function reporting_html_historical_data($table, $item) {
 	
 	$table1->data = array ();
 	foreach ($item['data'] as $data) {
-		$row = array($data[__('date')], $data[__('Data')]);
+		$row = array($data[__('Date')], $data[__('Data')]);
 		$table1->data[] = $row;
 	}
 	

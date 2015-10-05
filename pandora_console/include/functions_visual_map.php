@@ -88,7 +88,7 @@ function visual_map_print_user_line_handles($layoutData) {
 }
 
 function visual_map_print_item($mode = "read", $layoutData,
-	$proportion = null, $show_links = true) {
+	$proportion = null, $show_links = true, $isExternalLink = false) {
 	global $config;
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
@@ -158,7 +158,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 	$element_enterprise = array();
 	if (enterprise_installed()) {
 		$element_enterprise = enterprise_visual_map_print_item(
-			$mode, $layoutData, $proportion, $show_links);
+			$mode, $layoutData, $proportion, $show_links, $isExternalLink);
 	}
 	
 	
@@ -873,13 +873,15 @@ function visual_map_print_item($mode = "read", $layoutData,
 							"width" => "$width",
 							"height" => "$height",
 							"title" => $img_style_title,
-							"style" => $borderStyle));
+							"style" => $borderStyle), false,
+							false, false, $isExternalLink);
 				else
 					echo html_print_image($img, true,
 						array("class" => "image",
 							"id" => "image_" . $id,
 							"title" => $img_style_title,
-							"style" => $borderStyle));
+							"style" => $borderStyle), false,
+							false, false, $isExternalLink);
 				echo '<br />';
 			}
 			echo io_safe_output($text);
@@ -983,10 +985,12 @@ function visual_map_print_item($mode = "read", $layoutData,
 						array("class" => "image",
 							"id" => "image_" . $id,
 							"width" => "$width",
-							"height" => "$height"));
+							"height" => "$height"), false,
+							false, false, $isExternalLink);
 				else
 					echo html_print_image($img, true,
-						array("class" => "image", "id" => "image_" . $id));
+						array("class" => "image", "id" => "image_" . $id),
+						false, false, false, $isExternalLink);
 				echo '<br />';
 			}
 			break;
@@ -1768,8 +1772,8 @@ function visual_map_print_user_lines($layout_data, $proportion = null) {
  * @param bool $draw_lines
  */
 function visual_map_print_visual_map ($id_layout, $show_links = true,
-	$draw_lines = true, $width = null, $height = null, $home_url = '') {
-	
+	$draw_lines = true, $width = null, $height = null, $home_url = '', $isExternalLink = false) {
+
 	enterprise_include_once('include/functions_visual_map.php');
 	
 	global $config;
@@ -1917,7 +1921,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				break;
 			default:
 				visual_map_print_item("read", $layout_data,
-					$proportion, $show_links);
+					$proportion, $show_links, $isExternalLink);
 				break;
 		}
 	}

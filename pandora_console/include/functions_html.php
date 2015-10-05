@@ -1775,7 +1775,7 @@ function html_print_checkbox ($name, $value, $checked = false, $return = false, 
  * @return string HTML code if return parameter is true.
  */
 function html_print_image ($src, $return = false, $options = false,
-	$return_src = false, $relative = false, $no_in_meta = false) {
+	$return_src = false, $relative = false, $no_in_meta = false, $isExternalLink = false) {
 
 	global $config;
 	
@@ -1808,7 +1808,12 @@ function html_print_image ($src, $return = false, $options = false,
 				}
 				
 				if (!is_readable($working_dir . '/enterprise/meta' . $src)) {
-					$src = ui_get_full_url('../..' . $src);
+					if ($isExternalLink) {
+						$src = ui_get_full_url($src);
+					}
+					else {
+						$src = ui_get_full_url('../..' . $src);
+					}
 				}
 				else {
 					$src = ui_get_full_url($src);

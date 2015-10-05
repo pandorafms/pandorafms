@@ -79,7 +79,7 @@ $options = array();
 echo '<div style="width: 95%; background: white; margin: 20px auto 20px auto; box-shadow: 10px 10px 5px #000;">';
 echo "<h1>" . $layout_name . "</h1>";
 
-visual_map_print_visual_map ($id_layout, true, true, null, null, '../../');
+visual_map_print_visual_map ($id_layout, true, true, null, null, '../../', true);
 
 $values = array ();
 $values[5] = human_time_description_raw (5);

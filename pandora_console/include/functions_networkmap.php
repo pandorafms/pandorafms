@@ -636,11 +636,11 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 	}
 	
 	// Get groups data
-	if ($group > 0) {
-		$groups = array();
-		$id_groups = groups_get_id_recursive($group, true);
-		
-		foreach($id_groups as $id_group) {
+	$groups = array();
+	$id_groups = groups_get_id_recursive($group, true);
+	
+	foreach($id_groups as $id_group) {
+		if ($id_group != 0) {
 			$add = false;
 			if (check_acl($config["id_user"], $id_group, 'AR')) {
 				$add = true;
@@ -650,15 +650,9 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 				$groups[] = db_get_row ('tgrupo', 'id_grupo', $id_group);
 			}
 		}
+	}
 		
-		$filter['id_grupo'] = $id_groups;
-	}
-	else {
-		$groups = db_get_all_rows_in_table ('tgrupo');
-		if ($groups === false) {
-			$groups = array();
-		}
-	}
+	$filter['id_grupo'] = $id_groups;
 	
 	// Open Graph
 	$graph = networkmap_open_graph ($layout, $nooverlap, $pure, $zoom, $ranksep, $font_size);

@@ -187,6 +187,7 @@ $id_group = 0;
 
 $groups = users_get_groups();
 
+$table = new StdClass();
 $table->id = 'delete_table';
 $table->class = 'databox filters';
 $table->width = '100%';
@@ -246,12 +247,18 @@ $description = "";
 
 echo '<div id="form_agents" style="display: none;">';
 
+$table = new StdClass();
 $table->width = '100%';
 $table->class = "databox filters";
 
 $table->head = array ();
 $table->style = array ();
 $table->style[0] = 'font-weight: bold; width: 150px;';
+$table->size[0] = '15%';
+$table->size[1] = '35%';
+$table->size[2] = '15%';
+$table->size[3] = '35%';
+
 $table->data = array ();
 
 $groups = users_get_groups ($config["id_user"], "AW",false);
@@ -265,7 +272,10 @@ $params['input_name'] = 'id_parent';
 $params['value'] = agents_get_name ($id_parent);
 $table->data[0][1] = ui_print_agent_autocomplete_input($params);
 
-$table->data[0][1] .= html_print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);
+$table->data[0][1] .= "<b>" . __('Cascade protection'). "</b>&nbsp;" .
+			ui_print_help_icon("cascade_protection", true) .
+					html_print_select(array(1 => __('Yes'), 0 => __('No')),
+	"cascade_protection", -1, "", __('No change'), -1, true);
 
 $table->data[1][0] = __('Group');
 $table->data[1][1] = html_print_select_groups(false, "AR", false, 'group', $group, '', __('No change'), -1, true, false, true, '', false, 'width: 150px;');
@@ -305,8 +315,14 @@ $update_gis_data = -1;
 $cascade_protection = -1;
 $quiet_select = -1;
 
+$table = new StdClass();
 $table->width = '100%';
 $table->class = "databox filters";
+
+$table->size[0] = '15%';
+$table->size[1] = '35%';
+$table->size[2] = '15%';
+$table->size[3] = '35%';
 
 $table->head = array ();
 $table->style = array ();
@@ -387,6 +403,7 @@ $table->data[6][1] = html_print_select(array(-1 => __('No change'),
 ui_toggle(html_print_table ($table, true), __('Advanced options'));
 unset($table);
 
+$table = new StdClass();
 $table->width = '100%';
 $table->class = "databox filters";
 
@@ -394,6 +411,10 @@ $table->head = array ();
 $table->style = array ();
 $table->style[0] = 'font-weight: bold; width: 150px;';
 $table->data = array ();
+$table->size[0] = '15%';
+$table->size[1] = '35%';
+$table->size[2] = '15%';
+$table->size[3] = '35%';
 
 $fields = db_get_all_fields_in_table('tagent_custom_fields');
 

@@ -1922,8 +1922,8 @@ function html_html2rgb($htmlcolor)
  * @return mixed If the $return is true, return the output as string.
  */
 function html_print_autocomplete_modules($name = 'module',
-	$default = '', $id_agents = false, $id_agent_module = 0, $ACL = true, $scriptResult = '',
-	$filter = array(), $return = false) {
+	$default = '', $id_agents = false, $ACL = true, $scriptResult = '',
+	$filter = array(), $return = false,$id_agent_module = 0) {
 	
 	global $config;
 	

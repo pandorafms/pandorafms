@@ -883,7 +883,14 @@ sub send_buffered_xml_files () {
 		next if ($xml_file !~ m/^$Conf{'agent_name'}\.[0-9]+\.data$/ || -l "$Conf{'temporal'}/$xml_file");
 
 		my $rc = send_file ("$Conf{'temporal'}/$xml_file", 1);
-		unlink ("$Conf{'temporal'}/$xml_file") if ($rc == 0);
+		
+		if ($rc == 0) {	
+			if ($Conf{'debug'} eq '1') {
+				rename "$Conf{'temporal'}/$xml_file", "$Conf{'temporal'}/$xml_file". "sent";
+			} else {
+				unlink ("$Conf{'temporal'}/$xml_file");	
+			}
+		}
 	}
 }
 
@@ -2350,13 +2357,16 @@ while (1) {
 		if ($Conf{'debug'} eq '1') {
 			log_message ('debug', "Wrote XML data file '$temp_file'");
 			log_message ('debug', "Wrote XML data file '$temp_file'", *STDOUT);
-			last;
 		}
 
 		# Send the XML data file
 		my $rc = send_file ($temp_file, 1);
 		if ($rc == 0 || $Conf{'xml_buffer'} == 0 || temporal_freedisk () < $Conf{'temporal_min_size'}) {
-			unlink ($temp_file);
+			if ($Conf{'debug'} eq '1') {
+				rename $temp_file, $temp_file . "sent";
+			} else {
+				unlink ($temp_file);
+			}
 		}
 		
 		# Send buffered XML data files

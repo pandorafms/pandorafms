@@ -2771,15 +2771,24 @@ function reporting_get_last_activity() {
 	
 }
 
-function reporting_get_event_histogram ($events) {
+function reporting_get_event_histogram ($events, $text_header_event = false) {
 	global $config;
-	include_once ('../../include/graphs/functions_gd.php');
+	if (!defined("METACONSOLE")) {
+		include_once ($config['homedir'] .'include/graphs/functions_gd.php');
+	}
+	else {
+		include_once ('../../include/graphs/functions_gd.php');
+	}
+
 	$max_value = count($events);
 	
 	if (defined("METACONSOLE"))
 		$max_value = SECONDS_1HOUR;
-	
-	
+
+	if (!$text_header_event) {
+		$text_header_event = __('Events info (1hr.)');
+	}
+
 	$ttl = 1;
 	$urlImage = ui_get_full_url(false, true, false, false);
 	
@@ -2845,20 +2854,31 @@ function reporting_get_event_histogram ($events) {
 				);
 		}
 	}
-	
-	$table->width = '100%';
+	if (!$text_header_event) {
+		$table->width = '100%';
+	}
+	else {
+		$table->width = '70%';
+	}
 	$table->data = array ();
 	$table->size = array ();
 	$table->head = array ();
-	$table->title = '<span>' . __('Events info (1hr.)') . '</span>';
+	$table->title = '<span>' . $text_header_event . '</span>';
 	$table->data[0][0] = "" ;
 	
 	if (!empty($graph_data)) {
 		if (defined("METACONSOLE"))
 			$slicebar = flot_slicesbar_graph($graph_data, $max_value, "100%", 35, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $url);
-		else
-			$slicebar = slicesbar_graph($graph_data, $max_value, 700, 25, $colors, $config['fontpath'], $config['round_corner'], $urlImage, $ttl);
-		
+		else {
+			if (!$text_header_event) {
+				$slicebar = slicesbar_graph($graph_data, $max_value, 700, 25, $colors, $config['fontpath'], $config['round_corner'], $urlImage, $ttl);
+			}
+			else {
+				$slicebar = slicesbar_graph($graph_data, $max_value, 350, 18, $colors, $config['fontpath'], $config['round_corner'], $urlImage, $ttl);
+			}
+		}
+
+
 		$table->data[0][0] = $slicebar;
 	}
 	else {
@@ -2866,11 +2886,17 @@ function reporting_get_event_histogram ($events) {
 	}
 	
 	if (!defined('METACONSOLE')) {
-		$event_graph = '<fieldset class="databox tactical_set">
-					<legend>' . 
-						__('Events info (1hr)') . 
-					'</legend>' . 
-					html_print_table($table, true) . '</fieldset>';
+		if (!$text_header_event) {
+			$event_graph = '<fieldset class="databox tactical_set">
+						<legend>' .
+							$text_header_event .
+						'</legend>' .
+						html_print_table($table, true) . '</fieldset>';
+		}
+		else {
+			$table->class = 'noclass';
+			$event_graph = html_print_table($table, true);
+		}
 	}
 	else {
 		$table->class='tactical_view';

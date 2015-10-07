@@ -24,6 +24,7 @@ require_once ($config["homedir"] . '/include/functions_graph.php');
 include_graphs_dependencies();
 require_once ($config['homedir'] . '/include/functions_groups.php');
 require_once ($config['homedir'] .'/include/functions_incidents.php');
+include_once ($config['homedir'] .'/include/functions_reporting_html.php');
 
 include_once($config['homedir'] . "/include/functions_clippy.php");
 
@@ -230,25 +231,42 @@ $table_contact->data[] = $data;
 $table_data = new stdClass();
 $table_data->id = 'agent_data_main';
 $table_data->width = '100%';
+$table_data->styleTable = 'height:180px';
 $table_data->cellspacing = 0;
 $table_data->cellpadding = 0;
 $table_data->class = 'databox data';
 $table_data->style[0] = 'width: 30%;';
-$table_data->style[1] = 'width: 70%;';
+$table_data->style[1] = 'width: 40%;';
 
 $table_data->head[0] = ' <span>' . __('Agent info') . '</span>';
-$table_data->head_colspan[0] = 2;
+$table_data->head_colspan[0] = 3;
 
 $data = array();
 $data[0] = '<b>' . __('Group') . '</b>';
 $data[1] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$agent["id_grupo"].'">'.groups_get_name ($agent["id_grupo"]).'</a>';
+
+// ACCESS RATE GRAPH
+$access_agent = db_get_value_sql("SELECT COUNT(id_agent)
+	FROM tagent_access
+	WHERE id_agent = " . $id_agente);
+if ($config["agentaccess"] && $access_agent > 0) {
+	$data[2] =
+		'<fieldset width=90% class="databox agente" style="">
+		<legend>' .
+				__('Agent access rate (24h)') .
+		'</legend>' .
+			graphic_agentaccess($id_agente, 300, 100, SECONDS_1DAY, true) .
+	'</fieldset>';
+	$table_data->style[1] = 'width: 40%;';
+	$table_data->rowspan[0][2] = 5;
+}
 
 $table_data->data[] = $data;
 
 if (!empty($addresses)) {
 	$data = array();
 	$data[0] = '<b>' . __('Other IP addresses') . '</b>';
-	$data[1] = '<div style="max-height: 150px; overflow-y: auto;">' .
+	$data[1] = '<div style="max-height: 45px; overflow: scroll; height:45px;">' .
 		implode('<br>',$addresses) .
 		'</div>';
 	//~ $table_data->data[] = '<div style="max-height: 200px; overflow: hidden;>' .
@@ -402,19 +420,29 @@ if (!empty($network_interfaces_by_agents) && !empty($network_interfaces_by_agent
 if (!empty($network_interfaces)) {
 	$table_interface = new stdClass();
 	$table_interface->id = 'agent_interface_info';
-	$table_interface->class = 'databox';
-	$table_interface->width = '100%';
+	$table_interface->class = 'databox data';
+	$table_interface->width = '98%';
 	$table_interface->style = array();
-	$table_interface->style['interface_status'] = 'width: 30px;';
-	$table_interface->style['interface_graph'] = 'width: 20px;';
+	$table_interface->style['interface_status'] = 'width: 30px;padding-top:0px;padding-bottom:0px;';
+	$table_interface->style['interface_graph'] = 'width: 20px;padding-top:0px;padding-bottom:0px;';
+	$table_interface->style['interface_event_graph'] = 'width: 100px;padding-top:0px;padding-bottom:0px;';
+	$table_interface->align['interface_event_graph'] = 'right';
+	$table_interface->style['interface_name'] = 'width: 10%;padding-top:0px;padding-bottom:0px;';
+	$table_interface->align['interface_name'] = 'left';
+	$table_interface->align['interface_ip'] = 'left';
+	$table_interface->align['last_contact'] = 'left';
+	$table_interface->style['last_contact'] = 'width: 40%;padding-top:0px;padding-bottom:0px;';
+	$table_interface->style['interface_ip'] = 'width: 8%;padding-top:0px;padding-bottom:0px;';
+	$table_interface->style['interface_mac'] = 'width: 12%;padding-top:0px;padding-bottom:0px;';
+
 	$table_interface->head = array();
 	$options = array(
 		"class" => "closed",
-		"style" => "vertical-align:middle; cursor:pointer;");
+		"style" => "vertical-align:righ; cursor:pointer;");
 	$table_interface->head[0] = html_print_image("images/go.png", true, $options) . "&nbsp;&nbsp;";
 	$table_interface->head[0] .= '<span style="vertical-align: middle;">' . __('Interface information') .' (SNMP)</span>';
 	$table_interface->head_colspan = array();
-	$table_interface->head_colspan[0] = 5;
+	$table_interface->head_colspan[0] = 7;
 	$table_interface->data = array();
 	
 	foreach ($network_interfaces as $interface_name => $interface) {
@@ -450,13 +478,62 @@ if (!empty($network_interfaces)) {
 		else {
 			$graph_link = "";
 		}
-		
+
+		$events_limit = 5000;
+		$user_groups = users_get_groups($config['id_user'], 'ER');
+		$user_groups_ids = array_keys($user_groups);
+		if (empty($user_groups)) {
+			$groups_condition = ' 1 = 0 ';
+		}
+		else {
+			$groups_condition = ' id_grupo IN (' . implode(',', $user_groups_ids) . ') ';
+		}
+		if (!check_acl ($config['id_user'], 0, "PM")) {
+			$groups_condition .= " AND id_grupo != 0";
+		}
+		$status_condition = ' AND (estado = 0 OR estado = 1) ';
+		$unixtime = get_system_time () - SECONDS_1DAY; //last hour
+		$time_condition = 'AND (utimestamp > '.$unixtime.')';
+		// Tags ACLS
+		if ($id_group > 0 && in_array (0, array_keys (users_get_groups($config['id_user'], 'ER')))) {
+			$group_array = (array) $id_group;
+		}
+		else {
+			$group_array = array_keys(users_get_groups($config['id_user'], 'ER'));
+		}
+		$acl_tags = tags_get_acl_tags($config['id_user'], $group_array, 'ER',
+			'event_condition', 'AND', '', true, array(), true);
+		$sqlEvents = sprintf('
+			SELECT *
+			FROM tevento
+			WHERE id_agente = (
+				SELECT id_agente
+				FROM tagente_estado
+				WHERE id_agente_modulo = ' . $interface['status_module_id'] . ')
+		');
+
+		$sqlLast_contact = sprintf ('
+			SELECT last_try
+			FROM tagente_estado
+			WHERE id_agente_modulo = ' . $interface['status_module_id']
+		);
+
+		$last_contact = db_get_all_rows_sql ($sqlLast_contact);
+		$last_contact = array_shift($last_contact);
+		$last_contact = array_shift($last_contact);
+
+		$events = db_get_all_rows_sql ($sqlEvents);
+		$text_event_header = __('Events info (24hr.)');
+		$e_graph = reporting_get_event_histogram ($events, $text_event_header);
+
 		$data = array();
 		$data['interface_name'] = "<strong>" . $interface_name . "</strong>";
 		$data['interface_status'] = $interface['status_image'];
 		$data['interface_graph'] = $graph_link;
 		$data['interface_ip'] = $interface['ip'];
 		$data['interface_mac'] = $interface['mac'];
+		$data['last_contact'] = __('Last contact: ') . $last_contact;
+ 		$data['interface_event_graph'] = $e_graph;
 		$table_interface->data[] = $data;
 	}
 	// This javascript piece of code is used to make expandible the body of the table
@@ -493,57 +570,45 @@ $table->class = 'agents';
 $table->style = array_fill(0, 3, 'vertical-align: top;');
 
 $data = array();
-$data[0] = html_print_table($table_agent, true);
-$data[0] .=
+$data[0][0] = html_print_table($table_agent, true);
+$data[0][0] .=
 	'<br /> <table width=95% class="databox agente" style="">
-		<tr><th>' . 
-			__('Events (24h)') . 
-		'</th></tr>' . 
+		<tr><th>' .
+			__('Events (24h)') .
+		'</th></tr>' .
 		'<tr><td style="text-align:center;"><br />' .
 		graph_graphic_agentevents ($id_agente, 450, 15, SECONDS_1DAY, '', true) . 
 		'<br /></td></tr>' . 
 	'</table>';
 
-// ACCESS RATE GRAPH
-$access_agent = db_get_value_sql("SELECT COUNT(id_agent)
-	FROM tagent_access
-	WHERE id_agent = " . $id_agente);
-
-if ($config["agentaccess"] && $access_agent > 0) {
-	$data[0] .=
-		'<br /><table width=90% class="databox agente" style="">
-		<tr><th>' . 
-				__('Agent access rate (24h)') . 
-			'</th></tr>' . 
-		'<tr><td style="margin: auto; text-align:center; width: 300px;">' .
-			graphic_agentaccess($id_agente, 300, 100, SECONDS_1DAY, true) . 
-			'</td></tr>' . 
-	'</table>';
-}
 $table->style[0] = 'width:40%; vertical-align:top;';
-$data[1] = html_print_table($table_contact, true);
-$data[1] .= empty($table_data->data) ?
+$data[0][1] = html_print_table($table_contact, true);
+$data[0][1] .= empty($table_data->data) ?
 	'' :
 	'<br>' . html_print_table($table_data, true);
-$data[1] .= !isset($table_incident) ?
+$data[0][1] .= !isset($table_incident) ?
 	'' :
 	'<br>' . html_print_table($table_incident, true);
-$data[1] .= !isset($table_interface) ?
-	'' :
-	'<br>' . html_print_table($table_interface, true);
 
-$table->rowspan[0][1] = 0;
+$table->rowspan[1][0] = 0;
 
-$data[2] = '<div style="width:100%; text-align:right">';
-$data[2] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a><br>';
-$data[2] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'), "alt" => "")) . '</a>';
-$data[2] .= '</div>';
+$data[0][2] = '<div style="width:100%; text-align:right">';
+$data[0][2] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => '0', "title" => __('Refresh data'), "alt" => "")) . '</a><br>';
+$data[0][2] .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'), "alt" => "")) . '</a>';
+$data[0][2] .= '</div>';
 
-$table->data[] = $data;
+$table->data = $data;
 $table->rowclass[] = '';
 
 $table->cellstyle[1][0] = 'text-align:center;';
 
 html_print_table($table);
+$data2[1][0] = !isset($table_interface) ?
+	'' :
+	html_print_table($table_interface, true);
+$table->data = $data2;
+$table->styleTable = '';
+html_print_table($table);
+
 unset($table);
 ?>

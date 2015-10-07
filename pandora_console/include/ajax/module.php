@@ -732,9 +732,9 @@ if ($list_modules) {
 		'<a href="' . $url . '&sort_field=last_contact&amp;sort=up&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastContactUp, "alt" => "up")) . '</a>' .
 		'<a href="' . $url . '&sort_field=last_contact&amp;sort=down&refr=&filter_monitors=1&status_filter_monitor=' .$status_filter_monitor.' &status_text_monitor='. $status_text_monitor.'&status_module_group= '.$status_module_group.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastContactDown, "alt" => "down")) . '</a>';
 
-	
-	$table->align = array("center", "left", "center", "left", "left", "center","left","left","center");
-	
+
+	$table->align = array("left", "left", "left", "left", "left", "left","left","left","left");
+
 	$last_modulegroup = 0;
 	$rowIndex = 0;
 	

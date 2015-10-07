@@ -33,7 +33,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "6.0RC1 PS151006";
+my $version = "6.0RC1 PS151007";
 
 # Pandora server configuration
 my %conf;
@@ -1021,8 +1021,8 @@ else {
 
 # Connect to the DB
 my $dbh = db_connect ($conf{'dbengine'}, $conf{'dbname'}, $conf{'dbhost'}, $conf{'dbport'}, $conf{'dbuser'}, $conf{'dbpass'});
-my $history_dbh = ($conf{'_history_db_enabled'} eq '1') ? db_connect ('mysql', $conf{'_history_db_name'},
-		$conf{'_history_db_host'}, '3306', $conf{'_history_db_user'}, $conf{'_history_db_pass'}) : undef;
+my $history_dbh = ($conf{'_history_db_enabled'} eq '1') ? db_connect ($conf{'dbengine'}, $conf{'_history_db_name'},
+		$conf{'_history_db_host'}, $conf{'_history_db_port'}, $conf{'_history_db_user'}, $conf{'_history_db_pass'}) : undef;
 
 # Get a lock
 my $lock = db_get_lock ($dbh, 'pandora_db');

@@ -260,7 +260,8 @@ ui_print_page_header (__('Reporting'). " &raquo;  ".__('Custom graph viewer'), "
 
 $graphs = custom_graphs_get_user ();
 if (! empty ($graphs)) {
-	$table->width = '98%';
+	$table = new stdClass();
+	$table->width = '100%';
 	$tale->class = 'databox_frame';
 	$table->align = array ();
 	$table->align[2] = 'center';

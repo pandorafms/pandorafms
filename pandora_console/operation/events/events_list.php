@@ -435,7 +435,7 @@ $data[0] .= html_print_select($user_users, "id_user_ack", $id_user_ack, '',
 if (!$meta) {
 	$data[1] = __('Module search') . $jump;
 	$data[1] .= html_print_autocomplete_modules('module_search',
-		$text_module, false, $id_agent_module, true, '', array(), true);
+		$text_module, false, true, '', array(), true,$id_agent_module);
 }
 else {
 	$data[1] = __('Server') . $jump;

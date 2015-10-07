@@ -1699,19 +1699,23 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	fprintf (conf_fh, "%s", data_xml.c_str ());
 	fclose (conf_fh);
 
-	/* Only send if debug is not activated */
-	if (getPandoraDebug () == false) {
-		rc = this->copyDataFile (tmp_filename);
+	/* Allways reports to Data Server*/
+	rc = this->copyDataFile (tmp_filename);
         
-		/* Delete the file if successfully copied, buffer disabled or not enough space available */
-		if (rc == 0 || xml_buffer == 0 || (GetDiskFreeSpaceEx (tmp_filepath.c_str (), &free_bytes, NULL, NULL) != 0 && free_bytes.QuadPart < min_free_bytes)) {
-			Pandora_File::removeFile (tmp_filepath);
+	/* Delete the file if successfully copied, buffer disabled or not enough space available */
+	if (rc == 0 || xml_buffer == 0 || (GetDiskFreeSpaceEx (tmp_filepath.c_str (), &free_bytes, NULL, NULL) != 0 && free_bytes.QuadPart < min_free_bytes)) {
+		/* Rename the file if debug mode is enabled*/
+		if (getPandoraDebug ()) {
+			string tmp_filepath_sent = tmp_filepath;
+			tmp_filepath_sent.append("sent");
+			CopyFile (tmp_filepath.c_str(), tmp_filepath_sent.c_str(), false);
 		}
+		Pandora_File::removeFile (tmp_filepath);
+	}
 
-		/* Send any buffered data files */
-		if (xml_buffer == 1) {
-			this->sendBufferedXml (conf->getValue ("temporal"));
-		}
+	/* Send any buffered data files */
+	if (xml_buffer == 1) {
+		this->sendBufferedXml (conf->getValue ("temporal"));
 	}
 
 	ReleaseMutex (mutex);
@@ -1739,6 +1743,14 @@ Pandora_Windows_Service::sendBufferedXml (string path) {
         FindClose(find);
         return;
     }
+    
+    if (getPandoraDebug ()){
+		string file_data_path = base_path + file_data.cFileName;
+		string file_data_sent = file_data_path;
+		file_data_sent.append("sent");
+		CopyFile (file_data_path.c_str(), file_data_sent.c_str(), false);
+	}
+	
     Pandora_File::removeFile (base_path + file_data.cFileName);
 
     while (FindNextFile(find, &file_data) != 0) {
@@ -1746,6 +1758,12 @@ Pandora_Windows_Service::sendBufferedXml (string path) {
             FindClose(find);
             return;
         }
+        if (getPandoraDebug ()){
+			string file_data_path = base_path + file_data.cFileName;
+			string file_data_sent = file_data_path;
+			file_data_sent.append("sent");
+			CopyFile (file_data_path.c_str(), file_data_sent.c_str(), false);
+		}
         Pandora_File::removeFile (base_path + file_data.cFileName);
     }
 

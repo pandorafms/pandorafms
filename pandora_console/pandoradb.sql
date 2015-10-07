@@ -697,7 +697,7 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tmodule_relationship` (
 	`id` int(10) unsigned NOT NULL auto_increment,
-	`id_rt` int(10) unsigned NOT NULL DEFAULT 0,
+	`id_rt` int(10) unsigned DEFAULT NULL,
 	`module_a` int(10) unsigned NOT NULL,
 	`module_b` int(10) unsigned NOT NULL,
 	`disable_update` tinyint(1) unsigned NOT NULL default '0',

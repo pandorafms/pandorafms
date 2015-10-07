@@ -1103,6 +1103,7 @@ if ($list_modules) {
 			return false;
 		});
 		$("a.relations_details").cluetip ({
+			width: 500,
 			arrows: true,
 			attribute: 'href',
 			cluetipClass: 'default'

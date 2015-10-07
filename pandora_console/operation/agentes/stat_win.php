@@ -92,10 +92,10 @@ $id = get_parameter('id');
 			
 			function show_others() {
 				if (!$("#checkbox-avg_only").attr('checked')) {
-					$("#hidden-show_other").val(1);
+					$("#hidden-show_other").val(0);
 				}
 				else {
-					$("#hidden-show_other").val(0);
+					$("#hidden-show_other").val(1);
 				}
 			}
 			//-->

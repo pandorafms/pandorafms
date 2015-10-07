@@ -503,14 +503,17 @@ if (!empty($network_interfaces)) {
 		}
 		$acl_tags = tags_get_acl_tags($config['id_user'], $group_array, 'ER',
 			'event_condition', 'AND', '', true, array(), true);
+
+		$id_modules_array = array();
+		$id_modules_array[] = $interface['status_module_id'];
+
 		$sqlEvents = sprintf('
 			SELECT *
-			FROM tevento
-			WHERE id_agente = (
-				SELECT id_agente
-				FROM tagente_estado
-				WHERE id_agente_modulo = ' . $interface['status_module_id'] . ')
-		');
+			FROM tevento te
+			INNER JOIN tagente_estado tae
+				ON te.id_agentmodule = tae.id_agente_modulo
+					AND tae.id_agente_modulo IN (%s)
+		', implode(',', $id_modules_array));
 
 		$sqlLast_contact = sprintf ('
 			SELECT last_try

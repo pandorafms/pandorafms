@@ -439,6 +439,10 @@ function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 	$rows = db_get_all_rows_sql("SELECT *
 		FROM tmodule_group ORDER BY name");
 	$rows = io_safe_output($rows);
+	$rows_count = count($rows);
+	for ($i = 0; $i < $rows_count; $i++) {
+		$rows[$i]['name'] = ui_print_truncate_text($rows[$i]['name'], 35);
+	}
 	$rows_select = array();
 	if (!empty($rows)) {
 		$rows_select[-1] = __('All');

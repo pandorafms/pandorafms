@@ -1353,4 +1353,92 @@ function tags_get_user_module_and_tags ($id_user = false, $access = 'AR') {
 	
 	return $acltags;
 }
+
+function tags_get_tags_events_search($id_user = false, $access = 'AR') {
+    global $config;
+
+	//users_is_strict_acl
+
+	if ($id_user === false) {
+		$id_user = $config['id_user'];
+	}
+
+	// Get all tags to have the name of all of them
+	$all_tags = tags_get_all_tags();
+
+	// If at least one of the profiles of this access flag hasent
+	// tags restrictions, the user can see all tags
+	$acl_column = get_acl_column($access);
+
+	if (empty($acl_column)) {
+		return array();
+	}
+
+	switch ($config["dbtype"]) {
+		case "mysql":
+		case "postgresql":
+			$query = sprintf("
+				SELECT count(*)
+				FROM tusuario_perfil, tperfil
+				WHERE tperfil.id_perfil = tusuario_perfil.id_perfil
+					AND tusuario_perfil.id_usuario = '%s'
+					AND tperfil.%s = 1
+					AND tags <> ''",
+				$id_user, $acl_column);
+			break;
+		case "oracle":
+			$query = sprintf("
+				SELECT count(*)
+				FROM tusuario_perfil, tperfil
+				WHERE tperfil.id_perfil = tusuario_perfil.id_perfil
+					AND tusuario_perfil.id_usuario = '%s'
+					AND tperfil.%s = 1
+					AND dbms_lob.getlength(tags) > 0",
+				$id_user, $acl_column);
+			break;
+	}
+
+	$profiles_without_tags = db_get_value_sql($query);
+
+	if ($profiles_without_tags == 0) {
+		//--------------------------------------------------------------
+		// FIXED FOR TICKET #1921
+		//
+		// If the user is setted with strict ACL, the pandora does not
+		// show any tags. Thanks Mr. C from T.
+		//
+		//--------------------------------------------------------------
+		return false;
+	}
+    // Get the tags of the required access flag for each group
+	$tags = tags_get_acl_tags($id_user, 0, $access, 'data');
+	// If there are wrong parameters or fail ACL check, return false
+	if ($tags_user === ERR_WRONG_PARAMETERS || $tags_user === ERR_ACL) {
+		return array();
+	}
+
+	// Merge the tags to get an array with all of them
+	$user_tags_id = array();
+
+	foreach ($tags as $t) {
+		if (empty($user_tags_id)) {
+			$user_tags_id = $t;
+		}
+		else {
+			$user_tags_id = array_unique(array_merge($t,$user_tags_id));
+		}
+	}
+
+	// Set the format id=>name to tags
+	$user_tags = array();
+	foreach ($user_tags_id as $id) {
+		if (!isset($all_tags[$id])) {
+			continue;
+		}
+		$user_tags[$id] = $all_tags[$id];
+	}
+
+
+	return $user_tags;
+}
 ?>

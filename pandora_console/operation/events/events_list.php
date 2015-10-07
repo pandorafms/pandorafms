@@ -16,28 +16,28 @@
 
 // Load global vars
 global $config;
-
 require_once ($config['homedir']. "/include/functions_events.php"); //Event processing functions
 require_once ($config['homedir']. "/include/functions_alerts.php"); //Alerts processing functions
 require_once ($config['homedir']. "/include/functions.php");
 require_once($config['homedir'] . "/include/functions_agents.php"); //Agents funtions
 require_once($config['homedir'] . "/include/functions_users.php"); //Users functions
 require_once ($config['homedir'] . '/include/functions_groups.php');
-
 require_once ($config["homedir"] . '/include/functions_graph.php');
 require_once ($config["homedir"] . '/include/functions_tags.php');
 
 check_login ();
 
-if (! check_acl ($config["id_user"], 0, "ER")) {
+
+$ER_permissions = check_acl ($config["id_user"], 0, "ER");
+$EW_permissions = check_acl ($config["id_user"], 0, "EW");
+$EM_permissions = check_acl ($config["id_user"], 0, "EM");
+
+if (!$ER_permissions) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");
 	return;
 }
-
-$events_EW = check_acl ($config["id_user"], 0, "EW");
-$events_EM = check_acl ($config["id_user"], 0, "EM");
 
 if (is_ajax()) {
 	$get_filter_values = get_parameter('get_filter_values', 0);
@@ -125,6 +125,7 @@ if (is_ajax()) {
 	return;
 }
 
+
 // Get the tags where the user have permissions in Events reading tasks
 $tags = tags_get_user_tags($config['id_user'], 'ER');
 
@@ -188,7 +189,7 @@ html_print_div(array('hidden' => true,
 html_print_div(array('hidden' => true,
 	'id' => 'load_filter_text', 'content' => __('Load filter')));
 
-if ($events_EW || $events_EM) {
+if ($EW_permissions || $EM_permissions) {
 	// Save filter div for dialog
 	echo '<div id="save_filter_layer" style="display: none">';
 	$table->id = 'save_filter_form';
@@ -382,7 +383,9 @@ $table_advanced->rowclass[] = '';
 $data = array();
 $data[0] = __('User ack.') . '<br>';
 
-$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
+$ER_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
+
+$user_users = $ER_users;
 
 $data[0] .= html_print_select($user_users, "id_user_ack", $id_user_ack, '',
 	__('Any'), 0, true);
@@ -414,7 +417,7 @@ $table_advanced->rowclass[] = '';
 $data = array();
 $data[0] = __('Date from') . '<br>';
 
-$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
+$user_users = $ER_users;
 
 $data[0] .= html_print_input_text ('date_from', $date_from, '', 15, 10, true);
 
@@ -501,7 +504,7 @@ $table->rowclass[] = '';
 
 $data = array();
 $data[0] = '<div style="width:100%; text-align:left">';
-if ($events_EW) {
+if ($EW_permissions) {
 	$data[0] .= '<a href="javascript:" onclick="show_save_filter_dialog();">' . html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
 }
 $data[0] .= '<a href="javascript:" onclick="show_load_filter_dialog();">' . html_print_image("images/load.png", true, array("border" => '0', "title" => __('Load filter'), "alt" => __('Load filter'))) . '</a><br>';
@@ -571,12 +574,11 @@ if (!empty($result)) {
 	//~ Checking the event tags exactly. The event query filters approximated tags to keep events
 	//~ with several tags
 	$acltags = tags_get_user_module_and_tags ($config['id_user'],'ER', true);
-	if ($acltags){
-		foreach ($result as $key=>$event_data) {
-			$has_tags = events_checks_event_tags($event_data, $acltags);
-			if (!$has_tags) {
-				unset($result[$key]);
-			}
+
+	foreach ($result as $key=>$event_data) {
+		$has_tags = events_checks_event_tags($event_data, $acltags);
+		if (!$has_tags) {
+			unset($result[$key]);
 		}
 	}
 }

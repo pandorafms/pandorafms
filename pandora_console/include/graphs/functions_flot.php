@@ -529,6 +529,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 	$max = 0;
 	$i = count($graph_data);
 	$data = array();
+	
 	foreach ($graph_data as $label => $values) {
 		$labels[] = io_safe_output($label);
 		$i--;
@@ -536,26 +537,15 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 		foreach ($values as $key => $value) {
 			$jsvar = "data_" . $graph_id . "_" . $key;
 			
-			if ($multicolor) {
-				for ($j = count($graph_data) - 1; $j >= 0; $j--) {
-					if ($j == $i) {
-						$data[$jsvar . $i][$j] = $value;
-					}
-					else {
-						$data[$jsvar . $i][$j] = 0;
-					}
-				}
-			}
-			else {
-				$data[$jsvar][] = $value;
-			}
+			$data[$jsvar][] = $value;
 			
-			$return .= "<div id='value_".$i."_$graph_id' class='values_$graph_id' style='color: #000; position:absolute;'>$value</div>";
+			
 			if ($value > $max) {
 				$max = $value;
 			}
 		}
 	}
+
 	
 	// Store serialized data to use it from javascript
 	$labels = implode($separator,$labels);

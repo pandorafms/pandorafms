@@ -129,63 +129,61 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 
 function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	maxvalue, water_mark, separator, separator2) {
-	
+		
+	var colors_data = ['#FC4444','#FFA631','#FAD403','#5BB6E5','#F2919D','#80BA27'];
 	values = values.split(separator2);
 	var datas = new Array();
-	
 	for (i = 0; i < values.length; i++) {
 		var serie = values[i].split(separator);
-		var aux = new Array();
-		$.each(serie.reverse(),function(i,v) {
-			aux.push([v, i]);
-		});
 		
-		datas.push({ 
-			data: aux, 
-			bars: {
-				show: true,
-				horizontal: true,
-				fillColor: {
-					colors: [ { opacity: 0.7 }, { opacity: 1 } ]
-				},
-				lineWidth: 1,
-				steps: false
-			} 
-		});
+		
+		var aux = new Array();
+		for (j = 0; j < serie.length; j++) {
+			var aux2 = parseFloat(serie[j]);
+			aux.push([aux2, j]);
+			datas.push( {
+				data: [[aux2, j]],
+				color: colors_data[j]
+			});
+		};
 	}
 	
-	labels = labels.split(separator).reverse();
+	 
+	
+	var labels_total=new Array();
+	labels = labels.split(separator);
+	i = 0;
+	for (i = 0; i < labels.length; i++) {
+		labels_total.push([i, labels[i]]);
+	}
 	
 	var stack = 0, bars = true, lines = false, steps = false;
-	
+	var k=0;
 	var options = {
 			series: {
-				shadowSize: 0.1
+				bars: {
+					show: true,
+					barWidth: 0.75,
+					align: "center",
+					lineWidth: 1,
+					fill: 1,
+					horizontal: true,
+				}
 			},
-			
 			grid: {
 				hoverable: true,
-				borderWidth:1,
-				borderColor: '#666',
-				tickColor: '#eee'
+				borderWidth: 1,        
+				backgroundColor: { colors: ["#FFF", "#FFF"] }
 				},
-			xaxes: [ {
-					tickFormatter: yFormatter,
-					color: '#000'
-					} ],
-			yaxes: [ {
-					tickFormatter: xFormatter,
+			yaxis:  {
+					axisLabelUseCanvas: true,
+					axisLabelFontSizePixels: 12,
+					axisLabelFontFamily: 'Verdana, Arial',
+					axisLabelPadding: 3,
+					ticks: labels_total,
 					tickSize: 1,
-					color: '#000'
+					color: '#000',
 					},
-					{
-					  // align if we are to the right
-					  alignTicksWithAxis: 1,
-					  position: 'right'
-					  
-					  //tickFormatter: dFormatter
-					} ]
-					,
 			legend: {
 				show: false
 			}
@@ -205,7 +203,8 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	
 	var plot = $.plot($('#' + graph_id), datas, options );
 	
-	
+	$('#' + graph_id).UseTooltip();
+	/*
 	// Adjust the top of yaxis tick to set it in the middle of the bars
 	yAxisHeight = $('#' + graph_id + ' .yAxis .tickLabel')
 		.css('height').split('px')[0];
@@ -303,6 +302,52 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 		
 		$(".values_" + graph_id).css("left", (plot.offset().left + 5) + "px");
 	}
+	* */
+}
+
+var previousPoint = null, previousLabel = null;
+
+$.fn.UseTooltip = function () {
+    $(this).bind("plothover", function (event, pos, item) {
+        if (item) {
+            if ((previousLabel != item.series.label) || (previousPoint != item.dataIndex)) {
+                previousPoint = item.dataIndex;
+                previousLabel = item.series.label;
+                $("#tooltip").remove();
+
+                var x = item.datapoint[0];
+                var y = item.datapoint[1];
+
+                var color = item.series.color;
+				
+                console.log(item.series);                
+                
+                showTooltip(item.pageX,
+                        item.pageY,
+                        color,
+                        "<strong>" + item.series.yaxis.ticks[y].label + "</strong>: <strong>" + x + "</strong>");                
+            }
+        } else {
+            $("#tooltip").remove();
+            previousPoint = null;
+        }
+    });
+};
+
+function showTooltip(x, y, color, contents) {
+    $('<div id="tooltip">' + contents + '</div>').css({
+        position: 'absolute',
+        display: 'none',
+        top: y - 40,
+        left: x - 120,
+        border: '2px solid ' + color,
+        padding: '3px',
+        'font-size': '9px',
+        'border-radius': '5px',
+        'background-color': '#fff',
+        'font-family': 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+        opacity: 0.9
+    }).appendTo("body").fadeIn(200);
 }
 
 function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2) {

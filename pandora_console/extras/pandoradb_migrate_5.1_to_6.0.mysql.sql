@@ -160,13 +160,21 @@ CREATE  TABLE IF NOT EXISTS `tgis_map_has_tgis_map_con` (
 INSERT INTO `tgis_map_has_tgis_map_con` SELECT * FROM `tgis_map_has_tgis_map_connection`;
 DROP TABLE `tgis_map_has_tgis_map_connection`;
 
-ALTER TABLE `tmodule_relationship`
-	--ADD COLUMN `id_rt` int(10) unsigned NOT NULL DEFAULT 0,
-	ADD FOREIGN KEY (`id_rt`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE;
-	ALTER TABLE tmodule_relationship MODIFY `id_rt` int(10) unsigned NULL default NULL;
+ALTER TABLE `tmodule_relationship` ADD FOREIGN KEY (`id_rt`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE;
+ALTER TABLE tmodule_relationship MODIFY `id_rt` int(10) unsigned NULL default NULL;
 
 -- ---------------------------------------------------------------------
--- Table `tevent_filter`
--- ---------------------------------------------------------------------	
-ALTER TABLE tevent_filter ADD COLUMN `id_agent_module` int(25) DEFAULT 0;
-ALTER TABLE tevent_filter ADD COLUMN `id_agent` int(25) DEFAULT 0;
+-- Table `tagente_modulo`
+-- ---------------------------------------------------------------------
+ALTER TABLE tagente_modulo ADD COLUMN `dynamic_interval` int(4) unsigned default '0';
+ALTER TABLE tagente_modulo ADD COLUMN `dynamic_max` bigint(20) default '0';
+ALTER TABLE tagente_modulo ADD COLUMN `dynamic_min` bigint(20) default '0';
+ALTER TABLE tagente_modulo ADD COLUMN `prediction_sample_window` int(10) default 0;
+ALTER TABLE tagente_modulo ADD COLUMN `prediction_samples` int(4) default 0;
+ALTER TABLE tagente_modulo ADD COLUMN `prediction_threshold` int(4) default 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tagente_estado`
+-- ---------------------------------------------------------------------
+ALTER TABLE tagente_estado ADD COLUMN `last_dynamic_update` bigint(20) NOT NULL default '0';
+

@@ -95,7 +95,7 @@ if (count($module_array) > 0) {
 		echo "<tr><td class='$tdcolor'>" . $agent_array[$a] . "</td>";
 		echo "<td class='$tdcolor'>";
 		echo modules_get_agentmodule_name ($module_array[$a])."</td>";
-		echo "<td class='$tdcolor' align='center'>";
+		echo "<td class='$tdcolor' align=''>";
 		echo "<table><tr>";
 
 		echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_weight=1&id=". $id_graph ."&graph=" . $idgs_array[$a] . "'>";
@@ -105,7 +105,7 @@ if (count($module_array) > 0) {
 		
 		echo "</tr></table>";
 		echo "</td>";
-		echo "<td class='$tdcolor' align='center'>";
+		echo "<td class='$tdcolor' align=''>";
 		echo "<a href='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&delete_module=1&id=". $id_graph ."&delete=" . $idgs_array[$a] . "'>".html_print_image('images/cross.png', true, array ('title' => __('Delete')))."</a>";
 
 		echo "</td></tr>";

@@ -231,7 +231,7 @@ function readFields() {
 	values['module'] = $("select[name=module]").val();
 	values['process_simple_value'] = $("select[name=process_value]").val();
 	values['background'] = $("#background_image").val();
-	values['period'] = $("select[name=period]").val();
+	values['period'] = $("#hidden-period").val();
 	values['width'] = $("input[name=width]").val();
 	values['height'] = $("input[name=height]").val();
 	values['parent'] = $("select[name=parent]").val();
@@ -841,6 +841,8 @@ function getModuleGraph(id_data) {
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
+		async: false,
+		timeout: 1000,
 		success: function (data)
 		{
 			id_agente_modulo = data['id_agente_modulo'];
@@ -876,6 +878,8 @@ function getModuleGraph(id_data) {
 		url: url_ajax,
 		data: parameter,
 		type: "POST",
+		async: false,
+		timeout: 1000,
 		dataType: 'text', //The ajax return the data as text.
 		success: function (data)
 		{
@@ -906,6 +910,8 @@ function getModuleValue(id_data, process_simple_value, period) {
 		url: url_ajax,
 		data: parameter,
 		type: "POST",
+		async: false,
+		timeout: 1000,
 		dataType: 'json',
 		success: function (data)
 		{
@@ -940,6 +946,8 @@ function getPercentileBar(id_data, values) {
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
+		async: false,
+		timeout: 1000,
 		success: function (data)
 		{
 			module_value = data['value'];
@@ -965,6 +973,8 @@ function getPercentileBar(id_data, values) {
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
+		async: false,
+		timeout: 1000,
 		success: function (data)
 		{
 			font = data['font'];
@@ -1015,6 +1025,8 @@ function getPercentileBubble(id_data, values) {
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
+		async: false,
+		timeout: 1000,
 		success: function (data)
 		{
 			module_value = data['value'];
@@ -1037,6 +1049,8 @@ function getPercentileBubble(id_data, values) {
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
+		async: false,
+		timeout: 1000,
 		success: function (data)
 		{
 			font = data['font'];
@@ -1084,6 +1098,8 @@ function getImageElement(id_data) {
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
+		timeout: 1000,
+		async: false,
 		success: function (data)
 			{
 				img = data['image'];
@@ -1179,6 +1195,8 @@ function createItem(type, values, id_data) {
 				type: 'POST',
 				url: url_ajax,
 				data: parameter,
+				timeout: 1000,
+				async: false,
 				success: function (data) {
 					img_src = data;
 				}
@@ -1276,6 +1294,8 @@ function createItem(type, values, id_data) {
 				type: 'POST',
 				url: url_ajax,
 				data: parameter,
+				timeout: 1000,
+				async:false,
 				success: function (data) {
 					img_src = data;
 				}
@@ -1425,6 +1445,8 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 					data: params.join ("&"),
 					type: 'POST',
 					url: url_ajax,
+					async: false,
+					timeout: 10000,
 					success: function (data) {
 						$("#image_" + idElement).attr('src', data);
 					}
@@ -1435,10 +1457,10 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'label':
 		case 'icon':
 		case 'module_graph':
-			
-			if (type == 'module_graph')
-				$("#image_" + idElement).attr("src", getModuleGraph(idElement));
-			
+
+			/*if (type == 'module_graph')
+				$("#image_" + idElement).attr("src", getModuleGraph(idElement));*/
+
 			if ((typeof(values['mov_left']) != 'undefined') &&
 					(typeof(values['mov_top']) != 'undefined')) {
 				$("#" + idElement).css('top', '0px').css('top', top + 'px');
@@ -1582,6 +1604,8 @@ function updateDB(type, idElement , values, event) {
 			data: parameter,
 			type: "POST",
 			dataType: 'text',
+			async: false,
+			timeout: 1000,
 			success: function (data)
 				{
 					updateDB_visual(type, idElement , values, event, top, left);

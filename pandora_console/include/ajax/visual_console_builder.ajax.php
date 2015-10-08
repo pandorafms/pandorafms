@@ -559,8 +559,8 @@ switch ($action) {
 						break;
 					
 					case 'module_graph':
-						$elementFields['width_module_graph'] = $elementFields['width'];
-						$elementFields['height_module_graph'] = $elementFields['height'];
+						$elementFields['width_module_graph'] = (int)$elementFields['width'];
+						$elementFields['height_module_graph'] = (int)$elementFields['height'];
 						break;
 					
 				}
@@ -596,7 +596,7 @@ switch ($action) {
 	
 	case 'insert':
 		$values = array();
-		$values['id_layout'] = $id_visual_console;
+		$values['id_layout'] = (int)$id_visual_console;
 		$values['label'] = $label;
 		$values['pos_x'] = $left;
 		$values['pos_y'] = $top;
@@ -617,20 +617,20 @@ switch ($action) {
 			else
 				$values['id_agent'] = 0;
 		}
-		$values['id_agente_modulo'] = $id_module;
-		$values['id_layout_linked'] = $map_linked;
+		$values['id_agente_modulo'] = (int)$id_module;
+		$values['id_layout_linked'] = (int)$map_linked;
 		$values['label_color'] = $label_color;
-		$values['parent_item'] = $parent;
+		$values['parent_item'] = (int)$parent;
 		$values['no_link_color'] = 1;
-		$values['enable_link'] = $enable_link;
-		
+		$values['enable_link'] = (int)$enable_link;
+
 		$values['id_custom_graph'] = $id_custom_graph;
 		
 		switch ($type) {
 			case 'module_graph':
 				$values['type'] = MODULE_GRAPH;
-				$values['height'] = $height_module_graph;
-				$values['width'] = $width_module_graph;
+				$values['height'] = (int)$height_module_graph;
+				$values['width'] = (int)$width_module_graph;
 				$values['period'] = $period;
 				break;
 			case 'percentile_item':

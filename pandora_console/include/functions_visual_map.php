@@ -235,9 +235,9 @@ function visual_map_print_item($layoutData) {
 			if ($layoutData['id_metaconsole'] != 0) {
 				metaconsole_restore_db();
 			}
-			
-			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
-			
+
+			//$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
+
 			echo '<div id="' . $id . '" class="item module_graph" style="z-index: 1; color: ' . $color . '; text-align: center; position: absolute; display: inline-block; ' . $sizeStyle . ' top: ' . $top .  'px; left: ' . $left .  'px;">';
 			echo io_safe_output($text) . '<br />'; 
 			echo $img;

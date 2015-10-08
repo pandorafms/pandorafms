@@ -890,6 +890,23 @@ function visual_map_print_item($mode = "read", $layoutData,
 		
 		case PERCENTILE_BAR:
 		case PERCENTILE_BUBBLE:
+		 	$progress_bar_heigh = 15;
+			if (!empty($proportion)) {
+				if ($width != 0) {
+					$width = (integer)($proportion['proportion_width'] * $width);
+				}
+				else {
+					$width = (integer)($proportion['proportion_width'] * $infoImage[0]);
+				}
+
+				if ($height != 0) {
+					$height = (integer)($proportion['proportion_height'] * $height);
+					$progress_bar_heigh = $progress_bar_heigh * $proportion['proportion_height'];
+				}
+				else {
+					$height = (integer)($proportion['proportion_height'] * $infoImage[1]);
+				}
+			}
 			echo io_safe_output($text) . '<br />';
 			
 			ob_start();
@@ -897,7 +914,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 				echo progress_bubble($percentile, $width, $width, '', 1, $value_text, $colorStatus);
 			}
 			else {
-				echo progress_bar($percentile, $width, 15, '', 1, $value_text, $colorStatus);
+				echo progress_bar($percentile, $width, $progress_bar_heigh, '', 1, $value_text, $colorStatus);
 			}
 			$img = ob_get_clean();
 			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
@@ -960,8 +977,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 				if (preg_match('/^(http:\/\/)((.)+)$/i', $text)) {
 					echo '<a href="' . $label . '">' . '</a>' . '<br />';
 				}
-				
-				if (empty($proportion)) {
+
+				if (!empty($proportion)) {
 					if (is_file($config['homedir'] . '/' . $img))
 						$infoImage = getimagesize($config['homedir'] . '/' . $img);
 					

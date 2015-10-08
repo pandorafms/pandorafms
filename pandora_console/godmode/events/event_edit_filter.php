@@ -366,7 +366,7 @@ $table->data[19][1] = html_print_select(
 		'1' => __('Only alert events')),
 	"filter_only_alert", $filter_only_alert, '', '', '', true);
 
-if (!$meta) {
+if (!is_metaconsole()) {
 	echo $id_agent_module;
 	$table->data[20][0] = '<b>' . __('Module search') . '</b>';
 	$table->data[20][1] .= html_print_autocomplete_modules('module_search',

@@ -1131,7 +1131,7 @@ CREATE TABLE tusuario_perfil (
 	id_grupo NUMBER(10, 0) DEFAULT 0,
 	assigned_by VARCHAR2(100) DEFAULT '',
 	id_policy NUMBER(10, 0) DEFAULT 0,
-	tags CLOB DEFAULT ''
+	tags VARCHAR2(255) DEFAULT ''
 );
 
 CREATE SEQUENCE tusuario_perfil_s INCREMENT BY 1 START WITH 1;

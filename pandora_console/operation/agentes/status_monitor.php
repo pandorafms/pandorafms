@@ -1292,25 +1292,30 @@ foreach ($result as $row) {
 			
 			$sub_string = substr(io_safe_output($row["datos"]), 0, 12);
 			if ($module_value == $sub_string) {
-				$intDays = $module_value / 8640000;
-				$dias = $intDays - (integer)$intDays;
-				$intDays = (integer)$intDays;
-				
-				$intHours = $dias * 24;
-				$Hours = $intHours - (integer)$intHours;
-				$intHours = (integer)$intHours;
-				
-				$intMinutes = $Hours * 60;
-				$minutos = $intMinutes - (integer)$intMinutes;
-				$intMinutes = (integer)$intMinutes;
-				
-				$intSeconds = $minutos * 60;
-				$ConvertSeconds = $intDays . " Days - ". $intHours ." Hours - ". $intMinutes . " Mins";
-				if ($ConvertSeconds) {
-					$salida = $ConvertSeconds;
+				if ($module_value == 0 && !$sub_string) {
+					$salida = 0;
 				}
 				else {
-					$salida = $module_value;
+					$intDays = $module_value / 8640000;
+					$dias = $intDays - (integer)$intDays;
+					$intDays = (integer)$intDays;
+					
+					$intHours = $dias * 24;
+					$Hours = $intHours - (integer)$intHours;
+					$intHours = (integer)$intHours;
+					
+					$intMinutes = $Hours * 60;
+					$minutos = $intMinutes - (integer)$intMinutes;
+					$intMinutes = (integer)$intMinutes;
+					
+					$intSeconds = $minutos * 60;
+					$ConvertSeconds = $intDays . " Days - ". $intHours ." Hours - ". $intMinutes . " Mins";
+					if ($ConvertSeconds) {
+						$salida = $ConvertSeconds;
+					}
+					else {
+						$salida = $module_value;
+					}
 				}
 			}
 			else {

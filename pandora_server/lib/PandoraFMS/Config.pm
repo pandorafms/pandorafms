@@ -385,6 +385,9 @@ sub pandora_load_config {
 	
 	# Global Timeout for Custom Commands Alerts
 	$pa_config->{"global_alert_timeout"}= 15; # 6.0
+	
+	# Server Remote Config
+	$pa_config->{"remote_config"}= 0; # 6.0
 	                
 
 	# Check for UID0
@@ -856,6 +859,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^global_alert_timeout\s+([0-9]*)/i) {
 			$pa_config->{'global_alert_timeout'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^remote_config\s+([0-9]*)/i) {
+			$pa_config->{'remote_config'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

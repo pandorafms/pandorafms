@@ -139,8 +139,10 @@ sub pandora_startup () {
 ########################################################################################
 # Server restart.
 ########################################################################################
-sub pandora_restart () {
-	
+sub pandora_restart (;$) {
+		
+	my $sleep_time = @_ > 0 ? $_[0] : $Config{'restart_delay'};
+		
 	# Stop the servers
 	foreach my $server (@Servers) {
 		$server->stop ();
@@ -153,7 +155,7 @@ sub pandora_restart () {
 	close (STDERR);
 	
 	# Wait before trying to start again
-	sleep ($Config{'restart_delay'});
+	sleep ($sleep_time);
 	
 	# Start the servers
 	pandora_startup ();
@@ -624,6 +626,18 @@ sub main() {
 			# Unmute
 			open(STDOUT, ">&OLDOUT");
 			close (OLDOUT);
+		}	
+									
+		if ($Config{'remote_config'} == 1 && enterprise_hook ('pandora_remote_config_server', [\%Config])) {
+			
+			# Generate 'restarting' events
+			foreach my $server (@Servers) {
+				$server->restartEvent ($@);
+			}
+			
+			logger (\%Config, 'Pandora FMS Server restarting (' . $@ . ') in 10 seconds.', 1);
+			pandora_load_config (\%Config);
+			pandora_restart (5);
 		}
 		
 		threads->yield;

@@ -75,6 +75,7 @@ if (check_acl ($config["id_user"], 0, "PM")) {
 }
 
 $table->data = array ();
+$names_servers = array ();
 
 foreach ($servers as $server) {
 	$data = array ();
@@ -122,6 +123,15 @@ foreach ($servers as $server) {
 	}
 	$data[7] = ui_print_timestamp ($server['keepalive'], true);
 	
+	$safe_server_name = servers_get_name($server["id_server"]);
+	if (!isset($names_servers[$safe_server_name])){
+		if (servers_check_remote_config ($safe_server_name) && enterprise_installed()) {
+			$names_servers[$safe_server_name] = true;
+		} else {
+			$names_servers[$safe_server_name] = false;
+		}
+	}
+	
 	//Only Pandora Administrator can delete servers
 	if (check_acl ($config["id_user"], 0, "PM")) {
 		 $data[8] = '';
@@ -142,6 +152,14 @@ foreach ($servers as $server) {
 		$data[8] .= html_print_image ('images/config.png', true,
 			array('title' => __('Edit')));
 		$data[8] .= '</a>';
+		
+		if ($names_servers[$safe_server_name] === true) {
+			$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$server["id_server"].'">';
+			$data[8] .= html_print_image ('images/remote_configuration.png', true,
+				array('title' => __('Remote configuration')));
+			$data[8] .= '</a>';
+			$names_servers[$safe_server_name] = false;
+		}
 		
 		$data[8] .= '&nbsp;&nbsp;<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$server["id_server"].'&amp;delete=1">';
 		$data[8] .= html_print_image ('images/cross.png', true,

@@ -671,6 +671,37 @@ function servers_get_name ($id_server) {
 }
 
 /**
+ * Get the presence of .conf and .md5 into remote_config dir
+ * 
+ * @param string Agent name
+ * 
+ * @return true if files exist and are writable
+ */
+
+
+function servers_check_remote_config ($server_name) {
+	global $config;
+	
+	$server_md5 = md5 ($server_name, false);
+	
+	$filenames = array();
+	$filenames['md5'] = io_safe_output($config["remote_config"])
+		 . "/md5/" . $server_md5 . ".srv.md5";
+	$filenames['conf'] = io_safe_output($config["remote_config"])
+		 . "/conf/" . $server_md5 . ".srv.conf";
+		 
+	if (! isset ($filenames['conf']))
+		return false;
+	if (! isset ($filenames['md5']))
+		return false;
+		
+	return (file_exists ($filenames['conf'])
+		&& is_writable ($filenames['conf'])
+		&& file_exists ($filenames['md5'])
+		&& is_writable ($filenames['md5']));
+}
+
+/**
  * Return a string containing image tag for a given target id (server)
  * TODO: Make this print_servertype_icon and move to functions_ui.php. Make XHTML compatible. Make string translatable
  *

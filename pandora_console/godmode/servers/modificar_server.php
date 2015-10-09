@@ -29,6 +29,9 @@ if (! check_acl ($config["id_user"], 0, "AW")) {
 }
 
 if (isset($_GET["server"])) {
+	
+	enterprise_include("godmode/agentes/agent_disk_conf_editor.php");
+	
 	$id_server= get_parameter_get ("server");
 	// Headers
 	ui_print_page_header (__('Update Server'), "images/gm_servers.png", false, "servers", true);
@@ -53,6 +56,13 @@ if (isset($_GET["server"])) {
 	echo "</div>";
 
 }
+elseif (isset($_GET["server_remote"])) {
+	
+	// Headers
+	$id_server= get_parameter_get ("server_remote");
+	ui_print_page_header (__('Remote Configuration'), "images/gm_servers.png", false, "servers", true);
+	enterprise_include("godmode/servers/server_disk_conf_editor.php");
+	}
 else {
 	// Header
 	ui_print_page_header (__('Pandora servers'), "images/gm_servers.png", false, "servers", true);
@@ -107,6 +117,26 @@ else {
 			ui_print_error_message(__('There was a problem updating the server'));
 		}
 	}
+	elseif (isset($_GET["delete_conf_file"])) {
+		
+		$correct = false;
+		$id_server = get_parameter ("id_server");
+		$server_md5 = md5(io_safe_output(servers_get_name ($id_server,'none')), FALSE);
+		
+		if (file_exists ($config["remote_config"] . "/md5/" . $server_md5 . ".srv.md5")) {
+			// Server remote configuration editor
+			$file_name = $config["remote_config"] . "/conf/" . $server_md5 . ".srv.conf";
+			$correct = @unlink ($file_name);
+			
+			$file_name = $config["remote_config"] . "/md5/" . $server_md5 . ".srv.md5";
+			$correct = @unlink ($file_name);
+		}
+			
+		ui_print_result_message ($correct,
+			__('Conf file deleted successfully'),
+			__('Could not delete conf file'));
+	}
+	
 	
 	$tiny = false;
 	require($config['homedir'] . '/godmode/servers/servers.build_table.php');

@@ -507,13 +507,17 @@ if (!empty($network_interfaces)) {
 		$id_modules_array = array();
 		$id_modules_array[] = $interface['status_module_id'];
 
+		$unixtime = get_system_time () - SECONDS_1DAY; //last hour
+		$time_condition = 'WHERE (te.utimestamp > '.$unixtime.')';
+
 		$sqlEvents = sprintf('
 			SELECT *
 			FROM tevento te
 			INNER JOIN tagente_estado tae
 				ON te.id_agentmodule = tae.id_agente_modulo
 					AND tae.id_agente_modulo IN (%s)
-		', implode(',', $id_modules_array));
+			%s
+		', implode(',', $id_modules_array), $time_condition);
 
 		$sqlLast_contact = sprintf ('
 			SELECT last_try
@@ -527,8 +531,13 @@ if (!empty($network_interfaces)) {
 
 		$events = db_get_all_rows_sql ($sqlEvents);
 		$text_event_header = __('Events info (24hr.)');
-		$e_graph = reporting_get_event_histogram ($events, $text_event_header);
-
+		if (!$events) {
+			$no_events = array('color' => array('criticity' => 2));
+			$e_graph = reporting_get_event_histogram ($no_events, $text_event_header);
+		}
+		else {
+			$e_graph = reporting_get_event_histogram ($events, $text_event_header);
+		}
 		$data = array();
 		$data['interface_name'] = "<strong>" . $interface_name . "</strong>";
 		$data['interface_status'] = $interface['status_image'];

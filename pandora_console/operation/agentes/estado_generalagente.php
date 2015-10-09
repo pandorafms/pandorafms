@@ -23,6 +23,7 @@ require_once ("include/functions_agents.php");
 require_once ($config["homedir"] . '/include/functions_graph.php');
 include_graphs_dependencies();
 require_once ($config['homedir'] . '/include/functions_groups.php');
+require_once ($config['homedir'] . '/include/functions_ui.php');
 require_once ($config['homedir'] .'/include/functions_incidents.php');
 include_once ($config['homedir'] .'/include/functions_reporting_html.php');
 
@@ -425,8 +426,10 @@ if (!empty($network_interfaces)) {
 	$table_interface->style = array();
 	$table_interface->style['interface_status'] = 'width: 30px;padding-top:0px;padding-bottom:0px;';
 	$table_interface->style['interface_graph'] = 'width: 20px;padding-top:0px;padding-bottom:0px;';
-	$table_interface->style['interface_event_graph'] = 'width: 100px;padding-top:0px;padding-bottom:0px;';
+	$table_interface->style['interface_event_graph'] = 'width: 100%;padding-top:0px;padding-bottom:0px;';
 	$table_interface->align['interface_event_graph'] = 'right';
+	$table_interface->style['interface_event_graph'] = 'width: 5%;padding-top:0px;padding-bottom:0px;';
+	$table_interface->align['interface_event_graph_text'] = 'left';
 	$table_interface->style['interface_name'] = 'width: 10%;padding-top:0px;padding-bottom:0px;';
 	$table_interface->align['interface_name'] = 'left';
 	$table_interface->align['interface_ip'] = 'left';
@@ -442,9 +445,9 @@ if (!empty($network_interfaces)) {
 	$table_interface->head[0] = html_print_image("images/go.png", true, $options) . "&nbsp;&nbsp;";
 	$table_interface->head[0] .= '<span style="vertical-align: middle;">' . __('Interface information') .' (SNMP)</span>';
 	$table_interface->head_colspan = array();
-	$table_interface->head_colspan[0] = 7;
+	$table_interface->head_colspan[0] = 8;
 	$table_interface->data = array();
-	
+	$event_text_cont = 0;
 	foreach ($network_interfaces as $interface_name => $interface) {
 		if (!empty($interface['traffic'])) {
 			$permission = false;
@@ -545,7 +548,11 @@ if (!empty($network_interfaces)) {
 		$data['interface_ip'] = $interface['ip'];
 		$data['interface_mac'] = $interface['mac'];
 		$data['last_contact'] = __('Last contact: ') . $last_contact;
- 		$data['interface_event_graph'] = $e_graph;
+		$data['interface_event_graph'] = $e_graph;
+		if ($event_text_cont == 0) {
+			$data['interface_event_graph_text'] = ui_print_help_tip('Module events graph', true);
+			$event_text_cont++;
+		}
 		$table_interface->data[] = $data;
 	}
 	// This javascript piece of code is used to make expandible the body of the table

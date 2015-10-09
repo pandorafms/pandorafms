@@ -841,6 +841,12 @@ sub db_process_insert($$$$;@) {
 	}
 	$wildcards = '('.$wildcards.')';
 	
+	# Escape column names that are reserved words
+	for (my $i = 0; $i < scalar(@columns_array); $i++) {
+		if ($columns_array[$i] eq 'interval') {
+			$columns_array[$i] = "${RDBMS_QUOTE}interval${RDBMS_QUOTE}";
+		}
+	}
 	my $columns_string = join(',', @columns_array);
 	
 	my $res = db_insert ($dbh,

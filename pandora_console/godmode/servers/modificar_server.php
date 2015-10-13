@@ -30,8 +30,6 @@ if (! check_acl ($config["id_user"], 0, "AW")) {
 
 if (isset($_GET["server"])) {
 	
-	enterprise_include("godmode/agentes/agent_disk_conf_editor.php");
-	
 	$id_server= get_parameter_get ("server");
 	// Headers
 	ui_print_page_header (__('Update Server'), "images/gm_servers.png", false, "servers", true);

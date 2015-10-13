@@ -144,8 +144,14 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 		if (is_numeric($last_data["datos"]) && $last_data["datos"] == 1) {
 			$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . $config["render_proc_ok"] . "</span>";
 		}
-		else {
+		else if (is_numeric($last_data["datos"]) && $last_data["datos"] == 0){
 			$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . $config["render_proc_fail"] . "</span>";
+		}
+		else {
+			if (is_numeric($last_data["datos"]))
+				$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . format_numeric($last_data["datos"]) . "</span>";
+			else
+				$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
 		}
 	}
 	else {

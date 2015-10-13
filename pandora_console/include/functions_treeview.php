@@ -140,11 +140,21 @@ function treeview_printModuleTable($id_module, $server_data = false) {
 	
 	// Data
 	$last_data = db_get_row_filter ('tagente_estado', array('id_agente_modulo' => $module['id_agente_modulo'], 'order' => array('field' => 'id_agente_estado', 'order' => 'DESC')));
-	if (is_numeric($last_data["datos"]))
-		$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . format_numeric($last_data["datos"]) . "</span>";
-	else
-		$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
-	
+	if ($config["render_proc"]) {
+		if (is_numeric($last_data["datos"]) && $last_data["datos"] == 1) {
+			$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . $config["render_proc_ok"] . "</span>";
+		}
+		else {
+			$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . $config["render_proc_fail"] . "</span>";
+		}
+	}
+	else {
+		if (is_numeric($last_data["datos"]))
+			$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . format_numeric($last_data["datos"]) . "</span>";
+		else
+			$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
+	}
+
 	echo '<tr><td class="datos"><b>'.__('Last data').'</b></td>';
 	echo '<td class="datos" colspan="2">';
 	

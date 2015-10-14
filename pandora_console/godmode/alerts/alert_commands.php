@@ -59,14 +59,25 @@ if (is_ajax ()) {
 		}
 		
 		// Get the html rows of the fields form
-		
-		// Descriptions are stored in json
-		$fields_descriptions = empty($command['fields_descriptions']) ?
-			'' : json_decode(io_safe_output($command['fields_descriptions']), true);
-		
-		// Fields values are stored in json
-		$fields_values = empty($command['fields_values']) ?
-			'' : io_safe_output(json_decode($command['fields_values'], true));
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				// Descriptions are stored in json
+				$fields_descriptions = empty($command['fields_descriptions']) ?
+					'' : json_decode(io_safe_output($command['fields_descriptions']), true);
+				html_debug($fields_descriptions,true);
+				// Fields values are stored in json
+				$fields_values = empty($command['fields_values']) ?
+					'' : io_safe_output(json_decode($command['fields_values'], true));
+			case "oracle":
+				// Descriptions are stored in json
+				$fields_descriptions = empty($command['fields_descriptions']) ?
+					'' : json_decode(io_safe_output(str_replace("\\","",$command['fields_descriptions'])), true);
+				html_debug($fields_descriptions,true);
+				// Fields values are stored in json
+				$fields_values = empty($command['fields_values']) ?
+					'' : io_safe_output(json_decode(str_replace("\\","",$command['fields_values']), true));
+		}
 		
 		$fields_rows = array();
 		for ($i = 1; $i <= 10; $i++) {

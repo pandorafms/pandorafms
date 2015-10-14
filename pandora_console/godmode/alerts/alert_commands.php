@@ -69,6 +69,7 @@ if (is_ajax ()) {
 				// Fields values are stored in json
 				$fields_values = empty($command['fields_values']) ?
 					'' : io_safe_output(json_decode($command['fields_values'], true));
+				break;
 			case "oracle":
 				// Descriptions are stored in json
 				$fields_descriptions = empty($command['fields_descriptions']) ?
@@ -77,6 +78,7 @@ if (is_ajax ()) {
 				// Fields values are stored in json
 				$fields_values = empty($command['fields_values']) ?
 					'' : io_safe_output(json_decode(str_replace("\\","",$command['fields_values']), true));
+				break;		
 		}
 		
 		$fields_rows = array();

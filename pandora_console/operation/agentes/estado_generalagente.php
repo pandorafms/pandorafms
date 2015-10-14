@@ -498,7 +498,7 @@ if (!empty($network_interfaces)) {
 		$unixtime = get_system_time () - SECONDS_1DAY; //last hour
 		$time_condition = 'AND (utimestamp > '.$unixtime.')';
 		// Tags ACLS
-		if ($id_group > 0 && in_array (0, $user_groups_ids) {
+		if ($id_group > 0 && in_array (0, $user_groups_ids)) {
 			$group_array = (array) $id_group;
 		}
 		else {

@@ -424,6 +424,11 @@ function servers_get_info ($id_server = -1) {
 				$server["type"] = "enterprise snmp";
 				$id_modulo = 2;
 				break;
+			case SERVER_TYPE_ENTERPRISE_SATELLITE:
+				$server["img"] = html_print_image ("images/satellite.png", true, array ("title" => __('Enterprise Satellite server')));
+				$server["type"] = "enterprise satellite";
+				$id_modulo = 0;
+				break;
 			default:
 				$server["img"] = '';
 				$server["type"] = "unknown";

@@ -50,6 +50,9 @@ body.pure {
 input, textarea {
 	border: 1px solid #ddd;
 }
+form {
+	margin-block-end: 0px
+}
 
 textarea {
 	padding: 5px;

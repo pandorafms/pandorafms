@@ -580,6 +580,8 @@ sub main() {
 	
 	# Main loop
 	my $time_ref = time ();
+	my $test_remote_interval = ($Config{'keepalive'}/$Config{'server_threshold'});
+	my $test_remote = 0;
 	while ($RUN == 1) {
 		
 		eval {
@@ -627,17 +629,23 @@ sub main() {
 			open(STDOUT, ">&OLDOUT");
 			close (OLDOUT);
 		}	
-									
-		if ($Config{'remote_config'} == 1 && enterprise_hook ('pandora_remote_config_server', [\%Config])) {
-			
-			# Generate 'restarting' events
-			foreach my $server (@Servers) {
-				$server->restartEvent ($@);
+		
+		if ($test_remote >= $test_remote_interval) {
+			if ($Config{'remote_config'} == 1 && enterprise_hook ('pandora_remote_config_server', [\%Config])) {
+				
+				# Generate 'restarting' events
+				foreach my $server (@Servers) {
+					$server->restartEvent ($@);
+				}
+				
+				logger (\%Config, 'Pandora FMS Server restarting (' . $@ . ') in 5 seconds.', 1);
+				pandora_load_config (\%Config);
+				pandora_restart (5);
 			}
-			
-			logger (\%Config, 'Pandora FMS Server restarting (' . $@ . ') in 10 seconds.', 1);
-			pandora_load_config (\%Config);
-			pandora_restart (5);
+			$test_remote = 0;
+		} 
+		else {
+			$test_remote++;
 		}
 		
 		threads->yield;

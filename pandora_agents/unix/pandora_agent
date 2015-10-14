@@ -1862,6 +1862,7 @@ sub udp_server ($$) {
 	my $udp_port = shift;
 	my $udp_auth_address = shift;
 	my $parent_pid = getppid();
+	my @udp_auth_list = split(',', $udp_auth_address);
 
 	my($sock, $oldmsg, $newmsg, $hisaddr, $hishost, $MAXLEN);
 	$MAXLEN = 1024;
@@ -1871,7 +1872,11 @@ sub udp_server ($$) {
 
 	while ($sock->recv($newmsg, $MAXLEN)) {
 		my $hishost = $sock->peerhost();
-		if (($udp_auth_address eq "0.0.0.0") || ($hishost eq $udp_auth_address)){
+		my $address_found = 0;
+		foreach my $single_address (@udp_auth_list) {
+			$address_found = $address_found || ($hishost eq $single_address);
+		}
+		if (($udp_auth_address eq "0.0.0.0") || $address_found){
 			if ($newmsg =~ /REFRESH AGENT/){
 				# Send signal to restart agent
 				log_message ('udp server', 'Received signal from '.$hishost);

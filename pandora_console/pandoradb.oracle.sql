@@ -2040,6 +2040,8 @@ CREATE TABLE talert_snmp_action (
 	al_field9 CLOB DEFAULT '',
 	al_field10 CLOB DEFAULT ''
 );
+CREATE SEQUENCE talert_snmp_action_s INCREMENT BY 1 START WITH 1;
+CREATE OR REPLACE TRIGGER talert_snmp_action_inc BEFORE INSERT ON talert_snmp_action REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_snmp_action_s.nextval INTO :NEW.id FROM dual; END;;
 
 -- This sequence will not work with the 'insert_id' procedure
 

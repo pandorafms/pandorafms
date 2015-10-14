@@ -45,18 +45,18 @@ $add_action = (bool)get_parameter('add_alert', 0);
 $delete_action = get_parameter('delete_action', 0);
 
 if ($add_action) {
-	$values['id_alert_snmp'] = get_parameter('id_alert_snmp');
-	$values['alert_type'] = get_parameter('alert_type');
-	$values['al_field1'] = get_parameter('field1_value');
-	$values['al_field2'] = get_parameter('field2_value');
-	$values['al_field3'] = get_parameter('field3_value');
-	$values['al_field4'] = get_parameter('field4_value');
-	$values['al_field5'] = get_parameter('field5_value');
-	$values['al_field6'] = get_parameter('field6_value');
-	$values['al_field7'] = get_parameter('field7_value');
-	$values['al_field8'] = get_parameter('field8_value');
-	$values['al_field9'] = get_parameter('field9_value');
-	$values['al_field10'] = get_parameter('field10_value');
+	$values['id_alert_snmp'] = (int) get_parameter('id_alert_snmp');
+	$values['alert_type'] = (int) get_parameter('alert_type');
+	$values[db_escape_key_identifier('al_field1')] = get_parameter('field1_value');
+	$values[db_escape_key_identifier('al_field2')] = get_parameter('field2_value');
+	$values[db_escape_key_identifier('al_field3')] = get_parameter('field3_value');
+	$values[db_escape_key_identifier('al_field4')] = get_parameter('field4_value');
+	$values[db_escape_key_identifier('al_field5')] = get_parameter('field5_value');
+	$values[db_escape_key_identifier('al_field6')] = get_parameter('field6_value');
+	$values[db_escape_key_identifier('al_field7')] = get_parameter('field7_value');
+	$values[db_escape_key_identifier('al_field8')] = get_parameter('field8_value');
+	$values[db_escape_key_identifier('al_field9')] = get_parameter('field9_value');
+	$values[db_escape_key_identifier('al_field10')] = get_parameter('field10_value');
 	
 	$result = db_process_sql_insert('talert_snmp_action', $values);
 }
@@ -175,26 +175,26 @@ if ($save_alert || $modify_alert) {
 			'max_alerts' => $max_alerts,
 			'min_alerts' => $min_alerts,
 			'priority' => $priority,
-			'_snmp_f1_' => $custom_oid_data_1,
-			'_snmp_f2_' => $custom_oid_data_2,
-			'_snmp_f3_' => $custom_oid_data_3,
-			'_snmp_f4_' => $custom_oid_data_4,
-			'_snmp_f5_' => $custom_oid_data_5,
-			'_snmp_f6_' => $custom_oid_data_6,
-			'_snmp_f7_' => $custom_oid_data_7,
-			'_snmp_f8_' => $custom_oid_data_8,
-			'_snmp_f9_' => $custom_oid_data_9,
-			'_snmp_f10_' => $custom_oid_data_10,
-			'_snmp_f11_' => $custom_oid_data_11,
-			'_snmp_f12_' => $custom_oid_data_12,
-			'_snmp_f13_' => $custom_oid_data_13,
-			'_snmp_f14_' => $custom_oid_data_14,
-			'_snmp_f15_' => $custom_oid_data_15,
-			'_snmp_f16_' => $custom_oid_data_16,
-			'_snmp_f17_' => $custom_oid_data_17,
-			'_snmp_f18_' => $custom_oid_data_18,
-			'_snmp_f19_' => $custom_oid_data_19,
-			'_snmp_f20_' => $custom_oid_data_20,
+			db_escape_key_identifier('_snmp_f1_') => $custom_oid_data_1,
+			db_escape_key_identifier('_snmp_f2_') => $custom_oid_data_2,
+			db_escape_key_identifier('_snmp_f3_') => $custom_oid_data_3,
+			db_escape_key_identifier('_snmp_f4_') => $custom_oid_data_4,
+			db_escape_key_identifier('_snmp_f5_') => $custom_oid_data_5,
+			db_escape_key_identifier('_snmp_f6_') => $custom_oid_data_6,
+			db_escape_key_identifier('_snmp_f7_') => $custom_oid_data_7,
+			db_escape_key_identifier('_snmp_f8_') => $custom_oid_data_8,
+			db_escape_key_identifier('_snmp_f9_') => $custom_oid_data_9,
+			db_escape_key_identifier('_snmp_f10_') => $custom_oid_data_10,
+			db_escape_key_identifier('_snmp_f11_') => $custom_oid_data_11,
+			db_escape_key_identifier('_snmp_f12_') => $custom_oid_data_12,
+			db_escape_key_identifier('_snmp_f13_') => $custom_oid_data_13,
+			db_escape_key_identifier('_snmp_f14_') => $custom_oid_data_14,
+			db_escape_key_identifier('_snmp_f15_') => $custom_oid_data_15,
+			db_escape_key_identifier('_snmp_f16_') => $custom_oid_data_16,
+			db_escape_key_identifier('_snmp_f17_') => $custom_oid_data_17,
+			db_escape_key_identifier('_snmp_f18_') => $custom_oid_data_18,
+			db_escape_key_identifier('_snmp_f19_') => $custom_oid_data_19,
+			db_escape_key_identifier('_snmp_f20_') => $custom_oid_data_20,
 			'order_1' => $order_1,
 			'order_2' => $order_2,
 			'order_3' => $order_3,
@@ -241,13 +241,27 @@ if ($save_alert || $modify_alert) {
 			description = '%s',
 			agent = '%s', custom_oid = '%s', oid = '%s',
 			time_threshold = %d, max_alerts = %d, min_alerts = %d,
-			_snmp_f1_ = '%s', _snmp_f2_ = '%s', _snmp_f3_ = '%s',
-			_snmp_f4_ = '%s', _snmp_f5_ = '%s', _snmp_f6_ = '%s',
-			_snmp_f7_ = '%s', _snmp_f8_ = '%s', _snmp_f9_ = '%s',
-			_snmp_f10_ = '%s', _snmp_f11_ = '%s', _snmp_f12_ = '%s',
-			_snmp_f13_ = '%s', _snmp_f14_ = '%s', _snmp_f15_ = '%s',
-			_snmp_f16_ = '%s', _snmp_f17_ = '%s', _snmp_f18_ = '%s',
-			_snmp_f19_ = '%s', _snmp_f20_ = '%s', order_1 = '%d',
+			".db_escape_key_identifier('_snmp_f1_') ."= '%s',
+			".db_escape_key_identifier('_snmp_f2_') ."= '%s',
+			".db_escape_key_identifier('_snmp_f3_') ."= '%s',
+			".db_escape_key_identifier('_snmp_f4_') ."= '%s',
+			".db_escape_key_identifier('_snmp_f5_') ."= '%s',
+			".db_escape_key_identifier('_snmp_f6_') ."= '%s',
+			".db_escape_key_identifier('_snmp_f7_') ."= '%s',
+			".db_escape_key_identifier('_snmp_f8_') ."= '%s',
+			".db_escape_key_identifier('_snmp_f9_') ."= '%s',
+			".db_escape_key_identifier('_snmp_f10_')." = '%s',
+			".db_escape_key_identifier('_snmp_f11_')." = '%s',
+			".db_escape_key_identifier('_snmp_f12_')." = '%s',
+			".db_escape_key_identifier('_snmp_f13_')." = '%s',
+			".db_escape_key_identifier('_snmp_f14_')." = '%s',
+			".db_escape_key_identifier('_snmp_f15_')." = '%s',
+			".db_escape_key_identifier('_snmp_f16_')." = '%s',
+			".db_escape_key_identifier('_snmp_f17_')." = '%s',
+			".db_escape_key_identifier('_snmp_f18_')." = '%s',
+			".db_escape_key_identifier('_snmp_f19_')." = '%s',
+			".db_escape_key_identifier('_snmp_f20_')." = '%s',
+			order_1 = '%d',
 			order_2 = '%d', order_3 = '%d', order_4 = '%d',
 			order_5 = '%d', order_6 = '%d', order_7 = '%d',
 			order_8 = '%d', order_9 = '%d', order_10 = '%d',
@@ -848,7 +862,7 @@ if ($create_alert || $update_alert) {
 	echo '</td></tr>';
 	echo '</table>';
 	
-	echo "<table style='width:98%'>";
+	echo "<table style='width:100%'>";
 	echo '<tr><td></td><td align="right">';
 	if ($id_as > 0) {
 		html_print_submit_button (__('Update'), "submit", false, 'class="sub upd"', false);
@@ -896,8 +910,8 @@ else {
 	ui_toggle($form_filter,__('Alert SNMP control filter'), __('Toggle filter(s)'));
 	
 	$filter = array();
-	$filter['offset'] = (int) get_parameter ('offset');
-	$filter['limit'] = (int) $config['block_size'];
+	$offset = (int) get_parameter ('offset');
+	$limit = (int) $config['block_size'];
 	if ($filter_param) {
 		//Move the first page
 		$offset = 0;
@@ -919,32 +933,62 @@ else {
 			"offset=" . $offset;
 	}
 	
-	//$where_sql = ' 1 = 1';
-	if ($trap_type_filter != SNMP_TRAP_TYPE_NONE) {
-		$where_sql .= ' AND `trap_type` = ' . $trap_type_filter;
-	}
-	
-	if ($priority_filter != -1) {
-		$where_sql .= ' AND `priority` = ' . $priority_filter;
-	}
 	
 	$where_sql = "";
 	if (!empty($free_search)) {
-		$where_sql .= " AND (`single_value` LIKE '%" . $free_search . "%'
-			OR `_snmp_f10_` LIKE '%" . $free_search . "%'
-			OR `_snmp_f9_` LIKE '%" . $free_search . "%'
-			OR `_snmp_f8_` LIKE '%" . $free_search . "%'
-			OR `_snmp_f7_` LIKE '%" . $free_search . "%'
-			OR `_snmp_f6_` LIKE '%" . $free_search . "%'
-			OR `_snmp_f5_` LIKE '%" . $free_search . "%'
-			OR `_snmp_f4_` LIKE '%" . $free_search . "%'
-			OR `_snmp_f3_` LIKE '%" . $free_search . "%'
-			OR `_snmp_f2_` LIKE '%" . $free_search . "%'
-			OR `_snmp_f1_` LIKE '%" . $free_search . "%'
-			OR `oid` LIKE '%" . $free_search . "%'
-			OR `custom_oid` LIKE '%" . $free_search . "%'
-			OR `agent` LIKE '%" . $free_search . "%'
-			OR `description` LIKE '%" . $free_search . "%')";
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				//$where_sql = ' 1 = 1';
+				if ($trap_type_filter != SNMP_TRAP_TYPE_NONE) {
+					$where_sql .= ' AND `trap_type` = ' . $trap_type_filter;
+				}
+				
+				if ($priority_filter != -1) {
+					$where_sql .= ' AND `priority` = ' . $priority_filter;
+				}
+				$where_sql .= " AND (`single_value` LIKE '%" . $free_search . "%'
+					OR `_snmp_f10_` LIKE '%" . $free_search . "%'
+					OR `_snmp_f9_` LIKE '%" . $free_search . "%'
+					OR `_snmp_f8_` LIKE '%" . $free_search . "%'
+					OR `_snmp_f7_` LIKE '%" . $free_search . "%'
+					OR `_snmp_f6_` LIKE '%" . $free_search . "%'
+					OR `_snmp_f5_` LIKE '%" . $free_search . "%'
+					OR `_snmp_f4_` LIKE '%" . $free_search . "%'
+					OR `_snmp_f3_` LIKE '%" . $free_search . "%'
+					OR `_snmp_f2_` LIKE '%" . $free_search . "%'
+					OR `_snmp_f1_` LIKE '%" . $free_search . "%'
+					OR `oid` LIKE '%" . $free_search . "%'
+					OR `custom_oid` LIKE '%" . $free_search . "%'
+					OR `agent` LIKE '%" . $free_search . "%'
+					OR `description` LIKE '%" . $free_search . "%')";
+				break;
+			case "oracle":
+				//$where_sql = ' 1 = 1';
+				if ($trap_type_filter != SNMP_TRAP_TYPE_NONE) {
+					$where_sql .= ' AND trap_type = ' . $trap_type_filter;
+				}
+				
+				if ($priority_filter != -1) {
+					$where_sql .= ' AND priority = ' . $priority_filter;
+				}
+				$where_sql .= " AND (single_value LIKE '%" . $free_search . "%' 
+					OR \"_snmp_f10_\" LIKE '%" . $free_search . "%' 
+					OR \"_snmp_f9_\" LIKE '%" . $free_search . "%' 
+					OR \"_snmp_f8_\" LIKE '%" . $free_search . "%' 
+					OR \"_snmp_f7_\" LIKE '%" . $free_search . "%' 
+					OR \"_snmp_f6_\" LIKE '%" . $free_search . "%' 
+					OR \"_snmp_f5_\" LIKE '%" . $free_search . "%' 
+					OR \"_snmp_f4_\" LIKE '%" . $free_search . "%' 
+					OR \"_snmp_f3_\" LIKE '%" . $free_search . "%' 
+					OR \"_snmp_f2_\" LIKE '%" . $free_search . "%' 
+					OR \"_snmp_f1_\" LIKE '%" . $free_search . "%' 
+					OR oid LIKE '%" . $free_search . "%' 
+					OR custom_oid LIKE '%" . $free_search . "%' 
+					OR agent LIKE '%" . $free_search . "%' 
+					OR description LIKE '%" . $free_search . "%')";
+				break;
+		}
 	}
 	
 	$count = db_get_value_sql("SELECT COUNT(*)
@@ -960,11 +1004,26 @@ else {
 	}
 	else {
 		ui_pagination ($count, $url_pagination);
-		
-		$where_sql .= ' LIMIT ' . $config['block_size'] . ' OFFSET ' . $offset;
-		$result = db_get_all_rows_sql("SELECT *
-			FROM talert_snmp 
-			WHERE id_group IN ($str_user_groups) " . $where_sql);
+		switch ($config["dbtype"]) {
+			case "mysql":
+			case "postgresql":
+				$where_sql .= ' LIMIT ' . $limit . ' OFFSET ' . $offset;
+				$result = db_get_all_rows_sql("SELECT *
+					FROM talert_snmp 
+					WHERE id_group IN ($str_user_groups) " . $where_sql);
+				break;
+			case "oracle":
+				$sql = "SELECT *
+					FROM talert_snmp 
+					WHERE id_group IN ($str_user_groups) " . $where_sql;
+				$set = array();
+				if (isset($offset) && isset($limit)) {
+					$set['limit'] = $limit;
+					$set['offset'] = $offset;
+				}
+				$result = oracle_recode_query ($sql, $set, 'AND', false);
+				break;
+		}
 	}
 	
 	$table = new stdClass();
@@ -978,36 +1037,36 @@ else {
 	$table->align = array ();
 	
 	$table->head[0] = '<span title="' . __('Position') . '">' . __('P.') . '</span>';
-	$table->align[0] = 'center';
+	$table->align[0] = 'left';
 		
 	$table->head[1] = __('Alert action');
 	
 	$table->head[2] = __('SNMP Agent');
 	$table->size[2] = "90px";
-	$table->align[2] = 'center';
+	$table->align[2] = 'left';
 	
 	$table->head[3] = __('Enterprise String');
-	$table->align[3] = 'center';
+	$table->align[3] = 'left';
 	
 	$table->head[4] = __('Custom Value/Enterprise String');
-	$table->align[4] = 'center';
+	$table->align[4] = 'left';
 	
 	$table->head[5] = __('Description');
 	
 	$table->head[6] = '<span title="' . __('Times fired') . '">' . __('TF.') . '</span>';
 	$table->size[6] = "50px";
-	$table->align[6] = 'center';
+	$table->align[6] = 'left';
 	
 	$table->head[7] = __('Last fired');
-	$table->align[7] = 'center';
+	$table->align[7] = 'left';
 	
 	$table->head[8] = __('Action');
 	$table->size[8] = "90px";
-	$table->align[8] = 'center';
+	$table->align[8] = 'left';
 	
 	$table->head[9] = html_print_checkbox ("all_delete_box", "1", false, true);
 	$table->size[9] = "10px";
-	$table->align[9] = 'center';
+	$table->align[9] = 'left';
 	
 	foreach ($result as $row) {
 		$data = array ();
@@ -1146,17 +1205,17 @@ else {
 		
 		ui_pagination ($count, $url_pagination);
 		
-		echo '<div style="text-align:right; width: ' . $table->width . '; margin-bottom: 30px;">';
+		echo '<div style="float:right; margin-left: 10px;">';
 		html_print_input_hidden('multiple_delete', 1);
 		html_print_submit_button(__('Delete selected'), 'delete_button', false, 'class="sub delete"');
 		echo '</div>';
 		echo '</form>';
 	}
 	
-	echo '<div style="text-align:right; width:' . $table->width . ';">';
+	echo '<div style="float:right;">';
 	echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert">';
 	html_print_input_hidden('create_alert', 1);
-	html_print_submit_button (__('Create'), "add_alert", false, 'class="sub next"');
+	html_print_submit_button (__('Create'), "alert", false, 'class="sub next"');
 	echo "</form></div>";
 	
 	echo '<div style="margin-left: 30px; line-height: 17px; vertical-align: top; width:120px;">';
@@ -1170,6 +1229,7 @@ else {
 	unset ($table);
 }
 
+ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 ?>
 <script language="javascript" type="text/javascript">
 
@@ -1273,6 +1333,24 @@ $(document).ready (function () {
 		if (!confirmation) {
 			return;
 		}
+	});
+	
+	tinyMCE.init({
+		selector: 'textarea.tiny-mce-editor',
+		theme : "advanced",
+		plugins : "preview, print, table, searchreplace, nonbreaking, xhtmlxtras, noneditable",
+		theme_advanced_buttons1 : "bold,italic,underline,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,fontselect,fontsize,select",
+		theme_advanced_buttons2 : "search,replace,|,bullist,numlist,|,undo,redo,|,link,unlink,image,|,cleanup,code,preview,|,forecolor,backcolor",
+		theme_advanced_buttons3 : "",
+		theme_advanced_toolbar_location : "top",
+		theme_advanced_toolbar_align : "left",
+		theme_advanced_resizing : true,
+		theme_advanced_statusbar_location : "bottom",
+		force_p_newlines : false,
+		forced_root_block : '',
+		inline_styles : true,
+		valid_children : "+body[style]",
+		element_format : "html"
 	});
 
 });

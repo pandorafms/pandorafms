@@ -206,7 +206,11 @@ sub data_consumer ($$) {
 		}
 
 		unlink ($file_name);
-		process_xml_data ($self->getConfig (), $file_name, $xml_data, $self->getServerID (), $self->getDBH ());
+		if (defined($xml_data->{'server_name'})) {
+			process_xml_server ($self->getConfig (), $file_name, $xml_data, $self->getDBH ());
+		} else {
+			process_xml_data ($self->getConfig (), $file_name, $xml_data, $self->getServerID (), $self->getDBH ());
+		}
 		$AgentSem->down ();
 		delete ($Agents{$agent_name});
 		$AgentSem->up ();
@@ -762,6 +766,32 @@ sub update_module_configuration ($$$$) {
 	$module->{'extended_info'} = $module_conf->{'extended_info'} if (defined($module_conf->{'extended_info'})) ;
 	$module->{'descripcion'} = ($module_conf->{'descripcion'} eq '') ? $module->{'descripcion'} : $module_conf->{'descripcion'};
 	$module->{'module_interval'} = ($module_conf->{'module_interval'} eq '') ? $module->{'module_interval'} : $module_conf->{'module_interval'};
+}
+
+###############################################################################
+# Process XML data coming from a server.
+###############################################################################
+sub process_xml_server ($$$$) {
+	my ($pa_config, $file_name, $data, $dbh) = @_;
+
+	my ($server_name, $server_type, $version, $threads, $modules) = ($data->{'server_name'}, $data->{'server_type'}, $data->{'version'}, $data->{'threads'}, $data->{'modules'});
+
+	# Unknown server!
+	if (! defined ($server_name) || $server_name eq '') {
+		logger($pa_config, "$file_name has data from an unnamed server", 3);
+		return;
+	}
+
+	logger($pa_config, "Processing XML from server: $server_name", 10);
+
+	# Set some default values
+	$server_type = SATELLITESERVER unless defined($server_type);
+	$modules = 0 unless defined($modules);
+	$threads = 0 unless defined($threads);
+	$version = '' unless defined($version);
+	
+	# Update server information
+	pandora_update_server ($pa_config, $dbh, $data->{'server_name'}, 0, 1, $server_type, $threads, $modules, $version);
 }
 
 1;

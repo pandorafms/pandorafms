@@ -238,7 +238,7 @@ our @EXPORT = qw(
 
 # Some global variables
 our @DayNames = qw(sunday monday tuesday wednesday thursday friday saturday);
-our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver);
+our @ServerTypes = qw (dataserver networkserver snmpconsole reconserver pluginserver predictionserver wmiserver exportserver inventoryserver webserver eventserver icmpserver snmpserver satelliteserver);
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
 # Event storm protection (no alerts or events)
@@ -2168,15 +2168,15 @@ Update server status:
 
 =cut
 ##########################################################################
-sub pandora_update_server ($$$$$$;$$) {
+sub pandora_update_server ($$$$$$;$$$) {
 	my ($pa_config, $dbh, $server_name, $server_id, $status,
-		$server_type, $num_threads, $queue_size) = @_;
+		$server_type, $num_threads, $queue_size, $version) = @_;
 	
 	$num_threads = 0 unless defined ($num_threads);
 	$queue_size = 0 unless defined ($queue_size);
 
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
-	my $version = $pa_config->{'version'} . ' (P) ' . $pa_config->{'build'};
+	$version = $pa_config->{'version'} . ' (P) ' . $pa_config->{'build'} unless defined($version);
 	
 	# First run
 	if ($server_id == 0) { 
@@ -2193,8 +2193,10 @@ sub pandora_update_server ($$$$$$;$$) {
 				logger($pa_config, "Server '" . $pa_config->{'servername'} . "' not found.", 3);
 				return;
 			}
+		} else {
+			$server_id = $server->{'id_server'};
 		}
-		
+
 		db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, laststart = ?, version = ?, threads = ?, queued_modules = ?
 				WHERE id_server = ?',
 				1, $timestamp, $pa_config->{'pandora_master'}, $timestamp, $version, $num_threads, $queue_size, $server_id);

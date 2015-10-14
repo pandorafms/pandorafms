@@ -2774,7 +2774,7 @@ function reporting_get_last_activity() {
 function reporting_get_event_histogram ($events, $text_header_event = false) {
 	global $config;
 	if (!defined("METACONSOLE")) {
-		include_once ($config['homedir'] .'include/graphs/functions_gd.php');
+		include_once ($config['homedir'] .'/include/graphs/functions_gd.php');
 	}
 	else {
 		include_once ('../../include/graphs/functions_gd.php');

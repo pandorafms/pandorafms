@@ -498,11 +498,11 @@ if (!empty($network_interfaces)) {
 		$unixtime = get_system_time () - SECONDS_1DAY; //last hour
 		$time_condition = 'AND (utimestamp > '.$unixtime.')';
 		// Tags ACLS
-		if ($id_group > 0 && in_array (0, array_keys (users_get_groups($config['id_user'], 'ER')))) {
+		if ($id_group > 0 && in_array (0, $user_groups_ids) {
 			$group_array = (array) $id_group;
 		}
 		else {
-			$group_array = array_keys(users_get_groups($config['id_user'], 'ER'));
+			$group_array = $user_groups_ids;
 		}
 		$acl_tags = tags_get_acl_tags($config['id_user'], $group_array, 'ER',
 			'event_condition', 'AND', '', true, array(), true);

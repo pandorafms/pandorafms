@@ -183,8 +183,8 @@ ALTER TABLE tagente_estado ADD COLUMN `last_dynamic_update` bigint(20) NOT NULL 
 -- ---------------------------------------------------------------------	
 ALTER TABLE tgraph_source ADD COLUMN `label` varchar(150) DEFAULT '';
 
- -- ---------------------------------------------------------------------
---- Table `tevent_filter`
---- ---------------------------------------------------------------------	
--ALTER TABLE tevent_filter ADD COLUMN `id_agent_module` int(25) DEFAULT 0;
--ALTER TABLE tevent_filter ADD COLUMN `id_agent` int(25) DEFAULT 0;
+-- ---------------------------------------------------------------------
+-- Table `tevent_filter`
+-- ---------------------------------------------------------------------	
+ALTER TABLE tevent_filter ADD COLUMN `id_agent_module` int(25) DEFAULT 0;
+ALTER TABLE tevent_filter ADD COLUMN `id_agent` int(25) DEFAULT 0;

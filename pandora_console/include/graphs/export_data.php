@@ -62,7 +62,7 @@ $output_csv = function ($data, $filename) {
 		$head_line = implode($separator, $items['head']);
 		echo $head_line . "\n";
 		foreach ($items['data'] as $item) {
-			
+			$item = str_replace("--> ".__('Selected'),'',$item);
 			$line = implode($separator, $item);
 			
 			if ($excel_encoding)

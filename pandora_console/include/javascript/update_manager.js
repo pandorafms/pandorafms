@@ -1,10 +1,7 @@
 var correct_install_progress = true;
 
 function form_upload (homeurl) {
-	if (typeof homeurl !== 'undefined')
-		homeurl += '/';
-	else
-		homeurl = '';
+	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
 	
 	//Thanks to: http://tutorialzine.com/2013/05/mini-ajax-file-upload-form/
 	var ul = $('#form-offline_update ul');
@@ -23,7 +20,7 @@ function form_upload (homeurl) {
 	// Initialize the jQuery File Upload plugin
 	$('#form-offline_update').fileupload({
 		
-		url: homeurl + 'ajax.php?page=include/ajax/update_manager.ajax&upload_file=true',
+		url: home_url + 'ajax.php?page=include/ajax/update_manager.ajax&upload_file=true',
 		
 		// This element will accept file drag/drop uploading
 		dropZone: $('#drop_file'),
@@ -194,10 +191,7 @@ function formatFileSize(bytes) {
 }
 
 function install_package (package, homeurl) {
-	if (typeof homeurl !== 'undefined')
-		homeurl += '/';
-	else
-		homeurl = '';
+	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
 	
 	var parameters = {};
 	parameters['page'] = 'include/ajax/update_manager.ajax';
@@ -209,7 +203,7 @@ function install_package (package, homeurl) {
 	
 	$.ajax({
 		type: 'POST',
-		url: homeurl + 'ajax.php',
+		url: home_url + 'ajax.php',
 		data: parameters,
 		dataType: "json",
 		success: function (data) {
@@ -236,6 +230,8 @@ function install_package (package, homeurl) {
 }
 
 function check_install_package(package, homeurl) {
+	var home_url = (typeof homeurl !== 'undefined') ? homeurl += '/' : '';
+	
 	var parameters = {};
 	parameters['page'] = 'include/ajax/update_manager.ajax';
 	parameters['check_install_package'] = 1;
@@ -243,7 +239,7 @@ function check_install_package(package, homeurl) {
 	
 	$.ajax({
 		type: 'POST',
-		url: homeurl + 'ajax.php',
+		url: home_url + 'ajax.php',
 		data: parameters,
 		dataType: "json",
 		success: function(data) {
@@ -269,10 +265,7 @@ function check_install_package(package, homeurl) {
 }
 
 function check_online_free_packages(homeurl) {
-	if (typeof homeurl !== 'undefined')
-		homeurl += '/';
-	else
-		homeurl = '';
+	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
 	
 	$("#box_online .checking_package").show();
 	
@@ -281,7 +274,7 @@ function check_online_free_packages(homeurl) {
 	parameters['check_online_free_packages'] = 1;
 	
 	jQuery.post(
-		homeurl + "ajax.php",
+		home_url + "ajax.php",
 		parameters,
 		function (data) {
 			$("#box_online .checking_package").hide();
@@ -294,17 +287,13 @@ function check_online_free_packages(homeurl) {
 }
 
 function update_last_package(package, version, homeurl) {
-	if (typeof homeurl !== 'undefined')
-		homeurl += '/';
-	else
-		homeurl = '';
+	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
 	
 	version_update = version;
 	
 	$("#box_online .content").html("");
 	$("#box_online .loading").show();
 	$("#box_online .download_package").show();
-	
 	
 	var parameters = {};
 	parameters['page'] = 'include/ajax/update_manager.ajax';
@@ -313,7 +302,7 @@ function update_last_package(package, version, homeurl) {
 	parameters['version'] = version;
 	
 	jQuery.post(
-		homeurl + "ajax.php",
+		home_url + "ajax.php",
 		parameters,
 		function (data) {
 			if (data['in_progress']) {
@@ -336,10 +325,7 @@ function update_last_package(package, version, homeurl) {
 }
 
 function check_progress_update(homeurl) {
-	if (typeof homeurl !== 'undefined')
-		homeurl += '/';
-	else
-		homeurl = '';
+	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
 	
 	if (stop_check_progress) {
 		return;
@@ -350,7 +336,7 @@ function check_progress_update(homeurl) {
 	parameters['check_update_free_package'] = 1;
 	
 	jQuery.post(
-		homeurl + "ajax.php",
+		home_url + "ajax.php",
 		parameters,
 		function (data) {
 			if (stop_check_progress) {
@@ -382,10 +368,7 @@ function check_progress_update(homeurl) {
 }
 
 function install_free_package(package, version, homeurl) {
-	if (typeof homeurl !== 'undefined')
-		homeurl += '/';
-	else
-		homeurl = '';
+	var home_url = (typeof homeurl !== 'undefined') ? homeurl + '/' : '';
 	
 	var parameters = {};
 	parameters['page'] = 'include/ajax/update_manager.ajax';
@@ -396,7 +379,7 @@ function install_free_package(package, version, homeurl) {
 	jQuery.ajax ({
 		data: parameters,
 		type: 'POST',
-		url: homeurl + "ajax.php",
+		url: home_url + "ajax.php",
 		timeout: 600000,
 		dataType: "json",
 		error: function(data) {

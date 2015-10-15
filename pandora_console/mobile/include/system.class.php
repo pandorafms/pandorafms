@@ -25,10 +25,11 @@ class System {
 	
 	function __construct() {
 		$this->loadConfig();
-		
+		$session_id = session_id();
 		DB::getInstance($this->getConfig('db_engine', 'mysql'));
-		
-		session_start();
+		if (empty($session_id)) {
+			session_start();
+		}
 		$this->session = $_SESSION;
 		session_write_close();
 	}

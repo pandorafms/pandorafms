@@ -46,6 +46,11 @@ $system = System::getInstance();
 require_once($system->getConfig('homedir').'/include/constants.php');
 
 $user = User::getInstance();
+
+if (!is_object($user) && gettype($user) == 'object') {
+	$user = unserialize (serialize ($user));
+}
+
 $user->saveLogin();
 
 $page = $system->getRequest('page', 'home');

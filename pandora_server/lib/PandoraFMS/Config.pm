@@ -389,6 +389,14 @@ sub pandora_load_config {
 	# Server Remote Config
 	$pa_config->{"remote_config"}= 0; # 6.0
 	                
+	# Remote config server address
+	$pa_config->{"remote_config_address"} = 'localhost'; # 6.0
+
+	# Remote config server port
+	$pa_config->{"remote_config_port"} = 41121; # 6.0
+
+	# Remote config server options
+	$pa_config->{"remote_config_opts"} = ''; # 6.0
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){

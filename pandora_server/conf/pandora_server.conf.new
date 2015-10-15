@@ -509,5 +509,14 @@ console_pass pandora
 # Maximum executing time of an alert (in  seconds)
 global_alert_timeout 15
 
-# If set to 1 allows PandoraFMS Server to be configured via the web console (Only Enterprise version) 
+# If set to 1 allows PandoraFMS Server to be configured via the web console (PANDORA FMS ENTERPRISE ONLY).
 remote_config 0
+
+# Remote address to send the configuration file (PANDORA FMS ENTERPRISE ONLY).
+remote_config_address localhost
+
+# Remote port to send the configuration file (PANDORA FMS ENTERPRISE ONLY).
+#remote_config_port 41121
+
+# Extra options for the Tentacle client to send the configuration file (PANDORA FMS ENTERPRISE ONLY).
+#remote_config_opts

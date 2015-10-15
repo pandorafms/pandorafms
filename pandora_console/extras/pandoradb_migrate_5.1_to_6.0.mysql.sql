@@ -188,3 +188,8 @@ ALTER TABLE tgraph_source ADD COLUMN `label` varchar(150) DEFAULT '';
 -- ---------------------------------------------------------------------	
 ALTER TABLE tevent_filter ADD COLUMN `id_agent_module` int(25) DEFAULT 0;
 ALTER TABLE tevent_filter ADD COLUMN `id_agent` int(25) DEFAULT 0;
+
+ -- ---------------------------------------------------------------------
+--- Table `tconfig`
+--- ---------------------------------------------------------------------	
+UPDATE tconfig SET `value`='https://artica.es/pandoraupdate6/server.php' WHERE token='url_update_manager';

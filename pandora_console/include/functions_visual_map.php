@@ -625,6 +625,12 @@ function visual_map_print_item($mode = "read", $layoutData,
 	switch ($type) {
 		case STATIC_GRAPH:
 		case GROUP_ITEM:
+			$module_value = db_get_sql ('SELECT datos
+				FROM tagente_estado
+				WHERE id_agente_modulo = ' . $id_module);
+			if ((empty($module_value) || $module_value == '') && $type == STATIC_GRAPH) {
+				$layoutData['status_calculated'] = AGENT_STATUS_UNKNOWN;
+			}
 			if ($layoutData['image'] != null) {
 				$img = visual_map_get_image_status_element($layoutData,
 					$layoutData['status_calculated']);
@@ -676,6 +682,9 @@ function visual_map_print_item($mode = "read", $layoutData,
 			$module_value = db_get_sql ('SELECT datos
 				FROM tagente_estado
 				WHERE id_agente_modulo = ' . $id_module);
+			if (empty($module_value) || $module_value == 0) {
+				$colorStatus = COL_UNKNOWN;
+			}
 			$value_text = false;
 			if ($layoutData['image'] == 'percent') {
 				$value_text = false;
@@ -1081,9 +1090,15 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 		case SIMPLE_VALUE:
 			$value = db_get_value ('datos', 'tagente_estado',
 				'id_agente_modulo', $id_module);
-			$value = format_for_graph($value, 2);
-			if (!empty($unit_text))
-				$value .= " " . $unit_text;
+			if ($value === false) {
+				$value = __('Unknown');
+			}
+			else {
+				$value = format_for_graph($value, 2);
+				if (!empty($unit_text)) {
+					$value .= " " . $unit_text;
+				}
+			}
 			return $value;
 			break;
 		case SIMPLE_VALUE_MAX:
@@ -1647,7 +1662,11 @@ function visual_map_get_status_element($layoutData) {
 			return $status;
 		}
 	}
-	
+
+	$module_value = db_get_sql ('SELECT datos
+		FROM tagente_estado
+		WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
+
 	//Linked to other layout ?? - Only if not module defined
 	if ($layoutData['id_layout_linked'] != 0) {
 		$status = visual_map_get_layout_status ($layoutData['id_layout_linked']);
@@ -1657,6 +1676,11 @@ function visual_map_get_status_element($layoutData) {
 			case STATIC_GRAPH:
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
+			
+				if (empty($module_value) || $module_value == '') {
+					return VISUAL_MAP_STATUS_UNKNOWN;
+				}
+
 				if ($layoutData['id_metaconsole'] != 0) {
 					//Metaconsole db connection
 					$connection = db_get_row_filter ('tmetaconsole_setup',

@@ -241,7 +241,14 @@ switch ($action) {
 				$returnValue = db_get_sql ('SELECT datos
 					FROM tagente_estado
 					WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
-				
+				$no_data = false;
+				$status_no_data = '';
+				if ((!$returnValue || $returnValue == 0) &&
+				($layoutData['type'] == PERCENTILE_BUBBLE || $layoutData['type'] == PERCENTILE_BAR)) {
+					$status_no_data = COL_UNKNOWN;
+					$no_data = true;
+				}
+
 				if (($layoutData['type'] == PERCENTILE_BAR) ||
 					($layoutData['type'] == PERCENTILE_BUBBLE)) {
 					if ($value_show == 'value') {
@@ -335,8 +342,12 @@ switch ($action) {
 		$return['max_percentile'] = $layoutData['height'];
 		$return['width_percentile'] = $layoutData['width'];
 		$return['unit_text'] = $unit_text;
-		$return['colorRGB'] = implode('|', html_html2rgb($colorStatus));
-		
+		if ($no_data) {
+			$return['colorRGB'] = implode('|', html_html2rgb($status_no_data));
+		}
+		else {
+			$return['colorRGB'] = implode('|', html_html2rgb($colorStatus));
+		}
 		echo json_encode($return);
 		break;
 	

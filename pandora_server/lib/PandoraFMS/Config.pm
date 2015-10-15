@@ -397,6 +397,9 @@ sub pandora_load_config {
 
 	# Remote config server options
 	$pa_config->{"remote_config_opts"} = ''; # 6.0
+	
+	# Temp path for file sendinn and receiving
+	$pa_config->{"temporal"} = '/tmp'; # 6.0
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -870,6 +873,18 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^remote_config\s+([0-9]*)/i) {
 			$pa_config->{'remote_config'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^remote_config_address\s(.*)/i) {
+			$pa_config->{'remote_config_address'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^remote_config_port\s+([0-9]*)/i) {
+			$pa_config->{'remote_config_port'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^remote_config_opts\s(.*)/i) { 
+			$pa_config->{'remote_config_opts'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^temporal\s(.*)/i) {
+			$pa_config->{'temporal'}= clean_blank($1); 
 		}
 	} # end of loop for parameter #
 

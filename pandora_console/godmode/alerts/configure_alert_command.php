@@ -153,7 +153,7 @@ for ($i = 1; $i <= 10; $i++) {
 	else {
 		$field_description = '';
 	}
-	$table->data['field'.$i][1] = html_print_input_text ('field'.$i.'_description', $field_description, '', 35, 255, true);
+	$table->data['field'.$i][1] = html_print_input_text ('field'.$i.'_description', $field_description, '', 30, 255, true);
 	
 	$table->data['field'.$i][2] = sprintf(__('Field %s values'), $i);
 	
@@ -168,7 +168,7 @@ for ($i = 1; $i <= 10; $i++) {
 	else {
 		$field_values = '';
 	}
-	$table->data['field'.$i][3] = html_print_input_text ('field'.$i.'_values', $field_values, '', 65, 255, true);
+	$table->data['field'.$i][3] = html_print_input_text ('field'.$i.'_values', $field_values, '', 30, 255, true);
 }
 
 echo '<form method="post" action="index.php?sec=galertas&sec2=godmode/alerts/alert_commands&pure='.$pure.'">';

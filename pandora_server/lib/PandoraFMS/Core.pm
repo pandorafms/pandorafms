@@ -1636,6 +1636,7 @@ sub pandora_planned_downtime_monthly_start($$) {
 		FROM tplanned_downtime
 		WHERE type_periodicity = ' . $RDBMS_QUOTE_STRING . 'monthly' . $RDBMS_QUOTE_STRING . '
 			AND executed = 0
+			AND type_execution <> ' . $RDBMS_QUOTE_STRING . 'once' . $RDBMS_QUOTE_STRING . '
 			AND ((periodically_day_from = ? AND periodically_time_from <= ?) OR (periodically_day_from < ?))
 			AND ((periodically_day_to = ? AND periodically_time_to >= ?) OR (periodically_day_to > ?))',
 			$number_day_month, $time, $number_day_month,

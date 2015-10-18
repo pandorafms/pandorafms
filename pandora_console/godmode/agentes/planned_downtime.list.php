@@ -136,7 +136,7 @@ $table_form->data = array();
 $row = array();
 
 // Search text
-$row[] = __('Search') . '&nbsp;' . html_print_input_text("search_text", $search_text, '', 50, 250, true);
+$row[] = __('Search') . '&nbsp;' . html_print_input_text("search_text", $search_text, '', 32, 250, true);
 // Dates
 $date_inputs = __('From') . '&nbsp;' . html_print_input_text('date_from', $date_from, '', 10, 10, true);
 $date_inputs .= "&nbsp;&nbsp;";
@@ -172,7 +172,7 @@ $row[] = $agent_input;
 // Module
 $row[] = __('Module') . '&nbsp;' . html_print_autocomplete_modules('module_name', $module_name, false, true, '', array(), true);
 
-$row[] = html_print_submit_button('Search', 'search', false, 'class="sub search"', true);
+$row[] = html_print_submit_button(__('Search'), 'search', false, 'class="sub search"', true);
 
 $table_form->data[] = $row;
 // End of table filter

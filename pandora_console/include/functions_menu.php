@@ -305,6 +305,11 @@ function menu_print_menu (&$menu) {
 				
 				$count_sub2 = 0;
 				foreach ($sub['sub2'] as $key => $sub2) {
+					
+					if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $subsec2, true,$key)) == false) {
+						continue;
+					}
+					
 					$count_sub2++;
 					
 					$link = "index.php?sec=".$subsec2."&sec2=".$key;
@@ -536,8 +541,27 @@ function menu_get_sec($with_categories = false) {
 			$sec_array[$k] = $v['text'];
 		}
 	}
-	
 	return $sec_array;
+}
+
+/**
+ * Get the sec list built in menu
+ *
+ * @param bool If true, the array returned will have the structure
+ * to combo categories (optgroup)
+ * 
+ * @return array Sections list
+ */
+function get_sec($sec = false) {
+	$menu = menu_get_full_sec();
+	unset($menu['class']);
+	
+	$in_godmode = false;
+	foreach ($menu as $k => $v) {
+		if (isset($v["sub"][$sec]))
+			return $k;
+	}
+	return false;
 }
 
 /**
@@ -552,7 +576,7 @@ function menu_get_sec($with_categories = false) {
  * @return array Sections list
  */
 function menu_get_sec_pages($sec, $menu_hash = false) {
-	if ($menu_hash === false) {
+	if (!$menu_hash) {
 		$menu = menu_get_full_sec();
 	}
 	else {
@@ -564,7 +588,7 @@ function menu_get_sec_pages($sec, $menu_hash = false) {
 	if (isset($sec)) {
 		
 		// Get the sec2 of the main section
-		$sec2_array[$menu[$sec]['sec2']] = $menu[$sec]['text'];
+		//$sec2_array[$menu[$sec]['sec2']] = $menu[$sec]['text'];
 		
 		
 		// Get the sec2 of the subsections
@@ -586,6 +610,37 @@ function menu_get_sec_pages($sec, $menu_hash = false) {
 	}
 	
 	return $sec2_array;
+}
+
+/**
+ * Get the pages in a section2
+ *
+ * @param string sec code
+ * @param string menu hash. All the menu structure (For example
+ * 		returned by menu_get_full_sec(), json encoded and after that 
+ * 		base64 encoded. If this value is false this data is obtained from
+ * 		menu_get_full_sec();
+ * 
+ * @return array Sections list
+ */
+function menu_get_sec2_pages($sec, $sec2, $menu_hash = false) {
+	if ($menu_hash === false) {
+		$menu = menu_get_full_sec();
+	}
+	else {
+		$menu = json_decode(base64_decode($menu_hash),true);
+	}
+	
+	$sec3_array = array();
+	
+	if (isset($sec2)) {
+		// Get the sec2 of the subsections
+		foreach ($menu[$sec]['sub'][$sec2]['sub2'] as $k => $v) {
+			$sec3_array[$k] = $v['text'];
+		}
+	}
+	
+	return $sec3_array;
 }
 
 /**

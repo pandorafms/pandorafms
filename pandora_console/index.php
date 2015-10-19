@@ -628,10 +628,21 @@ if ($searchPage) {
 }
 else {
 	if ($page != "") {
+		
+		$main_sec = get_sec($sec);
+		if ($main_sec == false) {
+			if ($sec == 'extensions')
+				$main_sec = get_parameter('extension_in_menu');
+			else
+				$main_sec = $sec;
+			$sec = $sec2;
+			$sec2 = '';
+		}
 		$page .= '.php';
+		
 		// Enterprise ACL check
 		if (enterprise_hook ('enterprise_acl',
-			array ($config['id_user'], $sec, $sec2, true)) == false) {
+			array ($config['id_user'], $main_sec, $sec, true,$sec2)) == false) {
 			
 			require ("general/noaccess.php");
 			

@@ -47,7 +47,6 @@ rm -rf $RPM_BUILD_ROOT
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_console
-mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_console
 rm $RPM_BUILD_ROOT%{prefix}/pandora_console/*.spec
 rm $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console_install
@@ -77,6 +76,3 @@ fi
 %defattr(0644,%{httpd_user},%{httpd_group},0755)
 %docdir %{prefix}/pandora_console/docs
 %{prefix}/pandora_console
-
-%defattr(-,pandora,%{httpd_group},770)
-/var/spool/pandora/data_in

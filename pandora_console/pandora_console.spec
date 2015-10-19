@@ -48,7 +48,6 @@ rm -rf $RPM_BUILD_ROOT
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_console
-mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_console
 if [ -f $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console.spec ] ; then
    rm $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console.spec
@@ -82,6 +81,3 @@ rm -Rf %{prefix}/pandora_console
 %defattr(0644,%{httpd_user},%{httpd_group},0755)
 %docdir %{prefix}/pandora_console/docs
 %{prefix}/pandora_console
-
-%defattr(-,pandora,www,770)
-/var/spool/pandora

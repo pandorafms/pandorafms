@@ -59,7 +59,7 @@ $table->data[1][0] = __('Remote config directory') .
 $table->data[1][1] = html_print_input_text ('remote_config', io_safe_output($config["remote_config"]), '', 30, 100, true);
 
 $table->data[6][0] = __('Auto login (hash) password');
-$table->data[6][1] = html_print_input_text ('loginhash_pwd', io_output_password($config["loginhash_pwd"]), '', 15, 15, true);
+$table->data[6][1] = html_print_input_password ('loginhash_pwd', io_output_password($config["loginhash_pwd"]), '', 15, 15, true);
 
 $table->data[9][0] = __('Time source') . ui_print_help_icon ("timesource", true);
 $sources["system"] = __('System');
@@ -88,7 +88,7 @@ $table->data[15][1] = html_print_textarea('list_ACL_IPs_for_API', 2, 25, $list_A
 
 $table->data[16][0] = __('API password') . 
 	ui_print_help_tip (__("Please be careful if you put a password put https access."), true);
-$table->data[16][1] = html_print_input_text('api_password', io_output_password($config['api_password']), '', 25, 255, true);
+$table->data[16][1] = html_print_input_password('api_password', io_output_password($config['api_password']), '', 25, 255, true);
 
 $table->data[17][0] = __('Enable GIS features in Pandora Console');
 $table->data[17][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('activate_gis', 1, '', $config["activate_gis"], true).'&nbsp;&nbsp;';

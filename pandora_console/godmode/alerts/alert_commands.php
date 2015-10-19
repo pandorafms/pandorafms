@@ -65,19 +65,26 @@ if (is_ajax ()) {
 				// Descriptions are stored in json
 				$fields_descriptions = empty($command['fields_descriptions']) ?
 					'' : json_decode(io_safe_output($command['fields_descriptions']), true);
-				html_debug($fields_descriptions,true);
+				
 				// Fields values are stored in json
 				$fields_values = empty($command['fields_values']) ?
 					'' : io_safe_output(json_decode($command['fields_values'], true));
 				break;
 			case "oracle":
 				// Descriptions are stored in json
+				$description_field = str_replace("\\\"","\"",$command['fields_descriptions']);
+				$description_field = str_replace("\\","",$description_field);
+				
 				$fields_descriptions = empty($command['fields_descriptions']) ?
-					'' : json_decode(io_safe_output(str_replace("\\","",$command['fields_descriptions'])), true);
-				html_debug($fields_descriptions,true);
+					'' : json_decode(io_safe_output($description_field), true);
+				
 				// Fields values are stored in json
+				$values_fields = str_replace("\\\"","\"",$command['fields_values']);
+				$values_fields = str_replace("\\","",$values_fields);
+				
 				$fields_values = empty($command['fields_values']) ?
-					'' : io_safe_output(json_decode(str_replace("\\","",$command['fields_values']), true));
+					'' : io_safe_output(json_decode($values_fields, true));
+				
 				break;		
 		}
 		

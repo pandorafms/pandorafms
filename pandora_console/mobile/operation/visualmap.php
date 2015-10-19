@@ -75,7 +75,7 @@ class Visualmap {
 		$system = System::getInstance();
 		$this->checkVisualmapACL($this->visualmap['id_group']);
 		if (!$this->correct_acl) {
-			return;
+			$this->show_fail_acl();
 		}
 		else {
 			switch ($parameter2) {

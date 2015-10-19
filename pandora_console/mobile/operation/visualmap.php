@@ -73,7 +73,7 @@ class Visualmap {
 	
 	public function ajax($parameter2 = false) {
 		$system = System::getInstance();
-		
+		$this->checkVisualmapACL($this->visualmap['id_group']);
 		if (!$this->correct_acl) {
 			return;
 		}

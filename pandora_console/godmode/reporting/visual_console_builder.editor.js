@@ -1659,11 +1659,13 @@ function createItem(type, values, id_data) {
 		var line = {"id": id_data,
 			"node_begin":  values['parent'],
 			"node_end": id_data,
-			"color": false };
+			"color": '#cccccc' };
 
 		lines.push(line);
 
 		set_color_line_status(lines, line, id_data, values);
+
+		refresh_lines(lines, 'background', true);
 	}
 }
 

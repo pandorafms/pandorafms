@@ -588,7 +588,7 @@ function menu_get_sec_pages($sec, $menu_hash = false) {
 	if (isset($sec)) {
 		
 		// Get the sec2 of the main section
-		//$sec2_array[$menu[$sec]['sec2']] = $menu[$sec]['text'];
+		$sec2_array[$menu[$sec]['sec2']] = $menu[$sec]['text'];
 		
 		
 		// Get the sec2 of the subsections

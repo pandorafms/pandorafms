@@ -634,7 +634,10 @@ else {
 			if ($sec == 'extensions')
 				$main_sec = get_parameter('extension_in_menu');
 			else
-				$main_sec = $sec;
+				if ($sec == 'gextensions')
++					$main_sec = get_parameter('extension_in_menu');
+				else
+					$main_sec = $sec;
 			$sec = $sec2;
 			$sec2 = '';
 		}
@@ -647,20 +650,23 @@ else {
 			require ("general/noaccess.php");
 			
 		}
-		elseif (file_exists ($page)) {
-			if (! extensions_is_extension ($page)) {
-				
-				require_once($page);
-			}
-			else {
-				if ($sec[0] == 'g')
-					extensions_call_godmode_function (basename ($page));
-				else
-					extensions_call_main_function (basename ($page));
-			}
-		} 
 		else {
-			ui_print_error_message(__('Sorry! I can\'t find the page!'));
+			$sec = $main_sec;
+			if (file_exists ($page)) {
+				if (! extensions_is_extension ($page)) {
+					
+					require_once($page);
+				}
+				else {
+					if ($sec[0] == 'g')
+						extensions_call_godmode_function (basename ($page));
+					else
+						extensions_call_main_function (basename ($page));
+				}
+			} 
+			else {
+				ui_print_error_message(__('Sorry! I can\'t find the page!'));
+			}
 		}
 	} 
 	else {

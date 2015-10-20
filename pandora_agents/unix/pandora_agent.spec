@@ -65,6 +65,7 @@ if [ "`id pandora | grep uid | wc -l`" = 0 ]
 then
         /usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
 fi
+chown pandora:root /var/log/pandora
 
 %post
 if [ ! -d /etc/pandora ] ; then
@@ -114,9 +115,6 @@ exit 0
 %defattr(750,pandora,root)
 /usr/bin/pandora_agent
 /usr/bin/pandora_agent_exec
-
-%defattr(-,pandora,root,770)
-/var/log/pandora/
 
 %defattr(755,pandora,root)
 /usr/bin/tentacle_client

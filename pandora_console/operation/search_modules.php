@@ -59,20 +59,29 @@ else {
 	$table->align = array ();
 	$table->align[0] = "left";
 	$table->align[1] = "left";
-	$table->align[2] = "center";
-	$table->align[3] = "center";
-	$table->align[4] = "center";
-	$table->align[5] = "center";
-	$table->align[6] = "right";
-	$table->align[7] = "right";
-	$table->align[8] = "center";
-	
+	$table->align[2] = "left";
+	$table->align[3] = "left";
+	$table->align[4] = "left";
+	$table->align[5] = "left";
+	$table->align[6] = "left";
+	$table->align[7] = "left";
+	$table->align[8] = "left";
+
 	$table->data = array ();
 	
 	$id_type_web_content_string = db_get_value('id_tipo', 'ttipo_modulo',
 		'nombre', 'web_content_string');
 	
 	foreach ($modules as $module) {
+		//To search the monitor status
+		$status_sql = sprintf('SELECT estado from tagente_estado where id_agente_modulo =' . $module['id_agente_modulo']);
+		$status_sql = db_process_sql($status_sql);
+		$status_sql = $status_sql[0];
+		//To search the monitor utimestamp
+		$utimestamp_sql = sprintf('SELECT utimestamp from tagente_estado where id_agente_modulo =' . $module['id_agente_modulo']);
+		$utimestamp_sql = db_process_sql($utimestamp_sql);
+		$utimestamp_sql = $utimestamp_sql[0];
+
 		//Fixed the goliat sends the strings from web
 		//without HTML entities
 		if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
@@ -90,8 +99,8 @@ else {
 		$typeCell = ui_print_moduletype_icon($module["id_tipo_modulo"], true);
 		
 		$intervalCell = modules_get_interval ($module['id_agente_modulo']);
-		
-		if ($module['utimestamp'] == 0 &&
+
+		if ($utimestamp_sql['utimestamp'] == 0 &&
 			(
 				($module['id_tipo_modulo'] < 21 || $module['id_tipo_modulo'] > 23) &&
 				$module['id_tipo_modulo'] != 100)
@@ -99,15 +108,15 @@ else {
 			$statusCell = ui_print_status_image(STATUS_MODULE_NO_DATA,
 				__('NOT INIT'), true);
 		}
-		elseif ($module["estado"] == 0) {
+		elseif ($status_sql['estado'] == 0) {
 			$statusCell = ui_print_status_image(STATUS_MODULE_OK,
 				__('NORMAL') . ": " . $module["datos"], true);
 		}
-		elseif ($module["estado"] == 1) {
+		elseif ($status_sql['estado'] == 1) {
 			$statusCell = ui_print_status_image(STATUS_MODULE_CRITICAL,
 				__('CRITICAL') . ": " . $module["datos"], true);
 		}
-		elseif ($module["estado"] == 2) {
+		elseif ($status_sql['estado'] == 2) {
 			$statusCell = ui_print_status_image(STATUS_MODULE_WARNING,
 				__('WARNING') . ": " . $module["datos"], true);
 		}
@@ -241,9 +250,9 @@ else {
 		else {
 			$option = array ();
 		}
-		$timestampCell = ui_print_timestamp ($module["utimestamp"], true, $option);
-		
-		
+		$timestampCell = ui_print_timestamp ($utimestamp_sql["utimestamp"], true, $option);
+
+
 		$group_agent = agents_get_agent_group($module['id_agente']);
 		
 		if (check_acl ($config['id_user'], $group_agent, "AW")) {

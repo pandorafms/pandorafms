@@ -40,10 +40,19 @@ $url = "index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=inciden
 
 //Select incidencts where the user has access to ($groups from
 //get_user_groups), array_keys for the id, implode to pass to SQL
-$sql = "SELECT * FROM tincidencia WHERE 
-	id_grupo IN (".implode (",",array_keys ($groups)).")".$filter." 
-	ORDER BY actualizacion DESC LIMIT ".$offset.",".$config["block_size"];
-
+switch ($config["dbtype"]) {
+	case 'mysql':
+		$sql = "SELECT * FROM tincidencia WHERE
+			id_grupo IN (".implode (",",array_keys ($groups)).")".$filter."
+			ORDER BY actualizacion DESC LIMIT ".$offset.",".$config["block_size"];
+		break;
+	case 'oracle':
+		$sql = "SELECT * FROM tincidencia WHERE
+			id_grupo IN (".implode (",",array_keys ($groups)).")".$filter."
+			AND rownum <= " . $offset.",".$config["block_size"] . "
+			ORDER BY actualizacion DESC";
+		break;
+}
 $result = db_get_all_rows_sql ($sql);
 
 $count_sql = "SELECT count(*) FROM tincidencia WHERE 

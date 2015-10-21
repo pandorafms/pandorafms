@@ -2233,11 +2233,23 @@ function graphic_incident_group () {
 	
 	$data = array ();
 	$max_items = 5;
-	$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents, nombre
-		FROM tincidencia,tgrupo
-		WHERE tgrupo.id_grupo = tincidencia.id_grupo
-		GROUP BY tgrupo.id_grupo, nombre ORDER BY 1 DESC LIMIT %d',
-		$max_items);
+	switch ($config["dbtype"]) {
+		case 'mysql':
+			$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents, nombre
+				FROM tincidencia,tgrupo
+				WHERE tgrupo.id_grupo = tincidencia.id_grupo
+				GROUP BY tgrupo.id_grupo, nombre ORDER BY 1 DESC LIMIT %d',
+				$max_items);
+			break;
+		case 'oracle':
+			$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents, nombre
+				FROM tincidencia,tgrupo
+				WHERE tgrupo.id_grupo = tincidencia.id_grupo
+				AND rownum <= %d
+				GROUP BY tgrupo.id_grupo, nombre ORDER BY 1 DESC',
+				$max_items);
+			break;
+	}
 	$incidents = db_get_all_rows_sql ($sql);
 	
 	$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents
@@ -2279,10 +2291,21 @@ function graphic_incident_user () {
 	
 	$data = array ();
 	$max_items = 5;
-	$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents, id_usuario
-		FROM tincidencia
-		GROUP BY id_usuario
-		ORDER BY 1 DESC LIMIT %d', $max_items);
+	switch ($config["dbtype"]) {
+		case 'mysql':
+			$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents, id_usuario
+				FROM tincidencia
+				GROUP BY id_usuario
+				ORDER BY 1 DESC LIMIT %d', $max_items);
+			break;
+		case 'oracle':
+			$sql = sprintf ('SELECT COUNT(id_incidencia) n_incidents, id_usuario
+				FROM tincidencia
+				WHERE rownum <= %d
+				GROUP BY id_usuario
+				ORDER BY 1 DESC', $max_items);
+			break;
+	}
 	$incidents = db_get_all_rows_sql ($sql);
 	
 	if ($incidents == false) {

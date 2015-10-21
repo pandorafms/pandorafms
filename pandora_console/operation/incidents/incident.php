@@ -196,9 +196,13 @@ switch ($config["dbtype"]) {
 		break;
 	case "postgresql":
 	case "oracle":
-		$sql = "SELECT * FROM tincidencia WHERE 
+		$set = array();
+		$set['limit'] = $config["block_size"];
+		$set['offset'] = $offset;
+		$sql = "SELECT * FROM tincidencia WHERE
 			id_grupo IN (".implode (",",array_keys ($groups)).")".$filter."
-			ORDER BY actualizacion DESC OFFSET ".$offset." LIMIT ".$config["block_size"];
+			ORDER BY actualizacion DESC";
+		$sql = oracle_recode_query ($sql, $set);
 		$count_sql = "SELECT count(*) FROM tincidencia WHERE
 			id_grupo IN (".implode (",",array_keys ($groups)).")".$filter;
 		$total_sql = "SELECT count(*) FROM tincidencia WHERE

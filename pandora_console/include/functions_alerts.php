@@ -1777,7 +1777,20 @@ function alerts_create_alert_special_day ($date, $same_day, $values = false) {
 	
 	if (! is_array ($values))
 		$values = array ();
-	$values['date'] = $date;
+
+	global $config;
+	$date_db = '';
+
+	switch ($config['dbtype']) {
+		case "mysql":
+			$date_db = 'date';
+			break;
+		case "oracle":
+			$date_db = '"date"';
+			break;
+	}
+
+	$values[$date_db] = $date;
 	$values['same_day'] = $same_day;
 	
 	return @db_process_sql_insert ('talert_special_days', $values);

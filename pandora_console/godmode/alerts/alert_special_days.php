@@ -64,8 +64,15 @@ if ($create_special_day) {
 		$result = '';
 	}
 	else {
-		$date_check = db_get_value ('date', 'talert_special_days', 'date
-			', $date);
+		$date_check = '';
+		switch ($config['dbtype']) {
+			case "mysql":
+				$date_check = db_get_value ('date', 'talert_special_days', 'date', $date);
+				break;
+			case "oracle":
+				$date_check = db_get_value ('"date"', 'talert_special_days', '"date"', $date);
+				break;
+		}
 		if ($date_check == $date) {
 			$result = '';
 		}

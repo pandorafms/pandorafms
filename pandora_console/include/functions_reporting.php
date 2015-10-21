@@ -2960,11 +2960,13 @@ function reporting_monitor_report($report, $content) {
 		metaconsole_connect($server);
 	}
 	
+	$module = modules_get_agentmodule ($content['id_agent_module']);
+	
 	$value = reporting_get_agentmodule_sla(
 		$content['id_agent_module'],
 		$content['period'],
-		1,
-		false,
+		$module['min_critical'],
+		$module['max_critical'],
 		$report["datetime"]);
 	
 	if ($value === __('Unknown')) {

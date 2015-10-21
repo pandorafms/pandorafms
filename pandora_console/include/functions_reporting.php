@@ -4536,7 +4536,7 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 						// 	$data[6] = html_print_image('images/status_sets/default/severity_critical.png',true,array('title'=>__('Out of limits')));
 						// }
 						
-						$data[4] .= format_numeric ($sla_value, 2). "%";
+						$data[4] .= sprintf("%.2f", $sla_value) . "%";
 					}
 					$data[4] .= "</span>";
 					
@@ -4621,21 +4621,23 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 				array_push ($table->data, $data_desc);
 				$next_row++;
 			}
-			
+			$module = modules_get_agentmodule ($content['id_agent_module']);
 			$data = array ();
-			$monitor_value = reporting_get_agentmodule_sla ($content['id_agent_module'], $content['period'], 1, false, $report["datetime"]);
+			$monitor_value = reporting_get_agentmodule_sla ($content['id_agent_module'], $content['period'], 
+						$module['min_critical'],$module['max_critical'], $report["datetime"]);
 			if ($monitor_value === false) {
 				$monitor_value = __('Unknown');
 			}
 			else {
-				$monitor_value = format_numeric ($monitor_value);
+				$monitor_value = sprintf("%.2f", $monitor_value);
 			}
 			
 			$table->colspan[$next_row][0] = 2;
 			$data[0] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: ' . COL_NORMAL . ';">';
 			$data[0] .= html_print_image("images/module_ok.png", true) . ' ' . __('OK') . ': ' . $monitor_value.' %</p>';
 			if ($monitor_value !== __('Unknown')) {
-				$monitor_value = format_numeric (100 - $monitor_value, 2) ;
+				//$monitor_value = format_numeric (100 - $monitor_value, 2);
+				$monitor_value = sprintf("%.2f", 100 - $monitor_value);
 			}
 			$data[1] = '<p style="font: bold '.$sizem.'em Arial, Sans-serif; color: ' . COL_CRITICAL . ';">';
 			$data[1] .= html_print_image("images/module_critical.png", true) . ' ' .__('Not OK') . ': ' .$monitor_value.' % ' . '</p>';

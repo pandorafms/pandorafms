@@ -101,7 +101,11 @@ else {
 	$data[3] = html_print_select ($snmp_versions, 'snmp_version', 0, '', '',
 		'', true, false, false, '', $disabledBecauseInPolicy);
 }
-
+if($disabledBecauseInPolicy){
+	if ($id_module_type >= 15 && $id_module_type <= 18) {
+		$data[3] .= html_print_input_hidden ('snmp_version', $tcp_send, true);
+	}
+}
 push_table_simple ($data, 'snmp_1');
 
 $data = array ();

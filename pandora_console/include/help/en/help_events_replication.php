@@ -3,19 +3,15 @@
 */
 ?>
 
-<p> When the events replication is activated, the received events will be copied to the remote database of a metaconsole.
+<p> If the event replication is activated, all the events will be copied to the remote metaconsole's database.
 <br><br>
-Is necessary configurate the credentials of the metaconsole database, the replication mode (all events or only validated ones) and the replication interval in seconds.
+It is necessary to configure the credentials of the metaconsole's database, the replication mode (all events or only validated events) and the replication interval, specified in seconds.
 <br><br>
 <b>NOTES:</b>
 <br><br>
-The event viewer will be disabled when this option is activated.
+The event viewer will be disabled if this option is enabled.
 <br><br>
-To be effective the changes on the events replication configuration will be necessary restart the server.
+To apply the changes made on the event replication setup, it is necessary to restart the server.
 <br><br>
-The server configuration file must has token:
-
-<i>event_replication 1</i>
-
+The token "event_replication" must be set to 1 in the server's configuration file.
 </p>
-

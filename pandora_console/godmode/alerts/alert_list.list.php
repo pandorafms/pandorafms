@@ -68,13 +68,12 @@ if ($temp) {
 
 $form_filter .= "<td style='font-weight: bold;'>".__('Agents')."</td><td>";
 
-
 $params = array();
 $params['return'] = true;
 $params['show_helptip'] = true;
 $params['input_name'] = 'agent_name';
 $params['value'] = $agentName;
-$params['size'] = 12;
+$params['size'] = 24;
 $params['metaconsole_enabled'] = false;
 
 $form_filter .=  ui_print_agent_autocomplete_input($params);
@@ -351,7 +350,7 @@ $table = new stdClass();
 if ( defined("METACONSOLE") )
 	$table->class = 'alert_list databox';
 else
-	$table->class = 'databox';
+	$table->class = 'databox data';
 
 $table->width = '100%';
 $table->cellpadding = 0;

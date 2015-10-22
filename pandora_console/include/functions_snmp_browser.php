@@ -176,7 +176,17 @@ function snmp_browser_get_tree ($target_ip, $community, $starting_oid = '.', $ve
 
 	$oid_tree = array('__LEAVES__' => array());
 	if ($version == "3") {
-		exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' -x ' . escapeshellarg($snmp3_privacy_method) . ' -X ' . escapeshellarg($snmp3_privacy_pass) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
+		switch ($snmp3_security_level) {
+			case "authPriv":
+				exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' -x ' . escapeshellarg($snmp3_privacy_method) . ' -X ' . escapeshellarg($snmp3_privacy_pass) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
+				break;
+			case "authNoPriv":
+				exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -A ' . escapeshellarg($snmp3_auth_pass) . ' -l ' . escapeshellarg($snmp3_security_level) . ' -a ' . escapeshellarg($snmp3_auth_method) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
+				break;
+			case "noAuthNoPriv":
+				exec ($snmpwalk_bin . ' -m ALL -v 3 -u ' . escapeshellarg($snmp3_auth_user) . ' -l ' . escapeshellarg($snmp3_security_level) . ' ' . escapeshellarg($target_ip)  . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);
+				break;
+		}
 	}
 	else {
 		exec ($snmpwalk_bin . ' -m ALL -M +' . escapeshellarg($config['homedir'] . '/attachment/mibs') . ' -Cc -c ' . escapeshellarg($community) . ' -v ' . escapeshellarg($version) . ' ' . escapeshellarg($target_ip) . ' ' . escapeshellarg($starting_oid) . ' 2> ' . $error_redir_dir, $output, $rc);

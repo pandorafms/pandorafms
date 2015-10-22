@@ -397,7 +397,12 @@ sub pandora_query_snmp ($$$) {
 
 		my $snmp3_extra = "";
 		my $snmp3_execution;
-
+		
+		# SNMP v3 no authentication and no privacy
+		if ($snmp3_security_level eq "noAuthNoPriv"){
+			$snmp3_extra = " -u $snmp3_auth_user ";
+		}
+		
 		# SNMP v3 authentication only
 		if ($snmp3_security_level eq "authNoPriv"){
 			$snmp3_extra = " -a $snmp3_auth_method -u $snmp3_auth_user -A $snmp3_auth_pass ";

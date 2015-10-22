@@ -1,5 +1,5 @@
 package: pandorafms-console
-Version: 6.0-151022
+Version: 6.0-151023
 Architecture: all
 Priority: optional
 Section: admin

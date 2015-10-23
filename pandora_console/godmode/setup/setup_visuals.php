@@ -337,6 +337,10 @@ $table_chars->data[$row][0] = __('Graph resolution (1-low, 5-high)');
 $table_chars->data[$row][1] = html_print_input_text ('graph_res', $config["graph_res"], '', 5, 5, true);
 $row++;
 
+$table_chars->data[$row][0] = __('Value to interface graphics');
+$table_chars->data[$row][1] = html_print_input_text ('interface_unit', $config["interface_unit"], '', 20, 20, true);
+$row++;
+
 $table_chars->data[$row][0] = __('Default line thickness for the Custom Graph.');
 $table_chars->data[$row][1] = html_print_input_text ('custom_graph_width',
 	$config["custom_graph_width"], '', 5, 5, true);

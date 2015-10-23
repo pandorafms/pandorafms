@@ -419,6 +419,8 @@ function config_update_config () {
 						$error_update[] = __('Graph color #10');
 					if (!config_update_value ('graph_res', (int) get_parameter ('graph_res')))
 						$error_update[] = __('Graphic resolution (1-low, 5-high)');
+					if (!config_update_value ('interface_unit', (string) get_parameter ('interface_unit', __('Bytes') )))
+						$error_update[] = __('Value to interface graphics');
 					$style = (string) get_parameter ('style');
 					if ($style != $config['style'])
 						$style = substr ($style, 0, strlen ($style) - 4);
@@ -1296,7 +1298,11 @@ function config_process_config () {
 	if (!isset($config['gis_label'])) {
 		config_update_value ('gis_label', 0);
 	}
-	
+
+	if (!isset($config['interface_unit'])) {
+		config_update_value ('interface_unit',  __('Bytes'));
+	}
+
 	if (!isset($config['gis_default_icon'])) {
 		config_update_value ('gis_default_icon', "marker");
 	}

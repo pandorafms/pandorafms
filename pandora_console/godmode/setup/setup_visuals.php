@@ -127,6 +127,11 @@ $table->data[$row][1] = html_print_input_text ('graph_res', $config["graph_res"]
 
 $row++;
 
+$table->data[$row][0] = __('Value to interface graphics');
+$table->data[$row][1] = html_print_input_text ('interface_unit', $config["interface_unit"], '', 20, 20, true);
+
+$row++;
+
 $table->data[$row][0] = __('Interval values');
 
 $units = array(

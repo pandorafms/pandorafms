@@ -3,7 +3,7 @@
  * Pandora FMS- http://pandorafms.com
  * ==================================================
  * Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation for version 2.
@@ -33,7 +33,7 @@ ui_require_javascript_file('openlayers.pandora');
 /* Get the parameters */
 $period = (int)get_parameter ("period", SECONDS_1DAY);
 $agentId = (int)get_parameter('id_agente');
-$agent_name = agents_get_name($id_agente); 
+$agent_name = agents_get_name($id_agente);
 $agentData = gis_get_data_last_position_agent($id_agente);
 
 //Avoid the agents with characters that fails the div.
@@ -103,7 +103,7 @@ html_print_submit_button(__('Refresh path'), 'refresh', false, 'class = "sub upd
 echo "</table></form>";
 
 echo "<h4>" . __("Positional data from the last") . " " . human_time_description_raw ($period) ."</h4>";
-/* Get the total number of Elements for the pagination */ 
+/* Get the total number of Elements for the pagination */
 $sqlCount = sprintf ("SELECT COUNT(*)
 	FROM tgis_data_history
 	WHERE tagente_id_agente = %d AND end_timestamp > FROM_UNIXTIME(%d)
@@ -112,13 +112,31 @@ $countData = db_get_value_sql($sqlCount);
 
 
 /* Get the elements to present in this page */
-$sql = sprintf ("
-	SELECT longitude, latitude, altitude, start_timestamp,
-		end_timestamp, description, number_of_packages, manual_placement
-	FROM tgis_data_history
-	WHERE tagente_id_agente = %d AND end_timestamp > FROM_UNIXTIME(%d)  
-	ORDER BY end_timestamp DESC
-	LIMIT %d OFFSET %d", $agentId, get_system_time () - $period, $config['block_size'], (int)get_parameter ('offset'));
+switch ($config["dbtype"]) {
+	case "mysql":
+		$sql = sprintf ("
+			SELECT longitude, latitude, altitude, start_timestamp,
+				end_timestamp, description, number_of_packages, manual_placement
+			FROM tgis_data_history
+			WHERE tagente_id_agente = %d AND end_timestamp > FROM_UNIXTIME(%d)
+			ORDER BY end_timestamp DESC
+			LIMIT %d OFFSET %d", $agentId, get_system_time () - $period, $config['block_size'], (int)get_parameter ('offset'));
+		break;
+	case "postgresql":
+	case "oracle":
+		$set = array ();
+		$set['limit'] = $config['block_size'];
+		$set['offset'] = (int)get_parameter ('offset');
+		$sql = sprintf ("
+			SELECT longitude, latitude, altitude, start_timestamp,
+				end_timestamp, description, number_of_packages, manual_placement
+			FROM tgis_data_history
+			WHERE tagente_id_agente = %d AND end_timestamp > FROM_UNIXTIME(%d)
+			ORDER BY end_timestamp DESC", $agentId, get_system_time () - $period);
+		$sql = oracle_recode_query ($sql, $set);
+		break;
+}
+
 $result = db_get_all_rows_sql ($sql, true);
 
 
@@ -143,7 +161,7 @@ else {
 					$dataLastPosition['stored_longitude']);
 			}
 		}
-		
+
 		$rowdata = array(
 			$row['longitude'],
 			$row['latitude'],
@@ -171,7 +189,7 @@ else {
 	$table->title = $agent_name_original . " " . __("positional data");
 	$table->titlestyle = "background-color:#799E48;";
 	html_print_table($table); unset($table);
-	
+
 	ui_pagination ($countData, false) ;
 	echo "<h3>" . __('Total') . ' ' . $countData . ' ' . __('Data') . "</h3>";
 }

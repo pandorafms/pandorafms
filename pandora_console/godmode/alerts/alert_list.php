@@ -185,6 +185,7 @@ if ($delete_action) {
 }
 
 if ($enable_alert) {
+	$searchFlag = true;
 	$id_alert = (int) get_parameter ('id_alert');
 	
 	$result = alerts_agent_module_disable ($id_alert, false);
@@ -201,6 +202,7 @@ if ($enable_alert) {
 }
 
 if ($disable_alert) {
+	$searchFlag = true;
 	$id_alert = (int) get_parameter ('id_alert');
 	
 	$result = alerts_agent_module_disable ($id_alert, true);
@@ -217,6 +219,7 @@ if ($disable_alert) {
 }
 
 if ($standbyon_alert) {
+	$searchFlag = true;
 	$id_alert = (int) get_parameter ('id_alert');
 	
 	$result = alerts_agent_module_standby ($id_alert, true);
@@ -233,6 +236,7 @@ if ($standbyon_alert) {
 }
 
 if ($standbyoff_alert) {
+	$searchFlag = true;
 	$id_alert = (int) get_parameter ('id_alert');
 	
 	$result = alerts_agent_module_standby ($id_alert, false);
@@ -269,6 +273,7 @@ if ($id_agente) {
 	return;
 }
 else {
+	$searchFlag = true;
 	if (!defined('METACONSOLE')) {
 		// The tabs will be shown only with manage alerts permissions
 		if(check_acl ($config['id_user'], 0, "LW")) {

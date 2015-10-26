@@ -1870,90 +1870,98 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 	$query_error = false;
 	
 	// Data from 1 day ago
-	$filter['utimestamp'] = '>' . $time_1day;
 	$num_1day = 0;
-	$num_1day += (int) db_get_value_filter('COUNT(*)', 'tagente_datos', $filter);
-	$num_1day += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_string', $filter);
-	$num_1day += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_log4x', $filter);
-	
-	if ($num_1day !== false) {
+	$num_1day += (int) db_get_sql('SELECT COUNT(*)
+										FROM tagente_datos
+										WHERE utimestamp > ' . $time_1day);
+	$num_1day += (int) db_get_sql('SELECT COUNT(*)
+										FROM tagente_datos_string
+										WHERE utimestamp > ' . $time_1day);
+	$num_1day += (int) db_get_sql('SELECT COUNT(*)
+										FROM tagente_datos_log4x
+										WHERE utimestamp > ' . $time_1day);
+	if ($num_1day >= 0) {
 		// Data from 1 week ago
-		$filter['utimestamp'] = '>' . $time_1week;
 		$num_1week = 0;
-		$num_1week += (int) db_get_value_filter('COUNT(*)', 'tagente_datos', $filter);
-		$num_1week += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_string', $filter);
-		$num_1week += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_log4x', $filter);
-		
-		if ($num_1week !== false) {
+		$num_1week += (int) db_get_sql('SELECT COUNT(*)
+											FROM tagente_datos
+											WHERE utimestamp > ' . $time_1week . '
+											AND utimestamp < ' . $time_1day);
+		$num_1week += (int) db_get_sql('SELECT COUNT(*)
+											FROM tagente_datos_string
+											WHERE utimestamp > ' . $time_1week . '
+											AND utimestamp < ' . $time_1day);
+		$num_1week += (int) db_get_sql('SELECT COUNT(*)
+											FROM tagente_datos_log4x
+											WHERE utimestamp > ' . $time_1week . '
+											AND utimestamp < ' . $time_1day);
+		if ($num_1week >= 0) {
 			// Data from 1 month ago
-			$filter['utimestamp'] = '>' . $time_1month;
 			$num_1month = 0;
-			$num_1month += (int) db_get_value_filter('COUNT(*)', 'tagente_datos', $filter);
-			$num_1month += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_string', $filter);
-			$num_1month += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_log4x', $filter);
-			
-			if ($num_1month !== false) {
+			$num_1month += (int) db_get_sql('SELECT COUNT(*)
+												FROM tagente_datos
+												WHERE utimestamp > ' . $time_1month . '
+												AND utimestamp < ' . $time_1week);
+			$num_1month += (int) db_get_sql('SELECT COUNT(*)
+												FROM tagente_datos_string
+												WHERE utimestamp > ' . $time_1month . '
+												AND utimestamp < ' . $time_1week);
+			$num_1month += (int) db_get_sql('SELECT COUNT(*)
+												FROM tagente_datos_log4x
+												WHERE utimestamp > ' . $time_1month . '
+												AND utimestamp < ' . $time_1week);
+			if ($num_1month >= 0) {
 				// Data from 3 months ago
-				$filter['utimestamp'] = '>' . $time_3months;
 				$num_3months = 0;
-				$num_3months += (int) db_get_value_filter('COUNT(*)', 'tagente_datos', $filter);
-				$num_3months += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_string', $filter);
-				$num_3months += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_log4x', $filter);
-				
-				if ($num_3months !== false) {
+				$num_3months += (int) db_get_sql('SELECT COUNT(*)
+													FROM tagente_datos
+													WHERE utimestamp > ' . $time_3months . '
+													AND utimestamp < ' . $time_1month);
+				$num_3months += (int) db_get_sql('SELECT COUNT(*)
+													FROM tagente_datos
+													WHERE utimestamp > ' . $time_3months . '
+													AND utimestamp < ' . $time_1month);
+				$num_3months += (int) db_get_sql('SELECT COUNT(*)
+													FROM tagente_datos
+													WHERE utimestamp > ' . $time_3months . '
+													AND utimestamp < ' . $time_1month);
+				if ($num_3months >= 0) {
 					// All data
-					unset($filter['utimestamp']);
-					
-					if (empty($filter)) {
-						$num_all = 0;
-						$num_all += (int) db_get_value_sql('SELECT COUNT(*) FROM tagente_datos');
-						$num_all += (int) db_get_value_sql('SELECT COUNT(*) FROM tagente_datos_string');
-						$num_all += (int) db_get_value_sql('SELECT COUNT(*) FROM tagente_datos_log4x');
-					}
-					else {
-						$num_all = 0;
-						$num_all += (int) db_get_value_filter('COUNT(*)', 'tagente_datos', $filter);
-						$num_all += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_string', $filter);
-						$num_all += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_log4x', $filter);
-					}
-					
-					if ($num_all !== false) {
+					$num_all = 0;
+					$num_all += (int) db_get_sql('SELECT COUNT(*)
+														FROM tagente_datos
+														WHERE utimestamp < ' . $time_3months);
+					$num_all += (int) db_get_sql('SELECT COUNT(*)
+														FROM tagente_datos
+														WHERE utimestamp < ' . $time_3months);
+					$num_all += (int) db_get_sql('SELECT COUNT(*)
+														FROM tagente_datos
+														WHERE utimestamp < ' . $time_3months);
+					if ($num_all >= 0) {
 						$num_older = $num_all - $num_3months;
-						
 						if ($config['history_db_enabled'] == 1) {
 							// All data in common and history database
-							if (empty($filter)) {
-								$num_all_w_history = 0;
-								$num_all_w_history += (int) db_get_value_sql('SELECT COUNT(*) FROM tagente_datos', true);
-								$num_all_w_history += (int) db_get_value_sql('SELECT COUNT(*) FROM tagente_datos_string', true);
-								$num_all_w_history += (int) db_get_value_sql('SELECT COUNT(*) FROM tagente_datos_log4x', true);
-							}
-							else {
-								$num_all_w_history = 0;
-								$num_all_w_history += (int) db_get_value_filter('COUNT(*)', 'tagente_datos', $filter, 'AND', true);
-								$num_all_w_history += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_string', $filter, 'AND', true);
-								$num_all_w_history += (int) db_get_value_filter('COUNT(*)', 'tagente_datos_log4x', $filter, 'AND', true);
-							}
-							
-							if ($num_all_w_history !== false) {
+							$num_all_w_history = 0;
+							$num_all_w_history += (int) db_get_sql('SELECT COUNT(*)
+																FROM tagente_datos
+																WHERE utimestamp < ' . $num_older);
+							$num_all_w_history += (int) db_get_sql('SELECT COUNT(*)
+																FROM tagente_datos
+																WHERE utimestamp < ' . $num_older);
+							$num_all_w_history += (int) db_get_sql('SELECT COUNT(*)
+																FROM tagente_datos
+																WHERE utimestamp < ' . $num_older);
+							if ($num_all_w_history >= 0) {
 								$num_history = $num_all_w_history - $num_all;
-							} else {
-								$query_error = true;
 							}
 						}
-					} else {
-						$query_error = true;
 					}
-				} else {
-					$query_error = true;
 				}
-			} else {
-				$query_error = true;
 			}
-		} else {
-			$query_error = true;
 		}
-	} else {
+	}
+	else if (($num_1day == 0) && ($num_1week == 0) && ($num_1month == 0) && ($num_3months == 0) && ($num_all == 0)) {
+		//If no data, returns empty
 		$query_error = true;
 	}
 	
@@ -1984,7 +1992,6 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 		$data[$str_3months] = $num_3months;
 	if (!empty($num_older))
 		$data[$str_older] = $num_older;
-
 	if ($config['history_db_enabled'] == 1 && !empty($num_history)) {
 		// In this pie chart only 5 elements are shown, so we need to remove
 		// an element. With a history db enabled the >3 months element are dispensable

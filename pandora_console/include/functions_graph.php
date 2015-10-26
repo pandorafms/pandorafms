@@ -1896,6 +1896,18 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 											WHERE utimestamp > ' . $time_1week . '
 											AND utimestamp < ' . $time_1day);
 		if ($num_1week >= 0) {
+			if ($num_1week > 0) {
+				$num_1week = 0;
+				$num_1week += (int) db_get_sql('SELECT COUNT(*)
+													FROM tagente_datos
+													WHERE utimestamp > ' . $time_1week);
+				$num_1week += (int) db_get_sql('SELECT COUNT(*)
+													FROM tagente_datos_string
+													WHERE utimestamp > ' . $time_1week);
+				$num_1week += (int) db_get_sql('SELECT COUNT(*)
+													FROM tagente_datos_log4x
+													WHERE utimestamp > ' . $time_1week);
+			}
 			// Data from 1 month ago
 			$num_1month = 0;
 			$num_1month += (int) db_get_sql('SELECT COUNT(*)
@@ -1911,6 +1923,18 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 												WHERE utimestamp > ' . $time_1month . '
 												AND utimestamp < ' . $time_1week);
 			if ($num_1month >= 0) {
+				if ($num_1month > 0) {
+					$num_1month = 0;
+					$num_1month += (int) db_get_sql('SELECT COUNT(*)
+														FROM tagente_datos
+														WHERE utimestamp > ' . $time_1month);
+					$num_1month += (int) db_get_sql('SELECT COUNT(*)
+														FROM tagente_datos_string
+														WHERE utimestamp > ' . $time_1month);
+					$num_1month += (int) db_get_sql('SELECT COUNT(*)
+														FROM tagente_datos_log4x
+														WHERE utimestamp > ' . $time_1month);
+				}
 				// Data from 3 months ago
 				$num_3months = 0;
 				$num_3months += (int) db_get_sql('SELECT COUNT(*)
@@ -1926,6 +1950,18 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 													WHERE utimestamp > ' . $time_3months . '
 													AND utimestamp < ' . $time_1month);
 				if ($num_3months >= 0) {
+					if ($num_3months > 0) {
+						$num_3months = 0;
+						$num_3months += (int) db_get_sql('SELECT COUNT(*)
+															FROM tagente_datos
+															WHERE utimestamp > ' . $time_3months);
+						$num_3months += (int) db_get_sql('SELECT COUNT(*)
+															FROM tagente_datos
+															WHERE utimestamp > ' . $time_3months);
+						$num_3months += (int) db_get_sql('SELECT COUNT(*)
+															FROM tagente_datos
+															WHERE utimestamp > ' . $time_3months);
+					}
 					// All data
 					$num_all = 0;
 					$num_all += (int) db_get_sql('SELECT COUNT(*)
@@ -1944,13 +1980,13 @@ function grafico_db_agentes_purge ($id_agent, $width = 380, $height = 300) {
 							$num_all_w_history = 0;
 							$num_all_w_history += (int) db_get_sql('SELECT COUNT(*)
 																FROM tagente_datos
-																WHERE utimestamp < ' . $num_older);
+																WHERE utimestamp < ' . $time_3months);
 							$num_all_w_history += (int) db_get_sql('SELECT COUNT(*)
 																FROM tagente_datos
-																WHERE utimestamp < ' . $num_older);
+																WHERE utimestamp < ' . $time_3months);
 							$num_all_w_history += (int) db_get_sql('SELECT COUNT(*)
 																FROM tagente_datos
-																WHERE utimestamp < ' . $num_older);
+																WHERE utimestamp < ' . $time_3months);
 							if ($num_all_w_history >= 0) {
 								$num_history = $num_all_w_history - $num_all;
 							}

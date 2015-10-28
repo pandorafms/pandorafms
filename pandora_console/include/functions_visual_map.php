@@ -1240,8 +1240,8 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				if ($show_links) {
 					if ((!empty($layout_data['id_agent'])
 						&& empty($layout_data['id_layout_linked']))
-						|| ($layout_data['type'] == GROUP_ITEM)) {
-						
+						|| (($layout_data['type'] == GROUP_ITEM) && (empty($layout_data['id_layout_linked'])))) {
+
 						if ($layout_data['enable_link']
 							&& can_user_access_node()) {
 							

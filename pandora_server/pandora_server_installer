@@ -337,7 +337,7 @@ perl-TimeDate perl-XML-Simple perl-XML-Twig perl-libwww-perl mysql-client"
 	then
 		[ -d $DESTDIR/etc/logrotate.d ] && mkdir -p $DESTDIR/etc/logrotate.d
 		echo "Creating logrotate.d entry for Pandora FMS log management"
-		cp util/pandora_logrotate $DESTDIR/etc/logrotate.d/pandora
+		cp util/pandora_server_logrotate $DESTDIR/etc/logrotate.d/pandora_server
 	else
 		echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
 	fi
@@ -448,7 +448,7 @@ uninstall () {
 	rm -f  $DESTDIR$PREFIX/bin/tentacle_server 2> /dev/null
 	rm -Rf $DESTDIR$PANDORA_HOME
 	rm -f  $DESTDIR/etc/cron.hourly/pandora_db
-	rm -f  $DESTDIR/etc/logrotate.d/pandora
+	rm -f  $DESTDIR/etc/logrotate.d/pandora_server
 	if [ "$DESTDIR" ]
 	then
 		# do nothing with "fakeroot" uninstallation

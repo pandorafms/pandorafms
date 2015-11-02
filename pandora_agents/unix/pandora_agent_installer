@@ -154,6 +154,7 @@ uninstall () {
 	rm -Rf $PANDORA_BASE$PANDORA_BIN 2> /dev/null
 	rm -Rf $PANDORA_BASE$PANDORA_EXEC_BIN 2> /dev/null
 	rm -Rf $PANDORA_BASE$PANDORA_REVENT_BIN 2> /dev/null
+	rm -f  $DESTDIR/etc/logrotate.d/pandora_agent
 	
 	#Test if exist Pandora Server in this machine
 	if [ -d $PANDORA_BASE$PANDORA_TEMP/data_in ]
@@ -464,6 +465,15 @@ install () {
 			ln -s $PANDORA_STARTUP $DESTDIR$RCDIR/S90pandora_agent 2> /dev/null
 		done
 		[ "$MSG" ] && echo "$MSG"
+	fi
+	
+	if [ -d /etc/logrotate.d ]
+	then
+		[ -d $DESTDIR/etc/logrotate.d ] && mkdir -p $DESTDIR/etc/logrotate.d
+		echo "Creating logrotate.d entry for Pandora FMS log management"
+		cp pandora_agent_logrotate $DESTDIR/etc/logrotate.d/pandora_agent
+	else
+		echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
 	fi
 
 	echo "Done."

@@ -38,7 +38,7 @@ install () {
 
 	if [ -d /etc/logrotate.d ]; then
 		echo "Creating logrotate.d entry for Pandora FMS log management"
-		cp util/pandora_logrotate /etc/logrotate.d/pandora
+		cp util/pandora_server_logrotate /etc/logrotate.d/pandora_server
 	else
 		echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
 	fi

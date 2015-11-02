@@ -78,6 +78,13 @@ pandora_upgrade () {
 		return 1
 	fi
 
+	if [ -d /etc/logrotate.d ]; then
+		echo "Creating logrotate.d entry for Pandora FMS log management"
+		cp pandora_console_logrotate /etc/logrotate.d/pandora_console
+	else
+		echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
+	fi
+	
 	# Remove unnecessary files (optional, set variable to activate)
 
 	REMOVEFILES=0

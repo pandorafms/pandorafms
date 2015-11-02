@@ -1,0 +1,21 @@
+/var/log/pandora/pandora_server.log 
+/var/log/pandora/pandora_server.error {
+	weekly
+	missingok
+	size 300000
+	rotate 3
+	maxage 90
+	compress
+	notifempty
+        copytruncate
+}
+
+/var/log/pandora/pandora_snmptrap.log {
+	weekly
+	missingok
+	size 500000
+	rotate 1
+	maxage 30
+	notifempty
+	copytruncate
+}

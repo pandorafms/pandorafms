@@ -110,6 +110,7 @@ uninstall () {
 
 	echo "Removing Pandora FMS Console"
 	rm -Rf $PANDORA_HOME
+	rm -f  $DESTDIR/etc/logrotate.d/pandora_console
 	echo "You need to drop manually pandora database from your Database server"
 	echo "Done"
 }
@@ -177,6 +178,15 @@ install () {
 	do
 		[ ! -d $DESTDIR/var/spool/pandora/data_in/$subdir ] && mkdir -p $DESTDIR/var/spool/pandora/data_in/$subdir
 	done
+
+	if [ -d /etc/logrotate.d ]
+	then
+		[ -d $DESTDIR/etc/logrotate.d ] && mkdir -p $DESTDIR/etc/logrotate.d
+		echo "Creating logrotate.d entry for Pandora FMS log management"
+		cp pandora_console_logrotate $DESTDIR/etc/logrotate.d/pandora_console
+	else
+		echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
+	fi
 
 	#Ownership
 	chown -R $WWWUSER:$PANDORA_HOME_GROUP $DESTDIR$PANDORA_HOME 2> /dev/null

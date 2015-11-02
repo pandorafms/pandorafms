@@ -100,7 +100,7 @@ chkconfig tentacle_serverd on
 
 echo "/usr/share/pandora_server/util/pandora_db.pl /etc/pandora/pandora_server.conf" > /etc/cron.hourly/pandora_db
 chmod 750 /etc/cron.hourly/pandora_db
-cp -aRf /usr/share/pandora_server/util/pandora_logrotate /etc/logrotate.d/pandora
+cp -aRf /usr/share/pandora_server/util/pandora_server_logrotate /etc/logrotate.d/pandora_server
 
 if [ ! -d /etc/pandora ] ; then
    mkdir -p /etc/pandora
@@ -150,7 +150,7 @@ rm -Rf /var/spool/pandora
 rm -Rf /etc/init.d/pandora_server /etc/init.d/tentacle_serverd 
 rm -Rf /usr/bin/pandora_exec /usr/bin/pandora_server /usr/bin/tentacle_server
 rm -Rf /etc/cron.hourly/pandora_db
-rm -Rf /etc/logrotate.d/pandora
+rm -Rf /etc/logrotate.d/pandora_server
 rm -Rf /usr/share/man/man1/pandora_server.1.gz
 rm -Rf /usr/share/man/man1/tentacle_server.1.gz
 

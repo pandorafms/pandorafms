@@ -42,6 +42,7 @@ mkdir -p $RPM_BUILD_ROOT/etc/pandora/
 mkdir -p $RPM_BUILD_ROOT/etc/init.d/
 mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
 mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1/
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_agent/
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/tentacle_client $RPM_BUILD_ROOT/usr/bin/
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent $RPM_BUILD_ROOT/usr/bin/
@@ -52,6 +53,8 @@ cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/man/man1/pandora_agent.1.gz $RPM_
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/man/man1/tentacle_client.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
 
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/Linux/pandora_agent.conf $RPM_BUILD_ROOT/usr/share/pandora_agent/pandora_agent.conf.rpmnew
+
+install -m 0644 pandora_agent_logrotate $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_agent
 
 if [ -f $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent.spec ] ; then
 	rm $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent.spec
@@ -115,6 +118,7 @@ exit 0
 %defattr(750,pandora,root)
 /usr/bin/pandora_agent
 /usr/bin/pandora_agent_exec
+%config(noreplace) %{_sysconfdir}/logrotate.d/pandora_agent
 
 %defattr(755,pandora,root)
 /usr/bin/tentacle_client

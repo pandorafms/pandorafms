@@ -66,7 +66,7 @@ if [ -f %{prefix}/pandora_console/include/config.php ] ; then
 else
    echo "Please, now, point your browser to http://your_IP_address/pandora_console/install.php and follow all the steps described on it."
 fi
-
+cp -aRf %{prefix}/pandora_console/pandora_console_logrotate /etc/logrotate.d/pandora_console
 
 %preun
 
@@ -76,6 +76,15 @@ if [ "$1" = "1" ]; then
 fi
 
 rm -Rf %{prefix}/pandora_console
+
+%postun
+
+# Upgrading
+if [ "$1" = "1" ]; then
+        exit 0
+fi
+
+rm -Rf /etc/logrotate.d/pandora_console
 
 %files
 %defattr(0644,%{httpd_user},%{httpd_group},0755)

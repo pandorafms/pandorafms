@@ -47,9 +47,11 @@ rm -rf $RPM_BUILD_ROOT
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_console
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_console
 rm $RPM_BUILD_ROOT%{prefix}/pandora_console/*.spec
 rm $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console_install
+install -m 0644 pandora_console_logrotate $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_console
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -76,3 +78,4 @@ fi
 %defattr(0644,%{httpd_user},%{httpd_group},0755)
 %docdir %{prefix}/pandora_console/docs
 %{prefix}/pandora_console
+%config(noreplace) %{_sysconfdir}/logrotate.d/pandora_console

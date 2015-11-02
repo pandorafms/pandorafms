@@ -89,6 +89,7 @@ fi
 if [ ! -e /etc/pandora/collections ]; then
 	ln -s /usr/share/pandora_agent/collections /etc/pandora
 fi
+cp -aRf /usr/share/pandora_agent/pandora_agent_logrotate /etc/logrotate.d/pandora_agent
 
 mkdir -p /var/spool/pandora/data_out
 chkconfig pandora_agent_daemon on
@@ -110,6 +111,15 @@ rm -Rf /usr/share/pandora_agent
 rm -Rf /usr/share/man/man1/pandora_agent.1.gz
 rm -Rf /usr/share/man/man1/tentacle_client.1.gz
 exit 0
+
+%postun
+
+# Upgrading
+if [ "$1" = "1" ]; then
+        exit 0
+fi
+
+rm -Rf /etc/logrotate.d/pandora_agent
 
 %files
 %defattr(750,pandora,root)

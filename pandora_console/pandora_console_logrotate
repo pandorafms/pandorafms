@@ -1,0 +1,35 @@
+# DEBIAN / UBUNTU 
+/var/www/pandora_console/pandora_console.log {
+	weekly
+        missingok
+        size 100000
+        rotate 3
+        maxage 15
+        compress
+        notifempty
+        create 644 www-data www-data
+}
+
+# OpenSUSE, SLES
+/srv/www/htdocs/pandora_console/pandora_console.log {
+	weekly
+	missingok
+	size 100000
+	rotate 3
+	maxage 15
+	compress
+	notifempty
+	create 644 wwwrun www
+}
+
+# Centos, Redhat, Fedora
+/var/www/html/pandora_console/pandora_console.log {
+        weekly
+        missingok
+        size 100000
+        rotate 3
+        maxage 15
+        compress
+        notifempty
+        create 644 apache root
+}

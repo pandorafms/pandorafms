@@ -593,6 +593,7 @@ function treeview_printTree($type) {
 					$list[$server_item['_name_']]['_num_not_init_'] += $server_item['_num_not_init_'];
 					$list[$server_item['_name_']]['_num_warning_'] += $server_item['_num_warning_'];
 					$list[$server_item['_name_']]['_num_unknown_'] += $server_item['_num_unknown_'];
+					$list[$server_item['_name_']]['_num_total_'] += $server_item['_num_total_'];
 				}
 			}
 		}

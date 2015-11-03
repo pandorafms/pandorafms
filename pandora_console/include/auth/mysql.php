@@ -285,6 +285,32 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			$config['default_remote_group'], false, $config['default_assign_tags']);
 	}
 	
+	if ( defined('METACONSOLE') ) {
+		if ( (isset($config['ad_autosyn']) && $config['ad_autosyn']) &&
+			$config["auth"] === 'ad' ) {
+			enterprise_include_once('include/functions_metaconsole.php');
+			$servers = metaconsole_get_servers();
+			foreach ($servers as $server) {
+				html_debug_print($server);
+				if ( metaconsole_connect($server)  == NOERR ) {
+					if (create_user ($login, $pass,
+							array ('fullname' => $login, 
+							'comments' => 'Imported from ' . $config['auth'])
+						) === false) {
+						$config["auth_error"] = __("User not found in database or incorrect password");
+						return false;
+					}
+					profile_create_user_profile ($login, $config['default_remote_profile'], 
+						$config['default_remote_group'], false, $config['default_assign_tags']);
+				}
+				else {
+					$config["auth_error"] = __("Error to sync users");
+					return false;
+				}
+			}
+		}
+	}
+	
 	return $login;
 }
 	

@@ -721,7 +721,7 @@ function loadFieldsFromDB(item) {
 			var moduleId = 0;
 
 			fill_parent_select(idItem);
-
+			
 			jQuery.each(data, function(key, val) {
 				if (key == 'background')
 					$("#background_image").val(val);
@@ -1295,6 +1295,7 @@ function setModuleValue(id_data, process_simple_value, period) {
 	if (process_simple_value != undefined) {
 		parameter.push ({name: "process_simple_value", value: process_simple_value});
 	}
+	
 	jQuery.ajax({
 		url: get_url_ajax(),
 		data: parameter,
@@ -1302,7 +1303,7 @@ function setModuleValue(id_data, process_simple_value, period) {
 		dataType: 'json',
 		success: function (data)
 		{
-			$("#simplevalue_" + id_data).html(data['value']);
+			$("#simplevalue_" + id_data).text(data.value);
 		}
 	});
 }
@@ -1605,11 +1606,11 @@ function createItem(type, values, id_data) {
 		case 'simple_value':
 			sizeStyle = '';
 			imageSize = '';
-
 			item = $('<div id="' + id_data + '" class="item simple_value" style="text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
-					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span> ' +
+					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span> ' + '<span id="simplevalue_' + id_data + '"></span>'+
 				'</div>'
 			);
+			setModuleValue(id_data,values.process_simple_value,values.period);
 			break;
 		case 'label':
 			item = $('<div id="' + id_data + '" ' +
@@ -1811,7 +1812,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				setModuleGraph(idElement);
 			}
 			*/
-
+			
 			if ((typeof(values['mov_left']) != 'undefined') &&
 					(typeof(values['mov_top']) != 'undefined')) {
 				$("#" + idElement).css('top', '0px').css('top', top + 'px');
@@ -1848,12 +1849,13 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 					}
 				}
 			});
-
+			
 			if (typeof(values['parent']) != 'undefined') {
 				if (!found) {
 					set_color_line_status(lines, line, idElement, values);
 				}
 			}
+			
 			break;
 		case 'background':
 			if(values['width'] == '0' || values['height'] == '0'){
@@ -2003,6 +2005,7 @@ function updateDB(type, idElement , values, event) {
 		updateDB_visual(type, idElement , values, event, top, left);
 	}
 	else {
+		
 		jQuery.ajax({
 			url: get_url_ajax(),
 			data: parameter,

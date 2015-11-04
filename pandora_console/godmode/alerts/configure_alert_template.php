@@ -546,8 +546,9 @@ if ($step == 2) {
 	}
 	$table->data[4][1] = html_print_select_from_sql ($sql_query,
 			'default_action', $default_action, '', __('None'), 0,
-			true, false, false) .
-		ui_print_help_tip (__('In case you fill any Field 1, Field 2 or Field 3 above, those will replace the corresponding fields of this associated "Default action".'), true);
+			true, false, false, false, false, false, 0) .
+		ui_print_help_tip (
+			__('In case you fill any Field 1, Field 2 or Field 3 above, those will replace the corresponding fields of this associated "Default action".'), true);
 	
 	$table->data[5][0] = __('Condition type');
 	$table->data[5][1] = html_print_select (alerts_get_alert_templates_types (), 'type',

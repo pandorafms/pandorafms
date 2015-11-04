@@ -62,6 +62,7 @@ $active_tab = get_parameter('tab', 'main');
 $add_graph = (bool) get_parameter('add_graph', false);
 $update_graph = (bool) get_parameter('update_graph', false);
 $change_weight = (bool) get_parameter('change_weight', false);
+$change_label = (bool) get_parameter('change_label', false);
 $id_graph = (int) get_parameter('id', 0);
 
 if ($add_graph) {
@@ -171,6 +172,13 @@ if ($change_weight) {
 	$id_gs = get_parameter ('graph');
 	db_process_sql_update('tgraph_source', 
 		array('weight' => $weight), 
+		array('id_gs' => $id_gs));
+}
+if ($change_label) {
+	$label = get_parameter ('label');
+	$id_gs = get_parameter ('graph');
+	db_process_sql_update('tgraph_source', 
+		array('label' => $label), 
 		array('id_gs' => $id_gs));
 }
 

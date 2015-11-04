@@ -61,6 +61,7 @@ if ($view_graph) {
 	$private = $graph["private"];
 	$width = $graph["width"];
 	$height = $graph["height"] + count($sources) * 10;
+	
 	$zoom = (int) get_parameter ('zoom', 0);
 	//Increase the height to fix the leyend rise
 	if ($zoom > 0) {
@@ -95,6 +96,18 @@ if ($view_graph) {
 	$stacked = (int) get_parameter ('stacked', -1);
 	if ($stacked == -1)
 		$stacked = $graph["stacked"];
+	
+	if ($stacked == CUSTOM_GRAPH_BULLET_CHART )
+		$height = 50;
+	
+	if ($stacked == CUSTOM_GRAPH_GAUGE ){
+		if ( $graph["height"] < 150 )
+			$height = 150;
+		elseif( $graph["height"] >= 150 && $graph["height"] < 250 )
+				$height = $graph["height"];
+			elseif( $graph["height"] >= 250 )
+				$height = 200;
+	}
 	
 	$name = $graph["name"];
 	if (($graph["private"]==1) && ($graph["id_user"] != $id_user)) {
@@ -149,7 +162,7 @@ if ($view_graph) {
 		"images/chart.png", false, "", false, $options);
 	
 	$graph_return = custom_graphs_print($id_graph, $height, $width, $period, $stacked,
-		true, $unixdate);
+			true, $unixdate);
 	
 	if ($graph_return){
 		echo "<table class='databox filters' cellpadding='0' cellspacing='0' width='100%'>";
@@ -193,6 +206,11 @@ if ($view_graph) {
 	$stackeds[CUSTOM_GRAPH_STACKED_AREA] = __('Stacked area');
 	$stackeds[CUSTOM_GRAPH_LINE] = __('Line');
 	$stackeds[CUSTOM_GRAPH_STACKED_LINE] = __('Stacked line');
+	$stackeds[CUSTOM_GRAPH_BULLET_CHART] = __('Bullet chart');
+	$stackeds[CUSTOM_GRAPH_GAUGE] = __('Gauge');
+	$stackeds[CUSTOM_GRAPH_HBARS] = __('Horizontal Bars');
+	$stackeds[CUSTOM_GRAPH_VBARS] = __('Vertical Bars');
+	$stackeds[CUSTOM_GRAPH_PIE] = __('Pie');
 	html_print_select ($stackeds, 'stacked', $stacked , '', '', -1, false, false);
 	echo "</td>";
 	
@@ -217,6 +235,7 @@ if ($view_graph) {
 	
 	ui_include_time_picker();
 	ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascript/i18n/");
+	ui_require_jquery_file("");
 	?>
 	<script language="javascript" type="text/javascript">
 	

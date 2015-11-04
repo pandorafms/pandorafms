@@ -141,4 +141,137 @@ function d3_sunburst_graph ($data, $width = 700, $height = 700, $return = false)
 	return $output;
 }
 
+function d3_bullet_chart($chart_data, $width, $height, $color, $legend,
+				$homeurl, $unit, $font, $font_size) {
+					
+					
+	global $config;
+	$output = '';
+	$output .= include_javascript_d3(true);
+	
+	$output .= 
+		'<div id="bullet_graph" style="overflow: hidden;"></div>
+		<style>
+			
+			#bullet_graph {
+			   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			  margin: auto;
+			  padding-top: 40px;
+			  position: relative;
+			  width: 100%;
+			}
+			
+			.bullet { font: 7px sans-serif; }
+			.bullet .marker.s0 { stroke: #FC4444; stroke-width: 2px; }
+			.bullet .marker.s1 { stroke: #FAD403; stroke-width: 2px; }
+			.bullet .marker.s2 { stroke: steelblue; stroke-width: 2px; }
+			.bullet .tick line { stroke: #666; stroke-width: .5px; }
+			.bullet .range.s0 { fill: #ddd; }
+			.bullet .range.s1 { fill: #ddd; }
+			.bullet .range.s2 { fill: #ccc; }
+			.bullet .measure.s0 { fill: steelblue; }
+			.bullet .measure.s1 { fill: steelblue; }
+			.bullet .title { font-size: 7pt; font-weight: bold; text-align:left; }
+			.bullet .subtitle { fill: #999; font-size: 7pt;}
+			.bullet g text { font-size: 7pt;}
+
+		</style>
+		<script src="'. $config['homeurl'] . 'include/graphs/bullet.js"></script>
+		<script language="javascript" type="text/javascript">
+		
+		var margin = {top: 5, right: 40, bottom: 20, left: 120};
+		
+		width = ('.$width.'+10);
+		height = '.$height.'- margin.top - margin.bottom;
+		
+		var chart = d3.bullet()
+			.width(width)
+			.height(height)
+			.orient("left");
+		';
+	
+	$temp = array();
+	foreach ($chart_data as $data) {
+		if (isset ($data["label"]) ) {
+			$name = io_safe_output($data["label"]);
+		}
+		else
+			$name = io_safe_output($data["nombre"]);
+		$name = ui_print_truncate_text($name, 15, false, true, false, '...', false);
+		$marker = "";
+		if ($data['value'] == 0) {
+			$marker = ", 0";
+		}
+		$temp[] = '{"title":"'.$name.'","subtitle":"'.$data["unit"].'",
+				"ranges":['.((float)$data['max']) .'],"measures":[' .$data['value']. '],
+					"markers":[' .$data['min_warning'].','. $data['min_critical'].$marker.']}';
+	}
+	$output .= 'var data = ['
+	. implode(",",$temp) . '];
+	';
+	$output .=	'
+		
+		var svg = d3.select("#bullet_graph").selectAll("svg")
+			  .data(data)
+			.enter().append("svg")
+			  .attr("class", "bullet")
+			  .attr("width", "100%")
+			  .attr("height", height+ margin.top + margin.bottom)
+			.append("g")
+			  .attr("transform", "translate(" + (margin.left) + "," + margin.top + ")")
+			  .call(chart);
+			 
+		
+		 var title = svg.append("g")
+			.style("text-anchor", "end")
+			  .attr("transform", "translate(-20," + height  + ")");
+
+		 title.append("text")
+			  .attr("class", "title")
+			  .text(function(d) { return d.title; });
+
+		 title.append("text")
+			  .attr("class", "subtitle")
+			  .attr("dy", "1em")
+			  .text(function(d) { return d.subtitle; });
+			  
+			$(".tick>text").each(function() {
+				
+				label = $(this).text().replace(/,/g,"");
+				label = parseFloat(label);
+				text = label.toLocaleString();
+				if ( label >= 1000000)
+						text = text.substring(0,3) + "M";
+				else if (label >= 100000)
+						text = text.substring(0,3) + "K";
+					else if (label >= 1000)
+							text = text.substring(0,2) + "K";
+				
+				$(this).text(text);
+			});
+		</script>';
+	
+	return $output;
+	
+}
+
+function d3_gauges($chart_data, $width, $height, $color, $legend,
+				$homeurl, $unit, $font, $font_size) {
+	global $config;
+
+	if (is_array($chart_data))
+		$data = json_encode($chart_data);
+	$output = include_javascript_d3(true);
+	
+	foreach ($chart_data as $module) {
+		$output .= "<span id='".str_replace('&#x20;','_',$module['nombre'])."' style='overflow: hidden; margin-left: 10px;'></span>";
+	}
+	
+	$output .= "<script language=\"javascript\" type=\"text/javascript\">
+					var data = $data;
+					createGauges(data, '$width', '$height','$font_size');
+				</script>";
+
+	return $output;
+}
 ?>

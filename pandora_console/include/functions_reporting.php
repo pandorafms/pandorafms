@@ -6960,6 +6960,7 @@ function reporting_get_agentmodule_data_max ($id_agent_module, $period=0, $date 
 			' AND utimestamp > ' . (int) $datelimit .
 			' AND utimestamp < ' . (int) $date .
 		' ORDER BY utimestamp ASC', $search_in_history_db);
+	
 	if ($interval_data === false) $interval_data = array ();
 	
 	// Uncompressed module data

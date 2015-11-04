@@ -94,7 +94,7 @@ function flot_area_stacked_graph($chart_data, $width, $height, $color,
 	$serie_types = array(), $chart_extra_data = array(),
 	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
 	$force_integer = false, $series_suffix_str = '', $menu = true,
-	$background_color = 'white') {
+	$background_color = 'white', $dashboard = false) {
 	
 	global $config;
 	
@@ -102,7 +102,7 @@ function flot_area_stacked_graph($chart_data, $width, $height, $color,
 		$legend, $long_index, $homeurl, $unit, 'area_stacked',
 		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
 		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
-		$menu, $background_color);
+		$menu, $background_color, $dashboard);
 }
 
 function flot_area_simple_graph($chart_data, $width, $height, $color,
@@ -110,7 +110,7 @@ function flot_area_simple_graph($chart_data, $width, $height, $color,
 	$serie_types = array(), $chart_extra_data = array(),
 	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
 	$force_integer = false, $series_suffix_str = '', $menu = true,
-	$background_color = 'white') {
+	$background_color = 'white', $dashboard = false) {
 	
 	global $config;
 	
@@ -118,7 +118,7 @@ function flot_area_simple_graph($chart_data, $width, $height, $color,
 		$legend, $long_index, $homeurl, $unit, 'area_simple',
 		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
 		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
-		$menu, $background_color);
+		$menu, $background_color, $dashboard);
 }
 
 function flot_line_stacked_graph($chart_data, $width, $height, $color,
@@ -126,7 +126,7 @@ function flot_line_stacked_graph($chart_data, $width, $height, $color,
 	$serie_types = array(), $chart_extra_data = array(),
 	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
 	$force_integer = false, $series_suffix_str = '', $menu = true,
-	$background_color = 'white') {
+	$background_color = 'white', $dashboard = false) {
 	
 	global $config;
 	
@@ -134,7 +134,7 @@ function flot_line_stacked_graph($chart_data, $width, $height, $color,
 		$legend, $long_index, $homeurl, $unit, 'line_stacked',
 		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
 		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
-		$menu, $background_color);
+		$menu, $background_color, $dashboard);
 }
 
 function flot_line_simple_graph($chart_data, $width, $height, $color,
@@ -142,7 +142,7 @@ function flot_line_simple_graph($chart_data, $width, $height, $color,
 	$serie_types = array(), $chart_extra_data = array(),
 	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
 	$force_integer = false, $series_suffix_str = '', $menu = true,
-	$background_color = 'white') {
+	$background_color = 'white', $dashboard = false) {
 	
 	global $config;
 	
@@ -150,14 +150,14 @@ function flot_line_simple_graph($chart_data, $width, $height, $color,
 		$legend, $long_index, $homeurl, $unit, 'line_simple',
 		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
 		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
-		$menu, $background_color);
+		$menu, $background_color, $dashboard);
 }
 
 function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	$long_index, $homeurl, $unit, $type, $water_mark, $serie_types,
 	$chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key,
 	$force_integer, $series_suffix_str = '', $menu = true,
-	$background_color = 'white') {
+	$background_color = 'white', $dashboard = false) {
 	
 	global $config;
 	
@@ -200,28 +200,30 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		if ($threshold) {
 			$nbuttons++;
 		}
-		
+		$return .= html_print_input_hidden ('lineWidhtGraph', $config['custom_graph_width'],true);
 		$menu_width = 25 * $nbuttons + 15;
-		$return .= "<div id='menu_$graph_id' class='menu_graph' " .
-			"style='display: none; " .
-				"text-align: center; " .
-				"width: " . $menu_width . "px; ".
-				"border: solid 1px #666; ".
-				"border-bottom: 0px; " .
-				"padding: 4px 4px 4px 4px;margin-bottom:5px;'>
-			<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
-		if ($threshold) {
-			$return .= " <a href='javascript:'><img id='menu_threshold_$graph_id' src='".$homeurl."images/chart_curve_threshold.png' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";
+		if ( $dashboard == false) {
+			$return .= "<div id='menu_$graph_id' class='menu_graph' " .
+				"style='display: none; " .
+					"text-align: center; " .
+					"width: " . $menu_width . "px; ".
+					"border: solid 1px #666; ".
+					"border-bottom: 0px; " .
+					"padding: 4px 4px 4px 4px;margin-bottom:5px;'>
+				<a href='javascript:'><img id='menu_cancelzoom_$graph_id' src='".$homeurl."images/zoom_cross_grey.disabled.png' alt='".__('Cancel zoom')."' title='".__('Cancel zoom')."'></a>";
+			if ($threshold) {
+				$return .= " <a href='javascript:'><img id='menu_threshold_$graph_id' src='".$homeurl."images/chart_curve_threshold.png' alt='".__('Warning and Critical thresholds')."' title='".__('Warning and Critical thresholds')."'></a>";
+			}
+			$return .= " <a href='javascript:'>
+				<img id='menu_overview_$graph_id' class='menu_overview' src='" . $homeurl . "images/chart_curve_overview.png' alt='" . __('Overview graph') . "' title='".__('Overview graph')."'></a>";
+			
+			// Export buttons
+			$return .= " <a href='javascript:'><img id='menu_export_csv_$graph_id' src='".$homeurl."images/csv_grey.png' alt='".__('Export to CSV')."' title='".__('Export to CSV')."'></a>";
+			// Button disabled. This feature works, but seems that is not useful enough to the final users.
+			//$return .= " <a href='javascript:'><img id='menu_export_json_$graph_id' src='".$homeurl."images/json.png' alt='".__('Export to JSON')."' title='".__('Export to JSON')."'></a>";
+			
+			$return .= "</div>";
 		}
-		$return .= " <a href='javascript:'>
-			<img id='menu_overview_$graph_id' class='menu_overview' src='" . $homeurl . "images/chart_curve_overview.png' alt='" . __('Overview graph') . "' title='".__('Overview graph')."'></a>";
-		
-		// Export buttons
-		$return .= " <a href='javascript:'><img id='menu_export_csv_$graph_id' src='".$homeurl."images/csv_grey.png' alt='".__('Export to CSV')."' title='".__('Export to CSV')."'></a>";
-		// Button disabled. This feature works, but seems that is not useful enough to the final users.
-		//$return .= " <a href='javascript:'><img id='menu_export_json_$graph_id' src='".$homeurl."images/json.png' alt='".__('Export to JSON')."' title='".__('Export to JSON')."'></a>";
-		
-		$return .= "</div>";
 	}
 	$return .= "<div id='timestamp_$graph_id' class='timestamp_graph' style='font-size:".$font_size."pt;display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px; z-index:1000;'></div>";
 	$return .= "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
@@ -489,6 +491,64 @@ function flot_pie_chart ($values, $labels, $width, $height, $water_mark,
 	return $return;
 }
 
+// Prints a FLOT pie chart
+function flot_custom_pie_chart ($flash_charts, $graph_values,
+		$width, $height, $colors, $module_name_list, $long_index,
+		$no_data,$xaxisname, $yaxisname, $water_mark, $fontpath, $font_size,
+		$unit, $ttl, $homeurl, $background_color, $legend_position) {
+	
+	
+	///TODO
+	include_javascript_dependencies_flot_graph();
+	
+	$total_modules = $graph_values['total_modules'];
+	unset($graph_values['total_modules']);
+	
+	foreach ($graph_values as $label => $value) {
+		if ($value['value'] > 1000000)
+			$legendvalue = sprintf("%sM", number_format($value['value'] / 1000000, 2));
+		else if ($value['value'] > 1000)
+			$legendvalue = sprintf("%sK", number_format($value['value'] / 1000, 2));
+		$values[] = $value['value'];
+		$legend[] = $label .": " . $legendvalue . " " .$value['unit'];
+		$labels[] = $label;
+	}
+	
+	$graph_id = uniqid('graph_');
+	
+	$return = "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px;'></div>";
+	
+	if ($water_mark != '') {
+		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='".$water_mark["url"]."'></div>";
+		$water_mark = 'true';
+	}
+	else {
+		$water_mark = 'false';
+	}
+	
+	$separator = ';;::;;';
+	
+	$labels = implode($separator, $labels);
+	$legend = implode($separator, $legend);
+	$values = implode($separator, $values);
+	if (!empty($colors)) {
+		foreach ($colors as $color) {
+			$temp_colors[] = $color['color'];
+		}
+	}
+	$colors = implode($separator, $temp_colors);
+	
+	$return .= "<script type='text/javascript'>";
+	
+	$return .= "pandoraFlotPieCustom('$graph_id', '$values', '$labels',
+			'$width', $font_size, $water_mark,
+			'$separator', '$legend_position', '$height', '$colors','$legend')";
+	
+	$return .= "</script>";
+	
+	return $return;
+}
+
 // Returns a 3D column chart
 function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 	global $config;
@@ -505,7 +565,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 	$graph_id2 = uniqid('graph_');
 	
 	// Set some containers to legend, graph, timestamp tooltip, etc.
-	$return .= "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px;'></div>";
+	$return .= "<div id='$graph_id' class='graph' style='width: ".$width."px; height: ".$height."px; padding-left: 20px;'></div>";
 	$return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 	
 	if ($water_mark != '') {
@@ -596,7 +656,7 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	}
 	
 	// Set some containers to legend, graph, timestamp tooltip, etc.
-	$return .= "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."; height: ".$height."px;'></div>";
+	$return .= "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."; height: ".$height."px; padding-left: 20px;'></div>";
 	$return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 	
 	if ($water_mark != '') {
@@ -635,23 +695,11 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 		$i--;
 		
 		foreach ($values as $key => $value) {
-			$jsvar = "data_".$graph_id."_".$key;
+			$jsvar = "data_" . $graph_id . "_" . $key;
 			
-			if ($multicolor) {
-				for ($j = count($graph_data) - 1; $j>=0; $j--) {
-					if ($j == $i) {
-						$data[$jsvar.$i][$j] = $value;
-					}
-					else {
-						$data[$jsvar.$i][$j] = 0;
-					}
-				}
-			}
-			else {
-				$data[$jsvar][] = $value;
-			}
+			$data[$jsvar][] = $value;
 			
-			//$return .= "<div id='value_".$i."_$graph_id' class='values_$graph_id' style='color: #000; position:absolute;'>$value</div>";
+			
 			if ($value > $max) {
 				$max = $value;
 			}

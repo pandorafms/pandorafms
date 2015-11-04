@@ -163,7 +163,8 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 	$stacked = null, $return = false, $date = 0, $only_image = false,
 	$background_color = 'white', $modules_param = array(), $homeurl = '',
 	$name_list = array(), $unit_list = array(), $show_last = true,
-	$show_max = true, $show_min = true, $show_avg = true, $ttl = 1) {
+	$show_max = true, $show_min = true, $show_avg = true, $ttl = 1,
+	$dashboard = false) {
 	
 	global $config;
 	
@@ -193,9 +194,11 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		
 		$modules = array ();
 		$weights = array ();
+		$labels = array ();
 		foreach ($sources as $source) {
 			array_push ($modules, $source['id_agent_module']);
 			array_push ($weights, $source['weight']);
+			$labels[$source['id_agent_module']] = $source['label'];
 		}
 	}
 	
@@ -238,7 +241,9 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		$show_last,
 		$show_max,
 		$show_min,
-		$show_avg);
+		$show_avg,
+		$labels,
+		$dashboard);
 	
 	if ($return)
 		return $output;

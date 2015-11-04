@@ -50,6 +50,7 @@ if ($editGraph) {
 	$module_array = array();
 	$weight_array = array();
 	$agent_array = array();
+	$label_array = array();
 	
 	if($graphRows === false) {
 			$graphRows = array();
@@ -59,6 +60,7 @@ if ($editGraph) {
 		$idgs_array[] = $graphRow['id_gs'];
 		$module_array[] = $graphRow['id_agent_module'];
 		$weight_array[] = $graphRow['weight'];
+		$label_array[] = $graphRow['label'];
 		$agent_array[] = $graphRow['agent_name'];
 	}
 	
@@ -78,6 +80,7 @@ if (count($module_array) > 0) {
 	echo "<tr>
 	<th>".__('Agent')."</th>
 	<th>".__('Module')."</th>
+	<th>".__('Label')."</th>
 	<th>".__('Weight')."</th>
 	<th>".__('Delete')."</th>";
 	$color = 0;
@@ -95,6 +98,18 @@ if (count($module_array) > 0) {
 		echo "<tr><td class='$tdcolor'>" . $agent_array[$a] . "</td>";
 		echo "<td class='$tdcolor'>";
 		echo modules_get_agentmodule_name ($module_array[$a])."</td>";
+		
+		echo "<td class='$tdcolor' align=''>";
+		echo "<table><tr>";
+
+		echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&tab=graph_editor&change_label=1&id=". $id_graph ."&graph=" . $idgs_array[$a] . "'>";
+		html_print_input_text ('label', $label_array[$a], '', 20, 10, false, false);
+		html_print_submit_button ('Ok', 'btn', false, '', false);
+		echo "</form>";
+		
+		echo "</tr></table>";
+		echo "</td>";
+		
 		echo "<td class='$tdcolor' align=''>";
 		echo "<table><tr>";
 

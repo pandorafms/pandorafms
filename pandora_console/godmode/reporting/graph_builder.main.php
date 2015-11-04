@@ -113,13 +113,18 @@ echo "<td class='datos2' colspan=3><textarea name='description' style='height:45
 if ($edit_graph) {
 	echo $graphInTgraph['description'];
 }
+
 echo "</textarea>";
 echo "</td></tr>";
+if ($stacked == CUSTOM_GRAPH_GAUGE)
+	$hidden = ' style="display:none;" ';
+else
+	$hidden = '';
 echo "<tr>";
-echo "<td class='datos'>";
+echo "<td class='datos stacked' $hidden>";
 echo "<b>".__('Width')."</b></td>";
 echo "<td class='datos'>";
-echo "<input type='text' name='width' value='$width' size=6></td>";
+echo "<input type='text' name='width' value='$width' $hidden size=6></td>";
 echo "<td class='datos2'>";
 echo "<b>".__('Height')."</b></td>";
 echo "<td class='datos2'>";
@@ -131,7 +136,7 @@ echo "<b>".__('Period')."</b></td>";
 echo "<td class='datos'>";
 html_print_extended_select_for_time ('period', $period, '', '', '0', 10);
 echo "</td><td class='datos2'>";
-echo "<b>".__('Stacked')."</b></td>";
+echo "<b>".__('Type of graph')."</b></td>";
 echo "<td class='datos2'>";
 
 include_once($config["homedir"] . "/include/functions_graph.php");
@@ -140,7 +145,13 @@ $stackeds = array(
 	CUSTOM_GRAPH_AREA => __('Area'),
 	CUSTOM_GRAPH_STACKED_AREA => __('Stacked area'),
 	CUSTOM_GRAPH_LINE => __('Line'),
-	CUSTOM_GRAPH_STACKED_LINE => __('Stacked line'));
+	CUSTOM_GRAPH_STACKED_LINE => __('Stacked line'),
+	CUSTOM_GRAPH_BULLET_CHART => __('Bullet chart'),
+	CUSTOM_GRAPH_GAUGE => __('Gauge'),
+	CUSTOM_GRAPH_HBARS => __('Horizontal bars'),
+	CUSTOM_GRAPH_VBARS => __('Vertical bars'),
+	CUSTOM_GRAPH_PIE => __('Pie')
+	);
 html_print_select ($stackeds, 'stacked', $stacked);
 echo "</td>";
 
@@ -153,3 +164,20 @@ else {
 	echo "<div style='width:100%'><input style='float:right;' type=submit name='store' class='sub next' value='".__('Create')."'></div>";
 }
 echo "</form>";
+
+
+echo '<script type="text/javascript">
+	$("#stacked").change(function(){
+		console.log($(this).val());
+		if ( $(this).val() == '. CUSTOM_GRAPH_GAUGE .') {
+			$(".stacked").hide();
+			$("input[name=\'width\']").hide();
+		}
+		else {
+			$(".stacked").show();
+			$("input[name=\'width\']").show();
+		}
+	});
+
+</script>';
+?>

@@ -43,6 +43,7 @@ if (!empty($graph_type)) {
 	
 	include_once($homeurl . 'include/graphs/functions_gd.php');
 	include_once($homeurl . 'include/graphs/functions_utils.php');
+	include_once($homeurl . 'include/graphs/functions_d3.php');
 }
 
 // Clean the output buffer and turn off output buffering
@@ -212,7 +213,8 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 	$font_size = '', $unit = '', $ttl = 1, $series_type = array(),
 	$chart_extra_data = array(), $yellow_threshold = 0,
 	$red_threshold = 0, $adapt_key = '', $force_integer = false,
-	$series_suffix_str = '', $menu = true, $backgroundColor = 'white') {
+	$series_suffix_str = '', $menu = true, $backgroundColor = 'white',
+	$dashboard = false) {
 	
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
@@ -250,7 +252,8 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 			$force_integer,
 			$series_suffix_str,
 			$menu,
-			$backgroundColor);
+			$backgroundColor,
+			$dashboard);
 	}
 	else {
 		$graph = array();
@@ -288,7 +291,8 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 function stacked_area_graph($flash_chart, $chart_data, $width, $height,
 	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
-	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white') {
+	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
+	$dashboard = false) {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
@@ -315,7 +319,8 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height,
 			false,
 			'',
 			true,
-			$backgroundColor);
+			$backgroundColor,
+			$dashboard);
 	}
 	else {
 		//Stack the data
@@ -343,7 +348,8 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height,
 function stacked_line_graph($flash_chart, $chart_data, $width, $height,
 	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
-	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white') {
+	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
+	$dashboard = false) {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
@@ -371,7 +377,8 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height,
 			false,
 			'',
 			true,
-			$background_color);
+			$background_color,
+			$dashboard);
 	}
 	else {
 		//Stack the data
@@ -396,10 +403,63 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height,
 	}
 }
 
+function stacked_bullet_chart($flash_chart, $chart_data, $width, $height,
+	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
+	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
+	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white') {
+	
+	include_once('functions_d3.php');
+	
+	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+	
+	if (empty($chart_data)) {
+		return '<img src="' . $no_data_image . '" />';
+	}
+	
+	return d3_bullet_chart(
+			$chart_data,
+			$width,
+			$height,
+			$color,
+			$legend,
+			$homeurl,
+			$unit,
+			$font,
+			$font_size
+			);
+}
+
+function stacked_gauge($flash_chart, $chart_data, $width, $height,
+	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
+	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
+	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white') {
+	
+	include_once('functions_d3.php');
+	
+	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+	
+	if (empty($chart_data)) {
+		return '<img src="' . $no_data_image . '" />';
+	}
+	
+	return d3_gauges(
+			$chart_data,
+			$width,
+			$height,
+			$color,
+			$legend,
+			$homeurl,
+			$unit,
+			$font,
+			$font_size + 2
+			);
+}
+
 function line_graph($flash_chart, $chart_data, $width, $height, $color,
 	$legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
-	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white') {
+	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
+	$dashboard = false) {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
@@ -426,7 +486,8 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 			false,
 			'',
 			true,
-			$backgroundColor);
+			$backgroundColor,
+			$dashboard);
 	}
 	else {
 		$graph = array();

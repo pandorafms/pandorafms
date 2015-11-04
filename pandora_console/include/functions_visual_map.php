@@ -957,20 +957,21 @@ function visual_map_print_item($mode = "read", $layoutData,
 			$unit_text = trim(io_safe_output($unit_text));
 			
 			
-			$value = db_get_value ('datos',
-				'tagente_estado', 'id_agente_modulo', $layoutData['id_agente_modulo']);
+			//$value = db_get_value ('datos',
+				//'tagente_estado', 'id_agente_modulo', $layoutData['id_agente_modulo']);
+			$value = visual_map_get_simple_value($type,
+					$layoutData['id_agente_modulo'], $period);
 			
 			// If the value is a string, dont format it
 			if (!is_string($value)) {
 				$value = format_for_graph($value, 2);
 			}
-			
+			/*
 			if (!empty($unit_text))
 				$value .= " " . $unit_text;
-			
-			if (strstr($io_safe_output_text, "(_VALUE_)") === false) {
-				echo ' <span id="simplevalue_' . $id . '" style="font-weight:bold;">' . $value . '</span>';
-			}
+			*/
+			echo ' <span id="simplevalue_' . $id . '" style="font-weight:bold;">' . $value . '</span>';
+
 			
 			//Restore db connection
 			if ($layoutData['id_metaconsole'] != 0) {

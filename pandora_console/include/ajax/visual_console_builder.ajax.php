@@ -585,6 +585,7 @@ switch ($action) {
 				
 				$result = db_process_sql_update('tlayout_data', $values,
 					array('id' => $id_element));
+				
 				echo (int)$result;
 				break;
 		}

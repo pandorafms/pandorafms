@@ -934,6 +934,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_modulestatus_ => undef,
 				_moduletags_ => undef,
 				_id_agent_ => (defined ($module)) ? $module->{'id_agente'} : '', 
+				_id_group_ => (defined ($group)) ? $group->{'id_grupo'} : '',
 				_id_alert_ => (defined ($alert->{'id_template_module'})) ? $alert->{'id_template_module'} : '',
 				_interval_ => (defined ($module) && $module->{'module_interval'} != 0) ? $module->{'module_interval'} : (defined ($agent)) ? $agent->{'intervalo'} : '',
 				_target_ip_ => (defined ($module)) ? $module->{'ip_target'} : '', 

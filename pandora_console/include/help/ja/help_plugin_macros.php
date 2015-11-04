@@ -19,6 +19,7 @@
 <li>_moduledescription_ : モジュールの説明。</li>
 <li>_modulestatus_ : モジュールの状態。</li>
 <li>_id_agent_ : エージェントのID / Webコンソールへのリンクを生成するのに便利です。</li>
+<li>_id_group_ : エージェントグループのID</li>
 <li>_policy_ : モジュールが属するポリシー名。(存在する場合)</li>
 <li>_interval_ : モジュールの実行間隔。</li>
 

@@ -37,6 +37,7 @@
 <li>_event_text_severity_ : (イベントアラートのみ) イベント(アラートの発生元)のテキストでの重要度 (Maintenance, Informational, Normal Minor, Warning, Major, Critical)</li>
 <li>_event_id_ : (イベントアラートのみ) アラート発生元のイベントID</li>
 <li>_id_agent_ : エージェントのID / Webコンソールへのリンクを生成するのに便利です</li>
+<li>_id_group_ : エージェントグループのID</li>
 <li>_id_alert_ : アラートの(ユニークな)ID / 他のソフトウエアパッケージとの連携に利用できます</li>
 <li>_policy_ : モジュールが属するポリシー名 (存在する場合)</li>
 <li>_interval_ : モジュールの実行間隔</li>

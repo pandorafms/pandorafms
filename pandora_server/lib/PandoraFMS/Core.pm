@@ -2933,11 +2933,18 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 
 	# Get all SNMP alerts
 	my @snmp_alerts = get_db_rows ($dbh, 'SELECT * FROM talert_snmp ORDER BY position ASC');
+	my $fired_position;
 
 	# Find those that apply to the given SNMP trap
 	foreach my $alert (@snmp_alerts) {
 
 		my $alert_data = '';
+		
+		# Check if one alert has been thrown. If there is another with same position, tries to throw it. 
+		if (defined($fired_position)) {
+			last if ($fired_position != $alert->{'position'});
+		}
+		
 		my ($times_fired, $internal_counter, $alert_type) =
 			($alert->{'times_fired'}, $alert->{'internal_counter'}, $alert->{'alert_type'});
 
@@ -3214,8 +3221,8 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 			}
 		}
 		
-		# Do not execute more than one alert per trap
-		last;
+		$fired_position = $alert->{'position'};
+
 	}
 }
 

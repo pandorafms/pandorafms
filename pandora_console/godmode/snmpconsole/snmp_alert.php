@@ -857,7 +857,10 @@ if ($create_alert || $update_alert) {
 			break;
 	}
 	echo '</td></tr>';
-	echo '<tr><td class="datos">' . __('Position') . '</td><td class="datos">';
+	echo '<tr><td class="datos">' . __('Position') . 
+			ui_print_help_icon ("snmp_alert_position", true) .
+			'</td><td class="datos">';
+	
 	html_print_input_text ("position", $position, '', 3);
 	echo '</td></tr>';
 	echo '</table>';

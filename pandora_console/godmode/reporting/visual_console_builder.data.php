@@ -51,11 +51,11 @@ $pure = get_parameter('pure', 0);
 switch ($action) {
 	case 'new':
 		if (!defined('METACONSOLE')) {
-			echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "'>";
+			echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "' enctype='multipart/form-data'>";
 			html_print_input_hidden('action', 'save');
 		}
 		else {
-			echo '<form action="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '" method="post">';
+			echo '<form action="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '" method="post"  enctype="multipart/form-data">';
 			html_print_input_hidden('action2', 'save');
 		}
 		
@@ -63,22 +63,22 @@ switch ($action) {
 	case 'update':
 	case 'save':
 		if (!defined('METACONSOLE')) {
-			echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "'>";
+			echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "' enctype='multipart/form-data'>";
 			html_print_input_hidden('action', 'update');
 		}
 		else {
 			//echo '<form action="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '" method="post">';
-			echo "<form action='index.php?sec=screen&sec2=screens/screens&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "&id_visualmap=" . $idVisualConsole . "&action=visualmap' method='post' >";
+			echo "<form action='index.php?sec=screen&sec2=screens/screens&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "&id_visualmap=" . $idVisualConsole . "&action=visualmap' method='post' enctype='multipart/form-data'>";
 			html_print_input_hidden('action2', 'update');
 		}
 		break;
 	case 'edit':
 		if (!defined('METACONSOLE')) {
-			echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "'>";
+			echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "' enctype='multipart/form-data'>";
 			html_print_input_hidden('action', 'update');
 		}
 		else {
-			echo "<form action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "&action=visualmap' method='post' >";
+			echo "<form action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "&action=visualmap' method='post' enctype='multipart/form-data' >";
 			html_print_input_hidden('action2', 'update');
 		}
 		break;
@@ -121,6 +121,8 @@ $backgrounds_list = array_merge($backgrounds_list,
 $table->data[2][0] = __('Background');
 $table->data[2][1] = html_print_select($backgrounds_list, 'background',
 	$background, '', '', 0, true);
+$table->data[3][0] = __('Background image');
+$table->data[3][1] = html_print_input_file('background_image',true);
 if ($action == 'new') {
 	$textButtonSubmit = __('Save');
 	$classButtonSubmit = 'sub wand';

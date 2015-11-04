@@ -129,8 +129,71 @@ switch ($activeTab) {
 						'name' => $visualConsoleName,
 						'id_group' => $idGroup, 
 						'background' => $background
-					);
+				);
 				
+				$error = $_FILES['background_image']['error'];
+				$upload_file = true;
+				$uploadOK = true;
+				switch ($error) {
+					case UPLOAD_ERR_OK:
+						$tmpName = $_FILES['background_image']['tmp_name'];
+						$pathname = $config['homedir'] . '/images/console/background/';
+						$nameImage = str_replace(' ','_',$_FILES["background_image"]["name"]);
+						$target_file = $pathname . basename($nameImage);
+						$imageFileType = strtolower( pathinfo($target_file,PATHINFO_EXTENSION));
+						
+						$check = getimagesize($_FILES["background_image"]["tmp_name"]);
+						if($check !== false) {
+							$uploadOK = 1;
+						} else {
+							$uploadOK = false;
+							$error_message = __("This file isn't image");
+							$statusProcessInDB = array('flag' => false, 'message' => ui_print_error_message(__("This file isn't image."), '', true));
+						}
+						if (file_exists($target_file)) {
+							$uploadOK = false;
+							$error_message = __("File already are exists.");
+							$statusProcessInDB = array('flag' => false, 'message' => ui_print_error_message(__('File already are exists.'), '', true));
+						}
+						
+						if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+						&& $imageFileType != "gif" ) {
+							$uploadOK = false;
+							$error_message = __("The file have not image extension.");
+							$statusProcessInDB = array('flag' => false, 'message' => ui_print_error_message(__('The file have not image extension.'), '', true));
+						}
+						
+						if ($uploadOK == 1) {
+							if (move_uploaded_file($_FILES["background_image"]["tmp_name"], $target_file)) {
+								$background = $_FILES["background_image"]["name"];
+								$values['background'] = $background;
+								$error2 = chmod($target_file, 0644);
+								$uploadOK = $error2;
+							} else {
+								$uploadOK = false;
+								$error_message = __("Problems with move file to target.");
+								$statusProcessInDB = array('flag' => false, 'message' => ui_print_error_message(__('Problems with move file to target.'), '', true));
+								
+							}
+						}
+						break;
+					case UPLOAD_ERR_INI_SIZE:
+						$uploadOK = false;
+						$statusProcessInDB = array('flag' => false, 'message' => ui_print_error_message(__('Problems with move file to target.'), '', true));
+					case UPLOAD_ERR_PARTIAL:
+						$uploadOK = false;
+						$statusProcessInDB = array('flag' => false, 'message' => ui_print_error_message(__('Problems with move file to target.'), '', true));
+						break;
+					case UPLOAD_ERR_NO_FILE:
+						$upload_file = false;
+						break;
+				}
+				
+				if ( $upload_file && !$uploadOK){
+					db_pandora_audit( "Visual console builder", $error_message);
+					break;
+				}
+					
 				// If the background is changed the size is reseted
 				$background_now = $visualConsole['background'];
 				if ($background_now != $background && $background) {

@@ -18,6 +18,7 @@ The following macros are available:
 <li>_moduledescription_ : Description of the module.</li>
 <li>_modulestatus_ : Status of the module.</li>
 <li>_id_agent_ : Id of agent, useful to build direct URL to redirect to a Pandora FMS console webpage.</li>
+<li>_id_group_ : Id of agent group.</li>
 <li>_policy_ : Name of the policy the module belongs to (if applies).</li>
 <li>_interval_ : Execution interval of the module. </li>
 

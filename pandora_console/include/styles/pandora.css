@@ -2679,6 +2679,7 @@ div#agent_wizard_subtabs {
 
 .parent_graph {
 	position: relative;
+	margin: 0 auto;
 }
 
 .menu_graph, .timestamp_graph {

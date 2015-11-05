@@ -638,6 +638,10 @@ sub pandora_load_config ($) {
 	$conf->{'dbport'} = '3306' unless defined ($conf->{'dbport'});
 	$conf->{'claim_back_snmp_modules'} = '1' unless defined ($conf->{'claim_back_snmp_modules'});
 
+	// workaround for name unconsistency (corresponding entry at pandora_server.conf is 'errorlog_file')
+        $conf->{'errorlogfile'} = $conf->{'errorlog_file'};
+        $conf->{'errorlogfile'} = "/var/log/pandora_server.error" unless defined ($conf->{'errorlogfile'});
+
 	# Read additional tokens from the DB
 	my $dbh = db_connect ($conf->{'dbengine'}, $conf->{'dbname'}, $conf->{'dbhost'}, $conf->{'dbport'}, $conf->{'dbuser'}, $conf->{'dbpass'});
 

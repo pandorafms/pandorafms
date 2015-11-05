@@ -64,6 +64,7 @@ CREATE TABLE IF NOT EXISTS `tmodule_relationship` (
 	`module_a` int(10) unsigned NOT NULL,
 	`module_b` int(10) unsigned NOT NULL,
 	`disable_update` tinyint(1) unsigned NOT NULL default '0',
+	`id_rt` int(10) unsigned NOT NULL DEFAULT 0,
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`module_a`) REFERENCES tagente_modulo(`id_agente_modulo`) ON DELETE CASCADE,
 	FOREIGN KEY (`module_b`) REFERENCES tagente_modulo(`id_agente_modulo`) ON DELETE CASCADE

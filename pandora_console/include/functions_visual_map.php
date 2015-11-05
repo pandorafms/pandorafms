@@ -939,7 +939,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 		case SIMPLE_VALUE_MIN:
 		case SIMPLE_VALUE_AVG:
 			$io_safe_output_text = io_safe_output($text);
-			echo $io_safe_output_text;
 			
 			//Metaconsole db connection
 			if ($layoutData['id_metaconsole'] != 0) {
@@ -966,12 +965,11 @@ function visual_map_print_item($mode = "read", $layoutData,
 			if (!is_string($value)) {
 				$value = format_for_graph($value, 2);
 			}
-			/*
-			if (!empty($unit_text))
-				$value .= " " . $unit_text;
-			*/
-			echo ' <span id="simplevalue_' . $id . '" style="font-weight:bold;">' . $value . '</span>';
-
+			
+			$io_safe_output_text = str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
+			
+			echo $io_safe_output_text;
+			
 			
 			//Restore db connection
 			if ($layoutData['id_metaconsole'] != 0) {

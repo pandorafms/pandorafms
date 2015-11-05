@@ -216,8 +216,8 @@ function update_button_palette_callback() {
 			break;
 		case 'simple_value':
 			$("#text_" + idItem).html(values['label']);
-			$("#simplevalue_" + idItem)
-				.html($('<img></img>').attr('src', "images/spinner.gif"));
+			//$("#simplevalue_" + idItem)
+				//.html($('<img></img>').attr('src', "images/spinner.gif"));
 			setModuleValue(idItem,values['process_simple_value'], values['period']);
 			break;
 		case 'label':
@@ -1303,7 +1303,9 @@ function setModuleValue(id_data, process_simple_value, period) {
 		dataType: 'json',
 		success: function (data)
 		{
-			$("#simplevalue_" + id_data).text(data.value);
+			text_value = $("#text_" + idItem).html();
+			text_value = text_value.replace(/_VALUE_/gi,data.value);
+			$("#text_" + id_data).html(text_value);
 		}
 	});
 }
@@ -1607,8 +1609,7 @@ function createItem(type, values, id_data) {
 			sizeStyle = '';
 			imageSize = '';
 			item = $('<div id="' + id_data + '" class="item simple_value" style="text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
-					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span> ' + '<span id="simplevalue_' + id_data + '"></span>'+
-				'</div>'
+					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span> ' + '</div>'
 			);
 			setModuleValue(id_data,values.process_simple_value,values.period);
 			break;
@@ -1806,12 +1807,13 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 		case 'icon':
 		case 'module_graph':
 
-			/*
-			if (type == 'module_graph') {
-				$("#image_" + idElement).attr("src", "images/spinner.gif");
-				setModuleGraph(idElement);
+			
+			if (type == 'simple_value') {
+				setModuleValue(idElement,
+					values.process_simple_value,
+						values.period);
 			}
-			*/
+			
 			
 			if ((typeof(values['mov_left']) != 'undefined') &&
 					(typeof(values['mov_top']) != 'undefined')) {
@@ -1850,7 +1852,7 @@ function updateDB_visual(type, idElement , values, event, top, left) {
 				}
 			});
 			
-			if (typeof(values['parent']) != 'undefined') {
+			if (typeof(values['parent']) != 'undefined' && values['parent'] > 0 ) {
 				if (!found) {
 					set_color_line_status(lines, line, idElement, values);
 				}

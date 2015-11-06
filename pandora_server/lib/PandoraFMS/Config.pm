@@ -43,7 +43,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "5.1SP3";
-my $pandora_build = "151106";
+my $pandora_build = "151107";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash

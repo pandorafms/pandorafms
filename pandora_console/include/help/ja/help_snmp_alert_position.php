@@ -1,11 +1,11 @@
 <?php
 /*
-* @package Include /help/en
+* @package Include /help/ja
 */
 ?>
 
-<h1>Alert SNMP position</h1>
+<h1>SNMP アラート順位</h1>
 
-<p>The alerts with a lower position are evaluated first. If several alerts match with a trap, all matched alerts with same position will be thrown. Although lower position alerts match with the trap, they will not be thrown.</p>
+<p>低順位のアラートが最初に評価されます。トラップに複数のアラートがマッチした場合、同順位のマッチした全アラートが発報されます。しかし、トラップにマッチした低順位のアラートは、発報されません。
 
-<p>As a general rule, you have to set more restrictive alerts with lower positions.</p>
+<p>一般的なルールとして、低順位でアラートを制限するように設定する必要があります。</p>

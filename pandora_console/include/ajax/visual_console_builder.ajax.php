@@ -787,8 +787,27 @@ switch ($action) {
 				break;
 			case 'module_graph':
 				$values['type'] = MODULE_GRAPH;
-				$values['height'] = $height_module_graph;
-				$values['width'] = $width_module_graph;
+				if ($values['id_custom_graph'] > 0 ) {
+					$values['height'] = $height_module_graph;
+					$values['width'] = $width_module_graph;
+					
+					$graph_conf = db_get_row('tgraph', 'id_graph', $values['id_custom_graph']);
+					$graph_stacked = $graph_conf['stacked'];
+					if ( $graph_stacked == CUSTOM_GRAPH_BULLET_CHART) {
+						$values['height'] = 50;
+					}
+					elseif ($graph_stacked == CUSTOM_GRAPH_GAUGE ){
+						if ( $height_module_graph < 150 )
+							$values['height'] = 150;
+						elseif( $height_module_graph >= 150 && $height_module_graph < 250 )
+								$values['height'] = $graph_height;
+							elseif( $height_module_graph >= 250 )
+								$values['height'] = 200;
+					}
+				} else {
+					$values['height'] = $height_module_graph;
+					$values['width'] = $width_module_graph;
+				}
 				$values['period'] = $period;
 				break;
 			case 'percentile_item':

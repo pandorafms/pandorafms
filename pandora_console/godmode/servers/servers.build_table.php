@@ -29,6 +29,7 @@ if (! check_acl ($config["id_user"], 0, "AW")) {
 }
 
 global $tiny;
+global $hidden_toggle;
 
 $servers = servers_get_info();
 if ($servers === false) {
@@ -185,7 +186,7 @@ if ($tiny) {
 	unset($table->head[8]);
 }
 if ($tiny) {
-	ui_toggle(html_print_table ($table,true), __('Tactical server information'));
+	ui_toggle(html_print_table ($table,true), __('Tactical server information'),false,$hidden_toggle);
 }
 else {
 	html_print_table ($table);

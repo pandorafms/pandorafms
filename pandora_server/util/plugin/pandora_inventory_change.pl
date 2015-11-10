@@ -110,18 +110,18 @@ sub load_config {
 		elsif ($parametro =~ m/^log_file\s(.*)/i) { 
 			$tbuf= clean_blank($1);	
 			if ($tbuf =~ m/^\.(.*)/){
-				$pa_config->{"logfile"} = $pa_config->{"basepath"}.$1;
+				$pa_config->{"log_file"} = $pa_config->{"basepath"}.$1;
 			} else {
-				$pa_config->{"logfile"} = $tbuf;
+				$pa_config->{"log_file"} = $tbuf;
 			}
 		}
 
 		elsif ($parametro =~ m/^errorlog_file\s(.*)/i) { 
 			$tbuf= clean_blank($1); 	
 			if ($tbuf =~ m/^\.(.*)/){
-				$pa_config->{"errorlogfile"} = $pa_config->{"basepath"}.$1;
+				$pa_config->{"errorlog_file"} = $pa_config->{"basepath"}.$1;
 			} else {
-				$pa_config->{"errorlogfile"} = $tbuf;
+				$pa_config->{"errorlog_file"} = $tbuf;
 			}
 		}
 

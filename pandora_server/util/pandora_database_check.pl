@@ -59,9 +59,8 @@ my $history_dbh = ($conf{'_history_db_enabled'} eq '1') ? db_connect ('mysql', $
 
 $conf{'activate_gis'}=0;
 $conf{'max_log_size'}=1000;
-$conf{'logfile'}="/dev/null";
+$conf{'log_file'}="/dev/null";
 $conf{'servername'}="performance";
-$conf{'servermode'}="";
 $conf{'event_auto_validation'}=1;
 
 pandora_speedtest_main (\%conf, $dbh, $history_dbh);

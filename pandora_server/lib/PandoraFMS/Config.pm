@@ -188,8 +188,8 @@ sub pandora_load_config {
 	$pa_config->{"incomingdir"} = "/var/spool/pandora/data_in";
 	$pa_config->{"server_threshold"} = 30;
 	$pa_config->{"alert_threshold"} = 60;
-	$pa_config->{"logfile"} = "/var/log/pandora_server.log";
-	$pa_config->{"errorlogfile"} = "/var/log/pandora_server.error";
+	$pa_config->{"log_file"} = "/var/log/pandora_server.log";
+	$pa_config->{"errorlog_file"} = "/var/log/pandora_server.error";
 	$pa_config->{"networktimeout"} = 5;	# By default, not in config file yet
 	$pa_config->{"pandora_master"} = 1;	# on by default
 	$pa_config->{"pandora_check"} = 0; 	# Deprecated since 2.0
@@ -205,7 +205,6 @@ sub pandora_load_config {
 	$pa_config->{"exportserver"} = 1; # default
 	$pa_config->{"inventoryserver"} = 1; # default
 	$pa_config->{"webserver"} = 1; # 3.0
-	$pa_config->{"servermode"} = "";
 	$pa_config->{'snmp_logfile'} = "/var/log/pandora_snmptrap.log";
 	$pa_config->{"network_threads"} = 3; # Fixed default
 	$pa_config->{"keepalive"} = 60; # 60 Seconds initially for server keepalive
@@ -462,18 +461,18 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^log_file\s(.*)/i) { 
 			$tbuf= clean_blank($1);	
 			if ($tbuf =~ m/^\.(.*)/){
-				$pa_config->{"logfile"} = $pa_config->{"basepath"}.$1;
+				$pa_config->{"log_file"} = $pa_config->{"basepath"}.$1;
 			} else {
-				$pa_config->{"logfile"} = $tbuf;
+				$pa_config->{"log_file"} = $tbuf;
 			}
 		}
 
 		elsif ($parametro =~ m/^errorlog_file\s(.*)/i) { 
 			$tbuf= clean_blank($1); 	
 			if ($tbuf =~ m/^\.(.*)/){
-				$pa_config->{"errorlogfile"} = $pa_config->{"basepath"}.$1;
+				$pa_config->{"errorlog_file"} = $pa_config->{"basepath"}.$1;
 			} else {
-				$pa_config->{"errorlogfile"} = $tbuf;
+				$pa_config->{"errorlog_file"} = $tbuf;
 			}
 		}
 
@@ -906,14 +905,14 @@ sub pandora_load_config {
 			print " [*] PID File is written at ".$pa_config->{'PID'}."\n";
 		}
 		print " [*] Server basepath is ".$pa_config->{'basepath'}."\n";
-		print " [*] Server logfile at ".$pa_config->{"logfile"}."\n";
-		print " [*] Server errorlogfile at ".$pa_config->{"errorlogfile"}."\n";
+		print " [*] Server logfile at ".$pa_config->{"log_file"}."\n";
+		print " [*] Server errorlogfile at ".$pa_config->{"errorlog_file"}."\n";
 		print " [*] Server incoming directory at ".$pa_config->{"incomingdir"}."\n";
 		print " [*] Server keepalive ".$pa_config->{"keepalive"}."\n";
 		print " [*] Server threshold ".$pa_config->{"server_threshold"}."\n";
 	}
  	# Check for valid token token values
- 	if (( $pa_config->{"dbuser"} eq "" ) || ( $pa_config->{"basepath"} eq "" ) || ( $pa_config->{"incomingdir"} eq "" ) || ( $pa_config->{"logfile"} eq "" ) || ( $pa_config->{"dbhost"} eq "") || ( $pa_config->{"pandora_master"} eq "") || ( $pa_config->{"dbpass"} eq "" ) ) {
+ 	if (( $pa_config->{"dbuser"} eq "" ) || ( $pa_config->{"basepath"} eq "" ) || ( $pa_config->{"incomingdir"} eq "" ) || ( $pa_config->{"log_file"} eq "" ) || ( $pa_config->{"dbhost"} eq "") || ( $pa_config->{"pandora_master"} eq "") || ( $pa_config->{"dbpass"} eq "" ) ) {
 		print " [ERROR] Bad Config values. Be sure that $archivo_cfg is a valid setup file. \n\n";
 		exit;
 	}
@@ -928,7 +927,7 @@ sub pandora_load_config {
 	}
 
 	logger ($pa_config, "Launching $pa_config->{'version'} $pa_config->{'build'}", 1);
-	my $config_options = "Logfile at ".$pa_config->{"logfile"}.", Basepath is ".$pa_config->{"basepath"}.", Checksum is ".$pa_config->{"pandora_check"}.", Master is ".$pa_config->{"pandora_master"}.", SNMP Console is ".$pa_config->{"snmpconsole"}.", Server Threshold at ".$pa_config->{"server_threshold"}." sec, verbosity at ".$pa_config->{"verbosity"}.", Alert Threshold at $pa_config->{'alert_threshold'}, ServerName is '".$pa_config->{'servername'}.$pa_config->{"servermode"}."'";
+	my $config_options = "Logfile at ".$pa_config->{"log_file"}.", Basepath is ".$pa_config->{"basepath"}.", Checksum is ".$pa_config->{"pandora_check"}.", Master is ".$pa_config->{"pandora_master"}.", SNMP Console is ".$pa_config->{"snmpconsole"}.", Server Threshold at ".$pa_config->{"server_threshold"}." sec, verbosity at ".$pa_config->{"verbosity"}.", Alert Threshold at $pa_config->{'alert_threshold'}, ServerName is '".$pa_config->{'servername'}."'";
 	logger ($pa_config, "Config options: $config_options", 1);
 }
 
@@ -940,8 +939,8 @@ sub pandora_start_log ($){
 	my $pa_config = shift;
 
 	# Dump all errors to errorlog
-	open (STDERR, ">> " . $pa_config->{'errorlogfile'}) or die " [ERROR] Pandora FMS can't write to Errorlog. Aborting : \n $! \n";
-	print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $pa_config->{'servername'} . $pa_config->{'servermode'} . " Starting Pandora FMS Server. Error logging activated.\n";
+	open (STDERR, ">> " . $pa_config->{'errorlog_file'}) or die " [ERROR] Pandora FMS can't write to Errorlog. Aborting : \n $! \n";
+	print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $pa_config->{'servername'} . " Starting Pandora FMS Server. Error logging activated.\n";
 }
 
 ##########################################################################

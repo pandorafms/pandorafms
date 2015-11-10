@@ -547,6 +547,11 @@ sub log_message ($$) {
 	my $utimestamp = time ();
 	
 	my $log_file = get_conf_token ($conf, 'log_file', '');
+
+	# Added for backward compatibility.
+	if ($log_file eq '') {
+		$log_file = get_conf_token ($conf, 'logfile', '');
+	}
 	
 	# Log to stdout
 	if ($log_file eq '') {
@@ -839,7 +844,7 @@ module_end\n";
 server_ip       " . get_conf_token ($conf, 'server_ip', 'localhost') . "
 server_path     /var/spool/pandora/data_in
 temporal /tmp
-logfile /var/log/pandora/pandora_agent.log
+log_file /var/log/pandora/pandora_agent.log
 
 # Interval in seconds, 300 by default
 interval        $interval

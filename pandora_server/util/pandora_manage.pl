@@ -3302,7 +3302,7 @@ sub cli_get_bad_conf_files() {
 	foreach my $file (@files) {
 		# Check important tokens
 		my $missings = 0;
-		my @tokens = ("server_ip","server_path","temporal","logfile");
+		my @tokens = ("server_ip","server_path","temporal","log_file");
 		
 		foreach my $token (@tokens) {
 			if(enterprise_hook('pandora_check_conf_token',[$conf->{incomingdir}.'/conf/'.$file, $token]) == 0) {

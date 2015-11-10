@@ -466,13 +466,13 @@ sub logger ($$;$) {
 	$level = 1 unless defined ($level);
 	return if ($level > $pa_config->{'verbosity'});
 
-	if (!defined($pa_config->{'logfile'})) {
+	if (!defined($pa_config->{'log_file'})) {
 		print strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " [V". $level ."] " . $message . "\n";
 		return;
 	}
 
 	# Get the log file (can be a regular file or 'syslog')
-	my $file = $pa_config->{'logfile'};
+	my $file = $pa_config->{'log_file'};
 
 	# Syslog
 	if ($file eq 'syslog') {
@@ -492,7 +492,7 @@ sub logger ($$;$) {
 		open (FILE, ">> $file") or die "[FATAL] Could not open logfile '$file'";
 		# Get an exclusive lock on the file (LOCK_EX)
 		flock (FILE, 2);
-		print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " " . $pa_config->{'servername'} . $pa_config->{'servermode'} . " [V". $level ."] " . $message . "\n";
+		print FILE strftime ("%Y-%m-%d %H:%M:%S", localtime()) . " " . $pa_config->{'servername'} . " [V". $level ."] " . $message . "\n";
 		close (FILE);
 	}
 }
@@ -504,7 +504,7 @@ sub logger ($$;$) {
 sub pandora_rotate_logfile ($) {
 	my ($pa_config) = @_;
 
-	my $file = $pa_config->{'logfile'};
+	my $file = $pa_config->{'log_file'};
 
 	# Log File Rotation
 	if ($file ne 'syslog' && -e $file && (stat($file))[7] > $pa_config->{'max_log_size'}) {
@@ -592,7 +592,11 @@ sub enterprise_load ($) {
 	
 	# Ops
 	if ($@) {
-		open (STDERR, ">> " . $pa_config->{'errorlogfile'});
+		
+		# Enterprise.pm not found.
+		return 0 if ($@ =~ m/PandoraFMS\/Enterprise\.pm.*\@INC/);
+
+		open (STDERR, ">> " . $pa_config->{'errorlog_file'});
 		print STDERR $@;
 		close (STDERR);
 		return 0;

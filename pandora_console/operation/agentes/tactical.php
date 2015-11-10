@@ -35,6 +35,7 @@ $is_admin = check_acl ($config['id_user'], 0, "PM");
 $user_strict = (bool) db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
 $force_refresh = get_parameter ("force_refresh", "");
+$refresh = get_parameter ("refr", 0);
 if ($force_refresh == 1) {
 	db_process_sql ("UPDATE tgroup_stat SET utimestamp = 0");
 }
@@ -223,6 +224,9 @@ echo '<td style="vertical-align: top; width: 75%; padding-top: 0px;" id="rightco
 // ---------------------------------------------------------------------
 // Last events information
 // ---------------------------------------------------------------------
+$hidden_toggle = true;
+if ($refresh > 0 )
+	$hidden_toggle = false;
 
 $acltags = tags_get_user_module_and_tags ($config['id_user'], $access = 'ER', $user_strict);
 
@@ -231,7 +235,7 @@ if (!empty($acltags)) {
 	
 	if (!empty($tags_condition)) {
 		$events = events_print_event_table ("estado<>1 AND ($tags_condition)", 10, "100%",true,false,true);
-		ui_toggle($events, __('Latest events'));
+		ui_toggle($events, __('Latest events'),false,$hidden_toggle);
 	}
 }
 

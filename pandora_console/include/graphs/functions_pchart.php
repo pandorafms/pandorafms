@@ -633,6 +633,8 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	$legend = array(), $font, $antialiasing, $water_mark = '', $font_size,
 	$backgroundColor = 'white', $unit = '', $series_type = array()) {
 	
+	global $config;
+	
 	/* CAT:Vertical Charts */
 	if (!is_array($legend) || empty($legend)) {
 		unset($legend);
@@ -707,7 +709,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 			$MyData->setPalette($point_id, $palette_color);*/
 		}
 		
-		$MyData->setSerieWeight($point_id, 0);
+		$MyData->setSerieWeight($point_id, $config['custom_graph_width']);
 	}
 	
 	//$MyData->addPoints($data,"Yaxis");

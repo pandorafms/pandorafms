@@ -982,27 +982,7 @@ if ($list_modules) {
 
 
 					if ($module_value == $sub_string) {
-						$intDays = $module_value / 8640000;
-						$dias = $intDays - (integer)$intDays;
-						$intDays = (integer)$intDays;
-
-						$intHours = $dias * 24;
-						$Hours = $intHours - (integer)$intHours;
-						$intHours = (integer)$intHours;
-
-						$intMinutes = $Hours * 60;
-						$minutos = $intMinutes - (integer)$intMinutes;
-						$intMinutes = (integer)$intMinutes;
-
-						$intSeconds = $minutos * 60;
-						$ConvertSeconds = $intDays . " Days - ". $intHours ." Hours - ". $intMinutes . " Mins";
-
-						if ($ConvertSeconds) {
-							$salida = $ConvertSeconds;
-						}
-						else {
-							$salida = $module_value;
-						}
+						$salida = $module["datos"];
 					}
 					else {
 						$salida = "<span " .

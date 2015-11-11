@@ -768,7 +768,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	
 	//Calculate the bottom margin from the size of string in each index
 	$max_chars = graph_get_max_index($index);
-	$margin_bottom = $font_size * $max_chars;
+	$margin_bottom = $font_size * $max_chars + 20; // added 20 px to show xaxisname
 	
 	$water_mark_height = 0;
 	$water_mark_width = 0;

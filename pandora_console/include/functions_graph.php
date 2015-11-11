@@ -821,13 +821,13 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	if ($compare === 'separated') {
 		return area_graph($flash_chart, $chart, $width, $height/2, $color, $legend,
 			$long_index, ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-			"", $unit, $homeurl, $water_mark, $config['fontpath'], $config['font_size'], $unit, $ttl, 
+			$title, $unit, $homeurl, $water_mark, $config['fontpath'], $config['font_size'], $unit, $ttl, 
 			$series_type, $chart_extra_data, $warning_min, $critical_min, $adapt_key, false, 
 			$series_suffix_str, $menu, $backgroundColor).
 			'<br>'.
 			area_graph($flash_chart, $chart_prev, $width, $height/2, $color_prev, $legend_prev,
 			$long_index_prev, ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-			"", $unit, $homeurl, $water_mark, $config['fontpath'], $config['font_size'], $unit, $ttl, 
+			$title, $unit, $homeurl, $water_mark, $config['fontpath'], $config['font_size'], $unit, $ttl, 
 			$series_type_prev, $chart_extra_data, $warning_min, $critical_min, $adapt_key, false, 
 			$series_suffix_str, $menu, $backgroundColor);
 	}
@@ -836,7 +836,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		
 		return area_graph($flash_chart, $chart, $width, $height, $color, $legend,
 			$long_index, ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-			"", $unit, $homeurl, $water_mark, $config['fontpath'], $config['font_size'], $unit, $ttl, 
+			$title, $unit, $homeurl, $water_mark, $config['fontpath'], $config['font_size'], $unit, $ttl, 
 			$series_type, $chart_extra_data, $warning_min, $critical_min, $adapt_key, false, 
 			$series_suffix_str, $menu, $backgroundColor);
 	}

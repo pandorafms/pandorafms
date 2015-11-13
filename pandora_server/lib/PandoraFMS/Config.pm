@@ -400,6 +400,14 @@ sub pandora_load_config {
 	# Temp path for file sendinn and receiving
 	$pa_config->{"temporal"} = '/tmp'; # 6.0
 
+	# Warmup intervals.
+	$pa_config->{"warmup_alert_interval"} = 0; # 6.1
+	$pa_config->{"warmup_alert_on"} = 0; # 6.1
+	$pa_config->{"warmup_event_interval"} = 0; # 6.1
+	$pa_config->{"warmup_event_on"} = 0; # 6.1
+	$pa_config->{"warmup_unknown_interval"} = 300; # 6.1
+	$pa_config->{"warmup_unknown_on"} = 1; # 6.1
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -884,6 +892,18 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^temporal\s(.*)/i) {
 			$pa_config->{'temporal'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^warmup_event_interval\s+([0-9]*)/i ||
+		       $parametro =~ m/^warmup_alert_interval\s+([0-9]*)/i) {
+			$pa_config->{'warmup_event_interval'}= clean_blank($1);
+			$pa_config->{'warmup_event_on'} = 1 if ($pa_config->{'warmup_event_interval'} > 0); # Off by default.
+			# The same interval is used for alerts and events.
+			$pa_config->{'warmup_alert_interval'}= clean_blank($1);
+			$pa_config->{'warmup_alert_on'} = 1 if ($pa_config->{'warmup_event_interval'} > 0); # Off by default.
+		}
+		elsif ($parametro =~ m/^warmup_unknown_interval\s+([0-9]*)/i) {
+			$pa_config->{'warmup_unknown_interval'}= clean_blank($1);
+			$pa_config->{'warmup_unknown_on'} = 0 if ($pa_config->{'warmup_unknown_interval'} == 0); # On by default.
 		}
 	} # end of loop for parameter #
 

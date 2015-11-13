@@ -536,9 +536,23 @@ sub main() {
 		}
 	}
 	
+	# Save the start time for warmup intervals.
+	$Config{'__start_utimestamp__'} = time();
+
 	# Start the servers
 	pandora_startup ();
 	
+	if ($Config{'warmup_unknown_interval'} > 0) {
+		logger(\%Config, "Warmup mode for unknown modules started.", 3);
+		pandora_event (\%Config, "Warmup mode for unknown modules started.", 0, 0, 0, 0, 0, 'system', 0, $DBH);
+	}
+	if ($Config{'warmup_event_interval'} > 0) {
+		logger(\%Config, "Warmup mode for alerts started.", 3);
+		logger(\%Config, "Warmup mode for events started.", 3);
+		pandora_event (\%Config, "Warmup mode for alerts started.", 0, 0, 0, 0, 0, 'system', 0, $DBH);
+		pandora_event (\%Config, "Warmup mode for events started.", 0, 0, 0, 0, 0, 'system', 0, $DBH);
+	}
+
 	# Start thread to execute server tasks on the master server
 	threads->create('pandora_server_tasks', (\%Config))->detach();
 	

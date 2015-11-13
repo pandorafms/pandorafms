@@ -520,3 +520,13 @@ remote_config_address localhost
 
 # Extra options for the Tentacle client to send the configuration file (PANDORA FMS ENTERPRISE ONLY).
 #remote_config_opts
+
+# Module status change events will not be generated and module alerts will not
+# be executed for the specified number of seconds since the server starts up. 
+warmup_event_interval 0
+
+# Modules will not become unknown (so no unknown events will be generated)  and
+# keepalive modules will not be updated for the specified number of seconds
+# since the server starts up. 
+warmup_unknown_interval 300
+

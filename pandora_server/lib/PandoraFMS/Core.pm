@@ -288,6 +288,17 @@ sub pandora_generate_alerts ($$$$$$$$;$$$) {
 		return;
 	}
 	
+	# Warmup interval for alerts.
+	if ($pa_config->{'warmup_alert_on'} == 1) {
+
+		# No alerts.
+		return if (time() < $pa_config->{'__start_utimestamp__'} + $pa_config->{'warmup_alert_interval'});
+
+		$pa_config->{'warmup_alert_on'} = 0;
+		logger($pa_config, "Warmup mode for alerts ended.", 10);
+		pandora_event ($pa_config, "Warmup mode for alerts ended.", 0, 0, 0, 0, 0, 'system', 0, $dbh);
+	}
+
 	if ($agent->{'quiet'} == 1) {
 		logger($pa_config, "Generate Alert. The agent '" . $agent->{'nombre'} . "' is in quiet mode.", 10);
 		
@@ -3062,6 +3073,14 @@ Update keep_alive modules for agents without data.
 sub pandora_module_keep_alive_nd {
 	my ($pa_config, $dbh) = @_;
 
+	# Warmup interval for keepalive modules.
+	if ($pa_config->{'warmup_unknown_on'} == 1) {
+
+		return if (time() < $pa_config->{'__start_utimestamp__'} + $pa_config->{'warmup_unknown_interval'});
+
+		# Disabled from pandora_module_unknown.
+	}
+
 	my @modules = get_db_rows ($dbh, 'SELECT tagente_modulo.*
 					FROM tagente_modulo, tagente_estado, tagente 
 					WHERE tagente.id_agente = tagente_estado.id_agente 
@@ -3760,6 +3779,17 @@ sub generate_status_event ($$$$$$$$) {
 	# No events when event storm protection is enabled
 	if ($EventStormProtection == 1) {
 		return;
+	}
+
+	# Warmup interval for status events.
+	if ($pa_config->{'warmup_event_on'} == 1) {
+
+		# No status events.
+		return if (time() < $pa_config->{'__start_utimestamp__'} + $pa_config->{'warmup_event_interval'});
+
+		$pa_config->{'warmup_event_on'} = 0;
+		logger($pa_config, "Warmup mode for events ended.", 10);
+		pandora_event ($pa_config, "Warmup mode for events ended.", 0, 0, 0, 0, 0, 'system', 0, $dbh);
 	}
 
 	# disable event just recovering from 'Unknown' without status change
@@ -4476,6 +4506,17 @@ Set the status of unknown modules.
 sub pandora_module_unknown ($$) {
 	my ($pa_config, $dbh) = @_;
 	
+	# Warmup interval for unknown modules.
+	if ($pa_config->{'warmup_unknown_on'} == 1) {
+
+		# No status events.
+		return if (time() < $pa_config->{'__start_utimestamp__'} + $pa_config->{'warmup_unknown_interval'});
+
+		$pa_config->{'warmup_unknown_on'} = 0;
+		logger($pa_config, "Warmup mode for unknown modules ended.", 10);
+		pandora_event ($pa_config, "Warmup mode for unknown modules ended.", 0, 0, 0, 0, 0, 'system', 0, $dbh);
+	}
+
 	my @modules = get_db_rows ($dbh, 'SELECT tagente_modulo.*,
 			tagente_estado.id_agente_estado, tagente_estado.estado
 		FROM tagente_modulo, tagente_estado, tagente 

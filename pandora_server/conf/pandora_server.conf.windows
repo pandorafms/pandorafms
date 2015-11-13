@@ -318,3 +318,13 @@ global_alert_timeout 15
 
 # If set to 1 allows PandoraFMS Server to be configured via the web console (Only Enterprise version) 
 remote_config 0
+
+# Module status change events will not be generated and module alerts will not
+# be executed for the specified number of seconds since the server starts up. 
+warmup_event_interval 0
+
+# Modules will not become unknown (so no unknown events will be generated)  and
+# keepalive modules will not be updated for the specified number of seconds
+# since the server starts up. 
+warmup_unknown_interval 300
+

@@ -1,15 +1,15 @@
 #!/bin/sh
 
-# Pandora FMS Console Installer (c) 2008-2011 Artica ST
-# Linux/FreeBSD Version (generic), for SuSe, Debian/Ubuntu, RHEL/CentOS,
-# Fedora and FreeBSD only
+# Pandora FMS Console Installer (c) 2008-2015 Artica ST
+# Linux/FreeBSD/NetBSD Version (generic), for SuSe, Debian/Ubuntu,
+# RHEL/CentOS, Fedora, FreeBSD and NetBSD only
 # other Linux distros could not work properly without modifications
 # Please see http://www.pandorafms.org
 # v4.0dev Build 110203
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION=4.0
+PI_VERSION=6.0
 FORCE=0
 DESTDIR=""
 LOG_TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
@@ -226,7 +226,7 @@ help () {
 
 # Script banner at start
 echo " "
-echo "Pandora FMS Console Installer $PI_VERSION (c) 2008-2014 ArticaST"
+echo "Pandora FMS Console Installer $PI_VERSION $PI_BUILD (c) 2008-2015 ArticaST"
 echo "This program is licensed under GPL2 Terms. http://pandorafms.com"
 echo " "
 

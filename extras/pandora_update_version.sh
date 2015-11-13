@@ -36,6 +36,9 @@ $CODEHOME/pandora_server/DEBIAN \
 $CODEHOME/pandora_agents/unix/DEBIAN \
 $PANDHOME_ENT/pandora_console/DEBIAN \
 $PANDHOME_ENT/pandora_server/PandoraFMS-Enterprise/DEBIAN"
+INSTALLER_FILES="$CODEHOME/pandora_console/pandora_console_install \
+$CODEHOME/pandora_server/pandora_server_installer \
+$CODEHOME/pandora_agents/unix/pandora_agent_installer"
 SERVER_FILE="$CODEHOME/pandora_server/lib/PandoraFMS/Config.pm"
 SERVER_DB_FILE="$CODEHOME/pandora_server/util/pandora_db.pl"
 SERVER_CLI_FILE="$CODEHOME/pandora_server/util/pandora_manage.pl"
@@ -76,6 +79,14 @@ function update_deb_version {
 	sed -e "s/^pandora_version\s*=.*/pandora_version=\"$LOCAL_VERSION\"/" "$DEBIAN_DIR/make_deb_package.sh" > "$TEMP_FILE" && mv "$TEMP_FILE" "$DEBIAN_DIR/make_deb_package.sh" && sed -e "s/^Version:\s*.*/Version: $LOCAL_VERSION/" "$DEBIAN_DIR/control" > "$TEMP_FILE" && mv "$TEMP_FILE" "$DEBIAN_DIR/control"
 }
 
+# Update version in installer
+function update_installer_version {
+	FILE=$1
+
+	sed -e "/^PI_VERSION/s/=.*/=\"$VERSION\"/" -e "/^PI_BUILD/s/=.*/=\"$BUILD\"/" "$FILE" > "$TEMP_FILE" \
+		&& mv "$TEMP_FILE" "$FILE"
+}
+
 # Spec files
 for file in $SPEC_FILES; do
 	echo "Updating spec file $file..."
@@ -86,6 +97,12 @@ done
 for dir in $DEBIAN_FILES; do
 	echo "Updating DEBIAN dir $dir..."
 	update_deb_version $dir
+done
+
+# Installer files
+for file in $INSTALLER_FILES; do
+	echo "Updating installer file $file..."
+	update_installer_version $file
 done
 
 # Pandora Server

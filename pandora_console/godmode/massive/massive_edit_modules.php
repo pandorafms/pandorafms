@@ -139,20 +139,11 @@ if ($update) {
 				$modules_ = array();
 			
 			foreach ($modules_ as $module_) {
-				$filter = array('id_agente' => $agent_);
 				
-				if (!is_numeric($module_))
-					$filter['nombre'] = $module_;
-				else
-					$filter['id_agente_modulo'] = $module_;
+				$result = process_manage_edit ($module_, $agent_);
+				$count++;
+				$success += (int)$result;
 				
-				$exists = (bool) db_get_value_filter('id_agente', 'tagente_modulo', $filter);
-				
-				if ($exists) {
-					$result = process_manage_edit ($module_, $agent_);
-					$count++;
-					$success += (int)$result;
-				}
 			}
 		}
 	}
@@ -1095,7 +1086,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	foreach ($modules as $module) {
 		$result = modules_update_agent_module(
 			$module['id_agente_modulo'], $values, true, $update_tags);
-		
+
 		if (is_error($result)) {
 			
 			return false;

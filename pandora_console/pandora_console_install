@@ -183,7 +183,20 @@ install () {
 	then
 		[ -d $DESTDIR/etc/logrotate.d ] && mkdir -p $DESTDIR/etc/logrotate.d
 		echo "Creating logrotate.d entry for Pandora FMS log management"
-		cp pandora_console_logrotate $DESTDIR/etc/logrotate.d/pandora_console
+		case $DISTRO in
+			SUSE)
+				cp pandora_console_logrotate_suse $DESTDIR/etc/logrotate.d/pandora_console
+				;;
+			UBUNTU|DEBIAN)
+				cp pandora_console_logrotate_ubuntu $DESTDIR/etc/logrotate.d/pandora_console
+				;;
+			FEDORA|RHEL_CENTOS|GENERIC)
+				cp pandora_console_logrotate_centos $DESTDIR/etc/logrotate.d/pandora_console
+				;;
+			*)
+				echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
+				;;
+		esac
 	else
 		echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
 	fi

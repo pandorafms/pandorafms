@@ -88,10 +88,12 @@ mkdir -p temp_package
 if [ $package_pandora -eq 1 ]
 then
 	mkdir -p temp_package/var/www/pandora_console
+	mkdir -p temp_package/etc/logrotate.d
 
 	echo "Make directory system tree for package."
 	cp -R $(ls | grep -v temp_package | grep -v DEBIAN ) temp_package/var/www/pandora_console
 	cp -R DEBIAN temp_package
+	cp -aRf pandora_console_logrotate_ubuntu temp_package/etc/logrotate.d/pandora_console
 	find temp_package/var/www/pandora_console -name ".svn" | xargs rm -Rf 
 	rm -Rf temp_package/var/www/pandora_console/pandora_console.spec
 	chmod 755 -R temp_package/DEBIAN

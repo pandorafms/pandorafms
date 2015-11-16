@@ -123,29 +123,19 @@ if ($update) {
 		// We empty the agents array to skip the standard procedure
 		$agents_ = array();
 	}
-	
-	
-	
-	foreach ($agents_ as $agent_) {
-		
-		if ($modules_ == false) {
-			$modules_ = array();
-		}
-		
-		foreach ($modules_ as $module_) {
-			$filter = array('id_agente' => $agent_);
+	else {
+		// Standard procedure
+		foreach ($agents_ as $agent_) {
 			
-			if (!is_numeric($module_))
-				$filter['nombre'] = $module_;
-			else
-				$filter['id_agente_modulo'] = $module_;
+			if ($modules_ == false)
+				$modules_ = array();
 			
-			$exists = (bool) db_get_value_filter('id_agente', 'tagente_modulo', $filter);
-			
-			if ($exists) {
+			foreach ($modules_ as $module_) {
+				
 				$result = process_manage_edit ($module_, $agent_);
 				$count++;
 				$success += (int)$result;
+				
 			}
 		}
 	}

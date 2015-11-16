@@ -51,7 +51,7 @@ mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_console
 rm $RPM_BUILD_ROOT%{prefix}/pandora_console/*.spec
 rm $RPM_BUILD_ROOT%{prefix}/pandora_console/pandora_console_install
-install -m 0644 pandora_console_logrotate $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_console
+install -m 0644 pandora_console_logrotate_centos $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/pandora_console
 
 %clean
 rm -rf $RPM_BUILD_ROOT

@@ -17,6 +17,34 @@ fi
 MODE=$1
 
 pandora_upgrade () {
+	
+	case `uname -s` in
+	Linux)
+		# Get Linux Distro type and version
+		if [ -f "/etc/SuSE-release" ]
+		then
+			DISTRO=SUSE
+		elif [ -f "/etc/lsb-release" ] && [ ! -f "/etc/redhat-release" ]
+		then
+			DISTRO=UBUNTU
+		elif [ -f "/etc/debian_version" ]
+		then
+			DISTRO=DEBIAN
+		elif [ -f "/etc/fedora-release" ]
+		then
+			DISTRO=FEDORA
+		elif [ -f "/etc/redhat-release" ]
+		then
+			DISTRO=RHEL_CENTOS
+		fi
+		;;
+	FreeBSD)
+		DISTRO=FreeBSD
+		;;
+	NetBSD)
+		DISTRO=NetBSD
+		;;
+	esac
 
 	if [ ! -e "$PANDORAPATH/index.php" ]
 	then
@@ -80,7 +108,20 @@ pandora_upgrade () {
 
 	if [ -d /etc/logrotate.d ]; then
 		echo "Creating logrotate.d entry for Pandora FMS log management"
-		cp pandora_console_logrotate /etc/logrotate.d/pandora_console
+		case $DISTRO in
+			SUSE)
+				cp pandora_console_logrotate_suse $DESTDIR/etc/logrotate.d/pandora_console
+				;;
+			UBUNTU|DEBIAN)
+				cp pandora_console_logrotate_ubuntu $DESTDIR/etc/logrotate.d/pandora_console
+				;;
+			FEDORA|RHEL_CENTOS|GENERIC)
+				cp pandora_console_logrotate_centos $DESTDIR/etc/logrotate.d/pandora_console
+				;;
+			*)
+				echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
+				;;
+		esac
 	else
 		echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
 	fi

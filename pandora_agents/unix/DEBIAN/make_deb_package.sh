@@ -42,6 +42,7 @@ mkdir -p temp_package/var/spool/pandora/data_out
 mkdir -p temp_package/usr/share/man/man1/
 mkdir -p temp_package/usr/share/pandora_agent/plugins
 mkdir -p temp_package/tmp
+mkdir -p temp_package/etc/logrotate.d/
 
 echo "Make directory system tree for package."
 cp DEBIAN temp_package -R
@@ -62,6 +63,7 @@ cp -aRf tentacle_client temp_package/usr/bin/
 cp -aRf pandora_agent temp_package/usr/bin/
 cp -aRf pandora_agent_exec temp_package/usr/bin/pandora_agent_exec
 cp -aRf pandora_agent_daemon temp_package/etc/init.d/pandora_agent_daemon
+cp -aRf pandora_agent_logrotate temp_package/etc/logrotate.d/pandora_agent
 cp Linux/pandora_agent.conf temp_package/etc/pandora/
 
 cp -aRf man/man1/* temp_package/usr/share/man/man1/

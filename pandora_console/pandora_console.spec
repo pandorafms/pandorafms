@@ -66,7 +66,7 @@ if [ -f %{prefix}/pandora_console/include/config.php ] ; then
 else
    echo "Please, now, point your browser to http://your_IP_address/pandora_console/install.php and follow all the steps described on it."
 fi
-cp -aRf %{prefix}/pandora_console/pandora_console_logrotate /etc/logrotate.d/pandora_console
+cp -aRf %{prefix}/pandora_console/pandora_console_logrotate_suse /etc/logrotate.d/pandora_console
 
 %preun
 

@@ -441,7 +441,7 @@ function modules_update_agent_module ($id, $values,
 		}
 	}
 	else {
-		if ($result_disable == ERR_GENERIC ){
+		if ( ERR_GENERIC === $result_disable ){
 			return ERR_DB;
 		}
 		else{

@@ -384,6 +384,23 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	}
 }
 
+$menu_godmode["links"]["text"] = __('Links');
+$menu_godmode["links"]["sec2"] = "";
+$menu_godmode["links"]["id"] = "god-links";
+
+$sub = array ();
+$rows = db_get_all_rows_in_table('tlink', 'name');
+foreach ($rows as $row) {
+	// Audit //meter en extensiones
+	
+	$sub[$row['link']]["text"] = $row['name'];
+	$sub[$row['link']]["id"] = $row['name'];
+	$sub[$row['link']]["type"] = 'direct';
+	$sub[$row['link']]["subtype"] = 'new_blank';
+}
+
+$menu_godmode["links"]["sub"] = $sub;
+
 if (!$config['pure']) {
 	menu_print_menu ($menu_godmode);
 }

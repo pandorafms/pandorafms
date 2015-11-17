@@ -410,18 +410,6 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 			$sub["operation/servers/recon_view"]["refr"] = 0;
 		}
 		
-		$sub['link']["text"] = __("Links");
-		$sub['link']["id"] = "Links";
-		$rows = db_get_all_rows_in_table('tlink', 'name');
-		foreach ($rows as $row) {
-			// Audit //meter en extensiones
-			
-			$sub2[$row['link']]["text"] = $row['name'];
-			$sub2[$row['link']]["type"] = 'direct';
-			$sub2[$row['link']]["subtype"] = 'new_blank';
-		}
-		$sub["link"]["sub2"] = $sub2;
-		
 		foreach ($config["extensions"] as $extension) {
 			//If no operation_menu is a godmode extension
 			if ($extension["operation_menu"] == '') {
@@ -486,7 +474,6 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 
 // Save operation menu array to use in operation/extensions.php view
 $operation_menu_array = $menu_operation;
-
 
 
 if(!$config['pure']) {

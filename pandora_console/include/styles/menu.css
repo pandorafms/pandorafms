@@ -190,7 +190,11 @@ li:hover ul { display: block; }
 }
 #icon_god-extensions {
 	background: url(../../images/builder.menu.png) no-repeat 50% 50%;
-	
+}
+#icon_god-links {
+	border-top: 4px solid !important;
+	border-color: #777;
+	background: #333 url(../../images/links.menu.png) no-repeat 50% 50%;
 }
 
 #subicon_god-setup {
@@ -205,6 +209,10 @@ li:hover ul { display: block; }
 
 #subicon_god-servers {
 	top: -72px;
+}
+
+#subicon_god-links {
+	top: -130px;
 }
 
 #menu_container {

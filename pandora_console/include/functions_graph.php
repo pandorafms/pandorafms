@@ -1481,8 +1481,11 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					$temp[$module]['min'] =	0;
 					$temp[$module]['max'] = 100;
 				}else{
-					$min = reporting_get_agentmodule_data_min($module,$period,$date);
-					$max = reporting_get_agentmodule_data_max($module,$period,$date);
+					$min = $temp[$module]['min'];
+					if ($temp[$module]['max'] == 0)
+						$max = reporting_get_agentmodule_data_max($module,$period,$date);
+					else
+						$max = $temp[$module]['max'];
 					$temp[$module]['min'] = ($min)== 0 ? 0 : $min;
 					$temp[$module]['max'] = ($max)== 0 ? 100 : $max;
 				}

@@ -1208,8 +1208,6 @@ div.title_line {
 	text-decoration: none;
 	padding: 0px;
 	margin: 0px;
-	height: 21px;
-	width: 21px;
 }
 #menu_tab li.nomn:hover a, #menu_tab li:hover ul a:hover {
 	/*background: #82b92e;*/

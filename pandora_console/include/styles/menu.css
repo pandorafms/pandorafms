@@ -44,7 +44,7 @@
 li:hover ul { display: block; }
 
 .submenu_text {
-	padding: 11px;
+	padding: 10.5px;
 	margin-left: 0px;
 	width: 100%;
 }
@@ -201,6 +201,10 @@ li:hover ul { display: block; }
 }
 #subBulk_operations {
 	top: -210px;
+}
+
+#subicon_god-servers {
+	top: -72px;
 }
 
 #menu_container {

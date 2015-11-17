@@ -35,6 +35,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	
 	$sub = array ();
 	$sub["view"]["text"] = __('Views');
+	$sub["view"]["id"] = 'Views';
 	$sub["view"]["type"] = "direct";
 	$sub["view"]["subtype"] = "nolink";
 	$sub["view"]["refr"] = 0;
@@ -69,6 +70,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	if (check_acl ($config['id_user'], 0, "RR")) {
 		if ($config['activate_netflow']) {
 			$sub["operation/netflow/nf_live_view"]["text"] = __('Netflow Live View');
+			$sub["operation/netflow/nf_live_view"]["id"] = 'Netflow Live View';
 			$sub["operation/netflow/nf_live_view"]["refr"] = 0;
 		}
 	}
@@ -79,6 +81,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	
 	//SNMP Console
 	$sub["snmpconsole"]["text"] = __('SNMP');
+	$sub["snmpconsole"]["id"] = 'SNMP';
 	$sub["snmpconsole"]["refr"] = 0;
 	$sub["snmpconsole"]["type"] = "direct";
 	$sub["snmpconsole"]["subtype"] = "nolink";
@@ -109,9 +112,8 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	
 	$sub = array();
 	
-	
-	
 	$sub["operation/agentes/networkmap_list"]["text"] = __('Network map');
+	$sub["operation/agentes/networkmap_list"]["id"] = 'Network map';
 	$sub["operation/agentes/networkmap_list"]["refr"] = 0;
 	
 	enterprise_hook ('networkmap_console');
@@ -120,6 +122,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	
 	//Visual console
 	$sub["godmode/reporting/map_builder"]["text"] = __('Visual console');
+	$sub["godmode/reporting/map_builder"]["id"] = 'Visual console';
 	//Set godomode path
 	$sub["godmode/reporting/map_builder"]["subsecs"] = array(
 		"godmode/reporting/map_builder",
@@ -163,6 +166,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 				continue;
 			}
 			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($name, 0, 19);
+			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["id"] = mb_substr ($name, 0, 19);
 			$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["title"] = $name;
 			if (!empty($config['vc_refr'])) {
 				$sub2["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = $config['vc_refr'];
@@ -184,10 +188,12 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		//INI GIS Maps
 		if ($config['activate_gis']) {
 			$sub["gismaps"]["text"] = __('GIS Maps');
+			$sub["gismaps"]["id"] = 'GIS Maps';
 			$sub["gismaps"]["type"] = "direct";
 			$sub["gismaps"]["subtype"] = "nolink";
 			$sub2 = array ();
 			$sub2["operation/gis_maps/index"]["text"] = __("List of Gis maps");
+			$sub2["operation/gis_maps/index"]["id"] = "List of Gis maps";
 			$gisMaps = db_get_all_rows_in_table ('tgis_map', 'map_name');
 			if ($gisMaps === false) {
 				$gisMaps = array ();
@@ -209,6 +215,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 					continue;
 				}
 				$sub2["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["text"] = mb_substr (io_safe_output($gisMap["map_name"]), 0, 15);
+				$sub2["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["id"] = mb_substr (io_safe_output($gisMap["map_name"]), 0, 15);
 				$sub2["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["title"] = io_safe_output($gisMap["map_name"]);
 				$sub2["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["refr"] = 0;
 			}
@@ -234,12 +241,14 @@ if (check_acl ($config['id_user'], 0, "RR")) {
 	$sub = array ();
 	
 	$sub["godmode/reporting/reporting_builder"]["text"] = __('Custom reporting');
+	$sub["godmode/reporting/reporting_builder"]["id"] = 'Custom reporting';
 	//Set godomode path
 	$sub["godmode/reporting/reporting_builder"]["subsecs"] = array("godmode/reporting/reporting_builder",
 		"operation/reporting/reporting_viewer");
 	
 	
 	$sub["godmode/reporting/graphs"]["text"] = __('Custom graphs');
+	$sub["godmode/reporting/graphs"]["id"] = 'Custom graphs';
 	//Set godomode path
 	$sub["godmode/reporting/graphs"]["subsecs"] = array(
 		"operation/reporting/graph_viewer",
@@ -263,21 +272,26 @@ if (check_acl ($config['id_user'], 0, "ER")) {
 	
 	$sub = array ();
 	$sub["operation/events/events"]["text"] = __('View events');
+	$sub["operation/events/events"]["id"] = 'View events';
 	$sub["operation/events/event_statistics"]["text"] = __('Statistics');
+	$sub["operation/events/event_statistics"]["id"] = 'Statistics';
 	
 	//RSS
 	$pss = get_user_info($config['id_user']);
 	$hashup = md5($config['id_user'].$pss['password']);
 	
 	$sub["operation/events/events_rss.php?user=".$config['id_user']."&amp;hashup=".$hashup."&search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure="]["text"] = __('RSS');
+	$sub["operation/events/events_rss.php?user=".$config['id_user']."&amp;hashup=".$hashup."&search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure="]["id"] = 'RSS';
 	$sub["operation/events/events_rss.php?user=".$config['id_user']."&amp;hashup=".$hashup."&search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure="]["type"] = "direct";
 	
 	//CSV
 	$sub["operation/events/export_csv.php?search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure="]["text"] = __('CSV File');
+	$sub["operation/events/export_csv.php?search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure="]["id"] = 'CSV File';
 	$sub["operation/events/export_csv.php?search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure="]["type"] = "direct";
 	
 	//Marquee
 	$sub["operation/events/events_marquee.php"]["text"] = __('Marquee');
+	$sub["operation/events/events_marquee.php"]["id"] = 'Marquee';
 	$sub["operation/events/events_marquee.php"]["type"] = "direct";
 	
 	//Sound Events
@@ -285,6 +299,7 @@ if (check_acl ($config['id_user'], 0, "ER")) {
 	$javascript = 'javascript: alert(111);';
 	$javascript = 'javascript: openSoundEventWindow();';
 	$sub[$javascript]["text"] = __('Sound Events');
+	$sub[$javascript]["id"] = 'Sound Events';
 	$sub[$javascript]["type"] = "direct";
 	
 	?>
@@ -313,11 +328,13 @@ $menu_operation["workspace"]["id"] = "oper-users";
 // Users
 $sub = array();
 $sub["operation/users/user_edit"]["text"] = __('Edit my user');
+$sub["operation/users/user_edit"]["id"] = 'Edit my user';
 $sub["operation/users/user_edit"]["refr"] = 0;
 
 // ANY user can chat with other user and dogs.
 // Users
 $sub["operation/users/webchat"]["text"] = __('WebChat');
+$sub["operation/users/webchat"]["id"] = 'WebChat';
 $sub["operation/users/webchat"]["refr"] = 0;
 
 
@@ -334,6 +351,7 @@ if (check_acl ($config['id_user'], 0, "IR") == 1) {
 	}
 	
 	$sub[$sec2]["text"] = __('Incidents');
+	$sub[$sec2]["id"] = 'Incidents';
 	$sub[$sec2]["type"] = "direct";
 	$sub[$sec2]["subtype"] = "nolink";
 	$sub[$sec2]["refr"] = 0;
@@ -352,6 +370,7 @@ if (check_acl ($config['id_user'], 0, "IR") == 1) {
 
 // Messages
 $sub["message_list"]["text"] = __('Messages');
+$sub["message_list"]["id"] = 'Messages';
 $sub["message_list"]["refr"] = 0;
 $sub["message_list"]["type"] = "direct";
 $sub["message_list"]["subtype"] = "nolink";
@@ -376,16 +395,32 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		$menu_operation["extensions"]["id"] = "oper-extensions";
 		
 		$sub = array ();
+		$sub2 = array ();
 		
 		$sub["operation/agentes/exportdata"]["text"] = __('Export data');
+		$sub["operation/agentes/exportdata"]["id"] = 'Export data';
 		$sub["operation/agentes/exportdata"]["subsecs"] =  array("operation/agentes/exportdata");
 		
 		$sub["godmode/agentes/planned_downtime.list"]["text"] = __('Scheduled downtime');
+		$sub["godmode/agentes/planned_downtime.list"]["id"] = 'Scheduled downtime';
 		
 		if (check_acl ($config['id_user'], 0, "PM")) {
 			$sub["operation/servers/recon_view"]["text"] = __('Recon view');
+			$sub["operation/servers/recon_view"]["id"] = 'Recon view';
 			$sub["operation/servers/recon_view"]["refr"] = 0;
 		}
+		
+		$sub['link']["text"] = __("Links");
+		$sub['link']["id"] = "Links";
+		$rows = db_get_all_rows_in_table('tlink', 'name');
+		foreach ($rows as $row) {
+			// Audit //meter en extensiones
+			
+			$sub2[$row['link']]["text"] = $row['name'];
+			$sub2[$row['link']]["type"] = 'direct';
+			$sub2[$row['link']]["subtype"] = 'new_blank';
+		}
+		$sub["link"]["sub2"] = $sub2;
 		
 		foreach ($config["extensions"] as $extension) {
 			//If no operation_menu is a godmode extension
@@ -401,6 +436,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 					continue;
 				}
 				$sub[$extension_menu["sec2"]]["text"] = $extension_menu["name"];
+				$sub[$extension_menu["sec2"]]["id"] = $extension_menu["name"];
 				$sub[$extension_menu["sec2"]]["refr"] = 0;
 			}
 			else {
@@ -410,6 +446,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 						if (array_key_exists('subfatherId',$extension_menu)) {
 							if ((strlen($extension_menu['subfatherId']) > 0)) {
 								$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]["text"] = __($extension_menu['name']);
+								$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]["id"] = $extension_menu['name'];
 								$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]["refr"] = 0;
 								$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]["icon"] = $extension_menu['icon'];
 								$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]["sec"] = 'extensions';
@@ -419,6 +456,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 							}
 							else {
 								$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["text"] = __($extension_menu['name']);
+								$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["id"] = $extension_menu['name'];
 								$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["refr"] = 0;
 								$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["icon"] = $extension_menu['icon'];
 								$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["sec"] = 'extensions';
@@ -429,6 +467,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 						}
 						else {
 							$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["text"] = __($extension_menu['name']);
+							$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["id"] = $extension_menu['name'];
 							$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["refr"] = 0;
 							$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["icon"] = $extension_menu['icon'];
 							$menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]["sec"] = 'extensions';

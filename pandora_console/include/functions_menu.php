@@ -208,7 +208,7 @@ function menu_print_menu (&$menu) {
 			
 			if (isset ($sub["type"]) && $sub["type"] == "direct") {
 				//This is an external link
-				$submenu_output .= '<li id="'. str_replace(' ','_',$sub["text"]) . '" class="'.$class.'">';
+				$submenu_output .= '<li id="'. str_replace(' ','_',$sub["id"]) . '" class="'.$class.'">';
 				
 				if (isset ($sub["subtype"]) && $sub["subtype"] == "nolink") {
 					$submenu_output .= '<div class=" SubNoLink ' . $sub_tree_class . '">'.$sub["text"].'</div>';
@@ -225,7 +225,7 @@ function menu_print_menu (&$menu) {
 					$link_add = "";
 				}
 				
-				$submenu_output .= '<li id="'. str_replace(' ','_',$sub["text"]) . '" '.($class ? ' class="'.$class.'"' : '').'>';
+				$submenu_output .= '<li id="'. str_replace(' ','_',$sub["id"]) . '" '.($class ? ' class="'.$class.'"' : '').'>';
 				
 				//Ini Add icon extension
 				$secExtension = null;
@@ -312,8 +312,12 @@ function menu_print_menu (&$menu) {
 					
 					$count_sub2++;
 					
-					$link = "index.php?sec=".$subsec2."&sec2=".$key;
-					
+					if (isset ($sub2["type"]) && $sub2["type"] == "direct") {
+						if (isset ($sub2["subtype"]) && $sub2["subtype"] == "new_blank")
+							$link = $key . '"' . 'target = \'_blank\'';
+					}
+					else
+						$link = "index.php?sec=".$subsec2."&sec2=".$key;
 					$class = "sub_subMenu";
 					
 					if ($key == $sec2) {
@@ -339,7 +343,7 @@ function menu_print_menu (&$menu) {
 				}
 				
 				//Add submenu2 to submenu string
-				$submenu_output .= "<ul id='sub" . str_replace(' ','_',$sub["text"]) . "' class=submenu2 $display>";
+				$submenu_output .= "<ul id='sub" . str_replace(' ','_',$sub["id"]) . "' class=submenu2 $display>";
 				$submenu_output .= $submenu2_list;
 				$submenu_output .= "</ul>";
 			}

@@ -65,9 +65,9 @@ if [ "`id pandora | grep uid | wc -l`" = 0 ]
 then
         /usr/sbin/useradd -d %{prefix}/pandora -s /bin/false -M -g 0 pandora
 fi
-chown pandora:root /var/log/pandora
 
 %post
+chown pandora:root /var/log/pandora
 if [ ! -d /etc/pandora ] ; then
 	mkdir -p /etc/pandora
 fi

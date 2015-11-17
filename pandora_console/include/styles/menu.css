@@ -194,7 +194,7 @@ li:hover ul { display: block; }
 #icon_god-links {
 	border-top: 4px solid !important;
 	border-color: #777;
-	background: #333 url(../../images/links.menu.png) no-repeat 50% 50%;
+	background: url(../../images/links.menu.png) no-repeat 50% 50%;
 }
 
 #subicon_god-setup {

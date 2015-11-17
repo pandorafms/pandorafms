@@ -214,7 +214,10 @@ function menu_print_menu (&$menu) {
 					$submenu_output .= '<div class=" SubNoLink ' . $sub_tree_class . '">'.$sub["text"].'</div>';
 				}
 				else
-					$submenu_output .= '<a href="'.$subsec2.'"><div class="' . $sub_tree_class . '">'.$sub["text"].'</div></a>';
+					if (isset ($sub["subtype"]) && $sub["subtype"] == "new_blank")
+						$submenu_output .= '<a href="'.$subsec2.'" target="_blank"><div class="' . $sub_tree_class . '">'.$sub["text"].'</div></a>';
+					else
+						$submenu_output .= '<a href="'.$subsec2.'"><div class="' . $sub_tree_class . '">'.$sub["text"].'</div></a>';
 			}
 			else {
 				//This is an internal link

@@ -162,6 +162,9 @@ sub pandora_get_sharedconfig ($$) {
 
 	# Metaconsole agent cache.
 	$pa_config->{"metaconsole_agent_cache"} = pandora_get_tconfig_token ($dbh, 'metaconsole_agent_cache', 0);
+	
+	#Limit of events replicate in metaconsole
+	$pa_config->{'replication_limit'} = pandora_get_tconfig_token ($dbh, 'replication_limit', 1000);
 }
 
 ##########################################################################

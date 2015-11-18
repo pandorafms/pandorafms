@@ -26,6 +26,7 @@ check_login ();
 //extensions_call_login_function ();
 
 require_once ("include/functions_reporting.php");
+require_once ("include/functions_tactical.php");
 require_once ($config["homedir"] . '/include/functions_graph.php');
 
 ui_print_page_header (__('Welcome to Pandora FMS Web Console'),'',false,"",false);
@@ -34,7 +35,61 @@ if (tags_has_user_acl_tags()) {
 	ui_print_tags_warning();
 }
 
+$user_strict = (bool) db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
+$all_data = tactical_status_modules_agents($config['id_user'], $user_strict, 'AR', $user_strict);
+$data = array();
 
+$data['monitor_not_init'] = (int) $all_data['_monitors_not_init_'];
+$data['monitor_unknown'] = (int) $all_data['_monitors_unknown_'];
+$data['monitor_ok'] = (int) $all_data['_monitors_ok_'];
+$data['monitor_warning'] = (int) $all_data['_monitors_warning_'];
+$data['monitor_critical'] = (int) $all_data['_monitors_critical_'];
+$data['monitor_not_normal'] = (int) $all_data['_monitor_not_normal_'];
+$data['monitor_alerts'] = (int) $all_data['_monitors_alerts_'];
+$data['monitor_alerts_fired'] = (int) $all_data['_monitors_alerts_fired_'];
+
+$data['total_agents'] = (int) $all_data['_total_agents_'];
+
+$data["monitor_checks"] = (int) $all_data['_monitor_checks_'];
+if (!empty($all_data)) {
+	if ($data["monitor_not_normal"] > 0 && $data["monitor_checks"] > 0) {
+		$data['monitor_health'] = format_numeric (100 - ($data["monitor_not_normal"] / ($data["monitor_checks"] / 100)), 1);
+	}
+	else {
+		$data["monitor_health"] = 100;
+	}
+	
+	if ($data["monitor_not_init"] > 0 && $data["monitor_checks"] > 0) {
+		$data["module_sanity"] = format_numeric (100 - ($data["monitor_not_init"] / ($data["monitor_checks"] / 100)), 1);
+	}
+	else {
+		$data["module_sanity"] = 100;
+	}
+	
+	if (isset($data["alerts"])) {
+		if ($data["monitor_alerts_fired"] > 0 && $data["alerts"] > 0) {
+			$data["alert_level"] = format_numeric (100 - ($data["monitor_alerts_fired"] / ($data["alerts"] / 100)), 1);
+		}
+		else {
+			$data["alert_level"] = 100;
+		}
+	} 
+	else {
+		$data["alert_level"] = 100;
+		$data["alerts"] = 0;
+	}
+	
+	$data["monitor_bad"] = $data["monitor_critical"] + $data["monitor_warning"];
+	
+	if ($data["monitor_bad"] > 0 && $data["monitor_checks"] > 0) {
+		$data["global_health"] = format_numeric (100 - ($data["monitor_bad"] / ($data["monitor_checks"] / 100)), 1);
+	}
+	else {
+		$data["global_health"] = 100;
+	}
+	
+	$data["server_sanity"] = format_numeric (100 - $data["module_sanity"], 1);
+}
 ?>
 <table border="0" width="100%">
 	<tr>
@@ -43,7 +98,6 @@ if (tags_has_user_acl_tags()) {
 			
 			
 			<?php
-			$data = reporting_get_group_stats ();
 			
 			///////////////
 			// Overview Table
@@ -246,9 +300,6 @@ return;
 
 //echo '<div id="left_column_logon_ok" id="leftcolumn">';
 echo '<div style="width:30%; float:left;" id="leftcolumn">';
-
-
-$data = reporting_get_group_stats ();
 
 ///////////////
 // Overview Table

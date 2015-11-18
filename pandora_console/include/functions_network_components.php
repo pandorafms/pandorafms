@@ -31,7 +31,7 @@ function network_components_is_disable_type_event($id = false, $type_event = fal
 	if ($id === false) {
 		switch ($type_event) {
 			case EVENTS_GOING_UNKNOWN:
-				return false;
+				return true;
 				break;
 			case EVENTS_UNKNOWN:
 				return false;
@@ -97,7 +97,7 @@ function network_components_is_disable_type_event($id = false, $type_event = fal
 			return false;
 		}
 	}
-	return false;
+	return true;
 }
 
 /**

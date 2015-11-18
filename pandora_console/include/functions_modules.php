@@ -53,7 +53,7 @@ function modules_is_disable_type_event($id_agent_module = false, $type_event = f
 	if ($id_agent_module === false) {
 		switch ($type_event) {
 			case EVENTS_GOING_UNKNOWN:
-				return false;
+				return true;
 				break;
 			case EVENTS_UNKNOWN:
 				return false;
@@ -118,7 +118,7 @@ function modules_is_disable_type_event($id_agent_module = false, $type_event = f
 			return false;
 		}
 	}
-	return false;
+	return true;
 }
 
 /**

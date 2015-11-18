@@ -20,6 +20,7 @@ global $config;
 require_once ("include/functions_events.php");
 require_once ("include/functions_servers.php");
 require_once ("include/functions_reporting.php");
+require_once ("include/functions_tactical.php");
 require_once ($config["homedir"] . '/include/functions_graph.php');
 
 check_login ();
@@ -52,71 +53,27 @@ else {
 // Header
 ui_print_page_header (__("Tactical view"), "", false, "", false, $updated_time);
 
-$all_data = group_get_groups_list($config['id_user'], $user_strict, 'AR', true, false, 'tactical');
+//Currently this function makes loading this page is impossible. Change
+//and create new function.
+//$all_data = group_get_groups_list($config['id_user'], $user_strict, 'AR', true, false, 'tactical');
+
+$all_data = tactical_status_modules_agents($config['id_user'], $user_strict, 'AR', $user_strict);
 
 $data = array();
-$data['monitor_checks'] = 0;
-$data['monitor_not_init'] = 0;
-$data['monitor_unknown'] = 0;
-$data['monitor_ok'] = 0;
-$data['monitor_bad'] = 0;
-$data['monitor_warning'] = 0;
-$data['monitor_critical'] = 0;
-$data['monitor_not_normal'] = 0;
-$data['monitor_alerts'] = 0;
-$data['monitor_alerts_fired'] = 0;
-$data['monitor_alerts_fire_count'] = 0;
-$data['total_agents'] = 0;
-$data['total_alerts'] = 0;
-$data['total_checks'] = 0;
-$data['alerts'] = 0;
-$data['agents_unknown'] = 0;
-$data['monitor_health'] = 0;
-$data['alert_level'] = 0;
-$data['module_sanity'] = 0;
-$data['server_sanity'] = 0;
-$data['agent_ok'] = 0;
-$data['agent_warning'] = 0;
-$data['agent_critical'] = 0;
-$data['agent_unknown'] = 0;
-$data['agent_not_init'] = 0;
-$data['global_health'] = 0;
-foreach ($all_data as $item) {
-	$data['monitor_checks'] += (int) $item['_monitor_checks_'];
-	$data['monitor_not_init'] += (int) $item['_monitors_not_init_'];
-	$data['monitor_unknown'] += (int) $item['_monitors_unknown_'];
-	$data['monitor_ok'] += (int) $item['_monitors_ok_'];
-	$data['monitor_bad'] += (int) $item['_monitor_bad_'];
-	$data['monitor_warning'] += (int) $item['_monitors_warning_'];
-	$data['monitor_critical'] += (int) $item['_monitors_critical_'];
-	$data['monitor_not_normal'] += (int) $item['_monitor_not_normal_'];
-	$data['monitor_alerts'] += (int) $item['_monitors_alerts_'];
-	$data['monitor_alerts_fired'] += (int) $item['_monitors_alerts_fired_'];
 
-	if (isset($item['_total_agents_']))
-		$data['total_agents'] += (int) $item['_total_agents_'];
-	
-	if (isset($item['_total_alerts_']))
-		$data['total_alerts'] += (int) $item['_total_alerts_'];
-	
-	if (isset($item['_total_checks_']))
-		$data['total_checks'] += (int) $item['_total_checks_'];
+$data['monitor_not_init'] = (int) $all_data['_monitors_not_init_'];
+$data['monitor_unknown'] = (int) $all_data['_monitors_unknown_'];
+$data['monitor_ok'] = (int) $all_data['_monitors_ok_'];
+$data['monitor_warning'] = (int) $all_data['_monitors_warning_'];
+$data['monitor_critical'] = (int) $all_data['_monitors_critical_'];
+$data['monitor_not_normal'] = (int) $all_data['_monitor_not_normal_'];
+$data['monitor_alerts'] = (int) $all_data['_monitors_alerts_'];
+$data['monitor_alerts_fired'] = (int) $all_data['_monitors_alerts_fired_'];
 
-	$data['alerts'] += (int) $item['_alerts_'];
-	$data['agent_ok'] += (int) $item['_agents_ok_'];
-	$data['agents_unknown'] += (int) $item['_agents_unknown_'];
-	$data['agent_warning'] += (int) $item['_agents_warning_'];
-	$data['agent_critical'] += (int) $item['_agents_critical_'];
-	$data['agent_unknown'] += (int) $item['_agents_unknown_'];
-	$data['agent_not_init'] += (int) $item['_agents_not_init_'];
+$data['total_agents'] = (int) $all_data['_total_agents_'];
 
-	// Percentages
-	$data['server_sanity'] += (int) $item['_server_sanity_'];
-	$data['monitor_health'] += (int) $item['_monitor_health_'];
-	$data['module_sanity'] += (int) $item['_module_sanity_'];
-	$data['alert_level'] += (int) $item['_alert_level_'];
-	$data['global_health'] += (int) $item['_global_health_'];
-}
+$data["monitor_checks"] = (int) $all_data['_monitor_checks_'];
+
 
 // Percentages
 if (!empty($all_data)) {

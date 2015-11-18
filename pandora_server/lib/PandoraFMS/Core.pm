@@ -106,6 +106,7 @@ use strict;
 use warnings;
 
 use DBI;
+use Encode;
 use XML::Simple;
 use HTML::Entities;
 use Time::Local;

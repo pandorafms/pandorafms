@@ -217,6 +217,8 @@ function config_update_config () {
 						if ((int)get_parameter('event_replication') == 1) {
 							if (!config_update_value ('replication_interval', (int)get_parameter('replication_interval')))
 								$error_update[] = __('Replication interval');
+							if (!config_update_value ('replication_limit', (int)get_parameter('replication_limit')))
+								$error_update[] = __('Replication limit');
 							if (!config_update_value ('replication_mode', (string)get_parameter('replication_mode')))
 								$error_update[] = __('Replication mode');
 							if (!config_update_value ('show_events_in_local', (string)get_parameter('show_events_in_local')))
@@ -813,6 +815,10 @@ function config_process_config () {
 	
 	if (!isset ($config["replication_interval"])) {
 		config_update_value ('replication_interval', 120);
+	}
+	
+	if (!isset ($config["replication_limit"])) {
+		config_update_value ('replication_limit', 1000);
 	}
 	
 	if (!isset ($config["replication_dbengine"])) {

@@ -3927,6 +3927,7 @@ sub pandora_inhibit_alerts {
 	my $count = get_db_value ($dbh, 'SELECT COUNT(*) FROM tagente_modulo, talert_template_modules, talert_templates
 				WHERE tagente_modulo.id_agente = ?
 				AND tagente_modulo.id_agente_modulo = talert_template_modules.id_agent_module
+				AND tagente_modulo.disabled = 0
 				AND talert_template_modules.id_alert_template = talert_templates.id
 				AND talert_template_modules.times_fired > 0
 				AND talert_templates.priority = 4', $agent->{'id_parent'});

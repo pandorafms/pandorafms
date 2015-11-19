@@ -175,26 +175,31 @@ foreach ($all_traps as $trap) {
 
 
 
-$rows = db_get_all_rows_filter('tagente',
-	array('id_grupo' => array_keys($user_groups)),
-	array('id_agente'));
-$id_agents = array();
-foreach ($rows as $row)
-	$id_agents[] = $row['id_agente'];
-$address_by_user_groups = agents_get_addresses($id_agents);
-foreach ($address_by_user_groups as $i => $a)
-	$address_by_user_groups[$i] = '"' . $a . '"';
+switch ($config["dbtype"]) {
+	case "mysql":
+	case "postgresql":
+		$rows = db_get_all_rows_filter('tagente',
+			array('id_grupo' => array_keys($user_groups)),
+			array('id_agente'));
+		$id_agents = array();
+		foreach ($rows as $row)
+			$id_agents[] = $row['id_agente'];
+		$address_by_user_groups = agents_get_addresses($id_agents);
+		foreach ($address_by_user_groups as $i => $a)
+			$address_by_user_groups[$i] = '"' . $a . '"';
 
-$rows = db_get_all_rows_filter('tagente',
-	array(),
-	array('id_agente'));
-$id_agents = array();
-foreach ($rows as $row)
-	$id_agents[] = $row['id_agente'];
-$all_address_agents = agents_get_addresses($id_agents);
-foreach ($all_address_agents as $i => $a)
-	$all_address_agents[$i] = '"' . $a . '"';
+		$rows = db_get_all_rows_filter('tagente',
+			array(),
+			array('id_agente'));
+		$id_agents = array();
+		foreach ($rows as $row)
+			$id_agents[] = $row['id_agente'];
+		$all_address_agents = agents_get_addresses($id_agents);
+		foreach ($all_address_agents as $i => $a)
+			$all_address_agents[$i] = '"' . $a . '"';
 
+		break;
+}
 
 
 //Make query to extract traps of DB.
@@ -233,23 +238,47 @@ switch ($config["dbtype"]) {
 			ORDER BY timestamp DESC";
 		break;
 }
-$sql_all = "SELECT *
-	FROM ttrap
-	WHERE (
-		source IN (" . implode(",", $address_by_user_groups) . ") OR
-		source='' OR
-		source NOT IN (" . implode(",", $all_address_agents) . ")
-		)
-		%s
-	ORDER BY timestamp DESC";
-$sql_count = "SELECT COUNT(id_trap)
-	FROM ttrap
-	WHERE (
-		source IN (" . implode(",", $address_by_user_groups) . ") OR
-		source='' OR
-		source NOT IN (" . implode(",", $all_address_agents) . ")
-		)
-		%s";
+
+switch ($config["dbtype"]) {
+	case "mysql":
+	case "postgresql":
+		$sql_all = "SELECT *
+			FROM ttrap
+			WHERE (
+				source IN (" . implode(",", $address_by_user_groups) . ") OR
+				source='' OR
+				source NOT IN (" . implode(",", $all_address_agents) . ")
+				)
+				%s
+			ORDER BY timestamp DESC";
+		$sql_count = "SELECT COUNT(id_trap)
+			FROM ttrap
+			WHERE (
+				source IN (" . implode(",", $address_by_user_groups) . ") OR
+				source='' OR
+				source NOT IN (" . implode(",", $all_address_agents) . ")
+				)
+				%s";
+		break;		
+	case "oracle":
+		$sql_all = "SELECT *
+			FROM ttrap
+			WHERE (source IN (
+					SELECT direccion FROM tagente
+					WHERE id_grupo IN ($str_user_groups)
+					) OR source='' OR source NOT IN (SELECT direccion FROM tagente))
+				%s
+			ORDER BY timestamp DESC";
+		$sql_count = "SELECT COUNT(id_trap)
+			FROM ttrap
+			WHERE (
+				source IN (
+					SELECT direccion FROM tagente
+					WHERE id_grupo IN ($str_user_groups)
+					) OR source='' OR source NOT IN (SELECT direccion FROM tagente))
+				%s";
+		break;
+}
 //$whereSubquery = 'WHERE 1=1';
 $whereSubquery = '';
 

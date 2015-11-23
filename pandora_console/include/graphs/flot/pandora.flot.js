@@ -1443,7 +1443,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			$excelInput
 				.prop('name', 'excel_encoding')
 				.prop('type', 'text')
-				.prop('value', false);
+				.prop('value', 0);
 
 			$form
 				.prop('method', 'POST')

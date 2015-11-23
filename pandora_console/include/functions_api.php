@@ -29,6 +29,7 @@ include_once($config['homedir'] . "/include/functions_groups.php");
 include_once($config['homedir'] . "/include/functions_network_components.php");
 include_once($config['homedir'] . "/include/functions_netflow.php");
 include_once($config['homedir'] . "/include/functions_servers.php");
+include_once($config['homedir'] . "/include/functions_planned_downtimes.php");
 enterprise_include_once ('include/functions_local_components.php');
 enterprise_include_once ('include/functions_events.php');
 
@@ -3476,6 +3477,121 @@ function api_set_stop_downtime($id, $thrash1, $other, $thrash3) {
 		returnError('error_stop_downtime', 'Error stopping downtime.');
 	else
 		returnData('string', array('type' => 'string', 'data' => __('Downtime stopped.')));		
+}
+
+/**
+ * Create a new planned downtime.
+ * 
+ * @param $id name of planned downtime.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <description>;<date_from>;<date_to>;<id_group>;<monday>;
+ *  <tuesday>;<wednesday>;<thursday>;<friday>;<saturday>;<sunday>;<periodically_time_from>;<periodically_time_to>;
+ * 	<periodically_day_from>;<periodically_day_to>;<type_downtime>;<type_execution>;<type_periodicity>; in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=planned_downtimes_created&id=pepito&other=testing|1448035508|1448039108|0|1|1|1|1|1|1|1|17:06:00|19:06:00|1|31|quiet|periodically|weekly&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use.
+ */
+
+function api_set_planned_downtimes_created($id, $thrash1, $other, $thrash3) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$values = array();
+	$values['name'] = $id;
+	$values = array(
+		'name' => $id,
+		'description' => $other['data'][0],
+		'date_from' => $other['data'][1],
+		'date_to' => $other['data'][2],
+		'id_group' => $other['data'][3],
+		'monday' => $other['data'][4],
+		'tuesday' => $other['data'][5],
+		'wednesday' => $other['data'][6],
+		'thursday' => $other['data'][7],
+		'friday' => $other['data'][8],
+		'saturday' => $other['data'][9],
+		'sunday' => $other['data'][10],
+		'periodically_time_from' => $other['data'][11],
+		'periodically_time_to' => $other['data'][12],
+		'periodically_day_from' => $other['data'][13],
+		'periodically_day_to' => $other['data'][14],
+		'type_downtime' => $other['data'][15],
+		'type_execution' => $other['data'][16],
+		'type_periodicity' => $other['data'][17]
+	);
+	
+	$returned = planned_downtimes_created($values);
+	
+	if (!$returned['return'])
+		returnError('error_set_planned_downtime', $returned['message'] );
+	else
+		returnData('string',
+			array('type' => 'string', 'data' => $returned['return']));
+}
+
+/**
+ * Add new items to planned Downtime.
+ * 
+ * @param $id id of planned downtime.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <id_agent1;id_agent2;id_agent3;....id_agentn;>;
+ * 	<name_module1;name_module2;name_module3;......name_modulen;> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=planned_downtimes_additem&id=123&other=1;2;3;4|Status;Unkown_modules&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use.
+ */
+
+function api_set_planned_downtimes_additem($id, $thrash1, $other, $thrash3) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$total_agents = explode(';',$other['data'][0]);
+	$agents = $total_agents;
+	$bad_agents = array();
+	$i = 0;
+	foreach ($total_agents as $agent_id) {
+		$result_agent = (bool) db_get_value ('id_agente', 'tagente', 'id_agente', $agent_id);
+		if ( !$result_agent ) {
+			$bad_agents[] = $agent_id;
+			unset($agents[$i]);
+		}
+		$i++;
+	}
+	
+	if ( isset($other['data'][1]) )
+		$name_modules = explode(';',$other['data'][1]);
+	else
+		$name_modules = false;
+	
+	if ($name_modules)
+		$all_modules = false;
+	else
+		$all_modules = true;
+	
+	if ( !empty($agents) )
+		$returned = planned_downtimes_add_items($id, $agents, $all_modules, $name_modules);
+	
+	if ( empty($agents) )
+		returnError('error_set_planned_downtime_additem', "No agents to create planned downtime items");
+	else{
+		
+		if ( !empty($returned['bad_modules']) )
+			$bad_modules = __("and this modules are doesn't exists or not applicable a this agents: ") . implode(", ",$returned['bad_modules']);
+		if ( !empty($returned['bad_agents']) )
+			$bad_agent = __("and this agents are generate problems: ") . implode(", ", $returned['bad_agents']) ;
+		if ( !empty($bad_agents) )
+			$agents_no_exists = __("and this agents with ids are doesn't exists: ") . implode(", ", $bad_agents) ;
+		returnData('string',
+			array('type' => 'string', 'data' => "Successfully created items " . $bad_agent . " " . $bad_modules . " " . $agents_no_exists));
+	}
 }
 
 /**

@@ -108,6 +108,8 @@ sub help_screen{
    	help_screen_line('--enable_group', '<group_name>', 'Enable agents from an entire group');
     help_screen_line('--create_group', '<group_name> [<parent_group_name> <icon> <description>]', 'Create an agent group');
 	help_screen_line('--stop_downtime', '<downtime_name>', 'Stop a planned downtime');
+	help_screen_line('--create_downtime', "<downtime_name> <description> <date_from> <date_to> <id_group> <monday> <tuesday>\n\t <wednesday> <thursday> <friday> <saturday> <sunday> <periodically_time_from>\n\t <periodically_time_to> <periodically_day_from> <periodically_day_to> <type_downtime> <type_execution> <type_periodicity>", 'Create a planned downtime');
+	help_screen_line('--add_item_planned_downtime', "<id_downtime> <id_agente1,id_agente2,id_agente3...id_agenteN> <name_module1,name_module2,name_module3...name_moduleN> ", 'Add a items planned downtime');
 	help_screen_line('--get_agent_group', '<agent_name>', 'Get the group name of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name>', 'Get the modules of an agent');
 	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name>]', "Get \n\t  list of agents with optative filter parameters");
@@ -3313,6 +3315,29 @@ sub cli_policy_add_agent() {
 	}
 }
 
+sub cli_create_planned_downtime() {
+	my $name = @ARGV[2];
+	my @todo = @ARGV[3..20];
+	my $other = join('|', @todo);
+	
+	my $result = api_call(\%conf,'set', 'planned_downtimes_created', $name, undef, "$other");
+	print $result;
+}
+
+sub cli_add_item_planned_downtime() {
+	my $id = @ARGV[2];
+	my $agent = @ARGV[3];
+	my $moduls = @ARGV[4];
+	my @agents = split /,/, $agent;
+	my @modules = split /,/, $moduls;
+	my $other_agents = join(';', @agents);
+	my $other_modules = join(';', @modules);
+	my $other = $other_agents . "|" . $other_modules;
+	
+	my $result = api_call(\%conf,'set', 'planned_downtimes_additem', $id, undef, "$other");
+	print_log "$result \n\n";
+}
+
 ##############################################################################
 # Create group
 # Related option: --create_group
@@ -4074,6 +4099,14 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--recreate_collection') {
 			param_check($ltotal, 1);
 			cli_recreate_collection();
+		}
+		elsif ($param eq '--create_downtime') {
+			param_check($ltotal, 19);
+			cli_create_planned_downtime();
+		}
+		elsif ($param eq '--add_item_downtime') {
+			param_check($ltotal, 3);
+			cli_add_item_planned_downtime();
 		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";

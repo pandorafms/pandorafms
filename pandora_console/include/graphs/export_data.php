@@ -21,6 +21,13 @@ require_once ("../../include/functions.php");
 
 global $config;
 
+$user_language = get_user_language($config['id_user']);
+$l10n = NULL;
+if (file_exists ('../languages/' . $user_language . '.mo')) {
+	$l10n = new gettext_reader (new CachedFileReader ('../languages/'.$user_language.'.mo'));
+	$l10n->load_tables();
+}
+
 // Get data
 $type = (string) get_parameter('type', 'csv');
 
@@ -51,7 +58,11 @@ $output_csv = function ($data, $filename) {
 	// CSV Output
 	header ('Content-Type: text/csv; charset=UTF-8');
 	header ('Content-Disposition: attachment; filename="'.$filename.'.csv"');
-	
+
+	// BOM
+	if (!$excel_encoding)
+		print pack('C*',0xEF,0xBB,0xBF);
+
 	// Header
 	
 	// Item / data
@@ -64,7 +75,7 @@ $output_csv = function ($data, $filename) {
 		foreach ($items['data'] as $item) {
 			$item = str_replace("--> ".__('Selected'),'',$item);
 			$line = implode($separator, $item);
-			
+
 			if ($excel_encoding)
 				echo mb_convert_encoding($line, 'UTF-16LE', 'UTF-8') . "\n";
 			else

@@ -512,7 +512,10 @@ function delete_macro(prefix) {
 	var $row3 = $('#'+prefix+nrow3).remove();
 }
 
-function new_macro(prefix) {
+// The callback parameter is for a callback function
+// that will receive the 3 rows (function(row1, row2, row3))
+// to edit them before the new_macro function ends.
+function new_macro(prefix, callback) {
 	$('#delete_macro_button').show();
 	
 	var next_row = parseInt($('#next_row').html());
@@ -576,6 +579,9 @@ function new_macro(prefix) {
 	$('#text-field' + next_number + '_value').val('');
 	$('#radio-field' + next_number + '_hide').val(0);
 	
+	if (typeof callback === 'function')
+		callback($row1, $row2, $row3);
+	
 	function changeTdId() {
 		switch(this.id) {
 			case prefix + (nrow1) + '-0':
@@ -621,7 +627,7 @@ function new_macro(prefix) {
 function add_macro_field(macro, row_model_id) {
 	var macro_desc = macro['desc'];
 	// Change the carriage returns by html returns <br> in help
-	var macro_help = macro['help'].replace(/&#x0d;/g,"<br>");
+	var macro_help = macro['help'].replace(/&#x0d;/g, "<br>");
 	var macro_macro = macro['macro'];
 	var macro_value =  $('<div />').html(macro['value']).text();
 	var macro_hide = macro['hide'];
@@ -716,6 +722,9 @@ function load_plugin_macros_fields(row_model_id) {
 						add_macro_field(macro, row_model_id);
 					}
 				});
+				
+				// Add again the hover event to the 'force_callback' elements
+				forced_title_callback();
 			}
 		}
 	});

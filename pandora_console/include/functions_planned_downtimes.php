@@ -147,7 +147,7 @@ function planned_downtimes_add_items ($downtime_id, $agents, $all_modules = true
 
 	include_once($config['homedir'] . "/include/functions_modules.php");
 
-	$result = array(
+	$return = array(
 			'status' => true,
 			'bad_agents' => array(),
 			'bad_modules' => array()
@@ -164,41 +164,47 @@ function planned_downtimes_add_items ($downtime_id, $agents, $all_modules = true
 
 	if (empty($agents)) {
 		$agents = array();
-		$result['status'] = false;
+		$return['status'] = false;
 	}
 	
 	foreach ($agents as $agent_id) {
+		
 		$values = array(
-				'id_downtime' => $downtime_id,
-				'id_agent' => $agent_id,
-				'all_modules' => $all_modules,
-				'id_user' => $config['id_user']
-			);
+			'id_downtime' => $downtime_id,
+			'id_agent' => $agent_id,
+			'all_modules' => $all_modules
+		);
+		
 		$result = db_process_sql_insert('tplanned_downtime_agents', $values);
-
+		
 		if (empty($result)) {
-			$result['bad_agents'][] = $agent_id;
+			$return['bad_agents'][] = $agent_id;
 		}
 		else if (!$all_modules) {
 			foreach ($module_names as $module_name) {
 				$module = modules_get_agentmodule_id($module_name, $agent_id);
-				$module_id = $module["id_agente_modulo"];
+				$result = false;
+				
+				if ($module) {
+					
+					$module_id = $module["id_agente_modulo"];
 
-				$values = array(
-						'id_downtime' => $downtime_id,
-						'id_agent' => $agent_id,
-						'id_agent_module' => $module_id
-					);
-				$result = db_process_sql_insert('tplanned_downtime_modules', $values);
-
-				if (empty($result)) {
-					$result['bad_modules'][] = $module_id;
+					$values = array(
+							'id_downtime' => $downtime_id,
+							'id_agent' => $agent_id,
+							'id_agent_module' => $module_id
+						);
+					$result = db_process_sql_insert('tplanned_downtime_modules', $values);
+				}
+				
+				if (!$result) {
+					$return['bad_modules'][] = $module_name;
 				}
 			}
 		}
 	}
-
-	return $result;
+	
+	return $return;
 }
 
 /** 
@@ -654,6 +660,78 @@ function planned_downtimes_stop ($downtime) {
 	}
 	
 	return array('result' => $result, 'message' => $message);
+}
+
+function planned_downtimes_created ($values) {
+	global $config;
+	
+	$check = (bool) db_get_value ('name', 'tplanned_downtime', 'name', $values['name']);
+	
+	$datetime_from = strtotime ($values['once_date_from'] . ' ' . $values['once_time_from']);
+	$datetime_to = strtotime ($values['once_date_to'] . ' ' . $values['once_time_to']);
+	$now = time();
+	$result = false;
+	
+	if ($values['type_execution'] == 'once' && !$config["past_planned_downtimes"] && $values['datetime_from'] < $now) {
+		return array('return' => false,
+			'message' => __('Not created. Error inserting data. Start time must be higher than the current time'));
+	}
+	else if ($values['type_execution'] == 'once' && $values['datetime_from'] >= $values['datetime_to']) {
+		return array('return' => false,
+			'message' => __('Not created. Error inserting data') . ". " 
+				. __('The end date must be higher than the start date'));
+	}
+	else if ($values['type_execution'] == 'once' && $values['datetime_to'] <= $now) {
+		return array('return' => false,
+			'message' => __('Not created. Error inserting data') . ". " 
+				. __('The end date must be higher than the current time'));
+	}
+	else if ($values['type_execution'] == 'periodically'
+			&& (($values['type_periodicity'] == 'weekly' && $values['periodically_time_from'] >= $values['periodically_time_to'])
+				|| ($values['type_periodicity'] == 'monthly' && $values['periodically_day_from'] == 
+					$values['periodically_day_to'] && $values['periodically_time_from'] >= $values['periodically_time_to']))) {
+		return array('return' => false,
+			'message' => __('Not created. Error inserting data') . ". "
+				. __('The end time must be higher than the start time'));
+	}
+	else if ($values['type_execution'] == 'periodically' && 
+				$values['type_periodicity'] == 'monthly' &&
+					$values['periodically_day_from'] > $values['periodically_day_to']) {
+		return array('return' => false,
+			'message' => __('Not created. Error inserting data') . ". "
+				. __('The end day must be higher than the start day'));
+	}
+	else {
+		if (trim(io_safe_output($values['name'])) != '') {
+			if (!$check) {
+				if ($config["dbtype"] == 'oracle') {
+					$values['periodically_time_from'] = '1970/01/01 ' . $values['periodically_time_from'];
+					$values['periodically_time_to'] = '1970/01/01 ' . $values['periodically_time_to'];
+				}
+				
+				$result = db_process_sql_insert('tplanned_downtime', $values);
+			}
+			else {
+				return array('return' => false,
+					'message' => __('Each planned downtime must have a different name'));
+			}
+		}
+		else {
+			return array('return' => false,
+				'message' => __('Planned downtime must have a name'));
+		}
+		
+		if ($result === false) {
+			return array('return' => false,
+				'message' => __('Could not be created'));
+		}
+		else {
+			return array('return' => $result,
+				'message' => __('Successfully created'));
+		}
+	}
+	
+	return $return;
 }
 
 ?>

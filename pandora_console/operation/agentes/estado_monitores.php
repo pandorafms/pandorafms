@@ -121,7 +121,7 @@ $status_text_monitor = get_parameter('status_text_monitor', '');
 
 echo "<h4 style='padding-top:0px !important;'>";
 
-echo ui_print_help_tip(__('For to view the list modules paginated, set in setup visuals.'), true) .
+echo ui_print_help_tip(__('To see the list of modules paginated, enable this option in the Styles Configuration.'), true) .
 	__('Full list of monitors') . '&nbsp;' .
 	reporting_tiny_stats ($agent, true, 'modules');
 

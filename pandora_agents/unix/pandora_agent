@@ -1879,7 +1879,7 @@ sub udp_server ($$) {
 		if (($udp_auth_address eq "0.0.0.0") || $address_found){
 			if ($newmsg =~ /REFRESH AGENT/){
 				# Send signal to restart agent
-				log_message ('udp server', 'Received signal from '.$hishost);
+				log_message ('udp server', 'Received refresh signal from '.$hishost);
 				kill 'SIGINT' , $parent_pid;
 			}
 			elsif ($newmsg =~ /START PROCESS (.*)/){
@@ -1887,10 +1887,27 @@ sub udp_server ($$) {
 				$process_name =~ s/^\s*//g;
 				$process_name =~ s/\s*$//g;
 				if (defined($Conf{"process_${process_name}_start"})) {
-					log_message ('udp server', "Process $process_name started from $hishost");
-					if (fork() == 0) {  
+					# Configure a timeout to kill process if becomes zombie
+					eval {
+						local $SIG{ALRM} = sub{die;};
+						# Fixed timeout configured to 10
+						alarm(10);
 						`$Conf{"process_${process_name}_start"} 2>$DevNull`;
-						exit 0;
+						alarm (0);
+					};
+					# If exceeded timeout, kill the process
+					if ($@) {
+						my $command_process = $Conf{"process_${process_name}_start"};
+						my $pid = `ps aux | grep "$command_process" | grep -v grep | awk '{print \$2}'`;
+						chomp ($pid);
+						# Some process can be generated with exceeded timeout. Kill every processes
+						my @processes = split (/\n/, $pid);
+						foreach my $single_process (@processes) {
+							`kill $single_process 2>$DevNull`;
+							log_message ('udp_server', "killed $single_process due to $process_name timeout exceeding");
+						}
+					} else {
+						log_message ('udp server', "Process $process_name started from $hishost");
 					}
 				} else {
 					log_message ('udp server', "Attempt to start unknown process $process_name from $hishost");
@@ -1901,10 +1918,27 @@ sub udp_server ($$) {
 				$process_name =~ s/^\s*//g;
 				$process_name =~ s/\s*$//g;
 				if (defined($Conf{"process_${process_name}_stop"})) {
-					log_message ('udp server', "Process $process_name stopped from $hishost");
-					if (fork() == 0) {  
+					# Configure a timeout to kill process if becomes zombie
+					eval {
+						local $SIG{ALRM} = sub{die;};
+						# Fixed timeout configured to 10
+						alarm(10);
 						`$Conf{"process_${process_name}_stop"} 2>$DevNull`;
-						exit 0;
+						alarm (0);
+					};
+					# If exceeded timeout, kill the process
+					if ($@) {
+						my $command_process = $Conf{"process_${process_name}_stop"};
+						my $pid = `ps aux | grep "$command_process" | grep -v grep | awk '{print \$2}'`;
+						chomp ($pid);
+						# Some process can be generated with exceeded timeout. Kill every processes
+						my @processes = split (/\n/, $pid);
+						foreach my $single_process (@processes) {
+							`kill $single_process 2>$DevNull`;
+							log_message ('udp_server', "killed $single_process due to $process_name timeout exceeding");
+						}
+					} else {
+						log_message ('udp server', "Process $process_name stopped from $hishost");
 					}
 				} else {
 					log_message ('udp server', "Attempt to stop unknown process $process_name from $hishost");

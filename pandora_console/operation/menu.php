@@ -192,8 +192,8 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 			$sub["gismaps"]["type"] = "direct";
 			$sub["gismaps"]["subtype"] = "nolink";
 			$sub2 = array ();
-			$sub2["operation/gis_maps/index"]["text"] = __("List of Gis maps");
-			$sub2["operation/gis_maps/index"]["id"] = "List of Gis maps";
+			$sub2["operation/gis_maps/gis_map"]["text"] = __("List of Gis maps");
+			$sub2["operation/gis_maps/gis_map"]["id"] = "List of Gis maps";
 			$gisMaps = db_get_all_rows_in_table ('tgis_map', 'map_name');
 			if ($gisMaps === false) {
 				$gisMaps = array ();

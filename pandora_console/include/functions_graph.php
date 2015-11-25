@@ -1392,16 +1392,25 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 							WHERE id_agente_modulo = ' . (int) $module .
 								' AND utimestamp > ' . (int) $datelimit .
 								' AND utimestamp < ' . (int) $date);
-				if (is_numeric($temp_data))
-					$value = $temp_data;
-				else
-					$value = count($value);
+								
+				if ($temp_data) {
+					if (is_numeric($temp_data))
+						$value = $temp_data;
+					else
+						$value = count($value);
+				}
+				else {
+					$value = false;
+				}
+				
 				if ($labels[$module] != '')
 					$temp[$module]['label'] = $labels[$module];
 				$temp[$module]['value'] = $value;
 				$temp[$module]['max'] = reporting_get_agentmodule_data_max($module,$period,$date);
 				$temp[$module]['min'] = reporting_get_agentmodule_data_min($module,$period,$date);
+				
 			}
+			
 			break;
 		case CUSTOM_GRAPH_HBARS:
 		case CUSTOM_GRAPH_VBARS:
@@ -1421,6 +1430,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				else
 					$label = $module_data['nombre'];
 				$temp[$label]['g'] = $temp_data;
+				
 			}
 			break;
 		case CUSTOM_GRAPH_PIE:
@@ -1440,7 +1450,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 						$value = count($value);
 				}
 				else {
-					$value = 0;
+					$value = false;
 				}
 				$total_modules += $value;
 				
@@ -1454,7 +1464,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 										'unit'=>$data_module['unit']);
 			}
 			$temp['total_modules'] = $total_modules;
-			
 			break;
 		case CUSTOM_GRAPH_GAUGE:
 			$datelimit = $date - $period;
@@ -1465,24 +1474,25 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 							WHERE id_agente_modulo = ' . (int) $module .
 								' AND utimestamp > ' . (int) $datelimit .
 								' AND utimestamp < ' . (int) $date);
-				if ( $temp_data ){
+				if ( $temp_data ) {
 					if (is_numeric($temp_data))
 						$value = $temp_data;
 					else
 						$value = count($value);
 				}
 				else {
-					$value = 0;
+					$value = false;
 				}
 				$temp[$module]['label'] = ($labels[$module] != '') ? $labels[$module] : $temp[$module]['nombre'];
 				
 				$temp[$module]['value'] = $value;
 				$temp[$module]['label'] = ui_print_truncate_text($temp[$module]['label'],"module_small",false,true,false,"..");
 				
-				if ($temp[$module]['unit'] == '%'){
+				if ($temp[$module]['unit'] == '%') {
 					$temp[$module]['min'] =	0;
 					$temp[$module]['max'] = 100;
-				}else{
+				}
+				else {
 					$min = $temp[$module]['min'];
 					if ($temp[$module]['max'] == 0)
 						$max = reporting_get_agentmodule_data_max($module,$period,$date);
@@ -1560,6 +1570,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		'color' => COL_GRAPH12, 'alpha' => 50);
 	$color[15] = array('border' => '#000000',
 		'color' => COL_GRAPH13, 'alpha' => 50);
+	
 	
 	switch ($stacked) {
 		case CUSTOM_GRAPH_AREA:

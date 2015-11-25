@@ -866,8 +866,16 @@ function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,mi
 		label: etiqueta,
 		min: undefined != min ? min : 0,
 		max: undefined != max ? max : 100,
-		minorTicks: 20,
 		font_size: font_size
+	}
+	
+	if (value == -1200) {
+		config.majorTicks = 1;
+		config.minorTicks = 1;
+		value = false;
+	}
+	else {
+		config.minorTicks = 10;
 	}
 	
 	//var range = config.max - config.min;
@@ -916,6 +924,7 @@ function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,mi
 			$(this).text(text);
 		}
 	});
+	config = false;
 }
 
 function createGauges(data, width, height, font_size, no_data_image)
@@ -976,14 +985,12 @@ function createGauges(data, width, height, font_size, no_data_image)
 			minimun_warning = mininum;
 		}
 		
-		if (!isNaN(valor)) {	
-			createGauge(nombre, label, valor, mininum, maxinum, 
-					minimun_warning, maximun_warning, minimun_critical,
-						maximun_critical, font_size, height);
-		}
-		else {
-			$('#'+nombre).html("<img style='vertical-align:middle;' src='"+ no_data_image +"'/>")
-		}
+		if (isNaN(valor)) 
+			valor = (-1200);
+		createGauge(nombre, label, valor, mininum, maxinum, 
+				minimun_warning, maximun_warning, minimun_critical,
+					maximun_critical, font_size, height);
+		
 		
 	}
 	

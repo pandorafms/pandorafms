@@ -400,7 +400,8 @@ $table->data[3][1] = html_print_select($status_array, 'filter_status',
 
 // Free search (search by all alphanumeric fields)
 $table->data[2][3] = '<strong>' . __('Free search') . '</strong>' .
-	ui_print_help_tip(__('Search by any alphanumeric field in the trap'), true);
+	ui_print_help_tip(__('Search by any alphanumeric field in the trap.
+		REMEMBER trap sources need to be searched by IP Address'), true);
 $table->data[2][4] = html_print_input_text('free_search_string',
 	$free_search_string, '', 40, 0, true);
 
@@ -574,7 +575,7 @@ if ($traps !== false) {
 				continue;
 			}
 			$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'" title="'.__('View agent details').'">';
-			$data[1] .= '<strong>'.$agent["nombre"].'</strong></a>';
+			$data[1] .= '<strong>'.$agent["nombre"].ui_print_help_tip($trap['source'], true);'</strong></a>';
 		}
 		
 		//OID

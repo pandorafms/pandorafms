@@ -1449,6 +1449,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				else
 					$label = $data_module['nombre'];
 				
+				$label = io_safe_output($label);				
 				$temp[$label] = array('value'=>$value,
 										'unit'=>$data_module['unit']);
 			}

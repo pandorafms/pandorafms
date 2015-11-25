@@ -193,7 +193,7 @@ if ($layers != false) {
 			$icon_size = getimagesize($icon);
 			$icon_width = $icon_size[0];
 			$icon_height = $icon_size[1];
-			$status = agents_get_status($idAgent);
+			$status = agents_get_status($idAgent,true);
 			$parent = db_get_value('id_parent', 'tagente', 'id_agente', $idAgent);
 			
 			gis_add_agent_point($layer['layer_name'],

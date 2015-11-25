@@ -918,15 +918,31 @@ function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,mi
 	});
 }
 
-function createGauges(data, width, height, font_size)
+function createGauges(data, width, height, font_size, no_data_image)
 {
 	var nombre,label,minimun_warning,maximun_warning,minimun_critical,maximun_critical,
 		mininum,maxinum,valor;
+	
 	for (key in data) {
 		nombre = data[key].nombre;
+		
+		
 		nombre = nombre.replace(/&#x20;/g,'_');
+		nombre = nombre.replace(/&#40;/g,'_');
+		nombre = nombre.replace(/&#41;/g,'_');
+		nombre = nombre.replace(/\*/g,'_');
+		nombre = nombre.replace(/\(/g,'_');
+		nombre = nombre.replace(/\)/g,'_');
+		
 		label = undefined != data[key].label ? data[key].label : data[key].nombre;
+		
 		label = label.replace(/&#x20;/g,' ');
+		label = label.replace(/\(/g,'\(');
+		label = label.replace(/\)/g,'\)');
+		
+		label = label.replace(/&#40;/g,'\(');
+		label = label.replace(/&#41;/g,'\)');
+		
 		minimun_warning 	= Math.round(parseFloat( data[key].min_warning ),2);
 		maximun_warning 	= Math.round(parseFloat( data[key].max_warning ),2);
 		minimun_critical	= Math.round(parseFloat( data[key].min_critical ),2);
@@ -960,9 +976,15 @@ function createGauges(data, width, height, font_size)
 			minimun_warning = mininum;
 		}
 		
-		createGauge(nombre, label, valor, mininum, maxinum, 
-				minimun_warning, maximun_warning, minimun_critical,
-					maximun_critical, font_size, height);
+		if (!isNaN(valor)) {	
+			createGauge(nombre, label, valor, mininum, maxinum, 
+					minimun_warning, maximun_warning, minimun_critical,
+						maximun_critical, font_size, height);
+		}
+		else {
+			$('#'+nombre).html("<img style='vertical-align:middle;' src='"+ no_data_image +"'/>")
+		}
+		
 	}
 	
 }

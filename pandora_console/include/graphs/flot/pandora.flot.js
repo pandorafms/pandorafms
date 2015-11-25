@@ -232,7 +232,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 			return;
 		percent = parseFloat(obj.series.percent).toFixed(2);
 		valor = parseFloat(obj.series.data[0][1]);
-		console.log(obj);
+		
 		if (valor > 1000000){
 			value = Math.round((valor / 1000000)*100)/100;
 			value = value + "M";
@@ -240,7 +240,10 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 				value = Math.round((valor / 1000)*100)/100;
 				value = value + "K";
 			}
+			else
+				value = valor;
 		}
+		
 		alert(''+obj.series.label+': '+ value +' ('+percent+'%)');
 	}
 	

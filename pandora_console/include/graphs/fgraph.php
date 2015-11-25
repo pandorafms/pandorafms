@@ -163,17 +163,20 @@ function slicesbar_graph($chart_data, $period, $width, $height, $colors,
 }
 
 function vbar_graph($flash_chart, $chart_data, $width, $height,
-	$color = array(), $legend = array(), $xaxisname = "",
-	$yaxisname = "", $homedir="", $water_mark = '', $font = '',
-	$font_size = '', $force_steps = true, $ttl = 1,
-	$reduce_data_columns = false, $adapt_key = '') {
+	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
+	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
+	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white') {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+	
+	if (empty($chart_data)) {
+		return '<img src="' . $no_data_image . '" />';
+	}
 	
 	if ($flash_chart) {
 		return flot_vcolumn_chart ($chart_data, $width, $height, $color,
 			$legend, $long_index, $homeurl, $unit, $water_mark_url,
-			$homedir, $reduce_data_columns, $adapt_key);
+			$homedir);
 	}
 	else {
 		$graph = array();
@@ -451,7 +454,8 @@ function stacked_gauge($flash_chart, $chart_data, $width, $height,
 			$homeurl,
 			$unit,
 			$font,
-			$font_size + 2
+			$font_size + 2,
+			$no_data_image
 			);
 }
 
@@ -540,13 +544,17 @@ function polar_graph($flash_chart, $chart_data, $width, $height,
 		$height, $no_data_image, $ttl, $homedir="");
 }
 
+
 function hbar_graph($flash_chart, $chart_data, $width, $height,
-	$color = array(), $legend = array(), $xaxisname = "",
-	$yaxisname = "", $force_height = true, $homedir="",
-	$water_mark = '', $font = '', $font_size = '', $force_steps = true,
-	$ttl = 1, $return = false) {
+	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
+	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
+	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white') {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
+	
+	if (empty($chart_data)) {
+		return '<img src="' . $no_data_image . '" />';
+	}
 	
 	if ($flash_chart) {
 		if ($return) {

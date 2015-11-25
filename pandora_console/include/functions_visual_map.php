@@ -1093,7 +1093,8 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 				$value = __('Unknown');
 			}
 			else {
-				$value = format_for_graph($value, 2);
+				if ( is_numeric($value) )
+					$value = format_for_graph($value, 2);
 				if (!empty($unit_text)) {
 					$value .= " " . $unit_text;
 				}
@@ -1106,7 +1107,8 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 				$value = __('Unknown');
 			}
 			else {
-				$value = format_for_graph($value, 2);
+				if ( is_numeric($value) )
+					$value = format_for_graph($value, 2);
 				if (!empty($unit_text))
 					$value .= " " . $unit_text;
 			}
@@ -1118,7 +1120,8 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 				$value = __('Unknown');
 			}
 			else {
-				$value = format_for_graph($value, 2);
+				if ( is_numeric($value) )
+					$value = format_for_graph($value, 2);
 				if (!empty($unit_text))
 					$value .= " " . $unit_text;
 			}
@@ -1130,7 +1133,8 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 				$value = __('Unknown');
 			}
 			else {
-				$value = format_for_graph($value, 2);
+				if ( is_numeric($value) )
+					$value = format_for_graph($value, 2);
 				if (!empty($unit_text))
 					$value .= " " . $unit_text;
 			}

@@ -181,9 +181,6 @@ echo '<td style="vertical-align: top; width: 75%; padding-top: 0px;" id="rightco
 // ---------------------------------------------------------------------
 // Last events information
 // ---------------------------------------------------------------------
-$hidden_toggle = true;
-if ($refresh > 0 )
-	$hidden_toggle = false;
 
 $acltags = tags_get_user_module_and_tags ($config['id_user'], $access = 'ER', $user_strict);
 
@@ -192,7 +189,7 @@ if (!empty($acltags)) {
 	
 	if (!empty($tags_condition)) {
 		$events = events_print_event_table ("estado<>1 AND ($tags_condition)", 10, "100%",true,false,true);
-		ui_toggle($events, __('Latest events'),false,$hidden_toggle);
+		ui_toggle($events, __('Latest events'),false,false);
 	}
 }
 

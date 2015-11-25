@@ -189,7 +189,7 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	//INI GIS Maps
 	if ($config['activate_gis']) {
 		$menu_operation["gismaps"]["text"] = __('GIS Maps');
-		$menu_operation["gismaps"]["sec2"] = "operation/gis_maps/index";
+		$menu_operation["gismaps"]["sec2"] = "operation/gis_maps/gis_map";
 		$menu_operation["gismaps"]["refr"] = 0;
 		$menu_operation["gismaps"]["id"] = "oper-gismaps";
 		

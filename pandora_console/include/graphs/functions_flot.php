@@ -509,6 +509,8 @@ function flot_custom_pie_chart ($flash_charts, $graph_values,
 			$legendvalue = sprintf("%sM", number_format($value['value'] / 1000000, 2));
 		else if ($value['value'] > 1000)
 			$legendvalue = sprintf("%sK", number_format($value['value'] / 1000, 2));
+		else
+			$legendvalue = $value['value'];
 		$values[] = $value['value'];
 		$legend[] = $label .": " . $legendvalue . " " .$value['unit'];
 		$labels[] = $label;
@@ -639,7 +641,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark) {
 }
 
 // Returns a 3D column chart
-function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark, $homedir, $reduce_data_columns, $adapt_key) {
+function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark, $homedir) {
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();

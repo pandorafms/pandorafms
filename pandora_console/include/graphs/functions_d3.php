@@ -256,7 +256,7 @@ function d3_bullet_chart($chart_data, $width, $height, $color, $legend,
 }
 
 function d3_gauges($chart_data, $width, $height, $color, $legend,
-				$homeurl, $unit, $font, $font_size) {
+				$homeurl, $unit, $font, $font_size, $no_data_image) {
 	global $config;
 
 	if (is_array($chart_data))
@@ -264,12 +264,15 @@ function d3_gauges($chart_data, $width, $height, $color, $legend,
 	$output = include_javascript_d3(true);
 	
 	foreach ($chart_data as $module) {
-		$output .= "<span id='".str_replace('&#x20;','_',$module['nombre'])."' style='overflow: hidden; margin-left: 10px;'></span>";
+		$module['nombre'] = io_safe_output($module['nombre']);
+		$module['nombre'] = str_replace(array('&#x20;','(',')',"*",' '),'_',$module['nombre']);
+		$output .= "<div id='".$module['nombre']."' style='float:left; overflow: hidden; margin-left: 10px;'></div>";
+		
 	}
 	
 	$output .= "<script language=\"javascript\" type=\"text/javascript\">
 					var data = $data;
-					createGauges(data, '$width', '$height','$font_size');
+					createGauges(data, '$width', '$height','$font_size','$no_data_image');
 				</script>";
 
 	return $output;

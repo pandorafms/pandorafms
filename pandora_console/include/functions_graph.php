@@ -1474,9 +1474,10 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				else {
 					$value = 0;
 				}
-				if ($labels[$module] != '')
-					$temp[$module]['label'] = $labels[$module];
+				$temp[$module]['label'] = ($labels[$module] != '') ? $labels[$module] : $temp[$module]['nombre'];
+				
 				$temp[$module]['value'] = $value;
+				$temp[$module]['label'] = ui_print_truncate_text($temp[$module]['label'],"module_small",false,true,false,"..");
 				
 				if ($temp[$module]['unit'] == '%'){
 					$temp[$module]['min'] =	0;

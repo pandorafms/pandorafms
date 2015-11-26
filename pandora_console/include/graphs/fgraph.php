@@ -18,6 +18,8 @@ if (isset($_GET['homeurl'])) {
 }
 else $homeurl = '';
 
+$homeurl = ((bool)filter_var($homeurl, FILTER_VALIDATE_URL) == 1) ? '' : $homeurl;
+
 if (isset($_GET['ttl'])) {
 	$ttl = $_GET['ttl'];
 }

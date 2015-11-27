@@ -68,7 +68,7 @@ help () {
 
 # Script banner at start
 echo " "
-echo "Pandora FMS 5.0 Server Upgrade (c) 2009-2013 Artica ST"
+echo "Pandora FMS 6.0 Server Upgrade (c) 2009-2015 Artica ST"
 echo "This program is licensed under GPL2 Terms. http://pandorafms.org"
 echo " "
 

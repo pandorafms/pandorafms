@@ -1193,7 +1193,7 @@ function gis_get_map_data($idMap) {
 	$connections = false;
 	switch ($config["dbtype"]) {
 		case "mysql":
-			$sql = "SELECT t1.tgis_map_con_id_tmap_con AS id_conection
+			$sql = "SELECT t1.tgis_map_con_id_tmap_con AS id_conection, 
 						t1.default_map_connection AS `default`,
 						SUM(t2.num_zoom_levels) AS num_zoom_levels
 					FROM tgis_map_has_tgis_map_con t1
@@ -1205,7 +1205,7 @@ function gis_get_map_data($idMap) {
 			break;
 		case "postgresql":
 		case "oracle":
-			$sql = "SELECT t1.tgis_map_con_id_tmap_con AS id_conection
+			$sql = "SELECT t1.tgis_map_con_id_tmap_con AS id_conection, 
 						t1.default_map_connection AS \"default\",
 						SUM(t2.num_zoom_levels) AS num_zoom_levels
 					FROM tgis_map_has_tgis_map_con t1

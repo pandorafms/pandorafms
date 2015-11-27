@@ -359,6 +359,7 @@ switch ($config["dbtype"]) {
 $sql_all = sprintf($sql_all, $whereSubquery);
 $sql_count = sprintf($sql_count, $whereSubquery);
 
+$table = new stdClass();
 $table->width = '100%';
 $table->cellpadding = 0;
 $table->cellspacing = 0;

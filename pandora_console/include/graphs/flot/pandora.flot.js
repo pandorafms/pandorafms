@@ -133,6 +133,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 	var labels = labels.split(separator);
 	var legend = legend.split(separator);
 	var data = values.split(separator);
+	var no_data = 0;
 	if (colors != '') {
 		colors = colors.split(separator);
 	}
@@ -142,8 +143,11 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		if (colors != '') {
 			color = colors_data[i];
 		}
+		var datos = data[i];
+		data[i] = { label: labels[i], data: parseFloat(data[i]), color: color };
+		if (!datos)
+			no_data++;
 		
-		data[i] = { label: labels[i], data: parseFloat(data[i]), color: color}
 	}
 	
 	var label_conf;
@@ -184,7 +188,12 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		};
 	
 	var plot = $.plot($('#'+graph_id), data, conf_pie);
-	
+	if (no_data == data.length) {
+		$('#'+graph_id+' .overlay').remove();
+		$('#'+graph_id+' .base').remove();
+		$('#'+graph_id).prepend("<img style='width:50%;' src='images/no_data_toshow.png' />");
+		
+	}
 	var legends = $('#'+graph_id+' .legendLabel');
 	var j = 0;
 	legends.each(function () {

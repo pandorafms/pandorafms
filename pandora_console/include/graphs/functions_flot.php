@@ -505,12 +505,16 @@ function flot_custom_pie_chart ($flash_charts, $graph_values,
 	unset($graph_values['total_modules']);
 	
 	foreach ($graph_values as $label => $value) {
-		if ($value['value'] > 1000000)
-			$legendvalue = sprintf("%sM", number_format($value['value'] / 1000000, 2));
-		else if ($value['value'] > 1000)
-			$legendvalue = sprintf("%sK", number_format($value['value'] / 1000, 2));
+		if ($value['value']) {
+			if ($value['value'] > 1000000)
+				$legendvalue = sprintf("%sM", number_format($value['value'] / 1000000, 2));
+			else if ($value['value'] > 1000)
+				$legendvalue = sprintf("%sK", number_format($value['value'] / 1000, 2));
+			else
+				$legendvalue = $value['value'];
+		}
 		else
-			$legendvalue = $value['value'];
+			$legendvalue = __('No data');
 		$values[] = $value['value'];
 		$legend[] = $label .": " . $legendvalue . " " .$value['unit'];
 		$labels[] = $label;

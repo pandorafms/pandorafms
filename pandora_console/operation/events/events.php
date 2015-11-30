@@ -207,13 +207,16 @@ $open_filter = (int) get_parameter('open_filter', 0);
 $date_from = (string)get_parameter('date_from', '');
 $date_to = (string)get_parameter('date_to', '');
 
-$text_agent = (string) get_parameter("text_agent", __("All"));
+$text_agent = (string) io_safe_output( get_parameter("text_agent", __("All")) );
 $id_agent = get_parameter('id_agent', 0);
 if ($id_agent != 0) {
 	$text_agent = db_get_value('nombre', 'tagente', 'id_agente', $id_agent);
 	if ($text_agent == false) {
 		$text_agent = '';
 	}
+}
+else {
+	$id_agent = agents_get_agent_id ($text_agent,true);
 }
 
 
@@ -255,6 +258,7 @@ $params = "search=" . rawurlencode(io_safe_input($search)) .
 	"&amp;recursion=" . $recursion . 
 	"&amp;refr=" . (int)get_parameter("refr", 0) . 
 	"&amp;id_agent=" . $id_agent . 
+	"&amp;text_agent=" . $text_agent . 
 	"&amp;pagination=" . $pagination . 
 	"&amp;group_rep=" . $group_rep . 
 	"&amp;event_view_hr=" . $event_view_hr . 
@@ -273,9 +277,6 @@ $params = "search=" . rawurlencode(io_safe_input($search)) .
 	"&amp;date_to=" . $date_to .
 	"&amp;pure=" . $config["pure"];
 
-if ($meta) {
-	$params .= "&amp;text_agent=" . $text_agent;
-}
 
 $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;" . $params;
 

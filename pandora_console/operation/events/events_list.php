@@ -130,7 +130,11 @@ echo "<div id='show_filter_error'>";
 echo "</div>";
 
 if ($id_agent == 0 && $text_agent != __('All')) {
-	$id_agent = -1;
+	$agente_id = agents_get_agent_id ($text_agent);
+	if ($agente_id)
+		$id_agent = $agente_id;
+	else
+		$id_agent = -1;
 }
 
 /////////////////////////////////////////////
@@ -669,7 +673,7 @@ $(document).ready( function() {
 			$("#severity").val(-1);
 			$("#status").val(3);
 			$("#text-search").val('');
-			$("#text_id_agent").val( <?php echo '"' . __('All') . '"' ?> );
+			$("#text-text_agent").val( <?php echo '"' . __('All') . '"' ?> );
 			$("#pagination").val(25);
 			$("#text-event_view_hr").val(8);
 			$("#id_user_ack").val(0);
@@ -709,7 +713,7 @@ $(document).ready( function() {
 						if (i == 'search')
 							$("#text-search").val(val);
 						if (i == 'text_agent')
-							$("#text_id_agent").val(val);
+							$("#text-text_agent").val(val);
 						if (i == 'pagination')
 							$("#pagination").val(val);
 						if (i == 'event_view_hr')
@@ -780,7 +784,7 @@ $(document).ready( function() {
 			"severity" : $("#severity").val(),
 			"status" : $("#status").val(),
 			"search" : $("#text-search").val(),
-			"text_agent" : $("#text_id_agent").val(),
+			"text_agent" : $("#text-text_agent").val(),
 			"pagination" : $("#pagination").val(),
 			"event_view_hr" : $("#text-event_view_hr").val(),
 			"id_user_ack" : $("#id_user_ack").val(),
@@ -850,7 +854,7 @@ $(document).ready( function() {
 			"severity" : $("#severity").val(),
 			"status" : $("#status").val(),
 			"search" : $("#text-search").val(),
-			"text_agent" : $("#text_id_agent").val(),
+			"text_agent" : $("#text-text_agent").val(),
 			"pagination" : $("#pagination").val(),
 			"event_view_hr" : $("#text-event_view_hr").val(),
 			"id_user_ack" : $("#id_user_ack").val(),

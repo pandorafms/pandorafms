@@ -63,7 +63,7 @@ Optional parameters:
 	
 	print "Example of event generation:\n\n";
 	
-	print "\t./pandora_revent.pl -p http://localhost/pandora_console/include/api.php -u 1234,admin,pandora \
+	print "\t./pandora_revent_create.pl -p http://localhost/pandora_console/include/api.php -u 1234,admin,pandora \
 	\t-create_event -name \"SampleEvent\" -group 2 -agent 189 -status 0 -user \"admin\" -type \"system\" \
 	\t-severity 3 -am 0 -alert 9 -c_instructions \"Critical instructions\" -w_instructions \"Warning instructions\" \
 	\t-u_instructions \"Unknown instructions\" -source \"Commandline\" -tag \"Tags\"\n\n";

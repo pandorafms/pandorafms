@@ -416,7 +416,9 @@ $module_field_column_mampping = array(
 	'module_min_ff_event' => 'min_ff_event as module_min_ff_event',
 	'module_delete_pending' => 'delete_pending as module_delete_pending',
 	'module_plugin_macros' => 'macros as module_plugin_macros',
-	'module_macros' => 'module_macros as module_macros');
+	'module_macros' => 'module_macros as module_macros',
+	'module_critical_inverse' => 'critical_inverse as module_critical_inverse',
+	'module_warning_inverse' => 'warning_inverse as module_warning_inverse');
 
 /* module related field mappings 2/2 (output field => column for 'tagente_estado') */
 $estado_fields_to_columns_mapping = array(
@@ -567,6 +569,8 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType) {
 		'module_last_status',
 		'module_plugin_macros',
 		'module_macros',
+		'module_critical_inverse',
+		'module_warning_inverse',
 		
 		'alert_id_agent_module',
 		'alert_id_alert_template',
@@ -967,7 +971,9 @@ function get_module_properties($id_module, $fields, $separator, $returnType, $re
 		'module_status_changes',
 		'module_last_status',
 		'module_plugin_macros',
-		'module_macros' );
+		'module_macros',
+		'module_critical_inverse',
+		'module_warning_inverse');
 
 	/* module related field mappings 1/2 (output field => column for 'tagente_modulo') */
 

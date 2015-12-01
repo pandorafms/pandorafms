@@ -1624,7 +1624,14 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3) {
 		'min_ff_event_warning' => $other['data'][26],
 		'min_ff_event_critical' => $other['data'][27]
 	);
-	
+
+	if ( ! $values['descripcion'] ) {
+		$values['descripcion'] = '';	// Column 'descripcion' cannot be null
+	}
+	if ( ! $values['module_macros'] ) {
+		$values['module_macros'] = '';	// Column 'module_macros' cannot be null
+	}
+
 	$idModule = modules_create_agent_module($idAgent, $name, $values, true);
 	
 	if (is_error($idModule)) {
@@ -1817,6 +1824,13 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3) {
 		'min_ff_event_critical' => $other['data'][32]
 	);
 	
+	if ( ! $values['descripcion'] ) {
+		$values['descripcion'] = '';	// Column 'descripcion' cannot be null
+	}
+	if ( ! $values['module_macros'] ) {
+		$values['module_macros'] = '';	// Column 'module_macros' cannot be null
+	}
+
 	$idModule = modules_create_agent_module($idAgent, $name, $values, true);
 	
 	if (is_error($idModule)) {
@@ -2003,6 +2017,13 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3) {
 		'ff_timeout' => $other['data'][23]
 	);
 	
+	if ( ! $values['descripcion'] ) {
+		$values['descripcion'] = '';	// Column 'descripcion' cannot be null
+	}
+	if ( ! $values['module_macros'] ) {
+		$values['module_macros'] = '';	// Column 'module_macros' cannot be null
+	}
+
 	$idModule = modules_create_agent_module($idAgent, $name, $values, true);
 	
 	if (is_error($idModule)) {
@@ -2253,6 +2274,10 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 		);
 	}
 	
+	if ( ! $values['descripcion'] ) {
+		$values['descripcion'] = '';	// Column 'descripcion' cannot be null
+	}
+
 	$idModule = modules_create_agent_module($idAgent, $name, $values, true);
 	
 	if (is_error($idModule)) {

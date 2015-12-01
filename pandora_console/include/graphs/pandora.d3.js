@@ -935,7 +935,7 @@ function createGauges(data, width, height, font_size, no_data_image)
 	for (key in data) {
 		nombre = data[key].gauge;
 		
-		label = undefined != data[key].label ? data[key].label : data[key].nombre;
+		label = data[key].label;
 		
 		label = label.replace(/&#x20;/g,' ');
 		label = label.replace(/\(/g,'\(');

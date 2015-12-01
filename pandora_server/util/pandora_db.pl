@@ -580,7 +580,7 @@ sub pandora_compactdb ($$) {
 sub pandora_init ($) {
 	my $conf = shift;
 	
-	log_message ('', "\nPandora FMS DB Tool $version Copyright (c) 2004-2009 Artica ST\n");
+	log_message ('', "\nPandora FMS DB Tool $version Copyright (c) 2004-2015 Artica ST\n");
 	log_message ('', "This program is Free Software, licensed under the terms of GPL License v2\n");
 	log_message ('', "You can download latest versions and documentation at http://www.pandorafms.org\n\n");
 	

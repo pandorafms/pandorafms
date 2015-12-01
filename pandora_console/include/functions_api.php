@@ -1622,7 +1622,9 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3) {
 		'each_ff' => $other['data'][24],
 		'min_ff_event_normal' => $other['data'][25],
 		'min_ff_event_warning' => $other['data'][26],
-		'min_ff_event_critical' => $other['data'][27]
+		'min_ff_event_critical' => $other['data'][27],
+		'critical_inverse' => $other['data'][28],
+		'warning_inverse' => $other['data'][29]
 	);
 
 	if ( ! $values['descripcion'] ) {
@@ -1724,7 +1726,9 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3) {
 		'each_ff',
 		'min_ff_event_normal',
 		'min_ff_event_warning',
-		'min_ff_event_critical');
+		'min_ff_event_critical',
+		'critical_inverse',
+		'warning_inverse');
 	
 	$values = array();
 	$cont = 0;
@@ -1821,7 +1825,9 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3) {
 		'each_ff' => $other['data'][29],
 		'min_ff_event_normal' => $other['data'][30],
 		'min_ff_event_warning' => $other['data'][31],
-		'min_ff_event_critical' => $other['data'][32]
+		'min_ff_event_critical' => $other['data'][32],
+		'critical_inverse' => $other['data'][33],
+		'warning_inverse' => $other['data'][34]
 	);
 	
 	if ( ! $values['descripcion'] ) {
@@ -1922,7 +1928,9 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3) {
 		'each_ff',
 		'min_ff_event_normal',
 		'min_ff_event_warning',
-		'min_ff_event_critical');
+		'min_ff_event_critical',
+		'critical_inverse',
+		'warning_inverse');
 	
 	$values = array();
 	$cont = 0;
@@ -2014,7 +2022,9 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3) {
 		'min_ff_event_normal' => $other['data'][20],
 		'min_ff_event_warning' => $other['data'][21],
 		'min_ff_event_critical' => $other['data'][22],
-		'ff_timeout' => $other['data'][23]
+		'ff_timeout' => $other['data'][23],
+		'critical_inverse' => $other['data'][24],
+		'warning_inverse' => $other['data'][25]
 	);
 	
 	if ( ! $values['descripcion'] ) {
@@ -2107,7 +2117,9 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3) {
 		'min_ff_event_normal',
 		'min_ff_event_warning',
 		'min_ff_event_critical',
-		'ff_timeout');
+		'ff_timeout',
+		'critical_inverse',
+		'warning_inverse');
 	
 	$values = array();
 	$cont = 0;

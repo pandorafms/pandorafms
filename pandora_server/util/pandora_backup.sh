@@ -6,7 +6,7 @@
 function help {
 	echo ""
 	echo -e "Pandora FMS Command line backup tool. http://www.pandorafms.org" 
-	echo -e "(c) 2009 Sancho Lerena <slerena@gmail.com>, Artica Soluciones Tecnologicas"
+	echo -e "(c) 2009-2015 Sancho Lerena <slerena@gmail.com>, Artica Soluciones Tecnologicas"
 	echo ""
 	echo -e "Syntax:" 
 	echo -e "\t\t-c Path to Pandora FMS console, p.e: /srv/www/htdocs/pandora_console"

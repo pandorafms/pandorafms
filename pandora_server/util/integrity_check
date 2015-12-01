@@ -12,7 +12,7 @@ HUMANDATE=`date +%d-%m-%y-%s`
 OUTPUT=integrity_check_`date +%d-%m-%y-%s`.data
 
 echo "Pandora FMS Integrity Check tool v1.0"
-echo "(c) Pandora FMS Development Team 2014"
+echo "(c) Pandora FMS Development Team 2014-2015"
 echo " "
 
 if [ $# -lt 2 ]

@@ -734,4 +734,69 @@ function planned_downtimes_created ($values) {
 	return $return;
 }
 
+
+function all_planned_downtimes ($filter) {
+	
+	$fields = 'id, name, description, date_from, date_to, id_group, monday,
+		tuesday, wednesday, thursday, friday, saturday, sunday,
+		periodically_time_from, periodically_time_to, periodically_day_from, 
+		periodically_day_to, type_downtime, type_execution, type_periodicity, id_user';
+	
+	$result = db_get_all_rows_filter('tplanned_downtime',$filter, $fields);
+	
+	return $result;
+}
+
+function planned_downtimes_items ($filter) {
+	
+	$downtime_agents = db_get_all_rows_filter('tplanned_downtime_agents',$filter, 'id_agent,id_downtime,all_modules');
+	$downtime = db_get_row_filter('tplanned_downtime',array('id' => $filter['id_downtime']), 'type_downtime');
+	
+	$return = array('list_index'=>array('id_agents','id_downtime','all_modules'));
+	
+	foreach ( $downtime_agents as $key => $data ) {
+		$return[$key] = $data;
+		$modules = array();
+		if ($downtime['type_downtime'] === 'quiet') {
+			if (!$data['all_modules']) {
+				$second_filter = array(
+					'id_agent' => $data['id_agent'],
+					'id_downtime' => $data['id_downtime']);
+				
+				$downtime_modules = db_get_all_rows_filter('tplanned_downtime_modules',$second_filter, 'id_agent_module');
+				if ( $downtime_modules ) {
+					foreach ( $downtime_modules as $data2 ) {
+						$modules[] = $data2['id_agent_module'];
+					}
+					$return[$key]['modules'] = implode(',', $modules);
+				}
+			}
+		}
+	}
+	
+	if ($downtime['type_downtime'] === 'quiet') {
+		$return['list_index'][] = 'modules';
+	}
+	
+	return $return;
+}
+
+function delete_planned_downtimes ($filter) {
+	
+	
+	$downtime_execute = db_get_row_filter('tplanned_downtime',array('id' => $filter['id_downtime']), 'execute');
+	
+	if ( $downtime_execute )
+		$return = __("This planned downtime are executed now. Can't delete in this moment.");
+	else {
+		$delete = db_process_sql_delete ('tplanned_downtime',
+					array('id'=>$filter['id_downtime']));
+		if ($delete)
+			$return = __("Deleted this planned downtime successfully.");
+		else
+			$return = __("Problems for deleted this planned downtime.");
+	}
+		
+	return $return;
+}
 ?>

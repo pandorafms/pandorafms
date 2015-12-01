@@ -3791,6 +3791,104 @@ function api_set_tag($id, $thrash1, $other, $thrash3) {
 }
 
 /**
+ * Return all planned downtime.
+ *
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <name>;<id_group>;<type_downtime>;<type_execution>;<type_periodicity>; in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=all_planned_downtimes&other=test|0|quiet|periodically|weekly&other_mode=url_encode_separator_|&return_type=json
+ * 
+ * @param type of return json or csv.
+ */
+
+function api_get_all_planned_downtimes ($thrash1, $thrash2, $other, $returnType) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$values = array();
+	$values = array(
+		'name' => $other['data'][0]
+	);
+	
+	if (isset($other['data'][1]) && ($other['data'][1] != false ))
+		$values['id_group'] = $other['data'][1];
+	if (isset($other['data'][2]) && ($other['data'][2] != false))
+		$values['type_downtime'] = $other['data'][2];
+	if (isset($other['data'][3]) && ($other['data'][3]!= false) )
+		$values['type_execution'] = $other['data'][3];
+	if (isset($other['data'][4]) && ($other['data'][4] != false) )
+		$values['type_periodicity'] = $other['data'][4];
+		
+	
+	$returned = all_planned_downtimes($values);
+	
+	returnData($returnType,
+			array('type' => 'array', 'data' => $returned));
+}
+
+/**
+ * Return all items of planned downtime.
+ *
+ * @param $id id of planned downtime.
+ * @param 
+ *  example:
+ *  
+ *  api.php?op=set&op2=planned_downtimes_items&id=10&other_mode=url_encode_separator_|&return_type=json
+ * 
+ * @param type of return json or csv.
+ */
+
+function api_get_planned_downtimes_items ($id, $thrash2, $other, $returnType = 'json') {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$values = array();
+	$values = array(
+		'id_downtime' => $id
+	);
+	
+	$returned = planned_downtimes_items($values);
+	
+	if ( $returnType == 'json' )
+		unset($returned['list_index']);
+	
+	returnData($returnType,
+			array('type' => 'array', 'data' => $returned));
+}
+
+/**
+ * Delete planned downtime.
+ *
+ * @param $id id of planned downtime.
+ * @param $thrash1 not use.
+ * @param $thrash2 not use.
+ *  
+ *  api.php?op=set&op2=planned_downtimes_deleted &id=10&return_type=json
+ * 
+ * @param type of return json or csv.
+ */
+
+function api_set_planned_downtimes_deleted ($id, $thrash1, $thrash2, $returnType) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+	
+	$values = array();
+	$values = array(
+		'id_downtime' => $id
+	);
+	
+	$returned = delete_planned_downtimes($values);
+	
+	returnData($returnType,
+			array('type' => 'string', 'data' => $returned));
+}
+
+/**
  * Create a new planned downtime.
  * 
  * @param $id name of planned downtime.
@@ -3806,7 +3904,7 @@ function api_set_tag($id, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use.
  */
 
-function api_set_planned_downtimes_created($id, $thrash1, $other, $thrash3) {
+function api_set_planned_downtimes_created ($id, $thrash1, $other, $thrash3) {
 	if (defined ('METACONSOLE')) {
 		return;
 	}
@@ -3859,7 +3957,7 @@ function api_set_planned_downtimes_created($id, $thrash1, $other, $thrash3) {
  * @param $thrash3 Don't use.
  */
 
-function api_set_planned_downtimes_additem($id, $thrash1, $other, $thrash3) {
+function api_set_planned_downtimes_additem ($id, $thrash1, $other, $thrash3) {
 	if (defined ('METACONSOLE')) {
 		return;
 	}

@@ -1467,6 +1467,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			break;
 		case CUSTOM_GRAPH_GAUGE:
 			$datelimit = $date - $period;
+			$i = 0;
 			foreach ($module_list as $module) {
 				$temp[$module] = modules_get_agentmodule($module);
 				$temp_data = db_get_value_sql('SELECT datos
@@ -1498,9 +1499,11 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 						$max = reporting_get_agentmodule_data_max($module,$period,$date);
 					else
 						$max = $temp[$module]['max'];
-					$temp[$module]['min'] = ($min)== 0 ? 0 : $min;
-					$temp[$module]['max'] = ($max)== 0 ? 100 : $max;
+					$temp[$module]['min'] = ($min == 0 ) ? 0 : $min;
+					$temp[$module]['max'] = ($max == 0 ) ? 100 : $max;
 				}
+				$temp[$module]['gauge'] = "gauge_" . $i;
+				$i++;
 			}
 			break;
 		default:

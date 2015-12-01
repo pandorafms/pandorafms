@@ -93,7 +93,7 @@ exit;
 # Print a help screen and exit.
 ##############################################################################
 sub help_screen{
-	print "\nPandora FMS CLI $version Copyright (c) 2013 Artica ST\n";
+	print "\nPandora FMS CLI $version Copyright (c) 2013-2015 Artica ST\n";
 	print "This program is Free Software, licensed under the terms of GPL License v2\n";
 	print "You can download latest versions and documentation at http://www.pandorafms.org\n\n";
 	print "$enterprise_msg\n\n";

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Small tool to measure data processing throughput for a Pandora FMS data server"
-echo "(c) 2010 Sancho Lerena, slerena@gmail.com"
+echo "(c) 2010-2015 Sancho Lerena, slerena@gmail.com"
 
 ANT=0
 while [ 1 ]

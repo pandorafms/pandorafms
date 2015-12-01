@@ -12,7 +12,7 @@ LINUXINFO=`uname -a`
 OUTFILE="/tmp/pandora_diag.$TIMESTAMP.data"
 
 echo " "
-echo "Pandora FMS Diagnostic Script v1.0 (c) ArticaST 2009-2011"
+echo "Pandora FMS Diagnostic Script v1.0 (c) ArticaST 2009-2015"
 echo "http://pandorafms.org. This script is licensed under GPL2 terms"                   
 echo " "
 echo "Please wait while this script is collecting data"

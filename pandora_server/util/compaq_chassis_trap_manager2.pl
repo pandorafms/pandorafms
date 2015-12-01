@@ -12,7 +12,7 @@ use POSIX qw(setsid strftime);
 
 sub show_help {
 	print "\nSpecific Pandora FMS trap collector for compaq Hardware\n";
-	print "(c) Sancho Lerena 2010 <slerena@artica.es>\n";
+	print "(c) Sancho Lerena 2010-2015 <slerena@artica.es>\n";
 	print "Usage:\n\n";
 	print "   compaq_chassis_trap_manager.pl <destination_agent_name> <TRAP DATA>\n\n";
 	exit;

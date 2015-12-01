@@ -933,15 +933,7 @@ function createGauges(data, width, height, font_size, no_data_image)
 		mininum,maxinum,valor;
 	
 	for (key in data) {
-		nombre = data[key].nombre;
-		
-		
-		nombre = nombre.replace(/&#x20;/g,'_');
-		nombre = nombre.replace(/&#40;/g,'_');
-		nombre = nombre.replace(/&#41;/g,'_');
-		nombre = nombre.replace(/\*/g,'_');
-		nombre = nombre.replace(/\(/g,'_');
-		nombre = nombre.replace(/\)/g,'_');
+		nombre = data[key].gauge;
 		
 		label = undefined != data[key].label ? data[key].label : data[key].nombre;
 		

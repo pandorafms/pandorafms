@@ -264,9 +264,7 @@ function d3_gauges($chart_data, $width, $height, $color, $legend,
 	$output = include_javascript_d3(true);
 	
 	foreach ($chart_data as $module) {
-		$module['nombre'] = io_safe_output($module['nombre']);
-		$module['nombre'] = str_replace(array('&#x20;','(',')',"*",' '),'_',$module['nombre']);
-		$output .= "<div id='".$module['nombre']."' style='float:left; overflow: hidden; margin-left: 10px;'></div>";
+		$output .= "<div id='".$module['gauge']."' style='float:left; overflow: hidden; margin-left: 10px;'></div>";
 		
 	}
 	

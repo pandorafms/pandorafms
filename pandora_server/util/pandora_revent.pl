@@ -82,7 +82,7 @@ Optional parameters:
 ##############################################################################
 sub tool_api_init () {
 	
-	print "\nPandora FMS Remote Event Tool Copyright (c) 2013 Artica ST\n";
+	print "\nPandora FMS Remote Event Tool Copyright (c) 2013-2015 Artica ST\n";
 	print "This program is Free Software, licensed under the terms of GPL License v2\n";
 	print "You can download latest versions and documentation at http://www.pandorafms.org\n\n";
 	

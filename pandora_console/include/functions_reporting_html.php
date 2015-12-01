@@ -676,8 +676,9 @@ function reporting_html_inventory_changes($table, $item) {
 			$table1->data[2][0] = __('Added');
 			$table1->colspan[2][0] = 2;
 			
-			
-			$table1->data = array_merge($table1->data, $module_item['added']);
+			if (count ($module_item['added'])) {
+				$table1->data = array_merge($table1->data, $module_item['added']);
+			}
 			
 			
 			$table1->cellstyle[3 + count($module_item['added'])][0] =
@@ -685,8 +686,9 @@ function reporting_html_inventory_changes($table, $item) {
 			$table1->data[3 + count($module_item['added'])][0] = __('Deleted');
 			$table1->colspan[3 + count($module_item['added'])][0] = 2;
 			
-			
-			$table1->data = array_merge($table1->data, $module_item['deleted']);
+			if (count ($module_item['deleted'])) {
+				$table1->data = array_merge($table1->data, $module_item['deleted']);
+			}
 			
 			
 			$table->colspan[

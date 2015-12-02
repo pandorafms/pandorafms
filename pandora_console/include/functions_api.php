@@ -3524,12 +3524,12 @@ function api_set_stop_downtime($id, $thrash1, $other, $thrash3) {
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
- *  api.php?op=set&op2=all_planned_downtimes&other=test|0|quiet|periodically|weekly&other_mode=url_encode_separator_|&return_type=json
+ *  api.php?op=get&op2=all_planned_downtimes&other=test|0|quiet|periodically|weekly&other_mode=url_encode_separator_|&return_type=json
  * 
  * @param type of return json or csv.
  */
 
-function api_get_all_planned_downtimes ($thrash1, $thrash2, $other, $returnType) {
+function api_get_all_planned_downtimes ($thrash1, $thrash2, $other, $returnType = 'json') {
 	if (defined ('METACONSOLE')) {
 		return;
 	}
@@ -3625,7 +3625,7 @@ function api_set_planned_downtimes_deleted ($id, $thrash1, $thrash2, $returnType
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
- *  api.php?op=set&op2=planned_downtimes_created&id=pepito&other=testing|1448035508|1448039108|0|1|1|1|1|1|1|1|17:06:00|19:06:00|1|31|quiet|periodically|weekly&other_mode=url_encode_separator_|
+ *  api.php?op=set&op2=planned_downtimes_created&id=pepito&other=testing|08-22-2015|08-31-2015|0|1|1|1|1|1|1|1|17:06:00|19:06:00|1|31|quiet|periodically|weekly&other_mode=url_encode_separator_|
  * 
  * @param $thrash3 Don't use.
  */
@@ -3635,13 +3635,17 @@ function api_set_planned_downtimes_created ($id, $thrash1, $other, $thrash3) {
 		return;
 	}
 	
+	
+	$date_from = strtotime($other['data'][1]);
+	$date_to = strtotime($other['data'][2]);
+	
 	$values = array();
 	$values['name'] = $id;
 	$values = array(
 		'name' => $id,
 		'description' => $other['data'][0],
-		'date_from' => $other['data'][1],
-		'date_to' => $other['data'][2],
+		'datetime_from' => $date_from,
+		'datetime_to' => $date_to,
 		'id_group' => $other['data'][3],
 		'monday' => $other['data'][4],
 		'tuesday' => $other['data'][5],

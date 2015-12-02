@@ -111,6 +111,9 @@ sub help_screen{
 	help_screen_line('--stop_downtime', '<downtime_name>', 'Stop a planned downtime');
 	help_screen_line('--create_downtime', "<downtime_name> <description> <date_from> <date_to> <id_group> <monday> <tuesday>\n\t <wednesday> <thursday> <friday> <saturday> <sunday> <periodically_time_from>\n\t <periodically_time_to> <periodically_day_from> <periodically_day_to> <type_downtime> <type_execution> <type_periodicity>", 'Create a planned downtime');
 	help_screen_line('--add_item_planned_downtime', "<id_downtime> <id_agente1,id_agente2,id_agente3...id_agenteN> <name_module1,name_module2,name_module3...name_moduleN> ", 'Add a items planned downtime');
+	help_screen_line('--get_all_planned_downtimes', '<name> <id_group> <type_downtime> <type_execution> <type_periodicity>', 'Get all planned downtime');
+	help_screen_line('--get_planned_downtimes_items', '<name> <id_group> <type_downtime> <type_execution> <type_periodicity>', 'Get all items of planned downtimes');
+	help_screen_line('--set_planned_downtimes_deleted', '<name> ', 'Deleted a planned downtime');
 	help_screen_line('--get_agent_group', '<agent_name>', 'Get the group name of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name>', 'Get the modules of an agent');
 	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name>]', "Get \n\t  list of agents with optative filter parameters");
@@ -410,77 +413,100 @@ sub pandora_create_user_profile ($$$$) {
 ## Delete a profile from the given user/group.
 ##########################################################################
 sub pandora_delete_user_profile ($$$$) {
-        my ($dbh, $user_id, $profile_id, $group_id) = @_;
-        
-        return db_do ($dbh, 'DELETE FROM tusuario_perfil WHERE id_usuario=? AND id_perfil=? AND id_grupo=?', $user_id, $profile_id, $group_id);
+	my ($dbh, $user_id, $profile_id, $group_id) = @_;
+	
+	return db_do ($dbh, 'DELETE FROM tusuario_perfil WHERE id_usuario=? AND id_perfil=? AND id_grupo=?', $user_id, $profile_id, $group_id);
+}
+
+##########################################################################
+## Delete a planned downtime
+##########################################################################
+sub pandora_delete_planned_downtime ($$) {
+	my ($dbh, $id_downtime) = @_;
+	
+	my $execute = get_db_single_row($dbh, 'SELECT executed FROM tplanned_downtime WHERE id = ? ', $id_downtime);
+	
+	if ( !$execute->{'executed'} ) {
+		my $result = db_do ($dbh, 'DELETE FROM tplanned_downtime WHERE id = ? ', $id_downtime);
+		
+		if ($result) {
+			return "This planned downtime is deleted";
+		}	
+		else {
+			return "Problems with this planned downtime";
+		}
+	}
+	else {
+		return "The scheduled downtime is still being executed";
+	}
 }
 
 ##########################################################################
 ## Delete all the data of module, agent's modules or group's agent's modules
 ##########################################################################
 sub pandora_delete_data ($$$) {
-        my ($dbh, $type, $id) = @_;
-        
-        if($type eq 'group') {
-			my @delete_agents = get_db_rows ($dbh, 'SELECT id_agente FROM tagente WHERE id_grupo = ?', $id);
-			foreach my $agent (@delete_agents) {
-				my @delete_modules = get_db_rows ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ?', $agent->{'id_agente'});
-				foreach my $module (@delete_modules) {
-					pandora_delete_module_data($dbh, $module->{'id_agente_modulo'});
-				}
-			}
-		}
-        elsif ($type eq 'agent') {
-			my @delete_modules = get_db_rows ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ?', $id);
+	my ($dbh, $type, $id) = @_;
+	
+	if($type eq 'group') {
+		my @delete_agents = get_db_rows ($dbh, 'SELECT id_agente FROM tagente WHERE id_grupo = ?', $id);
+		foreach my $agent (@delete_agents) {
+			my @delete_modules = get_db_rows ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ?', $agent->{'id_agente'});
 			foreach my $module (@delete_modules) {
 				pandora_delete_module_data($dbh, $module->{'id_agente_modulo'});
 			}
 		}
-		elsif ($type eq 'module'){
-			pandora_delete_module_data($dbh, $id);
+	}
+	elsif ($type eq 'agent') {
+		my @delete_modules = get_db_rows ($dbh, 'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ?', $id);
+		foreach my $module (@delete_modules) {
+			pandora_delete_module_data($dbh, $module->{'id_agente_modulo'});
 		}
-		else {
-			return 0;
-		}
+	}
+	elsif ($type eq 'module'){
+		pandora_delete_module_data($dbh, $id);
+	}
+	else {
+		return 0;
+	}
 }
 
 ##########################################################################
 ## Delete all the data of module
 ##########################################################################
 sub pandora_delete_module_data ($$) {
-        my ($dbh, $id_module) = @_;
-        my $buffer = 1000;
-        
-		while(1) {
-			my $nd = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
-			my $ndinc = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
-			my $ndlog4x = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
-			my $ndstring = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
-			
-			my $ntot = $nd + $ndinc + $ndlog4x + $ndstring;
-
-			if($ntot == 0) {
-				last;
-			}
-			
-			if($nd > 0) {
-				db_do ($dbh, 'DELETE FROM tagente_datos WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
-			}
-			
-			if($ndinc > 0) {
-				db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
-			}
+	my ($dbh, $id_module) = @_;
+	my $buffer = 1000;
+	
+	while(1) {
+		my $nd = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
+		my $ndinc = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
+		my $ndlog4x = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
+		my $ndstring = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
 		
-			if($ndlog4x > 0) {
-				db_do ($dbh, 'DELETE FROM tagente_datos_log4x WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
-			}
-			
-			if($ndstring > 0) {
-				db_do ($dbh, 'DELETE FROM tagente_datos_string WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
-			}
+		my $ntot = $nd + $ndinc + $ndlog4x + $ndstring;
+
+		if($ntot == 0) {
+			last;
 		}
-			
-		return 1;
+		
+		if($nd > 0) {
+			db_do ($dbh, 'DELETE FROM tagente_datos WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+		}
+		
+		if($ndinc > 0) {
+			db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+		}
+	
+		if($ndlog4x > 0) {
+			db_do ($dbh, 'DELETE FROM tagente_datos_log4x WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+		}
+		
+		if($ndstring > 0) {
+			db_do ($dbh, 'DELETE FROM tagente_datos_string WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
+		}
+	}
+		
+	return 1;
 }
 
 ##########################################################################
@@ -643,6 +669,72 @@ sub pandora_get_planned_downtime_id ($$) {
 	my $downtime_id = get_db_value ($dbh, "SELECT id FROM tplanned_downtime WHERE name = ?", safe_input($downtime_name));
 
 	return defined ($downtime_id) ? $downtime_id : -1;
+}
+
+##########################################################################
+## SUB get_all_planned_downtime
+## Return the planned downtime id, given "downtime_name"
+##########################################################################
+sub pandora_get_all_planned_downtime ($$$$$$) {
+	my ($dbh, $downtime_name, $id_group, $type_downtime, $type_execution, $type_periodicity) = @_;
+	my $sql = "SELECT * FROM tplanned_downtime WHERE name = ? ?";
+	my $text_sql = '';
+	
+	if (defined($id_group) && $id_group != '') {
+		$text_sql .= " id_group = $id_group ";
+	}
+	if ( defined($type_downtime) && $type_downtime != '' ) {
+		$text_sql .= " type_downtime = $type_downtime ";
+	}
+	if (defined($type_execution) && $type_execution != '') {
+		$text_sql .= " type_execution = $type_execution ";
+	}
+	if (defined($type_periodicity) && $type_periodicity != '') {
+		$text_sql .= " type_periodicity = $type_periodicity ";
+	}
+	
+	if ($text_sql eq '') {
+		$text_sql = '';
+	}
+	
+	my @downtimes = get_db_rows ($dbh, $sql, 
+			safe_input($downtime_name), $text_sql);
+	
+	return @downtimes;
+}
+
+##########################################################################
+## SUB get_planned_downtimes_items
+## Return the planned downtime id, given "downtime_name"
+##########################################################################
+sub pandora_get_planned_downtimes_items ($$) {
+	my ($dbh, $downtime) = @_;
+	my $sql = "SELECT * FROM tplanned_downtime_agents WHERE id_downtime = ?";
+	my @agents_items = get_db_rows ($dbh, $sql, $downtime->{"id"});
+	my @modules_downtime;
+	my @return;
+	my $text_modules;
+	foreach my $agents_item (@agents_items) {
+		
+		if ( $downtime->{"type_downtime"} eq 'quiet' ) {
+			if ( !$agents_item->{'all_modules'} ) {
+				$sql = "SELECT id_agent_module FROM tplanned_downtime_modules WHERE id_downtime = ? AND id_agent = ?";
+				my @modules_items = get_db_rows ($dbh, $sql, $downtime->{"id"}, $agents_item->{"id_agent"});
+				foreach my $modules_item (@modules_items) {
+					push(@modules_downtime,$modules_item->{"id_agent_module"});
+				}
+			}
+		}
+		
+		if ( @modules_downtime != undef ) {
+			$text_modules = join(",", @modules_downtime);
+			$agents_item->{"modules"} = $text_modules;
+			@modules_downtime = undef;
+			
+		}
+		push (@return,$agents_item);
+	}
+	return @return;
 }
 
 ##########################################################################
@@ -3387,6 +3479,66 @@ sub cli_add_item_planned_downtime() {
 	print_log "$result \n\n";
 }
 
+sub cli_set_delete_planned_downtime() {
+	my $name_downtime = @ARGV[2];
+	my $id_downtime = pandora_get_planned_downtime_id($dbh,$name_downtime);
+	
+	my $result = pandora_delete_planned_downtime ($dbh,$id_downtime);
+	
+	print_log "$result \n\n";
+}
+
+sub cli_get_all_planned_downtime() {
+	my $name_downtime = @ARGV[2];
+	my ($id_group, $type_downtime, $type_execution, $type_periodicity) = @ARGV[3..6];
+	
+	my @results = pandora_get_all_planned_downtime($dbh, $name_downtime, $id_group, $type_downtime, $type_execution, $type_periodicity);
+	
+	if (!defined($results[0])) {
+		print_log "[ERROR] No data found with this parameters. Please check and launch again\n\n";
+	}	
+	else {
+		foreach my $result (@results) {
+			print("ID: " . $result->{'id'} . ", NAME: " . $result->{'name'} . ", DESC: " . safe_output($result->{'description'}) . ", DATE FROM: " .
+						localtime($result->{'date_from'}) . " DATE TO: " . localtime($result->{'date_to'}) .
+						" \nID GROUP: " .  $result->{'id_group'} . ", MONDAY:  " . $result->{'monday'} . ", TUESDAY: " . $result->{'tuesday'}  .
+						", WEDNESDAY: " .  $result->{'wednesday'} . ", THURSDAY: " .  $result->{'thursday'} . ", FRIDAY: " . $result->{'friday'}  .
+						", SATURDAY: " . $result->{'saturday'} .", SUNDAY: " . $result->{'sunday'} .", PEDIODICALLY TIME FROM: " . $result->{'periodically_time_from'} .
+						" \nPEDIODICALLY TIME TO: " . $result->{'periodically_time_to'} . ", PEDIODICALLY DAY FROM: " . $result->{'periodically_day_from'} .
+						"PEDIODICALLY DAY TO: " . $result->{'periodically_day_to'} . ", TYPE DOWNTIME: " . $result->{'type_downtime'} .
+						", TYPE OF EXECUTION: " . $result->{'type_execution'} . "\nTYPE OF PERIODICITY:  " . $result->{'type_periodicity'} .
+						", USER: " . $result->{'id_user'} ."\n");
+		}
+	}
+}
+
+sub cli_get_planned_downtimes_items() {
+	my $name_downtime = @ARGV[2];
+	my ($id_group, $type_downtime, $type_execution, $type_periodicity) = @ARGV[3..6];
+	my $text;
+	my @results = pandora_get_all_planned_downtime($dbh, $name_downtime, $id_group, $type_downtime, $type_execution, $type_periodicity);
+	
+	if (!defined($results[0])) {
+		print_log "[ERROR] No data found with this parameters. Please check and launch again\n\n";
+	}	
+	else {
+		my @items;
+		foreach my $result (@results) {
+			print(" ITEMS OF $result->{'name'} \n ");
+			@items = pandora_get_planned_downtimes_items($dbh,$result);
+			foreach my $item (@items) {
+				if ( $item->{'modules'} != '' ){
+					$text = " This Agent have this MODULES ID: " . $item->{"modules"};
+				}else{
+					$text = " All modules quiet of this agent";
+				}
+				print("AGENT ID: " . $item->{"id_agent"} . $text ."\n ");
+			}
+		}
+	}
+}
+
+
 ##############################################################################
 # Create group
 # Related option: --create_group
@@ -4189,6 +4341,18 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--add_item_downtime') {
 			param_check($ltotal, 3);
 			cli_add_item_planned_downtime();
+		}
+		elsif ($param eq '--get_all_planned_downtimes') {
+			param_check($ltotal, 5, 4);
+			cli_get_all_planned_downtime();
+		}
+		elsif ($param eq '--get_planned_downtimes_items') {
+			param_check($ltotal, 5, 4);
+			cli_get_planned_downtimes_items();
+		}
+		elsif ($param eq '--set_planned_downtimes_deleted') {
+			param_check($ltotal, 1);
+			cli_set_delete_planned_downtime();
 		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";

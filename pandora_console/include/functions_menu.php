@@ -309,7 +309,7 @@ function menu_print_menu (&$menu) {
 				$count_sub2 = 0;
 				foreach ($sub['sub2'] as $key => $sub2) {
 					
-					if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $subsec2, true,$key)) == false) {
+					if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $subsec2, false,$key)) == false) {
 						continue;
 					}
 					
@@ -666,6 +666,20 @@ function menu_sec2_in_sec($sec,$sec2) {
 	$sec2 = $sec2[0];
 	
 	if ($sec2_array != null && in_array($sec2,array_keys($sec2_array))) {
+		return true;
+	}
+	
+	return false;
+}
+
+function menu_sec3_in_sec2($sec,$sec2,$sec3) {
+	$sec3_array = menu_get_sec2_pages($sec, $sec2, $menu_hash = false);
+	
+	// If this value has various parameters, we only get the first
+	$sec3 = explode('&',$sec3);
+	$sec3 = $sec3[0];
+	
+	if ($sec3_array != null && in_array($sec3,array_keys($sec3_array))) {
 		return true;
 	}
 	

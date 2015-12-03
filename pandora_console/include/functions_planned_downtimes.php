@@ -182,7 +182,8 @@ function planned_downtimes_add_items ($downtime_id, $agents, $all_modules = true
 		}
 		else if (!$all_modules) {
 			foreach ($module_names as $module_name) {
-				$module = modules_get_agentmodule_id($module_name, $agent_id);
+				
+				$module = modules_get_agentmodule_id(io_safe_input($module_name), $agent_id);
 				$result = false;
 				
 				if ($module) {
@@ -672,16 +673,16 @@ function planned_downtimes_created ($values) {
 	$now = time();
 	$result = false;
 	
-	if ($values['type_execution'] == 'once' && !$config["past_planned_downtimes"] && $values['datetime_from'] < $now) {
+	if ($values['type_execution'] == 'once' && !$config["past_planned_downtimes"] && $values['date_from'] < $now) {
 		return array('return' => false,
 			'message' => __('Not created. Error inserting data. Start time must be higher than the current time'));
 	}
-	else if ($values['type_execution'] == 'once' && $values['datetime_from'] >= $values['datetime_to']) {
+	else if ($values['type_execution'] == 'once' && $values['date_from'] >= $values['date_to']) {
 		return array('return' => false,
 			'message' => __('Not created. Error inserting data') . ". " 
 				. __('The end date must be higher than the start date'));
 	}
-	else if ($values['type_execution'] == 'once' && $values['datetime_to'] <= $now) {
+	else if ($values['type_execution'] == 'once' && $values['date_to'] <= $now) {
 		return array('return' => false,
 			'message' => __('Not created. Error inserting data') . ". " 
 				. __('The end date must be higher than the current time'));
@@ -752,10 +753,8 @@ function planned_downtimes_items ($filter) {
 	$downtime_agents = db_get_all_rows_filter('tplanned_downtime_agents',$filter, 'id_agent,id_downtime,all_modules');
 	$downtime = db_get_row_filter('tplanned_downtime',array('id' => $filter['id_downtime']), 'type_downtime');
 	
-	$return = array('list_index'=>array('id_agents','id_downtime','all_modules'));
-	
 	foreach ( $downtime_agents as $key => $data ) {
-		$return[$key] = $data;
+		$return = $data;
 		$modules = array();
 		if ($downtime['type_downtime'] === 'quiet') {
 			if (!$data['all_modules']) {
@@ -768,14 +767,10 @@ function planned_downtimes_items ($filter) {
 					foreach ( $downtime_modules as $data2 ) {
 						$modules[] = $data2['id_agent_module'];
 					}
-					$return[$key]['modules'] = implode(',', $modules);
+					$return['modules'] = implode(',', $modules);
 				}
 			}
 		}
-	}
-	
-	if ($downtime['type_downtime'] === 'quiet') {
-		$return['list_index'][] = 'modules';
 	}
 	
 	return $return;

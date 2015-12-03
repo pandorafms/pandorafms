@@ -3536,7 +3536,7 @@ function api_get_all_planned_downtimes ($thrash1, $thrash2, $other, $returnType 
 	
 	$values = array();
 	$values = array(
-		'name' => $other['data'][0]
+		"name LIKE '%".$other['data'][0]."%'"
 	);
 	
 	if (isset($other['data'][1]) && ($other['data'][1] != false ))
@@ -3559,31 +3559,58 @@ function api_get_all_planned_downtimes ($thrash1, $thrash2, $other, $returnType 
  * Return all items of planned downtime.
  *
  * @param $id id of planned downtime.
- * @param 
+ * @param  array $other it's array, $other as param is <name>;<id_group>;<type_downtime>;<type_execution>;<type_periodicity>; in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ * 
  *  example:
  *  
- *  api.php?op=set&op2=planned_downtimes_items&id=10&other_mode=url_encode_separator_|&return_type=json
+ *   api.php?op=get&op2=planned_downtimes_items&other=test|0|quiet|periodically|weekly&other_mode=url_encode_separator_|&return_type=json
  * 
  * @param type of return json or csv.
  */
 
-function api_get_planned_downtimes_items ($id, $thrash2, $other, $returnType = 'json') {
+function api_get_planned_downtimes_items ($thrash1, $thrash2, $other, $returnType = 'json') {
 	if (defined ('METACONSOLE')) {
 		return;
 	}
 	
 	$values = array();
 	$values = array(
-		'id_downtime' => $id
+		"name LIKE '%".$other['data'][0]."%'"
 	);
 	
-	$returned = planned_downtimes_items($values);
+	if (isset($other['data'][1]) && ($other['data'][1] != false ))
+		$values['id_group'] = $other['data'][1];
+	if (isset($other['data'][2]) && ($other['data'][2] != false))
+		$values['type_downtime'] = $other['data'][2];
+	if (isset($other['data'][3]) && ($other['data'][3]!= false) )
+		$values['type_execution'] = $other['data'][3];
+	if (isset($other['data'][4]) && ($other['data'][4] != false) )
+		$values['type_periodicity'] = $other['data'][4];
+		
+	
+	$returned = all_planned_downtimes($values);
+	
+	$is_quiet = false;
+	$return = array('list_index'=>array('id_agents','id_downtime','all_modules'));
+	
+	foreach ($returned as $downtime) {
+		if ($downtime['type_downtime'] === 'quiet')
+			$is_quiet = true;
+		
+		$filter['id_downtime'] = $downtime['id'];
+		
+		$return[] = planned_downtimes_items ($filter);
+	}
+	
+	if ($is_quiet)
+		$return['list_index'][] = 'modules';
 	
 	if ( $returnType == 'json' )
-		unset($returned['list_index']);
+		unset($return['list_index']);
 	
 	returnData($returnType,
-			array('type' => 'array', 'data' => $returned));
+			array('type' => 'array', 'data' => $return));
 }
 
 /**
@@ -3593,7 +3620,7 @@ function api_get_planned_downtimes_items ($id, $thrash2, $other, $returnType = '
  * @param $thrash1 not use.
  * @param $thrash2 not use.
  *  
- *  api.php?op=set&op2=planned_downtimes_deleted &id=10&return_type=json
+ *  api.php?op=set&op2=planned_downtimes_deleted &id=10
  * 
  * @param type of return json or csv.
  */
@@ -3644,8 +3671,8 @@ function api_set_planned_downtimes_created ($id, $thrash1, $other, $thrash3) {
 	$values = array(
 		'name' => $id,
 		'description' => $other['data'][0],
-		'datetime_from' => $date_from,
-		'datetime_to' => $date_to,
+		'date_from' => $date_from,
+		'date_to' => $date_to,
 		'id_group' => $other['data'][3],
 		'monday' => $other['data'][4],
 		'tuesday' => $other['data'][5],
@@ -3706,7 +3733,7 @@ function api_set_planned_downtimes_additem ($id, $thrash1, $other, $thrash3) {
 	}
 	
 	if ( isset($other['data'][1]) )
-		$name_modules = explode(';',$other['data'][1]);
+		$name_modules = explode(';',io_safe_output($other['data'][1]));
 	else
 		$name_modules = false;
 	

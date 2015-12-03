@@ -110,8 +110,8 @@ sub help_screen{
 	help_screen_line('--stop_downtime', '<downtime_name>', 'Stop a planned downtime');
 	help_screen_line('--create_downtime', "<downtime_name> <description> <date_from> <date_to> <id_group> <monday> <tuesday>\n\t <wednesday> <thursday> <friday> <saturday> <sunday> <periodically_time_from>\n\t <periodically_time_to> <periodically_day_from> <periodically_day_to> <type_downtime> <type_execution> <type_periodicity>", 'Create a planned downtime');
 	help_screen_line('--add_item_planned_downtime', "<id_downtime> <id_agente1,id_agente2,id_agente3...id_agenteN> <name_module1,name_module2,name_module3...name_moduleN> ", 'Add a items planned downtime');
-	help_screen_line('--get_all_planned_downtimes', '<name> <id_group> <type_downtime> <type_execution> <type_periodicity>', 'Get all planned downtime');
-	help_screen_line('--get_planned_downtimes_items', '<name> <id_group> <type_downtime> <type_execution> <type_periodicity>', 'Get all items of planned downtimes');
+	help_screen_line('--get_all_planned_downtimes', '<name> [<id_group> <type_downtime> <type_execution> <type_periodicity>]', 'Get all planned downtime');
+	help_screen_line('--get_planned_downtimes_items', '<name> [<id_group> <type_downtime> <type_execution> <type_periodicity>]', 'Get all items of planned downtimes');
 	help_screen_line('--set_planned_downtimes_deleted', '<name> ', 'Deleted a planned downtime');
 	help_screen_line('--get_agent_group', '<agent_name>', 'Get the group name of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name>', 'Get the modules of an agent');
@@ -635,7 +635,7 @@ sub pandora_get_planned_downtime_id ($$) {
 ##########################################################################
 sub pandora_get_all_planned_downtime ($$$$$$) {
 	my ($dbh, $downtime_name, $id_group, $type_downtime, $type_execution, $type_periodicity) = @_;
-	my $sql = "SELECT * FROM tplanned_downtime WHERE name = ? ?";
+	my $sql = "SELECT * FROM tplanned_downtime WHERE  name LIKE '%".safe_input($downtime_name)."%' ?";
 	my $text_sql = '';
 	
 	if (defined($id_group) && $id_group != '') {
@@ -655,8 +655,7 @@ sub pandora_get_all_planned_downtime ($$$$$$) {
 		$text_sql = '';
 	}
 	
-	my @downtimes = get_db_rows ($dbh, $sql, 
-			safe_input($downtime_name), $text_sql);
+	my @downtimes = get_db_rows ($dbh, $sql, $text_sql);
 	
 	return @downtimes;
 }
@@ -3413,7 +3412,7 @@ sub cli_create_planned_downtime() {
 	my $other = join('|', @todo);
 	
 	my $result = api_call(\%conf,'set', 'planned_downtimes_created', $name, undef, "$other");
-	print $result;
+	print "$result \n\n ";
 }
 
 sub cli_add_item_planned_downtime() {
@@ -3450,7 +3449,7 @@ sub cli_get_all_planned_downtime() {
 	}	
 	else {
 		foreach my $result (@results) {
-			print("ID: " . $result->{'id'} . ", NAME: " . $result->{'name'} . ", DESC: " . safe_output($result->{'description'}) . ", DATE FROM: " .
+			print("\nID: " . $result->{'id'} . ", NAME: " . $result->{'name'} . ", DESC: " . safe_output($result->{'description'}) . ", DATE FROM: " .
 						localtime($result->{'date_from'}) . " DATE TO: " . localtime($result->{'date_to'}) .
 						" \nID GROUP: " .  $result->{'id_group'} . ", MONDAY:  " . $result->{'monday'} . ", TUESDAY: " . $result->{'tuesday'}  .
 						", WEDNESDAY: " .  $result->{'wednesday'} . ", THURSDAY: " .  $result->{'thursday'} . ", FRIDAY: " . $result->{'friday'}  .
@@ -3458,7 +3457,7 @@ sub cli_get_all_planned_downtime() {
 						" \nPEDIODICALLY TIME TO: " . $result->{'periodically_time_to'} . ", PEDIODICALLY DAY FROM: " . $result->{'periodically_day_from'} .
 						"PEDIODICALLY DAY TO: " . $result->{'periodically_day_to'} . ", TYPE DOWNTIME: " . $result->{'type_downtime'} .
 						", TYPE OF EXECUTION: " . $result->{'type_execution'} . "\nTYPE OF PERIODICITY:  " . $result->{'type_periodicity'} .
-						", USER: " . $result->{'id_user'} ."\n");
+						", USER: " . $result->{'id_user'} ."\n\n");
 		}
 	}
 }

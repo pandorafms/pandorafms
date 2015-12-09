@@ -2034,13 +2034,6 @@ function reporting_event_report_agent($report, $content,
 		$content['name'] = __('Event Report Agent');
 	}
 	
-	if ($config['metaconsole']) {
-		$id_meta = metaconsole_get_id_server($content["server_name"]);
-		
-		
-		$server = metaconsole_get_connection_by_id ($id_meta);
-		metaconsole_connect($server);
-	}
 	
 	$return['title'] = $content['name'];
 	$return['subtitle'] = agents_get_name($content['id_agent']);

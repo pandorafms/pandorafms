@@ -1328,17 +1328,23 @@ function events_get_agent ($id_agent, $period, $date = 0,
 		$sql_where .= ' AND criticity IN (' . implode(', ', $criticities) . ')';
 	}
 	
-	if ($filter_event_validated) {
-		$sql_where .= ' AND estado = 1 ';
-	}
-	if ($filter_event_no_validated) {
-		$sql_where .= ' AND estado = 0 ';
+	if ( $filter_event_validated && $filter_event_no_validated ) {
+		$sql_where .= " AND (estado = 1 OR estado = 0)";
+	}	
+	else {
+		if ($filter_event_validated) {
+			$sql_where .= ' AND estado = 1 ';
+		} else {
+			if ($filter_event_no_validated) {
+				$sql_where .= ' AND estado = 0 ';
+			}
+		}
 	}
 	
 	$sql_where .= sprintf(' AND id_agente = %d AND utimestamp > %d
 			AND utimestamp <= %d ', $id_agent, $datelimit, $date);
 	
-	return events_get_events_grouped($sql_where, 0, 1000);
+	return events_get_events_grouped($sql_where, 0, 1000, is_metaconsole());
 }
 
 /**

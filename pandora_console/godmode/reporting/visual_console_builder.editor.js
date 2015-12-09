@@ -1055,6 +1055,9 @@ function hiddenFields(item) {
 	$("#line_width_row").css('display', 'none');
 	$("#line_width_row." + item).css('display', '');
 
+	$("#line_case").css('display', 'none');
+	$("#line_case." + item).css('display', '');
+
 
 
 

@@ -507,7 +507,12 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				FROM tlayout
 				WHERE id != ' . $visualConsole_id, 'map_linked', '', '', 'None', '0', true) .
 				'</td>';
-			
+
+			$form_items_advance['line_case']['items'] = array('line_item');
+			$form_items_advance['line_case']['html'] = '
+				<td align="left">' . __('Lines haven\'t advanced options') . '</td>';
+
+
 			//Insert and modify before the buttons to create or update.
 			if (enterprise_installed()) {
 				enterprise_visual_map_editor_modify_form_items_advance_palette($form_items_advance);

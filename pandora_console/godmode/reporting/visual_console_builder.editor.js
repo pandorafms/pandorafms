@@ -596,7 +596,6 @@ function toggle_item_palette() {
 		$(".item").draggable("enable");
 		$("#background").resizable('enable');
 		$("#properties_panel").hide("fast");
-
 		toggle_advance_options_palette(false);
 	}
 	else {
@@ -1054,6 +1053,9 @@ function hiddenFields(item) {
 
 	$("#line_width_row").css('display', 'none');
 	$("#line_width_row." + item).css('display', '');
+
+	$("#line_case").css('display', 'none');
+	$("#line_case." + item).css('display', '');
 
 
 

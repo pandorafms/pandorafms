@@ -625,11 +625,52 @@ function visual_map_print_item($mode = "read", $layoutData,
 	switch ($type) {
 		case STATIC_GRAPH:
 		case GROUP_ITEM:
-			$module_value = db_get_sql ('SELECT datos
-				FROM tagente_estado
-				WHERE id_agente_modulo = ' . $id_module);
-			if ((empty($module_value) || $module_value == '') && $type == STATIC_GRAPH) {
-				$layoutData['status_calculated'] = AGENT_STATUS_UNKNOWN;
+			//Enter the correct img if the graph has a module selected or not
+			if ($type == STATIC_GRAPH) {
+				//Module
+				if ($layoutData['id_agente_modulo'] != 0) {
+					$module_status = db_get_sql ('SELECT estado
+						FROM tagente_estado
+						WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
+					switch($module_status) {
+						case AGENT_STATUS_NORMAL:
+							$layoutData['status_calculated'] = AGENT_STATUS_NORMAL;
+							break;
+						case AGENT_MODULE_STATUS_WARNING:
+							$layoutData['status_calculated'] = AGENT_STATUS_WARNING;
+							break;
+						case AGENT_STATUS_CRITICAL:
+							$layoutData['status_calculated'] = AGENT_STATUS_CRITICAL;
+							break;
+						case AGENT_MODULE_STATUS_NO_DATA:
+						default:
+							$layoutData['status_calculated'] = AGENT_STATUS_UNKNOWN;
+							break;
+					}
+				}
+				//No module
+				else if ($layoutData['id_agent'] != 0) {
+					$agent = db_get_row ("tagente", "id_agente", $layoutData['id_agent']);
+					if ($agent['total_count'] == 0 || $agent['total_count'] == $agent['notinit_count']) {
+						$layoutData['status_calculated'] = AGENT_STATUS_UNKNOWN;
+					}
+					else if ($agent['critical_count'] > 0) {
+						$layoutData['status_calculated'] = AGENT_STATUS_CRITICAL;
+					}
+					else if ($agent['warning_count'] > 0) {
+						$layoutData['status_calculated'] = AGENT_STATUS_WARNING;
+					}
+					else if ($agent['unknown_count'] > 0) {
+						$layoutData['status_calculated'] = AGENT_STATUS_UNKNOWN;
+					}
+					else {
+						$layoutData['status_calculated'] = AGENT_STATUS_NORMAL;
+					}
+				}
+				//In other case
+				else {
+					$layoutData['status_calculated'] = AGENT_STATUS_UNKNOWN;
+				}
 			}
 			if ($layoutData['image'] != null) {
 				$img = visual_map_get_image_status_element($layoutData,
@@ -1655,7 +1696,6 @@ function visual_map_get_image_status_element($layoutData, $status = false) {
  */
 function visual_map_get_status_element($layoutData) {
 	enterprise_include_once('include/functions_visual_map.php');
-	
 	if (enterprise_installed()) {
 		$status = enterprise_visual_map_get_status_element($layoutData);
 		
@@ -1677,6 +1717,68 @@ function visual_map_get_status_element($layoutData) {
 	else {
 		switch ($layoutData["type"]) {
 			case STATIC_GRAPH:
+			//Enter the correct img if the graph has a module selected or not
+				//Module
+				if ($layoutData['id_agente_modulo'] != 0) {
+					$module_status = db_get_sql ('SELECT estado
+						FROM tagente_estado
+						WHERE id_agente_modulo = ' . $layoutData['id_agente_modulo']);
+					switch($module_status) {
+						case AGENT_STATUS_NORMAL:
+							$layoutData['status_calculated'] = VISUAL_MAP_STATUS_NORMAL;
+							break;
+						case AGENT_MODULE_STATUS_WARNING:
+							$layoutData['status_calculated'] = VISUAL_MAP_STATUS_WARNING;
+							break;
+						case AGENT_STATUS_CRITICAL:
+							$layoutData['status_calculated'] = VISUAL_MAP_STATUS_CRITICAL_BAD;
+							break;
+						case AGENT_MODULE_STATUS_NO_DATA:
+						default:
+							$layoutData['status_calculated'] = VISUAL_MAP_STATUS_UNKNOWN;
+							break;
+					}
+				}
+				//No module
+				else if ($layoutData['id_agent'] != 0) {
+					$agent = db_get_row ("tagente", "id_agente", $layoutData['id_agent']);
+					if ($agent['total_count'] == 0 || $agent['total_count'] == $agent['notinit_count']) {
+						$layoutData['status_calculated'] = VISUAL_MAP_STATUS_UNKNOWN;
+					}
+					else if ($agent['critical_count'] > 0) {
+						$layoutData['status_calculated'] = VISUAL_MAP_STATUS_CRITICAL_BAD;
+					}
+					else if ($agent['warning_count'] > 0) {
+						$layoutData['status_calculated'] = VISUAL_MAP_STATUS_WARNING;
+					}
+					else if ($agent['unknown_count'] > 0) {
+						$layoutData['status_calculated'] = VISUAL_MAP_STATUS_UNKNOWN;
+					}
+					else {
+						$layoutData['status_calculated'] = VISUAL_MAP_STATUS_NORMAL;
+					}
+				}
+				//In other case
+				else {
+					$layoutData['status_calculated'] = VISUAL_MAP_STATUS_UNKNOWN;
+				}
+				$status = $layoutData['status_calculated'];
+
+				if ($layoutData['id_metaconsole'] != 0) {
+					//Metaconsole db connection
+					$connection = db_get_row_filter ('tmetaconsole_setup',
+						array('id' => $layoutData['id_metaconsole']));
+					if (metaconsole_load_external_db($connection) != NOERR) {
+						//ui_print_error_message ("Error connecting to ".$server_name);
+						continue;
+					}
+				}
+				if ($layoutData['id_metaconsole'] != 0) {
+					//Restore db connection
+					metaconsole_restore_db();
+				}
+				break;
+
 			case PERCENTILE_BAR:
 			case PERCENTILE_BUBBLE:
 			

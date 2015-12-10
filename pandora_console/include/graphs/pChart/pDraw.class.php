@@ -2548,6 +2548,7 @@
 
    function modulo($Value1,$Value2)
     {
+     if (floor($Value1) == 0) { return(0); }
      if (floor($Value2) == 0) { return(0); }
      if (floor($Value2) != 0) { return($Value1 % $Value2); }
 

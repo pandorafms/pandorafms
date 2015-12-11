@@ -3776,6 +3776,7 @@ function reporting_availability($report, $content) {
 			$row['poling_time'] = __('Unknown');
 			$row['time_unavaliable'] = __('Unknown');
 			$row['ok'] = __('Unknown');
+			$row['order'] = 0;
 			
 			$percent_ok = 0;
 		}
@@ -3785,6 +3786,7 @@ function reporting_availability($report, $content) {
 			
 			$row['checks'] = format_numeric($count_checks, 0);
 			$row['ok'] = $percent_ok . " %";
+			$row['order'] = $percent_ok;
 			$row['fail'] = $percent_fail . " %";
 			$row['failed'] =
 				format_numeric($percent_fail * $count_checks / 100, 0);
@@ -3863,7 +3865,7 @@ function reporting_availability($report, $content) {
 			foreach ($data as $row) {
 				$i = 0;
 				foreach ($temp as $t_row) {
-					if (strcmp($row['availability_item'], $t_row['availability_item']) < 0) {
+					if ($row['order'] < $t_row['order']) {
 						break;
 					}
 					
@@ -3881,7 +3883,7 @@ function reporting_availability($report, $content) {
 				$i = 0;
 				foreach ($temp as $t_row) {
 					
-					if (strcmp($row['availability_item'], $t_row['availability_item']) > 0) {
+					if ($row['order'] > $t_row['order']) {
 						break;
 					}
 					

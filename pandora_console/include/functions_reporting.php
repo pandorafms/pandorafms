@@ -112,7 +112,6 @@ function reporting_make_reporting_data($report = null, $id_report,
 		$contents = db_get_all_rows_field_filter ('treport_content',
 			'id_report', $id_report, db_escape_key_identifier('order'));
 	}
-	
 	$datetime = strtotime($date . ' ' . $time);
 	$report["datetime"] = $datetime;
 	$report["group"] = $report['id_group'];
@@ -3694,7 +3693,6 @@ function reporting_availability($report, $content) {
 	else {
 		$items = $content['subitems'];
 	}
-	
 
 	
 	

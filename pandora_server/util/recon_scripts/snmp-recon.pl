@@ -762,8 +762,35 @@ sub host_connectivity($) {
 sub create_pandora_agent($) {
 	my ($device) = @_;
 
+	my $agent;
+	my @agents = get_db_rows($DBH,
+		'SELECT * FROM taddress, taddress_agent, tagente
+		 WHERE tagente.id_agente = taddress_agent.id_agent
+			AND taddress_agent.id_a = taddress.id_a
+            AND ip = ?', $device
+	);
+
 	# Does the host already exist?
-	my $agent = get_agent_from_addr($DBH, $device);
+	foreach my $candidate (@agents) {
+	  $agent = {map {$_} %$candidate}; # copy contents, do not use shallow copy
+	  # exclude $device itself, because it handle corner case when target includes NAT
+	  my @registered = map {$_->{ip}} get_db_rows($DBH,
+	  	'SELECT ip FROM taddress, taddress_agent, tagente
+	  	 WHERE tagente.id_agente = taddress_agent.id_agent
+	  		AND taddress_agent.id_a = taddress.id_a
+	  		AND tagente.id_agente = ?
+            AND taddress.ip != ?', $agent->{id_agente}, $device
+	  );
+	  foreach my $ip_addr (@registered) {
+		my @matched = grep { $_ =~ /^$ip_addr$/ } keys(%{$VISITED_DEVICES{$device}->{'addr'}});
+		if (scalar(@matched) == 0) {
+			$agent = undef;
+			last;
+		}
+	  }
+	  last if(defined($agent)); # exit loop if match all ip_addr
+	}
+
 	if (!defined($agent)) {
 		$agent = get_agent_from_name($DBH, $device);
 	}

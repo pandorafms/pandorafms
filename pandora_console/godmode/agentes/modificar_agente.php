@@ -271,12 +271,6 @@ else{
 
 // Show only selected groups
 if ($ag_group > 0) {
-	$sql = sprintf ('SELECT COUNT(*)
-		FROM tagente
-		WHERE id_grupo = %d
-			%s',
-		$ag_group, $search_sql);
-	$total_agents = db_get_sql ($sql);
 	
 	$ag_groups = array();
 	$ag_groups = (array)$ag_group;
@@ -316,11 +310,19 @@ if ($ag_group > 0) {
 			$sql = oracle_recode_query ($sql, $set);
 			break;
 	}
+	
+	$sql_total = sprintf ('SELECT COUNT(*)
+		FROM tagente
+		WHERE id_grupo IN (%s)
+			%s',
+		implode (",", $ag_groups), $search_sql);
+	$total_agents = db_get_sql ($sql_total);
 }
 else {
 	
 	// Admin user get ANY group, even if they doesnt exist
-	if (check_acl ($config['id_user'], 0, "PM")) {		
+	if (check_acl ($config['id_user'], 0, "PM")) {
+		
 		$sql = sprintf ('SELECT COUNT(*) FROM tagente WHERE 1=1 %s', $search_sql);
 		$total_agents = db_get_sql ($sql);
 		switch ($config["dbtype"]) {
@@ -354,6 +356,7 @@ else {
 		}
 	}
 	else {
+		
 		// Concatenate AW and AD permisions to get all the possible groups where the user can manage
 		$user_groupsAW = users_get_groups ($config['id_user'], 'AW');
 		$user_groupsAD = users_get_groups ($config['id_user'], 'AD');

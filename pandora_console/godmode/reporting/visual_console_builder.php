@@ -496,30 +496,9 @@ switch ($activeTab) {
 						
 						//Any module
 						if ($name_modules[0] == '0') {
-							$id_modules = array();
-							
-							if ($id_server != 0) {
-								if (metaconsole_connect(null, $id_server) != NOERR) {
-									continue;
-								}
-							}
-							
-							foreach ($id_agents as $id_agent) {
-								$id_modulo = agents_get_modules($id_agent, array('id_agente_modulo'));
-								if (empty($id_modulo)) $id_modulo = array();
-								
-								foreach ($id_modulo as $id) {
-									$id_modules[] = $id['id_agente_modulo'];
-								}
-							}
-							
-							if ($id_server != 0) {
-								metaconsole_restore_db();
-							}
-							
-							
-							$message .= visual_map_process_wizard_add_modules(
-								$id_modules,
+													
+							$message .= visual_map_process_wizard_add_agents(
+								$id_agents,
 								$image,
 								$idVisualConsole,
 								$range,
@@ -531,7 +510,7 @@ switch ($activeTab) {
 								$max_value,
 								$type_percentile,
 								$value_show,
-								$label_type,
+								'agent',
 								$type,
 								$enable_link,
 								$id_server,

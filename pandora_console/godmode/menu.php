@@ -39,19 +39,17 @@ if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0,
 		if (check_acl ($config["id_user"], 0, "PM")) {
 			$sub["godmode/agentes/fields_manager"]["text"] = __('Custom fields');
 			$sub["godmode/agentes/fields_manager"]["id"] = 'Custom fields';
-		}
 
-		$sub["godmode/modules/manage_nc_groups"]["text"] = __('Component groups');
-		$sub["godmode/modules/manage_nc_groups"]["id"] = 'Component groups';
-		// Category
-		$sub["godmode/category/category"]["text"] = __('Module categories');
-		$sub["godmode/category/category"]["id"] = 'Module categories';
-		$sub["godmode/category/category"]["subsecs"] = "godmode/category/edit_category";
-		
-		$sub["godmode/modules/module_list"]["text"] = __('Module types');
-		$sub["godmode/modules/module_list"]["id"] = 'Module types';
+			$sub["godmode/modules/manage_nc_groups"]["text"] = __('Component groups');
+			$sub["godmode/modules/manage_nc_groups"]["id"] = 'Component groups';
+			// Category
+			$sub["godmode/category/category"]["text"] = __('Module categories');
+			$sub["godmode/category/category"]["id"] = 'Module categories';
+			$sub["godmode/category/category"]["subsecs"] = "godmode/category/edit_category";
+			
+			$sub["godmode/modules/module_list"]["text"] = __('Module types');
+			$sub["godmode/modules/module_list"]["id"] = 'Module types';
 
-		if (check_acl ($config["id_user"], 0, "PM")) {
 			$sub["godmode/groups/modu_group_list"]["text"] = __('Module groups');
 			$sub["godmode/groups/modu_group_list"]["id"] = 'Module groups';
 		}
@@ -85,55 +83,58 @@ if (check_acl ($config['id_user'], 0, "UM")) {
 	$sub['godmode/users/profile_list']['id'] = 'Profile management';
 	$sub["godmode/groups/group_list"]["text"] = __('Manage agents groups');
 	$sub["godmode/groups/group_list"]["id"] = 'Manage agents groups';
-	// Tag
-	$sub["godmode/tag/tag"]["text"] = __('Module tags');
-	$sub["godmode/tag/tag"]["id"] = 'Module tags';
-	$sub["godmode/tag/tag"]["subsecs"] = "godmode/tag/edit_tag";
-
-	enterprise_hook ('enterprise_acl_submenu');
+	
+	if (check_acl ($config['id_user'], 0, "PM")) {
+		// Tag
+		$sub["godmode/tag/tag"]["text"] = __('Module tags');
+		$sub["godmode/tag/tag"]["id"] = 'Module tags';
+		$sub["godmode/tag/tag"]["subsecs"] = "godmode/tag/edit_tag";
+	
+		enterprise_hook ('enterprise_acl_submenu');
+	}
+	
 	$menu_godmode["gusuarios"]["sub"] = $sub;
 }
 
+
+$menu_godmode["gmodules"]["text"] = __('Configuration');
+$menu_godmode["gmodules"]["sec2"] = "godmode/modules/manage_network_templates";
+$menu_godmode["gmodules"]["id"] = "god-configuration";
+
+$sub = array ();
 if (check_acl ($config['id_user'], 0, "PM")) {
-	$menu_godmode["gmodules"]["text"] = __('Configuration');
-	$menu_godmode["gmodules"]["sec2"] = "godmode/modules/manage_network_templates";
-	$menu_godmode["gmodules"]["id"] = "god-configuration";
-
-	$sub = array ();
-
 	$sub["godmode/modules/manage_network_components"]["text"] = __('Network components');
 	$sub["godmode/modules/manage_network_components"]["id"] = 'Network components';
 	enterprise_hook ('components_submenu');
 	$sub["godmode/modules/manage_network_templates"]["text"] = __('Module templates');
 	$sub["godmode/modules/manage_network_templates"]["id"] = 'Module templates';
 	enterprise_hook ('inventory_submenu');
-	if (check_acl ($config['id_user'], 0, "AW")) {
-		enterprise_hook ('policies_menu');
-	}
-	enterprise_hook('agents_submenu');
-	if (check_acl ($config['id_user'], 0, "AW")) {
-		$sub["gmassive"]["text"] = __('Bulk operations');
-		$sub["gmassive"]["id"] = 'Bulk operations';
-		$sub["gmassive"]["type"] = "direct";
-		$sub["gmassive"]["subtype"] = "nolink";
-		$sub2 = array ();
-		$sub2["godmode/massive/massive_operations&amp;tab=massive_agents"]["text"] = __('Agents operations');
-		$sub2["godmode/massive/massive_operations&amp;tab=massive_modules"]["text"] = __('Modules operations');
-		$sub2["godmode/massive/massive_operations&amp;tab=massive_plugins"]["text"] = __('Plugins operations');
-		if (check_acl ($config['id_user'], 0, "PM")) {
-			$sub2["godmode/massive/massive_operations&amp;tab=massive_users"]["text"] = __('Users operations');
-		}
-		$sub2["godmode/massive/massive_operations&amp;tab=massive_alerts"]["text"] = __('Alerts operations');
-		enterprise_hook('massivepolicies_submenu');
-		enterprise_hook('massivesnmp_submenu');
-		enterprise_hook('massivesatellite_submenu');
-
-		$sub["gmassive"]["sub2"] = $sub2;
-	}
-
-
-	$menu_godmode["gmodules"]["sub"] = $sub;
 }
+if (check_acl ($config['id_user'], 0, "AW")) {
+	enterprise_hook ('policies_menu');
+}
+enterprise_hook('agents_submenu');
+if (check_acl ($config['id_user'], 0, "AW")) {
+	$sub["gmassive"]["text"] = __('Bulk operations');
+	$sub["gmassive"]["id"] = 'Bulk operations';
+	$sub["gmassive"]["type"] = "direct";
+	$sub["gmassive"]["subtype"] = "nolink";
+	$sub2 = array ();
+	$sub2["godmode/massive/massive_operations&amp;tab=massive_agents"]["text"] = __('Agents operations');
+	$sub2["godmode/massive/massive_operations&amp;tab=massive_modules"]["text"] = __('Modules operations');
+	$sub2["godmode/massive/massive_operations&amp;tab=massive_plugins"]["text"] = __('Plugins operations');
+	if (check_acl ($config['id_user'], 0, "PM")) {
+		$sub2["godmode/massive/massive_operations&amp;tab=massive_users"]["text"] = __('Users operations');
+	}
+	$sub2["godmode/massive/massive_operations&amp;tab=massive_alerts"]["text"] = __('Alerts operations');
+	enterprise_hook('massivepolicies_submenu');
+	enterprise_hook('massivesnmp_submenu');
+	enterprise_hook('massivesatellite_submenu');
+
+	$sub["gmassive"]["sub2"] = $sub2;
+}
+
+$menu_godmode["gmodules"]["sub"] = $sub;
 
 if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0, "AD")) {
 	$menu_godmode["galertas"]["text"] = __('Alerts');

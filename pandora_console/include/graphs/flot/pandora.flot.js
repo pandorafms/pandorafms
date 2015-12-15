@@ -467,8 +467,8 @@ var previousPoint = null, previousLabel = null;
 $.fn.HUseTooltip = function () {
     $(this).bind("plothover", function (event, pos, item) {
         if (item) {
-            if ((previousLabel != item.series.label) || (previousPoint != item.dataIndex)) {
-                previousPoint = item.dataIndex;
+            if ((previousLabel != item.series.label) || (previousPoint != item.seriesIndex)) {
+                previousPoint = item.seriesIndex;
                 previousLabel = item.series.label;
                 $("#tooltip").remove();
 
@@ -480,7 +480,7 @@ $.fn.HUseTooltip = function () {
                 showTooltip(item.pageX,
                         item.pageY,
                         color,
-                        "<strong>" + item.series.yaxis.ticks[y].label + "</strong>: <strong>" + x + "</strong>");                
+                        "<strong>" + item.series.yaxis.ticks[y].label + "</strong>: <strong>" + x + "</strong>");
             }
         } else {
             $("#tooltip").remove();
@@ -491,8 +491,8 @@ $.fn.HUseTooltip = function () {
 $.fn.VUseTooltip = function () {
     $(this).bind("plothover", function (event, pos, item) {
         if (item) {
-            if ((previousLabel != item.series.label) || (previousPoint != item.dataIndex)) {
-                previousPoint = item.dataIndex;
+            if ((previousLabel != item.series.label) || (previousPoint != item.seriesIndex)) {
+                previousPoint = item.seriesIndex;
                 previousLabel = item.series.label;
                 $("#tooltip").remove();
 
@@ -504,7 +504,7 @@ $.fn.VUseTooltip = function () {
                 showTooltip(item.pageX,
                         item.pageY,
                         color,
-                        "<strong>" + item.series.xaxis.ticks[x].label + "</strong>"  + " : <strong>" + y + "</strong>");      
+                        "<strong>" + item.series.xaxis.ticks[x].label + "</strong>"  + " : <strong>" + y + "</strong>");
             }
         } else {
             $("#tooltip").remove();
@@ -600,7 +600,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
             },
             grid: {
                 hoverable: true,
-				borderWidth: 1,        
+				borderWidth: 1,
 				backgroundColor: { colors: ["#FFF", "#FFF"] }
             }
     };

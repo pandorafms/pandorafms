@@ -3929,11 +3929,10 @@ function api_set_planned_downtimes_created ($id, $thrash1, $other, $thrash3) {
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-	
-	
-	$date_from = strtotime($other['data'][1]);
-	$date_to = strtotime($other['data'][2]);
-	
+
+        $date_from = strtotime(html_entity_decode($other['data'][1]));
+        $date_to = strtotime(html_entity_decode($other['data'][2]));
+
 	$values = array();
 	$values['name'] = $id;
 	$values = array(

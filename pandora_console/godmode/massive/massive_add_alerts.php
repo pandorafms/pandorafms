@@ -31,7 +31,7 @@ require_once($config['homedir'] . '/include/functions_users.php');
 
 if (is_ajax ()) {
 	$get_agents = (bool) get_parameter ('get_agents');
-	$recursion = (int) get_parameter ('recursion');
+	$recursion = (bool) get_parameter ('recursion',false);
 	
 	if ($get_agents) {
 		$id_group = (int) get_parameter ('id_group', 0);
@@ -49,17 +49,9 @@ if (is_ajax ()) {
 					),
 				false, "", false, $recursion);
 		}
-		else {
-			$agents = agents_get_group_agents (
-				array_keys(
-					users_get_groups(
-						$config["id_user"],
-						"AW",
-						true,
-						false,
-						array($id_group) )
-					),
-				false, "", false, $recursion);
+		else {			
+			$agents = agents_get_group_agents ( $id_group,
+					false, "", false, $recursion);
 		}
 		
 		// Add keys prefix

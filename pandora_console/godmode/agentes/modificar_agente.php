@@ -22,7 +22,7 @@ $group_id = (int) get_parameter ("group_id");
 $ag_group = get_parameter ("ag_group_refresh", -1);
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
-$recursion = get_parameter('recursion');
+$recursion = (bool) get_parameter('recursion',false);
 $disabled = get_parameter('disabled', 0);
 
 if ($ag_group == -1 )
@@ -134,7 +134,7 @@ echo "<td>";
 
 echo __('Group') . '&nbsp;';
 $own_info = get_user_info($config['id_user']);
-if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "PM"))
+if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "AW"))
 	$return_all_group = false;
 else
 	$return_all_group = true;

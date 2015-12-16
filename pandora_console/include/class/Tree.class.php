@@ -1123,28 +1123,66 @@ class Tree {
 		return strcmp($a["name"], $b["name"]);
 	}
 	
-	protected function getGroupsChildren(&$groups, &$groups_tmp, $parent_id, $server = false, $remove_empty = false) {
-		$children = array();
-		foreach ($groups as $key => $group) {
-			if (isset($group['parent']) && $group['parent'] == $parent_id) {
-				unset($groups[$key]);
+	protected function getProcessedGroups ($items, $remove_empty = false) {
+		$processed_groups = array();
+		// Index and process the groups
+		$groups = array();
+		foreach ($items as $item) {
+			$groups[$item['id']] = $this->getProcessedItem($item);
+		}
+		// Build the group hierarchy
+		foreach ($groups as $id => $group) {
+			if (!isset($groups[$id]['parent']))
+				continue;
+			$parent = $groups[$id]['parent'];
+			// Parent exists
+			if (isset($groups[$parent])) {
+				if (!isset($groups[$parent]['children']))
+					$groups[$parent]['children'] = array();
+				// Store a reference to the group into the parent
+				$groups[$parent]['children'][] = &$groups[$id];
 				
-				$children_aux = $this->getProcessedItem($group, $server, $groups, $groups_tmp, $remove_empty);
-				if (!empty($children_aux))
-					$children[] = $children_aux;
+				// Add the child counters to the parent
+				if (isset($groups[$id]['counters']) && !empty($groups[$id]['counters'])) {
+					foreach ($groups[$id]['counters'] as $type => $value) {
+						if (isset($groups[$parent]['counters'][$type]))
+							$groups[$parent]['counters'][$type] += $value;
+					}
+				}
+				
+				// This group was introduced into a parent
+				$groups[$id]['have_parent'] = true;
 			}
 		}
-		foreach ($groups_tmp as $key_tmp => $group_tmp) {
-			if (isset($group_tmp['parent']) && $group_tmp['parent'] == $parent_id) {
-				unset($groups_tmp[$key_tmp]);
-				
-				$children[] = $group_tmp;
+		if ($remove_empty) {
+			// Filter empty groups
+			$groups = array_filter($groups, function ($group) {
+				return (isset($group['counters']) &&
+						isset($group['counters']['total']) &&
+						!empty($group['counters']['total']));
+			});
+		}
+		// Sort the children groups
+		foreach ($groups as $id => $group) {
+			if (isset($groups[$id]['children'])) {
+				if ($remove_empty) {
+					// Remove empty childs
+					$groups[$id]['children'] = array_filter($groups[$id]['children'], function ($g) use ($groups) {
+						return (!empty($g) && isset($g['id']) && isset($groups[$g['id']]));
+					});
+				}
+				usort($groups[$id]['children'], array("Tree", "cmpSortNames"));
 			}
 		}
-		usort($children, array("Tree", "cmpSortNames"));
-		$children = array_filter($children);
+		// Extract the root groups
+		foreach ($groups as $group) {
+			if (!$group['have_parent'])
+				$processed_groups[] = $group;
+		}
+		// Sort the root groups
+		usort($processed_groups, array("Tree", "cmpSortNames"));
 		
-		return $children;
+		return $processed_groups;
 	}
 
 	protected function getProcessedItem ($item, $server = false, &$items = array(), &$items_tmp = array(), $remove_empty = false) {
@@ -1290,34 +1328,10 @@ class Tree {
 			$counters['total'] = $item['total_count'];
 		if (isset($item['total_fired_count']))
 			$counters['alerts'] = $item['total_fired_count'];
-		
-		// Get the children of the group (special case)
-		if ($processed_item['type'] == 'group') {
-			$children = $this->getGroupsChildren($items, $items_tmp, $item['id'], $server, $remove_empty);
-			
-			if (!empty($children)) {
-				$processed_item['children'] = $children;
-
-				foreach ($children as $key => $child) {
-					if (isset($child['counters'])) {
-						foreach ($child['counters'] as $type => $value) {
-							if (isset($counters[$type]))
-								$counters[$type] += $value;
-						}
-					}
-				}
-			}
-		}
 
 		if (!empty($counters))
 			$processed_item['counters'] = $counters;
-		
-		if ($remove_empty && $processed_item['type'] == 'group'
-				&& (!isset($processed_item['counters']['total'])
-					|| empty($processed_item['counters']['total']))) {
-			$processed_item = array();
-		}
-		
+
 		if (!empty($processed_item))
 			$processed_item['is_processed'] = true;
 
@@ -1987,24 +2001,31 @@ class Tree {
 				$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree', $agent_filter, $module_filter);
 				
 				// Build the group and tag hierarchy
-				$processed_items = array();
-				$processed_items_tmp = array();
+				$processed_groups = array();
+				$processed_tags = array();
+				
 				foreach ($items as $key => $item) {
-					unset($items[$key]);
-					
-					$processed_item = $this->getProcessedItem($item, false, $items, $processed_items_tmp, true);
-					if (!empty($processed_item)
-							&& isset($processed_item['counters'])
-							&& isset($processed_item['counters']['total'])
-							&& !empty($processed_item['counters']['total'])) {
-						$processed_items_tmp[] = $processed_item;
+					$processed_item = $this->getProcessedItem($item);
+					if ($processed_item['type'] == 'tag') {
+						if (!empty($processed_item) &&
+								isset($processed_item['counters']) &&
+								isset($processed_item['counters']['total']) &&
+								!empty($processed_item['counters']['total'])) {
+							$processed_tags[] = $processed_item;
+						}
+					}
+					else {
+						$processed_groups[] = $processed_item;
 					}
 				}
-				if (!empty($processed_items_tmp)) {
-					usort($processed_items_tmp, array("Tree", "cmpSortNames"));
-					// array_filter clean the empty elements
-					$processed_items = array_filter($processed_items_tmp);
-				}
+				
+				// Build the groups hierarchy
+				$processed_groups = $this->getProcessedGroups($processed_groups, true);
+				// Sort tags
+				usort($processed_tags, array("Tree", "cmpSortNames"));
+				
+				// Join tags and groups
+				$processed_items = array_merge($processed_groups, $processed_tags);
 			}
 			else {
 				$unmerged_items = array();
@@ -2018,17 +2039,24 @@ class Tree {
 					$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree', $agent_filter, $module_filter);
 					
 					// Build the group and tag hierarchy
-					$processed_items = array();
-					$processed_items_tmp = array();
+					$processed_groups = array();
+					$processed_tags = array();
+					
 					foreach ($items as $key => $item) {
-						unset($items[$key]);
-						$processed_items_tmp[] = $this->getProcessedItem($item, $server, $items, $processed_items_tmp);
+						$processed_item = $this->getProcessedItem($item);
+						if ($processed_item['type'] == 'tag')
+							$processed_tags[] = $processed_item;
+						else
+							$processed_groups[] = $processed_item;
 					}
-					if (!empty($processed_items_tmp)) {
-						usort($processed_items_tmp, array("Tree", "cmpSortNames"));
-						// array_filter clean the empty elements
-						$processed_items = array_filter($processed_items_tmp);
-					}
+					
+					// Build the groups hierarchy
+					$processed_groups = $this->getProcessedGroups($processed_groups);
+					// Sort tags
+					usort($processed_tags, array("Tree", "cmpSortNames"));
+					
+					// Join tags and groups
+					$processed_items = array_merge($processed_groups, $processed_tags);
 					
 					$unmerged_items += $processed_items;
 					
@@ -2105,16 +2133,7 @@ class Tree {
 			
 			$items = $this->getItems();
 			
-			// Build the group hierarchy
-			while (($item = array_shift($items)) !== null) {
-				$processed_item = $this->getProcessedItem($item, false, $items, $processed_items, true);
-				
-				if (!empty($processed_item)
-						&& isset($processed_item['counters'])
-						&& isset($processed_item['counters']['total'])
-						&& !empty($processed_item['counters']['total']))
-					$processed_items[] = $processed_item;
-			}
+			$processed_items = $this->getProcessedGroups($items, true);
 			
 			// groupID filter. To access the view from tactical views f.e.
 			if (!empty($processed_items) && !empty($this->filter['groupID'])) {

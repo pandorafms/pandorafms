@@ -587,11 +587,14 @@ sub enterprise_load ($) {
 	else {
 		eval 'require PandoraFMS::Enterprise;';
 	}
-	
-	
+
+
 	
 	# Ops
 	if ($@) {
+		# Enterprise.pm not found.
+		return 0 if ($@ =~ m/PandoraFMS\/Enterprise\.pm.*\@INC/);
+
 		open (STDERR, ">> " . $pa_config->{'errorlogfile'});
 		print STDERR $@;
 		close (STDERR);

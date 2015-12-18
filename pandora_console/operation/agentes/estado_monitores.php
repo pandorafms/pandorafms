@@ -437,13 +437,8 @@ function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 	$table->data[0][3] = html_print_input_text('status_text_monitor', $status_text_monitor, '', 30, 100, true);
 	$table->data[0][4] = __('Module group');
 	$rows = db_get_all_rows_sql("SELECT *
-		FROM tmodule_group ORDER BY name");
-	$rows = io_safe_output($rows);
-	$rows_count = count($rows);
-	for ($i = 0; $i < $rows_count; $i++) {
-		$rows[$i]['name'] = ui_print_truncate_text($rows[$i]['name'], 35);
-	}
-	$rows_select = array();
+		FROM tmodule_group where id_mg in (SELECT id_module_group from tagente_modulo where id_agente = $id_agent )  ORDER BY name");
+	
 	if (!empty($rows)) {
 		$rows_select[-1] = __('All');
 		foreach ($rows as $module_group)

@@ -66,6 +66,11 @@ $config_fixed_header = false;
 if (isset($config['fixed_header'])) {
 	$config_fixed_header = $config['fixed_header'];
 }
+
+$agente = $_SERVER['HTTP_USER_AGENT'];
+if(preg_match('/MSIE/i',$agente)) {
+	$browser = "MSIE";
+}
 ?>
 <script type="text/javascript" language="javascript">
 /* <![CDATA[ */
@@ -75,7 +80,14 @@ var fixed_menu = <?php echo json_encode((bool)$config_fixed_menu); ?>;
 var fixed_header = <?php echo json_encode((bool)$config_fixed_header); ?>;
 var id_user = "<?php echo $config['id_user']; ?>";
 var cookie_name = id_user + '-pandora_menu_state';
-var cookie_name_encoded = btoa(cookie_name);
+var navegator = "<?php echo $browser; ?>";
+
+if (navegator == 'MSIE') {
+	var cookie_name_encoded = Base64.encode(cookie_name);
+} 
+else {
+	var cookie_name_encoded = btoa(cookie_name);
+}
 
 var menuState = $.cookie(cookie_name_encoded);
 if (!menuState) {

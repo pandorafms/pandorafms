@@ -880,14 +880,14 @@ function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,mi
 	
 	//var range = config.max - config.min;
 	var range = config.max - config.min;
-	if (value >= min_warning){
-		if ( min_warning > 0 ) {
-			config.yellowZones = [{ from: min_warning, to: max_warning }];
-		}
-		if ( min_critical > 0 ) {
-			config.redZones = [{ from: min_critical, to: max_critical }];
-		}
+	
+	if ( min_warning > 0 ) {
+		config.yellowZones = [{ from: min_warning, to: max_warning }];
 	}
+	if ( min_critical > 0 ) {
+		config.redZones = [{ from: min_critical, to: max_critical }];
+	}
+
 	gauges = new Gauge(name, config);
 	gauges.render();
 	gauges.redraw(value);

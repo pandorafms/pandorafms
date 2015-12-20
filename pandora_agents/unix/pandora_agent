@@ -1842,10 +1842,7 @@ sub udp_server ($$) {
 				$process_name =~ s/\s*$//g;
 				if (defined($Conf{"process_${process_name}_start"})) {
 					log_message ('udp server', "Process $process_name started from $hishost");
-					if (fork() == 0) {  
-						`$Conf{"process_${process_name}_start"} 2>$DevNull`;
-						exit 0;
-					}
+					system "$Conf{\"process_${process_name}_start\"} 2>$DevNull &";
 				} else {
 					log_message ('udp server', "Attempt to start unknown process $process_name from $hishost");
 				}
@@ -1856,10 +1853,7 @@ sub udp_server ($$) {
 				$process_name =~ s/\s*$//g;
 				if (defined($Conf{"process_${process_name}_stop"})) {
 					log_message ('udp server', "Process $process_name stopped from $hishost");
-					if (fork() == 0) {  
-						`$Conf{"process_${process_name}_stop"} 2>$DevNull`;
-						exit 0;
-					}
+					system "$Conf{\"process_${process_name}_stop\"} 2>$DevNull &";
 				} else {
 					log_message ('udp server', "Attempt to stop unknown process $process_name from $hishost");
 				}

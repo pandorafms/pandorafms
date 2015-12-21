@@ -213,6 +213,9 @@ my %Macros;
 # PID of tentacle proxy, used in proxy mode
 my $tentacle_pid = undef;
 
+# PID of udp_server
+my $udp_server_pid = undef;
+
 ################################################################################
 # Print usage information and exit.
 ################################################################################
@@ -1972,6 +1975,13 @@ sub kill_signal_handler (){
 			print "kill -9 $tentacle_pid\n";
 			`kill -9 $tentacle_pid`;
 	}
+
+	# Kill udp_server if it was forked.
+	if (defined ($udp_server_pid) && $udp_server_pid) {
+		kill 'TERM', $udp_server_pid;
+		log_message ('udp server',  'terminated.');
+	}
+
 	exit (0);
 }
 
@@ -2177,9 +2187,10 @@ $ENV{'PATH'} .= ":$ConfDir/plugins";
 
 # Start UDP server if configured
 if ($Conf{'udp_server'} == 1){
-	my $pid = fork();
+	$udp_server_pid = fork();
 
-	if ($pid == 0){
+	if ($udp_server_pid == 0){
+		$0 = 'udp_server (pandora_agent)';
 		udp_server ($Conf{'udp_server_port'}, $Conf{'udp_server_auth_address'});
 		exit;
 	}

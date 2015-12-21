@@ -250,11 +250,11 @@ enterprise_hook('close_meta_frame');
 ?>
 <script type="text/javascript">
 	function check_all_checkboxes() {
-		if ($("input[name=all_delete]").attr('checked')) {
-			$(".check_delete").attr('checked', true);
+		if ($("input[name=all_delete]").prop('checked')) {
+			$(".check_delete").prop('checked', true);
 		}
 		else {
-			$(".check_delete").attr('checked', false);
+			$(".check_delete").prop('checked', false);
 		}
 	}
 </script>

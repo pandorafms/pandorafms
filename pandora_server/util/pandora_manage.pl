@@ -4434,6 +4434,10 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 5, 4);
 			cli_get_planned_downtimes_items();
 		}
+		elsif ($param eq '--create_synthetic') {
+			#aram_check($ltotal, 1);
+			cli_create_synthetic();
+		}
 		elsif ($param eq '--set_planned_downtimes_deleted') {
 			param_check($ltotal, 1);
 			cli_set_delete_planned_downtime();

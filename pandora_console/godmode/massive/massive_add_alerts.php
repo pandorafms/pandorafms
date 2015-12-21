@@ -152,7 +152,7 @@ $table->data[0][0] = __('Group');
 $table->data[0][1] = html_print_select_groups(false, "AW", $return_all_group, 'id_group', 0,
 	'', 'Select', -1, true, false, true, '', false, 'width:180px;');
 $table->data[0][2] = __('Group recursion');
-$table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion, true, false);
+$table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion, true, false,'',true);
 
 $table->data[1][0] = __('Agents');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';

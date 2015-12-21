@@ -1074,54 +1074,12 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		if ($projection != false && $i != 0) {
 			$agent_module_id = $module_list[0];
 			
-			if (!empty($name_list) && $names_number == $module_number && isset($name_list[$i])) {
-				$module_name_list[$i] = $name_list[$i];
-			}
-			else {
-				//Get and process agent name
-				$agent_name = io_safe_output(
-					modules_get_agentmodule_agent_name ($agent_module_id));
-				$agent_name = ui_print_truncate_text($agent_name, 'agent_small', false, true, false, '...', false);
-				
-				
-				$agent_id = agents_get_agent_id ($agent_name);
-				
-				
-				//Get and process module name
-				$module_name = io_safe_output(
-					modules_get_agentmodule_name ($agent_module_id));
-				$module_name = sprintf(__("projection for %s"), $module_name);
-				$module_name = ui_print_truncate_text($module_name, 'module_small', false, true, false, '...', false);
-				
-				$module_name_list[$i] = $agent_name ." / ". $module_name;
-			}
-			
 			$id_module_type = modules_get_agentmodule_type ($agent_module_id);
 			$module_type = modules_get_moduletype_name ($id_module_type);
 			$uncompressed_module = is_module_uncompressed ($module_type);
 		}
 		else {
 			$agent_module_id = $module_list[$i];
-			
-			if (!empty($name_list) && $names_number == $module_number && isset($name_list[$i])) {
-				$module_name_list[$i] = $name_list[$i];
-			}
-			else {
-				//Get and process agent name
-				$agent_name = io_safe_output(
-					modules_get_agentmodule_agent_name ($agent_module_id));
-				$agent_name = ui_print_truncate_text($agent_name, 'agent_small', false, true, false, '...', false);
-				
-				
-				$agent_id = agents_get_agent_id ($agent_name);
-				
-				//Get and process module name
-				$module_name = io_safe_output(
-					modules_get_agentmodule_name ($agent_module_id));
-				$module_name = ui_print_truncate_text($module_name, 'module_small', false, true, false, '...', false);
-				
-				$module_name_list[$i] = $agent_name . " / " . $module_name;
-			}
 			
 			$id_module_type = modules_get_agentmodule_type ($agent_module_id);
 			$module_type = modules_get_moduletype_name ($id_module_type);
@@ -1192,6 +1150,26 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		// Check available data
 		if (count ($data) < $min_necessary) {
 			continue;
+		}
+		
+		if (!empty($name_list) && $names_number == $module_number && isset($name_list[$i])) {
+			$module_name_list[$i] = $name_list[$i];
+		}
+		else {
+			//Get and process agent name
+			$agent_name = io_safe_output(
+				modules_get_agentmodule_agent_name ($agent_module_id));
+			$agent_name = ui_print_truncate_text($agent_name, 'agent_small', false, true, false, '...', false);
+			
+			$agent_id = agents_get_agent_id ($agent_name);
+			
+			//Get and process module name
+			$module_name = io_safe_output(
+				modules_get_agentmodule_name ($agent_module_id));
+			$module_name = sprintf(__("projection for %s"), $module_name);
+			$module_name = ui_print_truncate_text($module_name, 'module_small', false, true, false, '...', false);
+			
+			$module_name_list[$i] = $agent_name ." / ". $module_name;
 		}
 		
 		// Data iterator

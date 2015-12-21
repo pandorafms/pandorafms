@@ -132,6 +132,7 @@ sub help_screen{
 	help_screen_line('--update_module', '<module_name> <agent_name> <field_to_change> <new_value>', 'Update a module field');
     help_screen_line('--get_agents_module_current_data', '<module_name>', "Get the agent and current data \n\t  of all the modules with a given name");
 	help_screen_line('--create_network_module_from_component', '<agent_name> <component_name>', "Create a new network \n\t  module from a network component");
+	help_screen_line('--create_synthetic', "<module_name> <synthetic_type> <agent_name> <source_agent1>,<operation>,<source_module1>|<source_agent1>,<source_module1> \n\t [ <operation>,<fixed_value> | <source agent2>,<operation>,<source_module2> ]", "Create a new Synthetic module");
 	print "\nALERTS:\n\n" unless $param ne '';
     help_screen_line('--create_template_module', '<template_name> <module_name> <agent_name>', 'Add alert template to module');
     help_screen_line('--delete_template_module', '<template_name> <module_name> <agent_name>', 'Delete alert template from module');
@@ -3183,6 +3184,90 @@ sub cli_get_agent_modules() {
 		print $module->{'id_agente_modulo'}.",".safe_output($module->{'nombre'})."\n";
 	}
 }
+
+sub cli_create_synthetic() {
+	my $name_module = @ARGV[2];
+	my $synthetic_type = @ARGV[3];
+	
+	my $agent_name = @ARGV[4];
+	my @module_data = @ARGV[5..$#ARGV];
+	my $module;
+	my (@filterdata,@data_module);
+	
+	if ($synthetic_type ne 'arithmetic' && $synthetic_type ne 'average') {
+		print("[ERROR] Type of syntethic module doesn't exists \n\n");
+		exit 1;
+	}
+	
+	$module->{'custom_integer_1'} = 0;
+	$module->{'custom_integer_2'} = 0;
+	$module->{'prediction_module'} = 3; # Synthetic code is 3
+		
+	my $id_agent = int(get_agent_id($dbh,$agent_name));
+	
+	if ($id_agent > 0) {
+		
+		foreach my $data (@module_data) {
+			my @split_data = split(',',$data);
+			if (@split_data[0] =~ m/(x|\/|\+|\*|\-)/ && length(@split_data[0]) == 1 ) {
+				if ( @split_data[0] =~ m/(\/|\+|\*|\-)/ && $synthetic_type eq 'average' ) {
+					print("[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
+					exit 1;
+				}
+				@data_module = ("",@split_data[0],@split_data[1]);
+				my $text_data = join(',',@data_module);
+				push (@filterdata,$text_data);
+			}
+			else {
+				if (scalar(@split_data) == 2) {
+					@data_module = (safe_output(@split_data[0]),'',safe_output(@split_data[1]));
+					my $text_data = join(',',@data_module);
+					push (@filterdata,$text_data);
+				}
+				else {
+					if (length(@split_data[1]) > 1 ) {
+						print("[ERROR] You can only use +, -, *, / or x, and you use this: @split_data[1] \n\n");
+						exit 1;
+					}
+					if ( @split_data[1] =~ m/(\/|\+|\*|\-)/ && $synthetic_type eq 'average' ) {
+						print("[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
+						exit 1;
+					}
+					@data_module = (safe_output(@split_data[0]),@split_data[1],safe_output(@split_data[2]));
+					my $text_data = join(',',@data_module);
+					push (@filterdata,$text_data);
+				}
+			}
+		}
+
+		my $module_exists = get_agent_module_id($dbh, $name_module, $id_agent);
+		non_exist_check($module_exists, 'module name', $name_module);
+		
+		$module->{'id_agente'} = $id_agent;
+		$module->{'nombre'} = safe_input($name_module);
+		$module->{'id_modulo'} = 5;
+		
+		my $id_module = db_process_insert($dbh, 'id_agente_modulo', 'tagente_modulo', $module);
+		
+		if ($id_module) {
+			my $result = enterprise_hook('create_synthetic_operations',
+				[$dbh,int($id_module), @filterdata]);
+			if ($result) {
+				print("[OK] The modules are creating ID: $id_module \n\n");
+			}
+			else {
+				print("[ERROR] Problems with creating data module. \n\n");
+			}
+		}
+		else {
+			print("[INFO] Problems with creating module \n\n");
+		}
+	}
+	else { 
+		print( "[INFO] The agent '$agent_name' doesn't exists\n\n");
+	}
+}
+
 
 ########################################################################
 # Show all the modules of a policy

@@ -33,6 +33,7 @@ include_once($config['homedir'] . "/include/functions_planned_downtimes.php");
 enterprise_include_once ('include/functions_local_components.php');
 enterprise_include_once ('include/functions_events.php');
 enterprise_include_once ('include/functions_agents.php');
+enterprise_include_once ('include/functions_modules.php');
 
 /**
  * Parse the "other" parameter.
@@ -2042,6 +2043,127 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3) {
 	}
 	else {
 		returnData('string', array('type' => 'string', 'data' => $idModule));
+	}
+}
+
+
+/**
+ * Create a synthetic module in agent. And return the id_agent_module of new module. 
+ * Note: Only adds database information, this function doesn't alter config file information.
+ * 
+ * @param string $id Name of agent to add the module.
+ * @param $thrash1 Don't use.
+ * @param array $other it's array, $other as param is <name_module><synthetic_type><AgentName;Operation;NameModule> OR <AgentName;NameModule> OR <Operation;Value>in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=set&op2=create_synthetic_module&id=pepito&other=prueba|average|Agent%20Name;AVG;Name%20Module|Agent%20Name2;AVG;Name%20Module2&other_mode=url_encode_separator_|
+ *  
+ * @param $thrash3 Don't use
+ */
+function api_set_create_synthetic_module($id, $thrash1, $other, $thrash3) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+			
+	$agentName = $id;
+	
+	io_safe_input_array($other);
+	
+	if ($other['data'][0] == "") {
+		returnError('error_create_data_module', __('Error in creation synthetic module. Module_name cannot be left blank.'));
+		return;
+	}
+	
+	$idAgent = agents_get_agent_id(io_safe_output($agentName),true);
+	
+	if (!$idAgent) {
+		returnError('error_create_data_module', __('Error in creation synthetic module. Agent name doesn\'t exists.'));
+		return;
+	}
+	
+	$name = io_safe_output($other['data'][0]);
+	$name = io_safe_input($name);
+	
+	$values = array(
+		'id_agente' => $idAgent,
+		'id_modulo' => 5,
+		'custom_integer_1' => 0,
+		'custom_integer_2' => 0,
+		'prediction_module' => 3, 
+	);
+	
+	if ( ! $values['descripcion'] ) {
+		$values['descripcion'] = '';	// Column 'descripcion' cannot be null
+	}
+
+	$idModule = modules_create_agent_module($idAgent, $name, $values, true);
+	
+	if (is_error($idModule)) {
+		// TODO: Improve the error returning more info
+		returnError('error_create_data_module', __('Error in creation data module.'));
+	}
+	else {
+		$synthetic_type = $other['data'][1];
+		unset($other['data'][0]);
+		unset($other['data'][1]);
+		
+		
+		$filterdata = array();
+		foreach ($other['data'] as $data) {
+			$data = str_replace(array('ADD','SUB','MUL','DIV'),array('+','-','*','/'),$data);
+			$split_data = explode(';',$data);
+			
+			if ( preg_match("/[x\/+*-]/",$split_data[0]) && strlen($split_data[0]) == 1 ) {
+				if ( preg_match("/[\/|+|*|-]/",$split_data[0]) && $synthetic_type === 'average' ) {
+					returnError("","[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
+				}
+				
+				$operator = $split_data[0] == 'x' ? 'avg' : $split_data[0];
+				$data_module = array("",$operator,$split_data[1]);
+				
+				$text_data = implode('_',$data_module);
+				array_push($filterdata,$text_data);
+			}
+			else {
+				if (count($split_data) == 2) {
+					$idAgent = agents_get_agent_id(io_safe_output($split_data[0]),true);
+					$data_module = array($idAgent,'',$split_data[1]);
+					$text_data = implode('_',$data_module);
+					array_push($filterdata,$text_data);
+				}
+				else {
+					if (strlen($split_data[1]) > 1 ) {
+						returnError("","[ERROR] You can only use +, -, *, / or x, and you use this: @split_data[1] \n\n");
+					}
+					if ( preg_match("/[\/|+|*|-]/",$split_data[1]) && $synthetic_type === 'average' ) {
+						returnError("","[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
+					}
+					
+					$idAgent = agents_get_agent_id(io_safe_output($split_data[0]),true);
+					$operator = $split_data[1] == 'x' ? 'avg' : $split_data[1];
+					$data_module = array($idAgent,$operator,$split_data[2]);
+					$text_data = implode('_',$data_module);
+					array_push($filterdata,$text_data);
+				}
+			}
+		}
+		
+		$serialize_ops = implode(',',$filterdata);
+		
+		//modules_create_synthetic_operations
+		$synthetic = enterprise_hook('modules_create_synthetic_operations',
+			array($idModule, $serialize_ops));
+		
+		if ($synthetic === ENTERPRISE_NOT_HOOK) {
+			returnError('error_policy_modules', 'Error Synthetic modules.');
+			return;
+		}
+		else {
+			returnData('string', array('type' => 'string', 'data' => __('Synthetic module created ID: ' . $idModule)));
+		}
+		
+		//enterprise
 	}
 }
 

@@ -944,6 +944,7 @@ function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength
 	if ($size == 0)
 		$size = 10;
 	
+	$attr = array();
 	if ($required)
 		$attr = array('required' => 'required');
 	

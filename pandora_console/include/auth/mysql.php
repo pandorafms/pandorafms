@@ -290,6 +290,8 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			$config["auth"] === 'ad' ) {
 			enterprise_include_once('include/functions_metaconsole.php');
 			$servers = metaconsole_get_servers();
+			$error_count = 0;
+			$error_servers = array();
 			foreach ($servers as $server) {
 				if ( metaconsole_connect($server)  == NOERR ) {
 					if (create_user ($login, $pass,
@@ -303,9 +305,14 @@ function process_user_login_remote ($login, $pass, $api = false) {
 						$config['default_remote_group'], false, $config['default_assign_tags']);
 				}
 				else {
-					$config["auth_error"] = __("Error to sync users");
-					return false;
+					$error_count++;
+					$error_servers[$error_count] = $server['server_name'];
 				}
+				metaconsole_restore_db();
+			}
+			if ($error_count > 0) {
+				$config["auth_error"] = __("Error synching with the following servers: ") . implode(',', $error_servers);
+				return false;
 			}
 		}
 	}

@@ -291,7 +291,6 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			enterprise_include_once('include/functions_metaconsole.php');
 			$servers = metaconsole_get_servers();
 			foreach ($servers as $server) {
-				html_debug_print($server);
 				if ( metaconsole_connect($server)  == NOERR ) {
 					if (create_user ($login, $pass,
 							array ('fullname' => $login, 

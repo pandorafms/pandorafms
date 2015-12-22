@@ -306,7 +306,7 @@ sub pandora_server_tasks ($) {
 						}
 						
 						if ($agent->{'update_alert_count'} == 1) {
-							pandora_update_agent_alert_count ($dbh, $agent->{'id_agente'});
+							pandora_update_agent_alert_count ($pa_config, $dbh, $agent->{'id_agente'});
 						}
 					}
 		

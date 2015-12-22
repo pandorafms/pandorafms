@@ -4806,12 +4806,15 @@ sub pandora_update_agent_module_count ($$$) {
 ##########################################################################
 # Update the fired alert count of an agent.
 ##########################################################################
-sub pandora_update_agent_alert_count ($$) {
-	my ($dbh, $agent_id) = @_;
+sub pandora_update_agent_alert_count ($$$) {
+	my ($pa_config, $dbh, $agent_id) = @_;
 	
 	db_do ($dbh, 'UPDATE tagente SET update_alert_count=0,
 	fired_count=(SELECT COUNT(*) FROM tagente_modulo, talert_template_modules WHERE tagente_modulo.disabled=0 AND tagente_modulo.id_agente_modulo=talert_template_modules.id_agent_module AND talert_template_modules.disabled=0 AND times_fired>0 AND id_agente=' . $agent_id .
 	') WHERE id_agente = ' . $agent_id);
+	
+	# Sync the agent cache every time the module count is updated.
+	enterprise_hook('update_agent_cache', [$pa_config, $dbh, $agent_id]) if ($pa_config->{'metaconsole_agent_cache'} == 1);
 }
 
 ########################################################################

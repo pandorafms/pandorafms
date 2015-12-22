@@ -71,6 +71,7 @@ $agente = $_SERVER['HTTP_USER_AGENT'];
 if(preg_match('/MSIE/i',$agente)) {
 	$browser = "MSIE";
 }
+else $browser = '';
 ?>
 <script type="text/javascript" language="javascript">
 /* <![CDATA[ */

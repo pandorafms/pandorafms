@@ -915,10 +915,13 @@ function html_print_input_password ($name, $value, $alt = '', $size = 50, $maxle
 	
 	if ($size == 0)
 		$size = 10;
-	
-	if ($required)
-		$attr = array('required' => 'required');
-	
+
+	$attr = array();
+
+	if ($required) {
+		$attr['required'] = 'required';
+	}
+
 	return html_print_input_text_extended ($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true);
 }
 

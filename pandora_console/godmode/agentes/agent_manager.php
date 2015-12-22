@@ -242,6 +242,9 @@ $table->data[2][1] .= html_print_checkbox ("cascade_protection", 1, $cascade_pro
 
 $table->data[3][0] = __('Group');
 $table->data[3][1] = html_print_select_groups(false, "AR", false, 'grupo', $grupo, '', '', 0, true);
+$table->data[3][1] .= ' <span id="group_preview">';
+$table->data[3][1] .= ui_print_group_icon ($grupo, true);
+$table->data[3][1] .= '</span>';
 
 $table->data[4][0] = __('Interval');
 
@@ -546,6 +549,9 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 			theme_advanced_toolbar_align : "left",
 			theme_advanced_buttons1 : "undo, redo, | , link, unlink"
 		});
+	});
+	$(document).ready (function () {
+		$('#grupo').pandoraSelectGroupIcon ();
 	});
 	/* ]]> */
 </script>

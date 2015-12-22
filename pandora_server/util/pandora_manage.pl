@@ -3252,9 +3252,9 @@ sub cli_get_policies() {
 
 sub cli_get_agents() {
 	my ($group_name, $os_name, $status, $max_modules, $filter_substring, $policy_name) = @ARGV[2..7];
-	
-	my $condition = ' 1=1';
-	
+
+	my $condition = ' disabled=0';
+
 	my $id_group;
 	my $id_os;
 	my $policy_id;

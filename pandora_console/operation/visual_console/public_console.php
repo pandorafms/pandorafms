@@ -171,8 +171,5 @@ $(document).ready (function () {
 	?>
 });
 
-$(window).load(function() {
-	draw_lines (lines, 'layout_map');
-});
 /* ]]> */
 </script>

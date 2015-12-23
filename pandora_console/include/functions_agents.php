@@ -901,9 +901,10 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 			}
 			unset($search['status']);
 		}
-
-		if (isset($search['id_agente'])) {
-			$filter['id_agente'] = $search['id_agente'];
+		if ($add_alert_bulk_op) {
+			if (isset($search['id_agente'])) {
+				$filter['id_agente'] = $search['id_agente'];
+			}
 		}
 
 		if (is_metaconsole() && isset($search['id_server'])) {

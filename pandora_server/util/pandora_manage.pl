@@ -3203,6 +3203,14 @@ sub cli_create_synthetic() {
 		print("[ERROR] Type of syntethic module doesn't exists \n\n");
 		exit 1;
 	}
+	if (scalar(@{$module_data}) == 0) {
+		print("[ERROR] No modules data \n\n");
+		exit 1;
+	}
+	if ($name_module == '') {
+		print("[ERROR] No module name \n\n");
+		exit 1;
+	}
 	
 	$module->{'custom_integer_1'} = 0;
 	$module->{'custom_integer_2'} = 0;
@@ -3218,6 +3226,9 @@ sub cli_create_synthetic() {
 				if ( @split_data[0] =~ m/(\/|\+|\*|\-)/ && $synthetic_type eq 'average' ) {
 					print("[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
 					exit 1;
+				}
+				if (is_numeric(@split_data[1]) == 0) {
+					continue;
 				}
 				@data_module = ("",@split_data[0],@split_data[1]);
 				my $text_data = join(',',@data_module);

@@ -220,6 +220,7 @@ $(document).ready (function () {
 	$("#id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#id_agents",
 		privilege: "AW",
+		add_alert_bulk_op: true,
 		recursion: function() {return recursion},
 		filter_agents_json: filter_agents_json,
 		callbackPost: function () {

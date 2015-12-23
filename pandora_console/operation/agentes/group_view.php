@@ -17,6 +17,7 @@ require_once ("include/config.php");
 require_once ("include/functions_reporting.php");
 require_once ($config['homedir'] . "/include/functions_agents.php");
 require_once ($config['homedir'] . '/include/functions_users.php');
+require_once ("include/functions_groupview.php");
 
 check_login ();
 // ACL Check
@@ -64,34 +65,18 @@ else {
 // Header
 ui_print_page_header (__("Group view"), "images/group.png", false, "", false, $updated_time);
 
-
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
-//Groups and tags
-$result_groups = group_get_groups_list($config['id_user'], $strict_user,
-	'AR', true, true);
 
-$count = count($result_groups);
+$all_data = groupview_status_modules_agents ($config['id_user'], $strict_user, 'AR', $strict_user);
 
-if ($count == 1) {
-	if ($result_groups[0]['_id_'] == 0) {
-		unset($result_groups[0]);
-	}
-}
+$total_agentes = $all_data["_total_agents_"];
+$monitor_ok = $all_data["_monitors_ok_"];
+$monitor_warning = $all_data["_monitors_warning_"];
+$monitor_critical = $all_data["_monitors_critical_"];
+$monitor_unknown = $all_data["_monitors_unknown_"];
 
-$total_agentes = 0;
-$monitor_ok = 0;
-$monitor_warning = 0;
-$monitor_critical = 0;
-$monitor_unknown = 0;
-$agents_unknown = 0;
-foreach ($result_groups as $data) {
-	$total_agentes += $data["_total_agents_"];
-	$monitor_ok += $data["_monitors_ok_"];
-	$monitor_warning += $data["_monitors_warning_"];
-	$monitor_critical += $data["_monitors_critical_"];
-	$monitor_unknown += $data["_monitors_unknown_"];
-}
-$total = $monitor_ok + $monitor_warning + $monitor_critical+$monitor_unknown;
+$total = $monitor_ok + $monitor_warning + $monitor_critical + $monitor_unknown;
+
 $total_ok = format_numeric (($monitor_ok*100)/$total,0);
 $total_warning = format_numeric (($monitor_warning*100)/$total,0);
 $total_critical = format_numeric (($monitor_critical*100)/$total,0);
@@ -110,6 +95,19 @@ echo '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="data
 		echo "</td>";
 	echo "</tr>";
 echo "</table>";
+
+
+//Groups and tags
+$result_groups = groupview_get_groups_list($config['id_user'], $strict_user,
+	'AR', true, true);
+
+$count = count($result_groups);
+
+if ($count == 1) {
+	if ($result_groups[0]['_id_'] == 0) {
+		unset($result_groups[0]);
+	}
+}
 
 ui_pagination($count);
 
@@ -220,9 +218,13 @@ if (!empty($result_groups)) {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
 			}
+			if ($data["_id_"] == 0) {
+				$agent_counter = agents_get_group_agents($groups_id);
+				echo $link . count($agent_counter) . "</a>";
+			}
 			$agent_counter = agents_get_group_agents($groups_id);
 			if ($data["_total_agents_"] > 0) {
-				echo $link . count($agent_counter) . "</a>";
+				echo $link . $data["_total_agents_"] . "</a>";
 			}
 			echo "</td>";
 			
@@ -235,12 +237,8 @@ if (!empty($result_groups)) {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_UNKNOWN ."'>";
 			}
-			$search = array(
-				'status' => AGENT_STATUS_UNKNOWN
-			);
-			$agent_counter_unknown = agents_get_group_agents($groups_id, $search);
 			if ($data["_agents_unknown_"] > 0) {
-				echo $link . count($agent_counter_unknown) . "</a>";
+				echo $link . $data["_agents_unknown_"] . "</a>";
 			}
 			echo "</td>";
 			
@@ -253,12 +251,8 @@ if (!empty($result_groups)) {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_NOT_INIT ."'>";
 			}
-			$search = array(
-				'status' => AGENT_STATUS_NOT_INIT
-			);
-			$agent_counter_not_init = agents_get_group_agents($groups_id, $search);
 			if ($data["_agents_not_init_"] > 0) {
-				echo $link . count($agent_counter_not_init) . "</a>";
+				echo $link . $data["_agents_not_init_"] . "</a>";
 			}
 			echo "</td>";
 			

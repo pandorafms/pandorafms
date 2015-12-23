@@ -805,8 +805,8 @@ function agents_common_modules ($id_agent, $filter = false, $indexed = true, $ge
  * @return array An array with all agents in the group or an empty array
  */
 function agents_get_group_agents ($id_group = 0, $search = false,
-	$case = "lower", $noACL = false, $childGroups = false, $serialized = false, $separator = '|') {
-	
+	$case = "lower", $noACL = false, $childGroups = false, $serialized = false, $separator = '|', $add_alert_bulk_op = false) {
+
 	global $config;
 	
 	$filter = array();
@@ -901,7 +901,12 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 			}
 			unset($search['status']);
 		}
-		
+		if ($add_alert_bulk_op) {
+			if (isset($search['id_agente'])) {
+				$filter['id_agente'] = $search['id_agente'];
+			}
+		}
+
 		if (is_metaconsole() && isset($search['id_server'])) {
 			$filter['id_tmetaconsole_setup'] = $search['id_server'];
 			
@@ -912,10 +917,11 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 			
 			unset ($search["id_server"]);
 		}
-		
-		// Add the rest of the filter from the search array
-		foreach ($search as $key => $value) {
-			$filter[] = $value;
+		if (!$add_alert_bulk_op) {
+			// Add the rest of the filter from the search array
+			foreach ($search as $key => $value) {
+				$filter[] = $value;
+			}
 		}
 	}
 	else {

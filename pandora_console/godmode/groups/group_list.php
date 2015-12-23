@@ -72,6 +72,9 @@ if (is_ajax ()) {
 		$privilege = (string) get_parameter ('privilege', '');
 		// Is is possible add keys prefix to avoid auto sorting in js object conversion
 		$keys_prefix = (string) get_parameter ('keys_prefix', '');
+		// This attr is for the operation "bulk alert accions add", it controls the query that take the agents
+		// from db
+		$add_alert_bulk_op = get_parameter ('add_alert_bulk_op', false);
 		// Ids of agents to be include in the SQL clause as id_agent IN ()
 		$filter_agents_json = (string) get_parameter ('filter_agents_json', '');
 		$status_agents = (int)get_parameter('status_agents', AGENT_STATUS_ALL);
@@ -113,10 +116,10 @@ if (is_ajax ()) {
 		}
 		
 		if ( $id_group == 0 && $privilege != '') {
+			$groups = users_get_groups ($config["id_user"], $privilege, false);
 			//  if group ID doesn't matter and $privilege is specified (like 'AW'),
 			//  retruns all agents that current user has $privilege privilege for.
-			$agents = agents_get_group_agents(
-				array_keys (users_get_groups ($config["id_user"], $privilege, false)),$filter,"none",false,$recursion);
+			$agents = agents_get_group_agents(array_keys($groups), $filter, "none", false, $recursion, false, '|', $add_alert_bulk_op);
 		}
 		else {
 			$agents = agents_get_group_agents($id_group, $filter, "none",

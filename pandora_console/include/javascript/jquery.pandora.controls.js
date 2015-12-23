@@ -44,6 +44,7 @@
 						"filter_agents_json" : config.filter_agents_json,
 						"disabled" : config.disabled ? 1 : 0,
 						"status_agents" : config.status_agents,
+						"add_alert_bulk_op" : config.add_alert_bulk_op,
 						"privilege" : config.privilege,
 						// Add a key prefix to avoid auto sorting in js object conversion
 						"keys_prefix" : "_"

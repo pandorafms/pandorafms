@@ -162,9 +162,9 @@ sub help_screen{
 	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
 	print "\nEVENTS:\n\n" unless $param ne '';
 	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <custom_data_json>]", 'Add event');
-    help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name>", 'Validate events'); 
-    help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id'); 
-    help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id'); 
+    help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name>", 'Validate events');
+    help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id');
+    help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id');
     help_screen_line('--add_event_comment', '<event_id> <user_name> <comment>', 'Add event\'s comment');
 	print "\nINCIDENTS:\n\n" unless $param ne '';
     help_screen_line('--create_incident', "<title> <description> <origin> <status> <priority 0 for Informative, \n\t  1 for Low, 2 for Medium, 3 for Serious, 4 for Very serious or 5 for Maintenance>\n\t   <group> [<owner>]", 'Create incidents');
@@ -182,15 +182,15 @@ sub help_screen{
 	help_screen_line('--get_policy_modules', '<policy_name>', 'Get the modules of a policy');
 	help_screen_line('--get_policies', '[<agent_name>]', "Get all the policies (without parameters) or \n\tthe policies of a given agent (agent name as parameter)");
 	help_screen_line('--recreate_collection', '<collection_id>', 'Recreate the files of a collection');
-  
+
 	print "\nNETFLOW:\n\n" unless $param ne '';
 	help_screen_line('--create_netflow_filter', "<filter_name> <group_name> <filter> \n\t  <aggregate_by dstip|dstport|none|proto|srcip|srcport> <output_format kilobytes|kilobytespersecond|\n\t  megabytes|megabytespersecond>", "Create a new netflow filter");
 	print "\nTOOLS:\n\n" unless $param ne '';
 	help_screen_line('--exec_from_file', '<file_path> <option_to_execute> <option_params>', "Execute any CLI option \n\t  with macros from CSV file");
-    help_screen_line('--create_snmp_trap', '<name> <oid> <description> <severity>', "Create a new trap definition. \n\tSeverity 0 (Maintenance), 1(Info) , 2 (Normal), 3 (Warning), 4 (Critical), 5 (Minor) and 6 (Major)");	
+    help_screen_line('--create_snmp_trap', '<name> <oid> <description> <severity>', "Create a new trap definition. \n\tSeverity 0 (Maintenance), 1(Info) , 2 (Normal), 3 (Warning), 4 (Critical), 5 (Minor) and 6 (Major)");
     print "\nSETUP:\n\n" unless $param ne '';
 	help_screen_line('--set_event_storm_protection', '<value>', "Enable (1) or disable (0) event \n\t  storm protection");
-	
+
     print "\n";
 	exit;
 }
@@ -219,7 +219,7 @@ sub pandora_enable_group ($$$) {
 	if ($group == 0){
 			db_do ($dbh, "UPDATE tagente SET disabled = 0");
 	}
-	else {  
+	else {
 			db_do ($dbh, "UPDATE tagente SET disabled = 0 WHERE id_grupo = $group");
 	}
     exit;
@@ -229,17 +229,17 @@ sub pandora_enable_group ($$$) {
 # Init screen
 ##############################################################################
 sub pandora_manage_init ($) {
-    my $conf = shift; 
-    
+    my $conf = shift;
+
     $conf->{"verbosity"}=0;	# Verbose 1 by default
 	$conf->{"daemon"}=0;	# Daemon 0 by default
 	$conf->{'PID'}="";	# PID file not exist by default
 	$conf->{"quiet"}=0;	# Daemon 0 by default
-   
+
 
 	# Load config file from command line
 	help_screen () if ($#ARGV < 0);
-   
+
         $conf->{'pandora_path'} = $ARGV[0];
 
 	help_screen () if ($conf->{'pandora_path'} =~ m/--*h\w*\z/i );
@@ -253,8 +253,8 @@ sub pandora_delete_template_module ($$) {
 
 	# Delete the template module
 	db_do ($dbh, 'DELETE FROM talert_template_modules WHERE id = ?', $template_module_id);
-	
-	# 
+
+	#
 	db_do ($dbh, 'DELETE FROM talert_template_module_actions WHERE id_alert_template_module = ?', $template_module_id);
 }
 
@@ -281,13 +281,13 @@ sub pandora_create_alert_template_from_hash ($$$) {
 }
 
 ##########################################################################
-# Assign a profile in a group to user 
+# Assign a profile in a group to user
 ##########################################################################
 sub pandora_add_profile_to_user ($$$;$) {
 	my ($dbh, $user_id, $profile_id, $group_id) = @_;
-	
+
 	$group_id = 0 unless defined($group_id);
-	
+
 	db_do ($dbh, 'INSERT INTO tusuario_perfil (`id_usuario`, `id_perfil`, `id_grupo`)
 				  VALUES (?, ?, ?)', safe_input($user_id), $profile_id, $group_id);
 }
@@ -364,7 +364,7 @@ else {
 ##########################################################################
 sub pandora_create_user_profile ($$$$) {
         my ($dbh, $user_id, $profile_id, $group_id) = @_;
-        
+
         return db_insert ($dbh, 'id_up', 'INSERT INTO tusuario_perfil (id_usuario, id_perfil, id_grupo) VALUES (?, ?, ?)', $user_id, $profile_id, $group_id);
 }
 
@@ -373,7 +373,7 @@ sub pandora_create_user_profile ($$$$) {
 ##########################################################################
 sub pandora_delete_user_profile ($$$$) {
 	my ($dbh, $user_id, $profile_id, $group_id) = @_;
-	
+
 	return db_do ($dbh, 'DELETE FROM tusuario_perfil WHERE id_usuario=? AND id_perfil=? AND id_grupo=?', $user_id, $profile_id, $group_id);
 }
 
@@ -382,15 +382,15 @@ sub pandora_delete_user_profile ($$$$) {
 ##########################################################################
 sub pandora_delete_planned_downtime ($$) {
 	my ($dbh, $id_downtime) = @_;
-	
+
 	my $execute = get_db_single_row($dbh, 'SELECT executed FROM tplanned_downtime WHERE id = ? ', $id_downtime);
-	
+
 	if ( !$execute->{'executed'} ) {
 		my $result = db_do ($dbh, 'DELETE FROM tplanned_downtime WHERE id = ? ', $id_downtime);
-		
+
 		if ($result) {
 			return "This planned downtime is deleted";
-		}	
+		}
 		else {
 			return "Problems with this planned downtime";
 		}
@@ -405,7 +405,7 @@ sub pandora_delete_planned_downtime ($$) {
 ##########################################################################
 sub pandora_delete_data ($$$) {
 	my ($dbh, $type, $id) = @_;
-	
+
 	if($type eq 'group') {
 		my @delete_agents = get_db_rows ($dbh, 'SELECT id_agente FROM tagente WHERE id_grupo = ?', $id);
 		foreach my $agent (@delete_agents) {
@@ -435,36 +435,36 @@ sub pandora_delete_data ($$$) {
 sub pandora_delete_module_data ($$) {
 	my ($dbh, $id_module) = @_;
 	my $buffer = 1000;
-	
+
 	while(1) {
 		my $nd = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
 		my $ndinc = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
 		my $ndlog4x = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
 		my $ndstring = get_db_value ($dbh, 'SELECT count(id_agente_modulo) FROM tagente_datos_string WHERE id_agente_modulo=?', $id_module);
-		
+
 		my $ntot = $nd + $ndinc + $ndlog4x + $ndstring;
 
 		if($ntot == 0) {
 			last;
 		}
-		
+
 		if($nd > 0) {
 			db_do ($dbh, 'DELETE FROM tagente_datos WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
 		}
-		
+
 		if($ndinc > 0) {
 			db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
 		}
-	
+
 		if($ndlog4x > 0) {
 			db_do ($dbh, 'DELETE FROM tagente_datos_log4x WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
 		}
-		
+
 		if($ndstring > 0) {
 			db_do ($dbh, 'DELETE FROM tagente_datos_string WHERE id_agente_modulo=? LIMIT ?', $id_module, $buffer);
 		}
 	}
-		
+
 	return 1;
 }
 
@@ -475,7 +475,7 @@ sub pandora_delete_module_data ($$) {
 sub pandora_validate_event_filter ($$$$$$$$$) {
 	my ($pa_config, $id_agentmodule, $id_agent, $timestamp_min, $timestamp_max, $id_user, $id_alert_agent_module, $criticity, $dbh) = @_;
 	my $filter = '';
-		
+
 	if ($id_agentmodule ne ''){
 		$filter .= " AND id_agentmodule = $id_agentmodule";
 	}
@@ -491,11 +491,11 @@ sub pandora_validate_event_filter ($$$$$$$$$) {
 	if ($id_user ne ''){
 		$filter .= " AND id_usuario = '$id_user'";
 	}
-	
+
 	if ($id_alert_agent_module ne ''){
 		$filter .= " AND id_alert_am = $id_alert_agent_module";
-	}	
-	
+	}
+
 	if ($criticity ne ''){
 		$filter .= " AND criticity = $criticity";
 	}
@@ -510,10 +510,10 @@ sub pandora_validate_event_filter ($$$$$$$$$) {
 sub pandora_validate_event_id ($$$) {
 	my ($pa_config, $id_event, $dbh) = @_;
 	my $filter = '';
-	
+
 	if ($id_event ne ''){
 		$filter .= " AND id_evento = $id_event";
-	}	
+	}
 
 	logger($pa_config, "Validating events", 10);
 	db_do ($dbh, "UPDATE tevento SET estado = 1 WHERE estado = 0".$filter);
@@ -524,7 +524,7 @@ sub pandora_validate_event_id ($$$) {
 ##########################################################################
 sub pandora_update_user_from_hash ($$$$) {
 	my ($parameters, $where_column, $where_value, $dbh) = @_;
-	
+
 	my $user_id = db_process_update($dbh, 'tusuario', $parameters, $where_column, $where_value);
 	return $user_id;
 }
@@ -534,7 +534,7 @@ sub pandora_update_user_from_hash ($$$$) {
 ##########################################################################
 sub pandora_update_alert_template_from_hash ($$$$) {
 	my ($parameters, $where_column, $where_value, $dbh) = @_;
-	
+
 	my $template_id = db_process_update($dbh, 'talert_templates', $parameters, $where_column, $where_value);
 	return $template_id;
 }
@@ -542,11 +542,11 @@ sub pandora_update_alert_template_from_hash ($$$$) {
 ###############################################################################
 # Get list of all downed agents
 ###############################################################################
-sub pandora_get_downed_agents () {    	
+sub pandora_get_downed_agents () {
 	my @downed_agents = get_db_rows ($dbh, "SELECT tagente.id_agente, tagente.nombre, truncate((NOW() - tagente.ultimo_contacto/60),0) as downed_time, tagente.server_name from tagente
 where  UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(tagente.ultimo_contacto)>(tagente.intervalo*2)
 OR tagente.ultimo_contacto=0");
-	
+
 	return \@downed_agents;
 }
 
@@ -555,10 +555,10 @@ OR tagente.ultimo_contacto=0");
 ###############################################################################
 sub pandora_get_module_agents ($$) {
 	my ($dbh,$module_name) = @_;
-	    	
-	my @agents = get_db_rows ($dbh, "SELECT tagente_modulo.id_agente_modulo, tagente.id_agente, tagente.nombre FROM tagente, tagente_modulo 
+
+	my @agents = get_db_rows ($dbh, "SELECT tagente_modulo.id_agente_modulo, tagente.id_agente, tagente.nombre FROM tagente, tagente_modulo
 	WHERE tagente.id_agente = tagente_modulo.id_agente AND tagente_modulo.nombre = ?", safe_input($module_name));
-	
+
 	return \@agents;
 }
 
@@ -567,20 +567,20 @@ sub pandora_get_module_agents ($$) {
 ###############################################################################
 sub pandora_get_agent_status ($$) {
 	my ($dbh,$agent_id) = @_;
-	
+
 	my $critical = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_agente = $agent_id AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 1 AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))");
 	return 'critical' unless $critical == 0;
-	
+
 	my $warning = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_agente = $agent_id AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 2 AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))");
 	return 'warning' unless $warning == 0;
-	
+
 	my $unknown = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_agente = $agent_id AND tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100) AND utimestamp < ( UNIX_TIMESTAMP() - (current_interval * 2)) AND utimestamp != 0");
 	return 'unknown' unless $unknown == 0;
-	
+
 	my $normal = get_db_value ($dbh, "SELECT COUNT(tagente_estado.id_agente_estado) FROM tagente_estado, tagente, tagente_modulo WHERE tagente.id_agente = $agent_id AND tagente.disabled = 0 AND tagente_estado.id_agente = tagente.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 AND estado = 0 AND (utimestamp != 0 OR tagente_modulo.id_tipo_modulo IN (21,22,23)) AND (utimestamp >= ( UNIX_TIMESTAMP() - (current_interval * 2)) OR tagente_modulo.id_tipo_modulo IN (21,22,23,100))");
 	return 'normal' unless $normal == 0;
 	return 'normal' unless $normal == 0;
-		
+
 	return '';
 }
 
@@ -589,7 +589,7 @@ sub pandora_get_agent_status ($$) {
 ##########################################################################
 sub pandora_get_agent_modules ($$) {
 	my ($dbh, $agent_id) = @_;
-	
+
 	my @modules = get_db_rows ($dbh, "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE delete_pending = 0 AND id_agente = ?", $agent_id);
 
 	return \@modules;
@@ -600,9 +600,9 @@ sub pandora_get_agent_modules ($$) {
 ###############################################################################
 sub pandora_get_module_current_data ($$) {
 	my ($dbh,$id_agent_module) = @_;
-	    	
+
 	my $current_data = get_db_value ($dbh, "SELECT datos FROM tagente_estado WHERE id_agente_modulo = ?", $id_agent_module);
-	
+
 	return $current_data;
 }
 
@@ -612,7 +612,7 @@ sub pandora_get_module_current_data ($$) {
 ##########################################################################
 sub pandora_get_alert_template_id ($$) {
 	my ($dbh, $template_name) = @_;
-	
+
 	my $template_id = get_db_value ($dbh, "SELECT id FROM talert_templates WHERE name = ?", safe_input($template_name));
 
 	return defined ($template_id) ? $template_id : -1;
@@ -624,7 +624,7 @@ sub pandora_get_alert_template_id ($$) {
 ##########################################################################
 sub pandora_get_planned_downtime_id ($$) {
 	my ($dbh, $downtime_name) = @_;
-	
+
 	my $downtime_id = get_db_value ($dbh, "SELECT id FROM tplanned_downtime WHERE name = ?", safe_input($downtime_name));
 
 	return defined ($downtime_id) ? $downtime_id : -1;
@@ -638,7 +638,7 @@ sub pandora_get_all_planned_downtime ($$$$$$) {
 	my ($dbh, $downtime_name, $id_group, $type_downtime, $type_execution, $type_periodicity) = @_;
 	my $sql = "SELECT * FROM tplanned_downtime WHERE  name LIKE '%".safe_input($downtime_name)."%' ?";
 	my $text_sql = '';
-	
+
 	if (defined($id_group) && $id_group != '') {
 		$text_sql .= " id_group = $id_group ";
 	}
@@ -651,13 +651,13 @@ sub pandora_get_all_planned_downtime ($$$$$$) {
 	if (defined($type_periodicity) && $type_periodicity != '') {
 		$text_sql .= " type_periodicity = $type_periodicity ";
 	}
-	
+
 	if ($text_sql eq '') {
 		$text_sql = '';
 	}
-	
+
 	my @downtimes = get_db_rows ($dbh, $sql, $text_sql);
-	
+
 	return @downtimes;
 }
 
@@ -673,7 +673,7 @@ sub pandora_get_planned_downtimes_items ($$) {
 	my @return;
 	my $text_modules;
 	foreach my $agents_item (@agents_items) {
-		
+
 		if ( $downtime->{"type_downtime"} eq 'quiet' ) {
 			if ( !$agents_item->{'all_modules'} ) {
 				$sql = "SELECT id_agent_module FROM tplanned_downtime_modules WHERE id_downtime = ? AND id_agent = ?";
@@ -683,12 +683,12 @@ sub pandora_get_planned_downtimes_items ($$) {
 				}
 			}
 		}
-		
+
 		if ( @modules_downtime != undef ) {
 			$text_modules = join(",", @modules_downtime);
 			$agents_item->{"modules"} = $text_modules;
 			@modules_downtime = undef;
-			
+
 		}
 		push (@return,$agents_item);
 	}
@@ -713,7 +713,7 @@ sub pandora_create_special_day_from_hash ($$$) {
 ##########################################################################
 sub pandora_update_special_day_from_hash ($$$$) {
 	my ($parameters, $where_column, $where_value, $dbh) = @_;
-	
+
 	my $special_day_id = db_process_update($dbh, 'talert_special_days', $parameters, $where_column, $where_value);
 	return $special_day_id;
 }
@@ -724,7 +724,7 @@ sub pandora_update_special_day_from_hash ($$$$) {
 ##########################################################################
 sub pandora_get_special_day_id ($$) {
 	my ($dbh, $special_day) = @_;
-	
+
 	my $special_day_id = get_db_value ($dbh, "SELECT id FROM talert_special_days WHERE date = ?", safe_input($special_day));
 
 	return defined ($special_day_id) ? $special_day_id : -1;
@@ -738,7 +738,7 @@ sub pandora_delete_special_day ($$) {
 
 	# Delete the special_day
 	my $return = db_do ($dbh, 'DELETE FROM talert_special_days WHERE date = ?', safe_input($date));
-        
+
 	if($return eq '0E0') {
 		return -1;
 	}
@@ -772,7 +772,7 @@ sub print_log ($) {
 sub param_error ($$) {
     print (STDERR "[ERROR] Parameters error: $_[1] received | $_[0] necessary.\n\n");
     logger( $conf, "($progname) [ERROR] Parameters error: $_[1] received | $_[0] necessary.", 10);
-    
+
     help_screen ();
     exit 1;
 }
@@ -822,7 +822,7 @@ sub non_exist_check ($$$) {
 sub param_check ($$;$) {
 	my ($ltotal, $laccept, $lopt) = @_;
 	$ltotal = $ltotal - 1;
-	
+
 	if(!defined($lopt)){
 		$lopt = 0;
 	}
@@ -859,7 +859,7 @@ sub help_screen_line($$$){
 sub cli_disable_group() {
 	my $group_name = @ARGV[2];
 	my $id_group;
-	
+
 	if($group_name eq "All") {
 		print_log "[INFO] Disabling all groups\n\n";
 		$id_group = 0;
@@ -869,7 +869,7 @@ sub cli_disable_group() {
 		exist_check($id_group,'group',$group_name);
 		print_log "[INFO] Disabling group '$group_name'\n\n";
 	}
-	
+
 	pandora_disable_group ($conf, $dbh, $id_group);
 }
 
@@ -881,7 +881,7 @@ sub cli_disable_group() {
 sub cli_enable_group() {
 	my $group_name = @ARGV[2];
 	my $id_group;
-	
+
 	if($group_name eq "All") {
 		$id_group = 0;
 		print_log "[INFO] Enabling all groups\n\n";
@@ -891,7 +891,7 @@ sub cli_enable_group() {
 		exist_check($id_group,'group',$group_name);
 		print_log "[INFO] Enabling group '$group_name'\n\n";
 	}
-	
+
 	pandora_enable_group ($conf, $dbh, $id_group);
 }
 
@@ -902,13 +902,13 @@ sub cli_enable_group() {
 
 sub cli_create_agent() {
 	my ($agent_name,$os_name,$group_name,$server_name,$address,$description,$interval) = @ARGV[2..8];
-	
+
 	print_log "[INFO] Creating agent '$agent_name'\n\n";
-	
+
 	$address = '' unless defined ($address);
 	$description = (defined ($description) ? safe_input($description)  : '' );	# safe_input() might be better at pandora_create_agent() (when passing 'description' to db_insert())
 	$interval = 300 unless defined ($interval);
-	
+
 	my $id_group = get_group_id($dbh,$group_name);
 	exist_check($id_group,'group',$group_name);
 	my $os_id = get_os_id($dbh,$os_name);
@@ -925,13 +925,13 @@ sub cli_create_agent() {
 
 sub cli_delete_agent() {
 	my $agent_name = @ARGV[2];
-	
+
 	$agent_name = decode_entities($agent_name);
 	print_log "[INFO] Deleting agent '$agent_name'\n\n";
-	
+
 	my $id_agent = get_agent_id($dbh,$agent_name);
 	exist_check($id_agent,'agent',$agent_name);
-	
+
 	pandora_delete_agent($dbh,$id_agent,$conf);
 }
 
@@ -942,19 +942,19 @@ sub cli_delete_agent() {
 ##############################################################################
 
 sub cli_create_alert_template() {
-	my ($template_name, $condition_type_serialized, $time_from, $time_to, 
-		$description,$group_name,$field1, $field2, $field3, $priority, $default_action, $days, $time_threshold, 
+	my ($template_name, $condition_type_serialized, $time_from, $time_to,
+		$description,$group_name,$field1, $field2, $field3, $priority, $default_action, $days, $time_threshold,
 		$min_alerts, $max_alerts, $alert_recovery, $field2_recovery, $field3_recovery, $condition_type_separator) = @ARGV[2..20];
-	
+
 	my $template_exists = pandora_get_alert_template_id ($dbh, $template_name);
 	non_exist_check($template_exists,'alert template',$template_name);
 
 	my $id_alert_action = 0;
-	
+
 	$id_alert_action = get_action_id ($dbh, safe_input($default_action)) unless $default_action eq '';
 
 	my $group_id = 0;
-	
+
 	# If group name is not defined, we assign group All (0)
 	if(defined($group_name)) {
 		$group_id = get_group_id($dbh, $group_name);
@@ -963,15 +963,15 @@ sub cli_create_alert_template() {
 	else {
 		$group_name = 'All';
 	}
-	
+
 	$condition_type_separator = ';' unless defined $condition_type_separator;
-	
+
 	my %parameters;
-	
+
 	my @condition_array = split($condition_type_separator, $condition_type_serialized);
-	
+
 	my $type = $condition_array[0];
-	
+
 	if($type eq 'regex') {
 		$parameters{'matches_value'} = $condition_array[1];
 		$parameters{'value'} = $condition_array[1];
@@ -1002,14 +1002,14 @@ sub cli_create_alert_template() {
 	else {
 		$type = 'always';
 	}
-	
+
 	$parameters{'name'} = $template_name;
 	$parameters{'type'} = $type;
 	$parameters{'time_from'} = $time_from;
 	$parameters{'time_to'} = $time_to;
-	
+
 	$parameters{'id_alert_action'} = $id_alert_action unless $id_alert_action <= 0;
-	
+
 	$parameters{'id_group'} = $group_id;
 	$parameters{'field1'} = defined ($field1) ? safe_input($field1) : '';
 	$parameters{'field2'} = defined ($field2) ? safe_input($field2) : '';
@@ -1022,11 +1022,11 @@ sub cli_create_alert_template() {
 	$parameters{'recovery_notify'} = defined ($alert_recovery) ? $alert_recovery : 0;
 	$parameters{'field2_recovery'} = defined ($field2_recovery) ? safe_input($field2_recovery) : '';
 	$parameters{'field3_recovery'} = defined ($field3_recovery) ? safe_input($field3_recovery) : '';
-	
+
 	$days = '1111111' unless defined($days); # Al days actived by default
-	
+
 	my @days_array = split('',$days);
-	
+
 	$parameters{'monday'} = $days_array[0];
 	$parameters{'tuesday'} = $days_array[1];
 	$parameters{'wednesday'} = $days_array[2];
@@ -1045,30 +1045,30 @@ sub cli_create_alert_template() {
 
 sub cli_create_data_module($) {
 	my $in_policy = shift;
-	my ($policy_name, $module_name, $module_type, $agent_name, $description, $module_group, 
+	my ($policy_name, $module_name, $module_type, $agent_name, $description, $module_group,
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
 		$critical_max, $history_data, $definition_file, $configuration_data, $warning_str, $critical_str, $enable_unknown_events,
 	    $ff_threshold, $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout);
-	
+
 	if ($in_policy == 0) {
-		($module_name, $module_type, $agent_name, $description, $module_group, 
+		($module_name, $module_type, $agent_name, $description, $module_group,
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
 		$critical_max, $history_data, $definition_file, $warning_str, $critical_str, $enable_unknown_events, $ff_threshold,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout) = @ARGV[2..25];
 	}
 	else {
-		($policy_name, $module_name, $module_type, $description, $module_group, 
+		($policy_name, $module_name, $module_type, $description, $module_group,
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
 		$critical_max, $history_data, $configuration_data, $warning_str, $critical_str, $enable_unknown_events, $ff_threshold,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout) = @ARGV[2..25];
 	}
-	
+
 	my $module_name_def;
 	my $module_type_def;
-	
+
 	my $agent_id;
 	my $policy_id;
-	
+
 	my $disabled_types_event = {};
 	if ($enable_unknown_events) {
 		$disabled_types_event->{'going_unknown'} = 0;
@@ -1077,26 +1077,26 @@ sub cli_create_data_module($) {
 		$disabled_types_event->{'going_unknown'} = 1;
 	}
 	my $disabled_types_event_json = encode_json($disabled_types_event);
-	
+
 	if ($in_policy == 0) {
 		$agent_id = get_agent_id($dbh,$agent_name);
 		exist_check($agent_id,'agent',$agent_name);
-		
+
 		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
 		non_exist_check($module_exists, 'module name', $module_name);
-		
+
 		print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
 	}
 	else {
 		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
 		exist_check($policy_id,'policy',$policy_name);
-		
+
 		my $policy_module_exist = enterprise_hook('get_policy_module_id',[$dbh, $policy_id, $module_name]);
 		non_exist_check($policy_module_exist,'policy module',$module_name);
-		
+
 		print_log "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
 	}
-	
+
 	$module_name_def = $module_name;
 	$module_type_def = $module_type;
 	# If the module is local and is not to policy, we add it to the conf file
@@ -1105,8 +1105,8 @@ sub cli_create_data_module($) {
 		my @file = <FILE>;
 		my $definition = join("", @file);
 		close (FILE);
-		
-		# If the parameter name or type and the definition file name or type 
+
+		# If the parameter name or type and the definition file name or type
 		# dont match will be set the file definitions
 		open (FILE, $definition_file);
 		while (<FILE>) {
@@ -1120,49 +1120,49 @@ sub cli_create_data_module($) {
 			}
 		}
 		close (FILE);
-		
+
 		open (FILE, $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
 		my @file = <FILE>;
 		my $conf_file = join("", @file);
 		close(FILE);
-		
+
 		open FILE, "> ".$conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf';
 		print FILE "$conf_file\n$definition";
 		close(FILE);
-		
+
 		enterprise_hook('pandora_update_md5_file', [$conf, $agent_name]);
 	}
-	
+
 	if (defined($definition_file) && $module_type ne $module_type_def) {
 		$module_type = $module_type_def;
 		print_log "[INFO] The module type has been forced to '$module_type' by the definition file\n\n";
 	}
-	
+
 	if (defined($definition_file) && $module_name ne $module_name_def) {
 		$module_name = $module_name_def;
 		print_log "[INFO] The module name has been forced to '$module_name' by the definition file\n\n";
 	}
-	
+
 	# The get_module_id has wrong name. Change in future
 	my $module_type_id = get_module_id($dbh,$module_type);
 	exist_check($module_type_id,'module type',$module_type);
-	
+
 	if ($module_type !~ m/.?generic.?/ && $module_type !~ m/.?async.?/ && $module_type ne 'log4x' && $module_type ne 'keep_alive') {
 			print_log "[ERROR] '$module_type' is not valid type for data modules. Try with generic, asyncronous, keep alive or log4x types\n\n";
 			exit;
 	}
-	
+
 	my $module_group_id = 0;
-	
+
 	if (defined($module_group)) {
 		$module_group_id = get_module_group_id($dbh,$module_group);
 		exist_check($module_group_id,'module group',$module_group);
 	}
-	
+
 	my %parameters;
-	
+
 	$parameters{'id_tipo_modulo'} = $module_type_id;
-	
+
 	if ($in_policy == 0) {
 		$parameters{'nombre'} = safe_input($module_name);
 		$parameters{'id_agente'} = $agent_id;
@@ -1171,7 +1171,7 @@ sub cli_create_data_module($) {
 		$parameters{'name'} = safe_input($module_name);
 		$parameters{'id_policy'} = $policy_id;
 	}
-	
+
 	# Optional parameters
 	$parameters{'id_module_group'} = $module_group_id unless !defined ($module_group);
 	$parameters{'min_warning'} = $warning_min unless !defined ($warning_min);
@@ -1181,13 +1181,13 @@ sub cli_create_data_module($) {
 	$parameters{'history_data'} = $history_data unless !defined ($history_data);
 	if ($in_policy == 0) {
 		$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
-		$parameters{'id_modulo'} = 1;	
+		$parameters{'id_modulo'} = 1;
 	}
 	else {
 		$parameters{'description'} = safe_input($description) unless !defined ($description);
 		$parameters{'id_module'} = 1;
 		$configuration_data !~ s/\\n/\n/g;
-		$parameters{'configuration_data'} = safe_input($configuration_data);	
+		$parameters{'configuration_data'} = safe_input($configuration_data);
 	}
 	$parameters{'min'} = $min unless !defined ($min);
 	$parameters{'max'} = $max unless !defined ($max);
@@ -1202,7 +1202,7 @@ sub cli_create_data_module($) {
 	$parameters{'min_ff_event_warning'} = $ff_threshold_warning unless !defined ($ff_threshold_warning);
 	$parameters{'min_ff_event_critical'} = $ff_threshold_critical unless !defined ($ff_threshold_critical);
 	$parameters{'ff_timeout'} = $ff_timeout unless !defined ($ff_timeout);
-	
+
 	if ($in_policy == 0) {
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 	}
@@ -1218,19 +1218,19 @@ sub cli_create_data_module($) {
 
 sub cli_create_network_module_from_component() {
 	my ($agent_name, $component_name) = @ARGV[2..3];
-	
+
 	my $agent_id = get_agent_id($dbh,$agent_name);
 	exist_check($agent_id,'agent',$agent_name);
-		
+
 	my $nc_id = pandora_get_network_component_id($dbh, $component_name);
 	exist_check($nc_id,'network component',$component_name);
-	
+
 	my $module_exists = get_agent_module_id($dbh, $component_name, $agent_id);
 	non_exist_check($module_exists, 'module name', $component_name);
-	
+
 	# Get network component data
 	my $component = get_db_single_row ($dbh, 'SELECT * FROM tnetwork_component WHERE id_nc = ?', $nc_id);
-	
+
 	pandora_create_module_from_network_component ($conf, $component, $agent_id, $dbh);
 }
 
@@ -1241,16 +1241,16 @@ sub cli_create_network_module_from_component() {
 
 sub cli_create_netflow_filter() {
 	my ($filter_name, $group_name, $filter, $aggregate_by, $output_format) = @ARGV[2..6];
-	
+
 	my $group_id = get_group_id($dbh, $group_name);
 	exist_check($group_id,'group',$group_name);
-	
+
 	logger($conf, 'Creating netflow filter "' . $filter_name . '"', 10);
 
 	# Create the module
 	my $module_id = db_insert ($dbh, 'id_sg', 'INSERT INTO tnetflow_filter (id_name, id_group, advanced_filter, filter_args, aggregate, output)
 												VALUES (?, ?, ?, ?, ?, ?)',
-												safe_input($filter_name), $group_id, safe_input($filter), 
+												safe_input($filter_name), $group_id, safe_input($filter),
 												'"(' . $filter . ')"', $aggregate_by, $output_format);
 }
 
@@ -1261,31 +1261,31 @@ sub cli_create_netflow_filter() {
 
 sub cli_create_network_module($) {
 	my $in_policy = shift;
-	my ($policy_name, $module_name, $module_type, $agent_name, $module_address, $module_port, $description, 
+	my ($policy_name, $module_name, $module_type, $agent_name, $module_address, $module_port, $description,
 	$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
 	$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events, $each_ff,
 	$ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout, $retries);
-	
+
 	if ($in_policy == 0) {
-		($module_name, $module_type, $agent_name, $module_address, $module_port, $description, 
+		($module_name, $module_type, $agent_name, $module_address, $module_port, $description,
 		$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
 		$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning,
 		$ff_threshold_critical, $timeout, $retries) = @ARGV[2..27];
 	}
 	else {
-		($policy_name, $module_name, $module_type, $module_port, $description, 
+		($policy_name, $module_name, $module_type, $module_port, $description,
 		$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
 		$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning,
 		$ff_threshold_critical, $timeout, $retries) = @ARGV[2..26];
 	}
-	
+
 	my $module_name_def;
 	my $module_type_def;
 	my $agent_id;
 	my $policy_id;
-	
+
 	my $disabled_types_event = {};
 	if ($enable_unknown_events) {
 		$disabled_types_event->{'going_unknown'} = 0;
@@ -1294,23 +1294,23 @@ sub cli_create_network_module($) {
 		$disabled_types_event->{'going_unknown'} = 1;
 	}
 	my $disabled_types_event_json = encode_json($disabled_types_event);
-	
+
 	if ($in_policy == 0) {
 		$agent_id = get_agent_id($dbh,$agent_name);
 		exist_check($agent_id,'agent',$agent_name);
-		
+
 		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
 		non_exist_check($module_exists, 'module name', $module_name);
-		
+
 		print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
 	}
 	else {
 		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
 		exist_check($policy_id,'policy',$policy_name);
-	
+
 		my $policy_module_exist = enterprise_hook('get_policy_module_id',[$dbh, $policy_id, $module_name]);
 		non_exist_check($policy_module_exist,'policy module',$module_name);
-		
+
 		print_log "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
 	}
 
@@ -1324,18 +1324,18 @@ sub cli_create_network_module($) {
 			print_log "[ERROR] '$module_type' is not valid type for (not snmp) network modules. Try with icmp or tcp types\n\n";
 			exit;
 	}
-	
+
 	# The get_module_id has wrong name. Change in future
 	my $module_type_id = get_module_id($dbh,$module_type);
 	exist_check($module_type_id,'module type',$module_type);
-	
+
 	my $module_group_id = 0;
-	
+
 	if(defined($module_group)) {
 		$module_group_id = get_module_group_id($dbh,$module_group);
 		exist_check($module_group_id,'module group',$module_group);
 	}
-	
+
 	if ($module_type !~ m/.?icmp.?/) {
 		if (not defined($module_port)) {
 			print_log "[ERROR] Port error. Agents of type distinct of icmp need port\n\n";
@@ -1347,9 +1347,9 @@ sub cli_create_network_module($) {
 		}
 	}
 	my %parameters;
-	
+
 	$parameters{'id_tipo_modulo'} = $module_type_id;
-	
+
 	if ($in_policy == 0) {
 		$parameters{'nombre'} = safe_input($module_name);
 		$parameters{'id_agente'} = $agent_id;
@@ -1359,7 +1359,7 @@ sub cli_create_network_module($) {
 		$parameters{'name'} = safe_input($module_name);
 		$parameters{'id_policy'} = $policy_id;
 	}
-	
+
 	# Optional parameters
 	$parameters{'id_module_group'} = $module_group_id unless !defined ($module_group);
 	$parameters{'min_warning'} = $warning_min unless !defined ($warning_min);
@@ -1379,8 +1379,8 @@ sub cli_create_network_module($) {
 	$parameters{'min'} = $min unless !defined ($min);
 	$parameters{'max'} = $max unless !defined ($max);
 	$parameters{'post_process'} = $post_process unless !defined ($post_process);
-	$parameters{'module_interval'} = $interval unless !defined ($interval);	
-	$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);	
+	$parameters{'module_interval'} = $interval unless !defined ($interval);
+	$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);
 	$parameters{'str_warning'}  = safe_input($warning_str)  unless !defined ($warning_str);
 	$parameters{'str_critical'} = safe_input($critical_str) unless !defined ($critical_str);
 	$parameters{'disabled_types_event'} = $disabled_types_event_json;
@@ -1390,7 +1390,7 @@ sub cli_create_network_module($) {
 	$parameters{'min_ff_event_critical'} = $ff_threshold_critical unless !defined ($ff_threshold_critical);
 	$parameters{'max_timeout'} = $timeout unless !defined ($timeout);
 	$parameters{'max_retries'} = $retries unless !defined ($retries);
-	
+
 	if ($in_policy == 0) {
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 	}
@@ -1406,32 +1406,32 @@ sub cli_create_network_module($) {
 
 sub cli_create_snmp_module($) {
 	my $in_policy = shift;
-	my ($policy_name, $module_name, $module_type, $agent_name, $module_address, $module_port, $version, $community, 
-		$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min, 
+	my ($policy_name, $module_name, $module_type, $agent_name, $module_address, $module_port, $version, $community,
+		$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min,
 		$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
 		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 	    $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout, $retries);
-	
+
 	if ($in_policy == 0) {
-		($module_name, $module_type, $agent_name, $module_address, $module_port, $version, $community, 
-		$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min, 
+		($module_name, $module_type, $agent_name, $module_address, $module_port, $version, $community,
+		$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min,
 		$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
 		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout, $retries) = @ARGV[2..36];
 	}
 	else {
-		($policy_name, $module_name, $module_type, $module_port, $version, $community, 
-		$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min, 
+		($policy_name, $module_name, $module_type, $module_port, $version, $community,
+		$oid, $description, $module_group, $min, $max, $post_process, $interval, $warning_min,
 		$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
 		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout, $retries) = @ARGV[2..35];
 	}
-	
+
 	my $module_name_def;
 	my $module_type_def;
 	my $agent_id;
 	my $policy_id;
-	
+
 	my $disabled_types_event = {};
 	if ($enable_unknown_events) {
 		$disabled_types_event->{'going_unknown'} = 0;
@@ -1440,51 +1440,51 @@ sub cli_create_snmp_module($) {
 		$disabled_types_event->{'going_unknown'} = 1;
 	}
 	my $disabled_types_event_json = encode_json($disabled_types_event);
-	
+
 	if ($in_policy == 0) {
 		$agent_id = get_agent_id($dbh,$agent_name);
 		exist_check($agent_id,'agent',$agent_name);
-		
+
 		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
 		non_exist_check($module_exists, 'module name', $module_name);
-		
+
 		print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
 	}
 	else {
 		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
 		exist_check($policy_id,'policy',$policy_name);
-	
+
 		my $policy_module_exist = enterprise_hook('get_policy_module_id',[$dbh, $policy_id, $module_name]);
 		non_exist_check($policy_module_exist,'policy module',$module_name);
-		
+
 		print_log "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
 	}
-	
+
 	# The get_module_id has wrong name. Change in future
 	my $module_type_id = get_module_id($dbh,$module_type);
 	exist_check($module_type_id,'module type',$module_type);
-	
+
 	my $module_group_id = 0;
-	
+
 	if (defined($module_group)) {
 		$module_group_id = get_module_group_id($dbh,$module_group);
 		exist_check($module_group_id,'module group',$module_group);
 	}
-	
+
 	if ($module_type !~ m/.?snmp.?/) {
 		print_log "[ERROR] '$module_type' is not a valid snmp type\n\n";
 		exit;
 	}
-	
+
 	if ($module_port > 65535 || $module_port < 1) {
 		print_log "[ERROR] Port error. Port must into [1-65535]\n\n";
 		exit;
 	}
-	
+
 	my %parameters;
-	
+
 	$parameters{'id_tipo_modulo'} = $module_type_id;
-	
+
 	if ($in_policy == 0) {
 		$parameters{'nombre'} = safe_input($module_name);
 		$parameters{'id_agente'} = $agent_id;
@@ -1494,10 +1494,10 @@ sub cli_create_snmp_module($) {
 		$parameters{'name'} = safe_input($module_name);
 		$parameters{'id_policy'} = $policy_id;
 	}
-	
+
 	$parameters{'tcp_port'} = $module_port;
 	$parameters{'tcp_send'} = $version;
-	
+
 	# Optional parameters
 	$parameters{'id_module_group'} = $module_group_id unless !defined ($module_group);
 	$parameters{'min_warning'} = $warning_min unless !defined ($warning_min);
@@ -1521,19 +1521,19 @@ sub cli_create_snmp_module($) {
 	$parameters{'module_interval'} = $interval unless !defined ($interval);
 	$parameters{'snmp_community'} = $community unless !defined ($community);
 	$parameters{'snmp_oid'} = $oid unless !defined ($oid);
-	$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);	
+	$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);
 	$parameters{'str_warning'}  = safe_input($warning_str)  unless !defined ($warning_str);
 	$parameters{'str_critical'} = safe_input($critical_str) unless !defined ($critical_str);
-	
+
 	if ($version == 3) {
 		$parameters{'custom_string_1'} = $snmp3_priv_method;
 		$parameters{'custom_string_2'} = $snmp3_priv_pass;
 		$parameters{'custom_string_3'} = $snmp3_sec_level;
 		$parameters{'plugin_parameter'} = $snmp3_auth_method;
-		$parameters{'plugin_user'} = $snmp3_auth_user; 
+		$parameters{'plugin_user'} = $snmp3_auth_user;
 		$parameters{'plugin_pass'} = $snmp3_auth_pass;
 	}
-	
+
 	$parameters{'disabled_types_event'} = $disabled_types_event_json;
 	$parameters{'each_ff'} = $each_ff unless !defined ($each_ff);
 	$parameters{'min_ff_event_normal'} = $ff_threshold_normal unless !defined ($ff_threshold_normal);
@@ -1541,7 +1541,7 @@ sub cli_create_snmp_module($) {
 	$parameters{'min_ff_event_critical'} = $ff_threshold_critical unless !defined ($ff_threshold_critical);
 	$parameters{'max_timeout'} = $timeout unless !defined ($timeout);
 	$parameters{'max_retries'} = $retries unless !defined ($retries);
-	
+
 	if ($in_policy == 0) {
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 	}
@@ -1558,31 +1558,31 @@ sub cli_create_snmp_module($) {
 sub cli_create_plugin_module($) {
 	my $in_policy = shift;
 	my ($policy_name, $module_name, $module_type, $agent_name, $module_address, $module_port, $plugin_name,
-		$user, $password, $params, $description, $module_group, $min, $max, $post_process, 
-		$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
+		$user, $password, $params, $description, $module_group, $min, $max, $post_process,
+		$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data,
 		$ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 	    $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout);
-	
+
 	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $module_address, $module_port, $plugin_name,
-			$user, $password, $params, $description, $module_group, $min, $max, $post_process, 
-			$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
+			$user, $password, $params, $description, $module_group, $min, $max, $post_process,
+			$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data,
 			$ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout) = @ARGV[2..30];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $module_port, $plugin_name,
-			$user, $password, $params, $description, $module_group, $min, $max, $post_process, 
-			$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
+			$user, $password, $params, $description, $module_group, $min, $max, $post_process,
+			$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data,
 			$ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout) = @ARGV[2..29];
 	}
-	
+
 	my $module_name_def;
 	my $module_type_def;
 	my $agent_id;
 	my $policy_id;
-	
+
 	my $disabled_types_event = {};
 	if ($enable_unknown_events) {
 		$disabled_types_event->{'going_unknown'} = 0;
@@ -1591,50 +1591,50 @@ sub cli_create_plugin_module($) {
 		$disabled_types_event->{'going_unknown'} = 1;
 	}
 	my $disabled_types_event_json = encode_json($disabled_types_event);
-	
+
 	if ($in_policy == 0) {
 		$agent_id = get_agent_id($dbh,$agent_name);
 		exist_check($agent_id,'agent',$agent_name);
-		
+
 		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
 		non_exist_check($module_exists, 'module name', $module_name);
-		
+
 		print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
 	}
 	else {
 		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
 		exist_check($policy_id,'policy',$policy_name);
-	
+
 		my $policy_module_exist = enterprise_hook('get_policy_module_id',[$dbh, $policy_id, $module_name]);
 		non_exist_check($policy_module_exist,'policy module',$module_name);
-		
+
 		print_log "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
 	}
-	
+
 	# The get_module_id has wrong name. Change in future
 	my $module_type_id = get_module_id($dbh,$module_type);
 	exist_check($module_type_id,'module type',$module_type);
-	
+
 	if ($module_type !~ m/.?generic.?/ && $module_type ne 'log4x') {
 			print_log "[ERROR] '$module_type' is not valid type for plugin modules. Try with generic or log4x types\n\n";
 			exit;
 	}
-	
+
 	my $module_group_id = get_module_group_id($dbh,$module_group);
 	exist_check($module_group_id,'module group',$module_group);
-	
+
 	my $plugin_id = get_plugin_id($dbh,$plugin_name);
 	exist_check($plugin_id,'plugin',$plugin_name);
-	
+
 	if ($module_port > 65535 || $module_port < 1) {
 		print_log "[ERROR] Port error. Port must into [1-65535]\n\n";
 		exit;
 	}
-	
+
 	my %parameters;
-	
+
 	$parameters{'id_tipo_modulo'} = $module_type_id;
-	
+
 	if ($in_policy == 0) {
 		$parameters{'nombre'} = safe_input($module_name);
 		$parameters{'id_agente'} = $agent_id;
@@ -1644,7 +1644,7 @@ sub cli_create_plugin_module($) {
 		$parameters{'name'} = safe_input($module_name);
 		$parameters{'id_policy'} = $policy_id;
 	}
-	
+
 	$parameters{'tcp_port'} = $module_port;
 	$parameters{'id_plugin'} = $plugin_id;
 	$parameters{'plugin_user'} = $user;
@@ -1682,7 +1682,7 @@ sub cli_create_plugin_module($) {
 	if ($in_policy == 0) {
 		$parameters{'descripcion'} = safe_input($description) unless !defined ($description);
 		#4 for plugin modules
-		$parameters{'id_modulo'} = 4;	
+		$parameters{'id_modulo'} = 4;
 	}
 	else {
 		$parameters{'description'} = safe_input($description) unless !defined ($description);
@@ -1692,18 +1692,18 @@ sub cli_create_plugin_module($) {
 	$parameters{'min'} = $min unless !defined ($min);
 	$parameters{'max'} = $max unless !defined ($max);
 	$parameters{'post_process'} = $post_process unless !defined ($post_process);
-	$parameters{'module_interval'} = $interval unless !defined ($interval);	
-	$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);	
+	$parameters{'module_interval'} = $interval unless !defined ($interval);
+	$parameters{'min_ff_event'} = $ff_threshold unless !defined ($ff_threshold);
 	$parameters{'str_warning'}  = safe_input($warning_str)  unless !defined ($warning_str);
 	$parameters{'str_critical'} = safe_input($critical_str) unless !defined ($critical_str);
-	
+
 	$parameters{'disabled_types_event'} = $disabled_types_event_json;
 	$parameters{'each_ff'} = $each_ff unless !defined ($each_ff);
 	$parameters{'min_ff_event_normal'} = $ff_threshold_normal unless !defined ($ff_threshold_normal);
 	$parameters{'min_ff_event_warning'} = $ff_threshold_warning unless !defined ($ff_threshold_warning);
 	$parameters{'min_ff_event_critical'} = $ff_threshold_critical unless !defined ($ff_threshold_critical);
 	$parameters{'max_timeout'} = $timeout unless !defined ($timeout);
-	
+
 	if ($in_policy == 0) {
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 	}
@@ -1719,14 +1719,14 @@ sub cli_create_plugin_module($) {
 
 sub cli_delete_module() {
 	my ($module_name,$agent_name) = @ARGV[2..3];
-	
+
 	print_log "[INFO] Deleting module '$module_name' from agent '$agent_name' \n\n";
-	
+
 	my $id_agent = get_agent_id($dbh,$agent_name);
 	exist_check($id_agent,'agent',$agent_name);
 	my $id_module = get_agent_module_id($dbh,$module_name,$id_agent);
 	exist_check($id_module,'module',$module_name);
-	
+
 	pandora_delete_module($dbh,$id_module,$conf);
 }
 
@@ -1744,12 +1744,12 @@ sub cli_delete_not_policy_modules() {
 
 	# Open the folder
 	opendir FOLDER, $incomingdir || die "[ERROR] Opening incoming directory";
-	
+
 	# Store the list of files
 	my @files = readdir(FOLDER);
 	my $file;
 	my $filemd5;
-	
+
 	print_log "[INFO] Deleting modules without policy from conf files \n\n";
 	foreach $file (@files)
 	{
@@ -1761,10 +1761,10 @@ sub cli_delete_not_policy_modules() {
 			my $ret = enterprise_hook('pandora_delete_not_policy_modules', [$incomingdir.$file, $incomingdirmd5.$filemd5]);
 		}
 	}
-	
+
 	my @local_modules_without_policies = get_db_rows ($dbh, 'SELECT * FROM tagente_modulo WHERE id_policy_module = 0 AND id_tipo_modulo = 1');
-	
-	
+
+
 	foreach my $module (@local_modules_without_policies) {
 		pandora_delete_module ($dbh, $module->{'id_agente_modulo'});
 	}
@@ -1777,16 +1777,16 @@ sub cli_delete_not_policy_modules() {
 
 sub cli_create_template_module() {
 	my ($template_name,$module_name,$agent_name) = @ARGV[2..4];
-	
+
 	print_log "[INFO] Adding template '$template_name' to module '$module_name' from agent '$agent_name' \n\n";
-	
+
 	my $id_agent = get_agent_id($dbh,$agent_name);
 	exist_check($id_agent,'agent',$agent_name);
 	my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
 	exist_check($module_id,'module',$module_name);
 	my $template_id = get_template_id($dbh,$template_name);
 	exist_check($template_id,'template',$template_name);
-	
+
 	pandora_create_template_module ($conf, $dbh, $module_id, $template_id);
 }
 
@@ -1809,7 +1809,7 @@ sub cli_delete_template_module() {
 
 	my $template_module_id = get_template_module_id($dbh, $module_id, $template_id);
 	exist_check($template_module_id,"template '$template_name' on module",$module_name);
-		
+
 	pandora_delete_template_module ($dbh, $template_module_id);
 }
 
@@ -1820,9 +1820,9 @@ sub cli_delete_template_module() {
 
 sub cli_create_template_action() {
 	my ($action_name,$template_name,$module_name,$agent_name,$fires_min,$fires_max) = @ARGV[2..7];
-	
+
 	print_log "[INFO] Adding action '$action_name' to template '$template_name' in module '$module_name' from agent '$agent_name' with $fires_min min. fires and $fires_max max. fires\n\n";
-	
+
 	my $id_agent = get_agent_id($dbh,$agent_name);
 	exist_check($id_agent,'agent',$agent_name);
 	my $module_id = get_agent_module_id($dbh,$module_name,$id_agent);
@@ -1833,17 +1833,17 @@ sub cli_create_template_action() {
 	exist_check($template_module_id,'template module',$template_name);
 	my $action_id = get_action_id($dbh,safe_input($action_name));
 	exist_check($action_id,'action',$action_name);
-	
+
 	$fires_min = 0 unless defined ($fires_min);
 	$fires_max = 0 unless defined ($fires_max);
-	
-	my %parameters;						
-	
+
+	my %parameters;
+
 	$parameters{'id_alert_template_module'} = $template_module_id;
 	$parameters{'id_alert_action'} = $action_id;
 	$parameters{'fires_min'} = $fires_min;
 	$parameters{'fires_max'} = $fires_max;
-	
+
 	pandora_create_template_module_action ($conf, \%parameters, $dbh);
 }
 
@@ -1854,7 +1854,7 @@ sub cli_create_template_action() {
 
 sub cli_delete_template_action() {
 	my ($action_name,$template_name,$module_name,$agent_name) = @ARGV[2..5];
-	
+
 	print_log "[INFO] Deleting action '$action_name' from template '$template_name' in module '$module_name' from agent '$agent_name')\n\n";
 
 	my $id_agent = get_agent_id($dbh,$agent_name);
@@ -1879,7 +1879,7 @@ sub cli_delete_template_action() {
 sub cli_data_module() {
 	my ($server_name,$agent_name,$module_name,$module_type,$module_new_data,$datetime) = @ARGV[2..7];
 	my $utimestamp;
-	
+
 	if(defined($datetime)) {
 		if ($datetime !~ /([0-9]{2,4})\-([0-1][0-9])\-([0-3][0-9]) +([0-2][0-9]):([0-5][0-9])/) {
 			print_log "[ERROR] Invalid datetime $datetime. (Correct format: YYYY-MM-DD HH:mm)\n";
@@ -1896,28 +1896,28 @@ sub cli_data_module() {
 	# The get_module_id has wrong name. Change in future
 	my $module_type_id = get_module_id($dbh,$module_type);
 	exist_check($module_type_id,'module type',$module_type);
-	
+
 	my $id_agent = get_agent_id($dbh,$agent_name);
 	exist_check($id_agent,'agent',$agent_name);
-	
+
 	my $id_module = get_agent_module_id($dbh, $module_name, $id_agent);
 	exist_check($id_module, 'module name', $module_name);
-		
+
 	# Server_type 0 is dataserver
 	my $server_id = get_server_id($dbh,$server_name,0);
 	exist_check($server_id,'data server',$server_name);
-	
+
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente_modulo = ? AND id_tipo_modulo = ?', $id_module, $id_agent, $module_type_id);
-	
+
 	if(not defined($module->{'module_interval'})) {
 		print_log "[ERROR] No module found with this type. \n\n";
 		exit;
 	}
-	
+
 	my %data = ('data' => $module_new_data);
-	
+
 	pandora_process_module ($conf, \%data, '', $module, $module_type, '', $utimestamp, $server_id, $dbh);
-	
+
 	print_log "[INFO] Inserting data to module '$module_name'\n\n";
 }
 
@@ -1928,14 +1928,14 @@ sub cli_data_module() {
 
 sub cli_create_user() {
 	my ($user_name,$password,$is_admin,$comments) = @ARGV[2..5];
-	
+
 	$comments = (defined ($comments) ? safe_input($comments)  : '' );
-	
+
 	my $user_exists = get_user_exists ($dbh, $user_name);
 	non_exist_check($user_exists,'user',$user_name);
-	
+
 	print_log "[INFO] Creating user '$user_name'\n\n";
-	
+
 	pandora_create_user ($dbh, $user_name, md5($password), $is_admin, $comments);
 }
 
@@ -1946,10 +1946,10 @@ sub cli_create_user() {
 
 sub cli_user_update() {
 	my ($user_id,$field,$new_value) = @ARGV[2..4];
-	
+
 	my $user_exists = get_user_exists ($dbh, $user_id);
 	exist_check($user_exists,'user',$user_id);
-	
+
 	if($field eq 'email' || $field eq 'phone' || $field eq 'is_admin' || $field eq 'language' || $field eq 'id_skin' || $field eq 'flash_chart') {
 		# Fields admited, no changes
 	}
@@ -1961,20 +1961,20 @@ sub cli_user_update() {
 			print_log "[ERROR] Field '$field' cannot be empty\n\n";
 			exit;
 		}
-		
+
 		$new_value = md5($new_value);
 	}
 	else {
 		print_log "[ERROR] Field '$field' doesnt exist\n\n";
 		exit;
 	}
-		
+
 	print_log "[INFO] Updating field '$field' in user '$user_id'\n\n";
-	
+
 	my $update;
-	
+
 	$update->{$field} = $new_value;
-	
+
 	pandora_update_user_from_hash ($update, 'id_user', safe_input($user_id), $dbh);
 }
 
@@ -1985,13 +1985,13 @@ sub cli_user_update() {
 
 sub cli_agent_update() {
 	my ($agent_name,$field,$new_value) = @ARGV[2..4];
-	
+
 	my $id_agent = get_agent_id($dbh,$agent_name);
 	exist_check($id_agent,'agent',$agent_name);
-	
+
 	# agent_name, address, description, group_name, interval, os_name, disabled, parent_name, cascade_protection, icon_path, update_gis_data, custom_id
-	
-	if($field eq 'disabled' || $field eq 'cascade_protection' || $field eq 'icon_path' || 
+
+	if($field eq 'disabled' || $field eq 'cascade_protection' || $field eq 'icon_path' ||
 	$field eq 'update_gis_data' || $field eq 'custom_id') {
 		# Fields admited, no changes
 	}
@@ -2028,26 +2028,26 @@ sub cli_agent_update() {
 	elsif($field eq 'address') {
 		# Check if the address already exist
 		my $address_id = get_addr_id($dbh,$new_value);
-		
+
 		# If the addres doesnt exist, we add it to the addresses list
 		if($address_id == -1) {
 			$address_id = add_address($dbh,$new_value);
 		}
-		
+
 		# Add the address to the agent
 		add_new_address_agent ($dbh, $address_id, $id_agent);
-		
+
 		$field = 'direccion';
 	}
 	else {
 		print_log "[ERROR] Field '$field' doesnt exist\n\n";
 		exit;
 	}
-		
+
 	print_log "[INFO] Updating field '$field' in agent '$agent_name'\n\n";
-	
+
 	my $update;
-	
+
 	$update->{$field} = $new_value;
 
 	pandora_update_table_from_hash ($conf, $update, 'id_agente', safe_input($id_agent), 'tagente', $dbh);
@@ -2060,15 +2060,15 @@ sub cli_agent_update() {
 
 sub cli_alert_template_update() {
 	my ($template_name,$field,$new_value) = @ARGV[2..4];
-	
+
 	my $template_id = pandora_get_alert_template_id ($dbh, $template_name);
 	exist_check($template_id,'alert template',$template_name);
-	
-	if($field eq 'matches_value' || $field eq 'value' || $field eq 'min_value' || 
-		$field eq 'max_value' || $field eq 'type' || $field eq 'time_threshold' || 
-		$field eq 'time_from' || $field eq 'time_to' || $field eq 'monday' || 
-		$field eq 'tuesday' || $field eq 'wednesday' || $field eq 'thursday' || 
-		$field eq 'friday' || $field eq 'saturday' || $field eq 'sunday' || 
+
+	if($field eq 'matches_value' || $field eq 'value' || $field eq 'min_value' ||
+		$field eq 'max_value' || $field eq 'type' || $field eq 'time_threshold' ||
+		$field eq 'time_from' || $field eq 'time_to' || $field eq 'monday' ||
+		$field eq 'tuesday' || $field eq 'wednesday' || $field eq 'thursday' ||
+		$field eq 'friday' || $field eq 'saturday' || $field eq 'sunday' ||
 		$field eq 'min_alerts' || $field eq 'max_alerts' || $field eq 'recovery_notify') {
 		# Fields admited, no changes
 	}
@@ -2099,13 +2099,13 @@ sub cli_alert_template_update() {
 		print_log "[ERROR] Field '$field' doesnt exist\n\n";
 		exit;
 	}
-		
+
 	print_log "[INFO] Updating field '$field' in alert template '$template_name'\n\n";
-	
+
 	my $update;
-	
+
 	$update->{$field} = $new_value;
-	
+
 	pandora_update_alert_template_from_hash ($update, 'id', $template_id, $dbh);
 }
 
@@ -2132,25 +2132,25 @@ sub pandora_check_data_module_fields($) {
 
 sub pandora_check_network_module_fields($) {
 	my $field_value = shift;
-		
+
 	if($field_value->{'field'} eq 'module_address') {
 		my $agent_name = @ARGV[3];
-		
+
 		my $id_agent = get_agent_id($dbh,$agent_name);
-	
+
 		$field_value->{'field'} = 'ip_target';
-		
+
 		# Check if the address already exist
 		my $address_id = get_addr_id($dbh,$field_value->{'new_value'});
-		
+
 		# If the addres doesnt exist, we add it to the addresses list
 		if($address_id == -1) {
 			$address_id = add_address($dbh,$field_value->{'new_value'});
 		}
-		
+
 		# Add the address to the agent
 		add_new_address_agent ($dbh, $address_id, $id_agent);
-		
+
 		# Only pending set as main address (Will be done at the end of the function)
 	}
 	elsif($field_value->{'field'} eq 'module_port') {
@@ -2178,7 +2178,7 @@ sub pandora_check_network_module_fields($) {
 
 sub pandora_check_snmp_module_fields($) {
 	my $field_value = shift;
-		
+
 	if($field_value->{'field'} eq 'version') {
 		$field_value->{'field'} = 'tcp_send';
 	}
@@ -2208,22 +2208,22 @@ sub pandora_check_snmp_module_fields($) {
 	}
 	elsif($field_value->{'field'} eq 'module_address') {
 		my $agent_name = @ARGV[3];
-		
+
 		my $id_agent = get_agent_id($dbh,$agent_name);
-	
+
 		$field_value->{'field'} = 'ip_target';
-		
+
 		# Check if the address already exist
 		my $address_id = get_addr_id($dbh,$field_value->{'new_value'});
-		
+
 		# If the addres doesnt exist, we add it to the addresses list
 		if($address_id == -1) {
 			$address_id = add_address($dbh,$field_value->{'new_value'});
 		}
-		
+
 		# Add the address to the agent
 		add_new_address_agent ($dbh, $address_id, $id_agent);
-		
+
 		# Only pending set as main address (Will be done at the end of the function)
 	}
 	elsif($field_value->{'field'} eq 'module_port') {
@@ -2251,11 +2251,11 @@ sub pandora_check_snmp_module_fields($) {
 
 sub pandora_check_plugin_module_fields($) {
 	my $field_value = shift;
-		
+
 	if($field_value->{'field'} eq 'plugin_name') {
 		my $plugin_id = get_plugin_id($dbh,$field_value->{'new_value'});
 		exist_check($plugin_id,'plugin',$field_value->{'new_value'});
-		
+
 		$field_value->{'new_value'} = $plugin_id;
 		$field_value->{'field'} = 'id_plugin';
 	}
@@ -2271,22 +2271,22 @@ sub pandora_check_plugin_module_fields($) {
 	}
 	elsif($field_value->{'field'} eq 'module_address') {
 		my $agent_name = @ARGV[3];
-		
+
 		my $id_agent = get_agent_id($dbh,$agent_name);
-		
+
 		$field_value->{'field'} = 'ip_target';
-		
+
 		# Check if the address already exist
 		my $address_id = get_addr_id($dbh,$field_value->{'new_value'});
-		
+
 		# If the addres doesnt exist, we add it to the addresses list
 		if($address_id == -1) {
 			$address_id = add_address($dbh,$field_value->{'new_value'});
 		}
-		
+
 		# Add the address to the agent
 		add_new_address_agent ($dbh, $address_id, $id_agent);
-		
+
 		# Only pending set as main address (Will be done at the end of the function)
 	}
 	elsif($field_value->{'field'} eq 'module_port') {
@@ -2308,14 +2308,14 @@ sub pandora_check_plugin_module_fields($) {
 
 sub cli_module_update() {
 	my ($module_name,$agent_name,$field,$new_value) = @ARGV[2..5];
-	
+
 	my $id_agent = get_agent_id($dbh,$agent_name);
 	exist_check($id_agent,'agent',$agent_name);
 	my $id_agent_module = get_agent_module_id ($dbh, $module_name, $id_agent);
 	exist_check($id_agent_module,'agent module',$module_name);
-	
+
 	# Check and adjust parameters in common values
-	
+
 	if($field eq 'min' || $field eq 'max' || $field eq 'post_process' || $field eq 'history_data') {
 		# Fields admited, no changes
 	}
@@ -2368,7 +2368,7 @@ sub cli_module_update() {
 	}
 	elsif ($field eq 'module_group') {
 		my $module_group_id = get_module_group_id($dbh,$new_value);
-		
+
 		if ($module_group_id == -1) {
 			print_log "[ERROR] Module group '$new_value' doesnt exist\n\n";
 			exit;
@@ -2405,11 +2405,11 @@ sub cli_module_update() {
 	else {
 		# If is not a common value, check type and call type update funtion
 		my $type = pandora_get_module_type($dbh,$id_agent_module);
-		
+
 		my %field_value;
 		$field_value{'field'} = $field;
 		$field_value{'new_value'} = $new_value;
-		
+
 		if($type eq 'data') {
 			pandora_check_data_module_fields(\%field_value);
 		}
@@ -2425,22 +2425,22 @@ sub cli_module_update() {
 		else {
 			print_log "[ERROR] The field '$field' is not available for this type of module\n\n";
 		}
-		
+
 		$field = $field_value{'field'};
 		$new_value = $field_value{'new_value'};
 	}
-	
+
 	print_log "[INFO] Updating field '$field' in module '$module_name' of agent '$agent_name' with new value '$new_value'\n\n";
-	
+
 	my $update;
-	
+
 	$update->{$field} = $new_value;
 
 	my $policy_id = enterprise_hook('get_id_policy_module_agent_module',[$dbh, safe_input($id_agent_module)]);
 	if ( $policy_id > 0) {
 		$update->{policy_linked} = 0;
 	}
-	
+
 	pandora_update_module_from_hash ($conf, $update, 'id_agente_modulo', $id_agent_module, $dbh);
 }
 
@@ -2459,7 +2459,7 @@ sub cli_exec_from_file() {
 		# First and second are the script and conf paths
 		if($c < 2) {
 			$command = "$command $opt";
-		}	
+		}
 		# Third param is ignored, because is --exec_from_file
 		# Fourth param is the file path
 		elsif($c == 3) {
@@ -2483,7 +2483,7 @@ sub cli_exec_from_file() {
 			}
 		}
 	}
-	
+
 	open (FILE, $file);
 	while (<FILE>) {
 		my $command_tr = $command;
@@ -2501,7 +2501,7 @@ sub cli_exec_from_file() {
 		print `./$command_tr`;
 	}
 	close (FILE);
-	
+
 	exit;
 }
 
@@ -2511,9 +2511,9 @@ sub cli_exec_from_file() {
 
 sub pandora_get_module_type($$) {
 	my ($dbh,$id_agent_module) = @_;
-	
+
 	my $id_modulo = get_db_value($dbh, 'SELECT id_modulo FROM tagente_modulo WHERE id_agente_modulo = ?',$id_agent_module);
-	
+
 	if($id_modulo == 1) {
 		return 'data';
 	}
@@ -2547,15 +2547,15 @@ sub pandora_get_module_type($$) {
 
 sub cli_user_add_profile() {
 	my ($user_id,$profile_name,$group_name) = @ARGV[2..4];
-	
+
 	my $user_exists = get_user_exists ($dbh, $user_id);
 	exist_check($user_exists,'user',$user_id);
-	
+
 	my $profile_id = get_profile_id($dbh, $profile_name);
 	exist_check($profile_id,'profile',$profile_name);
-	
+
 	my $group_id = 0;
-	
+
 	# If group name is not defined, we assign group All (0)
 	if(defined($group_name)) {
 		$group_id = get_group_id($dbh, $group_name);
@@ -2564,9 +2564,9 @@ sub cli_user_add_profile() {
 	else {
 		$group_name = 'All';
 	}
-		
+
 	print_log "[INFO] Adding profile '$profile_name' to user '$user_id' in group '$group_name'\n\n";
-		
+
 	pandora_add_profile_to_user ($dbh, $user_id, $profile_id, $group_id);
 }
 
@@ -2577,9 +2577,9 @@ sub cli_user_add_profile() {
 
 sub cli_delete_user() {
 	my $user_name = @ARGV[2];
-	
+
 	print_log "[INFO] Deleting user '$user_name' \n\n";
-	
+
 	my $result = pandora_delete_user($dbh,$user_name);
 	exist_check($result,'user',$user_name);
 }
@@ -2591,9 +2591,9 @@ sub cli_delete_user() {
 
 sub cli_delete_alert_template() {
 	my $template_name = @ARGV[2];
-	
+
 	print_log "[INFO] Deleting template '$template_name' \n\n";
-	
+
 	my $result = pandora_delete_alert_template($dbh,$template_name);
 	exist_check($result,'alert template',$template_name);
 }
@@ -2605,12 +2605,12 @@ sub cli_delete_alert_template() {
 
 sub cli_create_profile() {
 	my ($user_name,$profile_name,$group_name) = @ARGV[2..4];
-	
+
 	my $id_profile = get_profile_id($dbh,$profile_name);
 	exist_check($id_profile,'profile',$profile_name);
-	
+
 	my $id_group;
-	
+
 	if($group_name eq "All") {
 		$id_group = 0;
 		print_log "[INFO] Adding profile '$profile_name' to all groups for user '$user_name') \n\n";
@@ -2620,7 +2620,7 @@ sub cli_create_profile() {
 		exist_check($id_group,'group',$group_name);
 		print_log "[INFO] Adding profile '$profile_name' to group '$group_name' for user '$user_name') \n\n";
 	}
-	
+
 	pandora_create_user_profile ($dbh, $user_name, $id_profile, $id_group);
 }
 
@@ -2631,12 +2631,12 @@ sub cli_create_profile() {
 
 sub cli_delete_profile() {
 	my ($user_name,$profile_name,$group_name) = @ARGV[2..4];
-	
+
 	my $id_profile = get_profile_id($dbh,$profile_name);
 	exist_check($id_profile,'profile',$profile_name);
-	
+
 	my $id_group;
-	
+
 	if($group_name eq "All") {
 		$id_group = 0;
 		print_log "[INFO] Deleting profile '$profile_name' from all groups for user '$user_name') \n\n";
@@ -2646,7 +2646,7 @@ sub cli_delete_profile() {
 		exist_check($id_group,'group',$group_name);
 		print_log "[INFO] Deleting profile '$profile_name' from group '$group_name' for user '$user_name') \n\n";
 	}
-	
+
 	pandora_delete_user_profile ($dbh, $user_name, $id_profile, $id_group);
 }
 
@@ -2662,7 +2662,7 @@ sub cli_create_event() {
 	$severity = 0 unless defined($severity);
 
 	my $id_user;
-	
+
 	if (!defined($user_name)) {
 		$id_user = 0;
 	}
@@ -2670,9 +2670,9 @@ sub cli_create_event() {
 		$id_user = pandora_get_user_id($dbh,$user_name);
 		exist_check($id_user,'user',$user_name);
 	}
-	
+
 	my $id_group;
-	
+
 	if (!defined($group_name) || $group_name eq "All") {
 		$id_group = 0;
 	}
@@ -2680,9 +2680,9 @@ sub cli_create_event() {
 		$id_group = get_group_id($dbh,$group_name);
 		exist_check($id_group,'group',$group_name);
 	}
-	
+
 	my $id_agent;
-	
+
 	if (!defined($agent_name)) {
 		$id_agent = 0;
 	}
@@ -2690,9 +2690,9 @@ sub cli_create_event() {
 		$id_agent = get_agent_id($dbh,$agent_name);
 		exist_check($id_agent,'agent',$agent_name);
 	}
-	
+
 	my $id_agentmodule;
-	
+
 	if (!defined($module_name)) {
 		$id_agentmodule = 0;
 	}
@@ -2700,9 +2700,9 @@ sub cli_create_event() {
 		$id_agentmodule = get_agent_module_id($dbh,$module_name,$id_agent);
 		exist_check($id_agentmodule,'module',$module_name);
 	}
-	
+
 	my $id_alert_agent_module;
-				
+
 	if(defined($template_name) && $template_name ne '') {
 		my $id_template = get_template_id($dbh,$template_name);
 		exist_check($id_template,'template',$template_name);
@@ -2712,7 +2712,7 @@ sub cli_create_event() {
 	else {
 		$id_alert_agent_module = 0;
 	}
-	
+
 	if (defined($comment) && $comment ne '') {
 		$comment = '<b>-- Added comment by '.$user_name. ' ['. localtime(time).'] --</b><br>'.$comment.'<br>';
 	}
@@ -2738,7 +2738,7 @@ sub cli_validate_event() {
 	if(defined($agent_name) && $agent_name ne '') {
 		$id_agent = get_agent_id($dbh,$agent_name);
 		exist_check($id_agent,'agent',$agent_name);
-		
+
 		if($module_name ne '') {
 			$id_agentmodule = get_agent_module_id($dbh, $module_name, $id_agent);
 			exist_check($id_agentmodule,'module',$module_name);
@@ -2753,7 +2753,7 @@ sub cli_validate_event() {
 		# Add the seconds
 		$datetime_min .= ":00";
 	}
-	
+
 	if(defined($datetime_max) && $datetime_max ne '') {
 		if ($datetime_max !~ /([0-9]{2,4})\-([0-1][0-9])\-([0-3][0-9]) +([0-2][0-9]):([0-5][0-9])/) {
 			print_log "[ERROR] Invalid datetime_max $datetime_max. (Correct format: YYYY-MM-DD HH:mm)\n";
@@ -2764,14 +2764,14 @@ sub cli_validate_event() {
 	}
 
 	my $id_alert_agent_module = '';
-	
+
 	if(defined($template_name) && $template_name ne '') {
 		my $id_template = get_template_id($dbh,$template_name);
 		exist_check($id_template,'template',$template_name);
 		$id_alert_agent_module = get_template_module_id($dbh,$id_agentmodule,$id_template);
 		exist_check($id_alert_agent_module,'template module',$template_name);
 	}
-				
+
 	pandora_validate_event_filter ($conf, $id_agentmodule, $id_agent, $datetime_min, $datetime_max, $user_name, $id_alert_agent_module, $criticity, $dbh);
 	print_log "[INFO] Validating event for agent '$agent_name'\n\n";
 }
@@ -2786,12 +2786,12 @@ sub cli_validate_event_id() {
 
 	my $event_name = pandora_get_event_name($dbh, $id_event);
 	exist_check($event_name,'event',$id_event);
-	
+
 	print_log "[INFO] Validating event '$id_event'\n\n";
-				
+
 	my $result = pandora_validate_event_id ($conf, $id_event, $dbh);
 	exist_check($result,'event',$id_event);
-	
+
 }
 
 ###############################################################################
@@ -2800,12 +2800,12 @@ sub cli_validate_event_id() {
 ###############################################################################
 sub cli_get_event_info () {
 	my ($id_event,$csv_separator) = @ARGV[2..3];
-	
+
 	my $event_name = pandora_get_event_name($dbh, $id_event);
 	exist_check($event_name,'event',$id_event);
-	
+
 	$csv_separator = '|' unless defined($csv_separator);
-	
+
 	my $query = "SELECT * FROM tevento where id_evento=".$id_event;
 
 	my $header = "Event ID".$csv_separator."Event name".$csv_separator."Agent ID".$csv_separator."User ID".$csv_separator.
@@ -2813,7 +2813,7 @@ sub cli_get_event_info () {
 				"Agent module ID".$csv_separator."Alert module ID".$csv_separator."Criticity".$csv_separator.
 				"Comment".$csv_separator."Tags".$csv_separator."Source".$csv_separator."Extra ID"."\n";
 	print $header;
-	
+
 	my @result = get_db_single_row($dbh, $query);
 	foreach my $event_data (@result) {
 		print $event_data->{'id_evento'};
@@ -2847,7 +2847,7 @@ sub cli_get_event_info () {
 		print $event_data->{'id_extra'};
 		print "\n";
 	}
-	
+
     exit;
 }
 
@@ -2857,7 +2857,7 @@ sub cli_get_event_info () {
 ###############################################################################
 sub cli_add_event_comment() {
 	my ($id_event, $user_name, $comment) = @ARGV[2..4];
-	
+
 	my $id_user;
 	if (!defined($user_name) || $user_name eq '') {
 		$id_user = 'admin';
@@ -2866,16 +2866,16 @@ sub cli_add_event_comment() {
 		$id_user = pandora_get_user_id($dbh,$user_name);
 		exist_check($id_user,'user',$user_name);
 	}
-	
+
 	my $event_name = pandora_get_event_name($dbh, $id_event);
 	exist_check($event_name,'event',$id_event);
-	
-	my $current_comment = encode_utf8(pandora_get_event_comment($dbh, $id_event)); 
+
+	my $current_comment = encode_utf8(pandora_get_event_comment($dbh, $id_event));
 	my $utimestamp = time ();
 	my @additional_comment = ({ comment => $comment, action => "Added comment", id_user => $id_user, utimestamp => $utimestamp});
-	
+
 	print_log "[INFO] Adding event comment for event '$id_event'. \n\n";
-	
+
 	my $decoded_comment;
 	my $update;
 	if ($current_comment eq '') {
@@ -2883,12 +2883,12 @@ sub cli_add_event_comment() {
 	}
 	else {
 		$decoded_comment = decode_json($current_comment);
-		
+
 		push(@{$decoded_comment}, @additional_comment);
-		
+
 		$update->{'user_comment'} = encode_json($decoded_comment);
 	}
-	
+
 	pandora_update_event_from_hash ($update, 'id_evento', $id_event, $dbh);
 }
 
@@ -2899,10 +2899,10 @@ sub cli_add_event_comment() {
 
 sub cli_create_incident() {
 	my ($title, $description, $origin, $status, $priority, $group_name, $owner) = @ARGV[2..8];
-	
+
 	my $id_group = get_group_id($dbh,$group_name);
 	exist_check($id_group,'group',$group_name);
-	
+
 	pandora_create_incident ($conf, $dbh, $title, $description, $priority, $status, $origin, $id_group, $owner);
 	print_log "[INFO] Creating incident '$title'\n\n";
 }
@@ -2921,30 +2921,30 @@ sub cli_delete_data($) {
 		param_check($ltotal, 3) unless ($name2 ne '');
 		my $id_agent = get_agent_id($dbh,$name2);
 		exist_check($id_agent,'agent',$name2);
-		
+
 		my $id_module = get_agent_module_id($dbh,$name,$id_agent);
 		exist_check($id_module,'module',$name);
-	
+
 		print_log "DELETING THE DATA OF THE MODULE $name OF THE AGENT $name2\n\n";
-		
+
 		pandora_delete_data($dbh, 'module', $id_module);
 	}
 	elsif($opt eq '-a' || $opt eq '--a') {
 		# Delete agent's modules data
 		my $id_agent = get_agent_id($dbh,$name);
 		exist_check($id_agent,'agent',$name);
-		
+
 		print_log "DELETING THE DATA OF THE AGENT $name\n\n";
-		
+
 		pandora_delete_data($dbh, 'module', $id_agent);
 	}
 	elsif($opt eq '-g' || $opt eq '--g') {
 		# Delete group's modules data
 		my $id_group = get_group_id($dbh,$name);
 		exist_check($id_group,'group',$name);
-		
+
 		print_log "DELETING THE DATA OF THE GROUP $name\n\n";
-		
+
 		pandora_delete_data($dbh, 'group', $id_group);
 	}
 	else {
@@ -2961,17 +2961,17 @@ sub cli_delete_data($) {
 
 sub cli_apply_policy() {
 	my $policy_name = @ARGV[2];
-	
+
 	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
 	exist_check($policy_id,'policy',$policy_name);
-	
+
 	my $ret = enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy_id, 'apply']);
-	
+
 	if($ret == -1) {
 		print_log "[ERROR] Operation 'apply' cannot be added to policy '$policy_name' because is duplicated in queue or incompatible with others operations\n\n";
 		exit;
 	}
-	
+
 	print_log "[INFO] Added operation 'apply' to policy '$policy_name'\n\n";
 }
 
@@ -2982,11 +2982,11 @@ sub cli_apply_policy() {
 
 sub cli_apply_all_policies() {
 	my $policies = enterprise_hook('get_policies', [$dbh, 0]);
-	
+
 	my $npolicies = scalar(@{$policies});
-	
+
 	print_log "[INFO] $npolicies policies found\n\n";
-	
+
 	my $added = 0;
 	foreach my $policy (@{$policies}) {
 		my $ret = enterprise_hook('pandora_add_policy_queue', [$dbh, $conf, $policy->{'id'}, 'apply']);
@@ -2995,7 +2995,7 @@ sub cli_apply_all_policies() {
 			print_log "[INFO] Added operation 'apply' to policy '".safe_output($policy->{'name'})."'\n";
 		}
 	}
-		
+
 	if($npolicies > $added) {
 		my $failed = $npolicies - $added;
 		print_log "[ERROR] $failed policies cannot be added to apply queue. Maybe the queue already contains these operations.\n";
@@ -3011,7 +3011,7 @@ sub cli_recreate_collection () {
 	my $collection_id = @ARGV[2];
 
 	my $result = enterprise_hook('pandora_recreate_collection', [$conf, $collection_id, $dbh]);
-	
+
 	if ($result == 1) {
 		print_log "[INFO] Collection recreated successfully.\n";
 	}
@@ -3027,9 +3027,9 @@ sub cli_recreate_collection () {
 
 sub cli_validate_all_alerts() {
 	print_log "[INFO] Validating all the alerts\n\n";
-		
+
 	my $res = db_update ($dbh, "UPDATE talert_template_modules SET times_fired = 0, internal_counter = 0");
-	
+
 	if($res == -1) {
 		print_log "[ERROR] Alerts cannot be validated\n\n";
 	}
@@ -3046,35 +3046,35 @@ sub cli_validate_all_alerts() {
 
 sub cli_validate_policy_alerts() {
 	my $policy_name = @ARGV[2];
-	
+
 	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
 	exist_check($policy_id,'policy',$policy_name);
-	
+
 	my $policy_alerts = enterprise_hook('get_policy_alerts',[$dbh, $policy_id]);
-	
+
 	my @policy_alerts_id_array;
 	my $policy_alerts_id = '';
-	
+
 	my $cont = 0;
 	foreach my $alert (@{$policy_alerts}) {
 		$policy_alerts_id_array[$cont] = $alert->{'id'};
 		$cont++;
 	}
-	
+
 	if($#policy_alerts_id_array == -1) {
 		print_log "[INFO] No alerts found in the policy '$policy_name'\n\n";
 		return;
 	}
-	
+
 	$policy_alerts_id = join(',',@policy_alerts_id_array);
-	
+
 	#Get the fired alerts that match with the filter to update counts after validate it
 	my @fired_alerts = get_db_rows ($dbh, "SELECT id_agent_module, count(id) alerts FROM talert_template_modules WHERE id_policy_alerts IN (?) AND times_fired > 0 GROUP BY id_agent_module", $policy_alerts_id);
 
 	print_log "[INFO] Validating the alerts of the policy '$policy_name'\n\n";
-		
+
 	my $res = db_update ($dbh, "UPDATE talert_template_modules SET times_fired = 0, internal_counter = 0 WHERE id_policy_alerts IN (?)", $policy_alerts_id);
-		
+
 	if($res == -1) {
 		print_log "[ERROR] Alerts cannot be validated\n\n";
 	}
@@ -3096,12 +3096,12 @@ sub cli_validate_policy_alerts() {
 
 sub cli_get_agent_group() {
 	my $agent_name = @ARGV[2];
-	
+
 	my $id_agent = get_agent_id($dbh,$agent_name);
 	exist_check($id_agent,'agent',$agent_name);
-	
+
 	my $id_group = get_agent_group ($dbh, $id_agent);
-	
+
 	my $group_name = get_group_name ($dbh, $id_group);
 
 	print $group_name;
@@ -3114,10 +3114,10 @@ sub cli_get_agent_group() {
 
 sub cli_get_agents_module_current_data() {
 	my $module_name = @ARGV[2];
-	
+
 	my $agents = pandora_get_module_agents($dbh, $module_name);
 	exist_check(scalar(@{$agents})-1,'data of module',$module_name);
-	
+
 	print "id_agent,agent_name,module_data\n";
 	foreach my $agent (@{$agents}) {
 		my $current_data = pandora_get_module_current_data($dbh, $agent->{'id_agente_modulo'});
@@ -3132,16 +3132,16 @@ sub cli_get_agents_module_current_data() {
 
 sub cli_get_agent_modules() {
 	my $agent_name = @ARGV[2];
-	
+
 	my $id_agent = get_agent_id($dbh,$agent_name);
 	exist_check($id_agent,'agent',$agent_name);
-	
+
 	my $modules = pandora_get_agent_modules ($dbh, $id_agent);
 
 	if(scalar(@{$modules}) == 0) {
 		print_log "[INFO] The agent '$agent_name' have not modules\n\n";
 	}
-	
+
 	print "id_module, module_name\n";
 	foreach my $module (@{$modules}) {
 		print $module->{'id_agente_modulo'}.",".safe_output($module->{'nombre'})."\n";
@@ -3151,25 +3151,25 @@ sub cli_get_agent_modules() {
 sub cli_create_synthetic() {
 	my $name_module = @ARGV[2];
 	my $synthetic_type = @ARGV[3];
-	
+
 	my $agent_name = @ARGV[4];
 	my @module_data = @ARGV[5..$#ARGV];
 	my $module;
 	my (@filterdata,@data_module);
-	
+
 	if ($synthetic_type ne 'arithmetic' && $synthetic_type ne 'average') {
 		print("[ERROR] Type of syntethic module doesn't exists \n\n");
 		exit 1;
 	}
-	
+
 	$module->{'custom_integer_1'} = 0;
 	$module->{'custom_integer_2'} = 0;
 	$module->{'prediction_module'} = 3; # Synthetic code is 3
-		
+
 	my $id_agent = int(get_agent_id($dbh,$agent_name));
-	
+
 	if ($id_agent > 0) {
-		
+
 		foreach my $data (@module_data) {
 			my @split_data = split(',',$data);
 			if (@split_data[0] =~ m/(x|\/|\+|\*|\-)/ && length(@split_data[0]) == 1 ) {
@@ -3205,13 +3205,13 @@ sub cli_create_synthetic() {
 
 		my $module_exists = get_agent_module_id($dbh, $name_module, $id_agent);
 		non_exist_check($module_exists, 'module name', $name_module);
-		
+
 		$module->{'id_agente'} = $id_agent;
 		$module->{'nombre'} = safe_input($name_module);
 		$module->{'id_modulo'} = 5;
-		
+
 		my $id_module = db_process_insert($dbh, 'id_agente_modulo', 'tagente_modulo', $module);
-		
+
 		if ($id_module) {
 			my $result = enterprise_hook('create_synthetic_operations',
 				[$dbh,int($id_module), @filterdata]);
@@ -3226,7 +3226,7 @@ sub cli_create_synthetic() {
 			print("[INFO] Problems with creating module \n\n");
 		}
 	}
-	else { 
+	else {
 		print( "[INFO] The agent '$agent_name' doesn't exists\n\n");
 	}
 }
@@ -3239,13 +3239,13 @@ sub cli_create_synthetic() {
 
 sub cli_get_policy_modules() {
 	my $policy_name = @ARGV[2];
-	
+
 	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
 	exist_check($policy_id,'policy',$policy_name);
-	
+
 	my $policy_modules = enterprise_hook('get_policy_modules',[$dbh, $policy_id]);
 	exist_check(scalar(@{$policy_modules})-1,'modules in policy',$policy_name);
-	
+
 	print "id_policy_module, module_name\n";
 	foreach my $module (@{$policy_modules}) {
 		print $module->{'id'}.",".safe_output($module->{'name'})."\n";
@@ -3264,7 +3264,7 @@ sub cli_get_policies() {
 	if(defined($agent_name)) {
 		my $id_agent = get_agent_id($dbh,$agent_name);
 		exist_check($id_agent,'agent',$agent_name);
-		
+
 		$policies = enterprise_hook('get_agent_policies',[$dbh,$id_agent]);
 
 		if(scalar(@{$policies}) == 0) {
@@ -3279,7 +3279,7 @@ sub cli_get_policies() {
 			exit;
 		}
 	}
-	
+
 	print "id_policy, policy_name\n";
 	foreach my $module (@{$policies}) {
 		print $module->{'id'}.",".safe_output($module->{'name'})."\n";
@@ -3293,9 +3293,9 @@ sub cli_get_policies() {
 
 sub cli_get_agents() {
 	my ($group_name, $os_name, $status, $max_modules, $filter_substring, $policy_name) = @ARGV[2..7];
-	
-	my $condition = ' 1=1';
-	
+
+	my $condition = ' disabled=0';
+
 	my $id_group;
 	my $id_os;
 	my $policy_id;
@@ -3303,43 +3303,43 @@ sub cli_get_agents() {
 	if($group_name ne '') {
 		$id_group = get_group_id($dbh, $group_name);
 		exist_check($id_group,'group',$group_name);
-		
+
 		$condition .= " AND id_grupo = $id_group ";
 	}
-	
+
 	if($os_name ne '') {
 		$id_os = get_os_id($dbh, $os_name);
 		exist_check($id_os,'operative system',$os_name);
-		
+
 		$condition .= " AND id_os = $id_os ";
 	}
-	
+
 	if($policy_name ne '') {
 		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
 		exist_check($policy_id,'policy',$policy_name);
-		
-		$condition .= " AND id_agente IN (SELECT id_agent FROM tpolicy_agents 
+
+		$condition .= " AND id_agente IN (SELECT id_agent FROM tpolicy_agents
 		WHERE id_policy = $policy_id )";
 	}
-	
-	if($max_modules ne '') {	
-		$condition .= " AND id_agente NOT IN (SELECT id_agente FROM tagente_modulo t1 
+
+	if($max_modules ne '') {
+		$condition .= " AND id_agente NOT IN (SELECT id_agente FROM tagente_modulo t1
 		WHERE (SELECT count(*) FROM tagente_modulo WHERE id_agente = t1.id_agente) > $max_modules)";
 	}
-	
+
 	if($filter_substring ne '') {
 		$condition .= " AND nombre LIKE '%".safe_input($filter_substring)."%'";
 	}
-		
-	my @agents = get_db_rows ($dbh, "SELECT * FROM tagente WHERE $condition");	
+
+	my @agents = get_db_rows ($dbh, "SELECT * FROM tagente WHERE $condition");
 
 	if(scalar(@agents) == 0) {
 		print_log "[INFO] No agents found\n\n";
 		exit;
 	}
-	
+
 	my $agent_status;
-	
+
 	my $head_print = 0;
 	foreach my $agent (@agents) {
 		if($status ne '') {
@@ -3354,7 +3354,7 @@ sub cli_get_agents() {
 		}
 		print $agent->{'id_agente'}.",".safe_output($agent->{'nombre'})."\n";
 	}
-	
+
 	if($head_print == 0) {
 		print_log "[INFO] No agents found\n\n";
 	}
@@ -3367,10 +3367,10 @@ sub cli_get_agents() {
 
 sub cli_delete_conf_file() {
 	my $agent_name = @ARGV[2];
-	
+
 	my $conf_deleted = 0;
 	my $md5_deleted = 0;
-	
+
 	if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
 		unlink($conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
 		$conf_deleted = 1;
@@ -3379,7 +3379,7 @@ sub cli_delete_conf_file() {
 		unlink($conf->{incomingdir}.'/md5/'.md5($agent_name).'.md5');
 		$md5_deleted = 1;
 	}
-	
+
 	if($conf_deleted == 1 || $md5_deleted == 1) {
 		print_log "[INFO] Local conf files of the agent '$agent_name' has been deleted succesfully\n\n";
 	}
@@ -3397,7 +3397,7 @@ sub cli_delete_conf_file() {
 sub cli_clean_conf_file() {
 	my $agent_name = @ARGV[2];
 	my $result;
-	
+
 	if(defined($agent_name)) {
 		if (-e $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf') {
 			$result = enterprise_hook('pandora_clean_conf_file',[$conf, md5($agent_name)]);
@@ -3437,20 +3437,20 @@ sub cli_get_bad_conf_files() {
 		# Check important tokens
 		my $missings = 0;
 		my @tokens = ("server_ip","server_path","temporal","logfile");
-		
+
 		foreach my $token (@tokens) {
 			if(enterprise_hook('pandora_check_conf_token',[$conf->{incomingdir}.'/conf/'.$file, $token]) == 0) {
 				$missings++;
 			}
 		}
-		
+
 		# If any token of checked is missed we print the file path
 		if($missings > 0) {
 			print $conf->{incomingdir}.'/conf/'.$file."\n";
 			$bad_files++;
 		}
 	}
-	
+
 	if($bad_files == 0) {
 		print_log "[INFO] No bad files found\n\n";
 	}
@@ -3463,10 +3463,10 @@ sub cli_get_bad_conf_files() {
 
 sub cli_disable_policy_alerts() {
 	my $policy_name = @ARGV[2];
-	
+
 	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
 	exist_check($policy_id,'policy',$policy_name);
-	
+
 	# Flag as disabled the policy alerts
 	my $array_pointer_ag = enterprise_hook('pandora_disable_policy_alerts',[$dbh, $policy_id]);
 }
@@ -3478,16 +3478,16 @@ sub cli_disable_policy_alerts() {
 
 sub cli_policy_add_agent() {
 	my ($agent_name, $policy_name) = @ARGV[2..3];
-	
+
 	my $agent_id = get_agent_id($dbh,$agent_name);
 	exist_check($agent_id,'agent',$agent_name);
-	
+
 	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
 	exist_check($policy_id,'policy',$policy_name);
-		
+
 	# Add the agent to policy
 	my $policy_agent_id = enterprise_hook('pandora_policy_add_agent',[$policy_id, $agent_id, $dbh]);
-	
+
 	if($policy_agent_id == -1) {
 		print_log "[ERROR] A problem has been ocurred adding agent '$agent_name' to policy '$policy_name'\n\n";
 	}
@@ -3500,7 +3500,7 @@ sub cli_create_planned_downtime() {
 	my $name = @ARGV[2];
 	my @todo = @ARGV[3..20];
 	my $other = join('|', @todo);
-	
+
 	my $result = api_call(\%conf,'set', 'planned_downtimes_created', $name, undef, "$other");
 	print "$result \n\n ";
 }
@@ -3514,7 +3514,7 @@ sub cli_add_item_planned_downtime() {
 	my $other_agents = join(';', @agents);
 	my $other_modules = join(';', @modules);
 	my $other = $other_agents . "|" . $other_modules;
-	
+
 	my $result = api_call(\%conf,'set', 'planned_downtimes_additem', $id, undef, "$other");
 	print_log "$result \n\n";
 }
@@ -3522,21 +3522,21 @@ sub cli_add_item_planned_downtime() {
 sub cli_set_delete_planned_downtime() {
 	my $name_downtime = @ARGV[2];
 	my $id_downtime = pandora_get_planned_downtime_id($dbh,$name_downtime);
-	
+
 	my $result = pandora_delete_planned_downtime ($dbh,$id_downtime);
-	
+
 	print_log "$result \n\n";
 }
 
 sub cli_get_all_planned_downtime() {
 	my $name_downtime = @ARGV[2];
 	my ($id_group, $type_downtime, $type_execution, $type_periodicity) = @ARGV[3..6];
-	
+
 	my @results = pandora_get_all_planned_downtime($dbh, $name_downtime, $id_group, $type_downtime, $type_execution, $type_periodicity);
-	
+
 	if (!defined($results[0])) {
 		print_log "[ERROR] No data found with this parameters. Please check and launch again\n\n";
-	}	
+	}
 	else {
 		foreach my $result (@results) {
 			print("\nID: " . $result->{'id'} . ", NAME: " . $result->{'name'} . ", DESC: " . safe_output($result->{'description'}) . ", DATE FROM: " .
@@ -3557,10 +3557,10 @@ sub cli_get_planned_downtimes_items() {
 	my ($id_group, $type_downtime, $type_execution, $type_periodicity) = @ARGV[3..6];
 	my $text;
 	my @results = pandora_get_all_planned_downtime($dbh, $name_downtime, $id_group, $type_downtime, $type_execution, $type_periodicity);
-	
+
 	if (!defined($results[0])) {
 		print_log "[ERROR] No data found with this parameters. Please check and launch again\n\n";
-	}	
+	}
 	else {
 		my @items;
 		foreach my $result (@results) {
@@ -3586,12 +3586,12 @@ sub cli_get_planned_downtimes_items() {
 
 sub cli_create_group() {
 	my ($group_name,$parent_group_name,$icon,$description) = @ARGV[2..5];
-		
+
 	my $group_id = get_group_id($dbh,$group_name);
 	non_exist_check($group_id, 'group name', $group_name);
-	
+
 	my $parent_group_id = 0;
-	
+
 	if(defined($parent_group_name) && $parent_group_name ne 'All') {
 		$parent_group_id = get_group_id($dbh,$parent_group_name);
 		exist_check($parent_group_id, 'group name', $parent_group_name);
@@ -3620,7 +3620,7 @@ sub cli_disable_alerts ($$) {
 	print_log "[INFO] Disabling all alerts \n\n";
 
 	# This works by disabling alerts in each defined group
-    # If you have previously a group with alert disabled, and you disable 
+    # If you have previously a group with alert disabled, and you disable
     # alerts globally, when enabled it again, it will enabled also !
 
 	db_do ($dbh, "UPDATE tgrupo SET disabled = 1");
@@ -3648,7 +3648,7 @@ sub cli_enable_alerts ($$) {
 ###############################################################################
 sub cli_disable_eacl ($$) {
 	my ($conf, $dbh) = @_;
-			
+
 	print_log "[INFO] Disabling Enterprise ACL system (system wide)\n\n";
 
 	db_do ($dbh, "UPDATE tconfig SET `value` ='0' WHERE `token` = 'acl_enterprise'");
@@ -3666,7 +3666,7 @@ sub cli_enable_eacl ($$) {
 	print_log "[INFO] Enabling Enterprise ACL system (system wide)\n\n";
 
     db_do ($dbh, "UPDATE tconfig SET `value` ='1' WHERE `token` = 'acl_enterprise'");
-    	
+
     exit;
 }
 
@@ -3678,20 +3678,20 @@ sub cli_user_enable () {
 	my $user_id = @ARGV[2];
 
 	my $user_disabled = get_user_disabled ($dbh, $user_id);
-	
+
 	exist_check($user_disabled,'user',$user_id);
 
 	if($user_disabled == 0) {
 		print_log "[INFO] The user '$user_id' is already enabled. Nothing to do.\n\n";
 		exit;
 	}
-	
+
 	print_log "[INFO] Enabling user '$user_id'\n\n";
 
 	$user_id = safe_input($user_id);
 
     db_do ($dbh, "UPDATE tusuario SET `disabled` = '0' WHERE `id_user` = '$user_id'");
-    	
+
     exit;
 }
 
@@ -3703,20 +3703,20 @@ sub cli_user_disable () {
 	my $user_id = @ARGV[2];
 
 	my $user_disabled = get_user_disabled ($dbh, $user_id);
-	
+
 	exist_check($user_disabled,'user',$user_id);
 
 	if($user_disabled == 1) {
 		print_log "[INFO] The user '$user_id' is already disabled. Nothing to do.\n\n";
 		exit;
 	}
-	
+
 	print_log "[INFO] Disabling user '$user_id'\n\n";
 
 	$user_id = safe_input($user_id);
-	
+
     db_do ($dbh, "UPDATE tusuario SET `disabled` = '1' WHERE `id_user` = '$user_id'");
-    	
+
     exit;
 }
 
@@ -3729,19 +3729,19 @@ sub cli_stop_downtime () {
 
 	my $downtime_id = pandora_get_planned_downtime_id ($dbh, $downtime_name);
 	exist_check($downtime_id,'planned downtime',$downtime_id);
-	
+
 	my $current_time = time;
 	my $downtime_date_to = get_db_value ($dbh, 'SELECT date_to FROM tplanned_downtime WHERE id=?', $downtime_id);
-	
+
 	if($current_time >= $downtime_date_to) {
 		print_log "[INFO] Planned_downtime '$downtime_name' is already stopped\n\n";
 		exit;
 	}
 
 	print_log "[INFO] Stopping planned downtime '$downtime_name'\n\n";
-		
+
 	my $parameters->{'date_to'} = time;
-		
+
 	db_process_update($dbh, 'tplanned_downtime', $parameters, 'id', $downtime_id);
 }
 
@@ -3751,72 +3751,72 @@ sub cli_stop_downtime () {
 ###############################################################################
 sub cli_module_get_data () {
 	my ($agent_name, $module_name, $interval, $csv_separator) = @ARGV[2..5];
-	
+
 	$csv_separator = '|' unless defined($csv_separator);
-	
+
 	if ($interval <= 0) {
 		print_log "[ERROR] Interval must be a possitive value\n\n";
 		exit;
 	}
-	
-	
-	
+
+
+
 	my $agent_id = get_agent_id($dbh,$agent_name);
 	exist_check($agent_id, 'agent name', $agent_name);
-	
+
 	my $module_id = get_agent_module_id($dbh, $module_name, $agent_id);
 	exist_check($module_id, 'module name', $module_name);
-	
+
 	my $id_agent_module = get_agent_module_id ($dbh, $module_name, $agent_id);
-	
+
 	my $module_type_id = get_db_value($dbh,
 		"SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?;",
 		$id_agent_module);
-	
+
 	my $module_type = get_db_value($dbh,
 		"SELECT nombre FROM ttipo_modulo WHERE id_tipo = ?",
 		$module_type_id);
-	
+
 	my @data = NULL;
 	if ($module_type eq "log4x") {
-		@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
-			FROM tagente_datos_log4x 
-			WHERE id_agente_modulo = $id_agent_module 
-			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
+		@data = get_db_rows ($dbh, "SELECT utimestamp, datos
+			FROM tagente_datos_log4x
+			WHERE id_agente_modulo = $id_agent_module
+			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval)
 			ORDER BY utimestamp DESC");
 	}
 	elsif ($module_type =~ m/_string/) {
 		print("aaaa\n");
-		@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
-			FROM tagente_datos_string 
-			WHERE id_agente_modulo = $id_agent_module 
-			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
+		@data = get_db_rows ($dbh, "SELECT utimestamp, datos
+			FROM tagente_datos_string
+			WHERE id_agente_modulo = $id_agent_module
+			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval)
 			ORDER BY utimestamp DESC");
 	}
 	elsif ($module_type =~ m/_inc$/) {
-		@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
-			FROM tagente_datos_inc 
-			WHERE id_agente_modulo = $id_agent_module 
-			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
+		@data = get_db_rows ($dbh, "SELECT utimestamp, datos
+			FROM tagente_datos_inc
+			WHERE id_agente_modulo = $id_agent_module
+			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval)
 			ORDER BY utimestamp DESC");
 	}
 	else {
-		@data = get_db_rows ($dbh, "SELECT utimestamp, datos 
-			FROM tagente_datos 
-			WHERE id_agente_modulo = $id_agent_module 
-			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval) 
+		@data = get_db_rows ($dbh, "SELECT utimestamp, datos
+			FROM tagente_datos
+			WHERE id_agente_modulo = $id_agent_module
+			AND utimestamp > (UNIX_TIMESTAMP(NOW()) - $interval)
 			ORDER BY utimestamp DESC");
 	}
-	
-	
-	
+
+
+
 	foreach my $data_timestamp (@data) {
 		print $data_timestamp->{'utimestamp'};
 		print $csv_separator;
 		print $data_timestamp->{'datos'};
 		print "\n";
 	}
-	
+
 	exit;
 }
 
@@ -3826,7 +3826,7 @@ sub cli_module_get_data () {
 ##############################################################################
 sub cli_set_event_storm_protection () {
 	my $value = @ARGV[2];
-	
+
 	# Check for a valid value
 	if ($value != 0 && $value != 1) {
 		print_log "[ERROR] Invalid value: $value. Value must be either 0 or 1\n\n";
@@ -3843,9 +3843,9 @@ sub cli_set_event_storm_protection () {
 
 sub pandora_get_event_name($$) {
 	my ($dbh,$id_event) = @_;
-	
+
 	my $event_name = get_db_value($dbh, 'SELECT evento FROM tevento WHERE id_evento = ?',$id_event);
-	
+
 	return defined ($event_name) ? $event_name : -1;
 }
 
@@ -3854,7 +3854,7 @@ sub pandora_get_event_name($$) {
 ##########################################################################
 sub pandora_update_event_from_hash ($$$$) {
 	my ($parameters, $where_column, $where_value, $dbh) = @_;
-	
+
 	my $event_id = db_process_update($dbh, 'tevento', $parameters, $where_column, $where_value);
 	return $event_id;
 }
@@ -3877,9 +3877,9 @@ sub pandora_get_event_comment($$) {
 
 sub pandora_get_user_id($$) {
 	my ($dbh,$user_name) = @_;
-	
+
 	my $user_id = get_db_value($dbh, 'SELECT id_user FROM tusuario WHERE id_user = ? or fullname = ?',$user_name, $user_name);
-	
+
 	return defined ($user_id) ? $user_id : -1;
 }
 
@@ -3889,9 +3889,9 @@ sub pandora_get_user_id($$) {
 
 sub pandora_get_network_component_id($$) {
 	my ($dbh,$name) = @_;
-	
+
 	my $nc_id = get_db_value($dbh, 'SELECT id_nc FROM tnetwork_component WHERE name = ?',safe_input($name));
-	
+
 	return defined ($nc_id) ? $nc_id : -1;
 }
 
@@ -3906,7 +3906,7 @@ sub cli_create_special_day() {
 	non_exist_check($special_day_exists,'special day',$special_day);
 
 	my $group_id = 0;
-	
+
 	# If group name is not defined, we assign group All (0)
 	if(defined($group_name)) {
 		$group_id = get_group_id($dbh, decode('UTF-8', $group_name));
@@ -3928,9 +3928,9 @@ sub cli_create_special_day() {
 		help_screen ();
 		exit 1;
 	}
-	
+
 	my %parameters;
-	
+
 	$parameters{'date'} = $special_day;
 	$parameters{'same_day'} = $same_day;
 	$parameters{'description'} = decode('UTF-8', $description);
@@ -3946,10 +3946,10 @@ sub cli_create_special_day() {
 
 sub cli_update_special_day() {
 	my ($special_day,$field,$new_value) = @ARGV[2..4];
-	
+
 	my $special_day_id = pandora_get_special_day_id ($dbh, $special_day);
 	exist_check($special_day_id,'special day',$special_day);
-	
+
 	if($field eq 'date') {
 		if ($new_value !~ /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/) {
 			print_log "[ERROR] '$new_value' is invalid date format.\n\n";
@@ -3982,13 +3982,13 @@ sub cli_update_special_day() {
 		print_log "[ERROR] Field '$field' doesnt exist\n\n";
 		exit;
 	}
-		
+
 	print_log "[INFO] Updating field '$field' in special day '$special_day'\n\n";
-	
+
 	my $update;
-	
+
 	$update->{$field} = $new_value;
-	
+
 	pandora_update_special_day_from_hash ($update, 'id', $special_day_id, $dbh);
 }
 
@@ -3999,9 +3999,9 @@ sub cli_update_special_day() {
 
 sub cli_delete_special_day() {
 	my $special_day = @ARGV[2];
-	
+
 	print_log "[INFO] Deleting special day '$special_day' \n\n";
-	
+
 	my $result = pandora_delete_special_day($dbh,$special_day);
 	exist_check($result,'special day',$special_day);
 }
@@ -4017,7 +4017,7 @@ sub pandora_manage_main ($$$) {
 	my ($conf, $dbh, $history_dbh) = @_;
 
 	my @args = @ARGV;
- 	my $ltotal=$#args; 
+ 	my $ltotal=$#args;
 	my $ax;
 
  	# Has read setup file ok ?
@@ -4042,15 +4042,15 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--enable_alerts') {
 			param_check($ltotal, 0);
 	        cli_enable_alerts ($conf, $dbh);
-		} 
+		}
 		elsif ($param eq '--disable_eacl') {
 			param_check($ltotal, 0);
 	        	cli_disable_eacl ($conf, $dbh);
-		} 
+		}
 		elsif ($param eq '--enable_eacl') {
 			param_check($ltotal, 0);
             		cli_enable_eacl ($conf, $dbh);
-		} 
+		}
         elsif ($param eq '--disable_group') {
 			param_check($ltotal, 1);
 			cli_disable_group();
@@ -4130,7 +4130,7 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_event') {
 			param_check($ltotal, 14, 10);
 			cli_create_event();
-		}		
+		}
 		elsif ($param eq '--validate_event') {
 			param_check($ltotal, 7, 6);
 			cli_validate_event();
@@ -4296,7 +4296,7 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--set_event_storm_protection') {
 			param_check($ltotal, 1);
 			cli_set_event_storm_protection();
-		} 
+		}
 		elsif ($param eq '--create_custom_graph') {
 			param_check($ltotal, 11);
 			cli_create_custom_graph();
@@ -4382,13 +4382,13 @@ sub pandora_manage_main ($$$) {
 ##############################################################################
 
 sub cli_create_custom_graph() {
-	
+
 	my ($name,$description,$user,$idGroup,$width,$height,$events,$stacked,$period,$modules,$separator) = @ARGV[2..12];
-	
+
 	$separator = ($separator ne '') ? $separator : ';';
-	
+
 	my @module_array = split($separator, $modules);
-	
+
 	$description = ($description ne '') ? safe_input($description) : '';
 	$width = ($width ne '') ? $width : 550;
 	$height = ($height ne '') ? $height : 210;
@@ -4396,9 +4396,9 @@ sub cli_create_custom_graph() {
 	$events = ($events ne '') ? $events : 0;
 	$stacked = ($stacked ne '') ? $stacked : 0;
 	$idGroup = ($idGroup ne '') ? $idGroup : 0;
-	
+
 	my $id_graph = pandora_create_custom_graph($name,$description,$user,$idGroup,$width,$height,$events,$stacked,$period,$dbh);
-	
+
 	if ($id_graph != 0) { #~ insert source
 		if ($modules ne '') {
 			foreach my $module (@module_array) {
@@ -4413,11 +4413,11 @@ sub cli_create_custom_graph() {
 # Related option: --delete_custom_graph
 ##############################################################################
 sub cli_delete_custom_graph () {
-	
+
 	my ($id_graph) = @ARGV[2];
-	
+
 	my $result = pandora_delete_graph_source($id_graph, $dbh);
-	
+
 	pandora_delete_custom_graph($id_graph, $dbh);
 }
 
@@ -4426,34 +4426,34 @@ sub cli_delete_custom_graph () {
 # Related option: --edit_custom_graph
 ##############################################################################
 sub cli_edit_custom_graph() {
-	
+
 	my ($id_graph,$name,$description,$user,$idGroup,$width,$height,$events,$stacked,$period) = @ARGV[2..12];
 
 	pandora_edit_custom_graph($id_graph,$name,$description,$user,$idGroup,$width,$height,$events,$stacked,$period,$dbh);
-	
+
 }
 
 sub cli_add_modules_to_graph () {
-	
+
 	my ($id_graph,$modules,$separator) = @ARGV[2..4];
-	
+
 	$separator = ($separator ne '') ? $separator : ';';
-	
+
 	my @module_array = split($separator, $modules);
-	
+
 	foreach my $module (@module_array) {
 		pandora_insert_graph_source($id_graph,$module,1,$dbh);
 	}
 }
 
 sub cli_delete_modules_to_graph () {
-	
+
 	my ($id_graph,$modules,$separator) = @ARGV[2..4];
-	
+
 	$separator = ($separator ne '') ? $separator : ';';
-	
+
 	my @module_array = split($separator, $modules);
-	
+
 	foreach my $module (@module_array) {
 		pandora_delete_graph_source($id_graph, $dbh, $module);
 	}
@@ -4465,9 +4465,9 @@ sub cli_delete_modules_to_graph () {
 
 sub pandora_get_local_component_id($$) {
 	my ($dbh,$name) = @_;
-	
+
 	my $lc_id = get_db_value($dbh, 'SELECT id FROM tlocal_component WHERE name = ?',safe_input($name));
-	
+
 	return defined ($lc_id) ? $lc_id : -1;
 }
 
@@ -4478,19 +4478,19 @@ sub pandora_get_local_component_id($$) {
 
 sub cli_create_data_module_from_local_component() {
 	my ($agent_name, $component_name) = @ARGV[2..3];
-	
+
 	my $agent_id = get_agent_id($dbh,$agent_name);
 	exist_check($agent_id,'agent',$agent_name);
-		
+
 	my $lc_id = pandora_get_local_component_id($dbh, $component_name);
 	exist_check($lc_id,'local component',$component_name);
-	
+
 	my $module_exists = get_agent_module_id($dbh, $component_name, $agent_id);
 	non_exist_check($module_exists, 'module name', $component_name);
-	
+
 	# Get local component data
 	my $component = get_db_single_row ($dbh, 'SELECT * FROM tlocal_component WHERE id = ?', $lc_id);
-	
+
 	#~ pandora_create_module_from_local_component ($conf, $component, $agent_id, $dbh);
 	enterprise_hook('pandora_create_module_from_local_component',[$conf, $component, $agent_id, $dbh]);
 }
@@ -4508,9 +4508,9 @@ sub cli_create_local_component() {
 	    $critical_instructions, $warning_instructions, $unknown_instructions, $critical_inverse, $warning_inverse,
 	    $id_category, $tags, $disabled_types_event, $min_ff_event_normal, $min_ff_event_warning, $min_ff_event_critical,
 	    $each_ff, $ff_timeout) = @ARGV[2..37];
-	
+
 	my %parameters;
-	
+
 	$parameters{'name'} = safe_input($component_name);
 	my $data_aux = safe_input($data);
 	$data_aux =~ s/&#92;n/&#x0a;/g;
@@ -4555,13 +4555,13 @@ sub cli_create_local_component() {
 	}
 	my $disabled_types_event_json = encode_json($disabled_types_event_hash);
 	$parameters{'disabled_types_event'} = $disabled_types_event_json unless !defined ($disabled_types_event);
-	
+
 	$parameters{'min_ff_event_normal'} = $min_ff_event_normal unless !defined ($min_ff_event_normal);
 	$parameters{'min_ff_event_warning'} = $min_ff_event_warning unless !defined ($min_ff_event_warning);
 	$parameters{'min_ff_event_critical'} = $min_ff_event_critical unless !defined ($min_ff_event_critical);
 	$parameters{'each_ff'} = $each_ff unless !defined ($each_ff);
 	$parameters{'ff_timeout'} = $ff_timeout unless !defined ($ff_timeout);
-	
+
 	my $component_id = enterprise_hook('pandora_create_local_component_from_hash',[$conf, \%parameters, $dbh]);
 
 }

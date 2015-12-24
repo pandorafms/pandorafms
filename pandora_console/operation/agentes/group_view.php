@@ -77,10 +77,10 @@ $monitor_unknown = $all_data["_monitors_unknown_"];
 
 $total = $monitor_ok + $monitor_warning + $monitor_critical + $monitor_unknown;
 
-$total_ok = format_numeric (($monitor_ok*100)/$total,0);
-$total_warning = format_numeric (($monitor_warning*100)/$total,0);
-$total_critical = format_numeric (($monitor_critical*100)/$total,0);
-$total_unknown = format_numeric (($monitor_unknown*100)/$total,0);
+$total_ok = format_numeric (($monitor_ok*100)/$total,2);
+$total_warning = format_numeric (($monitor_warning*100)/$total,2);
+$total_critical = format_numeric (($monitor_critical*100)/$total,2);
+$total_unknown = format_numeric (($monitor_unknown*100)/$total,2);
 
 echo '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="databox">';
 	echo "<tr>";

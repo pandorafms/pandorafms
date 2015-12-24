@@ -167,7 +167,7 @@ function update_button_palette_callback() {
 			$("#background").css('height', values['height']);
 
 			//$("#background").css('background', 'url(images/console/background/' + values['background'] + ')');
-
+			var image = values['background'];
 			$("#background_img").attr('src', "images/spinner.gif");
 			set_image("background", null, image);
 
@@ -1201,7 +1201,7 @@ function set_image(type, idElement, image) {
 		img_src = "images/console/icons/" + image;
 	}
 	else if (type == "background") {
-		item = "background_img";
+		item = "#background_img";
 		img_src = "images/console/background/" + image;
 	}
 

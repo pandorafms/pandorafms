@@ -153,26 +153,27 @@ if (isset ($_GET["user_del"])) { //delete user
 			foreach ($servers as $server) {
 				
 				// Connect to the remote console
-				metaconsole_connect($server);
-				
-				// Delete the user
-				$result = delete_user ($id_user);
-				if ($result) {
-					db_pandora_audit("User management",
-					__("Deleted user %s from metaconsole", io_safe_input($id_user)));
+				if (metaconsole_connect($server) == NOERR ) {
+					// Delete the user
+					$result = delete_user ($id_user);
+					if ($result) {
+						db_pandora_audit("User management",
+						__("Deleted user %s from metaconsole", io_safe_input($id_user)));
+					}
+					// Restore the db connection
+					metaconsole_restore_db();
+					// Log to the metaconsole too
+					if ($result) {
+						db_pandora_audit("User management",
+							__("Deleted user %s from %s", io_safe_input($id_user), io_safe_input($server['server_name'])));
+					}
+					ui_print_result_message ($result,
+						__('Successfully deleted from %s', io_safe_input($server['server_name'])),
+						__('There was a problem deleting the user from %s', io_safe_input($server['server_name'])));
 				}
-				
-				// Restore the db connection
-				metaconsole_restore_db();
-				
-				// Log to the metaconsole too
-				if ($result) {
-					db_pandora_audit("User management",
-						__("Deleted user %s from %s", io_safe_input($id_user), io_safe_input($server['server_name'])));
+				else {
+					ui_print_error_message (__('There was a problem deleting the user from %s', io_safe_input($server['server_name'])));
 				}
-				ui_print_result_message ($result,
-					__('Successfully deleted from %s', io_safe_input($server['server_name'])),
-					__('There was a problem deleting the user from %s', io_safe_input($server['server_name'])));
 			}
 		}
 	}

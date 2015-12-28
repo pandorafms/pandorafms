@@ -1353,7 +1353,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$min_ff_event = $module->{'min_ff_event_warning'} if ($new_status == 2);
 	}
 	
-	if ($last_status == $new_status) {
+	if ($last_status == $new_status || $last_status == 3) {
 		
 		# Avoid overflows
 		$status_changes = $min_ff_event if ($status_changes > $min_ff_event);
@@ -1398,7 +1398,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$last_status = $new_status; # Set last_status before forcing the module's new status to its last known status.
 		$new_status = $last_known_status; # Set the module to its last known status.
 		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $last_known_status, $dbh);
-		$status = $new_status;
+		$status = $last_known_status;
 
 		# Update module status count.
 		$mark_for_update = 1;
@@ -1430,7 +1430,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 			id_agente = ?, current_interval = ?, running_by = ?,
 			last_execution_try = ?, last_try = ?, last_error = ?,
 			ff_start_utimestamp = ?
-		WHERE id_agente_modulo = ?', $processed_data, $status, $last_status, $last_status, $status_changes,
+		WHERE id_agente_modulo = ?', $processed_data, $status, $last_status, $status, $status_changes,
 		$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
 		$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp, $module->{'id_agente_modulo'});
 	

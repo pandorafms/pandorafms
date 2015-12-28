@@ -2955,6 +2955,14 @@ function reporting_monitor_report($report, $content) {
 	
 	$module = modules_get_agentmodule ($content['id_agent_module']);
 	
+	$module_name = io_safe_output(
+		modules_get_agentmodule_name($content['id_agent_module']));
+	$agent_name = io_safe_output(
+		modules_get_agentmodule_agent_name ($content['id_agent_module']));
+	
+	$return['agent_name'] = $agent_name;
+	$return['module_name'] = $module_name;
+	
 	$value = reporting_get_agentmodule_sla(
 		$content['id_agent_module'],
 		$content['period'],
@@ -3448,6 +3456,9 @@ function reporting_value($report, $content, $type) {
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	
+	$return['agent_name'] = $agent_name;
+	$return['module_name'] = $module_name;
+	
 	switch ($type) {
 		case 'max':
 			$value = reporting_get_agentmodule_data_max(
@@ -3617,6 +3628,7 @@ function reporting_sql($report, $content) {
 		$header = array();
 		if ($content['header_definition'] != '') {
 			$header = explode('|', $content['header_definition']);
+			$return['header'] = $header;
 		}
 		
 		$result = db_get_all_rows_sql($sql);

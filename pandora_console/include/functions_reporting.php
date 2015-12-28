@@ -112,6 +112,7 @@ function reporting_make_reporting_data($report = null, $id_report,
 		$contents = db_get_all_rows_field_filter ('treport_content',
 			'id_report', $id_report, db_escape_key_identifier('order'));
 	}
+	
 	$datetime = strtotime($date . ' ' . $time);
 	$report["datetime"] = $datetime;
 	$report["group"] = $report['id_group'];
@@ -4294,6 +4295,8 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 	
 	$return['title'] = $content['name'];
 	$return['subtitle'] = $agent_name . " - " . $module_name;
+	$return['agent_name'] = $agent_name;
+	$return['module_name'] = $module_name;
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text(
 		$report,
@@ -4383,6 +4386,15 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 			}
 			break;
 		case 'data':
+			$data = modules_get_agentmodule_data(
+				$content['id_agent_module'],
+				$content['period'],
+				$report["datetime"]);
+			
+			foreach ($data as $d) {
+				$return['chart'][$d['utimestamp']] = $d['data'];
+			}
+			
 			break;
 	}
 	

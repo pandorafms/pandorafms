@@ -3982,7 +3982,7 @@ function reporting_general($report, $content) {
 		
 		if (modules_is_disable_agent($row['id_agent_module']) ||
 			modules_is_not_init($row['id_agent_module'])) {
-
+			
 			if (is_metaconsole()) {
 				//Restore db connection
 				metaconsole_restore_db();
@@ -4180,7 +4180,8 @@ function reporting_general($report, $content) {
 						$data['value'] = $d;
 					}
 					else {
-						$data['value'] = format_for_graph($d, 2) . " " .
+						$data['value'] = $d;
+						$data['formated_value'] = format_for_graph($d, 2) . " " .
 							$units[$i];
 					}
 				}

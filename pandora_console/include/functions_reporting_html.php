@@ -1725,13 +1725,13 @@ function reporting_html_general(&$table, $item) {
 							$row['agent'],
 							$row['module'],
 							$row['operator'],
-							$row['value']);
+							$row['formated_value']);
 					}
 					else {
 						$table1->data[] = array(
 							$row['agent'],
 							$row['module'],
-							$row['value']);
+							$row['formated_value']);
 					}
 				}
 				break;

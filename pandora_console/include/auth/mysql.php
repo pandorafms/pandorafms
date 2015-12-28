@@ -493,6 +493,23 @@ function delete_user ($id_user) {
  * @return mixed False in case of error or invalid values passed. Affected rows otherwise
  */
 function update_user_password ($user, $password_new) {
+	global $config;
+	if (isset($config['auth']) && $config['auth'] == 'pandora') {
+		$sql = sprintf("UPDATE tusuario SET password = '" . md5($password_new) .
+		"', last_pass_change = '" . date("Y-m-d H:i:s", get_system_time()) .
+		"' WHERE id_user = '" . $user . "'");
+
+		$connection = mysql_connect_db($config['rpandora_server'],
+			$config['rpandora_dbname'], $config['rpandora_user'],
+			$config['rpandora_pass']);
+		$remote_pass_update = db_process_sql ($sql, 'affected_rows', $connection);
+		html_debug_print($remote_pass_update, true);
+		html_debug_print($sql, true);
+		if (!$remote_pass_update) {
+			$config["auth_error"] = __('Could not changes password on remote pandora');
+			return false;
+		}
+	}
 	return db_process_sql_update ('tusuario',
 		array ('password' => md5 ($password_new), 'last_pass_change' => date ("Y/m/d H:i:s", get_system_time())),
 		array ('id_user' => $user));

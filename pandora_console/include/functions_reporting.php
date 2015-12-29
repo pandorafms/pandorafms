@@ -3177,6 +3177,14 @@ function reporting_prediction_date($report, $content) {
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	
+	$module_name = io_safe_output(
+		modules_get_agentmodule_name($content['id_agent_module']));
+	$agent_name = io_safe_output(
+		modules_get_agentmodule_agent_name ($content['id_agent_module']));
+	
+	$return['agent_name'] = $agent_name;
+	$return['module_name'] = $module_name;
+	
 	set_time_limit(500);
 	
 	$intervals_text = $content['text'];

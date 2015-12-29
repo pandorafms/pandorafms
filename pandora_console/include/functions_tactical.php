@@ -217,14 +217,14 @@ function tactical_get_data ($id_user = false, $user_strict = false, $acltags, $r
 			$list['_total_agents_'] += isset($group_stat['agents_total']) ? $group_stat['agents_total'] : 0;
 		
 			// This fields are not in database
-			$list['_monitors_ok_'] = isset($group_stat['monitors_ok']) ? $group_stat['monitors_ok'] : 0;
+			$list['_monitors_ok_'] += isset($group_stat['monitors_ok']) ? $group_stat['monitors_ok'] : 0;
 			$list['_monitors_critical_'] += isset($group_stat['monitors_critical']) ? $group_stat['monitors_critical'] : 0;
 			$list['_monitors_warning_'] += isset($group_stat['monitors_warning']) ? $group_stat['monitors_warning'] : 0;
 			$list['_monitors_unknown_'] += isset($group_stat['monitors_unknown']) ? $group_stat['monitors_unknown'] : 0;
 			$list['_monitors_not_init_'] += isset($group_stat['monitors_not_init']) ? $group_stat['monitors_not_init'] : 0;
 			$list['_agents_not_init_'] += isset($group_stat['agents_not_init']) ? $group_stat['agents_not_init'] : 0;
 		
-			$list['_agents_ok_'] = isset($group_stat['agents_ok']) ? $group_stat['agents_ok'] : 0;
+			$list['_agents_ok_'] += isset($group_stat['agents_ok']) ? $group_stat['agents_ok'] : 0;
 			$list['_agents_warning_'] += isset($group_stat['agents_warning']) ? $group_stat['agents_warning'] : 0;
 			$list['_agents_critical_'] += isset($group_stat['agents_critical']) ? $group_stat['agents_critical'] : 0;
 			$list['_monitors_alerts_'] +=  isset($group_stat['alerts']) ? $group_stat['alerts'] : 0;;

@@ -391,12 +391,14 @@ function reporting_make_reporting_data($report = null, $id_report,
 			case 'inventory':
 				$report['contents'][] = reporting_inventory(
 					$report,
-					$content);
+					$content,
+					$type);
 				break;
 			case 'inventory_changes':
 				$report['contents'][] = reporting_inventory_changes(
 					$report,
-					$content);
+					$content,
+					$type);
 				break;
 			case 'event_report_module':
 				$report['contents'][] = reporting_event_report_module(
@@ -1361,7 +1363,7 @@ function reporting_event_report_module($report, $content) {
 	return reporting_check_structure_content($return);
 }
 
-function reporting_inventory_changes($report, $content) {
+function reporting_inventory_changes($report, $content, $type) {
 	global $config;
 	
 	$return['type'] = 'inventory_changes';
@@ -1389,11 +1391,22 @@ function reporting_inventory_changes($report, $content) {
 	$module_name = $es['inventory_modules'];
 	
 	
+	switch ($type) {
+		case 'data':
+			$inventory_changes = inventory_get_changes(
+				$id_agent, $module_name,
+				$report["datetime"] - $content['period'],
+				$report["datetime"], "csv");
+			break;
+		default:
+			$inventory_changes = inventory_get_changes(
+				$id_agent, $module_name,
+				$report["datetime"] - $content['period'],
+				$report["datetime"], "array");
+			break;
+	}
 	
-	$inventory_changes = inventory_get_changes(
-		$id_agent, $module_name,
-		$report["datetime"] - $content['period'],
-		$report["datetime"], "array");
+	
 	
 	$return['data'] = array();
 	
@@ -1411,7 +1424,7 @@ function reporting_inventory_changes($report, $content) {
 	return reporting_check_structure_content($return);
 }
 
-function reporting_inventory($report, $content) {
+function reporting_inventory($report, $content, $type) {
 	global $config;
 	
 	$es = json_decode($content['external_source'], true);
@@ -1444,9 +1457,20 @@ function reporting_inventory($report, $content) {
 	$date = $es['date'];
 	$description = $content['description'];
 	
-	$inventory_data = inventory_get_data(
-		(array)$id_agent, (array)$module_name, $date, '', false,
-		'hash');
+	switch ($type) {
+		case 'data':
+			$inventory_data = inventory_get_data(
+				(array)$id_agent, (array)$module_name, $date, '', false,
+				'csv');
+			break;
+		default:
+			$inventory_data = inventory_get_data(
+				(array)$id_agent, (array)$module_name, $date, '', false,
+				'hash');
+			break;
+	}
+	
+	
 	
 	if ($inventory_data == ERR_NODATA) {
 		$return['failed'] = __('No data found.');

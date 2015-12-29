@@ -834,7 +834,7 @@ function reporting_event_top_n($report, $content, $type = 'dinamic',
 	$top_n_value = $content['top_n_value'];
 	$show_graph = $content['show_graph'];
 	
-	
+	$return['top_n'] = $content['top_n_value'];
 	
 	if (empty($content['subitems'])) {
 		//Get all the related data
@@ -1590,44 +1590,53 @@ function reporting_exception($report, $content, $type = 'dinamic',
 	switch ($exception_condition) {
 		case REPORT_EXCEPTION_CONDITION_EVERYTHING:
 			$return['subtitle'] = __('Exception - Everything');
+			$return['subtype'] = __('Everything');
 			break;
 		case REPORT_EXCEPTION_CONDITION_GE:
 			$return['subtitle'] =
 				sprintf(__('Exception - Modules over or equal to %s'),
 				$formated_exception_value);
+			$return['subtype'] = __('Modules over or equal to %s');
 			break;
 		case REPORT_EXCEPTION_CONDITION_LE:
 			$return['subtitle'] =
 				sprintf(__('Exception - Modules under or equal to %s'),
 				$formated_exception_value);
+			$return['subtype'] = __('Modules under or equal to %s');
 			break;
 		case REPORT_EXCEPTION_CONDITION_L:
 			$return['subtitle'] =
 				sprintf(__('Exception - Modules under %s'),
 				$formated_exception_value);
+			$return['subtype'] = __('Modules under %s');
 			break;
 		case REPORT_EXCEPTION_CONDITION_G:
 			$return['subtitle'] =
 				sprintf(__('Exception - Modules over %s'),
 				$formated_exception_value);
+			$return['subtype'] = __('Modules over %s');
 			break;
 		case REPORT_EXCEPTION_CONDITION_E:
 			$return['subtitle'] =
 				sprintf(__('Exception - Equal to %s'),
 				$formated_exception_value);
+			$return['subtype'] = __('Equal to %s');
 			break;
 		case REPORT_EXCEPTION_CONDITION_NE:
 			$return['subtitle'] =
 				sprintf(__('Exception - Not equal to %s'),
 				$formated_exception_value);
+			$return['subtype'] = __('Not equal to %s');
 			break;
 		case REPORT_EXCEPTION_CONDITION_OK:
 			$return['subtitle'] =
 				__('Exception - Modules at normal status');
+			$return['subtype'] = __('Modules at normal status');
 			break;
 		case REPORT_EXCEPTION_CONDITION_NOT_OK:
 			$return['subtitle'] =
 				__('Exception - Modules at critical or warning status');
+			$return['subtype'] = __('Modules at critical or warning status');
 			break;
 	}
 	$return["description"] = $content["description"];
@@ -2216,6 +2225,16 @@ function reporting_database_serialized($report, $content) {
 	}
 	
 	$return['keys'] = $keys;
+	
+	
+	
+	$module_name = io_safe_output(
+		modules_get_agentmodule_name($content['id_agent_module']));
+	$agent_name = io_safe_output(
+		modules_get_agentmodule_agent_name ($content['id_agent_module']));
+	
+	$return['agent_name'] = $agent_name;
+	$return['module_name'] = $module_name;
 	
 	
 	$datelimit = $report["datetime"] - $content['period'];
@@ -3199,6 +3218,18 @@ function reporting_projection_graph($report, $content,
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	
+	
+	
+	$module_name = io_safe_output(
+		modules_get_agentmodule_name($content['id_agent_module']));
+	$agent_name = io_safe_output(
+		modules_get_agentmodule_agent_name ($content['id_agent_module']));
+	
+	$return['agent_name'] = $agent_name;
+	$return['module_name'] = $module_name;
+	
+	
+	
 	set_time_limit(500);
 	
 	$output_projection = forecast_projection_graph(
@@ -3246,6 +3277,11 @@ function reporting_projection_graph($report, $content,
 				);
 			break;
 		case 'data':
+			$return['data'] = forecast_projection_graph(
+				$content['id_agent_module'],
+				$content['period'],
+				$content['top_n_value'],
+				false, false, true);
 			break;
 	}
 	

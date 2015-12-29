@@ -114,6 +114,7 @@ sub help_screen{
 	help_screen_line('--get_planned_downtimes_items', '<name> [<id_group> <type_downtime> <type_execution> <type_periodicity>]', 'Get all items of planned downtimes');
 	help_screen_line('--set_planned_downtimes_deleted', '<name> ', 'Deleted a planned downtime');
 	help_screen_line('--get_agent_group', '<agent_name>', 'Get the group name of an agent');
+	help_screen_line('--get_agent_group_id', '<agent_name>', 'Get the group ID of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name>', 'Get the modules of an agent');
 	help_screen_line('--get_agents', '[<group_name> <os_name> <status> <max_modules> <filter_substring> <policy_name>]', "Get \n\t  list of agents with optative filter parameters");
 	help_screen_line('--delete_conf_file', '<agent_name>', 'Delete a local conf of a given agent');
@@ -193,6 +194,41 @@ sub help_screen{
 
     print "\n";
 	exit;
+}
+
+###############################################################################
+# 
+###############################################################################
+sub api_call($$$;$$$) {
+	my ($pa_config, $op, $op2, $id, $id2, $other) = @_;
+	my $content = undef;
+
+	eval {
+		# Set the parameters for the POST request.
+		my $params = {};
+		$params->{"apipass"} = $pa_config->{"console_api_pass"};
+		$params->{"user"} = $pa_config->{"console_user"};
+		$params->{"pass"} = $pa_config->{"console_pass"};
+		$params->{"op"} = $op;
+		$params->{"op2"} = $op2;
+		$params->{"id"} = $id;
+		$params->{"id2"} = $id2;
+		$params->{"other"} = $other;
+		$params->{"other_mode"} = "url_encode_separator_|";
+		
+		# Call the API.
+		my $ua = new LWP::UserAgent;
+		my $url = $pa_config->{"console_api_url"};
+		my $response = $ua->post($url, $params);
+				
+		if ($response->is_success) {
+			$content = $response->decoded_content();
+		} else {
+			$content = $response->decoded_content();
+		}
+	};
+
+	return $content;
 }
 
 ###############################################################################
@@ -925,14 +961,35 @@ sub cli_create_agent() {
 
 sub cli_delete_agent() {
 	my $agent_name = @ARGV[2];
-
+	
 	$agent_name = decode_entities($agent_name);
 	print_log "[INFO] Deleting agent '$agent_name'\n\n";
-
-	my $id_agent = get_agent_id($dbh,$agent_name);
-	exist_check($id_agent,'agent',$agent_name);
-
-	pandora_delete_agent($dbh,$id_agent,$conf);
+	
+	if (is_metaconsole($conf) == 1) {
+		my $servers = enterprise_hook('get_metaconsole_setup_servers',[$dbh]);
+		my @servers_id = split(',',$servers);
+		my @list_servers;
+		my $list_names_servers;
+		foreach my $server (@servers_id) {
+			my $dbh_metaconsole = enterprise_hook('get_node_dbh',[$conf, $server, $dbh]);
+			
+			my $id_agent = get_agent_id($dbh_metaconsole,$agent_name);
+			
+			if ($id_agent == -1) {
+				next;
+			}
+			else {
+				pandora_delete_agent($dbh_metaconsole,$id_agent,$conf);
+			}
+		}
+	}
+	else {
+	
+		my $id_agent = get_agent_id($dbh,$agent_name);
+		exist_check($id_agent,'agent',$agent_name);
+		
+		pandora_delete_agent($dbh,$id_agent,$conf);
+	}
 }
 
 
@@ -3096,16 +3153,77 @@ sub cli_validate_policy_alerts() {
 
 sub cli_get_agent_group() {
 	my $agent_name = @ARGV[2];
-
-	my $id_agent = get_agent_id($dbh,$agent_name);
-	exist_check($id_agent,'agent',$agent_name);
-
-	my $id_group = get_agent_group ($dbh, $id_agent);
-
-	my $group_name = get_group_name ($dbh, $id_group);
-
-	print $group_name;
+	
+	if (is_metaconsole($conf) == 1) {
+		my $servers = enterprise_hook('get_metaconsole_setup_servers',[$dbh]);
+		my @servers_id = split(',',$servers);
+		my @list_servers;
+		my $list_names_servers;
+		foreach my $server (@servers_id) {
+			my $dbh_metaconsole = enterprise_hook('get_node_dbh',[$conf, $server, $dbh]);
+			
+			my $id_agent = get_agent_id($dbh_metaconsole,$agent_name);
+			
+			if ($id_agent == -1) {
+				next;
+			}
+			else {
+				my $id_group = get_agent_group ($dbh_metaconsole, $id_agent);
+				my $group_name = get_group_name ($dbh_metaconsole, $id_group);
+				my $metaconsole_name = enterprise_hook('get_metaconsole_setup_server_name',[$dbh, $server]);
+				print "[INFO] Server: $metaconsole_name Agent: $agent_name Name Group: $group_name\n\n";
+			}
+		}
+	}
+	else {
+		my $id_agent = get_agent_id($dbh,$agent_name);
+		exist_check($id_agent,'agent',$agent_name);
+		
+		my $id_group = get_agent_group ($dbh, $id_agent);
+		
+		my $group_name = get_group_name ($dbh, $id_group);
+		print $group_name;
+	}
 }
+
+##############################################################################
+# Show the group id where is a given agent
+# Related option: --get_agent_group_id
+##############################################################################
+sub cli_get_agent_group_id() {
+	my $agent_name = @ARGV[2];
+	
+	if (is_metaconsole($conf) == 1) {
+		my $servers = enterprise_hook('get_metaconsole_setup_servers',[$dbh]);
+		my @servers_id = split(',',$servers);
+		my @list_servers;
+		my $list_names_servers;
+		foreach my $server (@servers_id) {
+			my $dbh_metaconsole = enterprise_hook('get_node_dbh',[$conf, $server, $dbh]);
+			
+			my $metaconsole_name = enterprise_hook('get_metaconsole_setup_server_name',[$dbh, $server]);
+			my $id_agent = get_agent_id($dbh_metaconsole,$agent_name);
+			
+			if ($id_agent == -1) {
+				next;
+			}
+			else {
+				my $id_group = get_agent_group ($dbh_metaconsole, $id_agent);
+				print "Server: $metaconsole_name Agent: $agent_name ID Group: $id_group\n\n";
+			}
+		}
+	}
+	else {
+		my $id_agent = get_agent_id($dbh,$agent_name);
+		exist_check($id_agent,'agent',$agent_name);
+		
+		my $id_group = get_agent_group ($dbh, $id_agent);
+
+		print $id_group;
+	}
+}
+
+
 
 ##############################################################################
 # Show the agent and current data of all the modules with the same name
@@ -3589,9 +3707,9 @@ sub cli_create_group() {
 
 	my $group_id = get_group_id($dbh,$group_name);
 	non_exist_check($group_id, 'group name', $group_name);
-
+	
 	my $parent_group_id = 0;
-
+	
 	if(defined($parent_group_name) && $parent_group_name ne 'All') {
 		$parent_group_id = get_group_id($dbh,$parent_group_name);
 		exist_check($parent_group_id, 'group name', $parent_group_name);
@@ -3601,12 +3719,89 @@ sub cli_create_group() {
 	$description = '' unless defined($description);
 
 	$group_id = pandora_create_group ($group_name, $icon, $parent_group_id, 0, 0, '', 0, $description, $dbh);
-
+	
 	if($group_id == -1) {
 		print_log "[ERROR] A problem has been ocurred creating group '$group_name'\n\n";
 	}
+	else {		
+		if (is_metaconsole($conf) == 1) {
+			my $servers = enterprise_hook('get_metaconsole_setup_servers',[$dbh]);
+			my @servers_id = split(',',$servers);
+			my $count_error = 0;
+			my $count_success = 0;
+			foreach my $server (@servers_id) {
+				my $dbh_metaconsole = enterprise_hook('get_node_dbh',[$conf, $server, $dbh]);
+				my $group_id_nodo;
+				
+				my $group_id = get_group_id($dbh_metaconsole,$group_name);
+				
+				if ($group_id != -1) {
+					$count_error++;
+					next;
+				}
+				
+				eval {
+					$group_id_nodo = db_insert ($dbh_metaconsole, 'id_grupo', 'INSERT INTO tgrupo (id_grupo, nombre, icon, parent, propagate, disabled,
+							custom_id, id_skin, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', $group_name, safe_input($group_name), $icon, 
+							$parent_group_id, 0, 0, '', 0, $description);
+				};
+				if ($@) {
+					print_log "[ERROR] Problems with IDS and doesnt created group\n\n";
+					$count_error++;
+					next;
+				}
+				
+				if ($group_id_nodo == -1) {
+					$count_error++;
+				}
+				else {
+					$count_success++;
+				}
+			}
+			
+			print_log "[INFO] Created group success: $count_success error: $count_error\n\n";
+		}
+		else {
+			print_log "[INFO] Created group '$group_name'\n\n";
+		}
+	}
+}
+
+###############################################################################
+# Locate agent in any Nodes of metaconsole
+# Related option: --locate_agent
+###############################################################################
+sub cli_locate_agent () {
+	my ($agent_name) = @ARGV[2];
+	
+	if (is_metaconsole($conf) == 1) {
+		my $servers = enterprise_hook('get_metaconsole_setup_servers',[$dbh]);
+		my @servers_id = split(',',$servers);
+		my @list_servers;
+		my $list_names_servers;
+		foreach my $server (@servers_id) {
+			my $dbh_metaconsole = enterprise_hook('get_node_dbh',[$conf, $server, $dbh]);
+			
+			my $agent_id = get_agent_id($dbh_metaconsole,$agent_name);
+			
+			if ($agent_id == -1) {
+				next;
+			}
+			else {
+				push @list_servers,$server;
+			}
+		}
+		
+		if (defined(@list_servers)) {
+			$list_names_servers = join(',',@list_servers);
+			print_log "[INFO] The agent: $agent_name find in server with IDS: $list_names_servers\n\n";
+		}
+		else {
+			print_log "[ERROR] This agent: $agent_name not  find in any node\n\n";
+		}
+	}
 	else {
-		print_log "[INFO] Created group '$group_name'\n\n";
+		print_log "[ERROR] This functions only working in metaconsole system\n\n";
 	}
 }
 
@@ -4245,6 +4440,10 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 1);
 			cli_get_agent_group();
 		}
+		elsif ($param eq '--get_agent_group_id') {
+			param_check($ltotal, 1);
+			cli_get_agent_group_id();
+		}
 		elsif ($param eq '--get_agents_module_current_data') {
 			param_check($ltotal, 1);
 			cli_get_agents_module_current_data();
@@ -4365,6 +4564,10 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 1);
 			cli_set_delete_planned_downtime();
 		}
+		elsif ($param eq '--locate_agent') {
+			param_check($ltotal, 1);
+			cli_locate_agent();
+		} 
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";
 			$param = '';

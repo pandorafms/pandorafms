@@ -490,6 +490,7 @@ switch ($action) {
 			$table->size[4] = '2%';
 			$table->size[5] = '2%';
 			$table->size[6] = '2%';
+			$table->size['csv'] = '5%';
 			
 			$next = 4;
 			//Calculate dinamically the number of the column

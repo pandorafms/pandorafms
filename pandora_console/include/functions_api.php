@@ -1550,6 +1550,53 @@ function api_get_group_agent_by_name($thrash1, $thrash2, $other, $thrash3) {
 }
 
 /**
+ * Get id server whare agent is located, and print all the result like a csv.
+ * 
+ * @param $id name of agent.
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ *  example:
+ *  
+ *  api.php?op=get&op2=locate_agent&return_type=csv&id=Pepito&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use.
+ */
+
+function api_get_locate_agent($id, $thrash1, $thrash2, $thrash3) {
+	if (!is_metaconsole()) 
+		return;
+	
+	$servers = db_get_all_rows_sql ("SELECT *
+		FROM tmetaconsole_setup
+			WHERE disabled = 0");
+		
+	if ($servers === false)
+		$servers = array();
+	
+	foreach($servers as $server) {
+		$id_server = $server['id'];
+		if (metaconsole_connect($server) == NOERR) {
+			$agent_id = agents_get_agent_id($id,true);
+			
+			if ($agent_id) {
+				$group_servers[]['server'] = $id_server;
+			}
+		}
+		metaconsole_restore_db();
+	}
+	
+	if (count($group_servers) > 0 and $group_servers !== false) {
+		$data = array('type' => 'array', 'data' => $group_servers);
+		
+		returnData('csv', $data, ';');
+	}
+	else {
+		returnError('error_locate_agents', 'No agents located.');
+	}
+}
+
+
+/**
  * Get id group for an agent, and print all the result like a csv.
  * 
  * @param $thrash1 Don't use.

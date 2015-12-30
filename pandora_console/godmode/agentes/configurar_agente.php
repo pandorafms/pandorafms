@@ -190,12 +190,16 @@ if ($create_agent) {
 		$id_agente = db_process_sql_insert ('tagente', 
 			array ('nombre' => $nombre_agente,
 				'direccion' => $direccion_agente,
-				'id_grupo' => $grupo, 'intervalo' => $intervalo,
-				'comentarios' => $comentarios, 'modo' => $modo,
-				'id_os' => $id_os, 'disabled' => $disabled,
+				'id_grupo' => $grupo,
+				'intervalo' => $intervalo,
+				'comentarios' => $comentarios,
+				'modo' => $modo,
+				'id_os' => $id_os,
+				'disabled' => $disabled,
 				'cascade_protection' => $cascade_protection,
 				'server_name' => $server_name,
-				'id_parent' => $id_parent, 'custom_id' => $custom_id,
+				'id_parent' => $id_parent,
+				'custom_id' => $custom_id,
 				'icon_path' => $icon_path,
 				'update_gis_data' => $update_gis_data,
 				'url_address' => $url_description,
@@ -736,11 +740,11 @@ if ($update_agent) { // if modified some agent paramenter
 				'url_address' => $url_description,
 				'url_address' => $url_description,
 				'quiet' => $quiet);
-
+		
 		if ($config['metaconsole_agent_cache'] == 1) {
 			$values['update_module_count'] = 1; // Force an update of the agent cache.
 		}
-
+		
 		$result = db_process_sql_update ('tagente', $values, array ('id_agente' => $id_agente));
 		if ($result === false) {
 			ui_print_error_message(
@@ -838,7 +842,7 @@ if ($update_module || $create_module) {
 	// Don't read as (float) because it lost it's decimals when put into MySQL
 	// where are very big and PHP uses scientific notation, p.e:
 	// 1.23E-10 is 0.000000000123
-
+	
 	$post_process = (string) get_parameter ('post_process', 0.0);
 	//$prediction_module = 0;
 	
@@ -1594,7 +1598,7 @@ switch ($tab) {
 		// Control the tab and subtab hover. When mouse leave one, 
 		// check if is hover the other before hide the subtab
 		$('.agent_wizard_tab').hover(agent_wizard_tab_show, agent_wizard_tab_hide);
-
+	
 	});
 	
 	// Set the position and width of the subtab

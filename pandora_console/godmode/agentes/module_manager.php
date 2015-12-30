@@ -99,6 +99,8 @@ if (!isset($policy_page))
 
 $show_creation = false;
 
+echo "</form>";
+
 if (($policy_page) || (isset($agent))) {
 	if ($policy_page) {
 		$show_creation = true;
@@ -110,7 +112,7 @@ if (($policy_page) || (isset($agent))) {
 	
 	if ($show_creation) {
 		// Create module/type combo
-		//echo '<form id="create_module_type" method="post" action="'.$url.'">';
+		echo '<form id="create_module_type" method="post" action="'.$url.'">';
 		echo '<td class="datos" style="font-weight: bold;">';
 		echo __("Type");
 		html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false, '', false, 'max-width:300px;' );
@@ -120,12 +122,12 @@ if (($policy_page) || (isset($agent))) {
 		echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Create').'">';
 		echo '</td>';
 		echo '</tr>';
-		//echo "</form>";
+		echo "</form>";
 	}
 }
 
 echo "</table>";
-echo "</form>";
+
 
 echo '<div style="text-align: right; width: 100%;padding-top:10px;padding-bottom:10px">';
 echo "<strong>";

@@ -973,6 +973,13 @@ sub cli_delete_agent() {
 	print_log "[INFO] Deleting agent '$agent_name'\n\n";
 	
 	if (is_metaconsole($conf) == 1) {
+		my $agents_groups = enterprise_hook('get_metaconsole_agent',[$dbh, $agent_name]);
+		
+		if (scalar(@{$agents_groups}) != 0) {
+			foreach my $agent (@{$agents_groups}) {
+				my $return = enterprise_hook('delete_metaconsole_agent',[$dbh,$agent->{'id_agente'}]);
+			}
+		}
 		my $servers = enterprise_hook('get_metaconsole_setup_servers',[$dbh]);
 		my @servers_id = split(',',$servers);
 		my @list_servers;

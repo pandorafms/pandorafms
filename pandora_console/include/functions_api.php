@@ -1186,10 +1186,34 @@ function api_get_custom_field_id($t1, $t2, $other, $returnType) {
  * @param $thrash3 Don't use.
  */
 function api_set_delete_agent($id, $thrash1, $thrast2, $thrash3) {
-	$agentName = $id;
-	$idAgent[0] = agents_get_agent_id($agentName);
 	
-	if (($idAgent[0] === 0) || (!agents_delete_agent ($idAgent, true)))
+	if (is_metaconsole()) {
+		$servers = db_get_all_rows_sql ("SELECT *
+			FROM tmetaconsole_setup
+				WHERE disabled = 0");
+		
+		if ($servers === false)
+			$servers = array();
+		
+		
+		foreach($servers as $server) {
+			if (metaconsole_connect($server) == NOERR) {
+				$idAgent[0] = agents_get_agent_id($id,true);
+				if ($idAgent[0]) {
+					$result = agents_delete_agent ($idAgent, true);
+				}
+			}
+		}
+	}
+	else {
+		$agentName = $id;
+		$idAgent[0] = agents_get_agent_id($agentName);
+		if ($idAgent[0])
+			$result = agents_delete_agent ($idAgent, true);
+		else
+			$result = false;
+	}
+	if (!$result)
 		returnError('error_delete', 'Error in delete operation.');
 	else
 		returnData('string', array('type' => 'string', 'data' => __('Correct Delete')));
@@ -1394,6 +1418,140 @@ function api_get_group_agent($thrash1, $thrash2, $other, $thrash3) {
 		$data = array('type' => 'array', 'data' => $group_names);
 		
 		returnData('csv', $data, ';');
+	}
+	else {
+		returnError('error_group_agent', 'No groups retrieved.');
+	}
+}
+
+/**
+ * Get name group for an agent, and print all the result like a csv.
+ * 
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param are the filters available <name_agent> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=get&op2=group_agent&return_type=csv&other=Pepito&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use.
+ */
+function api_get_group_agent_by_name($thrash1, $thrash2, $other, $thrash3) {
+	
+	$group_names =array();
+	
+	if (is_metaconsole()) {
+		$servers = db_get_all_rows_sql ("SELECT *
+			FROM tmetaconsole_setup
+				WHERE disabled = 0");
+			
+		if ($servers === false)
+			$servers = array();
+		
+		
+		foreach($servers as $server) {
+			if (metaconsole_connect($server) == NOERR) {
+				$agent_id = agents_get_agent_id($other['data'][0],true);
+				
+				if ($agent_id) {
+					$sql = sprintf("SELECT groups.nombre nombre 
+						FROM tagente agents, tgrupo groups
+						WHERE id_agente = %d 
+							AND agents.id_grupo = groups.id_grupo",$agent_id);
+					$group_server_names = db_get_all_rows_sql($sql);
+					
+					if ($group_server_names) {
+						foreach($group_server_names as $group_server_name) {
+							$group_names[] = $group_server_name;
+						}
+					}
+				}
+			}
+			metaconsole_restore_db();
+		}
+	}
+	else {
+		$agent_id = agents_get_agent_id($other['data'][0],true);
+	
+		$sql = sprintf("SELECT groups.nombre nombre 
+			FROM tagente agents, tgrupo groups
+			WHERE id_agente = %d 
+				AND agents.id_grupo = groups.id_grupo",$agent_id);
+		$group_names = db_get_all_rows_sql($sql);
+	}
+	
+	if (count($group_names) > 0 and $group_names !== false) {
+		$data = array('type' => 'array', 'data' => $group_names);
+		
+		returnData('csv', $data, ';');
+	}
+	else {
+		returnError('error_group_agent', 'No groups retrieved.');
+	}
+}
+
+/**
+ * Get id group for an agent, and print all the result like a csv.
+ * 
+ * @param $thrash1 Don't use.
+ * @param $thrash2 Don't use.
+ * @param array $other it's array, $other as param are the filters available <name_agent> in this order
+ *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
+ *  example:
+ *  
+ *  api.php?op=get&op2=group_agent&return_type=csv&other=Pepito&other_mode=url_encode_separator_|
+ * 
+ * @param $thrash3 Don't use.
+ */
+function api_get_id_group_agent_by_name($thrash1, $thrash2, $other, $thrash3) {
+	
+	$group_names =array();
+	
+	if (is_metaconsole()) {
+		$servers = db_get_all_rows_sql ("SELECT *
+			FROM tmetaconsole_setup
+				WHERE disabled = 0");
+			
+		if ($servers === false)
+			$servers = array();
+		
+		
+		foreach($servers as $server) {
+			if (metaconsole_connect($server) == NOERR) {
+				$agent_id = agents_get_agent_id($other['data'][0],true);
+				
+				if ($agent_id) {
+					$sql = sprintf("SELECT groups.id_grupo id_group 
+						FROM tagente agents, tgrupo groups
+						WHERE id_agente = %d 
+							AND agents.id_grupo = groups.id_grupo",$agent_id);
+					$group_server_names = db_get_all_rows_sql($sql);
+					
+					if ($group_server_names) {
+						foreach($group_server_names as $group_server_name) {
+							$group_names[] = $group_server_name;
+						}
+					}
+				}
+			}
+			metaconsole_restore_db();
+		}
+	}
+	else {
+		$agent_id = agents_get_agent_id($other['data'][0],true);
+	
+		$sql = sprintf("SELECT groups.nombre nombre 
+			FROM tagente agents, tgrupo groups
+			WHERE id_agente = %d 
+				AND agents.id_grupo = groups.id_grupo",$agent_id);
+		$group_names = db_get_all_rows_sql($sql);
+	}
+	
+	if (count($group_names) > 0 and $group_names !== false) {
+		$data = array('type' => 'array', 'data' => $group_names);
+		
+		returnData('csv', $data);
 	}
 	else {
 		returnError('error_group_agent', 'No groups retrieved.');
@@ -4985,6 +5143,26 @@ function api_set_create_group($id, $thrash1, $other, $thrash3) {
 		returnError('error_create_group', __('Error in group creation.'));
 	}
 	else {
+		
+		if (defined("METACONSOLE")) {
+			$servers = db_get_all_rows_sql ("SELECT *
+				FROM tmetaconsole_setup
+				WHERE disabled = 0");
+			
+			if ($servers === false)
+				$servers = array();
+			
+			$result = array();
+			foreach($servers as $server) {
+				// If connection was good then retrieve all data server
+				if (metaconsole_connect($server) == NOERR) {
+					$values['id_grupo'] = $id_group;
+					$id_group_node = groups_create_group($group_name, $values);
+				}
+				metaconsole_restore_db();
+			}
+		}
+		
 		returnData('string', array('type' => 'string', 'data' => $id_group));
 	}
 }

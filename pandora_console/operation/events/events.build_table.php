@@ -535,6 +535,17 @@ foreach ($result as $event) {
 					$data[$i] = html_print_image('images/page_white_text.png', true, array('title' => str_replace("\n","<br>", io_safe_output($event["warning_instructions"]))));
 				}
 				break;
+			case 'system':
+				if(!empty($event["critical_instructions"])) {
+					$data[$i] = html_print_image('images/page_white_text.png', true, array('title' => str_replace("\n","<br>", io_safe_output($event["critical_instructions"]))));
+				}
+				elseif(!empty($event["warning_instructions"])) {
+					$data[$i] = html_print_image('images/page_white_text.png', true, array('title' => str_replace("\n","<br>", io_safe_output($event["warning_instructions"]))));
+				}
+				elseif(!empty($event["unknown_instructions"])) {
+					$data[$i] = html_print_image('images/page_white_text.png', true, array('title' => str_replace("\n","<br>", io_safe_output($event["unknown_instructions"]))));
+				}
+				break;
 		}
 		
 		if (!isset($data[$i])) {

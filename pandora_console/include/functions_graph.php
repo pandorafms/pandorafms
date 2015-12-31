@@ -4191,7 +4191,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
  * @param string adaptation width and margin left key (could be adapter_[something] or adapted_[something])
  * @param int date limit of the period
  */
-function graphic_module_events ($id_module, $width, $height, $period = 0, $homeurl = '', $zoom = 0, $adapt_key = '', $date = false) {
+function graphic_module_events ($id_module, $width, $height, $period = 0, $homeurl = '', $zoom = 0, $adapt_key = '', $date = false, $stat_win = false) {
 	global $config;
 	global $graphic_type;
 	
@@ -4319,7 +4319,7 @@ function graphic_module_events ($id_module, $width, $height, $period = 0, $homeu
 	
 	// Draw slicebar graph
 	if ($config['flash_charts']) {
-		echo flot_slicesbar_graph($data, $period, $width, 15, $legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', $adapt_key);
+		echo flot_slicesbar_graph($data, $period, $width, 15, $legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', $adapt_key, $stat_win);
 	}
 	else {
 		echo slicesbar_graph($data, $period, $width, 15, $colors, $config['fontpath'], $config['round_corner'], $homeurl);

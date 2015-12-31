@@ -201,7 +201,7 @@ $id = get_parameter('id');
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height,
 						$period, $config['homeurl'], $zoom,
-						'adapted_' . $graph_type, $date);
+						'adapted_' . $graph_type, $date, true);
 				break;
 			case 'sparse':
 				echo grafico_modulo_sparse ($id, $period, $draw_events,
@@ -215,7 +215,7 @@ $id = get_parameter('id');
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height,
 						$period, $config['homeurl'], $zoom,
-						'adapted_' . $graph_type, $date);
+						'adapted_' . $graph_type, $date, true);
 				break;
 			case 'string':
 				echo grafico_modulo_string ($id, $period, $draw_events,
@@ -226,7 +226,7 @@ $id = get_parameter('id');
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height,
 						$period, $config['homeurl'], $zoom,
-						'adapted_' . $graph_type, $date);
+						'adapted_' . $graph_type, $date, true);
 				break;
 			case 'log4x':
 				echo grafico_modulo_log4x ($id, $period, $draw_events,
@@ -235,7 +235,7 @@ $id = get_parameter('id');
 				echo '<br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height,
-						$period, $config['homeurl'], $zoom, '', $date);
+						$period, $config['homeurl'], $zoom, '', $date, true);
 				break;
 			default:
 				echo fs_error_image ('../images');

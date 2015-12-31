@@ -823,13 +823,18 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 	if ($childGroups) {
 		if (is_array($id_group)) {
 			foreach ($id_group as $parent) {
-				$id_group = array_merge($id_group, groups_get_id_recursive($parent, true));
+				$id_group = array_merge($id_group,
+					groups_get_id_recursive($parent, true));
 			}
 		}
 		else {
 			$id_group = groups_get_id_recursive($id_group, true);
 		}
-		$id_group = array_keys(users_get_groups(false, "AR", true, false, (array)$id_group));
+		
+		if (!$noACL) {
+			$id_group = array_keys(
+				users_get_groups(false, "AR", true, false, (array)$id_group));
+		}
 	}
 	
 	if (!empty($id_group)) {

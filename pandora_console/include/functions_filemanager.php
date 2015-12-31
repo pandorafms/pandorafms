@@ -158,6 +158,7 @@ if ($upload_file) {
 	if (isset ($_FILES['file']) && $_FILES['file']['name'] != "") {
 		$filename = $_FILES['file']['name'];
 		$filesize = $_FILES['file']['size'];
+		$filename = str_replace(' ', '_', $filename);
 		$real_directory = io_safe_output((string) get_parameter('real_directory'));
 		$directory = io_safe_output((string) get_parameter ('directory'));
 		$umask = io_safe_output((string) get_parameter('umask', ''));

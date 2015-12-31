@@ -2860,7 +2860,12 @@ function reporting_get_event_histogram ($events, $text_header_event = false) {
 		$table->width = '100%';
 	}
 	else {
-		$table->width = '70%';
+		if (defined("METACONSOLE")) {
+			$table->width = '100%';
+		}
+		else {
+			$table->width = '70%';
+		}
 	}
 	$table->data = array ();
 	$table->size = array ();

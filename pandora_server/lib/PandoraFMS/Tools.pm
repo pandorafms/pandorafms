@@ -70,6 +70,7 @@ our @EXPORT = qw(
 	float_equal
 	sqlWrap
 	is_numeric
+	is_metaconsole
 	clean_blank
 	pandora_sendmail
 	pandora_trash_ascii
@@ -1356,6 +1357,19 @@ sub valid_regex ($) {
 	
 	# Valid regex
 	return 1;
+}
+
+###############################################################################
+# Returns 1 if a valid metaconsole license is configured, 0 otherwise.
+###############################################################################
+sub is_metaconsole ($) {
+	my ($pa_config) = @_;
+
+	if (defined($pa_config->{"license_type"}) && $pa_config->{"license_type"} == METACONSOLE_LICENSE) {
+		return 1;
+	}
+
+	return 0;
 }
 
 # End of function declaration

@@ -354,6 +354,10 @@ div#foot {
 	height: 30px;
 	clear: both;
 	width: auto;
+	
+	bottom: 0;
+	position: fixed;
+	width: 100%;
 }
 #ver {
 	margin-bottom: 25px;

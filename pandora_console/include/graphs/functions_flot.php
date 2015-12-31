@@ -742,7 +742,7 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	return $return;
 }
 
-function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $colors, $fontpath, $round_corner, $homeurl, $watermark = '', $adapt_key = '') {
+function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $colors, $fontpath, $round_corner, $homeurl, $watermark = '', $adapt_key = '', $stat_win = false) {
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
@@ -755,7 +755,12 @@ function flot_slicesbar_graph ($graph_data, $period, $width, $height, $legend, $
 	$graph_id = uniqid('graph_');
 	
 	// Set some containers to legend, graph, timestamp tooltip, etc.
-	$return = "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
+	if ($stat_win) {
+		$return = "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px; display: inline-block;'></div>";
+	}
+	else {
+		$return = "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
+	}
 	$return .= "<div id='value_$graph_id' style='display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px'></div>";
 	
 	// Set a weird separator to serialize and unserialize passing data from php to javascript

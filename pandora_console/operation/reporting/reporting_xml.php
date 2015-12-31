@@ -517,7 +517,10 @@ foreach ($contents as $content) {
 		case 6:
 		case 'monitor_report':
 			$data["title"] = __('Monitor report');
-			$monitor_value = reporting_get_agentmodule_sla ($content['id_agent_module'], $content['period'], 1, false, $datetime);
+			
+			$module = modules_get_agentmodule ($content['id_agent_module']);
+			$monitor_value = reporting_get_agentmodule_monitor ($content['id_agent_module'], $content['period'],
+					$module['min_critical'],$module['max_critical'], $datetime);
 			if ($monitor_value === false) {
 				$monitor_value = __('Unknown');
 			}

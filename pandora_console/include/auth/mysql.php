@@ -172,7 +172,9 @@ function process_user_login_local ($login, $pass, $api = false) {
 
 function process_user_login_remote ($login, $pass, $api = false) {
 	global $config, $mysql_cache;
-
+	
+	
+	
 	// Remote authentication
 	switch ($config["auth"]) {
 		// LDAP
@@ -225,21 +227,26 @@ function process_user_login_remote ($login, $pass, $api = false) {
 	
 	// Authentication ok, check if the user exists in the local database
 	if (is_user ($login)) {
+		
+		
 		if (!user_can_login($login)) {
 			return false;
 		}
 		
-		if (($config["auth"] === 'ad') && (isset($config['ad_advanced_config']) && $config['ad_advanced_config'])){
+		if (($config["auth"] === 'ad') &&
+			(isset($config['ad_advanced_config']) && $config['ad_advanced_config'])) {
+			
+			
+			
 			$return = enterprise_hook ('prepare_permissions_groups_of_user_ad',
 				array ($login, $pass, false, true));
 			
 			if ($return === "error_permissions") {
-				$config["auth_error"] = __("Problems with configuration
-						permissions. Please contact with Administrator");
+				$config["auth_error"] =
+					__("Problems with configuration permissions. Please contact with Administrator");
 				return false;
 			}
-			else
-			{
+			else {
 				if ($return === "permissions_changed") {
 					$config["auth_error"] = __("Your permmission have been change. Please, login again");
 					return false;
@@ -250,6 +257,8 @@ function process_user_login_remote ($login, $pass, $api = false) {
 	}
 	
 	
+	
+	
 	// The user does not exist and can not be created
 	if ($config['autocreate_remote_users'] == 0 || is_user_blacklisted ($login)) {
 		$config["auth_error"] = __("Ooops User not found in 
@@ -258,12 +267,35 @@ function process_user_login_remote ($login, $pass, $api = false) {
 		return false;
 	}
 	
+	// Create the user in the local database
 	if (isset($config['ad_advanced_config']) && $config['ad_advanced_config']) {
-		// Create the user in the local database enterprise_hook ('prepare_permissions_groups_of_user_ad', array ($login, $pass))
+		
+		
+		if ( defined('METACONSOLE') ) {
+			enterprise_include_once('include/functions_metaconsole.php');
+			enterprise_include_once ('meta/include/functions_groups_meta.php');
+			
+			$return = groups_meta_synchronizing();
+			
+			if ($return["group_create_err"] > 0  || $return["group_update_err"] > 0) {
+				$config["auth_error"] = __('Fail the group synchronizing');
+				return false;
+			}
+			
+			$return = meta_tags_synchronizing();
+			if ($return['tag_create_err'] > 0 || $return['tag_update_err'] > 0) {
+				$config["auth_error"] = __('Fail the tag synchronizing');
+				return false;
+			}
+		}
+		
+		// Create the user
 		if (enterprise_hook ('prepare_permissions_groups_of_user_ad',
-				array ($login, $pass, array ('fullname' => $login, 
-					'comments' => 'Imported from ' .
-						$config['auth']))) === false) {
+				array($login,
+					$pass,
+					array ('fullname' => $login, 
+						'comments' => 'Imported from ' . $config['auth']),
+					false, defined('METACONSOLE'))) === false) {
 			
 			$config["auth_error"] = __("User not found in database 
 					or incorrect password");
@@ -280,13 +312,16 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			$config["auth_error"] = __("User not found in database or incorrect password");
 			return false;
 		}
+		
+		//TODO: Check the creation in the nodes
+		
 		profile_create_user_profile ($login, $config['default_remote_profile'], 
 			$config['default_remote_group'], false, $config['default_assign_tags']);
 	}
 	
 	return $login;
 }
-	
+
 /** 
  * Checks if a user is administrator.
  * 

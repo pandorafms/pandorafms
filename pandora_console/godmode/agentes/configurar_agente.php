@@ -1625,7 +1625,7 @@ switch ($tab) {
 			if(wizard_tab_showed <= 0) {
 				$('.subsubmenu').hide("fast");
 			}
-		},1500);
+		},15000);
 	}
 	
 	/* ]]> */

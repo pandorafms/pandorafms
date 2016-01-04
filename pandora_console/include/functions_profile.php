@@ -18,6 +18,10 @@
  * @package Include
  * @subpackage Profile_Functions
  */
+ 
+ function profile_exist($name) {
+	return (bool)db_get_value('id_perfil', 'tperfil', 'name', $name);
+ }
 
 /**
  * Get profile name from id.
@@ -67,7 +71,9 @@ function profile_get_profiles ($filter = false) {
  *
  * @return mixed Number id if succesful, false if not
  */
-function profile_create_user_profile ($id_user, $id_profile = 1, $id_group = 0, $assignUser = false, $tags = '') {
+function profile_create_user_profile ($id_user,
+	$id_profile = 1, $id_group = 0, $assignUser = false, $tags = '') {
+	
 	global $config;
 	
 	if (empty ($id_profile) || $id_group < 0)

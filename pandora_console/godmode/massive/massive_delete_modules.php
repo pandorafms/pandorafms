@@ -79,28 +79,29 @@ function process_manage_delete ($module_name, $id_agents) {
 			$filter_for_module_deletion = sprintf('nombre IN ("%s")', implode('","', $module_name));
 
 		if ($config['dbtype'] == "oracle") {
-			$all_modules = false;
+			$all_agent_modules = false;
 			if (($module_name[0] == "0") and (is_array($module_name)) and (count($module_name) == 1)) {
-				$all_modules = true;
+				$all_agent_modules = true;
 			}
 			$names_to_long = array();
 			$i = 0;
 			foreach ($module_name as $name) {
 				if (strlen($name) > 30) {
+					$original_names[] = $module_name[$i];
 					unset($module_name[$i]);
 					$names_to_long[] = substr($name, 0, 28) . "%";
 				}
 				$i++;
 			}
-			$modules = "SELECT id_agente_modulo FROM tagente_modulo WHERE";
+			$modules = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE";
 			$modules .= sprintf(" id_agente IN (%s)", implode(",", $id_agents));
-			if (!empty($module_name) && (!$all_modules)) {
+			if (!empty($module_name) && (!$all_agent_modules)) {
 				$modules .= sprintf(" AND nombre IN ('%s')", implode("','", $module_name));
 			}
 			$modules = db_get_all_rows_sql($modules);
 			$modules2 = "";
-			if (!empty($names_to_long) && (!$all_modules)) {
-				$modules2 = "SELECT id_agente_modulo FROM tagente_modulo WHERE";
+			if (!empty($names_to_long) && (!$all_agent_modules)) {
+				$modules2 = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE";
 				$modules2 .= sprintf(" id_agente IN (%s) AND (", implode(",", $id_agents));
 				$j = 0;
 				foreach ($names_to_long as $name) {
@@ -115,6 +116,24 @@ function process_manage_delete ($module_name, $id_agents) {
 				$modules2 .= ")";
 				$modules2 = db_get_all_rows_sql($modules2);
 				$modules = array_merge($modules, $modules2);
+			}
+			$all_names = array();
+			foreach ($modules as $module) {
+				$all_modules[] = $module['id_agente_modulo'];
+				$all_names[] = $module['nombre'];
+			}
+			$modules = $all_modules;
+			$modules = array_unique($modules);
+			if (!empty($names_to_long) && (!$all_agent_modules)) {
+				$j = 0;
+				foreach ($all_names as $name) {
+					if (strlen($name) > 30) {
+						if (!in_array($name, $original_names)) {
+							unset($modules[$j]);
+						}
+					}
+					$j++;
+				}
 			}
 		}
 		else {
@@ -124,17 +143,21 @@ function process_manage_delete ($module_name, $id_agents) {
 	}
 	else {
 		if ($config['dbtype'] == "oracle") {
-			$all_modules = false;
+			$all_agent_modules = false;
 			$names_to_long = array();
+			if (($module_name[0] == "0") and (is_array($module_name)) and (count($module_name) == 1)) {
+				$all_agent_modules = true;
+			}
 			$i = 0;
 			foreach ($module_name as $name) {
 				if (strlen($name) > 30) {
+					$original_names[] = $module_name[$i];
 					unset($module_name[$i]);
 					$names_to_long[] = substr($name, 0, 28) . "%";
 				}
 				$i++;
 			}
-			$modules = "SELECT id_agente_modulo FROM tagente_modulo WHERE";
+			$modules = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE";
 			$any_agent = false;
 			if ($id_agents == null) {
 				$any_agent = true;
@@ -143,7 +166,7 @@ function process_manage_delete ($module_name, $id_agents) {
 				$modules .= sprintf(" id_agente IN (%s)", implode(",", $id_agents));
 				$agents_selected = true;
 			}
-			if (!empty($module_name) && (!$all_modules)) {
+			if (!empty($module_name) && (!$all_agent_modules)) {
 				if ($any_agent) {
 					$modules .= sprintf(" nombre IN ('%s')", implode("','", $module_name));
 				}
@@ -152,8 +175,8 @@ function process_manage_delete ($module_name, $id_agents) {
 				}
 			}
 			$modules = db_get_all_rows_sql($modules);
-			if (!empty($names_to_long) && (!$all_modules)) {
-				$modules2 = "SELECT id_agente_modulo FROM tagente_modulo WHERE";
+			if (!empty($names_to_long) && (!$all_agent_modules)) {
+				$modules2 = "SELECT id_agente_modulo, nombre FROM tagente_modulo WHERE";
 				$modules2 .= sprintf(" id_agente IN (%s) AND (", implode(",", $id_agents));
 				$j = 0;
 				foreach ($names_to_long as $name) {
@@ -168,6 +191,24 @@ function process_manage_delete ($module_name, $id_agents) {
 				$modules2 .= ")";
 				$modules2 = db_get_all_rows_sql($modules2);
 				$modules = array_merge($modules, $modules2);
+			}
+			$all_names = array();
+			foreach ($modules as $module) {
+				$all_modules[] = $module['id_agente_modulo'];
+				$all_names[] = $module['nombre'];
+			}
+			$modules = $all_modules;
+			$modules = array_unique($modules);
+			if (!empty($names_to_long) && (!$all_agent_modules)) {
+				$j = 0;
+				foreach ($all_names as $name) {
+					if (strlen($name) > 30) {
+						if (!in_array($name, $original_names)) {
+							unset($modules[$j]);
+						}
+					}
+					$j++;
+				}
 			}
 		}
 		else {
@@ -178,11 +219,6 @@ function process_manage_delete ($module_name, $id_agents) {
 	
 	$count_deleted_modules = count($modules);
 	if ($config['dbtype'] == "oracle") {
-		$all_modules = array();
-		foreach ($modules as $module) {
-			$all_modules[] = $module['id_agente_modulo'];
-		}
-		$modules = $all_modules;
 		$success = db_process_sql(sprintf("DELETE FROM tagente_modulo WHERE id_agente_modulo IN (%s)", implode(",", $modules)));
 	}
 	else {

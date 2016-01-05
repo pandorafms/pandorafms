@@ -1547,7 +1547,7 @@ function api_get_locate_agent($id, $thrash1, $thrash2, $thrash3) {
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
- *  api.php?op=get&op2=group_agent&return_type=csv&other=Pepito&other_mode=url_encode_separator_|
+ *  api.php?op=get&op2=id_group_agent_by_name&return_type=csv&other=Pepito&other_mode=url_encode_separator_|
  * 
  * @param $thrash3 Don't use.
  */
@@ -1587,8 +1587,8 @@ function api_get_id_group_agent_by_name($thrash1, $thrash2, $other, $thrash3) {
 	}
 	else {
 		$agent_id = agents_get_agent_id($other['data'][0],true);
-	
-		$sql = sprintf("SELECT groups.nombre nombre 
+		
+		$sql = sprintf("SELECT groups.id_grupo id_group
 			FROM tagente agents, tgrupo groups
 			WHERE id_agente = %d 
 				AND agents.id_grupo = groups.id_grupo",$agent_id);
@@ -5143,23 +5143,30 @@ function api_set_apply_all_policies($thrash1, $thrash2, $other, $thrash3) {
 function api_set_create_group($id, $thrash1, $other, $thrash3) {
 	$group_name = $id;
 	
+	
+	
 	if ($id == "") {
-		returnError('error_create_group', __('Error in group creation. Group_name cannot be left blank.'));
+		returnError('error_create_group',
+			__('Error in group creation. Group_name cannot be left blank.'));
 		return;
 	}
 	
 	if ($other['data'][0] == "") {
-		returnError('error_create_group', __('Error in group creation. Icon_name cannot be left blank.'));
+		returnError('error_create_group',
+			__('Error in group creation. Icon_name cannot be left blank.'));
 		return;
 	}
 	
+	
+	
 	$safe_other_data = io_safe_input($other['data']);
-
+	
 	if ($safe_other_data[1] != "") {
-	       $group = groups_get_group_by_id($safe_other_data[1]);
+			$group = groups_get_group_by_id($safe_other_data[1]);
 		
 		if ($group == false) {
-			returnError('error_create_group', __('Error in group creation. Id_parent_group doesn\'t exists.'));
+			returnError('error_create_group',
+				__('Error in group creation. Id_parent_group doesn\'t exists.'));
 			return;
 		}
 	}

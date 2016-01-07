@@ -193,6 +193,13 @@ sub help_screen{
 	print "\nSETUP:\n\n" unless $param ne '';
 	help_screen_line('--set_event_storm_protection', '<value>', "Enable (1) or disable (0) event \n\t  storm protection");
 	
+	print "\nOTHERS:\n\n" unless $param ne '';
+	help_screen_line('--meta_get_agent_group', '<url_host> <api_pass> <user> <pass> <agent_name>', 'Return the group name of the agent.');
+	help_screen_line('--meta_get_agent_group_id', '<url_host> <api_pass> <user> <pass> <agent_name>', 'Return the group id of the agent.');
+	help_screen_line('--meta_delete_agent', '<url_host> <api_pass> <user> <pass> <agent_name>', 'Delete an agent on metaconsole and node.');
+	help_screen_line('--meta_locate_agent', '<url_host> <api_pass> <user> <pass> <agent_name>', 'Return the id of the node that manages the agent.');
+	help_screen_line('--meta_set_create_group', '<url_host> <api_pass> <user> <pass> <group_name> (<icon_name> | "<icon_name>|<id_group_parent>")', 'Create group and return the id of the new group.');
+	
 	print "\n";
 	exit;
 }

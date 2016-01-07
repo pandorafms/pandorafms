@@ -4212,20 +4212,20 @@ sub cli_delete_special_day() {
 
 sub pandora_manage_main ($$$) {
 	my ($conf, $dbh, $history_dbh) = @_;
-
+	
 	my @args = @ARGV;
- 	my $ltotal=$#args;
+	my $ltotal=$#args;
 	my $ax;
-
- 	# Has read setup file ok ?
- 	if ( $ltotal == 0 ) {
+	
+	# Has read setup file ok ?
+	if ( $ltotal == 0 ) {
 		print_log "[ERROR] No valid arguments\n\n";
 		help_screen();
 		exit;
- 	}
+	}
 	else {
 		$param = $args[1];
-
+		
 		# help!
 		if ($param =~ m/--*h\w*\z/i ) {
 			$param = '';
@@ -4445,6 +4445,26 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--get_agent_group_id') {
 			param_check($ltotal, 1);
 			cli_get_agent_group_id();
+		}
+		elsif ($param eq '--meta_get_agent_group') {
+			param_check($ltotal, 5);
+			cli_meta_get_agent_group();
+		}
+		elsif ($param eq '--meta_get_agent_group_id') {
+			param_check($ltotal, 5);
+			cli_meta_get_agent_group_id();
+		}
+		elsif ($param eq '--meta_delete_agent') {
+			param_check($ltotal, 5);
+			cli_meta_delete_agent();
+		}
+		elsif ($param eq '--meta_locate_agent') {
+			param_check($ltotal, 5);
+			cli_meta_locate_agent();
+		}
+		elsif ($param eq '--meta_set_create_group') {
+			param_check($ltotal, 6);
+			cli_meta_set_create_group();
 		}
 		elsif ($param eq '--get_agents_module_current_data') {
 			param_check($ltotal, 1);
@@ -4770,3 +4790,158 @@ sub cli_create_local_component() {
 	my $component_id = enterprise_hook('pandora_create_local_component_from_hash',[$conf, \%parameters, $dbh]);
 
 }
+
+########### META CASTAÑAS FOR PANDORA5 WORKING AS MICROSOFT ###############
+sub meta_api_call($$$$$$$$$) {
+	my ($host, $apipass, $user, $pass, $op, $op2, $id, $id2, $other) = @_;
+	my $content = undef;
+	
+	eval {
+		# Set the parameters for the POST request.
+		my $params = {};
+		$params->{"apipass"} = $apipass;
+		$params->{"user"} = $user;
+		$params->{"pass"} = $pass;
+		$params->{"op"} = $op;
+		$params->{"op2"} = $op2;
+		$params->{"id"} = $id;
+		$params->{"id2"} = $id2;
+		$params->{"other"} = $other;
+		$params->{"other_mode"} = "url_encode_separator_|";
+		
+		# Call the API.
+		my $ua = new LWP::UserAgent;
+		my $url = "$host/include/api.php";
+		my $response = $ua->post($url, $params);
+		
+		if ($response->is_success) {
+			$content = $response->decoded_content();
+		}
+		else {
+			$content = "[ERROR]";
+		}
+	};
+	
+	return $content;
+}
+
+
+sub cli_meta_get_agent_group() {
+	my $host = @ARGV[2];
+	my $apipass = @ARGV[3];
+	my $user = @ARGV[4];
+	my $pass = @ARGV[5];
+	my $name = @ARGV[6];
+	
+	print meta_api_call(
+		$host,
+		$apipass,
+		$user,
+		$pass,
+		"get",
+		"group_agent_by_name",
+		undef,
+		undef,
+		$name
+		);
+	
+	#~ system ("curl",
+		#~ "$host/include/api.php?op=get&op2=group_agent_by_name&other_mode=url_encode_separator_|&"."apipass=$apipass&"."user=$user&"."pass=$pass&"."other=$name" );
+}
+
+sub cli_meta_get_agent_group_id() {
+	my $host = @ARGV[2];
+	my $apipass = @ARGV[3];
+	my $user = @ARGV[4];
+	my $pass = @ARGV[5];
+	my $name = @ARGV[6];
+	
+	print meta_api_call(
+		$host,
+		$apipass,
+		$user,
+		$pass,
+		"get",
+		"id_group_agent_by_name",
+		undef,
+		undef,
+		$name
+		);
+	
+	#~ system ("curl",
+		#~ "$host/include/api.php?op=get&op2=id_group_agent_by_name&other_mode=url_encode_separator_|&"."apipass=$apipass&"."user=$user&"."pass=$pass&"."other=$name" );
+}
+
+sub cli_meta_delete_agent() {
+	my $host = @ARGV[2];
+	my $apipass = @ARGV[3];
+	my $user = @ARGV[4];
+	my $pass = @ARGV[5];
+	my $name = @ARGV[6];
+	
+	print meta_api_call(
+		$host,
+		$apipass,
+		$user,
+		$pass,
+		"set",
+		"delete_agent",
+		$name,
+		undef,
+		undef
+		);
+	
+	#~ system ("curl",
+		#~ "$host/include/api.php?op=set&op2=delete_agent&"."apipass=$apipass&"."user=$user&"."pass=$pass&"."id=$name" );
+}
+
+sub cli_meta_locate_agent() {
+	my $host = @ARGV[2];
+	my $apipass = @ARGV[3];
+	my $user = @ARGV[4];
+	my $pass = @ARGV[5];
+	my $name = @ARGV[6];
+	
+	print meta_api_call(
+		$host,
+		$apipass,
+		$user,
+		$pass,
+		"get",
+		"locate_agent",
+		$name,
+		undef,
+		undef
+		);
+	
+	#~ system ("curl",
+		#~ "$host/include/api.php?op=get&op2=locate_agent&"."apipass=$apipass&"."user=$user&"."pass=$pass&"."id=$name" );
+}
+
+sub cli_meta_set_create_group() {
+	my $host = @ARGV[2];
+	my $apipass = @ARGV[3];
+	my $user = @ARGV[4];
+	my $pass = @ARGV[5];
+	my $name = @ARGV[6];
+	my $other = @ARGV[7];
+	
+	print meta_api_call(
+		$host,
+		$apipass,
+		$user,
+		$pass,
+		"set",
+		"create_group",
+		$name,
+		undef,
+		$other
+		);
+	
+	#~ system ("curl",
+		#~ "$host/include/api.php?op=set&op2=create_group&"."apipass=$apipass&"."user=$user&"."pass=$pass&"."id=$name&"."other_mode=url_encode_separator_|&other=$other" );
+}
+
+#~ 
+
+########################################################################

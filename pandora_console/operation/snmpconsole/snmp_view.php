@@ -234,7 +234,7 @@ switch ($config["dbtype"]) {
 			WHERE (source IN (
 					SELECT direccion FROM tagente
 					WHERE id_grupo IN ($str_user_groups)
-					) OR source='' OR source NOT IN (SELECT direccion FROM tagente)) %s
+					) OR source='' OR source NOT IN (SELECT direccion FROM tagente WHERE direccion IS NOT NULL)) %s
 			ORDER BY timestamp DESC";
 		break;
 }
@@ -266,7 +266,7 @@ switch ($config["dbtype"]) {
 			WHERE (source IN (
 					SELECT direccion FROM tagente
 					WHERE id_grupo IN ($str_user_groups)
-					) OR source='' OR source NOT IN (SELECT direccion FROM tagente))
+					) OR source='' OR source NOT IN (SELECT direccion FROM tagente WHERE direccion IS NOT NULL))
 				%s
 			ORDER BY timestamp DESC";
 		$sql_count = "SELECT COUNT(id_trap)
@@ -275,7 +275,7 @@ switch ($config["dbtype"]) {
 				source IN (
 					SELECT direccion FROM tagente
 					WHERE id_grupo IN ($str_user_groups)
-					) OR source='' OR source NOT IN (SELECT direccion FROM tagente))
+					) OR source='' OR source NOT IN (SELECT direccion FROM tagente WHERE direccion IS NOT NULL))
 				%s";
 		break;
 }

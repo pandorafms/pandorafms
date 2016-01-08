@@ -176,7 +176,7 @@ switch ($config["dbtype"]) {
 			WHERE (`source` IN (
 					SELECT direccion FROM tagente
 					WHERE id_grupo IN ($str_user_groups)
-					) OR `source`='' OR `source` NOT IN (SELECT direccion FROM tagente)) %s
+					) OR `source`='' OR `source` NOT IN (SELECT direccion FROM tagente WHERE direccion IS NOT NULL)) %s
 			ORDER BY timestamp DESC
 			LIMIT %d,%d";
 		break;
@@ -187,7 +187,7 @@ switch ($config["dbtype"]) {
 			WHERE (source IN (
 					SELECT direccion FROM tagente
 					WHERE id_grupo IN ($str_user_groups)
-					) OR source='' OR source NOT IN (SELECT direccion FROM tagente)) %s
+					) OR source='' OR source NOT IN (SELECT direccion FROM tagente WHERE direccion IS NOT NULL)) %s
 			ORDER BY timestamp DESC
 			LIMIT %d OFFSET %d";
 		break;
@@ -198,7 +198,7 @@ $sql_all = "SELECT *
 			SELECT direccion FROM tagente
 			WHERE id_grupo IN ($str_user_groups)
 			)
-	OR source='' OR source NOT IN (SELECT direccion FROM tagente)) %s
+	OR source='' OR source NOT IN (SELECT direccion FROM tagente WHERE direccion IS NOT NULL)) %s
 	ORDER BY timestamp DESC";
 $sql_count = "SELECT COUNT(id_trap)
 	FROM ttrap
@@ -206,7 +206,7 @@ $sql_count = "SELECT COUNT(id_trap)
 			SELECT direccion FROM tagente
 			WHERE id_grupo IN ($str_user_groups)
 			)
-	OR source='' OR source NOT IN (SELECT direccion FROM tagente)) %s";
+	OR source='' OR source NOT IN (SELECT direccion FROM tagente WHERE direccion IS NOT NULL)) %s";
 //$whereSubquery = 'WHERE 1=1';
 $whereSubquery = '';
 

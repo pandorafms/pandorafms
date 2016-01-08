@@ -698,19 +698,28 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	// Color commented not to restrict serie colors
 	if ($show_events) {
 		$color['event' . $series_suffix] =
-			array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
+			array('border' => '#ff0000', 'color' => '#ff0000',
+				'alpha' => CHART_DEFAULT_ALPHA);
 	}
 	if ($show_alerts) {
 		$color['alert' . $series_suffix] =
-			array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
+			array('border' => '#ff7f00', 'color' => '#ff7f00',
+				'alpha' => CHART_DEFAULT_ALPHA);
 	}
 	if ($show_unknown) {
 		$color['unknown' . $series_suffix] =
-			array('border' => '#999999', 'color' => '#999999', 'alpha' => 50);
+			array('border' => '#999999', 'color' => '#999999',
+				'alpha' => CHART_DEFAULT_ALPHA);
 	}
-	$color['max'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
-	$color['sum'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
-	$color['min'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
+	$color['max'.$series_suffix] = array(
+		'border' => '#000000', 'color' => $config['graph_color3'],
+		'alpha' => CHART_DEFAULT_ALPHA);
+	$color['sum'.$series_suffix] = array(
+		'border' => '#000000', 'color' => $config['graph_color2'],
+		'alpha' => CHART_DEFAULT_ALPHA);
+	$color['min'.$series_suffix] = array(
+		'border' => '#000000', 'color' => $config['graph_color1'],
+		'alpha' => CHART_DEFAULT_ALPHA);
 	//Baseline was replaced by compare graph feature
 	//$color['baseline'.$series_suffix] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
 	$color['unit'.$series_suffix] = array('border' => null, 'color' => '#0097BC', 'alpha' => 10);		
@@ -1437,7 +1446,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				else
 					$label = $data_module['nombre'];
 				
-				$label = io_safe_output($label);				
+				$label = io_safe_output($label);
 				$temp[$label] = array('value'=>$value,
 										'unit'=>$data_module['unit']);
 			}
@@ -1510,7 +1519,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	}
 	
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
+	$water_mark = array(
+		'file' => $config['homedir'] .  "/images/logo_vertical_water.png",
 		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	
 	
@@ -1522,35 +1532,50 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$color = array();
 	
 	$color[0] = array('border' => '#000000',
-		'color' => $config['graph_color1'], 'alpha' => 50);
+		'color' => $config['graph_color1'],
+		'alpha' => CHART_DEFAULT_ALPHA);
 	$color[1] = array('border' => '#000000',
-		'color' => $config['graph_color2'], 'alpha' => 50);
+		'color' => $config['graph_color2'],
+		'alpha' => CHART_DEFAULT_ALPHA);
 	$color[2] = array('border' => '#000000',
-		'color' => $config['graph_color3'], 'alpha' => 50);
+		'color' => $config['graph_color3'],
+		'alpha' => CHART_DEFAULT_ALPHA);
 	$color[3] = array('border' => '#000000',
-		'color' => $config['graph_color4'], 'alpha' => 50);
+		'color' => $config['graph_color4'],
+		'alpha' => CHART_DEFAULT_ALPHA);
 	$color[4] = array('border' => '#000000',
-		'color' => $config['graph_color5'], 'alpha' => 50);
+		'color' => $config['graph_color5'],
+		'alpha' => CHART_DEFAULT_ALPHA);
 	$color[5] = array('border' => '#000000',
-		'color' => $config['graph_color6'], 'alpha' => 50);
+		'color' => $config['graph_color6'],
+		'alpha' => CHART_DEFAULT_ALPHA);
 	$color[6] = array('border' => '#000000',
-		'color' => $config['graph_color7'], 'alpha' => 50);
+		'color' => $config['graph_color7'],
+		'alpha' => CHART_DEFAULT_ALPHA);
 	$color[7] = array('border' => '#000000',
-		'color' => $config['graph_color8'], 'alpha' => 50);
+		'color' => $config['graph_color8'],
+		'alpha' => CHART_DEFAULT_ALPHA);
 	$color[8] = array('border' => '#000000',
-		'color' => $config['graph_color9'], 'alpha' => 50);
+		'color' => $config['graph_color9'],
+		'alpha' => CHART_DEFAULT_ALPHA);
 	$color[9] = array('border' => '#000000',
-		'color' => $config['graph_color10'], 'alpha' => 50);
+		'color' => $config['graph_color10'],
+		'alpha' => CHART_DEFAULT_ALPHA);
 	$color[11] = array('border' => '#000000',
-		'color' => COL_GRAPH9, 'alpha' => 50);
+		'color' => COL_GRAPH9,
+		'alpha' => CHART_DEFAULT_ALPHA);
 	$color[12] = array('border' => '#000000',
-		'color' => COL_GRAPH10, 'alpha' => 50);
+		'color' => COL_GRAPH10,
+		'alpha' => CHART_DEFAULT_ALPHA);
 	$color[13] = array('border' => '#000000',
-		'color' => COL_GRAPH11, 'alpha' => 50);
+		'color' => COL_GRAPH11,
+		'alpha' => CHART_DEFAULT_ALPHA);
 	$color[14] = array('border' => '#000000',
-		'color' => COL_GRAPH12, 'alpha' => 50);
+		'color' => COL_GRAPH12,
+		'alpha' => CHART_DEFAULT_ALPHA);
 	$color[15] = array('border' => '#000000',
-		'color' => COL_GRAPH13, 'alpha' => 50);
+		'color' => COL_GRAPH13,
+		'alpha' => CHART_DEFAULT_ALPHA);
 	
 	
 	switch ($stacked) {
@@ -3521,16 +3546,28 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 	//$legend['baseline'.$series_suffix] = __('Baseline').$series_suffix_str;
 	/////////////////////////////////////////////////////////////////////////////////////////
 	if ($show_events) {
-		$color['event'.$series_suffix] = array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
+		$color['event'.$series_suffix] =
+			array('border' => '#ff0000', 'color' => '#ff0000',
+				'alpha' => CHART_DEFAULT_ALPHA);
 	}
 	if ($show_alerts) {
-		$color['alert'.$series_suffix] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
+		$color['alert'.$series_suffix] =
+			array('border' => '#ff7f00', 'color' => '#ff7f00',
+				'alpha' => CHART_DEFAULT_ALPHA);
 	}
-	$color['max'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
-	$color['sum'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
-	$color['min'.$series_suffix] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
+	$color['max'.$series_suffix] =
+		array('border' => '#000000', 'color' => $config['graph_color3'],
+			'alpha' => CHART_DEFAULT_ALPHA);
+	$color['sum'.$series_suffix] =
+		array('border' => '#000000', 'color' => $config['graph_color2'],
+			'alpha' => CHART_DEFAULT_ALPHA);
+	$color['min'.$series_suffix] =
+		array('border' => '#000000', 'color' => $config['graph_color1'],
+			'alpha' => CHART_DEFAULT_ALPHA);
 	if ($show_unknown) {
-		$color['unknown'.$series_suffix] = array('border' => '#999999', 'color' => '#999999', 'alpha' => 50);
+		$color['unknown'.$series_suffix] =
+			array('border' => '#999999', 'color' => '#999999',
+				'alpha' => CHART_DEFAULT_ALPHA);
 	}
 	//$color['baseline'.$series_suffix] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);
 }
@@ -4117,19 +4154,27 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 	$color = array();
 	
 	if ($show_events) {
-		$color['event'] = array('border' => '#ff0000', 'color' => '#ff0000', 'alpha' => 50);
+		$color['event'] = array('border' => '#ff0000',
+			'color' => '#ff0000', 'alpha' => CHART_DEFAULT_ALPHA);
 	}
 	if ($show_alerts) {
-		$color['alert'] = array('border' => '#ff7f00', 'color' => '#ff7f00', 'alpha' => 50);
+		$color['alert'] = array('border' => '#ff7f00',
+			'color' => '#ff7f00', 'alpha' => CHART_DEFAULT_ALPHA);
 	}
 	
 	if (!$avg_only) {
-		$color['max'] = array('border' => '#000000', 'color' => $config['graph_color3'], 'alpha' => 50);
+		$color['max'] = array('border' => '#000000',
+			'color' => $config['graph_color3'],
+			'alpha' => CHART_DEFAULT_ALPHA);
 	}
-	$color['sum'] = array('border' => '#000000', 'color' => $config['graph_color2'], 'alpha' => 50);
+	$color['sum'] = array('border' => '#000000',
+		'color' => $config['graph_color2'],
+		'alpha' => CHART_DEFAULT_ALPHA);
 	
 	if (!$avg_only) {
-		$color['min'] = array('border' => '#000000', 'color' => $config['graph_color1'], 'alpha' => 50);
+		$color['min'] = array('border' => '#000000',
+			'color' => $config['graph_color1'],
+			'alpha' => CHART_DEFAULT_ALPHA);
 	}
 	
 	//$color['baseline'] = array('border' => null, 'color' => '#0097BD', 'alpha' => 10);

@@ -559,14 +559,8 @@ function hbar_graph($flash_chart, $chart_data, $width, $height,
 	}
 	
 	if ($flash_chart) {
-		if ($return) {
-			return flot_hcolumn_chart(
-				$chart_data, $width, $height, $water_mark_url);
-		}
-		else {
-			echo flot_hcolumn_chart(
-				$chart_data, $width, $height, $water_mark_url);
-		}
+		return flot_hcolumn_chart(
+			$chart_data, $width, $height, $water_mark_url);
 	}
 	else {
 		$graph = array();

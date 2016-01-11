@@ -2546,10 +2546,17 @@
      return($Scale);
     }
 
+	function mod_check($x, $y) {
+	  return @($x % $y) === FALSE;
+	}
+
    function modulo($Value1,$Value2)
     {
      if (floor($Value1) == 0) { return(0); }
      if (floor($Value2) == 0) { return(0); }
+     if (is_infinite($Value2)) { return(0); }
+     if ($Value2 == 0.0) { return(0); }
+     if ($this->mod_check($Value1, $Value2)) { return(0); }
      if (floor($Value2) != 0) { return($Value1 % $Value2); }
 
      $MinValue = min($Value1,$Value2); $Factor = 10;

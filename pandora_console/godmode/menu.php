@@ -215,9 +215,9 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu_godmode["gsetup"]["text"] = __('Setup');
 	$menu_godmode["gsetup"]["sec2"] = "godmode/setup/setup&section=general";
 	$menu_godmode["gsetup"]["id"] = "god-setup";
-
+	
 	$sub = array ();
-
+	
 	// Options Setup
 	$sub["general"]["text"] = __('Setup');
 	$sub["general"]["id"] = 'Setup';
@@ -228,30 +228,30 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$sub2["godmode/setup/setup&amp;section=general"]["text"] = __('General Setup');
 	$sub2["godmode/setup/setup&amp;section=general"]["id"] = 'General Setup';
 	$sub2["godmode/setup/setup&amp;section=general"]["refr"] = 0;
-
+	
 	enterprise_hook ('password_submenu');
 	enterprise_hook ('enterprise_submenu');
 	enterprise_hook ('historydb_submenu');
 	enterprise_hook ('log_collector_submenu');
-
+	
 	$sub2["godmode/setup/setup&amp;section=auth"]["text"] =  __('Authentication');
 	$sub2["godmode/setup/setup&amp;section=auth"]["refr"] = 0;
-
+	
 	$sub2["godmode/setup/setup&amp;section=perf"]["text"] = __('Performance');
 	$sub2["godmode/setup/setup&amp;section=perf"]["refr"] = 0;
-
+	
 	$sub2["godmode/setup/setup&amp;section=vis"]["text"] = __('Visual styles');
 	$sub2["godmode/setup/setup&amp;section=vis"]["refr"] = 0;
-
+	
 	if (check_acl ($config['id_user'], 0, "AW")) {
 		if ($config['activate_netflow']) {
 			$sub2["godmode/setup/setup&amp;section=net"]["text"] = __('Netflow');
 			$sub2["godmode/setup/setup&amp;section=net"]["refr"] = 0;
 		}
 	}
-
-
-
+	
+	
+	
 	if ($config['activate_gis'])
 		$sub2["godmode/setup/gis"]["text"] = __('Map conections GIS');
 	
@@ -260,9 +260,9 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$sub["godmode/setup/os"]["id"] = 'Edit OS';
 	$sub["godmode/setup/license"]["text"] = __('License');
 	$sub["godmode/setup/license"]["id"] = 'License';
-
+	
 	enterprise_hook ('skins_submenu');
-
+	
 	$menu_godmode["gsetup"]["sub"] = $sub;
 }
 
@@ -270,7 +270,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu_godmode["gextensions"]["text"] = __('Admin tools');
 	$menu_godmode["gextensions"]["sec2"] = "godmode/extensions";
 	$menu_godmode["gextensions"]["id"] = "god-extensions";
-
+	
 	$sub = array ();
 	// Audit //meter en extensiones
 	$sub["godmode/admin_access_logs"]["text"] = __('System audit log');
@@ -279,7 +279,11 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$sub["godmode/setup/links"]["id"] = 'Links';
 	$sub["godmode/update_manager/update_manager"]["text"] = __('Update manager');
 	$sub["godmode/update_manager/update_manager"]["id"] = 'Update manager';
-	$sub["gextmaneger"]["sub2"] = $sub2;
+	
+	
+	$sub["godmode/extensions"]["sub2"] = $sub2;
+	
+	
 	if (check_acl ($config['id_user'], 0, "DM")) {
 		$sub["gdbman"]["text"] = __('DB maintenance');
 		$sub["gdbman"]["id"] = 'DB maintenance';
@@ -291,7 +295,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 		$sub2["godmode/db/db_refine"]["text"] = __('Database debug');
 		$sub2["godmode/db/db_audit"]["text"] = __('Database audit');
 		$sub2["godmode/db/db_event"]["text"] = __('Database event');
-
+		
 		$sub["gdbman"]["sub2"] = $sub2;
 	}
 	$sub["extras/pandora_diag"]["text"] = __('Diagnostic info');
@@ -308,24 +312,24 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	if (is_array ($config['extensions'])) {
 		
 		$sub = array ();
-		$sub["gextmaneger"]["text"] = __('Extension manager');
-		$sub["gextmaneger"]["id"] = 'Extension manager';
-		$sub["gextmaneger"]["type"] = "direct";
-		$sub["gextmaneger"]["subtype"] = "nolink";
+		$sub["godmode/extensions"]["text"] = __('Extension manager');
+		$sub["godmode/extensions"]["id"] = 'Extension manager';
+		
+		
 		$sub2 = array ();
-
+		
 		foreach ($config['extensions'] as $extension) {
 			//If no godmode_menu is a operation extension
 			if ($extension['godmode_menu'] == '') {
 				continue;
 			}
-
+			
 			$extmenu = $extension['godmode_menu'];
-
+			
 			if ($extmenu["name"] == 'DB interface' && !check_acl ($config['id_user'], 0, "DM")) {
 				continue;
 			}
-
+			
 			//Check the ACL for this user
 			if (! check_acl ($config['id_user'], 0, $extmenu['acl'])) {
 				continue;
@@ -379,7 +383,12 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 				}
 			}
 		}
-		$sub["gextmaneger"]["sub2"] = $sub2;
+		
+		
+		
+		$sub["godmode/extensions"]["sub2"] = $sub2;
+		
+		
 		$submenu = array_merge($menu_godmode["gextensions"]["sub"],$sub);
 		$menu_godmode["gextensions"]["sub"] = $submenu;
 	}

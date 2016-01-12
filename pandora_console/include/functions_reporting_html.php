@@ -928,6 +928,12 @@ function reporting_html_exception($table, $item) {
 		
 		$table1->data = array ();
 		
+		$table1->headstyle = array();
+		$table1->headstyle['agent'] = 'text-align: left';
+		$table1->headstyle['module'] = 'text-align: left';
+		$table1->headstyle['operation'] = 'text-align: left';
+		$table1->headstyle['value'] = 'text-align: right';
+		
 		$table1->head = array ();
 		$table1->head['agent'] = __('Agent');
 		$table1->head['module'] = __('Module');
@@ -966,6 +972,11 @@ function reporting_html_exception($table, $item) {
 			$table1->align['min'] = 'right';
 			$table1->align['avg'] = 'right';
 			$table1->align['max'] = 'right';
+			
+			$table1->headstyle = array();
+			$table1->headstyle['min'] = 'text-align: right';
+			$table1->headstyle['avg'] = 'text-align: right';
+			$table1->headstyle['max'] = 'text-align: right';
 			
 			$table1->head = array ();
 			$table1->head['min'] = __('Min Value');

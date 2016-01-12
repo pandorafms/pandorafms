@@ -324,6 +324,12 @@ function reporting_html_SLA($table, $item, $mini) {
 		$table1->head[4] = __('SLA Compliance');
 		$table1->head[5] = __('Status');
 		
+		$table1->headstyle = array();
+		$table1->headstyle[2] = 'text-align: right';
+		$table1->headstyle[3] = 'text-align: right';
+		$table1->headstyle[4] = 'text-align: right';
+		$table1->headstyle[5] = 'text-align: right';
+		
 		foreach ($item['data'] as $sla) {
 			$row = array();
 			$row[] = $sla['agent'];
@@ -390,6 +396,11 @@ function reporting_html_top_n($table, $item) {
 		
 		$table1->data = array ();
 		
+		$table1->headstyle = array();
+		$table1->headstyle[0] = 'text-align: left';
+		$table1->headstyle[1] = 'text-align: left';
+		$table1->headstyle[2] = 'text-align: right';
+		
 		$table1->head = array ();
 		$table1->head[0] = __('Agent');
 		$table1->head[1] = __('Module');
@@ -426,6 +437,11 @@ function reporting_html_top_n($table, $item) {
 			$table1->align[2] = 'center';
 			
 			$table1->data = array ();
+			
+			$table1->headstyle = array();
+			$table1->headstyle[0] = 'text-align: center';
+			$table1->headstyle[1] = 'text-align: center';
+			$table1->headstyle[2] = 'text-align: center';
 			
 			$table1->head = array ();
 			$table1->head[0] = __('Min Value');
@@ -1617,6 +1633,7 @@ function reporting_html_availability(&$table, $item) {
 		$table1 = new stdClass();
 		$table1->width = '99%';
 		$table1->data = array ();
+		
 		$table1->head = array ();
 		$table1->head[0] = __('Agent');
 		// HACK it is saved in show_graph field.
@@ -1633,6 +1650,14 @@ function reporting_html_availability(&$table, $item) {
 		$table1->head[5] = __('Poling time');
 		$table1->head[6] = __('Time unavailable');
 		$table1->head[7] = __('% Ok');
+		
+		$table1->headstyle = array();
+		$table1->headstyle[2] = 'text-align: right';
+		$table1->headstyle[3] = 'text-align: right';
+		$table1->headstyle[4] = 'text-align: right';
+		$table1->headstyle[5] = 'text-align: right';
+		$table1->headstyle[6] = 'text-align: right';
+		$table1->headstyle[7] = 'text-align: right';
 		
 		$table1->style[0] = 'text-align: left';
 		$table1->style[1] = 'text-align: left';
@@ -1671,13 +1696,25 @@ function reporting_html_availability(&$table, $item) {
 	if ($item['resume'] && !empty($item["data"])) {
 		$table1->width = '99%';
 		$table1->data = array ();
+		
+		
+		
 		$table1->head = array ();
-		$table1->style = array();
-		$table1->head['min_text'] = '';
+		$table1->head['min_text'] = __('Agent max');
 		$table1->head['min'] = __('Min Value');
 		$table1->head['avg'] = __('Average Value');
-		$table1->head['max_text'] = '';
+		$table1->head['max_text'] = __('Agent min');
 		$table1->head['max'] = __('Max Value');
+		
+		$table1->headstyle = array();
+		$table1->headstyle['min_text'] = 'text-align: left';
+		$table1->headstyle['min'] = 'text-align: right';
+		$table1->headstyle['avg'] = 'text-align: right';
+		$table1->headstyle['max_text'] = 'text-align: left';
+		$table1->headstyle['max'] = 'text-align: right';
+		
+		
+		$table1->style = array();
 		$table1->style['min_text'] = 'text-align: left';
 		$table1->style['min'] = 'text-align: right';
 		$table1->style['avg'] = 'text-align: right';

@@ -230,10 +230,10 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0,
 	$id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
 	$relative = false, $text_filter = '', $l2_network = false, $ip_mask = null,
-	$dont_show_subgroups = false, $strict_user = false, $size_canvas = null) {
+	$dont_show_subgroups = false, $strict_user = false, $size_canvas = null,
+	$old_mode = false) {
 	
 	global $config;
-	
 	
 	
 	if ($l2_network) {
@@ -604,7 +604,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		}
 	}
 	
-	if ($l2_network) {
+	if ($l2_network || $old_mode) {
 		$count = 0;
 		$group_nodes = 10;
 		$graph .= networkmap_create_transparent_node($count);

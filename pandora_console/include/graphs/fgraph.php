@@ -579,7 +579,7 @@ function hbar_graph($flash_chart, $chart_data, $width, $height,
 		
 		$id_graph = serialize_in_temp($graph, null, $ttl);
 		
-		return "<img src='" . $homedir . "include/graphs/functions_pchart.php?static_graph=1&graph_type=hbar&ttl=".$ttl."&id_graph=".$id_graph."'>";
+		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?static_graph=1&graph_type=hbar&ttl=".$ttl."&id_graph=".$id_graph."'>";
 	}
 }
 

@@ -540,7 +540,7 @@ sub process_module_data ($$$$$$$$$) {
 	            'datalist' => 0, 'status' => 0, 'unit' => 0, 'timestamp' => 0, 'module_group' => 0, 'custom_id' => '', 
 	            'str_warning' => '', 'str_critical' => '', 'critical_instructions' => '', 'warning_instructions' => '',
 	            'unknown_instructions' => '', 'tags' => '', 'critical_inverse' => 0, 'warning_inverse' => 0, 'quiet' => 0,
-	            'module_ff_interval' => 0};
+	            'module_ff_interval' => 0, 'alert_template' => ''};
 	
 	# Other tags will be saved here
 	$module_conf->{'extended_info'} = '';
@@ -618,7 +618,13 @@ sub process_module_data ($$$$$$$$$) {
 			$module_tags = $module_conf->{'tags'};
 			delete $module_conf->{'tags'};
 		}
-		
+
+		my $initial_alert_template = undef;
+		if(defined ($module_conf->{'alert_template'})) {
+			$initial_alert_template = $module_conf->{'alert_template'};
+			delete $module_conf->{'alert_template'};
+		}
+
 		# Create the module
 		my $module_id = pandora_create_module_from_hash ($pa_config, $module_conf, $dbh);
 		
@@ -645,7 +651,17 @@ sub process_module_data ($$$$$$$$$) {
 				}
 			}
 		}
-		
+
+		#  Assign alert-template if the spceicied one exists
+		if( $initial_alert_template ) {
+			my $id_alert_template = get_db_value ($dbh,
+					'SELECT id FROM talert_templates WHERE talert_templates.name = ?',
+					safe_input($initial_alert_template) );
+
+			if( defined($id_alert_template) ) {
+				pandora_create_template_module ($pa_config, $dbh, $module->{'id_agente_modulo'}, $id_alert_template);
+			}
+		}
 	}
 	else {
 		# Control NULL columns

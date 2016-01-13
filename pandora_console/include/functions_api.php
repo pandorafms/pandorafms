@@ -1900,6 +1900,12 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3) {
 				return;
 			}
 		}
+		// Check if agent exists
+		$check_id_agent = db_get_value ('id_agente', 'tagente', 'id_agente', $other['data'][0]);
+		if (!$check_id_agent) {
+			returnError('error_update_data_module', __('Error updating network module. Id_agent doesn\'t exists.'));
+			return;
+		}
 	}
 	
 	$network_module_fields = array('id_agente',
@@ -2096,6 +2102,12 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3) {
 				returnError('error_update_plugin_module', __('Error updating plugin module. Id_module exists in the new agent.'));
 				return;
 			}
+		}
+		// Check if agent exists
+		$check_id_agent = db_get_value ('id_agente', 'tagente', 'id_agente', $other['data'][0]);
+		if (!$check_id_agent) {
+			returnError('error_update_data_module', __('Error updating plugin module. Id_agent doesn\'t exists.'));
+			return;
 		}
 	}
 	
@@ -2416,6 +2428,12 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3) {
 				return;
 			}
 		}
+		// Check if agent exists
+		$check_id_agent = db_get_value ('id_agente', 'tagente', 'id_agente', $other['data'][0]);
+		if (!$check_id_agent) {
+			returnError('error_update_data_module', __('Error updating data module. Id_agent doesn\'t exists.'));
+			return;
+		}
 	}
 	
 	$data_module_fields = array('id_agente',
@@ -2672,6 +2690,12 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 				returnError('error_update_snmp_module', __('Error updating SNMP module. Id_module exists in the new agent.'));
 				return;
 			}
+		}
+		// Check if agent exists
+		$check_id_agent = db_get_value ('id_agente', 'tagente', 'id_agente', $other['data'][0]);
+		if (!$check_id_agent) {
+			returnError('error_update_data_module', __('Error updating snmp module. Id_agent doesn\'t exists.'));
+			return;
 		}
 	}
 	

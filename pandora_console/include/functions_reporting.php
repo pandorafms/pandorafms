@@ -1964,23 +1964,30 @@ function reporting_exception($report, $content, $type = 'dinamic',
 					$config['fontpath'],
 					$config['font_size'],
 					$ttl);
-				$return["chart"]["hbar"] = hbar_graph(
-					false,
-					$data_hbar,
-					600,
-					100,
-					array(),
-					array(),
-					"",
-					"",
-					true,
-					ui_get_full_url(false, false, false, false),
-					ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
-					'',
-					'',
-					true,
-					$ttl,
-					true);
+				
+				
+				$params = array(
+					'flash_chart' => false,
+					'chart_data' => $data_hbar,
+					'width' => 600,
+					'height' => 25 * count($data_hbar),
+					'color' => array(),
+					'legend' => array(),
+					'long_index' => array(),
+					'no_data_image' => ui_get_full_url("images/image_problem.opaque.png", false, false, false),
+					'xaxisname' => "",
+					'yaxisname' => "",
+					'water_mark' => ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
+					'font' => "",
+					'font_size' => "",
+					'unit' => "",
+					'ttl' => $ttl,
+					'homeurl' => ui_get_full_url(false, false, false, false),
+					'backgroundColor' => 'white'
+					);
+				$return["chart"]["hbar"] = call_user_func_array(
+					'hbar_graph',
+					$params);
 			}
 			
 			

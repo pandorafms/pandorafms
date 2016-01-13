@@ -126,8 +126,10 @@ switch ($action) {
 				$ids_serialize = (string)get_parameter('ids_items_to_sort', '');
 				$move_to = (string)get_parameter('move_to', 'after');
 				
-				$countItems = db_get_sql('SELECT COUNT(id_rc)
-					FROM treport_content WHERE id_report = ' . $idReport);
+				$countItems = db_get_sql('
+					SELECT COUNT(id_rc)
+					FROM treport_content
+					WHERE id_report = ' . $idReport);
 				
 				if (($countItems < $position_to_sort) || ($position_to_sort < 1)) {
 					$resultOperationDB = false;
@@ -137,14 +139,16 @@ switch ($action) {
 					
 					switch ($config["dbtype"]) {
 						case "mysql":
-							$items = db_get_all_rows_sql('SELECT id_rc, `order`
+							$items = db_get_all_rows_sql('
+								SELECT id_rc, `order`
 								FROM treport_content
 								WHERE id_report = ' . $idReport . '
 								ORDER BY `order`');
 							break;
 						case "oracle":
 						case "postgresql":
-							$items = db_get_all_rows_sql('SELECT id_rc, "order"
+							$items = db_get_all_rows_sql('
+								SELECT id_rc, "order"
 								FROM treport_content
 								WHERE id_report = ' . $idReport . '
 								ORDER BY "order"');
@@ -152,6 +156,49 @@ switch ($action) {
 					}
 					
 					if ($items === false) $items = array();
+					
+					
+					// Clean the repeated order values
+					$order_temp = 1;
+					foreach ($items as $item) {
+						switch ($config["dbtype"]) {
+							case "mysql":
+								db_process_sql_update('treport_content',
+									array('`order`' => $order_temp),
+									array('id_rc' => $item['id_rc']));
+								break;
+							case "postgresql":
+							case "oracle":
+								db_process_sql_update('treport_content',
+									array('"order"' => $order_temp),
+									array('id_rc' => $item['id_rc']));
+								break;
+						}
+						
+						$order_temp++;
+					}
+					
+					
+					switch ($config["dbtype"]) {
+						case "mysql":
+							$items = db_get_all_rows_sql('
+								SELECT id_rc, `order`
+								FROM treport_content
+								WHERE id_report = ' . $idReport . '
+								ORDER BY `order`');
+							break;
+						case "oracle":
+						case "postgresql":
+							$items = db_get_all_rows_sql('
+								SELECT id_rc, "order"
+								FROM treport_content
+								WHERE id_report = ' . $idReport . '
+								ORDER BY "order"');
+							break;
+					}
+					
+					if ($items === false) $items = array();
+					
 					
 					
 					$temp = array();
@@ -164,6 +211,8 @@ switch ($action) {
 						}
 					}
 					$items = $temp;
+					
+					
 					
 					$sorted_items = array();
 					foreach ($items as $pos => $id_unsort) {
@@ -187,16 +236,20 @@ switch ($action) {
 					
 					$items = $sorted_items;
 					
+					
+					
 					foreach ($items as $order => $id) {
 						switch ($config["dbtype"]) {
 							case "mysql":
 								db_process_sql_update('treport_content',
-									array('`order`' => ($order + 1)), array('id_rc' => $id));
+									array('`order`' => ($order + 1)),
+									array('id_rc' => $id));
 								break;
 							case "postgresql":
 							case "oracle":
 								db_process_sql_update('treport_content',
-									array('"order"' => ($order + 1)), array('id_rc' => $id));
+									array('"order"' => ($order + 1)),
+									array('id_rc' => $id));
 								break;
 						}
 					}

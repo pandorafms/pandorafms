@@ -2520,4 +2520,19 @@ if (!function_exists('hex2bin')) {
 	}
 }
 
+
+function get_refresh_time_array() {
+	return array (
+		'0' => __('Disable'),
+		'5' => __('5 seconds'),
+		'10' => __('10 seconds'),
+		'15' => __('15 seconds'),
+		'30' => __('30 seconds'),
+		(string)SECONDS_1MINUTE => __('1 minute'),
+		(string)SECONDS_2MINUTES => __('2 minutes'),
+		(string)SECONDS_5MINUTES => __('5 minutes'),
+		(string)SECONDS_15MINUTES => __('15 minutes'),
+		(string)SECONDS_30MINUTES => __('30 minutes'),
+		(string)SECONDS_1HOUR => __('1 hour'));
+}
 ?>

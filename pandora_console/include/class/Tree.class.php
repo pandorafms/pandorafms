@@ -368,7 +368,7 @@ class Tree {
 								else {
 									$agent_table = "SELECT COUNT(DISTINCT(ta.id_agente))
 													FROM tagente ta
-													LEFT JOIN tagente_modulo tam
+													INNER JOIN tagente_modulo tam
 														ON tam.disabled = 0
 															AND ta.id_agente = tam.id_agente
 															$module_search_filter

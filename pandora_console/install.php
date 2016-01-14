@@ -805,7 +805,7 @@ function install_step4() {
 							check_generic ($step1, "Creating database '$dbname'");
 						}
 						else {
-							$step = 1;
+							$step1 = 1;
 						}
 						if ($step1 == 1) {
 							$step2 = mysql_select_db($dbname);

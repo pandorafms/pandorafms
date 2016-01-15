@@ -201,10 +201,6 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 		$list["_server_sanity_"] = format_numeric (100 - $list["_module_sanity_"], 1);
 	}
 	else {
-		$_tag_condition = '';
-		if ($user_strict) {
-			$_tag_condition = ' AND ' . tags_get_acl_tags_module_condition($acltags,'tae');
-		}
 		foreach ($list_groups as $group) {
 			$group_agents = db_get_row_sql("SELECT SUM(warning_count) AS _monitors_warning_,
 														SUM(critical_count) AS _monitors_critical_,
@@ -214,7 +210,7 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 														SUM(fired_count) AS _monitors_alerts_fired_,
 														COUNT(*) AS _total_agents_, id_grupo, intervalo,
 														ultimo_contacto, disabled
-									FROM tagente WHERE id_grupo = " . $group['id_grupo'] . $_tag_condition . " GROUP BY id_grupo");
+									FROM tagente WHERE id_grupo = " . $group['id_grupo'] . " GROUP BY id_grupo");
 			$list[$group['id_grupo']]['_monitors_critical_'] = (int)$group_agents['_monitors_critical_'];
 			$list[$group['id_grupo']]['_monitors_warning_'] = (int)$group_agents['_monitors_warning_'];
 			$list[$group['id_grupo']]['_monitors_unknown_'] = (int)$group_agents['_monitors_unknown_'];
@@ -564,7 +560,6 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 			}
 		}
 	}
-
 	//Eliminate the first comma
 	$fathers_id = substr($fathers_id, 1);
 	//Takes the parents even without agents, complete groups
@@ -573,11 +568,11 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 				FROM tgrupo
 				WHERE id_grupo IN (" . $fathers_id . ")
 				ORDER BY nombre COLLATE utf8_general_ci ASC");
-
-	//Merges the arrays and eliminates the duplicates groups
-	$list_groups = array_merge($list_groups, $list_father_groups);
+	if (!empty($list_father_groups)) {
+		//Merges the arrays and eliminates the duplicates groups
+		$list_groups = array_merge($list_groups, $list_father_groups);
+	}
     $list_groups = groupview_array_unique_multidim($list_groups, 'id_grupo');
-
 	//Order groups (Father-children)
 	$ordered_groups = groupview_order_groups_for_parents($list_groups);
 	$ordered_ids = array();
@@ -732,11 +727,6 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 		$list["_server_sanity_"] = format_numeric (100 - $list["_module_sanity_"], 1);
 	}
 	else {
-		$_tag_condition = "";
-		if ($user_strict) {
-			$_tag_condition = " AND " . tags_get_acl_tags_module_condition($acltags,'tae');
-		}
-
 		foreach ($list_groups as $group) {
 			$group_agents = db_get_row_sql("SELECT SUM(warning_count) AS _monitors_warning_,
 														SUM(critical_count) AS _monitors_critical_,
@@ -746,7 +736,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 														SUM(fired_count) AS _monitors_alerts_fired_,
 														COUNT(*) AS _total_agents_, id_grupo, intervalo,
 														ultimo_contacto, disabled
-									FROM tagente WHERE id_grupo = " . $group['id_grupo'] . $_tag_condition . " GROUP BY id_grupo");
+									FROM tagente WHERE id_grupo = " . $group['id_grupo'] . " GROUP BY id_grupo");
 			$list[$group['id_grupo']]['_monitors_critical_'] = (int)$group_agents['_monitors_critical_'];
 			$list[$group['id_grupo']]['_monitors_warning_'] = (int)$group_agents['_monitors_warning_'];
 			$list[$group['id_grupo']]['_monitors_unknown_'] = (int)$group_agents['_monitors_unknown_'];

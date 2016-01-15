@@ -75,19 +75,20 @@ foreach ($all_data as $group_all_data) {
 	$monitor_warning += $group_all_data["_monitors_warning_"];
 	$monitor_critical += $group_all_data["_monitors_critical_"];
 	$monitor_unknown += $group_all_data["_monitors_unknown_"];
+	$monitor_not_init += $group_all_data["_monitors_not_init_"];
 
 	$agents_unknown += $group_all_data["_agents_unknown_"];
 	$agents_notinit += $group_all_data["_agents_not_init_"];
 }
 
-$total = $monitor_ok + $monitor_warning + $monitor_critical + $monitor_unknown;
+$total = $monitor_ok + $monitor_warning + $monitor_critical + $monitor_unknown + $monitor_not_init;
 
 //Monitors
 $total_ok = format_numeric (($monitor_ok*100)/$total,2);
 $total_warning = format_numeric (($monitor_warning*100)/$total,2);
 $total_critical = format_numeric (($monitor_critical*100)/$total,2);
 $total_unknown = format_numeric (($monitor_unknown*100)/$total,2);
-
+$total_monitor_not_init = format_numeric (($monitor_not_init*100)/$total,2);
 //Agents
 $total_agent_unknown = format_numeric (($agents_unknown*100)/$total_agentes,2);
 $total_not_init = format_numeric (($agents_notinit*100)/$total_agentes,2);
@@ -105,6 +106,7 @@ echo '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="data
 			echo "<span id='sumary' style='background-color:#FAD403;'>". $total_warning ."%</span>";
 			echo "<span id='sumary' style='background-color:#80BA27;'>". $total_ok ."%</span>";
 			echo "<span id='sumary' style='background-color:#B2B2B2;'>". $total_unknown ."%</span>";
+			echo "<span id='sumary' style='background-color:#5bb6e5;'>". $total_monitor_not_init ."%</span>";
 		echo "</td>";
 	echo "</tr>";
 echo "</table>";

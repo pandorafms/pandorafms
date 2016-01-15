@@ -63,12 +63,16 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 				break;
 		}
 	}
-	$list = array();
-	$list['_monitors_critical_'] = 0;
-	$list['_monitors_warning_'] = 0;
-	$list['_monitors_unknown_'] = 0;
-	$list['_monitors_not_init_'] = 0;
-	$list['_monitors_ok_'] = 0;
+
+	foreach ($list_groups as $group) {
+		$list[$group['id_grupo']]['_name_'] = $group['nombre'];
+		$list[$group['id_grupo']]['_id_'] = $group['id_grupo'];
+		$list[$group['id_grupo']]['_monitors_critical_'] = 0;
+		$list[$group['id_grupo']]['_monitors_warning_'] = 0;
+		$list[$group['id_grupo']]['_monitors_unknown_'] = 0;
+		$list[$group['id_grupo']]['_monitors_not_init_'] = 0;
+		$list[$group['id_grupo']]['_monitors_ok_'] = 0;
+	}
 	if ($list_groups == false) {
 		$list_groups = array();
 	}
@@ -77,175 +81,58 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 	 * Agent cache for metaconsole.
 	 * Retrieve the statistic data from the cache table.
 	 */
-	if (!$user_strict && is_metaconsole() && !empty($list_groups)) {
-		$cache_table = 'tmetaconsole_agent';
+	if (!$user_strict && is_metaconsole()) {
+		foreach ($list_groups as $group) {
+			$group_agents = db_get_row_sql("SELECT SUM(warning_count) AS _monitors_warning_,
+														SUM(critical_count) AS _monitors_critical_,
+														SUM(normal_count) AS _monitors_ok_,
+														SUM(unknown_count) AS _monitors_unknown_,
+														SUM(notinit_count) AS _monitors_not_init_,
+														SUM(fired_count) AS _monitors_alerts_fired_,
+														COUNT(*) AS _total_agents_, id_grupo, intervalo,
+														ultimo_contacto, disabled
+									FROM tmetaconsole_agent WHERE id_grupo = " . $group['id_grupo'] . " GROUP BY id_grupo");
+			$list[$group['id_grupo']]['_monitors_critical_'] = (int)$group_agents['_monitors_critical_'];
+			$list[$group['id_grupo']]['_monitors_warning_'] = (int)$group_agents['_monitors_warning_'];
+			$list[$group['id_grupo']]['_monitors_unknown_'] = (int)$group_agents['_monitors_unknown_'];
+			$list[$group['id_grupo']]['_monitors_not_init_'] = (int)$group_agents['_monitors_not_init_'];
+			$list[$group['id_grupo']]['_monitors_ok_'] = (int)$group_agents['_monitors_ok_'];
 
-		$sql_stats = "SELECT id_grupo, COUNT(id_agente) AS agents_total,
-						SUM(total_count) AS monitors_total,
-						SUM(normal_count) AS monitors_ok,
-						SUM(warning_count) AS monitors_warning,
-						SUM(critical_count) AS monitors_critical,
-						SUM(unknown_count) AS monitors_unknown,
-						SUM(notinit_count) AS monitors_not_init,
-						SUM(fired_count) AS alerts_fired
-					  FROM $cache_table
-					  WHERE disabled = 0
-					  	AND id_grupo IN ($user_groups_ids)
-					  GROUP BY id_grupo";
+			$list[$group['id_grupo']]['_monitors_alerts_fired_'] = (int)$group_agents['_monitors_alerts_fired_'];
 
-		$data_stats = db_get_all_rows_sql($sql_stats);
+			$list[$group['id_grupo']]['_total_agents_'] = (int)$group_agents['_total_agents_'];
 
-		$sql_stats_unknown = "SELECT id_grupo, COUNT(id_agente) AS agents_unknown
-							  FROM $cache_table
-							  WHERE disabled = 0
-							  	AND id_grupo IN ($user_groups_ids)
-							  	AND critical_count = 0
-							  	AND warning_count = 0
-							  	AND unknown_count > 0
-							  GROUP BY id_grupo";
-		$data_stats_unknown = db_get_all_rows_sql($sql_stats_unknown);
+			$list[$group['id_grupo']]["_monitor_checks_"] = $list[$group['id_grupo']]["_monitors_not_init_"] + $list[$group['id_grupo']]["_monitors_unknown_"] + $list[$group['id_grupo']]["_monitors_warning_"] + $list[$group['id_grupo']]["_monitors_critical_"] + $list[$group['id_grupo']]["_monitors_ok_"];
 
-		$sql_stats_not_init = "SELECT id_grupo, COUNT(id_agente) AS agents_not_init
-							  FROM $cache_table
-							  WHERE disabled = 0
-							  	AND id_grupo IN ($user_groups_ids)
-							  	AND (total_count = 0 OR total_count = notinit_count)
-							  GROUP BY id_grupo";
-		$data_stats_not_init = db_get_all_rows_sql($sql_stats_not_init);
+			// Calculate not_normal monitors
+			$list[$group['id_grupo']]["_monitor_not_normal_"] = $list["_monitor_checks_"] - $list["_monitors_ok_"];
 
-		$stats_by_group = array();
-		if (!empty($data_stats)) {
-			foreach ($data_stats as $value) {
-				$group_id = (int) $value['id_grupo'];
+			$total_agents = $list[$group['id_grupo']]['_total_agents_'];
 
-				$stats = array();
-				$stats['agents_total'] = (int) $value['agents_total'];
-				$stats['monitors_total'] = (int) $value['monitors_total'];
-				$stats['monitors_ok'] = (int) $value['monitors_ok'];
-				$stats['monitors_warning'] = (int) $value['monitors_warning'];
-				$stats['monitors_critical'] = (int) $value['monitors_critical'];
-				$stats['monitors_unknown'] = (int) $value['monitors_unknown'];
-				$stats['monitors_not_init'] = (int) $value['monitors_not_init'];
-				$stats['alerts_fired'] = (int) $value['alerts_fired'];
-				$stats_by_group[$group_id] = $stats;
-			}
-
-			if (!empty($stats_by_group)) {
-				if (!empty($data_stats_unknown)) {
-					foreach ($data_stats_unknown as $value) {
-						$group_id = (int) $value['id_grupo'];
-						if (isset($stats_by_group[$group_id])) {
-							$stats_by_group[$group_id]['agents_unknown'] = (int) $value['agents_unknown'];
+			if (($group['id_grupo'] != 0) && ($total_agents > 0)) {
+				$agents = db_get_all_rows_sql("SELECT warning_count,
+													critical_count,
+													normal_count,
+													unknown_count,
+													notinit_count,
+													fired_count,
+													disabled
+												FROM tmetaconsole_agent
+												WHERE id_grupo = " . $group['id_grupo'] );
+				foreach ($agents as $agent) {
+					if (($agent['critical_count'] == 0) && ($agent['warning_count'] == 0) && ($group_agents['disabled'] == 0) && ($agent['normal_count'] == 0)) {
+						if ($agent['unknown_count'] > 0) {
+							$list[$group['id_grupo']]['_agents_unknown_'] += 1;
 						}
 					}
-				}
-				if (!empty($data_stats_not_init)) {
-					foreach ($data_stats_not_init as $value) {
-						$group_id = (int) $value['id_grupo'];
-						if (isset($stats_by_group[$group_id])) {
-							$stats_by_group[$group_id]['agents_not_init'] = (int) $value['agents_not_init'];
-						}
-					}
-				}
-				if (!empty($data_stats_ok)) {
-					foreach ($data_stats_ok as $value) {
-						$group_id = (int) $value['id_grupo'];
-						if (isset($stats_by_group[$group_id])) {
-							$stats_by_group[$group_id]['agents_ok'] = (int) $value['agents_ok'];
-						}
-					}
-				}
-				if (!empty($data_stats_warning)) {
-					foreach ($data_stats_warning as $value) {
-						$group_id = (int) $value['id_grupo'];
-						if (isset($stats_by_group[$group_id])) {
-							$stats_by_group[$group_id]['agents_warning'] = (int) $value['agents_warning'];
-						}
-					}
-				}
-				if (!empty($data_stats_critical)) {
-					foreach ($data_stats_critical as $value) {
-						$group_id = (int) $value['id_grupo'];
-						if (isset($stats_by_group[$group_id])) {
-							$stats_by_group[$group_id]['agents_critical'] = (int) $value['agents_critical'];
+					if (($agent['critical_count'] == 0) && ($agent['warning_count'] == 0) && ($group_agents['disabled'] == 0) && ($agent['normal_count'] == 0) && ($agent['unknown_count'] == 0)) {
+						if ($agent['notinit_count'] > 0) {
+							$list[$group['id_grupo']]['_agents_not_init_'] += 1;
 						}
 					}
 				}
 			}
 		}
-	}
-
-	if (!$user_strict && is_metaconsole()) { // Agent cache
-		$group_stat = array();
-		foreach ($list_groups as $value) {
-			$id = (int) $value['id_grupo'];
-			if (isset($stats_by_group[$id]))
-				$group_stat = $stats_by_group[$id];
-
-			$list['_agents_unknown_'] += isset($group_stat['agents_unknown']) ? $group_stat['agents_unknown'] : 0;
-			$list['_monitors_alerts_fired_'] += isset($group_stat['alerts_fired']) ? $group_stat['alerts_fired'] : 0;
-			$list['_total_agents_'] += isset($group_stat['agents_total']) ? $group_stat['agents_total'] : 0;
-
-			// This fields are not in database
-			$list['_monitors_ok_'] = isset($group_stat['monitors_ok']) ? $group_stat['monitors_ok'] : 0;
-			$list['_monitors_critical_'] += isset($group_stat['monitors_critical']) ? $group_stat['monitors_critical'] : 0;
-			$list['_monitors_warning_'] += isset($group_stat['monitors_warning']) ? $group_stat['monitors_warning'] : 0;
-			$list['_monitors_unknown_'] += isset($group_stat['monitors_unknown']) ? $group_stat['monitors_unknown'] : 0;
-			$list['_monitors_not_init_'] += isset($group_stat['monitors_not_init']) ? $group_stat['monitors_not_init'] : 0;
-			$list['_agents_not_init_'] += isset($group_stat['agents_not_init']) ? $group_stat['agents_not_init'] : 0;
-
-			$list['_agents_ok_'] = isset($group_stat['agents_ok']) ? $group_stat['agents_ok'] : 0;
-			$list['_agents_warning_'] += isset($group_stat['agents_warning']) ? $group_stat['agents_warning'] : 0;
-			$list['_agents_critical_'] += isset($group_stat['agents_critical']) ? $group_stat['agents_critical'] : 0;
-			$list['_monitors_alerts_'] +=  isset($group_stat['alerts']) ? $group_stat['alerts'] : 0;;
-
-			$list["_monitor_alerts_fire_count_"] = $group_stat["alerts_fired"];
-			$list["_total_checks_"] += $group_stat["modules"];
-			$list["_total_alerts_"] += $group_stat["alerts"];
-		}
-		// Get total count of monitors for this group, except disabled.
-		$list["_monitor_checks_"] = $list["_monitors_not_init_"] + $list["_monitors_unknown_"] + $list["_monitors_warning_"] + $list["_monitors_critical_"] + $list["_monitors_ok_"];
-
-		// Calculate not_normal monitors
-		$list["_monitor_not_normal_"] = $list[$i]["_monitor_checks_"] - $list["_monitors_ok_"];
-
-		if ($list["_monitor_not_normal_"] > 0 && $list["_monitor_checks_"] > 0) {
-			$list["_monitor_health_"] = format_numeric (100 - ($list["_monitor_not_normal_"] / ($list["_monitor_checks_"] / 100)), 1);
-		}
-		else {
-			$list["_monitor_health_"] = 100;
-		}
-
-		if ($list["_monitors_not_init_"] > 0 && $list["_monitor_checks_"] > 0) {
-			$list["_module_sanity_"] = format_numeric (100 - ($list["_monitors_not_init_"] / ($list["_monitor_checks_"] / 100)), 1);
-		}
-		else {
-			$list["_module_sanity_"] = 100;
-		}
-
-		if (isset($list[$i]["_alerts_"])) {
-			if ($list["_monitors_alerts_fired_"] > 0 && $list["_alerts_"] > 0) {
-				$list["_alert_level_"] = format_numeric (100 - ($list["_monitors_alerts_fired_"] / ($list["_alerts_"] / 100)), 1);
-			}
-			else {
-				$list["_alert_level_"] = 100;
-			}
-		}
-		else {
-			$list["_alert_level_"] = 100;
-			$list["_alerts_"] = 0;
-		}
-
-		$list["_monitor_bad_"] = $list["_monitors_critical_"] + $list["_monitors_warning_"];
-
-		if ($list["_monitor_bad_"] > 0 && $list["_monitor_checks_"] > 0) {
-			$list["_global_health_"] = format_numeric (100 - ($list["_monitor_bad_"] / ($list["_monitor_checks_"] / 100)), 1);
-		}
-		else {
-			$list["_global_health_"] = 100;
-		}
-
-		$list["_server_sanity_"] = format_numeric (100 - $list["_module_sanity_"], 1);
 	}
 	else if (($config["realtimestats"] == 0) && !$user_strict) {
 
@@ -314,60 +201,61 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 		$list["_server_sanity_"] = format_numeric (100 - $list["_module_sanity_"], 1);
 	}
 	else {
+		$_tag_condition = '';
 		if ($user_strict) {
-			$_tag_condition = 'AND ' . tags_get_acl_tags_module_condition($acltags,'tae');
+			$_tag_condition = ' AND ' . tags_get_acl_tags_module_condition($acltags,'tae');
 		}
-		else
-			$_tag_condition = '';
+		foreach ($list_groups as $group) {
+			$group_agents = db_get_row_sql("SELECT SUM(warning_count) AS _monitors_warning_,
+														SUM(critical_count) AS _monitors_critical_,
+														SUM(normal_count) AS _monitors_ok_,
+														SUM(unknown_count) AS _monitors_unknown_,
+														SUM(notinit_count) AS _monitors_not_init_,
+														SUM(fired_count) AS _monitors_alerts_fired_,
+														COUNT(*) AS _total_agents_, id_grupo, intervalo,
+														ultimo_contacto, disabled
+									FROM tagente WHERE id_grupo = " . $group['id_grupo'] . $_tag_condition . " GROUP BY id_grupo");
+			$list[$group['id_grupo']]['_monitors_critical_'] = (int)$group_agents['_monitors_critical_'];
+			$list[$group['id_grupo']]['_monitors_warning_'] = (int)$group_agents['_monitors_warning_'];
+			$list[$group['id_grupo']]['_monitors_unknown_'] = (int)$group_agents['_monitors_unknown_'];
+			$list[$group['id_grupo']]['_monitors_not_init_'] = (int)$group_agents['_monitors_not_init_'];
+			$list[$group['id_grupo']]['_monitors_ok_'] = (int)$group_agents['_monitors_ok_'];
 
-		$result_list = db_get_all_rows_sql("SELECT COUNT(*) as contado, estado
-					FROM tagente_estado tae INNER JOIN tagente ta
-						ON tae.id_agente = ta.id_agente
-							AND ta.disabled = 0
-							AND ta.id_grupo IN ( $user_groups_ids )
-					INNER JOIN tagente_modulo tam
-						ON tae.id_agente_modulo = tam.id_agente_modulo
-							AND tam.disabled = 0
-					$_tag_condition
-					GROUP BY estado");
+			$list[$group['id_grupo']]['_monitors_alerts_fired_'] = (int)$group_agents['_monitors_alerts_fired_'];
 
-		foreach ($result_list as $result) {
-			switch ($result['estado']) {
-				case AGENT_MODULE_STATUS_CRITICAL_ALERT:
-					break;
-				case AGENT_MODULE_STATUS_CRITICAL_BAD:
-					$list['_monitors_critical_'] += (int)$result['contado'];
-					break;
-				case AGENT_MODULE_STATUS_WARNING_ALERT:
-					break;
-				case AGENT_MODULE_STATUS_WARNING:
-					$list['_monitors_warning_'] += (int)$result['contado'];
-					break;
-				case AGENT_MODULE_STATUS_UNKNOWN:
-					$list['_monitors_unknown_'] += (int)$result['contado'];
-					break;
-				case AGENT_MODULE_STATUS_NO_DATA:
-				case AGENT_MODULE_STATUS_NOT_INIT:
-					$list['_monitors_not_init_'] += (int)$result['contado'];
-					break;
-				case AGENT_MODULE_STATUS_NORMAL_ALERT:
-					break;
-				case AGENT_MODULE_STATUS_NORMAL:
-					$list['_monitors_ok_'] += (int)$result['contado'];
-					break;
+			$list[$group['id_grupo']]['_total_agents_'] = (int)$group_agents['_total_agents_'];
+
+			$list[$group['id_grupo']]["_monitor_checks_"] = $list[$group['id_grupo']]["_monitors_not_init_"] + $list[$group['id_grupo']]["_monitors_unknown_"] + $list[$group['id_grupo']]["_monitors_warning_"] + $list[$group['id_grupo']]["_monitors_critical_"] + $list[$group['id_grupo']]["_monitors_ok_"];
+
+			// Calculate not_normal monitors
+			$list[$group['id_grupo']]["_monitor_not_normal_"] = $list["_monitor_checks_"] - $list["_monitors_ok_"];
+
+			$total_agents = $list[$group['id_grupo']]['_total_agents_'];
+
+			if (($group['id_grupo'] != 0) && ($total_agents > 0)) {
+				$agents = db_get_all_rows_sql("SELECT warning_count,
+													critical_count,
+													normal_count,
+													unknown_count,
+													notinit_count,
+													fired_count,
+													disabled
+												FROM tagente
+												WHERE id_grupo = " . $group['id_grupo'] );
+				foreach ($agents as $agent) {
+					if (($agent['critical_count'] == 0) && ($agent['warning_count'] == 0) && ($group_agents['disabled'] == 0) && ($agent['normal_count'] == 0)) {
+						if ($agent['unknown_count'] > 0) {
+							$list[$group['id_grupo']]['_agents_unknown_'] += 1;
+						}
+					}
+					if (($agent['critical_count'] == 0) && ($agent['warning_count'] == 0) && ($group_agents['disabled'] == 0) && ($agent['normal_count'] == 0) && ($agent['unknown_count'] == 0)) {
+						if ($agent['notinit_count'] > 0) {
+							$list[$group['id_grupo']]['_agents_not_init_'] += 1;
+						}
+					}
+				}
 			}
 		}
-
-		$list['_monitors_alerts_fired_'] = groupview_monitor_fired_alerts (explode(',',$user_groups_ids), $user_strict,explode(',',$user_groups_ids));
-		$list['_monitors_alerts_'] = groupview_monitor_alerts (explode(',',$user_groups_ids), $user_strict,explode(',',$user_groups_ids));
-
-		$total_agentes = agents_get_agents (false, array('count(*) as total_agents'), 'AR',false, false);
-		$list['_total_agents_'] = $total_agentes[0]['total_agents'];
-
-		$list["_monitor_checks_"] = $list["_monitors_not_init_"] + $list["_monitors_unknown_"] + $list["_monitors_warning_"] + $list["_monitors_critical_"] + $list["_monitors_ok_"];
-
-		// Calculate not_normal monitors
-		$list["_monitor_not_normal_"] = $list["_monitor_checks_"] - $list["_monitors_ok_"];
 	}
 
 	return $list;
@@ -763,13 +651,14 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 												FROM tmetaconsole_agent
 												WHERE id_grupo = " . $group['id_grupo'] );
 				foreach ($agents as $agent) {
-					$total_monitors_init = $agent['warning_count'] + $agent['critical_count'] + $agent['normal_count'];
-					if ($total_monitors_init == $agent['notinit_count']) {
-						$list[$group['id_grupo']]['_agents_not_init_'] += 1;
-					}
-					if (($agent['critical_count'] == 0) && ($agent['warning_count'] == 0) && ($group_agents['disabled'] == 0)) {
+					if (($agent['critical_count'] == 0) && ($agent['warning_count'] == 0) && ($group_agents['disabled'] == 0) && ($agent['normal_count'] == 0)) {
 						if ($agent['unknown_count'] > 0) {
 							$list[$group['id_grupo']]['_agents_unknown_'] += 1;
+						}
+					}
+					if (($agent['critical_count'] == 0) && ($agent['warning_count'] == 0) && ($group_agents['disabled'] == 0) && ($agent['normal_count'] == 0) && ($agent['unknown_count'] == 0)) {
+						if ($agent['notinit_count'] > 0) {
+							$list[$group['id_grupo']]['_agents_not_init_'] += 1;
 						}
 					}
 				}
@@ -843,12 +732,11 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 		$list["_server_sanity_"] = format_numeric (100 - $list["_module_sanity_"], 1);
 	}
 	else {
+		$_tag_condition = "";
 		if ($user_strict) {
-			$_tag_condition = 'AND ' . tags_get_acl_tags_module_condition($acltags,'tae');
+			$_tag_condition = " AND " . tags_get_acl_tags_module_condition($acltags,'tae');
 		}
-		else{
-			$_tag_condition = '';
-		}
+
 		foreach ($list_groups as $group) {
 			$group_agents = db_get_row_sql("SELECT SUM(warning_count) AS _monitors_warning_,
 														SUM(critical_count) AS _monitors_critical_,
@@ -887,13 +775,14 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 												FROM tagente
 												WHERE id_grupo = " . $group['id_grupo'] );
 				foreach ($agents as $agent) {
-					$total_monitors_init = $agent['warning_count'] + $agent['critical_count'] + $agent['normal_count'];
-					if ($total_monitors_init == $agent['notinit_count']) {
-						$list[$group['id_grupo']]['_agents_not_init_'] += 1;
-					}
-					if (($agent['critical_count'] == 0) && ($agent['warning_count'] == 0) && ($group_agents['disabled'] == 0)) {
+					if (($agent['critical_count'] == 0) && ($agent['warning_count'] == 0) && ($group_agents['disabled'] == 0) && ($agent['normal_count'] == 0)) {
 						if ($agent['unknown_count'] > 0) {
 							$list[$group['id_grupo']]['_agents_unknown_'] += 1;
+						}
+					}
+					if (($agent['critical_count'] == 0) && ($agent['warning_count'] == 0) && ($group_agents['disabled'] == 0) && ($agent['normal_count'] == 0) && ($agent['unknown_count'] == 0)) {
+						if ($agent['notinit_count'] > 0) {
+							$list[$group['id_grupo']]['_agents_not_init_'] += 1;
 						}
 					}
 				}
@@ -903,6 +792,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 	}
 
 	if ($user_strict) {
+		$i = 0;
 		foreach ($user_tags as $group_id => $tag_name) {
 			$id = db_get_value('id_tag', 'ttag', 'name', $tag_name);
 

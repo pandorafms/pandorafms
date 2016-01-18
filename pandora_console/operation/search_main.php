@@ -55,9 +55,14 @@ $table->data[0][1] = "<a href='index.php?search_category=agents&keywords=" . $co
 $table->data[0][2] = html_print_image ("images/module.png", true, array ("title" => __('Modules found')));
 $table->data[0][3] = "<a href='index.php?search_category=modules&keywords=" . $config['search_keywords'] . "&head_search_keywords=Search'>" .
 	sprintf(__("%s Found"), $totalModules) . "</a>";
-$table->data[0][4] = html_print_image ("images/bell.png", true, array ("title" => __('Alerts found')));
-$table->data[0][5] = "<a href='index.php?search_category=alerts&keywords=" . $config['search_keywords'] . "&head_search_keywords=Search'>" .
-	sprintf(__("%s Found"), $totalAlerts) . "</a>";
+
+// ------------------- DISABLED FOR SOME INSTALLATIONS------------------
+
+//~ $table->data[0][4] = html_print_image ("images/bell.png", true, array ("title" => __('Alerts found')));
+//~ $table->data[0][5] = "<a href='index.php?search_category=alerts&keywords=" . $config['search_keywords'] . "&head_search_keywords=Search'>" .
+	//~ sprintf(__("%s Found"), $totalAlerts) . "</a>";
+// ---------------------------------------------------------------------
+
 $table->data[0][6] = html_print_image ("images/input_user.png", true, array ("title" => __('Users found')));
 $table->data[0][7] = "<a href='index.php?search_category=users&keywords=" . $config['search_keywords'] . "&head_search_keywords=Search'>" .
 	sprintf(__("%s Found"), $totalUsers) . "</a>";

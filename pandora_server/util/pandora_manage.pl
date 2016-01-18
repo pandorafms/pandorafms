@@ -333,7 +333,7 @@ sub pandora_add_profile_to_user ($$$;$) {
 	
 	$group_id = 0 unless defined($group_id);
 	
-	db_do ($dbh, 'INSERT INTO tusuario_perfil (`id_usuario`, `id_perfil`, `id_grupo`)
+	db_do ($dbh, 'INSERT INTO tusuario_perfil (id_usuario, id_perfil, id_grupo)
 				  VALUES (?, ?, ?)', safe_input($user_id), $profile_id, $group_id);
 }
 
@@ -681,19 +681,19 @@ sub pandora_get_planned_downtime_id ($$) {
 ##########################################################################
 sub pandora_get_all_planned_downtime ($$$$$$) {
 	my ($dbh, $downtime_name, $id_group, $type_downtime, $type_execution, $type_periodicity) = @_;
-	my $sql = "SELECT * FROM tplanned_downtime WHERE  name LIKE '%".safe_input($downtime_name)."%' ?";
+	my $sql = "SELECT * FROM tplanned_downtime WHERE  name LIKE '%".safe_input($downtime_name)."%' ";
 	my $text_sql = '';
 	
-	if (defined($id_group) && $id_group != '') {
+	if (defined($id_group) && $id_group ne '') {
 		$text_sql .= " id_group = $id_group ";
 	}
-	if ( defined($type_downtime) && $type_downtime != '' ) {
+	if ( defined($type_downtime) && $type_downtime ne '' ) {
 		$text_sql .= " type_downtime = $type_downtime ";
 	}
-	if (defined($type_execution) && $type_execution != '') {
+	if (defined($type_execution) && $type_execution ne '') {
 		$text_sql .= " type_execution = $type_execution ";
 	}
-	if (defined($type_periodicity) && $type_periodicity != '') {
+	if (defined($type_periodicity) && $type_periodicity ne '') {
 		$text_sql .= " type_periodicity = $type_periodicity ";
 	}
 	
@@ -701,7 +701,8 @@ sub pandora_get_all_planned_downtime ($$$$$$) {
 		$text_sql = '';
 	}
 	
-	my @downtimes = get_db_rows ($dbh, $sql, $text_sql);
+	$sql .= $text_sql;
+	my @downtimes = get_db_rows ($dbh, $sql);
 	
 	return @downtimes;
 }
@@ -770,7 +771,7 @@ sub pandora_update_special_day_from_hash ($$$$) {
 sub pandora_get_special_day_id ($$) {
 	my ($dbh, $special_day) = @_;
 	
-	my $special_day_id = get_db_value ($dbh, "SELECT id FROM talert_special_days WHERE date = ?", safe_input($special_day));
+	my $special_day_id = get_db_value ($dbh, "SELECT id FROM talert_special_days WHERE ${RDBMS_QUOTE}date${RDBMS_QUOTE} = ?", safe_input($special_day));
 
 	return defined ($special_day_id) ? $special_day_id : -1;
 }
@@ -1732,7 +1733,11 @@ sub cli_create_plugin_module($) {
    		print "[ERROR] Error to create module\n\n";
   		help_screen();
 	}
-
+	
+	if (${RDBMS} eq 'oracle') {
+		$plug_params =~ s/\\//g;
+	}
+	
 	my $decode_params = decode_json($plug_params);
 
 	my $user_params_size = scalar(@user_params);

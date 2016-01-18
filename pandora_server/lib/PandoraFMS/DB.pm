@@ -477,7 +477,15 @@ sub get_agent_module_id ($$$) {
 sub get_template_id ($$) {
 	my ($dbh, $template_name) = @_;
 	
-	my $rc = get_db_value ($dbh, "SELECT id FROM talert_templates WHERE name = ?", safe_input($template_name));
+	my $field;
+	if ($RDBMS eq 'oracle') {
+		$field = "to_char(name)";
+	}
+	else {
+		$field = "name";
+	}
+	
+	my $rc = get_db_value ($dbh, "SELECT id FROM talert_templates WHERE $field = ?", safe_input($template_name));
 	return defined ($rc) ? $rc : -1;
 }
 

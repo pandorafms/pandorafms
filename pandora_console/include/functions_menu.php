@@ -196,7 +196,7 @@ function menu_print_menu (&$menu) {
 				else
 					$visible = false;
 			}
-			elseif ((array_search($sec2, $sub['pages']) !== false) && isset($sub['pages'])) {
+			elseif (isset($sub['pages']) && (array_search($sec2, $sub['pages']) !== false)) {
 				$class .= 'submenu_selected selected';
 				$menu_selected = true;
 				$selected = true;

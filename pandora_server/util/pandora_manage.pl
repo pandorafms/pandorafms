@@ -3310,7 +3310,7 @@ sub cli_create_synthetic() {
 	my $agent_name = @ARGV[4];
 	my @module_data = @ARGV[5..$#ARGV];
 	my $module;
-	my (@filterdata,@data_module);
+	my (@filterdata,@data_module,$module_data);
 	
 	if ($synthetic_type ne 'arithmetic' && $synthetic_type ne 'average') {
 		print("[ERROR] Type of syntethic module doesn't exists \n\n");
@@ -3341,7 +3341,7 @@ sub cli_create_synthetic() {
 					exit 1;
 				}
 				if (is_numeric(@split_data[1]) == 0) {
-					continue;
+					next;
 				}
 				@data_module = ("",@split_data[0],@split_data[1]);
 				my $text_data = join(',',@data_module);

@@ -77,20 +77,24 @@ if ($multiple_delete) {
 if ($show_sent) { //sent view
 	$num_messages = messages_get_count_sent($config['id_user']);
 	if ($num_messages > 0 && !is_ajax()) {
-		echo '<p>'.__('You have').' <b>'.$num_messages.'</b> '.' '.__('sent message(s)').'.</p>';
+		echo '<p>' . __('You have') . ' <b>' . $num_messages . '</b> ' .
+			' ' . __('sent message(s)') . '.</p>';
 	}
 	$messages = messages_get_overview_sent ('', 'DESC');
 }
 else { //messages received
 	$num_messages = messages_get_count ($config["id_user"]);
 	if ($num_messages > 0 && !is_ajax()) {
-		echo '<p>'.__('You have').' <b>'.$num_messages.'</b> '.' '.__('unread message(s)').'.</p>';
+		echo '<p>' . __('You have') . ' <b>' . $num_messages . '</b> ' .
+			' ' . __('unread message(s)') . '.</p>';
 	}
 	$messages = messages_get_overview ();
 }
 
 if (empty ($messages)) {
-	ui_print_info_message ( array('no_close'=>true, 'message'=>  __('There are no messages.') ) );
+	ui_print_info_message (
+		array('no_close'=>true,
+			'message'=>  __('There are no messages.') ) );
 }
 else {
 	$table = new stdClass();
@@ -180,7 +184,9 @@ else {
 		}
 		$data[2] .= '</a>';
 		
-		$data[3] = ui_print_timestamp ($message["timestamp"], true, array ("prominent" => "timestamp"));
+		$data[3] = ui_print_timestamp(
+			$message["timestamp"], true,
+			array ("prominent" => "timestamp"));
 		
 		if ($show_sent) {
 			$data[4] = '<a href="index.php?sec=workspace&amp;sec2=operation/messages/message_list&show_sent=1&delete_message=1&id='.$message_id.'"
@@ -202,12 +208,13 @@ echo "<table width='100%'>";
 	echo "<tr>";
 		echo "<td>";
 			echo "<div style='float: right;'>";
-				if (!empty($messages)){
+				if (!empty($messages)) {
 					if ($show_sent)
 						echo '<form method="post" style="float:right;" action="index.php?sec=workspace&amp;sec2=operation/messages/message_list&show_sent=1&amp;multiple_delete=1">';
 					else
 						echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/messages/message_list&amp;multiple_delete=1">';
-								html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+					html_print_submit_button(__('Delete'), 'delete_btn',
+						false, 'class="sub delete"');
 					echo "</form>";
 				}
 				echo '<form method="post" style="float:right;" action="index.php?sec=workspace&sec2=operation/messages/message_edit">';

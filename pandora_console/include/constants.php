@@ -447,4 +447,7 @@ define("CHART_DEFAULT_ALPHA", 50);
 /* Statwin */
 define("STATWIN_DEFAULT_CHART_WIDTH",	555);
 define("STATWIN_DEFAULT_CHART_HEIGHT",	245);
+
+/* Dashboard */
+define("DASHBOARD_DEFAULT_COUNT_CELLS", 9);
 ?>

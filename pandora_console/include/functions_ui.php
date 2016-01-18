@@ -431,7 +431,7 @@ function ui_print_timestamp ($unixtime, $return = false, $option = array ()) {
 		$style = 'style="white-space:nowrap;"';
 	}
 	else {
-		$style = 'style="'.$option["style"].'"';
+		$style = 'style="' . $option["style"] . '"';
 	}
 	
 	if (!empty ($option["prominent"])) {
@@ -447,12 +447,15 @@ function ui_print_timestamp ($unixtime, $return = false, $option = array ()) {
 	
 	//prominent_time is either timestamp or comparation
 	if ($unixtime <= 0) {
-		$title = __('Unknown').'/'.__('Never');
+		$title = __('Unknown') . '/' . __('Never');
 		$data = __('Unknown');
 	}
 	elseif ($prominent == "timestamp") {
+		pandora_setlocale();
+		
 		$title = human_time_comparation ($unixtime);
-		$data = date ($config["date_format"], $unixtime);
+		$data = strftime(date2strftime_format($config["date_format"]),
+			$unixtime);
 	}
 	else {
 		$title = date ($config["date_format"], $unixtime);

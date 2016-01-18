@@ -43,7 +43,11 @@ function menu_print_menu (&$menu) {
 	}
 	
 	//Open list of menu
-	echo '<ul'.(isset ($menu['class']) ? ' class="'.$menu['class'].'"' : '').'>';
+	echo '<ul' .
+		(isset ($menu['class']) ?
+			' class="'.$menu['class'].'"' :
+			'') .
+		'>';
 	
 	foreach ($menu as $mainsec => $main) {
 		$extensionInMenuParameter = (string) get_parameter ('extension_in_menu','');
@@ -61,7 +65,7 @@ function menu_print_menu (&$menu) {
 		
 		if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec)) == false)
 			continue;
-
+		
 		if (! isset ($main['id'])) {
 			$id = 'menu_'.++$idcounter;
 		}
@@ -129,7 +133,7 @@ function menu_print_menu (&$menu) {
 				
 				//This hacks avoid empty delimiter error when sec2 is not provided.
 				if (!$sec2) {
-					$sec2=" ";
+					$sec2 = " ";
 				}
 				
 				//Check if some submenu was selected to mark this (the parent) as selected
@@ -168,6 +172,8 @@ function menu_print_menu (&$menu) {
 				}
 			}
 			
+			
+			
 			//Set class
 			if (($sec2 == $subsec2 || $allsec2 == $subsec2 ||
 				$selected_submenu2) && isset ($sub[$subsec2]["options"])
@@ -190,10 +196,17 @@ function menu_print_menu (&$menu) {
 				else
 					$visible = false;
 			}
+			elseif ((array_search($sec2, $sub['pages']) !== false) && isset($sub['pages'])) {
+				$class .= 'submenu_selected selected';
+				$menu_selected = true;
+				$selected = true;
+				$visible = true;
+			}
 			else {
 				//Else it's not selected
 				$class .= 'submenu_not_selected';
 			}
+			
 			if (! isset ($sub["refr"])) {
 				$sub["refr"] = 0;
 			}
@@ -285,8 +298,16 @@ function menu_print_menu (&$menu) {
 					$title = '';
 				}
 				
-				$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($sub["refr"] ? '&amp;refr=' .
-										$sub["refr"] : '').$link_add.'"' . $title . '><div class="' . $sub_tree_class . '">'.$sub["text"].'</div></a>';
+				$submenu_output .= '<a href="index.php?' .
+					$extensionInMenu .
+					'sec=' . $secUrl . '&amp;' .
+					'sec2=' . $subsec2 .
+					($sub["refr"] ?
+						'&amp;refr=' . $sub["refr"] :
+						'') .
+					$link_add . '"' . $title . '>' .
+					'<div class="' . $sub_tree_class . '">'.$sub["text"].'</div>' .
+					'</a>';
 				
 				if (isset($sub['sub2'])) {
 					//$submenu_output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
@@ -298,7 +319,7 @@ function menu_print_menu (&$menu) {
 			if (isset($sub['sub2'])) {
 				
 				//Display if father is selected
-				$display = "style='display:none'";
+				$display = "style='display:none;'";
 				
 				if ($selected) {
 					$display = "";
@@ -366,15 +387,17 @@ function menu_print_menu (&$menu) {
 			}
 		}
 		
+		
+		
 		if ($menu_selected)
 			$seleccionado = 'selected';
 		else
 			$seleccionado = '';
-			
+		
 		//Print out the first level
 		$output .= '<li class="'.implode (" ", $classes).' ' . $seleccionado . '" id="icon_'.$id.'">';
 						//onclick="location.href=\'index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'\'">';
-
+		
 		$length = strlen(__($main["text"]));
 		$padding_top = ( $length >= 18) ? 6 : 12;
 		

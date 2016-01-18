@@ -115,6 +115,9 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$sub["operation/agentes/networkmap_list"]["text"] = __('Network map');
 	$sub["operation/agentes/networkmap_list"]["id"] = 'Network map';
 	$sub["operation/agentes/networkmap_list"]["refr"] = 0;
+	$sub["operation/agentes/networkmap_list"]["pages"] = array(
+		"operation/agentes/networkmap"
+		);
 	
 	enterprise_hook ('networkmap_console');
 	
@@ -273,6 +276,8 @@ if (check_acl ($config['id_user'], 0, "ER")) {
 	$sub = array ();
 	$sub["operation/events/events"]["text"] = __('View events');
 	$sub["operation/events/events"]["id"] = 'View events';
+	$sub["operation/events/events"]["pages"] =
+		array("godmode/events/events");
 	$sub["operation/events/event_statistics"]["text"] = __('Statistics');
 	$sub["operation/events/event_statistics"]["id"] = 'Statistics';
 	

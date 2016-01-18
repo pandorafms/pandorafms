@@ -130,7 +130,7 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	enterprise_hook('massivepolicies_submenu');
 	enterprise_hook('massivesnmp_submenu');
 	enterprise_hook('massivesatellite_submenu');
-
+	
 	$sub["gmassive"]["sub2"] = $sub2;
 }
 
@@ -140,22 +140,35 @@ if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0,
 	$menu_godmode["galertas"]["text"] = __('Alerts');
 	$menu_godmode["galertas"]["sec2"] = "godmode/alerts/alert_list";
 	$menu_godmode["galertas"]["id"] = "god-alerts";
-
+	
 	$sub = array ();
-		$sub["godmode/alerts/alert_list"]["text"] = __('List of Alerts');
-		$sub["godmode/alerts/alert_list"]["id"] = 'List of Alerts';
+	$sub["godmode/alerts/alert_list"]["text"] = __('List of Alerts');
+	$sub["godmode/alerts/alert_list"]["id"] = 'List of Alerts';
+	$sub["godmode/alerts/alert_list"]["pages"] =
+		array("godmode/alerts/alert_view");
+	
 	if (check_acl ($config['id_user'], 0, "LM")) {
 		$sub["godmode/alerts/alert_templates"]["text"] = __('Templates');
 		$sub["godmode/alerts/alert_templates"]["id"] = 'Templates';
+		$sub["godmode/alerts/alert_templates"]["pages"] =
+			array("godmode/alerts/configure_alert_template");
+		
 		$sub["godmode/alerts/alert_actions"]["text"] = __('Actions');
 		$sub["godmode/alerts/alert_actions"]["id"] = 'Actions';
-
+		$sub["godmode/alerts/alert_actions"]["pages"] =
+			array("godmode/alerts/configure_alert_action");
+		
 		if (check_acl ($config['id_user'], 0, "PM")) {
 			$sub["godmode/alerts/alert_commands"]["text"] = __('Commands');
 			$sub["godmode/alerts/alert_commands"]["id"] = 'Commands';
+			$sub["godmode/alerts/alert_commands"]["pages"] =
+				array("godmode/alerts/configure_alert_command");
 		}
 		$sub["godmode/alerts/alert_special_days"]["text"] = __('Special days list');
 		$sub["godmode/alerts/alert_special_days"]["id"] = __('Special days list');
+		$sub["godmode/alerts/alert_special_days"]["pages"] =
+			array("godmode/alerts/configure_alert_special_days");
+		
 		enterprise_hook('eventalerts_submenu');
 		$sub["godmode/snmpconsole/snmp_alert"]["text"] = __("SNMP alerts");
 		$sub["godmode/snmpconsole/snmp_alert"]["id"] = "SNMP alerts";
@@ -168,19 +181,19 @@ if (check_acl ($config['id_user'], 0, "EW")) {
 	$menu_godmode["geventos"]["text"] = __('Events');
 	$menu_godmode["geventos"]["sec2"] = "godmode/events/events&amp;section=filter";
 	$menu_godmode["geventos"]["id"] = "god-events";
-
+	
 	// Custom event fields
 	$sub = array ();
 	$sub["godmode/events/events&amp;section=filter"]["text"] = __('Event filters');
 	$sub["godmode/events/events&amp;section=filter"]["id"] = 'Event filters';
-
+	
 	if (check_acl ($config['id_user'], 0, "PM")) {
 		$sub["godmode/events/events&amp;section=fields"]["text"] = __('Custom events');
 		$sub["godmode/events/events&amp;section=fields"]["id"] = 'Custom events';
 		$sub["godmode/events/events&amp;section=responses"]["text"] = __('Event responses');
 		$sub["godmode/events/events&amp;section=responses"]["id"] = 'Event responses';
 	}
-
+	
 	$menu_godmode["geventos"]["sub"] = $sub;
 }
 
@@ -189,24 +202,24 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	$menu_godmode["gservers"]["text"] = __('Servers');
 	$menu_godmode["gservers"]["sec2"] = "godmode/servers/modificar_server";
 	$menu_godmode["gservers"]["id"] = "god-servers";
-
+	
 	$sub = array ();
 	$sub["godmode/servers/modificar_server"]["text"] = __('Manage servers');
 	$sub["godmode/servers/modificar_server"]["id"] = 'Manage servers';
 	$sub["godmode/servers/manage_recontask"]["text"] = __('Recon task');
 	$sub["godmode/servers/manage_recontask"]["id"] = 'Recon task';
-
+	
 	//This subtabs are only for Pandora Admin
 	if (check_acl ($config['id_user'], 0, "PM")) {
 		$sub["godmode/servers/plugin"]["text"] = __('Plugins');
 		$sub["godmode/servers/plugin"]["id"] = 'Plugins';
-
+		
 		$sub["godmode/servers/recon_script"]["text"] = __('Recon script');
 		$sub["godmode/servers/recon_script"]["id"] = 'Recon script';
-
+		
 		enterprise_hook('export_target_submenu');
 	}
-
+	
 	$menu_godmode["gservers"]["sub"] = $sub;
 }
 

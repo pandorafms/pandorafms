@@ -1008,3 +1008,17 @@ function addTinyMCE(elementID) {
 	if (elementID.length > 0 && !isEmptyObject(tinyMCE))
 		tinyMCE.EditorManager.execCommand('mceAddControl', true, elementID);
 }
+
+function toggle_full_value(id) {
+	$("#hidden_value_module_" + id).dialog({
+		resizable: true,
+		draggable: true,
+		modal: true,
+		height: 200,
+		width: 400,
+		overlay: {
+			opacity: 0.5,
+			background: "black"
+		}
+	});
+}

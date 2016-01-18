@@ -3602,4 +3602,102 @@ function ui_include_time_picker($echo_tags = false) {
 			ui_get_full_url('include/javascript/i18n/jquery-ui-timepicker-' . substr(get_user_language(), 0, 2) . '.js', false, false, false) . '"></script>';
 	}
 }
+
+function ui_print_module_string_value($value, $id_agente_module,
+	$current_interval, $module_name = null) {
+	
+	global $config;
+	
+	if (is_null($module_name))
+		$module_name = modules_get_agentmodule_name($id_agente_module);
+	
+	$id_type_web_content_string = db_get_value('id_tipo',
+		'ttipo_modulo', 'nombre', 'web_content_string');
+	
+	$is_web_content_string = (bool)db_get_value_filter('id_agente_modulo',
+		'tagente_modulo',
+		array('id_agente_modulo' => $id_agente_module,
+			'id_tipo_modulo' => $id_type_web_content_string));
+	
+	//Fixed the goliat sends the strings from web
+	//without HTML entities
+	if ($is_web_content_string) {
+		$value = io_safe_input($value);
+	}
+	
+	
+	
+	$is_snapshot = is_snapshot_data($value);
+	
+	if (($config['command_snapshot']) && ($is_snapshot)) {
+		$handle = "snapshot" . "_" . $id_agente_module;
+		$url = 'include/procesos.php?agente=' . $id_agente_module;
+		$win_handle = dechex(crc32($handle));
+		
+		$link = "winopeng_var('operation/agentes/snapshot_view.php?" .
+			"id=" . $id_agente_module .
+			"&refr=" . $current_interval .
+			"&label=" . rawurlencode(urlencode(io_safe_output($module_name))) . "','" . $win_handle . "', 700,480)";
+		
+		$salida = '<a href="javascript:' . $link . '">' .
+			html_print_image("images/default_list.png", true,
+				array("border" => '0',
+					"alt" => "",
+					"title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
+	}
+	else {
+		
+		$sub_string = substr(io_safe_output($value), 0, 12);
+		if ($value == $sub_string) {
+			if ($value == 0 && !$sub_string) {
+				$salida = 0;
+			}
+			else {
+				$salida = $value;
+			}
+		}
+		else {
+			//Fixed the goliat sends the strings from web
+			//without HTML entities
+			if ($is_web_content_string) {
+				$sub_string = substr($value, 0, 12);
+			}
+			else {
+				//Fixed the data from Selenium Plugin
+				if ($value != strip_tags($value)) {
+					$value = io_safe_input($value);
+					$sub_string = substr($value, 0, 12);
+				}
+				else {
+					$sub_string = substr(io_safe_output($value),0, 12);
+				}
+			}
+			
+			
+			
+			if ($value == $sub_string) {
+				$salida = $value;
+			}
+			else {
+				$title_dialog =
+					modules_get_agentmodule_agent_name($id_agente_module) .
+					" / " . $module_name;
+				$salida = "<div " .
+					"id='hidden_value_module_" . $id_agente_module . "'
+					style='display: none;' title='" . $title_dialog . "'>" .
+					$value .
+					"</div>" . 
+					"<span " .
+					"id='value_module_" . $id_agente_module . "'
+					style='white-space: nowrap;'>" . 
+					'<span id="value_module_text_' . $id_agente_module . '">' .
+						$sub_string . '</span> ' .
+					"<a href='javascript: toggle_full_value(" . $id_agente_module . ")'>" .
+						html_print_image("images/zoom.png", true) . "</a>" . "</span>";
+			}
+		}
+	}
+	
+	return $salida;
+}
 ?>

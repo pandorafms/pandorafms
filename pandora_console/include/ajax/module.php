@@ -743,14 +743,8 @@ if ($list_modules) {
 			$last_modulegroup = $module["id_module_group"];
 		}
 		//End of title of group
-
-		//Fixed the goliat sends the strings from web
-		//without HTML entities
-		if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
-			$module['datos'] = io_safe_input($module['datos']);
-		}
-
-
+		
+		
 		$data = array ();
 		if (($module["id_modulo"] != 1) && ($module["id_tipo_modulo"] != 100)) {
 			if ($module["flag"] == 0) {
@@ -769,7 +763,7 @@ if ($list_modules) {
 		else {
 			$data[0] = '';
 		}
-
+		
 		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 			if ($module["id_policy_module"] != 0) {
 				$linked = policies_is_module_linked($module['id_agente_modulo']);
@@ -873,8 +867,8 @@ if ($list_modules) {
 				$data[5] .= clippy_context_help("module_unknow");
 			}
 		}
-
-
+		
+		
 		if ($module["id_tipo_modulo"] == 24) {
 			// log4x
 			switch($module["datos"]) {
@@ -934,87 +928,24 @@ if ($list_modules) {
 				}
 			}
 			else {
-				//Fixed the goliat sends the strings from web
-				//without HTML entities
-				if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
-					$module_value = $module["datos"];
-				}
-				else {
-					$module_value = io_safe_output($module["datos"]);
-				}
-
-				// If carriage returns present... then is a "Snapshot" data (full command output)
-				$is_snapshot = is_snapshot_data ( $module_value );
-
-				if (($config['command_snapshot']) && ($is_snapshot)) {
-					$handle = "snapshot" . "_" . $module["id_agente_modulo"];
-					$url = 'include/procesos.php?agente=' . $module["id_agente_modulo"];
-					$win_handle = dechex(crc32($handle));
-
-					$link ="winopeng_var('operation/agentes/snapshot_view.php?" .
-						"id=" . $module["id_agente_modulo"] .
-						"&refr=" . $module["current_interval"] .
-						"&label=" . rawurlencode(urlencode(io_safe_output($module["nombre"]))) . "','".$win_handle."', 700,480)";
-
-					$salida = '<a href="javascript:'.$link.'">' .
-						html_print_image("images/default_list.png", true,
-							array(
-								"border" => '0',
-								"alt" => "",
-								"title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
-				}
-				else {
-					//Fixed the goliat sends the strings from web
-					//without HTML entities
-					if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
-						$sub_string = substr($module_value, 0, 12);
-					}
-					else {
-						//Fixed the data from Selenium Plugin
-						if ($module_value != strip_tags($module_value)) {
-							$module_value = io_safe_input($module_value);
-							$sub_string = substr($module_value, 0, 12);
-						}
-						else {
-							$sub_string = substr(io_safe_output($module_value),0, 12);
-						}
-					}
-
-
-					if ($module_value == $sub_string) {
-						$salida = $module["datos"];
-					}
-					else {
-						$salida = "<span " .
-							"id='hidden_value_module_" . $module["id_agente_modulo"] . "'
-							style='display: none;'>" .
-							$module_value .
-							"</span>" .
-							"<span " .
-							"id='value_module_" . $module["id_agente_modulo"] . "'
-							title='" . $module_value . "' " .
-							"style='white-space: nowrap;'>" .
-							'<span id="value_module_text_' . $module["id_agente_modulo"] . '">' .
-								$sub_string . '</span> ' .
-							"<a href='javascript: toggle_full_value(" . $module["id_agente_modulo"] . ")'>" .
-								html_print_image("images/rosette.png", true) . "</a>" . "</span>";
-					}
-				}
+				$salida = ui_print_module_string_value(
+					$module["datos"], $module["id_agente_modulo"],
+					$module["current_interval"], $module["module_name"]);
 			}
 		}
-
+		
 		$data[6] = ui_print_module_warn_value ($module["max_warning"], $module["min_warning"], $module["str_warning"], $module["max_critical"], $module["min_critical"], $module["str_critical"]);
-
+		
 		$data[7] = $salida;
 		$graph_type = return_graphtype ($module["id_tipo_modulo"]);
-
+		
 		$data[8] = " ";
 		if ($module['history_data'] == 1) {
 			$nombre_tipo_modulo = modules_get_moduletype_name ($module["id_tipo_modulo"]);
 			$handle = "stat".$nombre_tipo_modulo."_".$module["id_agente_modulo"];
 			$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
 			$win_handle=dechex(crc32($module["id_agente_modulo"].$module["nombre"]));
-
+			
 			# Show events for boolean modules by default.
 			if ($graph_type == 'boolean') {
 				$draw_events = 1;
@@ -1031,7 +962,7 @@ if ($list_modules) {
 						base64_encode($module["nombre"]))) . "&amp;" .
 				"refresh=" . SECONDS_10MINUTES . "&amp;" .
 				"draw_events=$draw_events', 'day_".$win_handle."')";
-
+			
 			$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
 			$server_name = '';
 			$data[8] .= "<a href='javascript: " .
@@ -1042,7 +973,7 @@ if ($list_modules) {
 					0 . ", " .
 					SECONDS_1DAY . ", \" " . modules_get_agentmodule_name( $module["id_agente_modulo"] ) . "\")'>". html_print_image ("images/binary.png", true, array ("border" => "0", "alt" => "")) . "</a>";
 		}
-
+		
 		if ($module['estado'] == 3) {
 			$data[9] = '<span class="redb">';
 		}
@@ -1051,11 +982,11 @@ if ($list_modules) {
 		}
 		$data[9] .= ui_print_timestamp ($module["utimestamp"], true, array('style' => 'font-size: 7pt'));
 		$data[9] .= '</span>';
-
+		
 		array_push ($table->data, $data);
 		$rowIndex++;
 	}
-
+	
 	?>
 	<script type="text/javascript">
 		/* <![CDATA[ */
@@ -1076,15 +1007,7 @@ if ($list_modules) {
 		.click (function () {
 			return false;
 		});
-
-		function toggle_full_value(id) {
-			text = $("#hidden_value_module_" + id).html();
-			old_text = $("#value_module_text_" + id).html();
-
-			$("#hidden_value_module_" + id).html(old_text);
-
-			$("#value_module_text_" + id).html(text);
-		}
+		
 		/* ]]> */
 	</script>
 	<?php

@@ -988,22 +988,6 @@ foreach ($result as $row) {
 	if (empty($row['server_name']))
 		$row['server_name'] = "";
 	
-	$is_web_content_string = (bool)db_get_value_filter('id_agente_modulo',
-		'tagente_modulo',
-		array('id_agente_modulo' => $row['id_agente_modulo'],
-			'id_tipo_modulo' => $id_type_web_content_string));
-	
-	//Fixed the goliat sends the strings from web
-	//without HTML entities
-	if ($is_web_content_string) {
-		$row['datos'] = io_safe_input($row['datos']);
-	}
-	
-	//Fixed the data from Selenium Plugin
-	if ($row['datos'] != strip_tags($row['datos'])) {
-		$row['datos'] = io_safe_input($row['datos']);
-	}
-	
 	if ($rowPair)
 		$table->rowclass[$iterator] = 'rowPair';
 	else
@@ -1229,7 +1213,7 @@ foreach ($result as $row) {
 	$data[8] = ui_print_module_warn_value($row['max_warning'],
 		$row['min_warning'], $row['str_warning'], $row['max_critical'],
 		$row['min_critical'], $row['str_critical']);
-
+	
 	if (is_numeric($row["datos"]) && !modules_is_string_type($row['module_type'])) {
 		if ( $config["render_proc"] ) {
 				switch($row["module_type"]) {
@@ -1245,7 +1229,7 @@ foreach ($result as $row) {
 						else
 							$salida = $config["render_proc_fail"];
 						break;
-					default:	
+					default:
 						$salida = format_numeric($row["datos"]);
 						break;
 				}
@@ -1261,83 +1245,9 @@ foreach ($result as $row) {
 		}
 	}
 	else {
-		//Fixed the goliat sends the strings from web
-		//without HTML entities
-		if ($is_web_content_string) {
-			$module_value = $row["datos"];
-		}
-		else {
-			$module_value = io_safe_output($row["datos"]);
-		}
-		
-		$is_snapshot = is_snapshot_data ( $module_value );
-		
-		if (($config['command_snapshot']) && ($is_snapshot)) {
-			$handle = "snapshot" . "_" . $row["id_agente_modulo"];
-			$url = 'include/procesos.php?agente=' . $row["id_agente_modulo"];
-			$win_handle = dechex(crc32($handle));
-			
-			$link = "winopeng_var('operation/agentes/snapshot_view.php?" .
-				"id=" . $row["id_agente_modulo"] .
-				"&refr=" . $row["current_interval"] .
-				"&label=" . rawurlencode(urlencode(io_safe_output($row["module_name"]))) . "','" . $win_handle . "', 700,480)";
-			
-			$salida = '<a href="javascript:' . $link . '">' .
-				html_print_image("images/default_list.png", true,
-					array("border" => '0',
-						"alt" => "",
-						"title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
-		}
-		else {
-			
-			$sub_string = substr(io_safe_output($row["datos"]), 0, 12);
-			if ($module_value == $sub_string) {
-				if ($module_value == 0 && !$sub_string) {
-					$salida = 0;
-				}
-				else {
-					$salida = $row["datos"];
-				}
-			}
-			else {
-				//Fixed the goliat sends the strings from web
-				//without HTML entities
-				if ($is_web_content_string) {
-					$sub_string = substr($row["datos"], 0, 12);
-				}
-				else {
-					//Fixed the data from Selenium Plugin
-					if ($module_value != strip_tags($module_value)) {
-						$module_value = io_safe_input($module_value);
-						$sub_string = substr($row["datos"], 0, 12);
-					}
-					else {
-						$sub_string = substr(io_safe_output($row["datos"]),0, 12);
-					}
-				}
-				
-				
-				
-				if ($module_value == $sub_string) {
-					$salida = $module_value;
-				}
-				else {
-					$salida = "<span " .
-						"id='hidden_value_module_" . $row["id_agente_modulo"] . "'
-						style='display: none;'>" .
-						$module_value .
-						"</span>" . 
-						"<span " .
-						"id='value_module_" . $row["id_agente_modulo"] . "'
-						title='" . $module_value . "' " .
-						"style='white-space: nowrap;'>" . 
-						'<span id="value_module_text_' . $row["id_agente_modulo"] . '">' .
-							$sub_string . '</span> ' .
-						"<a href='javascript: toggle_full_value(" . $row["id_agente_modulo"] . ")'>" .
-							html_print_image("images/rosette.png", true) . "</a>" . "</span>";
-				}
-			}
-		}
+		$salida = ui_print_module_string_value(
+			$row["datos"], $row["id_agente_modulo"],
+			$row["current_interval"], $row["module_name"]);
 	}
 	
 	$data[9] = $salida;
@@ -1396,15 +1306,6 @@ ui_require_javascript_file('pandora_modules');
 			$("#tag_td").css('display', '');
 		}
 	});
-	
-	function toggle_full_value(id) {
-		text = $("#hidden_value_module_" + id).html();
-		old_text = $("#value_module_text_" + id).html();
-		
-		$("#hidden_value_module_" + id).html(old_text);
-		
-		$("#value_module_text_" + id).html(text);
-	}
 	
 	// Show the modal window of an module
 	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period, module_name) {

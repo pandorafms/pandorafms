@@ -66,13 +66,18 @@ else {
 	$table->align[6] = "left";
 	$table->align[7] = "left";
 	$table->align[8] = "left";
-
+	
 	$table->data = array ();
 	
 	$id_type_web_content_string = db_get_value('id_tipo', 'ttipo_modulo',
 		'nombre', 'web_content_string');
 	
 	foreach ($modules as $module) {
+		//~ html_debug_print($module);
+		$module["datos"] =
+			modules_get_last_value($module['id_agente_modulo']);
+		$module["module_name"] = 111;
+		
 		//To search the monitor status
 		$status_sql = sprintf('SELECT estado from tagente_estado where id_agente_modulo =' . $module['id_agente_modulo']);
 		$status_sql = db_process_sql($status_sql);
@@ -81,17 +86,7 @@ else {
 		$utimestamp_sql = sprintf('SELECT utimestamp from tagente_estado where id_agente_modulo =' . $module['id_agente_modulo']);
 		$utimestamp_sql = db_process_sql($utimestamp_sql);
 		$utimestamp_sql = $utimestamp_sql[0];
-
-		//Fixed the goliat sends the strings from web
-		//without HTML entities
-		if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
-			$module['datos'] = io_safe_input($module['datos']);
-		}
 		
-		//Fixed the data from Selenium Plugin
-		if ($module['datos'] != strip_tags($module['datos'])) {
-			$module['datos'] = io_safe_input($module['datos']);
-		}
 		
 		$agentCell = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $module['id_agente'] . '">' .
 			$module['agent_name'] . '</a>';
@@ -99,7 +94,7 @@ else {
 		$typeCell = ui_print_moduletype_icon($module["id_tipo_modulo"], true);
 		
 		$intervalCell = modules_get_interval ($module['id_agente_modulo']);
-
+		
 		if ($utimestamp_sql['utimestamp'] == 0 &&
 			(
 				($module['id_tipo_modulo'] < 21 || $module['id_tipo_modulo'] > 23) &&
@@ -185,63 +180,9 @@ else {
 			$dataCell = format_numeric($module["datos"]);
 		}
 		else {
-			//Fixed the goliat sends the strings from web
-			//without HTML entities
-			if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
-				$module_value = $module["datos"];
-			}
-			else {
-				$module_value = io_safe_output($module["datos"]);
-			}
-			
-			// There are carriage returns here ?
-			// If carriage returns present... then is a "Snapshot" data (full command output)
-			if (($config['command_snapshot']) && (preg_match ("/[\n]+/i", io_safe_output($module["datos"])))) {
-				
-				$handle = "snapshot"."_".$module["id_agente_modulo"];
-				$url = 'include/procesos.php?agente='.$module["id_agente_modulo"];
-				$win_handle=dechex(crc32($handle));
-				
-				$link ="winopeng_var('operation/agentes/snapshot_view.php?id=".$module["id_agente_modulo"]."&refr=".$module["current_interval"]."&label=".rawurlencode(urlencode(io_safe_output($module["module_name"])))."','".$win_handle."', 700,480)"; 
-				
-				$dataCell = '<a href="javascript:'.$link.'">' . html_print_image("images/default_list.png", true, array("border" => '0', "alt" => "", "title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
-			}
-			else {
-				//Fixed the goliat sends the strings from web
-				//without HTML entities
-				if ($module['id_tipo_modulo'] == $id_type_web_content_string) {
-					$sub_string = substr($module_value, 0, 12);
-				}
-				else {
-					//Fixed the data from Selenium Plugin
-					if ($module_value != strip_tags($module_value)) {
-						$module_value = io_safe_input($module_value);
-						$sub_string = substr($module_value, 0, 12);
-					}
-					else {
-						$sub_string = substr(io_safe_output($module_value),0, 12);
-					}
-				}
-				
-				if ($module_value == $sub_string) {
-					$dataCell = $module_value;
-				}
-				else {
-					$dataCell = "<span " .
-						"id='hidden_value_module_" . $module["id_agente_modulo"] . "'
-						style='display: none;'>" .
-						$module_value .
-						"</span>" . 
-						"<span " .
-						"id='value_module_" . $module["id_agente_modulo"] . "'
-						title='" . $module_value . "' " .
-						"style='white-space: nowrap;'>" . 
-						'<span id="value_module_text_' . $module["id_agente_modulo"] . '">' .
-							$sub_string . '</span> ' .
-						"<a href='javascript: toggle_full_value(" . $module["id_agente_modulo"] . ")'>" .
-							html_print_image("images/rosette.png", true) . "</a>" . "</span>";
-				}
-			}
+			$dataCell = ui_print_module_string_value(
+				$module["datos"], $module["id_agente_modulo"],
+				$module["current_interval"]);
 		}
 		
 		if ($module['estado'] == 3) {
@@ -251,8 +192,8 @@ else {
 			$option = array ();
 		}
 		$timestampCell = ui_print_timestamp ($utimestamp_sql["utimestamp"], true, $option);
-
-
+		
+		
 		$group_agent = agents_get_agent_group($module['id_agente']);
 		
 		if (check_acl ($config['id_user'], $group_agent, "AW")) {
@@ -289,14 +230,3 @@ else {
 	ui_pagination ($totalModules);
 }
 ?>
-
-<script type="text/javascript">
-	function toggle_full_value(id) {
-		text = $("#hidden_value_module_" + id).html();
-		old_text = $("#value_module_text_" + id).html();
-		
-		$("#hidden_value_module_" + id).html(old_text);
-		
-		$("#value_module_text_" + id).html(text);
-	}
-</script>

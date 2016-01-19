@@ -17,12 +17,201 @@ global $config;
 
 check_login ();
 
-ui_print_page_header (__('GIS Maps builder'), "images/gm_gis.png", false, "configure_gis_map", true);
 
+if (! check_acl ($config['id_user'], 0, "IW")) {
+	db_pandora_audit("ACL Violation", "Trying to access map builder");
+	require ("general/noaccess.php");
+	return;
+}
 
 require_once ('include/functions_gis.php');
 
-$magicQuotesFlag = (boolean)ini_get('magic_quotes_gpc');
+$idMap = (int)get_parameter('map_id', 0);
+$action = get_parameter('action', 'new_map');
+
+
+switch ($action) {
+	case 'save_new':
+		$map_name = get_parameter('map_name');
+		$map_initial_longitude = get_parameter('map_initial_longitude');
+		$map_initial_latitude = get_parameter('map_initial_latitude');
+		$map_initial_altitude = get_parameter('map_initial_altitude');
+		$map_zoom_level = get_parameter('map_zoom_level');
+		$map_background = ''; //TODO
+		$map_default_longitude = get_parameter('map_default_longitude');
+		$map_default_latitude = get_parameter('map_default_latitude');
+		$map_default_altitude = get_parameter('map_default_altitude');
+		$map_group_id = get_parameter('map_group_id');
+		$map_levels_zoom = get_parameter('map_levels_zoom');
+		
+		$map_connection_list_temp = explode(",",get_parameter('map_connection_list'));
+		
+		
+		foreach ($map_connection_list_temp as $index => $value) {
+			$cleanValue = trim($value);
+			if ($cleanValue == '') {
+				unset($map_connection_list_temp[$index]);
+			}
+		}
+		$layer_list = explode(",",get_parameter('layer_list'));
+		foreach ($layer_list as $index => $value) {
+			$cleanValue = trim($value);
+			if ($cleanValue == '') {
+				unset($layer_list[$index]);
+			}
+		}
+		
+		$map_connection_default = get_parameter('map_connection_default');
+		
+		$map_connection_list = array();
+		foreach ($map_connection_list_temp as $idMapConnection) {
+			$default = 0;
+			if ($map_connection_default == $idMapConnection)
+				$default = 1;
+			
+			$map_connection_list[] = array('id_conection' => $idMapConnection, 'default' => $default);
+		}
+		
+		$arrayLayers = array();
+		foreach ($layer_list as $layerID) {
+			$layer = get_parameter('layer_values_' . $layerID);
+			
+			$arrayLayers[] = JSON_decode($layer, true);
+		}
+		
+		$invalidFields = gis_validate_map_data($map_name, $map_zoom_level,
+			$map_initial_longitude, $map_initial_latitude, $map_initial_altitude,
+			$map_default_longitude, $map_default_latitude, $map_default_altitude,
+			$map_connection_list, $map_levels_zoom);
+		
+		if (empty($invalidFields) && get_parameter('map_connection_list') != "") {
+			$idMap = gis_save_map($map_name, $map_initial_longitude, $map_initial_latitude,
+				$map_initial_altitude, $map_zoom_level, $map_background,
+				$map_default_longitude, $map_default_latitude, $map_default_altitude,
+				$map_group_id, $map_connection_list, $arrayLayers);
+			$mapCreatedOk = true;
+		}
+		else {
+			html_print_input_hidden('action', 'save_new');
+			$mapCreatedOk = false;
+		}
+		$layer_list = $arrayLayers;
+		
+		ui_print_result_message ($mapCreatedOk, __('Map successfully created'),
+			__('Map could not be created'));
+		break;
+	case 'new_map':
+		html_print_input_hidden('action', 'save_new');
+		
+		$map_name = '';
+		$map_initial_longitude = '';
+		$map_initial_latitude = '';
+		$map_initial_altitude = '';
+		$map_zoom_level = '';
+		$map_background = '';
+		$map_default_longitude = '';
+		$map_default_latitude = '';
+		$map_default_altitude = '';
+		$map_group_id = '';
+		$map_connection_list = Array();
+		$layer_list = Array();
+		$map_levels_zoom = 0;
+		break;
+	case 'edit_map':
+		html_print_input_hidden('action', 'update_saved');
+		html_print_input_hidden('map_id', $idMap);
+		
+		
+		break;
+	case 'update_saved':
+		$map_name = get_parameter('map_name');
+		$map_initial_longitude = get_parameter('map_initial_longitude');
+		$map_initial_latitude = get_parameter('map_initial_latitude');
+		$map_initial_altitude = get_parameter('map_initial_altitude');
+		$map_zoom_level = get_parameter('map_zoom_level');
+		$map_background = ''; //TODO
+		$map_default_longitude = get_parameter('map_default_longitude');
+		$map_default_latitude = get_parameter('map_default_latitude');
+		$map_default_altitude = get_parameter('map_default_altitude');
+		$map_group_id = get_parameter('map_group_id');
+		$map_levels_zoom = get_parameter('map_levels_zoom');
+		
+		$map_connection_list_temp = explode(",",get_parameter('map_connection_list'));
+		foreach ($map_connection_list_temp as $index => $value) {
+			$cleanValue = trim($value);
+			if ($cleanValue == '') {
+				unset($map_connection_list_temp[$index]);
+			}
+		}
+		$layer_list = explode(",", get_parameter('layer_list'));
+		foreach ($layer_list as $index => $value) {
+			$cleanValue = trim($value);
+			if ($cleanValue == '') {
+				unset($layer_list[$index]);
+			}
+		}
+		
+		$map_connection_default = get_parameter('map_connection_default');
+		
+		$map_connection_list = array();
+		foreach ($map_connection_list_temp as $idMapConnection) {
+			$default = 0;
+			if ($map_connection_default == $idMapConnection)
+				$default = 1;
+			
+			$map_connection_list[] = array('id_conection' => $idMapConnection, 'default' => $default);
+		}
+		
+		$arrayLayers = array();
+		foreach ($layer_list as $layerID) {
+			$layer = get_parameter('layer_values_' . $layerID);
+			$arrayLayers[] = JSON_decode($layer, true);
+		}
+		
+		
+		
+		$invalidFields = gis_validate_map_data($map_name, $map_zoom_level,
+			$map_initial_longitude, $map_initial_latitude, $map_initial_altitude,
+			$map_default_longitude, $map_default_latitude, $map_default_altitude,
+			$map_connection_list, $map_levels_zoom);
+			
+		if (empty($invalidFields) && get_parameter('map_connection_list') != "") {
+			//TODO
+			gis_update_map($idMap, $map_name, $map_initial_longitude, $map_initial_latitude,
+				$map_initial_altitude, $map_zoom_level, $map_background,
+				$map_default_longitude, $map_default_latitude, $map_default_altitude,
+				$map_group_id, $map_connection_list, $arrayLayers);
+			$mapCreatedOk = true;
+		}
+		else {
+			
+			html_print_input_hidden('action', 'update_saved');
+			$mapCreatedOk = false;
+		}
+		
+		ui_print_result_message ($mapCreatedOk, __('Map successfully update'),
+			__('Map could not be updated'));
+		
+		html_print_input_hidden('action', 'update_saved');
+		html_print_input_hidden('map_id', $idMap);
+		break;
+}
+
+
+$buttons['gis_maps_list'] = array('active' => true,
+	'text' => '<a href="index.php?sec=godgismaps&sec2=operation/gis_maps/gis_map">' .
+	html_print_image("images/list.png", true,
+		array("title" => __('GIS Maps list'))) .'</a>');
+if ($idMap) {
+	$buttons['view_gis'] = array('active' => true,
+		'text' => '<a href="index.php?sec=gismaps&sec2=operation/gis_maps/render_view&map_id=' . $idMap . '">' .
+		html_print_image("images/op_gis.png", true,
+			array("title" => __('View GIS'))) .'</a>');
+}
+
+ui_print_page_header (__('GIS Maps builder'),
+	"images/gm_gis.png", false, "configure_gis_map", true, $buttons);
+
 
 ui_require_javascript_file('openlayers.pandora');
 //Global vars for javascript and scripts.
@@ -78,195 +267,9 @@ function updateArrowLayers() {
 </script>
 <?php
 
-if (! check_acl ($config['id_user'], 0, "IW")) {
-	db_pandora_audit("ACL Violation", "Trying to access map builder");
-	require ("general/noaccess.php");
-	return;
-}
-
-$action = get_parameter('action', 'new_map');
-
 echo '<form id="form_setup" method="post" onSubmit="fillOrderField();">';
 
-switch ($action) {
-	case 'save_new':
-		$map_name = get_parameter('map_name');
-		$map_initial_longitude = get_parameter('map_initial_longitude');
-		$map_initial_latitude = get_parameter('map_initial_latitude');
-		$map_initial_altitude = get_parameter('map_initial_altitude');
-		$map_zoom_level = get_parameter('map_zoom_level');
-		$map_background = ''; //TODO
-		$map_default_longitude = get_parameter('map_default_longitude');
-		$map_default_latitude = get_parameter('map_default_latitude');
-		$map_default_altitude = get_parameter('map_default_altitude');
-		$map_group_id = get_parameter('map_group_id');
-		$map_levels_zoom = get_parameter('map_levels_zoom');
-		
-		$map_connection_list_temp = explode(",",get_parameter('map_connection_list'));
-		
-		
-		foreach ($map_connection_list_temp as $index => $value) {
-			$cleanValue = trim($value);
-			if ($cleanValue == '') {
-				unset($map_connection_list_temp[$index]);
-			}
-		}
-		$layer_list = explode(",",get_parameter('layer_list'));
-		foreach ($layer_list as $index => $value) {
-			$cleanValue = trim($value);
-			if ($cleanValue == '') {
-				unset($layer_list[$index]);
-			}
-		}
-		
-		$map_connection_default = get_parameter('map_connection_default');
-		
-		$map_connection_list = array();
-		foreach ($map_connection_list_temp as $idMapConnection) {
-			$default = 0;
-			if ($map_connection_default == $idMapConnection)
-				$default = 1;
-			
-			$map_connection_list[] = array('id_conection' => $idMapConnection, 'default' => $default);
-		}
-		
-		$arrayLayers = array();
-		foreach ($layer_list as $layerID) {
-			if ($magicQuotesFlag) {
-				$layer = stripslashes($_POST['layer_values_' . $layerID]);
-			}
-			else {
-				$layer = $_POST['layer_values_' . $layerID];
-			}
-			$arrayLayers[] = JSON_decode($layer, true);
-		}
-		
-		$invalidFields = gis_validate_map_data($map_name, $map_zoom_level,
-			$map_initial_longitude, $map_initial_latitude, $map_initial_altitude,
-			$map_default_longitude, $map_default_latitude, $map_default_altitude,
-			$map_connection_list, $map_levels_zoom);
-		
-		if (empty($invalidFields) && get_parameter('map_connection_list') != "") {
-			gis_save_map($map_name, $map_initial_longitude, $map_initial_latitude,
-				$map_initial_altitude, $map_zoom_level, $map_background,
-				$map_default_longitude, $map_default_latitude, $map_default_altitude,
-				$map_group_id, $map_connection_list, $arrayLayers);
-			$mapCreatedOk = true;
-		}
-		else {
-			html_print_input_hidden('action', 'save_new');
-			$mapCreatedOk = false;
-		}
-		$layer_list = $arrayLayers;
-		
-		ui_print_result_message ($mapCreatedOk, __('Map successfully created'),
-			__('Map could not be created'));
-		break;
-	case 'new_map':
-		html_print_input_hidden('action', 'save_new');
-		
-		$map_name = '';
-		$map_initial_longitude = '';
-		$map_initial_latitude = '';
-		$map_initial_altitude = '';
-		$map_zoom_level = '';
-		$map_background = '';
-		$map_default_longitude = '';
-		$map_default_latitude = '';
-		$map_default_altitude = '';
-		$map_group_id = '';
-		$map_connection_list = Array();
-		$layer_list = Array();
-		$map_levels_zoom = 0;
-		break;
-	case 'edit_map':
-		$idMap = get_parameter('map_id');
-		
-		html_print_input_hidden('action', 'update_saved');
-		html_print_input_hidden('map_id', $idMap);
-		
-		
-		break;
-	case 'update_saved':
-		$idMap = get_parameter('map_id');
-		
-		$map_name = get_parameter('map_name');
-		$map_initial_longitude = get_parameter('map_initial_longitude');
-		$map_initial_latitude = get_parameter('map_initial_latitude');
-		$map_initial_altitude = get_parameter('map_initial_altitude');
-		$map_zoom_level = get_parameter('map_zoom_level');
-		$map_background = ''; //TODO
-		$map_default_longitude = get_parameter('map_default_longitude');
-		$map_default_latitude = get_parameter('map_default_latitude');
-		$map_default_altitude = get_parameter('map_default_altitude');
-		$map_group_id = get_parameter('map_group_id');
-		$map_levels_zoom = get_parameter('map_levels_zoom');
-		
-		$map_connection_list_temp = explode(",",get_parameter('map_connection_list'));
-		foreach ($map_connection_list_temp as $index => $value) {
-			$cleanValue = trim($value);
-			if ($cleanValue == '') {
-				unset($map_connection_list_temp[$index]);
-			}
-		}
-		$layer_list = explode(",", get_parameter('layer_list'));
-		foreach ($layer_list as $index => $value) {
-			$cleanValue = trim($value);
-			if ($cleanValue == '') {
-				unset($layer_list[$index]);
-			}
-		}
-		
-		$map_connection_default = get_parameter('map_connection_default');
-		
-		$map_connection_list = array();
-		foreach ($map_connection_list_temp as $idMapConnection) {
-			$default = 0;
-			if ($map_connection_default == $idMapConnection)
-				$default = 1;
-			
-			$map_connection_list[] = array('id_conection' => $idMapConnection, 'default' => $default);
-		}
-		
-		$arrayLayers = array();
-		foreach ($layer_list as $layerID) {
-			if ($magicQuotesFlag) {
-				$layer = stripslashes($_POST['layer_values_' . $layerID]);
-			}
-			else {
-				$layer = $_POST['layer_values_' . $layerID];
-			}
-			$arrayLayers[] = JSON_decode($layer, true);
-		}
-		
-		
-		
-		$invalidFields = gis_validate_map_data($map_name, $map_zoom_level,
-			$map_initial_longitude, $map_initial_latitude, $map_initial_altitude,
-			$map_default_longitude, $map_default_latitude, $map_default_altitude,
-			$map_connection_list, $map_levels_zoom);
-			
-		if (empty($invalidFields) && get_parameter('map_connection_list') != "") {
-			//TODO
-			gis_update_map($idMap, $map_name, $map_initial_longitude, $map_initial_latitude,
-				$map_initial_altitude, $map_zoom_level, $map_background,
-				$map_default_longitude, $map_default_latitude, $map_default_altitude,
-				$map_group_id, $map_connection_list, $arrayLayers);
-			$mapCreatedOk = true;
-		}
-		else {
-			
-			html_print_input_hidden('action', 'update_saved');
-			$mapCreatedOk = false;
-		}
-		
-		ui_print_result_message ($mapCreatedOk, __('Map successfully update'),
-			__('Map could not be updated'));
-		
-		html_print_input_hidden('action', 'update_saved');
-		html_print_input_hidden('map_id', $idMap);
-		break;
-}
+
 
 //Load the data in edit or reload in update.
 switch ($action) {

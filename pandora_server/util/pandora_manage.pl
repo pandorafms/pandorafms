@@ -771,7 +771,7 @@ sub pandora_update_special_day_from_hash ($$$$) {
 sub pandora_get_special_day_id ($$) {
 	my ($dbh, $special_day) = @_;
 	
-	my $special_day_id = get_db_value ($dbh, "SELECT id FROM talert_special_days WHERE ${RDBMS_QUOTE}date${RDBMS_QUOTE} = ?", safe_input($special_day));
+	my $special_day_id = get_db_value ($dbh, "SELECT id FROM talert_special_days WHERE ${RDBMS_QUOTE}date${RDBMS_QUOTE} = ?", $special_day);
 
 	return defined ($special_day_id) ? $special_day_id : -1;
 }
@@ -3972,7 +3972,7 @@ sub cli_user_enable () {
 
 	$user_id = safe_input($user_id);
 
-    db_do ($dbh, "UPDATE tusuario SET `disabled` = '0' WHERE `id_user` = '$user_id'");
+    db_do ($dbh, "UPDATE tusuario SET disabled = '0' WHERE id_user = '$user_id'");
     	
     exit;
 }
@@ -3997,7 +3997,7 @@ sub cli_user_disable () {
 
 	$user_id = safe_input($user_id);
 	
-    db_do ($dbh, "UPDATE tusuario SET `disabled` = '1' WHERE `id_user` = '$user_id'");
+    db_do ($dbh, "UPDATE tusuario SET disabled = '1' WHERE id_user = '$user_id'");
     	
     exit;
 }
@@ -4052,7 +4052,7 @@ sub cli_module_get_data () {
 	my $id_agent_module = get_agent_module_id ($dbh, $module_name, $agent_id);
 	
 	my $module_type_id = get_db_value($dbh,
-		"SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?;",
+		"SELECT id_tipo_modulo FROM tagente_modulo WHERE id_agente_modulo = ?",
 		$id_agent_module);
 	
 	my $module_type = get_db_value($dbh,
@@ -4213,7 +4213,7 @@ sub cli_create_special_day() {
 	
 	my %parameters;
 	
-	$parameters{'date'} = $special_day;
+	$parameters{"${RDBMS_QUOTE}date${RDBMS_QUOTE}"} = $special_day;
 	$parameters{'same_day'} = $same_day;
 	$parameters{'description'} = decode('UTF-8', $description);
 	$parameters{'id_group'} = $group_id;

@@ -447,4 +447,17 @@ define("CHART_DEFAULT_ALPHA", 50);
 /* Statwin */
 define("STATWIN_DEFAULT_CHART_WIDTH",	555);
 define("STATWIN_DEFAULT_CHART_HEIGHT",	245);
+
+/* Dashboard */
+define("DASHBOARD_DEFAULT_COUNT_CELLS",	9);
+
+define("OPTION_TEXT",					1);
+define("OPTION_SINGLE_SELECT",			2);
+define("OPTION_MULTIPLE_SELECT",		3);
+define("OPTION_BOOLEAN",				4);
+define("OPTION_TEXTAREA",				5);
+define("OPTION_TREE_GROUP_SELECT",		6);
+define("OPTION_SINGLE_SELECT_TIME",		7);
+define("OPTION_CUSTOM_INPUT",			8);
+define("OPTION_AGENT_AUTOCOMPLETE",		9);
 ?>

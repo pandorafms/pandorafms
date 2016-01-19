@@ -894,9 +894,15 @@ if ($update_module || $create_module) {
 		$macros = json_decode(base64_decode($macros), true);
 		
 		foreach($macros as $k => $m) {
-			if ($m['hide'] == "1") {
-				$macros[$k]['value'] = io_input_password(get_parameter($m['macro'], ''));
-			} else {
+			$m_hide = "0";
+			if (isset($m['hide'])) {
+				$m_hide = $m['hide'];
+			}
+			if ($m_hide == "1") {
+				$macros[$k]['value'] =
+					io_input_password(get_parameter($m['macro'], ''));
+			}
+			else {
 				$macros[$k]['value'] = get_parameter($m['macro'], '');
 			}
 		}

@@ -723,20 +723,34 @@ function gis_save_map_connection($mapConnection_name, $mapConnection_group,
  * @return None
  */
 function gis_delete_map($idMap) {
-	$listIdLayers = db_get_all_rows_sql("SELECT id_tmap_layer FROM tgis_map_layer WHERE tgis_map_id_tgis_map = " . $idMap);
+	$listIdLayers = db_get_all_rows_sql(
+		"SELECT id_tmap_layer
+		FROM tgis_map_layer
+		WHERE tgis_map_id_tgis_map = " . $idMap);
 	
 	if ($listIdLayers !== false) {
 		foreach ($listIdLayers as $idLayer) {
-			db_process_sql_delete('tgis_map_layer_has_tagente', array('tgis_map_layer_id_tmap_layer' => $idLayer));
+			db_process_sql_delete('tgis_map_layer_has_tagente',
+				array('tgis_map_layer_id_tmap_layer' => $idLayer));
 		}
 	}
-	db_process_sql_delete('tgis_map_layer', array('tgis_map_id_tgis_map' => $idMap));
-	db_process_sql_delete('tgis_map_has_tgis_map_con', array('tgis_map_id_tgis_map' => $idMap));
-	db_process_sql_delete('tgis_map', array('id_tgis_map' => $idMap));
+	$correct = (bool)db_process_sql_delete('tgis_map_layer',
+		array('tgis_map_id_tgis_map' => $idMap));
+	if ($correct) {
+		$correct = db_process_sql_delete('tgis_map_has_tgis_map_con',
+			array('tgis_map_id_tgis_map' => $idMap));
+	}
+	if ($correct) {
+		$correct = db_process_sql_delete('tgis_map',
+			array('id_tgis_map' => $idMap));
+	}
 	
 	$numMaps = db_get_num_rows('SELECT * FROM tgis_map');
 	
 	db_clean_cache();
+	
+	
+	return $correct;
 }
 
 /**
@@ -813,6 +827,8 @@ function gis_save_map($map_name, $map_initial_longitude, $map_initial_latitude,
 			}
 		}
 	}
+	
+	return $idMap;
 }
 
 function gis_update_map($idMap, $map_name, $map_initial_longitude, $map_initial_latitude,

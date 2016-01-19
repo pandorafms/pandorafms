@@ -34,12 +34,12 @@ if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0,
 	$sub['godmode/agentes/modificar_agente']['id'] = 'Manage agents';
 	$sub["godmode/agentes/modificar_agente"]["subsecs"] = array(
 		"godmode/agentes/configurar_agente");
-		
+	
 	if (check_acl ($config['id_user'], 0, "AW")) {
 		if (check_acl ($config["id_user"], 0, "PM")) {
 			$sub["godmode/agentes/fields_manager"]["text"] = __('Custom fields');
 			$sub["godmode/agentes/fields_manager"]["id"] = 'Custom fields';
-
+			
 			$sub["godmode/modules/manage_nc_groups"]["text"] = __('Component groups');
 			$sub["godmode/modules/manage_nc_groups"]["id"] = 'Component groups';
 			// Category
@@ -49,19 +49,11 @@ if (check_acl ($config['id_user'], 0, "AW") || check_acl ($config['id_user'], 0,
 			
 			$sub["godmode/modules/module_list"]["text"] = __('Module types');
 			$sub["godmode/modules/module_list"]["id"] = 'Module types';
-
+			
 			$sub["godmode/groups/modu_group_list"]["text"] = __('Module groups');
 			$sub["godmode/groups/modu_group_list"]["id"] = 'Module groups';
 		}
-		// GIS
-		if (check_acl ($config['id_user'], 0, "IW")) {
-			if ($config['activate_gis']) {
-				$sub["godmode/gis_maps/index"]["text"] = __('GIS Maps builder');
-				$sub["godmode/gis_maps/index"]["id"] = 'GIS Maps builder';
-				$sub["godmode/gis_maps/index"]["refr"] = (int)get_parameter('refr', 60);
-			}
-		}
-
+		
 		if ($config['activate_netflow']) {
 			//Netflow
 			$sub["godmode/netflow/nf_edit"]["text"] = __('Netflow filters');
@@ -75,7 +67,7 @@ if (check_acl ($config['id_user'], 0, "UM")) {
 	$menu_godmode["gusuarios"]["text"] = __('Profiles');
 	$menu_godmode["gusuarios"]["sec2"] = "godmode/users/user_list";
 	$menu_godmode["gusuarios"]["id"] = "god-users";
-
+	
 	$sub = array ();
 	$sub['godmode/users/user_list']['text'] = __('Users management');
 	$sub['godmode/users/user_list']['id'] = 'Users management';
@@ -265,8 +257,9 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	
 	
 	
-	if ($config['activate_gis'])
+	if ($config['activate_gis']) {
 		$sub2["godmode/setup/gis"]["text"] = __('Map conections GIS');
+	}
 	
 	$sub["general"]["sub2"] = $sub2;
 	$sub["godmode/setup/os"]["text"] = __('Edit OS');

@@ -110,6 +110,10 @@ if ($install_package) {
 	$package = (string) get_parameter("package");
 	$package = trim($package);
 	
+	$chunks = explode("_", basename($package));
+	$chunks = explode(".", $chunks[1]);
+	$version = $chunks[0];
+	
 	// All files extracted
 	$files_total = $package . "/files.txt";
 	// Files copied
@@ -128,27 +132,29 @@ if ($install_package) {
 				$line = trim($line);
 				
 				// Tries to move the old file to the directory backup inside the extracted package
-				if (file_exists($config["homedir"]."/".$line)) {
-					rename($config["homedir"]."/".$line, $package."/backup/".$line);
+				if (file_exists($config["homedir"] . "/" . $line)) {
+					rename($config["homedir"] . "/" . $line,
+						$package . "/backup/" . $line);
 				}
 				// Tries to move the new file to the Pandora directory
 				$dirname = dirname($line);
-				if (!file_exists($config["homedir"]."/".$dirname)) {
+				if (!file_exists($config["homedir"] . "/" . $dirname)) {
 					$dir_array = explode("/", $dirname);
 					$temp_dir = "";
 					foreach ($dir_array as $dir) {
-						$temp_dir .= "/".$dir;
-						if (!file_exists($config["homedir"].$temp_dir)) {
-							mkdir($config["homedir"].$temp_dir);
+						$temp_dir .= "/" . $dir;
+						if (!file_exists($config["homedir"] . $temp_dir)) {
+							mkdir($config["homedir"] . $temp_dir);
 						}
 					}
 				}
-				if (is_dir($package."/".$line)) {
-					if (!file_exists($config["homedir"]."/".$line)) {
-						mkdir($config["homedir"]."/".$line);
+				if (is_dir($package . "/" . $line)) {
+					if (!file_exists($config["homedir"] . "/" . $line)) {
+						mkdir($config["homedir"] . "/" . $line);
 						file_put_contents($files_copied, $line."\n", FILE_APPEND | LOCK_EX);
 					}
-				} else {
+				}
+				else {
 					if (rename($package."/".$line, $config["homedir"]."/".$line)) {
 						
 						// Append the moved file to the copied files txt
@@ -176,7 +182,8 @@ if ($install_package) {
 							echo json_encode($return);
 							return;
 						}
-					} else {
+					}
+					else {
 						
 						// If the copy process fail, this code tries to restore the files backed up before
 						if ($files_copied_h = fopen($files_copied, "r")) {
@@ -187,7 +194,8 @@ if ($install_package) {
 								}
 							}
 							fclose($files_copied_h);
-						} else {
+						}
+						else {
 							$backup_status = __("Some of your files might not be recovered.");
 						}
 						
@@ -200,18 +208,22 @@ if ($install_package) {
 				}
 			}
 			fclose($files_h);
-		} else {
+		}
+		else {
 			$return["status"] = "error";
 			$return["message"]= __("An error ocurred while reading a file.");
 			echo json_encode($return);
 			return;
 		}
-	} else {
+	}
+	else {
 		$return["status"] = "error";
 		$return["message"]= __("The package does not exist");
 		echo json_encode($return);
 		return;
 	}
+	
+	update_manager_enterprise_set_version($version);
 	
 	$return["status"] = "success";
 	echo json_encode($return);

@@ -27,7 +27,7 @@ if (! check_acl ($config['id_user'], 0, "AR")) {
 	require ("general/noaccess.php");
 	exit;
 }
-
+$offset = get_parameter('offset', 0);
 // Update network modules for this group
 // Check for Network FLAG change request
 // Made it a subquery, much faster on both the database and server side
@@ -79,6 +79,8 @@ foreach ($all_data as $group_all_data) {
 
 	$agents_unknown += $group_all_data["_agents_unknown_"];
 	$agents_notinit += $group_all_data["_agents_not_init_"];
+
+	$all_alerts_fired += $group_all_data["_monitors_alerts_fired_"];
 }
 
 $total = $monitor_ok + $monitor_warning + $monitor_critical + $monitor_unknown + $monitor_not_init;
@@ -95,13 +97,18 @@ $total_not_init = format_numeric (($agents_notinit*100)/$total_agentes,2);
 
 echo '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="databox">';
 	echo "<tr>";
-		echo "<th style='text-align: center;'>" . __("Summary of the status groups") . "</th>";
+		echo "<th colspan=2 style='text-align: center;'>" . __("Summary of the status groups") . "</th>";
+	echo "</tr>";
+	echo "<tr>";
+		echo "<th width=30% style='text-align:center'>" . __("Agents") . "</th>";
+		echo "<th width=70% style='text-align:center'>" . __("Modules") . "</th>";
 	echo "</tr>";
 	echo "<tr height=70px'>";
 		echo "<td align='center'>";
 			echo "<span id='sumary' style='background-color:#B2B2B2;'>". $total_agent_unknown ."%</span>";
 			echo "<span id='sumary' style='background-color:#5bb6e5;'>". $total_not_init ."%</span>";
-			echo "<span  style='background-color:#222; padding: 18px 1px 13px 1px;'></span>";
+		echo "</td>";
+		echo "<td align='center'>";
 			echo "<span id='sumary' style='background-color:#FC4444;'>". $total_critical ."%</span>";
 			echo "<span id='sumary' style='background-color:#FAD403;'>". $total_warning ."%</span>";
 			echo "<span id='sumary' style='background-color:#80BA27;'>". $total_ok ."%</span>";
@@ -110,7 +117,6 @@ echo '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="data
 		echo "</td>";
 	echo "</tr>";
 echo "</table>";
-
 
 //Groups and tags
 $result_groups = groupview_get_groups_list($config['id_user'], $strict_user,
@@ -148,7 +154,7 @@ if (!empty($result_groups)) {
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Critical") . "</th>";
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Alert fired") . "</th>";
 		echo "</tr>";
-		
+		$result_groups = array_slice($result_groups, $offset, $config['block_size']);
 		foreach ($result_groups as $data) {
 
 			$groups_id = $data["_id_"];
@@ -237,7 +243,6 @@ if (!empty($result_groups)) {
 				$agent_counter = agents_get_group_agents($groups_id);
 				echo $link . count($agent_counter) . "</a>";
 			}
-			$agent_counter = agents_get_group_agents($groups_id);
 			if ($data["_total_agents_"] > 0) {
 				echo $link . $data["_total_agents_"] . "</a>";
 			}
@@ -251,6 +256,9 @@ if (!empty($result_groups)) {
 			} else {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_UNKNOWN ."'>";
+			}
+			if (($data["_id_"] == 0) && ($agents_unknown != 0)) {
+				echo $link . $agents_unknown . "</a>";
 			}
 			if ($data["_agents_unknown_"] > 0) {
 				echo $link . $data["_agents_unknown_"] . "</a>";
@@ -266,6 +274,9 @@ if (!empty($result_groups)) {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."&status=" . AGENT_STATUS_NOT_INIT ."'>";
 			}
+			if (($data["_id_"] == 0) && ($agents_notinit != 0)) {
+				echo $link . $agents_notinit . "</a>";
+			}
 			if ($data["_agents_not_init_"] > 0) {
 				echo $link . $data["_agents_not_init_"] . "</a>";
 			}
@@ -279,6 +290,9 @@ if (!empty($result_groups)) {
 			} else {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_UNKNOWN . "'>";
+			}
+			if (($data["_id_"] == 0) && ($monitor_unknown != 0)) {
+				echo $link . $monitor_unknown . "</a>";
 			}
 			if ($data["_monitors_unknown_"] > 0) {
 				echo $link . $data["_monitors_unknown_"] . "</a>";
@@ -294,6 +308,9 @@ if (!empty($result_groups)) {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_NOT_INIT . "'>";
 			}
+			if (($data["_id_"] == 0) && ($monitor_not_init != 0)) {
+				echo $link . $monitor_not_init . "</a>";
+			}
 			if ($data["_monitors_not_init_"] > 0) {
 				echo $link . $data["_monitors_not_init_"] . "</a>";
 			}
@@ -307,6 +324,9 @@ if (!empty($result_groups)) {
 			} else {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_NORMAL . "'>";
+			}
+			if (($data["_id_"] == 0) && ($monitor_ok != 0)) {
+				echo $link . $monitor_ok . "</a>";
 			}
 			if ($data["_monitors_ok_"] > 0) {
 				echo $link . $data["_monitors_ok_"] . "</a>";
@@ -322,6 +342,9 @@ if (!empty($result_groups)) {
 				$link = "<a class='group_view_data group_view_data_warn $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_WARNING . "'>";
 			}
+			if (($data["_id_"] == 0) && ($monitor_warning != 0)) {
+				echo $link . $monitor_warning . "</a>";
+			}
 			if ($data["_monitors_warning_"] > 0) {
 				echo $link . $data["_monitors_warning_"] . "</a>";
 			}
@@ -336,6 +359,9 @@ if (!empty($result_groups)) {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/status_monitor&tag_filter=".$data['_id_']."&status=" . AGENT_MODULE_STATUS_CRITICAL_BAD . "'>";
 			}
+			if (($data["_id_"] == 0) && ($monitor_critical != 0)) {
+				echo $link . $monitor_critical . "</a>";
+			}
 			if ($data["_monitors_critical_"] > 0) {
 				echo $link . $data["_monitors_critical_"] . "</a>";
 			}
@@ -349,6 +375,9 @@ if (!empty($result_groups)) {
 			} else {
 				$link = "<a class='group_view_data $color_class' style='font-weight: bold; font-size: 18px; text-align: center;' 
 				href='index.php?sec=estado&sec2=operation/agentes/alerts_status&tag_filter=".$data['_id_']."&filter=fired'>";
+			}
+			if (($data["_id_"] == 0) && ($all_alerts_fired != 0)) {
+				echo $link . $all_alerts_fired . "</a>";
 			}
 			if ($data["_monitors_alerts_fired_"] > 0) {
 				echo $link . $data["_monitors_alerts_fired_"] . "</a>";

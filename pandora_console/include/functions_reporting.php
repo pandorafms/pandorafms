@@ -6108,12 +6108,9 @@ function reporting_render_report_html_item ($content, $table, $report, $mini = f
 			foreach ($data as $row) {
 				$table_row = array();
 				$table_row[] = $row['agent'];
-				if ($content['show_graph']) {
-					$table_row[] = $row['ip_address'];
-				}
-				else {
-					$table_row[] = $row['module'];
-				}
+				
+				$table_row[] = $row['availability_item'];
+
 				$table_row[] = $row['checks'];
 				$table_row[] = $row['failed'];
 				$table_row[] = $row['fail'];

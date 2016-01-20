@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS General Management Tool
 ###############################################################################
-# Copyright (c) 2013 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2015 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 2
@@ -123,7 +123,7 @@ sub help_screen{
 	help_screen_line('--get_bad_conf_files', '', 'Get the files bad configured (without essential tokens)');
 	help_screen_line('--locate_agent', '<agent_name>', 'Search a agent into of nodes of metaconsole. Only Enterprise.');
 	print "\nMODULES:\n\n" unless $param ne '';
-	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout>]", 'Add data server module to agent');
+	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse> ]", 'Add data server module to agent');
 	help_screen_line('--create_network_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  [<module_port> <description> <module_group> <min> <max> <post_process> <interval> \n\t  <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>\n\t  <warning_str> <critical_str> <unknown_events> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>]", 'Add not snmp network module to agent');
 	help_screen_line('--create_snmp_module', "<module_name> <module_type> <agent_name> <module_address> <module_port>\n\t  <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval>\n\t   <warning_min> <warning_max> <critical_min> <critical_max> <history_data> \n\t  <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> \n\t  <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold> <warning_str> \n\t  <critical_str> <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>]", 'Add snmp network module to agent');
 	help_screen_line('--create_plugin_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> \n\t  <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal> <ff_threshold_warning>\n\t  <ff_threshold_critical> <timeout>]", 'Add plug-in module to agent');
@@ -1122,19 +1122,22 @@ sub cli_create_data_module($) {
 	my ($policy_name, $module_name, $module_type, $agent_name, $description, $module_group, 
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
 		$critical_max, $history_data, $definition_file, $configuration_data, $warning_str, $critical_str, $enable_unknown_events,
-	    $ff_threshold, $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout);
+	    $ff_threshold, $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
+	    $warning_inverse, $critical_inverse);
 	
 	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $description, $module_group, 
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
 		$critical_max, $history_data, $definition_file, $warning_str, $critical_str, $enable_unknown_events, $ff_threshold,
-		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout) = @ARGV[2..25];
+		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
+	    $warning_inverse, $critical_inverse) = @ARGV[2..27];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $description, $module_group, 
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
 		$critical_max, $history_data, $configuration_data, $warning_str, $critical_str, $enable_unknown_events, $ff_threshold,
-		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout) = @ARGV[2..25];
+		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
+	    $warning_inverse, $critical_inverse) = @ARGV[2..28];
 	}
 	
 	my $module_name_def;
@@ -1276,6 +1279,8 @@ sub cli_create_data_module($) {
 	$parameters{'min_ff_event_warning'} = $ff_threshold_warning unless !defined ($ff_threshold_warning);
 	$parameters{'min_ff_event_critical'} = $ff_threshold_critical unless !defined ($ff_threshold_critical);
 	$parameters{'ff_timeout'} = $ff_timeout unless !defined ($ff_timeout);
+	$parameters{'critical_inverse'} = $critical_inverse unless !defined ($critical_inverse);
+	$parameters{'warning_inverse'} = $warning_inverse unless !defined ($warning_inverse);
 	
 	if ($in_policy == 0) {
 		pandora_create_module_from_hash ($conf, \%parameters, $dbh);
@@ -4354,7 +4359,7 @@ sub pandora_manage_main ($$$) {
 			cli_delete_agent();
 		}
 		elsif ($param eq '--create_data_module') {
-			param_check($ltotal, 23, 20);
+			param_check($ltotal, 27, 24);
 			cli_create_data_module(0);
 		}
 		elsif ($param eq '--create_network_module') {

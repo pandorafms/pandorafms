@@ -3864,9 +3864,9 @@ function reporting_availability($report, $content) {
 			$percent_fail = (100 - $percent_ok);
 			
 			$row['checks'] = format_numeric($count_checks, 0);
-			$row['ok'] = $percent_ok . " %";
+			$row['ok'] = format_numeric($percent_ok,2) . " %";
 			$row['order'] = $percent_ok;
-			$row['fail'] = $percent_fail . " %";
+			$row['fail'] = format_numeric($percent_fail,2) . " %";
 			$row['failed'] =
 				format_numeric($percent_fail * $count_checks / 100, 0);
 			

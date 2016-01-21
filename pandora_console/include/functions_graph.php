@@ -1412,10 +1412,13 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 								' AND utimestamp > ' . (int) $datelimit .
 								' AND utimestamp < ' . (int) $date);
 				
+				$agent_name = io_safe_output(
+					modules_get_agentmodule_agent_name ($module));
+				
 				if ($labels[$module] != '')
 					$label = $labels[$module];
 				else
-					$label = $module_data['nombre'];
+					$label = $agent_name . " - " .$module_data['nombre'];
 				$temp[$label]['g'] = $temp_data;
 				
 			}

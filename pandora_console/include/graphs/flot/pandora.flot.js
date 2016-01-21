@@ -352,7 +352,12 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	//yAxisHeight = $('#' + graph_id + ' .yAxis .tickLabel')
 		//.css('height').split('px')[0];
 	
-	//i = 0;
+	i = 0;
+	$('#' + graph_id + ' .yAxis .tickLabel').each(function() {
+		$(this).css('display','none');
+		$(this).addClass("legend_"+i);
+		i++;
+	});
 	
 	$('#' + graph_id + ' .xAxis .tickLabel').each(function() {
 		/*
@@ -468,6 +473,7 @@ $.fn.HUseTooltip = function () {
     $(this).bind("plothover", function (event, pos, item) {
         if (item) {
             if ((previousLabel != item.series.label) || (previousPoint != item.seriesIndex)) {
+				$('.legend_'+previousPoint).hide();
                 previousPoint = item.seriesIndex;
                 previousLabel = item.series.label;
                 $("#tooltip").remove();
@@ -476,7 +482,7 @@ $.fn.HUseTooltip = function () {
                 var y = item.datapoint[1];
 
                 var color = item.series.color;              
-                
+                $('.legend_'+y).show();
                 showTooltip(item.pageX,
                         item.pageY,
                         color,
@@ -484,6 +490,7 @@ $.fn.HUseTooltip = function () {
             }
         } else {
             $("#tooltip").remove();
+            $('.legend_'+previousPoint).hide();
             previousPoint = null;
         }
     });
@@ -492,15 +499,17 @@ $.fn.VUseTooltip = function () {
     $(this).bind("plothover", function (event, pos, item) {
         if (item) {
             if ((previousLabel != item.series.label) || (previousPoint != item.seriesIndex)) {
+				$('.legend_'+previousPoint).hide();
                 previousPoint = item.seriesIndex;
                 previousLabel = item.series.label;
+                
                 $("#tooltip").remove();
 
                 var x = item.datapoint[0];
                 var y = item.datapoint[1];
-
-                var color = item.series.color;
 				
+                var color = item.series.color;
+				$('.legend_'+x).show();
                 showTooltip(item.pageX,
                         item.pageY,
                         color,
@@ -508,6 +517,7 @@ $.fn.VUseTooltip = function () {
             }
         } else {
             $("#tooltip").remove();
+            $('.legend_'+previousPoint).hide();
             previousPoint = null;
         }
     });
@@ -614,7 +624,9 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	
 	i = 0;
 	$('#'+graph_id+' .xAxis .tickLabel').each(function() {
-		tickTop = $(this).css('transform',"rotate(20deg)");
+		$(this).css('display','none');
+		$(this).addClass("legend_"+i);
+		i++;
 		//~ tickNewTop = parseInt(parseInt(tickTop) - (yAxisHeight/2)-3);
 		//~ $(this).css('top', tickNewTop+'px');
 		//~
@@ -627,7 +639,6 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		//~ inCanvasValuePos = parseInt(pixelPerValue * ($('#value_'+i+'_'+graph_id).html()));
 		//~
 		//~ $('#value_'+i+'_'+graph_id).css('left',plot.offset().left + inCanvasValuePos - $('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3);
-		//~ i++;
 	});
 	
 	// When resize the window, adjust the values
@@ -642,6 +653,9 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 			//~ i++;
 		//~ });
 	//~ });
+	
+	
+	
 	$('#'+graph_id+' .yAxis .tickLabel').each(function() {
 		label = parseFloat($(this).text());
 		text = label.toLocaleString();

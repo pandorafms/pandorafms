@@ -664,6 +664,10 @@ function servers_get_info ($id_server = -1) {
 	return $return;
 }
 
+function servers_get_servers_type($type) {
+	return db_get_all_rows_filter('tserver', array('server_type' => $type));
+}
+
 /**
  * Get the server name.
  *

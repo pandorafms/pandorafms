@@ -163,7 +163,8 @@ if ($update) {
 				'id_agente' => $agent_ids,
 				'nombre' => $module_names
 			);
-		$module_plugin_macros = db_get_all_rows_filter('tagente_modulo', $filter, $fields);
+		$module_plugin_macros = db_get_all_rows_filter(
+			'tagente_modulo', $filter, $fields);
 		if (empty($module_plugin_macros)) $module_plugin_macros = array();
 		
 		// Error
@@ -182,12 +183,16 @@ if ($update) {
 			// Macros retrieved from the agent module
 			$module_macros = json_decode($module_macros_str, true);
 			
+			
 			// Error
 			if (empty($module_macros))
-				throw new Exception(__('Error retrieving the module plugin macros data'));
+				throw new Exception(
+					__('Error retrieving the module plugin macros data'));
+			
 			
 			// Get the new module plugin macros
-			$result_macros = array_map(function ($item) use ($macros, $module_macros) {
+			$result_macros = array_map(
+				function ($item) use ($macros, $module_macros) {
 				
 				$result = array(
 						'macro' => $item['macro'],
@@ -218,7 +223,9 @@ if ($update) {
 			if (empty($result_macros))
 				throw new Exception(__('Error building the new macros'));
 			
-			$module_macros = json_encode($result_macros);
+			
+			
+			$module_macros = json_encode($result_macros, JSON_FORCE_OBJECT);
 			if (empty($module_macros)) {
 				$module_macros = $module_macros_str;
 			}

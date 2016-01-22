@@ -38,6 +38,10 @@ function tactical_get_data ($id_user = false, $user_strict = false, $acltags, $r
 		$user_groups_ids = implode(',', array_keys($acltags));
 	}
 	
+	if (empty($user_groups_ids)) {
+		$user_groups_ids = 'null';
+	}
+	
 	if (!empty($user_groups_ids)) {
 		switch ($config["dbtype"]) {
 			case "mysql":
@@ -70,7 +74,9 @@ function tactical_get_data ($id_user = false, $user_strict = false, $acltags, $r
 	$list['_monitors_unknown_'] = 0;
 	$list['_monitors_not_init_'] = 0;
 	$list['_monitors_ok_'] = 0;
-	if ($list_groups == false) {
+	
+	
+	if (empty($list_groups)) {
 		$list_groups = array();
 	}
 	
@@ -112,7 +118,7 @@ function tactical_get_data ($id_user = false, $user_strict = false, $acltags, $r
 							  	AND (total_count = 0 OR total_count = notinit_count)
 							  GROUP BY id_grupo";
 		$data_stats_not_init = db_get_all_rows_sql($sql_stats_not_init);
-
+		
 		$sql_stats_ok = "SELECT id_grupo, COUNT(id_agente) AS agents_ok
 						 FROM $cache_table
 						 WHERE disabled = 0
@@ -123,7 +129,7 @@ function tactical_get_data ($id_user = false, $user_strict = false, $acltags, $r
 						 	AND normal_count > 0
 						 GROUP BY id_grupo";
 		$data_stats_ok = db_get_all_rows_sql($sql_stats_ok);
-
+		
 		$sql_stats_warning = "SELECT id_grupo, COUNT(id_agente) AS agents_warning
 							  FROM $cache_table
 							  WHERE disabled = 0
@@ -132,7 +138,7 @@ function tactical_get_data ($id_user = false, $user_strict = false, $acltags, $r
 							  	AND warning_count > 0
 							  GROUP BY id_grupo";
 		$data_stats_warning = db_get_all_rows_sql($sql_stats_warning);
-
+		
 		$sql_stats_critical = "SELECT id_grupo, COUNT(id_agente) AS agents_critical
 								FROM $cache_table
 								WHERE disabled = 0
@@ -140,7 +146,7 @@ function tactical_get_data ($id_user = false, $user_strict = false, $acltags, $r
 									AND critical_count > 0
 								GROUP BY id_grupo";
 		$data_stats_critical = db_get_all_rows_sql($sql_stats_critical);
-
+		
 		if (!empty($data_stats)) {
 			foreach ($data_stats as $value) {
 				$list['_total_agents_'] += (int) $value['agents_total'];
@@ -151,33 +157,33 @@ function tactical_get_data ($id_user = false, $user_strict = false, $acltags, $r
 				$list['_monitors_not_init_'] += (int) $value['monitors_not_init'];
 				$list["_monitor_alerts_fire_count_"] += (int) $value['alerts_fired'];
 			}
-
+			
 			if (!empty($data_stats_unknown)) {
-
+				
 				foreach ($data_stats_unknown as $value) {
 					$list['_agents_unknown_'] += (int) $value['agents_unknown'];
 				}
 			}
 			if (!empty($data_stats_not_init)) {
-
+			
 				foreach ($data_stats_not_init as $value) {
 					$list["_agents_not_init_"] += (int) $value['agents_not_init'];
 				}
 			}
 			if (!empty($data_stats_ok)) {
-
+				
 				foreach ($data_stats_ok as $value) {
 					$list["_agents_ok_"] += (int) $value['agents_ok'];
 				}
 			}
 			if (!empty($data_stats_warning)) {
-
+				
 				foreach ($data_stats_warning as $value) {
 					$list["_agents_warning_"] += (int) $value['agents_warning'];
 				}
 			}
 			if (!empty($data_stats_critical)) {
-
+				
 				foreach ($data_stats_critical as $value) {
 					$list["_agents_critical_"] += (int) $value['agents_critical'];
 				}
@@ -188,24 +194,24 @@ function tactical_get_data ($id_user = false, $user_strict = false, $acltags, $r
 	if (!$user_strict && is_metaconsole()) { // Agent cache
 		// Get total count of monitors for this group, except disabled.
 		$list["_monitor_checks_"] = $list["_monitors_not_init_"] + $list["_monitors_unknown_"] + $list["_monitors_warning_"] + $list["_monitors_critical_"] + $list["_monitors_ok_"];
-
+		
 		// Calculate not_normal monitors
 		$list["_monitor_not_normal_"] = $list[$i]["_monitor_checks_"] - $list["_monitors_ok_"];
-
+		
 		if ($list["_monitor_not_normal_"] > 0 && $list["_monitor_checks_"] > 0) {
 			$list["_monitor_health_"] = format_numeric (100 - ($list["_monitor_not_normal_"] / ($list["_monitor_checks_"] / 100)), 1);
 		}
 		else {
 			$list["_monitor_health_"] = 100;
 		}
-
+		
 		if ($list["_monitors_not_init_"] > 0 && $list["_monitor_checks_"] > 0) {
 			$list["_module_sanity_"] = format_numeric (100 - ($list["_monitors_not_init_"] / ($list["_monitor_checks_"] / 100)), 1);
 		}
 		else {
 			$list["_module_sanity_"] = 100;
 		}
-
+		
 		if (isset($list[$i]["_alerts_"])) {
 			if ($list["_monitors_alerts_fired_"] > 0 && $list["_alerts_"] > 0) {
 				$list["_alert_level_"] = format_numeric (100 - ($list["_monitors_alerts_fired_"] / ($list["_alerts_"] / 100)), 1);
@@ -218,18 +224,18 @@ function tactical_get_data ($id_user = false, $user_strict = false, $acltags, $r
 			$list["_alert_level_"] = 100;
 			$list["_alerts_"] = 0;
 		}
-
+		
 		$list["_monitor_bad_"] = $list["_monitors_critical_"] + $list["_monitors_warning_"];
-
+		
 		if ($list["_monitor_bad_"] > 0 && $list["_monitor_checks_"] > 0) {
 			$list["_global_health_"] = format_numeric (100 - ($list["_monitor_bad_"] / ($list["_monitor_checks_"] / 100)), 1);
 		}
 		else {
 			$list["_global_health_"] = 100;
 		}
-
+		
 		$list["_server_sanity_"] = format_numeric (100 - $list["_module_sanity_"], 1);
-
+	
 	}
 	else if (($config["realtimestats"] == 0) && !$user_strict) {
 		
@@ -299,6 +305,7 @@ function tactical_get_data ($id_user = false, $user_strict = false, $acltags, $r
 		
 	}
 	else {
+		
 		if ($user_strict) {
 			$_tag_condition = 'AND ' . tags_get_acl_tags_module_condition($acltags,'tae');
 		}
@@ -315,6 +322,9 @@ function tactical_get_data ($id_user = false, $user_strict = false, $acltags, $r
 							AND tam.disabled = 0
 					$_tag_condition
 					GROUP BY estado");
+		
+		if (empty($result_list))
+			$result_list = array();
 		
 		foreach ($result_list as $result) {
 			switch ($result['estado']) {
@@ -410,7 +420,7 @@ function tactical_status_modules_agents($id_user = false, $user_strict = false, 
 					$result_list[$server_item['_name_']]["_total_checks_"] += $server_item["_total_checks_"];
 					$result_list[$server_item['_name_']]["_total_alerts_"] += $server_item["_total_alerts_"];
 					}
-				}			
+				}
 		}
 		
 		return $result_list;
@@ -418,9 +428,10 @@ function tactical_status_modules_agents($id_user = false, $user_strict = false, 
 	else {
 		
 		$result_list = tactical_get_data ($id_user, $user_strict,
-				$acltags);
+			$acltags);
+		
 		return $result_list;
-	}		
+	}
 }
 
 function tactical_monitor_alerts ($group_array, $strict_user = false, $id_group_strict = false) {
@@ -429,7 +440,6 @@ function tactical_monitor_alerts ($group_array, $strict_user = false, $id_group_
 	
 	if (empty ($group_array)) {
 		return 0;
-		
 	}
 	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
@@ -448,7 +458,8 @@ function tactical_monitor_alerts ($group_array, $strict_user = false, $id_group_
 				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo";
 		$count = db_get_sql ($sql);
 		return $count;
-	} else {
+	}
+	else {
 		//TODO REVIEW ORACLE AND POSTGRES
 		return db_get_sql ("SELECT COUNT(talert_template_modules.id)
 			FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
@@ -464,7 +475,6 @@ function tactical_monitor_fired_alerts ($group_array, $strict_user = false, $id_
 	
 	if (empty ($group_array)) {
 		return 0;
-		
 	}
 	else if (!is_array ($group_array)) {
 		$group_array = array($group_array);
@@ -483,10 +493,11 @@ function tactical_monitor_fired_alerts ($group_array, $strict_user = false, $id_
 			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 			AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo 
 			AND times_fired > 0 ";
-
+		
 		$count = db_get_sql ($sql);
 		return $count;
-	} else {
+	}
+	else {
 		//TODO REVIEW ORACLE AND POSTGRES
 		return db_get_sql ("SELECT COUNT(talert_template_modules.id)
 			FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
@@ -497,6 +508,4 @@ function tactical_monitor_fired_alerts ($group_array, $strict_user = false, $id_
 	}
 	
 }
-
-
 ?>

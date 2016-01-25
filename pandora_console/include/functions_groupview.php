@@ -45,6 +45,7 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 					SELECT *
 					FROM tgrupo
 					WHERE id_grupo IN (" . $user_groups_ids . ")
+					AND id_grupo IN (SELECT id_grupo FROM tagente WHERE disabled = 0)
 					ORDER BY nombre COLLATE utf8_general_ci ASC");
 				break;
 			case "postgresql":
@@ -52,6 +53,7 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 					SELECT *
 					FROM tgrupo
 					WHERE id_grupo IN (" . $user_groups_ids . ")
+					AND id_grupo IN (SELECT id_grupo FROM tagente WHERE disabled = 0)
 					ORDER BY nombre ASC");
 				break;
 			case "oracle":
@@ -59,6 +61,7 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 					SELECT *
 					FROM tgrupo
 					WHERE id_grupo IN (" . $user_groups_ids . ")
+					AND id_grupo IN (SELECT id_grupo FROM tagente WHERE disabled = 0)
 					ORDER BY nombre ASC");
 				break;
 		}
@@ -91,7 +94,7 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 														SUM(fired_count) AS _monitors_alerts_fired_,
 														COUNT(*) AS _total_agents_, id_grupo, intervalo,
 														ultimo_contacto, disabled
-									FROM tmetaconsole_agent WHERE id_grupo = " . $group['id_grupo'] . " GROUP BY id_grupo");
+									FROM tmetaconsole_agent WHERE id_grupo = " . $group['id_grupo'] . " AND disabled = 0 GROUP BY id_grupo");
 			$list[$group['id_grupo']]['_monitors_critical_'] = (int)$group_agents['_monitors_critical_'];
 			$list[$group['id_grupo']]['_monitors_warning_'] = (int)$group_agents['_monitors_warning_'];
 			$list[$group['id_grupo']]['_monitors_unknown_'] = (int)$group_agents['_monitors_unknown_'];
@@ -210,7 +213,7 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 														SUM(fired_count) AS _monitors_alerts_fired_,
 														COUNT(*) AS _total_agents_, id_grupo, intervalo,
 														ultimo_contacto, disabled
-									FROM tagente WHERE id_grupo = " . $group['id_grupo'] . " GROUP BY id_grupo");
+									FROM tagente WHERE id_grupo = " . $group['id_grupo'] . " AND disabled = 0 GROUP BY id_grupo");
 			$list[$group['id_grupo']]['_monitors_critical_'] = (int)$group_agents['_monitors_critical_'];
 			$list[$group['id_grupo']]['_monitors_warning_'] = (int)$group_agents['_monitors_warning_'];
 			$list[$group['id_grupo']]['_monitors_unknown_'] = (int)$group_agents['_monitors_unknown_'];
@@ -515,7 +518,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 						SELECT *
 						FROM tgrupo
 						WHERE id_grupo IN (" . $user_groups_ids . ")
-						AND id_grupo IN (SELECT id_grupo FROM tagente)
+						AND id_grupo IN (SELECT id_grupo FROM tagente WHERE disabled = 0)
 						ORDER BY nombre COLLATE utf8_general_ci ASC");
 					break;
 				case "postgresql":
@@ -523,7 +526,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 						SELECT *
 						FROM tgrupo
 						WHERE id_grupo IN (" . $user_groups_ids . ")
-						AND id_grupo IN (SELECT id_grupo FROM tagente)
+						AND id_grupo IN (SELECT id_grupo FROM tagente WHERE disabled = 0)
 						ORDER BY nombre ASC");
 					break;
 				case "oracle":
@@ -531,7 +534,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 						SELECT *
 						FROM tgrupo
 						WHERE id_grupo IN (" . $user_groups_ids . ")
-						AND id_grupo IN (SELECT id_grupo FROM tagente)
+						AND id_grupo IN (SELECT id_grupo FROM tagente WHERE disabled = 0)
 						ORDER BY nombre ASC");
 					break;
 			}
@@ -592,6 +595,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 	}
 
 	$list_groups = $final_list;
+
 	$list = array();
 	foreach ($list_groups as $group) {
 		$list[$group['id_grupo']]['_name_'] = $group['nombre'];
@@ -617,7 +621,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 														SUM(fired_count) AS _monitors_alerts_fired_,
 														COUNT(*) AS _total_agents_, id_grupo, intervalo,
 														ultimo_contacto, disabled
-									FROM tmetaconsole_agent WHERE id_grupo = " . $group['id_grupo'] . " GROUP BY id_grupo");
+									FROM tmetaconsole_agent WHERE id_grupo = " . $group['id_grupo'] . " AND disabled = 0 GROUP BY id_grupo");
 			$list[$group['id_grupo']]['_monitors_critical_'] = (int)$group_agents['_monitors_critical_'];
 			$list[$group['id_grupo']]['_monitors_warning_'] = (int)$group_agents['_monitors_warning_'];
 			$list[$group['id_grupo']]['_monitors_unknown_'] = (int)$group_agents['_monitors_unknown_'];
@@ -736,7 +740,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 														SUM(fired_count) AS _monitors_alerts_fired_,
 														COUNT(*) AS _total_agents_, id_grupo, intervalo,
 														ultimo_contacto, disabled
-									FROM tagente WHERE id_grupo = " . $group['id_grupo'] . " GROUP BY id_grupo");
+									FROM tagente WHERE id_grupo = " . $group['id_grupo'] . " AND disabled = 0 GROUP BY id_grupo");
 			$list[$group['id_grupo']]['_monitors_critical_'] = (int)$group_agents['_monitors_critical_'];
 			$list[$group['id_grupo']]['_monitors_warning_'] = (int)$group_agents['_monitors_warning_'];
 			$list[$group['id_grupo']]['_monitors_unknown_'] = (int)$group_agents['_monitors_unknown_'];

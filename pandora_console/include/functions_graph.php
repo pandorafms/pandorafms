@@ -1419,7 +1419,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					$label = $labels[$module];
 				else
 					$label = $agent_name . " - " .$module_data['nombre'];
-				$temp[$label]['g'] = $temp_data;
+				$temp[$label]['g'] = round($temp_data,4);
 				
 			}
 			break;

@@ -178,21 +178,15 @@ switch ($graph_type) {
 		$fine_colors = array();
 		
 		// If is set fine colors we store it or set default
-		if (isset($colors[reset(array_keys($data_values))]['fine'])) {
-			$fine = $colors[reset(array_keys($data_values))]['fine'];
-			if ($fine === true) {
-				$fine = $default_fine_colors;
-			}
-			
-			foreach ($fine as $i => $fine_color) {
-				$rgb_fine = html_html2rgb($fine_color);
-				$fine_colors[$i]['R'] = $rgb_fine[0];
-				$fine_colors[$i]['G'] = $rgb_fine[1];
-				$fine_colors[$i]['B'] = $rgb_fine[2];
-				$fine_colors[$i]['Alpha'] = 100;
-			}
-			$colors = array();
+							
+		foreach ($colors as $i => $fine_color) {
+			$rgb_fine = html_html2rgb($fine_color);
+			$fine_colors[$i]['R'] = $rgb_fine[0];
+			$fine_colors[$i]['G'] = $rgb_fine[1];
+			$fine_colors[$i]['B'] = $rgb_fine[2];
+			$fine_colors[$i]['Alpha'] = 100;
 		}
+		$colors = $fine_colors;
 		
 		break;
 	case 'progress':

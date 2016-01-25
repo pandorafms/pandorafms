@@ -323,7 +323,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 					axisLabelFontSizePixels: 12,
 					axisLabelFontFamily: 'Verdana, Arial',
 					axisLabelPadding: 3,
-					ticks: labels_total,
+					ticks: yFormatter,
 					tickSize: 1,
 					color: '#000',
 					},
@@ -352,12 +352,12 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	//yAxisHeight = $('#' + graph_id + ' .yAxis .tickLabel')
 		//.css('height').split('px')[0];
 	
-	i = 0;
-	$('#' + graph_id + ' .yAxis .tickLabel').each(function() {
-		$(this).css('display','none');
-		$(this).addClass("legend_"+i);
-		i++;
-	});
+	//~ i = 0;
+	//~ $('#' + graph_id + ' .yAxis .tickLabel').each(function() {
+		//~ $(this).css('display','none');
+		//~ $(this).addClass("legend_"+i);
+		//~ i++;
+	//~ });
 	
 	$('#' + graph_id + ' .xAxis .tickLabel').each(function() {
 		/*
@@ -465,6 +465,13 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 		$(".values_" + graph_id).css("left", (plot.offset().left + 5) + "px");
 	}
 	* */
+	function yFormatter(v, axis) {
+		format = new Array();
+		for (i = 0; i < labels_total.length; i++) {
+			format.push([i,'<div style="visibility: hidden;" class="legend_'+i+'">'+labels_total[i][1]+'</div>']);
+		}
+		return format;
+	}
 }
 
 var previousPoint = null, previousLabel = null;
@@ -473,7 +480,7 @@ $.fn.HUseTooltip = function () {
     $(this).bind("plothover", function (event, pos, item) {
         if (item) {
             if ((previousLabel != item.series.label) || (previousPoint != item.seriesIndex)) {
-				$('.legend_'+previousPoint).hide();
+				$('.legend_'+previousPoint).css("visibility","hidden");
                 previousPoint = item.seriesIndex;
                 previousLabel = item.series.label;
                 $("#tooltip").remove();
@@ -482,15 +489,15 @@ $.fn.HUseTooltip = function () {
                 var y = item.datapoint[1];
 
                 var color = item.series.color;              
-                $('.legend_'+y).show();
+                $('.legend_'+y).css("visibility","");
                 showTooltip(item.pageX,
                         item.pageY,
                         color,
-                        "<strong>" + item.series.yaxis.ticks[y].label + "</strong>: <strong>" + x + "</strong>");
+                        "<strong>" + $('.legend_'+x).text() + "</strong>: <strong>" + x + "</strong>");
             }
         } else {
             $("#tooltip").remove();
-            $('.legend_'+previousPoint).hide();
+            $('.legend_'+previousPoint).css("visibility","hidden");
             previousPoint = null;
         }
     });
@@ -499,7 +506,7 @@ $.fn.VUseTooltip = function () {
     $(this).bind("plothover", function (event, pos, item) {
         if (item) {
             if ((previousLabel != item.series.label) || (previousPoint != item.seriesIndex)) {
-				$('.legend_'+previousPoint).hide();
+				$('.legend_'+previousPoint).css("visibility","hidden");
                 previousPoint = item.seriesIndex;
                 previousLabel = item.series.label;
                 
@@ -509,15 +516,15 @@ $.fn.VUseTooltip = function () {
                 var y = item.datapoint[1];
 				
                 var color = item.series.color;
-				$('.legend_'+x).show();
+				$('.legend_'+x).css("visibility","");
                 showTooltip(item.pageX,
                         item.pageY,
                         color,
-                        "<strong>" + item.series.xaxis.ticks[x].label + "</strong>"  + " : <strong>" + y + "</strong>");
+                        "<strong>" + $('.legend_'+x).text() + "</strong>"  + " : <strong>" + y + "</strong>");
             }
         } else {
             $("#tooltip").remove();
-            $('.legend_'+previousPoint).hide();
+            $('.legend_'+previousPoint).css("visibility","hidden");
             previousPoint = null;
         }
     });
@@ -572,48 +579,47 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	
 	var stack = 0, bars = true, lines = false, steps = false;
 	
-	 var options = {
-            series: {
-                bars: {
-                    show: true,
-                    lineWidth: 1,
-					fill: 1,
-					align: "center",
-					barWidth: 1
-                }
-            },
-            xaxis: {
-                axisLabelUseCanvas: true,
-                axisLabelFontSizePixels: 7,
-                axisLabelFontFamily: 'Verdana, Arial',
-                axisLabelPadding: 0,
-                ticks: labels_total,
-                labelWidth: 30,
-            },
-            yaxis: {
-                axisLabelUseCanvas: true,
-                axisLabelFontSizePixels: 7,
-                axisLabelFontFamily: 'Verdana, Arial',
-                axisLabelPadding: 100,
-                autoscaleMargin: 0.02,
-                tickFormatter: function (v, axis) {
-                    return v ;
-                }
-            },
-            legend: {
-                noColumns: 100,
-                labelBoxBorderColor: "#000000",
-                margin: 100,
-                container: true,
-                sorted: false
-                
-            },
-            grid: {
-                hoverable: true,
-				borderWidth: 1,
-				backgroundColor: { colors: ["#FFF", "#FFF"] }
-            }
-    };
+	var options = {
+		series: {
+			bars: {
+				show: true,
+				lineWidth: 1,
+				fill: 1,
+				align: "center",
+				barWidth: 1
+			}
+		},
+		xaxis: {
+			axisLabelUseCanvas: true,
+			axisLabelFontSizePixels: 7,
+			axisLabelFontFamily: 'Verdana, Arial',
+			axisLabelPadding: 0,
+			ticks: xFormatter,
+			labelWidth: 130,
+		},
+		yaxis: {
+			axisLabelUseCanvas: true,
+			axisLabelFontSizePixels: 7,
+			axisLabelFontFamily: 'Verdana, Arial',
+			axisLabelPadding: 100,
+			autoscaleMargin: 0.02,
+			tickFormatter: function (v, axis) {
+				return v ;
+			}
+		},
+		legend: {
+			noColumns: 100,
+			labelBoxBorderColor: "#000000",
+			margin: 100,
+			container: true,
+			sorted: false
+		},
+		grid: {
+			hoverable: true,
+			borderWidth: 1,
+			backgroundColor: { colors: ["#FFF", "#FFF"] }
+		}
+	};
 	
 	var plot = $.plot($('#'+graph_id),datas, options );
 	$('#' + graph_id).VUseTooltip();
@@ -622,11 +628,12 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	// Adjust the top of yaxis tick to set it in the middle of the bars
 	//yAxisHeight = $('#'+graph_id+' .yAxis .tickLabel').css('height').split('px')[0];
 	
-	i = 0;
-	$('#'+graph_id+' .xAxis .tickLabel').each(function() {
-		$(this).css('display','none');
-		$(this).addClass("legend_"+i);
-		i++;
+	//plot.getPlaceholder().onload = function(){pruebas};
+	//~ i = 0;
+	//~ $('#'+graph_id+' .xAxis .tickLabel').each(function() {
+		//~ $(this).css('display','none');
+		//~ $(this).addClass("legend_"+i);
+		//~ i++;
 		//~ tickNewTop = parseInt(parseInt(tickTop) - (yAxisHeight/2)-3);
 		//~ $(this).css('top', tickNewTop+'px');
 		//~
@@ -639,7 +646,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		//~ inCanvasValuePos = parseInt(pixelPerValue * ($('#value_'+i+'_'+graph_id).html()));
 		//~
 		//~ $('#value_'+i+'_'+graph_id).css('left',plot.offset().left + inCanvasValuePos - $('#value_'+i+'_'+graph_id).css('width').split('px')[0] - 3);
-	});
+	//~ });
 	
 	// When resize the window, adjust the values
 	//~ $('#'+graph_id).parent().resize(function () {
@@ -670,12 +677,11 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	});
 	// Format functions
 	function xFormatter(v, axis) {
-		if (labels[v] != undefined) {
-			return labels[v];
+		format = new Array();
+		for (i = 0; i < labels_total.length; i++) {
+			format.push([i,'<div style="visibility: hidden;" class="legend_'+i+'">'+labels_total[i][1]+'</div>']);
 		}
-		else {
-			return '';
-		}
+		return format;
 	}
 
 	function yFormatter(v, axis) {

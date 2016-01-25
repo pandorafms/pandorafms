@@ -288,7 +288,6 @@ echo "<legend>" . __('General options') . "</legend>";
 
 echo "</fieldset>";
 
-	//enterprise_hook ('setup');
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 html_print_submit_button (__('Update'), 'update_button', false, 'class="sub upd"');
 echo '</div>';

@@ -1371,9 +1371,11 @@ function index_array ($array, $index = 'id', $value = 'name') {
 	if (! is_array ($array))
 		return $retval;
 	
-	foreach ($array as $element) {
-		if (! isset ($element[$index]))
-			continue;
+	foreach ($array as $index_array => $element) {
+		if (!is_null($index)) {
+			if (! isset ($element[$index]))
+				continue;
+		}
 		if ($value === false) {
 			$retval[$element[$index]] = $element;
 			continue;
@@ -1381,7 +1383,13 @@ function index_array ($array, $index = 'id', $value = 'name') {
 		
 		if (! isset ($element[$value]))
 			continue;
-		$retval[$element[$index]] = $element[$value];
+		
+		if (is_null($index)) {
+			$retval[$index_array] = $element[$value];
+		}
+		else {
+			$retval[$element[$index]] = $element[$value];
+		}
 	}
 	
 	return $retval;

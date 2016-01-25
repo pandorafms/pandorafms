@@ -20,10 +20,11 @@ require_once ('include/functions_modules.php');
 require_once ('include/functions_alerts.php');
 require_once ('include/functions_reporting.php');
 require_once ('include/graphs/functions_utils.php');
+require_once("include/functions_snmp.php");
 
 // Define a separator to implode/explode data
 $separator = '_.._';
-	
+
 $idAgent = (int) get_parameter('id_agente', 0);
 $ipAgent = db_get_value('direccion', 'tagente', 'id_agente', $idAgent);
 
@@ -63,56 +64,6 @@ if (empty($plugin)) {
 	ui_print_info_message(array('message' => __('The SNMP remote plugin doesnt seem to be installed') . '. ' . __('It is necessary to use some features') . '.<br><br>' . __('Please, install the SNMP remote plugin (The name of the plugin must be snmp_remote.pl)'), 'no_close' => true));
 }
 
-// Define STATIC SNMP data
-$static_snmp_descriptions = array(
-	'Load-1' => 'Load Average (Last minute)',
-	'Load-5' => 'Load Average (Last 5 minutes)',
-	'Load-15' => 'Load Average (Last 5 minutes)',
-	'memTotalSwap' => 'Total Swap Size configured for the host',
-	'memAvailSwap' => 'Available Swap Space on the host',
-	'memTotalReal' => 'Total Real/Physical Memory Size on the host',
-	'memAvailReal' => 'Available Real/Physical Memory Space on the host',
-	'memTotalFree' => 'Total Available Memory on the host',
-	//'memShared' => 'Total Shared Memory',
-	'memCached' => 'Total Cached Memory',
-	'memBuffer' => 'Total Buffered Memory',
-	'ssSwapIn' => 'Amount of memory swapped in from disk (kB/s)',
-	'ssSwapOut' => 'Amount of memory swapped to disk (kB/s)',
-	'ssIORawSent' => 'Number of blocks sent to a block device',
-	'ssIORawReceived' => 'Number of blocks received from a block device',
-	'ssRawInterrupts' => 'Number of interrupts processed',
-	'ssRawContexts' => 'Number of context switches',
-	'ssCpuRawUser' => 'user CPU time',
-	'ssCpuRawSystem' => 'system CPU time',
-	'ssCpuRawIdle' => 'idle CPU time',
-	'sysUpTime' => 'system Up time');
-
-$static_snmp_oids = array(
-	'Load-1' => '.1.3.6.1.4.1.2021.10.1.5.1',
-	'Load-5' => '.1.3.6.1.4.1.2021.10.1.5.2',
-	'Load-15' => '.1.3.6.1.4.1.2021.10.1.5.3',
-	'memTotalSwap' => '.1.3.6.1.4.1.2021.4.3.0',
-	'memAvailSwap' => '.1.3.6.1.4.1.2021.4.4.0',
-	'memTotalReal' => '.1.3.6.1.4.1.2021.4.5.0',
-	'memAvailReal' => '.1.3.6.1.4.1.2021.4.6.0',
-	'memTotalFree' => '.1.3.6.1.4.1.2021.4.11.0',
-	//'memShared' => '.1.3.6.1.4.1.2021.4.13',
-	'memCached' => '.1.3.6.1.4.1.2021.4.15.0',
-	'memBuffer' => '.1.3.6.1.4.1.2021.4.14.0',
-	'ssSwapIn' => '.1.3.6.1.4.1.2021.11.3.0',
-	'ssSwapOut' => '.1.3.6.1.4.1.2021.11.4.0',
-	'ssIORawSent' => '.1.3.6.1.4.1.2021.11.57.0',
-	'ssIORawReceived' => '.1.3.6.1.4.1.2021.11.58.0',
-	'ssRawInterrupts' => '.1.3.6.1.4.1.2021.11.59.0',
-	'ssRawContexts' => '.1.3.6.1.4.1.2021.11.60.0',
-	'ssCpuRawUser' => '.1.3.6.1.4.1.2021.11.50.0',
-	'ssCpuRawSystem' => '.1.3.6.1.4.1.2021.11.52.0',
-	'ssCpuRawIdle' => '.1.3.6.1.4.1.2021.11.53.0',
-	'sysUpTime' => '1.3.6.1.2.1.1.3.0');
-
-$static_snmp_post_process = array(
-	'sysUpTime' => "0.00000011574074");
-
 // Using plugin
 if (!empty($plugin)) {
 	$static_snmp_descriptions['avgCpuLoad'] = 'Average of CPUs Load (%)';
@@ -128,6 +79,7 @@ $temperatures = array();
 
 $arrow = false;
 
+$snmp_translation_data = index_array(snmp_get_translation_wizard(), null, 'description');
 $other_snmp_data = array();
 
 if ($snmpwalk) {
@@ -283,16 +235,16 @@ if ($snmpwalk) {
 	// Other SNMP Data
 	$arrow = true;
 	
-	foreach ($static_snmp_oids as $key => $oid) {
+	foreach ($snmp_translation_data as $oid => $temp) {
 		if ($snmp_version == 3) {
 			$result = false; //It is statics oids.
 		}
 		else {
-			$result = snmpget($ip_target, $snmp_community, $oid);
+			$result = @snmpget($ip_target, $snmp_community, $oid);
 		}
 		
 		if ($result != false) {
-			$other_snmp_data[$key] = $static_snmp_descriptions[$key];
+			$other_snmp_data[$oid] = $snmp_translation_data[$oid];
 		}
 	}
 	if (empty($other_snmp_data)) {
@@ -375,10 +327,14 @@ if ($create_modules) {
 			);
 		
 		$devices_prefix_descriptions = array(
-			'diskIONRead' => 'The number of bytes read from this device since boot',
-			'diskIONWritten' => 'The number of bytes written to this device since boot',
-			'diskIONReads' => 'The number of read accesses from this device since boot',
-			'diskIONWrites' => 'The number of write accesses from this device since boot'
+			'diskIONRead' =>
+				__('The number of bytes read from this device since boot'),
+			'diskIONWritten' =>
+				__('The number of bytes written to this device since boot'),
+			'diskIONReads' =>
+				__('The number of read accesses from this device since boot'),
+			'diskIONWrites' =>
+				__('The number of write accesses from this device since boot')
 			);
 		
 		$results = array();
@@ -457,18 +413,17 @@ if ($create_modules) {
 		
 		// SNMP DATA (STATIC MODULES)
 		
-		foreach ($snmpdata as $snmpdata_name) {
+		foreach ($snmpdata as $snmpdata_oid) {
 			$module_values = $common_values;
+			$snmp_translation = snmp_get_translation($snmpdata_oid);
 			
-			$module_values['descripcion'] = $static_snmp_descriptions[$snmpdata_name];
+			$module_values['descripcion'] =
+				$snmp_translation['description'];
 			$module_values['id_tipo_modulo'] = modules_get_type_id('remote_snmp');
-			if (isset($static_snmp_post_process[$snmpdata_name])) {
-				$module_values['post_process'] = 
-					$static_snmp_post_process[$snmpdata_name];
-			}
+			$module_values['post_process'] = $snmp_translation['post_process'];
 			
 			//Average use of CPUs is a plugin module
-			switch ($snmpdata_name) {
+			switch ($snmpdata_oid) {
 				case 'avgCpuLoad':
 				case 'memoryUse':
 					$module_values['id_modulo'] = MODULE_PLUGIN;
@@ -538,15 +493,16 @@ if ($create_modules) {
 					unset($module_values['tcp_send']); //snmp_version
 					break;
 				default:
-					$module_values['snmp_oid'] = $static_snmp_oids[$snmpdata_name];
+					$module_values['snmp_oid'] = $snmpdata_oid;
 					
 					$module_values['id_modulo'] = MODULE_SNMP;
 					break;
 			}
 			
-			$result = modules_create_agent_module ($id_agent, io_safe_input($snmpdata_name), $module_values);
+			$result = modules_create_agent_module(
+				$id_agent, io_safe_input($snmp_translation['description']), $module_values);
 			
-			$results[$result][] = $snmpdata_name;
+			$results[$result][] = $snmp_translation['description'];
 		}
 		
 		// PROCESSES
@@ -924,7 +880,7 @@ ui_require_javascript_file ('pandora_modules');
 
 var separator = '<?php echo $separator; ?>';
 
-$(document).ready (function () {	
+$(document).ready (function () {
 	$("#walk_form").submit(function() {
 		$("#oid_loading").show ();
 	});
@@ -951,11 +907,11 @@ $(document).ready (function () {
 	$("#snmp_wizard_modes").trigger('change');
 	
 	<?php 
-		if (!$snmpwalk || $fail) {
+	if (!$snmpwalk || $fail) {
 	?>
-			$('#form_interfaces').hide();
+		$('#form_interfaces').hide();
 	<?php
-		}
+	}
 	?>
 	
 	$('.wizard_mode_devices_arrow').click(function() {
@@ -1045,7 +1001,7 @@ $(document).ready (function () {
 				$(value).remove();
 			}
 		});
-
+		
 		if($("#module option").length == 0) {
 			$("select[name='module[]']").append($("<option></option>").val(0).html(<?php echo "'".__('None')."'"; ?>));
 		}

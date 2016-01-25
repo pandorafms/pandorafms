@@ -306,10 +306,16 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	}
 	$sub["extras/pandora_diag"]["text"] = __('Diagnostic info');
 	$sub["extras/pandora_diag"]["id"] = 'Diagnostic info';
+	
 	$sub["godmode/setup/news"]["text"] = __('Site news');
 	$sub["godmode/setup/news"]["id"] = 'Site news';
+	
 	$sub["godmode/setup/file_manager"]["text"] = __('File manager');
 	$sub["godmode/setup/file_manager"]["id"] = 'File manager';
+	
+	$sub["godmode/setup/snmp_wizard"]["text"] = __('SNMP Wizard');
+	$sub["godmode/setup/snmp_wizard"]["id"] = 'SNMP Wizard';
+	
 	$menu_godmode["gextensions"]["sub"] = $sub;
 }
 

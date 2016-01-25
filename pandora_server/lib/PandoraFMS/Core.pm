@@ -1196,10 +1196,12 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	} elsif ($clean_name eq "Integria IMS Ticket") {
 		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module);
 		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module);
-		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module);
-		$field6 = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module);
+		$field5 = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module);
 		$field7 = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module);
-
+		$field8 = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module);
+		$field9 = subst_alert_macros ($field9, \%macros, $pa_config, $dbh, $agent, $module);
+		$field10 = subst_alert_macros ($field10, \%macros, $pa_config, $dbh, $agent, $module);
+		
 		# Field 1 (Integria IMS API path)
 		my $api_path = $field1;
 		
@@ -1209,28 +1211,37 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		# Field 3 (Integria IMS user)
 		my $integria_user = $field3;
 		
-		# Field 4 (Ticket name)
-		my $ticket_name = $field4;
+		# Field 4 (Integria IMS user password)
+		my $integria_user_pass = $field4;
+		
+		# Field 5 (Ticket name)
+		my $ticket_name = $field5;
 		if ($ticket_name eq "") {
 			$ticket_name = "Pandora FMS alert action created by API";
 		}
 		
-		# Field 5 (Ticket group ID)
-		my $ticket_group_id = $field5;
+		# Field 6 (Ticket group ID)
+		my $ticket_group_id = $field6;
 		if ($ticket_group_id eq '') {
 			$ticket_group_id = 0;
 		}
 		
-		# Field 6 (Ticket priority);
-		my $ticket_priority = $field6;
+		# Field 7 (Ticket priority);
+		my $ticket_priority = $field7;
 		if ($ticket_priority eq '') {
 			$ticket_priority = 0;
 		}
 		
-		# Field 7 (Ticket description);
-		my $ticket_description = $field7;
+		# Field 8 (Ticket email)
+		my $ticket_email = $field8;
+		
+		# Field 9 (Ticket owner)
+		my $ticket_owner = $field9;
+		
+		# Field 10 (Ticket description);
+		my $ticket_description = $field10;
 
-		pandora_create_integria_ticket($pa_config, $api_path, $api_pass, $integria_user, $ticket_name, $ticket_group_id, $ticket_priority, $ticket_description);
+		pandora_create_integria_ticket($pa_config, $api_path, $api_pass, $integria_user, $integria_user_pass, $ticket_name, $ticket_group_id, $ticket_priority, $ticket_email, $ticket_owner, $ticket_description);
 
 	# Unknown
 	} else {
@@ -5017,13 +5028,16 @@ sub pandora_edit_custom_graph ($$$$$$$$$$$) {
 	return $res;
 }
 
-sub pandora_create_integria_ticket ($$$$$$$$) {
-	my ($pa_config,$api_path,$api_pass,$integria_user,$ticket_name,$group_id,$ticket_priority,$ticket_description) = @_;
+sub pandora_create_integria_ticket ($$$$$$$$$$$) {
+	my ($pa_config,$api_path,$api_pass,$integria_user,$user_pass,$ticket_name,$group_id,$ticket_priority,$ticket_email,$ticket_owner,$ticket_description,) = @_;
 	
 	my $data_ticket;
 	my $call_api;
 
 	if ($api_path eq "") {
+		return 0;
+	}
+	if ($user_pass eq "") {
 		return 0;
 	}
 	if ($integria_user eq "") {
@@ -5033,19 +5047,31 @@ sub pandora_create_integria_ticket ($$$$$$$$) {
 		$ticket_name = "Ticket created by Pandora FMS";
 	}
 	if ($group_id eq "") {
-		$group_id = 0;
+		$group_id = 1;
 	}
 	if ($ticket_priority eq "") {
 		$ticket_priority = 1;
+	}
+	if ($ticket_owner eq "") {
+		$ticket_owner = "admin";
 	}
 	
 	$data_ticket = $ticket_name .
 		"|;|" . $group_id .
 		"|;|" . $ticket_priority .
-		"|;|" . $ticket_description;
-
+		"|;|" . $ticket_description .
+		"|;|" . #Id inventory
+		"|;|" . #Id incident type
+		"|;|" . $ticket_email .
+		"|;|" . $ticket_owner .
+		"|;|" . #Father ticket id
+		"|;|" . #Status
+		"|;|" . #Extra info
+		"|;|";  #Resolution
+		
 	$call_api = $api_path . '?' .
 		'user=' . $integria_user . '&' .
+		'user_pass=' . $user_pass . '&' .
 		'pass=' . $api_pass . '&' .
 		'op=create_incident&' .
 		'params=' . $data_ticket .'&' .

@@ -318,7 +318,7 @@ function config_update_config () {
 						$error_update[] = __('Fallback to local authentication');
 					
 					if (!config_update_value ('rpandora_server', get_parameter ('rpandora_server')))
-						$error_update[] = __('Pandora FMS host');
+						$error_update[] = __('MySQL host');
 					if (!config_update_value ('rpandora_port', get_parameter ('rpandora_port')))
 						$error_update[] = __('MySQL port');
 					if (!config_update_value ('rpandora_dbname', get_parameter ('rpandora_dbname')))

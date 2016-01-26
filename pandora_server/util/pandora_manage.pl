@@ -3278,31 +3278,42 @@ sub cli_get_agent_modules() {
 sub cli_create_synthetic() {
 	my $name_module = @ARGV[2];
 	my $synthetic_type = @ARGV[3];
-
+	
 	my $agent_name = @ARGV[4];
 	my @module_data = @ARGV[5..$#ARGV];
 	my $module;
 	my (@filterdata,@data_module);
-
+	
 	if ($synthetic_type ne 'arithmetic' && $synthetic_type ne 'average') {
 		print("[ERROR] Type of syntethic module doesn't exists \n\n");
 		exit 1;
 	}
-
+	if (scalar(@{module_data}) == 0) {
+		print("[ERROR] No modules data \n\n");
+		exit 1;
+	}
+	if ($name_module eq '') {
+		print("[ERROR] No module name \n\n");
+		exit 1;
+	}
+	
 	$module->{'custom_integer_1'} = 0;
 	$module->{'custom_integer_2'} = 0;
 	$module->{'prediction_module'} = 3; # Synthetic code is 3
-
+		
 	my $id_agent = int(get_agent_id($dbh,$agent_name));
-
+	
 	if ($id_agent > 0) {
-
+		
 		foreach my $data (@module_data) {
 			my @split_data = split(',',$data);
 			if (@split_data[0] =~ m/(x|\/|\+|\*|\-)/ && length(@split_data[0]) == 1 ) {
 				if ( @split_data[0] =~ m/(\/|\+|\*|\-)/ && $synthetic_type eq 'average' ) {
 					print("[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
 					exit 1;
+				}
+				if (is_numeric(@split_data[1]) == 0) {
+					next;
 				}
 				@data_module = ("",@split_data[0],@split_data[1]);
 				my $text_data = join(',',@data_module);
@@ -3332,13 +3343,15 @@ sub cli_create_synthetic() {
 
 		my $module_exists = get_agent_module_id($dbh, $name_module, $id_agent);
 		non_exist_check($module_exists, 'module name', $name_module);
-
+		
 		$module->{'id_agente'} = $id_agent;
 		$module->{'nombre'} = safe_input($name_module);
+		my $id_tipo_modulo = get_db_value ($dbh, "SELECT id_tipo FROM ttipo_modulo WHERE nombre = ?", "generic_data");
 		$module->{'id_modulo'} = 5;
-
+		$module->{'id_tipo_modulo'} = $id_tipo_modulo;
+		
 		my $id_module = db_process_insert($dbh, 'id_agente_modulo', 'tagente_modulo', $module);
-
+		
 		if ($id_module) {
 			my $result = enterprise_hook('create_synthetic_operations',
 				[$dbh,int($id_module), @filterdata]);
@@ -3346,10 +3359,12 @@ sub cli_create_synthetic() {
 				print("[OK] The modules are creating ID: $id_module \n\n");
 			}
 			else {
+				db_do ($dbh, 'DELETE FROM tagente_modulo WHERE id_agente_modulo = ?', $id_module);
 				print("[ERROR] Problems with creating data module. \n\n");
 			}
 		}
 		else {
+			db_do ($dbh, 'DELETE FROM tagente_modulo WHERE nombre = ? AND id_agente = ?', $name_module, $id_agent);
 			print("[INFO] Problems with creating module \n\n");
 		}
 	}

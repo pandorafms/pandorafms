@@ -3785,197 +3785,199 @@ function reporting_availability($report, $content) {
 	$max = null;
 	$max_text = "";
 	$count = 0;
-	foreach ($items as $item) {
-		//aaMetaconsole connection
-		$server_name = $item ['server_name'];
-		if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
-			$connection = metaconsole_get_connection($server_name);
-			if (metaconsole_load_external_db($connection) != NOERR) {
-				//ui_print_error_message ("Error connecting to ".$server_name);
+	
+	if (!empty($items)) {
+		foreach ($items as $item) {
+			//aaMetaconsole connection
+			$server_name = $item ['server_name'];
+			if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+				$connection = metaconsole_get_connection($server_name);
+				if (metaconsole_load_external_db($connection) != NOERR) {
+					//ui_print_error_message ("Error connecting to ".$server_name);
+					continue;
+				}
+			}
+			
+			
+			
+			if (modules_is_disable_agent($item['id_agent_module'])
+				|| modules_is_not_init($item['id_agent_module'])) {
+				//Restore dbconnection
+				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+					metaconsole_restore_db();
+				}
+				
 				continue;
 			}
-		}
-		
-		
-		
-		if (modules_is_disable_agent($item['id_agent_module'])
-			|| modules_is_not_init($item['id_agent_module'])) {
+			
+			$row = array();
+			
+			$text = "";
+			
+			// HACK it is saved in show_graph field.
+			// Show interfaces instead the modules
+			if ($content['show_graph']) {
+				$text = $row['availability_item'] = agents_get_address(
+					modules_get_agentmodule_agent($item['id_agent_module']));
+				
+				if (empty($text)) {
+					$text = $row['availability_item'] = __('No Address');
+				}
+			}
+			else {
+				$text = $row['availability_item'] = modules_get_agentmodule_name(
+					$item['id_agent_module']);
+			}
+			
+			$row['agent'] = modules_get_agentmodule_agent_name(
+				$item['id_agent_module']);
+			
+			$text = $row['agent'] . " (" . $text . ")";
+			
+			$sla_value = reporting_get_agentmodule_sla(
+				$item['id_agent_module'],
+				$content['period'],
+				0.50,
+				1.50,
+				$report["datetime"],
+				null,
+				$content['time_from'],
+				$content['time_to']);
+			
+			$count_checks = modules_get_count_datas(
+				$item['id_agent_module'],
+				$report["datetime"] - $content['period'],
+				$report["datetime"]);
+			
+			
+			if ($sla_value === false) {
+				$row['checks'] = __('Unknown');
+				$row['failed'] = __('Unknown');
+				$row['fail'] = __('Unknown');
+				$row['poling_time'] = __('Unknown');
+				$row['time_unavaliable'] = __('Unknown');
+				$row['ok'] = __('Unknown');
+				$row['order'] = 0;
+				
+				$percent_ok = 0;
+			}
+			else {
+				$percent_ok = format_numeric($sla_value, 2);
+				$percent_fail = (100 - $percent_ok);
+				
+				$row['checks'] = format_numeric($count_checks, 0);
+				$row['ok'] = format_numeric($percent_ok,2) . " %";
+				$row['order'] = $percent_ok;
+				$row['fail'] = format_numeric($percent_fail,2) . " %";
+				$row['failed'] =
+					format_numeric($percent_fail * $count_checks / 100, 0);
+				
+				
+				$row['poling_time'] =
+					human_time_description_raw(
+						($percent_ok * $count_checks / 100) * modules_get_interval($item['id_agent_module']),
+					true);
+				
+				$row['time_unavaliable'] = "-";
+				if ($percent_fail > 0) {
+					$row['time_unavaliable'] =
+						human_time_description_raw(
+							($percent_fail * $count_checks / 100) * modules_get_interval($item['id_agent_module']),
+						true);
+				}
+				
+			}
+			
+			$data[] = $row;
+			
+			
+			$avg = (($avg * $count) + $percent_ok) / ($count + 1);
+			if (is_null($min)) {
+				$min = $percent_ok;
+				$min_text = $text;
+			}
+			else {
+				if ($min > $percent_ok) {
+					$min = $percent_ok;
+					$min_text = $text;
+				}
+			}
+			if (is_null($max)) {
+				$max = $percent_ok;
+				$max_text = $text;
+			}
+			else {
+				if ($max < $percent_ok) {
+					$max = $percent_ok;
+					$max_text = $text;
+				}
+			}
+			
+			
 			//Restore dbconnection
 			if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 				metaconsole_restore_db();
 			}
 			
-			continue;
-		}
-		
-		$row = array();
-		
-		$text = "";
-		
-		// HACK it is saved in show_graph field.
-		// Show interfaces instead the modules
-		if ($content['show_graph']) {
-			$text = $row['availability_item'] = agents_get_address(
-				modules_get_agentmodule_agent($item['id_agent_module']));
-			
-			if (empty($text)) {
-				$text = $row['availability_item'] = __('No Address');
-			}
-		}
-		else {
-			$text = $row['availability_item'] = modules_get_agentmodule_name(
-				$item['id_agent_module']);
-		}
-		
-		$row['agent'] = modules_get_agentmodule_agent_name(
-			$item['id_agent_module']);
-		
-		$text = $row['agent'] . " (" . $text . ")";
-		
-		$sla_value = reporting_get_agentmodule_sla(
-			$item['id_agent_module'],
-			$content['period'],
-			0.50,
-			1.50,
-			$report["datetime"],
-			null,
-			$content['time_from'],
-			$content['time_to']);
-		
-		$count_checks = modules_get_count_datas(
-			$item['id_agent_module'],
-			$report["datetime"] - $content['period'],
-			$report["datetime"]);
-		
-		
-		if ($sla_value === false) {
-			$row['checks'] = __('Unknown');
-			$row['failed'] = __('Unknown');
-			$row['fail'] = __('Unknown');
-			$row['poling_time'] = __('Unknown');
-			$row['time_unavaliable'] = __('Unknown');
-			$row['ok'] = __('Unknown');
-			$row['order'] = 0;
-			
-			$percent_ok = 0;
-		}
-		else {
-			$percent_ok = format_numeric($sla_value, 2);
-			$percent_fail = (100 - $percent_ok);
-			
-			$row['checks'] = format_numeric($count_checks, 0);
-			$row['ok'] = format_numeric($percent_ok,2) . " %";
-			$row['order'] = $percent_ok;
-			$row['fail'] = format_numeric($percent_fail,2) . " %";
-			$row['failed'] =
-				format_numeric($percent_fail * $count_checks / 100, 0);
-			
-			
-			$row['poling_time'] =
-				human_time_description_raw(
-					($percent_ok * $count_checks / 100) * modules_get_interval($item['id_agent_module']),
-				true);
-			
-			$row['time_unavaliable'] = "-";
-			if ($percent_fail > 0) {
-				$row['time_unavaliable'] =
-					human_time_description_raw(
-						($percent_fail * $count_checks / 100) * modules_get_interval($item['id_agent_module']),
-					true);
-			}
-			
-		}
-		
-		$data[] = $row;
-		
-		
-		$avg = (($avg * $count) + $percent_ok) / ($count + 1);
-		if (is_null($min)) {
-			$min = $percent_ok;
-			$min_text = $text;
-		}
-		else {
-			if ($min > $percent_ok) {
-				$min = $percent_ok;
-				$min_text = $text;
-			}
-		}
-		if (is_null($max)) {
-			$max = $percent_ok;
-			$max_text = $text;
-		}
-		else {
-			if ($max < $percent_ok) {
-				$max = $percent_ok;
-				$max_text = $text;
-			}
+			$count++;
 		}
 		
 		
-		//Restore dbconnection
-		if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
-			metaconsole_restore_db();
+		switch ($content['order_uptodown']) {
+			case REPORT_ITEM_ORDER_BY_AGENT_NAME:
+				$temp = array();
+				foreach ($data as $row) {
+					$i = 0;
+					foreach ($temp as $t_row) {
+						if (strcmp($row['agent'], $t_row['agent']) < 0) {
+							break;
+						}
+						
+						$i++;
+					}
+					
+					array_splice($temp, $i, 0, array($row));
+				}
+				
+				$data = $temp;
+				break;
+			case REPORT_ITEM_ORDER_BY_ASCENDING:
+				$temp = array();
+				foreach ($data as $row) {
+					$i = 0;
+					foreach ($temp as $t_row) {
+						if ($row['order'] < $t_row['order']) {
+							break;
+						}
+						
+						$i++;
+					}
+					
+					array_splice($temp, $i, 0, array($row));
+				}
+				
+				$data = $temp;
+				break;
+			case REPORT_ITEM_ORDER_BY_DESCENDING:
+				$temp = array();
+				foreach ($data as $row) {
+					$i = 0;
+					foreach ($temp as $t_row) {
+						
+						if ($row['order'] > $t_row['order']) {
+							break;
+						}
+						
+						$i++;
+					}
+					
+					array_splice($temp, $i, 0, array($row));
+				}
+				
+				$data = $temp;
+				break;
 		}
-		
-		$count++;
 	}
-	
-	
-	switch ($content['order_uptodown']) {
-		case REPORT_ITEM_ORDER_BY_AGENT_NAME:
-			$temp = array();
-			foreach ($data as $row) {
-				$i = 0;
-				foreach ($temp as $t_row) {
-					if (strcmp($row['agent'], $t_row['agent']) < 0) {
-						break;
-					}
-					
-					$i++;
-				}
-				
-				array_splice($temp, $i, 0, array($row));
-			}
-			
-			$data = $temp;
-			break;
-		case REPORT_ITEM_ORDER_BY_ASCENDING:
-			$temp = array();
-			foreach ($data as $row) {
-				$i = 0;
-				foreach ($temp as $t_row) {
-					if ($row['order'] < $t_row['order']) {
-						break;
-					}
-					
-					$i++;
-				}
-				
-				array_splice($temp, $i, 0, array($row));
-			}
-			
-			$data = $temp;
-			break;
-		case REPORT_ITEM_ORDER_BY_DESCENDING:
-			$temp = array();
-			foreach ($data as $row) {
-				$i = 0;
-				foreach ($temp as $t_row) {
-					
-					if ($row['order'] > $t_row['order']) {
-						break;
-					}
-					
-					$i++;
-				}
-				
-				array_splice($temp, $i, 0, array($row));
-			}
-			
-			$data = $temp;
-			break;
-	}
-	
 	
 	$return["data"] = $data;
 	$return["resume"] = array();

@@ -3316,11 +3316,11 @@ sub cli_create_synthetic() {
 		print("[ERROR] Type of syntethic module doesn't exists \n\n");
 		exit 1;
 	}
-	if (scalar(@{$module_data}) == 0) {
+	if (scalar(@{module_data}) == 0) {
 		print("[ERROR] No modules data \n\n");
 		exit 1;
 	}
-	if ($name_module == '') {
+	if ($name_module eq '') {
 		print("[ERROR] No module name \n\n");
 		exit 1;
 	}
@@ -3374,7 +3374,9 @@ sub cli_create_synthetic() {
 		
 		$module->{'id_agente'} = $id_agent;
 		$module->{'nombre'} = safe_input($name_module);
+		my $id_tipo_modulo = get_db_value ($dbh, "SELECT id_tipo FROM ttipo_modulo WHERE nombre = ?", "generic_data");
 		$module->{'id_modulo'} = 5;
+		$module->{'id_tipo_modulo'} = $id_tipo_modulo;
 		
 		my $id_module = db_process_insert($dbh, 'id_agente_modulo', 'tagente_modulo', $module);
 		
@@ -3385,10 +3387,12 @@ sub cli_create_synthetic() {
 				print("[OK] The modules are creating ID: $id_module \n\n");
 			}
 			else {
+				db_do ($dbh, 'DELETE FROM tagente_modulo WHERE id_agente_modulo = ?', $id_module);
 				print("[ERROR] Problems with creating data module. \n\n");
 			}
 		}
 		else {
+			db_do ($dbh, 'DELETE FROM tagente_modulo WHERE nombre = ? AND id_agente = ?', $name_module, $id_agent);
 			print("[INFO] Problems with creating module \n\n");
 		}
 	}

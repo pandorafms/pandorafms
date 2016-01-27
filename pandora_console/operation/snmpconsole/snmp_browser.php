@@ -38,8 +38,10 @@ if (is_ajax()) {
 	if ($action == "snmptree") {
 		$starting_oid = (string) get_parameter ("starting_oid", '.');
 		
-		$snmp_tree = snmp_browser_get_tree ($target_ip, $community, $starting_oid, $snmp_version,
-		                                    $snmp3_auth_user, $snmp3_security_level, $snmp3_auth_method, $snmp3_auth_pass, $snmp3_privacy_method, $snmp3_privacy_pass);
+		$snmp_tree = snmp_browser_get_tree(
+			$target_ip, $community, $starting_oid, $snmp_version,
+			$snmp3_auth_user, $snmp3_security_level, $snmp3_auth_method,
+			$snmp3_auth_pass, $snmp3_privacy_method, $snmp3_privacy_pass);
 		if (! is_array ($snmp_tree)) {
 			echo $snmp_tree;
 		}

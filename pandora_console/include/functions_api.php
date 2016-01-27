@@ -916,10 +916,10 @@ function api_get_module_properties_by_name($agent_name, $module_name, $other, $r
 function get_module_properties($id_module, $fields, $separator, $returnType, $returnReplace)
 {
 	/** NOTE: if you want to add an output field, you have to add it to;
-	    1. $module_properties_master_fields (field name in order)
-	    2. Update field_column_mapping array (arraies are shared with get_tree_agents()).
-	       Each entry is  (DB coloum name => query fragment)
-	 **/
+		1. $module_properties_master_fields (field name in order)
+		2. Update field_column_mapping array (arraies are shared with get_tree_agents()).
+			Each entry is  (DB coloum name => query fragment)
+	**/
 	
 	/* all of output field names */
 	$module_properties_master_fields = array(
@@ -2665,7 +2665,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
  * 	example (update snmp v: 3, snmp3_priv_method: AES, passw|authNoPriv|MD5|pepito_user|example_priv_passw) 
  * 
  *  api.php?op=set&op2=update_snmp_module&id=example_snmp_module_name&other=44|0|6|20|25||26|30||15|1|127.0.0.1|60|3|public|.1.3.6.1.2.1.1.1.0|180|50.00|10|60|0|SNMP%20module%20modified%20by%20API|AES|example_priv_passw|authNoPriv|MD5|pepito_user|example_auth_passw&other_mode=url_encode_separator_| 
- *    
+ *
  * @param $thrash3 Don't use
  */
 function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {

@@ -344,7 +344,7 @@ function get_user_language ($id_user = null) {
 				$id_user = $config['id_user'];
 			
 			if ($language !== 0)
-				update_user($id_user, array('language' => $language));	
+				update_user($id_user, array('language' => $language));
 		
 		}
 		

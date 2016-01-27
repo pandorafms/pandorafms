@@ -73,14 +73,15 @@ function wmi_create_wizard_modules($id_agent, $names, $wizard_mode, $values) {
 		
 		// Add the query to values
 		$values['snmp_oid'] = io_safe_input($wmi_query);
-					
+		
 		$return = modules_create_agent_module ($id_agent, $name, $values);
 		
 		if($return < 0) {
 			$results[ERR_GENERIC][] = $name;
-		} else {
+		}
+		else {
 			$results[NOERR][] = $name;
-		}	
+		}
 	}
 	
 	return $results;
@@ -94,7 +95,7 @@ function wmi_create_module_from_components($components, $values) {
 	}
 	foreach ($components as $component_id) {
 		$nc = db_get_row ("tnetwork_component", "id_nc", $component_id);
-
+		
 		// Compatibilize the fields between components and modules table
 		$nc['descripcion'] = $nc['description'];
 		unset($nc['description']);

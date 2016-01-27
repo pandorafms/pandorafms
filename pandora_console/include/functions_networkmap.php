@@ -760,7 +760,7 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 			array ('id_grupo, nombre, id_os, id_agente, 
 				normal_count, warning_count, critical_count,
 				unknown_count, total_count, notinit_count'));
-		}	
+		}
 		if ($agents === false)
 			$agents = array();
 		

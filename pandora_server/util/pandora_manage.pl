@@ -35,7 +35,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "6.1dev PS160125";
+my $version = "6.1dev PS160126";
 
 # save program name for logging
 my $progname = basename($0);
@@ -3320,17 +3320,17 @@ sub cli_create_synthetic() {
 	my $agent_name = @ARGV[4];
 	my @module_data = @ARGV[5..$#ARGV];
 	my $module;
-	my (@filterdata,@data_module,$module_data);
+	my (@filterdata,@data_module);
 	
 	if ($synthetic_type ne 'arithmetic' && $synthetic_type ne 'average') {
 		print("[ERROR] Type of syntethic module doesn't exists \n\n");
 		exit 1;
 	}
-	if (scalar(@{$module_data}) == 0) {
+	if (scalar(@{module_data}) == 0) {
 		print("[ERROR] No modules data \n\n");
 		exit 1;
 	}
-	if ($name_module == '') {
+	if ($name_module eq '') {
 		print("[ERROR] No module name \n\n");
 		exit 1;
 	}
@@ -3384,7 +3384,9 @@ sub cli_create_synthetic() {
 		
 		$module->{'id_agente'} = $id_agent;
 		$module->{'nombre'} = safe_input($name_module);
+		my $id_tipo_modulo = get_db_value ($dbh, "SELECT id_tipo FROM ttipo_modulo WHERE nombre = ?", "generic_data");
 		$module->{'id_modulo'} = 5;
+		$module->{'id_tipo_modulo'} = $id_tipo_modulo;
 		
 		my $id_module = db_process_insert($dbh, 'id_agente_modulo', 'tagente_modulo', $module);
 		
@@ -3395,10 +3397,12 @@ sub cli_create_synthetic() {
 				print("[OK] The modules are creating ID: $id_module \n\n");
 			}
 			else {
+				db_do ($dbh, 'DELETE FROM tagente_modulo WHERE id_agente_modulo = ?', $id_module);
 				print("[ERROR] Problems with creating data module. \n\n");
 			}
 		}
 		else {
+			db_do ($dbh, 'DELETE FROM tagente_modulo WHERE nombre = ? AND id_agente = ?', $name_module, $id_agent);
 			print("[INFO] Problems with creating module \n\n");
 		}
 	}

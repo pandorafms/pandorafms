@@ -10,7 +10,7 @@
 # **********************************************************************
 
 PI_VERSION="6.1dev"
-PI_BUILD="160125"
+PI_BUILD="160126"
 OS_NAME=`uname -s`
 
 FORCE=0
@@ -485,6 +485,9 @@ install () {
 	echo "If you want to use SSH, firstly you need to copy your public SSH keys "
 	echo " ($HOME/.ssh/id_dsa) under /home/pandora/.ssh/authorized_keys "
 	echo "on your Pandora FMS Server host"
+	echo " "
+	echo "You may need to install manually some additional required dependencies:"
+	echo "perl-Sys-Syslog"
 	echo " "
 	echo "You also need to setup your $PANDORA_BASE$PANDORA_CFG/pandora_agent.conf config file"
 	echo " "

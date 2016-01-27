@@ -3338,7 +3338,8 @@ sub cli_create_synthetic() {
 	$module->{'custom_integer_1'} = 0;
 	$module->{'custom_integer_2'} = 0;
 	$module->{'prediction_module'} = 3; # Synthetic code is 3
-		
+	$module->{'flag'} = 1;
+
 	my $id_agent = int(get_agent_id($dbh,$agent_name));
 	
 	if ($id_agent > 0) {

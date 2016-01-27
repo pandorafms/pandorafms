@@ -483,3 +483,14 @@ async_recovery 1
 # Time interval (as a multiple of the module interval) before a module becomes unknown. Twice the module's interval by default.
 #unknown_interval 2
 
+# console_api_url: Api URL (http://localhost/pandora_console/include/api.php by default)
+console_api_url http://localhost/pandora_console/include/api.php
+
+# console_api_pass: Api pass
+console_api_pass pandora
+
+# console_user: Console user name (admin by default)
+console_user admin
+
+# console_pass: Console password (pandora by default)
+console_pass pandora

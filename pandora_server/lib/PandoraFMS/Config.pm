@@ -344,6 +344,12 @@ sub pandora_load_config {
 	# Auto-recovery of asynchronous modules.
 	$pa_config->{"async_recovery"} = 1; # 5.1SP1
 
+	# Console API connection
+	$pa_config->{"console_api_url"} = 'http://localhost/pandora_console/include/api.php'; # 5.1 SP4
+	$pa_config->{"console_api_pass"} = ''; # 5.1 SP4
+	$pa_config->{"console_user"} = 'admin'; # 5.1 SP4
+	$pa_config->{"console_pass"} = 'pandora'; # 5.1 SP4
+
 	# Unknown interval (as a multiple of the module's interval)
 	$pa_config->{"unknown_interval"} = 2; # > 5.1SP2
 
@@ -820,6 +826,18 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^async_recovery\s+([0-1])/i) {
 			$pa_config->{'async_recovery'}= safe_input($1);
+		}
+		elsif ($parametro =~ m/^console_api_url\s(.*)/i) {
+			$pa_config->{'console_api_url'}= safe_input($1);
+		}
+		elsif ($parametro =~ m/^console_api_pass\s(.*)/i) {
+			$pa_config->{'console_api_pass'}= safe_input($1);
+		}
+		elsif ($parametro =~ m/^console_user\s(.*)/i) {
+			$pa_config->{'console_user'}= safe_input($1);
+		}
+		elsif ($parametro =~ m/^console_pass\s(.*)/i) {
+			$pa_config->{'console_pass'}= safe_input($1);
 		}
 		elsif ($parametro =~ m/^unknown_interval\s([0-9]*)/i) { # > 5.1SP2
 			$pa_config->{'unknown_interval'}= safe_input($1);

@@ -34,7 +34,7 @@ var data = [];
 
 var id = $('.graph').attr('id');
 var plot = $.plot("#" + id, data, options);
-	
+
 
 var refresh = parseInt($('#refresh').val());
 var incremental = $('#checkbox-incremental').is(':checked');
@@ -67,7 +67,7 @@ function refresh_graph () {
 		success: function(serie) {
 			var timestamp = serie.data[0][0];
 			data = plot.getData();
-			if (data.length == 0) {				
+			if (data.length == 0) {
 				for(i = 0; i < max_data_plot; i ++) {
 					step = i * (refresh/1000);
 					serie.data.unshift([timestamp-step, 0]);
@@ -84,12 +84,12 @@ function refresh_graph () {
 			
 			if (incremental) {
 				var last_item = parseInt(data[0].data.length)-1;
-				var last_value = data[0].data[last_item][1];	
+				var last_value = data[0].data[last_item][1];
 				
 				var current_value = serie.data[0][1];
 				
 				serie.data[0][1] = current_value - last_inc;
-
+				
 				last_inc = current_value;
 				
 				// Incremental is always positive
@@ -111,7 +111,7 @@ $('#graph').change(function() {
 
 $('#refresh').change(function() {
 	var refresh = parseInt($('#refresh').val());
-
+	
 	// Stop and start the Timeout
 	clearTimeout(to);
 	to = window.setTimeout(refresh_graph, refresh);
@@ -153,7 +153,7 @@ function setOID () {
 	$('.ui-dialog-titlebar-close').trigger('click');
 }
 
-$('#checkbox-incremental').change(function() {		
+$('#checkbox-incremental').change(function() {
 	incremental = $('#checkbox-incremental').is(':checked');
 	clearGraph();
 });
@@ -173,13 +173,13 @@ function setOnIncremental() {
 
 function clearGraph() {
 	data = plot.getData();
-	if (data.length == 0) {				
+	if (data.length == 0) {
 		return;
 	}
 	
 	for(i = 0; i < data[0].data.length; i ++) {
 		data[0].data[i][1] = 0;
 	}
-		
+	
 	$.plot("#" + id, data, options);
 }

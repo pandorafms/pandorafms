@@ -1093,7 +1093,7 @@ function Gauge(placeholderName, configuration)
 			}
 			
 			var point1 = this.valueToPoint(major, 0.7);
-			var point2 = this.valueToPoint(major, 0.85);	
+			var point2 = this.valueToPoint(major, 0.85);
 			
 			this.body.append("svg:line")
 						.attr("x1", point1.x)
@@ -1249,5 +1249,5 @@ function Gauge(placeholderName, configuration)
 	}
 	
 	// initialization
-	this.configure(configuration);	
+	this.configure(configuration);
 }

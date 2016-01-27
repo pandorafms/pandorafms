@@ -632,7 +632,7 @@ function events_comment ($id_event, $comment = '', $action = 'Added comment', $m
 				case 'oracle':
 					$sql_validation = "UPDATE $event_table 
 						SET user_comment='" . $comment . "' || user_comment) 
-						WHERE id_evento in (" . implode(',', $id_event) . ")";	
+						WHERE id_evento in (" . implode(',', $id_event) . ")";
 					
 					$ret = db_process_sql($sql_validation);
 					break;

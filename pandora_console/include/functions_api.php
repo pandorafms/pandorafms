@@ -1226,7 +1226,7 @@ function api_get_custom_field_id($t1, $t2, $other, $returnType) {
 	}
 	
 	$name = $other["data"][0];
-	$id = db_get_value ('id_field', 'tagent_custom_fields', 'name', $name);	
+	$id = db_get_value ('id_field', 'tagent_custom_fields', 'name', $name);
 	
 	$data['type'] = "string";
 	$data["data"] = $id;
@@ -1734,7 +1734,7 @@ function api_get_policy_modules($thrash1, $thrash2, $other, $thrash3) {
 	
 	if ($other['data'][0] == "") {
 		returnError('error_policy_modules', 'Error retrieving policy modules. Id_policy cannot be left blank.');
-		return;	
+		return;
 	}
 	
 	$policies = enterprise_hook('policies_get_modules_api',

@@ -318,7 +318,7 @@ $(document).ready( function() {
 			$('li.menu_icon').removeClass( " no_hidden_menu");
 			$('ul.submenu').css('left', '44px');
 			$('div#title_menu').hide();
-		});		
+		});
 		$('div.menu>ul>li>ul>li>ul>li>a').click(function() {
 			openTime = 4000;
 			if( typeof(table_hover) != 'undefined')
@@ -329,7 +329,7 @@ $(document).ready( function() {
 			$('li.menu_icon').removeClass( " no_hidden_menu");
 			$('ul.submenu').css('left', '44px');
 			$('div#title_menu').hide();
-		});		
+		});
 	});
 	
 	

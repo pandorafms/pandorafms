@@ -39,31 +39,61 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 	}
 
 	if (!empty($user_groups_ids)) {
-		switch ($config["dbtype"]) {
-			case "mysql":
-				$list_groups = db_get_all_rows_sql("
-					SELECT *
-					FROM tgrupo
-					WHERE id_grupo IN (" . $user_groups_ids . ")
-					AND id_grupo IN (SELECT id_grupo FROM tagente WHERE disabled = 0)
-					ORDER BY nombre COLLATE utf8_general_ci ASC");
-				break;
-			case "postgresql":
-				$list_groups = db_get_all_rows_sql("
-					SELECT *
-					FROM tgrupo
-					WHERE id_grupo IN (" . $user_groups_ids . ")
-					AND id_grupo IN (SELECT id_grupo FROM tagente WHERE disabled = 0)
-					ORDER BY nombre ASC");
-				break;
-			case "oracle":
-				$list_groups = db_get_all_rows_sql("
-					SELECT *
-					FROM tgrupo
-					WHERE id_grupo IN (" . $user_groups_ids . ")
-					AND id_grupo IN (SELECT id_grupo FROM tagente WHERE disabled = 0)
-					ORDER BY nombre ASC");
-				break;
+		if (is_metaconsole()) {
+			switch ($config["dbtype"]) {
+				case "mysql":
+					$list_groups = db_get_all_rows_sql("
+						SELECT *
+						FROM tgrupo
+						WHERE id_grupo IN (" . $user_groups_ids . ")
+						AND id_grupo IN (SELECT id_grupo FROM tmetaconsole_agent WHERE disabled = 0)
+						ORDER BY nombre COLLATE utf8_general_ci ASC");
+					break;
+				case "postgresql":
+					$list_groups = db_get_all_rows_sql("
+						SELECT *
+						FROM tgrupo
+						WHERE id_grupo IN (" . $user_groups_ids . ")
+						AND id_grupo IN (SELECT id_grupo FROM tmetaconsole_agent WHERE disabled = 0)
+						ORDER BY nombre ASC");
+					break;
+				case "oracle":
+					$list_groups = db_get_all_rows_sql("
+						SELECT *
+						FROM tgrupo
+						WHERE id_grupo IN (" . $user_groups_ids . ")
+						AND id_grupo IN (SELECT id_grupo FROM tmetaconsole_agent WHERE disabled = 0)
+						ORDER BY nombre ASC");
+					break;
+			}
+		}
+		else {
+			switch ($config["dbtype"]) {
+				case "mysql":
+					$list_groups = db_get_all_rows_sql("
+						SELECT *
+						FROM tgrupo
+						WHERE id_grupo IN (" . $user_groups_ids . ")
+						AND id_grupo IN (SELECT id_grupo FROM tagente WHERE disabled = 0)
+						ORDER BY nombre COLLATE utf8_general_ci ASC");
+					break;
+				case "postgresql":
+					$list_groups = db_get_all_rows_sql("
+						SELECT *
+						FROM tgrupo
+						WHERE id_grupo IN (" . $user_groups_ids . ")
+						AND id_grupo IN (SELECT id_grupo FROM tagente WHERE disabled = 0)
+						ORDER BY nombre ASC");
+					break;
+				case "oracle":
+					$list_groups = db_get_all_rows_sql("
+						SELECT *
+						FROM tgrupo
+						WHERE id_grupo IN (" . $user_groups_ids . ")
+						AND id_grupo IN (SELECT id_grupo FROM tagente WHERE disabled = 0)
+						ORDER BY nombre ASC");
+					break;
+			}
 		}
 	}
 
@@ -490,7 +520,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 						SELECT *
 						FROM tgrupo
 						WHERE id_grupo IN (" . $user_groups_ids . ")
-						AND id_grupo IN (SELECT id_grupo FROM tmetaconsole_agent)
+						AND id_grupo IN (SELECT id_grupo FROM tmetaconsole_agent WHERE disabled = 0)
 						ORDER BY nombre COLLATE utf8_general_ci ASC");
 					break;
 				case "postgresql":
@@ -498,7 +528,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 						SELECT *
 						FROM tgrupo
 						WHERE id_grupo IN (" . $user_groups_ids . ")
-						AND id_grupo IN (SELECT id_grupo FROM tmetaconsole_agent)
+						AND id_grupo IN (SELECT id_grupo FROM tmetaconsole_agent WHERE disabled = 0)
 						ORDER BY nombre ASC");
 					break;
 				case "oracle":
@@ -506,7 +536,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 						SELECT *
 						FROM tgrupo
 						WHERE id_grupo IN (" . $user_groups_ids . ")
-						AND id_grupo IN (SELECT id_grupo FROM tmetaconsole_agent)
+						AND id_grupo IN (SELECT id_grupo FROM tmetaconsole_agent WHERE disabled = 0)
 						ORDER BY nombre ASC");
 					break;
 			}

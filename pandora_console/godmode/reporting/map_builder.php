@@ -43,7 +43,7 @@ if (!defined('METACONSOLE')) {
 $id_layout = (int) get_parameter ('id_layout');
 $copy_layout = (bool) get_parameter ('copy_layout');
 $delete_layout = (bool) get_parameter ('delete_layout');
-$refr = (int) get_parameter('refr', 60);
+$refr = (int) get_parameter('refr', $config['vc_refr']);
 $offset = (int) get_parameter('offset', 0);
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 

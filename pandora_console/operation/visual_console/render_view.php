@@ -47,7 +47,7 @@ $vc_refr = false;
 if (isset($config['vc_refr']) and $config['vc_refr'] != 0)
 	$view_refresh = $config['vc_refr'];
 else
-	$view_refresh = '60';
+	$view_refresh = '300';
 
 // Get input parameter for layout id
 if (! $id_layout) {

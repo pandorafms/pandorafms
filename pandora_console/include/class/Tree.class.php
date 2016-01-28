@@ -1132,28 +1132,31 @@ class Tree {
 		}
 		// Build the group hierarchy
 		foreach ($groups as $id => $group) {
-			if (!isset($groups[$id]['parent']))
-				continue;
-			$parent = $groups[$id]['parent'];
-			// Parent exists
-			if (isset($groups[$parent])) {
-				if (!isset($groups[$parent]['children']))
+			if (isset($groups[$id]['parent']) && ($groups[$id]['parent'] != 0)) {
+				$parent = $groups[$id]['parent'];
+				// Parent exists
+				if (!isset($groups[$parent]['children'])) {
 					$groups[$parent]['children'] = array();
+				}
 				// Store a reference to the group into the parent
 				$groups[$parent]['children'][] = &$groups[$id];
-				
-				// Add the child counters to the parent
-				if (isset($groups[$id]['counters']) && !empty($groups[$id]['counters'])) {
-					foreach ($groups[$id]['counters'] as $type => $value) {
-						if (isset($groups[$parent]['counters'][$type]))
-							$groups[$parent]['counters'][$type] += $value;
-					}
-				}
-				
 				// This group was introduced into a parent
 				$groups[$id]['have_parent'] = true;
 			}
 		}
+		// Sort the children groups
+		foreach ($groups as $id => $group) {
+			if (isset($groups[$id]['children'])) {
+				usort($groups[$id]['children'], array("Tree", "cmpSortNames"));
+			}
+		}
+		//Filter groups and eliminates the reference to children groups out of her parent
+		$groups = array_filter($groups, function ($group) {
+			return !$group['have_parent'];
+		});
+		// Propagate child counters to her parents
+		Tree::processCounters($groups);
+		// Filter groups and eliminates the reference to empty groups
 		if ($remove_empty) {
 			// Filter empty groups
 			$groups = array_filter($groups, function ($group) {
@@ -1162,27 +1165,7 @@ class Tree {
 						!empty($group['counters']['total']));
 			});
 		}
-		// Sort the children groups
-		foreach ($groups as $id => $group) {
-			if (isset($groups[$id]['children'])) {
-				if ($remove_empty) {
-					// Remove empty childs
-					$groups[$id]['children'] = array_filter($groups[$id]['children'], function ($g) use ($groups) {
-						return (!empty($g) && isset($g['id']) && isset($groups[$g['id']]));
-					});
-				}
-				usort($groups[$id]['children'], array("Tree", "cmpSortNames"));
-			}
-		}
-		// Extract the root groups
-		foreach ($groups as $group) {
-			if (!$group['have_parent'])
-				$processed_groups[] = $group;
-		}
-		// Sort the root groups
-		usort($processed_groups, array("Tree", "cmpSortNames"));
-		
-		return $processed_groups;
+		return $groups;
 	}
 
 	protected function getProcessedItem ($item, $server = false, &$items = array(), &$items_tmp = array(), $remove_empty = false) {
@@ -2556,5 +2539,25 @@ class Tree {
 		
 		return $this->tree;
 	}
+
+	static function processCounters(&$groups) {
+		$all_counters = [];
+		foreach ($groups as $id => $group) {
+			$child_counters = [];
+			if (!empty($groups[$id]['children'])) {
+				$child_counters = Tree::processCounters($groups[$id]['children']);
+			}
+			if (!empty($child_counters)) {
+				foreach($child_counters as $type => $value) {
+					$groups[$id]['counters'][$type] += $value;
+				}
+			}
+			foreach($groups[$id]['counters'] as $type => $value) {
+				$all_counters[$type] += $value;
+			}
+		}
+		return $all_counters;
+	}
+
 }
 ?>

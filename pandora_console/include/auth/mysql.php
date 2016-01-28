@@ -538,8 +538,7 @@ function update_user_password ($user, $password_new) {
 			$config['rpandora_dbname'], $config['rpandora_user'],
 			$config['rpandora_pass']);
 		$remote_pass_update = db_process_sql ($sql, 'affected_rows', $connection);
-		html_debug_print($remote_pass_update, true);
-		html_debug_print($sql, true);
+		
 		if (!$remote_pass_update) {
 			$config["auth_error"] = __('Could not changes password on remote pandora');
 			return false;

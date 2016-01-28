@@ -1274,7 +1274,7 @@ function config_process_config () {
 	}
 	
 	if (!isset ($config['vc_refr'])) {
-		config_update_value ('vc_refr', 60);
+		config_update_value ('vc_refr', 300);
 	}
 	
 	if (!isset($config['agent_size_text_small'])) {

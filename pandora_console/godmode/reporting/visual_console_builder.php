@@ -619,7 +619,7 @@ switch ($activeTab) {
 if (isset($config['vc_refr']) and $config['vc_refr'] != 0)
 	$view_refresh = $config['vc_refr'];
 else
-	$view_refresh = '60';
+	$view_refresh = '300';
 
 if (!defined('METACONSOLE')) {
 	$url_base = 'index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&action=';

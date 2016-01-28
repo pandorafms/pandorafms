@@ -114,16 +114,6 @@ if (check_acl ($config['id_user'], 0, "RR")) {
 		"godmode/reporting/map_builder",
 		"godmode/reporting/visual_console_builder");
 	
-	if (!empty($config['vc_refr'])) {
-		$sub["godmode/reporting/map_builder"]["refr"] = $config['vc_refr'];
-	}
-	else if (((int)get_parameter('refr', 0)) > 0) {
-		$sub["godmode/reporting/map_builder"]["refr"] = (int)get_parameter('refr', 0);
-	}
-	else {
-		$sub["godmode/reporting/map_builder"]["refr"] = 60;
-	}
-	
 	$sub2 = array ();
 	
 	$layouts = db_get_all_rows_in_table ('tlayout', 'name');

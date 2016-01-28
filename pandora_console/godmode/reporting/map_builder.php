@@ -29,7 +29,7 @@ if (!defined('METACONSOLE')) {
 $id_layout = (int) get_parameter ('id_layout');
 $copy_layout = (bool) get_parameter ('copy_layout');
 $delete_layout = (bool) get_parameter ('delete_layout');
-$refr = (int) get_parameter('refr');
+$refr = (int) get_parameter('refr',$config['vc_refr']);
 
 if ($delete_layout) {
 	db_process_sql_delete ('tlayout_data', array ('id_layout' => $id_layout));

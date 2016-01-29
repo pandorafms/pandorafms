@@ -1772,7 +1772,7 @@ class Tree {
 			$agent['quietImageHTML'] = html_print_image("/images/dot_green.disabled.png", true, array("title" => __('Quiet')));
 
 		// Status
-		$agent['statusRaw'] = agents_get_status($agent['id']);
+		$agent['statusRaw'] = agents_get_status($agent['id'], !$this->strictACL);
 		switch ($agent['statusRaw']) {
 			case AGENT_STATUS_NORMAL:
 				$agent['status'] = "ok";

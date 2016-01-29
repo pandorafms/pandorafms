@@ -186,8 +186,7 @@ elseif ($status == AGENT_MODULE_STATUS_UNKNOWN) { //Unknown
 	$sql_conditions .= " AND tagente_estado.estado = 3 AND tagente_estado.utimestamp <> 0";
 }
 elseif ($status == AGENT_MODULE_STATUS_NOT_INIT) { //Not init
-	$sql_conditions .= " AND tagente_estado.utimestamp = 0 AND 
-		tagente_estado.estado IN (".AGENT_MODULE_STATUS_NO_DATA.",".AGENT_MODULE_STATUS_NOT_INIT." )
+	$sql_conditions .= " AND tagente_estado.utimestamp = 0
 		AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)";
 }
 

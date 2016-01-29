@@ -69,6 +69,16 @@ $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_use
 
 $all_data = groupview_status_modules_agents ($config['id_user'], $strict_user, 'AR', $strict_user);
 
+$total_agentes = 0;
+$monitor_ok = 0;
+$monitor_warning = 0;
+$monitor_critical = 0;
+$monitor_unknown = 0;
+$monitor_not_init = 0;
+$agents_unknown = 0;
+$agents_notinit = 0;
+$all_alerts_fired = 0;
+
 foreach ($all_data as $group_all_data) {
 	$total_agentes += $group_all_data["_total_agents_"];
 	$monitor_ok += $group_all_data["_monitors_ok_"];
@@ -76,10 +86,9 @@ foreach ($all_data as $group_all_data) {
 	$monitor_critical += $group_all_data["_monitors_critical_"];
 	$monitor_unknown += $group_all_data["_monitors_unknown_"];
 	$monitor_not_init += $group_all_data["_monitors_not_init_"];
-
+	
 	$agents_unknown += $group_all_data["_agents_unknown_"];
 	$agents_notinit += $group_all_data["_agents_not_init_"];
-
 	$all_alerts_fired += $group_all_data["_monitors_alerts_fired_"];
 }
 
@@ -154,7 +163,9 @@ if (!empty($result_groups)) {
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Critical") . "</th>";
 			echo "<th width='10%' style='min-width: 60px;text-align:center;'>" . __("Alert fired") . "</th>";
 		echo "</tr>";
+		
 		$result_groups = array_slice($result_groups, $offset, $config['block_size']);
+		
 		foreach ($result_groups as $data) {
 
 			$groups_id = $data["_id_"];
@@ -243,7 +254,7 @@ if (!empty($result_groups)) {
 				$agent_counter = agents_get_group_agents($groups_id);
 				echo $link . count($agent_counter) . "</a>";
 			}
-			if ($data["_total_agents_"] > 0) {
+			if ($data["_total_agents_"] > 0 && $data["_id_"] != 0) {
 				echo $link . $data["_total_agents_"] . "</a>";
 			}
 			echo "</td>";
@@ -260,7 +271,7 @@ if (!empty($result_groups)) {
 			if (($data["_id_"] == 0) && ($agents_unknown != 0)) {
 				echo $link . $agents_unknown . "</a>";
 			}
-			if ($data["_agents_unknown_"] > 0) {
+			if ($data["_agents_unknown_"] > 0 && ($data["_id_"] != 0)) {
 				echo $link . $data["_agents_unknown_"] . "</a>";
 			}
 			echo "</td>";
@@ -277,7 +288,7 @@ if (!empty($result_groups)) {
 			if (($data["_id_"] == 0) && ($agents_notinit != 0)) {
 				echo $link . $agents_notinit . "</a>";
 			}
-			if ($data["_agents_not_init_"] > 0) {
+			if ($data["_agents_not_init_"] > 0 && ($data["_id_"] != 0)) {
 				echo $link . $data["_agents_not_init_"] . "</a>";
 			}
 			echo "</td>";
@@ -294,7 +305,7 @@ if (!empty($result_groups)) {
 			if (($data["_id_"] == 0) && ($monitor_unknown != 0)) {
 				echo $link . $monitor_unknown . "</a>";
 			}
-			if ($data["_monitors_unknown_"] > 0) {
+			if ($data["_monitors_unknown_"] > 0 && ($data["_id_"] != 0)) {
 				echo $link . $data["_monitors_unknown_"] . "</a>";
 			}
 			echo "</td>";
@@ -311,7 +322,7 @@ if (!empty($result_groups)) {
 			if (($data["_id_"] == 0) && ($monitor_not_init != 0)) {
 				echo $link . $monitor_not_init . "</a>";
 			}
-			if ($data["_monitors_not_init_"] > 0) {
+			if ($data["_monitors_not_init_"] > 0 && ($data["_id_"] != 0)) {
 				echo $link . $data["_monitors_not_init_"] . "</a>";
 			}
 			echo "</td>";
@@ -328,7 +339,7 @@ if (!empty($result_groups)) {
 			if (($data["_id_"] == 0) && ($monitor_ok != 0)) {
 				echo $link . $monitor_ok . "</a>";
 			}
-			if ($data["_monitors_ok_"] > 0) {
+			if ($data["_monitors_ok_"] > 0 && ($data["_id_"] != 0)) {
 				echo $link . $data["_monitors_ok_"] . "</a>";
 			}
 			echo "</td>";
@@ -345,7 +356,7 @@ if (!empty($result_groups)) {
 			if (($data["_id_"] == 0) && ($monitor_warning != 0)) {
 				echo $link . $monitor_warning . "</a>";
 			}
-			if ($data["_monitors_warning_"] > 0) {
+			if ($data["_monitors_warning_"] > 0 && ($data["_id_"] != 0)) {
 				echo $link . $data["_monitors_warning_"] . "</a>";
 			}
 			echo "</td>";
@@ -362,7 +373,7 @@ if (!empty($result_groups)) {
 			if (($data["_id_"] == 0) && ($monitor_critical != 0)) {
 				echo $link . $monitor_critical . "</a>";
 			}
-			if ($data["_monitors_critical_"] > 0) {
+			if ($data["_monitors_critical_"] > 0 && ($data["_id_"] != 0)) {
 				echo $link . $data["_monitors_critical_"] . "</a>";
 			}
 			echo "</td>";
@@ -379,7 +390,7 @@ if (!empty($result_groups)) {
 			if (($data["_id_"] == 0) && ($all_alerts_fired != 0)) {
 				echo $link . $all_alerts_fired . "</a>";
 			}
-			if ($data["_monitors_alerts_fired_"] > 0) {
+			if ($data["_monitors_alerts_fired_"] > 0 && ($data["_id_"] != 0)) {
 				echo $link . $data["_monitors_alerts_fired_"] . "</a>";
 			}
 			echo '</td>';

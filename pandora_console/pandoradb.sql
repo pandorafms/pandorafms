@@ -1830,6 +1830,7 @@ CREATE TABLE tsessions_php (
 CREATE TABLE IF NOT EXISTS `tmap` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`id_group` int(10) unsigned NOT NULL default 0,
+	`id_user` int(10) unsigned NOT NULL default 0,
 	`type` int(10) unsigned NOT NULL default 0,
 	`subtype` int(10) unsigned NOT NULL default 0,
 	`name` varchar(250) default '',
@@ -1843,6 +1844,7 @@ CREATE TABLE IF NOT EXISTS `tmap` (
 	`source_period` INTEGER UNSIGNED NOT NULL default 0,
 	`source` INTEGER UNSIGNED NOT NULL default 0,
 	`source_data`  varchar(250) default '',
+	`generation_method` INTEGER UNSIGNED NOT NULL default 0,
 	`filter` TEXT,
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;

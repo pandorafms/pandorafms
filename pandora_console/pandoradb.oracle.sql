@@ -2062,6 +2062,7 @@ CREATE TABLE tsessions_php (
 CREATE TABLE IF NOT EXISTS tmap (
 	id NUMBER(10, 0) PRIMARY KEY,
 	id_group NUMBER(10, 0) DEFAULT 0,
+	id_user NUMBER(10, 0) DEFAULT 0,
 	type NUMBER(5, 0) DEFAULT 0,
 	subtype NUMBER(5, 0) DEFAULT 0,
 	name VARCHAR2(100) DEFAULT '',
@@ -2075,6 +2076,7 @@ CREATE TABLE IF NOT EXISTS tmap (
 	source_period NUMBER(10, 0) DEFAULT 0,
 	source NUMBER(10, 0) DEFAULT 0,
 	source_data VARCHAR2(250) DEFAULT '',
+	generation_method NUMBER(10, 0) DEFAULT 0,
 	filter CLOB DEFAULT '',
 );
 

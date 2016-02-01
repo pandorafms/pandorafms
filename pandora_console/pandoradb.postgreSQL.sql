@@ -1722,6 +1722,7 @@ CREATE TABLE "tsessions_php" (
 CREATE TABLE IF NOT EXISTS "tmap" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"id_group" INTEGER default 0,
+	"id_user" INTEGER default 0,
 	"type" SMALLINT NOT NULL default 0,
 	"subtype" SMALLINT NOT NULL default 0,
 	"name" varchar(250) default '',
@@ -1735,6 +1736,7 @@ CREATE TABLE IF NOT EXISTS "tmap" (
 	"source_period" INTEGER UNSIGNED NOT NULL default 0,
 	"source" SMALLINT NOT NULL default 0,
 	"source_data"  varchar(250) default '',
+	"generation_method" SMALLINT NOT NULL default 0,
 	"filter" TEXT
 );
 

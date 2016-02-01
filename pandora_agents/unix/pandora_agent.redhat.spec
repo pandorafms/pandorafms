@@ -93,6 +93,9 @@ if [ ! -e /etc/pandora/collections ]; then
 fi
 
 mkdir -p /var/spool/pandora/data_out
+if [ ! -d /var/log/pandora ]; then
+	mkdir -p /var/log/pandora
+fi
 /sbin/chkconfig --add pandora_agent_daemon
 /sbin/chkconfig pandora_agent_daemon on
 

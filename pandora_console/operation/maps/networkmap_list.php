@@ -131,12 +131,11 @@ else {
 
 		$data['name'] = $networkmap['name'];
 
-		/*CUANDO HAYA VENTANA DE EDICIÓN SE REDIRIGE ALLÍ
 		$data['name'] = '<a href="index.php?' .
 			'sec=maps&' .
-			'sec2=enterprise/dashboard/main_dashboard&' .
-			'id_dashboard=' . $networkmap['id'] .'">' .
-			$networkmap['name'] . '</a>';*/
+			'sec2=operation/maps/networkmap_editor&' .
+			'id_networkmap=' . $networkmap['id'] .'">' .
+			$networkmap['name'] . '</a>';
 
 		$data['type'] = $networkmap['type'];
 
@@ -154,30 +153,24 @@ else {
 				ui_print_group_icon($networkmap['id_group'], true);
 		}
 
-		$data['copy'] = '<a href="index.php?' . '" alt="' . __('Copy') . '">' .
+		$data['copy'] = '<a href="index.php?' .
+			'sec=maps&;' .
+			'sec2=operation/maps/networkmap_list' .
+			'duplicate_networkmap=1&id_networkmap=' . $networkmap['id'] . '" alt="' . __('Copy') . '">' .
 			html_print_image("images/copy.png", true) . '</a>';
 
-			/*CUANDO HAYA FORMA DE COPIAR SE ACTUALIZARÁ
-			'<a href="index.php?' .
-			'sec=reporting&amp;' .
-			'sec2=' . ENTERPRISE_DIR . '/dashboard/dashboards&amp;' .
-			'duplicate_dashboard=1&amp;id_dashboard=' . $dashboard['id'] . '" alt="' . __('Copy') . '">' .
-			html_print_image("images/copy.png", true) . '</a>';*/
-
-		$data['edit'] = '<a href="index.php?' . '" alt="' . __('Edit') . '">' .
+		$data['edit'] = '<a href="index.php?' .
+			'sec=maps&;' .
+			'sec2=operation/maps/networkmap_editor' .
+			'id_networkmap=' . $networkmap['id'] .'">' .
 			html_print_image("images/edit.png", true) . '</a>';
 
-			/*CUANDO HAYA FORMA DE EDITAR SE ACTUALIZARÁ*/
-
-		$data['delete'] = '<a href="index.php?' . '" alt="' . __('Delete') . '" onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' .
+		$data['delete'] = '<a href="index.php?' .
+			'sec=maps&;' .
+			'sec2=operation/maps/networkmap_list' .
+			'delete_networkmap=1&id_networkmap=' . $networkmap['id'] . '" alt="' . __('Delete') .
+			'" onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' .
 			html_print_image('images/cross.png', true) . '</a>';
-
-			/*CUANDO HAYA FORMA DE BORRAR SE ACTUALIZARÁ
-			'<a href="index.php?' .
-			'sec=reporting&amp;' .
-			'sec2=' . ENTERPRISE_DIR . '/dashboard/dashboards&amp;' .
-			'delete_dashboard=1&amp;id_dashboard=' . $dashboard['id'] . '" alt="' . __('Delete') . '" onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' .
-			html_print_image('images/cross.png', true) . '</a>';*/
 
 		$table->data[] = $data;
 	}

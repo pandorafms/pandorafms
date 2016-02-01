@@ -177,19 +177,19 @@ else {
 		
 		$data['copy'] = '<a href="index.php?' .
 			'sec=maps&;' .
-			'sec2=operation/maps/networkmap_list' .
+			'sec2=operation/maps/networkmap_list&' .
 			'duplicate_networkmap=1&id_networkmap=' . $networkmap['id'] . '" alt="' . __('Copy') . '">' .
 			html_print_image("images/copy.png", true) . '</a>';
 		
 		$data['edit'] = '<a href="index.php?' .
 			'sec=maps&;' .
-			'sec2=operation/maps/networkmap_editor' .
+			'sec2=operation/maps/networkmap_editor&' .
 			'id_networkmap=' . $networkmap['id'] .'">' .
 			html_print_image("images/edit.png", true) . '</a>';
 		
 		$data['delete'] = '<a href="index.php?' .
 			'sec=maps&;' .
-			'sec2=operation/maps/networkmap_list' .
+			'sec2=operation/maps/networkmap_list&' .
 			'delete_networkmap=1&id_networkmap=' . $networkmap['id'] . '" alt="' . __('Delete') .
 			'" onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' .
 			html_print_image('images/cross.png', true) . '</a>';

@@ -1737,6 +1737,7 @@ CREATE TABLE IF NOT EXISTS "tmap" (
 	"source" SMALLINT NOT NULL default 0,
 	"source_data"  varchar(250) default '',
 	"generation_method" SMALLINT NOT NULL default 0,
+	"generated" SMALLINT NOT NULL default 0,
 	"filter" TEXT
 );
 

@@ -2077,6 +2077,7 @@ CREATE TABLE IF NOT EXISTS tmap (
 	source NUMBER(10, 0) DEFAULT 0,
 	source_data VARCHAR2(250) DEFAULT '',
 	generation_method NUMBER(10, 0) DEFAULT 0,
+	generated NUMBER(10, 0) DEFAULT 0,
 	filter CLOB DEFAULT '',
 );
 

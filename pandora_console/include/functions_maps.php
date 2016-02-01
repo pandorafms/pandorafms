@@ -28,4 +28,31 @@ function maps_save_map($values) {
 function maps_get_maps($filter) {
 	return db_get_all_rows_filter('tmap', $filter);
 }
+
+function maps_get_subtype_string($subtype) {
+	switch ($subtype) {
+		case MAP_SUBTYPE_TOPOLOGY:
+			return __('Topology');
+			break;
+		case MAP_SUBTYPE_POLICIES:
+			return __('Policies');
+			break;
+		case MAP_SUBTYPE_GROUPS:
+			return __('Groups');
+			break;
+		case MAP_SUBTYPE_RADIAL_DYNAMIC:
+			return __('Dynamic');
+			break;
+		default:
+			return __('Unknown');
+			break;
+	}
+}
+
+function maps_get_count_nodes($id) {
+	$result = db_get_sql(
+		"SELECT COUNT(*) FROM titem WHERE id_map = " . $id);
+	
+	return (int)$result;
+}
 ?>

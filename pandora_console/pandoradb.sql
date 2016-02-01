@@ -1845,6 +1845,7 @@ CREATE TABLE IF NOT EXISTS `tmap` (
 	`source` INTEGER UNSIGNED NOT NULL default 0,
 	`source_data`  varchar(250) default '',
 	`generation_method` INTEGER UNSIGNED NOT NULL default 0,
+	`generated` INTEGER UNSIGNED NOT NULL default 0,
 	`filter` TEXT,
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;

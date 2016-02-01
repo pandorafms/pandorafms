@@ -558,6 +558,9 @@ sub process_module_data ($$$$$$$$$) {
 		}
 	}
 	
+	# Reload alert_template to get all alerts like an array
+	$module_conf->{'alert_template'} = get_tag_value ($data, 'alert_template', '', 1);
+	
 	# Description XML tag and column name don't match
 	$module_conf->{'descripcion'} = $module_conf->{'description'};
 	$module_conf->{'descripcion'} = '' unless defined ($module_conf->{'descripcion'});
@@ -656,14 +659,16 @@ sub process_module_data ($$$$$$$$$) {
 			}
 		}
 
-		#  Assign alert-template if the spceicied one exists
+		#  Assign alert-templates if exist
 		if( $initial_alert_template ) {
-			my $id_alert_template = get_db_value ($dbh,
-					'SELECT id FROM talert_templates WHERE talert_templates.name = ?',
-					safe_input($initial_alert_template) );
+			foreach my $individual_template (@{$initial_alert_template}){
+				my $id_alert_template = get_db_value ($dbh,
+						'SELECT id FROM talert_templates WHERE talert_templates.name = ?',
+						safe_input($individual_template) );
 
-			if( defined($id_alert_template) ) {
-				pandora_create_template_module ($pa_config, $dbh, $module->{'id_agente_modulo'}, $id_alert_template);
+				if( defined($id_alert_template) ) {
+					pandora_create_template_module ($pa_config, $dbh, $module->{'id_agente_modulo'}, $id_alert_template);
+				}
 			}
 		}
 	}

@@ -646,11 +646,14 @@ sub print_message ($$$) {
 # Returns the value of an XML tag from a hash returned by XMLin (one level
 # depth).
 ##########################################################################
-sub get_tag_value ($$$) {
-	my ($hash_ref, $tag, $def_value) = @_;
+sub get_tag_value ($$$;$) {
+	my ($hash_ref, $tag, $def_value, $all_array) = @_;
+	$all_array = 0 unless defined ($all_array);
 	
 	return $def_value unless defined ($hash_ref->{$tag}) and ref ($hash_ref->{$tag});
 	
+	# If all array is required, returns the array
+	return $hash_ref->{$tag} if ($all_array == 1);
 	# Return the first found value
 	foreach my $value (@{$hash_ref->{$tag}}) {
 		

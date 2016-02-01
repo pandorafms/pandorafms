@@ -430,6 +430,8 @@ sub parse_conf_modules($) {
 			$module->{'timeout'} = $1;
 		} elsif ($line =~ /^\s*module_save\s+(\w+)$/) {
 			$module->{'save'} = $1;
+		} elsif ($line =~ /^\s*module_alert_template\s+(.*)$/) {
+			$module->{'alert_template'} = $1;
 		} elsif ($line =~ /^\s*module_condition\s+(.*)$/) {
 			my $action = $1;
 			# Numeric comparison
@@ -1860,6 +1862,9 @@ sub write_module_xml ($@) {
 	
 	# Module FF interval
 	$Xml .= "	<module_ff_interval>" . $module->{'module_ff_interval'} . "</module_ff_interval>\n" if (defined ($module->{'module_ff_interval'}));
+	
+	# Module Alert template
+	$Xml .= "	<alert_template>" . $module->{'alert_template'} . "</alert_template>\n" if (defined ($module->{'alert_template'}));
 		
 	# Data list
 	if ($#data > 0) {
@@ -2110,6 +2115,7 @@ sub init_module ($) {
 	$module->{'quiet'} = undef;
 	$module->{'module_ff_interval'} = undef;
 	$module->{'macros'} = {};
+	$module->{'alert_template'} = undef;
 }
 
 ################################################################################

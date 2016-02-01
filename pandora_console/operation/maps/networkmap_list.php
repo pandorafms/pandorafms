@@ -36,8 +36,14 @@ if (!$networkmaps_read && !$networkmaps_write && !$networkmaps_manage) {
 	}
 }
 
+$migrate_open_networkmaps = (int)get_parameter('migrate_open_networkmaps');
+
+if ($migrate_open_networkmaps)
+	migration_open_networkmaps();
+
 ui_print_page_header(__('Network map'), "images/op_network.png", false, "network_map", false);
 ?>
+<a href="index.php?sec=network&sec2=operation/maps/networkmap_list&migrate_open_networkmaps=1">(temp, this is for minor relases) migrate open networkmaps</a>
 
 <script type="text/javascript">
 </script>

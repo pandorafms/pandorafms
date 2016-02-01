@@ -38,10 +38,17 @@ if (!$networkmaps_read && !$networkmaps_write && !$networkmaps_manage) {
 
 require_once('include/functions_migration.php');
 
+////////////////////////////////////////////////////////////////////////
+// It is dirty but at the moment (minor release is not)
+// this place is the place for migration
+////////////////////////////////////////////////////////////////////////
+
 $migrate_open_networkmaps = (int)get_parameter('migrate_open_networkmaps');
 
 if ($migrate_open_networkmaps)
 	migration_open_networkmaps();
+
+////////////////////////////////////////////////////////////////////////
 
 ui_print_page_header(__('Network map'), "images/op_network.png", false, "network_map", false);
 
@@ -51,12 +58,14 @@ $duplicate_networkmap = (bool)get_parameter('duplicate_networkmap', 0);
 
 if ($delete_networkmap) {
 	$result_delete = networkmap_delete_networkmap($id);
-
+	
 	if ($result_delete)
-		db_pandora_audit( "Networkmap management", "Delete networkmap #$id");
+		db_pandora_audit( "Networkmap management",
+			"Delete networkmap #$id");
 	else
-		db_pandora_audit( "Networkmap management", "Fail try to delete networkmap #$id");
-
+		db_pandora_audit( "Networkmap management",
+			"Fail try to delete networkmap #$id");
+	
 	ui_print_result_message ($result_delete,
 		__('Successfully deleted'),
 		__('Could not be deleted'));
@@ -66,7 +75,7 @@ if ($duplicate_networkmap) {
 	//FUNCION
 	//$result_duplicate = networkmap_duplicate($id);
 	$result_duplicate = array();
-
+	
 	ui_print_result_message ($result,
 		__('Successfully duplicate'),
 		__('Could not be duplicate'));
@@ -119,8 +128,7 @@ $table->head['edit'] = __('Edit');
 $table->head['delete'] = __('Delete');
 
 //FUNCION
-//$networkmaps = networkmap_get_networkmaps();
-$networkmaps = array();
+$networkmaps = maps_get_maps(array('type' => MAP_TYPE_NETWORKMAP));
 
 if (empty($networkmaps)) {
 	ui_print_info_message (

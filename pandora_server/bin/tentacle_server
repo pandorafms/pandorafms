@@ -64,6 +64,7 @@ use threads;
 use Thread::Semaphore;
 use POSIX ":sys_wait_h";
 use Time::HiRes qw(usleep);
+use Scalar::Util qw(refaddr);
 
 # Constants for Win32 services.
 use constant WIN32_SERVICE_STOPPED => 0x01;
@@ -769,14 +770,21 @@ sub serve_proxy_connection {
 
 	# Forward data between the client and the server.
 	eval {
-		while (1) {
-			if ($t_select->can_read(0)) {
+		my $select = IO::Select->new ();
+		$select->add($t_proxy_socket);
+		$select->add($t_client_socket);
+		while (my @ready = $select->can_read()) {
+			foreach my $socket (@ready) {
+				if (refaddr($socket) == refaddr($t_client_socket)) {
 					my ($read, $data) = recv_data($t_block_size);
+					return unless defined($data);
 					send_data_proxy($data);
-			}
-			if ($t_proxy_select->can_read(0)) {
+				}
+				else {
 					my ($read, $data) = recv_data_proxy($t_block_size);
+					return unless defined($data);
 					send_data($data);
+				}
 			}
 		}
 	};

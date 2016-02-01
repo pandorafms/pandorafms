@@ -36,6 +36,8 @@ if (!$networkmaps_read && !$networkmaps_write && !$networkmaps_manage) {
 	}
 }
 
+require_once('include/functions_migration.php');
+
 $migrate_open_networkmaps = (int)get_parameter('migrate_open_networkmaps');
 
 if ($migrate_open_networkmaps)

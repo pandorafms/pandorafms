@@ -460,4 +460,19 @@ define("OPTION_TREE_GROUP_SELECT",		6);
 define("OPTION_SINGLE_SELECT_TIME",		7);
 define("OPTION_CUSTOM_INPUT",			8);
 define("OPTION_AGENT_AUTOCOMPLETE",		9);
+
+/* Maps (new networkmaps and  new visualmaps) */
+define("MAP_TYPE_NETWORKMAP",	0);
+define("MAP_TYPE_VISUALMAP",	1);
+
+define("MAP_SUBTYPE_TOPOLOGY",			0);
+define("MAP_SUBTYPE_POLICIES",			1);
+define("MAP_SUBTYPE_GROUPS",			2);
+define("MAP_SUBTYPE_RADIAL_DYNAMIC",	3);
+
+define("MAP_GENERATION_CIRCULAR",	0);
+define("MAP_GENERATION_PLANO",		1);
+define("MAP_GENERATION_RADIAL",		2);
+define("MAP_GENERATION_SPRING1",	3);
+define("MAP_GENERATION_SPRING2",	4);
 ?>

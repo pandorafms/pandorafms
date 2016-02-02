@@ -19,7 +19,7 @@ Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArch:          noarch
 PreReq:             %fillup_prereq %insserv_prereq /usr/bin/sed /usr/bin/grep /usr/sbin/useradd
-Requires:           coreutils unzip
+Requires:           coreutils unzip perl
 AutoReq:            0
 Provides:           %{name}-%{version}
 

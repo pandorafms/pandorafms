@@ -38,7 +38,19 @@ if (!$networkmaps_read && !$networkmaps_write && !$networkmaps_manage) {
 
 require_once('include/functions_migration.php');
 
-ui_print_page_header(__('Network map'), "images/op_network.png", false, "network_map", false);
+$buttons['list'] = array('active' => true,
+	'text' => '<a href="index.php?sec=network&sec2=operation/maps/networkmap_list">' . 
+		html_print_image("images/list.png", true,
+			array ('title' => __('List of networkmaps'))) .
+		'</a>');
+
+ui_print_page_header(
+	__('Network map'),
+	"images/op_network.png",
+	false,
+	"network_map",
+	false,
+	$buttons);
 
 ////////////////////////////////////////////////////////////////////////
 // It is dirty but at the moment (minor release is not)

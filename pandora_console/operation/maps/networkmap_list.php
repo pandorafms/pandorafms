@@ -65,17 +65,17 @@ $save_networkmap = (bool)get_parameter('save_networkmap', 0);
 
 if ($save_networkmap) {
 	$id_group = (int) get_parameter('id_group', 0);
-
+	
 	$networkmap_write = check_acl ($config['id_user'], $id_group, "MW");
 	$networkmap_manage = check_acl ($config['id_user'], $id_group, "MM");
-
+	
 	if (!$networkmap_write && !$networkmap_manage) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access networkmap enterprise");
 		require ("general/noaccess.php");
 		return;
 	}
-
+	
 	$type = MAP_TYPE_NETWORKMAP;
 	$subtype = (int) get_parameter('subtype', MAP_SUBTYPE_GROUPS);
 	$name = (string) get_parameter('name', "");
@@ -93,7 +93,7 @@ if ($save_networkmap) {
 	$show_module_group = get_parameter('show_module_group', false);
 	$id_tag = get_parameter('id_tag', 0);
 	$text = get_parameter('text', "");
-
+	
 	$values = array();
 	$values['name'] = $name;
 	$values['id_group'] = $id_group;
@@ -103,7 +103,7 @@ if ($save_networkmap) {
 	$values['source_period'] = $source_period;
 	$values['source_data'] = $source_data;
 	$values['generation_method'] = $generation_method;
-
+	
 	$filter = array();
 	$filter['show_groups_filter'] = 60;
 	$filter['show_module_plugins'] = $show_module_plugins;
@@ -115,26 +115,26 @@ if ($save_networkmap) {
 	$filter['id_tag'] = $id_tag;
 	$filter['text'] = $text;
 	$values['filter'] = json_encode($filter);
-
+	
 	$result_add = false;
 	if (!empty($name)) {
 		$result_add = maps_save_map($values);
 	}
-
+	
 	ui_print_result_message ($result_add,
 		__('Successfully created'),
 		__('Could not be created'));
 }
 else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 	$id = (int)get_parameter('id_networkmap', 0);
-
+	
 	if (empty($id)) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access networkmap enterprise");
 		require ("general/noaccess.php");
 		return;
 	}
-
+	
 	$id_group_old = db_get_value('id_group', 'tmap', 'id', $id);
 	if ($id_group_old === false) {
 		db_pandora_audit("ACL Violation",
@@ -142,20 +142,20 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 		require ("general/noaccess.php");
 		return;
 	}
-
+	
 	$networkmap_write_old_group = check_acl ($config['id_user'], $id_group_old, "MW");
 	$networkmap_manage_old_group = check_acl ($config['id_user'], $id_group_old, "MM");
-
+	
 	if (!$networkmap_write_old_group && !$networkmap_manage_old_group) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access networkmap");
 		require ("general/noaccess.php");
 		return;
 	}
-
+	
 	if ($delete_networkmap) {
 		$result_delete = maps_delete_map($id);
-
+		
 		if (!$result_delete) {
 			db_pandora_audit( "Networkmap management",
 				"Fail try to delete networkmap #$id");
@@ -164,20 +164,20 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 			db_pandora_audit( "Networkmap management",
 				"Delete networkmap #$id");
 		}
-
+		
 		ui_print_result_message ($result_delete,
 			__('Successfully deleted'),
 			__('Could not be deleted'));
 	}
-
+	
 	else if ($duplicate_networkmap) {
 		$result_duplicate = maps_duplicate_map($id);
-
+		
 		ui_print_result_message ($result,
 			__('Successfully duplicate'),
 			__('Could not be duplicate'));
 	}
-
+	
 	else if ($update_networkmap) {
 		$name = (string) get_parameter('name', "");
 		$description = (string) get_parameter('description', "");
@@ -193,14 +193,14 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 		$show_module_group = get_parameter('show_module_group', false);
 		$id_tag = get_parameter('id_tag', 0);
 		$text = get_parameter('text', "");
-
+		
 		$values = array();
 		$values['name'] = $name;
 		$values['id_group'] = $id_group;
 		$values['description'] = $description;
 		$values['source_period'] = $source_period;
 		$values['source_data'] = $source_data;
-
+		
 		$filter = array();
 		$filter['show_groups_filter'] = 60;
 		$filter['show_module_plugins'] = $show_module_plugins;
@@ -212,12 +212,12 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 		$filter['id_tag'] = $id_tag;
 		$filter['text'] = $text;
 		$values['filter'] = json_encode($filter);
-
+		
 		$result_add = false;
 		if (!empty($name)) {
 			$result_add = maps_update_map($id, $values);
 		}
-
+		
 		ui_print_result_message ($result_add,
 			__('Successfully updated'),
 			__('Could not be updated'));
@@ -286,8 +286,8 @@ else {
 		
 		$data['name'] = '<a href="index.php?' .
 			'sec=maps&amp;' .
-			'sec2=operation/maps/networkmap_editor&' .
-			'id_networkmap=' . $networkmap['id'] .'">' .
+			'sec2=operation/maps/networkmap&' .
+			'id=' . $networkmap['id'] .'">' .
 			$networkmap['name'] . '</a>';
 		
 		$data['type'] = maps_get_subtype_string($networkmap['subtype']);

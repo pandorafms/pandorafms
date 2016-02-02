@@ -130,3 +130,4 @@ ALTER TABLE tevent_filter ADD COLUMN id_agent int(25) DEFAULT 0;
 -- Table `tgraph_source`
 -- ---------------------------------------------------------------------	
 ALTER TABLE tgraph_source ADD COLUMN label VARCHAR2(150) DEFAULT '';
+ALTER TABLE tgraph_source ADD COLUMN "id_server" BIGINT NOT NULL default 0;

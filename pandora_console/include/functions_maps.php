@@ -22,7 +22,8 @@
  */
 
 function maps_save_map($values) {
-	return db_process_sql_insert('tmap', $values);
+	$result_add =  db_process_sql_insert('tmap', $values);
+	return $result_add;
 }
 
 function maps_get_maps($filter) {
@@ -51,18 +52,19 @@ function maps_get_subtype_string($subtype) {
 
 function maps_duplicate_map($id) {
 	global $config;
-	$map = db_get_sql("SELECT * FROM tmap WHERE id = " . $id);
-	$result = 0;
+	$map = db_get_all_rows_sql("SELECT * FROM tmap WHERE id = " . $id);
+	$result = false;
+	$map = $map[0];
 	if (!empty($map)) {
-		$map_names = db_get_all_rows_sql("SELECT name FROM tmap WHERE name LIKE '" . $map['name'] . "%'");
+		$map_names = db_get_row_sql("SELECT name FROM tmap WHERE name LIKE '" . $map['name'] . "%'");
 		$index = 0;
 		foreach ($map_names as $map_name) {
 			$index++;
 		}
-		$map['name'] = $map['name'] . '_' . $index;
+		$new_name = $map['name'] . '_' . $index;
 		$result = db_process_sql_insert('tmap', array('id_group' => $map['id_group'],
 				'id_user' => $config['id_user'], 'type' => $map['type'], 'subtype' => $map['subtype'],
-				'name' => $map['name'], 'description' => $map['description'], 'width' => $map['width'],
+				'name' => $new_name, 'description' => $map['description'], 'width' => $map['width'],
 				'height' => $map['height'], 'center_x' => $map['center_x'], 'center_y' => $map['center_y'],
 				'background' => $map['background'], 'background_options' => $map['background_options'],
 				'source_period' => $map['source_period'], 'source' => $map['source'],
@@ -74,7 +76,8 @@ function maps_duplicate_map($id) {
 
 function maps_delete_map($id) {
 	$where = 'id=' . $id;
-	db_process_sql_delete('tmap', $where);
+	$result = db_process_sql_delete('tmap', $where);
+	return (int)$result;
 }
 
 function maps_get_count_nodes($id) {

@@ -195,9 +195,10 @@ else {
 	$table->data[14][1] = html_print_input_text ('text', $text, '', 20,
 		10,true);
 
-	html_print_table($table);
-
 	echo '<form method="post" action="index.php?sec=maps&amp;sec2=operation/maps/networkmap_list">';
+
+	html_print_table($table);
+	
 	echo "<div style='width: " . $table->width . "; text-align: right;'>";
 	if ($create_networkmap) {
 		html_print_input_hidden ('save_networkmap', 1);

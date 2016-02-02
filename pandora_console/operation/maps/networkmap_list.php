@@ -281,18 +281,18 @@ if (empty($networkmaps)) {
 else {
 	foreach ($networkmaps as $networkmap) {
 		$data = array();
-
+		
 		$data['name'] = $networkmap['name'];
-
+		
 		$data['name'] = '<a href="index.php?' .
 			'sec=maps&amp;' .
 			'sec2=operation/maps/networkmap_editor&' .
 			'id_networkmap=' . $networkmap['id'] .'">' .
 			$networkmap['name'] . '</a>';
-
+		
 		$data['type'] = maps_get_subtype_string($networkmap['subtype']);
-
-
+		
+		
 		if (enterprise_installed()) {
 			if ($networkmap['generated']) {
 				$data['nodes'] = maps_get_count_nodes($networkmap['id']);
@@ -301,7 +301,7 @@ else {
 				$data['nodes'] = __('Pending to generate');
 			}
 		}
-
+		
 		if (!empty($networkmap['id_user'])) {
 			$data['group'] = __('Private for (%s)', $networkmap['id_user']);
 		}
@@ -309,26 +309,26 @@ else {
 			$data['groups'] =
 				ui_print_group_icon($networkmap['id_group'], true);
 		}
-
+		
 		$data['copy'] = '<a href="index.php?' .
 			'sec=maps&amp;' .
 			'sec2=operation/maps/networkmap_list&' .
 			'duplicate_networkmap=1&id_networkmap=' . $networkmap['id'] . '" alt="' . __('Copy') . '">' .
 			html_print_image("images/copy.png", true) . '</a>';
-
+		
 		$data['edit'] = '<a href="index.php?' .
 			'sec=maps&amp;' .
 			'sec2=operation/maps/networkmap_editor&' .
 			'edit_networkmap=1&id_networkmap=' . $networkmap['id'] .'">' .
 			html_print_image("images/edit.png", true) . '</a>';
-
+		
 		$data['delete'] = '<a href="index.php?' .
 			'sec=maps&amp;' .
 			'sec2=operation/maps/networkmap_list&' .
 			'delete_networkmap=1&id_networkmap=' . $networkmap['id'] . '" alt="' . __('Delete') .
 			'" onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' .
 			html_print_image('images/cross.png', true) . '</a>';
-
+		
 		$table->data[] = $data;
 	}
 	html_print_table($table);

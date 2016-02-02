@@ -19,7 +19,7 @@ Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArch:          noarch
 PreReq:             /bin/sed /bin/grep /usr/sbin/useradd
-Requires:           coreutils unzip
+Requires:           coreutils unzip perl
 AutoReq:            0
 Provides:           %{name}-%{version}
 
@@ -98,6 +98,8 @@ fi
 mkdir -p /var/spool/pandora/data_out
 /sbin/chkconfig --add pandora_agent_daemon
 /sbin/chkconfig pandora_agent_daemon on
+echo "You may need to install manually some additional required dependencies:"
+echo "perl-Sys-Syslog"
 
 %preun
 

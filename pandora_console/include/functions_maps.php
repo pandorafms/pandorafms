@@ -51,7 +51,7 @@ function maps_get_subtype_string($subtype) {
 
 function maps_duplicate_map($id) {
 	global $config;
-	$map = db_get_sql("SELECT * FROM tmap WHERE id_map = " . $id);
+	$map = db_get_sql("SELECT * FROM tmap WHERE id = " . $id);
 	$result = 0;
 	if (!empty($map)) {
 		$map_names = db_get_all_rows_sql("SELECT name FROM tmap WHERE name LIKE '" . $map['name'] . "%'");

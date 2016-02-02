@@ -156,13 +156,13 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 	if ($delete_networkmap) {
 		$result_delete = maps_delete_map($id);
 
-		if ($result_delete) {
+		if (!$result_delete) {
 			db_pandora_audit( "Networkmap management",
-				"Delete networkmap #$id");
+				"Fail try to delete networkmap #$id");
 		}
 		else {
 			db_pandora_audit( "Networkmap management",
-				"Fail try to delete networkmap #$id");
+				"Delete networkmap #$id");
 		}
 
 		ui_print_result_message ($result_delete,

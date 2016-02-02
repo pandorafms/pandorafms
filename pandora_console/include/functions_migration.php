@@ -26,7 +26,7 @@ require_once("include/functions_maps.php");
 function migration_open_networkmaps() {
 	$old_networkmaps_open = db_get_all_rows_in_table("tnetwork_map");
 	
-	//~ html_debug($old_networkmaps_open);
+	html_debug($old_networkmaps_open);
 	
 	foreach ($old_networkmaps_open as $old_netw_open) {
 		$new_networkmap = array();
@@ -34,7 +34,19 @@ function migration_open_networkmaps() {
 		$new_networkmap['name'] = $old_netw_open['name'];
 		$new_networkmap['id_user'] = $old_netw_open['id_user'];
 		
-		switch ($old_netw_open['id_user']) {
+		switch ($old_netw_open['type']) {
+			case 'radial_dynamic':
+				$new_networkmap['type'] = MAP_TYPE_NETWORKMAP;
+				$new_networkmap['subtype'] = MAP_SUBTYPE_RADIAL_DYNAMIC;
+				break;
+			case 'policies':
+				$new_networkmap['type'] = MAP_TYPE_NETWORKMAP;
+				$new_networkmap['subtype'] = MAP_SUBTYPE_POLICIES;
+				break;
+			case 'groups':
+				$new_networkmap['type'] = MAP_TYPE_NETWORKMAP;
+				$new_networkmap['subtype'] = MAP_SUBTYPE_GROUPS;
+				break;
 			case 'topology':
 				$new_networkmap['type'] = MAP_TYPE_NETWORKMAP;
 				$new_networkmap['subtype'] = MAP_SUBTYPE_TOPOLOGY;
@@ -83,8 +95,7 @@ function migration_open_networkmaps() {
 		
 		html_debug($new_networkmap);
 		
-		html_debug(maps_save_map($new_networkmap));
-		html_debug(mysql_error());
+		maps_save_map($new_networkmap);
 	}
 }
 ?>

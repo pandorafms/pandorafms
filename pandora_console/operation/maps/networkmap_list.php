@@ -69,7 +69,7 @@ if ($save_networkmap) {
 	$networkmap_write = check_acl ($config['id_user'], $id_group, "MW");
 	$networkmap_manage = check_acl ($config['id_user'], $id_group, "MM");
 
-	if (!$networkmap_write && !$networkmap_manage) {
+	if (!$networkmap_write && !$networkmap_manage && !$networkmaps_manage) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access networkmap enterprise");
 		require ("general/noaccess.php");
@@ -146,7 +146,7 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 	$networkmap_write_old_group = check_acl ($config['id_user'], $id_group_old, "MW");
 	$networkmap_manage_old_group = check_acl ($config['id_user'], $id_group_old, "MM");
 
-	if (!$networkmap_write && !$networkmap_manage) {
+	if (!$networkmap_write_old_group && !$networkmap_manage_old_group) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access networkmap");
 		require ("general/noaccess.php");

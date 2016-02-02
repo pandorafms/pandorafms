@@ -29,6 +29,7 @@ $edit_networkmap = (int)get_parameter('edit_networkmap', 0);
 $create_networkmap = (int)get_parameter('create_networkmap', 0);
 
 if ($create_networkmap) {
+	$id_group = 0;
 	$type = MAP_TYPE_NETWORKMAP;
 	$subtype = MAP_SUBTYPE_GROUPS;
 	$name = "";

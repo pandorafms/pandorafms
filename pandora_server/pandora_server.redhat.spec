@@ -131,6 +131,9 @@ fi
 
 echo "Don't forget to start Tentacle Server daemon if you want to receive"
 echo "data using tentacle"
+echo " "
+echo "You may need to install manually some additional required dependencies:"
+echo "perl-Sys-Syslog"
 
 %preun
 

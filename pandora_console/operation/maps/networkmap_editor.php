@@ -25,35 +25,41 @@ $networkmaps_write = check_acl ($config['id_user'], 0, "MW");
 $networkmaps_manage = check_acl ($config['id_user'], 0, "MM");
 
 $id = (int)get_parameter('id_networkmap', 0);
+$edit_networkmap = (int)get_parameter('edit_networkmap', 0);
+$add_networkmap = (int)get_parameter('add_networkmap', 0);
 
-$name = (string) get_parameter ('name');
-$description = (string) get_parameter ('description');
-$id_group = (int) get_parameter ('id_group');
-$type = (string) get_parameter ('type');
+if ($edit_networkmap) {
+	$name = (string) get_parameter ('name');
+	$description = (string) get_parameter ('description');
+	$id_group = (int) get_parameter ('id_group');
+	$type = (string) get_parameter ('type');
 
-if ($name == "")
-	$result = false;
-else {
-	//FUNCION
-	/*$result = networkmap_update_networkmap ($id,
-		array ('name' => $name,
-			'id_group' => $id_group,
-			'description' => $description),
-			'type' => $type);*/
-	$result = false;
+	if ($name == "") {
+		$result = 0;
+	}
+	else {
+		$result = maps_update_map ($id,
+			array ('name' => $name,
+				'id_group' => $id_group,
+				'description' => $description),
+				'type' => $type);
+	}
+
+	$info = ' Name: ' . $name . ' Description: ' . $description . ' ID group: ' . $id_group . ' Type: ' . $type;
+
+	if ($id) {
+		db_pandora_audit("Networkmap management", "Update networkmap #" . $id, false, false, $info);
+	}
+	else {
+		db_pandora_audit("Networkmap management", "Fail to update networkmap #$id", false, false, $info);
+	}
+
+	ui_print_result_message ($result,
+		__('Successfully updated'),
+		__('Could not be updated'));
 }
+else if ($add_networkmap) {
 
-$info = ' Name: ' . $name . ' Description: ' . $description . ' ID group: ' . $id_group . ' Type: ' . $type;
-
-if ($id) {
-	db_pandora_audit("Networkmap management", "Update networkmap #" . $id, false, false, $info);
 }
-else {
-	db_pandora_audit("Networkmap management", "Fail to update networkmap #$id", false, false, $info);
-}
-
-ui_print_result_message ($result,
-	__('Successfully updated'),
-	__('Could not be updated'));
 
 ?>

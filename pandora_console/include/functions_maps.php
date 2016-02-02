@@ -49,10 +49,38 @@ function maps_get_subtype_string($subtype) {
 	}
 }
 
-function maps_get_count_nodes($id) {
-	$result = db_get_sql(
-		"SELECT COUNT(*) FROM titem WHERE id_map = " . $id);
-	
+function maps_duplicate_map($id) {
+	global $config;
+	$map = db_get_sql("SELECT * FROM tmap WHERE id_map = " . $id);
+	$result = 0;
+	if (!empty($map)) {
+		$map_names = db_get_all_rows_sql("SELECT name FROM tmap WHERE name LIKE '" . $map['name'] . "%'");
+		$index = 0;
+		foreach ($map_names as $map_name) {
+			$index++;
+		}
+		$map['name'] = $map['name'] . '_' . $index;
+		$result = db_process_sql_insert('tmap', array('id_group' => $map['id_group'],
+				'id_user' => $config['id_user'], 'type' => $map['type'], 'subtype' => $map['subtype'],
+				'name' => $map['name'], 'description' => $map['description'], 'width' => $map['width'],
+				'height' => $map['height'], 'center_x' => $map['center_x'], 'center_y' => $map['center_y'],
+				'background' => $map['background'], 'background_options' => $map['background_options'],
+				'source_period' => $map['source_period'], 'source' => $map['source'],
+				'source_data' => $map['source_data'], 'generation_method' => $map['generation_method'],
+				'filter' => $map['filter']));
+	}
 	return (int)$result;
 }
+
+function maps_get_count_nodes($id) {
+	$result = db_get_sql("SELECT COUNT(*) FROM titem WHERE id_map = " . $id);
+	return (int)$result;
+}
+
+function maps_update_map ($id, $values) {
+	$where = 'id=' . $id;
+	$result = db_process_sql_update('tmap', $values, $where);
+	return (int)$result;
+}
+
 ?>

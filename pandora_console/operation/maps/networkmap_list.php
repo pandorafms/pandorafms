@@ -69,7 +69,7 @@ if ($save_networkmap) {
 	$networkmap_write = check_acl ($config['id_user'], $id_group, "MW");
 	$networkmap_manage = check_acl ($config['id_user'], $id_group, "MM");
 
-	if (!$networkmap_write && !$networkmap_manage && !$networkmaps_manage) {
+	if (!$networkmap_write && !$networkmap_manage) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access networkmap enterprise");
 		require ("general/noaccess.php");

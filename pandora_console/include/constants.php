@@ -475,4 +475,14 @@ define("MAP_GENERATION_PLANO",		1);
 define("MAP_GENERATION_RADIAL",		2);
 define("MAP_GENERATION_SPRING1",	3);
 define("MAP_GENERATION_SPRING2",	4);
+
+define("MAP_SOURCE_GROUP",		0);
+define("MAP_SOURCE_IP_MASK", 	1);
+
+/* Background options */
+define("CENTER",		0);
+define("MOSAIC",		1);
+define("STRECH",		2);
+define("FIT_WIDTH",		3);
+define("FIT_HEIGH",		4);
 ?>

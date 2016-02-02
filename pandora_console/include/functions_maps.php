@@ -72,6 +72,11 @@ function maps_duplicate_map($id) {
 	return (int)$result;
 }
 
+function maps_delete_map($id) {
+	$where = 'id=' . $id;
+	db_process_sql_delete('tmap', $where);
+}
+
 function maps_get_count_nodes($id) {
 	$result = db_get_sql("SELECT COUNT(*) FROM titem WHERE id_map = " . $id);
 	return (int)$result;

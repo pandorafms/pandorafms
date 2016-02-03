@@ -64,6 +64,15 @@ ui_print_page_header(
 	false,
 	$buttons);
 
+if (empty($id)) {
+	ui_print_error_message(__('Not found networkmap.'));
+	
+	return;
+}
+else {
+	maps_show($id);
+}
+
 ?>
 
 

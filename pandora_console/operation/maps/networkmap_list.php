@@ -230,7 +230,7 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 		$filter['id_tag'] = $id_tag;
 		$filter['text'] = $text;
 		$values['filter'] = json_encode($filter);
-
+		
 		$result_update = false;
 		if (!empty($name)) {
 			$result_update = maps_update_map($id, $values);

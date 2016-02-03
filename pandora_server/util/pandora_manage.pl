@@ -3305,9 +3305,8 @@ sub cli_create_synthetic() {
 	my $id_agent = int(get_agent_id($dbh,$agent_name));
 	
 	if ($id_agent > 0) {
-		
-		foreach my $data (@module_data) {
-			my @split_data = split(',',$data);
+		foreach my $i (0 .. $#module_data) {
+			my @split_data = split(',',$module_data[$i]);
 			if (@split_data[0] =~ m/(x|\/|\+|\*|\-)/ && length(@split_data[0]) == 1 ) {
 				if ( @split_data[0] =~ m/(\/|\+|\*|\-)/ && $synthetic_type eq 'average' ) {
 					print("[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
@@ -3335,7 +3334,13 @@ sub cli_create_synthetic() {
 						print("[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
 						exit 1;
 					}
-					@data_module = (safe_output(@split_data[0]),@split_data[1],safe_output(@split_data[2]));
+					if ( $synthetic_type eq 'arithmetic' && $i == 0) {
+						@data_module = (safe_output(@split_data[0]),'',safe_output(@split_data[2]));
+					}
+					else {
+						@data_module = (safe_output(@split_data[0]),@split_data[1],safe_output(@split_data[2]));
+					}
+					
 					my $text_data = join(',',@data_module);
 					push (@filterdata,$text_data);
 				}
@@ -3357,6 +3362,11 @@ sub cli_create_synthetic() {
 			my $result = enterprise_hook('create_synthetic_operations',
 				[$dbh,int($id_module), @filterdata]);
 			if ($result) {
+				db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado,
+				 last_status, last_known_status, last_try, datos) 
+				 VALUES (?, ?, ?, ?, ?, \'1970-01-01 00:00:00\', \'\')', $id_module, $id_agent, 4, 4, 4);
+				# Update the module status count. When the module is created disabled dont do it
+				pandora_mark_agent_for_module_update ($dbh, $id_agent);
 				print("[OK] The modules are creating ID: $id_module \n\n");
 			}
 			else {

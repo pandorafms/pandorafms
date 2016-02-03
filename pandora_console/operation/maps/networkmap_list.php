@@ -39,7 +39,7 @@ if (!$networkmaps_read && !$networkmaps_write && !$networkmaps_manage) {
 require_once('include/functions_migration.php');
 
 $buttons['list'] = array('active' => true,
-	'text' => '<a href="index.php?sec=network&sec2=operation/maps/networkmap_list">' . 
+	'text' => '<a href="index.php?sec=network&sec2=operation/maps/networkmap_list">' .
 		html_print_image("images/list.png", true,
 			array ('title' => __('List of networkmaps'))) .
 		'</a>');
@@ -87,31 +87,31 @@ if ($save_networkmap) {
 		require ("general/noaccess.php");
 		return;
 	}
-	
+
 	$type = MAP_TYPE_NETWORKMAP;
 	$subtype = (int) get_parameter('subtype', MAP_SUBTYPE_GROUPS);
 	$name = (string) get_parameter('name', "");
 	$description = (string) get_parameter('description', "");
 	$source_period = (int) get_parameter('source_period', 60 * 5);
 	$source = (int) get_parameter('source', MAP_SOURCE_GROUP);
-	$source_data = get_parameter('source_data', 'group');
-	$generation_method = get_parameter('generation_method', MAP_GENERATION_CIRCULAR);
-	$show_groups_filter = get_parameter('show_groups_filter', false);
-	$show_module_plugins = get_parameter('show_module_plugins', false);
-	$show_snmp_modules = get_parameter('show_snmp_modules', false);
-	$show_modules = get_parameter('show_modules', false);
-	$show_policy_modules = get_parameter('show_policy_modules', false);
-	$show_pandora_nodes = get_parameter('show_pandora_nodes', false);
-	$show_module_group = get_parameter('show_module_group', false);
-	$id_tag = get_parameter('id_tag', 0);
-	$text = get_parameter('text', "");
+	$source_data = (string) get_parameter('source_data', 'group');
+	$generation_method = (int) get_parameter('generation_method', MAP_GENERATION_CIRCULAR);
+	$show_groups_filter = (int) get_parameter('show_groups_filter', false);
+	$show_module_plugins = (int) get_parameter('show_module_plugins', false);
+	$show_snmp_modules = (int) get_parameter('show_snmp_modules', false);
+	$show_modules = (int) get_parameter('show_modules', false);
+	$show_policy_modules = (int) get_parameter('show_policy_modules', false);
+	$show_pandora_nodes = (int) get_parameter('show_pandora_nodes', false);
+	$show_module_group = (int) get_parameter('show_module_group', false);
+	$id_tag = (int) get_parameter('id_tag', 0);
+	$text = (string) get_parameter('text', "");
 
 	$values = array();
 	$values['name'] = $name;
 	$values['id_user'] = $config['id_user'];
 	$values['id_group'] = $id_group;
 	$values['subtype'] = $subtype;
-	$values['type'] = $$type;
+	$values['type'] = $type;
 	$values['description'] = $description;
 	$values['source_period'] = $source_period;
 	$values['source_data'] = $source_data;
@@ -134,11 +134,10 @@ if ($save_networkmap) {
 			$same_name = true;
 		}
 	}
-	html_debug($values);
 	if (!empty($name) && !$same_name) {
 		$result_add = maps_save_map($values);
 	}
-	
+
 	ui_print_result_message ($result_add,
 		__('Successfully created'),
 		__('Could not be created'));
@@ -197,20 +196,21 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 	}
 
 	else if ($update_networkmap) {
+		$id_group = (int) get_parameter('id_group', 0);
 		$name = (string) get_parameter('name', "");
 		$description = (string) get_parameter('description', "");
 		$source_period = (int) get_parameter('source_period', 60 * 5);
 		$source = (int) get_parameter('source', MAP_SOURCE_GROUP);
-		$source_data = get_parameter('source_data', 'group');
-		$show_groups_filter = get_parameter('show_groups_filter', false);
-		$show_module_plugins = get_parameter('show_module_plugins', false);
-		$show_snmp_modules = get_parameter('show_snmp_modules', false);
-		$show_modules = get_parameter('show_modules', false);
-		$show_policy_modules = get_parameter('show_policy_modules', false);
-		$show_pandora_nodes = get_parameter('show_pandora_nodes', false);
-		$show_module_group = get_parameter('show_module_group', false);
-		$id_tag = get_parameter('id_tag', 0);
-		$text = get_parameter('text', "");
+		$source_data = (string) get_parameter('source_data', 'group');
+		$show_groups_filter = (int) get_parameter('show_groups_filter', false);
+		$show_module_plugins = (int) get_parameter('show_module_plugins', false);
+		$show_snmp_modules = (int) get_parameter('show_snmp_modules', false);
+		$show_modules = (int) get_parameter('show_modules', false);
+		$show_policy_modules = (int) get_parameter('show_policy_modules', false);
+		$show_pandora_nodes = (int) get_parameter('show_pandora_nodes', false);
+		$show_module_group = (int) get_parameter('show_module_group', false);
+		$id_tag = (int) get_parameter('id_tag', 0);
+		$text = (string) get_parameter('text', "");
 
 		$values = array();
 		$values['name'] = $name;
@@ -218,9 +218,9 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 		$values['description'] = $description;
 		$values['source_period'] = $source_period;
 		$values['source_data'] = $source_data;
-
+		$values['source'] = $source;
 		$filter = array();
-		$filter['show_groups_filter'] = 60;
+		$filter['show_groups_filter'] = $show_groups_filter;
 		$filter['show_module_plugins'] = $show_module_plugins;
 		$filter['show_snmp_modules'] = $show_snmp_modules;
 		$filter['show_modules'] = $show_modules;
@@ -230,13 +230,13 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 		$filter['id_tag'] = $id_tag;
 		$filter['text'] = $text;
 		$values['filter'] = json_encode($filter);
-
-		$result_add = false;
+		
+		$result_update = false;
 		if (!empty($name)) {
-			$result_add = maps_update_map($id, $values);
+			$result_update = maps_update_map($id, $values);
 		}
 
-		ui_print_result_message ($result_add,
+		ui_print_result_message ($result_update,
 			__('Successfully updated'),
 			__('Could not be updated'));
 	}

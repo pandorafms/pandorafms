@@ -61,7 +61,7 @@ function maps_duplicate_map($id) {
 		foreach ($map_names as $map_name) {
 			$index++;
 		}
-		$new_name = $map['name'] . '_' . $index;
+		$new_name = __('Copy of ') . $map['name'];
 		$result = db_process_sql_insert('tmap', array('id_group' => $map['id_group'],
 				'id_user' => $config['id_user'], 'type' => $map['type'], 'subtype' => $map['subtype'],
 				'name' => $new_name, 'description' => $map['description'], 'width' => $map['width'],

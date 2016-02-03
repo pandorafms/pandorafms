@@ -54,23 +54,23 @@ $disabled_select = false;
 if ($edit_networkmap) {
 	$disabled_select= true;
 	$values = db_get_row('tmap', 'id', $id);
-
+	
 	if ($values === false) {
 		$not_found = true;
 	}
 	else {
 		$id_group = $values['id_group'];
-
+		
 		$networkmap_write = check_acl ($config['id_user'], $id_group, "MW");
 		$networkmap_manage = check_acl ($config['id_user'], $id_group, "MM");
-
+		
 		if (!$networkmap_write && !$networkmap_manage) {
 			db_pandora_audit("ACL Violation",
 				"Trying to access networkmap");
 			require ("general/noaccess.php");
 			return;
 		}
-
+		
 		$type = MAP_TYPE_NETWORKMAP;
 		$subtype = $values['subtype'];
 		$name = io_safe_output($values['name']);
@@ -98,13 +98,31 @@ if ($edit_networkmap) {
 }
 
 //+++++++++++++++TABLE TO CREATE/EDIT NETWORKMAP++++++++++++++++++++++
+
+$buttons['list'] = array('active' => false,
+	'text' => '<a href="index.php?sec=network&sec2=operation/maps/networkmap_list">' . 
+		html_print_image("images/list.png", true,
+			array ('title' => __('List of networkmaps'))) .
+		'</a>');
+
 if ($create_networkmap) {
 	ui_print_page_header(__('Create networkmap'), "images/bricks.png",
-		false, "network_list", false);
+		false, "network_list", false, $buttons);
 }
 else {
+	$buttons['edit'] = array('active' => true,
+		'text' => '<a href="index.php?sec=maps&sec2=operation/maps/networkmap_editor&edit_networkmap=1&id_networkmap=' . $id . '">' . 
+			html_print_image("images/cog.png", true,
+				array ('title' => __('Edit networkmap'))) .
+			'</a>');
+	$buttons['networkmap'] = array('active' => false,
+		'text' => '<a href="index.php?sec=network&sec2=operation/maps/networkmap&id=' . $id . '">' . 
+			html_print_image("images/op_network.png", true,
+				array ('title' => __('View networkmap'))) .
+			'</a>');
+	
 	ui_print_page_header(__('Update networkmap'), "images/bricks.png",
-		false, "network_list", false);
+		false, "network_list", false, $buttons);
 }
 
 if ($not_found) {

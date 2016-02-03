@@ -116,7 +116,7 @@ if ($save_networkmap) {
 	$values['source_period'] = $source_period;
 	$values['source_data'] = $source_data;
 	$values['generation_method'] = $generation_method;
-
+	$values['source'] = $source;
 	$filter = array();
 	$filter['show_groups_filter'] = 60;
 	$filter['show_module_plugins'] = $show_module_plugins;
@@ -230,7 +230,7 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 		$filter['id_tag'] = $id_tag;
 		$filter['text'] = $text;
 		$values['filter'] = json_encode($filter);
-		
+
 		$result_update = false;
 		if (!empty($name)) {
 			$result_update = maps_update_map($id, $values);

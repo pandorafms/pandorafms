@@ -126,7 +126,7 @@ else {
 	$table->style[0] = 'font-weight: bold; width: 150px;';
 	$table->data = array();
 
-	$subtype = array(
+	$subtypes = array(
 		MAP_SUBTYPE_TOPOLOGY => 'Topology',
 		MAP_SUBTYPE_POLICIES => 'Policies',
 		MAP_SUBTYPE_GROUPS => 'Groups',
@@ -134,7 +134,7 @@ else {
 		);
 
 	$table->data[0][0] = __('Subtype');
-	$table->data[0][1] = html_print_select($subtype, 'subtype', $subtype,
+	$table->data[0][1] = html_print_select($subtypes, 'subtype', $subtype,
 		'', '', 'Topology', true, false, true, '',
 		$disabled_select);
 
@@ -143,7 +143,7 @@ else {
 		html_print_radio_button('source', MAP_SOURCE_GROUP, __('Group'), $source, true) .
 		html_print_radio_button('source', MAP_SOURCE_IP_MASK, __('CIDR IP mask'), $source, true);
 
-	$generation_method = array(
+	$generation_methods = array(
 		MAP_GENERATION_RADIAL => 'Radial',
 		MAP_GENERATION_PLANO => 'Flat',
 		MAP_GENERATION_CIRCULAR => 'Circular',
@@ -152,7 +152,7 @@ else {
 		);
 
 	$table->data[2][0] = __('Method generation networkmap');
-	$table->data[2][1] = html_print_select($generation_method, 'generation_method', $generation_method,
+	$table->data[2][1] = html_print_select($generation_methods, 'generation_method', $generation_method,
 		'', '', 'twopi', true, false, true, '',
 		$disabled_select);
 

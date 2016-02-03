@@ -467,25 +467,27 @@ function servers_get_info ($id_server = -1) {
 				// Get total exported modules
 				$server["modules_total"] = db_get_sql ("SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) FROM tagente, tagent_module_inventory WHERE tagente.disabled=0 AND tagent_module_inventory.id_agente = tagente.id_agente");
 				
+				$interval_esc = db_escape_key_identifier ("interval");
+				
 				// Get the module lag
 				$server["module_lag"] = db_get_sql ("SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) AS module_lag
 					FROM tagente, tagent_module_inventory
 					WHERE utimestamp > 0
 					AND tagent_module_inventory.id_agente = tagente.id_agente
-					AND tagent_module_inventory.interval > 0
+					AND tagent_module_inventory." . $interval_esc . " > 0
 					AND tagente.server_name = '" . $server["name"] . "'
-					AND (UNIX_TIMESTAMP() - utimestamp) < (tagent_module_inventory.interval * 10)
-					AND (UNIX_TIMESTAMP() - utimestamp) > tagent_module_inventory.interval");
+					AND (UNIX_TIMESTAMP() - utimestamp) < (tagent_module_inventory." . $interval_esc . " * 10)
+					AND (UNIX_TIMESTAMP() - utimestamp) > tagent_module_inventory." . $interval_esc);
 				
 				// Get the lag
-				$server["lag"] = db_get_sql ("SELECT AVG(UNIX_TIMESTAMP() - utimestamp - tagent_module_inventory.interval)
+				$server["lag"] = db_get_sql ("SELECT AVG(UNIX_TIMESTAMP() - utimestamp - tagent_module_inventory." . $interval_esc . ")
 					FROM tagente, tagent_module_inventory
 					WHERE utimestamp > 0
 					AND tagent_module_inventory.id_agente = tagente.id_agente
-					AND tagent_module_inventory.interval > 0
+					AND tagent_module_inventory." . $interval_esc . " > 0
 					AND tagente.server_name = '" . $server["name"] . "'
-					AND (UNIX_TIMESTAMP() - utimestamp) < (tagent_module_inventory.interval * 10)
-					AND (UNIX_TIMESTAMP() - utimestamp) > tagent_module_inventory.interval");
+					AND (UNIX_TIMESTAMP() - utimestamp) < (tagent_module_inventory." . $interval_esc . " * 10)
+					AND (UNIX_TIMESTAMP() - utimestamp) > tagent_module_inventory." . $interval_esc);
 			// Export server
 			}
 			else if ($server["server_type"] == SERVER_TYPE_EXPORT) {

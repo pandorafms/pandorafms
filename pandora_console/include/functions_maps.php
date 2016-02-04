@@ -162,12 +162,19 @@ function maps_show($id) {
 	
 	if (maps_is_networkmap($id)) {
 		require_once("include/class/Networkmap.class.php");
+		enterprise_include_once("include/class/NetworkmapEnterprise.class.php");
 		
-		$map = new Networkmap($id);
-		$map->show();
+		if (enterprise_installed()) {
+			$map = new NetworkmapEnterprise($id);
+		}
+		else {
+			$map = new Networkmap($id);
+		}
 	}
 	else {
-		//TODO VISUAL
+		//~ $map = new Map($id);
 	}
+	
+	$map->show();
 }
 ?>

@@ -24,10 +24,23 @@
 class Networkmap extends Map {
 	public function __construct($id) {
 		parent::__construct($id);
+		
+		//~ $this->requires_js[] = "include/javascript/map/NetworkMapController.js";
 	}
 	
 	public function show() {
 		parent::show();
+	}
+	
+	public function print_js_init() {
+		echo "<h1>Networkmap</h1>";
+		?>
+		<script type="text/javascript">
+			$(function() {
+				// map = new js_networkmap();
+			});
+		</script>
+		<?php
 	}
 }
 ?>

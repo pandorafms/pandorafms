@@ -22,14 +22,12 @@
  */
 
 function networkmaps_show($id) {
-	$networkmap_items = db_get_all_rows_sql("SELECT * FROM titem WHERE id_map = " . $id);
-	$networkmap = db_get_all_rows_sql("SELECT * FROM tmap WHERE id = " . $id);
-
-	if ($networkmap === false) {
-		ui_print_error_message(__('Not found networkmap'));
-	}
-	else {
-		
-	}
-}
+	if (maps_is_networkmap($id))
+		return false;
+	
+	maps_show($id);
+	
+	networkmaps_show_staged_area($id);
+	networkmaps_show_black_list_staged_area($id);
+} 
 ?>

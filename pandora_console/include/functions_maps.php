@@ -126,10 +126,10 @@ function maps_update_map ($id, $values) {
 
 function maps_is_networkmap($id) {
 	$return = db_get_value('type', 'tmap', 'id', $id);
-
+	
 	if ($return === false)
 		return false;
-
+	
 	if ($return == MAP_TYPE_NETWORKMAP)
 		return true;
 	else
@@ -154,7 +154,7 @@ function maps_is_visualmap($id) {
 function maps_show($id) {
 	if (maps_is_networkmap($id)) {
 		require_once("include/functions_networkmaps.php");
-
+		
 		networkmaps_show($id);
 	}
 	else {

@@ -158,34 +158,16 @@ function maps_is_visualmap($id) {
 }
 
 function maps_show($id) {
+	require_once("include/class/Map.class.php");
+	
 	if (maps_is_networkmap($id)) {
-		require_once("include/functions_networkmaps.php");
+		require_once("include/class/Networkmap.class.php");
 		
 		$map = new Networkmap($id);
 		$map->show();
 	}
 	else {
 		//TODO VISUAL
-	}
-}
-
-class Map {
-	protected $id = null;
-	
-	public function __construct($id) {
-		$this->id = $id;
-	}
-	
-	public function show() {
-		?>
-		<div class="map">
-			<svg width="800" height="800" pointer-events="all" style="border: 2px solid red;">
-				<g>
-					<circle id="node_10" class="node" r="5" style="fill: rgb(128, 186, 39);" cx="100" cy="100"/>
-				</g>
-			</svg>
-		</div>
-		<?php
 	}
 }
 ?>

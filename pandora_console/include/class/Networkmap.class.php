@@ -18,13 +18,16 @@
 
 /**
  * @package Include
- * @subpackage Networkmaps
+ * @subpackage Networkmap
  */
 
-function networkmaps_show($id) {
-	maps_show($id);
+class Networkmap extends Map {
+	public function __construct($id) {
+		parent::__construct($id);
+	}
 	
-	networkmaps_show_staged_area($id);
-	networkmaps_show_black_list_staged_area($id);
+	public function show() {
+		parent::show();
+	}
 }
 ?>

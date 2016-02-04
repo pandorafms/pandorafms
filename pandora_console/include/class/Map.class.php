@@ -18,13 +18,26 @@
 
 /**
  * @package Include
- * @subpackage Networkmaps
+ * @subpackage Maps
  */
 
-function networkmaps_show($id) {
-	maps_show($id);
+class Map {
+	protected $id = null;
 	
-	networkmaps_show_staged_area($id);
-	networkmaps_show_black_list_staged_area($id);
+	public function __construct($id) {
+		$this->id = $id;
+	}
+	
+	public function show() {
+		?>
+		<div class="map">
+			<svg width="800" height="800" pointer-events="all" style="border: 2px solid red;">
+				<g>
+					<circle id="node_10" class="node" r="5" style="fill: rgb(128, 186, 39);" cx="100" cy="100"/>
+				</g>
+			</svg>
+		</div>
+		<?php
+	}
 }
 ?>

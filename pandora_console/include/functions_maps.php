@@ -91,16 +91,22 @@ function maps_duplicate_items_map($id, $map_items) {
 		if ($result_copy_item) {
 			$item_relations = db_get_all_rows_sql("SELECT * FROM trel_item WHERE id = " . $item['id']);
 			if ($item['id'] == $item_relations['parent_id']) {
-				$copy_item_relations = array('id_parent' => $result_copy_item,
-									'id_child' => $item_relations['id_child'], 'parent_type' => $item_relations['parent_type'],
-									'child_type' => $item_relations['child_type'], 'id_item' => $item_relations['id_item']
-									'deleted' => $item_relations['deleted']);
+				$copy_item_relations = array(
+					'id_parent' => $result_copy_item,
+					'id_child' => $item_relations['id_child'],
+					'parent_type' => $item_relations['parent_type'],
+					'child_type' => $item_relations['child_type'],
+					'id_item' => $item_relations['id_item'],
+					'deleted' => $item_relations['deleted']);
 			}
 			else {
-				$copy_item_relations = array('id_parent' => $item_relations['id_parent'],
-									'id_child' => $result_copy_item, 'parent_type' => $item_relations['parent_type'],
-									'child_type' => $item_relations['child_type'], 'id_item' => $item_relations['id_item']
-									'deleted' => $item_relations['deleted']);
+				$copy_item_relations = array(
+					'id_parent' => $item_relations['id_parent'],
+					'id_child' => $result_copy_item,
+					'parent_type' => $item_relations['parent_type'],
+					'child_type' => $item_relations['child_type'],
+					'id_item' => $item_relations['id_item'],
+					'deleted' => $item_relations['deleted']);
 			}
 			db_process_sql_insert('trel_item', $copy_item_relations);
 		}
@@ -155,10 +161,31 @@ function maps_show($id) {
 	if (maps_is_networkmap($id)) {
 		require_once("include/functions_networkmaps.php");
 		
-		networkmaps_show($id);
+		$map = new Networkmap($id);
+		$map->show();
 	}
 	else {
 		//TODO VISUAL
+	}
+}
+
+class Map {
+	protected $id = null;
+	
+	public function __construct($id) {
+		$this->id = $id;
+	}
+	
+	public function show() {
+		?>
+		<div class="map">
+			<svg width="800" height="800" pointer-events="all" style="border: 2px solid red;">
+				<g>
+					<circle id="node_10" class="node" r="5" style="fill: rgb(128, 186, 39);" cx="100" cy="100"/>
+				</g>
+			</svg>
+		</div>
+		<?php
 	}
 }
 ?>

@@ -22,12 +22,19 @@
  */
 
 function networkmaps_show($id) {
-	if (maps_is_networkmap($id))
-		return false;
-	
 	maps_show($id);
 	
 	networkmaps_show_staged_area($id);
 	networkmaps_show_black_list_staged_area($id);
-} 
+}
+
+class Networkmap extends Map {
+	public function __construct($id) {
+		parent::__construct($id);
+	}
+	
+	public function show() {
+		parent::show();
+	}
+}
 ?>

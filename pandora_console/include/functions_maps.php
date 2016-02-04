@@ -71,7 +71,40 @@ function maps_duplicate_map($id) {
 				'source_data' => $map['source_data'], 'generation_method' => $map['generation_method'],
 				'filter' => $map['filter']));
 	}
+	if ($result) {
+		$map_items = db_get_all_rows_sql("SELECT * FROM titem WHERE id_map = " . $id);
+		maps_duplicate_items_map($result, $map_items);
+	}
 	return (int)$result;
+}
+
+function maps_duplicate_items_map($id, $map_items) {
+	if (empty($map_items)) {
+		return;
+	}
+	foreach ($map_items as $item) {
+		$copy_items = array('id_map' => $id, 'x' => $item['x'], 'y' => $item['y'], 'z' => $item['z'],
+					'deleted' => $item['deleted'], 'type' => $item['type'], 'refresh' => $item['refresh'],
+					'source' => $item['source'], 'source_data' => $item['source_data'],
+					'options' => $item['options'], 'style' => $item['style']);
+		$result_copy_item = db_process_sql_insert('titem', $copy_items);
+		if ($result_copy_item) {
+			$item_relations = db_get_all_rows_sql("SELECT * FROM trel_item WHERE id = " . $item['id']);
+			if ($item['id'] == $item_relations['parent_id']) {
+				$copy_item_relations = array('id_parent' => $result_copy_item,
+									'id_child' => $item_relations['id_child'], 'parent_type' => $item_relations['parent_type'],
+									'child_type' => $item_relations['child_type'], 'id_item' => $item_relations['id_item']
+									'deleted' => $item_relations['deleted']);
+			}
+			else {
+				$copy_item_relations = array('id_parent' => $item_relations['id_parent'],
+									'id_child' => $result_copy_item, 'parent_type' => $item_relations['parent_type'],
+									'child_type' => $item_relations['child_type'], 'id_item' => $item_relations['id_item']
+									'deleted' => $item_relations['deleted']);
+			}
+			db_process_sql_insert('trel_item', $copy_item_relations);
+		}
+	}
 }
 
 function maps_delete_map($id) {

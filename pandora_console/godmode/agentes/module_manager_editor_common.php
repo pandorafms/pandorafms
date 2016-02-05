@@ -536,10 +536,18 @@ $table_advanced->data[10][0] = __('Unknown instructions'). ui_print_help_tip(__(
 $table_advanced->data[10][1] = html_print_textarea ('unknown_instructions', 2, 65, $unknown_instructions, '', true);
 $table_advanced->colspan[10][1] = 6;
 
-$table_advanced->data[11][0] = __('Cron') .
-	ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
-$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour, $minute, $mday, $month, $wday, true);
-$table_advanced->colspan[11][1] = 6;
+if (isset($id_agente) && $moduletype == MODULE_DATA) {
+	$table_advanced->data[11][0] = __('Cron') .
+		ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
+	$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour, $minute, $mday, $month, $wday, true, true);
+	$table_advanced->colspan[11][1] = 6;
+	}
+else {
+	$table_advanced->data[11][0] = __('Cron') .
+		ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
+	$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour, $minute, $mday, $month, $wday, true, false);
+	$table_advanced->colspan[11][1] = 6;
+}
 
 $table_advanced->data[12][0] = __('Timeout');
 $table_advanced->data[12][1] = html_print_input_text ('max_timeout', $max_timeout, '', 5, 10, true). ' ' . ui_print_help_tip (__('Seconds that agent will wait for the execution of the module.'), true);

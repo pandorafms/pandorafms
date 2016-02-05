@@ -64,6 +64,7 @@ our @EXPORT = qw(
     cron_get_closest_in_range
 	cron_next_execution
 	cron_next_execution_date
+	cron_check_syntax
 	pandora_daemonize
 	logger
 	pandora_rotate_logfile
@@ -1246,7 +1247,15 @@ sub cron_next_execution ($) {
 	# Something went wrong, default to 5 minutes
 	return 300;
 }
-
+###############################################################################
+# Get the number of seconds left to the next execution of the given cron entry.
+###############################################################################
+sub cron_check_syntax ($) {
+	my ($cron) = @_;
+	
+	return 0 if !defined ($cron);
+	return ($cron =~ m/^(\d|\*|-)+ (\d|\*|-)+ (\d|\*|-)+ (\d|\*|-)+ (\d|\*|-)+$/);
+}
 ###############################################################################
 # Get the next execution date for the given cron entry in seconds since epoch.
 ###############################################################################

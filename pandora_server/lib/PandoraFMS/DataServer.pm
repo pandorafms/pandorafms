@@ -544,7 +544,7 @@ sub process_module_data ($$$$$$$$$) {
 	            'datalist' => 0, 'status' => 0, 'unit' => 0, 'timestamp' => 0, 'module_group' => 0, 'custom_id' => '', 
 	            'str_warning' => '', 'str_critical' => '', 'critical_instructions' => '', 'warning_instructions' => '',
 	            'unknown_instructions' => '', 'tags' => '', 'critical_inverse' => 0, 'warning_inverse' => 0, 'quiet' => 0,
-	            'module_ff_interval' => 0, 'alert_template' => ''};
+	            'module_ff_interval' => 0, 'alert_template' => '', 'crontab' => ''};
 	
 	# Other tags will be saved here
 	$module_conf->{'extended_info'} = '';
@@ -631,6 +631,11 @@ sub process_module_data ($$$$$$$$$) {
 			$initial_alert_template = $module_conf->{'alert_template'};
 			delete $module_conf->{'alert_template'};
 		}
+		
+		if(cron_check_syntax ($module_conf->{'crontab'})) {
+			$module_conf->{'cron_interval'} = $module_conf->{'crontab'};
+		}
+		delete $module_conf->{'crontab'};
 
 		# Create the module
 		my $module_id = pandora_create_module_from_hash ($pa_config, $module_conf, $dbh);

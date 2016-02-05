@@ -469,6 +469,7 @@ sub parse_conf_modules($) {
 			}
 		} elsif ($line =~ /^\s*module_crontab\s+(((\*|(\d+(-\d+){0,1}))\s*){5}).*$/) {
 			$module->{'cron'} = $1;
+			chomp ($module->{'cron'});
 		} elsif ($line =~ /^\s*module_cron_interval\s+(\d+).*$/) {
 			$module->{'cron_interval'} = $1;
 		} elsif ($line =~ /^\s*module_end\s*$/) {
@@ -1865,6 +1866,9 @@ sub write_module_xml ($@) {
 	
 	# Module Alert template
 	$Xml .= "	<alert_template>" . $module->{'alert_template'} . "</alert_template>\n" if (defined ($module->{'alert_template'}));
+	
+	# Module Alert template
+	$Xml .= "	<crontab>" . $module->{'cron'} . "</crontab>\n" if (defined ($module->{'cron'}) and ($module->{'cron'} ne ""));
 		
 	# Data list
 	if ($#data > 0) {

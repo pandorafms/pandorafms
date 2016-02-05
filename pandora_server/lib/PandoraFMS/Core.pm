@@ -2203,6 +2203,10 @@ sub pandora_update_server ($$$$$$;$$$) {
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 	$version = $pa_config->{'version'} . ' (P) ' . $pa_config->{'build'} unless defined($version);
 	
+	my $master = ($server_type == SATELLITESERVER) ? 0 : $pa_config->{'pandora_master'};
+	
+	logger ($pa_config, "UPDATING SERVER: " . $server_name, 1);
+	
 	# First run
 	if ($server_id == 0) { 
 		
@@ -2224,12 +2228,12 @@ sub pandora_update_server ($$$$$$;$$$) {
 
 		db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, laststart = ?, version = ?, threads = ?, queued_modules = ?
 				WHERE id_server = ?',
-				1, $timestamp, $pa_config->{'pandora_master'}, $timestamp, $version, $num_threads, $queue_size, $server_id);
+				1, $timestamp, $master, $timestamp, $version, $num_threads, $queue_size, $server_id);
 		return;
 	}
 	
 	db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, version = ?, threads = ?, queued_modules = ?
-			WHERE id_server = ?', $status, $timestamp, $pa_config->{'pandora_master'}, $version, $num_threads, $queue_size, $server_id);
+			WHERE id_server = ?', $status, $timestamp, $master, $version, $num_threads, $queue_size, $server_id);
 }
 
 ##########################################################################

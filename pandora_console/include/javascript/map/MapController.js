@@ -12,6 +12,24 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-var MapController = function() {
+var MapController = function(target) {
+	this._target = target;
+}
 
+MapController.prototype.init_map = function() {
+	$("#" + this._target + " svg").append(
+		$("<g>").append(
+			$("<circle>")
+				.attr("id", "node_10")
+				.attr("class", "node")
+				.attr("cx", "100")
+				.attr("cy", "100")
+				.attr("style", "fill: rgb(128, 186, 39);")
+				.attr("r", "5")
+		)
+	);
+};
+
+MapController.prototype.test333 = function(aaa) {
+	console.log(aaa);
 }

@@ -2205,8 +2205,6 @@ sub pandora_update_server ($$$$$$;$$$) {
 	
 	my $master = ($server_type == SATELLITESERVER) ? 0 : $pa_config->{'pandora_master'};
 	
-	logger ($pa_config, "UPDATING SERVER: " . $server_name, 1);
-	
 	# First run
 	if ($server_id == 0) { 
 		

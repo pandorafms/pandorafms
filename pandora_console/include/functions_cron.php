@@ -22,7 +22,7 @@ include_once($config['homedir'] . "/include/functions_db.php");
 function cron_update_module_interval ($module_id, $cron) {
 	
 	// Check for a valid cron
-	if ($cron == '' || $cron == '* * * * *') {
+	if ($cron == '') {
 		return;
 	}
 	

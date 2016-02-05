@@ -16,5 +16,5 @@ var NetworkmapController = function(target) {
 	MapController.call(this, target);
 }
 
-NetworkmapController.prototype = new MapController();
+NetworkmapController.prototype = Object.create(MapController.prototype);
 NetworkmapController.prototype.constructor = NetworkmapController;

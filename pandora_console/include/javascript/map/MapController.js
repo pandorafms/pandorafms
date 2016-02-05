@@ -12,12 +12,20 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+// Constructor
 var MapController = function(target) {
 	this._target = target;
+	
+	console.log(this._id);
 }
 
+// Atributes
+MapController.prototype._id = 333;
+
+
+// Methods
 MapController.prototype.init_map = function() {
-	$("#" + this._target + " svg").append(
+	$(this._target + " svg").append(
 		$("<g>").append(
 			$("<circle>")
 				.attr("id", "node_10")
@@ -28,8 +36,5 @@ MapController.prototype.init_map = function() {
 				.attr("r", "5")
 		)
 	);
+	
 };
-
-MapController.prototype.test333 = function(aaa) {
-	console.log(aaa);
-}

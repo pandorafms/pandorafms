@@ -18,8 +18,15 @@ Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArch:          noarch
-PreReq:             /bin/sed /bin/grep /usr/sbin/useradd
-Requires:           coreutils unzip perl
+Requires(pre):      shadow-utils
+Requires(post):     chkconfig /bin/ln
+Requires(preun):    chkconfig /bin/rm /usr/sbin/userdel
+Requires:           fileutils textutils unzip
+Requires:           util-linux procps grep
+Requires:           /sbin/ip /bin/awk
+Requires:           perl perl(Sys::Syslog)
+# Required by plugins
+#Requires:           sh-utils sed passwd net-tools rpm
 AutoReq:            0
 Provides:           %{name}-%{version}
 
@@ -98,8 +105,6 @@ if [ ! -d /var/log/pandora ]; then
 fi
 /sbin/chkconfig --add pandora_agent_daemon
 /sbin/chkconfig pandora_agent_daemon on
-echo "You may need to install manually some additional required dependencies:"
-echo "perl-Sys-Syslog"
 
 %preun
 

@@ -670,14 +670,16 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 		//Eliminate the first comma
 		$fathers_id = substr($fathers_id, 1);
 		//Takes the parents even without agents, complete groups
-		$list_father_groups = db_get_all_rows_sql("
-					SELECT *
-					FROM tgrupo
-					WHERE id_grupo IN (" . $fathers_id . ")
-					ORDER BY nombre COLLATE utf8_general_ci ASC");
-		if (!empty($list_father_groups)) {
-			//Merges the arrays and eliminates the duplicates groups
-			$list_groups = array_merge($list_groups, $list_father_groups);
+		if ($fathers_id) {
+			$list_father_groups = db_get_all_rows_sql("
+						SELECT *
+						FROM tgrupo
+						WHERE id_grupo IN (" . $fathers_id . ")
+						ORDER BY nombre COLLATE utf8_general_ci ASC");
+			if (!empty($list_father_groups)) {
+				//Merges the arrays and eliminates the duplicates groups
+				$list_groups = array_merge($list_groups, $list_father_groups);
+			}
 		}
 		$list_groups = groupview_array_unique_multidim($list_groups, 'id_grupo');
 		//Order groups (Father-children)

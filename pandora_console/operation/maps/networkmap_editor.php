@@ -36,7 +36,7 @@ if ($create_networkmap) {
 	$description = "";
 	$source_period = 60 * 5;
 	$source = MAP_SOURCE_GROUP;
-	$source_data = "id_group";
+	$source_data = "";
 	$generation_method = MAP_GENERATION_CIRCULAR;
 	$show_groups_filter = false;
 	$show_module_plugins = false;
@@ -78,10 +78,10 @@ if ($edit_networkmap) {
 		$source_period = $values['source_period'];
 		$source = $values['source'];
 		if ($source == 'group') {
-			$source_data = 'id_group';
+			$source_data = $values['source_data'];
 		}
 		else {
-			$source_data = 'ip_mask';
+			$source_data = $values['source_data'];
 		}
 		$generation_method = $values['generation_method'];
 		$filter = json_decode($values['filter'], true);
@@ -131,36 +131,56 @@ if ($not_found) {
 else {
 	$table = null;
 	$table->id = 'form_editor';
-
+	
 	$table->width = '98%';
 	$table->class = "databox_color";
-
+	
 	$table->head = array();
-
+	
 	$table->size = array();
 	$table->size[0] = '30%';
-
+	
 	$table->style = array ();
 	$table->style[0] = 'font-weight: bold; width: 150px;';
 	$table->data = array();
-
+	
+	$table->data['name'][0] = __('Name');
+	$table->data['name'][1] = html_print_input_text ('name', $name, '',
+		30, 100, true);
+	
+	$table->data['group'][0] = __('Group');
+	$table->data['group'][1] = html_print_select_groups(false, "AR", true,
+		'id_group', $id_group, '', '', 0, true);
+	
+	$table->data['description'][0] = __('Description');
+	$table->data['description'][1] = html_print_textarea("description",
+		2, 65, $description, '', true);
+	
 	$subtypes = array(
 		MAP_SUBTYPE_TOPOLOGY => 'Topology',
 		MAP_SUBTYPE_POLICIES => 'Policies',
 		MAP_SUBTYPE_GROUPS => 'Groups',
 		MAP_SUBTYPE_RADIAL_DYNAMIC => 'Radial Dynamic'
 		);
-
-	$table->data[0][0] = __('Subtype');
-	$table->data[0][1] = html_print_select($subtypes, 'subtype', $subtype,
-		'', '', 'Topology', true, false, true, '',
+	
+	$table->data['subtype'][0] = __('Subtype');
+	$table->data['subtype'][1] = html_print_select($subtypes, 'subtype',
+		$subtype, '', '', 'Topology', true, false, true, '',
 		$disabled_select);
-
-	$table->data['source'][0] = __('Source');
+	
+	$table->data['source'][0] = __('Source type');
 	$table->data['source'][1] =
 		html_print_radio_button('source', MAP_SOURCE_GROUP, __('Group'), $source, true) .
 		html_print_radio_button('source', MAP_SOURCE_IP_MASK, __('CIDR IP mask'), $source, true);
-
+	
+	$table->data['source_group'][0] = __('Source');
+	$table->data['source_group'][1] = html_print_select_groups(
+		false, "AR", true, 'source_group', $source_data, '', '', 0, true);
+	
+	$table->data['source_ip_mask'][0] = __('Source');
+	$table->data['source_ip_mask'][1] = html_print_input_text ('source_ip_mask',
+		$source_data, '', 30, 100,true);
+	
 	$generation_methods = array(
 		MAP_GENERATION_RADIAL => 'Radial',
 		MAP_GENERATION_PLANO => 'Flat',
@@ -168,59 +188,52 @@ else {
 		MAP_GENERATION_SPRING1 => 'Spring1',
 		MAP_GENERATION_SPRING2 => 'Spring2'
 		);
-
-	$table->data[2][0] = __('Method generation networkmap');
-	$table->data[2][1] = html_print_select($generation_methods, 'generation_method', $generation_method,
+	
+	$table->data['method_generation'][0] = __('Method generation networkmap');
+	$table->data['method_generation'][1] = html_print_select($generation_methods, 'generation_method', $generation_method,
 		'', '', 'twopi', true, false, true, '',
 		$disabled_select);
-
-	$table->data[3][0] = __('Name');
-	$table->data[3][1] = html_print_input_text ('name', $name, '', 30,
-		100,true);
-
-	$table->data[4][0] = __('Group');
-	$table->data[4][1] = html_print_select_groups(false, "AR", true,
-		'id_group', $id_group, '', '', 0, true);
-
-	$table->data[5][0] = __('Description');
-	$table->data[5][1] = html_print_textarea ("description", 2, 65, $description, '', true);
-
+	
+	
+	
+	
+	
 	$table->data[6][0] = __('Refresh time');
 	$table->data[6][1] = html_print_input_text ('source_period', $source_period, '', 8,
 		20,true);
-
+	
 	$table->data[7][0] = __('Show groups filter');
 	$table->data[7][1] = html_print_checkbox('show_groups_filter', '1', $show_groups_filter, true);
-
+	
 	$table->data[8][0] = __('Show module plugins');
 	$table->data[8][1] = html_print_checkbox('show_module_plugins', '1', $show_module_plugins, true);
-
+	
 	$table->data[9][0] = __('Show snmp modules');
 	$table->data[9][1] = html_print_checkbox('show_snmp_modules', '1', $show_snmp_modules, true);
-
+	
 	$table->data[10][0] = __('Show modules');
 	$table->data[10][1] = html_print_checkbox('show_modules', '1', $show_modules, true);
-
+	
 	$table->data[11][0] = __('Show policy modules');
 	$table->data[11][1] = html_print_checkbox('show_policy_modules', '1', $show_policy_modules, true);
-
+	
 	$table->data[12][0] = __('Show pandora nodes');
 	$table->data[12][1] = html_print_checkbox('show_pandora_nodes', '1', $show_pandora_nodes, true);
-
+	
 	$table->data[13][0] = __('Show module group');
 	$table->data[13][1] = html_print_checkbox('show_module_group', '1', $show_module_group, true);
-
+	
 	$table->data[14][0] = __('Filter by tags');
 	$table->data[14][1] = html_print_select (tags_get_user_tags(), "id_tag", $id_tag, '', __('All'), 0, true, false, true, '', false, '');
-
+	
 	$table->data[15][0] = __('Filter by text');
 	$table->data[15][1] = html_print_input_text ('text', $text, '', 30,
 		100,true);
-
+	
 	echo '<form method="post" action="index.php?sec=maps&amp;sec2=operation/maps/networkmap_list">';
-
+	
 	html_print_table($table);
-
+	
 	echo "<div style='width: " . $table->width . "; text-align: right;'>";
 	if ($create_networkmap) {
 		html_print_input_hidden ('save_networkmap', 1);
@@ -237,3 +250,35 @@ else {
 	echo "</form>";
 }
 ?>
+<script type="text/javascript">
+	var MAP_SOURCE_GROUP = <?php echo MAP_SOURCE_GROUP; ?>;
+	var MAP_SOURCE_IP_MASK = <?php echo MAP_SOURCE_IP_MASK; ?>;
+	
+	$(function() {
+		change_source();
+		
+		$("input[name='source']").on("change",
+			function(event) {
+				change_source();
+			}
+		);
+	});
+	
+	function change_source() {
+		var checked_source_group =
+			$("input[name='source'][value='" + MAP_SOURCE_GROUP + "']")
+				.is(":checked");
+		var checked_source_ip_mask =
+			$("input[name='source'][value='" + MAP_SOURCE_IP_MASK + "']")
+				.is(":checked");
+		
+		$("#form_editor-source_group").hide();
+		$("#form_editor-source_ip_mask").hide();
+		if (checked_source_group) {
+			$("#form_editor-source_group").show();
+		}
+		else if (checked_source_ip_mask) {
+			$("#form_editor-source_ip_mask").show();
+		}
+	}
+</script>

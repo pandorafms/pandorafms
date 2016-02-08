@@ -15,7 +15,7 @@
 // Constructor
 var MapController = function(target) {
 	this._target = target;
-	
+
 	this._id = $(target).data('id');
 }
 
@@ -36,5 +36,32 @@ MapController.prototype.init_map = function() {
 				.attr("r", "5")
 		)
 	);
-	
+	this.init_events();
 };
+
+MapController.prototype.init_events = function(principalObject) {
+	$(this._target + " svg *, " + this._target + " svg").on("mousedown", {map: this}, this.click_event);
+}
+
+MapController.prototype.click_event = function(event) {
+	var self = event.data.map;
+	event.preventDefault();
+	event.stopPropagation();
+	switch (event.which) {
+        case 1:
+			if ($(event.currentTarget).attr("class") == "node") {
+				self.popup_map();
+			}
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+		default:
+			break;
+    }
+}
+
+MapController.prototype.popup_map = function() {
+	//POP-UP
+}

@@ -16,11 +16,11 @@
 var MapController = function(target) {
 	this._target = target;
 	
-	console.log(this._id);
+	this._id = $(target).data('id');
 }
 
 // Atributes
-MapController.prototype._id = 333;
+MapController.prototype._id = null;
 
 
 // Methods

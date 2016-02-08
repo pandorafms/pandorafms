@@ -461,6 +461,10 @@ define("OPTION_SINGLE_SELECT_TIME",		7);
 define("OPTION_CUSTOM_INPUT",			8);
 define("OPTION_AGENT_AUTOCOMPLETE",		9);
 
+/* Other constants */
+define("STATUS_OK", 0);
+define("STATUS_ERROR", 1);
+
 /* Maps (new networkmaps and  new visualmaps) */
 define("MAP_TYPE_NETWORKMAP",	0);
 define("MAP_TYPE_VISUALMAP",	1);

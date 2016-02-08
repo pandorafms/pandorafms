@@ -22,31 +22,60 @@
  */
 
 abstract class Map {
+	protected $status = STATUS_OK;
+	
 	protected $id = null;
 	
 	protected $type = null;
 	protected $subtype = null;
+	protected $id_group = null;
+	
+	protected $nodes = null;
 	
 	protected $requires_js = null;
 	
 	public function __construct($id) {
 		$this->id = $id;
 		
-		$this->loadDB();
+		if (!$this->loadDB()) {
+			$this->status = STATUS_ERROR;
+		}
+		else {
+			$this->requires_js = array();
+			$this->requires_js[] = "include/javascript/d3.3.5.14.js";
+			$this->requires_js[] = "include/javascript/map/MapController.js";
+		}
+	}
+	
+	protected function processDBValues($dbValues) {
+		$this->type = (int)$dbValues['type'];
+		$this->subtype = (int)$dbValues['subtype'];
 		
-		$this->requires_js = array();
-		$this->requires_js[] = "include/javascript/d3.3.5.14.js";
-		$this->requires_js[] = "include/javascript/map/MapController.js";
+		$this->id_group = (int)$dbValues['id_group'];
+		
+		html_debug(111);
 	}
 	
 	private function loadDB() {
 		$row = db_get_row_filter('tmap', array('id' => $this->id));
 		
-		$this->type = $row['type'];
-		$this->subtype = $row['subtype'];
+		if (empty($row))
+			return false;
+		
+		switch (get_class($this)) {
+			case 'Networkmap':
+				Networkmap::processDBValues($row);
+				break;
+			case 'NetworkmapEnterprise':
+				NetworkmapEnterprise::processDBValues($row);
+				break;
+			default:
+				$this->processDBValues($row);
+				break;
+		}
 	}
 	
-	abstract function print_js_init();
+	abstract function printJSInit();
 	
 	public function show() {
 		
@@ -62,7 +91,11 @@ abstract class Map {
 		</div>
 		
 		<?php
-		$this->print_js_init();
+		$this->printJSInit();
+	}
+	
+	public function getType() {
+		return $this->type;
 	}
 }
 ?>

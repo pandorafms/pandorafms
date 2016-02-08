@@ -39,6 +39,8 @@ if (!$networkmaps_read && !$networkmaps_write && !$networkmaps_manage) {
 $id = (int)get_parameter('id', 0);
 
 require_once('include/functions_migration.php');
+require_once('include/class/Networkmap.class.php');
+enterprise_include('include/class/NetworkmapEnterprise.class.php');
 
 $buttons['list'] = array('active' => false,
 	'text' => '<a href="index.php?sec=network&sec2=operation/maps/networkmap_list">' . 
@@ -70,11 +72,19 @@ if (empty($id)) {
 	return;
 }
 else {
-	maps_show($id);
+	if (enterprise_installed()) {
+		$networkmap = new NetworkmapEnterprise($id);
+	}
+	else {
+		$networkmap = new Networkmap($id);
+	}
+	
+	if (MAP_TYPE_NETWORKMAP === $networkmap->getType()) {
+		$networkmap->show();
+	}
+	else {
+		ui_print_error_message(__('Not found networkmap.'));
+	}
 }
 
 ?>
-
-
-<script type="text/javascript">
-</script>

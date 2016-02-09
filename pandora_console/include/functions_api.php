@@ -2297,13 +2297,15 @@ function api_set_create_synthetic_module($id, $thrash1, $other, $thrash3) {
 	
 	$name = io_safe_output($other['data'][0]);
 	$name = io_safe_input($name);
+	$id_tipo_modulo = db_get_row_sql ("SELECT id_tipo FROM ttipo_modulo WHERE nombre = 'generic_data'");
 	
 	$values = array(
 		'id_agente' => $idAgent,
 		'id_modulo' => 5,
 		'custom_integer_1' => 0,
 		'custom_integer_2' => 0,
-		'prediction_module' => 3, 
+		'prediction_module' => 3,
+		'id_tipo_modulo' => $id_tipo_modulo['id_tipo']
 	);
 	
 	if ( ! $values['descripcion'] ) {
@@ -2332,7 +2334,7 @@ function api_set_create_synthetic_module($id, $thrash1, $other, $thrash3) {
 					returnError("","[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
 				}
 				
-				$operator = $split_data[0] == 'x' ? 'avg' : $split_data[0];
+				$operator = strtolower($split_data[0]);
 				$data_module = array("",$operator,$split_data[1]);
 				
 				$text_data = implode('_',$data_module);
@@ -2346,15 +2348,17 @@ function api_set_create_synthetic_module($id, $thrash1, $other, $thrash3) {
 					array_push($filterdata,$text_data);
 				}
 				else {
-					if (strlen($split_data[1]) > 1 ) {
+					if (strlen($split_data[1]) > 1 && $synthetic_type != 'average' ) {
 						returnError("","[ERROR] You can only use +, -, *, / or x, and you use this: @split_data[1] \n\n");
+						return;
 					}
 					if ( preg_match("/[\/|+|*|-]/",$split_data[1]) && $synthetic_type === 'average' ) {
 						returnError("","[ERROR] With this type: $synthetic_type only be allow use this operator: 'x' \n\n");
+						return;
 					}
 					
 					$idAgent = agents_get_agent_id(io_safe_output($split_data[0]),true);
-					$operator = $split_data[1] == 'x' ? 'avg' : $split_data[1];
+					$operator = strtolower($split_data[1]);
 					$data_module = array($idAgent,$operator,$split_data[2]);
 					$text_data = implode('_',$data_module);
 					array_push($filterdata,$text_data);
@@ -2369,14 +2373,64 @@ function api_set_create_synthetic_module($id, $thrash1, $other, $thrash3) {
 			array($idModule, $serialize_ops));
 		
 		if ($synthetic === ENTERPRISE_NOT_HOOK) {
-			returnError('error_policy_modules', 'Error Synthetic modules.');
+			returnError('error_synthetic_modules', 'Error Synthetic modules.');
+			db_process_sql_delete ('tagente_modulo',
+				array ('id_agente_modulo' => $idModule));
 			return;
 		}
 		else {
-			returnData('string', array('type' => 'string', 'data' => __('Synthetic module created ID: ' . $idModule)));
+			$status = AGENT_MODULE_STATUS_NO_DATA;
+			switch ($config["dbtype"]) {
+				case "mysql":
+					$result = db_process_sql_insert ('tagente_estado',
+						array ('id_agente_modulo' => $idModule,
+							'datos' => 0,
+							'timestamp' => '01-01-1970 00:00:00',
+							'estado' => $status,
+							'id_agente' => (int) $idAgent,
+							'utimestamp' => 0,
+							'status_changes' => 0,
+							'last_status' => $status,
+							'last_known_status' => $status
+						));
+					break;
+				case "postgresql":
+					$result = db_process_sql_insert ('tagente_estado',
+						array ('id_agente_modulo' => $idModule,
+							'datos' => 0,
+							'timestamp' => null,
+							'estado' => $status,
+							'id_agente' => (int) $idAgent,
+							'utimestamp' => 0,
+							'status_changes' => 0,
+							'last_status' => $status,
+							'last_known_status' => $status
+						));
+					break;
+				case "oracle":
+					$result = db_process_sql_insert ('tagente_estado',
+						array ('id_agente_modulo' => $idModule,
+							'datos' => 0,
+							'timestamp' => '#to_date(\'1970-01-01 00:00:00\', \'YYYY-MM-DD HH24:MI:SS\')',
+							'estado' => $status,
+							'id_agente' => (int) $idAgent,
+							'utimestamp' => 0,
+							'status_changes' => 0,
+							'last_status' => $status,
+							'last_known_status' => $status
+						));
+					break;
+			}
+			if ($result === false) {
+				db_process_sql_delete ('tagente_modulo',
+					array ('id_agente_modulo' => $idModule));
+				returnError('error_synthetic_modules', 'Error Synthetic modules.');
+			}
+			else {
+				db_process_sql ('UPDATE tagente SET total_count=total_count+1, notinit_count=notinit_count+1 WHERE id_agente=' . (int)$idAgent);
+				returnData('string', array('type' => 'string', 'data' => __('Synthetic module created ID: ' . $idModule)));
+			}
 		}
-		
-		//enterprise
 	}
 }
 

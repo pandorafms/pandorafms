@@ -15,7 +15,7 @@
 // Constructor
 var MapController = function(target) {
 	this._target = target;
-	
+
 	this._id = $(target).data('id');
 }
 
@@ -57,7 +57,7 @@ MapController.prototype.click_event = function(event) {
 	switch (event.which) {
         case 1:
 			if ($(event.currentTarget).attr("class") == "node") {
-				self.popup_map();
+				self.popup_map(self, event);
 			}
             break;
         case 2:
@@ -69,6 +69,16 @@ MapController.prototype.click_event = function(event) {
     }
 }
 
-MapController.prototype.popup_map = function() {
-	//POP-UP
+MapController.prototype.popup_map = function(self, event) {
+	//console.log($(self._target + " svg"));
+	//console.log(event);
+	var xPos = event.pageX;
+	var YPos = event.pageY;
+	$(self._target + " svg").after($("<div>").attr("id", "dialog_popup"));
+	$("#dialog_popup").dialog({
+	  	modal: false,
+		title: "Ventana Modarrrrl!!",
+		resizable: false,
+		position: [xPos,YPos]
+	});
 }

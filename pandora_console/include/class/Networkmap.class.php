@@ -29,6 +29,11 @@ require_once("include/class/Map.class.php");
 
 class Networkmap extends Map {
 	protected $show_snmp_modules = false;
+	protected $source_group = 0;
+	protected $source_ip_mask = "";
+	protected $show_groups = false;
+	protected $show_module_groups = false;
+	protected $filter_text = "";
 	
 	public function __construct($id) {
 		parent::__construct($id);
@@ -37,9 +42,21 @@ class Networkmap extends Map {
 	}
 	
 	public function processDBValues($dbValues) {
-		$filter = json_decode($dbValues, true);
+		$filter = json_decode($dbValues['filter'], true);
 		
-		$this->show_snmp_modules = true;
+		$this->show_snmp_modules = $filter['show_snmp_modules'];
+		$this->filter_text = $filter["text"];
+		
+		switch ($dbValues['source_data']) {
+			case MAP_SOURCE_GROUP:
+				$this->source_group = $dbValues['source'];
+				$this->source_ip_mask = "";
+				break;
+			case MAP_SOURCE_IP_MASK:
+				$this->source_group = $dbValues['source'];
+				$this->source_ip_mask = "";
+				break;
+		}
 		
 		parent::processDBValues($dbValues);
 	}
@@ -51,7 +68,7 @@ class Networkmap extends Map {
 	protected function temp_parseParameters_generateDot() {
 		$return = array();
 		
-		$return['id_group'] = $this->id_group;
+		$return['id_group'] = $this->source_group;
 		$return['simple'] = 12; // HARD CODED
 		$return['font_size'] = null;
 		$return['layout'] = null;
@@ -63,12 +80,11 @@ class Networkmap extends Map {
 		$return['pure'] = 0; // HARD CODED
 		$return['id'] = $this->id;
 		$return['show_snmp_modules'] = $this->show_snmp_modules;
-		$return['l2_network_interfaces'] = null;
-		$return['ip_mask'] = null;
-		$return['dont_show_subgroups'] = null;
-		$return['old_mode'] = null;
-		$return['filter'] = null;
-		$return['simple'] = 0; // HARD CODED
+		$return['l2_network_interfaces'] = true; // HARD CODED
+		$return['ip_mask'] = $this->source_ip_mask;
+		$return['dont_show_subgroups'] = !$this->show_groups;
+		$return['old_mode'] = false;
+		$return['filter'] = $this->filter_text;
 		
 		return $return;
 	}
@@ -107,28 +123,44 @@ class Networkmap extends Map {
 				$parameters['old_mode']);
 			
 			
-			$filename_dot = sys_get_temp_dir() . "/networkmap_" . $parameters['filter'];
-			if ($parameters['simple']) {
-				$filename_dot .= "_simple";
-			}
-			if ($nooverlap) {
-				$filename_dot .= "_nooverlap";
-			}
-			$filename_dot .= "_" . $id . ".dot";
+			
+			$filename_dot = sys_get_temp_dir() . "/networkmap" . uniqid() . ".dot";
 			
 			file_put_contents($filename_dot, $graph);
 			
 			$filename_plain = sys_get_temp_dir() . "/plain.txt";
 			
-			$cmd = "$filter -Tplain -o " . $filename_plain . " " .
+			switch ($this->generation_method) {
+				case MAP_GENERATION_CIRCULAR:
+					$graphviz_command = "circo";
+					break;
+				case MAP_GENERATION_PLANO:
+					$graphviz_command = "dot";
+					break;
+				case MAP_GENERATION_RADIAL:
+					$graphviz_command = "twopi";
+					break;
+				case MAP_GENERATION_SPRING1:
+					$graphviz_command = "spring1";
+					break;
+				case MAP_GENERATION_SPRING2:
+					$graphviz_command = "spring2";
+					break;
+			}
+			
+			$cmd = "$graphviz_command -Tplain -o " . $filename_plain . " " .
 				$filename_dot;
 			
 			system ($cmd);
 			
 			unlink($filename_dot);
 			
-			$nodes = networkmap_enterprise_loadfile($id, $filename_plain,
-				$relation_nodes, $graph, $l2_network_interfaces);
+			html_debug($filename_plain);
+			
+			$nodes = networkmap_enterprise_loadfile($this->id,
+				$filename_plain,
+				$relation_nodes, $graph,
+				$parameters['l2_network_interfaces']);
 			//~ html_debug_print($graph);
 			//~ html_debug_print($nodes);
 			//~ html_debug_print($relation_nodes);
@@ -139,6 +171,7 @@ class Networkmap extends Map {
 	
 	public function show() {
 		$this->getNodes();
+		
 		parent::show();
 	}
 	

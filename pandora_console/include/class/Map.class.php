@@ -29,6 +29,7 @@ abstract class Map {
 	protected $type = null;
 	protected $subtype = null;
 	protected $id_group = null;
+	protected $generation_method = null;
 	
 	protected $nodes = null;
 	
@@ -51,8 +52,7 @@ abstract class Map {
 		$this->subtype = (int)$dbValues['subtype'];
 		
 		$this->id_group = (int)$dbValues['id_group'];
-		
-		html_debug(111);
+		$this->generation_method = (int)$dbValues['generation_method'];
 	}
 	
 	private function loadDB() {

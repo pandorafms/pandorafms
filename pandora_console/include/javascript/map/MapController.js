@@ -15,7 +15,7 @@
 // Constructor
 var MapController = function(target) {
 	this._target = target;
-
+	
 	this._id = $(target).data('id');
 }
 

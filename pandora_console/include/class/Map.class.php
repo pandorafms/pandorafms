@@ -37,13 +37,12 @@ abstract class Map {
 	public function __construct($id) {
 		$this->id = $id;
 		
+		$this->requires_js = array();
+		$this->requires_js[] = "include/javascript/d3.3.5.14.js";
+		$this->requires_js[] = "include/javascript/map/MapController.js";
+		
 		if (!$this->loadDB()) {
 			$this->status = STATUS_ERROR;
-		}
-		else {
-			$this->requires_js = array();
-			$this->requires_js[] = "include/javascript/d3.3.5.14.js";
-			$this->requires_js[] = "include/javascript/map/MapController.js";
 		}
 	}
 	
@@ -78,7 +77,6 @@ abstract class Map {
 	abstract function printJSInit();
 	
 	public function show() {
-		
 		foreach ($this->requires_js as $js) {
 			echo "<script type='text/javascript' src='$js'></script>" . "\n";
 		}

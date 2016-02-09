@@ -1673,12 +1673,27 @@ sub check_module_cron ($) {
 		# Get interval
 		my ($bottom, $top) = split (/-/, $cron_params[$i]);
 		$top = $bottom unless defined ($top);
+
+		# Check if next execution will overflow the cron (only minutes overflow)
+		# If overflow, execute the module
+		my $overflow_cron = 0;
+		if ($i == 0) {
+			my $start_cron_seconds = $bottom*60;
+			my $current_exec_seconds = $time_params[$i]*60;
+			my $next_exec_seconds = $time_params[$i]*60 + $module->{'interval'}*$Conf{'interval'};
+			if ($current_exec_seconds > $start_cron_seconds && $current_exec_seconds > $next_exec_seconds) {
+				$start_cron_seconds += 3600;
+			}
+			if (($current_exec_seconds <= $start_cron_seconds) && ($start_cron_seconds <= $next_exec_seconds)) {
+				$overflow_cron = 1
+			}
+		}
 		
 		# Check interval
 		if ($bottom <= $top) {
-			return 0 if ($time_params[$i] < $bottom || $time_params[$i] > $top);
+			return 0 if (($time_params[$i] < $bottom || $time_params[$i] > $top) && !$overflow_cron);
 		} else {
-			return 0 if ($time_params[$i] < $bottom && $time_params[$i] > $top);
+			return 0 if (($time_params[$i] < $bottom && $time_params[$i] > $top) && !$overflow_cron);
 		}
 	}
 

@@ -2278,7 +2278,9 @@ function api_set_create_synthetic_module($id, $thrash1, $other, $thrash3) {
 	if (defined ('METACONSOLE')) {
 		return;
 	}
-			
+	
+	global $config;
+	
 	$agentName = $id;
 	
 	io_safe_input_array($other);

@@ -25,17 +25,24 @@ MapController.prototype._id = null;
 
 // Methods
 MapController.prototype.init_map = function() {
-	$(this._target + " svg").append(
-		$("<g>").append(
-			$("<circle>")
-				.attr("id", "node_10")
-				.attr("class", "node")
-				.attr("cx", "100")
-				.attr("cy", "100")
-				.attr("style", "fill: rgb(128, 186, 39);")
-				.attr("r", "5")
-		)
-	);
+	var svg = d3.select("#map svg");
+	
+	svg.append("g").append("circle")
+		.attr("id", "node_10")
+		.attr("class", "node")
+		.attr("cx", "100")
+		.attr("cy", "100")
+		.attr("style", "fill: rgb(128, 186, 39);")
+		.attr("r", "5");
+	
+	svg.append("g").append("circle")
+		.attr("id", "node_11")
+		.attr("class", "node")
+		.attr("cx", "200")
+		.attr("cy", "200")
+		.attr("style", "fill: rgb(255, 0, 0);")
+		.attr("r", "10");
+	
 	this.init_events();
 };
 

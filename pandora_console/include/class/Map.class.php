@@ -84,7 +84,7 @@ abstract class Map {
 		?>
 		
 		<div id="map" data-id="<?php echo $this->id;?>" >
-			<svg style="border: 2px solid red;" pointer-events="all" width="800" height="800"><g><circle id="node_10" class="node" cx="100" cy="100" style="fill: rgb(128, 186, 39);" r="5">
+			<svg style="border: 2px solid red;" pointer-events="all" width="800px" height="800px">
 			</svg>
 		</div>
 		

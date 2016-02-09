@@ -30,17 +30,33 @@ MapController.prototype.init_map = function() {
 	svg.append("g").append("circle")
 		.attr("id", "node_10")
 		.attr("class", "node")
-		.attr("cx", "100")
-		.attr("cy", "100")
+		.attr("cx", "20")
+		.attr("cy", "20")
 		.attr("style", "fill: rgb(128, 186, 39);")
 		.attr("r", "5");
 	
 	svg.append("g").append("circle")
 		.attr("id", "node_11")
 		.attr("class", "node")
-		.attr("cx", "200")
-		.attr("cy", "200")
+		.attr("cx", "20")
+		.attr("cy", "780")
 		.attr("style", "fill: rgb(255, 0, 0);")
+		.attr("r", "10");
+	
+	svg.append("g").append("circle")
+		.attr("id", "node_12")
+		.attr("class", "node")
+		.attr("cx", "780")
+		.attr("cy", "780")
+		.attr("style", "fill: rgb(255, 255, 0);")
+		.attr("r", "10");
+	
+	svg.append("g").append("circle")
+		.attr("id", "node_12")
+		.attr("class", "node")
+		.attr("cx", "780")
+		.attr("cy", "30")
+		.attr("style", "fill: rgb(255, 0, 255);")
 		.attr("r", "10");
 	
 	this.init_events();

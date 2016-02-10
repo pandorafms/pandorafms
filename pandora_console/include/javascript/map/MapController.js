@@ -52,12 +52,44 @@ MapController.prototype.init_map = function() {
 		.attr("r", "10");
 
 	svg.append("g").append("circle")
-		.attr("id", "node_12")
+		.attr("id", "node_13")
 		.attr("class", "node")
 		.attr("cx", "780")
 		.attr("cy", "30")
 		.attr("style", "fill: rgb(255, 0, 255);")
 		.attr("r", "10");
+
+	svg.append("g").append("circle")
+		.attr("id", "node_14")
+		.attr("class", "node")
+		.attr("cx", "50")
+		.attr("cy", "50")
+		.attr("style", "fill: rgb(112, 51, 51);")
+		.attr("r", "7");
+
+	svg.append("g").append("circle")
+		.attr("id", "node_15")
+		.attr("class", "node")
+		.attr("cx", "600")
+		.attr("cy", "600")
+		.attr("style", "fill: rgb(98, 149, 54);")
+		.attr("r", "8");
+
+	svg.append("g").append("circle")
+		.attr("id", "node_16")
+		.attr("class", "node")
+		.attr("cx", "490")
+		.attr("cy", "490")
+		.attr("style", "fill: rgb(250, 103, 18);")
+		.attr("r", "6");
+
+	svg.append("g").append("circle")
+		.attr("id", "node_17")
+		.attr("class", "node")
+		.attr("cx", "400")
+		.attr("cy", "600")
+		.attr("style", "fill: rgb(50, 50, 128);")
+		.attr("r", "6");
 
 	this.init_events();
 };

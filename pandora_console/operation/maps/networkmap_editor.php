@@ -34,6 +34,8 @@ if ($create_networkmap) {
 	$subtype = MAP_SUBTYPE_GROUPS;
 	$name = "";
 	$description = "";
+	$width = 800;
+	$height = 800;
 	$source_period = 60 * 5;
 	$source = MAP_SOURCE_GROUP;
 	$source_data = "";
@@ -75,6 +77,8 @@ if ($edit_networkmap) {
 		$subtype = $values['subtype'];
 		$name = io_safe_output($values['name']);
 		$description = io_safe_output($values['description']);
+		$width = $values['width'];
+		$height = $values['height'];
 		$source_period = $values['source_period'];
 		$source = $values['source'];
 		if ($source == 'group') {
@@ -193,41 +197,43 @@ else {
 	$table->data['method_generation'][1] = html_print_select($generation_methods, 'generation_method', $generation_method,
 		'', '', 'twopi', true, false, true, '',
 		$disabled_select);
-	
-	
-	
-	
-	
-	$table->data[6][0] = __('Refresh time');
-	$table->data[6][1] = html_print_input_text ('source_period', $source_period, '', 8,
+
+	$table->data[6][0] = __('Size of networkmap (Width x Height)');
+	$table->data[6][1] = html_print_input_text ('width', $width, '', 4,
+		10,true) . __("x");
+	$table->data[6][1] .= html_print_input_text ('height', $height, '',
+		4, 10,true);
+
+	$table->data[7][0] = __('Refresh time');
+	$table->data[7][1] = html_print_input_text ('source_period', $source_period, '', 8,
 		20,true);
-	
-	$table->data[7][0] = __('Show groups filter');
-	$table->data[7][1] = html_print_checkbox('show_groups_filter', '1', $show_groups_filter, true);
-	
-	$table->data[8][0] = __('Show module plugins');
-	$table->data[8][1] = html_print_checkbox('show_module_plugins', '1', $show_module_plugins, true);
-	
-	$table->data[9][0] = __('Show snmp modules');
-	$table->data[9][1] = html_print_checkbox('show_snmp_modules', '1', $show_snmp_modules, true);
-	
-	$table->data[10][0] = __('Show modules');
-	$table->data[10][1] = html_print_checkbox('show_modules', '1', $show_modules, true);
-	
-	$table->data[11][0] = __('Show policy modules');
-	$table->data[11][1] = html_print_checkbox('show_policy_modules', '1', $show_policy_modules, true);
-	
-	$table->data[12][0] = __('Show pandora nodes');
-	$table->data[12][1] = html_print_checkbox('show_pandora_nodes', '1', $show_pandora_nodes, true);
-	
-	$table->data[13][0] = __('Show module group');
-	$table->data[13][1] = html_print_checkbox('show_module_group', '1', $show_module_group, true);
-	
-	$table->data[14][0] = __('Filter by tags');
-	$table->data[14][1] = html_print_select (tags_get_user_tags(), "id_tag", $id_tag, '', __('All'), 0, true, false, true, '', false, '');
-	
-	$table->data[15][0] = __('Filter by text');
-	$table->data[15][1] = html_print_input_text ('text', $text, '', 30,
+
+	$table->data[8][0] = __('Show groups filter');
+	$table->data[8][1] = html_print_checkbox('show_groups_filter', '1', $show_groups_filter, true);
+
+	$table->data[9][0] = __('Show module plugins');
+	$table->data[9][1] = html_print_checkbox('show_module_plugins', '1', $show_module_plugins, true);
+
+	$table->data[10][0] = __('Show snmp modules');
+	$table->data[10][1] = html_print_checkbox('show_snmp_modules', '1', $show_snmp_modules, true);
+
+	$table->data[11][0] = __('Show modules');
+	$table->data[11][1] = html_print_checkbox('show_modules', '1', $show_modules, true);
+
+	$table->data[12][0] = __('Show policy modules');
+	$table->data[12][1] = html_print_checkbox('show_policy_modules', '1', $show_policy_modules, true);
+
+	$table->data[13][0] = __('Show pandora nodes');
+	$table->data[13][1] = html_print_checkbox('show_pandora_nodes', '1', $show_pandora_nodes, true);
+
+	$table->data[14][0] = __('Show module group');
+	$table->data[14][1] = html_print_checkbox('show_module_group', '1', $show_module_group, true);
+
+	$table->data[15][0] = __('Filter by tags');
+	$table->data[15][1] = html_print_select (tags_get_user_tags(), "id_tag", $id_tag, '', __('All'), 0, true, false, true, '', false, '');
+
+	$table->data[16][0] = __('Filter by text');
+	$table->data[16][1] = html_print_input_text ('text', $text, '', 30,
 		100,true);
 	
 	echo '<form method="post" action="index.php?sec=maps&amp;sec2=operation/maps/networkmap_list">';

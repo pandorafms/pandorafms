@@ -30,7 +30,10 @@ abstract class Map {
 	protected $subtype = null;
 	protected $id_group = null;
 	protected $generation_method = null;
-	
+
+	protected $width = null;
+	protected $height = null;
+
 	protected $nodes = null;
 	
 	protected $requires_js = null;
@@ -53,6 +56,9 @@ abstract class Map {
 		
 		$this->id_group = (int)$dbValues['id_group'];
 		$this->generation_method = (int)$dbValues['generation_method'];
+
+		$this->width = (int)$dbValues['width'];
+		$this->height = (int)$dbValues['height'];
 	}
 	
 	private function loadDB() {
@@ -84,7 +90,7 @@ abstract class Map {
 		?>
 		
 		<div id="map" data-id="<?php echo $this->id;?>" >
-			<svg style="border: 2px solid red;" pointer-events="all" width="800px" height="800px">
+			<svg style="border: 2px solid red;" pointer-events="all" width="<?php echo $this->width;?>px" height="<?php echo $this->height;?>px">
 			</svg>
 		</div>
 		

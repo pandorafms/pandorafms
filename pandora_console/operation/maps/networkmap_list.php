@@ -125,6 +125,8 @@ if ($save_networkmap) {
 			$source = (string) get_parameter('source_ip_mask', 0);
 			break;
 	}
+	$width = (int) get_parameter('width', 800);
+	$height = (int) get_parameter('height', 800);
 	$generation_method = (int) get_parameter('generation_method', MAP_GENERATION_CIRCULAR);
 	$show_groups_filter = (int) get_parameter('show_groups_filter', false);
 	$show_module_plugins = (int) get_parameter('show_module_plugins', false);
@@ -146,6 +148,8 @@ if ($save_networkmap) {
 	$values['source_period'] = $source_period;
 	$values['source_data'] = $source_data;
 	$values['generation_method'] = $generation_method;
+	$values['width'] = $width;
+	$values['height'] = $height;
 	$values['source'] = $source;
 	$filter = array();
 	$filter['show_groups_filter'] = 60;
@@ -235,6 +239,8 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 		$source_period = (int) get_parameter('source_period', 60 * 5);
 		$source = (int) get_parameter('source', MAP_SOURCE_GROUP);
 		$source_data = (string) get_parameter('source_data', 'group');
+		$width = (int) get_parameter('width', 800);
+		$height = (int) get_parameter('height', 800);
 		$show_groups_filter = (int) get_parameter('show_groups_filter', false);
 		$show_module_plugins = (int) get_parameter('show_module_plugins', false);
 		$show_snmp_modules = (int) get_parameter('show_snmp_modules', false);
@@ -252,6 +258,8 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 		$values['source_period'] = $source_period;
 		$values['source_data'] = $source_data;
 		$values['source'] = $source;
+		$values['width'] = $width;
+		$values['height'] = $height;
 		$filter = array();
 		$filter['show_groups_filter'] = $show_groups_filter;
 		$filter['show_module_plugins'] = $show_module_plugins;

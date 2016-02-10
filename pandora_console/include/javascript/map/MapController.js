@@ -15,12 +15,15 @@
 // Constructor
 var MapController = function(target) {
 	this._target = target;
-
 	this._id = $(target).data('id');
+	this._dialogNodeMargin = 10;
+	this._marginConstant = 50;
 }
 
 // Atributes
 MapController.prototype._id = null;
+MapController.prototype._dialogNodeMargin = 0; //To be beauty
+MapController.prototype._marginConstant = 0; //To be beauty
 
 
 // Methods
@@ -118,25 +121,39 @@ MapController.prototype.click_event = function(event) {
 }
 
 MapController.prototype.popup_map = function(self, event) {
-	//Node position
-	nodeX = $(event.currentTarget).attr("cx");
-	nodeY = $(event.currentTarget).attr("cy");
+	// Node position and dimension
+	nodeX = parseInt($(event.currentTarget).attr("cx"));
+	nodeY = parseInt($(event.currentTarget).attr("cy"));
+	nodeR = parseInt($(event.currentTarget).attr("r"));
 
-	if ((nodeX >= 500) && (nodeY < 500)) {
-		var xPos = event.pageX - 300;
-		var yPos = event.clientY + 20;
+	// Map dimensions in pixels
+	var map_width_with_px = $(self._target + " svg").attr("width");
+	var map_height_with_px = $(self._target + " svg").attr("height");
+
+	// Map dimensions in numbers
+	var map_width = parseInt(map_width_with_px.slice(0, map_width_with_px.length - 2));
+	var map_height = parseInt(map_height_with_px.slice(0, map_height_with_px.length - 2));
+
+	// Dialog dimensions
+	var dialog_width = 300;
+	var dialog_height = 200;
+
+	//To know the position of the dialog box
+	if (self.xOffset(map_width, nodeX, dialog_width) && self.yOffset(map_height, nodeY, dialog_height)) {
+		var xPos = event.pageX - dialog_width + nodeR;
+		var yPos = event.clientY - dialog_height - nodeR - self._dialogNodeMargin;
 	}
-	else if ((nodeX < 500) && (nodeY >= 500)) {
-		var xPos = event.pageX - 10;
-		var yPos = event.clientY - 230;
+	else if (self.yOffset(map_height, nodeY, dialog_height)) {
+		var xPos = event.pageX - nodeR;
+		var yPos = event.clientY + -dialog_height - nodeR - self._dialogNodeMargin;
 	}
-	else if ((nodeX >= 500) && (nodeY >= 500)) {
-		var xPos = event.pageX - 300;
-		var yPos = event.clientY - 230;
+	else if (self.xOffset(map_width, nodeX, dialog_width)) {
+		var xPos = event.pageX - dialog_width + nodeR;
+		var yPos = event.clientY + nodeR + self._dialogNodeMargin;
 	}
 	else {
-		var xPos = event.pageX - 10;
-		var yPos = event.clientY + 20;
+		var xPos = event.pageX - nodeR;
+		var yPos = event.clientY + nodeR + self._dialogNodeMargin;
 	}
 
 	$(self._target + " svg").after($("<div>").attr("id", "dialog_popup"));
@@ -144,12 +161,35 @@ MapController.prototype.popup_map = function(self, event) {
 	  	modal: false,
 		closeOnEscape: true,
 		show: {effect: 'fade', speed: 1000},
-		title: "Ventana Modarrrrl!!",
+		title: "Ventana Modarrl!!",
 		resizable: false,
 		position: [xPos,yPos],
-		height: 200,
-		width: 300
+		height: dialog_height,
+		width: dialog_width
 	});
 
+}
 
+/*
+Function xOffset
+Return boolean
+This function returns true if dialog cuts map's x axis
+*/
+MapController.prototype.xOffset = function(map_w, node_x, dialog_w) {
+	if ((map_w - node_x - this._marginConstant) < dialog_w) {
+		return true;
+	}
+	return false;
+}
+
+/*
+Function yOffset
+Return boolean
+This function returns true if dialog cuts map's y axis
+*/
+MapController.prototype.yOffset = function(map_h, node_y, dialog_h) {
+	if ((map_h - node_y - this._marginConstant) < dialog_h) {
+		return true;
+	}
+	return false;
 }

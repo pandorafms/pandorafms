@@ -129,6 +129,7 @@ else {
 			$filter = $filter . '.exe';
 		}
 		$cmd = escapeshellarg($graphviz_path . $filter) .
+			" -Tplain -o /tmp/caca.txt " .
 			" -Tcmapx " . escapeshellarg("-o$filename_map") .
 			" -Tpng ". escapeshellarg("-o$filename_img") .
 			" " . escapeshellarg($filename_dot);
@@ -136,7 +137,11 @@ else {
 		$result = system ($cmd);
 		fclose ($fh);
 		unlink ($filename_dot);
-		//~ html_debug_print($cmd);
+		html_debug_print($cmd);
+		
+		
+		
+		html_debug(file_get_contents("/tmp/caca.txt"), true);
 	}
 }
 

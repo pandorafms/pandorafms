@@ -148,14 +148,17 @@ class Networkmap extends Map {
 					break;
 			}
 			
-			$cmd = "$graphviz_command -Tplain -o " . $filename_plain . " " .
+			$cmd = "$graphviz_command " .
+			"-Tpng -o /tmp/caca.png -Tplain -o " . $filename_plain . " " .
 				$filename_dot;
 			
 			system ($cmd);
 			
 			unlink($filename_dot);
 			
+			html_debug($cmd);
 			html_debug($filename_plain);
+			html_debug(file_get_contents($filename_plain), true);
 			
 			$nodes = networkmap_enterprise_loadfile($this->id,
 				$filename_plain,
@@ -164,6 +167,16 @@ class Networkmap extends Map {
 			//~ html_debug_print($graph);
 			//~ html_debug_print($nodes);
 			//~ html_debug_print($relation_nodes);
+			
+			// debug image
+			// Read image path, convert to base64 encoding
+			$imgData = base64_encode(file_get_contents("/tmp/caca.png"));
+			
+			// Format the image SRC:  data:{mime};base64,{data};
+			$src = 'data: '.mime_content_type("/tmp/caca.png").';base64,'.$imgData;
+				
+			// Echo out a sample image
+			echo '<img src="'.$src.'">';
 			
 			// ----- END DEPRECATED CODE--------------------------------
 		}

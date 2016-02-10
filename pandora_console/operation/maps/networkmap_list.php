@@ -71,9 +71,32 @@ if ($migrate_open_networkmaps)
 ////////////////////////////////////////////////////////////////////////
 
 $delete_networkmap = (bool)get_parameter('delete_networkmap', 0);
+$multiple_delete = (bool)get_parameter('multiple_delete', 0);
 $duplicate_networkmap = (bool)get_parameter('duplicate_networkmap', 0);
 $update_networkmap = (bool)get_parameter('update_networkmap', 0);
 $save_networkmap = (bool)get_parameter('save_networkmap', 0);
+
+if ($multiple_delete) {
+	$ids_multiple_delete = json_decode(
+		io_safe_output(
+			get_parameter('ids_multiple_delete',
+				json_encode(array())
+			)
+		),
+		true);
+	
+	$total = count($ids_multiple_delete);
+	$count = 0;
+	foreach ($ids_multiple_delete as $id) {
+		if (maps_delete_map($id)) {
+			$count++;
+		}
+	}
+	
+	ui_print_result_message (($total > 0 && $total == $count),
+		__('Successfully deleted'),
+		__('Could not be deleted'));
+}
 
 if ($save_networkmap) {
 	$id_group = (int) get_parameter('id_group', 0);
@@ -254,6 +277,7 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 
 //+++++++++++++++TABLE AND EDIT/CREATION BUTTONS++++++++++++++++++++++
 $table = new stdClass();
+$table->id = "list_networkmaps";
 $table->width = "100%";
 $table->class = "databox data";
 
@@ -282,7 +306,8 @@ if (enterprise_installed()) {
 $table->head['group'] = __('Group');
 $table->head['copy'] = __('Copy');
 $table->head['edit'] = __('Edit');
-$table->head['delete'] = __('Delete');
+$table->head['delete'] = __('Delete') .
+	html_print_checkbox('delete_all', 0, false, true, false, 'checkbox_delete_all();');
 
 $networkmaps = maps_get_maps(array('type' => MAP_TYPE_NETWORKMAP));
 
@@ -294,18 +319,18 @@ if (empty($networkmaps)) {
 else {
 	foreach ($networkmaps as $networkmap) {
 		$data = array();
-
+		
 		$data['name'] = $networkmap['name'];
-
+		
 		$data['name'] = '<a href="index.php?' .
 			'sec=maps&amp;' .
 			'sec2=operation/maps/networkmap&' .
 			'id=' . $networkmap['id'] .'">' .
 			$networkmap['name'] . '</a>';
-
+		
 		$data['type'] = maps_get_subtype_string($networkmap['subtype']);
-
-
+		
+		
 		if (enterprise_installed()) {
 			if ($networkmap['generated']) {
 				$data['nodes'] = maps_get_count_nodes($networkmap['id']);
@@ -314,7 +339,7 @@ else {
 				$data['nodes'] = __('Pending to generate');
 			}
 		}
-
+		
 		if (!empty($networkmap['id_user'])) {
 			$data['group'] = __('Private for (%s)', $networkmap['id_user']);
 		}
@@ -322,38 +347,75 @@ else {
 			$data['groups'] =
 				ui_print_group_icon($networkmap['id_group'], true);
 		}
-
+		
 		$data['copy'] = '<a href="index.php?' .
 			'sec=maps&amp;' .
 			'sec2=operation/maps/networkmap_list&' .
 			'duplicate_networkmap=1&id_networkmap=' . $networkmap['id'] . '" alt="' . __('Copy') . '">' .
 			html_print_image("images/copy.png", true) . '</a>';
-
+		
 		$data['edit'] = '<a href="index.php?' .
 			'sec=maps&amp;' .
 			'sec2=operation/maps/networkmap_editor&' .
 			'edit_networkmap=1&id_networkmap=' . $networkmap['id'] .'">' .
 			html_print_image("images/edit.png", true) . '</a>';
-
+		
 		$data['delete'] = '<a href="index.php?' .
 			'sec=maps&amp;' .
 			'sec2=operation/maps/networkmap_list&' .
 			'delete_networkmap=1&id_networkmap=' . $networkmap['id'] . '" alt="' . __('Delete') .
 			'" onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' .
 			html_print_image('images/cross.png', true) . '</a>';
-
+		$data['delete'] .=
+			html_print_checkbox("delete_id[" . $networkmap['id'] . "]",
+				1, false, true);
+		
+		
 		$table->data[] = $data;
 	}
 	html_print_table($table);
 }
+echo '<form id="multiple_delete" method="post" style="float:right;" action="index.php?sec=network&sec2=operation/maps/networkmap_list">';
+html_print_input_hidden ('multiple_delete', 1);
+html_print_input_hidden ('ids_multiple_delete', "");
+html_print_button(__('Delete'), 'del', false, 'submit_multiple_delete();', 'class="sub delete"');
+echo '</form>';
 
-echo '<form method="post" style="float:right;" action="index.php?sec=maps&amp;sec2=operation/maps/networkmap_editor">';
+echo '<form method="post" style="float:right; margin-right: 10px;" action="index.php?sec=maps&amp;sec2=operation/maps/networkmap_editor">';
 html_print_input_hidden ('create_networkmap', 1);
 html_print_submit_button (__('Create'), "crt", false, 'class="sub next"');
 echo '</form>';
+
 
 ?>
 
 
 <script type="text/javascript">
+	function submit_multiple_delete() {
+		var ids_multiple_delete = [];
+		$.each(
+			$("#list_networkmaps tbody input[type='checkbox']:checked"),
+			function(i,e) {
+				ids_multiple_delete.push(
+					$(e).attr("name").match(/\[(.*)\]/)[1]);
+			}
+		);
+		
+		$("input[name='ids_multiple_delete']").val(
+			JSON.stringify(ids_multiple_delete));
+		
+		if (confirm('<?php echo __('Are you sure?');?>'))
+			$("#multiple_delete").submit();
+	}
+	
+	function checkbox_delete_all() {
+		if ($("input[name='delete_all']").prop("checked")) {
+			$("#list_networkmaps tbody input[type='checkbox']")
+				.prop("checked", true);
+		}
+		else {
+			$("#list_networkmaps tbody input[type='checkbox']")
+				.prop("checked", false);
+		}
+	}
 </script>

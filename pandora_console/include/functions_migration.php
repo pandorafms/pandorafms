@@ -31,8 +31,10 @@ function migration_open_networkmaps() {
 	foreach ($old_networkmaps_open as $old_netw_open) {
 		$new_networkmap = array();
 		
-		$new_networkmap['name'] = $old_netw_open['name'];
+		$new_networkmap['name'] = 
+			io_safe_output($old_netw_open['name']);
 		$new_networkmap['id_user'] = $old_netw_open['id_user'];
+		$new_networkmap['id_group'] = $old_netw_open['store_group'];
 		
 		switch ($old_netw_open['type']) {
 			case 'radial_dynamic':
@@ -50,6 +52,13 @@ function migration_open_networkmaps() {
 			case 'topology':
 				$new_networkmap['type'] = MAP_TYPE_NETWORKMAP;
 				$new_networkmap['subtype'] = MAP_SUBTYPE_TOPOLOGY;
+				break;
+		}
+		
+		switch ($new_networkmap['subtype']) {
+			case MAP_SUBTYPE_TOPOLOGY:
+				$new_networkmap['source'] = MAP_SOURCE_GROUP;
+				$new_networkmap['source_data'] = $old_netw_open['id_group'];
 				break;
 		}
 		

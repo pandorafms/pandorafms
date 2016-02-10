@@ -26,7 +26,7 @@ MapController.prototype._id = null;
 // Methods
 MapController.prototype.init_map = function() {
 	var svg = d3.select("#map svg");
-	
+
 	svg.append("g").append("circle")
 		.attr("id", "node_10")
 		.attr("class", "node")
@@ -34,7 +34,7 @@ MapController.prototype.init_map = function() {
 		.attr("cy", "20")
 		.attr("style", "fill: rgb(128, 186, 39);")
 		.attr("r", "5");
-	
+
 	svg.append("g").append("circle")
 		.attr("id", "node_11")
 		.attr("class", "node")
@@ -42,7 +42,7 @@ MapController.prototype.init_map = function() {
 		.attr("cy", "780")
 		.attr("style", "fill: rgb(255, 0, 0);")
 		.attr("r", "10");
-	
+
 	svg.append("g").append("circle")
 		.attr("id", "node_12")
 		.attr("class", "node")
@@ -50,7 +50,7 @@ MapController.prototype.init_map = function() {
 		.attr("cy", "780")
 		.attr("style", "fill: rgb(255, 255, 0);")
 		.attr("r", "10");
-	
+
 	svg.append("g").append("circle")
 		.attr("id", "node_12")
 		.attr("class", "node")
@@ -58,7 +58,7 @@ MapController.prototype.init_map = function() {
 		.attr("cy", "30")
 		.attr("style", "fill: rgb(255, 0, 255);")
 		.attr("r", "10");
-	
+
 	this.init_events();
 };
 
@@ -86,15 +86,38 @@ MapController.prototype.click_event = function(event) {
 }
 
 MapController.prototype.popup_map = function(self, event) {
-	//console.log($(self._target + " svg"));
-	//console.log(event);
-	var xPos = event.pageX;
-	var YPos = event.pageY;
+	//Node position
+	nodeX = $(event.currentTarget).attr("cx");
+	nodeY = $(event.currentTarget).attr("cy");
+
+	if ((nodeX >= 500) && (nodeY < 500)) {
+		var xPos = event.pageX - 300;
+		var yPos = event.clientY + 20;
+	}
+	else if ((nodeX < 500) && (nodeY >= 500)) {
+		var xPos = event.pageX - 10;
+		var yPos = event.clientY - 230;
+	}
+	else if ((nodeX >= 500) && (nodeY >= 500)) {
+		var xPos = event.pageX - 300;
+		var yPos = event.clientY - 230;
+	}
+	else {
+		var xPos = event.pageX - 10;
+		var yPos = event.clientY + 20;
+	}
+
 	$(self._target + " svg").after($("<div>").attr("id", "dialog_popup"));
 	$("#dialog_popup").dialog({
 	  	modal: false,
+		closeOnEscape: true,
+		show: {effect: 'fade', speed: 1000},
 		title: "Ventana Modarrrrl!!",
 		resizable: false,
-		position: [xPos,YPos]
+		position: [xPos,yPos],
+		height: 200,
+		width: 300
 	});
+
+
 }

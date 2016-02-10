@@ -123,7 +123,7 @@ if (is_ajax ()) {
 		}
 		else {
 			$agents = agents_get_group_agents($id_group, $filter, "none",
-				false, $recursion);
+				false, $recursion, false, '|', $add_alert_bulk_op);
 		}
 		
 		// Add keys prefix

@@ -139,7 +139,8 @@ $table->data[0][0] = __('Group');
 $table->data[0][1] = html_print_select_groups(false, "AW", $return_all_group, 'id_group', $id_group,
 	false, '', '', true);
 $table->data[0][2] = __('Group recursion');
-$table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion, true, false);
+$table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion,
+	true, false);
 
 $table->data[1][0] = __('Agents with templates');
 $table->data[1][0] .= '<span id="agent_loading" class="invisible">';
@@ -167,7 +168,7 @@ $table->data[3][1] = html_print_select ($actions, 'action[]', '', '',
 echo '<form method="post" id="form_alert" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_action_alerts">';
 html_print_table ($table);
 
-$sql = 'SELECT id_agente
+$sql = 'SELECT DISTINCT(id_agente)
 	FROM tagente_modulo
 	WHERE id_agente_modulo IN (
 		SELECT id_agent_module
@@ -179,7 +180,7 @@ foreach($agents_with_templates as $ag) {
 }
 $agents_with_templates_json = json_encode($agents_with_templates_json);
 
-echo "<input type='hidden' id='hidden-agents_with_templates' value='$agents_with_templates_json'>";
+echo "<input type='hidden' id='hidden-agents_with_templates' value='".$agents_with_templates_json."'>";
 
 echo '<div class="action-buttons" style="width: '.$table->width.'" onsubmit="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 html_print_input_hidden ('delete', 1);
@@ -197,23 +198,23 @@ ui_require_jquery_file('pandora.controls');
 $(document).ready (function () {
 	update_alerts();
 	
-	var recursion;
-	$("#checkbox-recursion").click(function () {
-		recursion = this.checked ? 1 : 0;
-		$("#id_group").trigger("change");
-	});
-	
 	var filter_agents_json = $("#hidden-agents_with_templates").val();
+	var recursion = false;
+	$("#checkbox-recursion").click(function () {
+		recursion = this.checked;
+		$("#id_group").trigger("change");
+	});	
 	
 	$("#id_group").pandoraSelectGroupAgent ({
 		agentSelect: "select#id_agents",
 		privilege: "AW",
-		recursion: function() {return recursion},
 		filter_agents_json: filter_agents_json,
+		add_alert_bulk_op: true,
 		callbackPost: function () {
 			var $select_template = $("#id_alert_templates").disable ();
 			$("option", $select_template).remove ();
-		}
+		},
+		recursion: function() {return recursion}
 	});
 	
 	$("#id_agents").change (function () {

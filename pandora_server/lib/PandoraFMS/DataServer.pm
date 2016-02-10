@@ -544,7 +544,7 @@ sub process_module_data ($$$$$$$$$) {
 	            'datalist' => 0, 'status' => 0, 'unit' => 0, 'timestamp' => 0, 'module_group' => 0, 'custom_id' => '', 
 	            'str_warning' => '', 'str_critical' => '', 'critical_instructions' => '', 'warning_instructions' => '',
 	            'unknown_instructions' => '', 'tags' => '', 'critical_inverse' => 0, 'warning_inverse' => 0, 'quiet' => 0,
-	            'module_ff_interval' => 0, 'alert_template' => ''};
+	            'module_ff_interval' => 0, 'alert_template' => '', 'crontab' => ''};
 	
 	# Other tags will be saved here
 	$module_conf->{'extended_info'} = '';
@@ -557,6 +557,9 @@ sub process_module_data ($$$$$$$$$) {
 			$module_conf->{'extended_info'} .= "$tag: " . get_tag_value ($data, $tag, '') . '<br/>';
 		}
 	}
+	
+	# Reload alert_template to get all alerts like an array
+	$module_conf->{'alert_template'} = get_tag_value ($data, 'alert_template', '', 1);
 	
 	# Description XML tag and column name don't match
 	$module_conf->{'descripcion'} = $module_conf->{'description'};
@@ -628,6 +631,11 @@ sub process_module_data ($$$$$$$$$) {
 			$initial_alert_template = $module_conf->{'alert_template'};
 			delete $module_conf->{'alert_template'};
 		}
+		
+		if(cron_check_syntax ($module_conf->{'crontab'})) {
+			$module_conf->{'cron_interval'} = $module_conf->{'crontab'};
+		}
+		delete $module_conf->{'crontab'};
 
 		# Create the module
 		my $module_id = pandora_create_module_from_hash ($pa_config, $module_conf, $dbh);
@@ -656,14 +664,16 @@ sub process_module_data ($$$$$$$$$) {
 			}
 		}
 
-		#  Assign alert-template if the spceicied one exists
+		#  Assign alert-templates if exist
 		if( $initial_alert_template ) {
-			my $id_alert_template = get_db_value ($dbh,
-					'SELECT id FROM talert_templates WHERE talert_templates.name = ?',
-					safe_input($initial_alert_template) );
+			foreach my $individual_template (@{$initial_alert_template}){
+				my $id_alert_template = get_db_value ($dbh,
+						'SELECT id FROM talert_templates WHERE talert_templates.name = ?',
+						safe_input($individual_template) );
 
-			if( defined($id_alert_template) ) {
-				pandora_create_template_module ($pa_config, $dbh, $module->{'id_agente_modulo'}, $id_alert_template);
+				if( defined($id_alert_template) ) {
+					pandora_create_template_module ($pa_config, $dbh, $module->{'id_agente_modulo'}, $id_alert_template);
+				}
 			}
 		}
 	}

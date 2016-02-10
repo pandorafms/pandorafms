@@ -968,6 +968,7 @@ switch ($action) {
 								// Show interfaces instead the modules
 								$values['show_graph'] =
 									get_parameter('checkbox_show_address_agent');
+								$values['period'] = get_parameter('period');
 								$good_format = true;
 								break;
 							case 'simple_graph':

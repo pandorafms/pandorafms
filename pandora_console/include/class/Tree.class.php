@@ -24,19 +24,19 @@ class Tree {
 	protected $childrenMethod = "on_demand";
 
 	protected $userGroups;
-	
+
 	protected $strictACL = false;
 	protected $acltags = false;
-	
+
 	public function __construct($type, $rootType = '', $id = -1, $rootID = -1, $serverID = false, $childrenMethod = "on_demand") {
-		
+
 		$this->type = $type;
 		$this->rootType = !empty($rootType) ? $rootType : $type;
 		$this->id = $id;
 		$this->rootID = !empty($rootID) ? $rootID : $id;
 		$this->serverID = $serverID;
 		$this->childrenMethod = $childrenMethod;
-		
+
 		$userGroups = users_get_groups();
 
 		if (empty($userGroups))
@@ -56,11 +56,11 @@ class Tree {
 
 		$this->acltags = tags_get_user_module_and_tags($config['id_user'], 'AR');
 	}
-	
+
 	public function setType($type) {
 		$this->type = $type;
 	}
-	
+
 	public function setFilter($filter) {
 		$this->filter = $filter;
 	}
@@ -191,9 +191,9 @@ class Tree {
 
 	protected function getAgentCountersSql ($agent_table) {
 		global $config;
-		
+
 		$columns = $this->getAgentCounterColumnsSql($agent_table);
-		
+
 		switch ($config["dbtype"]) {
 			case "mysql":
 			case "postgresql":
@@ -203,7 +203,7 @@ class Tree {
 				$columns = "SELECT $columns FROM dual WHERE rownum <= 1";
 				break;
 		}
-		
+
 		return $columns;
 	}
 
@@ -225,10 +225,10 @@ class Tree {
 
 		// Get the root id
 		$rootID = $this->rootID;
-		
+
 		// Get the server id
 		$serverID = $this->serverID;
-		
+
 		// Agent name filter
 		$agent_search_filter = "";
 		if (!empty($this->filter['searchAgent'])) {
@@ -252,7 +252,7 @@ class Tree {
 									$agent_search_filter
 									$agent_status_filter";
 		}
-		
+
 		// Module name filter
 		$module_search_filter = "";
 		if (!empty($this->filter['searchModule'])) {
@@ -295,7 +295,7 @@ class Tree {
 		$modules_join = "";
 		$module_status_join = "";
 		if (!empty($module_search_filter) || !empty($module_status_filter)) {
-			
+
 			if (!empty($module_status_filter)) {
 				$module_status_join = "INNER JOIN tagente_estado tae
 										ON tam.id_agente_modulo IS NOT NULL
@@ -309,7 +309,7 @@ class Tree {
 									$module_search_filter
 							$module_status_join";
 		}
-		
+
 		if (empty($module_status_join)) {
 			$module_status_join = "LEFT JOIN tagente_estado tae
 									ON tam.id_agente_modulo = tae.id_agente_modulo";
@@ -352,10 +352,10 @@ class Tree {
 						if (empty($rootID) || $rootID == -1) {
 							if ($this->strictACL)
 								return false;
-							
+
 							$columns = 'tg.id_grupo AS id, tg.nombre AS name, tg.parent, tg.icon';
 							$order_fields = 'tg.nombre ASC, tg.id_grupo ASC';
-							
+
 							if (! is_metaconsole()) {
 								// Groups SQL
 								if ($item_for_count === false) {
@@ -405,11 +405,11 @@ class Tree {
 						}
 						else {
 							if (! is_metaconsole() || $this->strictACL) {
-								$columns = 'ta.id_agente AS id, ta.nombre AS name, 
+								$columns = 'ta.id_agente AS id, ta.nombre AS name,
 									ta.fired_count, ta.normal_count, ta.warning_count,
 									ta.critical_count, ta.unknown_count, ta.notinit_count,
 									ta.total_count, ta.quiet';
-								$group_by_fields = 'ta.id_agente, ta.nombre, 
+								$group_by_fields = 'ta.id_agente, ta.nombre,
 									ta.fired_count, ta.normal_count, ta.warning_count,
 									ta.critical_count, ta.unknown_count, ta.notinit_count,
 									ta.total_count, ta.quiet';
@@ -431,12 +431,12 @@ class Tree {
 										ORDER BY $order_fields";
 							}
 							else {
-								$columns = 'ta.id_tagente AS id, ta.nombre AS name, 
+								$columns = 'ta.id_tagente AS id, ta.nombre AS name,
 									ta.fired_count, ta.normal_count, ta.warning_count,
 									ta.critical_count, ta.unknown_count, ta.notinit_count,
 									ta.total_count, ta.quiet, id_tmetaconsole_setup AS server_id';
 								$order_fields = 'ta.nombre ASC, ta.id_tagente ASC';
-								
+
 								$sql = "SELECT $columns
 										FROM tmetaconsole_agent ta
 										WHERE ta.disabled = 0
@@ -453,7 +453,7 @@ class Tree {
 						$columns = 'tam.id_agente_modulo AS id, tam.nombre AS name,
 							tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos';
 						$order_fields = 'tam.nombre ASC, tam.id_agente_modulo ASC';
-						
+
 						// Set for the common ACL only. The strict ACL case is different (groups and tags divided).
 						// The modules only have visibility in two cases:
 						// 1. The user has access to the group of its agent and this group hasn't tags.
@@ -464,7 +464,7 @@ class Tree {
 							// $rootID it the agent group id in this case
 							if (!empty($this->acltags) && isset($this->acltags[$rootID])) {
 								$tags_str = $this->acltags[$rootID];
-								
+
 								if (!empty($tags_str)) {
 									$tag_join = sprintf('INNER JOIN ttag_module ttm
 																ON tam.id_agente_modulo = ttm.id_agente_modulo
@@ -472,7 +472,7 @@ class Tree {
 								}
 							}
 						}
-						
+
 						$sql = "SELECT $columns
 								FROM tagente_modulo tam
 								$tag_join
@@ -537,17 +537,17 @@ class Tree {
 						if (empty($rootID) || $rootID == -1) {
 							if ($this->strictACL)
 								return false;
-							
+
 							// tagID filter. To access the view from tactical views f.e.
 							$tag_filter = '';
 							if (!empty($this->filter['tagID'])) {
 								$tag_filter = "WHERE tt.id_tag = " . $this->filter['tagID'];
 							}
-							
+
 							$columns = 'tt.id_tag AS id, tt.name AS name';
 							$group_by_fields = 'tt.id_tag, tt.name';
 							$order_fields = 'tt.name ASC, tt.id_tag ASC';
-							
+
 							// Tags SQL
 							if ($item_for_count === false) {
 								$sql = "SELECT $columns
@@ -589,11 +589,11 @@ class Tree {
 							}
 						}
 						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name, 
+							$columns = 'ta.id_agente AS id, ta.nombre AS name,
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
-							$group_by_fields = 'ta.id_agente, ta.nombre, 
+							$group_by_fields = 'ta.id_agente, ta.nombre,
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
@@ -622,7 +622,7 @@ class Tree {
 						$columns = 'tam.id_agente_modulo AS id, tam.nombre AS name,
 							tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos';
 						$order_fields = 'tam.nombre ASC, tam.id_agente_modulo ASC';
-						
+
 						// Set for the common ACL only. The strict ACL case is different (groups and tags divided).
 						// The modules only have visibility in two cases:
 						// 1. The user has access to the group of its agent and this group hasn't tags.
@@ -638,13 +638,13 @@ class Tree {
 							}
 							else if (!empty($this->acltags) && isset($this->acltags[$group_id])) {
 								$tags_str = $this->acltags[$group_id];
-								
+
 								if (!empty($tags_str)) {
 									$tag_filter = sprintf('AND ttm.id_tag IN (%s)', $tags_str);
 								}
 							}
 						}
-						
+
 						$sql = "SELECT $columns
 								FROM tagente_modulo tam
 								INNER JOIN ttag_module ttm
@@ -712,16 +712,16 @@ class Tree {
 							}
 						}
 						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name, 
+							$columns = 'ta.id_agente AS id, ta.nombre AS name,
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
-							$group_by_fields = 'ta.id_agente, ta.nombre, 
+							$group_by_fields = 'ta.id_agente, ta.nombre,
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
 							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
-							
+
 							$sql = "SELECT $columns
 									FROM tagente ta
 									$modules_join
@@ -742,7 +742,7 @@ class Tree {
 
 						$os_filter = "AND ta.id_os = $rootID";
 						$agent_filter = "AND ta.id_agente = $parent";
-						
+
 						// Set for the common ACL only. The strict ACL case is different (groups and tags divided).
 						// The modules only have visibility in two cases:
 						// 1. The user has access to the group of its agent and this group hasn't tags.
@@ -759,7 +759,7 @@ class Tree {
 							}
 							else if (!empty($this->acltags) && isset($this->acltags[$group_id])) {
 								$tags_str = $this->acltags[$group_id];
-								
+
 								if (!empty($tags_str)) {
 									$tag_join = sprintf('INNER JOIN ttag_module ttm
 																ON tam.id_agente_modulo = ttm.id_agente_modulo
@@ -767,7 +767,7 @@ class Tree {
 								}
 							}
 						}
-						
+
 						$sql = "SELECT $columns
 								FROM tagente_modulo tam
 								$tag_join
@@ -804,7 +804,7 @@ class Tree {
 							$columns = 'tmg.id_mg AS id, tmg.name AS name';
 							$group_by_fields = 'tmg.id_mg, tmg.name';
 							$order_fields = 'tmg.name ASC, tmg.id_mg ASC';
-							
+
 							// Module groups SQL
 							if ($item_for_count === false) {
 								$sql = "SELECT $columns
@@ -841,16 +841,16 @@ class Tree {
 							}
 						}
 						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name, 
+							$columns = 'ta.id_agente AS id, ta.nombre AS name,
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
-							$group_by_fields = 'ta.id_agente, ta.nombre, 
+							$group_by_fields = 'ta.id_agente, ta.nombre,
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
 							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
-							
+
 							$sql = "SELECT $columns
 									FROM tagente ta
 									INNER JOIN tagente_modulo tam
@@ -872,10 +872,10 @@ class Tree {
 						$columns = 'tam.id_agente_modulo AS id, tam.nombre AS name,
 							tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos';
 						$order_fields = 'tam.nombre ASC, tam.id_agente_modulo ASC';
-						
+
 						$module_group_filter = "AND tam.id_module_group = $rootID";
 						$agent_filter = "AND tam.id_agente = $parent";
-						
+
 						// Set for the common ACL only. The strict ACL case is different (groups and tags divided).
 						// The modules only have visibility in two cases:
 						// 1. The user has access to the group of its agent and this group hasn't tags.
@@ -892,7 +892,7 @@ class Tree {
 							}
 							else if (!empty($this->acltags) && isset($this->acltags[$group_id])) {
 								$tags_str = $this->acltags[$group_id];
-								
+
 								if (!empty($tags_str)) {
 									$tag_join = sprintf('INNER JOIN ttag_module ttm
 																ON tam.id_agente_modulo = ttm.id_agente_modulo
@@ -900,7 +900,7 @@ class Tree {
 								}
 							}
 						}
-						
+
 						$sql = "SELECT $columns
 								FROM tagente_modulo tam
 								$tag_join
@@ -929,14 +929,14 @@ class Tree {
 				else {
 					$group_acl = "AND ta.id_grupo = -1";
 				}
-				
+
 				switch ($type) {
 					// Get the agents of a module
 					case 'module':
 						if (empty($rootID) || $rootID == -1) {
 							$columns = 'tam.nombre AS name';
 							$order_fields = 'tam.nombre ASC';
-							
+
 							// Modules SQL
 							if ($item_for_count === false) {
 								$sql = "SELECT $columns
@@ -972,16 +972,16 @@ class Tree {
 							}
 						}
 						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name, 
+							$columns = 'ta.id_agente AS id, ta.nombre AS name,
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
-							$group_by_fields = 'ta.id_agente, ta.nombre, 
+							$group_by_fields = 'ta.id_agente, ta.nombre,
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
 							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
-							
+
 							$symbols = ' !"#$%&\'()*+,./:;<=>?@[\\]^{|}~';
 							$name = $rootID;
 							for ($i = 0; $i < strlen($symbols); $i++) {
@@ -990,7 +990,7 @@ class Tree {
 									substr($symbols, $i, 1), $name);
 							}
 							$name = io_safe_input($name);
-							
+
 							$sql = "SELECT $columns
 									FROM tagente ta
 									INNER JOIN tagente_modulo tam
@@ -1013,7 +1013,7 @@ class Tree {
 						$columns = 'tam.id_agente_modulo AS id, tam.nombre AS name,
 							tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos';
 						$order_fields = 'tam.nombre ASC, tam.id_agente_modulo ASC';
-						
+
 						$symbols = ' !"#$%&\'()*+,./:;<=>?@[\\]^{|}~';
 						$name = $rootID;
 						for ($i = 0; $i < strlen($symbols); $i++) {
@@ -1022,10 +1022,10 @@ class Tree {
 								substr($symbols, $i, 1), $name);
 						}
 						$name = io_safe_input($name);
-						
+
 						$module_name_filter = "AND tam.nombre = '$name'";
 						$agent_filter = "AND tam.id_agente = $parent";
-						
+
 						// We need the agents table
 						if (empty($agents_join)) {
 							$agents_join = "INNER JOIN tagente ta
@@ -1036,7 +1036,7 @@ class Tree {
 						else {
 							$agents_join .= " $group_acl";
 						}
-						
+
 						// Set for the common ACL only. The strict ACL case is different (groups and tags divided).
 						// The modules only have visibility in two cases:
 						// 1. The user has access to the group of its agent and this group hasn't tags.
@@ -1053,7 +1053,7 @@ class Tree {
 							}
 							else if (!empty($this->acltags) && isset($this->acltags[$group_id])) {
 								$tags_str = $this->acltags[$group_id];
-								
+
 								if (!empty($tags_str)) {
 									$tag_join = sprintf('INNER JOIN ttag_module ttm
 																ON tam.id_agente_modulo = ttm.id_agente_modulo
@@ -1061,7 +1061,7 @@ class Tree {
 								}
 							}
 						}
-						
+
 						$sql = "SELECT $columns
 								FROM tagente_modulo tam
 								$tag_join
@@ -1080,32 +1080,32 @@ class Tree {
 				}
 				break;
 				default:
-					$sql = $this->getSqlExtended($item_for_count, $type, $rootType, $parent, $rootID, 
+					$sql = $this->getSqlExtended($item_for_count, $type, $rootType, $parent, $rootID,
 										$agent_search_filter, $agent_status_filter, $agents_join,
 										$module_search_filter, $module_status_filter, $modules_join,
 										$module_status_join);
 		}
-		
+
 		return $sql;
 	}
-	
+
 	// Override this method
-	protected function getSqlExtended ($item_for_count, $type, $rootType, $parent, $rootID, 
+	protected function getSqlExtended ($item_for_count, $type, $rootType, $parent, $rootID,
 										$agent_search_filter, $agent_status_filter, $agents_join,
 										$module_search_filter, $module_status_filter, $modules_join,
 										$module_status_join) {
 		return false;
 	}
-	
+
 	protected function getItems ($item_for_count = false) {
 		$sql = $this->getSql($item_for_count);
 		if (empty($sql))
 			return array();
-		
+
 		$data = db_process_sql($sql);
 		if (empty($data))
 			return array();
-		
+
 		return $data;
 	}
 
@@ -1122,7 +1122,7 @@ class Tree {
 	static function cmpSortNames($a, $b) {
 		return strcmp($a["name"], $b["name"]);
 	}
-	
+
 	protected function getProcessedGroups ($items, $remove_empty = false) {
 		$processed_groups = array();
 		// Index and process the groups
@@ -1132,28 +1132,31 @@ class Tree {
 		}
 		// Build the group hierarchy
 		foreach ($groups as $id => $group) {
-			if (!isset($groups[$id]['parent']))
-				continue;
-			$parent = $groups[$id]['parent'];
-			// Parent exists
-			if (isset($groups[$parent])) {
-				if (!isset($groups[$parent]['children']))
+			if (isset($groups[$id]['parent']) && ($groups[$id]['parent'] != 0)) {
+				$parent = $groups[$id]['parent'];
+				// Parent exists
+				if (!isset($groups[$parent]['children'])) {
 					$groups[$parent]['children'] = array();
+				}
 				// Store a reference to the group into the parent
 				$groups[$parent]['children'][] = &$groups[$id];
-				
-				// Add the child counters to the parent
-				if (isset($groups[$id]['counters']) && !empty($groups[$id]['counters'])) {
-					foreach ($groups[$id]['counters'] as $type => $value) {
-						if (isset($groups[$parent]['counters'][$type]))
-							$groups[$parent]['counters'][$type] += $value;
-					}
-				}
-				
 				// This group was introduced into a parent
 				$groups[$id]['have_parent'] = true;
 			}
 		}
+		// Sort the children groups
+		foreach ($groups as $id => $group) {
+			if (isset($groups[$id]['children'])) {
+				usort($groups[$id]['children'], array("Tree", "cmpSortNames"));
+			}
+		}
+		//Filter groups and eliminates the reference to children groups out of her parent
+		$groups = array_filter($groups, function ($group) {
+			return !$group['have_parent'];
+		});
+		// Propagate child counters to her parents
+		Tree::processCounters($groups);
+		// Filter groups and eliminates the reference to empty groups
 		if ($remove_empty) {
 			// Filter empty groups
 			$groups = array_filter($groups, function ($group) {
@@ -1162,39 +1165,19 @@ class Tree {
 						!empty($group['counters']['total']));
 			});
 		}
-		// Sort the children groups
-		foreach ($groups as $id => $group) {
-			if (isset($groups[$id]['children'])) {
-				if ($remove_empty) {
-					// Remove empty childs
-					$groups[$id]['children'] = array_filter($groups[$id]['children'], function ($g) use ($groups) {
-						return (!empty($g) && isset($g['id']) && isset($groups[$g['id']]));
-					});
-				}
-				usort($groups[$id]['children'], array("Tree", "cmpSortNames"));
-			}
-		}
-		// Extract the root groups
-		foreach ($groups as $group) {
-			if (!$group['have_parent'])
-				$processed_groups[] = $group;
-		}
-		// Sort the root groups
-		usort($processed_groups, array("Tree", "cmpSortNames"));
-		
-		return $processed_groups;
+		return $groups;
 	}
 
 	protected function getProcessedItem ($item, $server = false, &$items = array(), &$items_tmp = array(), $remove_empty = false) {
-		
+
 		if (isset($processed_item['is_processed']) && $processed_item['is_processed'])
 			return $item;
-		
+
 		// For strict items
 		if (isset($item['_id_'])) {
 			$item['id'] = $item['_id_'];
 			$item['name'] = $item['_name_'];
-			
+
 			if (isset($item['_is_tag_']) && $item['_is_tag_']) {
 				$item['type'] = 'tag';
 				$item['rootType'] = 'tag';
@@ -1203,11 +1186,11 @@ class Tree {
 				$item['type'] = 'group';
 				$item['rootType'] = 'group';
 				$item['parent'] = $item['_parent_id_'];
-				
+
 				if (!empty($item['_iconImg_']))
 					$item['iconHTML'] = $item['_iconImg_'];
 			}
-			
+
 			if (isset($item['_agents_unknown_']))
 				$item['total_unknown_count'] = $item['_agents_unknown_'];
 			if (isset($item['_agents_critical_']))
@@ -1222,13 +1205,13 @@ class Tree {
 				$item['total_count'] = $item['_total_agents_'];
 			if (isset($item['_monitors_alerts_fired_']))
 				$item['total_fired_count'] = $item['_monitors_alerts_fired_'];
-			
+
 			// Agent filter for Strict ACL users
 			if ($this->filter["statusAgent"] != -1) {
 				switch ($this->filter["statusAgent"]) {
 					case AGENT_STATUS_NOT_INIT:
 						$item['total_count'] = $item['total_not_init_count'];
-						
+
 						$item['total_unknown_count'] = 0;
 						$item['total_critical_count'] = 0;
 						$item['total_warning_count'] = 0;
@@ -1236,7 +1219,7 @@ class Tree {
 						break;
 					case AGENT_STATUS_CRITICAL:
 						$item['total_count'] = $item['total_critical_count'];
-						
+
 						$item['total_unknown_count'] = 0;
 						$item['total_warning_count'] = 0;
 						$item['total_not_init_count'] = 0;
@@ -1244,7 +1227,7 @@ class Tree {
 						break;
 					case AGENT_STATUS_WARNING:
 						$item['total_count'] = $item['total_warning_count'];
-						
+
 						$item['total_unknown_count'] = 0;
 						$item['total_critical_count'] = 0;
 						$item['total_not_init_count'] = 0;
@@ -1252,7 +1235,7 @@ class Tree {
 						break;
 					case AGENT_STATUS_UNKNOWN:
 						$item['total_count'] = $item['total_unknown_count'];
-						
+
 						$item['total_critical_count'] = 0;
 						$item['total_warning_count'] = 0;
 						$item['total_not_init_count'] = 0;
@@ -1260,7 +1243,7 @@ class Tree {
 						break;
 					case AGENT_STATUS_NORMAL:
 						$item['total_count'] = $item['total_normal_count'];
-						
+
 						$item['total_unknown_count'] = 0;
 						$item['total_critical_count'] = 0;
 						$item['total_warning_count'] = 0;
@@ -1269,8 +1252,8 @@ class Tree {
 				}
 			}
 		}
-		
-		
+
+
 		$processed_item = array();
 		$processed_item['id'] = $item['id'];
 		$processed_item['name'] = $item['name'];
@@ -1290,7 +1273,7 @@ class Tree {
 
 		if ($processed_item['type'] == 'group') {
 			$processed_item['parent'] = $item['parent'];
-			
+
 			if (!empty($item['iconHTML']))
 				$processed_item['iconHTML'] = $item['iconHTML'];
 			else if (!empty($item['icon']))
@@ -1302,7 +1285,7 @@ class Tree {
 		if (is_metaconsole() && !empty($server)) {
 			$processed_item['serverID'] = $server['id'];
 		}
-		
+
 		// Get the counters of the group (special case)
 		if ($processed_item['type'] == 'group') {
 			$counters = $this->getCounters($item['id']);
@@ -1425,11 +1408,11 @@ class Tree {
 			// Add the resulting item
 			if (!empty($resultItem) && !empty($resultItem['counters']['total']))
 				$mergedItems[] = $resultItem;
-			
+
 			// Remove the item
 			unset($items[$key]);
 		}
-		
+
 		usort($mergedItems, array("Tree", "cmpSortNames"));
 
 		return $mergedItems;
@@ -1454,10 +1437,10 @@ class Tree {
 			$module['serverName'] = false;
 			$module['serverID'] = false;
 		}
-		
+
 		if (!isset($module['value']))
 			$module['value'] = modules_get_last_value($module['id']);
-		
+
 		// Status
 		switch ($module['status']) {
 			case AGENT_MODULE_STATUS_CRITICAL_ALERT:
@@ -1494,7 +1477,7 @@ class Tree {
 				$module['statusText'] = "ok";
 				break;
 		}
-		
+
 		if ($statusType !== STATUS_MODULE_UNKNOWN_BALL
 				&& $statusType !== STATUS_MODULE_NO_DATA_BALL) {
 			if (is_numeric($module["value"])) {
@@ -1504,19 +1487,19 @@ class Tree {
 				$statusTitle .= " : " . substr(io_safe_output($module["value"]),0,42);
 			}
 		}
-		
+
 		$module['statusImageHTML'] = ui_print_status_image($statusType, $statusTitle, true);
-		
+
 		// HTML of the server type image
 		$module['serverTypeHTML'] = servers_show_type($module['server_type']);
-		
+
 		// Link to the Module graph
-		
+
 		// ACL
 		$group_id = (int) modules_get_agent_group($module['id']);
 		$acl_graphs = false;
 		$module["showGraphs"] = 0;
-		
+
 		// Avoid the check on the metaconsole. Too slow to show/hide an icon depending on the permissions
 		if (!empty($group_id) && !is_metaconsole()) {
 			if ($this->strictACL) {
@@ -1529,16 +1512,16 @@ class Tree {
 		else if (!empty($group_id)) {
 			$acl_graphs = true;
 		}
-		
+
 		if ($acl_graphs) {
 			$module["showGraphs"] = 1;
 		}
-		
+
 		if ($module["showGraphs"]) {
 			$graphType = return_graphtype($module['id_module_type']);
 			$url = ui_get_full_url("operation/agentes/stat_win.php", false, false, false);
 			$winHandle = dechex(crc32($module['id'].$module['name']));
-			
+
 			$graph_params = array(
 					"type" => $graphType,
 					"period" => SECONDS_1DAY,
@@ -1546,48 +1529,48 @@ class Tree {
 					"label" => base64_encode($module['name']),
 					"refresh" => SECONDS_10MINUTES
 				);
-			
+
 			if (is_metaconsole() && !empty($server)) {
 				$graph_params["avg_only"] = 1;
 				// Set the server id
 				$graph_params["server"] = $module['serverID'];
 			}
-			
+
 			$graph_params_str = http_build_query($graph_params);
 			$moduleGraphURL = "$url?$graph_params_str";
-			
+
 			$module['moduleGraph'] = array(
 					'url' => $moduleGraphURL,
 					'handle' => $winHandle
 				);
 		}
-		
+
 		// Alerts fired image
 		$has_alerts = (bool) db_get_value(
 			'COUNT(DISTINCT(id_agent_module))',
 			'talert_template_modules', 'id_agent_module', $module['id']);
-		
+
 		if ($has_alerts) {
 			$module['alertsImageHTML'] = html_print_image("images/bell.png", true, array("title" => __('Module alerts')));
 		}
 	}
-	
+
 	protected function processModules (&$modules, $server = false) {
 		foreach ($modules as $iterator => $module) {
 			$this->processModule($modules[$iterator], $server);
 		}
 	}
-	
+
 	protected function processAgent (&$agent, $server = false) {
 		global $config;
-		
+
 		$agent['type'] = 'agent';
 		$agent['id'] = (int) $agent['id'];
 		$agent['name'] = $agent['name'];
-		
+
 		$agent['rootID'] = $this->rootID;
 		$agent['rootType'] = $this->rootType;
-		
+
 		if (is_metaconsole()) {
 			if (isset($agent['server_id']))
 				$agent['serverID'] = $agent['server_id'];
@@ -1599,7 +1582,7 @@ class Tree {
 		if ($this->strictACL) {
 			$agent_filter = array("id" => $agent['id']);
 			$module_filter = array();
-			
+
 			if (isset($this->filter["statusAgent"]))
 				$agent_filter["status"] = $this->filter["statusAgent"];
 			if (isset($this->filter["searchAgent"]))
@@ -1609,7 +1592,7 @@ class Tree {
 				$module_filter["status"] = $this->filter["statusModule"];
 			if (isset($this->filter["searchModule"]))
 				$module_filter["name"] = $this->filter["searchModule"];
-			
+
 			$agent['counters'] = array();
 			$agent['counters']['unknown'] = 0;
 			$agent['counters']['critical'] = 0;
@@ -1621,7 +1604,7 @@ class Tree {
 
 			if ($agent['rootType'] == "group") {
 				$agent['counters']['alerts'] = agents_get_alerts_fired($agent['id']);
-				
+
 				// With module filter
 				if (isset($this->filter["statusModule"]) && $this->filter["statusModule"] != AGENT_MODULE_STATUS_ALL) {
 					switch ($this->filter["statusModule"]) {
@@ -1663,7 +1646,7 @@ class Tree {
 			}
 			else if ($agent['rootType'] == "tag") {
 				$agent['counters']['alerts'] = (int) tags_monitors_fired_alerts ($agent['rootID'], $this->acltags, $agent['id']);
-				
+
 				// With module filter
 				if (isset($this->filter["statusModule"]) && $this->filter["statusModule"] != AGENT_MODULE_STATUS_ALL) {
 					switch ($this->filter["statusModule"]) {
@@ -1703,7 +1686,7 @@ class Tree {
 					$agent['counters']['total'] = (int) tags_get_total_monitors ($agent['rootID'], $this->acltags, $agent_filter, $module_filter);
 				}
 			}
-			
+
 			if (isset($this->filter["statusAgent"]) && $this->filter["statusAgent"] != AGENT_STATUS_ALL) {
 				switch ($this->filter["statusAgent"]) {
 					case AGENT_STATUS_CRITICAL:
@@ -1732,47 +1715,47 @@ class Tree {
 					return;
 			}
 		}
-		
+
 		// Counters
 		if (empty($agent['counters'])) {
 			$agent['counters'] = array();
-			
+
 			if (isset($agent['unknown_count']))
 				$agent['counters']['unknown'] = $agent['unknown_count'];
 			else
 				$agent['counters']['unknown'] = (int) agents_monitor_unknown($agent['id']);
-			
+
 			if (isset($agent['critical_count']))
 				$agent['counters']['critical'] = $agent['critical_count'];
 			else
 				$agent['counters']['critical'] = (int) agents_monitor_critical($agent['id']);
-			
+
 			if (isset($agent['warning_count']))
 				$agent['counters']['warning'] = $agent['warning_count'];
 			else
 				$agent['counters']['warning'] = (int) agents_monitor_warning($agent['id']);
-			
+
 			if (isset($agent['notinit_count']))
 				$agent['counters']['not_init'] = $agent['notinit_count'];
 			else
 				$agent['counters']['not_init'] = (int) agents_monitor_notinit($agent['id']);
-			
+
 			if (isset($agent['normal_count']))
 				$agent['counters']['ok'] = $agent['normal_count'];
 			else
 				$agent['counters']['ok'] = (int) agents_monitor_ok($agent['id']);
-			
+
 			if (isset($agent['total_count']))
 				$agent['counters']['total'] = $agent['total_count'];
 			else
 				$agent['counters']['total'] = (int) agents_monitor_total($agent['id']);
-			
+
 			if (isset($agent['fired_count']))
 				$agent['counters']['alerts'] = $agent['fired_count'];
 			else
 				$agent['counters']['alerts'] = (int) agents_get_alerts_fired($agent['id']);
 		}
-		
+
 		// Status image
 		$agent['statusImageHTML'] = agents_tree_view_status_img_ball(
 				$agent['counters']['critical'],
@@ -1780,16 +1763,16 @@ class Tree {
 				$agent['counters']['unknown'],
 				$agent['counters']['total'],
 				$agent['counters']['not_init']);
-		
+
 		// Alerts fired image
 		$agent["alertImageHTML"] = agents_tree_view_alert_img_ball($agent['counters']['alerts']);
-		
+
 		// Quiet image
 		if (isset($agent['quiet']) && $agent['quiet'])
 			$agent['quietImageHTML'] = html_print_image("/images/dot_green.disabled.png", true, array("title" => __('Quiet')));
-		
+
 		// Status
-		$agent['statusRaw'] = agents_get_status($agent['id']);
+		$agent['statusRaw'] = agents_get_status($agent['id'], !$this->strictACL);
 		switch ($agent['statusRaw']) {
 			case AGENT_STATUS_NORMAL:
 				$agent['status'] = "ok";
@@ -1810,7 +1793,7 @@ class Tree {
 				$agent['status'] = "none";
 				break;
 		}
-		
+
 		// Children
 		if (empty($agent['children'])) {
 			$agent['children'] = array();
@@ -1821,7 +1804,7 @@ class Tree {
 						break;
 					case 'live':
 						$agent['searchChildren'] = 0;
-						
+
 						// if ($searchChildren)
 						// 	$agent['children'] = $this->getModules($agent['id'], $modulesFilter);
 						break;
@@ -1839,7 +1822,7 @@ class Tree {
 			}
 		}
 	}
-	
+
 	protected function processAgents (&$agents, $server = false) {
 		if (!empty($agents)) {
 			foreach ($agents as $iterator => $agent) {
@@ -1847,12 +1830,12 @@ class Tree {
 			}
 		}
 	}
-	
+
 	private static function extractItemWithID ($items, $item_id, $item_type = "group", $strictACL = false) {
 		foreach ($items as $item) {
 			if ($item["type"] != $item_type)
 				continue;
-			
+
 			// Item found
 			if ($strictACL && is_metaconsole()) {
 				foreach ($item["id"] as $server_id => $id) {
@@ -1864,20 +1847,20 @@ class Tree {
 				if ($item["id"] == $item_id)
 					return $item;
 			}
-			
+
 			if ($item["type"] == "group" && !empty($item["children"])) {
 				$result = self::extractItemWithID($item["children"], $item_id, $item_type, $strictACL);
-				
+
 				// Item found on children
 				if ($result !== false)
 					return $result;
 			}
 		}
-		
+
 		// Item not found
 		return false;
 	}
-	
+
 	public function getData() {
 		if (! is_metaconsole()) {
 			if ($this->strictACL) {
@@ -1936,17 +1919,17 @@ class Tree {
 			}
 		}
 	}
-	
+
 	protected function getDataExtended () {
 		// Override this method to add new types
 	}
-	
+
 	private function getDataAgent () {
 		$processed_items = array();
-		
+
 		// Module names
 		if ($this->id == -1) {
-			
+
 		}
 		// Agents
 		else {
@@ -1957,32 +1940,32 @@ class Tree {
 			}
 			else {
 				$items = array();
-				
+
 				if ($this->serverID !== false) {
-					
+
 					$server = metaconsole_get_servers($this->serverID);
 					if (metaconsole_connect($server) == NOERR) {
 						$items = $this->getItems();
 						$this->processModules($items, $server);
-						
+
 						metaconsole_restore_db();
 					}
 				}
-				
+
 				$processed_items = $items;
 			}
 		}
-		
+
 		$this->tree = $processed_items;
 	}
-	
+
 	private function getDataStrict () {
 		global $config;
-		
+
 		require_once($config['homedir']."/include/functions_groups.php");
-		
+
 		$processed_items = array();
-		
+
 		// Groups and tags
 		if ($this->id == -1) {
 			$agent_filter = array();
@@ -1996,14 +1979,14 @@ class Tree {
 				$module_filter["status"] = $this->filter["statusModule"];
 			if (isset($this->filter["searchModule"]))
 				$module_filter["name"] = $this->filter["searchModule"];
-			
+
 			if (! is_metaconsole()) {
 				$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree', $agent_filter, $module_filter);
-				
+
 				// Build the group and tag hierarchy
 				$processed_groups = array();
 				$processed_tags = array();
-				
+
 				foreach ($items as $key => $item) {
 					$processed_item = $this->getProcessedItem($item);
 					if ($processed_item['type'] == 'tag') {
@@ -2018,30 +2001,30 @@ class Tree {
 						$processed_groups[] = $processed_item;
 					}
 				}
-				
+
 				// Build the groups hierarchy
 				$processed_groups = $this->getProcessedGroups($processed_groups, true);
 				// Sort tags
 				usort($processed_tags, array("Tree", "cmpSortNames"));
-				
+
 				// Join tags and groups
 				$processed_items = array_merge($processed_groups, $processed_tags);
 			}
 			else {
 				$unmerged_items = array();
-				
+
 				$servers = metaconsole_get_servers();
 				foreach ($servers as $server) {
 					if (metaconsole_connect($server) != NOERR)
 						continue;
 					db_clean_cache();
-					
+
 					$items = group_get_data($config['id_user'], $this->strictACL, $this->acltags, false, 'tree', $agent_filter, $module_filter);
-					
+
 					// Build the group and tag hierarchy
 					$processed_groups = array();
 					$processed_tags = array();
-					
+
 					foreach ($items as $key => $item) {
 						$processed_item = $this->getProcessedItem($item);
 						if ($processed_item['type'] == 'tag')
@@ -2049,27 +2032,27 @@ class Tree {
 						else
 							$processed_groups[] = $processed_item;
 					}
-					
+
 					// Build the groups hierarchy
 					$processed_groups = $this->getProcessedGroups($processed_groups);
 					// Sort tags
 					usort($processed_tags, array("Tree", "cmpSortNames"));
-					
+
 					// Join tags and groups
 					$processed_items = array_merge($processed_groups, $processed_tags);
-					
+
 					$unmerged_items += $processed_items;
-					
+
 					metaconsole_restore_db();
 				}
-				
+
 				$processed_items = $this->getMergedItems($unmerged_items);
 			}
-			
+
 			if (!empty($processed_items)) {
 				if (!empty($this->filter["groupID"])) {
 					$result = self::extractItemWithID($processed_items, $this->filter["groupID"], "group", $this->strictACL);
-					
+
 					if ($result === false)
 						$processed_items = array();
 					else
@@ -2077,7 +2060,7 @@ class Tree {
 				}
 				else if (!empty($this->filter["tagID"])) {
 					$result = self::extractItemWithID($processed_items, $this->filter["tagID"], "tag", $this->strictACL);
-					
+
 					if ($result === false)
 						$processed_items = array();
 					else
@@ -2097,48 +2080,48 @@ class Tree {
 			}
 			else {
 				$rootIDs = $this->rootID;
-				
+
 				$items = array();
 				foreach ($rootIDs as $serverID => $rootID) {
 					$server = metaconsole_get_servers($serverID);
 					if (metaconsole_connect($server) != NOERR)
 						continue;
 					db_clean_cache();
-					
+
 					$this->rootID = $rootID;
 					$newItems = $this->getItems();
 					$this->processAgents($newItems, $server);
 					$newItems = array_filter($newItems);
 					$items = array_merge($items, $newItems);
-					
+
 					metaconsole_restore_db();
 				}
 				$this->rootID = $rootIDs;
-				
+
 				if (!empty($items))
 					usort($items, array("Tree", "cmpSortNames"));
-				
+
 				$processed_items = $items;
 			}
 		}
-		
+
 		$this->tree = $processed_items;
 	}
-	
+
 	private function getDataGroup() {
 		$processed_items = array();
-		
+
 		// Groups
 		if ($this->id == -1) {
-			
+
 			$items = $this->getItems();
-			
+
 			$processed_items = $this->getProcessedGroups($items, true);
-			
+
 			// groupID filter. To access the view from tactical views f.e.
 			if (!empty($processed_items) && !empty($this->filter['groupID'])) {
 				$result = self::extractItemWithID($processed_items, $this->filter['groupID'], "group", $this->strictACL);
-				
+
 				if ($result === false)
 					$processed_items = array();
 				else
@@ -2151,60 +2134,60 @@ class Tree {
 			$this->processAgents($items);
 			$processed_items = $items;
 		}
-		
+
 		$this->tree = $processed_items;
 	}
-	
+
 	private function getDataTag() {
 		$processed_items = array();
-		
+
 		// Tags
 		if ($this->id == -1) {
 			if (! is_metaconsole()) {
 				$items = $this->getItems();
-				
+
 				foreach ($items as $key => $item) {
-					
+
 					$counters = $this->getCounters($item['id']);
 					if (!empty($counters)) {
 						foreach ($counters as $type => $value) {
 							$item[$type] = $value;
 						}
 					}
-					
+
 					$processed_item = $this->getProcessedItem($item);
 					$processed_items[] = $processed_item;
 				}
 			}
 			else {
 				$servers = metaconsole_get_servers();
-				
+
 				$item_list = array();
 				foreach ($servers as $server) {
 					if (metaconsole_connect($server) != NOERR)
 						continue;
 					db_clean_cache();
-					
+
 					$items = $this->getItems();
-					
+
 					$processed_items = array();
 					foreach ($items as $key => $item) {
-						
+
 						$counters = $this->getCounters($item['id']);
 						if (!empty($counters)) {
 							foreach ($counters as $type => $value) {
 								$item[$type] = $value;
 							}
 						}
-						
+
 						$processed_item = $this->getProcessedItem($item, $server);
 						$processed_items[] = $processed_item;
 					}
 					$item_list = array_merge($item_list, $processed_items);
-					
+
 					metaconsole_restore_db();
 				}
-				
+
 				$processed_items = $this->getMergedItems($item_list);
 			}
 		}
@@ -2217,115 +2200,115 @@ class Tree {
 			}
 			else {
 				$rootIDs = $this->rootID;
-				
+
 				$items = array();
 				foreach ($rootIDs as $serverID => $rootID) {
 					$server = metaconsole_get_servers($serverID);
 					if (metaconsole_connect($server) != NOERR)
 						continue;
 					db_clean_cache();
-					
+
 					$this->rootID = $rootID;
 					$newItems = $this->getItems();
 					$this->processAgents($newItems, $server);
 					$items = array_merge($items, $newItems);
-					
+
 					metaconsole_restore_db();
 				}
 				$this->rootID = $rootIDs;
-				
+
 				if (!empty($items))
 					usort($items, array("Tree", "cmpSortNames"));
-				
+
 				$processed_items = $items;
 			}
 		}
-		
+
 		$this->tree = $processed_items;
 	}
-	
+
 	private function getDataModules() {
 		$processed_items = array();
-		
+
 		// Module names
 		if ($this->id == -1) {
 			if (! is_metaconsole()) {
 				$items = $this->getItems();
-				
+
 				foreach ($items as $key => $item) {
-					
+
 					$counters = $this->getCounters($item['name']);
 					if (!empty($counters)) {
 						foreach ($counters as $type => $value) {
 							$item[$type] = $value;
 						}
 					}
-					
-					$name = str_replace(array(' ','#','/','.','(',')','¿','?','¡','!'), 
-								array(  '_articapandora_'.ord(' ').'_pandoraartica_', 
-										'_articapandora_'.ord('#').'_pandoraartica_', 
-										'_articapandora_'.ord('/').'_pandoraartica_', 
+
+					$name = str_replace(array(' ','#','/','.','(',')','¿','?','¡','!'),
+								array(  '_articapandora_'.ord(' ').'_pandoraartica_',
+										'_articapandora_'.ord('#').'_pandoraartica_',
+										'_articapandora_'.ord('/').'_pandoraartica_',
 										'_articapandora_'.ord('.').'_pandoraartica_',
-										'_articapandora_'.ord('(').'_pandoraartica_', 
-										'_articapandora_'.ord(')').'_pandoraartica_', 
-										'_articapandora_'.ord('¿').'_pandoraartica_', 
-										'_articapandora_'.ord('?').'_pandoraartica_', 
-										'_articapandora_'.ord('¡').'_pandoraartica_', 
+										'_articapandora_'.ord('(').'_pandoraartica_',
+										'_articapandora_'.ord(')').'_pandoraartica_',
+										'_articapandora_'.ord('¿').'_pandoraartica_',
+										'_articapandora_'.ord('?').'_pandoraartica_',
+										'_articapandora_'.ord('¡').'_pandoraartica_',
 										'_articapandora_'.ord('!').'_pandoraartica_'),
 								io_safe_output($item['name']));
-					
+
 					$processed_item = $this->getProcessedItem($item);
 					$processed_item['id'] = $name;
 					$processed_item['rootID'] = $name;
-					
+
 					$processed_items[] = $processed_item;
 				}
 			}
 			else {
 				$servers = metaconsole_get_servers();
-				
+
 				$item_list = array();
 				foreach ($servers as $server) {
 					if (metaconsole_connect($server) != NOERR)
 						continue;
 					db_clean_cache();
-					
+
 					$items = $this->getItems();
-					
+
 					$processed_items = array();
 					foreach ($items as $key => $item) {
-						
+
 						$counters = $this->getCounters($item['name']);
 						if (!empty($counters)) {
 							foreach ($counters as $type => $value) {
 								$item[$type] = $value;
 							}
 						}
-						
-						$name = str_replace(array(' ','#','/','.','(',')','¿','?','¡','!'), 
-									array(  '_articapandora_'.ord(' ').'_pandoraartica_', 
-											'_articapandora_'.ord('#').'_pandoraartica_', 
-											'_articapandora_'.ord('/').'_pandoraartica_', 
+
+						$name = str_replace(array(' ','#','/','.','(',')','¿','?','¡','!'),
+									array(  '_articapandora_'.ord(' ').'_pandoraartica_',
+											'_articapandora_'.ord('#').'_pandoraartica_',
+											'_articapandora_'.ord('/').'_pandoraartica_',
 											'_articapandora_'.ord('.').'_pandoraartica_',
-											'_articapandora_'.ord('(').'_pandoraartica_', 
-											'_articapandora_'.ord(')').'_pandoraartica_', 
-											'_articapandora_'.ord('¿').'_pandoraartica_', 
-											'_articapandora_'.ord('?').'_pandoraartica_', 
-											'_articapandora_'.ord('¡').'_pandoraartica_', 
+											'_articapandora_'.ord('(').'_pandoraartica_',
+											'_articapandora_'.ord(')').'_pandoraartica_',
+											'_articapandora_'.ord('¿').'_pandoraartica_',
+											'_articapandora_'.ord('?').'_pandoraartica_',
+											'_articapandora_'.ord('¡').'_pandoraartica_',
 											'_articapandora_'.ord('!').'_pandoraartica_'),
 									io_safe_output($item['name']));
-						
+
 						$processed_item = $this->getProcessedItem($item, $server);
 						$processed_item['id'] = $name;
 						$processed_item['rootID'] = $name;
-						
+
 						$processed_items[] = $processed_item;
 					}
 					$item_list = array_merge($item_list, $processed_items);
-					
+
 					metaconsole_restore_db();
 				}
-				
+
 				$processed_items = $this->getMergedItems($item_list);
 			}
 		}
@@ -2338,83 +2321,83 @@ class Tree {
 			}
 			else {
 				$rootIDs = $this->rootID;
-				
+
 				$items = array();
 				foreach ($rootIDs as $serverID => $rootID) {
 					$server = metaconsole_get_servers($serverID);
 					if (metaconsole_connect($server) != NOERR)
 						continue;
 					db_clean_cache();
-					
+
 					$this->rootID = $rootID;
 					$newItems = $this->getItems();
 					$this->processAgents($newItems, $server);
 					$items = array_merge($items, $newItems);
-					
+
 					metaconsole_restore_db();
 				}
 				$this->rootID = $rootIDs;
-				
+
 				if (!empty($items))
 					usort($items, array("Tree", "cmpSortNames"));
-				
+
 				$processed_items = $items;
 			}
 		}
-		
+
 		$this->tree = $processed_items;
 	}
-	
+
 	private function getDataModuleGroup() {
 		$processed_items = array();
-		
+
 		// Module groups
 		if ($this->id == -1) {
 			if (! is_metaconsole()) {
 				$items = $this->getItems();
-				
+
 				foreach ($items as $key => $item) {
-					
+
 					$counters = $this->getCounters($item['id']);
 					if (!empty($counters)) {
 						foreach ($counters as $type => $value) {
 							$item[$type] = $value;
 						}
 					}
-					
+
 					$processed_item = $this->getProcessedItem($item);
 					$processed_items[] = $processed_item;
 				}
 			}
 			else {
 				$servers = metaconsole_get_servers();
-				
+
 				$item_list = array();
 				foreach ($servers as $server) {
 					if (metaconsole_connect($server) != NOERR)
 						continue;
 					db_clean_cache();
-					
+
 					$items = $this->getItems();
-					
+
 					$processed_items = array();
 					foreach ($items as $key => $item) {
-						
+
 						$counters = $this->getCounters($item['id']);
 						if (!empty($counters)) {
 							foreach ($counters as $type => $value) {
 								$item[$type] = $value;
 							}
 						}
-						
+
 						$processed_item = $this->getProcessedItem($item, $server);
 						$processed_items[] = $processed_item;
 					}
 					$item_list = array_merge($item_list, $processed_items);
-					
+
 					metaconsole_restore_db();
 				}
-				
+
 				$processed_items = $this->getMergedItems($item_list);
 			}
 		}
@@ -2427,50 +2410,50 @@ class Tree {
 			}
 			else {
 				$rootIDs = $this->rootID;
-				
+
 				$items = array();
 				foreach ($rootIDs as $serverID => $rootID) {
 					$server = metaconsole_get_servers($serverID);
 					if (metaconsole_connect($server) != NOERR)
 						continue;
 					db_clean_cache();
-					
+
 					$this->rootID = $rootID;
 					$newItems = $this->getItems();
 					$this->processAgents($newItems, $server);
 					$items = array_merge($items, $newItems);
-					
+
 					metaconsole_restore_db();
 				}
 				$this->rootID = $rootIDs;
-				
+
 				if (!empty($items))
 					usort($items, array("Tree", "cmpSortNames"));
-				
+
 				$processed_items = $items;
 			}
 		}
-		
+
 		$this->tree = $processed_items;
 	}
-	
+
 	private function getDataOS() {
 		$processed_items = array();
-		
+
 		// OS
 		if ($this->id == -1) {
 			if (! is_metaconsole()) {
 				$items = $this->getItems();
-				
+
 				foreach ($items as $key => $item) {
-					
+
 					$counters = $this->getCounters($item['id']);
 					if (!empty($counters)) {
 						foreach ($counters as $type => $value) {
 							$item[$type] = $value;
 						}
 					}
-					
+
 					$processed_item = $this->getProcessedItem($item);
 					$processed_item['icon'] = $item['os_icon'];
 					$processed_items[] = $processed_item;
@@ -2478,34 +2461,34 @@ class Tree {
 			}
 			else {
 				$servers = metaconsole_get_servers();
-				
+
 				$item_list = array();
 				foreach ($servers as $server) {
 					if (metaconsole_connect($server) != NOERR)
 						continue;
 					db_clean_cache();
-					
+
 					$items = $this->getItems();
-					
+
 					$processed_items = array();
 					foreach ($items as $key => $item) {
-						
+
 						$counters = $this->getCounters($item['id']);
 						if (!empty($counters)) {
 							foreach ($counters as $type => $value) {
 								$item[$type] = $value;
 							}
 						}
-						
+
 						$processed_item = $this->getProcessedItem($item, $server);
 						$processed_item['icon'] = $item['os_icon'];
 						$processed_items[] = $processed_item;
 					}
 					$item_list = array_merge($item_list, $processed_items);
-					
+
 					metaconsole_restore_db();
 				}
-				
+
 				$processed_items = $this->getMergedItems($item_list);
 			}
 		}
@@ -2518,43 +2501,63 @@ class Tree {
 			}
 			else {
 				$rootIDs = $this->rootID;
-				
+
 				$items = array();
 				foreach ($rootIDs as $serverID => $rootID) {
 					$server = metaconsole_get_servers($serverID);
 					if (metaconsole_connect($server) != NOERR)
 						continue;
 					db_clean_cache();
-					
+
 					$this->rootID = $rootID;
 					$newItems = $this->getItems();
 					$this->processAgents($newItems, $server);
 					$items = array_merge($items, $newItems);
-					
+
 					metaconsole_restore_db();
 				}
 				$this->rootID = $rootIDs;
-				
+
 				if (!empty($items))
 					usort($items, array("Tree", "cmpSortNames"));
-				
+
 				$processed_items = $items;
 			}
 		}
-		
+
 		$this->tree = $processed_items;
 	}
-	
+
 	public function getJSON() {
 		$this->getData();
-		
+
 		return json_encode($this->tree);
 	}
-	
+
 	public function getArray() {
 		$this->getData();
-		
+
 		return $this->tree;
 	}
+
+	static function processCounters(&$groups) {
+		$all_counters = array();
+		foreach ($groups as $id => $group) {
+			$child_counters = array();
+			if (!empty($groups[$id]['children'])) {
+				$child_counters = Tree::processCounters($groups[$id]['children']);
+			}
+			if (!empty($child_counters)) {
+				foreach($child_counters as $type => $value) {
+					$groups[$id]['counters'][$type] += $value;
+				}
+			}
+			foreach($groups[$id]['counters'] as $type => $value) {
+				$all_counters[$type] += $value;
+			}
+		}
+		return $all_counters;
+	}
+
 }
 ?>

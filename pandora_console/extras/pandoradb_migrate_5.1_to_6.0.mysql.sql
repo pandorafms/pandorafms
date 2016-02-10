@@ -182,6 +182,7 @@ ALTER TABLE tagente_estado ADD COLUMN `last_dynamic_update` bigint(20) NOT NULL 
 -- Table `tgraph_source`
 -- ---------------------------------------------------------------------	
 ALTER TABLE tgraph_source ADD COLUMN `label` varchar(150) DEFAULT '';
+ALTER TABLE tgraph_source ADD COLUMN `id_server` int(11) NOT NULL default 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tevent_filter`

@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_agent_unix
 %define version     6.1dev
-%define release     160126
+%define release     160210
 
 Summary:            Pandora FMS Linux agent, PERL version
 Name:               %{name}
@@ -20,7 +20,6 @@ BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArch:          noarch
 PreReq:             /bin/sed /bin/grep /usr/sbin/useradd
 Requires:           coreutils unzip perl
-Recommends:         perl-Sys-Syslog
 AutoReq:            0
 Provides:           %{name}-%{version}
 
@@ -94,8 +93,13 @@ if [ ! -e /etc/pandora/collections ]; then
 fi
 
 mkdir -p /var/spool/pandora/data_out
+if [ ! -d /var/log/pandora ]; then
+	mkdir -p /var/log/pandora
+fi
 /sbin/chkconfig --add pandora_agent_daemon
 /sbin/chkconfig pandora_agent_daemon on
+echo "You may need to install manually some additional required dependencies:"
+echo "perl-Sys-Syslog"
 
 %preun
 

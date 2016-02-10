@@ -188,10 +188,12 @@ if (!empty ($graphs)) {
 			echo "<td>";
 				echo "<div style='float: right;'>";
 					if (!empty($graphs)){
-						echo "<form method='post' style='float:right;' action='index.php?sec=reporting&sec2=godmode/reporting/graphs'>";
-							html_print_input_hidden('multiple_delete', 1);
-							html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
-						echo "</form>";
+						if (check_acl ($config['id_user'], 0, "RW") && users_can_manage_group_all($graph['id_group'])) {
+							echo "<form method='post' style='float:right;' action='index.php?sec=reporting&sec2=godmode/reporting/graphs'>";
+								html_print_input_hidden('multiple_delete', 1);
+								html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+							echo "</form>";
+						}
 					}
 					if (check_acl ($config['id_user'], 0, "RW")) {
 						echo '<form method="post" style="float:right;" action="index.php?sec=reporting&sec2=godmode/reporting/graph_builder">';

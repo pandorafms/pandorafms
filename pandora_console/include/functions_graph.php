@@ -1009,7 +1009,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	if ($date == 0)
 		$date = get_system_time();
 	$datelimit = $date - $period;
-	$search_in_history_db = db_search_in_history_db($datelimit);
+	
 	$resolution = $config['graph_res'] * 50; //Number of points of the graph
 	$interval = (int) ($period / $resolution);
 	
@@ -1079,16 +1079,36 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	
 	// Calculate data for each module
 	for ($i = 0; $i < $module_number; $i++) {
-		// If its a projection graph, first module will be data and second will be the projection
+		$automatic_custom_graph_meta = false;
+		if ($config['metaconsole']) {
+			// Automatic custom graph from the report template in metaconsole
+			if (is_array($module_list[$i])) {
+				$server = metaconsole_get_connection_by_id ($module_list[$i]['server']);
+				metaconsole_connect($server);
+				$automatic_custom_graph_meta = true;
+			}
+		}
+		
+		$search_in_history_db = db_search_in_history_db($datelimit);
+		
+		// If its a projection graph,
+		// first module will be data and second will be the projection
 		if ($projection != false && $i != 0) {
-			$agent_module_id = $module_list[0];
+			if ($automatic_custom_graph_meta)
+				$agent_module_id = $module_list[0]['module'];
+			else
+				$agent_module_id = $module_list[0];
 			
 			$id_module_type = modules_get_agentmodule_type ($agent_module_id);
 			$module_type = modules_get_moduletype_name ($id_module_type);
 			$uncompressed_module = is_module_uncompressed ($module_type);
 		}
 		else {
-			$agent_module_id = $module_list[$i];
+			if ($automatic_custom_graph_meta)
+				$agent_module_id = $module_list[$i]['module'];
+			else
+				$agent_module_id = $module_list[$i];
+			
 			
 			$id_module_type = modules_get_agentmodule_type ($agent_module_id);
 			$module_type = modules_get_moduletype_name ($id_module_type);
@@ -1365,6 +1385,13 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		//unset($graph_values[$i]);
 		
 		//$graph_values[$i] = $graph_values[$i];
+		
+		if ($config['metaconsole']) {
+			// Automatic custom graph from the report template in metaconsole
+			if (is_array($module_list[0])) {
+				metaconsole_restore_db();
+			}
+		}
 	}
 	
 	$temp = array();
@@ -1372,7 +1399,24 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	switch ($stacked) {
 		case CUSTOM_GRAPH_BULLET_CHART:
 			$datelimit = $date - $period;
-			foreach ($module_list as $module) {
+			foreach ($module_list as $module_item) {
+				$automatic_custom_graph_meta = false;
+				if ($config['metaconsole']) {
+					// Automatic custom graph from the report template in metaconsole
+					if (is_array($module_list[$i])) {
+						$server = metaconsole_get_connection_by_id ($module_item['server']);
+						metaconsole_connect($server);
+						$automatic_custom_graph_meta = true;
+					}
+				}
+				
+				if ($automatic_custom_graph_meta)
+					$module = $module_item['module'];
+				else
+					$module = $module_item;
+				
+				$search_in_history_db = db_search_in_history_db($datelimit);
+				
 				$temp[$module] = modules_get_agentmodule($module);
 				$temp_data = db_get_value_sql('SELECT datos
 							FROM tagente_datos 
@@ -1396,6 +1440,13 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$temp[$module]['max'] = reporting_get_agentmodule_data_max($module,$period,$date);
 				$temp[$module]['min'] = reporting_get_agentmodule_data_min($module,$period,$date);
 				
+				if ($config['metaconsole']) {
+					// Automatic custom graph from the report template in metaconsole
+					if (is_array($module_list[0])) {
+						metaconsole_restore_db();
+					}
+				}
+				
 			}
 			
 			break;
@@ -1404,7 +1455,23 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			$datelimit = $date - $period;
 			
 			$label = '';
-			foreach ($module_list as $module) {
+			foreach ($module_list as $module_item) {
+				$automatic_custom_graph_meta = false;
+				if ($config['metaconsole']) {
+					// Automatic custom graph from the report template in metaconsole
+					if (is_array($module_list[$i])) {
+						$server = metaconsole_get_connection_by_id ($module_item['server']);
+						metaconsole_connect($server);
+						$automatic_custom_graph_meta = true;
+					}
+				}
+				
+				if ($automatic_custom_graph_meta)
+					$module = $module_item['module'];
+				else
+					$module = $module_item;
+				
+				
 				$module_data = modules_get_agentmodule($module);
 				$temp_data = db_get_value_sql('SELECT datos
 							FROM tagente_datos 
@@ -1421,12 +1488,31 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					$label = $agent_name . " - " .$module_data['nombre'];
 				$temp[$label]['g'] = round($temp_data,4);
 				
+				
+				if ($config['metaconsole']) {
+					// Automatic custom graph from the report template in metaconsole
+					if (is_array($module_list[0])) {
+						metaconsole_restore_db();
+					}
+				}
+				
 			}
 			break;
 		case CUSTOM_GRAPH_PIE:
 			$datelimit = $date - $period;
 			$total_modules = 0;
-			foreach ($module_list as $module) {
+			foreach ($module_list as $module_item) {
+				$automatic_custom_graph_meta = false;
+				if ($config['metaconsole']) {
+					// Automatic custom graph from the report template in metaconsole
+					if (is_array($module_list[$i])) {
+						$server = metaconsole_get_connection_by_id ($module_item['server']);
+						metaconsole_connect($server);
+						$automatic_custom_graph_meta = true;
+					}
+				}
+				
+				
 				$data_module = modules_get_agentmodule($module);
 				$temp_data = db_get_value_sql('SELECT datos
 							FROM tagente_datos 
@@ -1450,15 +1536,35 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					$label = $data_module['nombre'];
 				
 				$label = io_safe_output($label);
-				$temp[$label] = array('value'=>$value,
-										'unit'=>$data_module['unit']);
+				$temp[$label] = array(
+					'value'=>$value,
+					'unit'=>$data_module['unit']);
+				
+				
+				if ($config['metaconsole']) {
+					// Automatic custom graph from the report template in metaconsole
+					if (is_array($module_list[0])) {
+						metaconsole_restore_db();
+					}
+				}
 			}
 			$temp['total_modules'] = $total_modules;
 			break;
 		case CUSTOM_GRAPH_GAUGE:
 			$datelimit = $date - $period;
 			$i = 0;
-			foreach ($module_list as $module) {
+			foreach ($module_list as $module_item) {
+				$automatic_custom_graph_meta = false;
+				if ($config['metaconsole']) {
+					// Automatic custom graph from the report template in metaconsole
+					if (is_array($module_list[$i])) {
+						$server = metaconsole_get_connection_by_id ($module_item['server']);
+						metaconsole_connect($server);
+						$automatic_custom_graph_meta = true;
+					}
+				}
+				
+				
 				$temp[$module] = modules_get_agentmodule($module);
 				$temp_data = db_get_value_sql('SELECT datos
 							FROM tagente_datos 
@@ -1494,6 +1600,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				}
 				$temp[$module]['gauge'] = "gauge_" . $i;
 				$i++;
+				
+				
+				if ($config['metaconsole']) {
+					// Automatic custom graph from the report template in metaconsole
+					if (is_array($module_list[0])) {
+						metaconsole_restore_db();
+					}
+				}
 			}
 			break;
 		default:

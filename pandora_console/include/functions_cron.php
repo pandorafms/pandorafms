@@ -22,7 +22,7 @@ include_once($config['homedir'] . "/include/functions_db.php");
 function cron_update_module_interval ($module_id, $cron) {
 	
 	// Check for a valid cron
-	if ($cron == '' || $cron == '* * * * *') {
+	if (!cron_check_syntax($cron)) {
 		return;
 	}
 	
@@ -158,6 +158,12 @@ function cron_next_execution_date ($cron, $cur_time = false) {
 	
 	// Something went wrong, default to 5 minutes
 	return $cur_time + SECONDS_5MINUTES;
+}
+
+// Check if cron is properly constructed
+function cron_check_syntax($cron) {
+	
+	return preg_match("/^[\d|\*].* .*[\d|\*].* .*[\d|\*].* .*[\d|\*].* .*[\d|\*]$/", $cron);	
 }
 
 ?>

@@ -488,7 +488,12 @@ var TreeController = {
 
 					// Load the status counters
 					var hasCounters = _processNodeCounters($content, element.counters, element.type);
-
+					//Don't show empty groups
+					if (element.type == 'agent') {
+						if (!hasCounters) {
+							return;
+						}
+					}
 					// If exist the detail container, show the data
 					if (typeof controller.detailRecipient !== 'undefined') {
 						if (element.type == 'agent' || element.type == 'module') {

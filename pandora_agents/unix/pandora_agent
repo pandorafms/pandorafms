@@ -41,7 +41,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '6.1dev';
-use constant AGENT_BUILD => '160126';
+use constant AGENT_BUILD => '160210';
 
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {
@@ -430,6 +430,8 @@ sub parse_conf_modules($) {
 			$module->{'timeout'} = $1;
 		} elsif ($line =~ /^\s*module_save\s+(\w+)$/) {
 			$module->{'save'} = $1;
+		} elsif ($line =~ /^\s*module_alert_template\s+(.*)$/) {
+			$module->{'alert_template'} = $1;
 		} elsif ($line =~ /^\s*module_condition\s+(.*)$/) {
 			my $action = $1;
 			# Numeric comparison
@@ -467,6 +469,7 @@ sub parse_conf_modules($) {
 			}
 		} elsif ($line =~ /^\s*module_crontab\s+(((\*|(\d+(-\d+){0,1}))\s*){5}).*$/) {
 			$module->{'cron'} = $1;
+			chomp ($module->{'cron'});
 		} elsif ($line =~ /^\s*module_cron_interval\s+(\d+).*$/) {
 			$module->{'cron_interval'} = $1;
 		} elsif ($line =~ /^\s*module_end\s*$/) {
@@ -1736,12 +1739,27 @@ sub check_module_cron ($) {
 		# Get interval
 		my ($bottom, $top) = split (/-/, $cron_params[$i]);
 		$top = $bottom unless defined ($top);
+
+		# Check if next execution will overflow the cron (only minutes overflow)
+		# If overflow, execute the module
+		my $overflow_cron = 0;
+		if ($i == 0) {
+			my $start_cron_seconds = $bottom*60;
+			my $current_exec_seconds = $time_params[$i]*60;
+			my $next_exec_seconds = $time_params[$i]*60 + $module->{'interval'}*$Conf{'interval'};
+			if ($current_exec_seconds > $start_cron_seconds && $current_exec_seconds > $next_exec_seconds) {
+				$start_cron_seconds += 3600;
+			}
+			if (($current_exec_seconds <= $start_cron_seconds) && ($start_cron_seconds <= $next_exec_seconds)) {
+				$overflow_cron = 1
+			}
+		}
 		
 		# Check interval
 		if ($bottom <= $top) {
-			return 0 if ($time_params[$i] < $bottom || $time_params[$i] > $top);
+			return 0 if (($time_params[$i] < $bottom || $time_params[$i] > $top) && !$overflow_cron);
 		} else {
-			return 0 if ($time_params[$i] < $bottom && $time_params[$i] > $top);
+			return 0 if (($time_params[$i] < $bottom && $time_params[$i] > $top) && !$overflow_cron);
 		}
 	}
 
@@ -1860,6 +1878,12 @@ sub write_module_xml ($@) {
 	
 	# Module FF interval
 	$Xml .= "	<module_ff_interval>" . $module->{'module_ff_interval'} . "</module_ff_interval>\n" if (defined ($module->{'module_ff_interval'}));
+	
+	# Module Alert template
+	$Xml .= "	<alert_template>" . $module->{'alert_template'} . "</alert_template>\n" if (defined ($module->{'alert_template'}));
+	
+	# Module Alert template
+	$Xml .= "	<crontab>" . $module->{'cron'} . "</crontab>\n" if (defined ($module->{'cron'}) and ($module->{'cron'} ne ""));
 		
 	# Data list
 	if ($#data > 0) {
@@ -2110,6 +2134,7 @@ sub init_module ($) {
 	$module->{'quiet'} = undef;
 	$module->{'module_ff_interval'} = undef;
 	$module->{'macros'} = {};
+	$module->{'alert_template'} = undef;
 }
 
 ################################################################################

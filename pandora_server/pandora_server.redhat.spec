@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_server
 %define version     6.1dev
-%define release     160126
+%define release     160210
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -29,7 +29,6 @@ Requires:           perl-NetAddr-IP net-snmp net-tools
 Requires:           perl-IO-Socket-INET6 perl-Socket6 perl-Net-Telnet
 Requires:           nmap wmic sudo perl-JSON
 Requires:           perl-Time-HiRes perl-Encode-Locale
-Recommends:         perl-Sys-Syslog
 
 %description
 Pandora FMS is a monitoring system for big IT environments. It uses remote tests, or local agents to grab information. Pandora supports all standard OS (Linux, AIX, HP-UX, Solaris and Windows XP,2000/2003), and support multiple setups in HA enviroments.
@@ -132,6 +131,9 @@ fi
 
 echo "Don't forget to start Tentacle Server daemon if you want to receive"
 echo "data using tentacle"
+echo " "
+echo "You may need to install manually some additional required dependencies:"
+echo "perl-Sys-Syslog"
 
 %preun
 

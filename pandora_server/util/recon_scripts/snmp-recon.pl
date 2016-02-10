@@ -795,7 +795,7 @@ sub create_pandora_agent($) {
 		$agent = get_agent_from_name($DBH, $device);
 	}
 
-	my $agent_id;
+	my ($agent_id, $agent_learning);
 	if (!defined($agent)) {
 		my $id_os = 10; # Other.
 		my $device_type = $VISITED_DEVICES{$device}->{'type'};
@@ -809,9 +809,11 @@ sub create_pandora_agent($) {
 		$agent_id = pandora_create_agent(\%CONF, $CONF{'servername'}, $device, $device, $GROUP_ID, 0, $id_os, '', 300, $DBH);
 		return undef unless defined ($agent_id) and ($agent_id > 0);
 		pandora_event(\%CONF, "[RECON] New $device_type found (" . join(',', keys(%{$VISITED_DEVICES{$device}->{'addr'}})) . ").", $GROUP_ID, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $DBH);
+		$agent_learning = 1 == 1;
 	}
 	else {
 		$agent_id = $agent->{'id_agente'};
+		$agent_learning = $agent->{'modo'} == 1;
 	}
 
 	# Add found IP addresses to the agent.
@@ -830,7 +832,7 @@ sub create_pandora_agent($) {
 
 	# Create a ping module.
 	my $module_id = get_agent_module_id($DBH, "ping", $agent_id);
-	if ($module_id <= 0) {
+	if ($module_id <= 0 && $agent_learning) {
 		my %module = ('id_tipo_modulo' => 6,
 			       'id_modulo' => 2,
 		           'nombre' => "ping",
@@ -866,7 +868,7 @@ sub create_pandora_agent($) {
 
 		# Check whether the module already exists.
 		my $module_id = get_agent_module_id($DBH, "ifOperStatus_${if_name}", $agent_id);
-		next if ($module_id > 0);
+		next if ($module_id > 0 && !$agent_learning);
 	
 		# Encode problematic characters.
 		$if_name = safe_input($if_name);
@@ -1044,7 +1046,7 @@ sub show_help {
 	print " * custom_field3 = a router in the network. Optional but recommended.\n\n";
 	print " * custom_field4 = set to -a to add all network interfaces (by default only interfaces that are up are added).\n\n";
 	print " Additional information:\nWhen the script is called from a recon task the task_id, group_id and create_incident";
-	print " parameters are automatically filled by the Pandora FMS Server.";
+	print " parameters are automatically filled by the Pandora FMS Server.\n";
 	exit;
 }
 
@@ -1082,23 +1084,26 @@ sub traceroute_connectivity($) {
 	
 	# Look for parents.
 	my $parent_id = 0;
+	my $child_id = $agent->{'id_agente'};
 	foreach my $hop (@hops) {
 		my $host_addr = $hop->ipaddr ();
 		
 		# Check if the parent agent exists.
-		my $agent = get_agent_from_addr ($DBH, $host_addr);
-		if (!defined($agent)) {
-			$agent = get_agent_from_name($DBH, $host_addr);
+		my $agent_parent = get_agent_from_addr ($DBH, $host_addr);
+		if (!defined($agent_parent)) {
+			$agent_parent = get_agent_from_name($DBH, $host_addr);
 		}
-		if (defined ($agent)) {
-			$parent_id = $agent->{'id_agente'};
-			last;
+		if (defined ($agent_parent)) {
+			$parent_id = $agent_parent->{'id_agente'};
+			next unless ($agent_parent->{'modo'} == 1);
+		} else {
+			$parent_id = create_pandora_agent ($host_addr);
 		}
-	}
-
-	# Connect the host to its parent.
-	if ($parent_id > 0) {
-		db_do($DBH, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $parent_id, $agent->{'id_agente'});
+		# Connect the host to its parent.
+		if ($parent_id > 0) {
+			db_do($DBH, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $parent_id, $child_id);
+			$child_id = $parent_id;
+		}
 	}
 }
 

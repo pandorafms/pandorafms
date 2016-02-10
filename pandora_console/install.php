@@ -63,7 +63,7 @@
 		<div style='height: 10px'>
 			<?php
 $version = '6.1dev';
-$build = '160126';
+$build = '160210';
 			$banner = "v$version Build $build";
 			
 			error_reporting(0);
@@ -702,18 +702,35 @@ function install_step3() {
 				<td>DB Name (pandora by default)<br>
 				<input class='login' type='text' name='dbname' value='pandora' size=20>
 				
-				<tr><td valign=top>
+				<tr>";
+	if ($_SERVER['SERVER_ADDR'] == 'localhost' || $_SERVER['SERVER_ADDR'] == '127.0.0.1') {
+		
+		echo	"<td>DB Host Access<br>
+					<span style='font-size: 9px'>Ignored if DB Hostname is localhost</span>
+				<input class='login' type='text' name='dbgrant' value='" . $_SERVER['SERVER_ADDR'] . "' size=20>";	
+	} else {
+		
+		echo	"<td valign=top>
 				Drop Database if exists<br>
-				<input class='login' type='checkbox' name='drop' value=1>				
+				<input class='login' type='checkbox' name='drop' value=1>";	
+	}
 				
-				
-				<td>Full path to HTTP publication directory<br>
+	echo		"<td>Full path to HTTP publication directory<br>
 					<span style='font-size: 9px'>For example /var/www/pandora_console/</span>
 				<br>
 				<input class='login' type='text' name='path' style='width: 240px;' 
 				value='".dirname (__FILE__)."'>
 				
-				<tr><td></td><td>URL path to Pandora FMS Console<br>
+				<tr>";
+	if ($_SERVER['SERVER_ADDR'] == 'localhost' || $_SERVER['SERVER_ADDR'] == '127.0.0.1') {
+		echo "<td valign=top>
+				Drop Database if exists<br>
+				<input class='login' type='checkbox' name='drop' value=1>
+				"; 
+	} else {
+		echo "<td>";
+	}
+	echo		"<td>URL path to Pandora FMS Console<br>
 				<span style='font-size: 9px'>For example '/pandora_console'</span>
 				</br>
 				<input class='login' type='text' name='url' style='width: 250px;' 
@@ -750,6 +767,7 @@ function install_step4() {
 		$dbname = "";
 		$engine = "";
 		$dbaction = "";
+		$dbgrant = "";
 	}
 	else {
 		$engine = $_POST['engine'];
@@ -757,6 +775,10 @@ function install_step4() {
 		$dbuser = $_POST["user"];
 		$dbhost = $_POST["host"];
 		$dbaction = $_POST["db_action"];
+		if (isset($_POST["dbgrant"]) && $_POST["dbgrant"] != "")
+			$dbgrant = $_POST["dbgrant"];
+		else
+			$dbgrant = $_SERVER["SERVER_ADDR"];
 		if (isset($_POST["drop"]))
 			$dbdrop = $_POST["drop"];
 		else
@@ -825,7 +847,7 @@ function install_step4() {
 							$random_password = random_name (8);
 							$host = 'localhost';
 							if ($dbhost != 'localhost')
-								$host = $_SERVER['SERVER_ADDR'];
+								$host = $dbgrant;
 							$step5 = mysql_query ("GRANT ALL PRIVILEGES ON `$dbname`.* to pandora@$host 
 								IDENTIFIED BY '".$random_password."'");
 							mysql_query ("FLUSH PRIVILEGES");

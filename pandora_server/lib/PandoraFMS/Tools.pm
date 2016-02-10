@@ -64,6 +64,7 @@ our @EXPORT = qw(
     cron_get_closest_in_range
 	cron_next_execution
 	cron_next_execution_date
+	cron_check_syntax
 	pandora_daemonize
 	logger
 	pandora_rotate_logfile
@@ -647,11 +648,14 @@ sub print_message ($$$) {
 # Returns the value of an XML tag from a hash returned by XMLin (one level
 # depth).
 ##########################################################################
-sub get_tag_value ($$$) {
-	my ($hash_ref, $tag, $def_value) = @_;
+sub get_tag_value ($$$;$) {
+	my ($hash_ref, $tag, $def_value, $all_array) = @_;
+	$all_array = 0 unless defined ($all_array);
 	
 	return $def_value unless defined ($hash_ref->{$tag}) and ref ($hash_ref->{$tag});
 	
+	# If all array is required, returns the array
+	return $hash_ref->{$tag} if ($all_array == 1);
 	# Return the first found value
 	foreach my $value (@{$hash_ref->{$tag}}) {
 		
@@ -1243,7 +1247,15 @@ sub cron_next_execution ($) {
 	# Something went wrong, default to 5 minutes
 	return 300;
 }
-
+###############################################################################
+# Get the number of seconds left to the next execution of the given cron entry.
+###############################################################################
+sub cron_check_syntax ($) {
+	my ($cron) = @_;
+	
+	return 0 if !defined ($cron);
+	return ($cron =~ m/^(\d|\*|-)+ (\d|\*|-)+ (\d|\*|-)+ (\d|\*|-)+ (\d|\*|-)+$/);
+}
 ###############################################################################
 # Get the next execution date for the given cron entry in seconds since epoch.
 ###############################################################################

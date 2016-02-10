@@ -211,7 +211,7 @@ $(document).ready (function () {
 	
 	var recursion;
 	$("#checkbox-recursion").click(function () {
-		recursion = this.checked ? 1 : 0;
+		recursion = this.checked;
 		$("#id_group").trigger("change");
 	});
 	

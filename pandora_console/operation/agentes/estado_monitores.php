@@ -157,6 +157,7 @@ ui_toggle($html_toggle,
 	var sort_rows = 'up';
 	var filter_status = -1;
 	var filter_text = "";
+	reset_filter_modules ();
 	
 	$(document).ready(function() {
 		var parameters = {};

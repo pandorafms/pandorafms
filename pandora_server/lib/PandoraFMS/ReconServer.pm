@@ -265,6 +265,7 @@ sub data_consumer ($$) {
 		# End of GIS code -----------------------------      
 		else {
 			# Create a new agent
+			logger ($pa_config, "Creating an agent through recon task: " . $host_name, 10);
 			$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'},
 					                                  $host_name, $addr, $task->{'id_group'},
 									  $parent_id, $id_os, '', 300, $dbh);
@@ -362,9 +363,11 @@ sub get_host_parent {
 		# Check if the host exists
 		my $agent = get_agent_from_addr ($dbh, $host_addr);
 		if (defined ($agent)) {
-			# Move to the next host
-			$parent_id = $agent->{'id_agente'};
-			next;
+			# Move to the next host if module is not in learning mode
+			if ($agent->{'modo'} != 1) {
+				$parent_id = $agent->{'id_agente'};
+				next;
+			}
 		}
 		
 		
@@ -392,10 +395,20 @@ sub get_host_parent {
 		}
 		
 		# Create the host
-		my $agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $host_name, $host_addr, $group, $parent_id, $id_os, '', 300, $dbh);
-		$agent_id = 0 unless defined ($parent_id);
-		db_do ($dbh, 'INSERT INTO taddress_agent (id_a, id_agent)
-			VALUES (?, ?)', $addr_id, $agent_id);
+		my $agent_id = 0;
+		my $agent_parent = get_agent_from_addr ($dbh, $host_addr);
+		if (!defined($agent_parent)) {
+			$agent_parent = get_agent_from_name($dbh, $host_addr);
+		}
+		if (defined ($agent_parent)) {
+			$agent_id = $agent_parent->{'id_agente'};
+			logger ($pa_config, "Updating agent " . $agent_id . " with parent $parent_id in host $host_addr");
+			db_do ($dbh, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $parent_id, $agent_id);
+		} else {
+			$agent_id = pandora_create_agent ($pa_config, $pa_config->{'servername'}, $host_name, $host_addr, $group, $parent_id, $id_os, '', 300, $dbh);
+			db_do ($dbh, 'INSERT INTO taddress_agent (id_a, id_agent)
+				VALUES (?, ?)', $addr_id, $agent_id);
+		}
 		
 		# Move to the next host
 		$parent_id = $agent_id;

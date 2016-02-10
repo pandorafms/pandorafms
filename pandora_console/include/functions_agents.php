@@ -192,7 +192,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 			}
 		}
 	}
-	else if ($id_agent === false) {
+	else if ($id_agent === false || empty($id_agent)) {
 		if ($allModules)
 			$disabled = '';
 		else

@@ -122,7 +122,7 @@ MapController.prototype.click_event = function(event) {
 }
 
 MapController.prototype.popup_map = function(self, event) {
-	// Node position and dimension
+	// Node position and radius
 	nodeX = parseInt($(event.currentTarget).attr("cx"));
 	nodeY = parseInt($(event.currentTarget).attr("cy"));
 	nodeR = parseInt($(event.currentTarget).attr("r"));
@@ -141,28 +141,33 @@ MapController.prototype.popup_map = function(self, event) {
 
 	//To know the position of the dialog box
 	if (self.xOffset(map_width, nodeX, dialog_width) && self.yOffset(map_height, nodeY, dialog_height)) {
+		var dialogClass = "nodeDialogBottom";
 		var xPos = event.pageX - dialog_width + nodeR;
 		var yPos = event.clientY - dialog_height - nodeR - self._dialogNodeMargin;
 	}
 	else if (self.yOffset(map_height, nodeY, dialog_height)) {
+		var dialogClass = "nodeDialogBottom";
 		var xPos = event.pageX - nodeR;
 		var yPos = event.clientY + -dialog_height - nodeR - self._dialogNodeMargin;
 	}
 	else if (self.xOffset(map_width, nodeX, dialog_width)) {
+		var dialogClass = "nodeDialogTop";
 		var xPos = event.pageX - dialog_width + nodeR;
 		var yPos = event.clientY + nodeR + self._dialogNodeMargin;
 	}
 	else {
+		var dialogClass = "nodeDialogTop";
 		var xPos = event.pageX - nodeR;
 		var yPos = event.clientY + nodeR + self._dialogNodeMargin;
 	}
 
 	$(self._target + " svg").after($("<div>").attr("id", "dialog_popup"));
 	$("#dialog_popup").dialog({
+		dialogClass: dialogClass,
 	  	modal: false,
 		closeOnEscape: true,
 		show: {effect: 'fade', speed: 1000},
-		title: "Ventana Modarrl!!",
+		title: "Node dialog",
 		resizable: false,
 		position: [xPos,yPos],
 		height: dialog_height,

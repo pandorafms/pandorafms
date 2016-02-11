@@ -3135,7 +3135,26 @@ table#policy_modules td * {
 }
 .nodeDialogTop:after {
 	bottom: 100%;
-	left: 50%;
+	left: 8%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+	border-color: transparent;
+	border-bottom-color: #82b92e;
+	border-width: 15px;
+	margin-left: -15px;
+}
+.nodeDialogTop2 {
+	float: left;
+	position: relative;
+	background: #82b92e;
+}
+.nodeDialogTop2:after {
+	bottom: 100%;
+	right: 8%;
 	border: solid transparent;
 	content: " ";
 	height: 0;
@@ -3155,7 +3174,25 @@ table#policy_modules td * {
 }
 .nodeDialogBottom:after {
 	top: 100%;
-	left: 50%;
+	right: 8%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+	border-color: transparent;
+	border-top-color: #82b92e;
+	border-width: 15px;
+	margin-left: -15px;
+}
+.nodeDialogBottom2 {
+	position: relative;
+	background: #82b92e;
+}
+.nodeDialogBottom2:after {
+	top: 100%;
+	left: 8%;
 	border: solid transparent;
 	content: " ";
 	height: 0;

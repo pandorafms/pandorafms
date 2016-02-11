@@ -146,12 +146,12 @@ MapController.prototype.popup_map = function(self, event) {
 		var yPos = event.clientY - dialog_height - nodeR - self._dialogNodeMargin;
 	}
 	else if (self.yOffset(map_height, nodeY, dialog_height)) {
-		var dialogClass = "nodeDialogBottom";
+		var dialogClass = "nodeDialogBottom2";
 		var xPos = event.pageX - nodeR;
 		var yPos = event.clientY + -dialog_height - nodeR - self._dialogNodeMargin;
 	}
 	else if (self.xOffset(map_width, nodeX, dialog_width)) {
-		var dialogClass = "nodeDialogTop";
+		var dialogClass = "nodeDialogTop2";
 		var xPos = event.pageX - dialog_width + nodeR;
 		var yPos = event.clientY + nodeR + self._dialogNodeMargin;
 	}

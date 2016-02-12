@@ -28,12 +28,10 @@ enterprise_include("include/functions_networkmap_enterprise.php");
 require_once("include/class/Map.class.php");
 
 class Networkmap extends Map {
-	protected $show_snmp_modules = false;
+	protected $filter = array();
+	
 	protected $source_group = 0;
 	protected $source_ip_mask = "";
-	protected $show_groups = false;
-	protected $show_module_groups = false;
-	protected $filter_text = "";
 	
 	public function __construct($id) {
 		parent::__construct($id);
@@ -44,8 +42,7 @@ class Networkmap extends Map {
 	public function processDBValues($dbValues) {
 		$filter = json_decode($dbValues['filter'], true);
 		
-		$this->show_snmp_modules = $filter['show_snmp_modules'];
-		$this->filter_text = $filter["text"];
+		$this->filter = $filter;
 		
 		switch ($dbValues['source_data']) {
 			case MAP_SOURCE_GROUP:
@@ -79,12 +76,12 @@ class Networkmap extends Map {
 		$return['regen'] = 0; // HARD CODED
 		$return['pure'] = 0; // HARD CODED
 		$return['id'] = $this->id;
-		$return['show_snmp_modules'] = $this->show_snmp_modules;
+		$return['show_snmp_modules'] = $this->filter['only_snmp_modules'];
 		$return['l2_network_interfaces'] = true; // HARD CODED
 		$return['ip_mask'] = $this->source_ip_mask;
-		$return['dont_show_subgroups'] = !$this->show_groups;
+		$return['dont_show_subgroups'] = false;
 		$return['old_mode'] = false;
-		$return['filter'] = $this->filter_text;
+		$return['filter'] = $this->filter['text'];
 		
 		return $return;
 	}

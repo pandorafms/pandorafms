@@ -56,7 +56,7 @@ abstract class Map {
 		
 		$this->id_group = (int)$dbValues['id_group'];
 		$this->generation_method = (int)$dbValues['generation_method'];
-
+		
 		$this->width = (int)$dbValues['width'];
 		$this->height = (int)$dbValues['height'];
 	}

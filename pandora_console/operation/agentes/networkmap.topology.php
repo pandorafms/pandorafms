@@ -142,6 +142,7 @@ else {
 		
 		
 		html_debug(file_get_contents("/tmp/caca.txt"), true);
+		html_debug($graph);
 	}
 }
 

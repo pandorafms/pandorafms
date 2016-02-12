@@ -66,7 +66,7 @@ class Networkmap extends Map {
 		$return = array();
 		
 		$return['id_group'] = $this->source_group;
-		$return['simple'] = 12; // HARD CODED
+		$return['simple'] = 0; // HARD CODED
 		$return['font_size'] = null;
 		$return['layout'] = null;
 		$return['nooverlap'] = false; // HARD CODED
@@ -161,7 +161,7 @@ class Networkmap extends Map {
 				$filename_plain,
 				$relation_nodes, $graph,
 				$parameters['l2_network_interfaces']);
-			//~ html_debug_print($graph);
+			html_debug_print($graph);
 			//~ html_debug_print($nodes);
 			//~ html_debug_print($relation_nodes);
 			
@@ -176,6 +176,7 @@ class Networkmap extends Map {
 			echo '<img src="'.$src.'">';
 			
 			// ----- END DEPRECATED CODE--------------------------------
+			$this->nodes[] = array(666);
 		}
 	}
 	

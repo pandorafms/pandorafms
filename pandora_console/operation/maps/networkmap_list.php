@@ -128,15 +128,20 @@ if ($save_networkmap) {
 	$width = (int) get_parameter('width', 800);
 	$height = (int) get_parameter('height', 800);
 	$generation_method = (int) get_parameter('generation_method', MAP_GENERATION_CIRCULAR);
-	$show_groups_filter = (int) get_parameter('show_groups_filter', false);
-	$show_module_plugins = (int) get_parameter('show_module_plugins', false);
-	$show_snmp_modules = (int) get_parameter('show_snmp_modules', false);
-	$show_modules = (int) get_parameter('show_modules', false);
-	$show_policy_modules = (int) get_parameter('show_policy_modules', false);
-	$show_pandora_nodes = (int) get_parameter('show_pandora_nodes', false);
-	$show_module_group = (int) get_parameter('show_module_group', false);
+	
+	// Filters
 	$id_tag = (int) get_parameter('id_tag', 0);
 	$text = (string) get_parameter('text', "");
+	$show_pandora_nodes = (int) get_parameter('show_pandora_nodes', 0);
+	$show_agents = (int) get_parameter('show_agents', 0);
+	$show_modules = (int) get_parameter('show_modules', 0);
+	$module_group = (int) get_parameter('module_group', 0);
+	$show_module_group = (int) get_parameter('show_module_group', 0);
+	$only_snmp_modules = (int) get_parameter('only_snmp_modules', 0);
+	$only_modules_with_alerts = (int) get_parameter('only_modules_with_alerts', 0);
+	$only_policy_modules = (int) get_parameter('only_policy_modules', 0);
+	
+	
 	
 	$values = array();
 	$values['name'] = $name;
@@ -151,16 +156,20 @@ if ($save_networkmap) {
 	$values['width'] = $width;
 	$values['height'] = $height;
 	$values['source'] = $source;
+	
+	
 	$filter = array();
-	$filter['show_groups_filter'] = 60;
-	$filter['show_module_plugins'] = $show_module_plugins;
-	$filter['show_snmp_modules'] = $show_snmp_modules;
-	$filter['show_modules'] = $show_modules;
-	$filter['show_policy_modules'] = $show_policy_modules;
-	$filter['show_pandora_nodes'] = $show_pandora_nodes;
-	$filter['show_module_group'] = $show_module_group;
 	$filter['id_tag'] = $id_tag;
 	$filter['text'] = $text;
+	$filter['show_pandora_nodes'] = $show_pandora_nodes;
+	$filter['show_agents'] = $show_agents;
+	$filter['show_modules'] = $show_modules;
+	$filter['module_group'] = $module_group;
+	$filter['show_module_group'] = $show_module_group;
+	$filter['only_snmp_modules'] = $only_snmp_modules;
+	$filter['only_modules_with_alerts'] = $only_modules_with_alerts;
+	$filter['only_policy_modules'] = $only_policy_modules;
+	
 	$values['filter'] = json_encode($filter);
 	$networkmap_names = db_get_all_rows_sql("SELECT name FROM tmap");
 	
@@ -241,15 +250,20 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 		$source_data = (string) get_parameter('source_data', 'group');
 		$width = (int) get_parameter('width', 800);
 		$height = (int) get_parameter('height', 800);
-		$show_groups_filter = (int) get_parameter('show_groups_filter', false);
-		$show_module_plugins = (int) get_parameter('show_module_plugins', false);
-		$show_snmp_modules = (int) get_parameter('show_snmp_modules', false);
-		$show_modules = (int) get_parameter('show_modules', false);
-		$show_policy_modules = (int) get_parameter('show_policy_modules', false);
-		$show_pandora_nodes = (int) get_parameter('show_pandora_nodes', false);
-		$show_module_group = (int) get_parameter('show_module_group', false);
+		
+		
+		// Filters
 		$id_tag = (int) get_parameter('id_tag', 0);
 		$text = (string) get_parameter('text', "");
+		$show_pandora_nodes = (int) get_parameter('show_pandora_nodes', 0);
+		$show_agents = (int) get_parameter('show_agents', 0);
+		$show_modules = (int) get_parameter('show_modules', 0);
+		$module_group = (int) get_parameter('module_group', 0);
+		$show_module_group = (int) get_parameter('show_module_group', 0);
+		$only_snmp_modules = (int) get_parameter('only_snmp_modules', 0);
+		$only_modules_with_alerts = (int) get_parameter('only_modules_with_alerts', 0);
+		$only_policy_modules = (int) get_parameter('only_policy_modules', 0);
+		
 		
 		$values = array();
 		$values['name'] = $name;
@@ -260,16 +274,18 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 		$values['source'] = $source;
 		$values['width'] = $width;
 		$values['height'] = $height;
+		
 		$filter = array();
-		$filter['show_groups_filter'] = $show_groups_filter;
-		$filter['show_module_plugins'] = $show_module_plugins;
-		$filter['show_snmp_modules'] = $show_snmp_modules;
-		$filter['show_modules'] = $show_modules;
-		$filter['show_policy_modules'] = $show_policy_modules;
-		$filter['show_pandora_nodes'] = $show_pandora_nodes;
-		$filter['show_module_group'] = $show_module_group;
 		$filter['id_tag'] = $id_tag;
 		$filter['text'] = $text;
+		$filter['show_pandora_nodes'] = $show_pandora_nodes;
+		$filter['show_agents'] = $show_agents;
+		$filter['show_modules'] = $show_modules;
+		$filter['module_group'] = $module_group;
+		$filter['show_module_group'] = $show_module_group;
+		$filter['only_snmp_modules'] = $only_snmp_modules;
+		$filter['only_modules_with_alerts'] = $only_modules_with_alerts;
+		$filter['only_policy_modules'] = $only_policy_modules;
 		$values['filter'] = json_encode($filter);
 		
 		$result_update = false;

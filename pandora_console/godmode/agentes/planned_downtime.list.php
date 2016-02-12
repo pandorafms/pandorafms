@@ -19,7 +19,7 @@ global $config;
 check_login();
 
 $read_permisson = check_acl ($config['id_user'], 0, "AR");
-$write_permisson = check_acl ($config['id_user'], 0, "AW");
+$write_permisson = check_acl ($config['id_user'], 0, "AD");
 
 if (! $read_permisson) {
 	db_pandora_audit("ACL Violation",
@@ -63,8 +63,8 @@ $stop_downtime = (bool) get_parameter ('stop_downtime');
 if ($stop_downtime) {
 	$downtime = db_get_row('tplanned_downtime', 'id', $id_downtime);
 	
-	// Check AW permission on the downtime
-	if (empty($downtime) || ! check_acl ($config['id_user'], $downtime['id_group'], "AW")) {
+	// Check AD permission on the downtime
+	if (empty($downtime) || ! check_acl ($config['id_user'], $downtime['id_group'], "AD")) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access downtime scheduler");
 		require ("general/noaccess.php");
@@ -86,8 +86,8 @@ $delete_downtime = (int) get_parameter ('delete_downtime');
 if ($delete_downtime) {
 	$downtime = db_get_row('tplanned_downtime', 'id', $id_downtime);
 	
-	// Check AW permission on the downtime
-	if (empty($downtime) || ! check_acl ($config['id_user'], $downtime['id_group'], "AW")) {
+	// Check AD permission on the downtime
+	if (empty($downtime) || ! check_acl ($config['id_user'], $downtime['id_group'], "AD")) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access downtime scheduler");
 		require ("general/noaccess.php");
@@ -352,9 +352,9 @@ else {
 	
 	ui_pagination($downtimes_number, "index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list&$filter_params_str", $offset);
 	
-	// User groups with AW permission
-	$groupsAW = users_get_groups($config['id_user'], 'AW');
-	$groupsAW = array_keys($groupsAW);
+	// User groups with AD permission
+	$groupsAD = users_get_groups($config['id_user'], 'AD');
+	$groupsAD = array_keys($groupsAD);
 	
 	// View available downtimes present in database (if any of them)
 	$table = new StdClass();
@@ -422,7 +422,7 @@ else {
 		}
 		
 		// If user have writting permissions
-		if (in_array($downtime['id_group'], $groupsAW)) {
+		if (in_array($downtime['id_group'], $groupsAD)) {
 			// Stop button
 			if ($downtime['type_execution'] == 'once' && $downtime["executed"] == 1) {
 				

@@ -55,12 +55,9 @@ function migration_open_networkmaps() {
 				break;
 		}
 		
-		switch ($new_networkmap['subtype']) {
-			case MAP_SUBTYPE_TOPOLOGY:
-				$new_networkmap['source'] = MAP_SOURCE_GROUP;
-				$new_networkmap['source_data'] = $old_netw_open['id_group'];
-				break;
-		}
+		// ---- Source -------------------------------------------------
+		$new_networkmap['source'] = MAP_SOURCE_GROUP;
+		$new_networkmap['source_data'] = $old_netw_open['id_group'];
 		
 		switch ($old_netw_open['layout']) {
 			case 'radial':
@@ -69,38 +66,51 @@ function migration_open_networkmaps() {
 		}
 		
 		
+		// ---- Filter -------------------------------------------------
 		$filter = array();
 		
-		$filter['show_groups'] = 0;
-		if ($old_netw_open['show_groups']) {
-			$filter['show_groups'] = 1;
+		$filter['id_tag'] = 0;
+		if ($old_netw_open['id_tag']) {
+			$filter['id_tag'] = 1;
 		}
-		$filter['show_module_plugins'] = 0;
-		$filter['show_snmp_modules'] = 0;
-		if ($old_netw_open['show_snmp_modules']) {
-			$filter['show_snmp_modules'] = 1;
+		$filter['text'] = $old_netw_open['text_filter'];
+		$filter['show_pandora_nodes'] = 0; // Only metaconsole
+		switch ($depth) {
+			case 'agents':
+				$filter['show_modules'] = 0;
+				$filter['show_agents'] = 1;
+				break;
+			case 'all':
+				$filter['show_modules'] = 1;
+				$filter['show_agents'] = 1;
+				break;
+			case 'groups':
+				$filter['show_modules'] = 0;
+				$filter['show_agents'] = 0;
+				break;
 		}
-		$filter['show_modules'] = 0;
-		if ($old_netw_open['show_modules']) {
-			$filter['show_modules'] = 1;
-		}
-		$filter['show_policy_modules'] = 0;
-		$filter['show_pandora_nodes'] = 0;
-		$filter['show_only_modules_with_alerts'] = 0;
+		$filter['only_modules_with_alerts'] = 0;
 		if ($old_netw_open['only_modules_with_alerts']) {
-			$filter['show_only_modules_with_alerts'] = 1;
+			$filter['only_modules_with_alerts'] = 1;
 		}
 		$filter['show_module_group'] = 0;
 		if ($old_netw_open['show_modulegroup']) {
 			$filter['show_module_group'] = 1;
 		}
-		$filter['id_tag'] = 0;
-		if ($old_netw_open['id_tag']) {
-			$filter['id_tag'] = 1;
+		$filter['module_group'] = 0;
+		if ($old_netw_open['id_module_group']) {
+			$filter['module_group'] = 1;
 		}
-		$filter['text'] = '';
+		$filter['only_policy_modules'] = 0;
+		$filter['only_snmp_modules'] = 0;
+		if ($old_netw_open['show_snmp_modules']) {
+			$filter['only_snmp_modules'] = 1;
+		}
 		
 		$new_networkmap['filter'] = json_encode($filter);
+		// -------------------------------------------------------------
+		
+		
 		
 		html_debug($new_networkmap);
 		

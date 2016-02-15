@@ -75,7 +75,7 @@ function migration_open_networkmaps() {
 		}
 		$filter['text'] = $old_netw_open['text_filter'];
 		$filter['show_pandora_nodes'] = 0; // Only metaconsole
-		switch ($depth) {
+		switch ($old_netw_open['depth']) {
 			case 'agents':
 				$filter['show_modules'] = 0;
 				$filter['show_agents'] = 1;

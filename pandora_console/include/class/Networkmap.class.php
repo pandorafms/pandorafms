@@ -58,8 +58,43 @@ class Networkmap extends Map {
 		parent::processDBValues($dbValues);
 	}
 	
-	protected function generateDot() {
-		// TODO
+	protected function generateDot($graph) {
+		$graph = preg_replace('/^graph .*/', '', $graph);
+		
+		$nodes_and_edges = explode("];", $graph);
+		
+		$nodes = array();
+		$edges = array();
+		foreach ($nodes_and_edges as $node_or_edge) {
+			$node_or_edge = trim($node_or_edge);
+			
+			$chunks = explode("[", $node_or_edge);
+			
+			if (strstr($chunk[0], "--") !== false) {
+				// EDGE
+				$graphviz_ids = explode("--", $chunk[0]);
+				
+				$edges[] = array(
+					'to' => trim($graphviz_ids[0]),
+					'from' => trim($graphviz_ids[1]));
+			}
+			else {
+				// NODE
+				$graphviz_id = trim($chunk[0]);
+				
+				if (strstr($chunk[1], "&id_module=") !== false) {
+					// MODULE
+				}
+				else {
+					// AGENT
+				}
+			}
+			
+			
+			html_debug($chunks, true);
+		}
+		
+		
 	}
 	
 	protected function temp_parseParameters_generateDot() {
@@ -153,15 +188,17 @@ class Networkmap extends Map {
 			
 			unlink($filename_dot);
 			
-			html_debug($cmd);
-			html_debug($filename_plain);
-			html_debug(file_get_contents($filename_plain), true);
+			//~ html_debug($cmd);
+			//~ html_debug($filename_plain);
+			//~ html_debug(file_get_contents($filename_plain), true);
+			
+			$this->generateDot($graph);
 			
 			$nodes = networkmap_enterprise_loadfile($this->id,
 				$filename_plain,
 				$relation_nodes, $graph,
 				$parameters['l2_network_interfaces']);
-			html_debug_print($graph);
+			//~ html_debug_print($graph);
 			//~ html_debug_print($nodes);
 			//~ html_debug_print($relation_nodes);
 			

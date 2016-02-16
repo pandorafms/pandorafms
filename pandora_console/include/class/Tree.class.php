@@ -350,8 +350,10 @@ class Tree {
 					// Get the agents of a group
 					case 'group':
 						if (empty($rootID) || $rootID == -1) {
-							if ($this->strictACL)
-								return false;
+
+							// Strict acl specifications
+							/*if ($this->strictACL)
+								return false;*/
 
 							$columns = 'tg.id_grupo AS id, tg.nombre AS name, tg.parent, tg.icon';
 							$order_fields = 'tg.nombre ASC, tg.id_grupo ASC';

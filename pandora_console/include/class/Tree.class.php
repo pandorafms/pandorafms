@@ -1130,6 +1130,14 @@ class Tree {
 		foreach ($items as $item) {
 			$groups[$item['id']] = $this->getProcessedItem($item);
 		}
+
+		// If user have not permissions in parent, set parent node to 0 (all)
+		$user_groups_with_privileges = users_get_groups($config['id_user']);
+		foreach ($groups as $id => $group) {
+			if (!in_array($groups[$id]['parent'], array_keys($user_groups_with_privileges))) {
+				$groups[$id]['parent'] = 0;
+			}
+		}
 		// Build the group hierarchy
 		foreach ($groups as $id => $group) {
 			if (isset($groups[$id]['parent']) && ($groups[$id]['parent'] != 0)) {

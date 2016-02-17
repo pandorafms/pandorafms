@@ -114,7 +114,7 @@ if [ "$1" = "1" ]; then
 fi
 
 /sbin/chkconfig --del pandora_agent_daemon 
-/etc/init.d/pandora_agent_daemon stop
+/etc/init.d/pandora_agent_daemon stop >/dev/null 2>&1 || :
 rm /etc/init.d/pandora_agent_daemon
 /usr/sbin/userdel pandora
 rm -Rf /etc/pandora/pandora_agent.conf

@@ -21,10 +21,4 @@
  * @subpackage Networkmaps
  */
 
-function networkmaps_show($id) {
-	maps_show($id);
-	
-	networkmaps_show_staged_area($id);
-	networkmaps_show_black_list_staged_area($id);
-}
 ?>

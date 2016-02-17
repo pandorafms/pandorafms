@@ -489,4 +489,9 @@ define("MOSAIC",		1);
 define("STRECH",		2);
 define("FIT_WIDTH",		3);
 define("FIT_HEIGH",		4);
+
+/* Items of maps */
+define("ITEM_TYPE_AGENT_NETWORKMAP",	0);
+define("ITEM_TYPE_MODULE_NETWORKMAP",	1);
+define("ITEM_TYPE_EDGE_NETWORKMAP",		2);
 ?>

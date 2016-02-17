@@ -30,11 +30,12 @@ abstract class Map {
 	protected $subtype = null;
 	protected $id_group = null;
 	protected $generation_method = null;
-
+	
 	protected $width = null;
 	protected $height = null;
-
+	
 	protected $nodes = null;
+	protected $edges = null;
 	
 	protected $requires_js = null;
 	

@@ -58,7 +58,7 @@ class Networkmap extends Map {
 		parent::processDBValues($dbValues);
 	}
 	
-	protected function generateDot($graph) {
+	protected function generateDot($graph, $positions) {
 		$graph = preg_replace('/^graph .*/', '', $graph);
 		
 		$nodes_and_edges = explode("];", $graph);
@@ -70,9 +70,9 @@ class Networkmap extends Map {
 			
 			$chunks = explode("[", $node_or_edge);
 			
-			if (strstr($chunk[0], "--") !== false) {
+			if (strstr($chunks[0], "--") !== false) {
 				// EDGE
-				$graphviz_ids = explode("--", $chunk[0]);
+				$graphviz_ids = explode("--", $chunks[0]);
 				
 				$edges[] = array(
 					'to' => trim($graphviz_ids[0]),
@@ -80,21 +80,53 @@ class Networkmap extends Map {
 			}
 			else {
 				// NODE
-				$graphviz_id = trim($chunk[0]);
+				$graphviz_id = trim($chunks[0]);
 				
-				if (strstr($chunk[1], "&id_module=") !== false) {
+				// Avoid the weird nodes.
+				if (!is_numeric($graphviz_id))
+					continue;
+				
+				
+				$chunks = explode("ajax.php?", $chunks[1]);
+				
+				if (strstr($chunks[1], "&id_module=") !== false) {
 					// MODULE
+					preg_match("/id_module=([0-9]*)/", $chunks[1], $matches);
+					$id = $matches[1];
+					$type = ITEM_TYPE_MODULE_NETWORKMAP;
 				}
 				else {
 					// AGENT
+					preg_match("/id_agent=([0-9]*)/", $chunks[1], $matches);
+					$id = $matches[1];
+					$type = ITEM_TYPE_AGENT_NETWORKMAP;
 				}
+				
+				$nodes[$graphviz_id] = array('id' => $id);
 			}
-			
-			
-			html_debug($chunks, true);
 		}
 		
+		foreach ($positions as $line) {
+			//clean line a long spaces for one space caracter
+			$line = preg_replace('/[ ]+/', ' ', $line);
+			
+			if (preg_match('/^node.*$/', $line) != 0) {
+				$graphviz_id = $items[1];
+				
+				$nodes[$graphviz_id]['x'] = $items[2] * 100; //200 is for show more big
+				$nodes[$graphviz_id]['y'] = $items[3] * 100;
+			}
+		}
 		
+		foreach ($nodes as $graphviz_id => $node) {
+			$graph->$nodes[$graphviz_id] = $node;
+		}
+		
+		foreach ($edges as $edge) {
+			$graph->nodes[] = array('type' => ITEM_TYPE_EDGE_NETWORKMAP);
+			$edge['id_item'] = key(end($graph->nodes[]));
+			$graph->edges[] = $edge;
+		}
 	}
 	
 	protected function temp_parseParameters_generateDot() {
@@ -186,34 +218,19 @@ class Networkmap extends Map {
 			
 			system ($cmd);
 			
+			
+			
+			$this->generateDot($graph, file($filename_plain));
+			
 			unlink($filename_dot);
-			
-			//~ html_debug($cmd);
-			//~ html_debug($filename_plain);
-			//~ html_debug(file_get_contents($filename_plain), true);
-			
-			$this->generateDot($graph);
-			
-			$nodes = networkmap_enterprise_loadfile($this->id,
-				$filename_plain,
-				$relation_nodes, $graph,
-				$parameters['l2_network_interfaces']);
-			//~ html_debug_print($graph);
-			//~ html_debug_print($nodes);
-			//~ html_debug_print($relation_nodes);
-			
-			// debug image
-			// Read image path, convert to base64 encoding
-			$imgData = base64_encode(file_get_contents("/tmp/caca.png"));
-			
-			// Format the image SRC:  data:{mime};base64,{data};
-			$src = 'data: '.mime_content_type("/tmp/caca.png").';base64,'.$imgData;
-				
-			// Echo out a sample image
-			echo '<img src="'.$src.'">';
-			
+			unlink($filename_plain);
 			// ----- END DEPRECATED CODE--------------------------------
-			$this->nodes[] = array(666);
+			
+			switch (get_class($this)) {
+				case 'NetworkmapEnterprise':
+					NetworkmapEnterprise::dbSaveNodes();
+					break;
+			}
 		}
 	}
 	

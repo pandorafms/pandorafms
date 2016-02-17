@@ -66,7 +66,7 @@ pidof_pandora () {
 			fi
 		done
 	else
-		PANDORA_PID=`ps -Af | grep "$DAEMON $PANDORA_PATH" | grep -v grep | awk '{ print $2 }'`
+		PANDORA_PID=`ps -Afw | grep "$DAEMON $PANDORA_PATH" | grep -v grep | awk '{ print $2 }'`
 	fi
 	
 	echo $PANDORA_PID

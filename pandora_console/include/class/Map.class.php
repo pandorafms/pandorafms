@@ -83,20 +83,58 @@ abstract class Map {
 	
 	abstract function printJSInit();
 	
+	public function writeJSGraph() {
+		?>
+		<script type="text/javascript">
+			<?php
+			echo "var nodes = " . json_encode($this->nodes) . ";";
+			echo "var edges = " . json_encode($this->edges) . ";";
+			?>
+		</script>
+		<?php
+	}
+	
 	public function show() {
 		foreach ($this->requires_js as $js) {
 			echo "<script type='text/javascript' src='$js'></script>" . "\n";
 		}
 		
+		$this->writeJSContants();
+		$this->writeJSGraph();
+		
 		?>
 		
 		<div id="map" data-id="<?php echo $this->id;?>" >
-			<svg style="border: 2px solid red;" pointer-events="all" width="<?php echo $this->width;?>px" height="<?php echo $this->height;?>px">
+			<?php
+			if ($this->width == 0) {
+				$width = "100%";
+			}
+			else {
+				$width = $this->width . "px";
+			}
+			if ($this->height == 0) {
+				$height = "500px";
+			}
+			else {
+				$height = $this->height . "px";
+			}
+			?>
+			<svg style="border: 2px solid red;" pointer-events="all" width="<?php echo $width;?>" height="<?php echo $height;?>">
 			</svg>
 		</div>
 		
 		<?php
 		$this->printJSInit();
+	}
+	
+	public function writeJSContants() {
+		?>
+		<script type="text/javascript">
+			<?php
+			
+			?>
+		</script>
+		<?php
 	}
 	
 	public function getType() {

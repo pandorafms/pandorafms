@@ -43,6 +43,8 @@ class Networkmap extends Map {
 		$filter = json_decode($dbValues['filter'], true);
 		
 		$this->filter = $filter;
+		if (!isset($this->filter['only_snmp_modules']))
+			$this->filter['only_snmp_modules'] = false;
 		
 		switch ($dbValues['source_data']) {
 			case MAP_SOURCE_GROUP:
@@ -111,6 +113,7 @@ class Networkmap extends Map {
 			$line = preg_replace('/[ ]+/', ' ', $line);
 			
 			if (preg_match('/^node.*$/', $line) != 0) {
+				$items = explode(' ', $line);
 				$graphviz_id = $items[1];
 				
 				$nodes[$graphviz_id]['x'] = $items[2] * 100; //200 is for show more big
@@ -119,13 +122,13 @@ class Networkmap extends Map {
 		}
 		
 		foreach ($nodes as $graphviz_id => $node) {
-			$graph->$nodes[$graphviz_id] = $node;
+			$this->nodes[$graphviz_id] = $node;
 		}
 		
 		foreach ($edges as $edge) {
-			$graph->nodes[] = array('type' => ITEM_TYPE_EDGE_NETWORKMAP);
+			$this->nodes[] = array('type' => ITEM_TYPE_EDGE_NETWORKMAP);
 			$edge['id_item'] = key(end($graph->nodes[]));
-			$graph->edges[] = $edge;
+			$this->edges[] = $edge;
 		}
 	}
 	

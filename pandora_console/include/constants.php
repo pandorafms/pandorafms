@@ -387,4 +387,11 @@ define("COLLECTION_UNSAVED",				3);
 
 /* PAGINATION */
 define("PAGINATION_BLOCKS_LIMIT", 15);
+
+/* SAML attributes constants */
+define("ROLES_AND_TAGS", "urn:mace:rediris.es:entitlement:monitoring:");
+define("USER_DESC", "commonName");
+define("ID_USER_IN_PANDORA", "eduPersonTargetedId");
+define("GROUP_IN_PANDORA", "schacHomeOrganization");
+define("MAIL_IN_PANDORA", "mail");
 ?>

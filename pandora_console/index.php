@@ -178,13 +178,21 @@ if (! isset ($config['id_user']) && isset ($_GET["login"])) {
 	$pass = get_parameter_post ("pass"); //This is the variable with the password
 	$nick = db_escape_string_sql($nick);
 	$pass = db_escape_string_sql($pass);
-	
-	// process_user_login is a virtual function which should be defined in each auth file.
-	// It accepts username and password. The rest should be internal to the auth file.
-	// The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it
-	// process_user_login should return false in case of errors or invalid login, the nickname if correct
-	$nick_in_db = process_user_login ($nick, $pass);
-	
+
+	$login_button_saml = get_parameter("login_button_saml", false);
+	if (($config['auth'] == 'saml') && $login_button_saml) {
+			include_once(ENTERPRISE_DIR . "/include/auth/saml.php");
+			$saml_user_id = saml_process_user_login();
+			$nick_in_db = $saml_user_id;
+	}
+	else {
+		// process_user_login is a virtual function which should be defined in each auth file.
+		// It accepts username and password. The rest should be internal to the auth file.
+		// The auth file can set $config["auth_error"] to an informative error output or reference their internal error messages to it
+		// process_user_login should return false in case of errors or invalid login, the nickname if correct
+		$nick_in_db = process_user_login ($nick, $pass);
+	}
+
 	$expired_pass = false;
 	
 	if (($nick_in_db != false) && ((!is_user_admin($nick)
@@ -352,6 +360,11 @@ if (isset ($_GET["bye"])) {
 	// Unregister Session (compatible with 5.2 and 6.x, old code was deprecated
 	unset($_SESSION['id_usuario']);
 	unset($iduser);
+	if ($config['auth'] == 'saml') {
+		require_once('/opt/simplesamlphp/lib/_autoload.php');
+		$as = new SimpleSAML_Auth_Simple('example-userpass');
+		$as->logout();
+	}
 	while (@ob_end_flush ());
 	exit ("</html>");
 }

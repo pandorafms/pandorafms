@@ -251,8 +251,8 @@ echo '</form>';
 	// Event callback for the auth select
 	function show_selected_rows (event) {
 		var auth_method = $(this).val();
-		
-		if (auth_method !== 'mysql') {
+
+		if ((auth_method !== 'mysql') && (auth_method !== 'saml')) {
 			$('tr.remote').show();
 			show_autocreate_options(null);
 		}

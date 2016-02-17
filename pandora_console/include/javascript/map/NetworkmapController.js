@@ -18,3 +18,10 @@ var NetworkmapController = function(target) {
 
 NetworkmapController.prototype = Object.create(MapController.prototype);
 NetworkmapController.prototype.constructor = NetworkmapController;
+
+NetworkmapController.prototype.init_map = function() {
+	
+	
+	
+	MapController.prototype.init_map.call(this);
+};

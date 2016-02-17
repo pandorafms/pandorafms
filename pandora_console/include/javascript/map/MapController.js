@@ -31,6 +31,8 @@ MapController.prototype._marginConstant = 0; //To be beauty
 MapController.prototype.init_map = function() {
 	var svg = d3.select("#map svg");
 	
+	
+	
 	svg.append("g").append("circle")
 		.attr("id", "node_10")
 		.attr("class", "node")

@@ -128,10 +128,16 @@ abstract class Map {
 	}
 	
 	public function writeJSContants() {
+		$contants = array();
+		$contants["ITEM_TYPE_AGENT_NETWORKMAP"] = ITEM_TYPE_AGENT_NETWORKMAP;
+		$contants["ITEM_TYPE_MODULE_NETWORKMAP"] = ITEM_TYPE_MODULE_NETWORKMAP;
+		$contants["ITEM_TYPE_EDGE_NETWORKMAP"] = ITEM_TYPE_EDGE_NETWORKMAP;
 		?>
 		<script type="text/javascript">
 			<?php
-			
+			foreach ($contants as $name => $value) {
+				echo "var $name = $value \n";
+			}
 			?>
 		</script>
 		<?php

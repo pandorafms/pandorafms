@@ -104,7 +104,7 @@ class Networkmap extends Map {
 					$type = ITEM_TYPE_AGENT_NETWORKMAP;
 				}
 				
-				$nodes[$graphviz_id] = array('id' => $id);
+				$nodes[$graphviz_id] = array('id' => $id, 'type' => $type);
 			}
 		}
 		

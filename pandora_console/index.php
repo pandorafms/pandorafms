@@ -181,9 +181,14 @@ if (! isset ($config['id_user']) && isset ($_GET["login"])) {
 
 	$login_button_saml = get_parameter("login_button_saml", false);
 	if (($config['auth'] == 'saml') && $login_button_saml) {
+		if (is_user_admin($nick)) {
+			$nick_in_db = $nick;
+		}
+		else {
 			include_once(ENTERPRISE_DIR . "/include/auth/saml.php");
 			$saml_user_id = saml_process_user_login();
 			$nick_in_db = $saml_user_id;
+		}
 	}
 	else {
 		// process_user_login is a virtual function which should be defined in each auth file.

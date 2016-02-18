@@ -127,7 +127,7 @@ class Networkmap extends Map {
 		
 		foreach ($edges as $edge) {
 			$this->nodes[] = array('type' => ITEM_TYPE_EDGE_NETWORKMAP);
-			$edge['id_item'] = key(end($graph->nodes[]));
+			$edge['id_item'] = key(end($this->nodes));
 			$this->edges[] = $edge;
 		}
 	}

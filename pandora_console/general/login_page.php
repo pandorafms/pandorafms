@@ -127,7 +127,9 @@ echo '<div id="login_in">';
 			if ($config['auth'] == 'saml') {
 				html_print_submit_button(__("Login with SAML"), "login_button_saml", false, 'class="sub login_boton"');
 			}
-			html_print_submit_button(__("Login"), "login_button", false, 'class="sub next_login"');
+			else {
+				html_print_submit_button(__("Login"), "login_button", false, 'class="sub next_login"');
+			}
 			echo '</div>';
 			break;
 		case 'logout':

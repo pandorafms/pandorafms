@@ -3489,8 +3489,14 @@ function api_get_plugins($thrash1, $thrash2, $other, $thrash3) {
 		$separator = $other['data'][0];
 	
 	$filter = false;
+	$field_list = array( 'id', 'name', 'description',
+				'max_timeout', 'max_retries',
+				'execute', 'net_dst_opt',
+				'net_port_opt', 'user_opt',
+				'pass_opt', 'plugin_type',
+				'macros', 'parameters');
 	
-	$plugins = @db_get_all_rows_filter ('tplugin', $filter);
+	$plugins = @db_get_all_rows_filter ('tplugin', $filter, $field_list);
 	
 	if ($plugins !== false) {
 		$data['type'] = 'array';

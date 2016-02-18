@@ -30,6 +30,10 @@ MapController.prototype._marginConstant = 0; //To be beauty
 
 
 /*--------------------Methods----------------------*/
+var svg;
+function zoom() {
+  svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+}
 
 /*
 Function init_map
@@ -37,9 +41,11 @@ Return void
 This function init the map
 */
 MapController.prototype.init_map = function() {
-	var svg = d3.select("#map svg");
+	svg = d3.select("#map svg");
 	
-	
+	svg
+		.call(d3.behavior.zoom().scaleExtent([1/100, 100]).on("zoom", zoom))
+		.append("g");
 	
 	svg.append("g").append("circle")
 		.attr("id", "node_10")
@@ -104,6 +110,8 @@ MapController.prototype.init_map = function() {
 		.attr("cy", "600")
 		.attr("style", "fill: rgb(50, 50, 128);")
 		.attr("r", "6");
+
+
 
 	//Runs tooltipster plugin
 	$(document).ready(function() {

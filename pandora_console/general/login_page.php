@@ -87,13 +87,7 @@ echo '
 		html_print_image ($config['homeurl'] . "/images/pandora_login.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 	}
 	echo '</a>';
-	echo '<div class="login_button" style="text-align: center;">';
-	if ($config['auth'] == 'saml') {
-		html_print_submit_button(__("Login with SAML"), "login_button_saml", false, 'class="sub login_boton"');
-
-	}
-	echo '</div>';
-
+	
 	// This prints the current pandora console version.
 	// For stable/live function it might be wise to comment it out
 	

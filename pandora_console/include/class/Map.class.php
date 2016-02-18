@@ -96,6 +96,8 @@ abstract class Map {
 	}
 	
 	public function show() {
+		// Tooltip css
+		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"include/styles/tooltipster.css\"/>" . "\n";
 		foreach ($this->requires_js as $js) {
 			echo "<script type='text/javascript' src='$js'></script>" . "\n";
 		}

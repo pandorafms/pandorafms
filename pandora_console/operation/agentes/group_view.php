@@ -252,8 +252,7 @@ if (!empty($result_groups)) {
 				href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=".$data['_id_']."'>";
 			}
 			if ($data["_id_"] == 0) {
-				$agent_counter = agents_get_group_agents($groups_id);
-				echo $link . count($agent_counter) . "</a>";
+				echo $link . $total_agentes . "</a>";
 			}
 			if ($data["_total_agents_"] > 0 && $data["_id_"] != 0) {
 				echo $link . $data["_total_agents_"] . "</a>";
@@ -289,6 +288,7 @@ if (!empty($result_groups)) {
 			if (($data["_id_"] == 0) && ($agents_notinit != 0)) {
 				echo $link . $agents_notinit . "</a>";
 			}
+
 			if ($data["_agents_not_init_"] > 0 && ($data["_id_"] != 0)) {
 				echo $link . $data["_agents_not_init_"] . "</a>";
 			}

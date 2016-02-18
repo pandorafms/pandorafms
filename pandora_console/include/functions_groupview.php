@@ -249,36 +249,30 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 	}
 	else {
 		if ($user_strict) {
-			$i = 1;
-			foreach ($user_tags as $group_id => $tag_name) {
-				$id = db_get_value('id_tag', 'ttag', 'name', $tag_name);
+			$fields = array ('tagente.id_agente','tagente.id_grupo','tagente.id_os','tagente.ultimo_contacto','tagente.intervalo','tagente.comentarios description','tagente.quiet',
+				'tagente.normal_count','tagente.warning_count','tagente.critical_count','tagente.unknown_count','tagente.notinit_count','tagente.total_count','tagente.fired_count');
 
-				$list[$i]['_id_'] = $id;
-				$list[$i]['_name_'] = $tag_name;
-				$list[$i]['_iconImg_'] = html_print_image ("images/tag_red.png", true, array ("style" => 'vertical-align: middle;'));
-				$list[$i]['_is_tag_'] = 1;
+			$acltags = tags_get_user_module_and_tags ($config['id_user'], 'AR', $strict_user);
 
-				$list[$i]['_total_agents_'] = (int) tags_get_total_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
-				$list[$i]['_agents_unknown_'] = (int) tags_get_unknown_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
-				$list[$i]['_agents_not_init_'] = (int) tags_get_not_init_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
-				$list[$i]['_monitors_ok_'] = (int) tags_get_normal_monitors ($id, $acltags, $agent_filter, $module_filter);
-				$list[$i]['_monitors_critical_'] = (int) tags_get_critical_monitors ($id, $acltags, $agent_filter, $module_filter);
-				$list[$i]['_monitors_warning_'] = (int) tags_get_warning_monitors ($id, $acltags, $agent_filter, $module_filter);
-				$list[$i]['_monitors_not_init_'] = (int) tags_get_not_init_monitors ($id, $acltags, $agent_filter, $module_filter);
-				$list[$i]['_monitors_unknown_'] = (int) tags_get_unknown_monitors ($id, $acltags, $agent_filter, $module_filter);
-				$list[$i]['_monitors_alerts_fired_'] = tags_monitors_fired_alerts($id, $acltags);
-
-				if (! defined ('METACONSOLE')) {
-					if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0) && ($list[$i]['_monitors_unknown_'] == 0) && ($list[$i]['_monitors_not_init_'] == 0) && ($list[$i]['_agents_not_init_'] == 0)) {
-						unset($list[$i]);
-					}
+			$total_agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $count_filter, $fields, false, $strict_user, true);
+			$total_agents = count($total_agents);
+			$agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
+			foreach ($agents as $agent) {
+				$list[$agent['id_grupo']]['_monitors_ok_'] += (int)$agent['normal_count'];
+				$list[$agent['id_grupo']]['_monitors_critical_'] += (int)$agent['critical_count'];
+				$list[$agent['id_grupo']]['_monitors_warning_'] += (int)$agent['warning_count'];
+				$list[$agent['id_grupo']]['_monitors_unknown_'] += (int)$agent['unknown_count'];
+				$list[$agent['id_grupo']]['_monitors_not_init_'] += (int)$agent['notinit_count'];
+				$list[$agent['id_grupo']]['_monitors_alerts_fired_'] += (int)$agent['fired_count'];
+				$list[$agent['id_grupo']]['_total_agents_'] += 1;
+				if (($agent['normal_count'] == 0) && ($agent['critical_count'] == 0) &&
+					($agent['warning_count'] == 0) && ($agent['unknown_count'] != 0)) {
+						$list[$agent['id_grupo']]['_agents_unknown_'] += 1;
 				}
-				else {
-					if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0)) {
-						unset($list[$i]);
-					}
+				if (($agent['normal_count'] == 0) && ($agent['critical_count'] == 0) &&
+					($agent['warning_count'] == 0) && ($agent['unknown_count'] == 0)) {
+						$list[$agent['id_grupo']]['_agents_not_init_'] += 1;
 				}
-				$i++;
 			}
 		}
 		else {
@@ -357,8 +351,40 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 				$list[$group['id_grupo']]['_monitors_not_init_'] = isset ($result_not_init['contado']) ? $result_not_init['contado'] : 0;
 			}
 		}
-	}
+		if ($user_strict) {
+			$i = 1;
+			foreach ($user_tags as $group_id => $tag_name) {
+				$id = db_get_value('id_tag', 'ttag', 'name', $tag_name);
 
+				$list[$i]['_id_'] = $id;
+				$list[$i]['_name_'] = $tag_name;
+				$list[$i]['_iconImg_'] = html_print_image ("images/tag_red.png", true, array ("style" => 'vertical-align: middle;'));
+				$list[$i]['_is_tag_'] = 1;
+
+				$list[$i]['_total_agents_'] = (int) tags_get_total_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
+				$list[$i]['_agents_unknown_'] = (int) tags_get_unknown_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
+				$list[$i]['_agents_not_init_'] = (int) tags_get_not_init_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
+				$list[$i]['_monitors_ok_'] = (int) tags_get_normal_monitors ($id, $acltags, $agent_filter, $module_filter);
+				$list[$i]['_monitors_critical_'] = (int) tags_get_critical_monitors ($id, $acltags, $agent_filter, $module_filter);
+				$list[$i]['_monitors_warning_'] = (int) tags_get_warning_monitors ($id, $acltags, $agent_filter, $module_filter);
+				$list[$i]['_monitors_not_init_'] = (int) tags_get_not_init_monitors ($id, $acltags, $agent_filter, $module_filter);
+				$list[$i]['_monitors_unknown_'] = (int) tags_get_unknown_monitors ($id, $acltags, $agent_filter, $module_filter);
+				$list[$i]['_monitors_alerts_fired_'] = tags_monitors_fired_alerts($id, $acltags);
+
+				if (! defined ('METACONSOLE')) {
+					if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0) && ($list[$i]['_monitors_unknown_'] == 0) && ($list[$i]['_monitors_not_init_'] == 0) && ($list[$i]['_agents_not_init_'] == 0)) {
+						unset($list[$i]);
+					}
+				}
+				else {
+					if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0)) {
+						unset($list[$i]);
+					}
+				}
+				$i++;
+			}
+		}
+	}
 	return $list;
 }
 
@@ -443,11 +469,13 @@ function groupview_monitor_alerts ($group_array, $strict_user = false, $id_group
 	if ($strict_user) {
 		$group_clause_strict = implode (",", $id_group_strict);
 		$group_clause_strict = "(" . $group_clause_strict . ")";
-		$sql = "SELECT COUNT(talert_template_modules.id)
-			FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
-			WHERE tagente.id_grupo IN $group_clause_strict AND tagente_modulo.id_agente = tagente.id_agente
-				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo";
+		if ($group_clause_strict !== '()') {
+			$sql = "SELECT COUNT(talert_template_modules.id)
+				FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
+				WHERE tagente.id_grupo IN $group_clause_strict AND tagente_modulo.id_agente = tagente.id_agente
+					AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+					AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo";
+		}
 		$count = db_get_sql ($sql);
 		return $count;
 	} else {
@@ -479,13 +507,14 @@ function groupview_monitor_fired_alerts ($group_array, $strict_user = false, $id
 	if ($strict_user) {
 		$group_clause_strict = implode (",", $id_group_strict);
 		$group_clause_strict = "(" . $group_clause_strict . ")";
-		$sql = "SELECT COUNT(talert_template_modules.id)
-		FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
-		WHERE tagente.id_grupo IN $group_clause_strict AND tagente_modulo.id_agente = tagente.id_agente
-			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-			AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo
-			AND times_fired > 0 ";
-
+		if ($group_clause_strict !== '()'){
+			$sql = "SELECT COUNT(talert_template_modules.id)
+			FROM talert_template_modules, tagente_modulo, tagente_estado, tagente
+			WHERE tagente.id_grupo IN $group_clause_strict AND tagente_modulo.id_agente = tagente.id_agente
+				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+				AND talert_template_modules.id_agent_module = tagente_modulo.id_agente_modulo
+				AND times_fired > 0 ";
+		}
 		$count = db_get_sql ($sql);
 		return $count;
 	} else {
@@ -643,11 +672,12 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 		}
 	}
 
+	//Add the group "All" at first
+	$group_all = array('id_grupo'=>0, 'nombre'=>'All', 'icon'=>'', 'parent'=>'', 'propagate'=>0, 'disabled'=>0,
+						'custom_id'=>'', 'id_skin'=>0, 'description'=>'', 'contact'=>'', 'other'=>'', 'password'=>'');
+	array_unshift($list_groups, $group_all);
+
 	if (!$user_strict) {
-		//Add the group "All" at first
-		$group_all = array('id_grupo'=>0, 'nombre'=>'All', 'icon'=>'', 'parent'=>'', 'propagate'=>0, 'disabled'=>0,
-							'custom_id'=>'', 'id_skin'=>0, 'description'=>'', 'contact'=>'', 'other'=>'', 'password'=>'');
-		array_unshift($list_groups, $group_all);
 		//Takes the parents even without agents, first ids
 		$fathers_id = '';
 		$list_father_groups = array();
@@ -848,9 +878,35 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 		$list["_server_sanity_"] = format_numeric (100 - $list["_module_sanity_"], 1);
 	}
 	else {
-		if (!$user_strict) {
-			foreach ($list_groups as $group) {
+		if ($user_strict) {
+			$fields = array ('tagente.id_agente','tagente.id_grupo','tagente.id_os','tagente.ultimo_contacto','tagente.intervalo','tagente.comentarios description','tagente.quiet',
+				'tagente.normal_count','tagente.warning_count','tagente.critical_count','tagente.unknown_count','tagente.notinit_count','tagente.total_count','tagente.fired_count');
 
+			$acltags = tags_get_user_module_and_tags ($config['id_user'], 'AR', $strict_user);
+
+			$total_agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $count_filter, $fields, false, $strict_user, true);
+			$total_agents = count($total_agents);
+			$agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
+			foreach ($agents as $agent) {
+				$list[$agent['id_grupo']]['_monitors_ok_'] += (int)$agent['normal_count'];
+				$list[$agent['id_grupo']]['_monitors_critical_'] += (int)$agent['critical_count'];
+				$list[$agent['id_grupo']]['_monitors_warning_'] += (int)$agent['warning_count'];
+				$list[$agent['id_grupo']]['_monitors_unknown_'] += (int)$agent['unknown_count'];
+				$list[$agent['id_grupo']]['_monitors_not_init_'] += (int)$agent['notinit_count'];
+				$list[$agent['id_grupo']]['_monitors_alerts_fired_'] += (int)$agent['fired_count'];
+				$list[$agent['id_grupo']]['_total_agents_'] += 1;
+				if (($agent['normal_count'] == 0) && ($agent['critical_count'] == 0) &&
+					($agent['warning_count'] == 0) && ($agent['unknown_count'] != 0)) {
+						$list[$agent['id_grupo']]['_agents_unknown_'] += 1;
+				}
+				if (($agent['normal_count'] == 0) && ($agent['critical_count'] == 0) &&
+					($agent['warning_count'] == 0) && ($agent['unknown_count'] == 0)) {
+						$list[$agent['id_grupo']]['_agents_not_init_'] += 1;
+				}
+			}
+		}
+		else {
+			foreach ($list_groups as $group) {
 				$agent_not_init = agents_get_agents(array (
 					'disabled' => 0,
 					'id_grupo' => $group['id_grupo'],
@@ -927,38 +983,39 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 				$list[$group['id_grupo']]['_monitors_not_init_'] = isset ($result_not_init['contado']) ? $result_not_init['contado'] : 0;
 			}
 		}
-		else {
-			$i = 1;
-			foreach ($user_tags as $group_id => $tag_name) {
-				$id = db_get_value('id_tag', 'ttag', 'name', $tag_name);
+	}
 
-				$list[$i]['_id_'] = $id;
-				$list[$i]['_name_'] = $tag_name;
-				$list[$i]['_iconImg_'] = html_print_image ("images/tag_red.png", true, array ("style" => 'vertical-align: middle;'));
-				$list[$i]['_is_tag_'] = 1;
+	if ($user_strict) {
+		$i = 1;
+		foreach ($user_tags as $group_id => $tag_name) {
+			$id = db_get_value('id_tag', 'ttag', 'name', $tag_name);
 
-				$list[$i]['_total_agents_'] = (int) tags_get_total_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
-				$list[$i]['_agents_unknown_'] = (int) tags_get_unknown_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
-				$list[$i]['_agents_not_init_'] = (int) tags_get_not_init_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
-				$list[$i]['_monitors_ok_'] = (int) tags_get_normal_monitors ($id, $acltags, $agent_filter, $module_filter);
-				$list[$i]['_monitors_critical_'] = (int) tags_get_critical_monitors ($id, $acltags, $agent_filter, $module_filter);
-				$list[$i]['_monitors_warning_'] = (int) tags_get_warning_monitors ($id, $acltags, $agent_filter, $module_filter);
-				$list[$i]['_monitors_not_init_'] = (int) tags_get_not_init_monitors ($id, $acltags, $agent_filter, $module_filter);
-				$list[$i]['_monitors_unknown_'] = (int) tags_get_unknown_monitors ($id, $acltags, $agent_filter, $module_filter);
-				$list[$i]['_monitors_alerts_fired_'] = tags_monitors_fired_alerts($id, $acltags);
+			$list[$i]['_id_'] = $id;
+			$list[$i]['_name_'] = $tag_name;
+			$list[$i]['_iconImg_'] = html_print_image ("images/tag_red.png", true, array ("style" => 'vertical-align: middle;'));
+			$list[$i]['_is_tag_'] = 1;
 
-				if (! defined ('METACONSOLE')) {
-					if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0) && ($list[$i]['_monitors_unknown_'] == 0) && ($list[$i]['_monitors_not_init_'] == 0) && ($list[$i]['_agents_not_init_'] == 0)) {
-						unset($list[$i]);
-					}
+			$list[$i]['_total_agents_'] = (int) tags_get_total_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
+			$list[$i]['_agents_unknown_'] = (int) tags_get_unknown_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
+			$list[$i]['_agents_not_init_'] = (int) tags_get_not_init_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
+			$list[$i]['_monitors_ok_'] = (int) tags_get_normal_monitors ($id, $acltags, $agent_filter, $module_filter);
+			$list[$i]['_monitors_critical_'] = (int) tags_get_critical_monitors ($id, $acltags, $agent_filter, $module_filter);
+			$list[$i]['_monitors_warning_'] = (int) tags_get_warning_monitors ($id, $acltags, $agent_filter, $module_filter);
+			$list[$i]['_monitors_not_init_'] = (int) tags_get_not_init_monitors ($id, $acltags, $agent_filter, $module_filter);
+			$list[$i]['_monitors_unknown_'] = (int) tags_get_unknown_monitors ($id, $acltags, $agent_filter, $module_filter);
+			$list[$i]['_monitors_alerts_fired_'] = tags_monitors_fired_alerts($id, $acltags);
+
+			if (! defined ('METACONSOLE')) {
+				if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0) && ($list[$i]['_monitors_unknown_'] == 0) && ($list[$i]['_monitors_not_init_'] == 0) && ($list[$i]['_agents_not_init_'] == 0)) {
+					unset($list[$i]);
 				}
-				else {
-					if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0)) {
-						unset($list[$i]);
-					}
-				}
-				$i++;
 			}
+			else {
+				if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0)) {
+					unset($list[$i]);
+				}
+			}
+			$i++;
 		}
 	}
 

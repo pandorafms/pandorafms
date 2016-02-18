@@ -585,6 +585,8 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 	if ($id_user == false) {
 		$id_user = $config['id_user'];
 	}
+	$groups_with_privileges = users_get_groups($id_user);
+	$groups_with_privileges = implode('","', $groups_with_privileges);
 
 	$user_groups = array();
 	$user_tags = array();
@@ -699,12 +701,16 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 		}
 		//Eliminate the first comma
 		$fathers_id = substr($fathers_id, 1);
+		while ($fathers_id{0} == ',') {
+			$fathers_id = substr($fathers_id, 1);
+		}
 		//Takes the parents even without agents, complete groups
 		if ($fathers_id) {
 			$list_father_groups = db_get_all_rows_sql("
 						SELECT *
 						FROM tgrupo
 						WHERE id_grupo IN (" . $fathers_id . ")
+						AND nombre IN (\"". $groups_with_privileges ."\")
 						ORDER BY nombre COLLATE utf8_general_ci ASC");
 			if (!empty($list_father_groups)) {
 				//Merges the arrays and eliminates the duplicates groups

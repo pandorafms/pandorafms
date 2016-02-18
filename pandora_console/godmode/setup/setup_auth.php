@@ -253,16 +253,14 @@ echo '</form>';
 	function show_selected_rows (event) {
 		var auth_method = $(this).val();
 
-		if (auth_method !== 'mysql') {
+		if ((auth_method !== 'mysql') && (auth_method !== 'saml')) {
 			$('tr.remote').show();
-			if (auth_method == 'saml') {
-				$('tr#table2-autocreate_remote_users').hide();
-			}
 			show_autocreate_options(null);
 		}
 		else {
 			$('tr.remote').hide();
 		}
+		
 		// Hide all the auth methods (except mysql)
 		_.each(auth_methods, function(value, key) {
 			if (value !== 'mysql')

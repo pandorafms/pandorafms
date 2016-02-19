@@ -113,10 +113,6 @@ MapController.prototype.init_map = function() {
 
 
 
-	//Runs tooltipster plugin
-	$(document).ready(function() {
-            $('.tooltip').tooltipster();
-    });
 
 	this.init_events();
 };
@@ -160,16 +156,35 @@ Return void
 This function manages nodes tooltips
 */
 MapController.prototype.tooltip_map = function(self, event) {
-	/*------------------- PRUEBA CON TOOLTIPSTER ----------------------*/
-	$(this._target + " svg").after($("<div>").attr("id", "tooltipster_node"));
+    /*------------------- PRUEBA CON TOOLTIPSTER ----------------------*/
+    //~ $(this._target + " svg circle").after($("<div>").attr("id", "tooltipster_node"));
 
-	$('#tooltipster_node').tooltipster({
-		arrow: true,
-		autoClose: false,
-		multiple: true,
-		content: 'I\'M A FUCKING TOOLTIP!!'
-	});
-
-	$('#tooltipster_node').tooltipster("show");
-	/*-----------------------------------------------------------------*/
+	//~ console.log($(event.currentTarget));
+	//~ console.log($(event.currentTarget).position());
+	//~ console.log($(event.currentTarget).position()['top']);
+	//~ console.log("-------------");
+    //~ console.log($(this._target + " svg tooltipster_node"));
+    //~ // Node position and radius
+    //~ nodeX = parseInt($(event.currentTarget).position()['top']);
+    //~ nodeY = parseInt($(event.currentTarget).position()['left']);
+    //~ nodeR = parseInt($(event.currentTarget).attr("r"));
+//~ 
+    //~ var tooltipOffsetX = nodeX + nodeR;
+    //~ var tooltipOffsetY = nodeY + nodeR;
+//~ 
+    //~ console.log($(event.currentTarget).attr("cx"));
+    //~ console.log($(event.currentTarget).attr("cy"));
+//~ 
+    //~ $(event.currentTarget).tooltipster({
+        //~ arrow: true,
+        //~ trigger: 'click',
+        //~ autoClose: false,
+        //~ offsetX: tooltipOffsetX,
+        //~ offsetY: tooltipOffsetY,
+        //~ multiple: true,
+        //~ content: 'I\'M A FUCKING TOOLTIP!!'
+    //~ });
+//~ 
+    //~ $(event.currentTarget).tooltipster("show");
+    /*-----------------------------------------------------------------*/
 }

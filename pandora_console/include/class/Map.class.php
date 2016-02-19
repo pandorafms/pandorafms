@@ -46,6 +46,8 @@ abstract class Map {
 		$this->requires_js[] = "include/javascript/d3.3.5.14.js";
 		$this->requires_js[] = "include/javascript/map/MapController.js";
 		$this->requires_js[] = "include/javascript/jquery.tooltipster.js";
+		$this->requires_js[] = "include/javascript/jquery.svg.js";
+		$this->requires_js[] = "include/javascript/jquery.svgdom.js";
 
 		if (!$this->loadDB()) {
 			$this->status = STATUS_ERROR;

@@ -175,16 +175,14 @@ MapController.prototype.tooltip_map = function(self, event) {
     //~ console.log($(event.currentTarget).attr("cx"));
     //~ console.log($(event.currentTarget).attr("cy"));
 //~ 
-    //~ $(event.currentTarget).tooltipster({
-        //~ arrow: true,
-        //~ trigger: 'click',
-        //~ autoClose: false,
-        //~ offsetX: tooltipOffsetX,
-        //~ offsetY: tooltipOffsetY,
-        //~ multiple: true,
-        //~ content: 'I\'M A FUCKING TOOLTIP!!'
-    //~ });
-//~ 
-    //~ $(event.currentTarget).tooltipster("show");
+    $(event.currentTarget).tooltipster({
+        arrow: true,
+        trigger: 'click',
+        autoClose: false,
+        multiple: true,
+        content: $('<span>I\'M A FUCKING TOOLTIP!!</span>')
+    });
+
+    $(event.currentTarget).tooltipster("show");
     /*-----------------------------------------------------------------*/
 }

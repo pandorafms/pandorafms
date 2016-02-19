@@ -156,25 +156,9 @@ Return void
 This function manages nodes tooltips
 */
 MapController.prototype.tooltip_map = function(self, event) {
-    /*------------------- PRUEBA CON TOOLTIPSTER ----------------------*/
-    //~ $(this._target + " svg circle").after($("<div>").attr("id", "tooltipster_node"));
 
-	//~ console.log($(event.currentTarget));
-	//~ console.log($(event.currentTarget).position());
-	//~ console.log($(event.currentTarget).position()['top']);
-	//~ console.log("-------------");
-    //~ console.log($(this._target + " svg tooltipster_node"));
-    //~ // Node position and radius
-    //~ nodeX = parseInt($(event.currentTarget).position()['top']);
-    //~ nodeY = parseInt($(event.currentTarget).position()['left']);
-    //~ nodeR = parseInt($(event.currentTarget).attr("r"));
-//~ 
-    //~ var tooltipOffsetX = nodeX + nodeR;
-    //~ var tooltipOffsetY = nodeY + nodeR;
-//~ 
-    //~ console.log($(event.currentTarget).attr("cx"));
-    //~ console.log($(event.currentTarget).attr("cy"));
-//~ 
+    nodeR = parseInt($(event.currentTarget).attr("r"));
+
     $(event.currentTarget).tooltipster({
         arrow: true,
         trigger: 'click',
@@ -184,5 +168,6 @@ MapController.prototype.tooltip_map = function(self, event) {
     });
 
     $(event.currentTarget).tooltipster("show");
-    /*-----------------------------------------------------------------*/
+
+	
 }

@@ -58,7 +58,7 @@ if (is_ajax()) {
 			}
 		}
 		
-		echo json_encode($plugin);
+		echo io_json_mb_encode($plugin);
 		return;
 	}
 	
@@ -97,7 +97,7 @@ if (is_ajax()) {
 			$agents[] = $current_element;
 		}
 		
-		echo json_encode($agents);
+		echo io_json_mb_encode($agents);
 		return;
 	}
 	
@@ -125,7 +125,7 @@ if (is_ajax()) {
 			
 		}, array());
 		
-		echo json_encode($module_plugin_macros);
+		echo io_json_mb_encode($module_plugin_macros);
 		return;
 	}
 	
@@ -225,7 +225,7 @@ if ($update) {
 			
 			
 			
-			$module_macros = json_encode($result_macros, JSON_FORCE_OBJECT);
+			$module_macros = io_json_mb_encode($result_macros, JSON_FORCE_OBJECT);
 			if (empty($module_macros)) {
 				$module_macros = $module_macros_str;
 			}

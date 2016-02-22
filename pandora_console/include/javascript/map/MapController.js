@@ -18,18 +18,16 @@ var MapController = function(target) {
 	this._target = target;
 	
 	this._id = $(target).data('id');
-	this._dialogNodeMargin = 10;
-	this._marginConstant = 50;
+	this._tooltipsID = [];
 }
 
 /*--------------------Atributes--------------------*/
 
 MapController.prototype._id = null;
-MapController.prototype._dialogNodeMargin = 0; //To be beauty
-MapController.prototype._marginConstant = 0; //To be beauty
-
+MapController.prototype._tooltipsID = null;
 
 /*--------------------Methods----------------------*/
+
 var svg;
 function zoom() {
   svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
@@ -111,9 +109,6 @@ MapController.prototype.init_map = function() {
 		.attr("style", "fill: rgb(50, 50, 128);")
 		.attr("r", "6");
 
-
-
-
 	this.init_events();
 };
 
@@ -138,10 +133,11 @@ MapController.prototype.click_event = function(event) {
 	switch (event.which) {
         case 1:
 			if ($(event.currentTarget).attr("class") == "node") {
-				self.tooltip_map(self, event);
+				self.tooltip_map_create(self, event);
 			}
             break;
         case 2:
+			self.tooltip_map_close(self, event);
             break;
         case 3:
             break;
@@ -151,23 +147,55 @@ MapController.prototype.click_event = function(event) {
 }
 
 /*
-Function popup_map
+Function tooltip_map_create
 Return void
 This function manages nodes tooltips
 */
-MapController.prototype.tooltip_map = function(self, event) {
+MapController.prototype.tooltip_map_create = function(self, event, close) {
+	var nodeR = parseInt($(event.currentTarget).attr("r"));
+	var node_id = $(event.currentTarget).attr("id");
 
-    nodeR = parseInt($(event.currentTarget).attr("r"));
+	if (this.containsTooltipId(node_id)) {
+		$(event.currentTarget).tooltipster("show");
+	}
+	else {
+		$(event.currentTarget).tooltipster({
+	        arrow: true,
+	        trigger: 'click',
+	        autoClose: false,
+			offsetX: nodeR,
+			theme: 'tooltipster-noir',
+	        multiple: true,
+	        content: $('<span>I\'M A FUCKING TOOLTIP!!</span>')
+	    });
 
-    $(event.currentTarget).tooltipster({
-        arrow: true,
-        trigger: 'click',
-        autoClose: false,
-        multiple: true,
-        content: $('<span>I\'M A FUCKING TOOLTIP!!</span>')
-    });
+		this._tooltipsID.push(node_id);
 
-    $(event.currentTarget).tooltipster("show");
+		$(event.currentTarget).tooltipster("show");
+	}
+}
 
-	
+/*
+Function tooltip_map_close
+Return void
+This function eliminates nodes tooltips
+*/
+MapController.prototype.tooltip_map_close = function(self, event) {
+	for (i = 0; i < this._tooltipsID.length; i++) {
+		$('#' + this._tooltipsID[i]).tooltipster("hide");
+	}
+}
+
+/*
+Function containsTooltipId
+Return boolean
+This function returns true if the element is in the array
+*/
+MapController.prototype.containsTooltipId = function(element) {
+	for (i = 0; i < this._tooltipsID.length; i++) {
+		if (this._tooltipsID[i] == element) {
+			return true;
+		}
+	}
+	return false;
 }

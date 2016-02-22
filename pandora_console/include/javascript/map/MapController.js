@@ -50,14 +50,53 @@ MapController.prototype.init_map = function() {
 	function zoom() {
 		self.tooltip_map_close();
 		
+		var zoom_level = d3.event.scale;
+		if (zoom_level == 1) {
+			zoom_level = 0;
+		}
+		else if (zoom_level < 1) {
+			zoom_level = (-zoom_level) * 100;
+		}
+		
+		slider.property("value", zoom_level);
+		
 		self._viewport
 			.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 	}
 	
+	function home_zoom(d) {
+		console.log(888);
+	}
+	
+	function slided(d) {
+		//~ var zoom_level = d3.select(this).property("value");
+		//~ 
+		//~ if (zoom_level == 0) {
+			//~ zoom_level = 1;
+		//~ }
+		//~ else if (zoom_level < 0) {
+			//~ zoom_level = 1 / (-zoom_level);
+		//~ }
+		//~ 
+		//~ self._zoomManager.scale(zoom_level)
+			//~ .event(svg);
+	}
+	
+	var slider = d3.select("#map .zoom_controller .vertical_range")
+		.attr("value", self._zoomManager.scaleExtent()[0])
+		.attr("min", -self._zoomManager.scaleExtent()[1])
+		.attr("max", self._zoomManager.scaleExtent()[1])
+		.attr("step", (self._zoomManager.scaleExtent()[1] - self._zoomManager.scaleExtent()[0]) / 100)
+		.on("input", slided);
+	
+	
+	d3.select("#map .zoom_controller .home_zoom")
+		.on("onclick", home_zoom);
+	
 	
 	
 	self.paint_nodes();
-
+	
 	this.init_events();
 };
 

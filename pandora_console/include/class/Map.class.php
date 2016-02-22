@@ -130,6 +130,63 @@ abstract class Map {
 		?>
 		
 		<div id="map" data-id="<?php echo $this->id;?>" style="border: 1px red solid;">
+			<div class="zoom_controller" style="">
+				<style type="text/css">
+					.zoom_controller {
+						width: 30px;
+						height: 210px;
+						background: blue;
+						border-radius: 15px;
+						
+						top: 60px;
+						left: 10px;
+						position: absolute;
+					}
+					
+					
+					
+					.vertical_range {
+						padding: 0;
+						-webkit-transform: rotate(270deg);
+						   -moz-transform: rotate(270deg);
+						        transform: rotate(270deg);
+						width: 200px;
+						height: 20px;
+						position: relative;
+						background: transparent !important;
+						border: 0px !important;
+					}
+					
+					.vertical_range {
+						left: -92px;
+						top: 93px;
+					}
+					
+					@media screen and (-webkit-min-device-pixel-ratio:0)
+					{
+						/* Only for chrome */
+						
+						.vertical_range {
+							left: -87px;
+							top: 93px;
+						}
+					} 
+					
+					.home_zoom {
+						position: absolute;
+						top: 215px;
+						left: 1px;
+						font-weight: bolder;
+						font-size: 20px;
+						background: blue;
+						color: white;
+						border-radius: 10px;
+						padding: 5px;
+					}
+				</style>
+				<input class="vertical_range" type="range" name="range" min="-666" max="666" step="1" value="666" />
+				<span class="home_zoom">H</span>
+			</div>
 			<?php
 			if ($this->width == 0) {
 				$width = "100%";

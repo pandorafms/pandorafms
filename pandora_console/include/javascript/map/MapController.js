@@ -27,90 +27,111 @@ MapController.prototype._id = null;
 MapController.prototype._tooltipsID = null;
 
 /*--------------------Methods----------------------*/
-
-var svg;
-function zoom() {
-  svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-}
-
 /*
 Function init_map
 Return void
 This function init the map
 */
 MapController.prototype.init_map = function() {
-	svg = d3.select("#map svg");
+	var svg = d3.select(this._target + " svg");
 	
-	svg
+	var viewport = svg
 		.call(d3.behavior.zoom().scaleExtent([1/100, 100]).on("zoom", zoom))
 		.append("g");
 	
-	svg.append("g").append("circle")
-		.attr("id", "node_10")
-		.attr("class", "node")
-		.attr("cx", "20")
-		.attr("cy", "20")
-		.attr("style", "fill: rgb(128, 186, 39);")
-		.attr("r", "5");
+	function zoom() {
+		viewport
+			.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+	}
 	
-	svg.append("g").append("circle")
-		.attr("id", "node_11")
-		.attr("class", "node")
-		.attr("cx", "20")
-		.attr("cy", "780")
-		.attr("style", "fill: rgb(255, 0, 0);")
-		.attr("r", "10");
+	this.paint_nodes(viewport);
 	
-	svg.append("g").append("circle")
-		.attr("id", "node_12")
-		.attr("class", "node")
-		.attr("cx", "780")
-		.attr("cy", "780")
-		.attr("style", "fill: rgb(255, 255, 0);")
-		.attr("r", "10");
-	
-	svg.append("g").append("circle")
-		.attr("id", "node_13")
-		.attr("class", "node")
-		.attr("cx", "780")
-		.attr("cy", "30")
-		.attr("style", "fill: rgb(255, 0, 255);")
-		.attr("r", "10");
-	
-	svg.append("g").append("circle")
-		.attr("id", "node_14")
-		.attr("class", "node")
-		.attr("cx", "50")
-		.attr("cy", "50")
-		.attr("style", "fill: rgb(112, 51, 51);")
-		.attr("r", "7");
+	//~ viewport.append("g").append("circle")
+		//~ .attr("id", "node_10")
+		//~ .attr("class", "node")
+		//~ .attr("cx", "20")
+		//~ .attr("cy", "20")
+		//~ .attr("style", "fill: rgb(128, 186, 39);")
+		//~ .attr("r", "5");
+	//~ 
+	//~ viewport.append("g").append("circle")
+		//~ .attr("id", "node_11")
+		//~ .attr("class", "node")
+		//~ .attr("cx", "20")
+		//~ .attr("cy", "780")
+		//~ .attr("style", "fill: rgb(255, 0, 0);")
+		//~ .attr("r", "10");
+	//~ 
+	//~ viewport.append("g").append("circle")
+		//~ .attr("id", "node_12")
+		//~ .attr("class", "node")
+		//~ .attr("cx", "780")
+		//~ .attr("cy", "780")
+		//~ .attr("style", "fill: rgb(255, 255, 0);")
+		//~ .attr("r", "10");
+	//~ 
+	//~ viewport.append("g").append("circle")
+		//~ .attr("id", "node_13")
+		//~ .attr("class", "node")
+		//~ .attr("cx", "780")
+		//~ .attr("cy", "30")
+		//~ .attr("style", "fill: rgb(255, 0, 255);")
+		//~ .attr("r", "10");
+	//~ 
+	//~ viewport.append("g").append("circle")
+		//~ .attr("id", "node_14")
+		//~ .attr("class", "node")
+		//~ .attr("cx", "50")
+		//~ .attr("cy", "50")
+		//~ .attr("style", "fill: rgb(112, 51, 51);")
+		//~ .attr("r", "7");
+//~ 
+	//~ viewport.append("g").append("circle")
+		//~ .attr("id", "node_15")
+		//~ .attr("class", "node")
+		//~ .attr("cx", "600")
+		//~ .attr("cy", "600")
+		//~ .attr("style", "fill: rgb(98, 149, 54);")
+		//~ .attr("r", "8");
+//~ 
+	//~ viewport.append("g").append("circle")
+		//~ .attr("id", "node_16")
+		//~ .attr("class", "node")
+		//~ .attr("cx", "490")
+		//~ .attr("cy", "490")
+		//~ .attr("style", "fill: rgb(250, 103, 18);")
+		//~ .attr("r", "6");
+//~ 
+	//~ viewport.append("g").append("circle")
+		//~ .attr("id", "node_17")
+		//~ .attr("class", "node")
+		//~ .attr("cx", "400")
+		//~ .attr("cy", "600")
+		//~ .attr("style", "fill: rgb(50, 50, 128);")
+		//~ .attr("r", "6");
 
-	svg.append("g").append("circle")
-		.attr("id", "node_15")
-		.attr("class", "node")
-		.attr("cx", "600")
-		.attr("cy", "600")
-		.attr("style", "fill: rgb(98, 149, 54);")
-		.attr("r", "8");
 
-	svg.append("g").append("circle")
-		.attr("id", "node_16")
-		.attr("class", "node")
-		.attr("cx", "490")
-		.attr("cy", "490")
-		.attr("style", "fill: rgb(250, 103, 18);")
-		.attr("r", "6");
 
-	svg.append("g").append("circle")
-		.attr("id", "node_17")
-		.attr("class", "node")
-		.attr("cx", "400")
-		.attr("cy", "600")
-		.attr("style", "fill: rgb(50, 50, 128);")
-		.attr("r", "6");
 
 	this.init_events();
 };
+
+MapController.prototype.paint_nodes = function(viewport) {
+	console.log(nodes);
+	
+	viewport.selectAll(".node")
+		.data(nodes)
+			.enter()
+				.append("g").append("circle")
+				.attr("id", function(d) { return "node_" + d['id'];})
+				.attr("class", "node")
+				.attr("cx", function(d) { return d['x'];})
+				.attr("cy", function(d) { return d['y'];})
+				.attr("style", "fill: rgb(50, 50, 128);")
+				.attr("r", "6");
+	
+	//~ ITEM_TYPE_AGENT_NETWORKMAP
+}
 
 /*
 Function init_events

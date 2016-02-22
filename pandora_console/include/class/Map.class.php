@@ -39,6 +39,15 @@ abstract class Map {
 	
 	protected $requires_js = null;
 	
+	public static function getName($id = null) {
+		if (empty($id)) {
+			return null;
+		}
+		else {
+			return db_get_value('name', 'tmap', 'id', $id);
+		}
+	}
+	
 	public function __construct($id) {
 		$this->id = $id;
 		
@@ -48,7 +57,7 @@ abstract class Map {
 		$this->requires_js[] = "include/javascript/jquery.tooltipster.js";
 		$this->requires_js[] = "include/javascript/jquery.svg.js";
 		$this->requires_js[] = "include/javascript/jquery.svgdom.js";
-
+		
 		if (!$this->loadDB()) {
 			$this->status = STATUS_ERROR;
 		}

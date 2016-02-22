@@ -59,7 +59,7 @@ $buttons['networkmap'] = array('active' => true,
 		'</a>');
 
 ui_print_page_header(
-	__('Network map'),
+	__('Network map &raquo; %s', Map::getName($id)),
 	"images/op_network.png",
 	false,
 	"network_map",

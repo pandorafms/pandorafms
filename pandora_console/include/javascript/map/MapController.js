@@ -67,29 +67,18 @@ Return void
 This function paint the nodes
 */
 MapController.prototype.paint_nodes = function() {
+	
 	this._viewport.selectAll(".node")
-		.data(['caca'])
+		.data(nodes)
 			.enter()
 				.append("g")
 					.attr("transform",
-						function(d) { return "translate(300 100)";})
+						function(d) { return "translate(" + d['x'] + " " + d['y'] + ")";})
 					.append("circle")
-						.attr("id", function(d) { return "node_caca";})
+						.attr("id", function(d) { return "node_" + d['id'];})
 						.attr("class", "node")
 						.attr("style", "fill: rgb(50, 50, 128);")
-						.attr("r", "60");
-	
-	//~ this._viewport.selectAll(".node")
-		//~ .data(nodes)
-			//~ .enter()
-				//~ .append("g")
-					//~ .attr("transform",
-						//~ function(d) { return "translate(" + d['x'] + " " + d['y'] + ")";})
-					//~ .append("circle")
-						//~ .attr("id", function(d) { return "node_" + d['id'];})
-						//~ .attr("class", "node")
-						//~ .attr("style", "fill: rgb(50, 50, 128);")
-						//~ .attr("r", "6");
+						.attr("r", "6");
 }
 
 /*

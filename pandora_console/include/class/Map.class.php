@@ -145,14 +145,6 @@ abstract class Map {
 			}
 			?>
 			<svg xmlns="http://www.w3.org/2000/svg" pointer-events="all" width="<?php echo $width;?>" height="<?php echo $height;?>">
-				<g class="viewport2">
-					<g class="first">
-					  <circle cx="100" cy="100" r="90" fill="green"></circle>
-					</g>
-					<g class="second">
-					  <rect x="200" y="200" height="90" width="90" fill="blue"></rect>
-					</g>
-				</g>
 			</svg>
 		</div>
 		

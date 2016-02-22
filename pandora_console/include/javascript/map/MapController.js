@@ -25,6 +25,7 @@ var MapController = function(target) {
 
 MapController.prototype._id = null;
 MapController.prototype._tooltipsID = null;
+MapController.prototype._viewport = null;
 
 /*--------------------Methods----------------------*/
 /*
@@ -33,22 +34,27 @@ Return void
 This function init the map
 */
 MapController.prototype.init_map = function() {
-	var svg = d3.select(this._target + " svg");
-
 	var self = this;
 
-	var viewport = svg
+	var svg = d3.select(this._target + " svg");
+
+	
+	self._viewport = svg
 		.call(d3.behavior.zoom().scaleExtent([1/100, 100]).on("zoom", zoom))
 		.append("g")
 			.attr("class", "viewport");
 	
+	
 	function zoom() {
 		self.tooltip_map_close();
-		viewport
+		
+		self._viewport
 			.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 	}
 	
-	this.paint_nodes(viewport);
+	
+	
+	self.paint_nodes();
 	//~ 
 	//~ viewport.append("g").append("circle")
 		//~ .attr("id", "node_10")
@@ -120,10 +126,10 @@ MapController.prototype.init_map = function() {
 	this.init_events();
 };
 
-MapController.prototype.paint_nodes = function(viewport) {
-	console.log(nodes);
+MapController.prototype.paint_nodes = function() {
 	
-	viewport.selectAll(".node")
+	
+	this._viewport.selectAll(".node")
 		.data(nodes)
 			.enter()
 				.append("g").append("circle")
@@ -152,12 +158,15 @@ Return void
 This function manages mouse clicks and run events in consecuence
 */
 MapController.prototype.click_event = function(event) {
+	
 	var self = event.data.map;
 	event.preventDefault();
 	event.stopPropagation();
 	switch (event.which) {
         case 1:
+			
 			if ($(event.currentTarget).hasClass("node")) {
+				
 				self.tooltip_map_create(self, event);
 			}
 			else {

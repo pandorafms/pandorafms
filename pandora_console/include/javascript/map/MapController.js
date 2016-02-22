@@ -178,7 +178,7 @@ Function tooltip_map_create
 Return void
 This function manages nodes tooltips
 */
-MapController.prototype.tooltip_map_create = function(self, event, close) {
+MapController.prototype.tooltip_map_create = function(self, event) {
 	var nodeR = parseInt($(event.currentTarget).attr("r"));
 	var node_id = $(event.currentTarget).attr("id");
 	

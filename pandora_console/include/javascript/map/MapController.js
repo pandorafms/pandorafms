@@ -34,13 +34,16 @@ This function init the map
 */
 MapController.prototype.init_map = function() {
 	var svg = d3.select(this._target + " svg");
-	
+
+	var self = this;
+
 	var viewport = svg
 		.call(d3.behavior.zoom().scaleExtent([1/100, 100]).on("zoom", zoom))
 		.append("g")
 			.attr("class", "viewport");
 	
 	function zoom() {
+		self.tooltip_map_close();
 		viewport
 			.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 	}
@@ -149,19 +152,16 @@ Return void
 This function manages mouse clicks and run events in consecuence
 */
 MapController.prototype.click_event = function(event) {
-	console.log(1111);
 	var self = event.data.map;
 	event.preventDefault();
 	event.stopPropagation();
 	switch (event.which) {
         case 1:
-			console.log(2222);
 			if ($(event.currentTarget).hasClass("node")) {
-				console.log(3333);
 				self.tooltip_map_create(self, event);
 			}
 			else {
-				self.tooltip_map_close(self, event);
+				self.tooltip_map_close();
 			}
             break;
         case 2:
@@ -193,7 +193,7 @@ MapController.prototype.tooltip_map_create = function(self, event, close) {
 			offsetX: nodeR,
 			theme: 'tooltipster-noir',
 	        multiple: true,
-	        content: $('<span class="mierdaca">I\'M A FUCKING TOOLTIP!!</span>')
+	        content: $('<span>I\'M A FUCKING TOOLTIP!!</span>')
 	    });
 
 		this._tooltipsID.push(node_id);
@@ -207,7 +207,7 @@ Function tooltip_map_close
 Return void
 This function eliminates nodes tooltips
 */
-MapController.prototype.tooltip_map_close = function(self, event) {
+MapController.prototype.tooltip_map_close = function() {
 	for (i = 0; i < this._tooltipsID.length; i++) {
 		$('#' + this._tooltipsID[i]).tooltipster("hide");
 	}

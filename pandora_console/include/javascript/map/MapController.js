@@ -13,6 +13,7 @@
 // GNU General Public License for more details.
 
 /*-------------------Constructor-------------------*/
+
 var MapController = function(target) {
 	this._target = target;
 	
@@ -28,6 +29,7 @@ MapController.prototype._viewport = null;
 MapController.prototype._zoomManager = null;
 
 /*--------------------Methods----------------------*/
+
 /*
 Function init_map
 Return void
@@ -57,80 +59,16 @@ MapController.prototype.init_map = function() {
 	
 	
 	self.paint_nodes();
-	//~ 
-	//~ viewport.append("g").append("circle")
-		//~ .attr("id", "node_10")
-		//~ .attr("class", "node")
-		//~ .attr("cx", "20")
-		//~ .attr("cy", "20")
-		//~ .attr("style", "fill: rgb(128, 186, 39);")
-		//~ .attr("r", "5");
-	//~ 
-	//~ viewport.append("g").append("circle")
-		//~ .attr("id", "node_11")
-		//~ .attr("class", "node")
-		//~ .attr("cx", "20")
-		//~ .attr("cy", "780")
-		//~ .attr("style", "fill: rgb(255, 0, 0);")
-		//~ .attr("r", "10");
-	//~ 
-	//~ viewport.append("g").append("circle")
-		//~ .attr("id", "node_12")
-		//~ .attr("class", "node")
-		//~ .attr("cx", "780")
-		//~ .attr("cy", "780")
-		//~ .attr("style", "fill: rgb(255, 255, 0);")
-		//~ .attr("r", "10");
-	//~ 
-	//~ viewport.append("g").append("circle")
-		//~ .attr("id", "node_13")
-		//~ .attr("class", "node")
-		//~ .attr("cx", "780")
-		//~ .attr("cy", "30")
-		//~ .attr("style", "fill: rgb(255, 0, 255);")
-		//~ .attr("r", "10");
-	//~ 
-	//~ viewport.append("g").append("circle")
-		//~ .attr("id", "node_14")
-		//~ .attr("class", "node")
-		//~ .attr("cx", "50")
-		//~ .attr("cy", "50")
-		//~ .attr("style", "fill: rgb(112, 51, 51);")
-		//~ .attr("r", "7");
-//~ 
-	//~ viewport.append("g").append("circle")
-		//~ .attr("id", "node_15")
-		//~ .attr("class", "node")
-		//~ .attr("cx", "600")
-		//~ .attr("cy", "600")
-		//~ .attr("style", "fill: rgb(98, 149, 54);")
-		//~ .attr("r", "8");
-//~ 
-	//~ viewport.append("g").append("circle")
-		//~ .attr("id", "node_16")
-		//~ .attr("class", "node")
-		//~ .attr("cx", "490")
-		//~ .attr("cy", "490")
-		//~ .attr("style", "fill: rgb(250, 103, 18);")
-		//~ .attr("r", "6");
-//~ 
-	//~ viewport.append("g").append("circle")
-		//~ .attr("id", "node_17")
-		//~ .attr("class", "node")
-		//~ .attr("cx", "400")
-		//~ .attr("cy", "600")
-		//~ .attr("style", "fill: rgb(50, 50, 128);")
-		//~ .attr("r", "6");
-
-
-
 
 	this.init_events();
 };
 
+/*
+Function paint_nodes
+Return void
+This function paint the nodes
+*/
 MapController.prototype.paint_nodes = function() {
-	
-	
 	this._viewport.selectAll(".node")
 		.data(nodes)
 			.enter()
@@ -142,8 +80,6 @@ MapController.prototype.paint_nodes = function() {
 						.attr("class", "node")
 						.attr("style", "fill: rgb(50, 50, 128);")
 						.attr("r", "6");
-	
-	//~ ITEM_TYPE_AGENT_NETWORKMAP
 }
 
 /*
@@ -161,15 +97,12 @@ Return void
 This function manages mouse clicks and run events in consecuence
 */
 MapController.prototype.click_event = function(event) {
-	
 	var self = event.data.map;
 	event.preventDefault();
 	event.stopPropagation();
 	switch (event.which) {
         case 1:
-			
 			if ($(event.currentTarget).hasClass("node")) {
-				
 				self.tooltip_map_create(self, event);
 			}
 			else {
@@ -196,6 +129,7 @@ MapController.prototype.tooltip_map_create = function(self, event) {
 	var node_id = $(event.currentTarget).attr("id");
 	
 	if (this.containsTooltipId(node_id)) {
+		$(event.currentTarget).tooltipster("option", "offsetX", nodeR);
 		$(event.currentTarget).tooltipster("show");
 	}
 	else {
@@ -218,7 +152,7 @@ MapController.prototype.tooltip_map_create = function(self, event) {
 /*
 Function tooltip_map_close
 Return void
-This function eliminates nodes tooltips
+This function hide nodes tooltips
 */
 MapController.prototype.tooltip_map_close = function() {
 	for (i = 0; i < this._tooltipsID.length; i++) {

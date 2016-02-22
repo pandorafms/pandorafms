@@ -13,7 +13,6 @@
 // GNU General Public License for more details.
 
 /*-------------------Constructor-------------------*/
-
 var MapController = function(target) {
 	this._target = target;
 	
@@ -29,7 +28,6 @@ MapController.prototype._viewport = null;
 MapController.prototype._zoomManager = null;
 
 /*--------------------Methods----------------------*/
-
 /*
 Function init_map
 Return void
@@ -70,16 +68,28 @@ This function paint the nodes
 */
 MapController.prototype.paint_nodes = function() {
 	this._viewport.selectAll(".node")
-		.data(nodes)
+		.data(['caca'])
 			.enter()
 				.append("g")
 					.attr("transform",
-						function(d) { return "translate(" + d['x'] + " " + d['y'] + ")";})
+						function(d) { return "translate(300 100)";})
 					.append("circle")
-						.attr("id", function(d) { return "node_" + d['id'];})
+						.attr("id", function(d) { return "node_caca";})
 						.attr("class", "node")
 						.attr("style", "fill: rgb(50, 50, 128);")
-						.attr("r", "6");
+						.attr("r", "60");
+	
+	//~ this._viewport.selectAll(".node")
+		//~ .data(nodes)
+			//~ .enter()
+				//~ .append("g")
+					//~ .attr("transform",
+						//~ function(d) { return "translate(" + d['x'] + " " + d['y'] + ")";})
+					//~ .append("circle")
+						//~ .attr("id", function(d) { return "node_" + d['id'];})
+						//~ .attr("class", "node")
+						//~ .attr("style", "fill: rgb(50, 50, 128);")
+						//~ .attr("r", "6");
 }
 
 /*

@@ -132,12 +132,14 @@ MapController.prototype.click_event = function(event) {
 	event.stopPropagation();
 	switch (event.which) {
         case 1:
-			if ($(event.currentTarget).attr("class") == "node") {
+			if ($(event.currentTarget).hasClass("node")) {
 				self.tooltip_map_create(self, event);
+			}
+			else {
+				self.tooltip_map_close(self, event);
 			}
             break;
         case 2:
-			self.tooltip_map_close(self, event);
             break;
         case 3:
             break;

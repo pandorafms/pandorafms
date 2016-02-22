@@ -13,7 +13,6 @@
 // GNU General Public License for more details.
 
 /*-------------------Constructor-------------------*/
-
 var MapController = function(target) {
 	this._target = target;
 	
@@ -26,6 +25,7 @@ var MapController = function(target) {
 MapController.prototype._id = null;
 MapController.prototype._tooltipsID = null;
 MapController.prototype._viewport = null;
+MapController.prototype._zoomManager = null;
 
 /*--------------------Methods----------------------*/
 /*
@@ -35,12 +35,14 @@ This function init the map
 */
 MapController.prototype.init_map = function() {
 	var self = this;
-
+	
 	var svg = d3.select(this._target + " svg");
-
+	
+	self._zoomManager = 
+		d3.behavior.zoom().scaleExtent([1/100, 100]).on("zoom", zoom);
 	
 	self._viewport = svg
-		.call(d3.behavior.zoom().scaleExtent([1/100, 100]).on("zoom", zoom))
+		.call(self._zoomManager)
 		.append("g")
 			.attr("class", "viewport");
 	
@@ -132,13 +134,14 @@ MapController.prototype.paint_nodes = function() {
 	this._viewport.selectAll(".node")
 		.data(nodes)
 			.enter()
-				.append("g").append("circle")
-				.attr("id", function(d) { return "node_" + d['id'];})
-				.attr("class", "node")
-				.attr("cx", function(d) { return d['x'];})
-				.attr("cy", function(d) { return d['y'];})
-				.attr("style", "fill: rgb(50, 50, 128);")
-				.attr("r", "6");
+				.append("g")
+					.attr("transform",
+						function(d) { return "translate(" + d['x'] + " " + d['y'] + ")";})
+					.append("circle")
+						.attr("id", function(d) { return "node_" + d['id'];})
+						.attr("class", "node")
+						.attr("style", "fill: rgb(50, 50, 128);")
+						.attr("r", "6");
 	
 	//~ ITEM_TYPE_AGENT_NETWORKMAP
 }
@@ -189,6 +192,7 @@ This function manages nodes tooltips
 */
 MapController.prototype.tooltip_map_create = function(self, event) {
 	var nodeR = parseInt($(event.currentTarget).attr("r"));
+	nodeR = nodeR * self._zoomManager.scale(); // Apply zoom
 	var node_id = $(event.currentTarget).attr("id");
 	
 	if (this.containsTooltipId(node_id)) {

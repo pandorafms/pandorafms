@@ -67,6 +67,7 @@ class Networkmap extends Map {
 		
 		$nodes = array();
 		$edges = array();
+		$last_graph_id = 0;
 		foreach ($nodes_and_edges as $node_or_edge) {
 			$node_or_edge = trim($node_or_edge);
 			
@@ -104,9 +105,14 @@ class Networkmap extends Map {
 					$type = ITEM_TYPE_AGENT_NETWORKMAP;
 				}
 				
-				$nodes[$graphviz_id] = array('id' => $id, 'type' => $type);
+				$nodes[] = array('graph_id' => $graphviz_id,
+					'id' => $id, 'type' => $type);
+				
+				$last_graph_id = $graphviz_id;
 			}
 		}
+		
+		
 		
 		foreach ($positions as $line) {
 			//clean line a long spaces for one space caracter
@@ -116,20 +122,29 @@ class Networkmap extends Map {
 				$items = explode(' ', $line);
 				$graphviz_id = $items[1];
 				
-				$nodes[$graphviz_id]['x'] = $items[2] * 100; //200 is for show more big
-				$nodes[$graphviz_id]['y'] = $items[3] * 100;
+				// We need a binary tree...in some future time.
+				
+				foreach ($nodes as $i => $node) {
+					if ($node['graph_id'] == $graphviz_id) {
+						$nodes[$i]['x'] = $items[2] * 100; //200 is for show more big
+						$nodes[$i]['y'] = $items[3] * 100;
+					}
+				}
 			}
 		}
 		
-		foreach ($nodes as $graphviz_id => $node) {
-			$this->nodes[$graphviz_id] = $node;
+		foreach ($edges as $i => $edge) {
+			$graph_id = $last_graph_id++;
+			
+			$this->nodes[] = array(
+				'graph_id' => $graph_id,
+				'type' => ITEM_TYPE_EDGE_NETWORKMAP);
+			$edge[$i]['graph_id'] = $graph_id;
+			
 		}
 		
-		foreach ($edges as $edge) {
-			$this->nodes[] = array('type' => ITEM_TYPE_EDGE_NETWORKMAP);
-			$edge['id_item'] = key(end($this->nodes));
-			$this->edges[] = $edge;
-		}
+		$this->nodes = $nodes;
+		$this->edges = $edges;
 	}
 	
 	protected function temp_parseParameters_generateDot() {

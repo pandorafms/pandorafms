@@ -37,7 +37,8 @@ MapController.prototype.init_map = function() {
 	
 	var viewport = svg
 		.call(d3.behavior.zoom().scaleExtent([1/100, 100]).on("zoom", zoom))
-		.append("g");
+		.append("g")
+			.attr("class", "viewport");
 	
 	function zoom() {
 		viewport
@@ -45,7 +46,7 @@ MapController.prototype.init_map = function() {
 	}
 	
 	this.paint_nodes(viewport);
-	
+	//~ 
 	//~ viewport.append("g").append("circle")
 		//~ .attr("id", "node_10")
 		//~ .attr("class", "node")
@@ -148,12 +149,15 @@ Return void
 This function manages mouse clicks and run events in consecuence
 */
 MapController.prototype.click_event = function(event) {
+	console.log(1111);
 	var self = event.data.map;
 	event.preventDefault();
 	event.stopPropagation();
 	switch (event.which) {
         case 1:
+			console.log(2222);
 			if ($(event.currentTarget).hasClass("node")) {
+				console.log(3333);
 				self.tooltip_map_create(self, event);
 			}
 			else {
@@ -177,7 +181,7 @@ This function manages nodes tooltips
 MapController.prototype.tooltip_map_create = function(self, event, close) {
 	var nodeR = parseInt($(event.currentTarget).attr("r"));
 	var node_id = $(event.currentTarget).attr("id");
-
+	
 	if (this.containsTooltipId(node_id)) {
 		$(event.currentTarget).tooltipster("show");
 	}
@@ -189,7 +193,7 @@ MapController.prototype.tooltip_map_create = function(self, event, close) {
 			offsetX: nodeR,
 			theme: 'tooltipster-noir',
 	        multiple: true,
-	        content: $('<span>I\'M A FUCKING TOOLTIP!!</span>')
+	        content: $('<span class="mierdaca">I\'M A FUCKING TOOLTIP!!</span>')
 	    });
 
 		this._tooltipsID.push(node_id);

@@ -51,12 +51,14 @@ MapController.prototype.init_map = function() {
 		self.tooltip_map_close();
 		
 		var zoom_level = d3.event.scale;
+		
 		if (zoom_level == 1) {
 			zoom_level = 0;
 		}
 		else if (zoom_level < 1) {
-			zoom_level = (-zoom_level) * 100;
+			zoom_level = (zoom_level * 100) - 100;
 		}
+		
 		
 		slider.property("value", zoom_level);
 		
@@ -69,29 +71,51 @@ MapController.prototype.init_map = function() {
 	}
 	
 	function slided(d) {
-		//~ var zoom_level = d3.select(this).property("value");
-		//~ 
-		//~ if (zoom_level == 0) {
-			//~ zoom_level = 1;
-		//~ }
-		//~ else if (zoom_level < 0) {
-			//~ zoom_level = 1 / (-zoom_level);
-		//~ }
-		//~ 
-		//~ self._zoomManager.scale(zoom_level)
-			//~ .event(svg);
+		var zoom_level = parseFloat(d3.select(this).property("value"));
+		
+		
+		if (zoom_level == 0) {
+			zoom_level = 1;
+		}
+		else if (zoom_level < 0) {
+			console.log("caca");
+			zoom_level = (zoom_level + 100) / 100;
+		}
+		
+		// Code to translate the map with the zoom for to hold the center
+		var center = [
+			parseFloat(d3.select("#map").style('width')) / 2,
+			parseFloat(d3.select("#map").style('height')) / 2];
+		
+		var old_translate = self._zoomManager.translate();
+		var old_scale = self._zoomManager.scale();
+		
+		var temp1 = [(center[0] - old_translate[0]) / old_scale,
+			(center[1] - old_translate[1]) / old_scale];
+		
+		var temp2 = [temp1[0] * zoom_level + old_translate[0],
+			temp1[1] * zoom_level + old_translate[1]];
+		
+		var new_translation = [
+			old_translate[0] + center[0] - temp2[0],
+			old_translate[1] + center[1] - temp2[1]]
+		// -------------------------------------------------------------
+		
+		self._zoomManager.scale(zoom_level)
+			.translate(new_translation)
+			.event(self._viewport);
 	}
 	
 	var slider = d3.select("#map .zoom_controller .vertical_range")
 		.attr("value", self._zoomManager.scaleExtent()[0])
-		.attr("min", -self._zoomManager.scaleExtent()[1])
+		.attr("min", (self._zoomManager.scaleExtent()[0] * 100) - 100)
 		.attr("max", self._zoomManager.scaleExtent()[1])
 		.attr("step", (self._zoomManager.scaleExtent()[1] - self._zoomManager.scaleExtent()[0]) / 100)
 		.on("input", slided);
 	
 	
 	d3.select("#map .zoom_controller .home_zoom")
-		.on("onclick", home_zoom);
+		.on("click", home_zoom);
 	
 	
 	

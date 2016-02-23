@@ -239,20 +239,29 @@ MapController.prototype.tooltip_map_create = function(self, event) {
 	var nodeR = parseInt($(event.currentTarget).attr("r"));
 	nodeR = nodeR * self._zoomManager.scale(); // Apply zoom
 	var node_id = $(event.currentTarget).attr("id");
+
+	//Always changes the content because this may be change
+	var nodeContent = this.nodeData();
 	
+	/*----------------------FOR TEST--------------------*/
+	nodeContent = '<span>I\'M A FUCKING TOOLTIP!!</span>';
+	/*--------------------------------------------------*/
+
 	if (this.containsTooltipId(node_id)) {
 		$(event.currentTarget).tooltipster("option", "offsetX", nodeR);
+		$(event.currentTarget).tooltipster('content', $(nodeContent));
 		$(event.currentTarget).tooltipster("show");
 	}
 	else {
 		$(event.currentTarget).tooltipster({
 	        arrow: true,
 	        trigger: 'click',
+			contentAsHTML: true,
 	        autoClose: false,
 			offsetX: nodeR,
 			theme: 'tooltipster-noir',
 	        multiple: true,
-	        content: $('<span>I\'M A FUCKING TOOLTIP!!</span>')
+	        content: nodeContent
 	    });
 
 		this._tooltipsID.push(node_id);
@@ -284,4 +293,31 @@ MapController.prototype.containsTooltipId = function(element) {
 		}
 	}
 	return false;
+}
+
+/**
+Function nodeData
+Return array(data)
+This function returns the data of the node
+*/
+MapController.prototype.nodeData = function() {
+	/*
+	$.ajax({
+		url: ,
+		type: 'POST',
+		dataType: 'json',
+		data: {
+			getNodeData: 1,
+		},
+		complete: function(xhr, textStatus) {
+
+		},
+		success: function(data, textStatus, xhr) {
+
+		},
+		error: function(xhr, textStatus, errorThrown) {
+
+		}
+	});
+	*/
 }

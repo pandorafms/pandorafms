@@ -20,4 +20,11 @@ if (is_ajax ()) {
 	// Login check
 	check_login ();
 
+	$getNodeData = (bool) get_parameter('getNodeData', 0);
+
+	if ($getNodeData) {
+
+	}
+
+}
 ?>

@@ -65,7 +65,7 @@ MapController.prototype.init_map = function() {
 	}
 	
 	function home_zoom(d) {
-		console.log(888);
+		self._zoomManager.scale(1).translate([0, 0]).event(self._viewport);
 	}
 	
 	function slided(d) {

@@ -182,6 +182,7 @@ abstract class Map {
 						color: white;
 						border-radius: 10px;
 						padding: 5px;
+						cursor:pointer;
 					}
 				</style>
 				<input class="vertical_range" type="range" name="range" min="-666" max="666" step="1" value="666" />

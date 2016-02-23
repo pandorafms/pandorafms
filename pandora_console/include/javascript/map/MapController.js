@@ -12,6 +12,9 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+/*-------------------Constants-------------------*/
+var MAX_ZOOM_LEVEL = 50;
+
 /*-------------------Constructor-------------------*/
 var MapController = function(target) {
 	this._target = target;
@@ -26,6 +29,7 @@ MapController.prototype._id = null;
 MapController.prototype._tooltipsID = null;
 MapController.prototype._viewport = null;
 MapController.prototype._zoomManager = null;
+MapController.prototype._slider = null;
 
 /*--------------------Methods----------------------*/
 /*
@@ -39,7 +43,7 @@ MapController.prototype.init_map = function() {
 	var svg = d3.select(this._target + " svg");
 	
 	self._zoomManager = 
-		d3.behavior.zoom().scaleExtent([1/100, 100]).on("zoom", zoom);
+		d3.behavior.zoom().scaleExtent([1/MAX_ZOOM_LEVEL, MAX_ZOOM_LEVEL]).on("zoom", zoom);
 	
 	self._viewport = svg
 		.call(self._zoomManager)
@@ -52,18 +56,33 @@ MapController.prototype.init_map = function() {
 		
 		var zoom_level = d3.event.scale;
 		
-		if (zoom_level == 1) {
-			zoom_level = 0;
-		}
-		else if (zoom_level < 1) {
-			zoom_level = (zoom_level * 100) - 100;
-		}
-		
-		
-		slider.property("value", zoom_level);
+		self._slider.property("value", Math.log(zoom_level));
 		
 		self._viewport
 			.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+	}
+	
+	function zoom_in(d) {
+		var step = parseFloat(self._slider.property("step"));
+		var slider_value = parseFloat(self._slider.property("value"));
+		
+		slider_value += step;
+		
+		var zoom_level = Math.exp(slider_value);
+		
+		self._slider.property("value", Math.log(zoom_level));
+		self._slider.on("input")();
+	}
+	function zoom_out(d) {
+		var step = parseFloat(self._slider.property("step"));
+		var slider_value = parseFloat(self._slider.property("value"));
+		
+		slider_value -= step;
+		
+		var zoom_level = Math.exp(slider_value);
+		
+		self._slider.property("value", Math.log(zoom_level));
+		self._slider.on("input")();
 	}
 	
 	function home_zoom(d) {
@@ -71,16 +90,9 @@ MapController.prototype.init_map = function() {
 	}
 	
 	function slided(d) {
-		var zoom_level = parseFloat(d3.select(this).property("value"));
+		var slider_value = parseFloat(self._slider.property("value"))
 		
-		
-		if (zoom_level == 0) {
-			zoom_level = 1;
-		}
-		else if (zoom_level < 0) {
-			console.log("caca");
-			zoom_level = (zoom_level + 100) / 100;
-		}
+		zoom_level = Math.exp(slider_value);
 		
 		// Code to translate the map with the zoom for to hold the center
 		var center = [
@@ -106,17 +118,24 @@ MapController.prototype.init_map = function() {
 			.event(self._viewport);
 	}
 	
-	var slider = d3.select("#map .zoom_controller .vertical_range")
-		.attr("value", self._zoomManager.scaleExtent()[0])
-		.attr("min", (self._zoomManager.scaleExtent()[0] * 100) - 100)
-		.attr("max", self._zoomManager.scaleExtent()[1])
-		.attr("step", (self._zoomManager.scaleExtent()[1] - self._zoomManager.scaleExtent()[0]) / 100)
+	console.log(self._zoomManager.scaleExtent());
+	
+	self._slider = d3.select("#map .zoom_controller .vertical_range")
+		.property("value", 0)
+		.property("min", -Math.log(MAX_ZOOM_LEVEL))
+		.property("max", Math.log(MAX_ZOOM_LEVEL))
+		.property("step", Math.log(MAX_ZOOM_LEVEL) * 2 / MAX_ZOOM_LEVEL)
 		.on("input", slided);
 	
 	
-	d3.select("#map .zoom_controller .home_zoom")
+	d3.select("#map .zoom_box .home_zoom")
 		.on("click", home_zoom);
 	
+	d3.select("#map .zoom_box .zoom_in")
+		.on("click", zoom_in);
+	
+	d3.select("#map .zoom_box .zoom_out")
+		.on("click", zoom_out);
 	
 	
 	self.paint_nodes();

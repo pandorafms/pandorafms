@@ -130,7 +130,7 @@ abstract class Map {
 		?>
 		
 		<div id="map" data-id="<?php echo $this->id;?>" style="border: 1px red solid;">
-			<div class="zoom_controller" style="">
+			<div class="zoom_box" style="">
 				<style type="text/css">
 					.zoom_controller {
 						width: 30px;
@@ -138,7 +138,7 @@ abstract class Map {
 						background: blue;
 						border-radius: 15px;
 						
-						top: 60px;
+						top: 100px;
 						left: 10px;
 						position: absolute;
 					}
@@ -170,23 +170,68 @@ abstract class Map {
 							left: -87px;
 							top: 93px;
 						}
-					} 
+					}
 					
 					.home_zoom {
+						top: 360px;
+						left: 10px;
+						
+						display: table-cell;
 						position: absolute;
-						top: 215px;
-						left: 1px;
 						font-weight: bolder;
 						font-size: 20px;
 						background: blue;
 						color: white;
-						border-radius: 10px;
-						padding: 5px;
+						border-radius: 15px;
+						width: 30px;
+						height: 30px;
 						cursor:pointer;
+						text-align: center;
+						vertical-align: middle;
+					}
+					
+					.zoom_in {
+						top: 10px;
+						left: 10px;
+						
+						display: table-cell;
+						position: relative;
+						font-weight: bolder;
+						font-size: 20px;
+						background: blue;
+						color: white;
+						border-radius: 15px;
+						width: 30px;
+						height: 30px;
+						cursor:pointer;
+						text-align: center;
+						vertical-align: middle;
+					}
+					
+					.zoom_out {
+						top: 320px;
+						left: 10px;
+						
+						display: table-cell;
+						position: absolute;
+						font-weight: bolder;
+						font-size: 20px;
+						background: blue;
+						color: white;
+						border-radius: 15px;
+						width: 30px;
+						height: 30px;
+						cursor:pointer;
+						text-align: center;
+						vertical-align: middle;
 					}
 				</style>
-				<input class="vertical_range" type="range" name="range" min="-666" max="666" step="1" value="666" />
-				<span class="home_zoom">H</span>
+				<div class="zoom_controller">
+					<input class="vertical_range" type="range" name="range" min="-666" max="666" step="1" value="666" />
+				</div>
+				<div class="zoom_in">+</div>
+				<div class="zoom_out">-</div>
+				<div class="home_zoom">H</div>
 			</div>
 			<?php
 			if ($this->width == 0) {

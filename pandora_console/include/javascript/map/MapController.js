@@ -12,10 +12,14 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
+/*-----------------------------------------------*/
 /*-------------------Constants-------------------*/
+/*-----------------------------------------------*/
 var MAX_ZOOM_LEVEL = 50;
 
-/*-------------------Constructor-------------------*/
+/*-----------------------------------------------*/
+/*------------------Constructor------------------*/
+/*-----------------------------------------------*/
 var MapController = function(target) {
 	this._target = target;
 	
@@ -23,16 +27,19 @@ var MapController = function(target) {
 	this._tooltipsID = [];
 }
 
-/*--------------------Atributes--------------------*/
-
+/*-----------------------------------------------*/
+/*------------------Atributes--------------------*/
+/*-----------------------------------------------*/
 MapController.prototype._id = null;
 MapController.prototype._tooltipsID = null;
 MapController.prototype._viewport = null;
 MapController.prototype._zoomManager = null;
 MapController.prototype._slider = null;
 
-/*--------------------Methods----------------------*/
-/*
+/*-----------------------------------------------*/
+/*--------------------Methods--------------------*/
+/*-----------------------------------------------*/
+/**
 Function init_map
 Return void
 This function init the map
@@ -49,8 +56,12 @@ MapController.prototype.init_map = function() {
 		.call(self._zoomManager)
 		.append("g")
 			.attr("class", "viewport");
-	
-	
+
+	/**
+	Function zoom
+	Return void
+	This function manages the zoom
+	*/
 	function zoom() {
 		self.tooltip_map_close();
 		
@@ -61,7 +72,12 @@ MapController.prototype.init_map = function() {
 		self._viewport
 			.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 	}
-	
+
+	/**
+	Function zoom_in
+	Return void
+	This function zoom with "+" button
+	*/
 	function zoom_in(d) {
 		var step = parseFloat(self._slider.property("step"));
 		var slider_value = parseFloat(self._slider.property("value"));
@@ -73,6 +89,12 @@ MapController.prototype.init_map = function() {
 		self._slider.property("value", Math.log(zoom_level));
 		self._slider.on("input")();
 	}
+
+	/**
+	Function zoom_out
+	Return void
+	This function zoom with "-" button
+	*/
 	function zoom_out(d) {
 		var step = parseFloat(self._slider.property("step"));
 		var slider_value = parseFloat(self._slider.property("value"));
@@ -84,17 +106,29 @@ MapController.prototype.init_map = function() {
 		self._slider.property("value", Math.log(zoom_level));
 		self._slider.on("input")();
 	}
-	
+
+	/**
+	Function home_zoom
+	Return void
+	This function zoom with "H" button (reset zoom)
+	*/
 	function home_zoom(d) {
 		self._zoomManager.scale(1).translate([0, 0]).event(self._viewport);
 	}
-	
+
+	/**
+	Function slided
+	Return void
+	This function manages the slide (zoom system)
+	*/
 	function slided(d) {
 		var slider_value = parseFloat(self._slider.property("value"))
 		
 		zoom_level = Math.exp(slider_value);
-		
-		// Code to translate the map with the zoom for to hold the center
+
+		/*----------------------------------------------------------------*/
+		/*-Code to translate the map with the zoom for to hold the center-*/
+		/*----------------------------------------------------------------*/
 		var center = [
 			parseFloat(d3.select("#map").style('width')) / 2,
 			parseFloat(d3.select("#map").style('height')) / 2];
@@ -111,15 +145,12 @@ MapController.prototype.init_map = function() {
 		var new_translation = [
 			old_translate[0] + center[0] - temp2[0],
 			old_translate[1] + center[1] - temp2[1]]
-		// -------------------------------------------------------------
-		
+
 		self._zoomManager.scale(zoom_level)
 			.translate(new_translation)
 			.event(self._viewport);
 	}
-	
-	console.log(self._zoomManager.scaleExtent());
-	
+
 	self._slider = d3.select("#map .zoom_controller .vertical_range")
 		.property("value", 0)
 		.property("min", -Math.log(MAX_ZOOM_LEVEL))
@@ -143,7 +174,7 @@ MapController.prototype.init_map = function() {
 	this.init_events();
 };
 
-/*
+/**
 Function paint_nodes
 Return void
 This function paint the nodes
@@ -163,7 +194,7 @@ MapController.prototype.paint_nodes = function() {
 						.attr("r", "6");
 }
 
-/*
+/**
 Function init_events
 Return boolean
 This function init click events in the map
@@ -172,7 +203,7 @@ MapController.prototype.init_events = function(principalObject) {
 	$(this._target + " svg *, " + this._target + " svg").on("mousedown", {map: this}, this.click_event);
 }
 
-/*
+/**
 Function click_event
 Return void
 This function manages mouse clicks and run events in consecuence
@@ -199,7 +230,7 @@ MapController.prototype.click_event = function(event) {
     }
 }
 
-/*
+/**
 Function tooltip_map_create
 Return void
 This function manages nodes tooltips
@@ -230,7 +261,7 @@ MapController.prototype.tooltip_map_create = function(self, event) {
 	}
 }
 
-/*
+/**
 Function tooltip_map_close
 Return void
 This function hide nodes tooltips
@@ -241,7 +272,7 @@ MapController.prototype.tooltip_map_close = function() {
 	}
 }
 
-/*
+/**
 Function containsTooltipId
 Return boolean
 This function returns true if the element is in the array

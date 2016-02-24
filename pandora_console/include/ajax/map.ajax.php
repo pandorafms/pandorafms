@@ -39,8 +39,13 @@ if (is_ajax ()) {
 													WHERE id_agente = " . $id_node_data);
 				$node_data = $node_data[0];
 				if (!empty($node_data)) {
+					$return_data .= '<div id="open_close_click_"' . $data_graph_id . '>';
+					$return_data .= '<span><strong>Agent: </strong>' . $node_data['nombre'] . '</span>';
+					/*-----------------PROVISIONAL, HABRÁ QUE METER ICONOS DE VERDAD------------------*/
+					/*-*/$return_data .= '<span class="close_click" onClick="close_button_tooltip()" style="float:right;">| X </span>';/*-*/
+					/*-*/$return_data .= '<span class="open_click" style="float:right;"> -> |</span>';/*-*/
+					/*--------------------------------------------------------------------------------*/
 					$return_data .= '<div id="agent_data_to_show_"' . $node_data['id_agente'] .'>';
-					$return_data .= '<span><strong>Agent: </strong>' . $node_data['nombre'] . '</span></br>';
 					$return_data .= '<span><strong>IP Addres: </strong>' . $node_data['direccion'] . '</span></br>';
 					$agent_os = db_get_row_sql("SELECT name FROM tconfig_os WHERE id_os = " . $node_data['id_os']);
 					$agent_os = $agent_os['name'];

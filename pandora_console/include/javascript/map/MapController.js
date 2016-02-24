@@ -180,7 +180,6 @@ Return void
 This function paint the nodes
 */
 MapController.prototype.paint_nodes = function() {
-	
 	this._viewport.selectAll(".node")
 		.data(nodes)
 			.enter()
@@ -266,9 +265,6 @@ MapController.prototype.click_event = function(event) {
         case 1:
 			if ($(event.currentTarget).parent().hasClass("node")) {
 				self.tooltip_map_create(self, event);
-			}
-			else {
-				self.tooltip_map_close();
 			}
             break;
         case 2:
@@ -373,4 +369,16 @@ MapController.prototype.nodeData = function(data_id, type, id_map, data_graph_id
 			origin.tooltipster('content', data);
 		}
 	});
+}
+
+/*-----------------------------------------------*/
+/*-------------------Functions-------------------*/
+/*-----------------------------------------------*/
+/**
+Function close_button_tooltip
+Return void
+This function hide the tooltip
+*/
+function close_button_tooltip() {
+	console.log($(this));
 }

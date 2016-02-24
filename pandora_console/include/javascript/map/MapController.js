@@ -221,8 +221,7 @@ MapController.prototype.init_events = function(principalObject) {
 		})
 		.on("click", function(d) {
 			if (d3.event.defaultPrevented) return;
-			
-			
+
 			self.tooltip_map_create(self, this);
 		});
 	
@@ -240,7 +239,6 @@ MapController.prototype.init_events = function(principalObject) {
 	}
 	
 	function dragged(d) {
-		console.log("dragged");
 		var delta_x = d3.event.dx;
 		var delta_y = d3.event.dy;
 		
@@ -267,7 +265,6 @@ MapController.prototype.tooltip_map_create = function(self, target) {
 	var nodeTarget = $(target);
 	var spinner = $('#spinner_tooltip').html();
 
-	
 	var nodeR = parseInt($("circle", nodeTarget).attr("r"));
 	nodeR = nodeR * self._zoomManager.scale(); // Apply zoom
 	var node_id = nodeTarget.attr("id");
@@ -278,7 +275,7 @@ MapController.prototype.tooltip_map_create = function(self, target) {
 
 	if (this.containsTooltipId(node_id)) {
 		nodeTarget.tooltipster('content', spinner);
-		self.nodeData(data_id, type, self._id, data_graph_id, nodeTarget);
+		self.nodeData(data_id, type, self._id, data_graph_id, nodeTarget, node_id);
 		nodeTarget.tooltipster("option", "offsetX", nodeR);
 		nodeTarget.tooltipster("show");
 	}
@@ -295,7 +292,7 @@ MapController.prototype.tooltip_map_create = function(self, target) {
 	        content: spinner,
 			functionBefore: function(origin, continueTooltip) {
 				continueTooltip();
-				self.nodeData(data_id, type, self._id, data_graph_id, origin);
+				self.nodeData(data_id, type, self._id, data_graph_id, origin, node_id);
 			}
 	    });
 
@@ -335,13 +332,14 @@ Function nodeData
 Return array(data)
 This function returns the data of the node
 */
-MapController.prototype.nodeData = function(data_id, type, id_map, data_graph_id, origin) {
+MapController.prototype.nodeData = function(data_id, type, id_map, data_graph_id, origin, node_id) {
 	var params = {};
 	params["getNodeData"] = 1;
 	params["id_node_data"] = data_id;
 	params["type"] = type;
 	params["id_map"] = id_map;
 	params["data_graph_id"] = data_graph_id;
+	params["node_id"] = node_id;
 	params["page"] = "include/ajax/map.ajax";
 
 	jQuery.ajax ({
@@ -363,6 +361,15 @@ Function close_button_tooltip
 Return void
 This function hide the tooltip
 */
-function close_button_tooltip() {
-	console.log($(this));
+function close_button_tooltip(node_id) {
+	$('#' + node_id).tooltipster("hide");
+}
+
+/**
+Function open_in_another_window
+Return void
+This function open the node in extra window
+*/
+function open_in_another_window(link) {
+	window.open(link);
 }

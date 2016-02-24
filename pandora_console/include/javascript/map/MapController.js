@@ -187,9 +187,12 @@ MapController.prototype.paint_nodes = function() {
 				.append("g")
 					.attr("transform",
 						function(d) { return "translate(" + d['x'] + " " + d['y'] + ")";})
+					.attr("class", "draggable node")
+					.attr("id", function(d) { return "node_" + d['id'];})
+					.attr("data-id", function(d) { return d['id'];})
+					.attr("data-graph_id", function(d) { return d['graph_id'];})
+					.attr("data-type", function(d) { return d['type'];})
 					.append("circle")
-						.attr("id", function(d) { return "node_" + d['id'];})
-						.attr("class", "node")
 						.attr("style", "fill: rgb(50, 50, 128);")
 						.attr("r", "6");
 }

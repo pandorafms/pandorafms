@@ -205,9 +205,8 @@ MapController.prototype.init_events = function(principalObject) {
 	self = this;
 	
 	$(this._target + " svg *, " + this._target + " svg")
-		.on("mousedown", {map: this}, this.click_event);
-	
-	
+		.off("mousedown", {map: this}, this.click_event);
+
 	d3.selectAll(".node")
 		.on("mouseover", function(d) {
 			d3.select("#node_" + d['graph_id'])

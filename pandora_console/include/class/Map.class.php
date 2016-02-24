@@ -120,6 +120,10 @@ abstract class Map {
 		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"include/styles/tooltipster-shadow.css\"/>" . "\n";
 		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"include/styles/tooltipster-noir.css\"/>" . "\n";
 		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"include/styles/tooltipster-light.css\"/>" . "\n";
+		//Tooltips spinner
+		echo "<div id='spinner_tooltip' style='display:none;'>";
+			html_print_image('images/spinner.gif');
+		echo "</div>";
 		foreach ($this->requires_js as $js) {
 			echo "<script type='text/javascript' src='$js'></script>" . "\n";
 		}
@@ -130,7 +134,7 @@ abstract class Map {
 		?>
 		
 		<div id="map" data-id="<?php echo $this->id;?>" style="border: 1px red solid;">
-			<div class="zoom_box" style="position: absolute;">
+			<div class="zoom_box" style="">
 				<style type="text/css">
 					.zoom_controller {
 						width: 30px;
@@ -138,7 +142,7 @@ abstract class Map {
 						background: blue;
 						border-radius: 15px;
 						
-						top: 50px;
+						top: 100px;
 						left: 10px;
 						position: absolute;
 					}
@@ -173,7 +177,7 @@ abstract class Map {
 					}
 					
 					.home_zoom {
-						top: 310px;
+						top: 360px;
 						left: 10px;
 						
 						display: table-cell;
@@ -195,7 +199,7 @@ abstract class Map {
 						left: 10px;
 						
 						display: table-cell;
-						position: absolute;
+						position: relative;
 						font-weight: bolder;
 						font-size: 20px;
 						background: blue;
@@ -209,7 +213,7 @@ abstract class Map {
 					}
 					
 					.zoom_out {
-						top: 270px;
+						top: 320px;
 						left: 10px;
 						
 						display: table-cell;

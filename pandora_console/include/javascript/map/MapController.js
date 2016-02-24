@@ -89,7 +89,7 @@ MapController.prototype.init_map = function() {
 		self._slider.property("value", Math.log(zoom_level));
 		self._slider.on("input")();
 	}
-	
+
 	/**
 	Function zoom_out
 	Return void
@@ -264,7 +264,7 @@ MapController.prototype.click_event = function(event) {
 	event.stopPropagation();
 	switch (event.which) {
         case 1:
-			if ($(event.currentTarget).hasClass("node")) {
+			if ($(event.currentTarget).parent().hasClass("node")) {
 				self.tooltip_map_create(self, event);
 			}
 			else {
@@ -286,24 +286,25 @@ Return void
 This function manages nodes tooltips
 */
 MapController.prototype.tooltip_map_create = function(self, event) {
+	var nodeTarget = $(event.currentTarget).parent();
+	var spinner = $('#spinner_tooltip').html();
+
 	var nodeR = parseInt($(event.currentTarget).attr("r"));
 	nodeR = nodeR * self._zoomManager.scale(); // Apply zoom
-	var node_id = $(event.currentTarget).attr("id");
+	var node_id = nodeTarget.attr("id");
 
-	//Always changes the content because this may be change
-	var nodeContent = this.nodeData(node_id/*, type, id_map*/);
-	
-	/*----------------------FOR TEST--------------------*/
-	nodeContent = '<span>I\'M A FUCKING TOOLTIP!!</span>';
-	/*--------------------------------------------------*/
+	var type = parseInt(nodeTarget.data("type"));
+	var data_id = parseInt(nodeTarget.data("id"));
+	var data_graph_id = parseInt(nodeTarget.data("graph_id"));
 
 	if (this.containsTooltipId(node_id)) {
-		$(event.currentTarget).tooltipster("option", "offsetX", nodeR);
-		$(event.currentTarget).tooltipster('content', $(nodeContent));
-		$(event.currentTarget).tooltipster("show");
+		nodeTarget.tooltipster('content', spinner);
+		self.nodeData(data_id, type, self._id, data_graph_id, nodeTarget);
+		nodeTarget.tooltipster("option", "offsetX", nodeR);
+		nodeTarget.tooltipster("show");
 	}
 	else {
-		$(event.currentTarget).tooltipster({
+		nodeTarget.tooltipster({
 	        arrow: true,
 	        trigger: 'click',
 			contentAsHTML: true,
@@ -311,12 +312,16 @@ MapController.prototype.tooltip_map_create = function(self, event) {
 			offsetX: nodeR,
 			theme: 'tooltipster-noir',
 	        multiple: true,
-	        content: nodeContent
+	        content: spinner,
+			functionBefore: function(origin, continueTooltip) {
+				continueTooltip();
+				self.nodeData(data_id, type, self._id, data_graph_id, origin);
+			}
 	    });
 
 		this._tooltipsID.push(node_id);
 
-		$(event.currentTarget).tooltipster("show");
+		nodeTarget.tooltipster("show");
 	}
 }
 
@@ -350,24 +355,22 @@ Function nodeData
 Return array(data)
 This function returns the data of the node
 */
-MapController.prototype.nodeData = function() {
-	/*
-	$.ajax({
-		url: ,
-		type: 'POST',
-		dataType: 'json',
-		data: {
-			getNodeData: 1,
-		},
-		complete: function(xhr, textStatus) {
+MapController.prototype.nodeData = function(data_id, type, id_map, data_graph_id, origin) {
+	var params = {};
+	params["getNodeData"] = 1;
+	params["id_node_data"] = data_id;
+	params["type"] = type;
+	params["id_map"] = id_map;
+	params["data_graph_id"] = data_graph_id;
+	params["page"] = "include/ajax/map.ajax";
 
-		},
-		success: function(data, textStatus, xhr) {
-
-		},
-		error: function(xhr, textStatus, errorThrown) {
-
+	jQuery.ajax ({
+		data: params,
+		dataType: "json",
+		type: "POST",
+		url: "ajax.php",
+		success: function (data) {
+			origin.tooltipster('content', data);
 		}
 	});
-	*/
 }

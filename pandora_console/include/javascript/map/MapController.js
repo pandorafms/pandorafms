@@ -22,7 +22,7 @@ var MAX_ZOOM_LEVEL = 50;
 /*-----------------------------------------------*/
 var MapController = function(target) {
 	this._target = target;
-
+	
 	this._id = $(target).data('id');
 	this._tooltipsID = [];
 }
@@ -46,12 +46,12 @@ This function init the map
 */
 MapController.prototype.init_map = function() {
 	var self = this;
-
+	
 	var svg = d3.select(this._target + " svg");
-
+	
 	self._zoomManager =
 		d3.behavior.zoom().scaleExtent([1/MAX_ZOOM_LEVEL, MAX_ZOOM_LEVEL]).on("zoom", zoom);
-
+	
 	self._viewport = svg
 		.call(self._zoomManager)
 		.append("g")
@@ -64,11 +64,11 @@ MapController.prototype.init_map = function() {
 	*/
 	function zoom() {
 		self.tooltip_map_close();
-
+		
 		var zoom_level = d3.event.scale;
-
+		
 		self._slider.property("value", Math.log(zoom_level));
-
+		
 		self._viewport
 			.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 	}
@@ -81,11 +81,11 @@ MapController.prototype.init_map = function() {
 	function zoom_in(d) {
 		var step = parseFloat(self._slider.property("step"));
 		var slider_value = parseFloat(self._slider.property("value"));
-
+		
 		slider_value += step;
-
+		
 		var zoom_level = Math.exp(slider_value);
-
+		
 		self._slider.property("value", Math.log(zoom_level));
 		self._slider.on("input")();
 	}
@@ -98,11 +98,11 @@ MapController.prototype.init_map = function() {
 	function zoom_out(d) {
 		var step = parseFloat(self._slider.property("step"));
 		var slider_value = parseFloat(self._slider.property("value"));
-
+		
 		slider_value -= step;
-
+		
 		var zoom_level = Math.exp(slider_value);
-
+		
 		self._slider.property("value", Math.log(zoom_level));
 		self._slider.on("input")();
 	}
@@ -123,7 +123,7 @@ MapController.prototype.init_map = function() {
 	*/
 	function slided(d) {
 		var slider_value = parseFloat(self._slider.property("value"))
-
+		
 		zoom_level = Math.exp(slider_value);
 
 		/*----------------------------------------------------------------*/
@@ -132,16 +132,16 @@ MapController.prototype.init_map = function() {
 		var center = [
 			parseFloat(d3.select("#map").style('width')) / 2,
 			parseFloat(d3.select("#map").style('height')) / 2];
-
+		
 		var old_translate = self._zoomManager.translate();
 		var old_scale = self._zoomManager.scale();
-
+		
 		var temp1 = [(center[0] - old_translate[0]) / old_scale,
 			(center[1] - old_translate[1]) / old_scale];
-
+		
 		var temp2 = [temp1[0] * zoom_level + old_translate[0],
 			temp1[1] * zoom_level + old_translate[1]];
-
+		
 		var new_translation = [
 			old_translate[0] + center[0] - temp2[0],
 			old_translate[1] + center[1] - temp2[1]]
@@ -157,20 +157,20 @@ MapController.prototype.init_map = function() {
 		.property("max", Math.log(MAX_ZOOM_LEVEL))
 		.property("step", Math.log(MAX_ZOOM_LEVEL) * 2 / MAX_ZOOM_LEVEL)
 		.on("input", slided);
-
-
+	
+	
 	d3.select("#map .zoom_box .home_zoom")
 		.on("click", home_zoom);
-
+	
 	d3.select("#map .zoom_box .zoom_in")
 		.on("click", zoom_in);
-
+	
 	d3.select("#map .zoom_box .zoom_out")
 		.on("click", zoom_out);
-
-
+	
+	
 	self.paint_nodes();
-
+	
 	this.init_events();
 };
 
@@ -180,7 +180,7 @@ Return void
 This function paint the nodes
 */
 MapController.prototype.paint_nodes = function() {
-
+	
 	this._viewport.selectAll(".node")
 		.data(nodes)
 			.enter()
@@ -245,7 +245,7 @@ MapController.prototype.tooltip_map_create = function(self, event) {
 
 	//Always changes the content because this may be change
 	var nodeContent = this.nodeData(node_id/*, type, id_map*/);
-
+	
 	/*----------------------FOR TEST--------------------*/
 	nodeContent = '<span>I\'M A FUCKING TOOLTIP!!</span>';
 	/*--------------------------------------------------*/

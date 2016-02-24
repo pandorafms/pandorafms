@@ -56,7 +56,7 @@ MapController.prototype.init_map = function() {
 		.call(self._zoomManager)
 		.append("g")
 			.attr("class", "viewport");
-
+	
 	/**
 	Function zoom
 	Return void
@@ -72,7 +72,7 @@ MapController.prototype.init_map = function() {
 		self._viewport
 			.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 	}
-
+	
 	/**
 	Function zoom_in
 	Return void
@@ -89,7 +89,7 @@ MapController.prototype.init_map = function() {
 		self._slider.property("value", Math.log(zoom_level));
 		self._slider.on("input")();
 	}
-
+	
 	/**
 	Function zoom_out
 	Return void
@@ -106,7 +106,7 @@ MapController.prototype.init_map = function() {
 		self._slider.property("value", Math.log(zoom_level));
 		self._slider.on("input")();
 	}
-
+	
 	/**
 	Function home_zoom
 	Return void
@@ -115,7 +115,7 @@ MapController.prototype.init_map = function() {
 	function home_zoom(d) {
 		self._zoomManager.scale(1).translate([0, 0]).event(self._viewport);
 	}
-
+	
 	/**
 	Function slided
 	Return void
@@ -125,7 +125,7 @@ MapController.prototype.init_map = function() {
 		var slider_value = parseFloat(self._slider.property("value"))
 		
 		zoom_level = Math.exp(slider_value);
-
+		
 		/*----------------------------------------------------------------*/
 		/*-Code to translate the map with the zoom for to hold the center-*/
 		/*----------------------------------------------------------------*/
@@ -145,12 +145,12 @@ MapController.prototype.init_map = function() {
 		var new_translation = [
 			old_translate[0] + center[0] - temp2[0],
 			old_translate[1] + center[1] - temp2[1]]
-
+		
 		self._zoomManager.scale(zoom_level)
 			.translate(new_translation)
 			.event(self._viewport);
 	}
-
+	
 	self._slider = d3.select("#map .zoom_controller .vertical_range")
 		.property("value", 0)
 		.property("min", -Math.log(MAX_ZOOM_LEVEL))
@@ -188,7 +188,7 @@ MapController.prototype.paint_nodes = function() {
 					.attr("transform",
 						function(d) { return "translate(" + d['x'] + " " + d['y'] + ")";})
 					.attr("class", "draggable node")
-					.attr("id", function(d) { return "node_" + d['id'];})
+					.attr("id", function(d) { return "node_" + d['graph_id'];})
 					.attr("data-id", function(d) { return d['id'];})
 					.attr("data-graph_id", function(d) { return d['graph_id'];})
 					.attr("data-type", function(d) { return d['type'];})
@@ -203,7 +203,54 @@ Return boolean
 This function init click events in the map
 */
 MapController.prototype.init_events = function(principalObject) {
-	$(this._target + " svg *, " + this._target + " svg").on("mousedown", {map: this}, this.click_event);
+	self = this;
+	
+	$(this._target + " svg *, " + this._target + " svg")
+		.on("mousedown", {map: this}, this.click_event);
+	
+	
+	d3.selectAll(".node")
+		.on("mouseover", function(d) {
+			d3.select("#node_" + d['graph_id'])
+				.select("circle")
+				.attr("style", "fill: rgb(128, 50, 50);");
+		})
+		.on("mouseout", function(d) {
+			d3.select("#node_" + d['graph_id'])
+				.select("circle")
+				.attr("style", "fill: rgb(50, 50, 128);");
+		});
+	
+	var drag = d3.behavior.drag()
+		.origin(function(d) { return d; })
+		.on("dragstart", dragstarted)
+		.on("drag", dragged)
+		.on("dragend", dragended);
+	
+	d3.selectAll(".draggable").call(drag);
+	
+	function dragstarted(d) {
+		d3.event.sourceEvent.stopPropagation();
+		d3.select(this).classed("dragging", true);
+	}
+	
+	function dragged(d) {
+		console.log("dragged");
+		var delta_x = d3.event.dx;
+		var delta_y = d3.event.dy;
+		
+		var translation = d3.transform(d3.select(this).attr("transform"));
+		scale = 1;
+		var x = translation.translate[0] + delta_x;
+		var y = translation.translate[1] + delta_y;
+		
+		d3.select(this).attr("transform",
+			"translate(" + x + " " + y + ")");
+	}
+	
+	function dragended(d) {
+		d3.select(this).classed("dragging", false);
+	}
 }
 
 /**
@@ -303,21 +350,24 @@ Function nodeData
 Return array(data)
 This function returns the data of the node
 */
-MapController.prototype.nodeData = function(id/*, type, id_map*/) {
-	var params = {};
-	params["getNodeData"] = 1;
-	params["id_node"] = id;
-	/*params["type"] = type;
-	params["id_map"] = id_map;*/
-	params["page"] = "include/ajax/map.ajax";
+MapController.prototype.nodeData = function() {
+	/*
+	$.ajax({
+		url: ,
+		type: 'POST',
+		dataType: 'json',
+		data: {
+			getNodeData: 1,
+		},
+		complete: function(xhr, textStatus) {
 
-	jQuery.ajax ({
-		data: params,
-		dataType: "json",
-		type: "POST",
-		url: "ajax.php",
-		success: function (data) {
-			return data;
+		},
+		success: function(data, textStatus, xhr) {
+
+		},
+		error: function(xhr, textStatus, errorThrown) {
+
 		}
 	});
+	*/
 }

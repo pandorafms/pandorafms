@@ -89,7 +89,7 @@ MapController.prototype.init_map = function() {
 		self._slider.property("value", Math.log(zoom_level));
 		self._slider.on("input")();
 	}
-
+	
 	/**
 	Function zoom_out
 	Return void

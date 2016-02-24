@@ -134,7 +134,7 @@ abstract class Map {
 		?>
 		
 		<div id="map" data-id="<?php echo $this->id;?>" style="border: 1px red solid;">
-			<div class="zoom_box" style="">
+			<div class="zoom_box" style="position: absolute;">
 				<style type="text/css">
 					.zoom_controller {
 						width: 30px;
@@ -142,7 +142,7 @@ abstract class Map {
 						background: blue;
 						border-radius: 15px;
 						
-						top: 100px;
+						top: 50px;
 						left: 10px;
 						position: absolute;
 					}
@@ -177,7 +177,7 @@ abstract class Map {
 					}
 					
 					.home_zoom {
-						top: 360px;
+						top: 310px;
 						left: 10px;
 						
 						display: table-cell;
@@ -199,7 +199,7 @@ abstract class Map {
 						left: 10px;
 						
 						display: table-cell;
-						position: relative;
+						position: absolute;
 						font-weight: bolder;
 						font-size: 20px;
 						background: blue;
@@ -213,7 +213,7 @@ abstract class Map {
 					}
 					
 					.zoom_out {
-						top: 320px;
+						top: 270px;
 						left: 10px;
 						
 						display: table-cell;

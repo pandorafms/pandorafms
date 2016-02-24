@@ -218,6 +218,12 @@ MapController.prototype.init_events = function(principalObject) {
 			d3.select("#node_" + d['graph_id'])
 				.select("circle")
 				.attr("style", "fill: rgb(50, 50, 128);");
+		})
+		.on("click", function(d) {
+			if (d3.event.defaultPrevented) return;
+			
+			
+			self.tooltip_map_create(self, this);
 		});
 	
 	var drag = d3.behavior.drag()
@@ -253,39 +259,16 @@ MapController.prototype.init_events = function(principalObject) {
 }
 
 /**
-Function click_event
-Return void
-This function manages mouse clicks and run events in consecuence
-*/
-MapController.prototype.click_event = function(event) {
-	var self = event.data.map;
-	event.preventDefault();
-	event.stopPropagation();
-	switch (event.which) {
-        case 1:
-			if ($(event.currentTarget).parent().hasClass("node")) {
-				self.tooltip_map_create(self, event);
-			}
-            break;
-        case 2:
-            break;
-        case 3:
-            break;
-		default:
-			break;
-    }
-}
-
-/**
 Function tooltip_map_create
 Return void
 This function manages nodes tooltips
 */
-MapController.prototype.tooltip_map_create = function(self, event) {
-	var nodeTarget = $(event.currentTarget).parent();
+MapController.prototype.tooltip_map_create = function(self, target) {
+	var nodeTarget = $(target);
 	var spinner = $('#spinner_tooltip').html();
 
-	var nodeR = parseInt($(event.currentTarget).attr("r"));
+	
+	var nodeR = parseInt($("circle", nodeTarget).attr("r"));
 	nodeR = nodeR * self._zoomManager.scale(); // Apply zoom
 	var node_id = nodeTarget.attr("id");
 
@@ -308,6 +291,7 @@ MapController.prototype.tooltip_map_create = function(self, event) {
 			offsetX: nodeR,
 			theme: 'tooltipster-noir',
 	        multiple: true,
+	        interactive: true,
 	        content: spinner,
 			functionBefore: function(origin, continueTooltip) {
 				continueTooltip();
@@ -316,7 +300,7 @@ MapController.prototype.tooltip_map_create = function(self, event) {
 	    });
 
 		this._tooltipsID.push(node_id);
-
+		
 		nodeTarget.tooltipster("show");
 	}
 }

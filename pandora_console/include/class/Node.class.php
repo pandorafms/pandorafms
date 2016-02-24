@@ -1,7 +1,8 @@
 <?php
+
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2012 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2011 Artica Soluciones Tecnologicas
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -13,24 +14,17 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-// Only accesible by ajax
-if (is_ajax ()) {
-	global $config;
+/**
+ * @package Include
+ * @subpackage Maps
+ */
+ 
+abstract class Node {
 
-	// Login check
-	check_login ();
+	private $id_node = null;
 
-	require_once($config['homedir'] . "/include/class/Node.class.php");
-
-	$getNodeData = (bool)get_parameter('getNodeData', 0);
-
-	if ($getNodeData) {
-		$id_node = (int)get_parameter('id_node');
-		$type = (int)get_parameter('type');
-		$id_map = (int)get_parameter('id_map');
-		
-		$node = new Node($id_node);
+	public function __construct($id) {
+		$this->$id_node = $id;
 	}
 
-}
 ?>

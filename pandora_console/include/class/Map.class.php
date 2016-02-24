@@ -23,22 +23,22 @@
 
 abstract class Map {
 	protected $status = STATUS_OK;
-	
+
 	protected $id = null;
-	
+
 	protected $type = null;
 	protected $subtype = null;
 	protected $id_group = null;
 	protected $generation_method = null;
-	
+
 	protected $width = null;
 	protected $height = null;
-	
+
 	protected $nodes = array();
 	protected $edges = array();
-	
+
 	protected $requires_js = null;
-	
+
 	public static function getName($id = null) {
 		if (empty($id)) {
 			return null;
@@ -47,39 +47,39 @@ abstract class Map {
 			return db_get_value('name', 'tmap', 'id', $id);
 		}
 	}
-	
+
 	public function __construct($id) {
 		$this->id = $id;
-		
+
 		$this->requires_js = array();
 		$this->requires_js[] = "include/javascript/d3.3.5.14.js";
 		$this->requires_js[] = "include/javascript/map/MapController.js";
 		$this->requires_js[] = "include/javascript/jquery.tooltipster.js";
 		$this->requires_js[] = "include/javascript/jquery.svg.js";
 		$this->requires_js[] = "include/javascript/jquery.svgdom.js";
-		
+
 		if (!$this->loadDB()) {
 			$this->status = STATUS_ERROR;
 		}
 	}
-	
+
 	protected function processDBValues($dbValues) {
 		$this->type = (int)$dbValues['type'];
 		$this->subtype = (int)$dbValues['subtype'];
-		
+
 		$this->id_group = (int)$dbValues['id_group'];
 		$this->generation_method = (int)$dbValues['generation_method'];
-		
+
 		$this->width = (int)$dbValues['width'];
 		$this->height = (int)$dbValues['height'];
 	}
-	
+
 	private function loadDB() {
 		$row = db_get_row_filter('tmap', array('id' => $this->id));
-		
+
 		if (empty($row))
 			return false;
-		
+
 		switch (get_class($this)) {
 			case 'Networkmap':
 				Networkmap::processDBValues($row);
@@ -92,9 +92,9 @@ abstract class Map {
 				break;
 		}
 	}
-	
+
 	abstract function printJSInit();
-	
+
 	public function writeJSGraph() {
 		?>
 		<script type="text/javascript">
@@ -105,14 +105,14 @@ abstract class Map {
 			var temp = [];
 			for (var i in nodes) { temp[parseInt(i)] = nodes[i];}
 			nodes = temp;
-			
+
 			temp = [];
 			for (var i in edges) { temp[parseInt(i)] = edges[i];}
 			edges = temp;
 		</script>
 		<?php
 	}
-	
+
 	public function show() {
 		// Tooltip css
 		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"include/styles/tooltipster.css\"/>" . "\n";
@@ -120,15 +120,19 @@ abstract class Map {
 		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"include/styles/tooltipster-shadow.css\"/>" . "\n";
 		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"include/styles/tooltipster-noir.css\"/>" . "\n";
 		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"include/styles/tooltipster-light.css\"/>" . "\n";
+		//Tooltips spinner
+		echo "<div id='spinner_tooltip' style='display:none;'>";
+			html_print_image('images/spinner.gif');
+		echo "</div>";
 		foreach ($this->requires_js as $js) {
 			echo "<script type='text/javascript' src='$js'></script>" . "\n";
 		}
-		
+
 		$this->writeJSContants();
 		$this->writeJSGraph();
-		
+
 		?>
-		
+
 		<div id="map" data-id="<?php echo $this->id;?>" style="border: 1px red solid;">
 			<div class="zoom_box" style="">
 				<style type="text/css">
@@ -137,14 +141,14 @@ abstract class Map {
 						height: 210px;
 						background: blue;
 						border-radius: 15px;
-						
+
 						top: 100px;
 						left: 10px;
 						position: absolute;
 					}
-					
-					
-					
+
+
+
 					.vertical_range {
 						padding: 0;
 						-webkit-transform: rotate(270deg);
@@ -156,26 +160,26 @@ abstract class Map {
 						background: transparent !important;
 						border: 0px !important;
 					}
-					
+
 					.vertical_range {
 						left: -92px;
 						top: 93px;
 					}
-					
+
 					@media screen and (-webkit-min-device-pixel-ratio:0)
 					{
 						/* Only for chrome */
-						
+
 						.vertical_range {
 							left: -87px;
 							top: 93px;
 						}
 					}
-					
+
 					.home_zoom {
 						top: 360px;
 						left: 10px;
-						
+
 						display: table-cell;
 						position: absolute;
 						font-weight: bolder;
@@ -189,11 +193,11 @@ abstract class Map {
 						text-align: center;
 						vertical-align: middle;
 					}
-					
+
 					.zoom_in {
 						top: 10px;
 						left: 10px;
-						
+
 						display: table-cell;
 						position: relative;
 						font-weight: bolder;
@@ -207,11 +211,11 @@ abstract class Map {
 						text-align: center;
 						vertical-align: middle;
 					}
-					
+
 					.zoom_out {
 						top: 320px;
 						left: 10px;
-						
+
 						display: table-cell;
 						position: absolute;
 						font-weight: bolder;
@@ -250,11 +254,11 @@ abstract class Map {
 			<svg xmlns="http://www.w3.org/2000/svg" pointer-events="all" width="<?php echo $width;?>" height="<?php echo $height;?>">
 			</svg>
 		</div>
-		
+
 		<?php
 		$this->printJSInit();
 	}
-	
+
 	public function writeJSContants() {
 		$contants = array();
 		$contants["ITEM_TYPE_AGENT_NETWORKMAP"] = ITEM_TYPE_AGENT_NETWORKMAP;
@@ -270,7 +274,7 @@ abstract class Map {
 		</script>
 		<?php
 	}
-	
+
 	public function getType() {
 		return $this->type;
 	}

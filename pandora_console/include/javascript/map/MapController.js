@@ -170,7 +170,7 @@ MapController.prototype.init_map = function() {
 
 
 	self.paint_nodes();
-	
+
 	this.init_events();
 };
 
@@ -239,6 +239,7 @@ This function manages nodes tooltips
 */
 MapController.prototype.tooltip_map_create = function(self, event) {
 	var nodeTarget = $(event.currentTarget).parent();
+	var spinner = $('#spinner_tooltip').html();
 
 	var nodeR = parseInt($(event.currentTarget).attr("r"));
 	nodeR = nodeR * self._zoomManager.scale(); // Apply zoom
@@ -249,7 +250,7 @@ MapController.prototype.tooltip_map_create = function(self, event) {
 	var data_graph_id = parseInt(nodeTarget.data("graph_id"));
 
 	if (this.containsTooltipId(node_id)) {
-		nodeTarget.tooltipster('content', 'Loading...');
+		nodeTarget.tooltipster('content', spinner);
 		self.nodeData(data_id, type, self._id, data_graph_id, nodeTarget);
 		nodeTarget.tooltipster("option", "offsetX", nodeR);
 		nodeTarget.tooltipster("show");
@@ -263,7 +264,7 @@ MapController.prototype.tooltip_map_create = function(self, event) {
 			offsetX: nodeR,
 			theme: 'tooltipster-noir',
 	        multiple: true,
-	        content: 'Loading...',
+	        content: spinner,
 			functionBefore: function(origin, continueTooltip) {
 				continueTooltip();
 				self.nodeData(data_id, type, self._id, data_graph_id, origin);

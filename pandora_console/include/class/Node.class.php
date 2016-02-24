@@ -18,8 +18,8 @@
  * @package Include
  * @subpackage Maps
  */
- 
-abstract class Node {
+
+class Node {
 
 	private $id_node = null;
 
@@ -27,4 +27,5 @@ abstract class Node {
 		$this->$id_node = $id;
 	}
 
+}
 ?>

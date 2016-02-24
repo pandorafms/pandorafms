@@ -22,7 +22,7 @@ var MAX_ZOOM_LEVEL = 50;
 /*-----------------------------------------------*/
 var MapController = function(target) {
 	this._target = target;
-	
+
 	this._id = $(target).data('id');
 	this._tooltipsID = [];
 }
@@ -46,12 +46,12 @@ This function init the map
 */
 MapController.prototype.init_map = function() {
 	var self = this;
-	
+
 	var svg = d3.select(this._target + " svg");
-	
+
 	self._zoomManager =
 		d3.behavior.zoom().scaleExtent([1/MAX_ZOOM_LEVEL, MAX_ZOOM_LEVEL]).on("zoom", zoom);
-	
+
 	self._viewport = svg
 		.call(self._zoomManager)
 		.append("g")
@@ -64,11 +64,11 @@ MapController.prototype.init_map = function() {
 	*/
 	function zoom() {
 		self.tooltip_map_close();
-		
+
 		var zoom_level = d3.event.scale;
-		
+
 		self._slider.property("value", Math.log(zoom_level));
-		
+
 		self._viewport
 			.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 	}
@@ -81,11 +81,11 @@ MapController.prototype.init_map = function() {
 	function zoom_in(d) {
 		var step = parseFloat(self._slider.property("step"));
 		var slider_value = parseFloat(self._slider.property("value"));
-		
+
 		slider_value += step;
-		
+
 		var zoom_level = Math.exp(slider_value);
-		
+
 		self._slider.property("value", Math.log(zoom_level));
 		self._slider.on("input")();
 	}
@@ -98,11 +98,11 @@ MapController.prototype.init_map = function() {
 	function zoom_out(d) {
 		var step = parseFloat(self._slider.property("step"));
 		var slider_value = parseFloat(self._slider.property("value"));
-		
+
 		slider_value -= step;
-		
+
 		var zoom_level = Math.exp(slider_value);
-		
+
 		self._slider.property("value", Math.log(zoom_level));
 		self._slider.on("input")();
 	}
@@ -123,7 +123,7 @@ MapController.prototype.init_map = function() {
 	*/
 	function slided(d) {
 		var slider_value = parseFloat(self._slider.property("value"))
-		
+
 		zoom_level = Math.exp(slider_value);
 
 		/*----------------------------------------------------------------*/
@@ -132,16 +132,16 @@ MapController.prototype.init_map = function() {
 		var center = [
 			parseFloat(d3.select("#map").style('width')) / 2,
 			parseFloat(d3.select("#map").style('height')) / 2];
-		
+
 		var old_translate = self._zoomManager.translate();
 		var old_scale = self._zoomManager.scale();
-		
+
 		var temp1 = [(center[0] - old_translate[0]) / old_scale,
 			(center[1] - old_translate[1]) / old_scale];
-		
+
 		var temp2 = [temp1[0] * zoom_level + old_translate[0],
 			temp1[1] * zoom_level + old_translate[1]];
-		
+
 		var new_translation = [
 			old_translate[0] + center[0] - temp2[0],
 			old_translate[1] + center[1] - temp2[1]]
@@ -157,18 +157,18 @@ MapController.prototype.init_map = function() {
 		.property("max", Math.log(MAX_ZOOM_LEVEL))
 		.property("step", Math.log(MAX_ZOOM_LEVEL) * 2 / MAX_ZOOM_LEVEL)
 		.on("input", slided);
-	
-	
+
+
 	d3.select("#map .zoom_box .home_zoom")
 		.on("click", home_zoom);
-	
+
 	d3.select("#map .zoom_box .zoom_in")
 		.on("click", zoom_in);
-	
+
 	d3.select("#map .zoom_box .zoom_out")
 		.on("click", zoom_out);
-	
-	
+
+
 	self.paint_nodes();
 	
 	this.init_events();
@@ -180,7 +180,6 @@ Return void
 This function paint the nodes
 */
 MapController.prototype.paint_nodes = function() {
-	
 	this._viewport.selectAll(".node")
 		.data(nodes)
 			.enter()
@@ -217,7 +216,7 @@ MapController.prototype.click_event = function(event) {
 	event.stopPropagation();
 	switch (event.which) {
         case 1:
-			if ($(event.currentTarget).hasClass("node")) {
+			if ($(event.currentTarget).parent().hasClass("node")) {
 				self.tooltip_map_create(self, event);
 			}
 			else {
@@ -239,24 +238,24 @@ Return void
 This function manages nodes tooltips
 */
 MapController.prototype.tooltip_map_create = function(self, event) {
+	var nodeTarget = $(event.currentTarget).parent();
+
 	var nodeR = parseInt($(event.currentTarget).attr("r"));
 	nodeR = nodeR * self._zoomManager.scale(); // Apply zoom
-	var node_id = $(event.currentTarget).attr("id");
+	var node_id = nodeTarget.attr("id");
 
-	//Always changes the content because this may be change
-	var nodeContent = this.nodeData(node_id/*, type, id_map*/);
-	
-	/*----------------------FOR TEST--------------------*/
-	nodeContent = '<span>I\'M A FUCKING TOOLTIP!!</span>';
-	/*--------------------------------------------------*/
+	var type = parseInt(nodeTarget.data("type"));
+	var data_id = parseInt(nodeTarget.data("id"));
+	var data_graph_id = parseInt(nodeTarget.data("graph_id"));
 
 	if (this.containsTooltipId(node_id)) {
-		$(event.currentTarget).tooltipster("option", "offsetX", nodeR);
-		$(event.currentTarget).tooltipster('content', $(nodeContent));
-		$(event.currentTarget).tooltipster("show");
+		nodeTarget.tooltipster('content', 'Loading...');
+		self.nodeData(data_id, type, self._id, data_graph_id, nodeTarget);
+		nodeTarget.tooltipster("option", "offsetX", nodeR);
+		nodeTarget.tooltipster("show");
 	}
 	else {
-		$(event.currentTarget).tooltipster({
+		nodeTarget.tooltipster({
 	        arrow: true,
 	        trigger: 'click',
 			contentAsHTML: true,
@@ -264,12 +263,16 @@ MapController.prototype.tooltip_map_create = function(self, event) {
 			offsetX: nodeR,
 			theme: 'tooltipster-noir',
 	        multiple: true,
-	        content: nodeContent
+	        content: 'Loading...',
+			functionBefore: function(origin, continueTooltip) {
+				continueTooltip();
+				self.nodeData(data_id, type, self._id, data_graph_id, origin);
+			}
 	    });
 
 		this._tooltipsID.push(node_id);
 
-		$(event.currentTarget).tooltipster("show");
+		nodeTarget.tooltipster("show");
 	}
 }
 
@@ -303,12 +306,13 @@ Function nodeData
 Return array(data)
 This function returns the data of the node
 */
-MapController.prototype.nodeData = function(id/*, type, id_map*/) {
+MapController.prototype.nodeData = function(data_id, type, id_map, data_graph_id, origin) {
 	var params = {};
 	params["getNodeData"] = 1;
-	params["id_node"] = id;
-	/*params["type"] = type;
-	params["id_map"] = id_map;*/
+	params["id_node_data"] = data_id;
+	params["type"] = type;
+	params["id_map"] = id_map;
+	params["data_graph_id"] = data_graph_id;
 	params["page"] = "include/ajax/map.ajax";
 
 	jQuery.ajax ({
@@ -317,7 +321,7 @@ MapController.prototype.nodeData = function(id/*, type, id_map*/) {
 		type: "POST",
 		url: "ajax.php",
 		success: function (data) {
-			return data;
+			origin.tooltipster('content', data);
 		}
 	});
 }

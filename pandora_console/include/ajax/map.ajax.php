@@ -25,11 +25,16 @@ if (is_ajax ()) {
 	$getNodeData = (bool)get_parameter('getNodeData', 0);
 
 	if ($getNodeData) {
-		$id_node = (int)get_parameter('id_node');
+		$id_node_data = (int)get_parameter('id_node_data');
 		$type = (int)get_parameter('type');
 		$id_map = (int)get_parameter('id_map');
-		
-		$node = new Node($id_node);
+		$data_graph_id = (int)get_parameter('data_graph_id');
+
+		$return_data = '<span>GOD SAVE FERMIN!!</span>';
+
+		sleep(2);
+		echo json_encode($return_data);
+		return;
 	}
 
 }

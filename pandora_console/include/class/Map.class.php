@@ -132,7 +132,44 @@ abstract class Map {
 		$this->writeJSGraph();
 		
 		?>
-		
+		<style type="text/css">
+			.title_bar {
+				border-bottom: 1px solid black;
+			}
+			.title_bar .title {
+				font-weight: bolder;
+			}
+			
+			.title_bar .open_click {
+				float: right;
+				display: table-cell;
+				font-weight: bolder;
+				font-size: 20px;
+				background: blue none repeat scroll 0% 0%;
+				color: white;
+				width: 17px;
+				height: 17px;
+				cursor: pointer;
+				text-align: center;
+				vertical-align: middle;
+				margin: 1px;
+			}
+			
+			.title_bar .close_click {
+				float: right;
+				display: table-cell;
+				font-weight: bolder;
+				font-size: 20px;
+				background: blue none repeat scroll 0% 0%;
+				color: white;
+				width: 17px;
+				height: 17px;
+				cursor: pointer;
+				text-align: center;
+				vertical-align: middle;
+				margin: 1px;
+			}
+		</style>
 		<div id="map" data-id="<?php echo $this->id;?>" style="border: 1px red solid;">
 			<div class="zoom_box" style="position: absolute;">
 				<style type="text/css">

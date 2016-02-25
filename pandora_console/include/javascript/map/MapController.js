@@ -351,6 +351,20 @@ function open_in_another_window(link) {
 	window.open(link);
 }
 
-function close_button_tooltip(node_id) {
-	$("#" + node_id).tooltipster("destroy");
+function close_button_tooltip(data_graph_id) {
+	$("#node_" + data_graph_id).tooltipster("destroy");
+}
+
+caca = null;
+
+function tooltip_to_new_window(data_graph_id) {
+	var content = $("#tooltip_" + data_graph_id + " .body").html();
+	
+	console.log("#node_" + data_graph_id);
+	$("#node_" + data_graph_id).tooltipster("destroy");
+	
+	var window_popup = window.open("", "window_" + data_graph_id,
+		'title=MIERDACA, width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no');
+	
+	$(window_popup.document.body).html(content);
 }

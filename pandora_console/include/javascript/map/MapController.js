@@ -24,14 +24,12 @@ var MapController = function(target) {
 	this._target = target;
 	
 	this._id = $(target).data('id');
-	this._tooltipsID = [];
 }
 
 /*-----------------------------------------------*/
 /*------------------Atributes--------------------*/
 /*-----------------------------------------------*/
 MapController.prototype._id = null;
-MapController.prototype._tooltipsID = null;
 MapController.prototype._viewport = null;
 MapController.prototype._zoomManager = null;
 MapController.prototype._slider = null;
@@ -63,7 +61,7 @@ MapController.prototype.init_map = function() {
 	This function manages the zoom
 	*/
 	function zoom() {
-		self.tooltip_map_close();
+		self.close_all_tooltips();
 		
 		var zoom_level = d3.event.scale;
 		
@@ -220,7 +218,7 @@ MapController.prototype.init_events = function(principalObject) {
 		})
 		.on("click", function(d) {
 			if (d3.event.defaultPrevented) return;
-
+			
 			self.tooltip_map_create(self, this);
 		});
 	
@@ -234,6 +232,11 @@ MapController.prototype.init_events = function(principalObject) {
 	
 	function dragstarted(d) {
 		d3.event.sourceEvent.stopPropagation();
+		
+		if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
+			$("#node_" + d['graph_id']).tooltipster('destroy');
+		}
+		
 		d3.select(this).classed("dragging", true);
 	}
 	
@@ -252,6 +255,12 @@ MapController.prototype.init_events = function(principalObject) {
 	
 	function dragended(d) {
 		d3.select(this).classed("dragging", false);
+		
+		console.log("#node_" + d['graph_id']);
+		
+		if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
+			$("#node_" + d['graph_id']).tooltipster('destroy');
+		}
 	}
 }
 
@@ -263,67 +272,49 @@ This function manages nodes tooltips
 MapController.prototype.tooltip_map_create = function(self, target) {
 	var nodeTarget = $(target);
 	var spinner = $('#spinner_tooltip').html();
-
+	
 	var nodeR = parseInt($("circle", nodeTarget).attr("r"));
 	nodeR = nodeR * self._zoomManager.scale(); // Apply zoom
 	var node_id = nodeTarget.attr("id");
-
+	
 	var type = parseInt(nodeTarget.data("type"));
 	var data_id = parseInt(nodeTarget.data("id"));
 	var data_graph_id = parseInt(nodeTarget.data("graph_id"));
-
-	if (this.containsTooltipId(node_id)) {
-		nodeTarget.tooltipster('content', spinner);
-		self.nodeData(data_id, type, self._id, data_graph_id, nodeTarget, node_id);
-		nodeTarget.tooltipster("option", "offsetX", nodeR);
-		nodeTarget.tooltipster("show");
-	}
-	else {
+	
+	//~ if (this.containsTooltipId(node_id)) {
+		//~ nodeTarget.tooltipster('content', spinner);
+		//~ self.nodeData(data_id, type, self._id, data_graph_id, nodeTarget, node_id);
+		//~ nodeTarget.tooltipster("option", "offsetX", nodeR);
+	//~ }
+	//~ else {
 		nodeTarget.tooltipster({
-	        arrow: true,
-	        trigger: 'click',
+			arrow: true,
+			trigger: 'click',
 			contentAsHTML: true,
-	        autoClose: false,
+			autoClose: false,
 			offsetX: nodeR,
 			theme: 'tooltipster-noir',
-	        multiple: true,
-	        interactive: true,
-	        content: spinner,
+			multiple: true,
+			interactive: true,
+			content: spinner,
+			restoration: 'none',
 			functionBefore: function(origin, continueTooltip) {
 				continueTooltip();
 				self.nodeData(data_id, type, self._id, data_graph_id, origin, node_id);
 			}
-	    });
-
-		this._tooltipsID.push(node_id);
+		});
 		
 		nodeTarget.tooltipster("show");
-	}
+	//~ }
 }
 
 /**
-Function tooltip_map_close
+Function close_all_tooltips
 Return void
 This function hide nodes tooltips
 */
-MapController.prototype.tooltip_map_close = function() {
-	for (i = 0; i < this._tooltipsID.length; i++) {
-		$('#' + this._tooltipsID[i]).tooltipster("hide");
-	}
-}
-
-/**
-Function containsTooltipId
-Return boolean
-This function returns true if the element is in the array
-*/
-MapController.prototype.containsTooltipId = function(element) {
-	for (i = 0; i < this._tooltipsID.length; i++) {
-		if (this._tooltipsID[i] == element) {
-			return true;
-		}
-	}
-	return false;
+MapController.prototype.close_all_tooltips = function() {
+	$("svg .tooltipstered").tooltipster("destroy");
 }
 
 /**
@@ -340,14 +331,16 @@ MapController.prototype.nodeData = function(data_id, type, id_map, data_graph_id
 	params["data_graph_id"] = data_graph_id;
 	params["node_id"] = node_id;
 	params["page"] = "include/ajax/map.ajax";
-
+	
 	jQuery.ajax ({
 		data: params,
 		dataType: "json",
 		type: "POST",
 		url: "ajax.php",
 		success: function (data) {
-			origin.tooltipster('content', data);
+			if ($(origin).hasClass("tooltipstered")) {
+				origin.tooltipster('content', data);
+			}
 		}
 	});
 }
@@ -355,14 +348,6 @@ MapController.prototype.nodeData = function(data_id, type, id_map, data_graph_id
 /*-----------------------------------------------*/
 /*-------------------Functions-------------------*/
 /*-----------------------------------------------*/
-/**
-Function close_button_tooltip
-Return void
-This function hide the tooltip
-*/
-function close_button_tooltip(node_id) {
-	$('#' + node_id).tooltipster("hide");
-}
 
 /**
 Function open_in_another_window
@@ -371,4 +356,8 @@ This function open the node in extra window
 */
 function open_in_another_window(link) {
 	window.open(link);
+}
+
+function close_button_tooltip(node_id) {
+	$("#" + node_id).tooltipster("destroy");
 }

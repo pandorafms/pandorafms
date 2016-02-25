@@ -16,28 +16,28 @@
 // Only accesible by ajax
 if (is_ajax ()) {
 	global $config;
-	
+
 	// Login check
 	check_login ();
-	
+
 	require_once($config['homedir'] . "/include/functions_os.php");
-	
-	
+
+
 	$getNodeData = (bool)get_parameter('getNodeData', 0);
-	
+
 	if ($getNodeData) {
 		$id_node_data = (int)get_parameter('id_node_data');
 		$type = (int)get_parameter('type');
 		$id_map = (int)get_parameter('id_map');
 		$data_graph_id = (int)get_parameter('data_graph_id');
 		$node_id = get_parameter('node_id');
-		
+
 		ob_start();
 		?>
 		<div id="tooltip_{data_graph_id}">
 			<div class="title_bar">
 				<span class="title">{title}</span>
-				
+
 				<span class="close_click" onClick="javascript: close_button_tooltip('{data_graph_id}');">&#x2716;</span>
 				<span class="open_click" onClick="javascript: tooltip_to_new_window('{data_graph_id}');">&#10138;</span>
 			</div>
@@ -47,7 +47,7 @@ if (is_ajax ()) {
 		</div>
 		<?php
 		$return_data = ob_get_clean();
-		
+
 		switch ($type) {
 			case ITEM_TYPE_AGENT_NETWORKMAP:
 				$return_data = str_replace(
@@ -62,11 +62,11 @@ if (is_ajax ()) {
 					"{title}",
 					agents_get_name($id_node_data),
 					$return_data);
-				
-				
+
+
 				$agent_group = groups_get_name(
 					db_get_value('id_grupo', 'tagente', 'id_agente', $id_node_data));
-				
+
 				ob_start();
 				?>
 				<span>
@@ -99,40 +99,53 @@ if (is_ajax ()) {
 				</span>
 				<?php
 				$body = ob_get_clean();
-				
+
 				$return_data = str_replace(
 					"{body}",
 					$body,
 					$return_data);
 				break;
 			case ITEM_TYPE_MODULE_NETWORKMAP:
-				$node_data = db_get_all_rows_sql("SELECT *
+
+				$node_data = db_get_all_rows_sql("SELECT descripcion
 													FROM tagente_modulo
 													WHERE id_agente_modulo = " . $id_node_data);
+
 				$node_data = $node_data[0];
-				if (!empty($node_data)) {
-					$link = $config['homeurl'] . 'index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=0&status=0&id_module=' . $id_node_data;
-					$return_data .= '<div id="module_data_to_show_"' . $id_node_data .'>';
-						$return_data .= '<div id="open_close_click_"' . $data_graph_id . '>';
-							$return_data .= '<span><strong>Module: </strong>' . $node_data['nombre'] . '</span></br>';
-							$return_data .= '<span class="close_click" onClick="close_button_tooltip(\'' . $node_id . '\');" style="float:right;">| X </span>';
-							$return_data .= '<span class="open_click" onClick="javascript: open_in_another_window(\'' . $link . '\');" style="float:right;"> -> |</span>';
-						$return_data .= '</div>';
-						
-						$return_data .= '<div>';
-							$agent_module = db_get_row_sql("SELECT nombre FROM tagente WHERE id_agente = " . $node_data['id_agente']);
-							$agent_module = $agent_module['nombre'];
-							$return_data .= '<span><strong>Agent: </strong>' . $agent_module . '</span></br>';
-							$return_data .= '<span><strong>Description: </strong>' . $node_data['descripcion'] . '</span>';
-						$return_data .= '</div>';
-					$return_data .= '</div>';
-				}
-				else {
-					$return_data = '<span>No data to show</span>';
-				}
+
+				$return_data = str_replace(
+					"{data_graph_id}",
+					$data_graph_id,
+					$return_data);
+				$return_data = str_replace(
+					"{node_id}",
+					$node_id,
+					$return_data);
+				$return_data = str_replace(
+					"{title}",
+					modules_get_agentmodule_name($id_node_data),
+					$return_data);
+
+				ob_start();
+				?>
+				<span>
+					<strong><?php echo __('Agent Name');?>: </strong>
+					<?php echo agents_get_name(modules_get_agentmodule_agent($id_node_data));?>
+				</span> <br/>
+				<span>
+					<strong><?php echo __('Description');?>: </strong>
+					<?php echo db_get_value('descripcion', 'tagente_modulo', 'id_agente_modulo', $id_node_data);?>
+				</span> <br/>
+				<?php
+				$body = ob_get_clean();
+
+				$return_data = str_replace(
+					"{body}",
+					$body,
+					$return_data);
 				break;
 		}
-		
+
 		sleep(1);
 		echo json_encode($return_data);
 		return;

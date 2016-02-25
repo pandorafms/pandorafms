@@ -40,8 +40,8 @@ if (is_ajax ()) {
 													WHERE id_agente = " . $id_node_data);
 				$node_data = $node_data[0];
 				if (!empty($node_data)) {
-					$link = $config['homeurl'] . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $node_data['id_agente'];
-					$return_data .= '<div id="agent_data_to_show_"' . $node_data['id_agente'] .'>';
+					$link = $config['homeurl'] . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $id_node_data;
+					$return_data .= '<div id="agent_data_to_show_"' . $id_node_data .'>';
 						$return_data .= '<div id="open_close_click_"' . $data_graph_id . '>';
 							$return_data .= '<span><strong>Agent: </strong>' . $node_data['nombre'] . '</span>';
 							$return_data .= '<span class="close_click" onClick="close_button_tooltip(\'' . $node_id . '\');" style="float:right;">| X </span>';
@@ -73,12 +73,20 @@ if (is_ajax ()) {
 													WHERE id_agente_modulo = " . $id_node_data);
 				$node_data = $node_data[0];
 				if (!empty($node_data)) {
-					$return_data .= '<div id="module_data_to_show_"' . $node_data['id_agente'] .'>';
-					$return_data .= '<span><strong>Module: </strong>' . $node_data['nombre'] . '</span></br>';
-					$agent_module = db_get_row_sql("SELECT nombre FROM tagente WHERE id_agente = " . $node_data['id_agnte']);
-					$agent_module = $agent_module['nombre'];
-					$return_data .= '<span><strong>Agent: </strong>' . $agent_module . '</span></br>';
-					$return_data .= '<span><strong>Description: </strong>' . $node_data['descripcion'] . '</span>';
+					$link = $config['homeurl'] . 'index.php?sec=estado&sec2=operation/agentes/status_monitor&ag_group=0&status=0&id_module=' . $id_node_data;
+					$return_data .= '<div id="module_data_to_show_"' . $id_node_data .'>';
+						$return_data .= '<div id="open_close_click_"' . $data_graph_id . '>';
+							$return_data .= '<span><strong>Module: </strong>' . $node_data['nombre'] . '</span></br>';
+							$return_data .= '<span class="close_click" onClick="close_button_tooltip(\'' . $node_id . '\');" style="float:right;">| X </span>';
+							$return_data .= '<span class="open_click" onClick="javascript: open_in_another_window(\'' . $link . '\');" style="float:right;"> -> |</span>';
+						$return_data .= '</div>';
+
+						$return_data .= '<div>';
+							$agent_module = db_get_row_sql("SELECT nombre FROM tagente WHERE id_agente = " . $node_data['id_agente']);
+							$agent_module = $agent_module['nombre'];
+							$return_data .= '<span><strong>Agent: </strong>' . $agent_module . '</span></br>';
+							$return_data .= '<span><strong>Description: </strong>' . $node_data['descripcion'] . '</span>';
+						$return_data .= '</div>';
 					$return_data .= '</div>';
 				}
 				else {

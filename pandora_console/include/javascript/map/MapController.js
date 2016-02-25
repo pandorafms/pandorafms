@@ -281,31 +281,24 @@ MapController.prototype.tooltip_map_create = function(self, target) {
 	var data_id = parseInt(nodeTarget.data("id"));
 	var data_graph_id = parseInt(nodeTarget.data("graph_id"));
 	
-	//~ if (this.containsTooltipId(node_id)) {
-		//~ nodeTarget.tooltipster('content', spinner);
-		//~ self.nodeData(data_id, type, self._id, data_graph_id, nodeTarget, node_id);
-		//~ nodeTarget.tooltipster("option", "offsetX", nodeR);
-	//~ }
-	//~ else {
-		nodeTarget.tooltipster({
-			arrow: true,
-			trigger: 'click',
-			contentAsHTML: true,
-			autoClose: false,
-			offsetX: nodeR,
-			theme: 'tooltipster-noir',
-			multiple: true,
-			interactive: true,
-			content: spinner,
-			restoration: 'none',
-			functionBefore: function(origin, continueTooltip) {
-				continueTooltip();
-				self.nodeData(data_id, type, self._id, data_graph_id, origin, node_id);
-			}
-		});
-		
-		nodeTarget.tooltipster("show");
-	//~ }
+	nodeTarget.tooltipster({
+		arrow: true,
+		trigger: 'click',
+		contentAsHTML: true,
+		autoClose: false,
+		offsetX: nodeR,
+		theme: 'tooltipster-noir',
+		multiple: true,
+		interactive: true,
+		content: spinner,
+		restoration: 'none',
+		functionBefore: function(origin, continueTooltip) {
+			continueTooltip();
+			self.nodeData(data_id, type, self._id, data_graph_id, origin, node_id);
+		}
+	});
+	
+	nodeTarget.tooltipster("show");
 }
 
 /**

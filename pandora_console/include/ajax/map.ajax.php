@@ -16,28 +16,28 @@
 // Only accesible by ajax
 if (is_ajax ()) {
 	global $config;
-
+	
 	// Login check
 	check_login ();
-
+	
 	require_once($config['homedir'] . "/include/functions_os.php");
-
-
+	
+	
 	$getNodeData = (bool)get_parameter('getNodeData', 0);
-
+	
 	if ($getNodeData) {
 		$id_node_data = (int)get_parameter('id_node_data');
 		$type = (int)get_parameter('type');
 		$id_map = (int)get_parameter('id_map');
 		$data_graph_id = (int)get_parameter('data_graph_id');
 		$node_id = get_parameter('node_id');
-
+		
 		ob_start();
 		?>
 		<div id="tooltip_{data_graph_id}">
 			<div class="title_bar">
 				<span class="title">{title}</span>
-
+				
 				<span class="close_click" onClick="javascript: close_button_tooltip('{data_graph_id}');">&#x2716;</span>
 				<span class="open_click" onClick="javascript: tooltip_to_new_window('{data_graph_id}');">&#10138;</span>
 			</div>
@@ -47,7 +47,7 @@ if (is_ajax ()) {
 		</div>
 		<?php
 		$return_data = ob_get_clean();
-
+		
 		switch ($type) {
 			case ITEM_TYPE_AGENT_NETWORKMAP:
 				$return_data = str_replace(
@@ -62,11 +62,11 @@ if (is_ajax ()) {
 					"{title}",
 					agents_get_name($id_node_data),
 					$return_data);
-
-
+				
+				
 				$agent_group = groups_get_name(
 					db_get_value('id_grupo', 'tagente', 'id_agente', $id_node_data));
-
+				
 				ob_start();
 				?>
 				<span>
@@ -99,7 +99,7 @@ if (is_ajax ()) {
 				</span>
 				<?php
 				$body = ob_get_clean();
-
+				
 				$return_data = str_replace(
 					"{body}",
 					$body,
@@ -145,7 +145,7 @@ if (is_ajax ()) {
 					$return_data);
 				break;
 		}
-
+		
 		sleep(1);
 		echo json_encode($return_data);
 		return;

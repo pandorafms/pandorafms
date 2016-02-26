@@ -141,8 +141,8 @@ if [ "$1" = "1" ]; then
         exit 0
 fi
 
-/sbin/service pandora_server stop &>/dev/null
-/sbin/service tentacle_serverd stop &>/dev/null
+/sbin/service pandora_server stop >/dev/null 2>&1 || :
+/sbin/service tentacle_serverd stop >/dev/null 2>&1 || :
 /sbin/chkconfig --del pandora_server
 /sbin/chkconfig --del tentacle_serverd
 

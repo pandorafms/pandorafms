@@ -18,17 +18,19 @@ Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:             %{_datadir}
 BuildRoot:          %{_tmppath}/%{name}-buildroot
 BuildArchitectures: noarch 
-Prereq:             /sbin/chkconfig, /sbin/service
 AutoReq:            0
 Provides:           %{name}-%{version}
 Requires(pre):      shadow-utils
+Requires(post,preun): /sbin/chkconfig /sbin/service
 Requires:           coreutils
-Requires:           perl-DBI perl-DBD-mysql perl-libwww-perl
-Requires:           perl-XML-Simple perl-XML-Twig net-snmp-utils
-Requires:           perl-NetAddr-IP net-snmp net-tools
-Requires:           perl-IO-Socket-INET6 perl-Socket6 perl-Net-Telnet
-Requires:           nmap wmic sudo perl-JSON
-Requires:           perl-Time-HiRes perl-Encode-Locale
+Requires:           perl(DBI) perl(DBD::mysql)
+Requires:           perl(HTTP::Request::Common) perl(LWP::Simple) perl(LWP::UserAgent)
+Requires:           perl(XML::Simple) perl(XML::Twig) net-snmp-utils
+Requires:           perl(NetAddr::IP) net-snmp net-tools
+Requires:           perl(IO::Socket::INET6) perl(Net::Telnet)
+Requires:           nmap wmic sudo perl(JSON)
+Requires:           perl(Time::HiRes) perl(Encode::Locale)
+Requires:           perl perl(Sys::Syslog) perl(HTML::Entities)
 
 %description
 Pandora FMS is a monitoring system for big IT environments. It uses remote tests, or local agents to grab information. Pandora supports all standard OS (Linux, AIX, HP-UX, Solaris and Windows XP,2000/2003), and support multiple setups in HA enviroments.
@@ -131,9 +133,6 @@ fi
 
 echo "Don't forget to start Tentacle Server daemon if you want to receive"
 echo "data using tentacle"
-echo " "
-echo "You may need to install manually some additional required dependencies:"
-echo "perl-Sys-Syslog"
 
 %preun
 

@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>test01</title>
+		<title>gatete</title>
 		<script type="text/javascript" src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
 		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
 	</head>
@@ -38,7 +38,9 @@ var svg = d3.select("#test svg");
 		<script type="text/javascript">
 			var svg = d3.select("svg #zoom");
 			
+			
 			svg.append("g")
+					.attr("id", "circulo")
 					.attr("transform",
 						function(d) {
 							return "translate(" + get_center_element("#cat1")[0] + " " + get_center_element("#cat1")[1] + ")";})
@@ -70,7 +72,9 @@ var svg = d3.select("#test svg");
 			
 			
 			
-			arrow(svg, get_center_element("#cat1"), []);
+			arrow(svg, get_center_element("#cat1"), get_center_element("#cat2"));
+			arrow_by_pieces("gatete_flecha");
+			
 			
 			function get_radius_element(element) {
 				var size = get_size_element(element);
@@ -125,11 +129,85 @@ var svg = d3.select("#test svg");
 				return [c_x, c_y];
 			}
 			
+			function get_distance_between_point(point1, point2) {
+				
+				delta_x = Math.abs(point1[0] - point2[0]);
+				delta_y = Math.abs(point1[1] - point1[1]);
+				
+				return Math.sqrt(
+					Math.pow(delta_x, 2) + Math.pow(delta_y, 2));
+			}
+			
+			function get_angle_of_line(point1, point2) {
+			}
+			
+			function arrow_by_pieces(id_arrow, step) {
+				//Steps is for avoid the problem of onload external
+				// symbols (that these returns zero values)
+				
+				if (typeof(step) === "undefined")
+					step = 1;
+				
+				switch (step) {
+					case 1:
+						var arrow = svg.append("g")
+							.attr("id", id_arrow)
+							.attr("style", "opacity: 0");
+						
+						arrow.append("g")
+							.attr("id", "body")
+							.attr("transform", "scale(4 1)")
+							.append("use")
+								.attr("xlink:href", "body_arrow.svg#body_arrow")
+								.attr("onload", "arrow_by_pieces('" + id_arrow + "', 2);");
+						break;
+					case 2:
+						var arrow = d3.select("#" +id_arrow);
+						
+						arrow.append("g")
+								.attr("id", "head")
+								.append("use")
+									.attr("xlink:href", "head_arrow.svg#head_arrow")
+									.attr("onload", "arrow_by_pieces('" + id_arrow + "', 3);");
+						break;
+					case 3:
+						// This have the size with the scale
+						var arrow = d3.select("#" + id_arrow);
+						var arrow_body = d3.select("#" + id_arrow + " #body");
+						var arrow_body_b = arrow_body.node().getBBox();
+						var arrow_body_t = d3.transform(arrow_body.attr("transform"));
+						
+						var scale = arrow_body_t.scale[0];
+						
+						var arrow_head = d3.select("#" + id_arrow + " #head");
+						var arrow_head_b = arrow_head.node().getBBox();
+						
+						
+						var transform = d3.transform();
+						
+						var x = 0 + arrow_body_b['width'] * scale;
+						var y = 0 + (arrow_body_b['height'] / 2  - arrow_head_b['height'] / 2);
+						
+						transform.translate[0] = x;
+						transform.translate[1] = y;
+						
+						arrow_head.attr("transform", transform.toString());
+						
+						arrow.attr("style", "opacity: 1");
+						break;
+				}
+			}
+			
 			function arrow(svg, element1, element2) {
 				//~ element1 = {center_x, center_y, width, height}
 				//~ element2 = {center_x, center_y, width, height}
 				
 				//~ var line = [[0, 0], [200, 200]];
+				
+				
+				d = get_distance_between_point(element1, element2);
+				
+				
 				
 				x = element1[0];
 				y = element1[1];
@@ -137,7 +215,18 @@ var svg = d3.select("#test svg");
 				svg.append("g")
 					.attr("transform",
 						function(d) {
-							return "translate(" + x + " " + y + ") rotate(45)";})
+							return "translate(" + x + " " + y + ")";})
+					.append("path")
+						.attr("style", "fill: none; stroke-width: 5; stroke: rgb(0, 255, 255);")
+						.attr("d", "M 0 10 L 200 10 L 200 0 L 230 20 L 200 40 L 200 30 L 0 30 z");
+				
+				x = element2[0];
+				y = element2[1];
+				
+				svg.append("g")
+					.attr("transform",
+						function(d) {
+							return "translate(" + x + " " + y + ")";})
 					.append("path")
 						.attr("style", "fill: none; stroke-width: 5; stroke: rgb(0, 255, 255);")
 						.attr("d", "M 0 10 L 200 10 L 200 0 L 230 20 L 200 40 L 200 30 L 0 30 z");

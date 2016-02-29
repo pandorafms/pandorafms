@@ -1,0 +1,147 @@
+<html>
+	<head>
+		<title>test01</title>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+	</head>
+<body>
+<script>
+
+var svg = d3.select("#test svg");
+</script>
+		
+		<div id="test">
+			<svg   xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000px" height="1000px" style="background: black;">
+				<image id="cat_piano" x="400" y="-100" width="50%" height="50%" xlink:href="https://media.giphy.com/media/ymckEpq27dQ9W/giphy.gif" />
+				<g id="zoom" transform="translate(-10 20) scale (1)">
+					
+					<g
+						transform="translate(100, 100) scale(0.50)"
+						id="cat1">
+						<path
+						   id="path8068"
+						   d="m 80,286.64792 28.57143,-31.42857 94.28571,60 5.71429,122.85714 L 200,472.3622 l 82.85714,-54.28571 194.28572,8.57143 191.42857,31.42857 48.57143,40 -11.42857,-65.71429 -48.57143,-94.28571 31.42857,-51.42857 14.28571,-88.57143 62.85715,74.28571 65.71428,0 31.42857,-82.85714 42.85715,94.28572 L 920,340.93363 897.14286,423.79078 868.57143,515.21935 800,663.79078 814.28571,795.21935 760,855.21935 734.28571,649.50506 691.42857,672.3622 714.28571,883.79078 640,895.21935 l -8.57143,-208.57143 -85.71428,71.42857 -160,-14.28571 L 317.14286,695.21935 360,838.07649 l -22.85714,65.71429 -74.28572,-200 -11.42857,162.85714 -74.28571,-17.14286 40,-217.14286 -42.85715,-17.14285 5.71429,-85.71429 -5.71429,-54.28571 -2.85714,-108.57143 -20,-42.85714 z"
+						   style="fill:none;fill-rule:evenodd;stroke: red; fill: white; stroke-width:4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+					</g>
+						
+					<g
+						transform="translate(600, 300) scale(0.25)"
+						id="cat2">
+						<path
+						   id="path8068"
+						   d="m 80,286.64792 28.57143,-31.42857 94.28571,60 5.71429,122.85714 L 200,472.3622 l 82.85714,-54.28571 194.28572,8.57143 191.42857,31.42857 48.57143,40 -11.42857,-65.71429 -48.57143,-94.28571 31.42857,-51.42857 14.28571,-88.57143 62.85715,74.28571 65.71428,0 31.42857,-82.85714 42.85715,94.28572 L 920,340.93363 897.14286,423.79078 868.57143,515.21935 800,663.79078 814.28571,795.21935 760,855.21935 734.28571,649.50506 691.42857,672.3622 714.28571,883.79078 640,895.21935 l -8.57143,-208.57143 -85.71428,71.42857 -160,-14.28571 L 317.14286,695.21935 360,838.07649 l -22.85714,65.71429 -74.28572,-200 -11.42857,162.85714 -74.28571,-17.14286 40,-217.14286 -42.85715,-17.14285 5.71429,-85.71429 -5.71429,-54.28571 -2.85714,-108.57143 -20,-42.85714 z"
+						   style="fill:none;fill-rule:evenodd;stroke: red; fill: white; stroke-width:4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+					</g>
+				</g>
+			</svg>
+		</div>
+		<script type="text/javascript">
+			var svg = d3.select("svg #zoom");
+			
+			svg.append("g")
+					.attr("transform",
+						function(d) {
+							return "translate(" + get_center_element("#cat1")[0] + " " + get_center_element("#cat1")[1] + ")";})
+					.append("circle")
+						.attr("style", "fill: rgb(0, 255, 0);")
+						.attr("cx", 0)
+						.attr("cy", 0)
+						.attr("r", 20);
+			
+			svg.append("g")
+					.attr("transform",
+						function(d) { return "translate(" + get_pos_element("#cat1")[0] + " " + get_pos_element("#cat1")[1] + ") scale(" + get_scale_element("#cat1") + ")";})
+					.append("rect")
+						.attr("style", "fill:none; stroke:#ffff00;stroke-width:5")
+						.attr("width", function(d) { return get_size_element("#cat1")[0];})
+						.attr("height", function(d) { return get_size_element("#cat1")[1];});
+						
+			
+			svg.append("g")
+					.attr("transform",
+						function(d) {
+							return "translate(" + get_center_element("#cat1")[0] + " " + get_center_element("#cat1")[1] + ") scale(" + get_scale_element("#cat1") + ")";})
+					.append("circle")
+						.attr("style", "fill: none; stroke-width: 5; stroke: rgb(0, 0, 255);")
+						.attr("cx", 0)
+						.attr("cy", 0)
+						.attr("r", get_radius_element("#cat1"));
+			
+			
+			
+			
+			arrow(svg, get_center_element("#cat1"), []);
+			
+			function get_radius_element(element) {
+				var size = get_size_element(element);
+				
+				return Math.sqrt(
+					Math.pow(size[0] / 2, 2) + Math.pow(size[1] / 2, 2));
+			}
+			
+			function get_scale_element(element) {
+				var element_t = d3.transform(d3.select(element).attr("transform"));
+				var element_t_scale = parseFloat(element_t['scale']);
+				
+				return element_t_scale;
+			}
+			
+			function get_size_element(element) {
+				var element_b = d3.select(element).node().getBBox();
+				
+				return [element_b['width'], element_b['height']];
+			}
+			
+			function get_pos_element(element) {
+				var element_t = d3.transform(d3.select(element).attr("transform"));
+				var element_t_scale = parseFloat(element_t['scale']);
+				var element_b = d3.select(element).node().getBBox();
+				
+				var box_x = parseFloat(element_t.translate[0]) +
+					parseFloat(element_b['x']) * element_t_scale;
+				var box_y = parseFloat(element_t.translate[1]) +
+					parseFloat(element_b['y']) * element_t_scale;
+				
+				return [box_x, box_y];
+			}
+			
+			function get_center_element(element) {
+				
+				var element_t = d3.transform(d3.select(element).attr("transform"));
+				var element_t_scale = parseFloat(element_t['scale']);
+				var element_b = d3.select(element).node().getBBox();
+				
+				var box_x = parseFloat(element_t.translate[0]) +
+					parseFloat(element_b['x']) * element_t_scale;
+				var box_y = parseFloat(element_t.translate[1]) +
+					parseFloat(element_b['y']) * element_t_scale;
+				
+				var width = (element_t_scale * element_b['width']);
+				var height = (element_t_scale * element_b['height']);
+				
+				var c_x = box_x + (width / 2);
+				var c_y = box_y + (height / 2);
+				
+				return [c_x, c_y];
+			}
+			
+			function arrow(svg, element1, element2) {
+				//~ element1 = {center_x, center_y, width, height}
+				//~ element2 = {center_x, center_y, width, height}
+				
+				//~ var line = [[0, 0], [200, 200]];
+				
+				x = element1[0];
+				y = element1[1];
+				
+				svg.append("g")
+					.attr("transform",
+						function(d) {
+							return "translate(" + x + " " + y + ") rotate(45)";})
+					.append("path")
+						.attr("style", "fill: none; stroke-width: 5; stroke: rgb(0, 255, 255);")
+						.attr("d", "M 0 10 L 200 10 L 200 0 L 230 20 L 200 40 L 200 30 L 0 30 z");
+			}
+		</script>
+	</body>
+</html>

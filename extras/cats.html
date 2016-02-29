@@ -72,8 +72,8 @@ var svg = d3.select("#test svg");
 			
 			
 			
-			arrow(svg, get_center_element("#cat1"), get_center_element("#cat2"));
-			arrow_by_pieces("gatete_flecha");
+			//~ arrow(svg, get_center_element("#cat1"), get_center_element("#cat2"));
+			arrow_by_pieces("gatete_flecha", "cat1", "cat2");
 			
 			
 			function get_radius_element(element) {
@@ -141,12 +141,20 @@ var svg = d3.select("#test svg");
 			function get_angle_of_line(point1, point2) {
 			}
 			
-			function arrow_by_pieces(id_arrow, step) {
+			function arrow_by_pieces(id_arrow, element1, element2, step) {
 				//Steps is for avoid the problem of onload external
 				// symbols (that these returns zero values)
 				
 				if (typeof(step) === "undefined")
-					step = 1;
+					step = 0;
+				
+				step++;
+				
+				var callback = "arrow_by_pieces("+
+					"'" + id_arrow + "', "+
+					"'" + element1 + "', "+
+					"'" + element2 + "', "+
+					" " + step + ");"
 				
 				switch (step) {
 					case 1:
@@ -156,10 +164,10 @@ var svg = d3.select("#test svg");
 						
 						arrow.append("g")
 							.attr("id", "body")
-							.attr("transform", "scale(4 1)")
 							.append("use")
 								.attr("xlink:href", "body_arrow.svg#body_arrow")
-								.attr("onload", "arrow_by_pieces('" + id_arrow + "', 2);");
+								.attr("onload",
+									callback);
 						break;
 					case 2:
 						var arrow = d3.select("#" +id_arrow);
@@ -168,23 +176,52 @@ var svg = d3.select("#test svg");
 								.attr("id", "head")
 								.append("use")
 									.attr("xlink:href", "head_arrow.svg#head_arrow")
-									.attr("onload", "arrow_by_pieces('" + id_arrow + "', 3);");
+									.attr("onload",
+										callback);
 						break;
 					case 3:
-						// This have the size with the scale
+						var c_elem1 = get_center_element("#" + element1);
+						var c_elem2 = get_center_element("#" + element2);
+						var distance = get_distance_between_point(c_elem1, c_elem2);
+						
+						var transform = d3.transform();
+					
+					
+						// ---------------------------------------------
+						// -- Position of layer arrow (body + head)
+						// ---------------------------------------------
 						var arrow = d3.select("#" + id_arrow);
+						
+						transform.translate[0] = c_elem1[0];
+						transform.translate[1] = c_elem1[1];
+						
+						arrow.attr("transform", transform.toString());
+						
+						// ---------------------------------------------
+						// -- Resize the body arrow width
+						// ---------------------------------------------
+						
 						var arrow_body = d3.select("#" + id_arrow + " #body");
 						var arrow_body_b = arrow_body.node().getBBox();
-						var arrow_body_t = d3.transform(arrow_body.attr("transform"));
-						
-						var scale = arrow_body_t.scale[0];
-						
 						var arrow_head = d3.select("#" + id_arrow + " #head");
 						var arrow_head_b = arrow_head.node().getBBox();
 						
 						
-						var transform = d3.transform();
+						var body_width = distance - arrow_head_b['width'];
 						
+						transform = d3.transform();
+						transform.scale[0] = body_width / arrow_body_b['width'];
+						arrow_body.attr("transform", transform.toString());
+						
+						// ---------------------------------------------
+						// -- Position of head arrow
+						// ---------------------------------------------
+						
+						transform = d3.transform();
+						
+						var arrow_body_t = d3.transform(arrow_body.attr("transform"));
+						
+						var scale = arrow_body_t.scale[0];
 						var x = 0 + arrow_body_b['width'] * scale;
 						var y = 0 + (arrow_body_b['height'] / 2  - arrow_head_b['height'] / 2);
 						
@@ -192,6 +229,10 @@ var svg = d3.select("#test svg");
 						transform.translate[1] = y;
 						
 						arrow_head.attr("transform", transform.toString());
+						
+						// ---------------------------------------------
+						// -- Show the result in one time
+						// ---------------------------------------------
 						
 						arrow.attr("style", "opacity: 1");
 						break;

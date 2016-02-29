@@ -139,6 +139,7 @@ var svg = d3.select("#test svg");
 			}
 			
 			function get_angle_of_line(point1, point2) {
+				return Math.atan2(point2[1] - point1[1], point2[0] - point1[0]) * 180 / Math.PI;
 			}
 			
 			function arrow_by_pieces(id_arrow, element1, element2, step) {
@@ -192,8 +193,13 @@ var svg = d3.select("#test svg");
 						// ---------------------------------------------
 						var arrow = d3.select("#" + id_arrow);
 						
+						var arrow_body = d3.select("#" + id_arrow + " #body");
+						var arrow_body_b = arrow_body.node().getBBox();
+						
+						
 						transform.translate[0] = c_elem1[0];
-						transform.translate[1] = c_elem1[1];
+						transform.translate[1] = c_elem1[1] - arrow_body_b['height'] / 2;
+						transform.rotate = get_angle_of_line(c_elem1, c_elem2);
 						
 						arrow.attr("transform", transform.toString());
 						

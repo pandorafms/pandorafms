@@ -462,7 +462,8 @@ define("OPTION_CUSTOM_INPUT",			8);
 define("OPTION_AGENT_AUTOCOMPLETE",		9);
 
 /* SAML attributes constants */
-define("ROLES_AND_TAGS", "urn:mace:rediris.es:entitlement:monitoring:");
+define("SAML_ROLE", "urn:mace:rediris.es:entitlement:monitoring:role");
+define("SAML_TAG", "urn:mace:rediris.es:entitlement:monitoring:tag");
 define("USER_DESC", "commonName");
 define("ID_USER_IN_PANDORA", "eduPersonTargetedId");
 define("GROUP_IN_PANDORA", "schacHomeOrganization");

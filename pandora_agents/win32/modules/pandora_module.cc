@@ -78,6 +78,8 @@ Pandora_Module::Pandora_Module (string name) {
 	this->warning_inverse = "";
 	this->quiet = "";
 	this->module_ff_interval = "";
+	this->module_alert_template = "";
+	this->module_crontab = "";
 }
 
 /** 
@@ -725,6 +727,20 @@ Pandora_Module::getXml () {
 		module_xml += this->module_ff_interval;
 		module_xml += "</module_ff_interval>\n";
 	}
+	
+	/* Module Alert template */
+	if (this->module_alert_template != "") {
+		module_xml += "\t<alert_template>";
+		module_xml += this->module_alert_template;
+		module_xml += "</alert_template>\n";
+	}
+	
+	/* Module Crontab */
+	if (this->module_crontab != "") {
+		module_xml += "\t<crontab>";
+		module_xml += this->module_crontab;
+		module_xml += "</crontab>\n";
+	}
 
     /* Write module data */
 	if (this->data_list && this->data_list->size () > 1) {
@@ -1000,6 +1016,26 @@ Pandora_Module::setQuiet (string value) {
 void
 Pandora_Module::setModuleFFInterval (string value) {
 	this->module_ff_interval = value;
+}
+
+/** 
+ * Set the module Alert template for the module.
+ *
+ * @param value module Alert template value to set.
+ */
+void
+Pandora_Module::setModuleAlertTemplate (string value) {
+	this->module_alert_template = value;
+}
+
+/** 
+ * Set the module Crontab for the module.
+ *
+ * @param value module Crontab value to set.
+ */
+void
+Pandora_Module::setModuleCrontab (string value) {
+	this->module_crontab = value;
 }
 
 /** 
@@ -1526,7 +1562,7 @@ Pandora_Module::evaluateIntensiveConditions () {
  * @return 1 if the module should run, 0 if not.
  */
 int
-Pandora_Module::checkCron () {
+Pandora_Module::checkCron (int module_interval, int agent_interval) {
 	int i, time_params[5];
 	time_t current_time, offset;
 	struct tm *time_struct;
@@ -1568,13 +1604,28 @@ Pandora_Module::checkCron () {
 			continue;
 		}
 		
+		// Check if next execution will overflow the cron (only minutes overflow)
+		// If overflow, execute the module
+		bool overflow_cron = false;
+		if (i == 0) {
+			int start_cron_seconds = cron->params[i][0]*60;
+			int current_exec_seconds = time_params[i]*60;
+			int next_exec_seconds = time_params[i]*60 + module_interval*agent_interval;
+			if (current_exec_seconds > start_cron_seconds && current_exec_seconds > next_exec_seconds) {
+				start_cron_seconds += 3600;
+			}
+			if ((current_exec_seconds <= start_cron_seconds) && (start_cron_seconds <= next_exec_seconds)) {
+				overflow_cron = true;
+			}
+		}
+		
 		// Check interval
 		if (cron->params[i][0] <= cron->params[i][1]) {
-			if (time_params[i] < cron->params[i][0] || time_params[i] > cron->params[i][1]) {
+			if ((time_params[i] < cron->params[i][0] || time_params[i] > cron->params[i][1]) && !overflow_cron) {
 				return 0;
 			}
 		} else {
-			if (time_params[i] < cron->params[i][0] && time_params[i] > cron->params[i][1]) {
+			if ((time_params[i] < cron->params[i][0] && time_params[i] > cron->params[i][1]) && !overflow_cron) {
 				return 0;
 			}
 		}

@@ -98,6 +98,7 @@ abstract class Map {
 	public function writeJSGraph() {
 		?>
 		<script type="text/javascript">
+			var controller_map = null;
 			<?php
 			echo "var nodes = " . json_encode($this->nodes) . ";";
 			echo "var edges = " . json_encode($this->edges) . ";";

@@ -108,7 +108,8 @@ class Networkmap extends Map {
 				$nodes[] = array('graph_id' => $graphviz_id,
 					'id' => $id, 'type' => $type);
 				
-				$last_graph_id = $graphviz_id;
+				if ($last_graph_id < $graphviz_id)
+					$last_graph_id = $graphviz_id;
 			}
 		}
 		
@@ -136,10 +137,10 @@ class Networkmap extends Map {
 		foreach ($edges as $i => $edge) {
 			$graph_id = $last_graph_id++;
 			
-			$this->nodes[] = array(
+			$nodes[] = array(
 				'graph_id' => $graph_id,
 				'type' => ITEM_TYPE_EDGE_NETWORKMAP);
-			$edge[$i]['graph_id'] = $graph_id;
+			$edges[$i]['graph_id'] = $graph_id;
 			
 		}
 		

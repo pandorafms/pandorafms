@@ -178,8 +178,16 @@ Return void
 This function paint the nodes
 */
 MapController.prototype.paint_nodes = function() {
-	this._viewport.selectAll(".node")
-		.data(nodes)
+	self = this;
+	
+	self._viewport.selectAll(".node")
+		.data(
+			nodes
+				.filter(function(d, i) {
+					if (d.type != ITEM_TYPE_EDGE_NETWORKMAP)
+						return true;
+					else return false;
+				}))
 			.enter()
 				.append("g")
 					.attr("transform",
@@ -192,6 +200,209 @@ MapController.prototype.paint_nodes = function() {
 					.append("circle")
 						.attr("style", "fill: rgb(50, 50, 128);")
 						.attr("r", "6");
+	
+	
+	//~ this._viewport.selectAll(".arrow").each(function(d) {
+		//~ console.log(d);
+	//~ });
+	
+	
+	
+	var arrow_layouts = self._viewport.selectAll(".arrow")
+		.data(
+			nodes
+				.filter(function(d, i) {
+					if (d.type == ITEM_TYPE_EDGE_NETWORKMAP)
+						return true;
+					else return false;
+				}))
+		.enter()
+			.append("g")
+				.attr("class", "arrow")
+				.attr("id", function(d) { return "arrow_" + d['graph_id'];});
+	
+	create_arrow(arrow_layouts);
+	
+	function create_arrow(arrow_layouts) {
+		
+		arrow_layouts.each(function(d) {
+			var arrow_layout = this;
+			
+			var node_arrow = edges.filter(function(d2) {
+				if (d2['graph_id'] == d['graph_id'])
+					return true;
+				else
+					return false;
+			})[0];
+			
+			var to_node = nodes.filter(function(d2) {
+				if (d2['graph_id'] == node_arrow['to'])
+					return true;
+				else
+					return false;
+			})[0];
+			
+			var from_node = nodes.filter(function(d2) {
+				if (d2['graph_id'] == node_arrow['from'])
+					return true;
+				else
+					return false;
+			})[0];
+			
+			var id_arrow = d3.select(arrow_layout).attr("id");
+			var id_node_to = "node_" + to_node['graph_id'];
+			var id_node_from = "node_" + from_node['graph_id'];
+			
+			console.log("-----------");
+			console.log(id_arrow);
+			arrow_by_pieces(id_arrow, id_node_to, id_node_from);
+		});
+	}
+	
+}
+
+function arrow_by_pieces(id_arrow, id_node_to, id_node_from) {
+	if (typeof(step) === "undefined")
+		step = 0;
+	
+	step++;
+	
+	var callback = "arrow_by_pieces("+
+		"'" + id_arrow + "', "+
+		"'" + id_node_to + "', "+
+		"'" + id_node_from + "', "+
+		" " + step + ");";
+	
+	/*-----------------------------------------------------------*/
+	/*- Print by steps ------------------------------------------*/
+	/*-  (beasue the browsers put async the symbols and ---------*/
+	/*-   they has not the size) --------------------------------*/
+	/*- 1 add the arrow body symbol -----------------------------*/
+	/*- 2 add the arrow head symbol -----------------------------*/
+	/*- 3 Resize and positing the arrow pieces ------------------*/
+	/*-----------------------------------------------------------*/
+	
+	switch (step) {
+		case 1:
+			var arrow_layout = d3
+				.select("#" + id_arrow);
+			
+			arrow_layout
+				.style("opacity", 1);
+			
+			arrow_layout.append("g")
+				.attr("class", "body")
+				.append("use")
+					.attr("xlink:href", "images/maps/body_arrow.svg#body_arrow")
+					.attr("onload",
+						function() {console.log("caca");});
+						//~ callback);
+			break;
+		case 2:
+			console.log("++++++++++");
+			console.log(id_arrow);
+			break;
+	}
+}
+
+function arrow_by_pieces_old(id_arrow, element1, element2, step) {
+	if (typeof(step) === "undefined")
+		step = 0;
+	
+	step++;
+	
+	var callback = "arrow_by_pieces("+
+		"'" + id_arrow + "', "+
+		"'" + element1 + "', "+
+		"'" + element2 + "', "+
+		" " + step + ");"
+	
+	/*-----------------------------------------------*/
+	/*---------------- Print by steps ---------------*/
+	/*------------- 1 Link the arrow body -----------*/
+	/*------------- 2 Link the arrow head -----------*/
+	/*------------- 3 Print the arrow ---------------*/
+	/*-----------------------------------------------*/
+	switch (step) {
+		case 1:
+			var arrow = svg.append("g")
+				.attr("id", id_arrow)
+				.attr("style", "opacity: 0");
+			
+			arrow.append("g")
+				.attr("id", "body")
+				.append("use")
+					.attr("xlink:href", "body_arrow.svg#body_arrow")
+					.attr("onload",
+						callback);
+			break;
+		case 2:
+			var arrow = d3.select("#" +id_arrow);
+			
+			arrow.append("g")
+					.attr("id", "head")
+					.append("use")
+						.attr("xlink:href", "head_arrow.svg#head_arrow")
+						.attr("onload",
+							callback);
+			break;
+		case 3:
+			var c_elem1 = get_center_element("#" + element1);
+			var c_elem2 = get_center_element("#" + element2);
+			var distance = get_distance_between_point(c_elem1, c_elem2);
+			
+			var transform = d3.transform();
+		
+			/*---------------------------------------------*/
+			/*--- Position of layer arrow (body + head) ---*/
+			/*---------------------------------------------*/
+			var arrow = d3.select("#" + id_arrow);
+			
+			var arrow_body = d3.select("#" + id_arrow + " #body");
+			var arrow_body_b = arrow_body.node().getBBox();
+			
+			transform.translate[0] = c_elem1[0];
+			transform.translate[1] = c_elem1[1] - arrow_body_b['height'] / 2;
+			transform.rotate = get_angle_of_line(c_elem1, c_elem2);
+			
+			arrow.attr("transform", transform.toString());
+			
+			/*---------------------------------------------*/
+			/*-------- Resize the body arrow width --------*/
+			/*---------------------------------------------*/
+			var arrow_body = d3.select("#" + id_arrow + " #body");
+			var arrow_body_b = arrow_body.node().getBBox();
+			var arrow_head = d3.select("#" + id_arrow + " #head");
+			var arrow_head_b = arrow_head.node().getBBox();
+			
+			var body_width = distance - arrow_head_b['width'];
+			
+			transform = d3.transform();
+			transform.scale[0] = body_width / arrow_body_b['width'];
+			arrow_body.attr("transform", transform.toString());
+			
+			/*---------------------------------------------*/
+			/*---------- Position of head arrow -----------*/
+			/*---------------------------------------------*/
+			transform = d3.transform();
+			
+			var arrow_body_t = d3.transform(arrow_body.attr("transform"));
+			
+			var scale = arrow_body_t.scale[0];
+			var x = 0 + arrow_body_b['width'] * scale;
+			var y = 0 + (arrow_body_b['height'] / 2  - arrow_head_b['height'] / 2);
+			
+			transform.translate[0] = x;
+			transform.translate[1] = y;
+			
+			arrow_head.attr("transform", transform.toString());
+			
+			/*---------------------------------------------*/
+			/*------- Show the result in one time ---------*/
+			/*---------------------------------------------*/
+			arrow.attr("style", "opacity: 1");
+			break;
+	}
 }
 
 /**
@@ -255,8 +466,6 @@ MapController.prototype.init_events = function(principalObject) {
 	
 	function dragended(d) {
 		d3.select(this).classed("dragging", false);
-		
-		console.log("#node_" + d['graph_id']);
 		
 		if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
 			$("#node_" + d['graph_id']).tooltipster('destroy');
@@ -360,7 +569,6 @@ caca = null;
 function tooltip_to_new_window(data_graph_id) {
 	var content = $("#tooltip_" + data_graph_id + " .body").html();
 	
-	console.log("#node_" + data_graph_id);
 	$("#node_" + data_graph_id).tooltipster("destroy");
 	
 	var window_popup = window.open("", "window_" + data_graph_id,

@@ -16,7 +16,7 @@ var svg = d3.select("#test svg");
 				<g id="zoom" transform="translate(-10 20) scale (1)">
 					
 					<g
-						transform="translate(100, 100) scale(0.50)"
+						transform="translate(100, 300) scale(0.50)"
 						id="cat1">
 						<path
 						   id="path8068"
@@ -25,8 +25,26 @@ var svg = d3.select("#test svg");
 					</g>
 						
 					<g
-						transform="translate(600, 300) scale(0.25)"
+						transform="translate(700, 500) scale(0.25)"
 						id="cat2">
+						<path
+						   id="path8068"
+						   d="m 80,286.64792 28.57143,-31.42857 94.28571,60 5.71429,122.85714 L 200,472.3622 l 82.85714,-54.28571 194.28572,8.57143 191.42857,31.42857 48.57143,40 -11.42857,-65.71429 -48.57143,-94.28571 31.42857,-51.42857 14.28571,-88.57143 62.85715,74.28571 65.71428,0 31.42857,-82.85714 42.85715,94.28572 L 920,340.93363 897.14286,423.79078 868.57143,515.21935 800,663.79078 814.28571,795.21935 760,855.21935 734.28571,649.50506 691.42857,672.3622 714.28571,883.79078 640,895.21935 l -8.57143,-208.57143 -85.71428,71.42857 -160,-14.28571 L 317.14286,695.21935 360,838.07649 l -22.85714,65.71429 -74.28572,-200 -11.42857,162.85714 -74.28571,-17.14286 40,-217.14286 -42.85715,-17.14285 5.71429,-85.71429 -5.71429,-54.28571 -2.85714,-108.57143 -20,-42.85714 z"
+						   style="fill:none;fill-rule:evenodd;stroke: red; fill: white; stroke-width:4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+					</g>
+
+					<g
+						transform="translate(200, 0) scale(0.25)"
+						id="cat3">
+						<path
+						   id="path8068"
+						   d="m 80,286.64792 28.57143,-31.42857 94.28571,60 5.71429,122.85714 L 200,472.3622 l 82.85714,-54.28571 194.28572,8.57143 191.42857,31.42857 48.57143,40 -11.42857,-65.71429 -48.57143,-94.28571 31.42857,-51.42857 14.28571,-88.57143 62.85715,74.28571 65.71428,0 31.42857,-82.85714 42.85715,94.28572 L 920,340.93363 897.14286,423.79078 868.57143,515.21935 800,663.79078 814.28571,795.21935 760,855.21935 734.28571,649.50506 691.42857,672.3622 714.28571,883.79078 640,895.21935 l -8.57143,-208.57143 -85.71428,71.42857 -160,-14.28571 L 317.14286,695.21935 360,838.07649 l -22.85714,65.71429 -74.28572,-200 -11.42857,162.85714 -74.28571,-17.14286 40,-217.14286 -42.85715,-17.14285 5.71429,-85.71429 -5.71429,-54.28571 -2.85714,-108.57143 -20,-42.85714 z"
+						   style="fill:none;fill-rule:evenodd;stroke: red; fill: white; stroke-width:4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+					</g>
+
+					<g
+						transform="translate(600, 0) scale(0.25)"
+						id="cat4">
 						<path
 						   id="path8068"
 						   d="m 80,286.64792 28.57143,-31.42857 94.28571,60 5.71429,122.85714 L 200,472.3622 l 82.85714,-54.28571 194.28572,8.57143 191.42857,31.42857 48.57143,40 -11.42857,-65.71429 -48.57143,-94.28571 31.42857,-51.42857 14.28571,-88.57143 62.85715,74.28571 65.71428,0 31.42857,-82.85714 42.85715,94.28572 L 920,340.93363 897.14286,423.79078 868.57143,515.21935 800,663.79078 814.28571,795.21935 760,855.21935 734.28571,649.50506 691.42857,672.3622 714.28571,883.79078 640,895.21935 l -8.57143,-208.57143 -85.71428,71.42857 -160,-14.28571 L 317.14286,695.21935 360,838.07649 l -22.85714,65.71429 -74.28572,-200 -11.42857,162.85714 -74.28571,-17.14286 40,-217.14286 -42.85715,-17.14285 5.71429,-85.71429 -5.71429,-54.28571 -2.85714,-108.57143 -20,-42.85714 z"
@@ -67,7 +85,37 @@ var svg = d3.select("#test svg");
 						.attr("cy", 0)
 						.attr("r", get_radius_element("#cat1"));
 			
+			svg.append("g")
+					.attr("id", "circulo")
+					.attr("transform",
+						function(d) {
+							return "translate(" + get_center_element("#cat3")[0] + " " + get_center_element("#cat3")[1] + ")";})
+					.append("circle")
+						.attr("style", "fill: rgb(0, 255, 0);")
+						.attr("cx", 0)
+						.attr("cy", 0)
+						.attr("r", 20);
+
+			svg.append("g")
+					.attr("transform",
+						function(d) { return "translate(" + get_pos_element("#cat3")[0] + " " + get_pos_element("#cat3")[1] + ") scale(" + get_scale_element("#cat3") + ")";})
+					.append("rect")
+						.attr("style", "fill:none; stroke:#ffff00;stroke-width:5")
+						.attr("width", function(d) { return get_size_element("#cat3")[0];})
+						.attr("height", function(d) { return get_size_element("#cat3")[1];});
+						
+			svg.append("g")
+					.attr("transform",
+						function(d) {
+							return "translate(" + get_center_element("#cat3")[0] + " " + get_center_element("#cat3")[1] + ") scale(" + get_scale_element("#cat3") + ")";})
+					.append("circle")
+						.attr("style", "fill: none; stroke-width: 5; stroke: rgb(0, 0, 255);")
+						.attr("cx", 0)
+						.attr("cy", 0)
+						.attr("r", get_radius_element("#cat3"));
+
 			arrow_by_pieces("gatete_flecha", "cat1", "cat2");
+			arrow_by_pieces("gatete_flecha", "cat3", "cat4");
 			
 			/**
 			* Function get_radius_element
@@ -264,7 +312,7 @@ var svg = d3.select("#test svg");
 						transform.translate[1] = y;
 						
 						arrow_head.attr("transform", transform.toString());
-						
+
 						/*---------------------------------------------*/
 						/*------- Show the result in one time ---------*/
 						/*---------------------------------------------*/

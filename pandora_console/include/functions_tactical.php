@@ -388,41 +388,38 @@ function tactical_status_modules_agents($id_user = false, $user_strict = false, 
 			
 			$server_list = tactical_get_data ($id_user, $user_strict,
 				$acltags);
+
+			if (!isset ($result_list[$server_item['_name_']])) {
+				$result_list[$server_item['_name_']] = $server_item;
+			}
+			else {
+				$result_list[$server_item['_name_']]['_monitors_ok_'] += $server_item['_monitors_ok_'];
+				$result_list[$server_item['_name_']]['_monitors_critical_'] += $server_item['_monitors_critical_'];
+				$result_list[$server_item['_name_']]['_monitors_warning_'] += $server_item['_monitors_warning_'];
+				$result_list[$server_item['_name_']]['_agents_unknown_'] += $server_item['_agents_unknown_'];
+				$result_list[$server_item['_name_']]['_total_agents_'] += $server_item['_total_agents_'];
+				$result_list[$server_item['_name_']]['_monitors_alerts_fired_'] += $server_item['_monitors_alerts_fired_'];
+				
+				$result_list[$server_item['_name_']]['_agents_ok_'] += $server_item['_agents_ok_'];
+				$result_list[$server_item['_name_']]['_agents_critical_'] += $server_item['_agents_critical_'];
+				$result_list[$server_item['_name_']]['_agents_warning_'] += $server_item['_agents_warning_'];
+				$result_list[$server_item['_name_']]['_monitors_alerts_'] += $server_item['_monitors_alerts_'];
+				
+				$result_list[$server_item['_name_']]["_monitor_checks_"] += $server_item["_monitor_checks_"];
+				$result_list[$server_item['_name_']]["_monitor_not_normal_"] += $server_item["_monitor_not_normal_"];
+				$result_list[$server_item['_name_']]["_monitor_health_"] += $server_item["_monitor_health_"];
+				$result_list[$server_item['_name_']]["_module_sanity_"] += $server_item["_module_sanity_"];
+				$result_list[$server_item['_name_']]["_alerts_"] += $server_item["_alerts_"];
+				$result_list[$server_item['_name_']]["_alert_level_"] += $server_item["_alert_level_"];
+				$result_list[$server_item['_name_']]["_monitor_bad_"] += $server_item["_monitor_bad_"];
+				$result_list[$server_item['_name_']]["_global_health_"] += $server_item["_global_health_"];
+				$result_list[$server_item['_name_']]["_server_sanity_"] += $server_item["_server_sanity_"];
+				$result_list[$server_item['_name_']]["_monitor_alerts_fire_count_"] += $server_item["_monitor_alerts_fire_count_"];
+				$result_list[$server_item['_name_']]["_total_checks_"] += $server_item["_total_checks_"];
+				$result_list[$server_item['_name_']]["_total_alerts_"] += $server_item["_total_alerts_"];
+			}
 			
-			foreach ($server_list as $server_item) {
-				if (! isset ($result_list[$server_item['_name_']])) {
-					
-					$result_list[$server_item['_name_']] = $server_item;
-				}
-				else {
-					$result_list[$server_item['_name_']]['_monitors_ok_'] += $server_item['_monitors_ok_'];
-					$result_list[$server_item['_name_']]['_monitors_critical_'] += $server_item['_monitors_critical_'];
-					$result_list[$server_item['_name_']]['_monitors_warning_'] += $server_item['_monitors_warning_'];
-					$result_list[$server_item['_name_']]['_agents_unknown_'] += $server_item['_agents_unknown_'];
-					$result_list[$server_item['_name_']]['_total_agents_'] += $server_item['_total_agents_'];
-					$result_list[$server_item['_name_']]['_monitors_alerts_fired_'] += $server_item['_monitors_alerts_fired_'];
-					
-					$result_list[$server_item['_name_']]['_agents_ok_'] += $server_item['_agents_ok_'];
-					$result_list[$server_item['_name_']]['_agents_critical_'] += $server_item['_agents_critical_'];
-					$result_list[$server_item['_name_']]['_agents_warning_'] += $server_item['_agents_warning_'];
-					$result_list[$server_item['_name_']]['_monitors_alerts_'] += $server_item['_monitors_alerts_'];
-					
-					$result_list[$server_item['_name_']]["_monitor_checks_"] += $server_item["_monitor_checks_"];
-					$result_list[$server_item['_name_']]["_monitor_not_normal_"] += $server_item["_monitor_not_normal_"];
-					$result_list[$server_item['_name_']]["_monitor_health_"] += $server_item["_monitor_health_"];
-					$result_list[$server_item['_name_']]["_module_sanity_"] += $server_item["_module_sanity_"];
-					$result_list[$server_item['_name_']]["_alerts_"] += $server_item["_alerts_"];
-					$result_list[$server_item['_name_']]["_alert_level_"] += $server_item["_alert_level_"];
-					$result_list[$server_item['_name_']]["_monitor_bad_"] += $server_item["_monitor_bad_"];
-					$result_list[$server_item['_name_']]["_global_health_"] += $server_item["_global_health_"];
-					$result_list[$server_item['_name_']]["_server_sanity_"] += $server_item["_server_sanity_"];
-					$result_list[$server_item['_name_']]["_monitor_alerts_fire_count_"] += $server_item["_monitor_alerts_fire_count_"];
-					$result_list[$server_item['_name_']]["_total_checks_"] += $server_item["_total_checks_"];
-					$result_list[$server_item['_name_']]["_total_alerts_"] += $server_item["_total_alerts_"];
-					}
-				}
 		}
-		
 		return $result_list;
 	}
 	else {

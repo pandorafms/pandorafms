@@ -38,7 +38,6 @@ var svg = d3.select("#test svg");
 		<script type="text/javascript">
 			var svg = d3.select("svg #zoom");
 			
-			
 			svg.append("g")
 					.attr("id", "circulo")
 					.attr("transform",
@@ -58,7 +57,6 @@ var svg = d3.select("#test svg");
 						.attr("width", function(d) { return get_size_element("#cat1")[0];})
 						.attr("height", function(d) { return get_size_element("#cat1")[1];});
 						
-			
 			svg.append("g")
 					.attr("transform",
 						function(d) {
@@ -69,13 +67,13 @@ var svg = d3.select("#test svg");
 						.attr("cy", 0)
 						.attr("r", get_radius_element("#cat1"));
 			
-			
-			
-			
-			//~ arrow(svg, get_center_element("#cat1"), get_center_element("#cat2"));
 			arrow_by_pieces("gatete_flecha", "cat1", "cat2");
 			
-			
+			/**
+			* Function get_radius_element
+			* Return float
+			* This method get the element radius
+			*/
 			function get_radius_element(element) {
 				var size = get_size_element(element);
 				
@@ -83,6 +81,11 @@ var svg = d3.select("#test svg");
 					Math.pow(size[0] / 2, 2) + Math.pow(size[1] / 2, 2));
 			}
 			
+			/**
+			* Function get_scale_element
+			* Return float
+			* This method get the element escale
+			*/
 			function get_scale_element(element) {
 				var element_t = d3.transform(d3.select(element).attr("transform"));
 				var element_t_scale = parseFloat(element_t['scale']);
@@ -90,12 +93,22 @@ var svg = d3.select("#test svg");
 				return element_t_scale;
 			}
 			
+			/**
+			* Function get_size_element
+			* Return array[2]
+			* This method get the element size [width, height]
+			*/
 			function get_size_element(element) {
 				var element_b = d3.select(element).node().getBBox();
 				
 				return [element_b['width'], element_b['height']];
 			}
 			
+			/**
+			* Function get_pos_element
+			* Return array[2]
+			* This method get the element position [x, y]
+			*/
 			function get_pos_element(element) {
 				var element_t = d3.transform(d3.select(element).attr("transform"));
 				var element_t_scale = parseFloat(element_t['scale']);
@@ -109,8 +122,12 @@ var svg = d3.select("#test svg");
 				return [box_x, box_y];
 			}
 			
+			/**
+			* Function get_center_element
+			* Return array[2]
+			* This method ge2t the element center point [x, y]
+			*/
 			function get_center_element(element) {
-				
 				var element_t = d3.transform(d3.select(element).attr("transform"));
 				var element_t_scale = parseFloat(element_t['scale']);
 				var element_b = d3.select(element).node().getBBox();
@@ -129,8 +146,12 @@ var svg = d3.select("#test svg");
 				return [c_x, c_y];
 			}
 			
+			/**
+			* Function get_distance_between_point
+			* Return float
+			* This method get the distance betweeen two points
+			*/
 			function get_distance_between_point(point1, point2) {
-				
 				delta_x = Math.abs(point1[0] - point2[0]);
 				delta_y = Math.abs(point1[1] - point1[1]);
 				
@@ -138,14 +159,21 @@ var svg = d3.select("#test svg");
 					Math.pow(delta_x, 2) + Math.pow(delta_y, 2));
 			}
 			
+			/**
+			* Function get_angle_of_line
+			* Return float
+			* This method get the angle of line and x axe
+			*/
 			function get_angle_of_line(point1, point2) {
 				return Math.atan2(point2[1] - point1[1], point2[0] - point1[0]) * 180 / Math.PI;
 			}
 			
+			/**
+			* Function arrow_by_pieces
+			* Return void
+			* This method print the arrow by pieces
+			*/
 			function arrow_by_pieces(id_arrow, element1, element2, step) {
-				//Steps is for avoid the problem of onload external
-				// symbols (that these returns zero values)
-				
 				if (typeof(step) === "undefined")
 					step = 0;
 				
@@ -157,6 +185,12 @@ var svg = d3.select("#test svg");
 					"'" + element2 + "', "+
 					" " + step + ");"
 				
+				/*-----------------------------------------------*/
+				/*---------------- Print by steps ---------------*/
+				/*------------- 1 Link the arrow body -----------*/
+				/*------------- 2 Link the arrow head -----------*/
+				/*------------- 3 Print the arrow ---------------*/
+				/*-----------------------------------------------*/
 				switch (step) {
 					case 1:
 						var arrow = svg.append("g")
@@ -187,15 +221,13 @@ var svg = d3.select("#test svg");
 						
 						var transform = d3.transform();
 					
-					
-						// ---------------------------------------------
-						// -- Position of layer arrow (body + head)
-						// ---------------------------------------------
+						/*---------------------------------------------*/
+						/*--- Position of layer arrow (body + head) ---*/
+						/*---------------------------------------------*/
 						var arrow = d3.select("#" + id_arrow);
 						
 						var arrow_body = d3.select("#" + id_arrow + " #body");
 						var arrow_body_b = arrow_body.node().getBBox();
-						
 						
 						transform.translate[0] = c_elem1[0];
 						transform.translate[1] = c_elem1[1] - arrow_body_b['height'] / 2;
@@ -203,15 +235,13 @@ var svg = d3.select("#test svg");
 						
 						arrow.attr("transform", transform.toString());
 						
-						// ---------------------------------------------
-						// -- Resize the body arrow width
-						// ---------------------------------------------
-						
+						/*---------------------------------------------*/
+						/*-------- Resize the body arrow width --------*/
+						/*---------------------------------------------*/
 						var arrow_body = d3.select("#" + id_arrow + " #body");
 						var arrow_body_b = arrow_body.node().getBBox();
 						var arrow_head = d3.select("#" + id_arrow + " #head");
 						var arrow_head_b = arrow_head.node().getBBox();
-						
 						
 						var body_width = distance - arrow_head_b['width'];
 						
@@ -219,10 +249,9 @@ var svg = d3.select("#test svg");
 						transform.scale[0] = body_width / arrow_body_b['width'];
 						arrow_body.attr("transform", transform.toString());
 						
-						// ---------------------------------------------
-						// -- Position of head arrow
-						// ---------------------------------------------
-						
+						/*---------------------------------------------*/
+						/*---------- Position of head arrow -----------*/
+						/*---------------------------------------------*/
 						transform = d3.transform();
 						
 						var arrow_body_t = d3.transform(arrow_body.attr("transform"));
@@ -235,26 +264,22 @@ var svg = d3.select("#test svg");
 						transform.translate[1] = y;
 						
 						arrow_head.attr("transform", transform.toString());
-						
-						// ---------------------------------------------
-						// -- Show the result in one time
-						// ---------------------------------------------
-						
+
+						/*---------------------------------------------*/
+						/*------- Show the result in one time ---------*/
+						/*---------------------------------------------*/
 						arrow.attr("style", "opacity: 1");
 						break;
 				}
 			}
 			
+			/**
+			* Function arrow
+			* Return void
+			* This method creates the arrow between two elements
+			*/
 			function arrow(svg, element1, element2) {
-				//~ element1 = {center_x, center_y, width, height}
-				//~ element2 = {center_x, center_y, width, height}
-				
-				//~ var line = [[0, 0], [200, 200]];
-				
-				
 				d = get_distance_between_point(element1, element2);
-				
-				
 				
 				x = element1[0];
 				y = element1[1];

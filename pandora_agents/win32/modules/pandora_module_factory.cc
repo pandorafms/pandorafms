@@ -119,6 +119,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_MODULE_FF_INTERVAL ("module_ff_interval ")
 #define TOKEN_MACRO ("module_macro")
 #define TOKEN_NATIVE_ENCODING ("module_native_encoding")
+#define TOKEN_ALERT_TEMPLATE ("module_alert_template")
 	
 string
 parseLine (string line, string token) {
@@ -171,7 +172,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_unit, module_group, module_custom_id, module_str_warning, module_str_critical;
 	string                 module_critical_instructions, module_warning_instructions, module_unknown_instructions, module_tags;
 	string                 module_critical_inverse, module_warning_inverse, module_quiet, module_ff_interval;
-	string				   module_native_encoding;
+	string				   module_native_encoding, module_alert_template;
 	string                 macro;
 	Pandora_Module        *module;
 	bool                   numeric;
@@ -250,6 +251,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_quiet         = "";
 	module_ff_interval   = "";
 	module_native_encoding	 = "";
+	module_alert_template	 = "";
 	macro   = "";
     
 	stringtok (tokens, definition, "\n");
@@ -500,6 +502,12 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_ff_interval == "") {
 			module_ff_interval = parseLine (line, TOKEN_MODULE_FF_INTERVAL);
 		}
+		
+		if (module_alert_template == "") {
+			module_alert_template = parseLine (line, TOKEN_ALERT_TEMPLATE);
+			module_alert_template.erase (0,1);
+		}
+		
 		if (macro == "") {
 			macro = parseLine (line, TOKEN_MACRO);
 			
@@ -1069,6 +1077,13 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 						module_ff_interval.replace(pos_macro, macro_name.size(), macro_value);
 					}
 				}
+
+				if (module_alert_template != "") {
+					pos_macro = module_alert_template.find(macro_name);
+					if (pos_macro != string::npos){
+						module_alert_template.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
 			}
 		}
 	}
@@ -1403,6 +1418,14 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	
 	if (module_ff_interval != "") {
 		module->setModuleFFInterval (module_ff_interval);
+	}
+	
+	if (module_alert_template != "") {
+		module->setModuleAlertTemplate (module_alert_template);
+	}
+	
+	if (module_crontab != "") {
+		module->setModuleCrontab (module_crontab);
 	}
 	
 	return module;

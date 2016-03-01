@@ -177,7 +177,8 @@ namespace Pandora_Modules {
 		unsigned char         intensive_match;
 		int                   intensive_interval;
 		string                unit, custom_id, str_warning, str_critical;
-		string 		      module_group, warning_inverse, critical_inverse, quiet, module_ff_interval;
+		string 		          module_group, warning_inverse, critical_inverse, quiet;
+		string                module_ff_interval, module_alert_template, module_crontab;
 		string                critical_instructions, warning_instructions, unknown_instructions, tags;
 
 	protected:
@@ -278,6 +279,8 @@ namespace Pandora_Modules {
 		void        setWarningInverse  (string value);
 		void        setQuiet       (string value);
 		void        setModuleFFInterval  (string value);
+		void        setModuleAlertTemplate  (string value);
+		void        setModuleCrontab  (string value);
 		
 		void        setAsync       (bool async);
 		void        setSave        (string save);
@@ -289,7 +292,7 @@ namespace Pandora_Modules {
 		void		addIntensiveCondition    (string intensivecondition);
 		int 		evaluatePreconditions ();
 		void		evaluateConditions ();
-		int         checkCron ();
+		int         checkCron (int module_interval, int agent_interval);
 		void        setCron (string cron_string);
 		void        setCronInterval (int interval);
 		int         evaluateCondition (string string_value, double double_value, Condition *condition);

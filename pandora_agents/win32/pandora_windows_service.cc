@@ -1737,7 +1737,7 @@ Pandora_Windows_Service::pandora_run_broker (string config) {
 			}
 	
 			/* Check preconditions */			
-			if (module->checkCron () == 0) {
+			if (module->checkCron (module->getInterval (), atoi (conf->getValue ("interval").c_str())) == 0) {
 				pandoraDebug ("Cron not matched for module %s", module->getName ().c_str ());
 				module->setNoOutput ();
 				this->modules->goNext ();
@@ -1857,7 +1857,7 @@ Pandora_Windows_Service::pandora_run (int forced_run) {
 			}
 	
 			/* Check preconditions */			
-			if (module->checkCron () == 0) {
+			if (module->checkCron (module->getInterval (), atoi (conf->getValue ("interval").c_str())) == 0) {
 				pandoraDebug ("Cron not matched for module %s", module->getName ().c_str ());
 				module->setNoOutput ();
 				this->modules->goNext ();

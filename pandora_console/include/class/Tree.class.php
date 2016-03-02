@@ -2092,19 +2092,20 @@ class Tree {
 				$rootIDs = $this->rootID;
 
 				$items = array();
+				$j = 1;
+				$server = metaconsole_get_servers();
 				foreach ($rootIDs as $serverID => $rootID) {
-					$server = metaconsole_get_servers($serverID);
-					if (metaconsole_connect($server) != NOERR)
+					if (metaconsole_connect($server[$j]) != NOERR)
 						continue;
 					db_clean_cache();
 
 					$this->rootID = $rootID;
 					$newItems = $this->getItems();
-					$this->processAgents($newItems, $server);
+					$this->processAgents($newItems, $server[$j]);
 					$newItems = array_filter($newItems);
 					$items = array_merge($items, $newItems);
-
 					metaconsole_restore_db();
+					$j++;
 				}
 				$this->rootID = $rootIDs;
 

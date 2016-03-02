@@ -253,102 +253,166 @@ MapController.prototype.paint_nodes = function() {
 			var id_node_to = "node_" + to_node['graph_id'];
 			var id_node_from = "node_" + from_node['graph_id'];
 			
-			console.log("-----------");
-			console.log(id_arrow);
-			arrow_by_pieces(id_arrow, id_node_to, id_node_from);
+			//~ console.log("-----------");
+			//~ console.log(id_arrow);
+			arrow_by_pieces(self._target + " svg", id_arrow, id_node_to, id_node_from);
 		});
 	}
 	
 }
 
-function arrow_by_pieces(id_arrow, id_node_to, id_node_from) {
-	if (typeof(step) === "undefined")
-		step = 0;
+function wait_for_preload_symbols(target, symbols, callback) {
+	var count_symbols = symbols.length;
+	
+	function wait(target, symbol, callback) {
+		switch (is_preload_symbol(target, symbol)) {
+			case -1:
+				preload_symbol(target, symbol);
+				
+				setTimeout(
+					function() {
+						wait(target, symbol, callback);
+					},
+					300);
+				break;
+			case 0:
+				// Wait
+				setTimeout(
+					function() {
+						wait(target, symbol, callback);
+					},
+					300);
+				break;
+			case 1:
+				count_symbols--;
+				break;
+		}
+		
+		if (count_symbols == 0) {
+			callback();
+		}
+	}
+	
+	
+	for (var i in symbols) {
+		wait(target, symbols[i], callback);
+	}
+}
+
+function is_preload_symbol(target, symbol) {
+	base64symbol = btoa(symbol).replace(/=/g, "");
+	
+	if (d3.select(target + " #" + base64symbol).node() === null)
+		return -1;
+	
+	return parseInt(d3.select(target +" #" + base64symbol).attr("data-loaded"));
+}
+
+function preload_symbol(target, symbol, param_step) {
+	if (typeof(param_step) == "undefined") {
+		step = 1;
+		param_step = 1;
+	}
+	else {
+		step = param_step;
+	}
 	
 	step++;
 	
-	var callback = "arrow_by_pieces("+
-		"'" + id_arrow + "', "+
-		"'" + id_node_to + "', "+
-		"'" + id_node_from + "', "+
-		" " + step + ");";
+	base64symbol = btoa(symbol).replace(/=/g, "");
 	
-	/*-----------------------------------------------------------*/
-	/*- Print by steps ------------------------------------------*/
-	/*-  (beasue the browsers put async the symbols and ---------*/
-	/*-   they has not the size) --------------------------------*/
-	/*- 1 add the arrow body symbol -----------------------------*/
-	/*- 2 add the arrow head symbol -----------------------------*/
-	/*- 3 Resize and positing the arrow pieces ------------------*/
-	/*-----------------------------------------------------------*/
-	
-	switch (step) {
+	switch (param_step) {
 		case 1:
-			var arrow_layout = d3
-				.select("#" + id_arrow);
-			
-			arrow_layout
-				.style("opacity", 1);
-			
-			arrow_layout.append("g")
-				.attr("class", "body")
+			d3.select(target).append("g")
+				.attr("id", base64symbol)
+				.attr("data-loaded", 0)
+				.style("opacity", 0)
 				.append("use")
-					.attr("xlink:href", "images/maps/body_arrow.svg#body_arrow")
+					.attr("xlink:href", symbol)
 					.attr("onload",
-						function() {console.log("caca");});
-						//~ callback);
+						function() {
+							preload_symbol(target, symbol, step);
+						});
 			break;
 		case 2:
-			console.log("++++++++++");
-			console.log(id_arrow);
+			d3.select("#" + base64symbol).attr("data-loaded", 1);
 			break;
 	}
 }
 
-function arrow_by_pieces_old(id_arrow, element1, element2, step) {
+function get_distance_between_point(point1, point2) {
+	delta_x = Math.abs(point1[0] - point2[0]);
+	delta_y = Math.abs(point1[1] - point1[1]);
+	
+	return Math.sqrt(
+		Math.pow(delta_x, 2) + Math.pow(delta_y, 2));
+}
+
+function get_center_element(element) {
+	var element_t = d3.transform(d3.select(element).attr("transform"));
+	var element_t_scale = parseFloat(element_t['scale']);
+	var element_b = d3.select(element).node().getBBox();
+	
+	var box_x = parseFloat(element_t.translate[0]) +
+		parseFloat(element_b['x']) * element_t_scale;
+	var box_y = parseFloat(element_t.translate[1]) +
+		parseFloat(element_b['y']) * element_t_scale;
+	
+	var width = (element_t_scale * element_b['width']);
+	var height = (element_t_scale * element_b['height']);
+	
+	var c_x = box_x + (width / 2);
+	var c_y = box_y + (height / 2);
+	
+	return [c_x, c_y];
+}
+
+function get_angle_of_line(point1, point2) {
+	return Math.atan2(point2[1] - point1[1], point2[0] - point1[0]) * 180 / Math.PI;
+}
+
+function getBBox_Symbol(target, symbol) {
+	base64symbol = btoa(symbol).replace(/=/g, "");
+	
+	console.log(target + " #" + base64symbol);
+	console.log(d3.select(target + " #" + base64symbol).node());
+	
+	return d3.select(target + " #" + base64symbol).node().getBBox();
+}
+
+function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, step) {
 	if (typeof(step) === "undefined")
 		step = 0;
 	
 	step++;
 	
-	var callback = "arrow_by_pieces("+
-		"'" + id_arrow + "', "+
-		"'" + element1 + "', "+
-		"'" + element2 + "', "+
-		" " + step + ");"
-	
-	/*-----------------------------------------------*/
-	/*---------------- Print by steps ---------------*/
-	/*------------- 1 Link the arrow body -----------*/
-	/*------------- 2 Link the arrow head -----------*/
-	/*------------- 3 Print the arrow ---------------*/
-	/*-----------------------------------------------*/
 	switch (step) {
 		case 1:
-			var arrow = svg.append("g")
-				.attr("id", id_arrow)
-				.attr("style", "opacity: 0");
-			
-			arrow.append("g")
-				.attr("id", "body")
-				.append("use")
-					.attr("xlink:href", "body_arrow.svg#body_arrow")
-					.attr("onload",
-						callback);
+			wait_for_preload_symbols(
+				target,
+				["images/maps/body_arrow.svg#body_arrow",
+					"images/maps/head_arrow.svg#head_arrow"],
+				function() {
+					arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, step);
+				});
 			break;
 		case 2:
-			var arrow = d3.select("#" +id_arrow);
+			var arrow_layout = d3
+				.select(target +" #" + id_arrow);
 			
-			arrow.append("g")
+			arrow_layout.append("g")
+				.attr("id", "body")
+				.append("use")
+					.attr("xlink:href", "images/maps/body_arrow.svg#body_arrow");
+			
+			arrow_layout.append("g")
 					.attr("id", "head")
 					.append("use")
-						.attr("xlink:href", "head_arrow.svg#head_arrow")
-						.attr("onload",
-							callback);
-			break;
-		case 3:
-			var c_elem1 = get_center_element("#" + element1);
-			var c_elem2 = get_center_element("#" + element2);
+						.attr("xlink:href", "images/maps/head_arrow.svg#head_arrow");
+			
+			
+			var c_elem1 = get_center_element(target +" #" + id_node_to);
+			var c_elem2 = get_center_element(target +" #" + id_node_from);
 			var distance = get_distance_between_point(c_elem1, c_elem2);
 			
 			var transform = d3.transform();
@@ -356,29 +420,36 @@ function arrow_by_pieces_old(id_arrow, element1, element2, step) {
 			/*---------------------------------------------*/
 			/*--- Position of layer arrow (body + head) ---*/
 			/*---------------------------------------------*/
-			var arrow = d3.select("#" + id_arrow);
-			
-			var arrow_body = d3.select("#" + id_arrow + " #body");
+			var arrow_body = arrow_layout.select("#body");
 			var arrow_body_b = arrow_body.node().getBBox();
 			
 			transform.translate[0] = c_elem1[0];
 			transform.translate[1] = c_elem1[1] - arrow_body_b['height'] / 2;
 			transform.rotate = get_angle_of_line(c_elem1, c_elem2);
 			
-			arrow.attr("transform", transform.toString());
+			console.log("Position body");
+			console.log(transform);
+			
+			arrow_layout.attr("transform", transform.toString());
 			
 			/*---------------------------------------------*/
 			/*-------- Resize the body arrow width --------*/
 			/*---------------------------------------------*/
-			var arrow_body = d3.select("#" + id_arrow + " #body");
 			var arrow_body_b = arrow_body.node().getBBox();
-			var arrow_head = d3.select("#" + id_arrow + " #head");
+			var arrow_head = arrow_layout.select("#head");
 			var arrow_head_b = arrow_head.node().getBBox();
 			
 			var body_width = distance - arrow_head_b['width'];
 			
 			transform = d3.transform();
 			transform.scale[0] = body_width / arrow_body_b['width'];
+			
+			console.log("Resize");
+			console.log(arrow_body_b);
+			console.log(getBBox_Symbol(target, "images/maps/body_arrow.svg#body_arrow"));
+			console.log(body_width);
+			console.log(transform);
+			
 			arrow_body.attr("transform", transform.toString());
 			
 			/*---------------------------------------------*/
@@ -395,12 +466,15 @@ function arrow_by_pieces_old(id_arrow, element1, element2, step) {
 			transform.translate[0] = x;
 			transform.translate[1] = y;
 			
+			console.log("Position head");
+			console.log(transform);
+			
 			arrow_head.attr("transform", transform.toString());
 			
 			/*---------------------------------------------*/
 			/*------- Show the result in one time ---------*/
 			/*---------------------------------------------*/
-			arrow.attr("style", "opacity: 1");
+			arrow_layout.attr("style", "opacity: 1");
 			break;
 	}
 }

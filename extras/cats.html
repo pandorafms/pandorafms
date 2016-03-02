@@ -56,6 +56,8 @@ var svg = d3.select("#test svg");
 		<script type="text/javascript">
 			var svg = d3.select("svg #zoom");
 			
+			
+			
 			svg.append("g")
 					.attr("id", "circulo")
 					.attr("transform",
@@ -113,9 +115,18 @@ var svg = d3.select("#test svg");
 						.attr("cx", 0)
 						.attr("cy", 0)
 						.attr("r", get_radius_element("#cat3"));
-
-			arrow_by_pieces("gatete_flecha", "cat1", "cat2");
-			arrow_by_pieces("gatete_flecha", "cat3", "cat4");
+			
+			
+			
+			
+			arrow_by_pieces2("gatete_flecha", "cat1", "cat2");
+			arrow_by_pieces2("gatete_flecha2", "cat1", "cat4");
+			arrow_by_pieces2("gatete_flecha3", "cat3", "cat4");
+			
+			
+			
+			//~ arrow_by_pieces("gatete_flecha", "cat1", "cat2");
+			//~ arrow_by_pieces("gatete_flecha", "cat3", "cat4");
 			
 			/**
 			* Function get_radius_element
@@ -207,6 +218,8 @@ var svg = d3.select("#test svg");
 					Math.pow(delta_x, 2) + Math.pow(delta_y, 2));
 			}
 			
+			
+			
 			/**
 			* Function get_angle_of_line
 			* Return float
@@ -216,12 +229,184 @@ var svg = d3.select("#test svg");
 				return Math.atan2(point2[1] - point1[1], point2[0] - point1[0]) * 180 / Math.PI;
 			}
 			
+			
+			
+			//~ function wait_for_preload_symbol(symbol) {
+				//~ preload_symbol(symbol);
+				//~ 
+				//~ while (!is_preload_symbol(symbol)) {
+					//~ sleep(1000);
+				//~ }
+			//~ }
+			//~ 
+			//~ function arrow_by_pieces(id_arrow, element1, element2, step) {
+				//~ 
+				//~ wait_for_preload_symbol('pedo');
+				//~ wait_for_preload_symbol('caca');
+				//~ ...
+			//~ }
+			
+			function wait_for_preload_symbols(symbols, callback) {
+				var count_symbols = symbols.length;
+				
+				function wait(symbol, callback) {
+					switch (is_preload_symbol(symbol)) {
+						case -1:
+							preload_symbol(symbol);
+							
+							setTimeout(function() {
+								wait(symbol,
+									callback);
+							}, 300);
+							break;
+						case 0:
+							// Wait
+							setTimeout(function() {
+								wait(symbol,
+									callback);
+							}, 300);
+							break;
+						case 1:
+							count_symbols--;
+							break;
+					}
+					
+					if (count_symbols == 0) {
+						callback();
+					}
+				}
+				
+				for (var i in symbols) {
+					wait(symbols[i], callback);
+				}
+			}
+			
+			function arrow_by_pieces2(id_arrow, element1, element2, step) {
+				if (typeof(step) === "undefined")
+					step = 0;
+				
+				step++;
+				
+				switch (step) {
+					case 1:
+						wait_for_preload_symbols(
+							["body_arrow.svg#body_arrow",
+								"head_arrow.svg#head_arrow"],
+							function() {
+								arrow_by_pieces2(id_arrow, element1, element2, step)
+							});
+						break;
+					case 2:
+						
+						var arrow = svg.append("g")
+							.attr("id", id_arrow)
+							.attr("style", "opacity: 0");
+						
+						arrow.append("g")
+							.attr("id", "body")
+							.append("use")
+								.attr("xlink:href", "body_arrow.svg#body_arrow");
+						
+						arrow.append("g")
+								.attr("id", "head")
+								.append("use")
+									.attr("xlink:href", "head_arrow.svg#head_arrow");
+						
+						
+						var c_elem1 = get_center_element("#" + element1);
+						var c_elem2 = get_center_element("#" + element2);
+						var distance = get_distance_between_point(c_elem1, c_elem2);
+						
+						var transform = d3.transform();
+					
+						/*---------------------------------------------*/
+						/*--- Position of layer arrow (body + head) ---*/
+						/*---------------------------------------------*/
+						var arrow = d3.select("#" + id_arrow);
+						
+						var arrow_body = d3.select("#" + id_arrow + " #body");
+						var arrow_body_b = arrow_body.node().getBBox();
+						
+						transform.translate[0] = c_elem1[0];
+						transform.translate[1] = c_elem1[1] - arrow_body_b['height'] / 2;
+						transform.rotate = get_angle_of_line(c_elem1, c_elem2);
+						
+						arrow.attr("transform", transform.toString());
+						
+						/*---------------------------------------------*/
+						/*-------- Resize the body arrow width --------*/
+						/*---------------------------------------------*/
+						var arrow_body = d3.select("#" + id_arrow + " #body");
+						var arrow_body_b = arrow_body.node().getBBox();
+						var arrow_head = d3.select("#" + id_arrow + " #head");
+						var arrow_head_b = arrow_head.node().getBBox();
+						
+						var body_width = distance - arrow_head_b['width'];
+						
+						transform = d3.transform();
+						transform.scale[0] = body_width / arrow_body_b['width'];
+						arrow_body.attr("transform", transform.toString());
+						
+						/*---------------------------------------------*/
+						/*---------- Position of head arrow -----------*/
+						/*---------------------------------------------*/
+						transform = d3.transform();
+						
+						var arrow_body_t = d3.transform(arrow_body.attr("transform"));
+						
+						var scale = arrow_body_t.scale[0];
+						var x = 0 + arrow_body_b['width'] * scale;
+						var y = 0 + (arrow_body_b['height'] / 2  - arrow_head_b['height'] / 2);
+						
+						transform.translate[0] = x;
+						transform.translate[1] = y;
+						
+						arrow_head.attr("transform", transform.toString());
+
+						/*---------------------------------------------*/
+						/*------- Show the result in one time ---------*/
+						/*---------------------------------------------*/
+						arrow.attr("style", "opacity: 1");
+						break;
+				}
+			}
+			
+			
+			
 			/**
 			* Function arrow_by_pieces
 			* Return void
 			* This method print the arrow by pieces
 			*/
 			function arrow_by_pieces(id_arrow, element1, element2, step) {
+				
+				//~ wait_for_preload_symbol('pedo');
+				
+				switch (is_preload_symbol("body_arrow.svg#body_arrow")) {
+					case -1:
+						preload_symbol("body_arrow.svg#body_arrow");
+						
+						setTimeout(function() {
+							arrow_by_pieces(id_arrow,
+								element1,
+								element2);
+						}, 300);
+						return;
+						break;
+					case 0:
+						// Wait
+						setTimeout(function() {
+							arrow_by_pieces(id_arrow,
+								element1,
+								element2);
+						}, 300);
+						return;
+						break;
+					case 1:
+						//It is preloaded
+						break;
+				}
+				
 				if (typeof(step) === "undefined")
 					step = 0;
 				
@@ -249,8 +434,10 @@ var svg = d3.select("#test svg");
 							.attr("id", "body")
 							.append("use")
 								.attr("xlink:href", "body_arrow.svg#body_arrow")
-								.attr("onload",
-									callback);
+								//~ .attr("onload",
+									//~ callback);
+						console.log(arrow.select("#body").node().getBBox());
+						return;
 						break;
 					case 2:
 						var arrow = d3.select("#" +id_arrow);
@@ -321,35 +508,48 @@ var svg = d3.select("#test svg");
 				}
 			}
 			
-			/**
-			* Function arrow
-			* Return void
-			* This method creates the arrow between two elements
-			*/
-			function arrow(svg, element1, element2) {
-				d = get_distance_between_point(element1, element2);
+			
+			
+			function preload_symbol(symbol, param_step) {
+				if (typeof(param_step) == "undefined") {
+					step = 1;
+					param_step = 1;
+				}
+				else {
+					step = param_step;
+				}
 				
-				x = element1[0];
-				y = element1[1];
+				step++;
 				
-				svg.append("g")
-					.attr("transform",
-						function(d) {
-							return "translate(" + x + " " + y + ")";})
-					.append("path")
-						.attr("style", "fill: none; stroke-width: 5; stroke: rgb(0, 255, 255);")
-						.attr("d", "M 0 10 L 200 10 L 200 0 L 230 20 L 200 40 L 200 30 L 0 30 z");
+				base64symbol = btoa(symbol).replace(/=/g, "");
 				
-				x = element2[0];
-				y = element2[1];
+				callback = "preload_symbol('" + symbol + "', " + step + ")";
 				
-				svg.append("g")
-					.attr("transform",
-						function(d) {
-							return "translate(" + x + " " + y + ")";})
-					.append("path")
-						.attr("style", "fill: none; stroke-width: 5; stroke: rgb(0, 255, 255);")
-						.attr("d", "M 0 10 L 200 10 L 200 0 L 230 20 L 200 40 L 200 30 L 0 30 z");
+				switch (param_step) {
+					case 1:
+						d3.select("svg").append("g")
+							.attr("id", base64symbol)
+							.attr("data-loaded", 0)
+							.style("opacity", 0)
+							.append("use")
+								.attr("xlink:href", "body_arrow.svg#body_arrow")
+								.attr("onload",
+									callback);
+						break;
+					case 2:
+						d3.select("#" + base64symbol).attr("data-loaded", 1);
+						
+						break;
+				}
+			}
+			
+			function is_preload_symbol(symbol) {
+				base64symbol = btoa(symbol).replace(/=/g, "");
+				
+				if (d3.select("#" + base64symbol).node() === null)
+					return -1;
+				
+				return parseInt(d3.select("#" + base64symbol).attr("data-loaded"));
 			}
 		</script>
 	</body>

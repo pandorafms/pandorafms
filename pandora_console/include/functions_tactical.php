@@ -28,8 +28,14 @@ function tactical_get_data ($id_user = false, $user_strict = false, $acltags, $r
 		if ($user_strict) { //Remove groups with tags
 			$groups_without_tags[$group] = $group;
 		}
+		if ($tags != '') {
+			$tags_group = explode(',', $tags);
+
+			foreach ($tags_group as $tag) {
+				$user_tags[$tag] = tags_get_name($tag);
+			}
+		}
 	}
-	
 	
 	if ($user_strict) {
 		$user_groups_ids = implode(',', array_keys($groups_without_tags));
@@ -366,7 +372,45 @@ function tactical_get_data ($id_user = false, $user_strict = false, $acltags, $r
 		// Calculate not_normal monitors
 		$list["_monitor_not_normal_"] = $list["_monitor_checks_"] - $list["_monitors_ok_"];
 	}
-	
+
+	if ($user_strict) {
+		$i = 1;
+		$list = array();
+		foreach ($user_tags as $group_id => $tag_name) {
+			$id = db_get_value('id_tag', 'ttag', 'name', $tag_name);
+
+			$list[$i]['_id_'] = $id;
+			$list[$i]['_name_'] = $tag_name;
+			$list[$i]['_iconImg_'] = html_print_image ("images/tag_red.png", true, array ("style" => 'vertical-align: middle;'));
+			$list[$i]['_is_tag_'] = 1;
+
+			$list[$i]['_total_agents_'] = (int) tags_get_total_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
+			$list[$i]['_agents_ok_'] = (int) tags_get_normal_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
+			$list[$i]['_agents_warning_'] = (int) tags_get_warning_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
+			$list[$i]['_agents_critical_'] = (int) tags_get_critical_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
+			$list[$i]['_agents_unknown_'] = (int) tags_get_unknown_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
+			$list[$i]['_agents_not_init_'] = (int) tags_get_not_init_agents ($id, $acltags, $agent_filter, $module_filter, $config["realtimestats"]);
+			$list[$i]['_monitors_ok_'] = (int) tags_get_normal_monitors ($id, $acltags, $agent_filter, $module_filter);
+			$list[$i]['_monitors_critical_'] = (int) tags_get_critical_monitors ($id, $acltags, $agent_filter, $module_filter);
+			$list[$i]['_monitors_warning_'] = (int) tags_get_warning_monitors ($id, $acltags, $agent_filter, $module_filter);
+			$list[$i]['_monitors_not_init_'] = (int) tags_get_not_init_monitors ($id, $acltags, $agent_filter, $module_filter);
+			$list[$i]['_monitors_unknown_'] = (int) tags_get_unknown_monitors ($id, $acltags, $agent_filter, $module_filter);
+			$list[$i]['_monitors_alerts_fired_'] = tags_monitors_fired_alerts($id, $acltags);
+
+			if (! defined ('METACONSOLE')) {
+				if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0) && ($list[$i]['_monitors_unknown_'] == 0) && ($list[$i]['_monitors_not_init_'] == 0) && ($list[$i]['_agents_not_init_'] == 0)) {
+					unset($list[$i]);
+				}
+			}
+			else {
+				if (($list[$i]['_agents_unknown_'] == 0) && ($list[$i]['_monitors_alerts_fired_'] == 0) && ($list[$i]['_total_agents_'] == 0) && ($list[$i]['_monitors_ok_'] == 0) && ($list[$i]['_monitors_critical_'] == 0) && ($list[$i]['_monitors_warning_'] == 0)) {
+					unset($list[$i]);
+				}
+			}
+			$i++;
+		}
+	}
+
 	return $list;
 }
 
@@ -385,10 +429,12 @@ function tactical_status_modules_agents($id_user = false, $user_strict = false, 
 		
 		$result_list = array ();
 		foreach ($servers as $server) {
-			
-			$server_list = tactical_get_data ($id_user, $user_strict,
+			if (metaconsole_connect($server) != NOERR) {
+				continue;
+			}
+			$result_list = tactical_get_data ($id_user, $user_strict,
 				$acltags);
-
+	
 			if (!isset ($result_list[$server_item['_name_']])) {
 				$result_list[$server_item['_name_']] = $server_item;
 			}
@@ -420,6 +466,7 @@ function tactical_status_modules_agents($id_user = false, $user_strict = false, 
 			}
 			
 		}
+		metaconsole_restore_db();
 		return $result_list;
 	}
 	else {

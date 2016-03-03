@@ -172,6 +172,22 @@ MapController.prototype.init_map = function() {
 	this.init_events();
 };
 
+MapController.prototype.node_from_edge = function(id_graph) {
+	var exists = null;
+	
+	$.each(edges, function(i, e) {
+		if (e.graph_id == id_graph) {
+			exists = i;
+			return false; // jquery.each break;
+		}
+	});
+	
+	if (exists !== null)
+		return edges[exists];
+	else
+		return null;
+}
+
 MapController.prototype.exists_edge = function(id_graph) {
 	var exists = false;
 	
@@ -235,7 +251,14 @@ MapController.prototype.paint_nodes = function() {
 		.enter()
 			.append("g")
 				.attr("class", "arrow")
-				.attr("id", function(d) { return "arrow_" + d['graph_id'];});
+				.attr("id", function(d) { return "arrow_" + d['graph_id'];})
+
+				.attr("data-id", function(d) { return d['id'];})
+				.attr("data-to", function(d) {
+					return self.node_from_edge(d['graph_id'])["to"];})
+				.attr("data-from", function(d) {
+					return self.node_from_edge(d['graph_id'])["from"];});
+
 	
 	create_arrow(arrow_layouts);
 	

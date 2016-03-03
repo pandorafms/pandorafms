@@ -147,10 +147,6 @@ $this->nodes = json_decode('[
 	"y": 931.19
 },
 {
-	"graph_id": 210,
-	"type": 2
-},
-{
 	"graph_id": "183",
 	"id": "89",
 	"type": 0,
@@ -165,10 +161,6 @@ $this->nodes = json_decode('[
 	"y": 599.03
 },
 {
-	"graph_id": 211,
-	"type": 2
-},
-{
 	"graph_id": "196",
 	"id": "412",
 	"type": 1,
@@ -178,11 +170,18 @@ $this->nodes = json_decode('[
 {
 	"graph_id": 212,
 	"type": 2
+},
+{
+	"graph_id": 213,
+	"type": 2
 }
 ]', true);
 
-//~ $this->edges = json_decode('[{"to":"165","from":"166","graph_id":208},{"to":"165","from":"169","graph_id":209},{"to":"179","from":"180","graph_id":210},{"to":"183","from":"184","graph_id":211},{"to":"183","from":"196","graph_id":212}]', true);
-$this->edges = json_decode('[{"to":"165","from":"166","graph_id":208}, {"to":"165","from":"169","graph_id":209}]', true);
+$this->edges = json_decode(
+'[
+{"to":"180","from":"184","graph_id":213},
+{"to":"165","from":"166","graph_id":208},
+{"to":"165","from":"169","graph_id":209}]', true);
 //~ $this->edges = json_decode('[{"to":"165","from":"166","graph_id":208}]', true);
 		
 		

@@ -46,7 +46,7 @@ mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_agent/
 mkdir -p $RPM_BUILD_ROOT/usr/bin/
 mkdir -p $RPM_BUILD_ROOT/usr/sbin/
 mkdir -p $RPM_BUILD_ROOT/etc/pandora/
-mkdir -p $RPM_BUILD_ROOT/etc/init.d/
+mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d/
 mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
 mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1/
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
@@ -54,8 +54,7 @@ cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_agent/
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/tentacle_client $RPM_BUILD_ROOT/usr/bin/
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent $RPM_BUILD_ROOT/usr/bin/
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent_exec $RPM_BUILD_ROOT/usr/bin/
-cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent_daemon $RPM_BUILD_ROOT/etc/init.d/pandora_agent_daemon
-cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent_daemon $RPM_BUILD_ROOT/etc/init.d/pandora_agent_daemon
+cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent_daemon $RPM_BUILD_ROOT/etc/rc.d/init.d/pandora_agent_daemon
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/man/man1/pandora_agent.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
 cp -aRf $RPM_BUILD_ROOT%{prefix}/pandora_agent/man/man1/tentacle_client.1.gz $RPM_BUILD_ROOT/usr/share/man/man1/
 
@@ -114,8 +113,8 @@ if [ "$1" = "1" ]; then
 fi
 
 /sbin/chkconfig --del pandora_agent_daemon 
-/etc/init.d/pandora_agent_daemon stop >/dev/null 2>&1 || :
-rm /etc/init.d/pandora_agent_daemon
+/etc/rc.d/init.d/pandora_agent_daemon stop >/dev/null 2>&1 || :
+rm /etc/rc.d/init.d/pandora_agent_daemon
 /usr/sbin/userdel pandora
 rm -Rf /etc/pandora/pandora_agent.conf
 rm -Rf /var/log/pandora/pandora_agent* 2> /dev/null
@@ -132,7 +131,7 @@ exit 0
 
 %defattr(755,pandora,root)
 /usr/bin/tentacle_client
-/etc/init.d/pandora_agent_daemon
+/etc/rc.d/init.d/pandora_agent_daemon
 %docdir %{prefix}/pandora_agents/docs
 %{prefix}/pandora_agent
 

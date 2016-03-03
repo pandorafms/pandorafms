@@ -114,21 +114,24 @@ fi
 
 /sbin/chkconfig --del pandora_agent_daemon 
 /etc/rc.d/init.d/pandora_agent_daemon stop >/dev/null 2>&1 || :
-/usr/sbin/userdel pandora
-rm -Rf /etc/pandora/pandora_agent.conf
-rm -Rf /var/log/pandora/pandora_agent* 2> /dev/null
-rm -Rf /usr/share/pandora_agent
+
+# Remove symbolic links
+pushd /etc/pandora
+for f in pandora_agent.conf plugins collections
+do
+	[ -L $f ] && rm -f $f
+done
 exit 0
 
 %files
-%defattr(750,pandora,root)
+%defattr(750,root,root)
 /usr/bin/pandora_agent
-/usr/bin/pandora_agent_exec
 
 %defattr(755,pandora,root)
 %{prefix}/pandora_agent
 
 %defattr(755,root,root)
+/usr/bin/pandora_agent_exec
 /usr/bin/tentacle_client
 /etc/rc.d/init.d/pandora_agent_daemon
 

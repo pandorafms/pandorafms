@@ -114,13 +114,10 @@ fi
 
 /sbin/chkconfig --del pandora_agent_daemon 
 /etc/rc.d/init.d/pandora_agent_daemon stop >/dev/null 2>&1 || :
-rm /etc/rc.d/init.d/pandora_agent_daemon
 /usr/sbin/userdel pandora
 rm -Rf /etc/pandora/pandora_agent.conf
 rm -Rf /var/log/pandora/pandora_agent* 2> /dev/null
 rm -Rf /usr/share/pandora_agent
-rm -Rf /usr/share/man/man1/pandora_agent.1.gz
-rm -Rf /usr/share/man/man1/tentacle_client.1.gz
 exit 0
 
 %files
@@ -138,4 +135,3 @@ exit 0
 %defattr(644,pandora,root)
 /usr/share/man/man1/pandora_agent.1.gz
 /usr/share/man/man1/tentacle_client.1.gz
-

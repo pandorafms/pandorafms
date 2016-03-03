@@ -1178,7 +1178,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			//Get and process module name
 			$module_name = io_safe_output(
 				modules_get_agentmodule_name ($agent_module_id));
-			$module_name = sprintf(__("projection for %s"), $module_name);
+			$module_name = sprintf(__("%s"), $module_name);
 			$module_name = ui_print_truncate_text($module_name, 'module_small', false, true, false, '...', false);
 			
 			if ($labels[$agent_module_id] != '')

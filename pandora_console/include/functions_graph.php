@@ -1182,7 +1182,10 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		}
 		
 		if (!empty($name_list) && $names_number == $module_number && isset($name_list[$i])) {
-			$module_name_list[$i] = $name_list[$i];
+			if ($labels[$agent_module_id] != '')
+				$module_name_list[$i] = $labels[$agent_module_id];
+			else
+				$module_name_list[$i] = $agent_name ." / ". $module_name;
 		}
 		else {
 			//Get and process agent name
@@ -1198,7 +1201,10 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			$module_name = sprintf(__("projection for %s"), $module_name);
 			$module_name = ui_print_truncate_text($module_name, 'module_small', false, true, false, '...', false);
 			
-			$module_name_list[$i] = $agent_name ." / ". $module_name;
+			if ($labels[$agent_module_id] != '')
+				$module_name_list[$i] = $labels[$agent_module_id];
+			else
+				$module_name_list[$i] = $agent_name ." / ". $module_name;
 		}
 		
 		// Data iterator

@@ -135,7 +135,7 @@ class Networkmap extends Map {
 		}
 		
 		foreach ($edges as $i => $edge) {
-			$graph_id = $last_graph_id++;
+			$graph_id = ++$last_graph_id;
 			
 			$nodes[] = array(
 				'graph_id' => $graph_id,

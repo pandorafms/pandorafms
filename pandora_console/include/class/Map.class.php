@@ -96,6 +96,96 @@ abstract class Map {
 	abstract function printJSInit();
 	
 	public function writeJSGraph() {
+		html_debug_print($this->nodes, true);
+		html_debug_print($this->edges, true);
+		html_debug_print(json_encode($this->nodes), true);
+		html_debug_print("", true);
+		html_debug_print(json_encode($this->edges), true);
+		
+$this->nodes = json_decode('[
+{
+	"graph_id": "165",
+	"id": "17",
+	"type": 0,
+	"x": 1033.4,
+	"y": 806.38
+},
+{
+	"graph_id": "166",
+	"id": "198",
+	"type": 1,
+	"x": 1119.5,
+	"y": 847.85
+},
+{
+	"graph_id": 208,
+	"type": 2
+},
+{
+	"graph_id": "169",
+	"id": "207",
+	"type": 1,
+	"x": 947.33,
+	"y": 764.91
+},
+{
+	"graph_id": 209,
+	"type": 2
+},
+{
+	"graph_id": "179",
+	"id": "27",
+	"type": 0,
+	"x": 159.23,
+	"y": 1005.9
+},
+{
+	"graph_id": "180",
+	"id": "223",
+	"type": 1,
+	"x": 218.82,
+	"y": 931.19
+},
+{
+	"graph_id": 210,
+	"type": 2
+},
+{
+	"graph_id": "183",
+	"id": "89",
+	"type": 0,
+	"x": 516.77,
+	"y": 557.57
+},
+{
+	"graph_id": "184",
+	"id": "418",
+	"type": 1,
+	"x": 430.66,
+	"y": 599.03
+},
+{
+	"graph_id": 211,
+	"type": 2
+},
+{
+	"graph_id": "196",
+	"id": "412",
+	"type": 1,
+	"x": 602.88,
+	"y": 516.1
+},
+{
+	"graph_id": 212,
+	"type": 2
+}
+]', true);
+
+//~ $this->edges = json_decode('[{"to":"165","from":"166","graph_id":208},{"to":"165","from":"169","graph_id":209},{"to":"179","from":"180","graph_id":210},{"to":"183","from":"184","graph_id":211},{"to":"183","from":"196","graph_id":212}]', true);
+$this->edges = json_decode('[{"to":"165","from":"166","graph_id":208}, {"to":"165","from":"169","graph_id":209}]', true);
+//~ $this->edges = json_decode('[{"to":"165","from":"166","graph_id":208}]', true);
+		
+		
 		?>
 		<script type="text/javascript">
 			var controller_map = null;

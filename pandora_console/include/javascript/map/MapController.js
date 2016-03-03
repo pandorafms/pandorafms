@@ -172,6 +172,19 @@ MapController.prototype.init_map = function() {
 	this.init_events();
 };
 
+MapController.prototype.exists_edge = function(id_graph) {
+	var exists = false;
+	
+	$.each(edges, function(i, e) {
+		if (e.graph_id == id_graph) {
+			exists = true;
+			return false; // jquery.each break;
+		}
+	});
+	
+	return exists; 
+}
+
 /**
 Function paint_nodes
 Return void
@@ -184,9 +197,12 @@ MapController.prototype.paint_nodes = function() {
 		.data(
 			nodes
 				.filter(function(d, i) {
-					if (d.type != ITEM_TYPE_EDGE_NETWORKMAP)
-						return true;
-					else return false;
+						if (d.type != ITEM_TYPE_EDGE_NETWORKMAP) {
+							return true;
+						}
+						else {
+							return false;
+						}
 				}))
 			.enter()
 				.append("g")
@@ -202,19 +218,19 @@ MapController.prototype.paint_nodes = function() {
 						.attr("r", "6");
 	
 	
-	//~ this._viewport.selectAll(".arrow").each(function(d) {
-		//~ console.log(d);
-	//~ });
-	
-	
 	
 	var arrow_layouts = self._viewport.selectAll(".arrow")
 		.data(
 			nodes
 				.filter(function(d, i) {
-					if (d.type == ITEM_TYPE_EDGE_NETWORKMAP)
-						return true;
-					else return false;
+					if (d.type == ITEM_TYPE_EDGE_NETWORKMAP) {
+						if (self.exists_edge(d['graph_id']))
+							return true;
+						else
+							return false;
+					}
+					else
+						return false;
 				}))
 		.enter()
 			.append("g")
@@ -253,8 +269,7 @@ MapController.prototype.paint_nodes = function() {
 			var id_node_to = "node_" + to_node['graph_id'];
 			var id_node_from = "node_" + from_node['graph_id'];
 			
-			//~ console.log("-----------");
-			//~ console.log(id_arrow);
+			
 			arrow_by_pieces(self._target + " svg", id_arrow, id_node_to, id_node_from);
 		});
 	}
@@ -295,12 +310,13 @@ function wait_for_preload_symbols(target, symbols, callback) {
 	
 	
 	for (var i in symbols) {
-		wait(target, symbols[i], callback);
+		if (typeof(symbols[i]) == "string")
+			wait(target, symbols[i], callback);
 	}
 }
 
 function is_preload_symbol(target, symbol) {
-	base64symbol = btoa(symbol).replace(/=/g, "");
+	var base64symbol = btoa(symbol).replace(/=/g, "");
 	
 	if (d3.select(target + " #" + base64symbol).node() === null)
 		return -1;
@@ -309,6 +325,8 @@ function is_preload_symbol(target, symbol) {
 }
 
 function preload_symbol(target, symbol, param_step) {
+	var step;
+	
 	if (typeof(param_step) == "undefined") {
 		step = 1;
 		param_step = 1;
@@ -319,7 +337,7 @@ function preload_symbol(target, symbol, param_step) {
 	
 	step++;
 	
-	base64symbol = btoa(symbol).replace(/=/g, "");
+	var base64symbol = btoa(symbol).replace(/=/g, "");
 	
 	switch (param_step) {
 		case 1:
@@ -329,7 +347,7 @@ function preload_symbol(target, symbol, param_step) {
 				.style("opacity", 0)
 				.append("use")
 					.attr("xlink:href", symbol)
-					.attr("onload",
+					.on("load",
 						function() {
 							preload_symbol(target, symbol, step);
 						});
@@ -341,8 +359,8 @@ function preload_symbol(target, symbol, param_step) {
 }
 
 function get_distance_between_point(point1, point2) {
-	delta_x = Math.abs(point1[0] - point2[0]);
-	delta_y = Math.abs(point1[1] - point1[1]);
+	var delta_x = Math.abs(point1[0] - point2[0]);
+	var delta_y = Math.abs(point1[1] - point1[1]);
 	
 	return Math.sqrt(
 		Math.pow(delta_x, 2) + Math.pow(delta_y, 2));
@@ -372,10 +390,7 @@ function get_angle_of_line(point1, point2) {
 }
 
 function getBBox_Symbol(target, symbol) {
-	base64symbol = btoa(symbol).replace(/=/g, "");
-	
-	console.log(target + " #" + base64symbol);
-	console.log(d3.select(target + " #" + base64symbol).node());
+	var base64symbol = btoa(symbol).replace(/=/g, "");
 	
 	return d3.select(target + " #" + base64symbol).node().getBBox();
 }
@@ -401,12 +416,12 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, step) {
 				.select(target +" #" + id_arrow);
 			
 			arrow_layout.append("g")
-				.attr("id", "body")
+				.attr("class", "body")
 				.append("use")
 					.attr("xlink:href", "images/maps/body_arrow.svg#body_arrow");
 			
 			arrow_layout.append("g")
-					.attr("id", "head")
+					.attr("class", "head")
 					.append("use")
 						.attr("xlink:href", "images/maps/head_arrow.svg#head_arrow");
 			
@@ -420,15 +435,13 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, step) {
 			/*---------------------------------------------*/
 			/*--- Position of layer arrow (body + head) ---*/
 			/*---------------------------------------------*/
-			var arrow_body = arrow_layout.select("#body");
+			var arrow_body = arrow_layout.select(".body");
 			var arrow_body_b = arrow_body.node().getBBox();
 			
 			transform.translate[0] = c_elem1[0];
 			transform.translate[1] = c_elem1[1] - arrow_body_b['height'] / 2;
 			transform.rotate = get_angle_of_line(c_elem1, c_elem2);
 			
-			console.log("Position body");
-			console.log(transform);
 			
 			arrow_layout.attr("transform", transform.toString());
 			
@@ -436,19 +449,13 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, step) {
 			/*-------- Resize the body arrow width --------*/
 			/*---------------------------------------------*/
 			var arrow_body_b = arrow_body.node().getBBox();
-			var arrow_head = arrow_layout.select("#head");
+			var arrow_head = arrow_layout.select(".head");
 			var arrow_head_b = arrow_head.node().getBBox();
 			
 			var body_width = distance - arrow_head_b['width'];
 			
 			transform = d3.transform();
 			transform.scale[0] = body_width / arrow_body_b['width'];
-			
-			console.log("Resize");
-			console.log(arrow_body_b);
-			console.log(getBBox_Symbol(target, "images/maps/body_arrow.svg#body_arrow"));
-			console.log(body_width);
-			console.log(transform);
 			
 			arrow_body.attr("transform", transform.toString());
 			
@@ -465,9 +472,6 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, step) {
 			
 			transform.translate[0] = x;
 			transform.translate[1] = y;
-			
-			console.log("Position head");
-			console.log(transform);
 			
 			arrow_head.attr("transform", transform.toString());
 			

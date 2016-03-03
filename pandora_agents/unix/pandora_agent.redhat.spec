@@ -124,14 +124,15 @@ exit 0
 %defattr(750,pandora,root)
 /usr/bin/pandora_agent
 /usr/bin/pandora_agent_exec
-%config(noreplace) %{_sysconfdir}/logrotate.d/pandora_agent
 
 %defattr(755,pandora,root)
-/usr/bin/tentacle_client
-/etc/rc.d/init.d/pandora_agent_daemon
-%docdir %{prefix}/pandora_agents/docs
 %{prefix}/pandora_agent
 
-%defattr(644,pandora,root)
+%defattr(755,root,root)
+/usr/bin/tentacle_client
+/etc/rc.d/init.d/pandora_agent_daemon
+
+%defattr(644,root,root)
 /usr/share/man/man1/pandora_agent.1.gz
 /usr/share/man/man1/tentacle_client.1.gz
+%config(noreplace) %{_sysconfdir}/logrotate.d/pandora_agent

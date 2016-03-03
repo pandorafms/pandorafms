@@ -1943,14 +1943,14 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 	?>
 	<script language="javascript" type="text/javascript">
 		/* <![CDATA[ */
-		
+		var id_layout = <?php echo $id_layout; ?>;
 		var lines = Array();
 		
 		var user_lines = Array();
 		
 		//Fixed to wait the load of images.
 		$(window).load(function() {
-				draw_lines(lines, 'background');
+				draw_lines(lines, 'background_'+id_layout);
 				draw_user_lines_read();
 				center_labels();
 			}
@@ -2006,7 +2006,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		echo "<div style='width: 920px; overflow:auto; margin: 0 auto;'>";
 	}
 	
-	echo '<div id="background"
+	echo '<div id="background_'.$id_layout.'"
 		style="margin:0px auto;
 			text-align:center;
 			z-index: 0;

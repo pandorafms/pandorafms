@@ -174,14 +174,109 @@ $this->nodes = json_decode('[
 {
 	"graph_id": 213,
 	"type": 2
+},
+
+
+
+
+
+
+{
+	"graph_id": 214,
+	"id": 666,
+	"type": 0,
+	"x": 300,
+	"y": 300
+},
+{
+	"graph_id": 215,
+	"id": 999,
+	"type": 0,
+	"x": 300,
+	"y": 100
+},
+{
+	"graph_id": 216,
+	"id": 999,
+	"type": 0,
+	"x": 300,
+	"y": 500
+},
+{
+	"graph_id": 217,
+	"id": 666,
+	"type": 0,
+	"x": 100,
+	"y": 300
+},
+{
+	"graph_id": 218,
+	"id": 666,
+	"type": 0,
+	"x": 500,
+	"y": 300
+},
+{
+	"graph_id": 219,
+	"id": 666,
+	"type": 0,
+	"x": 500,
+	"y": 100
+},
+{
+	"graph_id": 220,
+	"id": 666,
+	"type": 0,
+	"x": 500,
+	"y": 500
+},
+{
+	"graph_id": 221,
+	"id": 666,
+	"type": 0,
+	"x": 100,
+	"y": 100
+},
+{
+	"graph_id": 222,
+	"id": 666,
+	"type": 0,
+	"x": 100,
+	"y": 500
+},
+{
+	"graph_id": 400,
+	"type": 2
+},
+{
+	"graph_id": 401,
+	"type": 2
+},
+{
+	"graph_id": 402,
+	"type": 2
+},
+{
+	"graph_id": 403,
+	"type": 2
 }
 ]', true);
 
 $this->edges = json_decode(
 '[
-{"to":"180","from":"184","graph_id":213},
-{"to":"165","from":"166","graph_id":208},
-{"to":"165","from":"169","graph_id":209}]', true);
+{"to":"215","from":"214","graph_id":400},
+{"to":"216","from":"214","graph_id":401},
+{"to":"217","from":"214","graph_id":402},
+{"to":"218","from":"214","graph_id":403}
+
+]', true);
+
+$this->edges = json_decode(
+'[
+{"to":"218","from":"214","graph_id":400},
+{"to":"217","from":"214","graph_id":401}
+
+]', true);
 //~ $this->edges = json_decode('[{"to":"165","from":"166","graph_id":208}]', true);
 		
 		

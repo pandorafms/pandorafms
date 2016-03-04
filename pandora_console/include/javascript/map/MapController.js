@@ -231,7 +231,7 @@ MapController.prototype.paint_nodes = function() {
 					.attr("data-type", function(d) { return d['type'];})
 					.append("circle")
 						.attr("style", "fill: rgb(50, 50, 128);")
-						.attr("r", "6");
+						.attr("r", "15");
 	
 	
 	
@@ -299,91 +299,9 @@ MapController.prototype.paint_nodes = function() {
 	
 }
 
-function wait_for_preload_symbols(target, symbols, callback) {
-	var count_symbols = symbols.length;
-	
-	function wait(target, symbol, callback) {
-		switch (is_preload_symbol(target, symbol)) {
-			case -1:
-				preload_symbol(target, symbol);
-				
-				setTimeout(
-					function() {
-						wait(target, symbol, callback);
-					},
-					300);
-				break;
-			case 0:
-				// Wait
-				setTimeout(
-					function() {
-						wait(target, symbol, callback);
-					},
-					300);
-				break;
-			case 1:
-				count_symbols--;
-				break;
-		}
-		
-		if (count_symbols == 0) {
-			callback();
-		}
-	}
-	
-	
-	for (var i in symbols) {
-		if (typeof(symbols[i]) == "string")
-			wait(target, symbols[i], callback);
-	}
-}
-
-function is_preload_symbol(target, symbol) {
-	var base64symbol = btoa(symbol).replace(/=/g, "");
-	
-	if (d3.select(target + " #" + base64symbol).node() === null)
-		return -1;
-	
-	return parseInt(d3.select(target +" #" + base64symbol).attr("data-loaded"));
-}
-
-function preload_symbol(target, symbol, param_step) {
-	var step;
-	
-	if (typeof(param_step) == "undefined") {
-		step = 1;
-		param_step = 1;
-	}
-	else {
-		step = param_step;
-	}
-	
-	step++;
-	
-	var base64symbol = btoa(symbol).replace(/=/g, "");
-	
-	switch (param_step) {
-		case 1:
-			d3.select(target).append("g")
-				.attr("id", base64symbol)
-				.attr("data-loaded", 0)
-				.style("opacity", 0)
-				.append("use")
-					.attr("xlink:href", symbol)
-					.on("load",
-						function() {
-							preload_symbol(target, symbol, step);
-						});
-			break;
-		case 2:
-			d3.select("#" + base64symbol).attr("data-loaded", 1);
-			break;
-	}
-}
-
 function get_distance_between_point(point1, point2) {
 	var delta_x = Math.abs(point1[0] - point2[0]);
-	var delta_y = Math.abs(point1[1] - point1[1]);
+	var delta_y = Math.abs(point1[1] - point2[1]);
 	
 	return Math.sqrt(
 		Math.pow(delta_x, 2) + Math.pow(delta_y, 2));
@@ -418,40 +336,55 @@ function getBBox_Symbol(target, symbol) {
 	return d3.select(target + " #" + base64symbol).node().getBBox();
 }
 
-function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, step) {
-	if (typeof(step) === "undefined")
-		step = 0;
+function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, wait) {
 	
-	step++;
+	if (typeof(wait) === "undefined")
+		wait = 1;
 	
-	switch (step) {
+	var count_files = 2;
+	function wait_load(callback) {
+		count_files--;
+		
+		if (count_files == 0) {
+			callback();
+		}
+	}
+	
+	var arrow_layout = d3
+		.select(target +" #" + id_arrow);
+	
+	
+	
+	switch (wait) {
 		case 1:
-			wait_for_preload_symbols(
-				target,
-				["images/maps/body_arrow.svg#body_arrow",
-					"images/maps/head_arrow.svg#head_arrow"],
-				function() {
-					arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, step);
-				});
-			break;
-		case 2:
-			var arrow_layout = d3
-				.select(target +" #" + id_arrow);
-			
 			arrow_layout.append("g")
 				.attr("class", "body")
 				.append("use")
-					.attr("xlink:href", "images/maps/body_arrow.svg#body_arrow");
+					.attr("xlink:href", "images/maps/body_arrow.svg#body_arrow")
+					.on("load", function() {
+						wait_load(function() {
+							arrow_by_pieces(
+								target, id_arrow, id_node_to, id_node_from, 0);
+						});
+					});
 			
 			arrow_layout.append("g")
-					.attr("class", "head")
-					.append("use")
-						.attr("xlink:href", "images/maps/head_arrow.svg#head_arrow");
-			
-			
-			var c_elem1 = get_center_element(target +" #" + id_node_to);
-			var c_elem2 = get_center_element(target +" #" + id_node_from);
+				.attr("class", "head")
+				.append("use")
+					.attr("xlink:href", "images/maps/head_arrow.svg#head_arrow")
+					.on("load", function() {
+						wait_load(function() {
+							arrow_by_pieces(
+								target, id_arrow, id_node_to, id_node_from, 0);
+						});
+					});
+			break;
+		case 0:
+			var c_elem2 = get_center_element(target +" #" + id_node_to);
+			var c_elem1 = get_center_element(target +" #" + id_node_from);
+			//~ console.log("centro", c_elem2, c_elem1);
 			var distance = get_distance_between_point(c_elem1, c_elem2);
+			//~ console.log("distance", distance);
 			
 			var transform = d3.transform();
 		
@@ -461,9 +394,12 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, step) {
 			var arrow_body = arrow_layout.select(".body");
 			var arrow_body_b = arrow_body.node().getBBox();
 			
+			console.log("arrow_body_b", arrow_body_b);
+			
 			transform.translate[0] = c_elem1[0];
-			transform.translate[1] = c_elem1[1] + arrow_body_b['height'] / 2;
-			transform.rotate = get_angle_of_line(c_elem1, c_elem2);
+			transform.translate[1] = c_elem1[1];
+			transform.rotate = get_angle_of_line(c_elem1, c_elem2) +
+				" 0 " + (arrow_body_b['height'] / 2);
 			
 			
 			arrow_layout.attr("transform", transform.toString());

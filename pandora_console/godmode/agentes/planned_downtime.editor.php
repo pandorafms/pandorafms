@@ -18,7 +18,7 @@ global $config;
 check_login();
 
 
-if (! check_acl ($config['id_user'], 0, "AW")) {
+if (! check_acl ($config['id_user'], 0, "AD")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access downtime scheduler");
 	require ("general/noaccess.php");
@@ -82,16 +82,16 @@ $id_agent 				= (int) get_parameter ('id_agent');
 $insert_downtime_agent 	= (int) get_parameter ('insert_downtime_agent');
 $delete_downtime_agent 	= (int) get_parameter ('delete_downtime_agent');
 
-// User groups with AW permission for ACL checks
-$user_groups_aw = array_keys(users_get_groups($config['id_user'], 'AW'));
+// User groups with AD permission for ACL checks
+$user_groups_ad = array_keys(users_get_groups($config['id_user'], 'AD'));
 
 // INSERT A NEW DOWNTIME_AGENT ASSOCIATION
 if ($insert_downtime_agent === 1) {
 	
-	// Check AW permission on downtime
+	// Check AD permission on downtime
 	$downtime_group = db_get_value('id_group', 'tplanned_downtime', 'id', $id_downtime);
 	
-	if ($downtime_group === false || !in_array($downtime_group, $user_groups_aw)) {
+	if ($downtime_group === false || !in_array($downtime_group, $user_groups_ad)) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access downtime scheduler");
 		require ("general/noaccess.php");
@@ -111,10 +111,10 @@ if ($insert_downtime_agent === 1) {
 	else {
 		foreach ($agents as $agent_id) {
 			
-			// Check AW permission on agent
+			// Check AD permission on agent
 			$agent_group = db_get_value('id_grupo', 'tagente', 'id_agente', $agent_id);
 			
-			if ($agent_group === false || !in_array($agent_group, $user_groups_aw)) {
+			if ($agent_group === false || !in_array($agent_group, $user_groups_ad)) {
 				continue;
 			}
 			
@@ -155,20 +155,20 @@ if ($delete_downtime_agent === 1) {
 	
 	$id_da = (int) get_parameter ('id_downtime_agent');
 	
-	// Check AW permission on downtime
+	// Check AD permission on downtime
 	$downtime_group = db_get_value('id_group', 'tplanned_downtime', 'id', $id_downtime);
 	
-	if ($downtime_group === false || !in_array($downtime_group, $user_groups_aw)) {
+	if ($downtime_group === false || !in_array($downtime_group, $user_groups_ad)) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access downtime scheduler");
 		require ("general/noaccess.php");
 		return;
 	}
 	
-	// Check AW permission on agent
+	// Check AD permission on agent
 	$agent_group = db_get_value('id_grupo', 'tagente', 'id_agente', $id_agent);
 	
-	if ($agent_group === false || !in_array($agent_group, $user_groups_aw)) {
+	if ($agent_group === false || !in_array($agent_group, $user_groups_ad)) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access downtime scheduler");
 		require ("general/noaccess.php");
@@ -223,8 +223,8 @@ if ($create_downtime || $update_downtime) {
 		$sql = '';
 		if ($create_downtime) {
 			
-			// Check AW permission on new downtime
-			if (!in_array($id_group, $user_groups_aw)) {
+			// Check AD permission on new downtime
+			if (!in_array($id_group, $user_groups_ad)) {
 				db_pandora_audit("ACL Violation",
 					"Trying to access downtime scheduler");
 				require ("general/noaccess.php");
@@ -277,16 +277,16 @@ if ($create_downtime || $update_downtime) {
 		else if ($update_downtime) {
 			$old_downtime = db_get_row('tplanned_downtime', 'id', $id_downtime);
 			
-			// Check AW permission on OLD downtime
-			if (empty($old_downtime) || !in_array($old_downtime['id_group'], $user_groups_aw)) {
+			// Check AD permission on OLD downtime
+			if (empty($old_downtime) || !in_array($old_downtime['id_group'], $user_groups_ad)) {
 				db_pandora_audit("ACL Violation",
 					"Trying to access downtime scheduler");
 				require ("general/noaccess.php");
 				return;
 			}
 			
-			// Check AW permission on NEW downtime group
-			if (!in_array($id_group, $user_groups_aw)) {
+			// Check AD permission on NEW downtime group
+			if (!in_array($id_group, $user_groups_ad)) {
 				db_pandora_audit("ACL Violation",
 					"Trying to access downtime scheduler");
 				require ("general/noaccess.php");
@@ -424,8 +424,8 @@ if ($id_downtime > 0) {
 	
 	$result = db_get_row_sql ($sql);
 	
-	// Permission check for the downtime with the AW user groups
-	if (empty($result) || !in_array($result['id_group'], $user_groups_aw) ){
+	// Permission check for the downtime with the AD user groups
+	if (empty($result) || !in_array($result['id_group'], $user_groups_ad) ){
 		db_pandora_audit("ACL Violation",
 		"Trying to access downtime scheduler");
 		require ("general/noaccess.php");
@@ -472,7 +472,7 @@ $table->data = array ();
 $table->data[0][0] = __('Name');
 $table->data[0][1] = html_print_input_text ('name', $name, '', 25, 40, true, $disabled_in_execution);
 $table->data[1][0] = __('Group');
-$table->data[1][1] = html_print_select_groups(false, "AW", true, 'id_group', $id_group, '', '', 0, true, false, true, '', $disabled_in_execution);
+$table->data[1][1] = html_print_select_groups(false, "AD", true, 'id_group', $id_group, '', '', 0, true, false, true, '', $disabled_in_execution);
 $table->data[2][0] = __('Description');
 $table->data[2][1] = html_print_textarea ('description', 3, 35, $description, '', true);
 
@@ -632,8 +632,8 @@ if ($id_downtime > 0) {
 	
 	$filter_group = (int) get_parameter("filter_group", 0);
 	
-	// User AW groups to str for the filter
-	$id_groups_str = implode(",", $user_groups_aw);
+	// User AD groups to str for the filter
+	$id_groups_str = implode(",", $user_groups_ad);
 	
 	if (empty($id_groups_str)) {
 		// Restrictive filter on error. This will filter all the downtimes
@@ -671,7 +671,7 @@ if ($id_downtime > 0) {
 	
 	echo "<form method=post action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.editor&id_downtime=$id_downtime'>";
 	
-	html_print_select_groups(false, "AW", true, 'filter_group', $filter_group, '', '', '', false, false, true, '', false, 'width:180px');
+	html_print_select_groups(false, "AD", true, 'filter_group', $filter_group, '', '', '', false, false, true, '', false, 'width:180px');
 	
 	echo "<br /><br />";
 	html_print_submit_button (__('Filter by group'), '', false, 'class="sub next"',false);

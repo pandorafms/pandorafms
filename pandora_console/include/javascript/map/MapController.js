@@ -462,7 +462,7 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, step) {
 			var arrow_body_b = arrow_body.node().getBBox();
 			
 			transform.translate[0] = c_elem1[0];
-			transform.translate[1] = c_elem1[1] - arrow_body_b['height'] / 2;
+			transform.translate[1] = c_elem1[1] + arrow_body_b['height'] / 2;
 			transform.rotate = get_angle_of_line(c_elem1, c_elem2);
 			
 			

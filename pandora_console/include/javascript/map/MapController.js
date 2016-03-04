@@ -393,13 +393,15 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, wait) {
 			/*---------------------------------------------*/
 			var arrow_body = arrow_layout.select(".body");
 			var arrow_body_b = arrow_body.node().getBBox();
+			var arrow_body_height = (arrow_body_b['height'] + arrow_body_b['y']);
+			var arrow_body_width = (arrow_body_b['width'] + arrow_body_b['x']);
 			
 			console.log("arrow_body_b", arrow_body_b);
 			
 			transform.translate[0] = c_elem1[0];
 			transform.translate[1] = c_elem1[1];
 			transform.rotate = get_angle_of_line(c_elem1, c_elem2) +
-				" 0 " + (arrow_body_b['height'] / 2);
+				" 0 " + (arrow_body_height / 2);
 			
 			
 			arrow_layout.attr("transform", transform.toString());
@@ -407,14 +409,15 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, wait) {
 			/*---------------------------------------------*/
 			/*-------- Resize the body arrow width --------*/
 			/*---------------------------------------------*/
-			var arrow_body_b = arrow_body.node().getBBox();
 			var arrow_head = arrow_layout.select(".head");
 			var arrow_head_b = arrow_head.node().getBBox();
+			var arrow_head_height = (arrow_head_b['height'] + arrow_head_b['y']);
+			var arrow_head_width = (arrow_head_b['width'] + arrow_head_b['x']);
 			
-			var body_width = distance - arrow_head_b['width'];
+			var body_width = distance - arrow_head_width;
 			
 			transform = d3.transform();
-			transform.scale[0] = body_width / arrow_body_b['width'];
+			transform.scale[0] = body_width / arrow_body_width;
 			
 			arrow_body.attr("transform", transform.toString());
 			
@@ -426,8 +429,8 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, wait) {
 			var arrow_body_t = d3.transform(arrow_body.attr("transform"));
 			
 			var scale = arrow_body_t.scale[0];
-			var x = 0 + arrow_body_b['width'] * scale;
-			var y = 0 + (arrow_body_b['height'] / 2  - arrow_head_b['height'] / 2);
+			var x = 0 + arrow_body_width * scale;
+			var y = 0 + (arrow_body_height / 2  - arrow_head_height / 2);
 			
 			transform.translate[0] = x;
 			transform.translate[1] = y;

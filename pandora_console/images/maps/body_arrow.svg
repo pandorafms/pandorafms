@@ -9,11 +9,15 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
   <symbol id="body_arrow">
 	  <rect
 		vector-effect="non-scaling-stroke"
-         y="0"
-         x="0"
-         height="50"
-         width="100"
-         id="rect27734"
-         style="fill: rgb(255, 255, 0); fill-opacity:1.0;stroke:#00ff00;stroke-width:9.28252983;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         y="10"
+         x="10"
+         height="40"
+         width="90"
+         style="
+         fill:#ff0000;
+         fill-opacity:1;
+         stroke:#00ff00;
+         stroke-width: 20;" />
   </symbol>
+  </defs>
  </svg>

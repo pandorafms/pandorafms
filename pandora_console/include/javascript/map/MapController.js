@@ -467,6 +467,29 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, wait) {
 	}
 }
 
+MapController.prototype.move_arrow = function (id_from_any_point_arrow) {
+	var self = this;
+	
+	var arrows = d3.selectAll(self._target + " .arrow").filter(function(d2) {
+		if (
+			(d3.select(this).attr("data-to") == id_from_any_point_arrow) ||
+			(d3.select(this).attr("data-from") == id_from_any_point_arrow)
+			) {
+			
+			return true;
+		}
+		return false;
+	});
+	
+	arrows.each(function(d) {
+		var id_arrow = d3.select(this).attr("id");
+		var id_node_to = "node_" + d3.select(this).attr("data-to");
+		var id_node_from = "node_" + d3.select(this).attr("data-from");
+		
+		arrow_by_pieces(self._target + " svg", id_arrow, id_node_to, id_node_from, 0);
+	});
+}
+
 /**
 Function init_events
 Return boolean
@@ -524,6 +547,8 @@ MapController.prototype.init_events = function(principalObject) {
 		
 		d3.select(this).attr("transform",
 			"translate(" + x + " " + y + ")");
+		
+		self.move_arrow(d3.select(this).attr("data-graph_id"));
 	}
 	
 	function dragended(d) {

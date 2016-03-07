@@ -385,7 +385,8 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, wait) {
 			//~ console.log("centro", c_elem2, c_elem1);
 			var distance = get_distance_between_point(c_elem1, c_elem2);
 			//~ console.log("distance", distance);
-			
+			var radius_to = parseInt(d3.select("#" + id_node_to).select("circle").attr("r"));
+			var radius_from = parseInt(d3.select("#" + id_node_from).select("circle").attr("r"));
 			var transform = d3.transform();
 		
 			/*---------------------------------------------*/
@@ -396,14 +397,32 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, wait) {
 			var arrow_body_height = (arrow_body_b['height'] + arrow_body_b['y']);
 			var arrow_body_width = (arrow_body_b['width'] + arrow_body_b['x']);
 			
-			console.log("arrow_body_b", arrow_body_b);
-			
-			transform.translate[0] = c_elem1[0];
-			transform.translate[1] = c_elem1[1];
-			transform.rotate = get_angle_of_line(c_elem1, c_elem2) +
-				" 0 " + (arrow_body_height / 2);
-			
-			
+			console.log("c_elem1 (FROM)", c_elem1);
+			console.log("c_elem2 (TO)", c_elem2);
+			if (c_elem1[0] < c_elem2[0]) {
+				transform.translate[0] = c_elem1[0] + radius_from;
+				transform.translate[1] = c_elem1[1] - (arrow_body_height/2);
+				transform.rotate = get_angle_of_line(c_elem1, c_elem2) +
+					" 0 " + (arrow_body_height / 2);
+			}
+			else if (c_elem1[0] > c_elem2[0]) {
+				transform.translate[0] = c_elem1[0] - radius_from;
+				transform.translate[1] = c_elem1[1] - (arrow_body_height/2);
+				transform.rotate = get_angle_of_line(c_elem1, c_elem2) +
+					" 0 " + (arrow_body_height / 2);
+			}
+			else if (c_elem1[1] < c_elem2[1]) {
+				transform.translate[0] = c_elem1[0] + radius_from;
+				transform.translate[1] = c_elem1[1] - (arrow_body_height/2);
+				transform.rotate = get_angle_of_line(c_elem1, c_elem2) +
+					" 0 " + (arrow_body_height / 2);
+			}
+			else if (c_elem1[1] > c_elem2[1]) {
+				transform.translate[0] = c_elem1[0] - radius_from;
+				transform.translate[1] = c_elem1[1] - (arrow_body_height/2);
+				transform.rotate = get_angle_of_line(c_elem1, c_elem2) +
+					" 0 " + (arrow_body_height / 2);
+			}
 			arrow_layout.attr("transform", transform.toString());
 			
 			/*---------------------------------------------*/
@@ -414,7 +433,7 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, wait) {
 			var arrow_head_height = (arrow_head_b['height'] + arrow_head_b['y']);
 			var arrow_head_width = (arrow_head_b['width'] + arrow_head_b['x']);
 			
-			var body_width = distance - arrow_head_width;
+			var body_width = distance - arrow_head_width - radius_to - radius_from;
 			
 			transform = d3.transform();
 			transform.scale[0] = body_width / arrow_body_width;

@@ -424,6 +424,12 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, wait) {
 				transform.rotate = get_angle_of_line(c_elem1, c_elem2) +
 					" 0 " + (arrow_body_height / 2);
 			}
+			else {
+				transform.translate[0] = c_elem1[0];
+				transform.translate[1] = c_elem1[1] - (arrow_body_height/2);
+				transform.rotate = get_angle_of_line(c_elem1, c_elem2) +
+					" 0 " + (arrow_body_height / 2);
+			}
 			arrow_layout.attr("transform", transform.toString());
 			
 			/*---------------------------------------------*/

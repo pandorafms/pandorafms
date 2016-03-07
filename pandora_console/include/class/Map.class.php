@@ -259,6 +259,22 @@ $this->nodes = json_decode('[
 {
 	"graph_id": 403,
 	"type": 2
+},
+{
+	"graph_id": 404,
+	"type": 2
+},
+{
+	"graph_id": 405,
+	"type": 2
+},
+{
+	"graph_id": 406,
+	"type": 2
+},
+{
+	"graph_id": 407,
+	"type": 2
 }
 ]', true);
 
@@ -268,16 +284,28 @@ $this->edges = json_decode(
 {"to":"216","from":"214","graph_id":401},
 {"to":"217","from":"214","graph_id":402},
 {"to":"218","from":"214","graph_id":403}
-
 ]', true);
 
 $this->edges = json_decode(
 '[
-{"to":"218","from":"214","graph_id":400},
-{"to":"217","from":"214","graph_id":401},
-{"to":"216","from":"214","graph_id":402},
-{"to":"215","from":"214","graph_id":403}
+{"to":"219","from":"214","graph_id":404},
+{"to":"220","from":"214","graph_id":405},
+{"to":"221","from":"214","graph_id":406},
+{"to":"222","from":"214","graph_id":407}
 ]', true);
+
+$this->edges = json_decode(
+'[
+{"to":"215","from":"214","graph_id":400},
+{"to":"216","from":"214","graph_id":401},
+{"to":"217","from":"214","graph_id":402},
+{"to":"218","from":"214","graph_id":403},
+{"to":"219","from":"214","graph_id":404},
+{"to":"220","from":"214","graph_id":405},
+{"to":"221","from":"214","graph_id":406},
+{"to":"222","from":"214","graph_id":407}
+]', true);
+
 //~ $this->edges = json_decode('[{"to":"165","from":"166","graph_id":208}]', true);
 		
 		

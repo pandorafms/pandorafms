@@ -47,7 +47,7 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 	}
 
 	if (!empty($user_groups_ids)) {
-		if (is_metaconsole()) {
+		if (is_metaconsole() && (!$user_strict)) {
 			switch ($config["dbtype"]) {
 				case "mysql":
 					$list_groups = db_get_all_rows_sql("
@@ -104,7 +104,7 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 			}
 		}
 	}
-
+	
 	foreach ($list_groups as $group) {
 		$list[$group['id_grupo']]['_name_'] = $group['nombre'];
 		$list[$group['id_grupo']]['_id_'] = $group['id_grupo'];
@@ -247,7 +247,7 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 
 		$list["_server_sanity_"] = format_numeric (100 - $list["_module_sanity_"], 1);
 	}
-	else if (!$user_strict) {
+	else {
 		foreach ($list_groups as $group) {
 			$agent_not_init = agents_get_agents(array (
 				'disabled' => 0,
@@ -360,7 +360,7 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 	return $list;
 }
 
-function groupview_status_modules_agents($id_user = false, $user_strict = false, $access = 'AR', $force_group_and_tag = true) {
+function groupview_status_modules_agents($id_user = false, $user_strict = false, $access = 'AR', $force_group_and_tag = true, $returnAllGroup = false) {
 	global $config;
 
 	if ($id_user == false) {
@@ -376,8 +376,12 @@ function groupview_status_modules_agents($id_user = false, $user_strict = false,
 		$result_list = array ();
 		foreach ($servers as $server) {
 
+			if (metaconsole_connect($server) != NOERR) {
+				continue;
+			}
+
 			$server_list = groupview_get_all_data($id_user, $user_strict,
-				$acltags);
+				$acltags, $returnAllGroup);
 
 			foreach ($server_list as $server_item) {
 				if (! isset ($result_list[$server_item['_name_']])) {
@@ -409,8 +413,9 @@ function groupview_status_modules_agents($id_user = false, $user_strict = false,
 					$result_list[$server_item['_name_']]["_monitor_alerts_fire_count_"] += $server_item["_monitor_alerts_fire_count_"];
 					$result_list[$server_item['_name_']]["_total_checks_"] += $server_item["_total_checks_"];
 					$result_list[$server_item['_name_']]["_total_alerts_"] += $server_item["_total_alerts_"];
-					}
 				}
+			}
+			metaconsole_restore_db();
 		}
 
 		return $result_list;
@@ -576,7 +581,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 			}
 		}
 	}
-
+	
 	if (!$user_strict)
 		$acltags[0] = 0;
 
@@ -588,7 +593,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 	}
 
 	if (!empty($user_groups_ids)) {
-		if (is_metaconsole()) {
+		if (is_metaconsole() && (!$user_strict)) {
 			switch ($config["dbtype"]) {
 				case "mysql":
 					$list_groups = db_get_all_rows_sql("
@@ -710,7 +715,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 
 		$list_groups = $final_list;
 	}
-
+	
 	$list = array();
 	foreach ($list_groups as $group) {
 		$list[$group['id_grupo']]['_name_'] = $group['nombre'];
@@ -855,7 +860,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 
 		$list["_server_sanity_"] = format_numeric (100 - $list["_module_sanity_"], 1);
 	}
-	else if (!$user_strict) {
+	else {
 		foreach ($list_groups as $group) {
 			$agent_not_init = agents_get_agents(array (
 				'disabled' => 0,
@@ -917,7 +922,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 					AND (tae.utimestamp > 0 OR tam.id_tipo_modulo IN(21,22,23,100))
 					GROUP BY estado");
 			$list[$group['id_grupo']]['_monitors_ok_'] = isset ($result_normal['contado']) ? $result_normal['contado'] : 0;
-
+			
 			$result_not_init = db_get_row_sql("SELECT COUNT(*) as contado
 					FROM tagente_estado tae INNER JOIN tagente ta
 						ON tae.id_agente = ta.id_agente

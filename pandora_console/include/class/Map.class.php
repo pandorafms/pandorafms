@@ -274,8 +274,9 @@ $this->edges = json_decode(
 $this->edges = json_decode(
 '[
 {"to":"218","from":"214","graph_id":400},
-{"to":"217","from":"214","graph_id":401}
-
+{"to":"217","from":"214","graph_id":401},
+{"to":"216","from":"214","graph_id":402},
+{"to":"215","from":"214","graph_id":403}
 ]', true);
 //~ $this->edges = json_decode('[{"to":"165","from":"166","graph_id":208}]', true);
 		

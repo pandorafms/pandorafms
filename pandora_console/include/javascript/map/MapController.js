@@ -396,30 +396,31 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, wait) {
 			var arrow_body_b = arrow_body.node().getBBox();
 			var arrow_body_height = (arrow_body_b['height'] + arrow_body_b['y']);
 			var arrow_body_width = (arrow_body_b['width'] + arrow_body_b['x']);
-			
+			console.log("---------------------------");
 			console.log("c_elem1 (FROM)", c_elem1);
 			console.log("c_elem2 (TO)", c_elem2);
-			if (c_elem1[0] < c_elem2[0]) {
+			console.log("---------------------------");
+			if ((c_elem1[0] < c_elem2[0]) && (c_elem1[1] == c_elem2[1])) {
 				transform.translate[0] = c_elem1[0] + radius_from;
 				transform.translate[1] = c_elem1[1] - (arrow_body_height/2);
 				transform.rotate = get_angle_of_line(c_elem1, c_elem2) +
 					" 0 " + (arrow_body_height / 2);
 			}
-			else if (c_elem1[0] > c_elem2[0]) {
+			else if ((c_elem1[0] > c_elem2[0]) && (c_elem1[1] == c_elem2[1])) {
 				transform.translate[0] = c_elem1[0] - radius_from;
 				transform.translate[1] = c_elem1[1] - (arrow_body_height/2);
 				transform.rotate = get_angle_of_line(c_elem1, c_elem2) +
 					" 0 " + (arrow_body_height / 2);
 			}
-			else if (c_elem1[1] < c_elem2[1]) {
-				transform.translate[0] = c_elem1[0] + radius_from;
-				transform.translate[1] = c_elem1[1] - (arrow_body_height/2);
+			else if ((c_elem1[1] < c_elem2[1]) && (c_elem1[0] == c_elem2[0])) {
+				transform.translate[0] = c_elem1[0];
+				transform.translate[1] = c_elem1[1] - (arrow_body_height/2)  + radius_from;
 				transform.rotate = get_angle_of_line(c_elem1, c_elem2) +
 					" 0 " + (arrow_body_height / 2);
 			}
-			else if (c_elem1[1] > c_elem2[1]) {
-				transform.translate[0] = c_elem1[0] - radius_from;
-				transform.translate[1] = c_elem1[1] - (arrow_body_height/2);
+			else if ((c_elem1[1] > c_elem2[1]) && (c_elem1[0] == c_elem2[0])) {
+				transform.translate[0] = c_elem1[0];
+				transform.translate[1] = c_elem1[1] - (arrow_body_height/2)  - radius_from;
 				transform.rotate = get_angle_of_line(c_elem1, c_elem2) +
 					" 0 " + (arrow_body_height / 2);
 			}

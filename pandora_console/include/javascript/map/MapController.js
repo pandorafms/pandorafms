@@ -38,9 +38,9 @@ MapController.prototype._slider = null;
 /*--------------------Methods--------------------*/
 /*-----------------------------------------------*/
 /**
-Function init_map
-Return void
-This function init the map
+* Function init_map
+* Return void
+* This function init the map
 */
 MapController.prototype.init_map = function() {
 	var self = this;
@@ -56,9 +56,9 @@ MapController.prototype.init_map = function() {
 			.attr("class", "viewport");
 	
 	/**
-	Function zoom
-	Return void
-	This function manages the zoom
+	* Function zoom
+	* Return void
+	* This function manages the zoom
 	*/
 	function zoom() {
 		self.close_all_tooltips();
@@ -72,9 +72,9 @@ MapController.prototype.init_map = function() {
 	}
 	
 	/**
-	Function zoom_in
-	Return void
-	This function zoom with "+" button
+	* Function zoom_in
+	* Return void
+	* This function zoom with "+" button
 	*/
 	function zoom_in(d) {
 		var step = parseFloat(self._slider.property("step"));
@@ -89,9 +89,9 @@ MapController.prototype.init_map = function() {
 	}
 	
 	/**
-	Function zoom_out
-	Return void
-	This function zoom with "-" button
+	* Function zoom_out
+	* Return void
+	* This function zoom with "-" button
 	*/
 	function zoom_out(d) {
 		var step = parseFloat(self._slider.property("step"));
@@ -106,18 +106,18 @@ MapController.prototype.init_map = function() {
 	}
 	
 	/**
-	Function home_zoom
-	Return void
-	This function zoom with "H" button (reset zoom)
+	* Function home_zoom
+	* Return void
+	* This function zoom with "H" button (reset zoom)
 	*/
 	function home_zoom(d) {
 		self._zoomManager.scale(1).translate([0, 0]).event(self._viewport);
 	}
 	
 	/**
-	Function slided
-	Return void
-	This function manages the slide (zoom system)
+	* Function slided
+	* Return void
+	* This function manages the slide (zoom system)
 	*/
 	function slided(d) {
 		var slider_value = parseFloat(self._slider.property("value"))
@@ -174,6 +174,11 @@ MapController.prototype.init_map = function() {
 	this.init_events();
 };
 
+/**
+* Function node_from_edge
+* Return node
+* This function returns the node with the specific id_graph
+*/
 MapController.prototype.node_from_edge = function(id_graph) {
 	var exists = null;
 	
@@ -190,6 +195,11 @@ MapController.prototype.node_from_edge = function(id_graph) {
 		return null;
 }
 
+/**
+* Function exists_edge
+* Return bool
+* This function returns if the node exist
+*/
 MapController.prototype.exists_edge = function(id_graph) {
 	var exists = false;
 	
@@ -204,9 +214,9 @@ MapController.prototype.exists_edge = function(id_graph) {
 }
 
 /**
-Function paint_nodes
-Return void
-This function paint the nodes
+* Function paint_nodes
+* Return void
+* This function paint the nodes
 */
 MapController.prototype.paint_nodes = function() {
 	self = this;
@@ -234,9 +244,7 @@ MapController.prototype.paint_nodes = function() {
 					.append("circle")
 						.attr("style", "fill: rgb(50, 50, 128);")
 						.attr("r", "15");
-	
-	
-	
+
 	var arrow_layouts = self._viewport.selectAll(".arrow")
 		.data(
 			nodes
@@ -261,9 +269,13 @@ MapController.prototype.paint_nodes = function() {
 				.attr("data-from", function(d) {
 					return self.node_from_edge(d['graph_id'])["from"];});
 
-	
 	create_arrow(arrow_layouts);
 	
+	/**
+	* Function create_arrow
+	* Return void
+	* This function creates the arrow
+	*/
 	function create_arrow(arrow_layouts) {
 		
 		arrow_layouts.each(function(d) {
@@ -298,9 +310,242 @@ MapController.prototype.paint_nodes = function() {
 			arrow_by_pieces(self._target + " svg", id_arrow, id_node_to, id_node_from);
 		});
 	}
-	
 }
 
+/**
+* Function move_arrow
+* Return void
+* This function moves the arrow
+*/
+MapController.prototype.move_arrow = function (id_from_any_point_arrow) {
+	var self = this;
+	
+	var arrows = d3.selectAll(self._target + " .arrow").filter(function(d2) {
+		if (
+			(d3.select(this).attr("data-to") == id_from_any_point_arrow) ||
+			(d3.select(this).attr("data-from") == id_from_any_point_arrow)
+			) {
+			
+			return true;
+		}
+		return false;
+	});
+	
+	arrows.each(function(d) {
+		var id_arrow = d3.select(this).attr("id");
+		var id_node_to = "node_" + d3.select(this).attr("data-to");
+		var id_node_from = "node_" + d3.select(this).attr("data-from");
+		
+		arrow_by_pieces(self._target + " svg", id_arrow, id_node_to, id_node_from, 0);
+	});
+}
+
+/**
+* Function init_events
+* Return boolean
+* This function init click events in the map
+*/
+MapController.prototype.init_events = function(principalObject) {
+	self = this;
+	
+	$(this._target + " svg *, " + this._target + " svg")
+		.off("mousedown", {map: this}, this.click_event);
+
+	d3.selectAll(".node")
+		.on("mouseover", function(d) {
+			d3.select("#node_" + d['graph_id'])
+				.select("circle")
+				.attr("style", "fill: rgb(128, 50, 50);");
+		})
+		.on("mouseout", function(d) {
+			d3.select("#node_" + d['graph_id'])
+				.select("circle")
+				.attr("style", "fill: rgb(50, 50, 128);");
+		})
+		.on("click", function(d) {
+			if (d3.event.button != 0) {
+				d3.event.stopPropagation();
+				d3.event.preventDefault();
+			}
+
+			if (d3.event.defaultPrevented) return;
+			
+			self.tooltip_map_create(self, this);
+		});
+	
+	var drag = d3.behavior.drag()
+		.origin(function(d) { return d; })
+		.on("dragstart", dragstarted)
+		.on("drag", dragged)
+		.on("dragend", dragended);
+	
+	d3.selectAll(".draggable").call(drag);
+	
+	/**
+	* Function dragstarted
+	* Return void
+	*/
+	function dragstarted(d) {
+		if (d3.event.sourceEvent.button == 0) {
+			d3.event.sourceEvent.stopPropagation();
+			d3.event.sourceEvent.preventDefault();
+		}
+		
+		if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
+			$("#node_" + d['graph_id']).tooltipster('destroy');
+		}
+		
+		d3.select(this).classed("dragging", true);
+	}
+	
+	/**
+	* Function dragged
+	* Return void
+	*/
+	function dragged(d) {
+		var delta_x = d3.event.dx;
+		var delta_y = d3.event.dy;
+		
+		var translation = d3.transform(d3.select(this).attr("transform"));
+		scale = 1;
+		var x = translation.translate[0] + delta_x;
+		var y = translation.translate[1] + delta_y;
+		
+		d3.select(this).attr("transform",
+			"translate(" + x + " " + y + ")");
+		
+		self.move_arrow(d3.select(this).attr("data-graph_id"));
+	}
+	
+	/**
+	* Function dragended
+	* Return void
+	*/
+	function dragended(d) {
+		d3.select(this).classed("dragging", false);
+		
+		if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
+			$("#node_" + d['graph_id']).tooltipster('destroy');
+		}
+	}
+}
+
+/**
+* Function tooltip_map_create
+* Return void
+* This function manages nodes tooltips
+*/
+MapController.prototype.tooltip_map_create = function(self, target) {
+	var nodeTarget = $(target);
+	var spinner = $('#spinner_tooltip').html();
+	
+	var nodeR = parseInt($("circle", nodeTarget).attr("r"));
+	nodeR = nodeR * self._zoomManager.scale(); // Apply zoom
+	var node_id = nodeTarget.attr("id");
+	
+	var type = parseInt(nodeTarget.data("type"));
+	var data_id = parseInt(nodeTarget.data("id"));
+	var data_graph_id = parseInt(nodeTarget.data("graph_id"));
+	
+	nodeTarget.tooltipster({
+		arrow: true,
+		trigger: 'click',
+		contentAsHTML: true,
+		autoClose: false,
+		offsetX: nodeR,
+		theme: 'tooltipster-noir',
+		multiple: true,
+		interactive: true,
+		content: spinner,
+		restoration: 'none',
+		functionBefore: function(origin, continueTooltip) {
+			continueTooltip();
+			self.nodeData(data_id, type, self._id, data_graph_id, origin, node_id);
+		}
+	});
+	
+	nodeTarget.tooltipster("show");
+}
+
+/**
+* Function close_all_tooltips
+* Return void
+* This function hide nodes tooltips
+*/
+MapController.prototype.close_all_tooltips = function() {
+	$("svg .tooltipstered").tooltipster("destroy");
+}
+
+/**
+* Function nodeData
+* Return array(data)
+* This function returns the data of the node
+*/
+MapController.prototype.nodeData = function(data_id, type, id_map, data_graph_id, origin, node_id) {
+	var params = {};
+	params["getNodeData"] = 1;
+	params["id_node_data"] = data_id;
+	params["type"] = type;
+	params["id_map"] = id_map;
+	params["data_graph_id"] = data_graph_id;
+	params["node_id"] = node_id;
+	params["page"] = "include/ajax/map.ajax";
+	
+	jQuery.ajax ({
+		data: params,
+		dataType: "json",
+		type: "POST",
+		url: "ajax.php",
+		success: function (data) {
+			if ($(origin).hasClass("tooltipstered")) {
+				origin.tooltipster('content', data);
+			}
+		}
+	});
+}
+
+/*-----------------------------------------------*/
+/*-------------------Functions-------------------*/
+/*-----------------------------------------------*/
+/**
+* Function open_in_another_window
+* Return void
+* This function open the node in extra window
+*/
+function open_in_another_window(link) {
+	window.open(link);
+}
+
+/**
+* Function close_button_tooltip
+* Return void
+* This function manages "close" button from tooltips
+*/
+function close_button_tooltip(data_graph_id) {
+	$("#node_" + data_graph_id).tooltipster("destroy");
+}
+
+/**
+* Function tooltip_to_new_window
+* Return void
+* This function manages "open in new wondow" button from tooltips
+*/
+function tooltip_to_new_window(data_graph_id) {
+	var content = $("#tooltip_" + data_graph_id + " .body").html();
+	
+	$("#node_" + data_graph_id).tooltipster("destroy");
+	
+	var window_popup = window.open("", "window_" + data_graph_id,
+		'title=MIERDACA, width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no');
+	
+	$(window_popup.document.body).html(content);
+}
+
+/**
+* Function get_distance_between_point
+* Return float
+* This function returns the distance between two nodes
+*/
 function get_distance_between_point(point1, point2) {
 	var delta_x = Math.abs(point1[0] - point2[0]);
 	var delta_y = Math.abs(point1[1] - point2[1]);
@@ -309,6 +554,11 @@ function get_distance_between_point(point1, point2) {
 		Math.pow(delta_x, 2) + Math.pow(delta_y, 2));
 }
 
+/**
+* Function get_center_element
+* Return array[x, y]
+* This function returns the center of the node
+*/
 function get_center_element(element) {
 	var element_t = d3.transform(d3.select(element).attr("transform"));
 	var element_t_scale = parseFloat(element_t['scale']);
@@ -328,16 +578,31 @@ function get_center_element(element) {
 	return [c_x, c_y];
 }
 
+/**
+* Function get_angle_of_line
+* Return float
+* This function returns the angle between two lines (center node to another node)
+*/
 function get_angle_of_line(point1, point2) {
 	return Math.atan2(point2[1] - point1[1], point2[0] - point1[0]) * 180 / Math.PI;
 }
 
+/**
+* Function getBBox_Symbol
+* Return BBox
+* This function returns bbox of the symbol
+*/
 function getBBox_Symbol(target, symbol) {
 	var base64symbol = btoa(symbol).replace(/=/g, "");
 	
 	return d3.select(target + " #" + base64symbol).node().getBBox();
 }
 
+/**
+* Function get_size_element
+* Return array[width, height]
+* This function returns the size of the element
+*/
 function get_size_element(element) {
 	var element_b = d3.select(element).node().getBBox();
 	
@@ -345,6 +610,11 @@ function get_size_element(element) {
 	return [element_b['width'], element_b['height']];
 }
 
+/**
+* Function get_radius_element
+* Return void
+* This function returns the element radius
+*/
 function get_radius_element(element) {
 	var size = get_size_element(element);
 	
@@ -352,6 +622,11 @@ function get_radius_element(element) {
 		Math.pow(size[0] / 2, 2) + Math.pow(size[1] / 2, 2));
 }
 
+/**
+* Function arrow_by_pieces
+* Return void
+* This function print the arrow by pieces (3 steps)
+*/
 function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, wait) {
 	
 	if (typeof(wait) === "undefined")
@@ -370,6 +645,9 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, wait) {
 		.select(target +" #" + id_arrow);
 	
 	switch (wait) {
+		/*---------------------------------------------*/
+		/*-------- Preload head and body arrow --------*/
+		/*---------------------------------------------*/
 		case 1:
 			arrow_layout = arrow_layout.append("g")
 				.attr("class", "arrow_position_rotation")
@@ -400,12 +678,14 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, wait) {
 						});
 					});
 			break;
+		/*---------------------------------------------*/
+		/*---- Print head and body arrow by steps -----*/
+		/*---------------------------------------------*/
 		case 0:
 			var c_elem2 = get_center_element(target +" #" + id_node_to);
 			var c_elem1 = get_center_element(target +" #" + id_node_from);
-			//~ console.log("centro", c_elem2, c_elem1);
+
 			var distance = get_distance_between_point(c_elem1, c_elem2);
-			//~ console.log("distance", distance);
 			
 			var radius_to = parseFloat(get_radius_element("#" + id_node_to));
 			var radius_from = parseFloat(get_radius_element("#" + id_node_from));
@@ -467,209 +747,4 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, wait) {
 			arrow_layout.attr("style", "opacity: 1");
 			break;
 	}
-}
-
-MapController.prototype.move_arrow = function (id_from_any_point_arrow) {
-	var self = this;
-	
-	var arrows = d3.selectAll(self._target + " .arrow").filter(function(d2) {
-		if (
-			(d3.select(this).attr("data-to") == id_from_any_point_arrow) ||
-			(d3.select(this).attr("data-from") == id_from_any_point_arrow)
-			) {
-			
-			return true;
-		}
-		return false;
-	});
-	
-	arrows.each(function(d) {
-		var id_arrow = d3.select(this).attr("id");
-		var id_node_to = "node_" + d3.select(this).attr("data-to");
-		var id_node_from = "node_" + d3.select(this).attr("data-from");
-		
-		arrow_by_pieces(self._target + " svg", id_arrow, id_node_to, id_node_from, 0);
-	});
-}
-
-/**
-Function init_events
-Return boolean
-This function init click events in the map
-*/
-MapController.prototype.init_events = function(principalObject) {
-	self = this;
-	
-	$(this._target + " svg *, " + this._target + " svg")
-		.off("mousedown", {map: this}, this.click_event);
-
-	d3.selectAll(".node")
-		.on("mouseover", function(d) {
-			d3.select("#node_" + d['graph_id'])
-				.select("circle")
-				.attr("style", "fill: rgb(128, 50, 50);");
-		})
-		.on("mouseout", function(d) {
-			d3.select("#node_" + d['graph_id'])
-				.select("circle")
-				.attr("style", "fill: rgb(50, 50, 128);");
-		})
-		.on("click", function(d) {
-			if (d3.event.button != 0) {
-				d3.event.stopPropagation();
-				d3.event.preventDefault();
-			}
-
-			if (d3.event.defaultPrevented) return;
-			
-			self.tooltip_map_create(self, this);
-		});
-	
-	var drag = d3.behavior.drag()
-		.origin(function(d) { return d; })
-		.on("dragstart", dragstarted)
-		.on("drag", dragged)
-		.on("dragend", dragended);
-	
-	d3.selectAll(".draggable").call(drag);
-	
-	function dragstarted(d) {
-		if (d3.event.sourceEvent.button == 0) {
-			d3.event.sourceEvent.stopPropagation();
-			d3.event.sourceEvent.preventDefault();
-		}
-		
-		if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
-			$("#node_" + d['graph_id']).tooltipster('destroy');
-		}
-		
-		d3.select(this).classed("dragging", true);
-	}
-	
-	function dragged(d) {
-		var delta_x = d3.event.dx;
-		var delta_y = d3.event.dy;
-		
-		var translation = d3.transform(d3.select(this).attr("transform"));
-		scale = 1;
-		var x = translation.translate[0] + delta_x;
-		var y = translation.translate[1] + delta_y;
-		
-		d3.select(this).attr("transform",
-			"translate(" + x + " " + y + ")");
-		
-		self.move_arrow(d3.select(this).attr("data-graph_id"));
-	}
-	
-	function dragended(d) {
-		d3.select(this).classed("dragging", false);
-		
-		if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
-			$("#node_" + d['graph_id']).tooltipster('destroy');
-		}
-	}
-}
-
-/**
-Function tooltip_map_create
-Return void
-This function manages nodes tooltips
-*/
-MapController.prototype.tooltip_map_create = function(self, target) {
-	var nodeTarget = $(target);
-	var spinner = $('#spinner_tooltip').html();
-	
-	var nodeR = parseInt($("circle", nodeTarget).attr("r"));
-	nodeR = nodeR * self._zoomManager.scale(); // Apply zoom
-	var node_id = nodeTarget.attr("id");
-	
-	var type = parseInt(nodeTarget.data("type"));
-	var data_id = parseInt(nodeTarget.data("id"));
-	var data_graph_id = parseInt(nodeTarget.data("graph_id"));
-	
-	nodeTarget.tooltipster({
-		arrow: true,
-		trigger: 'click',
-		contentAsHTML: true,
-		autoClose: false,
-		offsetX: nodeR,
-		theme: 'tooltipster-noir',
-		multiple: true,
-		interactive: true,
-		content: spinner,
-		restoration: 'none',
-		functionBefore: function(origin, continueTooltip) {
-			continueTooltip();
-			self.nodeData(data_id, type, self._id, data_graph_id, origin, node_id);
-		}
-	});
-	
-	nodeTarget.tooltipster("show");
-}
-
-/**
-Function close_all_tooltips
-Return void
-This function hide nodes tooltips
-*/
-MapController.prototype.close_all_tooltips = function() {
-	$("svg .tooltipstered").tooltipster("destroy");
-}
-
-/**
-Function nodeData
-Return array(data)
-This function returns the data of the node
-*/
-MapController.prototype.nodeData = function(data_id, type, id_map, data_graph_id, origin, node_id) {
-	var params = {};
-	params["getNodeData"] = 1;
-	params["id_node_data"] = data_id;
-	params["type"] = type;
-	params["id_map"] = id_map;
-	params["data_graph_id"] = data_graph_id;
-	params["node_id"] = node_id;
-	params["page"] = "include/ajax/map.ajax";
-	
-	jQuery.ajax ({
-		data: params,
-		dataType: "json",
-		type: "POST",
-		url: "ajax.php",
-		success: function (data) {
-			if ($(origin).hasClass("tooltipstered")) {
-				origin.tooltipster('content', data);
-			}
-		}
-	});
-}
-
-/*-----------------------------------------------*/
-/*-------------------Functions-------------------*/
-/*-----------------------------------------------*/
-
-/**
-Function open_in_another_window
-Return void
-This function open the node in extra window
-*/
-function open_in_another_window(link) {
-	window.open(link);
-}
-
-function close_button_tooltip(data_graph_id) {
-	$("#node_" + data_graph_id).tooltipster("destroy");
-}
-
-caca = null;
-
-function tooltip_to_new_window(data_graph_id) {
-	var content = $("#tooltip_" + data_graph_id + " .body").html();
-	
-	$("#node_" + data_graph_id).tooltipster("destroy");
-	
-	var window_popup = window.open("", "window_" + data_graph_id,
-		'title=MIERDACA, width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no');
-	
-	$(window_popup.document.body).html(content);
 }

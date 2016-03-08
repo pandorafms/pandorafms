@@ -156,7 +156,10 @@ MapController.prototype.init_map = function() {
 		.property("step", Math.log(MAX_ZOOM_LEVEL) * 2 / MAX_ZOOM_LEVEL)
 		.on("input", slided);
 	
-	
+	$("svg").on("contextmenu", function() {
+        return false;
+    });
+
 	d3.select("#map .zoom_box .home_zoom")
 		.on("click", home_zoom);
 	
@@ -165,8 +168,7 @@ MapController.prototype.init_map = function() {
 	
 	d3.select("#map .zoom_box .zoom_out")
 		.on("click", zoom_out);
-	
-	
+
 	self.paint_nodes();
 	
 	this.init_events();
@@ -513,6 +515,11 @@ MapController.prototype.init_events = function(principalObject) {
 				.attr("style", "fill: rgb(50, 50, 128);");
 		})
 		.on("click", function(d) {
+			if (d3.event.button != 0) {
+				d3.event.stopPropagation();
+				d3.event.preventDefault();
+			}
+
 			if (d3.event.defaultPrevented) return;
 			
 			self.tooltip_map_create(self, this);
@@ -527,7 +534,10 @@ MapController.prototype.init_events = function(principalObject) {
 	d3.selectAll(".draggable").call(drag);
 	
 	function dragstarted(d) {
-		d3.event.sourceEvent.stopPropagation();
+		if (d3.event.sourceEvent.button == 0) {
+			d3.event.sourceEvent.stopPropagation();
+			d3.event.sourceEvent.preventDefault();
+		}
 		
 		if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
 			$("#node_" + d['graph_id']).tooltipster('destroy');

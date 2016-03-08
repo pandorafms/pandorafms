@@ -165,7 +165,7 @@ if (is_ajax ()) {
 			$nameAgents = array();
 		
 		foreach ($nameAgents as $nameAgent) {
-			$names[] = $nameAgent['name'];
+			$names[] = io_safe_output($nameAgent['name']);
 		}
 		
 		echo json_encode($names);

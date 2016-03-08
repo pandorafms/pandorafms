@@ -233,6 +233,8 @@ if ($id_agent != 0) {
 		$text_agent =  '';
 		$id_agent = 0;
 	}
+} else {
+	$text_agent = '';
 }
 
 
@@ -243,6 +245,8 @@ if ($id_agent_module != 0) {
 	if ($text_module == false) {
 		$text_module = '';
 	}
+} else {
+	$text_module = '';
 }
 
 

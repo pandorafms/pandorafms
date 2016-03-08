@@ -353,6 +353,21 @@ MapController.prototype.move_arrow = function (id_from_any_point_arrow) {
 MapController.prototype.init_events = function(principalObject) {
 	self = this;
 	
+	var node_menu = [
+		{
+			title: 'Ejemplo 1',
+			action: function(elm, d, i) {
+				console.log('Primer elemento!!');
+			}
+		},
+		{
+			title: 'Ejemplo 1',
+			action: function(elm, d, i) {
+				console.log('Segundo elemento!!');
+			}
+		}
+	]
+
 	$(this._target + " svg *, " + this._target + " svg")
 		.off("mousedown", {map: this}, this.click_event);
 
@@ -376,7 +391,8 @@ MapController.prototype.init_events = function(principalObject) {
 			if (d3.event.defaultPrevented) return;
 			
 			self.tooltip_map_create(self, this);
-		});
+		})
+		.on("contextmenu", d3.contextMenu(node_menu));
 	
 	var drag = d3.behavior.drag()
 		.origin(function(d) { return d; })

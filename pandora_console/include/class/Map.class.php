@@ -59,6 +59,7 @@ abstract class Map {
 		$this->requires_js[] = "include/javascript/jquery.tooltipster.js";
 		$this->requires_js[] = "include/javascript/jquery.svg.js";
 		$this->requires_js[] = "include/javascript/jquery.svgdom.js";
+		$this->requires_js[] = "include/javascript/d3-context-menu.js";
 		
 		if (!$this->loadDB()) {
 			$this->status = STATUS_ERROR;
@@ -358,6 +359,7 @@ $this->edges = json_decode(
 		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"include/styles/tooltipster-shadow.css\"/>" . "\n";
 		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"include/styles/tooltipster-noir.css\"/>" . "\n";
 		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"include/styles/tooltipster-light.css\"/>" . "\n";
+		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"include/styles/d3-context-menu.css\"/>" . "\n";
 		//Tooltips spinner
 		echo "<div id='spinner_tooltip' style='display:none;'>";
 			html_print_image('images/spinner.gif');

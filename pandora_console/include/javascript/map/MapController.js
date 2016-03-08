@@ -155,10 +155,6 @@ MapController.prototype.init_map = function() {
 		.property("max", Math.log(MAX_ZOOM_LEVEL))
 		.property("step", Math.log(MAX_ZOOM_LEVEL) * 2 / MAX_ZOOM_LEVEL)
 		.on("input", slided);
-	
-	$("svg").on("contextmenu", function() {
-        return false;
-    });
 
 	d3.select("#map .zoom_box .home_zoom")
 		.on("click", home_zoom);
@@ -168,7 +164,6 @@ MapController.prototype.init_map = function() {
 	
 	d3.select("#map .zoom_box .zoom_out")
 		.on("click", zoom_out);
-	
 	
 	self.paint_nodes();
 	
@@ -355,18 +350,35 @@ MapController.prototype.init_events = function(principalObject) {
 	
 	var node_menu = [
 		{
-			title: 'Ejemplo 1',
+			title: 'Show details',
 			action: function(elm, d, i) {
-				console.log('Primer elemento!!');
+				self.openNodeDetais(self, elm);
 			}
 		},
 		{
-			title: 'Ejemplo 1',
+			title: 'Edit',
 			action: function(elm, d, i) {
-				console.log('Segundo elemento!!');
+				console.log('Edit node!!');
+			}
+		},
+		{
+			title: 'Delete',
+			action: function(elm, d, i) {
+				console.log('Delete node!!');
 			}
 		}
-	]
+	];
+
+	var map_menu = [
+		{
+			title: 'Edit map',
+			action: function(elm, d, i) {
+				console.log('Edit map!!');
+			}
+		}
+	];
+
+	d3.select("#map").on("contextmenu", d3.contextMenu(map_menu));
 
 	$(this._target + " svg *, " + this._target + " svg")
 		.off("mousedown", {map: this}, this.click_event);
@@ -486,6 +498,50 @@ MapController.prototype.tooltip_map_create = function(self, target) {
 	});
 	
 	nodeTarget.tooltipster("show");
+}
+
+/**
+* Function openNodeDetais
+* Return void
+* This function shows node details in extra window
+*/
+MapController.prototype.openNodeDetais = function(self, target) {
+	var nodeTarget = $(target);
+	
+	var type = parseInt(nodeTarget.data("type"));
+	var data_id = parseInt(nodeTarget.data("id"));
+	var data_graph_id = parseInt(nodeTarget.data("graph_id"));
+	var node_id = nodeTarget.attr("id");
+
+	var link = self.nodeGetDetails(data_id, type, self._id, data_graph_id, node_id);
+
+	//window.open(link);
+}
+
+/**
+* Function nodeGetDetails
+* Return link
+* This function returns a link with node details
+*/
+MapController.prototype.nodeGetDetails = function(data_id, type, id_map, data_graph_id, node_id) {
+	var params = {};
+	params["getNodeDetails"] = 1;
+	params["id_node_data"] = data_id;
+	params["type"] = type;
+	params["id_map"] = id_map;
+	params["data_graph_id"] = data_graph_id;
+	params["node_id"] = node_id;
+	params["page"] = "include/ajax/map.ajax";
+	
+	jQuery.ajax ({
+		data: params,
+		dataType: "json",
+		type: "POST",
+		url: "ajax.php",
+		success: function (data) {
+			window.open(data);
+		}
+	});
 }
 
 /**

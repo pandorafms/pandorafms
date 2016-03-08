@@ -24,6 +24,7 @@ if (is_ajax ()) {
 	
 	
 	$getNodeData = (bool)get_parameter('getNodeData', 0);
+	$getNodeDetails = (bool)get_parameter('getNodeDetails', 0);
 	
 	if ($getNodeData) {
 		$id_node_data = (int)get_parameter('id_node_data');
@@ -106,7 +107,6 @@ if (is_ajax ()) {
 					$return_data);
 				break;
 			case ITEM_TYPE_MODULE_NETWORKMAP:
-
 				$node_data = db_get_all_rows_sql("SELECT descripcion
 													FROM tagente_modulo
 													WHERE id_agente_modulo = " . $id_node_data);
@@ -148,6 +148,114 @@ if (is_ajax ()) {
 		
 		sleep(1);
 		echo json_encode($return_data);
+		return;
+	}
+	else if ($getNodeDetails) {
+		$id_node_data = (int)get_parameter('id_node_data');
+		$type = (int)get_parameter('type');
+		$id_map = (int)get_parameter('id_map');
+		$data_graph_id = (int)get_parameter('data_graph_id');
+		$node_id = get_parameter('node_id');
+
+		switch ($type) {
+			case ITEM_TYPE_AGENT_NETWORKMAP:
+				$details = str_replace(
+					"{data_graph_id}",
+					$data_graph_id,
+					$details);
+				$details = str_replace(
+					"{node_id}",
+					$node_id,
+					$details);
+				$details = str_replace(
+					"{title}",
+					agents_get_name($id_node_data),
+					$details);
+				
+				
+				$agent_group = groups_get_name(
+					db_get_value('id_grupo', 'tagente', 'id_agente', $id_node_data));
+				
+				ob_start();
+				?>
+				<span>
+					<strong><?php echo __('IP Address');?>: </strong>
+					<?php echo agents_get_address($id_node_data);?>
+				</span><br />
+				<span>
+					<strong><?php echo __('OS');?>: </strong>
+					<?php echo os_get_name(agents_get_os($id_node_data));?>
+				</span><br />
+				<span>
+					<strong><?php echo __('Description');?>: </strong>
+					<?php echo db_get_value('comentarios', 'tagente', 'id_agente', $id_node_data);?>
+				</span> <br/>
+				<span>
+					<strong><?php echo __('Group');?>: </strong>
+					<?php echo $agent_group;?>
+				</span><br />
+				<span>
+					<strong><?php echo __('Agent Version');?>: </strong>
+					<?php echo db_get_value('agent_version', 'tagente', 'id_agente', $id_node_data);?>
+				</span><br />
+				<span>
+					<strong><?php echo __('Last Contact');?>: </strong>
+					<?php echo db_get_value('ultimo_contacto', 'tagente', 'id_agente', $id_node_data);?>
+				</span><br />
+				<span>
+					<strong><?php echo __('Remote');?>: </strong>
+					<?php echo db_get_value('ultimo_contacto_remoto', 'tagente', 'id_agente', $id_node_data);?>
+				</span>
+				<?php
+				$body = ob_get_clean();
+				
+				$details = str_replace(
+					"{body}",
+					$body,
+					$details);
+
+				break;
+			case ITEM_TYPE_MODULE_NETWORKMAP:
+				$node_data = db_get_all_rows_sql("SELECT descripcion
+													FROM tagente_modulo
+													WHERE id_agente_modulo = " . $id_node_data);
+
+				$node_data = $node_data[0];
+
+				$details = str_replace(
+					"{data_graph_id}",
+					$data_graph_id,
+					$details);
+				$details = str_replace(
+					"{node_id}",
+					$node_id,
+					$details);
+				$details = str_replace(
+					"{title}",
+					modules_get_agentmodule_name($id_node_data),
+					$details);
+
+				ob_start();
+				?>
+				<span>
+					<strong><?php echo __('Agent Name');?>: </strong>
+					<?php echo agents_get_name(modules_get_agentmodule_agent($id_node_data));?>
+				</span> <br/>
+				<span>
+					<strong><?php echo __('Description');?>: </strong>
+					<?php echo db_get_value('descripcion', 'tagente_modulo', 'id_agente_modulo', $id_node_data);?>
+				</span> <br/>
+				<?php
+				$body = ob_get_clean();
+
+				$details = str_replace(
+					"{body}",
+					$body,
+					$details);
+				break;
+		}
+
+		echo json_encode($details);
 		return;
 	}
 

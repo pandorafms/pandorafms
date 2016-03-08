@@ -157,6 +157,19 @@ if (is_ajax ()) {
 		$data_graph_id = (int)get_parameter('data_graph_id');
 		$node_id = get_parameter('node_id');
 
+		ob_start();
+		?>
+		<div id="tooltip_{data_graph_id}">
+			<div class="title_bar">
+				<span class="title">{title}</span>
+			</div>
+			<div class="body">
+				{body}
+			</div>
+		</div>
+		<?php
+		$details = ob_get_clean();
+
 		switch ($type) {
 			case ITEM_TYPE_AGENT_NETWORKMAP:
 				$details = str_replace(

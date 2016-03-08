@@ -539,7 +539,7 @@ MapController.prototype.nodeGetDetails = function(data_id, type, id_map, data_gr
 		type: "POST",
 		url: "ajax.php",
 		success: function (data) {
-			window.open(data);
+			console.log(data);
 		}
 	});
 }

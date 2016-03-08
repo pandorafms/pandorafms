@@ -168,7 +168,8 @@ MapController.prototype.init_map = function() {
 	
 	d3.select("#map .zoom_box .zoom_out")
 		.on("click", zoom_out);
-
+	
+	
 	self.paint_nodes();
 	
 	this.init_events();
@@ -244,7 +245,9 @@ MapController.prototype.paint_nodes = function() {
 					.append("circle")
 						.attr("style", "fill: rgb(50, 50, 128);")
 						.attr("r", "15");
-
+	
+	
+	
 	var arrow_layouts = self._viewport.selectAll(".arrow")
 		.data(
 			nodes
@@ -268,7 +271,8 @@ MapController.prototype.paint_nodes = function() {
 					return self.node_from_edge(d['graph_id'])["to"];})
 				.attr("data-from", function(d) {
 					return self.node_from_edge(d['graph_id'])["from"];});
-
+	
+	
 	create_arrow(arrow_layouts);
 	
 	/**
@@ -310,6 +314,7 @@ MapController.prototype.paint_nodes = function() {
 			arrow_by_pieces(self._target + " svg", id_arrow, id_node_to, id_node_from);
 		});
 	}
+	
 }
 
 /**

@@ -39,6 +39,8 @@ abstract class Map {
 	
 	protected $requires_js = null;
 	
+	protected $is_buggy_firefox = false;
+	
 	public static function getName($id = null) {
 		if (empty($id)) {
 			return null;
@@ -96,11 +98,6 @@ abstract class Map {
 	abstract function printJSInit();
 	
 	public function writeJSGraph() {
-		html_debug_print($this->nodes, true);
-		html_debug_print($this->edges, true);
-		html_debug_print(json_encode($this->nodes), true);
-		html_debug_print("", true);
-		html_debug_print(json_encode($this->edges), true);
 		
 $this->nodes = json_decode('[
 {
@@ -333,6 +330,27 @@ $this->edges = json_decode(
 		<?php
 	}
 	
+	private function check_browser() {
+		global $config;
+		
+		$browser = get_browser_local(null, true, $config['homedir'] . '/include/browscap/php_browscap.ini');
+		
+		switch ($browser['browser']) {
+			case 'Firefox':
+				// Firefox BUG
+				// https://bugzilla.mozilla.org/show_bug.cgi?id=1254159
+				
+				$this->is_buggy_firefox = true;
+				break;
+			case 'Microsoft':
+				// Do install a GNU/Linux.
+				break;
+			default:
+				// The world is a wonderful place.
+				break;
+		}
+	}
+	
 	public function show() {
 		// Tooltip css
 		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"include/styles/tooltipster.css\"/>" . "\n";
@@ -348,7 +366,9 @@ $this->edges = json_decode(
 			echo "<script type='text/javascript' src='$js'></script>" . "\n";
 		}
 		
-		$this->writeJSContants();
+		$this->check_browser();
+		
+		$this->writeJSConstants();
 		$this->writeJSGraph();
 		
 		?>
@@ -507,8 +527,13 @@ $this->edges = json_decode(
 			else {
 				$height = $this->height . "px";
 			}
+			
+			
 			?>
-			<svg xmlns="http://www.w3.org/2000/svg" pointer-events="all" width="<?php echo $width;?>" height="<?php echo $height;?>">
+			<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" pointer-events="all" width="<?php echo $width;?>" height="<?php echo $height;?>">
+			<?php
+			$this->embedded_symbols_for_firefox();
+			?>
 			</svg>
 		</div>
 		
@@ -516,7 +541,36 @@ $this->edges = json_decode(
 		$this->printJSInit();
 	}
 	
-	public function writeJSContants() {
+	private function embedded_symbols_for_firefox() {
+		global $config;
+		
+		if ($this->is_buggy_firefox) {
+			echo "<defs>";
+			// Firefox BUG
+			// https://bugzilla.mozilla.org/show_bug.cgi?id=1254159
+			
+			$this->is_buggy_firefox = true;
+			
+			$dir_string = $config['homedir'] . '/images/maps/';
+			if ($dir = opendir($dir_string)) {
+				
+				while (false !== ($file = readdir($dir))) {
+					if (is_file($dir_string . $file)) {
+						$xml = simplexml_load_file($dir_string . $file);
+						$xml->registerXPathNamespace("x", "http://www.w3.org/2000/svg");
+						
+						$symbols = $xml->xpath("//x:symbol");
+						//~ $symbols = $symbols->xpath("//symbol");
+						echo $symbols[0]->asXML();
+					}
+				}
+				closedir($dir);
+			}
+			echo "</defs>";
+		}
+	}
+	
+	public function writeJSConstants() {
 		$contants = array();
 		$contants["ITEM_TYPE_AGENT_NETWORKMAP"] = ITEM_TYPE_AGENT_NETWORKMAP;
 		$contants["ITEM_TYPE_MODULE_NETWORKMAP"] = ITEM_TYPE_MODULE_NETWORKMAP;
@@ -527,6 +581,7 @@ $this->edges = json_decode(
 			foreach ($contants as $name => $value) {
 				echo "var $name = $value \n";
 			}
+			echo "var is_buggy_firefox = " . ((int)$this->is_buggy_firefox) . ";\n";
 			?>
 		</script>
 		<?php

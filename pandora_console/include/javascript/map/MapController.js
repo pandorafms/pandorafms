@@ -398,7 +398,7 @@ MapController.prototype.init_events = function(principalObject) {
 		{
 			title: 'Delete',
 			action: function(elm, d, i) {
-				console.log('Delete node!!');
+				self.deleteNode(self, elm);
 			}
 		}
 	];
@@ -582,6 +582,78 @@ MapController.prototype.nodeGetDetails = function(data_id, type, id_map, data_gr
 			console.log(data);
 		}
 	});
+}
+
+/**
+* Function deleteNode
+* Return void
+* This function delete a node and the arrows that use it
+*/
+MapController.prototype.deleteNode = function(self, target) {
+	var id_node = d3.select(target).attr("id");
+	var arrowsToDelete = self.getArrows(self, id_node);
+	$.each(nodes, function(i, e) {
+		var node = "node_" + e["graph_id"];
+		if (node == id_node) {
+			nodes.splice(i, 1);
+			return false;
+		}
+	});
+
+	self.deleteEdges(arrowsToDelete);
+
+	$.each(arrowsToDelete, function(i, e) {
+		d3.select("#arrow_" + e).remove();
+	});
+	d3.select(target).remove();
+}
+
+/**
+* Function deleteEdges
+* Return void
+* This function delete the edges of a node in the edges array
+*/
+MapController.prototype.deleteEdges = function(arrowsToDelete) {
+	var newEdges = [];
+
+	arrowsToDelete.forEach(function(arrow) {
+		edges.forEach(function(edge) {
+			if (edge["graph_id"] != arrow) {
+				newEdges.push(edge);
+			}
+		});
+		edges = newEdges;
+		newEdges = [];
+	});
+	
+	arrowsToDelete.forEach(function(arrow) {
+		nodes.forEach(function(edge) {
+			if (edge["graph_id"] != arrow) {
+				newEdges.push(edge);
+			}
+		});
+		nodes = newEdges;
+		newEdges = [];
+	});
+}
+
+/**
+* Function getArrows
+* Return array[id_arrow]
+* This function returns the arrows of a node
+*/
+MapController.prototype.getArrows = function(self, id_node) {
+	var edgesToDel = [];
+	var j = 0;
+	$.each(edges, function(i, e) {
+		var nodeTo = "node_" + e["to"];
+		var nodeFrom = "node_" + e["from"];
+		if (nodeTo == id_node ||nodeFrom == id_node) {
+			edgesToDel[j] = e["graph_id"];
+			j++;
+		}
+	});
+	return edgesToDel;
 }
 
 /**

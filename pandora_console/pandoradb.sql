@@ -441,6 +441,7 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
 	`id_group` mediumint(8) unsigned NULL default 0,
 	`special_day` tinyint(1) default 0,
 	`wizard_level` enum('basic','advanced','nowizard') default 'nowizard',
+	`min_alerts_reset_counter` tinyint(1) default 0,
 	PRIMARY KEY  (`id`),
 	KEY `idx_template_action` (`id_alert_action`),
 	FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)

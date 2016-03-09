@@ -156,7 +156,7 @@ echo "</td>";
 echo "</tr><tr>";
 echo "<td colspan='3' align='right'></td>";
 echo "</tr></table>";
-echo "<div style='width:100%'><input style='float:right;' type=submit name='store' class='sub add' value='".__('Add')."'></div></form>";
+echo "<div style='width:100%'><input style='float:right;' id='submit-add' type=submit name='store' class='sub add' value='".__('Add')."'></div></form>";
 
 ui_require_jquery_file ('pandora.controls');
 ui_require_jquery_file ('ajaxqueue');
@@ -169,6 +169,19 @@ $(document).ready (function () {
 	$(document).data('text_for_module', $("#none_text").html());
 	
 	$("#id_agents").change(agent_changed_by_multiple_agents);
+	
+	
+	$("#submit-add").click(function() {
+		$('#module').map(function(){
+			if ($(this).val() != "0" )
+				$(this).prop('selected', true);
+		});
+		
+		if($('#module')[0].childElementCount == 1 && ($('#module')[0].value == "" || $('#module')[0].value == "0")) {
+			alert('<?php echo __('Please, select a module'); ?>');
+			return false;
+		}
+	});
 });
 
 function filterByGroup(idGroup) {

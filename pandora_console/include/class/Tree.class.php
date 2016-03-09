@@ -350,8 +350,10 @@ class Tree {
 					// Get the agents of a group
 					case 'group':
 						if (empty($rootID) || $rootID == -1) {
-							if ($this->strictACL)
-								return false;
+
+							// Strict acl specifications
+							/*if ($this->strictACL)
+								return false;*/
 
 							$columns = 'tg.id_grupo AS id, tg.nombre AS name, tg.parent, tg.icon';
 							$order_fields = 'tg.nombre ASC, tg.id_grupo ASC';
@@ -1129,6 +1131,14 @@ class Tree {
 		$groups = array();
 		foreach ($items as $item) {
 			$groups[$item['id']] = $this->getProcessedItem($item);
+		}
+
+		// If user have not permissions in parent, set parent node to 0 (all)
+		$user_groups_with_privileges = users_get_groups($config['id_user']);
+		foreach ($groups as $id => $group) {
+			if (!in_array($groups[$id]['parent'], array_keys($user_groups_with_privileges))) {
+				$groups[$id]['parent'] = 0;
+			}
 		}
 		// Build the group hierarchy
 		foreach ($groups as $id => $group) {
@@ -2082,19 +2092,20 @@ class Tree {
 				$rootIDs = $this->rootID;
 
 				$items = array();
+				$j = 1;
+				$server = metaconsole_get_servers();
 				foreach ($rootIDs as $serverID => $rootID) {
-					$server = metaconsole_get_servers($serverID);
-					if (metaconsole_connect($server) != NOERR)
+					if (metaconsole_connect($server[$j]) != NOERR)
 						continue;
 					db_clean_cache();
 
 					$this->rootID = $rootID;
 					$newItems = $this->getItems();
-					$this->processAgents($newItems, $server);
+					$this->processAgents($newItems, $server[$j]);
 					$newItems = array_filter($newItems);
 					$items = array_merge($items, $newItems);
-
 					metaconsole_restore_db();
+					$j++;
 				}
 				$this->rootID = $rootIDs;
 

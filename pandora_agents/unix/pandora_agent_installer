@@ -10,7 +10,7 @@
 # **********************************************************************
 
 PI_VERSION="6.1dev"
-PI_BUILD="160210"
+PI_BUILD="160309"
 OS_NAME=`uname -s`
 
 FORCE=0
@@ -471,7 +471,8 @@ install () {
 	then
 		[ -d $DESTDIR/etc/logrotate.d ] && mkdir -p $DESTDIR/etc/logrotate.d
 		echo "Creating logrotate.d entry for Pandora FMS log management"
-		cp pandora_agent_logrotate $DESTDIR/etc/logrotate.d/pandora_agent
+		sed -e "s|^/var/log/pandora/pandora_agent.log|$PANDORA_BASE_REAL$PANDORA_LOG_DIR/$PANDORA_LOG|" pandora_agent_logrotate \
+			> $DESTDIR/etc/logrotate.d/pandora_agent
 	else
 		echo "Please add a log rotation schedule manually to your log rotation daemon (if any)"
 	fi

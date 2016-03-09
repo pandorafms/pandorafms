@@ -282,11 +282,21 @@ if (! isset ($config['id_user'])) {
 				exit ("</html>");
 			}
 		}
-		
+		$login_button_saml = get_parameter("login_button_saml", false);
 		if (isset ($double_auth_success) && $double_auth_success) {
 			// This values are true cause there are checked before complete the 2nd auth step
 			$nick_in_db = $_SESSION["prepared_login_da"]['id_user'];
 			$expired_pass = false;
+		}
+		else if (($config['auth'] == 'saml') && $login_button_saml) {
+			if (is_user_admin($nick)) {
+				$nick_in_db = $nick;
+			}
+			else {
+				include_once(ENTERPRISE_DIR . "/include/auth/saml.php");
+				$saml_user_id = saml_process_user_login();
+				$nick_in_db = $saml_user_id;
+			}
 		}
 		else {
 			// process_user_login is a virtual function which should be defined in each auth file.
@@ -496,6 +506,11 @@ if (isset ($_GET["bye"])) {
 	// Unregister Session (compatible with 5.2 and 6.x, old code was deprecated
 	unset($_SESSION['id_usuario']);
 	unset($iduser);
+	if ($config['auth'] == 'saml') {
+		require_once('/opt/simplesamlphp/lib/_autoload.php');
+		$as = new SimpleSAML_Auth_Simple('example-userpass');
+		$as->logout();
+	}
 	while (@ob_end_flush ());
 	exit ("</html>");
 }

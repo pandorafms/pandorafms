@@ -255,6 +255,7 @@ function update_template ($step) {
 		$threshold = (int) get_parameter ('threshold');
 		$max_alerts = (int) get_parameter ('max_alerts');
 		$min_alerts = (int) get_parameter ('min_alerts');
+		$min_alerts_reset_counter = (int) get_parameter ('min_alerts_reset_counter');
 		$type = (string) get_parameter ('type');
 		$value = (string) html_entity_decode (get_parameter ('value'));
 		$max = (float) get_parameter ('max');
@@ -279,6 +280,7 @@ function update_template ($step) {
 			'id_alert_action' => $default_action,
 			'max_alerts' => $max_alerts,
 			'min_alerts' => $min_alerts,
+			'min_alerts_reset_counter' => $min_alerts_reset_counter,
 			'type' => $type,
 			'value' => $value,
 			'max_value' => $max,
@@ -360,6 +362,7 @@ for ($i = 1; $i <= 10; $i++) {
 }
 $priority = 1;
 $min_alerts = 0;
+$min_alerts_reset_counter = 0;
 $max_alerts = 1;
 $threshold = SECONDS_1DAY;
 $recovery_notify = false;
@@ -467,6 +470,7 @@ if ($id && ! $create_template) {
 	$special_day = (bool) $template['special_day'];
 	$max_alerts = $template['max_alerts'];
 	$min_alerts = $template['min_alerts'];
+	$min_alerts_reset_counter = $template['min_alerts_reset_counter'];
 	$threshold = $template['time_threshold'];
 	$fields = array();
 	for ($i = 1; $i <= 10; $i++) {
@@ -549,11 +553,15 @@ if ($step == 2) {
 	$table->data[3][0] = __('Min. number of alerts');
 	$table->data[3][1] = html_print_input_text ('min_alerts',
 		$min_alerts, '', 5, 7, true);
-	$table->data[3][2] = __('Max. number of alerts');
-	$table->data[3][3] = html_print_input_text ('max_alerts',
+
+	$table->data[3][2] = __('Reset counter when alert is not continuously') . ui_print_help_tip(__('Enable this option if you want to reset the counter for minimum number of alerts when the alert state is not continuously even if it\'s in the time threshold.'), true);;
+	$table->data[3][3] = html_print_checkbox ('min_alerts_reset_counter', 1, $min_alerts_reset_counter, true);
+
+	$table->data[4][0] = __('Max. number of alerts');
+	$table->data[4][1] = html_print_input_text ('max_alerts',
 		$max_alerts, '', 5, 7, true);
 	
-	$table->data[4][0] = __('Default action');
+	$table->data[5][0] = __('Default action');
 	$usr_groups = implode(',', array_keys(users_get_groups($config['id_user'], 'LM', true)));
 	switch ($config['dbtype']) {
 		case "mysql":
@@ -573,23 +581,23 @@ if ($step == 2) {
 				ORDER BY dbms_lob.substr(name,4000,1)', $usr_groups);
 			break;
 	}
-	$table->data[4][1] = html_print_select_from_sql ($sql_query,
+	$table->data[5][1] = html_print_select_from_sql ($sql_query,
 			'default_action', $default_action, '', __('None'), 0,
 			true, false, false, false, false, false, 0) .
 		ui_print_help_tip (
 			__('In case you fill any Field 1, Field 2 or Field 3 above, those will replace the corresponding fields of this associated "Default action".'), true);
 	
-	$table->data[5][0] = __('Condition type');
-	$table->data[5][1] = html_print_select (alerts_get_alert_templates_types (), 'type',
+	$table->data[6][0] = __('Condition type');
+	$table->data[6][1] = html_print_select (alerts_get_alert_templates_types (), 'type',
 		$type, '', __('Select'), 0, true, false, false);
-	$table->data[5][1] .= '<span id="matches_value" ' .
+	$table->data[6][1] .= '<span id="matches_value" ' .
 		($show_matches ? '' : 'style="display: none"').'>';
-	$table->data[5][1] .= '&nbsp;'.html_print_checkbox ('matches_value', 1, $matches, true);
-	$table->data[5][1] .= html_print_label(
+	$table->data[6][1] .= '&nbsp;'.html_print_checkbox ('matches_value', 1, $matches, true);
+	$table->data[6][1] .= html_print_label(
 		__('Trigger when matches the value'),
 		'checkbox-matches_value', true);
-	$table->data[5][1] .= '</span>';
-	$table->colspan[5][1] = 3;
+	$table->data[6][1] .= '</span>';
+	$table->colspan[6][1] = 3;
 	
 	$table->data['value'][0] = __('Value');
 	$table->data['value'][1] = html_print_input_text ('value', $value, '',

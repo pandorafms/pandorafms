@@ -490,6 +490,7 @@ CREATE TABLE talert_templates (
 	id_group NUMBER(10, 0) DEFAULT 0, 
 	special_day NUMBER(5, 0) DEFAULT 0,
 	wizard_level VARCHAR2(100) DEFAULT 'nowizard',
+	min_alerts_reset_counter NUMBER(5, 0) DEFAULT 0,
 	CONSTRAINT t_alert_templates_type_cons CHECK (type IN ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always')),
 	CONSTRAINT t_alert_templates_wizard_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
 );

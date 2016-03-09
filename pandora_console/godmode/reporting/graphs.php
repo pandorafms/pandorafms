@@ -73,13 +73,16 @@ ui_print_page_header (__('Reporting')." &raquo; ".__('Custom graphs'), "images/c
 // Delete module SQL code
 if ($delete_graph) {
 	if (check_acl ($config['id_user'], 0, "RW")) {
-		$result = db_process_sql_delete("tgraph_source", array('id_graph' =>$id));
 		
-		if ($result)
-			$result = ui_print_success_message(__('Successfully deleted'));
-		else
-			$result = ui_print_error_message(__('Not deleted. Error deleting data'));
-		
+		$exist = db_get_value("id_graph", "tgraph_source", "id_graph", $id);
+		if ($exist) {
+			$result = db_process_sql_delete("tgraph_source", array('id_graph' =>$id));
+			
+			if ($result)
+				$result = ui_print_success_message(__('Successfully deleted'));
+			else
+				$result = ui_print_error_message(__('Not deleted. Error deleting data'));
+		}
 		$result = db_process_sql_delete("tgraph", array('id_graph' =>$id));
 		
 		if ($result) {
@@ -150,7 +153,9 @@ if (!empty ($graphs)) {
 	$table->align[3] = 'left';
 	if (check_acl ($config['id_user'], 0, "RW")) {
 		$table->align[4] = 'left';
-		$table->head[4] = __('Op.');
+		$table->head[4] = __('Op.') .
+			html_print_checkbox('all_delete', 0, false, true, false,
+		'check_all_checkboxes();');
 		$table->size[4] = '90px';
 	}
 	$table->data = array ();
@@ -174,36 +179,33 @@ if (!empty ($graphs)) {
 			
 			$data[4] .= '<a href="index.php?sec=reporting&sec2=godmode/reporting/graphs&delete_graph=1&id='
 				.$graph['id_graph'].'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
-					return false;">' . html_print_image("images/cross.png", true) . '</a>' .
-					html_print_checkbox_extended ('delete_multiple[]', $graph['id_graph'], false, false, '', 'class="check_delete"', true);
+					return false;">' . html_print_image("images/cross.png", true, array('alt' => __('Delete'), 'title' => __('Delete'))) . '</a>' .
+					html_print_checkbox_extended ('delete_multiple[]', $graph['id_graph'], false, false, '', 'class="check_delete" style="margin-left:2px;"', true);
 		}
 		
 		array_push ($table->data, $data);
 	}
 	
-	html_print_table ($table);
 	
-	echo "<table width='100%'>";
-		echo "<tr>";
-			echo "<td>";
-				echo "<div style='float: right;'>";
-					if (!empty($graphs)){
-						if (check_acl ($config['id_user'], 0, "RW") && users_can_manage_group_all($graph['id_group'])) {
-							echo "<form method='post' style='float:right;' action='index.php?sec=reporting&sec2=godmode/reporting/graphs'>";
-								html_print_input_hidden('multiple_delete', 1);
-								html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
-							echo "</form>";
-						}
-					}
-					if (check_acl ($config['id_user'], 0, "RW")) {
-						echo '<form method="post" style="float:right;" action="index.php?sec=reporting&sec2=godmode/reporting/graph_builder">';
-							html_print_submit_button (__('Create graph'), 'create', false, 'class="sub next" style="margin-right:5px;"');
-						echo "</form>";
-					}
-				echo "</div>";
-			echo "</td>";
-		echo "</tr>";
-	echo "</table>";
+	if (!empty($graphs)){
+		echo "<form method='post' style='' action='index.php?sec=reporting&sec2=godmode/reporting/graphs'>";
+			html_print_input_hidden('multiple_delete', 1);
+			html_print_table ($table);
+			echo "<div style='float: right;'>";
+				html_print_submit_button(__('Delete'), 'delete_btn', false, 'class="sub delete"');
+			echo "</div>";
+		echo "</form>";
+	}
+
+
+	echo "<div style='float: right;'>";
+		if (check_acl ($config['id_user'], 0, "RW")) {
+			echo '<form method="post" style="float:right;" action="index.php?sec=reporting&sec2=godmode/reporting/graph_builder">';
+				html_print_submit_button (__('Create graph'), 'create', false, 'class="sub next" style="margin-right:5px;"');
+			echo "</form>";
+		}
+	echo "</div>";
+
 }
 else {
 	require_once ($config['homedir'] . "/general/firts_task/custom_graphs.php");
@@ -213,13 +215,15 @@ else {
 
 <script type="text/javascript">
 
-function check_all_checkboxes() {
-	if ($("input[name=all_delete]").attr('checked')) {
-		$(".check_delete").attr('checked', true);
+$("input[name=all_delete]").css("margin-left", "32px");
+
+	function check_all_checkboxes() {
+		if ($("input[name=all_delete]").prop("checked")) {
+			$(".check_delete").prop("checked", true);
+		}
+		else {
+			$(".check_delete").prop("checked", false);
+		}
 	}
-	else {
-		$(".check_delete").attr('checked', false);
-	}
-}
 
 </script>

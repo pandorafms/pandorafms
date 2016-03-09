@@ -732,28 +732,43 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, wait) {
 					.attr("class", "arrow_translation")
 					.append("g")
 						.attr("class", "arrow_container");
-		
-			arrow_layout.append("g")
-				.attr("class", "body")
-				.append("use")
-					.attr("xlink:href", "images/maps/body_arrow.svg#body_arrow")
-					.on("load", function() {
-						wait_load(function() {
-							arrow_by_pieces(
-								target, id_arrow, id_node_to, id_node_from, 0);
-						});
-					});
 			
-			arrow_layout.append("g")
-				.attr("class", "head")
-				.append("use")
-					.attr("xlink:href", "images/maps/head_arrow.svg#head_arrow")
-					.on("load", function() {
-						wait_load(function() {
-							arrow_by_pieces(
-								target, id_arrow, id_node_to, id_node_from, 0);
+			if (is_buggy_firefox) {
+				arrow_layout.append("g")
+					.attr("class", "body")
+					.append("use")
+						.attr("xlink:href", "#body_arrow");
+				
+				arrow_layout.append("g")
+					.attr("class", "head")
+					.append("use")
+						.attr("xlink:href", "#head_arrow");
+				
+				arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, 0);
+			}
+			else {
+				arrow_layout.append("g")
+					.attr("class", "body")
+					.append("use")
+						.attr("xlink:href", "images/maps/body_arrow.svg#body_arrow")
+						.on("load", function() {
+							wait_load(function() {
+								arrow_by_pieces(
+									target, id_arrow, id_node_to, id_node_from, 0);
+							});
 						});
-					});
+				
+				arrow_layout.append("g")
+					.attr("class", "head")
+					.append("use")
+						.attr("xlink:href", "images/maps/head_arrow.svg#head_arrow")
+						.on("load", function() {
+							wait_load(function() {
+								arrow_by_pieces(
+									target, id_arrow, id_node_to, id_node_from, 0);
+							});
+						});
+			}
 			break;
 		/*---------------------------------------------*/
 		/*---- Print head and body arrow by steps -----*/
@@ -761,7 +776,7 @@ function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, wait) {
 		case 0:
 			var c_elem2 = get_center_element(target +" #" + id_node_to);
 			var c_elem1 = get_center_element(target +" #" + id_node_from);
-
+			
 			var distance = get_distance_between_point(c_elem1, c_elem2);
 			
 			var radius_to = parseFloat(get_radius_element("#" + id_node_to));

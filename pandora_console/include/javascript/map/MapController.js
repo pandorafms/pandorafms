@@ -340,6 +340,34 @@ MapController.prototype.move_arrow = function (id_from_any_point_arrow) {
 	});
 }
 
+MapController.prototype.paint_resize_square = function(item, wait) {
+	if (typeof(wait) === "undefined")
+		wait = 1;
+	
+	var count_files = 1;
+	function wait_load(callback) {
+		count_files--;
+		
+		if (count_files == 0) {
+			callback();
+		}
+	}
+	
+	switch (wait) {
+		/*---------------------------------------------*/
+		/*-------- Preload head and body arrow --------*/
+		/*---------------------------------------------*/
+		case 1:
+			arrow_layout = arrow_layout.append("g")
+				.attr("class", "arrow_position_rotation")
+				.append("g")
+					.attr("class", "arrow_translation")
+					.append("g")
+						.attr("class", "arrow_container");
+			break;
+	}
+}
+
 /**
 * Function init_events
 * Return boolean
@@ -353,6 +381,12 @@ MapController.prototype.init_events = function(principalObject) {
 			title: 'Show details',
 			action: function(elm, d, i) {
 				self.openNodeDetais(self, elm);
+			}
+		},
+		{
+			title: 'Resize',
+			action: function(elm, d, i) {
+				self.paint_resize_square(d);
 			}
 		},
 		{
@@ -374,6 +408,12 @@ MapController.prototype.init_events = function(principalObject) {
 			title: 'Edit map',
 			action: function(elm, d, i) {
 				console.log('Edit map!!');
+			}
+		},
+		{
+			title: 'Save map',
+			action: function(elm, d, i) {
+				console.log('Save map!!');
 			}
 		}
 	];

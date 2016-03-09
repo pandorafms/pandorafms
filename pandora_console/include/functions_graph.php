@@ -1428,7 +1428,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 							FROM tagente_datos 
 							WHERE id_agente_modulo = ' . (int) $module .
 								' AND utimestamp > ' . (int) $datelimit .
-								' AND utimestamp < ' . (int) $date);
+								' AND utimestamp < ' . (int) $date) .
+								" ORDER BY utimestamp DESC";
 								
 				if ($temp_data) {
 					if (is_numeric($temp_data))
@@ -1483,7 +1484,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 							FROM tagente_datos 
 							WHERE id_agente_modulo = ' . (int) $module .
 								' AND utimestamp > ' . (int) $datelimit .
-								' AND utimestamp < ' . (int) $date);
+								' AND utimestamp < ' . (int) $date) .
+								" ORDER BY utimestamp DESC";
 				
 				$agent_name = io_safe_output(
 					modules_get_agentmodule_agent_name ($module));
@@ -1524,7 +1526,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 							FROM tagente_datos 
 							WHERE id_agente_modulo = ' . (int) $module .
 								' AND utimestamp > ' . (int) $datelimit .
-								' AND utimestamp < ' . (int) $date);
+								' AND utimestamp < ' . (int) $date) .
+								" ORDER BY utimestamp DESC";
 				if ( $temp_data ){
 					if (is_numeric($temp_data))
 						$value = $temp_data;
@@ -1576,7 +1579,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 							FROM tagente_datos 
 							WHERE id_agente_modulo = ' . (int) $module .
 								' AND utimestamp > ' . (int) $datelimit .
-								' AND utimestamp < ' . (int) $date);
+								' AND utimestamp < ' . (int) $date) .
+								" ORDER BY utimestamp DESC";
 				if ( $temp_data ) {
 					if (is_numeric($temp_data))
 						$value = $temp_data;

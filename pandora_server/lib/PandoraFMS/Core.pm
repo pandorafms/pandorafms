@@ -362,6 +362,10 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 	
 	# Value returned on valid data
 	my $status = 1;
+
+	if ($alert->{'min_alerts_reset_counter'}) {
+		$status = 5;
+	}
 	
 	# Get current time
 	my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time());
@@ -380,24 +384,24 @@ sub pandora_evaluate_alert ($$$$$$$;$$$) {
 		
 		if ($special_day ne '') {
 			logger ($pa_config, $date . " is a special day for " . $alert->{'name'} . ". (as a " . $special_day . ")", 10);
-			return 1 if ($alert->{$special_day} != 1);
+			return $status if ($alert->{$special_day} != 1);
 		}
 		else {
 			logger ($pa_config, $date . " is *NOT* a special day for " . $alert->{'name'}, 10);
-			return 1 if ($alert->{$DayNames[$wday]} != 1);
+			return $status if ($alert->{$DayNames[$wday]} != 1);
 		}
 	}
 	else {
-		return 1 if ($alert->{$DayNames[$wday]} != 1);
+		return $status if ($alert->{$DayNames[$wday]} != 1);
 	}
 	
 	# Check time slot
 	my $time = sprintf ("%.2d:%.2d:%.2d", $hour, $min, $sec);
 	if (($alert->{'time_from'} ne $alert->{'time_to'})) {
 		if ($alert->{'time_from'} lt $alert->{'time_to'}) {
-			return 1 if (($time le $alert->{'time_from'}) || ($time ge $alert->{'time_to'}));
+			return $status if (($time le $alert->{'time_from'}) || ($time ge $alert->{'time_to'}));
 		} else {
-			return 1 if (($time le $alert->{'time_from'}) && ($time ge $alert->{'time_to'}));
+			return $status if (($time le $alert->{'time_from'}) && ($time ge $alert->{'time_to'}));
 		}
 	}
 	

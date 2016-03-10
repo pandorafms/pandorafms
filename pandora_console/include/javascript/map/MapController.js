@@ -700,7 +700,7 @@ MapController.prototype.nodeGetDetails = function(data_id, type, id_map, data_gr
 	
 	jQuery.ajax ({
 		data: params,
-		dataType: "json",
+		dataType: "html",
 		type: "POST",
 		url: "ajax.php",
 		success: function (data) {
@@ -738,7 +738,10 @@ MapController.prototype.editNode = function(self, target) {
 		type: "POST",
 		url: "ajax.php",
 		success: function (data) {
-			console.log(data);
+			$(target).append("<div id='edit_node_dialog' style='display: none;'></div>");
+			$("#edit_node_dialog").append(data);
+			$("#edit_node_dialog").dialog({ autoOpen: false });
+			$("#edit_node_dialog").dialog("open");
 		}
 	});
 

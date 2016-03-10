@@ -273,48 +273,28 @@ if (is_ajax ()) {
 		return;
 	}
 	else if ($printEditNodeTable) {
-	?>
-	<div id="dialog_node_edit" style="display: none;" title="<?php echo __('Edit node');?>">
-		<div style="text-align: left; width: 100%;">
-	<?php
-		// $table = null;
-		// $table->id = 'node_options';
-		// $table->width = "100%";
-		// 
-		// $table->data = array();
-		// 
-		// $table->data[0][0] = __('Shape');
-		// $table->data[0][1] = html_print_select(array(
-		// 	'circle' => __('Circle'),
-		// 	'square' => __('Square'),
-		// 	'rhombus' => __('Rhombus')), 'shape', '',
-		// 	'javascript:', '', 0, true) . '&nbsp;' .
-		// 	'<span id="shape_icon_in_progress" style="display: none;">' .
-		// 		html_print_image('images/spinner.gif', true) . '</span>' .
-		// 	'<span id="shape_icon_correct" style="display: none;">' .
-		// 		html_print_image('images/dot_green.png', true) . '</span>' .
-		// 	'<span id="shape_icon_fail" style="display: none;">' .
-		// 		html_print_image('images/dot_red.png', true) . '</span>';
-		// 
-		// $table->data["fictional_node_name"][0] = __('Name');
-		// $table->data["fictional_node_name"][1] = html_print_input_text('edit_name_fictional_node',
-		// 	'', __('name fictional node'), '20', '50', true);
-		// 
-		// $table->data["fictional_node_update_button"][0] = '';
-		// $table->data["fictional_node_update_button"][1] =
-		// 	html_print_button(__('Update fictional node'), '', false,
-		// 		'add_fictional_node();', 'class="sub"', true);
-		// 
+		?>
+		<div title="<?php echo __('Edit node');?>">
+			<div style="text-align: left; width: 50%;">
+		<?php
+		$table = new stdClass();
+		$table->id = 'node_options';
+		$table->width = "100%";
 		
-		// 
-		// ui_toggle(html_print_table($table, true), __('Node options'),
-		// 	__('Node options'), true);
-		echo('PUTA');
-	?>
+		$table->data = array();
+
+		$table->data[0][0] = __('TABLA DE EDICION');
+
+		$table->data[1][0] = __('Capo1');
+		$table->data[1][1] = __('Capo2');
+		$table->data[1][2] = __('Capo3');
+		$table->data[1][3] = __('Capo4');
+
+		html_print_table($table);
+		?>
+			</div>
 		</div>
-	</div>
-	<?php
-		echo('CCCC');
+		<?php
 		return;
 	}
 

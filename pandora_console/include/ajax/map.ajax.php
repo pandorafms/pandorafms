@@ -26,6 +26,7 @@ if (is_ajax ()) {
 	$getNodeData = (bool)get_parameter('getNodeData', 0);
 	$getNodeDetails = (bool)get_parameter('getNodeDetails', 0);
 	$printEditNodeTable = (bool)get_parameter('printEditNodeTable', 0);
+	$printEditMapTable = (bool)get_parameter('printEditMapTable', 0);
 	
 	if ($getNodeData) {
 		$id_node_data = (int)get_parameter('id_node_data');
@@ -295,6 +296,35 @@ if (is_ajax ()) {
 
 		ui_toggle(html_print_table($table, true), __('Node options'),
 			__('Node options'), true);
+		?>
+			</div>
+		</div>
+		<?php
+		return;
+	}
+	else if ($printEditMapTable) {
+		?>
+		<div title="<?php echo __('Edit map');?>">
+			<div style="text-align: center; width: 100%;">
+		<?php
+		$table = new stdClass();
+		$table->id = 'map_options';
+		$table->width = "100%";
+
+		$table->head = array();
+		$table->head['name'] = __('Nombre del mapa');
+		$table->head['type'] = __('Tipo del mapa');
+
+		$table->data = array();
+		$table->data[0][0] = __('Capo1');
+		$table->data[0][1] = __('Capo2');
+		$table->data[1][0] = __('Capo1');
+		$table->data[1][1] = __('Capo2');
+		$table->data[2][0] = __('Capo1');
+		$table->data[2][1] = __('Capo2');
+
+		ui_toggle(html_print_table($table, true), __('Map options'),
+			__('Map options'), true);
 		?>
 			</div>
 		</div>

@@ -435,10 +435,6 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 					transform_viewport.translate[1]
 				) * transform_viewport.scale[1];
 			
-			console.log("transform_viewport", transform_viewport);
-			console.log("bbox_item", bbox_item);
-			console.log("bbox_square", bbox_square);
-			
 			x = (bbox_item.x +
 				transform_item.translate[0]) * transform_viewport.scale[0] +
 				transform_viewport.translate[0];
@@ -528,7 +524,7 @@ MapController.prototype.init_events = function(principalObject) {
 		{
 			title: 'Edit map',
 			action: function(elm, d, i) {
-				console.log('Edit map!!');
+				self.editMap(self, elm);
 			}
 		},
 		{
@@ -666,6 +662,33 @@ MapController.prototype.tooltip_map_create = function(self, target) {
 }
 
 /**
+* Function editMap
+* Return void
+* This function prints the map edition table
+*/
+MapController.prototype.editMap = function(self, target) {
+	var id_map = self._id;
+	
+	var params = {};
+	params["printEditMapTable"] = 1;
+	params["id_map"] = id_map;
+	params["page"] = "include/ajax/map.ajax";
+	
+	jQuery.ajax ({
+		data: params,
+		dataType: "html",
+		type: "POST",
+		url: "ajax.php",
+		success: function (data) {
+			$(target).append("<div id='edit_map_dialog' style='display: none;'></div>");
+			$("#edit_map_dialog").append(data);
+			$("#edit_map_dialog").dialog({ autoOpen: false });
+			$("#edit_map_dialog").dialog("open");
+		}
+	});
+}
+
+/**
 * Function openNodeDetais
 * Return void
 * This function shows node details in extra window
@@ -712,7 +735,7 @@ MapController.prototype.nodeGetDetails = function(data_id, type, id_map, data_gr
 /**
 * Function editNode
 * Return void
-* This function prints the node table
+* This function prints the node edition table
 */
 MapController.prototype.editNode = function(self, target) {
 	var nodeTarget = $(target);
@@ -744,7 +767,6 @@ MapController.prototype.editNode = function(self, target) {
 			$("#edit_node_dialog").dialog("open");
 		}
 	});
-
 }
 
 /**

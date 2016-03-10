@@ -248,7 +248,7 @@ if (is_ajax ()) {
 					"{title}",
 					modules_get_agentmodule_name($id_node_data),
 					$details);
-
+				
 				ob_start();
 				?>
 				<span>
@@ -261,14 +261,14 @@ if (is_ajax ()) {
 				</span> <br/>
 				<?php
 				$body = ob_get_clean();
-
+				
 				$details = str_replace(
 					"{body}",
 					$body,
 					$details);
 				break;
 		}
-
+		
 		echo json_encode($details);
 		return;
 	}

@@ -62,6 +62,7 @@ MapController.prototype.init_map = function() {
 	*/
 	function zoom() {
 		self.close_all_tooltips();
+		self.remove_resize_square();
 		
 		var zoom_level = d3.event.scale;
 		
@@ -340,6 +341,10 @@ MapController.prototype.move_arrow = function (id_from_any_point_arrow) {
 	});
 }
 
+MapController.prototype.remove_resize_square = function(item, wait) {
+	d3.select(self._target + " svg #resize_square").remove();
+}
+
 MapController.prototype.paint_resize_square = function(item, wait) {
 	if (typeof(wait) === "undefined")
 		wait = 1;
@@ -358,12 +363,128 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 		/*-------- Preload head and body arrow --------*/
 		/*---------------------------------------------*/
 		case 1:
-			arrow_layout = arrow_layout.append("g")
-				.attr("class", "arrow_position_rotation")
-				.append("g")
-					.attr("class", "arrow_translation")
-					.append("g")
-						.attr("class", "arrow_container");
+			var resize_square = d3
+				.select(self._target + " svg")
+					.append("g").attr("id", "resize_square")
+					.style("opacity", 1);
+			
+			if (is_buggy_firefox) {
+				
+				resize_square
+					.append("g").attr("class", "square_selection")
+						.append("use")
+						.attr("xlink:href", "#square_selection");
+				
+				resize_square
+					.append("g").attr("class", "handles")
+						.selectAll(".handle")
+						.data(["N", "NE", "E", "SE", "S", "SW", "W", "NW"])
+						.enter()
+							.append("use")
+								.attr("xlink:href", "images/maps/resize_handle.svg#resize_handle")
+								.attr("class", function(d) { return "handler " + d;});
+				
+				paint_resize_square(item, 0);
+			}
+			else {
+				resize_square
+					.append("g").attr("class", "square_selection")
+					.append("use")
+						.attr("xlink:href", "images/maps/square_selection.svg#square_selection")
+						.on("load", function() {
+							wait_load(function() {
+								self.paint_resize_square(
+									item, 0);
+							});
+						});
+				
+				resize_square
+					.append("g").attr("class", "handles")
+						.selectAll(".handle")
+						.data(["N", "NE", "E", "SE", "S", "SW", "W", "NW"])
+						.enter()
+							.append("use")
+								.attr("xlink:href", "images/maps/resize_handle.svg#resize_handle")
+								.attr("class", function(d) { return "handler " + d;})
+								.on("load", function() {
+									wait_load(function() {
+										self.paint_resize_square(
+											item, 0);
+									});
+								});
+			}
+			break;
+		case 0:
+			var resize_square = d3.select(self._target + " #resize_square");
+			var item = d3.select(self._target + " #node_" + item['graph_id']);
+			
+			var bbox_item = item.node().getBBox();
+			var bbox_square = resize_square.node().getBBox();
+			var transform_item = d3.transform(item.attr("transform"));
+			var transform_viewport = d3
+				.transform(d3.select(self._target + " .viewport").attr("transform"));
+			
+			var transform = d3.transform();
+			
+			var x = (bbox_item.x +
+					transform_item.translate[0] +
+					transform_viewport.translate[0]
+				) * transform_viewport.scale[0];
+			var y = (bbox_item.y +
+					transform_item.translate[1] +
+					transform_viewport.translate[1]
+				) * transform_viewport.scale[1];
+			
+			console.log("transform_viewport", transform_viewport);
+			console.log("bbox_item", bbox_item);
+			console.log("bbox_square", bbox_square);
+			
+			x = (bbox_item.x +
+				transform_item.translate[0]) * transform_viewport.scale[0] +
+				transform_viewport.translate[0];
+			y = (bbox_item.y +
+				transform_item.translate[1]) * transform_viewport.scale[1] +
+				transform_viewport.translate[1];
+			
+			transform.translate[0] = x;
+			transform.translate[1] = y;
+			
+			resize_square
+				.attr("transform", transform.toString());
+			
+			transform = d3.transform();
+			
+			var scale_x = bbox_item.width / bbox_square.width;
+			var scale_y = bbox_item.height / bbox_square.height;
+			
+			//~ 
+			//~ transform.scale[0] = scale_x;
+			//~ transform.scale[1] = scale_y;
+			//~ 
+			//~ console.log(bbox_item);
+			//~ console.log(bbox_square);
+			//~ 
+			//~ resize_square.select(".square_selection")
+				//~ .attr("transform", transform.toString());
+			
+			
+			transform.scale[0] = scale_x * transform_viewport.scale[0];
+			transform.scale[1] = scale_y * transform_viewport.scale[1];
+			
+			resize_square.select(".square_selection")
+				.attr("transform", transform.toString());
+			
+			// Set the handlers
+			//~ var bbox_handler = d3
+				//~ .select(self._target + " .handler").node().getBBox();
+			//~ var handler_positions = {};
+			//~ handler_positions['N'] = [];
+			//~ handler_positions['N'][0] = (bbox_item.width / 2)
+				//~ - (bbox_handler.width / 2);
+			//~ handler_positions['N'][1] = 0 - (bbox_handler.width / 2);
+			//~ 
+			//~ d3.selectAll(" .handler").each(function(d) {});
+			
 			break;
 	}
 }
@@ -402,7 +523,7 @@ MapController.prototype.init_events = function(principalObject) {
 			}
 		}
 	];
-
+	
 	var map_menu = [
 		{
 			title: 'Edit map',
@@ -417,12 +538,12 @@ MapController.prototype.init_events = function(principalObject) {
 			}
 		}
 	];
-
+	
 	d3.select("#map").on("contextmenu", d3.contextMenu(map_menu));
-
+	
 	$(this._target + " svg *, " + this._target + " svg")
 		.off("mousedown", {map: this}, this.click_event);
-
+	
 	d3.selectAll(".node")
 		.on("mouseover", function(d) {
 			d3.select("#node_" + d['graph_id'])
@@ -439,7 +560,7 @@ MapController.prototype.init_events = function(principalObject) {
 				d3.event.stopPropagation();
 				d3.event.preventDefault();
 			}
-
+			
 			if (d3.event.defaultPrevented) return;
 			
 			self.tooltip_map_create(self, this);
@@ -467,6 +588,8 @@ MapController.prototype.init_events = function(principalObject) {
 		if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
 			$("#node_" + d['graph_id']).tooltipster('destroy');
 		}
+		
+		self.remove_resize_square();
 		
 		d3.select(this).classed("dragging", true);
 	}
@@ -500,6 +623,8 @@ MapController.prototype.init_events = function(principalObject) {
 		if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
 			$("#node_" + d['graph_id']).tooltipster('destroy');
 		}
+		
+		self.remove_resize_square();
 	}
 }
 

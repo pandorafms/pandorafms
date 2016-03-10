@@ -275,22 +275,26 @@ if (is_ajax ()) {
 	else if ($printEditNodeTable) {
 		?>
 		<div title="<?php echo __('Edit node');?>">
-			<div style="text-align: left; width: 50%;">
+			<div style="text-align: center; width: 100%;">
 		<?php
 		$table = new stdClass();
 		$table->id = 'node_options';
 		$table->width = "100%";
-		
+
+		$table->head = array();
+		$table->head['name'] = __('Nombre del nodo');
+		$table->head['type'] = __('Tipo del nodo (Agente o Modulo)');
+
 		$table->data = array();
-
-		$table->data[0][0] = __('TABLA DE EDICION');
-
+		$table->data[0][0] = __('Capo1');
+		$table->data[0][1] = __('Capo2');
 		$table->data[1][0] = __('Capo1');
 		$table->data[1][1] = __('Capo2');
-		$table->data[1][2] = __('Capo3');
-		$table->data[1][3] = __('Capo4');
+		$table->data[2][0] = __('Capo1');
+		$table->data[2][1] = __('Capo2');
 
-		html_print_table($table);
+		ui_toggle(html_print_table($table, true), __('Node options'),
+			__('Node options'), true);
 		?>
 			</div>
 		</div>

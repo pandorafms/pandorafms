@@ -309,7 +309,7 @@ function menu_print_menu (&$menu) {
 				$count_sub2 = 0;
 				foreach ($sub['sub2'] as $key => $sub2) {
 					
-					if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $subsec2, false,$key)) == false) {
+					if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $subsec2, false, $key)) == false) {
 						continue;
 					}
 					
@@ -640,7 +640,7 @@ function menu_get_sec2_pages($sec, $sec2, $menu_hash = false) {
 	
 	$sec3_array = array();
 	
-	if (isset($sec2)) {
+	if (isset($menu[$sec]['sub']) AND isset($menu[$sec]['sub'][$sec2]['sub2'])) {
 		// Get the sec2 of the subsections
 		foreach ($menu[$sec]['sub'][$sec2]['sub2'] as $k => $v) {
 			$sec3_array[$k] = $v['text'];

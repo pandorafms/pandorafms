@@ -392,7 +392,7 @@ MapController.prototype.init_events = function(principalObject) {
 		{
 			title: 'Edit',
 			action: function(elm, d, i) {
-				console.log('Edit node!!');
+				self.editNode(self, elm);
 			}
 		},
 		{
@@ -582,6 +582,41 @@ MapController.prototype.nodeGetDetails = function(data_id, type, id_map, data_gr
 			console.log(data);
 		}
 	});
+}
+
+/**
+* Function editNode
+* Return void
+* This function prints the node table
+*/
+MapController.prototype.editNode = function(self, target) {
+	var nodeTarget = $(target);
+	
+	var id_map = self._id;
+	var type = parseInt(nodeTarget.data("type"));
+	var data_id = parseInt(nodeTarget.data("id"));
+	var data_graph_id = parseInt(nodeTarget.data("graph_id"));
+	var node_id = nodeTarget.attr("id");
+	
+	var params = {};
+	params["printEditNodeTable"] = 1;
+	params["id_node_data"] = data_id;
+	params["type"] = type;
+	params["id_map"] = id_map;
+	params["data_graph_id"] = data_graph_id;
+	params["node_id"] = node_id;
+	params["page"] = "include/ajax/map.ajax";
+	
+	jQuery.ajax ({
+		data: params,
+		dataType: "html",
+		type: "POST",
+		url: "ajax.php",
+		success: function (data) {
+			console.log(data);
+		}
+	});
+
 }
 
 /**

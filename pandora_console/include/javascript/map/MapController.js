@@ -351,7 +351,7 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 	if (typeof(wait) === "undefined")
 		wait = 1;
 	
-	var count_files = 1;
+	var count_files = 16;
 	function wait_load(callback) {
 		count_files--;
 		
@@ -391,21 +391,40 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 					self.paint_resize_square(item, 0);
 				}
 				else {
-					resize_square
-						.append("g").attr("class", "handles")
-							.selectAll(".handle")
-							.data(["N", "NE", "E", "SE", "S", "SW", "W", "NW"])
-							.enter()
-								.append("g")
-									.attr("class", function(d) { return "handler handler_" + d;})
-									.append("use")
-										.attr("xlink:href", "images/maps/resize_handle.svg#resize_handle")
-										.on("load", function() {
-											wait_load(function() {
-												self.paint_resize_square(
-													item, 0);
-											});
-										});
+					var handles = resize_square
+						.append("g").attr("class", "handles");
+						
+					handles.selectAll(".handle")
+						.data(["N", "NE", "E", "SE", "S", "SW", "W", "NW"])
+						.enter()
+							.append("g")
+							.attr("class", function(d) { return "handler handler_" + d;});
+					
+					handles.selectAll(".handler").each(function(d) {
+						d3.select(this)
+							.append("use")
+								.style("opacity", 1)
+								.attr("class", "default")
+								.attr("xlink:href", "images/maps/resize_handle.svg#resize_handle")
+								.on("load", function() {
+									wait_load(function() {
+										self.paint_resize_square(
+											item, 0);
+									});
+								});
+						
+						d3.select(this)
+							.append("use")
+								.style("opacity", 0)
+								.attr("class", "over")
+								.attr("xlink:href", "images/maps/resize_handle.over.svg#resize_handle_over")
+								.on("load", function() {
+									wait_load(function() {
+										self.paint_resize_square(
+											item, 0);
+									});
+								});
+					});
 				}
 				
 			});
@@ -450,6 +469,7 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 				.attr("height", (bbox_item.height * transform_viewport.scale[1]));
 			
 			// Set the handlers
+			
 			var bbox_handler = d3
 				.select(self._target + " .handler").node().getBBox();
 			
@@ -522,93 +542,27 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 					//~ });
 			});
 			
+			
 			resize_square.style("opacity", 1);
 			break;
 	}
 }
 
 MapController.prototype.change_handler_image = function(action, handler, wait) {
-	//~ console.log("action", action);
 	
-	//~ var self = this;
-	//~ 
-	//~ if (typeof(wait) === "undefined")
-		//~ wait = 1;
-	//~ 
-	//~ var count_files = 1;
-	//~ function wait_load(callback) {
-		//~ count_files--;
-		//~ 
-		//~ if (count_files == 0) {
-			//~ callback();
-		//~ }
-	//~ }
-	//~ 
-	//~ 
-	//~ var handlers_d3 = d3.select(self._target + " .handles");
-	//~ var handler_d3 = d3.select(self._target + " .handler_" + handler);
-	//~ 
-	//~ console.log("target", self._target);
-	//~ 
-	//~ 
-	//~ 
-	//~ switch (wait) {
-		//~ case 1:
-			//~ 
-			//~ handler_d3.select("use").remove();
-			//~ 
-			//~ switch (action) {
-				//~ case "mouseover":
-					//~ console.log("__mouseover");
-					//~ 
-					//~ 
-					//~ 
-					//~ handler_d3.append("use")
-						//~ .attr("xlink:href", "images/maps/resize_handle.over.svg#resize_handle_over")
-						//~ .attr("class", function(d) { return "handler " + d;})
-						//~ .on("load", function() {
-							//~ wait_load(function() {
-								//~ self.change_handler_image(
-									//~ action, handler, 0);
-							//~ });
-						//~ });
-					//~ 
-					//~ break;
-				//~ case "mouseout":
-					//~ console.log("__mouseout");
-					//~ 
-					//~ handler_d3.append("use")
-						//~ .attr("xlink:href", "images/maps/resize_handle.svg#resize_handle")
-						//~ .attr("class", function(d) { return "handler " + d;})
-						//~ .on("load", function() {
-							//~ wait_load(function() {
-								//~ self.change_handler_image(
-									//~ action, handler, 0);
-							//~ });
-						//~ });
-					//~ 
-					//~ break;
-			//~ }
-			//~ break;
-		//~ case 0:
-			//~ handler_d3
-				//~ .on("mouseover", null)
-				//~ .on("mouseout", null)
-				//~ .on("click", null);
-			//~ handler_d3
-				//~ .on("mouseover", function(d) {
-					//~ self.change_handler_image("mouseover", d);
-					//~ console.log("mouseover");
-				//~ })
-				//~ .on("mouseout", function(d) {
-					//~ self.change_handler_image("mouseout", d);
-					//~ console.log("mouseout");
-				//~ })
-				//~ .on("click", function(d) {
-					//~ console.log("click");
-				//~ });
-			//~ break;
-	//~ }
+	var handlers_d3 = d3.select(self._target + " .handles");
+	var handler_d3 = d3.select(self._target + " .handler_" + handler);
+	
+	switch (action) {
+		case "mouseover":
+			handler_d3.select(".default").style("opacity", 0);
+			handler_d3.select(".over").style("opacity", 1);
+			break;
+		case "mouseout":
+			handler_d3.select(".default").style("opacity", 1);
+			handler_d3.select(".over").style("opacity", 0);
+			break;
+	}
 }
 
 MapController.prototype.event_resize = function(action, item, handler) {

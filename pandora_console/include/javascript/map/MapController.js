@@ -346,6 +346,8 @@ MapController.prototype.remove_resize_square = function(item, wait) {
 }
 
 MapController.prototype.paint_resize_square = function(item, wait) {
+	var self = this;
+	
 	if (typeof(wait) === "undefined")
 		wait = 1;
 	
@@ -359,68 +361,62 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 	}
 	
 	switch (wait) {
-		/*---------------------------------------------*/
-		/*-------- Preload head and body arrow --------*/
-		/*---------------------------------------------*/
 		case 1:
 			var resize_square = d3
 				.select(self._target + " svg")
 					.append("g").attr("id", "resize_square")
-					.style("opacity", 1);
+					.style("opacity", 0);
 			
-			if (is_buggy_firefox) {
+			d3.xml("images/maps/square_selection.svg", "application/xml", function(xml) {
+				var nodes = xml
+					.evaluate("//*[@id='square_selection']/*", xml, null, XPathResult.ANY_TYPE, null);
+				var result = nodes.iterateNext();
 				
 				resize_square
 					.append("g").attr("class", "square_selection")
-						.append("use")
-						.attr("xlink:href", "#square_selection");
+					.append(function() {return result});
 				
-				resize_square
-					.append("g").attr("class", "handles")
-						.selectAll(".handle")
-						.data(["N", "NE", "E", "SE", "S", "SW", "W", "NW"])
-						.enter()
-							.append("use")
-								.attr("xlink:href", "images/maps/resize_handle.svg#resize_handle")
-								.attr("class", function(d) { return "handler " + d;});
+				if (is_buggy_firefox) {
+					resize_square
+						.append("g").attr("class", "handles")
+							.selectAll(".handle")
+							.data(["N", "NE", "E", "SE", "S", "SW", "W", "NW"])
+							.enter()
+								.append("g")
+									.attr("class", function(d) { return "handler handler_" + d;})
+									.append("use")
+										.attr("xlink:href", "images/maps/resize_handle.svg#resize_handle")
+										.attr("class", function(d) { return "handler " + d;});
+					
+					self.paint_resize_square(item, 0);
+				}
+				else {
+					resize_square
+						.append("g").attr("class", "handles")
+							.selectAll(".handle")
+							.data(["N", "NE", "E", "SE", "S", "SW", "W", "NW"])
+							.enter()
+								.append("g")
+									.attr("class", function(d) { return "handler handler_" + d;})
+									.append("use")
+										.attr("xlink:href", "images/maps/resize_handle.svg#resize_handle")
+										.on("load", function() {
+											wait_load(function() {
+												self.paint_resize_square(
+													item, 0);
+											});
+										});
+				}
 				
-				paint_resize_square(item, 0);
-			}
-			else {
-				resize_square
-					.append("g").attr("class", "square_selection")
-					.append("use")
-						.attr("xlink:href", "images/maps/square_selection.svg#square_selection")
-						.on("load", function() {
-							wait_load(function() {
-								self.paint_resize_square(
-									item, 0);
-							});
-						});
-				
-				resize_square
-					.append("g").attr("class", "handles")
-						.selectAll(".handle")
-						.data(["N", "NE", "E", "SE", "S", "SW", "W", "NW"])
-						.enter()
-							.append("use")
-								.attr("xlink:href", "images/maps/resize_handle.svg#resize_handle")
-								.attr("class", function(d) { return "handler " + d;})
-								.on("load", function() {
-									wait_load(function() {
-										self.paint_resize_square(
-											item, 0);
-									});
-								});
-			}
+			});
 			break;
 		case 0:
 			var resize_square = d3.select(self._target + " #resize_square");
-			var item = d3.select(self._target + " #node_" + item['graph_id']);
+			var item_d3 = d3.select(self._target + " #node_" + item['graph_id']);
 			
-			var bbox_item = item.node().getBBox();
+			var bbox_item = item_d3.node().getBBox();
 			var bbox_square = resize_square.node().getBBox();
-			var transform_item = d3.transform(item.attr("transform"));
+			var transform_item = d3.transform(item_d3.attr("transform"));
 			var transform_viewport = d3
 				.transform(d3.select(self._target + " .viewport").attr("transform"));
 			
@@ -448,41 +444,175 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 			resize_square
 				.attr("transform", transform.toString());
 			
-			transform = d3.transform();
-			
-			var scale_x = bbox_item.width / bbox_square.width;
-			var scale_y = bbox_item.height / bbox_square.height;
-			
-			//~ 
-			//~ transform.scale[0] = scale_x;
-			//~ transform.scale[1] = scale_y;
-			//~ 
-			//~ console.log(bbox_item);
-			//~ console.log(bbox_square);
-			//~ 
-			//~ resize_square.select(".square_selection")
-				//~ .attr("transform", transform.toString());
-			
-			
-			transform.scale[0] = scale_x * transform_viewport.scale[0];
-			transform.scale[1] = scale_y * transform_viewport.scale[1];
-			
-			resize_square.select(".square_selection")
-				.attr("transform", transform.toString());
+			d3.select("#resize_square .square rect")
+				.attr("width", (bbox_item.width * transform_viewport.scale[0]));
+			d3.select("#resize_square .square rect")
+				.attr("height", (bbox_item.height * transform_viewport.scale[1]));
 			
 			// Set the handlers
-			//~ var bbox_handler = d3
-				//~ .select(self._target + " .handler").node().getBBox();
-			//~ var handler_positions = {};
-			//~ handler_positions['N'] = [];
-			//~ handler_positions['N'][0] = (bbox_item.width / 2)
-				//~ - (bbox_handler.width / 2);
-			//~ handler_positions['N'][1] = 0 - (bbox_handler.width / 2);
-			//~ 
-			//~ d3.selectAll(" .handler").each(function(d) {});
+			var bbox_handler = d3
+				.select(self._target + " .handler").node().getBBox();
 			
+			var handler_positions = {};
+			handler_positions['N'] = [];
+			handler_positions['N'][0] = (bbox_item.width  * transform_viewport.scale[0] / 2)
+				- (bbox_handler.width / 2);
+			handler_positions['N'][1] = 0 - (bbox_handler.height / 2);
+			
+			handler_positions['NE'] = [];
+			handler_positions['NE'][0] = (bbox_item.width  * transform_viewport.scale[0])
+				- (bbox_handler.width / 2);
+			handler_positions['NE'][1] = handler_positions['N'][1];
+			
+			handler_positions['E'] = [];
+			handler_positions['E'][0] = handler_positions['NE'][0];
+			handler_positions['E'][1] = (bbox_item.height  * transform_viewport.scale[1] / 2)
+				- (bbox_handler.height / 2);
+			
+			handler_positions['SE'] = [];
+			handler_positions['SE'][0] = handler_positions['NE'][0];
+			handler_positions['SE'][1] = (bbox_item.height  * transform_viewport.scale[1])
+				- (bbox_handler.height / 2);
+			
+			handler_positions['S'] = [];
+			handler_positions['S'][0] = handler_positions['N'][0];
+			handler_positions['S'][1] = handler_positions['SE'][1];
+			
+			handler_positions['SW'] = [];
+			handler_positions['SW'][0] = 0 - (bbox_handler.width / 2);
+			handler_positions['SW'][1] = handler_positions['SE'][1];
+			
+			handler_positions['W'] = [];
+			handler_positions['W'][0] = handler_positions['SW'][0];
+			handler_positions['W'][1] = handler_positions['E'][1];
+			
+			handler_positions['NW'] = [];
+			handler_positions['NW'][0] = handler_positions['SW'][0];
+			handler_positions['NW'][1] = handler_positions['N'][1];
+			
+			d3.selectAll(" .handler").each(function(d) {
+				var transform = d3.transform();
+				
+				transform.translate[0] = handler_positions[d][0];
+				transform.translate[1] = handler_positions[d][1];
+				
+				d3.select(self._target + " .handler_" + d)
+					.attr("transform", transform.toString());
+				
+				d3.select(this)
+					.on("mouseover", function(d) {
+						self.change_handler_image("mouseover", d);
+						//~ console.log("mouseover");
+					})
+					.on("mouseout", function(d) {
+						self.change_handler_image("mouseout", d);
+						//~ console.log("mouseout");
+					})
+					.on("click", function(d) {
+						console.log("click");
+					})
+					//~ .on("dragstart", function(d) {
+						//~ self.event_resize("dragstart", item, d);
+					//~ })
+					//~ .on("drag", function(d) {
+						//~ self.event_resize("drag", item, d);
+					//~ })
+					//~ .on("dragend", function(d) {
+						//~ self.event_resize("dragend", item, d);
+					//~ });
+			});
+			
+			resize_square.style("opacity", 1);
 			break;
 	}
+}
+
+MapController.prototype.change_handler_image = function(action, handler, wait) {
+	//~ console.log("action", action);
+	
+	//~ var self = this;
+	//~ 
+	//~ if (typeof(wait) === "undefined")
+		//~ wait = 1;
+	//~ 
+	//~ var count_files = 1;
+	//~ function wait_load(callback) {
+		//~ count_files--;
+		//~ 
+		//~ if (count_files == 0) {
+			//~ callback();
+		//~ }
+	//~ }
+	//~ 
+	//~ 
+	//~ var handlers_d3 = d3.select(self._target + " .handles");
+	//~ var handler_d3 = d3.select(self._target + " .handler_" + handler);
+	//~ 
+	//~ console.log("target", self._target);
+	//~ 
+	//~ 
+	//~ 
+	//~ switch (wait) {
+		//~ case 1:
+			//~ 
+			//~ handler_d3.select("use").remove();
+			//~ 
+			//~ switch (action) {
+				//~ case "mouseover":
+					//~ console.log("__mouseover");
+					//~ 
+					//~ 
+					//~ 
+					//~ handler_d3.append("use")
+						//~ .attr("xlink:href", "images/maps/resize_handle.over.svg#resize_handle_over")
+						//~ .attr("class", function(d) { return "handler " + d;})
+						//~ .on("load", function() {
+							//~ wait_load(function() {
+								//~ self.change_handler_image(
+									//~ action, handler, 0);
+							//~ });
+						//~ });
+					//~ 
+					//~ break;
+				//~ case "mouseout":
+					//~ console.log("__mouseout");
+					//~ 
+					//~ handler_d3.append("use")
+						//~ .attr("xlink:href", "images/maps/resize_handle.svg#resize_handle")
+						//~ .attr("class", function(d) { return "handler " + d;})
+						//~ .on("load", function() {
+							//~ wait_load(function() {
+								//~ self.change_handler_image(
+									//~ action, handler, 0);
+							//~ });
+						//~ });
+					//~ 
+					//~ break;
+			//~ }
+			//~ break;
+		//~ case 0:
+			//~ handler_d3
+				//~ .on("mouseover", null)
+				//~ .on("mouseout", null)
+				//~ .on("click", null);
+			//~ handler_d3
+				//~ .on("mouseover", function(d) {
+					//~ self.change_handler_image("mouseover", d);
+					//~ console.log("mouseover");
+				//~ })
+				//~ .on("mouseout", function(d) {
+					//~ self.change_handler_image("mouseout", d);
+					//~ console.log("mouseout");
+				//~ })
+				//~ .on("click", function(d) {
+					//~ console.log("click");
+				//~ });
+			//~ break;
+	//~ }
+}
+
+MapController.prototype.event_resize = function(action, item, handler) {
+	var self = this;
 }
 
 /**

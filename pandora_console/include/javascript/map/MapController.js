@@ -238,10 +238,15 @@ MapController.prototype.paint_nodes = function() {
 					.attr("data-id", function(d) { return d['id'];})
 					.attr("data-graph_id", function(d) { return d['graph_id'];})
 					.attr("data-type", function(d) { return d['type'];})
-					.append("circle")
+					//~ .append("circle")
+						//~ .attr("style", "fill: rgb(50, 50, 128);")
+						//~ .attr("r", "15");
+					.append("rect")
 						.attr("style", "fill: rgb(50, 50, 128);")
-						.attr("r", "15");
-	
+						.attr("x", 0)
+						.attr("y", 0)
+						.attr("height", 30)
+						.attr("width", 30);
 	
 	
 	var arrow_layouts = self._viewport.selectAll(".arrow")
@@ -464,9 +469,13 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 				.attr("transform", transform.toString());
 			
 			d3.select("#resize_square .square rect")
-				.attr("width", (bbox_item.width * transform_viewport.scale[0]));
+				.attr("width",
+					((bbox_item.width * transform_item.scale[0])
+						* transform_viewport.scale[0]));
 			d3.select("#resize_square .square rect")
-				.attr("height", (bbox_item.height * transform_viewport.scale[1]));
+				.attr("height",
+					((bbox_item.height * transform_item.scale[1])
+						* transform_viewport.scale[1]));
 			
 			// Set the handlers
 			
@@ -627,6 +636,7 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 	}
 	
 	console.log("-------------");
+	console.log(handler);
 	
 	var item_d3 = d3.select(self._target + " #node_" + item['graph_id']);
 	var item_transform = d3.transform(item_d3.attr("transform"));
@@ -656,13 +666,49 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 	
 	console.log("old", old_width, old_height);
 	
-	var new_width = width + inc_w;
-	var new_height = height + inc_h;
+	var new_width;
+	var new_height;
 	
-	var scale_x = new_width / old_width;
-	var scale_y = new_width / old_width;
+	var scale_x;
+	var scale_y;
 	
 	console.log("new", new_width, new_height);
+	
+	
+	
+	
+	switch (handler) {
+		case "SE":
+		case "E":
+		case "S":
+			new_width = width + inc_w;
+			new_height = height + inc_h;
+			break;
+		case "N":
+		case "NE":
+			new_width = width + inc_w;
+			new_height = height - inc_h;
+			
+			item_transform.translate[1] += inc_h;
+			break;
+		case "NW":
+		case "W":
+			new_width = width - inc_w;
+			new_height = height - inc_h;
+			
+			item_transform.translate[0] += inc_w;
+			item_transform.translate[1] += inc_h;
+			break;
+		case "SW":
+			new_width = width - inc_w;
+			new_height = height + inc_h;
+			
+			item_transform.translate[0] += inc_w;
+			break;
+	}
+	
+	scale_x = new_width / old_width;
+	scale_y = new_height / old_height;
 	
 	item_transform.scale[0] = scale_x;
 	item_transform.scale[1] = scale_y;

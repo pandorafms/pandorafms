@@ -7832,7 +7832,6 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 	} else if (count ($interval_data) > 0) {
 		// Propagate undefined status to first time point
 		$first_interval_time = array_shift ($interval_data);
-		html_debug ($first_interval_time);
 		$period_reduced -= $first_interval_time['utimestamp'] - $datelimit + $datelimit_increased;
 		array_unshift ($interval_data, $first_interval_time);
 	}

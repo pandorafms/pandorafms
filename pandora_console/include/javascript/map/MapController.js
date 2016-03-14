@@ -468,14 +468,16 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 			resize_square
 				.attr("transform", transform.toString());
 			
+			
+			var real_item_width = (bbox_item.width * transform_item.scale[0]);
+			var real_item_height = (bbox_item.height * transform_item.scale[1]);
+			
 			d3.select("#resize_square .square rect")
 				.attr("width",
-					((bbox_item.width * transform_item.scale[0])
-						* transform_viewport.scale[0]));
+					(real_item_width * transform_viewport.scale[0]));
 			d3.select("#resize_square .square rect")
 				.attr("height",
-					((bbox_item.height * transform_item.scale[1])
-						* transform_viewport.scale[1]));
+					(real_item_height * transform_viewport.scale[1]));
 			
 			// Set the handlers
 			
@@ -484,23 +486,23 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 			
 			var handler_positions = {};
 			handler_positions['N'] = [];
-			handler_positions['N'][0] = (bbox_item.width  * transform_viewport.scale[0] / 2)
+			handler_positions['N'][0] = (real_item_width  * transform_viewport.scale[0] / 2)
 				- (bbox_handler.width / 2);
 			handler_positions['N'][1] = 0 - (bbox_handler.height / 2);
 			
 			handler_positions['NE'] = [];
-			handler_positions['NE'][0] = (bbox_item.width  * transform_viewport.scale[0])
+			handler_positions['NE'][0] = (real_item_width  * transform_viewport.scale[0])
 				- (bbox_handler.width / 2);
 			handler_positions['NE'][1] = handler_positions['N'][1];
 			
 			handler_positions['E'] = [];
 			handler_positions['E'][0] = handler_positions['NE'][0];
-			handler_positions['E'][1] = (bbox_item.height  * transform_viewport.scale[1] / 2)
+			handler_positions['E'][1] = (real_item_height  * transform_viewport.scale[1] / 2)
 				- (bbox_handler.height / 2);
 			
 			handler_positions['SE'] = [];
 			handler_positions['SE'][0] = handler_positions['NE'][0];
-			handler_positions['SE'][1] = (bbox_item.height  * transform_viewport.scale[1])
+			handler_positions['SE'][1] = (real_item_height  * transform_viewport.scale[1])
 				- (bbox_handler.height / 2);
 			
 			handler_positions['S'] = [];

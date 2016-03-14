@@ -596,6 +596,17 @@ MapController.prototype.event_resize = function(action, item, handler) {
 			
 			var transform = d3.transform(handler_d3.attr("transform"));
 			
+			switch (handler) {
+				case "N":
+				case "S":
+					delta_x = 0;
+					break;
+				case "E":
+				case "W":
+					delta_y = 0;
+					break;
+			}
+			
 			transform.translate[0] += delta_x;
 			transform.translate[1] += delta_y;
 			

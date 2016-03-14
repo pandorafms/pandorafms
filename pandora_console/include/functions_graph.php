@@ -2108,7 +2108,7 @@ function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek 
 	// If the data is not provided, we got it
 	if ($data === false) {
 		$data = reporting_get_agentmodule_sla_array ($id, $period,
-			$sla_min, $sla_max, $date, $daysWeek, $time_from, $time_to);
+			$sla_min, $sla_max, $date, $daysWeek, null, null);
 	}
 	
 	$col_planned_downtime = '#20973F';

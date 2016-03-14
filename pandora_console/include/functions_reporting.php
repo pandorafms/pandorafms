@@ -7741,7 +7741,15 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 	// Limit date to start searching data
 	$datelimit = $date - $period;
 	
-	
+	// Substract the not working time
+	// Initialize the working time status machine ($wt_status)
+	// Search the first data at worktime start
+	list ($period_reduced, $wt_status, $datelimit_increased) = reporting_get_agentmodule_sla_day_period ($period, $date, $timeFrom, $timeTo);
+	if ($period_reduced <= 0) {
+		return false;
+	}
+		
+	$wt_points = reporting_get_agentmodule_sla_working_timestamp ($period, $date, $timeFrom, $timeTo);
 	
 	$search_in_history_db = db_search_in_history_db($datelimit);
 	
@@ -7784,7 +7792,7 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 		}
 	}
 	
-	
+	/* The not working time consideration is now doing in foreach loop above
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
@@ -7801,6 +7809,7 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 		case "oracle":
 			break;
 	}
+	* */
 	
 	
 	$sql .= ' ORDER BY utimestamp ASC';
@@ -7815,11 +7824,17 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 		reporting_get_planned_downtimes_intervals($id_agent_module, $datelimit, $date);
 	
 	// Get previous data
-	$previous_data = modules_get_previous_data($id_agent_module, $datelimit);
+	$previous_data = modules_get_previous_data($id_agent_module, $datelimit + $datelimit_increased);
 	
 	if ($previous_data !== false) {
-		$previous_data['utimestamp'] = $datelimit;
+		$previous_data['utimestamp'] = $datelimit + $datelimit_increased;
 		array_unshift ($interval_data, $previous_data);
+	} else if (count ($interval_data) > 0) {
+		// Propagate undefined status to first time point
+		$first_interval_time = array_shift ($interval_data);
+		html_debug ($first_interval_time);
+		$period_reduced -= $first_interval_time['utimestamp'] - $datelimit + $datelimit_increased;
+		array_unshift ($interval_data, $first_interval_time);
 	}
 	
 	// Get next data
@@ -7868,8 +7883,18 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 	
 	
 	foreach ($interval_data as $data) {
-		// Previous status was critical
-		if ($previous_status == 1) {
+		// Test if working time is changed
+		while ($wt_points[0] <= $data['utimestamp']) {
+			$intermediate_point = array_shift($wt_points);
+			if ($wt_status && ($previous_status == 1)) {
+				$bad_period += $intermediate_point - $previous_utimestamp;
+			}
+			$previous_utimestamp = $intermediate_point;
+			$wt_status = !$wt_status;
+		}
+		
+		// Increses bad_period only if it is working time
+		if ($wt_status && ($previous_status == 1)) {
 			$bad_period += $data['utimestamp'] - $previous_utimestamp;
 		}
 		
@@ -7895,7 +7920,7 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 	
 	
 	// Return the percentage of SLA compliance
-	return (float) (100 - ($bad_period / $period) * 100);
+	return (float) (100 - ($bad_period / $period_reduced) * 100);
 }
 
 /** 
@@ -8503,6 +8528,186 @@ function reporting_format_planned_downtime_dates ($planned_downtime) {
 	}
 	
 	return $dates;
+}
+
+/** 
+ * Get real period in SLA subtracting worktime period.
+ * Get if is working in the first point
+ * Get time between first point and 
+ * 
+ * @param int Period to check the SLA compliance.
+ * @param int Date_end date end the sla compliace interval
+ * @param int Working Time start
+ * @param int Working Time end
+ * 
+ * @return array (int fixed SLA period, bool inside working time) 
+ * found
+ */
+function reporting_get_agentmodule_sla_day_period ($period, $date_end, $wt_start = "00:00:00", $wt_end = "23:59:59") {
+	
+	$date_start = $date_end - $period;
+	// Converts to timestamp
+	$human_date_end = date ('H:i:s', $date_end);	
+	$human_date_start = date ('H:i:s', $date_start);
+	// Store into an array the points
+	// "s" start SLA interval point
+	// "e" end SLA interval point
+	// "f" start worktime interval point (from)
+	// "t" end worktime interval point (to)
+	$tp = array (
+		"s" => strtotime($human_date_start),
+		"e" => strtotime($human_date_end),
+		"f" => strtotime($wt_start),
+		"t" => strtotime($wt_end)
+	);
+	
+	asort ($tp);
+	$order = "";
+	foreach ($tp as $type => $time) {
+		$order .= $type;
+	}
+	
+	$period_reduced = $period;
+	$start_working = true;
+	$datelimit_increased = 0;
+	
+	//Special case. If $order = "seft" and start time == end time it should be treated like "esft"
+	if (($period > 0) and ($human_date_end == $human_date_start) and ($order == "seft")) {
+		$order = "esft";
+	}
+	
+	// Discriminates the cases depends what time point is higher than other
+	switch ($order) {
+	
+		case "setf":
+		case "etfs":
+		case "tfse":
+		case "fset":
+			// Default $period_reduced
+			// Default $start_working
+			// Default $datelimit_increased
+			break;
+		case "stef":
+		case "tefs":
+		case "fste":
+			$period_reduced =  $period - ($tp["e"] - $tp["t"]);
+			// Default $start_working
+			// Default $datelimit_increased
+			break;
+		case "stfe":
+		case "estf":
+		case "tfes":
+			$period_reduced = $period - ($tp["f"] -$tp["t"]);
+			// Default $start_working
+			// Default $datelimit_increased
+			break;
+		case "tsef":
+		case "seft":
+		case "ftse":
+		case "efts":
+			$period_reduced = -1;
+			$start_working = false;
+			// Default $datelimit_increased
+			break;
+		case "tsfe":
+		case "etsf":
+		case "sfet":
+			$period_reduced = $period - ($tp["f"] - $tp["s"]);
+			$start_working = false;
+			$datelimit_increased = $tp["f"] - $tp["s"];
+			break;
+		case "efst":
+			$period_reduced = $tp["t"] - $tp["s"];
+			// Default $start_working
+			// Default $datelimit_increased
+			break;
+		case "fest":
+			$period_reduced = ($tp["t"] - $tp["s"]) + ($tp["e"] - $tp["f"]);
+			// Default $start_working
+			// Default $datelimit_increased
+			break;
+		case "tesf":
+			$period_reduced = SECONDS_1DAY - ($tp["f"] - $tp["t"]);
+			$start_working = false;
+			$datelimit_increased = $tp["f"] - $tp["s"];
+			break;
+		case "sfte":
+		case "esft":
+			$period_reduced = $tp["t"] - $tp["f"];
+			$start_working = false;
+			$datelimit_increased = $tp["f"] - $tp["s"];
+			break;
+		case "ftes":
+			$period_reduced = $tp["t"] - $tp["f"];
+			$start_working = false;
+			$datelimit_increased = $tp["f"] + SECONDS_1DAY - $tp["s"];
+			break;
+		case "fets":
+			$period_reduced = $tp["e"] - $tp["f"];
+			$start_working = false;
+			$datelimit_increased = $tp["f"] + SECONDS_1DAY - $tp["s"];
+			break;
+		default:
+			// Default $period_reduced
+			// Default $start_working
+			// Default $datelimit_increased
+			break;
+	}
+	
+	return array ($period_reduced, $start_working, $datelimit_increased);
+}
+
+/** 
+ * Get working time SLA in timestamp form. Get all items and discard previous not necessaries
+ *  
+ * @param int Period to check the SLA compliance.
+ * @param int Date_end date end the sla compliace interval
+ * @param int Working Time start
+ * @param int Working Time end
+ * 
+ * @return array work time points
+ * found
+ */
+function reporting_get_agentmodule_sla_working_timestamp ($period, $date_end, $wt_start = "00:00:00", $wt_end = "23:59:59") {
+	
+	$date_previous_day = $date_end - SECONDS_1DAY;
+	$wt = array ();
+	
+	// Calculate posibles data points
+	$relative_date_end = strtotime (date ('H:i:s', $date_end));
+	$relative_00_00_00 = strtotime ("00:00:00");
+	$relative_wt_start = strtotime($wt_start) - $relative_00_00_00;
+	$relative_wt_end = strtotime($wt_end) - $relative_00_00_00;
+	
+	$absolute_previous_00_00_00 = $date_previous_day - ($relative_date_end - $relative_00_00_00);
+	$absolute_00_00_00 = $date_end - ($relative_date_end - $relative_00_00_00);
+	array_push ($wt, $absolute_previous_00_00_00);
+	if ($relative_wt_start < $relative_wt_end) {
+		array_push ($wt, $absolute_previous_00_00_00 + $relative_wt_start);
+		array_push ($wt, $absolute_previous_00_00_00 + $relative_wt_end);
+		array_push ($wt, $absolute_00_00_00 + $relative_wt_start);
+		array_push ($wt, $absolute_00_00_00 + $relative_wt_end);
+	} else {
+		array_push ($wt, $absolute_previous_00_00_00 + $relative_wt_end);
+		array_push ($wt, $absolute_previous_00_00_00 + $relative_wt_start);
+		array_push ($wt, $absolute_00_00_00 + $relative_wt_end);
+		array_push ($wt, $absolute_00_00_00 + $relative_wt_start);
+	}
+	array_push ($wt, $absolute_00_00_00 + SECONDS_1DAY);
+	
+	//Discard outside period time points
+	$date_start = $date_end - $period;
+	
+	$first_time = array_shift ($wt);
+	while ($first_time < $date_start) {
+		if (empty ($wt)) {
+			return $wt;
+		}
+		$first_time = array_shift ($wt);
+	}
+	array_unshift ($wt, $first_time);
+	
+	return $wt;
 }
 
 ?>

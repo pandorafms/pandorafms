@@ -7801,6 +7801,15 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 		$first_interval_time = array_shift ($interval_data);
 		$period_reduced -= $first_interval_time['utimestamp'] - $datelimit + $datelimit_increased;
 		array_unshift ($interval_data, $first_interval_time);
+		// Remove rebased points
+		while ($wt_points[0] <= $first_interval_time['utimestamp']) {
+			array_shift ($wt_points);
+			$wt_status = !$wt_status;
+		}
+	}
+	
+	if (count ($wt_points) < 2) {
+		return false;
 	}
 	
 	// Get next data

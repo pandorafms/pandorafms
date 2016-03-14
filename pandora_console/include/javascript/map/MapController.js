@@ -350,6 +350,104 @@ MapController.prototype.remove_resize_square = function(item, wait) {
 	d3.select(self._target + " svg #resize_square").remove();
 }
 
+MapController.prototype.positioning_resize_square = function(item) {
+	var resize_square = d3.select(self._target + " #resize_square");
+	var item_d3 = d3.select(self._target + " #node_" + item['graph_id']);
+	
+	var bbox_item = item_d3.node().getBBox();
+	var bbox_square = resize_square.node().getBBox();
+	var transform_item = d3.transform(item_d3.attr("transform"));
+	var transform_viewport = d3
+		.transform(d3.select(self._target + " .viewport").attr("transform"));
+	
+	var transform = d3.transform();
+	
+	var x = (bbox_item.x +
+			transform_item.translate[0] +
+			transform_viewport.translate[0]
+		) * transform_viewport.scale[0];
+	var y = (bbox_item.y +
+			transform_item.translate[1] +
+			transform_viewport.translate[1]
+		) * transform_viewport.scale[1];
+	
+	x = (bbox_item.x +
+		transform_item.translate[0]) * transform_viewport.scale[0] +
+		transform_viewport.translate[0];
+	y = (bbox_item.y +
+		transform_item.translate[1]) * transform_viewport.scale[1] +
+		transform_viewport.translate[1];
+	
+	transform.translate[0] = x;
+	transform.translate[1] = y;
+	
+	resize_square
+		.attr("transform", transform.toString());
+	
+	
+	var real_item_width = (bbox_item.width * transform_item.scale[0]);
+	var real_item_height = (bbox_item.height * transform_item.scale[1]);
+	
+	d3.select("#resize_square .square rect")
+		.attr("width",
+			(real_item_width * transform_viewport.scale[0]));
+	d3.select("#resize_square .square rect")
+		.attr("height",
+			(real_item_height * transform_viewport.scale[1]));
+	
+	// Set the handlers
+	
+	var bbox_handler = d3
+		.select(self._target + " .handler").node().getBBox();
+	
+	var handler_positions = {};
+	handler_positions['N'] = [];
+	handler_positions['N'][0] = (real_item_width  * transform_viewport.scale[0] / 2)
+		- (bbox_handler.width / 2);
+	handler_positions['N'][1] = 0 - (bbox_handler.height / 2);
+	
+	handler_positions['NE'] = [];
+	handler_positions['NE'][0] = (real_item_width  * transform_viewport.scale[0])
+		- (bbox_handler.width / 2);
+	handler_positions['NE'][1] = handler_positions['N'][1];
+	
+	handler_positions['E'] = [];
+	handler_positions['E'][0] = handler_positions['NE'][0];
+	handler_positions['E'][1] = (real_item_height  * transform_viewport.scale[1] / 2)
+		- (bbox_handler.height / 2);
+	
+	handler_positions['SE'] = [];
+	handler_positions['SE'][0] = handler_positions['NE'][0];
+	handler_positions['SE'][1] = (real_item_height  * transform_viewport.scale[1])
+		- (bbox_handler.height / 2);
+	
+	handler_positions['S'] = [];
+	handler_positions['S'][0] = handler_positions['N'][0];
+	handler_positions['S'][1] = handler_positions['SE'][1];
+	
+	handler_positions['SW'] = [];
+	handler_positions['SW'][0] = 0 - (bbox_handler.width / 2);
+	handler_positions['SW'][1] = handler_positions['SE'][1];
+	
+	handler_positions['W'] = [];
+	handler_positions['W'][0] = handler_positions['SW'][0];
+	handler_positions['W'][1] = handler_positions['E'][1];
+	
+	handler_positions['NW'] = [];
+	handler_positions['NW'][0] = handler_positions['SW'][0];
+	handler_positions['NW'][1] = handler_positions['N'][1];
+	
+	d3.selectAll(" .handler").each(function(d) {
+		var transform = d3.transform();
+		
+		transform.translate[0] = handler_positions[d][0];
+		transform.translate[1] = handler_positions[d][1];
+		
+		d3.select(self._target + " .handler_" + d)
+			.attr("transform", transform.toString());
+	});
+}
+
 MapController.prototype.paint_resize_square = function(item, wait) {
 	var self = this;
 	
@@ -435,101 +533,9 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 			});
 			break;
 		case 0:
-			var resize_square = d3.select(self._target + " #resize_square");
-			var item_d3 = d3.select(self._target + " #node_" + item['graph_id']);
-			
-			var bbox_item = item_d3.node().getBBox();
-			var bbox_square = resize_square.node().getBBox();
-			var transform_item = d3.transform(item_d3.attr("transform"));
-			var transform_viewport = d3
-				.transform(d3.select(self._target + " .viewport").attr("transform"));
-			
-			var transform = d3.transform();
-			
-			var x = (bbox_item.x +
-					transform_item.translate[0] +
-					transform_viewport.translate[0]
-				) * transform_viewport.scale[0];
-			var y = (bbox_item.y +
-					transform_item.translate[1] +
-					transform_viewport.translate[1]
-				) * transform_viewport.scale[1];
-			
-			x = (bbox_item.x +
-				transform_item.translate[0]) * transform_viewport.scale[0] +
-				transform_viewport.translate[0];
-			y = (bbox_item.y +
-				transform_item.translate[1]) * transform_viewport.scale[1] +
-				transform_viewport.translate[1];
-			
-			transform.translate[0] = x;
-			transform.translate[1] = y;
-			
-			resize_square
-				.attr("transform", transform.toString());
-			
-			
-			var real_item_width = (bbox_item.width * transform_item.scale[0]);
-			var real_item_height = (bbox_item.height * transform_item.scale[1]);
-			
-			d3.select("#resize_square .square rect")
-				.attr("width",
-					(real_item_width * transform_viewport.scale[0]));
-			d3.select("#resize_square .square rect")
-				.attr("height",
-					(real_item_height * transform_viewport.scale[1]));
-			
-			// Set the handlers
-			
-			var bbox_handler = d3
-				.select(self._target + " .handler").node().getBBox();
-			
-			var handler_positions = {};
-			handler_positions['N'] = [];
-			handler_positions['N'][0] = (real_item_width  * transform_viewport.scale[0] / 2)
-				- (bbox_handler.width / 2);
-			handler_positions['N'][1] = 0 - (bbox_handler.height / 2);
-			
-			handler_positions['NE'] = [];
-			handler_positions['NE'][0] = (real_item_width  * transform_viewport.scale[0])
-				- (bbox_handler.width / 2);
-			handler_positions['NE'][1] = handler_positions['N'][1];
-			
-			handler_positions['E'] = [];
-			handler_positions['E'][0] = handler_positions['NE'][0];
-			handler_positions['E'][1] = (real_item_height  * transform_viewport.scale[1] / 2)
-				- (bbox_handler.height / 2);
-			
-			handler_positions['SE'] = [];
-			handler_positions['SE'][0] = handler_positions['NE'][0];
-			handler_positions['SE'][1] = (real_item_height  * transform_viewport.scale[1])
-				- (bbox_handler.height / 2);
-			
-			handler_positions['S'] = [];
-			handler_positions['S'][0] = handler_positions['N'][0];
-			handler_positions['S'][1] = handler_positions['SE'][1];
-			
-			handler_positions['SW'] = [];
-			handler_positions['SW'][0] = 0 - (bbox_handler.width / 2);
-			handler_positions['SW'][1] = handler_positions['SE'][1];
-			
-			handler_positions['W'] = [];
-			handler_positions['W'][0] = handler_positions['SW'][0];
-			handler_positions['W'][1] = handler_positions['E'][1];
-			
-			handler_positions['NW'] = [];
-			handler_positions['NW'][0] = handler_positions['SW'][0];
-			handler_positions['NW'][1] = handler_positions['N'][1];
+			self.positioning_resize_square(item);
 			
 			d3.selectAll(" .handler").each(function(d) {
-				var transform = d3.transform();
-				
-				transform.translate[0] = handler_positions[d][0];
-				transform.translate[1] = handler_positions[d][1];
-				
-				d3.select(self._target + " .handler_" + d)
-					.attr("transform", transform.toString());
-				
 				var drag = d3.behavior.drag()
 					.origin(function(d) { return d; })
 					.on("dragstart", function(d) {
@@ -553,6 +559,7 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 					});
 			});
 			
+			var resize_square = d3.select(self._target + " #resize_square");
 			
 			resize_square.style("opacity", 1);
 			break;
@@ -596,8 +603,6 @@ MapController.prototype.event_resize = function(action, item, handler) {
 			var delta_x = d3.event.dx;
 			var delta_y = d3.event.dy;
 			
-			var transform = d3.transform(handler_d3.attr("transform"));
-			
 			switch (handler) {
 				case "N":
 				case "S":
@@ -609,13 +614,9 @@ MapController.prototype.event_resize = function(action, item, handler) {
 					break;
 			}
 			
-			transform.translate[0] += delta_x;
-			transform.translate[1] += delta_y;
-			
 			self.resize_node(item, handler, delta_x, delta_y);
 			
-			handler_d3.attr("transform", transform.toString());
-			
+			self.positioning_resize_square(item);
 			//~ self.move_arrow(d3.select(this).attr("data-graph_id"));
 			break;
 		case "dragend":

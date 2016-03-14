@@ -519,27 +519,27 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 				d3.select(self._target + " .handler_" + d)
 					.attr("transform", transform.toString());
 				
+				var drag = d3.behavior.drag()
+					.origin(function(d) { return d; })
+					.on("dragstart", function(d) {
+						self.event_resize("dragstart", item, d);
+					})
+					.on("drag", function(d) {
+						self.event_resize("drag", item, d);
+					})
+					.on("dragend", function(d) {
+						self.event_resize("dragend", item, d);
+					});
+				
+				d3.select(this).call(drag);
+				
 				d3.select(this)
 					.on("mouseover", function(d) {
 						self.change_handler_image("mouseover", d);
-						//~ console.log("mouseover");
 					})
 					.on("mouseout", function(d) {
 						self.change_handler_image("mouseout", d);
-						//~ console.log("mouseout");
-					})
-					.on("click", function(d) {
-						console.log("click");
-					})
-					//~ .on("dragstart", function(d) {
-						//~ self.event_resize("dragstart", item, d);
-					//~ })
-					//~ .on("drag", function(d) {
-						//~ self.event_resize("drag", item, d);
-					//~ })
-					//~ .on("dragend", function(d) {
-						//~ self.event_resize("dragend", item, d);
-					//~ });
+					});
 			});
 			
 			
@@ -567,6 +567,110 @@ MapController.prototype.change_handler_image = function(action, handler, wait) {
 
 MapController.prototype.event_resize = function(action, item, handler) {
 	var self = this;
+	
+	d3.event.sourceEvent.stopPropagation();
+	d3.event.sourceEvent.preventDefault();
+	
+	var self = this;
+	
+	var handler_d3 = d3.select(self._target + " .handler_" + handler);
+	
+	switch (action) {
+		case "dragstart":
+			handler_d3.classed("dragging", true);
+			
+			self.save_size_item(item);
+			break;
+		case "drag":
+			var delta_x = d3.event.dx;
+			var delta_y = d3.event.dy;
+			
+			var transform = d3.transform(handler_d3.attr("transform"));
+			
+			transform.translate[0] += delta_x;
+			transform.translate[1] += delta_y;
+			
+			self.resize_node(item, handler, delta_x, delta_y);
+			
+			handler_d3.attr("transform", transform.toString());
+			
+			//~ self.move_arrow(d3.select(this).attr("data-graph_id"));
+			break;
+		case "dragend":
+			handler_d3.classed("dragging", false);
+			break;
+	}
+}
+
+MapController.prototype.save_size_item = function(item) {
+	var item_d3 = d3.select(self._target + " #node_" + item['graph_id']);
+	var item_transform = d3.transform(item_d3.attr("transform"));
+	var item_bbox = item_d3.node().getBBox();
+	
+	var width = item_bbox.width * item_transform.scale[0];
+	var height = item_bbox.height * item_transform.scale[1];
+	
+	item_d3.attr("data-original_width", parseFloat(width));
+	item_d3.attr("data-original_height", parseFloat(height));
+}
+
+MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) {
+	switch (handler) {
+		case "N":
+		case "S":
+			delta_x = 0;
+			break;
+		case "E":
+		case "W":
+			delta_y = 0;
+			break;
+	}
+	
+	console.log("-------------");
+	
+	var item_d3 = d3.select(self._target + " #node_" + item['graph_id']);
+	var item_transform = d3.transform(item_d3.attr("transform"));
+	var item_bbox = item_d3.node().getBBox();
+	var transform_viewport =
+		d3.transform(d3.select(self._target + " .viewport").attr("transform"));
+	
+	var inc_w = delta_x * transform_viewport.scale[0];
+	var inc_h = delta_y * transform_viewport.scale[1];
+	
+	console.log("delta", delta_x, delta_y);
+	console.log("inc", inc_w, inc_h);
+	console.log("item", item_transform.scale[0], item_transform.scale[1]);
+	
+	
+	var width = item_d3.attr("data-width");
+	var height =item_d3.attr("data-height");
+	if (width == null) {
+		width = old_width = item_d3.attr("data-original_width");
+		height = old_height = item_d3.attr("data-original_height");
+	}
+	
+	old_width = parseFloat(old_width);
+	old_height = parseFloat(old_height);
+	width = parseFloat(width);
+	height = parseFloat(height);
+	
+	console.log("old", old_width, old_height);
+	
+	var new_width = width + inc_w;
+	var new_height = height + inc_h;
+	
+	var scale_x = new_width / old_width;
+	var scale_y = new_width / old_width;
+	
+	console.log("new", new_width, new_height);
+	
+	item_transform.scale[0] = scale_x;
+	item_transform.scale[1] = scale_y;
+	
+	item_d3.attr("transform", item_transform.toString());
+	
+	item_d3.attr("data-width", parseFloat(new_width));
+	item_d3.attr("data-height", parseFloat(new_height));
 }
 
 /**

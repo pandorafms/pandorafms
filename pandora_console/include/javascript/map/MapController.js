@@ -842,6 +842,9 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 	
 	item_d3.attr("data-width", parseFloat(new_width));
 	item_d3.attr("data-height", parseFloat(new_height));
+	
+	
+	self.move_arrow(item["graph_id"]);
 }
 
 /**
@@ -1335,10 +1338,13 @@ function getBBox_Symbol(target, symbol) {
 * This function returns the size of the element
 */
 function get_size_element(element) {
+	var transform = d3.transform(d3.select(element).attr("transform"));
 	var element_b = d3.select(element).node().getBBox();
 	
 	
-	return [element_b['width'], element_b['height']];
+	return [
+		element_b['width'] * transform.scale[0],
+		element_b['height'] * transform.scale[1]];
 }
 
 /**

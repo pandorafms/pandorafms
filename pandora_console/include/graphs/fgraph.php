@@ -218,7 +218,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 	$chart_extra_data = array(), $yellow_threshold = 0,
 	$red_threshold = 0, $adapt_key = '', $force_integer = false,
 	$series_suffix_str = '', $menu = true, $backgroundColor = 'white',
-	$dashboard = false) {
+	$dashboard = false, $vconsole = false) {
 	
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
@@ -260,35 +260,55 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 			$dashboard);
 	}
 	else {
-		$graph = array();
-		$graph['data'] = $chart_data;
-		$graph['width'] = $width;
-		$graph['height'] = $height;
-		$graph['color'] = $color;
-		$graph['legend'] = $legend;
-		$graph['xaxisname'] = $xaxisname;
-		$graph['yaxisname'] = $yaxisname;
-		$graph['water_mark'] = $water_mark_file;
-		$graph['font'] = $font;
-		$graph['font_size'] = $font_size;
-		$graph['backgroundColor'] = $backgroundColor;
-		$graph['unit'] = $unit;
-		$graph['series_type'] = $series_type;
-		
-		$id_graph = serialize_in_temp($graph, null, $ttl);
-		
-		// Warning: This string is used in the function "api_get_module_graph" from 'functions_api.php' with the regec patern "/<img src='(.+)'>/"
-		
-		
-		
-		
-		return "<img src='" .
-			ui_get_full_url (false, false, false, false) .
-			"include/graphs/functions_pchart.php?" .
-				"static_graph=1&" .
-				"graph_type=area&" .
-				"ttl=" . $ttl . "&" .
-				"id_graph=" . $id_graph . "'>";
+		if ($vconsole) {
+			return flot_area_simple_graph(
+				$chart_data,
+				$width,
+				$height,
+				$color,
+				$legend,
+				$long_index,
+				$homeurl,
+				$unit,
+				$water_mark_url,
+				$series_type,
+				$chart_extra_data,
+				$yellow_threshold,
+				$red_threshold,
+				$adapt_key,
+				$force_integer,
+				$series_suffix_str,
+				$menu,
+				$backgroundColor,
+				$dashboard,
+				$vconsole);
+		}
+		else {
+			$graph = array();
+			$graph['data'] = $chart_data;
+			$graph['width'] = $width;
+			$graph['height'] = $height;
+			$graph['color'] = $color;
+			$graph['legend'] = $legend;
+			$graph['xaxisname'] = $xaxisname;
+			$graph['yaxisname'] = $yaxisname;
+			$graph['water_mark'] = $water_mark_file;
+			$graph['font'] = $font;
+			$graph['font_size'] = $font_size;
+			$graph['backgroundColor'] = $backgroundColor;
+			$graph['unit'] = $unit;
+			$graph['series_type'] = $series_type;
+			
+			$id_graph = serialize_in_temp($graph, null, $ttl);
+			// Warning: This string is used in the function "api_get_module_graph" from 'functions_api.php' with the regec patern "/<img src='(.+)'>/"
+			return "<img src='" .
+				ui_get_full_url (false, false, false, false) .
+				"include/graphs/functions_pchart.php?" .
+					"static_graph=1&" .
+					"graph_type=area&" .
+					"ttl=" . $ttl . "&" .
+					"id_graph=" . $id_graph . "'>";
+		}
 	}
 }
 
@@ -296,7 +316,7 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height,
 	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
 	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
-	$dashboard = false) {
+	$dashboard = false, $vconsole = false) {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
@@ -327,25 +347,51 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height,
 			$dashboard);
 	}
 	else {
-		//Stack the data
-		stack_data($chart_data, $legend, $color);
-		
-		$graph = array();
-		$graph['data'] = $chart_data;
-		$graph['width'] = $width;
-		$graph['height'] = $height;
-		$graph['color'] = $color;
-		$graph['legend'] = $legend;
-		$graph['xaxisname'] = $xaxisname;
-		$graph['yaxisname'] = $yaxisname;
-		$graph['water_mark'] = $water_mark_file;
-		$graph['font'] = $font;
-		$graph['font_size'] = $font_size;
-		$graph['backgroundColor'] = $backgroundColor;
-		
-		$id_graph = serialize_in_temp($graph, null, $ttl);
-		
-		return "<img src='" . ui_get_full_url (false, false, false, false) . "include/graphs/functions_pchart.php?static_graph=1&graph_type=stacked_area&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
+		if ($vconsole) {
+			return flot_area_stacked_graph(
+				$chart_data,
+				$width,
+				$height,
+				$color,
+				$legend,
+				$long_index,
+				$homeurl,
+				$unit,
+				$water_mark_url,
+				array(),
+				array(),
+				0,
+				0,
+				'',
+				false,
+				'',
+				true,
+				$backgroundColor,
+				$dashboard,
+				$vconsole);
+		}
+		else {
+			//Stack the data
+			stack_data($chart_data, $legend, $color);
+			
+			$graph = array();
+			$graph['data'] = $chart_data;
+			$graph['width'] = $width;
+			$graph['height'] = $height;
+			$graph['color'] = $color;
+			$graph['legend'] = $legend;
+			$graph['xaxisname'] = $xaxisname;
+			$graph['yaxisname'] = $yaxisname;
+			$graph['water_mark'] = $water_mark_file;
+			$graph['font'] = $font;
+			$graph['font_size'] = $font_size;
+			$graph['backgroundColor'] = $backgroundColor;
+			
+			$id_graph = serialize_in_temp($graph, null, $ttl);
+			
+			return "<img src='" . ui_get_full_url (false, false, false, false) .
+				"include/graphs/functions_pchart.php?static_graph=1&graph_type=stacked_area&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
+		}
 	}
 }
 
@@ -353,7 +399,7 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height,
 	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
 	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
-	$dashboard = false) {
+	$dashboard = false, $vconsole = false) {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
@@ -385,25 +431,50 @@ function stacked_line_graph($flash_chart, $chart_data, $width, $height,
 			$dashboard);
 	}
 	else {
-		//Stack the data
-		stack_data($chart_data, $legend, $color);
-		
-		$graph = array();
-		$graph['data'] = $chart_data;
-		$graph['width'] = $width;
-		$graph['height'] = $height;
-		$graph['color'] = $color;
-		$graph['legend'] = $legend;
-		$graph['xaxisname'] = $xaxisname;
-		$graph['yaxisname'] = $yaxisname;
-		$graph['water_mark'] = $water_mark_file;
-		$graph['font'] = $font;
-		$graph['font_size'] = $font_size;
-		$graph['backgroundColor'] = $backgroundColor;
-		
-		$id_graph = serialize_in_temp($graph, null, $ttl);
-		
-		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?static_graph=1&graph_type=line&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
+		if ($vconsole) {
+			return flot_line_stacked_graph(
+				$chart_data,
+				$width,
+				$height,
+				$color,
+				$legend,
+				$long_index,
+				$homeurl,
+				$unit,
+				$water_mark_url,
+				array(),
+				array(),
+				0,
+				0,
+				'',
+				false,
+				'',
+				true,
+				$background_color,
+				$dashboard,
+				$vconsole);
+		}
+		else {
+			//Stack the data
+			stack_data($chart_data, $legend, $color);
+			
+			$graph = array();
+			$graph['data'] = $chart_data;
+			$graph['width'] = $width;
+			$graph['height'] = $height;
+			$graph['color'] = $color;
+			$graph['legend'] = $legend;
+			$graph['xaxisname'] = $xaxisname;
+			$graph['yaxisname'] = $yaxisname;
+			$graph['water_mark'] = $water_mark_file;
+			$graph['font'] = $font;
+			$graph['font_size'] = $font_size;
+			$graph['backgroundColor'] = $backgroundColor;
+			
+			$id_graph = serialize_in_temp($graph, null, $ttl);
+			
+			return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?static_graph=1&graph_type=line&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
+		}
 	}
 }
 
@@ -464,7 +535,7 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 	$legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
 	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
-	$dashboard = false) {
+	$dashboard = false, $vconsole = false) {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
@@ -495,22 +566,47 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 			$dashboard);
 	}
 	else {
-		$graph = array();
-		$graph['data'] = $chart_data;
-		$graph['width'] = $width;
-		$graph['height'] = $height;
-		$graph['color'] = $color;
-		$graph['legend'] = $legend;
-		$graph['xaxisname'] = $xaxisname;
-		$graph['yaxisname'] = $yaxisname;
-		$graph['water_mark'] = $water_mark_file;
-		$graph['font'] = $font;
-		$graph['font_size'] = $font_size;
-		$graph['backgroundColor'] = $backgroundColor;
-		
-		$id_graph = serialize_in_temp($graph, null, $ttl);
-		
-		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?static_graph=1&graph_type=line&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
+		if ($vconsole) {
+			return flot_line_simple_graph(
+				$chart_data,
+				$width,
+				$height,
+				$color,
+				$legend,
+				$long_index,
+				$homeurl,
+				$unit,
+				$water_mark_url,
+				array(),
+				array(),
+				0,
+				0,
+				'',
+				false,
+				'',
+				true,
+				$backgroundColor,
+				$dashboard,
+				$vconsole);
+		}
+		else {
+			$graph = array();
+			$graph['data'] = $chart_data;
+			$graph['width'] = $width;
+			$graph['height'] = $height;
+			$graph['color'] = $color;
+			$graph['legend'] = $legend;
+			$graph['xaxisname'] = $xaxisname;
+			$graph['yaxisname'] = $yaxisname;
+			$graph['water_mark'] = $water_mark_file;
+			$graph['font'] = $font;
+			$graph['font_size'] = $font_size;
+			$graph['backgroundColor'] = $backgroundColor;
+			
+			$id_graph = serialize_in_temp($graph, null, $ttl);
+			
+			return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?static_graph=1&graph_type=line&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
+		}
 	}
 }
 

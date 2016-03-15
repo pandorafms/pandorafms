@@ -164,7 +164,7 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 	$background_color = 'white', $modules_param = array(), $homeurl = '',
 	$name_list = array(), $unit_list = array(), $show_last = true,
 	$show_max = true, $show_min = true, $show_avg = true, $ttl = 1,
-	$dashboard = false) {
+	$dashboard = false, $vconsole = false) {
 	
 	global $config;
 	
@@ -243,7 +243,8 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		$show_min,
 		$show_avg,
 		$labels,
-		$dashboard);
+		$dashboard,
+		$vconsole);
 	
 	if ($return)
 		return $output;

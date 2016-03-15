@@ -88,7 +88,7 @@ function visual_map_print_user_line_handles($layoutData) {
 }
 
 function visual_map_print_item($mode = "read", $layoutData,
-	$proportion = null, $show_links = true, $isExternalLink = false) {
+	$proportion = null, $show_links = true, $isExternalLink = false, $graph_javascript = true) {
 	global $config;
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
@@ -771,12 +771,15 @@ function visual_map_print_item($mode = "read", $layoutData,
 			if ($layoutData['id_custom_graph'] != 0) {
 				$img = custom_graphs_print(
 					$layoutData['id_custom_graph'], $height, $width,
-					$period, null, true, 0, true, $layoutData['image']);
+					$period, null, true, 0, true, $layoutData['image'], 
+					array(), '', array(), array(), true,
+					true, true, true, 1, false, $graph_javascript);
 			}
 			else {
 				$img = grafico_modulo_sparse($id_module, $period, 0, $width,
-					$height, '', null, false, 1, false, 0, '', 0, 0, true, true, 
-					'', 1, false, '', false, false, true, $layoutData['image']);
+					$height, '', null, false, 1, false, 0, '', 0, 0,
+					true, true, '', 1, false, '', false, false, true, 
+					$layoutData['image'], null, false, $graph_javascript);
 			}
 			
 			//Restore db connection
@@ -1918,7 +1921,7 @@ function visual_map_print_user_lines($layout_data, $proportion = null) {
  * @param bool $draw_lines
  */
 function visual_map_print_visual_map ($id_layout, $show_links = true,
-	$draw_lines = true, $width = null, $height = null, $home_url = '', $isExternalLink = false) {
+	$draw_lines = true, $width = null, $height = null, $home_url = '', $isExternalLink = false, $graph_javascript = true) {
 
 	enterprise_include_once('include/functions_visual_map.php');
 	
@@ -2067,7 +2070,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				break;
 			default:
 				visual_map_print_item("read", $layout_data,
-					$proportion, $show_links, $isExternalLink);
+					$proportion, $show_links, $isExternalLink, $graph_javascript);
 				break;
 		}
 	}

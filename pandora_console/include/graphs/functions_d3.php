@@ -152,7 +152,7 @@ function d3_bullet_chart($chart_data, $width, $height, $color, $legend,
 	$id_bullet = uniqid();
 	
 	$output .= 
-		'<div id="bullet_graph_' . $id_bullet . '" class="bulle" style="overflow: hidden;"></div>
+		'<div id="bullet_graph_' . $id_bullet . '" class="bullet" style="overflow: hidden; width: '.$width.'px"></div>
 		<style>
 			
 			.bullet_graph {
@@ -226,7 +226,7 @@ function d3_bullet_chart($chart_data, $width, $height, $color, $legend,
 		
 		var title = svg.append("g")
 			.style("text-anchor", "end")
-			.attr("transform", "translate(-20," + height  + ")");
+			.attr("transform", "translate(-10, 15)");
 		
 		title.append("text")
 			.attr("class", "title")

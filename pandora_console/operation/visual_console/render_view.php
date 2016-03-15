@@ -153,7 +153,7 @@ else {
 	html_print_input_hidden('metaconsole', 1);
 }
 
-visual_map_print_visual_map ($id_layout);
+visual_map_print_visual_map ($id_layout, true, true, null, null, '', false, true);
 
 
 

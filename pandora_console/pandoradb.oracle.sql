@@ -1001,6 +1001,7 @@ CREATE TABLE tserver (
 	lag_modules NUMBER(10, 0) DEFAULT 0,
 	total_modules_running NUMBER(10, 0) DEFAULT 0,
 	my_modules NUMBER(10, 0) DEFAULT 0,
+	server_keepalive NUMBER(10, 0) DEFAULT 0,
 	stat_utimestamp NUMBER(19, 0) DEFAULT 0
 );
 CREATE INDEX tserver_name_idx ON tserver(name);

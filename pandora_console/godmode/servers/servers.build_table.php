@@ -30,6 +30,7 @@ if (! check_acl ($config["id_user"], 0, "AW")) {
 
 global $tiny;
 global $hidden_toggle;
+$date = time();
 
 $servers = servers_get_info();
 if ($servers === false) {
@@ -84,11 +85,10 @@ foreach ($servers as $server) {
 	$data[0] = '<span title="' . $server['version'] . '">' .
 		$server['name'] . '</span>';
 	
-	if ($server['status'] == 0) {
+	//Status
+	$data[1] = ui_print_status_image (STATUS_SERVER_OK, '', true);
+	if (($server['status'] == 0) || (($date - strtotime($server['keepalive'])) > ($server['server_keepalive'])*2)) {
 		$data[1] = ui_print_status_image (STATUS_SERVER_DOWN, '', true);
-	}
-	else {
-		$data[1] = ui_print_status_image (STATUS_SERVER_OK, '', true);
 	}
 	
 	// Type

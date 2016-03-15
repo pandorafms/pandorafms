@@ -957,13 +957,14 @@ MapController.prototype.init_events = function(principalObject) {
 		var delta_x = d3.event.dx;
 		var delta_y = d3.event.dy;
 		
-		var translation = d3.transform(d3.select(this).attr("transform"));
-		scale = 1;
-		var x = translation.translate[0] + delta_x;
-		var y = translation.translate[1] + delta_y;
+		var transform = d3.transform(d3.select(this).attr("transform"));
 		
-		d3.select(this).attr("transform",
-			"translate(" + x + " " + y + ")");
+		transform.translate[0] += delta_x;
+		transform.translate[1] += delta_y;
+		
+		
+		
+		d3.select(this).attr("transform", transform.toString());
 		
 		self.move_arrow(d3.select(this).attr("data-graph_id"));
 	}

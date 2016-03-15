@@ -16,6 +16,7 @@
 /*-------------------Constants-------------------*/
 /*-----------------------------------------------*/
 var MAX_ZOOM_LEVEL = 50;
+var RELATION_MINIMAP = 4;
 
 /*-----------------------------------------------*/
 /*------------------Constructor------------------*/
@@ -31,6 +32,7 @@ var MapController = function(target) {
 /*-----------------------------------------------*/
 MapController.prototype._id = null;
 MapController.prototype._viewport = null;
+MapController.prototype._minimap = null;
 MapController.prototype._zoomManager = null;
 MapController.prototype._slider = null;
 
@@ -55,6 +57,10 @@ MapController.prototype.init_map = function() {
 		.append("g")
 			.attr("class", "viewport");
 	
+	self._minimap = svg
+		.append("g")
+			.attr("class", "minimap");
+	
 	/**
 	* Function zoom
 	* Return void
@@ -70,6 +76,8 @@ MapController.prototype.init_map = function() {
 		
 		self._viewport
 			.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+		
+		self.zoom_minimap();
 	}
 	
 	/**
@@ -168,8 +176,80 @@ MapController.prototype.init_map = function() {
 	
 	self.paint_nodes();
 	
+	self.paint_minimap();
+	
 	this.init_events();
 };
+
+MapController.prototype.paint_minimap = function() {
+	var self = this;
+	
+	var map_size = d3.select(self._target).node().getBoundingClientRect();
+	var viewport_size = d3.select(self._target + " .viewport").node().getBBox();
+	
+	var minimap_map_width = map_size.width / RELATION_MINIMAP;
+	var minimap_map_height = map_size.height / RELATION_MINIMAP;
+	
+	var minimap = d3.select(self._target + " .minimap");
+	var svg = d3.select(self._target + " svg");
+	
+	svg.append("defs")
+		.append("clipPath")
+			.attr("id", "clip_minimap")
+			.append("rect")
+				.attr("x", 0)
+				.attr("y", 0)
+				.attr("width", minimap_map_width)
+				.attr("height", minimap_map_height);
+	
+	minimap
+		.append("rect")
+			.attr("x", 0)
+			.attr("y", 0)
+			.attr("width", minimap_map_width)
+			.attr("height", minimap_map_height)
+			.attr("style", "fill: #ffffff; stroke: #000000; stroke-width: 1;");
+	
+	var minimap_layer = minimap
+		.append("g")
+			.attr("class", "clip_minimap")
+			.attr("clip-path", "url(#clip_minimap)")
+			.append("g")
+				.attr("class", "layer");
+	
+	
+	var minimap_viewport = minimap_layer.append("g")
+		.attr("id", "viewport");
+	
+	minimap_viewport.append("rect")
+		.attr("style", "fill: #dddddd; stroke: #aaaaaa; stroke-width: 1;")
+		.attr("x", 0)
+		.attr("y", 0)
+		.attr("height", viewport_size.width)
+		.attr("width", viewport_size.height);
+	
+	self.zoom_minimap();
+}
+
+MapController.prototype.zoom_minimap = function() {
+	var self = this;
+	
+	var viewport_transform = d3.transform(
+		d3.select(self._target + " .viewport").attr("transform"));
+	
+	var transform = d3.transform();
+	
+	var minimap_viewport =  d3.select(self._target + " .minimap #viewport");
+	
+	transform.translate[0] = viewport_transform.translate[0] / RELATION_MINIMAP;
+	transform.translate[1] = viewport_transform.translate[1] / RELATION_MINIMAP;
+	
+	transform.scale[0] = viewport_transform.scale[0] / RELATION_MINIMAP;
+	transform.scale[1] = viewport_transform.scale[1] / RELATION_MINIMAP;
+	
+	minimap_viewport
+		.attr("transform", transform.toString());
+}
 
 /**
 * Function node_from_edge

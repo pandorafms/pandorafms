@@ -655,7 +655,7 @@ require('include/php_to_js_values.php');
 		var t = (ulim + $('#foot').outerHeight() > wh) ? ulim : wh - $('#foot').outerHeight();
 		
 		if ($('#foot').position().top != t) {
-			$('#foot').css({ position: "absolute", top: t, left: $('#foot').offset().left});
+			$('#foot').css({ top: t, left: $('#foot').offset().left});
 			$('#foot').height(h);
 		}
 		if ($('#foot').width() !=  $(window).width()) {

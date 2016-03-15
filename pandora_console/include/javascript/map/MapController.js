@@ -778,17 +778,10 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 	
 	var width = item_d3.attr("data-width");
 	var height = item_d3.attr("data-height");
+
 	if (width == null) {
 		width = old_width = item_d3.attr("data-original_width");
 		height = old_height = item_d3.attr("data-original_height");
-	}
-
-	if (width <= 0) {
-		width = Math.abs(width);
-		
-	}
-	if (height <= 0) {
-		height = Math.abs(height);
 	}
 	
 	old_width = parseFloat(old_width);
@@ -808,6 +801,12 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 		case "S":
 			new_width = width + inc_w;
 			new_height = height + inc_h;
+			if (new_width < 0) {
+				new_width = Math.abs(new_width);
+			}
+			if (new_height < 0) {
+				new_height = Math.abs(new_height);
+			}
 			break;
 		case "N":
 		case "NE":

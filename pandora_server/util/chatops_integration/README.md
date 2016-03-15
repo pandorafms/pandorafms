@@ -1,5 +1,5 @@
-# Pandora FMS Mattermost Plugin
-A plugin for [Pandora FMS](https://github.com/pandorafms/pandorafms) to enable notifications to ChatOps solutions.
+# Pandora FMS ChatOps plugins
+A set of plugins for [Pandora FMS](https://github.com/pandorafms/pandorafms) to enable notifications to ChatOps solutions.
 
 #Solutions covered
 1. Slack

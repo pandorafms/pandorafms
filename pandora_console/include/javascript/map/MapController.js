@@ -346,10 +346,20 @@ MapController.prototype.move_arrow = function (id_from_any_point_arrow) {
 	});
 }
 
+/**
+* Function remove_resize_square
+* Return void
+* This function removes squares resize
+*/
 MapController.prototype.remove_resize_square = function(item, wait) {
 	d3.select(self._target + " svg #resize_square").remove();
 }
 
+/**
+* Function positioning_resize_square
+* Return void
+* This function positioning the square to resize the element
+*/
 MapController.prototype.positioning_resize_square = function(item) {
 	var resize_square = d3.select(self._target + " #resize_square");
 	var item_d3 = d3.select(self._target + " #node_" + item['graph_id']);
@@ -384,7 +394,6 @@ MapController.prototype.positioning_resize_square = function(item) {
 	resize_square
 		.attr("transform", transform.toString());
 	
-	
 	var real_item_width = (bbox_item.width * transform_item.scale[0]);
 	var real_item_height = (bbox_item.height * transform_item.scale[1]);
 	
@@ -396,7 +405,6 @@ MapController.prototype.positioning_resize_square = function(item) {
 			(real_item_height * transform_viewport.scale[1]));
 	
 	// Set the handlers
-	
 	var bbox_handler = d3
 		.select(self._target + " .handler").node().getBBox();
 	
@@ -448,6 +456,11 @@ MapController.prototype.positioning_resize_square = function(item) {
 	});
 }
 
+/**
+* Function paint_resize_square
+* Return void
+* This function paints a square to resize the elements
+*/
 MapController.prototype.paint_resize_square = function(item, wait) {
 	var self = this;
 	
@@ -464,6 +477,9 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 	}
 	
 	switch (wait) {
+		/*---------------------------------------------------*/
+		/*--------------- Prepare the square ----------------*/
+		/*---------------------------------------------------*/
 		case 1:
 			var resize_square = d3
 				.select(self._target + " svg")
@@ -532,6 +548,9 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 				
 			});
 			break;
+		/*---------------------------------------------------*/
+		/*-------- Paint and positioning the square ---------*/
+		/*---------------------------------------------------*/
 		case 0:
 			self.positioning_resize_square(item);
 			
@@ -566,6 +585,11 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 	}
 }
 
+/**
+* Function change_handler_image
+* Return void
+* This function changes the handler image
+*/
 MapController.prototype.change_handler_image = function(action, handler, wait) {
 	
 	var handlers_d3 = d3.select(self._target + " .handles");
@@ -583,6 +607,11 @@ MapController.prototype.change_handler_image = function(action, handler, wait) {
 	}
 }
 
+/**
+* Function event_resize
+* Return void
+* This function manages the resize event
+*/
 MapController.prototype.event_resize = function(action, item, handler) {
 	var self = this;
 	
@@ -617,7 +646,6 @@ MapController.prototype.event_resize = function(action, item, handler) {
 			self.resize_node(item, handler, delta_x, delta_y);
 			
 			self.positioning_resize_square(item);
-			//~ self.move_arrow(d3.select(this).attr("data-graph_id"));
 			break;
 		case "dragend":
 			handler_d3.classed("dragging", false);
@@ -625,6 +653,11 @@ MapController.prototype.event_resize = function(action, item, handler) {
 	}
 }
 
+/**
+* Function save_size_item
+* Return void
+* This function saves the actual size of the element (node)
+*/
 MapController.prototype.save_size_item = function(item) {
 	var item_d3 = d3.select(self._target + " #node_" + item['graph_id']);
 	var item_transform = d3.transform(item_d3.attr("transform"));
@@ -637,6 +670,11 @@ MapController.prototype.save_size_item = function(item) {
 	item_d3.attr("data-original_height", parseFloat(height));
 }
 
+/**
+* Function resize_node
+* Return void
+* This function do the process to resize the element (node)
+*/
 MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) {
 	switch (handler) {
 		case "N":
@@ -649,9 +687,6 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 			break;
 	}
 	
-	console.log("-------------");
-	console.log(handler);
-	
 	var item_d3 = d3.select(self._target + " #node_" + item['graph_id']);
 	var item_transform = d3.transform(item_d3.attr("transform"));
 	var item_bbox = item_d3.node().getBBox();
@@ -661,16 +696,19 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 	var inc_w = delta_x * transform_viewport.scale[0];
 	var inc_h = delta_y * transform_viewport.scale[1];
 	
-	console.log("delta", delta_x, delta_y);
-	console.log("inc", inc_w, inc_h);
-	console.log("item", item_transform.scale[0], item_transform.scale[1]);
-	
-	
 	var width = item_d3.attr("data-width");
-	var height =item_d3.attr("data-height");
+	var height = item_d3.attr("data-height");
 	if (width == null) {
 		width = old_width = item_d3.attr("data-original_width");
 		height = old_height = item_d3.attr("data-original_height");
+	}
+
+	if (width <= 0) {
+		width = Math.abs(width);
+		
+	}
+	if (height <= 0) {
+		height = Math.abs(height);
 	}
 	
 	old_width = parseFloat(old_width);
@@ -678,18 +716,11 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 	width = parseFloat(width);
 	height = parseFloat(height);
 	
-	console.log("old", old_width, old_height);
-	
 	var new_width;
 	var new_height;
 	
 	var scale_x;
 	var scale_y;
-	
-	console.log("new", new_width, new_height);
-	
-	
-	
 	
 	switch (handler) {
 		case "SE":

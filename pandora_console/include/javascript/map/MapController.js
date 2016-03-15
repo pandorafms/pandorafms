@@ -756,17 +756,6 @@ MapController.prototype.save_size_item = function(item) {
 * This function do the process to resize the element (node)
 */
 MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) {
-	switch (handler) {
-		case "N":
-		case "S":
-			delta_x = 0;
-			break;
-		case "E":
-		case "W":
-			delta_y = 0;
-			break;
-	}
-	
 	var item_d3 = d3.select(self._target + " #node_" + item['graph_id']);
 	var item_transform = d3.transform(item_d3.attr("transform"));
 	var item_bbox = item_d3.node().getBBox();
@@ -801,11 +790,17 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 		case "S":
 			new_width = width + inc_w;
 			new_height = height + inc_h;
-			if (new_width < 0) {
-				new_width = Math.abs(new_width);
-			}
-			if (new_height < 0) {
-				new_height = Math.abs(new_height);
+			if ((new_width < 0) || (new_height < 0)) {
+				if ((new_width < 0) && (new_height < 0)) {
+					new_width = Math.abs(new_width);
+					new_height = Math.abs(new_height);
+				}
+				else if (new_width < 0) {
+					new_width = Math.abs(new_width);
+				}
+				else {
+					new_height = Math.abs(new_height);
+				}
 			}
 			break;
 		case "N":
@@ -994,9 +989,8 @@ MapController.prototype.init_events = function(principalObject) {
 MapController.prototype.tooltip_map_create = function(self, target) {
 	var nodeTarget = $(target);
 	var spinner = $('#spinner_tooltip').html();
-	
-	var nodeR = parseInt($("circle", nodeTarget).attr("r"));
-	nodeR = nodeR * self._zoomManager.scale(); // Apply zoom
+	var nodeSize = get_size_element("#" + $(nodeTarget).attr("id"));
+	nodeSize[0] = nodeSize[0] * self._zoomManager.scale(); // Apply zoom
 	var node_id = nodeTarget.attr("id");
 	
 	var type = parseInt(nodeTarget.data("type"));
@@ -1008,7 +1002,7 @@ MapController.prototype.tooltip_map_create = function(self, target) {
 		trigger: 'click',
 		contentAsHTML: true,
 		autoClose: false,
-		offsetX: nodeR,
+		offsetX: nodeSize[0] / 2,
 		theme: 'tooltipster-noir',
 		multiple: true,
 		interactive: true,

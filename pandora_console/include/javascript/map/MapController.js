@@ -405,7 +405,33 @@ MapController.prototype.paint_items_minimap = function() {
 	var self = this;
 	var minimap_viewport =  d3.select(self._target + " .minimap #viewport");
 	
-	
+	minimap_viewport.selectAll(".node")
+		.data(
+			nodes
+				.filter(function(d, i) {
+						if (d.type != ITEM_TYPE_EDGE_NETWORKMAP) {
+							return true;
+						}
+						else {
+							return false;
+						}
+				}))
+			.enter()
+				.append("g")
+					.attr("transform",
+						function(d) {
+							var x = d['x'];
+							var y = d['y'];
+							return "translate(" + x + " " + y + ")";
+						})
+					.attr("class", "node")
+					.attr("id", function(d) { return "node_" + d['graph_id'];})
+					.attr("data-id", function(d) { return d['id'];})
+					.attr("data-graph_id", function(d) { return d['graph_id'];})
+					.attr("data-type", function(d) { return d['type'];})
+					.append("circle")
+						.attr("style", "fill: #000000;")
+						.attr("r", 15);
 }
 
 MapController.prototype.zoom_minimap = function() {

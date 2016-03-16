@@ -62,7 +62,16 @@ $real_directory = realpath ($config['homedir'] . '/' . $directory);
 
 echo '<h4>' . __('Index of %s', $directory) . '</h4>';
 
+$homedir_filemanager = isset ($config['homedir_filemanager']) ? $config['homedir_filemanager'] : false;
+
 filemanager_file_explorer($real_directory,
 	$directory,
-	'index.php?sec=gsetup&sec2=godmode/setup/file_manager');
+	'index.php?sec=gsetup&sec2=godmode/setup/file_manager',
+	'',
+	false,
+	false,
+	'',
+	false,
+	'',
+	$homedir_filemanager);
 ?>

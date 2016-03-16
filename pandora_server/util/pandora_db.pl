@@ -710,7 +710,9 @@ sub pandora_checkdb_integrity {
     db_do ($dbh, 'DELETE FROM tagente_modulo WHERE id_agente NOT IN (SELECT id_agente FROM tagente)');
 
     # Delete orphan modules in tagente_estado
-    db_do ($dbh, 'DELETE FROM tagente_estado WHERE id_agente NOT IN (SELECT id_agente FROM tagente)');
+     while (defined (get_db_value ($dbh, 'SELECT id_agente FROM tagente_estado WHERE id_agente NOT IN (SELECT id_agente FROM tagente)'))) {
+		db_delete_limit ($dbh, 'tagente_estado', 'id_agente NOT IN (SELECT id_agente FROM tagente)', $BIG_OPERATION_STEP);
+	}
 
     # Delete orphan data_inc reference records
     db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo NOT IN (SELECT id_agente_modulo FROM tagente_modulo)');

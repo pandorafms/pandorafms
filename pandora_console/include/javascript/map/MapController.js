@@ -930,8 +930,8 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 				}
 			}
 			else {
-				item_transform.translate[0] -= inc_w;
-				item_transform.translate[1] -= inc_h;
+				item_transform.translate[0] += inc_w;
+				item_transform.translate[1] += inc_h;
 			}
 			break;
 		case "SW":

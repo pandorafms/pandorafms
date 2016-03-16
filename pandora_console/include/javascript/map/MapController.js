@@ -873,7 +873,7 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 	
 	var scale_x;
 	var scale_y;
-	
+
 	switch (handler) {
 		case "SE":
 		case "E":
@@ -897,22 +897,61 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 		case "NE":
 			new_width = width + inc_w;
 			new_height = height - inc_h;
-			
-			item_transform.translate[1] += inc_h;
+			if ((new_width < 0) || (new_height < 0)) {
+				if ((new_width < 0) && (new_height < 0)) {
+					new_width = Math.abs(new_width);
+					new_height = Math.abs(new_height);
+				}
+				else if (new_width < 0) {
+					new_width = Math.abs(new_width);
+				}
+				else {
+					new_height = Math.abs(new_height);
+				}
+			}
+			else {
+				item_transform.translate[1] += inc_h;
+			}
 			break;
 		case "NW":
 		case "W":
 			new_width = width - inc_w;
 			new_height = height - inc_h;
-			
-			item_transform.translate[0] += inc_w;
-			item_transform.translate[1] += inc_h;
+			if ((new_width < 0) || (new_height < 0)) {
+				if ((new_width < 0) && (new_height < 0)) {
+					new_width = Math.abs(new_width);
+					new_height = Math.abs(new_height);
+				}
+				else if (new_width < 0) {
+					new_width = Math.abs(new_width);
+				}
+				else {
+					new_height = Math.abs(new_height);
+				}
+			}
+			else {
+				item_transform.translate[0] += inc_w;
+				item_transform.translate[1] += inc_h;
+			}
 			break;
 		case "SW":
 			new_width = width - inc_w;
 			new_height = height + inc_h;
-			
-			item_transform.translate[0] += inc_w;
+			if ((new_width < 0) || (new_height < 0)) {
+				if ((new_width < 0) && (new_height < 0)) {
+					new_width = Math.abs(new_width);
+					new_height = Math.abs(new_height);
+				}
+				else if (new_width < 0) {
+					new_width = Math.abs(new_width);
+				}
+				else {
+					new_height = Math.abs(new_height);
+				}
+			}
+			else {
+				item_transform.translate[0] += inc_w;
+			}
 			break;
 	}
 	

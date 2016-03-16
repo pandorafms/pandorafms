@@ -181,13 +181,25 @@ MapController.prototype.init_map = function() {
 	this.init_events();
 };
 
+MapController.prototype.minimap_get_size = function() {
+	var self = this;
+	
+	var map_size = d3.select(self._target).node().getBoundingClientRect();
+	
+	var minimap_size = [];
+	minimap_size[0] = map_size.width / RELATION_MINIMAP;
+	minimap_size[1] = map_size.height / RELATION_MINIMAP;
+	
+	return minimap_size;
+}
+
 MapController.prototype.paint_toggle_button = function(wait) {
 	var self = this;
 	
 	if (typeof(wait) === "undefined")
-		wait = 2;
+		wait = 1;
 	
-	var count_files = 1;
+	var count_files = 2;
 	function wait_load(callback) {
 		count_files--;
 		
@@ -203,41 +215,48 @@ MapController.prototype.paint_toggle_button = function(wait) {
 	
 	var minimap_transform = d3.transform(minimap.attr("transform"));
 	
-	var map_size = d3.select(self._target).node().getBoundingClientRect();
-	
-	var minimap_map_height = map_size.height / RELATION_MINIMAP;
-	
 	
 	switch (wait) {
 		case 1:
 			var toggle_minimap_button_layer = map.append("g")
 				.attr("id", "toggle_minimap_button");
 			
-			toggle_minimap_button_layer
-				.append("rect")
-					.attr("x", 0)
-					.attr("y", 0)
-					.attr("width", 16)
-					.attr("height", 16)
-					.attr("style",
-						"fill: #ff0000; stroke: #000000; stroke-width: 1;");
-		
-			//~ if (is_buggy_firefox) {
-				//~ resize_square
-					//~ .append("g").attr("class", "handles")
-						//~ .selectAll(".handle")
-						//~ .data(["N", "NE", "E", "SE", "S", "SW", "W", "NW"])
-						//~ .enter()
-							//~ .append("g")
-								//~ .attr("class", function(d) { return "handler handler_" + d;})
-								//~ .append("use")
-									//~ .attr("xlink:href", "images/maps/resize_handle.svg#resize_handle")
-									//~ .attr("class", function(d) { return "handler " + d;});
-				//~ 
+			if (is_buggy_firefox) {
+				toggle_minimap_button_layer.append("g")
+					.attr("class", "toggle_minimap_on")
+					.append("use")
+						.attr("xlink:href", "#toggle_minimap_on");
+				
+				arrow_layout.append("g")
+					.attr("class", "toggle_minimap_off")
+					.style("opacity", 0)
+					.append("use")
+						.attr("xlink:href", "#toggle_minimap_off");
+				
 				self.paint_toggle_button(0);
-			//~ }
-			//~ else {
-			//~ }
+			}
+			else {
+				toggle_minimap_button_layer.append("g")
+					.attr("class", "toggle_minimap_on")
+					.append("use")
+						.attr("xlink:href", "images/maps/toggle_minimap_on.svg#toggle_minimap_on")
+						.on("load", function() {
+							wait_load(function() {
+								self.paint_toggle_button(0);
+							});
+						});
+				
+				toggle_minimap_button_layer.append("g")
+					.attr("class", "toggle_minimap_off")
+					.style("opacity", 0)
+					.append("use")
+						.attr("xlink:href", "images/maps/toggle_minimap_off.svg#toggle_minimap_off")
+						.on("load", function() {
+							wait_load(function() {
+								self.paint_toggle_button(0);
+							});
+						});
+			}
 			break;
 		case 0:
 			var toggle_minimap_button_layer =
@@ -247,9 +266,77 @@ MapController.prototype.paint_toggle_button = function(wait) {
 				toggle_minimap_button_layer.node().getBBox();
 			
 			transform.translate[0] = minimap_transform.translate[0];
-			transform.translate[1] = minimap_map_height  - toggle_minimap_button_layer_bbox.height;
+			transform.translate[1] = self.minimap_get_size()[1] - toggle_minimap_button_layer_bbox.height;
 			
 			toggle_minimap_button_layer.attr("transform", transform.toString());
+			
+			toggle_minimap_button_layer.on("click",
+				function() {
+					//~ d3.event.sourceEvent.stopPropagation();
+					//~ d3.event.sourceEvent.preventDefault();
+					
+					self.event_toggle_minimap();
+				});
+			break;
+	}
+}
+
+MapController.prototype.event_toggle_minimap = function() {
+	var self = this;
+	
+	var map_size = d3.select(self._target).node().getBoundingClientRect();
+	
+	var toggle_minimap_on = parseInt(d3
+		.select(self._target + " .toggle_minimap_on").style("opacity"));
+	
+	var toggle_minimap_button_layer =
+				d3.select(self._target + " #toggle_minimap_button");
+	
+	var transform_toggle_minimap_button = d3
+		.transform(toggle_minimap_button_layer.attr("transform"));
+	
+	var toggle_minimap_button_layer_bbox =
+				toggle_minimap_button_layer.node().getBBox();
+	
+	
+	var minimap = d3.select(self._target + " .minimap");
+	var minimap_transform = d3.transform(minimap.attr("transform"));
+	
+	switch (toggle_minimap_on) {
+		case 0:
+			transform_toggle_minimap_button
+				.translate[0] = minimap_transform.translate[0];
+			transform_toggle_minimap_button
+				.translate[1] = self.minimap_get_size()[1] - toggle_minimap_button_layer_bbox.height;
+			
+			toggle_minimap_button_layer.attr("transform",
+				transform_toggle_minimap_button);
+			
+			
+			d3.select(self._target + " .minimap")
+				.style("opacity", 1);
+			
+			d3.select(self._target + " .toggle_minimap_off")
+				.style("opacity", 0);
+			d3.select(self._target + " .toggle_minimap_on")
+				.style("opacity", 1);
+			break;
+		case 1:
+			transform_toggle_minimap_button.translate[0] =
+				map_size.width - toggle_minimap_button_layer_bbox.width;
+			transform_toggle_minimap_button.translate[1] = 0;
+			
+			toggle_minimap_button_layer.attr("transform",
+				transform_toggle_minimap_button);
+			
+			
+			d3.select(self._target + " .minimap")
+				.style("opacity", 0);
+			
+			d3.select(self._target + " .toggle_minimap_off")
+				.style("opacity", 1);
+			d3.select(self._target + " .toggle_minimap_on")
+				.style("opacity", 0);
 			break;
 	}
 }
@@ -271,8 +358,6 @@ MapController.prototype.paint_minimap = function() {
 	// Move the minimap to the right upper corner
 	transform.translate[0] = map_size.width - minimap_map_width;
 	minimap.attr("transform", transform.toString());
-	
-	self.paint_toggle_button();
 	
 	svg.append("defs")
 		.append("clipPath")
@@ -308,6 +393,8 @@ MapController.prototype.paint_minimap = function() {
 		.attr("y", 0)
 		.attr("height", viewport_size.width)
 		.attr("width", viewport_size.height);
+	
+	self.paint_toggle_button();
 	
 	self.paint_items_minimap();
 	

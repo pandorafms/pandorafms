@@ -154,14 +154,12 @@ if (is_ajax ()) {
 	}
 	else if ($getNodeDetails) {
 		$id_node_data = (int)get_parameter('id_node_data');
-		$type = (int)get_parameter('type');
-		$id_map = (int)get_parameter('id_map');
 		$data_graph_id = (int)get_parameter('data_graph_id');
 		$node_id = get_parameter('node_id');
 
 		ob_start();
 		?>
-		<div id="tooltip_{data_graph_id}">
+		<div id="details_{data_graph_id}">
 			<div class="title_bar">
 				<span class="title">{title}</span>
 			</div>
@@ -172,102 +170,68 @@ if (is_ajax ()) {
 		<?php
 		$details = ob_get_clean();
 
-		switch ($type) {
-			case ITEM_TYPE_AGENT_NETWORKMAP:
-				$details = str_replace(
-					"{data_graph_id}",
-					$data_graph_id,
-					$details);
-				$details = str_replace(
-					"{node_id}",
-					$node_id,
-					$details);
-				$details = str_replace(
-					"{title}",
-					agents_get_name($id_node_data),
-					$details);
-				
-				
-				$agent_group = groups_get_name(
-					db_get_value('id_grupo', 'tagente', 'id_agente', $id_node_data));
-				
-				ob_start();
-				?>
-				<span>
-					<strong><?php echo __('IP Address');?>: </strong>
-					<?php echo agents_get_address($id_node_data);?>
-				</span><br />
-				<span>
-					<strong><?php echo __('OS');?>: </strong>
-					<?php echo os_get_name(agents_get_os($id_node_data));?>
-				</span><br />
-				<span>
-					<strong><?php echo __('Description');?>: </strong>
-					<?php echo db_get_value('comentarios', 'tagente', 'id_agente', $id_node_data);?>
-				</span> <br/>
-				<span>
-					<strong><?php echo __('Group');?>: </strong>
-					<?php echo $agent_group;?>
-				</span><br />
-				<span>
-					<strong><?php echo __('Agent Version');?>: </strong>
-					<?php echo db_get_value('agent_version', 'tagente', 'id_agente', $id_node_data);?>
-				</span><br />
-				<span>
-					<strong><?php echo __('Last Contact');?>: </strong>
-					<?php echo db_get_value('ultimo_contacto', 'tagente', 'id_agente', $id_node_data);?>
-				</span><br />
-				<span>
-					<strong><?php echo __('Remote');?>: </strong>
-					<?php echo db_get_value('ultimo_contacto_remoto', 'tagente', 'id_agente', $id_node_data);?>
-				</span>
-				<?php
-				$body = ob_get_clean();
-				
-				$details = str_replace(
-					"{body}",
-					$body,
-					$details);
-
-				break;
-			case ITEM_TYPE_MODULE_NETWORKMAP:
-				$node_data = db_get_all_rows_sql("SELECT descripcion
-													FROM tagente_modulo
-													WHERE id_agente_modulo = " . $id_node_data);
-
-				$node_data = $node_data[0];
-
-				$details = str_replace(
-					"{data_graph_id}",
-					$data_graph_id,
-					$details);
-				$details = str_replace(
-					"{node_id}",
-					$node_id,
-					$details);
-				$details = str_replace(
-					"{title}",
-					modules_get_agentmodule_name($id_node_data),
-					$details);
-				
-				ob_start();
-				?>
-				<span>
-					<strong><?php echo __('Agent Name');?>: </strong>
-					<?php echo agents_get_name(modules_get_agentmodule_agent($id_node_data));?>
-				</span> <br/>
-				<span>
-					<strong><?php echo __('Description');?>: </strong>
-					<?php echo db_get_value('descripcion', 'tagente_modulo', 'id_agente_modulo', $id_node_data);?>
-				</span> <br/>
-				<?php
-				$body = ob_get_clean();
-				
-				$details = str_replace(
-					"{body}",
-					$body,
-					$details);
-				break;
+		$details = str_replace(
+			"{data_graph_id}",
+			$data_graph_id,
+			$details);
+		$details = str_replace(
+			"{node_id}",
+			$node_id,
+			$details);
+		$details = str_replace(
+			"{title}",
+			agents_get_name($id_node_data),
+			$details);
+		
+		$agent_modules = agents_get_modules($id_node_data);
+		$agent_modules = array_keys($agent_modules);
+		$agent_interval = agents_get_interval ($id_node_data);
+		
+		$table = new stdClass();
+		$table->width = '100%';
+		$table->class = 'databox data';
+		$table->head = array ();
+		$table->head[0] = __('Name');
+		$table->head[1] = __('Description');
+		$table->head[2] = __('Type');
+		$table->head[3] = __('Interval');
+		$table->head[4] = __('Status');
+		$table->rowstyle = array();
+		$table->style = array ();
+		$table->style[0] = 'font-weight: bold';
+		$table->align = array ();
+		$table->align[0] = 'center';
+		$table->align[1] = 'center';
+		$table->align[2] = 'center';
+		$table->align[3] = 'center';
+		$table->align[4] = 'center';
+		$table->data = array ();
+		foreach ($agent_modules as $module) {
+			$data = array ();
+			$status = '';
+			$title = '';
+			$module_data = db_get_all_rows_sql("SELECT nombre, id_tipo_modulo, descripcion, module_interval
+												FROM tagente_modulo WHERE id_agente_modulo = " . $module);
+			$module_data = $module_data[0];
+			
+			$module_status = db_get_row('tagente_estado', 'id_agente_modulo', $module);
+			modules_get_status($module_status['id_agente_modulo'], $module_status['estado'], $module_status['datos'], $status, $title);
+			
+			$data[0] = $module_data['nombre'];
+			$data[1] = $module_data['descripcion'];
+			$data[2] = '';
+			$type = $module_data['id_tipo_modulo'];
+			if ($type) {
+				$data[2] = ui_print_moduletype_icon($type, true);
+			}
+			if ($module_data['module_interval']) {
+				$data[3] = human_time_description_raw($module_data['module_interval']);
+			}
+			else {
+				$data[3] = human_time_description_raw($agent_interval);
+			}
+			$data[4] = ui_print_status_image($status, $title, true);;
+			array_push ($table->data, $data);
 		}
 		$body = html_print_table ($table, true);			
 		

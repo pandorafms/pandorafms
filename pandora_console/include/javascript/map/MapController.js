@@ -47,7 +47,7 @@ MapController.prototype._slider = null;
 MapController.prototype.init_map = function() {
 	var self = this;
 	
-	var svg = d3.select(this._target + " svg");
+	var svg = d3.select(self._target + " svg");
 	
 	self._zoomManager =
 		d3.behavior.zoom().scaleExtent([1/MAX_ZOOM_LEVEL, MAX_ZOOM_LEVEL]).on("zoom", zoom);
@@ -178,8 +178,18 @@ MapController.prototype.init_map = function() {
 	
 	self.paint_minimap();
 	
-	this.init_events();
+	self.ini_selection_rectangle();
+	
+	self.init_events();
 };
+
+MapController.prototype.ini_selection_rectangle = function() {
+	var self = this;
+	
+	d3.select(self._target + " svg")
+		.append("g")
+			.attr("id", "layer_selection_rectangle");
+}
 
 MapController.prototype.minimap_get_size = function() {
 	var self = this;
@@ -1238,6 +1248,27 @@ MapController.prototype.init_events = function(principalObject) {
 		
 		self.remove_resize_square();
 	}
+	
+	//~ //For to catch the keyevent for the ctrl key
+	//~ d3.select(document)
+		//~ .on("keydown", function() {
+			//~ 
+			//~ if (d3.event.keyCode == key_multiple_selection) {
+				//~ flag_multiple_selection = true;
+				//~ disabled_drag_zoom = true;
+			//~ }
+		//~ })
+		//~ .on("keyup", function() {
+			//~ 
+			//~ if (d3.event.keyCode == key_multiple_selection) {
+				//~ flag_multiple_selection = false;
+				//~ disabled_drag_zoom = false;
+				//~ flag_multiple_selection_running = false;
+				//~ 
+				//~ d3.select("#selection_rectangle")
+					//~ .style("display", "none");
+			//~ }
+		//~ });
 }
 
 /**

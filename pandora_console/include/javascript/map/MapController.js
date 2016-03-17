@@ -1310,7 +1310,7 @@ MapController.prototype.nodeGetDetails = function(self, target) {
 	
 	jQuery.ajax ({
 		data: params,
-		dataType: "html",
+		dataType: "JSON",
 		type: "POST",
 		url: "ajax.php",
 		success: function (data) {

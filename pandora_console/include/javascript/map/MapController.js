@@ -348,7 +348,9 @@ MapController.prototype.paint_minimap = function() {
 	var map_size = d3.select(self._target + " .viewport").node().getBBox();
 	
 	var minimap_map_width = (map_size.width + map_size.x) / RELATION_MINIMAP;
+	//~ var minimap_map_width = (map_size.width) / RELATION_MINIMAP;
 	var minimap_map_height = (map_size.height + map_size.y) / RELATION_MINIMAP;
+	//~ var minimap_map_height = (map_size.height) / RELATION_MINIMAP;
 	
 	var minimap = d3.select(self._target + " .minimap");
 	var svg = d3.select(self._target + " svg");
@@ -390,22 +392,22 @@ MapController.prototype.paint_minimap = function() {
 				.attr("transform", transform.toString());
 	
 	
-	//~ var minimap_viewport = minimap_layer.append("g")
-		//~ .attr("id", "viewport");
-	//~ 
-	//~ minimap_viewport.append("rect")
-		//~ .attr("style", "fill: #dddddd; stroke: #aaaaaa; stroke-width: 1;")
-		//~ .attr("x", 0)
-		//~ .attr("y", 0)
-		//~ .attr("height", screen_size.height)
-		//~ .attr("width", screen_size.width);
-	//~ 
+	
+	
+	minimap_layer.append("rect")
+		.attr("class", "viewport")
+		.attr("style", "fill: #dddddd; stroke: #aaaaaa; stroke-width: 1;")
+		.attr("x", 0)
+		.attr("y", 0)
+		.attr("height", screen_size.height)
+		.attr("width", screen_size.width);
+	
 	self.paint_toggle_button();
 	
 	self.paint_items_minimap();
 	
-	//~ 
-	//~ self.zoom_minimap();
+	
+	self.zoom_minimap();
 }
 
 
@@ -440,9 +442,9 @@ MapController.prototype.paint_items_minimap = function() {
 					.attr("data-type", function(d) { return d['type'];})
 					.append("circle")
 						.attr("style", "fill: rgb(50, 50, 128);")
-						.attr("x", -8)
-						.attr("y", -8)
-						.attr("r", 16);
+						.attr("x", 0)
+						.attr("y", 0)
+						.attr("r", 30);
 }
 
 MapController.prototype.zoom_minimap = function() {
@@ -453,13 +455,13 @@ MapController.prototype.zoom_minimap = function() {
 	
 	var transform = d3.transform();
 	
-	var minimap_viewport =  d3.select(self._target + " .minimap #viewport");
+	var minimap_viewport =  d3.select(self._target + " .minimap .viewport");
 	
-	transform.translate[0] = viewport_transform.translate[0] / RELATION_MINIMAP;
-	transform.translate[1] = viewport_transform.translate[1] / RELATION_MINIMAP;
+	transform.translate[0] = -viewport_transform.translate[0];
+	transform.translate[1] = -viewport_transform.translate[1];
 	
-	transform.scale[0] = viewport_transform.scale[0] / RELATION_MINIMAP;
-	transform.scale[1] = viewport_transform.scale[1] / RELATION_MINIMAP;
+	transform.scale[0] = 1 / viewport_transform.scale[0];
+	transform.scale[1] = 1 / viewport_transform.scale[1];
 	
 	minimap_viewport
 		.attr("transform", transform.toString());

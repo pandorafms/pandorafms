@@ -65,6 +65,8 @@ class Networkmap extends Map {
 		
 		$nodes_and_edges = explode("];", $graph);
 		
+		$flag_modules = false;
+		
 		$nodes = array();
 		$edges = array();
 		$last_graph_id = 0;
@@ -97,6 +99,8 @@ class Networkmap extends Map {
 					preg_match("/id_module=([0-9]*)/", $chunks[1], $matches);
 					$id = $matches[1];
 					$type = ITEM_TYPE_MODULE_NETWORKMAP;
+					
+					$flag_modules = true;
 				}
 				else {
 					// AGENT

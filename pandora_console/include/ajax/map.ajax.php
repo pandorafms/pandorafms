@@ -190,12 +190,14 @@ if (is_ajax ()) {
 		$table = new stdClass();
 		$table->width = '100%';
 		$table->class = 'databox data';
+
 		$table->head = array ();
 		$table->head[0] = __('Name');
 		$table->head[1] = __('Description');
 		$table->head[2] = __('Type');
 		$table->head[3] = __('Interval');
 		$table->head[4] = __('Status');
+
 		$table->rowstyle = array();
 		$table->style = array ();
 		$table->style[0] = 'font-weight: bold';

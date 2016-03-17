@@ -184,6 +184,11 @@ MapController.prototype.init_map = function() {
 	self.init_events();
 };
 
+/**
+* Function ini_selection_rectangle
+* Return void
+* This function init the rectangle selection
+*/
 MapController.prototype.ini_selection_rectangle = function() {
 	var self = this;
 	
@@ -192,6 +197,11 @@ MapController.prototype.ini_selection_rectangle = function() {
 			.attr("id", "layer_selection_rectangle");
 }
 
+/**
+* Function minimap_get_size
+* Return [width, height]
+* This function returns the minimap size
+*/
 MapController.prototype.minimap_get_size = function() {
 	var self = this;
 	
@@ -204,6 +214,11 @@ MapController.prototype.minimap_get_size = function() {
 	return minimap_size;
 }
 
+/**
+* Function paint_toggle_button
+* Return  void
+* This function paints the hide/show button (minimap)
+*/
 MapController.prototype.paint_toggle_button = function(wait) {
 	var self = this;
 	
@@ -225,7 +240,6 @@ MapController.prototype.paint_toggle_button = function(wait) {
 	var transform = d3.transform();
 	
 	var minimap_transform = d3.transform(minimap.attr("transform"));
-	
 	
 	switch (wait) {
 		case 1:
@@ -292,6 +306,11 @@ MapController.prototype.paint_toggle_button = function(wait) {
 	}
 }
 
+/**
+* Function event_toggle_minimap
+* Return  void
+* This function captures the minimap events
+*/
 MapController.prototype.event_toggle_minimap = function() {
 	var self = this;
 	
@@ -352,6 +371,11 @@ MapController.prototype.event_toggle_minimap = function() {
 	}
 }
 
+/**
+* Function paint_minimap
+* Return  void
+* This function paints the minimap
+*/
 MapController.prototype.paint_minimap = function() {
 	var self = this;
 	
@@ -417,11 +441,14 @@ MapController.prototype.paint_minimap = function() {
 	
 	self.paint_items_minimap();
 	
-	
 	self.zoom_minimap();
 }
 
-
+/**
+* Function paint_items_minimap
+* Return  void
+* This function paints the minimap items
+*/
 MapController.prototype.paint_items_minimap = function() {
 	var self = this;
 	var minimap_viewport =  d3.select(self._target + " .minimap .map");
@@ -430,12 +457,7 @@ MapController.prototype.paint_items_minimap = function() {
 		.data(
 			nodes
 				.filter(function(d, i) {
-						if (d.type != ITEM_TYPE_EDGE_NETWORKMAP) {
-							return true;
-						}
-						else {
-							return false;
-						}
+					return self.filter_only_agents(d);
 				}))
 			.enter()
 				.append("g")
@@ -458,6 +480,11 @@ MapController.prototype.paint_items_minimap = function() {
 						.attr("r", 30);
 }
 
+/**
+* Function zoom_minimap
+* Return  void
+* This function apply zoom in minimap
+*/
 MapController.prototype.zoom_minimap = function() {
 	var self = this;
 	
@@ -517,6 +544,11 @@ MapController.prototype.exists_edge = function(id_graph) {
 	return exists; 
 }
 
+/**
+* Function paint_arrows
+* Return  void
+* This function paints the arrows
+*/
 MapController.prototype.paint_arrows = function() {
 	var self = this;
 	
@@ -599,12 +631,7 @@ MapController.prototype.paint_nodes = function() {
 		.data(
 			nodes
 				.filter(function(d, i) {
-						if (d.type != ITEM_TYPE_EDGE_NETWORKMAP) {
-							return true;
-						}
-						else {
-							return false;
-						}
+					return self.filter_only_agents(d);
 				}))
 			.enter()
 				.append("g")

@@ -7832,13 +7832,21 @@ function reporting_get_agentmodule_sla_day ($id_agent_module, $period = 0, $min_
 	} else if (count ($interval_data) > 0) {
 		// Propagate undefined status to first time point
 		$first_interval_time = array_shift ($interval_data);
-		$period_reduced -= $first_interval_time['utimestamp'] - $datelimit + $datelimit_increased;
-		array_unshift ($interval_data, $first_interval_time);
-		// Remove rebased points
+		$previous_point = $datelimit + $datelimit_increased;
+		$point = $datelimit + $datelimit_increased;
+		// Remove rebased points and substract time only on working time
 		while ($wt_points[0] <= $first_interval_time['utimestamp']) {
-			array_shift ($wt_points);
+			$point = array_shift ($wt_points);
+			if ($wt_status){
+				$period_reduced -= $point - $previous_point;
+			}
 			$wt_status = !$wt_status;
+			$previous_point = $point;
 		}
+		if ($wt_status){
+			$period_reduced -= $first_interval_time['utimestamp'] - $point;
+		}
+		array_unshift ($interval_data, $first_interval_time);
 	}
 	
 	if (count ($wt_points) < 2) {

@@ -184,11 +184,11 @@ MapController.prototype.init_map = function() {
 MapController.prototype.minimap_get_size = function() {
 	var self = this;
 	
-	var map_size = d3.select(self._target).node().getBoundingClientRect();
+	var map_size = d3.select(self._target + " .minimap").node().getBBox();
 	
 	var minimap_size = [];
-	minimap_size[0] = map_size.width / RELATION_MINIMAP;
-	minimap_size[1] = map_size.height / RELATION_MINIMAP;
+	minimap_size[0] = map_size.width;
+	minimap_size[1] = map_size.height;
 	
 	return minimap_size;
 }
@@ -344,11 +344,11 @@ MapController.prototype.event_toggle_minimap = function() {
 MapController.prototype.paint_minimap = function() {
 	var self = this;
 	
-	var map_size = d3.select(self._target).node().getBoundingClientRect();
-	var viewport_size = d3.select(self._target + " .viewport").node().getBBox();
+	var screen_size = d3.select(self._target).node().getBoundingClientRect();
+	var map_size = d3.select(self._target + " .viewport").node().getBBox();
 	
-	var minimap_map_width = map_size.width / RELATION_MINIMAP;
-	var minimap_map_height = map_size.height / RELATION_MINIMAP;
+	var minimap_map_width = (map_size.width + map_size.x) / RELATION_MINIMAP;
+	var minimap_map_height = (map_size.height + map_size.y) / RELATION_MINIMAP;
 	
 	var minimap = d3.select(self._target + " .minimap");
 	var svg = d3.select(self._target + " svg");
@@ -356,7 +356,8 @@ MapController.prototype.paint_minimap = function() {
 	var transform = d3.transform();
 	
 	// Move the minimap to the right upper corner
-	transform.translate[0] = map_size.width - minimap_map_width;
+	transform.translate[0] = screen_size.width - minimap_map_width;
+	transform.translate[1] = 0;
 	minimap.attr("transform", transform.toString());
 	
 	svg.append("defs")
@@ -376,34 +377,41 @@ MapController.prototype.paint_minimap = function() {
 			.attr("height", minimap_map_height)
 			.attr("style", "fill: #ffffff; stroke: #000000; stroke-width: 1;");
 	
+	transform = d3.transform();
+	transform.scale[0] = 1 / RELATION_MINIMAP;
+	transform.scale[1] = 1 / RELATION_MINIMAP;
+	
 	var minimap_layer = minimap
 		.append("g")
 			.attr("class", "clip_minimap")
 			.attr("clip-path", "url(#clip_minimap)")
 			.append("g")
-				.attr("class", "layer");
+				.attr("class", "map")
+				.attr("transform", transform.toString());
 	
 	
-	var minimap_viewport = minimap_layer.append("g")
-		.attr("id", "viewport");
-	
-	minimap_viewport.append("rect")
-		.attr("style", "fill: #dddddd; stroke: #aaaaaa; stroke-width: 1;")
-		.attr("x", 0)
-		.attr("y", 0)
-		.attr("height", viewport_size.width)
-		.attr("width", viewport_size.height);
-	
+	//~ var minimap_viewport = minimap_layer.append("g")
+		//~ .attr("id", "viewport");
+	//~ 
+	//~ minimap_viewport.append("rect")
+		//~ .attr("style", "fill: #dddddd; stroke: #aaaaaa; stroke-width: 1;")
+		//~ .attr("x", 0)
+		//~ .attr("y", 0)
+		//~ .attr("height", screen_size.height)
+		//~ .attr("width", screen_size.width);
+	//~ 
 	self.paint_toggle_button();
 	
 	self.paint_items_minimap();
 	
-	self.zoom_minimap();
+	//~ 
+	//~ self.zoom_minimap();
 }
+
 
 MapController.prototype.paint_items_minimap = function() {
 	var self = this;
-	var minimap_viewport =  d3.select(self._target + " .minimap #viewport");
+	var minimap_viewport =  d3.select(self._target + " .minimap .map");
 	
 	minimap_viewport.selectAll(".node")
 		.data(
@@ -422,6 +430,7 @@ MapController.prototype.paint_items_minimap = function() {
 						function(d) {
 							var x = d['x'];
 							var y = d['y'];
+							
 							return "translate(" + x + " " + y + ")";
 						})
 					.attr("class", "node")
@@ -430,8 +439,10 @@ MapController.prototype.paint_items_minimap = function() {
 					.attr("data-graph_id", function(d) { return d['graph_id'];})
 					.attr("data-type", function(d) { return d['type'];})
 					.append("circle")
-						.attr("style", "fill: #000000;")
-						.attr("r", 15);
+						.attr("style", "fill: rgb(50, 50, 128);")
+						.attr("x", -8)
+						.attr("y", -8)
+						.attr("r", 16);
 }
 
 MapController.prototype.zoom_minimap = function() {

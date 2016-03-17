@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1">
+  <defs>
+		<symbol id="toggle_minimap_off">
+			<g>
+				<rect
+				   y="0"
+				   x="0"
+				   height="16"
+				   width="16"
+				   style="opacity:1;fill:#00ffff;fill-opacity:1;" />
+				<path
+				   d="m 14,12 -4.72056,-0.84949 -3.37596,3.40709 -0.65081,-4.75203 -4.28357,-2.15787 4.31834,-2.08742 0.72856,-4.74074 3.31969,3.46194 4.73385,-0.77207 -2.26665,4.22702 z"
+				   id="path8070"
+				   style="opacity:1;fill:#00d400;fill-opacity:1;" />
+			</g>
+		</symbol>
+	</defs>
+</svg>

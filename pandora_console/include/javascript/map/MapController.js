@@ -175,6 +175,7 @@ MapController.prototype.init_map = function() {
 		.on("click", zoom_out);
 	
 	self.paint_nodes();
+	self.paint_arrows();
 	
 	self.paint_minimap();
 	
@@ -516,44 +517,8 @@ MapController.prototype.exists_edge = function(id_graph) {
 	return exists; 
 }
 
-/**
-* Function paint_nodes
-* Return void
-* This function paint the nodes
-*/
-MapController.prototype.paint_nodes = function() {
-	self = this;
-	
-	self._viewport.selectAll(".node")
-		.data(
-			nodes
-				.filter(function(d, i) {
-						if (d.type != ITEM_TYPE_EDGE_NETWORKMAP) {
-							return true;
-						}
-						else {
-							return false;
-						}
-				}))
-			.enter()
-				.append("g")
-					.attr("transform",
-						function(d) { return "translate(" + d['x'] + " " + d['y'] + ")";})
-					.attr("class", "draggable node")
-					.attr("id", function(d) { return "node_" + d['graph_id'];})
-					.attr("data-id", function(d) { return d['id'];})
-					.attr("data-graph_id", function(d) { return d['graph_id'];})
-					.attr("data-type", function(d) { return d['type'];})
-					//~ .append("circle")
-						//~ .attr("style", "fill: rgb(50, 50, 128);")
-						//~ .attr("r", "15");
-					.append("rect")
-						.attr("style", "fill: rgb(50, 50, 128);")
-						.attr("x", 0)
-						.attr("y", 0)
-						.attr("height", 30)
-						.attr("width", 30);
-	
+MapController.prototype.paint_arrows = function() {
+	var self = this;
 	
 	var arrow_layouts = self._viewport.selectAll(".arrow")
 		.data(
@@ -578,7 +543,6 @@ MapController.prototype.paint_nodes = function() {
 					return self.node_from_edge(d['graph_id'])["to"];})
 				.attr("data-from", function(d) {
 					return self.node_from_edge(d['graph_id'])["from"];});
-	
 	
 	create_arrow(arrow_layouts);
 	
@@ -621,7 +585,45 @@ MapController.prototype.paint_nodes = function() {
 			arrow_by_pieces(self._target + " svg", id_arrow, id_node_to, id_node_from);
 		});
 	}
+}
+
+/**
+* Function paint_nodes
+* Return void
+* This function paint the nodes
+*/
+MapController.prototype.paint_nodes = function() {
+	var self = this;
 	
+	self._viewport.selectAll(".node")
+		.data(
+			nodes
+				.filter(function(d, i) {
+						if (d.type != ITEM_TYPE_EDGE_NETWORKMAP) {
+							return true;
+						}
+						else {
+							return false;
+						}
+				}))
+			.enter()
+				.append("g")
+					.attr("transform",
+						function(d) { return "translate(" + d['x'] + " " + d['y'] + ")";})
+					.attr("class", "draggable node")
+					.attr("id", function(d) { return "node_" + d['graph_id'];})
+					.attr("data-id", function(d) { return d['id'];})
+					.attr("data-graph_id", function(d) { return d['graph_id'];})
+					.attr("data-type", function(d) { return d['type'];})
+					//~ .append("circle")
+						//~ .attr("style", "fill: rgb(50, 50, 128);")
+						//~ .attr("r", "15");
+					.append("rect")
+						.attr("style", "fill: rgb(50, 50, 128);")
+						.attr("x", 0)
+						.attr("y", 0)
+						.attr("height", 30)
+						.attr("width", 30);
 }
 
 /**

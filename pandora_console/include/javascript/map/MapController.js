@@ -1095,7 +1095,7 @@ MapController.prototype.init_events = function(principalObject) {
 		{
 			title: 'Show details',
 			action: function(elm, d, i) {
-				self.openNodeDetais(self, elm);
+				self.nodeGetDetails(self, elm);
 			}
 		},
 		{
@@ -1287,29 +1287,18 @@ MapController.prototype.editMap = function(self, target) {
 }
 
 /**
-* Function openNodeDetais
-* Return void
-* This function shows node details in extra window
-*/
-MapController.prototype.openNodeDetais = function(self, target) {
-	var nodeTarget = $(target);
-	
-	var type = parseInt(nodeTarget.data("type"));
-	var data_id = parseInt(nodeTarget.data("id"));
-	var data_graph_id = parseInt(nodeTarget.data("graph_id"));
-	var node_id = nodeTarget.attr("id");
-
-	var link = self.nodeGetDetails(data_id, type, self._id, data_graph_id, node_id);
-
-	//window.open(link);
-}
-
-/**
 * Function nodeGetDetails
 * Return link
 * This function returns a link with node details
 */
-MapController.prototype.nodeGetDetails = function(data_id, type, id_map, data_graph_id, node_id) {
+MapController.prototype.nodeGetDetails = function(self, target) {
+	var nodeTarget = $(target);
+	var node_id = nodeTarget.attr("id");
+	var type = parseInt(nodeTarget.data("type"));
+	var data_id = parseInt(nodeTarget.data("id"));
+	var data_graph_id = parseInt(nodeTarget.data("graph_id"));
+	var id_map = self._id;
+
 	var params = {};
 	params["getNodeDetails"] = 1;
 	params["id_node_data"] = data_id;
@@ -1325,7 +1314,10 @@ MapController.prototype.nodeGetDetails = function(data_id, type, id_map, data_gr
 		type: "POST",
 		url: "ajax.php",
 		success: function (data) {
-			console.log(data);
+			var window_popup = window.open("", "window_" + data_graph_id,
+				'title=DETAILS, width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no');
+			
+			$(window_popup.document.body).html(data);
 		}
 	});
 }
@@ -1505,7 +1497,7 @@ function tooltip_to_new_window(data_graph_id) {
 	$("#node_" + data_graph_id).tooltipster("destroy");
 	
 	var window_popup = window.open("", "window_" + data_graph_id,
-		'title=MIERDACA, width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no');
+		'title=NEW_WINDOW, width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no');
 	
 	$(window_popup.document.body).html(content);
 }

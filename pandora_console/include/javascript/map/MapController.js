@@ -1095,7 +1095,11 @@ MapController.prototype.init_events = function(principalObject) {
 		{
 			title: 'Show details',
 			action: function(elm, d, i) {
-				self.nodeGetDetails(self, elm);
+				var nodeTarget = $(elm);
+				var type = parseInt(nodeTarget.data("type"));
+				if (type == 0) {
+					self.nodeGetDetails(self, elm);
+				}
 			}
 		},
 		{
@@ -1294,16 +1298,12 @@ MapController.prototype.editMap = function(self, target) {
 MapController.prototype.nodeGetDetails = function(self, target) {
 	var nodeTarget = $(target);
 	var node_id = nodeTarget.attr("id");
-	var type = parseInt(nodeTarget.data("type"));
 	var data_id = parseInt(nodeTarget.data("id"));
 	var data_graph_id = parseInt(nodeTarget.data("graph_id"));
-	var id_map = self._id;
 
 	var params = {};
 	params["getNodeDetails"] = 1;
 	params["id_node_data"] = data_id;
-	params["type"] = type;
-	params["id_map"] = id_map;
 	params["data_graph_id"] = data_graph_id;
 	params["node_id"] = node_id;
 	params["page"] = "include/ajax/map.ajax";

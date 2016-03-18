@@ -106,11 +106,6 @@ abstract class Map {
 			<?php
 			echo "var nodes = " . json_encode($this->nodes) . ";";
 			echo "var edges = " . json_encode($this->edges) . ";";
-			$dimension = $this->edges.length;
-			$this->validate_edges = $this->edges;
-			foreach ($this->validate_edges as $e) {
-				$this->validate_edges[$e] = false;
-			}
 			echo "var edges = " . json_encode($this->validate_edges) . ";";
 			?>
 			var temp = [];

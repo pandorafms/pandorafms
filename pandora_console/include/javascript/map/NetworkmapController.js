@@ -54,34 +54,10 @@ NetworkmapController.prototype.filter_only_agents = function(node) {
 	}
 }
 
-/**
-* Function get_arrow
-* Return  void
-* This function return a specific arrow
-*/
-NetworkmapController.prototype.get_arrow = function(id_to, id_from) {
-	var arrow = [];
-	
-	var i = 0;
-	$.each(nodes, function(i, node) {
-		
-		if ((node['graph_id'] == id_to) || (node['graph_id'] == id_from)) {
-			
-			arrow[i] = node;
-			i++;
-		}
-	});
-	
-	if (i == 2)	{
-		return arrow;
-	}
-	else {
-		return null;
-	}
-}
+
 
 /**
-* Function is_arrow_module_to_module
+* Function is_arrow_module_to_module (Module -> Module)
 * Return  void
 * This function return if an arrow is module to module arrow
 */
@@ -112,7 +88,7 @@ NetworkmapController.prototype.is_arrow_module_to_module = function(id_to, id_fr
 }
 
 /**
-* Function is_arrow_AM
+* Function is_arrow_AM (Agent -> Module)
 * Return  void
 * This function return if an arrow is module to agent arrow
 */
@@ -127,7 +103,7 @@ NetworkmapController.prototype.is_arrow_AM = function(id_to, id_from) {
 		return false;
 	}
 	
-	if (arrow[0]['type'] == arrow[1]['type']) {
+	if (arrow['nodes'][0]['type'] == arrow['nodes'][1]['type']) {
 		return false;
 	}
 	
@@ -135,39 +111,222 @@ NetworkmapController.prototype.is_arrow_AM = function(id_to, id_from) {
 }
 
 /**
-* Function is_arrow_AMA
+* Function is_arrow_AMA (Agent -> Module -> Agent)
 * Return  void
 * This function return if an arrow is agent to module to agent arrow
 */
 NetworkmapController.prototype.is_arrow_AMA = function(id_to, id_from) {
 	var self = this;
+	var var_return = false;
 	
 	if (self.is_arrow_AM(id_to, id_from)) {
 		var arrow = self.get_arrow(id_to, id_from);
 		
 		var module = null;
-		if (arrow[0]['type'] == ITEM_TYPE_MODULE_NETWORKMAP) {
-			module = arrow[0];
+		if (arrow['nodes'][0]['type'] == ITEM_TYPE_MODULE_NETWORKMAP) {
+			module = arrow['nodes'][0];
 		}
 		else {
-			module = arrow[1];
+			module = arrow['nodes'][1];
 		}
 		
 		$.each(edges, function(i, edge) {
-			if (edge['to'] == module['graph_id']) {
-				if (self.is_arrow_AM(module['graph_id'], edge['from'])) {
+			if ((edge['to'] == module['graph_id']) ||
+				(edge['from'] == module['graph_id'])) {
+				
+				if (edge['graph_id'] != arrow['arrow']['graph_id']) {
 					
-				}
-			}
-			else if (edge['from'] == module['graph_id']) {
-				if (self.is_arrow_AM(module['graph_id'], edge['to'])) {
 					
+					var_return = true;
+					return false; //Break
 				}
 			}
 		});
 	}
 	
-	return false;
+	return var_return;
+}
+
+NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
+	var self = this;
+	
+	var return_var = null;
+	
+	var arrow = {};
+	
+	arrow['AMMA'] = 1;
+	arrow['AMA'] = 0;
+	
+	if ((self.get_node_type(id_to) == ITEM_TYPE_MODULE_NETWORKMAP)
+		&& (self.get_node_type(id_from) == ITEM_TYPE_MODULE_NETWORKMAP)) {
+			
+		var arrow_MM = self.get_arrow(id_to, id_from);
+		
+		var arrows_to = self.get_edges_from_node(id_to);
+		var arrows_from = self.get_edges_from_node(id_from);
+		
+		var temp = null;
+		$.each(arrows_to, function(i,arrow_to) {
+			if (arrow_to['graph_id'] != arrow_MM['arrow']['graph_id']) {
+				temp = arrow_to;
+				return false;
+			}
+		});
+		var arrow_to = temp;
+		
+		temp = null;
+		$.each(arrows_from, function(i,arrow_from) {
+			if (arrow_from['graph_id'] != arrow_MM['arrow']['graph_id']) {
+				temp = arrow_from;
+				return false;
+			}
+		});
+		var arrow_from = temp;
+		
+		if (arrow_to !== null && arrow_from !== null) {
+			// There is one arrow for A-M-M-A
+			
+			arrow_to = self.get_arrow(arrow_to['id_to'], arrow_to['id_from']);
+			arrow_from = self.get_arrow(arrow_from['id_to'], arrow_from['id_from']);
+			
+			arrow['graph_id'] = arrow_to['arrow']['graph_id'] + "" +
+				arrow_MM['arrow']['graph_id'] + "" +
+				arrow_from['arrow']['graph_id'];
+			
+			
+			if (arrow_to['nodes']['to'] == arrow_MM['arrow']['to']) {
+				arrow['to'] = arrow_to['nodes']['from'];
+			}
+			else {
+				arrow['to'] = arrow_to['nodes']['to'];
+			}
+			arrow['to_module'] = arrow_MM['nodes']['to']['id'];
+			
+			
+			if (arrow_from['nodes']['to'] == arrow_MM['arrow']['from']) {
+				arrow['from'] = arrow_from['nodes']['from'];
+			}
+			else {
+				arrow['from'] = arrow_from['nodes']['to'];
+			}
+			arrow['to_module'] = arrow_MM['nodes']['from']['id'];
+			
+			return_var = arrow;
+		}
+	}
+	
+	return return_var;
+}
+
+
+NetworkmapController.prototype.get_arrows_AMA = function(id_to, id_from) {
+	var self = this;
+	
+	var arrows = [];
+	var var_return = null;
+	
+	$.each(edges, function(i, edge) {
+		if (self.get_node_type(id_to) != self.get_node_type(id_from)) {
+			var arrow_AM = self.get_arrow(id_to, id_from);
+			
+			var edges_temp = null;
+			var is_agent = null
+			
+			if (self.get_node_type(id_to) == ITEM_TYPE_AGENT_NETWORKMAP) {
+				edges_temp = self.get_edges_from_node(id_from);
+				is_agent = 'to';
+			}
+			else if (self.get_node_type(id_from) == ITEM_TYPE_AGENT_NETWORKMAP) {
+				edges_temp = self.get_edges_from_node(id_to);
+				is_agent = 'from';
+			}
+			
+			if (edges_temp != null) {
+				$.each(edges_temp, function(i, edge) {
+					// Filter same edge
+					if ((edge['to'] != id_to) && (edge['from'] != id_from)) {
+						
+						var type_to = self.get_node_type(edge['to']);
+						var type_from = self.get_node_type(edge['from']);
+						
+						// Filter M-M edge
+						if ((type_to != ITEM_TYPE_MODULE_NETWORKMAP)
+							|| (type_from != ITEM_TYPE_MODULE_NETWORKMAP)) {
+							
+							
+							var temp = {};
+							
+							temp['graph_id'] =
+								arrow['arrow']['graph_id'] + "" +
+								arrow_AM['arrow']['graph_id'] + "";
+							
+							temp['AMMA'] = 0;
+							temp['AMA'] = 1;
+							
+							
+						}
+					}
+				});
+			}
+			
+			// TRASH
+			//~ 
+			//~ if (edges_from != null) {
+				//~ $.each(edges_from, function(i, edge) {
+					//~ 
+					//~ if ((edge['to'] != id_to) && (edge['from'] != id_from)) {
+						//~ 
+					//~ }
+					//~ 
+					//~ 
+					//~ if (arrow['nodes']['from']['id_graph'] == id_from) {
+						//~ if (arrow['nodes']['to']['type'] == ITEM_TYPE_AGENT_NETWORKMAP) {
+							//~ var temp = {};
+							//~ 
+							//~ temp['graph_id'] =
+								//~ arrow['arrow']['graph_id'] + "" +
+								//~ arrow_AM['arrow']['graph_id'] + "";
+							//~ 
+							//~ temp['AMMA'] = 0;
+							//~ temp['AMA'] = 1;
+							//~ 
+							//~ 
+							//~ temp['to'] = id_to;
+							//~ if (arrow['nodes']['from']['type'] == ITEM_TYPE_AGENT_NETWORKMAP) {
+								//~ temp['from'] = arrow['nodes']['from']['id_graph'];
+							//~ }
+							//~ else {
+								//~ temp['from'] = arrow['nodes']['to']['id_graph'];
+							//~ }
+							//~ 
+							//~ 
+							//~ temp['to_module'] = arrow_AM['nodes']['from']['id'];
+							//~ temp['from_module'] = null;
+							//~ 
+							//~ arrows.push(temp);
+						//~ }
+					//~ }
+				//~ });
+			//~ }
+			//~ else if (edges_to != null) {
+				//~ $.each(arrows_to, function(i, arrow) {
+					//~ 
+				//~ });
+			//~ }
+		}
+	});
+	
+	return var_return;
+}
+
+NetworkmapController.prototype.exists_arrow = function(arrows, arrow) {
+	var var_return = false;
+	
+	$.each(arrows, function(i, a) {
+		if (a['AMMA'] == arrow['AMMA']) {
+			
+		}
+	});
 }
 
 /**
@@ -178,6 +337,26 @@ NetworkmapController.prototype.is_arrow_AMA = function(id_to, id_from) {
 NetworkmapController.prototype.paint_arrows = function() {
 	var self = this;
 	
+	var clean_arrows = [];
+	
+	$.each(edges, function(i, edge) {
+		
+		var arrow_AMMA = self.get_arrow_AMMA(edge['to'], edge['from']);
+		var arrows_AMA = self.get_arrows_AMA(edge['to'], edge['from']);
+		
+		if (arrow_AMMA !== null) {
+			clean_arrows.push(arrow_AMMA);
+		}
+		else  if (arrows_AMA !== null) {
+			$.each(arrows_AMA, function(i, arrow) {
+				if (!self.exists_arrow(clean_arrows, arrow)) {
+					clean_arrows.push(arrow_AMMA);
+				}
+			});
+		}
+	});
+	
+	//TO DO
 	var arrow_layouts = self._viewport.selectAll(".arrow")
 		.data(
 			edges
@@ -185,7 +364,6 @@ NetworkmapController.prototype.paint_arrows = function() {
 					if (self.is_arrow_module_to_module(d['to'], d['from'])) {
 						return true;
 					}
-					//is_arrow_agent_to_module_to_agent
 					else if (self.is_arrow_AMA(d['to'], d['from'])) {
 						if (self.is_arrow_in_map(d['to'], d['from']))
 							return false;

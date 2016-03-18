@@ -36,7 +36,6 @@ abstract class Map {
 	
 	protected $nodes = array();
 	protected $edges = array();
-	protected $validate_edges = array();
 	
 	protected $requires_js = null;
 	
@@ -106,7 +105,6 @@ abstract class Map {
 			<?php
 			echo "var nodes = " . json_encode($this->nodes) . ";";
 			echo "var edges = " . json_encode($this->edges) . ";";
-			echo "var validate_edges = " . json_encode($this->validate_edges) . ";";
 			?>
 			var temp = [];
 			for (var i in nodes) { temp[parseInt(i)] = nodes[i];}
@@ -115,10 +113,6 @@ abstract class Map {
 			temp = [];
 			for (var i in edges) { temp[parseInt(i)] = edges[i];}
 			edges = temp;
-
-			temp = [];
-			for (var i in validate_edges) { temp[parseInt(i)] = validate_edges[i];}
-			validate_edges = temp;
 		</script>
 		<?php
 	}

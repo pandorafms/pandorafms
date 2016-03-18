@@ -182,7 +182,7 @@ MapController.prototype.init_map = function() {
 	self.ini_selection_rectangle();
 	
 	self.init_events();
-};
+}
 
 /**
 * Function ini_selection_rectangle
@@ -212,6 +212,88 @@ MapController.prototype.minimap_get_size = function() {
 	minimap_size[1] = map_size.height;
 	
 	return minimap_size;
+}
+
+MapController.prototype.get_node = function(id_graph) {
+	var return_node = null;
+	
+	$.each(nodes, function(i, node) {
+		if (node['graph_id'] == id_graph) {
+			return_node = node;
+			return false;
+		}
+	});
+	
+	return return_node;
+}
+
+MapController.prototype.get_node_type = function(id_graph) {
+	var self = this;
+	
+	var node = self.get_node(id_graph);
+	
+	if (node !== null) {
+		return node['type'];
+	}
+	
+	return null;
+}
+
+MapController.prototype.get_edges_from_node = function(id_graph) {
+	var edges = [];
+	
+	$.each(edges, function(i, edge) {
+		if ((edge['to'] == id_graph) || (edge['from'] == id_graph)) {
+			edges.push(edge);
+			return false;
+		}
+	});
+	
+	return edges;
+}
+
+/**
+* Function get_arrow
+* Return  void
+* This function return a specific arrow
+*/
+MapController.prototype.get_arrow = function(id_to, id_from) {
+	var arrow = {};
+	
+	arrow['nodes'] = [];
+	
+	var i = 0;
+	$.each(nodes, function(i, node) {
+		
+		if (node['graph_id'] == id_to) {
+			
+			arrow['nodes']['to'] = node;
+			i++;
+		}
+		else if (node['graph_id'] == id_from) {
+			
+			arrow['nodes']['from'] = node;
+			i++;
+		}
+	});
+	
+	if (i == 2)	{
+		
+		$.each(arrows, function(i, arrow) {
+			if (arrow['to'] == arrow['nodes']['to'] &&
+				arrow['from'] == arrow['nodes']['from']) {
+				
+				arrow['arrow'] = arrow;
+				
+				return false; // Break
+			}
+		});
+		
+		return arrow;
+	}
+	else {
+		return null;
+	}
 }
 
 /**

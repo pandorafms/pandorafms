@@ -106,7 +106,7 @@ abstract class Map {
 			<?php
 			echo "var nodes = " . json_encode($this->nodes) . ";";
 			echo "var edges = " . json_encode($this->edges) . ";";
-			echo "var edges = " . json_encode($this->validate_edges) . ";";
+			echo "var validate_edges = " . json_encode($this->validate_edges) . ";";
 			?>
 			var temp = [];
 			for (var i in nodes) { temp[parseInt(i)] = nodes[i];}

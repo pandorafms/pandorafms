@@ -79,6 +79,13 @@ class Networkmap extends Map {
 				// EDGE
 				$graphviz_ids = explode("--", $chunks[0]);
 				
+				if (!is_numeric(trim($graphviz_ids[0])) ||
+					!is_numeric(trim($graphviz_ids[1]))) {
+					
+					continue;
+				}
+				
+				
 				$edges[] = array(
 					'to' => trim($graphviz_ids[0]),
 					'from' => trim($graphviz_ids[1]));
@@ -202,7 +209,7 @@ class Networkmap extends Map {
 				false, //cut_names
 				true, // relative
 				'',
-				$parameters['l2_network_interfaces'],
+				'mix_l2_l3',
 				$parameters['ip_mask'],
 				$parameters['dont_show_subgroups'],
 				false,

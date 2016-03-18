@@ -229,12 +229,18 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0,
 	$zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0,
 	$id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
-	$relative = false, $text_filter = '', $l2_network = false, $ip_mask = null,
+	$relative = false, $text_filter = '', $l2_network_or_mixed = false, $ip_mask = null,
 	$dont_show_subgroups = false, $strict_user = false, $size_canvas = null,
 	$old_mode = false) {
 	
 	global $config;
 	
+	if ($l2_network_or_mixed === 'mix_l2_l3') {
+		$l2_network = true;
+	}
+	else {
+		$l2_network = $l2_network_or_mixed;
+	}
 	
 	if ($l2_network) {
 		$nooverlap = 1;
@@ -416,7 +422,49 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	
 	// Drop the modules without a partner if l2_network is true
 	// and the snmp interfaces token is false
-	if ($l2_network) {
+	if ($l2_network_or_mixed === 'mix_l2_l3') {
+		
+		foreach ($modules_node_ref as $id_module => $node_count) {
+			if (! modules_relation_exists($id_module, array_keys($modules_node_ref))) {
+				if ($show_snmp_modules) {
+					$module_type = modules_get_agentmodule_type($id_module);
+					if ($module_type != 18) {
+						unset($nodes[$node_count]);
+						unset($orphans[$node_count]);
+						unset($parents[$node_count]);
+					}
+				}
+				else {
+					unset($nodes[$node_count]);
+					unset($orphans[$node_count]);
+					unset($parents[$node_count]);
+				}
+			}
+			else {
+				$module_type = modules_get_agentmodule_type($id_module);
+				if ($module_type != 18) {
+					unset($nodes[$node_count]);
+					unset($orphans[$node_count]);
+					unset($parents[$node_count]);
+				}
+			}
+		}
+		
+		// Addded the relationship of parents of agents
+		foreach ($agents as $agent) {
+			if ($agent['id_parent'] != "0" &&
+				array_key_exists($agent['id_parent'], $node_ref)) {
+				
+				
+				$parents[$node_ref[$agent['id_agente']]] = $node_ref[$agent['id_parent']];
+			}
+			else {
+				$orphans[$node_ref[$agent['id_agente']]] = 1;
+			}
+		}
+		
+	}
+	else if ($l2_network) {
 		foreach ($modules_node_ref as $id_module => $node_count) {
 			if (! modules_relation_exists($id_module, array_keys($modules_node_ref))) {
 				if ($show_snmp_modules) {

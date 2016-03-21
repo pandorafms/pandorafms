@@ -156,19 +156,25 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 	
 	var arrow = {};
 	
-	arrow['AMMA'] = 1;
-	arrow['AMA'] = 0;
+	arrow['type'] = 'AMMA';
 	
 	if ((self.get_node_type(id_to) == ITEM_TYPE_MODULE_NETWORKMAP)
 		&& (self.get_node_type(id_from) == ITEM_TYPE_MODULE_NETWORKMAP)) {
 			
 		var arrow_MM = self.get_arrow(id_to, id_from);
 		
-		var arrows_to = self.get_edges_from_node(id_to);
-		var arrows_from = self.get_edges_from_node(id_from);
+		console.log("arrow_MM", arrow_MM);
+		
+		var arrows_to = self
+			.get_edges_from_node(arrow_MM['nodes']['to']['graph_id']);
+		var arrows_from = self
+			.get_edges_from_node(arrow_MM['nodes']['from']['graph_id']);
+		
+		console.log("arrows_to", arrows_to);
+		console.log("arrows_from", arrows_from);
 		
 		var temp = null;
-		$.each(arrows_to, function(i,arrow_to) {
+		$.each(arrows_to, function(i, arrow_to) {
 			if (arrow_to['graph_id'] != arrow_MM['arrow']['graph_id']) {
 				temp = arrow_to;
 				return false;
@@ -177,7 +183,7 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 		var arrow_to = temp;
 		
 		temp = null;
-		$.each(arrows_from, function(i,arrow_from) {
+		$.each(arrows_from, function(i, arrow_from) {
 			if (arrow_from['graph_id'] != arrow_MM['arrow']['graph_id']) {
 				temp = arrow_from;
 				return false;
@@ -187,8 +193,8 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 		
 		if (arrow_to !== null && arrow_from !== null) {
 			// There is one arrow for A-M-M-A
-			arrow_to = self.get_arrow(arrow_to['id_to'], arrow_to['id_from']);
-			arrow_from = self.get_arrow(arrow_from['id_to'], arrow_from['id_from']);
+			arrow_to = self.get_arrow_from_id(arrow_to['graph_id']);
+			arrow_from = self.get_arrow_from_id(arrow_from['graph_id']);
 			
 			arrow['graph_id'] = arrow_to['arrow']['graph_id'] + "" +
 				arrow_MM['arrow']['graph_id'] + "" +
@@ -210,7 +216,7 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 			else {
 				arrow['from'] = arrow_from['nodes']['to'];
 			}
-			arrow['to_module'] = arrow_MM['nodes']['from']['id'];
+			arrow['from_module'] = arrow_MM['nodes']['from']['id'];
 			
 			return_var = arrow;
 		}
@@ -279,6 +285,30 @@ NetworkmapController.prototype.get_arrows_AMA = function(id_to, id_from) {
 	return var_return;
 }
 
+NetworkmapController.prototype.get_arrow_AA = function(id_to, id_from) {
+	var self = this;
+	var arrow_AA;
+	var found = false;
+	
+	$.each(edges, function(i, edge) {
+		if (self.get_node_type(id_to) == self.get_node_type(id_from)) {
+			if (self.get_node_type(id_to) == ITEM_TYPE_AGENT_NETWORKMAP) {
+				arrow_AA = self.get_arrow(id_to, id_from);
+				
+				arrow_AA['type'] = 'AA';
+				found = true;
+			}
+		}
+	});
+	
+	if (found) {
+		return arrow_AA;
+	}
+	else {
+		return null;
+	}
+}
+
 /**
 * Function exists_arrow
 * Return  bool
@@ -287,11 +317,31 @@ NetworkmapController.prototype.get_arrows_AMA = function(id_to, id_from) {
 NetworkmapController.prototype.exists_arrow = function(arrows, arrow) {
 	var var_return = false;
 	
+	
+	if (arrow === null) {
+		return false;
+	}
+	
+	if (arrows.length == 0) {
+		return false;
+	}
+	
 	$.each(arrows, function(i, a) {
-		if (a['AMMA'] == arrow['AMMA']) {
-			
+		if (a === null) {
+			return true; // Continue
+		}
+		
+		if (a['type'] == arrow['type']) {
+			if (a['to']['graph_id'] == arrow['to']['graph_id'] &&
+				a['from']['graph_id'] == arrow['from']['graph_id']) {
+				
+				var_return = true;
+				return false; // Break
+			}
 		}
 	});
+	
+	return var_return;
 }
 
 /**
@@ -304,22 +354,41 @@ NetworkmapController.prototype.paint_arrows = function() {
 	
 	var clean_arrows = [];
 	
+	var arrows_AA;
 	$.each(edges, function(i, edge) {
 		
-		var arrow_AMMA = self.get_arrow_AMMA(edge['to'], edge['from']);
-		var arrows_AMA = self.get_arrows_AMA(edge['to'], edge['from']);
+		var arrow_AA = self.get_arrow_AA(edge['to'], edge['from']);
+		if (arrow_AA !== null) {
+			if (!self.exists_arrow(clean_arrows, arrow_AA)) {
+				clean_arrows.push(arrow_AA);
+			}
+		}
 		
+		var arrow_AMMA = self.get_arrow_AMMA(edge['to'], edge['from']);
 		if (arrow_AMMA !== null) {
-			clean_arrows.push(arrow_AMMA);
+			if (!self.exists_arrow(clean_arrows, arrow_AMMA)) {
+				clean_arrows.push(arrow_AMMA);
+			}
 		}
-		else  if (arrows_AMA !== null) {
-			$.each(arrows_AMA, function(i, arrow) {
-				if (!self.exists_arrow(clean_arrows, arrow)) {
-					clean_arrows.push(arrow_AMMA);
-				}
-			});
-		}
+		
+		
+		
+		//~ var arrows_AMMA = self.get_arrow_AMMA(edge['to'], edge['from']);
+		//~ var arrows_AMA = self.get_arrows_AMA(edge['to'], edge['from']);
+		//~ 
+		//~ if (arrows_AMMA !== null) {
+			//~ clean_arrows.push(arrow_AMMA);
+		//~ }
+		//~ else  if (arrows_AMA !== null) {
+			//~ $.each(arrows_AMA, function(i, arrow) {
+				//~ if (!self.exists_arrow(clean_arrows, arrow)) {
+					//~ clean_arrows.push(arrow_AMMA);
+				//~ }
+			//~ });
+		//~ }
 	});
+	
+	console.log(clean_arrows);
 	
 	//TO DO
 	//~ var arrow_layouts = self._viewport.selectAll(".arrow")

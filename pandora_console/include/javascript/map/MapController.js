@@ -255,16 +255,16 @@ MapController.prototype.get_node_type = function(id_graph) {
 * This function returns the edges of a node
 */
 MapController.prototype.get_edges_from_node = function(id_graph) {
-	var edges = [];
+	var return_edges = [];
 	
 	$.each(edges, function(i, edge) {
 		if ((edge['to'] == id_graph) || (edge['from'] == id_graph)) {
-			edges.push(edge);
+			return_edges.push(edge);
 			return false;
 		}
 	});
 	
-	return edges;
+	return return_edges;
 }
 
 MapController.prototype.get_arrow_from_id = function(id) {

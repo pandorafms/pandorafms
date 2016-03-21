@@ -16,7 +16,6 @@
 /*-------------------Constants-------------------*/
 /*-----------------------------------------------*/
 var MAX_ZOOM_LEVEL = 50;
-var RELATION_MINIMAP = 4;
 
 /*-----------------------------------------------*/
 /*------------------Constructor------------------*/
@@ -503,12 +502,22 @@ MapController.prototype.event_toggle_minimap = function() {
 */
 MapController.prototype.paint_minimap = function() {
 	var self = this;
-	
+
 	var screen_size = d3.select(self._target).node().getBoundingClientRect();
 	var map_size = d3.select(self._target + " .viewport").node().getBBox();
+	var relation_minimap = [];
 	
-	var minimap_map_width = (map_size.width + map_size.x) / RELATION_MINIMAP;
-	var minimap_map_height = (map_size.height + map_size.y) / RELATION_MINIMAP;
+	if (map_size.width > map_size.height) {
+		relation_minimap['width'] = 6;
+		relation_minimap['height'] = 8;
+	}
+	else {
+		relation_minimap['width'] = 8;
+		relation_minimap['height'] = 6;
+	}
+
+	var minimap_map_width = (map_size.width + map_size.x) / relation_minimap['width'];
+	var minimap_map_height = (map_size.height + map_size.y) / relation_minimap['height'];
 	
 	var minimap = d3.select(self._target + " .minimap");
 	var svg = d3.select(self._target + " svg");
@@ -538,8 +547,8 @@ MapController.prototype.paint_minimap = function() {
 			.attr("style", "fill: #ffffff; stroke: #000000; stroke-width: 1;");
 	
 	transform = d3.transform();
-	transform.scale[0] = 1 / RELATION_MINIMAP;
-	transform.scale[1] = 1 / RELATION_MINIMAP;
+	transform.scale[0] = 1 / relation_minimap['width'];
+	transform.scale[1] = 1 / relation_minimap['height'];
 	
 	var minimap_layer = minimap
 		.append("g")

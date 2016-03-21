@@ -260,7 +260,6 @@ MapController.prototype.get_edges_from_node = function(id_graph) {
 	$.each(edges, function(i, edge) {
 		if ((edge['to'] == id_graph) || (edge['from'] == id_graph)) {
 			return_edges.push(edge);
-			return false;
 		}
 	});
 	
@@ -286,6 +285,18 @@ MapController.prototype.get_arrow_from_id = function(id) {
 		return self.get_arrow(arrow['to'], arrow['from']);
 	}
 
+}
+
+MapController.prototype.get_arrows_from_edges = function() {
+	var self = this;
+	
+	var return_var = [];
+	
+	$.each(edges, function(i, e) {
+		return_var.push(self.get_arrow_from_id(e['graph_id']));
+	});
+	
+	return return_var;
 }
 
 /**

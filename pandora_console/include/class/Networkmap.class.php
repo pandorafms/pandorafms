@@ -101,10 +101,12 @@ class Networkmap extends Map {
 				
 				$chunks = explode("ajax.php?", $chunks[1]);
 				
+				$id_agent = null;
 				if (strstr($chunks[1], "&id_module=") !== false) {
 					// MODULE
 					preg_match("/id_module=([0-9]*)/", $chunks[1], $matches);
 					$id = $matches[1];
+					$id_agent = agents_get_module_id($id);
 					$type = ITEM_TYPE_MODULE_NETWORKMAP;
 					
 					$flag_modules = true;
@@ -112,12 +114,12 @@ class Networkmap extends Map {
 				else {
 					// AGENT
 					preg_match("/id_agent=([0-9]*)/", $chunks[1], $matches);
-					$id = $matches[1];
+					$id_agent = $id = $matches[1];
 					$type = ITEM_TYPE_AGENT_NETWORKMAP;
 				}
 				
 				$nodes[] = array('graph_id' => $graphviz_id,
-					'id' => $id, 'type' => $type);
+					'id' => $id, 'id_agent' => $id_agent,'type' => $type);
 				
 				if ($last_graph_id < $graphviz_id)
 					$last_graph_id = $graphviz_id;

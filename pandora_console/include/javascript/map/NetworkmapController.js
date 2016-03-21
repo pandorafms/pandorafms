@@ -145,26 +145,27 @@ NetworkmapController.prototype.get_arrows_AMA = function(id_to, id_from) {
 	if (self.get_node_type(id_to) != self.get_node_type(id_from)) {
 		var arrow_AM = self.get_arrow(id_to, id_from);
 		
-		console.log("arrow_AM", arrow_AM);
 		
 		var edges_temp = null;
 		var is_agent = null
 		
 		if (self.get_node_type(id_to) == ITEM_TYPE_AGENT_NETWORKMAP) {
-			edges_temp = self.get_edges_from_node(id_from);
-			is_agent = 'to';
+			if (arrow_AM['nodes']['from']['id_agent'] == arrow_AM['nodes']['to']['id']) {
+				edges_temp = self.get_edges_from_node(id_from);
+				is_agent = 'to';
+			}
 		}
 		else if (self.get_node_type(id_from) == ITEM_TYPE_AGENT_NETWORKMAP) {
-			edges_temp = self.get_edges_from_node(id_to);
-			is_agent = 'from';
+			if (arrow_AM['nodes']['to']['id_agent'] == arrow_AM['nodes']['from']['id']) {
+				edges_temp = self.get_edges_from_node(id_to);
+				is_agent = 'from';
+			}
 		}
-		
-		console.log("edges_temp", edges_temp);
 		
 		if (edges_temp != null) {
 			$.each(edges_temp, function(i, edge) {
 				// Filter same edge
-				if ((edge['to'] != id_to) && (edge['from'] != id_from)) {
+				if ((edge['to'] != id_to) || (edge['from'] != id_from)) {
 					
 					var type_to = self.get_node_type(edge['to']);
 					var type_from = self.get_node_type(edge['from']);
@@ -183,29 +184,28 @@ NetworkmapController.prototype.get_arrows_AMA = function(id_to, id_from) {
 						
 						temp['type'] = 'AMA';
 						
-						temp['nodes'] = {};
 						switch (is_agent) {
 							case 'to':
-								temp['nodes']['to'] = arrow_AM['nodes']['to'];
+								temp['to'] = arrow_AM['nodes']['to'];
 								temp['to_module'] = arrow_AM['nodes']['from']['id'];
 								
 								if (type_to == ITEM_TYPE_AGENT_NETWORKMAP) {
-									temp['nodes']['from'] = arrow['nodes']['to'];
+									temp['from'] = arrow['nodes']['to'];
 								}
 								else {
-									temp['nodes']['from'] = arrow['nodes']['from'];
+									temp['from'] = arrow['nodes']['from'];
 								}
 								temp['from_module'] = null;
 								break;
 							case 'from':
-								temp['nodes']['from'] = arrow_AM['nodes']['from'];
+								temp['from'] = arrow_AM['nodes']['from'];
 								temp['from_module'] = arrow_AM['nodes']['to']['id'];
 								
 								if (type_to == ITEM_TYPE_AGENT_NETWORKMAP) {
-									temp['nodes']['to'] = arrow['nodes']['to'];
+									temp['to'] = arrow['nodes']['to'];
 								}
 								else {
-									temp['nodes']['to'] = arrow['nodes']['from'];
+									temp['to'] = arrow['nodes']['from'];
 								}
 								temp['to_module'] = null;
 								break;
@@ -265,7 +265,6 @@ NetworkmapController.prototype.get_arrow_AA = function(id_to, id_from) {
 NetworkmapController.prototype.exists_arrow = function(arrows, arrow) {
 	var var_return = false;
 	
-	
 	if (arrow === null) {
 		return false;
 	}
@@ -279,12 +278,35 @@ NetworkmapController.prototype.exists_arrow = function(arrows, arrow) {
 			return true; // Continue
 		}
 		
+		
 		if (a['type'] == arrow['type']) {
-			if (a['to']['graph_id'] == arrow['to']['graph_id'] &&
-				a['from']['graph_id'] == arrow['from']['graph_id']) {
-				
-				var_return = true;
-				return false; // Break
+			
+			var a_to = a['to']['graph_id'];
+			var arrow_to = arrow['to']['graph_id'];
+			var a_from = a['from']['graph_id'];
+			var arrow_from = arrow['from']['graph_id'];
+			
+			switch (arrow['type']) {
+				case 'AA':
+				case 'AMMA':
+					if (a_to == arrow_to) {
+						if (a_from == arrow_from) {
+							
+							var_return = true;
+							return false; // Break
+						}
+					}
+					break;
+				case 'AMA':
+					if ((a_to == arrow_to) && (a_from == arrow_from)) {
+						var_return = true;
+						return false; //Break;
+					}
+					else if ((a_to == arrow_from) && (a_from == arrow_to)) {
+						var_return = true;
+						return false; //Break;
+					}
+					break;
 			}
 		}
 	});

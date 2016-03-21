@@ -55,95 +55,6 @@ NetworkmapController.prototype.filter_only_agents = function(node) {
 }
 
 
-
-/**
-* Function is_arrow_module_to_module (Module -> Module)
-* Return  void
-* This function return if an arrow is module to module arrow
-*/
-NetworkmapController.prototype.is_arrow_module_to_module = function(id_to, id_from) {
-	var return_var = false;
-	var found_two = 0;
-	
-	$.each(nodes, function(i, node) {
-		
-		if ((node['graph_id'] == id_to) || (node['graph_id'] == id_from)) {
-			
-			found_two++;
-			
-			if (node['type'] == ITEM_TYPE_MODULE_NETWORKMAP) {
-				return_var = true;
-			}
-			else {
-				return_var = false;
-				return false;
-			}
-		}
-		
-		if (found_two == 2)
-			return false; // Break
-	});
-	
-	return return_var;
-}
-
-/**
-* Function is_arrow_AM (Agent -> Module)
-* Return  void
-* This function return if an arrow is module to agent arrow
-*/
-//~ NetworkmapController.prototype.is_arrow_AM = function(id_to, id_from) {
-	//~ var self = this;
-	//~ 
-	//~ var return_var = false;
-	//~ 
-	//~ var arrow = self.get_arrow(id_to, id_from);
-	//~ 
-	//~ if (arrow === null) {
-		//~ return false;
-	//~ }
-	//~ 
-	//~ if (arrow['nodes'][0]['type'] == arrow['nodes'][1]['type']) {
-		//~ return false;
-	//~ }
-	//~ 
-	//~ return true;
-//~ }
-
-/**
-* Function is_arrow_AMA (Agent -> Module -> Agent)
-* Return  void
-* This function return if an arrow is agent to module to agent arrow
-*/
-//~ NetworkmapController.prototype.is_arrow_AMA = function(id_to, id_from) {
-	//~ var self = this;
-	//~ var var_return = false;
-	//~ 
-	//~ if (self.is_arrow_AM(id_to, id_from)) {
-		//~ var arrow = self.get_arrow(id_to, id_from);
-		//~ 
-		//~ var module = null;
-		//~ if (arrow['nodes'][0]['type'] == ITEM_TYPE_MODULE_NETWORKMAP) {
-			//~ module = arrow['nodes'][0];
-		//~ }
-		//~ else {
-			//~ module = arrow['nodes'][1];
-		//~ }
-		//~ 
-		//~ $.each(edges, function(i, edge) {
-			//~ if ((edge['to'] == module['graph_id']) ||
-				//~ (edge['from'] == module['graph_id'])) {
-				//~ if (edge['graph_id'] != arrow['arrow']['graph_id']) {
-					//~ var_return = true;
-					//~ return false; //Break
-				//~ }
-			//~ }
-		//~ });
-	//~ }
-	//~ 
-	//~ return var_return;
-//~ }
-
 /**
 * Function get_arrow_AMMA
 * Return  array (arrow)
@@ -371,21 +282,12 @@ NetworkmapController.prototype.paint_arrows = function() {
 			}
 		}
 		
-		
-		
-		//~ var arrows_AMMA = self.get_arrow_AMMA(edge['to'], edge['from']);
-		//~ var arrows_AMA = self.get_arrows_AMA(edge['to'], edge['from']);
-		//~ 
-		//~ if (arrows_AMMA !== null) {
-			//~ clean_arrows.push(arrow_AMMA);
-		//~ }
-		//~ else  if (arrows_AMA !== null) {
-			//~ $.each(arrows_AMA, function(i, arrow) {
-				//~ if (!self.exists_arrow(clean_arrows, arrow)) {
-					//~ clean_arrows.push(arrow_AMMA);
-				//~ }
-			//~ });
-		//~ }
+		var arrows_AMA = self.get_arrows_AMA(edge['to'], edge['from']);
+		$.each(arrows_AMA, function(i, arrow_AMA) {
+			if (!self.exists_arrow(clean_arrows, arrow_AMA)) {
+				clean_arrows.push(arrow_AMA);
+			}
+		});
 	});
 	
 	console.log(clean_arrows);

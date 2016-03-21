@@ -214,6 +214,11 @@ MapController.prototype.minimap_get_size = function() {
 	return minimap_size;
 }
 
+/**
+* Function get_node
+* Return node
+* This function returns a node
+*/
 MapController.prototype.get_node = function(id_graph) {
 	var return_node = null;
 	
@@ -227,6 +232,11 @@ MapController.prototype.get_node = function(id_graph) {
 	return return_node;
 }
 
+/**
+* Function get_node_type
+* Return node type
+* This function returns a node type (module, agent or edge)
+*/
 MapController.prototype.get_node_type = function(id_graph) {
 	var self = this;
 	
@@ -239,6 +249,11 @@ MapController.prototype.get_node_type = function(id_graph) {
 	return null;
 }
 
+/**
+* Function get_edges_from_node
+* Return array[edge]
+* This function returns the edges of a node
+*/
 MapController.prototype.get_edges_from_node = function(id_graph) {
 	var edges = [];
 	
@@ -252,6 +267,27 @@ MapController.prototype.get_edges_from_node = function(id_graph) {
 	return edges;
 }
 
+MapController.prototype.get_arrow_from_id = function(id) {
+	var self = this;
+	
+	var arrow = $.grep(edges, function(e) {
+		if (e['graph_id'] == id) {
+			return true;
+		}
+	});
+	
+	
+	if (arrow.length == 0) {
+		return null;
+	}
+	else {
+		arrow = arrow[0];
+		
+		return self.get_arrow(arrow['to'], arrow['from']);
+	}
+
+}
+
 /**
 * Function get_arrow
 * Return  void
@@ -260,30 +296,26 @@ MapController.prototype.get_edges_from_node = function(id_graph) {
 MapController.prototype.get_arrow = function(id_to, id_from) {
 	var arrow = {};
 	
-	arrow['nodes'] = [];
+	arrow['nodes'] = {};
 	
-	var i = 0;
+	var count_nodes = 0;
 	$.each(nodes, function(i, node) {
-		
-		if (node['graph_id'] == id_to) {
-			
+		if (parseInt(node['graph_id']) == parseInt(id_to)) {
 			arrow['nodes']['to'] = node;
-			i++;
+			count_nodes++;
 		}
-		else if (node['graph_id'] == id_from) {
-			
+		else if (parseInt(node['graph_id']) == parseInt(id_from)) {
 			arrow['nodes']['from'] = node;
-			i++;
+			count_nodes++;
 		}
 	});
 	
-	if (i == 2)	{
-		
-		$.each(arrows, function(i, arrow) {
-			if (arrow['to'] == arrow['nodes']['to'] &&
-				arrow['from'] == arrow['nodes']['from']) {
+	if (count_nodes == 2) {
+		$.each(edges, function(i, edge) {
+			if (edge['to'] == arrow['nodes']['to']['graph_id'] &&
+				edge['from'] == arrow['nodes']['from']['graph_id']) {
 				
-				arrow['arrow'] = arrow;
+				arrow['arrow'] = edge;
 				
 				return false; // Break
 			}
@@ -465,9 +497,7 @@ MapController.prototype.paint_minimap = function() {
 	var map_size = d3.select(self._target + " .viewport").node().getBBox();
 	
 	var minimap_map_width = (map_size.width + map_size.x) / RELATION_MINIMAP;
-	//~ var minimap_map_width = (map_size.width) / RELATION_MINIMAP;
 	var minimap_map_height = (map_size.height + map_size.y) / RELATION_MINIMAP;
-	//~ var minimap_map_height = (map_size.height) / RELATION_MINIMAP;
 	
 	var minimap = d3.select(self._target + " .minimap");
 	var svg = d3.select(self._target + " svg");
@@ -507,9 +537,6 @@ MapController.prototype.paint_minimap = function() {
 			.append("g")
 				.attr("class", "map")
 				.attr("transform", transform.toString());
-	
-	
-	
 	
 	minimap_layer.append("rect")
 		.attr("class", "viewport")
@@ -1359,27 +1386,6 @@ MapController.prototype.init_events = function(principalObject) {
 		
 		self.remove_resize_square();
 	}
-	
-	//~ //For to catch the keyevent for the ctrl key
-	//~ d3.select(document)
-		//~ .on("keydown", function() {
-			//~ 
-			//~ if (d3.event.keyCode == key_multiple_selection) {
-				//~ flag_multiple_selection = true;
-				//~ disabled_drag_zoom = true;
-			//~ }
-		//~ })
-		//~ .on("keyup", function() {
-			//~ 
-			//~ if (d3.event.keyCode == key_multiple_selection) {
-				//~ flag_multiple_selection = false;
-				//~ disabled_drag_zoom = false;
-				//~ flag_multiple_selection_running = false;
-				//~ 
-				//~ d3.select("#selection_rectangle")
-					//~ .style("display", "none");
-			//~ }
-		//~ });
 }
 
 /**

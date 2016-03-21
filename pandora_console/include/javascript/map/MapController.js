@@ -734,7 +734,8 @@ MapController.prototype.paint_arrows = function() {
 			var id_node_from = "node_" + from_node['graph_id'];
 			
 			
-			arrow_by_pieces(self._target + " svg", id_arrow, id_node_to, id_node_from);
+			arrow_by_pieces(self._target + " svg", id_arrow,
+				id_node_to, id_node_from);
 		});
 	}
 }

@@ -115,6 +115,7 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 				arrow['to'] = arrow_to['nodes']['to'];
 			}
 			arrow['to_module'] = arrow_MM['nodes']['to']['id'];
+			arrow['to_status'] = arrow_MM['nodes']['to']['status'];
 			
 			
 			if (arrow_from['nodes']['to'] == arrow_MM['arrow']['from']) {
@@ -124,6 +125,7 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 				arrow['from'] = arrow_from['nodes']['to'];
 			}
 			arrow['from_module'] = arrow_MM['nodes']['from']['id'];
+			arrow['from_status'] = arrow_MM['nodes']['from']['status'];
 			
 			return_var = arrow;
 		}
@@ -188,6 +190,7 @@ NetworkmapController.prototype.get_arrows_AMA = function(id_to, id_from) {
 							case 'to':
 								temp['to'] = arrow_AM['nodes']['to'];
 								temp['to_module'] = arrow_AM['nodes']['from']['id'];
+								temp['to_status'] = arrow_AM['nodes']['from']['status'];
 								
 								if (type_to == ITEM_TYPE_AGENT_NETWORKMAP) {
 									temp['from'] = arrow['nodes']['to'];
@@ -196,10 +199,12 @@ NetworkmapController.prototype.get_arrows_AMA = function(id_to, id_from) {
 									temp['from'] = arrow['nodes']['from'];
 								}
 								temp['from_module'] = null;
+								temp['from_status'] = null;
 								break;
 							case 'from':
 								temp['from'] = arrow_AM['nodes']['from'];
 								temp['from_module'] = arrow_AM['nodes']['to']['id'];
+								temp['from_status'] = arrow_AM['nodes']['to']['status'];
 								
 								if (type_to == ITEM_TYPE_AGENT_NETWORKMAP) {
 									temp['to'] = arrow['nodes']['to'];
@@ -208,6 +213,7 @@ NetworkmapController.prototype.get_arrows_AMA = function(id_to, id_from) {
 									temp['to'] = arrow['nodes']['from'];
 								}
 								temp['to_module'] = null;
+								temp['to_status'] = null;
 								break;
 						}
 						
@@ -352,32 +358,201 @@ NetworkmapController.prototype.paint_arrows = function() {
 	});
 	
 	console.log(clean_arrows);
-	
+
 	//TO DO
-	//~ var arrow_layouts = self._viewport.selectAll(".arrow")
-		//~ .data(
-			//~ edges
-				//~ .filter(function(d, i) {
-					//~ if (self.is_arrow_module_to_module(d['to'], d['from'])) {
-						//~ return true;
-					//~ }
-					//~ else if (self.is_arrow_AMA(d['to'], d['from'])) {
-						//~ if (self.is_arrow_in_map(d['to'], d['from']))
-							//~ return false;
-						//~ else
-							//~ return true;
-					//~ }
-					//~ 
-					//~ return false;
-				//~ }))
-		//~ .enter()
-			//~ .append("g")
-				//~ .attr("class", "arrow")
-				//~ .attr("id", function(d) { return "arrow_" + d['graph_id'];})
-				//~ 
-				//~ .attr("data-id", function(d) { return d['id'];})
-				//~ .attr("data-to", function(d) {
-					//~ return self.node_from_edge(d['graph_id'])["to"];})
-				//~ .attr("data-from", function(d) {
-					//~ return self.node_from_edge(d['graph_id'])["from"];});
+	var arrow_layouts = self._viewport.selectAll(".arrow")
+		.data(clean_arrows)
+		.enter()
+			.append("g")
+				.attr("class", "arrow")
+				.attr("id", function(d) { return "arrow_" + d['graph_id'];})
+				.attr("data-to", function(d) {
+					return d['to']['graph_id'];})
+				.attr("data-from", function(d) {
+					return d['from']['graph_id'];})
+				.attr("data-type", function(d) {
+					return d['type'];})
+				.attr("data-to_module", function(d) {
+					return d['to_module'];})
+				.attr("data-from_module", function(d) {
+					return d['from_module'];});
+	
+	create_arrow(arrow_layouts);
+	
+	/**
+	* Function create_arrow
+	* Return void
+	* This function creates the arrow
+	*/
+	function create_arrow(arrow_layouts) {
+		
+		arrow_layouts.each(function(d) {
+			console.log(d['type']);
+			switch (d['type']) {
+				case 'AA':
+					arrow_by_pieces(self._target + " svg",
+						"arrow_" + d['graph_id'],
+						"node_" + d['to']['graph_id'],
+						"node_" + d['from']['graph_id']);
+					break;
+				case 'AMMA':
+					arrow_by_pieces_AMMA(self._target + " svg", d);
+					break;
+				case 'AMA':
+					arrow_by_pieces_AMA(self._target + " svg", d);
+					break;
+			}
+		});
+	}
+	
+}
+
+/**
+* Function arrow_by_pieces
+* Return void
+* This function print the arrow by pieces (3 steps)
+*/
+function arrow_by_pieces_AMMA(target, arrow_data, wait) {
+	
+	if (typeof(wait) === "undefined")
+		wait = 1;
+	
+	var count_files = 2;
+	function wait_load(callback) {
+		count_files--;
+		
+		if (count_files == 0) {
+			callback();
+		}
+	}
+	
+	var arrow_layout = d3
+		.select(target +" #arrow_" + arrow_data['graph_id']);
+	
+	switch (wait) {
+		/*---------------------------------------------*/
+		/*-------- Preload head and body arrow --------*/
+		/*---------------------------------------------*/
+		case 1:
+			arrow_layout = arrow_layout.append("g")
+				.attr("class", "arrow_position_rotation")
+				.append("g")
+					.attr("class", "arrow_translation")
+					.append("g")
+						.attr("class", "arrow_container");
+			
+			if (is_buggy_firefox) {
+				arrow_layout.append("g")
+					.attr("class", "body")
+					.append("use")
+						.attr("xlink:href", "#body_arrow");
+				
+				//~ arrow_layout.append("g")
+					//~ .attr("class", "head")
+					//~ .append("use")
+						//~ .attr("xlink:href", "#head_arrow");
+				
+				arrow_by_pieces_AMMA(target, arrow_data, 0);
+			}
+			else {
+				arrow_layout.append("g")
+					.attr("class", "body")
+					.append("use")
+						.attr("xlink:href", "images/maps/body_arrow.svg#body_arrow")
+						.on("load", function() {
+							wait_load(function() {
+								arrow_by_pieces_AMMA(
+									target, arrow_data, 0);
+							});
+						});
+				
+				//~ arrow_layout.append("g")
+					//~ .attr("class", "head")
+					//~ .append("use")
+						//~ .attr("xlink:href", "images/maps/head_arrow.svg#head_arrow")
+						//~ .on("load", function() {
+							//~ wait_load(function() {
+								//~ arrow_by_pieces_AMMA(
+									//~ target, arrow_data, 0);
+							//~ });
+						//~ });
+			}
+			break;
+		/*---------------------------------------------*/
+		/*---- Print head and body arrow by steps -----*/
+		/*---------------------------------------------*/
+		case 0:
+			var id_node_to = arrow_data['to']['graph_id'];
+			var id_node_from = arrow_data['from']['graph_id'];
+			
+			var c_elem2 = get_center_element(target +" #" + id_node_to);
+			var c_elem1 = get_center_element(target +" #" + id_node_from);
+			
+			var distance = get_distance_between_point(c_elem1, c_elem2);
+			
+			var radius_to = parseFloat(get_radius_element("#" + id_node_to));
+			var radius_from = parseFloat(get_radius_element("#" + id_node_from));
+			
+			var transform = d3.transform();
+		
+			/*---------------------------------------------*/
+			/*--- Position of layer arrow (body + head) ---*/
+			/*---------------------------------------------*/
+			var arrow_body = arrow_layout.select(".body");
+			var arrow_body_b = arrow_body.node().getBBox();
+			var arrow_body_height = (arrow_body_b['height'] + arrow_body_b['y']);
+			var arrow_body_width = (arrow_body_b['width'] + arrow_body_b['x']);
+			
+			transform.translate[0] = c_elem1[0];
+			transform.translate[1] = c_elem1[1];
+			transform.rotate = get_angle_of_line(c_elem1, c_elem2);
+			
+			arrow_layout.select(".arrow_position_rotation")
+				.attr("transform", transform.toString());
+			transform = d3.transform();
+			transform.translate[0] = radius_from;
+			transform.translate[1] = - (arrow_body_height / 2);
+			arrow_layout.select(".arrow_translation")
+				.attr("transform", transform.toString());
+			
+			/*---------------------------------------------*/
+			/*-------- Resize the body arrow width --------*/
+			/*---------------------------------------------*/
+			//~ var arrow_head = arrow_layout.select(".head");
+			//~ var arrow_head_b = arrow_head.node().getBBox();
+			//~ var arrow_head_height = (arrow_head_b['height'] + arrow_head_b['y']);
+			//~ var arrow_head_width = (arrow_head_b['width'] + arrow_head_b['x']);
+			//~ 
+			//~ var body_width = distance - arrow_head_width - radius_to - radius_from;
+			//~ 
+			//~ transform = d3.transform();
+			//~ transform.scale[0] = body_width / arrow_body_width;
+			//~ 
+			//~ arrow_body.attr("transform", transform.toString());
+			
+			/*---------------------------------------------*/
+			/*---------- Position of head arrow -----------*/
+			/*---------------------------------------------*/
+			//~ transform = d3.transform();
+			//~ 
+			//~ var arrow_body_t = d3.transform(arrow_body.attr("transform"));
+			//~ 
+			//~ var scale = arrow_body_t.scale[0];
+			//~ var x = 0 + arrow_body_width * scale;
+			//~ var y = 0 + (arrow_body_height / 2  - arrow_head_height / 2);
+			//~ 
+			//~ transform.translate[0] = x;
+			//~ transform.translate[1] = y;
+			//~ 
+			//~ arrow_head.attr("transform", transform.toString());
+			
+			/*---------------------------------------------*/
+			/*------- Show the result in one time ---------*/
+			/*---------------------------------------------*/
+			arrow_layout.attr("style", "opacity: 1");
+			break;
+	}
+}
+
+function arrow_by_pieces_AMA(target, arrow_data) {
 }

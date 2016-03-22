@@ -507,6 +507,9 @@ MapController.prototype.paint_minimap = function() {
 	var screen_size = d3.select(self._target).node().getBoundingClientRect();
 	var map_size = d3.select(self._target + " .viewport").node().getBBox();
 	
+	var real_width = map_size.width + map_size.x;
+	var real_height = map_size.height + map_size.y;
+	
 	var minimap_map_width = (map_size.width + map_size.x) / RELATION_MINIMAP;
 	var minimap_map_height = (map_size.height + map_size.y) / RELATION_MINIMAP;
 	

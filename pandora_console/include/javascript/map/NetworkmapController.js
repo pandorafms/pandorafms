@@ -417,7 +417,49 @@ function arrow_by_pieces_AMMA(target, arrow_data, wait) {
 	if (typeof(wait) === "undefined")
 		wait = 1;
 	
-	var count_files = 2;
+	var symbols = {};
+	
+	symbols['images/maps/body_arrow.svg'] = {};
+	symbols['images/maps/body_arrow.svg']['target'] = "body";
+	symbols['images/maps/body_arrow.svg']['id_symbol'] = "#body_arrow";
+	
+	symbols['images/maps/head_arrow_module_warning.svg'] = {};
+	symbols['images/maps/head_arrow_module_warning.svg']
+		['target'] = "head_tail";
+	symbols['images/maps/head_arrow_module_warning.svg']
+		['id_symbol'] = "#head_arrow_module_warning";
+	
+	symbols['images/maps/head_arrow_module_unknown.svg'] = {};
+	symbols['images/maps/head_arrow_module_unknown.svg']
+		['target'] = "head_tail";
+	symbols['images/maps/head_arrow_module_unknown.svg']
+		['id_symbol'] = "#head_arrow_module_unknown";
+		
+	symbols['images/maps/head_arrow_module_ok.svg'] = {};
+	symbols['images/maps/head_arrow_module_ok.svg']
+		['target'] = "head_tail";
+	symbols['images/maps/head_arrow_module_ok.svg']
+		['id_symbol'] = "#head_arrow_module_ok";
+		
+	symbols['images/maps/head_arrow_module_no_data.svg'] = {};
+	symbols['images/maps/head_arrow_module_no_data.svg']
+		['target'] = "head_tail";
+	symbols['images/maps/head_arrow_module_no_data.svg']
+		['id_symbol'] = "#head_arrow_module_no_data";
+		
+	symbols['images/maps/head_arrow_module_critical.svg'] = {};
+	symbols['images/maps/head_arrow_module_critical.svg']
+		['target'] = "head_tail";
+	symbols['images/maps/head_arrow_module_critical.svg']
+		['id_symbol'] = "#head_arrow_module_critical";
+		
+	symbols['images/maps/head_arrow_module_alertsfired.svg'] = {};
+	symbols['images/maps/head_arrow_module_alertsfired.svg']
+		['target'] = "head_tail";
+	symbols['images/maps/head_arrow_module_alertsfired.svg']
+		['id_symbol'] = "#head_arrow_module_alertsfired";
+	
+	var count_files = Object.keys(symbols).length;
 	function wait_load(callback) {
 		count_files--;
 		
@@ -441,49 +483,74 @@ function arrow_by_pieces_AMMA(target, arrow_data, wait) {
 					.append("g")
 						.attr("class", "arrow_container");
 			
+			var arrow_body = arrow_layout.append("g")
+				.attr("class", "body");
+			var arrow_head = arrow_layout.append("g")
+				.attr("class", "head");
+			var arrow_tail = arrow_layout.append("g")
+				.attr("class", "tail");
+			
+			$.each(symbols, function (i, s) {
+				if (is_buggy_firefox) {
+					switch (s['target']) {
+						case 'body':
+							arrow_body.append("use")
+								.attr("xlink:href", s['id_symbol']);
+							break;
+						case 'head_tail':
+							arrow_head.append("use")
+								.attr("xlink:href", s['id_symbol']);
+
+							arrow_tail.append("use")
+								.attr("xlink:href", s['id_symbol']);
+							break;
+					}
+				}
+				else {
+					switch (s['target']) {
+						case 'body':
+							arrow_body.append("use")
+								.attr("xlink:href", i + s['id_symbol'])
+								.on("load", function() {
+									wait_load(function() {
+										arrow_by_pieces_AMMA(
+											target, arrow_data, 0);
+									});
+								});
+							break;
+						case 'head_tail':
+							arrow_head.append("use")
+								.attr("xlink:href", i + s['id_symbol'])
+								.on("load", function() {
+									wait_load(function() {
+										arrow_by_pieces_AMMA(
+											target, arrow_data, 0);
+									});
+								});
+
+							arrow_tail.append("use")
+								.attr("xlink:href", i + s['id_symbol'])
+								.on("load", function() {
+									wait_load(function() {
+										arrow_by_pieces_AMMA(
+											target, arrow_data, 0);
+									});
+								});
+							break;
+					}
+				}
+			});
+			
 			if (is_buggy_firefox) {
-				arrow_layout.append("g")
-					.attr("class", "body")
-					.append("use")
-						.attr("xlink:href", "#body_arrow");
-				
-				//~ arrow_layout.append("g")
-					//~ .attr("class", "head")
-					//~ .append("use")
-						//~ .attr("xlink:href", "#head_arrow");
-				
 				arrow_by_pieces_AMMA(target, arrow_data, 0);
-			}
-			else {
-				arrow_layout.append("g")
-					.attr("class", "body")
-					.append("use")
-						.attr("xlink:href", "images/maps/body_arrow.svg#body_arrow")
-						.on("load", function() {
-							wait_load(function() {
-								arrow_by_pieces_AMMA(
-									target, arrow_data, 0);
-							});
-						});
-				
-				//~ arrow_layout.append("g")
-					//~ .attr("class", "head")
-					//~ .append("use")
-						//~ .attr("xlink:href", "images/maps/head_arrow.svg#head_arrow")
-						//~ .on("load", function() {
-							//~ wait_load(function() {
-								//~ arrow_by_pieces_AMMA(
-									//~ target, arrow_data, 0);
-							//~ });
-						//~ });
 			}
 			break;
 		/*---------------------------------------------*/
 		/*---- Print head and body arrow by steps -----*/
 		/*---------------------------------------------*/
 		case 0:
-			var id_node_to = arrow_data['to']['graph_id'];
-			var id_node_from = arrow_data['from']['graph_id'];
+			var id_node_to = "node_" + arrow_data['to']['graph_id'];
+			var id_node_from = "node_" + arrow_data['from']['graph_id'];
 			
 			var c_elem2 = get_center_element(target +" #" + id_node_to);
 			var c_elem1 = get_center_element(target +" #" + id_node_from);
@@ -522,13 +589,15 @@ function arrow_by_pieces_AMMA(target, arrow_data, wait) {
 			//~ var arrow_head_b = arrow_head.node().getBBox();
 			//~ var arrow_head_height = (arrow_head_b['height'] + arrow_head_b['y']);
 			//~ var arrow_head_width = (arrow_head_b['width'] + arrow_head_b['x']);
-			//~ 
-			//~ var body_width = distance - arrow_head_width - radius_to - radius_from;
-			//~ 
-			//~ transform = d3.transform();
-			//~ transform.scale[0] = body_width / arrow_body_width;
-			//~ 
-			//~ arrow_body.attr("transform", transform.toString());
+			
+			arrow_head_width = 0; //WIP
+			
+			var body_width = distance - arrow_head_width - radius_to - radius_from;
+			
+			transform = d3.transform();
+			transform.scale[0] = body_width / arrow_body_width;
+			
+			arrow_body.attr("transform", transform.toString());
 			
 			/*---------------------------------------------*/
 			/*---------- Position of head arrow -----------*/

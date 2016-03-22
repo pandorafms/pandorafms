@@ -409,12 +409,11 @@ NetworkmapController.prototype.paint_arrows = function() {
 }
 
 /**
-* Function arrow_by_pieces
+* Function arrow_by_pieces_AMMA
 * Return void
 * This function print the arrow by pieces (3 steps)
 */
 function arrow_by_pieces_AMMA(target, arrow_data, wait) {
-	
 	if (typeof(wait) === "undefined")
 		wait = 1;
 	
@@ -619,5 +618,10 @@ function arrow_by_pieces_AMMA(target, arrow_data, wait) {
 	}
 }
 
+/**
+* Function arrow_by_pieces_AMA
+* Return void
+* This function print the arrow by pieces (3 steps)
+*/
 function arrow_by_pieces_AMA(target, arrow_data) {
 }

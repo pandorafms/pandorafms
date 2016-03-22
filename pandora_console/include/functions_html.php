@@ -702,7 +702,16 @@ function html_print_extended_select_for_time ($name, $selected = '',
 	global $config;
 	
 	$fields = get_periods();
-	
+
+	if ( ! $selected ) {
+		foreach( $fields as $t_key => $t_value){
+			if ( $t_key != -1 ) {			//  -1 means 'custom'
+				$selected = $t_key;
+				break;
+			}
+		}
+	}
+
 	if (($selected !== false) && (!isset($fields[$selected]) && $selected != 0)) {
 		$fields[$selected] = human_time_description_raw($selected,true);
 	}

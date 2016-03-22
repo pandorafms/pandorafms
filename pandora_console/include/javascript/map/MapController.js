@@ -267,6 +267,11 @@ MapController.prototype.get_edges_from_node = function(id_graph) {
 	return return_edges;
 }
 
+/**
+* Function get_arrow_from_id
+* Return  void
+* This function return an arrow from a specific id
+*/
 MapController.prototype.get_arrow_from_id = function(id) {
 	var self = this;
 	
@@ -288,6 +293,11 @@ MapController.prototype.get_arrow_from_id = function(id) {
 
 }
 
+/**
+* Function get_arrows_from_edges
+* Return  array[]
+* This function returns a collection of arrows from edges (array)
+*/
 MapController.prototype.get_arrows_from_edges = function() {
 	var self = this;
 	
@@ -777,9 +787,6 @@ MapController.prototype.paint_nodes = function() {
 					.attr("data-id", function(d) { return d['id'];})
 					.attr("data-graph_id", function(d) { return d['graph_id'];})
 					.attr("data-type", function(d) { return d['type'];})
-					//~ .append("circle")
-						//~ .attr("style", "fill: rgb(50, 50, 128);")
-						//~ .attr("r", "15");
 					.append("rect")
 						.attr("style", "fill: rgb(50, 50, 128);")
 						.attr("x", 0)

@@ -232,6 +232,11 @@ NetworkmapController.prototype.get_arrows_AMA = function(id_to, id_from) {
 	}
 }
 
+/**
+* Function get_arrow_AA
+* Return  array (arrow)
+* This function returns an AA arrow
+*/
 NetworkmapController.prototype.get_arrow_AA = function(id_to, id_from) {
 	var self = this;
 	var arrow_AA;
@@ -283,7 +288,6 @@ NetworkmapController.prototype.exists_arrow = function(arrows, arrow) {
 		if (a === null) {
 			return true; // Continue
 		}
-		
 		
 		if (a['type'] == arrow['type']) {
 			
@@ -356,8 +360,6 @@ NetworkmapController.prototype.paint_arrows = function() {
 			});
 		}
 	});
-	
-	console.log(clean_arrows);
 
 	//TO DO
 	var arrow_layouts = self._viewport.selectAll(".arrow")
@@ -387,7 +389,6 @@ NetworkmapController.prototype.paint_arrows = function() {
 	function create_arrow(arrow_layouts) {
 		
 		arrow_layouts.each(function(d) {
-			console.log(d['type']);
 			switch (d['type']) {
 				case 'AA':
 					arrow_by_pieces(self._target + " svg",
@@ -585,11 +586,6 @@ function arrow_by_pieces_AMMA(target, arrow_data, wait) {
 			/*---------------------------------------------*/
 			/*-------- Resize the body arrow width --------*/
 			/*---------------------------------------------*/
-			//~ var arrow_head = arrow_layout.select(".head");
-			//~ var arrow_head_b = arrow_head.node().getBBox();
-			//~ var arrow_head_height = (arrow_head_b['height'] + arrow_head_b['y']);
-			//~ var arrow_head_width = (arrow_head_b['width'] + arrow_head_b['x']);
-			
 			arrow_head_width = 0; //WIP
 			
 			var body_width = distance - arrow_head_width - radius_to - radius_from;

@@ -35,6 +35,7 @@ MapController.prototype._viewport = null;
 MapController.prototype._minimap = null;
 MapController.prototype._zoomManager = null;
 MapController.prototype._slider = null;
+MapController.prototype._relation = null;
 
 /*-----------------------------------------------*/
 /*--------------------Methods--------------------*/
@@ -510,8 +511,18 @@ MapController.prototype.paint_minimap = function() {
 	var real_width = map_size.width + map_size.x;
 	var real_height = map_size.height + map_size.y;
 	
-	var minimap_map_width = (map_size.width + map_size.x) / RELATION_MINIMAP;
-	var minimap_map_height = (map_size.height + map_size.y) / RELATION_MINIMAP;
+	var max_map = real_height;
+	if (real_width > real_height)
+		max_map = real_width;
+	
+	var max_screen = screen_size.height;
+	if (screen_size.width > screen_size.height)
+		max_screen = screen_size.width;
+	
+	self._relation = RELATION_MINIMAP * max_map / max_screen;
+	
+	var minimap_map_width = (map_size.width + map_size.x) / self._relation;
+	var minimap_map_height = (map_size.height + map_size.y) / self._relation;
 	
 	var minimap = d3.select(self._target + " .minimap");
 	var svg = d3.select(self._target + " svg");
@@ -541,8 +552,8 @@ MapController.prototype.paint_minimap = function() {
 			.attr("style", "fill: #ffffff; stroke: #000000; stroke-width: 1;");
 	
 	transform = d3.transform();
-	transform.scale[0] = 1 / relation_minimap['width'];
-	transform.scale[1] = 1 / relation_minimap['height'];
+	transform.scale[0] = 1 / self._relation;
+	transform.scale[1] = 1 / self._relation;
 	
 	var minimap_layer = minimap
 		.append("g")
@@ -1380,6 +1391,10 @@ MapController.prototype.init_events = function(principalObject) {
 		
 		transform.translate[0] += delta_x;
 		transform.translate[1] += delta_y;
+		
+		d3.select(".minimap #node_" + d['graph_id'])
+			.attr("transform", transform.toString());
+		
 		
 		
 		

@@ -758,7 +758,7 @@ MapController.prototype.paint_arrows = function() {
 			var id_node_from = "node_" + from_node['graph_id'];
 			
 			
-			arrow_by_pieces(self._target + " svg", id_arrow,
+			self.arrow_by_pieces(self._target + " svg", id_arrow,
 				id_node_to, id_node_from);
 		});
 	}
@@ -819,7 +819,7 @@ MapController.prototype.move_arrow = function (id_from_any_point_arrow) {
 		var id_node_to = "node_" + d3.select(this).attr("data-to");
 		var id_node_from = "node_" + d3.select(this).attr("data-from");
 		
-		arrow_by_pieces(self._target + " svg", id_arrow, id_node_to, id_node_from, 0);
+		self.arrow_by_pieces(self._target + " svg", id_arrow, id_node_to, id_node_from, 0);
 	});
 }
 
@@ -1402,9 +1402,6 @@ MapController.prototype.init_events = function(principalObject) {
 		d3.select(".minimap #node_" + d['graph_id'])
 			.attr("transform", transform.toString());
 		
-		
-		
-		
 		d3.select(this).attr("transform", transform.toString());
 		
 		self.move_arrow(d3.select(this).attr("data-graph_id"));
@@ -1663,6 +1660,154 @@ MapController.prototype.nodeData = function(data_id, type, id_map, data_graph_id
 	});
 }
 
+
+/**
+* Function arrow_by_pieces
+* Return void
+* This function print the arrow by pieces (3 steps)
+*/
+//~ MapController.prototype.arrow_by_pieces = function(target, id_arrow, id_node_to, id_node_from, wait) {
+MapController.prototype.arrow_by_pieces = function(target, arrow_data, wait) {
+	var self = this;
+	
+	console.log("MapController.arrow_by_pieces", target, arrow_data, wait);
+	
+	if (typeof(wait) === "undefined")
+		wait = 1;
+	
+	var count_files = 2;
+	function wait_load(callback) {
+		count_files--;
+		
+		if (count_files == 0) {
+			callback();
+		}
+	}
+	
+	var arrow_layout = d3
+		.select(target +" #arrow_" + arrow_data['graph_id']);
+	
+	switch (wait) {
+		/*---------------------------------------------*/
+		/*-------- Preload head and body arrow --------*/
+		/*---------------------------------------------*/
+		case 1:
+			arrow_layout = arrow_layout.append("g")
+				.attr("class", "arrow_position_rotation")
+				.append("g")
+					.attr("class", "arrow_translation")
+					.append("g")
+						.attr("class", "arrow_container");
+			
+			if (is_buggy_firefox) {
+				arrow_layout.append("g")
+					.attr("class", "body")
+					.append("use")
+						.attr("xlink:href", "#body_arrow");
+				
+				arrow_layout.append("g")
+					.attr("class", "head")
+					.append("use")
+						.attr("xlink:href", "#head_arrow");
+				
+				self.arrow_by_pieces(target, arrow_data, 0);
+			}
+			else {
+				arrow_layout.append("g")
+					.attr("class", "body")
+					.append("use")
+						.attr("xlink:href", "images/maps/body_arrow.svg#body_arrow")
+						.on("load", function() {
+							wait_load(function() {
+								self.arrow_by_pieces(target, arrow_data, 0);
+							});
+						});
+				
+				arrow_layout.append("g")
+					.attr("class", "head")
+					.append("use")
+						.attr("xlink:href", "images/maps/head_arrow.svg#head_arrow")
+						.on("load", function() {
+							wait_load(function() {
+								self.arrow_by_pieces(target, arrow_data, 0);
+							});
+						});
+			}
+			break;
+		/*---------------------------------------------*/
+		/*---- Print head and body arrow by steps -----*/
+		/*---------------------------------------------*/
+		case 0:
+			var id_node_to = "node_" + arrow_data['to']['graph_id'];
+			var id_node_from = "node_" + arrow_data['from']['graph_id'];
+		
+			var c_elem2 = get_center_element(target +" #" + id_node_to);
+			var c_elem1 = get_center_element(target +" #" + id_node_from);
+			
+			var distance = get_distance_between_point(c_elem1, c_elem2);
+			
+			var radius_to = parseFloat(get_radius_element("#" + id_node_to));
+			var radius_from = parseFloat(get_radius_element("#" + id_node_from));
+			
+			var transform = d3.transform();
+		
+			/*---------------------------------------------*/
+			/*--- Position of layer arrow (body + head) ---*/
+			/*---------------------------------------------*/
+			var arrow_body = arrow_layout.select(".body");
+			var arrow_body_b = arrow_body.node().getBBox();
+			var arrow_body_height = (arrow_body_b['height'] + arrow_body_b['y']);
+			var arrow_body_width = (arrow_body_b['width'] + arrow_body_b['x']);
+			
+			transform.translate[0] = c_elem1[0];
+			transform.translate[1] = c_elem1[1];
+			transform.rotate = get_angle_of_line(c_elem1, c_elem2);
+			
+			arrow_layout.select(".arrow_position_rotation").attr("transform", transform.toString());
+			transform = d3.transform();
+			transform.translate[0] = radius_from;
+			transform.translate[1] = - (arrow_body_height / 2);
+			arrow_layout.select(".arrow_translation").attr("transform", transform.toString());
+			
+			/*---------------------------------------------*/
+			/*-------- Resize the body arrow width --------*/
+			/*---------------------------------------------*/
+			var arrow_head = arrow_layout.select(".head");
+			var arrow_head_b = arrow_head.node().getBBox();
+			var arrow_head_height = (arrow_head_b['height'] + arrow_head_b['y']);
+			var arrow_head_width = (arrow_head_b['width'] + arrow_head_b['x']);
+			
+			var body_width = distance - arrow_head_width - radius_to - radius_from;
+			
+			transform = d3.transform();
+			transform.scale[0] = body_width / arrow_body_width;
+			
+			arrow_body.attr("transform", transform.toString());
+			
+			/*---------------------------------------------*/
+			/*---------- Position of head arrow -----------*/
+			/*---------------------------------------------*/
+			transform = d3.transform();
+			
+			var arrow_body_t = d3.transform(arrow_body.attr("transform"));
+			
+			var scale = arrow_body_t.scale[0];
+			var x = 0 + arrow_body_width * scale;
+			var y = 0 + (arrow_body_height / 2  - arrow_head_height / 2);
+			
+			transform.translate[0] = x;
+			transform.translate[1] = y;
+			
+			arrow_head.attr("transform", transform.toString());
+			
+			/*---------------------------------------------*/
+			/*------- Show the result in one time ---------*/
+			/*---------------------------------------------*/
+			arrow_layout.attr("style", "opacity: 1");
+			break;
+	}
+}
+
 /*-----------------------------------------------*/
 /*-------------------Functions-------------------*/
 /*-----------------------------------------------*/
@@ -1784,144 +1929,3 @@ function get_radius_element(element) {
 		Math.pow(size[0] / 2, 2) + Math.pow(size[1] / 2, 2));
 }
 
-/**
-* Function arrow_by_pieces
-* Return void
-* This function print the arrow by pieces (3 steps)
-*/
-function arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, wait) {
-	
-	if (typeof(wait) === "undefined")
-		wait = 1;
-	
-	var count_files = 2;
-	function wait_load(callback) {
-		count_files--;
-		
-		if (count_files == 0) {
-			callback();
-		}
-	}
-	
-	var arrow_layout = d3
-		.select(target +" #" + id_arrow);
-	
-	switch (wait) {
-		/*---------------------------------------------*/
-		/*-------- Preload head and body arrow --------*/
-		/*---------------------------------------------*/
-		case 1:
-			arrow_layout = arrow_layout.append("g")
-				.attr("class", "arrow_position_rotation")
-				.append("g")
-					.attr("class", "arrow_translation")
-					.append("g")
-						.attr("class", "arrow_container");
-			
-			if (is_buggy_firefox) {
-				arrow_layout.append("g")
-					.attr("class", "body")
-					.append("use")
-						.attr("xlink:href", "#body_arrow");
-				
-				arrow_layout.append("g")
-					.attr("class", "head")
-					.append("use")
-						.attr("xlink:href", "#head_arrow");
-				
-				arrow_by_pieces(target, id_arrow, id_node_to, id_node_from, 0);
-			}
-			else {
-				arrow_layout.append("g")
-					.attr("class", "body")
-					.append("use")
-						.attr("xlink:href", "images/maps/body_arrow.svg#body_arrow")
-						.on("load", function() {
-							wait_load(function() {
-								arrow_by_pieces(
-									target, id_arrow, id_node_to, id_node_from, 0);
-							});
-						});
-				
-				arrow_layout.append("g")
-					.attr("class", "head")
-					.append("use")
-						.attr("xlink:href", "images/maps/head_arrow.svg#head_arrow")
-						.on("load", function() {
-							wait_load(function() {
-								arrow_by_pieces(
-									target, id_arrow, id_node_to, id_node_from, 0);
-							});
-						});
-			}
-			break;
-		/*---------------------------------------------*/
-		/*---- Print head and body arrow by steps -----*/
-		/*---------------------------------------------*/
-		case 0:
-			var c_elem2 = get_center_element(target +" #" + id_node_to);
-			var c_elem1 = get_center_element(target +" #" + id_node_from);
-			
-			var distance = get_distance_between_point(c_elem1, c_elem2);
-			
-			var radius_to = parseFloat(get_radius_element("#" + id_node_to));
-			var radius_from = parseFloat(get_radius_element("#" + id_node_from));
-			
-			var transform = d3.transform();
-		
-			/*---------------------------------------------*/
-			/*--- Position of layer arrow (body + head) ---*/
-			/*---------------------------------------------*/
-			var arrow_body = arrow_layout.select(".body");
-			var arrow_body_b = arrow_body.node().getBBox();
-			var arrow_body_height = (arrow_body_b['height'] + arrow_body_b['y']);
-			var arrow_body_width = (arrow_body_b['width'] + arrow_body_b['x']);
-			
-			transform.translate[0] = c_elem1[0];
-			transform.translate[1] = c_elem1[1];
-			transform.rotate = get_angle_of_line(c_elem1, c_elem2);
-			
-			arrow_layout.select(".arrow_position_rotation").attr("transform", transform.toString());
-			transform = d3.transform();
-			transform.translate[0] = radius_from;
-			transform.translate[1] = - (arrow_body_height / 2);
-			arrow_layout.select(".arrow_translation").attr("transform", transform.toString());
-			
-			/*---------------------------------------------*/
-			/*-------- Resize the body arrow width --------*/
-			/*---------------------------------------------*/
-			var arrow_head = arrow_layout.select(".head");
-			var arrow_head_b = arrow_head.node().getBBox();
-			var arrow_head_height = (arrow_head_b['height'] + arrow_head_b['y']);
-			var arrow_head_width = (arrow_head_b['width'] + arrow_head_b['x']);
-			
-			var body_width = distance - arrow_head_width - radius_to - radius_from;
-			
-			transform = d3.transform();
-			transform.scale[0] = body_width / arrow_body_width;
-			
-			arrow_body.attr("transform", transform.toString());
-			
-			/*---------------------------------------------*/
-			/*---------- Position of head arrow -----------*/
-			/*---------------------------------------------*/
-			transform = d3.transform();
-			
-			var arrow_body_t = d3.transform(arrow_body.attr("transform"));
-			
-			var scale = arrow_body_t.scale[0];
-			var x = 0 + arrow_body_width * scale;
-			var y = 0 + (arrow_body_height / 2  - arrow_head_height / 2);
-			
-			transform.translate[0] = x;
-			transform.translate[1] = y;
-			
-			arrow_head.attr("transform", transform.toString());
-			
-			/*---------------------------------------------*/
-			/*------- Show the result in one time ---------*/
-			/*---------------------------------------------*/
-			arrow_layout.attr("style", "opacity: 1");
-			break;
-	}
-}

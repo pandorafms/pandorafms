@@ -389,23 +389,35 @@ NetworkmapController.prototype.paint_arrows = function() {
 	function create_arrow(arrow_layouts) {
 		
 		arrow_layouts.each(function(d) {
-			switch (d['type']) {
-				case 'AA':
-					arrow_by_pieces(self._target + " svg",
-						"arrow_" + d['graph_id'],
-						"node_" + d['to']['graph_id'],
-						"node_" + d['from']['graph_id']);
-					break;
-				case 'AMMA':
-					arrow_by_pieces_AMMA(self._target + " svg", d);
-					break;
-				case 'AMA':
-					arrow_by_pieces_AMA(self._target + " svg", d);
-					break;
-			}
+			
+			console.log("create_arrow", d);
+			
+			self.arrow_by_pieces(self._target + " svg", d);
 		});
 	}
 	
+}
+
+NetworkmapController.prototype.arrow_by_pieces = function (target, arrow_data, wait) {
+	var self = this;
+	
+	console.log("NetworkmapController.arrow_by_pieces", arrow_data);
+	
+	if (typeof(wait) === "undefined")
+		wait = 1;
+	
+	switch (arrow_data['type']) {
+		case 'AA':
+			MapController.prototype.arrow_by_pieces.call(
+				this, self._target + " svg", arrow_data, wait);
+			break;
+		case 'AMMA':
+			self.arrow_by_pieces_AMMA(self._target + " svg", arrow_data, wait);
+			break;
+		case 'AMA':
+			self.arrow_by_pieces_AMA(self._target + " svg", arrow_data, wait);
+			break;
+	}
 }
 
 /**
@@ -413,7 +425,9 @@ NetworkmapController.prototype.paint_arrows = function() {
 * Return void
 * This function print the arrow by pieces (3 steps)
 */
-function arrow_by_pieces_AMMA(target, arrow_data, wait) {
+NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_data, wait) {
+	var self = this;
+	
 	if (typeof(wait) === "undefined")
 		wait = 1;
 	
@@ -500,7 +514,7 @@ function arrow_by_pieces_AMMA(target, arrow_data, wait) {
 						case 'head_tail':
 							arrow_head.append("use")
 								.attr("xlink:href", s['id_symbol']);
-
+							
 							arrow_tail.append("use")
 								.attr("xlink:href", s['id_symbol']);
 							break;
@@ -513,7 +527,7 @@ function arrow_by_pieces_AMMA(target, arrow_data, wait) {
 								.attr("xlink:href", i + s['id_symbol'])
 								.on("load", function() {
 									wait_load(function() {
-										arrow_by_pieces_AMMA(
+										self.arrow_by_pieces_AMMA(
 											target, arrow_data, 0);
 									});
 								});
@@ -523,16 +537,16 @@ function arrow_by_pieces_AMMA(target, arrow_data, wait) {
 								.attr("xlink:href", i + s['id_symbol'])
 								.on("load", function() {
 									wait_load(function() {
-										arrow_by_pieces_AMMA(
+										self.arrow_by_pieces_AMMA(
 											target, arrow_data, 0);
 									});
 								});
-
+							
 							arrow_tail.append("use")
 								.attr("xlink:href", i + s['id_symbol'])
 								.on("load", function() {
 									wait_load(function() {
-										arrow_by_pieces_AMMA(
+										self.arrow_by_pieces_AMMA(
 											target, arrow_data, 0);
 									});
 								});
@@ -542,7 +556,7 @@ function arrow_by_pieces_AMMA(target, arrow_data, wait) {
 			});
 			
 			if (is_buggy_firefox) {
-				arrow_by_pieces_AMMA(target, arrow_data, 0);
+				self.arrow_by_pieces_AMMA(target, arrow_data, 0);
 			}
 			break;
 		/*---------------------------------------------*/

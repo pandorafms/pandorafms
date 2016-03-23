@@ -1,0 +1,11 @@
+[mysqld]
+sql_mode = ""
+character-set-server=utf8
+skip-character-set-client-handshake
+# Disabling symbolic-links is recommended to prevent assorted security risks
+symbolic-links=0
+# Mysql optimizations for Pandora FMS
+# Please check the documentation in http://pandorafms.com for better results
+innodb_file_per_table
+innodb_flush_log_at_trx_commit = 0
+innodb_flush_method = O_DIRECT

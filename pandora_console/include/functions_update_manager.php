@@ -230,6 +230,8 @@ function update_manager_check_online_free_packages_available() {
 	curl_setopt($curlObj, CURLOPT_POST, true);
 	curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);
 	curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($curlObj, CURLOPT_CONNECTTIMEOUT, 4);
+	
 	if (isset($config['update_manager_proxy_server'])) {
 		curl_setopt($curlObj, CURLOPT_PROXY, $config['update_manager_proxy_server']);
 	}
@@ -296,6 +298,8 @@ function update_manager_check_online_free_packages ($is_ajax=true) {
 	curl_setopt($curlObj, CURLOPT_POST, true);
 	curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);
 	curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($curlObj, CURLOPT_CONNECTTIMEOUT, 4);
+	
 	if (isset($config['update_manager_proxy_server'])) {
 		curl_setopt($curlObj, CURLOPT_PROXY, $config['update_manager_proxy_server']);
 	}

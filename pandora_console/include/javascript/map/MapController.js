@@ -819,7 +819,7 @@ MapController.prototype.move_arrow = function (id_from_any_point_arrow) {
 		var id_node_to = "node_" + d3.select(this).attr("data-to");
 		var id_node_from = "node_" + d3.select(this).attr("data-from");
 		
-		self.arrow_by_pieces(self._target + " svg", id_arrow, id_node_to, id_node_from, 0);
+		self.arrow_by_pieces(self._target + " svg", d, 0);
 	});
 }
 
@@ -1670,8 +1670,6 @@ MapController.prototype.nodeData = function(data_id, type, id_map, data_graph_id
 MapController.prototype.arrow_by_pieces = function(target, arrow_data, wait) {
 	var self = this;
 	
-	console.log("MapController.arrow_by_pieces", target, arrow_data, wait);
-	
 	if (typeof(wait) === "undefined")
 		wait = 1;
 	
@@ -1928,4 +1926,3 @@ function get_radius_element(element) {
 	return Math.sqrt(
 		Math.pow(size[0] / 2, 2) + Math.pow(size[1] / 2, 2));
 }
-

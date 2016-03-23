@@ -387,11 +387,7 @@ NetworkmapController.prototype.paint_arrows = function() {
 	* This function creates the arrow
 	*/
 	function create_arrow(arrow_layouts) {
-		
 		arrow_layouts.each(function(d) {
-			
-			console.log("create_arrow", d);
-			
 			self.arrow_by_pieces(self._target + " svg", d);
 		});
 	}
@@ -401,10 +397,9 @@ NetworkmapController.prototype.paint_arrows = function() {
 NetworkmapController.prototype.arrow_by_pieces = function (target, arrow_data, wait) {
 	var self = this;
 	
-	console.log("NetworkmapController.arrow_by_pieces", arrow_data);
-	
-	if (typeof(wait) === "undefined")
+	if (typeof(wait) === "undefined") {
 		wait = 1;
+	}
 	
 	switch (arrow_data['type']) {
 		case 'AA':

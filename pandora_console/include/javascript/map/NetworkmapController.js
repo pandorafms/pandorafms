@@ -570,6 +570,16 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 			var radius_from = parseFloat(get_radius_element("#" + id_node_from));
 			
 			var transform = d3.transform();
+			
+			var arrow_head = arrow_layout.select(".head");
+			var arrow_head_b = arrow_head.node().getBBox();
+			var arrow_head_height = (arrow_head_b['height'] + arrow_head_b['y']);
+			var arrow_head_width = (arrow_head_b['width'] + arrow_head_b['x']);
+			
+			var arrow_tail = arrow_layout.select(".tail");
+			var arrow_tail_b = arrow_tail.node().getBBox();
+			var arrow_tail_height = (arrow_tail_b['height'] + arrow_tail_b['y']);
+			var arrow_tail_width = (arrow_tail_b['width'] + arrow_tail_b['x']);
 		
 			/*---------------------------------------------*/
 			/*--- Position of layer arrow (body + head) ---*/
@@ -586,7 +596,7 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 			arrow_layout.select(".arrow_position_rotation")
 				.attr("transform", transform.toString());
 			transform = d3.transform();
-			transform.translate[0] = radius_from;
+			transform.translate[0] = radius_from + arrow_tail_width;
 			transform.translate[1] = - (arrow_body_height / 2);
 			arrow_layout.select(".arrow_translation")
 				.attr("transform", transform.toString());
@@ -594,12 +604,7 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 			/*---------------------------------------------*/
 			/*-------- Resize the body arrow width --------*/
 			/*---------------------------------------------*/
-			var arrow_head = arrow_layout.select(".head");
-			var arrow_head_b = arrow_head.node().getBBox();
-			var arrow_head_height = (arrow_head_b['height'] + arrow_head_b['y']);
-			var arrow_head_width = (arrow_head_b['width'] + arrow_head_b['x']);
-			
-			var body_width = distance - arrow_head_width - radius_to - radius_from;
+			var body_width = distance - arrow_head_width - arrow_tail_width - radius_to - radius_from;
 			
 			transform = d3.transform();
 			transform.scale[0] = body_width / arrow_body_width;
@@ -621,6 +626,17 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 			transform.translate[1] = y;
 			
 			arrow_head.attr("transform", transform.toString());
+			
+			
+			transform = d3.transform();
+			
+			x = 0 - arrow_tail_width;
+			y = 0 + (arrow_body_height / 2  - arrow_tail_height / 2);
+			
+			transform.translate[0] = x;
+			transform.translate[1] = y;
+			
+			arrow_tail.attr("transform", transform.toString());
 			
 			/*---------------------------------------------*/
 			/*------- Show the result in one time ---------*/

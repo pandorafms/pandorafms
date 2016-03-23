@@ -705,22 +705,97 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 			var arrow_tail_title_b = arrow_tail_title.node().getBBox();
 			var arrow_tail_title_height =
 				(arrow_tail_title_b['height'] + arrow_tail_title_b['y']);
+			var arrow_tail_title_width =
+				(arrow_tail_title_b['width'] + arrow_tail_title_b['x']);
 			
 			transform = d3.transform();
 			
 			var x = -10 + (arrow_body_width * scale) - arrow_tail_width - radius_from;
 			var y = 0 + (arrow_body_height / 2  - arrow_head_title_height / 2);
 			
+			
+			
 			transform.translate[0] = x;
 			transform.translate[1] = y;
-			
 			arrow_tail_title.attr("transform", transform.toString());
+			
+			self.re_rotate_interface_title(arrow_data);
 			
 			/*---------------------------------------------*/
 			/*------- Show the result in one time ---------*/
 			/*---------------------------------------------*/
 			arrow_layout.attr("style", "opacity: 1");
 			break;
+	}
+}
+
+NetworkmapController.prototype.re_rotate_interface_title = function(arrow_data) {
+	var id_node_to = "node_" + arrow_data['to']['graph_id'];
+	var id_node_from = "node_" + arrow_data['from']['graph_id'];
+	
+	var c_elem2 = get_center_element(self._target +" #" + id_node_to);
+	var c_elem1 = get_center_element(self._target +" #" + id_node_from);
+	var angle = get_angle_of_line(c_elem1, c_elem2);
+	if (angle < 0) angle = 360 + angle;
+	
+	// The angles in our SVG
+	/*
+	 *            \   270º    /            
+	 *             \    |    /             
+	 *              \   |   /              
+	 *               \  |  /               
+	 *                \ | /                
+	 *          225º ( \|/ ) 315º          
+	 * 180º ------------+--------------- 0º
+	 *          135º ( /|\ ) 45º           
+	 *                / | \                
+	 *               /  |  \               
+	 *              /   |   \              
+	 *             /    |    \             
+	 *            /     |     \            
+	 *           /      |      \           
+	 *                 90º                 
+	 */
+	
+	var rotate;
+	if (angle >= 0 && angle <= 90)
+		rotate = false;
+	if (angle > 90 && angle <= 180)
+		rotate = true;
+	if (angle > 180 && angle <= 270)
+		rotate = true;
+	if (angle > 270 && angle <= 360)
+		rotate = false;
+	
+	console.log(arrow_data['graph_id'], angle, rotate);
+	
+	if (rotate) {
+		var arrow_layout = d3.select(self._target +" #arrow_" + arrow_data['graph_id']);
+		var arrow_tail_title = arrow_layout.select(".tail_title");
+		var arrow_tail_title_text = arrow_tail_title.select("text");
+		var arrow_tail_title_b = arrow_tail_title.node().getBBox();
+		
+		var transform = d3.transform();
+		
+		var center_tail_x = arrow_tail_title_b['width'] / 2 + arrow_tail_title_b['x'];
+		var center_tail_y = arrow_tail_title_b['height'] / 2 + arrow_tail_title_b['y'];
+		
+		transform.rotate = "180 " + center_tail_x + " " + center_tail_y;
+		arrow_tail_title_text.attr("transform", transform.toString());
+		
+		
+		
+		var arrow_head_title = arrow_layout.select(".head_title");
+		var arrow_head_title_text = arrow_head_title.select("text");
+		var arrow_head_title_b = arrow_head_title.node().getBBox();
+		
+		transform = d3.transform();
+		
+		var center_head_x = arrow_head_title_b['width'] / 2 + arrow_head_title_b['x'];
+		var center_head_y = arrow_head_title_b['height'] / 2 + arrow_head_title_b['y'];
+		
+		transform.rotate = "180 " + center_head_x + " " + center_head_y;
+		arrow_head_title_text.attr("transform", transform.toString());
 	}
 }
 

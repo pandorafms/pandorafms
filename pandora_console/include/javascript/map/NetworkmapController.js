@@ -360,8 +360,7 @@ NetworkmapController.prototype.paint_arrows = function() {
 			});
 		}
 	});
-
-	//TO DO
+	
 	var arrow_layouts = self._viewport.selectAll(".arrow")
 		.data(clean_arrows)
 		.enter()
@@ -437,36 +436,48 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 		['target'] = "head_tail";
 	symbols['images/maps/head_arrow_module_warning.svg']
 		['id_symbol'] = "#head_arrow_module_warning";
+	symbols['images/maps/head_arrow_module_warning.svg']
+		['status'] = "module_warning";
 	
 	symbols['images/maps/head_arrow_module_unknown.svg'] = {};
 	symbols['images/maps/head_arrow_module_unknown.svg']
 		['target'] = "head_tail";
 	symbols['images/maps/head_arrow_module_unknown.svg']
 		['id_symbol'] = "#head_arrow_module_unknown";
+	symbols['images/maps/head_arrow_module_unknown.svg']
+		['status'] = "module_unknown";
 		
 	symbols['images/maps/head_arrow_module_ok.svg'] = {};
 	symbols['images/maps/head_arrow_module_ok.svg']
 		['target'] = "head_tail";
 	symbols['images/maps/head_arrow_module_ok.svg']
 		['id_symbol'] = "#head_arrow_module_ok";
-		
+	symbols['images/maps/head_arrow_module_ok.svg']
+		['status'] = "module_ok";
+	
 	symbols['images/maps/head_arrow_module_no_data.svg'] = {};
 	symbols['images/maps/head_arrow_module_no_data.svg']
 		['target'] = "head_tail";
 	symbols['images/maps/head_arrow_module_no_data.svg']
 		['id_symbol'] = "#head_arrow_module_no_data";
-		
+	symbols['images/maps/head_arrow_module_no_data.svg']
+		['status'] = "no_data";
+	
 	symbols['images/maps/head_arrow_module_critical.svg'] = {};
 	symbols['images/maps/head_arrow_module_critical.svg']
 		['target'] = "head_tail";
 	symbols['images/maps/head_arrow_module_critical.svg']
 		['id_symbol'] = "#head_arrow_module_critical";
+	symbols['images/maps/head_arrow_module_critical.svg']
+		['status'] = "module_critical";
 		
 	symbols['images/maps/head_arrow_module_alertsfired.svg'] = {};
 	symbols['images/maps/head_arrow_module_alertsfired.svg']
 		['target'] = "head_tail";
 	symbols['images/maps/head_arrow_module_alertsfired.svg']
 		['id_symbol'] = "#head_arrow_module_alertsfired";
+	symbols['images/maps/head_arrow_module_alertsfired.svg']
+		['status'] = "module_alertsfired";
 	
 	var count_files = Object.keys(symbols).length;
 	function wait_load(callback) {
@@ -508,9 +519,13 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 							break;
 						case 'head_tail':
 							arrow_head.append("use")
+								.style("opacity", 0)
+								.attr("data-status", s['status'])
 								.attr("xlink:href", s['id_symbol']);
 							
 							arrow_tail.append("use")
+								.style("opacity", 0)
+								.attr("data-status", s['status'])
 								.attr("xlink:href", s['id_symbol']);
 							break;
 					}
@@ -529,6 +544,8 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 							break;
 						case 'head_tail':
 							arrow_head.append("use")
+								.style("opacity", 0)
+								.attr("data-status", s['status'])
 								.attr("xlink:href", i + s['id_symbol'])
 								.on("load", function() {
 									wait_load(function() {
@@ -538,6 +555,8 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 								});
 							
 							arrow_tail.append("use")
+								.style("opacity", 0)
+								.attr("data-status", s['status'])
 								.attr("xlink:href", i + s['id_symbol'])
 								.on("load", function() {
 									wait_load(function() {
@@ -638,11 +657,117 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 			
 			arrow_tail.attr("transform", transform.toString());
 			
+			self.update_interfaces_status(arrow_data);
+			
 			/*---------------------------------------------*/
 			/*------- Show the result in one time ---------*/
 			/*---------------------------------------------*/
 			arrow_layout.attr("style", "opacity: 1");
 			break;
+	}
+}
+
+NetworkmapController.prototype.update_interfaces_status = function (arrow_data) {
+	var self = this;
+	
+	var arrow_layout = d3
+		.select(self._target +" #arrow_" + arrow_data['graph_id']);
+	var arrow_head = arrow_layout.select(".head");
+	var arrow_tail = arrow_layout.select(".tail");
+	
+	
+	if (arrow_data.from_status !== null) {
+		switch (parseInt(arrow_data.from_status)) {
+			case AGENT_MODULE_STATUS_ALL:
+			case AGENT_MODULE_STATUS_UNKNOWN:
+				arrow_tail.selectAll("use")
+					.style("opacity", 0);
+				arrow_tail.select("use[data-status='module_unknown']")
+					.style("opacity", 1);
+				break;
+			case AGENT_MODULE_STATUS_CRITICAL_BAD:
+			case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+			case AGENT_MODULE_STATUS_NOT_NORMAL:
+				arrow_tail.selectAll("use")
+					.style("opacity", 0);
+				arrow_tail.select("use[data-status='module_critical']")
+					.style("opacity", 1);
+				break;
+			case AGENT_MODULE_STATUS_NO_DATA:
+			case AGENT_MODULE_STATUS_NOT_INIT:
+			default:
+				arrow_tail.selectAll("use")
+					.style("opacity", 0);
+				arrow_tail.select("use[data-status='no_data']")
+					.style("opacity", 1);
+				break;
+			case AGENT_MODULE_STATUS_NORMAL:
+			case AGENT_MODULE_STATUS_NORMAL_ALERT:
+				arrow_tail.selectAll("use")
+					.style("opacity", 0);
+				arrow_tail.select("use[data-status='module_ok']")
+					.style("opacity", 1);
+				break;
+			case AGENT_MODULE_STATUS_WARNING:
+				arrow_tail.selectAll("use")
+					.style("opacity", 0);
+				arrow_tail.select("use[data-status='module_warning']")
+					.style("opacity", 1);
+				break;
+			case AGENT_MODULE_STATUS_WARNING_ALERT:
+				arrow_tail.selectAll("use")
+					.style("opacity", 0);
+				arrow_tail.select("use[data-status='module_alertsfired']")
+					.style("opacity", 1);
+				break;
+		}
+	}
+	
+	if (arrow_data.to_status !== null) {
+		switch (parseInt(arrow_data.to_status)) {
+			case AGENT_MODULE_STATUS_ALL:
+			case AGENT_MODULE_STATUS_UNKNOWN:
+				arrow_head.selectAll("use")
+					.style("opacity", 0);
+				arrow_head.select("use[data-status='module_unknown']")
+					.style("opacity", 1);
+				break;
+			case AGENT_MODULE_STATUS_CRITICAL_BAD:
+			case AGENT_MODULE_STATUS_CRITICAL_ALERT:
+			case AGENT_MODULE_STATUS_NOT_NORMAL:
+				arrow_head.selectAll("use")
+					.style("opacity", 0);
+				arrow_head.select("use[data-status='module_critical']")
+					.style("opacity", 1);
+				break;
+			case AGENT_MODULE_STATUS_NO_DATA:
+			case AGENT_MODULE_STATUS_NOT_INIT:
+			default:
+				arrow_head.selectAll("use")
+					.style("opacity", 0);
+				arrow_head.select("use[data-status='no_data']")
+					.style("opacity", 1);
+				break;
+			case AGENT_MODULE_STATUS_NORMAL:
+			case AGENT_MODULE_STATUS_NORMAL_ALERT:
+				arrow_head.selectAll("use")
+					.style("opacity", 0);
+				arrow_head.select("use[data-status='module_ok']")
+					.style("opacity", 1);
+				break;
+			case AGENT_MODULE_STATUS_WARNING:
+				arrow_head.selectAll("use")
+					.style("opacity", 0);
+				arrow_head.select("use[data-status='module_warning']")
+					.style("opacity", 1);
+				break;
+			case AGENT_MODULE_STATUS_WARNING_ALERT:
+				arrow_head.selectAll("use")
+					.style("opacity", 0);
+				arrow_head.select("use[data-status='module_alertsfired']")
+					.style("opacity", 1);
+				break;
+		}
 	}
 }
 

@@ -767,15 +767,21 @@ NetworkmapController.prototype.re_rotate_interface_title = function(arrow_data) 
 	if (angle > 270 && angle <= 360)
 		rotate = false;
 	
-	console.log(arrow_data['graph_id'], angle, rotate);
+	
+	var arrow_layout = d3.select(self._target +" #arrow_" + arrow_data['graph_id']);
+	
+	var arrow_tail_title = arrow_layout.select(".tail_title");
+	var arrow_tail_title_text = arrow_tail_title.select("text");
+	
+	var arrow_head_title = arrow_layout.select(".head_title");
+	var arrow_head_title_text = arrow_head_title.select("text");
+	
+	var transform;
 	
 	if (rotate) {
-		var arrow_layout = d3.select(self._target +" #arrow_" + arrow_data['graph_id']);
-		var arrow_tail_title = arrow_layout.select(".tail_title");
-		var arrow_tail_title_text = arrow_tail_title.select("text");
 		var arrow_tail_title_b = arrow_tail_title.node().getBBox();
 		
-		var transform = d3.transform();
+		transform = d3.transform();
 		
 		var center_tail_x = arrow_tail_title_b['width'] / 2 + arrow_tail_title_b['x'];
 		var center_tail_y = arrow_tail_title_b['height'] / 2 + arrow_tail_title_b['y'];
@@ -785,8 +791,7 @@ NetworkmapController.prototype.re_rotate_interface_title = function(arrow_data) 
 		
 		
 		
-		var arrow_head_title = arrow_layout.select(".head_title");
-		var arrow_head_title_text = arrow_head_title.select("text");
+		
 		var arrow_head_title_b = arrow_head_title.node().getBBox();
 		
 		transform = d3.transform();
@@ -795,6 +800,13 @@ NetworkmapController.prototype.re_rotate_interface_title = function(arrow_data) 
 		var center_head_y = arrow_head_title_b['height'] / 2 + arrow_head_title_b['y'];
 		
 		transform.rotate = "180 " + center_head_x + " " + center_head_y;
+		arrow_head_title_text.attr("transform", transform.toString());
+	}
+	else {
+		transform = d3.transform();;
+		arrow_tail_title_text.attr("transform", transform.toString());
+		
+		transform = d3.transform();;
 		arrow_head_title_text.attr("transform", transform.toString());
 	}
 }

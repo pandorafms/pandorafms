@@ -594,7 +594,10 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 			/*---------------------------------------------*/
 			/*-------- Resize the body arrow width --------*/
 			/*---------------------------------------------*/
-			arrow_head_width = 0; //WIP
+			var arrow_head = arrow_layout.select(".head");
+			var arrow_head_b = arrow_head.node().getBBox();
+			var arrow_head_height = (arrow_head_b['height'] + arrow_head_b['y']);
+			var arrow_head_width = (arrow_head_b['width'] + arrow_head_b['x']);
 			
 			var body_width = distance - arrow_head_width - radius_to - radius_from;
 			
@@ -606,18 +609,18 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 			/*---------------------------------------------*/
 			/*---------- Position of head arrow -----------*/
 			/*---------------------------------------------*/
-			//~ transform = d3.transform();
-			//~ 
-			//~ var arrow_body_t = d3.transform(arrow_body.attr("transform"));
-			//~ 
-			//~ var scale = arrow_body_t.scale[0];
-			//~ var x = 0 + arrow_body_width * scale;
-			//~ var y = 0 + (arrow_body_height / 2  - arrow_head_height / 2);
-			//~ 
-			//~ transform.translate[0] = x;
-			//~ transform.translate[1] = y;
-			//~ 
-			//~ arrow_head.attr("transform", transform.toString());
+			transform = d3.transform();
+			
+			var arrow_body_t = d3.transform(arrow_body.attr("transform"));
+			
+			var scale = arrow_body_t.scale[0];
+			var x = 0 + arrow_body_width * scale;
+			var y = 0 + (arrow_body_height / 2  - arrow_head_height / 2);
+			
+			transform.translate[0] = x;
+			transform.translate[1] = y;
+			
+			arrow_head.attr("transform", transform.toString());
 			
 			/*---------------------------------------------*/
 			/*------- Show the result in one time ---------*/

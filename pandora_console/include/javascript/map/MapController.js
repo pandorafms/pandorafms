@@ -815,10 +815,6 @@ MapController.prototype.move_arrow = function (id_from_any_point_arrow) {
 	});
 	
 	arrows.each(function(d) {
-		var id_arrow = d3.select(this).attr("id");
-		var id_node_to = "node_" + d3.select(this).attr("data-to");
-		var id_node_from = "node_" + d3.select(this).attr("data-from");
-		
 		self.arrow_by_pieces(self._target + " svg", d, 0);
 	});
 }

@@ -107,7 +107,8 @@ foreach ($layoutDatas as $layoutData) {
 			visual_map_print_user_lines($layoutData);
 			break;
 		default:
-			visual_map_print_item("write", $layoutData);
+			visual_map_print_item("write", $layoutData, 
+				null, true, false, false);
 			break;
 	}
 	

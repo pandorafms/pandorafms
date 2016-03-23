@@ -202,7 +202,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		}
 		$return .= html_print_input_hidden ('lineWidhtGraph', $config['custom_graph_width'],true);
 		$menu_width = 25 * $nbuttons + 15;
-		if ( $dashboard == false) {
+		if ( $dashboard == false AND $vconsole == false) {
 			$return .= "<div id='menu_$graph_id' class='menu_graph' " .
 				"style='display: none; " .
 					"text-align: center; " .
@@ -233,7 +233,8 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	else {
 		$height = 1;
 	}
-	$return .= "<div id='overview_$graph_id' class='overview_graph' style='visibility: hidden; margin-left:0px; margin-top:20px; width: ".$width."px; height: ".$height ."px;'></div>";
+	if ( $dashboard == false AND $vconsole == false )
+		$return .= "<div id='overview_$graph_id' class='overview_graph' style='visibility: hidden; margin-left:0px; margin-top:20px; width: ".$width."px; height: ".$height ."px;'></div>";
 	
 	if ($water_mark != '') {
 		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";

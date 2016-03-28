@@ -94,9 +94,9 @@ MapController.prototype.init_map = function() {
 			var viewport_transform = d3.transform(
 				d3.select(self._target + " .viewport").attr("transform"));
 			
+			
 			self._zoomManager
-				.scale(viewport_transform.scale);
-			self._zoomManager
+				.scale(viewport_transform.scale[0])
 				.translate(viewport_transform.translate);
 		}
 	}
@@ -152,7 +152,7 @@ MapController.prototype.init_map = function() {
 	function slided(d) {
 		var slider_value = parseFloat(self._slider.property("value"))
 		
-		zoom_level = Math.exp(slider_value);
+		var zoom_level = Math.exp(slider_value);
 		
 		/*----------------------------------------------------------------*/
 		/*-Code to translate the map with the zoom for to hold the center-*/

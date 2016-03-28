@@ -52,7 +52,8 @@ MapController.prototype.init_map = function() {
 	var svg = d3.select(self._target + " svg");
 	
 	self._zoomManager =
-		d3.behavior.zoom().scaleExtent([1/MAX_ZOOM_LEVEL, MAX_ZOOM_LEVEL]).on("zoom", zoom);
+		d3.behavior.zoom()
+			.scaleExtent([1/MAX_ZOOM_LEVEL, MAX_ZOOM_LEVEL]).on("zoom", zoom);
 	
 	self._viewport = svg
 		.call(self._zoomManager)
@@ -1065,6 +1066,7 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 * This function changes the handler image
 */
 MapController.prototype.change_handler_image = function(action, handler, wait) {
+	var self = this;
 	
 	var handlers_d3 = d3.select(self._target + " .handles");
 	var handler_d3 = d3.select(self._target + " .handler_" + handler);
@@ -1133,6 +1135,8 @@ MapController.prototype.event_resize = function(action, item, handler) {
 * This function saves the actual size of the element (node)
 */
 MapController.prototype.save_size_item = function(item) {
+	var self = this;
+	
 	var item_d3 = d3.select(self._target + " #node_" + item['graph_id']);
 	var item_transform = d3.transform(item_d3.attr("transform"));
 	var item_bbox = item_d3.node().getBBox();
@@ -1150,6 +1154,8 @@ MapController.prototype.save_size_item = function(item) {
 * This function do the process to resize the element (node)
 */
 MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) {
+	var self = this;
+	
 	var item_d3 = d3.select(self._target + " #node_" + item['graph_id']);
 	var item_transform = d3.transform(item_d3.attr("transform"));
 	var item_bbox = item_d3.node().getBBox();
@@ -1395,6 +1401,7 @@ MapController.prototype.init_events = function(principalObject) {
 		}
 		
 		self.remove_resize_square();
+		
 		
 		d3.select(this).classed("dragging", true);
 	}

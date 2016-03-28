@@ -719,7 +719,8 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 			transform.translate[1] = y;
 			arrow_tail_title.attr("transform", transform.toString());
 			
-			self.re_rotate_interface_title(arrow_data);
+			self.re_rotate_interfaces_title(arrow_data);
+			self.truncate_interfaces_title(arrow_data);
 			
 			/*---------------------------------------------*/
 			/*------- Show the result in one time ---------*/
@@ -729,9 +730,48 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 	}
 }
 
-NetworkmapController.prototype.re_rotate_interface_title = function(arrow_data) {
-	var self = this;	
+NetworkmapController.prototype.truncate_interfaces_title = function(arrow_data) {
+	var self = this;
+
+	var arrow_layout = d3.select(self._target +" #arrow_" + arrow_data['graph_id']);
 	
+	var arrow_tail_title = arrow_layout.select(".tail_title");
+	var arrow_tail_title_text = arrow_tail_title.select("text");
+	var arrow_tail_title_b = arrow_tail_title.node().getBBox();
+	var arrow_tail_title_width =
+		(arrow_tail_title_b['width'] + arrow_tail_title_b['x']);
+	
+	var arrow_head_title = arrow_layout.select(".head_title");
+	var arrow_head_title_text = arrow_head_title.select("text");
+	var arrow_head_title_b = arrow_head_title.node().getBBox();
+	var arrow_head_title_width =
+		(arrow_head_title_b['width'] + arrow_head_title_b['x']);
+	
+	var arrow_body = arrow_layout.select(".body");
+	var arrow_body_b = arrow_body.node().getBBox();
+	var arrow_body_width = (arrow_body_b['width'] + arrow_body_b['x']);
+	
+	var arrow_body_t = d3.transform(arrow_body.attr("transform"));
+	
+	var scale = arrow_body_t.scale[0];
+	
+	var total = arrow_tail_title_width + arrow_head_title_width + 10 + 10;
+	
+	
+	if (total >= (scale * arrow_body_width)) {
+		// Truncate
+		arrow_tail_title_text.text("");
+		arrow_head_title_text.text("");
+	}
+	else {
+		arrow_tail_title_text.text(arrow_data['to_title']);
+		arrow_head_title_text.text(arrow_data['from_title']);
+	}
+}
+
+NetworkmapController.prototype.re_rotate_interfaces_title = function(arrow_data) {
+	var self = this;
+
 	var id_node_to = "node_" + arrow_data['to']['graph_id'];
 	var id_node_from = "node_" + arrow_data['from']['graph_id'];
 	

@@ -36,6 +36,8 @@ MapController.prototype._minimap = null;
 MapController.prototype._zoomManager = null;
 MapController.prototype._slider = null;
 MapController.prototype._relation = null;
+MapController.prototype._disabled_drag_zoom = false;
+MapController.prototype._ctrl_key = 17;
 
 /*-----------------------------------------------*/
 /*--------------------Methods--------------------*/
@@ -1280,6 +1282,22 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 */
 MapController.prototype.init_events = function(principalObject) {
 	self = this;
+	
+	d3.select(window)
+		.on("keydown", function() {
+			// ctrl key
+			if(d3.event.keyCode === self._ctrl_key) {
+				console.log("Event", d3.event);
+				console.log("DOWN");
+				console.log("CTRL");
+			}
+		})
+		.on("keyup", function() {
+			if(d3.event.keyCode === self._ctrl_key) {
+				console.log("UP");
+				console.log("CTRL");
+			}
+		});
 	
 	var node_menu = [
 		{

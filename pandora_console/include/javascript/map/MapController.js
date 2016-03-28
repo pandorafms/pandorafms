@@ -1447,7 +1447,7 @@ MapController.prototype.init_events = function(principalObject) {
 		self.remove_resize_square();
 		
 		
-		d3.select(this).classed("dragging", true);
+		self.select_node(d['graph_id'], "select");
 	}
 	
 	/**
@@ -1476,7 +1476,7 @@ MapController.prototype.init_events = function(principalObject) {
 	* Return void
 	*/
 	function dragended(d) {
-		d3.select(this).classed("dragging", false);
+		self.select_node(d['graph_id'], "off");
 		
 		if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
 			$("#node_" + d['graph_id']).tooltipster('destroy');

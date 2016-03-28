@@ -90,15 +90,14 @@ MapController.prototype.init_map = function() {
 			self.zoom_minimap();
 		}
 		else {
-			//~ console.log(d3.event);
-			//~ 
-			//~ console.log("---");
-			//~ console.log(self._viewport.node().getBBox());
-			//~ console.log(self._viewport.attr("transform"));
-			//~ 
-			//~ self.multiple_selection_dragging(
-				//~ d3.event.sourceEvent.layerX,
-				//~ d3.event.sourceEvent.layerY);
+			// Reset the zoom and panning actual
+			var viewport_transform = d3.transform(
+				d3.select(self._target + " .viewport").attr("transform"));
+			
+			self._zoomManager
+				.scale(viewport_transform.scale);
+			self._zoomManager
+				.translate(viewport_transform.translate);
 		}
 	}
 	
@@ -173,7 +172,7 @@ MapController.prototype.init_map = function() {
 		
 		var new_translation = [
 			old_translate[0] + center[0] - temp2[0],
-			old_translate[1] + center[1] - temp2[1]]
+			old_translate[1] + center[1] - temp2[1]];
 		
 		self._zoomManager.scale(zoom_level)
 			.translate(new_translation)
@@ -805,11 +804,12 @@ MapController.prototype.paint_nodes = function() {
 						function(d) { return "translate(" + d['x'] + " " + d['y'] + ")";})
 					.attr("class", "draggable node")
 					.attr("id", function(d) { return "node_" + d['graph_id'];})
+					.attr("style", "fill: rgb(50, 50, 128);")
 					.attr("data-id", function(d) { return d['id'];})
 					.attr("data-graph_id", function(d) { return d['graph_id'];})
 					.attr("data-type", function(d) { return d['type'];})
 					.append("rect")
-						.attr("style", "fill: rgb(50, 50, 128);")
+						.attr("style", "")
 						.attr("x", 0)
 						.attr("y", 0)
 						.attr("height", 30)
@@ -846,6 +846,8 @@ MapController.prototype.move_arrow = function (id_from_any_point_arrow) {
 * This function removes squares resize
 */
 MapController.prototype.remove_resize_square = function(item, wait) {
+	var self = this;
+	
 	d3.select(self._target + " svg #resize_square").remove();
 }
 
@@ -1325,6 +1327,7 @@ MapController.prototype.init_events = function(principalObject) {
 				console.log("un_control");
 				self._flag_multiple_selection = false;
 				self._stop_dragging = false;
+				self.multiple_selection_end();
 			}
 		});
 	
@@ -1381,14 +1384,10 @@ MapController.prototype.init_events = function(principalObject) {
 	
 	d3.selectAll(".node")
 		.on("mouseover", function(d) {
-			d3.select("#node_" + d['graph_id'])
-				.select("circle")
-				.attr("style", "fill: rgb(128, 50, 50);");
+			self.select_node(d['graph_id'], "over");
 		})
 		.on("mouseout", function(d) {
-			d3.select("#node_" + d['graph_id'])
-				.select("circle")
-				.attr("style", "fill: rgb(50, 50, 128);");
+			self.select_node(d['graph_id'], "off");
 		})
 		.on("click", function(d) {
 			if (d3.event.button != 0) {
@@ -1573,11 +1572,141 @@ MapController.prototype.multiple_selection_dragging = function(x, y, first) {
 			selection_box.select("rect")
 				.attr("height", delta_y);
 		}
+		
+		self.multiple_selection_select_nodes();
 	}
 }
 
 MapController.prototype.multiple_selection_end = function() {
+	var self = this;
 	
+	var selection_box = d3
+		.select(self._target + " #selection_box");
+	
+	selection_box.style("opacity", 0);
+	selection_box.select("rect")
+		.attr("width", 0);
+	selection_box.select("rect")
+		.attr("height", 0);
+}
+
+MapController.prototype.multiple_selection_select_nodes = function() {
+	var self = this;
+	
+	var selection_box = d3
+		.select(self._target + " #selection_box");
+	var transform = d3.transform(selection_box.attr("transform"));
+	var selection_box_dimensions = {};
+	selection_box_dimensions["x"] = transform.translate[0];
+	selection_box_dimensions["y"] = transform.translate[1];
+	selection_box_dimensions["width"] = selection_box.select("rect")
+		.attr("width");
+	selection_box_dimensions["height"] = selection_box.select("rect")
+		.attr("height");
+	
+	// Apply the zoom and panning
+	var zoom = d3.transform(
+		d3.select(self._target + " .viewport").attr("transform"));
+	
+	selection_box_dimensions["x"] = (selection_box_dimensions["x"]
+		+ zoom.translate[0]) * zoom.scale[0];
+	selection_box_dimensions["y"] = (selection_box_dimensions["y"]
+		+ zoom.translate[1]) * zoom.scale[1];
+	
+	selection_box_dimensions["width"] =
+		selection_box_dimensions["width"] * zoom.scale[0];
+	selection_box_dimensions["height"] =
+		selection_box_dimensions["height"] * zoom.scale[1];
+	
+	$.each(nodes, function(i, node) {
+		if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)
+			return 1; // Continue
+		
+		var x = node.x;
+		var y = node.y;
+		
+		var node_bbox = null;
+		
+		var width;
+		if (!node.hasOwnProperty("width")) {
+			node_bbox =
+				d3.select(self._target + " #node_" + node.graph_id).node().getBBox()
+			
+			width = node_bbox['x'] + node_bbox['width'];
+			
+			nodes[i].width = width;
+		}
+		else {
+			width = node.width;
+		}
+		
+		var height;
+		if (!node.hasOwnProperty("height")) {
+			if (node_bbox === null) {
+				node_bbox =
+					d3.select(self._target + " #node_" + node.graph_id).node().getBBox()
+			}
+			
+			height = node_bbox['y'] + node_bbox['height'];
+			
+			nodes[i].height = height;
+		}
+		else {
+			height = node.height;
+		}
+		
+		if (
+			(x >= selection_box_dimensions["x"]) &&
+			(y >= selection_box_dimensions["y"]) &&
+			((x + width) <= (selection_box_dimensions["x"] + selection_box_dimensions["width"])) &&
+			((y + height) <= (selection_box_dimensions["y"] + selection_box_dimensions["height"]))
+			) {
+			
+			self.select_node(node.graph_id, "select");
+		}
+	});
+}
+
+MapController.prototype.select_node = function(node_id, type) {
+	var self = this;
+	
+	d3.select(self._target + " #node_" + node_id)
+		.classed("over", false);
+	
+	switch (type) {
+		case 'select':
+			d3.select(self._target + " #node_" + node_id)
+				.classed("select", true);
+			d3.select(self._target + " #node_" + node_id)
+				.attr("style", "fill: rgb(50, 128, 50);");
+			break;
+		case 'over':
+			d3.select(self._target + " #node_" + node_id)
+				.classed("over", true);
+			if (d3.select(self._target + " #node_" + node_id)
+				.classed("select")) {
+				
+				d3.select(self._target + " #node_" + node_id)
+					.attr("style", "fill: rgb(128, 128, 50);");
+			}
+			else {
+				d3.select(self._target + " #node_" + node_id)
+					.attr("style", "fill: rgb(128, 50, 50);");
+			}
+			break;
+		case 'off':
+			if (d3.select(self._target + " #node_" + node_id)
+				.classed("select")) {
+				
+				d3.select(self._target + " #node_" + node_id)
+					.attr("style", "fill: rgb(50, 128, 50);");
+			}
+			else {
+				d3.select(self._target + " #node_" + node_id)
+					.attr("style", "fill: rgb(50, 50, 128);");
+			}
+			break;
+	}
 }
 
 /**

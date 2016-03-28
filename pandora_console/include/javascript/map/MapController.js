@@ -17,6 +17,7 @@
 /*-----------------------------------------------*/
 var MAX_ZOOM_LEVEL = 50;
 var RELATION_MINIMAP = 4;
+var CONTROL_KEY = 17;
 
 /*-----------------------------------------------*/
 /*------------------Constructor------------------*/
@@ -36,7 +37,10 @@ MapController.prototype._minimap = null;
 MapController.prototype._zoomManager = null;
 MapController.prototype._slider = null;
 MapController.prototype._relation = null;
-MapController.prototype._ctrl_key = 17;
+MapController.prototype._start_multiple_selection = false;
+MapController.prototype._flag_multiple_selection = false;
+MapController.prototype._stop_dragging = false;
+MapController.prototype._cache_files = {};
 
 /*-----------------------------------------------*/
 /*--------------------Methods--------------------*/
@@ -73,14 +77,29 @@ MapController.prototype.init_map = function() {
 		self.close_all_tooltips();
 		self.remove_resize_square();
 		
-		var zoom_level = d3.event.scale;
-		
-		self._slider.property("value", Math.log(zoom_level));
-		
-		self._viewport
-			.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-		
-		self.zoom_minimap();
+		if (!self._flag_multiple_selection) {
+			
+			var zoom_level = d3.event.scale;
+			
+			self._slider.property("value", Math.log(zoom_level));
+			
+			self._viewport
+				.attr("transform",
+					"translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
+			
+			self.zoom_minimap();
+		}
+		else {
+			//~ console.log(d3.event);
+			//~ 
+			//~ console.log("---");
+			//~ console.log(self._viewport.node().getBBox());
+			//~ console.log(self._viewport.attr("transform"));
+			//~ 
+			//~ self.multiple_selection_dragging(
+				//~ d3.event.sourceEvent.layerX,
+				//~ d3.event.sourceEvent.layerY);
+		}
 	}
 	
 	/**
@@ -836,6 +855,8 @@ MapController.prototype.remove_resize_square = function(item, wait) {
 * This function positioning the square to resize the element
 */
 MapController.prototype.positioning_resize_square = function(item) {
+	var self = this;
+	
 	var resize_square = d3.select(self._target + " #resize_square");
 	var item_d3 = d3.select(self._target + " #node_" + item['graph_id']);
 	
@@ -1288,19 +1309,22 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 MapController.prototype.init_events = function(principalObject) {
 	var self = this;
 	
-	d3.select(self._target + " svg")
+	d3.select("body")
 		.on("keydown", function() {
 			// ctrl key
-			if(d3.event.keyCode === self._ctrl_key) {
-				console.log("Event", d3.event);
-				console.log("DOWN");
-				console.log("CTRL");
+			if (d3.event.keyCode === CONTROL_KEY) {
+				console.log("control");
+				self._flag_multiple_selection = true;
+				self._stop_dragging = true;
+				
+				self.multiple_selection_start();
 			}
 		})
 		.on("keyup", function() {
-			if(d3.event.keyCode === self._ctrl_key) {
-				console.log("UP");
-				console.log("CTRL");
+			if (d3.event.keyCode === CONTROL_KEY) {
+				console.log("un_control");
+				self._flag_multiple_selection = false;
+				self._stop_dragging = false;
 			}
 		});
 	
@@ -1386,6 +1410,27 @@ MapController.prototype.init_events = function(principalObject) {
 	
 	d3.selectAll(".draggable").call(drag);
 	
+	
+	d3.select(self._target + " svg").on("mousedown",
+		function() {
+			if (self._flag_multiple_selection) {
+				self._start_multiple_selection = true;
+				
+				self.multiple_selection_dragging(
+					d3.event.offsetX,
+					d3.event.offsetY, true);
+			}
+		});
+	
+	d3.select(self._target + " svg").on("mousemove",
+		function() {
+			if (self._flag_multiple_selection && self._start_multiple_selection) {
+				self.multiple_selection_dragging(
+					d3.event.offsetX,
+					d3.event.offsetY, false);
+			}
+		});
+	
 	/**
 	* Function dragstarted
 	* Return void
@@ -1440,6 +1485,99 @@ MapController.prototype.init_events = function(principalObject) {
 		
 		self.remove_resize_square();
 	}
+}
+
+MapController.prototype.multiple_selection_start = function() {
+	var self = this;
+	
+	if (!self._cache_files.hasOwnProperty("selection_box")) {
+		var selection_box = d3
+			.select(self._target + " svg")
+				.append("g").attr("id", "selection_box")
+				.style("opacity", 0);
+		
+		d3.xml("images/maps/selection_box.svg", "application/xml", function(xml) {
+			var nodes = xml
+				.evaluate("//*[@id='selection_box']/*", xml, null,
+					XPathResult.ANY_TYPE, null);
+			
+			self._cache_files["selection_box"] = nodes.iterateNext();
+			
+			self.multiple_selection_start();
+		});
+	}
+	else {
+		var selection_box = d3
+			.select(self._target + " #selection_box");
+		
+		selection_box
+			.append(function() {
+				return self._cache_files["selection_box"]
+			});
+	}
+}
+
+MapController.prototype.multiple_selection_dragging = function(x, y, first) {
+	var self = this;
+	
+	var selection_box = d3
+		.select(self._target + " #selection_box");
+	
+	var transform = d3.transform();
+	
+	if (first) {
+		transform.translate[0] = x;
+		transform.translate[1] = y;
+		
+		selection_box.attr("transform", transform.toString());
+		selection_box.style("opacity", 1);
+		
+		selection_box.select("rect")
+			.attr("width", 0);
+		selection_box.select("rect")
+			.attr("height", 0);
+		
+		selection_box.attr("data-ini_x", x);
+		selection_box.attr("data-ini_y", y);
+	}
+	else {
+		var delta_x = x - parseInt(selection_box.attr("data-ini_x"));
+		var delta_y = y - parseInt(selection_box.attr("data-ini_y"));
+		
+		if (delta_x < 0) {
+			transform = d3.transform(selection_box.attr("transform"));
+			
+			transform.translate[0] = x;
+			
+			selection_box.attr("transform", transform.toString());
+			
+			selection_box.select("rect")
+				.attr("width", -delta_x);
+		}
+		else {
+			selection_box.select("rect")
+				.attr("width", delta_x);
+		}
+		
+		if (delta_y < 0) {
+			transform = d3.transform(selection_box.attr("transform"));
+			
+			transform.translate[1] = y;
+			
+			selection_box.attr("transform", transform.toString());
+			
+			selection_box.select("rect")
+				.attr("height", -delta_y);
+		}
+		else {
+			selection_box.select("rect")
+				.attr("height", delta_y);
+		}
+	}
+}
+
+MapController.prototype.multiple_selection_end = function() {
+	
 }
 
 /**

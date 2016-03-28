@@ -36,7 +36,6 @@ MapController.prototype._minimap = null;
 MapController.prototype._zoomManager = null;
 MapController.prototype._slider = null;
 MapController.prototype._relation = null;
-MapController.prototype._disabled_drag_zoom = false;
 MapController.prototype._ctrl_key = 17;
 
 /*-----------------------------------------------*/
@@ -1281,9 +1280,9 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 * This function init click events in the map
 */
 MapController.prototype.init_events = function(principalObject) {
-	self = this;
+	var self = this;
 	
-	d3.select(window)
+	d3.select(self._target + " svg")
 		.on("keydown", function() {
 			// ctrl key
 			if(d3.event.keyCode === self._ctrl_key) {
@@ -1347,8 +1346,8 @@ MapController.prototype.init_events = function(principalObject) {
 	
 	d3.select("#map").on("contextmenu", d3.contextMenu(map_menu));
 	
-	$(this._target + " svg *, " + this._target + " svg")
-		.off("mousedown", {map: this}, this.click_event);
+	$(self._target + " svg *, " + self._target + " svg")
+		.off("mousedown", {map: self}, self.click_event);
 	
 	d3.selectAll(".node")
 		.on("mouseover", function(d) {
@@ -1753,8 +1752,8 @@ MapController.prototype.arrow_by_pieces = function(target, arrow_data, wait) {
 			var id_node_to = "node_" + arrow_data['to']['graph_id'];
 			var id_node_from = "node_" + arrow_data['from']['graph_id'];
 		
-			var c_elem2 = get_center_element(target +" #" + id_node_to);
-			var c_elem1 = get_center_element(target +" #" + id_node_from);
+			var c_elem2 = get_center_element(self._target +" #" + id_node_to);
+			var c_elem1 = get_center_element(self._target +" #" + id_node_from);
 			
 			var distance = get_distance_between_point(c_elem1, c_elem2);
 			

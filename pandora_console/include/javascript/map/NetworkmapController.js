@@ -730,6 +730,8 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 }
 
 NetworkmapController.prototype.re_rotate_interface_title = function(arrow_data) {
+	var self = this;	
+	
 	var id_node_to = "node_" + arrow_data['to']['graph_id'];
 	var id_node_from = "node_" + arrow_data['from']['graph_id'];
 	

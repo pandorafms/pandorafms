@@ -371,8 +371,6 @@ NetworkmapController.prototype.paint_arrows = function() {
 		}
 	});
 	
-	console.log(clean_arrows);
-	
 	var arrow_layouts = self._viewport.selectAll(".arrow")
 		.data(clean_arrows)
 		.enter()
@@ -730,47 +728,457 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 	}
 }
 
+/**
+* Function arrow_by_pieces_AMA
+* Return void
+* This function print the arrow by pieces (3 steps)
+*/
+NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data, wait) {
+	var head_module = false;
+	var tail_module = false;
+
+	if (arrow_data['from_module'] === null) {
+		head_module = true;
+	}
+	else {
+		tail_module = true;
+	}
+
+	var self = this;
+	
+	if (typeof(wait) === "undefined")
+		wait = 1;
+	
+	var symbols = {};
+	
+	symbols['images/maps/body_arrow.svg'] = {};
+	symbols['images/maps/body_arrow.svg']['target'] = "body";
+	symbols['images/maps/body_arrow.svg']['id_symbol'] = "#body_arrow";
+	
+	symbols['images/maps/head_arrow_module_warning.svg'] = {};
+	symbols['images/maps/head_arrow_module_warning.svg']
+		['target'] = "head_tail";
+	symbols['images/maps/head_arrow_module_warning.svg']
+		['id_symbol'] = "#head_arrow_module_warning";
+	symbols['images/maps/head_arrow_module_warning.svg']
+		['status'] = "module_warning";
+	
+	symbols['images/maps/head_arrow_module_unknown.svg'] = {};
+	symbols['images/maps/head_arrow_module_unknown.svg']
+		['target'] = "head_tail";
+	symbols['images/maps/head_arrow_module_unknown.svg']
+		['id_symbol'] = "#head_arrow_module_unknown";
+	symbols['images/maps/head_arrow_module_unknown.svg']
+		['status'] = "module_unknown";
+		
+	symbols['images/maps/head_arrow_module_ok.svg'] = {};
+	symbols['images/maps/head_arrow_module_ok.svg']
+		['target'] = "head_tail";
+	symbols['images/maps/head_arrow_module_ok.svg']
+		['id_symbol'] = "#head_arrow_module_ok";
+	symbols['images/maps/head_arrow_module_ok.svg']
+		['status'] = "module_ok";
+	
+	symbols['images/maps/head_arrow_module_no_data.svg'] = {};
+	symbols['images/maps/head_arrow_module_no_data.svg']
+		['target'] = "head_tail";
+	symbols['images/maps/head_arrow_module_no_data.svg']
+		['id_symbol'] = "#head_arrow_module_no_data";
+	symbols['images/maps/head_arrow_module_no_data.svg']
+		['status'] = "no_data";
+	
+	symbols['images/maps/head_arrow_module_critical.svg'] = {};
+	symbols['images/maps/head_arrow_module_critical.svg']
+		['target'] = "head_tail";
+	symbols['images/maps/head_arrow_module_critical.svg']
+		['id_symbol'] = "#head_arrow_module_critical";
+	symbols['images/maps/head_arrow_module_critical.svg']
+		['status'] = "module_critical";
+		
+	symbols['images/maps/head_arrow_module_alertsfired.svg'] = {};
+	symbols['images/maps/head_arrow_module_alertsfired.svg']
+		['target'] = "head_tail";
+	symbols['images/maps/head_arrow_module_alertsfired.svg']
+		['id_symbol'] = "#head_arrow_module_alertsfired";
+	symbols['images/maps/head_arrow_module_alertsfired.svg']
+		['status'] = "module_alertsfired";
+	
+	var count_files = Object.keys(symbols).length;
+	function wait_load(callback) {
+		count_files--;
+		
+		if (count_files == 0) {
+			callback();
+		}
+	}
+	
+	var arrow_layout = d3
+		.select(target +" #arrow_" + arrow_data['graph_id']);
+	
+	switch (wait) {
+		/*---------------------------------------------*/
+		/*-------- Preload head and body arrow --------*/
+		/*---------------------------------------------*/
+		case 1:
+			arrow_layout = arrow_layout.append("g")
+				.attr("class", "arrow_position_rotation")
+				.append("g")
+					.attr("class", "arrow_translation")
+					.append("g")
+						.attr("class", "arrow_container");
+			
+			var arrow_body = arrow_layout.append("g")
+				.attr("class", "body");
+			if (head_module) {
+				var arrow_head = arrow_layout.append("g")
+					.attr("class", "head");
+				var arrow_head_title = arrow_layout.append("g")
+					.attr("class", "head_title");
+				arrow_head_title.append("text").text(arrow_data['to_title']);
+			}
+			else {
+				var arrow_tail = arrow_layout.append("g")
+					.attr("class", "tail");
+				var arrow_tail_title = arrow_layout.append("g")
+					.attr("class", "tail_title");
+				arrow_tail_title.append("text").text(arrow_data['from_title']);
+			}
+			
+			$.each(symbols, function (i, s) {
+				if (is_buggy_firefox) {
+					switch (s['target']) {
+						case 'body':
+							arrow_body.append("use")
+								.attr("xlink:href", s['id_symbol']);
+							break;
+						case 'head_tail':
+							if (head_module) {
+								arrow_head.append("use")
+									.style("opacity", 0)
+									.attr("data-status", s['status'])
+									.attr("xlink:href", s['id_symbol']);
+							}
+							else {
+								arrow_tail.append("use")
+									.style("opacity", 0)
+									.attr("data-status", s['status'])
+									.attr("xlink:href", s['id_symbol']);
+							}
+							break;
+					}
+				}
+				else {
+					switch (s['target']) {
+						case 'body':
+							arrow_body.append("use")
+								.attr("xlink:href", i + s['id_symbol'])
+								.on("load", function() {
+									wait_load(function() {
+										self.arrow_by_pieces_AMA(
+											target, arrow_data, 0);
+									});
+								});
+							break;
+						case 'head_tail':
+							if (head_module) {
+								arrow_head.append("use")
+									.style("opacity", 0)
+									.attr("data-status", s['status'])
+									.attr("xlink:href", i + s['id_symbol'])
+									.on("load", function() {
+										wait_load(function() {
+											self.arrow_by_pieces_AMA(
+												target, arrow_data, 0);
+										});
+									});
+							}
+							else {
+								arrow_tail.append("use")
+									.style("opacity", 0)
+									.attr("data-status", s['status'])
+									.attr("xlink:href", i + s['id_symbol'])
+									.on("load", function() {
+										wait_load(function() {
+											self.arrow_by_pieces_AMA(
+												target, arrow_data, 0);
+										});
+									});
+							}
+							break;
+					}
+				}
+			});
+			
+			if (is_buggy_firefox) {
+				self.arrow_by_pieces_AMA(target, arrow_data, 0);
+			}
+			break;
+		/*---------------------------------------------*/
+		/*---- Print head and body arrow by steps -----*/
+		/*---------------------------------------------*/
+		case 0:
+			var id_node_to = "node_" + arrow_data['to']['graph_id'];
+			var id_node_from = "node_" + arrow_data['from']['graph_id'];
+			
+			var c_elem2 = get_center_element(target +" #" + id_node_to);
+			var c_elem1 = get_center_element(target +" #" + id_node_from);
+			
+			var distance = get_distance_between_point(c_elem1, c_elem2);
+			
+			var radius_to = parseFloat(get_radius_element("#" + id_node_to));
+			var radius_from = parseFloat(get_radius_element("#" + id_node_from));
+			
+			var transform = d3.transform();
+			
+			if (head_module) {
+				var arrow_head = arrow_layout.select(".head");
+				var arrow_head_b = arrow_head.node().getBBox();
+				var arrow_head_height = (arrow_head_b['height'] + arrow_head_b['y']);
+				var arrow_head_width = (arrow_head_b['width'] + arrow_head_b['x']);
+			}
+			else {
+				var arrow_tail = arrow_layout.select(".tail");
+				var arrow_tail_b = arrow_tail.node().getBBox();
+				var arrow_tail_height = (arrow_tail_b['height'] + arrow_tail_b['y']);
+				var arrow_tail_width = (arrow_tail_b['width'] + arrow_tail_b['x']);
+			}
+
+			var arrow_body = arrow_layout.select(".body");
+			
+			/*---------------------------------------------*/
+			/*--- Position of layer arrow (body + head) ---*/
+			/*---------------------------------------------*/
+			var arrow_body_b = arrow_body.node().getBBox();
+			var arrow_body_height = (arrow_body_b['height'] + arrow_body_b['y']);
+			var arrow_body_width = (arrow_body_b['width'] + arrow_body_b['x']);
+			
+			transform.translate[0] = c_elem1[0];
+			transform.translate[1] = c_elem1[1];
+			transform.rotate = get_angle_of_line(c_elem1, c_elem2);
+			
+			arrow_layout.select(".arrow_position_rotation")
+				.attr("transform", transform.toString());
+			transform = d3.transform();
+			if (head_module) {
+				transform.translate[0] = radius_from;
+			}
+			else {
+				transform.translate[0] = radius_from + arrow_tail_width;
+			}
+			transform.translate[1] = - (arrow_body_height / 2);
+			arrow_layout.select(".arrow_translation")
+				.attr("transform", transform.toString());
+			
+			/*---------------------------------------------*/
+			/*-------- Resize the body arrow width --------*/
+			/*---------------------------------------------*/
+			if (head_module) {
+				var body_width = distance - arrow_head_width - radius_to - radius_from;
+			}
+			else {
+				var body_width = distance - arrow_tail_width - radius_to - radius_from;
+			}
+			
+			transform = d3.transform();
+			transform.scale[0] = body_width / arrow_body_width;
+			
+			arrow_body.attr("transform", transform.toString());
+			
+			/*---------------------------------------------*/
+			/*---------- Position of head arrow -----------*/
+			/*---------------------------------------------*/
+			if (head_module) {
+				transform = d3.transform();
+				
+				var arrow_body_t = d3.transform(arrow_body.attr("transform"));
+				
+				var scale = arrow_body_t.scale[0];
+				var x = 0 + arrow_body_width * scale;
+				var y = 0 + (arrow_body_height / 2  - arrow_head_height / 2);
+
+				transform.translate[0] = x;
+				transform.translate[1] = y;
+				
+				arrow_head.attr("transform", transform.toString());
+			}
+			else {
+				transform = d3.transform();
+				
+				x = 0 - arrow_tail_width;
+				y = 0 + (arrow_body_height / 2  - arrow_tail_height / 2);
+				
+				transform.translate[0] = x;
+				transform.translate[1] = y;
+				
+				arrow_tail.attr("transform", transform.toString());
+			}
+			self.update_interfaces_status(arrow_data);
+			
+			if (head_module) {
+			/*---------------------------------------------*/
+			/*---------- Position the title of head -------*/
+			/*---------------------------------------------*/
+				var arrow_head_title = arrow_layout.select(".head_title");
+				
+				var arrow_head_title_b = arrow_head_title.node().getBBox();
+				var arrow_head_title_height =
+					(arrow_head_title_b['height'] + arrow_head_title_b['y']);
+				
+				transform = d3.transform();
+				
+				var x = 10;
+				var y = 0 + (arrow_body_height / 2  - arrow_head_title_height / 2);
+				
+				transform.translate[0] = x;
+				transform.translate[1] = y;
+				
+				arrow_head_title.attr("transform", transform.toString());
+			}
+			else {
+				/*---------------------------------------------*/
+				/*---------- Position the title of tail -------*/
+				/*---------------------------------------------*/
+				var arrow_tail_title = arrow_layout.select(".tail_title");
+				
+				var arrow_tail_title_b = arrow_tail_title.node().getBBox();
+				var arrow_tail_title_height =
+					(arrow_tail_title_b['height'] + arrow_tail_title_b['y']);
+				var arrow_tail_title_width =
+					(arrow_tail_title_b['width'] + arrow_tail_title_b['x']);
+				
+				transform = d3.transform();
+				
+				var x = -10 + (arrow_body_width * scale) - arrow_tail_width - radius_from;
+				var y = 0 + (arrow_body_height / 2  - arrow_tail_title_height / 2);
+
+				transform.translate[0] = x;
+				transform.translate[1] = y;
+				arrow_tail_title.attr("transform", transform.toString());
+			}
+
+			self.re_rotate_interfaces_title(arrow_data);
+			self.truncate_interfaces_title(arrow_data);
+			
+			/*---------------------------------------------*/
+			/*------- Show the result in one time ---------*/
+			/*---------------------------------------------*/
+			arrow_layout.attr("style", "opacity: 1");
+			break;
+	}
+}
+
 NetworkmapController.prototype.truncate_interfaces_title = function(arrow_data) {
 	var self = this;
+	console.log(arrow_data);
+	var head_module = false;
+	var tail_module = false;
+
+	if (arrow_data['from_module'] === null) {
+		head_module = true;
+	}
+	else if (arrow_data['to_module'] === null) {
+		tail_module = true;
+	}
 
 	var arrow_layout = d3.select(self._target +" #arrow_" + arrow_data['graph_id']);
 	
-	var arrow_tail_title = arrow_layout.select(".tail_title");
-	var arrow_tail_title_text = arrow_tail_title.select("text");
-	var arrow_tail_title_b = arrow_tail_title.node().getBBox();
-	var arrow_tail_title_width =
-		(arrow_tail_title_b['width'] + arrow_tail_title_b['x']);
-	
-	var arrow_head_title = arrow_layout.select(".head_title");
-	var arrow_head_title_text = arrow_head_title.select("text");
-	var arrow_head_title_b = arrow_head_title.node().getBBox();
-	var arrow_head_title_width =
-		(arrow_head_title_b['width'] + arrow_head_title_b['x']);
-	
-	var arrow_body = arrow_layout.select(".body");
-	var arrow_body_b = arrow_body.node().getBBox();
-	var arrow_body_width = (arrow_body_b['width'] + arrow_body_b['x']);
-	
-	var arrow_body_t = d3.transform(arrow_body.attr("transform"));
-	
-	var scale = arrow_body_t.scale[0];
-	
-	var total = arrow_tail_title_width + arrow_head_title_width + 10 + 10;
-	
-	
-	if (total >= (scale * arrow_body_width)) {
-		// Truncate
-		arrow_tail_title_text.text("");
-		arrow_head_title_text.text("");
+	if (tail_module) {
+		var arrow_tail_title = arrow_layout.select(".tail_title");
+		var arrow_tail_title_text = arrow_tail_title.select("text");
+		var arrow_tail_title_b = arrow_tail_title.node().getBBox();
+		var arrow_tail_title_width =
+			(arrow_tail_title_b['width'] + arrow_tail_title_b['x']);
+
+		var arrow_body = arrow_layout.select(".body");
+		var arrow_body_b = arrow_body.node().getBBox();
+		var arrow_body_width = (arrow_body_b['width'] + arrow_body_b['x']);
+		
+		var arrow_body_t = d3.transform(arrow_body.attr("transform"));
+		
+		var scale = arrow_body_t.scale[0];
+		
+		var total = arrow_tail_title_width + 10 + 10;
+		
+		if (total >= (scale * arrow_body_width)) {
+			// Truncate
+			arrow_tail_title_text.text("");
+		}
+		else {
+			arrow_tail_title_text.text(arrow_data['from_title']);
+		}
+	}
+	else if (head_module) {
+		var arrow_head_title = arrow_layout.select(".head_title");
+		var arrow_head_title_text = arrow_head_title.select("text");
+		var arrow_head_title_b = arrow_head_title.node().getBBox();
+		var arrow_head_title_width =
+			(arrow_head_title_b['width'] + arrow_head_title_b['x']);
+
+		var arrow_body = arrow_layout.select(".body");
+		var arrow_body_b = arrow_body.node().getBBox();
+		var arrow_body_width = (arrow_body_b['width'] + arrow_body_b['x']);
+
+		var arrow_body_t = d3.transform(arrow_body.attr("transform"));
+
+		var scale = arrow_body_t.scale[0];
+
+		var total = arrow_head_title_width + 10 + 10;
+
+		if (total >= (scale * arrow_body_width)) {
+			// Truncate
+			arrow_head_title_text.text("");
+		}
+		else {
+			arrow_head_title_text.text(arrow_data['to_title']);
+		}
 	}
 	else {
-		arrow_tail_title_text.text(arrow_data['to_title']);
-		arrow_head_title_text.text(arrow_data['from_title']);
+		var arrow_tail_title = arrow_layout.select(".tail_title");
+		var arrow_tail_title_text = arrow_tail_title.select("text");
+		var arrow_tail_title_b = arrow_tail_title.node().getBBox();
+		var arrow_tail_title_width =
+			(arrow_tail_title_b['width'] + arrow_tail_title_b['x']);
+		
+		var arrow_head_title = arrow_layout.select(".head_title");
+		var arrow_head_title_text = arrow_head_title.select("text");
+		var arrow_head_title_b = arrow_head_title.node().getBBox();
+		var arrow_head_title_width =
+			(arrow_head_title_b['width'] + arrow_head_title_b['x']);
+
+		var arrow_body = arrow_layout.select(".body");
+		var arrow_body_b = arrow_body.node().getBBox();
+		var arrow_body_width = (arrow_body_b['width'] + arrow_body_b['x']);
+		
+		var arrow_body_t = d3.transform(arrow_body.attr("transform"));
+		
+		var scale = arrow_body_t.scale[0];
+		
+		var total = arrow_tail_title_width + 10 + 10;
+		
+		if (total >= (scale * arrow_body_width)) {
+			// Truncate
+			arrow_head_title_text.text("");
+			arrow_tail_title_text.text("");
+		}
+		else {
+			arrow_head_title_text.text(arrow_data['to_title']);
+			arrow_tail_title_text.text(arrow_data['from_title']);
+		}
 	}
 }
 
 NetworkmapController.prototype.re_rotate_interfaces_title = function(arrow_data) {
 	var self = this;
+
+	var head_module = false;
+	var tail_module = false;
+
+	if (arrow_data['from_module'] === null) {
+		head_module = true;
+	}
+	else if (arrow_data['to_module'] === null) {
+		tail_module = true;
+	}
 
 	var id_node_to = "node_" + arrow_data['to']['graph_id'];
 	var id_node_from = "node_" + arrow_data['from']['graph_id'];
@@ -809,47 +1217,86 @@ NetworkmapController.prototype.re_rotate_interfaces_title = function(arrow_data)
 	if (angle > 270 && angle <= 360)
 		rotate = false;
 	
-	
 	var arrow_layout = d3.select(self._target +" #arrow_" + arrow_data['graph_id']);
 	
-	var arrow_tail_title = arrow_layout.select(".tail_title");
-	var arrow_tail_title_text = arrow_tail_title.select("text");
-	
-	var arrow_head_title = arrow_layout.select(".head_title");
-	var arrow_head_title_text = arrow_head_title.select("text");
-	
+	if (tail_module) {
+		var arrow_tail_title = arrow_layout.select(".tail_title");
+		var arrow_tail_title_text = arrow_tail_title.select("text");
+	}
+	else if (head_module) {
+		var arrow_head_title = arrow_layout.select(".head_title");
+		var arrow_head_title_text = arrow_head_title.select("text");
+	}
+	else {
+		var arrow_tail_title = arrow_layout.select(".tail_title");
+		var arrow_tail_title_text = arrow_tail_title.select("text");
+
+		var arrow_head_title = arrow_layout.select(".head_title");
+		var arrow_head_title_text = arrow_head_title.select("text");
+	}
 	var transform;
 	
 	if (rotate) {
-		var arrow_tail_title_b = arrow_tail_title.node().getBBox();
-		
-		transform = d3.transform();
-		
-		var center_tail_x = arrow_tail_title_b['width'] / 2 + arrow_tail_title_b['x'];
-		var center_tail_y = arrow_tail_title_b['height'] / 2 + arrow_tail_title_b['y'];
-		
-		transform.rotate = "180 " + center_tail_x + " " + center_tail_y;
-		arrow_tail_title_text.attr("transform", transform.toString());
-		
-		
-		
-		
-		var arrow_head_title_b = arrow_head_title.node().getBBox();
-		
-		transform = d3.transform();
-		
-		var center_head_x = arrow_head_title_b['width'] / 2 + arrow_head_title_b['x'];
-		var center_head_y = arrow_head_title_b['height'] / 2 + arrow_head_title_b['y'];
-		
-		transform.rotate = "180 " + center_head_x + " " + center_head_y;
-		arrow_head_title_text.attr("transform", transform.toString());
+		if (tail_module) {
+			var arrow_tail_title_b = arrow_tail_title.node().getBBox();
+			
+			transform = d3.transform();
+			
+			var center_tail_x = arrow_tail_title_b['width'] / 2 + arrow_tail_title_b['x'];
+			var center_tail_y = arrow_tail_title_b['height'] / 2 + arrow_tail_title_b['y'];
+			
+			transform.rotate = "180 " + center_tail_x + " " + center_tail_y;
+			arrow_tail_title_text.attr("transform", transform.toString());
+		}
+		else if (head_module) {
+			var arrow_head_title_b = arrow_head_title.node().getBBox();
+			
+			transform = d3.transform();
+			
+			var center_head_x = arrow_head_title_b['width'] / 2 + arrow_head_title_b['x'];
+			var center_head_y = arrow_head_title_b['height'] / 2 + arrow_head_title_b['y'];
+			
+			transform.rotate = "180 " + center_head_x + " " + center_head_y;
+			arrow_head_title_text.attr("transform", transform.toString());
+		}
+		else {
+			var arrow_tail_title_b = arrow_tail_title.node().getBBox();
+			
+			transform = d3.transform();
+			
+			var center_tail_x = arrow_tail_title_b['width'] / 2 + arrow_tail_title_b['x'];
+			var center_tail_y = arrow_tail_title_b['height'] / 2 + arrow_tail_title_b['y'];
+			
+			transform.rotate = "180 " + center_tail_x + " " + center_tail_y;
+			arrow_tail_title_text.attr("transform", transform.toString());
+
+			var arrow_head_title_b = arrow_head_title.node().getBBox();
+			
+			transform = d3.transform();
+			
+			var center_head_x = arrow_head_title_b['width'] / 2 + arrow_head_title_b['x'];
+			var center_head_y = arrow_head_title_b['height'] / 2 + arrow_head_title_b['y'];
+			
+			transform.rotate = "180 " + center_head_x + " " + center_head_y;
+			arrow_head_title_text.attr("transform", transform.toString());
+		}
 	}
 	else {
-		transform = d3.transform();;
-		arrow_tail_title_text.attr("transform", transform.toString());
-		
-		transform = d3.transform();;
-		arrow_head_title_text.attr("transform", transform.toString());
+		if (tail_module) {
+			transform = d3.transform();;
+			arrow_tail_title_text.attr("transform", transform.toString());
+		}
+		else if (head_module) {
+			transform = d3.transform();;
+			arrow_head_title_text.attr("transform", transform.toString());
+		}
+		else {
+			transform = d3.transform();;
+			arrow_tail_title_text.attr("transform", transform.toString());
+
+			transform = d3.transform();;
+			arrow_head_title_text.attr("transform", transform.toString());
+		}
 	}
 }
 
@@ -955,200 +1402,4 @@ NetworkmapController.prototype.update_interfaces_status = function (arrow_data) 
 				break;
 		}
 	}
-}
-
-/**
-* Function arrow_by_pieces_AMA
-* Return void
-* This function print the arrow by pieces (3 steps)
-*/
-NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data) {
-	// if (typeof(wait) === "undefined")
-	// 	wait = 1;
-	// 
-	// var symbols = {};
-	// 
-	// symbols['images/maps/body_arrow.svg'] = {};
-	// symbols['images/maps/body_arrow.svg']['target'] = "body";
-	// symbols['images/maps/body_arrow.svg']['id_symbol'] = "#body_arrow";
-	// 
-	// symbols['images/maps/head_arrow_module_warning.svg'] = {};
-	// symbols['images/maps/head_arrow_module_warning.svg']
-	// 	['target'] = "tail";
-	// symbols['images/maps/head_arrow_module_warning.svg']
-	// 	['id_symbol'] = "#head_arrow_module_warning";
-	// 
-	// symbols['images/maps/head_arrow_module_unknown.svg'] = {};
-	// symbols['images/maps/head_arrow_module_unknown.svg']
-	// 	['target'] = "tail";
-	// symbols['images/maps/head_arrow_module_unknown.svg']
-	// 	['id_symbol'] = "#head_arrow_module_unknown";
-	// 	
-	// symbols['images/maps/head_arrow_module_ok.svg'] = {};
-	// symbols['images/maps/head_arrow_module_ok.svg']
-	// 	['target'] = "tail";
-	// symbols['images/maps/head_arrow_module_ok.svg']
-	// 	['id_symbol'] = "#head_arrow_module_ok";
-	// 	
-	// symbols['images/maps/head_arrow_module_no_data.svg'] = {};
-	// symbols['images/maps/head_arrow_module_no_data.svg']
-	// 	['target'] = "tail";
-	// symbols['images/maps/head_arrow_module_no_data.svg']
-	// 	['id_symbol'] = "#head_arrow_module_no_data";
-	// 	
-	// symbols['images/maps/head_arrow_module_critical.svg'] = {};
-	// symbols['images/maps/head_arrow_module_critical.svg']
-	// 	['target'] = "tail";
-	// symbols['images/maps/head_arrow_module_critical.svg']
-	// 	['id_symbol'] = "#head_arrow_module_critical";
-	// 	
-	// symbols['images/maps/head_arrow_module_alertsfired.svg'] = {};
-	// symbols['images/maps/head_arrow_module_alertsfired.svg']
-	// 	['target'] = "tail";
-	// symbols['images/maps/head_arrow_module_alertsfired.svg']
-	// 	['id_symbol'] = "#head_arrow_module_alertsfired";
-	// 
-	// var count_files = Object.keys(symbols).length;
-	// function wait_load(callback) {
-	// 	count_files--;
-	// 	
-	// 	if (count_files == 0) {
-	// 		callback();
-	// 	}
-	// }
-	// 
-	// var arrow_layout = d3
-	// 	.select(target +" #arrow_" + arrow_data['graph_id']);
-	// 
-	// switch (wait) {
-	// 	/*---------------------------------------------*/
-	// 	/*-------- Preload head and body arrow --------*/
-	// 	/*---------------------------------------------*/
-	// 	case 1:
-	// 		arrow_layout = arrow_layout.append("g")
-	// 			.attr("class", "arrow_position_rotation")
-	// 			.append("g")
-	// 				.attr("class", "arrow_translation")
-	// 				.append("g")
-	// 					.attr("class", "arrow_container");
-	// 		
-	// 		var arrow_body = arrow_layout.append("g")
-	// 			.attr("class", "body");
-	// 		var arrow_tail = arrow_layout.append("g")
-	// 			.attr("class", "tail");
-	// 		
-	// 		$.each(symbols, function (i, s) {
-	// 			if (is_buggy_firefox) {
-	// 				switch (s['target']) {
-	// 					case 'body':
-	// 						arrow_body.append("use")
-	// 							.attr("xlink:href", s['id_symbol']);
-	// 						break;
-	// 					case 'tail':
-	// 						arrow_tail.append("use")
-	// 							.attr("xlink:href", s['id_symbol']);
-	// 						break;
-	// 				}
-	// 			}
-	// 			else {
-	// 				switch (s['target']) {
-	// 					case 'body':
-	// 						arrow_body.append("use")
-	// 							.attr("xlink:href", i + s['id_symbol'])
-	// 							.on("load", function() {
-	// 								wait_load(function() {
-	// 									arrow_by_pieces_AMA(
-	// 										target, arrow_data, 0);
-	// 								});
-	// 							});
-	// 						break;
-	// 					case 'tail':
-	// 						arrow_tail.append("use")
-	// 							.attr("xlink:href", i + s['id_symbol'])
-	// 							.on("load", function() {
-	// 								wait_load(function() {
-	// 									arrow_by_pieces_AMA(
-	// 										target, arrow_data, 0);
-	// 								});
-	// 							});
-	// 						break;
-	// 				}
-	// 			}
-	// 		});
-	// 		
-	// 		if (is_buggy_firefox) {
-	// 			arrow_by_pieces_AMA(target, arrow_data, 0);
-	// 		}
-	// 		break;
-	// 	/*---------------------------------------------*/
-	// 	/*---- Print head and body arrow by steps -----*/
-	// 	/*---------------------------------------------*/
-	// 	case 0:
-	// 		var id_node_to = "node_" + arrow_data['to']['graph_id'];
-	// 		var id_node_from = "node_" + arrow_data['from']['graph_id'];
-	// 		
-	// 		var c_elem2 = get_center_element(target +" #" + id_node_to);
-	// 		var c_elem1 = get_center_element(target +" #" + id_node_from);
-	// 		
-	// 		var distance = get_distance_between_point(c_elem1, c_elem2);
-	// 		
-	// 		var radius_to = parseFloat(get_radius_element("#" + id_node_to));
-	// 		var radius_from = parseFloat(get_radius_element("#" + id_node_from));
-	// 		
-	// 		var transform = d3.transform();
-	// 	
-	// 		/*---------------------------------------------*/
-	// 		/*--- Position of layer arrow (body + head) ---*/
-	// 		/*---------------------------------------------*/
-	// 		var arrow_body = arrow_layout.select(".body");
-	// 		var arrow_body_b = arrow_body.node().getBBox();
-	// 		var arrow_body_height = (arrow_body_b['height'] + arrow_body_b['y']);
-	// 		var arrow_body_width = (arrow_body_b['width'] + arrow_body_b['x']);
-	// 		
-	// 		transform.translate[0] = c_elem1[0];
-	// 		transform.translate[1] = c_elem1[1];
-	// 		transform.rotate = get_angle_of_line(c_elem1, c_elem2);
-	// 		
-	// 		arrow_layout.select(".arrow_position_rotation")
-	// 			.attr("transform", transform.toString());
-	// 		transform = d3.transform();
-	// 		transform.translate[0] = radius_from;
-	// 		transform.translate[1] = - (arrow_body_height / 2);
-	// 		arrow_layout.select(".arrow_translation")
-	// 			.attr("transform", transform.toString());
-	// 		
-	// 		/*---------------------------------------------*/
-	// 		/*-------- Resize the body arrow width --------*/
-	// 		/*---------------------------------------------*/
-	// 		arrow_head_width = 0; //WIP
-	// 		
-	// 		var body_width = distance - arrow_head_width - radius_to - radius_from;
-	// 		
-	// 		transform = d3.transform();
-	// 		transform.scale[0] = body_width / arrow_body_width;
-	// 		
-	// 		arrow_body.attr("transform", transform.toString());
-	// 		
-	// 		/*---------------------------------------------*/
-	// 		/*---------- Position of head arrow -----------*/
-	// 		/*---------------------------------------------*/
-	// 		//~ transform = d3.transform();
-	// 		//~ 
-	// 		//~ var arrow_body_t = d3.transform(arrow_body.attr("transform"));
-	// 		//~ 
-	// 		//~ var scale = arrow_body_t.scale[0];
-	// 		//~ var x = 0 + arrow_body_width * scale;
-	// 		//~ var y = 0 + (arrow_body_height / 2  - arrow_head_height / 2);
-	// 		//~ 
-	// 		//~ transform.translate[0] = x;
-	// 		//~ transform.translate[1] = y;
-	// 		//~ 
-	// 		//~ arrow_head.attr("transform", transform.toString());
-	// 		
-	// 		/*---------------------------------------------*/
-	// 		/*------- Show the result in one time ---------*/
-	// 		/*---------------------------------------------*/
-	// 		arrow_layout.attr("style", "opacity: 1");
-	// 		break;
-	// }
 }

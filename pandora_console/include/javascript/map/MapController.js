@@ -1423,6 +1423,9 @@ MapController.prototype.init_events = function(principalObject) {
 					d3.event.offsetX,
 					d3.event.offsetY, true);
 			}
+			
+			d3.event.stopPropagation();
+			d3.event.preventDefault();
 		});
 	
 	d3.select(self._target + " svg").on("mousemove",
@@ -1478,17 +1481,35 @@ MapController.prototype.init_events = function(principalObject) {
 		var delta_x = d3.event.dx;
 		var delta_y = d3.event.dy;
 		
-		var transform = d3.transform(d3.select(this).attr("transform"));
 		
-		transform.translate[0] += delta_x;
-		transform.translate[1] += delta_y;
-		
-		d3.select(".minimap #node_" + d['graph_id'])
-			.attr("transform", transform.toString());
-		
-		d3.select(this).attr("transform", transform.toString());
-		
-		self.move_arrow(d3.select(this).attr("data-graph_id"));
+		$.each(nodes, function(i, node) {
+			if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)
+				return 1; // Continue
+			
+			var status_selection =
+				self.get_status_selection_node(node.graph_id);
+			
+			if (status_selection.indexOf("select") == -1) {
+				return 1; // Continue
+			}
+			
+			var d3_node = d3.select(self._target + " #node_" + node.graph_id);
+			
+			var transform = d3.transform(d3_node.attr("transform"));
+			
+			transform.translate[0] += delta_x;
+			transform.translate[1] += delta_y;
+			
+			nodes[i].x = transform.translate[0];
+			nodes[i].y = transform.translate[1];
+			
+			d3.select(".minimap #node_" + node.graph_id)
+				.attr("transform", transform.toString());
+			
+			d3_node.attr("transform", transform.toString());
+			
+			self.move_arrow(node.graph_id);
+		});
 	}
 	
 	/**

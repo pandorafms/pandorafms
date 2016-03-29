@@ -1391,7 +1391,10 @@ MapController.prototype.init_events = function(principalObject) {
 			self.select_node(d['graph_id'], "over");
 		})
 		.on("mouseout", function(d) {
-			self.select_node(d['graph_id'], "off");
+			if (self.last_event != "drag")
+				self.select_node(d['graph_id'], "off");
+			
+			self.last_event = null;
 		})
 		.on("click", function(d) {
 			if (d3.event.button != 0) {
@@ -1466,7 +1469,6 @@ MapController.prototype.init_events = function(principalObject) {
 		var status_selection = self.get_status_selection_node(d['graph_id']);
 		
 		if (status_selection.indexOf("select") == -1) {
-			console.log("self.remove_selection_nodes");
 			self.remove_selection_nodes();
 		}
 		
@@ -1481,6 +1483,7 @@ MapController.prototype.init_events = function(principalObject) {
 		var delta_x = d3.event.dx;
 		var delta_y = d3.event.dy;
 		
+		self.last_event = "drag";
 		
 		$.each(nodes, function(i, node) {
 			if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)

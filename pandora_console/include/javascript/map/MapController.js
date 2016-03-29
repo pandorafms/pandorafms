@@ -1417,6 +1417,9 @@ MapController.prototype.init_events = function(principalObject) {
 					d3.event.offsetX,
 					d3.event.offsetY, true);
 			}
+			else {
+				self.remove_selection_nodes();
+			}
 		});
 	
 	d3.select(self._target + " svg").on("mousemove",
@@ -1445,7 +1448,7 @@ MapController.prototype.init_events = function(principalObject) {
 		self.remove_resize_square();
 		
 		var status_selection = self.get_status_selection_node(d['graph_id']);
-		console.log("status_selection", status_selection);
+		
 		if (status_selection.indexOf("select") == -1) {
 			console.log("self.remove_selection_nodes");
 			self.remove_selection_nodes();
@@ -1726,6 +1729,9 @@ MapController.prototype.select_node = function(node_id, type) {
 			}
 			break;
 		case 'off':
+			d3.select(self._target + " #node_" + node_id)
+				.classed("select", false);
+			
 			d3.select(self._target + " #node_" + node_id)
 				.attr("style", "fill: rgb(50, 50, 128);");
 			break;

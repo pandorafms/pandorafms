@@ -734,18 +734,17 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 * This function print the arrow by pieces (3 steps)
 */
 NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data, wait) {
-	var head_module = false;
-	var tail_module = false;
-
-	if (arrow_data['from_module'] === null) {
-		head_module = true;
-	}
-	else {
-		tail_module = true;
-	}
-
 	var self = this;
 	
+	var A_is_tail = false;
+	var AM_is_tail = false;
+	if (arrow_data['from_module'] === null) {
+		A_is_tail = true;
+	}
+	else {
+		AM_is_tail = true;
+	}
+
 	if (typeof(wait) === "undefined")
 		wait = 1;
 	
@@ -829,7 +828,7 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 			
 			var arrow_body = arrow_layout.append("g")
 				.attr("class", "body");
-			if (head_module) {
+			if (A_is_tail) {
 				var arrow_head = arrow_layout.append("g")
 					.attr("class", "head");
 				var arrow_head_title = arrow_layout.append("g")
@@ -852,7 +851,7 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 								.attr("xlink:href", s['id_symbol']);
 							break;
 						case 'head_tail':
-							if (head_module) {
+							if (A_is_tail) {
 								arrow_head.append("use")
 									.style("opacity", 0)
 									.attr("data-status", s['status'])
@@ -880,7 +879,7 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 								});
 							break;
 						case 'head_tail':
-							if (head_module) {
+							if (A_is_tail) {
 								arrow_head.append("use")
 									.style("opacity", 0)
 									.attr("data-status", s['status'])
@@ -930,7 +929,7 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 			
 			var transform = d3.transform();
 			
-			if (head_module) {
+			if (A_is_tail) {
 				var arrow_head = arrow_layout.select(".head");
 				var arrow_head_b = arrow_head.node().getBBox();
 				var arrow_head_height = (arrow_head_b['height'] + arrow_head_b['y']);
@@ -942,7 +941,6 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 				var arrow_tail_height = (arrow_tail_b['height'] + arrow_tail_b['y']);
 				var arrow_tail_width = (arrow_tail_b['width'] + arrow_tail_b['x']);
 			}
-
 			var arrow_body = arrow_layout.select(".body");
 			
 			/*---------------------------------------------*/
@@ -959,7 +957,8 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 			arrow_layout.select(".arrow_position_rotation")
 				.attr("transform", transform.toString());
 			transform = d3.transform();
-			if (head_module) {
+			
+			if (A_is_tail) {
 				transform.translate[0] = radius_from;
 			}
 			else {
@@ -972,13 +971,13 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 			/*---------------------------------------------*/
 			/*-------- Resize the body arrow width --------*/
 			/*---------------------------------------------*/
-			if (head_module) {
+			if (A_is_tail) {
 				var body_width = distance - arrow_head_width - radius_to - radius_from;
 			}
 			else {
 				var body_width = distance - arrow_tail_width - radius_to - radius_from;
 			}
-			
+
 			transform = d3.transform();
 			transform.scale[0] = body_width / arrow_body_width;
 			
@@ -987,7 +986,7 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 			/*---------------------------------------------*/
 			/*---------- Position of head arrow -----------*/
 			/*---------------------------------------------*/
-			if (head_module) {
+			if (A_is_tail) {
 				transform = d3.transform();
 				
 				var arrow_body_t = d3.transform(arrow_body.attr("transform"));
@@ -995,7 +994,7 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 				var scale = arrow_body_t.scale[0];
 				var x = 0 + arrow_body_width * scale;
 				var y = 0 + (arrow_body_height / 2  - arrow_head_height / 2);
-
+				
 				transform.translate[0] = x;
 				transform.translate[1] = y;
 				
@@ -1003,6 +1002,10 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 			}
 			else {
 				transform = d3.transform();
+
+				var arrow_body_t = d3.transform(arrow_body.attr("transform"));
+				
+				var scale = arrow_body_t.scale[0];
 				
 				x = 0 - arrow_tail_width;
 				y = 0 + (arrow_body_height / 2  - arrow_tail_height / 2);
@@ -1014,10 +1017,10 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 			}
 			self.update_interfaces_status(arrow_data);
 			
-			if (head_module) {
-			/*---------------------------------------------*/
-			/*---------- Position the title of head -------*/
-			/*---------------------------------------------*/
+			if (A_is_tail) {
+				/*---------------------------------------------*/
+				/*---------- Position the title of head -------*/
+				/*---------------------------------------------*/
 				var arrow_head_title = arrow_layout.select(".head_title");
 				
 				var arrow_head_title_b = arrow_head_title.node().getBBox();
@@ -1026,7 +1029,7 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 				
 				transform = d3.transform();
 				
-				var x = 10;
+				var x = body_width - arrow_head_title_height - arrow_head_width - radius_to - 10;
 				var y = 0 + (arrow_body_height / 2  - arrow_head_title_height / 2);
 				
 				transform.translate[0] = x;
@@ -1049,10 +1052,11 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 				transform = d3.transform();
 				
 				var x = -10 + (arrow_body_width * scale) - arrow_tail_width - radius_from;
-				var y = 0 + (arrow_body_height / 2  - arrow_tail_title_height / 2);
-
+				var y = 0 + (arrow_body_height / 2);
+				
 				transform.translate[0] = x;
 				transform.translate[1] = y;
+
 				arrow_tail_title.attr("transform", transform.toString());
 			}
 
@@ -1069,20 +1073,19 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 
 NetworkmapController.prototype.truncate_interfaces_title = function(arrow_data) {
 	var self = this;
-	console.log(arrow_data);
-	var head_module = false;
-	var tail_module = false;
 
+	var A_is_tail = false;
+	var AM_is_tail = false;
 	if (arrow_data['from_module'] === null) {
-		head_module = true;
+		A_is_tail = true;
 	}
-	else if (arrow_data['to_module'] === null) {
-		tail_module = true;
+	else {
+		AM_is_tail = true;
 	}
 
 	var arrow_layout = d3.select(self._target +" #arrow_" + arrow_data['graph_id']);
 	
-	if (tail_module) {
+	if (AM_is_tail) {
 		var arrow_tail_title = arrow_layout.select(".tail_title");
 		var arrow_tail_title_text = arrow_tail_title.select("text");
 		var arrow_tail_title_b = arrow_tail_title.node().getBBox();
@@ -1107,7 +1110,7 @@ NetworkmapController.prototype.truncate_interfaces_title = function(arrow_data) 
 			arrow_tail_title_text.text(arrow_data['from_title']);
 		}
 	}
-	else if (head_module) {
+	else if (A_is_tail) {
 		var arrow_head_title = arrow_layout.select(".head_title");
 		var arrow_head_title_text = arrow_head_title.select("text");
 		var arrow_head_title_b = arrow_head_title.node().getBBox();
@@ -1170,14 +1173,13 @@ NetworkmapController.prototype.truncate_interfaces_title = function(arrow_data) 
 NetworkmapController.prototype.re_rotate_interfaces_title = function(arrow_data) {
 	var self = this;
 
-	var head_module = false;
-	var tail_module = false;
-
+	var A_is_tail = false;
+	var AM_is_tail = false;
 	if (arrow_data['from_module'] === null) {
-		head_module = true;
+		A_is_tail = true;
 	}
-	else if (arrow_data['to_module'] === null) {
-		tail_module = true;
+	else {
+		AM_is_tail = true;
 	}
 
 	var id_node_to = "node_" + arrow_data['to']['graph_id'];
@@ -1219,11 +1221,11 @@ NetworkmapController.prototype.re_rotate_interfaces_title = function(arrow_data)
 	
 	var arrow_layout = d3.select(self._target +" #arrow_" + arrow_data['graph_id']);
 	
-	if (tail_module) {
+	if (AM_is_tail) {
 		var arrow_tail_title = arrow_layout.select(".tail_title");
 		var arrow_tail_title_text = arrow_tail_title.select("text");
 	}
-	else if (head_module) {
+	else if (A_is_tail) {
 		var arrow_head_title = arrow_layout.select(".head_title");
 		var arrow_head_title_text = arrow_head_title.select("text");
 	}
@@ -1237,7 +1239,7 @@ NetworkmapController.prototype.re_rotate_interfaces_title = function(arrow_data)
 	var transform;
 	
 	if (rotate) {
-		if (tail_module) {
+		if (AM_is_tail) {
 			var arrow_tail_title_b = arrow_tail_title.node().getBBox();
 			
 			transform = d3.transform();
@@ -1248,7 +1250,7 @@ NetworkmapController.prototype.re_rotate_interfaces_title = function(arrow_data)
 			transform.rotate = "180 " + center_tail_x + " " + center_tail_y;
 			arrow_tail_title_text.attr("transform", transform.toString());
 		}
-		else if (head_module) {
+		else if (A_is_tail) {
 			var arrow_head_title_b = arrow_head_title.node().getBBox();
 			
 			transform = d3.transform();
@@ -1282,11 +1284,11 @@ NetworkmapController.prototype.re_rotate_interfaces_title = function(arrow_data)
 		}
 	}
 	else {
-		if (tail_module) {
+		if (AM_is_tail) {
 			transform = d3.transform();;
 			arrow_tail_title_text.attr("transform", transform.toString());
 		}
-		else if (head_module) {
+		else if (A_is_tail) {
 			transform = d3.transform();;
 			arrow_head_title_text.attr("transform", transform.toString());
 		}

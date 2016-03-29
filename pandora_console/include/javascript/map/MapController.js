@@ -41,6 +41,7 @@ MapController.prototype._start_multiple_selection = false;
 MapController.prototype._flag_multiple_selection = false;
 MapController.prototype._stop_dragging = false;
 MapController.prototype._cache_files = {};
+MapController.prototype._last_event = null;
 
 /*-----------------------------------------------*/
 /*--------------------Methods--------------------*/
@@ -78,6 +79,7 @@ MapController.prototype.init_map = function() {
 		self.remove_resize_square();
 		
 		if (!self._flag_multiple_selection) {
+			self.last_event = "zoom";
 			
 			var zoom_level = d3.event.scale;
 			
@@ -88,8 +90,12 @@ MapController.prototype.init_map = function() {
 					"translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
 			
 			self.zoom_minimap();
+			
+			
 		}
 		else {
+			self.last_event = null;
+			
 			// Reset the zoom and panning actual
 			var viewport_transform = d3.transform(
 				d3.select(self._target + " .viewport").attr("transform"));
@@ -1417,9 +1423,6 @@ MapController.prototype.init_events = function(principalObject) {
 					d3.event.offsetX,
 					d3.event.offsetY, true);
 			}
-			else {
-				self.remove_selection_nodes();
-			}
 		});
 	
 	d3.select(self._target + " svg").on("mousemove",
@@ -1428,6 +1431,16 @@ MapController.prototype.init_events = function(principalObject) {
 				self.multiple_selection_dragging(
 					d3.event.offsetX,
 					d3.event.offsetY, false);
+			}
+		});
+	
+	d3.select(self._target + " svg").on("mouseup",
+		function() {
+			if (!self._flag_multiple_selection) {
+				if (self.last_event != "zoom")
+					self.remove_selection_nodes();
+				
+				self.last_event = null;
 			}
 		});
 	

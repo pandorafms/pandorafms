@@ -820,6 +820,7 @@ CREATE TABLE "tserver" (
 	"lag_modules" INTEGER NOT NULL default 0,
 	"total_modules_running" INTEGER NOT NULL default 0,
 	"my_modules" INTEGER NOT NULL default 0,
+	"server_keepalive" INTEGER NOT NULL default 0,
 	"stat_utimestamp" BIGINT NOT NULL default 0
 );
 CREATE INDEX "tserver_name_idx" ON "tserver"("name");

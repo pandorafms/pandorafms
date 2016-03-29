@@ -67,8 +67,16 @@ ui_print_info_message(__("MIB files will be installed on the system. Please note
 
 //echo '<h4>' . __('Index of %s', $directory) . '</h4>';
 
+$homedir_filemanager = isset ($config['homedir_filemanager']) ? $config['homedir_filemanager'] : false;
+
 filemanager_file_explorer($real_directory,
 	$directory,
 	'index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_mib_uploader',
-	SNMP_DIR_MIBS);
+	SNMP_DIR_MIBS,
+	false,
+	false,
+	'',
+	false,
+	'',
+	$homedir_filemanager);
 ?>

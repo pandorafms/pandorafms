@@ -5,7 +5,9 @@ chmod -R u+rwX,g+rX,g-w,o-rwx /var/www/pandora_console
 chgrp www-data /var/www/pandora_console -R
 chown www-data /var/www/pandora_console -R
 
+if [ -f /etc/init.d/apache2 ]; then
 echo Restart the apache.
 /etc/init.d/apache2 restart
+fi
 
 echo "Please, now, point your browser to http://your_IP_address/pandora_console/install.php and follow all the steps described on it."

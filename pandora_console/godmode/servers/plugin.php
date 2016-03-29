@@ -179,6 +179,8 @@ if ($filemanager) {
 		$chunck_url = '&create=1';
 	}
 	
+	$homedir_filemanager = isset ($config['homedir_filemanager']) ? $config['homedir_filemanager'] : false;
+	
 	filemanager_file_explorer($real_directory,
 		$directory,
 		'index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&id_plugin=' . $id_plugin,
@@ -187,7 +189,8 @@ if ($filemanager) {
 		false,
 		'index.php?sec=gservers&sec2=godmode/servers/plugin' . $chunck_url . '&plugin_command=[FILE_FULLPATH]&id_plugin=' . $id_plugin,
 		true,
-		0775);
+		0775,
+		$homedir_filemanager);
 	
 	
 	return;

@@ -895,6 +895,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 	`lag_modules` int(11) NOT NULL default 0,
 	`total_modules_running` int(11) NOT NULL default 0,
 	`my_modules` int(11) NOT NULL default 0,
+	`server_keepalive` int(11) NOT NULL default 0,
 	`stat_utimestamp` bigint(20) NOT NULL default '0',
 	PRIMARY KEY  (`id_server`),
 	KEY `name` (`name`)

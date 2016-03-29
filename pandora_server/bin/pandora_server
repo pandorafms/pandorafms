@@ -606,8 +606,13 @@ sub main() {
 				$server->update();
 			}
 	
-			# Update fallen servers
-			db_do ($DBH, "UPDATE tserver SET status = 0 WHERE keepalive < ?", strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - $Config{'keepalive'})));
+			# Update fallen servers 
+			my @servers_db = get_db_rows ($DBH, "SELECT id_server, server_keepalive FROM tserver");
+			for (@servers_db) {
+				my %server_db = %$_;
+				my $expected_update = strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - $server_db{'server_keepalive'} * 2));
+				db_do ($DBH, "UPDATE tserver SET status = 0 WHERE keepalive < ? AND id_server = ?", $expected_update, $server_db{'id_server'});
+			}
 
 			# Set the master server
 			pandora_set_master(\%Config, $DBH);

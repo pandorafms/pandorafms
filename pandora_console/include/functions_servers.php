@@ -765,19 +765,19 @@ function servers_check_status () {
 			$sql = "SELECT COUNT(id_server)
 				FROM tserver
 				WHERE status = 1
-					AND keepalive > NOW() - INTERVAL 15 MINUTE";
+					AND keepalive > NOW() - INTERVAL server_keepalive*2 SECOND";
 			break;
 		case "postgresql":
 			$sql = "SELECT COUNT(id_server)
 				FROM tserver
 				WHERE status = 1
-					AND keepalive > NOW() - INTERVAL '15 MINUTE'";
+					AND keepalive > NOW() - INTERVAL 'server_keepalive*2 SECOND'";
 			break;
 		case "oracle":
 			$sql = "SELECT COUNT(id_server)
 				FROM tserver
 				WHERE status = 1
-					AND keepalive > systimestamp - INTERVAL '15' MINUTE";
+					AND keepalive > systimestamp - INTERVAL 'server_keepalive*2' SECOND";
 			break;
 	}
 	$status = (int) db_get_sql ($sql); //Cast as int will assure a number value

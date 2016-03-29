@@ -2197,12 +2197,13 @@ Update server status:
 
 =cut
 ##########################################################################
-sub pandora_update_server ($$$$$$;$$$) {
+sub pandora_update_server ($$$$$$;$$$$) {
 	my ($pa_config, $dbh, $server_name, $server_id, $status,
-		$server_type, $num_threads, $queue_size, $version) = @_;
+		$server_type, $num_threads, $queue_size, $version, $keepalive) = @_;
 	
 	$num_threads = 0 unless defined ($num_threads);
 	$queue_size = 0 unless defined ($queue_size);
+	$keepalive = $pa_config->{'keepalive'} unless defined ($keepalive);
 
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 	$version = $pa_config->{'version'} . ' (P) ' . $pa_config->{'build'} unless defined($version);
@@ -2215,9 +2216,9 @@ sub pandora_update_server ($$$$$$;$$$) {
 		# Create an entry in tserver if needed
 		my $server = get_db_single_row ($dbh, 'SELECT id_server FROM tserver WHERE name = ? AND server_type = ?', $server_name, $server_type);
 		if (! defined ($server)) {
-			$server_id = db_insert ($dbh, 'id_server', 'INSERT INTO tserver (name, server_type, description, version, threads, queued_modules)
-						VALUES (?, ?, ?, ?, ?, ?)', $server_name, $server_type,
-						'Autocreated at startup', $version, $num_threads, $queue_size);
+			$server_id = db_insert ($dbh, 'id_server', 'INSERT INTO tserver (name, server_type, description, version, threads, queued_modules, server_keepalive)
+						VALUES (?, ?, ?, ?, ?, ?, ?)', $server_name, $server_type,
+						'Autocreated at startup', $version, $num_threads, $queue_size, $keepalive);
 		
 			$server = get_db_single_row ($dbh, 'SELECT status FROM tserver WHERE id_server = ?', $server_id);
 			if (! defined ($server)) {
@@ -2228,14 +2229,14 @@ sub pandora_update_server ($$$$$$;$$$) {
 			$server_id = $server->{'id_server'};
 		}
 
-		db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, laststart = ?, version = ?, threads = ?, queued_modules = ?
+		db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, laststart = ?, version = ?, threads = ?, queued_modules = ?, server_keepalive = ?
 				WHERE id_server = ?',
-				1, $timestamp, $master, $timestamp, $version, $num_threads, $queue_size, $server_id);
+				1, $timestamp, $master, $timestamp, $version, $num_threads, $queue_size, $keepalive, $server_id);
 		return;
 	}
 	
-	db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, version = ?, threads = ?, queued_modules = ?
-			WHERE id_server = ?', $status, $timestamp, $master, $version, $num_threads, $queue_size, $server_id);
+	db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, version = ?, threads = ?, queued_modules = ?, server_keepalive = ?
+			WHERE id_server = ?', $status, $timestamp, $master, $version, $num_threads, $queue_size, $keepalive, $server_id);
 }
 
 ##########################################################################

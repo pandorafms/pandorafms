@@ -42,6 +42,7 @@ else {
 }
 
 $refr = (int) get_parameter ('refr', $config['vc_refr']);
+$graph_javascript = (bool) get_parameter ('graph_javascript', false);
 $vc_refr = false;
 
 if (isset($config['vc_refr']) and $config['vc_refr'] != 0)
@@ -153,7 +154,7 @@ else {
 	html_print_input_hidden('metaconsole', 1);
 }
 
-visual_map_print_visual_map ($id_layout);
+visual_map_print_visual_map ($id_layout, true, true, null, null, '', false, $graph_javascript);
 
 
 

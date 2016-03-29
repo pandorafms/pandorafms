@@ -817,7 +817,7 @@ sub process_xml_server ($$$$) {
 	$version = '' unless defined($version);
 	
 	# Update server information
-	pandora_update_server ($pa_config, $dbh, $data->{'server_name'}, 0, 1, $server_type, $threads, $modules, $version);
+	pandora_update_server ($pa_config, $dbh, $data->{'server_name'}, 0, 1, $server_type, $threads, $modules, $version, $data->{'keepalive'});
 }
 
 1;

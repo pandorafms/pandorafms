@@ -706,7 +706,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	}
 }
 
-function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumulate_data, intervaltick, water_mark, maxvalue, separator, separator2) {
+function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumulate_data, intervaltick, water_mark, maxvalue, separator, separator2, graph_javascript) {
 
 	values = values.split(separator2);
 	labels = labels.split(separator);
@@ -804,7 +804,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	colors, type, serie_types, water_mark, width, max_x, homeurl, unit,
 	font_size, menu, events, event_ids, legend_events, alerts,
 	alert_ids, legend_alerts, yellow_threshold, red_threshold,
-	force_integer, separator, separator2, series_suffix_str) {
+	force_integer, separator, separator2, series_suffix_str, vconsole) {
 
 	var threshold = true;
 	var thresholded = false;
@@ -1024,11 +1024,25 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				labelFormatter: lFormatter
 				}
 		};
-
+	if (vconsole) {
+		options.grid['hoverable'] = false;
+		options.grid['clickable'] = false;
+		options.crosshair = false;
+		options.selection = false;
+	}
+	
 	var stack = 0, bars = true, lines = false, steps = false;
 
 	var plot = $.plot($('#' + graph_id), datas, options);
-
+	
+	if (vconsole) {
+		var myCanvas = plot.getCanvas();
+		plot.setupGrid(); // redraw plot to new size
+		plot.draw();
+		var image = myCanvas.toDataURL("image/png");
+		return;
+	}
+	
 	// Adjust the overview plot to the width and position of the main plot
 	adjust_left_width_canvas(graph_id, 'overview_'+graph_id);
 
@@ -1267,7 +1281,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 	$('#'+graph_id).bind('mouseout',resetInteractivity);
 	$('#overview_'+graph_id).bind('mouseout',resetInteractivity);
-
+	
 	// Reset interactivity styles
 	function resetInteractivity() {
 		$('#timestamp_'+graph_id).hide();

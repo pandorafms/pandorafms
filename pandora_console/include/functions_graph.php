@@ -765,7 +765,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$unit = '', $baseline = 0, $return_data = 0, $show_title = true,
 	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
 	$adapt_key = '', $compare = false, $show_unknown = false,
-	$menu = true, $backgroundColor = 'white', $percentil = null) {
+	$menu = true, $backgroundColor = 'white', $percentil = null,
+	$dashboard = false, $vconsole = false) {
 	
 	global $config;
 	global $graphic_type;
@@ -892,7 +893,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 					$config['font_size'], $unit, $ttl, $series_type,
 					$chart_extra_data, $warning_min, $critical_min,
 					$adapt_key, false, $series_suffix_str, $menu,
-					$backgroundColor);
+					$backgroundColor, $dashboard, $vconsole);
 		}
 	}
 	elseif ($config['type_module_charts'] === 'line') {
@@ -969,7 +970,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
 	$prediction_period = false, $background_color = 'white',
 	$name_list = array(), $unit_list = array(), $show_last = true, $show_max = true,
-	$show_min = true, $show_avg = true, $labels = false, $dashboard = false) {
+	$show_min = true, $show_avg = true, $labels = false, $dashboard = false, $vconsole = false) {
 	
 	global $config;
 	global $graphic_type;
@@ -1428,7 +1429,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 							FROM tagente_datos 
 							WHERE id_agente_modulo = ' . (int) $module .
 								' AND utimestamp > ' . (int) $datelimit .
-								' AND utimestamp < ' . (int) $date);
+								' AND utimestamp < ' . (int) $date) .
+								" ORDER BY utimestamp DESC";
 								
 				if ($temp_data) {
 					if (is_numeric($temp_data))
@@ -1483,7 +1485,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 							FROM tagente_datos 
 							WHERE id_agente_modulo = ' . (int) $module .
 								' AND utimestamp > ' . (int) $datelimit .
-								' AND utimestamp < ' . (int) $date);
+								' AND utimestamp < ' . (int) $date) .
+								" ORDER BY utimestamp DESC";
 				
 				$agent_name = io_safe_output(
 					modules_get_agentmodule_agent_name ($module));
@@ -1524,7 +1527,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 							FROM tagente_datos 
 							WHERE id_agente_modulo = ' . (int) $module .
 								' AND utimestamp > ' . (int) $datelimit .
-								' AND utimestamp < ' . (int) $date);
+								' AND utimestamp < ' . (int) $date) .
+								" ORDER BY utimestamp DESC";
 				if ( $temp_data ){
 					if (is_numeric($temp_data))
 						$value = $temp_data;
@@ -1576,7 +1580,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 							FROM tagente_datos 
 							WHERE id_agente_modulo = ' . (int) $module .
 								' AND utimestamp > ' . (int) $datelimit .
-								' AND utimestamp < ' . (int) $date);
+								' AND utimestamp < ' . (int) $date) .
+								" ORDER BY utimestamp DESC";
 				if ( $temp_data ) {
 					if (is_numeric($temp_data))
 						$value = $temp_data;
@@ -1708,7 +1713,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				"", "", $homeurl, $water_mark, $config['fontpath'],
 				$fixed_font_size, $unit, $ttl, array(), array(), 0,  0,  '',
-				false, '', true, $background_color,$dashboard);
+				false, '', true, $background_color,$dashboard, $vconsole);
 			break;
 		default:
 		case CUSTOM_GRAPH_STACKED_AREA: 
@@ -1716,21 +1721,21 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$width, $height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color,$dashboard);
+				"", $ttl, $homeurl, $background_color,$dashboard, $vconsole);
 			break;
 		case CUSTOM_GRAPH_LINE:  
 			return line_graph($flash_charts, $graph_values, $width,
 				$height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				$unit, $ttl, $homeurl, $background_color,$dashboard); 
+				$unit, $ttl, $homeurl, $background_color,$dashboard, $vconsole); 
 			break;
 		case CUSTOM_GRAPH_STACKED_LINE:
 			return stacked_line_graph($flash_charts, $graph_values,
 				$width, $height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color,$dashboard);
+				"", $ttl, $homeurl, $background_color,$dashboard, $vconsole);
 			break;
 		case CUSTOM_GRAPH_BULLET_CHART:
 			return stacked_bullet_chart($flash_charts, $graph_values,
@@ -2104,7 +2109,7 @@ function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek 
 	// If the data is not provided, we got it
 	if ($data === false) {
 		$data = reporting_get_agentmodule_sla_array ($id, $period,
-			$sla_min, $sla_max, $date, $daysWeek, $time_from, $time_to);
+			$sla_min, $sla_max, $date, $daysWeek, null, null);
 	}
 	
 	$col_planned_downtime = '#20973F';

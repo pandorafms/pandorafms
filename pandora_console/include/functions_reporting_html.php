@@ -1658,7 +1658,7 @@ function reporting_html_availability(&$table, $item) {
 		$table1->head[2] = __('# Checks');
 		$table1->head[3] = __('# Failed');
 		$table1->head[4] = __('% Fail');
-		$table1->head[5] = __('Poling time');
+		$table1->head[5] = __('Time available');
 		$table1->head[6] = __('Time unavailable');
 		$table1->head[7] = __('% Ok');
 		

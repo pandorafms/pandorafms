@@ -1608,15 +1608,17 @@ MapController.prototype.multiple_selection_select_nodes = function() {
 	var zoom = d3.transform(
 		d3.select(self._target + " .viewport").attr("transform"));
 	
-	selection_box_dimensions["x"] = (selection_box_dimensions["x"]
-		- zoom.translate[0]); // / zoom.scale[0];
-	selection_box_dimensions["y"] = (selection_box_dimensions["y"]
-		- zoom.translate[1]); // / zoom.scale[1];
+	console.log("zoom", zoom);
+	
+	selection_box_dimensions["x"] = (selection_box_dimensions["x"] / zoom.scale[0]
+		- zoom.translate[0] / zoom.scale[0]);
+	selection_box_dimensions["y"] = (selection_box_dimensions["y"] / zoom.scale[1]
+		- zoom.translate[1] / zoom.scale[1]);
 	
 	selection_box_dimensions["width"] =
-		selection_box_dimensions["width"] * zoom.scale[0];
+		selection_box_dimensions["width"] / zoom.scale[0];
 	selection_box_dimensions["height"] =
-		selection_box_dimensions["height"] * zoom.scale[1];
+		selection_box_dimensions["height"] / zoom.scale[1];
 	
 	$.each(nodes, function(i, node) {
 		if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)

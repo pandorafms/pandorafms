@@ -1315,7 +1315,6 @@ MapController.prototype.init_events = function(principalObject) {
 		.on("keydown", function() {
 			// ctrl key
 			if (d3.event.keyCode === CONTROL_KEY) {
-				console.log("control");
 				self._flag_multiple_selection = true;
 				self._stop_dragging = true;
 				
@@ -1324,7 +1323,6 @@ MapController.prototype.init_events = function(principalObject) {
 		})
 		.on("keyup", function() {
 			if (d3.event.keyCode === CONTROL_KEY) {
-				console.log("un_control");
 				self._flag_multiple_selection = false;
 				self._stop_dragging = false;
 				self.multiple_selection_end();
@@ -1446,6 +1444,12 @@ MapController.prototype.init_events = function(principalObject) {
 		
 		self.remove_resize_square();
 		
+		var status_selection = self.get_status_selection_node(d['graph_id']);
+		console.log("status_selection", status_selection);
+		if (status_selection.indexOf("select") == -1) {
+			console.log("self.remove_selection_nodes");
+			self.remove_selection_nodes();
+		}
 		
 		self.select_node(d['graph_id'], "select");
 	}
@@ -1486,6 +1490,15 @@ MapController.prototype.init_events = function(principalObject) {
 	}
 }
 
+MapController.prototype.get_status_selection_node = function(id_node) {
+	var self = this;
+	
+	var status = d3.select(self._target + " #node_" + id_node)
+		.attr("data-select");
+	
+	return status.split(" ");
+}
+
 MapController.prototype.multiple_selection_start = function() {
 	var self = this;
 	
@@ -1511,7 +1524,7 @@ MapController.prototype.multiple_selection_start = function() {
 		
 		selection_box
 			.append(function() {
-				return self._cache_files["selection_box"]
+				return self._cache_files["selection_box"];
 			});
 	}
 }
@@ -1608,7 +1621,6 @@ MapController.prototype.multiple_selection_select_nodes = function() {
 	var zoom = d3.transform(
 		d3.select(self._target + " .viewport").attr("transform"));
 	
-	console.log("zoom", zoom);
 	
 	selection_box_dimensions["x"] = (selection_box_dimensions["x"] / zoom.scale[0]
 		- zoom.translate[0] / zoom.scale[0]);
@@ -1669,18 +1681,31 @@ MapController.prototype.multiple_selection_select_nodes = function() {
 	});
 }
 
+MapController.prototype.remove_selection_nodes = function() {
+	var self = this;
+	
+	$.each(nodes, function(i, node) {
+		if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)
+			return 1; // Continue
+		
+		self.select_node(node.graph_id, "off");
+	});
+}
+
 MapController.prototype.select_node = function(node_id, type) {
 	var self = this;
 	
 	d3.select(self._target + " #node_" + node_id)
 		.classed("over", false);
 	
+	var data = "";
 	switch (type) {
 		case 'select':
 			d3.select(self._target + " #node_" + node_id)
 				.classed("select", true);
 			d3.select(self._target + " #node_" + node_id)
 				.attr("style", "fill: rgb(50, 128, 50);");
+			data = "select";
 			break;
 		case 'over':
 			d3.select(self._target + " #node_" + node_id)
@@ -1690,25 +1715,24 @@ MapController.prototype.select_node = function(node_id, type) {
 				
 				d3.select(self._target + " #node_" + node_id)
 					.attr("style", "fill: rgb(128, 128, 50);");
+				
+				data = "select over";
 			}
 			else {
 				d3.select(self._target + " #node_" + node_id)
 					.attr("style", "fill: rgb(128, 50, 50);");
+				
+				data = "over";
 			}
 			break;
 		case 'off':
-			if (d3.select(self._target + " #node_" + node_id)
-				.classed("select")) {
-				
-				d3.select(self._target + " #node_" + node_id)
-					.attr("style", "fill: rgb(50, 128, 50);");
-			}
-			else {
-				d3.select(self._target + " #node_" + node_id)
-					.attr("style", "fill: rgb(50, 50, 128);");
-			}
+			d3.select(self._target + " #node_" + node_id)
+				.attr("style", "fill: rgb(50, 50, 128);");
 			break;
 	}
+	
+	d3.select(self._target + " #node_" + node_id)
+		.attr("data-select", data);
 }
 
 /**

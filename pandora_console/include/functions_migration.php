@@ -26,8 +26,6 @@ require_once("include/functions_maps.php");
 function migration_open_networkmaps() {
 	$old_networkmaps_open = db_get_all_rows_in_table("tnetwork_map");
 	
-	html_debug($old_networkmaps_open);
-	
 	foreach ($old_networkmaps_open as $old_netw_open) {
 		$new_networkmap = array();
 		
@@ -64,7 +62,6 @@ function migration_open_networkmaps() {
 				$new_networkmap['generation_method'] = MAP_GENERATION_RADIAL;
 				break;
 		}
-		
 		
 		// ---- Filter -------------------------------------------------
 		$filter = array();
@@ -109,10 +106,6 @@ function migration_open_networkmaps() {
 		
 		$new_networkmap['filter'] = json_encode($filter);
 		// -------------------------------------------------------------
-		
-		
-		
-		html_debug($new_networkmap);
 		
 		maps_save_map($new_networkmap);
 	}

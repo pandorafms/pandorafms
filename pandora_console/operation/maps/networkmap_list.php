@@ -37,6 +37,9 @@ if (!$networkmaps_read && !$networkmaps_write && !$networkmaps_manage) {
 }
 
 require_once('include/functions_migration.php');
+if (enterprise_installed()) {
+	require_once ($config['homedir'].'/enterprise/include/functions_migration.php');
+}
 
 $buttons['list'] = array('active' => true,
 	'text' => '<a href="index.php?sec=network&sec2=operation/maps/networkmap_list">' .
@@ -58,13 +61,25 @@ ui_print_page_header(
 ////////////////////////////////////////////////////////////////////////
 
 $migrate_open_networkmaps = (int)get_parameter('migrate_open_networkmaps');
+$migrate_enterprise_networkmaps = (int)get_parameter('migrate_enterprise_networkmaps');
 
-if ($migrate_open_networkmaps)
+if ($migrate_open_networkmaps) {
 	migration_open_networkmaps();
+}
+if (enterprise_installed()) {
+	if ($migrate_enterprise_networkmaps) {
+		migration_enterprise_networkmaps();
+	}
+}
 
 ?>
 <br />
 <a href="index.php?sec=network&sec2=operation/maps/networkmap_list&migrate_open_networkmaps=1">(temp, this is for minor relases) migrate open networkmaps</a>
+<br />
+<br />
+
+<br />
+<a href="index.php?sec=network&sec2=operation/maps/networkmap_list&migrate_enterprise_networkmaps=1">(temp, this is for minor relases) migrate enterprise networkmaps</a>
 <br />
 <br />
 <?php
@@ -141,8 +156,6 @@ if ($save_networkmap) {
 	$only_modules_with_alerts = (int) get_parameter('only_modules_with_alerts', 0);
 	$only_policy_modules = (int) get_parameter('only_policy_modules', 0);
 	
-	
-	
 	$values = array();
 	$values['name'] = $name;
 	$values['id_user'] = $config['id_user'];
@@ -156,7 +169,6 @@ if ($save_networkmap) {
 	$values['width'] = $width;
 	$values['height'] = $height;
 	$values['source'] = $source;
-	
 	
 	$filter = array();
 	$filter['id_tag'] = $id_tag;

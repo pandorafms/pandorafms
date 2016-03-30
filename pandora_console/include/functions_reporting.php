@@ -3844,11 +3844,11 @@ function reporting_availability($report, $content) {
 				$content['time_from'],
 				$content['time_to']);
 			
-			$count_checks = modules_get_count_datas(
-				$item['id_agent_module'],
-				$report["datetime"] - $content['period'],
-				$report["datetime"]);
-			
+			$item['interval_agent_module'] = modules_get_interval ($item['id_agent_module']);
+			$unknown_seconds = modules_get_unknown_time ($item['id_agent_module'], $report["datetime"], $content['period']);
+			if ($unknown_seconds !== false) {
+				$count_checks = (int)(($content['period'] - $unknown_seconds)/$item['interval_agent_module']);
+			}
 			
 			if ($sla_value === false) {
 				$row['checks'] = __('Unknown');
@@ -3872,11 +3872,13 @@ function reporting_availability($report, $content) {
 				$row['failed'] =
 					format_numeric($percent_fail * $count_checks / 100, 0);
 				
-				
+				$row['poling_time'] = "-";
+				if ($percent_ok > 0) {
 				$row['poling_time'] =
 					human_time_description_raw(
 						($percent_ok * $count_checks / 100) * modules_get_interval($item['id_agent_module']),
 					true);
+				}
 				
 				$row['time_unavaliable'] = "-";
 				if ($percent_fail > 0) {

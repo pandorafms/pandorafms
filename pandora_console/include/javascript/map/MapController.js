@@ -294,6 +294,22 @@ MapController.prototype.get_edges_from_node = function(id_graph) {
 }
 
 /**
+* Function update_edges_from_clean_arrows
+* Return void
+* This function updates the graph id of the edges
+*/
+MapController.prototype.update_edges_from_clean_arrows = function(clean_arrows) {
+	newEdges = [];
+	clean_arrows.forEach(function(arrow, index) {
+		newEdges[index] = [];
+		newEdges[index]['from'] = arrow['from']['graph_id'];
+		newEdges[index]['to'] = arrow['to']['graph_id'];
+		newEdges[index]['graph_id'] = arrow['graph_id'];
+	});
+	edges = newEdges;
+}
+
+/**
 * Function get_arrow_from_id
 * Return  void
 * This function return an arrow from a specific id

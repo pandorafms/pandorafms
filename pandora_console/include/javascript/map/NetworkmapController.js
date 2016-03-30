@@ -173,13 +173,13 @@ NetworkmapController.prototype.get_arrows_AMA = function(id_to, id_from) {
 					
 					var type_to = self.get_node_type(edge['to']);
 					var type_from = self.get_node_type(edge['from']);
-					
+
 					// Filter M-M edge
 					if ((type_to != ITEM_TYPE_MODULE_NETWORKMAP)
 						|| (type_from != ITEM_TYPE_MODULE_NETWORKMAP)) {
 						
 						var arrow = self.get_arrow_from_id(edge['graph_id']);
-						
+
 						var temp = {};
 						
 						temp['graph_id'] =
@@ -346,7 +346,6 @@ NetworkmapController.prototype.paint_arrows = function() {
 	
 	var arrows_AA;
 	$.each(edges, function(i, edge) {
-		
 		var arrow_AA = self.get_arrow_AA(edge['to'], edge['from']);
 		if (arrow_AA !== null) {
 			if (!self.exists_arrow(clean_arrows, arrow_AA)) {
@@ -370,6 +369,8 @@ NetworkmapController.prototype.paint_arrows = function() {
 			});
 		}
 	});
+
+	MapController.prototype.update_edges_from_clean_arrows(clean_arrows);
 	
 	var arrow_layouts = self._viewport.selectAll(".arrow")
 		.data(clean_arrows)

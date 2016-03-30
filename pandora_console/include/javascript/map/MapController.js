@@ -1977,17 +1977,33 @@ MapController.prototype.editNode = function(self, target) {
 * This function delete a node and the arrows that use it
 */
 MapController.prototype.deleteNode = function(self, target) {
-	var id_node = d3.select(target).attr("id");
-	var arrowsToDelete = self.getArrows(self, id_node);
-
-	// Delete edges and nodes in "nodes" and "edges" arrays
-	self.deleteEdgesAndNode(arrowsToDelete, id_node);
-
-	// Delete visual edges and nodes
-	arrowsToDelete.forEach(function(arrow) {
-		d3.select("#arrow_" + arrow).remove();
+	var self = this;
+	
+	$.each(nodes, function(i, node) {
+		if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)
+			return 1; // Continue
+		
+		var status_selection =
+			self.get_status_selection_node(node.graph_id);
+		
+		if (status_selection.indexOf("select") == -1) {
+			return 1; // Continue
+		}
+		
+		var id_node = "node_" + node.graph_id;
+		var arrowsToDelete = self.getArrows(self, id_node);
+		
+		// Delete edges and nodes in "nodes" and "edges" arrays
+		self.deleteEdgesAndNode(arrowsToDelete, id_node);
+		
+		// Delete visual edges and nodes
+		arrowsToDelete.forEach(function(arrow) {
+			d3.select("#arrow_" + arrow).remove();
+		});
+		d3.select(self._target + " #" + id_node).remove();
+		
+		
 	});
-	d3.select(target).remove();
 }
 
 /**

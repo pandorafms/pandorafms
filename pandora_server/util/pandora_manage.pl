@@ -3870,7 +3870,7 @@ sub cli_locate_agent () {
 				}
 			}
 			
-			if (defined(@list_servers)) {
+			if (scalar(@list_servers) > 0) {
 				$list_names_servers = join(',',@list_servers);
 				print_log "[INFO] The agent: $agent_name find in server with IDS: $list_names_servers\n\n";
 			}

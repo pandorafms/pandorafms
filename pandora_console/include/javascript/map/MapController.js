@@ -1404,8 +1404,14 @@ MapController.prototype.init_events = function(principalObject) {
 			self.select_node(d['graph_id'], "over");
 		})
 		.on("mouseout", function(d) {
-			if (self.last_event != "drag")
+			if (self.last_event != "drag") {
+				var status_selection = self.get_status_selection_node(d['graph_id']);
+				
 				self.select_node(d['graph_id'], "off");
+				if (status_selection.indexOf("select") != -1) {
+					self.select_node(d['graph_id'], "select");
+				}
+			}
 			
 			self.last_event = null;
 		})
@@ -1419,7 +1425,10 @@ MapController.prototype.init_events = function(principalObject) {
 			
 			self.tooltip_map_create(self, this);
 		})
-		.on("contextmenu", d3.contextMenu(node_menu));
+		.on("contextmenu", d3.contextMenu(node_menu, function(node) {
+			self._last_event = "contextmenu";
+			self.select_node(node['graph_id'], "select");
+		}));
 	
 	var drag = d3.behavior.drag()
 		.origin(function(d) { return d; })
@@ -1533,13 +1542,17 @@ MapController.prototype.init_events = function(principalObject) {
 	* Return void
 	*/
 	function dragended(d) {
-		self.select_node(d['graph_id'], "off");
-		
-		if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
-			$("#node_" + d['graph_id']).tooltipster('destroy');
+		if (self._last_event != "contextmenu") {
+			self._last_event = null;
+			
+			self.select_node(d['graph_id'], "off");
+			
+			if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
+				$("#node_" + d['graph_id']).tooltipster('destroy');
+			}
+			
+			self.remove_resize_square();
 		}
-		
-		self.remove_resize_square();
 	}
 }
 

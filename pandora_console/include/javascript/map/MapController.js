@@ -459,9 +459,6 @@ MapController.prototype.paint_toggle_button = function(wait) {
 			
 			toggle_minimap_button_layer.on("click",
 				function() {
-					//~ d3.event.sourceEvent.stopPropagation();
-					//~ d3.event.sourceEvent.preventDefault();
-					
 					self.event_toggle_minimap();
 				});
 			break;
@@ -1530,6 +1527,11 @@ MapController.prototype.init_events = function(principalObject) {
 	}
 }
 
+/**
+* Function get_status_selection_node
+* Return node status
+* This function returns the status of a node
+*/
 MapController.prototype.get_status_selection_node = function(id_node) {
 	var self = this;
 	
@@ -1539,6 +1541,11 @@ MapController.prototype.get_status_selection_node = function(id_node) {
 	return status.split(" ");
 }
 
+/**
+* Function multiple_selection_start
+* Return void
+* This function init multiple selection mode
+*/
 MapController.prototype.multiple_selection_start = function() {
 	var self = this;
 	
@@ -1569,6 +1576,11 @@ MapController.prototype.multiple_selection_start = function() {
 	}
 }
 
+/**
+* Function multiple_selection_dragging
+* Return void
+* This function init multiple selection drag
+*/
 MapController.prototype.multiple_selection_dragging = function(x, y, first) {
 	var self = this;
 	
@@ -1630,6 +1642,11 @@ MapController.prototype.multiple_selection_dragging = function(x, y, first) {
 	}
 }
 
+/**
+* Function multiple_selection_end
+* Return void
+* This function ends multiple selection mode
+*/
 MapController.prototype.multiple_selection_end = function() {
 	var self = this;
 	
@@ -1643,6 +1660,11 @@ MapController.prototype.multiple_selection_end = function() {
 		.attr("height", 0);
 }
 
+/**
+* Function multiple_selection_select_nodes
+* Return void
+* This function gets the nodes in the selection zone
+*/
 MapController.prototype.multiple_selection_select_nodes = function() {
 	var self = this;
 	
@@ -1721,6 +1743,11 @@ MapController.prototype.multiple_selection_select_nodes = function() {
 	});
 }
 
+/**
+* Function remove_selection_nodes
+* Return void
+* This function removes the selection
+*/
 MapController.prototype.remove_selection_nodes = function() {
 	var self = this;
 	
@@ -1732,6 +1759,11 @@ MapController.prototype.remove_selection_nodes = function() {
 	});
 }
 
+/**
+* Function select_node
+* Return void
+* This function gets the node eith selection mode
+*/
 MapController.prototype.select_node = function(node_id, type) {
 	var self = this;
 	

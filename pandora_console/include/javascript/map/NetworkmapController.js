@@ -403,6 +403,11 @@ NetworkmapController.prototype.paint_arrows = function() {
 	
 }
 
+/**
+* Function arrow_by_pieces
+* Return  void
+* This function creates the arrow by pieces
+*/
 NetworkmapController.prototype.arrow_by_pieces = function (target, arrow_data, wait) {
 	var self = this;
 	
@@ -1071,6 +1076,11 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 	}
 }
 
+/**
+* Function truncate_interfaces_title
+* Return  void
+* This function truncates the interface text title
+*/
 NetworkmapController.prototype.truncate_interfaces_title = function(arrow_data) {
 	var self = this;
 
@@ -1170,6 +1180,11 @@ NetworkmapController.prototype.truncate_interfaces_title = function(arrow_data) 
 	}
 }
 
+/**
+* Function re_rotate_interfaces_title
+* Return  void
+* This function rotate the interface text title
+*/
 NetworkmapController.prototype.re_rotate_interfaces_title = function(arrow_data) {
 	var self = this;
 
@@ -1302,6 +1317,11 @@ NetworkmapController.prototype.re_rotate_interfaces_title = function(arrow_data)
 	}
 }
 
+/**
+* Function update_interfaces_status
+* Return  void
+* This function updates the interfaces status
+*/
 NetworkmapController.prototype.update_interfaces_status = function (arrow_data) {
 	var self = this;
 	

@@ -51,6 +51,16 @@ function get_pid {
 	echo $TENTACLE_PID
 }
 
+function get_all_pid {
+	# This sets COLUMNS to XXX chars, because if command is run 
+	# in a "strech" term, ps aux don't report more than COLUMNS
+	# characters and this will not work. 
+	COLUMNS=300
+	TENTACLE_PIDS=`ps aux | grep "$TENTACLE_PATH$TENTACLE_DAEMON" | grep -v grep | awk '{ print $2 }'`
+	TENTACLE_PID="${TENTACLE_PIDS//\\n/' '}"
+	echo $TENTACLE_PID
+}
+
 # Pandora server settings
 PANDORA_SERVER_PATH="/var/spool/pandora/data_in"
 
@@ -110,14 +120,14 @@ case "$1" in
 	;;
 	
 	stop)
-		TENTACLE_PID=`get_pid`
+		TENTACLE_PID=`get_all_pid`
 		if [ -z "$TENTACLE_PID" ]; then
 			echo "Tentacle Server does not seem to be running"
 			rc_exit # running stop on a service already stopped or not running
 		else
 			kill $TENTACLE_PID
 			sleep 1
-			_PID=`get_pid`
+			_PID=`get_all_pid`
 
 			if [ "$_PID" = "$TENTACLE_PID" ]; then
 				echo "Tentacle Server could not be stopped"

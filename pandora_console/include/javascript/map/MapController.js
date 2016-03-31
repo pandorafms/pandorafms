@@ -42,6 +42,9 @@ MapController.prototype._flag_multiple_selection = false;
 MapController.prototype._stop_dragging = false;
 MapController.prototype._cache_files = {};
 MapController.prototype._last_event = null;
+MapController.prototype._last_mouse_position = null;
+MapController.prototype._relationship_in_progress = false;
+MapController.prototype._relationship_in_progress_type = null;
 
 /*-----------------------------------------------*/
 /*--------------------Methods--------------------*/
@@ -1372,6 +1375,20 @@ MapController.prototype.init_events = function(principalObject) {
 			}
 		},
 		{
+			title: 'Set as children',
+			action: function(elm, d, i) {
+				self._relationship_in_progress_type = "children";
+				self.set_as_children();
+			}
+		},
+		{
+			title: 'Set as parent',
+			action: function(elm, d, i) {
+				self._relationship_in_progress_type = "parent";
+				self.set_as_parent();
+			}
+		},
+		{
 			title: 'Delete',
 			action: function(elm, d, i) {
 				self.deleteNode(self, elm);
@@ -1472,6 +1489,34 @@ MapController.prototype.init_events = function(principalObject) {
 			}
 		});
 	
+	d3.select(document).on("mousemove",
+		function() {
+			var map_pos = d3.select(self._target).node().getBoundingClientRect();
+			
+			var x = d3.event.pageX - map_pos.left;
+			var y = d3.event.pageY - map_pos.top;;
+			
+			self._last_mouse_position = [x, y];
+			
+			if (self._relationship_in_progress) {
+				$.each(nodes, function(i, node) {
+					if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)
+						return 1; // Continue
+					
+					var status_selection =
+						self.get_status_selection_node(node.graph_id);
+					
+					if (status_selection.indexOf("select") == -1) {
+						return 1; // Continue
+					}
+					
+					self._relationship_in_progress = true;
+					self.move_temp_arrows(node,
+						self._relationship_in_progress_type);
+				});
+			}
+		});
+	
 	/**
 	* Function dragstarted
 	* Return void
@@ -1554,6 +1599,140 @@ MapController.prototype.init_events = function(principalObject) {
 			self.remove_resize_square();
 		}
 	}
+}
+
+/**
+* Function set_as_parent
+* Return void
+* This function sets a node as a parent
+*/
+MapController.prototype.set_as_parent = function() {
+	var self = this;
+	
+	self.start_relationship_nodes("parent");
+}
+
+/**
+* Function set_as_children
+* Return void
+* This function sets a node as a children
+*/
+MapController.prototype.set_as_children = function() {
+	var self = this;
+	
+	self.start_relationship_nodes("children");
+}
+
+/**
+* Function start_relationship_nodes
+* Return void
+* This function starts the relation nodes function
+*/
+MapController.prototype.start_relationship_nodes = function(type) {
+	var self = this;
+	
+	$.each(nodes, function(i, node) {
+		if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)
+			return 1; // Continue
+		
+		var status_selection =
+			self.get_status_selection_node(node.graph_id);
+		
+		if (status_selection.indexOf("select") == -1) {
+			return 1; // Continue
+		}
+		
+		self._relationship_in_progress = true;
+		self.show_temp_arrows(node, type);
+	});
+}
+
+/**
+* Function show_temp_arrows
+* Return void
+* This function shows temporal arrows to parent-children relation
+*/
+MapController.prototype.show_temp_arrows = function(node, type) {
+	var self = this;
+	
+	// Apply the zoom and panning
+	var zoom = d3.transform(
+		d3.select(self._target + " .viewport").attr("transform"));
+	
+	var x = self._last_mouse_position[0]/ zoom.scale[0]
+		- zoom.translate[0] / zoom.scale[0];
+		
+	var y = self._last_mouse_position[1]/ zoom.scale[1]
+		- zoom.translate[1] / zoom.scale[1];
+	
+	
+	if (d3.select(self._target + " #arrow_temp_" + node.graph_id).empty()) {
+		self._viewport
+		.append("g")
+			.attr("class", "arrow")
+			.attr("id", function(d) {
+				return "arrow_temp_" + node.graph_id;})
+			.attr("data-id", function(d) { return node.graph_id;});
+	}
+	
+	
+	var temp_arrow = {};
+	temp_arrow['graph_id'] = "temp_" + node.graph_id;
+	temp_arrow['mouse'] = [x, y];
+	temp_arrow['temp'] = 1;
+	temp_arrow['type'] = type;
+	temp_arrow['from'] = {};
+	temp_arrow['to'] = {};
+	
+	switch (type) {
+		case 'parent':
+			temp_arrow['from']['graph_id'] = node.graph_id;
+			temp_arrow['to']['graph_id'] = null;
+			break;
+		case 'children':
+			temp_arrow['from']['graph_id'] = null;
+			temp_arrow['to']['graph_id'] = node.graph_id;
+			break;
+	}
+	
+	
+	self.arrow_by_pieces(self._target + " svg", temp_arrow);
+}
+
+MapController.prototype.move_temp_arrows = function(node, type) {
+	var self = this;
+	
+	// Apply the zoom and panning
+	var zoom = d3.transform(
+		d3.select(self._target + " .viewport").attr("transform"));
+	
+	var x = self._last_mouse_position[0]/ zoom.scale[0]
+		- zoom.translate[0] / zoom.scale[0];
+		
+	var y = self._last_mouse_position[1]/ zoom.scale[1]
+		- zoom.translate[1] / zoom.scale[1];
+	
+	var temp_arrow = {};
+	temp_arrow['graph_id'] = "temp_" + node.graph_id;
+	temp_arrow['mouse'] = [x, y];
+	temp_arrow['temp'] = 1;
+	temp_arrow['type'] = type;
+	temp_arrow['from'] = {};
+	temp_arrow['to'] = {};
+	
+	switch (type) {
+		case 'parent':
+			temp_arrow['from']['graph_id'] = node.graph_id;
+			temp_arrow['to']['graph_id'] = null;
+			break;
+		case 'children':
+			temp_arrow['from']['graph_id'] = null;
+			temp_arrow['to']['graph_id'] = node.graph_id;
+			break;
+	}
+	
+	
+	self.arrow_by_pieces(self._target + " svg", temp_arrow, 0);
 }
 
 /**
@@ -2001,8 +2180,6 @@ MapController.prototype.deleteNode = function(self, target) {
 			d3.select("#arrow_" + arrow).remove();
 		});
 		d3.select(self._target + " #" + id_node).remove();
-		
-		
 	});
 }
 
@@ -2169,19 +2346,46 @@ MapController.prototype.arrow_by_pieces = function(target, arrow_data, wait) {
 		/*---- Print head and body arrow by steps -----*/
 		/*---------------------------------------------*/
 		case 0:
-			var id_node_to = "node_" + arrow_data['to']['graph_id'];
-			var id_node_from = "node_" + arrow_data['from']['graph_id'];
-		
-			var c_elem2 = get_center_element(self._target +" #" + id_node_to);
-			var c_elem1 = get_center_element(self._target +" #" + id_node_from);
+			if (arrow_data['temp']) {
+				switch (arrow_data['type']) {
+					case 'parent':
+						var id_node_to = null;
+						var id_node_from = "node_" + arrow_data['from']['graph_id'];
+						
+						var c_elem2 = arrow_data['mouse'];
+						var c_elem1 = get_center_element(self._target +" #" + id_node_from);
+						
+						var radius_to = 5;
+						var radius_from = parseFloat(get_radius_element("#" + id_node_from));
+						break;
+					case 'children':
+						var id_node_to = "node_" + arrow_data['to']['graph_id'];
+						var id_node_from = null;
+						
+						var c_elem2 = get_center_element(self._target +" #" + id_node_to);
+						var c_elem1 = arrow_data['mouse'];
+						
+						var radius_to = parseFloat(get_radius_element("#" + id_node_to));
+						var radius_from = 5;
+						break;
+				}
+				
+			}
+			else {
+				var id_node_to = "node_" + arrow_data['to']['graph_id'];
+				var id_node_from = "node_" + arrow_data['from']['graph_id'];
+				
+				var c_elem2 = get_center_element(self._target +" #" + id_node_to);
+				var c_elem1 = get_center_element(self._target +" #" + id_node_from);
+				
+				var radius_to = parseFloat(get_radius_element("#" + id_node_to));
+				var radius_from = parseFloat(get_radius_element("#" + id_node_from));
+			}
 			
 			var distance = get_distance_between_point(c_elem1, c_elem2);
 			
-			var radius_to = parseFloat(get_radius_element("#" + id_node_to));
-			var radius_from = parseFloat(get_radius_element("#" + id_node_from));
-			
 			var transform = d3.transform();
-		
+			
 			/*---------------------------------------------*/
 			/*--- Position of layer arrow (body + head) ---*/
 			/*---------------------------------------------*/

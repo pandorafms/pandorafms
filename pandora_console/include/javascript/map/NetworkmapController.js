@@ -416,17 +416,23 @@ NetworkmapController.prototype.arrow_by_pieces = function (target, arrow_data, w
 		wait = 1;
 	}
 	
-	switch (arrow_data['type']) {
-		case 'AA':
-			MapController.prototype.arrow_by_pieces.call(
-				this, self._target + " svg", arrow_data, wait);
-			break;
-		case 'AMMA':
-			self.arrow_by_pieces_AMMA(self._target + " svg", arrow_data, wait);
-			break;
-		case 'AMA':
-			self.arrow_by_pieces_AMA(self._target + " svg", arrow_data, wait);
-			break;
+	if (arrow_data['temp']) {
+		MapController.prototype.arrow_by_pieces.call(
+				this, target, arrow_data, wait);
+	}
+	else {
+		switch (arrow_data['type']) {
+			case 'AA':
+				MapController.prototype.arrow_by_pieces.call(
+					this, self._target + " svg", arrow_data, wait);
+				break;
+			case 'AMMA':
+				self.arrow_by_pieces_AMMA(self._target + " svg", arrow_data, wait);
+				break;
+			case 'AMA':
+				self.arrow_by_pieces_AMA(self._target + " svg", arrow_data, wait);
+				break;
+		}
 	}
 }
 

@@ -1377,6 +1377,7 @@ MapController.prototype.init_events = function(principalObject) {
 		{
 			title: 'Set as children',
 			action: function(elm, d, i) {
+				self._last_event = null;
 				self._relationship_in_progress_type = "children";
 				self.set_as_children();
 			}
@@ -1384,6 +1385,7 @@ MapController.prototype.init_events = function(principalObject) {
 		{
 			title: 'Set as parent',
 			action: function(elm, d, i) {
+				self._last_event = null;
 				self._relationship_in_progress_type = "parent";
 				self.set_as_parent();
 			}
@@ -1433,6 +1435,11 @@ MapController.prototype.init_events = function(principalObject) {
 			self.last_event = null;
 		})
 		.on("click", function(d) {
+			if (self.last_event == "relationship") {
+				self.last_event = null;
+				return;
+			}
+			
 			if (d3.event.button != 0) {
 				d3.event.stopPropagation();
 				d3.event.preventDefault();
@@ -1470,22 +1477,53 @@ MapController.prototype.init_events = function(principalObject) {
 			d3.event.preventDefault();
 		});
 	
+	d3.select(self._target + " svg").on("mouseup",
+		function(d) {
+			if (!self._flag_multiple_selection) {
+				if (self.last_event != "zoom") {
+					self.remove_selection_nodes();
+					
+					self.last_event = null;
+					
+					if (self._relationship_in_progress) {
+						
+						var found_id = null;
+						for (i in d3.event.path) {
+							var item = d3.event.path[i];
+							
+							if (item == document)
+								continue;
+							if (typeof(d3.select(item).node().tagName) == "undefined")
+								continue;
+							
+							if (d3.select(item).classed("node")) {
+								found_id = d3.select(item).attr("data-graph_id");
+							}
+						}
+						
+						if (found_id !== null) {
+							self.apply_temp_arrows(found_id);
+						}
+						else {
+							self.remove_temp_arrows();
+						}
+						
+						
+						self.last_event = "relationship";
+					}
+				}
+				else {
+					self.last_event = null;
+				}
+			}
+		});
+	
 	d3.select(self._target + " svg").on("mousemove",
 		function() {
 			if (self._flag_multiple_selection && self._start_multiple_selection) {
 				self.multiple_selection_dragging(
 					d3.event.offsetX,
 					d3.event.offsetY, false);
-			}
-		});
-	
-	d3.select(self._target + " svg").on("mouseup",
-		function() {
-			if (!self._flag_multiple_selection) {
-				if (self.last_event != "zoom")
-					self.remove_selection_nodes();
-				
-				self.last_event = null;
 			}
 		});
 	
@@ -1665,17 +1703,6 @@ MapController.prototype.show_temp_arrows = function(node, type) {
 	var y = self._last_mouse_position[1]/ zoom.scale[1]
 		- zoom.translate[1] / zoom.scale[1];
 	
-	
-	if (d3.select(self._target + " #arrow_temp_" + node.graph_id).empty()) {
-		self._viewport
-		.append("g")
-			.attr("class", "arrow")
-			.attr("id", function(d) {
-				return "arrow_temp_" + node.graph_id;})
-			.attr("data-id", function(d) { return node.graph_id;});
-	}
-	
-	
 	var temp_arrow = {};
 	temp_arrow['graph_id'] = "temp_" + node.graph_id;
 	temp_arrow['mouse'] = [x, y];
@@ -1683,6 +1710,19 @@ MapController.prototype.show_temp_arrows = function(node, type) {
 	temp_arrow['type'] = type;
 	temp_arrow['from'] = {};
 	temp_arrow['to'] = {};
+	
+	if (d3.select(self._target + " #arrow_temp_" + node.graph_id).empty()) {
+		self._viewport
+		.append("g")
+			.attr("class", "arrow")
+			.attr("id", function(d) {
+				return "arrow_temp_" + node.graph_id;})
+			.attr("data-id", function(d) { return node.graph_id;})
+			.attr("data-temp", 1);
+	}
+	
+	
+	
 	
 	switch (type) {
 		case 'parent':
@@ -1733,6 +1773,52 @@ MapController.prototype.move_temp_arrows = function(node, type) {
 	
 	
 	self.arrow_by_pieces(self._target + " svg", temp_arrow, 0);
+}
+
+MapController.prototype.remove_temp_arrows = function() {
+	var self = this;
+	
+	d3.selectAll(self._target + " .arrow")
+		.filter(function(d, i) {
+			if (d3.select(this).attr("data-temp") == 1) return true;
+			else return false;
+		})
+		.remove();
+	
+	self._relationship_in_progress = false;
+	self._relationship_in_progress_type = null;
+}
+
+MapController.prototype.apply_temp_arrows = function(target_id) {
+	var self = this;
+	
+	$.each(nodes, function(i, node) {
+		if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)
+			return 1; // Continue
+		
+		var status_selection =
+			self.get_status_selection_node(node.graph_id);
+		
+		if (status_selection.indexOf("select") == -1) {
+			return 1; // Continue
+		}
+		
+		switch (self._relationship_in_progress_type) {
+			case 'parent':
+				self.make_arrow(node.graph_id, target_id);
+				break;
+			case 'children':
+				self.make_arrow(target_id, node.graph_id);
+				break;
+		}
+		
+		
+	});
+	
+	
+}
+
+MapController.prototype.make_arrow = function(from_id, to_id) {
 }
 
 /**

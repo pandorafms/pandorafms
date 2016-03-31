@@ -436,6 +436,12 @@ NetworkmapController.prototype.arrow_by_pieces = function (target, arrow_data, w
 	}
 }
 
+NetworkmapController.prototype.make_arrow = function(from_id, to_id) {
+	var edge = {};
+	
+	console.log(from_id, to_id);
+}
+
 /**
 * Function arrow_by_pieces_AMMA
 * Return void

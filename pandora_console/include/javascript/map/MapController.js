@@ -39,7 +39,6 @@ MapController.prototype._slider = null;
 MapController.prototype._relation = null;
 MapController.prototype._start_multiple_selection = false;
 MapController.prototype._flag_multiple_selection = false;
-MapController.prototype._stop_dragging = false;
 MapController.prototype._cache_files = {};
 MapController.prototype._last_event = null;
 MapController.prototype._last_mouse_position = null;
@@ -1339,16 +1338,11 @@ MapController.prototype.init_events = function(principalObject) {
 		.on("keydown", function() {
 			// ctrl key
 			if (d3.event.keyCode === CONTROL_KEY) {
-				self._flag_multiple_selection = true;
-				self._stop_dragging = true;
-				
 				self.multiple_selection_start();
 			}
 		})
 		.on("keyup", function() {
 			if (d3.event.keyCode === CONTROL_KEY) {
-				self._flag_multiple_selection = false;
-				self._stop_dragging = false;
 				self.multiple_selection_end();
 			}
 		});
@@ -1833,7 +1827,7 @@ MapController.prototype.make_arrow = function(from_id, to_id) {
 */
 MapController.prototype.get_status_selection_node = function(id_node) {
 	var self = this;
-
+	
 	var status = d3.select(self._target + " #node_" + id_node)
 		.attr("data-select");
 	
@@ -1852,6 +1846,8 @@ MapController.prototype.get_status_selection_node = function(id_node) {
 */
 MapController.prototype.multiple_selection_start = function() {
 	var self = this;
+	
+	self._flag_multiple_selection = true;
 	
 	if (!self._cache_files.hasOwnProperty("selection_box")) {
 		var selection_box = d3
@@ -1953,6 +1949,8 @@ MapController.prototype.multiple_selection_dragging = function(x, y, first) {
 */
 MapController.prototype.multiple_selection_end = function() {
 	var self = this;
+	
+	self._flag_multiple_selection = false;
 	
 	var selection_box = d3
 		.select(self._target + " #selection_box");

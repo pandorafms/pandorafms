@@ -37,6 +37,7 @@ MapController.prototype._minimap = null;
 MapController.prototype._zoomManager = null;
 MapController.prototype._slider = null;
 MapController.prototype._relation = null;
+MapController.prototype._start_flag_multiple_selection = false;
 MapController.prototype._flag_multiple_selection = false;
 MapController.prototype._cache_files = {};
 MapController.prototype._last_event = null;
@@ -96,7 +97,6 @@ MapController.prototype.init_map = function() {
 			
 		}
 		else {
-			
 			self.last_event = null;
 			
 			// Reset the zoom and panning actual
@@ -1337,12 +1337,14 @@ MapController.prototype.init_events = function(principalObject) {
 		.on("keydown", function() {
 			// ctrl key
 			if (d3.event.keyCode === CONTROL_KEY) {
+				self._start_flag_multiple_selection = true;
 				self.multiple_selection_start();
 			}
 		})
 		.on("keyup", function() {
 			if (d3.event.keyCode === CONTROL_KEY) {
 				self.multiple_selection_end();
+				self._last_event = "multiple_selection_end";
 			}
 		});
 	
@@ -1457,6 +1459,10 @@ MapController.prototype.init_events = function(principalObject) {
 	
 	d3.select(self._target + " svg").on("mousedown",
 		function() {
+			if (self._start_flag_multiple_selection) {
+				self._start_flag_multiple_selection = false;
+				self._flag_multiple_selection = true;
+			}
 			if (self._flag_multiple_selection) {
 				
 				self.multiple_selection_dragging(
@@ -1470,6 +1476,11 @@ MapController.prototype.init_events = function(principalObject) {
 	
 	d3.select(self._target + " svg").on("mouseup",
 		function(d) {
+			if (self._last_event == "multiple_selection_end") {
+				self._last_event = null;
+				return;
+			}
+			
 			if (!self._flag_multiple_selection) {
 				if (self.last_event != "zoom") {
 					self.last_event = null;
@@ -1507,11 +1518,14 @@ MapController.prototype.init_events = function(principalObject) {
 					self.last_event = null;
 				}
 			}
+			else {
+				self.multiple_selection_end();
+			}
 		});
 	
 	d3.select(self._target + " svg").on("mousemove",
 		function() {
-			if (self._flag_multiple_selection && self._start_multiple_selection) {
+			if (self._flag_multiple_selection) {
 				self.multiple_selection_dragging(
 					d3.event.offsetX,
 					d3.event.offsetY, false);
@@ -1841,8 +1855,6 @@ MapController.prototype.get_status_selection_node = function(id_node) {
 */
 MapController.prototype.multiple_selection_start = function() {
 	var self = this;
-	
-	self._flag_multiple_selection = true;
 	
 	if (!self._cache_files.hasOwnProperty("selection_box")) {
 		var selection_box = d3

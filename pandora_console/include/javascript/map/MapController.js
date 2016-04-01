@@ -1840,7 +1840,7 @@ MapController.prototype.get_status_selection_node = function(id_node) {
 	var status = d3.select(self._target + " #node_" + id_node)
 		.attr("data-select");
 	
-	if (status == null) {
+	if (status === null) {
 		return [];
 	}
 	else {
@@ -2280,7 +2280,9 @@ MapController.prototype.deleteNode = function(self, target) {
 		arrowsToDelete.forEach(function(arrow) {
 			d3.select("#arrow_" + arrow).remove();
 		});
+
 		d3.select(self._target + " #" + id_node).remove();
+		d3.select(self._target + " .minimap" + " #" + id_node).remove();
 	});
 }
 
@@ -2290,28 +2292,41 @@ MapController.prototype.deleteNode = function(self, target) {
 * This function delete the edges of a node in the edges array
 */
 MapController.prototype.deleteEdgesAndNode = function(arrowsToDelete, id_node) {
-	var newEdges = [];
+	var temp;
 
 	arrowsToDelete.forEach(function(arrow) {
+		temp = [];
 		edges.forEach(function(edge) {
 			if (edge["graph_id"] != arrow) {
-				newEdges.push(edge);
+				temp.push(edge);
 			}
 		});
-		edges = newEdges;
-		newEdges = [];
+		edges = temp;
 	});
 	
 	arrowsToDelete.forEach(function(arrow) {
+		temp = [];
 		nodes.forEach(function(nodeOrEdge) {
 			var nodeToDel = "node_" + nodeOrEdge["graph_id"];
+			
 			if ((nodeOrEdge["graph_id"] != arrow) && (nodeToDel != id_node)) {
-				newEdges.push(nodeOrEdge);
+				temp.push(nodeOrEdge);
 			}
 		});
-		nodes = newEdges;
-		newEdges = [];
+		nodes = temp;
 	});
+	
+	if (arrowsToDelete.length == 0) {
+		temp = [];
+		nodes.forEach(function(nodeOrEdge) {
+			var nodeToDel = "node_" + nodeOrEdge["graph_id"];
+			
+			if (nodeToDel != id_node) {
+				temp.push(nodeOrEdge);
+			}
+		});
+		nodes = temp;
+	}
 }
 
 /**

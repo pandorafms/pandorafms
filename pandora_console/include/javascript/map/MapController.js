@@ -37,7 +37,6 @@ MapController.prototype._minimap = null;
 MapController.prototype._zoomManager = null;
 MapController.prototype._slider = null;
 MapController.prototype._relation = null;
-MapController.prototype._start_multiple_selection = false;
 MapController.prototype._flag_multiple_selection = false;
 MapController.prototype._cache_files = {};
 MapController.prototype._last_event = null;
@@ -1411,9 +1410,6 @@ MapController.prototype.init_events = function(principalObject) {
 	
 	d3.select("#map").on("contextmenu", d3.contextMenu(map_menu));
 	
-	$(self._target + " svg *, " + self._target + " svg")
-		.off("mousedown", {map: self}, self.click_event);
-	
 	d3.selectAll(".node")
 		.on("mouseover", function(d) {
 			self.select_node(d['graph_id'], "over");
@@ -1462,7 +1458,6 @@ MapController.prototype.init_events = function(principalObject) {
 	d3.select(self._target + " svg").on("mousedown",
 		function() {
 			if (self._flag_multiple_selection) {
-				self._start_multiple_selection = true;
 				
 				self.multiple_selection_dragging(
 					d3.event.offsetX,

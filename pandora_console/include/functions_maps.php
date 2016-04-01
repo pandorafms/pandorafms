@@ -127,4 +127,14 @@ function maps_update_map ($id, $values) {
 	$result = db_process_sql_update('tmap', $values, $where);
 	return (int)$result;
 }
+
+function maps_add_node ($values) {
+	$result_add_node =  db_process_sql_insert('titem', $values);
+	return $result_add_node;
+}
+
+function maps_add_node_relationship ($values) {
+	$result_add_node_rel =  db_process_sql_insert('trel_item', $values);
+	return $result_add_node_rel;
+}
 ?>

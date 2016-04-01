@@ -1833,7 +1833,7 @@ MapController.prototype.make_arrow = function(from_id, to_id) {
 */
 MapController.prototype.get_status_selection_node = function(id_node) {
 	var self = this;
-	
+
 	var status = d3.select(self._target + " #node_" + id_node)
 		.attr("data-select");
 	

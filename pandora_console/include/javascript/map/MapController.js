@@ -82,6 +82,7 @@ MapController.prototype.init_map = function() {
 		self.remove_resize_square();
 		
 		if (!self._flag_multiple_selection) {
+			
 			self.last_event = "zoom";
 			
 			var zoom_level = d3.event.scale;
@@ -97,6 +98,7 @@ MapController.prototype.init_map = function() {
 			
 		}
 		else {
+			
 			self.last_event = null;
 			
 			// Reset the zoom and panning actual
@@ -1481,8 +1483,6 @@ MapController.prototype.init_events = function(principalObject) {
 		function(d) {
 			if (!self._flag_multiple_selection) {
 				if (self.last_event != "zoom") {
-					self.remove_selection_nodes();
-					
 					self.last_event = null;
 					
 					if (self._relationship_in_progress) {
@@ -1511,6 +1511,8 @@ MapController.prototype.init_events = function(principalObject) {
 						
 						self.last_event = "relationship";
 					}
+					
+					self.remove_selection_nodes();
 				}
 				else {
 					self.last_event = null;
@@ -1563,6 +1565,10 @@ MapController.prototype.init_events = function(principalObject) {
 		if (d3.event.sourceEvent.button == 0) {
 			d3.event.sourceEvent.stopPropagation();
 			d3.event.sourceEvent.preventDefault();
+		}
+		
+		if (self._relationship_in_progress) {
+			return;
 		}
 		
 		if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
@@ -1811,11 +1817,10 @@ MapController.prototype.apply_temp_arrows = function(target_id) {
 				self.make_arrow(target_id, node.graph_id);
 				break;
 		}
-		
-		
 	});
 	
-	
+	self.remove_temp_arrows();
+	self.paint_arrows();
 }
 
 MapController.prototype.make_arrow = function(from_id, to_id) {
@@ -1832,7 +1837,12 @@ MapController.prototype.get_status_selection_node = function(id_node) {
 	var status = d3.select(self._target + " #node_" + id_node)
 		.attr("data-select");
 	
-	return status.split(" ");
+	if (status == null) {
+		return [];
+	}
+	else {
+		return status.split(" ");
+	}
 }
 
 /**

@@ -24,6 +24,12 @@
 # Description:    Tentacle Server startup script
 ### END INIT INFO
 
+# Uses a wait limit before sending a KILL signal, before trying to stop
+# Pandora FMS server nicely. Some big systems need some time before close
+# all pending tasks / threads.
+
+export MAXWAIT=60
+
 # Check for SUSE status scripts
 if [ -f /etc/rc.status ]
 then
@@ -126,14 +132,23 @@ case "$1" in
 			rc_exit # running stop on a service already stopped or not running
 		else
 			kill $TENTACLE_PID
-			sleep 1
-			_PID=`get_all_pid`
+			
+			while [ $COUNTER -lt $MAXWAIT ]
+	 		do
+ 				_PID=`get_all_pid`
+				if [ "$_PID" != "$SATELLITE_PID" ]
+ 				then
+					COUNTER=$MAXWAIT
+				fi
+				COUNTER=`expr $COUNTER + 1`
+				sleep 1
+			done
 
-			if [ "$_PID" = "$TENTACLE_PID" ]; then
-				echo "Tentacle Server could not be stopped"
-				rc_failed
+			if [ "$_PID" = "$TENTACLE_PID" ]
+			then
+				kill -9 $TENTACLE_PID   > /dev/null 2>&1
 			fi
-
+			
 			echo "Stopping Tentacle Server"
 			rc_status -v
 		fi

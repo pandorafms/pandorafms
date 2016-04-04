@@ -1335,8 +1335,13 @@ MapController.prototype.key_is_pressed = function(key) {
 		return self._keys_pressed[key];
 }
 
-MapController.prototype.events_for_nodes = function() {
+MapController.prototype.events_for_nodes = function(id_node) {
 	var self = this;
+	
+	var selector = ".node";
+	if (typeof(id_node) != "undefined") {
+		selector = "#node_" + id_node;
+	}
 	
 	var node_menu = [
 		{
@@ -1385,7 +1390,7 @@ MapController.prototype.events_for_nodes = function() {
 		}
 	];
 	
-	d3.selectAll(".node")
+	d3.selectAll(selector)
 		.on("mouseover", function(d) {
 			self.select_node(d['graph_id'], "over");
 		})
@@ -1427,7 +1432,7 @@ MapController.prototype.events_for_nodes = function() {
 		.on("drag", dragged)
 		.on("dragend", dragended);
 	
-	d3.selectAll(".draggable").call(drag);
+	d3.selectAll(selector).call(drag);
 	
 	
 	/**
@@ -1943,6 +1948,8 @@ MapController.prototype.add_fictional_node = function() {
 	
 	self.paint_nodes();
 	self.paint_items_minimap();
+	
+	self.events_for_nodes(new_node['graph_id']);
 }
 
 MapController.prototype.get_last_graph_id = function() {

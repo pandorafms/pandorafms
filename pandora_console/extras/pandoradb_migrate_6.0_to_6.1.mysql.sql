@@ -15,3 +15,22 @@ ALTER TABLE tserver ADD COLUMN `server_keepalive` int(11) DEFAULT 0;
 -- ----------------------------------------------------------------------
 
 ALTER TABLE tagente_estado MODIFY `status_changes` tinyint(4) unsigned default 0;
+
+-- ---------------------------------------------------------------------
+-- Table `talert_actions`
+-- ---------------------------------------------------------------------
+UPDATE talert_actions SET   `field4` = 'integria',
+							`field5` = '_agent_:&#x20;_alert_name_',
+							`field6` = '1',
+							`field7` = '3',
+							`field8` = 'copy@dom.com',
+							`field9` = 'admin',
+							`field10` = '_alert_description_'
+WHERE `id` = 4 AND `id_alert_command` = 11;
+
+-- ---------------------------------------------------------------------
+-- Table `talert_commands`
+-- ---------------------------------------------------------------------
+UPDATE `talert_commands` SET `fields_descriptions` = '[\"Integria&#x20;IMS&#x20;API&#x20;path\",\"Integria&#x20;IMS&#x20;API&#x20;pass\",\"Integria&#x20;IMS&#x20;user\",\"Integria&#x20;IMS&#x20;user&#x20;pass\",\"Ticket&#x20;title\",\"Ticket&#x20;group&#x20;ID\",\"Ticket&#x20;priority\",\"Email&#x20;copy\",\"Ticket&#x20;owner\",\"Ticket&#x20;description\"]', `fields_values` = '[\"\",\"\",\"\",\"\",\"\",\"\",\"10,Maintenance;0,Informative;1,Low;2,Medium;3,Serious;4,Very&#x20;Serious\",\"\",\"\",\"\"]' WHERE `id` = 11 AND `name` = 'Integria&#x20;IMS&#x20;Ticket';
+
+

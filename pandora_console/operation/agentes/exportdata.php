@@ -124,7 +124,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 				}
 				
 				$work_end = $end - $period + $work_period;
-				$work_start = $end - $work_period;
+				$work_start = $work_end - $work_period;
 				//Buffer to get data, anyway this will report a memory exhaustin
 				
 				$flag_last_time_slice = false;
@@ -166,7 +166,14 @@ if (!empty ($export_btn) && !empty ($module)) {
 						$output .= $divider;
 						$output .= $module['data'];
 						$output .= $divider;
-						$output .= date ("Y-m-d G:i:s", $work_start ) . ' - ' . date ("Y-m-d G:i:s", $module['utimestamp']);
+						switch($export_type) {
+						case "data":
+							$output .= date("Y-m-d G:i:s", $module['utimestamp']);
+							break;
+						case "avg":
+							$output .= date ("Y-m-d G:i:s", $work_start) . ' - ' . date ("Y-m-d G:i:s", $work_end);
+							break;
+						}
 						$output .= $rowend;
 					}
 					
@@ -196,6 +203,7 @@ if (!empty ($export_btn) && !empty ($module)) {
 					else {
 						$work_end = $work_end + $work_period;
 					}
+					$work_start = $work_end - $work_period;
 				}
 				unset ($output);
 				$output = "";

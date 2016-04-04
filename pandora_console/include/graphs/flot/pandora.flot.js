@@ -804,7 +804,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	colors, type, serie_types, water_mark, width, max_x, homeurl, unit,
 	font_size, menu, events, event_ids, legend_events, alerts,
 	alert_ids, legend_alerts, yellow_threshold, red_threshold,
-	force_integer, separator, separator2, series_suffix_str, vconsole) {
+	force_integer, separator, separator2, 
+	yellow_up, red_up, yellow_inverse, red_inverse,
+	series_suffix_str, vconsole) {
 
 	var threshold = true;
 	var thresholded = false;
@@ -861,14 +863,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	for (i = 0; i < values.length; i++) {
 		var serie = values[i].split(separator);
 		var aux = new Array();
-		var critical_min = new Array();
-		var warning_min = new Array();
 		$.each(serie, function(i, v) {
 			aux.push([i, v]);
-			if (threshold) {
-				critical_min.push([i,red_threshold]);
-				warning_min.push([i,yellow_threshold]);
-			}
 		});
 
 		switch (serie_types[i]) {
@@ -961,21 +957,77 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	var threshold_data = new Array();
 
 	if (threshold) {
-		// Warning and critical treshold
-		threshold_data.push({
-			id: 'critical_min',
-			data: critical_min,
-			label: null,
-			color: critical,
-			lines: { show: true, fill: false, lineWidth:3}
-		});
-		threshold_data.push({
-			id: 'warning_min',
-			data: warning_min,
-			label: null,
-			color: warning,
-			lines: { show: true, fill: false, lineWidth:3}
-		});
+		// Warning interval
+		if (yellow_inverse) { 
+			threshold_data.push({ // barWidth will be correct on draw time
+				id: 'warning_up',
+				data: [[max_x, yellow_up]],
+				label: null,
+				color: warning, 
+				bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
+			});
+			threshold_data.push({ // barWidth will be correct on draw time
+				id: 'warning_down',
+				data: [[max_x, 0]],
+				label: null,
+				color: warning, 
+				bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
+			});
+		} else {
+			if (yellow_up == 0) {
+				threshold_data.push({ // barWidth will be correct on draw time
+					id: 'warning_up',
+					data: [[max_x, yellow_threshold]],
+					label: null,
+					color: warning, 
+					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
+				});
+			} else {
+				threshold_data.push({
+					id: 'warning_normal',
+					data: [[max_x, yellow_threshold]],
+					label: null,
+					color: warning, 
+					bars: {show: true, align: "left", barWidth: (yellow_up - yellow_threshold), lineWidth: 0, horizontal: true}
+				});
+			}
+		}
+		// Critical interval
+		if (red_inverse) { 
+			threshold_data.push({ // barWidth will be correct on draw time
+				id: 'critical_up',
+				data: [[max_x, red_up]],
+				label: null,
+				color: critical, 
+				bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
+			});
+			threshold_data.push({ // barWidth will be correct on draw time
+				id: 'critical_down',
+				data: [[max_x, 0]],
+				label: null,
+				color: critical, 
+				bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
+			});
+		} else {
+			if (red_up == 0) {
+				threshold_data.push({ // barWidth will be correct on draw time
+					id: 'critical_up',
+					data: [[max_x, red_threshold]],
+					label: null,
+					color: critical, 
+					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
+				});
+			} else {
+				threshold_data.push({
+					id: 'critical_normal',
+					data: [[max_x, red_threshold]],
+					label: null,
+					color: critical, 
+					bars: {show: true, align: "left", barWidth: (red_up - red_threshold), lineWidth: 0, horizontal: true}
+				});
+			}
+		}
+		
 	}
 
 	// The first execution, the graph data is the base data
@@ -1082,7 +1134,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 		new_steps = parseInt(factor * steps);
 
-		plot = $.plot($('#' + graph_id), datas,
+		plot = $.plot($('#' + graph_id), data_base,
 			$.extend(true, {}, options, {
 				xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to},
 				xaxes: [ {
@@ -1092,6 +1144,15 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 						} ],
 				legend: { show: false }
 			}));
+		if (thresholded) {
+			var zoom_data_threshold = new Array ();
+			
+			zoom_data_threshold = add_threshold (data_base, threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
+										yellow_threshold, red_threshold, yellow_up, red_up);
+			plot.setData(zoom_data_threshold);
+			plot.draw();
+		}
+			
 
 		$('#menu_cancelzoom_' + graph_id)
 			.attr('src', homeurl + '/images/zoom_cross_grey.png');
@@ -1535,23 +1596,22 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			datas = new Array();
 
 			if (thresholded) {
-				thresholded = false;
-			}
-			else {
-				$.each(threshold_data, function() {
-					datas.push(this);
+				$.each(data_base, function() {
+					// Prepared to turning series
+					//if(showed[this.id.split('_')[1]]) {
+						datas.push(this);
+					//}
 				});
+				thresholded = false;
+			} else {
+				//pocoyo
+				datas = add_threshold (data_base, threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
+										yellow_threshold, red_threshold, yellow_up, red_up);
 				thresholded = true;
 			}
 
-			$.each(data_base, function() {
-				// Prepared to turning series
-				//if(showed[this.id.split('_')[1]]) {
-					datas.push(this);
-				//}
-			});
-
-			plot = $.plot($('#' + graph_id), datas, options);
+			plot.setData(datas);
+			plot.draw();
 
 			plot.setSelection(currentRanges);
 		});
@@ -1568,6 +1628,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				.attr('src', homeurl + '/images/zoom_cross.disabled.png');
 			overview.clearSelection();
 			currentRanges = null;
+			
+			thresholded = false;
 		});
 
 		// Adjust the menu image on top of the plot
@@ -1734,4 +1796,52 @@ function number_format(number, force_integer, unit) {
 	}
 	
 	return number + ' ' + shorts[pos] + unit;
+}
+function add_threshold (data_base, threshold_data, y_min, y_max, yellow_threshold,
+						red_threshold, yellow_up, red_up) {
+	
+	var datas = new Array ();
+	
+	$.each(data_base, function() {
+		// Prepared to turning series
+		//if(showed[this.id.split('_')[1]]) {
+			datas.push(this);
+		//}
+	});
+
+	// Resize the warning and critical interval
+	$.each(threshold_data, function() {
+		if (/_up/.test(this.id)){
+			this.bars.barWidth = y_max - this.data[0][1];
+		}
+		if (/_down/.test(this.id)){
+			var end;
+			if (/critical/.test(this.id)) {
+				 end = red_threshold;
+			} else {
+				end = yellow_threshold;
+			}
+			this.bars.barWidth = end - y_min;
+			this.data[0][1] = y_min;
+		}
+		if (/_normal/.test(this.id)){
+			var end;
+			if (/critical/.test(this.id)) {
+				end = red_up;
+			} else {
+				end = yellow_up;
+			}
+			if (this.data[0][1] < y_min) {
+				this.bars.barWidth = end - y_min;
+				this.data[0][1] = y_min;
+				end = this.bars.barWidth + this.data[0][1];
+			}
+			if (end > y_max) {
+				this.bars.barWidth = y_max - this.data[0][1];
+			}
+		}	
+		datas.push(this);
+	});
+	
+	return datas;
 }

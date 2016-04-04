@@ -893,7 +893,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 					$config['font_size'], $unit, $ttl, $series_type,
 					$chart_extra_data, $warning_min, $critical_min,
 					$adapt_key, false, $series_suffix_str, $menu,
-					$backgroundColor, $dashboard, $vconsole);
+					$backgroundColor, $dashboard, $vconsole, $agent_module_id);
 		}
 	}
 	elseif ($config['type_module_charts'] === 'line') {

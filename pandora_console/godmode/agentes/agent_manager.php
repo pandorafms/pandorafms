@@ -391,9 +391,9 @@ $table->data[2][3] = html_print_input_text ('url_description',
 	$url_description, '', 45, 255, true);
 
 $table->data[3][2] = __('Quiet');
-$table->data[3][3] .= ui_print_help_tip(
+$table->data[3][3] = ui_print_help_tip(
 	__('The agent still runs but the alerts and events will be stop'), true);
-$table->data[3][3] = html_print_checkbox('quiet', 1, $quiet, true);
+$table->data[3][3] .= html_print_checkbox('quiet', 1, $quiet, true);
 
 ui_toggle(html_print_table ($table, true), __('Advanced options'));
 unset($table);

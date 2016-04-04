@@ -201,6 +201,14 @@ switch ($config["dbtype"]) {
 		break;
 }
 
+if (empty ($address_by_user_groups)) {
+	$address_by_user_groups = array ();
+	array_unshift ($address_by_user_groups, "\"\"");
+}
+if (empty ($all_address_agents)) {
+	$all_address_agents = array ();
+	array_unshift ($all_address_agents, "\"\"");
+}
 
 //Make query to extract traps of DB.
 switch ($config["dbtype"]) {

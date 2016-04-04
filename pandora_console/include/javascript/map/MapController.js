@@ -1397,6 +1397,12 @@ MapController.prototype.init_events = function(principalObject) {
 	
 	var map_menu = [
 		{
+			title: 'Add fictional node',
+			action: function(elm, d, i) {
+				self.add_fictional_node();
+			}
+		},
+		{
 			title: 'Edit map',
 			action: function(elm, d, i) {
 				self.editMap(self, elm);
@@ -1881,6 +1887,51 @@ MapController.prototype.multiple_selection_start = function() {
 				return self._cache_files["selection_box"];
 			});
 	}
+}
+
+MapController.prototype.add_fictional_node = function() {
+	var self = this;
+	
+	// Apply the zoom and panning
+	var zoom = d3.transform(
+		d3.select(self._target + " .viewport").attr("transform"));
+	
+	var x = self._last_mouse_position[0] / zoom.scale[0]
+		- zoom.translate[0] / zoom.scale[0];
+	var y = self._last_mouse_position[1] / zoom.scale[1]
+		- zoom.translate[1] / zoom.scale[1];
+	
+	var new_node = {};
+	
+	new_node['id'] = 0;
+	new_node['id_agent'] = 0
+	new_node['graph_id'] = self.get_last_graph_id() + 1;
+	new_node['height'] = 30;
+	new_node['width'] = 30;
+	new_node['status'] = AGENT_MODULE_STATUS_NO_DATA;
+	new_node['title'] = "fictional point";
+	new_node['type'] = ITEM_TYPE_FICTIONAL_NODE;
+	new_node['x'] = x;
+	new_node['y'] = y;
+	
+	nodes.push(new_node);
+	
+	self.paint_nodes();
+	self.paint_items_minimap();
+}
+
+MapController.prototype.get_last_graph_id = function() {
+	var self = this;
+	
+	var return_var = 0;
+	
+	$.each(nodes, function(i, node) {
+		if (node['graph_id'] > return_var) {
+			return_var = node['graph_id'];
+		}
+	});
+	
+	return return_var;
 }
 
 /**

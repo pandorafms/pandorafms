@@ -3209,6 +3209,7 @@ sub cli_get_agent_group() {
 					my $id_group = get_agent_group ($dbh_metaconsole, $id_agent);
 					my $group_name = get_group_name ($dbh_metaconsole, $id_group);
 					my $metaconsole_name = enterprise_hook('get_metaconsole_setup_server_name',[$dbh, $server]);
+					$agent_name = safe_output($agent_name);
 					print "[INFO] Server: $metaconsole_name Agent: $agent_name Name Group: $group_name\n\n";
 				}
 			}
@@ -3257,6 +3258,7 @@ sub cli_get_agent_group_id() {
 				}
 				else {
 					my $id_group = get_agent_group ($dbh_metaconsole, $id_agent);
+					$agent_name = safe_output($agent_name);
 					print "Server: $metaconsole_name Agent: $agent_name ID Group: $id_group\n\n";
 				}
 			}

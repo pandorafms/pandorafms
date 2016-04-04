@@ -1330,7 +1330,7 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 * Return boolean
 * This function init click events in the map
 */
-MapController.prototype.init_events = function(principalObject) {
+MapController.prototype.init_events = function() {
 	var self = this;
 	
 	d3.select("body")

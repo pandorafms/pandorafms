@@ -218,7 +218,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 	$chart_extra_data = array(), $yellow_threshold = 0,
 	$red_threshold = 0, $adapt_key = '', $force_integer = false,
 	$series_suffix_str = '', $menu = true, $backgroundColor = 'white',
-	$dashboard = false, $vconsole = false) {
+	$dashboard = false, $vconsole = false, $agent_module_id = 0) {
 	
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
@@ -257,7 +257,9 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 			$series_suffix_str,
 			$menu,
 			$backgroundColor,
-			$dashboard);
+			$dashboard,
+			false,
+			$agent_module_id);
 	}
 	else {
 		if ($vconsole) {
@@ -281,7 +283,8 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 				$menu,
 				$backgroundColor,
 				$dashboard,
-				$vconsole);
+				$vconsole,
+				$agent_module_id);
 		}
 		else {
 			$graph = array();
@@ -316,7 +319,7 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height,
 	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
 	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
-	$dashboard = false, $vconsole = false) {
+	$dashboard = false, $vconsole = false, $agent_module_id) {
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
@@ -368,7 +371,8 @@ function stacked_area_graph($flash_chart, $chart_data, $width, $height,
 				true,
 				$backgroundColor,
 				$dashboard,
-				$vconsole);
+				$vconsole,
+				$agent_module_id);
 		}
 		else {
 			//Stack the data

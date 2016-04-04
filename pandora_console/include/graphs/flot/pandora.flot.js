@@ -954,6 +954,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		// showed[i] = true;
 	}
 
+	// If threshold and up are the same, that critical or warning is disabled
+	if (yellow_threshold == yellow_up) yellow_inverse = false;
+	if (red_threshold == red_up) red_inverse = false;
+
 	//Array with points to be painted
 	var threshold_data = new Array();
 	//Array with some interesting points

@@ -954,35 +954,155 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		// showed[i] = true;
 	}
 
+	//Array with points to be painted
 	var threshold_data = new Array();
-
+	//Array with some interesting points
+	var extremes = new Array ();
+	
+	yellow_threshold = parseFloat (yellow_threshold);
+	yellow_up = parseFloat (yellow_up);
+	red_threshold = parseFloat (red_threshold);
+	red_up = parseFloat (red_up);
+	
 	if (threshold) {
-		// Warning interval
-		if (yellow_inverse) { 
-			threshold_data.push({ // barWidth will be correct on draw time
-				id: 'warning_up',
-				data: [[max_x, yellow_up]],
-				label: null,
-				color: warning, 
-				bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-			});
-			threshold_data.push({ // barWidth will be correct on draw time
-				id: 'warning_down',
-				data: [[max_x, 0]],
-				label: null,
-				color: warning, 
-				bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
-			});
-		} else {
-			if (yellow_up == 0) {
+		// Warning interval. Change extremes depends on critical interval
+		if (yellow_inverse && red_inverse) {
+			if (yellow_threshold > red_threshold) {
+				// C: |--------   ------|
+				// W: |········===·  ···|
+				if (yellow_threshold > red_up) {
+					yellow_threshold = red_up;
+				}
+				threshold_data.push({
+					id: 'warning_normal_fdown',
+					data: [[max_x, red_threshold]],
+					label: null,
+					color: warning, 
+					bars: {show: true, align: "left", barWidth: yellow_threshold - red_threshold, lineWidth: 0, horizontal: true}
+				});
+				extremes['warning_normal_fdown_1'] = red_threshold;
+				extremes['warning_normal_fdown_2'] = yellow_threshold;
+			}
+			if (yellow_up < red_up) {
+				// C: |--------      ---|
+				// W: |·····  ·======···|
+				if (yellow_up < red_threshold) {
+					yellow_up = red_up;
+				}
+				threshold_data.push({ 
+					id: 'warning_normal_fup',
+					data: [[max_x, yellow_up]],
+					label: null,
+					color: warning, 
+					bars: {show: true, align: "left", barWidth: red_up - yellow_up, lineWidth: 0, horizontal: true}
+				});
+				extremes['warning_normal_fup_1'] = red_up;
+				extremes['warning_normal_fup_2'] = yellow_up;
+			}
+			// If warning is under critical completely do not paint anything yellow
+				// C: |--------    -----|
+				// W: |····          ···|
+				
+		} else if (yellow_inverse && !red_inverse) {
+			if (yellow_threshold > red_up) {
+				// C: |    -----        |
+				// W: |====·····===  ===|
 				threshold_data.push({ // barWidth will be correct on draw time
-					id: 'warning_up',
-					data: [[max_x, yellow_threshold]],
+					id: 'warning_down',
+					data: [[max_x, 0]],
 					label: null,
 					color: warning, 
 					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
 				});
+				extremes['warning_down'] = red_threshold;
+				
+				threshold_data.push({
+					id: 'warning_normal_fdown',
+					data: [[max_x, red_up]],
+					label: null,
+					color: warning, 
+					bars: {show: true, align: "left", barWidth: yellow_threshold - red_up, lineWidth: 0, horizontal: true}
+				});
+				extremes['warning_normal_fdown_1'] = red_up;
+				extremes['warning_normal_fdown_2'] = yellow_threshold;
+				
+				threshold_data.push({ // barWidth will be correct on draw time
+					id: 'warning_up',
+					data: [[max_x, yellow_up]],
+					label: null,
+					color: warning, 
+					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
+				});
+				extremes['warning_up'] = yellow_up;
+			} else if (red_threshold > yellow_up){
+				// C: |          -----  |
+				// W: |===    ===·····==|
+				threshold_data.push({ // barWidth will be correct on draw time
+					id: 'warning_down',
+					data: [[max_x, 0]],
+					label: null,
+					color: warning, 
+					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
+				});
+				extremes['warning_down'] = yellow_threshold;
+				
+				threshold_data.push({
+					id: 'warning_normal_fup',
+					data: [[max_x, yellow_up]],
+					label: null,
+					color: warning, 
+					bars: {show: true, align: "left", barWidth: yellow_up - red_threshold, lineWidth: 0, horizontal: true}
+				});
+				extremes['warning_normal_fup_1'] = yellow_up;
+				extremes['warning_normal_fup_2'] = red_threshold;
+				
+				threshold_data.push({ // barWidth will be correct on draw time
+					id: 'warning_up',
+					data: [[max_x, yellow_up]],
+					label: null,
+					color: warning, 
+					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
+				});
+				extremes['warning_up'] = yellow_up;
 			} else {
+				// C: |  --------       |
+				// W: |==·    ···=======|
+				if (yellow_threshold > red_threshold) {
+					yellow_threshold = red_threshold;
+				}
+				if (yellow_up < red_up) {
+					yellow_up = red_up;
+				}
+				
+				threshold_data.push({ // barWidth will be correct on draw time
+					id: 'warning_down',
+					data: [[max_x, 0]],
+					label: null,
+					color: warning, 
+					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
+				});
+				extremes['warning_down'] = yellow_threshold;
+				
+				threshold_data.push({ // barWidth will be correct on draw time
+					id: 'warning_up',
+					data: [[max_x, yellow_up]],
+					label: null,
+					color: warning, 
+					bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
+				});
+				extremes['warning_up'] = yellow_up;
+			}
+		} else if (!yellow_inverse && red_inverse) {
+			if (red_up > yellow_threshold && red_threshold < yellow_up) {
+				// C: |-----      ------|
+				// W: |   ··======·     |
+				if (yellow_threshold < red_threshold) {
+					yellow_threshold = red_threshold;
+				}
+				if (yellow_up > red_up) {
+					yellow_up = red_up;
+				}
+				
 				threshold_data.push({
 					id: 'warning_normal',
 					data: [[max_x, yellow_threshold]],
@@ -990,6 +1110,58 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 					color: warning, 
 					bars: {show: true, align: "left", barWidth: (yellow_up - yellow_threshold), lineWidth: 0, horizontal: true}
 				});
+				extremes['warning_normal_1'] = yellow_threshold;
+				extremes['warning_normal_2'] = yellow_up;
+			}
+		}
+			// If warning is under critical completely do not paint anything yellow
+				// C: |--------    -----|   or	// C: |--------    -----|
+				// W: |   ····          |		// W: |             ··  |
+		else {
+			if (red_threshold > yellow_threshold && red_up < yellow_up ) {
+				// C: |    ------       |
+				// W: |  ==······====   |
+				threshold_data.push({
+					id: 'warning_normal_fdown',
+					data: [[max_x, yellow_threshold]],
+					label: null,
+					color: warning, 
+					bars: {show: true, align: "left", barWidth: red_threshold - yellow_threshold, lineWidth: 0, horizontal: true}
+				});
+				extremes['warning_normal_fdown_1'] = yellow_threshold;
+				extremes['warning_normal_fdown_2'] = red_threshold;
+				
+				threshold_data.push({
+					id: 'warning_normal_fup',
+					data: [[max_x, red_up]],
+					label: null,
+					color: warning, 
+					bars: {show: true, align: "left", barWidth: yellow_up - red_up, lineWidth: 0, horizontal: true}
+				});
+				extremes['warning_normal_fup_1'] = red_up;
+				extremes['warning_normal_fup_2'] = yellow_up;
+			} else if (red_threshold < yellow_threshold && red_up > yellow_up) {
+			// If warning is under critical completely do not paint anything yellow
+				// C: |  --------        |
+				// W: |    ····          |
+			} else {
+				// C: |     --------    |   or	// C: |     ------      |
+				// W: |   ==··          |		// W: |        ···====  |
+				if ((yellow_up > red_threshold) && (yellow_up < red_up)) {
+					yellow_up = red_threshold;
+				}
+				if ((yellow_threshold < red_up) && (yellow_threshold > red_threshold)) {
+					yellow_threshold = red_up;
+				}
+				threshold_data.push({
+					id: 'warning_normal',
+					data: [[max_x, yellow_threshold]],
+					label: null,
+					color: warning, 
+					bars: {show: true, align: "left", barWidth: (yellow_up - yellow_threshold), lineWidth: 0, horizontal: true}
+				});
+				extremes['warning_normal_1'] = yellow_threshold;
+				extremes['warning_normal_2'] = yellow_up;
 			}
 		}
 		// Critical interval
@@ -1148,7 +1320,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			var zoom_data_threshold = new Array ();
 			
 			zoom_data_threshold = add_threshold (data_base, threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
-										yellow_threshold, red_threshold, yellow_up, red_up);
+										yellow_threshold, red_threshold, extremes, red_up);
 			plot.setData(zoom_data_threshold);
 			plot.draw();
 		}
@@ -1604,9 +1776,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				});
 				thresholded = false;
 			} else {
-				//pocoyo
 				datas = add_threshold (data_base, threshold_data, plot.getAxes().yaxis.min, plot.getAxes().yaxis.max,
-										yellow_threshold, red_threshold, yellow_up, red_up);
+										yellow_threshold, red_threshold, extremes, red_up);
 				thresholded = true;
 			}
 
@@ -1798,7 +1969,7 @@ function number_format(number, force_integer, unit) {
 	return number + ' ' + shorts[pos] + unit;
 }
 function add_threshold (data_base, threshold_data, y_min, y_max, yellow_threshold,
-						red_threshold, yellow_up, red_up) {
+						red_threshold, extremes, red_up) {
 	
 	var datas = new Array ();
 	
@@ -1809,7 +1980,7 @@ function add_threshold (data_base, threshold_data, y_min, y_max, yellow_threshol
 		//}
 	});
 
-	// Resize the warning and critical interval
+	// Resize the threshold data
 	$.each(threshold_data, function() {
 		if (/_up/.test(this.id)){
 			this.bars.barWidth = y_max - this.data[0][1];
@@ -1819,7 +1990,7 @@ function add_threshold (data_base, threshold_data, y_min, y_max, yellow_threshol
 			if (/critical/.test(this.id)) {
 				 end = red_threshold;
 			} else {
-				end = yellow_threshold;
+				end = extremes[this.id];
 			}
 			this.bars.barWidth = end - y_min;
 			this.data[0][1] = y_min;
@@ -1829,7 +2000,7 @@ function add_threshold (data_base, threshold_data, y_min, y_max, yellow_threshol
 			if (/critical/.test(this.id)) {
 				end = red_up;
 			} else {
-				end = yellow_up;
+				end = extremes[this.id + '_2'];
 			}
 			if (this.data[0][1] < y_min) {
 				this.bars.barWidth = end - y_min;

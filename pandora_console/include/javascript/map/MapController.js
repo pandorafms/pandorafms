@@ -41,6 +41,7 @@ MapController.prototype._start_flag_multiple_selection = false;
 MapController.prototype._flag_multiple_selection = false;
 MapController.prototype._cache_files = {};
 MapController.prototype._last_event = null;
+MapController.prototype._keys_pressed = [];
 MapController.prototype._last_mouse_position = null;
 MapController.prototype._relationship_in_progress = false;
 MapController.prototype._relationship_in_progress_type = null;
@@ -1325,28 +1326,17 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 	self.move_arrow(item["graph_id"]);
 }
 
-/**
-* Function init_events
-* Return boolean
-* This function init click events in the map
-*/
-MapController.prototype.init_events = function() {
+MapController.prototype.key_is_pressed = function(key) {
 	var self = this;
 	
-	d3.select("body")
-		.on("keydown", function() {
-			// ctrl key
-			if (d3.event.keyCode === CONTROL_KEY) {
-				self._start_flag_multiple_selection = true;
-				self.multiple_selection_start();
-			}
-		})
-		.on("keyup", function() {
-			if (d3.event.keyCode === CONTROL_KEY) {
-				self.multiple_selection_end();
-				self._last_event = "multiple_selection_end";
-			}
-		});
+	if (typeof(self._keys_pressed[key]) == "undefined")
+		return false;
+	else
+		return self._keys_pressed[key];
+}
+
+MapController.prototype.events_for_nodes = function() {
+	var self = this;
 	
 	var node_menu = [
 		{
@@ -1395,29 +1385,6 @@ MapController.prototype.init_events = function() {
 		}
 	];
 	
-	var map_menu = [
-		{
-			title: 'Add fictional node',
-			action: function(elm, d, i) {
-				self.add_fictional_node();
-			}
-		},
-		{
-			title: 'Edit map',
-			action: function(elm, d, i) {
-				self.editMap(self, elm);
-			}
-		},
-		{
-			title: 'Save map',
-			action: function(elm, d, i) {
-				console.log('Save map!!');
-			}
-		}
-	];
-	
-	d3.select("#map").on("contextmenu", d3.contextMenu(map_menu));
-	
 	d3.selectAll(".node")
 		.on("mouseover", function(d) {
 			self.select_node(d['graph_id'], "over");
@@ -1461,6 +1428,151 @@ MapController.prototype.init_events = function() {
 		.on("dragend", dragended);
 	
 	d3.selectAll(".draggable").call(drag);
+	
+	
+	/**
+	* Function dragstarted
+	* Return void
+	*/
+	function dragstarted(d) {
+		if (d3.event.sourceEvent.button == 0) {
+			d3.event.sourceEvent.stopPropagation();
+			d3.event.sourceEvent.preventDefault();
+		}
+		
+		if (self._relationship_in_progress) {
+			return;
+		}
+		
+		if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
+			$("#node_" + d['graph_id']).tooltipster('destroy');
+		}
+		
+		self.remove_resize_square();
+		
+		var status_selection = self.get_status_selection_node(d['graph_id']);
+		
+		if (status_selection.indexOf("select") == -1) {
+			self.remove_selection_nodes();
+		}
+		
+		self.select_node(d['graph_id'], "select");
+	}
+	
+	/**
+	* Function dragged
+	* Return void
+	*/
+	function dragged(d) {
+		var delta_x = d3.event.dx;
+		var delta_y = d3.event.dy;
+		
+		self.last_event = "drag";
+		
+		$.each(nodes, function(i, node) {
+			if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)
+				return 1; // Continue
+			
+			var status_selection =
+				self.get_status_selection_node(node.graph_id);
+			
+			if (status_selection.indexOf("select") == -1) {
+				return 1; // Continue
+			}
+			
+			var d3_node = d3.select(self._target + " #node_" + node.graph_id);
+			
+			var transform = d3.transform(d3_node.attr("transform"));
+			
+			transform.translate[0] += delta_x;
+			transform.translate[1] += delta_y;
+			
+			nodes[i].x = transform.translate[0];
+			nodes[i].y = transform.translate[1];
+			
+			d3.select(".minimap #node_" + node.graph_id)
+				.attr("transform", transform.toString());
+			
+			d3_node.attr("transform", transform.toString());
+			
+			self.move_arrow(node.graph_id);
+		});
+	}
+	
+	/**
+	* Function dragended
+	* Return void
+	*/
+	function dragended(d) {
+		if (self._last_event != "contextmenu") {
+			self._last_event = null;
+			
+			self.select_node(d['graph_id'], "off");
+			
+			if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
+				$("#node_" + d['graph_id']).tooltipster('destroy');
+			}
+			
+			self.remove_resize_square();
+		}
+	}
+}
+
+/**
+* Function init_events
+* Return boolean
+* This function init click events in the map
+*/
+MapController.prototype.init_events = function() {
+	var self = this;
+	
+	self.events_for_nodes();
+	
+	d3.select("body")
+		.on("keydown", function() {
+			// ctrl key
+			if (d3.event.keyCode === CONTROL_KEY) {
+				self._start_flag_multiple_selection = true;
+				self.multiple_selection_start();
+				
+				self._keys_pressed[CONTROL_KEY] = true;
+			}
+		})
+		.on("keyup", function() {
+			if (d3.event.keyCode === CONTROL_KEY) {
+				self.multiple_selection_end();
+				self._last_event = "multiple_selection_end";
+				
+				self._keys_pressed[CONTROL_KEY] = false;
+			}
+		});
+	
+	
+	
+	var map_menu = [
+		{
+			title: 'Add fictional node',
+			action: function(elm, d, i) {
+				self.add_fictional_node();
+			}
+		},
+		{
+			title: 'Edit map',
+			action: function(elm, d, i) {
+				self.editMap(self, elm);
+			}
+		},
+		{
+			title: 'Save map',
+			action: function(elm, d, i) {
+				console.log('Save map!!');
+			}
+		}
+	];
+	
+	d3.select("#map").on("contextmenu", d3.contextMenu(map_menu));
+	
+	
 	
 	
 	d3.select(self._target + " svg").on("mousedown",
@@ -1565,93 +1677,6 @@ MapController.prototype.init_events = function() {
 				});
 			}
 		});
-	
-	/**
-	* Function dragstarted
-	* Return void
-	*/
-	function dragstarted(d) {
-		if (d3.event.sourceEvent.button == 0) {
-			d3.event.sourceEvent.stopPropagation();
-			d3.event.sourceEvent.preventDefault();
-		}
-		
-		if (self._relationship_in_progress) {
-			return;
-		}
-		
-		if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
-			$("#node_" + d['graph_id']).tooltipster('destroy');
-		}
-		
-		self.remove_resize_square();
-		
-		var status_selection = self.get_status_selection_node(d['graph_id']);
-		
-		if (status_selection.indexOf("select") == -1) {
-			self.remove_selection_nodes();
-		}
-		
-		self.select_node(d['graph_id'], "select");
-	}
-	
-	/**
-	* Function dragged
-	* Return void
-	*/
-	function dragged(d) {
-		var delta_x = d3.event.dx;
-		var delta_y = d3.event.dy;
-		
-		self.last_event = "drag";
-		
-		$.each(nodes, function(i, node) {
-			if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)
-				return 1; // Continue
-			
-			var status_selection =
-				self.get_status_selection_node(node.graph_id);
-			
-			if (status_selection.indexOf("select") == -1) {
-				return 1; // Continue
-			}
-			
-			var d3_node = d3.select(self._target + " #node_" + node.graph_id);
-			
-			var transform = d3.transform(d3_node.attr("transform"));
-			
-			transform.translate[0] += delta_x;
-			transform.translate[1] += delta_y;
-			
-			nodes[i].x = transform.translate[0];
-			nodes[i].y = transform.translate[1];
-			
-			d3.select(".minimap #node_" + node.graph_id)
-				.attr("transform", transform.toString());
-			
-			d3_node.attr("transform", transform.toString());
-			
-			self.move_arrow(node.graph_id);
-		});
-	}
-	
-	/**
-	* Function dragended
-	* Return void
-	*/
-	function dragended(d) {
-		if (self._last_event != "contextmenu") {
-			self._last_event = null;
-			
-			self.select_node(d['graph_id'], "off");
-			
-			if ($("#node_" + d['graph_id']).hasClass("tooltipstered")) {
-				$("#node_" + d['graph_id']).tooltipster('destroy');
-			}
-			
-			self.remove_resize_square();
-		}
-	}
 }
 
 /**

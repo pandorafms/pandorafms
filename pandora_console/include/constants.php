@@ -503,4 +503,10 @@ define("ITEM_TYPE_AGENT_NETWORKMAP",	0);
 define("ITEM_TYPE_MODULE_NETWORKMAP",	1);
 define("ITEM_TYPE_EDGE_NETWORKMAP",		2);
 define("ITEM_TYPE_FICTIONAL_NODE",		3);
+
+/* Another constants new networkmap */
+define("DEFAULT_NODE_WIDTH", 30);
+define("DEFAULT_NODE_HEIGHT", 30);
+define("DEFAULT_NODE_SHAPE", "circle");
+define("DEFAULT_NODE_COLOR", COL_NOTINIT);
 ?>

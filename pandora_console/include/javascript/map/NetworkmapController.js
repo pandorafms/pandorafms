@@ -371,6 +371,95 @@ NetworkmapController.prototype.exists_arrow = function(arrows, arrow) {
 	return var_return;
 }
 
+NetworkmapController.prototype.paint_node = function(g_node, node) {
+	var self = this;
+	
+	var color;
+	
+	switch (node['type'])  {
+		case ITEM_TYPE_AGENT_NETWORKMAP:
+			//~ color = 
+			break;
+		case ITEM_TYPE_FICTIONAL_NODE:
+			break;
+	}
+	
+	var d3_node = d3.select(g_node)
+		.attr("transform", "translate(" + node['x'] + " " + node['y'] + ")")
+		.attr("class", "draggable node")
+		.attr("id", "node_" + node['graph_id'])
+		.attr("style", "fill: rgb(50, 50, 128);")
+		.attr("data-id", node['id'])
+		.attr("data-graph_id", node['graph_id'])
+		.attr("data-type", node['type']);
+	
+	switch (node['shape']) {
+		case 'rect':
+			d3_node.append("rect")
+				.attr("height", node['height'])
+				.attr("width", node['width'])
+				.attr("x", 0)
+				.attr("y", 0);
+			break;
+		case 'circle':
+			d3_node.append("circle")
+				.attr("r", node['width'] / 2)
+				.attr("transform", "translate(" +
+					node['width'] / 2 + " " +
+					node['height'] / 2 + ")");
+			break;
+		case 'rhombus':
+			d3_node.append("rect")
+				.attr("transform", "rotate(45)")
+				.attr("height", node['height'])
+				.attr("width", node['width'])
+				.attr("x", 0)
+				.attr("y", 0)
+			break;
+	}
+	
+	// Title
+	
+	
+	var d3_node_title = d3_node.append("text");
+	
+	d3_node_title
+		.text(node['title'])
+		.style("fill", "#000000");
+		
+	
+	//Title position
+	var title_bbox = d3_node_title.node().getBBox();
+	console.log(node['title'], title_bbox);
+	var x = node['width'] / 2 - title_bbox.width / 2;
+	var y = node['height'] - title_bbox.y;
+	
+	d3_node_title
+		.attr("transform", "translate(" + x + " " + y + ")");
+	
+	d3_node
+		.style("fill", node['color']);
+}
+
+/**
+* Function paint_nodes
+* Return void
+* This function paint the nodes
+*/
+NetworkmapController.prototype.paint_nodes = function() {
+	var self = this;
+	
+	self._viewport.selectAll(".node")
+		.data(
+			nodes
+				.filter(function(d, i) {
+					return self.filter_only_agents(d);
+				}))
+			.enter()
+				.append("g")
+					.each(function(node) {self.paint_node(this, node);});
+}
+
 /**
 * Function paint_arrows
 * Return  void

@@ -238,6 +238,42 @@ NetworkmapController.prototype.get_arrows_AMA = function(id_to, id_from) {
 	}
 }
 
+NetworkmapController.prototype.get_arrow_AF_or_FF = function(id_to, id_from) {
+	var self = this;
+	var arrow_AF_or_FF;
+	var found = false;
+	
+	$.each(edges, function(i, edge) {
+		
+		if (self.get_node_type(id_to) == ITEM_TYPE_FICTIONAL_NODE ||
+			self.get_node_type(id_from) == ITEM_TYPE_FICTIONAL_NODE) {
+			
+			var arrow = self.get_arrow(id_to, id_from);
+			
+			arrow_AF_or_FF = {};
+			arrow_AF_or_FF['type'] = 'AF_or_FF';
+			arrow_AF_or_FF['graph_id'] = arrow['arrow']['graph_id'];
+			arrow_AF_or_FF['to'] = arrow['nodes']['to'];
+			arrow_AF_or_FF['to_module'] = null;
+			arrow_AF_or_FF['to_status'] = null;
+			arrow_AF_or_FF['to_title'] = null;
+			arrow_AF_or_FF['from'] = arrow['nodes']['from'];
+			arrow_AF_or_FF['from_module'] = null;
+			arrow_AF_or_FF['from_status'] = null;
+			arrow_AF_or_FF['from_title'] = null;
+			
+			found = true;
+		}
+	});
+	
+	if (found) {
+		return arrow_AF_or_FF;
+	}
+	else {
+		return null;
+	}
+}
+
 /**
 * Function get_arrow_AA
 * Return  array (arrow)
@@ -307,6 +343,7 @@ NetworkmapController.prototype.exists_arrow = function(arrows, arrow) {
 			var arrow_from = arrow['from']['graph_id'];
 			
 			switch (arrow['type']) {
+				case 'AF_or_FF':
 				case 'AA':
 				case 'AMMA':
 					if (a_to == arrow_to) {
@@ -344,8 +381,14 @@ NetworkmapController.prototype.paint_arrows = function() {
 	
 	var clean_arrows = [];
 	
-	var arrows_AA;
 	$.each(edges, function(i, edge) {
+		var arrow_AF_or_FF = self.get_arrow_AF_or_FF(edge['to'], edge['from']);
+		if (arrow_AF_or_FF !== null) {
+			if (!self.exists_arrow(clean_arrows, arrow_AF_or_FF)) {
+				clean_arrows.push(arrow_AF_or_FF);
+			}
+		}
+		
 		var arrow_AA = self.get_arrow_AA(edge['to'], edge['from']);
 		if (arrow_AA !== null) {
 			if (!self.exists_arrow(clean_arrows, arrow_AA)) {
@@ -369,7 +412,7 @@ NetworkmapController.prototype.paint_arrows = function() {
 			});
 		}
 	});
-
+	
 	MapController.prototype.update_edges_from_clean_arrows(clean_arrows);
 	
 	var arrow_layouts = self._viewport.selectAll(".arrow")
@@ -389,19 +432,9 @@ NetworkmapController.prototype.paint_arrows = function() {
 				.attr("data-from_module", function(d) {
 					return d['from_module'];});
 	
-	create_arrow(arrow_layouts);
-	
-	/**
-	* Function create_arrow
-	* Return void
-	* This function creates the arrow
-	*/
-	function create_arrow(arrow_layouts) {
-		arrow_layouts.each(function(d) {
-			self.arrow_by_pieces(self._target + " svg", d);
-		});
-	}
-	
+	arrow_layouts.each(function(d) {
+		self.arrow_by_pieces(self._target + " svg", d);
+	});
 }
 
 /**
@@ -422,6 +455,7 @@ NetworkmapController.prototype.arrow_by_pieces = function (target, arrow_data, w
 	}
 	else {
 		switch (arrow_data['type']) {
+			case 'AF_or_FF':
 			case 'AA':
 				MapController.prototype.arrow_by_pieces.call(
 					this, self._target + " svg", arrow_data, wait);

@@ -212,7 +212,7 @@ MapController.prototype.init_map = function() {
 	
 	self.ini_selection_rectangle();
 	
-	self.init_events();
+	self.events();
 }
 
 /**
@@ -1475,7 +1475,7 @@ MapController.prototype.events_for_nodes = function(id_node) {
 		self.last_event = "drag";
 		
 		$.each(nodes, function(i, node) {
-			if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)
+			if (!self.is_draggable(node))
 				return 1; // Continue
 			
 			var status_selection =
@@ -1523,12 +1523,68 @@ MapController.prototype.events_for_nodes = function(id_node) {
 	}
 }
 
+MapController.prototype.is_draggable = function(node) {
+	var return_var = false;
+	
+	switch (node.type) {
+		case ITEM_TYPE_AGENT_NETWORKMAP:
+		case ITEM_TYPE_FICTIONAL_NODE:
+			return_var = true;
+			break;
+	}
+	
+	
+	return return_var;
+}
+
+MapController.prototype.is_relationshipy = function(node) {
+	var return_var = false;
+	
+	switch (node.type) {
+		case ITEM_TYPE_AGENT_NETWORKMAP:
+		case ITEM_TYPE_FICTIONAL_NODE:
+			return_var = true;
+			break;
+	}
+	
+	
+	return return_var;
+}
+
+MapController.prototype.is_selecty = function(node) {
+	var return_var = false;
+	
+	switch (node.type) {
+		case ITEM_TYPE_AGENT_NETWORKMAP:
+		case ITEM_TYPE_FICTIONAL_NODE:
+			return_var = true;
+			break;
+	}
+	
+	
+	return return_var;
+}
+
+MapController.prototype.is_delety = function(node) {
+	var return_var = false;
+	
+	switch (node.type) {
+		case ITEM_TYPE_AGENT_NETWORKMAP:
+		case ITEM_TYPE_FICTIONAL_NODE:
+			return_var = true;
+			break;
+	}
+	
+	
+	return return_var;
+}
+
 /**
 * Function init_events
 * Return boolean
 * This function init click events in the map
 */
-MapController.prototype.init_events = function() {
+MapController.prototype.events = function() {
 	var self = this;
 	
 	self.events_for_nodes();
@@ -1666,7 +1722,7 @@ MapController.prototype.init_events = function() {
 			
 			if (self._relationship_in_progress) {
 				$.each(nodes, function(i, node) {
-					if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)
+					if (!self.is_relationshipy(node))
 						return 1; // Continue
 					
 					var status_selection =
@@ -1715,7 +1771,7 @@ MapController.prototype.start_relationship_nodes = function(type) {
 	var self = this;
 	
 	$.each(nodes, function(i, node) {
-		if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)
+		if (!self.is_relationshipy(node))
 			return 1; // Continue
 		
 		var status_selection =
@@ -1838,7 +1894,7 @@ MapController.prototype.apply_temp_arrows = function(target_id) {
 	var self = this;
 	
 	$.each(nodes, function(i, node) {
-		if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)
+		if (!self.is_relationshipy(node))
 			return 1; // Continue
 		
 		var status_selection =
@@ -1959,7 +2015,7 @@ MapController.prototype.get_last_graph_id = function() {
 	
 	$.each(nodes, function(i, node) {
 		if (node['graph_id'] > return_var) {
-			return_var = node['graph_id'];
+			return_var = parseInt(node['graph_id']);
 		}
 	});
 	
@@ -2087,7 +2143,7 @@ MapController.prototype.multiple_selection_select_nodes = function() {
 		selection_box_dimensions["height"] / zoom.scale[1];
 	
 	$.each(nodes, function(i, node) {
-		if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)
+		if (!self.is_selecty(node))
 			return 1; // Continue
 		
 		var x = node.x;
@@ -2144,7 +2200,7 @@ MapController.prototype.remove_selection_nodes = function() {
 	var self = this;
 	
 	$.each(nodes, function(i, node) {
-		if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)
+		if (!self.is_selecty(node))
 			return 1; // Continue
 		
 		self.select_node(node.graph_id, "off");
@@ -2343,7 +2399,7 @@ MapController.prototype.deleteNode = function(self, target) {
 	var self = this;
 	
 	$.each(nodes, function(i, node) {
-		if (node.type != ITEM_TYPE_AGENT_NETWORKMAP)
+		if (!self.is_delety(node))
 			return 1; // Continue
 		
 		var status_selection =

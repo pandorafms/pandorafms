@@ -972,7 +972,6 @@ sub cli_delete_agent() {
 	my $agent_name = @ARGV[2];
 	
 	$agent_name = decode_entities($agent_name);
-	print_log "[INFO] Deleting agent '$agent_name'\n\n";
 	
 	if (is_metaconsole($conf) == 1) {
 		my $agents_groups = enterprise_hook('get_metaconsole_agent',[$dbh, $agent_name]);
@@ -980,6 +979,7 @@ sub cli_delete_agent() {
 		if (scalar(@{$agents_groups}) != 0) {
 			foreach my $agent (@{$agents_groups}) {
 				my $return = enterprise_hook('delete_metaconsole_agent',[$dbh,$agent->{'id_agente'}]);
+				print_log "[INFO] Deleting agent '$agent_name' \n\n";
 			}
 		}
 		my $servers = enterprise_hook('get_metaconsole_setup_servers',[$dbh]);
@@ -995,6 +995,7 @@ sub cli_delete_agent() {
 				next;
 			}
 			else {
+				print_log "[INFO] Deleting agent '$agent_name' in ID server: '$server'\n\n";
 				pandora_delete_agent($dbh_metaconsole,$id_agent,$conf);
 			}
 		}
@@ -1004,6 +1005,7 @@ sub cli_delete_agent() {
 		my $id_agent = get_agent_id($dbh,$agent_name);
 		exist_check($id_agent,'agent',$agent_name);
 		
+		print_log "[INFO] Deleting agent '$agent_name'\n\n";
 		pandora_delete_agent($dbh,$id_agent,$conf);
 	}
 }

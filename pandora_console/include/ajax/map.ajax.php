@@ -250,21 +250,46 @@ if (is_ajax ()) {
 		<div title="<?php echo __('Edit node');?>">
 			<div style="text-align: center; width: 100%;">
 		<?php
+		
+		$id_node_data = (int)get_parameter('id_node_data');
+		$type = (int)get_parameter('type');
+		$node_id = get_parameter('node_id');
+		
 		$table = new stdClass();
-		$table->id = 'node_options';
+		$table->id = 'node_options_' . $node_id;
 		$table->width = "100%";
 
 		$table->head = array();
-		$table->head['name'] = __('Nombre del nodo');
-		$table->head['type'] = __('Tipo del nodo (Agente o Modulo)');
-
+		
+		$node_name = __('No name');
+		if ($type == ITEM_TYPE_AGENT_NETWORKMAP) {
+			$node_name = agents_get_name($id_node_data);
+			$table->head['type'] = __('Agent');
+		}
+		else {
+			$node_name = db_get_all_rows_sql("SELECT nombre 
+												FROM tagente_modulo
+												WHERE id_agente_modulo = " . $id_node_data);
+			$node_name = $node_name[0];
+			$table->head['type'] = __('Module');
+		}
+		$table->head['name'] = $node_name;
+		
+		$node = db_get_all_rows_sql("SELECT style FROM titem WHERE id = " . $id_node_data);
+		$node = $node[0];
+		$node_style = json_decode($node);
+		
 		$table->data = array();
-		$table->data[0][0] = __('Capo1');
-		$table->data[0][1] = __('Capo2');
-		$table->data[1][0] = __('Capo1');
-		$table->data[1][1] = __('Capo2');
-		$table->data[2][0] = __('Capo1');
-		$table->data[2][1] = __('Capo2');
+		$table->data[0][0] = __('Label');
+		$table->data[0][1] = $node_style;
+		$table->data[1][0] = __('Image');
+		$table->data[1][1] = $node_style['image'];
+		$table->data[2][0] = __('Width');
+		$table->data[2][1] = $node_style['width'];
+		$table->data[3][0] = __('Height');
+		$table->data[3][1] = $node_style['height'];
+		$table->data[4][0] = __('Shape');
+		$table->data[4][1] = $node_style['shape'];
 
 		ui_toggle(html_print_table($table, true), __('Node options'),
 			__('Node options'), true);

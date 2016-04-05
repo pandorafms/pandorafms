@@ -37,6 +37,7 @@ MapController.prototype._minimap = null;
 MapController.prototype._zoomManager = null;
 MapController.prototype._slider = null;
 MapController.prototype._relation = null;
+MapController.prototype._dragging = false;
 MapController.prototype._start_flag_multiple_selection = false;
 MapController.prototype._flag_multiple_selection = false;
 MapController.prototype._cache_files = {};
@@ -1392,10 +1393,13 @@ MapController.prototype.events_for_nodes = function(id_node) {
 	
 	d3.selectAll(selector)
 		.on("mouseover", function(d) {
-			self.select_node(d['graph_id'], "over");
+			if (!self._dragging)
+				self.select_node(d['graph_id'], "over");
+			
+			self.last_event = null;
 		})
 		.on("mouseout", function(d) {
-			if (self.last_event != "drag") {
+			if (!self._dragging) {
 				var status_selection = self.get_status_selection_node(d['graph_id']);
 				
 				self.select_node(d['graph_id'], "off");
@@ -1403,8 +1407,6 @@ MapController.prototype.events_for_nodes = function(id_node) {
 					self.select_node(d['graph_id'], "select");
 				}
 			}
-			
-			self.last_event = null;
 		})
 		.on("click", function(d) {
 			if (self.last_event == "relationship") {
@@ -1462,6 +1464,8 @@ MapController.prototype.events_for_nodes = function(id_node) {
 		}
 		
 		self.select_node(d['graph_id'], "select");
+		
+		self._dragging = true;
 	}
 	
 	/**
@@ -1472,7 +1476,7 @@ MapController.prototype.events_for_nodes = function(id_node) {
 		var delta_x = d3.event.dx;
 		var delta_y = d3.event.dy;
 		
-		self.last_event = "drag";
+		self._dragging = true;
 		
 		$.each(nodes, function(i, node) {
 			if (!self.is_draggable(node))
@@ -1519,6 +1523,8 @@ MapController.prototype.events_for_nodes = function(id_node) {
 			}
 			
 			self.remove_resize_square();
+			
+			self._dragging = false;
 		}
 	}
 }

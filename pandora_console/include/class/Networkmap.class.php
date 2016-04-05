@@ -126,6 +126,31 @@ class Networkmap extends Map {
 					
 					preg_match("/<img src=\"(.*)\" \/>/", $chunks[0], $matches);
 					$image = $matches[1];
+					
+					
+					// Set node status
+					switch ($status) {
+						case AGENT_STATUS_NORMAL: 
+							$color = COL_NORMAL;
+							break;
+						case AGENT_STATUS_CRITICAL:
+							$color = COL_CRITICAL;
+							break;
+						case AGENT_STATUS_WARNING:
+							$color = COL_WARNING;
+							break;
+						case AGENT_STATUS_ALERT_FIRED:
+							$color = COL_ALERTFIRED;
+							break;
+						# Juanma (05/05/2014) Fix: Correct color for not init agents!
+						case AGENT_STATUS_NOT_INIT:
+							$color = COL_NOTINIT;
+							break;
+						default:
+							//Unknown monitor
+							$color = COL_UNKNOWN;
+							break;
+					}
 				}
 				
 				

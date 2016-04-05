@@ -430,7 +430,7 @@ NetworkmapController.prototype.paint_node = function(g_node, node) {
 	
 	//Title position
 	var title_bbox = d3_node_title.node().getBBox();
-	console.log(node['title'], title_bbox);
+	
 	var x = node['width'] / 2 - title_bbox.width / 2;
 	var y = node['height'] - title_bbox.y;
 	
@@ -439,6 +439,14 @@ NetworkmapController.prototype.paint_node = function(g_node, node) {
 	
 	d3_node
 		.style("fill", node['color']);
+	
+	d3_node
+		.append("image")
+		.attr("xlink:href", "http://192.168.70.147/pandora_console/images/networkmap/so_linux.png")
+		.attr("x", 0)
+		.attr("y", 0)
+		.attr("height", node['height'])
+		.attr("width", node['width']);
 }
 
 /**

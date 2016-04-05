@@ -391,7 +391,8 @@ NetworkmapController.prototype.paint_node = function(g_node, node) {
 		.attr("style", "fill: rgb(50, 50, 128);")
 		.attr("data-id", node['id'])
 		.attr("data-graph_id", node['graph_id'])
-		.attr("data-type", node['type']);
+		.attr("data-type", node['type'])
+		.attr("data-status_color", node['color']);
 	
 	switch (node['shape']) {
 		case 'rect':

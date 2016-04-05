@@ -2236,27 +2236,38 @@ MapController.prototype.select_node = function(node_id, type) {
 		case 'over':
 			d3.select(self._target + " #node_" + node_id)
 				.classed("over", true);
+			
+			var over_color =
+				d3.rgb(
+					d3.select(self._target + " #node_" + node_id)
+						.style("fill"))
+				.brighter(1).toString();
+			
 			if (d3.select(self._target + " #node_" + node_id)
 				.classed("select")) {
 				
 				d3.select(self._target + " #node_" + node_id)
-					.attr("style", "fill: rgb(128, 128, 50);");
+					.style("fill", over_color);
 				
 				data = "select over";
 			}
 			else {
 				d3.select(self._target + " #node_" + node_id)
-					.attr("style", "fill: rgb(128, 50, 50);");
+					.style("fill", over_color);
 				
 				data = "over";
 			}
 			break;
 		case 'off':
+			var status_color = d3
+				.select(self._target + " #node_" + node_id)
+				.attr("data-status_color");
+			
 			d3.select(self._target + " #node_" + node_id)
 				.classed("select", false);
 			
 			d3.select(self._target + " #node_" + node_id)
-				.attr("style", "fill: rgb(50, 50, 128);");
+				.style("fill", status_color);
 			break;
 	}
 	

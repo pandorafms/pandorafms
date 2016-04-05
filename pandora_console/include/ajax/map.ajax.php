@@ -289,7 +289,17 @@ if (is_ajax ()) {
 		$table->data[3][0] = __('Height');
 		$table->data[3][1] = $node_style['height'];
 		$table->data[4][0] = __('Shape');
-		$table->data[4][1] = $node_style['shape'];
+		$table->data[4][1] = html_print_select(array(
+			'circle' => __('Circle'),
+			'square' => __('Square'),
+			'rhombus' => __('Rhombus')), 'shape', '',
+			'javascript:', '', 0, true) . '&nbsp;' .
+			'<span id="shape_icon_in_progress" style="display: none;">' . 
+				html_print_image('images/spinner.gif', true) . '</span>' .
+			'<span id="shape_icon_correct" style="display: none;">' .
+				html_print_image('images/dot_green.png', true) . '</span>' .
+			'<span id="shape_icon_fail" style="display: none;">' .
+				html_print_image('images/dot_red.png', true) . '</span>';
 
 		ui_toggle(html_print_table($table, true), __('Node options'),
 			__('Node options'), true);

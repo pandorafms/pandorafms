@@ -442,11 +442,11 @@ NetworkmapController.prototype.paint_node = function(g_node, node) {
 	
 	d3_node
 		.append("image")
-		.attr("xlink:href", "http://192.168.70.147/pandora_console/images/networkmap/so_linux.png")
-		.attr("x", 0)
-		.attr("y", 0)
-		.attr("height", node['height'])
-		.attr("width", node['width']);
+		.attr("xlink:href", node['image'])
+		.attr("x", NODE_IMAGE_PADDING)
+		.attr("y", NODE_IMAGE_PADDING)
+		.attr("height", node['height'] - NODE_IMAGE_PADDING * 2)
+		.attr("width", node['width'] - NODE_IMAGE_PADDING * 2);
 }
 
 /**

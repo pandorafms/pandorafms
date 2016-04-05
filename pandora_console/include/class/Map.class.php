@@ -244,6 +244,8 @@ abstract class Map {
 		$contants["AGENT_MODULE_STATUS_UNKNOWN"] = AGENT_MODULE_STATUS_UNKNOWN;
 		$contants["AGENT_MODULE_STATUS_NOT_INIT"] = AGENT_MODULE_STATUS_NOT_INIT;
 		
+		$contants["NODE_IMAGE_PADDING"] = NODE_IMAGE_PADDING;
+		
 		?>
 		<script type="text/javascript">
 			<?php

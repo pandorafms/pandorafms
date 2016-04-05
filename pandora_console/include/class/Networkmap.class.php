@@ -106,6 +106,7 @@ class Networkmap extends Map {
 				$height = DEFAULT_NODE_HEIGHT;
 				$shape = DEFAULT_NODE_SHAPE;
 				$color = DEFAULT_NODE_COLOR;
+				$image = DEFAULT_NODE_IMAGE;
 				if (strstr($chunks[1], "&id_module=") !== false) {
 					// MODULE
 					preg_match("/id_module=([0-9]*)/", $chunks[1], $matches);
@@ -122,7 +123,12 @@ class Networkmap extends Map {
 					$status = agents_get_status($id);
 					$title = agents_get_name($id);
 					$type = ITEM_TYPE_AGENT_NETWORKMAP;
+					
+					preg_match("/<img src=\"(.*)\" \/>/", $chunks[0], $matches);
+					$image = $matches[1];
 				}
+				
+				
 				
 				$nodes[] = array('graph_id' => $graphviz_id,
 					'id' => $id,
@@ -133,7 +139,8 @@ class Networkmap extends Map {
 					'width' => $width,
 					'height' => $height,
 					'shape' => $shape,
-					'color' => $color);
+					'color' => $color,
+					'image' => $image);
 				
 				if ($last_graph_id < $graphviz_id)
 					$last_graph_id = $graphviz_id;

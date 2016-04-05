@@ -509,4 +509,7 @@ define("DEFAULT_NODE_WIDTH", 30);
 define("DEFAULT_NODE_HEIGHT", 30);
 define("DEFAULT_NODE_SHAPE", "circle");
 define("DEFAULT_NODE_COLOR", COL_NOTINIT);
+define("DEFAULT_NODE_IMAGE", "images/networkmap/unknown.png");
+
+define("NODE_IMAGE_PADDING", 5);
 ?>

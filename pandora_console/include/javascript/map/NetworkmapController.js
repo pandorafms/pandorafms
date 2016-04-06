@@ -376,7 +376,10 @@ NetworkmapController.prototype.update_node = function(id) {
 	
 	var node = self.get_node_filter('id', id);
 	
-	d3.select(self._target + "#node_" + id)
+	if (d3.select(self._target + " #node_" + node['graph_id']).node() == null)
+		return;
+	
+	d3.select(self._target + " #node_" + node['graph_id'])
 		.attr("data-status", node['status'])
 		.attr("data-status_color", node['color'])
 		.style("fill", node['color']);
@@ -1606,16 +1609,15 @@ NetworkmapController.prototype.refresh_nodes = function() {
 		type: "POST",
 		url: "ajax.php",
 		success: function (data) {
-			console.log(data);
 			$.each(nodes, function(i, node) {
+				if (node['type'] != ITEM_TYPE_AGENT_NETWORKMAP)
+					return true;
+				
 				if (typeof(data[node['id']]) != "undefined") {
 					nodes[i]['status'] = data[node['id']]['status'];
 					nodes[i]['color'] = data[node['id']]['color'];
 					
 					self.update_node(node['id']);
-				}
-				else {
-					console.log("refresh_nodes undefined", node['id'], data[node['id']]);
 				}
 			});
 		}

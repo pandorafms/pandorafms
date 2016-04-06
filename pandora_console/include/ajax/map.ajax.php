@@ -37,7 +37,6 @@ if (is_ajax ()) {
 		
 		
 		$status = agents_get_status($node);
-		$status = 1;
 		
 		foreach ($nodes as $node) {
 			switch ($status) {

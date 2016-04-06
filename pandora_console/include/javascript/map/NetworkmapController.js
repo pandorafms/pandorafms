@@ -1626,4 +1626,18 @@ NetworkmapController.prototype.refresh_nodes = function() {
 
 NetworkmapController.prototype.refresh_arrows = function() {
 	var self = this;
+	
+	var params = {};
+	params["refresh_arrows_open"] = 1;
+	params["id_map"] = self._id;
+	params["page"] = "include/ajax/map.ajax2";
+	var agent_nodes = $.grep(nodes,
+		function(node) {
+			if (node['type'] == 0) {
+				return true;
+			}
+			else {
+				return false;
+			}
+	});
 }

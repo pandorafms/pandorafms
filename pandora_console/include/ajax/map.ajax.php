@@ -28,6 +28,14 @@ if (is_ajax ()) {
 	$printEditNodeTable = (bool)get_parameter('printEditNodeTable', 0);
 	$printEditMapTable = (bool)get_parameter('printEditMapTable', 0);
 	$refresh_nodes_open = (bool)get_parameter('refresh_nodes_open', 0);
+	$refresh_arrows_open = (bool)get_parameter('refresh_arrows_open', 0);
+	
+	if ($refresh_arrows_open) {
+		$return = array();
+		
+		echo json_encode($return);
+		return;
+	}
 	
 	if ($refresh_nodes_open) {
 		$return = array();

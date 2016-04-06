@@ -371,18 +371,19 @@ NetworkmapController.prototype.exists_arrow = function(arrows, arrow) {
 	return var_return;
 }
 
-NetworkmapController.prototype.paint_node = function(g_node, node) {
+NetworkmapController.prototype.update_node = function(id) {
 	var self = this;
 	
-	var color;
+	var node = self.get_node_filter('id', id);
 	
-	switch (node['type'])  {
-		case ITEM_TYPE_AGENT_NETWORKMAP:
-			//~ color = 
-			break;
-		case ITEM_TYPE_FICTIONAL_NODE:
-			break;
-	}
+	d3.select(self._target + "#node_" + id)
+		.attr("data-status", node['status'])
+		.attr("data-status_color", node['color'])
+		.style("fill", node['color']);
+}
+
+NetworkmapController.prototype.paint_node = function(g_node, node) {
+	var self = this;
 	
 	var d3_node = d3.select(g_node)
 		.attr("transform", "translate(" + node['x'] + " " + node['y'] + ")")
@@ -392,6 +393,7 @@ NetworkmapController.prototype.paint_node = function(g_node, node) {
 		.attr("data-id", node['id'])
 		.attr("data-graph_id", node['graph_id'])
 		.attr("data-type", node['type'])
+		.attr("data-status", node['status'])
 		.attr("data-status_color", node['color']);
 	
 	switch (node['shape']) {
@@ -1130,7 +1132,7 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 			else {
 				var body_width = distance - arrow_tail_width - radius_to - radius_from;
 			}
-
+			
 			transform = d3.transform();
 			transform.scale[0] = body_width / arrow_body_width;
 			
@@ -1155,7 +1157,7 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 			}
 			else {
 				transform = d3.transform();
-
+				
 				var arrow_body_t = d3.transform(arrow_body.attr("transform"));
 				
 				var scale = arrow_body_t.scale[0];
@@ -1572,4 +1574,54 @@ NetworkmapController.prototype.update_interfaces_status = function (arrow_data) 
 				break;
 		}
 	}
+}
+
+
+NetworkmapController.prototype.refresh_nodes = function() {
+	var self = this;
+	
+	
+	var params = {};
+	params["refresh_nodes_open"] = 1;
+	params["id_map"] = self._id;
+	params["page"] = "include/ajax/map.ajax2";
+	var agent_nodes = $.grep(nodes,
+		function(node) {
+			if (node['type'] == 0) {
+				return true;
+			}
+			else {
+				return false;
+			}
+	});
+	
+	params['nodes'] = [];
+	$.each(agent_nodes, function(i, node) {
+		params['nodes'].push(node['id']);
+	});
+	
+	jQuery.ajax ({
+		data: params,
+		dataType: "JSON",
+		type: "POST",
+		url: "ajax.php",
+		success: function (data) {
+			console.log(data);
+			$.each(nodes, function(i, node) {
+				if (typeof(data[node['id']]) != "undefined") {
+					nodes[i]['status'] = data[node['id']]['status'];
+					nodes[i]['color'] = data[node['id']]['color'];
+					
+					self.update_node(node['id']);
+				}
+				else {
+					console.log("refresh_nodes undefined", node['id'], data[node['id']]);
+				}
+			});
+		}
+	});
+}
+
+NetworkmapController.prototype.refresh_arrows = function() {
+	var self = this;
 }

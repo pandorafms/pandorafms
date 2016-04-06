@@ -227,6 +227,8 @@ abstract class Map {
 	
 	public function writeJSConstants() {
 		$contants = array();
+		$contants["MAP_REFRESH_TIME"] = MAP_REFRESH_TIME;
+		
 		$contants["ITEM_TYPE_AGENT_NETWORKMAP"] = ITEM_TYPE_AGENT_NETWORKMAP;
 		$contants["ITEM_TYPE_MODULE_NETWORKMAP"] = ITEM_TYPE_MODULE_NETWORKMAP;
 		$contants["ITEM_TYPE_EDGE_NETWORKMAP"] = ITEM_TYPE_EDGE_NETWORKMAP;

@@ -27,6 +27,50 @@ if (is_ajax ()) {
 	$getNodeDetails = (bool)get_parameter('getNodeDetails', 0);
 	$printEditNodeTable = (bool)get_parameter('printEditNodeTable', 0);
 	$printEditMapTable = (bool)get_parameter('printEditMapTable', 0);
+	$refresh_nodes_open = (bool)get_parameter('refresh_nodes_open', 0);
+	
+	if ($refresh_nodes_open) {
+		$return = array();
+		
+		$id_map = (int)get_parameter('id_map', 0);
+		$nodes = (array)get_parameter('nodes', array());
+		
+		
+		$status = agents_get_status($node);
+		$status = 1;
+		
+		foreach ($nodes as $node) {
+			switch ($status) {
+				case AGENT_STATUS_NORMAL: 
+					$color = COL_NORMAL;
+					break;
+				case AGENT_STATUS_CRITICAL:
+					$color = COL_CRITICAL;
+					break;
+				case AGENT_STATUS_WARNING:
+					$color = COL_WARNING;
+					break;
+				case AGENT_STATUS_ALERT_FIRED:
+					$color = COL_ALERTFIRED;
+					break;
+				# Juanma (05/05/2014) Fix: Correct color for not init agents!
+				case AGENT_STATUS_NOT_INIT:
+					$color = COL_NOTINIT;
+					break;
+				default:
+					//Unknown monitor
+					$color = COL_UNKNOWN;
+					break;
+			}
+			
+			$return[$node] = array(
+				'status' => $status,
+				'color' => $color);
+		}
+		
+		echo json_encode($return);
+		return;
+	}
 	
 	if ($getNodeData) {
 		$id_node_data = (int)get_parameter('id_node_data');

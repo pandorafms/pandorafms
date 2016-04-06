@@ -264,6 +264,19 @@ MapController.prototype.get_node = function(id_graph) {
 	return return_node;
 }
 
+MapController.prototype.get_node_filter = function(field, value) {
+	var return_node = null;
+	
+	$.each(nodes, function(i, node) {
+		if (node[field] == value) {
+			return_node = node;
+			return false;
+		}
+	});
+	
+	return return_node;
+}
+
 /**
 * Function get_node_type
 * Return node type
@@ -1744,6 +1757,23 @@ MapController.prototype.events = function() {
 				});
 			}
 		});
+	
+	setTimeout(function() { self.refresh_map();}, MAP_REFRESH_TIME);
+}
+
+MapController.prototype.refresh_map = function() {
+	var self = this;
+	
+	self.refresh_nodes();
+	self.refresh_arrows();
+	
+	setTimeout(function() { self.refresh_map();}, MAP_REFRESH_TIME);
+}
+
+MapController.prototype.refresh_nodes = function() {
+}
+
+MapController.prototype.refresh_arrows = function() {
 }
 
 /**

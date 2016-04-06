@@ -462,12 +462,12 @@ define("OPTION_CUSTOM_INPUT",			8);
 define("OPTION_AGENT_AUTOCOMPLETE",		9);
 
 /* SAML attributes constants */
-define("SAML_ROLE", "urn:mace:rediris.es:entitlement:monitoring:role");
-define("SAML_TAG", "urn:mace:rediris.es:entitlement:monitoring:tag");
-define("USER_DESC", "commonName");
-define("ID_USER_IN_PANDORA", "eduPersonTargetedId");
-define("GROUP_IN_PANDORA", "schacHomeOrganization");
-define("MAIL_IN_PANDORA", "mail");
+define("SAML_ROLE",				"urn:mace:rediris.es:entitlement:monitoring:role");
+define("SAML_TAG",				"urn:mace:rediris.es:entitlement:monitoring:tag");
+define("USER_DESC",				"commonName");
+define("ID_USER_IN_PANDORA",	"eduPersonTargetedId");
+define("GROUP_IN_PANDORA",		"schacHomeOrganization");
+define("MAIL_IN_PANDORA",		"mail");
 
 /* Other constants */
 define("STATUS_OK", 0);
@@ -476,6 +476,8 @@ define("STATUS_ERROR", 1);
 /* Maps (new networkmaps and  new visualmaps) */
 define("MAP_TYPE_NETWORKMAP",	0);
 define("MAP_TYPE_VISUALMAP",	1);
+
+define("MAP_REFRESH_TIME",	10000);
 
 define("MAP_SUBTYPE_TOPOLOGY",			0);
 define("MAP_SUBTYPE_POLICIES",			1);

@@ -2399,10 +2399,14 @@ MapController.prototype.editNode = function(self, target) {
 		type: "POST",
 		url: "ajax.php",
 		success: function (data) {
-			$(target).append("<div id='edit_node_dialog' style='display: none;'></div>");
-			$("#edit_node_dialog").append(data);
-			$("#edit_node_dialog").dialog({ autoOpen: false });
-			$("#edit_node_dialog").dialog("open");
+			$(target).append("<div id='edit_node_dialog_" + node_id + "' style='display: none;'></div>");
+			$("#edit_node_dialog_" + node_id).append(data);
+			$("#edit_node_dialog_" + node_id).dialog({ 
+				autoOpen: false,
+ 				closeOnEscape: true
+			});
+			$("#edit_node_dialog_" + node_id).dialog("open");
+			
 		}
 	});
 }

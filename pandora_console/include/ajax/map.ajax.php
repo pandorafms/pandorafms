@@ -267,7 +267,7 @@ if (is_ajax ()) {
 			$table->head['type'] = __('Agent');
 		}
 		else {
-			$node_name = db_get_all_rows_sql("SELECT nombre 
+			$node_name = db_get_all_rows_sql("SELECT nombre
 												FROM tagente_modulo
 												WHERE id_agente_modulo = " . $id_node_data);
 			$node_name = $node_name[0];
@@ -281,15 +281,10 @@ if (is_ajax ()) {
 		
 		$table->data = array();
 		$table->data[0][0] = __('Label');
-		$table->data[0][1] = $node_style;
-		$table->data[1][0] = __('Image');
-		$table->data[1][1] = $node_style['image'];
-		$table->data[2][0] = __('Width');
-		$table->data[2][1] = $node_style['width'];
-		$table->data[3][0] = __('Height');
-		$table->data[3][1] = $node_style['height'];
-		$table->data[4][0] = __('Shape');
-		$table->data[4][1] = html_print_select(array(
+		$table->data[0][1] = html_print_input_text('label',
+			$node_style['label'], '', 5, 10, true);
+		$table->data[3][0] = __('Shape');
+		$table->data[3][1] = html_print_select(array(
 			'circle' => __('Circle'),
 			'square' => __('Square'),
 			'rhombus' => __('Rhombus')), 'shape', '',

@@ -33,6 +33,29 @@ if (is_ajax ()) {
 	if ($refresh_arrows_open) {
 		$return = array();
 		
+		$id_map = (int)get_parameter('id_map', 0);
+		$arrows = (array)get_parameter('arrows', array());
+		
+		foreach ($arrows as $arrow) {
+			$temp = array();
+			
+			if (!empty($arrow['to_module']))
+				$status = modules_get_agentmodule_status($arrow['to_module']);
+			else
+				$status = null;
+			$temp['to_status'] = 2; //$status;
+			
+			if (!empty($arrow['to_module']))
+				$status = modules_get_agentmodule_status($arrow['to_module']);
+			else
+				$status = null;
+			$temp['from_status'] = 2; //$status;
+			
+			$temp['graph_id'] = $arrow['graph_id'];
+			
+			$return[$arrow['graph_id']] = $temp;
+		}
+		
 		echo json_encode($return);
 		return;
 	}

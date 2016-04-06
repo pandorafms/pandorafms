@@ -319,10 +319,7 @@ MapController.prototype.get_edges_from_node = function(id_graph) {
 MapController.prototype.update_edges_from_clean_arrows = function(clean_arrows) {
 	newEdges = [];
 	clean_arrows.forEach(function(arrow, index) {
-		newEdges[index] = [];
-		newEdges[index]['from'] = arrow['from']['graph_id'];
-		newEdges[index]['to'] = arrow['to']['graph_id'];
-		newEdges[index]['graph_id'] = arrow['graph_id'];
+		newEdges[index] = arrow;
 	});
 	edges = newEdges;
 }
@@ -2436,7 +2433,6 @@ MapController.prototype.editNode = function(self, target) {
  				closeOnEscape: true
 			});
 			$("#edit_node_dialog_" + node_id).dialog("open");
-			
 		}
 	});
 }

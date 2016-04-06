@@ -1198,19 +1198,19 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 						data: [[max_x, yellow_up]],
 						label: null,
 						color: warning, 
-						bars: {show: true, align: "left", barWidth: yellow_up - red_threshold, lineWidth: 0, horizontal: true}
+						bars: {show: true, align: "left", barWidth: red_threshold - yellow_up, lineWidth: 0, horizontal: true}
 					});
 					extremes['warning_normal_fup_1'] = yellow_up;
 					extremes['warning_normal_fup_2'] = red_threshold;
 					
 					threshold_data.push({ // barWidth will be correct on draw time
 						id: 'warning_up',
-						data: [[max_x, yellow_up]],
+						data: [[max_x, red_up]],
 						label: null,
 						color: warning, 
 						bars: {show: true, align: "left", barWidth: 1, lineWidth: 0, horizontal: true}
 					});
-					extremes['warning_up'] = yellow_up;
+					extremes['warning_up'] = red_up;
 				} else {
 					// C: |  --------       |
 					// W: |==·    ···=======|

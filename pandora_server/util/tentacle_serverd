@@ -133,10 +133,12 @@ case "$1" in
 		else
 			kill $TENTACLE_PID
 			
+			COUNTER=0
 			while [ $COUNTER -lt $MAXWAIT ]
 	 		do
  				_PID=`get_all_pid`
-				if [ "$_PID" != "$SATELLITE_PID" ]
+				if [ "$_PID" != "$SATELLITE_PID" ] || ([ "$_PID" == "" ] && [ "$SATELLITE_PID" == "" ])
+					# tentacle already stopped
  				then
 					COUNTER=$MAXWAIT
 				fi

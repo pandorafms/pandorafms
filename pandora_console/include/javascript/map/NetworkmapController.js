@@ -104,7 +104,11 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 		if (arrow_to !== null && arrow_from !== null) {
 			// There is one arrow for A-M-M-A
 			arrow_to = self.get_arrow_from_id(arrow_to['graph_id']);
+			arrow_to = self.get_arrow(
+				arrow_to['to'], arrow_to['from']);
 			arrow_from = self.get_arrow_from_id(arrow_from['graph_id']);
+			arrow_from = self.get_arrow(
+				arrow_from['to'], arrow_from['from']);
 			
 			arrow['graph_id'] = arrow_to['arrow']['graph_id'] + "" +
 				arrow_MM['arrow']['graph_id'] + "" +
@@ -176,13 +180,15 @@ NetworkmapController.prototype.get_arrows_AMA = function(id_to, id_from) {
 					
 					var type_to = self.get_node_type(edge['to']);
 					var type_from = self.get_node_type(edge['from']);
-
+					
 					// Filter M-M edge
 					if ((type_to != ITEM_TYPE_MODULE_NETWORKMAP)
 						|| (type_from != ITEM_TYPE_MODULE_NETWORKMAP)) {
 						
 						var arrow = self.get_arrow_from_id(edge['graph_id']);
-
+						arrow = self.get_arrow(
+							arrow['to'], arrow['from']);
+						
 						var temp = {};
 						
 						temp['graph_id'] =
@@ -380,6 +386,8 @@ NetworkmapController.prototype.update_node = function(id) {
 }
 
 NetworkmapController.prototype.update_arrow = function(graph_id) {
+	var self = this;
+	
 	var arrow = self.get_arrow_from_id(graph_id);
 	
 	if ((arrow['type'] == "AMA") || (arrow['type'] == "AMMA")) {
@@ -1850,7 +1858,7 @@ NetworkmapController.prototype.refresh_arrows = function() {
 	var params = {};
 	params["refresh_arrows_open"] = 1;
 	params["id_map"] = self._id;
-	params["page"] = "include/ajax/map.ajax2";
+	params["page"] = "include/ajax/map.ajax";
 	
 	var arrows_AMA_or_AMMA = $.grep(edges,
 		function(edge) {

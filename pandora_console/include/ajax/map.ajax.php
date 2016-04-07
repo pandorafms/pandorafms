@@ -43,13 +43,13 @@ if (is_ajax ()) {
 				$status = modules_get_agentmodule_status($arrow['to_module']);
 			else
 				$status = null;
-			$temp['to_status'] = 2; //$status;
+			$temp['to_status'] = $status;
 			
 			if (!empty($arrow['to_module']))
 				$status = modules_get_agentmodule_status($arrow['to_module']);
 			else
 				$status = null;
-			$temp['from_status'] = 2; //$status;
+			$temp['from_status'] = $status;
 			
 			$temp['graph_id'] = $arrow['graph_id'];
 			

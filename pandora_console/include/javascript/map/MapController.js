@@ -343,9 +343,7 @@ MapController.prototype.get_arrow_from_id = function(id) {
 		return null;
 	}
 	else {
-		arrow = arrow[0];
-		
-		return self.get_arrow(arrow['to'], arrow['from']);
+		return arrow[0];
 	}
 
 }
@@ -2880,6 +2878,4 @@ function update_node(data_graph_id) {
 		case 'square':
 			break;
 	}
-	
-	console.log(new_label, new_shape);
 }

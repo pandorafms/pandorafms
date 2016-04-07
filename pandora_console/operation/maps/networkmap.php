@@ -44,7 +44,7 @@ enterprise_include('include/class/NetworkmapEnterprise.class.php');
 
 
 
-require_once('include/browscap/php-local-browscap.php');
+//~ require_once('include/browscap/php-local-browscap.php');
 
 $buttons['list'] = array('active' => false,
 	'text' => '<a href="index.php?sec=network&sec2=operation/maps/networkmap_list">' . 

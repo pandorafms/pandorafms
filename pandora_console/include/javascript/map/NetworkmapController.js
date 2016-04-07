@@ -1907,3 +1907,21 @@ NetworkmapController.prototype.cache_is_element = function(element) {
 		return true;
 	}
 }
+
+
+function update_node(data_graph_id) {
+	node_id = "node_" + data_graph_id;
+	var new_label = $("#edit_node_dialog_" + node_id + " input[id='text-label']").val();
+	var new_shape = $("#edit_node_dialog_" + node_id + " select[id='shape']").val();
+	
+	$('#' + node_id + " text").text(new_label);
+	
+	switch (new_shape) {
+		case 'circle':
+			break;
+		case 'rhombus':
+			break;
+		case 'square':
+			break;
+	}
+}

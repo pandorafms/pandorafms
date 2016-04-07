@@ -350,7 +350,8 @@ if (is_ajax ()) {
 		}
 		$table->head['name'] = $node_name;
 		
-		$node = db_get_all_rows_sql("SELECT style FROM titem WHERE id = " . $id_node_data);
+		$node = db_get_all_rows_sql(
+			"SELECT style FROM titem WHERE id = " . $id_node_data);
 		$node = $node[0];
 		$node_style = json_decode($node);
 		

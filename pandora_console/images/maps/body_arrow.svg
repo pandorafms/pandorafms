@@ -12,7 +12,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
       <rect
 		 y="0"
          x="0"
-         height="60"
+         height="15"
          width="110"
          style="
          fill:#000000;
@@ -22,13 +22,13 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
       <rect
          y="10"
          x="10"
-         height="40"
+         height="10"
          width="90"
          style="
          fill:#ff0000;
          fill-opacity:1;
          stroke:#00ff00;
-         stroke-width: 20;" />
+         stroke-width: 5;" />
       </g>
   </symbol>
   </defs>

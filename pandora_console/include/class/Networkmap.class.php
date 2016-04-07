@@ -61,6 +61,9 @@ class Networkmap extends Map {
 	}
 	
 	protected function generateDot($graph, $positions) {
+		//html_debug($graph, true);
+		//html_debug($positions, true);
+		
 		$graph = preg_replace('/^graph .*/', '', $graph);
 		
 		$nodes_and_edges = explode("];", $graph);

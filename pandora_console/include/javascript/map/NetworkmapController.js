@@ -554,7 +554,7 @@ NetworkmapController.prototype.paint_arrows = function() {
 		self.arrow_by_pieces(self._target + " svg", d);
 	});
 	
-	self._first_paint_arrows = true;
+	self._first_paint_arrows = false;
 }
 
 /**
@@ -990,7 +990,6 @@ NetworkmapController.prototype.arrow_by_pieces_AA = function(target, arrow_data,
 			else {
 				var id_node_to = "node_" + arrow_data['to']['graph_id'];
 				var id_node_from = "node_" + arrow_data['from']['graph_id'];
-				
 				
 				if (self._first_paint_arrows) {
 					if (self.cache_is_element("center" + id_node_to)) {
@@ -1854,7 +1853,7 @@ NetworkmapController.prototype.refresh_arrows = function() {
 	params["page"] = "include/ajax/map.ajax2";
 	
 	var arrows_AMA_or_AMMA = $.grep(edges,
-		function(edge) { console.log("edge", edge);
+		function(edge) {
 			if ((edge['type'] == "AMA") || (edge['type'] == "AMMA")) {
 				return true;
 			}
@@ -1872,16 +1871,12 @@ NetworkmapController.prototype.refresh_arrows = function() {
 		params['arrows'].push(a);
 	});
 	
-	console.log(arrows_AMA_or_AMMA);
-	console.log(params);
-	
 	jQuery.ajax ({
 		data: params,
 		dataType: "JSON",
 		type: "POST",
 		url: "ajax.php",
 		success: function (data) {
-			console.log(data);
 			$.each(edges, function(i, edge) {
 				if (typeof(data[edge['graph_id']]) != "undefined") {
 					edges[i]['to_status'] = data[edge['graph_id']]['to_status'];

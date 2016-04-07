@@ -120,22 +120,22 @@ abstract class Map {
 	private function check_browser() {
 		global $config;
 		
-		$browser = get_browser_local(null, true, $config['homedir'] . '/include/browscap/php_browscap.ini');
+		//~ $browser = get_browser_local(null, true, $config['homedir'] . '/include/browscap/php_browscap.ini');
 		
-		switch ($browser['browser']) {
-			case 'Firefox':
-				// Firefox BUG
-				// https://bugzilla.mozilla.org/show_bug.cgi?id=1254159
-				
-				$this->is_buggy_firefox = true;
-				break;
-			case 'Microsoft':
-				// Do install a GNU/Linux.
-				break;
-			default:
-				// The world is a wonderful place.
-				break;
-		}
+		//~ switch ($browser['browser']) {
+			//~ case 'Firefox':
+				//~ // Firefox BUG
+				//~ // https://bugzilla.mozilla.org/show_bug.cgi?id=1254159
+				//~ 
+				//~ $this->is_buggy_firefox = true;
+				//~ break;
+			//~ case 'Microsoft':
+				//~ // Do install a GNU/Linux.
+				//~ break;
+			//~ default:
+				//~ // The world is a wonderful place.
+				//~ break;
+		//~ }
 	}
 	
 	public function show() {

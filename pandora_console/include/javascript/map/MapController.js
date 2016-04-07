@@ -2454,7 +2454,7 @@ MapController.prototype.deleteNode = function(self, target) {
 		}
 		
 		var id_node = "node_" + node.graph_id;
-		var arrowsToDelete = self.getArrows(self, id_node);
+		var arrowsToDelete = self.getArrows(id_node);
 		
 		// Delete edges and nodes in "nodes" and "edges" arrays
 		self.deleteEdgesAndNode(arrowsToDelete, id_node);
@@ -2476,7 +2476,7 @@ MapController.prototype.deleteNode = function(self, target) {
 */
 MapController.prototype.deleteEdgesAndNode = function(arrowsToDelete, id_node) {
 	var temp;
-
+	
 	arrowsToDelete.forEach(function(arrow) {
 		temp = [];
 		edges.forEach(function(edge) {
@@ -2517,7 +2517,9 @@ MapController.prototype.deleteEdgesAndNode = function(arrowsToDelete, id_node) {
 * Return array[id_arrow]
 * This function returns the arrows of a node
 */
-MapController.prototype.getArrows = function(self, id_node) {
+MapController.prototype.getArrows = function(id_node) {
+	var self = this;
+	
 	var edgesToDel = [];
 	var j = 0;
 

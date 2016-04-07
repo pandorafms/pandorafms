@@ -1908,6 +1908,26 @@ NetworkmapController.prototype.cache_is_element = function(element) {
 	}
 }
 
+/**
+* Function getArrows
+* Return array[id_arrow]
+* This function returns the arrows of a node
+*/
+NetworkmapController.prototype.getArrows = function(id_node) {
+	var self = this;
+	
+	var return_var = [];
+	
+	edges.forEach(function(edge, index) {
+		if (("node_" + edge['to']['graph_id']) == id_node
+			|| ("node_" + edge['from']['graph_id']) == id_node) {
+			return_var[index] = edge["graph_id"];
+		}
+	});
+	
+	return return_var;
+}
+
 
 function update_node(data_graph_id) {
 	node_id = "node_" + data_graph_id;

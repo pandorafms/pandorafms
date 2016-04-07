@@ -2522,7 +2522,7 @@ MapController.prototype.getArrows = function(id_node) {
 	
 	var edgesToDel = [];
 	var j = 0;
-
+	
 	edges.forEach(function(edge, index) {
 		var nodeTo = "node_" + edge["to"];
 		var nodeFrom = "node_" + edge["from"];
@@ -2530,7 +2530,7 @@ MapController.prototype.getArrows = function(id_node) {
 			edgesToDel[index] = edge["graph_id"];
 		}
 	});
-
+	
 	return edgesToDel;
 }
 

@@ -328,11 +328,12 @@ if (is_ajax ()) {
 		$id_node_data = (int)get_parameter('id_node_data');
 		$type = (int)get_parameter('type');
 		$node_id = get_parameter('node_id');
+		$data_graph_id = (int)get_parameter('data_graph_id');
 		
 		$table = new stdClass();
 		$table->id = 'node_options_' . $node_id;
 		$table->width = "100%";
-
+		
 		$table->head = array();
 		
 		$node_name = __('No name');
@@ -356,22 +357,18 @@ if (is_ajax ()) {
 		$table->data = array();
 		$table->data[0][0] = __('Label');
 		$table->data[0][1] = html_print_input_text('label',
-			$node_style['label'], '', 5, 10, true);
-		$table->data[3][0] = __('Shape');
-		$table->data[3][1] = html_print_select(array(
+			$node_name, '', 12, 10, true);
+		$table->data[1][0] = __('Shape');
+		$table->data[1][1] = html_print_select(array(
 			'circle' => __('Circle'),
 			'square' => __('Square'),
-			'rhombus' => __('Rhombus')), 'shape', '',
-			'javascript:', '', 0, true) . '&nbsp;' .
-			'<span id="shape_icon_in_progress" style="display: none;">' . 
-				html_print_image('images/spinner.gif', true) . '</span>' .
-			'<span id="shape_icon_correct" style="display: none;">' .
-				html_print_image('images/dot_green.png', true) . '</span>' .
-			'<span id="shape_icon_fail" style="display: none;">' .
-				html_print_image('images/dot_red.png', true) . '</span>';
-
-		ui_toggle(html_print_table($table, true), __('Node options'),
-			__('Node options'), true);
+			'rhombus' => __('Rhombus')), 'shape', 'circle', '', '', 0, true);
+		
+		html_print_table($table);
+		echo '<form method="post" style="float:right; margin-right: 10px;">';
+		echo html_print_button(__('Update'), 'upd', false, 'update_node(' . $data_graph_id . ');') . 
+			ui_print_help_tip (__('This function is only fix in Enterprise version'));
+		echo '</form>';
 		?>
 			</div>
 		</div>

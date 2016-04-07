@@ -2415,7 +2415,6 @@ MapController.prototype.editNode = function(self, target) {
 	params["printEditNodeTable"] = 1;
 	params["id_node_data"] = data_id;
 	params["type"] = type;
-	params["id_map"] = id_map;
 	params["data_graph_id"] = data_graph_id;
 	params["node_id"] = node_id;
 	params["page"] = "include/ajax/map.ajax";
@@ -2864,4 +2863,23 @@ function get_radius_element(element) {
 	
 	return Math.sqrt(
 		Math.pow(size[0] / 2, 2) + Math.pow(size[1] / 2, 2));
+}
+
+function update_node(data_graph_id) {
+	node_id = "node_" + data_graph_id;
+	var new_label = $("#edit_node_dialog_" + node_id + " input[id='text-label']").val();
+	var new_shape = $("#edit_node_dialog_" + node_id + " select[id='shape']").val();
+	
+	$('#' + node_id + " text").text(new_label);
+	
+	switch (new_shape) {
+		case 'circle':
+			break;
+		case 'rhombus':
+			break;
+		case 'square':
+			break;
+	}
+	
+	console.log(new_label, new_shape);
 }

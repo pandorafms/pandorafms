@@ -1344,13 +1344,8 @@ MapController.prototype.key_is_pressed = function(key) {
 		return self._keys_pressed[key];
 }
 
-MapController.prototype.events_for_nodes = function(id_node) {
+MapController.prototype.get_menu_nodes = function() {
 	var self = this;
-	
-	var selector = ".node";
-	if (typeof(id_node) != "undefined") {
-		selector = "#node_" + id_node;
-	}
 	
 	var node_menu = [
 		{
@@ -1398,6 +1393,20 @@ MapController.prototype.events_for_nodes = function(id_node) {
 			}
 		}
 	];
+	
+	return node_menu;
+}
+
+MapController.prototype.events_for_nodes = function(id_node) {
+	var self = this;
+	
+	var selector = ".node";
+	if (typeof(id_node) != "undefined") {
+		selector = "#node_" + id_node;
+	}
+	
+	var node_menu = self.get_menu_nodes();
+	
 	
 	d3.selectAll(selector)
 		.on("mouseover", function(d) {
@@ -1813,6 +1822,7 @@ MapController.prototype.start_relationship_nodes = function(type) {
 		}
 		
 		self._relationship_in_progress = true;
+		self._dragging = false;
 		self.show_temp_arrows(node, type);
 	});
 }

@@ -578,8 +578,10 @@ NetworkmapController.prototype.arrow_by_pieces = function (target, arrow_data, w
 	}
 	
 	if (arrow_data['temp']) {
-		MapController.prototype.arrow_by_pieces.call(
-				this, target, arrow_data, wait);
+		self.arrow_by_pieces_AA(
+			self._target + " svg", arrow_data, wait);
+		//~ MapController.prototype.arrow_by_pieces.call(
+				//~ this, target, arrow_data, wait);
 	}
 	else {
 		switch (arrow_data['type']) {
@@ -1926,6 +1928,51 @@ NetworkmapController.prototype.getArrows = function(id_node) {
 	});
 	
 	return return_var;
+}
+
+NetworkmapController.prototype.get_menu_nodes = function() {
+	var self = this;
+	
+	var node_menu = [
+		{
+			title: 'Show details',
+			action: function(elm, d, i) {
+				var nodeTarget = $(elm);
+				var type = parseInt(nodeTarget.data("type"));
+				if (type == 0) {
+					self.nodeGetDetails(self, elm);
+				}
+			}
+		},
+		{
+			title: 'Resize',
+			action: function(elm, d, i) {
+				self.paint_resize_square(d);
+			}
+		},
+		{
+			title: 'Edit',
+			action: function(elm, d, i) {
+				self.editNode(self, elm);
+			}
+		},
+		{
+			title: 'Relationship with other',
+			action: function(elm, d, i) {
+				self._last_event = null;
+				self._relationship_in_progress_type = "children";
+				self.set_as_children();
+			}
+		},
+		{
+			title: 'Delete',
+			action: function(elm, d, i) {
+				self.deleteNode(self, elm);
+			}
+		}
+	];
+	
+	return node_menu;
 }
 
 

@@ -366,10 +366,10 @@ if (is_ajax ()) {
 			'rhombus' => __('Rhombus')), 'shape', 'circle', '', '', 0, true);
 		
 		html_print_table($table);
-		echo '<form method="post" style="float:right; margin-right: 10px;">';
-		echo html_print_button(__('Update'), 'upd', false, 'update_node(' . $data_graph_id . ');') . 
+		echo '<div class="edit_node" style="float:right; margin-right: 10px;">';
+		echo html_print_button(__('Update'), 'upd', false, '') . 
 			ui_print_help_tip (__('This function is only fix in Enterprise version'));
-		echo '</form>';
+		echo '</div>';
 		?>
 			</div>
 		</div>

@@ -1370,7 +1370,7 @@ MapController.prototype.get_menu_nodes = function() {
 		{
 			title: 'Edit',
 			action: function(elm, d, i) {
-				self.editNode(self, elm);
+				self.editNode(elm);
 			}
 		},
 		{
@@ -2465,37 +2465,6 @@ MapController.prototype.nodeGetDetails = function(self, target) {
 * This function prints the node edition table
 */
 MapController.prototype.editNode = function(self, target) {
-	var nodeTarget = $(target);
-	
-	var id_map = self._id;
-	var type = parseInt(nodeTarget.data("type"));
-	var data_id = parseInt(nodeTarget.data("id"));
-	var data_graph_id = parseInt(nodeTarget.data("graph_id"));
-	var node_id = nodeTarget.attr("id");
-	
-	var params = {};
-	params["printEditNodeTable"] = 1;
-	params["id_node_data"] = data_id;
-	params["type"] = type;
-	params["data_graph_id"] = data_graph_id;
-	params["node_id"] = node_id;
-	params["page"] = "include/ajax/map.ajax";
-	
-	jQuery.ajax ({
-		data: params,
-		dataType: "html",
-		type: "POST",
-		url: "ajax.php",
-		success: function (data) {
-			$(target).append("<div id='edit_node_dialog_" + node_id + "' style='display: none;'></div>");
-			$("#edit_node_dialog_" + node_id).append(data);
-			$("#edit_node_dialog_" + node_id).dialog({ 
-				autoOpen: false,
- 				closeOnEscape: true
-			});
-			$("#edit_node_dialog_" + node_id).dialog("open");
-		}
-	});
 }
 
 /**

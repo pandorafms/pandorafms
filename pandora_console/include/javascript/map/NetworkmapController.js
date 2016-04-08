@@ -316,6 +316,11 @@ NetworkmapController.prototype.get_arrows_AMA = function(id_to, id_from) {
 	}
 }
 
+/**
+* Function get_arrow_AF_or_FF
+* Return arrow
+* This function returns an arrow AF or FF (fictional-fictional or agent-fictional)
+*/
 NetworkmapController.prototype.get_arrow_AF_or_FF = function(id_to, id_from) {
 	var self = this;
 	var arrow_AF_or_FF;
@@ -325,7 +330,6 @@ NetworkmapController.prototype.get_arrow_AF_or_FF = function(id_to, id_from) {
 		
 		if (self.get_node_type(id_to) == ITEM_TYPE_FICTIONAL_NODE ||
 			self.get_node_type(id_from) == ITEM_TYPE_FICTIONAL_NODE) {
-			
 			var arrow = self.get_arrow(id_to, id_from);
 			
 			arrow_AF_or_FF = {};
@@ -440,6 +444,11 @@ NetworkmapController.prototype.exists_arrow = function(arrows, arrow) {
 	return var_return;
 }
 
+/**
+* Function update_node
+* Return void
+* This function updates the node status
+*/
 NetworkmapController.prototype.update_node = function(id) {
 	var self = this;
 	
@@ -454,6 +463,11 @@ NetworkmapController.prototype.update_node = function(id) {
 		.style("fill", node['color']);
 }
 
+/**
+* Function update_arrow
+* Return void
+* This function updates the interfaces status
+*/
 NetworkmapController.prototype.update_arrow = function(graph_id) {
 	var self = this;
 	
@@ -464,6 +478,11 @@ NetworkmapController.prototype.update_arrow = function(graph_id) {
 	}
 }
 
+/**
+* Function get_type_arrow
+* Return void
+* This function returns the arrow type
+*/
 NetworkmapController.prototype.get_type_arrow = function(graph_id) {
 	var return_var = null;
 	
@@ -477,6 +496,11 @@ NetworkmapController.prototype.get_type_arrow = function(graph_id) {
 	return return_var;
 }
 
+/**
+* Function paint_node
+* Return void
+* This function paints the node
+*/
 NetworkmapController.prototype.paint_node = function(g_node, node) {
 	var self = this;
 	
@@ -517,14 +541,11 @@ NetworkmapController.prototype.paint_node = function(g_node, node) {
 	}
 	
 	// Title
-	
-	
 	var d3_node_title = d3_node.append("text");
 	
 	d3_node_title
 		.text(node['title'])
 		.style("fill", "#000000");
-		
 	
 	//Title position
 	var title_bbox = d3_node_title.node().getBBox();
@@ -573,50 +594,6 @@ NetworkmapController.prototype.paint_nodes = function() {
 */
 NetworkmapController.prototype.paint_arrows = function() {
 	var self = this;
-	
-	//~ var clean_arrows = [];
-	//~ 
-	//~ $.each(edges, function(i, edge) {
-		//~ var arrow_AF_or_FF = self.get_arrow_AF_or_FF(edge['to'], edge['from']);
-		//~ if (arrow_AF_or_FF !== null) {
-			//~ if (!self.exists_arrow(clean_arrows, arrow_AF_or_FF)) {
-				//~ clean_arrows.push(arrow_AF_or_FF);
-			//~ }
-		//~ }
-		//~ 
-		//~ var arrow_AA = self.get_arrow_AA(edge['graph_id'], edge['to'], edge['from']);
-		//~ if (arrow_AA !== null) {
-			//~ if (!self.exists_arrow(clean_arrows, arrow_AA)) {
-				//~ clean_arrows.push(arrow_AA);
-			//~ }
-		//~ }
-		//~ 
-		//~ var arrow_AMMA = self.get_arrow_AMMA(edge['to'], edge['from']);
-		//~ if (arrow_AMMA !== null) {
-			//~ if (!self.exists_arrow(clean_arrows, arrow_AMMA)) {
-				//~ clean_arrows.push(arrow_AMMA);
-			//~ }
-		//~ }
-		//~ 
-		//~ var arrows_AMA = self.get_arrows_AMA(edge['to'], edge['from']);
-		//~ if (arrows_AMA !== null) {
-			//~ $.each(arrows_AMA, function(i, arrow_AMA) {
-				//~ if (!self.exists_arrow(clean_arrows, arrow_AMA)) {
-					//~ clean_arrows.push(arrow_AMA);
-				//~ }
-			//~ });
-		//~ }
-	//~ });
-	//~ 
-	//~ var new_clean_arrows = [];
-	//~ clean_arrows.forEach(function(arrow, index) {
-		//~ console.log(arrow);
-		//~ for (var i = index + 1; i < clean_arrows.length; i++) {
-			//~ 
-		//~ }
-	//~ });
-	//~ 
-	//~ MapController.prototype.update_edges_from_clean_arrows(clean_arrows);
 	
 	var arrow_layouts = self._viewport.selectAll(".arrow")
 		.data(edges)
@@ -676,6 +653,11 @@ NetworkmapController.prototype.arrow_by_pieces = function (target, arrow_data, w
 	}
 }
 
+/**
+* Function make_arrow
+* Return void
+* This function makes AA arrows
+*/
 NetworkmapController.prototype.make_arrow = function(from_id, to_id) {
 	var self = this;
 	
@@ -983,8 +965,6 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 			var x = -10 + (arrow_body_width * scale) - arrow_tail_width - radius_from;
 			var y = 0 + (arrow_body_height / 2  - arrow_head_title_height / 2);
 			
-			
-			
 			transform.translate[0] = x;
 			transform.translate[1] = y;
 			arrow_tail_title.attr("transform", transform.toString());
@@ -1005,7 +985,6 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 * Return void
 * This function print the arrow by pieces (3 steps)
 */
-//~ MapController.prototype.arrow_by_pieces = function(target, id_arrow, id_node_to, id_node_from, wait) {
 NetworkmapController.prototype.arrow_by_pieces_AA = function(target, arrow_data, wait) {
 	var self = this;
 	
@@ -1150,7 +1129,6 @@ NetworkmapController.prototype.arrow_by_pieces_AA = function(target, arrow_data,
 			/*---------------------------------------------*/
 			/*--- Position of layer arrow (body + head) ---*/
 			/*---------------------------------------------*/
-			
 			var arrow_body = arrow_layout.select(".body");
 			
 			if (self._first_paint_arrows) {
@@ -1388,6 +1366,7 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 				self.arrow_by_pieces_AMA(target, arrow_data, 0);
 			}
 			break;
+		
 		/*---------------------------------------------*/
 		/*---- Print head and body arrow by steps -----*/
 		/*---------------------------------------------*/
@@ -1897,10 +1876,13 @@ NetworkmapController.prototype.update_interfaces_status = function (arrow_data) 
 	}
 }
 
-
+/**
+* Function refresh_nodes
+* Return void
+* This function refresh the nodes
+*/
 NetworkmapController.prototype.refresh_nodes = function() {
 	var self = this;
-	
 	
 	var params = {};
 	params["refresh_nodes_open"] = 1;
@@ -1942,6 +1924,11 @@ NetworkmapController.prototype.refresh_nodes = function() {
 	});
 }
 
+/**
+* Function refresh_arrows
+* Return void
+* This function refresh the arrows
+*/
 NetworkmapController.prototype.refresh_arrows = function() {
 	var self = this;
 	
@@ -1987,6 +1974,11 @@ NetworkmapController.prototype.refresh_arrows = function() {
 	});
 }
 
+/**
+* Function cache_is_element
+* Return void
+* This function checks if the element is in cache
+*/
 NetworkmapController.prototype.cache_is_element = function(element) {
 	var self = this;
 	
@@ -2018,6 +2010,11 @@ NetworkmapController.prototype.getArrows = function(id_node) {
 	return return_var;
 }
 
+/**
+* Function get_menu_nodes
+* Return menu
+* This function returns the node menus
+*/
 NetworkmapController.prototype.get_menu_nodes = function() {
 	var self = this;
 	
@@ -2110,11 +2107,13 @@ NetworkmapController.prototype.editNode = function(target) {
 	});
 }
 
-
+/**
+* Function apply_edit_node
+* Return menu
+* This function aplies the new data to the node
+*/
 NetworkmapController.prototype.apply_edit_node = function(data_graph_id) {
 	var node_id = data_graph_id;
-	
-	console.log(node_id);
 	
 	var new_label = $("#edit_node_dialog_" + node_id + " input[id='text-label']").val();
 	var new_shape = $("#edit_node_dialog_" + node_id + " select[id='shape']").val();

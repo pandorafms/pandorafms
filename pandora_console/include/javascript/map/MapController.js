@@ -265,6 +265,11 @@ MapController.prototype.get_node = function(id_graph) {
 	return return_node;
 }
 
+/**
+* Function get_node_filter
+* Return void
+* This function returns the node filter
+*/
 MapController.prototype.get_node_filter = function(field, value) {
 	var return_node = null;
 	
@@ -1338,6 +1343,11 @@ MapController.prototype.resize_node = function(item, handler, delta_x, delta_y) 
 	self.move_arrow(item["graph_id"]);
 }
 
+/**
+* Function key_is_pressed
+* Return void
+* This function checks if the crtl key is pressed
+*/
 MapController.prototype.key_is_pressed = function(key) {
 	var self = this;
 	
@@ -1347,6 +1357,11 @@ MapController.prototype.key_is_pressed = function(key) {
 		return self._keys_pressed[key];
 }
 
+/**
+* Function get_menu_nodes
+* Return void
+* This function returns the node menu
+*/
 MapController.prototype.get_menu_nodes = function() {
 	var self = this;
 	
@@ -1400,6 +1415,11 @@ MapController.prototype.get_menu_nodes = function() {
 	return node_menu;
 }
 
+/**
+* Function events_for_minimap
+* Return void
+* This function init the minimap events
+*/
 MapController.prototype.events_for_minimap = function() {
 	var self = this;
 	
@@ -1415,6 +1435,11 @@ MapController.prototype.events_for_minimap = function() {
 		});
 }
 
+/**
+* Function map_move_position
+* Return void
+* This function moves map position with minimap click
+*/
 MapController.prototype.map_move_position = function(x, y) {
 	var self = this;
 	
@@ -1423,6 +1448,11 @@ MapController.prototype.map_move_position = function(x, y) {
 		.event(self._viewport);
 }
 
+/**
+* Function minimap_panning_map
+* Return void
+* This function calculates the position in click event (minimap)
+*/
 MapController.prototype.minimap_panning_map = function() {
 	var self = this;
 	
@@ -1445,6 +1475,11 @@ MapController.prototype.minimap_panning_map = function() {
 	self.map_move_position(x, y);
 }
 
+/**
+* Function events_for_nodes
+* Return void
+* This function init the nodes events
+*/
 MapController.prototype.events_for_nodes = function(id_node) {
 	var self = this;
 	
@@ -1595,6 +1630,11 @@ MapController.prototype.events_for_nodes = function(id_node) {
 	}
 }
 
+/**
+* Function is_draggable
+* Return void
+* This function checks if the node is draggable
+*/
 MapController.prototype.is_draggable = function(node) {
 	var return_var = false;
 	
@@ -1609,6 +1649,11 @@ MapController.prototype.is_draggable = function(node) {
 	return return_var;
 }
 
+/**
+* Function is_relationshipy
+* Return void
+* This function checks if the node have a relathion
+*/
 MapController.prototype.is_relationshipy = function(node) {
 	var return_var = false;
 	
@@ -1623,6 +1668,11 @@ MapController.prototype.is_relationshipy = function(node) {
 	return return_var;
 }
 
+/**
+* Function is_selecty
+* Return void
+* This function checks if the node is selecty
+*/
 MapController.prototype.is_selecty = function(node) {
 	var return_var = false;
 	
@@ -1637,6 +1687,11 @@ MapController.prototype.is_selecty = function(node) {
 	return return_var;
 }
 
+/**
+* Function is_delety
+* Return void
+* This function checks if the node is delety
+*/
 MapController.prototype.is_delety = function(node) {
 	var return_var = false;
 	
@@ -1680,8 +1735,6 @@ MapController.prototype.events = function() {
 			}
 		});
 	
-	
-	
 	var map_menu = [
 		{
 			title: 'Add fictional node',
@@ -1704,9 +1757,6 @@ MapController.prototype.events = function() {
 	];
 	
 	d3.select("#map").on("contextmenu", d3.contextMenu(map_menu));
-	
-	
-	
 	
 	d3.select(self._target + " svg").on("mousedown",
 		function() {
@@ -1818,6 +1868,11 @@ MapController.prototype.events = function() {
 	setTimeout(function() { self.refresh_map();}, MAP_REFRESH_TIME);
 }
 
+/**
+* Function refresh_map
+* Return void
+* This function refresh the map
+*/
 MapController.prototype.refresh_map = function() {
 	var self = this;
 	
@@ -1825,12 +1880,6 @@ MapController.prototype.refresh_map = function() {
 	self.refresh_arrows();
 	
 	setTimeout(function() { self.refresh_map();}, MAP_REFRESH_TIME);
-}
-
-MapController.prototype.refresh_nodes = function() {
-}
-
-MapController.prototype.refresh_arrows = function() {
 }
 
 /**
@@ -1916,9 +1965,6 @@ MapController.prototype.show_temp_arrows = function(node, type) {
 			.attr("data-temp", 1);
 	}
 	
-	
-	
-	
 	switch (type) {
 		case 'parent':
 			temp_arrow['from']['graph_id'] = node.graph_id;
@@ -1930,10 +1976,14 @@ MapController.prototype.show_temp_arrows = function(node, type) {
 			break;
 	}
 	
-	
 	self.arrow_by_pieces(self._target + " svg", temp_arrow);
 }
 
+/**
+* Function move_temp_arrows
+* Return void
+* This function move the temporal arrows
+*/
 MapController.prototype.move_temp_arrows = function(node, type) {
 	var self = this;
 	
@@ -1970,6 +2020,11 @@ MapController.prototype.move_temp_arrows = function(node, type) {
 	self.arrow_by_pieces(self._target + " svg", temp_arrow, 0);
 }
 
+/**
+* Function remove_temp_arrows
+* Return void
+* This function remove the temporal arrows
+*/
 MapController.prototype.remove_temp_arrows = function() {
 	var self = this;
 	
@@ -1984,6 +2039,11 @@ MapController.prototype.remove_temp_arrows = function() {
 	self._relationship_in_progress_type = null;
 }
 
+/**
+* Function apply_temp_arrows
+* Return void
+* This function apply the temporal arrows
+*/
 MapController.prototype.apply_temp_arrows = function(target_id) {
 	var self = this;
 	
@@ -1998,7 +2058,6 @@ MapController.prototype.apply_temp_arrows = function(target_id) {
 			return 1; // Continue
 		}
 		
-		
 		switch (self._relationship_in_progress_type) {
 			case 'parent':
 				self.make_arrow(node.graph_id, target_id);
@@ -2011,9 +2070,6 @@ MapController.prototype.apply_temp_arrows = function(target_id) {
 	
 	self.remove_temp_arrows();
 	self.paint_arrows();
-}
-
-MapController.prototype.make_arrow = function(from_id, to_id) {
 }
 
 /**
@@ -2070,6 +2126,11 @@ MapController.prototype.multiple_selection_start = function() {
 	}
 }
 
+/**
+* Function add_fictional_node
+* Return void
+* This function add a fictional node
+*/
 MapController.prototype.add_fictional_node = function() {
 	var self = this;
 	
@@ -2103,6 +2164,11 @@ MapController.prototype.add_fictional_node = function() {
 	self.events_for_nodes(new_node['graph_id']);
 }
 
+/**
+* Function get_last_graph_id
+* Return id
+* This function returns the last graph id
+*/
 MapController.prototype.get_last_graph_id = function() {
 	var self = this;
 	

@@ -46,6 +46,7 @@ MapController.prototype._keys_pressed = [];
 MapController.prototype._last_mouse_position = null;
 MapController.prototype._relationship_in_progress = false;
 MapController.prototype._relationship_in_progress_type = null;
+MapController.prototype._over = null
 
 /*-----------------------------------------------*/
 /*--------------------Methods--------------------*/
@@ -638,6 +639,8 @@ MapController.prototype.paint_minimap = function() {
 	self.paint_items_minimap();
 	
 	self.zoom_minimap();
+	
+	self.events_for_minimap();
 }
 
 /**
@@ -1397,6 +1400,51 @@ MapController.prototype.get_menu_nodes = function() {
 	return node_menu;
 }
 
+MapController.prototype.events_for_minimap = function() {
+	var self = this;
+	
+	d3.select(self._target + " .minimap")
+		.on("mouseover", function(d) {
+			self._over = "minimap";
+		})
+		.on("mouseout", function(d) {
+			self._over = null;
+		})
+		.on("click", function(d) {
+			self.minimap_panning_map();
+		});
+}
+
+MapController.prototype.map_move_position = function(x, y) {
+	var self = this;
+	
+	self._zoomManager
+		.translate([-x, -y])
+		.event(self._viewport);
+}
+
+MapController.prototype.minimap_panning_map = function() {
+	var self = this;
+	
+	var minimap_translate = d3.transform(
+		d3.select(self._target +" .minimap").attr("transform")).translate;
+	
+	var minimap_map_transform = d3.transform(
+		d3.select(self._target +" .minimap .map").attr("transform"));
+	
+	var viewport_minimap = d3.select(self._target +" .minimap .viewport");
+	
+	var x = self._last_mouse_position[0] - minimap_translate[0];
+	var y = self._last_mouse_position[1] - minimap_translate[1];
+	
+	x = x / minimap_map_transform.scale[0] -
+		parseFloat(viewport_minimap.attr("width")) / 2;
+	y = y / minimap_map_transform.scale[0] -
+		parseFloat(viewport_minimap.attr("height")) / 2;
+	
+	self.map_move_position(x, y);
+}
+
 MapController.prototype.events_for_nodes = function(id_node) {
 	var self = this;
 	
@@ -1410,8 +1458,9 @@ MapController.prototype.events_for_nodes = function(id_node) {
 	
 	d3.selectAll(selector)
 		.on("mouseover", function(d) {
-			if (!self._dragging)
+			if (!self._dragging) {
 				self.select_node(d['graph_id'], "over");
+			}
 			
 			self.last_event = null;
 		})
@@ -1678,6 +1727,9 @@ MapController.prototype.events = function() {
 	
 	d3.select(self._target + " svg").on("mouseup",
 		function(d) {
+			if (self._over == "minimap")
+				return;
+			
 			if (self._last_event == "multiple_selection_end") {
 				self._last_event = null;
 				return;
@@ -1702,6 +1754,7 @@ MapController.prototype.events = function() {
 								found_id = d3.select(item).attr("data-graph_id");
 							}
 						}
+						
 						
 						if (found_id !== null) {
 							self.apply_temp_arrows(found_id);
@@ -1944,6 +1997,7 @@ MapController.prototype.apply_temp_arrows = function(target_id) {
 		if (status_selection.indexOf("select") == -1) {
 			return 1; // Continue
 		}
+		
 		
 		switch (self._relationship_in_progress_type) {
 			case 'parent':

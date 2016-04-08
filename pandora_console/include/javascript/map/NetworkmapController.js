@@ -72,13 +72,37 @@ NetworkmapController.prototype.init_map = function() {
 		}
 	});
 	
-	var new_clean_arrows = [];
 	clean_arrows.forEach(function(arrow, index) {
-		console.log(arrow);
 		for (var i = index + 1; i < clean_arrows.length; i++) {
-			
+			if (((arrow['to']['graph_id'] == clean_arrows[i]['to']['graph_id']) && 
+				(arrow['from']['graph_id'] == clean_arrows[i]['from']['graph_id'])) || 
+				((arrow['to']['graph_id'] == clean_arrows[i]['from']['graph_id']) &&
+				(arrow['from']['graph_id'] == clean_arrows[i]['to']['graph_id']))) {
+				if (arrow['type'] == 'AMMA') {
+					delete clean_arrows[i];
+				}
+				else if (clean_arrows[i]['type'] == 'AMMA') {
+					delete clean_arrows[index];
+				}
+				else if (arrow['type'] == 'AMA') {
+					delete clean_arrows[i];
+				}
+				else if (clean_arrows[i]['type'] == 'AMA') {
+					delete clean_arrows[index];
+				}
+				else {
+					delete clean_arrows[i];
+				}
+			}
 		}
 	});
+	var new_clean_arrows = [];
+	var j = 0;
+	clean_arrows.forEach(function(arrow, index) {
+		new_clean_arrows[j] = arrow;
+		j++;
+	});
+	clean_arrows = new_clean_arrows;
 	
 	MapController.prototype.update_edges_from_clean_arrows(clean_arrows);
 	

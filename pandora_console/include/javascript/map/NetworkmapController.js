@@ -37,6 +37,51 @@ NetworkmapController.prototype._cache_elements = {};
 * This function init the map
 */
 NetworkmapController.prototype.init_map = function() {
+	var self = this;
+	var clean_arrows = [];
+	
+	$.each(edges, function(i, edge) {
+		var arrow_AF_or_FF = self.get_arrow_AF_or_FF(edge['to'], edge['from']);
+		if (arrow_AF_or_FF !== null) {
+			if (!self.exists_arrow(clean_arrows, arrow_AF_or_FF)) {
+				clean_arrows.push(arrow_AF_or_FF);
+			}
+		}
+		
+		var arrow_AA = self.get_arrow_AA(edge['graph_id'], edge['to'], edge['from']);
+		if (arrow_AA !== null) {
+			if (!self.exists_arrow(clean_arrows, arrow_AA)) {
+				clean_arrows.push(arrow_AA);
+			}
+		}
+		
+		var arrow_AMMA = self.get_arrow_AMMA(edge['to'], edge['from']);
+		if (arrow_AMMA !== null) {
+			if (!self.exists_arrow(clean_arrows, arrow_AMMA)) {
+				clean_arrows.push(arrow_AMMA);
+			}
+		}
+		
+		var arrows_AMA = self.get_arrows_AMA(edge['to'], edge['from']);
+		if (arrows_AMA !== null) {
+			$.each(arrows_AMA, function(i, arrow_AMA) {
+				if (!self.exists_arrow(clean_arrows, arrow_AMA)) {
+					clean_arrows.push(arrow_AMA);
+				}
+			});
+		}
+	});
+	
+	var new_clean_arrows = [];
+	clean_arrows.forEach(function(arrow, index) {
+		console.log(arrow);
+		for (var i = index + 1; i < clean_arrows.length; i++) {
+			
+		}
+	});
+	
+	MapController.prototype.update_edges_from_clean_arrows(clean_arrows);
+	
 	MapController.prototype.init_map.call(this);
 };
 
@@ -505,44 +550,52 @@ NetworkmapController.prototype.paint_nodes = function() {
 NetworkmapController.prototype.paint_arrows = function() {
 	var self = this;
 	
-	var clean_arrows = [];
-	
-	$.each(edges, function(i, edge) {
-		var arrow_AF_or_FF = self.get_arrow_AF_or_FF(edge['to'], edge['from']);
-		if (arrow_AF_or_FF !== null) {
-			if (!self.exists_arrow(clean_arrows, arrow_AF_or_FF)) {
-				clean_arrows.push(arrow_AF_or_FF);
-			}
-		}
-		
-		var arrow_AA = self.get_arrow_AA(edge['graph_id'], edge['to'], edge['from']);
-		if (arrow_AA !== null) {
-			if (!self.exists_arrow(clean_arrows, arrow_AA)) {
-				clean_arrows.push(arrow_AA);
-			}
-		}
-		
-		var arrow_AMMA = self.get_arrow_AMMA(edge['to'], edge['from']);
-		if (arrow_AMMA !== null) {
-			if (!self.exists_arrow(clean_arrows, arrow_AMMA)) {
-				clean_arrows.push(arrow_AMMA);
-			}
-		}
-		
-		var arrows_AMA = self.get_arrows_AMA(edge['to'], edge['from']);
-		if (arrows_AMA !== null) {
-			$.each(arrows_AMA, function(i, arrow_AMA) {
-				if (!self.exists_arrow(clean_arrows, arrow_AMA)) {
-					clean_arrows.push(arrow_AMA);
-				}
-			});
-		}
-	});
-	
-	MapController.prototype.update_edges_from_clean_arrows(clean_arrows);
+	//~ var clean_arrows = [];
+	//~ 
+	//~ $.each(edges, function(i, edge) {
+		//~ var arrow_AF_or_FF = self.get_arrow_AF_or_FF(edge['to'], edge['from']);
+		//~ if (arrow_AF_or_FF !== null) {
+			//~ if (!self.exists_arrow(clean_arrows, arrow_AF_or_FF)) {
+				//~ clean_arrows.push(arrow_AF_or_FF);
+			//~ }
+		//~ }
+		//~ 
+		//~ var arrow_AA = self.get_arrow_AA(edge['graph_id'], edge['to'], edge['from']);
+		//~ if (arrow_AA !== null) {
+			//~ if (!self.exists_arrow(clean_arrows, arrow_AA)) {
+				//~ clean_arrows.push(arrow_AA);
+			//~ }
+		//~ }
+		//~ 
+		//~ var arrow_AMMA = self.get_arrow_AMMA(edge['to'], edge['from']);
+		//~ if (arrow_AMMA !== null) {
+			//~ if (!self.exists_arrow(clean_arrows, arrow_AMMA)) {
+				//~ clean_arrows.push(arrow_AMMA);
+			//~ }
+		//~ }
+		//~ 
+		//~ var arrows_AMA = self.get_arrows_AMA(edge['to'], edge['from']);
+		//~ if (arrows_AMA !== null) {
+			//~ $.each(arrows_AMA, function(i, arrow_AMA) {
+				//~ if (!self.exists_arrow(clean_arrows, arrow_AMA)) {
+					//~ clean_arrows.push(arrow_AMA);
+				//~ }
+			//~ });
+		//~ }
+	//~ });
+	//~ 
+	//~ var new_clean_arrows = [];
+	//~ clean_arrows.forEach(function(arrow, index) {
+		//~ console.log(arrow);
+		//~ for (var i = index + 1; i < clean_arrows.length; i++) {
+			//~ 
+		//~ }
+	//~ });
+	//~ 
+	//~ MapController.prototype.update_edges_from_clean_arrows(clean_arrows);
 	
 	var arrow_layouts = self._viewport.selectAll(".arrow")
-		.data(clean_arrows)
+		.data(edges)
 		.enter()
 			.append("g")
 				.attr("class", "arrow")
@@ -600,10 +653,21 @@ NetworkmapController.prototype.arrow_by_pieces = function (target, arrow_data, w
 }
 
 NetworkmapController.prototype.make_arrow = function(from_id, to_id) {
+	var self = this;
+	
 	var edge = {};
-	edge['from'] = from_id;
-	edge['to'] = to_id;
+	
+	edge = {};
+	edge['type'] = 'AA';
 	edge['graph_id'] = from_id + "" + to_id;
+	edge['to'] = self.get_node(to_id);
+	edge['to_module'] = null;
+	edge['to_status'] = null;
+	edge['to_title'] = null;
+	edge['from'] = self.get_node(from_id);
+	edge['from_module'] = null;
+	edge['from_status'] = null;
+	edge['from_title'] = null;
 	
 	edges.push(edge);
 }

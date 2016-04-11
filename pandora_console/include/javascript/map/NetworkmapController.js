@@ -516,7 +516,7 @@ NetworkmapController.prototype.paint_node = function(g_node, node) {
 		.attr("data-status_color", node['color']);
 	
 	switch (node['shape']) {
-		case 'rect':
+		case 'square':
 			d3_node.append("rect")
 				.attr("height", node['height'])
 				.attr("width", node['width'])
@@ -532,7 +532,8 @@ NetworkmapController.prototype.paint_node = function(g_node, node) {
 			break;
 		case 'rhombus':
 			d3_node.append("rect")
-				.attr("transform", "rotate(45)")
+				.attr("transform",
+					"rotate(45 " + (node['width'] / 2) + " " + (node['height'] / 2) + " )")
 				.attr("height", node['height'])
 				.attr("width", node['width'])
 				.attr("x", 0)

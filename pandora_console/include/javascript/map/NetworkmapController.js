@@ -1732,9 +1732,8 @@ NetworkmapController.prototype.re_rotate_interfaces_title = function(arrow_data)
 			var arrow_tail_title_b = arrow_tail_title.node().getBBox();
 			
 			transform = d3.transform();
-			
-			var center_tail_x = arrow_tail_title_b['width'] / 2 + arrow_tail_title_b['x'];
-			var center_tail_y = arrow_tail_title_b['height'] / 2 + arrow_tail_title_b['y'];
+			var center_tail_x = (arrow_tail_title_b['width'] / 2);
+			var center_tail_y = (arrow_tail_title_b['height'] / 2) + 10;
 			
 			transform.rotate = "180 " + center_tail_x + " " + center_tail_y;
 			arrow_tail_title_text.attr("transform", transform.toString());
@@ -1742,9 +1741,8 @@ NetworkmapController.prototype.re_rotate_interfaces_title = function(arrow_data)
 			var arrow_head_title_b = arrow_head_title.node().getBBox();
 			
 			transform = d3.transform();
-			
-			var center_head_x = arrow_head_title_b['width'] / 2 + arrow_head_title_b['x'];
-			var center_head_y = arrow_head_title_b['height'] / 2 + arrow_head_title_b['y'];
+			var center_head_x = (arrow_head_title_b['width'] / 2);
+			var center_head_y = (arrow_head_title_b['height'] / 2) + 10;
 			
 			transform.rotate = "180 " + center_head_x + " " + center_head_y;
 			arrow_head_title_text.attr("transform", transform.toString());

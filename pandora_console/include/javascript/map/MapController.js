@@ -257,7 +257,11 @@ MapController.prototype.get_node = function(id_graph) {
 	
 	$.each(nodes, function(i, node) {
 		if (node['graph_id'] == id_graph) {
+			
+			node['index_node'] = i;
+			
 			return_node = node;
+			
 			return false;
 		}
 	});

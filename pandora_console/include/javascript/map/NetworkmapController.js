@@ -2113,19 +2113,28 @@ NetworkmapController.prototype.editNode = function(target) {
 * This function aplies the new data to the node
 */
 NetworkmapController.prototype.apply_edit_node = function(data_graph_id) {
+	var self = this;
+	
 	var node_id = data_graph_id;
 	
 	var new_label = $("#edit_node_dialog_" + node_id + " input[id='text-label']").val();
 	var new_shape = $("#edit_node_dialog_" + node_id + " select[id='shape']").val();
 	
-	$('#' + node_id + " text").text(new_label);
+	var id_graph = node_id.replace(/node_/, "");
 	
-	switch (new_shape) {
-		case 'circle':
-			break;
-		case 'rhombus':
-			break;
-		case 'square':
-			break;
-	}
+	var node = self.get_node(id_graph);
+	
+	node['title'] = new_label;
+	node['shape'] = new_shape;
+	
+	nodes[node['index_node']] = node;
+	
+	d3.selectAll(self._target + " #" + node_id + " *")
+		.remove();
+	
+	self.paint_node(d3.select(self._target + " #" + node_id).node(), node);
+	
+	self.move_arrow(id_graph);
+	
+	$("#edit_node_dialog_" + node_id).dialog("close");
 }

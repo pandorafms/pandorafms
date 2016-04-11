@@ -189,10 +189,34 @@ class Networkmap extends Map {
 				
 				foreach ($nodes as $i => $node) {
 					if ($node['graph_id'] == $graphviz_id) {
-						$nodes[$i]['x'] = $items[2] * 100; //200 is for show more big
-						$nodes[$i]['y'] = $items[3] * 100;
+						$nodes[$i]['x'] = $items[2];
+						$nodes[$i]['y'] = $items[3];
 					}
 				}
+			}
+		}
+		
+		if (($this->width > 0) && ($this->height > 0)) {
+			
+			$max_x = 0;
+			$max_y = 0;
+			
+			foreach ($nodes as $node) {
+				if ($max_x < $node['x']) {
+					$max_x = $node['x'];
+				}
+				
+				if ($max_y < $node['y']) {
+					$max_y = $node['y'];
+				}
+			}
+			
+			$sep_x = $this->width / $max_x;
+			$sep_y = $this->height / $max_y;
+			
+			foreach ($nodes as $i => $node) {
+				$nodes[$i]['x'] *= $sep_x;
+				$nodes[$i]['y'] *= $sep_y;
 			}
 		}
 		

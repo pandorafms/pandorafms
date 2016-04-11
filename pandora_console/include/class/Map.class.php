@@ -170,18 +170,8 @@ abstract class Map {
 				<div class="home_zoom">H</div>
 			</div>
 			<?php
-			if ($this->width == 0) {
-				$width = "100%";
-			}
-			else {
-				$width = $this->width . "px";
-			}
-			if ($this->height == 0) {
-				$height = "500px";
-			}
-			else {
-				$height = $this->height . "px";
-			}
+			$width = "100%";
+			$height = "500px";
 			
 			
 			?>

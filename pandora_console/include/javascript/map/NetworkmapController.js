@@ -634,8 +634,6 @@ NetworkmapController.prototype.arrow_by_pieces = function (target, arrow_data, w
 	if (arrow_data['temp']) {
 		self.arrow_by_pieces_AA(
 			self._target + " svg", arrow_data, wait);
-		//~ MapController.prototype.arrow_by_pieces.call(
-				//~ this, target, arrow_data, wait);
 	}
 	else {
 		switch (arrow_data['type']) {
@@ -941,7 +939,7 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 			
 			transform = d3.transform();
 			
-			var x = 10;
+			var x = radius_from;
 			var y = 0 + (arrow_body_height / 2  - arrow_head_title_height / 2);
 			
 			transform.translate[0] = x;
@@ -1533,16 +1531,18 @@ NetworkmapController.prototype.arrow_by_pieces_AMA = function(target, arrow_data
 */
 NetworkmapController.prototype.truncate_interfaces_title = function(arrow_data) {
 	var self = this;
-
+	
 	var A_is_tail = false;
 	var AM_is_tail = false;
-	if (arrow_data['from_module'] === null) {
-		A_is_tail = true;
+	if (arrow_data["type"] == "AMA") {
+		if (arrow_data['from_module'] === null) {
+			A_is_tail = true;
+		}
+		else {
+			AM_is_tail = true;
+		}
 	}
-	else {
-		AM_is_tail = true;
-	}
-
+	
 	var arrow_layout = d3.select(self._target +" #arrow_" + arrow_data['graph_id']);
 	
 	if (AM_is_tail) {
@@ -1637,16 +1637,18 @@ NetworkmapController.prototype.truncate_interfaces_title = function(arrow_data) 
 */
 NetworkmapController.prototype.re_rotate_interfaces_title = function(arrow_data) {
 	var self = this;
-
+	
 	var A_is_tail = false;
 	var AM_is_tail = false;
-	if (arrow_data['from_module'] === null) {
-		A_is_tail = true;
+	if (arrow_data["type"] == "AMA") {
+		if (arrow_data['from_module'] === null) {
+			A_is_tail = true;
+		}
+		else {
+			AM_is_tail = true;
+		}
 	}
-	else {
-		AM_is_tail = true;
-	}
-
+	
 	var id_node_to = "node_" + arrow_data['to']['graph_id'];
 	var id_node_from = "node_" + arrow_data['from']['graph_id'];
 	

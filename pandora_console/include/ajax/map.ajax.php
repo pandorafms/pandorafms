@@ -22,7 +22,6 @@ if (is_ajax ()) {
 	
 	require_once($config['homedir'] . "/include/functions_os.php");
 	
-	
 	$getNodeData = (bool)get_parameter('getNodeData', 0);
 	$getNodeDetails = (bool)get_parameter('getNodeDetails', 0);
 	$printEditNodeTable = (bool)get_parameter('printEditNodeTable', 0);

@@ -231,7 +231,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
 	$relative = false, $text_filter = '', $l2_network_or_mixed = false,
 	$ip_mask = null, $dont_show_subgroups = false, $strict_user = false,
-	$size_canvas = null, $old_mode = false) {
+	$size_canvas = null, $old_mode = false, $id_tag = 0) {
 	
 	global $config;
 	
@@ -350,6 +350,15 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	if ($agents === false)
 		//return false;
 		$agents = array();
+	
+	// Filter by tags
+	if (!empty($id_tag)) {
+		foreach ($agents as $index => $agent) {
+			if (!tags_agent_has_tag($agent['id_agente'], $id_tag)) {
+				unset($agents[$index]);
+			}
+		}
+	}
 	
 	// Open Graph
 	$graph = networkmap_open_graph ($layout, $nooverlap, $pure, $zoom,

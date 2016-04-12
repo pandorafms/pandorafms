@@ -257,6 +257,8 @@ class Networkmap extends Map {
 		$return['dont_show_subgroups'] = false;
 		$return['old_mode'] = false;
 		$return['filter'] = $this->filter['text'];
+		$return['id_tag'] = $this->filter['id_tag'];
+		
 		
 		return $return;
 	}
@@ -292,7 +294,8 @@ class Networkmap extends Map {
 				$parameters['dont_show_subgroups'],
 				false,
 				null,
-				$parameters['old_mode']);
+				$parameters['old_mode'],
+				$parameters['id_tag']);
 			
 			
 			

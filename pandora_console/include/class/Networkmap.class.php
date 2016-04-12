@@ -46,14 +46,14 @@ class Networkmap extends Map {
 		if (!isset($this->filter['only_snmp_modules']))
 			$this->filter['only_snmp_modules'] = false;
 		
-		switch ($dbValues['source_data']) {
+		switch ($dbValues['source']) {
 			case MAP_SOURCE_GROUP:
-				$this->source_group = $dbValues['source'];
+				$this->source_group = $dbValues['source_data'];
 				$this->source_ip_mask = "";
 				break;
 			case MAP_SOURCE_IP_MASK:
-				$this->source_group = $dbValues['source'];
-				$this->source_ip_mask = "";
+				$this->source_ip_mask = $dbValues['source_data'];
+				$this->source_group = "";
 				break;
 		}
 		

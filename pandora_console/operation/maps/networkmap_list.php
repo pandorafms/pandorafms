@@ -131,13 +131,13 @@ if ($save_networkmap) {
 	$name = (string) get_parameter('name', "");
 	$description = (string) get_parameter('description', "");
 	$source_period = (int) get_parameter('source_period', 60 * 5);
-	$source_data = (string) get_parameter('source_data', MAP_SOURCE_GROUP);
-	switch ($source_data) {
+	$source = (int) get_parameter('source', MAP_SOURCE_GROUP);
+	switch ($source) {
 		case MAP_SOURCE_GROUP:
-			$source = (string) get_parameter('source_group', 0);
+			$source_data = (string) get_parameter('source_group', '');
 			break;
 		case MAP_SOURCE_IP_MASK:
-			$source = (string) get_parameter('source_ip_mask', 0);
+			$source_data = (string) get_parameter('source_ip_mask', '');
 			break;
 	}
 	$width = (int) get_parameter('width', 800);
@@ -259,7 +259,7 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 		$description = (string) get_parameter('description', "");
 		$source_period = (int) get_parameter('source_period', 60 * 5);
 		$source = (int) get_parameter('source', MAP_SOURCE_GROUP);
-		$source_data = (string) get_parameter('source_data', 'group');
+		$source_data = (string) get_parameter('source_data', '');
 		$width = (int) get_parameter('width', 800);
 		$height = (int) get_parameter('height', 800);
 		

@@ -38,7 +38,7 @@ if ($create_networkmap) {
 	$height = 800;
 	$source_period = 60 * 5;
 	$source = MAP_SOURCE_GROUP;
-	$source_data = "";
+	$source_data = '';
 	$generation_method = MAP_GENERATION_CIRCULAR;
 	
 	// Filters
@@ -84,12 +84,7 @@ if ($edit_networkmap) {
 		$height = $values['height'];
 		$source_period = $values['source_period'];
 		$source = $values['source'];
-		if ($source == 'group') {
-			$source_data = $values['source_data'];
-		}
-		else {
-			$source_data = $values['source_data'];
-		}
+		$source_data = $values['source_data'];
 		$generation_method = $values['generation_method'];
 		
 		$filter = json_decode($values['filter'], true);
@@ -105,8 +100,6 @@ if ($edit_networkmap) {
 		$only_policy_modules = $filter['only_policy_modules'];
 	}
 }
-
-
 
 //+++++++++++++++TABLE TO CREATE/EDIT NETWORKMAP++++++++++++++++++++++
 
@@ -230,7 +223,6 @@ else {
 	html_print_table($table);
 	echo '</fieldset>';
 	$table->data = array();
-	
 	
 	// ----- Filter configuration --------------------------------------
 	

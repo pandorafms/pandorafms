@@ -259,7 +259,15 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 		$description = (string) get_parameter('description', "");
 		$source_period = (int) get_parameter('source_period', 60 * 5);
 		$source = (int) get_parameter('source', MAP_SOURCE_GROUP);
-		$source_data = (string) get_parameter('source_data', '');
+		switch ($source) {
+			case MAP_SOURCE_GROUP:
+				$source_data = (string) get_parameter('source_group', '');
+				break;
+			case MAP_SOURCE_IP_MASK:
+				$source_data = (string) get_parameter('source_ip_mask', '');
+				break;
+		}
+		
 		$width = (int) get_parameter('width', 800);
 		$height = (int) get_parameter('height', 800);
 		

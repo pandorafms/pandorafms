@@ -213,11 +213,14 @@ class Networkmap extends Map {
 			
 			$sep_x = $this->width / $max_x;
 			$sep_y = $this->height / $max_y;
-			
-			foreach ($nodes as $i => $node) {
-				$nodes[$i]['x'] *= $sep_x;
-				$nodes[$i]['y'] *= $sep_y;
-			}
+		}
+		else {
+			$sep_x = $sep_y = 100;
+		}
+		
+		foreach ($nodes as $i => $node) {
+			$nodes[$i]['x'] *= $sep_x;
+			$nodes[$i]['y'] *= $sep_y;
 		}
 		
 		foreach ($edges as $i => $edge) {

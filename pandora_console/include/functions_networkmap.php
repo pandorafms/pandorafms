@@ -324,6 +324,14 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			array ('id_grupo, nombre, id_os, id_parent, id_agente,
 				normal_count, warning_count, critical_count,
 				unknown_count, total_count, notinit_count'), $strict_user);
+		
+		if (!empty($text_filter)) {
+			foreach ($agents as $index => $agent) {
+				if (strstr($agent['nombre'], $text_filter) === false) {
+					unset($agents[$index]);
+				}
+			}
+		}
 	}
 	else {
 		//Order by id_parent ascendant for to avoid the bugs
@@ -1832,7 +1840,9 @@ function networkmap_cidr_match($ip, $cidr_mask) {
 	return ($ip & $mask) == $subnet;
 }
 
-function networkmap_get_new_nodes_from_ip_mask($ip_mask, $fields = array(), $strict_user = false) {
+function networkmap_get_new_nodes_from_ip_mask($ip_mask,
+	$fields = array(), $strict_user = false) {
+	
 	$list_ip_masks = explode(",", $ip_mask);
 	
 	$list_address = db_get_all_rows_in_table('taddress');

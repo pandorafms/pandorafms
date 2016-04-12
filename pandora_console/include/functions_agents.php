@@ -1202,11 +1202,13 @@ function agents_get_modules ($id_agent = null, $details = false,
 	
 	//$where .= " AND id_policy_module = 0 ";
 	
-	$where_tags = tags_get_acl_tags($config['id_user'], $id_groups, 'AR',
-		'module_condition', 'AND', 'tagente_modulo', false, array(),
-		true); 
-	
-	$where .= "\n\n" . $where_tags;
+	if (tags_has_user_acl_tags($config['id_user'])){
+		$where_tags = tags_get_acl_tags($config['id_user'], $id_groups, 'AR',
+			'module_condition', 'AND', 'tagente_modulo', false, array(),
+			true); 
+		
+		$where .= "\n\n" . $where_tags;
+	}
 	
 	$sql = sprintf ('SELECT %s%s
 					FROM tagente_modulo

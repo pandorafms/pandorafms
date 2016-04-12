@@ -229,9 +229,9 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0,
 	$zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0,
 	$id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
-	$relative = false, $text_filter = '', $l2_network_or_mixed = false, $ip_mask = null,
-	$dont_show_subgroups = false, $strict_user = false, $size_canvas = null,
-	$old_mode = false) {
+	$relative = false, $text_filter = '', $l2_network_or_mixed = false,
+	$ip_mask = null, $dont_show_subgroups = false, $strict_user = false,
+	$size_canvas = null, $old_mode = false) {
 	
 	global $config;
 	
@@ -385,7 +385,8 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 				$modules = tags_get_agent_modules ($agent['id_agente'], false, $acltags, false, $filter, false);
 			}
 			else {
-				$modules = agents_get_modules($agent['id_agente'], '*', $filter, true, true);
+				$modules = agents_get_modules(
+					$agent['id_agente'], '*', $filter, true, true);
 			}
 			
 			if ($modules === false)
@@ -1828,40 +1829,47 @@ function networkmap_get_new_nodes_from_ip_mask($ip_mask, $fields = array(), $str
 	$list_address = db_get_all_rows_in_table('taddress');
 	if (empty($address))
 		$address = array();
-
+	
 	if ($strict_user) {
 		$filter['group_by'] = 'tagente.id_agente';
 		$fields = array ('tagente.id_agente');
 		$acltags = tags_get_user_module_and_tags ($config['id_user'],'AR', $strict_user);
 		$user_agents = tags_get_all_user_agents (false, $config['id_user'], $acltags, $filter, $fields, false, $strict_user, true);
-	
+		
 		foreach ($all_user_agents as $agent) {
 			$user_agents[$agent['id_agente']] = $agent['id_agente'];
 		}
 	}
-
+	
 	$agents = array();
 	foreach ($list_address as $address) {
 		foreach ($list_ip_masks as $ip_mask) {
 			if (networkmap_cidr_match($address['ip'], $ip_mask)) {
-				$id_agent = db_get_value_filter('id_agent', 'taddress_agent', array('id_a' => $address['id_a']));
-						
+				$id_agent = db_get_value_filter('id_agent', 'taddress_agent',
+					array('id_a' => $address['id_a']));
+				
+				if (empty($id_agent)) {
+					continue;
+				}
+				
 				if (empty($fields)) {
 					if ($strict_user) {
 						if (array_key_exists($id_agent, $user_agents)) {
 							$agents[] = db_get_value_filter('id_agent', 'taddress_agent', array('id_a' => $address['id_a']));
 						}
-					} else {
+					}
+					else {
 						$agents[] = db_get_value_filter('id_agent', 'taddress_agent', array('id_a' => $address['id_a']));
 					}
-
+				
 				}
 				else {
 					if ($strict_user) {
 						if (array_key_exists($id_agent, $user_agents)) {
 							$agents[] = db_get_row('tagente', 'id_agente', $id_agent, $fields);
 						}
-					} else {
+					}
+					else {
 						$agents[] = db_get_row('tagente', 'id_agente', $id_agent, $fields);
 					}
 				}

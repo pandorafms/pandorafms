@@ -288,7 +288,7 @@ class Networkmap extends Map {
 				$parameters['show_snmp_modules'],
 				false, //cut_names
 				true, // relative
-				'',
+				$this->filter['text'],
 				'mix_l2_l3',
 				$parameters['ip_mask'],
 				$parameters['dont_show_subgroups'],

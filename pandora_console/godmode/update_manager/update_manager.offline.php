@@ -18,6 +18,16 @@ global $config;
 
 ui_require_css_file('update_manager', 'godmode/update_manager/');
 
+check_login ();
+
+// ui_require_css_file('update_manager', 'godmode/update_manager/');
+if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+	db_pandora_audit("ACL Violation", "Trying to access Setup Management");
+	require ("general/noaccess.php");
+	return;
+}
+$baseurl = ui_get_full_url(false, false, false, false);
+
 ?>
 <script type="text/javascript">
 	<?php

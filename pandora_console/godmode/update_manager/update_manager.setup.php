@@ -16,6 +16,14 @@
 
 global $config;
 
+check_login ();
+
+if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+	db_pandora_audit("ACL Violation", "Trying to access Setup Management");
+	require ("general/noaccess.php");
+	return;
+}
+
 $action_update_url_update_manager = (bool)get_parameter(
 	'action_update_url_update_manager', 0);
 

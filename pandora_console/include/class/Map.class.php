@@ -105,14 +105,8 @@ abstract class Map {
 			<?php
 			echo "var nodes = " . json_encode($this->nodes) . ";";
 			echo "var edges = " . json_encode($this->edges) . ";";
+			echo "var filter = " . json_encode($this->filter) . ";";
 			?>
-			var temp = [];
-			for (var i in nodes) { temp[parseInt(i)] = nodes[i];}
-			nodes = temp;
-			
-			temp = [];
-			for (var i in edges) { temp[parseInt(i)] = edges[i];}
-			edges = temp;
 		</script>
 		<?php
 	}

@@ -46,6 +46,7 @@ if (!empty($graph_type)) {
 	include_once($homeurl . 'include/graphs/functions_gd.php');
 	include_once($homeurl . 'include/graphs/functions_utils.php');
 	include_once($homeurl . 'include/graphs/functions_d3.php');
+	include_once($homeurl . 'include/graphs/functions_flot.php');
 }
 
 // Clean the output buffer and turn off output buffering
@@ -540,6 +541,8 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
 	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
 	$dashboard = false, $vconsole = false) {
+	
+	include_once("functions_flot.php");
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	

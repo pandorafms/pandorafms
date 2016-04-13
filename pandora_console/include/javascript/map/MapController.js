@@ -1586,7 +1586,7 @@ MapController.prototype.events_for_nodes = function(id_node) {
 		$.each(nodes, function(i, node) {
 			if (!self.is_draggable(node))
 				return 1; // Continue
-			
+
 			var status_selection =
 				self.get_status_selection_node(node.graph_id);
 			
@@ -1643,6 +1643,7 @@ MapController.prototype.is_draggable = function(node) {
 	var return_var = false;
 	
 	switch (node.type) {
+		case ITEM_TYPE_MODULE_NETWORKMAP:
 		case ITEM_TYPE_AGENT_NETWORKMAP:
 		case ITEM_TYPE_FICTIONAL_NODE:
 			return_var = true;

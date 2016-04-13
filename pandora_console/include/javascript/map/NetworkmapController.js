@@ -117,8 +117,15 @@ NetworkmapController.prototype.init_map = function() {
 NetworkmapController.prototype.filter_only_agents = function(node) {
 	switch (node.type) {
 		case ITEM_TYPE_EDGE_NETWORKMAP:
-		case ITEM_TYPE_MODULE_NETWORKMAP:
 			return false;
+			break;
+		case ITEM_TYPE_MODULE_NETWORKMAP:
+			if (filter['show_modules']) {
+				return true;
+			}
+			else {
+				return false;
+			}
 			break;
 		default:
 			return true;

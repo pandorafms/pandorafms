@@ -232,7 +232,8 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$relative = false, $text_filter = '', $l2_network_or_mixed = false,
 	$ip_mask = null, $dont_show_subgroups = false, $strict_user = false,
 	$size_canvas = null, $old_mode = false, $id_tag = 0,
-	$show_all_modules = false) {
+	$show_all_modules = false, $only_modules_alerts = false,
+	$filter_module_group = 0, $show_modulegroup = false) {
 	
 	global $config;
 	
@@ -380,6 +381,8 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$node_ref = array();
 	$modules_node_ref = array();
 	
+	$module_groups = array();
+	
 	$node_count = 0;
 	
 	foreach ($agents as $agent) {
@@ -402,28 +405,51 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 				$modules = tags_get_agent_modules ($agent['id_agente'], false, $acltags, false, $filter, false);
 			}
 			else {
+				$filter_get_modules = $filter;
+				if ($filter_module_group > 0) {
+					$filter_get_modules['id_module_group'] = $filter_module_group;
+				}
+				
 				$modules = agents_get_modules(
-					$agent['id_agente'], '*', $filter, true, true);
+					$agent['id_agente'], '*', $filter_get_modules, true, true);
 			}
 			
 			if ($modules === false) {
 				$modules = array();
 			}
 			
+			$module_groups[$agent['id_node']] = array();
+			
 			// Parse modules
 			foreach ($modules as $key => $module) {
 				
-				if (!$show_all_modules) {
+				if (!$show_all_modules || $show_snmp_modules) {
 					if ($module['id_tipo_modulo'] != 18 &&
 						(!$l2_network || $module['id_tipo_modulo'] != 6)) {
 						continue;
 					}
 				}
 				
+				$status_module = modules_get_agentmodule_status(
+					$module['id_agente_modulo']);
+				
+				if ($only_modules_alerts) {
+					if (($status_module != AGENT_MODULE_STATUS_NORMAL_ALERT) ||
+						($status_module != AGENT_MODULE_STATUS_WARNING_ALERT) ||
+						($status_module != AGENT_MODULE_STATUS_CRITICAL_ALERT)) {
+						
+						continue;
+					}
+				}
+				
+				
+				
+				
 				$node_count ++;
 				$modules_node_ref[$module['id_agente_modulo']] = $node_count;
 				$module['id_node'] = $node_count;
 				$module['type'] = 'module';
+				$module['status'] = $status_module;
 				
 				// Try to get the interface name
 				if (preg_match ("/_(.+)$/" , (string)$module['nombre'], $matches)) {
@@ -432,11 +458,110 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 					}
 				}
 				
-				// Save node parent information to define edges later
-				$parents[$node_count] = $module['parent'] = $agent['id_node'];
+				
+				
+				//// Show module groups
+				if ($show_modulegroup) {
+					
+					$id_node_module_group = array_search(
+						$module['id_module_group'],
+						$module_groups[$agent['id_node']]);
+					
+					if ($id_node_module_group === false) {
+						$name = db_get_value('name', 'tmodule_group',
+							'id_mg', $module['id_module_group']);
+						
+						if (empty($name))
+							$name = _('N/A');
+						
+						$node_count ++;
+						
+						$module_group = array();
+						$module_group['name'] = $name;
+						$module_group['type'] = "module_group";
+						$module_group['id_server'] = $agent['id_server'];
+						$module_group['id_node'] = $node_count;
+						$module_group['parent'] = $agent['id_node'];
+						$nodes[$node_count] = $module_group;
+						
+						$id_node_module_group = $node_count;
+						
+						$module_groups[$agent['id_node']][$node_count]
+						 = $module['id_module_group'];
+						
+						$parents[$id_node_module_group] =
+							$module_group['parent'];
+					}
+					
+					
+					
+					//Change the status to module group to worst
+					//~ $status = modules_get_agentmodule_status(
+						//~ $module['id_agente_modulo'],
+						//~ false, true, $agent['id_server']);
+					
+					switch ($module['status']) {
+						case 0: // Normal monitor
+							if (empty(
+								$nodes[$id_node_module_group]['status']))
+							{
+								$nodes[$id_node_module_group]['status'] = 0;
+							}
+							elseif ($nodes[$id_node_module_group]['status']
+								== -1) {
+								$nodes[$id_node_module_group]['status'] = 0;
+							}
+							break;
+						case 1: //Critical monitor
+							$nodes[$id_node_module_group]['status'] = 1;
+							break;
+						case 2: // Warning monitor
+							if (empty(
+								$nodes[$id_node_module_group]['status']))
+							{
+								$nodes[$id_node_module_group]['status'] = 0;
+							}
+							elseif ($nodes[$id_node_module_group]['status']
+								!= 1) {
+								$nodes[$id_node_module_group]['status'] = 2;
+							}
+							break;
+						case 4: // Alert fired
+							if (empty(
+								$nodes[$id_node_module_group]['status']))
+							{
+								$nodes[$id_node_module_group]['status'] = 4;
+							}
+							elseif (($nodes[$id_node_module_group]['status']
+								== 0) ||
+								($nodes[$id_node_module_group]['status']
+								== -1)) {
+								$nodes[$id_node_module_group]['status'] = 4;
+							}
+							break;
+						default: // Unknown monitor
+							$nodes[$id_node_module_group]['status'] = -1;
+							break;
+					}
+					
+					
+					
+					
+					$module['parent'] = $id_node_module_group;
+					
+					$parents[$module['id_node']] =
+						$id_node_module_group;
+					
+				}
+				else {
+					$parents[$module['id_node']] =
+						$module['parent'] =
+						$agent['id_node'];
+				}
+				////////////////////////////////////////////////////////
 				
 				// Add node
-				$nodes[$node_count] = $module;
+				$nodes[$module['id_node']] = $module;
 			}
 		}
 	}
@@ -444,7 +569,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	// Drop the modules without a partner if l2_network is true
 	// and the snmp interfaces token is false
 	if ($l2_network_or_mixed === 'mix_l2_l3') {
-		if (!$show_all_modules) {
+		if (!$show_all_modules || $show_snmp_modules) {
 			foreach ($modules_node_ref as $id_module => $node_count) {
 				if (! modules_relation_exists($id_module, array_keys($modules_node_ref))) {
 					if ($show_snmp_modules) {
@@ -550,6 +675,10 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 				$graph .= networkmap_create_module_node($node, $simple,
 					$font_size) . "\n\t\t";
 				$stats['modules'][] = $node['id_agente_modulo'];
+				break;
+			case 'module_group':
+				$graph .= networkmap_create_module_group_node ($node , $simple, $font_size, true, $node['id_server']) . "\n\t\t";
+				$stats['module_group'][] = null;
 				break;
 		}
 	}
@@ -1268,7 +1397,7 @@ function networkmap_create_module_group_node ($module_group, $simple = 0, $font_
 		$node = $module_group['id_node'].' [ color="' . $status_color .
 			'", fontsize='.$font_size.', style="filled", ' .
 			'fixedsize=true, width=0.30, height=0.30, ' .
-			'label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' .
+			'label=<<TABLE data-status="' . $module_group['status'] . '" CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' .
 			io_safe_output($module_group['name']) . '</TD></TR></TABLE>>,
 			shape="square", URL="' . $url . '",
 			tooltip="' . $url_tooltip . '"];';

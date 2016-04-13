@@ -99,6 +99,12 @@ class Networkmap extends Map {
 				if (!is_numeric($graphviz_id))
 					continue;
 				
+				$is_node_module_group = false;
+				if ($this->filter['show_module_group']) {
+					if (strstr($chunks[1], 'URL=""') !== false) {
+						$is_node_module_group = true;
+					}
+				}
 				
 				$chunks = explode("ajax.php?", $chunks[1]);
 				
@@ -110,7 +116,18 @@ class Networkmap extends Map {
 				$shape = DEFAULT_NODE_SHAPE;
 				$color = DEFAULT_NODE_COLOR;
 				$image = DEFAULT_NODE_IMAGE;
-				if (strstr($chunks[1], "&id_module=") !== false) {
+				
+				if ($is_node_module_group) {
+					preg_match("/<TR><TD>(.*)<\/TD><\/TR><\/TABLE>>/", $chunks[0], $matches);
+					$title = $matches[1];
+					$id = db_get_value('id_mg', 'tmodule_group',
+						'name', $title);
+					$type = ITEM_TYPE_MODULEGROUP_NETWORKMAP;
+					preg_match("/data-status=\"([0-9]*)\"/", $chunks[1], $matches);
+					$status = $matches[1];
+					$shape = "rhombus";
+				}
+				elseif (strstr($chunks[1], "&id_module=") !== false) {
 					// MODULE
 					preg_match("/id_module=([0-9]*)/", $chunks[1], $matches);
 					$id = $matches[1];
@@ -260,7 +277,9 @@ class Networkmap extends Map {
 		$return['filter'] = $this->filter['text'];
 		$return['id_tag'] = $this->filter['id_tag'];
 		$return['show_modules'] = $this->filter['show_modules'];
-		
+		$return['only_modules_alerts'] = $this->filter['only_modules_with_alerts'];
+		$return['module_group'] = $this->filter['module_group'];
+		$return['show_modulegroup'] = $this->filter['show_module_group'];
 		
 		return $return;
 	}
@@ -298,7 +317,10 @@ class Networkmap extends Map {
 				null,
 				$parameters['old_mode'],
 				$parameters['id_tag'],
-				$parameters['show_modules']);
+				$parameters['show_modules'],
+				$parameters['only_modules_alerts'],
+				$parameters['module_group'],
+				$parameters['show_modulegroup']);
 			
 			
 			$filename_dot = sys_get_temp_dir() . "/networkmap" . uniqid() . ".dot";

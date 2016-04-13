@@ -118,6 +118,7 @@ class Networkmap extends Map {
 					$status = modules_get_agentmodule_status($id);
 					$title = modules_get_agentmodule_name($id);
 					$type = ITEM_TYPE_MODULE_NETWORKMAP;
+					$shape = "square";
 				}
 				else {
 					// AGENT
@@ -258,6 +259,7 @@ class Networkmap extends Map {
 		$return['old_mode'] = false;
 		$return['filter'] = $this->filter['text'];
 		$return['id_tag'] = $this->filter['id_tag'];
+		$return['show_modules'] = $this->filter['show_modules'];
 		
 		
 		return $return;
@@ -295,8 +297,8 @@ class Networkmap extends Map {
 				false,
 				null,
 				$parameters['old_mode'],
-				$parameters['id_tag']);
-			
+				$parameters['id_tag'],
+				$parameters['show_modules']);
 			
 			
 			$filename_dot = sys_get_temp_dir() . "/networkmap" . uniqid() . ".dot";

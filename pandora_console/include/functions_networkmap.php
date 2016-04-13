@@ -231,7 +231,8 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$id_networkmap = 0, $show_snmp_modules = 0, $cut_names = true,
 	$relative = false, $text_filter = '', $l2_network_or_mixed = false,
 	$ip_mask = null, $dont_show_subgroups = false, $strict_user = false,
-	$size_canvas = null, $old_mode = false, $id_tag = 0) {
+	$size_canvas = null, $old_mode = false, $id_tag = 0,
+	$show_all_modules = false) {
 	
 	global $config;
 	
@@ -393,7 +394,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		$nodes[$node_count] = $agent;
 		
 		if ($l2_network || $show_snmp_modules) {
-			
 			$filter = array();
 			$filter['disabled'] = 0;
 			
@@ -406,15 +406,18 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 					$agent['id_agente'], '*', $filter, true, true);
 			}
 			
-			if ($modules === false)
+			if ($modules === false) {
 				$modules = array();
+			}
 			
 			// Parse modules
 			foreach ($modules as $key => $module) {
 				
-				if ($module['id_tipo_modulo'] != 18 &&
-					(!$l2_network || $module['id_tipo_modulo'] != 6)) {
-					continue;
+				if (!$show_all_modules) {
+					if ($module['id_tipo_modulo'] != 18 &&
+						(!$l2_network || $module['id_tipo_modulo'] != 6)) {
+						continue;
+					}
 				}
 				
 				$node_count ++;
@@ -441,29 +444,30 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	// Drop the modules without a partner if l2_network is true
 	// and the snmp interfaces token is false
 	if ($l2_network_or_mixed === 'mix_l2_l3') {
-		
-		foreach ($modules_node_ref as $id_module => $node_count) {
-			if (! modules_relation_exists($id_module, array_keys($modules_node_ref))) {
-				if ($show_snmp_modules) {
-					$module_type = modules_get_agentmodule_type($id_module);
-					if ($module_type != 18) {
+		if (!$show_all_modules) {
+			foreach ($modules_node_ref as $id_module => $node_count) {
+				if (! modules_relation_exists($id_module, array_keys($modules_node_ref))) {
+					if ($show_snmp_modules) {
+						$module_type = modules_get_agentmodule_type($id_module);
+						if ($module_type != 18) {
+							unset($nodes[$node_count]);
+							unset($orphans[$node_count]);
+							unset($parents[$node_count]);
+						}
+					}
+					else {
 						unset($nodes[$node_count]);
 						unset($orphans[$node_count]);
 						unset($parents[$node_count]);
 					}
 				}
 				else {
-					unset($nodes[$node_count]);
-					unset($orphans[$node_count]);
-					unset($parents[$node_count]);
-				}
-			}
-			else {
-				$module_type = modules_get_agentmodule_type($id_module);
-				if ($module_type != 18) {
-					unset($nodes[$node_count]);
-					unset($orphans[$node_count]);
-					unset($parents[$node_count]);
+					$module_type = modules_get_agentmodule_type($id_module);
+					if ($module_type != 18) {
+						unset($nodes[$node_count]);
+						unset($orphans[$node_count]);
+						unset($parents[$node_count]);
+					}
 				}
 			}
 		}

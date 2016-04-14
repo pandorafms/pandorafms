@@ -73,20 +73,16 @@ NetworkmapController.prototype.init_map = function() {
 
 		var arrows_GM = self.get_arrow_GM(edge['to'], edge['from']);
 		if (arrows_GM !== null) {
-			$.each(arrows_GM, function(i, arrow_GM) {
-				if (!self.exists_arrow(clean_arrows, arrow_GM)) {
-					clean_arrows.push(arrow_GM);
-				}
-			});
+			if (!self.exists_arrow(clean_arrows, arrow_GM)) {
+				clean_arrows.push(arrow_GM);
+			}
 		}
 
-		var arrows_AG = self.get_arrow_AG(edge['to'], edge['from']);
-		if (arrows_AG !== null) {
-			$.each(arrows_AG, function(i, arrow_AG) {
-				if (!self.exists_arrow(clean_arrows, arrow_AG)) {
-					clean_arrows.push(arrow_AG);
-				}
-			});
+		var arrow_AG = self.get_arrow_AG(edge['to'], edge['from']);
+		if (arrow_AG !== null) {
+			if (!self.exists_arrow(clean_arrows, arrow_AG)) {
+				clean_arrows.push(arrow_AG);
+			}
 		}
 	});
 	
@@ -428,38 +424,38 @@ NetworkmapController.prototype.get_arrow_GM = function(id_to, id_from) {
 */
 NetworkmapController.prototype.get_arrow_AG = function(id_to, id_from) {
 	var self = this;
-	// var arrow_AG;
-	// var found = false;
-	// 
-	// $.each(edges, function(i, edge) {
-	// 	
-	// 	if (self.get_node_type(id_to) == ITEM_TYPE_MODULEGROUP_NETWORKMAP ||
-	// 		self.get_node_type(id_from) == ITEM_TYPE_MODULEGROUP_NETWORKMAP) {
-	// 		var arrow = self.get_arrow(id_to, id_from);
-	// 		
-	// 		arrow_AG = {};
-	// 		arrow_AG['type'] = 'AG';
-	// 		arrow_AG['graph_id'] = arrow['arrow']['graph_id'];
-	// 		arrow_AG['to'] = arrow['nodes']['to'];
-	// 		arrow_AG['to_module'] = null;
-	// 		arrow_AG['to_status'] = null;
-	// 		arrow_AG['to_title'] = null;
-	// 		arrow_AG['from'] = arrow['nodes']['from'];
-	// 		arrow_AG['from_module'] = null;
-	// 		arrow_AG['from_status'] = null;
-	// 		arrow_AG['from_title'] = null;
-	// 		
-	// 		found = true;
-	// 	}
-	// });
-	// 
-	// if (found) {
-	// 	return arrow_AG;
-	// }
-	// else {
-	// 	return null;
-	// }
-	return null;
+	
+	var arrow_AG;
+	var found = false;
+	
+	$.each(edges, function(i, edge) {
+		if (self.get_node_type(id_to) == ITEM_TYPE_MODULEGROUP_NETWORKMAP ||
+			self.get_node_type(id_from) == ITEM_TYPE_MODULEGROUP_NETWORKMAP) {
+			
+			var arrow = self.get_arrow(id_to, id_from);
+			
+			arrow_AG = {};
+			arrow_AG['type'] = 'AG';
+			arrow_AG['graph_id'] = arrow['arrow']['graph_id'];
+			arrow_AG['to'] = arrow['arrow']['to'];
+			arrow_AG['to_module'] = null;
+			arrow_AG['to_status'] = null;
+			arrow_AG['to_title'] = null;
+			arrow_AG['from'] = arrow['arrow']['from'];
+			arrow_AG['from_module'] = null;
+			arrow_AG['from_status'] = null;
+			arrow_AG['from_title'] = null;
+			
+			found = true;
+		}
+	});
+	
+	if (found) {
+		return arrow_AG;
+	}
+	else {
+		return null;
+	}
 }
 
 /**
@@ -714,6 +710,8 @@ NetworkmapController.prototype.arrow_by_pieces = function (target, arrow_data, w
 	else {
 		switch (arrow_data['type']) {
 			case 'AF_or_FF':
+			case 'AG':
+			case 'GM':
 			case 'AA':
 				self.arrow_by_pieces_AA(self._target + " svg", arrow_data, wait);
 				break;
@@ -1074,6 +1072,11 @@ NetworkmapController.prototype.arrow_by_pieces_AA = function(target, arrow_data,
 		}
 	}
 	
+	var arrow_AG = false;
+	if (arrow_data['type'] == 'AG') {
+		arrow_AG = true;
+	}
+	
 	var arrow_layout = d3
 		.select(target +" #arrow_" + arrow_data['graph_id']);
 	
@@ -1139,9 +1142,14 @@ NetworkmapController.prototype.arrow_by_pieces_AA = function(target, arrow_data,
 				
 			}
 			else {
-				var id_node_to = "node_" + arrow_data['to']['graph_id'];
-				var id_node_from = "node_" + arrow_data['from']['graph_id'];
-				
+				if (arrow_AG) {
+					var id_node_to = "node_" + arrow_data['to'];
+					var id_node_from = "node_" + arrow_data['from'];
+				}
+				else {
+					var id_node_to = "node_" + arrow_data['to']['graph_id'];
+					var id_node_from = "node_" + arrow_data['from']['graph_id'];
+				}
 				if (self._first_paint_arrows) {
 					if (self.cache_is_element("center" + id_node_to)) {
 						var c_elem2 = self._cache_elements["center" + id_node_to];

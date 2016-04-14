@@ -70,6 +70,24 @@ NetworkmapController.prototype.init_map = function() {
 				}
 			});
 		}
+
+		var arrows_AM = self.get_arrow_AM(edge['to'], edge['from']);
+		if (arrows_AM !== null) {
+			$.each(arrows_AM, function(i, arrow_AM) {
+				if (!self.exists_arrow(clean_arrows, arrow_AM)) {
+					clean_arrows.push(arrow_AM);
+				}
+			});
+		}
+
+		var arrows_AG = self.get_arrow_AG(edge['to'], edge['from']);
+		if (arrows_AG !== null) {
+			$.each(arrows_AG, function(i, arrow_AG) {
+				if (!self.exists_arrow(clean_arrows, arrow_AG)) {
+					clean_arrows.push(arrow_AG);
+				}
+			});
+		}
 	});
 	
 	clean_arrows.forEach(function(arrow, index) {
@@ -390,6 +408,57 @@ NetworkmapController.prototype.get_arrow_AA = function(graph_id, id_to, id_from)
 		}
 	}
 	
+	return null;
+}
+
+/**
+* Function get_arrow_AM
+* Return  array (arrow)
+* This function returns an AM arrow
+*/
+NetworkmapController.prototype.get_arrow_AM = function(id_to, id_from) {
+	var self = this;
+	return null;
+}
+
+/**
+* Function get_arrow_AG
+* Return  array (arrow)
+* This function returns an AG arrow
+*/
+NetworkmapController.prototype.get_arrow_AG = function(id_to, id_from) {
+	var self = this;
+	// var arrow_AG;
+	// var found = false;
+	// 
+	// $.each(edges, function(i, edge) {
+	// 	
+	// 	if (self.get_node_type(id_to) == ITEM_TYPE_MODULEGROUP_NETWORKMAP ||
+	// 		self.get_node_type(id_from) == ITEM_TYPE_MODULEGROUP_NETWORKMAP) {
+	// 		var arrow = self.get_arrow(id_to, id_from);
+	// 		
+	// 		arrow_AG = {};
+	// 		arrow_AG['type'] = 'AG';
+	// 		arrow_AG['graph_id'] = arrow['arrow']['graph_id'];
+	// 		arrow_AG['to'] = arrow['nodes']['to'];
+	// 		arrow_AG['to_module'] = null;
+	// 		arrow_AG['to_status'] = null;
+	// 		arrow_AG['to_title'] = null;
+	// 		arrow_AG['from'] = arrow['nodes']['from'];
+	// 		arrow_AG['from_module'] = null;
+	// 		arrow_AG['from_status'] = null;
+	// 		arrow_AG['from_title'] = null;
+	// 		
+	// 		found = true;
+	// 	}
+	// });
+	// 
+	// if (found) {
+	// 	return arrow_AG;
+	// }
+	// else {
+	// 	return null;
+	// }
 	return null;
 }
 

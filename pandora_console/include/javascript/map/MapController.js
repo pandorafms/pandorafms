@@ -1644,6 +1644,7 @@ MapController.prototype.is_draggable = function(node) {
 	
 	switch (node.type) {
 		case ITEM_TYPE_MODULE_NETWORKMAP:
+		case ITEM_TYPE_MODULEGROUP_NETWORKMAP:
 		case ITEM_TYPE_AGENT_NETWORKMAP:
 		case ITEM_TYPE_FICTIONAL_NODE:
 			return_var = true;

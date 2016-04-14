@@ -133,7 +133,6 @@ NetworkmapController.prototype.filter_only_agents = function(node) {
 	}
 }
 
-
 /**
 * Function get_arrow_AMMA
 * Return  array (arrow)

@@ -71,11 +71,11 @@ NetworkmapController.prototype.init_map = function() {
 			});
 		}
 
-		var arrows_AM = self.get_arrow_AM(edge['to'], edge['from']);
-		if (arrows_AM !== null) {
-			$.each(arrows_AM, function(i, arrow_AM) {
-				if (!self.exists_arrow(clean_arrows, arrow_AM)) {
-					clean_arrows.push(arrow_AM);
+		var arrows_GM = self.get_arrow_GM(edge['to'], edge['from']);
+		if (arrows_GM !== null) {
+			$.each(arrows_GM, function(i, arrow_GM) {
+				if (!self.exists_arrow(clean_arrows, arrow_GM)) {
+					clean_arrows.push(arrow_GM);
 				}
 			});
 		}
@@ -414,9 +414,9 @@ NetworkmapController.prototype.get_arrow_AA = function(graph_id, id_to, id_from)
 /**
 * Function get_arrow_AM
 * Return  array (arrow)
-* This function returns an AM arrow
+* This function returns an GM arrow
 */
-NetworkmapController.prototype.get_arrow_AM = function(id_to, id_from) {
+NetworkmapController.prototype.get_arrow_GM = function(id_to, id_from) {
 	var self = this;
 	return null;
 }

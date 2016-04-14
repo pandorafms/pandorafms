@@ -71,8 +71,8 @@ NetworkmapController.prototype.init_map = function() {
 			});
 		}
 
-		var arrows_GM = self.get_arrow_GM(edge['to'], edge['from']);
-		if (arrows_GM !== null) {
+		var arrow_GM = self.get_arrow_GM(edge['to'], edge['from']);
+		if (arrow_GM !== null) {
 			if (!self.exists_arrow(clean_arrows, arrow_GM)) {
 				clean_arrows.push(arrow_GM);
 			}
@@ -408,13 +408,47 @@ NetworkmapController.prototype.get_arrow_AA = function(graph_id, id_to, id_from)
 }
 
 /**
-* Function get_arrow_AM
+* Function get_arrow_GM
 * Return  array (arrow)
 * This function returns an GM arrow
 */
 NetworkmapController.prototype.get_arrow_GM = function(id_to, id_from) {
 	var self = this;
-	return null;
+	
+	var arrow_GM;
+	var found = false;
+	
+	$.each(edges, function(i, edge) {
+		if (self.get_node_type(id_to) == ITEM_TYPE_MODULEGROUP_NETWORKMAP ||
+			self.get_node_type(id_from) == ITEM_TYPE_MODULEGROUP_NETWORKMAP) {
+			if (self.get_node_type(id_to) == ITEM_TYPE_MODULE_NETWORKMAP ||
+				self.get_node_type(id_from) == ITEM_TYPE_MODULE_NETWORKMAP) {
+				
+				var arrow = self.get_arrow(id_to, id_from);
+				
+				arrow_GM = {};
+				arrow_GM['type'] = 'GM';
+				arrow_GM['graph_id'] = arrow['arrow']['graph_id'];
+				arrow_GM['to'] = arrow['nodes']['to'];
+				arrow_GM['to_module'] = null;
+				arrow_GM['to_status'] = null;
+				arrow_GM['to_title'] = null;
+				arrow_GM['from'] = arrow['nodes']['from'];
+				arrow_GM['from_module'] = null;
+				arrow_GM['from_status'] = null;
+				arrow_GM['from_title'] = null;
+				
+				found = true;
+			}
+		}
+	});
+	
+	if (found) {
+		return arrow_GM;
+	}
+	else {
+		return null;
+	}
 }
 
 /**
@@ -431,22 +465,25 @@ NetworkmapController.prototype.get_arrow_AG = function(id_to, id_from) {
 	$.each(edges, function(i, edge) {
 		if (self.get_node_type(id_to) == ITEM_TYPE_MODULEGROUP_NETWORKMAP ||
 			self.get_node_type(id_from) == ITEM_TYPE_MODULEGROUP_NETWORKMAP) {
-			
-			var arrow = self.get_arrow(id_to, id_from);
-			
-			arrow_AG = {};
-			arrow_AG['type'] = 'AG';
-			arrow_AG['graph_id'] = arrow['arrow']['graph_id'];
-			arrow_AG['to'] = arrow['arrow']['to'];
-			arrow_AG['to_module'] = null;
-			arrow_AG['to_status'] = null;
-			arrow_AG['to_title'] = null;
-			arrow_AG['from'] = arrow['arrow']['from'];
-			arrow_AG['from_module'] = null;
-			arrow_AG['from_status'] = null;
-			arrow_AG['from_title'] = null;
-			
-			found = true;
+			if (self.get_node_type(id_to) == ITEM_TYPE_AGENT_NETWORKMAP ||
+				self.get_node_type(id_from) == ITEM_TYPE_AGENT_NETWORKMAP) {
+				
+				var arrow = self.get_arrow(id_to, id_from);
+				
+				arrow_AG = {};
+				arrow_AG['type'] = 'AG';
+				arrow_AG['graph_id'] = arrow['arrow']['graph_id'];
+				arrow_AG['to'] = arrow['nodes']['to'];
+				arrow_AG['to_module'] = null;
+				arrow_AG['to_status'] = null;
+				arrow_AG['to_title'] = null;
+				arrow_AG['from'] = arrow['nodes']['from'];
+				arrow_AG['from_module'] = null;
+				arrow_AG['from_status'] = null;
+				arrow_AG['from_title'] = null;
+				
+				found = true;
+			}
 		}
 	});
 	
@@ -488,6 +525,8 @@ NetworkmapController.prototype.exists_arrow = function(arrows, arrow) {
 			
 			switch (arrow['type']) {
 				case 'AF_or_FF':
+				case 'GM':
+				case 'AG':
 				case 'AA':
 				case 'AMMA':
 					if (a_to == arrow_to) {
@@ -1053,7 +1092,7 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 }
 
 /**
-* Function arrow_by_pieces
+* Function arrow_by_pieces_AA
 * Return void
 * This function print the arrow by pieces (3 steps)
 */
@@ -1070,11 +1109,6 @@ NetworkmapController.prototype.arrow_by_pieces_AA = function(target, arrow_data,
 		if (count_files == 0) {
 			callback();
 		}
-	}
-	
-	var arrow_AG = false;
-	if (arrow_data['type'] == 'AG') {
-		arrow_AG = true;
 	}
 	
 	var arrow_layout = d3
@@ -1142,14 +1176,8 @@ NetworkmapController.prototype.arrow_by_pieces_AA = function(target, arrow_data,
 				
 			}
 			else {
-				if (arrow_AG) {
-					var id_node_to = "node_" + arrow_data['to'];
-					var id_node_from = "node_" + arrow_data['from'];
-				}
-				else {
-					var id_node_to = "node_" + arrow_data['to']['graph_id'];
-					var id_node_from = "node_" + arrow_data['from']['graph_id'];
-				}
+				var id_node_to = "node_" + arrow_data['to']['graph_id'];
+				var id_node_from = "node_" + arrow_data['from']['graph_id'];
 				if (self._first_paint_arrows) {
 					if (self.cache_is_element("center" + id_node_to)) {
 						var c_elem2 = self._cache_elements["center" + id_node_to];

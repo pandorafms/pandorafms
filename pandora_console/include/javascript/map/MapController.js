@@ -238,11 +238,9 @@ MapController.prototype.ini_selection_rectangle = function() {
 MapController.prototype.minimap_get_size = function() {
 	var self = this;
 	
-	var map_size = d3.select(self._target + " .minimap").node().getBBox();
-	
 	var minimap_size = [];
-	minimap_size[0] = map_size.width;
-	minimap_size[1] = map_size.height;
+	minimap_size[0] = d3.selectAll(self._target + " .minimap rect").attr("width");
+	minimap_size[1] = d3.selectAll(self._target + " .minimap rect").attr("height");
 	
 	return minimap_size;
 }
@@ -492,7 +490,8 @@ MapController.prototype.paint_toggle_button = function(wait) {
 				toggle_minimap_button_layer.node().getBBox();
 			
 			transform.translate[0] = minimap_transform.translate[0];
-			transform.translate[1] = self.minimap_get_size()[1] - toggle_minimap_button_layer_bbox.height;
+			transform.translate[1] = self.minimap_get_size()[1]
+				- toggle_minimap_button_layer_bbox.height;
 			
 			toggle_minimap_button_layer.attr("transform", transform.toString());
 			
@@ -569,6 +568,21 @@ MapController.prototype.event_toggle_minimap = function() {
 	}
 }
 
+MapController.prototype.get_real_size_map = function() {
+	var self = this;
+	
+	var map_size = d3.select(self._target + " .viewport").node().getBBox();
+	
+	if (map_size.width == 0) {
+		map_size.width  = 100;
+	}
+	if (map_size.height == 0) {
+		map_size.height = 100;
+	}
+	
+	return map_size;
+}
+
 /**
 * Function paint_minimap
 * Return  void
@@ -578,7 +592,7 @@ MapController.prototype.paint_minimap = function() {
 	var self = this;
 	
 	var screen_size = d3.select(self._target).node().getBoundingClientRect();
-	var map_size = d3.select(self._target + " .viewport").node().getBBox();
+	var map_size = self.get_real_size_map();
 	
 	var real_width = map_size.width + map_size.x;
 	var real_height = map_size.height + map_size.y;
@@ -592,6 +606,9 @@ MapController.prototype.paint_minimap = function() {
 		max_screen = screen_size.width;
 	
 	self._relation = RELATION_MINIMAP * max_map / max_screen;
+	if (self._relation < 1)
+		self._relation = 1;
+	
 	
 	var minimap_map_width = (map_size.width + map_size.x) / self._relation;
 	var minimap_map_height = (map_size.height + map_size.y) / self._relation;

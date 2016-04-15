@@ -707,6 +707,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		}
 	}
 	
+	
 	// Define edges for the module interfaces relations
 	// Get the remote_snmp_proc relations
 	$relations = modules_get_relations();
@@ -740,24 +741,27 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 					$id_networkmap);
 			}
 		}
+		// Relation into agents 
 		elseif ($module_a_type == 6 && $module_b_type == 6) {
-			if (isset($node_ref[$agent_a]) &&
-				isset($node_ref[$agent_b])) {
-				$graph .= networkmap_create_edge(
-					$node_ref[$agent_a],
-					$node_ref[$agent_b],
-					$layout,
-					$nooverlap,
-					$pure,
-					$zoom,
-					$ranksep,
-					$simple,
-					$regen,
-					$font_size,
-					$group,
-					'operation/agentes/networkmap',
-					'topology',
-					$id_networkmap);
+			if ($l2_network_or_mixed !== 'mix_l2_l3') {
+				if (isset($node_ref[$agent_a]) &&
+					isset($node_ref[$agent_b])) {
+					$graph .= networkmap_create_edge(
+						$node_ref[$agent_a],
+						$node_ref[$agent_b],
+						$layout,
+						$nooverlap,
+						$pure,
+						$zoom,
+						$ranksep,
+						$simple,
+						$regen,
+						$font_size,
+						$group,
+						'operation/agentes/networkmap',
+						'topology',
+						$id_networkmap);
+				}
 			}
 		
 		}

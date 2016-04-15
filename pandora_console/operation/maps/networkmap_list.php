@@ -301,6 +301,12 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 		$filter['show_pandora_nodes'] = $show_pandora_nodes;
 		$filter['show_agents'] = $show_agents;
 		$filter['show_modules'] = $show_modules;
+		if (!$show_modules) {
+			$show_module_group = 0;
+			$module_group = 0;
+			$only_snmp_modules = 0;
+			$only_modules_with_alerts = 0;
+		}
 		$filter['module_group'] = $module_group;
 		$filter['show_module_group'] = $show_module_group;
 		$filter['only_snmp_modules'] = $only_snmp_modules;

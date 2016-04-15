@@ -1661,13 +1661,31 @@ MapController.prototype.is_draggable = function(node) {
 	
 	switch (node.type) {
 		case ITEM_TYPE_MODULE_NETWORKMAP:
+			if (filter['show_modules']) {
+				return_var = true;
+			}
+			else {
+				return_var = false;
+			}
+			break;
 		case ITEM_TYPE_MODULEGROUP_NETWORKMAP:
+			if (filter['show_modules']) {
+				if (filter['show_module_group']) {
+					return_var = true;
+				}
+				else {
+					return_var = false;
+				}
+			}
+			else {
+				return_var = false;
+			}
+			break;
 		case ITEM_TYPE_AGENT_NETWORKMAP:
 		case ITEM_TYPE_FICTIONAL_NODE:
 			return_var = true;
 			break;
 	}
-	
 	
 	return return_var;
 }

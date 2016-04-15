@@ -70,18 +70,21 @@ NetworkmapController.prototype.init_map = function() {
 				}
 			});
 		}
+		if (filter['show_modules']) {
+			if (filter['show_module_group']) {
+				var arrow_GM = self.get_arrow_GM(edge['to'], edge['from']);
+				if (arrow_GM !== null) {
+					if (!self.exists_arrow(clean_arrows, arrow_GM)) {
+						clean_arrows.push(arrow_GM);
+					}
+				}
 
-		var arrow_GM = self.get_arrow_GM(edge['to'], edge['from']);
-		if (arrow_GM !== null) {
-			if (!self.exists_arrow(clean_arrows, arrow_GM)) {
-				clean_arrows.push(arrow_GM);
-			}
-		}
-
-		var arrow_AG = self.get_arrow_AG(edge['to'], edge['from']);
-		if (arrow_AG !== null) {
-			if (!self.exists_arrow(clean_arrows, arrow_AG)) {
-				clean_arrows.push(arrow_AG);
+				var arrow_AG = self.get_arrow_AG(edge['to'], edge['from']);
+				if (arrow_AG !== null) {
+					if (!self.exists_arrow(clean_arrows, arrow_AG)) {
+						clean_arrows.push(arrow_AG);
+					}
+				}
 			}
 		}
 	});
@@ -141,6 +144,18 @@ NetworkmapController.prototype.filter_only_agents = function(node) {
 				return false;
 			}
 			break;
+		case ITEM_TYPE_MODULEGROUP_NETWORKMAP:
+			if (filter['show_modules']) {
+				if (filter['show_module_group']) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+			else {
+				return false;
+			}
 		default:
 			return true;
 			break;

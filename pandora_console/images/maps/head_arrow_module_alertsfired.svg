@@ -11,16 +11,16 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
 		<rect
 			y="0"
 			x="0"
-			height="100"
-			width="100"
+			height="20"
+			width="20"
 			style="
 			fill:#000000;
 			fill-opacity:0;"
 			/>
 		<circle
-		   r="50"
-		   cy="50"
-		   cx="50"
+		   r="10"
+		   cy="10"
+		   cx="10"
 		   style="opacity:1;fill:#FAA326;fill-opacity:1;stroke:none;" />
 	</g>
   </symbol>

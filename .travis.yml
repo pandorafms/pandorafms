@@ -1,0 +1,37 @@
+language: perl
+perl:
+  - "5.18-extras"
+  - "5.20-extras"
+
+services:
+  - mysql
+
+sudo: required
+
+before_install:
+  - sudo apt-get install snmp snmpd traceroute xprobe2 nmap snmp-mibs-downloader
+
+# override install
+install:
+  - pushd pandora_server
+  - cpanm --quiet --installdeps --notest .
+  - cpanm --quiet --notest DBD::mysql
+  - cpanm --quiet --notest Scope::Guard
+  - popd
+
+before_script:
+  - mysql -u root -e 'CREATE DATABASE IF NOT EXISTS `pandora`;'
+  - mysql -u root -e 'GRANT ALL PRIVILEGES ON `pandora`.* TO "pandora" IDENTIFIED BY "pandora";'
+  - mysql -u root -e 'FLUSH PRIVILEGES;'
+  - mysql -u root -D pandora < pandora_console/pandoradb.sql
+  - mysql -u root -D pandora < pandora_console/pandoradb_data.sql
+  - sudo mkdir -p /var/log/pandora && sudo chown travis:travis /var/log/pandora
+
+# override script
+script:
+  - pushd pandora_server
+  - prove -lfr
+  - popd
+
+notifications:
+  email: false

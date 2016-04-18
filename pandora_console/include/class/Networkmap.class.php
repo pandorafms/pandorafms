@@ -115,6 +115,12 @@ class Networkmap extends Map {
 					}
 				}
 				
+				$is_node_policy = false;
+				if ($this->subtype == MAP_SUBTYPE_POLICIES) {
+					if (strstr($chunks[1], "&id_policy=") !== false) {
+						$is_node_policy = true;
+					}
+				}
 				
 				
 				$id_agent = null;
@@ -126,7 +132,17 @@ class Networkmap extends Map {
 				$color = DEFAULT_NODE_COLOR;
 				$image = DEFAULT_NODE_IMAGE;
 				
-				if ($is_node_group) {
+				if ($is_node_policy) {
+					preg_match("/<TR><TD>(.*)<\/TD><\/TR><\/TABLE>>/", $chunks[0], $matches);
+					$title = io_safe_output($matches[1]);
+					preg_match("/id_policy=([0-9]*)/", $chunks[1], $matches);
+					$id = $matches[1];
+					$type = ITEM_TYPE_POLICY_NETWORKMAP;
+					preg_match("/data-status=\"([0-9]*)\"/", $chunks[1], $matches);
+					$status = $matches[1];
+					$shape = "rhombus";
+				}
+				elseif ($is_node_group) {
 					preg_match("/<TR><TD>(.*)<\/TD><\/TR><\/TABLE>>/", $chunks[0], $matches);
 					$title = $matches[1];
 					preg_match("/id_group=([0-9]*)/", $chunks[1], $matches);
@@ -302,10 +318,17 @@ class Networkmap extends Map {
 		
 		switch ($this->subtype) {
 			case MAP_SUBTYPE_GROUPS:
+				$return['show_policies'] = false;
 				$return['show_groups'] = true;
 				$return['show_agents'] = $this->filter['show_agents'];
 				break;
+			case MAP_SUBTYPE_POLICIES:
+				$return['show_policies'] = true;
+				$return['show_groups'] = false;
+				$return['show_agents'] = $this->filter['show_agents'];
+				break;
 			default:
+				$return['show_policies'] = false;
 				$return['show_groups'] = false;
 				$return['show_agents'] = true;
 				break;
@@ -353,7 +376,8 @@ class Networkmap extends Map {
 				$parameters['module_group'],
 				$parameters['show_modulegroup'],
 				$parameters['show_groups'],
-				$parameters['show_agents']);
+				$parameters['show_agents'],
+				$parameters['show_policies']);
 			
 			
 			$filename_dot = sys_get_temp_dir() . "/networkmap" . uniqid() . ".dot";

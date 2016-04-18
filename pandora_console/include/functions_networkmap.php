@@ -234,7 +234,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$size_canvas = null, $old_mode = false, $id_tag = 0,
 	$show_all_modules = false, $only_modules_alerts = false,
 	$filter_module_group = 0, $show_modulegroup = false,
-	$show_groups = false, $show_agents = true) {
+	$show_groups = false, $show_agents = true, $show_policies = false) {
 	
 	global $config;
 	
@@ -371,6 +371,18 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		}
 	}
 	
+	// Get policy data
+	if ($show_policies) {
+		
+		$policies =
+			enterprise_hook("networkmap_enterprise_get_policies",
+				array($group));
+		
+		$agents = enterprise_hook(
+			"networkmap_enterprise_filter_agents_policies",
+			array($policies, $agents));
+	}
+	
 	
 	// Get groups data
 	if ($show_groups) {
@@ -412,8 +424,25 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$nodes = array ();
 	$node_count = 0;
 	
+	// Parse policies
+	if ($show_policies) {
+		$nodes_policies = array();
+		foreach ($policies as $policy) {
+			$node_count ++;
+			$policy['type'] = 'policy';
+			$policy['id_node'] = $node_count;
+			
+			$orphans[$node_count] = 1;
+			
+			$nodes[$node_count] = $policy;	
+			
+			// Add node
+			$nodes_policies[$policy['id']] = $policy;
+		}
+	}
+	
+	// Parse groups
 	if ($show_groups) {
-		// Parse groups
 		$nodes_groups = array();
 		foreach ($groups as $group2) {
 			$node_count ++;
@@ -468,6 +497,13 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			
 			if ($show_groups)  {
 				$parents[$node_count] = $agent['parent'] = $nodes_groups[$agent['id_grupo']]['id_node'];
+			}
+			
+			if ($show_policies) {
+				$id_policy = db_get_value(
+					'id_policy',
+					'tpolicy_agents', 'id_agent', $agent['id_agent']);
+				$parents[$node_count] = $agent['parent'] = $nodes_policies[$id_policy]['id_node'];
 			}
 			
 			$node_ref[$agent['id_agente']] = $node_count;
@@ -749,6 +785,12 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		}
 		
 		switch ($node['type']) {
+			case 'policy':
+				if (enterprise_installed()) {
+					enterprise_include_once("include/functions_policies.php");
+					$graph .= policies_create_node($node, $simple, $font_size)."\n\t\t";
+				}
+				break;
 			case 'group':
 				$graph .= networkmap_create_group_node ($node , $simple, $font_size, $metaconsole = false, null, $strict_user) .
 					"\n\t\t";

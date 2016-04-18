@@ -108,6 +108,15 @@ class Networkmap extends Map {
 				
 				$chunks = explode("ajax.php?", $chunks[1]);
 				
+				$is_node_group = false;
+				if ($this->subtype == MAP_SUBTYPE_GROUPS) {
+					if (strstr($chunks[1], "&id_group=") !== false) {
+						$is_node_group = true;
+					}
+				}
+				
+				
+				
 				$id_agent = null;
 				$status = null;
 				$title = "";
@@ -117,7 +126,17 @@ class Networkmap extends Map {
 				$color = DEFAULT_NODE_COLOR;
 				$image = DEFAULT_NODE_IMAGE;
 				
-				if ($is_node_module_group) {
+				if ($is_node_group) {
+					preg_match("/<TR><TD>(.*)<\/TD><\/TR><\/TABLE>>/", $chunks[0], $matches);
+					$title = $matches[1];
+					preg_match("/id_group=([0-9]*)/", $chunks[1], $matches);
+					$id = $matches[1];
+					$type = ITEM_TYPE_GROUP_NETWORKMAP;
+					preg_match("/data-status=\"([0-9]*)\"/", $chunks[1], $matches);
+					$status = $matches[1];
+					$shape = "rhombus";
+				}
+				elseif ($is_node_module_group) {
 					preg_match("/<TR><TD>(.*)<\/TD><\/TR><\/TABLE>>/", $chunks[0], $matches);
 					$title = $matches[1];
 					$id = db_get_value('id_mg', 'tmodule_group',
@@ -281,6 +300,17 @@ class Networkmap extends Map {
 		$return['module_group'] = $this->filter['module_group'];
 		$return['show_modulegroup'] = $this->filter['show_module_group'];
 		
+		switch ($this->subtype) {
+			case MAP_SUBTYPE_GROUPS:
+				$return['show_groups'] = true;
+				$return['show_agents'] = $this->filter['show_agents'];
+				break;
+			default:
+				$return['show_groups'] = false;
+				$return['show_agents'] = true;
+				break;
+		}
+		
 		return $return;
 	}
 	
@@ -292,6 +322,7 @@ class Networkmap extends Map {
 			//  rewrote the old function.
 			
 			$parameters = $this->temp_parseParameters_generateDot();
+			
 			
 			// Generate dot file
 			$graph = networkmap_generate_dot (__('Pandora FMS'),
@@ -320,7 +351,9 @@ class Networkmap extends Map {
 				$parameters['show_modules'],
 				$parameters['only_modules_alerts'],
 				$parameters['module_group'],
-				$parameters['show_modulegroup']);
+				$parameters['show_modulegroup'],
+				$parameters['show_groups'],
+				$parameters['show_agents']);
 			
 			
 			$filename_dot = sys_get_temp_dir() . "/networkmap" . uniqid() . ".dot";

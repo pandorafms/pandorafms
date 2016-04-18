@@ -506,6 +506,7 @@ define("ITEM_TYPE_MODULE_NETWORKMAP",		1);
 define("ITEM_TYPE_EDGE_NETWORKMAP",			2);
 define("ITEM_TYPE_FICTIONAL_NODE",			3);
 define("ITEM_TYPE_MODULEGROUP_NETWORKMAP",	4);
+define("ITEM_TYPE_GROUP_NETWORKMAP",	5);
 
 /* Another constants new networkmap */
 define("DEFAULT_NODE_WIDTH", 30);

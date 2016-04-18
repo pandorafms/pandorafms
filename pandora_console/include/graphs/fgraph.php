@@ -221,6 +221,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 	$series_suffix_str = '', $menu = true, $backgroundColor = 'white',
 	$dashboard = false, $vconsole = false, $agent_module_id = 0) {
 	
+	include_once('functions_flot.php');
 	
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	

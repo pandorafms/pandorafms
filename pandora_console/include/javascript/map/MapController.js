@@ -568,6 +568,11 @@ MapController.prototype.event_toggle_minimap = function() {
 	}
 }
 
+/**
+* Function get_real_size_map
+* Return  [width, height]
+* This function returns the real map size
+*/
 MapController.prototype.get_real_size_map = function() {
 	var self = this;
 	
@@ -1511,7 +1516,6 @@ MapController.prototype.events_for_nodes = function(id_node) {
 	
 	var node_menu = self.get_menu_nodes();
 	
-	
 	d3.selectAll(selector)
 		.on("mouseover", function(d) {
 			if (!self._dragging) {
@@ -1741,8 +1745,28 @@ MapController.prototype.is_delety = function(node) {
 		case ITEM_TYPE_FICTIONAL_NODE:
 			return_var = true;
 			break;
+		case ITEM_TYPE_MODULE_NETWORKMAP:
+			if (filter['show_modules']) {
+				return_var = true;
+			}
+			else {
+				return_var = false;
+			}
+			break;
+		case ITEM_TYPE_MODULEGROUP_NETWORKMAP:
+			if (filter['show_modules']) {
+				if (filter['show_module_group']) {
+					return_var = true;
+				}
+				else {
+					return_var = false;
+				}
+			}
+			else {
+				return_var = false;
+			}
+			break;
 	}
-	
 	
 	return return_var;
 }
@@ -2603,7 +2627,7 @@ MapController.prototype.deleteNode = function(self, target) {
 		arrowsToDelete.forEach(function(arrow) {
 			d3.select("#arrow_" + arrow).remove();
 		});
-
+		
 		d3.select(self._target + " #" + id_node).remove();
 		d3.select(self._target + " .minimap" + " #" + id_node).remove();
 	});

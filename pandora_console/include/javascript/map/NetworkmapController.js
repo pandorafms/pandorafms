@@ -70,6 +70,7 @@ NetworkmapController.prototype.init_map = function() {
 				}
 			});
 		}
+		
 		if (filter['show_modules']) {
 			if (filter['show_module_group']) {
 				var arrow_GM = self.get_arrow_GM(edge['to'], edge['from']);
@@ -90,7 +91,9 @@ NetworkmapController.prototype.init_map = function() {
 				var arrow_AM = self.get_arrow_AM(edge['to'], edge['from']);
 				if (arrow_AM !== null) {
 					if (!self.exists_arrow(clean_arrows, arrow_AM)) {
-						clean_arrows.push(arrow_AM);
+						if (!self.fake_arrow_AM(arrow_AM)) {
+							clean_arrows.push(arrow_AM);
+						}
 					}
 				}
 			}
@@ -133,6 +136,22 @@ NetworkmapController.prototype.init_map = function() {
 	
 	MapController.prototype.init_map.call(this);
 };
+
+/**
+* Function fake_arrow_AM
+* Return  bool
+* This function returns if the AM arrow is a fake arrow
+*/
+NetworkmapController.prototype.fake_arrow_AM = function(arrow_AM) {
+	var agent_to = parseInt(arrow_AM['to']['id_agent']);
+	var agent_from = parseInt(arrow_AM['from']['id_agent']);
+	if (agent_to == agent_from) {
+		return false;
+	}
+	else {
+		return true;
+	}
+}
 
 /**
 * Function filter_only_agents
@@ -2274,7 +2293,7 @@ NetworkmapController.prototype.editNode = function(target) {
 			$("#edit_node_dialog_" + node_id).append(data);
 			$("#edit_node_dialog_" + node_id).dialog({ 
 				autoOpen: false,
- 				closeOnEscape: true
+				closeOnEscape: true
 			});
 			$("#edit_node_dialog_" + node_id).dialog("open");
 			

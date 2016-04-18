@@ -1547,7 +1547,9 @@ MapController.prototype.events_for_nodes = function(id_node) {
 			
 			if (d3.event.defaultPrevented) return;
 			
-			self.tooltip_map_create(self, this);
+			if ((d['type'] == ITEM_TYPE_AGENT_NETWORKMAP) || (d['type'] == ITEM_TYPE_MODULE_NETWORKMAP)) {
+				self.tooltip_map_create(self, this);
+			}
 		})
 		.on("contextmenu", d3.contextMenu(node_menu, function(node) {
 			self._last_event = "contextmenu";

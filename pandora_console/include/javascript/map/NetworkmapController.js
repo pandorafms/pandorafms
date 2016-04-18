@@ -553,7 +553,7 @@ NetworkmapController.prototype.get_arrow_AM = function(id_to, id_from) {
 			}
 		}
 	});
-	console.log(arrow_AM);
+	
 	if (found) {
 		return arrow_AM;
 	}
@@ -594,11 +594,11 @@ NetworkmapController.prototype.exists_arrow = function(arrows, arrow) {
 				case 'AF_or_FF':
 				case 'GM':
 				case 'AG':
+				case 'AM':
 				case 'AA':
 				case 'AMMA':
 					if (a_to == arrow_to) {
 						if (a_from == arrow_from) {
-							
 							var_return = true;
 							return false; // Break
 						}

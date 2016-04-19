@@ -141,6 +141,9 @@ class Networkmap extends Map {
 					preg_match("/data-status=\"([0-9]*)\"/", $chunks[1], $matches);
 					$status = $matches[1];
 					$shape = "rhombus";
+					
+					preg_match("/<img src=\"(.*)\" \/>/", $chunks[0], $matches);
+					$image = $matches[1];
 				}
 				elseif ($is_node_group) {
 					preg_match("/<TR><TD>(.*)<\/TD><\/TR><\/TABLE>>/", $chunks[0], $matches);
@@ -151,6 +154,9 @@ class Networkmap extends Map {
 					preg_match("/data-status=\"([0-9]*)\"/", $chunks[1], $matches);
 					$status = $matches[1];
 					$shape = "rhombus";
+					
+					preg_match("/<img src=\"(.*)\" \/>/", $chunks[0], $matches);
+					$image = $matches[1];
 				}
 				elseif ($is_node_module_group) {
 					preg_match("/<TR><TD>(.*)<\/TD><\/TR><\/TABLE>>/", $chunks[0], $matches);
@@ -161,6 +167,8 @@ class Networkmap extends Map {
 					preg_match("/data-status=\"([0-9]*)\"/", $chunks[1], $matches);
 					$status = $matches[1];
 					$shape = "rhombus";
+					
+					//The module group has not icon.
 				}
 				elseif (strstr($chunks[1], "&id_module=") !== false) {
 					// MODULE
@@ -171,6 +179,9 @@ class Networkmap extends Map {
 					$title = modules_get_agentmodule_name($id);
 					$type = ITEM_TYPE_MODULE_NETWORKMAP;
 					$shape = "square";
+					
+					preg_match("/<img src=\"(.*)\" \/>/", $chunks[0], $matches);
+					$image = $matches[1];
 				}
 				else {
 					// AGENT

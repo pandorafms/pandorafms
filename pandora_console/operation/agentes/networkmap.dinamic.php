@@ -62,6 +62,8 @@ if ($activeTab == "radial_dynamic") {
 	
 	echo "<div style='width: auto; text-align: center;'>";
 	
+	
+	
 	$filter = array();
 	if (!empty($group))
 		$filter['group'] = $group;
@@ -99,7 +101,10 @@ $zoom_default = file($config['homedir'] . '/images/zoom_default.svg');
 <?php
 
 //html_debug_print($graph);
-echo '<script type="text/javascript" src="' . $config['homeurl'] . 'include/javascript/d3.v3.js" charset="utf-8"></script>';
+echo '<script '.
+	' type="text/javascript" ' .
+	' src="' . $config['homeurl'] . 'include/javascript/d3.3.5.14.js" ' .
+	' charset="utf-8"></script>';
 echo '<div id="dinamic_networkmap" style="overflow: hidden;"></div>';
 ?>
 <style type="text/css">

@@ -24,7 +24,7 @@ function include_javascript_d3 ($return = false) {
 	if (!$is_include_javascript) {
 		$is_include_javascript = true;
 
-		$output .= '<script type="text/javascript" src="' . $config['homeurl'] . 'include/javascript/d3.3.5.14.js.js" charset="utf-8"></script>';
+		$output .= '<script type="text/javascript" src="' . $config['homeurl'] . 'include/javascript/d3.3.5.14.js" charset="utf-8"></script>';
 		$output .= '<script type="text/javascript" src="' . $config['homeurl'] . 'include/graphs/pandora.d3.js" charset="utf-8"></script>';
 
 	}

@@ -84,7 +84,22 @@ else {
 	}
 	
 	if (MAP_TYPE_NETWORKMAP === $networkmap->getType()) {
-		$networkmap->show();
+		if (MAP_SUBTYPE_RADIAL_DYNAMIC === $networkmap->getSubtype()) {
+			global $id_networkmap;
+			global $store_group;
+			global $group;
+			global $activeTab;
+			
+			$id_networkmap = $networkmap->getId();
+			$store_group = $networkmap->getGroup();
+			$group = $networkmap->getSourceGroup();
+			$activeTab = "radial_dynamic";
+			
+			require_once('operation/agentes/networkmap.dinamic.php');
+		}
+		else {
+			$networkmap->show();
+		}
 	}
 	else {
 		ui_print_error_message(__('Not found networkmap.'));

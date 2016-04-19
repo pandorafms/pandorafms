@@ -290,6 +290,10 @@ class Networkmap extends Map {
 		$this->edges = $edges;
 	}
 	
+	public function getSourceGroup() {
+		return $this->source_group;
+	}
+	
 	protected function temp_parseParameters_generateDot() {
 		$return = array();
 		

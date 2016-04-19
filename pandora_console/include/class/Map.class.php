@@ -41,6 +41,13 @@ abstract class Map {
 	
 	protected $is_buggy_firefox = false;
 	
+	public function getId() {
+		return $this->id;
+	}
+	public function getGroup() {
+		return $this->id_group;
+	}
+	
 	public static function getName($id = null) {
 		if (empty($id)) {
 			return null;
@@ -247,6 +254,10 @@ abstract class Map {
 	
 	public function getType() {
 		return $this->type;
+	}
+	
+	public function getSubtype() {
+		return $this->subtype;
 	}
 }
 ?>

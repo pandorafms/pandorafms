@@ -406,6 +406,7 @@ else {
 		var subtype = parseInt($("select[name='subtype']").val());
 		
 		$("#form_editor-show_agents").show();
+		$("#form_editor-source").show();
 		switch (subtype) {
 			case MAP_SUBTYPE_GROUPS:
 				$("#form_editor-only_snmp_modules").hide();
@@ -425,6 +426,7 @@ else {
 				$("#form_editor-show_module_group").hide();
 				$("#form_editor-only_snmp_modules").hide();
 				$("#form_editor-only_policy_modules").hide();
+				$("#form_editor-source").hide();
 				
 				$("#form_editor-filter_module_group").show();
 				break;

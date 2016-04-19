@@ -21,8 +21,10 @@
 /* Enterprise hook constant */
 define ('ENTERPRISE_NOT_HOOK',	-1);
 
+/* Others */
+define('GROUP_ALL', 0);
 
-/**/
+/* Date and time formats */
 define('DATE_FORMAT',		'Y/m/d');
 define('DATE_FORMAT_JS',	'yy/mm/dd');
 define('TIME_FORMAT',		'H:i:s');
@@ -492,6 +494,9 @@ define("MAP_GENERATION_SPRING2",	4);
 
 define("MAP_SOURCE_GROUP",		0);
 define("MAP_SOURCE_IP_MASK", 	1);
+
+define("NETWORKMAP_DEFAULT_WIDTH", 800);
+define("NETWORKMAP_DEFAULT_HEIGHT", 800);
 
 /* Background options */
 define("CENTER",		0);

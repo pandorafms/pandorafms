@@ -29,14 +29,14 @@ $edit_networkmap = (int)get_parameter('edit_networkmap', 0);
 $create_networkmap = (int)get_parameter('create_networkmap', 0);
 
 if ($create_networkmap) {
-	$id_group = 0;
+	$id_group = GROUP_ALL;
 	$type = MAP_TYPE_NETWORKMAP;
 	$subtype = MAP_SUBTYPE_GROUPS;
 	$name = "";
 	$description = "";
-	$width = 800;
-	$height = 800;
-	$source_period = 60 * 5;
+	$width = NETWORKMAP_DEFAULT_WIDTH;
+	$height = NETWORKMAP_DEFAULT_HEIGHT;
+	$source_period = SECONDS_5MINUTES;
 	$source = MAP_SOURCE_GROUP;
 	$source_data = '';
 	$generation_method = MAP_GENERATION_CIRCULAR;

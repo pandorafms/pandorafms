@@ -106,18 +106,18 @@ class Networkmap extends Map {
 					}
 				}
 				
-				$chunks = explode("ajax.php?", $chunks[1]);
+				$other_chunks = explode("ajax.php?", $chunks[1]);
 				
 				$is_node_group = false;
 				if ($this->subtype == MAP_SUBTYPE_GROUPS) {
-					if (strstr($chunks[1], "&id_group=") !== false) {
+					if (strstr($other_chunks[1], "&id_group=") !== false) {
 						$is_node_group = true;
 					}
 				}
 				
 				$is_node_policy = false;
 				if ($this->subtype == MAP_SUBTYPE_POLICIES) {
-					if (strstr($chunks[1], "&id_policy=") !== false) {
+					if (strstr($other_chunks[1], "&id_policy=") !== false) {
 						$is_node_policy = true;
 					}
 				}
@@ -133,33 +133,33 @@ class Networkmap extends Map {
 				$image = DEFAULT_NODE_IMAGE;
 				
 				if ($is_node_policy) {
-					preg_match("/<TR><TD>(.*)<\/TD><\/TR><\/TABLE>>/", $chunks[0], $matches);
+					preg_match("/<TR><TD>(.*)<\/TD><\/TR><\/TABLE>>/", $other_chunks[0], $matches);
 					$title = io_safe_output($matches[1]);
-					preg_match("/id_policy=([0-9]*)/", $chunks[1], $matches);
+					preg_match("/id_policy=([0-9]*)/", $other_chunks[1], $matches);
 					$id = $matches[1];
 					$type = ITEM_TYPE_POLICY_NETWORKMAP;
-					preg_match("/data-status=\"([0-9]*)\"/", $chunks[1], $matches);
+					preg_match("/data-status=\"([0-9]*)\"/", $other_chunks[1], $matches);
 					$status = $matches[1];
 					$shape = "rhombus";
 					
-					preg_match("/<img src=\"(.*)\" \/>/", $chunks[0], $matches);
+					preg_match("/<img src=\"(.*)\" \/>/", $other_chunks[0], $matches);
 					$image = $matches[1];
 				}
 				elseif ($is_node_group) {
-					preg_match("/<TR><TD>(.*)<\/TD><\/TR><\/TABLE>>/", $chunks[0], $matches);
+					preg_match("/<TR><TD>(.*)<\/TD><\/TR><\/TABLE>>/", $other_chunks[0], $matches);
 					$title = $matches[1];
-					preg_match("/id_group=([0-9]*)/", $chunks[1], $matches);
+					preg_match("/id_group=([0-9]*)/", $other_chunks[1], $matches);
 					$id = $matches[1];
 					$type = ITEM_TYPE_GROUP_NETWORKMAP;
-					preg_match("/data-status=\"([0-9]*)\"/", $chunks[1], $matches);
+					preg_match("/data-status=\"([0-9]*)\"/", $other_chunks[1], $matches);
 					$status = $matches[1];
 					$shape = "rhombus";
 					
-					preg_match("/<img src=\"(.*)\" \/>/", $chunks[0], $matches);
+					preg_match("/<img src=\"(.*)\" \/>/", $other_chunks[0], $matches);
 					$image = $matches[1];
 				}
 				elseif ($is_node_module_group) {
-					preg_match("/<TR><TD>(.*)<\/TD><\/TR><\/TABLE>>/", $chunks[0], $matches);
+					preg_match("/<TR><TD>(.*)<\/TD><\/TR><\/TABLE>>/", $chunks[1], $matches);
 					$title = $matches[1];
 					$id = db_get_value('id_mg', 'tmodule_group',
 						'name', $title);
@@ -169,10 +169,11 @@ class Networkmap extends Map {
 					$shape = "rhombus";
 					
 					//The module group has not icon.
+					$image = "";
 				}
-				elseif (strstr($chunks[1], "&id_module=") !== false) {
+				elseif (strstr($other_chunks[1], "&id_module=") !== false) {
 					// MODULE
-					preg_match("/id_module=([0-9]*)/", $chunks[1], $matches);
+					preg_match("/id_module=([0-9]*)/", $other_chunks[1], $matches);
 					$id = $matches[1];
 					$id_agent = agents_get_module_id($id);
 					$status = modules_get_agentmodule_status($id);
@@ -180,44 +181,43 @@ class Networkmap extends Map {
 					$type = ITEM_TYPE_MODULE_NETWORKMAP;
 					$shape = "square";
 					
-					preg_match("/<img src=\"(.*)\" \/>/", $chunks[0], $matches);
+					preg_match("/<img src=\"(.*)\" \/>/", $other_chunks[0], $matches);
 					$image = $matches[1];
 				}
 				else {
 					// AGENT
-					preg_match("/id_agent=([0-9]*)/", $chunks[1], $matches);
+					preg_match("/id_agent=([0-9]*)/", $other_chunks[1], $matches);
 					$id_agent = $id = $matches[1];
 					$status = agents_get_status($id);
 					$title = agents_get_name($id);
 					$type = ITEM_TYPE_AGENT_NETWORKMAP;
 					
-					preg_match("/<img src=\"(.*)\" \/>/", $chunks[0], $matches);
+					preg_match("/<img src=\"(.*)\" \/>/", $other_chunks[0], $matches);
 					$image = $matches[1];
-					
-					
-					// Set node status
-					switch ($status) {
-						case AGENT_STATUS_NORMAL: 
-							$color = COL_NORMAL;
-							break;
-						case AGENT_STATUS_CRITICAL:
-							$color = COL_CRITICAL;
-							break;
-						case AGENT_STATUS_WARNING:
-							$color = COL_WARNING;
-							break;
-						case AGENT_STATUS_ALERT_FIRED:
-							$color = COL_ALERTFIRED;
-							break;
-						# Juanma (05/05/2014) Fix: Correct color for not init agents!
-						case AGENT_STATUS_NOT_INIT:
-							$color = COL_NOTINIT;
-							break;
-						default:
-							//Unknown monitor
-							$color = COL_UNKNOWN;
-							break;
-					}
+				}
+				
+				// Set node status
+				switch ($status) {
+					case AGENT_STATUS_NORMAL: 
+						$color = COL_NORMAL;
+						break;
+					case AGENT_STATUS_CRITICAL:
+						$color = COL_CRITICAL;
+						break;
+					case AGENT_STATUS_WARNING:
+						$color = COL_WARNING;
+						break;
+					case AGENT_STATUS_ALERT_FIRED:
+						$color = COL_ALERTFIRED;
+						break;
+					# Juanma (05/05/2014) Fix: Correct color for not init agents!
+					case AGENT_STATUS_NOT_INIT:
+						$color = COL_NOTINIT;
+						break;
+					default:
+						//Unknown monitor
+						$color = COL_UNKNOWN;
+						break;
 				}
 				
 				

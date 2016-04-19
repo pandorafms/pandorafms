@@ -407,6 +407,8 @@ else {
 		
 		$("#form_editor-show_agents").show();
 		$("#form_editor-source").show();
+		$("#form_editor-size").show();
+		$("#form_editor-7").show();
 		switch (subtype) {
 			case MAP_SUBTYPE_GROUPS:
 				$("#form_editor-only_snmp_modules").hide();
@@ -429,6 +431,8 @@ else {
 				$("#form_editor-source").hide();
 				
 				$("#form_editor-filter_module_group").show();
+				$("#form_editor-size").hide();
+				$("#form_editor-7").hide();
 				break;
 			case MAP_SUBTYPE_TOPOLOGY:
 				// Forever show agents

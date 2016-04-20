@@ -1547,7 +1547,8 @@ MapController.prototype.events_for_nodes = function(id_node) {
 			
 			if (d3.event.defaultPrevented) return;
 			
-			if ((d['type'] == ITEM_TYPE_AGENT_NETWORKMAP) || (d['type'] == ITEM_TYPE_MODULE_NETWORKMAP)) {
+			if ((d['type'] == ITEM_TYPE_AGENT_NETWORKMAP) || (d['type'] == ITEM_TYPE_MODULE_NETWORKMAP) ||
+			(d['type'] == ITEM_TYPE_GROUP_NETWORKMAP) || (d['type'] == ITEM_TYPE_POLICY_NETWORKMAP)) {
 				self.tooltip_map_create(self, this);
 			}
 		})

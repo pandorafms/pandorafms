@@ -21,6 +21,9 @@ if (is_ajax ()) {
 	check_login ();
 	
 	require_once($config['homedir'] . "/include/functions_os.php");
+	if (enterprise_installed()) {
+		enterprise_include_once ('include/functions_policies.php');
+	}
 	
 	$getNodeData = (bool)get_parameter('getNodeData', 0);
 	$getNodeDetails = (bool)get_parameter('getNodeDetails', 0);
@@ -214,6 +217,111 @@ if (is_ajax ()) {
 				<?php
 				$body = ob_get_clean();
 
+				$return_data = str_replace(
+					"{body}",
+					$body,
+					$return_data);
+				break;
+			case ITEM_TYPE_GROUP_NETWORKMAP:
+				$return_data = str_replace(
+					"{data_graph_id}",
+					$data_graph_id,
+					$return_data);
+				$return_data = str_replace(
+					"{node_id}",
+					$node_id,
+					$return_data);
+				$return_data = str_replace(
+					"{title}",
+					groups_get_name($id_node_data),
+					$return_data);
+				
+				$parent = (int)db_get_value ('parent', 'tgrupo', 'id_grupo', (int)$id_node_data);
+				$parent = groups_get_name($parent, true);
+				
+				$description = (string)db_get_value ('description', 'tgrupo', 'id_grupo', (int)$id_node_data);
+				
+				$alerts = (int)db_get_value ('disabled', 'tgrupo', 'id_grupo', (int)$id_node_data);
+				if ($alerts == 0) {
+					$alerts = __('Enabled');
+				}
+				else {
+					$alerts = __('Disabled');
+				}
+				
+				ob_start();
+				?>
+				<span>
+					<strong><?php echo __('Parent');?>: </strong>
+					<?php echo $parent;?>
+				</span><br />
+				<span>
+					<strong><?php echo __('Description');?>: </strong>
+					<?php echo $description;?>
+				</span><br />
+				<span>
+					<strong><?php echo __('Alerts');?>: </strong>
+					<?php echo $alerts;?>
+				</span><br />
+				<?php
+				$body = ob_get_clean();
+				
+				$return_data = str_replace(
+					"{body}",
+					$body,
+					$return_data);
+				break;
+			case ITEM_TYPE_POLICY_NETWORKMAP:
+				$policy_name = (string)db_get_value ('name', 'tpolicies', 'id', (int)$id_node_data);
+				
+				$return_data = str_replace(
+					"{data_graph_id}",
+					$data_graph_id,
+					$return_data);
+				$return_data = str_replace(
+					"{node_id}",
+					$node_id,
+					$return_data);
+				$return_data = str_replace(
+					"{title}",
+					$policy_name,
+					$return_data);
+				
+				$policy_agents = count(policies_get_agents($id_node_data));
+				
+				$group = (int)db_get_value('id_group', 'tpolicies', 'id', (int)$id_node_data);
+				$group = (string)groups_get_name($group, true);
+				
+				$policy_status = (int)db_get_value('status', 'tpolicies', 'id', (int)$id_node_data);
+				switch ($policy_status) {
+					case POLICY_UPDATED:
+						$policy_status = __('Updated');
+						break;
+					case POLICY_PENDING_DATABASE:
+						$policy_status = __('Pending Database');
+						break;
+					case POLICY_PENDING_ALL:
+						$policy_status = __('Pending');
+						break;
+				}
+				
+				ob_start();
+				?>
+				<span>
+					<strong><?php echo __('Agents');?>: </strong>
+					<?php echo $policy_agents;?>
+				</span><br />
+				<span>
+					<strong><?php echo __('Group');?>: </strong>
+					<?php echo $group;?>
+				</span><br />
+				<span>
+					<strong><?php echo __('Status');?>: </strong>
+					<?php echo $policy_status;?>
+				</span><br />
+				<?php
+				$body = ob_get_clean();
+				
 				$return_data = str_replace(
 					"{body}",
 					$body,

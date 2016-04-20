@@ -447,13 +447,35 @@ if (is_ajax ()) {
 		if ($type == ITEM_TYPE_AGENT_NETWORKMAP) {
 			$node_name = agents_get_name($id_node_data);
 			$table->head['type'] = __('Agent');
+			
+			$node_shape = 'circle';
 		}
-		else {
+		else if ($type == ITEM_TYPE_MODULE_NETWORKMAP) {
 			$node_name = db_get_all_rows_sql("SELECT nombre
 												FROM tagente_modulo
 												WHERE id_agente_modulo = " . $id_node_data);
-			$node_name = $node_name[0];
+			$node_name = $node_name[0]['nombre'];
 			$table->head['type'] = __('Module');
+			
+			$node_shape = 'square';
+		}
+		else if ($type == ITEM_TYPE_GROUP_NETWORKMAP) {
+			$node_name = db_get_all_rows_sql("SELECT nombre
+												FROM tgrupo
+												WHERE id_grupo = " . $id_node_data);
+			$node_name = $node_name[0]['nombre'];
+			$table->head['type'] = __('Group');
+			
+			$node_shape = 'rhombus';
+		}
+		else if ($type == ITEM_TYPE_POLICY_NETWORKMAP) {
+			$node_name = db_get_all_rows_sql("SELECT name
+												FROM tpolicies
+												WHERE id = " . $id_node_data);
+			$node_name = $node_name[0]['name'];
+			$table->head['type'] = __('Policy');
+			
+			$node_shape = 'rhombus';
 		}
 		$table->head['name'] = $node_name;
 		
@@ -470,7 +492,7 @@ if (is_ajax ()) {
 		$table->data[1][1] = html_print_select(array(
 			'circle' => __('Circle'),
 			'square' => __('Square'),
-			'rhombus' => __('Rhombus')), 'shape', 'circle', '', '', 0, true);
+			'rhombus' => __('Rhombus')), 'shape', $node_shape, '', '', 0, true);
 		
 		html_print_table($table);
 		echo '<div class="edit_node" style="float:right; margin-right: 10px;">';

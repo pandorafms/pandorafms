@@ -23,6 +23,7 @@ if (is_ajax ()) {
 	require_once($config['homedir'] . "/include/functions_os.php");
 	if (enterprise_installed()) {
 		enterprise_include_once ('include/functions_policies.php');
+		enterprise_include_once ('include/functions_networkmap_enterprise.php');
 	}
 	
 	$getNodeData = (bool)get_parameter('getNodeData', 0);
@@ -31,6 +32,38 @@ if (is_ajax ()) {
 	$printEditMapTable = (bool)get_parameter('printEditMapTable', 0);
 	$refresh_nodes_open = (bool)get_parameter('refresh_nodes_open', 0);
 	$refresh_arrows_open = (bool)get_parameter('refresh_arrows_open', 0);
+	$update_node = (bool)get_parameter("update_node", 0);
+	$delete_node = (bool)get_parameter("delete_node", 0);
+	$add_relation = (bool)get_parameter("add_relation", 0);
+	
+	if ($update_node) {
+		$id_node_data = (int)get_parameter('id_node_data');
+		$label = (string)get_parameter('label', '');
+		$shape = (string)get_parameter('shape', '');
+		$return_update = networkmap_enterprise_update_data($id_node_data, $label, $shape);
+		
+		echo json_encode($return_update);
+		return;
+	}
+	
+	if ($delete_node) {
+		$id_node_data = (int)get_parameter('id_node_data');
+		$return_delete = networkmap_enterprise_delete_node($id_node_data);
+		
+		echo json_encode($return_delete);
+		return;
+	}
+	
+	if ($add_relation) {
+		$id_node_data_a = (int)get_parameter('id_node_data');
+		$id_node_data_b = (int)get_parameter('id_node_data_b');
+		$type = (int)get_parameter('type');
+		
+		$result_relation = networkmap_enterprise_add_relation($id_node_data_a, $id_node_data_b, $type);
+		
+		echo json_encode($result_relation);
+		return;
+	}
 	
 	if ($refresh_arrows_open) {
 		$return = array();

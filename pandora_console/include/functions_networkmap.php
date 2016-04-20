@@ -434,7 +434,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			
 			$orphans[$node_count] = 1;
 			
-			$nodes[$node_count] = $policy;	
+			$nodes[$node_count] = $policy;
 			
 			// Add node
 			$nodes_policies[$policy['id']] = $policy;
@@ -502,8 +502,9 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			if ($show_policies) {
 				$id_policy = db_get_value(
 					'id_policy',
-					'tpolicy_agents', 'id_agent', $agent['id_agent']);
-				$parents[$node_count] = $agent['parent'] = $nodes_policies[$id_policy]['id_node'];
+					'tpolicy_agents', 'id_agent', $agent['id_agente']);
+				if (!empty($id_policy))
+					$parents[$node_count] = $agent['parent'] = $nodes_policies[$id_policy]['id_node'];
 			}
 			
 			$node_ref[$agent['id_agente']] = $node_count;

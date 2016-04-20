@@ -441,6 +441,18 @@ class Networkmap extends Map {
 		}
 	}
 	
+	public function writeJSGraph() {
+		parent::writeJSGraph();
+		
+		?>
+		<script type="text/javascript">
+			<?php
+			echo "var subtype = " . $this->subtype . ";";
+			?>
+		</script>
+		<?php
+	}
+	
 	public function show() {
 		$this->getNodes();
 		

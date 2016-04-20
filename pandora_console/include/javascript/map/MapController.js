@@ -1688,6 +1688,8 @@ MapController.prototype.is_draggable = function(node) {
 			}
 			break;
 		case ITEM_TYPE_AGENT_NETWORKMAP:
+		case ITEM_TYPE_GROUP_NETWORKMAP:
+		case ITEM_TYPE_POLICY_NETWORKMAP:
 		case ITEM_TYPE_FICTIONAL_NODE:
 			return_var = true;
 			break;
@@ -1726,6 +1728,8 @@ MapController.prototype.is_selecty = function(node) {
 	switch (node.type) {
 		case ITEM_TYPE_AGENT_NETWORKMAP:
 		case ITEM_TYPE_FICTIONAL_NODE:
+		case ITEM_TYPE_GROUP_NETWORKMAP:
+		case ITEM_TYPE_POLICY_NETWORKMAP:
 			return_var = true;
 			break;
 		case ITEM_TYPE_MODULE_NETWORKMAP:
@@ -1765,6 +1769,8 @@ MapController.prototype.is_delety = function(node) {
 	switch (node.type) {
 		case ITEM_TYPE_AGENT_NETWORKMAP:
 		case ITEM_TYPE_FICTIONAL_NODE:
+		case ITEM_TYPE_GROUP_NETWORKMAP:
+		case ITEM_TYPE_POLICY_NETWORKMAP:
 			return_var = true;
 			break;
 		case ITEM_TYPE_MODULE_NETWORKMAP:

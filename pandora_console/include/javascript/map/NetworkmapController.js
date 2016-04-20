@@ -2417,6 +2417,15 @@ NetworkmapController.prototype.get_menu_nodes = function() {
 	return node_menu;
 }
 
+
+NetworkmapController.prototype.apply_temp_arrows = function(target_id) {
+	MapController.prototype.apply_temp_arrows.call(this, target_id);
+}
+
+NetworkmapController.prototype.deleteNode = function(self, target) {
+	MapController.prototype.deleteNode.call(this, self, target);
+}
+
 /**
 * Function editNode
 * Return void
@@ -2494,4 +2503,9 @@ NetworkmapController.prototype.apply_edit_node = function(data_graph_id) {
 	self.move_arrow(id_graph);
 	
 	$("#edit_node_dialog_" + node_id).dialog("close");
+	
+	// Enterprise save the data into the database
+	if (typeof(self.apply_edit_node_save) != "undefined") {
+		self.apply_edit_node_save(id_graph, new_label, new_shape);
+	}
 }

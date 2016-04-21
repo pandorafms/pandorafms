@@ -2417,6 +2417,12 @@ NetworkmapController.prototype.get_menu_nodes = function() {
 	return node_menu;
 }
 
+NetworkmapController.prototype.resize_node_save = function(graph_id) {
+	
+}
+
+NetworkmapController.prototype.move_node = function(node) {
+}
 
 NetworkmapController.prototype.apply_temp_arrows = function(target_id) {
 	MapController.prototype.apply_temp_arrows.call(this, target_id);

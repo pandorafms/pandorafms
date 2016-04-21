@@ -32,9 +32,11 @@ if (is_ajax ()) {
 	$printEditMapTable = (bool)get_parameter('printEditMapTable', 0);
 	$refresh_nodes_open = (bool)get_parameter('refresh_nodes_open', 0);
 	$refresh_arrows_open = (bool)get_parameter('refresh_arrows_open', 0);
-	$update_node = (bool)get_parameter("update_node", 0);
-	$delete_node = (bool)get_parameter("delete_node", 0);
-	$add_relation = (bool)get_parameter("add_relation", 0);
+	$update_node = (bool)get_parameter('update_node', 0);
+	$delete_node = (bool)get_parameter('delete_node', 0);
+	$add_relation = (bool)get_parameter('add_relation', 0);
+	$update_node_position = (bool)get_parameter('update_node_position', 0);
+	$update_node_size = (bool)get_parameter('update_node_size', 0);
 	
 	if ($update_node) {
 		$id_node_data = (int)get_parameter('id_node_data');
@@ -62,6 +64,28 @@ if (is_ajax ()) {
 		$result_relation = networkmap_enterprise_add_relation($id_node_data_a, $id_node_data_b, $type);
 		
 		echo json_encode($result_relation);
+		return;
+	}
+	
+	if ($update_node_position) {
+		$id_node_data = (int)get_parameter('id_node_data');
+		$new_pos_x = (int)get_parameter('new_pos_x');
+		$new_pos_y = (int)get_parameter('new_pos_y');
+		
+		$result_update_position = networkmap_enterprise_update_position($id_node_data, $new_pos_x, $new_pos_y);
+		
+		echo json_encode($result_update_position);
+		return;
+	}
+	
+	if ($update_node_size) {
+		$id_node_data = (int)get_parameter('id_node_data');
+		$new_width = (int)get_parameter('new_width');
+		$new_height = (int)get_parameter('new_height');
+		
+		$result_update_size = networkmap_enterprise_update_size($id_node_data, $new_width, $new_height);
+		
+		echo json_encode($result_update_size);
 		return;
 	}
 	

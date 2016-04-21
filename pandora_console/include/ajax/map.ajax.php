@@ -82,8 +82,10 @@ if (is_ajax ()) {
 		$id_node_data = (int)get_parameter('id_node_data');
 		$new_width = (int)get_parameter('new_width');
 		$new_height = (int)get_parameter('new_height');
+		$new_pos_x = (int)get_parameter('new_pos_x');
+		$new_pos_y = (int)get_parameter('new_pos_y');
 		
-		$result_update_size = networkmap_enterprise_update_size($id_node_data, $new_width, $new_height);
+		$result_update_size = networkmap_enterprise_update_size($id_node_data, $new_width, $new_height, $new_pos_x, $new_pos_y);
 		
 		echo json_encode($result_update_size);
 		return;

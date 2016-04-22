@@ -319,6 +319,16 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 			$result_update = maps_update_map($id, $values);
 		}
 		
+		if ($result_update) {
+			$nodes = db_get_all_rows_filter(
+				'titem', array('id_map' => $id));
+			
+			foreach ($nodes as $node) {
+				db_process_sql_delete('trel_item', array('id_item' => $node['id']));
+			}
+			db_process_sql_delete('titem', array('id_map' => $id));
+		}
+		
 		ui_print_result_message ($result_update,
 			__('Successfully updated'),
 			__('Could not be updated'));

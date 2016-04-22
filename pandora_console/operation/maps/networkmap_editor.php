@@ -133,7 +133,12 @@ if ($not_found) {
 	ui_print_error_message(__('Not found networkmap'));
 }
 else {
-	echo '<form method="post" action="index.php?sec=maps&amp;sec2=operation/maps/networkmap_list">';
+	if ($edit_networkmap && enterprise_installed()) {
+		echo '<form method="post" onsubmit="javascript: return alert_refresh_all_networkmap();" action="index.php?sec=maps&amp;sec2=operation/maps/networkmap_list">';
+	}
+	else {
+		echo '<form method="post" action="index.php?sec=maps&amp;sec2=operation/maps/networkmap_list">';
+	}
 	
 	$table = null;
 	$table->id = 'form_editor';
@@ -281,6 +286,9 @@ else {
 			'class="sub next"');
 	}
 	else if ($edit_networkmap) {
+		if (enterprise_installed()) {
+			ui_print_help_tip(__("Update the config of enterprise networkmap refresh all data and lost the changes."));
+		}
 		html_print_input_hidden ('id_networkmap', $id);
 		html_print_input_hidden ('update_networkmap', 1);
 		html_print_submit_button (__('Update networkmap'), 'crt', false,
@@ -460,5 +468,9 @@ else {
 		else if (checked_source_ip_mask) {
 			$("#form_editor-source_ip_mask").show();
 		}
+	}
+	
+	function alert_refresh_all_networkmap() {
+		return confirm("<?php echo __("Do you want refresh the map and lost the changes?");?>");
 	}
 </script>

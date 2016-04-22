@@ -432,12 +432,6 @@ class Networkmap extends Map {
 			unlink($filename_dot);
 			unlink($filename_plain);
 			// ----- END DEPRECATED CODE--------------------------------
-			
-			switch (get_class($this)) {
-				case 'NetworkmapEnterprise':
-					NetworkmapEnterprise::dbSaveNodes();
-					break;
-			}
 		}
 	}
 	

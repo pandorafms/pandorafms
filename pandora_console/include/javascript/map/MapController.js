@@ -1768,7 +1768,6 @@ MapController.prototype.is_relationshipy = function(node) {
 			break;
 	}
 	
-	
 	return return_var;
 }
 
@@ -1888,18 +1887,6 @@ MapController.prototype.events = function() {
 			title: 'Add fictional node',
 			action: function(elm, d, i) {
 				self.add_fictional_node();
-			}
-		},
-		{
-			title: 'Edit map',
-			action: function(elm, d, i) {
-				self.editMap(self, elm);
-			}
-		},
-		{
-			title: 'Save map',
-			action: function(elm, d, i) {
-				console.log('Save map!!');
 			}
 		}
 	];

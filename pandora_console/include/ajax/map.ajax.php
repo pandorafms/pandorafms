@@ -44,7 +44,6 @@ if (is_ajax ()) {
 		$shape = (string)get_parameter('shape', '');
 		$return_update = networkmap_enterprise_update_data($id_node_data, $label, $shape);
 		
-		echo json_encode($return_update);
 		return;
 	}
 	
@@ -496,57 +495,44 @@ if (is_ajax ()) {
 		$node_id = get_parameter('node_id');
 		$data_graph_id = (int)get_parameter('data_graph_id');
 		
+		$style = db_get_value('style', 'titem', 'id', $data_graph_id);
+		$node_style = json_decode($style, true);
+		
+		$node_label = $node_style['label'];
+		$node_shape = $node_style['shape'];
+		
 		$table = new stdClass();
 		$table->id = 'node_options_' . $node_id;
 		$table->width = "100%";
-		
 		$table->head = array();
 		
 		$node_name = __('No name');
 		if ($type == ITEM_TYPE_AGENT_NETWORKMAP) {
 			$node_name = agents_get_name($id_node_data);
 			$table->head['type'] = __('Agent');
-			
-			$node_shape = 'circle';
 		}
 		else if ($type == ITEM_TYPE_MODULE_NETWORKMAP) {
-			$node_name = db_get_all_rows_sql("SELECT nombre
-												FROM tagente_modulo
-												WHERE id_agente_modulo = " . $id_node_data);
-			$node_name = $node_name[0]['nombre'];
-			$table->head['type'] = __('Module');
+			$node_name = db_get_value('nombre', 'tagente_modulo', 'id_agente_modulo', $id_node_data);
 			
-			$node_shape = 'square';
+			$table->head['type'] = __('Module');
 		}
 		else if ($type == ITEM_TYPE_GROUP_NETWORKMAP) {
-			$node_name = db_get_all_rows_sql("SELECT nombre
-												FROM tgrupo
-												WHERE id_grupo = " . $id_node_data);
-			$node_name = $node_name[0]['nombre'];
-			$table->head['type'] = __('Group');
+			$node_name = db_get_value('nombre', 'tgrupo', 'id_grupo', $id_node_data);
 			
-			$node_shape = 'rhombus';
+			$table->head['type'] = __('Group');
 		}
 		else if ($type == ITEM_TYPE_POLICY_NETWORKMAP) {
-			$node_name = db_get_all_rows_sql("SELECT name
-												FROM tpolicies
-												WHERE id = " . $id_node_data);
-			$node_name = $node_name[0]['name'];
-			$table->head['type'] = __('Policy');
+			$node_name = db_get_value('name', 'tpolicies', 'id', $id_node_data);
 			
-			$node_shape = 'rhombus';
+			$table->head['type'] = __('Policy');
 		}
-		$table->head['name'] = $node_name;
 		
-		$node = db_get_all_rows_sql(
-			"SELECT style FROM titem WHERE id = " . $id_node_data);
-		$node = $node[0];
-		$node_style = json_decode($node);
+		$table->head['name'] = $node_name;
 		
 		$table->data = array();
 		$table->data[0][0] = __('Label');
 		$table->data[0][1] = html_print_input_text('label',
-			$node_name, '', 12, 10, true);
+			$node_label, '', 12, 10, true);
 		$table->data[1][0] = __('Shape');
 		$table->data[1][1] = html_print_select(array(
 			'circle' => __('Circle'),

@@ -2442,7 +2442,6 @@ NetworkmapController.prototype.editNode = function(target) {
 	
 	var nodeTarget = $(target);
 	
-	var id_map = self._id;
 	var type = parseInt(nodeTarget.data("type"));
 	var data_id = parseInt(nodeTarget.data("id"));
 	var data_graph_id = parseInt(nodeTarget.data("graph_id"));

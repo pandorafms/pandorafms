@@ -9,7 +9,7 @@ use PandoraFMS::Core;
 use PandoraFMS::Config;
 use PandoraFMS::DB;
 
-no lib '/usr/lib/perl5';
+no lib '/usr/lib/perl5'; # disable @INC for system perl, because travis uses http://perlbrew.pl/.
 
 my $conf;
 my $dbh;

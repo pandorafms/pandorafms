@@ -1859,9 +1859,9 @@ CREATE TABLE IF NOT EXISTS `tmap` (
 CREATE TABLE IF NOT EXISTS `titem` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`id_map` int(10) unsigned NOT NULL default 0,
-	`x` INTEGER UNSIGNED NOT NULL default 0,
-	`y` INTEGER UNSIGNED NOT NULL default 0,
-	`z` INTEGER UNSIGNED NOT NULL default 0,
+	`x` INTEGER NOT NULL default 0,
+	`y` INTEGER NOT NULL default 0,
+	`z` INTEGER NOT NULL default 0,
 	`deleted` INTEGER(1) unsigned NOT NULL default 0,
 	`type` INTEGER UNSIGNED NOT NULL default 0,
 	`refresh` INTEGER UNSIGNED NOT NULL default 0,

@@ -10,6 +10,13 @@ ALTER TABLE talert_templates ADD COLUMN min_alerts_reset_counter NUMBER(5, 0) DE
 
 ALTER TABLE tserver ADD COLUMN server_keepalive NUMBER(10, 0) DEFAULT 0;
 
+-- ----------------------------------------------------------------------
+-- Table `tagente_estado`
+-- ----------------------------------------------------------------------
+
+ALTER TABLE tagente_estado RENAME COLUMN last_known_status TO known_status;
+ALTER TABLE tagente_estado ADD COLUMN last_known_status NUMBER(10, 0) DEFAULT 0;
+
 -- ---------------------------------------------------------------------
 -- Table `talert_actions`
 -- ---------------------------------------------------------------------

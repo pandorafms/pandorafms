@@ -148,6 +148,7 @@ CREATE TABLE "tagente_estado" (
 	"datos" text NOT NULL default '',
 	"timestamp" TIMESTAMP without time zone default '1970-01-01 00:00:00',
 	"estado" INTEGER NOT NULL default 0,
+	"known_status" INTEGER default 0,
 	"id_agente" INTEGER NOT NULL default 0,
 	"last_try" TIMESTAMP without time zone default '1970-01-01 00:00:00',
 	"utimestamp" BIGINT NOT NULL default 0,

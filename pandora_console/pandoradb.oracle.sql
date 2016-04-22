@@ -178,6 +178,7 @@ CREATE TABLE tagente_estado (
 	datos CLOB DEFAULT '',
 	timestamp TIMESTAMP DEFAULT NULL,
 	estado NUMBER(10, 0) DEFAULT 0,
+	known_status NUMBER(10, 0) DEFAULT 0,
 	id_agente NUMBER(10, 0) DEFAULT 0,
 	last_try TIMESTAMP DEFAULT NULL,
 	utimestamp NUMBER(19, 0) DEFAULT 0,

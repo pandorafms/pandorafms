@@ -144,6 +144,7 @@ CREATE TABLE IF NOT EXISTS `tagente_estado` (
 	`datos` text NOT NULL,
 	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
 	`estado` int(4) NOT NULL default '0',
+	`known_status` tinyint(4) default 0,
 	`id_agente` int(10) NOT NULL default '0',
 	`last_try` datetime default NULL,
 	`utimestamp` bigint(20) NOT NULL default '0',

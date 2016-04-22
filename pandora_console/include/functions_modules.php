@@ -534,6 +534,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 					'datos' => 0,
 					'timestamp' => '01-01-1970 00:00:00',
 					'estado' => $status,
+					'known_status' => $status,
 					'id_agente' => (int) $id_agent,
 					'utimestamp' => 0,
 					'status_changes' => 0,
@@ -547,6 +548,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 					'datos' => 0,
 					'timestamp' => null,
 					'estado' => $status,
+					'known_status' => $status,
 					'id_agente' => (int) $id_agent,
 					'utimestamp' => 0,
 					'status_changes' => 0,
@@ -560,6 +562,7 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 					'datos' => 0,
 					'timestamp' => '#to_date(\'1970-01-01 00:00:00\', \'YYYY-MM-DD HH24:MI:SS\')',
 					'estado' => $status,
+					'known_status' => $status,
 					'id_agente' => (int) $id_agent,
 					'utimestamp' => 0,
 					'status_changes' => 0,
@@ -1558,7 +1561,7 @@ function modules_get_agentmodule_status($id_agentmodule = 0, $without_alerts = f
 function modules_get_agentmodule_last_status($id_agentmodule = 0) {
 	$status_row = db_get_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
 	
-	return $status_row['last_known_status'];
+	return $status_row['known_status'];
 }
 
 /**

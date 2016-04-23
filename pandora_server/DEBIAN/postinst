@@ -81,12 +81,15 @@ else
 	echo "Skipping creation of pandora_server.conf: there is already one."
 fi
 
-echo "Linking startup script to /etc/rc2.d"
-update-rc.d pandora_server defaults
-
-# Tentacle server install
-echo "Installing tentacle server in /etc/rc2.d/S80tentacle_serverd"
-update-rc.d tentacle_serverd defaults
+echo "Enabling start-up pandora & tentacle server daemons";
+if [ -x `command -v systemctl` ]; then
+  systemctl daemon-reload
+  systemctl enable pandora_server
+  systemctl enable tentacle_serverd
+else
+  update-rc.d pandora_server defaults
+  update-rc.d tentacle_serverd defaults
+fi
 
 if [ -d /etc/cron.hourly ]
 then

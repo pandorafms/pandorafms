@@ -24,6 +24,10 @@
 # Description:    Tentacle Server startup script
 ### END INIT INFO
 
+if [ -x /lib/lsb/init-functions ]; then
+. /lib/lsb/init-functions
+fi
+
 # Uses a wait limit before sending a KILL signal, before trying to stop
 # Pandora FMS server nicely. Some big systems need some time before close
 # all pending tasks / threads.

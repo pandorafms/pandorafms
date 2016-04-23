@@ -1,0 +1,10 @@
+[Unit]
+Description=Pandora FMS server daemon
+After=network-online.target
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/pandora_server /etc/pandora/pandora_server.conf -D
+
+[Install]
+WantedBy=multi-user.target

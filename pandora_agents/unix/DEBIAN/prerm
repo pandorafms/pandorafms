@@ -8,4 +8,9 @@ PANDORA_CFG=/etc/pandora
 #rm -rf $PANDORA_CFG/plugins
 #rm -rf $PANDORA_CFG/pandora_agent.conf
 
-update-rc.d -f pandora_agent_daemon remove
+if [ -x `command -v systemctl` ]; then
+  systemctl disable pandora_agent_daemon
+  systemctl daemon-reload
+else
+  update-rc.d -f pandora_agent_daemon remove
+fi

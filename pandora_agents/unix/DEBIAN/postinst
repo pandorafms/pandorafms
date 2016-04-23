@@ -22,7 +22,12 @@ chgrp root $PANDORA_LOG
 chown -R root:root $PANDORA_BIN
 chown -R root:root $PANDORA_EXEC_BIN
 
-echo "Linking start-up daemon script to /etc/rc$INITLV.d";
-update-rc.d pandora_agent_daemon defaults
+echo "Enabling start-up agent daemon";
+if [ -x `command -v systemctl` ]; then
+  systemctl daemon-reload
+  systemctl enable pandora_agent_daemon
+else
+  update-rc.d pandora_agent_daemon defaults
+fi
 
-echo "Please, now setup the $PANDORA_HOME/pandora_agent.conf and before start the /etc/init.d/pandora_agent_daemon"
+echo "Please, now setup the $PANDORA_HOME/pandora_agent.conf and before start the pandora_agent_daemon service"

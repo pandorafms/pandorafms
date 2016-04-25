@@ -2417,17 +2417,37 @@ NetworkmapController.prototype.get_menu_nodes = function() {
 	return node_menu;
 }
 
+/**
+* Function resize_node_save
+* Return menu
+* Declaration
+*/
 NetworkmapController.prototype.resize_node_save = function(graph_id) {
 	
 }
 
+/**
+* Function move_node
+* Return menu
+* Declaration
+*/
 NetworkmapController.prototype.move_node = function(node) {
 }
 
+/**
+* Function apply_temp_arrows
+* Return menu
+* Calls father functions
+*/
 NetworkmapController.prototype.apply_temp_arrows = function(target_id) {
 	MapController.prototype.apply_temp_arrows.call(this, target_id);
 }
 
+/**
+* Function deleteNode
+* Return menu
+* Calls father functions
+*/
 NetworkmapController.prototype.deleteNode = function(self, target) {
 	MapController.prototype.deleteNode.call(this, self, target);
 }

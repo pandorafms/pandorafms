@@ -77,8 +77,12 @@ $table_other->style[0] = "font-weight: bold";
 $table_other->size[0] = '70%';
 $table_other->size[1] = '30%';
 
-$table_other->data[1][0] = __('Compact interpolation in hours (1 Fine-20 bad)') . ui_print_help_tip(__('Data will be compacted in intervals of the specified length.'), true);
-$table_other->data[1][1] = html_print_input_text ('step_compact',
+$table_other->data[1][0] = __('Item limit for realtime reports') . ui_print_help_tip(__('Set a value too high cause a slowdown on console and a performance penalty in the system.'), true);
+$table_other->data[1][1] = html_print_input_text ('report_limit',
+	$config["report_limit"], '', 5, 5, true);
+	
+$table_other->data[2][0] = __('Compact interpolation in hours (1 Fine-20 bad)') . ui_print_help_tip(__('Data will be compacted in intervals of the specified length.'), true);
+$table_other->data[2][1] = html_print_input_text ('step_compact',
 	$config["step_compact"], '', 5, 5, true);
 
 $intervals = array ();

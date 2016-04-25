@@ -602,7 +602,14 @@ switch ($action) {
 				
 				$data[1] = $report['description'];
 				
-				if (!$report['non_interactive']) {
+				//Remove html and xml button if items are larger than limit
+				$item_count = db_get_num_rows ('SELECT * FROM treport_content WHERE id_report=' . $report['id_report']);
+				$report['overload'] = $item_count >= $config['report_limit'];
+				if ($report['overload']) {
+					$data[2] = html_print_image("images/application_not_writable.png", true, array('title' => __('This report exceeds the item limit for realtime operations')));
+					$data[3] = null;
+				}
+				else if (!$report['non_interactive']) {
 					$data[2] = '<a href="' . $config['homeurl'] . 'index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'&pure='.$pure.'">' .
 						html_print_image("images/html.png", true, array('title' => __('HTML view'))) . '</a>';
 					$data[3] = '<a href="'. ui_get_full_url(false, false, false, false) . 'ajax.php?page=' . $config['homedir'] . '/operation/reporting/reporting_xml&id='.$report['id_report'].'">' . html_print_image("images/xml.png", true, array('title' => __('Export to XML'))) . '</a>'; //I chose ajax.php because it's supposed to give XML anyway

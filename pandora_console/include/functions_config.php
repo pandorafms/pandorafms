@@ -376,6 +376,8 @@ function config_update_config () {
 						$error_update[] = __('Max. days before delete unknown modules');
 					if (!config_update_value ('days_compact', (int) get_parameter ('days_compact')))
 						$error_update[] = __('Max. days before compact data');
+					if (!config_update_value ('report_limit', (int) get_parameter ('report_limit')))
+						$error_update[] = __('Item limit for realtime reports)');
 					if (!config_update_value ('step_compact', (int) get_parameter ('step_compact')))
 						$error_update[] = __('Compact interpolation in hours (1 Fine-20 bad)');
 					if (!config_update_value ('event_view_hr', (int) get_parameter ('event_view_hr')))
@@ -706,6 +708,10 @@ function config_process_config () {
 	
 	if (!isset ($config['event_view_hr'])) {
 		config_update_value ('event_view_hr', 8);
+	}
+	
+	if (!isset ($config['report_limit'])) {
+		config_update_value ('report_limit', 100);
 	}
 	
 	if (!isset ($config['loginhash_pwd'])) {

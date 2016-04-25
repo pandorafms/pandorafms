@@ -93,7 +93,7 @@ function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextI
 		else {
 			echo $text;
 		}
-	} 
+	}
 	
 	$text = io_safe_output($text);
 	if (mb_strlen($text, "UTF-8") > ($numChars)) {
@@ -134,10 +134,10 @@ function ui_print_truncate_text($text, $numChars = GENERIC_SIZE_TEXT, $showTextI
 		}
 	}
 	else {
-		if ($style !== false) { 
+		if ($style !== false) {
 			$truncateText = '<span style="' . $style . '">' . $text . '</span>';
 		}
-		else { 
+		else {
 			$truncateText = $text;
 		}
 	}
@@ -183,7 +183,7 @@ function printSmallFont ($string, $return = true) {
 	}
 }
 
-/** 
+/**
  * Prints a generic message between tags.
  * 
  * @param mixed The string message or array ('title', 'message', 'icon', 'no_close', 'force_style')  to be displayed
@@ -267,7 +267,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 			<td class="title" style="text-transform: uppercase; padding-top: 10px;"><b>' . $text_title . '</b></td>
 			<td class="icon" style="text-align: right; padding-right: 3px;">';
 	if (!$no_close_bool) {
-		//Use the no_meta parameter because this image is only in the base console		
+		//Use the no_meta parameter because this image is only in the base console
 		$output .= '<a href="javascript: close_info_box(\'' . $id . '\')">' .
 			html_print_image('images/blade.png', true, false, false, false, true) . '</a>';
 	}
@@ -296,11 +296,11 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 		return $output;
 	else
 		echo $output;
-		
+	
 	return '';
 }
 
-/** 
+/**
  * Prints an error message.
  * 
  * @param mixed The string error message or array ('title', 'message', 'icon', 'no_close') to be displayed
@@ -315,7 +315,7 @@ function ui_print_error_message ($message, $attributes = '', $return = false, $t
 	return ui_print_message ($message, 'error', $attributes, $return, $tag);
 }
 
-/** 
+/**
  * Prints an operation success message.
  * 
  * @param mixed The string message or array ('title', 'message', 'icon', 'no_close') to be displayed
@@ -330,7 +330,7 @@ function ui_print_success_message ($message, $attributes = '', $return = false, 
 	return ui_print_message ($message, 'suc', $attributes, $return, $tag);
 }
 
-/** 
+/**
  * Prints an operation info message.
  * 
  * @param mixed The string message or array ('title', 'message', 'icon', 'no_close') to be displayed
@@ -349,10 +349,10 @@ function ui_print_empty_data($message, $attributes = '', $return = false, $tag =
 	return ui_print_message ($message, 'info', $attributes, $return, $tag);
 }
 
-/** 
+/**
  * Evaluates a result using empty() and then prints an error or success message
  * 
- * @param mixed The results to evaluate. 0, NULL, false, '' or 
+ * @param mixed The results to evaluate. 0, NULL, false, '' or
  * array() is bad, the rest is good
  * @param mixed The string or array ('title', 'message') to be displayed if the result was good
  * @param mixed The string or array ('title', 'message') to be displayed if the result was bad
@@ -378,7 +378,7 @@ function ui_print_result_message ($result, $good = '', $bad = '', $attributes = 
 	}
 }
 
-/** 
+/**
  * Prints an warning message.
  * 
  * @param mixed The string warning message or array ('title', 'message', 'icon', 'no_close') to be displayed
@@ -517,7 +517,7 @@ function ui_print_tags_warning ($return = false) {
 	}
 }
 
-/** 
+/**
  * Print group icon within a link
  * 
  * @param int Group id
@@ -543,7 +543,7 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
 	if (defined('METACONSOLE'))
 		$link = false;
 	
-	if ($link) 
+	if ($link)
 		$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
 	
 	if ($config['show_group_name']) {
@@ -559,7 +559,7 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
 		}
 	}
 	
-	if ($link) 
+	if ($link)
 		$output .= '</a>';
 	
 	if (!$return)
@@ -568,7 +568,7 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
 	return $output;
 }
 
-/** 
+/**
  * Print group icon within a link. Other version.
  * 
  * @param int Group id
@@ -587,7 +587,7 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
 		$style = 'width: 16px; height: 16px;';
 	
 	$output = '';
-	if ($link) 
+	if ($link)
 		$output = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id_group.'">';
 	
 	if (empty ($icon))
@@ -595,7 +595,7 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
 	else
 		$output .= '<img style="' . $style . '" class="bot" src="'.$path.'/'.$icon.'.png" alt="'.groups_get_name ($id_group, true).'" title="'.groups_get_name ($id_group, true).'" />';
 	
-	if ($link) 
+	if ($link)
 		$output .= '</a>';
 	
 	if (!$return)
@@ -604,12 +604,12 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
 	return $output;
 }
 
-/** 
+/**
  * Get the icon of an operating system.
  *
  * @param int Operating system id
  * @param bool Whether to also append the name of the OS after the icon
- * @param bool Whether to return or echo the result 
+ * @param bool Whether to return or echo the result
  * @param bool Whether to apply skin or not
  * 
  * @return string HTML with icon of the OS
@@ -636,8 +636,7 @@ function ui_print_os_icon ($id_os, $name = true, $return = false,
 			return "-";
 		}
 	}
-	
-	if ($apply_skin) {
+	else if ($apply_skin) {
 		if ($only_src) {
 			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, $options, true, $relative);
 		}
@@ -690,7 +689,7 @@ function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_mediu
 	}
 	
 	if ($link) {
-		$url = $server_url . 'index.php?sec=estado&amp;'. 
+		$url = $server_url . 'index.php?sec=estado&amp;'.
 			'sec2=operation/agentes/ver_agente&amp;' .
 			'id_agente=' . $id_agent.$extra_params;
 		
@@ -710,7 +709,7 @@ function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_mediu
 	echo $output;
 }
 
-/** 
+/**
  * Formats a row from the alert table and returns an array usable in the table function
  * 
  * @param array A valid (non empty) row from the alert table
@@ -769,12 +768,12 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	}
 	
 	if ($alert['disabled']) {
-		$disabledHtmlStart = '<span style="font-style: italic; color: #aaaaaa;">'; 
+		$disabledHtmlStart = '<span style="font-style: italic; color: #aaaaaa;">';
 		$disabledHtmlEnd = '</span>';
 		$styleDisabled = "font-style: italic; color: #aaaaaa;";
 	}
 	else {
-		$disabledHtmlStart = ''; 
+		$disabledHtmlStart = '';
 		$disabledHtmlEnd = '';
 		$styleDisabled = "";
 	}
@@ -802,7 +801,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 			else {
 				$img = 'images/policies.png';
 				
-				$data[$index['policy']] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id'] . '">' . 
+				$data[$index['policy']] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id'] . '">' .
 					html_print_image($img,true, array('title' => $policyInfo['name'])) .
 					'</a>';
 			}
@@ -813,7 +812,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	$data[$index['standby']] = '';
 	if (isset ($alert["standby"]) && $alert["standby"] == 1) {
 		$data[$index['standby']] = html_print_image ('images/bell_pause.png', true, array('title' => __('Standby on')));
-	} 
+	}
 	
 	if (!defined('METACONSOLE')) {
 		// Force alert execution
@@ -821,7 +820,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 		if ($alert["force_execution"] == 0) {
 			$data[$index['force_execution']] =
 				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;force_execution=1&refr=60">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'))) . '</a>';
-		} 
+		}
 		else {
 			$data[$index['force_execution']] =
 				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;refr=60">' . html_print_image("images/refresh.png", true) . '</a>';
@@ -832,7 +831,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	if ($agent == 0) {
 		$data[$index['module_name']] .=
 			ui_print_truncate_text(isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name ($alert["id_agent_module"]), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
-	} 
+	}
 	else {
 		if (defined('METACONSOLE')) {
 			$agent_name = $alert['agent_name'];
@@ -851,7 +850,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 				$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 'agent_medium', $styleDisabled . " $agent_style", false, $console_url, $url_hash, $agent_name);
 			}
 			else {
-				$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 'agent_medium', $styleDisabled, false, $console_url, $url_hash);		
+				$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 'agent_medium', $styleDisabled, false, $console_url, $url_hash);
 			}
 		}
 		
@@ -932,7 +931,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 }
 
 /**
- * Prints a substracted string, length specified by cutoff, the full string will be in a rollover. 
+ * Prints a substracted string, length specified by cutoff, the full string will be in a rollover.
  *
  * @param string The string to be cut
  * @param int At how much characters to cut
@@ -1050,7 +1049,7 @@ function ui_print_alert_template_example ($id_alert_template, $return = false, $
  * 
  * @param string Id of the help article
  * @param bool Whether to return or output the result
- * @param string Home url if its necessary 
+ * @param string Home url if its necessary
  * @param string Image path
  * 
  * @return string The help tip
@@ -1063,7 +1062,7 @@ function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image =
 		$home_url = "../../" . $home_url;
 	}
 	
-	$output = html_print_image ($image, true, 
+	$output = html_print_image ($image, true,
 		array ("class" => "img_help",
 			"title" => __('Help'),
 			"onclick" => "open_help ('" . $help_id . "','" . $home_url . "')"));
@@ -1257,7 +1256,7 @@ function ui_require_jquery_file ($name, $path = 'include/javascript/', $echo_tag
  * @param string Callback will fill this with the current buffer.
  * @param bitfield Callback will fill this with a bitfield (see ob_start)
  * 
- * @return string String to return to the browser 
+ * @return string String to return to the browser
  */
 function ui_process_page_head ($string, $bitfield) {
 	global $config;
@@ -1286,7 +1285,7 @@ function ui_process_page_head ($string, $bitfield) {
 			$_GET['sec2'] == 'enterprise/dashboard/main_dashboard') {
 			
 			$query = ui_get_url_refresh (false, false);
-			$output .= '<meta http-equiv="refresh" content="' . 
+			$output .= '<meta http-equiv="refresh" content="' .
 				$config_refr . '; URL=' . $query . '" />';
 			
 		}
@@ -1357,7 +1356,7 @@ function ui_process_page_head ($string, $bitfield) {
 	
 	$exists_css = false;
 	if ($login_ok and $isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-		//Checks if user's skin is available 
+		//Checks if user's skin is available
 		$exists_skin = enterprise_hook('skins_is_path_set');
 		if ($exists_skin) {
 			$skin_path = enterprise_hook('skins_get_skin_path');
@@ -1369,15 +1368,15 @@ function ui_process_page_head ($string, $bitfield) {
 	if ($exists_css) {
 		foreach ($skin_styles as $filename => $name) {
 			$style = substr ($filename, 0, strlen ($filename) - 4);
-			$config['css'][$style] = $skin_path . 'include/styles/' . $filename; 
+			$config['css'][$style] = $skin_path . 'include/styles/' . $filename;
 		}
-	} 
+	}
 	//Otherwise assign default and user's css
 	else {
 		//User style should go last so it can rewrite common styles
 		$config['css'] = array_merge (array (
-			"common" => "include/styles/common.css", 
-			"menu" => "include/styles/menu.css", 
+			"common" => "include/styles/common.css",
+			"menu" => "include/styles/menu.css",
 			$config['style'] => "include/styles/" . $config['style'] . ".css"),
 			$config['css']);
 	}
@@ -1552,7 +1551,7 @@ function ui_process_page_body ($string, $bitfield) {
 	return $output;
 }
 
-/** 
+/**
  * Prints a pagination menu to browse into a collection of data.
  * 
  * @param int $count Number of elements in the collection.
@@ -1562,7 +1561,7 @@ function ui_process_page_body ($string, $bitfield) {
  * taken from $_REQUEST['offset']
  * @param int $pagination Current pagination size. If a user requests a larger
  * pagination than config["block_size"]
- * @param bool $return Whether to return or print this 
+ * @param bool $return Whether to return or print this
  * @param string $offset_name The name of parameter for the offset.
  * @param bool $print_total_items Show the text with the total items. By default true.
  *
@@ -1596,8 +1595,8 @@ function ui_pagination ($count, $url = false, $offset = 0,
 	/*
 	 URL passed render links with some parameter
 	 &offset - Offset records passed to next page
-	 &counter - Number of items to be blocked 
-	 Pagination needs $url to build the base URL to render links, its a base url, like 
+	 &counter - Number of items to be blocked
+	 Pagination needs $url to build the base URL to render links, its a base url, like
 	 " http://pandora/index.php?sec=godmode&sec2=godmode/admin_access_logs "
 	 */
 	$block_limit = PAGINATION_BLOCKS_LIMIT; // Visualize only $block_limit blocks
@@ -1793,7 +1792,7 @@ function ui_pagination ($count, $url = false, $offset = 0,
 	return $output;
 }
 
-/** 
+/**
  * Prints only a tip button which shows a text when the user puts the mouse over it.
  * 
  * @param string Complete text to show in the tip
@@ -1804,8 +1803,8 @@ function ui_pagination ($count, $url = false, $offset = 0,
  */
 function ui_print_session_action_icon ($action, $return = false) {
 	$key_icon = array(
-		'acl' => 'images/delete.png', 
-		'agent' => 'images/agent.png', 
+		'acl' => 'images/delete.png',
+		'agent' => 'images/agent.png',
 		'module' => 'images/module.png',
 		'alert' => 'images/bell.png',
 		'incident' => 'images/default_list.png',
@@ -1831,7 +1830,7 @@ function ui_print_session_action_icon ($action, $return = false) {
 	$output = '';
 	foreach($key_icon as $key => $icon) {
 		if (stristr($action, $key) !== false) {
-			$output = html_print_image($icon, true, array('title' => $action)) . ' '; 
+			$output = html_print_image($icon, true, array('title' => $action)) . ' ';
 			break;
 		}
 	}
@@ -1841,7 +1840,7 @@ function ui_print_session_action_icon ($action, $return = false) {
 	echo $output;
 }
 
-/** 
+/**
  * Prints only a tip button which shows a text when the user puts the mouse over it.
  * 
  * @param string Complete text to show in the tip
@@ -1889,7 +1888,7 @@ function ui_debug ($var, $backtrace = true) {
 		foreach ($traces as $trace) {
 			$trace_id++;
 			
-			/* Many classes are used to allow better customization. 
+			/* Many classes are used to allow better customization.
 			Please, do not remove them */
 			echo '<li>';
 			if (isset ($trace['class']))
@@ -1947,7 +1946,7 @@ function ui_print_moduletype_icon ($id_moduletype, $return = false, $relative = 
 	$type = db_get_row ("ttipo_modulo", "id_tipo", (int) $id_moduletype, array ("descripcion", "icon"));
 	if ($type === false) {
 		$type = array ();
-		$type["descripcion"] = __('Unknown type'); 
+		$type["descripcion"] = __('Unknown type');
 		$type["icon"] = 'b_down.png';
 	}
 	$imagepath = 'images/'.$type["icon"];
@@ -1987,7 +1986,7 @@ function ui_print_module_warn_value ($max_warning, $min_warning, $str_warning, $
 	}
 	else {
 		$data .= __("N/A");
-	} 
+	}
 	
 	$data .= " - ";
 	
@@ -2032,7 +2031,7 @@ function ui_get_status_images_path () {
 	
 	$imageset = $config["status_images_set"];
 	
-	if (strpos ($imageset, ",") === false) 
+	if (strpos ($imageset, ",") === false)
 		$imageset .= ",40x18";
 	list ($imageset, $sizes) = preg_split ("/\,/", $imageset);
 	
@@ -2049,7 +2048,7 @@ function ui_get_status_images_path () {
  * Prints an image representing a status.
  *
  * @param string
- * @param string 
+ * @param string
  * @param bool Whether to return an output string or echo now (optional, echo by default).
  * @param array options to set image attributes: I.E.: style
  * @param Path of the image, if not provided use the status path
@@ -2158,7 +2157,7 @@ function ui_toggle($code, $name, $title = '', $hidden_default = true, $return = 
 function ui_get_url_refresh ($params = false, $relative = true, $add_post = true) {
 	// Agent selection filters and refresh
 	global $config;
-
+	
 	// slerena, 8/Ene/2015 - Need to put index.php on URL which have it.
 	if (strpos($_SERVER['REQUEST_URI'], 'index.php') === false)
 		$url = '';
@@ -2381,7 +2380,7 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
  * @param boolean Return (false will print using a echo)
  * @param boolean help (Help ID to print the Help link)
  * @param boolean Godmode (false = operation mode).
- * @param string Options (HTML code for make tabs or just a brief info string 
+ * @param string Options (HTML code for make tabs or just a brief info string
  * @return string Header HTML
  */
 
@@ -2399,7 +2398,7 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 		$type = "view";
 		$type2 = "menu_tab_frame_view";
 		$separator_class = "separator";
-	} 
+	}
 	else {
 		$type = "view";
 		$type2 = "menu_tab_frame_view";
@@ -2411,7 +2410,7 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	
 	
 	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . '&nbsp; ';
-	$buffer .= '<span style="">' . 
+	$buffer .= '<span style="">' .
 		ui_print_truncate_text($title, 38);
 	if ($help != "")
 		$buffer .= "<div class='head_help' style='float: right; margin-top: -2px !important; margin-left: 2px !important;'>" .
@@ -2627,7 +2626,7 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
  *
  *  - $parameters['javascript_function_action_after_select_js_call'] The
  *    call of this function to call after user select a agent into the
- *    list in the autocomplete field. Instead the 
+ *    list in the autocomplete field. Instead the
  *    $parameters['javascript_function_action_after_select'], this is
  *    overwrite the previous element. And this is necesary when you need
  *    to set some params in your custom function.
@@ -3214,7 +3213,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 						server_id = ui.item.id_server;
 					}
 					
-					 
+					
 					
 					//Put the name
 					$(this).val(agent_name);
@@ -3535,7 +3534,7 @@ function ui_get_error ($error_code) {
 		case 'error_dbconfig':
 			$title = __('Problem with Pandora FMS database');
 			$message = __('Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file.<i><br/><br/>
-			Probably your database, hostname, user or password values are incorrect or 
+			Probably your database, hostname, user or password values are incorrect or
 			the database server is not running.').'<br /><br />';
 			$message .= '<span class="red">';
 			$message .= '<b>' . __('DB ERROR') . ':</b><br>';
@@ -3577,9 +3576,9 @@ function ui_get_error ($error_code) {
 			break;
 		case 'error_perms':
 			$title = __('Bad permission for include/config.php');
-			$message = __('For security reasons, <i>config.php</i> must have restrictive permissions, and "other" users 
-			should not read it or write to it. It should be written only for owner 
-			(usually www-data or http daemon user), normal operation is not possible until you change 
+			$message = __('For security reasons, <i>config.php</i> must have restrictive permissions, and "other" users
+			should not read it or write to it. It should be written only for owner
+			(usually www-data or http daemon user), normal operation is not possible until you change
 			permissions for <i>include/config.php</i> file. Please do it, it is for your security.');
 			break;
 	}

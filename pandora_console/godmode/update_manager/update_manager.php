@@ -16,8 +16,15 @@
 
 global $config;
 
+check_login ();
 //The ajax is in
 // include/ajax/update_manager.ajax.php
+
+if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
+	db_pandora_audit("ACL Violation", "Trying to access Setup Management");
+	require ("general/noaccess.php");
+	return;
+}
 
 $tab = get_parameter('tab', 'online');
 

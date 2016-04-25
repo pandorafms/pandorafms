@@ -94,7 +94,7 @@ function flot_area_stacked_graph($chart_data, $width, $height, $color,
 	$serie_types = array(), $chart_extra_data = array(),
 	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
 	$force_integer = false, $series_suffix_str = '', $menu = true,
-	$background_color = 'white', $dashboard = false, $vconsole = false) {
+	$background_color = 'white', $dashboard = false, $vconsole = false, $agent_module_id = 0) {
 	
 	global $config;
 	
@@ -102,7 +102,7 @@ function flot_area_stacked_graph($chart_data, $width, $height, $color,
 		$legend, $long_index, $homeurl, $unit, 'area_stacked',
 		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
 		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
-		$menu, $background_color, $dashboard, $vconsole);
+		$menu, $background_color, $dashboard, $vconsole, $agent_module_id);
 }
 
 function flot_area_simple_graph($chart_data, $width, $height, $color,
@@ -110,7 +110,7 @@ function flot_area_simple_graph($chart_data, $width, $height, $color,
 	$serie_types = array(), $chart_extra_data = array(),
 	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
 	$force_integer = false, $series_suffix_str = '', $menu = true,
-	$background_color = 'white', $dashboard = false, $vconsole = false) {
+	$background_color = 'white', $dashboard = false, $vconsole = false, $agent_module_id = 0) {
 	
 	global $config;
 	
@@ -118,7 +118,7 @@ function flot_area_simple_graph($chart_data, $width, $height, $color,
 		$legend, $long_index, $homeurl, $unit, 'area_simple',
 		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
 		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
-		$menu, $background_color, $dashboard, $vconsole);
+		$menu, $background_color, $dashboard, $vconsole, $agent_module_id);
 }
 
 function flot_line_stacked_graph($chart_data, $width, $height, $color,
@@ -126,7 +126,7 @@ function flot_line_stacked_graph($chart_data, $width, $height, $color,
 	$serie_types = array(), $chart_extra_data = array(),
 	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
 	$force_integer = false, $series_suffix_str = '', $menu = true,
-	$background_color = 'white', $dashboard = false, $vconsole = false) {
+	$background_color = 'white', $dashboard = false, $vconsole = false, $agent_module_id = 0) {
 	
 	global $config;
 	
@@ -134,7 +134,7 @@ function flot_line_stacked_graph($chart_data, $width, $height, $color,
 		$legend, $long_index, $homeurl, $unit, 'line_stacked',
 		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
 		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
-		$menu, $background_color, $dashboard, $vconsole);
+		$menu, $background_color, $dashboard, $vconsole, $agent_module_id);
 }
 
 function flot_line_simple_graph($chart_data, $width, $height, $color,
@@ -142,7 +142,7 @@ function flot_line_simple_graph($chart_data, $width, $height, $color,
 	$serie_types = array(), $chart_extra_data = array(),
 	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
 	$force_integer = false, $series_suffix_str = '', $menu = true,
-	$background_color = 'white', $dashboard = false, $vconsole = false) {
+	$background_color = 'white', $dashboard = false, $vconsole = false, $agent_module_id = 0) {
 	
 	global $config;
 	
@@ -157,7 +157,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	$long_index, $homeurl, $unit, $type, $water_mark, $serie_types,
 	$chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key,
 	$force_integer, $series_suffix_str = '', $menu = true,
-	$background_color = 'white', $dashboard = false, $vconsole = false) {
+	$background_color = 'white', $dashboard = false, $vconsole = false, $agent_module_id = 0) {
 	
 	global $config;
 	
@@ -189,9 +189,25 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	$return = "<div class='parent_graph' style='width: " . $width . "px; " . $background_style . "'>";
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:".$font_size."pt'></p>";
+	
+			
+	// Get other required module datas to draw warning and critical
+	if ($agent_module_id == 0) {
+		$yellow_up = 0;
+		$red_up = 0;
+		$yellow_inverse = false;
+		$red_inverse = false;
+	} else {
+		$module_data = db_get_row_sql ('SELECT * FROM tagente_modulo WHERE id_agente_modulo = ' . $agent_module_id);
+		$yellow_up = $module_data['max_warning'];
+		$red_up = $module_data['max_critical'];
+		$yellow_inverse = !($module_data['warning_inverse'] == 0);
+		$red_inverse = !($module_data['critical_inverse'] == 0);
+	}
+	
 	if ($menu) {
 		$threshold = false;
-		if ($yellow_threshold != 0 || $red_threshold != 0) {
+		if ($yellow_threshold != $yellow_up || $red_threshold != $red_up) {
 			$threshold = true;
 		}
 		
@@ -426,6 +442,10 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		"$force_integer, \n" .
 		"'$separator', \n" .
 		"'$separator2', \n" .
+		"'$yellow_up', \n" .
+		"'$red_up', \n" .
+		"'$yellow_inverse', \n" .
+		"'$red_inverse', \n" .
 		"'$series_suffix_str',
 		'$vconsole');";
 	$return .= "\n//]]>";

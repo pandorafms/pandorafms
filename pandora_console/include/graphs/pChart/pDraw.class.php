@@ -2556,6 +2556,7 @@
      if (floor($Value2) == 0) { return(0); }
      if (is_infinite($Value2)) { return(0); }
      if ($Value2 == 0.0) { return(0); }
+     if ($Value1 > $Value2) { return(0); }
      if ($this->mod_check($Value1, $Value2)) { return(0); }
      if (floor($Value2) != 0) { return($Value1 % $Value2); }
 

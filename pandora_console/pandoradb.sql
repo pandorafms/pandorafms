@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS `tagente_estado` (
 	`current_interval` int(8) unsigned NOT NULL default '0',
 	`running_by` smallint(4) unsigned default '0',
 	`last_execution_try` bigint(20) NOT NULL default '0',
-	`status_changes` tinyint(4) default 0,
+	`status_changes` tinyint(4) unsigned default 0,
 	`last_status` tinyint(4) default 0,
 	`last_known_status` tinyint(4) default 0,
 	`last_error` int(4) NOT NULL default '0',

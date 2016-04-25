@@ -776,9 +776,14 @@ function visual_map_print_item($mode = "read", $layoutData,
 					true, true, true, 1, false, $graph_javascript);
 			}
 			else {
+				if ($isExternalLink)
+					$homeurl = $config['homeurl'];
+				else
+					$homeurl = '';
+				
 				$img = grafico_modulo_sparse($id_module, $period, 0, $width,
 					$height, '', null, false, 1, false, 0, '', 0, 0,
-					true, true, '', 1, false, '', false, false, true, 
+					true, true, $homeurl, 1, false, '', false, false, true, 
 					$layoutData['image'], null, false, $graph_javascript);
 			}
 			

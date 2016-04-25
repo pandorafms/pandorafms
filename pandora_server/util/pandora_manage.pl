@@ -35,7 +35,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "6.1dev PS160329";
+my $version = "6.1dev PS160420";
 
 # save program name for logging
 my $progname = basename($0);
@@ -973,7 +973,6 @@ sub cli_delete_agent() {
 	my $agent_name = @ARGV[2];
 	
 	$agent_name = decode_entities($agent_name);
-	print_log "[INFO] Deleting agent '$agent_name'\n\n";
 	
 	if (is_metaconsole($conf) == 1) {
 		my $agents_groups = enterprise_hook('get_metaconsole_agent',[$dbh, $agent_name]);
@@ -981,6 +980,7 @@ sub cli_delete_agent() {
 		if (scalar(@{$agents_groups}) != 0) {
 			foreach my $agent (@{$agents_groups}) {
 				my $return = enterprise_hook('delete_metaconsole_agent',[$dbh,$agent->{'id_agente'}]);
+				print_log "[INFO] Deleting agent '$agent_name' \n\n";
 			}
 		}
 		my $servers = enterprise_hook('get_metaconsole_setup_servers',[$dbh]);
@@ -996,6 +996,7 @@ sub cli_delete_agent() {
 				next;
 			}
 			else {
+				print_log "[INFO] Deleting agent '$agent_name' in ID server: '$server'\n\n";
 				pandora_delete_agent($dbh_metaconsole,$id_agent,$conf);
 			}
 		}
@@ -1005,6 +1006,7 @@ sub cli_delete_agent() {
 		my $id_agent = get_agent_id($dbh,$agent_name);
 		exist_check($id_agent,'agent',$agent_name);
 		
+		print_log "[INFO] Deleting agent '$agent_name'\n\n";
 		pandora_delete_agent($dbh,$id_agent,$conf);
 	}
 }
@@ -3209,6 +3211,7 @@ sub cli_get_agent_group() {
 					my $id_group = get_agent_group ($dbh_metaconsole, $id_agent);
 					my $group_name = get_group_name ($dbh_metaconsole, $id_group);
 					my $metaconsole_name = enterprise_hook('get_metaconsole_setup_server_name',[$dbh, $server]);
+					$agent_name = safe_output($agent_name);
 					print "[INFO] Server: $metaconsole_name Agent: $agent_name Name Group: $group_name\n\n";
 				}
 			}
@@ -3257,6 +3260,7 @@ sub cli_get_agent_group_id() {
 				}
 				else {
 					my $id_group = get_agent_group ($dbh_metaconsole, $id_agent);
+					$agent_name = safe_output($agent_name);
 					print "Server: $metaconsole_name Agent: $agent_name ID Group: $id_group\n\n";
 				}
 			}
@@ -3881,7 +3885,7 @@ sub cli_locate_agent () {
 				}
 			}
 			
-			if (defined(@list_servers)) {
+			if (scalar(@list_servers) > 0) {
 				$list_names_servers = join(',',@list_servers);
 				print_log "[INFO] The agent: $agent_name find in server with IDS: $list_names_servers\n\n";
 			}

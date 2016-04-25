@@ -2241,6 +2241,85 @@ function modules_get_first_contact_date($id_agent_module) {
 	return $first_date;
 }
 
+/**
+ * Get the unknown time status of a module in a period.
+ * If there is more than 1 days between data, there is some unknown time modules
+ *
+ * @param int id_agent_module.
+ * @param int ending interval timestamp
+ * @param int interval duration
+ *
+ * @return int unknown seconds.
+ */
+function modules_get_unknown_time ($id_agent_module, $date, $period){
+	
+	// TODO REMOVE THE TIME IN PLANNED DOWNTIME
+	
+	if (empty($id_agent_module) || empty($date))
+		return false;
+	
+	// Set initial conditions
+	$unknown_seconds = 0; 
+	$datelimit = $date - $period;	
+	$search_in_history_db = db_search_in_history_db($datelimit);
+	
+	// Get interval data
+	$sql = sprintf ('SELECT utimestamp
+		FROM tagente_datos
+		WHERE id_agente_modulo = %d
+			AND utimestamp > %d AND utimestamp <= %d',
+		$id_agent_module, $datelimit, $date);
+	$sql .= ' ORDER BY utimestamp ASC';
+	$interval_data = db_get_all_rows_sql ($sql, $search_in_history_db);
+	
+	$previous_data = modules_get_previous_data ($id_agent_module, $datelimit);
+	
+	// All alternatives on first data
+	if ($previous_data === false && $interval_data === false) {
+		return false;
+	} else if($previous_data !== false && $interval_data === false) {
+		if (($date - $previous_data['utimestamp']) <= SECONDS_1DAY) {
+			return 0;
+		}
+		if (($previous_data['utimestamp'] + SECONDS_1DAY) >= $datelimit) {
+			return $date - ($previous_data['utimestamp'] + SECONDS_1DAY);
+		} else {
+			return $period;
+		}
+	} else if ($previous_data === false && $interval_data !== false) {
+		$first_data = array_shift ($interval_data);
+		$unknown_seconds += $first_data['utimestamp'] - $datelimit;
+		array_unshift ($interval_data, $first_data);
+	} else {
+		$first_data = array_shift ($interval_data);
+		if (($previous_data['utimestamp'] + SECONDS_1DAY) >= $first_data['utimestamp']) {
+			if (($previous_data['utimestamp'] + SECONDS_1DAY) >= $datelimit) {
+				$unknown_seconds += $previous_data['utimestamp'] + SECONDS_1DAY - $first_data['utimestamp'];
+			} else {
+				$unknown_seconds += $first_data['utimestamp'] - $datetime;
+			}
+		}
+		array_unshift ($interval_data, $first_data);
+	}
+	
+	// Put utimestamp like last data
+	$last_data['utimestamp'] = $date; 
+	array_push ($interval_data, $last_data);
+	$previous_data = array_shift ($previous_data);
+	
+	// Check if all datas have data maximum one day before
+	foreach ($interval_data as $data) {
+		$previous_1day = $previous_data['utimestamp'] + SECONDS_1DAY;
+		if ($previous_1day >= $data['utimestamp']) {
+			$unknown_period += $previous_1day - $data['utimestamp'];
+		}
+		$previous_data = $data;
+	}
+	
+	return $unknown_seconds;
+}
+
+
 function modules_get_module_group_status($id_agent, $id_module_group) {
 	$status_return = null;
 	

@@ -2688,14 +2688,15 @@ MapController.prototype.deleteNode = function(self, target) {
 		}
 		
 		var id_node = "node_" + node.graph_id;
-		var arrowsToDelete = self.getArrows(id_node);
+		
+		var arrowsToDelete = self.get_edges_to_del(node.graph_id);
 		
 		// Delete edges and nodes in "nodes" and "edges" arrays
 		self.deleteEdgesAndNode(arrowsToDelete, id_node);
 		
 		// Delete visual edges and nodes
 		arrowsToDelete.forEach(function(arrow) {
-			d3.select("#arrow_" + arrow).remove();
+			d3.select("#arrow_" + arrow['graph_id']).remove();
 		});
 		
 		d3.select(self._target + " #" + id_node).remove();
@@ -2714,7 +2715,7 @@ MapController.prototype.deleteEdgesAndNode = function(arrowsToDelete, id_node) {
 	arrowsToDelete.forEach(function(arrow) {
 		temp = [];
 		edges.forEach(function(edge) {
-			if (edge["graph_id"] != arrow) {
+			if (edge["graph_id"] != arrow['graph_id']) {
 				temp.push(edge);
 			}
 		});
@@ -2726,7 +2727,7 @@ MapController.prototype.deleteEdgesAndNode = function(arrowsToDelete, id_node) {
 		nodes.forEach(function(nodeOrEdge) {
 			var nodeToDel = "node_" + nodeOrEdge["graph_id"];
 			
-			if ((nodeOrEdge["graph_id"] != arrow) && (nodeToDel != id_node)) {
+			if ((nodeOrEdge["graph_id"] != arrow['graph_id']) && (nodeToDel != id_node)) {
 				temp.push(nodeOrEdge);
 			}
 		});
@@ -2744,6 +2745,23 @@ MapController.prototype.deleteEdgesAndNode = function(arrowsToDelete, id_node) {
 		});
 		nodes = temp;
 	}
+}
+
+/**
+* Function get_edges_to_del
+* Return array[edge]
+* This function returns the edges of a node to delete them
+*/
+MapController.prototype.get_edges_to_del = function(id_graph) {
+	var return_edges = [];
+	
+	$.each(edges, function(i, edge) {
+		if ((edge['to']['graph_id'] == id_graph) || (edge['from']['graph_id'] == id_graph)) {
+			return_edges.push(edge);
+		}
+	});
+	
+	return return_edges;
 }
 
 /**

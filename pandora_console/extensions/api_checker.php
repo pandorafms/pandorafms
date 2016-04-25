@@ -54,6 +54,15 @@ function api_execute($url, $ip, $pandora_url, $apipass, $user, $password, $op, $
 function extension_api_checker() {
 	global $config;
 	
+	check_login ();
+	
+	if (! check_acl ($config['id_user'], 0, "PM")) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access Profile Management");
+		require ("general/noaccess.php");
+		return;
+	}
+	
 	$url = io_safe_output(get_parameter('url', ''));
 	
 	$ip = io_safe_output(get_parameter('ip', '127.0.0.1'));

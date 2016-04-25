@@ -2281,6 +2281,10 @@ NetworkmapController.prototype.refresh_nodes = function() {
 	});
 }
 
+NetworkmapController.prototype.refresh_map = function() {
+	MapController.prototype.refresh_map.call(this);
+}
+
 /**
 * Function refresh_arrows
 * Return void

@@ -30,6 +30,7 @@ abstract class Map {
 	protected $subtype = null;
 	protected $id_group = null;
 	protected $generation_method = null;
+	protected $source_period = MAP_REFRESH_TIME;
 	
 	protected $width = null;
 	protected $height = null;
@@ -82,6 +83,8 @@ abstract class Map {
 		
 		$this->width = (int)$dbValues['width'];
 		$this->height = (int)$dbValues['height'];
+		
+		$this->source_period = (int)$dbValues['source_period'];
 	}
 	
 	private function loadDB() {

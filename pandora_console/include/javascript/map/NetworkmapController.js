@@ -15,8 +15,8 @@
 /*-----------------------------------------------*/
 /*------------------Constructor------------------*/
 /*-----------------------------------------------*/
-var NetworkmapController = function(target) {
-	MapController.call(this, target);
+var NetworkmapController = function(target, refresh_time) {
+	MapController.call(this, target, refresh_time);
 }
 
 /*-----------------------------------------------*/

@@ -22,8 +22,9 @@ var CONTROL_KEY = 17;
 /*-----------------------------------------------*/
 /*------------------Constructor------------------*/
 /*-----------------------------------------------*/
-var MapController = function(target) {
+var MapController = function(target, refresh_time) {
 	this._target = target;
+	this._refresh_time = refresh_time * 1000; // 1000 for the javascript
 	
 	this._id = $(target).data('id');
 }
@@ -2012,7 +2013,7 @@ MapController.prototype.events = function() {
 			}
 		});
 	
-	setTimeout(function() { self.refresh_map();}, MAP_REFRESH_TIME);
+	setTimeout(function() { self.refresh_map();}, self._refresh_time);
 }
 
 /**
@@ -2026,7 +2027,7 @@ MapController.prototype.refresh_map = function() {
 	self.refresh_nodes();
 	self.refresh_arrows();
 	
-	setTimeout(function() { self.refresh_map();}, MAP_REFRESH_TIME);
+	setTimeout(function() { self.refresh_map();}, self._refresh_time);
 }
 
 /**

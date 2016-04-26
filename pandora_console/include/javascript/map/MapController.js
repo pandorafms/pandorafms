@@ -33,6 +33,7 @@ var MapController = function(target) {
 /*-----------------------------------------------*/
 MapController.prototype._id = null;
 MapController.prototype._viewport = null;
+MapController.prototype._minimap_viewport = null;
 MapController.prototype._minimap = null;
 MapController.prototype._zoomManager = null;
 MapController.prototype._slider = null;
@@ -48,6 +49,7 @@ MapController.prototype._relationship_in_progress = false;
 MapController.prototype._relationship_in_progress_type = null;
 MapController.prototype._over = null
 MapController.prototype._dragged_nodes = {};
+MapController.prototype._enabled_minimap = true;
 
 /*-----------------------------------------------*/
 /*--------------------Methods--------------------*/
@@ -211,7 +213,9 @@ MapController.prototype.init_map = function() {
 	self.paint_nodes();
 	self.paint_arrows();
 	
-	self.paint_minimap();
+	
+	if (self._enabled_minimap)
+		self.init_minimap();
 	
 	self.ini_selection_rectangle();
 	
@@ -589,23 +593,40 @@ MapController.prototype.get_real_size_map = function() {
 	return map_size;
 }
 
-/**
-* Function paint_minimap
-* Return  void
-* This function paints the minimap
-*/
-MapController.prototype.paint_minimap = function() {
+MapController.prototype.init_minimap = function() {
 	var self = this;
 	
-	var screen_size = d3.select(self._target).node().getBoundingClientRect();
 	var map_size = self.get_real_size_map();
 	
 	var real_width = map_size.width + map_size.x;
 	var real_height = map_size.height + map_size.y;
 	
-	var max_map = real_height;
-	if (real_width > real_height)
-		max_map = real_width;
+	self.paint_minimap(real_width, real_height);
+	
+	
+	
+	self.paint_toggle_button();
+	
+	self.paint_items_minimap();
+	
+	self.zoom_minimap();
+	
+	self.events_for_minimap();
+}
+
+/**
+* Function paint_minimap
+* Return  void
+* This function paints the minimap
+*/
+MapController.prototype.paint_minimap = function(map_width, map_height) {
+	var self = this;
+	
+	var screen_size = d3.select(self._target).node().getBoundingClientRect();
+	
+	var max_map = map_height;
+	if (map_width > map_height)
+		max_map = map_width;
 	
 	var max_screen = screen_size.height;
 	if (screen_size.width > screen_size.height)
@@ -616,8 +637,8 @@ MapController.prototype.paint_minimap = function() {
 		self._relation = 1;
 	
 	
-	var minimap_map_width = (map_size.width + map_size.x) / self._relation;
-	var minimap_map_height = (map_size.height + map_size.y) / self._relation;
+	var minimap_map_width = map_width / self._relation;
+	var minimap_map_height = map_height / self._relation;
 	
 	var minimap = d3.select(self._target + " .minimap");
 	var svg = d3.select(self._target + " svg");
@@ -650,7 +671,7 @@ MapController.prototype.paint_minimap = function() {
 	transform.scale[0] = 1 / self._relation;
 	transform.scale[1] = 1 / self._relation;
 	
-	var minimap_layer = minimap
+	self._minimap_viewport = minimap
 		.append("g")
 			.attr("class", "clip_minimap")
 			.attr("clip-path", "url(#clip_minimap)")
@@ -658,21 +679,13 @@ MapController.prototype.paint_minimap = function() {
 				.attr("class", "map")
 				.attr("transform", transform.toString());
 	
-	minimap_layer.append("rect")
+	self._minimap_viewport.append("rect")
 		.attr("class", "viewport")
 		.attr("style", "fill: #dddddd; stroke: #aaaaaa; stroke-width: 1;")
 		.attr("x", 0)
 		.attr("y", 0)
 		.attr("height", screen_size.height)
 		.attr("width", screen_size.width);
-	
-	self.paint_toggle_button();
-	
-	self.paint_items_minimap();
-	
-	self.zoom_minimap();
-	
-	self.events_for_minimap();
 }
 
 /**
@@ -682,9 +695,8 @@ MapController.prototype.paint_minimap = function() {
 */
 MapController.prototype.paint_items_minimap = function() {
 	var self = this;
-	var minimap_viewport =  d3.select(self._target + " .minimap .map");
 	
-	minimap_viewport.selectAll(".node")
+	self._minimap_viewport.selectAll(".node")
 		.data(
 			nodes
 				.filter(function(d, i) {

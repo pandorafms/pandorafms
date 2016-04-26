@@ -607,6 +607,8 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 							$module_group['id_server'] = $agent['id_server'];
 							$module_group['id_node'] = $node_count;
 							$module_group['parent'] = $agent['id_node'];
+							$module_group['id_module_group'] = $module['id_module_group'];
+							$module_group['id_agent'] = $agent['id_agente'];
 							$nodes[$node_count] = $module_group;
 							
 							$id_node_module_group = $node_count;
@@ -1575,7 +1577,7 @@ function networkmap_create_module_group_node ($module_group, $simple = 0, $font_
 		$node = $module_group['id_node'].' [ color="' . $status_color .
 			'", fontsize='.$font_size.', style="filled", ' .
 			'fixedsize=true, width=0.30, height=0.30, ' .
-			'label=<<TABLE data-status="' . $module_group['status'] . '" CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' .
+			'label=<<TABLE data-id_agent="' . $module_group['id_agent'] . '" data-status="' . $module_group['status'] . '" CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD>' .
 			io_safe_output($module_group['name']) . '</TD></TR></TABLE>>,
 			shape="square", URL="' . $url . '",
 			tooltip="' . $url_tooltip . '"];';
@@ -1846,7 +1848,7 @@ function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom,
 	$head .= "root=0;";
 	$head .= "size=\"$size\";";
 	
-	
+	$head .= "\n";
 	
 	return $head;
 }

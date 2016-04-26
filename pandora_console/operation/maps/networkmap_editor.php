@@ -36,7 +36,7 @@ if ($create_networkmap) {
 	$description = "";
 	$width = NETWORKMAP_DEFAULT_WIDTH;
 	$height = NETWORKMAP_DEFAULT_HEIGHT;
-	$source_period = SECONDS_5MINUTES;
+	$source_period = MAP_REFRESH_TIME;
 	$source = MAP_SOURCE_GROUP;
 	$source_data = '';
 	$generation_method = MAP_GENERATION_CIRCULAR;
@@ -201,8 +201,8 @@ else {
 		4, 10,true);
 	
 	$table->data[7][0] = __('Refresh time');
-	$table->data[7][1] = html_print_input_text ('source_period', $source_period, '', 8,
-		20,true);
+	$table->data[7][1] = html_print_input_text ('source_period',
+		$source_period, '', 8, 20, true);
 	
 	echo '<fieldset><legend>' . __('Main') . '</legend>';
 	html_print_table($table);

@@ -166,6 +166,8 @@ class Networkmap extends Map {
 					$type = ITEM_TYPE_MODULEGROUP_NETWORKMAP;
 					preg_match("/data-status=\"([0-9]*)\"/", $chunks[1], $matches);
 					$status = $matches[1];
+					preg_match("/data-id_agent=\"([0-9]*)\"/", $chunks[1], $matches);
+					$id_agent = $matches[1];
 					$shape = "rhombus";
 					
 					//The module group has not icon.

@@ -248,6 +248,11 @@ abstract class Map {
 		
 		$contants["NODE_IMAGE_PADDING"] = NODE_IMAGE_PADDING;
 		
+		
+		
+		$contants["DEFAULT_NODE_WIDTH"] = DEFAULT_NODE_WIDTH;
+		$contants["DEFAULT_NODE_HEIGHT"] = DEFAULT_NODE_HEIGHT;
+		
 		?>
 		<script type="text/javascript">
 			<?php

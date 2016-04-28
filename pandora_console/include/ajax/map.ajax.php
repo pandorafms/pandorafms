@@ -68,10 +68,15 @@ if (is_ajax ()) {
 	
 	if ($update_node_position) {
 		$id_node_data = (int)get_parameter('id_node_data');
+		$exit_holding_area = (bool)get_parameter('exit_holding_area');
 		$new_pos_x = (int)get_parameter('new_pos_x');
 		$new_pos_y = (int)get_parameter('new_pos_y');
 		
 		$result_update_position = networkmap_enterprise_update_position($id_node_data, $new_pos_x, $new_pos_y);
+		
+		if ($exit_holding_area) {
+			networkmap_enterprise_exit_holding_area($id_node_data);
+		}
 		
 		echo json_encode($result_update_position);
 		return;

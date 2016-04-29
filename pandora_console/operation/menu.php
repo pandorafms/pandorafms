@@ -119,6 +119,8 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		"operation/agentes/networkmap"
 		);
 	
+	enterprise_hook ('transmap_console');
+	
 	enterprise_hook ('networkmap_console');
 	
 	enterprise_hook ('services_menu');

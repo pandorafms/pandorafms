@@ -119,6 +119,13 @@ else {
 			html_print_image("images/cog.png", true,
 				array ('title' => __('Edit networkmap'))) .
 			'</a>');
+	if (enterprise_installed()) {
+		$buttons['deleted'] = array('active' => false,
+			'text' => '<a href="index.php?sec=maps&sec2=enterprise/operation/maps/networkmap_list_deleted&&id_networkmap=' . $id . '">' . 
+				html_print_image("images/list.png", true,
+					array ('title' => __('Deleted list'))) .
+				'</a>');
+	}
 	$buttons['networkmap'] = array('active' => false,
 		'text' => '<a href="index.php?sec=network&sec2=operation/maps/networkmap&id=' . $id . '">' . 
 			html_print_image("images/op_network.png", true,

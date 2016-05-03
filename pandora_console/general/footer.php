@@ -32,7 +32,9 @@ echo '</a><br />';
 echo '<a class="white footer">'. __('Page generated at') . ' '. ui_print_timestamp ($time, true, array ("prominent" => "timestamp")); //Always use timestamp here
 echo '</a>';
 if (isset ($config['debug'])) {
-	echo ' - Saved '.format_numeric ($sql_cache["saved"]).' Queries';
+	$cache_info = array();
+	$cache_info = db_get_cached_queries();
+	echo ' - Saved '.$cache_info[0].' Queries';
 }
 
 ?>

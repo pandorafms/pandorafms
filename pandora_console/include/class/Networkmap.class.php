@@ -440,10 +440,12 @@ class Networkmap extends Map {
 	public function writeJSGraph() {
 		parent::writeJSGraph();
 		
+		$name_subtype = "controller_" . $this->id;
+		
 		?>
 		<script type="text/javascript">
 			<?php
-			echo "var subtype = " . $this->subtype . ";";
+			echo "var " . $name_subtype . " = " . $this->subtype . ";";
 			?>
 		</script>
 		<?php
@@ -456,11 +458,16 @@ class Networkmap extends Map {
 	}
 	
 	public function printJSInit() {
-		echo "<h1>Networkmap</h1>";
+		$name_object = "controller_" . $this->id;
+		
 		?>
 		<script type="text/javascript">
+			var <?php echo $name_object;?> = null
 			$(function() {
-				// map = new js_networkmap();
+				<?php echo $name_object;?> = new NetworkmapController("#map",
+					<?php echo $this->source_period;?>);
+				
+				<?php echo $name_object;?>.init_map();
 			});
 		</script>
 		<?php

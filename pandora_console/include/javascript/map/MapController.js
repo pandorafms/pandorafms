@@ -223,6 +223,25 @@ MapController.prototype.init_map = function() {
 	self.events();
 }
 
+MapController.prototype.set_nodes_map = function(nodes) {
+	var self = this;
+	
+	window["nodes_" + self._id] = nodes;
+}
+
+MapController.prototype.get_nodes_map = function() {
+	var self = this;
+	
+	return window["nodes_" + self._id];
+}
+
+
+MapController.prototype.get_subtype_map = function() {
+	var self = this;
+	
+	return window["subtype_" + self._id];
+}
+
 /**
 * Function ini_selection_rectangle
 * Return void
@@ -257,9 +276,10 @@ MapController.prototype.minimap_get_size = function() {
 * This function returns a node
 */
 MapController.prototype.get_node = function(id_graph) {
+	var self = this;
 	var return_node = null;
 	
-	$.each(nodes, function(i, node) {
+	$.each(self.get_nodes_map(), function(i, node) {
 		if (node['graph_id'] == id_graph) {
 			
 			node['index_node'] = i;
@@ -279,9 +299,11 @@ MapController.prototype.get_node = function(id_graph) {
 * This function returns the node filter
 */
 MapController.prototype.get_node_filter = function(field, value) {
+	var self = this;
+	
 	var return_node = null;
 	
-	$.each(nodes, function(i, node) {
+	$.each(self.get_nodes_map(), function(i, node) {
 		if (node[field] == value) {
 			return_node = node;
 			return false;
@@ -385,12 +407,13 @@ MapController.prototype.get_arrows_from_edges = function() {
 * This function return a specific arrow
 */
 MapController.prototype.get_arrow = function(id_to, id_from) {
+	var self = this;
 	var arrow = {};
 	
 	arrow['nodes'] = {};
 	
 	var count_nodes = 0;
-	$.each(nodes, function(i, node) {
+	$.each(self.get_nodes_map(), function(i, node) {
 		if (parseInt(node['graph_id']) == parseInt(id_to)) {
 			arrow['nodes']['to'] = node;
 			count_nodes++;
@@ -699,7 +722,7 @@ MapController.prototype.paint_items_minimap = function() {
 	
 	self._minimap_viewport.selectAll(".node")
 		.data(
-			nodes
+			self.get_nodes_map()
 				.filter(function(d, i) {
 					return self.filter_only_agents(d);
 				}))
@@ -798,7 +821,7 @@ MapController.prototype.paint_arrows = function() {
 	
 	var arrow_layouts = self._viewport.selectAll(".arrow")
 		.data(
-			nodes
+			self.get_nodes_map()
 				.filter(function(d, i) {
 					if (d.type == ITEM_TYPE_EDGE_NETWORKMAP) {
 						if (self.exists_edge(d['graph_id']))
@@ -839,14 +862,14 @@ MapController.prototype.paint_arrows = function() {
 					return false;
 			})[0];
 			
-			var to_node = nodes.filter(function(d2) {
+			var to_node = self.get_nodes_map().filter(function(d2) {
 				if (d2['graph_id'] == node_arrow['to'])
 					return true;
 				else
 					return false;
 			})[0];
 			
-			var from_node = nodes.filter(function(d2) {
+			var from_node = self.get_nodes_map().filter(function(d2) {
 				if (d2['graph_id'] == node_arrow['from'])
 					return true;
 				else
@@ -874,7 +897,7 @@ MapController.prototype.paint_nodes = function() {
 	
 	self._viewport.selectAll(".node")
 		.data(
-			nodes
+			self.get_nodes_map()
 				.filter(function(d, i) {
 					return self.filter_only_agents(d);
 				}))
@@ -1067,7 +1090,7 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 			d3.xml("images/maps/square_selection.svg", "application/xml", function(xml) {
 				var nodes = xml
 					.evaluate("//*[@id='square_selection']/*", xml, null, XPathResult.ANY_TYPE, null);
-				var result = nodes.iterateNext();
+				var result = self.get_nodes_map().iterateNext();
 				
 				resize_square
 					.append("g").attr("class", "square_selection")
@@ -1238,14 +1261,14 @@ MapController.prototype.event_resize = function(action, item, handler) {
 			var x = transform_viewport.translate[0];
 			var y = transform_viewport.translate[1];
 			
-			$.each(nodes, function(i, node) {
+			$.each(self.get_nodes_map(), function(i, node) {
 				if (node['graph_id'] !=  item['graph_id'])
 					return 1; // Continue
 				
-				nodes[i].x = x;
-				nodes[i].y = y;
-				nodes[i].width = width;
-				nodes[i].height = height;
+				self.get_nodes_map()[i].x = x;
+				self.get_nodes_map()[i].y = y;
+				self.get_nodes_map()[i].width = width;
+				self.get_nodes_map()[i].height = height;
 			});
 			
 			self.resize_node_save(item['graph_id']);
@@ -1635,7 +1658,7 @@ MapController.prototype.events_for_nodes = function(id_node) {
 		
 		self._dragging = true;
 		self._dragged_nodes = {};
-		$.each(nodes, function(i, node) {
+		$.each(self.get_nodes_map(), function(i, node) {
 			if (!self.is_draggable(node))
 				return 1; // Continue
 			
@@ -1662,7 +1685,7 @@ MapController.prototype.events_for_nodes = function(id_node) {
 		
 		self._dragging = true;
 		
-		$.each(nodes, function(i, node) {
+		$.each(self.get_nodes_map(), function(i, node) {
 			if (!self.is_draggable(node))
 				return 1; // Continue
 			
@@ -1680,8 +1703,8 @@ MapController.prototype.events_for_nodes = function(id_node) {
 			transform.translate[0] += delta_x;
 			transform.translate[1] += delta_y;
 			
-			nodes[i].x = transform.translate[0];
-			nodes[i].y = transform.translate[1];
+			self.get_nodes_map()[i].x = transform.translate[0];
+			self.get_nodes_map()[i].y = transform.translate[1];
 			
 			d3.select(".minimap #node_" + node.graph_id)
 				.attr("transform", transform.toString());
@@ -1995,7 +2018,7 @@ MapController.prototype.events = function() {
 			self._last_mouse_position = [x, y];
 			
 			if (self._relationship_in_progress) {
-				$.each(nodes, function(i, node) {
+				$.each(self.get_nodes_map(), function(i, node) {
 					if (!self.is_relationshipy(node))
 						return 1; // Continue
 					
@@ -2060,7 +2083,7 @@ MapController.prototype.set_as_children = function() {
 MapController.prototype.start_relationship_nodes = function(type) {
 	var self = this;
 	
-	$.each(nodes, function(i, node) {
+	$.each(self.get_nodes_map(), function(i, node) {
 		if (!self.is_relationshipy(node))
 			return 1; // Continue
 		
@@ -2195,7 +2218,7 @@ MapController.prototype.remove_temp_arrows = function() {
 MapController.prototype.apply_temp_arrows = function(target_id) {
 	var self = this;
 	
-	$.each(nodes, function(i, node) {
+	$.each(self.get_nodes_map(), function(i, node) {
 		if (!self.is_relationshipy(node))
 			return 1; // Continue
 		
@@ -2304,7 +2327,7 @@ MapController.prototype.add_fictional_node = function() {
 	new_node['x'] = x;
 	new_node['y'] = y;
 	
-	nodes.push(new_node);
+	self.get_nodes_map().push(new_node);
 	
 	self.paint_nodes();
 	self.paint_items_minimap();
@@ -2322,7 +2345,7 @@ MapController.prototype.get_last_graph_id = function() {
 	
 	var return_var = 0;
 	
-	$.each(nodes, function(i, node) {
+	$.each(self.get_nodes_map(), function(i, node) {
 		if (node['graph_id'] > return_var) {
 			return_var = parseInt(node['graph_id']);
 		}
@@ -2451,7 +2474,7 @@ MapController.prototype.multiple_selection_select_nodes = function() {
 	selection_box_dimensions["height"] =
 		selection_box_dimensions["height"] / zoom.scale[1];
 	
-	$.each(nodes, function(i, node) {
+	$.each(self.get_nodes_map(), function(i, node) {
 		if (!self.is_selecty(node))
 			return 1; // Continue
 		
@@ -2467,7 +2490,7 @@ MapController.prototype.multiple_selection_select_nodes = function() {
 			
 			width = node_bbox['x'] + node_bbox['width'];
 			
-			nodes[i].width = width;
+			self.get_nodes_map()[i].width = width;
 		}
 		else {
 			width = node.width;
@@ -2482,7 +2505,7 @@ MapController.prototype.multiple_selection_select_nodes = function() {
 			
 			height = node_bbox['y'] + node_bbox['height'];
 			
-			nodes[i].height = height;
+			self.get_nodes_map()[i].height = height;
 		}
 		else {
 			height = node.height;
@@ -2508,7 +2531,7 @@ MapController.prototype.multiple_selection_select_nodes = function() {
 MapController.prototype.remove_selection_nodes = function() {
 	var self = this;
 	
-	$.each(nodes, function(i, node) {
+	$.each(self.get_nodes_map(), function(i, node) {
 		if (!self.is_selecty(node))
 			return 1; // Continue
 		
@@ -2689,7 +2712,7 @@ MapController.prototype.editNode = function(self, target) {
 MapController.prototype.deleteNode = function(self, target) {
 	var self = this;
 	
-	$.each(nodes, function(i, node) {
+	$.each(self.get_nodes_map(), function(i, node) {
 		if (!self.is_delety(node))
 			return 1; // Continue
 		
@@ -2723,6 +2746,7 @@ MapController.prototype.deleteNode = function(self, target) {
 * This function delete the edges of a node in the edges array
 */
 MapController.prototype.deleteEdgesAndNode = function(arrowsToDelete, id_node) {
+	var self = this;
 	var temp;
 	
 	arrowsToDelete.forEach(function(arrow) {
@@ -2737,26 +2761,26 @@ MapController.prototype.deleteEdgesAndNode = function(arrowsToDelete, id_node) {
 	
 	arrowsToDelete.forEach(function(arrow) {
 		temp = [];
-		nodes.forEach(function(nodeOrEdge) {
+		self.get_nodes_map().forEach(function(nodeOrEdge) {
 			var nodeToDel = "node_" + nodeOrEdge["graph_id"];
 			
 			if ((nodeOrEdge["graph_id"] != arrow['graph_id']) && (nodeToDel != id_node)) {
 				temp.push(nodeOrEdge);
 			}
 		});
-		nodes = temp;
+		self.set_nodes_map(temp);
 	});
 	
 	if (arrowsToDelete.length == 0) {
 		temp = [];
-		nodes.forEach(function(nodeOrEdge) {
+		self.get_nodes_map().forEach(function(nodeOrEdge) {
 			var nodeToDel = "node_" + nodeOrEdge["graph_id"];
 			
 			if (nodeToDel != id_node) {
 				temp.push(nodeOrEdge);
 			}
 		});
-		nodes = temp;
+		self.set_nodes_map(temp);
 	}
 }
 

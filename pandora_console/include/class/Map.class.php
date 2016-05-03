@@ -109,13 +109,17 @@ abstract class Map {
 	abstract function printJSInit();
 	
 	public function writeJSGraph() {
+		
+		$nodes_name = "nodes_" . $this->id;
+		$edges_name = "edges_" . $this->id; $edges_name = "edges";
+		$filter_name = "filter_" . $this->id; $filter_name = "filter";
+		
 		?>
 		<script type="text/javascript">
-			var controller_map = null;
 			<?php
-			echo "var nodes = " . json_encode($this->nodes) . ";";
-			echo "var edges = " . json_encode($this->edges) . ";";
-			echo "var filter = " . json_encode($this->filter) . ";";
+			echo "var " . $nodes_name . " = " . json_encode($this->nodes) . ";";
+			echo "var " . $edges_name . " = " . json_encode($this->edges) . ";";
+			echo "var " . $filter_name . " = " . json_encode($this->filter) . ";";
 			?>
 		</script>
 		<?php

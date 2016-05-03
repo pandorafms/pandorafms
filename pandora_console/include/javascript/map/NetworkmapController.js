@@ -71,7 +71,7 @@ NetworkmapController.prototype.init_map = function() {
 			});
 		}
 		
-		if (subtype == MAP_SUBTYPE_GROUPS) {
+		if (self.get_subtype_map() == MAP_SUBTYPE_GROUPS) {
 			var arrow_AG = self.get_arrow_AG(edge['to'], edge['from']);
 			if (arrow_AG !== null) {
 				if (!self.exists_arrow(clean_arrows, arrow_AG)) {
@@ -86,7 +86,7 @@ NetworkmapController.prototype.init_map = function() {
 			}
 		}
 		
-		if (subtype == MAP_SUBTYPE_POLICIES) {
+		if (self.get_subtype_map() == MAP_SUBTYPE_POLICIES) {
 			var arrow_PA = self.get_arrow_PA(edge['to'], edge['from']);
 			if (arrow_PA !== null) {
 				if (!self.exists_arrow(clean_arrows, arrow_PA)) {
@@ -930,7 +930,7 @@ NetworkmapController.prototype.paint_nodes = function() {
 	
 	self._viewport.selectAll(".node")
 		.data(
-			nodes
+			self.get_nodes_map()
 				.filter(function(d, i) {
 					return self.filter_only_agents(d);
 				}))
@@ -2245,7 +2245,7 @@ NetworkmapController.prototype.refresh_nodes = function() {
 	params["refresh_nodes_open"] = 1;
 	params["id_map"] = self._id;
 	params["page"] = "include/ajax/map.ajax";
-	var agent_nodes = $.grep(nodes,
+	var agent_nodes = $.grep(self.get_nodes_map(),
 		function(node) {
 			if (node['type'] == 0) {
 				return true;
@@ -2266,13 +2266,13 @@ NetworkmapController.prototype.refresh_nodes = function() {
 		type: "POST",
 		url: "ajax.php",
 		success: function (data) {
-			$.each(nodes, function(i, node) {
+			$.each(self.get_nodes_map(), function(i, node) {
 				if (node['type'] != ITEM_TYPE_AGENT_NETWORKMAP)
 					return true;
 				
 				if (typeof(data[node['id']]) != "undefined") {
-					nodes[i]['status'] = data[node['id']]['status'];
-					nodes[i]['color'] = data[node['id']]['color'];
+					self.get_nodes_map()[i]['status'] = data[node['id']]['status'];
+					self.get_nodes_map()[i]['color'] = data[node['id']]['color'];
 					
 					self.update_node(node['id']);
 				}
@@ -2522,7 +2522,7 @@ NetworkmapController.prototype.apply_edit_node = function(data_graph_id) {
 	node['title'] = new_label;
 	node['shape'] = new_shape;
 	
-	nodes[node['index_node']] = node;
+	self.get_nodes_map()[node['index_node']] = node;
 	
 	d3.selectAll(self._target + " #" + node_id + " *")
 		.remove();

@@ -901,6 +901,9 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		$show_all_modules, $only_modules_alerts, $filter_module_group,
 		$show_modulegroup, $show_groups, $show_agents, $show_policies);
 	
+	//~ html_debug("networkmap_data", true);
+	//~ html_debug($networkmap_data, true);
+	
 	if ($l2_network_or_mixed === 'mix_l2_l3') {
 		$l2_network = true;
 	}
@@ -1984,18 +1987,21 @@ function networkmap_get_networkmap ($id_networkmap, $filter = false, $fields = f
  *
  * @return Networkmap with the given id. False if not available or readable.
  */
-function networkmap_get_networkmaps ($id_user = '', $type = '', $optgrouped = true, $strict_user = false) {
+function networkmap_get_networkmaps ($id_user = null, $type = null,
+	$optgrouped = true, $strict_user = false) {
+	
 	global $config;
 	
-	if ($id_user == '') {
+	if (empty($id_user)) {
 		$id_user = $config['id_user'];
 	}
 	
 	// Configure filters
 	$where = array ();
+	$where['type'] = MAP_TYPE_NETWORKMAP;
 	$where['id_group'] = array_keys (users_get_groups($id_user));
-	if ($type != '') {
-		$where['type'] = $type;
+	if (!empty($type)) {
+		$where['subtype'] = $type;
 	}
 	
 	$where['order'][0]['field'] = 'type';
@@ -2003,31 +2009,57 @@ function networkmap_get_networkmaps ($id_user = '', $type = '', $optgrouped = tr
 	$where['order'][1]['field'] = 'name';
 	$where['order'][1]['order'] = 'ASC';
 	
-	$networkmaps_raw =  db_get_all_rows_filter('tnetwork_map', $where);
-	if ($networkmaps_raw === false) {
-		return false;
+	$networkmaps_raw =  db_get_all_rows_filter('tmap', $where);
+	if (empty($networkmaps_raw)) {
+		return array();
 	}
 	
 	$networkmaps = array();
-	foreach ($networkmaps_raw as $key => $networkmapitem) {
+	foreach ($networkmaps_raw as $networkmapitem) {
 		if ($optgrouped) {
-			if ((($networkmapitem['type'] == 'policies') || ($networkmapitem['type'] == 'radial_dynamic')) && ($strict_user)) {
+			if ((($networkmapitem['subtype'] == MAP_SUBTYPE_POLICIES) ||
+				($networkmapitem['subtype'] == MAP_SUBTYPE_RADIAL_DYNAMIC)) &&
+				($strict_user)) {
+				
 				continue;
 			}
-			$networkmaps[$networkmapitem['id_networkmap']] = 
+			
+			$networkmaps[$networkmapitem['id']] = 
 				array('name' => $networkmapitem['name'], 
-					'optgroup' => $networkmapitem['type']);
+					'optgroup' =>
+						networkmap_type_to_str_type($networkmapitem['subtype']));
 		}
 		else {
-			if ((($networkmapitem['type'] == 'policies') || ($networkmapitem['type'] == 'radial_dynamic')) && ($strict_user)) {
+			if ((($networkmapitem['type'] == MAP_SUBTYPE_POLICIES) ||
+				($networkmapitem['type'] == MAP_SUBTYPE_RADIAL_DYNAMIC)) &&
+				($strict_user)) {
+				
 				continue;
 			}
-			$networkmaps[$networkmapitem['id_networkmap']] =
+			
+			$networkmaps[$networkmapitem['id']] =
 				$networkmapitem['name'];
 		}
 	}
 	
 	return $networkmaps;
+}
+
+function networkmap_type_to_str_type($type) {
+	switch ($type) {
+		case MAP_SUBTYPE_GROUPS:
+			return __("Groups");
+			break;
+		case MAP_SUBTYPE_POLICIES:
+			return __("Policies");
+			break;
+		case MAP_SUBTYPE_RADIAL_DYNAMIC:
+			return __("Radial dynamic");
+			break;
+		case MAP_SUBTYPE_TOPOLOGY:
+			return __("Topology");
+			break;
+	}
 }
 
 /**

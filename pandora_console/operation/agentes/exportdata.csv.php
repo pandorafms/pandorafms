@@ -54,7 +54,7 @@ if (!empty ($module)) {
 	
 	// Disable SQL cache
 	global $sql_cache;
-	$sql_cache = array ('saved' => 0);
+	$sql_cache = array ('saved' => array());
 	
 	
 	//Convert start time and end time to unix timestamps

@@ -57,6 +57,16 @@ require_once ('include/functions_networkmap.php');
 
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
+global $width;
+global $height;
+
+if (empty($width)) {
+	$width = 600;
+}
+if (empty($height)) {
+	$width = 650;
+}
+
 if ($activeTab == "radial_dynamic") {
 	include_once("include/functions_graph.php");
 	
@@ -70,7 +80,7 @@ if ($activeTab == "radial_dynamic") {
 	if (!empty($module_group))
 		$filter['module_group'] = $module_group;
 	
-	echo graph_monitor_wheel(600, 650, $filter, $strict_user);
+	echo graph_monitor_wheel($width, $height, $filter, $strict_user);
 	
 	echo "</div>";
 	return;

@@ -459,12 +459,14 @@ class Networkmap extends Map {
 	
 	public function printJSInit() {
 		$name_object = "controller_" . $this->id;
+		$target = "#map_" . $this->id;
 		
 		?>
 		<script type="text/javascript">
 			var <?php echo $name_object;?> = null
 			$(function() {
-				<?php echo $name_object;?> = new NetworkmapController("#map",
+				<?php echo $name_object;?> = new NetworkmapController(
+					"<?php echo $target;?>",
 					<?php echo $this->source_period;?>);
 				
 				<?php echo $name_object;?>.init_map();

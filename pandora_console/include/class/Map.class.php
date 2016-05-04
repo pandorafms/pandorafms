@@ -168,7 +168,7 @@ abstract class Map {
 		$this->writeJSGraph();
 		
 		?>
-		<div id="map" data-id="<?php echo $this->id;?>" style="border: 1px red solid;">
+		<div id="map_<?php echo $this->id;?>" data-id="<?php echo $this->id;?>" style="border: 1px red solid;">
 			<div class="zoom_box" style="position: absolute;">
 				<div class="zoom_controller">
 					<input class="vertical_range" type="range" name="range" min="-666" max="666" step="1" value="666" />

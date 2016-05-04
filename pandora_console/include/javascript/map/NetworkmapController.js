@@ -95,8 +95,8 @@ NetworkmapController.prototype.init_map = function() {
 			}
 		}
 		
-		if (filter['show_modules']) {
-			if (filter['show_module_group']) {
+		if (self.get_filter_map()['show_modules']) {
+			if (self.get_filter_map()['show_module_group']) {
 				var arrow_GMA = self.get_arrow_GMA(edge['to'], edge['from']);
 				if (arrow_GMA !== null) {
 					if (!self.exists_arrow(clean_arrows, arrow_GMA)) {
@@ -182,12 +182,14 @@ NetworkmapController.prototype.fake_arrow_AM = function(arrow_AM) {
 * This function return if a node is an agent
 */
 NetworkmapController.prototype.filter_only_agents = function(node) {
+	var self = this;
+	
 	switch (node.type) {
 		case ITEM_TYPE_EDGE_NETWORKMAP:
 			return false;
 			break;
 		case ITEM_TYPE_MODULE_NETWORKMAP:
-			if (filter['show_modules']) {
+			if (self.get_filter_map()['show_modules']) {
 				return true;
 			}
 			else {
@@ -195,8 +197,8 @@ NetworkmapController.prototype.filter_only_agents = function(node) {
 			}
 			break;
 		case ITEM_TYPE_MODULEGROUP_NETWORKMAP:
-			if (filter['show_modules']) {
-				if (filter['show_module_group']) {
+			if (self.get_filter_map()['show_modules']) {
+				if (self.get_filter_map()['show_module_group']) {
 					return true;
 				}
 				else {

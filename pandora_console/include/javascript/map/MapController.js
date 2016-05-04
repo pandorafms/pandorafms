@@ -253,6 +253,12 @@ MapController.prototype.get_subtype_map = function() {
 	return window["subtype_" + self._id];
 }
 
+MapController.prototype.get_filter_map = function() {
+	var self = this;
+	
+	return window["filter_" + self._id];
+}
+
 /**
 * Function ini_selection_rectangle
 * Return void
@@ -1765,11 +1771,13 @@ MapController.prototype.move_node = function(node) {
 * This function checks if the node is draggable
 */
 MapController.prototype.is_draggable = function(node) {
+	var self = this;
+	
 	var return_var = false;
 	
 	switch (node.type) {
 		case ITEM_TYPE_MODULE_NETWORKMAP:
-			if (filter['show_modules']) {
+			if (self.get_filter_map()['show_modules']) {
 				return_var = true;
 			}
 			else {
@@ -1777,7 +1785,7 @@ MapController.prototype.is_draggable = function(node) {
 			}
 			break;
 		case ITEM_TYPE_MODULEGROUP_NETWORKMAP:
-			if (filter['show_modules']) {
+			if (self.get_filter_map()['show_modules']) {
 				if (filter['show_module_group']) {
 					return_var = true;
 				}
@@ -1824,6 +1832,8 @@ MapController.prototype.is_relationshipy = function(node) {
 * This function checks if the node is selecty
 */
 MapController.prototype.is_selecty = function(node) {
+	var self = this;
+	
 	var return_var = false;
 	
 	switch (node.type) {
@@ -1834,7 +1844,7 @@ MapController.prototype.is_selecty = function(node) {
 			return_var = true;
 			break;
 		case ITEM_TYPE_MODULE_NETWORKMAP:
-			if (filter['show_modules']) {
+			if (self.get_filter_map()['show_modules']) {
 				return_var = true;
 			}
 			else {
@@ -1842,8 +1852,8 @@ MapController.prototype.is_selecty = function(node) {
 			}
 			break;
 		case ITEM_TYPE_MODULEGROUP_NETWORKMAP:
-			if (filter['show_modules']) {
-				if (filter['show_module_group']) {
+			if (self.get_filter_map()['show_modules']) {
+				if (self.get_filter_map()['show_module_group']) {
 					return_var = true;
 				}
 				else {
@@ -1865,6 +1875,8 @@ MapController.prototype.is_selecty = function(node) {
 * This function checks if the node is delety
 */
 MapController.prototype.is_delety = function(node) {
+	var self = this;
+	
 	var return_var = false;
 	
 	switch (node.type) {
@@ -1875,7 +1887,7 @@ MapController.prototype.is_delety = function(node) {
 			return_var = true;
 			break;
 		case ITEM_TYPE_MODULE_NETWORKMAP:
-			if (filter['show_modules']) {
+			if (self.get_filter_map()['show_modules']) {
 				return_var = true;
 			}
 			else {
@@ -1883,8 +1895,8 @@ MapController.prototype.is_delety = function(node) {
 			}
 			break;
 		case ITEM_TYPE_MODULEGROUP_NETWORKMAP:
-			if (filter['show_modules']) {
-				if (filter['show_module_group']) {
+			if (self.get_filter_map()['show_modules']) {
+				if (self.get_filter_map()['show_module_group']) {
 					return_var = true;
 				}
 				else {

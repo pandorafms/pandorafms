@@ -111,7 +111,7 @@ abstract class Map {
 	public function writeJSGraph() {
 		
 		$nodes_name = "nodes_" . $this->id;
-		$edges_name = "edges_" . $this->id; $edges_name = "edges";
+		$edges_name = "edges_" . $this->id;
 		$filter_name = "filter_" . $this->id; $filter_name = "filter";
 		
 		?>

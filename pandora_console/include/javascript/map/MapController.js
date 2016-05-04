@@ -235,6 +235,17 @@ MapController.prototype.get_nodes_map = function() {
 	return window["nodes_" + self._id];
 }
 
+MapController.prototype.get_edges_map = function() {
+	var self = this;
+	
+	return window["edges_" + self._id];
+}
+
+MapController.prototype.set_edges_map = function(edges) {
+	var self = this;
+	
+	window["edges_" + self._id] = edges;
+}
 
 MapController.prototype.get_subtype_map = function() {
 	var self = this;
@@ -425,7 +436,7 @@ MapController.prototype.get_arrow = function(id_to, id_from) {
 	});
 	
 	if (count_nodes == 2) {
-		$.each(edges, function(i, edge) {
+		$.each(self.get_edges_map(), function(i, edge) {
 			if (edge['to'] == arrow['nodes']['to']['graph_id'] &&
 				edge['from'] == arrow['nodes']['from']['graph_id']) {
 				

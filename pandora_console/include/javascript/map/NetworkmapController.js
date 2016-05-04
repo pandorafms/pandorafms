@@ -40,7 +40,7 @@ NetworkmapController.prototype.init_map = function() {
 	var self = this;
 	var clean_arrows = [];
 	
-	$.each(edges, function(i, edge) {
+	$.each(self.get_edges_map(), function(i, edge) {
 		var arrow_AF_or_FF = self.get_arrow_AF_or_FF(edge['to'], edge['from']);
 		if (arrow_AF_or_FF !== null) {
 			if (!self.exists_arrow(clean_arrows, arrow_AF_or_FF)) {
@@ -411,7 +411,7 @@ NetworkmapController.prototype.get_arrow_AF_or_FF = function(id_to, id_from) {
 	var arrow_AF_or_FF;
 	var found = false;
 	
-	$.each(edges, function(i, edge) {
+	$.each(self.get_edges_map(), function(i, edge) {
 		
 		if (self.get_node_type(id_to) == ITEM_TYPE_FICTIONAL_NODE ||
 			self.get_node_type(id_from) == ITEM_TYPE_FICTIONAL_NODE) {
@@ -612,7 +612,7 @@ NetworkmapController.prototype.get_arrow_GMM = function(id_to, id_from) {
 	var arrow_GMM;
 	var found = false;
 	
-	$.each(edges, function(i, edge) {
+	$.each(self.get_edges_map(), function(i, edge) {
 		if (self.get_node_type(id_to) == ITEM_TYPE_MODULEGROUP_NETWORKMAP ||
 			self.get_node_type(id_from) == ITEM_TYPE_MODULEGROUP_NETWORKMAP) {
 			if (self.get_node_type(id_to) == ITEM_TYPE_MODULE_NETWORKMAP ||
@@ -656,7 +656,7 @@ NetworkmapController.prototype.get_arrow_GMA = function(id_to, id_from) {
 	var arrow_GMA;
 	var found = false;
 	
-	$.each(edges, function(i, edge) {
+	$.each(self.get_edges_map(), function(i, edge) {
 		if (self.get_node_type(id_to) == ITEM_TYPE_MODULEGROUP_NETWORKMAP ||
 			self.get_node_type(id_from) == ITEM_TYPE_MODULEGROUP_NETWORKMAP) {
 			if (self.get_node_type(id_to) == ITEM_TYPE_AGENT_NETWORKMAP ||

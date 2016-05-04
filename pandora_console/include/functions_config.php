@@ -641,6 +641,20 @@ function config_update_config () {
 				if (!config_update_value ('history_db_delay', get_parameter ('history_db_delay')))
 					$error_update[] = __('Delay');
 				break;
+			case 'ehorus':
+				if (!config_update_value('ehorus_enabled', (int) get_parameter('ehorus_enabled')))
+					$error_update[] = __('Enable eHorus');
+				if (!config_update_value('ehorus_user', get_parameter('ehorus_user')))
+					$error_update[] = __('eHorus user');
+				if (!config_update_value('ehorus_pass', io_input_password(get_parameter('ehorus_pass'))))
+					$error_update[] = __('eHorus password');
+				if (!config_update_value('ehorus_hostname', get_parameter('ehorus_hostname')))
+					$error_update[] = __('eHorus API hostname');
+				if (!config_update_value('ehorus_port', (int) get_parameter('ehorus_port')))
+					$error_update[] = __('eHorus API port');
+				if (!config_update_value('ehorus_req_timeout', (int) get_parameter('ehorus_req_timeout')))
+					$error_update[] = __('eHorus request timeout');
+				break;
 			
 		}
 		
@@ -1460,7 +1474,19 @@ function config_process_config () {
 		config_update_value ('instance_registered', 0);
 	}
 	
-	
+	// eHorus
+	if (!isset($config['ehorus_enabled'])) {
+		config_update_value('ehorus_enabled', 0);
+	}
+	if (!isset($config['ehorus_hostname'])) {
+		config_update_value('ehorus_hostname', 'switch.ehorus.com');
+	}
+	if (!isset($config['ehorus_port'])) {
+		config_update_value('ehorus_port', 18080);
+	}
+	if (!isset($config['ehorus_req_timeout'])) {
+		config_update_value('ehorus_req_timeout', 5);
+	}
 	
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();

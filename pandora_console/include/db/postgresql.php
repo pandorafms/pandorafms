@@ -259,7 +259,7 @@ function postgresql_db_process_sql($sql, $rettype = "affected_rows", $dbconnecti
 				}
 				
 				if ($cache === true)
-					$sql_cache[$sql] = $retval;
+					$sql_cache[$sql_cache['id']][$sql] = $retval;
 				pg_free_result ($result);
 			}
 		}

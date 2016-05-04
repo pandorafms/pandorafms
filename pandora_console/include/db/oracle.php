@@ -336,7 +336,7 @@ function oracle_db_process_sql($sql, $rettype = "affected_rows", $dbconnection =
 				}
 				
 				if ($cache === true)
-					$sql_cache[$sql] = $retval;
+					$sql_cache[$sql_cache['id']][$sql] = $retval;
 				oci_free_statement ($query);
 			}
 		}

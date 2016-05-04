@@ -64,7 +64,7 @@ if (empty($width)) {
 	$width = 600;
 }
 if (empty($height)) {
-	$width = 650;
+	$height = 650;
 }
 
 if ($activeTab == "radial_dynamic") {

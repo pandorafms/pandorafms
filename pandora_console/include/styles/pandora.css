@@ -2636,6 +2636,10 @@ div#agent_wizard_subtabs {
 	text-align: left;
 }
 
+.legend_servicemap_item {
+	display: none;
+}
+
 .legend_square {
 	width: 20px;
 	padding-left: 20px;

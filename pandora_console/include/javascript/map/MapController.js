@@ -2031,7 +2031,7 @@ MapController.prototype.events = function() {
 			}
 		});
 	
-	d3.select(document).on("mousemove",
+	d3.select(self._target).on("mousemove",
 		function() {
 			var map_pos = d3.select(self._target).node().getBoundingClientRect();
 			

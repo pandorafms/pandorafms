@@ -174,8 +174,8 @@ MapController.prototype.init_map = function() {
 		/*-Code to translate the map with the zoom for to hold the center-*/
 		/*----------------------------------------------------------------*/
 		var center = [
-			parseFloat(d3.select("#map").style('width')) / 2,
-			parseFloat(d3.select("#map").style('height')) / 2];
+			parseFloat(d3.select(self._target).style('width')) / 2,
+			parseFloat(d3.select(self._target).style('height')) / 2];
 		
 		var old_translate = self._zoomManager.translate();
 		var old_scale = self._zoomManager.scale();
@@ -195,20 +195,20 @@ MapController.prototype.init_map = function() {
 			.event(self._viewport);
 	}
 	
-	self._slider = d3.select("#map .zoom_controller .vertical_range")
+	self._slider = d3.select(self._target + " .zoom_controller .vertical_range")
 		.property("value", 0)
 		.property("min", -Math.log(MAX_ZOOM_LEVEL))
 		.property("max", Math.log(MAX_ZOOM_LEVEL))
 		.property("step", Math.log(MAX_ZOOM_LEVEL) * 2 / MAX_ZOOM_LEVEL)
 		.on("input", slided);
 
-	d3.select("#map .zoom_box .home_zoom")
+	d3.select(self._target + " .zoom_box .home_zoom")
 		.on("click", home_zoom);
 	
-	d3.select("#map .zoom_box .zoom_in")
+	d3.select(self._target + " .zoom_box .zoom_in")
 		.on("click", zoom_in);
 	
-	d3.select("#map .zoom_box .zoom_out")
+	d3.select(self._target + " .zoom_box .zoom_out")
 		.on("click", zoom_out);
 	
 	self.paint_nodes();
@@ -1723,7 +1723,7 @@ MapController.prototype.events_for_nodes = function(id_node) {
 			self.get_nodes_map()[i].x = transform.translate[0];
 			self.get_nodes_map()[i].y = transform.translate[1];
 			
-			d3.select(".minimap #node_" + node.graph_id)
+			d3.select(self._target + " .minimap #node_" + node.graph_id)
 				.attr("transform", transform.toString());
 			
 			d3_node.attr("transform", transform.toString());
@@ -1950,7 +1950,7 @@ MapController.prototype.events = function() {
 		}
 	];
 	
-	d3.select("#map").on("contextmenu", d3.contextMenu(map_menu));
+	d3.select(self._target).on("contextmenu", d3.contextMenu(map_menu));
 	
 	d3.select(self._target + " svg").on("mousedown",
 		function() {
@@ -2906,7 +2906,7 @@ MapController.prototype.arrow_by_pieces = function(target, arrow_data, wait) {
 	}
 	
 	var arrow_layout = d3
-		.select(target +" #arrow_" + arrow_data['graph_id']);
+		.select(target + " #arrow_" + arrow_data['graph_id']);
 	
 	switch (wait) {
 		/*---------------------------------------------*/

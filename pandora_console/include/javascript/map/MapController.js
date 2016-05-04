@@ -1786,7 +1786,7 @@ MapController.prototype.is_draggable = function(node) {
 			break;
 		case ITEM_TYPE_MODULEGROUP_NETWORKMAP:
 			if (self.get_filter_map()['show_modules']) {
-				if (filter['show_module_group']) {
+				if (self.get_filter_map()['show_module_group']) {
 					return_var = true;
 				}
 				else {

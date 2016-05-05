@@ -102,38 +102,82 @@ if ($edit_networkmap) {
 }
 
 //+++++++++++++++TABLE TO CREATE/EDIT NETWORKMAP++++++++++++++++++++++
-
-$buttons['list'] = array('active' => false,
-	'text' => '<a href="index.php?sec=network&sec2=operation/maps/networkmap_list">' . 
-		html_print_image("images/list.png", true,
-			array ('title' => __('List of networkmaps'))) .
-		'</a>');
-
-if ($create_networkmap) {
-	ui_print_page_header(__('Create networkmap'), "images/bricks.png",
-		false, "network_list", false, $buttons);
-}
-else {
-	$buttons['edit'] = array('active' => true,
-		'text' => '<a href="index.php?sec=maps&sec2=operation/maps/networkmap_editor&edit_networkmap=1&id_networkmap=' . $id . '">' . 
-			html_print_image("images/cog.png", true,
-				array ('title' => __('Edit networkmap'))) .
-			'</a>');
-	if (enterprise_installed()) {
-		$buttons['deleted'] = array('active' => false,
-			'text' => '<a href="index.php?sec=maps&sec2=enterprise/operation/maps/networkmap_list_deleted&&id_networkmap=' . $id . '">' . 
-				html_print_image("images/list.png", true,
-					array ('title' => __('Deleted list'))) .
-				'</a>');
-	}
-	$buttons['networkmap'] = array('active' => false,
-		'text' => '<a href="index.php?sec=network&sec2=operation/maps/networkmap&id=' . $id . '">' . 
-			html_print_image("images/op_network.png", true,
-				array ('title' => __('View networkmap'))) .
+if (enterprise_installed() && defined('METACONSOLE')) {
+	$buttons['list'] = array('active' => true,
+		'text' => '<a href="index.php?sec=screen&sec2=screens/screens&action=networkmap">' .
+			html_print_image("images/list.png", true,
+				array ('title' => __('List of networkmaps'))) .
 			'</a>');
 	
-	ui_print_page_header(__('Update networkmap'), "images/bricks.png",
-		false, "network_list", false, $buttons);
+	if ($create_networkmap) {
+		$title_header = __('Create networkmap');
+	}
+	else {
+		$title_header = __('Update networkmap');
+		
+		$buttons['edit'] = array('active' => true,
+			'text' => '<a href="index.php?sec=screen&sec2=screens/screens&action=networkmap&edit_networkmap=1&id_networkmap=' . $id . '">' . 
+				html_print_image("images/cog.png", true,
+					array ('title' => __('Edit networkmap'))) .
+				'</a>');
+		if (enterprise_installed()) {
+			$buttons['deleted'] = array('active' => false,
+				'text' => '<a href="index.php?sec=screen&sec2=screens/screens&action=networkmap&list_deleted=1&id_networkmap=' . $id . '">' . 
+					html_print_image("images/list.png", true,
+						array ('title' => __('Deleted list'))) .
+					'</a>');
+		}
+		$buttons['networkmap'] = array('active' => false,
+			'text' => '<a href="index.php?sec=screen&sec2=screens/screens&action=networkmap&id=' . $id . '">' . 
+				html_print_image("images/op_network.png", true,
+					array ('title' => __('View networkmap'))) .
+				'</a>');
+	}
+	
+	// Bread crumbs
+	ui_meta_add_breadcrumb(
+		array('link' =>
+			'index.php?sec=screen&sec2=screens/screens&action=networkmap',
+		'text' => $title_header));
+	
+	ui_meta_print_page_header($nav_bar);
+	
+	//Print header
+	ui_meta_print_header($title_header, "", $buttons);
+}
+else {
+	$buttons['list'] = array('active' => false,
+		'text' => '<a href="index.php?sec=network&sec2=operation/maps/networkmap_list">' . 
+			html_print_image("images/list.png", true,
+				array ('title' => __('List of networkmaps'))) .
+			'</a>');
+	
+	if ($create_networkmap) {
+		ui_print_page_header(__('Create networkmap'), "images/bricks.png",
+			false, "network_list", false, $buttons);
+	}
+	else {
+		$buttons['edit'] = array('active' => true,
+			'text' => '<a href="index.php?sec=maps&sec2=operation/maps/networkmap_editor&edit_networkmap=1&id_networkmap=' . $id . '">' . 
+				html_print_image("images/cog.png", true,
+					array ('title' => __('Edit networkmap'))) .
+				'</a>');
+		if (enterprise_installed()) {
+			$buttons['deleted'] = array('active' => false,
+				'text' => '<a href="index.php?sec=maps&sec2=enterprise/operation/maps/networkmap_list_deleted&&id_networkmap=' . $id . '">' . 
+					html_print_image("images/list.png", true,
+						array ('title' => __('Deleted list'))) .
+					'</a>');
+		}
+		$buttons['networkmap'] = array('active' => false,
+			'text' => '<a href="index.php?sec=network&sec2=operation/maps/networkmap&id=' . $id . '">' . 
+				html_print_image("images/op_network.png", true,
+					array ('title' => __('View networkmap'))) .
+				'</a>');
+		
+		ui_print_page_header(__('Update networkmap'), "images/bricks.png",
+			false, "network_list", false, $buttons);
+	}
 }
 
 if ($not_found) {

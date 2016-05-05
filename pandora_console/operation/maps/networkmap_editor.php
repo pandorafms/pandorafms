@@ -184,11 +184,21 @@ if ($not_found) {
 	ui_print_error_message(__('Not found networkmap'));
 }
 else {
+	$url_action = 'index.php?sec=maps&amp;sec2=operation/maps/networkmap_list';
+	if (is_metaconsole()) {
+		$url_action = 'index.php?sec=screen&sec2=screens/screens';
+	}
+	
 	if ($edit_networkmap && enterprise_installed()) {
-		echo '<form method="post" onsubmit="javascript: return alert_refresh_all_networkmap();" action="index.php?sec=maps&amp;sec2=operation/maps/networkmap_list">';
+		echo '<form ' .
+			'method="post" ' .
+			'onsubmit="javascript: return alert_refresh_all_networkmap();" ' .
+			'action="' . $url_action . '">';
 	}
 	else {
-		echo '<form method="post" action="index.php?sec=maps&amp;sec2=operation/maps/networkmap_list">';
+		echo '<form ' .
+			'method="post" ' .
+			'action="' . $url_action . '">';
 	}
 	
 	

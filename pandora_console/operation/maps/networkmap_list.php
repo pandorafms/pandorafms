@@ -427,31 +427,57 @@ else {
 		}
 		
 		if (!empty($networkmap['id_user'])) {
-			$data['group'] = __('Private for (%s)', $networkmap['id_user']);
+			$data['groups'] = __('Private for (%s)', $networkmap['id_user']);
 		}
 		else {
 			$data['groups'] =
 				ui_print_group_icon($networkmap['id_group'], true);
 		}
 		
-		$data['copy'] = '<a href="index.php?' .
+		
+		$url_duplicate = 'index.php?' .
 			'sec=maps&amp;' .
 			'sec2=operation/maps/networkmap_list&' .
-			'duplicate_networkmap=1&id_networkmap=' . $networkmap['id'] . '" alt="' . __('Copy') . '">' .
+			'duplicate_networkmap=1&id_networkmap=' . $networkmap['id'];
+		if (is_metaconsole()) {
+			$url_duplicate = 'index.php?' .
+				'sec=screen&' .
+				'sec2=screens/screens&action=networkmap&' .
+				'duplicate_networkmap=1&id_networkmap=' . $networkmap['id'];
+		}
+		$data['copy'] = '<a href="' . $url_duplicate . '" alt="' . __('Copy') . '">' .
 			html_print_image("images/copy.png", true) . '</a>';
 		
-		$data['edit'] = '<a href="index.php?' .
-			'sec=maps&amp;' .
-			'sec2=operation/maps/networkmap_editor&' .
-			'edit_networkmap=1&id_networkmap=' . $networkmap['id'] .'">' .
-			html_print_image("images/edit.png", true) . '</a>';
 		
-		$data['delete'] = '<a href="index.php?' .
+		$url_edit = 'index.php?' .
 			'sec=maps&amp;' .
 			'sec2=operation/maps/networkmap_list&' .
-			'delete_networkmap=1&id_networkmap=' . $networkmap['id'] . '" alt="' . __('Delete') .
+			'edit_networkmap=1&id_networkmap=' . $networkmap['id'];
+		if (is_metaconsole()) {
+			$url_edit = 'index.php?' .
+				'sec=screen&' .
+				'sec2=screens/screens&action=networkmap&' .
+				'edit_networkmap=1&id_networkmap=' . $networkmap['id'];
+		}
+		$data['edit'] = '<a href="' . $url_edit . '">' .
+			html_print_image("images/edit.png", true) . '</a>';
+		
+		
+		$url_delete = 'index.php?' .
+			'sec=maps&amp;' .
+			'sec2=operation/maps/networkmap_list&' .
+			'delete_networkmap=1&id_networkmap=' . $networkmap['id'];
+		if (is_metaconsole()) {
+			$url_delete = 'index.php?' .
+				'sec=screen&' .
+				'sec2=screens/screens&action=networkmap&' .
+				'delete_networkmap=1&id_networkmap=' . $networkmap['id'];
+		}
+		$data['delete'] = '<a href="' . $url_delete . '" alt="' . __('Delete') .
 			'" onclick="javascript: if (!confirm(\'' . __('Are you sure?') . '\')) return false;">' .
 			html_print_image('images/cross.png', true) . '</a>';
+		
+		
 		$data['delete'] .=
 			html_print_checkbox("delete_id[" . $networkmap['id'] . "]",
 				1, false, true);
@@ -461,16 +487,19 @@ else {
 	}
 	html_print_table($table);
 }
-echo '<form id="multiple_delete" method="post" style="float:right;" action="index.php?sec=network&sec2=operation/maps/networkmap_list">';
-html_print_input_hidden ('multiple_delete', 1);
-html_print_input_hidden ('ids_multiple_delete', "");
-html_print_button(__('Delete'), 'del', false, 'submit_multiple_delete();', 'class="sub delete"');
-echo '</form>';
+
 
 $action_url = 'index.php?sec=maps&amp;sec2=operation/maps/networkmap_editor';
 if (is_metaconsole()) {
 	$action_url = 'index.php?sec=screen&sec2=screens/screens';
 }
+
+
+echo '<form id="multiple_delete" method="post" style="float:right;" action="' . $action_url . '">';
+html_print_input_hidden ('multiple_delete', 1);
+html_print_input_hidden ('ids_multiple_delete', "");
+html_print_button(__('Delete'), 'del', false, 'submit_multiple_delete();', 'class="sub delete"');
+echo '</form>';
 
 echo '<form method="post" style="float:right; margin-right: 10px;" action="' . $action_url . '">';
 html_print_input_hidden ('create_networkmap', 1);

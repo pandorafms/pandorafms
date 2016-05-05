@@ -637,18 +637,20 @@ function config_update_config () {
 					$error_update[] = __('Delay');
 				break;
 			case 'ehorus':
-				if (!config_update_value('ehorus_enabled', (int) get_parameter('ehorus_enabled')))
+				if (!config_update_value('ehorus_enabled', (int) get_parameter('ehorus_enabled', $config['ehorus_enabled'])))
 					$error_update[] = __('Enable eHorus');
-				if (!config_update_value('ehorus_user', get_parameter('ehorus_user')))
+				if (!config_update_value('ehorus_user', (string) get_parameter('ehorus_user', $config['ehorus_user'])))
 					$error_update[] = __('eHorus user');
-				if (!config_update_value('ehorus_pass', io_input_password(get_parameter('ehorus_pass'))))
+				if (!config_update_value('ehorus_pass', io_input_password((string) get_parameter('ehorus_pass', $config['ehorus_pass']))))
 					$error_update[] = __('eHorus password');
-				if (!config_update_value('ehorus_hostname', get_parameter('ehorus_hostname')))
+				if (!config_update_value('ehorus_hostname', (string) get_parameter('ehorus_hostname', $config['ehorus_hostname'])))
 					$error_update[] = __('eHorus API hostname');
-				if (!config_update_value('ehorus_port', (int) get_parameter('ehorus_port')))
+				if (!config_update_value('ehorus_port', (int) get_parameter('ehorus_port', $config['ehorus_port'])))
 					$error_update[] = __('eHorus API port');
-				if (!config_update_value('ehorus_req_timeout', (int) get_parameter('ehorus_req_timeout')))
+				if (!config_update_value('ehorus_req_timeout', (int) get_parameter('ehorus_req_timeout', $config['ehorus_req_timeout'])))
 					$error_update[] = __('eHorus request timeout');
+				if (!config_update_value('ehorus_custom_field', (string) get_parameter('ehorus_custom_field', $config['ehorus_custom_field'])))
+					$error_update[] = __('eHorus id custom field');
 				break;
 			
 		}

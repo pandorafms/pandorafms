@@ -35,7 +35,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "6.1dev PS160420";
+my $version = "6.1dev PS160505";
 
 # save program name for logging
 my $progname = basename($0);
@@ -2758,7 +2758,7 @@ sub cli_create_event() {
 	
 	my $id_group;
 	
-	if (!defined($group_name) || $group_name eq "All") {
+	if (! $group_name || $group_name eq "All") {
 		$id_group = 0;
 	}
 	else {
@@ -2768,7 +2768,7 @@ sub cli_create_event() {
 	
 	my $id_agent;
 	
-	if (!defined($agent_name)) {
+	if (! $agent_name) {
 		$id_agent = 0;
 	}
 	else {
@@ -2778,7 +2778,7 @@ sub cli_create_event() {
 	
 	my $id_agentmodule;
 	
-	if (!defined($module_name)) {
+	if (! $module_name) {
 		$id_agentmodule = 0;
 	}
 	else {
@@ -4438,7 +4438,7 @@ sub pandora_manage_main ($$$) {
 			cli_delete_profile();
 		}
 		elsif ($param eq '--create_event') {
-			param_check($ltotal, 14, 10);
+			param_check($ltotal, 14, 11);
 			cli_create_event();
 		}		
 		elsif ($param eq '--validate_event') {

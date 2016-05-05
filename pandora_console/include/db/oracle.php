@@ -45,6 +45,8 @@ function oracle_connect_db($host = null, $db = null, $user = null, $pass = null,
 	$date_format = oci_parse($connect_id , 'alter session set NLS_DATE_FORMAT =\'YYYY-MM-DD HH24:MI:SS\'');
 	$decimal_separator = oci_parse($connect_id , 'alter session set NLS_NUMERIC_CHARACTERS =\'.,\'');
 	
+	db_change_cache_id($host, $db);
+	
 	oci_execute($datetime_tz_format);
 	oci_execute($datetime_format);
 	oci_execute($date_format);
@@ -224,9 +226,9 @@ function oracle_db_process_sql($sql, $rettype = "affected_rows", $dbconnection =
 	if ($sql == '')
 		return false;
 	
-	if ($cache && ! empty ($sql_cache[$sql])) {
-		$retval = $sql_cache[$sql];
-		$sql_cache['saved']++;
+	if ($cache && ! empty ($sql_cache[$sql_cache['id']][$sql])) {
+		$retval = $sql_cache[$sql_cache['id']][$sql];
+		$sql_cache['saved'][$sql_cache['id']]++;
 		db_add_database_debug_trace ($sql);
 	}
 	else {
@@ -334,7 +336,7 @@ function oracle_db_process_sql($sql, $rettype = "affected_rows", $dbconnection =
 				}
 				
 				if ($cache === true)
-					$sql_cache[$sql] = $retval;
+					$sql_cache[$sql_cache['id']][$sql] = $retval;
 				oci_free_statement ($query);
 			}
 		}

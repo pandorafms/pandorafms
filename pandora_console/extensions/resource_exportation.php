@@ -17,14 +17,12 @@
 if (isset($_GET['get_ptr'])) {
 	if ($_GET['get_ptr'] == 1) {
 		
+		session_start ();
+		session_write_close ();
+		
 		$ownDir = dirname(__FILE__) . '/';
 		$ownDir = str_replace("\\", "/", $ownDir);
 		require_once ($ownDir.'../include/config.php');
-		
-		if (! isset ($_SESSION["id_usuario"])) {
-			session_start ();
-			session_write_close ();
-		}
 		
 		// Login check
 		if (!isset($_SESSION["id_usuario"])) {
@@ -322,6 +320,8 @@ function get_xml_resource() {
 
 function resource_exportation_extension_main() {
 	global $config;
+	
+	check_login();
 	
 	if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_user'])) {
 		db_pandora_audit("ACL Violation", "Trying to access Setup Management");

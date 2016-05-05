@@ -256,6 +256,15 @@ function main_net_tools () {
 function godmode_net_tools() {
 	global $config;
 	
+	check_config ();
+	
+	if (! check_acl ($config['id_user'], 0, "PM")) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access Profile Management");
+		require ("general/noaccess.php");
+		return;
+	}
+	
 	ui_print_page_header (__('Config Network Tools'));
 	
 	$update_traceroute = (bool)get_parameter('update_traceroute', 0);

@@ -37,6 +37,8 @@ function postgresql_connect_db($host = null, $db = null, $user = null, $pass = n
 	if (! $connect_id) {
 		return false;
 	}
+		
+	db_change_cache_id($host, $db);
 	
 	return $connect_id;
 }
@@ -200,9 +202,9 @@ function postgresql_db_process_sql($sql, $rettype = "affected_rows", $dbconnecti
 	if ($sql == '')
 		return false;
 		
-	if ($cache && ! empty ($sql_cache[$sql])) {
-		$retval = $sql_cache[$sql];
-		$sql_cache['saved']++;
+	if ($cache && ! empty ($sql_cache[$sql_cache['id']][$sql])) {
+		$retval = $sql_cache[$sql_cache['id']][$sql];
+		$sql_cache['saved'][$sql_cache['id']]++;
 		db_add_database_debug_trace ($sql);
 	}
 	else {
@@ -257,7 +259,7 @@ function postgresql_db_process_sql($sql, $rettype = "affected_rows", $dbconnecti
 				}
 				
 				if ($cache === true)
-					$sql_cache[$sql] = $retval;
+					$sql_cache[$sql_cache['id']][$sql] = $retval;
 				pg_free_result ($result);
 			}
 		}

@@ -292,6 +292,11 @@ if (! isset ($config['id_user'])) {
 			include_once(ENTERPRISE_DIR . "/include/auth/saml.php");
 			$saml_user_id = saml_process_user_login();
 			$nick_in_db = $saml_user_id;
+			if (!$nick_in_db) {
+				require_once('/opt/simplesamlphp/lib/_autoload.php');
+				$as = new SimpleSAML_Auth_Simple('example-userpass');
+				$as->logout();
+			}
 		}
 		else {
 			// process_user_login is a virtual function which should be defined in each auth file.
@@ -445,7 +450,7 @@ if (! isset ($config['id_user'])) {
 		}
 		else { //login wrong
 			$blocked = false;
-
+			
 			if ((!is_user_admin($nick) || $config['enable_pass_policy_admin']) && defined('PANDORA_ENTERPRISE')) {
 				$blocked = login_check_blocked($nick);
 			}

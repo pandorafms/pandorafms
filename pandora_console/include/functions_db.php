@@ -223,7 +223,7 @@ function db_logoff ($id_user, $ip) {
 	db_pandora_audit("Logoff", "Logged out", $id_user, $ip);
 }
 
-$sql_cache = array ('saved' => 0);
+$sql_cache = array ('saved' => array());
 
 /**
  * Get the first value of the first row of a table in the database.
@@ -613,7 +613,40 @@ function db_add_database_debug_trace ($sql, $result = false, $affected = false, 
 function db_clean_cache() {
 	global $sql_cache;
 	
-	$sql_cache = array ('saved' => 0);
+	$sql_cache = array ('saved' => array ());
+}
+
+/**
+ * Change the sql cache id to another value
+ *
+ * @return None
+ */
+function db_change_cache_id($name, $host) {
+	global $sql_cache;
+	
+	// Update the sql cache identification 
+	$sql_cache['id'] = $name . "_" . $host;
+	if (!isset ($sql_cache['saved'][$sql_cache['id']])){
+		$sql_cache['saved'][$sql_cache['id']] = 0;
+	}
+}
+
+/**
+ * Get the total cached queries and the databases checked
+ *
+ * @return (total_queries, total_dbs)
+ */
+function db_get_cached_queries() {
+	global $sql_cache;
+	
+	$total_saved = 0;
+	$total_dbs = 0;
+	foreach ($sql_cache['saved'] as $saver) {
+		$total_saved += format_numeric($saver);
+		$total_dbs++;
+	}
+	
+	return array ($total_saved, $total_dbs);
 }
 
 /**

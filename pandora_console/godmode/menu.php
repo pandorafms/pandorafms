@@ -122,7 +122,7 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	enterprise_hook('massivepolicies_submenu');
 	enterprise_hook('massivesnmp_submenu');
 	enterprise_hook('massivesatellite_submenu');
-	
+
 	$sub["gmassive"]["sub2"] = $sub2;
 }
 
@@ -132,7 +132,7 @@ if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0,
 	$menu_godmode["galertas"]["text"] = __('Alerts');
 	$menu_godmode["galertas"]["sec2"] = "godmode/alerts/alert_list";
 	$menu_godmode["galertas"]["id"] = "god-alerts";
-	
+
 	$sub = array ();
 	$sub["godmode/alerts/alert_list"]["text"] = __('List of Alerts');
 	$sub["godmode/alerts/alert_list"]["id"] = 'List of Alerts';
@@ -173,19 +173,19 @@ if (check_acl ($config['id_user'], 0, "EW")) {
 	$menu_godmode["geventos"]["text"] = __('Events');
 	$menu_godmode["geventos"]["sec2"] = "godmode/events/events&amp;section=filter";
 	$menu_godmode["geventos"]["id"] = "god-events";
-	
+
 	// Custom event fields
 	$sub = array ();
 	$sub["godmode/events/events&amp;section=filter"]["text"] = __('Event filters');
 	$sub["godmode/events/events&amp;section=filter"]["id"] = 'Event filters';
-	
+
 	if (check_acl ($config['id_user'], 0, "PM")) {
 		$sub["godmode/events/events&amp;section=fields"]["text"] = __('Custom events');
 		$sub["godmode/events/events&amp;section=fields"]["id"] = 'Custom events';
 		$sub["godmode/events/events&amp;section=responses"]["text"] = __('Event responses');
 		$sub["godmode/events/events&amp;section=responses"]["id"] = 'Event responses';
 	}
-	
+
 	$menu_godmode["geventos"]["sub"] = $sub;
 }
 
@@ -194,24 +194,26 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	$menu_godmode["gservers"]["text"] = __('Servers');
 	$menu_godmode["gservers"]["sec2"] = "godmode/servers/modificar_server";
 	$menu_godmode["gservers"]["id"] = "god-servers";
-	
+
 	$sub = array ();
 	$sub["godmode/servers/modificar_server"]["text"] = __('Manage servers');
 	$sub["godmode/servers/modificar_server"]["id"] = 'Manage servers';
 	$sub["godmode/servers/manage_recontask"]["text"] = __('Recon task');
 	$sub["godmode/servers/manage_recontask"]["id"] = 'Recon task';
-	
+
 	//This subtabs are only for Pandora Admin
 	if (check_acl ($config['id_user'], 0, "PM")) {
 		$sub["godmode/servers/plugin"]["text"] = __('Plugins');
 		$sub["godmode/servers/plugin"]["id"] = 'Plugins';
-		
+
 		$sub["godmode/servers/recon_script"]["text"] = __('Recon script');
 		$sub["godmode/servers/recon_script"]["id"] = 'Recon script';
-		
+
 		enterprise_hook('export_target_submenu');
+
+		enterprise_hook('manage_satellite_submenu');
 	}
-	
+
 	$menu_godmode["gservers"]["sub"] = $sub;
 }
 

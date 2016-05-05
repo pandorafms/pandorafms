@@ -406,12 +406,17 @@ else {
 	foreach ($networkmaps as $networkmap) {
 		$data = array();
 		
-		$data['name'] = $networkmap['name'];
-		
-		$data['name'] = '<a href="index.php?' .
+		$url_networkmap = 'index.php?' .
 			'sec=maps&amp;' .
 			'sec2=operation/maps/networkmap&' .
-			'id=' . $networkmap['id'] .'">' .
+			'id=' . $networkmap['id'];
+		if (is_metaconsole()) {
+			$url_networkmap = 'index.php?' .
+				'sec=screen&sec2=screens/screens&' .
+				'action=networkmap&id=' . $networkmap['id'];
+		}
+		
+		$data['name'] = '<a href="' . $url_networkmap . '">' .
 			$networkmap['name'] . '</a>';
 		
 		$data['type'] = maps_get_subtype_string($networkmap['subtype']);

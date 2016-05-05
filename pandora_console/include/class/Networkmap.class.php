@@ -21,12 +21,6 @@
  * @subpackage Networkmap
  */
 
-require_once ('include/functions_os.php');
-require_once ('include/functions_networkmap.php');
-enterprise_include("include/functions_networkmap_enterprise.php");
-
-require_once("include/class/Map.class.php");
-
 class Networkmap extends Map {
 	protected $filter = array();
 	
@@ -34,6 +28,12 @@ class Networkmap extends Map {
 	protected $source_ip_mask = "";
 	
 	public function __construct($id) {
+		global $config;
+		
+		require_once($config['homedir'] . '/include/functions_os.php');
+		require_once($config['homedir'] . '/include/functions_networkmap.php');
+		enterprise_include_once("include/functions_networkmap_enterprise.php");
+		
 		parent::__construct($id);
 		
 		$this->requires_js[] = "include/javascript/map/NetworkmapController.js";

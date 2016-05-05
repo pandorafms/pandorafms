@@ -39,7 +39,7 @@ if (empty($agent_id)) {
 	return;
 }
 
-$ehorus_agent_id = agents_get_agent_custom_field($agent_id, 'eHorus&#x20;ID');
+$ehorus_agent_id = agents_get_agent_custom_field($agent_id, $config['ehorus_custom_field']);
 
 if (empty($ehorus_agent_id)) {
 	ui_print_error_message(__('Missing ehorus agent id'));

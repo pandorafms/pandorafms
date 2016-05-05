@@ -102,7 +102,7 @@ if ($edit_networkmap) {
 }
 
 //+++++++++++++++TABLE TO CREATE/EDIT NETWORKMAP++++++++++++++++++++++
-if (enterprise_installed() && defined('METACONSOLE')) {
+if (is_metaconsole()) {
 	$buttons['list'] = array('active' => true,
 		'text' => '<a href="index.php?sec=screen&sec2=screens/screens&action=networkmap">' .
 			html_print_image("images/list.png", true,
@@ -191,22 +191,32 @@ else {
 		echo '<form method="post" action="index.php?sec=maps&amp;sec2=operation/maps/networkmap_list">';
 	}
 	
-	$table = null;
-	$table->id = 'form_editor';
 	
-	$table->width = '98%';
-	$table->class = "databox_color";
+	
+	$table = new stdClass();
+	$table->id = 'form_editor';
+	$table->width = '100%';
+	$table->class = 'databox filters';
 	
 	$table->head = array();
+	
+	if (is_metaconsole()) {
+		$table->head[0] = __("Create visual console");
+		$table->head_colspan[0] = 5;
+		$table->headstyle[0] = 'text-align: center';
+		$table->align[0] = 'left';
+		$table->align[1] = 'left';
+	}
+	
 	
 	$table->size = array();
 	$table->size[0] = '30%';
 	
 	$table->style = array ();
 	$table->style[0] = 'font-weight: bold; width: 150px;';
-	$table->data = array();
 	
 	// ----- Main configuration ----------------------------------------
+	$table->data = array();
 	
 	$table->data['name'][0] = __('Name');
 	$table->data['name'][1] = html_print_input_text ('name', $name, '',
@@ -258,9 +268,11 @@ else {
 	echo '<fieldset><legend>' . __('Main') . '</legend>';
 	html_print_table($table);
 	echo '</fieldset>';
-	$table->data = array();
+	
+	
 	
 	// ----- Source configuration --------------------------------------
+	$table->data = array();
 	
 	$table->data['source'][0] = __('Source type');
 	$table->data['source'][1] =
@@ -278,9 +290,11 @@ else {
 	echo '<fieldset><legend>' . __('Source') . '</legend>';
 	html_print_table($table);
 	echo '</fieldset>';
-	$table->data = array();
+	
+	
 	
 	// ----- Filter configuration --------------------------------------
+	$table->data = array();
 	
 	$table->data["filter_by_tag"][0] = __('Filter by tags');
 	$table->data["filter_by_tag"][1] = html_print_select(
@@ -290,11 +304,11 @@ else {
 	$table->data["filter_by_text"][1] = html_print_input_text ('text',
 		$text, '', 30, 100,true);
 	
-	if (is_metaconsole()) {
-		$table->data[13][0] = __('Show pandora nodes');
-		$table->data[13][1] = html_print_checkbox('show_pandora_nodes', '1',
-			$show_pandora_nodes, true);
-	}
+	//~ if (is_metaconsole()) {
+		//~ $table->data[13][0] = __('Show pandora nodes');
+		//~ $table->data[13][1] = html_print_checkbox('show_pandora_nodes', '1',
+			//~ $show_pandora_nodes, true);
+	//~ }
 	
 	$table->data['show_agents'][0] = __('Show agents');
 	$table->data['show_agents'][1] = html_print_checkbox(
@@ -329,6 +343,8 @@ else {
 	echo '<fieldset><legend>' . __('Filters') . '</legend>';
 	html_print_table($table);
 	echo '</fieldset>';
+	
+	
 	
 	echo "<div style='width: " . $table->width . "; text-align: right;'>";
 	if ($create_networkmap) {

@@ -47,7 +47,7 @@ if (enterprise_installed()) {
 $buttons = array();
 
 // Page header for metaconsole
-if (enterprise_installed() && defined('METACONSOLE')) {
+if (is_metaconsole()) {
 	$buttons['list'] = array('active' => true,
 		'text' => '<a href="index.php?sec=screen&sec2=screens/screens&action=networkmap">' .
 			html_print_image("images/list.png", true,
@@ -468,7 +468,7 @@ html_print_button(__('Delete'), 'del', false, 'submit_multiple_delete();', 'clas
 echo '</form>';
 
 $action_url = 'index.php?sec=maps&amp;sec2=operation/maps/networkmap_editor';
-if (enterprise_installed() && defined('METACONSOLE')) {
+if (is_metaconsole()) {
 	$action_url = 'index.php?sec=screen&sec2=screens/screens';
 }
 

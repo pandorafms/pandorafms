@@ -515,7 +515,7 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 			'name' => __('SQL horizonal bar graph'));
 	}
 	
-	if ($template && (!defined('METACONSOLE') or $config['experimental_v_word'] == 1)) {
+	if ($template) {
 		$types['automatic_graph'] = array('optgroup' => __('Graphs'), 
 			'name' => __('Automatic combined Graph'));
 	}

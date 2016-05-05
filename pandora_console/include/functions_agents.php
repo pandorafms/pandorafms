@@ -2431,8 +2431,8 @@ function agents_get_agent_custom_field ($agent_id, $custom_field_name) {
 					INNER JOIN tagent_custom_fields tacf
 						ON tacd.id_field = tacf.id_field
 							AND tacf.name LIKE '%s'
-					WHERE tacd.id_agent = %d
-					LIMIT 1", $custom_field_name, $agent_id);
+					WHERE tacd.id_agent = %d",
+					$custom_field_name, $agent_id);
 	return db_get_value_sql($sql);
 }
 

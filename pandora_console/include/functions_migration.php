@@ -20,10 +20,11 @@
  * @package Include
  * @subpackage Migration
  */
-
-require_once("include/functions_maps.php");
-
 function migration_open_networkmaps() {
+	global $config;
+	
+	require_once($config['homedir'] . "/include/functions_maps.php");
+	
 	$old_networkmaps_open = db_get_all_rows_in_table("tnetwork_map");
 	
 	foreach ($old_networkmaps_open as $old_netw_open) {

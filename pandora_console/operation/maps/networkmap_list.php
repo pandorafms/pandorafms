@@ -36,24 +36,50 @@ if (!$networkmaps_read && !$networkmaps_write && !$networkmaps_manage) {
 	}
 }
 
-require_once('include/functions_migration.php');
+require_once($config['homedir'] .'/include/functions_migration.php');
+require_once($config['homedir'] .'/include/functions_maps.php');
+
 if (enterprise_installed()) {
 	require_once ($config['homedir'].'/enterprise/include/functions_migration.php');
 }
 
-$buttons['list'] = array('active' => true,
-	'text' => '<a href="index.php?sec=network&sec2=operation/maps/networkmap_list">' .
-		html_print_image("images/list.png", true,
-			array ('title' => __('List of networkmaps'))) .
-		'</a>');
 
-ui_print_page_header(
-	__('Network map'),
-	"images/op_network.png",
-	false,
-	"network_map",
-	false,
-	$buttons);
+$buttons = array();
+
+// Page header for metaconsole
+if (enterprise_installed() && defined('METACONSOLE')) {
+	$buttons['list'] = array('active' => true,
+		'text' => '<a href="index.php?sec=screen&sec2=screens/screens&action=networkmap">' .
+			html_print_image("images/list.png", true,
+				array ('title' => __('List of networkmaps'))) .
+			'</a>');
+	
+	// Bread crumbs
+	ui_meta_add_breadcrumb(
+		array('link' =>
+			'index.php?sec=screen&sec2=screens/screens&action=networkmap',
+		'text' => __('Network map')));
+	
+	ui_meta_print_page_header($nav_bar);
+	
+	//Print header
+	ui_meta_print_header(__('Network map'), "", $buttons);
+}
+else {
+	$buttons['list'] = array('active' => true,
+		'text' => '<a href="index.php?sec=network&sec2=operation/maps/networkmap_list">' .
+			html_print_image("images/list.png", true,
+				array ('title' => __('List of networkmaps'))) .
+			'</a>');
+	
+	ui_print_page_header(
+		__('Network map'),
+		"images/op_network.png",
+		false,
+		"network_map",
+		false,
+		$buttons);
+}
 
 ////////////////////////////////////////////////////////////////////////
 // It is dirty but at the moment (minor release is not)

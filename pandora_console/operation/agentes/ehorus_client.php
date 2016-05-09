@@ -22,6 +22,11 @@ if (! isset($_SESSION['id_usuario'])) {
 require_once ('../../include/config.php');
 require_once ($config['homedir'] . '/include/functions.php');
 
+if (! check_acl($config['id_user'], 0, 'AM') && !is_user_admin($config['id_user'])) {
+	db_pandora_audit('ACL Violation', 'Trying to access eHorus');
+	return;
+}
+
 check_login();
 
 $agent_id = (string) get_parameter_get('agent_id');

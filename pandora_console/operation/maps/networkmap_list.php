@@ -506,6 +506,11 @@ html_print_input_hidden ('ids_multiple_delete', "");
 html_print_button(__('Delete'), 'del', false, 'submit_multiple_delete();', 'class="sub delete"');
 echo '</form>';
 
+$action_url = 'index.php?sec=maps&amp;sec2=operation/maps/networkmap_editor';
+if (is_metaconsole()) {
+	$action_url = 'index.php?sec=screen&sec2=screens/screens';
+}
+
 echo '<form method="post" style="float:right; margin-right: 10px;" action="' . $action_url . '">';
 html_print_input_hidden ('create_networkmap', 1);
 html_print_submit_button (__('Create'), "crt", false, 'class="sub next"');

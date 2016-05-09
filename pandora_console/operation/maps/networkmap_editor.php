@@ -19,19 +19,23 @@ global $config;
 
 check_login ();
 
+require_once($config['homedir'] .'/include/functions_maps.php');
+
 // ACL for the general permission
 $networkmaps_read = check_acl ($config['id_user'], 0, "MR");
 $networkmaps_write = check_acl ($config['id_user'], 0, "MW");
 $networkmaps_manage = check_acl ($config['id_user'], 0, "MM");
 
 $id = (int)get_parameter('id_networkmap', 0);
+
 $edit_networkmap = (int)get_parameter('edit_networkmap', 0);
 $create_networkmap = (int)get_parameter('create_networkmap', 0);
+$update_networkmap = (bool)get_parameter('update_networkmap', 0);
 
 if ($create_networkmap) {
 	$id_group = GROUP_ALL;
 	$type = MAP_TYPE_NETWORKMAP;
-	$subtype = MAP_SUBTYPE_GROUPS;
+	$subtype = MAP_SUBTYPE_TOPOLOGY;
 	$name = "";
 	$description = "";
 	$width = NETWORKMAP_DEFAULT_WIDTH;
@@ -54,52 +58,10 @@ if ($create_networkmap) {
 	$only_policy_modules = false;
 }
 
+
 $not_found = false;
 $disabled_select = false;
-if ($edit_networkmap) {
-	$disabled_select= true;
-	$values = db_get_row('tmap', 'id', $id);
-	
-	if ($values === false) {
-		$not_found = true;
-	}
-	else {
-		$id_group = $values['id_group'];
-		
-		$networkmap_write = check_acl ($config['id_user'], $id_group, "MW");
-		$networkmap_manage = check_acl ($config['id_user'], $id_group, "MM");
-		
-		if (!$networkmap_write && !$networkmap_manage) {
-			db_pandora_audit("ACL Violation",
-				"Trying to access networkmap");
-			require ("general/noaccess.php");
-			return;
-		}
-		
-		$type = MAP_TYPE_NETWORKMAP;
-		$subtype = $values['subtype'];
-		$name = io_safe_output($values['name']);
-		$description = io_safe_output($values['description']);
-		$width = $values['width'];
-		$height = $values['height'];
-		$source_period = $values['source_period'];
-		$source = $values['source'];
-		$source_data = $values['source_data'];
-		$generation_method = $values['generation_method'];
-		
-		$filter = json_decode($values['filter'], true);
-		$id_tag = $filter['id_tag'];
-		$text = io_safe_output($filter['text']);
-		$show_pandora_nodes = $filter['show_pandora_nodes'];
-		$show_agents = $filter['show_agents'];
-		$show_modules = $filter['show_modules'];
-		$module_group = $filter['module_group'];
-		$show_module_group = $filter['show_module_group'];
-		$only_snmp_modules = $filter['only_snmp_modules'];
-		$only_modules_with_alerts = $filter['only_modules_with_alerts'];
-		$only_policy_modules = $filter['only_policy_modules'];
-	}
-}
+$disabled_select_generation = false;
 
 //+++++++++++++++TABLE TO CREATE/EDIT NETWORKMAP++++++++++++++++++++++
 if (is_metaconsole()) {
@@ -180,22 +142,187 @@ else {
 	}
 }
 
+if ($update_networkmap) {
+	$id = (int)get_parameter('id_networkmap', 0);
+	
+	$id_group_old = db_get_value('id_group', 'tmap', 'id', $id);
+	
+	if (empty($id)) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access networkmap enterprise");
+		require ("general/noaccess.php");
+		return;
+	}
+	
+	$networkmap_write_old_group = check_acl ($config['id_user'], $id_group_old, "MW");
+	$networkmap_manage_old_group = check_acl ($config['id_user'], $id_group_old, "MM");
+	
+	if (!$networkmap_write_old_group && !$networkmap_manage_old_group) {
+		db_pandora_audit("ACL Violation",
+			"Trying to access networkmap");
+		require ("general/noaccess.php");
+		return;
+	}
+	
+	$id_group = (int) get_parameter('id_group', 0);
+	$name = (string) get_parameter('name', "");
+	$description = (string) get_parameter('description', "");
+	if (enterprise_installed()) {
+		$generation_method = (int) get_parameter('generation_method', MAP_GENERATION_CIRCULAR);
+	}
+	$source_period = (int) get_parameter('source_period', 60 * 5);
+	$source = (int) get_parameter('source', MAP_SOURCE_GROUP);
+	switch ($source) {
+		case MAP_SOURCE_GROUP:
+			$source_data = (string) get_parameter('source_group', '');
+			break;
+		case MAP_SOURCE_IP_MASK:
+			$source_data = (string) get_parameter('source_ip_mask', '');
+			break;
+	}
+	
+	$width = (int) get_parameter('width', 800);
+	$height = (int) get_parameter('height', 800);
+	
+	
+	// Filters
+	$id_tag = (int) get_parameter('id_tag', 0);
+	$text = (string) get_parameter('text', "");
+	$show_pandora_nodes = (int) get_parameter('show_pandora_nodes', 0);
+	$show_agents = (int) get_parameter('show_agents', 0);
+	$show_modules = (int) get_parameter('show_modules', 0);
+	$module_group = (int) get_parameter('module_group', 0);
+	$show_module_group = (int) get_parameter('show_module_group', 0);
+	$only_snmp_modules = (int) get_parameter('only_snmp_modules', 0);
+	$only_modules_with_alerts = (int) get_parameter('only_modules_with_alerts', 0);
+	$only_policy_modules = (int) get_parameter('only_policy_modules', 0);
+	
+	
+	$values = array();
+	$values['name'] = $name;
+	$values['id_group'] = $id_group;
+	$values['description'] = $description;
+	$values['source_period'] = $source_period;
+	$values['source_data'] = $source_data;
+	$values['source'] = $source;
+	if (enterprise_installed()) {
+		$values['generation_method'] = $generation_method;
+	}
+	$values['width'] = $width;
+	$values['height'] = $height;
+	
+	$filter = array();
+	$filter['id_tag'] = $id_tag;
+	$filter['text'] = $text;
+	$filter['show_pandora_nodes'] = $show_pandora_nodes;
+	$filter['show_agents'] = $show_agents;
+	$filter['show_modules'] = $show_modules;
+	if (!$show_modules) {
+		$show_module_group = 0;
+		$module_group = 0;
+		$only_snmp_modules = 0;
+		$only_modules_with_alerts = 0;
+	}
+	$filter['module_group'] = $module_group;
+	$filter['show_module_group'] = $show_module_group;
+	$filter['only_snmp_modules'] = $only_snmp_modules;
+	$filter['only_modules_with_alerts'] = $only_modules_with_alerts;
+	$filter['only_policy_modules'] = $only_policy_modules;
+	$values['filter'] = json_encode($filter);
+	
+	$result_update = false;
+	if (!empty($name)) {
+		$result_update = maps_update_map($id, $values);
+	}
+	
+	if ($result_update) {
+		$nodes = db_get_all_rows_filter(
+			'titem', array('id_map' => $id));
+		
+		foreach ($nodes as $node) {
+			db_process_sql_delete('trel_item', array('id_item' => $node['id']));
+		}
+		db_process_sql_delete('titem', array('id_map' => $id));
+	}
+	
+	ui_print_result_message ($result_update,
+		__('Successfully updated'),
+		__('Could not be updated'));
+	
+	$edit_networkmap = true;
+}
+
+if ($edit_networkmap) {
+	$disabled_select= true;
+	if (enterprise_installed()) {
+		$disabled_select_generation = true;
+	}
+	$values = db_get_row('tmap', 'id', $id);
+	
+	if ($values === false) {
+		$not_found = true;
+	}
+	else {
+		$id_group = $values['id_group'];
+		
+		$networkmap_write = check_acl ($config['id_user'], $id_group, "MW");
+		$networkmap_manage = check_acl ($config['id_user'], $id_group, "MM");
+		
+		if (!$networkmap_write && !$networkmap_manage) {
+			db_pandora_audit("ACL Violation",
+				"Trying to access networkmap");
+			require ("general/noaccess.php");
+			return;
+		}
+		
+		$type = MAP_TYPE_NETWORKMAP;
+		$subtype = $values['subtype'];
+		$name = io_safe_output($values['name']);
+		$description = io_safe_output($values['description']);
+		$width = $values['width'];
+		$height = $values['height'];
+		$source_period = $values['source_period'];
+		$source = $values['source'];
+		$source_data = $values['source_data'];
+		$generation_method = $values['generation_method'];
+		
+		$filter = json_decode($values['filter'], true);
+		$id_tag = $filter['id_tag'];
+		$text = io_safe_output($filter['text']);
+		$show_pandora_nodes = $filter['show_pandora_nodes'];
+		$show_agents = $filter['show_agents'];
+		$show_modules = $filter['show_modules'];
+		$module_group = $filter['module_group'];
+		$show_module_group = $filter['show_module_group'];
+		$only_snmp_modules = $filter['only_snmp_modules'];
+		$only_modules_with_alerts = $filter['only_modules_with_alerts'];
+		$only_policy_modules = $filter['only_policy_modules'];
+	}
+}
+
 if ($not_found) {
 	ui_print_error_message(__('Not found networkmap'));
 }
 else {
-	$url_action = 'index.php?sec=maps&amp;sec2=operation/maps/networkmap_list';
-	if (is_metaconsole()) {
-		$url_action = 'index.php?sec=screen&sec2=screens/screens';
-	}
-	
 	if ($edit_networkmap && enterprise_installed()) {
+		
+		$url_action = 'index.php?sec=maps&amp;sec2=operation/maps/networkmap_editor&id_networkmap=' . $id;
+		if (is_metaconsole()) {
+			$url_action = 'index.php?sec=screen&sec2=screens/screens';
+		}
+		
 		echo '<form ' .
 			'method="post" ' .
 			'onsubmit="javascript: return alert_refresh_all_networkmap();" ' .
 			'action="' . $url_action . '">';
 	}
 	else {
+		
+		$url_action = 'index.php?sec=maps&amp;sec2=operation/maps/networkmap_list';
+		if (is_metaconsole()) {
+			$url_action = 'index.php?sec=screen&sec2=screens/screens';
+		}
+		
 		echo '<form ' .
 			'method="post" ' .
 			'action="' . $url_action . '">';
@@ -249,7 +376,7 @@ else {
 	
 	$table->data['subtype'][0] = __('Subtype');
 	$table->data['subtype'][1] = html_print_select($subtypes, 'subtype',
-		$subtype, '', '', 'Topology', true, false, true, '',
+		$subtype, '', '', 0, true, false, true, '',
 		$disabled_select);
 	
 	$generation_methods = array(
@@ -261,9 +388,10 @@ else {
 		);
 	
 	$table->data['method_generation'][0] = __('Method generation networkmap');
-	$table->data['method_generation'][1] = html_print_select($generation_methods, 'generation_method', $generation_method,
+	$table->data['method_generation'][1] = html_print_select(
+		$generation_methods, 'generation_method', $generation_method,
 		'', '', 'twopi', true, false, true, '',
-		$disabled_select);
+		$disabled_select_generation);
 	
 	$table->data['size'][0] = __('Size of networkmap (Width x Height)');
 	$table->data['size'][1] = html_print_input_text ('width', $width, '', 4,

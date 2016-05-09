@@ -114,7 +114,6 @@ if (enterprise_installed()) {
 $delete_networkmap = (bool)get_parameter('delete_networkmap', 0);
 $multiple_delete = (bool)get_parameter('multiple_delete', 0);
 $duplicate_networkmap = (bool)get_parameter('duplicate_networkmap', 0);
-$update_networkmap = (bool)get_parameter('update_networkmap', 0);
 $save_networkmap = (bool)get_parameter('save_networkmap', 0);
 
 if ($multiple_delete) {
@@ -226,7 +225,7 @@ if ($save_networkmap) {
 		__('Successfully created'),
 		__('Could not be created'));
 }
-else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
+else if ($delete_networkmap || $duplicate_networkmap) {
 	$id = (int)get_parameter('id_networkmap', 0);
 	
 	if (empty($id)) {
@@ -270,94 +269,12 @@ else if ($delete_networkmap || $duplicate_networkmap || $update_networkmap) {
 			__('Successfully deleted'),
 			__('Could not be deleted'));
 	}
-	
 	else if ($duplicate_networkmap) {
 		$result_duplicate = maps_duplicate_map($id);
 		
 		ui_print_result_message ($result_duplicate,
 			__('Successfully duplicate'),
 			__('Could not be duplicate'));
-	}
-	
-	else if ($update_networkmap) {
-		$id_group = (int) get_parameter('id_group', 0);
-		$name = (string) get_parameter('name', "");
-		$description = (string) get_parameter('description', "");
-		$source_period = (int) get_parameter('source_period', 60 * 5);
-		$source = (int) get_parameter('source', MAP_SOURCE_GROUP);
-		switch ($source) {
-			case MAP_SOURCE_GROUP:
-				$source_data = (string) get_parameter('source_group', '');
-				break;
-			case MAP_SOURCE_IP_MASK:
-				$source_data = (string) get_parameter('source_ip_mask', '');
-				break;
-		}
-		
-		$width = (int) get_parameter('width', 800);
-		$height = (int) get_parameter('height', 800);
-		
-		
-		// Filters
-		$id_tag = (int) get_parameter('id_tag', 0);
-		$text = (string) get_parameter('text', "");
-		$show_pandora_nodes = (int) get_parameter('show_pandora_nodes', 0);
-		$show_agents = (int) get_parameter('show_agents', 0);
-		$show_modules = (int) get_parameter('show_modules', 0);
-		$module_group = (int) get_parameter('module_group', 0);
-		$show_module_group = (int) get_parameter('show_module_group', 0);
-		$only_snmp_modules = (int) get_parameter('only_snmp_modules', 0);
-		$only_modules_with_alerts = (int) get_parameter('only_modules_with_alerts', 0);
-		$only_policy_modules = (int) get_parameter('only_policy_modules', 0);
-		
-		
-		$values = array();
-		$values['name'] = $name;
-		$values['id_group'] = $id_group;
-		$values['description'] = $description;
-		$values['source_period'] = $source_period;
-		$values['source_data'] = $source_data;
-		$values['source'] = $source;
-		$values['width'] = $width;
-		$values['height'] = $height;
-		
-		$filter = array();
-		$filter['id_tag'] = $id_tag;
-		$filter['text'] = $text;
-		$filter['show_pandora_nodes'] = $show_pandora_nodes;
-		$filter['show_agents'] = $show_agents;
-		$filter['show_modules'] = $show_modules;
-		if (!$show_modules) {
-			$show_module_group = 0;
-			$module_group = 0;
-			$only_snmp_modules = 0;
-			$only_modules_with_alerts = 0;
-		}
-		$filter['module_group'] = $module_group;
-		$filter['show_module_group'] = $show_module_group;
-		$filter['only_snmp_modules'] = $only_snmp_modules;
-		$filter['only_modules_with_alerts'] = $only_modules_with_alerts;
-		$filter['only_policy_modules'] = $only_policy_modules;
-		$values['filter'] = json_encode($filter);
-		
-		$result_update = false;
-		if (!empty($name)) {
-			$result_update = maps_update_map($id, $values);
-		}
-		
-		if ($result_update) {
-			$nodes = db_get_all_rows_filter(
-				'titem', array('id_map' => $id));
-			
-			foreach ($nodes as $node) {
-				db_process_sql_delete('trel_item', array('id_item' => $node['id']));
-			}
-			db_process_sql_delete('titem', array('id_map' => $id));
-		}
-		
-		ui_print_result_message ($result_update,
-			__('Successfully updated'),
-			__('Could not be updated'));
 	}
 }
 

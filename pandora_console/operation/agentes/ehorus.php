@@ -135,6 +135,15 @@ echo '<input type="button" id="run-ehorus-client" class="sub next" value="' . __
 echo '</td>';
 echo '</tr></table>';
 
+echo '<div id="expired_message" style="display: none;">';
+ui_print_error_message(
+	__('The connection was lost and the authorization token was expired')
+	. '. ' .
+	__('Reload the page to request a new authorization token')
+	. '. '
+);
+echo '</div>';
+
 echo '<div id="ehorus-client-iframe"></div>';
 
 $query_data = array(
@@ -142,6 +151,7 @@ $query_data = array(
 	'hostname' => (string) $agent_data['serverAddress'],
 	'port' => (int) $agent_data['serverPort'],
 	'token' => (string) $response_auth['token'],
+	'expiration' => (int)  $response_auth['exp'],
 	'is_busy' => (bool) $agent_data['isBusy'],
 	'last_connection' => (int) $agent_data['lastConnection'],
 	'section' => $client_tab
@@ -200,7 +210,6 @@ $client_url = $config['homeurl'] . 'operation/agentes/ehorus_client.php?' . $que
 					event.source !== iframe.contentWindow) {
 					return;
 				}
-				console.log('message from iframe', event.data);
 				if (typeof actionHandlers === 'undefined') return;
 				
 				if (event.data.action in actionHandlers) {
@@ -231,6 +240,17 @@ $client_url = $config['homeurl'] . 'operation/agentes/ehorus_client.php?' . $que
 					$('a.tab_processes').click(handleTabClick('processes', messageToIframe));
 					$('a.tab_services').click(handleTabClick('services', messageToIframe));
 					$('a.tab_files').click(handleTabClick('files', messageToIframe));
+				},
+				expired: function () {
+					$(iframe).remove();
+					$('a.ehorus_tab').unbind('click');
+					$('a.tab_terminal').unbind('click');
+					$('a.tab_display').unbind('click');
+					$('a.tab_processes').unbind('click');
+					$('a.tab_services').unbind('click');
+					$('a.tab_files').unbind('click');
+					iframe = null;
+					$('div#expired_message').show();
 				}
 			}
 			

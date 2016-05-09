@@ -167,7 +167,7 @@ if ($update_networkmap) {
 	$id_group = (int) get_parameter('id_group', 0);
 	$name = (string) get_parameter('name', "");
 	$description = (string) get_parameter('description', "");
-	if (enterprise_installed()) {
+	if (!enterprise_installed()) {
 		$generation_method = (int) get_parameter('generation_method', MAP_GENERATION_CIRCULAR);
 	}
 	$source_period = (int) get_parameter('source_period', 60 * 5);
@@ -205,7 +205,7 @@ if ($update_networkmap) {
 	$values['source_period'] = $source_period;
 	$values['source_data'] = $source_data;
 	$values['source'] = $source;
-	if (enterprise_installed()) {
+	if (!enterprise_installed()) {
 		$values['generation_method'] = $generation_method;
 	}
 	$values['width'] = $width;

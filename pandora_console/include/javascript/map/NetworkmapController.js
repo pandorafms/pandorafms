@@ -155,7 +155,7 @@ NetworkmapController.prototype.init_map = function() {
 	});
 	clean_arrows = new_clean_arrows;
 	
-	MapController.prototype.update_edges_from_clean_arrows(clean_arrows);
+	self.update_edges_from_clean_arrows(clean_arrows);
 	
 	MapController.prototype.init_map.call(this);
 };
@@ -485,7 +485,7 @@ NetworkmapController.prototype.get_arrow_AG = function(id_to, id_from) {
 	var arrow_AG;
 	var found = false;
 	
-	$.each(edges, function(i, edge) {
+	$.each(self.get_edges_map(), function(i, edge) {
 		if (self.get_node_type(id_to) == ITEM_TYPE_AGENT_NETWORKMAP ||
 			self.get_node_type(id_from) == ITEM_TYPE_AGENT_NETWORKMAP) {
 			if (self.get_node_type(id_to) == ITEM_TYPE_GROUP_NETWORKMAP ||
@@ -529,7 +529,7 @@ NetworkmapController.prototype.get_arrow_PA = function(id_to, id_from) {
 	var arrow_PA;
 	var found = false;
 	
-	$.each(edges, function(i, edge) {
+	$.each(self.get_edges_map(), function(i, edge) {
 		if (self.get_node_type(id_to) == ITEM_TYPE_AGENT_NETWORKMAP ||
 			self.get_node_type(id_from) == ITEM_TYPE_AGENT_NETWORKMAP) {
 			if (self.get_node_type(id_to) == ITEM_TYPE_POLICY_NETWORKMAP ||
@@ -573,7 +573,7 @@ NetworkmapController.prototype.get_arrow_GG = function(id_to, id_from) {
 	var arrow_GG;
 	var found = false;
 	
-	$.each(edges, function(i, edge) {
+	$.each(self.get_edges_map(), function(i, edge) {
 		if (self.get_node_type(id_to) == ITEM_TYPE_GROUP_NETWORKMAP &&
 			self.get_node_type(id_from) == ITEM_TYPE_GROUP_NETWORKMAP) {
 			
@@ -702,7 +702,7 @@ NetworkmapController.prototype.get_arrow_AM = function(id_to, id_from) {
 	var arrow_AM;
 	var found = false;
 	
-	$.each(edges, function(i, edge) {
+	$.each(self.get_edges_map(), function(i, edge) {
 		if (self.get_node_type(id_to) == ITEM_TYPE_AGENT_NETWORKMAP ||
 			self.get_node_type(id_from) == ITEM_TYPE_AGENT_NETWORKMAP) {
 			if (self.get_node_type(id_to) == ITEM_TYPE_MODULE_NETWORKMAP ||
@@ -837,9 +837,11 @@ NetworkmapController.prototype.update_arrow = function(graph_id) {
 * This function returns the arrow type
 */
 NetworkmapController.prototype.get_type_arrow = function(graph_id) {
+	var self = this;
+	
 	var return_var = null;
 	
-	$.each(edges, function(i, edge) {
+	$.each(self.get_edges_map(), function(i, edge) {
 		if (edge['graph_id'] == graph_id) {
 			return_var = edge['type'];
 			return false;
@@ -950,7 +952,7 @@ NetworkmapController.prototype.paint_arrows = function() {
 	var self = this;
 	
 	var arrow_layouts = self._viewport.selectAll(".arrow")
-		.data(edges)
+		.data(self.get_edges_map())
 		.enter()
 			.append("g")
 				.attr("class", "arrow")
@@ -1033,7 +1035,7 @@ NetworkmapController.prototype.make_arrow = function(from_id, to_id) {
 	edge['from_status'] = null;
 	edge['from_title'] = null;
 	
-	edges.push(edge);
+	self.get_edges_map().push(edge);
 }
 
 /**
@@ -2300,7 +2302,7 @@ NetworkmapController.prototype.refresh_arrows = function() {
 	params["id_map"] = self._id;
 	params["page"] = "include/ajax/map.ajax";
 	
-	var arrows_AMA_or_AMMA = $.grep(edges,
+	var arrows_AMA_or_AMMA = $.grep(self.get_edges_map(),
 		function(edge) {
 			if ((edge['type'] == "AMA") || (edge['type'] == "AMMA")) {
 				return true;
@@ -2325,10 +2327,10 @@ NetworkmapController.prototype.refresh_arrows = function() {
 		type: "POST",
 		url: "ajax.php",
 		success: function (data) {
-			$.each(edges, function(i, edge) {
+			$.each(self.get_edges_map(), function(i, edge) {
 				if (typeof(data[edge['graph_id']]) != "undefined") {
-					edges[i]['to_status'] = data[edge['graph_id']]['to_status'];
-					edges[i]['from_status'] = data[edge['graph_id']]['from_status'];
+					self.get_edges_map()[i]['to_status'] = data[edge['graph_id']]['to_status'];
+					self.get_edges_map()[i]['from_status'] = data[edge['graph_id']]['from_status'];
 					
 					self.update_arrow(edge['graph_id']);
 				}
@@ -2363,7 +2365,7 @@ NetworkmapController.prototype.getArrows = function(id_node) {
 	
 	var return_var = [];
 	
-	edges.forEach(function(edge, index) {
+	self.get_edges_map().forEach(function(edge, index) {
 		if (("node_" + edge['to']['graph_id']) == id_node
 			|| ("node_" + edge['from']['graph_id']) == id_node) {
 			return_var[index] = edge["graph_id"];

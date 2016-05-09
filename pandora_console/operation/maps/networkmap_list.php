@@ -494,7 +494,7 @@ else {
 }
 
 
-$action_url = 'index.php?sec=maps&amp;sec2=operation/maps/networkmap_editor';
+$action_url = 'index.php?sec=maps&amp;sec2=operation/maps/networkmap_list';
 if (is_metaconsole()) {
 	$action_url = 'index.php?sec=screen&sec2=screens/screens';
 }

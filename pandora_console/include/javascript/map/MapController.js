@@ -353,9 +353,11 @@ MapController.prototype.get_node_type = function(id_graph) {
 * This function returns the edges of a node
 */
 MapController.prototype.get_edges_from_node = function(id_graph) {
+	var self = this;
+	
 	var return_edges = [];
 	
-	$.each(edges, function(i, edge) {
+	$.each(self.get_edges_map(), function(i, edge) {
 		if ((edge['to'] == id_graph) || (edge['from'] == id_graph)) {
 			return_edges.push(edge);
 		}
@@ -370,11 +372,14 @@ MapController.prototype.get_edges_from_node = function(id_graph) {
 * This function updates the graph id of the edges
 */
 MapController.prototype.update_edges_from_clean_arrows = function(clean_arrows) {
+	var self = this;
+	
 	newEdges = [];
 	clean_arrows.forEach(function(arrow, index) {
 		newEdges[index] = arrow;
 	});
-	edges = newEdges;
+	
+	self.set_edges_map(newEdges);
 }
 
 /**
@@ -385,7 +390,7 @@ MapController.prototype.update_edges_from_clean_arrows = function(clean_arrows) 
 MapController.prototype.get_arrow_from_id = function(id) {
 	var self = this;
 	
-	var arrow = $.grep(edges, function(e) {
+	var arrow = $.grep(self.get_edges_map(), function(e) {
 		if (e['graph_id'] == id) {
 			return true;
 		}
@@ -411,7 +416,7 @@ MapController.prototype.get_arrows_from_edges = function() {
 	
 	var return_var = [];
 	
-	$.each(edges, function(i, e) {
+	$.each(self.get_edges_map(), function(i, e) {
 		return_var.push(self.get_arrow_from_id(e['graph_id']));
 	});
 	
@@ -795,9 +800,11 @@ MapController.prototype.zoom_minimap = function() {
 * This function returns the node with the specific id_graph
 */
 MapController.prototype.node_from_edge = function(id_graph) {
+	var self = this;
+	
 	var exists = null;
 	
-	$.each(edges, function(i, e) {
+	$.each(self.get_edges_map(), function(i, e) {
 		if (e.graph_id == id_graph) {
 			exists = i;
 			return false; // jquery.each break;
@@ -805,7 +812,7 @@ MapController.prototype.node_from_edge = function(id_graph) {
 	});
 	
 	if (exists !== null)
-		return edges[exists];
+		return self.get_edges_map()[exists];
 	else
 		return null;
 }
@@ -816,9 +823,11 @@ MapController.prototype.node_from_edge = function(id_graph) {
 * This function returns if the node exist
 */
 MapController.prototype.exists_edge = function(id_graph) {
+	var self = this;
+	
 	var exists = false;
 	
-	$.each(edges, function(i, e) {
+	$.each(self.get_edges_map(), function(i, e) {
 		if (e.graph_id == id_graph) {
 			exists = true;
 			return false; // jquery.each break;
@@ -872,7 +881,7 @@ MapController.prototype.paint_arrows = function() {
 		arrow_layouts.each(function(d) {
 			var arrow_layout = this;
 			
-			var node_arrow = edges.filter(function(d2) {
+			var node_arrow = self.get_edges_map().filter(function(d2) {
 				if (d2['graph_id'] == d['graph_id'])
 					return true;
 				else
@@ -2774,12 +2783,12 @@ MapController.prototype.deleteEdgesAndNode = function(arrowsToDelete, id_node) {
 	
 	arrowsToDelete.forEach(function(arrow) {
 		temp = [];
-		edges.forEach(function(edge) {
+		self.get_edges_map().forEach(function(edge) {
 			if (edge["graph_id"] != arrow['graph_id']) {
 				temp.push(edge);
 			}
 		});
-		edges = temp;
+		self.set_edges_map(temp);
 	});
 	
 	arrowsToDelete.forEach(function(arrow) {
@@ -2813,9 +2822,11 @@ MapController.prototype.deleteEdgesAndNode = function(arrowsToDelete, id_node) {
 * This function returns the edges of a node to delete them
 */
 MapController.prototype.get_edges_to_del = function(id_graph) {
+	var self = this;
+	
 	var return_edges = [];
 	
-	$.each(edges, function(i, edge) {
+	$.each(self.get_edges_map(), function(i, edge) {
 		if ((edge['to']['graph_id'] == id_graph) || (edge['from']['graph_id'] == id_graph)) {
 			return_edges.push(edge);
 		}
@@ -2835,7 +2846,7 @@ MapController.prototype.getArrows = function(id_node) {
 	var edgesToDel = [];
 	var j = 0;
 	
-	edges.forEach(function(edge, index) {
+	self.get_edges_map().forEach(function(edge, index) {
 		var nodeTo = "node_" + edge["to"];
 		var nodeFrom = "node_" + edge["from"];
 		if (nodeTo == id_node || nodeFrom == id_node) {

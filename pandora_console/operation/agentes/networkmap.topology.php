@@ -137,12 +137,6 @@ else {
 		$result = system ($cmd);
 		fclose ($fh);
 		unlink ($filename_dot);
-		html_debug_print($cmd);
-		
-		
-		
-		html_debug(file_get_contents("/tmp/caca.txt"), true);
-		html_debug($graph);
 	}
 }
 

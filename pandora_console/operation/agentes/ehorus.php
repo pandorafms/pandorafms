@@ -18,9 +18,9 @@ global $config;
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "AR") && ! is_user_admin ($config['id_user'])) {
-	db_pandora_audit("ACL Violation", "Trying to access eHorus");
-	require ("general/noaccess.php");
+if (! check_acl ($config['id_user'], 0, 'AM') && ! is_user_admin ($config['id_user'])) {
+	db_pandora_audit('ACL Violation', 'Trying to access eHorus');
+	require ('general/noaccess.php');
 	return;
 }
 
@@ -175,9 +175,14 @@ $client_url = $config['homeurl'] . 'operation/agentes/ehorus_client.php?' . $que
 			}
 		}
 		
+		var heightCorrection = 20;
+		
 		var createIframe = function (node, src) {
 			var iframe = document.createElement('iframe');
 			iframe.src = src;
+			iframe.style.border = 'none';
+			iframe.style.position = 'relative';
+			iframe.style.top = '-' + heightCorrection + 'px';
 			iframe.style.border = 'none';
 			resizeIframe(iframe);
 			node.appendChild(iframe);
@@ -189,7 +194,7 @@ $client_url = $config['homeurl'] . 'operation/agentes/ehorus_client.php?' . $que
 			var $elem = $('div#ehorus-client-iframe');
 			return {
 				width: $elem.width(),
-				height: $(window).height() - $elem.offset().top - 20
+				height: $(window).height() - $elem.offset().top + heightCorrection
 			}
 		}
 		var resizeIframe = function (iframe) {

@@ -930,34 +930,34 @@ if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])) {
 	if (!empty($ehorus_agent_id)) {
 		$tab_url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente;
 		$ehorus_tab['text'] = '<a href="'.$tab_url.'" class="ehorus_tab">'
-			. html_print_image ('images/operation.png', true, array ( 'title' => __('eHorus')))
+			. html_print_image ('images/ehorus/ehorus.png', true, array ( 'title' => __('eHorus')))
 			. '</a>';
 		
 		// Hidden subtab layer
 		$ehorus_tab['sub_menu'] = '<ul class="mn subsubmenu" style="float:none;">';
 		$ehorus_tab['sub_menu'] .= '<a class="tab_terminal" href="' . $tab_url . '&client_tab=terminal">';
 		$ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'
-			. html_print_image("images/wand_snmp.png", true, array( 'title' => __('Terminal')));
+			. html_print_image("images/ehorus/terminal.png", true, array( 'title' => __('Terminal')));
 		$ehorus_tab['sub_menu'] .= '</li>';
 		$ehorus_tab['sub_menu'] .= '</a>';
 		$ehorus_tab['sub_menu'] .= '<a class="tab_display" href="' . $tab_url . '&client_tab=display">';
 		$ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'
-			. html_print_image("images/wand_snmp.png", true, array( 'title' => __('VNC')));
+			. html_print_image("images/ehorus/vnc.png", true, array( 'title' => __('VNC')));
 		$ehorus_tab['sub_menu'] .= '</li>';
 		$ehorus_tab['sub_menu'] .= '</a>';
 		$ehorus_tab['sub_menu'] .= '<a class="tab_processes" href="' . $tab_url . '&client_tab=processes">';
 		$ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'
-			. html_print_image("images/wand_snmp.png", true, array( 'title' => __('Processes')));
+			. html_print_image("images/ehorus/processes.png", true, array( 'title' => __('Processes')));
 		$ehorus_tab['sub_menu'] .= '</li>';
 		$ehorus_tab['sub_menu'] .= '</a>';
 		$ehorus_tab['sub_menu'] .= '<a class="tab_services" href="' . $tab_url . '&client_tab=services">';
 		$ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'
-			. html_print_image("images/wand_snmp.png", true, array( 'title' => __('Services')));
+			. html_print_image("images/ehorus/services.png", true, array( 'title' => __('Services')));
 		$ehorus_tab['sub_menu'] .= '</li>';
 		$ehorus_tab['sub_menu'] .= '</a>';
 		$ehorus_tab['sub_menu'] .= '<a class="tab_files" href="' . $tab_url . '&client_tab=files">';
 		$ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'
-			. html_print_image("images/wand_snmp.png", true, array( 'title' => __('Files')));
+			. html_print_image("images/ehorus/files.png", true, array( 'title' => __('Files')));
 		$ehorus_tab['sub_menu'] .= '</li>';
 		$ehorus_tab['sub_menu'] .= '</a>';
 		$ehorus_tab['sub_menu'] .= '</ul>';

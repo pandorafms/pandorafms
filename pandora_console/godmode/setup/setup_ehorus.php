@@ -152,7 +152,7 @@ if ($config['ehorus_enabled']) {
 	echo '<form id="form_agents" method="post">';
 	$info_messsage = __('eHorus has his own agent identifiers');
 	$info_messsage .= '. ' . __('To store them, it will be necessary to use an agent custom field');
-	$info_messsage .= '.<br />' . __('Possibly the eHorus id will have to be filled by hand for every agent') . '.';
+	$info_messsage .= '.<br />' . __('Possibly the eHorus id will have to be filled in by hand for every agent') . '.';
 	ui_print_info_message($info_messsage);
 	
 	if (!$custom_field_exists) {

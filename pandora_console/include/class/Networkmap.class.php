@@ -403,6 +403,8 @@ class Networkmap extends Map {
 			
 			$filename_plain = sys_get_temp_dir() . "/plain.txt";
 			
+			
+			
 			switch ($this->generation_method) {
 				case MAP_GENERATION_CIRCULAR:
 					$graphviz_command = "circo";
@@ -414,10 +416,10 @@ class Networkmap extends Map {
 					$graphviz_command = "twopi";
 					break;
 				case MAP_GENERATION_SPRING1:
-					$graphviz_command = "spring1";
+					$graphviz_command = "neato";
 					break;
 				case MAP_GENERATION_SPRING2:
-					$graphviz_command = "spring2";
+					$graphviz_command = "fdp";
 					break;
 			}
 			

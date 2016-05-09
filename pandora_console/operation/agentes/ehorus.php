@@ -33,6 +33,7 @@ if (!$config['ehorus_enabled']) {
 
 /* Get the parameters */
 $agent_id = (int) get_parameter('id_agente');
+$client_tab = (string) get_parameter('client_tab');
 
 if (empty($agent_id)) {
 	ui_print_error_message(__('Missing agent id'));
@@ -126,9 +127,6 @@ catch (Exception $e) {
 	ui_print_error_message(__('There was an error processing the response'));
 }
 
-// Invalid permision
-// return;
-
 echo '<table id="ehorus-client-run-info" class="databox" style="width: 100%;"><tr>';
 echo '<td>';
 echo __('Remote management of this agent with eHorus');
@@ -137,49 +135,111 @@ echo '<input type="button" id="run-ehorus-client" class="sub next" value="' . __
 echo '</td>';
 echo '</tr></table>';
 
-echo '<div id="ehorus-client"></div>';
+echo '<div id="ehorus-client-iframe"></div>';
 
-ui_require_css_file('bootstrap.min', 'include/ehorus/css/');
-ui_require_css_file('style', 'include/ehorus/css/');
-ui_require_javascript_file('bundle.min', 'include/ehorus/');
+$query_data = array(
+	'agent_id' => $ehorus_agent_id,
+	'hostname' => (string) $agent_data['serverAddress'],
+	'port' => (int) $agent_data['serverPort'],
+	'token' => (string) $response_auth['token'],
+	'is_busy' => (bool) $agent_data['isBusy'],
+	'last_connection' => (int) $agent_data['lastConnection'],
+	'section' => $client_tab
+);
+$query = http_build_query($query_data);
+$client_url = $config['homeurl'] . 'operation/agentes/ehorus_client.php?' . $query;
+
 ?>
 
 <script type="text/javascript">
 	$(document).ready(function () {
-		var runClient = function () {
-			var agentID = '<?php echo $ehorus_agent_id; ?>';
-			var protocol = 'wss';
-			var hostname = '<?php echo $agent_data['serverAddress']; ?>';
-			var port = <?php echo $agent_data['serverPort']; ?>;
-			var token = '<?php echo $response_auth['token']; ?>';
-			var isBusy = <?php echo json_encode($agent_data['isBusy']); ?>;
-			var lastConnection = <?php echo json_encode($agent_data['lastConnection']); ?>;
+		var handleTabClick = function (section, messager) {
+			return function (event) {
+				event.preventDefault();
+				messager({
+					action: 'change_section',
+					payload: {
+						section: section
+					}
+				})
+			}
+		}
+		
+		var createIframe = function (node, src) {
+			var iframe = document.createElement('iframe');
+			iframe.src = src;
+			iframe.style.border = 'none';
+			resizeIframe(iframe);
+			node.appendChild(iframe);
 			
-			var eHorusProps = {
-				url: {
-					protocol,
-					hostname,
-					port,
-					slashes: true,
-					pathname: '',
-					search: 'auth=' + token
-				},
-				agentID: agentID,
-				agentLastContact: lastConnection,
-				agentIsBusy: isBusy,
-				header: false,
-				section: 'terminal',
-				handleDisconnect: function () {
-					console.log('Disconnect callback');
+			return iframe;
+		}
+		
+		var getOptimalIframeSize = function () {
+			var $elem = $('div#ehorus-client-iframe');
+			return {
+				width: $elem.width(),
+				height: $(window).height() - $elem.offset().top - 20
+			}
+		}
+		var resizeIframe = function (iframe) {
+			var size = getOptimalIframeSize();
+			iframe.style.width = size.width + 'px';
+			iframe.style.height = size.height + 'px';
+		}
+		var handleResize = function (iframe) {
+			return function (event) {
+				resizeIframe(iframe);
+			}
+		}
+		
+		var handleMessage = function (iframe, actionHandlers) {
+			return function (event) {
+				// The message source should be the created iframe
+				if (event.origin === window.location.origin &&
+					event.source !== iframe.contentWindow) {
+					return;
+				}
+				console.log('message from iframe', event.data);
+				if (typeof actionHandlers === 'undefined') return;
+				
+				if (event.data.action in actionHandlers) {
+					actionHandlers[event.data.action](event.data.payload);
 				}
 			}
-
-			var eHorus = new EHorus(eHorusProps);
-			eHorus.renderIn(document.getElementById('ehorus-client'));
 		}
-		$('input#run-ehorus-client').click(function () {
+		var messageToElement = function (elem, message) {
+			elem.postMessage(message, window.location.origin);
+		}
+		
+		var handleButtonClick = function (event) {
 			$('table#ehorus-client-run-info').remove();
-			runClient();
-		});
+			
+			// Init iframe
+			var clientURL = '<?php echo $client_url; ?>';
+			var iframe = createIframe(document.getElementById('ehorus-client-iframe'), clientURL);
+			
+			var messageToIframe = function (message) {
+				return messageToElement(iframe.contentWindow, message)
+			}
+			
+			var actionHandlers = {
+				ready: function () {
+					$('a.ehorus_tab').click(handleTabClick('system', messageToIframe));
+					$('a.tab_terminal').click(handleTabClick('terminal', messageToIframe));
+					$('a.tab_display').click(handleTabClick('display', messageToIframe));
+					$('a.tab_processes').click(handleTabClick('processes', messageToIframe));
+					$('a.tab_services').click(handleTabClick('services', messageToIframe));
+					$('a.tab_files').click(handleTabClick('files', messageToIframe));
+				}
+			}
+			
+			// Listen for messages
+			window.addEventListener('message', handleMessage(iframe, actionHandlers));
+			// Listen for resize
+			window.addEventListener('resize', handleResize(iframe));
+		}
+			
+		$('input#run-ehorus-client').click(handleButtonClick);
 	});
 </script>

@@ -99,7 +99,7 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 
 $buttons['ehorus'] = array('active' => false,
 	'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=ehorus">' .
-	html_print_image("images/operation.png", true, array ("title" => __('eHorus'))) . '</a>');
+	html_print_image("images/ehorus/ehorus.png", true, array ("title" => __('eHorus'))) . '</a>');
 
 $help_header = '';
 if (enterprise_installed()) {

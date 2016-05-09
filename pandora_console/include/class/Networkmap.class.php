@@ -424,7 +424,7 @@ class Networkmap extends Map {
 			}
 			
 			$cmd = "$graphviz_command " .
-			"-Tpng -o /tmp/caca.png -Tplain -o " . $filename_plain . " " .
+			" -Tplain -o " . $filename_plain . " " .
 				$filename_dot;
 			
 			system ($cmd);

@@ -28,6 +28,7 @@ $agent_id = (string) get_parameter_get('agent_id');
 $hostname = (string) get_parameter_get('hostname');
 $port = (int) get_parameter_get('port');
 $token = (string) get_parameter_get('token');
+$expiration = (int) get_parameter_get('expiration');
 $is_busy = (bool) get_parameter_get('is_busy');
 $last_connection = (int) get_parameter_get('last_connection');
 $section = (string) get_parameter_get('section');
@@ -92,7 +93,6 @@ $section = (string) get_parameter_get('section');
 					event.source !== window.parent) {
 					return;
 				}
-				console.log('message from parent', event.data);
 				if (typeof actionHandlers === 'undefined') return;
 				
 				if (event.data.action in actionHandlers) {
@@ -102,6 +102,7 @@ $section = (string) get_parameter_get('section');
 		}
 		
 		window.onload = function () {
+			var expiration = <?php echo $expiration; ?>;
 			// Start client
 			var ehorusContainer = document.getElementById('ehorus-client-container');
 			var eHorus = runClient(ehorusContainer, {
@@ -115,11 +116,21 @@ $section = (string) get_parameter_get('section');
 				section: '<?php echo $section; ?>'
 			});
 			
+			eHorus.remote.onClose(function () {
+				if (expiration && expiration < Date.now() / 1000) {
+					eHorus.remote.close();
+					// Send expired message
+					messageToParent({
+						action: 'expired',
+						payload: {}
+					});
+				}
+			});
+			
 			// Listen for messages
 			var actionHandlers = {
 				change_section: function (payload) {
 					eHorus.changeSection(payload.section);
-					console.log('Changing section', payload.section);
 				}
 			}
 			window.addEventListener('message', handleMessage(actionHandlers));

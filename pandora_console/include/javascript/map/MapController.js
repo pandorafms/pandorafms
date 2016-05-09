@@ -2510,8 +2510,8 @@ MapController.prototype.multiple_selection_select_nodes = function() {
 		if (!self.is_selecty(node))
 			return 1; // Continue
 		
-		var x = node.x;
-		var y = node.y;
+		var x = parseFloat(node.x);
+		var y = parseFloat(node.y);
 		
 		var node_bbox = null;
 		

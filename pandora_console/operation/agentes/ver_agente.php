@@ -928,28 +928,39 @@ if (enterprise_installed() && $config['log_collector']) {
 if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])) {
 	$ehorus_agent_id = agents_get_agent_custom_field($id_agente, $config['ehorus_custom_field']);
 	if (!empty($ehorus_agent_id)) {
-		$ehorus_tab['text'] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente.'" class="ehorus_tab">'
+		$tab_url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente;
+		$ehorus_tab['text'] = '<a href="'.$tab_url.'" class="ehorus_tab">'
 			. html_print_image ('images/operation.png', true, array ( 'title' => __('eHorus')))
 			. '</a>';
 		
 		// Hidden subtab layer
-		// $ehorus_tab['sub_menu'] =  '<ul class="mn subsubmenu" style="display:none; float:none;">';
-		// $ehorus_tab['sub_menu'] .=  '<li class="nomn tab_godmode" style="text-align: center;">';
-		// $ehorus_tab['sub_menu'] .=  '<a href="javascript:;">'
-		// 		. html_print_image ("images/wand_snmp.png", true, array ( "title" => __('SNMP Wizard')))
-		// 		. '</a>';
-		// $ehorus_tab['sub_menu'] .=  '</li>';
-		// $ehorus_tab['sub_menu'] .=  '<li class="nomn tab_godmode" style="text-align: center;">';
-		// $ehorus_tab['sub_menu'] .=  '<a href="javascript:;">'
-		// 		. html_print_image ("images/wand_interfaces.png", true, array ( "title" => __('SNMP Interfaces wizard')))
-		// 		. '</a>';
-		// $ehorus_tab['sub_menu'] .=  '</li>';
-		// $ehorus_tab['sub_menu'] .=  '<li class="nomn tab_godmode" style="text-align: center;">';
-		// $ehorus_tab['sub_menu'] .=  '<a href="javascript:;">'
-		// 		. html_print_image ("images/wand_wmi.png", true, array ( "title" => __('WMI Wizard')))
-		// 		. '</a>';
-		// $ehorus_tab['sub_menu'] .=  '</li>';
-		// $ehorus_tab['sub_menu'] .=  '</ul>';
+		$ehorus_tab['sub_menu'] = '<ul class="mn subsubmenu" style="float:none;">';
+		$ehorus_tab['sub_menu'] .= '<a class="tab_terminal" href="' . $tab_url . '&client_tab=terminal">';
+		$ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'
+			. html_print_image("images/wand_snmp.png", true, array( 'title' => __('Terminal')));
+		$ehorus_tab['sub_menu'] .= '</li>';
+		$ehorus_tab['sub_menu'] .= '</a>';
+		$ehorus_tab['sub_menu'] .= '<a class="tab_display" href="' . $tab_url . '&client_tab=display">';
+		$ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'
+			. html_print_image("images/wand_snmp.png", true, array( 'title' => __('VNC')));
+		$ehorus_tab['sub_menu'] .= '</li>';
+		$ehorus_tab['sub_menu'] .= '</a>';
+		$ehorus_tab['sub_menu'] .= '<a class="tab_processes" href="' . $tab_url . '&client_tab=processes">';
+		$ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'
+			. html_print_image("images/wand_snmp.png", true, array( 'title' => __('Processes')));
+		$ehorus_tab['sub_menu'] .= '</li>';
+		$ehorus_tab['sub_menu'] .= '</a>';
+		$ehorus_tab['sub_menu'] .= '<a class="tab_services" href="' . $tab_url . '&client_tab=services">';
+		$ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'
+			. html_print_image("images/wand_snmp.png", true, array( 'title' => __('Services')));
+		$ehorus_tab['sub_menu'] .= '</li>';
+		$ehorus_tab['sub_menu'] .= '</a>';
+		$ehorus_tab['sub_menu'] .= '<a class="tab_files" href="' . $tab_url . '&client_tab=files">';
+		$ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'
+			. html_print_image("images/wand_snmp.png", true, array( 'title' => __('Files')));
+		$ehorus_tab['sub_menu'] .= '</li>';
+		$ehorus_tab['sub_menu'] .= '</a>';
+		$ehorus_tab['sub_menu'] .= '</ul>';
 		
 		$ehorus_tab['active'] = $tab == 'ehorus';
 	}

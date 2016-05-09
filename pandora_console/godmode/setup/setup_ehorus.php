@@ -27,16 +27,16 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 }
 
 // Check custom field
-$custom_field_exists = false;
-if (!empty($config['ehorus_custom_field'])) {
-	$custom_field = db_get_value('name', 'tagent_custom_fields', 'name', $config['ehorus_custom_field']);
-	$custom_field_exists = !empty($custom_field);
-}
-$create_custom_field = (bool) get_parameter('create_custom_field');
-if ($create_custom_field) {
-	$result = (bool) db_process_sql_insert('tagent_custom_fields', array('name' => $config['ehorus_custom_field']));
-	ui_print_result_message($result, __('Custom field for eHorus ID created'), __('Error creating custom field'));
-	$custom_field_exists = $result;
+$custom_field = db_get_value('name', 'tagent_custom_fields', 'name', $config['ehorus_custom_field']);
+$custom_field_exists = !empty($custom_field);
+$custom_field_created = null;
+if ($config['ehorus_enabled'] && !$custom_field_exists) {
+	$values = array(
+		'name' => $config['ehorus_custom_field'],
+		'display_on_front' => 1
+	);
+	$result = (bool) db_process_sql_insert('tagent_custom_fields', $values);
+	$custom_field_exists = $custom_field_created = $result;
 }
 
 /* Enable table */
@@ -56,26 +56,6 @@ $row['control'] = __('Yes').'&nbsp;'.html_print_radio_button ('ehorus_enabled', 
 $row['control'] .= __('No').'&nbsp;'.html_print_radio_button ('ehorus_enabled', 0, '', $config['ehorus_enabled'], true);
 $row['button'] = html_print_submit_button(__('Update'), 'update_button', false, 'class="sub upd"', true);
 $table_enable->data['ehorus_enabled'] = $row;
-
-/* Agents config table */
-
-$table_agents = new StdClass();
-$table_agents->data = array();
-$table_agents->width = '100%';
-$table_agents->styleTable = 'margin-bottom: 10px;';
-$table_agents->id = 'ehorus-agents-setup';
-$table_agents->class = 'databox filters';
-$table_agents->size['name'] = '30%';
-$table_agents->style['name'] = 'font-weight: bold';
-
-// Custom Fields
-$row = array();
-$row['name'] = __('Custom field name');
-$row['control'] = html_print_input_text('ehorus_custom_field', $config['ehorus_custom_field'], '', 30, 100, true);
-$row['button'] = html_print_submit_button(__('Use'), 'use_custom_field', false, 'class="sub upd"', true);
-$row['button'] .= '&nbsp;' . html_print_submit_button(__('Create and use'), 'create_custom_field', false, 'class="sub upd"', true);
-$row['button'] .= ui_print_help_tip(__('The previous item will not be deleted or modified by performing this operations'), true);
-$table_agents->data['ehorus_custom_field'] = $row;
 
 /* Remote config table */
 
@@ -133,39 +113,39 @@ $table_remote->data['ehorus_test'] = $row;
 
 /* Print */
 
-// Form enable
-echo '<form id="form_enable" method="post">';
-if (!$config['ehorus_enabled']) {
-	$info_page = "http://ehorus.com/";
-	$link = '<a target="_blank" rel="noopener noreferrer" href="' . $info_page . '">this</a>';
-	$info_messsage = __('eHorus is a web based remote management system which allows you to easily connect to machines that have internet connection');
-	$info_messsage .= '. ' . __('Forget about firewalls and proxies');
-	$info_messsage .= '. ' . sprintf(__('Check %s for more info'), $link) . '.';
-	ui_print_info_message($info_messsage);
-}
-html_print_input_hidden('update_config', 1);
-html_print_table($table_enable);
-echo '</form>';
+echo '<div style="text-align: center; padding-bottom: 20px;">';
+echo '<a target="_blank" rel="noopener noreferrer" href="http://ehorus.com">';
+html_print_image('include/ehorus/images/ehorus-logo-grey.png');
+echo '</a>';
+echo '<br />';
+echo '<div style="font-family: lato, "Helvetica Neue", Helvetica, Arial, sans-serif; color: #515151;">';
+echo __('Remote Management System');
+echo '</div>';
+echo '<a target="_blank" rel="noopener noreferrer" href="http://ehorus.com">';
+echo 'http://ehorus.com';
+echo '</a>';
+echo '</div>';
 
-// Form agents
-if ($config['ehorus_enabled']) {
-	echo '<form id="form_agents" method="post">';
+if ($custom_field_created !== null) {
+	ui_print_result_message($custom_field_created, __('Custom field eHorusID created'), __('Error creating custom field'));
+}
+if ($custom_field_created) {
 	$info_messsage = __('eHorus has his own agent identifiers');
 	$info_messsage .= '. ' . __('To store them, it will be necessary to use an agent custom field');
 	$info_messsage .= '.<br />' . __('Possibly the eHorus id will have to be filled in by hand for every agent') . '.';
 	ui_print_info_message($info_messsage);
-	
-	if (!$custom_field_exists) {
-		$error_message = __('The custom field does not exists already');
-		ui_print_error_message($error_message);
-	}
-	echo "<fieldset>";
-	echo "<legend>" . __('Pandora agents') . "</legend>";
-	html_print_input_hidden('update_config', 1);
-	html_print_table($table_agents);
-	echo "</fieldset>";
-	echo '</form>';
 }
+
+if ($config['ehorus_enabled'] && !$custom_field_exists) {
+	$error_message = __('The custom field does not exists already');
+	ui_print_error_message($error_message);
+}
+
+// Form enable
+echo '<form id="form_enable" method="post">';
+html_print_input_hidden('update_config', 1);
+html_print_table($table_enable);
+echo '</form>';
 
 // Form remote
 if ($config['ehorus_enabled']) {
@@ -185,11 +165,9 @@ if ($config['ehorus_enabled']) {
 
 <script type="text/javascript">
 	var showFields = function () {
-		$('form#form_agents').show();
 		$('form#form_remote').show();
 	}
 	var hideFields = function () {
-		$('form#form_agents').hide();
 		$('form#form_remote').hide();
 	}
 	var handleEnable = function (event) {

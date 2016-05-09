@@ -456,7 +456,7 @@ else {
 		
 		$url_edit = 'index.php?' .
 			'sec=maps&amp;' .
-			'sec2=operation/maps/networkmap_list&' .
+			'sec2=operation/maps/networkmap_editor&' .
 			'edit_networkmap=1&id_networkmap=' . $networkmap['id'];
 		if (is_metaconsole()) {
 			$url_edit = 'index.php?' .

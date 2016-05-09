@@ -1455,6 +1455,9 @@ function config_process_config () {
 	if (!isset($config['ehorus_enabled'])) {
 		config_update_value('ehorus_enabled', 0);
 	}
+	if (!isset($config['ehorus_custom_field'])) {
+		config_update_value('ehorus_custom_field', 'eHorusID');
+	}
 	if (!isset($config['ehorus_hostname'])) {
 		config_update_value('ehorus_hostname', 'switch.ehorus.com');
 	}

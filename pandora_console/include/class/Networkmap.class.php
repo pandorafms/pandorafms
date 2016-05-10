@@ -454,7 +454,17 @@ class Networkmap extends Map {
 	}
 	
 	public function show() {
-		$this->getNodes();
+		foreach ($this->nodes as $i => $node) {
+			$this->nodes[$i]['title'] = 
+				ui_print_truncate_text(
+					$node['title'],
+					GENERIC_SIZE_TEXT,
+					false,
+					true,
+					false,
+					'...',
+					false);
+		}
 		
 		parent::show();
 	}

@@ -901,7 +901,14 @@ NetworkmapController.prototype.paint_node = function(g_node, node) {
 	
 	d3_node_title
 		.text(node['title'])
-		.style("fill", "#000000");
+		.style("fill", "#000000")
+		.style("font-size", "9px")
+		.style("font-style", "normal")
+		.style("font-weight", "normal")
+		.style("line-height", "125%")
+		.style("letter-spacing", "0px")
+		.style("word-spacing", "0px")
+		.style("font-family", "Sans");
 	
 	//Title position
 	var title_bbox = d3_node_title.node().getBBox();

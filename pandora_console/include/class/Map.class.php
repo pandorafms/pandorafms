@@ -257,6 +257,9 @@ abstract class Map {
 		$contants["DEFAULT_NODE_WIDTH"] = DEFAULT_NODE_WIDTH;
 		$contants["DEFAULT_NODE_HEIGHT"] = DEFAULT_NODE_HEIGHT;
 		
+		
+		$contants["GENERIC_SIZE_TEXT"] = GENERIC_SIZE_TEXT;
+		
 		?>
 		<script type="text/javascript">
 			<?php

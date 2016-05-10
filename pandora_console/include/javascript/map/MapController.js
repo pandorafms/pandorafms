@@ -2018,6 +2018,8 @@ MapController.prototype.events = function() {
 						
 						
 						self.last_event = "relationship";
+						
+						self.hide_help_text_in_pointer();
 					}
 					
 					self.remove_selection_nodes();
@@ -2064,6 +2066,7 @@ MapController.prototype.events = function() {
 					self._relationship_in_progress = true;
 					self.move_temp_arrows(node,
 						self._relationship_in_progress_type);
+					self.show_help_text_in_pointer();
 				});
 			}
 		});
@@ -2221,6 +2224,55 @@ MapController.prototype.move_temp_arrows = function(node, type) {
 	
 	
 	self.arrow_by_pieces(self._target + " svg", temp_arrow, 0);
+}
+
+MapController.prototype.hide_help_text_in_pointer = function() {
+	var self = this;
+	
+	d3.select(self._target + " .help_text_pointer").remove();
+}
+
+MapController.prototype.show_help_text_in_pointer = function() {
+	var self = this;
+	
+	var zoom = d3.transform(
+		d3.select(self._target + " .viewport").attr("transform"));
+	
+	var x = self._last_mouse_position[0]/ zoom.scale[0]
+		- zoom.translate[0] / zoom.scale[0];
+		
+	var y = self._last_mouse_position[1]/ zoom.scale[1]
+		- zoom.translate[1] / zoom.scale[1];
+	
+	var help_text_pointer = d3.select(self._target + " .help_text_pointer");
+	
+	if (help_text_pointer.node() == null) {
+		help_text_pointer = d3.select(self._target + " svg").append("g")
+			.attr("class", "help_text_pointer");
+			
+		
+		var rect_background_help=
+			help_text_pointer.append("rect").attr("class", ".rect_background_help");
+		
+		help_text_pointer.append("text")
+			.text("Click in anynode to link")
+			.attr("x", 3).attr("y", 12);
+		
+		var bbox = help_text_pointer.node().getBBox()
+		
+		rect_background_help.attr("x", 0).attr("y", 0)
+			.attr("height", bbox.height)
+			.attr("width", bbox.width + 5)
+			.attr("style", "opacity:1;fill:#feffb4;fill-opacity:1;stroke:#808080;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1");
+	}
+	
+	
+	var transform = d3.transform();
+	
+	transform.translate[0] = x;
+	transform.translate[1] = y + 20; // Under the mouse pointer
+	
+	help_text_pointer.attr("transform", transform.toString());
 }
 
 /**

@@ -2530,7 +2530,7 @@ NetworkmapController.prototype.apply_edit_node = function(data_graph_id) {
 	
 	var node = self.get_node(id_graph);
 	
-	node['title'] = new_label;
+	node['title'] = truncate_title(new_label);
 	node['shape'] = new_shape;
 	
 	self.get_nodes_map()[node['index_node']] = node;
@@ -2549,3 +2549,25 @@ NetworkmapController.prototype.apply_edit_node = function(data_graph_id) {
 		self.apply_edit_node_save(id_graph, new_label, new_shape);
 	}
 }
+
+// ---------------------------------------------------------------------
+// --- Functions -------------------------------------------------------
+// ---------------------------------------------------------------------
+function truncate_title(text) {
+	
+	if (text.length > GENERIC_SIZE_TEXT) {
+		var half_length = parseInt((GENERIC_SIZE_TEXT - 3) / 2);
+		var return_var;
+		
+		var truncate_text = text.substring(0, half_length);
+		var truncate_text2 = text.substring(text.length - half_length);
+		
+		return_var = truncate_text + "..." + truncate_text2;
+		
+		return return_var;
+	}
+	else {
+		return text;
+	}
+}
+// ---------------------------------------------------------------------

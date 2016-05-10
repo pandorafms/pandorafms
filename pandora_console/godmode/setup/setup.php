@@ -97,6 +97,10 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	}
 }
 
+$buttons['ehorus'] = array('active' => false,
+	'text' => '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=ehorus">' .
+	html_print_image("images/ehorus/ehorus.png", true, array ("title" => __('eHorus'))) . '</a>');
+
 $help_header = '';
 if (enterprise_installed()) {
 	$subpage = setup_enterprise_add_subsection_main($section, $buttons, $help_header);
@@ -123,6 +127,10 @@ switch ($section) {
 	case 'net':
 		$buttons['net']['active'] = true;
 		$subpage = ' &raquo ' . __('Netflow');
+		break;
+	case 'ehorus':
+		$buttons['ehorus']['active'] = true;
+		$subpage = ' &raquo ' . __('eHorus');
 		break;
 }
 
@@ -155,6 +163,9 @@ switch ($section) {
 		break;
 	case "vis":
 		require_once($config['homedir'] . "/godmode/setup/setup_visuals.php");
+		break;
+	case "ehorus":
+		require_once($config['homedir'] . "/godmode/setup/setup_ehorus.php");
 		break;
 	default:
 		enterprise_hook('setup_enterprise_select_tab', array($section));

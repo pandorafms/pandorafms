@@ -537,7 +537,7 @@ if (is_ajax ()) {
 		$table->data = array();
 		$table->data[0][0] = __('Label');
 		$table->data[0][1] = html_print_input_text('label',
-			$node_label, '', 12, 10, true);
+			$node_label, '', 12, 255, true);
 		$table->data[1][0] = __('Shape');
 		$table->data[1][1] = html_print_select(array(
 			'circle' => __('Circle'),

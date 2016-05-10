@@ -41,6 +41,7 @@ require_once($config['homedir'] .'/include/functions_maps.php');
 
 if (enterprise_installed()) {
 	require_once ($config['homedir'].'/enterprise/include/functions_migration.php');
+	require_once ($config['homedir'].'/enterprise/include/functions_networkmap_enterprise.php');
 }
 
 
@@ -341,7 +342,7 @@ else {
 		
 		if (enterprise_installed()) {
 			if ($networkmap['generated']) {
-				$data['nodes'] = maps_get_count_nodes($networkmap['id']);
+				$data['nodes'] = networkmap_enterprise_get_count_nodes($networkmap['id']);
 			}
 			else {
 				$data['nodes'] = __('Pending to generate');

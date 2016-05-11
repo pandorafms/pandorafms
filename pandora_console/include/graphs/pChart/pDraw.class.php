@@ -1850,6 +1850,7 @@
          $Data["Axis"][$AxisID]["Min"] = $AxisMin-$AutoMargin; $Data["Axis"][$AxisID]["Max"] = $AxisMax+$AutoMargin;
         }
        $MaxDivs = floor($Height/$MinDivHeight);
+       if ($MaxDivs == 0) { $MaxDivs = 1;}
 
        if ( $Mode == SCALE_MODE_ADDALL_START0 ) { $Data["Axis"][$AxisID]["Min"] = 0; }
 

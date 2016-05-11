@@ -47,6 +47,7 @@ require ('include/functions_visual_map.php');
 
 $hash = get_parameter ('hash');
 $id_layout = (int) get_parameter ('id_layout');
+$graph_javascript = (bool) get_parameter('graph_javascript');
 $config["id_user"] = get_parameter ('id_user');
 
 $myhash = md5($config["dbpass"].$id_layout. $config["id_user"]);
@@ -79,7 +80,7 @@ $options = array();
 echo '<div style="width: 95%; background: white; margin: 20px auto 20px auto; box-shadow: 10px 10px 5px #000;">';
 echo "<h1>" . $layout_name . "</h1>";
 
-visual_map_print_visual_map ($id_layout, true, true, null, null, '../../', true);
+visual_map_print_visual_map ($id_layout, true, true, null, null, '../../', true, $graph_javascript);
 
 $values = array ();
 $values[5] = human_time_description_raw (5);

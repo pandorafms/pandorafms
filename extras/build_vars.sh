@@ -10,9 +10,6 @@ CONSOLEHOME=$CODEHOME/pandora_console
 CONSOLEHOME_ENT=$CODEHOME_ENT/pandora_console
 
 function get_current_branch {
-	cd "$CODEHOME" || return ""
-	BRANCH=`git branch 2>/dev/null | grep \* | awk '{print $2}'`
-	cd -
-	return $BRANCH
+	echo `cd "$CODEHOME" && git branch 2>/dev/null | grep \* | awk '{print $2}'`
 }
 

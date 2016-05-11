@@ -259,6 +259,8 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 		
 		if (arrow_to !== null && arrow_from !== null) {
 			// There is one arrow for A-M-M-A
+			
+			// Get arrow with full data (nodes and arrow)
 			arrow_to = self.get_arrow_from_id(arrow_to['graph_id']);
 			arrow_to = self.get_arrow(
 				arrow_to['to'], arrow_to['from']);
@@ -266,16 +268,17 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 			arrow_from = self.get_arrow(
 				arrow_from['to'], arrow_from['from']);
 			
+			// Make the new id with concatenate the id_to + id_mm + id_from
 			arrow['graph_id'] = arrow_to['arrow']['graph_id'] + "" +
 				arrow_MM['arrow']['graph_id'] + "" +
 				arrow_from['arrow']['graph_id'];
 			
 			
-			if (arrow_to['nodes']['to'] == arrow_MM['arrow']['to']) {
-				arrow['to'] = arrow_to['nodes']['from'];
+			if (arrow_to['nodes']['from'] == arrow_MM['arrow']['to']) {
+				arrow['to'] = arrow_to['nodes']['to'];
 			}
 			else {
-				arrow['to'] = arrow_to['nodes']['to'];
+				arrow['to'] = arrow_to['nodes']['from'];
 			}
 			arrow['to_module'] = arrow_MM['nodes']['to']['id'];
 			arrow['to_status'] = arrow_MM['nodes']['to']['status'];

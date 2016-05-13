@@ -545,13 +545,7 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 				
 				$module_groups[$agent['id_node']] = array();
 				
-				//~ html_debug("---------------modules-------------------");
-				//~ foreach ($modules as $module) {
-					//~ html_debug(
-						//~ $module['id_agente'] . "|" .
-						//~ $module['id_agente_modulo'] . "|" .
-						//~ $module['nombre']);
-				//~ }
+				
 				
 				
 				// Parse modules
@@ -702,16 +696,7 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 			}
 			
 			
-			//~ html_debug("----------------------------------------");
-			//~ html_debug("------------nodes-----------------------");
-			//~ foreach($nodes as $node_id => $node) {
-				//~ if ($node['type'] == 'agent')
-					//~ html_debug($node_id . "|AGENT|" . $node["id_agente"] . "(" . $node['id_parent'] . ")" . $node['nombre']);
-				//~ elseif ($node['type'] == 'module')
-					//~ html_debug($node_id . "|MODULE|" . $node['id_agente_modulo'] . "(" . $node['id_agente'] . ")" . $node['nombre']);
-			//~ }
-			//~ html_debug("------------parents---------------------");
-			//~ html_debug($parents);
+			
 		}
 	} // End if ($show_agents)
 	
@@ -729,7 +714,7 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 					if ($show_snmp_modules) {
 						$module_type = modules_get_agentmodule_type($id_module);
 						if ($module_type != 18) {
-							//~ html_debug("unset111 " . $id_module);
+							
 							
 							unset($nodes[$node_count]);
 							unset($orphans[$node_count]);
@@ -737,7 +722,7 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 						}
 					}
 					else {
-						//~ html_debug("unset222 " . $id_module . " | " . $node_count);
+						
 						
 						unset($nodes[$node_count]);
 						unset($orphans[$node_count]);
@@ -747,7 +732,7 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 				else {
 					$module_type = modules_get_agentmodule_type($id_module);
 					if ($module_type != 18) {
-						//~ html_debug("unset333 " . $id_module);
+						
 						
 						unset($nodes[$node_count]);
 						unset($orphans[$node_count]);
@@ -772,8 +757,7 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 		}
 		
 		
-		//~ html_debug("--------result parents---------------------------");
-		//~ html_debug($parents);
+		
 	}
 	else if ($l2_network) {
 		foreach ($modules_node_ref as $id_module => $node_count) {
@@ -868,8 +852,6 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 	//------------------------------------------------------------------
 	// INIT Relations between the nodes
 	//------------------------------------------------------------------
-	//~ html_debug("------------modules_node_ref-------------------------");
-	//~ html_debug($modules_node_ref);
 	foreach ($modules_node_ref as $id_module => $id_node) {
 		$relations = db_get_all_rows_sql(
 			"SELECT module_b AS id_module
@@ -883,8 +865,7 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 		$id_module_type = modules_get_agentmodule_type($id_module);
 		$agent_id = modules_get_agentmodule_agent($id_module);
 		
-		//~ html_debug("------relations-----");
-		//~ html_debug($relations);
+		
 		
 		foreach ($relations as $relation) {
 			$id_module_relation = $relation['id_module'];
@@ -893,13 +874,13 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 				modules_get_agentmodule_type($id_module_relation);
 			$agent_id_relation = modules_get_agentmodule_agent($id_module_relation);
 			
-			//~ html_debug_print($id_module_type."~".$id_module_type_relation);
+			
 			
 			if ($id_module_type == 18 && $id_module_type_relation == 18) {
-				//~ html_debug(111);
+				
 				if (isset($modules_node_ref[$id_module]) &&
 					isset($modules_node_ref[$id_module_relation])) {
-					//~ html_debug(222);
+					
 					
 					$exists =
 						networkmap_check_exists_edge_between_nodes(
@@ -910,7 +891,7 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 					
 					if (!$exists) {
 						if (empty($edges[$modules_node_ref[$id_module]])) {
-							//~ html_debug(333);
+							
 							$edges[$modules_node_ref[$id_module]] = 
 								$modules_node_ref[$id_module_relation];
 						}
@@ -919,9 +900,7 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 							
 							
 							
-							//~ html_debug(444);
-							//~ html_debug($id_module . "|" . $modules_node_ref[$id_module]
-								//~ . "|" . $edges[$modules_node_ref[$id_module]]);
+							
 							$edges[$modules_node_ref[$id_module]] =
 								(array)$edges[$modules_node_ref[$id_module]];
 							$edges[$modules_node_ref[$id_module]][] = 
@@ -935,7 +914,7 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 				if ($l2_network_or_mixed !== 'mix_l2_l3') {
 					if (isset($node_ref[$agent_id]) &&
 						isset($node_ref[$agent_id_relation])) {
-							//~ html_debug(111111);
+						
 						
 						$exists =
 							networkmap_check_exists_edge_between_nodes(
@@ -946,13 +925,13 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 						
 						if (!$exists) {
 							if (empty($edges[$node_ref[$agent_id]])) {
-								//~ html_debug(111222);
+								
 								
 								$edges[$node_ref[$agent_id]] = 
 									$node_ref[$agent_id_relation];
 							}
 							else {
-								//~ html_debug(111333);
+								
 								
 								
 								
@@ -1005,14 +984,7 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 			elseif ($id_module_type_relation == 6 && $id_module_type == 18) {
 				if (isset($node_ref[$agent_id_relation]) &&
 					isset($modules_node_ref[$id_module])) {
-						//~ html_debug(222111);
 					
-					//~ elseif ($module_b_type == 6 && $module_a_type == 18) {
-			//~ if (isset($node_ref[$agent_b]) &&
-				//~ isset($modules_node_ref[$module_a])) {
-				//~ 
-				//~ $edges[$node_ref[$agent_b]] = $modules_node_ref[$module_a];
-			//~ }
 					
 					
 					$exists =
@@ -1025,13 +997,13 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 					
 					if (!$exists) {
 						if (empty($edges[$node_ref[$agent_id_relation]])) {
-							//~ html_debug(222222);
+							
 							
 							$edges[$node_ref[$agent_id_relation]] =
 								$modules_node_ref[$id_module];
 						}
 						else {
-							//~ html_debug(222333);
+							
 							
 							
 							
@@ -1049,7 +1021,7 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 				}
 			}
 			
-			//~ html_debug($edges);
+			
 			
 		}
 	}
@@ -1107,16 +1079,7 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 		//~ }
 	//~ }
 	
-	//~ html_debug("-----------GENERATE_DOT------------------------------");
-	//~ html_debug("-----------nodes-------------------------------------");
-	//~ foreach($nodes as $node_id => $node) {
-		//~ if ($node['type'] == 'agent')
-			//~ html_debug($node_id . "|AGENT|" . $node["id_agente"] . "|" . $node['nombre']);
-		//~ elseif ($node['type'] == 'module')
-			//~ html_debug($node_id . "|MODULE|" . $node['id_agente_modulo'] . "|" . $node['id_agente'] . "|" . $node['nombre']);
-	//~ }
-	//~ html_debug("-----------edges-------------------------------------");
-	//~ html_debug($edges);
+	
 	
 	return array("nodes" => $nodes, "edges" => $edges, "orphans" => $orphans);
 }
@@ -1167,8 +1130,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		$show_all_modules, $only_modules_alerts, $filter_module_group,
 		$show_modulegroup, $show_groups, $show_agents, $show_policies);
 	
-	//~ html_debug("networkmap_data", true);
-	//~ html_debug($networkmap_data, true);
+	
 	
 	if ($l2_network_or_mixed === 'mix_l2_l3') {
 		$l2_network = true;

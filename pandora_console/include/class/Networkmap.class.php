@@ -61,8 +61,7 @@ class Networkmap extends Map {
 	}
 	
 	protected function generateDot($graph, $positions) {
-		//~ html_debug($graph, true);
-		//~ html_debug($positions, true);
+		
 		
 		$graph = preg_replace('/^graph .*/', '', $graph);
 		
@@ -456,8 +455,7 @@ class Networkmap extends Map {
 	public function show() {
 		$this->getNodes();
 		
-		//~ html_debug($this->nodes, true);
-		//~ html_debug($this->edges, true);
+		
 		
 		foreach ($this->nodes as $i => $node) {
 			$this->nodes[$i]['title'] = 

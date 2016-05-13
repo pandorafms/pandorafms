@@ -924,6 +924,47 @@ if (enterprise_installed() && $config['log_collector']) {
 	}
 }
 
+/* eHorus tab */
+if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])) {
+	$ehorus_agent_id = agents_get_agent_custom_field($id_agente, $config['ehorus_custom_field']);
+	if (!empty($ehorus_agent_id)) {
+		$tab_url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente;
+		$ehorus_tab['text'] = '<a href="'.$tab_url.'" class="ehorus_tab">'
+			. html_print_image ('images/ehorus/ehorus.png', true, array ( 'title' => __('eHorus')))
+			. '</a>';
+		
+		// Hidden subtab layer
+		$ehorus_tab['sub_menu'] = '<ul class="mn subsubmenu" style="float:none;">';
+		$ehorus_tab['sub_menu'] .= '<a class="tab_terminal" href="' . $tab_url . '&client_tab=terminal">';
+		$ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'
+			. html_print_image("images/ehorus/terminal.png", true, array( 'title' => __('Terminal')));
+		$ehorus_tab['sub_menu'] .= '</li>';
+		$ehorus_tab['sub_menu'] .= '</a>';
+		$ehorus_tab['sub_menu'] .= '<a class="tab_display" href="' . $tab_url . '&client_tab=display">';
+		$ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'
+			. html_print_image("images/ehorus/vnc.png", true, array( 'title' => __('VNC')));
+		$ehorus_tab['sub_menu'] .= '</li>';
+		$ehorus_tab['sub_menu'] .= '</a>';
+		$ehorus_tab['sub_menu'] .= '<a class="tab_processes" href="' . $tab_url . '&client_tab=processes">';
+		$ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'
+			. html_print_image("images/ehorus/processes.png", true, array( 'title' => __('Processes')));
+		$ehorus_tab['sub_menu'] .= '</li>';
+		$ehorus_tab['sub_menu'] .= '</a>';
+		$ehorus_tab['sub_menu'] .= '<a class="tab_services" href="' . $tab_url . '&client_tab=services">';
+		$ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'
+			. html_print_image("images/ehorus/services.png", true, array( 'title' => __('Services')));
+		$ehorus_tab['sub_menu'] .= '</li>';
+		$ehorus_tab['sub_menu'] .= '</a>';
+		$ehorus_tab['sub_menu'] .= '<a class="tab_files" href="' . $tab_url . '&client_tab=files">';
+		$ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'
+			. html_print_image("images/ehorus/files.png", true, array( 'title' => __('Files')));
+		$ehorus_tab['sub_menu'] .= '</li>';
+		$ehorus_tab['sub_menu'] .= '</a>';
+		$ehorus_tab['sub_menu'] .= '</ul>';
+		
+		$ehorus_tab['active'] = $tab == 'ehorus';
+	}
+}
 
 $onheader = array('manage' => $managetab,
 	'main' => $maintab, 
@@ -946,6 +987,10 @@ if ($agent['url_address'] != '') {
 // If the log viewer tab exists
 if (isset($log_viewer_tab) && !empty($log_viewer_tab)) {
 	$onheader['log_viewer'] = $log_viewer_tab;
+}
+// If the ehorus id exists
+if (isset($ehorus_tab) && !empty($ehorus_tab)) {
+	$onheader['ehorus'] = $ehorus_tab;
 }
 
 //Tabs for extensions
@@ -1039,6 +1084,9 @@ switch($tab) {
 	case "url_address":
 		$header_description = ' - ' . __('Url address');
 		break;
+	case "ehorus":
+		$header_description = ' - ' . __('eHorus');
+		break;
 }
 
 ui_print_page_header(agents_get_name($id_agente) .
@@ -1091,6 +1139,9 @@ switch ($tab) {
 	case "log_viewer":
 		$embebed_into_agent_view = true;
 		enterprise_include ("operation/log/log_viewer.php");
+		break;
+	case "ehorus":
+		require("operation/agentes/ehorus.php");
 		break;
 	case "extension":
 		$found = false;

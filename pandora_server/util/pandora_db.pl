@@ -33,7 +33,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "6.1dev PS160505";
+my $version = "6.1dev PS160513";
 
 # Pandora server configuration
 my %conf;
@@ -638,6 +638,11 @@ sub pandora_load_config ($) {
 	$conf->{'dbport'} = '3306' unless defined ($conf->{'dbport'});
 	$conf->{'claim_back_snmp_modules'} = '1' unless defined ($conf->{'claim_back_snmp_modules'});
 
+    # Dynamic interval configuration.                                                                                                                             
+	$conf->{"dynamic_constant"} = 0.10 unless defined($conf->{"dynamic_constant"});
+	$conf->{"dynamic_warning"} = 0.10 unless defined($conf->{"dynamic_warning"});
+	$conf->{"dynamic_updates"} = 5 unless defined($conf->{"dynamic_updates"});
+
 	# workaround for name unconsistency (corresponding entry at pandora_server.conf is 'errorlog_file')
         $conf->{'errorlogfile'} = $conf->{'errorlog_file'};
         $conf->{'errorlogfile'} = "/var/log/pandora_server.error" unless defined ($conf->{'errorlogfile'});
@@ -1007,6 +1012,9 @@ sub pandoradb_main ($$$) {
 
 	# Move SNMP modules back to the Enterprise server
 	enterprise_hook("claim_back_snmp_modules", [$dbh, $conf]);
+
+	# Recalculating dynamic intervals.
+	enterprise_hook("update_min_max", [$dbh, $conf]);
 
 	log_message ('', "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 }

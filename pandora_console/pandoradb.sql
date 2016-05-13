@@ -244,6 +244,8 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`dynamic_interval` int(4) unsigned default '0',
 	`dynamic_max` int(4) default '0',
 	`dynamic_min` int(4) default '0',
+	`dynamic_next` bigint(20) NOT NULL default '0',
+	`dynamic_two_tailed` tinyint(1) unsigned default '0',
 	`prediction_sample_window` int(10) default 0,
 	`prediction_samples` int(4) default 0,
 	`prediction_threshold` int(4) default 0,

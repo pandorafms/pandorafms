@@ -300,6 +300,19 @@ class Networkmap extends Map {
 		
 		$this->nodes = $nodes;
 		$this->edges = $edges;
+		
+		html_debug("--------------nodes------------------------", true);
+		$lines = "";
+		foreach ($nodes as $n) {
+			$lines .= $n['graph_id']."|".$n['id']."(".$n['id_agent'].")"."|".$n['type']."|".$n['title']."\n";
+		}
+		html_debug($lines, true);
+		html_debug("--------------edges------------------------", true);
+		$lines = "";
+		foreach ($edges as $e) {
+			$lines .= $e['to']."|".$e['from']."\n";
+		}
+		html_debug($lines, true);
 	}
 	
 	public function getSourceGroup() {

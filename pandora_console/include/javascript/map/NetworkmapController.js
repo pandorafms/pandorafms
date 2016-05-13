@@ -248,6 +248,32 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 		console.log("arrows_to", arrows_to);
 		console.log("arrows_from", arrows_from);
 		
+		//--------------------------------------------------------------
+		//------ INIT CODE -- get arrow A-M from M-M --------------------
+		//--------------------------------------------------------------
+		var arrow_to = null;
+		$.each(arrows_to, function(i, arw) {
+			if (arw['graph_id'] != arrow_MM['arrow']['graph_id']) {
+				node = null;
+				
+				if (arw['to'] == arrow_MM['arrow']['to']) {
+					node = self.get_node(arw['from']);
+				}
+				else if (arw['from'] == arrow_MM['arrow']['to']) {
+					node = self.get_node(arw['to']);
+				}
+				
+				if (node['type'] == ITEM_TYPE_AGENT_NETWORKMAP &&
+					node['id'] == arrow_MM['nodes']['to']['id_agent']) {
+					
+					arrow_to = node;
+				}
+			}
+		});
+		//--------------------------------------------------------------
+		//------ END CODE --- get arrow A-M from M-M --------------------
+		//--------------------------------------------------------------
+		
 		var temp = null;
 		$.each(arrows_to, function(i, arrow_to) {
 			if (arrow_to['graph_id'] != arrow_MM['arrow']['graph_id']) {

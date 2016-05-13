@@ -1544,9 +1544,36 @@ MapController.prototype.events_for_minimap = function() {
 		.on("mouseout", function(d) {
 			self._over = null;
 		})
+		//~ .on("mousedown", function(d) {
+			//~ console.log("minimap mousedown");
+			//~ d3.event.stopPropagation();
+			//~ d3.event.preventDefault();
+		//~ })
+		//~ .on("mouseup", function(d) {
+			//~ console.log("minimap mouseup");
+			//~ d3.event.stopPropagation();
+			//~ d3.event.preventDefault();
+		//~ })
 		.on("click", function(d) {
+			//~ console.log("minimap click");
+			
 			self.minimap_panning_map();
 		});
+	
+	var drag = d3.behavior.drag()
+		.origin(function(d) { return d; })
+		.on("dragstart", function(d) {
+			console.log("dragstart minimap");
+			//~ self.event_resize("dragstart", item, d);
+		})
+		.on("drag", function(d) {
+			console.log("drag minimap");
+		})
+		.on("dragend", function(d) {
+			console.log("dragend minimap");
+		});
+	
+	d3.select(self._target + " .minimap .viewport").call(drag);
 }
 
 /**
@@ -2071,7 +2098,7 @@ MapController.prototype.events = function() {
 			}
 		});
 	
-	setTimeout(function() { self.refresh_map();}, self._refresh_time);
+	//~ setTimeout(function() { self.refresh_map();}, self._refresh_time);
 }
 
 /**
@@ -3175,7 +3202,14 @@ function get_distance_between_point(point1, point2) {
 * This function returns the center of the node
 */
 function get_center_element(element) {
-	var element_t = d3.transform(d3.select(element).attr("transform"));
+	var element_t;
+	try {
+		element_t = d3.transform(d3.select(element).attr("transform"));
+	}
+	catch(err) {
+		console.log(element, err);
+	}
+	//~ var element_t = d3.transform(d3.select(element).attr("transform"));
 	var element_t_scale = parseFloat(element_t['scale']);
 	var element_b = d3.select(element).node().getBBox();
 	

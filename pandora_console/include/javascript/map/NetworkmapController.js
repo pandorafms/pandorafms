@@ -40,6 +40,9 @@ NetworkmapController.prototype.init_map = function() {
 	var self = this;
 	var clean_arrows = [];
 	
+	console.log(self.get_nodes_map());
+	console.log(self.get_edges_map());
+	
 	$.each(self.get_edges_map(), function(i, edge) {
 		var arrow_AF_or_FF = self.get_arrow_AF_or_FF(edge['to'], edge['from']);
 		if (arrow_AF_or_FF !== null) {
@@ -58,6 +61,7 @@ NetworkmapController.prototype.init_map = function() {
 		var arrow_AMMA = self.get_arrow_AMMA(edge['to'], edge['from']);
 		if (arrow_AMMA !== null) {
 			if (!self.exists_arrow(clean_arrows, arrow_AMMA)) {
+				console.log(arrow_AMMA);
 				clean_arrows.push(arrow_AMMA);
 			}
 		}
@@ -220,6 +224,7 @@ NetworkmapController.prototype.filter_only_agents = function(node) {
 * This function returns an AMMA arrow
 */
 NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
+	console.log("--------------------get_arrow_AMMA-----------------------");
 	var self = this;
 	
 	var return_var = null;
@@ -230,14 +235,18 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 	
 	if ((self.get_node_type(id_to) == ITEM_TYPE_MODULE_NETWORKMAP)
 		&& (self.get_node_type(id_from) == ITEM_TYPE_MODULE_NETWORKMAP)) {
-			
+		
 		var arrow_MM = self.get_arrow(id_to, id_from);
 		
+		console.log("arrow_MM", arrow_MM);
 		
 		var arrows_to = self
 			.get_edges_from_node(arrow_MM['nodes']['to']['graph_id']);
 		var arrows_from = self
 			.get_edges_from_node(arrow_MM['nodes']['from']['graph_id']);
+		
+		console.log("arrows_to", arrows_to);
+		console.log("arrows_from", arrows_from);
 		
 		var temp = null;
 		$.each(arrows_to, function(i, arrow_to) {
@@ -257,6 +266,7 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 		});
 		var arrow_from = temp;
 		
+		
 		if (arrow_to !== null && arrow_from !== null) {
 			// There is one arrow for A-M-M-A
 			
@@ -264,9 +274,13 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 			arrow_to = self.get_arrow_from_id(arrow_to['graph_id']);
 			arrow_to = self.get_arrow(
 				arrow_to['to'], arrow_to['from']);
+			
 			arrow_from = self.get_arrow_from_id(arrow_from['graph_id']);
 			arrow_from = self.get_arrow(
 				arrow_from['to'], arrow_from['from']);
+			
+			console.log("arrow_to", arrow_to);
+			console.log("arrow_from", arrow_from);
 			
 			// Make the new id with concatenate the id_to + id_mm + id_from
 			arrow['graph_id'] = arrow_to['arrow']['graph_id'] + "" +

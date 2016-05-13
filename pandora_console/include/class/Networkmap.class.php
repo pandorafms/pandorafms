@@ -456,6 +456,9 @@ class Networkmap extends Map {
 	public function show() {
 		$this->getNodes();
 		
+		//~ html_debug($this->nodes, true);
+		//~ html_debug($this->edges, true);
+		
 		foreach ($this->nodes as $i => $node) {
 			$this->nodes[$i]['title'] = 
 				ui_print_truncate_text(

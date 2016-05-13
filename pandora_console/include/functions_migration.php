@@ -79,7 +79,7 @@ function migration_open_networkmaps() {
 				$filter['show_agents'] = 1;
 				break;
 			case 'all':
-				$filter['show_modules'] = 1;
+				$filter['show_modules'] = 0;
 				$filter['show_agents'] = 1;
 				break;
 			case 'groups':

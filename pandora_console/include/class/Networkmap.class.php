@@ -311,16 +311,17 @@ class Networkmap extends Map {
 		
 		$return['id_group'] = $this->source_group;
 		$return['simple'] = 0; // HARD CODED
-		$return['font_size'] = null;
-		$return['layout'] = null;
+		$return['font_size'] = 12; // HARD CODED
+		$return['layout'] = "radial"; // HARD CODED
 		$return['nooverlap'] = false; // HARD CODED
 		$return['zoom'] = 1; // HARD CODED
 		$return['ranksep'] = 2.5; // HARD CODED
 		$return['center'] = 0; // HARD CODED
-		$return['regen'] = 0; // HARD CODED
+		$return['regen'] = 1; // HARD CODED
 		$return['pure'] = 0; // HARD CODED
 		$return['id'] = $this->id;
 		$return['show_snmp_modules'] = $this->filter['only_snmp_modules'];
+		$return['cut_names'] = 0; // HARD CODED
 		$return['l2_network_interfaces'] = true; // HARD CODED
 		$return['ip_mask'] = $this->source_ip_mask;
 		$return['dont_show_subgroups'] = false;
@@ -377,7 +378,7 @@ class Networkmap extends Map {
 				$parameters['pure'],
 				$parameters['id'],
 				$parameters['show_snmp_modules'],
-				false, //cut_names
+				$parameters['cut_names'],
 				true, // relative
 				$this->filter['text'],
 				'mix_l2_l3',

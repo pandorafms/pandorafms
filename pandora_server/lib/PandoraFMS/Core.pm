@@ -4217,11 +4217,7 @@ sub pandora_process_event_replication ($) {
 	}
 	
 	# Get server id on metaconsole
-	my $server_name = get_first_server_name($dbh);
-	my $metaconsole_server_id = -1;
-	if($server_name ne '') {
-		$metaconsole_server_id = enterprise_hook('get_metaconsole_setup_server_id', [$dbh_metaconsole,$server_name]);
-	}
+	my $metaconsole_server_id = enterprise_hook('get_metaconsole_setup_server_id', [$dbh_metaconsole, safe_input($pa_config->{'servername'})]);
 
 	# If the server name is not found in metaconsole setup: abort
 	if($metaconsole_server_id == -1) {

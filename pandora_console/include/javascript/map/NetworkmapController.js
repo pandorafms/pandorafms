@@ -287,9 +287,10 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 		//------ END CODE --- get arrows A-M from M-M ------------------
 		//--------------------------------------------------------------
 		
-		
 		if (arrow_to !== null && arrow_from !== null) {
 			// There is one arrow for A-M-M-A
+			
+			
 			
 			// Get arrow with full data (nodes and arrow)
 			arrow_to = self.get_arrow_from_id(arrow_to['graph_id']);
@@ -305,8 +306,7 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 				arrow_MM['arrow']['graph_id'] + "" +
 				arrow_from['arrow']['graph_id'];
 			
-			
-			if (arrow_to['nodes']['from'] == arrow_MM['arrow']['to']) {
+			if (arrow_to['arrow']['from'] == arrow_MM['arrow']['to']) {
 				arrow['to'] = arrow_to['nodes']['to'];
 			}
 			else {
@@ -316,8 +316,7 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 			arrow['to_status'] = arrow_MM['nodes']['to']['status'];
 			arrow['to_title'] = arrow_MM['nodes']['to']['title'];
 			
-			
-			if (arrow_from['nodes']['to'] == arrow_MM['arrow']['from']) {
+			if (arrow_from['arrow']['to'] == arrow_MM['arrow']['from']) {
 				arrow['from'] = arrow_from['nodes']['from'];
 			}
 			else {

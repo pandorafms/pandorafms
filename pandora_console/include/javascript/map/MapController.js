@@ -34,6 +34,8 @@ var MapController = function(target, refresh_time) {
 /*-----------------------------------------------*/
 MapController.prototype._id = null;
 MapController.prototype._viewport = null;
+MapController.prototype._viewport_nodes = null;
+MapController.prototype._viewport_edges = null;
 MapController.prototype._minimap_viewport = null;
 MapController.prototype._minimap = null;
 MapController.prototype._zoomManager = null;
@@ -89,6 +91,12 @@ MapController.prototype.init_map = function() {
 		.call(self._zoomManager)
 		.append("g")
 			.attr("class", "viewport");
+	
+	self._viewport_edges = self._viewport.append("g")
+		.attr("class", "viewport_edges");
+	
+	self._viewport_nodes = self._viewport.append("g")
+		.attr("class", "viewport_nodes");
 	
 	self._minimap = svg
 		.append("g")

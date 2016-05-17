@@ -985,7 +985,7 @@ NetworkmapController.prototype.paint_node = function(g_node, node) {
 NetworkmapController.prototype.paint_nodes = function() {
 	var self = this;
 	
-	self._viewport.selectAll(".node")
+	self._viewport_nodes.selectAll(".node")
 		.data(
 			self.get_nodes_map()
 				.filter(function(d, i) {
@@ -1004,7 +1004,7 @@ NetworkmapController.prototype.paint_nodes = function() {
 NetworkmapController.prototype.paint_arrows = function() {
 	var self = this;
 	
-	var arrow_layouts = self._viewport.selectAll(".arrow")
+	var arrow_layouts = self._viewport_edges.selectAll(".arrow")
 		.data(self.get_edges_map())
 		.enter()
 			.append("g")

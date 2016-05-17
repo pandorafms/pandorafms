@@ -861,6 +861,8 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 			SELECT module_a AS id_module
 			FROM tmodule_relationship
 			WHERE module_b =  " . $id_module);
+		if (empty($relations))
+			$relations = array();
 		
 		$id_module_type = modules_get_agentmodule_type($id_module);
 		$agent_id = modules_get_agentmodule_agent($id_module);

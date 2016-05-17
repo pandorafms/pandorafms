@@ -3284,8 +3284,16 @@ function get_size_element(element) {
 * This function returns the element radius
 */
 function get_radius_element(element) {
-	var size = get_size_element(element);
-	
-	return Math.sqrt(
-		Math.pow(size[0] / 2, 2) + Math.pow(size[1] / 2, 2));
+	// Hack for the circle items
+	if (!d3.select(element + " .layout_size_node circle").empty()) {
+		return parseFloat(
+			d3.select(element + " .layout_size_node circle").attr("r"));
+	}
+	else {
+		//~ var size = get_size_element(element);
+		var size = get_size_element(element + " .layout_size_node");
+		
+		return Math.sqrt(
+			Math.pow(size[0] / 2, 2) + Math.pow(size[1] / 2, 2));
+	}
 }

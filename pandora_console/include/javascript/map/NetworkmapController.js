@@ -904,9 +904,15 @@ NetworkmapController.prototype.paint_node = function(g_node, node) {
 		.attr("data-status", node['status'])
 		.attr("data-status_color", node['color']);
 	
+	var d3_node_icon = d3_node.append("g")
+		.attr("class", "icon")
+		.attr("class", "layout_size_node");
+	var d3_node_title_layout = d3_node.append("g")
+		.attr("class", "title");
+	
 	switch (node['shape']) {
 		case 'square':
-			d3_node.append("rect")
+			d3_node_icon.append("rect")
 				.attr("height", node['height'])
 				.attr("width", node['width'])
 				.attr("x", 0)
@@ -915,7 +921,7 @@ NetworkmapController.prototype.paint_node = function(g_node, node) {
 				.style("stroke-width", 1);
 			break;
 		case 'circle':
-			d3_node.append("circle")
+			d3_node_icon.append("circle")
 				.attr("r", node['width'] / 2)
 				.attr("transform", "translate(" +
 					node['width'] / 2 + " " +
@@ -924,7 +930,7 @@ NetworkmapController.prototype.paint_node = function(g_node, node) {
 				.style("stroke-width", 1);
 			break;
 		case 'rhombus':
-			d3_node.append("rect")
+			d3_node_icon.append("rect")
 				.attr("transform",
 					"rotate(45 " + (node['width'] / 2) + " " + (node['height'] / 2) + " )")
 				.attr("height", node['height'])
@@ -937,7 +943,7 @@ NetworkmapController.prototype.paint_node = function(g_node, node) {
 	}
 	
 	// Title
-	var d3_node_title = d3_node.append("text");
+	var d3_node_title = d3_node_title_layout.append("text");
 	
 	d3_node_title
 		.text(node['title'])
@@ -962,7 +968,7 @@ NetworkmapController.prototype.paint_node = function(g_node, node) {
 	d3_node
 		.style("fill", node['color']);
 	
-	d3_node
+	d3_node_icon
 		.append("image")
 		.attr("xlink:href", node['image'])
 		.attr("x", NODE_IMAGE_PADDING)

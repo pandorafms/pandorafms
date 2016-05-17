@@ -1116,7 +1116,7 @@ MapController.prototype.paint_resize_square = function(item, wait) {
 			d3.xml("images/maps/square_selection.svg", "application/xml", function(xml) {
 				var nodes = xml
 					.evaluate("//*[@id='square_selection']/*", xml, null, XPathResult.ANY_TYPE, null);
-				var result = self.get_nodes_map().iterateNext();
+				var result = nodes.iterateNext();
 				
 				resize_square
 					.append("g").attr("class", "square_selection")

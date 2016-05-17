@@ -74,11 +74,11 @@ $table->class = 'databox data';
 
 $table->head = array();
 $table->head['icon'] = '';
-$table->head[0] = __('Label') . ' / ' . __('Agent') . ' / ' . __('Group');
-$table->head[1] = __('Image') . ' / ' . __('Module');
+$table->head[0] = __('Label') . '<br>' . __('Agent') . ' / ' . __('Group');
+$table->head[1] = __('Image') . '<br>' . __('Module') . ' / ' .  __('Custom graph');
 $table->head[2] = __('Width x Height<br>Max value');
-$table->head[3] = __('Period') . ' / ' . __('Position');
-$table->head[4] = __('Parent') . ' / ' . __('Map linked');
+$table->head[3] = __('Position') . '<br>' . __('Period');
+$table->head[4] = __('Parent') . '<br>' . __('Map linked');
 $table->head[5] = "";
 $table->head[5] .= '&nbsp;&nbsp;&nbsp;' . html_print_checkbox('head_multiple_delete',
 	'', false, true, false, 'toggle_checkbox_multiple_delete();');
@@ -373,7 +373,11 @@ foreach ($layoutDatas as $layoutData) {
 					$params['value'] = agents_get_name($layoutData['id_agent']);
 				}
 				
-				$table->data[$i + 2][0] = ui_print_agent_autocomplete_input($params);
+				if ($layoutData['id_agent'] == 0 and $layoutData['id_custom_graph'] != 0) {
+					$table->data[$i + 2][0] = __("Custom graph");
+				} else {
+					$table->data[$i + 2][0] = ui_print_agent_autocomplete_input($params);
+				}
 			}
 			else {
 				$table->data[$i + 2][0] = $cell_content_enterprise;
@@ -416,10 +420,16 @@ foreach ($layoutDatas as $layoutData) {
 				
 				$modules = io_safe_output($modules);
 				
-				$table->data[$i + 2][1] = html_print_select($modules,
-					'module_' . $idLayoutData,
-					$layoutData['id_agente_modulo'], '', '---', 0, true,
-					false, true, '', false, "width: 120px");
+				if ($layoutData['id_agent'] == 0 and $layoutData['id_custom_graph'] != 0) {
+					$table->data[$i + 2][1] = html_print_select_from_sql(
+							"SELECT id_graph, name FROM tgraph", 'custom_graph_' . $idLayoutData,
+							$layoutData['id_custom_graph'], '', __('None'), 0, true);
+				} else {
+					$table->data[$i + 2][1] = html_print_select($modules,
+						'module_' . $idLayoutData,
+						$layoutData['id_agente_modulo'], '', '---', 0, true,
+						false, true, '', false, "width: 120px");
+				}
 			}
 			else {
 				$table->data[$i + 2][1] = $cell_content_enterprise;

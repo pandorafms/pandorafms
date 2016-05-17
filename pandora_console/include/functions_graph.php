@@ -1609,9 +1609,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					$temp[$module]['min'] = ($min == 0 ) ? 0 : $min;
 					$temp[$module]['max'] = ($max == 0 ) ? 100 : $max;
 				}
-				$temp[$module]['gauge'] = "gauge_" . $i;
-				$i++;
-				
+				$temp[$module]['gauge'] = uniqid('gauge_');
 				
 				if ($config['metaconsole']) {
 					// Automatic custom graph from the report template in metaconsole
@@ -1619,6 +1617,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 						metaconsole_restore_db();
 					}
 				}
+				$i++;
 			}
 			break;
 		default:

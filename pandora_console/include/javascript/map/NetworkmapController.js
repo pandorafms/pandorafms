@@ -910,14 +910,18 @@ NetworkmapController.prototype.paint_node = function(g_node, node) {
 				.attr("height", node['height'])
 				.attr("width", node['width'])
 				.attr("x", 0)
-				.attr("y", 0);
+				.attr("y", 0)
+				.style("stroke", "#000000")
+				.style("stroke-width", 1);
 			break;
 		case 'circle':
 			d3_node.append("circle")
 				.attr("r", node['width'] / 2)
 				.attr("transform", "translate(" +
 					node['width'] / 2 + " " +
-					node['height'] / 2 + ")");
+					node['height'] / 2 + ")")
+				.style("stroke", "#000000")
+				.style("stroke-width", 1);
 			break;
 		case 'rhombus':
 			d3_node.append("rect")
@@ -927,6 +931,8 @@ NetworkmapController.prototype.paint_node = function(g_node, node) {
 				.attr("width", node['width'])
 				.attr("x", 0)
 				.attr("y", 0)
+				.style("stroke", "#000000")
+				.style("stroke-width", 1);
 			break;
 	}
 	

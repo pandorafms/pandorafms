@@ -61,7 +61,6 @@ NetworkmapController.prototype.init_map = function() {
 		var arrow_AMMA = self.get_arrow_AMMA(edge['to'], edge['from']);
 		if (arrow_AMMA !== null) {
 			if (!self.exists_arrow(clean_arrows, arrow_AMMA)) {
-				console.log(arrow_AMMA);
 				clean_arrows.push(arrow_AMMA);
 			}
 		}
@@ -224,7 +223,6 @@ NetworkmapController.prototype.filter_only_agents = function(node) {
 * This function returns an AMMA arrow
 */
 NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
-	console.log("--------------------get_arrow_AMMA-----------------------");
 	var self = this;
 	
 	var return_var = null;
@@ -238,18 +236,13 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 		
 		var arrow_MM = self.get_arrow(id_to, id_from);
 		
-		console.log("arrow_MM", arrow_MM);
-		
 		var arrows_to = self
 			.get_edges_from_node(arrow_MM['nodes']['to']['graph_id']);
 		var arrows_from = self
 			.get_edges_from_node(arrow_MM['nodes']['from']['graph_id']);
 		
-		console.log("arrows_to", arrows_to);
-		console.log("arrows_from", arrows_from);
-		
 		//--------------------------------------------------------------
-		//------ INIT CODE -- get arrow A-M from M-M --------------------
+		//------ INIT CODE -- get arrows A-M from M-M ------------------
 		//--------------------------------------------------------------
 		var arrow_to = null;
 		$.each(arrows_to, function(i, arw) {
@@ -266,31 +259,33 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 				if (node['type'] == ITEM_TYPE_AGENT_NETWORKMAP &&
 					node['id'] == arrow_MM['nodes']['to']['id_agent']) {
 					
-					arrow_to = node;
+					arrow_to = arw;
+				}
+			}
+		});
+		
+		var arrow_from = null;
+		$.each(arrows_from, function(i, arw) {
+			if (arw['graph_id'] != arrow_MM['arrow']['graph_id']) {
+				node = null;
+				
+				if (arw['to'] == arrow_MM['arrow']['from']) {
+					node = self.get_node(arw['from']);
+				}
+				else if (arw['from'] == arrow_MM['arrow']['from']) {
+					node = self.get_node(arw['to']);
+				}
+				
+				if (node['type'] == ITEM_TYPE_AGENT_NETWORKMAP &&
+					node['id'] == arrow_MM['nodes']['from']['id_agent']) {
+					
+					arrow_from = arw;
 				}
 			}
 		});
 		//--------------------------------------------------------------
-		//------ END CODE --- get arrow A-M from M-M --------------------
+		//------ END CODE --- get arrows A-M from M-M ------------------
 		//--------------------------------------------------------------
-		
-		var temp = null;
-		$.each(arrows_to, function(i, arrow_to) {
-			if (arrow_to['graph_id'] != arrow_MM['arrow']['graph_id']) {
-				temp = arrow_to;
-				return false;
-			}
-		});
-		var arrow_to = temp;
-		
-		temp = null;
-		$.each(arrows_from, function(i, arrow_from) {
-			if (arrow_from['graph_id'] != arrow_MM['arrow']['graph_id']) {
-				temp = arrow_from;
-				return false;
-			}
-		});
-		var arrow_from = temp;
 		
 		
 		if (arrow_to !== null && arrow_from !== null) {
@@ -304,9 +299,6 @@ NetworkmapController.prototype.get_arrow_AMMA = function(id_to, id_from) {
 			arrow_from = self.get_arrow_from_id(arrow_from['graph_id']);
 			arrow_from = self.get_arrow(
 				arrow_from['to'], arrow_from['from']);
-			
-			console.log("arrow_to", arrow_to);
-			console.log("arrow_from", arrow_from);
 			
 			// Make the new id with concatenate the id_to + id_mm + id_from
 			arrow['graph_id'] = arrow_to['arrow']['graph_id'] + "" +

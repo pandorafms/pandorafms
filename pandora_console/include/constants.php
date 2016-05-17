@@ -469,4 +469,8 @@ define("ID_USER_IN_PANDORA", "eduPersonTargetedId");
 define("GROUP_IN_PANDORA", "schacHomeOrganization");
 define("MAIL_IN_PANDORA", "mail");
 
+/* Transactional map constants */
+define("NODE_TYPE", 0);
+define("ARROW_TYPE", 1);
+
 ?>

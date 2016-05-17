@@ -143,6 +143,9 @@ class Networkmap extends Map {
 					
 					preg_match("/<img src=\"(.*)\" \/>/", $other_chunks[0], $matches);
 					$image = $matches[1];
+					
+					$width = $width / 2;
+					$height = $height / 2;
 				}
 				elseif ($is_node_group) {
 					preg_match("/<TR><TD>(.*)<\/TD><\/TR><\/TABLE>>/", $other_chunks[0], $matches);
@@ -156,6 +159,9 @@ class Networkmap extends Map {
 					
 					preg_match("/<img src=\"(.*)\" \/>/", $other_chunks[0], $matches);
 					$image = $matches[1];
+					
+					$width = $width / 2;
+					$height = $height / 2;
 				}
 				elseif ($is_node_module_group) {
 					preg_match("/<TR><TD>(.*)<\/TD><\/TR><\/TABLE>>/", $chunks[1], $matches);
@@ -171,6 +177,9 @@ class Networkmap extends Map {
 					
 					//The module group has not icon.
 					$image = "";
+					
+					$width = $width / 2;
+					$height = $height / 2;
 				}
 				elseif (strstr($other_chunks[1], "&id_module=") !== false) {
 					// MODULE
@@ -184,6 +193,9 @@ class Networkmap extends Map {
 					
 					preg_match("/<img src=\"(.*)\" \/>/", $other_chunks[0], $matches);
 					$image = $matches[1];
+					
+					$width = $width / 2;
+					$height = $height / 2;
 				}
 				else {
 					// AGENT

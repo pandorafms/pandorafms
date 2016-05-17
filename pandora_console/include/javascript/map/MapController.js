@@ -63,7 +63,23 @@ MapController.prototype._enabled_minimap = true;
 MapController.prototype.init_map = function() {
 	var self = this;
 	
+	width_svg = $("#map_" + self._id).width();
+	if ($("#main").height()) {
+		height_svg = $("#main").height();
+	}
+	else {
+		//Set the height in the pure view (fullscreen).
+		
+		height_svg = $(window).height() -
+			$("#menu_tab_frame_view").height() -
+			20; // 20 of margin
+	}
+	
 	var svg = d3.select(self._target + " svg");
+	
+	svg
+		.attr("width", width_svg)
+		.attr("height", height_svg)
 	
 	self._zoomManager =
 		d3.behavior.zoom()

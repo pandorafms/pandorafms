@@ -183,7 +183,7 @@ abstract class Map {
 			
 			
 			?>
-			<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" pointer-events="all" width="<?php echo $width;?>" height="<?php echo $height;?>">
+			<svg id="svg_map_<?php echo $this->id;?>" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" pointer-events="all" width="<?php echo $width;?>" height="<?php echo $height;?>">
 			<?php
 			$this->embedded_symbols_for_firefox();
 			?>

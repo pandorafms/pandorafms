@@ -1186,12 +1186,28 @@ NetworkmapController.prototype.arrow_by_pieces_AMMA = function (target, arrow_da
 				.attr("class", "head");
 			var arrow_head_title = arrow_layout.append("g")
 				.attr("class", "head_title");
-			arrow_head_title.append("text").text(arrow_data['to_title']);
+			arrow_head_title.append("text").text(arrow_data['to_title'])
+				.style("fill", "#000000")
+				.style("font-size", "9px")
+				.style("font-style", "normal")
+				.style("font-weight", "normal")
+				.style("line-height", "125%")
+				.style("letter-spacing", "0px")
+				.style("word-spacing", "0px")
+				.style("font-family", "Sans");
 			var arrow_tail = arrow_layout.append("g")
 				.attr("class", "tail");
 			var arrow_tail_title = arrow_layout.append("g")
 				.attr("class", "tail_title");
-			arrow_tail_title.append("text").text(arrow_data['from_title']);
+			arrow_tail_title.append("text").text(arrow_data['from_title'])
+				.style("fill", "#000000")
+				.style("font-size", "9px")
+				.style("font-style", "normal")
+				.style("font-weight", "normal")
+				.style("line-height", "125%")
+				.style("letter-spacing", "0px")
+				.style("word-spacing", "0px")
+				.style("font-family", "Sans");
 			
 			$.each(symbols, function (i, s) {
 				if (is_buggy_firefox) {

@@ -2114,7 +2114,7 @@ MapController.prototype.events = function() {
 			}
 		});
 	
-	//~ setTimeout(function() { self.refresh_map();}, self._refresh_time);
+	setTimeout(function() { self.refresh_map();}, self._refresh_time);
 }
 
 /**

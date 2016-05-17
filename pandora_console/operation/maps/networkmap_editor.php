@@ -393,11 +393,11 @@ else {
 		'', '', 'twopi', true, false, true, '',
 		$disabled_select_generation);
 	
-	$table->data['size'][0] = __('Size of networkmap (Width x Height)');
-	$table->data['size'][1] = html_print_input_text ('width', $width, '', 4,
-		10,true) . " x ";
-	$table->data['size'][1] .= html_print_input_text ('height', $height, '',
-		4, 10,true);
+	//~ $table->data['size'][0] = __('Size of networkmap (Width x Height)');
+	//~ $table->data['size'][1] = html_print_input_text ('width', $width, '', 4,
+		//~ 10,true) . " x ";
+	//~ $table->data['size'][1] .= html_print_input_text ('height', $height, '',
+		//~ 4, 10,true);
 	
 	$table->data[7][0] = __('Refresh time');
 	$table->data[7][1] = html_print_input_text ('source_period',

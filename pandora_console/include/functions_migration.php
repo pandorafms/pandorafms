@@ -34,6 +34,7 @@ function migration_open_networkmaps() {
 			io_safe_output($old_netw_open['name']);
 		$new_networkmap['id_user'] = $old_netw_open['id_user'];
 		$new_networkmap['id_group'] = $old_netw_open['store_group'];
+		$new_networkmap['source_period'] = MAP_REFRESH_TIME;
 		
 		switch ($old_netw_open['type']) {
 			case 'radial_dynamic':

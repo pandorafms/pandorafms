@@ -43,7 +43,11 @@ function menu_print_menu (&$menu) {
 	}
 	
 	//Open list of menu
-	echo '<ul'.(isset ($menu['class']) ? ' class="'.$menu['class'].'"' : '').'>';
+	echo '<ul' .
+		(isset ($menu['class']) ?
+			' class="'.$menu['class'].'"' :
+			'') .
+		'>';
 	
 	foreach ($menu as $mainsec => $main) {
 		$extensionInMenuParameter = (string) get_parameter ('extension_in_menu','');
@@ -59,9 +63,9 @@ function menu_print_menu (&$menu) {
 		if ($mainsec == 'class')
 			continue;
 		
-		if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec)) == false)
-			continue;
-
+		//~ if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec)) == false)
+			//~ continue;
+		
 		if (! isset ($main['id'])) {
 			$id = 'menu_'.++$idcounter;
 		}
@@ -108,7 +112,10 @@ function menu_print_menu (&$menu) {
 			
 			$subsec2 = io_safe_output($subsec2);
 			// Choose valid suboptions (sec2)
-			if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $subsec2)) == false) {
+			$check_2 = true;
+			if (isset($sub['sub2']))
+				$check_2 = false;
+			if (enterprise_hook ('enterprise_acl', array ($config['id_user'], $mainsec, $subsec2, $check_2)) == false) {
 				continue;
 			}
 			
@@ -129,7 +136,7 @@ function menu_print_menu (&$menu) {
 				
 				//This hacks avoid empty delimiter error when sec2 is not provided.
 				if (!$sec2) {
-					$sec2=" ";
+					$sec2 = " ";
 				}
 				
 				//Check if some submenu was selected to mark this (the parent) as selected
@@ -168,6 +175,8 @@ function menu_print_menu (&$menu) {
 				}
 			}
 			
+			
+			
 			//Set class
 			if (($sec2 == $subsec2 || $allsec2 == $subsec2 ||
 				$selected_submenu2) && isset ($sub[$subsec2]["options"])
@@ -190,10 +199,17 @@ function menu_print_menu (&$menu) {
 				else
 					$visible = false;
 			}
+			elseif (isset($sub['pages']) && (array_search($sec2, $sub['pages']) !== false)) {
+				$class .= 'submenu_selected selected';
+				$menu_selected = true;
+				$selected = true;
+				$visible = true;
+			}
 			else {
 				//Else it's not selected
 				$class .= 'submenu_not_selected';
 			}
+			
 			if (! isset ($sub["refr"])) {
 				$sub["refr"] = 0;
 			}
@@ -285,8 +301,16 @@ function menu_print_menu (&$menu) {
 					$title = '';
 				}
 				
-				$submenu_output .= '<a href="index.php?'.$extensionInMenu.'sec='.$secUrl.'&amp;sec2='.$subsec2.($sub["refr"] ? '&amp;refr=' .
-										$sub["refr"] : '').$link_add.'"' . $title . '><div class="' . $sub_tree_class . '">'.$sub["text"].'</div></a>';
+				$submenu_output .= '<a href="index.php?' .
+					$extensionInMenu .
+					'sec=' . $secUrl . '&amp;' .
+					'sec2=' . $subsec2 .
+					($sub["refr"] ?
+						'&amp;refr=' . $sub["refr"] :
+						'') .
+					$link_add . '"' . $title . '>' .
+					'<div class="' . $sub_tree_class . '">'.$sub["text"].'</div>' .
+					'</a>';
 				
 				if (isset($sub['sub2'])) {
 					//$submenu_output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));
@@ -298,7 +322,7 @@ function menu_print_menu (&$menu) {
 			if (isset($sub['sub2'])) {
 				
 				//Display if father is selected
-				$display = "style='display:none'";
+				$display = "style='display:none;'";
 				
 				if ($selected) {
 					$display = "";
@@ -455,9 +479,12 @@ function menu_add_extras(&$menu) {
 	$menu_extra['galertas']['sub']['godmode/alerts/configure_alert_template']['text'] = __('Configure alert template');
 	
 	$menu_extra['network']['sub']['operation/agentes/networkmap']['text'] = __('Manage network map');
+	$menu_extra['network']['sub']['operation/visual_console/render_view']['text'] = __('View visual console');
+	$menu_extra['network']['sub']['godmode/reporting/visual_console_builder']['text'] = __('Builder visual console');
+	
+	$menu_extra['eventos']['sub']['godmode/events/events']['text'] = __('Administration events');
 	
 	$menu_extra['reporting']['sub']['operation/reporting/reporting_viewer']['text'] = __('View reporting');
-	$menu_extra['reporting']['sub']['operation/visual_console/render_view']['text'] = __('View visual console');
 	$menu_extra['reporting']['sub']['godmode/reporting/graph_builder']['text'] = __('Manage custom graphs');
 	$menu_extra['reporting']['sub']['enterprise/dashboard/dashboard_replicate']['text'] = __('Copy dashboard');
 	
@@ -481,7 +508,9 @@ function menu_add_extras(&$menu) {
 	$menu_extra['estado']['sub']['godmode/snmpconsole/snmp_alert']['text'] = __('SNMP alerts');
 	$menu_extra['estado']['sub']['godmode/snmpconsole/snmp_filters']['text'] = __('SNMP filters');
 	$menu_extra['estado']['sub']['enterprise/godmode/snmpconsole/snmp_trap_editor']['text'] = __('SNMP trap editor');
-	$menu_extra['estado']['sub']['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
+	$menu_extra['estado']['sub']['snmpconsole']['sub2']['godmode/snmpconsole/snmp_trap_generator']['text'] = __('SNMP trap generator');
+	
+	$menu_extra['estado']['sub']['snmpconsole']['sub2']['operation/snmpconsole/snmp_view']['text'] = __('SNMP console');
 	
 	$menu_extra['workspace']['sub']['operation/incidents/incident_detail']['text'] = __('Manage incident');
 	

@@ -89,8 +89,10 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$sub2["operation/snmpconsole/snmp_view"]["text"] = __("SNMP console");
 	$sub2["operation/snmpconsole/snmp_browser"]["text"] = __("SNMP browser");
 	$sub2["operation/snmpconsole/snmp_mib_uploader"]["text"] = __("MIB uploader");
-	$sub2["godmode/snmpconsole/snmp_filters"]["text"] = __("SNMP filters");
-	$sub2["godmode/snmpconsole/snmp_trap_generator"]["text"] = __("SNMP trap generator");
+	if (check_acl ($config['id_user'], 0, "LW")) {
+		$sub2["godmode/snmpconsole/snmp_filters"]["text"] = __("SNMP filters");
+		$sub2["godmode/snmpconsole/snmp_trap_generator"]["text"] = __("SNMP trap generator");
+	}
 	enterprise_hook ('snmpconsole_submenu');
 	$sub["snmpconsole"]["sub2"] = $sub2;
 	

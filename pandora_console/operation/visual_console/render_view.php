@@ -91,12 +91,12 @@ if (! $vconsole_read) {
 $options = array();
 
 $options['consoles_list']['text'] =
-	'<a href="index.php?sec=reporting&sec2=godmode/reporting/map_builder&refr=' . $refr . '">' .
+	'<a href="index.php?sec=network&sec2=godmode/reporting/map_builder&refr=' . $refr . '">' .
 	html_print_image ("images/visual_console.png", true,
 		array ("title" => __('Visual consoles list'))) . '</a>';
 
 if ($vconsole_write || $vconsole_manage) {
-	$url_base = 'index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&action=';
+	$url_base = 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&action=';
 	
 	$hash = md5($config["dbpass"] . $id_layout . $config["id_user"]);
 	

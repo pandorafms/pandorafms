@@ -124,7 +124,12 @@ echo '<div id="login_in">';
 				'', 'class="login login_password" placeholder="'.__('Password').'"', false, true);
 			echo '</div>';
 			echo '<div class="login_button">';
-			html_print_submit_button(__("Login"), "login_button", false, 'class="sub next_login"');
+			if ($config['auth'] == 'saml') {
+				html_print_submit_button(__("Login with SAML"), "login_button_saml", false, 'class="sub login_boton"');
+			}
+			else {
+				html_print_submit_button(__("Login"), "login_button", false, 'class="sub next_login"');
+			}
 			echo '</div>';
 			break;
 		case 'logout':

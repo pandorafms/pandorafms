@@ -288,14 +288,14 @@ if (! isset ($config['id_user'])) {
 			$nick_in_db = $_SESSION["prepared_login_da"]['id_user'];
 			$expired_pass = false;
 		}
-		else if (($config['auth'] == 'saml') && $login_button_saml) {
-			if (is_user_admin($nick)) {
-				$nick_in_db = $nick;
-			}
-			else {
-				include_once(ENTERPRISE_DIR . "/include/auth/saml.php");
-				$saml_user_id = saml_process_user_login();
-				$nick_in_db = $saml_user_id;
+		else if (($config['auth'] == 'saml') && $login_button_saml && !is_user_admin($nick)) {
+			include_once(ENTERPRISE_DIR . "/include/auth/saml.php");
+			$saml_user_id = saml_process_user_login();
+			$nick_in_db = $saml_user_id;
+			if (!$nick_in_db) {
+				require_once('/opt/simplesamlphp/lib/_autoload.php');
+				$as = new SimpleSAML_Auth_Simple('example-userpass');
+				$as->logout();
 			}
 		}
 		else {

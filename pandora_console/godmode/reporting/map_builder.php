@@ -230,7 +230,7 @@ $filters['offset'] = $offset;
 $filters['limit'] = $pagination;
 $own_info = get_user_info ($config['id_user']);
 if (!defined('METACONSOLE')) {
-	$url = 'index.php?sec=reporting&amp;sec2=godmode/reporting/map_builder&pagination='.$pagination;
+	$url = 'index.php?sec=network&amp;sec2=godmode/reporting/map_builder&pagination='.$pagination;
 }
 else {
 	$url = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&pagination='.$pagination;
@@ -267,7 +267,7 @@ else {
 		$data = array ();
 		
 		if (!defined('METACONSOLE')) {
-			$data[0] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.
+			$data[0] = '<a href="index.php?sec=network&amp;sec2=operation/visual_console/render_view&amp;id='.
 				$map['id'].'&amp;refr=' . $refr . '">'.$map['name'].'</a>';
 		}
 		else {
@@ -282,8 +282,8 @@ else {
 		if ($vconsole_write || $vconsole_manage) {
 			
 			if (!defined('METACONSOLE')) {
-				$data[3] = '<a class="copy_visualmap" href="index.php?sec=reporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
-				$data[4] = '<a class="delete_visualmap" href="index.php?sec=reporting&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image ("images/cross.png", true).'</a>';
+				$data[3] = '<a class="copy_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
+				$data[4] = '<a class="delete_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image ("images/cross.png", true).'</a>';
 			}
 			else {
 				$data[3] = '<a class="copy_visualmap" href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
@@ -303,7 +303,7 @@ if ($maps) {
 if ($maps || defined("METACONSOLE")) {
 	if ($vconsoles_write || $vconsoles_manage) {
 		if (!defined('METACONSOLE')) {
-			echo '<form action="index.php?sec=reporting&amp;sec2=godmode/reporting/visual_console_builder" method="post">';
+			echo '<form action="index.php?sec=network&amp;sec2=godmode/reporting/visual_console_builder" method="post">';
 		}
 		else {
 			echo '<form action="index.php?sec=screen&sec2=screens/screens&action=visualmap&action2=new&operation=new_visualmap&tab=data&pure=' . $pure . '" method="post">';

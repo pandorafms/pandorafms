@@ -623,8 +623,8 @@ else
 	$view_refresh = '300';
 
 if (!defined('METACONSOLE')) {
-	$url_base = 'index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&action=';
-	$url_view = 'index.php?sec=reporting&sec2=operation/visual_console/render_view&id=' . $idVisualConsole . '&refr=' . $view_refresh;
+	$url_base = 'index.php?sec=network&sec2=godmode/reporting/visual_console_builder&action=';
+	$url_view = 'index.php?sec=network&sec2=operation/visual_console/render_view&id=' . $idVisualConsole . '&refr=' . $view_refresh;
 }
 else {
 	$url_base = 'index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '&action2=';
@@ -637,7 +637,7 @@ $hash = md5($config["dbpass"] . $idVisualConsole . $config["id_user"]);
 $buttons = array();
 
 $buttons['consoles_list'] = array('active' => false,
-	'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/map_builder&refr=' . $refr . '">' .
+	'text' => '<a href="index.php?sec=network&sec2=godmode/reporting/map_builder&refr=' . $refr . '">' .
 		html_print_image ("images/visual_console.png", true, array ("title" => __('Visual consoles list'))) .'</a>');
 $buttons['public_link'] = array('active' => false,
 	'text' => '<a href="' . ui_get_full_url('operation/visual_console/public_console.php?hash='.$hash.'&id_layout='.$idVisualConsole.'&id_user='.$config["id_user"]) . '">'.

@@ -47,4 +47,3 @@ service pandora_agent_daemon start
 check "Starting the Pandora FMS Agent" $?
 
 exit 0
-

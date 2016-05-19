@@ -1,0 +1,8 @@
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - docker build -t pandorafms/ci "$TRAVIS_BUILD_DIR/tests/"
+  - docker run --rm -v "$TRAVIS_BUILD_DIR:/tmp/pandorafms" pandorafms/ci /tmp/pandorafms/tests/test.sh

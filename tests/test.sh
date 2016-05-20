@@ -16,6 +16,12 @@ function check {
     fi
 }
 
+# Start the required services.
+service mysqld start && /usr/bin/mysqladmin -u root password 'pandora'
+check "Starting the MySQL Server" $?
+service httpd start
+check "Starting the Apache Web Server" $?
+
 # Install the Pandora FMS Console.
 cd /tmp/pandorafms/pandora_console && chmod +x pandora_console_install && yes | ./pandora_console_install --install
 check "Installing the Pandora FMS Console" $?
@@ -34,11 +40,7 @@ check "Installing the Pandora FMS Server" $?
 cd /tmp/pandorafms/pandora_agents/unix && chmod +x pandora_agent_installer && ./pandora_agent_installer --install
 check "Installing the Pandora FMS Agent" $?
 
-# Start the required services.
-service mysqld start && /usr/bin/mysqladmin -u root password 'pandora'
-check "Starting the MySQL Server" $?
-service httpd start
-check "Starting the Apache Web Server" $?
+# Start Pandora FMS services.
 service tentacle_serverd start
 check "Starting the Tentacle Server" $?
 service pandora_server start

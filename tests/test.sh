@@ -41,8 +41,8 @@ cd /tmp/pandorafms/pandora_agents/unix && chmod +x pandora_agent_installer && ./
 check "Installing the Pandora FMS Agent" $?
 
 # Start Pandora FMS services.
-service tentacle_serverd start
-check "Starting the Tentacle Server" $?
+#service tentacle_serverd start
+#check "Starting the Tentacle Server" $?
 service pandora_server start
 check "Starting the Pandora FMS Server" $?
 service pandora_agent_daemon start

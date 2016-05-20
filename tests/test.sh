@@ -35,6 +35,7 @@ cd /tmp/pandorafms/pandora_server && perl Makefile.PL && make && make test
 check "Building the Pandora FMS Server" $?
 cd /tmp/pandorafms/pandora_server && chmod +x pandora_server_installer && ./pandora_server_installer --install
 check "Installing the Pandora FMS Server" $?
+sed -i -e 's/^dbuser.*/dbuser root/' /etc/pandora/pandora_server.conf
 
 # Install the Pandora FMS Agent.
 cd /tmp/pandorafms/pandora_agents/unix && chmod +x pandora_agent_installer && ./pandora_agent_installer --install

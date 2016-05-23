@@ -23,7 +23,7 @@ RUN yum -y update; yum clean all;
 RUN yum install -y \
 	firefox \
 	python-pip \
-	xorg-x11-server-Xvfb
+	xorg-x11-server-Xvfb; yum clean all;
 RUN pip install pyvirtualdisplay
 RUN pip install selenium
 
@@ -57,7 +57,7 @@ RUN yum install -y \
 	nmap \
 	xprobe2 \
 	mysql-server \
-	mysql
+	mysql; yum clean all;
 
 # Pandora FMS Server dependencies
 RUN yum install -y \ 
@@ -92,5 +92,5 @@ RUN yum install -y \
 	perl-Encode-Locale \
 	net-snmp \
 	net-snmp-utils \
-	perl-Test-Simple
+	perl-Test-Simple; yum clean all;
 

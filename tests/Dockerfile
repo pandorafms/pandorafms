@@ -21,8 +21,8 @@ RUN yum -y update; yum clean all;
 
 # Generic dependencies
 RUN yum install -y \
-	firefox
-	python-pip
+	firefox \
+	python-pip \
 	xorg-x11-server-Xvfb
 RUN pip install pyvirtualdisplay
 RUN pip install selenium
@@ -91,5 +91,6 @@ RUN yum install -y \
 	perl-XML-Twig \ 
 	perl-Encode-Locale \
 	net-snmp \
-	net-snmp-utils
+	net-snmp-utils \
+	perl-Test-Simple
 

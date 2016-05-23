@@ -2951,4 +2951,70 @@ function events_checks_event_tags($event_data, $acltags) {
 	}
 	return false;
 }
+
+function events_get_events_grouped_by_agent($sql_post, $offset = 0,
+	$pagination = 1, $meta = false, $history = false, $total = false) {
+	global $config;
+	
+	$table = events_get_events_table($meta, $history);
+	
+	if ($meta) {
+		$groupby_extra = ', server_id';
+	}
+	else {
+		$groupby_extra = '';
+	}
+	
+	switch ($config["dbtype"]) {
+		case "mysql":
+			if ($total) {
+				$sql = "SELECT COUNT(*) FROM (select id_agente, 
+					event_type, count(*) as total from $table WHERE 1=1 
+						$sql_post GROUP BY id_agente, event_type$groupby_extra ORDER BY id_agente ) AS t";
+			}
+			else {
+				$sql = "select id_agente, event_type, count(*) as total, id_grupo from $table 
+					WHERE id_agente > 0 $sql_post GROUP BY id_agente, event_type$groupby_extra ORDER BY id_agente LIMIT $offset,$pagination";
+			}
+			break;
+		case 'postgresql':
+			if ($total) {
+				
+			}
+			else {
+				$sql = "select id_agente, event_type, count(*), id_grupo as total from $table 
+					WHERE id_agente > 0 $sql_post GROUP BY id_agente, event_type$groupby_extra ORDER BY id_agente LIMIT $offset,$pagination";
+			}
+			break;
+		case 'oracle':
+			if ($total) {
+				
+			}
+			else {
+				$set = array();
+				$set['limit'] = $pagination;
+				$set['offset'] = $offset;
+				
+				$sql = "select id_agente, event_type, count(*), id_grupo as total from $table 
+					WHERE id_agente > 0 $sql_post GROUP BY id_agente, event_type$groupby_extra ORDER BY id_agente ";
+				$sql = oracle_recode_query ($sql, $set);
+			}
+			break;
+	}
+	
+	$result = array();
+	//Extract the events by filter (or not) from db
+	
+	$events = db_get_all_rows_sql ($sql);
+	$result = array();
+	
+	if ($events) {
+		foreach ($events as $event) {
+			$id_agente = $event['id_agente'];
+			$result[$id_agente][$event['event_type']] = $event['total'];
+			$result[$id_agente]['id_grupo'] = $event['id_grupo'];
+		}
+	}
+	return $result;
+}
 ?>

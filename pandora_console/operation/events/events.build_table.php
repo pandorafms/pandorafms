@@ -75,14 +75,14 @@ if ($group_rep == 2) {
 		$key_result = array_keys($res);
 		
 		if ($meta)
-			$url_agente .= "&amp;text_agent=" . $key;
+			$agente = "&amp;text_agent=" . $key;
 		else
-			$url_agente .= "&amp;id_agent=" . $key;
+			$agente = "&amp;id_agent=" . $key;
 		
 		$unknown = 0;
 		if (in_array('going_unknown',$key_result))
 			$unknown += $res['going_unknown'];
-		$url_unknown = $url_agente . "&amp;event_type=going_unknown";
+		$url_unknown = $url_agente . $agente . "&amp;event_type=going_unknown";
 		$table->data[$key][1] = '<a href="'.$url_unknown.'" target="_blank" >' . $unknown . '</a>';
 		
 		$normal = 0;
@@ -90,7 +90,7 @@ if ($group_rep == 2) {
 			$normal += $res['going_down_normal'];
 		if (in_array('going_up_normal',$key_result))
 			$normal += $res['going_up_normal'];
-		$url_normal = $url_agente . "&amp;event_type=normal";
+		$url_normal = $url_agente . $agente  . "&amp;event_type=normal";
 		$table->data[$key][2] = '<a href="'.$url_normal.'" target="_blank" >' . $normal . '</a>';
 		
 		$warning = 0;
@@ -98,7 +98,7 @@ if ($group_rep == 2) {
 			$warning += $res['going_up_warning'];
 		if (in_array('going_down_warning',$key_result))
 			$warning += $res['going_down_warning'];
-		$url_warning = $url_agente . "&amp;event_type=warning";
+		$url_warning = $url_agente . $agente  . "&amp;event_type=warning";
 		$table->data[$key][3] = '<a href="'.$url_warning.'" target="_blank" >' . $warning . '</a>';
 		
 		$critical = 0;
@@ -106,13 +106,13 @@ if ($group_rep == 2) {
 			$critical += $res['going_up_critical'];
 		if (in_array('going_down_critical',$key_result))
 			$critical += $res['going_down_critical'];
-		$url_critical = $url_agente . "&amp;event_type=critical";
+		$url_critical = $url_agente . $agente  . "&amp;event_type=critical";
 		$table->data[$key][4] = '<a href="'.$url_critical.'" target="_blank" >' . $critical . '</a>';
 		
 		$alert = 0;
 		if (in_array('alert_fired',$key_result))
 			$alert += $res['alert_fired'];
-		$url_alert = $url_agente . "&amp;event_type=alert_fired";
+		$url_alert = $url_agente . $agente  . "&amp;event_type=alert_fired";
 		$table->data[$key][5] = '<a href="'.$url_alert.'" target="_blank" >' . $alert . '</a>';
 		
 		if ($alert > 0) {

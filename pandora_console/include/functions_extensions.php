@@ -93,11 +93,24 @@ function extensions_is_extension ($page) {
  * @param bool $enterprise
  */
 function extensions_get_extensions ($enterprise = false) {
+	
 	$dir = EXTENSIONS_DIR;
+	$master_dir = ENTERPRISE_DIR . '/' . EXTENSIONS_DIR;
 	$handle = false;
-	if ($enterprise)
-		$dir = ENTERPRISE_DIR.'/'.EXTENSIONS_DIR;
-
+	if ($enterprise) {
+		$dir = ENTERPRISE_DIR . '/' . EXTENSIONS_DIR;
+		if (defined("METACONSOLE")) {
+			$dir = '../' . EXTENSIONS_DIR;
+			$master_dir = '../' . EXTENSIONS_DIR;
+		}
+	}
+	else {
+		if (defined("METACONSOLE")) {
+			$dir = '../../' . $dir;
+			$master_dir = '../' . EXTENSIONS_DIR;
+		}
+	}
+	
 	if (file_exists ($dir))
 		$handle = @opendir ($dir);
 	
@@ -134,7 +147,7 @@ function extensions_get_extensions ($enterprise = false) {
 	}
 	
 	/* Load extensions in enterprise directory */
-	if (! $enterprise && file_exists (ENTERPRISE_DIR.'/'.EXTENSIONS_DIR))
+	if (! $enterprise && file_exists ($master_dir))
 		return array_merge ($extensions, extensions_get_extensions (true));
 	
 	return $extensions;

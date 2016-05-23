@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-02-01 11:28+0100\n"
-"PO-Revision-Date: 2015-10-14 12:07+0000\n"
+"PO-Revision-Date: 2016-05-23 06:18+0000\n"
 "Last-Translator: Junichi Satoh <junichi@rworks.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-03-03 08:34+0000\n"
-"X-Generator: Launchpad (build 17925)\n"
+"X-Launchpad-Export-Date: 2016-05-23 06:28+0000\n"
+"X-Generator: Launchpad (build 18025)\n"
 
 #: ../../enterprise/mobile/include/enterprise.class.php:63
 #: ../../enterprise/dashboard/main_dashboard.php:381
@@ -422,7 +422,7 @@ msgstr "リフレッシュ"
 
 #: ../../enterprise/dashboard/main_dashboard.php:253
 msgid "Save the actual layout design"
-msgstr ""
+msgstr "レイアウト設計を保存"
 
 #: ../../enterprise/dashboard/main_dashboard.php:344
 msgid "Number Cells"
@@ -434,7 +434,7 @@ msgstr "セルの更新"
 
 #: ../../enterprise/dashboard/main_dashboard.php:351
 msgid "Name of dashboard"
-msgstr ""
+msgstr "ダッシュボード名"
 
 #: ../../enterprise/dashboard/main_dashboard.php:354
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:286
@@ -728,7 +728,7 @@ msgstr "エラー: 空ではないセルがあります。"
 
 #: ../../enterprise/dashboard/main_dashboard.php:412
 msgid "Error save conf dashboard"
-msgstr ""
+msgstr "ダッシュボード設定の保存エラー"
 
 #: ../../enterprise/dashboard/main_dashboard.php:480
 msgid "Add widget"
@@ -1950,29 +1950,29 @@ msgstr "線の積み上げ"
 #: ../../operation/reporting/graph_viewer.php:209
 #: ../../godmode/reporting/graph_builder.main.php:149
 msgid "Bullet chart"
-msgstr ""
+msgstr "ブレットグラフ"
 
 #: ../../enterprise/dashboard/widgets/custom_graph.php:41
 #: ../../operation/reporting/graph_viewer.php:210
 #: ../../godmode/reporting/graph_builder.main.php:150
 msgid "Gauge"
-msgstr ""
+msgstr "ゲージ"
 
 #: ../../enterprise/dashboard/widgets/custom_graph.php:42
 #: ../../operation/reporting/graph_viewer.php:211
 msgid "Horizontal Bars"
-msgstr ""
+msgstr "水平バー"
 
 #: ../../enterprise/dashboard/widgets/custom_graph.php:43
 #: ../../operation/reporting/graph_viewer.php:212
 msgid "Vertical Bars"
-msgstr ""
+msgstr "垂直バー"
 
 #: ../../enterprise/dashboard/widgets/custom_graph.php:44
 #: ../../operation/reporting/graph_viewer.php:213
 #: ../../godmode/reporting/graph_builder.main.php:153
 msgid "Pie"
-msgstr ""
+msgstr "円"
 
 #: ../../enterprise/dashboard/widgets/custom_graph.php:46
 #: ../../enterprise/godmode/reporting/graph_template_editor.php:202
@@ -6587,7 +6587,7 @@ msgstr "ライセンスを更新しました"
 
 #: ../../enterprise/meta/advanced/license_meta.php:62
 msgid "Licence"
-msgstr ""
+msgstr "ライセンス"
 
 #: ../../enterprise/meta/advanced/license_meta.php:69
 #: ../../godmode/setup/license.php:64
@@ -8320,7 +8320,7 @@ msgstr "% のエージェントが不明状態"
 
 #: ../../enterprise/meta/monitoring/group_view.php:101
 msgid "% Agents not init"
-msgstr ""
+msgstr "% 未初期化エージェント"
 
 #: ../../enterprise/meta/monitoring/group_view.php:104
 msgid "% Monitors Critical"
@@ -8336,11 +8336,11 @@ msgstr "% の監視項目が正常状態"
 
 #: ../../enterprise/meta/monitoring/group_view.php:107
 msgid "% Monitors Unknown"
-msgstr ""
+msgstr "% 不明モジュール"
 
 #: ../../enterprise/meta/monitoring/group_view.php:108
 msgid "% Monitors Not init"
-msgstr ""
+msgstr "% 未初期化モジュール"
 
 #: ../../enterprise/meta/monitoring/group_view.php:140
 msgid "Group or Tag"
@@ -9990,7 +9990,7 @@ msgstr "ネットワークの範囲指定が正しくありません。"
 #: ../../enterprise/extensions/ipam/ipam_action.php:88
 #: ../../enterprise/extensions/ipam/ipam_action.php:125
 msgid "The location is not filled, please add a location."
-msgstr ""
+msgstr "位置情報がありません。位置情報を追加してください。"
 
 #: ../../enterprise/extensions/ipam/ipam_action.php:133
 #: ../../enterprise/extensions/ipam/ipam_massive.php:42
@@ -10661,64 +10661,64 @@ msgstr "ログ収集"
 
 #: ../../enterprise/include/functions_setup.php:80
 msgid "Auto provisioning into Metaconsole"
-msgstr ""
+msgstr "メタコンソールへの自動プロビジョニング"
 
 #: ../../enterprise/include/functions_setup.php:90
 msgid "URL Metaconsole Api"
-msgstr ""
+msgstr "メタコンソール API の URL"
 
 #: ../../enterprise/include/functions_setup.php:95
 msgid "Api pass"
-msgstr ""
+msgstr "APIパスワード"
 
 #: ../../enterprise/include/functions_setup.php:99
 msgid "Meta user"
-msgstr ""
+msgstr "メタコンソールユーザ"
 
 #: ../../enterprise/include/functions_setup.php:103
 msgid "Meta pass"
-msgstr ""
+msgstr "メタコンソールパスワード"
 
 #: ../../enterprise/include/functions_setup.php:107
 msgid "Metaconsole APi Online"
-msgstr ""
+msgstr "メタコンソール API オンライン"
 
 #: ../../enterprise/include/functions_setup.php:109
 #: ../../enterprise/include/functions_setup.php:139
 msgid "Please click in the dot to re-check"
-msgstr ""
+msgstr "再確認するにはドットをクリックしてください"
 
 #: ../../enterprise/include/functions_setup.php:115
 msgid "Pandora user"
-msgstr ""
+msgstr "Pandora ユーザ"
 
 #: ../../enterprise/include/functions_setup.php:116
 msgid "Normally the admin user"
-msgstr ""
+msgstr "通常は管理者ユーザです"
 
 #: ../../enterprise/include/functions_setup.php:120
 msgid "Pandora pass"
-msgstr ""
+msgstr "Pandora パスワード"
 
 #: ../../enterprise/include/functions_setup.php:124
 msgid "Public url console"
-msgstr ""
+msgstr "公開URLコンソール"
 
 #: ../../enterprise/include/functions_setup.php:125
 msgid "Without the index.php such as http://domain/pandora_url"
-msgstr ""
+msgstr "http://domain/pandora_url のように、index.php を除きます"
 
 #: ../../enterprise/include/functions_setup.php:131
 msgid "Register your node in metaconsole"
-msgstr ""
+msgstr "メタコンソールにノードを登録"
 
 #: ../../enterprise/include/functions_setup.php:133
 msgid "Register the node"
-msgstr ""
+msgstr "ノードを登録"
 
 #: ../../enterprise/include/functions_setup.php:138
 msgid "Status your node in metaconsole"
-msgstr ""
+msgstr "メタコンソールに登録済のノードの状態"
 
 #: ../../enterprise/include/functions_groups.php:47
 msgid "Metaconsole"
@@ -11361,7 +11361,7 @@ msgstr "タグごとのツリー表示"
 #: ../../enterprise/include/functions_dashboard.php:369
 #, php-format
 msgid "Copy of %s"
-msgstr ""
+msgstr "%s のコピー"
 
 #: ../../enterprise/include/functions_reporting_csv.php:135
 #: ../../include/functions_reporting.php:1372
@@ -11432,7 +11432,7 @@ msgstr "データ"
 
 #: ../../enterprise/include/functions_reporting_csv.php:200
 msgid "Serialized data "
-msgstr ""
+msgstr "連続データ "
 
 #: ../../enterprise/include/functions_reporting_csv.php:224
 #: ../../enterprise/godmode/reporting/reporting_builder.global.php:45
@@ -11465,7 +11465,7 @@ msgstr "グループレポート"
 #: ../../enterprise/include/functions_reporting_csv.php:527
 #: ../../enterprise/include/functions_reporting_csv.php:550
 msgid "Report type"
-msgstr ""
+msgstr "レポートタイプ"
 
 #: ../../enterprise/include/functions_reporting_csv.php:276
 #: ../../mobile/operation/groups.php:99
@@ -11477,7 +11477,7 @@ msgstr "エージェント数"
 
 #: ../../enterprise/include/functions_reporting_csv.php:277
 msgid "Uknown agents"
-msgstr ""
+msgstr "不明エージェント"
 
 #: ../../enterprise/include/functions_reporting_csv.php:278
 #: ../../operation/tree.php:272
@@ -11524,7 +11524,7 @@ msgstr "発生したアラート"
 
 #: ../../enterprise/include/functions_reporting_csv.php:286
 msgid "Last 8 hours events"
-msgstr ""
+msgstr "最近8時間のイベント"
 
 #: ../../enterprise/include/functions_reporting_csv.php:289
 #: ../../include/functions_reports.php:575
@@ -11599,7 +11599,7 @@ msgstr "SQL"
 
 #: ../../enterprise/include/functions_reporting_csv.php:431
 msgid "Illegal query or any other error"
-msgstr ""
+msgstr "不正なクエリまたはその他エラー"
 
 #: ../../enterprise/include/functions_reporting_csv.php:450
 #: ../../enterprise/include/functions_reporting_csv.php:461
@@ -11647,15 +11647,15 @@ msgstr "モニタレポート"
 
 #: ../../enterprise/include/functions_reporting_csv.php:550
 msgid "% OK"
-msgstr ""
+msgstr "% 正常"
 
 #: ../../enterprise/include/functions_reporting_csv.php:550
 msgid "% Wrong"
-msgstr ""
+msgstr "% 異常"
 
 #: ../../enterprise/include/functions_reporting_csv.php:564
 msgid "Simple Graph"
-msgstr ""
+msgstr "シンプルグラフ"
 
 #: ../../enterprise/include/functions_reporting_csv.php:586
 #: ../../enterprise/godmode/services/services.service.php:290
@@ -11667,7 +11667,7 @@ msgstr "SLA"
 
 #: ../../enterprise/include/functions_reporting_csv.php:595
 msgid "% Limit"
-msgstr ""
+msgstr "% 制限"
 
 #: ../../enterprise/include/functions_reporting_csv.php:635
 #: ../../enterprise/godmode/reporting/reporting_builder.template_wizard.php:271
@@ -12865,13 +12865,13 @@ msgstr "CIDR IPマスク"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:274
 msgid "Generate networkmap with parents relationships"
-msgstr ""
+msgstr "親の関係性をつけてネットワークマップを生成"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:276
 msgid ""
 "This feature is deprecated, be careful because in the next releases it will "
 "be disappear."
-msgstr ""
+msgstr "この機能は廃止されました。次のリリースでは削除されますので注意してください。"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:286
 msgid "Source from recon task"
@@ -12918,7 +12918,7 @@ msgstr "ネットワークマップ生成手法"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:336
 msgid "Refresh network map state"
-msgstr ""
+msgstr "ネットワークマップの状態を更新"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:340
 msgid "Resize the networkmap"
@@ -13087,7 +13087,7 @@ msgstr "CSVファイル"
 #: ../../enterprise/operation/reporting/custom_reporting.php:22
 msgid ""
 "All the items are not available in CSV, only the previous versions ones."
-msgstr ""
+msgstr "全ての要素は CSV にありません。以前のバージョンのみです。"
 
 #: ../../enterprise/operation/reporting/custom_reporting.php:43
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:339
@@ -13252,15 +13252,15 @@ msgstr "サービス作成エラー"
 
 #: ../../enterprise/godmode/services/services.service.php:85
 msgid "No name and description specified for the service"
-msgstr ""
+msgstr "サービスの名前と説明が定義されていません"
 
 #: ../../enterprise/godmode/services/services.service.php:90
 msgid "No name specified for the service"
-msgstr ""
+msgstr "サービスの名前が定義されていません"
 
 #: ../../enterprise/godmode/services/services.service.php:95
 msgid "No description specified for the service"
-msgstr ""
+msgstr "サービスの説明が定義されていません"
 
 #: ../../enterprise/godmode/services/services.service.php:109
 msgid "Error updating service"
@@ -14445,21 +14445,21 @@ msgstr "削除"
 
 #: ../../enterprise/godmode/servers/server_disk_conf_editor.php:129
 msgid "Error: The conf file of server is not readble."
-msgstr ""
+msgstr "エラー: サービスの設定ファイルを読めません"
 
 #: ../../enterprise/godmode/servers/server_disk_conf_editor.php:134
 msgid "Error: The conf file of server is not writable."
-msgstr ""
+msgstr "エラー: サービスの設定ファイルに書き込めません"
 
 #: ../../enterprise/godmode/servers/server_disk_conf_editor.php:159
 msgid "Delete remote conf server files in Pandora"
-msgstr ""
+msgstr "Pandora が保持しているサーバのリモート設定ファイルを削除"
 
 #: ../../enterprise/godmode/servers/server_disk_conf_editor.php:163
 msgid ""
 "Delete this conf file implies that Pandora will send back local config to "
 "console"
-msgstr ""
+msgstr "この設定ファイルを削除すると、Pandora コンソールへローカルの設定が再送されることを意味します"
 
 #: ../../enterprise/godmode/servers/manage_export.php:61
 msgid "Error updating export target"
@@ -14676,12 +14676,12 @@ msgstr "モバイル"
 #: ../../enterprise/godmode/setup/setup_acl.php:87
 #: ../../enterprise/godmode/setup/setup_acl.php:151
 msgid "Section 2"
-msgstr ""
+msgstr "セクション 2"
 
 #: ../../enterprise/godmode/setup/setup_acl.php:92
 #: ../../enterprise/godmode/setup/setup_acl.php:152
 msgid "Section 3"
-msgstr ""
+msgstr "セクション 3"
 
 #: ../../enterprise/godmode/setup/setup_acl.php:104
 msgid "Hidden"
@@ -14748,13 +14748,13 @@ msgstr "秒"
 #: ../../enterprise/godmode/setup/setup.php:70
 #: ../../include/functions_config.php:221
 msgid "Replication limit"
-msgstr ""
+msgstr "複製制限"
 
 #: ../../enterprise/godmode/setup/setup.php:72
 msgid ""
 "Limit the number of events that are replicated metaconsole each specified "
 "range."
-msgstr ""
+msgstr "指定期間におけるメタコンソールへのイベント複製の制限数です。"
 
 #: ../../enterprise/godmode/setup/setup.php:78
 msgid "Last replication at"
@@ -14885,18 +14885,18 @@ msgstr "リモートの Integria"
 
 #: ../../enterprise/godmode/setup/setup_auth.php:60
 msgid "Autosync users"
-msgstr ""
+msgstr "自動同期ユーザ"
 
 #: ../../enterprise/godmode/setup/setup_auth.php:71
 msgid ""
 "Enable this option will be synchronice the groups and tags each new user "
 "when he/she will login."
-msgstr ""
+msgstr "このオプションを有効化すると、新たなユーザがログインするたびにグループとタグを同期します。"
 
 #: ../../enterprise/godmode/setup/setup_auth.php:138
 #: ../../include/functions_config.php:321
 msgid "MySQL host"
-msgstr ""
+msgstr "MySQL ホスト"
 
 #: ../../enterprise/godmode/setup/setup_history.php:45
 #: ../../include/functions_config.php:619
@@ -15850,7 +15850,7 @@ msgstr "テンプレートがまだ作成されていません。"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:386
 msgid "Generate a dynamic report\""
-msgstr ""
+msgstr "動的レポート生成\""
 
 #: ../../enterprise/godmode/reporting/reporting_builder.template.php:438
 #: ../../include/ajax/module.php:147
@@ -18791,7 +18791,7 @@ msgstr "ネットワークモジュール更新エラー。id_module が新規�
 
 #: ../../include/functions_api.php:1912
 msgid "Error updating network module. Id_agent doesn't exists."
-msgstr ""
+msgstr "ネットワークモジュールの更新エラー。id_agent が存在しません。"
 
 #: ../../include/functions_api.php:1962
 msgid "Network module updated."
@@ -18823,7 +18823,7 @@ msgstr "プラグインモジュール更新エラー。id_module が新規エ�
 
 #: ../../include/functions_api.php:2115
 msgid "Error updating plugin module. Id_agent doesn't exists."
-msgstr ""
+msgstr "プラグインモジュールの更新エラー。id_agent が存在しません。"
 
 #: ../../include/functions_api.php:2174
 msgid "Plugin module updated."
@@ -18867,7 +18867,7 @@ msgstr "データモジュール更新エラー。id_module が新規エージ�
 
 #: ../../include/functions_api.php:2440
 msgid "Error updating data module. Id_agent doesn't exists."
-msgstr ""
+msgstr "データモジュールの更新エラー。id_agent が存在しません。"
 
 #: ../../include/functions_api.php:2486
 msgid "Data module updated."
@@ -18927,7 +18927,7 @@ msgstr "SNMPモジュール更新エラー。id_moduleが新規エージェン�
 
 #: ../../include/functions_api.php:2703
 msgid "Error updating snmp module. Id_agent doesn't exists."
-msgstr ""
+msgstr "snmp モジュールの更新エラー。id_agent が存在しません。"
 
 #: ../../include/functions_api.php:2813
 msgid "SNMP module updated."
@@ -20046,7 +20046,7 @@ msgstr "データベース上にユーザが存在しないかパスワードが
 
 #: ../../include/auth/mysql.php:544
 msgid "Could not changes password on remote pandora"
-msgstr ""
+msgstr "リモートの pandora のパスワードを変更できません"
 
 #: ../../include/auth/mysql.php:581
 msgid "Your installation of PHP does not support LDAP"
@@ -20179,7 +20179,7 @@ msgstr "エンタープライズSNMPサーバ"
 
 #: ../../include/functions_servers.php:428
 msgid "Enterprise Satellite server"
-msgstr ""
+msgstr "Enterprise サテライトサーバ"
 
 #: ../../include/functions_networkmap.php:1719
 msgid "Create a new topology map"
@@ -21358,83 +21358,83 @@ msgstr "終了"
 
 #: ../../include/functions_snmp.php:67
 msgid "Load Average (Last minute)"
-msgstr ""
+msgstr "ロードアベレージ(直近1分)"
 
 #: ../../include/functions_snmp.php:71
 msgid "Load Average (Last 5 minutes)"
-msgstr ""
+msgstr "ロードアベレージ(直近5分)"
 
 #: ../../include/functions_snmp.php:75
 msgid "Load Average (Last 15 minutes)"
-msgstr ""
+msgstr "ロードアベレージ(直近15分)"
 
 #: ../../include/functions_snmp.php:79
 msgid "Total Swap Size configured for the host"
-msgstr ""
+msgstr "ホストに設定されているスワップの総容量"
 
 #: ../../include/functions_snmp.php:83
 msgid "Available Swap Space on the host"
-msgstr ""
+msgstr "ホストのスワップ空き容量"
 
 #: ../../include/functions_snmp.php:87
 msgid "Total Real/Physical Memory Size on the host"
-msgstr ""
+msgstr "ホストの実物理メモリ量"
 
 #: ../../include/functions_snmp.php:91
 msgid "Available Real/Physical Memory Space on the host"
-msgstr ""
+msgstr "ホストの実メモリ空き容量"
 
 #: ../../include/functions_snmp.php:95
 msgid "Total Available Memory on the host"
-msgstr ""
+msgstr "ホストのメモリ空き容量"
 
 #: ../../include/functions_snmp.php:99
 msgid "Total Cached Memory"
-msgstr ""
+msgstr "キャッシュメモリ量"
 
 #: ../../include/functions_snmp.php:103
 msgid "Total Buffered Memory"
-msgstr ""
+msgstr "Bufferedメモリ量"
 
 #: ../../include/functions_snmp.php:107
 msgid "Amount of memory swapped in from disk (kB/s)"
-msgstr ""
+msgstr "ディスクからスワップしたメモリ量(kB/s)"
 
 #: ../../include/functions_snmp.php:111
 msgid "Amount of memory swapped to disk (kB/s)"
-msgstr ""
+msgstr "ディスクへスワップしたメモリ量(kB/s)"
 
 #: ../../include/functions_snmp.php:115
 msgid "Number of blocks sent to a block device"
-msgstr ""
+msgstr "ブロックデバイスへ送信したブロック数"
 
 #: ../../include/functions_snmp.php:119
 msgid "Number of blocks received from a block device"
-msgstr ""
+msgstr "ブロックデバイスから受け取ったブロック数"
 
 #: ../../include/functions_snmp.php:123
 msgid "Number of interrupts processed"
-msgstr ""
+msgstr "処理された割り込み数"
 
 #: ../../include/functions_snmp.php:127
 msgid "Number of context switches"
-msgstr ""
+msgstr "コンテキストスイッチ数"
 
 #: ../../include/functions_snmp.php:131
 msgid "user CPU time"
-msgstr ""
+msgstr "user CPU時間"
 
 #: ../../include/functions_snmp.php:135
 msgid "system CPU time"
-msgstr ""
+msgstr "system CPU時間"
 
 #: ../../include/functions_snmp.php:139
 msgid "idle CPU time"
-msgstr ""
+msgstr "idle CPU時間"
 
 #: ../../include/functions_snmp.php:143
 msgid "system Up time"
-msgstr ""
+msgstr "system アップタイム"
 
 #: ../../include/functions_reporting.php:1153
 msgid "Event Report Group"
@@ -21460,7 +21460,7 @@ msgstr "例外 - モジュールが %s 以上"
 #: ../../include/functions_reporting.php:1623
 #, php-format
 msgid "Modules over or equal to %s"
-msgstr ""
+msgstr "%s 以上のモジュール"
 
 #: ../../include/functions_reporting.php:1627
 #, php-format
@@ -21470,7 +21470,7 @@ msgstr "例外 - モジュールが %s 以下"
 #: ../../include/functions_reporting.php:1629
 #, php-format
 msgid "Modules under or equal to %s"
-msgstr ""
+msgstr "%s 以下のモジュール"
 
 #: ../../include/functions_reporting.php:1633
 #, php-format
@@ -21480,7 +21480,7 @@ msgstr "例外 - モジュールが %s 未満"
 #: ../../include/functions_reporting.php:1635
 #, php-format
 msgid "Modules under %s"
-msgstr ""
+msgstr "%s 未満のモジュール"
 
 #: ../../include/functions_reporting.php:1639
 #, php-format
@@ -21490,7 +21490,7 @@ msgstr "例外 - モジュールが %s より大きい"
 #: ../../include/functions_reporting.php:1641
 #, php-format
 msgid "Modules over %s"
-msgstr ""
+msgstr "%s を超えるモジュール"
 
 #: ../../include/functions_reporting.php:1645
 #, php-format
@@ -21500,7 +21500,7 @@ msgstr "例外 - %s と同じ"
 #: ../../include/functions_reporting.php:1647
 #, php-format
 msgid "Equal to %s"
-msgstr ""
+msgstr "%s と同じ"
 
 #: ../../include/functions_reporting.php:1651
 #, php-format
@@ -21510,7 +21510,7 @@ msgstr "例外 - %s と異なる"
 #: ../../include/functions_reporting.php:1653
 #, php-format
 msgid "Not equal to %s"
-msgstr ""
+msgstr "%s と異なる"
 
 #: ../../include/functions_reporting.php:1657
 msgid "Exception - Modules at normal status"
@@ -22313,6 +22313,8 @@ msgid ""
 "\t\t\t\t\ta text to replace '(_VALUE_)' and the value of the module will be "
 "printed at the end."
 msgstr ""
+"'ラベル' フィールドを利用するには、'(_VALUE_)'を\n"
+"\t\t\t\t\t置き換えるテキストを書きます。最終的にはモジュールの値が表示されます。"
 
 #: ../../include/functions_visual_map_editor.php:95
 #: ../../include/functions_visual_map_editor.php:119
@@ -22397,7 +22399,7 @@ msgstr "リンク先マップ"
 
 #: ../../include/functions_visual_map_editor.php:513
 msgid "Lines haven't advanced options"
-msgstr ""
+msgstr "拡張オプションがありません"
 
 #: ../../include/functions_visual_map_editor.php:540
 msgid "Click start point<br />of the line"
@@ -22603,11 +22605,11 @@ msgstr "警告<br/>障害"
 
 #: ../../include/functions_reporting_html.php:1714
 msgid "Agent max"
-msgstr ""
+msgstr "最大エージェント"
 
 #: ../../include/functions_reporting_html.php:1717
 msgid "Agent min"
-msgstr ""
+msgstr "最小エージェント"
 
 #: ../../include/functions_reporting_html.php:1921
 #: ../../operation/tree.php:163
@@ -24685,6 +24687,8 @@ msgid ""
 "Search by any alphanumeric field in the trap.\n"
 "\t\tREMEMBER trap sources need to be searched by IP Address"
 msgstr ""
+"トラップの英数字フィールドで検索。\n"
+"\t\tトラップの発信元は IPアドレスで検索する必要があることに注意してください。"
 
 #: ../../operation/snmpconsole/snmp_view.php:411
 msgid "Search by trap type"
@@ -24787,7 +24791,7 @@ msgstr "表示するエージェントの状態: "
 #: ../../operation/gis_maps/gis_map.php:29
 #: ../../godmode/gis_maps/configure_gis_map.php:204
 msgid "GIS Maps list"
-msgstr ""
+msgstr "GIS マップ一覧"
 
 #: ../../operation/gis_maps/gis_map.php:173
 #: ../../operation/gis_maps/index.php:70
@@ -24945,7 +24949,7 @@ msgstr "関係情報"
 msgid ""
 "To see the list of modules paginated, enable this option in the Styles "
 "Configuration."
-msgstr ""
+msgstr "モジュール一覧をページ区切り表示するには、スタイル設定でこのオプションを有効化します。"
 
 #: ../../operation/agentes/estado_monitores.php:125
 msgid "Full list of monitors"
@@ -25285,7 +25289,7 @@ msgstr "作者"
 
 #: ../../operation/agentes/estado_generalagente.php:536
 msgid "Events info (24hr.)"
-msgstr ""
+msgstr "イベント情報 (24時間)"
 
 #: ../../operation/agentes/estado_generalagente.php:615
 msgid "Refresh data"
@@ -26731,7 +26735,7 @@ msgstr "マップを更新できませんでした"
 
 #: ../../godmode/gis_maps/configure_gis_map.php:209
 msgid "View GIS"
-msgstr ""
+msgstr "GIS 表示"
 
 #: ../../godmode/gis_maps/configure_gis_map.php:319
 msgid "Map Name"
@@ -27026,7 +27030,7 @@ msgstr "他のアクションが無い場合に、アラートが発生するた
 
 #: ../../godmode/alerts/alert_list.list.php:540
 msgid "Delete action"
-msgstr ""
+msgstr "アクションの削除"
 
 #: ../../godmode/alerts/alert_list.list.php:696
 msgid "View alert advanced details"
@@ -27662,19 +27666,19 @@ msgstr "リモートシステムは、ホスト SNMP 情報をサポートして
 
 #: ../../godmode/agentes/agent_wizard.snmp_explorer.php:331
 msgid "The number of bytes read from this device since boot"
-msgstr ""
+msgstr "起動以降このデバイスから読み込んだバイト数"
 
 #: ../../godmode/agentes/agent_wizard.snmp_explorer.php:333
 msgid "The number of bytes written to this device since boot"
-msgstr ""
+msgstr "起動以降このデバイスへ書き込んだバイト数"
 
 #: ../../godmode/agentes/agent_wizard.snmp_explorer.php:335
 msgid "The number of read accesses from this device since boot"
-msgstr ""
+msgstr "起動以降このデバイスからの読み込みアクセス数"
 
 #: ../../godmode/agentes/agent_wizard.snmp_explorer.php:337
 msgid "The number of write accesses from this device since boot"
-msgstr ""
+msgstr "起動以降このデバイスへの書き込みアクセス数"
 
 #: ../../godmode/agentes/agent_wizard.snmp_explorer.php:512
 #, php-format
@@ -28221,7 +28225,7 @@ msgstr "サーバ情報の更新"
 
 #: ../../godmode/servers/modificar_server.php:61
 msgid "Remote Configuration"
-msgstr ""
+msgstr "リモート設定"
 
 #: ../../godmode/servers/modificar_server.php:66
 msgid "Pandora servers"
@@ -30348,7 +30352,7 @@ msgstr "最初の文字には [ または ( を使ってください。例えば
 
 #: ../../godmode/reporting/visual_console_builder.data.php:124
 msgid "Background image"
-msgstr ""
+msgstr "背景画像"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:487
 #: ../../godmode/reporting/reporting_builder.list_items.php:492
@@ -30465,15 +30469,15 @@ msgstr "グラフの削除で問題が発生しました。"
 
 #: ../../godmode/reporting/graph_builder.main.php:139
 msgid "Type of graph"
-msgstr ""
+msgstr "グラフのタイプ"
 
 #: ../../godmode/reporting/graph_builder.main.php:151
 msgid "Horizontal bars"
-msgstr ""
+msgstr "水平バー"
 
 #: ../../godmode/reporting/graph_builder.main.php:152
 msgid "Vertical bars"
-msgstr ""
+msgstr "垂直バー"
 
 #: ../../godmode/reporting/visual_console_builder.wizard.php:125
 msgid "Range between elements (px)"
@@ -30545,28 +30549,28 @@ msgstr "モジュールを選択してください。"
 
 #: ../../godmode/reporting/visual_console_builder.php:150
 msgid "This file isn't image"
-msgstr ""
+msgstr "このファイルは画像ではありません"
 
 #: ../../godmode/reporting/visual_console_builder.php:151
 msgid "This file isn't image."
-msgstr ""
+msgstr "このファイルは画像ではありません。"
 
 #: ../../godmode/reporting/visual_console_builder.php:155
 #: ../../godmode/reporting/visual_console_builder.php:156
 msgid "File already are exists."
-msgstr ""
+msgstr "ファイルが既に存在します。"
 
 #: ../../godmode/reporting/visual_console_builder.php:162
 #: ../../godmode/reporting/visual_console_builder.php:163
 msgid "The file have not image extension."
-msgstr ""
+msgstr "画像ファイルの拡張子ではありません。"
 
 #: ../../godmode/reporting/visual_console_builder.php:174
 #: ../../godmode/reporting/visual_console_builder.php:175
 #: ../../godmode/reporting/visual_console_builder.php:182
 #: ../../godmode/reporting/visual_console_builder.php:185
 msgid "Problems with move file to target."
-msgstr ""
+msgstr "対象へのファイルの移動で問題が発生しました。"
 
 #: ../../godmode/reporting/visual_console_builder.php:213
 msgid "Successfully update."

@@ -54,3 +54,5 @@ exit 0
 #Run console CI tests
 cd /tmp/pandorafms/tests && chmod +x run_console_tests.py && ./run_console_tests.py
 check "Running console CI tests" $?
+
+

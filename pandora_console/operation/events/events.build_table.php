@@ -64,15 +64,20 @@ if ($group_rep == 2) {
 		"&amp;date_from=" . $date_from .
 		"&amp;date_to=" . $date_to .
 		"&amp;pure=" . $config["pure"];
-	if ($meta) {
-		$params .= "&amp;text_agent=" . $text_agent;
-	}
 
 	$url_agente = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;" . $params;
 	foreach ($result as $key => $res) {
-		$table->data[$key][0] = agents_get_name ($key);
+		if  ($meta)
+			$table->data[$key][0] = $key;
+		else
+			$table->data[$key][0] = agents_get_name ($key);
+		
 		$key_result = array_keys($res);
-		$url_agente .= "&amp;id_agent=" . $key;
+		
+		if ($meta)
+			$url_agente .= "&amp;text_agent=" . $key;
+		else
+			$url_agente .= "&amp;id_agent=" . $key;
 		
 		$unknown = 0;
 		if (in_array('going_unknown',$key_result))

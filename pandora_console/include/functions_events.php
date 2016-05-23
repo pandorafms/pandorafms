@@ -2959,21 +2959,22 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 	$table = events_get_events_table($meta, $history);
 	
 	if ($meta) {
+		$fields_extra = ', agent_name';
 		$groupby_extra = ', server_id';
 	}
 	else {
 		$groupby_extra = '';
+		$fields_extra = '';
 	}
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
 			if ($total) {
-				$sql = "SELECT COUNT(*) FROM (select id_agente, 
-					event_type, count(*) as total from $table WHERE 1=1 
+				$sql = "SELECT COUNT(*) FROM (select id_agente from $table WHERE 1=1 
 						$sql_post GROUP BY id_agente, event_type$groupby_extra ORDER BY id_agente ) AS t";
 			}
 			else {
-				$sql = "select id_agente, event_type, count(*) as total, id_grupo from $table 
+				$sql = "select id_agente, event_type, count(*) as total, id_grupo$fields_extra from $table 
 					WHERE id_agente > 0 $sql_post GROUP BY id_agente, event_type$groupby_extra ORDER BY id_agente LIMIT $offset,$pagination";
 			}
 			break;
@@ -2982,7 +2983,7 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 				
 			}
 			else {
-				$sql = "select id_agente, event_type, count(*), id_grupo as total from $table 
+				$sql = "select id_agente, event_type, count(*) as total, id_grupo$fields_extra from $table 
 					WHERE id_agente > 0 $sql_post GROUP BY id_agente, event_type$groupby_extra ORDER BY id_agente LIMIT $offset,$pagination";
 			}
 			break;
@@ -2995,7 +2996,7 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 				$set['limit'] = $pagination;
 				$set['offset'] = $offset;
 				
-				$sql = "select id_agente, event_type, count(*), id_grupo as total from $table 
+				$sql = "select id_agente, event_type, count(*) as total, id_grupo$fields_extra from $table 
 					WHERE id_agente > 0 $sql_post GROUP BY id_agente, event_type$groupby_extra ORDER BY id_agente ";
 				$sql = oracle_recode_query ($sql, $set);
 			}
@@ -3010,7 +3011,10 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 	
 	if ($events) {
 		foreach ($events as $event) {
-			$id_agente = $event['id_agente'];
+			if ($meta)
+				$id_agente = $event['agent_name'];
+			else
+				$id_agente = $event['id_agente'];
 			$result[$id_agente][$event['event_type']] = $event['total'];
 			$result[$id_agente]['id_grupo'] = $event['id_grupo'];
 		}

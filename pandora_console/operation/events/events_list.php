@@ -560,6 +560,7 @@ $data[1] .= html_print_input_text ('event_view_hr', $event_view_hr, '', 5, 255, 
 $data[2] = __("Repeated") . $jump;
 $repeated_sel[0] = __("All events");
 $repeated_sel[1] = __("Group events");
+$repeated_sel[2] = __("Group agents");
 $data[2] .= html_print_select ($repeated_sel, "group_rep", $group_rep, '', '', 0, true);
 $table->data[] = $data;
 $table->rowclass[] = '';
@@ -680,13 +681,21 @@ if ($group_rep == 0) {
 	//Extract the events by filter (or not) from db
 	$result = db_get_all_rows_sql ($sql);
 }
-else {
+elseif ($group_rep == 1) {
 	$result = events_get_events_grouped(
 		$sql_post,
 		$offset,
 		$pagination,
 		$meta,
 		$history);
+}
+elseif ($group_rep == 2) {
+	$result = events_get_events_grouped_by_agent(
+		$sql_post,
+		$offset,
+		$pagination,
+		$meta,
+		$history);	
 }
 
 if (!empty($result)) {
@@ -695,7 +704,7 @@ if (!empty($result)) {
 			FROM $event_table
 			WHERE 1=1 " . $sql_post;
 	}
-	else {
+	elseif ($group_rep == 1) {
 		switch ($config["dbtype"]) {
 			case "mysql":
 			case "postgresql":
@@ -713,6 +722,10 @@ if (!empty($result)) {
 							GROUP BY to_char(evento), id_agentmodule) t";
 				break;
 		}
+	}
+	elseif ($group_rep == 2) {
+	
+	
 	}
 	$limit = (int) db_get_sql ($sql);
 	
@@ -745,20 +758,26 @@ if (!empty($result)) {
 		//Extract the events by filter (or not) from db
 		$results_graph = db_get_all_rows_sql ($sql);
 	}
-	else {
+	elseif ($group_rep == 1)  {
 		$results_graph = events_get_events_grouped($sql_post,
 											0,
 											$limit,
 											$meta,
 											$history);
 	}
-		
-	$graph = '<div style="width: 350px; margin: 0 auto;">' .
-		grafico_eventos_agente(350, 185,
-			$results_graph, $meta, $history, $tags_acls_condition,$limit) .
-		'</div>';
-	html_print_div(array('id' => 'events_graph',
-		'hidden' => true, 'content' => $graph));
+	elseif ($group_rep == 2) {
+	
+	
+	}
+	
+	if (($group_rep == 1) OR ($group_rep == 0)) {
+		$graph = '<div style="width: 350px; margin: 0 auto;">' .
+			grafico_eventos_agente(350, 185,
+				$results_graph, $meta, $history, $tags_acls_condition,$limit) .
+			'</div>';
+		html_print_div(array('id' => 'events_graph',
+			'hidden' => true, 'content' => $graph));
+	}
 }
 
 
@@ -789,7 +808,7 @@ if ($group_rep == 0) {
 			FROM $event_table
 			WHERE 1=1 $sql_post";
 }
-else {
+elseif ($group_rep == 1) {
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
@@ -808,9 +827,13 @@ else {
 			break;
 	}
 }
-
+elseif ($group_rep == 2) {
+	$sql = "SELECT COUNT(*) FROM (select id_agente as total from $event_table WHERE id_agente > 0  
+					$sql_post GROUP BY id_agente ORDER BY id_agente ) AS t";
+}
 
 $total_events = (int) db_get_sql ($sql);
+
 if (empty ($result)) {
 	$result = array ();
 }

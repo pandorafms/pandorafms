@@ -50,3 +50,6 @@ service pandora_agent_daemon start
 check "Starting the Pandora FMS Agent" $?
 
 exit 0
+
+#Run console CI tests
+cd /tmp/pandorafms/tests && chmod +x run_console_tests.py && ./run_console_tests.py

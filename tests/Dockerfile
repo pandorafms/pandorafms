@@ -94,3 +94,5 @@ RUN yum install -y \
 	net-snmp-utils \
 	perl-Test-Simple; yum clean all;
 
+#Exposing ports for: HTTP, SNMP Traps, Anytermd (SSH), Anytermd (Telnet), Tentacle protocol
+EXPOSE 80 162/udp 8022 8023 41121

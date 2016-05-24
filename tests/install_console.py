@@ -29,6 +29,7 @@ browser.implicitly_wait(300) # The installation is going to take a long time.
 browser.find_element_by_xpath("//*[@id='step5']/img").click()
 browser.implicitly_wait(5)
 assert("Installation complete" in browser.page_source)
+browser.find_element_by_name("rn_file").click()
 
 # Clean-up
 browser.quit()

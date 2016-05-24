@@ -26,7 +26,8 @@ install:
 #  - "export DISPLAY=:99.0"
 #  - "sh -e /etc/init.d/xvfb start"
 #  - sleep 4 # give xvfb some time to start
-  
+
 script:
-  - docker run -dt -v "$TRAVIS_BUILD_DIR:/tmp/pandorafms" -p 127.0.0.1:80:80 pandorafms/pandorafms-base /tmp/pandorafms/tests/test.sh
-  - python $TRAVIS_BUILD_DIR/tests/console/PAN1.py
+  - docker run --name pandorafms -h pandorafms -dt -v "$TRAVIS_BUILD_DIR:/tmp/pandorafms" -p 127.0.0.1:80:80 pandorafms/pandorafms-base tail -f /var/log/httpd/access_log
+  - docker exec -t pandorafms /tmp/pandorafms/tests/test.sh
+  - python $TRAVIS_BUILD_DIR/tests/run_console_tests.py

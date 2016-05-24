@@ -14,3 +14,5 @@ install:
 script:
   - python $TRAVIS_BUILD_DIR/tests/console/PAN1.py
 
+addons:
+  firefox: "latest"

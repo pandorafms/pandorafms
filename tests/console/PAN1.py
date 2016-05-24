@@ -16,9 +16,7 @@ class PAN1(PandoraWebDriverTestCase):
 	
 	def test_pan1(self):
 		driver = self.driver
-		#login(driver,"admin","t3st1ng!",self.base_url)
 		login(driver,"admin","pandora",self.base_url)
-		#driver.find_element_by_css_selector("#subSetup > li.sub_subMenu > a > div.submenu_text.submenu2_text_middle").click()
 		element = driver.find_element_by_css_selector("#subSetup > li.sub_subMenu > a > div.submenu_text.submenu2_text_middle")
 		driver.execute_script("arguments[0].click();", element)
 		self.assertEqual("IP list with API access", driver.find_element_by_id("table2-15-0").text)

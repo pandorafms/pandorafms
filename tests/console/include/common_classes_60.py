@@ -8,6 +8,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
+from os import environ
 
 
 class ArticaTestResult(TestResult):
@@ -24,10 +25,20 @@ class PandoraWebDriverTestCase(TestCase):
 	time_started = None
 	time_elapsed = None #Total time of the test
 	tickets_associated = []
+	sauce_username = environ["SAUCE_USERNAME"]
+	sauce_access_key = environ["SAUCE_ACCESS_KEY"]
+
+	desired_cap = {
+		'tunnel-identifier': environ["TRAVIS_JOB_NUMBER"],
+		'platform': "Windows 10",
+		'browserName': "firefox",
+		'version': "46",
+	}
 
 	def setUp(self):
 		self.time_started = datetime.now()
-		self.driver = webdriver.Firefox()
+		#self.driver = webdriver.Firefox()
+		self.driver = webdriver.Remote(command_executor='http://'+self.sauce_username+':'+self.sauce_access_key+'@ondemand.saucelabs.com:80/wd/hub',desired_capabilities=self.desired_cap)
 		self.driver.implicitly_wait(30)
 		self.base_url = "http://localhost/"
 		self.verificationErrors = []

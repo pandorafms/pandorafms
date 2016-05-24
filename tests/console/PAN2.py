@@ -17,12 +17,6 @@ class PAN2(PandoraWebDriverTestCase):
 	def test_pan2(self):
 		driver = self.driver
 		login(driver,"admin","pandora",self.base_url)
-		driver.get(self.base_url + "/pandora_console/index.php")
-		driver.find_element_by_id("nick").clear()
-		driver.find_element_by_id("nick").send_keys("admin")
-		driver.find_element_by_id("pass").clear()
-		driver.find_element_by_id("pass").send_keys("t3st1ng!")
-		driver.find_element_by_id("submit-login_button").click()
 		element = driver.find_element_by_xpath("//ul[@id='subViews']/li[4]/a/div")
 		driver.execute_script("arguments[0].click();", element)
 		driver.find_element_by_id("submit-crt").click()

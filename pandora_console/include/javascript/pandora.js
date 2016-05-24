@@ -1021,6 +1021,7 @@ function toggle_full_value(id) {
 			background: "black"
 		}
 	});
+}
 
 /**
  * Auto hides an element and shows it
@@ -1073,5 +1074,4 @@ var autoHideElement = function (element, hideTime) {
 	
 	// Start hide
 	startHideTimeout(hideTime);
->>>>>>> 8d69c50... Added a function to easily made a control which only appear on mouse move
 }

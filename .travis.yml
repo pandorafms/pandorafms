@@ -20,7 +20,6 @@ before_install:
   - sudo apt-get install xvfb
 
 install:
-  - docker run -dt -v "$TRAVIS_BUILD_DIR:/tmp/pandorafms" -p 127.0.0.1:80:80 pandorafms/pandorafms-base /tmp/pandorafms/tests/test.sh
   - pip install selenium PyVirtualDisplay sauceclient
 
 #before_script:
@@ -30,4 +29,7 @@ install:
   
 script:
   - docker ps -a
+  - docker run -dt -v "$TRAVIS_BUILD_DIR:/tmp/pandorafms" -p 127.0.0.1:80:80 pandorafms/pandorafms-base /tmp/pandorafms/tests/test.sh
+  - docker ps -a
   - python $TRAVIS_BUILD_DIR/tests/console/PAN1.py
+  - docker ps -a

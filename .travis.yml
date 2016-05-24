@@ -12,5 +12,5 @@ install:
   - pip install selenium PyVirtualDisplay
   
 script:
-  - python $TRAVIS_BUILD_DIR/tests/run_console_tests.py
+  - python $TRAVIS_BUILD_DIR/tests/console/PAN1.py
 

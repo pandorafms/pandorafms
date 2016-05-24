@@ -29,6 +29,5 @@ install:
 #  - sleep 4 # give xvfb some time to start
   
 script:
+  - docker ps -a
   - python $TRAVIS_BUILD_DIR/tests/console/PAN1.py
-
-

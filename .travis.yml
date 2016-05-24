@@ -5,9 +5,9 @@ python:
   - 2.7
 
 env:
-  - SAUCE_USERNAME="artica_pandorafms"
   global:
     - secure: "MEfyEpYEBkPmgPYX3CDKhaoiOltH5lDcUOYZ/19Yflg6ee20IBZOywCmrKH7VouKlOHUrGTUQqHBou0npm93qBju3MrPCE2R62PiDV2EHCGl3AFpLkgt0m1/DceWCWKlL+gI8uvnEFzVUuaPm6cEcRn1ikzg5b084bTxJ2B1Bvs="
+    - SAUCE_USERNAME="artica_pandorafms"
 
 addons:
   firefox: "latest"

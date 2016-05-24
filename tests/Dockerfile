@@ -21,9 +21,9 @@ RUN yum -y update; yum clean all;
 
 # Generic dependencies
 RUN yum install -y \
-	firefox
-	python-pip
-	xorg-x11-server-Xvfb
+	firefox \
+	python-pip \
+	xorg-x11-server-Xvfb; yum clean all;
 RUN pip install pyvirtualdisplay
 RUN pip install selenium
 
@@ -57,7 +57,7 @@ RUN yum install -y \
 	nmap \
 	xprobe2 \
 	mysql-server \
-	mysql
+	mysql; yum clean all;
 
 # Pandora FMS Server dependencies
 RUN yum install -y \ 
@@ -91,5 +91,8 @@ RUN yum install -y \
 	perl-XML-Twig \ 
 	perl-Encode-Locale \
 	net-snmp \
-	net-snmp-utils
+	net-snmp-utils \
+	perl-Test-Simple; yum clean all;
 
+#Exposing ports for: HTTP, SNMP Traps, Anytermd (SSH), Anytermd (Telnet), Tentacle protocol
+EXPOSE 80 162/udp 8022 8023 41121

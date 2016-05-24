@@ -1021,4 +1021,57 @@ function toggle_full_value(id) {
 			background: "black"
 		}
 	});
+
+/**
+ * Auto hides an element and shows it
+ * when the user moves the mouse over the body.
+ *
+ * @param element [Element object] Element object to hide.
+ * @param hideTime [integer] ms of the hide timeout.
+ *
+ * @retval void
+ */
+var autoHideElement = function (element, hideTime) {
+	hideTime = hideTime || 3000;
+	var timerRef;
+	var isHoverElement = false;
+	
+	var showElement = function () {
+		$(element).show();
+	}
+	var hideElement = function () {
+		$(element).fadeOut();
+	}
+	var startHideTimeout = function (msec) {
+		showElement();
+		timerRef = setTimeout(hideElement, msec);
+	}
+	var cancelHideTimeout = function () {
+		clearTimeout(timerRef);
+		timerRef = null;
+	}
+	
+	var handleBodyMove = function (event) {
+		if (isHoverElement) return;
+		if (timerRef) cancelHideTimeout();
+		startHideTimeout(hideTime);
+	}
+	var handleElementEnter = function (event) {
+		isHoverElement = true;
+		cancelHideTimeout();
+	}
+	var handleElementLeave = function (event) {
+		isHoverElement = false;
+		startHideTimeout(hideTime);
+	}
+	
+	// Bind event handlers
+	$(element)
+		.mouseenter(handleElementEnter)
+		.mouseleave(handleElementLeave);
+	$('body').mousemove(handleBodyMove);
+	
+	// Start hide
+	startHideTimeout(hideTime);
+>>>>>>> 8d69c50... Added a function to easily made a control which only appear on mouse move
 }

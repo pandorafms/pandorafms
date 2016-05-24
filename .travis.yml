@@ -7,5 +7,9 @@ python:
 services:
   - docker
 
+install:
+  - docker run --rm -t -v "$TRAVIS_BUILD_DIR:/tmp/pandorafms" -p 80:80 pandorafms/pandorafms-base /tmp/pandorafms/tests/test.sh
+  
 script:
-  - docker run --rm -t -v "$TRAVIS_BUILD_DIR:/tmp/pandorafms" pandorafms/pandorafms-base /tmp/pandorafms/tests/test.sh
+  - python /tmp/pandorafms/tests/run_console_tests.py
+

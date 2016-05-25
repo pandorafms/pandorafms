@@ -8,6 +8,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
+from sauceclient import SauceClient
 from os import environ
 
 
@@ -27,6 +28,7 @@ class PandoraWebDriverTestCase(TestCase):
 	tickets_associated = []
 	sauce_username = environ["SAUCE_USERNAME"]
 	sauce_access_key = environ["SAUCE_ACCESS_KEY"]
+	sauce_client = None
 
 	desired_cap = {
 		'tunnel-identifier': environ["TRAVIS_JOB_NUMBER"],
@@ -35,10 +37,14 @@ class PandoraWebDriverTestCase(TestCase):
 		'version': "46",
 	}
 
+	sauce_custom_tags = [environ["TRAVIS_BRANCH"],self.id()]
+
 	def setUp(self):
 		self.time_started = datetime.now()
-		#self.driver = webdriver.Firefox()
+		#Start VM in Sauce Labs
 		self.driver = webdriver.Remote(command_executor='http://'+self.sauce_username+':'+self.sauce_access_key+'@ondemand.saucelabs.com:80/wd/hub',desired_capabilities=self.desired_cap)
+
+		self.sauce_client = SauceClient(self.sauce_username, self.sauce_access_key)
 		self.driver.implicitly_wait(30)
 		self.base_url = "http://localhost/"
 		self.verificationErrors = []
@@ -71,6 +77,10 @@ class PandoraWebDriverTestCase(TestCase):
 		diff = tack - self.time_started
 		self.time_elapsed = diff.seconds
 		self.driver.quit()
+		#Update Sauce Labs job
+		is_test_successful = self.verificationErrors == []
+		sauce_client.jobs.update_job(driver.session_id, passed=is_test_successful,tags=self.sauce_custom_tags,build_num=environ["TRAVIS_JOB_NUMBER"],name=str(self.id())+"_"+str(environ["TRAVIS_BRANCH"])+"_"+str(environ["TRAVIS_JOB_NUMBER"]))
+
 		self.assertEqual([], self.verificationErrors)
 		super(PandoraWebDriverTestCase, self).tearDown()
 

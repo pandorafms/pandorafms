@@ -313,10 +313,16 @@ function tactical_get_data ($id_user = false, $user_strict = false, $acltags, $r
 	else {
 		
 		if ($user_strict) {
-			$_tag_condition = 'AND ' . tags_get_acl_tags_module_condition($acltags,'tae');
+			if (empty($acltags)) {
+				$_tag_condition = '';
+			}
+			else {
+				$_tag_condition = 'AND ' . tags_get_acl_tags_module_condition($acltags,'tae');
+			}
 		}
-		else
+		else {
 			$_tag_condition = '';
+		}
 		
 		$result_list = db_get_all_rows_sql("SELECT COUNT(*) as contado, estado
 					FROM tagente_estado tae INNER JOIN tagente ta

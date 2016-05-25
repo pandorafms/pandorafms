@@ -92,10 +92,11 @@ if ($search_agents && (!is_metaconsole() || $force_local)) {
 		}
 	}
 	
-	switch ($all) {
-		case 'enabled':
-			$filter['disabled'] = 0;
-			break;
+	if ($all === 'enabled') {
+		$filter['disabled'] = 1;
+	}
+	else {
+		$filter['disabled'] = 0;
 	}
 	
 	$data = array();

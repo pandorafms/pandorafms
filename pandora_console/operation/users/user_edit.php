@@ -102,6 +102,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	$upd_info["language"] = get_parameter_post ("language", $user_info["language"]);
 	$upd_info["id_skin"] = get_parameter ("skin", $user_info["id_skin"]);
 	$upd_info["block_size"] = get_parameter ("block_size", $config["block_size"]);
+	$upd_info["firstname"] = get_parameter ("newsletter_reminder", $user_info["first_name"]);
 	$default_block_size = get_parameter ("default_block_size", 0);
 	if($default_block_size) {
 		$upd_info["block_size"] = 0;
@@ -355,7 +356,25 @@ if ($double_auth_enabled) {
 }
 // Dialog
 $data[0] .= "<div id=\"dialog-double_auth\"><div id=\"dialog-double_auth-container\"></div></div>";
-$table->colspan[count($table->data)][0] = 3;
+
+// Newsletter
+if (license_free()) {
+	$data[1] = __('Newsletter Subscribed');
+	$data[1] .= $jump . ui_print_help_tip(__('Subs news'), true);
+	if ($user_info["middlename"]) {
+		$data[1] .= $jump . __('You are subscribed to PandoraFMS newsletter');
+	}
+	else {
+		$data[1] .= $jump . __('Click <a style="font-weight:bold;" href="javascript: force_run_newsletter();"> HERE </a> to init the newsletter subscription process');
+	}
+
+	$data[2] = __('Newsletter Reminder');
+	$data[2] .= ui_print_help_tip(__('Remind news'), true);
+	if ($user_info["firstname"] != 0) $user_info["firstname"] = 1;
+	$data[2] .= html_print_checkbox('newsletter_reminder', 1, $user_info["firstname"], true);
+} else {
+	$table->colspan[count($table->data)][0] = 3;
+}
 $table->rowclass[] = '';
 $table->rowstyle[] = 'font-weight: bold;';
 $table->data[] = $data;

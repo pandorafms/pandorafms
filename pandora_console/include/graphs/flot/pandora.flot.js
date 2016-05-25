@@ -468,7 +468,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	function yFormatter(v, axis) {
 		format = new Array();
 		for (i = 0; i < labels_total.length; i++) {
-			format.push([i,'<div style="visibility: hidden;" class="legend_'+i+'">'+labels_total[i][1]+'</div>']);
+			format.push([i,'<div class="legend_'+i+'">'+labels_total[i][1]+'</div>']);
 		}
 		return format;
 	}
@@ -480,7 +480,6 @@ $.fn.HUseTooltip = function () {
     $(this).bind("plothover", function (event, pos, item) {
         if (item) {
             if ((previousLabel != item.series.label) || (previousPoint != item.seriesIndex)) {
-				$('.legend_'+previousPoint).css("visibility","hidden");
                 previousPoint = item.seriesIndex;
                 previousLabel = item.series.label;
                 $("#tooltip").remove();
@@ -489,15 +488,13 @@ $.fn.HUseTooltip = function () {
                 var y = item.datapoint[1];
 
                 var color = item.series.color;              
-                $('.legend_'+y).css("visibility","");
                 showTooltip(item.pageX,
                         item.pageY,
                         color,
-                        "<strong>" + $('.legend_'+x).text() + "</strong>: <strong>" + x + "</strong>");
+                        "<strong>" + x + "</strong>");
             }
         } else {
             $("#tooltip").remove();
-            $('.legend_'+previousPoint).css("visibility","hidden");
             previousPoint = null;
         }
     });

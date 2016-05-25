@@ -1381,12 +1381,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			$datelimit = $date - $period;
 			foreach ($module_list as $module) {
 				$temp[$module] = modules_get_agentmodule($module);
-				$temp_data = db_get_value_sql('SELECT datos
-							FROM tagente_datos 
-							WHERE id_agente_modulo = ' . (int) $module .
-								' AND utimestamp > ' . (int) $datelimit .
-								' AND utimestamp < ' . (int) $date) .
-								" ORDER BY utimestamp DESC";
+				$query_last_value = sprintf('
+					SELECT datos
+					FROM tagente_datos
+					WHERE id_agente_modulo = %d
+						AND utimestamp < %d
+						ORDER BY utimestamp DESC',
+					$module, $date);
+				$temp_data = db_get_value_sql($query_last_value);
 								
 				if ($temp_data) {
 					if (is_numeric($temp_data))
@@ -1403,9 +1405,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$temp[$module]['value'] = $value;
 				$temp[$module]['max'] = reporting_get_agentmodule_data_max($module,$period,$date);
 				$temp[$module]['min'] = reporting_get_agentmodule_data_min($module,$period,$date);
-				
 			}
-			
 			break;
 		case CUSTOM_GRAPH_HBARS:
 		case CUSTOM_GRAPH_VBARS:
@@ -1414,12 +1414,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			$label = '';
 			foreach ($module_list as $module) {
 				$module_data = modules_get_agentmodule($module);
-				$temp_data = db_get_value_sql('SELECT datos
-							FROM tagente_datos 
-							WHERE id_agente_modulo = ' . (int) $module .
-								' AND utimestamp > ' . (int) $datelimit .
-								' AND utimestamp < ' . (int) $date) .
-								" ORDER BY utimestamp DESC";
+				$query_last_value = sprintf('
+					SELECT datos
+					FROM tagente_datos
+					WHERE id_agente_modulo = %d
+						AND utimestamp < %d
+						ORDER BY utimestamp DESC',
+					$module, $date);
+				$temp_data = db_get_value_sql($query_last_value);
 				
 				$agent_name = io_safe_output(
 					modules_get_agentmodule_agent_name ($module));
@@ -1429,7 +1431,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				else
 					$label = $agent_name . " - " .$module_data['nombre'];
 				$temp[$label]['g'] = round($temp_data,4);
-				
 			}
 			break;
 		case CUSTOM_GRAPH_PIE:
@@ -1437,12 +1438,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			$total_modules = 0;
 			foreach ($module_list as $module) {
 				$data_module = modules_get_agentmodule($module);
-				$temp_data = db_get_value_sql('SELECT datos
-							FROM tagente_datos 
-							WHERE id_agente_modulo = ' . (int) $module .
-								' AND utimestamp > ' . (int) $datelimit .
-								' AND utimestamp < ' . (int) $date) .
-								" ORDER BY utimestamp DESC";
+				$query_last_value = sprintf('
+					SELECT datos
+					FROM tagente_datos
+					WHERE id_agente_modulo = %d
+						AND utimestamp < %d
+						ORDER BY utimestamp DESC',
+					$module, $date);
+				$temp_data = db_get_value_sql($query_last_value);
 				if ( $temp_data ){
 					if (is_numeric($temp_data))
 						$value = $temp_data;
@@ -1469,12 +1472,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			$datelimit = $date - $period;
 			foreach ($module_list as $module) {
 				$temp[$module] = modules_get_agentmodule($module);
-				$temp_data = db_get_value_sql('SELECT datos
-							FROM tagente_datos 
-							WHERE id_agente_modulo = ' . (int) $module .
-								' AND utimestamp > ' . (int) $datelimit .
-								' AND utimestamp < ' . (int) $date) .
-								" ORDER BY utimestamp DESC";
+				$query_last_value = sprintf('
+					SELECT datos
+					FROM tagente_datos
+					WHERE id_agente_modulo = %d
+						AND utimestamp < %d
+						ORDER BY utimestamp DESC',
+					$module, $date);
+				$temp_data = db_get_value_sql($query_last_value);
 				if ( $temp_data ) {
 					if (is_numeric($temp_data))
 						$value = $temp_data;

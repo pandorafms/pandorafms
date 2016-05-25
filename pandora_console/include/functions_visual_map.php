@@ -1936,7 +1936,8 @@ function visual_map_print_user_lines($layout_data, $proportion = null) {
  * @param bool $draw_lines
  */
 function visual_map_print_visual_map ($id_layout, $show_links = true,
-	$draw_lines = true, $width = null, $height = null, $home_url = '', $isExternalLink = false, $graph_javascript = true) {
+	$draw_lines = true, $width = null, $height = null, $home_url = '',
+	$isExternalLink = false, $graph_javascript = true, $keep_aspect_ratio = false) {
 
 	enterprise_include_once('include/functions_visual_map.php');
 	
@@ -1989,15 +1990,23 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 	if (!is_null($height) && !is_null($width)) {
 		$resizedMap = true;
 		
-		$mapWidth = $width;
-		$mapHeight = $height;
 		
-		$dif_height = $layout["height"] - $height;
-		$dif_width = $layout["width"] - $width;
+		if ($keep_aspect_ratio) {
+			$ratio = min($width / $layout['width'], $height / $layout['height']);
+			$mapWidth = $ratio * $layout['width'];
+			$mapHeight = $ratio * $layout['height'];
+		}
+		else {
+			$mapWidth = $width;
+			$mapHeight = $height;
+		}
+		
+		$dif_height = $layout["height"] - $mapHeight;
+		$dif_width = $layout["width"] - $mapWidth;
 		
 		
-		$proportion_height = $height / $layout["height"];
-		$proportion_width = $width / $layout["width"];
+		$proportion_height = $mapHeight / $layout["height"];
+		$proportion_width = $mapWidth / $layout["width"];
 		
 		
 		if (is_metaconsole()) {

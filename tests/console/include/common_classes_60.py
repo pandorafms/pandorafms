@@ -77,7 +77,7 @@ class PandoraWebDriverTestCase(TestCase):
 		self.driver.quit()
 		#Update Sauce Labs job
 		is_test_successful = self.verificationErrors == []
-		sauce_client.jobs.update_job(driver.session_id, passed=is_test_successful,tags=[environ["TRAVIS_BRANCH"],self.id()],build_num=environ["TRAVIS_JOB_NUMBER"],name=str(self.id())+"_"+str(environ["TRAVIS_BRANCH"])+"_"+str(environ["TRAVIS_JOB_NUMBER"]))
+		self.sauce_client.jobs.update_job(self.driver.session_id, passed=is_test_successful,tags=[environ["TRAVIS_BRANCH"],self.id()],build_num=environ["TRAVIS_JOB_NUMBER"],name=str(environ["TRAVIS_COMMIT"])+"_"+str(self.id().split('.')[1]))
 
 		self.assertEqual([], self.verificationErrors)
 		super(PandoraWebDriverTestCase, self).tearDown()

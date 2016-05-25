@@ -494,13 +494,13 @@ if (defined('METACONSOLE'))
 		'</fieldset>';
 }
 else {
-	$data[0] = '<fieldset class="databox" style="padding:0px; width: 510px; ">' .
+	$data[0] = '<fieldset class="databox" style="padding:0px; width: 30%; ">' .
 			'<legend>' .
 				__('Events with following tags') .
 			'</legend>' .
 			html_print_table($tabletags_with, true) .
 		'</fieldset>';
-	$data[1] = '<fieldset class="databox" style="padding:0px; width: 310px;">' .
+	$data[1] = '<fieldset class="databox" style="padding:0px; width: 30%;">' .
 			'<legend>' .
 				__('Events without following tags') .
 			'</legend>' .

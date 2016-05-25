@@ -37,8 +37,6 @@ class PandoraWebDriverTestCase(TestCase):
 		'version': "46",
 	}
 
-	sauce_custom_tags = [environ["TRAVIS_BRANCH"],self.id()]
-
 	def setUp(self):
 		self.time_started = datetime.now()
 		#Start VM in Sauce Labs
@@ -79,7 +77,7 @@ class PandoraWebDriverTestCase(TestCase):
 		self.driver.quit()
 		#Update Sauce Labs job
 		is_test_successful = self.verificationErrors == []
-		sauce_client.jobs.update_job(driver.session_id, passed=is_test_successful,tags=self.sauce_custom_tags,build_num=environ["TRAVIS_JOB_NUMBER"],name=str(self.id())+"_"+str(environ["TRAVIS_BRANCH"])+"_"+str(environ["TRAVIS_JOB_NUMBER"]))
+		sauce_client.jobs.update_job(driver.session_id, passed=is_test_successful,tags=[environ["TRAVIS_BRANCH"],self.id()],build_num=environ["TRAVIS_JOB_NUMBER"],name=str(self.id())+"_"+str(environ["TRAVIS_BRANCH"])+"_"+str(environ["TRAVIS_JOB_NUMBER"]))
 
 		self.assertEqual([], self.verificationErrors)
 		super(PandoraWebDriverTestCase, self).tearDown()

@@ -1196,6 +1196,20 @@ function enterprise_installed() {
 }
 
 /**
+ * Check if the license is PANDORA-FREE.
+ * 
+ * @return boolean.
+ */
+function license_free() {
+	$return = true;
+	
+	$pandora_license = db_get_value ('value', 'tupdate_settings', '`key`', 'customer_key');
+	if ($pandora_license !== 'PANDORA-FREE') $return = false;
+	
+	return $return;
+}
+
+/**
  * TODO: Document enterprise functions
  */
 function enterprise_hook ($function_name, $parameters = false) {

@@ -1472,6 +1472,18 @@ function config_process_config () {
 		config_update_value ('max_file_size', "2M");
 	}
 	
+	if (!isset ($config["initial_wizard"])) {
+		config_update_value ('initial_wizard', 0);
+	}
+	
+	if (!isset ($config["identification_reminder"])) {
+		config_update_value ('identification_reminder', 1);
+	}
+	
+	if (!isset ($config["instance_registered"])) {
+		config_update_value ('instance_registered', 0);
+	}
+
 	// eHorus
 	if (!isset($config['ehorus_enabled'])) {
 		config_update_value('ehorus_enabled', 0);
@@ -1663,6 +1675,24 @@ function config_check () {
 			__("Variable disable_functions containts functions system() or exec(), in PHP configuration file (php.ini)"). '<br /><br />' . 
 			__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'), __("Problems with disable functions in PHP.INI"));
 	}
+	
+	if (license_free() && users_is_admin($config['id_user'])) {
+		//Newsletter advice
+		$newsletter = db_get_value ('middlename', 'tusuario', 'id_user', $config['id_user']);
+		if ($newsletter != 1) {
+			set_pandora_error_for_header(  
+				__('Click <a style="font-weight:bold;" href="javascript: force_run_newsletter();"> HERE </a> to init the newsletter subscription process'),
+				__("Missing user in newsletter"));
+		}
+		
+		//Registration advice
+		if (!isset ($config['instance_registered']) || ($config['instance_registered'] != 1)) {
+			set_pandora_error_for_header(  
+				__('Click <a style="font-weight:bold;" href="javascript: force_run_register();"> HERE </a> to init the registration process'),
+				__("This PandoraFMS instance is not registered"));
+		}
+	}
+	
 }
 
 function config_return_in_bytes($val) {

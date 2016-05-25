@@ -137,31 +137,26 @@ ui_require_javascript_file('wz_jsgraphics');
 ui_require_javascript_file('pandora_visual_console');
 ?>
 
-<style type="text/css">
-	div#vc-controls {
-		position: fixed;
-		top: 30px;
-		right: 20px;
-	}
-
-	div#vc-controls div.vc-title, div#vc-controls div.vc-refr {
-		margin-top: 6px;
-		margin-left: 3px;
-		margin-right: 3px;
-	}
-	div#vc-controls div.vc-refr>div {
-		display: inline;
-	}
-	div#vc-controls img.vc-qr {
-		margin-top: 6px;
-		margin-left: 8px;
-		margin-right: 8px;
-	}
-</style>
-
 <script language="javascript" type="text/javascript">
 	$(document).ready(function () {
 		var refr = <?php echo (int) $refr; ?>;
+		
+		var startCountDown = function (duration, cb) {
+			$('div.vc-countdown').countdown('destroy');
+			if (!duration) return;
+			var t = new Date();
+			t.setTime(t.getTime() + duration * 1000);
+			$('div.vc-countdown').countdown({
+				until: t,
+				format: 'MS',
+				layout: '(%M%nn%M:%S%nn%S <?php echo __('Until refresh'); ?>) ',
+				alwaysExpire: true,
+				onExpiry: function () {
+					$('div.vc-countdown').countdown('destroy');
+					cb();
+				}
+			});
+		}
 		
 		var fetchMap = function () {
 			$.ajax({
@@ -184,23 +179,6 @@ ui_require_javascript_file('pandora_visual_console');
 			});
 		}
 		
-		var startCountDown = function (duration, cb) {
-			$('div.vc-countdown').countdown('destroy');
-			if (!duration) return;
-			var t = new Date();
-			t.setTime(t.getTime() + duration * 1000);
-			$('div.vc-countdown').countdown({
-				until: t,
-				format: 'MS',
-				layout: '(%M%nn%M:%S%nn%S <?php echo __('Until refresh'); ?>) ',
-				alwaysExpire: true,
-				onExpiry: function () {
-					$('div.vc-countdown').countdown('destroy');
-					cb();
-				}
-			});
-		}
-		
 		// Auto hide controls
 		var controls = document.getElementById('vc-controls');
 		autoHideElement(controls, 1000);
@@ -213,7 +191,6 @@ ui_require_javascript_file('pandora_visual_console');
 		$('select#refr').change(function (event) {
 			refr = Number.parseInt(event.target.value, 10);
 			startCountDown(refr, fetchMap);
-			
 		});
 		
 		// Start the map fetch

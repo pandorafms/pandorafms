@@ -126,151 +126,148 @@ if ($vconsole_write || $vconsole_manage) {
 			array ("title" => __('Builder'))) .'</a>';
 }
 
-$options['view']['text'] = '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id=' . $id_layout . '&refr=' . $view_refresh . '">' . html_print_image ("images/operation.png", true, array ("title" => __('View'))) .'</a>';
+$options['view']['text'] = '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id=' . $id_layout . '&refr=' . $view_refresh . '">'
+	. html_print_image("images/operation.png", true, array ("title" => __('View'))) .'</a>';
 $options['view']['active'] = true;
 
 if (! defined('METACONSOLE')) {
-	if ($config["pure"] == 0) {
-		$options['pure']['text'] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.((int)get_parameter('refr', 0)).'&amp;pure=1">' . html_print_image ("images/full_screen.png", true, array ("title" => __('Full screen mode')))
+	if (!$config['pure']) {
+		$options['pure']['text'] = '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'&pure=1">'
+			. html_print_image('images/full_screen.png', true, array('title' => __('Full screen mode')))
 			. "</a>";
+		ui_print_page_header($layout_name, 'images/visual_console.png', false, '', false, $options);
 	}
-	else {
-		$options['pure']['text'] = '<a href="index.php?sec=reporting&amp;sec2=operation/visual_console/render_view&amp;id='.$id_layout.'&amp;refr='.((int)get_parameter('refr', 0)).'">'
-			. html_print_image ("images/normal_screen.png", true,
-				array ("title" => __('Back to normal mode')))
-			. "</a>";
-		
-		// In full screen, the manage options are not available
-		$options = array('view' => $options['view'], 'pure' => $options['pure']);
-	}
-	$options['pure']['active'] = false;
-	
 	//Set the hidden value for the javascript
 	html_print_input_hidden('metaconsole', 0);
-	ui_print_page_header ($layout_name, "images/visual_console.png", false, '', false, $options);
 }
 else {
 	//Set the hidden value for the javascript
 	html_print_input_hidden('metaconsole', 1);
 }
 
-visual_map_print_visual_map ($id_layout, true, true, null, null, '', false, $graph_javascript);
+if ($config['pure']) {
+	// Container of the visual map (ajax loaded)
+	echo '<div id="vc-container"></div>';
+	
+	// Floating menu - Start
+	echo '<div id="vc-controls">';
 
+	echo '<div id="menu_tab">';
+	echo '<ul class="mn">';
 
+	// Quit fullscreen
+	echo '<li class="nomn">';
+	echo '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'">';
+	echo html_print_image('images/normal_screen.png', true, array('title' => __('Back to normal mode')));
+	echo '</a>';
+	echo '</li>';
 
-if ($config["pure"]) {
-	$values = array ();
-	$values[5] = human_time_description_raw (5);
-	$values[30] = human_time_description_raw (30);
-	$values[SECONDS_1MINUTE] = human_time_description_raw(SECONDS_1MINUTE);
-	$values[SECONDS_2MINUTES] = human_time_description_raw(SECONDS_2MINUTES);
-	$values[SECONDS_5MINUTES] = human_time_description_raw(SECONDS_5MINUTES);
-	$values[SECONDS_10MINUTES] = human_time_description_raw(SECONDS_10MINUTES);
-	$values[SECONDS_30MINUTES] = human_time_description_raw(SECONDS_30MINUTES);
-	
-	$table->width = '90%';
-	$table->data = array ();
-	$table->style = array ();
-	$table->style[2] = 'text-align: center';
-	$table->data[0][0] = __('Autorefresh time');
-	
-	$table->data[0][1] = html_print_select ($values, 'refr', $refr, '',
-		'N/A', 0, true, false, false);
-	$table->data[0][2] = html_print_submit_button (__('Refresh'), '',
-		false, 'class="sub next"', true);
-	$table->data[0][2] .= html_print_input_hidden ('vc_refr',
-		$config["vc_refr"], true);
-	
-	echo '<div style="height:30px">&nbsp;</div>';
-	
-	if ($refr > 0) {
-		echo '<div id="countdown"><br /></div>';
-	}
-	
-	echo '<div style="height:30px">&nbsp;</div>';
-	
-	echo '<form method="post">';
-	html_print_input_hidden ('pure', $config["pure"]);
-	html_print_input_hidden ('id', $id_layout);
-	html_print_table ($table);
-	echo '</form>';
+	// Countdown
+	echo '<li class="nomn">';
+	echo '<div class="vc-refr">';
+	echo '<div class="vc-countdown"></div>';
+	echo '<div id="vc-refr-form">';
+	echo __('Refresh') . ':';
+	echo html_print_select(get_refresh_time_array(), 'refr', $refr, '', '', 0, true, false, false);
 	echo '</div>';
+	echo '</div>';
+	echo '</li>';
+
+	// Console name
+	echo '<li class="nomn">';
+	echo '<div class="vc-title">' . $layout_name . '</div>';
+	echo '</li>';
+
+	echo '</ul>';
+	echo '</div>';
+
+	echo '</div>';
+	// Floating menu - End
 	
+	ui_require_jquery_file('countdown');
+	ui_require_css_file('countdown');
 	
-	ui_require_jquery_file ('countdown');
-	ui_require_css_file ('countdown');
 	?>
-	<script language="javascript" type="text/javascript">
-	/* <![CDATA[ */
-	$(document).ready (function () {
-		$("#refr").change(function () {
-			$("#hidden-vc_refr").val($("#refr option:selected").val());
-		});
-		
-		<?php
-		if ($refr > 0) {
-		?>
-			t = new Date();
-			t.setTime (t.getTime() + <?php echo $refr * 1000; ?>);
-			$("#countdown").countdown({
-					until: t,
-					format: 'MS',
-					description: '<?php echo __('Until refresh'); ?>',
-					onExpiry: function () {
-						href = "<?php
-						$url = ui_get_full_url();
-						$url = preg_replace("/&refr=.*&/", "&", $url);
-						echo $url;
-						?>";
-						href = href + "&refr=<?php echo $refr;?>";
-						$(document).attr ("location", href);
-					}
-				}
-			);
-		
-		<?php
+	<style type="text/css">
+		/* Avoid the main_pure container 1000px height */
+		body.pure {
+			min-height: 100px;
 		}
-		?>
-	});
-	/* ]]> */
-	</script>
+		div#main_pure {
+			height: 100%;
+			margin: 0px;
+		}
+	</style>
 	<?php
 }
-
-
-if ($config["pure"] && ((int)get_parameter('refr', 0)) != 0) {
-	ui_require_jquery_file ('countdown');
-	ui_require_css_file ('countdown');
+else {
+	visual_map_print_visual_map ($id_layout, true, true, null, null, '', false, $graph_javascript);
 }
-ui_require_javascript_file ('wz_jsgraphics');
-ui_require_javascript_file ('pandora_visual_console');
+
+ui_require_javascript_file('wz_jsgraphics');
+ui_require_javascript_file('pandora_visual_console');
+
 ?>
+
 <script language="javascript" type="text/javascript">
-	/* <![CDATA[ */
-	
-	
 	$(document).ready (function () {
-		$("#refr").change(function () {
-			$("#hidden-vc_refr").val($("#refr option:selected").val());
-		});
-		
-		<?php
-		if ($config["pure"] && ((int)get_parameter('refr', 0)) > 0) {
-			?>
-			t = new Date();
-			t.setTime (t.getTime() + <?php
-				echo ((int)get_parameter('refr', 0)) * 1000;
-			?>);
-			$("#countdown").countdown({
-				until: t,
-				format: 'MS',
-				description: '<?php echo __('Until refresh'); ?>'
-				});
+		var refr = <?php echo $refr; ?>;
+		var pure = <?php echo (int) $config['pure']; ?>;
 			
-			<?php
+		if (pure) {
+			var startCountDown = function (duration, cb) {
+				$('div.vc-countdown').countdown('destroy');
+				if (!duration) return;
+				var t = new Date();
+				t.setTime(t.getTime() + duration * 1000);
+				$('div.vc-countdown').countdown({
+					until: t,
+					format: 'MS',
+					layout: '(%M%nn%M:%S%nn%S <?php echo __('Until refresh'); ?>) ',
+					alwaysExpire: true,
+					onExpiry: function () {
+						$('div.vc-countdown').countdown('destroy');
+						cb();
+					}
+				});
+			}
+			
+			var fetchMap = function () {
+				$.ajax({
+					url: 'ajax.php',
+					type: 'GET',
+					dataType: 'html',
+					data: {
+						page: 'include/ajax/visual_console.ajax',
+						render_map: true,
+						keep_aspect_ratio: true,
+						id_visual_console: <?php echo $id_layout; ?>,
+						graph_javascript: <?php echo (int) $graph_javascript; ?>,
+						width: $(window).width(),
+						height: $(window).height()
+					}
+				})
+				.done(function (data, textStatus, xhr) {
+					$('div#vc-container').html(data);
+					startCountDown(refr, fetchMap);
+				});
+			}
+			
+			// Auto hide controls
+			var controls = document.getElementById('vc-controls');
+			autoHideElement(controls, 1000);
+			$('select#refr').change(function (event) {
+				refr = Number.parseInt(event.target.value, 10);
+				startCountDown(refr, fetchMap);
+			});
+			
+			// Start the map fetch
+			fetchMap();
 		}
-		?>
+		else {
+			$('#refr').change(function () {
+				$('#hidden-vc_refr').val($('#refr option:selected').val());
+			});
+		}
 	});
-	
-	/* ]]> */
 </script>

@@ -91,7 +91,7 @@ $wizard_data['newsletter_reminder'] = db_get_value ('firstname', 'tusuario', 'id
 $wizard_data['newsletter_reminder_timestamp'] = db_get_value ('lastname', 'tusuario', 'id_user', $config['id_user']);
 
 
-$wizard_data['instance_register'] = $config['instance_registered'];
+$wizard_data['instance_registered'] = $config['instance_registered'];
 $wizard_data['force_register'] = get_parameter ('force_register', -1);
 $wizard_data['identification_reminder'] = $config['identification_reminder'];
 $wizard_data['identification_reminder_timestamp'] = $config['identification_reminder_timestamp'];

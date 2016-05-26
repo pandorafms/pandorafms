@@ -688,26 +688,28 @@ function hbar_graph($flash_chart, $chart_data, $width, $height,
 
 function pie3d_graph($flash_chart, $chart_data, $width, $height,
 	$others_str = "other", $homedir = "", $water_mark = "", $font = '',
-	$font_size = '', $ttl = 1, $legend_position = false, $colors = '') {
+	$font_size = '', $ttl = 1, $legend_position = false, $colors = '',
+	$hide_labels = false) {
 	
 	return pie_graph('3d', $flash_chart, $chart_data, $width, $height,
 		$others_str, $homedir, $water_mark, $font, $font_size, $ttl,
-		$legend_position, $colors);
+		$legend_position, $colors, $hide_labels);
 }
 
 function pie2d_graph($flash_chart, $chart_data, $width, $height,
 	$others_str = "other", $homedir="", $water_mark = "", $font = '',
-	$font_size = '', $ttl = 1, $legend_position = false, $colors = '') {
+	$font_size = '', $ttl = 1, $legend_position = false, $colors = '',
+	$hide_labels = false) {
 	
 	return pie_graph('2d', $flash_chart, $chart_data, $width, $height,
 		$others_str, $homedir, $water_mark, $font, $font_size, $ttl, 
-		$legend_position, $colors);
+		$legend_position, $colors, $hide_labels);
 }
 
 function pie_graph($graph_type, $flash_chart, $chart_data, $width,
 	$height, $others_str = "other", $homedir="", $water_mark = "",
 	$font = '', $font_size = '', $ttl = 1, $legend_position = false,
-	$colors = '') {
+	$colors = '', $hide_labels = false) {
 	
 	if (empty($chart_data)) {
 		return graph_nodata_image($width, $height, 'pie');
@@ -746,7 +748,7 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width,
 	if ($flash_chart) {
 		return flot_pie_chart(array_values($chart_data),
 			array_keys($chart_data), $width, $height, $water_mark_url,
-			$font, $font_size, $legend_position, $colors);
+			$font, $font_size, $legend_position, $colors, $hide_labels);
 	}
 	else {
 		//TODO SET THE LEGEND POSITION

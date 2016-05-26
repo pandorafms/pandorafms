@@ -3,7 +3,7 @@
 
 */
 
-function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, water_mark, separator, legend_position, height, colors) {
+function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, water_mark, separator, legend_position, height, colors, hide_labels) {
 	var labels = labels.split(separator);
 	var data = values.split(separator);
 	if (colors != '') {
@@ -21,7 +21,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 
 	var label_conf;
 
-	if (width < 400) {
+	if (width < 400 || hide_labels) {
 		label_conf = {
 			show: false
 		};
@@ -93,10 +93,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	var plot = $.plot($('#'+graph_id), data, conf_pie);
 
 	var legends = $('#'+graph_id+' .legendLabel');
-	legends.each(function () {
-		$(this).css('width', $(this).width());
-		$(this).css('font-size', font_size+'pt');
-	});
+	legends.css('font-size', font_size+'pt');
 
 	// Events
 	$('#' + graph_id).bind('plothover', pieHover);
@@ -105,22 +102,17 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	$('#' + graph_id).css('margin-left', 'auto');
 	$('#' + graph_id).css('margin-right', 'auto');
 
-	function pieHover(event, pos, obj)
-	{
-		if (!obj)
-			return;
+	function pieHover(event, pos, obj) {
+		if (!obj) return;
 
 		index = obj.seriesIndex;
-		legends.css('font-weight', '');
-		legends.eq(index).css('font-weight', 'bold');
+		legends.css('color', '#3F3F3D');
+		legends.eq(index).css('color', '#000000');
 	}
 
 	// Reset styles
 	function resetInteractivity() {
-		legends.each(function () {
-			// fix the widths so they don't jump around
-			$(this).css('font-weight', '');
-		});
+		legends.css('color', '#3F3F3D');
 	}
 	
 	if (water_mark) {
@@ -160,7 +152,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		formatter: function(label, series) {
 			return '<div style="font-size:' + font_size + 'pt;' +
 				'text-align:center;padding:2px;color:white;">' +
-					label + ':' + series.percent.toFixed(2) + '%</div>';
+				series.percent.toFixed(2) + '%</div>';
 		},
 		background: {
 			opacity: 0.5,
@@ -229,20 +221,16 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 	$('#' + graph_id).css('margin-left', 'auto');
 	$('#' + graph_id).css('margin-right', 'auto');
 	
-	function pieHover(event, pos, obj) 
-	{
-		if (!obj)
-			return;
+	function pieHover(event, pos, obj) {
+		if (!obj) return;
 		
 		index = obj.seriesIndex;
-		legends.css('font-weight', '');
-		legends.eq(index).css('font-weight', 'bold');
+		legends.css('color', '#3F3F3D');
+		legends.eq(index).css('color', '#000000');
 	}
 	
-	function Clickpie(event, pos, obj) 
-	{
-		if (!obj)
-			return;
+	function Clickpie(event, pos, obj) {
+		if (!obj) return;
 		percent = parseFloat(obj.series.percent).toFixed(2);
 		valor = parseFloat(obj.series.data[0][1]);
 		
@@ -264,7 +252,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 	function resetInteractivity() {
 		legends.each(function () {
 			// fix the widths so they don't jump around
-			$(this).css('font-weight', '');
+			$(this).css('color', '#3F3F3D');
 		});
 	}
 	

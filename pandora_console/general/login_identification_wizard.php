@@ -102,9 +102,8 @@ $display_forced = ($wizard_data['force_newsletter'] != -1) || ($wizard_data['for
 
 // Return if it is fully completed
 if ((!$display_register) && (!$display_newsletter)) return;
-html_debug ($wizard_data, true);
 
-$return_button = get_parameter ('return_button', 0) == 1;
+$return_button = get_parameter ('return_button', 0);
 
 $email = db_get_value ('email', 'tusuario', 'id_user', $config['id_user']);
 //Avoid to show default email
@@ -131,7 +130,8 @@ echo '<div id="login_accept_register" title="' .
 		echo '<div style="float: right; width: 20%;">';
 			html_print_submit_button("Finish", 'finish_dialog_button', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
 		echo '</div>';
-		echo '<div style="float: left; width: 20%; display: none;">';
+		$display_status_return = $return_button ? 'block' : 'none';
+		echo '<div style="float: left; width: 20%; display: ' . $display_status_return . ';">';
 			html_print_submit_button("Return", 'return_dialog_button', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
 		echo '</div>';
 		echo '<div style="float: left; margin-left: 0px; width: 50%; text-align: left;">';

@@ -127,7 +127,8 @@ sub help_screen{
 	help_screen_line('--create_network_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  [<module_port> <description> <module_group> <min> <max> <post_process> <interval> \n\t  <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>\n\t  <warning_str> <critical_str> <unknown_events> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>]", 'Add not snmp network module to agent');
 	help_screen_line('--create_snmp_module', "<module_name> <module_type> <agent_name> <module_address> <module_port>\n\t  <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval>\n\t   <warning_min> <warning_max> <critical_min> <critical_max> <history_data> \n\t  <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> \n\t  <snmp3_auth_user> <snmp3_priv_pass> <ff_threshold> <warning_str> \n\t  <critical_str> <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>]", 'Add snmp network module to agent');
 	help_screen_line('--create_plugin_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> \n\t  <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal> <ff_threshold_warning>\n\t  <ff_threshold_critical> <timeout>]", 'Add plug-in module to agent');
-    help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name>');
+    help_screen_line('--create_module_group', '<module_group_name>');
+	help_screen_line('--delete_module', 'Delete module from agent', '<module_name> <agent_name>');
     help_screen_line('--data_module', "<server_name> <agent_name> <module_name> \n\t  <module_type> <module_new_data> [<datetime>]", 'Insert data to module');
     help_screen_line('--get_module_data', "<agent_name> <module_name> <interval> [<csv_separator>]", "\n\t  Show the data of a module in the last X seconds (interval) in CSV format");
     help_screen_line('--delete_data', '-m <module_name> <agent_name> | -a <agent_name> | -g <group_name>', "Delete historic \n\t  data of a module, the modules of an agent or the modules of the agents of a group");
@@ -178,10 +179,13 @@ sub help_screen{
 	help_screen_line('--add_agent_to_policy', '<agent_name> <policy_name>', 'Add an agent to a policy');
 	help_screen_line('--delete_not_policy_modules', '', 'Delete all modules without policy from configuration file');
 	help_screen_line('--disable_policy_alerts', '<policy_name>', 'Disable all the alerts of a policy');
+	help_screen_line('--create_policy', '<policy_name> <group_name> <description>');
 	help_screen_line('--create_policy_data_module', "<policy_name> <module_name> <module_type> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> \n\t  <critical_min> <critical_max> <history_data> <data_configuration> <warning_str> \n\t  <critical_str> <unknown_events> <ff_threshold> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical>\n\t  <ff_timeout>]", 'Add data server module to policy');
 	help_screen_line('--create_policy_network_module', "<policy_name> <module_name> <module_type> [<module_port> \n\t  <description> <module_group> <min> <max> <post_process> <interval> \n\t  <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> \n\t  <warning_str> <critical_str> <unknown_events> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical>]", "Add not snmp network module to policy");
 	help_screen_line('--create_policy_snmp_module', "<policy_name> <module_name> <module_type> <module_port> \n\t  <version> [<community> <oid> <description> <module_group> <min> <max> \n\t  <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data>\n\t   <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> \n\t  <snmp3_priv_pass> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical>]", 'Add snmp network module to policy');
 	help_screen_line('--create_policy_plugin_module', "<policy_name> <module_name> <module_type> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> \n\t  <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max>\n\t  <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical>]", 'Add plug-in module to policy');
+	help_screen_line('--create_policy_data_module_from_local_component', '<policy_name> <component_name>');
+	help_screen_line('--add_collection_to_policy', "<policy_name> <collection_name>");
 	help_screen_line('--validate_policy_alerts', '<policy_name>', 'Validate the alerts of a given policy');
 	help_screen_line('--get_policy_modules', '<policy_name>', 'Get the modules of a policy');
 	help_screen_line('--get_policies', '[<agent_name>]', "Get all the policies (without parameters) or \n\tthe policies of a given agent (agent name as parameter)");
@@ -1290,6 +1294,19 @@ sub cli_create_data_module($) {
 	else {
 		enterprise_hook('pandora_create_policy_module_from_hash', [$conf, \%parameters, $dbh]);
 	}
+}
+
+##############################################################################
+# Create module group.
+# Related option: --create_module_group
+##############################################################################
+sub cli_create_module_group () {
+	my $module_group_name = @ARGV[2];
+	
+	my $id_module_group = get_module_group_id($dbh, $module_group_name);
+	non_exist_check($id_module_group,'group',$module_group_name);
+	
+	db_insert ($dbh, 'id_mg', 'INSERT INTO tmodule_group (name) VALUES (?)', safe_input($module_group_name));
 }
 
 ##############################################################################
@@ -4381,6 +4398,10 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 27, 24);
 			cli_create_data_module(0);
 		}
+		elsif ($param eq '--create_module_group') {
+			param_check($ltotal, 1, 1);
+			cli_create_module_group();
+		}
 		elsif ($param eq '--create_network_module') {
 			param_check($ltotal, 26, 20);
 			cli_create_network_module(0);
@@ -4500,6 +4521,18 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--get_module_data') {
 			param_check($ltotal, 4, 1);
 			cli_module_get_data();
+		}
+		elsif ($param eq '--add_collection_to_policy') {
+			param_check($ltotal, 2, 2);
+			cli_add_collection_to_policy();
+		}
+		elsif ($param eq '--create_policy_data_module_from_local_component') {
+			param_check($ltotal, 2, 2);
+			cli_create_policy_data_module_from_local_component();
+		}
+		elsif ($param eq '--create_policy') {
+			param_check($ltotal, 3, 2);
+			cli_create_policy();
 		}
 		elsif ($param eq '--create_policy_data_module') {
 			param_check($ltotal, 23, 20);
@@ -4802,6 +4835,43 @@ sub pandora_get_local_component_id($$) {
 }
 
 ##############################################################################
+# Create policy
+# Related option: --create_policy
+##############################################################################
+sub cli_create_policy () {
+	my ($policy_name, $group_name, $description) = @ARGV[2..4];
+	
+	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
+	
+	non_exist_check($policy_id,'policy',$policy_name);
+	
+	my $id_group = get_group_id($dbh,$group_name);
+	exist_check($id_group,'group',$group_name);
+	
+	my $id = enterprise_hook('create_policy',[$dbh, safe_input($policy_name), safe_input($description), $id_group]);
+	
+	return $id;
+}
+
+##############################################################################
+# Add collection to a policy
+# Related option: --add_collection_to_policy
+##############################################################################
+sub cli_add_collection_to_policy () {
+	my ($policy_name, $collection_name) = @ARGV[2..3];
+	
+	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
+	exist_check($policy_id,'policy',$policy_name);
+	
+	my $collection_id = enterprise_hook('get_collection_id',[$dbh, safe_input($collection_name)]);
+	exist_check($collection_id,'group',$collection_name);
+	
+	my $id = enterprise_hook('add_collection_to_policy_db',[$dbh, $policy_id, $collection_id]);
+	
+	return $id;
+}
+
+##############################################################################
 # Create data module from local component.
 # Related option: --create_data_module_from_local_component
 ##############################################################################
@@ -4823,6 +4893,25 @@ sub cli_create_data_module_from_local_component() {
 	
 	#~ pandora_create_module_from_local_component ($conf, $component, $agent_id, $dbh);
 	enterprise_hook('pandora_create_module_from_local_component',[$conf, $component, $agent_id, $dbh]);
+}
+
+##############################################################################
+# Create policy data module from local component.
+# Related option: --create_policy_data_module_from_local_component
+##############################################################################
+sub cli_create_policy_data_module_from_local_component() {
+	my ($policy_name, $component_name) = @ARGV[2..3];
+	
+	my $policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
+	exist_check($policy_id,'policy',$policy_name);
+	
+	my $lc_id = pandora_get_local_component_id($dbh, $component_name);
+	exist_check($lc_id,'local component',$component_name);
+	
+	# Get local component data
+	my $component = get_db_single_row ($dbh, 'SELECT * FROM tlocal_component WHERE id = ?', $lc_id);
+	
+	enterprise_hook('pandora_create_policy_data_module_from_local_component',[$conf, $component, $policy_id, $dbh]);
 }
 
 ##############################################################################

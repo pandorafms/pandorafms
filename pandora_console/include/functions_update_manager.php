@@ -523,4 +523,31 @@ function update_manager_get_current_package() {
 	
 	return $current_update;
 }
+
+// Set the read or not read status message of current user
+function update_manger_set_read_message ($message_id, $status) {
+	global $config;
+	
+	$rollback = db_get_value('data_rollback', 'tupdate', 'svn_version', $message_id);
+	$users_read = json_decode ($rollback, true);
+	$users_read[$config['id_user']] = $status;
+	
+	$rollback = json_encode ($users_read);
+	db_process_sql_update('tupdate', array('data_rollback' => $rollback), array('svn_version' => $message_id));	
+}
+
+// Get the read or not read status message
+function update_manger_get_read_message ($message_id, $rollback = false) {
+	global $config;
+	
+	if ($rollback === false) {
+		$rollback = db_get_value('data_rollback', 'tupdate', 'svn_version', $message_id);
+	}
+	$users_read = json_decode ($rollback, true);
+	
+	if (isset ($users_read[$config['id_user']]) && ($users_read[$config['id_user']] == 1)) {
+		return true;
+	}
+	return false;
+}
 ?>

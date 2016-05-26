@@ -103,7 +103,7 @@ $display_forced = ($wizard_data['force_newsletter'] != -1) || ($wizard_data['for
 // Return if it is fully completed
 if ((!$display_register) && (!$display_newsletter)) return;
 
-$return_button = get_parameter ('return_button', 0);
+$return_button = get_parameter ('return_button', 0) == 1;
 
 $email = db_get_value ('email', 'tusuario', 'id_user', $config['id_user']);
 //Avoid to show default email
@@ -172,8 +172,6 @@ var display_newsletter = <?php echo json_encode($display_newsletter); ?>;
 var display_forced = <?php echo json_encode($display_forced); ?>;
 var return_button = <?php echo json_encode($return_button); ?>;
 
-
-console.log (display_forced + ".");
 ////////////////////////////////////////////////////////////////////////
 //HELPER FUNCTIONS
 
@@ -198,6 +196,7 @@ function submit_open_wizard (register, newsletter, email, forced) {
 //EVENT FUNCTIONS
 $("#submit-return_dialog_button").click (function () {
 	$("#login_accept_register" ).dialog('close');
+	$("#all-required").hide();
 	$("#login_id_dialog" ).dialog('open');
 });
 
@@ -217,7 +216,8 @@ $("#submit-finish_dialog_button").click (function () {
 	if (!register && display_register && !display_forced) {
 		$("#login_registration_yesno").dialog('open');
 	} else {
-		submit_open_wizard (1, newsletter, email, display_forced);
+		var register_forced = register ? 1 : 0;
+		submit_open_wizard (register_forced, newsletter, email, display_forced);
 		$("#login_accept_register" ).dialog('close');
 	}
 });

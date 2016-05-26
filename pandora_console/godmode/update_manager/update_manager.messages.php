@@ -66,94 +66,107 @@ if ($delete_action !== false) {
 	
 }
 
-// Get all messages
-$sql = 'SELECT data, svn_version, filename, data_rollback, description FROM tupdate';
-$um_messages = array ();
-$um_messages = db_get_all_rows_sql ($sql);
+$offset = (int) get_parameter ('offset', 0);
 
-echo '<form method="post" action="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=setup">';
+$total_messages = update_manager_get_total_messages ();
+if ($total_messages){
 
-html_print_input_hidden ('tab', 'messages');
-echo '<div class="action-buttons" style="float:right; padding: 10px 5px">';
-html_print_submit_button (__('Delete'), 'delete_button', false,
-	'class="sub upd"');
-echo '</div>';
+	// Get all messages
+	$sql = 'SELECT data, svn_version, filename, data_rollback, description FROM tupdate LIMIT ' . $offset . ',' . $config['block_size'];
+	$um_messages = array ();
+	$um_messages = db_get_all_rows_sql ($sql);
 
-echo '<div class="action-buttons" style="float:right; padding: 10px 5px">';
-html_print_submit_button (__('Mark as not read'), 'not_read_button', false,
-	'class="sub upd"');
-echo '</div>';
+	echo '<form method="post" action="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=setup">';
 
-$table = new stdClass();
-	$table->width = '100%';
-	$table->class = 'databox data';
-	$table->cellpadding = 4;
-	$table->cellspacing = 4;
-	$table->head = array ();
-	$table->data = array ();
-	$table->align = array ();
-	$table->size = array ();
-	$table->id = 'um_messages_table';
-	
-	$table->align[0] = "left";
-	$table->align[1] = "left";
-	$table->align[2] = "left";
-	$table->align[3] = "left";
-	$table->align[4] = "left";
-	
-	$table->size[0] = "20px";
-	$table->size[1] = "100px";
-	$table->size[3] = "80px";
-	$table->size[4] = "60px";
-	
-	$table->head[0] = __('Message Id');
-	$table->head[1] = __('Expiration date');
-	$table->head[2] = __('Subject');
-	$table->head[3] = html_print_checkbox_extended('all_selection[]', 0, false, false, '', '', true);
+	html_print_input_hidden ('tab', 'messages');
+	html_print_input_hidden ('offset', $offset);
+	echo '<div class="action-buttons" style="float:right; padding: 10px 5px">';
+	html_print_submit_button (__('Delete'), 'delete_button', false,
+		'class="sub upd"');
+	echo '</div>';
 
-	$i = 0;
-	foreach ($um_messages as $message) {
-		$data[0] = $message['svn_version'];
-		
-		$data[1] = $message['filename'];
-		
-		$data[2] = $message['description'];
-		
-		//~ $delete_link = 'index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&amp;tab=messages&amp;delete_single=1&amp;message_id=' . $message['svn_version'];
-		$data[3] = html_print_checkbox_extended('select_multiple[]', $message['svn_version'], false, false, '', 'class="check_selection"', true);
-		
-		
-		// Change row class if message is read or not by this user
-		if (update_manger_get_read_message ($message['svn_version'], $message['data_rollback'])) {
-			$table->rowclass[count($table->data)] = "um_read_message";
-				
-		} else {
-			$table->rowclass[count($table->data)] = "um_not_read_message";
-			
-		}
-		array_push ($table->data, $data);
-		
-		// Insert an empty row too. Here the message will be displayed
-		$empty[0] = "";
-		$table->colspan[count($table->data)][0] = 4;
-		$table->cellclass[count($table->data)][0] = "um_message_" . $i;
-		$table->cellstyle[count($table->data)][0] = "display: none;";
-		array_push ($table->data, $empty);
-		
-		$i++;
+	echo '<div class="action-buttons" style="float:right; padding: 10px 5px">';
+	html_print_submit_button (__('Mark as not read'), 'not_read_button', false,
+		'class="sub upd"');
+	echo '</div>';
+
+	if ($total_messages > $config['block_size']) {
+		ui_pagination (update_manager_get_total_messages (), false, 0);
 	}
-html_print_table($table);
 
-echo '<div class="action-buttons" style="float:right"; padding: 0 5px>';
-html_print_submit_button (__('Delete'), 'delete_button', false,
-	'class="sub upd"');
-echo '</div>';
+	$table = new stdClass();
+		$table->width = '100%';
+		$table->class = 'databox data';
+		$table->cellpadding = 4;
+		$table->cellspacing = 4;
+		$table->head = array ();
+		$table->data = array ();
+		$table->align = array ();
+		$table->size = array ();
+		$table->id = 'um_messages_table';
+		
+		$table->align[0] = "left";
+		$table->align[1] = "left";
+		$table->align[2] = "left";
+		$table->align[3] = "left";
+		$table->align[4] = "left";
+		
+		$table->size[0] = "20px";
+		$table->size[1] = "100px";
+		$table->size[3] = "80px";
+		$table->size[4] = "60px";
+		
+		$table->head[0] = __('Message Id');
+		$table->head[1] = __('Expiration date');
+		$table->head[2] = __('Subject');
+		$table->head[3] = html_print_checkbox_extended('all_selection[]', 0, false, false, '', '', true);
 
-echo '<div class="action-buttons" style="float:right; padding: 0 5px">';
-html_print_submit_button (__('Mark as not read'), 'not_read_button', false,
-	'class="sub upd"');
-echo '</div>';
-echo '</form>';
+		$i = 0;
+		foreach ($um_messages as $message) {
+			$data[0] = $message['svn_version'];
+			
+			$data[1] = $message['filename'];
+			
+			$data[2] = $message['description'];
+			
+			//~ $delete_link = 'index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&amp;tab=messages&amp;delete_single=1&amp;message_id=' . $message['svn_version'];
+			$data[3] = html_print_checkbox_extended('select_multiple[]', $message['svn_version'], false, false, '', 'class="check_selection"', true);
+			
+			
+			// Change row class if message is read or not by this user
+			if (update_manger_get_read_message ($message['svn_version'], $message['data_rollback'])) {
+				$table->rowclass[count($table->data)] = "um_read_message";
+					
+			} else {
+				$table->rowclass[count($table->data)] = "um_not_read_message";
+				
+			}
+			array_push ($table->data, $data);
+			
+			// Insert an empty row too. Here the message will be displayed
+			$empty[0] = "";
+			$table->colspan[count($table->data)][0] = 4;
+			$table->cellclass[count($table->data)][0] = "um_message_" . $i;
+			$table->cellstyle[count($table->data)][0] = "display: none;";
+			array_push ($table->data, $empty);
+			
+			$i++;
+		}
+	html_print_table($table);
+
+	echo '<div class="action-buttons" style="float:right"; padding: 0 5px>';
+	html_print_submit_button (__('Delete'), 'delete_button', false,
+		'class="sub upd"');
+	echo '</div>';
+
+	echo '<div class="action-buttons" style="float:right; padding: 0 5px">';
+	html_print_submit_button (__('Mark as not read'), 'not_read_button', false,
+		'class="sub upd"');
+	echo '</div>';
+	echo '</form>';
+} else {
+	ui_print_info_message ( array ( 'no_close' => true, 'message' => __('There is not any update manager messages.') ) );
+}
 ?>
 
 <script type="text/javascript">

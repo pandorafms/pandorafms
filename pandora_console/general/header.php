@@ -75,14 +75,10 @@ config_check();
 				//UM messages
 				if (is_user_admin ($config['id_user'])) {
 					include_once ("include/functions_update_manager.php");
-					$sql = 'SELECT COUNT(*) FROM tupdate WHERE data_rollback LIKE \'%"' . $config['id_user'] . '":1%\'';
-					$number_read_messages = (int) db_get_sql ($sql);
-					$sql = 'SELECT COUNT(*) FROM tupdate';
-					$number_total_messages = (int) db_get_sql ($sql);
-					$number_unread_messages = $number_total_messages - $number_read_messages;
+					$number_unread_messages = update_manager_get_unread_messages ();
 					if ($number_unread_messages > 0) {
 						$um_messages = html_print_image("images/header_email.png", true, 
-											array("alt" => 'cross', "class" => 'bot', 'title' => __('UM messages').': ' . $number_unread_messages . '/' . $number_total_messages));
+											array("alt" => 'cross', "class" => 'bot', 'title' => __('UM unread messages').': ' . $number_unread_messages));
 						$table->data[0]['um'] = '<a href="index.php?sec=gsetup&amp;sec2=godmode/update_manager/update_manager&amp;tab=messages">' . $um_messages . "</a>";
 					}
 				}

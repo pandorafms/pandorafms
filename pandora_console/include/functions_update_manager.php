@@ -550,4 +550,21 @@ function update_manger_get_read_message ($message_id, $rollback = false) {
 	}
 	return false;
 }
+
+function update_manager_get_total_messages () {	
+	global $config;
+	
+	$sql = 'SELECT COUNT(*) FROM tupdate';
+	return (int) db_get_sql ($sql);	
+}
+
+function update_manager_get_unread_messages () {
+	global $config;
+	
+	$total = update_manager_get_total_messages ();
+	$sql = 'SELECT COUNT(*) FROM tupdate WHERE data_rollback LIKE \'%"' . $config['id_user'] . '":1%\'';
+	$read = (int) db_get_sql ($sql);
+	
+	return $total - $read;	
+}
 ?>

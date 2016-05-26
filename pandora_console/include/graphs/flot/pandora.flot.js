@@ -500,7 +500,6 @@ $.fn.VUseTooltip = function () {
     $(this).bind("plothover", function (event, pos, item) {
         if (item) {
             if ((previousLabel != item.series.label) || (previousPoint != item.seriesIndex)) {
-				$('.legend_'+previousPoint).css("visibility","hidden");
                 previousPoint = item.seriesIndex;
                 previousLabel = item.series.label;
                 
@@ -510,15 +509,13 @@ $.fn.VUseTooltip = function () {
                 var y = item.datapoint[1];
 				
                 var color = item.series.color;
-				$('.legend_'+x).css("visibility","");
                 showTooltip(pos.pageX,
                         pos.pageY,
                         color,
-                        "<strong>" + $('.legend_'+x).text() + "</strong>"  + " : <strong>" + y + "</strong>");
+                        "<strong>" + y + "</strong>");
             }
         } else {
             $("#tooltip").remove();
-            $('.legend_'+previousPoint).css("visibility","hidden");
             previousPoint = null;
         }
     });
@@ -669,11 +666,19 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		
 		$(this).text(text);
 	});
+	
+	$('#'+graph_id+' .xAxis .tickLabel')
+		.css('transform', 'rotate(-35deg)')
+		.find('div')
+			.css('position', 'relative')
+			.css('top', '+10px')
+			.css('left', '-20px');
+	
 	// Format functions
 	function xFormatter(v, axis) {
 		format = new Array();
 		for (i = 0; i < labels_total.length; i++) {
-			format.push([i,'<div style="visibility: hidden;" class="legend_'+i+'">'+labels_total[i][1]+'</div>']);
+			format.push([i,'<div class="legend_'+i+'">'+labels_total[i][1]+'</div>']);
 		}
 		return format;
 	}

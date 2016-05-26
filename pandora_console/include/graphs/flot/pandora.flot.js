@@ -465,6 +465,10 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 		}
 		return format;
 	}
+	
+	if (water_mark) {
+		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
+	}
 }
 
 var previousPoint = null, previousLabel = null;

@@ -152,7 +152,7 @@ function d3_bullet_chart($chart_data, $width, $height, $color, $legend,
 	$id_bullet = uniqid();
 	
 	$output .= 
-		'<div id="bullet_graph_' . $id_bullet . '" class="bullet" style="overflow: hidden; width: '.$width.'px"></div>
+		'<div id="bullet_graph_' . $id_bullet . '" class="bullet" style="overflow: hidden; width: '.$width.'px; margin-left: auto; margin-right: auto;"></div>
 		<style>
 			
 			.bullet_graph {

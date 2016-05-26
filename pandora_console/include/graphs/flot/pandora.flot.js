@@ -102,6 +102,8 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	$('#' + graph_id).bind('plothover', pieHover);
 	$('#' + graph_id).bind('plotclick', pieClick);
 	$('#' + graph_id).bind('mouseout',resetInteractivity);
+	$('#' + graph_id).css('margin-left', 'auto');
+	$('#' + graph_id).css('margin-right', 'auto');
 
 	function pieHover(event, pos, obj)
 	{
@@ -224,6 +226,8 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 	$('#' + graph_id).bind('plothover', pieHover);
 	$('#' + graph_id).bind('plotclick', Clickpie);
 	$('#' + graph_id).bind('mouseout',resetInteractivity);
+	$('#' + graph_id).css('margin-left', 'auto');
+	$('#' + graph_id).css('margin-right', 'auto');
 	
 	function pieHover(event, pos, obj) 
 	{
@@ -347,7 +351,8 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	var plot = $.plot($('#' + graph_id), datas, options );
 	
 	$('#' + graph_id).HUseTooltip();
-	$('#' + graph_id).css("margin-left","35px");
+	$('#' + graph_id).css("margin-left","auto");
+	$('#' + graph_id).css("margin-right","auto");
 	// Adjust the top of yaxis tick to set it in the middle of the bars
 	//yAxisHeight = $('#' + graph_id + ' .yAxis .tickLabel')
 		//.css('height').split('px')[0];
@@ -620,8 +625,8 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	
 	var plot = $.plot($('#'+graph_id),datas, options );
 	$('#' + graph_id).VUseTooltip();
-	$('#' + graph_id).css("margin-left","25px");
-	$('#' + graph_id).css("margin-right","20px");
+	$('#' + graph_id).css("margin-left","auto");
+	$('#' + graph_id).css("margin-right","auto");
 	// Adjust the top of yaxis tick to set it in the middle of the bars
 	//yAxisHeight = $('#'+graph_id+' .yAxis .tickLabel').css('height').split('px')[0];
 	

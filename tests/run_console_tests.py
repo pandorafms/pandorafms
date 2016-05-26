@@ -13,10 +13,10 @@ tests = a.discover(start_dir='console',pattern='PAN*.py')
 c = ArticaTestResult()
 tests.run(c)
 
-print "Tests failed: %s" % (get_test_file(c.failures))
-print "Tests succeeded: %s" % (get_test_file(c.success))
-print "Tests skipped: %s" % (get_test_file(c.skipped))
-print "Tests with errors: %s" % (get_test_file(c.errors))
+print "Tests failed: %s" % c.failures
+print "Tests succeeded: %s" % c.success
+print "Tests skipped: %s" % c.skipped
+print "Tests with errors: %s" % c.errors
 
 if (len(c.failures)+len(c.errors)+len(c.skipped)) != 0:
 	exit(1)

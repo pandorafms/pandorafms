@@ -38,8 +38,11 @@ class PAN2(PandoraWebDriverTestCase):
 		Select(driver.find_element_by_id("id_agents")).select_by_visible_text("prueba masivas 1")
 		Select(driver.find_element_by_id("id_agents")).select_by_visible_text("prueba masivas 2")
 		driver.find_element_by_id("submit-go").click()
-		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
-		self.assertTrue("Successfully deleted (2)" in driver.page_source)
+		try:
+			self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
+			self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Successfully deleted (2)")]').text,"Successfully deleted (2)")
+		except AssertionError as e:
+			self.verificationErrors.append(str(e))
 	
 if __name__ == "__main__":
 	unittest.main()

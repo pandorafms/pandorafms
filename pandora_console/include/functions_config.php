@@ -1511,6 +1511,24 @@ function config_check () {
 	// At this first version I'm passing errors using session variables, because the error management
 	// is done by an AJAX request. Better solutions could be implemented in the future :-)
 	
+	if (license_free() && users_is_admin($config['id_user'])) {
+		
+		//Registration advice
+		if (!isset ($config['instance_registered']) || ($config['instance_registered'] != 1)) {
+			set_pandora_error_for_header(  
+				__('Click <a style="font-weight:bold;" href="javascript: force_run_register();"> HERE </a> to init the registration process'),
+				__("This PandoraFMS instance is not registered"));
+		}
+		
+		//Newsletter advice
+		$newsletter = db_get_value ('middlename', 'tusuario', 'id_user', $config['id_user']);
+		if ($newsletter != 1) {
+			set_pandora_error_for_header(  
+				__('Click <a style="font-weight:bold;" href="javascript: force_run_newsletter();"> HERE </a> to init the newsletter subscription process'),
+				__("Missing user in newsletter"));
+		}
+	}
+	
 	// Check default password for "admin"
 	$is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
 	if ($is_admin) {
@@ -1674,23 +1692,6 @@ function config_check () {
 		set_pandora_error_for_header( 
 			__("Variable disable_functions containts functions system() or exec(), in PHP configuration file (php.ini)"). '<br /><br />' . 
 			__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'), __("Problems with disable functions in PHP.INI"));
-	}
-	
-	if (license_free() && users_is_admin($config['id_user'])) {
-		//Newsletter advice
-		$newsletter = db_get_value ('middlename', 'tusuario', 'id_user', $config['id_user']);
-		if ($newsletter != 1) {
-			set_pandora_error_for_header(  
-				__('Click <a style="font-weight:bold;" href="javascript: force_run_newsletter();"> HERE </a> to init the newsletter subscription process'),
-				__("Missing user in newsletter"));
-		}
-		
-		//Registration advice
-		if (!isset ($config['instance_registered']) || ($config['instance_registered'] != 1)) {
-			set_pandora_error_for_header(  
-				__('Click <a style="font-weight:bold;" href="javascript: force_run_register();"> HERE </a> to init the registration process'),
-				__("This PandoraFMS instance is not registered"));
-		}
 	}
 	
 }

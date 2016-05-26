@@ -21,8 +21,10 @@
 /* Enterprise hook constant */
 define ('ENTERPRISE_NOT_HOOK',	-1);
 
+/* Others */
+define('GROUP_ALL', 0);
 
-/**/
+/* Date and time formats */
 define('DATE_FORMAT',		'Y/m/d');
 define('DATE_FORMAT_JS',	'yy/mm/dd');
 define('TIME_FORMAT',		'H:i:s');
@@ -462,11 +464,62 @@ define("OPTION_CUSTOM_INPUT",			8);
 define("OPTION_AGENT_AUTOCOMPLETE",		9);
 
 /* SAML attributes constants */
-define("SAML_ROLE", "urn:mace:rediris.es:entitlement:monitoring:role");
-define("SAML_TAG", "urn:mace:rediris.es:entitlement:monitoring:tag");
-define("USER_DESC", "commonName");
-define("ID_USER_IN_PANDORA", "eduPersonTargetedId");
-define("GROUP_IN_PANDORA", "schacHomeOrganization");
-define("MAIL_IN_PANDORA", "mail");
+define("SAML_ROLE",				"urn:mace:rediris.es:entitlement:monitoring:role");
+define("SAML_TAG",				"urn:mace:rediris.es:entitlement:monitoring:tag");
+define("SAML_USER_DESC",				"commonName");
+define("SAML_ID_USER_IN_PANDORA",	"eduPersonTargetedId");
+define("SAML_GROUP_IN_PANDORA",		"schacHomeOrganization");
+define("SAML_MAIL_IN_PANDORA",		"mail");
 
+/* Other constants */
+define("STATUS_OK", 0);
+define("STATUS_ERROR", 1);
+
+/* Maps (new networkmaps and  new visualmaps) */
+define("MAP_TYPE_NETWORKMAP",	0);
+define("MAP_TYPE_VISUALMAP",	1);
+
+define("MAP_REFRESH_TIME",	SECONDS_5MINUTES);
+
+define("MAP_SUBTYPE_TOPOLOGY",			0);
+define("MAP_SUBTYPE_POLICIES",			1);
+define("MAP_SUBTYPE_GROUPS",			2);
+define("MAP_SUBTYPE_RADIAL_DYNAMIC",	3);
+
+define("MAP_GENERATION_CIRCULAR",	0);
+define("MAP_GENERATION_PLANO",		1);
+define("MAP_GENERATION_RADIAL",		2);
+define("MAP_GENERATION_SPRING1",	3);
+define("MAP_GENERATION_SPRING2",	4);
+
+define("MAP_SOURCE_GROUP",		0);
+define("MAP_SOURCE_IP_MASK", 	1);
+
+define("NETWORKMAP_DEFAULT_WIDTH", 800);
+define("NETWORKMAP_DEFAULT_HEIGHT", 800);
+
+/* Background options */
+define("CENTER",		0);
+define("MOSAIC",		1);
+define("STRECH",		2);
+define("FIT_WIDTH",		3);
+define("FIT_HEIGH",		4);
+
+/* Items of maps */
+define("ITEM_TYPE_AGENT_NETWORKMAP",		0);
+define("ITEM_TYPE_MODULE_NETWORKMAP",		1);
+define("ITEM_TYPE_EDGE_NETWORKMAP",			2);
+define("ITEM_TYPE_FICTIONAL_NODE",			3);
+define("ITEM_TYPE_MODULEGROUP_NETWORKMAP",	4);
+define("ITEM_TYPE_GROUP_NETWORKMAP",		5);
+define("ITEM_TYPE_POLICY_NETWORKMAP",		6);
+
+/* Another constants new networkmap */
+define("DEFAULT_NODE_WIDTH", 30);
+define("DEFAULT_NODE_HEIGHT", 30);
+define("DEFAULT_NODE_SHAPE", "circle");
+define("DEFAULT_NODE_COLOR", COL_NOTINIT);
+define("DEFAULT_NODE_IMAGE", "images/networkmap/unknown.png");
+
+define("NODE_IMAGE_PADDING", 5);
 ?>

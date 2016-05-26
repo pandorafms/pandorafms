@@ -488,8 +488,8 @@ $.fn.HUseTooltip = function () {
                 var y = item.datapoint[1];
 
                 var color = item.series.color;              
-                showTooltip(item.pageX,
-                        item.pageY,
+                showTooltip(pos.pageX,
+                        pos.pageY,
                         color,
                         "<strong>" + x + "</strong>");
             }
@@ -514,8 +514,8 @@ $.fn.VUseTooltip = function () {
 				
                 var color = item.series.color;
 				$('.legend_'+x).css("visibility","");
-                showTooltip(item.pageX,
-                        item.pageY,
+                showTooltip(pos.pageX,
+                        pos.pageY,
                         color,
                         "<strong>" + $('.legend_'+x).text() + "</strong>"  + " : <strong>" + y + "</strong>");
             }
@@ -531,8 +531,8 @@ function showTooltip(x, y, color, contents) {
     $('<div id="tooltip">' + contents + '</div>').css({
         position: 'absolute',
         display: 'none',
-        top: y - 40,
-        left: x - 120,
+        top: y,
+        left: x,
         border: '2px solid ' + color,
         padding: '3px',
         'font-size': '9px',

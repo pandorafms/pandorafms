@@ -38,10 +38,14 @@ class PAN3(PandoraWebDriverTestCase):
 		driver.find_element_by_id("text-name").send_keys("ping test")
 		driver.find_element_by_id("submit-crtbutton").click()
 		driver.find_element_by_xpath('//*[@id="menu_tab"]//a[contains(@href,"ver_agente")]').click()
-		element = refresh_N_times_until_find_element(driver,5,"table1-1-7",how=By.ID)
+		element_text = refresh_N_times_until_find_element(driver,5,"table1-1-7",how=By.ID).text
 
-		try: self.assertEqual("1", element.text.lstrip().rstrip()) # The lstrip.rstrip is done because if not, this error is raised: "'1' != u'1 '"
-		except AssertionError as e: self.verificationErrors.append(str(e))
+		try:
+			self.assertEqual("1", element_text.lstrip().rstrip()) # The lstrip.rstrip is done because if not, this error is raised: "'1' != u'1 '"
+		except AssertionError as e:
+			self.verificationErrors.append(str(e))
+			
+		
 
 if __name__ == "__main__":
 	unittest.main()

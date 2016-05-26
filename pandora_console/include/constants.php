@@ -466,10 +466,10 @@ define("OPTION_AGENT_AUTOCOMPLETE",		9);
 /* SAML attributes constants */
 define("SAML_ROLE",				"urn:mace:rediris.es:entitlement:monitoring:role");
 define("SAML_TAG",				"urn:mace:rediris.es:entitlement:monitoring:tag");
-define("USER_DESC",				"commonName");
-define("ID_USER_IN_PANDORA",	"eduPersonTargetedId");
-define("GROUP_IN_PANDORA",		"schacHomeOrganization");
-define("MAIL_IN_PANDORA",		"mail");
+define("SAML_USER_DESC",				"commonName");
+define("SAML_ID_USER_IN_PANDORA",	"eduPersonTargetedId");
+define("SAML_GROUP_IN_PANDORA",		"schacHomeOrganization");
+define("SAML_MAIL_IN_PANDORA",		"mail");
 
 /* Other constants */
 define("STATUS_OK", 0);

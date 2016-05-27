@@ -52,7 +52,7 @@ class PAN3(PandoraWebDriverTestCase):
 			except StaleElementReferenceException as e_stale:
 				i = i+1
 				if i > max_retries:
-                                        self.verificationErrors.append(str(e))
+                                        self.verificationErrors.append(str(e_stale))
 					break
                                 else:
                                         next

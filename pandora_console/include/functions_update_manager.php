@@ -567,4 +567,28 @@ function update_manager_get_unread_messages () {
 	
 	return $total - $read;	
 }
+
+function update_manager_get_not_deleted_messages () {
+	global $config;
+	
+	$total = update_manager_get_total_messages ();
+	$sql = 'SELECT COUNT(*) FROM tupdate WHERE description LIKE \'%"' . $config['id_user'] . '":1%\'';
+	$read = (int) db_get_sql ($sql);
+	
+	return $total - $read;	
+}
+
+function update_manger_set_deleted_message ($message_id) {
+	global $config;
+	
+	$rollback = db_get_value('description', 'tupdate', 'svn_version', $message_id);
+	$users_read = json_decode ($rollback, true);
+	$users_read[$config['id_user']] = 1;
+	
+	$rollback = json_encode ($users_read);
+	db_process_sql_update('tupdate', array('description' => $rollback, ), array('svn_version' => $message_id));	
+	
+	//Mark as read too
+	update_manger_set_read_message ($message_id, 1);
+}
 ?>

@@ -61,18 +61,20 @@ if ($delete_action !== false) {
 	$selected = get_parameter ('select_multiple', false);
 	foreach ($selected as $k => $message_id) {
 		
-		db_process_sql_delete ('tupdate', array('svn_version' => $message_id));
+		update_manger_set_deleted_message ($message_id);
 	}
 	
 }
 
 $offset = (int) get_parameter ('offset', 0);
 
-$total_messages = update_manager_get_total_messages ();
+$total_messages = update_manager_get_not_deleted_messages ();
 if ($total_messages){
 
 	// Get all messages
-	$sql = 'SELECT data, svn_version, filename, data_rollback, description FROM tupdate LIMIT ' . $offset . ',' . $config['block_size'];
+	$sql = 'SELECT data, svn_version, filename, data_rollback, db_field_value FROM tupdate ';
+	$sql .= 'WHERE description NOT LIKE \'%"' . $config['id_user'] . '":1%\' ';
+	$sql .= 'LIMIT ' . $offset . ',' . $config['block_size'];
 	$um_messages = array ();
 	$um_messages = db_get_all_rows_sql ($sql);
 
@@ -127,7 +129,7 @@ if ($total_messages){
 			
 			$data[1] = $message['filename'];
 			
-			$data[2] = $message['description'];
+			$data[2] = $message['db_field_value'];
 			
 			//~ $delete_link = 'index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&amp;tab=messages&amp;delete_single=1&amp;message_id=' . $message['svn_version'];
 			$data[3] = html_print_checkbox_extended('select_multiple[]', $message['svn_version'], false, false, '', 'class="check_selection"', true);

@@ -112,25 +112,47 @@ echo '<div id="login_in">';
 					html_print_input_hidden ($key, $value);
 				}
 			}
-			
-			echo '<div class="login_nick">';
-			html_print_image ("/images/usuario_login.png", false);
-			html_print_input_text_extended ("nick", '', "nick", '', '', '' , false,
-				'', 'class="login login_user" placeholder="'.__('User').'"');
-			echo '</div><br />';
-			echo '<div class="login_pass">';
-			html_print_image ("/images/candado_login.png", false);
-			html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false,
-				'', 'class="login login_password" placeholder="'.__('Password').'"', false, true);
-			echo '</div>';
-			echo '<div class="login_button">';
 			if ($config['auth'] == 'saml') {
-				html_print_submit_button(__("Login with SAML"), "login_button_saml", false, 'class="sub login_boton"');
+				echo '<div id="log_nick" class="login_nick" style="display: none;>';
+					html_print_image ("/images/usuario_login.png", false);
+					html_print_input_text_extended ("nick", '', "nick", '', '', '' , false,
+						'', '"id="nick_text" class="login login_user" placeholder="'.__('User').'"');
+				echo '</div>';
+
+				echo '<div id="log_pass" class="login_pass" style="display: none;>';
+					html_print_image ("/images/candado_login.png", false);
+					html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false,
+						'', 'id="pass_text" class="login login_password" placeholder="'.__('Password').'"', false, true);
+				echo '</div>';
+				
+				echo '<div id="log_button" class="login_button" style="display: none;">';
+					html_print_submit_button(__("Login as admin"), "login_button", false, 'class="sub next_login"');
+				echo '</div>';
+				
+				echo '<div style="padding-left: 50px !important">';
+						echo '<input type="button" id="input_saml" class="next_login" style="width: 150px;" value="Login as admin" onclick="show_normal_menu()">';
+					echo '<br><br>';
+						echo '<div class="saml_button">';
+							html_print_submit_button(__("Login with SAML"), "login_button_saml", false, 'class="next_login" style="width: 150px;');
+						echo '</div>';
+				echo '</div>';
 			}
 			else {
+				echo '<div class="login_nick">';
+				html_print_image ("/images/usuario_login.png", false);
+				html_print_input_text_extended ("nick", '', "nick", '', '', '' , false,
+					'', 'class="login login_user" placeholder="'.__('User').'"');
+				echo '</div><br />';
+				echo '<div class="login_pass">';
+				html_print_image ("/images/candado_login.png", false);
+				html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false,
+					'', 'class="login login_password" placeholder="'.__('Password').'"', false, true);
+				echo '</div>';
+				echo '<div class="login_button">';
 				html_print_submit_button(__("Login"), "login_button", false, 'class="sub next_login"');
+				echo '</div>';
 			}
-			echo '</div>';
+			
 			break;
 		case 'logout':
 			echo '<h1 id="log_title">' . __('Logged out') . '</h1>';
@@ -316,6 +338,14 @@ html_print_div(array('id' => 'modal_alert', 'hidden' => true));
 ?>
 <script type="text/javascript" language="javascript">
 	/* <![CDATA[ */
+	function show_normal_menu() {
+		document.getElementById('input_saml').style.display = 'none';
+		document.getElementById('log_nick').style.display = 'block';
+		document.getElementById('log_pass').style.display = 'block';
+		document.getElementById('log_button').style.display = 'inline';
+		document.getElementById('nick_text').className = 'login login_user';
+		document.getElementById('pass_text').className = 'login login_password';
+	}
 	
 	function modal_alert_critical() {
 		$("#modal_alert").hide ()

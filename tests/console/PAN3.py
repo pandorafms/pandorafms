@@ -5,13 +5,15 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
+from selenium.common.exceptions import StaleElementReferenceException
+import unittest, time, re
+
 
 class PAN3(PandoraWebDriverTestCase):
 
 	test_name = u'PAN_3'
 	test_description = u'Creates a simple ICMP check against localhost and checks the result is 1'
 	tickets_associated = []
-
 
 	def test_pan3(self):
 		driver = self.driver
@@ -40,12 +42,25 @@ class PAN3(PandoraWebDriverTestCase):
 		driver.find_element_by_xpath('//*[@id="menu_tab"]//a[contains(@href,"ver_agente")]').click()
 		element_text = refresh_N_times_until_find_element(driver,5,"table1-1-7",how=By.ID).text
 
-		try:
-			self.assertEqual("1", element_text.lstrip().rstrip()) # The lstrip.rstrip is done because if not, this error is raised: "'1' != u'1 '"
-		except AssertionError as e:
-			self.verificationErrors.append(str(e))
-			
-		
+		max_retries = 3
+		i = 1
+		element_text = ""
+
+		while (i <= max_retries): # Temporary workaround to weird StaleElementReferenceException exceptions due Javascript altering the DOM
+			try:
+				element_text = refresh_N_times_until_find_element(driver,5,"table1-1-7",how=By.ID).text
+				self.assertEqual("1", element_text.lstrip().rstrip()) # The lstrip.rstrip is done because if not, this error is raised: "'1' != u'1 '"
+				break
+			except StaleElementReferenceException as e_stale:
+				i = i+1
+				if i > max_retries:
+                                        self.verificationErrors.append(str(e_stale))
+					break
+                                else:
+                                        next
+			except AssertionError as e:
+				self.verificationErrors.append(str(e))
+				break
 
 if __name__ == "__main__":
 	unittest.main()

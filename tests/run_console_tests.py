@@ -39,7 +39,6 @@ print "Tests skipped: %s" % c.skipped
 print "Tests with errors: %s" % c.errors
 
 if (len(c.failures)+len(c.errors)+len(c.skipped)) != 0:
-	sys.exit(1)
+	raise Exception(Build failed)
 
-else:
-	sys.exit(0)
+

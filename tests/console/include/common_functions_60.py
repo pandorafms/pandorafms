@@ -18,7 +18,7 @@ def get_menu_element(driver,menu_item_text):
 def click_menu_element(driver,menu_item_text):
 	return driver.execute_script("arguments[0].click();", get_menu_element(driver,menu_item_text))
 
-def refresh_N_times_until_find_element(driver,n,element_text,how=By.ID,refresh_time=10):
+def refresh_N_times_until_find_element(driver,n,element_text,how=By.ID,refresh_time=5):
 	from selenium.common.exceptions import TimeoutException
 
 	i = 1

@@ -167,6 +167,11 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 	$dashboard = false, $vconsole = false) {
 	
 	global $config;
+
+	// Only avg on dashboard and visual console
+	if ($dashboard || $vconsole) {
+		$show_last = $show_min = $show_max = false;
+	}
 	
 	if ($id_graph == 0) {
 		$graph_conf['stacked'] = CUSTOM_GRAPH_LINE;

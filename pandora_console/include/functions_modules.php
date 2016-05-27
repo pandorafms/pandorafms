@@ -2292,26 +2292,25 @@ function modules_get_unknown_time ($id_agent_module, $date, $period){
 		array_unshift ($interval_data, $first_data);
 	} else {
 		$first_data = array_shift ($interval_data);
-		if (($previous_data['utimestamp'] + SECONDS_1DAY) >= $first_data['utimestamp']) {
-			if (($previous_data['utimestamp'] + SECONDS_1DAY) >= $datelimit) {
-				$unknown_seconds += $previous_data['utimestamp'] + SECONDS_1DAY - $first_data['utimestamp'];
-			} else {
-				$unknown_seconds += $first_data['utimestamp'] - $datetime;
-			}
+		$previous_1day = $previous_data['utimestamp'] + SECONDS_1DAY;
+		if ($previous_1day <= $datelimit) {
+			$unknown_seconds += $first_data['utimestamp'] - $datelimit;
+		} else if ($previous_1day <= $first_data['utimestamp']) {
+			$unknown_seconds += $first_data['utimestamp'] - $previous_1day;
 		}
 		array_unshift ($interval_data, $first_data);
 	}
 	
 	// Put utimestamp like last data
+	$last_data = modules_get_next_data ($id_agent_module, $datelimit);
 	$last_data['utimestamp'] = $date; 
 	array_push ($interval_data, $last_data);
-	$previous_data = array_shift ($previous_data);
-	
+	$previous_data = array_shift ($interval_data);
 	// Check if all datas have data maximum one day before
 	foreach ($interval_data as $data) {
 		$previous_1day = $previous_data['utimestamp'] + SECONDS_1DAY;
-		if ($previous_1day >= $data['utimestamp']) {
-			$unknown_period += $previous_1day - $data['utimestamp'];
+		if ($previous_1day <= $data['utimestamp']) {
+			$unknown_seconds += $data['utimestamp'] - $previous_1day;
 		}
 		$previous_data = $data;
 	}

@@ -392,6 +392,10 @@ function config_update_config () {
 						$error_update[] = __('Max. recommended number of files in attachment directory');
 					if (!config_update_value ('delete_notinit', get_parameter ('delete_notinit')))
 						$error_update[] = __('Delete not init modules');
+					if (!config_update_value ('big_operation_step_datos_purge', get_parameter ('big_operation_step_datos_purge')))
+						$error_update[] = __('Big Operatiopn Step to purge old data');
+					if (!config_update_value ('small_operation_step_datos_purge', get_parameter ('small_operation_step_datos_purge')))
+						$error_update[] = __('Small Operation Step to purge old data');
 					/////////////
 					break;
 					
@@ -758,7 +762,7 @@ function config_process_config () {
 	if (!isset ($config["num_files_attachment"])) {
 		config_update_value ('num_files_attachment', 100);
 	}
-	
+
 	if (!isset ($config['status_images_set'])) {
 		config_update_value ('status_images_set', 'default');
 	}
@@ -794,7 +798,15 @@ function config_process_config () {
 	if (!isset ($config["delete_notinit"])) {
 		config_update_value ('delete_notinit', 0);
 	}
-	
+
+	if (!isset ($config["big_operation_step_datos_purge"])) {
+		config_update_value ('big_operation_step_datos_purge', 100);
+	}
+
+	if (!isset ($config["small_operation_step_datos_purge"])) {
+		config_update_value ('small_operation_step_datos_purge', 1000);
+	}
+
 	if (!isset ($config["event_purge"])) {
 		config_update_value ('event_purge', 15);
 	}

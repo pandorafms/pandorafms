@@ -96,6 +96,8 @@ INSERT INTO tconfig (token, value) VALUES ('audit_purge', 15);
 INSERT INTO tconfig (token, value) VALUES ('trap_purge', 7);
 INSERT INTO tconfig (token, value) VALUES ('event_purge', 7);
 INSERT INTO tconfig (token, value) VALUES ('gis_purge', 7);
+INSERT INTO tconfig (token, value) VALUES ('big_operation_step_datos_purge', '100');
+INSERT INTO tconfig (token, value) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO tconfig (token, value) VALUES ('sound_alert', 'include/sounds/air_shock_alarm.wav');
 INSERT INTO tconfig (token, value) VALUES ('sound_critical', 'include/sounds/Star_Trek_emergency_simulation.wav');
 INSERT INTO tconfig (token, value) VALUES ('sound_warning', 'include/sounds/negativebeep.wav');

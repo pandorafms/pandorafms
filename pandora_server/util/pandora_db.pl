@@ -39,10 +39,11 @@ my $version = "6.1dev PS160527";
 my %conf;
 
 # Long operations are divided in XX steps for performance
-my $BIG_OPERATION_STEP = 100;
+my $BIG_OPERATION_STEP = 100;	# 100 is default
+
 # Each long operations has a LIMIT of SMALL_OPERATION_STEP to avoid locks. 
 #Increate to 3000~5000 in fast systems decrease to 500 or 250 on systems with locks
-my $SMALL_OPERATION_STEP = 1000;
+my $SMALL_OPERATION_STEP = 1000;	# 1000 is default
 
 # FLUSH in each IO 
 $| = 1;
@@ -679,6 +680,14 @@ sub pandora_load_config ($) {
    	$conf->{'_log_dir'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'log_dir'");
    	$conf->{'_log_max_lifetime'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'log_max_lifetime'");
 	$conf->{'_delete_notinit'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_notinit'");
+
+	$conf->{'_big_operation_step_datos_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'big_operation_step_datos_purge'");
+	$conf->{'_small_operation_step_datos_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'small_operation_step_datos_purge'");
+
+	$BIG_OPERATION_STEP = $conf->{'_big_operation_step_datos_purge'}
+					if ( $conf->{'_big_operation_step_datos_purge'} );
+	$SMALL_OPERATION_STEP = $conf->{'_small_operation_step_datos_purge'}
+					if ( $conf->{'_small_operation_step_datos_purge'} );
    	
 	db_disconnect ($dbh);
 

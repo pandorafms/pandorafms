@@ -70,6 +70,8 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('trap_purge', 7),
 ('event_purge', 7),
 ('gis_purge', 7),
+('big_operation_step_datos_purge', '100'),
+('small_operation_step_datos_purge', '1000'),
 ('sound_alert', 'include/sounds/air_shock_alarm.wav'),
 ('sound_critical', 'include/sounds/Star_Trek_emergency_simulation.wav'),
 ('sound_warning', 'include/sounds/negativebeep.wav'),

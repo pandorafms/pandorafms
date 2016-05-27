@@ -29,6 +29,7 @@ class PandoraWebDriverTestCase(TestCase):
 	sauce_username = environ["SAUCE_USERNAME"]
 	sauce_access_key = environ["SAUCE_ACCESS_KEY"]
 	sauce_client = None
+	sauce_labs_job_id = None
 
 	desired_cap = {
 		'tunnel-identifier': environ["TRAVIS_JOB_NUMBER"],
@@ -41,6 +42,7 @@ class PandoraWebDriverTestCase(TestCase):
 		self.time_started = datetime.now()
 		#Start VM in Sauce Labs
 		self.driver = webdriver.Remote(command_executor='http://'+self.sauce_username+':'+self.sauce_access_key+'@ondemand.saucelabs.com:80/wd/hub',desired_capabilities=self.desired_cap)
+		self.sauce_labs_job_id = self.driver.session_id # We store this information to update the job info when the tests are done
 
 		self.sauce_client = SauceClient(self.sauce_username, self.sauce_access_key)
 		self.driver.implicitly_wait(30)
@@ -75,9 +77,6 @@ class PandoraWebDriverTestCase(TestCase):
 		diff = tack - self.time_started
 		self.time_elapsed = diff.seconds
 		self.driver.quit()
-		#Update Sauce Labs job
-		is_test_successful = self.verificationErrors == []
-		self.sauce_client.jobs.update_job(self.driver.session_id, passed=is_test_successful,tags=[environ["TRAVIS_BRANCH"],self.id()],build_num=environ["TRAVIS_JOB_NUMBER"],name=str(environ["TRAVIS_COMMIT"])+"_"+str(self.id().split('.')[1]))
 
 		self.assertEqual([], self.verificationErrors)
 		super(PandoraWebDriverTestCase, self).tearDown()

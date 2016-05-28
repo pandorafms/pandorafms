@@ -40,7 +40,6 @@ class PAN3(PandoraWebDriverTestCase):
 		driver.find_element_by_id("text-name").send_keys("ping test")
 		driver.find_element_by_id("submit-crtbutton").click()
 		driver.find_element_by_xpath('//*[@id="menu_tab"]//a[contains(@href,"ver_agente")]').click()
-		element_text = refresh_N_times_until_find_element(driver,5,"table1-1-7",how=By.ID).text
 
 		max_retries = 3
 		i = 1

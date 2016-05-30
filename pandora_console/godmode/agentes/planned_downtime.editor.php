@@ -101,7 +101,7 @@ if ($insert_downtime_agent === 1) {
 	$agents = (array) get_parameter ('id_agents');
 	$module_names = (array) get_parameter ('module');
 	
-	$all_modules = (empty($module_names) || in_array(0, $module_names));
+	$all_modules = (empty($module_names) || ($module_names[0] === "0"));
 	
 	// 'Is running' check
 	$is_running = (bool) db_get_value ('executed', 'tplanned_downtime', 'id', $id_downtime);

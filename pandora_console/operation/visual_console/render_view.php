@@ -242,7 +242,7 @@ ui_require_javascript_file('pandora_visual_console');
 						render_map: true,
 						keep_aspect_ratio: true,
 						id_visual_console: <?php echo $id_layout; ?>,
-						graph_javascript: <?php echo (int) $graph_javascript; ?>,
+						graph_javascript: <?php echo $config['pure'] ? 0 : (int) $graph_javascript; ?>,
 						width: $(window).width(),
 						height: $(window).height()
 					}

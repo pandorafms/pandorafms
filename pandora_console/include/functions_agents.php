@@ -2412,4 +2412,28 @@ function agents_get_network_interfaces ($agents = false, $agents_filter = false)
 
 	return $ni_by_agents;
 }
+
+/**
+ * Returns the value of the custom field for the selected agent.
+ *
+ * @param integer Agent id.
+ * @param string Name of the custom field.
+ *
+ * @return mixed The custom field value or false on error.
+ */
+function agents_get_agent_custom_field ($agent_id, $custom_field_name) {
+	if (empty($agent_id) && empty($custom_field_name)) {
+		return false;
+	}
+	
+	$sql = sprintf("SELECT tacd.description AS value
+					FROM tagent_custom_data tacd
+					INNER JOIN tagent_custom_fields tacf
+						ON tacd.id_field = tacf.id_field
+							AND tacf.name LIKE '%s'
+					WHERE tacd.id_agent = %d",
+					$custom_field_name, $agent_id);
+	return db_get_value_sql($sql);
+}
+
 ?>

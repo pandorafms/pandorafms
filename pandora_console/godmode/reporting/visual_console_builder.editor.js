@@ -1293,8 +1293,7 @@ function setModuleValue(id_data, process_simple_value, period) {
 	parameter.push ({name: "action", value: "get_module_value"});
 	parameter.push ({name: "id_element", value: id_data});
 	parameter.push ({name: "period", value: period});
-	parameter.push ({name: "id_visual_console",
-		value: id_visual_console});
+	parameter.push ({name: "id_visual_console", value: id_visual_console});
 	if (process_simple_value != undefined) {
 		parameter.push ({name: "process_simple_value", value: process_simple_value});
 	}
@@ -1304,11 +1303,10 @@ function setModuleValue(id_data, process_simple_value, period) {
 		data: parameter,
 		type: "POST",
 		dataType: 'json',
-		success: function (data)
-		{
-			text_value = $("#text_" + idItem).html();
-			text_value = text_value.replace(/_VALUE_/gi,data.value);
-			$("#text_" + id_data).html(text_value);
+		success: function (data) {
+			var currentValue = $("#text_" + id_data).html();
+			currentValue = currentValue.replace(/_VALUE_/gi, data.value);
+			$("#text_" + id_data).html(currentValue);
 		}
 	});
 }

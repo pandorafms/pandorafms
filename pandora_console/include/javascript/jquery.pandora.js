@@ -160,7 +160,7 @@ $(document).ready (function () {
 
 function forced_title_callback() {
 	// Forced title code
-	$('.forced_title').hover(function() {
+	$('body').on('mouseenter', '.forced_title', function() {
 		///////////////////////////////////////////
 		// Put the layer in the left-top corner to fill it
 		///////////////////////////////////////////
@@ -233,8 +233,8 @@ function forced_title_callback() {
 		$('#forced_title_layer').css('left', layer_left);
 		$('#forced_title_layer').css('top', layer_top);
 		$('#forced_title_layer').show();
-	},
-	function () {
+	});
+	$('body').on('mouseout', '.forced_title', function () {
 		$('#forced_title_layer').hide().empty();
 	});
 }

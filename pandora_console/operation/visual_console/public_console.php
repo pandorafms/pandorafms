@@ -47,6 +47,7 @@ require ('include/functions_visual_map.php');
 
 $hash = get_parameter ('hash');
 $id_layout = (int) get_parameter ('id_layout');
+$graph_javascript = (bool) get_parameter('graph_javascript');
 $config["id_user"] = get_parameter ('id_user');
 
 $myhash = md5($config["dbpass"].$id_layout. $config["id_user"]);
@@ -74,102 +75,125 @@ $bheight = $layout["height"];
 if (!isset($config['pure']))
 	$config['pure'] = 0;
 
-// Render map
-$options = array();
-echo '<div style="width: 95%; background: white; margin: 20px auto 20px auto; box-shadow: 10px 10px 5px #000;">';
-echo "<h1>" . $layout_name . "</h1>";
-
-visual_map_print_visual_map ($id_layout, true, true, null, null, '../../', true);
-
-$values = array ();
-$values[5] = human_time_description_raw (5);
-$values[30] = human_time_description_raw (30);
-$values[SECONDS_1MINUTE] = human_time_description_raw(SECONDS_1MINUTE);
-$values[SECONDS_2MINUTES] = human_time_description_raw(SECONDS_2MINUTES);
-$values[SECONDS_5MINUTES] = human_time_description_raw(SECONDS_5MINUTES);
-$values[SECONDS_10MINUTES] = human_time_description_raw(SECONDS_10MINUTES);
-$values[SECONDS_30MINUTES] = human_time_description_raw(SECONDS_30MINUTES);
-
-$table->width = '90%';
-$table->data = array ();
-$table->style = array ();
-$table->style[2] = 'text-align: center';
-$table->data[0][0] = __('Autorefresh time');
-
-$table->data[0][1] = html_print_select ($values, 'refr', $refr, '', 'N/A', 0, true, false, false);
-$table->data[0][2] = html_print_submit_button (__('Refresh'), '', false, 'class="sub next"', true);
-$table->data[0][2] .= html_print_input_hidden ('vc_refr', $config["vc_refr"], true);
-$table->data[0][3] .= '<a href="javascript: show_dialog_qrcode();">' .
-	'<img src="../../images/qrcode_icon.jpg"/>' .
-	'</a>';
-
-echo '<div style="height:30px">&nbsp;</div>';
-
-if ($refr > 0) {
-	echo '<div id="countdown"><br /></div>';
+$xhr = (bool) get_parameter('xhr');
+if ($xhr) {
+	$width = (int) get_parameter('width');
+	if ($width <= 0) $width = null;
+	$height = (int) get_parameter('height');
+	if ($height <= 0) $height = null;
+	
+	ob_start();
+	// Render map
+	visual_map_print_visual_map($id_layout, true, true, $width, $height,
+		'../../', true, $graph_javascript, true);
+	return;
+}
+else {
+	echo '<div id="vc-container"></div>';
 }
 
-echo '<div style="height:30px">&nbsp;</div>';
+// Floating menu - Start
+echo '<div id="vc-controls">';
 
-echo "<div style='display: none;' id='qrcode_container' title='" . __('QR code of the page') . "'>";
-echo "<div id='qrcode_container_image'></div>";
-echo "</div>";
+echo '<div id="menu_tab">';
+echo '<ul class="mn">';
 
-echo '<form method="post">';
-html_print_input_hidden ('pure', $config["pure"]);
-html_print_input_hidden ('id', $id_layout);
-html_print_table ($table);
-echo '</form>';
+// QR code
+echo '<li class="nomn">';
+echo '<a href="javascript: show_dialog_qrcode();">';
+echo '<img class="vc-qr" src="../../images/qrcode_icon.jpg"/>';
+echo '</a>';
+echo '</li>';
+
+// Countdown
+echo '<li class="nomn">';
+echo '<div class="vc-refr">';
+echo '<div class="vc-countdown"></div>';
+echo '<div id="vc-refr-form">';
+echo __('Refresh') . ':';
+echo html_print_select(get_refresh_time_array(), 'refr', $refr, '', '', 0, true, false, false);
+echo '</div>';
+echo '</div>';
+echo '</li>';
+
+// Console name
+echo '<li class="nomn">';
+echo '<div class="vc-title">' . $layout_name . '</div>';
+echo '</li>';
+
+echo '</ul>';
 echo '</div>';
 
+echo '</div>';
+// Floating menu - End
 
-ui_require_jquery_file ('countdown');
-ui_require_css_file ('countdown');
+// QR code dialog
+echo '<div style="display: none;" id="qrcode_container" title="' . __('QR code of the page') . '">';
+echo '<div id="qrcode_container_image"></div>';
+echo '</div>';
 
-
-
-ui_require_javascript_file ('wz_jsgraphics');
-ui_require_javascript_file ('pandora_visual_console');
+ui_require_jquery_file('countdown');
+ui_require_javascript_file('wz_jsgraphics');
+ui_require_javascript_file('pandora_visual_console');
 ?>
+
 <script language="javascript" type="text/javascript">
-/* <![CDATA[ */
-$(document).ready (function () {
-	$(document).ready(function() {
-		$( "#qrcode_container" ).dialog({
+	$(document).ready(function () {
+		var refr = <?php echo (int) $refr; ?>;
+		
+		var startCountDown = function (duration, cb) {
+			$('div.vc-countdown').countdown('destroy');
+			if (!duration) return;
+			var t = new Date();
+			t.setTime(t.getTime() + duration * 1000);
+			$('div.vc-countdown').countdown({
+				until: t,
+				format: 'MS',
+				layout: '(%M%nn%M:%S%nn%S <?php echo __('Until refresh'); ?>) ',
+				alwaysExpire: true,
+				onExpiry: function () {
+					$('div.vc-countdown').countdown('destroy');
+					cb();
+				}
+			});
+		}
+		
+		var fetchMap = function () {
+			$.ajax({
+				url: 'public_console.php',
+				type: 'GET',
+				dataType: 'html',
+				data: {
+					hash: '<?php echo $hash; ?>',
+					id_layout: <?php echo $id_layout; ?>,
+					graph_javascript: <?php echo (int) $graph_javascript; ?>,
+					id_user: '<?php echo $config['id_user']; ?>',
+					width: $(window).width(),
+					height: $(window).height(),
+					xhr: true
+				}
+			})
+			.done(function (data, textStatus, xhr) {
+				$('div#vc-container').html(data);
+				startCountDown(refr, fetchMap);
+			});
+		}
+		
+		// Auto hide controls
+		var controls = document.getElementById('vc-controls');
+		autoHideElement(controls, 1000);
+		
+		$('#qrcode_container').dialog({
 			autoOpen: false,
 			modal: true
 		});
+		
+		$('select#refr').change(function (event) {
+			refr = Number.parseInt(event.target.value, 10);
+			startCountDown(refr, fetchMap);
+		});
+		
+		// Start the map fetch
+		fetchMap();
 	});
-	
-	$("#refr").change(function () {
-		$("#hidden-vc_refr").val($("#refr option:selected").val());
-	});
-	
-	<?php
-	if ($refr > 0) {
-	?>
-		t = new Date();
-		t.setTime (t.getTime() + <?php echo $refr * 1000; ?>);
-		$("#countdown").countdown(
-			{
-				until: t,
-				format: 'MS',
-				description: '<?php echo __('Until refresh'); ?>',
-				onExpiry: function () {
-						href = "<?php echo ui_get_full_url();?>";
-						$exists_refr = href.indexOf("refr");
-						if ($exists_refr == -1) {
-							href = href + "&refr=<?php echo $refr;?>";
-						}
-						$(document).attr ("location", href);
-					}
-			}
-		);
-	
-	<?php
-	}
-	?>
-});
-
-/* ]]> */
 </script>

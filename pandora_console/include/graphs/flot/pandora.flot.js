@@ -3,7 +3,7 @@
 
 */
 
-function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, water_mark, separator, legend_position, height, colors) {
+function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, water_mark, separator, legend_position, height, colors, hide_labels) {
 	var labels = labels.split(separator);
 	var data = values.split(separator);
 	if (colors != '') {
@@ -21,7 +21,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 
 	var label_conf;
 
-	if (width < 400) {
+	if (width < 400 || hide_labels) {
 		label_conf = {
 			show: false
 		};
@@ -93,32 +93,26 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	var plot = $.plot($('#'+graph_id), data, conf_pie);
 
 	var legends = $('#'+graph_id+' .legendLabel');
-	legends.each(function () {
-		$(this).css('width', $(this).width());
-		$(this).css('font-size', font_size+'pt');
-	});
+	legends.css('font-size', font_size+'pt');
 
 	// Events
 	$('#' + graph_id).bind('plothover', pieHover);
 	$('#' + graph_id).bind('plotclick', pieClick);
 	$('#' + graph_id).bind('mouseout',resetInteractivity);
+	$('#' + graph_id).css('margin-left', 'auto');
+	$('#' + graph_id).css('margin-right', 'auto');
 
-	function pieHover(event, pos, obj)
-	{
-		if (!obj)
-			return;
+	function pieHover(event, pos, obj) {
+		if (!obj) return;
 
 		index = obj.seriesIndex;
-		legends.css('font-weight', '');
-		legends.eq(index).css('font-weight', 'bold');
+		legends.css('color', '#3F3F3D');
+		legends.eq(index).css('color', '#000000');
 	}
 
 	// Reset styles
 	function resetInteractivity() {
-		legends.each(function () {
-			// fix the widths so they don't jump around
-			$(this).css('font-weight', '');
-		});
+		legends.css('color', '#3F3F3D');
 	}
 	
 	if (water_mark) {
@@ -158,7 +152,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		formatter: function(label, series) {
 			return '<div style="font-size:' + font_size + 'pt;' +
 				'text-align:center;padding:2px;color:white;">' +
-					label + ':' + series.percent.toFixed(2) + '%</div>';
+				series.percent.toFixed(2) + '%</div>';
 		},
 		background: {
 			opacity: 0.5,
@@ -224,21 +218,19 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 	$('#' + graph_id).bind('plothover', pieHover);
 	$('#' + graph_id).bind('plotclick', Clickpie);
 	$('#' + graph_id).bind('mouseout',resetInteractivity);
+	$('#' + graph_id).css('margin-left', 'auto');
+	$('#' + graph_id).css('margin-right', 'auto');
 	
-	function pieHover(event, pos, obj) 
-	{
-		if (!obj)
-			return;
+	function pieHover(event, pos, obj) {
+		if (!obj) return;
 		
 		index = obj.seriesIndex;
-		legends.css('font-weight', '');
-		legends.eq(index).css('font-weight', 'bold');
+		legends.css('color', '#3F3F3D');
+		legends.eq(index).css('color', '#000000');
 	}
 	
-	function Clickpie(event, pos, obj) 
-	{
-		if (!obj)
-			return;
+	function Clickpie(event, pos, obj) {
+		if (!obj) return;
 		percent = parseFloat(obj.series.percent).toFixed(2);
 		valor = parseFloat(obj.series.data[0][1]);
 		
@@ -260,7 +252,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 	function resetInteractivity() {
 		legends.each(function () {
 			// fix the widths so they don't jump around
-			$(this).css('font-weight', '');
+			$(this).css('color', '#3F3F3D');
 		});
 	}
 	
@@ -347,7 +339,8 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	var plot = $.plot($('#' + graph_id), datas, options );
 	
 	$('#' + graph_id).HUseTooltip();
-	$('#' + graph_id).css("margin-left","35px");
+	$('#' + graph_id).css("margin-left","auto");
+	$('#' + graph_id).css("margin-right","auto");
 	// Adjust the top of yaxis tick to set it in the middle of the bars
 	//yAxisHeight = $('#' + graph_id + ' .yAxis .tickLabel')
 		//.css('height').split('px')[0];
@@ -468,9 +461,13 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	function yFormatter(v, axis) {
 		format = new Array();
 		for (i = 0; i < labels_total.length; i++) {
-			format.push([i,'<div style="visibility: hidden;" class="legend_'+i+'">'+labels_total[i][1]+'</div>']);
+			format.push([i,'<div class="legend_'+i+'">'+labels_total[i][1]+'</div>']);
 		}
 		return format;
+	}
+	
+	if (water_mark) {
+		set_watermark(graph_id, plot, $('#watermark_image_'+graph_id).attr('src'));
 	}
 }
 
@@ -480,7 +477,6 @@ $.fn.HUseTooltip = function () {
     $(this).bind("plothover", function (event, pos, item) {
         if (item) {
             if ((previousLabel != item.series.label) || (previousPoint != item.seriesIndex)) {
-				$('.legend_'+previousPoint).css("visibility","hidden");
                 previousPoint = item.seriesIndex;
                 previousLabel = item.series.label;
                 $("#tooltip").remove();
@@ -489,15 +485,13 @@ $.fn.HUseTooltip = function () {
                 var y = item.datapoint[1];
 
                 var color = item.series.color;              
-                $('.legend_'+y).css("visibility","");
-                showTooltip(item.pageX,
-                        item.pageY,
+                showTooltip(pos.pageX,
+                        pos.pageY,
                         color,
-                        "<strong>" + $('.legend_'+x).text() + "</strong>: <strong>" + x + "</strong>");
+                        "<strong>" + x + "</strong>");
             }
         } else {
             $("#tooltip").remove();
-            $('.legend_'+previousPoint).css("visibility","hidden");
             previousPoint = null;
         }
     });
@@ -506,7 +500,6 @@ $.fn.VUseTooltip = function () {
     $(this).bind("plothover", function (event, pos, item) {
         if (item) {
             if ((previousLabel != item.series.label) || (previousPoint != item.seriesIndex)) {
-				$('.legend_'+previousPoint).css("visibility","hidden");
                 previousPoint = item.seriesIndex;
                 previousLabel = item.series.label;
                 
@@ -516,15 +509,13 @@ $.fn.VUseTooltip = function () {
                 var y = item.datapoint[1];
 				
                 var color = item.series.color;
-				$('.legend_'+x).css("visibility","");
-                showTooltip(item.pageX,
-                        item.pageY,
+                showTooltip(pos.pageX,
+                        pos.pageY,
                         color,
-                        "<strong>" + $('.legend_'+x).text() + "</strong>"  + " : <strong>" + y + "</strong>");
+                        "<strong>" + y + "</strong>");
             }
         } else {
             $("#tooltip").remove();
-            $('.legend_'+previousPoint).css("visibility","hidden");
             previousPoint = null;
         }
     });
@@ -534,8 +525,8 @@ function showTooltip(x, y, color, contents) {
     $('<div id="tooltip">' + contents + '</div>').css({
         position: 'absolute',
         display: 'none',
-        top: y - 40,
-        left: x - 120,
+        top: y,
+        left: x,
         border: '2px solid ' + color,
         padding: '3px',
         'font-size': '9px',
@@ -623,8 +614,8 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	
 	var plot = $.plot($('#'+graph_id),datas, options );
 	$('#' + graph_id).VUseTooltip();
-	$('#' + graph_id).css("margin-left","25px");
-	$('#' + graph_id).css("margin-right","20px");
+	$('#' + graph_id).css("margin-left","auto");
+	$('#' + graph_id).css("margin-right","auto");
 	// Adjust the top of yaxis tick to set it in the middle of the bars
 	//yAxisHeight = $('#'+graph_id+' .yAxis .tickLabel').css('height').split('px')[0];
 	
@@ -675,11 +666,19 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		
 		$(this).text(text);
 	});
+	
+	$('#'+graph_id+' .xAxis .tickLabel')
+		.css('transform', 'rotate(-35deg)')
+		.find('div')
+			.css('position', 'relative')
+			.css('top', '+10px')
+			.css('left', '-20px');
+	
 	// Format functions
 	function xFormatter(v, axis) {
 		format = new Array();
 		for (i = 0; i < labels_total.length; i++) {
-			format.push([i,'<div style="visibility: hidden;" class="legend_'+i+'">'+labels_total[i][1]+'</div>']);
+			format.push([i,'<div class="legend_'+i+'">'+labels_total[i][1]+'</div>']);
 		}
 		return format;
 	}

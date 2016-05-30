@@ -116,6 +116,12 @@ $table_other->data[9][0] = __('Delete not init modules');
 $table_other->data[9][1] = __('Yes').'&nbsp;'.html_print_radio_button ('delete_notinit', 1, '', $config["delete_notinit"], true).'&nbsp;&nbsp;';
 $table_other->data[9][1] .= __('No').'&nbsp;'.html_print_radio_button ('delete_notinit', 0, '', $config["delete_notinit"], true);
 
+$table_other->data[10][0] = __('Big Operation Step to purge old data') . ui_print_help_tip(__('The number of blocks that a time interval is split into. A bigger value means bigger blocks, which is faster but heavier on the database. Default is 100.'), true);
+$table_other->data[10][1] = html_print_input_text ('big_operation_step_datos_purge', $config["big_operation_step_datos_purge"], '', 5, 5, true);
+
+$table_other->data[11][0] = __('Small Operation Step to purge old data') . ui_print_help_tip(__('The number of rows that are processed in a single query in deletion. Default is 1000. Increase to 3000-5000 in fast systems. Decrease to 500 or 250 on systems with locks.'), true);
+$table_other->data[11][1] = html_print_input_text ('small_operation_step_datos_purge', $config["small_operation_step_datos_purge"], '', 5, 5, true);
+
 echo '<form id="form_setup" method="post">';
 echo "<fieldset>";
 echo "<legend>" . __('Database maintenance options') . "</legend>";

@@ -26,3 +26,11 @@ WHERE id = 4 AND id_alert_command = 11;
 -- Table `talert_commands`
 -- ---------------------------------------------------------------------
 UPDATE talert_commands SET fields_descriptions = '[\"Integria&#x20;IMS&#x20;API&#x20;path\",\"Integria&#x20;IMS&#x20;API&#x20;pass\",\"Integria&#x20;IMS&#x20;user\",\"Integria&#x20;IMS&#x20;user&#x20;pass\",\"Ticket&#x20;title\",\"Ticket&#x20;group&#x20;ID\",\"Ticket&#x20;priority\",\"Email&#x20;copy\",\"Ticket&#x20;owner\",\"Ticket&#x20;description\"]', fields_values = '[\"\",\"\",\"\",\"\",\"\",\"\",\"10,Maintenance;0,Informative;1,Low;2,Medium;3,Serious;4,Very&#x20;Serious\",\"\",\"\",\"\"]' WHERE id = 11 AND name = 'Integria&#x20;IMS&#x20;Ticket';
+
+-- ---------------------------------------------------------------------
+-- Table `tconfig`
+-- ---------------------------------------------------------------------
+
+INSERT INTO tconfig (token, value) VALUES ('big_operation_step_datos_purge', '100');
+INSERT INTO tconfig (token, value) VALUES ('small_operation_step_datos_purge', '1000');
+

@@ -1,0 +1,33 @@
+sudo: required
+
+language: python
+python:
+  - 2.7
+
+env:
+  global:
+    - secure: "MEfyEpYEBkPmgPYX3CDKhaoiOltH5lDcUOYZ/19Yflg6ee20IBZOywCmrKH7VouKlOHUrGTUQqHBou0npm93qBju3MrPCE2R62PiDV2EHCGl3AFpLkgt0m1/DceWCWKlL+gI8uvnEFzVUuaPm6cEcRn1ikzg5b084bTxJ2B1Bvs="
+    - SAUCE_USERNAME="artica_pandorafms"
+
+addons:
+  firefox: "latest"
+  sauce_connect: true
+
+services:
+  - docker
+
+before_install:
+  - sudo apt-get install xvfb
+
+install:
+  - pip install selenium PyVirtualDisplay sauceclient
+
+#before_script:
+#  - "export DISPLAY=:99.0"
+#  - "sh -e /etc/init.d/xvfb start"
+#  - sleep 4 # give xvfb some time to start
+
+script:
+  - docker run --name pandorafms -h pandorafms -dt -v "$TRAVIS_BUILD_DIR:/tmp/pandorafms" -p 127.0.0.1:80:80 pandorafms/pandorafms-base tail -f /var/log/messages
+  - docker exec -t pandorafms /tmp/pandorafms/tests/test.sh
+  - python $TRAVIS_BUILD_DIR/tests/run_console_tests.py

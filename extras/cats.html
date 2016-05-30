@@ -1,0 +1,428 @@
+<html>
+	<head>
+		<title>gatete</title>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+	</head>
+<body>
+<script>
+
+var svg = d3.select("#test svg");
+</script>
+		
+		<div id="test">
+			<svg   xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000px" height="1000px" style="background: black;">
+				<image id="cat_piano" x="400" y="-100" width="50%" height="50%" xlink:href="https://media.giphy.com/media/ymckEpq27dQ9W/giphy.gif" />
+				<g id="zoom" transform="translate(-10 20) scale (1)">
+					
+					<g
+						transform="translate(100, 300) scale(0.50)"
+						id="cat1">
+						<path
+						   id="path8068"
+						   d="m 80,286.64792 28.57143,-31.42857 94.28571,60 5.71429,122.85714 L 200,472.3622 l 82.85714,-54.28571 194.28572,8.57143 191.42857,31.42857 48.57143,40 -11.42857,-65.71429 -48.57143,-94.28571 31.42857,-51.42857 14.28571,-88.57143 62.85715,74.28571 65.71428,0 31.42857,-82.85714 42.85715,94.28572 L 920,340.93363 897.14286,423.79078 868.57143,515.21935 800,663.79078 814.28571,795.21935 760,855.21935 734.28571,649.50506 691.42857,672.3622 714.28571,883.79078 640,895.21935 l -8.57143,-208.57143 -85.71428,71.42857 -160,-14.28571 L 317.14286,695.21935 360,838.07649 l -22.85714,65.71429 -74.28572,-200 -11.42857,162.85714 -74.28571,-17.14286 40,-217.14286 -42.85715,-17.14285 5.71429,-85.71429 -5.71429,-54.28571 -2.85714,-108.57143 -20,-42.85714 z"
+						   style="fill:none;fill-rule:evenodd;stroke: red; fill: white; stroke-width:4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+					</g>
+						
+					<g
+						transform="translate(700, 500) scale(0.25)"
+						id="cat2">
+						<path
+						   id="path8068"
+						   d="m 80,286.64792 28.57143,-31.42857 94.28571,60 5.71429,122.85714 L 200,472.3622 l 82.85714,-54.28571 194.28572,8.57143 191.42857,31.42857 48.57143,40 -11.42857,-65.71429 -48.57143,-94.28571 31.42857,-51.42857 14.28571,-88.57143 62.85715,74.28571 65.71428,0 31.42857,-82.85714 42.85715,94.28572 L 920,340.93363 897.14286,423.79078 868.57143,515.21935 800,663.79078 814.28571,795.21935 760,855.21935 734.28571,649.50506 691.42857,672.3622 714.28571,883.79078 640,895.21935 l -8.57143,-208.57143 -85.71428,71.42857 -160,-14.28571 L 317.14286,695.21935 360,838.07649 l -22.85714,65.71429 -74.28572,-200 -11.42857,162.85714 -74.28571,-17.14286 40,-217.14286 -42.85715,-17.14285 5.71429,-85.71429 -5.71429,-54.28571 -2.85714,-108.57143 -20,-42.85714 z"
+						   style="fill:none;fill-rule:evenodd;stroke: red; fill: white; stroke-width:4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+					</g>
+
+					<g
+						transform="translate(200, 0) scale(0.25)"
+						id="cat3">
+						<path
+						   id="path8068"
+						   d="m 80,286.64792 28.57143,-31.42857 94.28571,60 5.71429,122.85714 L 200,472.3622 l 82.85714,-54.28571 194.28572,8.57143 191.42857,31.42857 48.57143,40 -11.42857,-65.71429 -48.57143,-94.28571 31.42857,-51.42857 14.28571,-88.57143 62.85715,74.28571 65.71428,0 31.42857,-82.85714 42.85715,94.28572 L 920,340.93363 897.14286,423.79078 868.57143,515.21935 800,663.79078 814.28571,795.21935 760,855.21935 734.28571,649.50506 691.42857,672.3622 714.28571,883.79078 640,895.21935 l -8.57143,-208.57143 -85.71428,71.42857 -160,-14.28571 L 317.14286,695.21935 360,838.07649 l -22.85714,65.71429 -74.28572,-200 -11.42857,162.85714 -74.28571,-17.14286 40,-217.14286 -42.85715,-17.14285 5.71429,-85.71429 -5.71429,-54.28571 -2.85714,-108.57143 -20,-42.85714 z"
+						   style="fill:none;fill-rule:evenodd;stroke: red; fill: white; stroke-width:4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+					</g>
+
+					<g
+						transform="translate(600, 0) scale(0.25)"
+						id="cat4">
+						<path
+						   id="path8068"
+						   d="m 80,286.64792 28.57143,-31.42857 94.28571,60 5.71429,122.85714 L 200,472.3622 l 82.85714,-54.28571 194.28572,8.57143 191.42857,31.42857 48.57143,40 -11.42857,-65.71429 -48.57143,-94.28571 31.42857,-51.42857 14.28571,-88.57143 62.85715,74.28571 65.71428,0 31.42857,-82.85714 42.85715,94.28572 L 920,340.93363 897.14286,423.79078 868.57143,515.21935 800,663.79078 814.28571,795.21935 760,855.21935 734.28571,649.50506 691.42857,672.3622 714.28571,883.79078 640,895.21935 l -8.57143,-208.57143 -85.71428,71.42857 -160,-14.28571 L 317.14286,695.21935 360,838.07649 l -22.85714,65.71429 -74.28572,-200 -11.42857,162.85714 -74.28571,-17.14286 40,-217.14286 -42.85715,-17.14285 5.71429,-85.71429 -5.71429,-54.28571 -2.85714,-108.57143 -20,-42.85714 z"
+						   style="fill:none;fill-rule:evenodd;stroke: red; fill: white; stroke-width:4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+					</g>
+				</g>
+			</svg>
+		</div>
+		<script type="text/javascript">
+			var svg = d3.select("svg #zoom");
+			
+			
+			
+			svg.append("g")
+					.attr("id", "circulo")
+					.attr("transform",
+						function(d) {
+							return "translate(" + get_center_element("#cat1")[0] + " " + get_center_element("#cat1")[1] + ")";})
+					.append("circle")
+						.attr("style", "fill: rgb(0, 255, 0);")
+						.attr("cx", 0)
+						.attr("cy", 0)
+						.attr("r", 20);
+			
+			svg.append("g")
+					.attr("transform",
+						function(d) { return "translate(" + get_pos_element("#cat1")[0] + " " + get_pos_element("#cat1")[1] + ") scale(" + get_scale_element("#cat1") + ")";})
+					.append("rect")
+						.attr("style", "fill:none; stroke:#ffff00;stroke-width:5")
+						.attr("width", function(d) { return get_size_element("#cat1")[0];})
+						.attr("height", function(d) { return get_size_element("#cat1")[1];});
+						
+			svg.append("g")
+					.attr("transform",
+						function(d) {
+							return "translate(" + get_center_element("#cat1")[0] + " " + get_center_element("#cat1")[1] + ") scale(" + get_scale_element("#cat1") + ")";})
+					.append("circle")
+						.attr("style", "fill: none; stroke-width: 5; stroke: rgb(0, 0, 255);")
+						.attr("cx", 0)
+						.attr("cy", 0)
+						.attr("r", get_radius_element("#cat1"));
+			
+			svg.append("g")
+					.attr("id", "circulo")
+					.attr("transform",
+						function(d) {
+							return "translate(" + get_center_element("#cat3")[0] + " " + get_center_element("#cat3")[1] + ")";})
+					.append("circle")
+						.attr("style", "fill: rgb(0, 255, 0);")
+						.attr("cx", 0)
+						.attr("cy", 0)
+						.attr("r", 20);
+
+			svg.append("g")
+					.attr("transform",
+						function(d) { return "translate(" + get_pos_element("#cat3")[0] + " " + get_pos_element("#cat3")[1] + ") scale(" + get_scale_element("#cat3") + ")";})
+					.append("rect")
+						.attr("style", "fill:none; stroke:#ffff00;stroke-width:5")
+						.attr("width", function(d) { return get_size_element("#cat3")[0];})
+						.attr("height", function(d) { return get_size_element("#cat3")[1];});
+						
+			svg.append("g")
+					.attr("transform",
+						function(d) {
+							return "translate(" + get_center_element("#cat3")[0] + " " + get_center_element("#cat3")[1] + ") scale(" + get_scale_element("#cat3") + ")";})
+					.append("circle")
+						.attr("style", "fill: none; stroke-width: 5; stroke: rgb(0, 0, 255);")
+						.attr("cx", 0)
+						.attr("cy", 0)
+						.attr("r", get_radius_element("#cat3"));
+			
+			
+			
+			
+			arrow_by_pieces2("gatete_flecha", "cat1", "cat2");
+			arrow_by_pieces2("gatete_flecha2", "cat1", "cat4");
+			arrow_by_pieces2("gatete_flecha3", "cat3", "cat4");
+			
+			
+			
+			//~ arrow_by_pieces("gatete_flecha", "cat1", "cat2");
+			//~ arrow_by_pieces("gatete_flecha", "cat3", "cat4");
+			
+			/**
+			* Function get_radius_element
+			* Return float
+			* This method get the element radius
+			*/
+			function get_radius_element(element) {
+				var size = get_size_element(element);
+				
+				return Math.sqrt(
+					Math.pow(size[0] / 2, 2) + Math.pow(size[1] / 2, 2));
+			}
+			
+			/**
+			* Function get_scale_element
+			* Return float
+			* This method get the element escale
+			*/
+			function get_scale_element(element) {
+				var element_t = d3.transform(d3.select(element).attr("transform"));
+				var element_t_scale = parseFloat(element_t['scale']);
+				
+				return element_t_scale;
+			}
+			
+			/**
+			* Function get_size_element
+			* Return array[2]
+			* This method get the element size [width, height]
+			*/
+			function get_size_element(element) {
+				var element_b = d3.select(element).node().getBBox();
+				
+				return [element_b['width'], element_b['height']];
+			}
+			
+			/**
+			* Function get_pos_element
+			* Return array[2]
+			* This method get the element position [x, y]
+			*/
+			function get_pos_element(element) {
+				var element_t = d3.transform(d3.select(element).attr("transform"));
+				var element_t_scale = parseFloat(element_t['scale']);
+				var element_b = d3.select(element).node().getBBox();
+				
+				var box_x = parseFloat(element_t.translate[0]) +
+					parseFloat(element_b['x']) * element_t_scale;
+				var box_y = parseFloat(element_t.translate[1]) +
+					parseFloat(element_b['y']) * element_t_scale;
+				
+				return [box_x, box_y];
+			}
+			
+			/**
+			* Function get_center_element
+			* Return array[2]
+			* This method ge2t the element center point [x, y]
+			*/
+			function get_center_element(element) {
+				var element_t = d3.transform(d3.select(element).attr("transform"));
+				var element_t_scale = parseFloat(element_t['scale']);
+				var element_b = d3.select(element).node().getBBox();
+				
+				var box_x = parseFloat(element_t.translate[0]) +
+					parseFloat(element_b['x']) * element_t_scale;
+				var box_y = parseFloat(element_t.translate[1]) +
+					parseFloat(element_b['y']) * element_t_scale;
+				
+				var width = (element_t_scale * element_b['width']);
+				var height = (element_t_scale * element_b['height']);
+				
+				var c_x = box_x + (width / 2);
+				var c_y = box_y + (height / 2);
+				
+				return [c_x, c_y];
+			}
+			
+			/**
+			* Function get_distance_between_point
+			* Return float
+			* This method get the distance betweeen two points
+			*/
+			function get_distance_between_point(point1, point2) {
+				delta_x = Math.abs(point1[0] - point2[0]);
+				delta_y = Math.abs(point1[1] - point1[1]);
+				
+				return Math.sqrt(
+					Math.pow(delta_x, 2) + Math.pow(delta_y, 2));
+			}
+			
+			
+			
+			/**
+			* Function get_angle_of_line
+			* Return float
+			* This method get the angle of line and x axe
+			*/
+			function get_angle_of_line(point1, point2) {
+				return Math.atan2(point2[1] - point1[1], point2[0] - point1[0]) * 180 / Math.PI;
+			}
+			
+			
+			
+			//~ function wait_for_preload_symbol(symbol) {
+				//~ preload_symbol(symbol);
+				//~ 
+				//~ while (!is_preload_symbol(symbol)) {
+					//~ sleep(1000);
+				//~ }
+			//~ }
+			//~ 
+			//~ function arrow_by_pieces(id_arrow, element1, element2, step) {
+				//~ 
+				//~ wait_for_preload_symbol('pedo');
+				//~ wait_for_preload_symbol('caca');
+				//~ ...
+			//~ }
+			
+			
+			
+			function arrow_by_pieces2(id_arrow, element1, element2, step) {
+				if (typeof(step) === "undefined")
+					step = 0;
+				
+				step++;
+				
+				switch (step) {
+					case 1:
+						wait_for_preload_symbols(
+							["body_arrow.svg#body_arrow",
+								"head_arrow.svg#head_arrow"],
+							function() {
+								arrow_by_pieces2(id_arrow, element1, element2, step)
+							});
+						break;
+					case 2:
+						
+						var arrow = svg.append("g")
+							.attr("id", id_arrow)
+							.attr("style", "opacity: 0");
+						
+						arrow.append("g")
+							.attr("id", "body")
+							.append("use")
+								.attr("xlink:href", "body_arrow.svg#body_arrow");
+						
+						arrow.append("g")
+								.attr("id", "head")
+								.append("use")
+									.attr("xlink:href", "head_arrow.svg#head_arrow");
+						
+						
+						var c_elem1 = get_center_element("#" + element1);
+						var c_elem2 = get_center_element("#" + element2);
+						var distance = get_distance_between_point(c_elem1, c_elem2);
+						
+						var transform = d3.transform();
+					
+						/*---------------------------------------------*/
+						/*--- Position of layer arrow (body + head) ---*/
+						/*---------------------------------------------*/
+						var arrow = d3.select("#" + id_arrow);
+						
+						var arrow_body = d3.select("#" + id_arrow + " #body");
+						var arrow_body_b = arrow_body.node().getBBox();
+						
+						transform.translate[0] = c_elem1[0];
+						transform.translate[1] = c_elem1[1] - arrow_body_b['height'] / 2;
+						transform.rotate = get_angle_of_line(c_elem1, c_elem2);
+						
+						arrow.attr("transform", transform.toString());
+						
+						/*---------------------------------------------*/
+						/*-------- Resize the body arrow width --------*/
+						/*---------------------------------------------*/
+						var arrow_body = d3.select("#" + id_arrow + " #body");
+						var arrow_body_b = arrow_body.node().getBBox();
+						var arrow_head = d3.select("#" + id_arrow + " #head");
+						var arrow_head_b = arrow_head.node().getBBox();
+						
+						var body_width = distance - arrow_head_b['width'];
+						
+						transform = d3.transform();
+						transform.scale[0] = body_width / arrow_body_b['width'];
+						arrow_body.attr("transform", transform.toString());
+						
+						/*---------------------------------------------*/
+						/*---------- Position of head arrow -----------*/
+						/*---------------------------------------------*/
+						transform = d3.transform();
+						
+						var arrow_body_t = d3.transform(arrow_body.attr("transform"));
+						
+						var scale = arrow_body_t.scale[0];
+						var x = 0 + arrow_body_b['width'] * scale;
+						var y = 0 + (arrow_body_b['height'] / 2  - arrow_head_b['height'] / 2);
+						
+						transform.translate[0] = x;
+						transform.translate[1] = y;
+						
+						arrow_head.attr("transform", transform.toString());
+
+						/*---------------------------------------------*/
+						/*------- Show the result in one time ---------*/
+						/*---------------------------------------------*/
+						arrow.attr("style", "opacity: 1");
+						break;
+				}
+			}
+			
+			function wait_for_preload_symbols(symbols, callback) {
+				var count_symbols = symbols.length;
+				
+				function wait(symbol, callback) {
+					switch (is_preload_symbol(symbol)) {
+						case -1:
+							preload_symbol(symbol);
+							
+							setTimeout(function() {
+								wait(symbol,
+									callback);
+							}, 100);
+							break;
+						case 0:
+							// Wait
+							setTimeout(function() {
+								wait(symbol,
+									callback);
+							}, 100);
+							break;
+						case 1:
+							count_symbols--;
+							break;
+					}
+					
+					if (count_symbols == 0) {
+						//~ setTimeout(function() {
+							//~ callback();
+						//~ }, 1000);
+						callback();
+					}
+				}
+				
+				for (var i in symbols) {
+					wait(symbols[i], callback);
+				}
+			}
+			
+			
+			function preload_symbol(symbol, param_step) {
+				var step;
+				
+				
+				if (typeof(param_step) == "undefined") {
+					step = 1;
+					param_step = 1;
+				}
+				else {
+					step = param_step;
+				}
+				
+				
+				step++;
+				
+				var base64symbol = btoa(symbol).replace(/=/g, "");
+				
+				var callback = function (e) {
+					preload_symbol(symbol, step);
+				}
+				
+				switch (param_step) {
+					case 1:
+						d3.select("svg").append("g")
+							.attr("id", base64symbol)
+							.attr("data-loaded", 0)
+							.style("opacity", 0)
+							.append("use")
+								.attr("xlink:href", symbol)
+								.on("load", callback);
+						break;
+					case 2:
+						d3.select("#" + base64symbol).attr("data-loaded", 1);
+						
+						break;
+				}
+			}
+			
+			function is_preload_symbol(symbol) {
+				var base64symbol = btoa(symbol).replace(/=/g, "");
+				
+				if (d3.select("#" + base64symbol).node() === null)
+					return -1;
+				
+				return parseInt(d3.select("#" + base64symbol).attr("data-loaded"));
+			}
+		</script>
+	</body>
+</html>

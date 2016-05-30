@@ -35,6 +35,8 @@ function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, 
 		return false;
 	}
 	
+	db_change_cache_id ($db, $host);
+	
 	mysql_select_db($db, $connect_id);
 	return $connect_id;
 }
@@ -287,9 +289,9 @@ function mysql_db_process_sql($sql, $rettype = "affected_rows", $dbconnection = 
 	if ($sql == '')
 		return false;
 	
-	if ($cache && ! empty ($sql_cache[$sql])) {
-		$retval = $sql_cache[$sql];
-		$sql_cache['saved']++;
+	if ($cache && ! empty ($sql_cache[$sql_cache['id']][$sql])) {
+		$retval = $sql_cache[$sql_cache['id']][$sql];
+		$sql_cache['saved'][$sql_cache['id']]++;
 		db_add_database_debug_trace ($sql);
 	}
 	else {
@@ -335,7 +337,7 @@ function mysql_db_process_sql($sql, $rettype = "affected_rows", $dbconnection = 
 			}
 			
 			if ($cache === true)
-				$sql_cache[$sql] = $retval;
+				$sql_cache[$sql_cache ['id']][$sql] = $retval;
 			mysql_free_result ($result);
 		}
 	}

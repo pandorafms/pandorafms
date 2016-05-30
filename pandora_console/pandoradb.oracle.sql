@@ -2058,3 +2058,66 @@ CREATE TABLE tsessions_php (
 );
 
 -- This sequence will not work with the 'insert_id' procedure
+
+-- ---------------------------------------------------------------------
+-- Table `tmap`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS tmap (
+	id NUMBER(10, 0) PRIMARY KEY,
+	id_group NUMBER(10, 0) DEFAULT 0,
+	id_user NUMBER(10, 0) DEFAULT 0,
+	type NUMBER(5, 0) DEFAULT 0,
+	subtype NUMBER(5, 0) DEFAULT 0,
+	name VARCHAR2(100) DEFAULT '',
+	description CLOB DEFAULT '',
+	height NUMBER(10, 0) DEFAULT 0,
+	width NUMBER(10, 0) DEFAULT 0,
+	center_x NUMBER(10, 0) DEFAULT 0,
+	center_y NUMBER(10, 0) DEFAULT 0,
+	background VARCHAR2(100) DEFAULT '',
+	background_options NUMBER(10, 0) DEFAULT 0,
+	source_period NUMBER(10, 0) DEFAULT 0,
+	source NUMBER(10, 0) DEFAULT 0,
+	source_data VARCHAR2(250) DEFAULT '',
+	generation_method NUMBER(10, 0) DEFAULT 0,
+	generated NUMBER(10, 0) DEFAULT 0,
+	filter CLOB DEFAULT '',
+);
+
+CREATE SEQUENCE tmap_s INCREMENT BY 1 START WITH 1;
+CREATE OR REPLACE TRIGGER tmap_inc BEFORE INSERT ON tmap REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT tmap_s.nextval INTO :NEW.id FROM dual; END tmap_inc;;
+
+-- ---------------------------------------------------------------------
+-- Table titem
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS titem (
+	id NUMBER(10, 0) PRIMARY KEY,
+	id_map NUMBER(10, 0) DEFAULT 0,
+	x NUMBER(10, 0) DEFAULT 0,
+	y NUMBER(10, 0) DEFAULT 0,
+	z NUMBER(10, 0) DEFAULT 0,
+	deleted NUMBER(1, 0) DEFAULT 0,
+	type NUMBER(5, 0) DEFAULT 0,
+	refresh NUMBER(10, 0) DEFAULT 0,
+	source NUMBER(10, 0) DEFAULT 0,
+	source_data VARCHAR2(250) DEFAULT '',
+	options CLOB DEFAULT '',
+	style CLOB DEFAULT ''
+);
+CREATE SEQUENCE titem_s INCREMENT BY 1 START WITH 1;
+CREATE OR REPLACE TRIGGER titem_inc BEFORE INSERT ON titem REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT titem_s.nextval INTO :NEW.id FROM dual; END titem_inc;;
+
+-- ---------------------------------------------------------------------
+-- Table trel_item
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS trel_item (
+	id NUMBER(10, 0) PRIMARY KEY,
+	id_parent NUMBER(10, 0) DEFAULT 0,
+	id_child NUMBER(10, 0) DEFAULT 0,
+	parent_type NUMBER(5, 0) DEFAULT 0,
+	child_type NUMBER(5, 0) DEFAULT 0,
+	id_item NUMBER(10, 0) DEFAULT 0,
+	deleted NUMBER(1, 0) DEFAULT 0
+);
+CREATE SEQUENCE trel_item_s INCREMENT BY 1 START WITH 1;
+CREATE OR REPLACE TRIGGER trel_item_inc BEFORE INSERT ON trel_item REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT trel_item_s.nextval INTO :NEW.id FROM dual; END trel_item_inc;;

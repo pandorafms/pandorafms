@@ -2636,6 +2636,10 @@ div#agent_wizard_subtabs {
 	text-align: left;
 }
 
+.legend_servicemap_item {
+	display: none;
+}
+
 .legend_square {
 	width: 20px;
 	padding-left: 20px;
@@ -2875,6 +2879,12 @@ table#policy_modules td * {
 	text-align: right;
 }
 
+.saml_button {
+	float: left;
+	position: fixed;
+	vertical-align: middle;
+}
+
 .status_tactical{
 	width: 100%;
 	margin-left: auto;
@@ -2979,7 +2989,7 @@ table#policy_modules td * {
 	float: right;
 	z-index: 9999;
 	display: none;
-	margin-top: 6px !important ;
+	margin-top: 5px !important ;
 	left: 0px !important;
 }
 .subsubmenu li{
@@ -3123,3 +3133,161 @@ table#policy_modules td * {
 		transform: rotate(359deg);
 	}
 }
+
+/*
+ * ---------------------------------------------------------------------
+ * - Styles for the new networkmap                                     -
+ * ---------------------------------------------------------------------
+ */
+ .zoom_controller {
+	width: 30px;
+	height: 210px;
+	background: blue;
+	border-radius: 15px;
+	
+	top: 50px;
+	left: 10px;
+	position: absolute;
+}
+
+
+
+.vertical_range {
+	padding: 0;
+	-webkit-transform: rotate(270deg);
+	   -moz-transform: rotate(270deg);
+			transform: rotate(270deg);
+	width: 200px;
+	height: 20px;
+	position: relative;
+	background: transparent !important;
+	border: 0px !important;
+}
+
+.vertical_range {
+	left: -92px;
+	top: 93px;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0)
+{
+	/* Only for chrome */
+	
+	.vertical_range {
+		left: -87px;
+		top: 93px;
+	}
+}
+
+.home_zoom {
+	top: 310px;
+	left: 10px;
+	
+	display: table-cell;
+	position: absolute;
+	font-weight: bolder;
+	font-size: 20px;
+	background: blue;
+	color: white;
+	border-radius: 15px;
+	width: 30px;
+	height: 30px;
+	cursor:pointer;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.zoom_in {
+	top: 10px;
+	left: 10px;
+	
+	display: table-cell;
+	position: absolute;
+	font-weight: bolder;
+	font-size: 20px;
+	background: blue;
+	color: white;
+	border-radius: 15px;
+	width: 30px;
+	height: 30px;
+	cursor:pointer;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.zoom_out {
+	top: 270px;
+	left: 10px;
+	
+	display: table-cell;
+	position: absolute;
+	font-weight: bolder;
+	font-size: 20px;
+	background: blue;
+	color: white;
+	border-radius: 15px;
+	width: 30px;
+	height: 30px;
+	cursor:pointer;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.title_bar {
+	border-bottom: 1px solid black;
+}
+.title_bar .title {
+	font-weight: bolder;
+}
+
+.title_bar .open_click {
+	float: right;
+	display: table-cell;
+	font-weight: bolder;
+	font-size: 20px;
+	background: blue none repeat scroll 0% 0%;
+	color: white;
+	width: 17px;
+	height: 17px;
+	cursor: pointer;
+	text-align: center;
+	vertical-align: middle;
+	margin: 1px;
+}
+
+.title_bar .close_click {
+	float: right;
+	display: table-cell;
+	font-weight: bolder;
+	font-size: 20px;
+	background: blue none repeat scroll 0% 0%;
+	color: white;
+	width: 17px;
+	height: 17px;
+	cursor: pointer;
+	text-align: center;
+	vertical-align: middle;
+	margin: 1px;
+}
+
+/* Visual map */
+div#vc-controls {
+	position: fixed;
+	top: 30px;
+	right: 20px;
+}
+
+div#vc-controls div.vc-title, div#vc-controls div.vc-refr {
+	margin-top: 6px;
+	margin-left: 3px;
+	margin-right: 3px;
+}
+div#vc-controls div.vc-refr>div {
+	display: inline;
+}
+div#vc-controls img.vc-qr {
+	margin-top: 6px;
+	margin-left: 8px;
+	margin-right: 8px;
+}
+/* Visual map */

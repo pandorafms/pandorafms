@@ -1718,3 +1718,60 @@ CREATE TABLE "tsessions_php" (
 	"last_active" INTEGER NOT NULL,
 	"data" TEXT default ''
 );
+
+-- ---------------------------------------------------------------------
+-- Table "tmap"
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS "tmap" (
+	"id" SERIAL NOT NULL PRIMARY KEY,
+	"id_group" INTEGER default 0,
+	"id_user" INTEGER default 0,
+	"type" SMALLINT NOT NULL default 0,
+	"subtype" SMALLINT NOT NULL default 0,
+	"name" varchar(250) default '',
+	"description" TEXT,
+	"height" INTEGER UNSIGNED NOT NULL default 0,
+	"width" INTEGER UNSIGNED NOT NULL default 0,
+	"center_x" INTEGER NOT NULL default 0,
+	"center_y" INTEGER NOT NULL default 0,
+	"background" varchar(250) default '',
+	"background_options" INTEGER UNSIGNED NOT NULL default 0,
+	"source_period" INTEGER UNSIGNED NOT NULL default 0,
+	"source" SMALLINT NOT NULL default 0,
+	"source_data"  varchar(250) default '',
+	"generation_method" SMALLINT NOT NULL default 0,
+	"generated" SMALLINT NOT NULL default 0,
+	"filter" TEXT
+);
+
+-- ---------------------------------------------------------------------
+-- Table "titem"
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS "titem" (
+	"id" SERIAL NOT NULL PRIMARY KEY,
+	"id_map" INTEGER default 0,
+	"x" INTEGER UNSIGNED NOT NULL default 0,
+	"y" INTEGER UNSIGNED NOT NULL default 0,
+	"z" INTEGER UNSIGNED NOT NULL default 0,
+	"deleted" INTEGER(1) unsigned NOT NULL default 0,
+	"type" SMALLINT NOT NULL default 0,
+	"refresh" INTEGER UNSIGNED NOT NULL default 0,
+	"source" SMALLINT NOT NULL default 0,
+	"source_data" varchar(250) default '',
+	"options" TEXT,
+	"style" TEXT,
+	PRIMARY KEY("id")
+);
+
+-- ---------------------------------------------------------------------
+-- Table "trel_item"
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS "trel_item" (
+	"id" SERIAL NOT NULL PRIMARY KEY,
+	"id_parent" INTEGER default 0,
+	"id_child" INTEGER default 0,
+	"parent_type" SMALLINT NOT NULL default 0,
+	"child_type" SMALLINT NOT NULL default 0,
+	"id_item" INTEGER default 0,
+	"deleted" SMALLINT NOT NULL default 0
+);

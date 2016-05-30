@@ -1425,12 +1425,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$search_in_history_db = db_search_in_history_db($datelimit);
 				
 				$temp[$module] = modules_get_agentmodule($module);
-				$temp_data = db_get_value_sql('SELECT datos
-							FROM tagente_datos 
-							WHERE id_agente_modulo = ' . (int) $module .
-								' AND utimestamp > ' . (int) $datelimit .
-								' AND utimestamp < ' . (int) $date) .
-								" ORDER BY utimestamp DESC";
+				$query_last_value = sprintf('
+					SELECT datos
+					FROM tagente_datos
+					WHERE id_agente_modulo = %d
+						AND utimestamp < %d
+						ORDER BY utimestamp DESC',
+					$module, $date);
+				$temp_data = db_get_value_sql($query_last_value);
 								
 				if ($temp_data) {
 					if (is_numeric($temp_data))
@@ -1481,12 +1483,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				
 				
 				$module_data = modules_get_agentmodule($module);
-				$temp_data = db_get_value_sql('SELECT datos
-							FROM tagente_datos 
-							WHERE id_agente_modulo = ' . (int) $module .
-								' AND utimestamp > ' . (int) $datelimit .
-								' AND utimestamp < ' . (int) $date) .
-								" ORDER BY utimestamp DESC";
+				$query_last_value = sprintf('
+					SELECT datos
+					FROM tagente_datos
+					WHERE id_agente_modulo = %d
+						AND utimestamp < %d
+						ORDER BY utimestamp DESC',
+					$module, $date);
+				$temp_data = db_get_value_sql($query_last_value);
 				
 				$agent_name = io_safe_output(
 					modules_get_agentmodule_agent_name ($module));
@@ -1521,14 +1525,20 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					}
 				}
 				
+				if ($automatic_custom_graph_meta)
+					$module = $module_item['module'];
+				else
+					$module = $module_item;
 				
 				$data_module = modules_get_agentmodule($module);
-				$temp_data = db_get_value_sql('SELECT datos
-							FROM tagente_datos 
-							WHERE id_agente_modulo = ' . (int) $module .
-								' AND utimestamp > ' . (int) $datelimit .
-								' AND utimestamp < ' . (int) $date) .
-								" ORDER BY utimestamp DESC";
+				$query_last_value = sprintf('
+					SELECT datos
+					FROM tagente_datos
+					WHERE id_agente_modulo = %d
+						AND utimestamp < %d
+						ORDER BY utimestamp DESC',
+					$module, $date);
+				$temp_data = db_get_value_sql($query_last_value);
 				if ( $temp_data ){
 					if (is_numeric($temp_data))
 						$value = $temp_data;
@@ -1574,14 +1584,20 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					}
 				}
 				
+				if ($automatic_custom_graph_meta)
+					$module = $module_item['module'];
+				else
+					$module = $module_item;
 				
 				$temp[$module] = modules_get_agentmodule($module);
-				$temp_data = db_get_value_sql('SELECT datos
-							FROM tagente_datos 
-							WHERE id_agente_modulo = ' . (int) $module .
-								' AND utimestamp > ' . (int) $datelimit .
-								' AND utimestamp < ' . (int) $date) .
-								" ORDER BY utimestamp DESC";
+				$query_last_value = sprintf('
+					SELECT datos
+					FROM tagente_datos
+					WHERE id_agente_modulo = %d
+						AND utimestamp < %d
+						ORDER BY utimestamp DESC',
+					$module, $date);
+				$temp_data = db_get_value_sql($query_last_value);
 				if ( $temp_data ) {
 					if (is_numeric($temp_data))
 						$value = $temp_data;
@@ -1609,9 +1625,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					$temp[$module]['min'] = ($min == 0 ) ? 0 : $min;
 					$temp[$module]['max'] = ($max == 0 ) ? 100 : $max;
 				}
-				$temp[$module]['gauge'] = "gauge_" . $i;
-				$i++;
-				
+				$temp[$module]['gauge'] = uniqid('gauge_');
 				
 				if ($config['metaconsole']) {
 					// Automatic custom graph from the report template in metaconsole
@@ -1619,6 +1633,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 						metaconsole_restore_db();
 					}
 				}
+				$i++;
 			}
 			break;
 		default:

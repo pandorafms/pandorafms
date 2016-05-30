@@ -1243,11 +1243,18 @@ function visual_map_process_wizard_add ($id_agents, $image, $id_layout, $range,
 				break;
 		}
 		
+		$label = agents_get_name($id_agent);
+		
+		$value_label = '(_VALUE_)';
+		if ($type === SIMPLE_VALUE) {
+			$label .= ' ' . $value_label;
+		}
+		
 		$values = array ('type' => $value_type,
 			'id_layout' => $id_layout,
 			'pos_x' => $pos_x,
 			'pos_y' => $pos_y,
-			'label' => agents_get_name ($id_agent),
+			'label' => $label,
 			'image' => $value_image,
 			'id_agent' => $id_agent,
 			'width' => $width,
@@ -1314,24 +1321,25 @@ function visual_map_process_wizard_add_modules ($id_modules, $image,
 		}
 		
 		$id_agent = modules_get_agentmodule_agent ($id_module);
+		$value_label = '(_VALUE_)';
 		
 		switch ($label_type) {
 			case 'agent_module':
 			default:
 				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 'agent_small', false, true, false, '…', false);
 				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_small', false, true, false, '…', false);
-				$label = $agent_label . " - " . $module_label;
+				$label = $agent_label . " - " . $module_label . " " . $value_label;
 				break;
 			case 'module':
 				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_small', false, true, false, '…', false);
-				$label = $module_label;
+				$label = $module_label . " " . $value_label;
 				break;
 			case 'agent':
 				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 'agent_small', false, true, false, '…', false);
-				$label = $agent_label;
+				$label = $agent_label . " " . $value_label;
 				break;
 			case 'none':
-				$label = '';
+				$label = $value_label;
 				break;
 		}
 		$label = io_safe_input($label);
@@ -1516,6 +1524,7 @@ function visual_map_process_wizard_add_agents ($id_agents, $image,
 			}
 		}
 		
+		$value_label = '(_VALUE_)';
 		
 		switch ($label_type) {
 			case 'agent':
@@ -1523,9 +1532,10 @@ function visual_map_process_wizard_add_agents ($id_agents, $image,
 					agents_get_name($id_agent),
 					'agent_small', false, true, false, '…', false);
 				$label = $agent_label;
+				if ($type === SIMPLE_VALUE) $label .= ' ' . $value_label;
 				break;
 			case 'none':
-				$label = '';
+				$label = ($type === SIMPLE_VALUE) ? $value_label : '';
 				break;
 		}
 		$label = io_safe_input($label);
@@ -1926,7 +1936,8 @@ function visual_map_print_user_lines($layout_data, $proportion = null) {
  * @param bool $draw_lines
  */
 function visual_map_print_visual_map ($id_layout, $show_links = true,
-	$draw_lines = true, $width = null, $height = null, $home_url = '', $isExternalLink = false, $graph_javascript = true) {
+	$draw_lines = true, $width = null, $height = null, $home_url = '',
+	$isExternalLink = false, $graph_javascript = true, $keep_aspect_ratio = false) {
 
 	enterprise_include_once('include/functions_visual_map.php');
 	
@@ -1979,15 +1990,23 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 	if (!is_null($height) && !is_null($width)) {
 		$resizedMap = true;
 		
-		$mapWidth = $width;
-		$mapHeight = $height;
 		
-		$dif_height = $layout["height"] - $height;
-		$dif_width = $layout["width"] - $width;
+		if ($keep_aspect_ratio) {
+			$ratio = min($width / $layout['width'], $height / $layout['height']);
+			$mapWidth = $ratio * $layout['width'];
+			$mapHeight = $ratio * $layout['height'];
+		}
+		else {
+			$mapWidth = $width;
+			$mapHeight = $height;
+		}
+		
+		$dif_height = $layout["height"] - $mapHeight;
+		$dif_width = $layout["width"] - $mapWidth;
 		
 		
-		$proportion_height = $height / $layout["height"];
-		$proportion_width = $width / $layout["width"];
+		$proportion_height = $mapHeight / $layout["height"];
+		$proportion_width = $mapWidth / $layout["width"];
 		
 		
 		if (is_metaconsole()) {

@@ -534,6 +534,23 @@ function tags_get_tags ($ids) {
 	return $tags;
 }
 
+function tags_agent_has_tag($id_agent, $id_tag) {
+	$exists = db_get_value_sql("
+		SELECT COUNT(*)
+		FROM ttag_module
+		WHERE id_agente_modulo IN (
+			SELECT id_agente_modulo
+			FROM tagente_modulo
+			WHERE id_agente = " . $id_agent . ")
+			AND id_tag = " . $id_tag);
+	
+	if (empty($exists)) {
+		return false;
+	}
+	
+	return (bool)$exists;
+}
+
 function tags_get_agents($id_tag, $id_policy_module = 0) {
 	
 	$agents = db_get_all_rows_sql("
@@ -2461,13 +2478,16 @@ function tags_get_user_module_and_tags ($id_user = false, $access = 'AR', $stric
  * 
  * @return mixed Returns count of agents with this tag or false if they aren't.
  */
-function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_and_tags = array(), $filter = false, $fields = false, $meta = true, $strict_user = true, $return_all_fields = false) {
+function tags_get_all_user_agents ($id_tag = false, $id_user = false,
+	$groups_and_tags = array(), $filter = false, $fields = false,
+	$meta = true, $strict_user = true, $return_all_fields = false) {
 	
 	global $config;
-
+	
 	if (empty($id_tag)) {
 		$tag_filter = '';
-	} else {
+	}
+	else {
 		$tag_filter = " AND tagente_modulo.id_agente_modulo IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag = $id_tag) ";
 	}
 	if (empty($id_user)) {
@@ -2481,13 +2501,14 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 	}
 	
 	$select_fields = implode(',',$fields);
-
+	
 	$groups_clause = "";
 	if ($strict_user) {
 		if (!empty($groups_and_tags)) {
 			$groups_clause = " AND ".tags_get_acl_tags_module_condition($groups_and_tags, "tagente_modulo"); 		 
 		}
-	} else {
+	}
+	else {
 		$groups_clause = " AND tagente.id_grupo IN (".implode(',', array_keys($groups_and_tags)).")";
 	}
 	
@@ -2498,7 +2519,7 @@ function tags_get_all_user_agents ($id_tag = false, $id_user = false, $groups_an
 			$groups_str = $filter['id_group'];
 		$groups_clause .= " AND tagente.id_grupo IN ($groups_str)";
 	}
-
+	
 	$status_sql = '';
 	if (isset($filter['status'])) {
 		switch ($filter['status']) {

@@ -392,6 +392,10 @@ function config_update_config () {
 						$error_update[] = __('Max. recommended number of files in attachment directory');
 					if (!config_update_value ('delete_notinit', get_parameter ('delete_notinit')))
 						$error_update[] = __('Delete not init modules');
+					if (!config_update_value ('big_operation_step_datos_purge', get_parameter ('big_operation_step_datos_purge')))
+						$error_update[] = __('Big Operatiopn Step to purge old data');
+					if (!config_update_value ('small_operation_step_datos_purge', get_parameter ('small_operation_step_datos_purge')))
+						$error_update[] = __('Small Operation Step to purge old data');
 					/////////////
 					break;
 					
@@ -636,6 +640,22 @@ function config_update_config () {
 				if (!config_update_value ('history_db_delay', get_parameter ('history_db_delay')))
 					$error_update[] = __('Delay');
 				break;
+			case 'ehorus':
+				if (!config_update_value('ehorus_enabled', (int) get_parameter('ehorus_enabled', $config['ehorus_enabled'])))
+					$error_update[] = __('Enable eHorus');
+				if (!config_update_value('ehorus_user', (string) get_parameter('ehorus_user', $config['ehorus_user'])))
+					$error_update[] = __('eHorus user');
+				if (!config_update_value('ehorus_pass', io_input_password((string) get_parameter('ehorus_pass', $config['ehorus_pass']))))
+					$error_update[] = __('eHorus password');
+				if (!config_update_value('ehorus_hostname', (string) get_parameter('ehorus_hostname', $config['ehorus_hostname'])))
+					$error_update[] = __('eHorus API hostname');
+				if (!config_update_value('ehorus_port', (int) get_parameter('ehorus_port', $config['ehorus_port'])))
+					$error_update[] = __('eHorus API port');
+				if (!config_update_value('ehorus_req_timeout', (int) get_parameter('ehorus_req_timeout', $config['ehorus_req_timeout'])))
+					$error_update[] = __('eHorus request timeout');
+				if (!config_update_value('ehorus_custom_field', (string) get_parameter('ehorus_custom_field', $config['ehorus_custom_field'])))
+					$error_update[] = __('eHorus id custom field');
+				break;
 			
 		}
 		
@@ -742,7 +762,7 @@ function config_process_config () {
 	if (!isset ($config["num_files_attachment"])) {
 		config_update_value ('num_files_attachment', 100);
 	}
-	
+
 	if (!isset ($config['status_images_set'])) {
 		config_update_value ('status_images_set', 'default');
 	}
@@ -778,7 +798,15 @@ function config_process_config () {
 	if (!isset ($config["delete_notinit"])) {
 		config_update_value ('delete_notinit', 0);
 	}
-	
+
+	if (!isset ($config["big_operation_step_datos_purge"])) {
+		config_update_value ('big_operation_step_datos_purge', 100);
+	}
+
+	if (!isset ($config["small_operation_step_datos_purge"])) {
+		config_update_value ('small_operation_step_datos_purge', 1000);
+	}
+
 	if (!isset ($config["event_purge"])) {
 		config_update_value ('event_purge', 15);
 	}
@@ -1435,7 +1463,22 @@ function config_process_config () {
 		config_update_value ('max_file_size', "2M");
 	}
 	
-	
+	// eHorus
+	if (!isset($config['ehorus_enabled'])) {
+		config_update_value('ehorus_enabled', 0);
+	}
+	if (!isset($config['ehorus_custom_field'])) {
+		config_update_value('ehorus_custom_field', 'eHorusID');
+	}
+	if (!isset($config['ehorus_hostname'])) {
+		config_update_value('ehorus_hostname', 'switch.ehorus.com');
+	}
+	if (!isset($config['ehorus_port'])) {
+		config_update_value('ehorus_port', 18080);
+	}
+	if (!isset($config['ehorus_req_timeout'])) {
+		config_update_value('ehorus_req_timeout', 5);
+	}
 	
 	/* Finally, check if any value was overwritten in a form */
 	config_update_config();

@@ -57,10 +57,22 @@ require_once ('include/functions_networkmap.php');
 
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
+global $width;
+global $height;
+
+if (empty($width)) {
+	$width = 600;
+}
+if (empty($height)) {
+	$height = 650;
+}
+
 if ($activeTab == "radial_dynamic") {
 	include_once("include/functions_graph.php");
 	
 	echo "<div style='width: auto; text-align: center;'>";
+	
+	
 	
 	$filter = array();
 	if (!empty($group))
@@ -68,7 +80,7 @@ if ($activeTab == "radial_dynamic") {
 	if (!empty($module_group))
 		$filter['module_group'] = $module_group;
 	
-	echo graph_monitor_wheel(600, 650, $filter, $strict_user);
+	echo graph_monitor_wheel($width, $height, $filter, $strict_user);
 	
 	echo "</div>";
 	return;
@@ -99,7 +111,10 @@ $zoom_default = file($config['homedir'] . '/images/zoom_default.svg');
 <?php
 
 //html_debug_print($graph);
-echo '<script type="text/javascript" src="' . $config['homeurl'] . 'include/javascript/d3.v3.js" charset="utf-8"></script>';
+echo '<script '.
+	' type="text/javascript" ' .
+	' src="' . $config['homeurl'] . 'include/javascript/d3.3.5.14.js" ' .
+	' charset="utf-8"></script>';
 echo '<div id="dinamic_networkmap" style="overflow: hidden;"></div>';
 ?>
 <style type="text/css">

@@ -85,7 +85,7 @@ $table->data[3][1] = html_print_input_text('update_manager_proxy_user',
 	$update_manager_proxy_user, __('Proxy user'), 40, 60, true);
 
 $table->data[4][0] = __('Proxy password:');
-$table->data[4][1] = html_print_input_text('update_manager_proxy_password',
+$table->data[4][1] = html_print_input_password('update_manager_proxy_password',
 	$update_manager_proxy_password, __('Proxy password'), 40, 60, true);
 
 html_print_input_hidden('action_update_url_update_manager', 1);

@@ -33,16 +33,17 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "6.1dev PS160429";
+my $version = "6.1dev PS160530";
 
 # Pandora server configuration
 my %conf;
 
 # Long operations are divided in XX steps for performance
-my $BIG_OPERATION_STEP = 100;
+my $BIG_OPERATION_STEP = 100;	# 100 is default
+
 # Each long operations has a LIMIT of SMALL_OPERATION_STEP to avoid locks. 
 #Increate to 3000~5000 in fast systems decrease to 500 or 250 on systems with locks
-my $SMALL_OPERATION_STEP = 1000;
+my $SMALL_OPERATION_STEP = 1000;	# 1000 is default
 
 # FLUSH in each IO 
 $| = 1;
@@ -638,6 +639,11 @@ sub pandora_load_config ($) {
 	$conf->{'dbport'} = '3306' unless defined ($conf->{'dbport'});
 	$conf->{'claim_back_snmp_modules'} = '1' unless defined ($conf->{'claim_back_snmp_modules'});
 
+    # Dynamic interval configuration.                                                                                                                             
+	$conf->{"dynamic_constant"} = 0.10 unless defined($conf->{"dynamic_constant"});
+	$conf->{"dynamic_warning"} = 0.10 unless defined($conf->{"dynamic_warning"});
+	$conf->{"dynamic_updates"} = 5 unless defined($conf->{"dynamic_updates"});
+
 	# workaround for name unconsistency (corresponding entry at pandora_server.conf is 'errorlog_file')
         $conf->{'errorlogfile'} = $conf->{'errorlog_file'};
         $conf->{'errorlogfile'} = "/var/log/pandora_server.error" unless defined ($conf->{'errorlogfile'});
@@ -674,6 +680,14 @@ sub pandora_load_config ($) {
    	$conf->{'_log_dir'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'log_dir'");
    	$conf->{'_log_max_lifetime'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'log_max_lifetime'");
 	$conf->{'_delete_notinit'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_notinit'");
+
+	$conf->{'_big_operation_step_datos_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'big_operation_step_datos_purge'");
+	$conf->{'_small_operation_step_datos_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'small_operation_step_datos_purge'");
+
+	$BIG_OPERATION_STEP = $conf->{'_big_operation_step_datos_purge'}
+					if ( $conf->{'_big_operation_step_datos_purge'} );
+	$SMALL_OPERATION_STEP = $conf->{'_small_operation_step_datos_purge'}
+					if ( $conf->{'_small_operation_step_datos_purge'} );
    	
 	db_disconnect ($dbh);
 
@@ -1007,6 +1021,9 @@ sub pandoradb_main ($$$) {
 
 	# Move SNMP modules back to the Enterprise server
 	enterprise_hook("claim_back_snmp_modules", [$dbh, $conf]);
+
+	# Recalculating dynamic intervals.
+	enterprise_hook("update_min_max", [$dbh, $conf]);
 
 	log_message ('', "Ending at ". strftime ("%Y-%m-%d %H:%M:%S", localtime()) . "\n");
 }

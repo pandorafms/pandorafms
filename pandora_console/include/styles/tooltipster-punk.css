@@ -1,0 +1,12 @@
+.tooltipster-punk {
+	border-radius: 5px;
+	border-bottom: 3px solid #82B92E;
+	background: #ccc;
+	color: #fff;
+}
+.tooltipster-punk .tooltipster-content {
+	font-family: 'Courier', monospace;
+	font-size: 14px;
+	line-height: 16px;
+	padding: 8px 10px;
+}

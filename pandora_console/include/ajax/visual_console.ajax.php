@@ -41,10 +41,10 @@ $graph_javascript = (bool)get_parameter('graph_javascript', false);
 if ($render_map) {
 	$width = (int)get_parameter('width', '400');
 	$height = (int)get_parameter('height', '400');
+	$keep_aspect_ratio = (bool) get_parameter('keep_aspect_ratio');
 	
 	visual_map_print_visual_map($id_visual_console, true, true, $width,
-		$height, '', false, $graph_javascript);
-	
+		$height, '', false, $graph_javascript, $keep_aspect_ratio);
 	return;
 }
 

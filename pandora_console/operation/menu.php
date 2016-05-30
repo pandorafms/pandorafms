@@ -89,8 +89,10 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	$sub2["operation/snmpconsole/snmp_view"]["text"] = __("SNMP console");
 	$sub2["operation/snmpconsole/snmp_browser"]["text"] = __("SNMP browser");
 	$sub2["operation/snmpconsole/snmp_mib_uploader"]["text"] = __("MIB uploader");
-	$sub2["godmode/snmpconsole/snmp_filters"]["text"] = __("SNMP filters");
-	$sub2["godmode/snmpconsole/snmp_trap_generator"]["text"] = __("SNMP trap generator");
+	if (check_acl ($config['id_user'], 0, "LW")) {
+		$sub2["godmode/snmpconsole/snmp_filters"]["text"] = __("SNMP filters");
+		$sub2["godmode/snmpconsole/snmp_trap_generator"]["text"] = __("SNMP trap generator");
+	}
 	enterprise_hook ('snmpconsole_submenu');
 	$sub["snmpconsole"]["sub2"] = $sub2;
 	
@@ -119,7 +121,18 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		"operation/agentes/networkmap"
 		);
 	
+<<<<<<< HEAD
 	enterprise_hook ('transmap_console');
+=======
+	$sub["operation/maps/networkmap_list"]["text"] = __('(Temp) Network map');
+	$sub["operation/maps/networkmap_list"]["id"] = '(Temp) Network map';
+	$sub["operation/maps/networkmap_list"]["refr"] = 0;
+	$sub["operation/maps/networkmap_list"]["pages"] = array(
+		"operation/maps/networkmap"
+		);
+	
+	
+>>>>>>> develop
 	
 	enterprise_hook ('networkmap_console');
 	

@@ -231,7 +231,7 @@ config_check();
 				
 				
 				
-				
+				$pandora_management = check_acl($config['id_user'], 0, "PM");
 				
 				if ($config["alert_cnt"] > 0) {
 					echo '<div id="alert_messages" style="display: none"></div>';
@@ -245,16 +245,26 @@ config_check();
 					$maintenance_link_open_img = 
 						'<a href="' . $maintenance_link . '" title="' . $maintenance_title . '" class="' . $maintenance_class . '">';
 					$maintenance_link_close = '</a>';
-					$maintenance_img = $maintenance_link_open_img .
-						html_print_image("images/header_yellow.png",
-							true, array(
-								"title" => __('You have %d warning(s)',
-								$config["alert_cnt"]),
-								"id" => "yougotalert",
-								"class" => "bot")) . $maintenance_link_close;
+					if (!$pandora_management) {
+						$maintenance_img = '';
+					}
+					else {
+						$maintenance_img = $maintenance_link_open_img .
+							html_print_image("images/header_yellow.png",
+								true, array(
+									"title" => __('You have %d warning(s)',
+									$config["alert_cnt"]),
+									"id" => "yougotalert",
+									"class" => "bot")) . $maintenance_link_close;
+					}
 				}
 				else {
-					$maintenance_img = html_print_image ("images/header_ready.png", true, array ("title" => __('There are not warnings'), "id" => "yougotalert", "class" => "bot"));
+					if (!$pandora_management) {
+						$maintenance_img = '';
+					}
+					else {
+						$maintenance_img = html_print_image ("images/header_ready.png", true, array ("title" => __('There are not warnings'), "id" => "yougotalert", "class" => "bot"));
+					}
 				}
 				
 				$table->data[0][3] = $maintenance_img;

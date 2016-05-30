@@ -8,3 +8,8 @@ BUILD=$(grep 'my $pandora_build =' $CODEHOME/pandora_server/lib/PandoraFMS/Confi
 X86_64=`uname -m | grep x86_64`
 CONSOLEHOME=$CODEHOME/pandora_console
 CONSOLEHOME_ENT=$CODEHOME_ENT/pandora_console
+
+function get_current_branch {
+	echo `cd "$CODEHOME" && git branch 2>/dev/null | grep \* | awk '{print $2}'`
+}
+

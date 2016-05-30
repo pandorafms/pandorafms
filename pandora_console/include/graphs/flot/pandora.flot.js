@@ -1524,6 +1524,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 	var plot = $.plot($('#' + graph_id), datas, options);
 	
+	// Re-calculate the graph height with the legend height
+	$('#'+graph_id).css('height',
+		$('#'+graph_id).height() - $('#legend_'+graph_id).height());
+	
 	if (vconsole) {
 		var myCanvas = plot.getCanvas();
 		plot.setupGrid(); // redraw plot to new size

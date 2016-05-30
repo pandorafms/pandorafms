@@ -447,7 +447,8 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		"'$yellow_inverse', \n" .
 		"'$red_inverse', \n" .
 		"'$series_suffix_str',
-		'$vconsole');";
+		" . json_encode($dashboard) . ",\n
+		" . json_encode($vconsole) . ");";
 	$return .= "\n//]]>";
 	$return .= "</script>";
 	

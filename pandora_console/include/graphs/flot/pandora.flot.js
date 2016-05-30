@@ -805,7 +805,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	alert_ids, legend_alerts, yellow_threshold, red_threshold,
 	force_integer, separator, separator2, 
 	yellow_up, red_up, yellow_inverse, red_inverse,
-	series_suffix_str, vconsole) {
+	series_suffix_str, dashboard, vconsole) {
 
 	var threshold = true;
 	var thresholded = false;
@@ -1525,8 +1525,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	var plot = $.plot($('#' + graph_id), datas, options);
 	
 	// Re-calculate the graph height with the legend height
-	$('#'+graph_id).css('height',
-		$('#'+graph_id).height() - $('#legend_'+graph_id).height());
+	if (dashboard || vconsole) {
+		var hDiff = $('#'+graph_id).height() - $('#legend_'+graph_id).height();
+		$('#'+graph_id).css('height', hDiff);
+	}
 	
 	if (vconsole) {
 		var myCanvas = plot.getCanvas();

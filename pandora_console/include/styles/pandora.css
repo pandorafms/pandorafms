@@ -2879,6 +2879,12 @@ table#policy_modules td * {
 	text-align: right;
 }
 
+.saml_button {
+	float: left;
+	position: fixed;
+	vertical-align: middle;
+}
+
 .status_tactical{
 	width: 100%;
 	margin-left: auto;

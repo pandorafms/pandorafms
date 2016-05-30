@@ -599,6 +599,7 @@ $class = 'databox filters';
 				}
 				else {
 					$report_type = reports_get_report_types();
+					
 					if (!empty($report_type) and isset($report_type[$type]['name']))
 						echo $report_type[$type]['name'];
 					else
@@ -672,7 +673,7 @@ $class = 'databox filters';
 			<td style="">
 				<?php
 				html_print_checkbox('last_value', '1',
-					($period === 0), false, false, 'set_last_value_period();');
+					((int)$period === 0), false, false, 'set_last_value_period();');
 				?>
 			</td>
 		</tr>
@@ -2545,8 +2546,10 @@ function chooseType() {
 			$("#row_show_resume").show();
 			$("#row_show_in_two_columns").show();
 			
+			var checked = $("input[name='last_value']").prop("checked");
+			
 			$("#row_last_value").show();
-			if ($("#hidden-period").val() == 0) {
+			if (checked) {
 				$("#row_period").hide();
 				$("input[name='last_value']").prop("checked", true);
 			}
@@ -2598,8 +2601,10 @@ function chooseType() {
 			$("#row_show_graph").show();
 			$("#row_show_in_two_columns").show();
 			
+			var checked = $("input[name='last_value']").prop("checked");
+			
 			$("#row_last_value").show();
-			if ($("#hidden-period").val() == 0) {
+			if (checked) {
 				$("#row_period").hide();
 				$("input[name='last_value']").prop("checked", true);
 			}

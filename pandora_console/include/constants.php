@@ -463,14 +463,11 @@ define("OPTION_SINGLE_SELECT_TIME",		7);
 define("OPTION_CUSTOM_INPUT",			8);
 define("OPTION_AGENT_AUTOCOMPLETE",		9);
 
-/* SAML attributes constants */
-
-<<<<<<< HEAD
 /* Transactional map constants */
 define("NODE_TYPE", 0);
 define("ARROW_TYPE", 1);
 
-=======
+/* SAML attributes constants */
 define("SAML_ROLE_AND_TAG", "eduPersonEntitlement");
 define("SAML_USER_DESC", "commonName");
 define("SAML_ID_USER_IN_PANDORA", "eduPersonTargetedId");
@@ -529,5 +526,4 @@ define("DEFAULT_NODE_COLOR", COL_NOTINIT);
 define("DEFAULT_NODE_IMAGE", "images/networkmap/unknown.png");
 
 define("NODE_IMAGE_PADDING", 5);
->>>>>>> develop
 ?>

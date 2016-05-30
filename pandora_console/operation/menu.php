@@ -121,18 +121,14 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 		"operation/agentes/networkmap"
 		);
 	
-<<<<<<< HEAD
 	enterprise_hook ('transmap_console');
-=======
+	
 	$sub["operation/maps/networkmap_list"]["text"] = __('(Temp) Network map');
 	$sub["operation/maps/networkmap_list"]["id"] = '(Temp) Network map';
 	$sub["operation/maps/networkmap_list"]["refr"] = 0;
 	$sub["operation/maps/networkmap_list"]["pages"] = array(
 		"operation/maps/networkmap"
 		);
-	
-	
->>>>>>> develop
 	
 	enterprise_hook ('networkmap_console');
 	

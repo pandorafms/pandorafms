@@ -768,12 +768,14 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 			}
 			
+			$only_image = !$graph_javascript || $isExternalLink;
 			if ($layoutData['id_custom_graph'] != 0) {
+				// Show only avg on the visual console
 				$img = custom_graphs_print(
 					$layoutData['id_custom_graph'], $height, $width,
-					$period, null, true, 0, true, $layoutData['image'], 
-					array(), '', array(), array(), true,
-					true, true, true, 1, false, $graph_javascript);
+					$period, null, true, 0, $only_image, $layoutData['image'],
+					array(), '', array(), array(), false,
+					false, false, true, 1, false, true);
 			}
 			else {
 				if ($isExternalLink)
@@ -783,8 +785,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 				
 				$img = grafico_modulo_sparse($id_module, $period, 0, $width,
 					$height, '', null, false, 1, false, 0, '', 0, 0,
-					true, true, $homeurl, 1, false, '', false, false, true, 
-					$layoutData['image'], null, false, $graph_javascript);
+					true, $only_image, $homeurl, 1, false, '', false, false, false,
+					$layoutData['image'], null, false, true);
 			}
 			
 			//Restore db connection

@@ -42,7 +42,7 @@ else {
 }
 
 $refr = (int) get_parameter ('refr', $config['vc_refr']);
-$graph_javascript = (bool) get_parameter ('graph_javascript', true);
+$graph_javascript = (bool) get_parameter ('graph_javascript', false);
 $vc_refr = false;
 
 if (isset($config['vc_refr']) and $config['vc_refr'] != 0)
@@ -242,7 +242,7 @@ ui_require_javascript_file('pandora_visual_console');
 						render_map: true,
 						keep_aspect_ratio: true,
 						id_visual_console: <?php echo $id_layout; ?>,
-						graph_javascript: <?php echo $config['pure'] ? 0 : (int) $graph_javascript; ?>,
+						graph_javascript: <?php echo (int) $graph_javascript; ?>,
 						width: $(window).width(),
 						height: $(window).height()
 					}

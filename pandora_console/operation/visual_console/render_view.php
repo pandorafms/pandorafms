@@ -42,7 +42,7 @@ else {
 }
 
 $refr = (int) get_parameter ('refr', $config['vc_refr']);
-$graph_javascript = (bool) get_parameter ('graph_javascript', false);
+$graph_javascript = (bool) get_parameter ('graph_javascript', true);
 $vc_refr = false;
 
 if (isset($config['vc_refr']) and $config['vc_refr'] != 0)

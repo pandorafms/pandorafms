@@ -1594,7 +1594,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		'color' => COL_GRAPH13,
 		'alpha' => CHART_DEFAULT_ALPHA);
 	
-	
 	switch ($stacked) {
 		case CUSTOM_GRAPH_AREA:
 			return area_graph($flash_charts, $graph_values, $width,

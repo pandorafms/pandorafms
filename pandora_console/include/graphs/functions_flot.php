@@ -216,7 +216,6 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		if ($threshold) {
 			$nbuttons++;
 		}
-		$return .= html_print_input_hidden ('lineWidhtGraph', $config['custom_graph_width'],true);
 		$menu_width = 25 * $nbuttons + 15;
 		if ( $dashboard == false AND $vconsole == false) {
 			$return .= "<div id='menu_$graph_id' class='menu_graph' " .
@@ -241,6 +240,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 			$return .= "</div>";
 		}
 	}
+	$return .= html_print_input_hidden('line_width_graph', $config['custom_graph_width'], true);
 	$return .= "<div id='timestamp_$graph_id' class='timestamp_graph' style='font-size:".$font_size."pt;display:none; position:absolute; background:#fff; border: solid 1px #aaa; padding: 2px; z-index:1000;'></div>";
 	$return .= "<div id='$graph_id' class='graph $adapt_key' style='width: ".$width."px; height: ".$height."px;'></div>";
 	if ($menu) {

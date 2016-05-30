@@ -9,6 +9,8 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	if (colors != '') {
 		colors = colors.split(separator);
 	}
+	
+	var pieRadius = 0.9;
 
 	var color = null;
 	for (var i = 0; i < nseries; i++) {
@@ -29,7 +31,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	else {
 		label_conf = {
 			show: true,
-			radius: 3/4,
+			radius: pieRadius,
 			formatter: function(label, series) {
 				return '<div style="font-size:' + font_size + 'pt;' +
 					'text-align:center;padding:2px;color:white;">' +
@@ -51,7 +53,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 			series: {
 				pie: {
 					show: true,
-					radius: 3/4,
+					radius: pieRadius,
 					//offset: {top: -100},
 					label: label_conf,
 					//$label_str
@@ -74,12 +76,6 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 
 	switch (legend_position) {
 		case 'bottom':
-			if (width > height)
-				offset = - (height / 5);
-			else
-				offset = - (width / 5);
-			conf_pie.series.pie.radius = 1 / 2.5;
-			conf_pie.series.pie.offset = {top: offset};
 			conf_pie.legend.position = "se";
 			break;
 		case 'right':

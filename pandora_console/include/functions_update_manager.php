@@ -367,6 +367,228 @@ function update_manager_check_online_free_packages ($is_ajax=true) {
 	
 }
 
+function update_manager_curl_request ($action, $additional_params = false) {
+	global $config;
+	
+	$error_array = array ('success' => true, 'update_message' => '');
+	$update_message = "";
+	
+	$um_config_values = update_manager_get_config_values();
+	
+	$params = array(
+		'license' => $um_config_values['license'],
+		'limit_count' => $um_config_values['limit_count'],
+		'current_package' => $um_config_values['current_update'],
+		'version' => $um_config_values['version'],
+		'build' => $um_config_values['build']
+	);
+	if ($additional_params !== false) {
+		html_debug ($additional_params, true);
+		$params = array_merge ($params, $additional_params);
+	}
+	$params['action'] = $action;
+	html_debug ($params, true);
+	
+	$curlObj = curl_init();
+	curl_setopt($curlObj, CURLOPT_URL, $config['url_update_manager']);
+	curl_setopt($curlObj, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($curlObj, CURLOPT_POST, true);
+	curl_setopt($curlObj, CURLOPT_POSTFIELDS, $params);
+	curl_setopt($curlObj, CURLOPT_SSL_VERIFYPEER, false);
+	if (isset($config['update_manager_proxy_server'])) {
+		curl_setopt($curlObj, CURLOPT_PROXY, $config['update_manager_proxy_server']);
+	}
+	if (isset($config['update_manager_proxy_port'])) {
+		curl_setopt($curlObj, CURLOPT_PROXYPORT, $config['update_manager_proxy_port']);
+	}
+	if (isset($config['update_manager_proxy_user'])) {
+		curl_setopt($curlObj, CURLOPT_PROXYUSERPWD, $config['update_manager_proxy_user'] . ':' . $config['update_manager_proxy_password']);
+	}
+	
+	$result = curl_exec($curlObj);
+	$http_status = curl_getinfo($curlObj, CURLINFO_HTTP_CODE);
+	curl_close($curlObj);
+	
+	$error_array['http_status'] = $http_status;
+	//~ html_debug_print("=============", true);
+	//~ html_debug_print($params, true);
+	//~ html_debug_print($http_status, true);
+	//~ html_debug_print($result, true);
+	
+	if ($result === false) {
+		$error_array['success'] = false;
+		if ($is_ajax) {
+			echo __("Could not connect to internet");
+			return $error_array;
+		}
+		else {
+			$error_array['update_message'] = __("Could not connect to internet");
+			return $error_array;
+		}
+	}
+	else if ($http_status >= 400 && $http_status < 500) {
+		$error_array['success'] = false;
+		if ($is_ajax) {
+			echo __("Server not found.");
+			return $error_array;
+		}
+		else {
+			$error_array['update_message'] = __("Server not found.");
+			return $error_array;
+		}
+	}
+	elseif ($http_status >= 500) {
+		$error_array['success'] = false;
+		if ($is_ajax) {
+			echo $result;
+			return $error_array;
+		}
+		else {
+			$error_array['update_message'] = $result;
+			return $error_array;
+		}
+	}
+	
+	$error_array['update_message'] = $result;
+	return $error_array;
+	
+}
+
+function update_manager_insert_newsletter () {
+	global $config;
+	
+	$email = db_get_value ('email', 'tusuario', 'id_user', $config['id_user']);
+	$params = array(
+		'email' => $email,
+		'language' => $config['language']
+		);
+	
+	//For to test in the shell ?????????????????
+	/*
+	wget https://artica.es/pandoraupdate6/server.php -O- --no-check-certificate --post-data "action=new_newsletter&email=m@d.com&language=es"
+	*/
+	
+	$result = update_manager_curl_request ('new_newsletter', $params);
+	
+	if (!$result['success']) {
+		html_debug ("FAIL update_manager_insert_newsletter", true);
+		html_debug ($result, true);
+		return ($result['update_message']);
+	}
+	
+	switch ($resul['http_status']) {
+		
+		case 200:
+			//SUCESS
+			break;
+		case 201: //provisional
+			//EMAIL ON DB
+			break;
+		default:
+			//FAILS
+			break;			
+	}
+}
+
+function update_manager_register_instance () {
+	global $config;
+	
+	$email = db_get_value ('email', 'tusuario', 'id_user', $config['id_user']);
+	$params = array(
+		'language' => $config['language'],
+		'timezone' => $config['timezone']
+		);
+	
+	//For to test in the shell ??????????????
+	/*
+	wget https://artica.es/pandoraupdate6/server.php -O- --no-check-certificate --post-data "action=new_instance&language=es&timezone=Europe/Berlin"
+	*/
+	
+	$result = update_manager_curl_request ('new_instance', $params);
+	
+	if (!$result['success']) {
+		html_debug ("FAIL update_manager_register_instance", true);
+		html_debug ($result, true);
+		return ($result['update_message']);
+	}
+	
+	switch ($resul['http_status']) {
+		case 200:
+			//SUCESS
+			//Retrieve the PUID
+			$update_message = json_decode($result['update_message'], true);
+			$puid = $update_message[0]['pandora_uid'];
+			config_update_value ('pandora_uid', $puid);
+			
+			//The tupdate table is reused to display messages. A specific entry to tupdate_package is required. 
+			//Then, this tupdate_package id is saved in tconfig
+			db_process_sql_insert ('tupdate_package', array ('description' => '__UMMESSAGES__'));
+			$id_um_package_messages = db_get_value('id', 'tupdate_package', 'description', '__UMMESSAGES__');
+			config_update_config ('id_um_package_messages', $id_um_package_messages);
+			
+			break;			
+		default:
+			//FAILS		
+	}
+}
+
+function update_manager_download_messages () {
+	global $config;
+	
+	// TODO: Delete old messages
+	
+	$email = db_get_value ('email', 'tusuario', 'id_user', $config['id_user']);
+	$params = array(
+		'pandora_uid' => $config['puid']
+		);
+	
+	//For to test in the shell ??????????????
+	/*
+	wget https://artica.es/pandoraupdate6/server.php -O- --no-check-certificate --post-data "action=download_messages&language=es&timezone=Europe/Berlin"
+	*/
+	
+	$result = update_manager_curl_request ('download_messages', $params);
+	
+	if (!$result['success']) {
+		//Do not ask in next 2 hours
+		//~ html_debug ("FAIL update_manager_download_messages", true);
+		//~ html_debug ($result, true);
+		config_update_value ('last_um_check', time() + 2 * SECONDS_1HOUR);
+		return ($result['update_message']);
+	}
+	
+	switch ($resul['http_status']) {
+		case 200:
+			//SUCESS
+			break;			
+		default:
+	}
+	
+	//Do not ask in next 2 hours
+	config_update_value ('last_um_check', time() + 2 * SECONDS_1HOUR);
+	//FAILS		
+}
+
+function update_manager_remote_read_messages ($id_message) {
+	global $config;
+	
+	$email = db_get_value ('email', 'tusuario', 'id_user', $config['id_user']);
+	$params = array(
+		'pandora_uid' => $config['puid'],
+		'id_message' => $id_message
+		);
+	
+	//For to test in the shell ??????????????
+	/*
+	wget https://artica.es/pandoraupdate6/server.php -O- --no-check-certificate --post-data "action=download_messages&language=es&timezone=Europe/Berlin"
+	*/
+	
+	$result = update_manager_curl_request ('read_message', $params);
+	
+	html_debug ("Update_manager_read_messages", true);
+	html_debug ($result, true);
+	return $result['success'];
+}
 
 /**
  * The update copy entirire the tgz or fail (leave some parts copies and some part not).

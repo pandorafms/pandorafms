@@ -113,13 +113,13 @@ echo '<div id="login_in">';
 				}
 			}
 			if ($config['auth'] == 'saml') {
-				echo '<div id="log_nick" class="login_nick" style="display: none;>';
+				echo '<div id="log_nick" class="login_nick" style="display: none;">';
 					html_print_image ("/images/usuario_login.png", false);
 					html_print_input_text_extended ("nick", '', "nick", '', '', '' , false,
-						'', '"id="nick_text" class="login login_user" placeholder="'.__('User').'"');
+						'', 'id="nick_text" class="login login_user" placeholder="'.__('User').'"');
 				echo '</div>';
 
-				echo '<div id="log_pass" class="login_pass" style="display: none;>';
+				echo '<div id="log_pass" class="login_pass" style="display: none;">';
 					html_print_image ("/images/candado_login.png", false);
 					html_print_input_text_extended ("pass", '', "pass", '', '', '' ,false,
 						'', 'id="pass_text" class="login login_password" placeholder="'.__('Password').'"', false, true);
@@ -343,8 +343,9 @@ html_print_div(array('id' => 'modal_alert', 'hidden' => true));
 		document.getElementById('log_nick').style.display = 'block';
 		document.getElementById('log_pass').style.display = 'block';
 		document.getElementById('log_button').style.display = 'inline';
-		document.getElementById('nick_text').className = 'login login_user';
-		document.getElementById('pass_text').className = 'login login_password';
+		
+		document.getElementById('log_nick').className = 'login_nick';
+		document.getElementById('log_pass').className = 'login_pass';
 	}
 	
 	function modal_alert_critical() {

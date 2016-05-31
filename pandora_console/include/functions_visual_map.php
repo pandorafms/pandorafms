@@ -774,7 +774,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$img = custom_graphs_print(
 					$layoutData['id_custom_graph'], $height, $width,
 					$period, null, true, 0, $only_image, $layoutData['image'],
-					array(), '', array(), array(), false,
+					array(), '', array(), array(), true,
 					false, false, true, 1, false, true);
 			}
 			else {

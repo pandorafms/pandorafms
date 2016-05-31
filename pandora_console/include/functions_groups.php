@@ -236,6 +236,36 @@ function groups_check_used($idGroup) {
  * @param integer $parent The id_group parent to search the childrens.
  * @param array $groups The groups, its for optimize the querys to DB.
  */
+function groups_get_childrens_ids($parent, $groups = null) {
+	if (empty($groups)) {
+		$groups = db_get_all_rows_in_table('tgrupo');
+	}
+	
+	$return = '';
+	
+	foreach ($groups as $key => $group) {
+		if ($group['id_grupo'] == 0) {
+			continue;
+		}
+		
+		if ($group['parent'] == $parent) {
+			$return .= $group['id_grupo'] . ",";
+			$propagate = db_get_value('propagate', 'tgrupo', 'id_grupo', $group['id_grupo']);
+			if ($propagate) {
+				$return .= groups_get_childrens_ids($group['id_grupo']);
+			}
+		}
+	}
+	
+	return $return;
+}
+
+/**
+ * Return a array of id_group of childrens (to branches down)
+ *
+ * @param integer $parent The id_group parent to search the childrens.
+ * @param array $groups The groups, its for optimize the querys to DB.
+ */
 function groups_get_childrens($parent, $groups = null, $onlyPropagate = false) {
 	if (empty($groups)) {
 		$groups = db_get_all_rows_in_table('tgrupo');

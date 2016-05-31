@@ -51,8 +51,8 @@ class User {
 				//hack to compatibility with pandora
 				global $config;
 				$config['id_user'] = $this->user;
-				$system->setSessionBase('id_usuario', $this->user);
 			}
+			$system->setSessionBase('id_usuario', $this->user);
 		}
 	}
 	

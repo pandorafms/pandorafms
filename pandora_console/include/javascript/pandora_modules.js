@@ -722,7 +722,8 @@ function load_plugin_macros_fields(row_model_id) {
 						add_macro_field(macro, row_model_id);
 					}
 				});
-				
+				//Plugin text can be larger
+				$(".macro_field").find(":input").attr("maxlength", 1023);
 				// Add again the hover event to the 'force_callback' elements
 				forced_title_callback();
 			}

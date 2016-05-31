@@ -484,7 +484,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$show_alerts = false, $avg_only = 0, $date = 0, $unit = '',
 	$baseline = 0, $return_data = 0, $show_title = true, $projection = false, 
 	$adapt_key = '', $compare = false, $series_suffix = '', $series_suffix_str = '', 
-	$show_unknown = false, $percentil = null) {
+	$show_unknown = false, $percentil = null, $dashboard = false, $vconsole = false) {
 	
 	global $config;
 	global $chart;
@@ -733,13 +733,19 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$chart_extra_data['legend_alerts'] = $legend['alert'.$series_suffix_str];
 	}
 	
-	if (!$avg_only) {
+	if ($dashboard || $vconsole) {
+		$legend['sum'.$series_suffix] =
+			__('Last') . ': ' . rtrim(number_format($graph_stats['sum']['last'], 2), '.0') . ($unit ? ' ' . $unit : '') . ' ; '
+			. __('Avg') . ': ' . rtrim(number_format($graph_stats['sum']['avg'], 2), '.0') . ($unit ? ' ' . $unit : '');
+	}
+	else if (!$avg_only) {
 		$legend['max'.$series_suffix] = __('Max').$series_suffix_str.': '.__('Last').': '.rtrim(number_format($graph_stats['max']['last'], 2), '.0').' '.$unit.' ; '.__('Avg').': '.rtrim(number_format($graph_stats['max']['avg'], 2), '.0').' '.$unit.' ; '.__('Max').': '.rtrim(number_format($graph_stats['max']['max'], 2), '.0').' '.$unit.' ; '.__('Min').': '.rtrim(number_format($graph_stats['max']['min'], 2), '.0').' '.$unit.'--> '.__('Selected');
 		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Last').': '.rtrim(number_format($graph_stats['sum']['last'], 2), '.0').' '.$unit.' ; '.__('Avg').': '.rtrim(number_format($graph_stats['sum']['avg'], 2), '.0').' '.$unit.' ; '.__('Max').': '.rtrim(number_format($graph_stats['sum']['max'], 2), '.0').' '.$unit.' ; '.__('Min').': '.rtrim(number_format($graph_stats['sum']['min'], 2), '.0').' '.$unit.'--> '.__('Selected');
 		$legend['min'.$series_suffix] = __('Min').$series_suffix_str.': '.__('Last').': '.rtrim(number_format($graph_stats['min']['last'], 2), '.0').' '.$unit.' ; '.__('Avg').': '.rtrim(number_format($graph_stats['min']['avg'], 2), '.0').' '.$unit.' ; '.__('Max').': '.rtrim(number_format($graph_stats['min']['max'], 2), '.0').' '.$unit.' ; '.__('Min').': '.rtrim(number_format($graph_stats['min']['min'], 2), '.0').' '.$unit.'--> '.__('Selected');
 	}
-	else
+	else {
 		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Last').': '.rtrim(number_format($graph_stats['sum']['last'], 2), '.0').' '.$unit.' ; '.__('Avg').': '.rtrim(number_format($graph_stats['sum']['avg'], 2), '.0').' '.$unit.' ; '.__('Max').': '.rtrim(number_format($graph_stats['sum']['max'], 2), '.0').' '.$unit.' ; '.__('Min').': '.rtrim(number_format($graph_stats['sum']['min'], 2), '.0').' '.$unit.'--> '.__('Selected');
+	}
 	//Baseline was replaced by compare graph feature
 	/*if ($baseline) {
 		$legend['baseline'.$series_suffix] = __('Baseline');
@@ -797,7 +803,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$show_alerts, $avg_only, $date-$period, $unit, $baseline,
 			$return_data, $show_title, $projection, $adapt_key,
 			$compare, $series_suffix, $series_suffix_str,
-			$show_unknown, $percentil);
+			$show_unknown, $percentil, $dashboard, $vconsole);
 		
 		
 		
@@ -833,7 +839,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$show_alerts, $avg_only,
 		$date, $unit, $baseline, $return_data, $show_title,
 		$projection, $adapt_key, $compare, '', '', $show_unknown,
-		$percentil);
+		$percentil, $dashboard, $vconsole);
 	
 	
 	if ($return_data) {

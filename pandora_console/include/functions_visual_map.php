@@ -2055,14 +2055,6 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 	
 	
 	foreach ($layout_datas as $layout_data) {
-		
-		if ($resizedMap) {
-			//Hack to resize the text
-			$layout_data["label"] = str_replace(
-				'visual_font_size', 'resize_visual_font_size',
-				$layout_data["label"]);
-		}
-		
 		//Check the items are from disabled or pending delete modules
 		if ($layout_data['id_agente_modulo'] != 0 &&
 			(($layout_data['type'] != LABEL)

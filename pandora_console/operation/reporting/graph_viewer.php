@@ -168,6 +168,10 @@ if ($view_graph) {
 		echo "<table class='databox filters' cellpadding='0' cellspacing='0' width='100%'>";
 		echo "<tr><td>";
 		echo $graph_return;
+		// Add space to the legend transformation
+		if ($stacked === CUSTOM_GRAPH_VBARS) {
+			echo '<br /><br /><br /><br />';
+		}
 		echo "</td></tr></table>";
 	}
 	else {

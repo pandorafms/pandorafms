@@ -432,7 +432,9 @@ if (! isset ($config['id_user'])) {
 			$_SESSION['id_usuario'] = $nick_in_db;
 			$config['id_user'] = $nick_in_db;
 			
-			$minor_release_message = db_update_schema();
+			if (is_user_admin($config['id_user'])) {
+				$minor_release_message = db_update_schema();
+			}
 
 			//==========================================================
 			//-------- SET THE CUSTOM CONFIGS OF USER ------------------

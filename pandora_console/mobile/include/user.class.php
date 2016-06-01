@@ -45,14 +45,13 @@ class User {
 		
 		if ($this->logged) {
 			$system = System::getInstance();
-			$system->setSession('user', $this);
+						
+			//hack to compatibility with pandora
+			global $config;
+			$config['id_user'] = $this->user;
 			
-			if (!$this->needDoubleAuth) {
-				//hack to compatibility with pandora
-				global $config;
-				$config['id_user'] = $this->user;
-			}
 			$system->setSessionBase('id_usuario', $this->user);
+			$system->setSession('user', $this);
 		}
 	}
 	

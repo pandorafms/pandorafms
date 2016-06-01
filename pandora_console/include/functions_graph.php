@@ -484,7 +484,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$show_alerts = false, $avg_only = 0, $date = 0, $unit = '',
 	$baseline = 0, $return_data = 0, $show_title = true, $projection = false, 
 	$adapt_key = '', $compare = false, $series_suffix = '', $series_suffix_str = '', 
-	$show_unknown = false, $percentil = null) {
+	$show_unknown = false, $percentil = null, $dashboard = false, $vconsole = false) {
 	
 	global $config;
 	global $chart;
@@ -733,13 +733,19 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 		$chart_extra_data['legend_alerts'] = $legend['alert'.$series_suffix_str];
 	}
 	
-	if (!$avg_only) {
+	if ($dashboard || $vconsole) {
+		$legend['sum'.$series_suffix] =
+			__('Last') . ': ' . rtrim(number_format($graph_stats['sum']['last'], 2), '.0') . ($unit ? ' ' . $unit : '') . ' ; '
+			. __('Avg') . ': ' . rtrim(number_format($graph_stats['sum']['avg'], 2), '.0') . ($unit ? ' ' . $unit : '');
+	}
+	else if (!$avg_only) {
 		$legend['max'.$series_suffix] = __('Max').$series_suffix_str.': '.__('Last').': '.rtrim(number_format($graph_stats['max']['last'], 2), '.0').' '.$unit.' ; '.__('Avg').': '.rtrim(number_format($graph_stats['max']['avg'], 2), '.0').' '.$unit.' ; '.__('Max').': '.rtrim(number_format($graph_stats['max']['max'], 2), '.0').' '.$unit.' ; '.__('Min').': '.rtrim(number_format($graph_stats['max']['min'], 2), '.0').' '.$unit.'--> '.__('Selected');
 		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Last').': '.rtrim(number_format($graph_stats['sum']['last'], 2), '.0').' '.$unit.' ; '.__('Avg').': '.rtrim(number_format($graph_stats['sum']['avg'], 2), '.0').' '.$unit.' ; '.__('Max').': '.rtrim(number_format($graph_stats['sum']['max'], 2), '.0').' '.$unit.' ; '.__('Min').': '.rtrim(number_format($graph_stats['sum']['min'], 2), '.0').' '.$unit.'--> '.__('Selected');
 		$legend['min'.$series_suffix] = __('Min').$series_suffix_str.': '.__('Last').': '.rtrim(number_format($graph_stats['min']['last'], 2), '.0').' '.$unit.' ; '.__('Avg').': '.rtrim(number_format($graph_stats['min']['avg'], 2), '.0').' '.$unit.' ; '.__('Max').': '.rtrim(number_format($graph_stats['min']['max'], 2), '.0').' '.$unit.' ; '.__('Min').': '.rtrim(number_format($graph_stats['min']['min'], 2), '.0').' '.$unit.'--> '.__('Selected');
 	}
-	else
+	else {
 		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Last').': '.rtrim(number_format($graph_stats['sum']['last'], 2), '.0').' '.$unit.' ; '.__('Avg').': '.rtrim(number_format($graph_stats['sum']['avg'], 2), '.0').' '.$unit.' ; '.__('Max').': '.rtrim(number_format($graph_stats['sum']['max'], 2), '.0').' '.$unit.' ; '.__('Min').': '.rtrim(number_format($graph_stats['sum']['min'], 2), '.0').' '.$unit.'--> '.__('Selected');
+	}
 	//Baseline was replaced by compare graph feature
 	/*if ($baseline) {
 		$legend['baseline'.$series_suffix] = __('Baseline');
@@ -765,7 +771,8 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$unit = '', $baseline = 0, $return_data = 0, $show_title = true,
 	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
 	$adapt_key = '', $compare = false, $show_unknown = false,
-	$menu = true, $backgroundColor = 'white', $percentil = null) {
+	$menu = true, $backgroundColor = 'white', $percentil = null,
+	$dashboard = false, $vconsole = false) {
 	
 	global $config;
 	global $graphic_type;
@@ -796,7 +803,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$show_alerts, $avg_only, $date-$period, $unit, $baseline,
 			$return_data, $show_title, $projection, $adapt_key,
 			$compare, $series_suffix, $series_suffix_str,
-			$show_unknown, $percentil);
+			$show_unknown, $percentil, $dashboard, $vconsole);
 		
 		
 		
@@ -832,7 +839,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$show_alerts, $avg_only,
 		$date, $unit, $baseline, $return_data, $show_title,
 		$projection, $adapt_key, $compare, '', '', $show_unknown,
-		$percentil);
+		$percentil, $dashboard, $vconsole);
 	
 	
 	if ($return_data) {
@@ -867,7 +874,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				area_graph($flash_chart, $chart, $width, $height/2, $color,
 					$legend, $long_index,
 					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-					"", $unit, $homeurl, $water_mark, $config['fontpath'],
+					$title, $unit, $homeurl, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $series_type,
 					$chart_extra_data, $warning_min, $critical_min,
 					$adapt_key, false, $series_suffix_str, $menu,
@@ -876,7 +883,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				area_graph($flash_chart, $chart_prev, $width, $height/2,
 					$color_prev, $legend_prev, $long_index_prev,
 					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-					"", $unit, $homeurl, $water_mark, $config['fontpath'],
+					$title, $unit, $homeurl, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $series_type_prev,
 					$chart_extra_data, $warning_min, $critical_min,
 					$adapt_key, false, $series_suffix_str, $menu,
@@ -888,11 +895,11 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				area_graph($flash_chart, $chart, $width, $height, $color,
 					$legend, $long_index,
 					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-					"", $unit, $homeurl, $water_mark, $config['fontpath'],
+					$title, $unit, $homeurl, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $series_type,
 					$chart_extra_data, $warning_min, $critical_min,
 					$adapt_key, false, $series_suffix_str, $menu,
-					$backgroundColor);
+					$backgroundColor, $dashboard, $vconsole, $agent_module_id);
 		}
 	}
 	elseif ($config['type_module_charts'] === 'line') {
@@ -969,7 +976,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
 	$prediction_period = false, $background_color = 'white',
 	$name_list = array(), $unit_list = array(), $show_last = true, $show_max = true,
-	$show_min = true, $show_avg = true, $labels = false, $dashboard = false) {
+	$show_min = true, $show_avg = true, $labels = false, $dashboard = false, $vconsole = false) {
 	
 	global $config;
 	global $graphic_type;
@@ -1079,36 +1086,16 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	
 	// Calculate data for each module
 	for ($i = 0; $i < $module_number; $i++) {
-		$automatic_custom_graph_meta = false;
-		if ($config['metaconsole']) {
-			// Automatic custom graph from the report template in metaconsole
-			if (is_array($module_list[$i])) {
-				$server = metaconsole_get_connection_by_id ($module_list[$i]['server']);
-				metaconsole_connect($server);
-				$automatic_custom_graph_meta = true;
-			}
-		}
-		
-		$search_in_history_db = db_search_in_history_db($datelimit);
-		
-		// If its a projection graph,
-		// first module will be data and second will be the projection
+		// If its a projection graph, first module will be data and second will be the projection
 		if ($projection != false && $i != 0) {
-			if ($automatic_custom_graph_meta)
-				$agent_module_id = $module_list[0]['module'];
-			else
-				$agent_module_id = $module_list[0];
+			$agent_module_id = $module_list[0];
 			
 			$id_module_type = modules_get_agentmodule_type ($agent_module_id);
 			$module_type = modules_get_moduletype_name ($id_module_type);
 			$uncompressed_module = is_module_uncompressed ($module_type);
 		}
 		else {
-			if ($automatic_custom_graph_meta)
-				$agent_module_id = $module_list[$i]['module'];
-			else
-				$agent_module_id = $module_list[$i];
-			
+			$agent_module_id = $module_list[$i];
 			
 			$id_module_type = modules_get_agentmodule_type ($agent_module_id);
 			$module_type = modules_get_moduletype_name ($id_module_type);
@@ -1198,7 +1185,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			//Get and process module name
 			$module_name = io_safe_output(
 				modules_get_agentmodule_name ($agent_module_id));
-			$module_name = sprintf(__("projection for %s"), $module_name);
+			$module_name = sprintf(__("%s"), $module_name);
 			$module_name = ui_print_truncate_text($module_name, 'module_small', false, true, false, '...', false);
 			
 			if ($labels[$agent_module_id] != '')
@@ -1391,13 +1378,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		//unset($graph_values[$i]);
 		
 		//$graph_values[$i] = $graph_values[$i];
-		
-		if ($config['metaconsole']) {
-			// Automatic custom graph from the report template in metaconsole
-			if (is_array($module_list[0])) {
-				metaconsole_restore_db();
-			}
-		}
 	}
 	
 	$temp = array();
@@ -1405,24 +1385,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	switch ($stacked) {
 		case CUSTOM_GRAPH_BULLET_CHART:
 			$datelimit = $date - $period;
-			foreach ($module_list as $module_item) {
-				$automatic_custom_graph_meta = false;
-				if ($config['metaconsole']) {
-					// Automatic custom graph from the report template in metaconsole
-					if (is_array($module_item)) {
-						$server = metaconsole_get_connection_by_id ($module_item['server']);
-						metaconsole_connect($server);
-						$automatic_custom_graph_meta = true;
-					}
-				}
-				
-				if ($automatic_custom_graph_meta)
-					$module = $module_item['module'];
-				else
-					$module = $module_item;
-				
-				$search_in_history_db = db_search_in_history_db($datelimit);
-				
+			foreach ($module_list as $module) {
 				$temp[$module] = modules_get_agentmodule($module);
 				$query_last_value = sprintf('
 					SELECT datos
@@ -1448,37 +1411,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$temp[$module]['value'] = $value;
 				$temp[$module]['max'] = reporting_get_agentmodule_data_max($module,$period,$date);
 				$temp[$module]['min'] = reporting_get_agentmodule_data_min($module,$period,$date);
-				
-				if ($config['metaconsole']) {
-					// Automatic custom graph from the report template in metaconsole
-					if (is_array($module_item)) {
-						metaconsole_restore_db();
-					}
-				}
 			}
-			
 			break;
 		case CUSTOM_GRAPH_HBARS:
 		case CUSTOM_GRAPH_VBARS:
 			$datelimit = $date - $period;
 			
 			$label = '';
-			foreach ($module_list as $module_item) {
-				$automatic_custom_graph_meta = false;
-				if ($config['metaconsole']) {
-					// Automatic custom graph from the report template in metaconsole
-					if (is_array($module_item)) {
-						$server = metaconsole_get_connection_by_id ($module_item['server']);
-						metaconsole_connect($server);
-						$automatic_custom_graph_meta = true;
-					}
-				}
-				
-				if ($automatic_custom_graph_meta)
-					$module = $module_item['module'];
-				else
-					$module = $module_item;
-				
+			foreach ($module_list as $module) {
 				$module_data = modules_get_agentmodule($module);
 				$query_last_value = sprintf('
 					SELECT datos
@@ -1497,36 +1437,12 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				else
 					$label = $agent_name . " - " .$module_data['nombre'];
 				$temp[$label]['g'] = round($temp_data,4);
-				
-				
-				if ($config['metaconsole']) {
-					// Automatic custom graph from the report template in metaconsole
-					if (is_array($module_item)) {
-						metaconsole_restore_db();
-					}
-				}
-				
 			}
 			break;
 		case CUSTOM_GRAPH_PIE:
 			$datelimit = $date - $period;
 			$total_modules = 0;
-			foreach ($module_list as $module_item) {
-				$automatic_custom_graph_meta = false;
-				if ($config['metaconsole']) {
-					// Automatic custom graph from the report template in metaconsole
-					if (is_array($module_item)) {
-						$server = metaconsole_get_connection_by_id ($module_item['server']);
-						metaconsole_connect($server);
-						$automatic_custom_graph_meta = true;
-					}
-				}
-				
-				if ($automatic_custom_graph_meta)
-					$module = $module_item['module'];
-				else
-					$module = $module_item;
-				
+			foreach ($module_list as $module) {
 				$data_module = modules_get_agentmodule($module);
 				$query_last_value = sprintf('
 					SELECT datos
@@ -1553,39 +1469,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					$label = $data_module['nombre'];
 				
 				$label = io_safe_output($label);
-				$temp[$label] = array(
-					'value'=>$value,
-					'unit'=>$data_module['unit']);
-				
-				
-				if ($config['metaconsole']) {
-					// Automatic custom graph from the report template in metaconsole
-					if (is_array($module_item)) {
-						metaconsole_restore_db();
-					}
-				}
+				$temp[$label] = array('value'=>$value,
+										'unit'=>$data_module['unit']);
 			}
 			$temp['total_modules'] = $total_modules;
 			break;
 		case CUSTOM_GRAPH_GAUGE:
 			$datelimit = $date - $period;
-			$i = 0;
 			foreach ($module_list as $module) {
-				$automatic_custom_graph_meta = false;
-				if ($config['metaconsole']) {
-					// Automatic custom graph from the report template in metaconsole
-					if (is_array($module_item)) {
-						$server = metaconsole_get_connection_by_id ($module_item['server']);
-						metaconsole_connect($server);
-						$automatic_custom_graph_meta = true;
-					}
-				}
-				
-				if ($automatic_custom_graph_meta)
-					$module = $module_item['module'];
-				else
-					$module = $module_item;
-				
 				$temp[$module] = modules_get_agentmodule($module);
 				$query_last_value = sprintf('
 					SELECT datos
@@ -1623,14 +1514,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					$temp[$module]['max'] = ($max == 0 ) ? 100 : $max;
 				}
 				$temp[$module]['gauge'] = uniqid('gauge_');
-				
-				
-				if ($config['metaconsole']) {
-					// Automatic custom graph from the report template in metaconsole
-					if (is_array($module_item)) {
-						metaconsole_restore_db();
-					}
-				}
 			}
 			break;
 		default:
@@ -1717,7 +1600,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		'color' => COL_GRAPH13,
 		'alpha' => CHART_DEFAULT_ALPHA);
 	
-	
 	switch ($stacked) {
 		case CUSTOM_GRAPH_AREA:
 			return area_graph($flash_charts, $graph_values, $width,
@@ -1725,7 +1607,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				"", "", $homeurl, $water_mark, $config['fontpath'],
 				$fixed_font_size, $unit, $ttl, array(), array(), 0,  0,  '',
-				false, '', true, $background_color,$dashboard);
+				false, '', true, $background_color,$dashboard, $vconsole);
 			break;
 		default:
 		case CUSTOM_GRAPH_STACKED_AREA: 
@@ -1733,21 +1615,21 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$width, $height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color,$dashboard);
+				"", $ttl, $homeurl, $background_color,$dashboard, $vconsole);
 			break;
 		case CUSTOM_GRAPH_LINE:  
 			return line_graph($flash_charts, $graph_values, $width,
 				$height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				$unit, $ttl, $homeurl, $background_color,$dashboard); 
+				$unit, $ttl, $homeurl, $background_color,$dashboard, $vconsole); 
 			break;
 		case CUSTOM_GRAPH_STACKED_LINE:
 			return stacked_line_graph($flash_charts, $graph_values,
 				$width, $height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color,$dashboard);
+				"", $ttl, $homeurl, $background_color,$dashboard, $vconsole);
 			break;
 		case CUSTOM_GRAPH_BULLET_CHART:
 			return stacked_bullet_chart($flash_charts, $graph_values,
@@ -2121,7 +2003,7 @@ function graph_sla_slicebar ($id, $period, $sla_min, $sla_max, $date, $daysWeek 
 	// If the data is not provided, we got it
 	if ($data === false) {
 		$data = reporting_get_agentmodule_sla_array ($id, $period,
-			$sla_min, $sla_max, $date, $daysWeek, $time_from, $time_to);
+			$sla_min, $sla_max, $date, $daysWeek, null, null);
 	}
 	
 	$col_planned_downtime = '#20973F';

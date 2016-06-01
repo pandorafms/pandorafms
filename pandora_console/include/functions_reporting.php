@@ -160,22 +160,14 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$content);
 				break;
 			case 'custom_graph':
+			case 'automatic_custom_graph':
 				$report['contents'][] =
 					reporting_custom_graph(
 						$report,
 						$content,
 						$type,
 						$force_width_chart,
-						$force_height_chart, 'custom_graph');
-				break;
-			case 'automatic_graph':
-				$report['contents'][] =
-					reporting_custom_graph(
-						$report,
-						$content,
-						$type,
-						$force_width_chart,
-						$force_height_chart, 'automatic_graph');
+						$force_height_chart);
 				break;
 			case 'text':
 				$report['contents'][] = reporting_text(
@@ -4275,23 +4267,18 @@ function reporting_general($report, $content) {
 }
 
 function reporting_custom_graph($report, $content, $type = 'dinamic',
-	$force_width_chart = null, $force_height_chart = null, $type_report = "custom_graph") {
+	$force_width_chart = null, $force_height_chart = null) {
 	
 	global $config;
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	
-	if ($type_report == 'automatic_graph') {
-		// Do none
-	}
-	else {
-		if ($config['metaconsole']) {
-			$id_meta = metaconsole_get_id_server($content["server_name"]);
-			
-			
-			$server = metaconsole_get_connection_by_id ($id_meta);
-			metaconsole_connect($server);
-		}
+	if ($config['metaconsole']) {
+		$id_meta = metaconsole_get_id_server($content["server_name"]);
+		
+		
+		$server = metaconsole_get_connection_by_id ($id_meta);
+		metaconsole_connect($server);
 	}
 	
 	$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
@@ -4318,15 +4305,7 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		$graphs = array();
 	
 	foreach ($graphs as $graph_item) {
-		if ($type_report == 'automatic_graph') {
-			array_push ($modules, array(
-				'module' => $graph_item['id_agent_module'],
-				'server' => $graph_item['id_server']));
-		}
-		else {
-			array_push ($modules, $graph_item['id_agent_module']);
-		}
-		
+		array_push ($modules, $graph_item['id_agent_module']);
 		array_push ($weights, $graph_item["weight"]);
 	}
 	
@@ -4360,13 +4339,8 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			break;
 	}
 	
-	if ($type_report == 'automatic_graph') {
-		// Do none
-	}
-	else {
-		if ($config['metaconsole']) {
-			metaconsole_restore_db();
-		}
+	if ($config['metaconsole']) {
+		metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);

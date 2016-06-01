@@ -514,6 +514,7 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 		$types['sql_graph_hbar'] = array('optgroup' => __('Graphs'),
 			'name' => __('SQL horizonal bar graph'));
 	}
+	
 	if ($template) {
 		$types['automatic_graph'] = array('optgroup' => __('Graphs'), 
 			'name' => __('Automatic combined Graph'));

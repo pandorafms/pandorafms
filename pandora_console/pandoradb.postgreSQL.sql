@@ -984,11 +984,9 @@ CREATE TABLE "tgraph" (
 -- -----------------------------------------------------
 CREATE TABLE "tgraph_source" (
 	"id_gs" SERIAL NOT NULL PRIMARY KEY,
-	"id_server" BIGINT NOT NULL default 0,
 	"id_graph" BIGINT NOT NULL default 0,
 	"id_agent_module"  BIGINT NOT NULL default 0,
-	"weight" DOUBLE PRECISION default 0,
-	"label" VARCHAR2(150) DEFAULT ''
+	"weight" DOUBLE PRECISION default 0
 );
 
 -- -----------------------------------------------------

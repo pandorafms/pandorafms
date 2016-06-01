@@ -121,9 +121,3 @@ UPDATE `tnetwork_component` set `tcp_port`=0 WHERE id_nc=219;
 -- ---------------------------------------------------------------------
 ALTER TABLE tevent_filter ADD COLUMN id_agent_module int(25) DEFAULT 0;
 ALTER TABLE tevent_filter ADD COLUMN id_agent int(25) DEFAULT 0;
-
--- ---------------------------------------------------------------------
--- Table `tgraph_source`
--- ---------------------------------------------------------------------
-ALTER TABLE tgraph_source ADD COLUMN label VARCHAR2(150) DEFAULT '';
-ALTER TABLE tgraph_source ADD COLUMN id_graph NUMBER(19, 0) DEFAULT 0;

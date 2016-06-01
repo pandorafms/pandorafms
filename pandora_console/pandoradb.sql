@@ -1071,7 +1071,6 @@ CREATE TABLE IF NOT EXISTS `tgraph` (
 CREATE TABLE IF NOT EXISTS `tgraph_source` (
 	`id_gs` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
 	`id_graph` int(11) NOT NULL default 0,
-	`id_server` int(11) NOT NULL default 0,
 	`id_agent_module` int(11) NOT NULL default 0,
 	`weight` float(8,3) NOT NULL DEFAULT 0,
 	`label` varchar(150) DEFAULT '',

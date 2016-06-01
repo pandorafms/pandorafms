@@ -427,7 +427,7 @@ $data[0] = __('User ack.') . $jump;
 if ($strict_user) {
 	$user_users = array($config['id_user']=>$config['id_user']);
 } else {
-	$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
+	$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all());
 }
 
 $data[0] .= html_print_select($user_users, "id_user_ack", $id_user_ack, '',
@@ -467,7 +467,7 @@ $table_advanced->rowclass[] = '';
 $data = array();
 $data[0] = __('Date from') . $jump;
 
-$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
+$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all());
 
 $data[0] .= html_print_input_text ('date_from', $date_from, '', 15, 10, true);
 

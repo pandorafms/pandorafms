@@ -230,8 +230,16 @@ config_check();
 				//======================================================
 				
 				
-				
+				$check_minor_release_available = false;
 				$pandora_management = check_acl($config['id_user'], 0, "PM");
+				
+				if (is_user_admin($config['id_user'])) {
+					$check_minor_release_available = db_check_minor_relase_available ();
+					
+					if ($check_minor_release_available) {
+						set_pandora_error_for_header('There are one or more minor releases waiting for update', 'minor release/s available');
+					}
+				}
 				
 				if ($config["alert_cnt"] > 0) {
 					echo '<div id="alert_messages" style="display: none"></div>';

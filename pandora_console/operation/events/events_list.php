@@ -427,7 +427,7 @@ $data[0] = __('User ack.') . $jump;
 if ($strict_user) {
 	$user_users = array($config['id_user']=>$config['id_user']);
 } else {
-	$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
+	$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all());
 }
 
 $data[0] .= html_print_select($user_users, "id_user_ack", $id_user_ack, '',
@@ -467,7 +467,7 @@ $table_advanced->rowclass[] = '';
 $data = array();
 $data[0] = __('Date from') . $jump;
 
-$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all(0));
+$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all());
 
 $data[0] .= html_print_input_text ('date_from', $date_from, '', 15, 10, true);
 
@@ -494,13 +494,13 @@ if (defined('METACONSOLE'))
 		'</fieldset>';
 }
 else {
-	$data[0] = '<fieldset class="databox" style="padding:0px; width: 30%; ">' .
+	$data[0] = '<fieldset class="databox" style="padding:0px; width: 510px; ">' .
 			'<legend>' .
 				__('Events with following tags') .
 			'</legend>' .
 			html_print_table($tabletags_with, true) .
 		'</fieldset>';
-	$data[1] = '<fieldset class="databox" style="padding:0px; width: 30%;">' .
+	$data[1] = '<fieldset class="databox" style="padding:0px; width: 310px;">' .
 			'<legend>' .
 				__('Events without following tags') .
 			'</legend>' .
@@ -560,7 +560,6 @@ $data[1] .= html_print_input_text ('event_view_hr', $event_view_hr, '', 5, 255, 
 $data[2] = __("Repeated") . $jump;
 $repeated_sel[0] = __("All events");
 $repeated_sel[1] = __("Group events");
-$repeated_sel[2] = __("Group agents");
 $data[2] .= html_print_select ($repeated_sel, "group_rep", $group_rep, '', '', 0, true);
 $table->data[] = $data;
 $table->rowclass[] = '';
@@ -681,21 +680,13 @@ if ($group_rep == 0) {
 	//Extract the events by filter (or not) from db
 	$result = db_get_all_rows_sql ($sql);
 }
-elseif ($group_rep == 1) {
+else {
 	$result = events_get_events_grouped(
 		$sql_post,
 		$offset,
 		$pagination,
 		$meta,
 		$history);
-}
-elseif ($group_rep == 2) {
-	$result = events_get_events_grouped_by_agent(
-		$sql_post,
-		$offset,
-		$pagination,
-		$meta,
-		$history);	
 }
 
 if (!empty($result)) {
@@ -704,7 +695,7 @@ if (!empty($result)) {
 			FROM $event_table
 			WHERE 1=1 " . $sql_post;
 	}
-	elseif ($group_rep == 1) {
+	else {
 		switch ($config["dbtype"]) {
 			case "mysql":
 			case "postgresql":
@@ -722,10 +713,6 @@ if (!empty($result)) {
 							GROUP BY to_char(evento), id_agentmodule) t";
 				break;
 		}
-	}
-	elseif ($group_rep == 2) {
-	
-	
 	}
 	$limit = (int) db_get_sql ($sql);
 	
@@ -758,26 +745,20 @@ if (!empty($result)) {
 		//Extract the events by filter (or not) from db
 		$results_graph = db_get_all_rows_sql ($sql);
 	}
-	elseif ($group_rep == 1)  {
+	else {
 		$results_graph = events_get_events_grouped($sql_post,
 											0,
 											$limit,
 											$meta,
 											$history);
 	}
-	elseif ($group_rep == 2) {
-	
-	
-	}
-	
-	if (($group_rep == 1) OR ($group_rep == 0)) {
-		$graph = '<div style="width: 350px; margin: 0 auto;">' .
-			grafico_eventos_agente(350, 185,
-				$results_graph, $meta, $history, $tags_acls_condition,$limit) .
-			'</div>';
-		html_print_div(array('id' => 'events_graph',
-			'hidden' => true, 'content' => $graph));
-	}
+		
+	$graph = '<div style="width: 350px; margin: 0 auto;">' .
+		grafico_eventos_agente(350, 185,
+			$results_graph, $meta, $history, $tags_acls_condition,$limit) .
+		'</div>';
+	html_print_div(array('id' => 'events_graph',
+		'hidden' => true, 'content' => $graph));
 }
 
 
@@ -808,7 +789,7 @@ if ($group_rep == 0) {
 			FROM $event_table
 			WHERE 1=1 $sql_post";
 }
-elseif ($group_rep == 1) {
+else {
 	switch ($config["dbtype"]) {
 		case "mysql":
 		case "postgresql":
@@ -827,13 +808,9 @@ elseif ($group_rep == 1) {
 			break;
 	}
 }
-elseif ($group_rep == 2) {
-	$sql = "SELECT COUNT(*) FROM (select id_agente as total from $event_table WHERE id_agente > 0  
-					$sql_post GROUP BY id_agente ORDER BY id_agente ) AS t";
-}
+
 
 $total_events = (int) db_get_sql ($sql);
-
 if (empty ($result)) {
 	$result = array ();
 }

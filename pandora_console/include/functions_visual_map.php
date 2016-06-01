@@ -1323,25 +1323,24 @@ function visual_map_process_wizard_add_modules ($id_modules, $image,
 		}
 		
 		$id_agent = modules_get_agentmodule_agent ($id_module);
-		$value_label = '(_VALUE_)';
 		
 		switch ($label_type) {
 			case 'agent_module':
 			default:
 				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 'agent_small', false, true, false, '…', false);
 				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_small', false, true, false, '…', false);
-				$label = $agent_label . " - " . $module_label . " " . $value_label;
+				$label = $agent_label . " - " . $module_label;
 				break;
 			case 'module':
 				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_small', false, true, false, '…', false);
-				$label = $module_label . " " . $value_label;
+				$label = $module_label;
 				break;
 			case 'agent':
 				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 'agent_small', false, true, false, '…', false);
-				$label = $agent_label . " " . $value_label;
+				$label = $agent_label;
 				break;
 			case 'none':
-				$label = $value_label;
+				$label = '';
 				break;
 		}
 		$label = io_safe_input($label);
@@ -1369,6 +1368,7 @@ function visual_map_process_wizard_add_modules ($id_modules, $image,
 				}
 				break;
 			case SIMPLE_VALUE:
+				$label = !empty($label) ? $label . ' (_VALUE_)' : '(_VALUE_)';
 				$value_image = '';
 				switch ($process_value) {
 					case PROCESS_VALUE_NONE:
@@ -1526,21 +1526,20 @@ function visual_map_process_wizard_add_agents ($id_agents, $image,
 			}
 		}
 		
-		$value_label = '(_VALUE_)';
-		
 		switch ($label_type) {
 			case 'agent':
 				$agent_label = ui_print_truncate_text(
 					agents_get_name($id_agent),
 					'agent_small', false, true, false, '…', false);
 				$label = $agent_label;
-				if ($type === SIMPLE_VALUE) $label .= ' ' . $value_label;
 				break;
 			case 'none':
-				$label = ($type === SIMPLE_VALUE) ? $value_label : '';
+				$label = '';
 				break;
 		}
 		$label = io_safe_input($label);
+		
+		if ($type === SIMPLE_VALUE) $label = !empty($label) ? $label . ' (_VALUE_)' : '(_VALUE_)';
 		
 		//Restore db connection
 		if ($id_server != 0) {

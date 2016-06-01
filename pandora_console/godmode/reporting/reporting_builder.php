@@ -373,7 +373,9 @@ switch ($action) {
 						$delete = true; //owner can delete
 					} else {
 						$delete = check_acl($config['id_user'],
-							$report['id_group'], "RM");
+							$report['id_group'], "RM")
+							&&
+							users_can_manage_group_all($report["id_group"], "RM");
 					}
 					break;
 				case 'group_edit':
@@ -381,7 +383,9 @@ switch ($action) {
 						$delete = true; //owner can delete
 					} else {
 						$delete = check_acl($config['id_user'],
-							$report['id_group'], "RM");
+							$report['id_group'], "RM")
+							&&
+							users_can_manage_group_all($report["id_group"], "RM");
 					}
 					break;
 				case 'user_edit':
@@ -587,7 +591,7 @@ switch ($action) {
 				
 				$data = array ();
 				
-				if (check_acl ($config["id_user"], $report["id_group"], "RW")) {
+				if (check_acl ($config["id_user"], $report["id_group"], "RW") && users_can_manage_group_all($report["id_group"])) {
 					$data[0] = '<a href="' . $config['homeurl'] . 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report='.
 						$report['id_report'].'&pure='.$pure.'">'.$report['name'].'</a>';
 				}
@@ -648,7 +652,9 @@ switch ($action) {
 				switch ($type_access_selected) {
 					case 'group_view':
 						$edit = check_acl($config['id_user'],
-							$report['id_group'], "RW");
+							$report['id_group'], "RW")
+							&&
+							users_can_manage_group_all($report["id_group"], "RW");
 						
 						if ($config['id_user'] == $report['id_user'] || is_user_admin ($config["id_user"])) {
 							$delete = true; //owner can delete
@@ -658,13 +664,17 @@ switch ($action) {
 						break;
 					case 'group_edit':
 						$edit = check_acl($config['id_user'],
-							$report['id_group_edit'], "RW");
+							$report['id_group_edit'], "RW")
+							&&
+							users_can_manage_group_all($report["id_group_edit"], "RW");
 						
 						if ($config['id_user'] == $report['id_user'] || is_user_admin ($config["id_user"])) {
 							$delete = true; //owner can delete
 						} else {
 							$delete = check_acl($config['id_user'],
-								$report['id_group'], "RM");
+								$report['id_group'], "RM")
+								&&
+								users_can_manage_group_all($report["id_group"], "RM");
 						}
 						break;
 					case 'user_edit':

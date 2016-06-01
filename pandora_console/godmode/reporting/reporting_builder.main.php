@@ -69,7 +69,7 @@ $table->data['name'][1] = html_print_input_text('name', $reportName,
 $table->data['group'][0] = __('Group');
 
 $write_groups = users_get_groups_for_select(false, "RW",
-	users_can_manage_group_all("RW"), true, false, 'id_grupo');
+	users_can_manage_group_all(0, "RW"), true, false, 'id_grupo');
 
 // If the report group is not among the RW groups (special permission) we add it
 if (!isset($write_groups[$idGroupReport]) && $idGroupReport) {

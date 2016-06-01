@@ -277,7 +277,7 @@ if ($strict_user) {
 }
 else {
 	$users = users_get_user_users($config['id_user'], "ER",
-		users_can_manage_group_all());
+		users_can_manage_group_all(0));
 }
 
 $table->data[10][1] =  html_print_select($users, "id_user_ack",

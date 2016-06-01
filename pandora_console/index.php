@@ -174,6 +174,7 @@ if ($change_pass == 1) {
 	$changed_pass = login_update_password_check ($password_old, $password_new, $password_confirm, $id);
 }
 
+$minor_release_message = false;
 $searchPage = false;
 $search = get_parameter_get("head_search_keywords");
 if (strlen($search) > 0) {
@@ -430,6 +431,8 @@ if (! isset ($config['id_user'])) {
 			db_logon ($nick_in_db, $_SERVER['REMOTE_ADDR']);
 			$_SESSION['id_usuario'] = $nick_in_db;
 			$config['id_user'] = $nick_in_db;
+			
+			$minor_release_message = db_update_schema();
 
 			//==========================================================
 			//-------- SET THE CUSTOM CONFIGS OF USER ------------------
@@ -594,6 +597,26 @@ $now_global_counter_chat = users_get_last_global_counter('return');
 if ($old_global_counter_chat != $now_global_counter_chat) {
 	if (!users_is_last_system_message())
 		$_SESSION['new_chat'] = true;
+}
+
+if ($minor_release_message) {
+	echo "<div class= 'dialog ui-dialog-content' title='".__("Minor release update")."' id='mr_dialog'>$minor_release_message</div>";
+		echo "<script type='text/javascript'>";
+			echo "$(document).ready (function () {";
+				echo "$('#mr_dialog').dialog ({
+					resizable: true,
+					draggable: true,
+					modal: true,
+					overlay: {
+						opacity: 0.5,
+						background: 'black'
+					},
+					width: 400,
+					height: 150
+				});";
+				echo "$('#mr_dialog').dialog('open');";
+		echo "	});";
+	echo "</script>";
 }
 
 if (get_parameter ('login', 0) !== 0) {

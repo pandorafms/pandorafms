@@ -1292,9 +1292,9 @@ function db_check_minor_relase_available () {
 			if ($files !== false) {
 				// Enterprise installed
 				if (enterprise_installed()) {
-					$pattern = "/^\d+\.open.sql$/";
+					$pattern = "/^\d+\.open\.sql$/";
 					$sqlfiles = preg_grep($pattern, $files); // Get the name of the correct files
-					$pattern = "/\.open.sql$/";
+					$pattern = "/\.open\.sql$/";
 					$replacement = "";
 					$sqlfiles_num = preg_replace($pattern, $replacement, $sqlfiles); // Get the number of the file
 					
@@ -1302,17 +1302,16 @@ function db_check_minor_relase_available () {
 					
 					if ($sqlfiles_num) {
 						foreach ($sqlfiles_num as $sqlfile_num) {
-							$file = "$dir/$sqlfile_num.sql";
 							if ($config["minor_release_open"] < $sqlfile_num) {
 								$have_open_minor = true;
 							}
 						}
 					}
 					
-					$pattern2 = "/^\d+\.ent.sql$/";
+					$pattern2 = "/^\d+\.ent\.sql$/";
 					$sqlfiles2 = preg_grep($pattern2, $files); // Get the name of the correct files
 					$files = null;
-					$pattern2 = "/\.ent.sql$/";
+					$pattern2 = "/\.ent\.sql$/";
 					$replacement2 = "";
 					$sqlfiles_num2 = preg_replace($pattern2, $replacement2, $sqlfiles2); // Get the number of the file
 					
@@ -1320,7 +1319,6 @@ function db_check_minor_relase_available () {
 					
 					if ($sqlfiles_num2) {
 						foreach ($sqlfiles_num2 as $sqlfile_num2) {
-							$file = "$dir/$sqlfile_num2.sql";
 							if ($config["minor_release_enterprise"] < $sqlfile_num2) {
 								$have_ent_minor = true;
 							}
@@ -1339,7 +1337,6 @@ function db_check_minor_relase_available () {
 					
 					if ($sqlfiles_num) {
 						foreach ($sqlfiles_num as $sqlfile_num) {
-							$file = "$dir/$sqlfile_num.sql";
 							if ($config["minor_release"] < $sqlfile_num) {
 								$have_open_minor = true;
 							}

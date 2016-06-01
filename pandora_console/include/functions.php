@@ -2619,4 +2619,18 @@ function pandora_setlocale() {
 	setlocale(LC_ALL,
 		str_replace(array_keys($replace_locale), $replace_locale, $user_language));
 }
+
+function update_config_token ($cfgtoken, $cfgvalue) {
+	global $config;
+	
+	$delete = db_process_sql ("DELETE FROM tconfig WHERE token = '$cfgtoken'");
+	$insert = db_process_sql ("INSERT INTO tconfig (token, value) VALUES ('$cfgtoken', '$cfgvalue')");
+	
+	if ($delete && $insert) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 ?>

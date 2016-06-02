@@ -2372,6 +2372,16 @@ while (1) {
 			$xml_header .= "' parent_agent_name='" .$Conf{'parent_agent_name'};
 		}
 		
+		if (defined ($Conf{'agent_mode'})) {
+			if ($Conf{'agent_mode'} =~ m/no.?learn/ig) {
+				$xml_header .= "' agent_mode='0";
+			} elsif ($Conf{'agent_mode'} =~ m/auto.?disable.?/ig) {
+				$xml_header .= "' agent_mode='2";
+			} else {
+				$xml_header .= "' agent_mode='1";
+			}
+		}
+
 		# Check the gis mode (exec or manual). If exec script is defined, we execute it and get the coordenates
 		if (defined ($Conf{'gis_exec'}) && (-e $Conf{'gis_exec'})) {		
 			my $coord_str = `$Conf{'gis_exec'}`;

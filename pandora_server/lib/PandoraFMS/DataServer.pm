@@ -391,7 +391,12 @@ sub process_xml_data ($$$$$) {
 	
 	# Check if agent is disabled and return if it's disabled. Disabled agents doesnt process data
 	# in order to avoid not only events, also possible invalid data coming from agents.
-	return if ($agent->{'disabled'} == 1);
+	# But, if agent is in mode autodisable, put it enable and retrieve all data
+	if ($agent->{'disabled'} == 1) {
+		return unless ($agent->{'modo'} == 2);
+		logger($pa_config, "Autodisable agent ID $agent_id is recovered to enable mode.",10);
+		db_do ($dbh, 'UPDATE tagente SET disabled=0 WHERE id_agente=?', $agent_id);
+	}
 	
 	# Do not overwrite agent parameters if the agent is in normal mode
 	if ($agent->{'modo'} == 0) {;

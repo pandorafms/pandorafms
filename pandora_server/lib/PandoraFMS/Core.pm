@@ -48,6 +48,8 @@ Exported Functions:
 
 =item * C<pandora_create_module>
 
+=item * C<pandora_disable_autodisable_agents>
+
 =item * C<pandora_evaluate_alert>
 
 =item * C<pandora_evaluate_snmp_alerts>
@@ -168,6 +170,7 @@ our @EXPORT = qw(
 	pandora_delete_agent
 	pandora_delete_all_template_module_actions
 	pandora_delete_module
+	pandora_disable_autodisable_agents
 	pandora_evaluate_alert
 	pandora_evaluate_snmp_alerts
 	pandora_event
@@ -4652,6 +4655,22 @@ sub pandora_module_unknown ($$) {
 			}
 		}
 	}
+}
+
+##########################################################################
+=head2 C<< pandora_disable_autodisable_agents (I<$pa_config>, I<$dbh>) >> 
+
+Puts all autodisable agents with all modules unknown on disabled mode
+
+=cut
+##########################################################################
+sub pandora_disable_autodisable_agents ($$) {
+	my ($pa_config, $dbh) = @_;
+	
+	db_do ($dbh, 'UPDATE tagente SET disabled=1 
+			WHERE disabled=0 AND 
+			tagente.total_count=tagente.unknown_count AND 
+			tagente.modo=2');
 }
 
 ##########################################################################

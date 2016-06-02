@@ -316,6 +316,9 @@ sub pandora_server_tasks ($) {
 					# Set the status of unknown modules
 					pandora_module_unknown ($pa_config, $dbh);
 					
+					# Check if an autodisabled agent needs to be autodisable
+					pandora_disable_autodisable_agents ($pa_config, $dbh); 
+					
 					# Set event storm protection
 					pandora_set_event_storm_protection (pandora_get_tconfig_token ($dbh, 'event_storm_protection', 0));
 				}

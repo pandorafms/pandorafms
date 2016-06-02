@@ -136,8 +136,9 @@ function refresh_lines (lines, id_div, editor) {
 }
 
 
-function draw_user_lines_read() {
-	var obj_js_user_lines = new jsGraphics("background");
+function draw_user_lines_read(divId) {
+	divId = divId || 'background';
+	var obj_js_user_lines = new jsGraphics(divId);
 	
 	obj_js_user_lines.clear();
 	

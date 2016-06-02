@@ -249,6 +249,10 @@ sub process_xml_data ($$$$$) {
 			$parent_id = 0;
 		}
 	}
+	
+	# Get agent mode
+	my $agent_mode = 1; # Default value learning mode
+	$agent_mode = $data->{'agent_mode'} if (defined ($data->{'agent_mode'}));
 
 	# Unknown agent!
 	if (! defined ($agent_name) || $agent_name eq '') {
@@ -331,7 +335,7 @@ sub process_xml_data ($$$$$) {
 		$description = $data->{'description'} if (defined ($data->{'description'}));
 		
 		$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, $address, $group_id, $parent_id, $os, 
-						$description, $interval, $dbh, $timezone_offset, undef, undef, undef, undef, $custom_id, $url_address);
+						$description, $interval, $dbh, $timezone_offset, undef, undef, undef, undef, $custom_id, $url_address, $agent_mode);
 												 
 		if (! defined ($agent_id)) {
 			return;
@@ -596,8 +600,8 @@ sub process_module_data ($$$$$$$$$) {
 			return;
 		}
 		
-		# Is the agent learning?
-		if ($agent->{'modo'} ne '1') {
+		# Is the agent not learning?
+		if ($agent->{'modo'} == 0) {
 			logger($pa_config, "Learning mode disabled. Skipping module '$module_name' agent '$agent_name'.", 10);
 			$ModuleSem->up ();
 			return;
@@ -697,7 +701,7 @@ sub process_module_data ($$$$$$$$$) {
 	}
 	
 	# Update module configuration if in learning mode and not a policy module
-	if ($agent->{'modo'} eq '1' && $policy_linked == 0) {
+	if ((($agent->{'modo'} eq '1') || ($agent->{'modo'} eq '2')) && $policy_linked == 0) {
 		update_module_configuration ($pa_config, $dbh, $module, $module_conf);
 	}
 	

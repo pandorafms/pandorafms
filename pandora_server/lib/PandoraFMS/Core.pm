@@ -2786,12 +2786,12 @@ Create a new entry in B<tagente> optionaly with position information
 
 =cut
 ##########################################################################
-sub pandora_create_agent ($$$$$$$$$$;$$$$$$$) {
+sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$) {
 	my ($pa_config, $server_name, $agent_name, $address,
 		$group_id, $parent_id, $os_id,
 		$description, $interval, $dbh, $timezone_offset,
 		$longitude, $latitude, $altitude, $position_description,
-		$custom_id, $url_address) = @_;
+		$custom_id, $url_address, $agent_mode) = @_;
 	
 	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
 	
@@ -2802,6 +2802,8 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$) {
 			return;
 		}
 	}
+	
+	$agent_mode = 1 unless defined($agent_mode);
 
 	$description = "Created by $server_name" unless ($description ne '');	
 	my ($columns, $values) = db_insert_get_values ({ 'nombre' => safe_input($agent_name),
@@ -2812,7 +2814,7 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$) {
 	                                                 'server_name' => $server_name,
 	                                                 'intervalo' => $interval,
 	                                                 'id_parent' => $parent_id,
-	                                                 'modo' => 1,
+	                                                 'modo' => $agent_mode,
 	                                                 'custom_id' => $custom_id,
 	                                                 'url_address' => $url_address,
 	                                                 'timezone_offset' => $timezone_offset

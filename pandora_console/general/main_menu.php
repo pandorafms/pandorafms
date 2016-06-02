@@ -74,6 +74,7 @@ var fixed_header = <?php echo json_encode((bool)$config_fixed_header); ?>;
 var id_user = "<?php echo $config['id_user']; ?>";
 var cookie_name = id_user + '-pandora_menu_state';
 var cookie_name_encoded = btoa(cookie_name);
+var click_display = "<?php echo $config["click_display"]; ?>";
 
 var menuState = $.cookie(cookie_name_encoded);
 if (!menuState) {
@@ -257,31 +258,54 @@ $(document).ready( function() {
 	openTime2 = 0;
 	handsIn = 0;
 	handsIn2 = 0;
-	
-	$('.menu_icon').mouseenter(function() {
-		table_hover = $(this);
-		handsIn = 1;
-		openTime = new Date().getTime();
-		$("ul#sub"+table_hover[0].id).show();
-		//$('div#menu').offset().top;
-		//$('div#menu').css('overflow','visible');
-		if( typeof(table_noHover) != 'undefined')
-			if ( "ul#sub"+table_hover[0].id != "ul#sub"+table_noHover[0].id )
-				$("ul#sub"+table_noHover[0].id).hide();
-	}).mouseleave(function() {
-		//$('div#menu').css('overflow', 'hidden');
-		table_noHover = $(this);
-		handsIn = 0;
-		setTimeout(function() {
-			opened = new Date().getTime() - openTime;
-			if(opened > 3000 && handsIn == 0) {
-				openTime = 4000;
-				$("ul#sub"+table_hover[0].id).hide();
-			}
-		}, 3500);
-	});
-	
-	
+
+	//Daniel maya 02/06/2016 Display menu with click --INI
+	if(!click_display){
+		$('.menu_icon').mouseenter(function() {
+			table_hover = $(this);
+			handsIn = 1;
+			openTime = new Date().getTime();
+			$("ul#sub"+table_hover[0].id).show();
+			if( typeof(table_noHover) != 'undefined')
+				if ( "ul#sub"+table_hover[0].id != "ul#sub"+table_noHover[0].id )
+					$("ul#sub"+table_noHover[0].id).hide();
+		}).mouseleave(function() {
+			table_noHover = $(this);
+			handsIn = 0;
+			setTimeout(function() {
+				opened = new Date().getTime() - openTime;
+				if(opened > 3000 && handsIn == 0) {
+					openTime = 4000;
+					$("ul#sub"+table_hover[0].id).hide();
+				}
+			}, 3500);
+		});
+
+	}else{
+		$(document).ready(function() {
+			$('.menu_icon').on("click", function() {
+				if( typeof(table_hover) != 'undefined'){
+					$("ul#sub"+table_hover[0].id).hide();
+				}
+				table_hover = $(this);
+				handsIn = 1;
+				openTime = new Date().getTime();
+				$("ul#sub"+table_hover[0].id).show();
+			}).mouseleave(function() {
+				table_noHover = $(this);
+				handsIn = 0;
+				setTimeout(function() {
+					opened = new Date().getTime() - openTime;
+					if(opened > 5000 && handsIn == 0) {
+						openTime = 6000;
+						$("ul#sub"+table_hover[0].id).hide();
+					}
+				}, 5500);
+			});
+		});
+	}
+	//Daniel maya 02/06/2016 Display menu with click --END
+
 -	$('.has_submenu').mouseenter(function() {
 		table_hover2 = $(this);
 		handsIn2 = 1;
@@ -303,18 +327,34 @@ $(document).ready( function() {
 	});
 	
 	$(document).ready(function() {
-		$('#container').click(function() {
-			openTime = 4000;
-			if( typeof(table_hover) != 'undefined')
-				$("ul#sub"+table_hover[0].id).hide();
-			if( typeof(table_hover2) != 'undefined')
-				$("ul#sub"+table_hover2[0].id).hide();
-			$('#menu').css('width', '45px');
-			$('li.menu_icon').removeClass( " no_hidden_menu");
-			$('ul.submenu').css('left', '44px');
-			$('div#title_menu').hide();
-		});
-		
+		//Daniel maya 02/06/2016 Display menu with click --INI
+		if(!click_display){
+			$('#container').click(function() {
+				openTime = 4000;
+				if( typeof(table_hover) != 'undefined')
+					$("ul#sub"+table_hover[0].id).hide();
+				if( typeof(table_hover2) != 'undefined')
+					$("ul#sub"+table_hover2[0].id).hide();
+				$('#menu').css('width', '45px');
+				$('li.menu_icon').removeClass( " no_hidden_menu");
+				$('ul.submenu').css('left', '44px');
+				$('div#title_menu').hide();
+			});
+		}else{
+			$('#main').click(function() {
+				openTime = 4000;
+				if( typeof(table_hover) != 'undefined')
+					$("ul#sub"+table_hover[0].id).hide();
+				if( typeof(table_hover2) != 'undefined')
+					$("ul#sub"+table_hover2[0].id).hide();
+				$('#menu').css('width', '45px');
+				$('li.menu_icon').removeClass( " no_hidden_menu");
+				$('ul.submenu').css('left', '44px');
+				$('div#title_menu').hide();
+			});
+		}
+		//Daniel maya 02/06/2016 Display menu with click --END
+
 		$('div.menu>ul>li>ul>li>a').click(function() {
 			openTime = 4000;
 			if( typeof(table_hover) != 'undefined')

@@ -99,6 +99,19 @@ $table_behaviour->data[$row][0] = __('Display text when proc modules have state 
 $table_behaviour->data[$row][1] = html_print_input_text ('render_proc_fail', $config["render_proc_fail"], '', 25, 25, true);
 $row++;
 
+//Daniel maya 02/06/2016 Display menu with click --INI
+$table_behaviour->data[$row][0] = __('Display lateral menus with click').
+	ui_print_help_tip(__('If you check this option, the lateral menus display with left click. Otherwise it will show by placing the mouse over'), true);
+$table_behaviour->data[$row][1] = __('Yes') . '&nbsp;' .
+		html_print_radio_button ('click_display', 1, '',
+		$config["click_display"], true) .
+	'&nbsp;&nbsp;';
+$table_behaviour->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('click_display', 0, '',
+		$config["click_display"], true);
+$row++;
+//Daniel maya 02/06/2016 Display menu with click --END
+
 echo "<fieldset>";
 echo "<legend>" . __('Behaviour configuration') . "</legend>";
 html_print_table ($table_behaviour);

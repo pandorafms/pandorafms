@@ -703,7 +703,9 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 			$MyData->setPalette($point_id, $palette_color);*/
 		}
 		
-		$MyData->setSerieWeight($point_id, $config['custom_graph_width']);
+		// The weight of the line is not calculated in pixels, so it needs to be transformed
+		$reduction_coefficient = 0.31;
+		$MyData->setSerieWeight($point_id, $config['custom_graph_width'] * $reduction_coefficient);
 	}
 	
 	//$MyData->addPoints($data,"Yaxis");

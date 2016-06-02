@@ -35,6 +35,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES
 ('days_purge','45'),
 ('days_delete_unknown','0'),
 ('days_compact','0'),
+('days_autodisable_deletion','30'),
 ('graph_res','5'),
 ('step_compact','1'),
 ('db_scheme_first_version', '6.0dev'),

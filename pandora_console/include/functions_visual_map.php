@@ -1969,12 +1969,11 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		var user_lines = Array();
 		
 		//Fixed to wait the load of images.
-		$(window).load(function() {
-				draw_lines(lines, 'background_'+id_layout);
-				draw_user_lines_read();
-				center_labels();
-			}
-		);
+		$(window).load(function () {
+			draw_lines(lines, 'background_'+id_layout);
+			draw_user_lines_read('background_'+id_layout);
+			center_labels();
+		});
 		/* ]]> */
 	</script>
 	<?php

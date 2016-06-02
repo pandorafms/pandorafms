@@ -305,6 +305,9 @@ sub process_xml_data ($$$$$) {
 		shift (@address_list);
 }
 	
+	# A module with No-learn mode (modo = 0) creates its modules on database only when it is created 
+	my $new_agent = 0;
+	
 	# Get agent id
 	my $agent_id = get_agent_id ($dbh, $agent_name);
 	if ($agent_id < 1) {
@@ -340,6 +343,9 @@ sub process_xml_data ($$$$$) {
 		if (! defined ($agent_id)) {
 			return;
 		}
+		
+		# This agent is new.
+		$new_agent = 1;
 		
 		# Add the main address to the address list
 		if ($address ne '') {
@@ -491,7 +497,7 @@ sub process_xml_data ($$$$$) {
 		# Single data
 		if (! defined ($module_data->{'datalist'})) {
 			my $data_timestamp = get_tag_value ($module_data, 'timestamp', $timestamp);
-			process_module_data ($pa_config, $module_data, $server_id, $agent_name, $module_name, $module_type, $interval, $data_timestamp, $dbh);
+			process_module_data ($pa_config, $module_data, $server_id, $agent_name, $module_name, $module_type, $interval, $data_timestamp, $dbh, $new_agent);
 			next;
 		}
 
@@ -509,7 +515,7 @@ sub process_xml_data ($$$$$) {
 				$module_data->{'data'} = $data->{'value'};
 				my $data_timestamp = get_tag_value ($data, 'timestamp', $timestamp);
 				process_module_data ($pa_config, $module_data, $server_id, $agent_name, $module_name,
-									 $module_type, $interval, $data_timestamp, $dbh);
+									 $module_type, $interval, $data_timestamp, $dbh, $new_agent);
 			}
 		}
 	}
@@ -526,10 +532,10 @@ sub process_xml_data ($$$$$) {
 ##########################################################################
 # Process module data, creating module if necessary.
 ##########################################################################
-sub process_module_data ($$$$$$$$$) {
+sub process_module_data ($$$$$$$$$$) {
 	my ($pa_config, $data, $server_id, $agent_name,
 		$module_name, $module_type, $interval, $timestamp,
-		$dbh) = @_;
+		$dbh, $force_processing) = @_;
 
 	# Get agent data
 	my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE nombre = ?', safe_input($agent_name));
@@ -601,7 +607,7 @@ sub process_module_data ($$$$$$$$$) {
 		}
 		
 		# Is the agent not learning?
-		if ($agent->{'modo'} == 0) {
+		if (($agent->{'modo'} == 0) && !($force_processing)) {
 			logger($pa_config, "Learning mode disabled. Skipping module '$module_name' agent '$agent_name'.", 10);
 			$ModuleSem->up ();
 			return;

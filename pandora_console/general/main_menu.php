@@ -102,6 +102,13 @@ function close_submenus () {
 }
 
 $(document).ready( function() {
+	//Daniel maya 02/06/2016 Fixed menu position--INI
+	if (fixed_menu) {
+		$('div#menu')
+			.css('position', 'fixed')
+			.css('z-index', '9000')
+	}
+	//Daniel maya 02/06/2016 Fixed menu position--END
 	/*
 	$("img.toggle").click (function (e) {
 		//In case the links gets activated, we don't want to follow link

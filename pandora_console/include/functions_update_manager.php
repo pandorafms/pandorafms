@@ -179,11 +179,12 @@ function update_manager_install_package_step2() {
 		return;
 	}
 	
+	update_manager_enterprise_set_version($version);
+	db_pandora_audit("Update Pandora", "Update version: $version of Pandora FMS by ".$config['id_user']);
+	
 	$return["status"] = "success";
 	$return["message"]= __("The package is installed.");
 	echo json_encode($return);
-	
-	update_manager_enterprise_set_version($version);
 	
 	return;
 }

@@ -726,7 +726,9 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 			break;
 		case 'transparent':
 			$transparent = true;
-			$fontColor = array('R' => 0, 'G' => 0, 'B' => 0);
+			// $fontColor = array('R' => 0, 'G' => 0, 'B' => 0);
+			// Now the color of the text will be grey
+			$fontColor = array('R' => 200, 'G' => 200, 'B' => 200);
 			break;
 		
 	}

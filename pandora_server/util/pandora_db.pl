@@ -366,6 +366,14 @@ sub pandora_purgedb ($$) {
 						AND id_rc NOT IN (SELECT id_report_content FROM treport_content_sla_combined)");
 	}
 	
+    
+    # Delete disabled autodisable agents after some period
+    log_message ('PURGE', 'Delete autodisabled agents where last contact is bigger than ' . $conf->{'_days_autodisable_deletion'} . ' days.');
+	db_do ($dbh, "DELETE FROM tagente 
+				  WHERE UNIX_TIMESTAMP(ultimo_contacto) + ? < UNIX_TIMESTAMP(NOW())
+				   AND disabled=1
+				   AND modo=2
+				   AND total_count=unknown_count", $conf->{'_days_autodisable_deletion'}*8600);
 	
 	
 	# Delete old netflow data
@@ -674,7 +682,7 @@ sub pandora_load_config ($) {
    	$conf->{'_log_dir'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'log_dir'");
    	$conf->{'_log_max_lifetime'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'log_max_lifetime'");
 	$conf->{'_delete_notinit'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_notinit'");
-   	
+	$conf->{'_days_autodisable_deletion'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_autodisable_deletion'");
 	db_disconnect ($dbh);
 
 	log_message ('', "Pandora DB now initialized and running (PURGE=" . $conf->{'_days_purge'} . " days, COMPACT=$conf->{'_days_compact'} days, STEP=" . $conf->{'_step_compact'} . ") . \n\n");

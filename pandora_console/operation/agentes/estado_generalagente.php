@@ -175,7 +175,7 @@ $table_agent->cellstyle[count($table_agent->data)][2] =
 $data[3] = '<span style="vertical-align:top; display: inline-block;">';
 $data[3] .= empty($agent["comentarios"]) ?
 	'<em>' . __('N/A') . '</em>' :
-	ui_bbcode_to_html($agent["comentarios"]);
+	io_safe_output(ui_bbcode_to_html($agent["comentarios"]));
 $data[3] .= '</span>';
 $table_agent->colspan[count($table_agent->data)][3] = 2;
 

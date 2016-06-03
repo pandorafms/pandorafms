@@ -5034,7 +5034,7 @@ sub pandora_edit_custom_graph ($$$$$$$$$$$) {
 }
 
 sub pandora_create_integria_ticket ($$$$$$$$$$$) {
-	my ($pa_config,$api_path,$api_pass,$integria_user,$user_pass,$ticket_name,$group_id,$ticket_priority,$ticket_email,$ticket_owner,$ticket_description,) = @_;
+	my ($pa_config,$api_path,$api_pass,$integria_user,$user_pass,$ticket_name,$group_id,$ticket_priority,$ticket_email,$ticket_owner,$ticket_description) = @_;
 	
 	my $data_ticket;
 	my $call_api;
@@ -5061,18 +5061,30 @@ sub pandora_create_integria_ticket ($$$$$$$$$$$) {
 		$ticket_owner = "admin";
 	}
 	
+	#~ $data_ticket = $ticket_name .
+		#~ "|;|" . $group_id .
+		#~ "|;|" . $ticket_priority .
+		#~ "|;|" . $ticket_description .
+		#~ "|;|" . #Id inventory
+		#~ "|;|" . #Id incident type
+		#~ "|;|" . $ticket_email .
+		#~ "|;|" . $ticket_owner .
+		#~ "|;|" . #Father ticket id
+		#~ "|;|" . #Status
+		#~ "|;|" . #Extra info
+		#~ "|;|";  #Resolution
 	$data_ticket = $ticket_name .
 		"|;|" . $group_id .
 		"|;|" . $ticket_priority .
 		"|;|" . $ticket_description .
-		"|;|" . #Id inventory
-		"|;|" . #Id incident type
+		"|;|" . 
+		"|;|" . 
 		"|;|" . $ticket_email .
 		"|;|" . $ticket_owner .
-		"|;|" . #Father ticket id
-		"|;|" . #Status
-		"|;|" . #Extra info
-		"|;|";  #Resolution
+		"|;|" . 
+		"|;|" . '1' .
+		"|;|" . 
+		"|;|";
 		
 	$call_api = $api_path . '?' .
 		'user=' . $integria_user . '&' .

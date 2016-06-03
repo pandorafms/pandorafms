@@ -10,6 +10,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 from sauceclient import SauceClient
 from os import environ
+import os
 
 
 class ArticaTestResult(TestResult):

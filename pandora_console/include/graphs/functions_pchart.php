@@ -865,17 +865,16 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		"ManualScale" => $ManualScale,
 		"LabelRotation" => 40, 
 		"XMargin" => 0, 
-		"MinDivHeight" => 20,
+		"MinDivHeight" => 15,
 		"TicksFontSize" => $font_size - 1);
-		
-	if (true) {
-		$scaleSettings['AxisR'] = '200';
-		$scaleSettings['AxisG'] = '200';
-		$scaleSettings['AxisB'] = '200';
-		$scaleSettings['TickR'] = '200';
-		$scaleSettings['TickG'] = '200';
-		$scaleSettings['TickB'] = '200';
-	}
+	
+	$scaleSettings['AxisR'] = '200';
+	$scaleSettings['AxisG'] = '200';
+	$scaleSettings['AxisB'] = '200';
+	$scaleSettings['TickR'] = '200';
+	$scaleSettings['TickG'] = '200';
+	$scaleSettings['TickB'] = '200';
+	
 	$myPicture->drawScale($scaleSettings);
 	
 	/* Turn on shadow computing */ 

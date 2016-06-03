@@ -41,10 +41,12 @@ class PandoraWebDriverTestCase(TestCase):
 	def setUp(self):
 		self.time_started = datetime.now()
 		#Start VM in Sauce Labs
-		self.driver = webdriver.Remote(command_executor='http://'+self.sauce_username+':'+self.sauce_access_key+'@ondemand.saucelabs.com:80/wd/hub',desired_capabilities=self.desired_cap)
-		self.sauce_labs_job_id = self.driver.session_id # We store this information to update the job info when the tests are done
+		if environ["DEVELOPMENT"] == "1":
+			self.driver = webdriver.Firefox()
+		else:
+			self.driver = webdriver.Remote(command_executor='http://'+self.sauce_username+':'+self.sauce_access_key+'@ondemand.saucelabs.com:80/wd/hub',desired_capabilities=self.desired_cap)
+			self.sauce_labs_job_id = self.driver.session_id # We store this information to update the job info when the tests are done
 
-		self.sauce_client = SauceClient(self.sauce_username, self.sauce_access_key)
 		self.driver.implicitly_wait(30)
 		self.base_url = "http://localhost/"
 		self.verificationErrors = []

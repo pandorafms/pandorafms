@@ -384,7 +384,7 @@ string
 Pandora_Windows_Service::getXmlHeader () {
 	char          timestamp[20];
 	string        agent_name, os_name, os_version, encoding, value, xml, address, parent_agent_name, agent_name_cmd;
-	string        custom_id, url_address, latitude, longitude, altitude, position_description, gis_exec, gis_result;
+	string        custom_id, url_address, latitude, longitude, altitude, position_description, gis_exec, gis_result, agent_mode;
 	time_t        ctime;
 	struct tm     *ctime_tm = NULL;
 	int pos;
@@ -539,12 +539,28 @@ Pandora_Windows_Service::getXmlHeader () {
 			}
 		}
 	}
+	
+	// Get agent mode
+	agent_mode = conf->getValue ("agent_mode");	
+	// Convert the type string to lowercase
+    for (int i = 0; i < agent_mode.length(); i++) {
+        agent_mode[i] = tolower(agent_mode[i]);
+    }
+    if (!agent_mode.compare("no-learn") || !agent_mode.compare("nolearn")) {
+		agent_mode = "0";
+	} else if (!agent_mode.compare("autodisable")) {
+		agent_mode = "2";
+	} else {
+		agent_mode = "1";
+	}
 
 	xml += "\" interval=\"" + conf->getValue ("interval") +
 	       "\" os_name=\"" + os_name +
 	       "\" os_version=\"" + os_version +
 	       "\" group=\"" + conf->getValue ("group") +
-	       "\" parent_agent_name=\"" + conf->getValue ("parent_agent_name") + "\">\n";
+	       "\" parent_agent_name=\"" + conf->getValue ("parent_agent_name") + 
+	       "\" agent_mode=\"" + agent_mode + 
+	       "\">\n";
 	return xml;
 }
 

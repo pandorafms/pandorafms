@@ -4,6 +4,17 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+import random
+import string
+
+def gen_random_string(size,preffix=None):
+	random_string =  ''.join(random.SystemRandom().choice(string.ascii_uppercase string.digits) for _ in range(size))
+	if preffix:
+		return preffix+random_string
+	else:
+		return random_string
+
+
 def login(driver,user="admin",passwd="pandora",pandora_url="http://127.0.0.1/"):
 	driver.get(pandora_url+"/pandora_console/index.php")
 	driver.find_element_by_id("nick").clear()

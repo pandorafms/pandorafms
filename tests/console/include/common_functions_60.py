@@ -8,7 +8,7 @@ import random
 import string
 
 def gen_random_string(size,preffix=None):
-	random_string =  ''.join(random.SystemRandom().choice(string.ascii_uppercase string.digits) for _ in range(size))
+	random_string =  ''.join(random.SystemRandom().choice(string.ascii_uppercase+string.digits) for _ in range(size))
 	if preffix:
 		return preffix+random_string
 	else:

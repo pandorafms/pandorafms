@@ -48,6 +48,8 @@ Exported Functions:
 
 =item * C<pandora_create_module>
 
+=item * C<pandora_disable_autodisable_agents>
+
 =item * C<pandora_evaluate_alert>
 
 =item * C<pandora_evaluate_snmp_alerts>
@@ -168,6 +170,7 @@ our @EXPORT = qw(
 	pandora_delete_agent
 	pandora_delete_all_template_module_actions
 	pandora_delete_module
+	pandora_disable_autodisable_agents
 	pandora_evaluate_alert
 	pandora_evaluate_snmp_alerts
 	pandora_event
@@ -2791,12 +2794,12 @@ Create a new entry in B<tagente> optionaly with position information
 
 =cut
 ##########################################################################
-sub pandora_create_agent ($$$$$$$$$$;$$$$$$$) {
+sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$) {
 	my ($pa_config, $server_name, $agent_name, $address,
 		$group_id, $parent_id, $os_id,
 		$description, $interval, $dbh, $timezone_offset,
 		$longitude, $latitude, $altitude, $position_description,
-		$custom_id, $url_address) = @_;
+		$custom_id, $url_address, $agent_mode) = @_;
 	
 	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
 	
@@ -2807,6 +2810,8 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$) {
 			return;
 		}
 	}
+	
+	$agent_mode = 1 unless defined($agent_mode);
 
 	$description = "Created by $server_name" unless ($description ne '');	
 	my ($columns, $values) = db_insert_get_values ({ 'nombre' => safe_input($agent_name),
@@ -2817,7 +2822,7 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$) {
 	                                                 'server_name' => $server_name,
 	                                                 'intervalo' => $interval,
 	                                                 'id_parent' => $parent_id,
-	                                                 'modo' => 1,
+	                                                 'modo' => $agent_mode,
 	                                                 'custom_id' => $custom_id,
 	                                                 'url_address' => $url_address,
 	                                                 'timezone_offset' => $timezone_offset
@@ -4655,6 +4660,22 @@ sub pandora_module_unknown ($$) {
 			}
 		}
 	}
+}
+
+##########################################################################
+=head2 C<< pandora_disable_autodisable_agents (I<$pa_config>, I<$dbh>) >> 
+
+Puts all autodisable agents with all modules unknown on disabled mode
+
+=cut
+##########################################################################
+sub pandora_disable_autodisable_agents ($$) {
+	my ($pa_config, $dbh) = @_;
+	
+	db_do ($dbh, 'UPDATE tagente SET disabled=1 
+			WHERE disabled=0 AND 
+			tagente.total_count=tagente.unknown_count AND 
+			tagente.modo=2');
 }
 
 ##########################################################################

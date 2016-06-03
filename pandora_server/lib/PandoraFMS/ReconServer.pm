@@ -184,7 +184,7 @@ sub data_consumer ($$) {
 		if ($agent_id > 0) {
 
 			# Skip if not in learning mode
-			next if ($agent->{'modo'} != 1);
+			next unless (($agent->{'modo'} == 1) || ($agent->{'modo'} == 2));
 		}
 
 		# Get the parent host

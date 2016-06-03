@@ -60,6 +60,7 @@ INSERT INTO tconfig (token, value) VALUES ('language','en_GB');
 INSERT INTO tconfig (token, value) VALUES ('block_size','20');
 INSERT INTO tconfig (token, value) VALUES ('days_purge','45');
 INSERT INTO tconfig (token, value) VALUES ('days_delete_unknown','0');
+INSERT INTO tconfig (token, value) VALUES ('days_autodisable_deletion','30');
 INSERT INTO tconfig (token, value) VALUES ('days_compact','0');
 INSERT INTO tconfig (token, value) VALUES ('graph_res','5');
 INSERT INTO tconfig (token, value) VALUES ('step_compact','1');

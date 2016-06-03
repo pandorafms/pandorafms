@@ -305,6 +305,9 @@ $table->data[1][1] = __('Learning mode') . ' ' .
 $table->data[1][1] .= __('Normal mode') . ' ' .
 	html_print_radio_button_extended ("modo", 0, '', $modo, false, 'show_modules_not_learning_mode_context_help();',
 		'style="margin-right: 40px;"', true);
+$table->data[1][1] .= __('Autodisable mode') . ' ' .
+	html_print_radio_button_extended ("modo", 2, '', $modo, false, 'show_modules_not_learning_mode_context_help();',
+		'style="margin-right: 40px;"', true);
 
 // Status (Disabled / Enabled)
 $table->data[2][0] = __('Status');
@@ -509,11 +512,11 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 	}
 	
 	function show_modules_not_learning_mode_context_help() {
-		if ($("input[name='modo'][value=1]").is(':checked')) {
-			$("#modules_not_learning_mode_context_help").hide();
+		if ($("input[name='modo'][value=0]").is(':checked')) {
+			$("#modules_not_learning_mode_context_help").show();
 		}
 		else {
-			$("#modules_not_learning_mode_context_help").show();
+			$("#modules_not_learning_mode_context_help").hide();
 		}
 	}
 	

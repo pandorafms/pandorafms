@@ -33,4 +33,5 @@ UPDATE talert_commands SET fields_descriptions = '[\"Integria&#x20;IMS&#x20;API&
 
 INSERT INTO tconfig (token, value) VALUES ('big_operation_step_datos_purge', '100');
 INSERT INTO tconfig (token, value) VALUES ('small_operation_step_datos_purge', '1000');
+INSERT INTO tconfig (token, value) VALUES ('days_autodisable_deletion', '30');
 

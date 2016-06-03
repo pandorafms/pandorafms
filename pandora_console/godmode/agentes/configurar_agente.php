@@ -658,7 +658,7 @@ if ($update_agent) { // if modified some agent paramenter
 	$grupo = (int) get_parameter_post ("grupo", 0);
 	$intervalo = (int) get_parameter_post ("intervalo", SECONDS_5MINUTES);
 	$comentarios = str_replace('`','&lsquo;',(string) get_parameter_post ("comentarios", ""));
-	$modo = (bool) get_parameter_post ("modo", 0); //Mode: Learning or Normal
+	$modo = (int) get_parameter_post ("modo", 0); //Mode: Learning, Normal or Autodisabled
 	$id_os = (int) get_parameter_post ("id_os");
 	$disabled = (bool) get_parameter_post ("disabled");
 	$server_name = (string) get_parameter_post ("server_name", "");

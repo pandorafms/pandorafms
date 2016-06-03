@@ -249,6 +249,10 @@ sub process_xml_data ($$$$$) {
 			$parent_id = 0;
 		}
 	}
+	
+	# Get agent mode
+	my $agent_mode = 1; # Default value learning mode
+	$agent_mode = $data->{'agent_mode'} if (defined ($data->{'agent_mode'}));
 
 	# Unknown agent!
 	if (! defined ($agent_name) || $agent_name eq '') {
@@ -301,6 +305,9 @@ sub process_xml_data ($$$$$) {
 		shift (@address_list);
 }
 	
+	# A module with No-learn mode (modo = 0) creates its modules on database only when it is created 
+	my $new_agent = 0;
+	
 	# Get agent id
 	my $agent_id = get_agent_id ($dbh, $agent_name);
 	if ($agent_id < 1) {
@@ -331,11 +338,14 @@ sub process_xml_data ($$$$$) {
 		$description = $data->{'description'} if (defined ($data->{'description'}));
 		
 		$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, $address, $group_id, $parent_id, $os, 
-						$description, $interval, $dbh, $timezone_offset, undef, undef, undef, undef, $custom_id, $url_address);
+						$description, $interval, $dbh, $timezone_offset, undef, undef, undef, undef, $custom_id, $url_address, $agent_mode);
 												 
 		if (! defined ($agent_id)) {
 			return;
 		}
+		
+		# This agent is new.
+		$new_agent = 1;
 		
 		# Add the main address to the address list
 		if ($address ne '') {
@@ -381,7 +391,12 @@ sub process_xml_data ($$$$$) {
 	
 	# Check if agent is disabled and return if it's disabled. Disabled agents doesnt process data
 	# in order to avoid not only events, also possible invalid data coming from agents.
-	return if ($agent->{'disabled'} == 1);
+	# But, if agent is in mode autodisable, put it enable and retrieve all data
+	if ($agent->{'disabled'} == 1) {
+		return unless ($agent->{'modo'} == 2);
+		logger($pa_config, "Autodisable agent ID $agent_id is recovered to enable mode.",10);
+		db_do ($dbh, 'UPDATE tagente SET disabled=0 WHERE id_agente=?', $agent_id);
+	}
 	
 	# Do not overwrite agent parameters if the agent is in normal mode
 	if ($agent->{'modo'} == 0) {;
@@ -487,7 +502,7 @@ sub process_xml_data ($$$$$) {
 		# Single data
 		if (! defined ($module_data->{'datalist'})) {
 			my $data_timestamp = get_tag_value ($module_data, 'timestamp', $timestamp);
-			process_module_data ($pa_config, $module_data, $server_id, $agent_name, $module_name, $module_type, $interval, $data_timestamp, $dbh);
+			process_module_data ($pa_config, $module_data, $server_id, $agent_name, $module_name, $module_type, $interval, $data_timestamp, $dbh, $new_agent);
 			next;
 		}
 
@@ -505,7 +520,7 @@ sub process_xml_data ($$$$$) {
 				$module_data->{'data'} = $data->{'value'};
 				my $data_timestamp = get_tag_value ($data, 'timestamp', $timestamp);
 				process_module_data ($pa_config, $module_data, $server_id, $agent_name, $module_name,
-									 $module_type, $interval, $data_timestamp, $dbh);
+									 $module_type, $interval, $data_timestamp, $dbh, $new_agent);
 			}
 		}
 	}
@@ -522,10 +537,10 @@ sub process_xml_data ($$$$$) {
 ##########################################################################
 # Process module data, creating module if necessary.
 ##########################################################################
-sub process_module_data ($$$$$$$$$) {
+sub process_module_data ($$$$$$$$$$) {
 	my ($pa_config, $data, $server_id, $agent_name,
 		$module_name, $module_type, $interval, $timestamp,
-		$dbh) = @_;
+		$dbh, $force_processing) = @_;
 
 	# Get agent data
 	my $agent = get_db_single_row ($dbh, 'SELECT * FROM tagente WHERE nombre = ?', safe_input($agent_name));
@@ -596,8 +611,8 @@ sub process_module_data ($$$$$$$$$) {
 			return;
 		}
 		
-		# Is the agent learning?
-		if ($agent->{'modo'} ne '1') {
+		# Is the agent not learning?
+		if (($agent->{'modo'} == 0) && !($force_processing)) {
 			logger($pa_config, "Learning mode disabled. Skipping module '$module_name' agent '$agent_name'.", 10);
 			$ModuleSem->up ();
 			return;
@@ -697,7 +712,7 @@ sub process_module_data ($$$$$$$$$) {
 	}
 	
 	# Update module configuration if in learning mode and not a policy module
-	if ($agent->{'modo'} eq '1' && $policy_linked == 0) {
+	if ((($agent->{'modo'} eq '1') || ($agent->{'modo'} eq '2')) && $policy_linked == 0) {
 		update_module_configuration ($pa_config, $dbh, $module, $module_conf);
 	}
 	

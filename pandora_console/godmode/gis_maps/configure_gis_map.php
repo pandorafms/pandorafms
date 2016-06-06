@@ -29,6 +29,13 @@ require_once ('include/functions_gis.php');
 $idMap = (int)get_parameter('map_id', 0);
 $action = get_parameter('action', 'new_map');
 
+$sec2 = get_parameter_get ('sec2');
+$sec2 = safe_url_extraclean ($sec2);
+
+$sec = get_parameter_get ('sec');
+$sec = safe_url_extraclean ($sec);
+
+$next_action = 'new_map';
 
 switch ($action) {
 	case 'save_new':
@@ -75,8 +82,8 @@ switch ($action) {
 		$arrayLayers = array();
 		foreach ($layer_list as $layerID) {
 			$layer = get_parameter('layer_values_' . $layerID);
-			
-			$arrayLayers[] = JSON_decode($layer, true);
+			$layer = json_decode(io_safe_output ($layer), true);
+			array_unshift ($arrayLayers, $layer);
 		}
 		
 		$invalidFields = gis_validate_map_data($map_name, $map_zoom_level,
@@ -90,9 +97,10 @@ switch ($action) {
 				$map_default_longitude, $map_default_latitude, $map_default_altitude,
 				$map_group_id, $map_connection_list, $arrayLayers);
 			$mapCreatedOk = true;
+			$next_action = 'update_saved';
 		}
 		else {
-			html_print_input_hidden('action', 'save_new');
+			$next_action = 'save_new';
 			$mapCreatedOk = false;
 		}
 		$layer_list = $arrayLayers;
@@ -101,7 +109,7 @@ switch ($action) {
 			__('Map could not be created'));
 		break;
 	case 'new_map':
-		html_print_input_hidden('action', 'save_new');
+		$next_action = 'save_new';
 		
 		$map_name = '';
 		$map_initial_longitude = '';
@@ -118,9 +126,7 @@ switch ($action) {
 		$map_levels_zoom = 0;
 		break;
 	case 'edit_map':
-		html_print_input_hidden('action', 'update_saved');
-		html_print_input_hidden('map_id', $idMap);
-		
+		$next_action = 'update_saved';	
 		
 		break;
 	case 'update_saved':
@@ -165,7 +171,8 @@ switch ($action) {
 		$arrayLayers = array();
 		foreach ($layer_list as $layerID) {
 			$layer = get_parameter('layer_values_' . $layerID);
-			$arrayLayers[] = JSON_decode($layer, true);
+			$layer = json_decode(io_safe_output ($layer), true);
+			array_unshift ($arrayLayers, $layer);
 		}
 		
 		
@@ -184,19 +191,19 @@ switch ($action) {
 			$mapCreatedOk = true;
 		}
 		else {
-			
-			html_print_input_hidden('action', 'update_saved');
+			$next_action = 'update_saved';
 			$mapCreatedOk = false;
 		}
 		
 		ui_print_result_message ($mapCreatedOk, __('Map successfully update'),
 			__('Map could not be updated'));
 		
-		html_print_input_hidden('action', 'update_saved');
+		$next_action = 'update_saved';
 		html_print_input_hidden('map_id', $idMap);
 		break;
 }
 
+$url = 'index.php?sec=' . $sec . '&sec2=' . $sec2 . '&map_id=' . $idMap . '&action=' . $next_action;
 
 $buttons['gis_maps_list'] = array('active' => true,
 	'text' => '<a href="index.php?sec=godgismaps&sec2=operation/gis_maps/gis_map">' .
@@ -267,7 +274,7 @@ function updateArrowLayers() {
 </script>
 <?php
 
-echo '<form id="form_setup" method="post" onSubmit="fillOrderField();">';
+echo '<form action="' . $url . '" id="form_setup" method="post" onSubmit="fillOrderField();">';
 
 
 

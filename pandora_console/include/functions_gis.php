@@ -733,9 +733,13 @@ function gis_delete_map($idMap) {
 			db_process_sql_delete('tgis_map_layer_has_tagente',
 				array('tgis_map_layer_id_tmap_layer' => $idLayer));
 		}
+		
+		$correct = (bool)db_process_sql_delete('tgis_map_layer',
+			array('tgis_map_id_tgis_map' => $idMap));
+	} else {
+		$correct = true;
 	}
-	$correct = (bool)db_process_sql_delete('tgis_map_layer',
-		array('tgis_map_id_tgis_map' => $idMap));
+	
 	if ($correct) {
 		$correct = db_process_sql_delete('tgis_map_has_tgis_map_con',
 			array('tgis_map_id_tgis_map' => $idMap));

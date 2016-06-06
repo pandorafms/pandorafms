@@ -684,7 +684,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 					"BorderG" => $rgb_color[$i]['border']["G"], 
 					"BorderB" => $rgb_color[$i]['border']["B"], 
 					"Alpha" => $rgb_color[$i]['alpha']));
-				
+			
 			/*$palette_color = array();
 			if (isset($rgb_color[$i]['color'])) {
 				$palette_color["R"] = $rgb_color[$i]['color']["R"];
@@ -859,8 +859,11 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 		"GridR" => 200,
 		"GridG" => 200,
 		"GridB" => 200,
-		"DrawSubTicks" => TRUE,
-		"CycleBackground" => TRUE, 
+		"GridAlpha" => 30,
+		"DrawSubTicks" => true,
+		"CycleBackground" => true,
+		"BackgroundAlpha1" => 35,
+		"BackgroundAlpha2" => 35,
 		"Mode" => $mode,
 		"ManualScale" => $ManualScale,
 		"LabelRotation" => 40, 
@@ -885,7 +888,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 			$ForceTransparency = "-1";
 			break;
 		default:
-			$ForceTransparency = "50";
+			$ForceTransparency = "100";
 			break;
 	}
 	

@@ -134,7 +134,7 @@ $id = get_parameter('id');
 		}
 		
 		$draw_alerts = get_parameter("draw_alerts", 0);
-		$avg_only = get_parameter ("avg_only", 0);
+		$avg_only = get_parameter ("avg_only", 1);
 		$show_other = (bool)get_parameter('show_other', false);
 		if ($show_other) {
 			$avg_only = 0;
@@ -496,8 +496,6 @@ ui_include_time_picker(true);
 	});
 	
 	$.datepicker.setDefaults($.datepicker.regional["<?php echo $custom_user_language; ?>"]);
-	
-	forced_title_callback();
 	
 	$(window).ready(function() {
 		$("#field_list").css('height', ($(window).height() - 160) + 'px');

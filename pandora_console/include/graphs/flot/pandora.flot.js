@@ -2011,10 +2011,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	if (menu) {
 		var parent_height;
 		$('#menu_overview_' + graph_id).click(function() {
-			if ( $('#overview_' + graph_id).css('visibility') == 'hidden' )
-				$('#overview_' + graph_id).css('visibility','visible');
-			else
-				$('#overview_' + graph_id).css('visibility','hidden');
+			$('#overview_' + graph_id).toggle();
 		});
 
 		$('#menu_export_csv_' + graph_id).click(function() {
@@ -2181,14 +2178,12 @@ function get_event_details (event_ids) {
 }
 
 function adjust_left_width_canvas(adapter_id, adapted_id) {
-	adapter_left_margin = $('#'+adapter_id+' .yAxis .tickLabel').css('width');
-
-	adapted_pix = $('#'+adapted_id).css('width').split('px');
-	new_adapted_width = parseInt(adapted_pix[0])-parseInt(adapter_left_margin);
-
-	$('#'+adapted_id).css('width',new_adapted_width);
-
-	$('#'+adapted_id).css('margin-left',adapter_left_margin);
+	var adapter_left_margin = $('#'+adapter_id+' .yAxis .tickLabel').width();
+	var adapted_pix = $('#'+adapted_id).width();
+	var new_adapted_width = adapted_pix - adapter_left_margin;
+	
+	$('#'+adapted_id).width(new_adapted_width);
+	$('#'+adapted_id).css('margin-left', adapter_left_margin);
 }
 
 function check_adaptions(graph_id) {

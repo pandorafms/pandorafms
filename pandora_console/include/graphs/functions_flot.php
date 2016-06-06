@@ -249,8 +249,8 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	else {
 		$height = 1;
 	}
-	if ( $dashboard == false AND $vconsole == false )
-		$return .= "<div id='overview_$graph_id' class='overview_graph' style='visibility: hidden; margin-left:0px; margin-top:20px; width: ".$width."px; height: ".$height ."px;'></div>";
+	if (!$dashboard && !$vconsole)
+		$return .= "<div id='overview_$graph_id' class='overview_graph' style='display: none; margin-left:0px; margin-top:20px; width: ".$width."px; height: ".$height ."px;'></div>";
 	
 	if ($water_mark != '') {
 		$return .= "<div id='watermark_$graph_id' style='display:none; position:absolute;'><img id='watermark_image_$graph_id' src='$water_mark'></div>";

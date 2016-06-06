@@ -86,7 +86,7 @@ if (is_ajax ()) {
 	return;
 }
 
-enterprise_hook('open_meta_frame');
+//~ enterprise_hook('open_meta_frame');
 
 if (is_metaconsole())
 	$sec = 'advanced';
@@ -103,7 +103,7 @@ $buttons[$tab]['active'] = true;
 
 if (is_metaconsole()) {
 	// Print header
-	ui_meta_print_header(__('Tags'), "", $buttons);
+	//ui_meta_print_header(__('Tags'), "", $buttons);
 }
 else {
 	// Header
@@ -302,7 +302,7 @@ echo "<table border=0 cellpadding=0 cellspacing=0 width=100%>";
 echo "</table>";
 
 
-enterprise_hook('close_meta_frame');
+//~ enterprise_hook('close_meta_frame');
 
 ?>
 

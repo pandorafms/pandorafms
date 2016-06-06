@@ -159,9 +159,10 @@ sub help_screen{
 	help_screen_line('--update_user', '<user_id> <field_to_change> <new_value>', "Update a user field. The fields\n\t   can be the following: email, phone, is_admin (0-1), language, id_skin, flash_chart (0-1)\n\t  , comments, fullname, password");
 	help_screen_line('--enable_user', '<user_id>', 'Enable a given user');
 	help_screen_line('--disable_user', '<user_id>', 'Disable a given user');
-	help_screen_line('--create_profile', '<user_name> <profile_name> <group_name>', 'Add perfil to user');
+	help_screen_line('--add_profile', '<user_name> <profile_name> <group_name>', 'Add perfil to user');
 	help_screen_line('--delete_profile', '<user_name> <profile_name> <group_name>', 'Delete perfil from user');
 	help_screen_line('--add_profile_to_user', '<user_id> <profile_name> [<group_name>]', 'Add a profile in group to a user');
+	help_screen_line('--create_profile', "<profile_name> <incident_view> <incident_edit> <incident_management> <agent_view>\n\t   <agent_edit> <agent_disable> <alert_edit> <alert_management> <user_management> <db_management>\n\t   <event_view> <event_edit> <event_management> <report_view> <report_edit> <report_management>\n\t   <map_view> <map_edit> <map_management> <vconsole_view> <vconsole_edit> <vconsole_management>\n\t   <pandora_management>", 'Create profile');
 	help_screen_line('--disable_eacl', '', 'Disable enterprise ACL system');
 	help_screen_line('--enable_eacl', '', 'Enable enterprise ACL system');
 	help_screen_line('--disable_double_auth', '<user_name>', 'Disable the double authentication for the specified user');
@@ -415,6 +416,22 @@ sub pandora_create_user_profile ($$$$) {
         my ($dbh, $user_id, $profile_id, $group_id) = @_;
         
         return db_insert ($dbh, 'id_up', 'INSERT INTO tusuario_perfil (id_usuario, id_perfil, id_grupo) VALUES (?, ?, ?)', $user_id, $profile_id, $group_id);
+}
+
+##########################################################################
+## Create profile.
+##########################################################################
+sub pandora_create_profile ($$$$$$$$$$$$$$$$$$$$$$$$$) {
+        my ($dbh, $profile_name, $incident_view,$incident_edit, $incident_management, $agent_view,
+		$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
+		$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
+		$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management) = @_;
+
+		return db_insert ($dbh, 'id_up', 'INSERT INTO tperfil (name,incident_edit,incident_view,incident_management,agent_view,agent_edit,alert_edit,user_management,db_management,alert_management,pandora_management,report_view,report_edit,report_management,event_view,event_edit,event_management,agent_disable,map_view,map_edit,map_management,vconsole_view,vconsole_edit,vconsole_management) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
+		$profile_name, $incident_view,$incident_edit, $incident_management, $agent_view,
+		$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
+		$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
+		$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management);
 }
 
 ##########################################################################
@@ -2701,11 +2718,11 @@ sub cli_delete_alert_template() {
 }
 
 ##############################################################################
-# Create profile.
-# Related option: --create_profile
+# Add profile.
+# Related option: --add_profile
 ##############################################################################
 
-sub cli_create_profile() {
+sub cli_add_profile() {
 	my ($user_name,$profile_name,$group_name) = @ARGV[2..4];
 	
 	my $id_profile = get_profile_id($dbh,$profile_name);
@@ -2724,6 +2741,26 @@ sub cli_create_profile() {
 	}
 	
 	pandora_create_user_profile ($dbh, $user_name, $id_profile, $id_group);
+}
+
+##############################################################################
+# Create profile.
+# Related option: --create_profile
+##############################################################################
+
+sub cli_create_profile() {
+	my ($profile_name,$incident_view,$incident_edit,$incident_management,$agent_view,
+	$agent_edit,$agent_disable,$alert_edit,$alert_management,$user_management,$db_management,
+	$event_view,$event_edit,$event_management,$report_view,$report_edit,$report_management,
+	$map_view,$map_edit,$map_management,$vconsole_view,$vconsole_edit,$vconsole_management,$pandora_management) = @ARGV[2..25];
+
+	my $id_profile = get_profile_id($dbh,$profile_name);
+	non_exist_check($id_profile,'profile',$profile_name);
+
+	pandora_create_profile ($dbh, $profile_name, $incident_view, $incident_edit, $incident_management, $agent_view,
+	$agent_edit, $agent_disable, $alert_edit, $alert_management, $user_management, $db_management,
+	$event_view, $event_edit, $event_management, $report_view, $report_edit, $report_management,
+	$map_view, $map_edit, $map_management, $vconsole_view, $vconsole_edit, $vconsole_management, $pandora_management);
 }
 
 ##############################################################################
@@ -4450,8 +4487,12 @@ sub pandora_manage_main ($$$) {
 			param_check($ltotal, 1);
 			cli_delete_user();
 		}
-		elsif ($param eq '--create_profile') {
+		elsif ($param eq '--add_profile') {
 			param_check($ltotal, 3);
+			cli_add_profile();
+		}
+		elsif ($param eq '--create_profile') {
+			param_check($ltotal, 24);
 			cli_create_profile();
 		}
 		elsif ($param eq '--delete_profile') {

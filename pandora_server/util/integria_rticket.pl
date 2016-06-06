@@ -44,11 +44,11 @@ Optional parameters:
 	[-email <email_copy>]		: 1 or 0\n\n";
 	
 	print "Credential/API syntax: \n\n";
-	print "<credentials>: API credentials separated by comma: <api_pass>,<user>\n\n";
+	print "<credentials>: API credentials separated by comma: <api_pass>,<user>,<user_pass>\n\n";
 	
 	print "Example of ticket generation:\n\n";
 	
-	print "\t$0 -p http://localhost/integria/include/api.php -u 1234,admin \
+	print "\t$0 -p http://localhost/integria/include/api.php -u 1234,admin,1234 \
 	\t-create_ticket -name \"SampleTicket\" -group 1 -priority 2 -desc \"This is a sample\" \
 	\t-type 4 -inventory 6 -email 1";
 	print "\n\n\n";
@@ -126,6 +126,7 @@ sub tool_api_main () {
 		else {
 			$api_pass = $db_info[0];
 			$db_user = $db_info[1];
+			$db_user_pass = $db_info[2];
 		}
 	}
 	else {
@@ -178,15 +179,29 @@ sub tool_api_main () {
 			exit;
 		}
 		
+		#~ $data_ticket = $ticket_name .
+			#~ "|;|" . $group_id .
+			#~ "|;|" . $ticket_priority .
+			#~ "|;|" . $ticket_description .
+			#~ "|;|" . $ticket_inventory .
+			#~ "|;|" . $ticket_type .
+			#~ "|;|" . $email_copy;
+		
 		$data_ticket = $ticket_name .
-			"|;|" . $group_id .
-			"|;|" . $ticket_priority .
-			"|;|" . $ticket_description .
-			"|;|" . $ticket_inventory .
-			"|;|" . $ticket_type .
-			"|;|" . $email_copy;
+				"|;|" . $group_id .
+				"|;|" . $ticket_priority .
+				"|;|" . $ticket_description .
+				"|;|" . $ticket_inventory .
+				"|;|" . $ticket_type .
+				"|;|" . $email_copy .
+				"|;|" . $email_copy .
+				"|;|" . 
+				"|;|" . '1' .
+				"|;|" . 
+				"|;|";
 		$call_api = $api_path . '?' .
-			'user=' . $db_user . '&' .
+			'user=' . $integria_user . '&' .
+			'user_pass=' . $user_pass . '&' .
 			'pass=' . $api_pass . '&' .
 			'op=create_incident&' .
 			'params=' . $data_ticket .'&' .

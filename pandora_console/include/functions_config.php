@@ -496,7 +496,7 @@ function config_update_config () {
 						$error_update[] = __('Display text when proc modules have state critical');
 					//Daniel maya 02/06/2016 Display menu with click --INI
 					if (!config_update_value ('click_display', (bool) get_parameter('click_display', false)))
-						$error_update[] = __('Display data of proc modules in other format');
+						$error_update[] = __('Display lateral menus with left click');
 					//Daniel maya 02/06/2016 Display menu with click --END
 
 
@@ -1366,7 +1366,7 @@ function config_process_config () {
 	}
 	//Daniel maya 02/06/2016 Display menu with click --INI
 	if (!isset($config["click_display"])) {
-		config_update_value ('click_display', 0);
+		config_update_value ('click_display', 1);
 	}
 	//Daniel maya 02/06/2016 Display menu with click --END
 	if (!isset($config['command_snapshot'])) {

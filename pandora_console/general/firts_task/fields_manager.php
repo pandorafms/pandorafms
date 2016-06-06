@@ -28,7 +28,7 @@ ui_require_css_file ('firts_task');
 		<h3> <?php echo __('Create Fields Manager'); ?></h3>
 		<p id="description_task"> <?php echo __("Custom fields are an easy way to personalized agent's information.
 				You're able to create custom fields by klicking on 'Administration' -> 'Manage monitoring' -> 'Manage custom fields'. "); ?></p>
-		<form action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create" method="post">
+		<form action="index.php?sec=gagente&sec2=godmode/agentes/configure_field" method="post">
 			<input type="submit" class="button_task" value="<?php echo __('Create Fields '); ?>" />
 		</form>
 	</div>

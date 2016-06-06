@@ -1191,8 +1191,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		if (!empty($name_list) && $names_number == $module_number && isset($name_list[$i])) {
 			if ($labels[$agent_module_id] != '')
 				$module_name_list[$i] = $labels[$agent_module_id];
-			else
+			else {
+				$agent_name = io_safe_output(
+					modules_get_agentmodule_agent_name ($agent_module_id));
+				$module_name = io_safe_output(
+					modules_get_agentmodule_name ($agent_module_id));
+				
 				$module_name_list[$i] = $agent_name ." / ". $module_name;
+			}
 		}
 		else {
 			//Get and process agent name

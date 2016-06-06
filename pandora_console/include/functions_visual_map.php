@@ -94,8 +94,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	require_once ($config["homedir"] . '/include/functions_custom_graphs.php');
 	
-	
-	
 	$width = $layoutData['width'];
 	$height = $max_percentile = $layoutData['height'];
 	$top = $layoutData['pos_y'];
@@ -667,11 +665,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 						$layoutData['status_calculated'] = AGENT_STATUS_NORMAL;
 					}
 				}
-				//In other case
-				else {
-					$layoutData['status_calculated'] = AGENT_STATUS_UNKNOWN;
-				}
 			}
+
 			if ($layoutData['image'] != null) {
 				$img = visual_map_get_image_status_element($layoutData,
 					$layoutData['status_calculated']);

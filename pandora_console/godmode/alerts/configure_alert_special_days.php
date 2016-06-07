@@ -30,11 +30,11 @@ if (! check_acl ($config['id_user'], 0, "LM")) {
 ui_require_javascript_file ('calendar');
 
 $id = (int) get_parameter ('id');
+$date = (string) get_parameter ('date');
 
 $name = '';
 $command = '';
 $description = '';
-$date = '';
 $same_day = '';
 $id_group = 0;
 if ($id) {

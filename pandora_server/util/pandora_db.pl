@@ -373,8 +373,7 @@ sub pandora_purgedb ($$) {
 	db_do ($dbh, "DELETE FROM tagente 
 				  WHERE UNIX_TIMESTAMP(ultimo_contacto) + ? < UNIX_TIMESTAMP(NOW())
 				   AND disabled=1
-				   AND modo=2
-				   AND total_count=unknown_count", $conf->{'_days_autodisable_deletion'}*8600);
+				   AND modo=2", $conf->{'_days_autodisable_deletion'}*8600);
 	
 	
 	# Delete old netflow data

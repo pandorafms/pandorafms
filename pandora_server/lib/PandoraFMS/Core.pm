@@ -4672,10 +4672,27 @@ Puts all autodisable agents with all modules unknown on disabled mode
 sub pandora_disable_autodisable_agents ($$) {
 	my ($pa_config, $dbh) = @_;
 	
-	db_do ($dbh, 'UPDATE tagente SET disabled=1 
+	my $sql = 'SELECT id_agente FROM tagente
 			WHERE disabled=0 AND 
-			tagente.total_count=tagente.unknown_count AND 
-			tagente.modo=2');
+			tagente.unknown_count>0 AND 
+			tagente.modo=2';
+	my @agents_autodisabled = get_db_rows ($dbh, $sql);
+	return if !defined (@agents_autodisabled);
+	
+	my $disable_agents = '';
+	foreach my $agent (@agents_autodisabled) {
+		if (get_agent_status ($pa_config, $dbh, $agent->{'id_agente'}) == 3) {
+			$disable_agents .= $agent->{'id_agente'} . ',';
+		}
+	}
+	return if ($disable_agents eq '');
+	
+	# Remove the last quote
+	$disable_agents =~ s/,$//ig;	
+	logger($pa_config, "Autodisable agents ($disable_agents) will be disabled", 9);
+	
+	db_do ($dbh, 'UPDATE tagente SET disabled=1 
+			WHERE id_agente IN ('.$disable_agents.')');
 }
 
 ##########################################################################

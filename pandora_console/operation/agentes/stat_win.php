@@ -156,6 +156,9 @@ $id = get_parameter('id');
 		$time_compare_overlapped = get_parameter ("time_compare_overlapped", 0);
 		$unknown_graph = get_parameter_checkbox ("unknown_graph", 1);
 		
+		// To avoid the horizontal overflow
+		$width -= 20;
+		
 		$time_compare = false;
 		
 		if ($time_compare_separated) {

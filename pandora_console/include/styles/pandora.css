@@ -2540,6 +2540,11 @@ div.legend>div {
 	opacity: 0.65 !important;
 }
 
+/* Recover the padding of the legend elements under a databox parent */
+table.databox div.legend td {
+	padding: 1px;
+}
+
 div.nodata_text {
 	padding: 5px 12px 0px 68px;
 	font-weight: bold;

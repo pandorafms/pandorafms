@@ -1846,8 +1846,10 @@ if ($idReport != 0) {
 else {
 	$temp = $buttons['main'];
 	$buttons = null;
-	$buttons['main'] = $temp;
-	$buttons['main']['active'] = true;
+	$buttons = array(
+		'main' => array('active' => true,
+			'text' => '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure=' .$pure.'">' .
+				html_print_image("images/op_reporting.png", true, array ("title" => __('Main data'))) .'</a>'));
 	$textReportName = '';
 }
 

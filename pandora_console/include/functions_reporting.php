@@ -3358,8 +3358,7 @@ function reporting_agent_configuration($report, $content) {
 	$agent_configuration['os'] = os_get_name($agent_data["id_os"]);
 	$agent_configuration['os_icon'] = ui_print_os_icon($agent_data["id_os"], true, true);
 	$agent_configuration['address'] = $agent_data['direccion'];
-	$agent_configuration['description'] =
-		strip_tags(ui_bbcode_to_html($agent_data['comentarios']));
+	$agent_configuration['description'] = $agent_data['comentarios'];
 	$agent_configuration['enabled'] = (int)!$agent_data['disabled'];
 	$agent_configuration['group'] = $report["group"];
 	

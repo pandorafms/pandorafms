@@ -274,7 +274,7 @@ $table->data[6][1] = html_print_select (servers_get_names (),
 // Description
 $table->data[7][0] = __('Description');
 $table->data[7][1] = html_print_input_text ('comentarios', $comentarios,
-	'', 45, 255, true);
+	'', 45, 200, true);
 
 html_print_table ($table);
 unset($table);
@@ -411,6 +411,13 @@ if ($fields === false) $fields = array();
 foreach ($fields as $field) {
 	
 	$data[0] = '<b>'.$field['name'].'</b>';
+	$data[0] .= ui_print_help_tip(
+		__('This field allows url insertion using the BBCode\'s url tag')
+		. '.<br />'
+		. __('The format is: [url=\'url to navigate\']\'text to show\'[/url]')
+		. '.<br /><br />'
+		. __('e.g.: [url=pandorafms.org]Pandora FMS Community[/url]')
+		, true);
 	
 	$custom_value = db_get_value_filter('description',
 		'tagent_custom_data',
@@ -446,7 +453,6 @@ echo "</span>";
 
 
 if ($id_agente) {
-	
 	html_print_submit_button (__('Update'), 'updbutton', false,
 		'class="sub upd"');
 	html_print_input_hidden ('update_agent', 1);
@@ -459,17 +465,16 @@ else {
 }
 echo '</div></form>';
 
-ui_require_jquery_file ('pandora.controls');
-ui_require_jquery_file ('ajaxqueue');
-ui_require_jquery_file ('bgiframe');
-ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
+ui_require_jquery_file('pandora.controls');
+ui_require_jquery_file('ajaxqueue');
+ui_require_jquery_file('bgiframe');
+
 ?>
+
 <script type="text/javascript">
-	/* <![CDATA[ */
-	
 	//Use this function for change 3 icons when change the selectbox
 	function changeIcons() {
-		icon = $("#icon_path :selected").val();
+		var icon = $("#icon_path :selected").val();
 		
 		$("#icon_without_status").attr("src", "images/spinner.png");
 		$("#icon_default").attr("src", "images/spinner.png");
@@ -501,8 +506,6 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 			$("#icon_bad").attr("style", "");
 			$("#icon_warning").attr("style", "");
 		}
-		
-		//$("#icon_default").attr("src", "<?php echo $path; ?>" + icon +
 	}
 	
 	function show_modules_not_learning_mode_context_help() {
@@ -514,7 +517,7 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 		}
 	}
 	
-	$(document).ready (function () {
+	$(document).ready (function() {
 		$("select#id_os").pandoraSelectOS ();
 		
 		paint_qrcode(
@@ -523,29 +526,4 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 			?>",
 			"#qr_code_agent_view", 128, 128);
 	});
-	
-	$(document).ready(function() {
-		tinyMCE.init({
-			mode : "exact",
-			elements: <?php
-			
-			$elements = array('comentarios');
-			
-			foreach ($fields as $field) {
-				$elements[] = 'customvalue_' . $field['id_field'];
-			}
-			
-			echo '"' . implode(', ', $elements) . '"';
-			?>,
-			width: '95%',
-			theme : "advanced",
-			theme_advanced_path : false,
-			statusbar : false,
-			plugins: "bbcode",
-			theme_advanced_toolbar_location : "top",
-			theme_advanced_toolbar_align : "left",
-			theme_advanced_buttons1 : "undo, redo, | , link, unlink"
-		});
-	});
-	/* ]]> */
 </script>

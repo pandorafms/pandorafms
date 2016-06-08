@@ -1939,7 +1939,9 @@ function events_page_custom_fields ($event) {
 		$data = array();
 		$data[0] = $field['name'];
 		
-		$data[1] = empty($fields_data[$field['id_field']]) ? '<i>'.__('N/A').'</i>' : $fields_data[$field['id_field']];
+		$data[1] = empty($fields_data[$field['id_field']])
+			? '<i>'.__('N/A').'</i>'
+			: ui_bbcode_to_html($fields_data[$field['id_field']]);
 		
 		$field['id_field'];
 		

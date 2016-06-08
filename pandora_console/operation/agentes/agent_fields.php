@@ -47,6 +47,9 @@ foreach($fields as $field) {
 	if($custom_value === false || $custom_value == '') {
 		$custom_value = '<i>-'.__('empty').'-</i>';
 	}
+	else {
+		$custom_value = ui_bbcode_to_html($custom_value);
+	}
 	echo '<td class="datos f9" colspan="2">'.$custom_value.'</td></tr>';
 }
 

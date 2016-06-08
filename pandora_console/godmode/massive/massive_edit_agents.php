@@ -423,6 +423,13 @@ if ($fields === false) $fields = array();
 foreach ($fields as $field) {
 	
 	$data[0] = '<b>'.$field['name'].'</b>';
+	$data[0] .= ui_print_help_tip(
+		__('This field allows url insertion using the BBCode\'s url tag')
+		. '.<br />'
+		. __('The format is: [url=\'url to navigate\']\'text to show\'[/url]')
+		. '.<br /><br />'
+		. __('e.g.: [url=pandorafms.org]Pandora FMS Community[/url]')
+		, true);
 	
 	$custom_value = db_get_value_filter('description', 'tagent_custom_data', array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 	
@@ -542,7 +549,7 @@ $(document).ready (function () {
 });
 
 function changeIcons() {
-	icon = $("#icon_path :selected").val();
+	var icon = $("#icon_path :selected").val();
 	
 	$("#icon_without_status").attr("src", "images/spinner.png");
 	$("#icon_default").attr("src", "images/spinner.png");
@@ -574,7 +581,5 @@ function changeIcons() {
 		$("#icon_bad").attr("style", "");
 		$("#icon_warning").attr("style", "");
 	}
-	
-	//$("#icon_default").attr("src", "<?php echo $path; ?>" + icon +
 }
 </script>

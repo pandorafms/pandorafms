@@ -537,9 +537,11 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 
 	values = values.split(separator2);
 	legend = legend.split(separator);
-	labels_long = labels_long.split(separator);
-	//colors = colors.split(separator);
-	var colors_data = ['#FC4444','#FFA631','#FAD403','#5BB6E5','#F2919D','#80BA27'];
+	labels_long = labels_long.length > 0 ? labels_long.split(separator) : 0;
+	colors = colors.length > 0 ? colors.split(separator) : [];
+	var colors_data = colors.length > 0
+		? colors
+		: ['#FC4444','#FFA631','#FAD403','#5BB6E5','#F2919D','#80BA27'];
 	var datas = new Array();
 	
 	for (i = 0; i < values.length; i++) {

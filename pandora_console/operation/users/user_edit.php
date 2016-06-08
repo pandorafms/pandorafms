@@ -362,10 +362,10 @@ if (license_free()) {
 	$data[1] = __('Newsletter Subscribed');
 	$data[1] .= $jump . ui_print_help_tip(__('Subs news'), true);
 	if ($user_info["middlename"]) {
-		$data[1] .= $jump . __('You are subscribed to PandoraFMS newsletter');
+		$data[1] .= $jump . '<span style="font-weight:initial;">' . __('You are subscribed to PandoraFMS newsletter') . "</span>";
 	}
 	else {
-		$data[1] .= $jump . __('Click <a style="font-weight:bold;" href="javascript: force_run_newsletter();"> HERE </a> to init the newsletter subscription process');
+		$data[1] .= $jump . '<span style="font-weight:initial;">' . __('Click <a style="text-decoration:underline; font-weight:bold;" href="javascript: force_run_newsletter();"> here </a> to init the newsletter subscription process') . "</span>";
 	}
 
 	$data[2] = __('Newsletter Reminder');

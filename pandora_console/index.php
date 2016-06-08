@@ -528,6 +528,14 @@ clear_pandora_error_for_header();
 
 $config['logged'] = false;
 extensions_load_extensions ($process_login);
+
+// Check for update manager messages
+if ($config['last_um_check'] > (time() + 2 * SECONDS_1HOUR)) {
+	require_once("include/functions_update_manager.php");
+	
+	update_manager_download_messages ();
+}
+
 if ($process_login) {
 	 /* Call all extensions login function */
 	extensions_call_login_function ();
@@ -615,7 +623,6 @@ if (get_parameter ('login', 0) !== 0) {
 		
 		include_once("general/login_help_dialog.php");
 	}
-	
 }
 
 // Header

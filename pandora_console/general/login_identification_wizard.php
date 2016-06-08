@@ -44,6 +44,8 @@ function display_newsletter ($data) {
 
 if (is_ajax()) {
 	
+	include_once($config['homedir'] . "/include/functions_update_manager.php");
+	
 	$open_wizard = get_parameter ('open_wizard', 0);
 	$not_return = get_parameter ('not_return', 0);
 	
@@ -55,17 +57,23 @@ if (is_ajax()) {
 		$future_8_days = time() + 8 * SECONDS_1DAY;
 		
 		if ($register_pandora) {
-			//TODO: Pandora registration
-			config_update_value ('instance_registered', 1);
+			
+			// Pandora register update
+			if (update_manager_register_instance ()) {
+				config_update_value ('instance_registered', 1);
+			}
 		} elseif (!$forced)  {
 			config_update_value ('identification_reminder_timestamp', $future_8_days);
 		}
 		
 		if ($newsletter) {
-			//TODO: Newsletter subscribe
-			db_process_sql_update ('tusuario', array ('middlename' => 1), array('id_user' => $config['id_user']));
+			
+			// Pandora newsletter update
+			$email = get_parameter ('email', '');
+			if (update_manager_insert_newsletter ($email)){
+				db_process_sql_update ('tusuario', array ('middlename' => 1), array('id_user' => $config['id_user']));
+			}
 		} elseif (!$forced) {
-			html_debug ('future days');
 			db_process_sql_update ('tusuario', array ('lastname' => $future_8_days), array('id_user' => $config['id_user']));
 		}
 	}
@@ -112,27 +120,27 @@ if ($email == 'admin@example.com') $email = '';
 // Prints accept register license
 echo '<div id="login_accept_register" title="' .
 	__('Pandora FMS instance identification wizard') . '" style="">';
-	echo '<div style="font-size: 15pt; margin: 20px; float: left; padding-left: 150px;">';
+	echo '<div style="font-size: 15pt; margin: 20px 0; float: left; padding-left: 15px;">';
 		echo html_print_image ('images/support.png', true);
 	echo '</div>';
 	echo '<div style="font-size: 15pt; margin: 20px; float: left;">';
 		echo __('KEEP UPDATED!');
 	echo '</div>';
 	
-	echo '<div style="">';
+	echo '<div id="license_newsletter">';
 		$license_text = file('license.lic');
-		$license_text = implode ($license_text);
-		html_print_textarea ("text-license", 1, 65, $license_text,
-			'readonly="readonly"; ', false);
+		foreach ($license_text as $paragraph) {
+			echo '<p>' . $paragraph . "</p>";
+		}
 	echo '</div>';
 	
-	echo '<div style="position:absolute; margin: 0 auto; bottom: 0px; right: 10px; border: 1px solid #FFF; width: 570px">';
-		echo '<div style="float: right; width: 20%;">';
+	echo '<div style="position:absolute; margin: 0 auto; bottom: 0px; padding-top:10px; position:relative; border: 1px solid #FFF;">';
+		echo '<div style="float: right;">';
 			html_print_submit_button("Finish", 'finish_dialog_button', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
 		echo '</div>';
 		$display_status_return = $return_button ? 'block' : 'none';
-		echo '<div style="float: left; width: 20%; display: ' . $display_status_return . ';">';
-			html_print_submit_button("Return", 'return_dialog_button', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
+		echo '<div style="float: right; width: 20%; display: ' . $display_status_return . ';">';
+			html_print_submit_button("Return", 'return_dialog_button', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd" style="width:100px;"');  
 		echo '</div>';
 		echo '<div style="float: left; margin-left: 0px; width: 50%; text-align: left;">';
 			html_print_checkbox('register', 1, false, false, false, 'cursor: \'pointer\'');
@@ -140,10 +148,11 @@ echo '<div id="login_accept_register" title="' .
 			html_print_checkbox('newsletter', 1, false, false, false, 'cursor: \'pointer\'');
 			echo '&nbsp;<span style="font-size: 12px;" id="label-newsletter">' .__("Subscribe to newsletter") . '</span>';
 			echo "<br>";
-			echo '&nbsp;<span id="label-email-newsletter"style="font-size: 12px; display: none">' .__("Email") . ': </span>';
-			//html_print_input_text ('email-newsletter', '', '', 30, 255, false);
-			html_print_input_text_extended ('email-newsletter', $email, 'text-email-newsletter', '', 30, 255, false, '', array ("style" => "display:none; ")); echo '&nbsp;<span id="label-email-newsletter"style="font-size: 12px; display: none">' .__("Email") . ': </span>';
-			echo '&nbsp;<span id="required-email-newsletter" style="font-size: 9px; display: none; color: red;">'.__("*Required") .' </span>';
+			echo '<div id="email_container">';
+				echo '&nbsp;<span id="label-email-newsletter"style="font-size: 12px; display: none">' .__("Email") . ': </span>';
+				html_print_input_text_extended ('email-newsletter', $email, 'text-email-newsletter', '', 30, 255, false, '', array ("style" => "display:none; ")); echo '&nbsp;<span id="label-email-newsletter"style="font-size: 12px; display: none">' .__("Email") . ': </span>';
+				echo '&nbsp;<span id="required-email-newsletter">*'.__("Required") .' </span>';
+			echo '</div>';
 		echo '</div>';
 	echo '</div>';
 echo '</div>';
@@ -154,11 +163,11 @@ echo '<div id="login_registration_yesno" title="' .
 	echo '<div style="font-size: 15pt; margin: 20px;">';
 		echo __("Do you want to continue without any registration") . "?";
 	echo '</div>';
-	echo '<div style="float: left; width: 50%;">';
-		html_print_submit_button("No", 'no_registration', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
+	echo '<div style="float: left;  padding-left: 15px; padding-top: 20px;">';
+		html_print_submit_button("No", 'no_registration', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub cancel" style="width:100px;"');  
 	echo '</div>';
-	echo '<div style="float: left; width: 50%;">';
-		html_print_submit_button("Yes", 'yes_registration', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
+	echo '<div style="float: right;  padding-right: 15px; padding-top: 20px;">';
+		html_print_submit_button("Yes", 'yes_registration', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd" style="width:100px;"');  
 	echo '</div>';
 echo '</div>';
 ?>
@@ -171,7 +180,6 @@ var display_register = <?php echo json_encode($display_register); ?>;
 var display_newsletter = <?php echo json_encode($display_newsletter); ?>;
 var display_forced = <?php echo json_encode($display_forced); ?>;
 var return_button = <?php echo json_encode($return_button); ?>;
-
 ////////////////////////////////////////////////////////////////////////
 //HELPER FUNCTIONS
 
@@ -247,22 +255,17 @@ $("#checkbox-newsletter").click (function () {
 $(document).ready (function () {
 	
 	$("#login_accept_register").dialog({
-		resizable: true,
+		resizable: false,
 		draggable: true,
 		modal: true,
 		height: 350,
 		width: 630,
-		overlay: {
-				opacity: 0.5,
-				background: "black"
-			},
 	});
 	
 	$("#login_registration_yesno").dialog({
-		resizable: true,
+		resizable: false,
 		draggable: true,
 		modal: true,
-		height: 250,
 		width: 350,
 		overlay: {
 				opacity: 1,
@@ -288,3 +291,39 @@ $(document).ready (function () {
 
 /* ]]> */
 </script>
+
+
+<style type="text/css">
+
+	#required-email-newsletter{
+		font-size : 9px;
+		color: red;
+		float:right;
+		left: -26px;
+		top: 3px;
+		position: relative;
+		display: none;
+	}
+	
+	#email_container{
+		margin-top: 3px;
+	}
+	
+	#license_newsletter {
+		height: 100px;
+		width: 100%;
+		overflow-y: scroll;
+		border: 1px solid grey;
+		border-radius: 3px; 
+	}
+	
+	#license_newsletter p{
+		padding: 0 3px;
+	}
+	
+	.ui-widget-overlay {
+		background: #000;
+		opacity: .6;
+	}
+
+</style>

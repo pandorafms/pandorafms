@@ -39,6 +39,7 @@ if (is_ajax()) {
 	if ($not_read_single) {
 		$message_id = get_parameter ('message_id', 0);
 		update_manger_set_read_message ($message_id, 1);
+		update_manager_remote_read_messages ($message_id);
 	}
 	
 	return;
@@ -74,6 +75,7 @@ if ($total_messages){
 	// Get all messages
 	$sql = 'SELECT data, svn_version, filename, data_rollback, db_field_value FROM tupdate ';
 	$sql .= 'WHERE description NOT LIKE \'%"' . $config['id_user'] . '":1%\' ';
+	$sql .= 'OR description IS NULL ';
 	$sql .= 'LIMIT ' . $offset . ',' . $config['block_size'];
 	$um_messages = array ();
 	$um_messages = db_get_all_rows_sql ($sql);
@@ -84,12 +86,12 @@ if ($total_messages){
 	html_print_input_hidden ('offset', $offset);
 	echo '<div class="action-buttons" style="float:right; padding: 10px 5px">';
 	html_print_submit_button (__('Delete'), 'delete_button', false,
-		'class="sub upd"');
+		'class="sub delete"');
 	echo '</div>';
 
 	echo '<div class="action-buttons" style="float:right; padding: 10px 5px">';
 	html_print_submit_button (__('Mark as not read'), 'not_read_button', false,
-		'class="sub upd"');
+		'class="sub wand"');
 	echo '</div>';
 
 	if ($total_messages > $config['block_size']) {
@@ -113,26 +115,32 @@ if ($total_messages){
 		$table->align[3] = "left";
 		$table->align[4] = "left";
 		
-		$table->size[0] = "20px";
+		$table->size[0] = "30px";
 		$table->size[1] = "100px";
 		$table->size[3] = "80px";
 		$table->size[4] = "60px";
 		
-		$table->head[0] = __('Message Id');
-		$table->head[1] = __('Expiration date');
+		$table->style[0] = "padding-left: 20px";
+		
+		$table->head[0] = html_print_checkbox_extended('all_selection[]', 0, false, false, '', '', true);
+		$table->head[1] = __('Message Id');
 		$table->head[2] = __('Subject');
-		$table->head[3] = html_print_checkbox_extended('all_selection[]', 0, false, false, '', '', true);
+		$table->head[3] = __('Expiration date');
+		
 
 		$i = 0;
 		foreach ($um_messages as $message) {
-			$data[0] = $message['svn_version'];
+			$data[0] = html_print_checkbox_extended('select_multiple[]', $message['svn_version'], false, false, '', 'class="check_selection"', true);
+			$table->cellclass[count($table->data)][0] = 'um_individual_check';
 			
-			$data[1] = $message['filename'];
+			$data[1] = $message['svn_version'];
+			$table->cellclass[count($table->data)][1] = 'um_individual_info';
 			
 			$data[2] = $message['db_field_value'];
+			$table->cellclass[count($table->data)][2] = 'um_individual_subject';
 			
-			//~ $delete_link = 'index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&amp;tab=messages&amp;delete_single=1&amp;message_id=' . $message['svn_version'];
-			$data[3] = html_print_checkbox_extended('select_multiple[]', $message['svn_version'], false, false, '', 'class="check_selection"', true);
+			$data[3] = $message['filename'];
+			$table->cellclass[count($table->data)][3] = 'um_individual_info';
 			
 			
 			// Change row class if message is read or not by this user
@@ -156,14 +164,14 @@ if ($total_messages){
 		}
 	html_print_table($table);
 
-	echo '<div class="action-buttons" style="float:right"; padding: 0 5px>';
+	echo '<div class="action-buttons" style="float:right; padding: 0 5px;">';
 	html_print_submit_button (__('Delete'), 'delete_button', false,
-		'class="sub upd"');
+		'class="sub delete"');
 	echo '</div>';
 
-	echo '<div class="action-buttons" style="float:right; padding: 0 5px">';
+	echo '<div class="action-buttons" style="float:right; padding: 0 5px;">';
 	html_print_submit_button (__('Mark as not read'), 'not_read_button', false,
-		'class="sub upd"');
+		'class="sub wand"');
 	echo '</div>';
 	echo '</form>';
 } else {
@@ -176,8 +184,10 @@ if ($total_messages){
 	$("#checkbox-all_selection").click( function() {
 		if ($("#checkbox-all_selection").is(':checked')) {
 			$(".check_selection").prop('checked', true);
+			$(".check_selection").parent().parent().css('background', "#FFFFEE");
 		} else {
 			$(".check_selection").prop('checked', false);
+			$(".check_selection").parent().parent().css('background', "inherit");
 		}
 	});
 	
@@ -194,14 +204,14 @@ if ($total_messages){
 		var column = raw_position.replace(/.*-/ig, "");
 		
 		// Delete and mark as not read column will do not open the message
-		if (column > 2) return;
+		if (column == 0) return;
 		
 		if (row%2 == 0) {
 			// Clicking a tittle
 			
 			// Class where object will be displayed
 			var current_class = ".um_message_" + row/2;
-			var message_id = $("#"+target).parent().find(":first-child").html();
+			var message_id = $("#"+target).parent().find(":nth-child(2)").html();
 			var div_id = 'um_individual_message' + row/2;
 			
 			// Get the message via Ajax (only if it is not checked now
@@ -230,17 +240,77 @@ if ($total_messages){
 						 "message_id": message_id},
 						function (data) {}
 					);
-					$("#"+target).parent().find(".um_not_read_message").attr('class', 'um_read_message');
+					
+					$("#"+target).parent().children().each(function(){
+						var full_class = $(this).attr('class');
+						console.log ("current_class: " + full_class);
+						full_class = full_class.replace (/um_not_read_message/g, "um_read_message");
+						console.log ("modified_class: " + full_class);
+						$(this).attr('class', full_class);
+					});
 				}
 			}			
 			
 			// Display message
 			$(current_class).toggle ();
 			
-		} else {
-			// Clicking a message
-			$(".um_message_" + Math.floor(row/2)).hide();
 		}
 		
 	});
+	
+	$(".check_selection").click(function (event) {
+		console.log(event.target.id);
+		if ($("#" + event.target.id).is(':checked')) {
+			$("#" + event.target.id).parent().parent().css('background', "#FFFFEE");
+		} else {
+			$("#" + event.target.id).parent().parent().css('background', 'inherit');
+		}
+	});
+	
+	$(".um_individual_info, .um_individual_subject").hover(
+		function () {
+			$(this).parent().css('background', '#EFFFEF');
+		},
+		function () {
+			if ($(this).parent().find(":first-child").is(':checked')) {
+				$(this).parent().css('background', "#FFFFEE");
+			} else {
+				$(this).parent().css('background', 'inherit');
+			}
+		}
+	);
+	
 </script>
+
+<style type="text/css">
+
+	.um_not_read_message{
+		font-weight: 900;
+	}
+	.um_read_message{
+		font-weight: 500;
+		color: #909090;
+	}
+	
+	.um_individual_info, .um_individual_subject {
+		cursor: pointer;
+	}
+	
+	.databox td {
+		padding-top: 15px;
+		padding-bottom: 15px;
+	}
+	
+	td input[type=checkbox] {
+		ms-transform: scale(1);
+		moz-transform: scale(1);
+		o-transform: scale(1);
+		webkit-transform: scale(1);
+		transform: scale(1);
+	}
+	
+	.c0 {
+		padding-left: 17px !important;
+	}
+	
+</style>

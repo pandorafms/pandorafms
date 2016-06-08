@@ -55,12 +55,18 @@ if (is_ajax()) {
 		$newsletter = get_parameter ('newsletter', 0);
 		$forced = get_parameter ('forced', 0);
 		$future_8_days = time() + 8 * SECONDS_1DAY;
+		$ui_feedback = array('status' => true, 'message' => '');
 		
 		if ($register_pandora) {
 			
 			// Pandora register update
-			if (update_manager_register_instance ()) {
+			$um_message = update_manager_register_instance ();
+			$ui_feedback['message'] .= $um_message['message'] . '<br><br>';
+			if ($um_message['success']) {
 				config_update_value ('instance_registered', 1);
+				$ui_feedback['status'] = true && $ui_feedback['status'];
+			} else {
+				$ui_feedback['status'] = false;
 			}
 		} elseif (!$forced)  {
 			config_update_value ('identification_reminder_timestamp', $future_8_days);
@@ -70,12 +76,21 @@ if (is_ajax()) {
 			
 			// Pandora newsletter update
 			$email = get_parameter ('email', '');
-			if (update_manager_insert_newsletter ($email)){
+			$um_message = update_manager_insert_newsletter ($email);
+			$ui_feedback['message'] .= $um_message['message'];
+			if ($um_message['success']) {
 				db_process_sql_update ('tusuario', array ('middlename' => 1), array('id_user' => $config['id_user']));
+				$ui_feedback['status'] = true && $ui_feedback['status'];
+			} else {
+				$ui_feedback['status'] = false;
 			}
 		} elseif (!$forced) {
 			db_process_sql_update ('tusuario', array ('lastname' => $future_8_days), array('id_user' => $config['id_user']));
 		}
+		
+		// Form answer JSON
+		$ui_feedback['status'] = $ui_feedback['status'] ? 1 : 0;
+		echo io_json_mb_encode($ui_feedback);
 	}
 	
 	if (!$not_return) {
@@ -170,6 +185,14 @@ echo '<div id="login_registration_yesno" title="' .
 		html_print_submit_button("Yes", 'yes_registration', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd" style="width:100px;"');  
 	echo '</div>';
 echo '</div>';
+
+// Print feedback user dialog
+echo '<div id="ui_messages_feedback" style="">';
+	echo '<div style="float: left;  margin: 15px; margin-left: 5px;">';
+		echo html_print_image ('images/support.png', true);
+	echo '</div>';
+	echo '<div id="feedback_message" style="font-size: 15pt; margin: 20px; padding-left:80px;"></div>';
+echo '</div>';
 ?>
 
 <script type="text/javascript" language="javascript">
@@ -189,6 +212,9 @@ function submit_open_wizard (register, newsletter, email, forced) {
 	newsletter = newsletter ? 1 : 0;
 	forced = forced ? 1 : 0;
 	
+	var feedback_message = '';
+	var feedback_status = 1;
+	
 	jQuery.post ("ajax.php",
 				{"page": "general/login_identification_wizard",
 				"open_wizard": 1,
@@ -196,7 +222,20 @@ function submit_open_wizard (register, newsletter, email, forced) {
 				"newsletter": newsletter,
 				"email": email,
 				"forced": forced},
-				function (data) {}
+				function (data) {
+					var feedback_message = '';
+					var feedback_status = 1;
+					
+					jQuery.each (data, function (i, val) {
+						if (i == 'message') feedback_message = val;
+						if (i == 'status') feedback_status = val;
+					});
+					if (feedback_status == 0) {
+						$("#ui_messages_feedback img").attr("src", "images/error_login.png");
+					}
+					$("#feedback_message").html(feedback_message);	
+				},
+				"json"
 			);
 }
 
@@ -227,6 +266,7 @@ $("#submit-finish_dialog_button").click (function () {
 		var register_forced = register ? 1 : 0;
 		submit_open_wizard (register_forced, newsletter, email, display_forced);
 		$("#login_accept_register" ).dialog('close');
+		$("#ui_messages_feedback").dialog('open');
 	}
 });
 
@@ -263,6 +303,19 @@ $(document).ready (function () {
 	});
 	
 	$("#login_registration_yesno").dialog({
+		resizable: false,
+		draggable: true,
+		modal: true,
+		width: 400,
+		overlay: {
+				opacity: 1,
+				background: "black"
+			},
+		autoOpen: false
+	});
+	
+	
+	$("#ui_messages_feedback").dialog({
 		resizable: false,
 		draggable: true,
 		modal: true,

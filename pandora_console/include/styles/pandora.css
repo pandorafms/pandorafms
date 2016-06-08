@@ -3098,14 +3098,6 @@ table#policy_modules td * {
 	margin-left: 3%;
 }
 
-.um_not_read_message{
-	font-weight: 900;
-}
-.um_read_message{
-	font-weight: 500;
-	color: #bbbbbb;
-}
-
 /* The items with the class 'spinner' will rotate */
 /* Not supported on IE9 and below */
 .spinner {

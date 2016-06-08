@@ -201,6 +201,8 @@ function config_update_config () {
 						$error_update[] = __('Allow create planned downtimes in the past');
 					if (!config_update_value ('limit_parameters_massive', get_parameter('limit_parameters_massive')))
 						$error_update[] = __('Limit parameters massive');
+					if (!config_update_value ('identification_reminder', get_parameter('identification_reminder')))
+						$error_update[] = __('Identification_reminder');
 					break;
 				case 'enterprise':
 					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
@@ -1516,7 +1518,7 @@ function config_check () {
 		//Registration advice
 		if (!isset ($config['instance_registered']) || ($config['instance_registered'] != 1)) {
 			set_pandora_error_for_header(  
-				__('Click <a style="font-weight:bold;" href="javascript: force_run_register();"> HERE </a> to init the registration process'),
+				__('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_register();"> here </a> to init the registration process'),
 				__("This PandoraFMS instance is not registered"));
 		}
 		
@@ -1524,7 +1526,7 @@ function config_check () {
 		$newsletter = db_get_value ('middlename', 'tusuario', 'id_user', $config['id_user']);
 		if ($newsletter != 1) {
 			set_pandora_error_for_header(  
-				__('Click <a style="font-weight:bold;" href="javascript: force_run_newsletter();"> HERE </a> to init the newsletter subscription process'),
+				__('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_newsletter();"> here </a> to init the newsletter subscription process'),
 				__("Missing user in newsletter"));
 		}
 	}

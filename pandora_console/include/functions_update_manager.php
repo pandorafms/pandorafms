@@ -473,10 +473,12 @@ function update_manager_insert_newsletter ($email) {
 		
 		case 200:
 			$message = json_decode($result['update_message'], true);
-			if ($message['success'] == 1) return true;
-			return false;
+			if ($message['success'] == 1) {
+				return array('success' => true, 'message' => __('E-mail successfully subscribed to newsletter.'));
+			}
+			return array('success' => false, 'message' => __('E-mail has already subscribed to newsletter.'));
 		default:
-			return false;
+			return array('success' => false, 'message' => __('Update manager returns error code: ') . $result['http_status'] . '.');
 			break;			
 	}
 }
@@ -494,7 +496,7 @@ function update_manager_register_instance () {
 	$result = update_manager_curl_request ('new_register', $params);
 	
 	if (!$result['success']) {
-		return false;
+		return array('success' => false, 'message' => $result['update_message']);
 	}
 	
 	switch ($result['http_status']) {
@@ -511,13 +513,12 @@ function update_manager_register_instance () {
 				db_process_sql_insert ('tupdate_package', array ('description' => '__UMMESSAGES__'));
 				$id_um_package_messages = db_get_value('id', 'tupdate_package', 'description', '__UMMESSAGES__');
 				config_update_value ('id_um_package_messages', $id_um_package_messages);
-				return true;
-			} else {
-				return false;
+				return array('success' => true, 'message' => __('Pandora successfully subscribed with UID: ') . $puid . '.');
 			}
+			return array('success' => false, 'message' => __('Unsuccessful subscription.'));
 			break;			
 		default:
-			return false;
+			return array('success' => false, 'message' => __('Update manager returns error code: ') . $result['http_status'] . '.');
 			break;		
 	}
 }
@@ -527,14 +528,10 @@ function update_manager_download_messages () {
 	
 	// TODO: Delete old messages
 	
+	// Build the curl request
 	$params = array(
 		'pandora_uid' => $config['pandora_uid']
 	);
-	
-	//For to test in the shell ??????????????
-	/*
-	wget https://artica.es/pandoraupdate6/server.php -O- --no-check-certificate --post-data "action=download_messages&language=es&timezone=Europe/Berlin"
-	*/
 	
 	$result = update_manager_curl_request ('get_messages', $params);
 		

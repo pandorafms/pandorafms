@@ -173,9 +173,9 @@ $data[2] = html_print_image('images/default_list.png', true,
 $table_agent->cellstyle[count($table_agent->data)][2] =
 	'width: 16px; text-align: right; padding: 0px;';
 $data[3] = '<span style="vertical-align:top; display: inline-block;">';
-$data[3] .= empty($agent["comentarios"]) ?
-	'<em>' . __('N/A') . '</em>' :
-	io_safe_output(ui_bbcode_to_html($agent["comentarios"]));
+$data[3] .= empty($agent["comentarios"])
+	? '<em>' . __('N/A') . '</em>'
+	: $agent["comentarios"];
 $data[3] .= '</span>';
 $table_agent->colspan[count($table_agent->data)][3] = 2;
 
@@ -358,6 +358,9 @@ foreach ($fields as $field) {
 		array('id_field' => $field['id_field'], 'id_agent' => $id_agente));
 	if ($custom_value === false || $custom_value == '') {
 		$custom_value = '<i>'.__('N/A').'</i>';
+	}
+	else {
+		$custom_value = ui_bbcode_to_html($custom_value);
 	}
 	$data[1] = $custom_value;
 	$table_data->data[] = $data;

@@ -30,13 +30,12 @@ if (isset($config['homedir'])) {
 }
 
 function ui_bbcode_to_html($text, $allowed_tags = array('[url]')) {
-	$return = "";
-	
 	$return = $text;
 	
 	if (array_search('[url]', $allowed_tags) !== false) {
+		$return = preg_replace("/\[url=([^\]]*)\]/",
+			"<a target=\"_blank\" rel=\"noopener noreferrer\" href=\"$1\">", $return);
 		$return = str_replace('[/url]', '</a>', $return);
-		$return = preg_replace("/\[url=([^\]]*)\]/", "<a href=\"$1\">", $return);
 	}
 	
 	return $return;

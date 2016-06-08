@@ -697,17 +697,9 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 		$watermark = 'false';
 	}
 	
-	$colors = array();
-	$index = array_keys(reset($graph_data));
-	
-	foreach ($index as $serie_key) {
-		if (isset($color[$serie_key])) {
-			$colors[] = $color[$serie_key]['color'];
-		}
-		else {
-			$colors[] = '';
-		}
-	}
+	$colors = array_map(function ($elem) {
+		return $elem['color'] ? $elem['color'] : null;
+	}, $color);
 	
 	// Set a weird separator to serialize and unserialize passing data from php to javascript
 	$separator = ';;::;;';

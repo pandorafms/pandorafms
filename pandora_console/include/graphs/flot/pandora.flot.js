@@ -539,7 +539,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	legend = legend.split(separator);
 	labels_long = labels_long.split(separator);
 	//colors = colors.split(separator);
-	var colors_data = ['#FC4444','#FFA631','#FAD403','#5BB6E5','#F2919D','#80BA27'];
+	var colors_data = ['#FFA631','#FC4444','#FAD403','#5BB6E5','#F2919D','#80BA27'];
 	var datas = new Array();
 	
 	for (i = 0; i < values.length; i++) {
@@ -552,7 +552,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 			aux.push([aux2, j]);
 			datas.push( {
 				data: [[j, aux2]],
-				color: colors_data[j]
+				color: colors_data[0]
 			});
 		};
 	}

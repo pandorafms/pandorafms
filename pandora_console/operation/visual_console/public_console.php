@@ -183,11 +183,6 @@ ui_require_javascript_file('pandora_visual_console');
 		var controls = document.getElementById('vc-controls');
 		autoHideElement(controls, 1000);
 		
-		$('#qrcode_container').dialog({
-			autoOpen: false,
-			modal: true
-		});
-		
 		$('select#refr').change(function (event) {
 			refr = Number.parseInt(event.target.value, 10);
 			startCountDown(refr, fetchMap);

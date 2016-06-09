@@ -3160,3 +3160,9 @@ div#vc-controls img.vc-qr {
 	margin-right: 8px;
 }
 /* Visual map */
+
+/* jQuery dialog */
+.no-close .ui-dialog-titlebar-close {
+  display: none;
+}
+/* jQuery dialog */

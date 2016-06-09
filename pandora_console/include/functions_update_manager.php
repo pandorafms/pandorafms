@@ -526,17 +526,20 @@ function update_manager_register_instance () {
 function update_manager_download_messages () {
 	global $config;
 	
-	// TODO: Delete old messages
+	//Do not ask in next 2 hours
+	config_update_value ('last_um_check', time() + 2 * SECONDS_1HOUR);
+	if (!isset ($config['pandora_uid'])) return;
+
+	// Delete old messages
+	db_get_sql('DELETE FROM tupdate WHERE UNIX_TIMESTAMP(filename) < UNIX_TIMESTAMP(NOW())');
 	
 	// Build the curl request
 	$params = array(
-		'pandora_uid' => $config['pandora_uid']
+		'pandora_uid' => $config['pandora_uid'],
+		'timezone' => $config['timezone']
 	);
 	
 	$result = update_manager_curl_request ('get_messages', $params);
-		
-	//Do not ask in next 2 hours
-	config_update_value ('last_um_check', time() + 2 * SECONDS_1HOUR);
 	
 	if (!$result['success']) {
 		return ($result['update_message']);

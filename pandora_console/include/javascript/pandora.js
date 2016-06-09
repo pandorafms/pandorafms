@@ -990,9 +990,9 @@ function show_dialog_qrcode(dialog, text, where, width, height) {
 			}
 	}
 	
-	paint_qrcode(text, where, 256, 256)
+	paint_qrcode(text, where, 256, 256);
 	
-	$(dialog).dialog( "open" );
+	$(dialog).dialog({ autoOpen: false, modal: true }).dialog('open');
 }
 
 function openURLTagWindow(url) {

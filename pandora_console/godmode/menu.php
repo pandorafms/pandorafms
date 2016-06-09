@@ -426,6 +426,13 @@ foreach ($rows as $row) {
 
 $menu_godmode["links"]["sub"] = $sub;
 
+if (license_free() && check_acl ($config['id_user'], 0, "PM")) {
+	$menu_godmode["messages"]["text"] = __('Update manager');
+	$menu_godmode["messages"]["sec2"] = "";
+	$menu_godmode["messages"]["id"] = "god-um_messages";
+	$menu_godmode["messages"]["notification"] = 6;
+}
+
 if (!$config['pure']) {
 	menu_print_menu ($menu_godmode);
 }

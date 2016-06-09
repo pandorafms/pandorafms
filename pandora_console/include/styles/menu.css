@@ -196,6 +196,10 @@ li:hover ul { display: block; }
 	border-color: #777;
 	background: url(../../images/links.menu.png) no-repeat 50% 50%;
 }
+#icon_god-um_messages {
+	border-color: #777;
+	background: url(../../images/um_messages.menu.png) no-repeat 50% 50%;
+}
 
 #subicon_god-setup {
 	top: -140px;
@@ -215,11 +219,31 @@ li:hover ul { display: block; }
 	top: -130px;
 }
 
+#subicon_god-um_messages {
+	top: -300px;
+}
+
 #menu_container {
 	z-index: 3;
 	position: absolute;
 	left: -80px;
 	background-color: #AAA;
+}
+
+.notification_ball {
+	margin-top: 2px;
+	margin-left: 29px;
+	font-size: 6pt;
+	font-weight: 900;
+	background: red;
+	height: 12px;
+	width: 12px;
+	border-radius: 50px;
+	position: absolute;
+	text-align: center;
+	color: white;
+	padding-top: 1px;
+	font-family: sans-serif;
 }
 
 ul {

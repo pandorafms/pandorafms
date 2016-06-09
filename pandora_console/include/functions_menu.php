@@ -403,6 +403,10 @@ function menu_print_menu (&$menu) {
 		$padding_top = ( $length >= 18) ? 6 : 12;
 		
 		$output .= '<div id="title_menu" style="color:#FFF; padding-top:'. $padding_top . 'px; display:none;">' . $main["text"] . '</div>';
+		// Add the notification ball if defined
+		if (isset($main["notification"])) {
+			$output .= '<div class="notification_ball">' . $main["notification"] . '</div>';
+		}
 		$padding_top = 0;
 		$length = 0;
 		//$output .= html_print_image("include/styles/images/toggle.png", true, array("class" => "toggle", "alt" => "toogle"));

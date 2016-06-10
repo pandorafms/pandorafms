@@ -976,7 +976,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
 	$prediction_period = false, $background_color = 'white',
 	$name_list = array(), $unit_list = array(), $show_last = true, $show_max = true,
-	$show_min = true, $show_avg = true, $labels = false, $dashboard = false, $vconsole = false) {
+	$show_min = true, $show_avg = true, $labels = array(), $dashboard = false, $vconsole = false) {
 	
 	global $config;
 	global $graphic_type;
@@ -1414,6 +1414,22 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	}
 	
 	$temp = array();
+	$user = users_get_user_by_id($config['id_user']);
+	$user_flash_charts = $user['flash_chart'];
+	
+	if ($user_flash_charts == 1)
+		$flash_charts = true;
+	elseif($user_flash_charts == -1)
+		$flash_charts = $config['flash_charts'];
+	elseif($user_flash_charts == 0)
+		$flash_charts = false;
+	
+	if ($only_image) {
+		$flash_charts = false;
+	}
+	
+	if ($flash_charts === false && $stacked == CUSTOM_GRAPH_GAUGE) 
+		$stacked = CUSTOM_GRAPH_BULLET_CHART;
 	
 	switch ($stacked) {
 		case CUSTOM_GRAPH_BULLET_CHART:
@@ -1456,8 +1472,13 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					$value = false;
 				}
 				
-				if ($labels[$module] != '')
-					$temp[$module]['label'] = $labels[$module];
+				
+				if ( !empty($labels) && isset($labels[$module]) )
+					$label = io_safe_input($labels[$module]);
+				else
+					$label = agents_get_name($temp[$module]['id_agente']) . ': ' . $temp[$module]['nombre'];
+				
+				$temp[$module]['label'] = $label;
 				$temp[$module]['value'] = $value;
 				$temp[$module]['max'] = reporting_get_agentmodule_data_max($module,$period,$date);
 				$temp[$module]['min'] = reporting_get_agentmodule_data_min($module,$period,$date);
@@ -1507,7 +1528,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$agent_name = io_safe_output(
 					modules_get_agentmodule_agent_name ($module));
 				
-				if ($labels[$module] != '')
+				if (!empty($labels) && isset($labels[$module]) )
 					$label = $labels[$module];
 				else
 					$label = $agent_name . " - " .$module_data['nombre'];
@@ -1547,10 +1568,12 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					SELECT datos
 					FROM tagente_datos
 					WHERE id_agente_modulo = %d
+						AND utimestamp > %d
 						AND utimestamp < %d
 						ORDER BY utimestamp DESC',
-					$module, $date);
+					$module, $datelimit, $date);
 				$temp_data = db_get_value_sql($query_last_value);
+				
 				if ( $temp_data ){
 					if (is_numeric($temp_data))
 						$value = $temp_data;
@@ -1562,17 +1585,15 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				}
 				$total_modules += $value;
 				
-				if ( !isset($labels[$module]) )
-					$label = $labels[$module];
-				else
-					$label = $data_module['nombre'];
+				if ( !empty($labels) && isset($labels[$module]) )
+					$label = io_safe_input($labels[$module]);
+				else {
+					$agent_name = agents_get_name($data_module['id_agente']);
+					$label = $agent_name . ": " . $data_module['nombre'];
+				}
 				
-				$label = io_safe_output($label);
-				$temp[$label] = array(
-					'value'=>$value,
-					'unit'=>$data_module['unit']);
-				
-				
+				$temp[$label] = array('value'=>$value,
+										'unit'=>$data_module['unit']);
 				if ($config['metaconsole']) {
 					// Automatic custom graph from the report template in metaconsole
 					if (is_array($module_list[0])) {
@@ -1581,6 +1602,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				}
 			}
 			$temp['total_modules'] = $total_modules;
+			
 			break;
 		case CUSTOM_GRAPH_GAUGE:
 			$datelimit = $date - $period;
@@ -1767,7 +1789,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			return stacked_bullet_chart($flash_charts, $graph_values,
 				$width, $height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
+				"", "", $water_mark, $config['fontpath'], ($config['font_size']+1),
 				"", $ttl, $homeurl, $background_color);
 			break;
 		case CUSTOM_GRAPH_GAUGE:
@@ -1792,11 +1814,9 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				"", $ttl, $homeurl, $background_color);
 			break;
 		case CUSTOM_GRAPH_PIE:
-			return flot_custom_pie_chart($flash_charts, $graph_values,
-				$width, $height, $color, $module_name_list, $long_index,
-				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-				"", "", $water_mark, $config['fontpath'], ($config['font_size']+1),
-				"", $ttl, $homeurl, $background_color,'other');
+			return ring_graph($flash_charts, $graph_values, $width, $height,
+				$others_str, $homeurl, $water_mark, $config['fontpath'],
+				($config['font_size']+1), 1, false, $color, false);
 			break;
 	}
 }

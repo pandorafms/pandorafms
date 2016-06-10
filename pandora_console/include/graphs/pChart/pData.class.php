@@ -151,20 +151,9 @@
    function setAbscissa($Serie)
     { if (isset($this->Data["Series"][$Serie])) { $this->Data["Abscissa"] = $Serie; } }
 
-   function setAbsicssaPosition($Position = AXIS_POSITION_BOTTOM)
-    { $this->Data["AbsicssaPosition"] = $Position; }
-
-   /* Set the name of the abscissa axis */
-   function setAbscissaName($Name)
-    { $this->Data["AbscissaName"] = $Name; }
-
    /* Create a scatter group specifyin X and Y data series */
    function setScatterSerie($SerieX,$SerieY,$ID=0)
     { if (isset($this->Data["Series"][$SerieX]) && isset($this->Data["Series"][$SerieY]) ) { $this->initScatterSerie($ID); $this->Data["ScatterSeries"][$ID]["X"] = $SerieX; $this->Data["ScatterSeries"][$ID]["Y"] = $SerieY; } }
-
-   /* Set the shape of a given sctatter serie */
-   function setScatterSerieShape($ID,$Shape=SERIE_SHAPE_FILLEDCIRCLE)
-    { if (isset($this->Data["ScatterSeries"][$ID]) ) { $this->Data["ScatterSeries"][$ID]["Shape"] = $Shape; } }
 
    /* Set the description of a given scatter serie */
    function setScatterSerieDescription($ID,$Description="My serie")
@@ -562,62 +551,9 @@
       }
     }
 
-   /* Create a dataset based on a formula */
-   function createFunctionSerie($SerieName,$Formula="",$Options="")
-    {
-     $MinX		= isset($Options["MinX"]) ? $Options["MinX"] : -10;
-     $MaxX		= isset($Options["MaxX"]) ? $Options["MaxX"] : 10;
-     $XStep		= isset($Options["XStep"]) ? $Options["XStep"] : 1;
-     $AutoDescription	= isset($Options["AutoDescription"]) ? $Options["AutoDescription"] : FALSE;
-     $RecordAbscissa	= isset($Options["RecordAbscissa"]) ? $Options["RecordAbscissa"] : FALSE;
-     $AbscissaSerie	= isset($Options["AbscissaSerie"]) ? $Options["AbscissaSerie"] : "Abscissa";
-
-     if ( $Formula == "" ) { return(0); }
-
-     $Result = ""; $Abscissa = "";
-     for($i=$MinX; $i<=$MaxX; $i=$i+$XStep)
-      {
-       $Expression = "\$return = '!'.(".str_replace("z",$i,$Formula).");";
-       if ( @eval($Expression) === FALSE ) { $return = VOID; }
-       if ( $return == "!" ) { $return = VOID; } else { $return = $this->right($return,strlen($return)-1); }
-       if ( $return == "NAN" ) { $return = VOID; }
-       if ( $return == "INF" ) { $return = VOID; }
-       if ( $return == "-INF" ) { $return = VOID; }
-
-       $Abscissa[] = $i;
-       $Result[]   = $return;
-      }
-
-     $this->addPoints($Result,$SerieName);
-     if ( $AutoDescription ) { $this->setSerieDescription($SerieName,$Formula); }
-     if ( $RecordAbscissa ) { $this->addPoints($Abscissa,$AbscissaSerie); }
-    }
-
-   function negateValues($Series)
-    {
-     if ( !is_array($Series) ) { $Series = $this->convertToArray($Series); }
-     foreach($Series as $Key => $SerieName)
-      {
-       if (isset($this->Data["Series"][$SerieName]))
-        {
-         $Data = "";
-         foreach($this->Data["Series"][$SerieName]["Data"] as $Key => $Value)
-          { if ( $Value == VOID ) { $Data[] = VOID; } else { $Data[] = -$Value; } }
-         $this->Data["Series"][$SerieName]["Data"] = $Data;
-
-         $this->Data["Series"][$SerieName]["Max"] = max($this->stripVOID($this->Data["Series"][$SerieName]["Data"]));
-         $this->Data["Series"][$SerieName]["Min"] = min($this->stripVOID($this->Data["Series"][$SerieName]["Data"]));
-        }
-      }
-    }
-
    /* Return the data & configuration of the series */
    function getData()
     { return($this->Data); }
-
-   /* Save a palette element */
-   function savePalette($ID,$Color)
-    { $this->Palette[$ID] = $Color; }
 
    /* Return the palette of the series */
    function getPalette()

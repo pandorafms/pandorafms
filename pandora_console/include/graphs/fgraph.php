@@ -427,49 +427,18 @@ function stacked_bullet_chart($flash_chart, $chart_data, $width, $height,
 	if (empty($chart_data)) {
 		return '<img src="' . $no_data_image . '" />';
 	}
-	if ($flash_chart) {
-		return d3_bullet_chart(
-				$chart_data,
-				$width,
-				$height,
-				$color,
-				$legend,
-				$homeurl,
-				$unit,
-				$font,
-				$font_size
-				);
-	}
-	else {
-		$legend = array();
-		$new_data = array();
-		foreach($chart_data as $key => $data) {
-			$temp[] = ($data['min'] != false) ? $data['min'] : 0;
-			$temp[] = ($data['value'] != false) ? $data['value'] : 0;
-			$temp[] = ($data['max'] != false) ? $data['max'] : 0;
-			
-			$legend[] = $data['label'];
-			array_push($new_data, $temp);
-			$temp = array();
-		} 
-		$graph = array();
-		$graph['data'] = $new_data;
-		$graph['width'] = $width;
-		$graph['height'] = $height;
-		$graph['color'] = $color;
-		$graph['legend'] = $legend;
-		$graph['xaxisname'] = $xaxisname;
-		$graph['yaxisname'] = $yaxisname;
-		$graph['water_mark'] = $water_mark_file;
-		$graph['font'] = $font;
-		$graph['font_size'] = $font_size;
-		$graph['backgroundColor'] = $backgroundColor;
-		
-		$id_graph = serialize_in_temp($graph, null, $ttl);
-		
-		return "<img src='" . $homeurl . "include/graphs/functions_pchart.php?static_graph=1&graph_type=bullet_chart&ttl=".$ttl."&id_graph=" . $id_graph . "' />";
-	}
 	
+	return d3_bullet_chart(
+			$chart_data,
+			$width,
+			$height,
+			$color,
+			$legend,
+			$homeurl,
+			$unit,
+			$font,
+			$font_size
+			);
 }
 
 function stacked_gauge($flash_chart, $chart_data, $width, $height,
@@ -713,81 +682,6 @@ function pie_graph($graph_type, $flash_chart, $chart_data, $width,
 				return "<img src='" . $homedir . "include/graphs/functions_pchart.php?static_graph=1&graph_type=pie3d&ttl=".$ttl."&id_graph=".$id_graph."'>";
 				break;
 		}
-	}
-}
-
-function ring_graph($flash_chart, $chart_data, $width,
-	$height, $others_str = "other", $homedir="", $water_mark = "",
-	$font = '', $font_size = '', $ttl = 1, $legend_position = false,
-	$colors = '', $hide_labels = false) {
-	
-	if (empty($chart_data)) {
-		return graph_nodata_image($width, $height, 'pie');
-	}
-	
-	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
-	
-	// This library allows only 8 colors
-	$max_values = 18;
-	
-	
-	if ($flash_chart) {
-		return flot_custom_pie_chart ($flash_chart, $chart_data,
-		$width, $height, $colors, $module_name_list, $long_index,
-		$no_data, false, '', $water_mark, $font, $font_size,
-		$unit, $ttl, $homeurl, $background_color, $legend_position);
-	}
-	else {
-		$total_modules = $chart_data['total_modules'];
-		unset($chart_data['total_modules']);
-		
-		
-		//Remove the html_entities
-		$n = 0;
-		$temp = array();
-		$coloretes = array();
-		foreach ($chart_data as $key => $value) {
-			$temp[io_safe_output($key)] = $value['value'];
-			$legend[] = io_safe_output($key) .": " . $value['value'] . " " .$value['unit'];
-			//~ $coloretes[$n] = $colors[$n]['color'];
-			//~ $n++;
-		}
-		$chart_data = $temp;
-		
-		$chart_data_trunc = array();
-		$coloretes = array();
-		$n = 1;
-		foreach ($chart_data as $key => $value) {
-			if ($n < $max_values) {
-				
-				$chart_data_trunc[$key] = $value;
-			}
-			//~ else {
-				//~ if (!isset($chart_data_trunc[$others_str])) {
-					//~ $chart_data_trunc[$others_str] = 0;
-				//~ }
-				//~ $chart_data_trunc[$others_str] += $value;
-			//~ }
-			$n++;
-		}
-		$chart_data = $chart_data_trunc;
-		
-		//TODO SET THE LEGEND POSITION
-		
-		$graph = array();
-		$graph['data'] = $chart_data;
-		$graph['width'] = $width;
-		$graph['height'] = $height;
-		$graph['water_mark'] = $water_mark_file;
-		$graph['font'] = $font;
-		$graph['font_size'] = $font_size;
-		$graph['legend_position'] = $legend_position;
-		$graph['legend'] = $legend;
-		
-		$id_graph = serialize_in_temp($graph, null, $ttl);
-		
-		return "<img src='" . $homedir . "include/graphs/functions_pchart.php?static_graph=1&graph_type=ring3d&ttl=".$ttl."&id_graph=".$id_graph."'>";
-				
 	}
 }
 

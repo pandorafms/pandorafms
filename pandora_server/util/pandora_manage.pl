@@ -108,6 +108,8 @@ sub help_screen{
 	help_screen_line('--disable_group', '<group_name>', 'Disable agents from an entire group');
 	help_screen_line('--enable_group', '<group_name>', 'Enable agents from an entire group');
 	help_screen_line('--create_group', '<group_name> [<parent_group_name> <icon> <description>]', 'Create an agent group');
+	help_screen_line('--delete_group', '<group_name>', 'Delete an agent group');
+	help_screen_line('--update_group', '<group_id>','[<group_name> <parent_group_name> <icon> <description>]', 'Update an agent group');
 	help_screen_line('--stop_downtime', '<downtime_name>', 'Stop a planned downtime');
 	help_screen_line('--create_downtime', "<downtime_name> <description> <date_from> <date_to> <id_group> <monday> <tuesday>\n\t <wednesday> <thursday> <friday> <saturday> <sunday> <periodically_time_from>\n\t <periodically_time_to> <periodically_day_from> <periodically_day_to> <type_downtime> <type_execution> <type_periodicity>", 'Create a planned downtime');
 	help_screen_line('--add_item_planned_downtime', "<id_downtime> <id_agente1,id_agente2,id_agente3...id_agenteN> <name_module1,name_module2,name_module3...name_moduleN> ", 'Add a items planned downtime');
@@ -3905,6 +3907,71 @@ sub cli_create_group() {
 	}
 }
 
+
+##############################################################################
+# Delete group
+# Related option: --delete_group
+##############################################################################
+
+sub cli_delete_group() {
+	my ($group_name) = @ARGV[2];
+
+	my $group_id = get_group_id($dbh,$group_name);
+	exist_check($group_id, 'group name', $group_name);
+
+	$group_id = db_do ($dbh, 'DELETE FROM tgrupo WHERE nombre=?', $group_name);
+
+	if($group_id == -1) {
+		print_log "[ERROR] A problem has been ocurred deleting group '$group_name'\n\n";
+	}else{
+		print_log "[INFO] Deleted group '$group_name'\n\n";
+	}
+
+
+}
+
+
+##############################################################################
+# Update group
+# Related option: --update_group
+##############################################################################
+
+sub cli_update_group() {
+	my ($group_id,$group_name,$parent_group_name,$icon,$description) = @ARGV[2..6];
+	my $result;
+	$result = db_do ($dbh, 'SELECT * FROM tgrupo WHERE id_grupo=?', $group_id);
+
+	if($result == "0E0"){
+		print_log "[ERROR] Group '$group_id' doesn`t exist \n\n";
+	}else{
+		if(defined($group_name)){
+			if(defined($parent_group_name)){
+				my $parent_group_id = get_group_id($dbh,$parent_group_name);
+				exist_check($parent_group_id, 'group name', $parent_group_name);
+
+				if(defined($icon)){
+					if(defined($description)){
+						db_do ($dbh,'UPDATE tgrupo SET nombre=? , parent=? , icon=? , description=? WHERE id_grupo=?',$group_name,$parent_group_id,$icon,$description,$group_id);
+					}else{
+						db_do ($dbh,'UPDATE tgrupo SET nombre=? , parent=? , icon=? WHERE id_grupo=?',$group_name,$parent_group_id,$icon,$group_id);
+					}
+				}else{
+					db_do ($dbh,'UPDATE tgrupo SET nombre=? , parent=? WHERE id_grupo=?',$group_name,$parent_group_id,$group_id);
+				}
+			}else{
+				db_do ($dbh,'UPDATE tgrupo SET nombre=? WHERE id_grupo=?',$group_name,$group_id);
+			}
+			print_log "[INFO] Updated group '$group_id'\n\n";
+		}
+	}
+
+
+
+
+
+}
+
+
 ###############################################################################
 # Locate agent in any Nodes of metaconsole
 # Related option: --locate_agent
@@ -4538,6 +4605,14 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--create_group') {
 			param_check($ltotal, 4, 3);
 			cli_create_group();
+		}
+		elsif ($param eq '--delete_group') {
+			param_check($ltotal, 1);
+			cli_delete_group();
+		}
+		elsif ($param eq '--update_group') {
+			param_check($ltotal, 5,4);
+			cli_update_group();
 		}
 		elsif ($param eq '--add_agent_to_policy') {
 			param_check($ltotal, 2);

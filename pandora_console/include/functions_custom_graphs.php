@@ -198,11 +198,11 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		foreach ($sources as $source) {
 			array_push ($modules, $source['id_agent_module']);
 			array_push ($weights, $source['weight']);
-			$labels[$source['id_agent_module']] = $source['label'];
+			if ($source['label'] != '')
+				$labels[$source['id_agent_module']] = $source['label'];
 		}
 	}
-	
-	
+		
 	
 	if ($sources === false) {
 		if ($return){

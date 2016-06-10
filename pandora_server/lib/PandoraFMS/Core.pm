@@ -3818,15 +3818,23 @@ sub generate_status_event ($$$$$$$$) {
 	}
 
 	# disable event just recovering from 'Unknown' without status change
-	if($last_status == 3 && $status == $last_known_status && $module->{'disabled_types_event'} ) {
-		my $disabled_types_event;
-		eval {
-			local $SIG{__DIE__};
-			$disabled_types_event = decode_json($module->{'disabled_types_event'});
-		};
-		
-		if ($disabled_types_event->{'going_unknown'}) {
+	if($last_status == 3 && $status == $last_known_status ) {
+
+		if (! pandora_get_config_throw_unknown_events($dbh, $agent, $module) ) {
 			return;
+		}
+
+		if($module->{'disabled_types_event'} ) {
+
+			my $disabled_types_event;
+			eval {
+				local $SIG{__DIE__};
+				$disabled_types_event = decode_json($module->{'disabled_types_event'});
+			};
+			
+			if ($disabled_types_event->{'going_unknown'}) {
+				return;
+			}
 		}
 	}
 
@@ -3885,6 +3893,19 @@ sub generate_status_event ($$$$$$$$) {
 	}
 
 }
+
+##########################################################################
+## Return if unknown event should be thrown
+###########################################################################
+sub pandora_get_config_throw_unknown_events($$$)
+{
+	my ($dbh, $agent, $module) = @_;
+
+	my $config_throw_unknown_events = pandora_get_config_value($dbh, 'throw_unknown_events');
+
+	return ($config_throw_unknown_events ne "" ? $config_throw_unknown_events : 1);
+}
+
 
 ##########################################################################
 # Saves module data to the DB.
@@ -4625,7 +4646,10 @@ sub pandora_module_unknown ($$) {
 			}
 			
 			my $do_event = 0;
-			if (!defined($module->{'disabled_types_event'}) || $module->{'disabled_types_event'} eq "") {
+			if (! pandora_get_config_throw_unknown_events($dbh, $agent, $module) ) {
+				$do_event = 0;
+			}
+			elsif (!defined($module->{'disabled_types_event'}) || $module->{'disabled_types_event'} eq "") {
 				$do_event = 1;
 			}
 			else {

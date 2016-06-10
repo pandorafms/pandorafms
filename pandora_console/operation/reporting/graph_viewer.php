@@ -101,12 +101,9 @@ if ($view_graph) {
 		$height = 50;
 	
 	if ($stacked == CUSTOM_GRAPH_GAUGE ){
-		if ( $graph["height"] < 150 )
-			$height = 150;
-		elseif( $graph["height"] >= 150 && $graph["height"] < 250 )
-				$height = $graph["height"];
-			elseif( $graph["height"] >= 250 )
-				$height = 200;
+		// Use the defined graph height, that's why
+		// the user can setup graph height.
+		$height = $graph["height"];
 	}
 	
 	$name = $graph["name"];

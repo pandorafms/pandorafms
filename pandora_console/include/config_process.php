@@ -163,7 +163,7 @@ if (!isset($config['inventory_changes_blacklist'])) {
 //NEW UPDATE MANAGER URL
 if (!isset($config['url_update_manager'])) {
 	config_update_value('url_update_manager',
-		'https://artica.es/pandoraupdate6/server.php');
+		'https://firefly.artica.es/pandoraupdate6/server.php');
 }
 
 if (defined('METACONSOLE')) {

@@ -868,7 +868,7 @@ require('include/php_to_js_values.php');
 	function run_identification_wizard (register, newsletter , return_button) {
 		
 		if (times_fired_register_wizard) {
-			console.log ("only open");
+			
 			$(".ui-dialog-titlebar-close").show();
 			
 			//Reset some values				

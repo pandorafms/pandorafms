@@ -38,7 +38,6 @@ function display_newsletter ($data) {
 	if (!isset ($data['newsletter_reminder_timestamp'])) return true;
 	if (!is_numeric ($data['newsletter_reminder_timestamp'])) return true;
 	if ($data['newsletter_reminder_timestamp'] < time()) return true;
-	else {html_debug ($data['newsletter_reminder_timestamp'] . "<<-data", true);}
 	return false;
 }
 

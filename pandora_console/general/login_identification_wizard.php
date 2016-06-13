@@ -34,7 +34,7 @@ function display_newsletter ($data) {
 	if ($data['newsletter_subscribed'] == 1) return false;
 	if ($data['force_newsletter'] == 1) return true;
 	if ($data['force_newsletter'] == 0) return false;
-	if ($data['newsletter_reminder'] == 0) return false;
+	if ($data['newsletter_reminder'] === 0) return false;
 	if (!isset ($data['newsletter_reminder_timestamp'])) return true;
 	if (!is_numeric ($data['newsletter_reminder_timestamp'])) return true;
 	if ($data['newsletter_reminder_timestamp'] < time()) return true;

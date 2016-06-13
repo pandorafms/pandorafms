@@ -43,3 +43,18 @@ def refresh_N_times_until_find_element(driver,n,element_text,how=By.ID,refresh_t
 
 	raise TimeoutException("Element %s not found" % (element_text))
 
+
+def create_user(driver,userid,userpwd,email=None):
+	click_menu_element(driver,"Users management")
+	driver.find_element_by_id("submit-crt").click()
+	driver.find_element_by_name("id_user").clear()
+	driver.find_element_by_name("id_user").send_keys(userid)
+	driver.find_element_by_name("password_new").clear()
+	driver.find_element_by_name("password_new").send_keys(userpwd)
+	driver.find_element_by_name("password_confirm").clear()
+	driver.find_element_by_name("password_confirm").send_keys(userpwd)
+	driver.find_element_by_name("email").clear()
+	if email != None:
+		driver.find_element_by_name("email").send_keys(email)
+		driver.find_element_by_id("submit-crtbutton").click()
+	

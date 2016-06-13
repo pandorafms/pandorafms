@@ -318,12 +318,12 @@ sub pandora_daemonize {
 			}
 			logger ($pa_config, '[W] Stale PID file, overwriting.', 1);
 		}
-		umask 022;
+		umask 0022;
 		open (FILE, "> ".$pa_config->{'PID'}) or die "[FATAL] Cannot open PIDfile at ".$pa_config->{'PID'};
 		print FILE "$$";
 		close (FILE);
 	}
-	umask 0;
+	umask 0007;
 }
 
 

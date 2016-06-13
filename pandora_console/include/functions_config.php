@@ -1445,6 +1445,10 @@ function config_process_config () {
 		config_update_value ('identification_reminder', 1);
 	}
 	
+	if (!isset ($config["identification_reminder_timestamp"])) {
+		config_update_value ('identification_reminder_timestamp', 0);
+	}
+	
 	if (!isset ($config["instance_registered"])) {
 		config_update_value ('instance_registered', 0);
 	}

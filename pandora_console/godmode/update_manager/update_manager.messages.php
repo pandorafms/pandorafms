@@ -46,6 +46,7 @@ if (is_ajax()) {
 }
 
 $not_read_action = get_parameter('not_read_button', false);
+$read_action = get_parameter('read_button', false);
 $delete_action = get_parameter ('delete_button', false);
 
 if ($not_read_action !== false) {
@@ -54,6 +55,15 @@ if ($not_read_action !== false) {
 	foreach ($selected as $k => $message_id) {
 		
 		update_manger_set_read_message ($message_id, 0);
+	}
+}
+
+if ($read_action !== false) {
+	
+	$selected = get_parameter ('select_multiple', false);
+	foreach ($selected as $k => $message_id) {
+		
+		update_manger_set_read_message ($message_id, 1);
 	}
 }
 
@@ -76,7 +86,8 @@ if ($total_messages){
 	$sql = 'SELECT data, svn_version, filename, data_rollback, db_field_value FROM tupdate ';
 	$sql .= 'WHERE description NOT LIKE \'%"' . $config['id_user'] . '":1%\' ';
 	$sql .= 'OR description IS NULL ';
-	$sql .= 'LIMIT ' . $offset . ',' . $config['block_size'];
+	$sql .= 'ORDER BY svn_version DESC ';
+	$sql .= 'LIMIT ' . $offset . ',' . $config['block_size'] . ' ';
 	$um_messages = array ();
 	$um_messages = db_get_all_rows_sql ($sql);
 
@@ -92,6 +103,11 @@ if ($total_messages){
 	echo '<div class="action-buttons" style="float:right; padding: 10px 5px">';
 	html_print_submit_button (__('Mark as not read'), 'not_read_button', false,
 		'class="sub wand"');
+	echo '</div>';
+
+	echo '<div class="action-buttons" style="float:right; padding: 10px 5px">';
+	html_print_submit_button (__('Mark as read'), 'read_button', false,
+		'class="sub upd"');
 	echo '</div>';
 
 	if ($total_messages > $config['block_size']) {
@@ -172,6 +188,11 @@ if ($total_messages){
 	echo '<div class="action-buttons" style="float:right; padding: 0 5px;">';
 	html_print_submit_button (__('Mark as not read'), 'not_read_button', false,
 		'class="sub wand"');
+	echo '</div>';
+
+	echo '<div class="action-buttons" style="float:right; padding: 0 5px;">';
+	html_print_submit_button (__('Mark as read'), 'read_button', false,
+		'class="sub upd"');
 	echo '</div>';
 	echo '</form>';
 } else {
@@ -269,7 +290,7 @@ if ($total_messages){
 	
 	$(".um_individual_info, .um_individual_subject").hover(
 		function () {
-			$(this).parent().css('background', '#EFFFEF');
+			$(this).parent().css('background', '#F2F2F2');
 		},
 		function () {
 			if ($(this).parent().find(":first-child").is(':checked')) {

@@ -2717,7 +2717,7 @@ function showPreview(image) {
 			showPreviewIcon(image);
 			break;
 		case 'service':
-			showPreviewIcon(image);
+			if (image && image.length > 0) showPreviewIcon(image);
 			break;
 	}
 }

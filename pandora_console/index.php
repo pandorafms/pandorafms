@@ -530,7 +530,7 @@ $config['logged'] = false;
 extensions_load_extensions ($process_login);
 
 // Check for update manager messages
-if ($config['last_um_check'] > (time() + 2 * SECONDS_1HOUR)) {
+if (license_free() && is_user_admin ($config['id_user']) && $config['last_um_check'] > (time() + 2 * SECONDS_1HOUR)) {
 	require_once("include/functions_update_manager.php");
 	
 	update_manager_download_messages ();
@@ -605,7 +605,12 @@ if ($old_global_counter_chat != $now_global_counter_chat) {
 		$_SESSION['new_chat'] = true;
 }
 
-if ($config['initial_wizard'] != 1) {
+// Pop-ups display order:
+// 1) login_required (timezone and email)
+// 2) identification (newsletter and register)
+// 3) last_message   (update manager message popup
+// 4) login_help     (online help, enterpirse version, forums, documentation)
+if (!isset($config['initial_wizard']) || $config['initial_wizard'] != 1) {
 	include_once ("general/login_required.php");
 }
 if (get_parameter ('login', 0) !== 0) {
@@ -614,13 +619,17 @@ if (get_parameter ('login', 0) !== 0) {
 	
 	// Display login help info dialog
 	// If it's configured to not skip this
-
-	if ($config['initial_wizard'] == 1) {
-		include_once("general/login_identification_wizard.php");
+	$display_previous_popup = false;
+	if (license_free() && is_user_admin ($config['id_user']) && $config['initial_wizard'] == 1) {
+		$display_previous_popup = include_once("general/login_identification_wizard.php");
+		if ($display_previous_popup === false) {
+			$display_previous_popup = include_once("general/last_message.php");
+		}
 	}
-	if (!isset($config['skip_login_help_dialog']) ||
-		$config['skip_login_help_dialog'] == 0) {
-		
+	if ((!isset($config['skip_login_help_dialog']) || $config['skip_login_help_dialog'] == 0) && 
+		$display_previous_popup === false && 
+		$config['initial_wizard'] == 1) {
+			
 		include_once("general/login_help_dialog.php");
 	}
 }
@@ -881,7 +890,7 @@ require('include/php_to_js_values.php');
 			$("#login_accept_register").dialog('open');
 		}
 		else {
-			console.log ("ajax open wizard");
+			
 			$(".ui-dialog-titlebar-close").show();
 			$("#container").append('<div class="id_wizard"></div>');
 			jQuery.get ("ajax.php",

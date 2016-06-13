@@ -57,6 +57,7 @@ our @EXPORT = qw(
 	ICMPSERVER
 	SNMPSERVER
 	SATELLITESERVER
+	TRANSACTIONALSERVER
 	METACONSOLE_LICENSE
 	$DEVNULL
 	RECOVERED_ALERT
@@ -112,6 +113,7 @@ use constant EVENTSERVER => 10;
 use constant ICMPSERVER => 11;
 use constant SNMPSERVER => 12;
 use constant SATELLITESERVER => 13;
+use constant TRANSACTIONALSERVER => 14;
 
 # Value for a metaconsole license type
 use constant METACONSOLE_LICENSE => 0x01;

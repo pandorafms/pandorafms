@@ -208,6 +208,10 @@ sub pandora_load_config {
 	$pa_config->{"exportserver"} = 1; # default
 	$pa_config->{"inventoryserver"} = 1; # default
 	$pa_config->{"webserver"} = 1; # 3.0
+	$pa_config->{"transactionalserver"} = 0; # Default 0, introduced on 6.1
+	$pa_config->{"transactional_threads"} = 1; # Default 1, introduced on 6.1
+	$pa_config->{"transactional_threshold"} = 2; # Default 2, introduced on 6.1
+	$pa_config->{"transactional_pool"} = $pa_config->{"incomingdir"} . "/" . "trans"; # Default, introduced on 6.1
 	$pa_config->{'snmp_logfile'} = "/var/log/pandora_snmptrap.log";
 	$pa_config->{"network_threads"} = 3; # Fixed default
 	$pa_config->{"keepalive"} = 60; # 60 Seconds initially for server keepalive
@@ -583,6 +587,23 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^webserver\s([0-9]*)/i) {
 			$pa_config->{'webserver'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^transactionalserver\s([0-9]*)/i) {
+			$pa_config->{'transactionalserver'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^transactional_threads\s([0-9]*)/i) {
+			$pa_config->{'transactional_threads'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^transactional_threshold\s([0-9]*)/i) {
+			$pa_config->{'transactional_threshold'}= clean_blank($1);
+		}
+		if ($parametro =~ m/^transactional_pool\s(.*)/i) {
+			$tbuf= clean_blank($1); 
+			if ($tbuf =~ m/^\.(.*)/){
+				$pa_config->{"transactional_pool"} = $pa_config->{"incomingdir"} . "/" . $1;
+			} else {
+				$pa_config->{"transactional_pool"} = $pa_config->{"incomingdir"} . "/" . $tbuf;
+			}
 		}
 		elsif ($parametro =~ m/^eventserver\s([0-9]*)/i) {
 			$pa_config->{'eventserver'}= clean_blank($1);

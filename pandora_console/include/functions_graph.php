@@ -1689,12 +1689,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	}
 	*/
 	
-	$flash_charts = $config['flash_charts'];
-	
-	if ($only_image) {
-		$flash_charts = false;
-	}
-	
 	
 	$water_mark = array(
 		'file' => $config['homedir'] .  "/images/logo_vertical_water.png",

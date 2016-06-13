@@ -264,9 +264,7 @@ if ($total_messages){
 					
 					$("#"+target).parent().children().each(function(){
 						var full_class = $(this).attr('class');
-						console.log ("current_class: " + full_class);
 						full_class = full_class.replace (/um_not_read_message/g, "um_read_message");
-						console.log ("modified_class: " + full_class);
 						$(this).attr('class', full_class);
 					});
 				}
@@ -280,7 +278,7 @@ if ($total_messages){
 	});
 	
 	$(".check_selection").click(function (event) {
-		console.log(event.target.id);
+		
 		if ($("#" + event.target.id).is(':checked')) {
 			$("#" + event.target.id).parent().parent().css('background', "#FFFFEE");
 		} else {

@@ -120,7 +120,7 @@ echo '</div>';
 //HELPER FUNCTIONS
 function show_timezone () {
 	zone = $("#zone").val();
-	console.log("Z: " +zone);
+	
 	$.ajax({
 		type: "POST",
 		url: "ajax.php",

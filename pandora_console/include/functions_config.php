@@ -1515,18 +1515,19 @@ function config_check () {
 	
 	if (license_free() && users_is_admin($config['id_user'])) {
 		
+		$login = get_parameter ('login', false);
 		//Registration advice
-		if (!isset ($config['instance_registered']) || ($config['instance_registered'] != 1)) {
+		if ((!isset ($config['instance_registered']) || ($config['instance_registered'] != 1)) && ($login === false)) {
 			set_pandora_error_for_header(  
-				__('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_register();"> here </a> to init the registration process'),
-				__("This PandoraFMS instance is not registered"));
+				__('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_register();"> here</a> to start the registration process'),
+				__("This instance is not registered in the Update manager"));
 		}
 		
 		//Newsletter advice
 		$newsletter = db_get_value ('middlename', 'tusuario', 'id_user', $config['id_user']);
-		if ($newsletter != 1) {
+		if ($newsletter != 1 && $login === false) {
 			set_pandora_error_for_header(  
-				__('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_newsletter();"> here </a> to init the newsletter subscription process'),
+				__('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_newsletter();"> here</a> to start the newsletter subscription process'),
 				__("Missing user in newsletter"));
 		}
 	}

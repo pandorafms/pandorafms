@@ -124,7 +124,7 @@ $display_register = display_register ($wizard_data);
 $display_forced = ($wizard_data['force_newsletter'] != -1) || ($wizard_data['force_register'] != -1);
 
 // Return if it is fully completed
-if ((!$display_register) && (!$display_newsletter)) return;
+if ((!$display_register) && (!$display_newsletter)) return false;
 
 $return_button = get_parameter ('return_button', 0) == 1;
 

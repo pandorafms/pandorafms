@@ -741,36 +741,37 @@ function ring_graph($flash_chart, $chart_data, $width,
 		$total_modules = $chart_data['total_modules'];
 		unset($chart_data['total_modules']);
 		
-		
+		$max_values = 9;
 		//Remove the html_entities
 		$n = 0;
 		$temp = array();
 		$coloretes = array();
 		foreach ($chart_data as $key => $value) {
-			$temp[io_safe_output($key)] = $value['value'];
-			$legend[] = io_safe_output($key) .": " . $value['value'] . " " .$value['unit'];
-			//~ $coloretes[$n] = $colors[$n]['color'];
-			//~ $n++;
+			if ($n < $max_values) {
+				$temp[io_safe_output($key)] = $value['value'];
+				$legend[] = io_safe_output($key) .": " . $value['value'] . " " .$value['unit'];
+			}
+			$n++;
 		}
 		$chart_data = $temp;
 		
 		$chart_data_trunc = array();
 		$coloretes = array();
 		$n = 1;
-		foreach ($chart_data as $key => $value) {
-			if ($n < $max_values) {
+		//~ foreach ($chart_data as $key => $value) {
+			//~ if ($n < $max_values) {
 				
-				$chart_data_trunc[$key] = $value;
-			}
+				//~ $chart_data_trunc[$key] = $value;
+			//~ }
 			//~ else {
 				//~ if (!isset($chart_data_trunc[$others_str])) {
 					//~ $chart_data_trunc[$others_str] = 0;
 				//~ }
 				//~ $chart_data_trunc[$others_str] += $value;
 			//~ }
-			$n++;
-		}
-		$chart_data = $chart_data_trunc;
+			//~ $n++;
+		//~ }
+		//~ $chart_data = $chart_data_trunc;
 		
 		//TODO SET THE LEGEND POSITION
 		

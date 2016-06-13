@@ -1694,7 +1694,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		case CUSTOM_GRAPH_PIE:
 			return ring_graph($flash_charts, $graph_values, $width, $height,
 				$others_str, $homeurl, $water_mark, $config['fontpath'],
-				($config['font_size']+1), 1, false, $color, false);
+				($config['font_size']+1), $ttl, false, $color, false);
 			break;
 	}
 }

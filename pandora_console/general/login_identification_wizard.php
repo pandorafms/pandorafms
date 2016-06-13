@@ -135,10 +135,10 @@ if ($email == 'admin@example.com') $email = '';
 // Prints accept register license
 echo '<div id="login_accept_register" title="' .
 	__('Pandora FMS instance identification wizard') . '" style="">';
-	echo '<div style="font-size: 15pt; margin: 20px 0; float: left; padding-left: 15px;">';
-		echo html_print_image ('images/support.png', true);
+	echo '<div style="margin: 20px 0; float: left; padding-left: 15px;">';
+		echo html_print_image ('images/pandora_circle_big.png', true);
 	echo '</div>';
-	echo '<div style="font-size: 15pt; margin: 20px; float: left;">';
+	echo '<div style="font-size: 12pt; margin: 25px 20px; float: left;">';
 		echo __('KEEP UPDATED!');
 	echo '</div>';
 	
@@ -175,7 +175,7 @@ echo '</div>';
 // Print yes or not dialog
 echo '<div id="login_registration_yesno" title="' .
 	__('Pandora FMS instance identification wizard') . '" style="">';
-	echo '<div style="font-size: 15pt; margin: 20px;">';
+	echo '<div style="font-size: 12pt; margin: 20px;">';
 		echo __("Do you want to continue without any registration") . "?";
 	echo '</div>';
 	echo '<div style="float: left;  padding-left: 15px; padding-top: 20px;">';
@@ -189,9 +189,9 @@ echo '</div>';
 // Print feedback user dialog
 echo '<div id="ui_messages_feedback" style="">';
 	echo '<div style="float: left;  margin: 15px; margin-left: 5px;">';
-		echo html_print_image ('images/support.png', true);
+		echo html_print_image ('images/success_circle_big.png', true);
 	echo '</div>';
-	echo '<div id="feedback_message" style="font-size: 15pt; margin: 20px; padding-left:80px;"></div>';
+	echo '<div id="feedback_message" style="font-size: 13pt; margin: 15px 20px; padding-left:80px;"></div>';
 echo '</div>';
 ?>
 
@@ -231,7 +231,9 @@ function submit_open_wizard (register, newsletter, email, forced) {
 						if (i == 'status') feedback_status = val;
 					});
 					if (feedback_status == 0) {
-						$("#ui_messages_feedback img").attr("src", "images/error_login.png");
+						$("#ui_messages_feedback img").attr("src", "images/fail_circle_big.png");
+					} else {
+						$("#ui_messages_feedback img").attr("src", "images/success_circle_big.png");
 					}
 					$("#feedback_message").html(feedback_message);	
 				},
@@ -266,7 +268,9 @@ $("#submit-finish_dialog_button").click (function () {
 		var register_forced = register ? 1 : 0;
 		submit_open_wizard (register_forced, newsletter, email, display_forced);
 		$("#login_accept_register" ).dialog('close');
-		$("#ui_messages_feedback").dialog('open');
+		if (register || newsletter) {
+			$("#ui_messages_feedback").dialog('open');
+		}
 	}
 });
 
@@ -299,14 +303,14 @@ $(document).ready (function () {
 		draggable: true,
 		modal: true,
 		height: 350,
-		width: 630,
+		width: 570
 	});
 	
 	$("#login_registration_yesno").dialog({
 		resizable: false,
 		draggable: true,
 		modal: true,
-		width: 400,
+		width: 320,
 		overlay: {
 				opacity: 1,
 				background: "black"
@@ -319,7 +323,7 @@ $(document).ready (function () {
 		resizable: false,
 		draggable: true,
 		modal: true,
-		width: 350,
+		width: 300,
 		overlay: {
 				opacity: 1,
 				background: "black"
@@ -366,7 +370,7 @@ $(document).ready (function () {
 		height: 100px;
 		width: 100%;
 		overflow-y: scroll;
-		border: 1px solid grey;
+		border: 1px solid #E4E4E4;
 		border-radius: 3px; 
 	}
 	

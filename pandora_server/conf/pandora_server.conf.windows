@@ -1,9 +1,9 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 3.2
+# Version 6.1dev
 # Licensed under GPL license v2,
-# (c) 2003-2010 Artica Soluciones Tecnologicas
+# (c) 2003-2016 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
 # Please change it for your setup needs
 #############################################################################
@@ -38,6 +38,10 @@ errorlog_file c:\pandora_server\log\pandora_server.error
 
 # daemon 1
 
+# dbengine: mysql, postgresql or oracle (mysql by default)
+
+dbengine mysql
+
 # Database credentials. A VERY important configuration.
 # This must be the same credentials used by your Pandora FMS Console
 # but could be different if your console is not running in the same
@@ -64,6 +68,10 @@ dbhost 192.168.55.1
 
 #dbport 3306
 
+# By default, parent agent will not be updated
+
+#update_parent 0
+
 # verbosity: level of detail on errors/messages (0 default, 1 verbose, 2 debug.... 10 noisy)
 # -v in command line (verbose) or -d (debug). Set this to 10 when try to locate problems and
 # set to 1 or 3 on production enviroments.
@@ -82,6 +90,30 @@ checksum 0
 # only available on Pandora Network server
 
 snmpconsole 0
+
+# snmpconsole_threads: number of SNMP console threads for processing SNMP traps.
+
+snmpconsole_threads 1
+
+# Attempt to translate variable bindings when processing SNMP traps. 1 enabled, 0 disabled. 0 by default. (ENTERPRISE ONLY).
+
+translate_variable_bindings 0
+
+# Attempt to translate enterprise strings when processing SNMP traps. 1 enabled, 0 disabled. 1 by default. (ENTERPRISE ONLY).
+
+translate_enterprise_strings 0
+
+# snmptrapd will ignore authenticationFailure traps if set to 1.
+
+snmp_ignore_authfailure 1
+
+# snmptrapd will read the PDU source address instead of the agent-addr field is set to 1.
+
+snmp_pdu_address 0
+
+# Path to the snmp_trapd binary. If set to manual, the server will not attemp to start snmp_trapd.
+
+#snmp_trapd manual
 
 # Activate (1) Pandora Network Server 
 
@@ -105,6 +137,7 @@ plugin_exec c:\pandora_server\bin/pandora_exec
 
 # predictionserver : 1 or 0. Set to 1 to activate prediction server with this setup
 # DISABLED BY DEFAULT 
+
 predictionserver 0
 
 # wmiserver : 1 or 0. Set to 1 to activate WMI server with this setup
@@ -188,9 +221,11 @@ dataserver_threads 2
 #mta_port 25
 
 # mta_user MTA User (if needed for auth, FQD or simple user, depending on your server)
+
 #mta_user myuser@mydomain.com
 
 # mta_pass MTA Pass (if needed for auth)
+
 #mta_pass mypassword
 
 # mta_auth MTA Auth system (if needed, support: LOGIN, PLAIN, CRAM-MD5, DIGEST-MD)
@@ -243,6 +278,7 @@ max_log_size 1048576
 max_queue_files 250
 
 # Use the XML file last modification time as timestamp.
+
 # use_xml_timestamp 1
 
 # Pandora FMS will autorestart itself each XXX seconds, use this if you experience problems with 
@@ -258,9 +294,11 @@ restart_delay 60
 # More information about GIS Setup in /usr/share/pandora_server/util/gis.README
 # Flag to activate GIS (positional information for agents and maps) 
 # by default it is desactivated
+
 #activate_gis 0
 
 # Radius of error in meters to consider two gis locations as the same location.
+
 #location_error 50
 
 # Recon reverse geolocation mode [disabled, sql, file]
@@ -275,18 +313,159 @@ restart_delay 60
 
 # Recon reverse geolocation file. This is the database with the reverse 
 # geolocation information using MaxMind GPL GeoLiteCity.dat format).
+
 #recon_reverse_geolocation_file /usr/local/share/GeoIP/GeoIPCity.dat
 
 # Radius (in meters) of the circle in where the agents will be place randomly 
 # when finded by a recon task. Center of the circle is guessed 
 # by geolocating the IP.
+
 #recon_location_scatter_radius 1000
 
 # Pandora Server self-monitoring (embedded agent) (by default disabled)
+
 #self_monitoring 1
 
+# Self monitoring interval (in seconds).
+#self_monitoring_interval 300
+
 # Update parent from the agent xml
+
 #update_parent 1
+#
+#
+# This enable realtime reverse geocoding using Google Maps public api.
+# This requires internet access, and could have performance penalties processing GIS
+# information due the connetion needed to resolve all GIS input.
+# NOTE: If you dont pay the service to google, they will ban your IP in a few days.
+
+# google_maps_description 1
+
+# This enable realtime reverse geocoding using Openstreet Maps public api.
+# This requires internet access, and could have performance penalties processing GIS
+# information due the connetion needed to resolve all GIS input.
+# You can alter the code to use a local (your own) openstreet maps server.
+
+# openstreetmaps_description 1
+
+# Enable (1) or disable (0) Pandora FMS Event Web Server (PANDORA FMS ENTERPRISE ONLY).
+
+webserver 1
+
+# Number of threads for the Web Server (PANDORA FMS ENTERPRISE ONLY).
+
+web_threads 1
+
+# Uncomment to perform web checks with CURL instead of LWP.
+#web_engine curl
+
+# Enable (1) or disable (0) Pandora FMS Inventory Server (PANDORA FMS ENTERPRISE ONLY).
+
+inventoryserver 1
+
+# Number of threads for the Web Server (PANDORA FMS ENTERPRISE ONLY).
+
+inventory_threads 1
+
+# Enable (1) or disable (0) Pandora FMS Export Server (PANDORA FMS ENTERPRISE ONLY).
+
+exportserver 0
+
+# Number of threads for the Export Server (PANDORA FMS ENTERPRISE ONLY).
+
+export_threads 1
+
+# Enable (1) or disable (0) Pandora FMS Event Server (PANDORA FMS ENTERPRISE ONLY).
+
+eventserver 0
+
+# Event Server event window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
+
+event_window 3600
+
+# Enable (1) or disable (0) Pandora FMS Enterprise ICMP Server (PANDORA FMS ENTERPRISE ONLY).
+# You need nmap 5.20 or higher in order to use this !
+
+icmpserver 1
+
+# Number of threads for the Enterprise ICMP Server (PANDORA FMS ENTERPRISE ONLY).
+
+icmp_threads 4
+
+# Enable (1) or disable (0) Pandora FMS Enterprise SNMP Server (PANDORA FMS ENTERPRISE ONLY).
+# Check braa tool is running and operative.
+
+snmpserver 1
+
+# Number of threads for the Enterprise SNMP Server (PANDORA FMS ENTERPRISE ONLY).
+
+snmp_threads 4
+
+# Pandora FMS TransactionalServer (PANDORA FMS ENTERPRISE ONLY).
+
+transactionalserver 0
+
+# Number of threads for the Transactional Server (PANDORA FMS ENTERPRISE ONLY).
+
+transactional_threads 1
+
+# Threshold for the Transactional Server (PANDORA FMS ENTERPRISE ONLY).
+
+transactional_threshold 2
+
+# Block size for block producer/consumer servers, that is, the number of modules
+# per block (15 by default) (PANDORA FMS ENTERPRISE ONLY).
+
+block_size 20
+
+# If set to 1, process XML data files in a stack instead of a queue. 0 by default.
+# WARNING: Incremental modules will not work properly if dataserver_lifo is set to 1!!!
+
+dataserver_lifo 0
+
+# If set to 1, the policy manager is enabled and the server is listening the policy queue. 
+# 0 by default (PANDORA FMS ENTERPRISE ONLY) 
+
+policy_manager 1
+
+# If set to 1, the event replicate process is enabled. 0 by default. (PANDORA FMS ENTERPRISE ONLY) 
+# WARNING: This process doesn't do anything if is not properly configured from the console setup 
+
+event_replication 0
+
+# If set to 1, new events validate older event for the same module. This will
+# affect the performance of the server. This was the "normal behaviour" on previous (4.x) versions.
+# disable only if you really know what you are doing !!.
+
+event_auto_validation 1
+
+# If defined, events generated by Pandora FMS will be written to the specified text file.
+#event_file /var/log/pandora/pandora_events.txt
+
+# Set the maximum number of traps that will be processed from a single source in a
+# configured time interval.
+snmp_storm_protection 25
+
+# Time interval for snmp_storm protection (in seconds).
+snmp_storm_timeout 10
+
+# Default texts for some events. The macros _module_ and _data_ are supported.
+#text_going_down_normal Module '_module_' is going to NORMAL (_data_)
+#text_going_up_critical Module '_module_' is going to CRITICAL (_data_)
+#text_going_up_warning Module '_module_' is going to WARNING (_data_)
+#text_going_down_warning Module '_module_' is going to WARNING (_data_)
+#text_going_unknown Module '_module_' is going to UNKNOWN
+
+# Events older that the specified time (in seconds) will be auto-validated. Set to 0 to disable this feature.
+event_expiry_time 0
+
+# Only events more recent than the specified time window (in seconds) will be auto-validated. This value must
+# be greater than event_expiry_time.
+#event_expiry_window 86400
+
+# If set to 1, SNMP modules run by the Network Server will be claimed back by
+# the SNMP Enterprise Server when pandora_db is run.
+claim_back_snmp_modules 1
 
 # If set to 1 asynchronous modules that do not receive data for twice their
 # interval will become normal. Set to 0 to disable.
@@ -318,6 +497,15 @@ global_alert_timeout 15
 
 # If set to 1 allows PandoraFMS Server to be configured via the web console (Only Enterprise version) 
 remote_config 0
+
+# Remote address to send the configuration file (PANDORA FMS ENTERPRISE ONLY).
+remote_config_address localhost
+
+# Remote port to send the configuration file (PANDORA FMS ENTERPRISE ONLY).
+#remote_config_port 41121
+
+# Extra options for the Tentacle client to send the configuration file (PANDORA FMS ENTERPRISE ONLY).
+#remote_config_opts
 
 # Module status change events will not be generated and module alerts will not
 # be executed for the specified number of seconds since the server starts up. 

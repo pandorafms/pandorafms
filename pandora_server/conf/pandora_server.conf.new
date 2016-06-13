@@ -3,7 +3,7 @@
 # Pandora FMS, the Flexible Monitoring System.
 # Version 6.1dev
 # Licensed under GPL license v2,
-# (c) 2003-2014 Artica Soluciones Tecnologicas
+# (c) 2003-2016 Artica Soluciones Tecnologicas
 # http://www.pandorafms.com
 # Please change it for your setup needs
 #############################################################################
@@ -426,6 +426,18 @@ snmpserver 1
 # Number of threads for the Enterprise SNMP Server (PANDORA FMS ENTERPRISE ONLY).
 
 snmp_threads 4
+
+# Pandora FMS TransactionalServer (PANDORA FMS ENTERPRISE ONLY).
+
+transactionalserver 0
+
+# Number of threads for the Transactional Server (PANDORA FMS ENTERPRISE ONLY).
+
+transactional_threads 1
+
+# Threshold for the Transactional Server (PANDORA FMS ENTERPRISE ONLY).
+
+transactional_threshold 2
 
 # Block size for block producer/consumer servers, that is, the number of modules
 # per block (15 by default) (PANDORA FMS ENTERPRISE ONLY).

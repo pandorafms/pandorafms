@@ -201,6 +201,8 @@ function config_update_config () {
 						$error_update[] = __('Allow create planned downtimes in the past');
 					if (!config_update_value ('limit_parameters_massive', get_parameter('limit_parameters_massive')))
 						$error_update[] = __('Limit parameters massive');
+					if (!config_update_value ('identification_reminder', get_parameter('identification_reminder')))
+						$error_update[] = __('Identification_reminder');
 					break;
 				case 'enterprise':
 					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
@@ -1442,6 +1444,22 @@ function config_process_config () {
 		config_update_value ('max_file_size', "2M");
 	}
 	
+	if (!isset ($config["initial_wizard"])) {
+		config_update_value ('initial_wizard', 0);
+	}
+	
+	if (!isset ($config["identification_reminder"])) {
+		config_update_value ('identification_reminder', 1);
+	}
+	
+	if (!isset ($config["identification_reminder_timestamp"])) {
+		config_update_value ('identification_reminder_timestamp', 0);
+	}
+	
+	if (!isset ($config["instance_registered"])) {
+		config_update_value ('instance_registered', 0);
+	}
+	
 	
 	
 	/* Finally, check if any value was overwritten in a form */
@@ -1453,6 +1471,25 @@ function config_check () {
 	
 	// At this first version I'm passing errors using session variables, because the error management
 	// is done by an AJAX request. Better solutions could be implemented in the future :-)
+	
+	if (license_free() && users_is_admin($config['id_user'])) {
+		
+		$login = get_parameter ('login', false);
+		//Registration advice
+		if ((!isset ($config['instance_registered']) || ($config['instance_registered'] != 1)) && ($login === false)) {
+			set_pandora_error_for_header(  
+				__('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_register();"> here</a> to start the registration process'),
+				__("This instance is not registered in the Update manager"));
+		}
+		
+		//Newsletter advice
+		$newsletter = db_get_value ('middlename', 'tusuario', 'id_user', $config['id_user']);
+		if ($newsletter != 1 && $login === false) {
+			set_pandora_error_for_header(  
+				__('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_newsletter();"> here</a> to start the newsletter subscription process'),
+				__("Missing user in newsletter"));
+		}
+	}
 	
 	// Check default password for "admin"
 	$is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
@@ -1618,6 +1655,7 @@ function config_check () {
 			__("Variable disable_functions containts functions system() or exec(), in PHP configuration file (php.ini)"). '<br /><br />' . 
 			__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'), __("Problems with disable functions in PHP.INI"));
 	}
+	
 }
 
 function config_return_in_bytes($val) {

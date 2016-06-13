@@ -179,6 +179,9 @@ $(document).ready (function () {
 		closeOnEscape: false,
 		open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
 	});
+	
+	$(".ui-widget-overlay").css("background", "#000");
+	$(".ui-widget-overlay").css("opacity", 0.6);
 });
 
 /* ]]> */

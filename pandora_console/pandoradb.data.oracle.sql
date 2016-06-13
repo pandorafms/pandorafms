@@ -135,6 +135,8 @@ INSERT INTO tconfig (token, value) VALUES ('custom_report_front_font', 'FreeSans
 INSERT INTO tconfig (token, value) VALUES ('custom_report_front_logo', 'images/pandora_logo_white.jpg');
 INSERT INTO tconfig (token, value) VALUES ('custom_report_front_header', '');
 INSERT INTO tconfig (token, value) VALUES ('custom_report_front_footer', '');
+INSERT INTO tconfig (token, value) VALUES ('identification_reminder', 1);
+INSERT INTO tconfig (token, value) VALUES ('identification_reminder_timestamp', 0);
 INSERT INTO tconfig (token, value) VALUES ('post_process_custom_values', '{"0.00000038580247":"Seconds&#x20;to&#x20;months","0.00000165343915":"Seconds&#x20;to&#x20;weeks","0.00001157407407":"Seconds&#x20;to&#x20;days","0.01666666666667":"Seconds&#x20;to&#x20;minutes","0.00000000093132":"Bytes&#x20;to&#x20;Gigabytes","0.00000095367432":"Bytes&#x20;to&#x20;Megabytes","0.0009765625":"Bytes&#x20;to&#x20;Kilobytes","0.00000001653439":"Timeticks&#x20;to&#x20;weeks","0.00000011574074":"Timeticks&#x20;to&#x20;days"}');
 
 COMMIT;

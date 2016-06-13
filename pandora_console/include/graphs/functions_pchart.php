@@ -62,7 +62,7 @@ $ttl = get_parameter('ttl', 1);
 
 $graph = unserialize_in_temp($id_graph, true, $ttl);
 
-if (!isset($graph)) {
+if (!$graph) {
 	exit;
 }
 
@@ -1111,7 +1111,6 @@ function pch_bullet_chart($graph_type, $data, $legend,
 	/* Create and populate the pData object */
 	$MyData = new pData();
 	
-	html_debug($data,true);
 	foreach ($data as $key => $dat) {
 		$MyData->addPoints($dat, $key);
 	}

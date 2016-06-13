@@ -40,12 +40,15 @@ $buttons = array(
 	'online' => array(
 		'active' => ($tab == 'online') ? true : false,
 		'text' => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online">' . 
-			html_print_image("images/op_gis.png", true, array ("title" => __('Online update manager'))) .'</a>'),
-	'messages' => array(
+			html_print_image("images/op_gis.png", true, array ("title" => __('Online update manager'))) .'</a>')
+	);
+	
+if (license_free()) {
+	$buttons['messages'] = array(
 		'active' => ($tab == 'messages') ? true : false,
 		'text' => '<a href="index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=messages">' . 
-			html_print_image("images/hourglass.png", true, array ("title" => __('Update manager messages'))) .'</a>')
-	);
+			html_print_image("images/email_mc.png", true, array ("title" => __('Update manager messages'))) .'</a>');
+}
 
 switch ($tab) {
 	case 'setup':

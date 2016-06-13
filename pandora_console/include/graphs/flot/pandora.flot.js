@@ -457,7 +457,16 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	function yFormatter(v, axis) {
 		format = new Array();
 		for (i = 0; i < labels_total.length; i++) {
-			format.push([i,'<div class="legend_'+i+'">'+labels_total[i][1]+'</div>']);
+			var label = labels_total[i][1];
+			var shortLabel = reduceText(label, 30);
+			var title = '';
+			if (label !== shortLabel) {
+				title = label;
+				label = shortLabel;
+			}
+			format.push([i,'<div title="'+title+'" class="legend_'+i+'">'
+				+ label
+				+ '</div>']);
 		}
 		return format;
 	}
@@ -666,7 +675,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	});
 	
 	$('#'+graph_id+' .xAxis .tickLabel')
-		.css('transform', 'rotate(-35deg)')
+		.css('transform', 'rotate(-45deg)')
 		.find('div')
 			.css('position', 'relative')
 			.css('top', '+10px')
@@ -674,9 +683,19 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	
 	// Format functions
 	function xFormatter(v, axis) {
-		format = new Array();
+		var format = new Array();
 		for (i = 0; i < labels_total.length; i++) {
-			format.push([i,'<div class="legend_'+i+'">'+labels_total[i][1]+'</div>']);
+			var label = labels_total[i][1];
+			var shortLabel = reduceText(label, 35);
+			var title = '';
+			if (label !== shortLabel) {
+				title = label;
+				label = shortLabel;
+			}
+			format.push([i,
+				'<div class="legend_'+i+'" title="'+title+'" style="word-break: break-word; max-width: 110px;">'
+				+ label
+				+ '</div>']);
 		}
 		return format;
 	}
@@ -2273,4 +2292,10 @@ function add_threshold (data_base, threshold_data, y_min, y_max, yellow_threshol
 	});
 	
 	return datas;
+}
+
+function reduceText (text, maxLength) {
+	if (text.length <= maxLength) return text
+	var firstSlideEnd = parseInt((maxLength - 3) / 2);
+	return text.substr(0, firstSlideEnd) + '...' + text.substr(-firstSlideEnd - 3);
 }

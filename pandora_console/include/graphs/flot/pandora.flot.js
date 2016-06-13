@@ -337,6 +337,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	$('#' + graph_id).HUseTooltip();
 	$('#' + graph_id).css("margin-left","auto");
 	$('#' + graph_id).css("margin-right","auto");
+	$('#' + graph_id).find('div.legend-tooltip').tooltip({ track: true });
 	// Adjust the top of yaxis tick to set it in the middle of the bars
 	//yAxisHeight = $('#' + graph_id + ' .yAxis .tickLabel')
 		//.css('height').split('px')[0];
@@ -464,7 +465,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 				title = label;
 				label = shortLabel;
 			}
-			format.push([i,'<div title="'+title+'" class="legend_'+i+'">'
+			format.push([i,'<div title="'+title+'" class="legend_'+i+' legend-tooltip">'
 				+ label
 				+ '</div>']);
 		}
@@ -623,6 +624,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	$('#' + graph_id).VUseTooltip();
 	$('#' + graph_id).css("margin-left","auto");
 	$('#' + graph_id).css("margin-right","auto");
+	$('#' + graph_id).find('div.legend-tooltip').tooltip({ track: true });
 	// Adjust the top of yaxis tick to set it in the middle of the bars
 	//yAxisHeight = $('#'+graph_id+' .yAxis .tickLabel').css('height').split('px')[0];
 	
@@ -693,7 +695,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 				label = shortLabel;
 			}
 			format.push([i,
-				'<div class="legend_'+i+'" title="'+title+'" style="word-break: break-word; max-width: 110px;">'
+				'<div class="legend_'+i+' legend-tooltip" title="'+title+'" style="word-break: break-word; max-width: 110px;">'
 				+ label
 				+ '</div>']);
 		}

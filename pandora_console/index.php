@@ -536,9 +536,11 @@ $config['logged'] = false;
 extensions_load_extensions ($process_login);
 
 // Check for update manager messages
-if (license_free() && is_user_admin ($config['id_user']) && $config['last_um_check'] > (time() + 2 * SECONDS_1HOUR)) {
+if (license_free() && is_user_admin ($config['id_user']) && 
+	(($config['last_um_check'] > (time() + 2 * SECONDS_1HOUR)) || 
+	(!isset($config['last_um_check'])))) {
+		
 	require_once("include/functions_update_manager.php");
-	
 	update_manager_download_messages ();
 }
 

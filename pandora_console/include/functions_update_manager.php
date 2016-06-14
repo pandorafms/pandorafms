@@ -466,7 +466,7 @@ function update_manager_insert_newsletter ($email) {
 	$result = update_manager_curl_request ('new_newsletter', $params);
 	
 	if (!$result['success']) {
-		return false;
+		return array('success' => false, 'message' => __('Remote server error on newsletter request'));
 	}
 	
 	switch ($result['http_status']) {
@@ -496,7 +496,7 @@ function update_manager_register_instance () {
 	$result = update_manager_curl_request ('new_register', $params);
 	
 	if (!$result['success']) {
-		return array('success' => false, 'message' => $result['update_message']);
+		return array('success' => false, 'message' => __('Remote server error on newsletter request'));
 	}
 	
 	switch ($result['http_status']) {

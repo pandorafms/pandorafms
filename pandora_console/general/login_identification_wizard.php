@@ -133,19 +133,17 @@ if ($email == 'admin@example.com') $email = '';
 
 // Prints accept register license
 echo '<div id="login_accept_register" title="' .
-	__('Pandora FMS instance identification wizard') . '" style="">';
-	echo '<div style="margin: 20px 0; float: left; padding-left: 15px;">';
+	__('The Pandora FMS community wizard') . '" style="">';
+	echo '<div style="margin: 5px 0 10px; float: left; padding-left: 15px;">';
 		echo html_print_image ('images/pandora_circle_big.png', true);
 	echo '</div>';
-	echo '<div style="font-size: 12pt; margin: 25px 20px; float: left;">';
-		echo __('KEEP UPDATED!');
+	echo '<div style="font-size: 12pt; margin: 5px 20px; float: left; padding-top: 23px;">';
+		echo __('Stay up to date with the Pandora FMS community') . ".";
 	echo '</div>';
 	
 	echo '<div id="license_newsletter">';
-		$license_text = file('license.lic');
-		foreach ($license_text as $paragraph) {
-			echo '<p>' . $paragraph . "</p>";
-		}
+		echo '<p>' . __("When you subscribe to the Pandora FMS Update Manager service, you accept that we register your Pandora instance as an identifier on the database owned by Artica TS. This data will solely be used to provide you with information about Pandora FMS and will not be conceded to third parties. You'll be able to unregister from said database at any time from the Update Manager options") . '.</p>';
+		echo '<p>' . __("In the same fashion, when subscribed to the newsletter you accept that your email will pass on to a database property of Artica TS. This data will solely be used to provide you with information about Pandora FMS and will not be conceded to third parties. You'll be able to unregister from said database at any time from the newsletter subscription options") . '.</p>';
 	echo '</div>';
 	
 	echo '<div style="position:absolute; margin: 0 auto; bottom: 0px; padding-top:10px; position:relative; border: 1px solid #FFF;">';
@@ -158,9 +156,9 @@ echo '<div id="login_accept_register" title="' .
 		echo '</div>';
 		echo '<div style="float: left; margin-left: 0px; width: 50%; text-align: left;">';
 			html_print_checkbox('register', 1, false, false, false, 'cursor: \'pointer\'');
-			echo '&nbsp;<span style="font-size: 12px;" id="label-register">' .__("Accept register Pandora") . '</span><br>';
+			echo '&nbsp;<span style="font-size: 12px;" id="label-register">' .__("Join the Pandora FMS community") . '!</span><br>';
 			html_print_checkbox('newsletter', 1, false, false, false, 'cursor: \'pointer\'');
-			echo '&nbsp;<span style="font-size: 12px;" id="label-newsletter">' .__("Subscribe to newsletter") . '</span>';
+			echo '&nbsp;<span style="font-size: 12px;" id="label-newsletter">' .__("Subscribe to our newsletter") . '</span>';
 			echo "<br>";
 			echo '<div id="email_container">';
 				echo '&nbsp;<span id="label-email-newsletter"style="font-size: 12px; display: none">' .__("Email") . ': </span>';
@@ -287,9 +285,16 @@ $("#submit-yes_registration").click (function () {
 });
 
 $("#checkbox-newsletter").click (function () {
-	if (!return_button) {
+	var newsletter = $("#checkbox-newsletter").is(':checked') ? 1 : 0;
+	if (!return_button && newsletter) {
 		$("#label-email-newsletter").show();
 		$("#text-email-newsletter").show();
+	}
+	
+	if (!newsletter) {
+		$("#label-email-newsletter").hide();
+		$("#text-email-newsletter").hide();
+		$("#required-email-newsletter").hide();
 	}
 });
 
@@ -301,7 +306,7 @@ $(document).ready (function () {
 		resizable: false,
 		draggable: true,
 		modal: true,
-		height: 350,
+		height: 320,
 		width: 570
 	});
 	
@@ -355,8 +360,8 @@ $(document).ready (function () {
 		font-size : 9px;
 		color: red;
 		float:right;
-		left: -26px;
-		top: 3px;
+		left: 5px;
+		top: -17px;
 		position: relative;
 		display: none;
 	}
@@ -381,5 +386,10 @@ $(document).ready (function () {
 		background: #000;
 		opacity: .6;
 	}
+	
+	.ui-draggable {
+		cursor: inherit;
+	}
+	
 
 </style>

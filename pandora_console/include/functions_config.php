@@ -1487,7 +1487,7 @@ function config_check () {
 		if ($newsletter != 1 && $login === false) {
 			set_pandora_error_for_header(  
 				__('Click <a style="font-weight:bold; text-decoration:underline" href="javascript: force_run_newsletter();"> here</a> to start the newsletter subscription process'),
-				__("Missing user in newsletter"));
+				__("Not subscribed to the newsletter"));
 		}
 	}
 	

@@ -119,8 +119,8 @@ $table->data[4][1] = html_print_input_password('update_manager_proxy_password',
 
 if (license_free()) {
 	$config["identification_reminder"] = isset($config["identification_reminder"]) ? $config["identification_reminder"] : 1;
-	$table->data[6][0] = __('Remember registration to admins') .
-		ui_print_help_tip(__('Every 8 days, a message is displayed to admin to remember Pandora is not registered'), true);
+	$table->data[6][0] = __('Pandora FMS community reminder') .
+		ui_print_help_tip(__('Every 8 days, a message is displayed to admin users to remember to register this Pandora instance'), true);
 	$table->data[6][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('identification_reminder', 1, '', $config["identification_reminder"], true).'&nbsp;&nbsp;';
 	$table->data[6][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('identification_reminder', 0, '', $config["identification_reminder"], true);
 }

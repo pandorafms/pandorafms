@@ -63,4 +63,4 @@ def is_element_present(driver, how, what):
 	from selenium.common.exceptions import NoSuchElementException
 	try: driver.find_element(by=how, value=what)
 	except NoSuchElementException: return False
-    return True
+	return True

@@ -37,7 +37,6 @@ use PandoraFMS::ReconServer;
 use PandoraFMS::WMIServer;
 use PandoraFMS::PluginServer;
 use PandoraFMS::PredictionServer;
-use PandoraFMS::TransactionalServer;
 
 # Constants for Win32 services.
 use constant WIN32_SERVICE_STOPPED => 0x01;

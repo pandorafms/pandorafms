@@ -772,6 +772,19 @@ function update_manger_get_read_message ($message_id, $rollback = false) {
 	return false;
 }
 
+// Get the last message
+function update_manger_get_last_message () {
+	global $config;
+	
+	$sql = 'SELECT data, svn_version, db_field_value FROM tupdate ';
+	$sql .= 'WHERE data_rollback NOT LIKE \'%"' . $config['id_user'] . '":1%\' ';
+	$sql .= 'OR data_rollback IS NULL ';
+	$sql .= 'ORDER BY svn_version DESC ';
+	
+	$message = db_get_row_sql($sql);
+	return $message;
+}
+
 function update_manager_get_total_messages () {	
 	global $config;
 	

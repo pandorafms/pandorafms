@@ -116,7 +116,6 @@ sub pandora_startup () {
 		push (@Servers, new PandoraFMS::WMIServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::PluginServer (\%Config, $DBH));
 		push (@Servers, new PandoraFMS::PredictionServer (\%Config, $DBH));
-		push (@Servers, new PandoraFMS::TransactionalServer (\%Config, $DBH));
 	} else {
 		# Metaconsole service modules are run by the prediction server
 		push (@Servers, new PandoraFMS::PredictionServer (\%Config, $DBH));

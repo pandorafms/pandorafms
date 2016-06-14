@@ -690,7 +690,13 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 					if (strstr($fileinfo['name'], '.txt') !== false) {
 						$fileinfo['mime'] = MIME_TEXT;
 						$data[0] = html_print_image ('images/mimetypes/text.png', true, array('title' => __('Text file')));
+					}else{
+						//unknow
+						$data[0] = '';
 					}
+				}else{
+					//pdf
+					$data[0] = '';
 				}
 				break;
 			default:

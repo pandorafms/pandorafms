@@ -359,17 +359,15 @@ $data[0] .= "<div id=\"dialog-double_auth\"><div id=\"dialog-double_auth-contain
 
 // Newsletter
 if (license_free()) {
-	$data[1] = __('Newsletter Subscribed');
-	$data[1] .= $jump . ui_print_help_tip(__('Subs news'), true);
+	$data[1] = __('Newsletter Subscribed') . ':';
 	if ($user_info["middlename"]) {
-		$data[1] .= $jump . '<span style="font-weight:initial;">' . __('You are subscribed to PandoraFMS newsletter') . "</span>";
+		$data[1] .= $jump . '<span style="font-weight:initial;">' . __('Already subscribed to Pandora FMS newsletter') . "</span>";
 	}
 	else {
-		$data[1] .= $jump . '<span style="font-weight:initial;">' . __('Click <a style="text-decoration:underline; font-weight:bold;" href="javascript: force_run_newsletter();"> here </a> to init the newsletter subscription process') . "</span>";
+		$data[1] .= $jump . '<span style="font-weight:initial;"><a style="text-decoration:underline;" href="javascript: force_run_newsletter();">' . __('Subscribe to our newsletter') . "</a></span>";
 	}
-
-	$data[2] = __('Newsletter Reminder');
-	$data[2] .= ui_print_help_tip(__('Remind news'), true);
+	
+	$data[2] = __('Newsletter Reminder') . ' ';
 	if ($user_info["firstname"] != 0) $user_info["firstname"] = 1;
 	$data[2] .= html_print_checkbox('newsletter_reminder', 1, $user_info["firstname"], true);
 } else {

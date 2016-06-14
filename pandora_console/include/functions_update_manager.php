@@ -466,7 +466,7 @@ function update_manager_insert_newsletter ($email) {
 	$result = update_manager_curl_request ('new_newsletter', $params);
 	
 	if (!$result['success']) {
-		return false;
+		return array('success' => false, 'message' => __('Remote server error on newsletter request'));
 	}
 	
 	switch ($result['http_status']) {
@@ -496,7 +496,7 @@ function update_manager_register_instance () {
 	$result = update_manager_curl_request ('new_register', $params);
 	
 	if (!$result['success']) {
-		return array('success' => false, 'message' => $result['update_message']);
+		return array('success' => false, 'message' => __('Remote server error on newsletter request'));
 	}
 	
 	switch ($result['http_status']) {
@@ -527,7 +527,8 @@ function update_manager_download_messages () {
 	global $config;
 	
 	//Do not ask in next 2 hours
-	config_update_value ('last_um_check', time() + 2 * SECONDS_1HOUR);
+	$future = time() + 2 * SECONDS_1HOUR;
+	config_update_value ('last_um_check', $future);
 	if (!isset ($config['pandora_uid'])) return;
 
 	// Delete old messages
@@ -536,7 +537,8 @@ function update_manager_download_messages () {
 	// Build the curl request
 	$params = array(
 		'pandora_uid' => $config['pandora_uid'],
-		'timezone' => $config['timezone']
+		'timezone' => $config['timezone'],
+		'language' => $config['language']
 	);
 	
 	$result = update_manager_curl_request ('get_messages', $params);

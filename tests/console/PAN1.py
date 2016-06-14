@@ -17,6 +17,7 @@ class PAN1(PandoraWebDriverTestCase):
 	def test_pan1(self):
 		driver = self.driver
 		login(driver,"admin","pandora",self.base_url)
+		detect_and_pass_all_wizards(driver)
 		click_menu_element(driver,"General Setup")
 		self.assertEqual("IP list with API access", driver.find_element_by_id("table2-15-0").text)
 	

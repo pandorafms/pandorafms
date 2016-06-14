@@ -58,3 +58,8 @@ def create_user(driver,userid,userpwd,email=None):
 		driver.find_element_by_name("email").send_keys(email)
 		driver.find_element_by_id("submit-crtbutton").click()
 	
+
+def is_element_present(driver, how, what):
+    try: driver.find_element(by=how, value=what)
+    except NoSuchElementException: return False
+    return True

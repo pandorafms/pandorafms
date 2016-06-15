@@ -12,7 +12,7 @@ import unittest, time, re
 class PAN2(PandoraWebDriverTestCase):
 	test_name = u'PAN_2'
 	test_description = u'Creation two agents and delete this agents using bulk operation'
-	tickets_associated = []
+	tickets_associated = [3831]
 	
 	def test_pan2(self):
 		driver = self.driver

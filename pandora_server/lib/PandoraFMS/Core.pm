@@ -4677,7 +4677,7 @@ sub pandora_disable_autodisable_agents ($$) {
 			tagente.unknown_count>0 AND 
 			tagente.modo=2';
 	my @agents_autodisabled = get_db_rows ($dbh, $sql);
-	return if !defined (@agents_autodisabled);
+	return if ($#agents_autodisabled < 0);
 	
 	my $disable_agents = '';
 	foreach my $agent (@agents_autodisabled) {

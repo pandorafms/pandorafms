@@ -29,7 +29,7 @@ def get_menu_element(driver,menu_item_text):
 def click_menu_element(driver,menu_item_text):
 	return driver.execute_script("arguments[0].click();", get_menu_element(driver,menu_item_text))
 
-def refresh_N_times_until_find_element(driver,n,element_text,how=By.ID,refresh_time=5):
+def refresh_N_times_until_find_element(driver,n,element_text,how=By.ID,refresh_time=10):
 	from selenium.common.exceptions import TimeoutException
 
 	i = 1
@@ -58,3 +58,35 @@ def create_user(driver,userid,userpwd,email=None):
 		driver.find_element_by_name("email").send_keys(email)
 		driver.find_element_by_id("submit-crtbutton").click()
 	
+
+def is_element_present(driver, how, what):
+	from selenium.common.exceptions import NoSuchElementException
+	try: driver.find_element(by=how, value=what)
+	except NoSuchElementException: return False
+	return True
+
+def detect_and_pass_pandorin(driver):
+	if is_element_present(driver,By.NAME,'clippy_is_annoying'):
+		driver.find_element_by_id('checkbox-clippy_is_annoying').click()
+		driver.find_element_by_class_name('introjs-skipbutton').click()
+		alert = driver.switch_to_alert()
+		alert.accept()
+
+def detect_and_pass_initial_wizard(driver):
+	#We need to distinguish between the REQUIRED wizard
+	if is_element_present(driver,By.ID,'login_id_dialog'):
+		driver.find_element_by_id('text-email').clear()
+		driver.find_element_by_id('text-email').send_keys("test@pandora.com")
+		driver.find_element_by_id('submit-id_dialog_button').click()
+
+
+def detect_and_pass_newsletter_wizard(driver):
+	if is_element_present(driver,By.ID,'login_accept_register'):
+		driver.find_element_by_id('submit-finish_dialog_button').click()
+		driver.find_element_by_id('submit-yes_registration').click()
+
+
+def detect_and_pass_all_wizards(driver):
+	detect_and_pass_pandorin(driver)
+	detect_and_pass_initial_wizard(driver)
+	detect_and_pass_newsletter_wizard(driver)

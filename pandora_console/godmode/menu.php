@@ -425,34 +425,37 @@ foreach ($rows as $row) {
 $menu_godmode["links"]["sub"] = $sub;
 
 // Update Manager
-$menu_godmode["messages"]["text"] = __('Update manager');
-$menu_godmode["messages"]["sec2"] = "";
-$menu_godmode["messages"]["id"] = "god-um_messages";
+if (check_acl ($config['id_user'], 0, "PM")) {
+	$menu_godmode["messages"]["text"] = __('Update manager');
+	$menu_godmode["messages"]["sec2"] = "";
+	$menu_godmode["messages"]["id"] = "god-um_messages";
 
-$sub = array ();
-$sub["godmode/update_manager/update_manager&tab=offline"]["text"] = __('Offline');
-$sub["godmode/update_manager/update_manager&tab=offline"]["id"] = 'Offline';
-$sub["godmode/update_manager/update_manager&tab=online"]["text"] = __('Online');
-$sub["godmode/update_manager/update_manager&tab=online"]["id"] = 'Online';
-$sub["godmode/update_manager/update_manager&tab=setup"]["text"] = __('Options');
-$sub["godmode/update_manager/update_manager&tab=setup"]["id"] = 'Options';
-	
-if (license_free() && is_user_admin ($config['id_user'])) {	
+	$sub = array ();
+	$sub["godmode/update_manager/update_manager&tab=offline"]["text"] = __('Offline');
+	$sub["godmode/update_manager/update_manager&tab=offline"]["id"] = 'Offline';
+	$sub["godmode/update_manager/update_manager&tab=online"]["text"] = __('Online');
+	$sub["godmode/update_manager/update_manager&tab=online"]["id"] = 'Online';
+	$sub["godmode/update_manager/update_manager&tab=setup"]["text"] = __('Options');
+	$sub["godmode/update_manager/update_manager&tab=setup"]["id"] = 'Options';
+		
+	if (license_free() && is_user_admin ($config['id_user'])) {	
+				
+		include_once ("include/functions_update_manager.php");		
+		//If there are unread messages, display the notification icon
+		$number_total_messages;
+		$number_unread_messages = update_manager_get_unread_messages ();
+		if ($number_unread_messages > 0) {
+			$menu_godmode["messages"]["notification"] = $number_unread_messages;
+		}
+		
+		$sub["godmode/update_manager/update_manager&tab=messages"]["text"] = __('Messages');
+		$sub["godmode/update_manager/update_manager&tab=messages"]["id"] = 'Messages';
 			
-	include_once ("include/functions_update_manager.php");		
-	//If there are unread messages, display the notification icon
-	$number_total_messages;
-	$number_unread_messages = update_manager_get_unread_messages ();
-	if ($number_unread_messages > 0) {
-		$menu_godmode["messages"]["notification"] = $number_unread_messages;
 	}
 	
-	$sub["godmode/update_manager/update_manager&tab=messages"]["text"] = __('Messages');
-	$sub["godmode/update_manager/update_manager&tab=messages"]["id"] = 'Messages';
-		
+	$menu_godmode["messages"]["sub"] = $sub;
 }
 
-$menu_godmode["messages"]["sub"] = $sub;
 
 if (!$config['pure']) {
 	menu_print_menu ($menu_godmode);

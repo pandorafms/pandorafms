@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import login, click_menu_element
+from include.common_functions_60 import login, click_menu_element, detect_and_pass_all_wizards
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -17,6 +17,7 @@ class PAN1(PandoraWebDriverTestCase):
 	def test_pan1(self):
 		driver = self.driver
 		login(driver,"admin","pandora",self.base_url)
+		detect_and_pass_all_wizards(driver)
 		click_menu_element(driver,"General Setup")
 		self.assertEqual("IP list with API access", driver.find_element_by_id("table2-15-0").text)
 	

@@ -1942,8 +1942,9 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3) {
 		'min_ff_event_warning',
 		'min_ff_event_critical',
 		'critical_inverse',
-		'warning_inverse');
-	
+		'warning_inverse',
+		'policy_linked');
+
 	$values = array();
 	$cont = 0;
 	foreach ($network_module_fields as $field) {
@@ -1953,7 +1954,9 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3) {
 		
 		$cont++;
 	}
-	
+	$values['policy_linked'] = 0;
+
+
 	$result_update = modules_update_agent_module($id_module, $values);
 	
 	if ($result_update < 0)
@@ -2150,8 +2153,9 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3) {
 		'min_ff_event_warning',
 		'min_ff_event_critical',
 		'critical_inverse',
-		'warning_inverse');
-	
+		'warning_inverse',
+		'policy_linked');
+
 	$values = array();
 	$cont = 0;
 	foreach ($plugin_module_fields as $field) {
@@ -2165,7 +2169,8 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3) {
 		
 		$cont++;
 	}
-	
+
+	$values['policy_linked']= 0;
 	$result_update = modules_update_agent_module($id_module, $values);
 	
 	if ($result_update < 0)
@@ -2522,8 +2527,9 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3) {
 		'min_ff_event_critical',
 		'ff_timeout',
 		'critical_inverse',
-		'warning_inverse');
-	
+		'warning_inverse',
+		'policy_linked');
+
 	$values = array();
 	$cont = 0;
 	foreach ($data_module_fields as $field) {
@@ -2533,7 +2539,8 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3) {
 		
 		$cont++;
 	}
-	
+
+	$values['policy_linked'] = 0;
 	$result_update = modules_update_agent_module($id_module, $values);
 	
 	if ($result_update < 0)
@@ -2818,7 +2825,8 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 			'each_ff',
 			'min_ff_event_normal',
 			'min_ff_event_warning',
-			'min_ff_event_critical');
+			'min_ff_event_critical',
+			'policy_linked');
 	}
 	else {
 		$snmp_module_fields = array(
@@ -2848,7 +2856,8 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 			'each_ff',
 			'min_ff_event_normal',
 			'min_ff_event_warning',
-			'min_ff_event_critical');
+			'min_ff_event_critical',
+			'policy_linked');
 	}
 	
 	$values = array();
@@ -2860,7 +2869,8 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 		
 		$cont++;
 	}
-	
+
+	$values['policy_linked'] = 0;
 	$result_update = modules_update_agent_module($id_module, $values);
 	
 	if ($result_update < 0)

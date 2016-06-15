@@ -64,3 +64,29 @@ def is_element_present(driver, how, what):
 	try: driver.find_element(by=how, value=what)
 	except NoSuchElementException: return False
 	return True
+
+def detect_and_pass_pandorin(driver):
+	if is_element_present(driver,By.NAME,'clippy_is_annoying'):
+		driver.find_element_by_id('checkbox-clippy_is_annoying').click()
+		driver.find_element_by_class_name('introjs-skipbutton').click()
+		alert = driver.switch_to_alert()
+		alert.accept()
+
+def detect_and_pass_initial_wizard(driver):
+	#We need to distinguish between the REQUIRED wizard
+	if is_element_present(driver,By.ID,'login_id_dialog'):
+		driver.find_element_by_id('text-email').clear()
+		driver.find_element_by_id('text-email').send_keys("test@pandora.com")
+		driver.find_element_by_id('submit-id_dialog_button').click()
+
+
+def detect_and_pass_newsletter_wizard(driver):
+	if is_element_present(driver,By.ID,'login_accept_register'):
+		driver.find_element_by_id('submit-finish_dialog_button').click()
+		driver.find_element_by_id('submit-yes_registration').click()
+
+
+def detect_and_pass_all_wizards(driver):
+	detect_and_pass_pandorin(driver)
+	detect_and_pass_initial_wizard(driver)
+	detect_and_pass_newsletter_wizard(driver)

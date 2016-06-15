@@ -1110,6 +1110,31 @@ sub get_group_id {
 }
 
 ################################################################################
+## SUB get_module_group_id
+## Get the id of a module_group given its name.
+################################################################################
+sub get_module_group_id {
+	my $name = $_[0];
+	my $sth;
+	my @data;
+	
+	# SQL Get group id
+	$sth = $dbh->prepare ("SELECT id_mg FROM tmodule_group WHERE name = ?") || die ("Error preparing statement: " . $sth->errstr);
+	
+	$sth->execute ($name) || die ("Error executing statement: " . $sth->errstr);
+	
+	# Group not found
+	if ($sth->rows == 0) {
+		return -1;
+	}
+
+	@data = $sth->fetchrow_array ();
+	
+	# Return id
+	return $data[0];
+}
+
+################################################################################
 ## SUB get_module_id
 ## Get the id of a module given its name and the id of the host.
 ################################################################################

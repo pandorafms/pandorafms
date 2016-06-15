@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import login, click_menu_element
+from include.common_functions_60 import login, click_menu_element, detect_and_pass_all_wizards
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -12,11 +12,12 @@ import unittest, time, re
 class PAN2(PandoraWebDriverTestCase):
 	test_name = u'PAN_2'
 	test_description = u'Creation two agents and delete this agents using bulk operation'
-	tickets_associated = []
+	tickets_associated = [3831]
 	
 	def test_pan2(self):
 		driver = self.driver
 		login(driver,"admin","pandora",self.base_url)
+		detect_and_pass_all_wizards(driver)
 		click_menu_element(driver,"Agent detail")
 		driver.find_element_by_id("submit-crt").click()
 		driver.find_element_by_id("text-agente").click()

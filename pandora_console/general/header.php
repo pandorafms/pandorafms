@@ -72,17 +72,6 @@ config_check();
 				$table->styleTable = 'margin: auto; margin-top: 0px;';
 				$table->rowclass[0] = '';
 				
-				//UM messages
-				if (is_user_admin ($config['id_user'])) {
-					include_once ("include/functions_update_manager.php");
-					$number_unread_messages = update_manager_get_unread_messages ();
-					if ($number_unread_messages > 0) {
-						$um_messages = html_print_image("images/header_email.png", true, 
-											array("alt" => 'cross', "class" => 'bot', 'title' => __('UM unread messages').': ' . $number_unread_messages));
-						$table->data[0]['um'] = '<a href="index.php?sec=gsetup&amp;sec2=godmode/update_manager/update_manager&amp;tab=messages">' . $um_messages . "</a>";
-					}
-				}
-				
 				// Search bar
 				$search_bar = '<form method="get" style="display: inline;" name="quicksearch" action="">';
 				if (!isset($config['search_keywords'])) {

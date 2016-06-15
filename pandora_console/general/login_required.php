@@ -51,7 +51,7 @@ echo '<div id="login_id_dialog" title="' .
 	__('Pandora FMS instance identification wizard') . '" style="display: none;">';
 	
 	echo '<div style="font-size: 10pt; margin: 20px;">';
-	echo __('Pandora FMS requires an identification of each administrator. Please, fill next information:');
+	echo __('Please fill the following information in order to configure your Pandora FMS instance successfully') . '.';
 	echo '</div>';
 	
 	echo '<div style="">';
@@ -85,7 +85,8 @@ echo '<div id="login_id_dialog" title="' .
 		$timezones = timezone_identifiers_list();
 		foreach ($timezones as $timezone) {
 			if (strpos($timezone, $zone_selected) !== false) { 
-				$timezone_n[$timezone] = $timezone;
+				$timezone_country = preg_replace('/^.*\//', '', $timezone);
+				$timezone_n[$timezone] = $timezone_country;
 			}
 		}			
 		
@@ -130,7 +131,8 @@ function show_timezone () {
 			$("#timezone").empty();
 			jQuery.each (data, function (id, value) {
 				timezone = value;
-				$("select[name='timezone']").append($("<option>").val(timezone).html(timezone));
+				var timezone_country = timezone.replace (/^.*\//g, "");
+				$("select[name='timezone']").append($("<option>").val(timezone).html(timezone_country));
 			});
 		}
 	});

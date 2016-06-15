@@ -162,7 +162,7 @@ echo '<div id="login_accept_register" title="' .
 			echo "<br>";
 			echo '<div id="email_container">';
 				echo '&nbsp;<span id="label-email-newsletter"style="font-size: 12px; display: none">' .__("Email") . ': </span>';
-				html_print_input_text_extended ('email-newsletter', $email, 'text-email-newsletter', '', 30, 255, false, '', array ("style" => "display:none; ")); echo '&nbsp;<span id="label-email-newsletter"style="font-size: 12px; display: none">' .__("Email") . ': </span>';
+				html_print_input_text_extended ('email-newsletter', $email, 'text-email-newsletter', '', 30, 255, false, '', array ("style" => "display:none; width: 180px;")); echo '&nbsp;<span id="label-email-newsletter"style="font-size: 12px; display: none">' .__("Email") . ': </span>';
 				echo '&nbsp;<span id="required-email-newsletter">*'.__("Required") .' </span>';
 			echo '</div>';
 		echo '</div>';

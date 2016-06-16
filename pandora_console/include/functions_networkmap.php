@@ -510,96 +510,98 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	
 	// Define edges for the module interfaces relations
 	// Get the remote_snmp_proc relations
-	$relations = modules_get_relations();
-	if ($relations === false)
-		$relations = array();
-	foreach ($relations as $key => $relation) {
-		$module_a = $relation['module_a'];
-		$module_a_type = modules_get_agentmodule_type($module_a);
-		$agent_a = modules_get_agentmodule_agent($module_a);
-		$module_b = $relation['module_b'];
-		$module_b_type = modules_get_agentmodule_type($module_b);
-		$agent_b = modules_get_agentmodule_agent($module_b);
-		
-		if ($module_a_type == 18 && $module_b_type == 18) {
-			if (isset($modules_node_ref[$module_a]) &&
-				isset($modules_node_ref[$module_b])) {
-				$graph .= networkmap_create_edge(
-					$modules_node_ref[$module_a],
-					$modules_node_ref[$module_b],
-					$layout,
-					$nooverlap,
-					$pure,
-					$zoom,
-					$ranksep,
-					$simple,
-					$regen,
-					$font_size,
-					$group,
-					'operation/agentes/networkmap',
-					'topology',
-					$id_networkmap);
+	if ($l2_network) {
+		$relations = modules_get_relations();
+		if ($relations === false)
+			$relations = array();
+		foreach ($relations as $key => $relation) {
+			$module_a = $relation['module_a'];
+			$module_a_type = modules_get_agentmodule_type($module_a);
+			$agent_a = modules_get_agentmodule_agent($module_a);
+			$module_b = $relation['module_b'];
+			$module_b_type = modules_get_agentmodule_type($module_b);
+			$agent_b = modules_get_agentmodule_agent($module_b);
+			
+			if ($module_a_type == 18 && $module_b_type == 18) {
+				if (isset($modules_node_ref[$module_a]) &&
+					isset($modules_node_ref[$module_b])) {
+					$graph .= networkmap_create_edge(
+						$modules_node_ref[$module_a],
+						$modules_node_ref[$module_b],
+						$layout,
+						$nooverlap,
+						$pure,
+						$zoom,
+						$ranksep,
+						$simple,
+						$regen,
+						$font_size,
+						$group,
+						'operation/agentes/networkmap',
+						'topology',
+						$id_networkmap);
+				}
 			}
-		}
-		elseif ($module_a_type == 6 && $module_b_type == 6) {
-			if (isset($node_ref[$agent_a]) &&
-				isset($node_ref[$agent_b])) {
-				$graph .= networkmap_create_edge(
-					$node_ref[$agent_a],
-					$node_ref[$agent_b],
-					$layout,
-					$nooverlap,
-					$pure,
-					$zoom,
-					$ranksep,
-					$simple,
-					$regen,
-					$font_size,
-					$group,
-					'operation/agentes/networkmap',
-					'topology',
-					$id_networkmap);
+			elseif ($module_a_type == 6 && $module_b_type == 6) {
+				if (isset($node_ref[$agent_a]) &&
+					isset($node_ref[$agent_b])) {
+					$graph .= networkmap_create_edge(
+						$node_ref[$agent_a],
+						$node_ref[$agent_b],
+						$layout,
+						$nooverlap,
+						$pure,
+						$zoom,
+						$ranksep,
+						$simple,
+						$regen,
+						$font_size,
+						$group,
+						'operation/agentes/networkmap',
+						'topology',
+						$id_networkmap);
+				}
+			
 			}
-		
-		}
-		elseif ($module_a_type == 6 && $module_b_type == 18) {
-			if (isset($node_ref[$agent_a]) &&
-				isset($modules_node_ref[$module_b])) {
-				$graph .= networkmap_create_edge(
-					$node_ref[$agent_a],
-					$modules_node_ref[$module_b],
-					$layout,
-					$nooverlap,
-					$pure,
-					$zoom,
-					$ranksep,
-					$simple,
-					$regen,
-					$font_size,
-					$group,
-					'operation/agentes/networkmap',
-					'topology',
-					$id_networkmap);
+			elseif ($module_a_type == 6 && $module_b_type == 18) {
+				if (isset($node_ref[$agent_a]) &&
+					isset($modules_node_ref[$module_b])) {
+					$graph .= networkmap_create_edge(
+						$node_ref[$agent_a],
+						$modules_node_ref[$module_b],
+						$layout,
+						$nooverlap,
+						$pure,
+						$zoom,
+						$ranksep,
+						$simple,
+						$regen,
+						$font_size,
+						$group,
+						'operation/agentes/networkmap',
+						'topology',
+						$id_networkmap);
+				}
 			}
-		}
-		elseif ($module_b_type == 6 && $module_a_type == 18) {
-			if (isset($node_ref[$agent_b]) &&
-				isset($modules_node_ref[$module_a])) {
-				$graph .= networkmap_create_edge(
-					$node_ref[$agent_b],
-					$modules_node_ref[$module_a],
-					$layout,
-					$nooverlap,
-					$pure,
-					$zoom,
-					$ranksep,
-					$simple,
-					$regen,
-					$font_size,
-					$group,
-					'operation/agentes/networkmap',
-					'topology',
-					$id_networkmap);
+			elseif ($module_b_type == 6 && $module_a_type == 18) {
+				if (isset($node_ref[$agent_b]) &&
+					isset($modules_node_ref[$module_a])) {
+					$graph .= networkmap_create_edge(
+						$node_ref[$agent_b],
+						$modules_node_ref[$module_a],
+						$layout,
+						$nooverlap,
+						$pure,
+						$zoom,
+						$ranksep,
+						$simple,
+						$regen,
+						$font_size,
+						$group,
+						'operation/agentes/networkmap',
+						'topology',
+						$id_networkmap);
+				}
 			}
 		}
 	}

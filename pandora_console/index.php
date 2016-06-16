@@ -635,9 +635,10 @@ if (get_parameter ('login', 0) !== 0) {
 			$display_previous_popup = include_once("general/last_message.php");
 		}
 	}
-	if (!isset($config['skip_login_help_dialog']) ||
-		$config['skip_login_help_dialog'] == 0) {
-
+	if ((!isset($config['skip_login_help_dialog']) || $config['skip_login_help_dialog'] == 0) && 
+		$display_previous_popup === false && 
+		$config['initial_wizard'] == 1) {
+			
 		include_once("general/login_help_dialog.php");
 	}
 

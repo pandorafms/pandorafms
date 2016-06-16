@@ -39,7 +39,8 @@ if (is_ajax()) {
 		$mail_check = 'yourmail@domain.es';
 		$mail_alert = alerts_get_alert_action_field1(1);
 		if ($mail_check === $mail_alert && $email !== false) {
-			alerts_update_alert_action (1, array('field1' => $email));
+			alerts_update_alert_action (1, array('field1' => $email, 
+							     'field1_recovery' => $email));
 		}
 		
 		config_update_value ('initial_wizard', 1);

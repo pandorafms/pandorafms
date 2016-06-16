@@ -479,10 +479,10 @@ if ($activeTab == 'groups') {
 }
 
 // Interfaces
-if ($activeTab == 'topology') {
-	$form_elems[] = __('Show interfaces') . '&nbsp;' .
-		html_print_checkbox ('show_snmp_modules', '1', $show_snmp_modules, true);
-}
+//if ($activeTab == 'topology') {
+//	$form_elems[] = __('Show interfaces') . '&nbsp;' .
+//		html_print_checkbox ('show_snmp_modules', '1', $show_snmp_modules, true);
+//}
 
 // No overlap
 if ($activeTab != 'dynamic' && $activeTab != 'radial_dynamic') {
@@ -547,10 +547,10 @@ if (($activeTab == 'groups') || ($activeTab == 'topology')) {
 }
 
 // L2 network
-if ($activeTab == 'topology') {
-	$form_elems[] = __('L2 network interfaces') . '&nbsp;' .
-		html_print_checkbox ('l2_network', '1', $l2_network, true);
-}
+//if ($activeTab == 'topology') {
+//	$form_elems[] = __('L2 network interfaces') . '&nbsp;' .
+//		html_print_checkbox ('l2_network', '1', $l2_network, true);
+//}
 
 // Distance between nodes
 if ($nooverlap == 1) {

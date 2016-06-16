@@ -618,7 +618,8 @@ if ($old_global_counter_chat != $now_global_counter_chat) {
 // 2) identification (newsletter and register)
 // 3) last_message   (update manager message popup
 // 4) login_help     (online help, enterpirse version, forums, documentation)
-if (!isset($config['initial_wizard']) || $config['initial_wizard'] != 1) {
+if (license_free() && is_user_admin ($config['id_user']) && 
+	(!isset($config['initial_wizard']) || $config['initial_wizard'] != 1)) {
 	include_once ("general/login_required.php");
 }
 if (get_parameter ('login', 0) !== 0) {

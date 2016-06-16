@@ -34,7 +34,14 @@ if (is_ajax()) {
 		if ($timezone !== false) config_update_value ('timezone', $timezone);
 		if ($email !== false) db_process_sql_update ('tusuario', 
 								array ('email' => $email), array('id_user' => $config['id_user']));
-								
+		
+		// Update the alert action Mail to XXX/Administrator if it is set to default
+		$mail_check = 'yourmail@domain.es';
+		$mail_alert = alerts_get_alert_action_field1(1);
+		if ($mail_check === $mail_alert && $email !== false) {
+			alerts_update_alert_action (1, array('field1' => $email));
+		}
+		
 		config_update_value ('initial_wizard', 1);
 		
 	}

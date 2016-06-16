@@ -22,6 +22,9 @@ use PandoraFMS::NmapParser;
 # Do not change code below this line.
 #######################################################################
 
+# IP aliases.
+my %ALIASES;
+
 # If set to '-a' all network interfaces will be added (the default is to only add interfaces that are up).
 my $ALLIFACES = '';
 
@@ -31,11 +34,12 @@ my %ARP_CACHE;
 # IP address of a host given the MAC of one of its interfaces.
 my %IF_CACHE;
 
-# Default configuration values.
-my $OSNAME = $^O;
-my %CONF;
+# The default gateway for this host.
+my $DEFAULT_GW = undef;
 
-if ($OSNAME eq "freebsd") {
+# Default configuration values.
+my %CONF;
+if ($^O eq "freebsd") {
 	%CONF = (
 		'nmap' => '/usr/local/bin/nmap',
 		'pandora_path' => '/usr/local/etc/pandora/pandora_server.conf',
@@ -77,10 +81,11 @@ my $DBH;
 # Pandora FMS group where agents will be placed.
 my $GROUP_ID;
 
-# Devices by type.
+# Found hosts.
 my @HOSTS;
-my @ROUTERS;
-my @SWITCHES;
+
+# Found IP routes.
+my @ROUTE_CACHE;
 
 # Switch to switch connections. Used to properly connect hosts
 # that are connected to a switch wich is in turn connected to another switch,
@@ -90,11 +95,8 @@ my %SWITCH_TO_SWITCH;
 # MAC addresses.
 my %MAC;
 
-# Parent-child relationships (in Pandora).
-my %PARENTS;
-
-# Entry router.
-my $ROUTER;
+# SNMP query cache.
+my %SNMP_CACHE;
 
 # Comma separated list of sub-nets to scan.
 my @SUBNETS;
@@ -108,8 +110,8 @@ my $TASK_ID;
 # Visited devices (initially empty).
 my %VISITED_DEVICES;
 
-# Visited routers (initially empty).
-my %VISITED_ROUTERS;
+# Per-device VLAN cache.
+my %VLAN_CACHE;
 
 # Some useful OID.
 my $DOT1DBASEBRIDGEADDRESS = ".1.3.6.1.2.1.17.1.1.0";
@@ -133,6 +135,7 @@ my $PRTMARKERINDEX = ".1.3.6.1.2.1.43.10.2.1.1";
 my $SYSDESCR = ".1.3.6.1.2.1.1.1";
 my $SYSSERVICES = ".1.3.6.1.2.1.1.7";
 my $SYSUPTIME = ".1.3.6.1.2.1.1.3";
+my $VTPVLANIFINDEX = ".1.3.6.1.4.1.9.9.46.1.3.1.1.18.1";
 
 #######################################################################
 # Print log messages.
@@ -208,18 +211,15 @@ sub mac_matches($$) {
 # Returns 1 if the device belongs to one of the scanned subnets.
 ########################################################################################
 sub in_subnet($) {
-	my $device = ip_to_long(shift);
+	my ($device) = @_;
+
+	$device = ip_to_long($device);
 
 	# No subnets specified.
 	return 1 if ($#SUBNETS < 0);
 
 	foreach my $subnet (@SUBNETS) {
-		next unless $subnet =~ m/(^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\/(\d{1,2})$/;
-		my $subnet = ip_to_long($1);
-		my $bits = $2;
-		my $mask = -1 << (32 - $bits);
-		$subnet &= $mask;
-		if (($device & $mask) == $subnet ) {
+		if (subnet_matches($device, $subnet)) {
 			return 1;
 		}
 	}
@@ -251,7 +251,28 @@ sub snmp_get($$$) {
 	my ($target, $community, $oid) = @_;
 	my @output;
 
-	@output = `snmpwalk -M/dev/null -r$CONF{'snmp_checks'} -t$CONF{'snmp_timeout'}  -v1 -On -Oe -c $community $target $oid 2>/dev/null`;
+	# Check the SNMP query cache first.
+	if (defined($SNMP_CACHE{"${target}_${oid}"})) {
+		return @{$SNMP_CACHE{"${target}_${oid}"}};
+	}
+
+	my $vlans = defined($VLAN_CACHE{$target}) ? $VLAN_CACHE{$target} : [];
+	if (!defined($vlans->[0])) {
+		@output = `snmpwalk -M/dev/null -r$CONF{'snmp_checks'} -t$CONF{'snmp_timeout'}  -v1 -On -Oe -c $community $target $oid 2>/dev/null`;
+	} else {
+		# Handle duplicate lines.
+		my %output_hash;
+		foreach my $vlan (@{$vlans}) {
+			foreach my $line (`snmpwalk -M/dev/null -r$CONF{'snmp_checks'} -t$CONF{'snmp_timeout'}  -v1 -On -Oe -c $community\@$vlan $target $oid 2>/dev/null`) {
+				$output_hash{$line} = 1;
+			}
+		}
+		push(@output, keys(%output_hash));
+	}
+
+	# Update the SNMP query cache.
+	$SNMP_CACHE{"${target}_${oid}"} = [@output];
+
 	return @output;
 }
 
@@ -284,6 +305,34 @@ sub snmp_get_value_hash($$$) {
 	}
 
 	return %values;
+}
+
+########################################################################################
+# Returns 1 if the given IP address belongs to the given subnet.
+########################################################################################
+sub subnet_matches($$;$) {
+	my ($ipaddr, $subnet, $mask) = @_;
+	my ($netaddr, $netmask);
+
+	# Decimal dot notation mask.
+	if (defined($mask)) {
+		$netaddr = $subnet;
+		$netmask = ip_to_long($mask);
+	}
+	# CIDR notation.
+	else {
+		($netaddr, $netmask) = split('/', $subnet);
+		return 0 unless defined($netmask);
+
+		# Convert the netmask to a numeric format.
+		$netmask = -1 << (32 - $netmask);
+	}
+
+	if ((ip_to_long($ipaddr) & $netmask) == (ip_to_long($netaddr) & $netmask)) {
+		return 1;
+	}
+
+	return 0;
 }
 
 ########################################################################################
@@ -345,6 +394,63 @@ sub get_if_from_mac($$$) {
 	return '';
 }
 
+##########################################################################
+# Connect the given hosts to its gateway.
+##########################################################################
+sub gateway_connectivity($) {
+	my ($host) = @_;
+	my $parent_id;
+
+	# Find a gateway for the host.
+	my $gw = get_gateway($host);
+	return unless defined($gw);
+
+	# Get the agent for the host.
+	my $agent = get_agent_from_addr($DBH, $host);
+	if (!defined($agent)) {
+		$agent = get_agent_from_name($DBH, $host);
+	}
+	return unless defined($agent);
+
+	# Check if the parent agent exists.
+	my $agent_parent = get_agent_from_addr($DBH, $gw);
+	if (!defined($agent_parent)) {
+		$agent_parent = get_agent_from_name($DBH, $gw);
+	}
+	if (defined ($agent_parent)) {
+		$parent_id = $agent_parent->{'id_agente'};
+	} else {
+		$parent_id = create_pandora_agent($gw);
+	}
+
+	# Connect the host to its parent.
+	if ($parent_id > 0) {
+		message("Host $host is connected to gateway $gw.");
+		connect_pandora_agents($host, '', $gw, '');
+		$VISITED_DEVICES{$host}->{'connected'} = 1 if defined($VISITED_DEVICES{$host});
+	}
+}
+
+########################################################################################
+# Get the gateway to reach the given host.
+########################################################################################
+sub get_gateway($) {
+	my ($host) = @_;
+
+	# Look for a specific route to the given host.
+	foreach my $route (@ROUTE_CACHE) {
+		if (subnet_matches($host, $route->{'dest'}, $route->{'mask'})) {
+			return $route->{'gw'};
+		}
+	}
+
+	# Return the default gateway.
+	return $DEFAULT_GW if defined($DEFAULT_GW);
+
+	# Ops!
+	return undef;
+}
+
 ########################################################################################
 # Get an interface name from an AFT entry. Returns undef on error.
 ########################################################################################
@@ -399,35 +505,6 @@ sub get_if_mac($$$) {
 }
 
 ########################################################################################
-# Find devices using next-hops.
-########################################################################################
-sub next_hop_discovery {
-	my $router = shift;
-
-	# Check if the router has already been visited.
-	return if (defined($VISITED_ROUTERS{$router}));
-
-	# Mark the router as visited.
-	$VISITED_ROUTERS{$router} = '';
-
-	# Check if the router responds to SNMP.
-	my $community = defined($COMMUNITIES{$router}) ? $COMMUNITIES{$router} : responds_to_snmp($router);
-	return unless defined ($community);
-
-	# Get next hops.
-	my @next_hops = snmp_get($router, $community, $IPROUTENEXTHOP);
-	foreach my $line (@next_hops) {
-		next unless ($line =~ /^$IPROUTENEXTHOP.([^ ]+)\s+=\s+\S+:\s+(.*)$/);
-		my ($route, $next_hop) = ($1, $2);
-		my $route_type = snmp_get_value($router, $community, "$IPROUTETYPE.$route");
-		next unless defined($route_type);
-
-		# Recursively process found routers (route type 4, 'indirect').
-		next_hop_discovery($next_hop) if ($route_type eq '4');
-	}
-}
-
-########################################################################################
 # Find devices using ARP caches.
 ########################################################################################
 sub arp_cache_discovery {
@@ -440,7 +517,7 @@ sub arp_cache_discovery {
 	return if (in_subnet($device) == 0);
 		
 	# Set a default device type.
-	my $device_type = defined ($VISITED_ROUTERS{$device}) ? 'router' : 'host';
+	my $device_type = 'host';
 
 	# Mark the device as visited.
 	$VISITED_DEVICES{$device} = { 'addr' => { $device => '' },
@@ -451,14 +528,17 @@ sub arp_cache_discovery {
 	my $community = defined($COMMUNITIES{$device}) ? $COMMUNITIES{$device} : responds_to_snmp($device);
 	if (defined ($community)) {
 
+		# Find VLANs and populate the VLAN cache.
+		find_vlans($device, $community);
+
 		# Guess device type.
 		if ($device_type ne 'router') {
 			$device_type = guess_device_type($device, $community);
 			$VISITED_DEVICES{$device}->{'type'} = $device_type;
 		}
 
-		# Find synonyms for the device.
-		find_synonyms($device, $device_type, $community);
+		# Find aliases for the device.
+		find_aliases($device, $community);
 		
 		# Get ARP cache.
 		my @output = snmp_get($device, $community, $IPNETTOMEDIAPHYSADDRESS);
@@ -477,44 +557,78 @@ sub arp_cache_discovery {
 		}
 	}
 
-	# Separate devices by type to find device connectivity later.
-	if ($device_type eq 'host' || $device_type eq 'printer') {
-
-		# Hosts are indexed to help find router/switch to host connectivity.
-		push(@HOSTS, $device);
-	}
-	elsif ($device_type eq 'switch') {
-		push(@SWITCHES, $device);
-	}
-	elsif ($device_type eq 'router') {
-		push(@ROUTERS, $device);
-	}
+	# Save the found host.
+	push(@HOSTS, $device);
 
 	# Create a Pandora FMS agent for the device.
 	create_pandora_agent($device);
 }
 
 ########################################################################################
-# Find IP address synonyms for the given device.
+# Find IP address aliases for the given device.
 ########################################################################################
-sub find_synonyms($$$) {
-	my ($device, $device_type, $community) = @_;
+sub find_aliases($$) {
+	my ($device, $community) = @_;
 
 	# Get ARP cache.
 	my @ip_addresses = snmp_get_value_array($device, $community, $IPENTADDR);
 	foreach my $ip_address (@ip_addresses) {
 		next if ($ip_address =~ m/\.255$|\.0$|127\.0\.0\.1$/);
 
+		# Sometimes we find the same IP address we had.
+		next if ($ip_address eq $device);
+
+		# Link both devices.
 		$VISITED_DEVICES{$device}->{'addr'}->{$ip_address} = '';
+		$VISITED_DEVICES{$ip_address} = $VISITED_DEVICES{$device};
+		$COMMUNITIES{$ip_address} = $community;
 
-		# Link the two addresses.
-		$VISITED_DEVICES{$ip_address} = \$VISITED_DEVICES{$device} if (!defined($VISITED_DEVICES{$ip_address}));
-
-		# There is no need to access switches or routers from different IP addresses.
-		if ($device_type eq 'host' || $device_type eq 'printer') {
-			push(@HOSTS, $device);
+		# Add it to the list of hosts to be scanned if it belongs to any of the
+		# scanned subnets.
+		if (in_subnet($device)) {
+			push(@HOSTS, $ip_address);
 		}
 	}
+}
+
+########################################################################################
+# Fill the route cache.
+########################################################################################
+sub find_routes() {
+
+	# Parse route's output.
+	my @output = `route -n 2>/dev/null`;
+	foreach my $line (@output) {
+		chomp($line);
+		if ($line =~ /^0\.0\.0\.0\s+(\d+\.\d+\.\d+\.\d+).*/) {
+			$DEFAULT_GW = $1;
+		} elsif ($line =~ /^(\d+\.\d+\.\d+\.\d+)\s+(\d+\.\d+\.\d+\.\d+)\s+(\d+\.\d+\.\d+\.\d+).*/) {
+			push(@ROUTE_CACHE, { dest => $1, gw => $2, mask => $3 });
+		}
+	}
+
+	# Replace 0.0.0.0 with the default gateway's IP.
+	return unless defined ($DEFAULT_GW);
+	foreach my $route (@ROUTE_CACHE) {
+		$route->{gw} = $DEFAULT_GW if ($route->{'gw'} eq '0.0.0.0');
+	}
+}
+
+########################################################################################
+# Find the device's VLANs and fill the VLAN cache.
+########################################################################################
+sub find_vlans ($$) {
+	my ($device, $community) = @_;
+	my %vlan_hash;
+
+	foreach my $vlan (snmp_get_value_array($device, $community, $VTPVLANIFINDEX)) {
+		next if $vlan eq '0';
+		$vlan_hash{$vlan} = 1;
+	}
+	my @vlans = keys(%vlan_hash);
+
+	$VLAN_CACHE{$device} = [];
+	push(@{$VLAN_CACHE{$device}}, @vlans) if (scalar(@vlans) > 0);
 }
 
 ########################################################################################
@@ -627,6 +741,7 @@ sub switch_to_switch_connectivity($$) {
 					next unless ($if_name_1) ne '';
 					my $if_name_2 = get_if_from_aft($switch_2, $COMMUNITIES{$switch_2}, $aft_mac_2);
 					next unless ($if_name_2) ne '';
+
 					message("Switch $switch_1 (if $if_name_1) is connected to switch $switch_2 (if $if_name_2).");
 					connect_pandora_agents($switch_1, $if_name_1, $switch_2, $if_name_2);
 
@@ -646,7 +761,7 @@ sub router_to_switch_connectivity($$) {
 	my ($router, $switch) = @_;
 	my (%mac_temp, @aft_temp);
 
-	# Make sure both routers respond to SNMP.
+	# Make sure both devices respond to SNMP.
 	return unless defined($COMMUNITIES{$router} && $COMMUNITIES{$switch});
 
 	# Get the list of MAC addresses of the router.
@@ -745,13 +860,12 @@ sub host_connectivity($) {
 			message("Host $host " . ($host_if_name ne '' ? "(if $host_if_name)" : '') . " is connected to router $device (if $device_if_name).");
 		}
 		elsif ($VISITED_DEVICES{$device}->{'type'} eq 'switch') {
-			next if defined ($SWITCH_TO_SWITCH{"$device$device_if_name"}); # The switch is probably connected to another switch.
 			message("Host $host " . ($host_if_name ne '' ? "(if $host_if_name)" : '') . " is connected to switch $device (if $device_if_name).");
 		}
 		else {
 			message("Host $host " . ($host_if_name ne '' ? "(if $host_if_name)" : '') . " is connected to host $device (if $device_if_name).");
 		}
-		connect_pandora_agents($device, $device_if_name, $host, $host_if_name);
+		connect_pandora_agents($host, $host_if_name, $device, $device_if_name);
 	}
 }
 
@@ -761,70 +875,47 @@ sub host_connectivity($) {
 ##########################################################################
 sub create_pandora_agent($) {
 	my ($device) = @_;
+	my $agent_id;
 
-	my $agent;
-	my @agents = get_db_rows($DBH,
-		'SELECT * FROM taddress, taddress_agent, tagente
-		 WHERE tagente.id_agente = taddress_agent.id_agent
-			AND taddress_agent.id_a = taddress.id_a
-            AND ip = ?', $device
-	);
-
-	# Does the host already exist?
-	foreach my $candidate (@agents) {
-	  $agent = {map {$_} %$candidate}; # copy contents, do not use shallow copy
-	  # exclude $device itself, because it handle corner case when target includes NAT
-	  my @registered = map {$_->{ip}} get_db_rows($DBH,
-	  	'SELECT ip FROM taddress, taddress_agent, tagente
-	  	 WHERE tagente.id_agente = taddress_agent.id_agent
-	  		AND taddress_agent.id_a = taddress.id_a
-	  		AND tagente.id_agente = ?
-            AND taddress.ip != ?', $agent->{id_agente}, $device
-	  );
-	  foreach my $ip_addr (@registered) {
-		my @matched = grep { $_ =~ /^$ip_addr$/ } keys(%{$VISITED_DEVICES{$device}->{'addr'}});
-		if (scalar(@matched) == 0) {
-			$agent = undef;
-			last;
-		}
-	  }
-	  last if(defined($agent)); # exit loop if match all ip_addr
-	}
-
+	# Does the agent already exist?
+	my $agent = get_agent_from_addr($DBH, $device);
 	if (!defined($agent)) {
 		$agent = get_agent_from_name($DBH, $device);
 	}
-
-	my $agent_id;
+	
+	# Create it.
 	if (!defined($agent)) {
 		my $id_os = 10; # Other.
-		my $device_type = $VISITED_DEVICES{$device}->{'type'};
+		my $device_type = defined($VISITED_DEVICES{$device}) ? $VISITED_DEVICES{$device}->{'type'} : 'host';
 		if ($device_type eq 'router') {
 			$id_os = 17;
 		}
 		elsif ($device_type eq 'switch') {
 			$id_os = 18;
 		}
-
+	
 		$agent_id = pandora_create_agent(\%CONF, $CONF{'servername'}, $device, $device, $GROUP_ID, 0, $id_os, '', 300, $DBH);
 		return undef unless defined ($agent_id) and ($agent_id > 0);
-		pandora_event(\%CONF, "[RECON] New $device_type found (" . join(',', keys(%{$VISITED_DEVICES{$device}->{'addr'}})) . ").", $GROUP_ID, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $DBH);
+
+		pandora_event(\%CONF, "[RECON] New $device_type found (" . join(',', defined($VISITED_DEVICES{$device}) ? keys(%{$VISITED_DEVICES{$device}->{'addr'}}) : $device) . ").", $GROUP_ID, $agent_id, 2, 0, 0, 'recon_host_detected', 0, $DBH);
 	}
+	# Update it.
 	else {
 		$agent_id = $agent->{'id_agente'};
 	}
 
 	# Add found IP addresses to the agent.
-	foreach my $ip_addr (keys(%{$VISITED_DEVICES{$device}->{'addr'}})) {
+	foreach my $ip_addr (defined($VISITED_DEVICES{$device}) ? keys(%{$VISITED_DEVICES{$device}->{'addr'}}) : ($device)) {
 		my $addr_id = get_addr_id ($DBH, $ip_addr);
+
+		# Create the address if it does not exist.
 		$addr_id = add_address ($DBH, $ip_addr) unless ($addr_id > 0);
 		next unless ($addr_id > 0);
 
 		# Assign the new address to the agent
-		my $agent_addr_id = get_agent_addr_id ($DBH, $addr_id, $agent_id);
-		if ($agent_addr_id <= 0) {
-			db_do ($DBH, 'INSERT INTO taddress_agent (`id_a`, `id_agent`)
-						  VALUES (?, ?)', $addr_id, $agent_id);
+		if (!defined(get_address_agent($DBH, $addr_id, $agent_id))) {
+			add_new_address_agent($DBH, $addr_id, $agent_id);
+			message("Assigning address $ip_addr to agent $agent->{'nombre'}");
 		}
 	}
 
@@ -919,6 +1010,8 @@ sub create_pandora_agent($) {
 sub switch_already_connected ($$$$) {
 	my ($dev_1, $if_1, $dev_2, $if_2) = @_;
 
+	return unless defined($VISITED_DEVICES{$dev_1}) and defined($VISITED_DEVICES{$dev_2});
+
 	if ($VISITED_DEVICES{$dev_1}->{'type'} eq 'router' ||
 	    $VISITED_DEVICES{$dev_1}->{'type'} eq 'switch') {
 		return 1 if defined ($SWITCH_TO_SWITCH{"$dev_1$if_1"}); # The switch is probably connected to another router/switch.
@@ -977,16 +1070,8 @@ sub connect_pandora_agents($$$$) {
 
 	# Mark the two devices as connected.
 	$CONNECTIONS{"${module_id_1}_${module_id_2}"} = 1;
-	if (ref($VISITED_DEVICES{$dev_1}) eq 'HASH') {
-		$VISITED_DEVICES{$dev_1}->{'connected'} = 1;
-	} else {
-		${$VISITED_DEVICES{$dev_1}}->{'connected'} = 1; # An alias.
-	}
-	if (ref($VISITED_DEVICES{$dev_2}) eq 'HASH') {
-		$VISITED_DEVICES{$dev_2}->{'connected'} = 1;
-	} else {
-		${$VISITED_DEVICES{$dev_2}}->{'connected'} = 1; # An alias.
-	}
+	$VISITED_DEVICES{$dev_1}->{'connected'} = 1 if defined($VISITED_DEVICES{$dev_1});
+	$VISITED_DEVICES{$dev_2}->{'connected'} = 1 if defined($VISITED_DEVICES{$dev_2});
 
 	# Connect the modules if they are not already connected.
 	my $connection_id = get_db_value($DBH, 'SELECT id FROM tmodule_relationship WHERE (module_a = ? AND module_b = ?) OR (module_b = ? AND module_a = ?)', $module_id_1, $module_id_2, $module_id_1, $module_id_2);
@@ -995,13 +1080,7 @@ sub connect_pandora_agents($$$$) {
 	}
 
 	# Update parents.
-	if (!defined($PARENTS{$agent_2->{'id_agente'}})) {
-		$PARENTS{$agent_2->{'id_agente'}} = $agent_1->{'id_agente'};
-		db_do($DBH, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $agent_1->{'id_agente'}, $agent_2->{'id_agente'});
-	} elsif (!defined($PARENTS{$agent_1->{'id_agente'}})) {
-		$PARENTS{$agent_1->{'id_agente'}} = $agent_2->{'id_agente'};
-		db_do($DBH, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $agent_2->{'id_agente'}, $agent_1->{'id_agente'});
-	}
+	db_do($DBH, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $agent_2->{'id_agente'}, $agent_1->{'id_agente'});
 }
 
 
@@ -1044,13 +1123,13 @@ sub show_help {
 	print " * custom_field3 = a router in the network. Optional but recommended.\n\n";
 	print " * custom_field4 = set to -a to add all network interfaces (by default only interfaces that are up are added).\n\n";
 	print " Additional information:\nWhen the script is called from a recon task the task_id, group_id and create_incident";
-	print " parameters are automatically filled by the Pandora FMS Server.";
+	print " parameters are automatically filled by the Pandora FMS Server.\n";
 	exit;
 }
 
 ##########################################################################
 # Connect the given hosts to its parent using traceroute.
-##########################################################################	
+##########################################################################
 sub traceroute_connectivity($) {
 	my ($host) = @_;
 
@@ -1079,26 +1158,33 @@ sub traceroute_connectivity($) {
 	
 	# Reverse the host order (closest hosts first).
 	@hops = reverse(@hops);
-	
-	# Look for parents.
-	my $parent_id = 0;
-	foreach my $hop (@hops) {
-		my $host_addr = $hop->ipaddr ();
-		
-		# Check if the parent agent exists.
-		my $agent = get_agent_from_addr ($DBH, $host_addr);
-		if (!defined($agent)) {
-			$agent = get_agent_from_name($DBH, $host_addr);
-		}
-		if (defined ($agent)) {
-			$parent_id = $agent->{'id_agente'};
-			last;
-		}
-	}
 
-	# Connect the host to its parent.
-	if ($parent_id > 0) {
-		db_do($DBH, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $parent_id, $agent->{'id_agente'});
+	# Look for parents.
+	my ($parent_id, $parent_address) = (0, undef);
+	my ($child_id, $child_address) = ($agent->{'id_agente'}, $host);
+	foreach my $hop (@hops) {
+		$parent_address = $hop->ipaddr();
+
+		# Check if the parent agent exists.
+		my $agent_parent = get_agent_from_addr($DBH, $parent_address);
+		if (!defined($agent_parent)) {
+			$agent_parent = get_agent_from_name($DBH, $parent_address);
+		}
+		if (defined ($agent_parent)) {
+			$parent_id = $agent_parent->{'id_agente'};
+		} else {
+			$parent_id = create_pandora_agent ($parent_address);
+		}
+
+		# Connect the host to its parent.
+		if ($parent_id > 0) {
+			message("Host $child_address is connected to host $parent_address.") if (defined($VISITED_DEVICES{$child_address}));
+			connect_pandora_agents($child_address, '', $parent_address, '');
+			$VISITED_DEVICES{$child_address}->{'connected'} = 1 if defined($VISITED_DEVICES{$child_address});
+
+			# Move on to the next hop.
+			($child_id, $child_address) = ($parent_id, $parent_address);
+		}
 	}
 }
 
@@ -1116,8 +1202,7 @@ $GROUP_ID = $ARGV[1]; # Defined by user
 $CREATE_INCIDENT = $ARGV[2]; # Defined by user
 @SUBNETS = split(',', $ARGV[3]);
 @SNMP_COMMUNITIES = split(',', $ARGV[4]) if defined($ARGV[4]);
-$ROUTER = $ARGV[5] if defined($ARGV[5]);
-$ALLIFACES = $ARGV[6] if defined($ARGV[6]);
+#$ROUTER = $ARGV[5] if defined($ARGV[5]); # Not used anymore.
 $ALLIFACES = $ARGV[6] if defined($ARGV[6]);
 
 # Read config filea and start logging.
@@ -1130,106 +1215,84 @@ $DBH = db_connect ('mysql', $CONF{'dbname'}, $CONF{'dbhost'}, $CONF{'dbport'}, $
 # 0%
 update_recon_task($DBH, $TASK_ID, 1);
 
-# Find routers.
-message("[1/6] Searching for routers...");
-if (defined($ROUTER) && $ROUTER ne '') {
-	next_hop_discovery($ROUTER);
-}
-update_recon_task($DBH, $TASK_ID, 15);
-
 # Find devices.
-message("[2/6] Searching for switches and end hosts...");
-if (defined($ROUTER) && $ROUTER ne '') {
-	foreach my $router (keys(%VISITED_ROUTERS)) {
-		arp_cache_discovery($router);
+message("[1/7] Searching for switches and end hosts...");
+foreach my $subnet (@SUBNETS) {
+    my $net_addr = new NetAddr::IP ($subnet);
+	if (!defined($net_addr)) {
+		message("Invalid network: $subnet");
+		exit 1;
 	}
-}
-else {
-	foreach my $subnet (@SUBNETS) {
-	    my $net_addr = new NetAddr::IP ($subnet);
-		if (!defined($net_addr)) {
-			message("Invalid network: $subnet");
-			exit 1;
-		}
 
-		my @hosts = map { (split('/', $_))[0] } $net_addr->hostenum;
-		foreach my $host (@hosts) {
+	my @hosts = map { (split('/', $_))[0] } $net_addr->hostenum;
+	foreach my $host (@hosts) {
 
-			# Check if the device has already been visited.
-			next if (defined($VISITED_DEVICES{$host}));
+		message("Scanning host: $host");
 
-			# Check if the host is up.
-			next if (pandora_ping(\%CONF, $host, 1, 1) == 0);
+		# Check if the device has already been visited.
+		next if (defined($VISITED_DEVICES{$host}));
+
+		# Check if the host is up.
+		next if (pandora_ping(\%CONF, $host, 1, 1) == 0);
 	
-			arp_cache_discovery($host);
-		}
+		arp_cache_discovery($host);
 	}
 }
 update_recon_task($DBH, $TASK_ID, 30);
 
 # Find switch to switch connections.
-message("[3/6] Finding switch to switch connectivity...");
-for (my $i = 0; defined($SWITCHES[$i]); $i++) {
-	my $switch_1 = $SWITCHES[$i];
-	for (my $j = $i + 1; defined($SWITCHES[$j]); $j++) {
-		my $switch_2 = $SWITCHES[$j];
+message("[2/7] Finding switch to switch connectivity...");
+for (my $i = 0; defined($HOSTS[$i]); $i++) {
+	my $switch_1 = $HOSTS[$i];
+	for (my $j = $i + 1; defined($HOSTS[$j]); $j++) {
+		my $switch_2 = $HOSTS[$j];
 		switch_to_switch_connectivity($switch_1, $switch_2) if ($switch_1 ne $switch_2);
 	}
 }
 update_recon_task($DBH, $TASK_ID, 45);
 
 # Find router to switch connections.
-message("[4/6] Finding router to switch connectivity...");
-foreach my $router (@ROUTERS) {
-	foreach my $switch (@SWITCHES) {
-		router_to_switch_connectivity($router, $switch);
+message("[3/7] Finding router to switch connectivity...");
+for (my $i = 0; defined($HOSTS[$i]); $i++) {
+	my $router = $HOSTS[$i];
+	for (my $j = $i + 1; defined($HOSTS[$j]); $j++) {
+		my $switch = $HOSTS[$j];
+		router_to_switch_connectivity($router, $switch) if ($router ne $switch);
 	}
 }
 update_recon_task($DBH, $TASK_ID, 60);
 
 # Find router to router connections.
-message("[5/6] Finding router to router connectivity...");
-for (my $i = 0; defined($ROUTERS[$i]); $i++) {
-	my $router_1 = $ROUTERS[$i];
-	for (my $j = $i + 1; defined($ROUTERS[$j]); $j++) {
-		my $router_2 = $ROUTERS[$j];
+message("[4/7] Finding router to router connectivity...");
+for (my $i = 0; defined($HOSTS[$i]); $i++) {
+	my $router_1 = $HOSTS[$i];
+	for (my $j = $i + 1; defined($HOSTS[$j]); $j++) {
+		my $router_2 = $HOSTS[$j];
 		router_to_router_connectivity($router_1, $router_2) if ($router_1 ne $router_2);
 	}
 }
 update_recon_task($DBH, $TASK_ID, 75);
 
 # Find switch/router to host connections.
-my @hosts = (@ROUTERS, @SWITCHES, @HOSTS);
-message("[6/6] Finding switch/router to end host connectivity...");
-foreach my $device (@hosts) {
+message("[5/7] Finding switch/router to end host connectivity...");
+foreach my $device (@HOSTS) {
 	host_connectivity($device);
 }
 
-# Retry all known connectivity methods by brute force.
-for (my $i = 0; defined($hosts[$i]); $i++) {
-	my $switch_1 = $hosts[$i];
-	for (my $j = $i + 1; defined($hosts[$j]); $j++) {
-		my $switch_2 = $hosts[$j];
-		switch_to_switch_connectivity($switch_1, $switch_2) if ($switch_1 ne $switch_2);
-	}
+# Connect hosts that are still unconnected using configured routes.
+message("[6/7] Finding traceroute connectivity...");
+foreach my $host (@HOSTS) {
+	next unless ($VISITED_DEVICES{$host}->{'connected'} == 0); # Skip already connected hosts.
+	traceroute_connectivity($host);
 }
-foreach my $router (@hosts) {
-	foreach my $switch (@hosts) {
-		router_to_switch_connectivity($router, $switch) if ($router ne $switch);
-	}
-}
-for (my $i = 0; defined($hosts[$i]); $i++) {
-	my $router_1 = $hosts[$i];
-	for (my $j = $i + 1; defined($hosts[$j]); $j++) {
-		my $router_2 = $hosts[$j];
-		router_to_router_connectivity($router_1, $router_2) if ($router_1 ne $router_2);
-	}
-}
+update_recon_task($DBH, $TASK_ID, 90);
 
 # Connect hosts that are still unconnected using traceroute.
-foreach my $host (@hosts) {
-	next if ($VISITED_DEVICES{$host}->{'connected'} == 1); # Skip already connected hosts.
-	traceroute_connectivity($host);
+message("[6/7] Finding gateway connectivity...");
+find_routes();
+foreach my $host (@HOSTS) {
+	next unless ($VISITED_DEVICES{$host}->{'connected'} == 0); # Skip already connected hosts.
+	gateway_connectivity($host);
 }
 update_recon_task($DBH, $TASK_ID, -1);
 

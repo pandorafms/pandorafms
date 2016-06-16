@@ -49,6 +49,7 @@ our @EXPORT = qw(
 		db_update_get_values
 		get_action_id
 		get_addr_id
+		get_address_agent
 		get_agent_addr_id
 		get_agent_id
 		get_agent_address
@@ -941,6 +942,15 @@ sub add_new_address_agent ($$$) {
 	
 	db_do ($dbh, 'INSERT INTO taddress_agent (id_a, id_agent)
 	              VALUES (?, ?)', $addr_id, $agent_id);
+}
+
+########################################################################
+# Return an aggent-address relationship given the respective IDs.
+########################################################################
+sub get_address_agent ($$$) {
+	my ($dbh, $addr_id, $agent_id) = @_;
+
+	return get_db_single_row ($dbh, 'SELECT * FROM taddress_agent WHERE id_a = ? AND id_agent = ?', $addr_id, $agent_id);
 }
 
 ########################################################################

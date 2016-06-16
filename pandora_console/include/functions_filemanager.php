@@ -687,7 +687,8 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 				break;
 			case MIME_UNKNOWN:
 				if ($fileinfo['size'] == 0) {
-					if (strstr($fileinfo['name'], '.txt') !== false) {
+
+					if ((strstr($fileinfo['name'], '.txt') !== false)||(strstr($fileinfo['name'], '.conf') !== false)||(strstr($fileinfo['name'], '.sql') !== false)||(strstr($fileinfo['name'], '.pl') !== false)) {
 						$fileinfo['mime'] = MIME_TEXT;
 						$data[0] = html_print_image ('images/mimetypes/text.png', true, array('title' => __('Text file')));
 					}else{

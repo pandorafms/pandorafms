@@ -176,12 +176,20 @@ if ($total_messages){
 		'class="sub upd"');
 	echo '</div>';
 	echo '</form>';
+	
+	// Get unread messages to update the notification ball.
+	// Clean the cache because the unread messages can be different.
+	db_clean_cache();
+	$total_unread_messages = update_manager_get_unread_messages();
+	
 } else {
 	ui_print_info_message ( array ( 'no_close' => true, 'message' => __('There is not any update manager messages.') ) );
 }
 ?>
 
 <script type="text/javascript">
+	
+	var total_unread_messages = <?php echo json_encode($total_unread_messages); ?>;
 	
 	$("#checkbox-all_selection").click( function() {
 		if ($("#checkbox-all_selection").is(':checked')) {
@@ -227,6 +235,15 @@ if ($total_messages){
 				full_class = full_class.replace (/um_not_read_message/g, "um_read_message");
 				$(this).attr('class', full_class);
 			});
+			
+			var unread = $("#icon_god-um_messages").find(".notification_ball").html();
+			unread--;
+			if (unread == 0) {
+					$("#icon_god-um_messages").find(".notification_ball").hide();
+				}
+				else {
+					$("#icon_god-um_messages").find(".notification_ball").html(unread);
+				}
 		}
 		
 		// Display message
@@ -265,6 +282,17 @@ if ($total_messages){
 			}
 		}
 	);
+	
+	$(document).ready (function () {
+		
+		// Rewrite the notification ball
+		if (total_unread_messages == 0) {
+			$("#icon_god-um_messages").find(".notification_ball").hide();
+		}
+		else {
+			$("#icon_god-um_messages").find(".notification_ball").html(total_unread_messages);
+		}
+	});
 	
 </script>
 

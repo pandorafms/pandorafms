@@ -50,7 +50,7 @@ class PandoraWebDriverTestCase(TestCase):
 			self.sauce_labs_job_id = self.driver.session_id # We store this information to update the job info when the tests are done
 
 		self.driver.implicitly_wait(30)
-		self.base_url = "http://localhost/"
+		self.base_url = "http://127.0.0.1/"
 		self.verificationErrors = []
 		self.accept_next_alert = True
 		super(PandoraWebDriverTestCase, self).setUp()

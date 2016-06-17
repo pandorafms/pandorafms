@@ -44,7 +44,13 @@ def refresh_N_times_until_find_element(driver,n,element_text,how=By.ID,refresh_t
 	raise TimeoutException("Element %s not found" % (element_text))
 
 def logout(driver,url):
-	driver.get(url+'/pandora_console/index.php?bye=bye')
+	if url[-1] != '/':
+		driver.find_element_by_xpath('//div[@id="container"]//a[@href="'+url+'/pandora_console/index.php?bye=bye"]').click()
+	else:
+		driver.find_element_by_xpath('//div[@id="container"]//a[@href="'+url+'pandora_console/index.php?bye=bye"]').click()
+
+	driver.get(url+"/pandora_console/index.php")
+	refresh_N_times_until_find_element(driver,2,"nick")
 
 def create_report(driver,nombre,group_name):
 	click_menu_element(driver,"Custom reporting")

@@ -23,6 +23,7 @@ global $config;
 if (is_ajax()) {
 	
 	$save_identification = get_parameter ('save_required_wizard', 0);
+	$change_language = get_parameter ('change_language', 0);
 	
 	// Updates the values get on the identification wizard
 	if ($save_identification) {
@@ -43,8 +44,12 @@ if (is_ajax()) {
 							     'field1_recovery' => $email));
 		}
 		
-		config_update_value ('initial_wizard', 1);
-		
+		config_update_value ('initial_wizard', 1);	
+	}
+	
+	//Change the language if is change in checkbox
+	if ($change_language !== 0) {
+		config_update_value ('language', $change_language);
 	}
 	
 	return;
@@ -125,6 +130,8 @@ echo '</div>';
 <script type="text/javascript" language="javascript">
 /* <![CDATA[ */
 
+var default_language_displayed;
+
 ////////////////////////////////////////////////////////////////////////
 //HELPER FUNCTIONS
 function show_timezone () {
@@ -172,6 +179,18 @@ $("#submit-id_dialog_button").click (function () {
 	}
 });
 
+$("#language").click(function () {
+	var change_language = $("#language").val();
+	
+	if (change_language === default_language_displayed) return;
+	jQuery.post ("ajax.php",
+			{"page": "general/login_required",
+			"change_language": change_language},
+			function (data) {}
+		);
+	location.reload();
+});
+
 ////////////////////////////////////////////////////////////////////////
 //DISPLAY
 $(document).ready (function () {
@@ -189,6 +208,8 @@ $(document).ready (function () {
 		closeOnEscape: false,
 		open: function(event, ui) { $(".ui-dialog-titlebar-close").hide(); }
 	});
+	
+	default_language_displayed = $("#language").val();
 	
 	$(".ui-widget-overlay").css("background", "#000");
 	$(".ui-widget-overlay").css("opacity", 0.6);

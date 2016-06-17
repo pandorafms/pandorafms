@@ -25,16 +25,8 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 }
 
 if (is_ajax()) {
-	
-	$charge_message = get_parameter ('charge_message', 0);
+
 	$not_read_single = get_parameter ('not_read_single', 0);
-	
-	if ($charge_message) {
-		$message_id = get_parameter ('message_id', 0);
-		if ($message_id == 0) return;
-		$message_html = db_get_value ('data', 'tupdate', 'svn_version', $message_id);
-		echo $message_html;
-	}
 	
 	if ($not_read_single) {
 		$message_id = get_parameter ('message_id', 0);
@@ -109,7 +101,8 @@ if ($total_messages){
 	html_print_submit_button (__('Mark as read'), 'read_button', false,
 		'class="sub upd"');
 	echo '</div>';
-
+	
+	// Pagination
 	if ($total_messages > $config['block_size']) {
 		ui_pagination (update_manager_get_total_messages (), false, 0);
 	}
@@ -137,11 +130,10 @@ if ($total_messages){
 		$table->size[4] = "60px";
 		
 		$table->style[0] = "padding-left: 20px";
+		$table->style[1] = "display: none";
 		
 		$table->head[0] = html_print_checkbox_extended('all_selection[]', 0, false, false, '', '', true);
-		$table->head[1] = __('Message Id');
 		$table->head[2] = __('Subject');
-		$table->head[3] = __('Expiration date');
 		
 
 		$i = 0;
@@ -155,9 +147,6 @@ if ($total_messages){
 			$data[2] = $message['db_field_value'];
 			$table->cellclass[count($table->data)][2] = 'um_individual_subject';
 			
-			$data[3] = $message['filename'];
-			$table->cellclass[count($table->data)][3] = 'um_individual_info';
-			
 			
 			// Change row class if message is read or not by this user
 			if (update_manger_get_read_message ($message['svn_version'], $message['data_rollback'])) {
@@ -169,14 +158,6 @@ if ($total_messages){
 			}
 			array_push ($table->data, $data);
 			
-			// Insert an empty row too. Here the message will be displayed
-			$empty[0] = "";
-			$table->colspan[count($table->data)][0] = 4;
-			$table->cellclass[count($table->data)][0] = "um_message_" . $i;
-			$table->cellstyle[count($table->data)][0] = "display: none;";
-			array_push ($table->data, $empty);
-			
-			$i++;
 		}
 	html_print_table($table);
 
@@ -226,54 +207,40 @@ if ($total_messages){
 		
 		// Delete and mark as not read column will do not open the message
 		if (column == 0) return;
+			
+		// Class where object will be displayed
+		var current_class = ".um_message_" + row;
+		var message_id = $("#"+target).parent().find(":nth-child(2)").html();
+		var className = $("#"+target).parent().attr('class');
 		
-		if (row%2 == 0) {
-			// Clicking a tittle
-			
-			// Class where object will be displayed
-			var current_class = ".um_message_" + row/2;
-			var message_id = $("#"+target).parent().find(":nth-child(2)").html();
-			var div_id = 'um_individual_message' + row/2;
-			
-			// Get the message via Ajax (only if it is not checked now
-			$(current_class).append('<div class="' + div_id + '"></div>');
-			if ($("." + div_id).length == 1) {
-				jQuery.get ("ajax.php",
-					{"page": "godmode/update_manager/update_manager.messages",
-					 "charge_message": 1,
-					 "message_id": message_id},
-					function (data) {
-						$("." + div_id).hide ()
-							.empty ()
-							.append (data)
-							.show ();
-					},
-					"html"
-				);
+		if (className == 'um_not_read_message'){
 				
-				// Update message if it is not readed
-				var className = $("#"+target).parent().attr('class');
-				if (className == 'um_not_read_message'){
-					
-					jQuery.post ("ajax.php",
-						{"page": "godmode/update_manager/update_manager.messages",
-						 "not_read_single": 1,
-						 "message_id": message_id},
-						function (data) {}
-					);
-					
-					$("#"+target).parent().children().each(function(){
-						var full_class = $(this).attr('class');
-						full_class = full_class.replace (/um_not_read_message/g, "um_read_message");
-						$(this).attr('class', full_class);
-					});
-				}
-			}			
+			jQuery.post ("ajax.php",
+				{"page": "godmode/update_manager/update_manager.messages",
+				 "not_read_single": 1,
+				 "message_id": message_id},
+				function (data) {}
+			);
 			
-			// Display message
-			$(current_class).toggle ();
-			
+			$("#"+target).parent().children().each(function(){
+				var full_class = $(this).attr('class');
+				full_class = full_class.replace (/um_not_read_message/g, "um_read_message");
+				$(this).attr('class', full_class);
+			});
 		}
+		
+		// Display message
+		$("#container").append('<div class="id_wizard"></div>');
+		jQuery.get ("ajax.php",
+			{"page": "general/last_message",
+			 "message_id": message_id},
+			function (data) {
+				$(".id_wizard").hide ()
+					.empty ()
+					.append (data);
+			},
+			"html"
+		);
 		
 	});
 	

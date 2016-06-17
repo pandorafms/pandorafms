@@ -21,19 +21,33 @@
 global $config;
 
 include_once("include/functions_update_manager.php");
-$last_message = update_manger_get_last_message ();
 
-if ($last_message === false) return false;
+$message = array();
 
-update_manger_set_read_message($last_message["svn_version"], 1);
-update_manager_remote_read_messages ($last_message["svn_version"]);
+if (is_ajax()) {
+	
+	$message_id = get_parameter ('message_id', false);
+	if ($message_id === false) return false;
+	$message = update_manger_get_single_message ($message_id);
+	
+} else {
+	
+	$message = update_manger_get_last_message ();
+
+	if ($message === false) return false;
+
+	update_manger_set_read_message($message["svn_version"], 1);
+	update_manager_remote_read_messages ($message["svn_version"]);
+}
+
+
 
 // Prints first step pandora registration
 echo '<div id="message_id_dialog" title="' .
-	'[' . $last_message["svn_version"] . '] ' . $last_message['db_field_value'] . '">';
+	'[' . $message["svn_version"] . '] ' . $message['db_field_value'] . '">';
 	
 	echo '<div>';
-		echo $last_message["data"];
+		echo $message["data"];
 	echo '</div>';
 echo '</div>';
 

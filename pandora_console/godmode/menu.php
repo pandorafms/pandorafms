@@ -409,11 +409,11 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu_godmode["messages"]["id"] = "god-um_messages";
 
 	$sub = array ();
-	$sub["godmode/update_manager/update_manager&tab=offline"]["text"] = __('Offline');
+	$sub["godmode/update_manager/update_manager&tab=offline"]["text"] = __('Update Manager offline');
 	$sub["godmode/update_manager/update_manager&tab=offline"]["id"] = 'Offline';
-	$sub["godmode/update_manager/update_manager&tab=online"]["text"] = __('Online');
+	$sub["godmode/update_manager/update_manager&tab=online"]["text"] = __('Update Manager online');
 	$sub["godmode/update_manager/update_manager&tab=online"]["id"] = 'Online';
-	$sub["godmode/update_manager/update_manager&tab=setup"]["text"] = __('Options');
+	$sub["godmode/update_manager/update_manager&tab=setup"]["text"] = __('Update Manager options');
 	$sub["godmode/update_manager/update_manager&tab=setup"]["id"] = 'Options';
 		
 	if (license_free() && is_user_admin ($config['id_user'])) {	

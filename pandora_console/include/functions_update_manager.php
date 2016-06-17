@@ -787,6 +787,17 @@ function update_manger_get_last_message () {
 	return $message;
 }
 
+// Get the a single message message
+function update_manger_get_single_message ($message_id) {
+	global $config;
+	
+	$sql = 'SELECT data, svn_version, db_field_value FROM tupdate ';
+	$sql .= 'WHERE svn_version=' . $message_id;
+	html_debug ("S: " . $sql, true);
+	$message = db_get_row_sql($sql);
+	return $message;
+}
+
 function update_manager_get_total_messages () {	
 	global $config;
 	

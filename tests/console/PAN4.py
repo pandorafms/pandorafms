@@ -15,7 +15,7 @@ class PAN4(PandoraWebDriverTestCase):
 	test_description = u'Creates a user with Chief Operator permissions over the Applications group. Then creates two reports: one in the Applications group and other in the Servers group. Then, it checks that the given user can only see the Application report'
 	tickets_associated = []
 
-	def test_pan3(self):
+	def test_pan4(self):
 		driver = self.driver
 		login(driver,"admin","pandora")
 		detect_and_pass_all_wizards(driver)

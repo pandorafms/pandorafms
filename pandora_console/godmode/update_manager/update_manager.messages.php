@@ -144,7 +144,7 @@ if ($total_messages){
 			$data[1] = $message['svn_version'];
 			$table->cellclass[count($table->data)][1] = 'um_individual_info';
 			
-			$data[2] = $message['db_field_value'];
+			$data[2] = io_safe_output($message['db_field_value']);
 			$table->cellclass[count($table->data)][2] = 'um_individual_subject';
 			
 			

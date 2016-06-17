@@ -524,6 +524,7 @@ function update_manager_register_instance () {
 }
 
 function update_manager_download_messages () {
+	include_once ("include/functions_io.php");
 	global $config;
 	
 	if (!isset ($config['pandora_uid'])) return;
@@ -554,9 +555,11 @@ function update_manager_download_messages () {
 			if ($message['success'] == 1) {
 				foreach ($message['messages'] as $single_message) {
 					// Convert subject -> db_field_value; message_html -> data; expiration -> filename; message_id -> svn_version
-					$single_message['db_field_value'] = $single_message['subject'];
+					$single_message['db_field_value'] = io_safe_input($single_message['subject']);
 					unset ($single_message['subject']);
-					$single_message['data'] = $single_message['message_html'];
+					$single_message['data'] = io_safe_input_html($single_message['message_html']);
+					// It is mandatory to prepend a backslash to all single quotes
+					$single_message['data'] = preg_replace ('/\'/','\\\'', $single_message['data']);
 					unset ($single_message['message_html']);
 					$single_message['filename'] = $single_message['expiration'];
 					unset ($single_message['expiration']);

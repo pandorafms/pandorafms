@@ -44,10 +44,10 @@ if (is_ajax()) {
 
 // Prints first step pandora registration
 echo '<div id="message_id_dialog" title="' .
-	'[' . $message["svn_version"] . '] ' . $message['db_field_value'] . '">';
+	io_safe_output($message['db_field_value']) . '">';
 	
 	echo '<div>';
-		echo $message["data"];
+		echo io_safe_output_html($message["data"]);
 	echo '</div>';
 echo '</div>';
 

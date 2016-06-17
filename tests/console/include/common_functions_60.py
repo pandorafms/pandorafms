@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from selenium import selenium
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 
 import random
@@ -58,11 +58,11 @@ def create_report(driver,nombre,group_name):
 		Select(driver.find_element_by_id("id_group")).select_by_visible_text("    "+group_name)
 	driver.find_element_by_id("submit-add").click()
 
-def add_user_profile(driver,user,profile,group):
+def add_user_profile(driver,user_name,profile,group):
 	click_menu_element(driver,"Users management")
 	driver.find_element_by_css_selector("b").click()
 	driver.find_element_by_id("text-filter_search").clear()
-	driver.find_element_by_id("text-filter_search").send_keys(user)
+	driver.find_element_by_id("text-filter_search").send_keys(user_name)
 	driver.find_element_by_id("submit-search").click()
 	driver.find_element_by_xpath('//*[@id="table3-0-6"]/a[2]').click()
 	Select(driver.find_element_by_id("assign_profile")).select_by_visible_text(profile)
@@ -73,10 +73,11 @@ def add_user_profile(driver,user,profile,group):
 		#TODO This will not work when choosing a group within a group within another group
 		Select(driver.find_element_by_id("assign_group")).select_by_visible_text("    "+group)
 		
-	driver.find_element_by_id("image-add2").click()
+	#driver.find_element_by_id("image-add2").click()
+	driver.find_element_by_xpath('//*[@name="add"]').click()
 
 
-def create_user(driver,userid,userpwd,email=None,profile_list=None):
+def create_user(driver,user_name,userpwd,email=None,profile_list=None):
 	u"""
 	Profile list es una LISTA de TUPLAS:
 		l = [("Chief Operator","All"),("Read Operator","Servers")]
@@ -84,7 +85,7 @@ def create_user(driver,userid,userpwd,email=None,profile_list=None):
 	click_menu_element(driver,"Users management")
 	driver.find_element_by_id("submit-crt").click()
 	driver.find_element_by_name("id_user").clear()
-	driver.find_element_by_name("id_user").send_keys(userid)
+	driver.find_element_by_name("id_user").send_keys(user_name)
 	driver.find_element_by_name("password_new").clear()
 	driver.find_element_by_name("password_new").send_keys(userpwd)
 	driver.find_element_by_name("password_confirm").clear()
@@ -97,7 +98,7 @@ def create_user(driver,userid,userpwd,email=None,profile_list=None):
 	
 	if profile_list != None:
 		for profile_name,group_name in profile_list:
-			add_user_profile(driver,user,profile_name,group_name)
+			add_user_profile(driver,user_name,profile_name,group_name)
 
 def is_element_present(driver, how, what):
 	from selenium.common.exceptions import NoSuchElementException

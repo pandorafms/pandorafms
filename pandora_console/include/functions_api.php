@@ -1446,6 +1446,39 @@ function api_get_agent_modules($thrash1, $thrash2, $other, $thrash3) {
 	}
 }
 
+
+/**
+ * Get modules id for an agent, and print the result like a csv.
+ *
+ * @param $id Id of agent.
+ * @param array $name name of module.
+ * @param $thrash1 Don't use.
+ *
+ *  pi.php?op=get&op2=module_id&id=5&other=Host%20Alive&apipass=1234&user=admin&pass=pandora
+ *
+ * @param $thrash3 Don't use.
+ */
+function api_get_module_id($id , $thrash1 , $name, $thrash3) {
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	$sql = sprintf('SELECT id_agente_modulo
+		FROM tagente_modulo WHERE id_agente = %d
+		AND nombre = "%s" AND disabled = 0
+		AND delete_pending = 0', $id , $name['data']);
+
+	$module_id = db_get_all_rows_sql($sql);
+
+	if (count($module_id) > 0 and $module_id !== false) {
+		$data = array('type' => 'array', 'data' => $module_id);
+		returnData('csv', $data, ';');
+	}
+	else {
+		returnError('error_module_id', 'does not exist module or agent');
+	}
+}
+
 /**
  * Get modules for an agent, and print all the result like a csv.
  * 

@@ -23,7 +23,7 @@ class PAN4(PandoraWebDriverTestCase):
 		#Creates a user with Chief Operator - Applications profile
 		profile_list = []
 		profile_list.append(("Chief Operator","Applications"))
-		create_user(driver,'test','test',email='test@pandorafms.com',profile_list=profile_list)
+		create_user(driver,'PAN_4','PAN_4',email='pan_4@pandorafms.com',profile_list=profile_list)
 
 		#Creates report
 		create_report(driver,"Informe applications","Applications")
@@ -33,7 +33,7 @@ class PAN4(PandoraWebDriverTestCase):
 		logout(driver,self.base_url)
 
 		#Login
-		login(driver,user='test',passwd='test')
+		login(driver,user='PAN_4',passwd='PAN_4')
 		detect_and_pass_all_wizards(driver)
 
 		#Check that the report is visible

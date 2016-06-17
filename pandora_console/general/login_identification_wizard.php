@@ -47,6 +47,12 @@ if (is_ajax()) {
 	
 	$open_wizard = get_parameter ('open_wizard', 0);
 	$not_return = get_parameter ('not_return', 0);
+	$reset_initial_wizard = get_parameter ('reset_initial_wizard', 0);
+	
+		
+	if ($reset_initial_wizard) {
+		config_update_value ('initial_wizard', 0);
+	}
 	
 	if ($open_wizard) {
 		
@@ -244,6 +250,12 @@ $("#submit-return_dialog_button").click (function () {
 	$("#login_accept_register" ).dialog('close');
 	$("#all-required").hide();
 	$("#login_id_dialog" ).dialog('open');
+	
+	jQuery.post ("ajax.php",
+		{"page": "general/login_identification_wizard",
+		 "reset_initial_wizard": 1},
+		function (data) {}
+	);
 });
 
 $("#submit-finish_dialog_button").click (function () {

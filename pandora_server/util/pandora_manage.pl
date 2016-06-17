@@ -114,7 +114,7 @@ sub help_screen{
 	help_screen_line('--get_all_planned_downtimes', '<name> [<id_group> <type_downtime> <type_execution> <type_periodicity>]', 'Get all planned downtime');
 	help_screen_line('--get_planned_downtimes_items', '<name> [<id_group> <type_downtime> <type_execution> <type_periodicity>]', 'Get all items of planned downtimes');
 	help_screen_line('--set_planned_downtimes_deleted', '<name> ', 'Deleted a planned downtime');
-	help_screen_line('--get_module_id', '<agent_name> <module_name>', 'Get the id of an module');
+	help_screen_line('--get_module_id', '<agent_id> <module_name>', 'Get the id of an module');
 	help_screen_line('--get_agent_group', '<agent_name>', 'Get the group name of an agent');
 	help_screen_line('--get_agent_group_id', '<agent_name>', 'Get the group ID of an agent');
 	help_screen_line('--get_agent_modules', '<agent_name>', 'Get the modules of an agent');

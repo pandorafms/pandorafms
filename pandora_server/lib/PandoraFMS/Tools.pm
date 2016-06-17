@@ -61,7 +61,12 @@ our @EXPORT = qw(
 	$DEVNULL
 	RECOVERED_ALERT
 	FIRED_ALERT
-    cron_get_closest_in_range
+	STATUS_NORMAL
+	STATUS_CRITICAL
+	STATUS_WARNING
+	STATUS_UNKNOWN
+	STATUS_NOTINIT
+	cron_get_closest_in_range
 	cron_next_execution
 	cron_next_execution_date
 	cron_check_syntax
@@ -112,6 +117,13 @@ use constant EVENTSERVER => 10;
 use constant ICMPSERVER => 11;
 use constant SNMPSERVER => 12;
 use constant SATELLITESERVER => 13;
+
+# Module statuses.
+use constant STATUS_NORMAL => 0;
+use constant STATUS_CRITICAL => 1;
+use constant STATUS_WARNING => 2;
+use constant STATUS_UNKNOWN => 3;
+use constant STATUS_NOTINIT => 4;
 
 # Value for a metaconsole license type
 use constant METACONSOLE_LICENSE => 0x01;

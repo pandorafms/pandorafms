@@ -362,73 +362,26 @@ sub get_agentmodule_status_str($$$) {
 ########################################################################
 sub get_agent_status ($$$) {
 	my ($pa_config, $dbh, $agent_id) = @_;
+	my %status_count = (
+		STATUS_CRITICAL() => 0,	# Highest priority status.
+		STATUS_NORMAL() => 0,
+		STATUS_WARNING() => 0,
+		STATUS_UNKNOWN() => 0,
+		STATUS_NOTINIT() => 0	# Lowest priority status.
+	);  
 	
-	my @modules = get_agent_modules ($pa_config, $dbh,
-		$agent_id, 'id_agente_modulo', {'disabled' => 0});
-	#logger($pa_config, Dumper(@modules), 5);
-	
-	# The status are:
-	#  3 -> AGENT_MODULE_STATUS_UNKNOW
-	#  4 -> AGENT_MODULE_STATUS_CRITICAL_ALERT
-	#  1 -> AGENT_MODULE_STATUS_CRITICAL_BAD
-	#  2 -> AGENT_MODULE_STATUS_WARNING
-	#  0 -> AGENT_MODULE_STATUS_NORMAL
-	
-	my $module_status = 3;
-	my $modules_async = 0;
-	foreach my $module (@modules) {
-		my $m_status = get_agentmodule_status($pa_config, $dbh,
-			$module->{'id_agente_modulo'});
-		
-		#This is the order to check
-		# AGENT_MODULE_STATUS_CRITICAL_ALERT
-		# AGENT_MODULE_STATUS_CRITICAL_BAD
-		# AGENT_MODULE_STATUS_WARNING
-		# AGENT_MODULE_STATUS_UNKNOWN
-		# AGENT_MODULE_STATUS_NORMAL
-		if ($m_status == 4) {
-			$module_status = 4;
-		}
-		elsif ($module_status != 4) {
-			if ($m_status == 1) {
-				$module_status = 1;
-			}
-			elsif ($module_status != 1) {
-				if ($m_status == 2) {
-					$module_status = 2;
-				}
-				elsif ($module_status != 2) {
-					if ($m_status == 0) {
-						$module_status = 0;
-					}
-				}
-			}
-		}
-		
-		my $module_type = get_db_value($dbh, 'SELECT id_tipo_modulo
-			FROM tagente_modulo
-			WHERE id_agente_modulo = ?', $module->{'id_agente_modulo'});
-		
-		if (($module_type >= 21 && $module_type <= 23) ||
-			$module_type == 100) {
-			$modules_async++;
-		}
-	}
-	
-	my $count_modules = scalar(@modules);
-	
-	# If all the modules are asynchronous or keep alive, the group cannot be unknown
-	if ($modules_async < $count_modules) {
-		my $last_contact = get_db_value($dbh,
-			'SELECT (UNIX_TIMESTAMP(ultimo_contacto) + (intervalo * 2)) AS last_contact
-			FROM tagente WHERE id_agente = ?', $agent_id);
-		
-		if ($last_contact < time ()) {
-			return 3;
-		}
-	}
-	
-	return $module_status;
+	my @modules = get_agent_modules ($pa_config, $dbh, $agent_id, 'id_agente_modulo', {'disabled' => 0});
+	foreach my $module (@modules) { 
+		my $module_status = get_agentmodule_status($pa_config, $dbh, $module->{'id_agente_modulo'});
+		return STATUS_CRITICAL if ($module_status == STATUS_CRITICAL);
+
+		$status_count{$module_status} += 1;
+	}   
+
+	return STATUS_WARNING if ($status_count{STATUS_WARNING()} > 0);
+	return STATUS_UNKNOWN if ($status_count{STATUS_UNKNOWN()} > 0);
+	return STATUS_NORMAL if ($status_count{STATUS_NORMAL()} > 0);
+	return STATUS_NOTINIT;
 }
 
 

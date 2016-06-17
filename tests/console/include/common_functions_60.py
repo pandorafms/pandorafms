@@ -43,8 +43,44 @@ def refresh_N_times_until_find_element(driver,n,element_text,how=By.ID,refresh_t
 
 	raise TimeoutException("Element %s not found" % (element_text))
 
+def logout(driver,url):
+	driver.get(url+'/pandora_console/index.php?bye=bye')
 
-def create_user(driver,userid,userpwd,email=None):
+def create_report(driver,nombre,group_name):
+	click_menu_element(driver,"Custom reporting")
+	driver.find_element_by_id("submit-create").click()
+	driver.find_element_by_id("text-name").clear()
+	driver.find_element_by_id("text-name").send_keys(nombre)
+	if group_name == "All":
+		Select(driver.find_element_by_id("id_group")).select_by_visible_text(group_name)
+	else:
+		#TODO This will not work when choosing a group within a group within another group
+		Select(driver.find_element_by_id("id_group")).select_by_visible_text("    "+group_name)
+	driver.find_element_by_id("submit-add").click()
+
+def add_user_profile(driver,user,profile,group):
+	click_menu_element(driver,"Users management")
+	driver.find_element_by_css_selector("b").click()
+	driver.find_element_by_id("text-filter_search").clear()
+	driver.find_element_by_id("text-filter_search").send_keys(user)
+	driver.find_element_by_id("submit-search").click()
+	driver.find_element_by_xpath('//*[@id="table3-0-6"]/a[2]').click()
+	Select(driver.find_element_by_id("assign_profile")).select_by_visible_text(profile)
+	
+	if group == "All":
+		Select(driver.find_element_by_id("assign_group")).select_by_visible_text(group)
+	else:
+		#TODO This will not work when choosing a group within a group within another group
+		Select(driver.find_element_by_id("assign_group")).select_by_visible_text("    "+group)
+		
+	driver.find_element_by_id("image-add2").click()
+
+
+def create_user(driver,userid,userpwd,email=None,profile_list=None):
+	u"""
+	Profile list es una LISTA de TUPLAS:
+		l = [("Chief Operator","All"),("Read Operator","Servers")]
+	"""
 	click_menu_element(driver,"Users management")
 	driver.find_element_by_id("submit-crt").click()
 	driver.find_element_by_name("id_user").clear()
@@ -55,9 +91,13 @@ def create_user(driver,userid,userpwd,email=None):
 	driver.find_element_by_name("password_confirm").send_keys(userpwd)
 	driver.find_element_by_name("email").clear()
 	if email != None:
+		driver.find_element_by_name("email").clear()
 		driver.find_element_by_name("email").send_keys(email)
-		driver.find_element_by_id("submit-crtbutton").click()
+	driver.find_element_by_id("submit-crtbutton").click()
 	
+	if profile_list != None:
+		for profile_name,group_name in profile_list:
+			add_user_profile(driver,user,profile_name,group_name)
 
 def is_element_present(driver, how, what):
 	from selenium.common.exceptions import NoSuchElementException

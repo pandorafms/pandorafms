@@ -103,7 +103,7 @@ echo '<div id="login_in">';
 			// For stable/live function it might be wise to comment it out
 			
 			/* CUSTOM BRANDING ENDS HERE */
-	echo '</td><td style="padding-top: 15px; position:fixed;">';
+	echo '</td><td style="padding-top: 15px; position:absolute;">';
 	
 	switch ($login_screen) {
 		case 'login':

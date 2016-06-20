@@ -145,7 +145,7 @@ h1#log_title {
 	font-size: 18px;
 	margin-bottom: 0px;
 	color: #FFF !important;
-	width:54%
+	width:300px;
 }
 div#log_msg {
 	display: none;
@@ -414,7 +414,7 @@ div#foot {
 p.log_in {
 	color: #FFF !important;
 	padding: 0px 10px;
-	width:57%;
+	width:300px;
 }
 h1#log_f {
 	color: #c00;
@@ -484,7 +484,7 @@ div#login_in, #login_f {
 table#login_layout {
 	width: 100%;
 	height: 160px;
-	position:fixed;
+	position:absolute;
 }
 
 div#error_login {

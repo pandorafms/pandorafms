@@ -126,8 +126,14 @@ def search_user(driver,user_name):
 
 def is_element_present(driver, how, what):
 	from selenium.common.exceptions import NoSuchElementException
-	try: driver.find_element(by=how, value=what)
-	except NoSuchElementException: return False
+	try:
+		driver.implicitly_wait(5)
+		driver.find_element(by=how, value=what)
+	except NoSuchElementException:
+		driver.implicitly_wait(5)
+		return False
+
+	driver.implicitly_wait(30)
 	return True
 
 def detect_and_pass_pandorin(driver):

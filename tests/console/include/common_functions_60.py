@@ -106,6 +106,13 @@ def create_user(driver,user_name,userpwd,email=None,profile_list=None):
 		for profile_name,group_name in profile_list:
 			add_user_profile(driver,user_name,profile_name,group_name)
 
+def search_user(driver,user_name):
+	click_menu_element(driver,"Users management")
+	driver.find_element_by_css_selector("b").click()
+	driver.find_element_by_id('text-filter_search').clear()
+	driver.find_element_by_id("text-filter_search").send_keys(user_name)
+	driver.find_element_by_id("submit-search").click()
+
 def is_element_present(driver, how, what):
 	from selenium.common.exceptions import NoSuchElementException
 	try: driver.find_element(by=how, value=what)

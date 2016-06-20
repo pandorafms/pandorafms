@@ -64,6 +64,17 @@ def create_report(driver,nombre,group_name):
 		Select(driver.find_element_by_id("id_group")).select_by_visible_text("    "+group_name)
 	driver.find_element_by_id("submit-add").click()
 
+
+def delete_report(driver,report_name):
+	click_menu_element(driver,"Custom reporting")
+	driver.find_element_by_id('text-search').clear()
+	driver.find_element_by_id('text-search').send_keys(report_name)
+	driver.find_element_by_id('submit-search_submit').click()
+	driver.find_element_by_id('image-delete2').click()
+	alert = driver.switch_to_alert()
+	alert.accept()
+
+
 def add_user_profile(driver,user_name,profile,group):
 	click_menu_element(driver,"Users management")
 	driver.find_element_by_css_selector("b").click()

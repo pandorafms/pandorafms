@@ -137,3 +137,17 @@ def detect_and_pass_all_wizards(driver):
 	detect_and_pass_pandorin(driver)
 	detect_and_pass_initial_wizard(driver)
 	detect_and_pass_newsletter_wizard(driver)
+
+
+def delete_agent (driver,agent_names_list):
+ 
+	click_menu_element(driver,"Agents operations")
+	driver.find_element_by_id("option").click()
+    Select(driver.find_element_by_id("option")).select_by_visible_text("Bulk agent delete")
+
+    for agent_name in agent_names_list:
+        Select(driver.find_element_by_id("id_agents")).select_by_visible_text(agent_name)
+
+    driver.find_element_by_id("submit-go").click()
+
+

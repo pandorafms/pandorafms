@@ -108,7 +108,7 @@ echo '<div id="login_id_dialog" title="' .
 		$table->data[2][1] = html_print_select($zone_name, 'zone', $zone_selected, 'show_timezone()', '', '', true);
 		$table->data[2][1] .= "&nbsp;&nbsp;". html_print_select($timezone_n, 'timezone', $config["timezone"], '', '', '', true);
 		
-		$table->data[4][0] = __('E-mail');
+		$table->data[4][0] = __('E-mail for receiving alerts');
 		$table->data[4][1] = html_print_input_text ('email', $email, '', 50, 255, true);
 		
 		html_print_table ($table);
@@ -213,6 +213,8 @@ $(document).ready (function () {
 	
 	$(".ui-widget-overlay").css("background", "#000");
 	$(".ui-widget-overlay").css("opacity", 0.6);
+	$(".ui-draggable").css("cursor", "inherit");
+	
 });
 
 /* ]]> */

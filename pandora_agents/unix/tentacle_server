@@ -30,7 +30,7 @@ tentacle_server - Tentacle Server
 
 =head1 VERSION
 
-Version 0.5.0
+Version 0.6.0
 
 =head1 USAGE
 
@@ -79,10 +79,17 @@ if ($t_libwrap_installed) {
 # Log messages, 1 enabled, 0 disabled
 my $t_log = 0;
 
-my $SOCKET_MODULE =
-	eval { require IO::Socket::INET6 } ? 'IO::Socket::INET6'
-      : eval { require IO::Socket::INET }  ? 'IO::Socket::INET'
-      : die $@;
+my $SOCKET_MODULE;
+if ($^O eq 'MSWin32') {
+	# Only support INET on windows
+	require IO::Socket::INET;
+	$SOCKET_MODULE = 'IO::Socket::INET';
+} else {
+	$SOCKET_MODULE =
+		eval { require IO::Socket::INET6 } ? 'IO::Socket::INET6'
+		  : eval { require IO::Socket::INET }  ? 'IO::Socket::INET'
+		  : die $@;
+}
 
 # Service name for Win32.
 my $SERVICE_NAME="Tentacle Server";
@@ -91,7 +98,7 @@ my $SERVICE_NAME="Tentacle Server";
 my $SERVICE_PARAMS=join(' ', @ARGV);
 
 # Program version
-our $VERSION = '0.5.0';
+our $VERSION = '0.6.0';
 
 # IPv4 address to listen on
 my @t_addresses = ('0', '0.0.0.0');

@@ -30,7 +30,7 @@ tentacle_server - Tentacle Server
 
 =head1 VERSION
 
-Version 0.3.0
+Version 0.6.0
 
 =head1 USAGE
 
@@ -56,20 +56,52 @@ The client and server (B<TCP port 41121>) are designed to be run from the comman
 
 =cut
 
-
 use strict;
 use warnings;
 use Getopt::Std;
 use IO::Select;
-use IO::Socket::INET;
+use threads;
 use Thread::Semaphore;
 use POSIX ":sys_wait_h";
+use Time::HiRes qw(usleep);
+use Scalar::Util qw(refaddr);
+
+# Constants for Win32 services.
+use constant WIN32_SERVICE_STOPPED => 0x01;
+use constant WIN32_SERVICE_RUNNING => 0x04;
+
+my $t_libwrap_installed = eval { require Authen::Libwrap } ? 1 : 0;
+
+if ($t_libwrap_installed) {
+	Authen::Libwrap->import( qw( hosts_ctl STRING_UNKNOWN ) );
+}
+
+# Log messages, 1 enabled, 0 disabled
+my $t_log = 0;
+
+my $SOCKET_MODULE;
+if ($^O eq 'MSWin32') {
+	# Only support INET on windows
+	require IO::Socket::INET;
+	$SOCKET_MODULE = 'IO::Socket::INET';
+} else {
+	$SOCKET_MODULE =
+		eval { require IO::Socket::INET6 } ? 'IO::Socket::INET6'
+		  : eval { require IO::Socket::INET }  ? 'IO::Socket::INET'
+		  : die $@;
+}
+
+# Service name for Win32.
+my $SERVICE_NAME="Tentacle Server";
+
+# Service parameters.
+my $SERVICE_PARAMS=join(' ', @ARGV);
 
 # Program version
-our $VERSION = '0.3.0';
+our $VERSION = '0.6.0';
 
-# Address to listen on
-my $t_address = '0.0.0.0';
+# IPv4 address to listen on
+my @t_addresses = ('0', '0.0.0.0');
 
 # Block size for socket read/write operations in bytes
 my $t_block_size = 1024;
@@ -88,9 +120,6 @@ my @t_filters;
 
 # String containing quoted invalid file name characters
 my $t_invalid_chars = '\?\[\]\/\\\=\+\<\>\:\;\'\,\*\~';
-
-# Log messages, 1 enabled, 0 disabled
-my $t_log = 0;
 
 # Maximum number of simultaneous connections
 my $t_max_conn = 10;
@@ -117,10 +146,13 @@ my $t_retries = 3;
 my $t_select;
 
 # Semaphore
-my $t_sem;
+my $t_sem :shared;
 
 # Server socket
-my $t_server_socket;
+my @t_server_sockets;
+
+# Server select handler
+my $t_server_select;
 
 # Use SSL, 1 true, 0 false
 my $t_ssl = 0;
@@ -140,10 +172,10 @@ my $t_ssl_pwd = '';
 # Timeout for socket read/write operations in seconds
 my $t_timeout = 1;
 
-#Bridge IP to actuate as a proxy
+# Address to proxy client requests to
 my $t_proxy_ip = undef;
 
-# Proxy port by default 41121
+# Port to proxy client requests to
 my $t_proxy_port = 41121;
 
 # Proxy socket
@@ -152,16 +184,25 @@ my $t_proxy_socket;
 # Proxy selected handler
 my $t_proxy_select;
 
+# Use libwrap, 1 true, 0 false
+my $t_use_libwrap = 0;
+
+# Program name for libwrap
+my $t_program_name = $0;
+$t_program_name =~ s/.*\///g;
+
 ################################################################################
 ## SUB print_help
 ## Print help screen.
 ################################################################################
 sub print_help {
+	$" = ',';
 
 	print ("Usage: $0 -s <storage directory> [options]\n\n");
 	print ("Tentacle server v$VERSION. See http://www.openideas.info/wiki for protocol description.\n\n");
 	print ("Options:\n");
-	print ("\t-a ip_address\tAddress to listen on (default $t_address).\n");
+	print ("\t-a ip_addresses\tIP addresses to listen on (default @t_addresses).\n");
+	print ("\t               \t(Multiple addresses separated by comma can be defined.)\n");
 	print ("\t-c number\tMaximum number of simultaneous connections (default $t_max_conn).\n");
 	print ("\t-d\t\tRun as daemon.\n");
 	print ("\t-e cert\t\tOpenSSL certificate file. Enables SSL.\n");
@@ -174,12 +215,15 @@ sub print_help {
 	print ("\t-p port\t\tPort to listen on (default $t_port).\n");
 	print ("\t-q\t\tQuiet. Do now print error messages.\n");
 	print ("\t-r number\tNumber of retries for network opertions (default $t_retries).\n");
+	print ("\t-S (install|uninstall|run) Manage the win32 service.\n");
 	print ("\t-t time\t\tTime-out for network operations in seconds (default ${t_timeout}s).\n");
 	print ("\t-v\t\tBe verbose.\n");
 	print ("\t-w\t\tPrompt for OpenSSL private key password.\n");
-	print ("\t-x pwd\t\tServer password.\n\n");
-	print ("\t-b proxy_ip_address\t\tProxied server address.\n\n");	
-	print ("\t-g proxy_port\t\tPort of proxied server.\n\n");
+	print ("\t-x pwd\t\tServer password.\n");
+	print ("\t-b ip_address\tProxy requests to the given address.\n");
+	print ("\t-g port\t\tProxy requests to the given port.\n");
+	print ("\t-T\t\tEnable tcpwrappers support.\n");
+	print ("\t  \t\t(To use this option, 'Authen::Libwrap' should be installed.)\n\n");
 }
 
 ################################################################################
@@ -216,47 +260,52 @@ sub daemonize {
 }
 
 ################################################################################
-## SUB start_win_service
-## Turn the current process into a Windows service.
-################################################################################
-#sub start_win_service {
-#	require Win32::Daemon;
-#
-#	# Tell the OS to start the service
-#	Win32::Daemon::StartService ();
-#
-#	# Wait until the service manager is ready
-#	while (SERVICE_START_PENDING != Win32::Daemon::State()) {
-#		sleep (1);
-#	}
-#
-#	# Tell the service manager we are running
-#	Win32::Daemon::State (SERVICE_RUNNING);
-#
-#	# Call Win32::Daemon::StopService() when done
-#}
-
-################################################################################
 ## SUB parse_options
 ## Parse command line options and initialize global variables.
 ################################################################################
 sub parse_options {
 	my %opts;
 	my $tmp;
+	my @t_addresses_tmp;
 
 	# Get options
-	if (getopts ('a:c:de:f:hi:k:m:op:qr:s:t:vwx:b:g:', \%opts) == 0 || defined ($opts{'h'})) {
+	if (getopts ('a:b:c:de:f:g:hi:k:m:op:qr:s:S:t:Tvwx:', \%opts) == 0 || defined ($opts{'h'})) {
 		print_help ();
 		exit 1;
 	}
 
+	# The Win32 service must be installed/uninstalled without checking other parameters.
+	if (defined ($opts{'S'})) {
+		my $service_action = $opts{'S'};
+		if ($^O ne 'MSWin32') {
+			error ("Windows services are only available on Win32.");
+		} else {
+			eval "use Win32::Daemon";
+			die($@) if ($@);
+
+			if ($service_action eq 'install') {
+				install_service();
+			} elsif ($service_action eq 'uninstall') {
+				uninstall_service();
+			}
+		}
+	}
+
 	# Address
 	if (defined ($opts{'a'})) {
-		$t_address = $opts{'a'};
-		if ($t_address !~ /^[a-zA-Z\.]+$/ && ($t_address  !~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
-			|| $1 < 0 || $1 > 255 || $2 < 0 || $2 > 255
-			|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255)) {
-			error ("Address $t_address is not valid.");
+		@t_addresses = ();
+		@t_addresses_tmp = split(/,/, $opts{'a'});
+		
+		foreach my $t_address (@t_addresses_tmp) {
+			$t_address =~ s/^ *(.*?) *$/$1/;
+			if (($t_address ne '0') && 
+				($t_address !~ /^[a-zA-Z\.]+$/ && ($t_address  !~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
+					|| $1 < 0 || $1 > 255 || $2 < 0 || $2 > 255
+					|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255)) &&
+				($t_address !~ /^[0-9a-f:]+$/o)) {
+					error ("Address $t_address is not valid.");
+			}
+			push @t_addresses, $t_address;
 		}
 	}
 	
@@ -411,7 +460,8 @@ sub parse_options {
 		$t_proxy_ip = $opts{'b'};
 		if ($t_proxy_ip !~ /^[a-zA-Z\.]+$/ && ($t_proxy_ip  !~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
 			|| $1 < 0 || $1 > 255 || $2 < 0 || $2 > 255
-			|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255)) {
+			|| $3 < 0 || $3 > 255 || $4 < 0 || $4 > 255) &&
+			$t_proxy_ip !~ /^[0-9a-f:]+$/o) {
 			error ("Proxy address $t_proxy_ip is not valid.");
 		}		
 	}
@@ -423,29 +473,48 @@ sub parse_options {
 			error ("Proxy port $t_port is not valid.");
 		}
 	}	
-}
 
-################################################################################
-## SUB sigchld_handler
-## Handle child process termination.
-################################################################################
-sub sigchld_handler {
-
-	while (waitpid(-1, &WNOHANG) > 0) {
-		$t_sem->up ();
+	# TCP wrappers support
+	if (defined ($opts{'T'})) {
+		if ($t_libwrap_installed) {
+			$t_use_libwrap = 1;
+		} else {
+			error ("Authen::Libwrap is not installed.");
+		}
 	}
 
-	$SIG{CHLD} = \&sigchld_handler;
+	# Win32 service management
+	if (defined ($opts{'S'})) {
+		my $service_action = $opts{'S'};
+		if ($^O ne 'MSWin32') {
+			error ("Windows services are only available on Win32.");
+		} else {
+			eval "use Win32::Daemon";
+			die($@) if ($@);
+
+			if ($service_action eq 'run') {
+				Win32::Daemon::RegisterCallbacks({
+			        start       =>  \&callback_start,
+			        running     =>  \&callback_running,
+			        stop        =>  \&callback_stop,
+				});
+				Win32::Daemon::StartService();
+				exit 0;
+			} else {
+				error("Unknown action: $service_action");
+			}
+		}
+	}
 }
 
 ################################################################################
 ## SUB start_proxy
-## Open the server socket.
+## Open the proxy server socket.
 ################################################################################
-sub open_proxy {
+sub start_proxy {
 
 	# Connect to server
-	$t_proxy_socket = IO::Socket::INET->new (
+	$t_proxy_socket = $SOCKET_MODULE->new (
 	    PeerAddr => $t_proxy_ip,
 		PeerPort => $t_proxy_port,
 	);
@@ -455,8 +524,8 @@ sub open_proxy {
 	}
 	
 	# Create proxy selector
-	$t_proxy_select = IO::Select->new ();	
-	$t_proxy_select->add ($t_proxy_socket);	
+	$t_proxy_select = IO::Select->new ();
+	$t_proxy_select->add ($t_proxy_socket);
 	
 }
 
@@ -466,25 +535,41 @@ sub open_proxy {
 ################################################################################
 sub start_server {
 
-	$t_server_socket = IO::Socket::INET->new (
-		Listen    => $t_max_conn,
-		LocalAddr => $t_address,
-		LocalPort => $t_port,
-		Proto     => 'tcp',
-		ReuseAddr     => 1,
-	);
+	my $t_server_socket;
 
-        if (! defined ($t_server_socket)) {
-		error ("Cannot open socket for address $t_address on port $t_port: $!.");
-	}
+	foreach my $t_address (@t_addresses) {
 
-	print_log ("Server listening on $t_address port $t_port (press <ctr-c> to stop)");
+		$t_server_socket = $SOCKET_MODULE->new (
+			Listen    => $t_max_conn,
+			LocalAddr => $t_address,
+			LocalPort => $t_port,
+			Proto     => 'tcp',
+			ReuseAddr     => 1,
+		);
+
+		if (! defined ($t_server_socket)) {
+			print_log ("Cannot open socket for address $t_address on port $t_port: $!.");
+			next;
+		}
+
+		print_log ("Server listening on $t_address port $t_port (press <ctr-c> to stop)");
 	
-	# Say message if tentacle proxy is enable
-	if (defined ($t_proxy_ip)) {
-		print_log ("Proxy Mode enable, data will be sent to $t_proxy_ip port $t_proxy_port");	
+		# Say message if tentacle proxy is enable
+		if (defined ($t_proxy_ip)) {
+			print_log ("Proxy Mode enable, data will be sent to $t_proxy_ip port $t_proxy_port");	
+		}
+	
+		push @t_server_sockets, $t_server_socket;
 	}
 
+	if (!@t_server_sockets) {
+		error ("Cannot open socket for all addresses on port $t_port: $!.");
+	}
+	
+	$t_server_select = IO::Select->new();
+	foreach my $t_server_socket (@t_server_sockets){
+		$t_server_select->add($t_server_socket);
+ 	}
 }
 
 ################################################################################
@@ -541,9 +626,8 @@ sub send_data_proxy {
 ## Close the proxy socket.
 ################################################################################
 sub close_proxy {
+	$t_proxy_socket->shutdown (2);
 	$t_proxy_socket->close ();
-	print_log ("Proxy socket closed");
-	
 }
 
 ################################################################################
@@ -551,8 +635,11 @@ sub close_proxy {
 ## Close the server socket.
 ################################################################################
 sub stop_server {
-	
-	$t_server_socket->close ();
+
+	foreach my $t_server_socket (@t_server_sockets) {
+		$t_server_socket->shutdown (2);
+		$t_server_socket->close ();
+	}
 	print_log ("Server going down");
 	
 	exit 0;
@@ -598,76 +685,90 @@ sub start_ssl {
 }
 
 ################################################################################
-## SUB accept_connection
-## Accept an incoming connection and fork.
+## SUB accept_connections
+## Manage incoming connections.
 ################################################################################
-sub accept_connection {
+sub accept_connections {
 	my $pid;
+	my $t_server_socket;
+
+	# Ignore SIGPIPE
+	$SIG{PIPE} = 'IGNORE';
+
+	# Start server
+	start_server ();
+
+	# Initialize semaphore
+	$t_sem = Thread::Semaphore->new ($t_max_conn);
 
 	while (1) {
+		my @ready = $t_server_select->can_read;
+		foreach $t_server_socket (@ready) {
 
-		# Accept connection
-		$t_client_socket = $t_server_socket->accept ();
+			# Accept connection
+			$t_client_socket = $t_server_socket->accept ();
 
-		if (! defined ($t_client_socket)) {
-
-			# EINTR
-			if ($! ne '') {
-				next;
+			if (! defined ($t_client_socket)) {
+				next if ($! ne ''); # EINTR
+				error ("accept: $!.");
 			}
 
-			error ("accept: $!.");
+			print_log ("Client connected from " . $t_client_socket->peerhost ());
+
+			if ($t_use_libwrap && (! hosts_ctl($t_program_name, $t_client_socket))) {
+				print_log ("Connection from " . $t_client_socket->peerhost() . " is closed by tcpwrappers.");
+				$t_client_socket->shutdown (2);
+				$t_client_socket->close();
+			}
+			else {
+
+				# Create a new thread and serve the client
+				$t_sem->down();
+				my $thr = threads->create(\&serve_client);
+				if (! defined ($thr)) {
+					error ("Error creating thread: $!.");
+				}
+				$thr->detach();
+				$t_client_socket->close ();
+			}
 		}
 
-		last;
+		usleep (1000);
 	}
+}
 
-	print_log ("Client connected from " . $t_client_socket->sockhost ());
+################################################################################
+## SUB serve_client
+## Serve a connected client.
+################################################################################
+sub serve_client() {
 
-	# Fork and serve the client
-	$pid = fork ();
-	if (! defined ($pid)) {
-		error ("Cannot fork: $!.");
-	}
-	
-	# Child
-	if ($pid == 0) {
-		
-		# We do not need the server socket
-		$t_server_socket->close ();
-		
+	eval {		
 		# Add client socket to select queue
 		$t_select = IO::Select->new ();
 		$t_select->add ($t_client_socket);
-		
+			
 		# Start SSL
 		if ($t_ssl == 1) {
 			start_ssl ();
 		}
-
+	
 		# Authenticate client
 		if ($t_pwd ne '') {
 			auth_pwd ();
 		}
-
+	
 		# Check if proxy mode is enable
 		if (defined ($t_proxy_ip)) {
-
 			serve_proxy_connection ();	
-			
 		} else {
-			
 			serve_connection ();
 		}
-		
-		$t_client_socket->close ();
+	};
 
-		# Must exit now
-		exit;
-	}
-
-	# Parent
+	$t_client_socket->shutdown (2);
 	$t_client_socket->close ();
+	$t_sem->up();
 }
 
 ################################################################################
@@ -675,40 +776,32 @@ sub accept_connection {
 ## Actuate as a proxy between its client and other tentacle server.
 ################################################################################
 sub serve_proxy_connection {
-	my $read;
-	my $data=1;
 	
-	# Start a connection with the other Tentacle Server
-	open_proxy();		
-	
-	my $command;
+	# We are a proxy! Start a connection to the Tentacle Server.
+	start_proxy();
 
-	# Read commands
-	while ($command = recv_command ($t_block_size)) {
-		# Client wants to send a file
-		if ($command =~ /^SEND <(.*)> SIZE (\d+)$/) {
-			recv_file_proxy($command, $2);
+	# Forward data between the client and the server.
+	eval {
+		my $select = IO::Select->new ();
+		$select->add($t_proxy_socket);
+		$select->add($t_client_socket);
+		while (my @ready = $select->can_read()) {
+			foreach my $socket (@ready) {
+				if (refaddr($socket) == refaddr($t_client_socket)) {
+					my ($read, $data) = recv_data($t_block_size);
+					return unless defined($data);
+					send_data_proxy($data);
+				}
+				else {
+					my ($read, $data) = recv_data_proxy($t_block_size);
+					return unless defined($data);
+					send_data($data);
+				}
+			}
 		}
-		# Client wants to receive a file
-		elsif ($command =~ /^RECV <(.*)>$/) {
-			send_file_proxy ($command);
-		}		
-		# Quit
-		elsif ($command =~ /^QUIT$/) {
-			print_log ("Connection closed from " . $t_client_socket->sockhost ());
-			
-			# End proxy connection
-			send_data_proxy("QUIT\n");				
-			last;
-		}
-		# Unknown command
-		else {
-			print_log ("Unknown command '$command' from " . $t_client_socket->sockhost ());
-			last;
-		}		
-	}	
+	};
 
-	# End a connection with the other Tentacle Server
+	# Close the connection to the Tentacle Server.
 	close_proxy();
 }
 
@@ -775,43 +868,6 @@ sub auth_pwd {
 }
 
 ################################################################################
-## SUB recv_file_proxy
-## Redirect file from agent to proxy
-################################################################################
-sub recv_file_proxy ($$) {
-	my ($command, $size) = @_;
-	
-	# Send command to proxy
-	print_log ("[PROXY] Host: ".$t_client_socket->sockhost()." send ".$command." to ".$t_proxy_socket->sockhost ());	
-	send_data_proxy($command."\n");
-
-	# Proxied server response 
-	my $rc = dump_data($t_proxy_socket, $t_client_socket);
-
-	# Check if there was an error	
-	if ($rc == -1) {
-		return;
-	}
-	
-	# Client send data to server
-	$rc = dump_data($t_client_socket, $t_proxy_socket, $size);		
-	
-	# Check if there was an error
-	if ($rc == -1) {
-		return;
-	}	
-	
-	# Server says if data was recieved or not
-	$rc = dump_data($t_proxy_socket, $t_client_socket);
-	
-	# Check if there was an error
-	if ($rc == -1) {	
-		return;
-	}		
-	
-}
-
-################################################################################
 ## SUB recv_file
 ## Receive a file of size $_[1] and save it in $t_directory as $_[0].
 ################################################################################
@@ -858,45 +914,6 @@ sub recv_file {
 
 	send_data ("SEND OK\n");
 	print_log ("Received file '$base_name' size ${size}b from " . $t_client_socket->sockhost ());
-}
-
-################################################################################
-## SUB send_file_proxy
-## Redirect file from agent to proxy
-################################################################################
-sub send_file_proxy ($) {
-	my ($command) = @_;
-	my $size;
-	# Send command to proxy
-	print_log ("[PROXY] ".$t_client_socket->sockhost()." send ".$command." to ".$t_proxy_socket->sockhost ());	
-	send_data_proxy($command."\n");
-
-	$command = recv_command_proxy($t_block_size);
-	
-	if ($command =~ /^RECV SIZE (\d+)$/) {
-		$size = $1;
-	}
-	
-	print_log ("[PROXY] ".$t_proxy_socket->sockhost()." send ".$command." to ".$t_client_socket->sockhost ());		
-	
-	send_data($command."\n");
-	
-	# Client send OK to server
-	my $rc = dump_data($t_client_socket, $t_proxy_socket);
-	
-	# Check if there was an error	
-	if ($rc == -1) {
-		return;
-	}
-	
-	# Proxied server send the file to client
-	$rc = dump_data($t_proxy_socket, $t_client_socket, $size);		
-	
-	# Check if there was an error
-	if ($rc == -1) {
-		return;
-	}	
-	
 }
 
 ################################################################################
@@ -975,7 +992,7 @@ sub error {
 		print (STDERR "[err] $_[0]\n");
 	}
 
-	exit 1;
+	die("\n");
 }
 
 ################################################################################
@@ -1110,127 +1127,6 @@ sub send_data {
 }
 
 ################################################################################
-## SUB dump_data
-## Dump data from a socket to another one. Following Tentacle Protocol.
-################################################################################
-sub dump_data($$;$) {
-	my ($from, $to, $size) = @_;
-	my $read;
-	my $data;
-	my $buffer = "";
-	my $written;
-	my $total = $size;
-	my $t_select_read = undef;
-	my $t_select_write = undef;
-	
-	# Assign the correct selector for each socket
-	if ($from == $t_proxy_socket) {
-		# We must read from t_proxy_socket
-		$t_select_read = $t_proxy_select;
-		$t_select_write = $t_select;
-	} else {
-		# We must read from t_client_socket
-		$t_select_read = $t_select;
-		$t_select_write = $t_proxy_select;
-	}
-	
-	while (1) {
-		
-		# Ensure we can read from socket
-		if ($t_select_read->can_read()) {
-			# Ensure we can write from socket
-			if ($t_select_write->can_write()) {
-
-				$read = "";
-				$read = sysread ($from, $data, $t_block_size);
-
-				# Read error
-				if (! defined ($read)) {
-					error ("Read error from " . $from->sockhost () . ": $!.");
-					return -1;
-				}
-
-				# EOF
-				if ($read == 0) {
-					error ("Connection from " . $from->sockhost () . " unexpectedly closed.");
-					return -1;
-				}		
-				
-				$written = syswrite ($to, $data, $read);
-				
-				if ($written != $read) {
-					error ("Connection from " . $to->sockhost () . " unexpectedly closed.");
-					return -1;
-				}
-				
-				$buffer .= $data;
-				
-				if (! defined ($size)) {
-					# If no size defined check for \n
-					# because a command was sent.
-
-					if ($buffer =~ /\n$/) {
-						
-						# Delete CHAR \n
-						chop($buffer);
-						
-						print_log ("[PROXY] ".$from->sockhost()." send ".$buffer." to ".$to->sockhost ());
-						
-						# Returns error if proxy returns error to end connection
-						if ($buffer =~ /SEND ERR/) {
-							return -1;
-						} else {
-							return 0;
-						}
-					}
-				} else {
-					# If size is defined check if all bytes were sent
-					$size = $size - $read;
-					
-					if ($size == 0) {
-						print_log ("[PROXY] ".$from->sockhost()." send ".$total."b to ".$to->sockhost());
-						
-						return 0;
-					}
-				}
-			}
-		}
-	}
-}
-
-################################################################################
-## SUB recv_command_proxy
-## Read a command from the proxied server, ended by a new line character.
-################################################################################
-sub recv_command_proxy {
-	my $buffer;
-	my $char;
-	my $command = '';
-	my $read;
-	my $total = 0;
-
-	while (1) {
-		
-		($read, $buffer) = recv_data_proxy ($t_block_size);
-		$command .= $buffer;
-		$total += $read;
-
-		# Check if the command is complete
-		$char = chop ($command);
-		if ($char eq "\n") {
-			return $command;
-		}
-	
-		$command .= $char;
-
-		# Avoid overflow
-		if ($total > $t_block_size) {
-			error ("Received too much data from " . $t_proxy_socket->sockhost () . ".");
-		}
-	}
-}
-
-################################################################################
 ## SUB recv_command
 ## Read a command from the client, ended by a new line character.
 ################################################################################
@@ -1341,6 +1237,95 @@ sub apply_filters ($) {
 }
 
 ################################################################################
+## SUB install_service
+## Install the Windows service.
+################################################################################
+sub install_service() {
+
+	my $service_path = $0;
+	my $service_params = $SERVICE_PARAMS;
+
+	# Change the service parameter from 'install' to 'run'.
+	$service_params =~ s/\-S\s+\S+/\-S run/;
+
+	my %service_hash = (
+		machine =>  '',
+		name	=>  'TENTACLESRV',
+		display =>  $SERVICE_NAME,
+		path	=>  $service_path,
+		user	=>  '',
+		pwd	 =>  '',
+		description => 'Tentacle Server http://sourceforge.net/projects/tentacled/',
+		parameters => $service_params
+	);
+	
+	if (Win32::Daemon::CreateService(\%service_hash)) {
+		print "Successfully added.\n";
+		exit 0;
+	} else {
+		print "Failed to add service: " . Win32::FormatMessage(Win32::Daemon::GetLastError()) . "\n";
+		exit 1;
+	}
+}
+
+################################################################################
+## SUB uninstall_service
+## Install the Windows service.
+################################################################################
+sub uninstall_service() {
+	if (Win32::Daemon::DeleteService('', 'TENTACLESRV')) {
+		print "Successfully deleted.\n";
+		exit 0;
+	} else {
+		print "Failed to delete service: " . Win32::FormatMessage(Win32::Daemon::GetLastError()) . "\n";
+		exit 1;
+	}
+}
+
+################################################################################
+## SUB callback_running
+## Windows service callback function for the running event.
+################################################################################
+sub callback_running {
+
+	if (Win32::Daemon::State() == WIN32_SERVICE_RUNNING) {
+	}
+}
+
+################################################################################
+## SUB callback_start
+## Windows service callback function for the start event.
+################################################################################
+sub callback_start {
+
+	# Accept_connections ();
+	my $thr = threads->create(\&accept_connections);
+	if (!defined($thr)) {
+		Win32::Daemon::State(WIN32_SERVICE_STOPPED);
+		Win32::Daemon::StopService();
+		return;
+	}
+	$thr->detach();
+
+	Win32::Daemon::State(WIN32_SERVICE_RUNNING);
+}
+
+################################################################################
+## SUB callback_stop
+## Windows service callback function for the stop event.
+################################################################################
+sub callback_stop {
+
+	foreach my $t_server_socket (@t_server_sockets) {
+		$t_server_socket->shutdown (2);
+		$t_server_socket->close ();
+	}
+
+	Win32::Daemon::State(WIN32_SERVICE_STOPPED);
+	Win32::Daemon::StopService();
+}
+
+################################################################################
 # Main
 ################################################################################
 
@@ -1359,6 +1344,11 @@ if ($#ARGV != -1) {
 	exit 1;
 }
 
+# Show IPv6 status
+if ($SOCKET_MODULE eq 'IO::Socket::INET') {
+	print_log ("IO::Socket::INET6 is not found. IPv6 is disabled.");
+}
+
 # Run as daemon?
 if ($t_daemon == 1 && $^O ne 'MSWin32') {
 	daemonize ();
@@ -1366,25 +1356,16 @@ if ($t_daemon == 1 && $^O ne 'MSWin32') {
 
 # Handle ctr-c
 if ($^O eq 'MSWin32') {
+	no warnings;
 	$SIG{INT2} = \&stop_server;
+	use warnings;
 }
 else {
 	$SIG{INT} = \&stop_server;
 }
 
-# Handle SIGCHLD
-$SIG{CHLD} = \&sigchld_handler;
-
-start_server ();
-
-# Initialize semaphore
-$t_sem = Thread::Semaphore->new ($t_max_conn);
-
 # Accept connections
-while (1) {
-	$t_sem->down ();
-	accept_connection ();
-}
+accept_connections();
 
 __END__
 

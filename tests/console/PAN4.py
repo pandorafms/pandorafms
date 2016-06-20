@@ -27,7 +27,7 @@ class PAN4(PandoraWebDriverTestCase):
 
 		#Creates report
 		create_report(driver,"PAN_4_Applications","Applications")
-		create_report(driver,"PAN_4Servers","Servers")
+		create_report(driver,"PAN_4_Servers","Servers")
 
 		#Logout
 		logout(driver,self.base_url)

@@ -17,49 +17,49 @@ class PAN4(PandoraWebDriverTestCase):
 	test_description = u'Creates a user with Chief Operator permissions over the Applications group. Then creates two reports: one in the Applications group and other in the Servers group. Then, it checks that the given user can only see the Application report'
 	tickets_associated = []
 
-def test_pan4(self):
-	driver = self.driver
-	login(driver)
-	detect_and_pass_all_wizards(driver)
-
-	#Creates a user with Chief Operator - Applications profile
-	profile_list = []
-	profile_list.append(("Chief Operator","Applications"))
-	create_user(driver,'PAN_4','PAN_4',email='pan_4@pandorafms.com',profile_list=profile_list)
-
-	#Creates report
-	create_report(driver,"PAN_4_Applications","Applications")
-	create_report(driver,"PAN_4_Servers","Servers")
-
-	#Logout
-	logout(driver,self.base_url)
-
-	#Login
-	login(driver,user='PAN_4',passwd='PAN_4')
-	detect_and_pass_all_wizards(driver)
-
-	#Check that the report is visible
-	click_menu_element(driver,"Custom reporting")
-	driver.find_element_by_id('text-search').clear()
-	driver.find_element_by_id('text-search').send_keys("PAN_4_Applications")
-	driver.find_element_by_id('submit-search_submit').click()
-	self.assertEqual(is_element_present(driver, By.ID, 'report_list-0'),True)
-
-
-	#Check that the report is not visible
-	click_menu_element(driver,"Custom reporting")
-	driver.find_element_by_id('text-search').clear()
-	driver.find_element_by_id('text-search').send_keys("PAN_4_Servers")
-	driver.find_element_by_id('submit-search_submit').click()
+	def test_pan4(self):
+		driver = self.driver
+		login(driver,user="admin",passwd="pandora",pandora_url=self.base_url)
+		detect_and_pass_all_wizards(driver)
+		
+		#Creates a user with Chief Operator - Applications profile
+		profile_list = []
+		profile_list.append(("Chief Operator","Applications"))
+		create_user(driver,'PAN_4','PAN_4',email='pan_4@pandorafms.com',profile_list=profile_list)
 	
-	self.assertEqual("No data found." in driver.page_source,True)
-
-	#Delete reports
-	logout(driver,self.base_url)
-	login(driver)
-
-	delete_report(driver,"PAN_4_Servers")
-	delete_report(driver,"PAN_4_Applications")
+		#Creates report
+		create_report(driver,"PAN_4_Applications","Applications")
+		create_report(driver,"PAN_4_Servers","Servers")
+	
+		#Logout
+		logout(driver,self.base_url)
+	
+		#Login
+		login(driver,user='PAN_4',passwd='PAN_4',pandora_url=self.base_url)
+		detect_and_pass_all_wizards(driver)
+	
+		#Check that the report is visible
+		click_menu_element(driver,"Custom reporting")
+		driver.find_element_by_id('text-search').clear()
+		driver.find_element_by_id('text-search').send_keys("PAN_4_Applications")
+		driver.find_element_by_id('submit-search_submit').click()
+		self.assertEqual(is_element_present(driver, By.ID, 'report_list-0'),True)
+	
+	
+		#Check that the report is not visible
+		click_menu_element(driver,"Custom reporting")
+		driver.find_element_by_id('text-search').clear()
+		driver.find_element_by_id('text-search').send_keys("PAN_4_Servers")
+		driver.find_element_by_id('submit-search_submit').click()
+		
+		self.assertEqual("No data found." in driver.page_source,True)
+	
+		#Delete reports
+		logout(driver,self.base_url)
+		login(driver,user="admin",passwd="pandora",pandora_url=self.base_url)
+	
+		delete_report(driver,"PAN_4_Servers")
+		delete_report(driver,"PAN_4_Applications")
 
 
 if __name__ == "__main__":

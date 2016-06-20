@@ -26,8 +26,8 @@ class PAN4(PandoraWebDriverTestCase):
 		create_user(driver,'PAN_4','PAN_4',email='pan_4@pandorafms.com',profile_list=profile_list)
 
 		#Creates report
-		create_report(driver,"Informe applications","Applications")
-		create_report(driver,"Informe servers","Servers")
+		create_report(driver,"PAN_4_Applications","Applications")
+		create_report(driver,"PAN_4Servers","Servers")
 
 		#Logout
 		logout(driver,self.base_url)
@@ -39,7 +39,7 @@ class PAN4(PandoraWebDriverTestCase):
 		#Check that the report is visible
 		click_menu_element(driver,"Custom reporting")
 		driver.find_element_by_id('text-search').clear()
-		driver.find_element_by_id('text-search').send_keys("Informe applications")
+		driver.find_element_by_id('text-search').send_keys("PAN_4_Applications")
 		driver.find_element_by_id('submit-search_submit').click()
 		self.assertEqual(is_element_present(driver, By.ID, 'report_list-0'),True)
 
@@ -47,7 +47,7 @@ class PAN4(PandoraWebDriverTestCase):
 		#Check that the report is not visible
 		click_menu_element(driver,"Custom reporting")
 		driver.find_element_by_id('text-search').clear()
-		driver.find_element_by_id('text-search').send_keys("Informe servers")
+		driver.find_element_by_id('text-search').send_keys("PAN_4_Servers")
 		driver.find_element_by_id('submit-search_submit').click()
 		# ESTE NO ESTARÁ driver.find_element_by_id('report_list-0')
 		self.assertEqual("No data found." in driver.page_source,True)

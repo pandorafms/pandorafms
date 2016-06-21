@@ -4989,7 +4989,7 @@ sub cli_create_policy () {
 	my $id_group = get_group_id($dbh,$group_name);
 	exist_check($id_group,'group',$group_name);
 	
-	my $id = enterprise_hook('create_policy',[$dbh, safe_input($policy_name), safe_input($description), $id_group]);
+	my $id = enterprise_hook('create_policy',[$dbh, $policy_name, $description, $id_group]);
 	
 	return $id;
 }

@@ -186,15 +186,36 @@ function isInACL($ip) {
 	// If the IP is not in the list, we check one by one, all the wildcard registers
 	foreach($config['list_ACL_IPs_for_API'] as $acl_ip) {
 		if (preg_match('/\*/', $acl_ip)) {
-			
+
+			if($acl_ip[0]=='*' && strlen($acl_ip)>1){
+				//example *.lab.artica.es == 151.80.15.*
+				$acl_ip = str_replace('*.','',$acl_ip);
+				$name = array();
+				$name = gethostbyname($acl_ip);
+				$names = explode('.',$name);
+				$names[3] = "";
+				$names = implode('.',$names);
+				if (preg_match('/'.$names.'/', $ip)) {
+					return true;
+				}
+
+			}else{
+				//example 192.168.70.* or *
+				$acl_ip = str_replace('.','\.',$acl_ip);
+				// Replace wilcard by .* to do efective in regular expression
+				$acl_ip = str_replace('*','.*',$acl_ip);
+				// If the string match with the beginning of the IP give it access
+				if (preg_match('/'.$acl_ip.'/', $ip)) {
+					return true;
+				}
+			}
 			// Scape for protection
-			$acl_ip = str_replace('.','\.',$acl_ip);
-			
-			// Replace wilcard by .* to do efective in regular expression
-			$acl_ip = str_replace('*','.*',$acl_ip);
-			
-			// If the string match with the beginning of the IP give it access
-			if (preg_match('/'.$acl_ip.'/', $ip)) {
+
+		}else{
+			//example lab.artica.es without '*'
+			$name = array();
+			$name = gethostbyname($acl_ip);
+			if (preg_match('/'.$name.'/', $ip)) {
 				return true;
 			}
 		}

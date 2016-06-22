@@ -943,7 +943,7 @@ if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])
 		$ehorus_tab['sub_menu'] .= '</a>';
 		$ehorus_tab['sub_menu'] .= '<a class="tab_display" href="' . $tab_url . '&client_tab=display">';
 		$ehorus_tab['sub_menu'] .= '<li class="nomn tab_godmode" style="text-align: center;">'
-			. html_print_image("images/ehorus/vnc.png", true, array( 'title' => __('VNC')));
+			. html_print_image("images/ehorus/vnc.png", true, array( 'title' => __('Display')));
 		$ehorus_tab['sub_menu'] .= '</li>';
 		$ehorus_tab['sub_menu'] .= '</a>';
 		$ehorus_tab['sub_menu'] .= '<a class="tab_processes" href="' . $tab_url . '&client_tab=processes">';

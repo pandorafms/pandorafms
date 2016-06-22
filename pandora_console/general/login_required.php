@@ -116,7 +116,7 @@ echo '<div id="login_id_dialog" title="' .
 	
 	echo '<div style="position:absolute; margin: 0 auto; bottom: 0px; right: 10px; border: 1px solid #FFF; width: 570px">';
 		echo '<div style="float: right; width: 20%;">';
-		html_print_submit_button("Register", 'id_dialog_button', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
+		html_print_submit_button(__("Register"), 'id_dialog_button', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
 		echo '</div>';
 		echo '<div id="all-required" style="float: right; margin-right: 30px; display: none; color: red;">';
 			echo __("All fields required");

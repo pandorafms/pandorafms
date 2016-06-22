@@ -154,11 +154,11 @@ echo '<div id="login_accept_register" title="' .
 	
 	echo '<div style="position:absolute; margin: 0 auto; bottom: 0px; padding-top:10px; position:relative; border: 1px solid #FFF;">';
 		echo '<div style="float: right;">';
-			html_print_submit_button("Finish", 'finish_dialog_button', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
+			html_print_submit_button(__("Finish"), 'finish_dialog_button', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
 		echo '</div>';
 		$display_status_return = $return_button ? 'block' : 'none';
 		echo '<div style="float: right; width: 20%; display: ' . $display_status_return . ';">';
-			html_print_submit_button("Return", 'return_dialog_button', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd" style="width:100px;"');  
+			html_print_submit_button(__("Return"), 'return_dialog_button', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd" style="width:100px;"');  
 		echo '</div>';
 		echo '<div style="float: left; margin-left: 0px; width: 50%; text-align: left;">';
 			html_print_checkbox('register', 1, false, false, false, 'cursor: \'pointer\'');
@@ -182,10 +182,10 @@ echo '<div id="login_registration_yesno" title="' .
 		echo __("Do you want to continue without any registration") . "?";
 	echo '</div>';
 	echo '<div style="float: left;  padding-left: 15px; padding-top: 20px;">';
-		html_print_submit_button("No", 'no_registration', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub cancel" style="width:100px;"');  
+		html_print_submit_button(__("No"), 'no_registration', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub cancel" style="width:100px;"');  
 	echo '</div>';
 	echo '<div style="float: right;  padding-right: 15px; padding-top: 20px;">';
-		html_print_submit_button("Yes", 'yes_registration', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd" style="width:100px;"');  
+		html_print_submit_button(__("Yes"), 'yes_registration', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd" style="width:100px;"');  
 	echo '</div>';
 echo '</div>';
 

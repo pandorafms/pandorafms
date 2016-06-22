@@ -208,7 +208,7 @@ if ($create_downtime || $update_downtime) {
 	else if ($type_execution == 'once' && $datetime_from >= $datetime_to) {
 		ui_print_error_message(__('Not created. Error inserting data') . ". " .__('The end date must be higher than the start date'));
 	}
-	else if ($type_execution == 'once' && $datetime_to <= $now) {
+	else if ($type_execution == 'once' && $datetime_to <= $now && !$config["past_planned_downtimes"]) {
 		ui_print_error_message(__('Not created. Error inserting data') . ". " .__('The end date must be higher than the current time'));
 	}
 	else if ($type_execution == 'periodically'

@@ -319,7 +319,7 @@ $(document).ready (function () {
 		draggable: true,
 		modal: true,
 		height: 320,
-		width: 570
+		width: 750
 	});
 	
 	$("#login_registration_yesno").dialog({

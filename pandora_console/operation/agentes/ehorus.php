@@ -33,7 +33,7 @@ if (empty($agent_id)) {
 
 $group_id = db_get_value('id_grupo', 'tagente', 'id_agente', $agent_id);
 
-if ($group_id === false || (!check_acl($config['id_user'], $group_id, 'AM') && !is_user_admin($config['id_user']))) {
+if ($group_id === false || (!check_acl($config['id_user'], $group_id, 'AW') && !is_user_admin($config['id_user']))) {
 	db_pandora_audit('ACL Violation', 'Trying to access eHorus');
 	require ('general/noaccess.php');
 	return;

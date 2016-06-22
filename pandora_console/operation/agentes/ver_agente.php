@@ -926,7 +926,7 @@ if (enterprise_installed() && $config['log_collector']) {
 
 /* eHorus tab */
 if ($config['ehorus_enabled'] && !empty($config['ehorus_custom_field'])
-		&& (check_acl($config['id_user'], $id_grupo, 'AM') || is_user_admin($config['id_user']))) {
+		&& (check_acl($config['id_user'], $id_grupo, 'AW') || is_user_admin($config['id_user']))) {
 	$ehorus_agent_id = agents_get_agent_custom_field($id_agente, $config['ehorus_custom_field']);
 	if (!empty($ehorus_agent_id)) {
 		$tab_url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente;

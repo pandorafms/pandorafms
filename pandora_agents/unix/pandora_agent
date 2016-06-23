@@ -41,7 +41,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '6.0SP3';
-use constant AGENT_BUILD => '160623';
+use constant AGENT_BUILD => '160624';
 
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {

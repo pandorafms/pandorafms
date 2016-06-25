@@ -60,7 +60,7 @@ Besides the defined module macros, the following macros are available:
 <li>_groupcontact_ : Group contact information.	Configured when the group is created.</li>
 <li>_groupother_ : Other information about the group. Configured when the group is created.</li>
 <li>_email_tag_ : Emails associated to the module tags.</li>
-
+<li>_modulegraph_nh_: (Only for alerts that use the command eMail) Returns an image of a module graph with a period of n hours (eg. _modulegraph_24h_). A correct setup of the connection between the server and the console's api is required. This setup is done into the server's configuration file.</li>
 </ul>
 <p>
 </p>

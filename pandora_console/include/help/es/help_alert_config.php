@@ -61,7 +61,7 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_groupcontact_ : Información de contacto del grupo.	Se configura al crear el grupo.</li>
 <li>_groupother_ : Otra información sobre el grupo. Se configura al crear el grupo.</li>
 <li>_email_tag_ : Emails asociados a los tags de módulos.</li>
-
+<li>_modulegraph_nh_: (Sólo para alertas que usen el comando eMail) Devuelve una imagen codificada en base64 de una gráfica del módulo con un período de n horas (eg. _modulegraph_24h_). Requiere de una configuración correcta de la conexión del servidor a la consola vía api, la cual se realiza en el fichero de configuración del servidor.</li>
 </ul>
 <p>
 Ejemplo: Error en el agente _agent_: _alert_description_ 

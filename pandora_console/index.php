@@ -144,6 +144,12 @@ ob_start ('ui_process_page_head');
 // Enterprise main 
 enterprise_include ('index.php');
 
+echo '<script type="text/javascript">';
+	echo 'var dispositivo = navigator.userAgent.toLowerCase();';
+	echo 'if( dispositivo.search(/iphone|ipod|ipad|android/) > -1 ){';
+    	echo 'document.location = "/pandora_console/mobile";  }';
+echo '</script>';
+
 // This tag is included in the buffer passed to ui_process_page_head so 
 // technically it can be stripped
 echo '</head>' . "\n";

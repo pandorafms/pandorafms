@@ -110,7 +110,7 @@ if (is_ajax ()) {
 				}
 				//If the field is the number one, print the help message
 				if ($i == 1) {
-					$fdesc .= ui_print_help_icon ('snmp_alert_field1', true);
+					$fdesc .= ui_print_help_icon ('alert_config', true);
 				}
 			}
 			else {

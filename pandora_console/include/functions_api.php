@@ -8883,7 +8883,7 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 	$graph_image_file_encoded = false;
 	
 	// Get the src of the html item
-	if (preg_match("/<img src='(.+)'>/", $graph_html, $matches)) {
+	if (preg_match("/<img src='(.+)'.*/", $graph_html, $matches)) {
 		if (isset($matches) && isset($matches[1])) {
 			$file_url = $matches[1];
 			// Get the file

@@ -26,7 +26,7 @@ sub help_screen{
 
 	print "Options to create event: 
 
-	$0 -p <path_to_integria_console_API> -c <credentials> -create_ticket <options> 
+	$0 -p <path_to_integria_console_API> -u <credentials> -create_ticket <options> 
 
 Where options:
 

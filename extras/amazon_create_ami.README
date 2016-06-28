@@ -1,0 +1,4 @@
+Put this file inside the AMI, and then remove it.
+After removeing the script, type:
+* history -c
+* history -w

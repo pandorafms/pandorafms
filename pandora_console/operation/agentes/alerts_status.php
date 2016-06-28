@@ -52,6 +52,8 @@ if ($tag_filter) {
 	}
 }
 
+$action_filter = get_parameter("action_filter", 0);
+
 $sec2 = get_parameter_get ('sec2');
 $sec2 = safe_url_extraclean ($sec2);
 
@@ -67,7 +69,7 @@ $pure = get_parameter('pure', 0);
 
 $url = 'index.php?sec=' . $sec . '&sec2=' . $sec2 . '&refr=' . $refr .
 	'&filter=' . $filter . '&filter_standby=' . $filter_standby .
-	'&ag_group=' . $id_group .'&tag_filter=' .$tag_filter;
+	'&ag_group=' . $id_group .'&tag_filter=' .$tag_filter .'&action_filter=' .$action_filter;
 
 if ($flag_alert == 1 && check_acl($config['id_user'], $id_group, "AW")) {
 	forceExecution($id_group);
@@ -356,10 +358,10 @@ else {
 	else {
 		$id_groups = array_keys(
 			users_get_groups($config["id_user"], 'AR', false));
-		
-		$alerts['alerts_simple'] = get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter);
-		
-		$countAlertsSimple = get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter);
+
+		$alerts['alerts_simple'] = get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter,$action_filter);
+
+		$countAlertsSimple = get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
 	}
 }
 
@@ -386,7 +388,7 @@ if ($print_agent) {
 	else {
 		ui_toggle(
 			printFormFilterAlert($id_group, $filter, $free_search,
-				$url, $filter_standby, $tag_filter, true, $strict_user),
+				$url, $filter_standby, $tag_filter, $action_filter, true, $strict_user),
 			__('Alert control filter'), __('Toggle filter(s)'));
 	}
 }

@@ -1612,6 +1612,10 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 	if ($tag) {
 		$filter .= ' AND (id_agent_module IN (SELECT id_agente_modulo FROM ttag_module WHERE id_tag IN ('.$tag.')))';
 	}
+
+	if($action_filter){
+		$filter .= ' AND (talert_template_modules.id IN (SELECT id_alert_template_module FROM talert_template_module_actions where id_alert_action = '.$action_filter.'))';
+	}
 	if (is_array ($options)) {
 		$filter .= db_format_array_where_clause_sql ($options);
 	}

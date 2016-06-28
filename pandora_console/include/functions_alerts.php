@@ -1568,7 +1568,7 @@ function get_alert_fires_in_period ($id_alert_module, $period, $date = 0) {
  */
 function get_group_alerts($id_group, $filter = '', $options = false,
 	$where = '', $allModules = false, $orderby = false,
-	$idGroup = false, $count = false, $strict_user = false, $tag = false) {
+	$idGroup = false, $count = false, $strict_user = false, $tag = false, $action_filter = false) {
 
 	global $config;
 	

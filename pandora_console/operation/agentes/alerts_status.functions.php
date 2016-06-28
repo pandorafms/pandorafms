@@ -34,8 +34,8 @@ function validateAlert() {
 	}
 }
 
-function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby = false, $tag_filter = false, $return = false, $strict_user = false) {
-	
+function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby = false, $tag_filter = false,$action_filter = false, $return = false, $strict_user = false) {
+
 	global $config;
 	require_once ($config['homedir'] . "/include/functions_tags.php");
 	

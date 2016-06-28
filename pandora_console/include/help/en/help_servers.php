@@ -10,7 +10,7 @@
 
 <p>Pandora FMS's data server can work in high availability and/or load balancing modes. In a very large architecture, various Pandora FMS servers can be used at the same time, in order to handle large volumes of functionally or geographically distributed information.</p>
 
-<p>Pandora FMS servers are always on and permanently verify if any element has any problem and it is defined as alert. If this happens, it will execute the action defined in the alarm, such as sending an SMS, an e-mail, or triggering the execution of a script.</p> 
+<p>Pandora FMS servers are always on and permanently verify if any element has any problem. If there is any alert linked to the problem, then it'll run the pre-set action such as sending an SMS, an email, or activating a script execution.</p>
 
 <ul>
 <li type="circle">Data Server</li>

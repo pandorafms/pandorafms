@@ -395,6 +395,8 @@ if (is_ajax ()) {
 							WHERE t2.delete_pending = 0
 								AND t1.nombre = t2.nombre
 								AND t2.id_agente IN (' . implode(',', $idAgents) . ')) = (' . count($idAgents) . ')';
+			}elseif ($selection_mode == 'unknown'){
+				$sql .= 'AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where estado = 3 OR estado = 4)';
 			}
 			
 			$sql .= ' ORDER BY nombre';

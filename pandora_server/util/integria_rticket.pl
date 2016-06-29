@@ -86,7 +86,10 @@ sub tool_api_main () {
 	my $credentials;
 	my $api_pass;
 	my $db_user;
+	my $db_user_pass;
 	my @db_info;
+	my $integria_user;
+	my $user_pass;
 
 	my $ticket_name = "";
 	my $group_id = -1;
@@ -125,8 +128,8 @@ sub tool_api_main () {
 		}
 		else {
 			$api_pass = $db_info[0];
-			$db_user = $db_info[1];
-			$db_user_pass = $db_info[2];
+			$integria_user = $db_info[1];
+			$user_pass = $db_info[2];
 		}
 	}
 	else {
@@ -194,8 +197,8 @@ sub tool_api_main () {
 				"|;|" . $ticket_inventory .
 				"|;|" . $ticket_type .
 				"|;|" . $email_copy .
-				"|;|" . $email_copy .
-				"|;|" . 
+				"|;|" . $integria_user .
+				"|;|" .
 				"|;|" . '1' .
 				"|;|" . 
 				"|;|";

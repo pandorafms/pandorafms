@@ -486,7 +486,7 @@ $table->data['form_agents_3'][1] = html_print_select ($agents, 'id_agents[]',
 	$agents_id, false, '', '', true, true, false, '', false, 'width:100%');
 $table->data['form_agents_3'][2] = __('When select agents');
 $table->data['form_agents_3'][2] .= '<br>';
-$table->data['form_agents_3'][2] .= html_print_select (array('common' => __('Show common modules'), 'all' => __('Show all modules')), 'modules_selection_mode',
+$table->data['form_agents_3'][2] .= html_print_select (array('common' => __('Show common modules'), 'all' => __('Show all modules'),'unknown' => __('Show unknown and not init modules')), 'modules_selection_mode',
 	'common', false, '', '', true);
 $table->data['form_agents_3'][3] = html_print_select (array(), 'module[]',
 	$modules_select, false, '', '', true, true, false, '', false, 'width:100%');

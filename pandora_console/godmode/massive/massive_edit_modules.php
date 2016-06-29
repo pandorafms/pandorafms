@@ -333,7 +333,7 @@ $table->data['form_agents_3'][2] = __('When select agents');
 $table->data['form_agents_3'][2] .= '<br>';
 $table->data['form_agents_3'][2] .= html_print_select (
 	array('common' => __('Show common modules'),
-		'all' => __('Show all modules')),
+		'all' => __('Show all modules'),'unknown' => __('Show unknown and not init modules')),
 	'modules_selection_mode',
 	'common', false, '', '', true);
 $table->data['form_agents_3'][3] = html_print_select (array(), 'module[]',

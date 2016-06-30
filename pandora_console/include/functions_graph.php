@@ -1492,12 +1492,12 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 					$value = false;
 				}
 				$total_modules += $value;
-				
-				if ( !empty($labels) && isset($labels[$module]) )
-					$label = io_safe_input($labels[$module]);
-				else {
+
+				if ( !empty($labels) && isset($labels[$module]) ){
+					$label = io_safe_output($labels[$module]);
+				}else {
 					$agent_name = agents_get_name($data_module['id_agente']);
-					$label = $agent_name . ": " . $data_module['nombre'];
+					$label = io_safe_output($agent_name . ": " . $data_module['nombre']);
 				}
 				
 				$temp[$label] = array('value'=>$value,

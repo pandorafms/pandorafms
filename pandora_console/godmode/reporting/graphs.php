@@ -135,6 +135,9 @@ if ($multiple_delete) {
 
 
 $graphs = custom_graphs_get_user ($config['id_user'], false, true, "RR");
+$offset = (int) get_parameter ("offset");
+
+ui_pagination (count($graphs));
 
 if (!empty ($graphs)) {
 	$table = new stdClass();
@@ -159,8 +162,10 @@ if (!empty ($graphs)) {
 		$table->size[4] = '90px';
 	}
 	$table->data = array ();
-	
-	foreach ($graphs as $graph) {
+
+	$result_graphs = array_slice($graphs, $offset, $config['block_size']);
+
+	foreach ($result_graphs as $graph) {
 		$data = array ();
 		
 		$data[0] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.
@@ -185,9 +190,9 @@ if (!empty ($graphs)) {
 		
 		array_push ($table->data, $data);
 	}
-	
-	
-	if (!empty($graphs)){
+
+
+	if (!empty($result_graphs)){
 		echo "<form method='post' style='' action='index.php?sec=reporting&sec2=godmode/reporting/graphs'>";
 			html_print_input_hidden('multiple_delete', 1);
 			html_print_table ($table);
@@ -205,7 +210,7 @@ if (!empty ($graphs)) {
 			echo "</form>";
 		}
 	echo "</div>";
-
+	ui_pagination (count($graphs));
 }
 else {
 	require_once ($config['homedir'] . "/general/firts_task/custom_graphs.php");

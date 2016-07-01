@@ -126,6 +126,9 @@ sub db_connect ($$$$$$) {
 		# Enable character semantics
 		$dbh->{'mysql_enable_utf8'} = 1;
 		
+        # Tell the server to return UTF-8 strings.
+		$dbh->do("SET NAMES 'utf8';") if ($^O eq 'MSWin32');
+
 		return $dbh;
 	}
 	elsif ($rdbms eq 'postgresql') {

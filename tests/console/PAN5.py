@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
-import unittest, time, re, pdb
+import unittest, time, re
 
 class PAN5(PandoraWebDriverTestCase):
 
@@ -52,6 +52,7 @@ class PAN5(PandoraWebDriverTestCase):
 		driver.find_element_by_css_selector("b").click()
 		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Alerts"]').click()
 		driver.find_element_by_xpath('//tr[@id="table2-0"]/td/a/img[@data-title="Force"]').click()
+		time.sleep(10)
 		
 		#Search events of our agent	
 		click_menu_element(driver,"View events")

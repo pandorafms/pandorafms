@@ -277,6 +277,17 @@ $table->data[34][0] = __('Limit parameters massive') .
 $table->data[34][1] = html_print_input_text('limit_parameters_massive',
 	$config['limit_parameters_massive'], '', 10, 10, true);
 
+$table->data[35][0] = __('Include agents manually disabled');
+$table->data[35][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('include_agents', 1, '', $config["include_agents"], true).'&nbsp;&nbsp;';
+$table->data[35][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('include_agents', 0, '', $config["include_agents"], true);
+	/*$row = array();
+	$row[0] = __('Include agents');
+
+	$row[1] = __('Yes') . '&nbsp;&nbsp;&nbsp;' . html_print_radio_button ('include_agents', 1, '', $config["include_agents"], true) . '&nbsp;&nbsp;';
+	$row[1] .= __('No') . '&nbsp;&nbsp;&nbsp;' . html_print_radio_button ('include_agents', 0, '', $config["include_agents"], true);
+
+	$data['include_agents'] = $row;*/
+
 
 echo '<form id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 

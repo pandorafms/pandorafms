@@ -91,7 +91,9 @@ if (!function_exists ('mime_content_type')) {
 			'ods' => 'application/vnd.oasis.opendocument.spreadsheet'
 		);
 		
-		$ext = strtolower (array_pop (explode ('.', $filename)));
+		$ext_fields = explode ('.', $filename);
+		$ext = array_pop ();
+		$ext = strtolower ($ext);
 		if (array_key_exists ($ext, $mime_types)) {
 			return $mime_types[$ext];
 		}
@@ -114,7 +116,7 @@ if (!function_exists ('mime_content_type')) {
 global $config;
 
 if (isset($config['homedir_filemanager'])) {
-	$homedir_filemanager = $config['homedir_filemanager'];
+	$homedir_filemanager = io_safe_output($config['homedir_filemanager']);
 }
 else {
 	$homedir_filemanager = $config['homedir'];

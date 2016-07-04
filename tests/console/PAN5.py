@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
-import unittest, time, re
+import unittest, time, re, pdb
 
 class PAN5(PandoraWebDriverTestCase):
 
@@ -19,77 +19,51 @@ class PAN5(PandoraWebDriverTestCase):
 		login(driver)
 		detect_and_pass_all_wizards(driver)
 
+		#Create agent
 		click_menu_element(driver,"Agent detail")
 		driver.find_element_by_id("submit-crt").click()
 		driver.find_element_by_id("text-agente").click()
 		driver.find_element_by_id("text-agente").clear()
 		driver.find_element_by_id("text-agente").send_keys(u"次のライセンスに基づいていま")
 		driver.find_element_by_id("submit-crtbutton").click()
-		driver.find_element_by_css_selector("li.nomn.tab_godmode > a > img.forced_title").click()
-		
+
+		#Create module
+		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
 		Select(driver.find_element_by_id("moduletype")).select_by_visible_text("Create a new network server module")
 		driver.find_element_by_name("updbutton").click()
-		
 		Select(driver.find_element_by_id("network_component_group")).select_by_visible_text("Network Management")
 		Select(driver.find_element_by_id("network_component")).select_by_visible_text("Host Alive")
 		driver.find_element_by_id("text-name").clear()
 		driver.find_element_by_id("text-name").send_keys(u"管理者ガイド")
 		driver.find_element_by_id("submit-crtbutton").click()
 		
-		#TODO Improve xpath expression
-		driver.find_element_by_xpath('//*[@id="menu_tab"]/ul/li[4]/a/img').click()
+		#Create alert
+		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Alerts"]').click()
 		Select(driver.find_element_by_id("id_agent_module")).select_by_visible_text(u"管理者ガイド")
 		Select(driver.find_element_by_id("template")).select_by_visible_text("Critical condition")
 		Select(driver.find_element_by_id("action_select")).select_by_visible_text("Default action")
 		driver.find_element_by_id("submit-add").click()
-		
+
+		#Force alert		
 		click_menu_element(driver,"Agent detail")
 		driver.find_element_by_id("text-search").clear()
 		driver.find_element_by_id("text-search").send_keys(u"次のライセンスに基づいていま")
 		driver.find_element_by_id("submit-srcbutton").click()
 		driver.find_element_by_css_selector("b").click()
-		driver.find_element_by_xpath('//*[@id="menu_tab"]/ul/li[3]/a/img').click()
-		max_retries = 3
-                i = 1
-                while (i <= max_retries): # Temporary workaround to weird StaleElementReferenceException exceptions due Javascript altering the DOM
-                        try:
-                                element = refresh_N_times_until_find_element(driver,5,'//*[@id="table2-0-2"]/a/img',how=By.XPATH)
-				element.click()
-                                break
-                        except StaleElementReferenceException as e_stale:
-                                i = i+1
-                                if i > max_retries:
-                                        self.verificationErrors.append(str(e_stale))
-                                        break
-                                else:
-                                        next
-			except NoSuchElementException as e_nosuch:
-				i = i+1
-                                if i > max_retries:
-                                        self.verificationErrors.append(str(e_nosuch))
-                                        break
-                                else:
-                                        next
-                        except AssertionError as e:
-                                self.verificationErrors.append(str(e))
-                                break
-
-		driver.find_element_by_xpath('//*[@id="table2-0-2"]/a/img').click()
-	
+		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Alerts"]').click()
+		driver.find_element_by_xpath('//tr[@id="table2-0"]/td/a/img[@data-title="Force"]').click()
+		
+		#Search events of our agent	
 		click_menu_element(driver,"View events")
-
 		driver.find_element_by_xpath('//a[contains(.,"Event control filter")]').click()
-
 		driver.find_element_by_xpath('//a[contains(.,"Advanced options")]').click()
-
 		driver.find_element_by_id("text-text_agent").clear()
 		driver.find_element_by_id("text-text_agent").send_keys(u"次のライセンスに基づいていま")
-	
-		
 		driver.find_element_by_id("text-module_search").clear()
 		driver.find_element_by_id("text-module_search").send_keys(u"管理者ガイド")
 		driver.find_element_by_id("submit-update").click()
 
+		#Check that there are japanese characters present on the event
 		try:
 			self.assertEqual(True,u"Alert fired (Critical condition) assigned to (管理者ガイド)" in driver.page_source)
 		except AssertionError as e:

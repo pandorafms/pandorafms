@@ -182,3 +182,11 @@ def search_agent(driver,agent_name):
 	driver.find_element_by_id("text-search").send_keys(agent_name)
 	driver.find_element_by_id("submit-srcbutton").click()
 	driver.find_element_by_css_selector("b").click()
+
+def create_agent(driver,agent_name):
+	click_menu_element(driver,"Agent detail")
+	driver.find_element_by_id("submit-crt").click()
+	driver.find_element_by_id("text-agente").click()
+	driver.find_element_by_id("text-agente").clear()
+	driver.find_element_by_id("text-agente").send_keys(agent_name)
+	driver.find_element_by_id("submit-crtbutton").click()

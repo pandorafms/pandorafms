@@ -92,7 +92,7 @@ if (!function_exists ('mime_content_type')) {
 		);
 		
 		$ext_fields = explode ('.', $filename);
-		$ext = array_pop ();
+		$ext = array_pop ($ext_fields);
 		$ext = strtolower ($ext);
 		if (array_key_exists ($ext, $mime_types)) {
 			return $mime_types[$ext];

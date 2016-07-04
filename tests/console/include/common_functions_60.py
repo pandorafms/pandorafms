@@ -174,4 +174,11 @@ def delete_agent (driver,agent_names_list):
 
 	driver.find_element_by_id("submit-go").click()
 
+def search_agent(driver,agent_name):
 
+	click_menu_element(driver,"Agent detail")
+	driver.find_element_by_id("text-search").click() 
+	driver.find_element_by_id("text-search").clear()
+	driver.find_element_by_id("text-search").send_keys(agent_name)
+	driver.find_element_by_id("submit-srcbutton").click()
+	driver.find_element_by_css_selector("b").click()

@@ -66,7 +66,7 @@ class PAN5(PandoraWebDriverTestCase):
 			except NoSuchElementException as e_nosuch:
 				i = i+1
                                 if i > max_retries:
-                                        self.verificationErrors.append(str(e_stale))
+                                        self.verificationErrors.append(str(e_nosuch))
                                         break
                                 else:
                                         next

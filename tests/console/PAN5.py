@@ -5,7 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
-from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
 import unittest, time, re
 
 class PAN5(PandoraWebDriverTestCase):
@@ -49,6 +49,31 @@ class PAN5(PandoraWebDriverTestCase):
 		driver.find_element_by_id("submit-srcbutton").click()
 		driver.find_element_by_css_selector("b").click()
 		driver.find_element_by_xpath('//*[@id="menu_tab"]/ul/li[3]/a/img').click()
+		max_retries = 3
+                i = 1
+                while (i <= max_retries): # Temporary workaround to weird StaleElementReferenceException exceptions due Javascript altering the DOM
+                        try:
+                                element = refresh_N_times_until_find_element(driver,5,'//*[@id="table2-0-2"]/a/img',how=By.XPATH)
+				element.click()
+                                break
+                        except StaleElementReferenceException as e_stale:
+                                i = i+1
+                                if i > max_retries:
+                                        self.verificationErrors.append(str(e_stale))
+                                        break
+                                else:
+                                        next
+			except NoSuchElementException as e_nosuch:
+				i = i+1
+                                if i > max_retries:
+                                        self.verificationErrors.append(str(e_stale))
+                                        break
+                                else:
+                                        next
+                        except AssertionError as e:
+                                self.verificationErrors.append(str(e))
+                                break
+
 		driver.find_element_by_xpath('//*[@id="table2-0-2"]/a/img').click()
 	
 		click_menu_element(driver,"View events")

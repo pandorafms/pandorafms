@@ -40,3 +40,7 @@ INSERT INTO `tconfig` (`token`, `value`) VALUES ('big_operation_step_datos_purge
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('small_operation_step_datos_purge', '1000');
 INSERT INTO `tconfig` (`token`, `value`) VALUES ('days_autodisable_deletion', '30');
 
+-- ---------------------------------------------------------------------
+-- Table `tplanned_downtime_agents`
+-- ---------------------------------------------------------------------
+ALTER TABLE tplanned_downtime_agents ADD COLUMN `manually_disabled` tinyint(1) DEFAULT 0;

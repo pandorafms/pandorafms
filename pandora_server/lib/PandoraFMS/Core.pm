@@ -1576,6 +1576,13 @@ sub pandora_planned_downtime_set_disabled_elements($$$) {
 		}
 		
 		if ($only_alerts == 0) {
+
+			if($pa_config->{'include_agents'} == 0){
+				db_do($dbh, 'UPDATE tplanned_downtime_agents
+					SET manually_disabled = 1 WHERE id_agent IN (SELECT id_agente FROM tagente WHERE disabled = 1)
+					AND id_downtime = ' . $downtime->{'id'});
+			}
+
 			db_do ($dbh, 'UPDATE tagente
 				SET disabled = 1
 				WHERE id_agente = ?', $downtime_agent->{'id_agent'});
@@ -1619,6 +1626,12 @@ sub pandora_planned_downtime_unset_disabled_elements($$$) {
 			db_do ($dbh, 'UPDATE tagente
 				SET disabled = 0
 				WHERE id_agente = ?', $downtime_agent->{'id_agent'});
+
+			if($pa_config->{'include_agents'} == 0){
+				db_do ($dbh, 'UPDATE tagente
+					SET disabled = 1
+					WHERE id_agente IN (SELECT id_agent FROM tplanned_downtime_agents WHERE manually_disabled = 1)');
+			}
 		}
 		else {
 			db_do ($dbh, 'UPDATE talert_template_modules

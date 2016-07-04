@@ -277,7 +277,7 @@ $table->data[34][0] = __('Limit parameters massive') .
 $table->data[34][1] = html_print_input_text('limit_parameters_massive',
 	$config['limit_parameters_massive'], '', 10, 10, true);
 
-$table->data[35][0] = __('Include agents');
+$table->data[35][0] = __('Include agents manually disabled');
 $table->data[35][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('include_agents', 1, '', $config["include_agents"], true).'&nbsp;&nbsp;';
 $table->data[35][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('include_agents', 0, '', $config["include_agents"], true);
 	/*$row = array();

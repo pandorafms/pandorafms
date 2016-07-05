@@ -203,6 +203,10 @@ function config_update_config () {
 						$error_update[] = __('Limit parameters massive');
 					if (!config_update_value ('identification_reminder', get_parameter('identification_reminder')))
 						$error_update[] = __('Identification_reminder');
+					if (!config_update_value ('include_agents', (bool)get_parameter('include_agents')))
+						$error_update[] = __('Include_agents');
+					if (!config_update_value ('auditdir', get_parameter('auditdir')))
+						$error_update[] = __('Audit log directory');
 					break;
 				case 'enterprise':
 					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
@@ -887,7 +891,13 @@ function config_process_config () {
 	if (!isset ($config["log_collector"])) {
 		config_update_value ('log_collector', 0);
 	}
-	
+	if (!isset ($config["include_agents"])) {
+		config_update_value ('include_agents', 0);
+	}
+
+	if (!isset ($config["auditdir"])) {
+		config_update_value ('auditdir',"/var/www/html/pandora_console");
+	}
 	if (!isset ($config["log_dir"])) {
 		if ($is_windows)
 			$default = 'C:\\PandoraFMS\\Pandora_Server\\data_in\\log';

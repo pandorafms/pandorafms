@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import login, click_menu_element, refresh_N_times_until_find_element, detect_and_pass_all_wizards
+from include.common_functions_60 import login, click_menu_element, refresh_N_times_until_find_element, detect_and_pass_all_wizards, create_agent
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -19,15 +19,7 @@ class PAN3(PandoraWebDriverTestCase):
 		driver = self.driver
 		login(driver)
 		detect_and_pass_all_wizards(driver)
-		click_menu_element(driver,"Agent detail")
-		driver.find_element_by_id("submit-crt").click()
-		driver.find_element_by_id("text-agente").click()
-		driver.find_element_by_id("text-agente").clear()
-		driver.find_element_by_id("text-agente").send_keys("localhost icmp test")
-		driver.find_element_by_id("text-direccion").click()
-		driver.find_element_by_id("text-direccion").clear()
-		driver.find_element_by_id("text-direccion").send_keys("127.0.0.1")
-		driver.find_element_by_id("submit-crtbutton").click()
+		create_agent(driver,"localhost icmp test",ip="127.0.0.1")
 		driver.find_element_by_css_selector("li.nomn.tab_godmode > a > img.forced_title").click()
 		driver.find_element_by_id("moduletype").click()
 		Select(driver.find_element_by_id("moduletype")).select_by_visible_text("Create a new network server module")

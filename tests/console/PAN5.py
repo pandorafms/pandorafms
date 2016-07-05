@@ -33,6 +33,7 @@ class PAN5(PandoraWebDriverTestCase):
 		driver.find_element_by_name("updbutton").click()
 		Select(driver.find_element_by_id("network_component_group")).select_by_visible_text("Network Management")
 		Select(driver.find_element_by_id("network_component")).select_by_visible_text("Host Alive")
+		time.sleep(3)
 		driver.find_element_by_id("text-name").clear()
 		driver.find_element_by_id("text-name").send_keys(u"管理者ガイド")
 		driver.find_element_by_id("submit-crtbutton").click()

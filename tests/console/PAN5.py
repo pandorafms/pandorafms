@@ -1,5 +1,6 @@
 
-m include.common_classes_60 import PandoraWebDriverTestCase
+# -*- coding: utf-8 -*-
+from include.common_classes_60 import PandoraWebDriverTestCase
 from include.common_functions_60 import login, click_menu_element, refresh_N_times_until_find_element, detect_and_pass_all_wizards, create_user, is_element_present, create_report, logout, delete_report, create_agent
 from selenium import webdriver
 from selenium.webdriver.common.by import By

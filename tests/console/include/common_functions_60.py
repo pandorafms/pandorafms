@@ -202,3 +202,5 @@ def create_agent(driver,agent_name,ip=None,description=None,group=None,os_id=Non
 		
 	if os_id !=None:
 		Select(driver.find_element_by_id("id_os")).select_by_visible_text(os_id)
+	
+	driver.find_element_by_id("submit-crtbutton").click()

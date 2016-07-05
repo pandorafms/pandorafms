@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
-from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import login, click_menu_element, refresh_N_times_until_find_element, detect_and_pass_all_wizards, create_user, is_element_present, create_report, logout, delete_report
+
+m include.common_classes_60 import PandoraWebDriverTestCase
+from include.common_functions_60 import login, click_menu_element, refresh_N_times_until_find_element, detect_and_pass_all_wizards, create_user, is_element_present, create_report, logout, delete_report, create_agent
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -10,22 +10,16 @@ import unittest, time, re
 
 class PAN5(PandoraWebDriverTestCase):
 
-        test_name = u'PAN_5'
-        test_description = u'Creates an agent and a module with japanese characters and test if the event list show the characters properly'
-        tickets_associated = []
+	test_name = u'PAN_5'
+	test_description = u'Creates an agent and a module with japanese characters and test if the event list show the characters properly'
+	tickets_associated = []
 
-        def test_pan5(self):
+	def test_pan5(self):
 		driver = self.driver
 		login(driver)
 		detect_and_pass_all_wizards(driver)
 
-		#Create agent
-		click_menu_element(driver,"Agent detail")
-		driver.find_element_by_id("submit-crt").click()
-		driver.find_element_by_id("text-agente").click()
-		driver.find_element_by_id("text-agente").clear()
-		driver.find_element_by_id("text-agente").send_keys(u"次のライセンスに基づいていま")
-		driver.find_element_by_id("submit-crtbutton").click()
+		create_agent(driver,u"次のライセンスに基づいていま")
 
 		#Create module
 		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
@@ -37,7 +31,7 @@ class PAN5(PandoraWebDriverTestCase):
 		driver.find_element_by_id("text-name").clear()
 		driver.find_element_by_id("text-name").send_keys(u"管理者ガイド")
 		driver.find_element_by_id("submit-crtbutton").click()
-		
+
 		#Create alert
 		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Alerts"]').click()
 		Select(driver.find_element_by_id("id_agent_module")).select_by_visible_text(u"管理者ガイド")
@@ -45,7 +39,7 @@ class PAN5(PandoraWebDriverTestCase):
 		Select(driver.find_element_by_id("action_select")).select_by_visible_text("Default action")
 		driver.find_element_by_id("submit-add").click()
 
-		#Force alert		
+		#Force alert
 		click_menu_element(driver,"Agent detail")
 		driver.find_element_by_id("text-search").clear()
 		driver.find_element_by_id("text-search").send_keys(u"次のライセンスに基づいていま")
@@ -54,8 +48,8 @@ class PAN5(PandoraWebDriverTestCase):
 		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Alerts"]').click()
 		driver.find_element_by_xpath('//tr[@id="table2-0"]/td/a/img[@data-title="Force"]').click()
 		time.sleep(10)
-		
-		#Search events of our agent	
+
+		#Search events of our agent
 		click_menu_element(driver,"View events")
 		driver.find_element_by_xpath('//a[contains(.,"Event control filter")]').click()
 		driver.find_element_by_xpath('//a[contains(.,"Advanced options")]').click()
@@ -67,11 +61,12 @@ class PAN5(PandoraWebDriverTestCase):
 
 		#Check that there are japanese characters present on the event
 		try:
-			self.assertEqual(True,u"Alert fired (Critical condition) assigned to (管理者ガイド)" in driver.page_source)
+				self.assertEqual(True,u"Alert fired (Critical condition) assigned to (管理者ガイド)" in driver.page_source)
 		except AssertionError as e:
-			self.verificationErrors.append(str(e))	
+				self.verificationErrors.append(str(e))
 
-				
-				
+
+
 if __name__ == "__main__":
 	unittest.main()
+

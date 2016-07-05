@@ -17,7 +17,7 @@ class PAN3(PandoraWebDriverTestCase):
 
 	def test_pan3(self):
 		driver = self.driver
-		login(driver,"admin","pandora",self.base_url)
+		login(driver)
 		detect_and_pass_all_wizards(driver)
 		click_menu_element(driver,"Agent detail")
 		driver.find_element_by_id("submit-crt").click()

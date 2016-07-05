@@ -191,7 +191,15 @@ function db_pandora_audit($accion, $descripcion, $user_id = false, $ip = true, $
 			break;
 	}
 	$id_audit = db_process_sql_insert('tsesion', $values);
-	
+
+	$valor = "".$values['fecha']." - ".io_safe_output($id)." - ".io_safe_output($accion)." - ".$ip. " - ".io_safe_output($descripcion)."\n";
+
+	if(empty($config["auditdir"])){
+		file_put_contents($config["homedir"]."/audit.log", $valor, FILE_APPEND);
+	}else{
+		file_put_contents($config["auditdir"]."/audit.log", $valor, FILE_APPEND);
+	}
+
 	enterprise_include_once('include/functions_audit.php');
 	enterprise_hook('audit_pandora_enterprise', array($id_audit, $info));
 	

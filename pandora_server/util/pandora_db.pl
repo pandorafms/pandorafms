@@ -166,6 +166,12 @@ sub pandora_purgedb ($$) {
 	if (!defined($conf->{'_string_purge'})){
 		$conf->{'_string_purge'} = 7;
 	}
+	# Update alert with last_fired older than today - time_threshold
+	my @templates = get_db_rows ($dbh, 'SELECT t1.id,t1.time_threshold FROM talert_templates t1 JOIN talert_template_modules t2 ON t1.id = t2.id_alert_template');
+	foreach my $template(@templates) {
+		db_do($dbh, 'UPDATE talert_template_modules SET times_fired = 0 WHERE id_alert_template = ? AND times_fired > 0 AND last_fired < (? - ?)',$template->{'id'},time(),$template->{'time_threshold'});
+	}
+
 	if ($conf->{'_string_purge'} > 0) {
 		$ulimit_access_timestamp = time() - 86400;
 		$ulimit_timestamp = time() - (86400 * $conf->{'_days_purge'});

@@ -199,7 +199,7 @@ if ($config['integria_enabled'] == 0) {
 	$shortcut_incidents = sc_get_opened_incidents();
 	
 	$shortcut_html .= "<a class='shortcut_item' href='index.php?sec=incidencias&sec2=operation/incidents/incident&estado=0'>";
-	$shortcut_html .= html_print_image("images/book_edit.png", true, array("title" => __("Incidents opened"),  "style" => "margin-bottom: 0px;"));
+	$shortcut_html .= html_print_image("images/incidents.png", true, array("title" => __("Incidents opened"),  "style" => "margin-bottom: 0px;"));
 	$shortcut_html .= "&nbsp;";
 	$shortcut_html .= "<span id='shortcut_incidents_opened' title='" . __('Incidents opened') . "'>" . $shortcut_incidents . "</span>";
 	$shortcut_html .= "</a>";

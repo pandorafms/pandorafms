@@ -204,3 +204,17 @@ def create_agent(driver,agent_name,ip=None,description=None,group=None,os_id=Non
 		Select(driver.find_element_by_id("id_os")).select_by_visible_text(os_id)
 	
 	driver.find_element_by_id("submit-crtbutton").click()
+
+
+#Dashboard
+
+def create_new_dashboard(driver,name,group):
+	click_menu_element(driver,"Main dashboard")
+	driver.find_element_by_xpath('//*[@id="menu_tab"]/ul/li[4]/a/img').click()
+	driver.find_element_by_xpath('//*[@id="table2-0-1"]/a[2]/img').click()
+	driver.find_element_by_id("text-name").send_keys(name)
+	Select(driver.find_element_by_id("group")).select_by_visible_text(group)
+	driver.find_element_by_id('submit-add-btn').click()
+
+
+

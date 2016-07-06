@@ -52,6 +52,8 @@ def logout(driver,url):
 	driver.get(url+"/pandora_console/index.php")
 	refresh_N_times_until_find_element(driver,2,"nick")
 
+#Report
+
 def create_report(driver,nombre,group_name):
 	click_menu_element(driver,"Custom reporting")
 	driver.find_element_by_id("submit-create").click()
@@ -74,6 +76,7 @@ def delete_report(driver,report_name):
 	alert = driver.switch_to_alert()
 	alert.accept()
 
+#User
 
 def add_user_profile(driver,user_name,profile,group):
 	click_menu_element(driver,"Users management")
@@ -136,6 +139,8 @@ def is_element_present(driver, how, what):
 	driver.implicitly_wait(30)
 	return True
 
+#Pass Wizards
+
 def detect_and_pass_pandorin(driver):
 	if is_element_present(driver,By.NAME,'clippy_is_annoying'):
 		driver.find_element_by_id('checkbox-clippy_is_annoying').click()
@@ -162,6 +167,7 @@ def detect_and_pass_all_wizards(driver):
 	detect_and_pass_initial_wizard(driver)
 	detect_and_pass_newsletter_wizard(driver)
 
+#Agent
 
 def delete_agent (driver,agent_names_list):
  
@@ -215,6 +221,15 @@ def create_new_dashboard(driver,name,group):
 	driver.find_element_by_id("text-name").send_keys(name)
 	Select(driver.find_element_by_id("group")).select_by_visible_text(group)
 	driver.find_element_by_id('submit-add-btn').click()
+
+def delete_dashboard(driver,name):
+	click_menu_element(driver,"Main dashboard")
+	driver.find_element_by_xpath('//*[@id="menu_tab"]/ul/li[4]/a/img').click()
+	Select(driver.find_element_by_id("id_dashboard")).select_by_visible_text(name)
+	driver.find_element_by_xpath('//*[@id="menu_tab"]/ul/li[4]/a/img').click()
+	driver.find_element_by_xpath('//*[@id="table2-0-1"]/a[1]/img').click()
+
+
 
 
 

@@ -131,6 +131,14 @@ def search_user(driver,user_name):
 	driver.find_element_by_id("text-filter_search").send_keys(user_name)
 	driver.find_element_by_id("submit-search").click()
 
+
+def activate_home_screen(driver,mode):
+
+	click_menu_element(driver,"Edit my user")
+	Select(driver.find_element_by_id("section")).select_by_visible_text(mode)	
+	driver.find_element_by_id("submit-uptbutton").click()
+
+
 def is_element_present(driver, how, what):
 	from selenium.common.exceptions import NoSuchElementException
 	try:

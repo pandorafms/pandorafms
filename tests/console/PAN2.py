@@ -1,8 +1,7 @@
-
-
 # -*- coding: utf-8 -*-
 from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import login, click_menu_element, detect_and_pass_all_wizards,create_agent
+from include.common_functions_60 import login, click_menu_element, detect_and_pass_all_wizards
+from include.agent_functions import create_agent
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -23,23 +22,9 @@ class PAN2(PandoraWebDriverTestCase):
 		
 		create_agent(driver,"prueba masivas 1")
 		
-		#click_menu_element(driver,"Agent detail")
-		#driver.find_element_by_id("submit-crt").click()
-		#driver.find_element_by_id("text-agente").click()
-		#driver.find_element_by_id("text-agente").clear()
-		#driver.find_element_by_id("text-agente").send_keys("prueba masivas 1")
-		#driver.find_element_by_id("submit-crtbutton").click()
-		
 		driver.find_element_by_css_selector("b").click()
 				
 		create_agent(driver,"prueba masivas 2")
-		
-		#click_menu_element(driver,"Agent detail")
-		#driver.find_element_by_id("submit-crt").click()
-		#driver.find_element_by_id("text-agente").click()
-		#driver.find_element_by_id("text-agente").clear()
-		#driver.find_element_by_id("text-agente").send_keys("prueba masivas 2")
-		#driver.find_element_by_id("submit-crtbutton").click()
 		
 		driver.find_element_by_css_selector("b").click()
 		driver.find_element_by_css_selector("b").click()

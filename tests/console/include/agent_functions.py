@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+from selenium import selenium
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait, Select
+from selenium.webdriver.support import expected_conditions as EC
+
+import random, time
+import string
+
 def delete_agent (driver,agent_names_list):
 
 	click_menu_element(driver,"Agents operations")

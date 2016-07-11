@@ -81,5 +81,27 @@ def detect_and_pass_all_wizards(driver):
 	detect_and_pass_initial_wizard(driver)
 	detect_and_pass_newsletter_wizard(driver)
 
+def activate_home_screen(driver,mode):
+ 
+	click_menu_element(driver,"Edit my user")
+	Select(driver.find_element_by_id("section")).select_by_visible_text(mode)
+	driver.find_element_by_id("submit-uptbutton").click()
 
+def activate_home_screen(driver,mode):
+ 
+	click_menu_element(driver,"Edit my user")
+	Select(driver.find_element_by_id("section")).select_by_visible_text(mode)
+	driver.find_element_by_id("submit-uptbutton").click()
+	
+	-def is_element_present(driver, how, what):
+	from selenium.common.exceptions import NoSuchElementException
+	try:
+		driver.implicitly_wait(5)
+		driver.find_element(by=how, value=what)
+	except NoSuchElementException:
+		driver.implicitly_wait(5)
+		return False
+
+	driver.implicitly_wait(30)
+	return True
 

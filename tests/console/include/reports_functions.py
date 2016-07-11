@@ -3,6 +3,7 @@ from selenium import selenium
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
+from common_functions_60 import *
 
 import random, time
 import string

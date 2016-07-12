@@ -9,10 +9,13 @@ from common_functions_60 import *
 import random, time
 import string
 
-def create_network_server_module(driver,agent_name,module_name,module_component,type=None,subtype=None,min_warning=None,max_warning=None,min_critical=None,max_critical=None,ip=None,tag_type=None,description=None):
 
-	# Type -> Example: Remote ICMP network agent (latency)
-	# Subtype -> Example: Host Alive
+def create_network_server_module(driver,agent_name,module_name,component_group=None,type=None,network_component=None,min_warning=None,max_warning=None,min_critical=None,max_critical=None,ip=None,tag_type=None,description=None):
+
+	# component_group -> Example: Remote ICMP network agent (latency)
+	# network_component -> Example: Host Alive
+	
+	#The type variable is optional, but required if component_group and network_component variables are specified
 	
 	search_agent(driver,agent_name)
 	
@@ -20,20 +23,9 @@ def create_network_server_module(driver,agent_name,module_name,module_component,
 	driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
 	Select(driver.find_element_by_id("moduletype")).select_by_visible_text("Create a new network server module")
 	driver.find_element_by_xpath('//*[@id="create_module_type"]/table/tbody/tr/td[5]/input').click()
-	Select(driver.find_element_by_id("network_component_group")).select_by_visible_text(module_component)
+	
 	driver.find_element_by_xpath('//a[contains(.,"Advanced options")]').click()
 	
-	driver.find_element_by_id("text-name").clear()
-	driver.find_element_by_id("text-name").send_keys(module_name)
-	
-	if subtype != None:
-	
-		Select(driver.find_element_by_id("network_component")).select_by_visible_text(subtype)
-	
-	if type != None:
-		
-		Select(driver.find_element_by_id("id_module_type")).select_by_visible_text(type)	
-		
 	if min_warning != None:
 	
 		driver.find_element_by_id("text-min_warning").clear()
@@ -68,8 +60,19 @@ def create_network_server_module(driver,agent_name,module_name,module_component,
 	
 		driver.find_element_by_id("textarea_description").clear()
 		driver.find_element_by_id("textarea_description").send_keys(description)
+
+	
+	if component_group!= None and network_component!= None:
+		Select(driver.find_element_by_id("network_component_group")).select_by_visible_text(component_group)
+		Select(driver.find_element_by_id("network_component")).select_by_visible_text(network_component)
+	
+	else:
+		driver.find_element_by_id("text-name").clear()
+		driver.find_element_by_id("text-name").send_keys(module_name)
+		Select(driver.find_element_by_id("id_module_type")).select_by_visible_text(type)	
 	
 	driver.find_element_by_id("submit-crtbutton").click()
+
 	
 def delete_module (driver,agent_name,module_name):
 

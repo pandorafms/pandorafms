@@ -26,12 +26,13 @@ def add_user_profile(driver,user_name,profile,group):
 	#driver.find_element_by_id("image-add2").click()
 	driver.find_element_by_xpath('//*[@name="add"]').click()
 
+def create_user(driver,user_name,userpwd,email=None,profile_list=None,is_admin=False):
 
-def create_user(driver,user_name,userpwd,email=None,profile_list=None):
 	u"""
 	Profile list es una LISTA de TUPLAS:
-			l = [("Chief Operator","All"),("Read Operator","Servers")]
+				l = [("Chief Operator","All"),("Read Operator","Servers")]
 	"""
+	
 	click_menu_element(driver,"Users management")
 	driver.find_element_by_id("submit-crt").click()
 	driver.find_element_by_name("id_user").clear()
@@ -41,6 +42,13 @@ def create_user(driver,user_name,userpwd,email=None,profile_list=None):
 	driver.find_element_by_name("password_confirm").clear()
 	driver.find_element_by_name("password_confirm").send_keys(userpwd)
 	driver.find_element_by_name("email").clear()
+
+	if is_admin == True:
+		driver.find_element_by_id('radiobtn0001').click()
+
+	if is_admin == False:
+		driver.find_element_by_id('radiobtn0002').click()
+
 	if email != None:
 		driver.find_element_by_name("email").clear()
 		driver.find_element_by_name("email").send_keys(email)
@@ -49,6 +57,7 @@ def create_user(driver,user_name,userpwd,email=None,profile_list=None):
 	if profile_list != None:
 		for profile_name,group_name in profile_list:
 			add_user_profile(driver,user_name,profile_name,group_name)
+
 
 def search_user(driver,user_name):
 	click_menu_element(driver,"Users management")

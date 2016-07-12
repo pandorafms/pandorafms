@@ -26,7 +26,7 @@ class PAN4(PandoraWebDriverTestCase):
 		
 		#Creates a user with Chief Operator - Applications profile
 		profile_list = []
-		profile_list.append(("Chief Operator","Applications"))
+		profile_list.append(("Chief Operator","Applications",[]))
 		create_user(driver,'PAN_4','PAN_4',email='pan_4@pandorafms.com',profile_list=profile_list)
 	
 		#Creates report

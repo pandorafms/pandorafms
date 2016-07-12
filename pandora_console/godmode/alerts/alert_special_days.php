@@ -245,7 +245,7 @@ html_print_select ($days, "same_day", $same_day, '', '', 0, false, false, false)
 echo "</td><td>";
 echo __('Group') . '&nbsp;';
 $own_info = get_user_info($config['id_user']);
-if (!users_can_manage_group_all(0, "LM"))
+if (!users_can_manage_group_all("LM"))
         $can_manage_group_all = false;
 else
         $can_manage_group_all = true;

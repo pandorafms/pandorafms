@@ -3,7 +3,7 @@ from unittest import *
 from console.include.common_functions_60 import *
 from console.include.common_classes_60 import *
 from sauceclient import SauceClient
-from os import environ
+from os import environ, getenv
 import subprocess, time, sys
 
 def get_test_file(test_list):
@@ -12,6 +12,12 @@ def get_test_file(test_list):
 
 a = TestLoader()
 tests = a.discover(start_dir='console',pattern='PAN*.py')
+
+#Run Enterprise tests
+is_enterprise = '1' == getenv('ENTERPRISE', False)
+if is_enterprise:
+	tests = tests.addTests(a.discover(start_dir='console/enterprise',pattern='PAN*.py'))
+
 c = ArticaTestResult()
 tests.run(c)
 

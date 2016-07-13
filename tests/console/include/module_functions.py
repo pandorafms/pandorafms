@@ -76,7 +76,61 @@ def create_network_server_module(driver,agent_name,module_name=None,component_gr
 
 	driver.find_element_by_id("submit-crtbutton").click()
 
+
+def create_data_server_module(driver,agent_name,module_name,type=None,min_warning=None,max_warning=None,min_critical=None,max_critical=None,tag_name=None,description=None):
+
+	# type -> Example: Generic numeric
 	
+	# The type variable is Generic numeric by default
+	
+	search_agent(driver,agent_name)
+	
+	driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Manage"]').click()
+	driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
+	Select(driver.find_element_by_id("moduletype")).select_by_visible_text("Create a new data server module")
+	driver.find_element_by_xpath('//*[@id="create_module_type"]/table/tbody/tr/td[5]/input').click()
+	
+	driver.find_element_by_xpath('//a[contains(.,"Advanced options")]').click()
+	
+	driver.find_element_by_id("text-name").clear()
+	driver.find_element_by_id("text-name").send_keys(module_name)
+	
+	if type != None:
+	
+		Select(driver.find_element_by_id("id_module_type")).select_by_visible_text(type)	
+		
+	if min_warning != None:
+	
+		driver.find_element_by_id("text-min_warning").clear()
+		driver.find_element_by_id("text-min_warning").send_keys(min_warning)
+	
+	if max_warning != None:
+	
+		driver.find_element_by_id("text-max_warning").clear()
+		driver.find_element_by_id("text-max_warning").send_keys(min_warning)
+		
+	if min_critical != None:
+	
+		driver.find_element_by_id("text-min_critical").clear()
+		driver.find_element_by_id("text-min_critical").send_keys(min_critical)
+	
+	if max_critical != None:
+	
+		driver.find_element_by_id("text-max_critical").clear()
+		driver.find_element_by_id("text-max_critical").send_keys(max_critical)
+		
+	if tag_name != None:
+		
+		Select(driver.find_element_by_id("id_tag_available")).select_by_visible_text(tag_name)
+		driver.find_element_by_xpath('//*[@id="right"]').click()
+		
+	if description != None:
+	
+		driver.find_element_by_id("textarea_description").clear()
+		driver.find_element_by_id("textarea_description").send_keys(description)
+
+	driver.find_element_by_id("submit-crtbutton").click()
+		
 def delete_module (driver,agent_name,module_name):
 
 	search_agent(driver,agent_name)

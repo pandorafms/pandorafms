@@ -47,7 +47,7 @@ if (isset ($_GET["loginhash"])) {
 }
 
 // Check user
-check_login ();
+//check_login ();
 
 define ('AJAX', true);
 

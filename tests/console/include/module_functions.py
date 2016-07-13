@@ -10,7 +10,7 @@ import random, time
 import string
 
 
-def create_network_server_module(driver,agent_name,module_name,component_group=None,type=None,network_component=None,min_warning=None,max_warning=None,min_critical=None,max_critical=None,ip=None,tag_type=None,description=None):
+def create_network_server_module(driver,agent_name,module_name=None,component_group=None,type=None,network_component=None,min_warning=None,max_warning=None,min_critical=None,max_critical=None,ip=None,tag_type=None,description=None):
 
 	# component_group -> Example: Remote ICMP network agent (latency)
 	# network_component -> Example: Host Alive
@@ -71,6 +71,10 @@ def create_network_server_module(driver,agent_name,module_name,component_group=N
 		driver.find_element_by_id("text-name").send_keys(module_name)
 		Select(driver.find_element_by_id("id_module_type")).select_by_visible_text(type)	
 	
+	if module_name != None:
+		driver.find_element_by_id("text-name").clear()
+                driver.find_element_by_id("text-name").send_keys(module_name)
+		
 	driver.find_element_by_id("submit-crtbutton").click()
 
 	

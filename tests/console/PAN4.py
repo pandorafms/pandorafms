@@ -2,8 +2,10 @@
 
 # -*- coding: utf-8 -*-
 from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import login, click_menu_element, refresh_N_times_until_find_element, detect_and_pass_all_wizards, create_user, is_element_present, create_report, logout, delete_report
+from include.common_functions_60 import login, click_menu_element, refresh_N_times_until_find_element, detect_and_pass_all_wizards, is_element_present, logout
 from selenium import webdriver
+from include.reports_functions import delete_report, create_report
+from include.user_functions import create_user
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
@@ -24,7 +26,7 @@ class PAN4(PandoraWebDriverTestCase):
 		
 		#Creates a user with Chief Operator - Applications profile
 		profile_list = []
-		profile_list.append(("Chief Operator","Applications"))
+		profile_list.append(("Chief Operator","Applications",[]))
 		create_user(driver,'PAN_4','PAN_4',email='pan_4@pandorafms.com',profile_list=profile_list)
 	
 		#Creates report

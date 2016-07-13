@@ -18,20 +18,19 @@ def add_user_profile(driver,user_name,profile,group,tags=[]):
         driver.find_element_by_xpath('//*[@id="table3-0-6"]/a[2]').click()
         Select(driver.find_element_by_id("assign_profile")).select_by_visible_text(profile)
 
+
         if group == "All":
                 Select(driver.find_element_by_id("assign_group")).select_by_visible_text(group)
         else:
                 #TODO This will not work when choosing a group within a group within another group
                 Select(driver.find_element_by_id("assign_group")).select_by_visible_text("    "+group)
 
-        #driver.find_element_by_id("image-add2").click()
+	for tag in tags:
+		Select(driver.find_element_by_id("assign_tags")).select_by_visible_text(tag)
 		
-		for tag in tags:
-			Select(driver.find_element_by_id("assign_tags")).select_by_visible_text(tag)
-		
-		#If we do not provide tags, we NEED to leave "Any" selected, otherwise we need to deselect it.
-		if tags != []:
-			Select(driver.find_element_by_id("assign_tags")).deselect_by_visible_text("Any")
+	#If we do not provide tags, we NEED to leave "Any" selected, otherwise we need to deselect it.
+	if tags != []:
+		Select(driver.find_element_by_id("assign_tags")).deselect_by_visible_text("Any")
 		
         driver.find_element_by_xpath('//*[@name="add"]').click()
 

@@ -26,37 +26,37 @@ class PAN8(PandoraWebDriverTestCase):
 		
 		create_agent(driver,"PAN_8",group="Applications",ip="192.168.50.50")
 		
-		#Creamos modulo without tag 
+		#We create a module without a tag
 			
 		create_network_server_module(driver,"PAN_8",module_name="Without tag",component_group="Network Management",network_component="Host Alive",ip="192.168.50.50")
 		
-		#Module Host Alive with Tag
+		#We now create a modulo with tag "critical"
 		
 		create_network_server_module(driver,"PAN_8",module_name="With tag",component_group="Network Management",network_component="Host Alive",ip="192.168.50.50",tag_name="critical")
 		
 		l = [("Operator (Read)","All",["critical"])]
 
-		create_user(driver,"prueba ACL","pandora",profile_list=l) 
+		create_user(driver,"PAN8_user","pandora",profile_list=l) 
 		
 		logout(driver,self.base_url)
 		
-		login(driver,user="prueba ACL")
+		login(driver,user="PAN8_user")
 		
 		detect_and_pass_all_wizards(driver)
 		
-		#Función comprobar que existe un módulo:
-
 		search_agent(driver,"PAN_8")
-		
-		try:					
+	
+		try:
+			#The user should be able to see the module with Tag
 			self.assertEqual("With tag" in driver.page_source,True)		
 		except AssertionError as e:		
 			self.verificationErrors.append(str(e))
 		
 		try:
-			self.assertEqual("Without tag" in driver.page_source,False)		
-		except AssertionError as e:		
-			self.verificationErrors.append(str(e))		
+			#The user should NOT be able to see the module without tag
+			self.assertEqual("Without tag" in driver.page_source,False)
+		except AssertionError as e:
+			self.verificationErrors.append(str(e))
 		
 if __name__ == "__main__":
 	unittest.main()

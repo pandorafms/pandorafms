@@ -32,7 +32,7 @@ class PAN8(PandoraWebDriverTestCase):
 		
 		#Module Host Alive with Tag
 		
-		create_network_server_module(driver,"PAN_8",module_name="With tag",component_group="Network Management",network_component="Host Alive",ip="192.168.50.50",tag_type="critical")
+		create_network_server_module(driver,"PAN_8",module_name="With tag",component_group="Network Management",network_component="Host Alive",ip="192.168.50.50",tag_name="critical")
 		
 		l = [("Operator (Read)","All",["critical"])]
 

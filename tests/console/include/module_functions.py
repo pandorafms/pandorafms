@@ -10,7 +10,7 @@ import random, time
 import string
 
 
-def create_network_server_module(driver,agent_name,module_name=None,component_group=None,type=None,network_component=None,min_warning=None,max_warning=None,min_critical=None,max_critical=None,ip=None,tag_type=None,description=None):
+def create_network_server_module(driver,agent_name,module_name=None,component_group=None,type=None,network_component=None,min_warning=None,max_warning=None,min_critical=None,max_critical=None,ip=None,tag_name=None,description=None):
 
 	# component_group -> Example: Remote ICMP network agent (latency)
 	# network_component -> Example: Host Alive
@@ -51,17 +51,6 @@ def create_network_server_module(driver,agent_name,module_name=None,component_gr
 		driver.find_element_by_id("text-ip_target").clear()
 		driver.find_element_by_id("text-ip_target").send_keys(ip)		
 	
-	if tag_type != None:
-		
-		Select(driver.find_element_by_id("id_tag_available")).select_by_visible_text(tag_type)
-		driver.find_element_by_xpath('//*[@id="right"]').click()
-		
-	if description != None:
-	
-		driver.find_element_by_id("textarea_description").clear()
-		driver.find_element_by_id("textarea_description").send_keys(description)
-
-	
 	if component_group!= None and network_component!= None:
 		Select(driver.find_element_by_id("network_component_group")).select_by_visible_text(component_group)
 		Select(driver.find_element_by_id("network_component")).select_by_visible_text(network_component)
@@ -75,6 +64,16 @@ def create_network_server_module(driver,agent_name,module_name=None,component_gr
 		driver.find_element_by_id("text-name").clear()
                 driver.find_element_by_id("text-name").send_keys(module_name)
 		
+        if tag_name != None:
+
+                Select(driver.find_element_by_id("id_tag_available")).select_by_visible_text(tag_name)
+                driver.find_element_by_xpath('//*[@id="right"]').click()
+
+        if description != None:
+
+                driver.find_element_by_id("textarea_description").clear()
+                driver.find_element_by_id("textarea_description").send_keys(description)
+
 	driver.find_element_by_id("submit-crtbutton").click()
 
 	

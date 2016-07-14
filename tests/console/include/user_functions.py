@@ -8,14 +8,6 @@ from common_functions_60 import *
 import random, time
 import string
 
-
-def get_acl_dict():
-	acl_dict = {}
-	acl_dict['Monitoring'] = []
-	acl_dict['Topology maps'] = []
-	acl_dict['Monitoring'].append()
-
-
 def add_user_profile(driver,user_name,profile,group,tags=[]):
         click_menu_element(driver,"Users management")
         driver.find_element_by_css_selector("b").click()

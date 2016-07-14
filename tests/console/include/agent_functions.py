@@ -43,7 +43,7 @@ def create_agent(driver,agent_name,ip=None,description=None,group=None,os_id=Non
 		driver.find_element_by_id("text-comentarios").send_keys(description)
 
 	if group != None:
-		Select(driver.find_element_by_id("grupo")).select_by_visible_text(group)
+		driver.find_element_by_xpath('//option[contains(.,"'+group+'")]').click()
 
 	if os_id !=None:
 		Select(driver.find_element_by_id("id_os")).select_by_visible_text(os_id)

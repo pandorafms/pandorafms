@@ -45,12 +45,17 @@ class PAN8(PandoraWebDriverTestCase):
 		detect_and_pass_all_wizards(driver)
 		
 		search_agent(driver,"PAN_8")
+<<<<<<< HEAD
 	
 		time.sleep(3)
+=======
+>>>>>>> 6398287b7eb773a25cec3533a69f46cabaf6c0a5
 
 		try:
 			#The user should be able to see the module with Tag
+			module = driver.find_element_by_xpath('//td[contains(.,"With tag")]')
 			self.assertEqual("With tag" in driver.page_source,True)		
+			
 		except AssertionError as e:		
 			self.verificationErrors.append(str(e))
 		

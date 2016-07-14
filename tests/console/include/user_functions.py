@@ -8,7 +8,6 @@ from common_functions_60 import *
 import random, time
 import string
 
-
 def add_user_profile(driver,user_name,profile,group,tags=[]):
         click_menu_element(driver,"Users management")
         driver.find_element_by_css_selector("b").click()
@@ -83,3 +82,109 @@ def activate_home_screen(driver,mode):
 	Select(driver.find_element_by_id("section")).select_by_visible_text(mode)
 	driver.find_element_by_id("submit-uptbutton").click()
 
+
+def create_user_profile(driver,profile_name,bit_list=[]):
+
+	#bit_list can be the profile name or bit.	
+	
+	click_menu_element(driver,"Profile management")
+	driver.find_element_by_id("submit-crt").click()
+
+	driver.find_element_by_id("text-name").send_keys(profile_name)
+	
+	for profile in bit_list:
+		
+		if profile == "View incidents" or profile == "IR":
+			
+			driver.find_element_by_xpath('//*[@id="checkbox-incident_view"]').click()
+			
+		if profile == "Edit incidents" or profile == "IW":
+			
+			driver.find_element_by_xpath('//*[@id="checkbox-incident_edit"]').click()
+			
+		if profile == "Manage incidents" or profile == "IM":
+
+			driver.find_element_by_xpath('//*[@id="checkbox-incident_management"]').click()
+			
+		if profile == "View agents" or profile == "AR":
+		
+			driver.find_element_by_xpath('//*[@id="checkbox-agent_view"]').click()
+
+		if profile == "Edit agents" or profile == "AW":
+		
+			driver.find_element_by_xpath('//*[@id="checkbox-agent_edit"]').click()
+
+		if profile == "Disable agents" or profile == "AD":
+		
+			driver.find_element_by_xpath('//*[@id="checkbox-agent_disable"]').click()
+
+		if profile == "Edit alerts" or profile == "LW":
+		
+			driver.find_element_by_xpath('//*[@id="checkbox-alert_edit"]').click()
+
+		if profile == "Manage alerts" or profile == "LM":
+		
+			driver.find_element_by_xpath('//*[@id="checkbox-alert_management"]').click()
+
+		if profile == "Manage users" or profile == "UM":
+			
+			driver.find_element_by_xpath('//*[@id="checkbox-user_management"]').click()
+
+		if profile == "Manage database" or profile == "DM":
+		
+			driver.find_element_by_xpath('//*[@id="checkbox-db_management"]').click()
+	
+		if profile == "View events" or profile == "ER":
+		
+			driver.find_element_by_xpath('//*[@id="checkbox-event_view"]').click()
+
+		if profile == "Edit events" or profile == "EW":
+		
+			driver.find_element_by_xpath('//*[@id="checkbox-event_edit"]').click()		
+
+		if profile == "Manage events" or profile == "EM":
+		
+			driver.find_element_by_xpath('//*[@id="checkbox-event_management"]').click()		
+
+		if profile == "View reports" or profile == "RR":
+		
+			driver.find_element_by_xpath('//*[@id="checkbox-report_view"]').click()		
+
+		if profile == "Edit reports" or profile == "RW":
+		
+			driver.find_element_by_xpath('//*[@id="checkbox-report_edit"]').click()		
+		
+		if profile == "Manage reports" or profile == "RM":
+		
+			driver.find_element_by_xpath('//*[@id="checkbox-report_management"]').click()		
+
+		if profile == "View network maps" or profile == "MR":
+			
+			driver.find_element_by_xpath('//*[@id="checkbox-map_view"]').click()		
+			
+		if profile == "Edit network maps" or profile == "MW":
+			
+			driver.find_element_by_xpath('//*[@id="checkbox-map_edit"]').click()		
+
+		if profile == "Manage network maps" or profile == "MM":
+		
+			driver.find_element_by_xpath('//*[@id="checkbox-map_management"]').click()		
+			
+		if profile == "View visual console" or profile == "VR":
+		
+			driver.find_element_by_xpath('//*[@id="checkbox-vconsole_view"]').click()		
+			
+		if profile == "Edit visual console" or profile == "VW":
+		
+			driver.find_element_by_xpath('//*[@id="checkbox-vconsole_edit"]').click()		
+			
+		if profile == "Manage visual console" or profile == "VM":
+		
+			driver.find_element_by_xpath('//*[@id="checkbox-vconsole_management"]').click()		
+			
+		if profile == "Pandora management" or profile == "PM":
+			
+			driver.find_element_by_xpath('//*[@id="checkbox-pandora_management"]').click()		
+			
+	driver.find_element_by_id("submit-crt").click()
+			

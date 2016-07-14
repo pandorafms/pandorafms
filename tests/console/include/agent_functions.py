@@ -19,14 +19,17 @@ def delete_agent (driver,agent_names_list):
 
 	driver.find_element_by_id("submit-go").click()
 
-def search_agent(driver,agent_name):
+def search_agent(driver,agent_name,go_to_agent=True):
 
 	click_menu_element(driver,"Agent detail")
 	driver.find_element_by_id("text-search").click()
 	driver.find_element_by_id("text-search").clear()
 	driver.find_element_by_id("text-search").send_keys(agent_name)
 	driver.find_element_by_id("submit-srcbutton").click()
-	driver.find_element_by_css_selector("b").click()
+	# If go_to_agent is true this function enters the agent view
+
+	if go_to_agent == True:
+		driver.find_element_by_css_selector("b").click()
 
 def create_agent(driver,agent_name,ip=None,description=None,group=None,os_id=None):
 
@@ -43,10 +46,38 @@ def create_agent(driver,agent_name,ip=None,description=None,group=None,os_id=Non
 		driver.find_element_by_id("text-comentarios").send_keys(description)
 
 	if group != None:
-		Select(driver.find_element_by_id("grupo")).select_by_visible_text(group)
+		driver.find_element_by_xpath('//option[contains(.,"'+group+'")]').click()
 
 	if os_id !=None:
 		Select(driver.find_element_by_id("id_os")).select_by_visible_text(os_id)
 
 	driver.find_element_by_id("submit-crtbutton").click()
 
+
+def create_agent_group(driver,group_name,parent_group="All",alerts=True,propagate_acl=False,description=None):
+	
+	# parent_group by defect is All.
+	# Alerts by default is activate.
+	
+	click_menu_element(driver,"Manage agents groups")
+	driver.find_element_by_id("submit-crt").click()
+	
+	driver.find_element_by_id("text-name").send_keys(group_name)
+	
+	if parent_group != "All":
+	
+		driver.find_element_by_xpath('//option[contains(.,"'+parent_group+'")]').click()
+	
+	if alerts == False:
+	
+		driver.find_element_by_id("checkbox-alerts_enabled").click()
+		
+	if propagate_acl == True:
+	
+		driver.find_element_by_id("checkbox-propagate").click()
+		
+	if description!= None:
+	
+		driver.find_element_by_id("text-description").send_keys(description)
+	
+	driver.find_element_by_id("submit-crtbutton").click()

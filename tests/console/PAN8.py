@@ -46,17 +46,23 @@ class PAN8(PandoraWebDriverTestCase):
 		
 		search_agent(driver,"PAN_8")
 	
+		time.sleep(3)
+
 		try:
 			#The user should be able to see the module with Tag
 			self.assertEqual("With tag" in driver.page_source,True)		
 		except AssertionError as e:		
 			self.verificationErrors.append(str(e))
 		
+		time.sleep(3)
+		
 		try:
 			#The user should NOT be able to see the module without tag
 			self.assertEqual("Without tag" in driver.page_source,False)
 		except AssertionError as e:
 			self.verificationErrors.append(str(e))
+		
+		time.sleep(3)
 		
 if __name__ == "__main__":
 	unittest.main()

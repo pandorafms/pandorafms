@@ -45,11 +45,8 @@ class PAN8(PandoraWebDriverTestCase):
 		detect_and_pass_all_wizards(driver)
 		
 		search_agent(driver,"PAN_8")
-<<<<<<< HEAD
-	
-		time.sleep(3)
-=======
->>>>>>> 6398287b7eb773a25cec3533a69f46cabaf6c0a5
+
+		time.sleep(6)
 
 		try:
 			#The user should be able to see the module with Tag
@@ -59,15 +56,12 @@ class PAN8(PandoraWebDriverTestCase):
 		except AssertionError as e:		
 			self.verificationErrors.append(str(e))
 		
-		time.sleep(3)
-		
 		try:
 			#The user should NOT be able to see the module without tag
 			self.assertEqual("Without tag" in driver.page_source,False)
 		except AssertionError as e:
 			self.verificationErrors.append(str(e))
 		
-		time.sleep(3)
-		
+
 if __name__ == "__main__":
 	unittest.main()

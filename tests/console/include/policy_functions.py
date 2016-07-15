@@ -14,10 +14,10 @@ def create_policy(driver,policy_name,group,description=None):
 
 	click_menu_element(driver,"Manage policies")
 	driver.find_element_by_id("submit-crt").click()
-	driver.find_element_by_id("text-name").send_keys(profile_name)
+	driver.find_element_by_id("text-name").send_keys(policy_name)
 	driver.find_element_by_xpath('//option[contains(.,"'+group+'")]').click()
 
 	if description!= None:
-		driver.find_element_by_id("textarea_description").send_keys(profile_name)
+		driver.find_element_by_id("textarea_description").send_keys(description)
 	
 	driver.find_element_by_id("submit-crt").click()

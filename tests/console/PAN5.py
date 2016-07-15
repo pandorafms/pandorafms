@@ -5,6 +5,7 @@ from include.common_functions_60 import login, click_menu_element, refresh_N_tim
 from include.reports_functions import create_report, delete_report
 from include.user_functions import create_user
 from include.agent_functions import create_agent
+from include.module_functions import create_module
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -26,16 +27,8 @@ class PAN5(PandoraWebDriverTestCase):
 		create_agent(driver,u"次のライセンスに基づいていま")
 
 		#Create module
-		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
-		Select(driver.find_element_by_id("moduletype")).select_by_visible_text("Create a new network server module")
-		driver.find_element_by_name("updbutton").click()
-		Select(driver.find_element_by_id("network_component_group")).select_by_visible_text("Network Management")
-		Select(driver.find_element_by_id("network_component")).select_by_visible_text("Host Alive")
-		time.sleep(3)
-		driver.find_element_by_id("text-name").clear()
-		driver.find_element_by_id("text-name").send_keys(u"管理者ガイド")
-		driver.find_element_by_id("submit-crtbutton").click()
-
+		create_module("network_server",driver,agent_name=u"次のライセンスに基づいていま",module_name=u"管理者ガイド",component_group="Network Management",network_component="Host Alive",ip="192.168.50.50")
+		
 		#Create alert
 		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Alerts"]').click()
 		Select(driver.find_element_by_id("id_agent_module")).select_by_visible_text(u"管理者ガイド")

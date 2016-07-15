@@ -10,17 +10,24 @@ import random, time
 import string
 
 
-def create_network_server_module(driver,agent_name,module_name=None,component_group=None,type=None,network_component=None,min_warning=None,max_warning=None,min_critical=None,max_critical=None,ip=None,tag_name=None,description=None):
+def create_module(module_type,*args,**kwargs):
+	if module_type=='network_server':
+		create_network_server_module(*args,**kwargs)
+	elif module_type=='data_server':
+		create_data_server_module(*args,**kwargs)
+		
+def create_network_server_module(driver,agent_name=None,module_name=None,component_group=None,type=None,network_component=None,min_warning=None,max_warning=None,min_critical=None,max_critical=None,ip=None,tag_name=None,description=None):
 
 	# component_group -> Example: Remote ICMP network agent (latency)
 	# network_component -> Example: Host Alive
 	
 	#The type variable is optional, but required if component_group and network_component variables are specified
 	
-	search_agent(driver,agent_name)
-	
-	driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Manage"]').click()
-	driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
+	if agent_name != None:
+		search_agent(driver,agent_name)
+		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Manage"]').click()
+		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
+
 	Select(driver.find_element_by_id("moduletype")).select_by_visible_text("Create a new network server module")
 	driver.find_element_by_xpath('//*[@id="create_module_type"]/table/tbody/tr/td[5]/input').click()
 	
@@ -61,6 +68,7 @@ def create_network_server_module(driver,agent_name,module_name=None,component_gr
 		Select(driver.find_element_by_id("id_module_type")).select_by_visible_text(type)	
 	
 	if module_name != None:
+		time.sleep(3)
 		driver.find_element_by_id("text-name").clear()
                 driver.find_element_by_id("text-name").send_keys(module_name)
 		
@@ -77,16 +85,17 @@ def create_network_server_module(driver,agent_name,module_name=None,component_gr
 	driver.find_element_by_id("submit-crtbutton").click()
 
 
-def create_data_server_module(driver,agent_name,module_name,type=None,min_warning=None,max_warning=None,min_critical=None,max_critical=None,tag_name=None,description=None):
+def create_data_server_module(driver,module_name,agent_name=None,type=None,min_warning=None,max_warning=None,min_critical=None,max_critical=None,tag_name=None,description=None):
 
 	# type -> Example: Generic numeric
 	
 	# The type variable is Generic numeric by default
-	
-	search_agent(driver,agent_name)
-	
-	driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Manage"]').click()
-	driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
+
+	if agent_name != None:
+		search_agent(driver,agent_name)
+		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Manage"]').click()
+		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
+
 	Select(driver.find_element_by_id("moduletype")).select_by_visible_text("Create a new data server module")
 	driver.find_element_by_xpath('//*[@id="create_module_type"]/table/tbody/tr/td[5]/input').click()
 	

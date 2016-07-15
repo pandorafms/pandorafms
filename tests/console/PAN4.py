@@ -1,5 +1,3 @@
-
-
 # -*- coding: utf-8 -*-
 from include.common_classes_60 import PandoraWebDriverTestCase
 from include.common_functions_60 import login, click_menu_element, refresh_N_times_until_find_element, detect_and_pass_all_wizards, is_element_present, logout

@@ -3,7 +3,7 @@ from include.common_classes_60 import PandoraWebDriverTestCase
 from include.common_functions_60 import login, click_menu_element, detect_and_pass_all_wizards, logout
 from include.agent_functions import create_agent, search_agent
 from include.user_functions import create_user
-from include.module_functions import create_network_server_module
+from include.module_functions import *
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -28,11 +28,12 @@ class PAN8(PandoraWebDriverTestCase):
 		
 		#We create a module without a tag
 			
-		create_network_server_module(driver,"PAN_8",module_name="Without tag",component_group="Network Management",network_component="Host Alive",ip="192.168.50.50")
+		create_module("network_server",driver,agent_name="PAN_8",module_name="Without tag",component_group="Network Management",network_component="Host Alive",ip="192.168.50.50")
 		
 		#We now create a modulo with tag "critical"
 		
-		create_network_server_module(driver,"PAN_8",module_name="With tag",component_group="Network Management",network_component="Host Alive",ip="192.168.50.50",tag_name="critical")
+		create_module("network_server",driver,agent_name="PAN_8",module_name="With tag",component_group="Network Management",network_component="Host Alive",ip="192.168.50.50",tag_name="critical")
+
 		
 		l = [("Operator (Read)","All",["critical"])]
 

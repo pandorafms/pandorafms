@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import StaleElementReferenceException
+from include.module_functions import *
 import unittest, time, re
 
 
@@ -20,19 +21,10 @@ class PAN3(PandoraWebDriverTestCase):
 		driver = self.driver
 		login(driver)
 		detect_and_pass_all_wizards(driver)
-		create_agent(driver,"localhost icmp test",ip="127.0.0.1")
-		driver.find_element_by_css_selector("li.nomn.tab_godmode > a > img.forced_title").click()
-		driver.find_element_by_id("moduletype").click()
-		Select(driver.find_element_by_id("moduletype")).select_by_visible_text("Create a new network server module")
-		driver.find_element_by_name("updbutton").click() #Alternative XPATH: //*[@class="datos"]/input
-		driver.find_element_by_name("updbutton").click() #IMPORTANT! It's needed to click TWICE! One for leave the combo, and other for clicking the button
-		driver.find_element_by_id("id_module_type").click()
-		combo = driver.find_element_by_id("id_module_type")
-		Select(combo).select_by_visible_text("Remote ICMP network agent, boolean data")
-		combo.click()
-		driver.find_element_by_id("text-name").clear()
-		driver.find_element_by_id("text-name").send_keys("ping test")
-		driver.find_element_by_id("submit-crtbutton").click()
+		create_agent(driver,"PAN3_agent",ip="127.0.0.1")
+		
+		create_module("network_server",driver,agent_name="PAN3_agent",module_name="PAN3_module",component_group="Network Management",network_component="Host Alive",ip="127.0.0.1")
+
 		driver.find_element_by_xpath('//*[@id="menu_tab"]//a[contains(@href,"ver_agente")]').click()
 
 		max_retries = 3

@@ -718,7 +718,7 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 		}
 		else {
 			$hash = md5($relative_path . $config['dbpass']);
-			$data[1] = '<a href="' . $hack_metaconsole . 'include/get_file.php?file='.base64_encode($relative_path).'&hash=' . $hash . '">'.$fileinfo['name'].'</a>';
+			$data[1] = '<a href="' . $hack_metaconsole . 'include/get_file.php?file='.urlencode(base64_encode($relative_path)).'&hash=' . $hash . '">'.$fileinfo['name'].'</a>';
 		}
 		$data[2] = ui_print_timestamp ($fileinfo['last_modified'], true,
 			array ('prominent' => true));
@@ -759,7 +759,7 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 		}
 		if ((!$fileinfo['is_dir']) && ($download_button)) {
 			$hash = md5($fileinfo['url'] . $config['dbpass']);
-			$data[4] .= '<a href="include/get_file.php?file='.base64_encode($fileinfo['url']).'&hash=' . $hash . '" style="vertical-align: 25%;">';
+			$data[4] .= '<a href="include/get_file.php?file='.urlencode(base64_encode($fileinfo['url'])).'&hash=' . $hash . '" style="vertical-align: 25%;">';
 			$data[4] .= html_print_image('images/file.png', true);
 			$data[4] .= '</a>';
 		}

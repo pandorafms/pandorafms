@@ -40,8 +40,11 @@ $id_group = 0;
 if ($id) {
 	$special_day = alerts_get_alert_special_day ($id);
 	$date = str_replace('0001', '*', $special_day['date']);
+	$date_orig = $date;
 	$same_day = $special_day['same_day'];
 	$description = $special_day['description'];
+	$id_group = $special_day['id_group'];
+	$id_group_orig = $id_group;
 }
 
 if ($date == '') {
@@ -66,8 +69,8 @@ $table->data[0][1] .= html_print_image ("images/calendar_view_day.png", true, ar
 $table->data[1][0] = __('Group');
 $groups = users_get_groups ();
 $own_info = get_user_info ($config['id_user']);
-// Only display group "All" if user is administrator or has "PM" privileges
-if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
+// Only display group "All" if user is administrator or has "LM" privileges
+if (users_can_manage_group_all("LM"))
 	$display_all_group = true;
 else
 	$display_all_group = false;
@@ -94,6 +97,8 @@ echo '<div class="action-buttons" style="width: '.$table->width.'">';
 if ($id) {
 	html_print_input_hidden ('id', $id);
 	html_print_input_hidden ('update_special_day', 1);
+	html_print_input_hidden ('id_group_orig', $id_group_orig);
+	html_print_input_hidden ('date_orig', $date_orig);
 	html_print_submit_button (__('Update'), 'create', false, 'class="sub upd"');
 }
 else {

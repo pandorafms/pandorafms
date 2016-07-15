@@ -1745,11 +1745,11 @@ function check_login ($output = true) {
  * @param int $id_user User id
  * @param int $id_group Agents group id to check from
  * @param string $access Access privilege
- * @param int $id_agent The agent id.
+ * @param bool $onlyOneGroup Flag to check acl for specified group only (not to roots up, or check acl for 'All' group when $id_group is 0).
  *
  * @return bool 1 if the user has privileges, 0 if not.
  */
-function check_acl($id_user, $id_group, $access, $id_agent = 0) {
+function check_acl($id_user, $id_group, $access, $onlyOneGroup = false) {
 	if (empty ($id_user)) {
 		//User ID needs to be specified
 		trigger_error ("Security error: check_acl got an empty string for user id", E_USER_WARNING);
@@ -1763,7 +1763,7 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 	}
 	
 	$parents_id = array($id_group);
-	if ($id_group != 0) {
+	if ($id_group != 0 && $onlyOneGroup == false) {
 		$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));
 		$parents = groups_get_parents($group['parent'], true);
 		
@@ -1771,13 +1771,10 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 			$parents_id[] = $parent['id_grupo'];
 		}
 	}
-	else {
-		$parents_id = array();
-	}
 	
 	// TODO: To reduce this querys in one adding the group condition if necessary (only one line is different)
 	//Joined multiple queries into one. That saves on the query overhead and query cache.
-	if ($id_group == 0) {
+	if ($id_group == 0 && $onlyOneGroup == false) {
 		$query = sprintf("SELECT tperfil.incident_view, tperfil.incident_edit,
 				tperfil.incident_management, tperfil.agent_view,
 				tperfil.agent_edit, tperfil.alert_edit,
@@ -1792,7 +1789,7 @@ function check_acl($id_user, $id_group, $access, $id_agent = 0) {
 			FROM tusuario_perfil, tperfil
 			WHERE tusuario_perfil.id_perfil = tperfil.id_perfil
 				AND tusuario_perfil.id_usuario = '%s'", $id_user);
-		//GroupID = 0, group id doesnt matter (use with caution!)
+		//GroupID = 0 and onlyOneGroup = false, group id doesnt matter (use with caution!)
 	}
 	else {
 		$query = sprintf("SELECT tperfil.incident_view, tperfil.incident_edit,

@@ -826,7 +826,7 @@ function users_can_manage_group_all($access = "PM") {
 	
 	$is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
 	
-	if (check_acl ($config['id_user'], 0, $access) || $is_admin) {
+	if (check_acl ($config['id_user'], 0, $access, true) || $is_admin) {
 		return true;
 	}
 	

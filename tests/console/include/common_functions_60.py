@@ -16,6 +16,7 @@ def gen_random_string(size,preffix=None):
 
 
 def login(driver,user="admin",passwd="pandora",pandora_url="http://127.0.0.1/"):
+	print u"Logging in"
 	driver.get(pandora_url+"/pandora_console/index.php")
 	driver.find_element_by_id("nick").clear()
 	driver.find_element_by_id("nick").send_keys(user)
@@ -44,6 +45,7 @@ def refresh_N_times_until_find_element(driver,n,element_text,how=By.ID,refresh_t
 	raise TimeoutException("Element %s not found" % (element_text))
 
 def logout(driver,url):
+	print u"Logging out"
 	if url[-1] != '/':
 		driver.find_element_by_xpath('//div[@id="container"]//a[@href="'+url+'/pandora_console/index.php?bye=bye"]').click()
 	else:

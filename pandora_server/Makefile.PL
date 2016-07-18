@@ -2,7 +2,6 @@ use 5.000;
 use ExtUtils::MakeMaker;
 
 my %ARGV = map { my @r = split /=/,$_; defined $r[1] or $r[1]=1; @r } @ARGV;
-
 my @exe_files = qw(bin/pandora_server bin/pandora_exec);
 
 $ARGV{WITHOUT_TENTACLE} or push @exe_files, 'bin/tentacle_server';

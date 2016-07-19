@@ -10,6 +10,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
+from selenium.webdriver.remote.webelement import WebElement
 import unittest, time, re
 
 class PAN9(PandoraWebDriverTestCase):
@@ -21,7 +22,7 @@ class PAN9(PandoraWebDriverTestCase):
 	def test_pan9(self):
 
 		driver = self.driver
-		login(driver)
+		login(driver,pandora_url="http://192.168.50.50:84/")
 		detect_and_pass_all_wizards(driver)
 		
 		create_agent_group(driver,"PAN9_A",propagate_acl=True,description="Group A, with propagate ACL, son of ALL")	
@@ -36,20 +37,24 @@ class PAN9(PandoraWebDriverTestCase):
 		
 		create_user(driver,"PAN9_user","pandora",profile_list=l)
 		
-		logout(driver,self.base_url)
+		logout(driver,"http://192.168.50.50:84/")
 		
-		login(driver,user="PAN9_user")
+		login(driver,user="PAN9_user",pandora_url="http://192.168.50.50:84/")
 		
 		detect_and_pass_all_wizards(driver)
 		
 		search_agent(driver,"PAN9_agent_B",go_to_agent=False)
 		
 		time.sleep(6)
-
+		
 		try:
-			driver.find_element_by_xpath('//td[contains(.,"PAN9_agent_B")]')
-			self.assertEqual(True,u"PAN9_agent_B" in driver.page_source)
+			element = driver.find_element_by_xpath('//a[contains(.,"PAN9_agent_B")]')
+			self.assertIsInstance(element,WebElement)
+
 		except AssertionError as e:
+			self.verificationErrors.append(str(e))
+
+		except NoSuchElementException as e:
 			self.verificationErrors.append(str(e))
 
 		search_agent(driver,"PAN9_agent",go_to_agent=False)
@@ -57,9 +62,11 @@ class PAN9(PandoraWebDriverTestCase):
 		time.sleep(6)
 
 		try:
-			self.assertEqual(False,u"PAN9_agent_C" in driver.page_source)
+			#self.assertEqual(False,u"PAN9_agent_C" in driver.page_source)
+			element = driver.find_elements_by_xpath('//a[contains(.,"PAN9_agent_C")]')
+			self.assertEqual(element,[])
 		except AssertionError as e:
 			self.verificationErrors.append(str(e))
-		
+
 if __name__ == "__main__":
 	unittest.main()

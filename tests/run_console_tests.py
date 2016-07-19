@@ -10,17 +10,18 @@ def get_test_file(test_list):
 	#return [test[0].split(' ')[0].split('.')[0].split('<')[1] for test in test_list]
 	return [test[0].test_name for test in test_list]
 
+#Run Enterprise tests
+is_enterprise = '1' == getenv('ENTERPRISE', False)
+
 a = TestLoader()
-tests = a.discover(start_dir='console',pattern='PAN*.py')
+
+if is_enterprise:
+	tests = a.discover(start_dir='console',pattern='*.py')
+else:
+	tests = a.discover(start_dir='console',pattern='PAN*.py')
 
 c = ArticaTestResult()
 tests.run(c)
-
-#Run Enterprise tests
-is_enterprise = '1' == getenv('ENTERPRISE', False)
-if is_enterprise:
-	enterprise_tests = a.discover(start_dir='console/enterprise',pattern='PAN*.py')
-	enterprise_tests.run(c)
 
 #Update Saouce Labs jobs
 sauce_client = SauceClient(environ["SAUCE_USERNAME"], environ["SAUCE_ACCESS_KEY"])

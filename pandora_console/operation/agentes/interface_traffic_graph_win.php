@@ -188,7 +188,8 @@ $interface_traffic_modules = array(
 		///////////////////////////
 		$side_layer_params = array();
 		// TOP TEXT
-		$side_layer_params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('images/config_mc.png', true, array('width' => '16px')) . ' ' . __('Pandora FMS Graph configuration menu') . "</div>";
+
+		$side_layer_params['top_text'] = "<div style='color: white; width: 100%; text-align: center; font-weight: bold; vertical-align: top;'>" . html_print_image('/images/config.disabled.png', true, array('width' => '16px'),false,false,false,true) . ' ' . __('Pandora FMS Graph configuration menu') . "</div>";
 		$side_layer_params['body_text'] = "<div class='menu_sidebar_outer'>";
 		$side_layer_params['body_text'] .=__('Please, make your changes and apply with the <i>Reload</i> button');
 		
@@ -215,7 +216,7 @@ $interface_traffic_modules = array(
 		$data = array();
 		$data[0] = __('Begin date');
 		$data[1] = html_print_input_text ("start_date", substr ($start_date, 0, 10),'', 15, 255, true);
-		$data[1] .= html_print_image ("images/calendar_view_day.png", true, array ("onclick" => "scwShow(scwID('text-start_date'),this);", "style" => 'vertical-align: bottom;'));
+		$data[1] .= html_print_image ("/images/calendar_view_day.png", true, array ("onclick" => "scwShow(scwID('text-start_date'),this);", "style" => 'vertical-align: bottom;'),false,false,false,true);
 		$table->data[] = $data;
 		$table->rowclass[] = '';
 		

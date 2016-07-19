@@ -37,7 +37,7 @@ class PAN9(PandoraWebDriverTestCase):
 		
 		create_user(driver,"PAN9_user","pandora",profile_list=l)
 		
-		logout(driver,,self.base_url)
+		logout(driver,self.base_url)
 		
 		login(driver,user="PAN9_user")
 		

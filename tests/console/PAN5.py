@@ -11,6 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
+from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
 import unittest, time, re
 
@@ -60,7 +61,7 @@ class PAN5(PandoraWebDriverTestCase):
 		#Check that there are japanese characters present on the event
 		
 		try:
-			element = driver.find_element_by_xpath('//a[contains(.,u"Alert fired (Critical condition) assigned to (管理者ガイド)")]')
+			element = driver.find_element_by_xpath(u'//a[contains(.,"Alert fired (Critical condition) assigned to (管理者ガイド)")]')
 			self.assertIsInstance(element,WebElement)
 
 		except AssertionError as e:

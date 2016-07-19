@@ -22,7 +22,7 @@ class PAN9(PandoraWebDriverTestCase):
 	def test_pan9(self):
 
 		driver = self.driver
-		login(driver,pandora_url="http://192.168.50.50:84/")
+		login(driver)
 		detect_and_pass_all_wizards(driver)
 		
 		create_agent_group(driver,"PAN9_A",propagate_acl=True,description="Group A, with propagate ACL, son of ALL")	
@@ -37,9 +37,9 @@ class PAN9(PandoraWebDriverTestCase):
 		
 		create_user(driver,"PAN9_user","pandora",profile_list=l)
 		
-		logout(driver,"http://192.168.50.50:84/")
+		logout(driver)
 		
-		login(driver,user="PAN9_user",pandora_url="http://192.168.50.50:84/")
+		login(driver,user="PAN9_user")
 		
 		detect_and_pass_all_wizards(driver)
 		

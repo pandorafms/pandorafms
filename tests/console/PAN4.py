@@ -54,9 +54,11 @@ class PAN4(PandoraWebDriverTestCase):
 		driver.find_element_by_id('text-search').clear()
 		driver.find_element_by_id('text-search').send_keys("PAN_4_Servers")
 		driver.find_element_by_id('submit-search_submit').click()
+		
+		time.sleep(6)
 	
 		try:
-			element = driver.find_element_by_xpath('//a[contains(.,"No data found.")]')
+			element = driver.find_element_by_xpath('//td[contains(.,"No data found.")]')
 			self.assertIsInstance(element,WebElement)
 
 		except AssertionError as e:

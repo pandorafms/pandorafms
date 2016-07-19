@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import click_menu_element, detect_and_pass_all_wizards
-from selenium import webdriver
+from selenium import selenium
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import Select
-from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import NoAlertPresentException
-import unittest, time, re
+from selenium.webdriver.support.ui import WebDriverWait, Select
+from selenium.webdriver.support import expected_conditions as EC
+from common_functions_60 import *
+
+import random, time
+import string
+
 
 def create_collection(driver,name,short_name,group="All",description=None):
 

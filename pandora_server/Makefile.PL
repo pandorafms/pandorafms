@@ -36,4 +36,3 @@ WriteMakefile(
 	PMLIBDIRS  		=> [ 'lib' ],
 	'dist'		=> { 'TAR' => 'tar', 'TARFLAGS' => 'cvfz', 'SUFFIX' => '.gz', 'COMPRESS' => 'gzip'}
 );
-

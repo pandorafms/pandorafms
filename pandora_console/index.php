@@ -433,7 +433,43 @@ if (! isset ($config['id_user'])) {
 			$config['id_user'] = $nick_in_db;
 			
 			if (is_user_admin($config['id_user'])) {
-				$minor_release_message = db_update_schema();
+				$have_minor_releases = db_check_minor_relase_available();
+				
+				if ($have_minor_releases) {
+					$size_mr_o = get_number_of_mr('open');
+					$size_mr_e = get_number_of_mr('enterprise');
+					echo "<div class= 'dialog ui-dialog-content' title='".__("Minor release available")."' id='mr_dialog2'>" . __('') . "</div>";
+						?>
+						<script type="text/javascript" language="javascript">
+							$(document).ready (function () {;
+								$('#mr_dialog2').dialog ({
+									resizable: true,
+									draggable: true,
+									modal: true,
+									overlay: {
+										opacity: 0.5,
+										background: 'black'
+									},
+									width: 400,
+									height: 150,
+									buttons: {
+										"Apply minor releases": function() {
+											var n_mr_o = '<?php echo implode(",", $size_mr_o);?>';
+											var n_mr_e = '<?php echo implode(",", $size_mr_e);?>';
+											$(this).dialog("close");
+											apply_minor_release(n_mr_o.split(","), n_mr_e.split(","));
+										},
+										Cancel: function() {
+											$(this).dialog("close");
+										}
+									}
+								});
+								$('#mr_dialog2').text('Do you want to apply minor releases?');
+								$('#mr_dialog2').dialog('open');
+							});
+						</script>
+						<?php
+				}
 			}
 
 			//==========================================================
@@ -599,26 +635,6 @@ $now_global_counter_chat = users_get_last_global_counter('return');
 if ($old_global_counter_chat != $now_global_counter_chat) {
 	if (!users_is_last_system_message())
 		$_SESSION['new_chat'] = true;
-}
-
-if ($minor_release_message) {
-	echo "<div class= 'dialog ui-dialog-content' title='".__("Minor release update")."' id='mr_dialog'>$minor_release_message</div>";
-		echo "<script type='text/javascript'>";
-			echo "$(document).ready (function () {";
-				echo "$('#mr_dialog').dialog ({
-					resizable: true,
-					draggable: true,
-					modal: true,
-					overlay: {
-						opacity: 0.5,
-						background: 'black'
-					},
-					width: 400,
-					height: 150
-				});";
-				echo "$('#mr_dialog').dialog('open');";
-		echo "	});";
-	echo "</script>";
 }
 
 if (get_parameter ('login', 0) !== 0) {
@@ -848,7 +864,84 @@ require('include/php_to_js_values.php');
 			return rv;
 		};
 	})();
-
+	
+	function apply_minor_release (n_mr_o, n_mr_e) {
+		$.each(n_mr_o, function(i, open_mr) {
+			var params = {};
+			var error = false;
+			params["updare_rr_open"] = 1;
+			params["number"] = open_mr;
+			params["page"] = "include/ajax/rolling_release.ajax";
+			
+			jQuery.ajax ({
+				data: params,
+				async: false,
+				dataType: "html",
+				type: "POST",
+				url: "ajax.php",
+				success: function (data) {
+					if (data != "") {
+						alert("Error: " + data);
+						error = true;
+					}
+				}
+			});
+			
+			if (error == true) {
+				return false;
+			}
+		});
+		
+		$.each(n_mr_e, function(i, e_mr) {
+			var params = {};
+			var error2 = false;
+			params["updare_rr_enterprise"] = 1;
+			params["number"] = e_mr;
+			params["page"] = "enterprise/include/ajax/rolling_release.ajax";
+			
+			jQuery.ajax ({
+				data: params,
+				async: false,
+				dataType: "html",
+				type: "POST",
+				url: "ajax.php",
+				success: function (data) {
+					if (data != "") {
+						alert("Error: " + data);
+						error2 = true;
+					}
+				}
+			});
+			
+			if (error2 == true) {
+				return false;
+			}
+		});
+		
+		check_is_finished_mr();
+	}
+	
+	function check_is_finished_mr () {
+		var params = {};
+		params["check_finish"] = 1;
+		params["page"] = "include/ajax/rolling_release.ajax";
+		
+		jQuery.ajax ({
+			data: params,
+			dataType: "html",
+			type: "POST",
+			url: "ajax.php",
+			success: function (data) {
+				if (data == 1) {
+					setInterval(check_is_finished_mr, 2000);
+				}
+				else if (data == 0) {
+					alert("Updated finished successfully");
+				}
+			}
+		});
+	}
+	
 	//Dynamically assign footer position and width.
 	function adjustFooter() {
 		/*

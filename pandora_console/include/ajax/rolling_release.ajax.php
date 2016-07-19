@@ -27,58 +27,77 @@ if (is_ajax ()) {
 		$dir = $config["homedir"]."/extras/mr";
 		
 		$file = "$dir/$number.open.sql";
-		if (file_exists($dir) && is_dir($dir)) {
-			if (is_readable($dir)) {
-				if ($config["minor_release_open"] >= $number) {
-					if (!file_exists($dir."/updated") || !is_dir($dir."/updated")) {
-						mkdir($dir."/updated");
-					}
-					$file_dest = "$dir/updated/$number.open.sql";
-					if (copy($file, $file_dest)) {
-						unlink($file);
-					}
-				}
-				else {
-					$result = db_run_sql_file($file);
-					
-					if ($result) {
-						$update_config = update_config_token("minor_release_open", $number);
-						if ($update_config) {
-							$config["minor_release_open"] = $number;
+		
+		$dangerous_query = false;
+		$mr_file = fopen($file, "r");
+		while (!feof($mr_file)) {
+			$line = fgets($mr_file);
+			if ((preg_match("/^drop/", $line)) || 
+				(preg_match("/^DROP/", $line))) {
+				$dangerous_query = true;
+			}
+		}
+		
+		if ($dangerous_query) {
+			$error_file = fopen($config["homedir"] . "/extras/mr/error.txt", "w");
+			$message = "The sql file contains a dangerous query";
+			fwrite($error_file, $message);
+			fclose($error_file);
+		}
+		else {
+			if (file_exists($dir) && is_dir($dir)) {
+				if (is_readable($dir)) {
+					if ($config["minor_release_open"] >= $number) {
+						if (!file_exists($dir."/updated") || !is_dir($dir."/updated")) {
+							mkdir($dir."/updated");
 						}
-						
-						if ($config["minor_release_open"] == $number) {
-							if (!file_exists($dir."/updated") || !is_dir($dir."/updated")) {
-								mkdir($dir."/updated");
-							}
-							
-							$file_dest = "$dir/updated/$number.open.sql";
-							
-							if (copy($file, $file_dest)) {
-								unlink($file);
-							}
+						$file_dest = "$dir/updated/$number.open.sql";
+						if (copy($file, $file_dest)) {
+							unlink($file);
 						}
 					}
 					else {
-						$error_file = fopen($config["homedir"] . "/extras/mr/error.txt", "w");
-						$message = "An error occurred while updating the database schema to the minor release " . $number;
-						fwrite($error_file, $message);
-						fclose($error_file);
+						$result = db_run_sql_file($file);
+						
+						if ($result) {
+							$update_config = update_config_token("minor_release_open", $number);
+							if ($update_config) {
+								$config["minor_release_open"] = $number;
+							}
+							
+							if ($config["minor_release_open"] == $number) {
+								if (!file_exists($dir."/updated") || !is_dir($dir."/updated")) {
+									mkdir($dir."/updated");
+								}
+								
+								$file_dest = "$dir/updated/$number.open.sql";
+								
+								if (copy($file, $file_dest)) {
+									unlink($file);
+								}
+							}
+						}
+						else {
+							$error_file = fopen($config["homedir"] . "/extras/mr/error.txt", "w");
+							$message = "An error occurred while updating the database schema to the minor release " . $number;
+							fwrite($error_file, $message);
+							fclose($error_file);
+						}
 					}
+				}
+				else {
+					$error_file = fopen($config["homedir"] . "/extras/mr/error.txt", "w");
+					$message = "The directory ' . $dir . ' should have read permissions in order to update the database schema";
+					fwrite($error_file, $message);
+					fclose($error_file);
 				}
 			}
 			else {
 				$error_file = fopen($config["homedir"] . "/extras/mr/error.txt", "w");
-				$message = "The directory ' . $dir . ' should have read permissions in order to update the database schema";
+				$message = "The directory ' . $dir . ' does not exist";
 				fwrite($error_file, $message);
 				fclose($error_file);
 			}
-		}
-		else {
-			$error_file = fopen($config["homedir"] . "/extras/mr/error.txt", "w");
-			$message = "The directory ' . $dir . ' does not exist";
-			fwrite($error_file, $message);
-			fclose($error_file);
 		}
 		
 		echo $message;

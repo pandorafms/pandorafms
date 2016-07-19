@@ -25,14 +25,17 @@ class PAN7(PandoraWebDriverTestCase):
 		
 		logout(driver,self.base_url)
 		login(driver)
-		
+	
+
 		try:
-					
-			self.assertEqual("Event control filter" in driver.page_source,True)
-		
+			element = driver.find_element_by_xpath('//a[contains(.,"Event control filter")]')
+			self.assertIsInstance(element,WebElement)
+
 		except AssertionError as e:
-		
-			self.verificationErrors.append(str(e))		
+			self.verificationErrors.append(str(e))
+
+		except NoSuchElementException as e:
+			self.verificationErrors.append(str(e))
 		
 		#Return this change		
 		

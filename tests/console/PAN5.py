@@ -57,12 +57,16 @@ class PAN5(PandoraWebDriverTestCase):
 		driver.find_element_by_id("submit-update").click()
 
 		#Check that there are japanese characters present on the event
+		
 		try:
-				self.assertEqual(True,u"Alert fired (Critical condition) assigned to (管理者ガイド)" in driver.page_source)
+			element = driver.find_element_by_xpath('//a[contains(.,u"Alert fired (Critical condition) assigned to (管理者ガイド)")]')
+			self.assertIsInstance(element,WebElement)
+
 		except AssertionError as e:
-				self.verificationErrors.append(str(e))
+			self.verificationErrors.append(str(e))
 
-
+		except NoSuchElementException as e:
+			self.verificationErrors.append(str(e))
 
 if __name__ == "__main__":
 	unittest.main()

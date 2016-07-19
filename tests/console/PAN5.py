@@ -11,6 +11,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
+from selenium.common.exceptions import NoAlertPresentException
+from selenium.webdriver.remote.webelement import WebElement
 import unittest, time, re
 
 class PAN5(PandoraWebDriverTestCase):
@@ -57,12 +59,16 @@ class PAN5(PandoraWebDriverTestCase):
 		driver.find_element_by_id("submit-update").click()
 
 		#Check that there are japanese characters present on the event
+		
 		try:
-				self.assertEqual(True,u"Alert fired (Critical condition) assigned to (管理者ガイド)" in driver.page_source)
+			element = driver.find_element_by_xpath(u'//a[contains(.,"Alert fired (Critical condition) assigned to (管理者ガイド)")]')
+			self.assertIsInstance(element,WebElement)
+
 		except AssertionError as e:
-				self.verificationErrors.append(str(e))
+			self.verificationErrors.append(str(e))
 
-
+		except NoSuchElementException as e:
+			self.verificationErrors.append(str(e))
 
 if __name__ == "__main__":
 	unittest.main()

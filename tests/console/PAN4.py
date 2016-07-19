@@ -8,6 +8,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoAlertPresentException
+from selenium.webdriver.remote.webelement import WebElement
 import unittest, time, re
  
  
@@ -19,7 +22,7 @@ class PAN4(PandoraWebDriverTestCase):
 
 	def test_pan4(self):
 		driver = self.driver
-		login(driver,user="admin",passwd="pandora",pandora_url=self.base_url)
+		login(driver,user="admin",passwd="pandora")
 		detect_and_pass_all_wizards(driver)
 		
 		#Creates a user with Chief Operator - Applications profile
@@ -35,7 +38,7 @@ class PAN4(PandoraWebDriverTestCase):
 		logout(driver,self.base_url)
 	
 		#Login
-		login(driver,user='PAN_4',passwd='PAN_4',pandora_url=self.base_url)
+		login(driver,user='PAN_4',passwd='PAN_4')
 		detect_and_pass_all_wizards(driver)
 	
 		#Check that the report is visible
@@ -52,11 +55,22 @@ class PAN4(PandoraWebDriverTestCase):
 		driver.find_element_by_id('text-search').send_keys("PAN_4_Servers")
 		driver.find_element_by_id('submit-search_submit').click()
 		
-		self.assertEqual("No data found." in driver.page_source,True)
+		time.sleep(6)
+	
+		try:
+			element = driver.find_element_by_xpath('//td[contains(.,"No data found.")]')
+			self.assertIsInstance(element,WebElement)
+
+		except AssertionError as e:
+			self.verificationErrors.append(str(e))
+
+		except NoSuchElementException as e:
+			self.verificationErrors.append(str(e))
+
 	
 		#Delete reports
 		logout(driver,self.base_url)
-		login(driver,user="admin",passwd="pandora",pandora_url=self.base_url)
+		login(driver,user="admin",passwd="pandora")
 	
 		delete_report(driver,"PAN_4_Servers")
 		delete_report(driver,"PAN_4_Applications")

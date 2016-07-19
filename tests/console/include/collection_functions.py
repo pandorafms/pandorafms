@@ -46,3 +46,23 @@ def delete_collection(driver,name):
 	driver.find_element_by_xpath('//*[@id="agent_list"]/tbody/tr[2]/td[5]/a[1]/img').click()
 	alert = driver.switch_to_alert() 
 	alert.accept()
+
+def edit_collection(driver,name,new_name=None,group=None,description=None):
+	search_collection(driver,name)
+	
+	if new_name != None:
+		driver.find_element_by_id("text-name").clear()
+		driver.find_element_by_id("text-name").send_keys(name)
+	
+	if group != None:
+		driver.find_element_by_xpath('//option[contains(.,"'+group+'")]').click()
+	
+	if description != None:
+		driver.find_element_by_id("textarea_description").clear()
+		driver.find_element_by_id("textarea_description").send_keys(description)
+		
+	driver.find_element_by_id("submit-submit").click()
+
+
+
+

@@ -450,8 +450,8 @@ if (! isset ($config['id_user'])) {
 										opacity: 0.5,
 										background: 'black'
 									},
-									width: 400,
-									height: 150,
+									width: 600,
+									height: 350,
 									buttons: {
 										"Apply minor releases": function() {
 											var n_mr_o = '<?php echo implode(",", $size_mr_o);?>';
@@ -464,7 +464,12 @@ if (! isset ($config['id_user'])) {
 										}
 									}
 								});
-								$('#mr_dialog2').text('Do you want to apply minor releases?');
+								
+								var dialog_text = "<div><h3>Do you want to apply minor releases?</h3></br>";
+								dialog_text = dialog_text + "<h2>We recommend launch a planned downtime to this process</h2></br>";
+								dialog_text = dialog_text + "<a href=\"<?php echo $config['homeurl']; ?>index.php?sec=extensions&sec2=godmode/agentes/planned_downtime.list\">Planned downtimes</a></div>"
+								
+								$('#mr_dialog2').html(dialog_text);
 								$('#mr_dialog2').dialog('open');
 							});
 						</script>
@@ -866,9 +871,9 @@ require('include/php_to_js_values.php');
 	})();
 	
 	function apply_minor_release (n_mr_o, n_mr_e) {
+		var error = false;
 		$.each(n_mr_o, function(i, open_mr) {
 			var params = {};
-			var error = false;
 			params["updare_rr_open"] = 1;
 			params["number"] = open_mr;
 			params["page"] = "include/ajax/rolling_release.ajax";
@@ -891,10 +896,9 @@ require('include/php_to_js_values.php');
 				return false;
 			}
 		});
-		
+		var error2 = false;
 		$.each(n_mr_e, function(i, e_mr) {
 			var params = {};
-			var error2 = false;
 			params["updare_rr_enterprise"] = 1;
 			params["number"] = e_mr;
 			params["page"] = "enterprise/include/ajax/rolling_release.ajax";
@@ -918,28 +922,9 @@ require('include/php_to_js_values.php');
 			}
 		});
 		
-		check_is_finished_mr();
-	}
-	
-	function check_is_finished_mr () {
-		var params = {};
-		params["check_finish"] = 1;
-		params["page"] = "include/ajax/rolling_release.ajax";
-		
-		jQuery.ajax ({
-			data: params,
-			dataType: "html",
-			type: "POST",
-			url: "ajax.php",
-			success: function (data) {
-				if (data == 1) {
-					setInterval(check_is_finished_mr, 2000);
-				}
-				else if (data == 0) {
-					alert("Updated finished successfully");
-				}
-			}
-		});
+		if (!error && !error2) {
+			alert("Updated finished successfully");
+		}
 	}
 	
 	//Dynamically assign footer position and width.

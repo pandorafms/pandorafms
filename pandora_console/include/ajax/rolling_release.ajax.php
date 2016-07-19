@@ -15,12 +15,9 @@
 // Only accesible by ajax
 if (is_ajax ()) {
 	global $config;
-	
 	check_login();
 
 	$updare_rr_open = get_parameter('updare_rr_open', 0);
-	$check_minor_number = get_parameter('check_minor_number', 0);
-	$check_finish = get_parameter('check_finish', 0);
 	
 	if ($updare_rr_open) {
 		$number = get_parameter('number');
@@ -33,7 +30,7 @@ if (is_ajax ()) {
 		while (!feof($mr_file)) {
 			$line = fgets($mr_file);
 			if ((preg_match("/^drop/", $line)) || 
-				(preg_match("/^DROP/", $line))) {
+				(preg_match("/^truncate table/", $line))) {
 				$dangerous_query = true;
 			}
 		}
@@ -101,21 +98,6 @@ if (is_ajax ()) {
 		}
 		
 		echo $message;
-		return;
-	}
-	else if ($check_finish) {
-		$check = db_check_minor_relase_available();
-		
-		if (file_exists($config["homedir"] . "/extras/mr/error.txt")) {
-			unlink($config["homedir"] . "/extras/mr/error.txt");
-			$check = 2;
-		}
-		
-		echo $check;
-		return;
-	}
-	else if ($check_minor_number) {
-		echo $config['minor_release_open'];
 		return;
 	}
 }

@@ -64,5 +64,30 @@ def edit_collection(driver,name,new_name=None,group=None,description=None):
 	driver.find_element_by_id("submit-submit").click()
 
 
+def create_text_in_collection(driver,collection_name,file_name,text_file=None):
 
+	#text_file is a content of file.
+	
+	search_collection(driver,collection_name)
+	driver.find_element_by_xpath('//*[@id="menu_tab"]/ul/li[2]/a/img').click()
+	driver.find_element_by_xpath('//*[@id="main"]/div[2]/a[2]/img').click()	
+	driver.find_element_by_id("text-name_file").clear()
+	driver.find_element_by_id("text-name_file").send_keys(file_name)	
+	driver.find_element_by_id("submit-create").click()
+	
+	if text_file != None:
+		driver.find_element_by_xpath('//*[@id="main"]/form/table/tbody/tr[2]/td/textarea').clear()
+		driver.find_element_by_xpath('//*[@id="main"]/form/table/tbody/tr[2]/td/textarea').send_keys(text_file)
+	
+	driver.find_element_by_xpath('//*[@id="main"]/form/table/tbody/tr[3]/td/input[3]').click()	
+	
+
+def create_directory_in_collection(driver,collection_name,directory_name):
+
+	search_collection(driver,collection_name)
+	driver.find_element_by_xpath('//*[@id="menu_tab"]/ul/li[2]/a/img').click()
+	driver.find_element_by_xpath('//*[@id="main"]/div[2]/a[1]/img').click()
+	driver.find_element_by_id('text-dirname').clear()
+	driver.find_element_by_id('text-dirname').send_keys(directory_name)
+	driver.find_element_by_id('submit-crt').click()
 

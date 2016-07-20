@@ -91,3 +91,11 @@ def create_directory_in_collection(driver,collection_name,directory_name):
 	driver.find_element_by_id('text-dirname').send_keys(directory_name)
 	driver.find_element_by_id('submit-crt').click()
 
+def recreate_collection(driver,collection_name):
+	
+	search_collection(driver,collection_name)
+	driver.find_element_by_xpath('//*[@id="button-recreate_file"]').click()
+	alert = driver.switch_to_alert() 
+	alert.accept()
+
+

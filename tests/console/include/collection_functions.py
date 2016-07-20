@@ -12,7 +12,12 @@ import string
 def create_collection(driver,name,short_name,group="All",description=None):
 
 	click_menu_element(driver,"Collections")
-	driver.find_element_by_id("submit-crt").click()
+
+	if ("A file collection is a group of files (e.g. scripts or executables)" in driver.page_source) == True:
+		driver.find_element_by_xpath('//*[@id="main"]/div[2]/div[2]/form/input').click()
+	
+	else:
+		driver.find_element_by_id("submit-crt").click()	
 	
 	driver.find_element_by_id("text-name").clear()
 	driver.find_element_by_id("text-name").send_keys(name)

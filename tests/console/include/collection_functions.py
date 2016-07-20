@@ -52,7 +52,7 @@ def edit_collection(driver,name,new_name=None,group=None,description=None):
 	
 	if new_name != None:
 		driver.find_element_by_id("text-name").clear()
-		driver.find_element_by_id("text-name").send_keys(name)
+		driver.find_element_by_id("text-name").send_keys(new_name)
 	
 	if group != None:
 		driver.find_element_by_xpath('//option[contains(.,"'+group+'")]').click()

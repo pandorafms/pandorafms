@@ -29,21 +29,21 @@ function snmp_generate_trap($snmp_host_address, $snmp_community, $snmp_oid, $snm
 	if (empty($config['snmptrap'])) {
 		switch (PHP_OS) {
 			case "FreeBSD":
-				$snmpwalk_bin = '/usr/local/bin/snmptrap';
+				$snmptrap_bin = '/usr/local/bin/snmptrap';
 				break;
 			case "NetBSD":
-				$snmpwalk_bin = '/usr/pkg/bin/snmptrap';
+				$snmptrap_bin = '/usr/pkg/bin/snmptrap';
 				break;
 			default:
-				$snmpwalk_bin = 'snmptrap';
+				$snmptrap_bin = 'snmptrap';
 				break;
 		}
 	}
 	else {
-		$snmpwalk_bin = $config['snmptrap'];
+		$snmptrap_bin = $config['snmptrap'];
 	}
 	
-	$command = "snmptrap -v 1 -c " . escapeshellarg($snmp_community) .
+	$command = "$snmptrap_bin -v 1 -c " . escapeshellarg($snmp_community) .
 		" " . escapeshellarg($snmp_host_address) .
 		" " . escapeshellarg($snmp_oid) .
 		" " . escapeshellarg($snmp_agent) .

@@ -3098,6 +3098,19 @@ table#policy_modules td * {
 	margin-left: 3%;
 }
 
+.title_um {
+	font-family: "open sans";
+	font-size: 20px;
+	color: #82B92E;
+	text-align: center;
+}
+
+.text_um {
+	font-family: "open sans";
+	font-size: 16px;
+	padding-left: 80px;
+}
+
 /* The items with the class 'spinner' will rotate */
 /* Not supported on IE9 and below */
 .spinner {

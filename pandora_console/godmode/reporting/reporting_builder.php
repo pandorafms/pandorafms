@@ -1101,6 +1101,7 @@ switch ($action) {
 						$style = array();
 						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
+						$style['hide_notinit_agents'] = get_parameter('hide_notinit_agents', 0);
 						
 						switch ($values['type']) {
 							case 'event_report_agent':
@@ -1362,6 +1363,7 @@ switch ($action) {
 						$style = array();
 						$style['show_in_two_columns'] = get_parameter('show_in_two_columns', 0);
 						$style['show_in_landscape'] = get_parameter('show_in_landscape', 0);
+						$style['hide_notinit_agents'] = get_parameter('hide_notinit_agents', 0);
 						
 						switch ($values['type']) {
 							case 'event_report_agent':

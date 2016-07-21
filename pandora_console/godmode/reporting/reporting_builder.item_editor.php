@@ -124,6 +124,7 @@ switch ($action) {
 		$sql = null;
 		$show_in_two_columns = 0;
 		$show_in_landscape = 0;
+		$hide_notinit_agents = 0;
 		$server_name = '';
 		$server_id = 0;
 		break;
@@ -156,6 +157,7 @@ switch ($action) {
 				$sql = null;
 				$show_in_two_columns = 0;
 				$show_in_landscape = 0;
+				$hide_notinit_agents = 0;
 				$server_name = '';
 				$server_id = 0;
 				$get_data_editor = false;
@@ -177,8 +179,10 @@ switch ($action) {
 			}
 			
 			$style = json_decode(io_safe_output($item['style']), true);
+			
 			$show_in_two_columns = $style['show_in_two_columns'];
 			$show_in_landscape = $style['show_in_landscape'];
+			$hide_notinit_agents = $style['hide_notinit_agents'];
 			$type = $item['type'];
 			$name = $item['name'];
 			
@@ -1302,6 +1306,16 @@ $class = 'databox filters';
 			</td>
 		</tr>
 		
+		<tr id="row_hide_notinit_agents" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Hide not init agents');?></td>
+			<td>
+				<?php
+				html_print_checkbox('hide_notinit_agents', 1,
+					$hide_notinit_agents, false, false);
+				?>
+			</td>
+		</tr>
+		
 		
 		
 		<tr id="row_filter_search" style="" class="datos">
@@ -1395,6 +1409,7 @@ function print_SLA_list($width, $action, $idItem = null) {
 							'tagente_modulo',
 							array('id_agente_modulo' => $item['id_agent_module']));
 						$nameAgent = agents_get_name ($idAgent);
+						
 						$nameModule = db_get_value_filter('nombre',
 							'tagente_modulo',
 							array('id_agente_modulo' => $item['id_agent_module']));
@@ -2139,7 +2154,7 @@ function addGeneralRow() {
 		params.push("id_module=" + idModule);
 		params.push("id_server=" + serverId);
 		params.push("operation=" + operation);
-		
+		params.push("id_agent=" + idAgent);
 		params.push("page=include/ajax/reporting.ajax");
 		jQuery.ajax ({
 			data: params.join ("&"),
@@ -2212,6 +2227,7 @@ function chooseType() {
 	$("#row_exception_condition").hide();
 	$("#row_show_in_two_columns").hide();
 	$("#row_show_in_landscape").hide();
+	$('#row_hide_notinit_agents').hide();
 	$("#row_module_group").hide();
 	$("#row_servers").hide();
 	$("#row_sort").hide();
@@ -2313,6 +2329,7 @@ function chooseType() {
 			$("#row_show_graph").show();
 			$("#row_show_in_two_columns").show();
 			$("#row_sort").show();
+			$('#row_hide_notinit_agents').show();
 			break;
 		
 		case 'SLA_monthly':
@@ -2564,6 +2581,7 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			$("#row_show_resume").show();
 			$("#row_working_time").show();
+			$('#row_hide_notinit_agents').show();
 			break;
 		
 		case 'group_report':

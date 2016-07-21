@@ -281,6 +281,11 @@ function reporting_html_print_report($report, $mini = false) {
 }
 
 function reporting_html_SLA($table, $item, $mini) {
+	$style = db_get_value('style', 'treport_content', 'id_rc', $item['id_rc']);
+	$style = json_decode(io_safe_output($style), true);
+	$hide_notinit_agent = $style['hide_notinit_agents'];
+	$same_agent_in_resume = "";
+	
 	if ($mini) {
 		$font_size = '1.5';
 	}
@@ -331,29 +336,60 @@ function reporting_html_SLA($table, $item, $mini) {
 		$table1->headstyle[5] = 'text-align: right';
 		
 		foreach ($item['data'] as $sla) {
-			$row = array();
-			$row[] = $sla['agent'];
-			$row[] = $sla['module'];
-			$row[] = $sla['max'] . " / " . $sla['min'];
-			$row[] = round($sla['sla_limit'], 2) . "%";
-			
-			if ($sla['sla_value_unknown']) {
-				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
-					__('N/A') . '</span>';
-				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
-					__('Unknown') . '</span>';
-			}
-			elseif ($sla['sla_status']) {
-				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
-					round($sla['sla_value'], 2) . "%" . '</span>';
-				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
-					__('OK') . '</span>';
+			$the_first_men_time = get_agent_first_time(io_safe_output($sla['agent']));
+			if (!$hide_notinit_agent) {
+				$row = array();
+				$row[] = $sla['agent'];
+				$row[] = $sla['module'];
+				$row[] = $sla['max'] . " / " . $sla['min'];
+				$row[] = round($sla['sla_limit'], 2) . "%";
+				
+				if ($sla['sla_value_unknown']) {
+					$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
+						__('N/A') . '</span>';
+					$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
+						__('Unknown') . '</span>';
+				}
+				elseif ($sla['sla_status']) {
+					$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
+						round($sla['sla_value'], 2) . "%" . '</span>';
+					$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
+						__('OK') . '</span>';
+				}
+				else {
+					$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
+						round($sla['sla_value'], 2) . "%" . '</span>';
+					$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
+						__('Fail') . '</span>';
+				}
 			}
 			else {
-				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
-					round($sla['sla_value'], 2) . "%" . '</span>';
-				$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
-					__('Fail') . '</span>';
+				if ($item['date']['to'] > $the_first_men_time) {
+					$row = array();
+					$row[] = $sla['agent'];
+					$row[] = $sla['module'];
+					$row[] = $sla['max'] . " / " . $sla['min'];
+					$row[] = round($sla['sla_limit'], 2) . "%";
+					
+					if ($sla['sla_value_unknown']) {
+						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
+							__('N/A') . '</span>';
+						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
+							__('Unknown') . '</span>';
+					}
+					elseif ($sla['sla_status']) {
+						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
+							round($sla['sla_value'], 2) . "%" . '</span>';
+						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
+							__('OK') . '</span>';
+					}
+					else {
+						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
+							round($sla['sla_value'], 2) . "%" . '</span>';
+						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
+							__('Fail') . '</span>';
+					}
+				}
 			}
 			
 			$table1->data[] = $row;
@@ -1639,6 +1675,10 @@ function reporting_html_text(&$table, $item) {
 }
 
 function reporting_html_availability(&$table, $item) {
+	$style = db_get_value('style', 'treport_content', 'id_rc', $item['id_rc']);
+	$style = json_decode(io_safe_output($style), true);
+	$hide_notinit_agent = $style['hide_notinit_agents'];
+	$same_agent_in_resume = "";
 	
 	if (!empty($item["data"])) {
 		$table1 = new stdClass();
@@ -1680,15 +1720,35 @@ function reporting_html_availability(&$table, $item) {
 		$table1->style[7] = 'text-align: right';
 		
 		foreach ($item['data'] as $row) {
-			$table_row = array();
-			$table_row[] = $row['agent'];
-			$table_row[] = $row['availability_item'];
-			$table_row[] = $row['checks'];
-			$table_row[] = $row['failed'];
-			$table_row[] = $row['fail'];
-			$table_row[] = $row['poling_time'];
-			$table_row[] = $row['time_unavaliable'];
-			$table_row[] = $row['ok'];
+			$the_first_men_time = get_agent_first_time(io_safe_output($row['agent']));
+			
+			if (!$hide_notinit_agent) {
+				$table_row = array();
+				$table_row[] = $row['agent'];
+				$table_row[] = $row['availability_item'];
+				$table_row[] = $row['checks'];
+				$table_row[] = $row['failed'];
+				$table_row[] = $row['fail'];
+				$table_row[] = $row['poling_time'];
+				$table_row[] = $row['time_unavaliable'];
+				$table_row[] = $row['ok'];
+			}
+			else {
+				if ($item['date']['to'] > $the_first_men_time) {
+					$table_row = array();
+					$table_row[] = $row['agent'];
+					$table_row[] = $row['availability_item'];
+					$table_row[] = $row['checks'];
+					$table_row[] = $row['failed'];
+					$table_row[] = $row['fail'];
+					$table_row[] = $row['poling_time'];
+					$table_row[] = $row['time_unavaliable'];
+					$table_row[] = $row['ok'];
+				}
+				else {
+					$same_agent_in_resume = $row['agent'];
+				}
+			}
 			
 			$table1->data[] = $table_row;
 		}
@@ -1708,43 +1768,54 @@ function reporting_html_availability(&$table, $item) {
 		$table1->width = '99%';
 		$table1->data = array ();
 		
-		
-		
-		$table1->head = array ();
-		$table1->head['min_text'] = __('Agent max');
-		$table1->head['min'] = __('Min Value');
-		$table1->head['avg'] = __('Average Value');
-		$table1->head['max_text'] = __('Agent min');
-		$table1->head['max'] = __('Max Value');
-		
-		$table1->headstyle = array();
-		$table1->headstyle['min_text'] = 'text-align: left';
-		$table1->headstyle['min'] = 'text-align: right';
-		$table1->headstyle['avg'] = 'text-align: right';
-		$table1->headstyle['max_text'] = 'text-align: left';
-		$table1->headstyle['max'] = 'text-align: right';
-		
-		
-		$table1->style = array();
-		$table1->style['min_text'] = 'text-align: left';
-		$table1->style['min'] = 'text-align: right';
-		$table1->style['avg'] = 'text-align: right';
-		$table1->style['max_text'] = 'text-align: left';
-		$table1->style['max'] = 'text-align: right';
-		
-		$table1->data[] = array(
-			'min_text' => $item['resume']['min_text'],
-			'min' => format_numeric($item['resume']['min'], 2) . "%",
-			'avg' => format_numeric($item['resume']['avg'], 2) . "%",
-			'max_text' => $item['resume']['max_text'],
-			'max' => format_numeric($item['resume']['max'], 2) . "%"
-			);
-		
-		$table->colspan[2][0] = 3;
-		$data = array();
-		$data[0] = html_print_table($table1, true);
-		array_push ($table->data, $data);
+		if (($same_agent_in_resume == "") && (strpos($item['resume']['min_text'], $same_agent_in_resume) === false)) {
+			$table1->head = array ();
+			$table1->head['min_text'] = __('Agent max');
+			$table1->head['min'] = __('Min Value');
+			$table1->head['avg'] = __('Average Value');
+			$table1->head['max_text'] = __('Agent min');
+			$table1->head['max'] = __('Max Value');
+			
+			$table1->headstyle = array();
+			$table1->headstyle['min_text'] = 'text-align: left';
+			$table1->headstyle['min'] = 'text-align: right';
+			$table1->headstyle['avg'] = 'text-align: right';
+			$table1->headstyle['max_text'] = 'text-align: left';
+			$table1->headstyle['max'] = 'text-align: right';
+			
+			
+			$table1->style = array();
+			$table1->style['min_text'] = 'text-align: left';
+			$table1->style['min'] = 'text-align: right';
+			$table1->style['avg'] = 'text-align: right';
+			$table1->style['max_text'] = 'text-align: left';
+			$table1->style['max'] = 'text-align: right';
+			
+			$table1->data[] = array(
+				'min_text' => $item['resume']['min_text'],
+				'min' => format_numeric($item['resume']['min'], 2) . "%",
+				'avg' => format_numeric($item['resume']['avg'], 2) . "%",
+				'max_text' => $item['resume']['max_text'],
+				'max' => format_numeric($item['resume']['max'], 2) . "%"
+				);
+			
+			$table->colspan[2][0] = 3;
+			$data = array();
+			$data[0] = html_print_table($table1, true);
+			array_push ($table->data, $data);
+		}
 	}
+}
+
+function get_agent_first_time ($agent_name) {
+	$id = agents_get_agent_id($agent_name, true);
+	
+	$utimestamp = db_get_all_rows_sql("SELECT utimestamp FROM tagente_datos WHERE id_agente_modulo IN 
+		(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = " . $id . ")
+		ORDER BY utimestamp ASC LIMIT 1");
+	$utimestamp = $utimestamp[0]['utimestamp'];
+	
+	return $utimestamp;
 }
 
 function reporting_html_general(&$table, $item) {

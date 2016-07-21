@@ -60,6 +60,8 @@ our @EXPORT = qw(
 	TRANSACTIONALSERVER
 	METACONSOLE_LICENSE
 	$DEVNULL
+	$OS
+	$OS_VERSION
 	RECOVERED_ALERT
 	FIRED_ALERT
     cron_get_closest_in_range
@@ -122,8 +124,20 @@ use constant METACONSOLE_LICENSE => 0x01;
 use constant RECOVERED_ALERT => 0;
 use constant FIRED_ALERT => 1;
 
-# /dev/null
-our $DEVNULL = ($^O eq 'MSWin32') ? '/Nul' : '/dev/null';
+# Set OS, OS version and /dev/null
+our $OS = $^O;
+our $OS_VERSION;
+our $DEVNULL = '/dev/null';
+if ($OS eq 'linux') {
+	$OS_VERSION = `lsb_release -sd 2>/dev/null`;
+} elsif ($OS eq 'aix') {
+	$OS_VERSION = "$2.$1" if (`uname -rv` =~ /\s*(\d)\s+(\d)\s*/);
+} elsif ($OS =~ /win/i) {
+	$OS = "windows";
+	$OS_VERSION = `ver`;
+	$DEVNULL = '/Nul';
+}
+chomp($OS_VERSION);
 
 ########################################################################
 ## SUB pandora_trash_ascii 

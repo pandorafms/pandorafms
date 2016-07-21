@@ -1088,7 +1088,12 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 			'id_parent' => $idParent,
 			'custom_id' => $customId),
 		array('id_agente' => $id_agent));
-	
+
+	if ( $return && !empty($ip)) {
+		// register ip for this agent in 'taddress'
+		agents_add_address ($id_agent, $ip);
+	}
+
 	returnData('string',
 		array('type' => 'string', 'data' => (int)((bool)$return)));
 }
@@ -1181,7 +1186,12 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 				'server_name' => $nameServer,
 				'id_parent' => $idParent,
 				'custom_id' => $customId));
-		
+
+		if (!empty($idAgente) && !empty($ip)) {
+			// register ip for this agent in 'taddress'
+			agents_add_address ($idAgente, $ip);
+		}
+
 		returnData('string',
 			array('type' => 'string', 'data' => $idAgente));
 	}

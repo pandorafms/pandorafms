@@ -1469,7 +1469,10 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 						$value = count($value);
 				}
 				else {
-					$value = false;
+					if ($flash_charts === false)
+						$value = 0;
+					else
+						$value = false;
 				}
 				
 				
@@ -1480,8 +1483,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				
 				$temp[$module]['label'] = $label;
 				$temp[$module]['value'] = $value;
-				$temp[$module]['max'] = reporting_get_agentmodule_data_max($module,$period,$date);
-				$temp[$module]['min'] = reporting_get_agentmodule_data_min($module,$period,$date);
+				$temp_max = reporting_get_agentmodule_data_max($module,$period,$date);
+				if ($temp_max < 0)
+					$temp_max = 0;
+				$temp[$module]['max'] = ($temp_max === false) ? 0 : $temp_max;
+				$temp_min = reporting_get_agentmodule_data_min($module,$period,$date);
+				if ($temp_min < 0)
+					$temp_min = 0;
+				$temp[$module]['min'] = ($temp_min === false) ? 0 : $temp_min;
 				
 				if ($config['metaconsole']) {
 					// Automatic custom graph from the report template in metaconsole

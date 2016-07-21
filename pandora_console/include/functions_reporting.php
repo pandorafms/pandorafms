@@ -476,6 +476,7 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 		$height = $force_height_chart;
 	}
 	
+	$return["id_rc"] = $content['id_rc'];
 	
 	$edge_interval = 10;
 	
@@ -3733,7 +3734,6 @@ function reporting_sql($report, $content) {
 }
 
 function reporting_availability($report, $content) {
-	
 	global $config;
 	
 	$return = array();
@@ -3750,6 +3750,8 @@ function reporting_availability($report, $content) {
 	$return["date"] = reporting_get_date_text(
 		$report,
 		$content);
+	
+	$return['id_rc'] = $content['id_rc'];
 	
 	if ($content['show_graph']) {
 		$return['kind_availability'] = "address";

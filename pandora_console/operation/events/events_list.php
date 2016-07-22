@@ -724,8 +724,7 @@ if (!empty($result)) {
 		}
 	}
 	elseif ($group_rep == 2) {
-	
-	
+		
 	}
 	$limit = (int) db_get_sql ($sql);
 	
@@ -766,8 +765,7 @@ if (!empty($result)) {
 											$history);
 	}
 	elseif ($group_rep == 2) {
-	
-	
+		
 	}
 	
 	if (($group_rep == 1) OR ($group_rep == 0)) {
@@ -866,6 +864,7 @@ var origin_select_without_tag_empty = <?php echo (int)$add_without_tag_disabled;
 
 var val_none = 0;
 var text_none = "<?php echo __('None'); ?>";
+var group_agents_id = false;
 
 $(document).ready( function() {
 	

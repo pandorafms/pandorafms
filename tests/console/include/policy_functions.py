@@ -4,7 +4,7 @@ from common_functions_60 import login, click_menu_element, detect_and_pass_all_w
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from include.module_functions import create_module
+from module_functions import create_module
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException

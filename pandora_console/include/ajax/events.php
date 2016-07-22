@@ -23,6 +23,7 @@ enterprise_include_once ('meta/include/functions_events_meta.php');
 enterprise_include_once ('include/functions_metaconsole.php');
 
 $get_events_details = (bool) get_parameter ('get_events_details');
+$get_list_events_agents = (bool) get_parameter ('get_list_events_agents');
 $get_extended_event = (bool) get_parameter ('get_extended_event');
 $change_status = (bool) get_parameter ('change_status');
 $change_owner = (bool) get_parameter ('change_owner');
@@ -511,5 +512,37 @@ if ($table_events) {
 	
 	events_print_event_table ("estado <> 1 $tags_condition", 10, '100%',
 		false, $id_agente,true);
+}
+
+if ($get_list_events_agents) {
+	global $config;
+	
+	$id_agent = get_parameter('id_agent');
+	$server_id = get_parameter('server_id');
+	$event_type = get_parameter("event_type");
+	$severity = get_parameter("severity");
+	$status = get_parameter("status");
+	$search = get_parameter("search");
+	$id_agent_module = get_parameter('id_agent_module');
+	$event_view_hr = get_parameter("event_view_hr");
+	$id_user_ack = get_parameter("id_user_ack");
+	$tag_with = get_parameter("tag_with");
+	$tag_without = get_parameter("tag_without");
+	$filter_only_alert = get_parameter("filter_only_alert");
+	$date_from = get_parameter("date_from");
+	$date_to = get_parameter("date_to");
+	$id_user = $config["id_user"];
+	$server_id = get_parameter("server_id");
+	
+	$returned_sql = events_sql_events_grouped_agents($id_agent, $server_id, 
+						$event_type,$severity, $status, $search, 
+						$id_agent_module, $event_view_hr, $id_user_ack, 
+						$tag_with, $tag_without, $filter_only_alert, 
+						$date_from, $date_to, $id_user);
+	
+	$returned_list = events_list_events_grouped_agents($returned_sql);
+	
+	echo $returned_list;
+	return;
 }
 ?>

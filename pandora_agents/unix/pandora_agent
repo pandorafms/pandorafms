@@ -43,6 +43,10 @@ my $ThreadSem = undef;
 use constant AGENT_VERSION => '6.0SP3';
 use constant AGENT_BUILD => '160726';
 
+# Agent log default file size maximum and instances
+use constant DEFAULT_MAX_LOG_SIZE => 600000;
+use constant DEFAULT_LOG_ROTATE => 3;
+
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {
 	linux => 'cat /proc/meminfo | grep MemTotal: | awk \'{ print $2 }\'',
@@ -122,6 +126,8 @@ my %DefaultConf = (
 	'server_ip' => 'localhost',
 	'server_path' => '/var/spool/pandora/data_in',
 	'logfile' =>'/var/log/pandora/pandora_agent.log',
+	'logsize' => DEFAULT_MAX_LOG_SIZE,
+	'logrotate' => DEFAULT_LOG_ROTATE,
 	'temporal' => '/var/spool/pandora',
 	'interval' => 300,
 	'debug' => 0,		
@@ -175,6 +181,9 @@ my @Modules;
 
 # Logfile file handle
 my $LogFileFH;
+
+# Logfile index
+my $LogFileIdx;
 
 # Agent name MD5;
 my $AgentMD5;
@@ -306,6 +315,32 @@ sub start_log (;$) {
 	} else {
 		open ($LogFileFH, "> $Conf{'logfile'}") or error ("Could not open log file $Conf{'logfile'} for writing: $!.");
 		print "Logging to $Conf{'logfile'}\n" if (!defined ($quiet));
+	}
+}
+
+################################################################################
+# Rotates the agent logfile.
+################################################################################
+sub rotate_log () {
+	if ($Conf{'logfile'} eq 'syslog') {
+		# No action needed
+		return;
+	} else {
+		if ($Conf{'logrotate'} < 0){
+			$Conf{'logrotate'} = DEFAULT_LOG_ROTATE;
+		}
+		if ($Conf{'logfile'} eq 'syslog') {
+			return;
+		}
+
+		# Rotate file
+		$LogFileIdx = ($LogFileIdx+1) % $Conf{'logrotate'};
+		my $fsize = (stat $Conf{'logfile'})[7];
+
+		stop_log();
+		move ($Conf{'logfile'}, $Conf{'logfile'} . "." . $LogFileIdx);
+		start_log('quiet');
+
 	}
 }
 
@@ -2226,10 +2261,12 @@ my $main_agent = -1;
 
 # base time to start eatch iteration with the same interval.
 my $iter_base_time = time();
-
+$LogFileIdx = -1;
 # Loop
 while (1) {
-
+	if (-e $Conf{'logfile'} && (stat($Conf{'logfile'}))[7] > $Conf{'logsize'}) {
+		rotate_log();
+	}
 	# Ignore signals from UDP and Tentacle server while processing execution
 	if ($Conf{'udp_server'} == 1 || $Conf{'proxy_mode'}){
 		$SIG{'INT'} = 'DEFAULT';

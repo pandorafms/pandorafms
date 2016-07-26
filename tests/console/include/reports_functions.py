@@ -34,26 +34,5 @@ def delete_report(driver,report_name):
 	alert = driver.switch_to_alert()
 	alert.accept()
 
-def search_service(driver,name,group="All",status="Any",mode="Any",go_to_service=True):
-
-	# If go_to_service = False this function can not enter in service
-
-	driver.find_element_by_xpath('//a[contains(.,"Filter")]').click()
-	driver.find_element_by_id("text-free_search").clear()
-	driver.find_element_by_id("text-free_search").send_keys(name)
-	
-	if group != None:
-		driver.find_element_by_xpath('//option[contains(.,"'+group+'")]').click()
-	
-	if status != "Any":
-		driver.find_element_by_xpath('//option[contains(.,"'+status+'")]').click()
-	
-	if mode != "Any":
-		driver.find_element_by_xpath('//option[contains(.,"'+mode+'")]').click()
-	
-	driver.find_element_by_id("submit-search").click()
-
-	if go_to_service == True:
-		driver.find_element_by_xpath('//a[contains(.,"'+name+'")]').click()
 
 

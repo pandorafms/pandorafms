@@ -9,11 +9,11 @@ import random, time
 import string
 
 
-def create_planned_downtime(driver,name,group,type_planned,description=None,execution="Once",time_from=None,time_to=None,hour_from=None,hour_to=None,periodicity_type=None,from_day=None,to_day=None,list_days=None):
+def create_planned_downtime(driver,name,group,type_planned,description=None,execution="Once",date_from=None,date_to=None,hour_from=None,hour_to=None,periodicity_type=None,from_day=None,to_day=None,list_days=None):
 	
 	#type_planned is: Disabled Agents, Quiet or Disabled only Alerts
 	
-	#If execution = Once, time_from, time_to, hour_from and hour_to is required. Example time_from: 2016/07/05 hour_from 15:46:48
+	#If execution = Once, date_from, date_to, hour_from and hour_to is required. Example time_from: 2016/07/05 hour_from 15:46:48
 	#If exexution = Periodically, hour_from, hour_to is required, periodicity_type is weekly or monthly
 	
 	#If periodicity_type is Monthly insert from_day and to_day in argument function
@@ -35,10 +35,10 @@ def create_planned_downtime(driver,name,group,type_planned,description=None,exec
 		
 	if execution == "Once":
 		driver.find_element_by_id("text-once_date_from").clear()
-		driver.find_element_by_id("text-once_date_from").send_keys(time_from)
+		driver.find_element_by_id("text-once_date_from").send_keys(date_from)
 		
 		driver.find_element_by_id("text-once_date_to").clear()
-		driver.find_element_by_id("text-once_date_to").send_keys(time_to)
+		driver.find_element_by_id("text-once_date_to").send_keys(date_to)
 				
 		driver.find_element_by_id("text-once_time_from").clear()
 		driver.find_element_by_id("text-once_time_from").send_keys(hour_from)
@@ -63,5 +63,5 @@ def create_planned_downtime(driver,name,group,type_planned,description=None,exec
 		driver.find_element_by_id("text-periodically_time_from").send_keys(hour_from)
 				
 		driver.find_element_by_id("text-periodically_time_to").clear()
-		driver.find_element_by_id("text-periodically_time_to").send_keys(hour_from)
+		driver.find_element_by_id("text-periodically_time_to").send_keys(hour_to)
 		

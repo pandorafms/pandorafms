@@ -9,7 +9,7 @@ import random, time
 import string
 
 
-def create_planned_downtime(driver,name,group,type_planned,description=None,execution=None,date_from=None,date_to=None,hour_from=None,hour_to=None,periodicity_type=None,from_day=None,to_day=None,list_days=None):
+def create_planned_downtime(driver,name,group,type_planned,description=None,execution=None,date_from=None,date_to=None,hour_from=None,hour_to=None,periodicity_type=None,from_day=None,to_day=None,list_days=None,list_agent=None):
 
 	
 	#type_planned is: Disabled Agents, Quiet or Disabled only Alerts
@@ -21,6 +21,8 @@ def create_planned_downtime(driver,name,group,type_planned,description=None,exec
 	#If periodicity_type is Weekly insert list_days, Example list_days=("monday","saturday","sunday")
 	
 	#Execution by default is Once, date_from and date_to is date it's today's date
+
+	#list_agent is a list of agent that aplicate this planned downtime
 
 	click_menu_element(driver,"Scheduled downtime")
 	driver.find_element_by_id("submit-create").click()
@@ -68,6 +70,18 @@ def create_planned_downtime(driver,name,group,type_planned,description=None,exec
 		driver.find_element_by_id("text-periodically_time_to").clear()
 		driver.find_element_by_id("text-periodically_time_to").send_keys(hour_to)
 	
+	driver.find_element_by_id("submit-crtbutton").click()	
+	
+	if list_agent != None:
+		for agent in list_agent:
+			Select(driver.find_element_by_id("id_agents")).select_by_visible_text("PAN3_agent")
+			alert = driver.switch_to_alert()
+			alert.accept()
+			driver.find_element_by_id("submit-add_item").click()
+		
+	driver.find_element_by_id("submit-add_item").click()
+	alert = driver.switch_to_alert()
+	alert.accept()
 
 def search_planned_downtime(driver,name,type=None,date_from=None,date_to=None,show_past_downtimes=False):
 
@@ -75,6 +89,8 @@ def search_planned_downtime(driver,name,type=None,date_from=None,date_to=None,sh
 	#show_past_downtimes=True for select this option
 	#Type can be "Any","Once" or "Periodically", Any is the default
 	
+	click_menu_element(driver,"Scheduled downtime")
+
 	driver.find_element_by_id("text-search_text").clear()
 	driver.find_element_by_id("text-search_text").send_keys(name)
 	

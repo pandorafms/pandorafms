@@ -9,7 +9,8 @@ import random, time
 import string
 
 
-def create_planned_downtime(driver,name,group,type_planned,description=None,execution="Once",date_from=None,date_to=None,hour_from=None,hour_to=None,periodicity_type=None,from_day=None,to_day=None,list_days=None):
+def create_planned_downtime(driver,name,group,type_planned,description=None,execution=None,date_from=None,date_to=None,hour_from=None,hour_to=None,periodicity_type=None,from_day=None,to_day=None,list_days=None):
+
 	
 	#type_planned is: Disabled Agents, Quiet or Disabled only Alerts
 	
@@ -19,6 +20,8 @@ def create_planned_downtime(driver,name,group,type_planned,description=None,exec
 	#If periodicity_type is Monthly insert from_day and to_day in argument function
 	#If periodicity_type is Weekly insert list_days, Example list_days=("monday","saturday","sunday")
 	
+	#Execution by default is Once, date_from and date_to is date it's today's date
+
 	click_menu_element(driver,"Scheduled downtime")
 	driver.find_element_by_id("submit-create").click()
 	
@@ -64,4 +67,29 @@ def create_planned_downtime(driver,name,group,type_planned,description=None,exec
 				
 		driver.find_element_by_id("text-periodically_time_to").clear()
 		driver.find_element_by_id("text-periodically_time_to").send_keys(hour_to)
-		
+	
+
+def search_planned_downtime(driver,name,type=None,date_from=None,date_to=None,show_past_downtimes=False):
+
+	#Example format with date_from and date_to: 2016/07/04
+	#show_past_downtimes=True for select this option
+	#Type can be "Any","Once" or "Periodically", Any is the default
+	
+	driver.find_element_by_id("text-search_text").clear()
+	driver.find_element_by_id("text-search_text").send_keys(name)
+	
+	if type != None:
+		driver.find_element_by_xpath('//option[contains(.,"'+type+'")]').click()
+	
+	if date_from != None:
+		driver.find_element_by_id("text-date_from").clear()
+		driver.find_element_by_id("text-date_from").send_keys(date_from)
+	
+	if date_to != None:
+		driver.find_element_by_id("text-date_to").clear()
+		driver.find_element_by_id("text-date_to").send_keys(date_to)
+	
+	if show_past_downtimes == True:
+		driver.find_element_by_id("checkbox-archived").click()		
+	
+	driver.find_element_by_id("submit-search").click()	

@@ -93,3 +93,7 @@ def search_planned_downtime(driver,name,type=None,date_from=None,date_to=None,sh
 		driver.find_element_by_id("checkbox-archived").click()		
 	
 	driver.find_element_by_id("submit-search").click()	
+
+def stop_downtime(driver,name):
+	search_planned_downtime(driver,name)	
+	driver.find_element_by_xpath('//*[@id="table3-0-stop"]/a/img').click()

@@ -74,7 +74,7 @@ def create_planned_downtime(driver,name,group,type_planned,description=None,exec
 	
 	if list_agent != None:
 		for agent in list_agent:
-			Select(driver.find_element_by_id("id_agents")).select_by_visible_text("PAN3_agent")
+			Select(driver.find_element_by_id("id_agents")).select_by_visible_text(agent)
 			alert = driver.switch_to_alert()
 			alert.accept()
 			driver.find_element_by_id("submit-add_item").click()

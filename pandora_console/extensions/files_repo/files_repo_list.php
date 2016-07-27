@@ -38,7 +38,7 @@ if (!empty($files)) {
 	
 	// Pagination
 	if ($manage) {
-		$url = ui_get_full_url("index.php?sec=gextensions&sec2=extensions/files_repo");
+		$url = ui_get_full_url("index.php?sec=godmode/extensions&sec2=extensions/files_repo");
 	}
 	else {
 		$url = ui_get_full_url("index.php?sec=extensions&sec2=extensions/files_repo");
@@ -96,12 +96,12 @@ if (!empty($files)) {
 		
 		if ($manage) {
 			
-			$config_url = ui_get_full_url("index.php?sec=gextensions&sec2=extensions/files_repo&file_id=$file_id");
+			$config_url = ui_get_full_url("index.php?sec=godmode/extensions&sec2=extensions/files_repo&file_id=$file_id");
 			$data[4] .= " <a href=\"$config_url\">";
 			$data[4] .= html_print_image('images/config.png', true, array('title' => __('Edit'))); // Edit image
 			$data[4] .= "</a>";
 			
-			$delete_url = ui_get_full_url("index.php?sec=gextensions&sec2=extensions/files_repo&delete=1&file_id=$file_id");
+			$delete_url = ui_get_full_url("index.php?sec=godmode/extensions&sec2=extensions/files_repo&delete=1&file_id=$file_id");
 			$data[4] .= " <a href=\"$delete_url\" onClick=\"if (!confirm('".__('Are you sure?')."')) return false;\">";
 			$data[4] .= html_print_image('images/cross.png', true, array('title' => __('Delete'))); // Delete image
 			$data[4] .= "</a>";

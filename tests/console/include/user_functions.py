@@ -187,4 +187,9 @@ def create_user_profile(driver,profile_name,bit_list=[]):
 			driver.find_element_by_xpath('//*[@id="checkbox-pandora_management"]').click()		
 			
 	driver.find_element_by_id("submit-crt").click()
-			
+
+def delete_user(driver,user_name):
+	search_user(driver,user_name)	
+	driver.find_element_by_xpath('//*[@id="table3-0-6"]/a[3]/img').click()
+	alert = driver.switch_to_alert() 
+	alert.accept()			

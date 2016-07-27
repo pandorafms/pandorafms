@@ -39,3 +39,15 @@ def add_module_policy(driver,policy_name,module_type,*args,**kwargs):
 	search_policy(driver,policy_name,go_to_policy=True)
 	driver.find_element_by_xpath('//*[@id="menu_tab"]/ul/li[2]/a/img').click()
 	create_module(module_type,*args,**kwargs)
+
+
+def add_collection_to_policy(driver,policy_name,collection_name):
+
+	search_policy(driver,policy_name,go_to_policy=True)	
+	driver.find_element_by_xpath('//*[@id="menu_tab"]/ul/li[6]/a/img').click()	
+	
+	driver.find_element_by_xpath('//*[@id="main"]/table[2]/tbody/tr/td[2]/form/input[2]').clear()	
+	driver.find_element_by_xpath('//*[@id="main"]/table[2]/tbody/tr/td[2]/form/input[2]').send_keys(collection_name)
+	driver.find_element_by_xpath('//*[@id="main"]/table[2]/tbody/tr/td[3]/input').click()	
+	
+	driver.find_element_by_xpath('//*[@id="table3-0-4"]/a/img').click()

@@ -83,7 +83,7 @@ def create_planned_downtime(driver,name,group,type_planned,description=None,exec
 	alert = driver.switch_to_alert()
 	alert.accept()
 
-def search_planned_downtime(driver,name,type=None,date_from=None,date_to=None,show_past_downtimes=False):
+def search_planned_downtime(driver,name,type_planned=None,date_from=None,date_to=None,show_past_downtimes=False):
 
 	#Example format with date_from and date_to: 2016/07/04
 	#show_past_downtimes=True for select this option
@@ -94,8 +94,8 @@ def search_planned_downtime(driver,name,type=None,date_from=None,date_to=None,sh
 	driver.find_element_by_id("text-search_text").clear()
 	driver.find_element_by_id("text-search_text").send_keys(name)
 	
-	if type != None:
-		driver.find_element_by_xpath('//option[contains(.,"'+type+'")]').click()
+	if type_planned != None:
+		driver.find_element_by_xpath('//option[contains(.,"'+type_planned+'")]').click()
 	
 	if date_from != None:
 		driver.find_element_by_id("text-date_from").clear()
@@ -113,3 +113,15 @@ def search_planned_downtime(driver,name,type=None,date_from=None,date_to=None,sh
 def stop_downtime(driver,name):
 	search_planned_downtime(driver,name)	
 	driver.find_element_by_xpath('//*[@id="table3-0-stop"]/a/img').click()
+
+
+def delete_planned_downtime(driver,name):
+	search_planned_downtime(driver,name)
+
+	if (u"Running" in driver.page_source):
+			stop_downtime(driver,name)
+
+	search_planned_downtime(driver,name,show_past_downtimes=True)
+	driver.find_element_by_xpath('//*[@id="delete_downtime"]/img').click()
+	alert = driver.switch_to_alert()
+	alert.accept()

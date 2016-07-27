@@ -72,7 +72,7 @@ sub error_msg ($) {
 # Print a help message.
 ###############################################################################
 sub print_help () {
-	print "Usage: $0 <log_file> <module_name> <pattern>\n";
+	print "Usage: $0 <log_file> <module_name> <pattern> <up_lines_extra> <bot_lines_extra>\n";
 }
 
 ###############################################################################
@@ -168,7 +168,8 @@ sub create_idx () {
 # SUB parse_log
 # Parse log file starting from position $Idx_pos.
 ###############################################################################
-sub parse_log () {
+sub parse_log (;$$) {
+	my ($up_lines,$bot_lines) = @_;
 	my $line;
 
 	log_msg("Parsing log file $Log_file");
@@ -182,9 +183,54 @@ sub parse_log () {
 
 	# Parse log file
 	my @data;
-	while ($line = <LOGFILE>) {
-		if ($line =~ m/$Reg_exp/i) {
-			push (@data, $line);
+
+	if ( (defined($up_lines)) || (defined($bot_lines)) ){
+		# Detailed workmode
+		my @lines;
+		my $nl = 0;
+		my @nl_found;
+		while ($line = <LOGFILE>) {
+			push @lines, $line;
+			if ($line =~ m/$Reg_exp/i) {
+				push @nl_found, $nl;
+			}
+			$nl++;
+		}
+		# Return all coincidences with the desired margin
+		foreach my $curr_line (@nl_found){
+			my $flag = 0; # avoid repetition of current line
+			if (defined($up_lines)){
+				$flag = 1;
+				# Push upper lines
+				for (my $i = ($curr_line-$up_lines); $i<=$curr_line; $i++){
+					if (defined ($lines[$i])) {
+						print "metiendo (up): [" . $lines[$i] . "] $i\n";
+						push (@data, $lines[$i]);
+					}
+					else{
+						print "up: linea no definida $i\n";
+					}
+				}
+			}
+			if (defined($bot_lines)){
+				# Push bottom lines
+				for (my $i = ($curr_line+$flag); $i<=($curr_line+$bot_lines); $i++){
+					if (defined ($lines[$i])) {
+						print "metiendo(bot): [" . $lines[$i] . "] $i\n";
+						push (@data, $lines[$i]);
+					}
+					else{
+						print "up: linea no definida $i\n";
+					}
+				}
+			}
+		}
+	}
+	else { # Standar workmode
+		while ($line = <LOGFILE>) {
+			if ($line =~ m/$Reg_exp/i) {
+				push @data, $line;
+			}
 		}
 	}
 
@@ -245,7 +291,7 @@ sub print_log (@) {
 ###############################################################################
 
 # Check command line parameters
-if ($#ARGV != 2) {
+if ($#ARGV < 2) {
 	print_help();
 	exit 1;
 }
@@ -253,7 +299,8 @@ if ($#ARGV != 2) {
 $Log_file = $ARGV[0];
 $Module_name = $ARGV[1];
 $Reg_exp = $ARGV[2];
-
+my $up_lines = $ARGV[3];
+my $bot_lines = $ARGV[4];
 # Create index file storage directory
 if ( ! -d $Idx_dir) {
 	mkdir($Idx_dir) || error_msg("Error creating directory $Idx_dir: "
@@ -276,7 +323,7 @@ if (! -e $Idx_file) {
 load_idx();
 
 # Parse log file
-my @data = parse_log();
+my @data = parse_log($up_lines,$bot_lines);
 
 # Print output to stdout
 print_log (@data);

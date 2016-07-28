@@ -3482,8 +3482,8 @@ sub cli_create_synthetic() {
 				[$dbh,int($id_module), @filterdata]);
 			if ($result) {
 				db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado,
-				 last_status, last_known_status, last_try, datos) 
-				 VALUES (?, ?, ?, ?, ?, \'1970-01-01 00:00:00\', \'\')', $id_module, $id_agent, 4, 4, 4);
+				 known_status, last_status, last_known_status, last_try, datos) 
+				 VALUES (?, ?, ?, ?, ?, ?, \'1970-01-01 00:00:00\', \'\')', $id_module, $id_agent, 4, 4, 4, 4);
 				# Update the module status count. When the module is created disabled dont do it
 				pandora_mark_agent_for_module_update ($dbh, $id_agent);
 				print("[OK] The modules are creating ID: $id_module \n\n");

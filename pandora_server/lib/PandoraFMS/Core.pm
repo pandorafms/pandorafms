@@ -1338,6 +1338,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	}
 	my $last_status = $agent_status->{'last_status'};
 	my $status = $agent_status->{'estado'};
+	my $known_status = $agent_status->{'known_status'};
 	my $status_changes = $agent_status->{'status_changes'};
 	my $last_data_value = $agent_status->{'datos'};
 	my $last_known_status = $agent_status->{'last_known_status'};
@@ -1371,8 +1372,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 		$min_ff_event = $module->{'min_ff_event_warning'} if ($new_status == 2);
 	}
 	
-	if ($last_status == $new_status || $last_status == 3) {
-		
+	if ($last_known_status == $new_status) {
 		# Avoid overflows
 		$status_changes = $min_ff_event if ($status_changes > $min_ff_event);
 		
@@ -1393,10 +1393,9 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	}
 	
 	# Change status
-	if ($status_changes >= $min_ff_event && $status != $new_status) {
-		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $last_known_status, $dbh);
+	if ($status_changes >= $min_ff_event && $known_status != $new_status) {
+		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $known_status, $dbh);
 		$status = $new_status;
-		$last_status = $new_status;
 
 		# Update module status count.
 		$mark_for_update = 1;
@@ -1404,24 +1403,19 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	# Set not-init modules to normal status even if min_ff_event is not matched the first time they receive data.
 	# if critical or warning status, just pass through here and wait the time min_ff_event will be matched.
 	elsif ($status == 4) {
-		generate_status_event ($pa_config, $processed_data, $agent, $module, 0, $status, $last_known_status, $dbh);
+		generate_status_event ($pa_config, $processed_data, $agent, $module, 0, $status, $known_status, $dbh);
 		$status = 0;
-		$last_status = $new_status;
 
 		# Update module status count.
 		$mark_for_update = 1;
 	}
 	# If unknown modules receive data, restore status even if min_ff_event is not matched.
 	elsif ($status == 3) {
-		$last_status = $new_status; # Set last_status before forcing the module's new status to its last known status.
-		$new_status = $last_known_status; # Set the module to its last known status.
-		generate_status_event ($pa_config, $processed_data, $agent, $module, $new_status, $status, $last_known_status, $dbh);
-		$status = $last_known_status;
+		generate_status_event ($pa_config, $processed_data, $agent, $module, $known_status, $status, $known_status, $dbh);
+		$status = $known_status;
 
 		# Update module status count.
 		$mark_for_update = 1;
-	} else {
-		$last_status = $new_status;
 	}
 		
 	# tagente_estado.last_try defaults to NULL, should default to '1970-01-01 00:00:00'
@@ -1443,12 +1437,12 @@ sub pandora_process_module ($$$$$$$$$;$) {
 	my $save = ($module->{'history_data'} == 1 && ($agent_status->{'datos'} ne $processed_data || $last_try < ($utimestamp - 86400))) ? 1 : 0;
 	
 	db_do ($dbh, 'UPDATE tagente_estado
-		SET datos = ?, estado = ?, last_status = ?, last_known_status = ?,
+		SET datos = ?, estado = ?, known_status = ?, last_status = ?, last_known_status = ?,
 			status_changes = ?, utimestamp = ?, timestamp = ?,
 			id_agente = ?, current_interval = ?, running_by = ?,
 			last_execution_try = ?, last_try = ?, last_error = ?,
 			ff_start_utimestamp = ?
-		WHERE id_agente_modulo = ?', $processed_data, $status, $last_status, $status, $status_changes,
+		WHERE id_agente_modulo = ?', $processed_data, $status, $status, $new_status, $new_status, $status_changes,
 		$current_utimestamp, $timestamp, $module->{'id_agente'}, $current_interval, $server_id,
 		$utimestamp, ($save == 1) ? $timestamp : $agent_status->{'last_try'}, $last_error, $ff_start_utimestamp, $module->{'id_agente_modulo'});
 	
@@ -2569,9 +2563,9 @@ sub pandora_create_module ($$$$$$$$$$) {
 		'INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, nombre, max, min, post_process, descripcion, module_interval, id_modulo, critical_instructions, warning_instructions, unknown_instructions, disabled_types_event, module_macros)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, \'\', \'\', \'\', \'\', \'\')',
 		$agent_id, $module_type_id, safe_input($module_name), $max, $min, $post_process, $description, $interval);
-	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado, last_status, last_known_status, last_try, datos)
-		VALUES (?, ?, ?, ?, ?, \'1970-01-01 00:00:00\', \'\')',
-		$module_id, $agent_id, $status, $status, $status);
+	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado, known_status, last_status, last_known_status, last_try, datos)
+		VALUES (?, ?, ?, ?, ?, ?, \'1970-01-01 00:00:00\', \'\')',
+		$module_id, $agent_id, $status, $status, $status, $status);
 	
 	# Update the module status count. When the module is created disabled dont do it
 	pandora_mark_agent_for_module_update ($dbh, $agent_id);
@@ -2703,7 +2697,7 @@ sub pandora_create_module_from_hash ($$$) {
 		$status = 0;
 	}
 	
-	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado, last_status, last_known_status, last_try, datos) VALUES (?, ?, ?, ?, ?, \'1970-01-01 00:00:00\', \'\')', $module_id, $parameters->{'id_agente'}, $status, $status, $status);
+	db_do ($dbh, 'INSERT INTO tagente_estado (id_agente_modulo, id_agente, estado, known_status, last_status, last_known_status, last_try, datos) VALUES (?, ?, ?, ?, ?, ?, \'1970-01-01 00:00:00\', \'\')', $module_id, $parameters->{'id_agente'}, $status, $status, $status, $status);
 	
 	# Update the module status count. When the module is created disabled dont do it
 	pandora_mark_agent_for_module_update ($dbh, $parameters->{'id_agente'});
@@ -3810,7 +3804,7 @@ sub pandora_validate_event ($$$) {
 # Generates an event according to the change of status of a module.
 ##########################################################################
 sub generate_status_event ($$$$$$$$) {
-	my ($pa_config, $data, $agent, $module, $status, $last_status, $last_known_status, $dbh) = @_;
+	my ($pa_config, $data, $agent, $module, $status, $last_status, $known_status, $dbh) = @_;
 	my ($event_type, $severity);
 	my $description = '';
 
@@ -3831,7 +3825,7 @@ sub generate_status_event ($$$$$$$$) {
 	}
 
 	# disable event just recovering from 'Unknown' without status change
-	if($last_status == 3 && $status == $last_known_status && $module->{'disabled_types_event'} ) {
+	if($last_status == 3 && $status == $known_status && $module->{'disabled_types_event'} ) {
 		my $disabled_types_event;
 		eval {
 			local $SIG{__DIE__};
@@ -3850,7 +3844,7 @@ sub generate_status_event ($$$$$$$$) {
 	if ($status == 0) {
 		
 		# Do not generate an event when a module goes from notinit no normal
-		if ($last_known_status == 4) {
+		if ($known_status == 4) {
 			return;
 		}
 		
@@ -3864,7 +3858,7 @@ sub generate_status_event ($$$$$$$$) {
 	} elsif ($status == 2) {
 		
 		# From critical
-		if ($last_known_status == 1) {
+		if ($known_status == 1) {
 			($event_type, $severity) = ('going_down_warning', 3);
 			$description = $pa_config->{"text_going_down_warning"};
 		}

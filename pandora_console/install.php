@@ -58,6 +58,14 @@
 			window.document.step2_form.db_action.options[window.document.step2_form.db_action.length-1].selected=1;
 			ChangeDBDrop(window.document.step2_form.db_action);
 		}
+		function CheckDBhost(value){
+			if (( value != "localhost") && ( value != "127.0.0.1")) {
+				document.getElementById('tr_dbgrant').style["display"] = "block";
+			}
+			else {
+				document.getElementById('tr_dbgrant').style["display"] = "none";
+			}
+		}
 	</script>
 	<body>
 		<div style='height: 10px'>
@@ -697,23 +705,24 @@ function install_step3() {
 				<input class='login' type='password' name='pass' value='' size=20>
 				
 				<tr><td>DB Hostname<br>
-				<input class='login' type='text' name='host' value='localhost' size=20>
+				<input class='login' type='text' name='host' value='localhost' onkeyup='CheckDBhost(this.value);'size=20>
 				
 				<td>DB Name (pandora by default)<br>
 				<input class='login' type='text' name='dbname' value='pandora' size=20>
 				
 				<tr>";
-	if ($_SERVER['SERVER_ADDR'] == 'localhost' || $_SERVER['SERVER_ADDR'] == '127.0.0.1') {
+
+	// the field dbgrant is only shown when the DB host is different from 127.0.0.1 or localhost
+    echo    "<tr id='tr_dbgrant' style='display:none;'>
+                            <td colspan=\"2\">DB Host Access <img style='cursor:help;' src='http://aero/pandora_console/images/tip.png' title='Ignored if DB Hostname is localhost or 127.0.0.1'/><br>
+                            <input class='login' type='text' name='dbgrant' value='" . $_SERVER['SERVER_ADDR'] . "' size=20>
+                        </td>
+                    </tr>";
+
 		
-		echo	"<td>DB Host Access<br>
-					<span style='font-size: 9px'>Ignored if DB Hostname is localhost</span>
-				<input class='login' type='text' name='dbgrant' value='" . $_SERVER['SERVER_ADDR'] . "' size=20>";	
-	} else {
-		
-		echo	"<td valign=top>
-				Drop Database if exists<br>
-				<input class='login' type='checkbox' name='drop' value=1>";	
-	}
+	echo	"   <td valign=top>Drop Database if exists<br>
+			        <input class='login' type='checkbox' name='drop' value=1>
+			    </td>";
 				
 	echo		"<td>Full path to HTTP publication directory<br>
 					<span style='font-size: 9px'>For example /var/www/pandora_console/</span>
@@ -845,9 +854,9 @@ function install_step4() {
 							}
 							
 							$random_password = random_name (8);
-							$host = 'localhost';
-							if ($dbhost != 'localhost')
-								$host = $dbgrant;
+							$host = $dbhost; // set default granted origin to the origin of the queries
+							if (($dbhost != 'localhost') && ($dbhost != '127.0.0.1'))
+								$host = $dbgrant; // if the granted origin is different from local machine, set the valid origin
 							$step5 = mysql_query ("GRANT ALL PRIVILEGES ON `$dbname`.* to pandora@$host 
 								IDENTIFIED BY '".$random_password."'");
 							mysql_query ("FLUSH PRIVILEGES");

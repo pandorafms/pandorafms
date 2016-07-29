@@ -204,23 +204,16 @@ sub parse_log (;$$) {
 				# Push upper lines
 				for (my $i = ($curr_line-$up_lines); $i<=$curr_line; $i++){
 					if (defined ($lines[$i])) {
-						print "metiendo (up): [" . $lines[$i] . "] $i\n";
 						push (@data, $lines[$i]);
 					}
-					else{
-						print "up: linea no definida $i\n";
-					}
+
 				}
 			}
 			if (defined($bot_lines)){
 				# Push bottom lines
 				for (my $i = ($curr_line+$flag); $i<=($curr_line+$bot_lines); $i++){
 					if (defined ($lines[$i])) {
-						print "metiendo(bot): [" . $lines[$i] . "] $i\n";
 						push (@data, $lines[$i]);
-					}
-					else{
-						print "up: linea no definida $i\n";
 					}
 				}
 			}

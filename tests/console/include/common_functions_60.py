@@ -79,9 +79,11 @@ def detect_and_pass_newsletter_wizard(driver):
 
 
 def detect_and_pass_all_wizards(driver):
+	driver.implicitly_wait(2) #Optimisation workaround for skipping wizards quickly
 	detect_and_pass_pandorin(driver)
 	detect_and_pass_initial_wizard(driver)
 	detect_and_pass_newsletter_wizard(driver)
+	driver.implicitly_wait(30)
 
 def activate_home_screen(driver,mode):
  

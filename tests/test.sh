@@ -31,11 +31,13 @@ cd /tmp/pandorafms/tests && chmod +x install_console.py && ./install_console.py
 check "Creating the Pandora FMS Database" $?
 
 # Build and install the Pandora FMS Server.
-cd /tmp/pandorafms/pandora_server && perl Makefile.PL && make && make test
+cd /tmp/pandorafms/pandora_server && perl Makefile.PL && make # Do not run make test now. Some tests need files created by pandora_server_installer.
 check "Building the Pandora FMS Server" $?
 cd /tmp/pandorafms/pandora_server && chmod +x pandora_server_installer && ./pandora_server_installer --install
 check "Installing the Pandora FMS Server" $?
 sed -i -e 's/^dbuser.*/dbuser root/' /etc/pandora/pandora_server.conf
+cd /tmp/pandorafms/pandora_server && make test
+check "Running tests for the Pandora FMS Server" $?
 
 # Install the Pandora FMS Agent.
 cd /tmp/pandorafms/pandora_agents/unix && chmod +x pandora_agent_installer && ./pandora_agent_installer --install

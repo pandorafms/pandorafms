@@ -141,7 +141,7 @@ my %DefaultConf = (
 	'transfer_timeout' => 30,
 	'server_user' => 'pandora',
 	'server_pwd' => '',
-	'server_ssl' => 'no',
+	'server_ssl' => '0',
 	'server_opts' => '',
 	'delayed_startup' => 0,
 	'pandora_nice' => 10,
@@ -155,7 +155,7 @@ my %DefaultConf = (
 	'secondary_transfer_timeout' => 30,
 	'secondary_server_user' => 'pandora',
 	'secondary_server_pwd' => '',
-	'secondary_server_ssl' => 'no',
+	'secondary_server_ssl' => '0',
 	'secondary_server_opts' => '',
 	'autotime' => 0,
 	'temporal_min_size' => 1,
@@ -831,16 +831,20 @@ sub read_config (;$) {
 		log_message ('log', 'Thread is disabled.');
 	}
 
+	# Accept 'yes' for backward compatibility
+	$Conf{'server_ssl'} = '1' if ($Conf{'server_ssl'} eq 'yes');
+	$Conf{'secondary_server_ssl'} = '1' if ($Conf{'secondary_server_ssl'} eq 'yes');
+
 	# Set tentacle client options
 	if ($Conf{'transfer_mode'} eq 'tentacle') {
 		$Conf{'server_opts'} = '-x \'' . $Conf{'server_pwd'} . '\' ' . $Conf{'server_opts'} if ($Conf{'server_pwd'} ne '');
-		$Conf{'server_opts'} = '-c ' . $Conf{'server_opts'} if ($Conf{'server_ssl'} eq 'yes');
+		$Conf{'server_opts'} = '-c ' . $Conf{'server_opts'} if ($Conf{'server_ssl'} eq '1');
 	}
 
 	# Set tentacle client options for secondary server	
 	if ($Conf{'secondary_transfer_mode'} eq 'tentacle') {
 		$Conf{'secondary_server_opts'} = '-x \'' . $Conf{'secondary_server_pwd'} . '\' ' . $Conf{'secondary_server_opts'} if ($Conf{'secondary_server_pwd'} ne '');
-		$Conf{'secondary_server_opts'} = '-c ' . $Conf{'secondary_server_opts'} if ($Conf{'secondary_server_ssl'} eq 'yes');		
+		$Conf{'secondary_server_opts'} = '-c ' . $Conf{'secondary_server_opts'} if ($Conf{'secondary_server_ssl'} eq '1');
 	}
 }
 
@@ -1099,7 +1103,7 @@ sub launch_tentacle_proxy () {
 			#Execute tentacle server as a daemon
 			my $new_process = "tentacle_server -b ".$Conf{'server_ip'}." -g ".$Conf{'server_port'}." -c ".$Conf{'proxy_max_connection'}." -t ".$Conf{'proxy_timeout'};
 
-			$new_process .= ' -C' if ($Conf{'server_ssl'} eq 'yes');
+			$new_process .= ' -C' if ($Conf{'server_ssl'} eq '1');
 
 			log_message ('setup', 'Proxy mode enabled');
 			exec ($new_process);

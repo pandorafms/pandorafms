@@ -19,8 +19,6 @@ class ArticaTestResult(TestResult):
 		self.success.append((test,u'Success'))
 		TestResult.addSuccess(self, test)
 
-
-
 class PandoraWebDriverTestCase(TestCase):
 	test_name = u'' #Name of the test.
 	test_description = u'' #Description of the test
@@ -39,18 +37,27 @@ class PandoraWebDriverTestCase(TestCase):
 		'version': "46",
 	}
 
+	@classmethod
+	def setUpClass(cls):
+		cls.is_development = os.getenv('DEVELOPMENT', False)
+		if cls.is_development != False:
+			cls.driver = webdriver.Firefox()
+			cls.base_url = os.getenv('DEVELOPMENT_URL')
+		else:
+			#Start VM in Sauce Labs
+			cls.driver = webdriver.Remote(command_executor='http://'+cls.sauce_username+':'+cls.sauce_access_key+'@ondemand.saucelabs.com:80/wd/hub',desired_capabilities=cls.desired_cap)
+			cls.sauce_labs_job_id = cls.driver.session_id
+			cls.base_url = "http://127.0.0.1/"
+
+
+		
+	@classmethod
+	def tearDownClass(cls):
+		cls.driver.quit()
+
 	def setUp(self):
 		self.time_started = datetime.now()
-		#Start VM in Sauce Labs
-		is_development = os.getenv('DEVELOPMENT', False)
-		if is_development != False:
-			self.driver = webdriver.Firefox()
-		else:
-			self.driver = webdriver.Remote(command_executor='http://'+self.sauce_username+':'+self.sauce_access_key+'@ondemand.saucelabs.com:80/wd/hub',desired_capabilities=self.desired_cap)
-			self.sauce_labs_job_id = self.driver.session_id # We store this information to update the job info when the tests are done
-
 		self.driver.implicitly_wait(30)
-		self.base_url = "http://127.0.0.1/"
 		self.verificationErrors = []
 		self.accept_next_alert = True
 		super(PandoraWebDriverTestCase, self).setUp()
@@ -80,8 +87,39 @@ class PandoraWebDriverTestCase(TestCase):
 		tack = datetime.now()
 		diff = tack - self.time_started
 		self.time_elapsed = diff.seconds
-		self.driver.quit()
 
 		self.assertEqual([], self.verificationErrors)
 		super(PandoraWebDriverTestCase, self).tearDown()
+
+
+	def login(self,user="admin",passwd="pandora",pandora_url=None):
+		print u"Logging in"
+
+		driver = self.driver
+
+		if pandora_url is None:
+			pandora_url = self.base_url
+
+		driver.get(pandora_url+"/pandora_console/index.php")
+		driver.find_element_by_id("nick").clear()
+		driver.find_element_by_id("nick").send_keys(user)
+		driver.find_element_by_id("pass").clear()
+		driver.find_element_by_id("pass").send_keys(passwd)
+		driver.find_element_by_id("submit-login_button").click()
+
+	def logout(self,pandora_url=None):
+		print u"Logging out"
+
+		driver = self.driver
+
+		if pandora_url is None:
+			pandora_url = self.base_url
+
+		if pandora_url[-1] != '/':
+			driver.find_element_by_xpath('//div[@id="container"]//a[@href="'+pandora_url+'/pandora_console/index.php?bye=bye"]').click()
+		else:
+			driver.find_element_by_xpath('//div[@id="container"]//a[@href="'+pandora_url+'pandora_console/index.php?bye=bye"]').click()
+
+		driver.get(pandora_url+"/pandora_console/index.php")
+		refresh_N_times_until_find_element(driver,2,"nick")
 

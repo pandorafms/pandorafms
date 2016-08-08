@@ -23,8 +23,7 @@ class Policies(PandoraWebDriverTestCase):
 	def test_1_create_policy(self):
 
 		driver = self.driver
-		login(driver)
-		detect_and_pass_all_wizards(driver)
+		self.login()
 
 		create_policy(driver,self.policy_name,"Applications",description="Policy for test")
 
@@ -36,8 +35,6 @@ class Policies(PandoraWebDriverTestCase):
 	def test_2_add_network_server_module_to_policy(self):
 
 		driver = self.driver
-		login(driver)
-		detect_and_pass_all_wizards(driver)
 
 		add_module_policy(driver,self.policy_name,"network_server",driver,module_name=self.network_server_module_name,component_group="Network Management",network_component="Host Alive")
 

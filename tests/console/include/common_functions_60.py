@@ -15,8 +15,19 @@ def gen_random_string(size,preffix=None):
 		return random_string
 
 
-def login(driver,user="admin",passwd="pandora",pandora_url="http://127.0.0.1/"):
+def login(driver,user="admin",passwd="pandora",pandora_url=None):
 	print u"Logging in"
+	try:
+		print driver.base_url
+	except Exception as e:
+		print "se casco"
+		print e
+	print u"yep"
+	if pandora_url is None:
+		pandora_url = driver.base_url
+
+	print "Pandora url is "+pandora_url
+
 	driver.get(pandora_url+"/pandora_console/index.php")
 	driver.find_element_by_id("nick").clear()
 	driver.find_element_by_id("nick").send_keys(user)

@@ -23,7 +23,7 @@ class PAN5(PandoraWebDriverTestCase):
 
 	def test_pan5(self):
 		driver = self.driver
-		login(driver)
+		self.login()
 		detect_and_pass_all_wizards(driver)
 
 		create_agent(driver,u"次のライセンスに基づいていま")

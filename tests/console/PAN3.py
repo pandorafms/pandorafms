@@ -19,8 +19,7 @@ class PAN3(PandoraWebDriverTestCase):
 
 	def test_pan3(self):
 		driver = self.driver
-		login(driver)
-		detect_and_pass_all_wizards(driver)
+		self.login()
 		create_agent(driver,"PAN3_agent",ip="127.0.0.1")
 		
 		create_module("network_server",driver,agent_name="PAN3_agent",module_name="PAN3_module",component_group="Network Management",network_component="Host Alive",ip="127.0.0.1")

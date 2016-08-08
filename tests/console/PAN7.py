@@ -19,13 +19,13 @@ class PAN7(PandoraWebDriverTestCase):
 	def test_pan7(self):
 	
 		driver = self.driver
-		login(driver)
+		self.login()
 		detect_and_pass_all_wizards(driver)
 		
 		activate_home_screen(driver,"Event list")
 		
-		logout(driver,self.base_url)
-		login(driver)
+		self.logout()
+		self.login()
 	
 
 		try:

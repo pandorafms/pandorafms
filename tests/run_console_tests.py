@@ -57,7 +57,6 @@ class TracingStreamResult(testtools.StreamResult):
 
 		elif test_status=='uxsuccess' or test_status=='success':
 			self.success.append(test_id)
-			pdb.set_trace()
 
 		elif test_status=='exists':
 			self.errors.append(test_id)

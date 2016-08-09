@@ -42,12 +42,6 @@ def add_test_case_to_suite(suite, tc_name):
     for i in range(0, n):
         suite.addTest(tc_name)
 
-def get_suite():
-    suite = TestSuite()
-    add_test_case_to_suite(suite, My_login_test('tc_login'))
-    add_test_case_to_suite(suite, My_login_test('tc_logout'))
-    return suite
-
 class TracingStreamResult(testtools.StreamResult):
 	failures = []
 	success = []
@@ -63,6 +57,7 @@ class TracingStreamResult(testtools.StreamResult):
 
 		elif test_status=='uxsuccess' or test_status=='success':
 			self.success.append(test_id)
+			pdb.set_trace()
 
 		elif test_status=='exists':
 			self.errors.append(test_id)
@@ -86,35 +81,17 @@ else:
 suite = tests
 concurrent_suite = testtools.ConcurrentStreamTestSuite(lambda: (split_suite_into_chunks(num_threads, suite)))
 result = TracingStreamResult()
-result.startTestRun()
-concurrent_suite.run(result)
+try:
+	result.startTestRun()
+finally:
+	concurrent_suite.run(result)
 
-#Update Saouce Labs jobs
-sauce_client = SauceClient(environ["SAUCE_USERNAME"], environ["SAUCE_ACCESS_KEY"])
-c = result
-for test_id in c.failures+c.skipped+c.errors:
-	try:
-		sauce_client.jobs.update_job(test.sauce_labs_job_id, passed=False,tags=[environ["TRAVIS_BRANCH"],test_id],build_num=environ["TRAVIS_JOB_NUMBER"],name=str(environ["TRAVIS_COMMIT"])+"_"+str(test_id.split('.')[1]))
-	except:
-		print "Could not annotate Sauce Labs job #%s" % str(test_id)
-		next
+print "Tests failed: %s" % result.failures
+print "Tests succeeded: %s" % result.success
+print "Tests skipped: %s" % result.skipped
+print "Tests with errors: %s" % result.errors
 
-for test_id in c.success:
-	try:
-		sauce_client.jobs.update_job(test.sauce_labs_job_id, passed=True,tags=[environ["TRAVIS_BRANCH"],test_id],build_num=environ["TRAVIS_JOB_NUMBER"],name=str(environ["TRAVIS_COMMIT"])+"_"+str(test_id.split('.')[1]))
-	except:
-                print "Could not annotate Sauce Labs job #%s" % str(test_id)
-                next
-	
-
-
-print "Tests failed: %s" % c.failures
-print "Tests succeeded: %s" % c.success
-print "Tests skipped: %s" % c.skipped
-print "Tests with errors: %s" % c.errors
-
-if (len(c.failures)+len(c.errors)+len(c.skipped)) != 0:
+if (len(result.failures)+len(result.errors)+len(result.skipped)) != 0:
 	sys.exit(1)
-
 else:
 	sys.exit(0)

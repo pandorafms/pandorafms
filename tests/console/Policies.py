@@ -24,6 +24,7 @@ class Policies(PandoraWebDriverTestCase):
 
 		driver = self.driver
 		self.login()
+		detect_and_pass_all_wizards(driver)
 
 		create_policy(driver,self.policy_name,"Applications",description="Policy for test")
 

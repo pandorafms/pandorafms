@@ -26,6 +26,7 @@ RUN yum install -y \
 	xorg-x11-server-Xvfb; yum clean all;
 RUN pip install pyvirtualdisplay
 RUN pip install selenium
+RUN pip install testtools
 
 # Pandora FMS Console dependencies
 RUN yum install -y \ 

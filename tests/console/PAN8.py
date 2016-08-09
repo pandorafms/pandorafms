@@ -21,7 +21,7 @@ class PAN8(PandoraWebDriverTestCase):
 	def test_pan8(self):
 
 		driver = self.driver
-		login(driver)
+		self.login()
 		detect_and_pass_all_wizards(driver)
 		
 		create_agent(driver,"PAN_8",group="Applications",ip="192.168.50.50")
@@ -39,9 +39,9 @@ class PAN8(PandoraWebDriverTestCase):
 
 		create_user(driver,"PAN8_user","pandora",profile_list=l) 
 		
-		logout(driver,self.base_url)
+		self.logout()
 		
-		login(driver,user="PAN8_user")
+		self.login(user="PAN8_user")
 		
 		detect_and_pass_all_wizards(driver)
 		

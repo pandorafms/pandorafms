@@ -22,8 +22,7 @@ class PAN4(PandoraWebDriverTestCase):
 
 	def test_pan4(self):
 		driver = self.driver
-		login(driver,user="admin",passwd="pandora")
-		detect_and_pass_all_wizards(driver)
+		self.login()
 		
 		#Creates a user with Chief Operator - Applications profile
 		profile_list = []
@@ -35,11 +34,10 @@ class PAN4(PandoraWebDriverTestCase):
 		create_report(driver,"PAN_4_Servers","Servers")
 	
 		#Logout
-		logout(driver,self.base_url)
+		self.logout()
 	
 		#Login
-		login(driver,user='PAN_4',passwd='PAN_4')
-		detect_and_pass_all_wizards(driver)
+		self.login(user='PAN_4',passwd='PAN_4')
 	
 		#Check that the report is visible
 		click_menu_element(driver,"Custom reporting")
@@ -69,8 +67,8 @@ class PAN4(PandoraWebDriverTestCase):
 
 	
 		#Delete reports
-		logout(driver,self.base_url)
-		login(driver,user="admin",passwd="pandora")
+		self.logout()
+		self.login(user="admin",passwd="pandora")
 	
 		delete_report(driver,"PAN_4_Servers")
 		delete_report(driver,"PAN_4_Applications")

@@ -17,8 +17,7 @@ class PAN2(PandoraWebDriverTestCase):
 
 	def test_pan2(self):
 		driver = self.driver
-		login(driver)
-		detect_and_pass_all_wizards(driver)
+		self.login()
 		
 		create_agent(driver,"prueba masivas 1")
 		

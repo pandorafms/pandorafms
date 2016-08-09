@@ -33,3 +33,6 @@ def delete_report(driver,report_name):
 	driver.find_element_by_id('image-delete2').click()
 	alert = driver.switch_to_alert()
 	alert.accept()
+
+
+

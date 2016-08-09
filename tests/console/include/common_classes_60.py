@@ -54,6 +54,18 @@ class PandoraWebDriverTestCase(TestCase):
 	@classmethod
 	def tearDownClass(cls):
 		cls.driver.quit()
+		if cls.is_development == False:
+			try:
+				sauce_client = SauceClient(cls.sauce_username, cls.sauce_access_key)
+				if len(cls.verificationErrors)>0:
+					sauce_client.jobs.update_job(cls.sauce_labs_job_id, passed=False,tags=[environ["TRAVIS_BRANCH"],cls.id()],build_num=environ["TRAVIS_JOB_NUMBER"],name=str(environ["TRAVIS_COMMIT"])+"_"+str(cls.id().split('.')[1]))
+				else:
+					sauce_client.jobs.update_job(cls.sauce_labs_job_id, passed=True,tags=[environ["TRAVIS_BRANCH"],cls.id()],build_num=environ["TRAVIS_JOB_NUMBER"],name=str(environ["TRAVIS_COMMIT"])+"_"+str(cls.id().split('.')[1]))
+			except:
+				print "Could not annotate Sauce Labs job #%s" % str(cls)
+
+		
+		
 
 	def setUp(self):
 		self.time_started = datetime.now()

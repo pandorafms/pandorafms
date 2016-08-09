@@ -328,6 +328,9 @@ sub pandora_snmptrapd {
 		# Evaluate alerts for this trap
 		pandora_evaluate_snmp_alerts ($pa_config, $trap_id, $source, $oid, $type, $oid, $value, $custom_oid, $dbh);
 	}
+
+	# Delay the consumption of the next task.
+	sleep($pa_config->{'snmp_delay'}) if ($pa_config->{'snmp_delay'} > 0);
 }
 
 ########################################################################################

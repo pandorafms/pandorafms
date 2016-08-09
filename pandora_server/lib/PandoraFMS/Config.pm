@@ -258,6 +258,7 @@ sub pandora_load_config {
 	$pa_config->{"snmp_pdu_address"} = 0; # 5.0
 	$pa_config->{"snmp_storm_protection"} = 0; # 5.0
 	$pa_config->{"snmp_storm_timeout"} = 600; # 5.0
+	$pa_config->{"snmp_delay"} = 0; # > 6.0SP3
 	$pa_config->{"snmpconsole_threads"} = 1; # 5.1
 	$pa_config->{"translate_variable_bindings"} = 0; # 5.1
 	$pa_config->{"translate_enterprise_strings"} = 1; # 5.1
@@ -529,6 +530,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^snmp_storm_timeout\s+(\d+)/i) { 
 			$pa_config->{'snmp_storm_timeout'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^snmp_delay\s+(\d+)/i) { 
+			$pa_config->{'snmp_delay'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^snmpconsole_threads\s+(\d+)/i) { 
 			$pa_config->{'snmpconsole_threads'}= clean_blank($1); 

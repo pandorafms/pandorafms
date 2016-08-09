@@ -1771,7 +1771,7 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup = false) {
 	}
 	
 	$parents_id = array($id_group);
-	if ($id_group != 0 && $onlyOneGroup == false) {
+	if ($id_group != 0 && $onlyOneGroup !== true) {
 		$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));
 		$parents = groups_get_parents($group['parent'], true);
 		
@@ -1782,7 +1782,7 @@ function check_acl($id_user, $id_group, $access, $onlyOneGroup = false) {
 	
 	// TODO: To reduce this querys in one adding the group condition if necessary (only one line is different)
 	//Joined multiple queries into one. That saves on the query overhead and query cache.
-	if ($id_group == 0 && $onlyOneGroup == false) {
+	if ($id_group == 0 && $onlyOneGroup !== true) {
 		$query = sprintf("SELECT tperfil.incident_view, tperfil.incident_edit,
 				tperfil.incident_management, tperfil.agent_view,
 				tperfil.agent_edit, tperfil.alert_edit,

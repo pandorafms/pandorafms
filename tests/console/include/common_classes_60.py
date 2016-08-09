@@ -58,14 +58,15 @@ class PandoraWebDriverTestCase(TestCase):
 			try:
 				sauce_client = SauceClient(cls.sauce_username, cls.sauce_access_key)
 				if len(cls.verificationErrors)>0:
-					sauce_client.jobs.update_job(cls.sauce_labs_job_id, passed=False,tags=[environ["TRAVIS_BRANCH"]],build_num=environ["TRAVIS_JOB_NUMBER"],name=str(environ["TRAVIS_COMMIT"])+"_"+str(cls.id().split('.')[1]))
+					sauce_client.jobs.update_job(cls.sauce_labs_job_id, passed=False,tags=[environ["TRAVIS_BRANCH"]],build_num=environ["TRAVIS_JOB_NUMBER"],name=str(environ["TRAVIS_COMMIT"])+"_"+str(cls.sauce_labs_job_id))
 				else:
 					sauce_client.jobs.update_job(cls.sauce_labs_job_id, passed=True,tags=[environ["TRAVIS_BRANCH"]],build_num=environ["TRAVIS_JOB_NUMBER"],name=str(environ["TRAVIS_COMMIT"])+"_"+str(cls.sauce_labs_job_id))
 			except Exception as e:
+				print "EXCEPTION"
+				print e
 				print "Could not annotate Sauce Labs job #%s" % str(cls.sauce_labs_job_id)
 				print "Additional information about this error can be found below."
 				print "The job ID is: "+str(cls.id())
-				print e
 
 		
 		

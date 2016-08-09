@@ -20,7 +20,7 @@ before_install:
   - sudo apt-get install xvfb
 
 install:
-  - pip install selenium PyVirtualDisplay sauceclient
+  - pip install selenium PyVirtualDisplay sauceclient testtools
 
 #before_script:
 #  - "export DISPLAY=:99.0"

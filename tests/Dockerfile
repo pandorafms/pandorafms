@@ -24,6 +24,7 @@ RUN yum install -y \
 	firefox \
 	python-pip \
 	xorg-x11-server-Xvfb; yum clean all;
+RUN pip install --upgrade setuptools
 RUN pip install pyvirtualdisplay
 RUN pip install selenium
 RUN pip install testtools

@@ -244,7 +244,7 @@ $(document).ready( function() {
 						$('ul.submenu').css('left', '44px');
 						$('div#title_menu').hide();
 					}
-				}, 1500);
+				}, 2500);
 			});
 		}else{
 			$(document).ready(function() {
@@ -254,6 +254,7 @@ $(document).ready( function() {
 					openTimeMenu = new Date().getTime();
 					$('#menu').css('width', '145px');
 					$('li.menu_icon').addClass( " no_hidden_menu" );
+					$('li.menu_icon').find('li').addClass( " no_hidden_menu" );
 					$('ul.submenu').css('left', '144px');
 				}).mouseleave(function() {
 					handsInMenu = 0;
@@ -262,6 +263,7 @@ $(document).ready( function() {
 						if(openedMenu > 1000 && handsInMenu == 0) {
 							$('#menu').css('width', '45px');
 							$('li.menu_icon').removeClass( " no_hidden_menu");
+							$('li.menu_icon').find('li').removeClass( " no_hidden_menu" );
 							$('ul.submenu').css('left', '44px');
 							$('div#title_menu').hide();
 						}
@@ -304,47 +306,91 @@ $(document).ready( function() {
 
 	//Daniel maya 02/06/2016 Display menu with click --INI
 	if(!click_display){
-		$('.menu_icon').mouseenter(function() {
-			table_hover = $(this);
-			handsIn = 1;
-			openTime = new Date().getTime();
-			$("ul#sub"+table_hover[0].id).show();
-			if( typeof(table_noHover) != 'undefined')
-				if ( "ul#sub"+table_hover[0].id != "ul#sub"+table_noHover[0].id )
-					$("ul#sub"+table_noHover[0].id).hide();
-		}).mouseleave(function() {
-			table_noHover = $(this);
-			handsIn = 0;
-			setTimeout(function() {
-				opened = new Date().getTime() - openTime;
-				if(opened > 3000 && handsIn == 0) {
-					openTime = 4000;
-					$("ul#sub"+table_hover[0].id).hide();
-				}
-			}, 3500);
-		});
-
-	}else{
-		$(document).ready(function() {
-			$('.menu_icon').on("click", function() {
-				if( typeof(table_hover) != 'undefined'){
-					$("ul#sub"+table_hover[0].id).hide();
-				}
+		//Daniel barbero 10/08/2016 Display menu with click --INI
+		if (autohidden_menu) {
+		//Daniel barbero 10/08/2016 Display menu with click --END
+			$('.menu_icon').mouseenter(function() {
 				table_hover = $(this);
 				handsIn = 1;
 				openTime = new Date().getTime();
 				$("ul#sub"+table_hover[0].id).show();
+				if( typeof(table_noHover) != 'undefined')
+					if ( "ul#sub"+table_hover[0].id != "ul#sub"+table_noHover[0].id )
+						$("ul#sub"+table_noHover[0].id).hide();
 			}).mouseleave(function() {
 				table_noHover = $(this);
 				handsIn = 0;
 				setTimeout(function() {
 					opened = new Date().getTime() - openTime;
-					if(opened > 5000 && handsIn == 0) {
-						openTime = 6000;
+					if(opened > 3000 && handsIn == 0) {
+						openTime = 4000;
 						$("ul#sub"+table_hover[0].id).hide();
 					}
-				}, 5500);
+				}, 2500);
 			});
+		//Daniel barbero 10/08/2016 Display menu with click --INI
+		} else {
+			$('.menu_icon').mouseenter(function() {
+				table_hover = $(this);
+				handsIn = 1;
+				openTime = new Date().getTime();
+				$("ul#sub"+table_hover[0].id).show();
+				if( typeof(table_noHover) != 'undefined')
+					if ( "ul#sub"+table_hover[0].id != "ul#sub"+table_noHover[0].id )
+						$("ul#sub"+table_noHover[0].id).hide();
+			}).mouseleave(function() {
+				table_noHover = $(this);
+				handsIn = 0;
+				$("ul#sub"+table_hover[0].id).hide();
+				/*
+				setTimeout(function() {
+					opened = new Date().getTime() - openTime;
+					if(opened > 3000 && handsIn == 0) {
+						openTime = 4000;
+						$("ul#sub"+table_hover[0].id).hide();
+					}
+				}, 2500);
+				*/
+			});
+		}
+		//Daniel barbero 10/08/2016 Display menu with click --END
+	}else{
+		$(document).ready(function() {
+			//Daniel barbero 10/08/2016 Display menu with click --INI
+			if (autohidden_menu) {
+			//Daniel barbero 10/08/2016 Display menu with click --END
+				$('.menu_icon').on("click", function() {
+					if( typeof(table_hover) != 'undefined'){
+						$("ul#sub"+table_hover[0].id).hide();
+					}
+					table_hover = $(this);
+					handsIn = 1;
+					openTime = new Date().getTime();
+					$("ul#sub"+table_hover[0].id).show();
+				}).mouseleave(function() {
+					table_noHover = $(this);
+					handsIn = 0;
+					setTimeout(function() {
+						opened = new Date().getTime() - openTime;
+						if(opened > 5000 && handsIn == 0) {
+							openTime = 6000;
+							$("ul#sub"+table_hover[0].id).hide();
+						}
+					}, 5500);
+				});
+			//Daniel barbero 10/08/2016 Display menu with click --INI
+			} else {
+				$('.menu_icon').on("click", function() {
+					if( typeof(table_hover) != 'undefined'){
+						$("ul#sub"+table_hover[0].id).hide();
+					}
+					table_hover = $(this);
+					handsIn = 1;
+					openTime = new Date().getTime();
+					$("ul#sub"+table_hover[0].id).show();
+				});
+			}
+			//Daniel barbero 10/08/2016 Display menu with click --END
 		});
 	}
 	//Daniel maya 02/06/2016 Display menu with click --END

@@ -4080,6 +4080,7 @@ function reporting_general($report, $content) {
 		
 		$mod_name = modules_get_agentmodule_name ($row['id_agent_module']);
 		$ag_name = modules_get_agentmodule_agent_name ($row['id_agent_module']);
+		$type_mod = modules_get_last_value($row['id_agent_module']);
 		$unit = db_get_value('unit', 'tagente_modulo',
 			'id_agente_modulo',
 			$row['id_agent_module']);
@@ -4089,28 +4090,32 @@ function reporting_general($report, $content) {
 				modules_get_last_value($row['id_agent_module']);
 		}
 		else {
-			switch ($row['operation']) {
-				case 'sum':
-					$data_res[$key] =
-						reporting_get_agentmodule_data_sum(
-							$row['id_agent_module'], $content['period'], $report["datetime"]);
-					break;
-				case 'max':
-					$data_res[$key] =
-						reporting_get_agentmodule_data_max(
-							$row['id_agent_module'], $content['period']);
-					break;
-				case 'min':
-					$data_res[$key] =
-						reporting_get_agentmodule_data_min(
-							$row['id_agent_module'], $content['period']);
-					break;
-				case 'avg':
-				default:
-					$data_res[$key] =
-						reporting_get_agentmodule_data_average(
-							$row['id_agent_module'], $content['period']);
-					break;
+			if(is_numeric($type_mod)){
+				switch ($row['operation']) {
+					case 'sum':
+						$data_res[$key] =
+							reporting_get_agentmodule_data_sum(
+								$row['id_agent_module'], $content['period'], $report["datetime"]);
+						break;
+					case 'max':
+						$data_res[$key] =
+							reporting_get_agentmodule_data_max(
+								$row['id_agent_module'], $content['period']);
+						break;
+					case 'min':
+						$data_res[$key] =
+							reporting_get_agentmodule_data_min(
+								$row['id_agent_module'], $content['period']);
+						break;
+					case 'avg':
+					default:
+						$data_res[$key] =
+							reporting_get_agentmodule_data_average(
+								$row['id_agent_module'], $content['period']);
+						break;
+				}
+			} else {
+				$data_res[$key] = $type_mod;
 			}
 		}
 		
@@ -4265,8 +4270,11 @@ function reporting_general($report, $content) {
 					
 					if (!is_numeric($d)) {
 						$data['value'] = $d;
+						// to see the chains on the table
+						$data['formated_value'] = $d;
 					}
 					else {
+						
 						$data['value'] = $d;
 						$data['formated_value'] = format_for_graph($d, 2) . " " .
 							$units[$i];

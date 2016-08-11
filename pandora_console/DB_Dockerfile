@@ -1,0 +1,9 @@
+FROM mysql:5.5
+MAINTAINER Pandora FMS Team <info@pandorafms.com>
+
+WORKDIR /pandorafms/pandora_console
+ADD pandoradb.sql /docker-entrypoint-initdb.d
+ADD pandoradb_data.sql /docker-entrypoint-initdb.d
+RUN /bin/bash -c 'echo "CREATE DATABASE pandora" > /docker-entrypoint-initdb.d/create_pandoradb.sql'
+RUN /bin/bash -c 'sed -i "1iUSE pandora" /docker-entrypoint-initdb.d/pandoradb.sql'
+RUN /bin/bash -c 'sed -i "1iUSE pandora" /docker-entrypoint-initdb.d/pandoradb_data.sql'

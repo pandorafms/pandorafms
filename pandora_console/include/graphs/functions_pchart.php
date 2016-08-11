@@ -285,6 +285,18 @@ foreach ($colors as $i => $color) {
 	
 	$rgb_color[$i]['alpha'] = $color['alpha'];
 }
+//add for report with max 15 modules comparation repeat
+$countlegend = count($legend);
+if($countlegend > 15){
+	$i=16;
+	$l=0;
+	while ($countlegend > 15){
+		$rgb_color[$i] = $rgb_color[$l];
+		$l++;
+		$i++;
+		$countlegend--;
+	} 
+}
 
 /*foreach($colors as $i => $color) {
 	if (isset($color['border'])) {

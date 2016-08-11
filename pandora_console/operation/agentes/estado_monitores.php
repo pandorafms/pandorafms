@@ -118,6 +118,9 @@ if (!isset ($id_agente)) {
 $id_agent = (int)get_parameter('id_agente');
 $status_filter_monitor = (int)get_parameter('status_filter_monitor', -1);
 $status_text_monitor = get_parameter('status_text_monitor', '');
+$sort_field = get_parameter('sort_field', 'name');
+$sort = get_parameter('sort', 'up');
+
 
 echo "<h4 style='padding-top:0px !important;'>";
 
@@ -153,13 +156,14 @@ ui_toggle($html_toggle,
 
 ?>
 <script type="text/javascript">
-	var sort_field = 'name';
-	var sort_rows = 'up';
+	var sort_field = '<?php echo $sort_field; ?>';
+	var sort_rows = '<?php echo $sort; ?>';
 	var filter_status = -1;
 	var filter_text = "";
 	reset_filter_modules ();
 	
 	$(document).ready(function() {
+		/*filter_modules();
 		var parameters = {};
 		
 		parameters["list_modules"] = 1;
@@ -178,6 +182,7 @@ ui_toggle($html_toggle,
 				$("#module_list").html(data);
 			}
 		});
+		*/
 	});
 	
 	function order_module_list(sort_field_param, sort_rows_param) {

@@ -1771,10 +1771,10 @@ function reporting_html_availability(&$table, $item) {
 		if (($same_agent_in_resume == "") && (strpos($item['resume']['min_text'], $same_agent_in_resume) === false)) {
 			$table1->head = array ();
 			$table1->head['min_text'] = __('Agent max');
-			$table1->head['min'] = __('Min Value');
+			$table1->head['max'] = __('Max Value');
 			$table1->head['avg'] = __('Average Value');
 			$table1->head['max_text'] = __('Agent min');
-			$table1->head['max'] = __('Max Value');
+			$table1->head['min'] = __('Min Value');
 			
 			$table1->headstyle = array();
 			$table1->headstyle['min_text'] = 'text-align: left';
@@ -1792,11 +1792,11 @@ function reporting_html_availability(&$table, $item) {
 			$table1->style['max'] = 'text-align: right';
 			
 			$table1->data[] = array(
-				'min_text' => $item['resume']['min_text'],
-				'min' => format_numeric($item['resume']['min'], 2) . "%",
+				'max_text' => $item['resume']['min_text'],
+				'max' => format_numeric($item['resume']['max'], 2) . "%",
 				'avg' => format_numeric($item['resume']['avg'], 2) . "%",
-				'max_text' => $item['resume']['max_text'],
-				'max' => format_numeric($item['resume']['max'], 2) . "%"
+				'min_text' => $item['resume']['max_text'],
+				'min' => format_numeric($item['resume']['min'], 2) . "%"
 				);
 			
 			$table->colspan[2][0] = 3;

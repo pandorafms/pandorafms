@@ -41,6 +41,30 @@ require_once('operation/visualmap.php');
 $enterpriseHook = enterprise_include('mobile/include/enterprise.class.php');
 $enterpriseHook = enterprise_include('mobile/operation/home.php');
 
+if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
+	$query = '';
+	if (sizeof ($_REQUEST))
+		//Some (old) browsers don't like the ?&key=var
+		$query .= 'mobile/index.php?1=1';
+	
+	//We don't clean these variables up as they're only being passed along
+	foreach ($_GET as $key => $value) {
+		if ($key == 1)
+			continue;
+		$query .= '&'.$key.'='.$value;
+	}
+	foreach ($_POST as $key => $value) {
+		$query .= '&'.$key.'='.$value;
+	}
+	$url = ui_get_full_url($query);
+	
+	// Prevent HTTP response splitting attacks
+	// http://en.wikipedia.org/wiki/HTTP_response_splitting
+	$url = str_replace ("\n", "", $url);
+	header ('Location: '.$url);
+	exit; //Always exit after sending location headers
+}
+
 $system = System::getInstance();
 
 require_once($system->getConfig('homedir').'/include/constants.php');

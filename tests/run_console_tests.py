@@ -15,10 +15,7 @@ is_enterprise = '1' == getenv('ENTERPRISE', False)
 
 a = TestLoader()
 
-if is_enterprise:
-	tests = a.discover(start_dir='console',pattern='*.py')
-else:
-	tests = a.discover(start_dir='console',pattern='PAN*.py')
+tests = a.discover(start_dir='console',pattern='*.py')
 
 c = ArticaTestResult()
 tests.run(c)

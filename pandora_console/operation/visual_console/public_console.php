@@ -66,27 +66,26 @@ if (! $layout) {
 	exit;
 }
 
-$id_group = $layout["id_group"];
-$layout_name = $layout["name"];
-$background = $layout["background"];
-$bwidth = $layout["width"];
-$bheight = $layout["height"];
-
 if (!isset($config['pure']))
 	$config['pure'] = 0;
 
-$xhr = (bool) get_parameter('xhr');
-if ($xhr) {
-	$width = (int) get_parameter('width');
-	if ($width <= 0) $width = null;
-	$height = (int) get_parameter('height');
-	if ($height <= 0) $height = null;
+//~ $xhr = (bool) get_parameter('xhr');
+if ($layout) {
+	$id_group = $layout["id_group"];
+	$layout_name = $layout["name"];
+	$background = $layout["background"];
+	$bwidth = $layout["width"];
+	$bheight = $layout["height"];
+	//~ $width = (int) get_parameter('width');
+	//~ if ($width <= 0) $width = null;
+	//~ $height = (int) get_parameter('height');
+	//~ if ($height <= 0) $height = null;
 	
-	ob_start();
-	// Render map
+	//~ ob_start();
+	//~ // Render map
 	visual_map_print_visual_map($id_layout, true, true, $width, $height,
 		'../../', true, $graph_javascript, true);
-	return;
+	//~ return;
 }
 else {
 	echo '<div id="vc-container"></div>';

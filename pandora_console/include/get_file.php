@@ -26,7 +26,8 @@ check_login ();
 
 $auth_method = db_get_value('value', 'tconfig', 'token', 'auth');
 
-require_once("auth/" . $auth_method . ".php");
+if($auth_method != 'ad')
+	require_once("auth/" . $auth_method . ".php");
 
 
 

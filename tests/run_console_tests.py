@@ -43,7 +43,7 @@ print "Tests succeeded: %s" % c.success
 print "Tests skipped: %s" % c.skipped
 print "Tests with errors: %s" % c.errors
 
-if (len(c.failures)+len(c.errors)+len(c.skipped)) != 0:
+if (len(c.failures)+len(c.errors)) != 0:
 	sys.exit(1)
 
 else:

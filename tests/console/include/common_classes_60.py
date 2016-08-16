@@ -40,6 +40,7 @@ class PandoraWebDriverTestCase(TestCase):
 	@classmethod
 	def setUpClass(cls):
 		cls.is_development = os.getenv('DEVELOPMENT', False)
+		cls.is_enterprise = os.getenv('ENTERPRISE', False)
 		if cls.is_development != False:
 			cls.driver = webdriver.Firefox()
 			cls.base_url = os.getenv('DEVELOPMENT_URL')
@@ -60,6 +61,7 @@ class PandoraWebDriverTestCase(TestCase):
 		self.driver.implicitly_wait(30)
 		self.verificationErrors = []
 		self.accept_next_alert = True
+		#self.is_development = self.is_development
 		super(PandoraWebDriverTestCase, self).setUp()
 
 	def is_element_present(self, how, what):

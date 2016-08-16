@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 import random, time
 import string
+import unittest
 
 def is_enterprise(func):
         u"""
@@ -20,6 +21,8 @@ def is_enterprise(func):
 
                 if is_enterprise:
                         return func(*args,**kwargs)
+		else:
+			raise unittest.SkipTest("Skipping test")
         return inner
 
 

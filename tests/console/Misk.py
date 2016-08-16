@@ -15,13 +15,17 @@ from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
 import unittest, time, re
 
-class PAN5(PandoraWebDriverTestCase):
+class Miscellaneous (PandoraWebDriverTestCase):
 
-	test_name = u'PAN_5'
-	test_description = u'Creates an agent and a module with japanese characters and test if the event list show the characters properly'
+	test_name = u'Miscellaneous'
 	tickets_associated = []
 
-	def test_pan5(self):
+	def test_japanese_characters(self):
+		
+		u"""
+		Creates an agent and a module with japanese characters and test if the event list show the characters properly
+		"""
+		
 		driver = self.driver
 		self.login()
 		detect_and_pass_all_wizards(driver)
@@ -59,16 +63,8 @@ class PAN5(PandoraWebDriverTestCase):
 		driver.find_element_by_id("submit-update").click()
 
 		#Check that there are japanese characters present on the event
-		
-		try:
-			element = driver.find_element_by_xpath(u'//a[contains(.,"Alert fired (Critical condition) assigned to (管理者ガイド)")]')
-			self.assertIsInstance(element,WebElement)
-
-		except AssertionError as e:
-			self.verificationErrors.append(str(e))
-
-		except NoSuchElementException as e:
-			self.verificationErrors.append(str(e))
+		element = driver.find_element_by_xpath(u'//a[contains(.,"Alert fired (Critical condition) assigned to (管理者ガイド)")]')
+		self.assertIsInstance(element,WebElement)
 
 if __name__ == "__main__":
 	unittest.main()

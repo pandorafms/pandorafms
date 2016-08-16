@@ -538,7 +538,7 @@ function show_events_group_agent (id_insert, id_agent, server_id) {
 		success: function (data) {
 			console.log(data);
 			$("#"+id_insert).html(data);
-			$("#"+id_insert).show();
+			$("#"+id_insert).toggle();
 		}
 	});
 	

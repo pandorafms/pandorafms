@@ -44,7 +44,7 @@ if ($group_rep == 2) {
 		"&amp;refr=" . (int)get_parameter("refr", 0) . 
 		"&amp;id_agent_module=" . $id_agent_module . 
 		"&amp;pagination=" . $pagination . 
-		"&amp;group_rep=0" . 
+		"&amp;group_rep=2" . 
 		"&amp;event_view_hr=" . $event_view_hr . 
 		"&amp;id_user_ack=" . $id_user_ack .
 		"&amp;tag_with=". $tag_with_base64 . 

@@ -1573,8 +1573,8 @@ sub pandora_planned_downtime_set_disabled_elements($$$) {
 
 			if($pa_config->{'include_agents'} == 0){
 				db_do($dbh, 'UPDATE tplanned_downtime_agents
-					SET manually_disabled = 1 WHERE id_agent IN (SELECT id_agente FROM tagente WHERE disabled = 1)
-					AND id_downtime = ' . $downtime->{'id'});
+					SET manually_disabled = 1 WHERE id_agent IN (SELECT id_agente FROM tagente WHERE disabled = 1 AND id_agente = ?)
+					AND id_downtime = ' . $downtime->{'id'}, $downtime_agent->{'id_agent'});
 			}
 
 			db_do ($dbh, 'UPDATE tagente
@@ -1624,7 +1624,7 @@ sub pandora_planned_downtime_unset_disabled_elements($$$) {
 			if($pa_config->{'include_agents'} == 0){
 				db_do ($dbh, 'UPDATE tagente
 					SET disabled = 1
-					WHERE id_agente IN (SELECT id_agent FROM tplanned_downtime_agents WHERE manually_disabled = 1)');
+					WHERE id_agente IN (SELECT id_agent FROM tplanned_downtime_agents WHERE manually_disabled = 1 and id_downtime = ?)',$downtime_agent->{'id_downtime'});
 			}
 		}
 		else {

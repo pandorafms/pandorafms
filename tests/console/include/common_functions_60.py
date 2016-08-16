@@ -7,6 +7,22 @@ from selenium.webdriver.support import expected_conditions as EC
 import random, time
 import string
 
+def is_enterprise(func):
+        u"""
+        This decorator is intended to be used for Enterprise tests only
+        """
+        def inner(*args,**kwargs):
+                is_enterprise = 0
+                try:
+                        is_enterprise = args[0].is_enterprise == '1'
+                except:
+                        pass
+
+                if is_enterprise:
+                        return func(*args,**kwargs)
+        return inner
+
+
 def gen_random_string(size,preffix=None):
 	random_string =  ''.join(random.SystemRandom().choice(string.ascii_uppercase+string.digits) for _ in range(size))
 	if preffix:

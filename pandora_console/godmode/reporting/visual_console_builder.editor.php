@@ -208,7 +208,7 @@ ui_require_javascript_file ('encode_decode_base64');
 		width: "400",
 		height: "200",
 		nowrap: true,
-		plugins : "bbcode",
+		plugins : "noneditable",
 		inline_styles : true,
 		valid_children : "+body[style]",
 		element_format : "html",

@@ -1068,13 +1068,13 @@ function hiddenFields(item) {
 		enterprise_hiddenFields(item);
 	}
 
-	var code_control = tinyMCE.activeEditor.controlManager.controls['text-label_code'];
-	if (item == 'label') {
-		code_control.setDisabled(false);
-	}
-	else {
-		code_control.setDisabled(true);
-	}
+	//~ var code_control = tinyMCE.activeEditor.controlManager.controls['text-label_code'];
+	//~ if (item == 'label') {
+		//~ code_control.setDisabled(false);
+	//~ }
+	//~ else {
+		//~ code_control.setDisabled(true);
+	//~ }
 }
 
 function cleanFields(item) {

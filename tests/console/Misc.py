@@ -6,6 +6,7 @@ from include.reports_functions import create_report, delete_report
 from include.user_functions import create_user
 from include.agent_functions import create_agent
 from include.module_functions import create_module
+from include.event_functions import *
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys

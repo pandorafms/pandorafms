@@ -102,8 +102,6 @@ if (strstr($sec2, "enterprise/godmode/policies/policies") !== false) {
 
 $show_creation = false;
 
-echo "</form>";
-
 if (($policy_page) || (isset($agent))) {
 	if ($policy_page) {
 		$show_creation = true;

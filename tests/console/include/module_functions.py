@@ -97,7 +97,7 @@ def create_data_server_module(driver,module_name,agent_name=None,type_of_module=
 		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
 
 	Select(driver.find_element_by_id("moduletype")).select_by_visible_text("Create a new data server module")
-	driver.find_element_by_xpath('//*[@id="create_module_type"]/table/tbody/tr/td[5]/input').click()
+	driver.find_element_by_xpath('//*[@id="main"]/form/table/tbody/tr/td[5]/input').click()
 	
 	driver.find_element_by_xpath('//a[contains(.,"Advanced options")]').click()
 	

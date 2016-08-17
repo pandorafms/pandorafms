@@ -248,7 +248,7 @@ $table->data[4][0] = "<b>".__('Interval');
 $table->data[4][0] .= ui_print_help_tip (__('Manual interval means that it will be executed only On-demand'), true);
 
 $values = array (0 => __('Defined'), 1 => __('Manual'));
-$table->data[4][1] = html_print_select ($values, "interval_manual_defined", (int)($interval == 0), '','','',true);
+$table->data[4][1] = html_print_select ($values, "interval_manual_defined", (int)($interval === 0), '','','',true);
 
 $table->data[4][1] .= '<span id="interval_manual_container">';
 $table->data[4][1] .= html_print_extended_select_for_time ('interval' , $interval, '', '', '0', false, true, false, false);

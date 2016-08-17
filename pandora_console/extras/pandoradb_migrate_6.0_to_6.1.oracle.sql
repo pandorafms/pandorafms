@@ -46,3 +46,8 @@ INSERT INTO tconfig (token, value) VALUES ('days_autodisable_deletion', '30');
 -- Table `tplanned_downtime_agents`
 -- ---------------------------------------------------------------------
 ALTER TABLE tplanned_downtime_agents ADD COLUMN manually_disabled NUMBER(5, 0) DEFAULT 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tlink`
+-- ---------------------------------------------------------------------
+UPDATE tlink SET link = 'http://library.pandorafms.com/' WHERE name = 'Module library';

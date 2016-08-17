@@ -270,6 +270,7 @@ if (isset($_GET["create"])) {
 // --------------------------------
 //Pandora Admin must see all columns
 if (! check_acl ($config['id_user'], 0, "PM")) {
+	
 	$sql = sprintf('SELECT *
 		FROM trecon_task RT, tusuario_perfil UP
 		WHERE 
@@ -309,11 +310,13 @@ if ($result !== false) {
 				// Network recon task
 				$data[2] = html_print_image ("images/network.png", true, array ("title" => __('Network recon task')))."&nbsp;&nbsp;";
 				$data[2] .= network_profiles_get_name ($row["id_network_profile"]);
+				$mode_name = '';
 			}
 			else {
 				// APP recon task
 				$data[2] = html_print_image ("images/plugin.png", true). "&nbsp;&nbsp;";
-				$data[2] .= db_get_sql (sprintf("SELECT name FROM trecon_script WHERE id_recon_script = %d", $row["id_recon_script"]));
+				$mode_name = db_get_sql (sprintf("SELECT name FROM trecon_script WHERE id_recon_script = %d", $row["id_recon_script"]));
+				$data[2] .= $mode_name;
 			}
 			
 			
@@ -355,8 +358,13 @@ if ($result !== false) {
 			if (in_array($task_group, $user_groups_w)){
 				$data[8] = '<a href="index.php?sec=estado&sec2=operation/servers/recon_view">' . html_print_image("images/eye.png", true) . '</a>';
 				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">' . html_print_image("images/cross.png", true, array("border" => '0')) . '</a>';
-				$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">' .html_print_image("images/config.png", true) . '</a>';
-			
+				if($mode_name != 'IPAM Recon'){
+					$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">' .html_print_image("images/config.png", true) . '</a>';
+				} else {
+					$sql_ipam = 'select id from tipam_network where id_recon_task =' . $row["id_rt"];
+					$id_recon_ipam = db_get_sql($sql_ipam);
+					$data[8] .= '<a href="index.php?sec=godmode/extensions&sec2=enterprise/extensions/ipam&action=edit&id=' . $id_recon_ipam . '">' . html_print_image("images/config.png", true) . '</a>';
+				}
 				if($row["disabled"] == 0) {
 					$data[8] .= '<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&id='.$row["id_rt"].'&disabled=1">' .html_print_image("images/lightbulb.png", true) . '</a>';
 				}

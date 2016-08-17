@@ -29,7 +29,7 @@ def create_network_server_module(driver,agent_name=None,module_name=None,compone
 		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
 
 	Select(driver.find_element_by_id("moduletype")).select_by_visible_text("Create a new network server module")
-	driver.find_element_by_xpath('//*[@id="create_module_type"]/table/tbody/tr/td[5]/input').click()
+	driver.find_element_by_xpath('//*[@id="main"]/form/table/tbody/tr/td[5]/input').click()
 	
 	driver.find_element_by_xpath('//a[contains(.,"Advanced options")]').click()
 	
@@ -97,7 +97,7 @@ def create_data_server_module(driver,module_name,agent_name=None,type=None,min_w
 		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
 
 	Select(driver.find_element_by_id("moduletype")).select_by_visible_text("Create a new data server module")
-	driver.find_element_by_xpath('//*[@id="create_module_type"]/table/tbody/tr/td[5]/input').click()
+	driver.find_element_by_xpath('//*[@id="main"]/form/table/tbody/tr/td[5]/input').click()
 	
 	driver.find_element_by_xpath('//a[contains(.,"Advanced options")]').click()
 	

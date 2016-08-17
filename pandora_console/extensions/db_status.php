@@ -277,7 +277,7 @@ function extension_db_check_tables_differences($connection_test,
 								ui_print_info_message(
 									__('You can execute this SQL query for to fix.') . "<br />" .
 									'<pre>' .
-										"ALTER TABLE " . $table . " MODIFY COLUMN " . $field . " " . $value . ";" .
+										"ALTER TABLE " . $table . " MODIFY COLUMN " . $name_field . " " . $value . ";" .
 									'</pre>'
 								);
 								break;
@@ -289,7 +289,7 @@ function extension_db_check_tables_differences($connection_test,
 									ui_print_info_message(
 										__('You can execute this SQL query for to fix.') . "<br />" .
 										'<pre>' .
-											"ALTER TABLE " . $table . " MODIFY COLUMN " . $field . "INT NULL;" .
+											"ALTER TABLE " . $table . " MODIFY COLUMN " . $name_field . "INT NULL;" .
 										'</pre>'
 									);
 								}
@@ -297,7 +297,7 @@ function extension_db_check_tables_differences($connection_test,
 									ui_print_info_message(
 										__('You can execute this SQL query for to fix.') . "<br />" .
 										'<pre>' .
-											"ALTER TABLE " . $table . " MODIFY COLUMN " . $field . "INT NOT NULL;" .
+											"ALTER TABLE " . $table . " MODIFY COLUMN " . $name_field . "INT NOT NULL;" .
 										'</pre>'
 									);
 								}

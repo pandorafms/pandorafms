@@ -319,11 +319,12 @@ else {
 		$total_agents = db_get_sql ($sql);
 		switch ($config["dbtype"]) {
 			case "mysql":
+				$order['field2'] = "";
 				$sql = sprintf ('SELECT *
 					FROM tagente
 					WHERE 1=1
 						%s
-					ORDER BY %s, %s %s LIMIT %d, %d', $search_sql, $order['field'], $order['field2'],
+					ORDER BY %s %s %s LIMIT %d, %d', $search_sql, $order['field'], $order['field2'],
 					$order['order'], $offset, $config["block_size"]);
 				break;
 			case "postgresql":

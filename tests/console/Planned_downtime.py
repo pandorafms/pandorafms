@@ -82,10 +82,10 @@ class PAN13(PandoraWebDriverTestCase):
 
 	
 		driver=self.driver
-		self.login()
+
 		planned_name = gen_random_string(6)
 
-                create_planned_downtime(driver,planned_name,"Applications","Quiet","Once",description=planned_name,date_from='2016/09/18',date_to='2016/09/20',agent_module_list=[('pandorafms',['CPU Load','Agents_Unknown']),('lel',['Host Alive','Host Latency'])])
+                create_planned_downtime(driver,planned_name,"Applications","Quiet","Once",description=planned_name)
 
 		delete_planned_downtime(driver,planned_name)
 

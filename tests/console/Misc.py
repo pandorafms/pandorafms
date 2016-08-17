@@ -53,14 +53,8 @@ class Miscellaneous (PandoraWebDriverTestCase):
 		time.sleep(10)
 
 		#Search events of our agent
-		click_menu_element(driver,"View events")
-		driver.find_element_by_xpath('//a[contains(.,"Event control filter")]').click()
-		driver.find_element_by_xpath('//a[contains(.,"Advanced options")]').click()
-		driver.find_element_by_id("text-text_agent").clear()
-		driver.find_element_by_id("text-text_agent").send_keys(u"次のライセンスに基づいていま")
-		driver.find_element_by_id("text-module_search").clear()
-		driver.find_element_by_id("text-module_search").send_keys(u"管理者ガイド")
-		driver.find_element_by_id("submit-update").click()
+		
+		search_events(driver,agent_name=u"次のライセンスに基づいていま",module_name=u"管理者ガイド")
 
 		#Check that there are japanese characters present on the event
 		element = driver.find_element_by_xpath(u'//a[contains(.,"Alert fired (Critical condition) assigned to (管理者ガイド)")]')

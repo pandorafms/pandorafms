@@ -9,7 +9,7 @@ import random, time
 import string
 
 
-def create_planned_downtime(driver,name,group,type_planned,description=None,execution=None,date_from=None,date_to=None,hour_from=None,hour_to=None,periodicity_type=None,from_day=None,to_day=None,list_days=None,list_agent=None):
+def create_planned_downtime(driver,name,group,type_planned,execution,description=None,date_from=None,date_to=None,hour_from=None,hour_to=None,periodicity_type=None,from_day=None,to_day=None,list_days=None,agent_module_list=None):
 
 	
 	#type_planned is: Disabled Agents, Quiet or Disabled only Alerts
@@ -22,7 +22,12 @@ def create_planned_downtime(driver,name,group,type_planned,description=None,exec
 	
 	#Execution by default is Once, date_from and date_to is date it's today's date
 
-	#list_agent is a list of agent that aplicate this planned downtime
+	#agent_module_list is a list of tuples: lista = [('agent_name_1',['module_name_1','module_name_2']),('agent_name_2',[])]
+	#CAREFUL! [] means 'Any' module
+
+	#Self checks
+	if (date_from is None and date_to is not None) or (date_from is not None and date_to is None):
+		raise Exception("If one date is provided, the other should be provided too")
 
 	click_menu_element(driver,"Scheduled downtime")
 	driver.find_element_by_id("submit-create").click()
@@ -39,17 +44,21 @@ def create_planned_downtime(driver,name,group,type_planned,description=None,exec
 	driver.find_element_by_xpath('//option[contains(.,"'+type_planned+'")]').click()
 		
 	if execution == "Once":
-		driver.find_element_by_id("text-once_date_from").clear()
-		driver.find_element_by_id("text-once_date_from").send_keys(date_from)
-		
-		driver.find_element_by_id("text-once_date_to").clear()
-		driver.find_element_by_id("text-once_date_to").send_keys(date_to)
-				
-		driver.find_element_by_id("text-once_time_from").clear()
-		driver.find_element_by_id("text-once_time_from").send_keys(hour_from)
-		
-		driver.find_element_by_id("text-once_time_to").clear()
-		driver.find_element_by_id("text-once_time_to").send_keys(hour_to)
+		if date_from is not None:
+			driver.find_element_by_id("text-once_date_from").clear()
+			driver.find_element_by_id("text-once_date_from").send_keys(date_from)
+
+		if date_to is not None:
+			driver.find_element_by_id("text-once_date_to").clear()
+			driver.find_element_by_id("text-once_date_to").send_keys(date_to)
+
+		if hour_from is not None:		
+			driver.find_element_by_id("text-once_time_from").clear()
+			driver.find_element_by_id("text-once_time_from").send_keys(hour_from)
+	
+		if hour_to is not None:	
+			driver.find_element_by_id("text-once_time_to").clear()
+			driver.find_element_by_id("text-once_time_to").send_keys(hour_to)
 	
 	if execution == "Periodically":			
 		Select(driver.find_element_by_id("type_periodicity")).select_by_visible_text(periodicity_type)
@@ -69,19 +78,25 @@ def create_planned_downtime(driver,name,group,type_planned,description=None,exec
 				
 		driver.find_element_by_id("text-periodically_time_to").clear()
 		driver.find_element_by_id("text-periodically_time_to").send_keys(hour_to)
-	
+
 	driver.find_element_by_id("submit-crtbutton").click()	
 	
-	if list_agent != None:
-		for agent in list_agent:
-			Select(driver.find_element_by_id("id_agents")).select_by_visible_text(agent)
-			alert = driver.switch_to_alert()
-			alert.accept()
-			driver.find_element_by_id("submit-add_item").click()
-		
-	driver.find_element_by_id("submit-add_item").click()
-	alert = driver.switch_to_alert()
-	alert.accept()
+	if agent_module_list is not None:
+		for agent_name,module_name_list in agent_module_list:
+			Select(driver.find_element_by_id("id_agents")).select_by_visible_text(agent_name)
+			if type_planned == "Quiet":
+				#Quiet types allow to select modules
+				time.sleep(3)
+				if module_name_list is not []:
+					Select(driver.find_element_by_id("module")).deselect_by_visible_text('Any')
+				for module_name in module_name_list:
+					Select(driver.find_element_by_id("module")).select_by_visible_text(module_name)
+				driver.find_element_by_id("submit-add_item").click()
+				try:
+					alert = driver.switch_to_alert()
+					alert.accept()
+				except:
+					pass
 
 def search_planned_downtime(driver,name,type_planned=None,date_from=None,date_to=None,show_past_downtimes=False):
 
@@ -118,8 +133,8 @@ def stop_downtime(driver,name):
 def delete_planned_downtime(driver,name):
 	search_planned_downtime(driver,name)
 
-	if (u"Running" in driver.page_source):
-			stop_downtime(driver,name)
+	if (u"Not running" not in driver.page_source):
+		stop_downtime(driver,name)
 
 	search_planned_downtime(driver,name,show_past_downtimes=True)
 	driver.find_element_by_xpath('//*[@id="delete_downtime"]/img').click()

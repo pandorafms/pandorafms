@@ -209,7 +209,7 @@ INSERT INTO "tlink" VALUES
 (2,'Pandora FMS','http://pandorafms.com'),
 (3,'Report a bug','https://sourceforge.net/tracker/?func=add&amp;group_id=155200&amp;atid=794852'),
 (4,'Suggest new feature','http://sourceforge.net/tracker/?group_id=155200&amp;atid=794855'),
-(5,'Module library','http://pandorafms.com/pandora/repository/en');
+(5,'Module library','http://library.pandorafms.com/');
 COMMIT WORK;
 SELECT setval('tlink_id_link_seq', (SELECT (SELECT MAX(id_link) FROM tlink)));
 

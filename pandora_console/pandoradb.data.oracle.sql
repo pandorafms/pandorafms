@@ -241,7 +241,7 @@ INSERT INTO tlink VALUES (1,'Pandora FMS Manual','http://wiki.pandorafms.com/?ti
 INSERT INTO tlink VALUES (2,'Pandora FMS','http://pandorafms.com');
 INSERT INTO tlink VALUES (3,'Report a bug','{https://sourceforge.net/tracker/?func=add&amp;group_id=155200&amp;atid=794852}');
 INSERT INTO tlink VALUES (4,'Suggest new feature','http://sourceforge.net/tracker/?group_id=155200&amp;atid=794855');
-INSERT INTO tlink VALUES (5,'Module library','http://pandorafms.com/pandora/repository/en');
+INSERT INTO tlink VALUES (5,'Module library','http://library.pandorafms.com/');
 
 -- Update curr val of sequence
 update_currval('tlink', 'id_link');

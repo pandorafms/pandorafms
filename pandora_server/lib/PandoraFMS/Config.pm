@@ -165,6 +165,12 @@ sub pandora_get_sharedconfig ($$) {
 	
 	#Limit of events replicate in metaconsole
 	$pa_config->{'replication_limit'} = pandora_get_tconfig_token ($dbh, 'replication_limit', 1000);
+	$pa_config->{'include_agents'} = pandora_get_tconfig_token ($dbh, 'include_agents', 0);
+
+	if ($pa_config->{'include_agents'}== '') {
+		$pa_config->{'include_agents'} = 0;
+	}
+
 }
 
 ##########################################################################
@@ -416,7 +422,7 @@ sub pandora_load_config {
 	$pa_config->{"warmup_unknown_interval"} = 300; # 6.1
 	$pa_config->{"warmup_unknown_on"} = 1; # 6.1
 
-	$pa_config->{'include_agents'} = 0; #6.1
+	#$pa_config->{'include_agents'} = 0; #6.1
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -935,9 +941,9 @@ sub pandora_load_config {
 			$pa_config->{'warmup_unknown_interval'}= clean_blank($1);
 			$pa_config->{'warmup_unknown_on'} = 0 if ($pa_config->{'warmup_unknown_interval'} == 0); # On by default.
 		}
-		elsif ($parametro =~ m/^include_agents\s+([0-1])/i) {
-			$pa_config->{'include_agents'}= safe_input($1);
-		}
+		#elsif ($parametro =~ m/^include_agents\s+([0-1])/i) {
+		#	$pa_config->{'include_agents'}= clean_blank($1);
+		#}
 	} # end of loop for parameter #
 
 	# Set to RDBMS' standard port

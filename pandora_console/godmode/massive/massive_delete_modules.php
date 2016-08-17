@@ -486,12 +486,13 @@ $(document).ready (function () {
 		clean_lists();
 		
 		if (selector == 'agents') {
-			$(".select_modules_row").css('display', 'none');
-			$(".select_agents_row").css('display', '');
+			$(".select_modules_row").hide();
+			$(".select_agents_row").show();
+			$("#groups_select").trigger("change");
 		}
 		else if (selector == 'modules') {
-			$(".select_agents_row").css('display', 'none');
-			$(".select_modules_row").css('display', '');
+			$(".select_agents_row").hide();
+			$(".select_modules_row").show();
 		}
 	});
 

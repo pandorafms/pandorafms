@@ -108,7 +108,7 @@ function reporting_make_reporting_data($report = null, $id_report,
 		$contents = $report['contents'];
 	}
 	else {
-		$report = db_get_row ('treport', 'id_report', $id_report);
+		$report = io_safe_output(db_get_row ('treport', 'id_report', $id_report));
 		$contents = db_get_all_rows_field_filter ('treport_content',
 			'id_report', $id_report, db_escape_key_identifier('order'));
 	}

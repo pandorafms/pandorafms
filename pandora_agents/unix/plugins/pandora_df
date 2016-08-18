@@ -32,7 +32,6 @@ my $all_filesystems = 0;
 # Regex flag
 my $regex_mode = 0;
 
-use Data::Dumper;
 sub check_re($$){
 	my $item  = shift;
 	my $array = shift;

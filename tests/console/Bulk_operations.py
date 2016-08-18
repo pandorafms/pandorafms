@@ -46,7 +46,5 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
 		self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Successfully deleted (2)")]').text,"Successfully deleted (2)")
 		
-		self.verificationErrors.append(str(e))
-
 if __name__ == "__main__":
         unittest.main()

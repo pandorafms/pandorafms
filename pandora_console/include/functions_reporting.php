@@ -4399,8 +4399,8 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 	$only_avg = true;
 	// Due to database compatibility problems, the 'only_avg' value
 	// is stored into the json contained into the 'style' column.
-	if (isset($style['only_avg'])) {
-		$only_avg = (bool) $style['only_avg'];
+	if (isset($content['style']['only_avg'])) {
+		$only_avg = (bool) $content['style']['only_avg'];
 	}
 	
 	$moduletype_name = modules_get_moduletype_name(

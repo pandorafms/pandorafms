@@ -62,6 +62,8 @@ class PandoraWebDriverTestCase(TestCase):
 		self.verificationErrors = []
 		self.accept_next_alert = True
 		#self.is_development = self.is_development
+		#TODO Print test name
+		print "Starting test"
 		super(PandoraWebDriverTestCase, self).setUp()
 
 	def is_element_present(self, how, what):

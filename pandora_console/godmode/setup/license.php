@@ -73,17 +73,24 @@ $table->data[2][1] = html_print_input_text('expires', $license['limit'], '', 10,
 $table->data[3][0] = '<strong>'.__('Current Platform Count').'</strong>';
 $table->data[3][1] = html_print_input_text('expires', $license['count'], '', 10, 255, true, true) . ' ' . ($license['limit_mode'] == 0 ? __('agents') : __('modules'));
 
-$table->data[4][0] = '<strong>'.__('License Mode').'</strong>';
-$table->data[4][1] = html_print_input_text('expires', $license['license_mode'], '', 10, 255, true, true);
+$table->data[4][0] = '<strong>'.__('Current Platform Count (enabled: items)').'</strong>';
+$table->data[4][1] = html_print_input_text('expires', $license['count_enabled'], '', 10, 255, true, true) . ' ' . ($license['limit_mode'] == 0 ? __('agents') : __('modules'));
 
-$table->data[5][0] = '<strong>'.__('NMS').'</strong>';
-$table->data[5][1] = html_print_input_text('expires', ($license['nms'] == 1 ? __('enabled') : __('disabled')), '', 10, 255, true, true);
+$table->data[5][0] = '<strong>'.__('Current Platform Count (disabled: items)').'</strong>';
+$table->data[5][1] = html_print_input_text('expires', $license['count_disabled'], '', 10, 255, true, true) . ' ' . ($license['limit_mode'] == 0 ? __('agents') : __('modules'));
 
-$table->data[6][0] = '<strong>'.__('Satellite').'</strong>';
-$table->data[6][1] = html_print_input_text('expires', ($license['dhpm'] == 1 ? __('enabled') : __('disabled')), '', 10, 255, true, true);
+$table->data[6][0] = '<strong>'.__('License Mode').'</strong>';
+$table->data[6][1] = html_print_input_text('expires', $license['license_mode'], '', 10, 255, true, true);
 
-$table->data[7][0] = '<strong>'.__('Licensed to').'</strong>';
-$table->data[7][1] = html_print_input_text('licensed_to', $license['licensed_to'], '', 64, 255, true, true);
+$table->data[7][0] = '<strong>'.__('NMS').'</strong>';
+$table->data[7][1] = html_print_input_text('expires', ($license['nms'] == 1 ? __('enabled') : __('disabled')), '', 10, 255, true, true);
+
+$table->data[8][0] = '<strong>'.__('Satellite').'</strong>';
+$table->data[8][1] = html_print_input_text('expires', ($license['dhpm'] == 1 ? __('enabled') : __('disabled')), '', 10, 255, true, true);
+
+$table->data[9][0] = '<strong>'.__('Licensed to').'</strong>';
+$table->data[9][1] = html_print_input_text('licensed_to', $license['licensed_to'], '', 64, 255, true, true);
+
 html_print_table ($table);
 if (enterprise_installed()) {
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import login, click_menu_element, detect_and_pass_all_wizards, logout, gen_random_string, refresh_N_times_until_find_element
+from include.common_functions_60 import  click_menu_element, detect_and_pass_all_wizards, gen_random_string, refresh_N_times_until_find_element
 from include.planned_downtime_functions import *
 from include.alert_functions import *
 from include.module_functions import *

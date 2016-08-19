@@ -75,6 +75,8 @@ class TracingStreamResult(testtools.StreamResult):
 			self.skipped.append('test_id')
 
 is_enterprise = '1' == getenv('ENTERPRISE', False)
+num_threads = 0
+
 if is_enterprise:
         num_threads = 2
 else:
@@ -85,6 +87,7 @@ a = ArticaTestLoader()
 tests = a.discover(start_dir='console',pattern='*.py')
 
 print str(tests.countTestCases())+" tests found"
+print "Using "+str(num_threads)+" threads"
 
 concurrent_suite = testtools.ConcurrentStreamTestSuite(lambda: (split_suite_into_chunks(num_threads, tests)))
 result = TracingStreamResult()

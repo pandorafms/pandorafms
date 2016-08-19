@@ -26,7 +26,6 @@ class ACL(PandoraWebDriverTestCase):
 		ACL Propagation test: Creates one group "A" with ACL propagation, then a group "B" son of "A" with no ACL propagation, and finally group "C".
 		The test asserts if a user with privileges to "A" can see the agent of "B" but no agents of "C".
 		"""
-		print "funciono"
         	group_name_A = gen_random_string(6)
         	group_name_B = gen_random_string(6)
         	group_name_C = gen_random_string(6)

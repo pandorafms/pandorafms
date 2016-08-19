@@ -42,6 +42,7 @@ class Collections(PandoraWebDriverTestCase):
 	def test_B_edit_collection(self):
 	
 		driver = self.driver
+		self.login()
 		
 		edit_collection(driver,self.collection_name,new_name=self.new_collection_name,group="Applications",description="Edit collectionPAN11")
 		
@@ -54,6 +55,7 @@ class Collections(PandoraWebDriverTestCase):
 	def test_C_create_text_collection(self):
 	
 		driver = self.driver
+		self.login()
 	
 		create_text_in_collection(driver,self.new_collection_name,"file_collectionPAN11",text_file="test file")
 				
@@ -64,6 +66,7 @@ class Collections(PandoraWebDriverTestCase):
 	def test_D_directory_collection(self):	
 	
 		driver = self.driver
+		self.login()
 	
 		create_directory_in_collection(driver,self.new_collection_name,"directory_collectionPAN11")
 		
@@ -74,6 +77,7 @@ class Collections(PandoraWebDriverTestCase):
 	def test_E_delete_collection(self):
 	
 		driver = self.driver
+		self.login()
 		
 		delete_collection(driver,self.new_collection_name)
 	

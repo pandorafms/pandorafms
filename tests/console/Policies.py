@@ -48,6 +48,7 @@ class Policies(PandoraWebDriverTestCase):
 		Add network server module to previous policy 
 		"""	
 		driver = self.driver
+		self.login()
 
 		add_module_policy(driver,self.policy_name,"network_server",driver,module_name=self.network_server_module_name,component_group="Network Management",network_component="Host Alive")
 
@@ -67,6 +68,7 @@ class Policies(PandoraWebDriverTestCase):
 
 
 		driver = self.driver
+		self.login()
 
 		create_policy(driver,policy_name,"Applications",description="Policy for test")
 
@@ -93,6 +95,7 @@ class Policies(PandoraWebDriverTestCase):
 		module_name_2 = gen_random_string(6)
 
 		driver = self.driver
+		self.login()
 
 		create_agent(driver,agent_name_1,description="First agent by test")
 		create_agent(driver,agent_name_2,description="Second agent 2 by test")

@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import login, click_menu_element, detect_and_pass_all_wizards
-from include.agent_functions import create_agent
+import sys, os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../include")
+from common_classes_60 import PandoraWebDriverTestCase
+from common_functions_60 import login, click_menu_element, detect_and_pass_all_wizards
+from agent_functions import create_agent
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys

@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import click_menu_element, detect_and_pass_all_wizards, gen_random_string, is_enterprise
-from include.module_functions import create_module
-from include.agent_functions import create_agent_group
-from include.policy_functions import *
-from include.collection_functions import *
+import sys, os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../include")
+from common_classes_60 import PandoraWebDriverTestCase
+from common_functions_60 import click_menu_element, detect_and_pass_all_wizards, gen_random_string, is_enterprise
+from module_functions import create_module
+from agent_functions import create_agent_group
+from policy_functions import *
+from collection_functions import *
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -42,6 +44,7 @@ class Collections(PandoraWebDriverTestCase):
 	def test_B_edit_collection(self):
 	
 		driver = self.driver
+		self.login()
 		
 		edit_collection(driver,self.collection_name,new_name=self.new_collection_name,group="Applications",description="Edit collectionPAN11")
 		
@@ -54,6 +57,7 @@ class Collections(PandoraWebDriverTestCase):
 	def test_C_create_text_collection(self):
 	
 		driver = self.driver
+		self.login()
 	
 		create_text_in_collection(driver,self.new_collection_name,"file_collectionPAN11",text_file="test file")
 				
@@ -64,6 +68,7 @@ class Collections(PandoraWebDriverTestCase):
 	def test_D_directory_collection(self):	
 	
 		driver = self.driver
+		self.login()
 	
 		create_directory_in_collection(driver,self.new_collection_name,"directory_collectionPAN11")
 		
@@ -74,6 +79,7 @@ class Collections(PandoraWebDriverTestCase):
 	def test_E_delete_collection(self):
 	
 		driver = self.driver
+		self.login()
 		
 		delete_collection(driver,self.new_collection_name)
 	

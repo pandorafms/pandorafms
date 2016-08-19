@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import login, is_element_present, click_menu_element, detect_and_pass_all_wizards, logout, gen_random_string, is_enterprise
-from include.agent_functions import create_agent, search_agent, create_agent_group
-from include.user_functions import create_user, create_user_profile
-from include.module_functions import create_module
-from include.reports_functions import create_report
+import sys, os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../include")
+from common_classes_60 import PandoraWebDriverTestCase
+from common_functions_60 import login, is_element_present, click_menu_element, detect_and_pass_all_wizards, logout, gen_random_string, is_enterprise
+from agent_functions import create_agent, search_agent, create_agent_group
+from user_functions import create_user, create_user_profile
+from module_functions import create_module
+from reports_functions import create_report
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -26,7 +28,6 @@ class ACL(PandoraWebDriverTestCase):
 		ACL Propagation test: Creates one group "A" with ACL propagation, then a group "B" son of "A" with no ACL propagation, and finally group "C".
 		The test asserts if a user with privileges to "A" can see the agent of "B" but no agents of "C".
 		"""
-		print "funciono"
         	group_name_A = gen_random_string(6)
         	group_name_B = gen_random_string(6)
         	group_name_C = gen_random_string(6)

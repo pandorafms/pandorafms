@@ -1,28 +1,33 @@
 # -*- coding: utf-8 -*-
-from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import login, click_menu_element, refresh_N_times_until_find_element, detect_and_pass_all_wizards
-from include.agent_functions import create_agent
+import sys, os
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../include")
+from common_classes_60 import PandoraWebDriverTestCase
+from common_functions_60 import login, click_menu_element, refresh_N_times_until_find_element, detect_and_pass_all_wizards, gen_random_string
+from agent_functions import create_agent
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import StaleElementReferenceException
-from include.module_functions import *
+from module_functions import *
 import unittest, time, re
 
 
-class PAN3(PandoraWebDriverTestCase):
+class SimpleICMPTest(PandoraWebDriverTestCase):
 
-	test_name = u'PAN_3'
+	test_name = u'Simple ICMP Test'
 	test_description = u'Creates a simple ICMP check against localhost and checks the result is 1'
 	tickets_associated = []
 
 	def test_pan3(self):
 		driver = self.driver
+		agent_name = gen_random_string(6)
+		module_name = gen_random_string(6)
+
 		self.login()
-		create_agent(driver,"PAN3_agent",ip="127.0.0.1")
+		create_agent(driver,agent_name,ip="127.0.0.1")
 		
-		create_module("network_server",driver,agent_name="PAN3_agent",module_name="PAN3_module",component_group="Network Management",network_component="Host Alive",ip="127.0.0.1")
+		create_module("network_server",driver,agent_name=agent_name,module_name=module_name,component_group="Network Management",network_component="Host Alive",ip="127.0.0.1")
 
 		driver.find_element_by_xpath('//*[@id="menu_tab"]//a[contains(@href,"ver_agente")]').click()
 

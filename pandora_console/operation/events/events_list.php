@@ -481,6 +481,15 @@ $data[1] .= html_print_input_text ('date_to', $date_to, '', 15, 10, true);
 $table_advanced->data[] = $data;
 $table_advanced->rowclass[] = '';
 
+$data[0] = __('Timestamp from:') . $jump;
+$data[0] .= html_print_input_text('time_from', $time_from, '', 9, 7, true);
+
+$data[1] = __('Timestamp to:') . $jump;
+$data[1] .= html_print_input_text('time_to', $time_to, '', 9, 7, true);
+
+$table_advanced->data[] = $data;
+$table_advanced->rowclass[] = '';
+
 $data = array();
 if (defined('METACONSOLE'))
 {
@@ -1498,4 +1507,24 @@ function show_events_graph_dialog() {
 			.show ();
 }
 /* ]]> */
+
+//function datetime 
+function datetime_picker_callback() {
+		
+	$("#text-time_from, #text-time_to").timepicker({
+		showSecond: true,
+		timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+		timeOnlyTitle: '<?php echo __('Choose time');?>',
+		timeText: '<?php echo __('Time');?>',
+		hourText: '<?php echo __('Hour');?>',
+		minuteText: '<?php echo __('Minute');?>',
+		secondText: '<?php echo __('Second');?>',
+		currentText: '<?php echo __('Now');?>',
+		closeText: '<?php echo __('Close');?>'});
+		
+	$("#text-date_from, #text-date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+	
+	$.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
+}
+datetime_picker_callback();
 </script>

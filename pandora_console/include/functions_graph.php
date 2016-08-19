@@ -3319,7 +3319,7 @@ function graph_graphic_agentevents ($id_agent, $width, $height, $period = 0, $ho
 	
 	// Draw slicebar graph
 	if ($config['flash_charts']) {
-		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl);
+		$out = flot_slicesbar_graph($data, $period, $width, $height, $full_legend, $colors, $config['fontpath'], $config['round_corner'], $homeurl, '', '', false, $id_agent);
 	}
 	else {
 		$out = slicesbar_graph($data, $period, $width, $height, $colors, $config['fontpath'], $config['round_corner'], $homeurl);

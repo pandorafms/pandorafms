@@ -220,6 +220,8 @@ $id_name = (string) get_parameter('id_name', '');
 $open_filter = (int) get_parameter('open_filter', 0);
 $date_from = (string)get_parameter('date_from', '');
 $date_to = (string)get_parameter('date_to', '');
+$time_from = (string)get_parameter('time_from', '');
+$time_to = (string)get_parameter('time_to', '');
 $server_id = (int)get_parameter('server_id', 0);
 $text_agent = (string) get_parameter("text_agent");
 
@@ -295,6 +297,8 @@ $params = "search=" . rawurlencode(io_safe_input($search)) .
 	"&amp;open_filter=" . $open_filter .
 	"&amp;date_from=" . $date_from .
 	"&amp;date_to=" . $date_to .
+	"&amp;time_from=" . $time_from .
+	"&amp;time_to=" . $time_to .
 	"&amp;pure=" . $config["pure"];
 
 if ($meta) {

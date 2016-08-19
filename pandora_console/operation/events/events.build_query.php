@@ -160,13 +160,22 @@ if (($date_from == '') && ($date_to == '')) {
 }
 else {
 	if ($date_from != '') {
-		$udate_from = strtotime($date_from . " 00:00:00");
-		$sql_post .= " AND (utimestamp >= " . $udate_from . ")";
-		
+		if($time_from != '') {
+			$udate_from = strtotime($date_from . " " . $time_from);
+			$sql_post .= " AND (utimestamp >= " . $udate_from . ")";
+		} else {
+			$udate_from = strtotime($date_from . " 00:00:00");
+			$sql_post .= " AND (utimestamp >= " . $udate_from . ")";
+		}
 	}
 	if ($date_to != '') {
-		$udate_to = strtotime($date_to . " 23:59:59");
-		$sql_post .= " AND (utimestamp <= " . $udate_to . ")";
+		if($time_to != '') {
+			$udate_to = strtotime($date_to . " " . $time_to);
+			$sql_post .= " AND (utimestamp <= " . $udate_to . ")";
+		} else {
+			$udate_to = strtotime($date_to . " 23:59:59");
+			$sql_post .= " AND (utimestamp <= " . $udate_to . ")";
+		}
 	}
 }
 

@@ -30,6 +30,7 @@ def split_suite_into_chunks(num_threads, suite):
     if num_threads < 0: num_threads = 1
     if num_threads > 8: num_threads = 8
     num_tests = suite.countTestCases()
+    print "num_tests: "+str(num_tests)
     s = []
     s_tmp = ArticaTestSuite()
     n = round(num_tests / num_threads)
@@ -39,6 +40,8 @@ def split_suite_into_chunks(num_threads, suite):
             num_threads -= 1
             num_tests -= s_tmp.countTestCases()
             s_tmp = ArticaTestSuite()
+            print "num_tests: "+str(num_tests)
+            print "num_threads: "+str(num_threads)
             n = round(num_tests / num_threads)
         s_tmp.addTest(case)
         n -= 1
@@ -46,6 +49,7 @@ def split_suite_into_chunks(num_threads, suite):
         if s_tmp.countTestCases() > 0: s.append([s_tmp, None])
         num_tests -= s_tmp.countTestCases()
     if num_tests != 0: print("Error: num_tests should be 0 but is %s!" % num_tests)
+    print "The length of s is: "+str(len(s))
     return s
 
 class TracingStreamResult(testtools.StreamResult):
@@ -81,6 +85,7 @@ if is_enterprise:
         num_threads = 2
 else:
         num_threads = 3
+
 a = ArticaTestLoader()
 
 #Network server tests
@@ -90,6 +95,7 @@ print str(tests.countTestCases())+" tests found"
 print "Using "+str(num_threads)+" threads"
 
 concurrent_suite = testtools.ConcurrentStreamTestSuite(lambda: (split_suite_into_chunks(num_threads, tests)))
+#concurrent_suite = testtools.ConcurrentStreamTestSuite(tests)
 result = TracingStreamResult()
 
 

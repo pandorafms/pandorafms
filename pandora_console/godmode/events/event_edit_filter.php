@@ -58,7 +58,9 @@ if ($id) {
 	$event_view_hr = $filter['event_view_hr'];
 	$id_user_ack = $filter['id_user_ack'];
 	$group_rep = $filter['group_rep'];
-	
+	$date_from = str_replace("-","/",$filter['date_from']);
+	$date_to = str_replace("-","/",$filter['date_to']);
+
 	$tag_with_json = $filter['tag_with'];
 	$tag_with_json_clean = io_safe_output($tag_with_json);
 	$tag_with_base64 = base64_encode($tag_with_json_clean) ;
@@ -95,6 +97,9 @@ else {
 	$event_view_hr = '';
 	$id_user_ack = '';
 	$group_rep = '';
+	$date_from = '';
+	$date_to = '';
+
 	$tag_with_json = $tag_with_json_clean = json_encode(array());
 	$tag_with_base64 = base64_encode($tag_with_json);
 	$tag_without_json = $tag_without_json_clean = json_encode(array());
@@ -117,7 +122,9 @@ if($update || $create) {
 	$event_view_hr = get_parameter('event_view_hr', '');
 	$id_user_ack = get_parameter('id_user_ack', '');
 	$group_rep = get_parameter('group_rep', '');
-	
+	$date_from = get_parameter('date_from', '');
+	$date_to = get_parameter('date_to', '');
+
 	$tag_with_base64 = get_parameter('tag_with', json_encode(array()));
 	$tag_with_json = io_safe_input(base64_decode($tag_with_base64));
 	
@@ -143,6 +150,8 @@ if($update || $create) {
 		'group_rep' => $group_rep,
 		'tag_with' => $tag_with_json,
 		'tag_without' => $tag_without_json,
+		'date_from' => $date_from,
+		'date_to' => $date_to,
 		'filter_only_alert' => $filter_only_alert);
 }
 
@@ -289,6 +298,11 @@ $table->data[11][0] = '<b>' . __('Repeated') . '</b>';
 $table->data[11][1] = html_print_select ($repeated_sel, "group_rep",
 	$group_rep, '', '', '', true);
 
+$table ->data[12][0] = '<b>' . __('Date from') . '</b>';
+$table ->data[12][1] = html_print_input_text ('date_from', $date_from, '', 15, 10, true);
+
+$table ->data[13][0] = '<b>' . __('Date to') . '</b>';
+$table ->data[13][1] = html_print_input_text ('date_to', $date_to, '', 15, 10, true);
 
 $tag_with = json_decode($tag_with_json_clean, true);
 if (empty($tag_with)) {
@@ -328,38 +342,38 @@ $remove_with_tag_disabled = empty($tag_with_temp);
 $add_without_tag_disabled = empty($tags_select_without);
 $remove_without_tag_disabled = empty($tag_without_temp);
 
-$table->colspan[13][0] = '2';
-$table->data[13][0] = '<b>' . __('Events with following tags') . '</b>';
-$table->data[14][0] = html_print_select ($tags_select_with, 'select_with',
+$table->colspan[14][0] = '2';
+$table->data[14][0] = '<b>' . __('Events with following tags') . '</b>';
+$table->data[15][0] = html_print_select ($tags_select_with, 'select_with',
 	'', '', '', 0, true, false, true, '', false, 'width: 220px;');
-$table->data[14][1] = html_print_button(__('Add'), 'add_whith',
+$table->data[15][1] = html_print_button(__('Add'), 'add_whith',
 	$add_with_tag_disabled, '', 'class="add sub"', true);
 
-$table->data[15][0] = html_print_select ($tag_with_temp,
+$table->data[16][0] = html_print_select ($tag_with_temp,
 	'tag_with_temp', array(), '', '', 0, true, true,
 	true, '', false, "width: 220px; height: 50px;");
-$table->data[15][0] .= html_print_input_hidden('tag_with',
+$table->data[16][0] .= html_print_input_hidden('tag_with',
 	$tag_with_base64, true);
-$table->data[15][1] = html_print_button(__('Remove'),
+$table->data[16][1] = html_print_button(__('Remove'),
 	'remove_whith', $remove_with_tag_disabled, '', 'class="delete sub"', true);
 
-$table->colspan[16][0] = '2';
-$table->data[16][0] = '<b>' . __('Events without following tags') . '</b>';
-$table->data[17][0] = html_print_select ($tags_select_without, 'select_without',
+$table->colspan[17][0] = '2';
+$table->data[17][0] = '<b>' . __('Events without following tags') . '</b>';
+$table->data[18][0] = html_print_select ($tags_select_without, 'select_without',
 	'', '', '', 0, true, false, true, '', false, 'width: 220px;');
-$table->data[17][1] = html_print_button(__('Add'), 'add_whithout',
+$table->data[18][1] = html_print_button(__('Add'), 'add_whithout',
 	$add_without_tag_disabled, '', 'class="add sub"', true);
 
-$table->data[18][0] = html_print_select ($tag_without_temp,
+$table->data[19][0] = html_print_select ($tag_without_temp,
 	'tag_without_temp', array(), '', '', 0, true, true,
 	true, '', false, "width: 220px; height: 50px;");
-$table->data[18][0] .= html_print_input_hidden('tag_without',
+$table->data[19][0] .= html_print_input_hidden('tag_without',
 	$tag_without_base64, true);
-$table->data[18][1] = html_print_button(__('Remove'), 'remove_whithout',
+$table->data[19][1] = html_print_button(__('Remove'), 'remove_whithout',
 	$remove_without_tag_disabled, '', 'class="delete sub"', true);
 
-$table->data[19][0] = '<b>' . __('Alert events') . '</b>';
-$table->data[19][1] = html_print_select(
+$table->data[20][0] = '<b>' . __('Alert events') . '</b>';
+$table->data[20][1] = html_print_select(
 	array(
 		'-1' => __('All'),
 		'0' => __('Filter alert events'),
@@ -368,8 +382,8 @@ $table->data[19][1] = html_print_select(
 
 if (!is_metaconsole()) {
 	echo $id_agent_module;
-	$table->data[20][0] = '<b>' . __('Module search') . '</b>';
-	$table->data[20][1] .= html_print_autocomplete_modules('module_search',
+	$table->data[21][0] = '<b>' . __('Module search') . '</b>';
+	$table->data[21][1] .= html_print_autocomplete_modules('module_search',
 		$text_module, false, $id_agent_module, true, '', array(), true);
 }
 
@@ -405,6 +419,8 @@ var val_none = 0;
 var text_none = "<?php echo __('None'); ?>";
 
 $(document).ready( function() {
+	$("#text-date_from, #text-date_to").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+
 	$("#button-add_whith").click(function() {
 		click_button_add_tag("with");
 		});

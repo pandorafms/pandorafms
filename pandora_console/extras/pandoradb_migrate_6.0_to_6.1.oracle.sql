@@ -51,3 +51,9 @@ ALTER TABLE tplanned_downtime_agents ADD COLUMN manually_disabled NUMBER(5, 0) D
 -- Table `tlink`
 -- ---------------------------------------------------------------------
 UPDATE tlink SET link = 'http://library.pandorafms.com/' WHERE name = 'Module library';
+
+-- ---------------------------------------------------------------------
+-- Table `tevent_filter`
+-- ---------------------------------------------------------------------
+ALTER TABLE tevent_filter ADD COLUMN date_from date DEFAULT NULL;
+ALTER TABLE tevent_filter ADD COLUMN date_to date DEFAULT NULL;

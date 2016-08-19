@@ -1918,6 +1918,8 @@ CREATE TABLE tevent_filter (
 	group_rep NUMBER(10, 0) DEFAULT 0,
 	tag_with CLOB,
 	tag_without CLOB,
+	date_from DATE DEFAULT NULL,
+	date_to DATE DEFAULT NULL,
 	filter_only_alert NUMBER(10, 0) DEFAULT -1
 );
 

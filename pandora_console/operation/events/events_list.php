@@ -77,7 +77,9 @@ if (is_ajax()) {
 		$values['tag_without'] = get_parameter('tag_without', io_json_mb_encode(array()));
 		$values['filter_only_alert'] = get_parameter('filter_only_alert');
 		$values['id_group_filter'] = get_parameter('id_group_filter');
-		
+		$values['date_from'] = get_parameter('date_from');
+		$values['date_to'] = get_parameter('date_to');
+
 		$exists = (bool)db_get_value_filter(
 			'id_filter', 'tevent_filter', $values);
 		
@@ -115,7 +117,9 @@ if (is_ajax()) {
 		$values['tag_without'] = get_parameter('tag_without', io_json_mb_encode(array()));
 		$values['filter_only_alert'] = get_parameter('filter_only_alert');
 		$values['id_group_filter'] = get_parameter('id_group_filter');
-		
+		$values['date_from'] = get_parameter('date_from');
+		$values['date_to'] = get_parameter('date_to');
+
 		$result = db_process_sql_update('tevent_filter',
 			$values, array('id_filter' => $id));
 		
@@ -957,6 +961,20 @@ $(document).ready( function() {
 							$("#filter_only_alert").val(val);
 						if (i == 'id_group_filter')
 							$("#id_group_filter").val(val);
+						if (i == 'date_from'){
+							if((val == '0000-00-00') || (val == null)) {
+								$("#text-date_from").val('');
+							} else {
+								$("#text-date_from").val(val.replace(/\-/g,"/"));
+							}
+						}
+						if (i == 'date_to'){
+							if((val == '0000-00-00') || (val == null)) {
+								$("#text-date_to").val('');
+							} else {
+								$("#text-date_to").val(val.replace(/\-/g,"/"));
+							}
+						}
 					});
 					reorder_tags_inputs();
 					// Update the info with the loaded filter
@@ -1020,7 +1038,9 @@ $(document).ready( function() {
 				"tag_with": Base64.decode($("#hidden-tag_with").val()),
 				"tag_without": Base64.decode($("#hidden-tag_without").val()),
 				"filter_only_alert" : $("#filter_only_alert").val(),
-				"id_group_filter": $("#id_group_filter").val()
+				"id_group_filter": $("#id_group_filter").val(),
+				"date_from": $("#text-date_from").val(),
+				"date_to": $("#text-date_to").val()
 			},
 			function (data) {
 				$(".info_box").hide();
@@ -1115,7 +1135,9 @@ $(document).ready( function() {
 			"tag_with" : Base64.decode($("#hidden-tag_with").val()),
 			"tag_without" : Base64.decode($("#hidden-tag_without").val()),
 			"filter_only_alert" : $("#filter_only_alert").val(),
-			"id_group_filter": $("#id_group_filter").val()
+			"id_group_filter": $("#id_group_filter").val(),
+			"date_from": $("#text-date_from").val(),
+			"date_to": $("#text-date_to").val()
 			},
 			function (data) {
 				$(".info_box").hide();

@@ -1713,7 +1713,9 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
 	`group_rep` int(10) NOT NULL default 0,
 	`tag_with` text NOT NULL,
 	`tag_without` text NOT NULL,
-	`filter_only_alert` int(10) NOT NULL default -1, 
+	`filter_only_alert` int(10) NOT NULL default -1,
+	`date_from` date default NULL,
+	`date_to` date default NULL,
 	PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -13,8 +13,8 @@ class ArticaTestSuite(TestSuite):
 		super(ArticaTestSuite,self).__init__(*args,**kwargs)
 		
 	def run(self,*args,**kwargs):
-		print "Running "+str(self.countTestCases())+" tests."
-		print "Tests are: "+str(self._tests)
+		#print "Running "+str(self.countTestCases())+" tests."
+		#print "Tests are: "+str(self._tests)
 		super(ArticaTestSuite,self).run(*args,**kwargs)
 
 class ArticaTestLoader(TestLoader):
@@ -78,8 +78,7 @@ is_enterprise = '1' == getenv('ENTERPRISE', False)
 if is_enterprise:
         num_threads = 2
 else:
-        num_threads = 8
-import pdb
+        num_threads = 3
 a = ArticaTestLoader()
 
 #Network server tests

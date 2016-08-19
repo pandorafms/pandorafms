@@ -34,26 +34,6 @@ def gen_random_string(size,preffix=None):
 		return random_string
 
 
-def login(driver,user="admin",passwd="pandora",pandora_url=None):
-	print u"Logging in"
-	try:
-		print driver.base_url
-	except Exception as e:
-		print "se casco"
-		print e
-	print u"yep"
-	if pandora_url is None:
-		pandora_url = driver.base_url
-
-	print "Pandora url is "+pandora_url
-
-	driver.get(pandora_url+"/pandora_console/index.php")
-	driver.find_element_by_id("nick").clear()
-	driver.find_element_by_id("nick").send_keys(user)
-	driver.find_element_by_id("pass").clear()
-	driver.find_element_by_id("pass").send_keys(passwd)
-	driver.find_element_by_id("submit-login_button").click()
-
 def get_menu_element(driver,menu_item_text):
 	return driver.find_element_by_xpath('//div[@class="menu"]//a[contains(.,"'+menu_item_text+'")]')
 
@@ -64,7 +44,7 @@ def refresh_N_times_until_find_element(driver,n,element_text,how=By.ID,refresh_t
 	from selenium.common.exceptions import TimeoutException
 
 	i = 1
-	while (1<=n):
+	while (i<=n):
 		try:
 			element = WebDriverWait(driver, refresh_time).until(EC.presence_of_element_located((how, element_text)))
 			return element
@@ -73,17 +53,6 @@ def refresh_N_times_until_find_element(driver,n,element_text,how=By.ID,refresh_t
 			i = i+1
 
 	raise TimeoutException("Element %s not found" % (element_text))
-
-def logout(driver,url):
-	print u"Logging out"
-	if url[-1] != '/':
-		driver.find_element_by_xpath('//div[@id="container"]//a[@href="'+url+'/pandora_console/index.php?bye=bye"]').click()
-	else:
-		driver.find_element_by_xpath('//div[@id="container"]//a[@href="'+url+'pandora_console/index.php?bye=bye"]').click()
-
-	driver.get(url+"/pandora_console/index.php")
-	refresh_N_times_until_find_element(driver,2,"nick")
-
 
 #Pass Wizards
 

@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-import sys, os
-sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../include")
-from common_classes_60 import PandoraWebDriverTestCase
-from common_functions_60 import login, detect_and_pass_all_wizards, gen_random_string, is_enterprise
-from policy_functions import *
-from agent_functions import *
-from collection_functions import *
+from include.common_classes_60 import PandoraWebDriverTestCase
+from include.common_functions_60 import login, detect_and_pass_all_wizards, gen_random_string, is_enterprise
+from include.policy_functions import *
+from include.agent_functions import *
+from include.collection_functions import *
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys

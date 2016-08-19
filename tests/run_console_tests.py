@@ -23,33 +23,29 @@ class ArticaTestLoader(TestLoader):
 		super(ArticaTestLoader, self).__init__(*args,**kwargs)
 	
 
-""" Splits a Test Suite so that no more than 'n' threads will execute the tests """
-def split_suite_into_chunks(num_threads, suite):
-    # Compute num_threads such that the number of threads does not exceed the value passed to the function
-    # Keep num_threads to a reasonable number of threads
-    if num_threads < 0: num_threads = 1
-    if num_threads > 8: num_threads = 8
-    num_tests = suite.countTestCases()
-    print "num_tests: "+str(num_tests)
+def split_suite_into_chunks(n, suite):
+    import math
+
+    # Keep n to a reasonable number of threads
+    if n < 0:
+        n = 1
+    if n > 8:
+        n = 8
+    # Compute n such that the number of threads does not exceed the value passed to the function
+    n = math.ceil(suite.countTestCases() / n)
     s = []
+    i = 0
     s_tmp = ArticaTestSuite()
-    n = round(num_tests / num_threads)
     for case in suite:
-        if n <= 0 and s_tmp.countTestCases() > 0:
+        if i < n:
+            s_tmp.addTest(case)
+            i += 1
+        if i == n:
             s.append([s_tmp, None])
-            num_threads -= 1
-            num_tests -= s_tmp.countTestCases()
+            i = 0
             s_tmp = ArticaTestSuite()
-            print "num_tests: "+str(num_tests)
-            print "num_threads: "+str(num_threads)
-            n = round(num_tests / num_threads)
-        s_tmp.addTest(case)
-        n -= 1
-    if s_tmp.countTestCases() > 0:
-        if s_tmp.countTestCases() > 0: s.append([s_tmp, None])
-        num_tests -= s_tmp.countTestCases()
-    if num_tests != 0: print("Error: num_tests should be 0 but is %s!" % num_tests)
-    print "The length of s is: "+str(len(s))
+    if (i > 0):
+        s.append([s_tmp, None])
     return s
 
 class TracingStreamResult(testtools.StreamResult):
@@ -95,9 +91,7 @@ print str(tests.countTestCases())+" tests found"
 print "Using "+str(num_threads)+" threads"
 
 concurrent_suite = testtools.ConcurrentStreamTestSuite(lambda: (split_suite_into_chunks(num_threads, tests)))
-#concurrent_suite = testtools.ConcurrentStreamTestSuite(tests)
 result = TracingStreamResult()
-
 
 try:
 	result.startTestRun()

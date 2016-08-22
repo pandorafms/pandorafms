@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import  detect_and_pass_all_wizards, gen_random_string, is_enterprise, enterprise_class
+from include.common_functions_60 import  detect_and_pass_all_wizards, gen_random_string, is_enterprise
 from include.policy_functions import *
 from include.agent_functions import *
 from include.collection_functions import *
@@ -13,7 +13,6 @@ from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
 import unittest, time, re
 
-@enterprise_class
 class Policies(PandoraWebDriverTestCase):
 
 	test_name = u'Policies'
@@ -24,6 +23,7 @@ class Policies(PandoraWebDriverTestCase):
 	network_server_module_name = gen_random_string(6)
 
 
+	@is_enterprise
 	def test_A_create_policy(self):
 		
 		u"""
@@ -41,6 +41,7 @@ class Policies(PandoraWebDriverTestCase):
 		self.assertIsInstance(element,WebElement)
 
 	
+	@is_enterprise
 	def test_B_add_network_server_module_to_policy(self):
 		
 		u"""
@@ -55,6 +56,7 @@ class Policies(PandoraWebDriverTestCase):
 		self.assertIsInstance(element,WebElement)
 
 	
+	@is_enterprise
 	def test_C_add_collection_to_policy(self):
 
 		u"""
@@ -79,6 +81,7 @@ class Policies(PandoraWebDriverTestCase):
 
 
 
+	@is_enterprise
 	def test_D_Apply_policy_to_agents(self):
 
 		u"""

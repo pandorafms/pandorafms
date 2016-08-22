@@ -25,24 +25,6 @@ def is_enterprise(func):
 			raise unittest.SkipTest("Skipping test")
         return inner
 
-def enterprise_class(cls):
-	u"""
-        This decorator is intended to be used for Enterprise tests only
-        """
-        def inner(*args,**kwargs):
-                is_enterprise = 0
-                try:
-                        is_enterprise = args[0].is_enterprise == '1'
-                except:
-                        pass
-
-                if is_enterprise:
-                        return cls
-                else:
-			return object
-        return inner
-
-
 
 def gen_random_string(size,preffix=None):
 	random_string =  ''.join(random.SystemRandom().choice(string.ascii_uppercase+string.digits) for _ in range(size))

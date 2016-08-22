@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import click_menu_element, detect_and_pass_all_wizards, gen_random_string, is_enterprise, enterprise_class
+from include.common_functions_60 import click_menu_element, detect_and_pass_all_wizards, gen_random_string, is_enterprise
 from include.module_functions import create_module
 from include.agent_functions import create_agent_group
 from include.policy_functions import *
@@ -14,7 +14,7 @@ from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
 import unittest, time, re
 
-@enterprise_class
+
 class Collections(PandoraWebDriverTestCase):
 
 	test_name = u'Collections'
@@ -24,6 +24,7 @@ class Collections(PandoraWebDriverTestCase):
 	collection_name = gen_random_string(6)
 	new_collection_name = gen_random_string(6)
 
+	@is_enterprise
 	def test_A_create_collection(self):
 
 		driver = self.driver
@@ -37,6 +38,7 @@ class Collections(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//a[contains(.,self.collection_name)]')
 		self.assertIsInstance(element,WebElement)
 
+	@is_enterprise
 	def test_B_edit_collection(self):
 	
 		driver = self.driver
@@ -49,6 +51,7 @@ class Collections(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//a[contains(.,self.new_collection_name)]')
 		self.assertIsInstance(element,WebElement)
 
+	@is_enterprise
 	def test_C_create_text_collection(self):
 	
 		driver = self.driver
@@ -59,6 +62,7 @@ class Collections(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//a[contains(.,"file_collectionPAN11")]')
 		self.assertIsInstance(element,WebElement)
 
+	@is_enterprise
 	def test_D_directory_collection(self):	
 	
 		driver = self.driver
@@ -69,6 +73,7 @@ class Collections(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//a[contains(.,"directory_collectionPAN11")]')
 		self.assertIsInstance(element,WebElement)
 
+	@is_enterprise
 	def test_E_delete_collection(self):
 	
 		driver = self.driver

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import  click_menu_element, detect_and_pass_all_wizards, gen_random_string, enterprise_class
+from include.common_functions_60 import  click_menu_element, detect_and_pass_all_wizards, gen_random_string
 from include.planned_downtime_functions import *
 from include.alert_functions import *
 from include.module_functions import *
@@ -14,6 +14,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
 import unittest, time, re, datetime
+
 
 class QuietTest(PandoraWebDriverTestCase):
 

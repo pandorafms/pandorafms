@@ -604,12 +604,13 @@ sub process_module_data ($$$$$$$$$$) {
 	my $module = get_db_single_row ($dbh, 'SELECT * FROM tagente_modulo WHERE id_agente = ? AND ' . db_text ('nombre') . ' = ?', $agent->{'id_agente'}, safe_input($module_name));
 	if (! defined ($module)) {
 		
+		# This part has a code commentary because it doesn't allow creating new modules on preexistent agents
 		# Do not auto create modules
-		if ($pa_config->{'autocreate'} ne '1') {
-			logger($pa_config, "Module '$module_name' not found for agent '$agent_name' and module auto-creation disabled.", 10);
-			$ModuleSem->up ();
-			return;
-		}
+		#if ($pa_config->{'autocreate'} ne '1') {
+		#	logger($pa_config, "Module '$module_name' not found for agent '$agent_name' and module auto-creation disabled.", 10);
+		#	$ModuleSem->up ();
+		#	return;
+		#}
 		
 		# Is the agent not learning?
 		if (($agent->{'modo'} == 0) && !($force_processing)) {

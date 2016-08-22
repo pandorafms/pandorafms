@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import  click_menu_element, refresh_N_times_until_find_element, detect_and_pass_all_wizards, is_element_present
+from include.common_functions_60 import login, click_menu_element, refresh_N_times_until_find_element, detect_and_pass_all_wizards, is_element_present, logout
 from include.reports_functions import create_report, delete_report
 from include.user_functions import create_user
 from include.agent_functions import create_agent

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from common_classes_60 import PandoraWebDriverTestCase
-from common_functions_60 import click_menu_element, detect_and_pass_all_wizards
+from common_functions_60 import login, click_menu_element, detect_and_pass_all_wizards, logout
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys

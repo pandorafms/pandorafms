@@ -647,14 +647,15 @@ ui_require_jquery_file ("colorpicker");
 
 function load_fonts() {
 	global $config;
-	
-	$dir = scandir($config['homedir'] . '/include/fonts/');
-	
+
+	$home = str_replace('\\', '/', $config['homedir'] );
+	$dir = scandir($home. '/include/fonts/');
+
 	$fonts = array();
 	
 	foreach ($dir as $file) {
 		if (strstr($file, '.ttf') !== false) {
-			$fonts[$config['homedir'] . '/include/fonts/' . $file] = $file;
+			$fonts[$home . '/include/fonts/' . $file] = $file;
 		}
 	}
 	

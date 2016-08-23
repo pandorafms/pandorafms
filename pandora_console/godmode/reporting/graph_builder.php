@@ -74,7 +74,12 @@ if ($add_graph) {
 	$height = get_parameter_post ("height");
 	$stacked = get_parameter ("stacked", 0);
 	$period = get_parameter_post ("period");
-	
+	$threshold = get_parameter('threshold');
+
+	if ($threshold == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
+		$stacked = $threshold;
+	}
+
 	// Create graph
 	$values = array(
 		'id_user' => $config['id_user'],
@@ -112,7 +117,12 @@ if ($update_graph) {
 	$period = get_parameter('period');
 	$stacked = get_parameter('stacked');
 	$alerts = get_parameter('alerts');
-	
+	$threshold = get_parameter('threshold');
+
+	if ($threshold == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
+		$stacked = $threshold;
+	}
+
 	if (trim($name) != "") {
 		
 		$success = db_process_sql_update('tgraph', 

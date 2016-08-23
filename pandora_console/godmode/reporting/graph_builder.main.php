@@ -64,6 +64,12 @@ if ($edit_graph) {
 	$id_group = $graphInTgraph['id_group'];
 	$width = $graphInTgraph['width'];
 	$height = $graphInTgraph['height'];
+	$check = false;
+
+	if ($stacked == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
+		$stacked = CUSTOM_GRAPH_BULLET_CHART;
+		$check = true;
+	}
 }
 else {
 	$id_agent = 0;
@@ -74,7 +80,8 @@ else {
 	$height = 210;
 	$period = SECONDS_1DAY;
 	$factor = 1;
-	$stacked = 0;
+	$stacked = 4;
+	$check = false;
 }
 
 
@@ -137,7 +144,7 @@ echo "<td class='datos'>";
 html_print_extended_select_for_time ('period', $period, '', '', '0', 10);
 echo "</td><td class='datos2'>";
 echo "<b>".__('Type of graph')."</b></td>";
-echo "<td class='datos2'>";
+echo "<td class='datos2'> <div style='float:left;display:inline-block'>";
 
 include_once($config["homedir"] . "/include/functions_graph.php");
 
@@ -153,7 +160,16 @@ $stackeds = array(
 	CUSTOM_GRAPH_PIE => __('Pie')
 	);
 html_print_select ($stackeds, 'stacked', $stacked);
-echo "</td>";
+
+echo "<div style='float:right' id='thresholdDiv' name='thresholdDiv'>&nbsp;&nbsp;<b>".__('Equalize maximum thresholds')."</b>" .
+	ui_print_help_tip (__("If an option is selected, all graphs will have the highest value from all modules included in the graph as a maximum threshold"), true);
+
+html_print_checkbox('threshold', CUSTOM_GRAPH_BULLET_CHART_THRESHOLD, $check, false, false, '', false);
+echo "</div>";
+
+
+
+echo "</div></td>";
 
 echo "</table>";
 
@@ -167,15 +183,29 @@ echo "</form>";
 
 
 echo '<script type="text/javascript">
+	$(document).ready(function() {
+		if ($("#stacked").val() == '. CUSTOM_GRAPH_BULLET_CHART .') {
+			$("#thresholdDiv").show();
+		}else{
+			$("#thresholdDiv").hide();
+		}
+	});
+
 	$("#stacked").change(function(){
-		console.log($(this).val());
 		if ( $(this).val() == '. CUSTOM_GRAPH_GAUGE .') {
+			$("[name=threshold]").prop("checked", false);
 			$(".stacked").hide();
 			$("input[name=\'width\']").hide();
-		}
-		else {
+			$("#thresholdDiv").hide();
+		} else if ($(this).val() == '. CUSTOM_GRAPH_BULLET_CHART .') {
+			$("#thresholdDiv").show();
 			$(".stacked").show();
 			$("input[name=\'width\']").show();
+		} else {
+			$("[name=threshold]").prop("checked", false);
+			$(".stacked").show();
+			$("input[name=\'width\']").show();
+			$("#thresholdDiv").hide();
 		}
 	});
 

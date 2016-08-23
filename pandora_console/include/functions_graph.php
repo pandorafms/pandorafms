@@ -1083,7 +1083,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	
 	$graph_values = array();
 	$module_name_list = array();
-	
+	$collector = 0;
+
 	// Calculate data for each module
 	for ($i = 0; $i < $module_number; $i++) {
 		$automatic_custom_graph_meta = false;
@@ -1432,8 +1433,26 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		$stacked = CUSTOM_GRAPH_BULLET_CHART;
 	
 	switch ($stacked) {
+		case CUSTOM_GRAPH_BULLET_CHART_THRESHOLD:
 		case CUSTOM_GRAPH_BULLET_CHART:
 			$datelimit = $date - $period;
+			if($stacked == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
+				$acumulador = 0;
+				foreach ($module_list as $module_item) {
+					$module = $module_item;
+					$query_last_value = sprintf('
+						SELECT datos
+						FROM tagente_datos
+						WHERE id_agente_modulo = %d
+							AND utimestamp < %d
+							ORDER BY utimestamp DESC',
+						$module, $date);
+					$temp_data = db_get_value_sql($query_last_value);
+					if ($acumulador < $temp_data){
+						$acumulador = $temp_data;
+					}
+				}
+			}
 			foreach ($module_list as $module_item) {
 				$automatic_custom_graph_meta = false;
 				if ($config['metaconsole']) {
@@ -1486,7 +1505,12 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$temp_max = reporting_get_agentmodule_data_max($module,$period,$date);
 				if ($temp_max < 0)
 					$temp_max = 0;
-				$temp[$module]['max'] = ($temp_max === false) ? 0 : $temp_max;
+				if (isset($acumulador)){
+					$temp[$module]['max'] = $acumulador;
+				}else{
+					$temp[$module]['max'] = ($temp_max === false) ? 0 : $temp_max;
+				}
+
 				$temp_min = reporting_get_agentmodule_data_min($module,$period,$date);
 				if ($temp_min < 0)
 					$temp_min = 0;
@@ -1788,6 +1812,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
 				"", $ttl, $homeurl, $background_color,$dashboard, $vconsole);
 			break;
+		case CUSTOM_GRAPH_BULLET_CHART_THRESHOLD:
 		case CUSTOM_GRAPH_BULLET_CHART:
 			return stacked_bullet_chart($flash_charts, $graph_values,
 				$width, $height, $color, $module_name_list, $long_index,

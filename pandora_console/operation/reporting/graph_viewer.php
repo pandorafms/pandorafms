@@ -94,10 +94,16 @@ if ($view_graph) {
 	$events = $graph["events"];
 	$description = $graph["description"];
 	$stacked = (int) get_parameter ('stacked', -1);
+	$check = get_parameter('threshold',false);
+
+	if($check == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
+		$check = true;
+		$stacked = CUSTOM_GRAPH_BULLET_CHART_THRESHOLD;
+	}
 	if ($stacked == -1)
 		$stacked = $graph["stacked"];
-	
-	if ($stacked == CUSTOM_GRAPH_BULLET_CHART )
+
+	if ($stacked == CUSTOM_GRAPH_BULLET_CHART || $stacked == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD)
 		$height = 50;
 	
 	if ($stacked == CUSTOM_GRAPH_GAUGE ){
@@ -174,7 +180,9 @@ if ($view_graph) {
 	else {
 		ui_print_info_message ( array ( 'no_close' => true, 'message' =>  __('No data.') ) );
 	}
-	
+	if ($stacked == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
+		$stacked = 4;
+	}
 	$period_label = human_time_description_raw ($period);
 	echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id_graph'>";
 	echo "<table class='databox filters' cellpadding='4' cellspacing='4' style='width: 100%'>";
@@ -214,7 +222,15 @@ if ($view_graph) {
 	$stackeds[CUSTOM_GRAPH_PIE] = __('Pie');
 	html_print_select ($stackeds, 'stacked', $stacked , '', '', -1, false, false);
 	echo "</td>";
-	
+
+	echo "<td class='datos'>";
+	echo "<div style='float:left' id='thresholdDiv' name='thresholdDiv'>&nbsp;&nbsp;<b>".__('Equalize maximum thresholds')."</b>" .
+		ui_print_help_tip (__("If an option is selected, all graphs will have the highest value from all modules included in the graph as a maximum threshold"), true);
+
+	html_print_checkbox('threshold', CUSTOM_GRAPH_BULLET_CHART_THRESHOLD, $check, false, false, '', false);
+	echo "</div>";
+	echo "</td>";
+
 	echo "<td class='datos'>";
 	$zooms = array();
 	$zooms[0] = __('Graph defined');
@@ -260,6 +276,26 @@ if ($view_graph) {
 			changeMonth: true,
 			changeYear: true,
 			showAnim: "slideDown"});
+
+		if ($("#stacked").val() == '4') {
+			$("#thresholdDiv").show();
+		}else{
+			$("#thresholdDiv").hide();
+		}
+
+
+	});
+
+	$("#stacked").change(function(){
+		if ($(this).val() == '4') {
+			console.log($(this).val());
+			$("#thresholdDiv").show();
+			$(".stacked").show();
+		} else {
+			$("[name=threshold]").prop("checked", false);
+			$(".stacked").show();
+			$("#thresholdDiv").hide();
+		}
 	});
 	</script>
 	

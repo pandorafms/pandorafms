@@ -8,16 +8,21 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
+
 import unittest, time, re	
 
-class PAN7(PandoraWebDriverTestCase):
+class Users(PandoraWebDriverTestCase):
 
-	test_name = u'PAN_7'
-	test_description = u'Modify home screen, and check that change is correct. Return this change'
+	test_name = u'Users'
+	test_description = u'Users tests'
 	tickets_associated = []
 
-	def test_pan7(self):
+	def test_A_home_screen(self):
 	
+		u"""
+		Modify home screen, and check that change is correct. Return this change
+		"""
+
 		driver = self.driver
 		self.login()
 		detect_and_pass_all_wizards(driver)
@@ -27,17 +32,9 @@ class PAN7(PandoraWebDriverTestCase):
 		self.logout()
 		self.login()
 	
+		element = driver.find_element_by_xpath('//a[contains(.,"Event control filter")]')
+		self.assertIsInstance(element,WebElement)
 
-		try:
-			element = driver.find_element_by_xpath('//a[contains(.,"Event control filter")]')
-			self.assertIsInstance(element,WebElement)
-
-		except AssertionError as e:
-			self.verificationErrors.append(str(e))
-
-		except NoSuchElementException as e:
-			self.verificationErrors.append(str(e))
-		
 		#Return this change		
 		
 		activate_home_screen(driver,"Default")

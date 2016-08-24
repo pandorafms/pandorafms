@@ -16,18 +16,18 @@ def create_module(module_type,*args,**kwargs):
 	elif module_type=='data_server':
 		create_data_server_module(*args,**kwargs)
 		
-def create_network_server_module(driver,agent_name=None,module_name=None,component_group=None,type=None,network_component=None,min_warning=None,max_warning=None,min_critical=None,max_critical=None,ip=None,tag_name=None,description=None):
+def create_network_server_module(driver,agent_name=None,module_name=None,component_group=None,type_of_module=None,network_component=None,min_warning=None,max_warning=None,min_critical=None,max_critical=None,ip=None,tag_name=None,description=None):
 
 	# component_group -> Example: Remote ICMP network agent (latency)
 	# network_component -> Example: Host Alive
 	
-	#The type variable is optional, but required if component_group and network_component variables are specified
+	#The type_of_module variable is optional, but required if component_group and network_component variables are specified
 	
 	if agent_name != None:
 		search_agent(driver,agent_name)
 		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Manage"]').click()
 		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
-
+	
 	Select(driver.find_element_by_id("moduletype")).select_by_visible_text("Create a new network server module")
 	driver.find_element_by_xpath('//*[@id="main"]/form/table/tbody/tr/td[5]/input').click()
 	
@@ -65,7 +65,7 @@ def create_network_server_module(driver,agent_name=None,module_name=None,compone
 	else:
 		driver.find_element_by_id("text-name").clear()
 		driver.find_element_by_id("text-name").send_keys(module_name)
-		Select(driver.find_element_by_id("id_module_type")).select_by_visible_text(type)	
+		Select(driver.find_element_by_id("id_module_type")).select_by_visible_text(type_of_module)	
 	
 	if module_name != None:
 		time.sleep(3)
@@ -85,11 +85,11 @@ def create_network_server_module(driver,agent_name=None,module_name=None,compone
 	driver.find_element_by_id("submit-crtbutton").click()
 
 
-def create_data_server_module(driver,module_name,agent_name=None,type=None,min_warning=None,max_warning=None,min_critical=None,max_critical=None,tag_name=None,description=None):
+def create_data_server_module(driver,module_name,agent_name=None,type_of_module=None,min_warning=None,max_warning=None,min_critical=None,max_critical=None,tag_name=None,description=None):
 
-	# type -> Example: Generic numeric
+	# type_of_module -> Example: Generic numeric
 	
-	# The type variable is Generic numeric by default
+	# The type_of_module variable is Generic numeric by default
 
 	if agent_name != None:
 		search_agent(driver,agent_name)
@@ -104,9 +104,9 @@ def create_data_server_module(driver,module_name,agent_name=None,type=None,min_w
 	driver.find_element_by_id("text-name").clear()
 	driver.find_element_by_id("text-name").send_keys(module_name)
 	
-	if type != None:
+	if type_of_module != None:
 	
-		Select(driver.find_element_by_id("id_module_type")).select_by_visible_text(type)	
+		Select(driver.find_element_by_id("id_module_type")).select_by_visible_text(type_of_module)	
 		
 	if min_warning != None:
 	
@@ -166,4 +166,6 @@ def search_module (driver,agent_name,module_name):
 	driver.find_element_by_id("text-search_string").send_keys(module_name)
 	
 	driver.find_element_by_id("submit-filter").click()
+
+
 	

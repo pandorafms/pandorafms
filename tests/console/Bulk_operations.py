@@ -8,17 +8,26 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
+
 import unittest, time, re
 
-class PAN2(PandoraWebDriverTestCase):
-	test_name = u'PAN_2'
+class Bulk_operations(PandoraWebDriverTestCase):
+	
+	test_name = u'Bulk_operation'
 	test_description = u'Creation two agents and delete this agents using bulk operation'
-	tickets_associated = [3831]
+	tickets_associated = []
 
-	def test_pan2(self):
+	def test_A_delete_agent_bulk_operations(self):
+
+		u"""
+		Creation two agents and delete this agents using bulk operation'
+		Ticket Associated = 3831
+		"""
+	
 		driver = self.driver
 		self.login()
-		
+		detect_and_pass_all_wizards
+			
 		create_agent(driver,"prueba masivas 1")
 		
 		driver.find_element_by_css_selector("b").click()
@@ -33,11 +42,9 @@ class PAN2(PandoraWebDriverTestCase):
 		Select(driver.find_element_by_id("id_agents")).select_by_visible_text("prueba masivas 1")
 		Select(driver.find_element_by_id("id_agents")).select_by_visible_text("prueba masivas 2")
 		driver.find_element_by_id("submit-go").click()
-		try:
-			self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
-			self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Successfully deleted (2)")]').text,"Successfully deleted (2)")
-		except AssertionError as e:
-			self.verificationErrors.append(str(e))
-
+			
+		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
+		self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Successfully deleted (2)")]').text,"Successfully deleted (2)")
+		
 if __name__ == "__main__":
         unittest.main()

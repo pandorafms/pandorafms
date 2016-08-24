@@ -8,18 +8,25 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import StaleElementReferenceException
 from include.module_functions import *
+
 import unittest, time, re
 
+class Modules(PandoraWebDriverTestCase):
 
-class PAN3(PandoraWebDriverTestCase):
-
-	test_name = u'PAN_3'
-	test_description = u'Creates a simple ICMP check against localhost and checks the result is 1'
+	test_name = u'Modules'
+	test_description = u'Module tests'
 	tickets_associated = []
 
-	def test_pan3(self):
+	def test_create_ICMP_module(self):
+
+		u"""
+		Creates a simple ICMP check against localhost and checks the result is 1
+		"""
+
 		driver = self.driver
 		self.login()
+		detect_and_pass_all_wizards(driver)
+
 		create_agent(driver,"PAN3_agent",ip="127.0.0.1")
 		
 		create_module("network_server",driver,agent_name="PAN3_agent",module_name="PAN3_module",component_group="Network Management",network_component="Host Alive",ip="127.0.0.1")

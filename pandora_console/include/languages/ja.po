@@ -17411,7 +17411,7 @@ msgid "Correct Delete"
 msgstr "削除しました。"
 
 #: ../../include/functions_api.php:1815
-msgid "Error in creation network module. Agent name doesn't exists."
+msgid "Error in creation network module. Agent name doesn't exist."
 msgstr "ネットワークモジュール作成エラー。エージェント名が存在しません。"
 
 #: ../../include/functions_api.php:1821
@@ -17429,7 +17429,7 @@ msgid "Error updating network module. Module name cannot be left blank."
 msgstr "ネットワークモジュール更新エラー。モジュール名が指定されていません。"
 
 #: ../../include/functions_api.php:1917
-msgid "Error updating network module. Id_module doesn't exists."
+msgid "Error updating network module. Id_module doesn't exist."
 msgstr "ネットワークモジュール更新エラー。id_module が存在しません。"
 
 #: ../../include/functions_api.php:1932
@@ -17437,7 +17437,7 @@ msgid "Error updating network module. Id_module exists in the new agent."
 msgstr "ネットワークモジュール更新エラー。id_module が新規エージェントにあります。"
 
 #: ../../include/functions_api.php:1939
-msgid "Error updating network module. Id_agent doesn't exists."
+msgid "Error updating network module. Id_agent doesn't exist."
 msgstr "ネットワークモジュールの更新エラー。id_agent が存在しません。"
 
 #: ../../include/functions_api.php:1989
@@ -17449,7 +17449,7 @@ msgid "Error in creation plugin module. Id_plugin cannot be left blank."
 msgstr "ラグインモジュール作成エラー。id_plugin が指定されていません。"
 
 #: ../../include/functions_api.php:2025
-msgid "Error in creation plugin module. Agent name doesn't exists."
+msgid "Error in creation plugin module. Agent name doesn't exist."
 msgstr "プラグインモジュール作成エラー。エージェント名が存在しません。"
 
 #: ../../include/functions_api.php:2085
@@ -17461,7 +17461,7 @@ msgid "Error updating plugin module. Id_module cannot be left blank."
 msgstr "プラグインモジュール更新エラー。id_module が指定されていません。"
 
 #: ../../include/functions_api.php:2123
-msgid "Error updating plugin module. Id_module doesn't exists."
+msgid "Error updating plugin module. Id_module doesn't exist."
 msgstr "プラグインモジュール更新エラー。id_module が存在しません。"
 
 #: ../../include/functions_api.php:2135
@@ -17469,7 +17469,7 @@ msgid "Error updating plugin module. Id_module exists in the new agent."
 msgstr "プラグインモジュール更新エラー。id_module が新規エージェントにあります。"
 
 #: ../../include/functions_api.php:2142
-msgid "Error updating plugin module. Id_agent doesn't exists."
+msgid "Error updating plugin module. Id_agent doesn't exist."
 msgstr "プラグインモジュールの更新エラー。id_agent が存在しません。"
 
 #: ../../include/functions_api.php:2201
@@ -17481,7 +17481,7 @@ msgid "Error in creation data module. Module_name cannot be left blank."
 msgstr "データモジュール作成エラー。module_name が指定されていません。"
 
 #: ../../include/functions_api.php:2237
-msgid "Error in creation data module. Agent name doesn't exists."
+msgid "Error in creation data module. Agent name doesn't exist."
 msgstr "データモジュール作成エラー。エージェント名が存在しません。"
 
 #: ../../include/functions_api.php:2288 ../../include/functions_api.php:2354
@@ -17493,7 +17493,7 @@ msgid "Error in creation synthetic module. Module_name cannot be left blank."
 msgstr "統合モジュール作成エラー。モジュール名は空にできません。"
 
 #: ../../include/functions_api.php:2329
-msgid "Error in creation synthetic module. Agent name doesn't exists."
+msgid "Error in creation synthetic module. Agent name doesn't exist."
 msgstr "統合モジュール作成エラー。エージェント名が存在しません。"
 
 #: ../../include/functions_api.php:2466
@@ -17505,7 +17505,7 @@ msgid "Error updating data module. Id_module cannot be left blank."
 msgstr "データモジュール更新エラー。id_module が指定されていません。"
 
 #: ../../include/functions_api.php:2504
-msgid "Error updating data module. Id_module doesn't exists."
+msgid "Error updating data module. Id_module doesn't exist."
 msgstr "データモジュール更新エラー。id_moduleが存在しません。"
 
 #: ../../include/functions_api.php:2516
@@ -17513,7 +17513,7 @@ msgid "Error updating data module. Id_module exists in the new agent."
 msgstr "データモジュール更新エラー。id_module が新規エージェントにあります。"
 
 #: ../../include/functions_api.php:2523
-msgid "Error updating data module. Id_agent doesn't exists."
+msgid "Error updating data module. Id_agent doesn't exist."
 msgstr "データモジュールの更新エラー。id_agent が存在しません。"
 
 #: ../../include/functions_api.php:2569
@@ -17530,20 +17530,20 @@ msgid ""
 msgstr "SNMPモジュール作成エラー。SNMPモジュールの id_module_type が不正です。"
 
 #: ../../include/functions_api.php:2618
-msgid "Error in creation SNMP module. Agent name doesn't exists."
+msgid "Error in creation SNMP module. Agent name doesn't exist."
 msgstr "SNMPモジュール作成エラー。エージェント名が存在しません。"
 
 #: ../../include/functions_api.php:2633 ../../include/functions_api.php:2796
 #: ../../include/functions_api.php:5253
 msgid ""
-"Error in creation SNMP module. snmp3_priv_method doesn't exists. Set it to "
+"Error in creation SNMP module. snmp3_priv_method doesn't exist. Set it to "
 "'AES' or 'DES'. "
 msgstr "SNMPモジュール作成エラー。snmp3_priv_method がありません。'AES' または 'DES' を設定してください。 "
 
 #: ../../include/functions_api.php:2638 ../../include/functions_api.php:2805
 #: ../../include/functions_api.php:5258
 msgid ""
-"Error in creation SNMP module. snmp3_sec_level doesn't exists. Set it to "
+"Error in creation SNMP module. snmp3_sec_level doesn't exist. Set it to "
 "'authNoPriv' or 'authPriv' or 'noAuthNoPriv'. "
 msgstr ""
 "SNMPモジュール作成エラー。snmp3_sec_level がありません。 'authNoPriv'、'authPriv'、noAuthNoPriv' "
@@ -17552,7 +17552,7 @@ msgstr ""
 #: ../../include/functions_api.php:2643 ../../include/functions_api.php:2811
 #: ../../include/functions_api.php:5263
 msgid ""
-"Error in creation SNMP module. snmp3_auth_method doesn't exists. Set it to "
+"Error in creation SNMP module. snmp3_auth_method doesn't exist. Set it to "
 "'MD5' or 'SHA'. "
 msgstr "SNMPモジュール作成エラー。snmp3_auth_method がありません。'MD5' または 'SHA' を設定してください。 "
 
@@ -17565,7 +17565,7 @@ msgid "Error updating SNMP module. Id_module cannot be left blank."
 msgstr "SNMPモジュール更新エラー。id_module が指定されていません。"
 
 #: ../../include/functions_api.php:2767
-msgid "Error updating SNMP module. Id_module doesn't exists."
+msgid "Error updating SNMP module. Id_module doesn't exist."
 msgstr "SNMPモジュール更新エラー。id_module が存在しません。"
 
 #: ../../include/functions_api.php:2779
@@ -17573,7 +17573,7 @@ msgid "Error updating SNMP module. Id_module exists in the new agent."
 msgstr "SNMPモジュール更新エラー。id_moduleが新規エージェントにあります。"
 
 #: ../../include/functions_api.php:2786
-msgid "Error updating snmp module. Id_agent doesn't exists."
+msgid "Error updating snmp module. Id_agent doesn't exist."
 msgstr "snmp モジュールの更新エラー。id_agent が存在しません。"
 
 #: ../../include/functions_api.php:2896
@@ -17639,14 +17639,14 @@ msgstr "SNMPコンポーネント作成エラー。SNMPコンポーネントグ�
 
 #: ../../include/functions_api.php:3119
 msgid ""
-"Error creating SNMP component. snmp3_priv_method doesn't exists. Set it to "
+"Error creating SNMP component. snmp3_priv_method doesn't exist. Set it to "
 "'AES' or 'DES'. "
 msgstr ""
 "SNMPコンポーネント作成エラー。snmp3_priv_methd が存在しません。'AES' または 'DES' を設定してください。 "
 
 #: ../../include/functions_api.php:3128
 msgid ""
-"Error creating SNMP component. snmp3_sec_level doesn't exists. Set it to "
+"Error creating SNMP component. snmp3_sec_level doesn't exist. Set it to "
 "'authNoPriv' or 'authPriv' or 'noAuthNoPriv'. "
 msgstr ""
 "SNMPコンポーネント作成エラー。snmp3_sec_level "
@@ -17654,7 +17654,7 @@ msgstr ""
 
 #: ../../include/functions_api.php:3134
 msgid ""
-"Error creating SNMP component. snmp3_auth_method doesn't exists. Set it to "
+"Error creating SNMP component. snmp3_auth_method doesn't exist. Set it to "
 "'MD5' or 'SHA'. "
 msgstr ""
 "SNMPコンポーネント作成エラー。snmp3_auth_method が存在しません。'MD5' または 'SHA' を設定してください。 "
@@ -17688,7 +17688,7 @@ msgstr "全エージェントからのモジュール値取得エラー。モジ
 
 #: ../../include/functions_api.php:3323
 msgid ""
-"Error getting module value from all agents. Module name doesn't exists."
+"Error getting module value from all agents. Module name doesn't exist."
 msgstr "全エージェントからのモジュール値取得エラー。モジュール名が存在しません。"
 
 #: ../../include/functions_api.php:3368
@@ -17704,7 +17704,7 @@ msgid "Error updating alert template. Id_template cannot be left blank."
 msgstr "アラートテンプレート更新エラー。id_templateが指定されていません。"
 
 #: ../../include/functions_api.php:3479
-msgid "Error updating alert template. Id_template doesn't exists."
+msgid "Error updating alert template. Id_template doesn't exist."
 msgstr "アラートテンプレート更新エラー。id_templateが存在しません。"
 
 #: ../../include/functions_api.php:3505
@@ -17732,7 +17732,7 @@ msgid "Error getting all alert templates."
 msgstr "全アラートテンプレート取得エラー。"
 
 #: ../../include/functions_api.php:3616
-msgid "Error getting alert template. Id_template doesn't exists."
+msgid "Error getting alert template. Id_template doesn't exist."
 msgstr "アラートテンプレート取得エラー。id_templateが存在しません。"
 
 #: ../../include/functions_api.php:3633
@@ -17748,7 +17748,7 @@ msgid "Error getting plugins."
 msgstr "プラグイン取得エラー。"
 
 #: ../../include/functions_api.php:3740
-msgid "Error creating module from network component. Agent doesn't exists."
+msgid "Error creating module from network component. Agent doesn't exist."
 msgstr "ネットワークコンポーネントからのモジュール作成エラー。エージェントが存在しません。"
 
 #: ../../include/functions_api.php:3747
@@ -17778,11 +17778,11 @@ msgid "Error assigning module to template. Id_template doensn't exists."
 msgstr "テンプレートへのモジュール割当エラー。id_templateが存在しません。"
 
 #: ../../include/functions_api.php:3822
-msgid "Error assigning module to template. Id_agent doesn't exists."
+msgid "Error assigning module to template. Id_agent doesn't exist."
 msgstr "テンプレートへのモジュール割当エラー。id_agentが存在しません。"
 
 #: ../../include/functions_api.php:3829
-msgid "Error assigning module to template. Id_module doesn't exists."
+msgid "Error assigning module to template. Id_module doesn't exist."
 msgstr "テンプレートへのモジュール割当エラー。id_moduleが存在しません。"
 
 #: ../../include/functions_api.php:3837
@@ -17795,7 +17795,7 @@ msgid ""
 msgstr "モジュールテンプレート削除エラー。id_module_templateが指定されていません。"
 
 #: ../../include/functions_api.php:3870
-msgid "Error deleting module template. Id_module_template doesn't exists."
+msgid "Error deleting module template. Id_module_template doesn't exist."
 msgstr "モジュールテンプレート削除エラー。id_module_templateが存在しません。"
 
 #: ../../include/functions_api.php:3878 ../../include/functions_api.php:3937
@@ -17835,7 +17835,7 @@ msgid "Downtime stopped."
 msgstr "計画停止を中断しました。"
 
 #: ../../include/functions_api.php:4462
-msgid "and this modules are doesn't exists or not applicable a this agents: "
+msgid "the selected modules do not exist or do not belong to the intended agents: "
 msgstr "これらのモジュールが存在しないかまたはエージェントに適用できません : "
 
 #: ../../include/functions_api.php:4464
@@ -17843,7 +17843,7 @@ msgid "and this agents are generate problems: "
 msgstr "これらのエージェントでエラーです : "
 
 #: ../../include/functions_api.php:4466
-msgid "and this agents with ids are doesn't exists: "
+msgid "and this agents with ids are don't exist: "
 msgstr "これらのエージェントIDは存在しません : "
 
 #: ../../include/functions_api.php:4493
@@ -17855,7 +17855,7 @@ msgid "Error adding agent to policy. Id_agent cannot be left blank."
 msgstr "ポリシーへのエージェント追加エラー。id_agentが指定されていません。"
 
 #: ../../include/functions_api.php:4506
-msgid "Error adding agent to policy. Id_agent doesn't exists."
+msgid "Error adding agent to policy. Id_agent doesn't exist."
 msgstr "ポリシーへのエージェント追加エラー。id_agentが存在しません。"
 
 #: ../../include/functions_api.php:4514
@@ -17893,7 +17893,7 @@ msgid ""
 msgstr "ポリシーのデータモジュール更新エラー。id_policy_moduleが指定されていません。"
 
 #: ../../include/functions_api.php:4659
-msgid "Error updating data module in policy. Module doesn't exists."
+msgid "Error updating data module in policy. Module doesn't exist."
 msgstr "ポリシーのデータモジュール更新エラー。モジュールが存在しません。"
 
 #: ../../include/functions_api.php:4665
@@ -17942,7 +17942,7 @@ msgid ""
 msgstr "ポリシーのネットワークモジュール更新エラー。id_policy_moduleが指定されていません。"
 
 #: ../../include/functions_api.php:4836
-msgid "Error updating network module in policy. Module doesn't exists."
+msgid "Error updating network module in policy. Module doesn't exist."
 msgstr "ポリシーのネットワークモジュール更新エラー。モジュールが存在しません。"
 
 #: ../../include/functions_api.php:4842
@@ -17988,7 +17988,7 @@ msgid ""
 msgstr "ポリシーのプラグインモジュール更新エラー。id_policy_moduleが指定されていません。"
 
 #: ../../include/functions_api.php:5010
-msgid "Error updating plugin module in policy. Module doesn't exists."
+msgid "Error updating plugin module in policy. Module doesn't exist."
 msgstr "ポリシーのプラグインモジュール更新エラー。モジュールが存在しません。"
 
 #: ../../include/functions_api.php:5016
@@ -18033,7 +18033,7 @@ msgid ""
 msgstr "ポリシー内のSNMPモジュール更新エラー。id_policy_moduleが指定されていません。"
 
 #: ../../include/functions_api.php:5387
-msgid "Error updating SNMP module in policy. Module doesn't exists."
+msgid "Error updating SNMP module in policy. Module doesn't exist."
 msgstr "ポリシー内のSNMPモジュール更新エラー。モジュールが存在しません。"
 
 #: ../../include/functions_api.php:5392
@@ -18042,13 +18042,13 @@ msgstr "ポリシー内のSNMPモジュール更新エラー。モジュール�
 
 #: ../../include/functions_api.php:5402
 msgid ""
-"Error updating SNMP module. snmp3_priv_method doesn't exists. Set it to "
+"Error updating SNMP module. snmp3_priv_method doesn't exist. Set it to "
 "'AES' or 'DES'. "
 msgstr "SNMPモジュール更新エラー。snmp3_priv_methodがありません。'AES' または 'DES' を指定してください。 "
 
 #: ../../include/functions_api.php:5412
 msgid ""
-"Error updating SNMP module. snmp3_sec_level doesn't exists. Set it to "
+"Error updating SNMP module. snmp3_sec_level doesn't exist. Set it to "
 "'authNoPriv' or 'authPriv' or 'noAuthNoPriv'. "
 msgstr ""
 "SNMPモジュール更新エラー。snmp3_sec_level がありません。'authNoPriv'、'authPriv'、'noAuthNoPriv' "
@@ -18056,7 +18056,7 @@ msgstr ""
 
 #: ../../include/functions_api.php:5419
 msgid ""
-"Error updating SNMP module. snmp3_auth_method doesn't exists. Set it to "
+"Error updating SNMP module. snmp3_auth_method doesn't exist. Set it to "
 "'MD5' or 'SHA'. "
 msgstr "SNMPモジュール更新エラー。snmp3_auth_method がありません。'MD5' または 'SHA' を指定してください。 "
 
@@ -18089,7 +18089,7 @@ msgid "Error in group creation. Icon_name cannot be left blank."
 msgstr "グループ作成エラー。icon_name が指定されていません。"
 
 #: ../../include/functions_api.php:5636 ../../include/functions_api.php:5773
-msgid "Error in group creation. Id_parent_group doesn't exists."
+msgid "Error in group creation. Id_parent_group doesn't exist."
 msgstr "グループ作成エラー。id_parent_group が存在しません。"
 
 #: ../../include/functions_api.php:5664
@@ -18129,7 +18129,7 @@ msgid "Error updating user. Id_user cannot be left blank."
 msgstr "ユーザ更新エラー。id_user が指定されていません。"
 
 #: ../../include/functions_api.php:5993
-msgid "Error updating user. Id_user doesn't exists."
+msgid "Error updating user. Id_user doesn't exist."
 msgstr "ユーザ更新エラー。id_user が存在しません。"
 
 #: ../../include/functions_api.php:6009
@@ -18149,7 +18149,7 @@ msgid "Error enable/disable user. Enable/disable value cannot be left blank."
 msgstr "ユーザの有効化/無効化エラー。有効化/無効化の値は空にできません。"
 
 #: ../../include/functions_api.php:6061
-msgid "Error enable/disable user. The user doesn't exists."
+msgid "Error enable/disable user. The user doesn't exist."
 msgstr "ユーザの有効化/無効化エラー。ユーザが存在しません。"
 
 #: ../../include/functions_api.php:6070
@@ -18206,7 +18206,7 @@ msgid ""
 msgstr "エージェント有効化/無効化エラー。有効化/無効化は空にできません。"
 
 #: ../../include/functions_api.php:8528
-msgid "Error enable/disable agent. The agent doesn't exists."
+msgid "Error enable/disable agent. The agent doesn't exist."
 msgstr "エージェント有効化/無効化エラー。エージェントが存在しません。"
 
 #: ../../include/functions_api.php:8539
@@ -18242,7 +18242,7 @@ msgid "Error updating special day. Id cannot be left blank."
 msgstr "特別日更新エラー。IDは空にできません。"
 
 #: ../../include/functions_api.php:8738
-msgid "Error updating special day. Id doesn't exists."
+msgid "Error updating special day. Id doesn't exist."
 msgstr "特別日更新エラー。IDが存在しません。"
 
 #: ../../include/functions_api.php:8743
@@ -18254,7 +18254,7 @@ msgid "Error deleting special day. Id cannot be left blank."
 msgstr "特別日削除エラー。IDは空にできません。"
 
 #: ../../include/functions_api.php:8784
-msgid "Error deleting special day. Id doesn't exists."
+msgid "Error deleting special day. Id doesn't exist."
 msgstr "特別日削除エラー。IDが存在しません。"
 
 #: ../../include/functions_api.php:8791
@@ -24896,7 +24896,7 @@ msgstr "ページが見つかりません"
 #~ msgid "Add new job"
 #~ msgstr "新規ジョブ追加"
 
-#~ msgid "Path doesn't exists or is not writable"
+#~ msgid "Path doesn't exist or is not writable"
 #~ msgstr "パスが存在しないか書き込みできません"
 
 #~ msgid "Edit job"

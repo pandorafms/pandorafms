@@ -1849,7 +1849,7 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3) {
 	
 	if (!$idAgent) {
 		returnError('error_create_network_module',
-			__('Error in creation network module. Agent name doesn\'t exists.'));
+			__('Error in creation network module. Agent name doesn\'t exist.'));
 		return;
 	}
 	
@@ -1951,7 +1951,7 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3) {
 	
 	if (!$check_id_module) {
 		returnError('error_update_network_module',
-			__('Error updating network module. Id_module doesn\'t exists.'));
+			__('Error updating network module. Id_module doesn\'t exist.'));
 		return;
 	}
 	
@@ -1973,7 +1973,7 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3) {
 		// Check if agent exists
 		$check_id_agent = db_get_value ('id_agente', 'tagente', 'id_agente', $other['data'][0]);
 		if (!$check_id_agent) {
-			returnError('error_update_data_module', __('Error updating network module. Id_agent doesn\'t exists.'));
+			returnError('error_update_data_module', __('Error updating network module. Id_agent doesn\'t exist.'));
 			return;
 		}
 	}
@@ -2062,7 +2062,7 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3) {
 	$idAgent = agents_get_agent_id($agentName);
 	
 	if (!$idAgent) {
-		returnError('error_create_plugin_module', __('Error in creation plugin module. Agent name doesn\'t exists.'));
+		returnError('error_create_plugin_module', __('Error in creation plugin module. Agent name doesn\'t exist.'));
 		return;
 	}
 	
@@ -2160,7 +2160,7 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3) {
 	$check_id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
 	
 	if (!$check_id_module) {
-		returnError('error_update_plugin_module', __('Error updating plugin module. Id_module doesn\'t exists.'));
+		returnError('error_update_plugin_module', __('Error updating plugin module. Id_module doesn\'t exist.'));
 		return;
 	}
 	
@@ -2179,7 +2179,7 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3) {
 		// Check if agent exists
 		$check_id_agent = db_get_value ('id_agente', 'tagente', 'id_agente', $other['data'][0]);
 		if (!$check_id_agent) {
-			returnError('error_update_data_module', __('Error updating plugin module. Id_agent doesn\'t exists.'));
+			returnError('error_update_data_module', __('Error updating plugin module. Id_agent doesn\'t exist.'));
 			return;
 		}
 	}
@@ -2276,7 +2276,7 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3) {
 	$idAgent = agents_get_agent_id($agentName);
 	
 	if (!$idAgent) {
-		returnError('error_create_data_module', __('Error in creation data module. Agent name doesn\'t exists.'));
+		returnError('error_create_data_module', __('Error in creation data module. Agent name doesn\'t exist.'));
 		return;
 	}
 	
@@ -2368,7 +2368,7 @@ function api_set_create_synthetic_module($id, $thrash1, $other, $thrash3) {
 	$idAgent = agents_get_agent_id(io_safe_output($agentName),true);
 	
 	if (!$idAgent) {
-		returnError('error_create_data_module', __('Error in creation synthetic module. Agent name doesn\'t exists.'));
+		returnError('error_create_data_module', __('Error in creation synthetic module. Agent name doesn\'t exist.'));
 		return;
 	}
 	
@@ -2543,7 +2543,7 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3) {
 	$check_id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
 	
 	if (!$check_id_module) {
-		returnError('error_update_data_module', __('Error updating data module. Id_module doesn\'t exists.'));
+		returnError('error_update_data_module', __('Error updating data module. Id_module doesn\'t exist.'));
 		return;
 	}
 	
@@ -2562,7 +2562,7 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3) {
 		// Check if agent exists
 		$check_id_agent = db_get_value ('id_agente', 'tagente', 'id_agente', $other['data'][0]);
 		if (!$check_id_agent) {
-			returnError('error_update_data_module', __('Error updating data module. Id_agent doesn\'t exists.'));
+			returnError('error_update_data_module', __('Error updating data module. Id_agent doesn\'t exist.'));
 			return;
 		}
 	}
@@ -2659,7 +2659,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 	$idAgent = agents_get_agent_id($agentName);
 	
 	if (!$idAgent) {
-		returnError('error_create_snmp_module', __('Error in creation SNMP module. Agent name doesn\'t exists.'));
+		returnError('error_create_snmp_module', __('Error in creation SNMP module. Agent name doesn\'t exist.'));
 		return;
 	}
 	
@@ -2674,17 +2674,17 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3) {
 	if ($other['data'][14] == "3") {
 		
 		if ($other['data'][23] != "AES" and $other['data'][23] != "DES") {
-			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
+			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_priv_method doesn\'t exist. Set it to \'AES\' or \'DES\'. '));
 			return;
 		}
 		
 		if ($other['data'][25] != "authNoPriv" and $other['data'][25] != "authPriv" and $other['data'][25] != "noAuthNoPriv") {
-			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
+			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_sec_level doesn\'t exist. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
 			return;
 		}
 		
 		if ($other['data'][26] != "MD5" and $other['data'][26] != "SHA") {
-			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
+			returnError('error_create_snmp_module', __('Error in creation SNMP module. snmp3_auth_method doesn\'t exist. Set it to \'MD5\' or \'SHA\'. '));
 			return;
 		}
 		
@@ -2808,7 +2808,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 	$check_id_module = db_get_value ('id_agente_modulo', 'tagente_modulo', 'id_agente_modulo', $id_module);
 	
 	if (!$check_id_module) {
-		returnError('error_update_snmp_module', __('Error updating SNMP module. Id_module doesn\'t exists.'));
+		returnError('error_update_snmp_module', __('Error updating SNMP module. Id_module doesn\'t exist.'));
 		return;
 	}
 	
@@ -2827,7 +2827,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 		// Check if agent exists
 		$check_id_agent = db_get_value ('id_agente', 'tagente', 'id_agente', $other['data'][0]);
 		if (!$check_id_agent) {
-			returnError('error_update_data_module', __('Error updating snmp module. Id_agent doesn\'t exists.'));
+			returnError('error_update_data_module', __('Error updating snmp module. Id_agent doesn\'t exist.'));
 			return;
 		}
 	}
@@ -2837,7 +2837,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 		
 		if ($other['data'][22] != "AES" and $other['data'][22] != "DES") {
 			returnError('error_create_snmp_module',
-				__('Error in creation SNMP module. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
+				__('Error in creation SNMP module. snmp3_priv_method doesn\'t exist. Set it to \'AES\' or \'DES\'. '));
 			return;
 		}
 		
@@ -2846,13 +2846,13 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3) {
 			and $other['data'][24] != "noAuthNoPriv") {
 			
 			returnError('error_create_snmp_module',
-				__('Error in creation SNMP module. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
+				__('Error in creation SNMP module. snmp3_sec_level doesn\'t exist. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
 			return;
 		}
 		
 		if ($other['data'][25] != "MD5" and $other['data'][25] != "SHA") {
 			returnError('error_create_snmp_module',
-				__('Error in creation SNMP module. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
+				__('Error in creation SNMP module. snmp3_auth_method doesn\'t exist. Set it to \'MD5\' or \'SHA\'. '));
 			return;
 		}
 		
@@ -3163,7 +3163,7 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
 	if ($other['data'][16] == "3") {
 		
 		if ($other['data'][22] != "AES" and $other['data'][22] != "DES") {
-			returnError('error_set_new_snmp_component', __('Error creating SNMP component. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
+			returnError('error_set_new_snmp_component', __('Error creating SNMP component. snmp3_priv_method doesn\'t exist. Set it to \'AES\' or \'DES\'. '));
 			return;
 		}
 		
@@ -3172,13 +3172,13 @@ function api_set_new_snmp_component($id, $thrash1, $other, $thrash2) {
 			and $other['data'][25] != "noAuthNoPriv") {
 			
 			returnError('error_set_new_snmp_component',
-				__('Error creating SNMP component. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
+				__('Error creating SNMP component. snmp3_sec_level doesn\'t exist. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
 			return;
 		}
 		
 		if ($other['data'][24] != "MD5" and $other['data'][24] != "SHA") {
 			returnError('error_set_new_snmp_component',
-				__('Error creating SNMP component. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
+				__('Error creating SNMP component. snmp3_auth_method doesn\'t exist. Set it to \'MD5\' or \'SHA\'. '));
 			return;
 		}
 		
@@ -3367,7 +3367,7 @@ function api_get_module_value_all_agents($id, $thrash1, $other, $thrash2) {
 	
 	if ($id_module === false) {
 		returnError('error_get_module_value_all_agents',
-			__('Error getting module value from all agents. Module name doesn\'t exists.'));
+			__('Error getting module value from all agents. Module name doesn\'t exist.'));
 		return;
 	}
 	
@@ -3523,7 +3523,7 @@ function api_set_update_alert_template($id_template, $thrash1, $other, $thrash3)
 	
 	if (!$result_template) {
 		returnError('error_update_alert_template',
-			__('Error updating alert template. Id_template doesn\'t exists.'));
+			__('Error updating alert template. Id_template doesn\'t exist.'));
 		return;
 	}
 	
@@ -3660,7 +3660,7 @@ function api_get_alert_template($id_template, $thrash1, $other, $thrash3) {
 		
 		if (!$result_template) {
 			returnError('error_get_alert_template',
-				__('Error getting alert template. Id_template doesn\'t exists.'));
+				__('Error getting alert template. Id_template doesn\'t exist.'));
 			return;
 		}
 		
@@ -3784,14 +3784,14 @@ function api_set_create_network_module_from_component($agent_name, $component_na
 	$agent_id = agents_get_agent_id($agent_name);
 	
 	if (!$agent_id) {
-		returnError('error_network_module_from_component', __('Error creating module from network component. Agent doesn\'t exists.'));
+		returnError('error_network_module_from_component', __('Error creating module from network component. Agent doesn\'t exist.'));
 		return;
 	}
 	
 	$component= db_get_row ('tnetwork_component', 'name', $component_name);
 	
 	if (!$component) {
-		returnError('error_network_module_from_component', __('Error creating module from network component. Network component doesn\'t exists.'));
+		returnError('error_network_module_from_component', __('Error creating module from network component. Network component doesn\'t exist.'));
 		return;
 	}
 	
@@ -3866,14 +3866,14 @@ function api_set_create_module_template($id, $thrash1, $other, $thrash3) {
 	$result_agent = agents_get_name($id_agent);
 	
 	if (!$result_agent) {
-		returnError('error_module_to_template', __('Error assigning module to template. Id_agent doesn\'t exists.'));
+		returnError('error_module_to_template', __('Error assigning module to template. Id_agent doesn\'t exist.'));
 		return;
 	}
 	
 	$result_module = db_get_value ('nombre', 'tagente_modulo', 'id_agente_modulo', (int) $id_module);
 	
 	if (!$result_module) {
-		returnError('error_module_to_template', __('Error assigning module to template. Id_module doesn\'t exists.'));
+		returnError('error_module_to_template', __('Error assigning module to template. Id_module doesn\'t exist.'));
 		return;
 	}
 	
@@ -3914,7 +3914,7 @@ function api_set_delete_module_template($id, $thrash1, $other, $thrash3) {
 	$result_module_template = alerts_get_alert_agent_module($id);
 	
 	if (!$result_module_template) {
-		returnError('error_delete_module_template', __('Error deleting module template. Id_module_template doesn\'t exists.'));
+		returnError('error_delete_module_template', __('Error deleting module template. Id_module_template doesn\'t exist.'));
 		return;
 	}
 	
@@ -4550,7 +4550,7 @@ function api_set_add_agent_policy($id, $thrash1, $other, $thrash2) {
 	$result_agent = db_get_value ('id_agente', 'tagente', 'id_agente', (int) $other['data'][0]);
 	
 	if (!$result_agent) {
-		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_agent doesn\'t exists.'));
+		returnError('error_add_agent_policy', __('Error adding agent to policy. Id_agent doesn\'t exist.'));
 		return;
 	}
 	
@@ -4703,7 +4703,7 @@ function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3) {
 	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module'));
 	
 	if ($module_policy === false) {
-		returnError('error_update_data_module_policy', __('Error updating data module in policy. Module doesn\'t exists.'));
+		returnError('error_update_data_module_policy', __('Error updating data module in policy. Module doesn\'t exist.'));
 		return;
 	}
 	
@@ -4880,7 +4880,7 @@ function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3) {
 	
 	if ($module_policy === false) {
 		returnError('error_update_network_module_policy',
-			__('Error updating network module in policy. Module doesn\'t exists.'));
+			__('Error updating network module in policy. Module doesn\'t exist.'));
 		return;
 	}
 	
@@ -5054,7 +5054,7 @@ function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3) {
 	
 	if ($module_policy === false) {
 		returnError('error_updating_plugin_module_policy',
-			__('Error updating plugin module in policy. Module doesn\'t exists.'));
+			__('Error updating plugin module in policy. Module doesn\'t exist.'));
 		return;
 	}
 	
@@ -5297,17 +5297,17 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 	if ($other['data'][13] == "3") {
 		
 		if ($other['data'][22] != "AES" and $other['data'][22] != "DES") {
-			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
+			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_priv_method doesn\'t exist. Set it to \'AES\' or \'DES\'. '));
 			return;
 		}
 		
 		if ($other['data'][24] != "authNoPriv" and $other['data'][24] != "authPriv" and $other['data'][24] != "noAuthNoPriv") {
-			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
+			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_sec_level doesn\'t exist. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
 			return;
 		}
 		
 		if ($other['data'][25] != "MD5" and $other['data'][25] != "SHA") {
-			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
+			returnError('error_add_snmp_module_policy', __('Error in creation SNMP module. snmp3_auth_method doesn\'t exist. Set it to \'MD5\' or \'SHA\'. '));
 			return;
 		}
 		
@@ -5431,7 +5431,7 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 	$module_policy = enterprise_hook('policies_get_modules', array($id, array('id' => $other['data'][0]), 'id_module'));
 	
 	if ($module_policy === false) {
-		returnError('error_update_snmp_module_policy', __('Error updating SNMP module in policy. Module doesn\'t exists.'));
+		returnError('error_update_snmp_module_policy', __('Error updating SNMP module in policy. Module doesn\'t exist.'));
 		return;
 	}
 	
@@ -5446,8 +5446,8 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 		
 		if ($other['data'][21] != "AES" and $other['data'][21] != "DES") {
 			returnError('error_update_snmp_module_policy',
-				__('Error updating SNMP module. snmp3_priv_method doesn\'t exists. Set it to \'AES\' or \'DES\'. '));
-			
+				__('Error updating SNMP module. snmp3_priv_method doesn\'t exist. Set it to \'AES\' or \'DES\'. '));
+
 			return;
 		}
 		
@@ -5456,15 +5456,15 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3) {
 			and $other['data'][23] != "noAuthNoPriv") {
 				
 			returnError('error_update_snmp_module_policy',
-				__('Error updating SNMP module. snmp3_sec_level doesn\'t exists. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
-			
+				__('Error updating SNMP module. snmp3_sec_level doesn\'t exist. Set it to \'authNoPriv\' or \'authPriv\' or \'noAuthNoPriv\'. '));
+
 			return;
 		}
 		
 		if ($other['data'][24] != "MD5" and $other['data'][24] != "SHA") {
 			returnError('error_update_snmp_module_policy',
-				__('Error updating SNMP module. snmp3_auth_method doesn\'t exists. Set it to \'MD5\' or \'SHA\'. '));
-			
+				__('Error updating SNMP module. snmp3_auth_method doesn\'t exist. Set it to \'MD5\' or \'SHA\'. '));
+
 			return;
 		}
 		
@@ -5680,7 +5680,7 @@ function api_set_create_group($id, $thrash1, $other, $thrash3) {
 		
 		if ($group == false) {
 			returnError('error_create_group',
-				__('Error in group creation. Id_parent_group doesn\'t exists.'));
+				__('Error in group creation. Id_parent_group doesn\'t exist.'));
 			return;
 		}
 	}
@@ -5817,7 +5817,7 @@ function api_set_create_netflow_filter($thrash1, $thrash2, $other, $thrash3) {
 		$group = groups_get_group_by_id($other['data'][1]);
 		
 		if ($group == false) {
-			returnError('error_create_group', __('Error in group creation. Id_parent_group doesn\'t exists.'));
+			returnError('error_create_group', __('Error in group creation. Id_parent_group doesn\'t exist.'));
 			return;
 		}
 	}
@@ -6037,7 +6037,7 @@ function api_set_update_user($id, $thrash2, $other, $thrash3) {
 	
 	if (!$result_user) {
 		returnError('error_update_user',
-			__('Error updating user. Id_user doesn\'t exists.'));
+			__('Error updating user. Id_user doesn\'t exist.'));
 		return;
 	}
 	
@@ -6105,7 +6105,7 @@ function api_set_enable_disable_user ($id, $thrash2, $other, $thrash3) {
 	
 	if (users_get_user_by_id($id) == false) {
 		returnError('error_enable_disable_user',
-			__('Error enable/disable user. The user doesn\'t exists.'));
+			__('Error enable/disable user. The user doesn\'t exist.'));
 		return;
 	}
 	
@@ -8572,7 +8572,7 @@ function api_set_enable_disable_agent ($id, $thrash2, $other, $thrash3) {
 	
 	if (agents_get_name($id) == false) {
 		returnError('error_enable_disable_agent',
-			__('Error enable/disable agent. The agent doesn\'t exists.'));
+			__('Error enable/disable agent. The agent doesn\'t exist.'));
 		return;
 	}
 		
@@ -8782,7 +8782,7 @@ function api_set_update_special_day($id_special_day, $thrash2, $other, $thrash3)
 	$check_id_special_day = db_get_value ('id', 'talert_special_days', 'id', $id_special_day);
 	
 	if (!$check_id_special_day) {
-		returnError('error_update_special_day', __('Error updating special day. Id doesn\'t exists.'));
+		returnError('error_update_special_day', __('Error updating special day. Id doesn\'t exist.'));
 		return;
 	}
 	
@@ -8828,7 +8828,7 @@ function api_set_delete_special_day($id_special_day, $thrash2, $thrash3, $thrash
 	$check_id_special_day = db_get_value ('id', 'talert_special_days', 'id', $id_special_day);
 	
 	if (!$check_id_special_day) {
-		returnError('error_delete_special_day', __('Error deleting special day. Id doesn\'t exists.'));
+		returnError('error_delete_special_day', __('Error deleting special day. Id doesn\'t exist.'));
 		return;
 	}
 	

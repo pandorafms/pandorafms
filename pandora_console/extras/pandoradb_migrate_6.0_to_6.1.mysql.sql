@@ -52,6 +52,10 @@ ALTER TABLE tplanned_downtime_agents ADD COLUMN `manually_disabled` tinyint(1) D
 -- Table `tlink`
 -- ---------------------------------------------------------------------
 UPDATE `tlink` SET `link` = 'http://library.pandorafms.com/' WHERE `name` = 'Module library';
+UPDATE `tlink` SET `name` = 'Enterprise Edition' WHERE `id_link` = 0000000002;
+UPDATE `tlink` SET `name` = 'Documentation', `link` = 'http://wiki.pandorafms.com/' WHERE `id_link` = 0000000001;
+UPDATE `tlink` SET `link` = 'http://forums.pandorafms.com/index.php?board=22.0' WHERE `id_link` = 0000000004;
+UPDATE `tlink` SET `link` = 'https://github.com/pandorafms/pandorafms/issues' WHERE `id_link` = 0000000003;
 
 -- ---------------------------------------------------------------------
 -- Table `tevent_filter`

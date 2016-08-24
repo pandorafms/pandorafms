@@ -3870,8 +3870,20 @@ function reporting_availability($report, $content) {
 				$row['ok'] = format_numeric($percent_ok,2) . " %";
 				$row['order'] = $percent_ok;
 				$row['fail'] = format_numeric($percent_fail,2) . " %";
-				$row['failed'] =
-					format_numeric($percent_fail * $count_checks / 100, 0);
+				
+				//$row['failed'] = format_numeric($percent_fail * $count_checks / 100, 0);
+				//if the value of time in failures is less than those recorded in the database the number of errors that have registered in the database is set
+
+				$count_time_failed = ceil($percent_fail * $count_checks / 100);
+				
+				$sql_count_failed = 'SELECT count(*) FROM tagente_datos WHERE datos = 0 AND  id_agente_modulo =' . $item['id_agent_module'];
+				$count_failed = db_get_value_sql($sql_count_failed);
+				
+				if($count_failed < $count_time_failed){
+					$row['failed'] = $count_time_failed;
+				} else {
+					$row['failed'] = $count_failed;
+				}
 				
 				$row['poling_time'] = "-";
 				if ($percent_ok > 0) {

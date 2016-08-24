@@ -126,3 +126,12 @@ def edit_service(driver,name,new_name=None,new_group=None,new_description=None,n
 		driver.find_element_by_id("radiobtn0002").click()
 		
 	diver.find_elemet_by_id("submit-crt").click()
+
+def force_service(driver,service_name):
+
+	search_service(driver,service_name,go_to_service=False)
+
+	driver.find_element_by_xpath('//tr[contains(.,"'+service_name+'")]/td[11]/a[2]').click()
+
+	time.sleep(10)
+

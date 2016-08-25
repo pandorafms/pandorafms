@@ -135,3 +135,51 @@ def force_service(driver,service_name):
 
 	time.sleep(10)
 
+def add_elements_to_service(driver,service_name,type_element,agent_name=None,module=None,service_to_add=None,description=None):
+		
+	search_service(driver,service_name)
+	driver.find_element_by_xpath('//*[@id="menu_tab"]/ul/li[2]/a/img').click()
+	
+	if type_element == "Agent":
+	
+		Select(driver.find_element_by_id("type_element")).select_by_visible_text("Agent")		
+		driver.find_element_by_id("text-text_agent").clear()
+		driver.find_element_by_id("text-text_agent").send_keys(agent_name)
+		time.sleep(3)		
+		driver.find_element_by_xpath('//a[@class="ui-corner-all"][contains(.,"'+agent_name+'")]').click() # In this line you click the drop-down box search
+	
+		if description != None:
+			
+			driver.find_element_by_id("text-description").send_keys("description")			
+			
+		driver.find_element_by_id("submit-crt").click()
+					
+	if type_element == "Module":
+	
+		Select(driver.find_element_by_id("type_element")).select_by_visible_text("Module")
+		
+		driver.find_element_by_id("text-text_agent").clear()
+		driver.find_element_by_id("text-text_agent").send_keys(agent_name)
+		time.sleep(3)		
+		driver.find_element_by_xpath('//a[@class="ui-corner-all"][contains(.,"'+agent_name+'")]').click() # In this line you click the drop-down box search
+	
+		Select(driver.find_element_by_id("id_agente_modulo")).select_by_visible_text(module) # Select module
+		
+		if description != None:
+			
+			driver.find_element_by_id("text-description").send_keys("description")			
+			
+		driver.find_element_by_id("submit-crt").click()		
+		
+	if type_element == "Service":
+	
+		Select(driver.find_element_by_id("type_element")).select_by_visible_text("Service")
+		
+		Select(driver.find_element_by_id("id_service_child")).select_by_visible_text(service_to_add)
+		
+		if description != None:
+			
+			driver.find_element_by_id("text-description").send_keys("description")			
+			
+		driver.find_element_by_id("submit-crt").click()
+		

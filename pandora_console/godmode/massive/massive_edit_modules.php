@@ -350,7 +350,7 @@ $table->data['edit1'][1] = '<table width="100%">';
 		$table->data['edit1'][1] .= '</td>';
 		$table->data['edit1'][1] .= '<td align="right">';
 			$table->data['edit1'][1] .= html_print_input_text(
-				'min_warning', '', '', 5, 15, true);
+				'min_warning', '', '', 5, 255, true);
 		$table->data['edit1'][1] .= '</td>';
 	$table->data['edit1'][1] .= '</tr>';
 	$table->data['edit1'][1] .= '<tr>';
@@ -359,7 +359,7 @@ $table->data['edit1'][1] = '<table width="100%">';
 		$table->data['edit1'][1] .= '</td>';
 		$table->data['edit1'][1] .= '<td align="right">';
 			$table->data['edit1'][1] .= html_print_input_text (
-				'max_warning', '', '', 5, 15, true);
+				'max_warning', '', '', 5, 255, true);
 		$table->data['edit1'][1] .= '</td>';
 	$table->data['edit1'][1] .= '</tr>';
 	$table->data['edit1'][1] .= '<tr>';
@@ -368,7 +368,7 @@ $table->data['edit1'][1] = '<table width="100%">';
 		$table->data['edit1'][1] .= '</td>';
 		$table->data['edit1'][1] .= '<td align="right">';
 			$table->data['edit1'][1] .= html_print_input_text (
-				'str_warning', '', '', 5, 15, true);
+				'str_warning', '', '', 5, 255, true);
 		$table->data['edit1'][1] .= '</td>';
 	$table->data['edit1'][1] .= '</tr>';
 	$table->data['edit1'][1] .= '<tr>';
@@ -396,7 +396,7 @@ $table->data['edit1'][3] = '<table width="100%">';
 		$table->data['edit1'][3] .= '</td>';
 		$table->data['edit1'][3] .= '<td align="right">';
 			$table->data['edit1'][3] .= html_print_input_text(
-				'min_critical', '', '', 5, 15, true);
+				'min_critical', '', '', 5, 255, true);
 		$table->data['edit1'][3] .= '</td>';
 	$table->data['edit1'][3] .= '</tr>';
 	$table->data['edit1'][3] .= '<tr>';
@@ -405,7 +405,7 @@ $table->data['edit1'][3] = '<table width="100%">';
 		$table->data['edit1'][3] .= '</td>';
 		$table->data['edit1'][3] .= '<td align="right">';
 			$table->data['edit1'][3] .= html_print_input_text(
-				'max_critical', '', '', 5, 15, true);
+				'max_critical', '', '', 5, 255, true);
 		$table->data['edit1'][3] .= '</td>';
 	$table->data['edit1'][3] .= '</tr>';
 	$table->data['edit1'][3] .= '<tr>';
@@ -414,7 +414,7 @@ $table->data['edit1'][3] = '<table width="100%">';
 		$table->data['edit1'][3] .= '</td>';
 		$table->data['edit1'][3] .= '<td align="right">';
 			$table->data['edit1'][3] .= html_print_input_text(
-				'str_critical', '', '', 5, 15, true);
+				'str_critical', '', '', 5, 255, true);
 		$table->data['edit1'][3] .= '</td>';
 	$table->data['edit1'][3] .= '</tr>';
 	$table->data['edit1'][3] .= '<tr>';

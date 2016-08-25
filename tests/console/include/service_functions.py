@@ -135,7 +135,7 @@ def force_service(driver,service_name):
 
 	time.sleep(10)
 
-def add_elements_to_service(driver,service_name,type_element,agent_name=None,module=None,service_to_add=None,description=None):
+def add_elements_to_service(driver,service_name,type_element,agent_name=None,module=None,service_to_add=None,description=None,is_critical=False):
 		
 	search_service(driver,service_name)
 	driver.find_element_by_xpath('//*[@id="menu_tab"]/ul/li[2]/a/img').click()
@@ -151,7 +151,11 @@ def add_elements_to_service(driver,service_name,type_element,agent_name=None,mod
 		if description != None:
 			
 			driver.find_element_by_id("text-description").send_keys("description")			
-			
+		
+		if is_critical == True:
+		
+			driver.find_element_by_id("checkbox-critical").click()
+		
 		driver.find_element_by_id("submit-crt").click()
 					
 	if type_element == "Module":
@@ -168,7 +172,11 @@ def add_elements_to_service(driver,service_name,type_element,agent_name=None,mod
 		if description != None:
 			
 			driver.find_element_by_id("text-description").send_keys("description")			
-			
+
+		if is_critical == True:
+		
+			driver.find_element_by_id("checkbox-critical").click()	
+	
 		driver.find_element_by_id("submit-crt").click()		
 		
 	if type_element == "Service":
@@ -180,6 +188,10 @@ def add_elements_to_service(driver,service_name,type_element,agent_name=None,mod
 		if description != None:
 			
 			driver.find_element_by_id("text-description").send_keys("description")			
+
+		if is_critical == True:
+		
+			driver.find_element_by_id("checkbox-critical").click()
 			
 		driver.find_element_by_id("submit-crt").click()
 		

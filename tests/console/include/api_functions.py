@@ -1,0 +1,31 @@
+
+# -*- coding: utf-8 -*-
+from include.common_classes_60 import PandoraWebDriverTestCase
+from include.common_functions_60 import login, click_menu_element, detect_and_pass_all_wizards, logout
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoAlertPresentException
+import unittest, time, re
+
+
+def activate_api(driver,api_pwd):
+
+	click_menu_element(driver,"General Setup")
+	
+	driver.find_element_by_id("textarea_list_ACL_IPs_for_API").clear()
+	driver.find_element_by_id("textarea_list_ACL_IPs_for_API").send_keys("*")
+
+        driver.find_element_by_id("password-api_password").clear()
+        driver.find_element_by_id("password-api_password").send_keys(api_pwd)
+
+	driver.find_element_by_id("submit-update_button").click()
+
+
+def create_agent_api(driver,params,user="admin",pwd="pandora"):
+
+	driver.get ("http://127.0.0.1/pandora_console/include/api.php?op=set&op2=new_agent&other={0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|hola&other_mode=url_encode_separator_|&user="+user+"&pass="+pwd+"".format(params[0],params[1],params[2],params[3],params[4],params[5],params[6],params[7],params[8],params[9],params[10],params[11]))
+
+

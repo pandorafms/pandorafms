@@ -20,6 +20,7 @@ check_login ();
 
 $table = new StdClass();
 $table->class = 'databox filters';
+$table->id = 'setup_general';
 $table->width = '100%';
 $table->data = array ();
 $table->size = array();
@@ -73,6 +74,14 @@ $table->data[10][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('a
 $table->data[11][0] = __('Enforce https');
 $table->data[11][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('https', 1, '', $config["https"], false, "if (! confirm ('" . __('If SSL is not properly configured you will lose access to Pandora FMS Console. Do you want to continue?') . "')) return false", '', true) .'&nbsp;&nbsp;';
 $table->data[11][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('https', 0, '', $config["https"], true);
+
+$table->data[12][0] = __('Use cert of SSL');
+$table->data[12][1] = __('Yes').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button_extended ('use_cert', 1, '', $config["use_cert"], false, '', '', true) .'&nbsp;&nbsp;';
+$table->data[12][1] .= __('No').'&nbsp;&nbsp;&nbsp;'.html_print_radio_button ('use_cert', 0, '', $config["use_cert"], true);
+
+$table->rowstyle[13] = 'display: none;';
+$table->data[13][0] = __('Path of SSL Cert.') . ui_print_help_tip (__("Path where you put your cert and name of this cert. Remember your cert only in .pem extension."), true);
+$table->data[13][1] = html_print_input_text ('cert_path', io_safe_output($config["cert_path"]), '', 50, 255, true);
 
 $table->data[14][0] = __('Attachment store') . ui_print_help_tip (__("Directory where temporary data is stored."), true);
 $table->data[14][1] = html_print_input_text ('attachment_store', io_safe_output($config["attachment_store"]), '', 50, 255, true);
@@ -357,6 +366,16 @@ $(document).ready (function () {
 	$("#change_timezone").click(function () {
 		$("#zone").attr("hidden", false);
 		$("#timezone").attr("hidden", false);
+	});
+	$("input[name=use_cert]").change(function () {
+		if( $(this).is(":checked") ){
+            var val = $(this).val();
+            if (val == 1) {
+				$('#setup_general-13').show();
+			}
+			else
+				$('#setup_general-13').hide();
+        }
 	});
 });
 </script>

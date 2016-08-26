@@ -977,8 +977,9 @@ function config_process_config () {
 	
 	
 	if (!isset ($config['fontpath'])) {
+		$home = str_replace('\\', '/', $config['homedir'] );
 		config_update_value('fontpath',
-			$config['homedir'] . '/include/fonts/smallfont.ttf');
+			$home . '/include/fonts/smallfont.ttf');
 	}
 	
 	if (!isset ($config['style'])) {

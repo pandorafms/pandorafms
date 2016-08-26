@@ -141,8 +141,12 @@ function config_update_config () {
 						$error_update[] = __('Time source');
 					if (!config_update_value ('autoupdate', (bool) get_parameter ('autoupdate')))
 						$error_update[] = __('Automatic check for updates');
+					if (!config_update_value ('cert_path', (bool) get_parameter ('cert_path')))
+						$error_update[] = __('SSL cert path');
 					if (!config_update_value ('https', (bool) get_parameter ('https')))
 						$error_update[] = __('Enforce https');
+					if (!config_update_value ('use_cert', (bool) get_parameter ('use_cert')))
+						$error_update[] = __('Use cert.');
 					if (!config_update_value ('attachment_store', (string) get_parameter ('attachment_store')))
 						$error_update[] = __('Attachment store');
 					if (!config_update_value ('list_ACL_IPs_for_API', (string) get_parameter('list_ACL_IPs_for_API')))
@@ -769,6 +773,14 @@ function config_process_config () {
 		// potentially unexisting config by default
 		config_update_value ('https', false);
 	}
+	if (!isset ($config["use_cert"])) {
+		config_update_value ('use_cert', false);
+	}
+	
+	if (!isset ($config['cert_path'])) {
+		// Sets name and path of ssl path for use in application
+		config_update_value ('cert_path', '/etc/ssl/certs/pandorafms.pem');
+	}
 	
 	if (!isset ($config["num_files_attachment"])) {
 		config_update_value ('num_files_attachment', 100);
@@ -981,8 +993,9 @@ function config_process_config () {
 	
 	
 	if (!isset ($config['fontpath'])) {
+		$home = str_replace('\\', '/', $config['homedir'] );
 		config_update_value('fontpath',
-			$config['homedir'] . '/include/fonts/smallfont.ttf');
+			$home . '/include/fonts/smallfont.ttf');
 	}
 	
 	if (!isset ($config['style'])) {

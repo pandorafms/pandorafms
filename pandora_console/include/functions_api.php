@@ -8890,29 +8890,55 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
 		'', false, false, true, time(), '', 0, 0, true, true,
 		ui_get_full_url(false) . '/', 1, false, '', false, true);
 	
-	$graph_image_file_encoded = false;
-	
-	// Get the src of the html item
-	if (preg_match("/<img src='(.+)'.*/", $graph_html, $matches)) {
-		if (isset($matches) && isset($matches[1])) {
-			$file_url = $matches[1];
-			// Get the file
-			$graph_image_file = file_get_contents($file_url);
-			
-			if ($graph_image_file !== false) {
-				// Encode the file
-				$graph_image_file_encoded = base64_encode($graph_image_file);
-				unset($graph_image_file);
-			}
-		}
-	}
-	
-	if (empty($graph_image_file_encoded)) {
-		// returnError('error_module_graph', __(''));
-	}
-	else {
-		returnData('string', array('type' => 'string', 'data' => $graph_image_file_encoded));
-	}
+       $graph_image_file_encoded = false;
+        if (preg_match("/<img src='(.+)'./", $graph_html, $matches)) {
+                $file_url = $matches[1];
+
+                if (preg_match("/\?(.+)&(.+)&(.+)&(.+)/", $file_url,$parameters)) {
+                        array_shift ($parameters);
+                        foreach ($parameters as $parameter){
+                                $value = explode ("=",$parameter);
+
+                                if (strcmp($value[0], "static_graph") == 0){
+                                        $static_graph = $value[1];
+                                }
+                                elseif (strcmp($value[0], "graph_type") == 0){
+                                        $graph_type = $value[1];
+                                }
+                                elseif (strcmp($value[0], "ttl") == 0){
+                                        $ttl = $value[1];
+                                }
+                                elseif (strcmp($value[0], "id_graph") == 0){
+                                        $id_graph = $value[1];
+                                }
+                        }
+                }
+        }
+
+        // Check values are OK
+        if ( (isset ($graph_type))
+        && (isset ($ttl))
+        && (isset ($id_graph))) {
+                        $_GET["ttl"] = $ttl;
+                        $_GET["id_graph"] = $id_graph;
+                        $_GET["graph_type"] = $graph_type;
+                        $_GET["static_graph"] = $static_graph;
+        }
+
+        ob_start();
+        include (__DIR__ . "/graphs/functions_pchart.php");
+        $output =  ob_get_clean();
+
+        $graph_image_file_encoded = base64_encode($output);
+        if (empty($graph_image_file_encoded)) {
+                // returnError('error_module_graph', __(''));
+        }
+        else {
+			header('Content-type: text/html');
+            returnData('string', array('type' => 'string', 'data' => '<img src="data:image/jpeg;base64,' . $graph_image_file_encoded . '">'));
+		// To show only the base64 code, call returnData as:
+        // returnData('string', array('type' => 'string', 'data' => $graph_image_file_encoded));
+        }
 }
 
 ?>

@@ -714,7 +714,7 @@ function install_step3() {
 
 	// the field dbgrant is only shown when the DB host is different from 127.0.0.1 or localhost
     echo    "<tr id='tr_dbgrant' style='display:none;'>
-                            <td colspan=\"2\">DB Host Access <img style='cursor:help;' src='http://aero/pandora_console/images/tip.png' title='Ignored if DB Hostname is localhost or 127.0.0.1'/><br>
+                            <td colspan=\"2\">DB Host Access <img style='cursor:help;' src='http://" . $_SERVER['SERVER_ADDR'] . "/pandora_console/images/tip.png' title='Ignored if DB Hostname is localhost or 127.0.0.1'/><br>
                             <input class='login' type='text' name='dbgrant' value='" . $_SERVER['SERVER_ADDR'] . "' size=20>
                         </td>
                     </tr>";

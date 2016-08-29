@@ -28,12 +28,11 @@ def create_agent_api(driver,params,user="admin",pwd="pandora"):
 
 	driver.get ("http://127.0.0.1/pandora_console/include/api.php?op=set&op2=new_agent&other={0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|hola&other_mode=url_encode_separator_|&user="+user+"&pass="+pwd+"".format(params[0],params[1],params[2],params[3],params[4],params[5],params[6],params[7],params[8],params[9],params[10],params[11]))
 
+
 def add_module_to_agent_api(driver,params,user="admin",pwd="pandora",apipwd="1234"):
 
         #Describir lista params
 
-        driver.get ("http://127.0.0.1/pandora_console/include/api.php?op=set&op2=create_network_module&id={0}&other={1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|latency%20ping&other_mode=url_encode_separator_|&apipass="+apipwd+"1234&user="+user+"&pass="+pwd+"".format(params[0],params[1],params[2],params[3],params[4],params[5],params[6],params[7],params[8],params[9],params[10],params[11],params[12],params[13],params[14],params[15],params[16],params[17],params[18],params[19],params[20],params[21])))
-
-
+        driver.get ("http://127.0.0.1/pandora_console/include/api.php?op=set&op2=create_network_module&id={0}&other={1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|latency%20ping&other_mode=url_encode_separator_|&apipass="+apipwd+"1234&user="+user+"&pass="+pwd+"".format(params[0],params[1],params[2],params[3],params[4],params[5],params[6],params[7],params[8],params[9],params[10],params[11],params[12],params[13],params[14],params[15],params[16],params[17],params[18],params[19],params[20],params[21]))
 
 

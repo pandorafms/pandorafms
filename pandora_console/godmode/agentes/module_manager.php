@@ -289,7 +289,7 @@ $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
 $selected = 'border: 1px solid black;';
 
-$order[] = array('field' => 'id_module_group', 'order' => 'ASC');
+$order[] = array('field' => 'tmodule_group.name', 'order' => 'ASC');
 
 switch ($sortField) {
 	case 'name':
@@ -452,7 +452,9 @@ switch ($config["dbtype"]) {
 		}
 		$sql = sprintf("SELECT %s
 			FROM tagente_modulo
-			WHERE %s %s %s %s %s", 
+			LEFT JOIN tmodule_group
+			ON tagente_modulo.id_module_group = tmodule_group.id_mg
+			WHERE %s %s %s %s %s",
 			$params, $basic_where, $where, $where_tags, $order_sql, $limit_sql);
 		
 		$modules = db_get_all_rows_sql($sql);
@@ -465,7 +467,9 @@ switch ($config["dbtype"]) {
 		}
 		$sql = sprintf("SELECT %s
 			FROM tagente_modulo
-			WHERE %s %s %s %s", 
+			LEFT JOIN tmodule_group
+			ON tmodule_group.id_mg = tagente_modulo.id_module_group
+			WHERE %s %s %s %s",
 			$params, $basic_where, $where, $where_tags, $order_sql);
 		$modules = oracle_recode_query ($sql, $set, 'AND', false);
 		break;

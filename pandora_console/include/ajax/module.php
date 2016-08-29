@@ -618,7 +618,7 @@ if ($list_modules) {
 					AND %s %s
 					AND tagente_estado.estado != %d
 					AND tagente_modulo.%s
-				ORDER BY tagente_modulo.id_module_group , %s  %s",
+				ORDER BY tmodule_group.name , %s  %s",
 				$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA,
 				$status_module_group_filter, $order['field'], $order['order']);
 
@@ -637,7 +637,7 @@ if ($list_modules) {
 					AND %s %s
 					AND tagente_estado.estado != %d
 					AND tagente_modulo.%s
-				ORDER BY tagente_modulo.id_module_group , %s  %s",
+				ORDER BY tmodule_group.name , %s  %s",
 				$id_agente, $status_text_monitor_sql,$status_module_group_filter,$status_filter_sql, $tags_sql, AGENT_MODULE_STATUS_NO_DATA,
 				$status_module_group_filter, $order['field'], $order['order']);
 			break;
@@ -660,7 +660,7 @@ if ($list_modules) {
 					AND tagente_modulo.disabled = 0
 					AND tagente_estado.estado != %d
 					AND tagente_modulo.%s
-				ORDER BY tagente_modulo.id_module_group , %s %s
+				ORDER BY tmodule_group.name , %s %s
 				", $id_agente, $status_text_monitor_sql, $tags_sql, $status_filter_sql, AGENT_MODULE_STATUS_NO_DATA,
 				 $status_module_group_filter, $order['field'], $order['order']);
 			break;

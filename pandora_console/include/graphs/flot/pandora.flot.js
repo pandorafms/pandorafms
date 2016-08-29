@@ -2083,7 +2083,15 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 										yellow_threshold, red_threshold, extremes, red_up);
 				thresholded = true;
 			}
-
+			
+			var max_draw = plot.getAxes().yaxis.datamax;
+			if (max_draw < red_threshold || max_draw < yellow_threshold) {
+				var maxim_data = (red_threshold < yellow_threshold) ? yellow_threshold : red_threshold
+				plot = $.plot($('#' + graph_id), data_base,
+				$.extend(true, {}, options, {
+					yaxis: {max: maxim_data},
+				}));
+			}
 			plot.setData(datas);
 			plot.draw();
 

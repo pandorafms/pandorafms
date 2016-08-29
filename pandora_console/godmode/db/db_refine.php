@@ -83,7 +83,7 @@ echo '<div style="float:left; width: 250px;">';
 echo '<b>'.__('Source agent').'</b><br /><br />';
 
 $agent_selected = get_parameter_post ("origen", 0);
-$agents = agents_get_group_agents (array_keys (users_get_groups ($config["id_user"], "AW")));
+$agents = agents_get_group_agents (array_keys (users_get_groups ($config["id_user"], "DM")));
 
 html_print_select ($agents, "origen", $agent_selected, 'javascript:this.form.update_agent.click();', __('No agent selected'), '0', false, false, false, '', false, 'max-width:300px !important;');
 

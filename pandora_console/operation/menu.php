@@ -186,52 +186,46 @@ if (check_acl ($config['id_user'], 0, "VR")) {
 			$sub["godmode/reporting/map_builder"]["sub2"] = $sub2;
 	}
 }
-	// Agent read, Server read
-	if (check_acl ($config['id_user'], 0, "AR")) {
-		
-		//INI GIS Maps
-		if ($config['activate_gis']) {
-			$sub["gismaps"]["text"] = __('GIS Maps');
-			$sub["gismaps"]["id"] = 'GIS Maps';
-			$sub["gismaps"]["type"] = "direct";
-			$sub["gismaps"]["subtype"] = "nolink";
-			$sub2 = array ();
-			$sub2["operation/gis_maps/gis_map"]["text"] = __("List of Gis maps");
-			$sub2["operation/gis_maps/gis_map"]["id"] = "List of Gis maps";
-			$gisMaps = db_get_all_rows_in_table ('tgis_map', 'map_name');
-			if ($gisMaps === false) {
-				$gisMaps = array ();
-			}
-			$id = (int) get_parameter ('id', -1);
-			
-			$own_info = get_user_info ($config['id_user']);
-			if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
-				$own_groups = array_keys(users_get_groups($config['id_user'], "IR"));
-			else
-				$own_groups = array_keys(users_get_groups($config['id_user'], "IR", false));
-			
-			foreach ($gisMaps as $gisMap) {
-				$is_in_group = in_array($gisMap['group_id'], $own_groups);
-				if (!$is_in_group) {
-					continue;
-				}
-				if (! check_acl ($config["id_user"], $gisMap["group_id"], "IR")) {
-					continue;
-				}
-				$sub2["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["text"] = mb_substr (io_safe_output($gisMap["map_name"]), 0, 15);
-				$sub2["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["id"] = mb_substr (io_safe_output($gisMap["map_name"]), 0, 15);
-				$sub2["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["title"] = io_safe_output($gisMap["map_name"]);
-				$sub2["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["refr"] = 0;
-			}
-			
-			$sub["gismaps"]["sub2"] = $sub2;
+// Agent read, Server read
+if (check_acl ($config['id_user'], 0, "AR")) {
+	//INI GIS Maps
+	if ($config['activate_gis']) {
+		$sub["gismaps"]["text"] = __('GIS Maps');
+		$sub["gismaps"]["id"] = 'GIS Maps';
+		$sub["gismaps"]["type"] = "direct";
+		$sub["gismaps"]["subtype"] = "nolink";
+		$sub2 = array ();
+		$sub2["operation/gis_maps/gis_map"]["text"] = __("List of Gis maps");
+		$sub2["operation/gis_maps/gis_map"]["id"] = "List of Gis maps";
+		$gisMaps = db_get_all_rows_in_table ('tgis_map', 'map_name');
+		if ($gisMaps === false) {
+			$gisMaps = array ();
 		}
-		//END GIS Maps
+		$id = (int) get_parameter ('id', -1);
+		
+		$own_info = get_user_info ($config['id_user']);
+		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
+			$own_groups = array_keys(users_get_groups($config['id_user'], "IR"));
+		else
+			$own_groups = array_keys(users_get_groups($config['id_user'], "IR", false));
+		
+		foreach ($gisMaps as $gisMap) {
+			$is_in_group = in_array($gisMap['group_id'], $own_groups);
+			if (!$is_in_group) {
+				continue;
+			}
+			if (! check_acl ($config["id_user"], $gisMap["group_id"], "IR")) {
+				continue;
+			}
+			$sub2["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["text"] = mb_substr (io_safe_output($gisMap["map_name"]), 0, 15);
+			$sub2["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["id"] = mb_substr (io_safe_output($gisMap["map_name"]), 0, 15);
+			$sub2["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["title"] = io_safe_output($gisMap["map_name"]);
+			$sub2["operation/gis_maps/render_view&amp;map_id=".$gisMap["id_tgis_map"]]["refr"] = 0;
+		}
+		
+		$sub["gismaps"]["sub2"] = $sub2;
 	}
-	
-	$menu_operation["network"]["sub"] = $sub;
-	//End networkview
-	
+	//END GIS Maps	
 }
 
 if (check_acl ($config['id_user'], 0, "AR") || check_acl ($config['id_user'], 0, "MR"))

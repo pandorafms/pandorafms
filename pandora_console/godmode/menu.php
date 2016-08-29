@@ -88,11 +88,6 @@ if (check_acl ($config['id_user'], 0, "UM")) {
 	$menu_godmode["gusuarios"]["sub"] = $sub;
 }
 
-
-$menu_godmode["gmodules"]["text"] = __('Configuration');
-$menu_godmode["gmodules"]["sec2"] = "godmode/modules/manage_network_templates";
-$menu_godmode["gmodules"]["id"] = "god-configuration";
-
 $sub = array ();
 if (check_acl ($config['id_user'], 0, "PM")) {
 	$sub["godmode/modules/manage_network_components"]["text"] = __('Network components');
@@ -126,7 +121,12 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	$sub["gmassive"]["sub2"] = $sub2;
 }
 
-$menu_godmode["gmodules"]["sub"] = $sub;
+if (!empty($sub)) {
+	$menu_godmode["gmodules"]["text"] = __('Configuration');
+	$menu_godmode["gmodules"]["sec2"] = "godmode/modules/manage_network_templates";
+	$menu_godmode["gmodules"]["id"] = "god-configuration";
+	$menu_godmode["gmodules"]["sub"] = $sub;
+}
 
 if (check_acl ($config['id_user'], 0, "LM") || check_acl ($config['id_user'], 0, "AD")) {
 	$menu_godmode["galertas"]["text"] = __('Alerts');
@@ -275,27 +275,33 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 	$menu_godmode["gsetup"]["sub"] = $sub;
 }
 
-if (check_acl ($config['id_user'], 0, "PM")) {
+if (check_acl ($config['id_user'], 0, "PM") || check_acl ($config['id_user'], 0, "DM")) {
 	$menu_godmode["gextensions"]["text"] = __('Admin tools');
 	$menu_godmode["gextensions"]["sec2"] = "godmode/extensions";
 	$menu_godmode["gextensions"]["id"] = "god-extensions";
 	
 	$sub = array ();
-	// Audit //meter en extensiones
-	$sub["godmode/admin_access_logs"]["text"] = __('System audit log');
-	$sub["godmode/admin_access_logs"]["id"] = 'System audit log';
-	$sub["godmode/setup/links"]["text"] = __('Links');
-	$sub["godmode/setup/links"]["id"] = 'Links';
 	
-	
-	$sub["godmode/extensions"]["sub2"] = $sub2;
-	
+	if (check_acl ($config['id_user'], 0, "PM")) {
+		// Audit //meter en extensiones
+		$sub["godmode/admin_access_logs"]["text"] = __('System audit log');
+		$sub["godmode/admin_access_logs"]["id"] = 'System audit log';
+		$sub["godmode/setup/links"]["text"] = __('Links');
+		$sub["godmode/setup/links"]["id"] = 'Links';
+		$sub["extras/pandora_diag"]["text"] = __('Diagnostic info');
+		$sub["extras/pandora_diag"]["id"] = 'Diagnostic info';
+		$sub["godmode/setup/news"]["text"] = __('Site news');
+		$sub["godmode/setup/news"]["id"] = 'Site news';
+		$sub["godmode/setup/file_manager"]["text"] = __('File manager');
+		$sub["godmode/setup/file_manager"]["id"] = 'File manager';
+	}
 	
 	if (check_acl ($config['id_user'], 0, "DM")) {
 		$sub["gdbman"]["text"] = __('DB maintenance');
 		$sub["gdbman"]["id"] = 'DB maintenance';
 		$sub["gdbman"]["type"] = "direct";
 		$sub["gdbman"]["subtype"] = "nolink";
+		
 		$sub2 = array ();
 		$sub2["godmode/db/db_info"]["text"] = __('DB information');
 		$sub2["godmode/db/db_purge"]["text"] = __('Database purge');
@@ -305,103 +311,88 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 		
 		$sub["gdbman"]["sub2"] = $sub2;
 	}
-	$sub["extras/pandora_diag"]["text"] = __('Diagnostic info');
-	$sub["extras/pandora_diag"]["id"] = 'Diagnostic info';
-	
-	$sub["godmode/setup/news"]["text"] = __('Site news');
-	$sub["godmode/setup/news"]["id"] = 'Site news';
-	
-	$sub["godmode/setup/file_manager"]["text"] = __('File manager');
-	$sub["godmode/setup/file_manager"]["id"] = 'File manager';
-	
-	$sub["godmode/setup/snmp_wizard"]["text"] = __('SNMP Wizard');
-	$sub["godmode/setup/snmp_wizard"]["id"] = 'SNMP Wizard';
 	
 	$menu_godmode["gextensions"]["sub"] = $sub;
 }
-
-if (check_acl ($config['id_user'], 0, "PM")) {
 	
-	if (is_array ($config['extensions'])) {
+if (is_array ($config['extensions'])) {
+	
+	$sub = array ();
+	$sub2 = array ();
+	
+	foreach ($config['extensions'] as $extension) {
+		//If no godmode_menu is a operation extension
+		if ($extension['godmode_menu'] == '') {
+			continue;
+		}
 		
-		$sub = array ();
-		$sub["godmode/extensions"]["text"] = __('Extension manager');
-		$sub["godmode/extensions"]["id"] = 'Extension manager';
+		$extmenu = $extension['godmode_menu'];
 		
+		if ($extmenu["name"] == 'DB interface' && !check_acl ($config['id_user'], 0, "DM")) {
+			continue;
+		}
 		
-		$sub2 = array ();
+		//Check the ACL for this user
+		if (! check_acl ($config['id_user'], 0, $extmenu['acl'])) {
+			continue;
+		}
 		
-		foreach ($config['extensions'] as $extension) {
-			//If no godmode_menu is a operation extension
-			if ($extension['godmode_menu'] == '') {
-				continue;
-			}
-			
-			$extmenu = $extension['godmode_menu'];
-			
-			if ($extmenu["name"] == 'DB interface' && !check_acl ($config['id_user'], 0, "DM")) {
-				continue;
-			}
-			
-			//Check the ACL for this user
-			if (! check_acl ($config['id_user'], 0, $extmenu['acl'])) {
-				continue;
-			}
-			
-			//Check if was displayed inside other menu
-			if ($extension['godmode_menu']["fatherId"] == '') {
-				$sub2[$extmenu["sec2"]]["text"] = __($extmenu["name"]);
-				$sub2[$extmenu["sec2"]]["id"] = $extmenu["name"];
-				$sub2[$extmenu["sec2"]]["refr"] = 0;
-			}
-			else {
-				if (array_key_exists('fatherId',$extmenu)) {
-					if (strlen($extmenu['fatherId']) > 0) {
-						if (array_key_exists('subfatherId',$extmenu)) {
-							if (strlen($extmenu['subfatherId']) > 0) {
-								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["text"] = __($extmenu['name']);
-								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["id"] = $extmenu['name'];
-								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["refr"] = 0;
-								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["icon"] = $extmenu['icon'];
-								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["sec"] = 'extensions';
-								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["extension"] = true;
-								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["enterprise"] = $extension['enterprise'];
-								$menu_godmode[$extmenu['fatherId']]['hasExtensions'] = true;
-							}
-							else {
-								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["text"] = __($extmenu['name']);
-								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["id"] = $extmenu['name'];
-								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = 0;
-								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["icon"] = $extmenu['icon'];
-								if ($extmenu["name"] == 'Cron jobs') 
-									$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["sec"] = 'extensions';
-								else
-									$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["sec"] = 'gextensions';
-								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["extension"] = true;
-								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["enterprise"] = $extension['enterprise'];
-								$menu_godmode[$extmenu['fatherId']]['hasExtensions'] = true;
-							}
+		//Check if was displayed inside other menu
+		if ($extension['godmode_menu']["fatherId"] == '') {
+			$sub2[$extmenu["sec2"]]["text"] = __($extmenu["name"]);
+			$sub2[$extmenu["sec2"]]["id"] = $extmenu["name"];
+			$sub2[$extmenu["sec2"]]["refr"] = 0;
+		}
+		else {
+			if (array_key_exists('fatherId',$extmenu)) {
+				if (strlen($extmenu['fatherId']) > 0) {
+					if (array_key_exists('subfatherId',$extmenu)) {
+						if (strlen($extmenu['subfatherId']) > 0) {
+							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["text"] = __($extmenu['name']);
+							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["id"] = $extmenu['name'];
+							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["refr"] = 0;
+							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["icon"] = $extmenu['icon'];
+							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["sec"] = 'extensions';
+							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["extension"] = true;
+							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]["enterprise"] = $extension['enterprise'];
+							$menu_godmode[$extmenu['fatherId']]['hasExtensions'] = true;
 						}
 						else {
 							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["text"] = __($extmenu['name']);
 							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["id"] = $extmenu['name'];
 							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = 0;
 							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["icon"] = $extmenu['icon'];
-							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["sec"] = 'gextensions';
+							if ($extmenu["name"] == 'Cron jobs') 
+								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["sec"] = 'extensions';
+							else
+								$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["sec"] = 'gextensions';
 							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["extension"] = true;
 							$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["enterprise"] = $extension['enterprise'];
 							$menu_godmode[$extmenu['fatherId']]['hasExtensions'] = true;
 						}
 					}
+					else {
+						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["text"] = __($extmenu['name']);
+						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["id"] = $extmenu['name'];
+						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["refr"] = 0;
+						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["icon"] = $extmenu['icon'];
+						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["sec"] = 'gextensions';
+						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["extension"] = true;
+						$menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['sec2']]["enterprise"] = $extension['enterprise'];
+						$menu_godmode[$extmenu['fatherId']]['hasExtensions'] = true;
+					}
 				}
 			}
 		}
-		
-		
-		
+	}
+	
+	
+	if (!empty($sub2))
 		$sub["godmode/extensions"]["sub2"] = $sub2;
-		
-		
+	
+	if (!empty($sub)) {
+		$sub["godmode/extensions"]["text"] = __('Extension manager');
+		$sub["godmode/extensions"]["id"] = 'Extension manager';
 		$submenu = array_merge($menu_godmode["gextensions"]["sub"],$sub);
 		$menu_godmode["gextensions"]["sub"] = $submenu;
 	}
@@ -452,7 +443,6 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 		$sub["godmode/update_manager/update_manager&tab=messages"]["id"] = 'Messages';
 			
 	}
-	
 	$menu_godmode["messages"]["sub"] = $sub;
 }
 

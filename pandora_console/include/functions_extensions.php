@@ -351,7 +351,7 @@ function extensions_load_extensions ($process_login) {
  * @param string subfatherId Id of the parent submenu item for the current extension 
  * @param string icon Path to the icon image (18x18 px). If this parameter is blank then predefined icon will be used
  */
-function extensions_add_operation_menu_option ($name, $fatherId = null, $icon = null, $version="N/A", $subfatherId = null) {
+function extensions_add_operation_menu_option ($name, $fatherId = null, $icon = null, $version="N/A", $subfatherId = null, $acl = 'AR') {
 	global $config;
 	global $extension_file;
 	
@@ -361,7 +361,7 @@ function extensions_add_operation_menu_option ($name, $fatherId = null, $icon = 
 	call, we are sure it will be set.
 	*/
 	$option_menu['name'] = $name;
-	
+	$option_menu['acl'] = $acl;
 	$extension = &$config['extensions'][$extension_file];
 	
 	$option_menu['sec2'] = $extension['dir'] . '/' . mb_substr ($extension_file, 0, -4);

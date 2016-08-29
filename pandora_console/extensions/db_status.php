@@ -44,7 +44,7 @@ function extension_db_status() {
 		"images/extensions.png", false, "", true, "");
 	
 	
-	if (! check_acl ($config['id_user'], 0, "PM")) {
+	if (! check_acl ($config['id_user'], 0, "DM")) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access db status");
 		require ("general/noaccess.php");
@@ -362,5 +362,5 @@ function extension_db_status_execute_sql_file($url, $connection) {
 }
 
 extensions_add_godmode_function('extension_db_status');
-extensions_add_godmode_menu_option(__('DB Status'), 'PM', 'gextensions', null, "v1r1", 'gdbman');
+extensions_add_godmode_menu_option(__('DB Status'), 'DM', 'gextensions', null, "v1r1", 'gdbman');
 ?>

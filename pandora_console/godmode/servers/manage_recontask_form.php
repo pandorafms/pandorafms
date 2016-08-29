@@ -447,6 +447,7 @@ $('select#mode').change(function() {
 	else if (type == 'network_sweep') {
 		$(".recon_script").hide();
 		$(".network_sweep").show();
+		$('.macro_field').remove();
 	}
 }).change();
 

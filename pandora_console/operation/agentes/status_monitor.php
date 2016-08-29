@@ -363,6 +363,9 @@ foreach ($custom_fields as $custom_field) {
 	$table_custom_fields->data[] = $row;
 }
 
+$filters = '<form method="post" action="index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=' . $refr . '&amp;ag_group=' . 
+		$ag_group . '&amp;ag_freestring=' . $ag_freestring . '&amp;ag_modulename=' . $ag_modulename . '&amp;status=' . $status . '&amp;sort_field=' . 
+			$sortField . '&amp;sort=' . $sort .'&amp;pure=' . $config['pure'] . $ag_custom_fields_params . '">';
 if (is_metaconsole()) {
 	$table->colspan[2][0] = 7;
 	$table->cellstyle[2][0] = 'padding: 10px;';

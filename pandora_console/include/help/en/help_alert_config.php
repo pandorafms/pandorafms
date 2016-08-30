@@ -3,27 +3,26 @@
  * @package Include/help/en
  */
 ?>
-<h1>Configure Alert Action</h1>
-<br>Actions are the components of alerts where a command (which is described in the previous section) is linked with the generic variables Field 1, Field 2, ..., Field 10. These actions will be used later in the alert templates that are the ones that associate a data condition with an specific action. <br>
-Next are the fields that you should fill in:<br><br>
+<h1>Configuring Action Alerts</h1>
+<br>Actions are alert components that relate a command, explained in the previous part of the help guide, with generic variables Field 1, Field 2, …, Field 10. Said actions will be used further along in alert templates, which are those that relate a condition on a piece of data to a specific action. <br><br>
 
-    <b>Name:</b> Name of the action.<br>
-    <b>Group:</b> Group of the action. <br>
-    <b>Command:</b> In this field is defined the command that will be used in case the alert will be executed . You can choose between the different commands that are defined in Pandora.Depending of the command chosen we will have some or others fields to fill. <br>
-    <b>Threshold:</b> The action execution threshold. <br>
-    <b>Command Preview:</b>  In this field, not editable, will automatically appear the command that will be executed in the system. <br>
-    <b>Field X:</b> In this fields are defined the values of the macros _field1_ to _field10_, that will be used in the command if necessary. These fields can be a text field or combo box if configured. Depending on the selected command will appear a number of fields to fill in as needed or not. For example:<br><br>
+    <b>Name:</b> Name assigned to the action.<br>
+    <b>Group:</b> Group the action belongs to. <br>
+    <b>Command:</b> In this field the command that will be used in case the alert is triggered can be defined. Users can choose from the different commands that are defined on Pandora. Depending on the command chosen a variable group of fields will be shown (specific to each command) <br>
+    <b>Threshold:</b> The action’s execution threshold. <br>
+    <b>Command Preview:</b>  In this field, which can’t be edited, the command that will be run on the system will appear automatically. <br>
+    <b>Field X:</b> In these fields:<br><br>
 
-To configure email action, you can only fill _field1_ (Destination address), _field2_ (Subject) y _field3_ (Message)<br><br>
+For the email command only _field1_ (Destination address), _field2_ (Subject) y _field3_ (Message) are configured<br><br>
 
-Within these fields we can configure the macros listed below.
+When it comes to creating the action these are the only 3 fields we can set. Within these fields we can configure the macros shown below.
 <br><br>
 <?php html_print_image ("images/help/actions.png", false, array('width' => '550px')); ?>
 <br><br>
 <br>
 
 <p>
-Besides the defined module macros, the following macros are available:
+Apart from the defined module macros, the following macros are also available:
 <ul>
 <li>_field1_ : User defined field 1.</li>
 <li>_field2_ : User defined field 2.</li>
@@ -67,4 +66,3 @@ Besides the defined module macros, the following macros are available:
 <p>
 Example: Agent _agent_ has fired alert _alert_ with data _data_
 </p>
-

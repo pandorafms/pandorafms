@@ -1,12 +1,11 @@
 <h1>Cascade protection</h1>
 
-
 <?php html_print_image("images/help/cascade_protection_ilustration.png", false); ?>
 <br>
 <p>
-This option is designed to avoid a "storm" of alerts coming because a group of agents are unreachable. This kind of behaviour happen when an intermediate device, as for example a router, is down, and all devices behind it are just not reachable, probably that devices are not down and even that devices are working behind another router, in HA mode, but if you don't do nothing probably Pandora FMS thinks they are down because cannot remotely test it with a Remote ICMP Proc test (a ping).
+This option should be assigned to avoid an “alert storm” that can come in because a group of agents are unreachable. This type of behaviour occurs when an intermediary device, like for example a router, is down and all devices behind it, therefore, cannot be reached. Probably these devices aren’t down and chances indicate that they’re working with another router in HA mode. But, if nothing is done, it’s likely for Pandora FMS to think that they’re down since they can’t be tested using a Remote ICMP Proc test (a Ping check).
 <br><br>
-When you enable <i>cascade protection</i> in an agent, this means that if any of it's parents has a CRITICAL alert fired, then the agent alerts WILL NOT BE fired. If agent's parent has a module in CRITICAL or several alerts with less criticity than CRITICAL, alerts from the agent will be fired if should be. Cascade protection checks parents alerts with CRITICAL criticity, including the correlation alerts assigned to the parent.
+When you enable <i>cascade protection</i> for an agent, this means that if any of its parents has a CRITICAL alert fired, then the agent’s alerts WILL NOT BE fired. If the agent's parent has a module in CRITICAL or several alerts with less criticality than CRITICAL, alerts from the agent will be fired as normal if needed. Cascade protection checks parent alerts with CRITICAL priority, including the correlated alerts assigned to the parent.
 <br><br>
-If you want to use an advanced cascade protection system, just use correlation between sucesive parents, and just enable the Cascade Protection in the children.
+If you want to use an advanced cascade protection system, just use correlation among successive parents, and just enable Cascade Protection for the children.
 </p>

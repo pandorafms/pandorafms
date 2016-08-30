@@ -4,6 +4,6 @@
 */
 ?>
 
-<h1>Alert command</h1>
+<h1>Alert commands</h1>
 
-<p>Pandora FMS's reaction to a value &#34;out of range&#34; can be of diverse kinds: record in a syslog, e-mail or SMS sending, or the execution of any script hosted in Pandora FMS's machine that can be processed.</p>
+<p>Pandora FMS's reaction to a value stating &#34;out of range&#34; can be diverse: it can be recorder on the syslog, an email or SMS alert can be sent, or the execution of any script found on the Pandora FMS device and that can be properly processed.</p>

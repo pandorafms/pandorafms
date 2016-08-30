@@ -6,10 +6,10 @@
 
 <h1>Server field</h1>
 
-In the field "server" there is a combo where you can choose the server that will do the checking.
-Configuration at Servers
+On the “server” field there is a combination where the server for check ups is chosen.
+Setup is found on the servers.
 <br><br>
-In Servers there are two modes of work:
+For servers there are two work methods:
 <br><br>
 <ul>
 <blockquote>
@@ -18,10 +18,10 @@ In Servers there are two modes of work:
 </ul>
 
 <br>
-The differences between them, and the importance that they have to work in HA mode, consist on that when there are several servers from the same kind( e.g: Network Servers).When a server falls, the first master server that could, will be in charge of the network modules of the down server that are waiting to be executed. The non-master servers does not do this.
+The difference between them, and the importance that they carry when working in HA mode, is based on the fact that there are several servers of the same kind( e.g: Network Servers).When a server is down, the first master server available will be in charge of the network modules that are on the downed server and that are waiting to be run. Non-master servers cannot do this.
 <br><br>
-This option is configured in the file /etc/pandora/pandora_server.conf through the master 1 token.
+This option can be set in the file /etc/pandora/pandora_server.conf using the master 1 token.
 <br><br><i>
 master 1
 <br><br></i>
-Being the value 1 to active it and 0 to deactivate it.
+Set the value to 1 to active it and 0 to deactivate it.

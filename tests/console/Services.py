@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from include.common_classes_60 import PandoraWebDriverTestCase
+from include.common_classes_60 import PandoraWebDriverTestCase
 from include.common_functions_60 import login, click_menu_element, detect_and_pass_all_wizards, is_enterprise, gen_random_string
 from include.agent_functions import *
 from include.module_functions import *
 from include.service_functions import *
+from include.api_functions import *
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -42,26 +44,53 @@ class Service(PandoraWebDriverTestCase):
 		driver = self.driver
 		self.login()
 		detect_and_pass_all_wizards(driver)
-
-		create_agent(driver,self.agent_name,ip="127.0.0.1",group="Applications")
+	
+		activate_api(driver,"1234")
+	
+		params = [self.agent_name,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
+                create_agent_api(driver,params,user="admin",pwd="pandora")
 
 		# creamos 3 modulos uno que este router ping (127.0.0.3) y otro ping printer (127.0.0.1) y Apache server -> Host latency min_warning 0.01
 
-		create_network_server_module(driver,self.agent_name,module_name = self.module_critical_1_name,component_group="Network Management",network_component="Host Alive",ip="129.99.40.1")
+		time.sleep(3)
 
-		create_network_server_module(driver,self.agent_name,module_name =  self.module_critical_2_name,component_group="Network Management",network_component="Host Alive",ip="129.99.40.1")
+		params = [self.agent_name,self.module_critical_1_name,"0","6","1","0","0","0","0","0","0","0","0","129.99.40.1","0","0","180","0","0","0","0","Host_Alive"]
+		add_network_module_to_agent_api(driver,params,user="admin",pwd="pandora",apipwd="1234")
+
+		time.sleep(3)
+
+		params = [self.agent_name,self.module_critical_2_name,"0","6","1","0","0","0","0","0","0","0","0","129.99.40.1","0","0","180","0","0","0","0","Host_Alive"]
+		add_network_module_to_agent_api(driver,params,user="admin",pwd="pandora",apipwd="1234")
+
+		time.sleep(3)
+
+		params = [self.agent_name,self.module_critical_3_name,"0","6","1","0","0","0","0","0","0","0","0","129.99.40.1","0","0","180","0","0","0","0","Host_Alive"]
+		add_network_module_to_agent_api(driver,params,user="admin",pwd="pandora",apipwd="1234")	
 		
-		create_network_server_module(driver,self.agent_name,module_name = self.module_critical_3_name,component_group="Network Management",network_component="Host Alive",ip="129.99.40.1")
+		time.sleep(3)
+
+		params = [self.agent_name,self.module_normal_1_name,"0","6","1","0","0","0","0","0","0","0","0","127.0.0.1","0","0","180","0","0","0","0","Host_Alive"]
+		add_network_module_to_agent_api(driver,params,user="admin",pwd="pandora",apipwd="1234")
 		
-		create_network_server_module(driver,self.agent_name,module_name = self.module_normal_1_name,component_group="Network Management",network_component="Host Alive",ip="127.0.0.1")
-			
-		create_network_server_module(driver,self.agent_name,module_name = self.module_normal_2_name,component_group="Network Management",network_component="Host Alive",ip="127.0.0.1")
+		time.sleep(3)
 
-		create_network_server_module(driver,self.agent_name,module_name = self.module_warning_1_name,component_group="Network Management",network_component="Host Latency",ip="127.0.0.1",min_warning="-10")
+		params = [self.agent_name,self.module_normal_2_name,"0","6","1","0","0","0","0","0","0","0","0","127.0.0.1","0","0","180","0","0","0","0","Host_Alive"]
+		add_network_module_to_agent_api(driver,params,user="admin",pwd="pandora",apipwd="1234")
+	
+		time.sleep(3)
 
+                params = [self.agent_name,self.module_warning_1_name,"0","7","1","-10","9999","0","0","0","0","0","0","127.0.0.1","0","0","180","0","0","0","0","Host_Latency"]
+                add_network_module_to_agent_api(driver,params,user="admin",pwd="pandora",apipwd="1234")
+
+		lista = driver.current_url.split('/')
+
+		url = lista[0]+'//'+lista[2]+'/pandora_console'
+		
+		driver.get(url)
+	
 		#Creamos servicio en modo simple 
 		
-		create_service(driver,service_name,"Applications",self.agent_name,description=service_name,mode="Simple") 
+		create_service(driver,service_name,"Applications",self.agent_name,description=service_name,mode="simple") 
 
 		# añadimos los 3 modulos al servicio un router y el warning router critico printer no critico y apache critico
 		
@@ -78,65 +107,64 @@ class Service(PandoraWebDriverTestCase):
 		self.assertIsInstance(element,WebElement)
 
 	@is_enterprise
-        def test_B_simple_service(self):
+	def test_B_simple_service(self):
 
-                u"""
-                Add 3 modules in Simple service, two normal and one in critical, force service and check that service is critical.
-                """
+		u"""
+		Add 3 modules in Simple service, two normal and one in critical, force service and check that service is critical.
+		"""
 
-                service_name = gen_random_string(6)
+		service_name = gen_random_string(6)
 
-                driver = self.driver
+		driver = self.driver
 
-                #Creamos servicio en modo simple
+		#Creamos servicio en modo simple
 
-                create_service(driver,service_name,"Applications",self.agent_name,description=service_name,mode="Simple")
+		create_service(driver,service_name,"Applications",self.agent_name,description=service_name,mode="simple")
 
-                # añadimos los 3 modulos al servicio un router y el warning router critico printer no critico y apache critico
+		# añadimos los 3 modulos al servicio un router y el warning router critico printer no critico y apache critico
 
-                add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_critical_1_name,description=self.module_critical_1_name,is_critical=True)
-                add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_critical_2_name,description=self.module_critical_2_name)
-                add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_critical_3_name,description=self.module_critical_3_name,is_critical=True)
+		add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_critical_1_name,description=self.module_critical_1_name,is_critical=True)
+		add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_critical_2_name,description=self.module_critical_2_name)
+		add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_critical_3_name,description=self.module_critical_3_name,is_critical=True)
 
-                # Forzamos el servicio y comprobamos que el estado es warning
+		# Forzamos el servicio y comprobamos que el estado es warning
 
-                force_service(driver,service_name)
+		force_service(driver,service_name)
 
-                search_service(driver,service_name,go_to_service=False)
+		search_service(driver,service_name,go_to_service=False)
 
-                element = driver.find_element_by_xpath('//td/img[@data-title="Critical"]')
-                self.assertIsInstance(element,WebElement)
+		element = driver.find_element_by_xpath('//td/img[@data-title="Critical"]')
+		self.assertIsInstance(element,WebElement)
 
+	@is_enterprise
+	def test_C_simple_service(self):
 
-        @is_enterprise
-        def test_C_simple_service(self):
+		u"""
+		Add 3 modules in Simple service, two normal and one in critical, force service and check that service is critical.
+		"""
 
-                u"""
-                Add 3 modules in Simple service, two normal and one in critical, force service and check that service is critical.
-                """
-		
-                service_name = gen_random_string(6)
+		service_name = gen_random_string(6)
 
-                driver = self.driver
+		driver = self.driver
+
+		#Creamos servicio en modo simple
+
+		create_service(driver,service_name,"Applications",self.agent_name,description=service_name,mode="simple")
+
+		# añadimos los 3 modulos al servicio un router y el warning router critico printer no critico y apache critico
+
+		add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_normal_1_name,description=self.module_normal_1_name,is_critical=True)
+		add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_critical_2_name,description=self.module_critical_2_name)
+		add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_normal_1_name,description=self.module_normal_1_name,is_critical=True)
+
+		# Forzamos el servicio y comprobamos que el estado es warning
+
+		force_service(driver,service_name)
+
+		search_service(driver,service_name,go_to_service=False)
+
+		element = driver.find_element_by_xpath('//td/img[@data-title="Ok"]')
+		self.assertIsInstance(element,WebElement)
 	
-                #Creamos servicio en modo simple
-
-                create_service(driver,service_name,"Applications",self.agent_name,description=service_name,mode="Simple")
-
-                # añadimos los 3 modulos al servicio un router y el warning router critico printer no critico y apache critico
-
-                add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_normal_1_name,description=self.module_normal_1_name,is_critical=True)
-                add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_critical_2_name,description=self.module_critical_2_name)
-                add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_normal_1_name,description=self.module_normal_1_name,is_critical=True)
-
-                # Forzamos el servicio y comprobamos que el estado es warning
-
-                force_service(driver,service_name)
-
-                search_service(driver,service_name,go_to_service=False)
-
-                element = driver.find_element_by_xpath('//td/img[@data-title="Ok"]')
-                self.assertIsInstance(element,WebElement)
-
 if __name__ == "__main__":
-        unittest.main()
+	unittest.main()

@@ -44,10 +44,10 @@ def create_service(driver,name,group,agent,description=None,mode="Auto",critical
 		driver.find_element_by_id("text-description").clear()
 		driver.find_element_by_id("text-description").send_keys(description)
 	
-	if mode == "Simple":
+	if mode == "simple":
 		driver.find_element_by_id("radiobtn0003").click()
 		
-	if mode == "Manual":
+	if mode == "manual":
 		driver.find_element_by_id("radiobtn0001").click()
 		
 		driver.find_element_by_id("text-critical").clear()
@@ -130,20 +130,19 @@ def edit_service(driver,name,new_name=None,new_group=None,new_description=None,n
 def force_service(driver,service_name):
 
 	search_service(driver,service_name,go_to_service=False)
-	
+
 	driver.find_element_by_xpath('//tr[contains(.,"'+service_name+'")]/td[11]/a[2]').click()
 
 	time.sleep(10)
 
 def add_elements_to_service(driver,service_name,type_element,agent_name=None,module=None,service_to_add=None,description=None,is_critical=False):
+		
 	search_service(driver,service_name)
 	driver.find_element_by_xpath('//*[@id="menu_tab"]/ul/li[2]/a/img').click()
 	
 	if type_element == "Agent":
-					
-		driver.find_element_by_id("type_element").click()
-		Select(driver.find_element_by_id("type_element")).select_by_visible_text(type_element)
-
+	
+		Select(driver.find_element_by_id("type_element")).select_by_visible_text("Agent")		
 		driver.find_element_by_id("text-agent_name").clear()
 		driver.find_element_by_id("text-agent_name").send_keys(agent_name)
 		time.sleep(3)		
@@ -151,17 +150,17 @@ def add_elements_to_service(driver,service_name,type_element,agent_name=None,mod
 	
 		if description != None:
 			
-			driver.find_element_by_id("text-description").send_keys(description)			
-			
+			driver.find_element_by_id("text-description").send_keys("description")			
+		
 		if is_critical == True:
-
+		
 			driver.find_element_by_id("checkbox-critical").click()
-
+		
 		driver.find_element_by_id("submit-crt").click()
 					
 	if type_element == "Module":
-		driver.find_element_by_id("type_element").click()
-		Select(driver.find_element_by_id("type_element")).select_by_visible_text(type_element)
+	
+		Select(driver.find_element_by_id("type_element")).select_by_visible_text("Module")
 		
 		driver.find_element_by_id("text-agent_name").clear()
 		driver.find_element_by_id("text-agent_name").send_keys(agent_name)
@@ -172,51 +171,27 @@ def add_elements_to_service(driver,service_name,type_element,agent_name=None,mod
 		
 		if description != None:
 			
-			driver.find_element_by_id("text-description").send_keys(description)
+			driver.find_element_by_id("text-description").send_keys("description")			
 
 		if is_critical == True:
 		
-			driver.find_element_by_id("checkbox-critical").click()				
-			
+			driver.find_element_by_id("checkbox-critical").click()	
+	
 		driver.find_element_by_id("submit-crt").click()		
 		
 	if type_element == "Service":
-		
-		driver.find_element_by_id("type_element").click()	
-		Select(driver.find_element_by_id("type_element")).select_by_visible_text(type_element)
+	
+		Select(driver.find_element_by_id("type_element")).select_by_visible_text("Service")
 		
 		Select(driver.find_element_by_id("id_service_child")).select_by_visible_text(service_to_add)
 		
 		if description != None:
 			
-			driver.find_element_by_id("text-description").send_keys(description)			
+			driver.find_element_by_id("text-description").send_keys("description")			
 
 		if is_critical == True:
-
+		
 			driver.find_element_by_id("checkbox-critical").click()
 			
 		driver.find_element_by_id("submit-crt").click()
-	
-
-def delete_element_from_service(driver,service_name,agent=None,module=None,service_to_delete=None):
-
-	search_service(driver,service_name,go_to_service=True)
-
-	driver.find_element_by_xpath('//*[@id="menu_tab"]/ul/li[2]/a/img').click()
-	
-	if agent != None and module != None:
-
-		driver.find_element_by_xpath('//tr[contains(.,"'+agent+'") and contains(.,"'+module+'")]/td[5]/a[2]').click()
-	
-	if agent != None and module == None:
-
-		driver.find_element_by_xpath('//tr[contains(.,"'+agent+'")/td[5]/a[2]').click()
-
-	if service != None:
-
-		driver.find_element_by_xpath('//tr[contains(.,"'+service_to_delete+'")/td[5]/a[2]').click()
-	
-	alert = driver.switch_to_alert()
-	alert.accept()
-
-
+		

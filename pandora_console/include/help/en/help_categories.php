@@ -4,7 +4,5 @@
  */
 ?>
 <h1>Categories in Pandora FMS</h1>
-
-A category are configurated on the system, and be assigned to the choosed modules.  <br>
-Administrator is the only user who has permissions to create and configure categories. Can be used for charging modules depending on the category to which they belong.
-
+On the system some categories can be created and configured to later be assigned to any module desired. <br>
+The only user that has the permits to create and configure these categories is the administrator and they can be used to apply a “fee” to modules depending on the category the are sorted into.

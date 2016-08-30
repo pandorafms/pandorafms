@@ -3,8 +3,8 @@
  * @package Include/help/en
  */
 ?>
-<h1>Fields description</h1>
+<h1>Field descriptions</h1>
 
-Is possible configure a custom description to each field in the command configuration.
+It’s possible to configure a custom description for each field in the command’s settings.
 <br><br>
-This description will appear in the action configuration form near the field text box when this command is selected.
+This description will appear on the action’s configuration form next to the field’s text box when the command is selected.

@@ -143,8 +143,8 @@ def add_elements_to_service(driver,service_name,type_element,agent_name=None,mod
 	if type_element == "Agent":
 	
 		Select(driver.find_element_by_id("type_element")).select_by_visible_text("Agent")		
-		driver.find_element_by_id("text-text_agent").clear()
-		driver.find_element_by_id("text-text_agent").send_keys(agent_name)
+		driver.find_element_by_id("text-agent_name").clear()
+		driver.find_element_by_id("text-agent_name").send_keys(agent_name)
 		time.sleep(3)		
 		driver.find_element_by_xpath('//a[@class="ui-corner-all"][contains(.,"'+agent_name+'")]').click() # In this line you click the drop-down box search
 	
@@ -162,8 +162,8 @@ def add_elements_to_service(driver,service_name,type_element,agent_name=None,mod
 	
 		Select(driver.find_element_by_id("type_element")).select_by_visible_text("Module")
 		
-		driver.find_element_by_id("text-text_agent").clear()
-		driver.find_element_by_id("text-text_agent").send_keys(agent_name)
+		driver.find_element_by_id("text-agent_name").clear()
+		driver.find_element_by_id("text-agent_name").send_keys(agent_name)
 		time.sleep(3)		
 		driver.find_element_by_xpath('//a[@class="ui-corner-all"][contains(.,"'+agent_name+'")]').click() # In this line you click the drop-down box search
 	

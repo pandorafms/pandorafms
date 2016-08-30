@@ -3,19 +3,19 @@
  * @package Include/help/en
  */
 ?>
-<h1>Agent status view </h1>
+<h1>Agent’s status view </h1>
 
-Possible color values of <b>modules</b> are:
+Possible value colors for <b>modules</b> are:
 <br><br>
 <b>
-Number of modules
-: <span class="red">Number of critical modules</span>
-: <span class="yellow">Number of warning modules</span>
-: <span class="green">Number of normal modules</span>
-: <span class="grey">Number of down modules</span>
+Total number of modules
+: <span class="red">Number of modules in critical status </span>
+: <span class="yellow">Number of modules in warning status </span>
+: <span class="green">Number of modules in normal status </span>
+: <span class="grey">Number of downed modules</span>
 </b>
 <br><br>
-Possible values of an <b>agent status</b> are:
+Possible values for an <b>agent’s status</b> are:
 
 <br><br>
 
@@ -32,7 +32,7 @@ Possible values of an <b>agent status</b> are:
 </table>
 
 <br><br>
-Possible values of <b>alert status</b> are:
+Possible values for an <b>alert’s status</b> are:
 
 <br><br>
 <table width="450px">

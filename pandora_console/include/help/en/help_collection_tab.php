@@ -3,6 +3,6 @@
 */
 ?>
 
-<h1>Agent's collections</h1>
+<h1>Agent Collections</h1>
 
-<p>A collection is group of files (executables or scripts) that are copied to a specific agent directory. With this you can transfer remotely software to agent's machine in a easy way.</p>
+<p>A collection is group of files (executables or scripts) that are copied to the agent’s device on a specific directory. With this software can be remotely transferred to the agent’s device in a very simple manner. </p>

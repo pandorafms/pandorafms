@@ -3,7 +3,8 @@
  * @package Include/help/en
  */
 ?>
-<h1>Alert validation</h1>
+<h1>Alert validations</h1>
 <p>
-ACK an alert only changes it's current bit and clear the "fired", so if alert fired again, the process continues. It's oriented to alerts with a long threshold, for example 1 day. If you get an alarm, and you review and fix it, you probably want to set to green status and don't wait 1 day to get green again.
+Validating an alert only changes its status bit and cleans the &laquo;triggered&raquo;, this way if the alert is triggered again, the process just continues. This is oriented to alerts with larger thresholds, for example, 1 day. If you get an alert, check it and mark it as read, you’ll probably want to establish the status to green and won’t want to wait 1 day until it’s green again.
+
 </p>

@@ -4,6 +4,7 @@ echo Change the user and group to /var/www/pandora_console.
 chmod -R u+rwX,g+rX,g-w,o-rwx /var/www/pandora_console
 chgrp www-data /var/www/pandora_console -R
 chown www-data /var/www/pandora_console -R
+if [ -d /var/www/html ]; then mv /var/www/pandora_console /var/www/html/; fi
 
 echo Restart the apache.
 /etc/init.d/apache2 restart

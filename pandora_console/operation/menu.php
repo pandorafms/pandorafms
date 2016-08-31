@@ -282,7 +282,7 @@ if (check_acl ($config['id_user'], 0, "ER")
 	$sub["operation/events/event_statistics"]["id"] = 'Statistics';
 	
 	//RSS
-	require_once ('include/functions_api.php');
+	include_once ('include/functions_api.php');
 	if (isInACL($_SERVER['REMOTE_ADDR'])) {
 		$pss = get_user_info($config['id_user']);
 		$hashup = md5($config['id_user'].$pss['password']);

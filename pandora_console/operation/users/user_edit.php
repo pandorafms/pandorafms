@@ -101,6 +101,7 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	$upd_info["comments"] = get_parameter_post ("comments", $user_info["comments"]);
 	$upd_info["language"] = get_parameter_post ("language", $user_info["language"]);
 	$upd_info["id_skin"] = get_parameter ("skin", $user_info["id_skin"]);
+	$upd_info["id_filter"] = get_parameter ("event_filter",NULL);
 	$upd_info["block_size"] = get_parameter ("block_size", $config["block_size"]);
 	$upd_info["firstname"] = get_parameter ("newsletter_reminder", $user_info["first_name"]);
 	$default_block_size = get_parameter ("default_block_size", 0);
@@ -357,8 +358,12 @@ if ($double_auth_enabled) {
 // Dialog
 $data[0] .= "<div id=\"dialog-double_auth\"><div id=\"dialog-double_auth-container\"></div></div>";
 
-// Newsletter
-if (license_free()) {
+if (check_acl ($config['id_user'], 0, "ER")){
+	$data[1] = __('Event filter');
+	$data[1] .= $jump . html_print_select_from_sql ('SELECT id_filter, id_name FROM tevent_filter',
+		'event_filter', $user_info["id_filter"], '', __('None'), NULL, true);
+}// Newsletter
+else if (license_free()) {
 	$data[1] = __('Newsletter Subscribed') . ':';
 	if ($user_info["middlename"]) {
 		$data[1] .= $jump . '<span style="font-weight:initial;">' . __('Already subscribed to Pandora FMS newsletter') . "</span>";

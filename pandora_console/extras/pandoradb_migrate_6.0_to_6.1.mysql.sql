@@ -62,3 +62,9 @@ UPDATE `tlink` SET `link` = 'https://github.com/pandorafms/pandorafms/issues' WH
 -- ---------------------------------------------------------------------
 ALTER TABLE tevent_filter ADD COLUMN `date_from` date DEFAULT NULL;
 ALTER TABLE tevent_filter ADD COLUMN `date_to` date DEFAULT NULL;
+
+-- ---------------------------------------------------------------------
+-- Table `tusuario`
+-- ---------------------------------------------------------------------
+ALTER TABLE tusuario ADD (`id_filter` int(10) unsigned NULL default NULL);
+ALTER TABLE tusuario ADD CONSTRAINT fk_id_filter FOREIGN KEY (id_filter) REFERENCES tevent_filter(id_filter) ON DELETE SET NULL;

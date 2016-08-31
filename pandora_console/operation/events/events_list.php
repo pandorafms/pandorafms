@@ -35,6 +35,7 @@ if (! check_acl ($config["id_user"], 0, "ER")) {
 	return;
 }
 
+$is_filter = db_get_value('id_filter', 'tusuario', 'id_user', $config['id_user']);
 
 $jump = '&nbsp;&nbsp;';
 
@@ -863,6 +864,7 @@ html_print_input_hidden('ajax_file',
 	ui_get_full_url("ajax.php", false, false, false));
 html_print_input_hidden('meta', (int)$meta);
 html_print_input_hidden('history', (int)$history);
+html_print_input_hidden('filterid', $is_filter);
 
 ui_require_jquery_file('json');
 ui_include_time_picker();
@@ -898,7 +900,65 @@ $(document).ready( function() {
 		$("#row_name").css('visibility', '');
 		$("#submit-update_filter").css('visibility', '');
 	}
-	
+
+	if ($("#hidden-id_name").val() == ''){
+		if($("#hidden-filterid").val() != ''){
+			$('#row_name').css('visibility', '');
+			$("#submit-update_filter").css('visibility', '');
+			jQuery.post ("<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
+				{"page" : "operation/events/events_list",
+				"get_filter_values" : 1,
+				"id" : $('#hidden-filterid').val()
+				},
+				function (data) {
+					jQuery.each (data, function (i, val) {
+						if (i == 'id_name')
+							$("#hidden-id_name").val(val);
+						if (i == 'id_group')
+							$("#id_group").val(val);
+						if (i == 'event_type')
+							$("#event_type").val(val);
+						if (i == 'severity')
+							$("#severity").val(val);
+						if (i == 'status')
+							$("#status").val(val);
+						if (i == 'search')
+							$("#text-search").val(val);
+						if (i == 'text_agent')
+							$("#text_id_agent").val(val);
+						if (i == 'id_agent')
+							$('input:hidden[name=id_agent]').val(val);
+						if (i == 'id_agent_module')
+							$('input:hidden[name=module_search_hidden]').val(val);
+						if (i == 'pagination')
+							$("#pagination").val(val);
+						if (i == 'event_view_hr')
+							$("#text-event_view_hr").val(val);
+						if (i == 'id_user_ack')
+							$("#id_user_ack").val(val);
+						if (i == 'group_rep')
+							$("#group_rep").val(val);
+						if (i == 'tag_with')
+							$("#hidden-tag_with").val(val);
+						if (i == 'tag_without')
+							$("#hidden-tag_without").val(val);
+						if (i == 'filter_only_alert')
+							$("#filter_only_alert").val(val);
+						if (i == 'id_group_filter')
+							$("#id_group_filter").val(val);
+					});
+					reorder_tags_inputs();
+					// Update the info with the loaded filter
+					$('#filter_loaded_span').html($('#filter_loaded_text').html() + ': ' + $("#hidden-id_name").val());
+
+					// Update the view with the loaded filter
+					$('#submit-update').trigger('click');
+				},
+				"json"
+			);
+		}
+	}
+
 	$("#submit-load_filter").click(function () {
 		// If selected 'none' flush filter
 		if ( $("#filter_id").val() == 0 ) {

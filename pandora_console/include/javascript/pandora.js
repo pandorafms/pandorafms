@@ -1022,7 +1022,19 @@ function toggle_full_value(id) {
 		}
 	});
 }
-
+function autoclick_profile_users(firts_level, second_level) {
+	if (typeof firts_level !== "undefined") {
+		var is_checked_firts = $('#checkbox-' + firts_level).is(':checked');
+		if (!is_checked_firts) {
+			$('#checkbox-' + firts_level).prop('checked', true);
+		}
+		if (second_level !== false) {
+			if (!$('#checkbox-' + second_level).is(":checked")) {
+				$('#checkbox-' + second_level).prop('checked', true);
+			}
+		}
+	}
+}
 /**
  * Auto hides an element and shows it
  * when the user moves the mouse over the body.

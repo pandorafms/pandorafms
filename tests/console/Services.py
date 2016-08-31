@@ -33,7 +33,7 @@ class SimpleService(PandoraWebDriverTestCase):
 
 	
 	@is_enterprise	
-	def qtest_A_simple_service(self):
+	def test_A_simple_service(self):
 
 		u"""
 		Add 3 modules in Simple service, two critical and one in warning, force service and check that service is warning.
@@ -107,7 +107,7 @@ class SimpleService(PandoraWebDriverTestCase):
 		self.assertIsInstance(element,WebElement)
 
 	@is_enterprise
-	def qtest_B_simple_service(self):
+	def test_B_simple_service(self):
 
 		u"""
 		Add 3 modules in Simple service, two normal and one in critical, force service and check that service is critical.
@@ -137,7 +137,7 @@ class SimpleService(PandoraWebDriverTestCase):
 		self.assertIsInstance(element,WebElement)
 
 	@is_enterprise
-	def qtest_C_simple_service(self):
+	def test_C_simple_service(self):
 
 		u"""
 		Add 3 modules in Simple service, two normal and one in critical, force service and check that service is critical.
@@ -249,7 +249,7 @@ class ManualService(PandoraWebDriverTestCase):
 		self.assertIsInstance(element,WebElement)		
 
 
-	def qtest_C_auto_service_warning(self):
+	def test_C_auto_service_warning(self):
 
 		u"""
                 Utilizando el agente y modulos necesarios, creamos un servicio de tipo auto para añadirle el modulo warning y añadimos un critical y warning weight para que de un valor entre 0.5 y 1 y así obtener un servicio tipo auto en warning

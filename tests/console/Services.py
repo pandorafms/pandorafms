@@ -179,6 +179,7 @@ class ManualService(PandoraWebDriverTestCase):
 	module_warning_1_name = gen_random_string(6)
 	module_critical_1_name = gen_random_string(6)
 
+	@is_enterprise
 	def test_A_manual_service_ok(self):
 
 		u"""
@@ -224,7 +225,7 @@ class ManualService(PandoraWebDriverTestCase):
                 element = driver.find_element_by_xpath('//td/img[@data-title="Ok"]')
                 self.assertIsInstance(element,WebElement)
 
-
+	@is_enterprise
 	def test_B_auto_service_critical(self):
 
 		u"""
@@ -248,7 +249,7 @@ class ManualService(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//td/img[@data-title="Critical"]')
 		self.assertIsInstance(element,WebElement)		
 
-
+	@is_enterprise
 	def test_C_auto_service_warning(self):
 
 		u"""

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import login, click_menu_element, detect_and_pass_all_wizards
+from include.common_functions_60 import login, click_menu_element, detect_and_pass_all_wizards, gen_random_string
 from include.agent_functions import create_agent
+from include.api_functions import *
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -23,24 +24,35 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		Creation two agents and delete this agents using bulk operation'
 		Ticket Associated = 3831
 		"""
-	
+
+		agent_name_1 = gen_random_string(6)
+                agent_name_2 = gen_random_string(6)
+
 		driver = self.driver
 		self.login()
 		detect_and_pass_all_wizards
-			
-		create_agent(driver,"prueba masivas 1")
 		
-		driver.find_element_by_css_selector("b").click()
+		activate_api(driver,"1234")
+
+		params = [agent_name_1,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
+                create_agent_api(driver,params,user="admin",pwd="pandora")
+
+		params = [agent_name_2,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
+                create_agent_api(driver,params,user="admin",pwd="pandora")		
+		
+		lista = driver.current_url.split('/')
+
+                url = lista[0]+'//'+lista[2]+'/pandora_console'
+
+                driver.get(url)	
 				
-		create_agent(driver,"prueba masivas 2")
-		
 		driver.find_element_by_css_selector("b").click()
 		driver.find_element_by_css_selector("b").click()
 		click_menu_element(driver,"Agents operations")
 		driver.find_element_by_id("option").click()
 		Select(driver.find_element_by_id("option")).select_by_visible_text("Bulk agent delete")
-		Select(driver.find_element_by_id("id_agents")).select_by_visible_text("prueba masivas 1")
-		Select(driver.find_element_by_id("id_agents")).select_by_visible_text("prueba masivas 2")
+		Select(driver.find_element_by_id("id_agents")).select_by_visible_text(agent_name_1)
+		Select(driver.find_element_by_id("id_agents")).select_by_visible_text(agent_name_2)
 		driver.find_element_by_id("submit-go").click()
 			
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")

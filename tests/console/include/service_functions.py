@@ -11,7 +11,7 @@ import random, re
 import string
 
 
-def create_service(driver,name,group,agent,description=None,mode="Auto",critical=None,warning=None):
+def create_service(driver,name,group,agent,description=None,mode="auto",critical=None,warning=None):
 
 	# Mode by defect is "Auto". Mode can be "Auto", "Simple" or "Manual". 
 	# If mode = "manual" insert critial and warning values
@@ -47,7 +47,7 @@ def create_service(driver,name,group,agent,description=None,mode="Auto",critical
 	if mode == "simple":
 		driver.find_element_by_id("radiobtn0003").click()
 		
-	if mode == "manual":
+	elif mode == "manual":
 		driver.find_element_by_id("radiobtn0001").click()
 		
 		driver.find_element_by_id("text-critical").clear()
@@ -55,7 +55,11 @@ def create_service(driver,name,group,agent,description=None,mode="Auto",critical
 		
 		driver.find_element_by_id("text-warning").clear()
 		driver.find_element_by_id("text-warning").send_keys(warning)
-	
+
+	elif mode == "auto":
+
+		driver.find_element_by_id("radiobtn0002").click()
+			
 	driver.find_element_by_id("submit-crt").click()
 		
 
@@ -135,7 +139,7 @@ def force_service(driver,service_name):
 
 	time.sleep(10)
 
-def add_elements_to_service(driver,service_name,type_element,agent_name=None,module=None,service_to_add=None,description=None,is_critical=False):
+def add_elements_to_service(driver,service_name,type_element,agent_name=None,module=None,service_to_add=None,description=None,is_critical=False,critical_weight=None,warning_weight=None,unknown_weight=None,ok_weight=None):
 		
 	search_service(driver,service_name)
 	driver.find_element_by_xpath('//*[@id="menu_tab"]/ul/li[2]/a/img').click()
@@ -155,10 +159,8 @@ def add_elements_to_service(driver,service_name,type_element,agent_name=None,mod
 		if is_critical == True:
 		
 			driver.find_element_by_id("checkbox-critical").click()
-		
-		driver.find_element_by_id("submit-crt").click()
-					
-	if type_element == "Module":
+
+	elif type_element == "Module":
 	
 		Select(driver.find_element_by_id("type_element")).select_by_visible_text("Module")
 		
@@ -177,9 +179,7 @@ def add_elements_to_service(driver,service_name,type_element,agent_name=None,mod
 		
 			driver.find_element_by_id("checkbox-critical").click()	
 	
-		driver.find_element_by_id("submit-crt").click()		
-		
-	if type_element == "Service":
+	elif type_element == "Service":
 	
 		Select(driver.find_element_by_id("type_element")).select_by_visible_text("Service")
 		
@@ -192,6 +192,27 @@ def add_elements_to_service(driver,service_name,type_element,agent_name=None,mod
 		if is_critical == True:
 		
 			driver.find_element_by_id("checkbox-critical").click()
-			
-		driver.find_element_by_id("submit-crt").click()
+
+	if critical_weight != None:
+
+		driver.find_element_by_id("text-weight_critical").clear()
+		driver.find_element_by_id("text-weight_critical").send_keys(critical_weight)
+
+	if warning_weight != None:
+
+		driver.find_element_by_id("text-weight_warning").clear()
+		driver.find_element_by_id("text-weight_warning").send_keys(warning_weight)
+
+	if unknown_weight != None:
+
+		driver.find_element_by_id("text-weight_unknown").clear()
+		driver.find_element_by_id("text-weight_unknown").send_keys(unknown_weight)
+
+	if ok_weight != None:
+
+		driver.find_element_by_id("text-weight_ok").clear()
+		driver.find_element_by_id("text-weight_ok").send_keys(ok_weight)
+	
+	driver.find_element_by_id("submit-crt").click()
 		
+	

@@ -130,7 +130,7 @@ $options['view']['text'] = '<a href="index.php?sec=reporting&sec2=operation/visu
 	. html_print_image("images/operation.png", true, array ("title" => __('View'))) .'</a>';
 $options['view']['active'] = true;
 
-if (! defined('METACONSOLE')) {
+if (!is_metaconsole()) {
 	if (!$config['pure']) {
 		$options['pure']['text'] = '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'&pure=1">'
 			. html_print_image('images/full_screen.png', true, array('title' => __('Full screen mode')))
@@ -147,7 +147,10 @@ else {
 
 if ($config['pure']) {
 	// Container of the visual map (ajax loaded)
-	echo '<div id="vc-container"></div>';
+	echo '<div id="vc-container">' .
+		visual_map_print_visual_map ($id_layout, true, true, 
+			null, null, '', false, $graph_javascript)
+	. '</div>';
 	
 	// Floating menu - Start
 	echo '<div id="vc-controls">';
@@ -215,54 +218,54 @@ ui_require_javascript_file('pandora_visual_console');
 		var pure = <?php echo (int) $config['pure']; ?>;
 			
 		if (pure) {
-			var startCountDown = function (duration, cb) {
-				$('div.vc-countdown').countdown('destroy');
-				if (!duration) return;
-				var t = new Date();
-				t.setTime(t.getTime() + duration * 1000);
-				$('div.vc-countdown').countdown({
-					until: t,
-					format: 'MS',
-					layout: '(%M%nn%M:%S%nn%S <?php echo __('Until refresh'); ?>) ',
-					alwaysExpire: true,
-					onExpiry: function () {
-						$('div.vc-countdown').countdown('destroy');
-						cb();
-					}
-				});
-			}
+			//~ var startCountDown = function (duration, cb) {
+				//~ $('div.vc-countdown').countdown('destroy');
+				//~ if (!duration) return;
+				//~ var t = new Date();
+				//~ t.setTime(t.getTime() + duration * 1000);
+				//~ $('div.vc-countdown').countdown({
+					//~ until: t,
+					//~ format: 'MS',
+					//~ layout: '(%M%nn%M:%S%nn%S <?php echo __('Until refresh'); ?>) ',
+					//~ alwaysExpire: true,
+					//~ onExpiry: function () {
+						//~ $('div.vc-countdown').countdown('destroy');
+						//~ cb();
+					//~ }
+				//~ });
+			//~ }
 			
-			var fetchMap = function () {
-				$.ajax({
-					url: 'ajax.php',
-					type: 'GET',
-					dataType: 'html',
-					data: {
-						page: 'include/ajax/visual_console.ajax',
-						render_map: true,
-						keep_aspect_ratio: true,
-						id_visual_console: <?php echo $id_layout; ?>,
-						graph_javascript: <?php echo (int) $graph_javascript; ?>,
-						width: $(window).width(),
-						height: $(window).height()
-					}
-				})
-				.done(function (data, textStatus, xhr) {
-					$('div#vc-container').html(data);
-					startCountDown(refr, fetchMap);
-				});
-			}
+			//~ var fetchMap = function () {
+				//~ $.ajax({
+					//~ url: 'ajax.php',
+					//~ type: 'GET',
+					//~ dataType: 'html',
+					//~ data: {
+						//~ page: 'include/ajax/visual_console.ajax',
+						//~ render_map: true,
+						//~ keep_aspect_ratio: true,
+						//~ id_visual_console: <?php echo $id_layout; ?>,
+						//~ graph_javascript: <?php echo (int) $graph_javascript; ?>,
+						//~ width: $(window).width(),
+						//~ height: $(window).height()
+					//~ }
+				//~ })
+				//~ .done(function (data, textStatus, xhr) {
+					//~ $('div#vc-container').html(data);
+					//~ startCountDown(refr, fetchMap);
+				//~ });
+			//~ }
 			
-			// Auto hide controls
-			var controls = document.getElementById('vc-controls');
-			autoHideElement(controls, 1000);
-			$('select#refr').change(function (event) {
-				refr = Number.parseInt(event.target.value, 10);
-				startCountDown(refr, fetchMap);
-			});
+			//~ // Auto hide controls
+			//~ var controls = document.getElementById('vc-controls');
+			//~ autoHideElement(controls, 1000);
+			//~ $('select#refr').change(function (event) {
+				//~ refr = Number.parseInt(event.target.value, 10);
+				//~ startCountDown(refr, fetchMap);
+			//~ });
 			
-			// Start the map fetch
-			fetchMap();
+			//~ // Start the map fetch
+			//~ fetchMap();
 		}
 		else {
 			$('#refr').change(function () {

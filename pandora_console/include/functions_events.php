@@ -3017,7 +3017,7 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 			
 			if ($meta) {
 				$sql = "select event_type from $table 
-								WHERE agent_name = ".$event['agent_name']." $sql_post ORDER BY utimestamp DESC ";
+								WHERE agent_name = '".$event['agent_name']."' $sql_post ORDER BY utimestamp DESC ";
 				$resultado = db_get_row_sql($sql);
 				
 				$id_agente = $event['agent_name'];

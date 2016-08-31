@@ -1009,7 +1009,6 @@ function addTinyMCE(elementID) {
 		tinyMCE.EditorManager.execCommand('mceAddControl', true, elementID);
 }
 
-
 function autoclick_profile_users(firts_level, second_level) {
 	if (typeof firts_level !== "undefined") {
 		var is_checked_firts = $('#checkbox-' + firts_level).is(':checked');

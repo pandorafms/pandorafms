@@ -93,7 +93,7 @@ if ($group_rep == 2) {
 		$uniq = uniqid();
 		if  ($meta) {
 			$table->data[$key][2] = '<img id="open_agent_groups" src=images/zoom_mc.png data-id="'.$table->id.'-'.$uniq.'-0" data-open="false"
-				onclick=\'show_events_group_agent("'.$uniq.'",'.$res['id_agent'].','.$res['id_server'].');\' />';
+				onclick=\'show_events_group_agent("'.$table->id.'-'.$uniq.'-0","'.$res['id_agent'].'",'.$res['id_server'].');\' />';
 		}
 		else {
 			$table->data[$key][2] = '<img id="open_agent_groups" src="images/zoom_mc.png" data-id="'.$table->id.'-'.$uniq.'-0" data-open="false"

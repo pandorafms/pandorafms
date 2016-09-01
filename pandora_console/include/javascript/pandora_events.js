@@ -491,8 +491,9 @@ function event_comment() {
 
 //Show event list when fielter repetead is Group agents
 function show_events_group_agent (id_insert, id_agent, server_id) {
-	parameter = [];
 	
+	var ajax_file = $('#hidden-ajax_file').val();
+	parameter = [];
 	parameter.push ({name: "id_agent",
 			value: id_agent});
 	parameter.push ({name: "server_id",
@@ -522,7 +523,7 @@ function show_events_group_agent (id_insert, id_agent, server_id) {
 	parameter.push ({name: "date_to",
 			value: $("#text-date_to").val()});
 	parameter.push ({name: "server_id_search",
-			value: $("#text-date_to").val()});
+			value: $("#server_id").val()});
 	parameter.push ({
 			name: "page",
 			value: "include/ajax/events"});
@@ -532,7 +533,7 @@ function show_events_group_agent (id_insert, id_agent, server_id) {
 	
 	jQuery.ajax ({
 		type: 'POST',
-		url: 'ajax.php',
+		url: action=ajax_file,
 		data: parameter,
 		dataType: 'html',
 		success: function (data) {

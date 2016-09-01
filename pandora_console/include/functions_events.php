@@ -2962,7 +2962,7 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 	$table = events_get_events_table($meta, $history);
 	
 	if ($meta) {
-		$fields_extra = ', agent_name';
+		$fields_extra = ', agent_name, server_id';
 		$groupby_extra = ', server_id';
 	}
 	else {
@@ -3022,7 +3022,7 @@ function events_get_events_grouped_by_agent($sql_post, $offset = 0,
 				
 				$id_agente = $event['agent_name'];
 				$result[] = array('total' => $event['total'],
-									'id_server' => $event['id_server'],
+									'id_server' => $event['server_id'],
 									'id_agent' => $id_agente,
 									'event_type' => $resultado['event_type']);
 			}

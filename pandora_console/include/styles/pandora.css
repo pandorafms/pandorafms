@@ -3315,3 +3315,8 @@ div#vc-controls img.vc-qr {
   display: none;
 }
 /* jQuery dialog */
+
+/* Image open dialog in group events by agents*/
+#open_agent_groups {
+	cursor: pointer;
+}

@@ -29,7 +29,9 @@ Description: The default Pandora FMS theme layout
 	font-family: verdana, sans-serif;
 	letter-spacing: 0.03pt;
 	font-size: 8pt;
+/*
 	color: #3F3F3F;
+*/
 }
 svg * {
 	font-size: 11pt;
@@ -3071,7 +3073,7 @@ table#policy_modules td * {
 }
 
 .godmode{
-	border-top: 4px solid !important;
+	border-top: 4px solid #777 !important;
 	padding-bottom: 4px !important;
 	border-bottom-right-radius: 5px;
 	border-right-style: solid;

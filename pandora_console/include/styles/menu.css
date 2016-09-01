@@ -192,7 +192,7 @@ li:hover ul { display: block; }
 	background: url(../../images/builder.menu.png) no-repeat 50% 50%;
 }
 #icon_god-links {
-	border-top: 4px solid !important;
+	border-top: 4px solid #777!important;
 	border-color: #777;
 	background: url(../../images/links.menu.png) no-repeat 50% 50%;
 }

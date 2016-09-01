@@ -969,6 +969,33 @@ CREATE TABLE IF NOT EXISTS `ttrap` (
 	INDEX source (`source`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- ---------------------------------------------------------------------
+-- Table `tevent_filter`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tevent_filter` (
+	`id_filter`  int(10) unsigned NOT NULL auto_increment,
+	`id_group_filter` int(10) NOT NULL default 0,
+	`id_name` varchar(600) NOT NULL,
+	`id_group` int(10) NOT NULL default 0,
+	`event_type` text NOT NULL,
+	`severity` int(10) NOT NULL default -1,
+	`status` int(10) NOT NULL default -1,
+	`search` TEXT,
+	`text_agent` TEXT,
+	`id_agent` int(10) default 0,
+	`id_agent_module` int(10) default 0,
+	`pagination` int(10) NOT NULL default 25,
+	`event_view_hr` int(10) NOT NULL default 8,
+	`id_user_ack` TEXT,
+	`group_rep` int(10) NOT NULL default 0,
+	`tag_with` text NOT NULL,
+	`tag_without` text NOT NULL,
+	`filter_only_alert` int(10) NOT NULL default -1,
+	`date_from` date default NULL,
+	`date_to` date default NULL,
+	PRIMARY KEY  (`id_filter`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- ----------------------------------------------------------------------
 -- Table `tusuario`
 -- ----------------------------------------------------------------------
@@ -1693,33 +1720,6 @@ CREATE TABLE IF NOT EXISTS `tnetflow_report_content` (
 	FOREIGN KEY (`id_filter`) REFERENCES tnetflow_filter(`id_sg`)
 	ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
--- ---------------------------------------------------------------------
--- Table `tevent_filter`
--- ---------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tevent_filter` (
-	`id_filter`  int(10) unsigned NOT NULL auto_increment,
-	`id_group_filter` int(10) NOT NULL default 0,
-	`id_name` varchar(600) NOT NULL,
-	`id_group` int(10) NOT NULL default 0,
-	`event_type` text NOT NULL,
-	`severity` int(10) NOT NULL default -1,
-	`status` int(10) NOT NULL default -1,
-	`search` TEXT,
-	`text_agent` TEXT,
-	`id_agent` int(10) default 0,
-	`id_agent_module` int(10) default 0,
-	`pagination` int(10) NOT NULL default 25,
-	`event_view_hr` int(10) NOT NULL default 8,
-	`id_user_ack` TEXT,
-	`group_rep` int(10) NOT NULL default 0,
-	`tag_with` text NOT NULL,
-	`tag_without` text NOT NULL,
-	`filter_only_alert` int(10) NOT NULL default -1,
-	`date_from` date default NULL,
-	`date_to` date default NULL,
-	PRIMARY KEY  (`id_filter`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ---------------------------------------------------------------------
 -- Table `tpassword_history`

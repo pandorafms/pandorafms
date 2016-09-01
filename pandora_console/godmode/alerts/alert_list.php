@@ -42,6 +42,7 @@ else {
 
 $create_alert = (bool) get_parameter ('create_alert');
 $add_action = (bool) get_parameter ('add_action');
+$update_action = (bool) get_parameter ('update_action');
 $delete_action = (bool) get_parameter ('delete_action');
 $delete_alert = (bool) get_parameter ('delete_alert');
 $disable_alert = (bool) get_parameter ('disable_alert');
@@ -165,6 +166,33 @@ if ($add_action) {
 	
 	$messageAction = ui_print_result_message ($result,
 		__('Successfully added'), __('Could not be added'), '', true);
+}
+
+if ($update_action) {
+	$id_action = (int) get_parameter ('action_select_ajax');
+	$id_module_action = (int) get_parameter ('id_module_action_ajax');
+	$fires_min = (int) get_parameter ('fires_min_ajax');
+	$fires_max = (int) get_parameter ('fires_max_ajax');
+	
+	$values = array ();
+	if ($fires_min != -1)
+		$values['fires_min'] = $fires_min;
+	if ($fires_max != -1)
+		$values['fires_max'] = $fires_max;
+	$values['module_action_threshold'] = (int) get_parameter ('module_action_threshold_ajax');
+	$values['id_alert_action'] = $id_action;
+	
+	$result = alerts_update_alert_agent_module_action ($id_module_action, $values);
+	
+	if ($result) {
+		db_pandora_audit("Alert management", 'Update action ' . $id_action . ' in  alert ' . $id_alert_module);
+	}
+	else {
+		db_pandora_audit("Alert management", 'Fail to updated action ' . $id_action . ' in alert ' . $id_alert_module);
+	}
+	
+	$messageAction = ui_print_result_message ($result,
+		__('Successfully updated'), __('Could not be updated'), '', true);
 }
 
 if ($delete_action) {

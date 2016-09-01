@@ -332,11 +332,11 @@ if ($id_agente) {
 else {
 	ui_pagination ($total, 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list' . $form_params . $sort_params);
 }
-$simple_alerts = agents_get_alerts_simple ($id_agents, false,
-	array ('offset' => (int) get_parameter ('offset'),
-		'limit' => $config['block_size'], 'order' => $order), $where, false);
 
-$offset = get_parameter('offset');
+$offset = (int) get_parameter('offset');
+$simple_alerts = agents_get_alerts_simple ($id_agents, false,
+	array ('offset' => $offset,
+		'limit' => $config['block_size'], 'order' => $order), $where, false);
 
 if (!$id_agente) {
 	$url = 'index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&tab=list&pure='.$pure.'&offset=' . $offset . $form_params;
@@ -347,7 +347,7 @@ else {
 
 $table = new stdClass();
 
-if ( defined("METACONSOLE") )
+if ( is_metaconsole() )
 	$table->class = 'alert_list databox';
 else
 	$table->class = 'databox data';
@@ -497,6 +497,7 @@ foreach ($simple_alerts as $alert) {
 		$data[2] .= "<td></td>";
 		$data[2] .= "</tr>";
 	}
+	
 	foreach ($actions as $action_id => $action) {
 		$data[2] .= "<tr>";
 			$data[2] .= "<td>";
@@ -534,19 +535,27 @@ foreach ($simple_alerts as $alert) {
 
 				// Is possible manage actions if have LW permissions in the agent group of the alert module
 				if (check_acl ($config['id_user'], $agent_group, "LW")) {
-							$data[2] .= '<form method="post" action="' . $url . '" class="delete_link" style="display: inline; vertical-align: -50%;">';
-							$data[2] .= html_print_input_image ('delete',
-								'images/cross.png', 1, 'padding:0px;', true,
-								array('title' => __('Delete action')));
-							$data[2] .= html_print_input_hidden ('delete_action', 1, true);
-							$data[2] .= html_print_input_hidden ('id_alert', $alert['id'], true);
-							$data[2] .= html_print_input_hidden ('id_action', $action_id, true);
-							$data[2] .= '</form>';
+					//~ $data[2] .= '<form method="post" action="' . $url . '" class="delete_link" style="display: inline; vertical-align: -50%;">';
+					$data[2] .= '<form method="post" action="' . $url . '" class="delete_link" style="display: inline;">';
+					$data[2] .= html_print_input_image ('delete',
+						'images/cross.png', 1, 'padding:0px;', true,
+						array('title' => __('Delete action')));
+					$data[2] .= html_print_input_hidden ('delete_action', 1, true);
+					$data[2] .= html_print_input_hidden ('id_alert', $alert['id'], true);
+					$data[2] .= html_print_input_hidden ('id_action', $action_id, true);
+					$data[2] .= '</form>';
+					$data[2] .= html_print_input_image ('update_action',
+						'images/config.png', 1, 'padding:0px;', true,
+						array('title' => __('Update action'),
+								'onclick' => 'show_display_update_action(\''.$action['id'].'\',\''.$alert['id'].'\',\''.$alert['id_agent_module'].'\',\''.$action_id.'\',\''.$alert['id_agent_module'].'\')'));
+					$data[2] .= html_print_input_hidden ('id_agent_module', $alert['id_agent_module'], true);
 				}
 
 			$data[2] .= "</td>";
 		$data[2] .= "</tr>";
 	}
+	$data[2] .= '<div id="update_action-div" style="display:none;text-align:left">';
+	$data[2] .= '</div>';
 	$data[2] .= '</table>';
 	// Is possible manage actions if have LW permissions in the agent group of the alert module
 	if (check_acl ($config['id_user'], $agent_group, "LW")) {
@@ -826,6 +835,39 @@ function show_add_action(id_alert) {
 			height: 300
 		})
 		.show ();
+}
+
+function show_display_update_action(id_module_action, alert_id, alert_id_agent_module, action_id) {
+	var params = [];
+	params.push("show_update_action_menu=1");
+	params.push("id_agent_module=" + alert_id_agent_module);
+	params.push("id_module_action=" + id_module_action);
+	params.push("id_alert=" + alert_id);
+	params.push("id_action=" + action_id);
+	params.push("page=include/ajax/alert_list.ajax");
+	jQuery.ajax ({
+		data: params.join ("&"),
+		type: 'POST',
+		url: action="<?php echo ui_get_full_url("ajax.php", false, false, false); ?>",
+		success: function (data) {
+			$("#update_action-div").html (data);
+			$("#update_action-div").hide ()
+				.dialog ({
+					resizable: true,
+					draggable: true,
+					title: '<?php echo __('Update action'); ?>',
+					modal: true,
+					overlay: {
+						opacity: 0.5,
+						background: "black"
+					},
+					width: 500,
+					height: 300
+				})
+				.show ();
+		}
+	});
+	
 }
 
 /* ]]> */

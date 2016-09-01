@@ -1224,6 +1224,39 @@ function alerts_add_alert_agent_module_action ($id_alert_template_module, $id_al
 }
 
 /**
+ * Update an action to an alert associated to a module.
+ * 
+ * @param int Id of register.
+ * @param mixed Options of the action.
+ *
+ * @return mixed Affected rows or false if something goes wrong.
+ */
+function alerts_update_alert_agent_module_action ($id_module_action, $options = false) {
+	global $config;
+	
+	$values = array ();
+	$values['fires_max'] = 0;
+	$values['fires_min'] = 0;
+	$values['module_action_threshold'] = 0;
+	if ($options) {
+		$max = 0;
+		$min = 0;
+		if (isset ($options['fires_max']))
+			$values['fires_max'] = $options['fires_max'];
+		if (isset ($options['fires_min']))
+			$values['fires_min'] = $options['fires_min'];
+		if (isset ($options['module_action_threshold']))
+			$values['module_action_threshold'] = (int) $options['module_action_threshold'];
+		if (isset ($options['id_alert_action']))
+			$values['id_alert_action'] = (int) $options['id_alert_action'];
+	}
+	
+	return (@db_process_sql_update ('talert_template_module_actions',
+		$values,
+		array ('id' => $id_module_action))) !== false;
+}
+
+/**
  * Delete an action to an alert associated to a module.
  * 
  * @param int Id of an alert associated to a module.

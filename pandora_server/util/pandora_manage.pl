@@ -4413,7 +4413,7 @@ sub pandora_manage_main ($$$) {
 			cli_create_module_group();
 		}
 		elsif ($param eq '--create_network_module') {
-			param_check($ltotal, 26, 20);
+			param_check($ltotal, 24, 20);
 			cli_create_network_module(0);
 		}
 		elsif ($param eq '--create_snmp_module') {

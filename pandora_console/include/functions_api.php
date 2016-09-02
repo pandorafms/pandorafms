@@ -5746,6 +5746,46 @@ function api_set_update_group($id_group, $thrash2, $other, $thrash3) {
 }
 
 /**
+ * Delete a group 
+ * 
+ * @param integer $id Group ID
+ * @param $thrash1 Don't use.
+ * @param $thrast2 Don't use.
+ * @param $thrash3 Don't use.
+ */
+function api_set_delete_group($id_group, $thrash2, $other, $thrash3) {
+	global $config;
+
+	if (defined ('METACONSOLE')) {
+		return;
+	}
+
+	$group = db_get_row_filter('tgrupo', array('id_grupo' => $id_group));
+	if (!$group) {
+		returnError('error_delete', 'Error in delete operation. Id does not exist.');
+		return;
+	}
+
+	$usedGroup = groups_check_used($id_group);
+	if ($usedGroup['return']) {
+		returnError('error_delete',
+			 'Error in delete operation. The group is not empty (used in ' .
+			 implode(', ', $usedGroup['tables']) . ').' );
+		return;
+	}
+
+	db_process_sql_update('tgrupo', array('parent' => $group['parent']), array('parent' => $id_group));
+	db_process_sql_delete('tgroup_stat', array('id_group' => $id_group));
+
+	$result = db_process_sql_delete('tgrupo', array('id_grupo' => $id_group));
+
+	if (!$result)
+		returnError('error_delete', 'Error in delete operation.');
+	else
+		returnData('string', array('type' => 'string', 'data' => __('Correct Delete')));
+}
+
+/**
  * Create a new netflow filter. And return the id_group of the new group. 
  * 
  * @param $thrash1 Don't use.

@@ -789,7 +789,10 @@ function config_process_config () {
 	if (!isset ($config['status_images_set'])) {
 		config_update_value ('status_images_set', 'default');
 	}
-	
+
+	if(!isset ($config['autorefresh_white_list'])){
+		config_update_value ('autorefresh_white_list', '');
+	}
 	// Load user session
 	if (isset ($_SESSION['id_usuario']))
 		$config["id_user"] = $_SESSION["id_usuario"];

@@ -104,7 +104,7 @@ class ACL(PandoraWebDriverTestCase):
                 self.login(user=user_name,passwd=user_name)
 
                 #Check that the report is visible
-                click_menu_element(driver,"Custom reporting")
+                click_menu_element(driver,"Custom reports")
                 driver.find_element_by_id('text-search').clear()
                 driver.find_element_by_id('text-search').send_keys(report_name_A)
                 driver.find_element_by_id('submit-search_submit').click()
@@ -112,7 +112,7 @@ class ACL(PandoraWebDriverTestCase):
 
 
                 #Check that the report is not visible
-                click_menu_element(driver,"Custom reporting")
+                click_menu_element(driver,"Custom reports")
                 driver.find_element_by_id('text-search').clear()
                 driver.find_element_by_id('text-search').send_keys(report_name_B)
                 driver.find_element_by_id('submit-search_submit').click()

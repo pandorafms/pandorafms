@@ -9,7 +9,7 @@ import random, time
 import string
 
 def add_user_profile(driver,user_name,profile,group,tags=[]):
-        click_menu_element(driver,"Users management")
+        click_menu_element(driver,"Manage users")
         driver.find_element_by_css_selector("b").click()
         driver.find_element_by_id("text-filter_search").clear()
         driver.find_element_by_id("text-filter_search").send_keys(user_name)
@@ -42,7 +42,7 @@ def create_user(driver,user_name,userpwd,email=None,profile_list=None,is_admin=F
                                 l = [("Chief Operator","All",[]),("Read Operator","Servers",["tag1","tag2"])]
         """
 
-        click_menu_element(driver,"Users management")
+        click_menu_element(driver,"Manage users")
         driver.find_element_by_id("submit-crt").click()
         driver.find_element_by_name("id_user").clear()
         driver.find_element_by_name("id_user").send_keys(user_name)
@@ -69,7 +69,7 @@ def create_user(driver,user_name,userpwd,email=None,profile_list=None,is_admin=F
 
 
 def search_user(driver,user_name):
-	click_menu_element(driver,"Users management")
+	click_menu_element(driver,"Manage users")
 	driver.find_element_by_css_selector("b").click()
 	driver.find_element_by_id('text-filter_search').clear()
 	driver.find_element_by_id("text-filter_search").send_keys(user_name)

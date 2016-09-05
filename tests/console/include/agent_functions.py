@@ -10,9 +10,9 @@ import string
 
 def delete_agent (driver,agent_names_list):
 
-	click_menu_element(driver,"Agents operations")
+	click_menu_element(driver,"Agent operations")
 	driver.find_element_by_id("option").click()
-	Select(driver.find_element_by_id("option")).select_by_visible_text("Bulk agent delete")
+	Select(driver.find_element_by_id("option")).select_by_visible_text("Delete agents in bulk")
 
 	for agent_name in agent_names_list:
 		Select(driver.find_element_by_id("id_agents")).select_by_visible_text(agent_name)
@@ -59,7 +59,7 @@ def create_agent_group(driver,group_name,parent_group="All",alerts=True,propagat
 	# parent_group by defect is All.
 	# Alerts by default is activate.
 	
-	click_menu_element(driver,"Manage agents groups")
+	click_menu_element(driver,"Manage agent groups")
 	driver.find_element_by_id("submit-crt").click()
 	
 	driver.find_element_by_id("text-name").send_keys(group_name)

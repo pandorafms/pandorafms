@@ -9,7 +9,7 @@ import random, time
 import string
 
 def create_report(driver,nombre,group_name,description=None):
-	click_menu_element(driver,"Custom reporting")
+	click_menu_element(driver,"Custom reports")
 	driver.find_element_by_id("submit-create").click()
 	driver.find_element_by_id("text-name").clear()
 	driver.find_element_by_id("text-name").send_keys(nombre)
@@ -26,7 +26,7 @@ def create_report(driver,nombre,group_name,description=None):
 	driver.find_element_by_id("submit-add").click()
 
 def delete_report(driver,report_name):
-	click_menu_element(driver,"Custom reporting")
+	click_menu_element(driver,"Custom reports")
 	driver.find_element_by_id('text-search').clear()
 	driver.find_element_by_id('text-search').send_keys(report_name)
 	driver.find_element_by_id('submit-search_submit').click()

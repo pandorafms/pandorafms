@@ -27,9 +27,8 @@ check_login ();
 
 $ip_target = (string) get_parameter ('ip_target', $ipAgent); // Host
 $plugin_user = (string) get_parameter ('plugin_user', 'Administrator'); // Username
-$plugin_pass = get_parameter('plugin_pass', ''); // Password
+$plugin_pass = io_safe_output(get_parameter('plugin_pass', '')); // Password
 $tcp_send = (string) get_parameter ('tcp_send'); // Namespace
-
 
 //See if id_agente is set (either POST or GET, otherwise -1
 $id_agent = $idAgent;

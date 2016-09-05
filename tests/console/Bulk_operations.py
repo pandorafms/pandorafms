@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from include.common_classes_60 import PandoraWebDriverTestCase
 from include.common_functions_60 import login, click_menu_element, detect_and_pass_all_wizards, gen_random_string
-from include.agent_functions import create_agent
+from include.agent_functions import create_agent, delete_agent
 from include.api_functions import *
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -45,15 +45,8 @@ class Bulk_operations(PandoraWebDriverTestCase):
                 url = lista[0]+'//'+lista[2]+'/pandora_console'
 
                 driver.get(url)	
-				
-		driver.find_element_by_css_selector("b").click()
-		driver.find_element_by_css_selector("b").click()
-		click_menu_element(driver,"Agent operations")
-		driver.find_element_by_id("option").click()
-		Select(driver.find_element_by_id("option")).select_by_visible_text("Delete agents in bulk")
-		Select(driver.find_element_by_id("id_agents")).select_by_visible_text(agent_name_1)
-		Select(driver.find_element_by_id("id_agents")).select_by_visible_text(agent_name_2)
-		driver.find_element_by_id("submit-go").click()
+		
+		delete_agent(driver,[agent_name_1,agent_name_2])
 			
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
 		self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Successfully deleted (2)")]').text,"Successfully deleted (2)")

@@ -30,7 +30,7 @@ class Bulk_operations(PandoraWebDriverTestCase):
 
 		driver = self.driver
 		self.login()
-		detect_and_pass_all_wizards
+		detect_and_pass_all_wizards(driver)
 		
 		activate_api(driver,"1234")
 
@@ -48,9 +48,9 @@ class Bulk_operations(PandoraWebDriverTestCase):
 				
 		driver.find_element_by_css_selector("b").click()
 		driver.find_element_by_css_selector("b").click()
-		click_menu_element(driver,"Agents operations")
+		click_menu_element(driver,"Agent operations")
 		driver.find_element_by_id("option").click()
-		Select(driver.find_element_by_id("option")).select_by_visible_text("Bulk agent delete")
+		Select(driver.find_element_by_id("option")).select_by_visible_text("Delete agents in bulk")
 		Select(driver.find_element_by_id("id_agents")).select_by_visible_text(agent_name_1)
 		Select(driver.find_element_by_id("id_agents")).select_by_visible_text(agent_name_2)
 		driver.find_element_by_id("submit-go").click()

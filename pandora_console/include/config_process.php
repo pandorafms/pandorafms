@@ -201,21 +201,10 @@ if (isset($_POST['vc_refr'])) {
 
 
 //======= Autorefresh code =============================================
-$config['autorefresh_white_list'] = array(
-	'operation/agentes/tactical',
-	'operation/agentes/group_view',
-	'operation/agentes/estado_agente',
-	'operation/agentes/alerts_status',
-	'operation/agentes/status_monitor',
-	'enterprise/operation/services/services',
-	'enterprise/dashboard/main_dashboard',
-	'operation/reporting/graph_viewer',
-	'operation/snmpconsole/snmp_view',
-	'operation/agentes/networkmap',
-	'enterprise/operation/services/services',
-	'operation/visual_console/render_view',
-	'operation/events/events');
-	
+$select = db_process_sql("SELECT value FROM tconfig WHERE token='autorefresh_white_list'");
+$autorefresh_list = json_decode($select[0]['value']);
+$config['autorefresh_white_list'] = array();
+$config['autorefresh_white_list'] = $autorefresh_list;
 // Specific metaconsole autorefresh white list sections
 if (defined('METACONSOLE')) {
 	$config['autorefresh_white_list'][] = 'monitoring/tactical';

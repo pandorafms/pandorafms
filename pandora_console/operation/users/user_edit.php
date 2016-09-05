@@ -115,7 +115,16 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	$upd_info["data_section"] = get_parameter ("data_section", '');
 	$dashboard = get_parameter('dashboard', '');
 	$visual_console = get_parameter('visual_console', '');
-	
+
+	//save autorefresh list
+	$autorefresh_list = get_parameter_post ("autorefresh_list");
+	if(($autorefresh_list[0] === '') || ($autorefresh_list[0] === '0')){
+		db_process_sql("UPDATE tconfig SET value ='' WHERE token='autorefresh_white_list'");
+	}else{
+		db_process_sql("UPDATE tconfig SET value ='".json_encode($autorefresh_list)."' WHERE token='autorefresh_white_list'");
+	}
+
+
 	$is_admin = db_get_value('is_admin', 'tusuario', 'id_user', $id);
 	
 	$section = io_safe_output($upd_info["section"]);
@@ -381,6 +390,85 @@ else if (license_free()) {
 $table->rowclass[] = '';
 $table->rowstyle[] = 'font-weight: bold;';
 $table->data[] = $data;
+$data = array();
+
+$autorefresh_list_out = array();
+$autorefresh_list_out['operation/agentes/tactical'] = "tactical";
+$autorefresh_list_out['operation/agentes/group_view'] = "group_view";
+$autorefresh_list_out['operation/agentes/estado_agente'] = "agent_status";
+$autorefresh_list_out['operation/agentes/alerts_status'] = "alerts_status";
+$autorefresh_list_out['operation/agentes/status_monitor'] = "status_monitor";
+$autorefresh_list_out['enterprise/operation/services/services'] = "services";
+$autorefresh_list_out['enterprise/dashboard/main_dashboard'] = "main_dashboard";
+$autorefresh_list_out['operation/reporting/graph_viewer'] = "graph_viewer";
+$autorefresh_list_out['operation/snmpconsole/snmp_view'] = "snmp_view";
+$autorefresh_list_out['operation/agentes/networkmap'] = "networkmap";
+$autorefresh_list_out['operation/visual_console/render_view'] = "render_view";
+$autorefresh_list_out['operation/events/events'] = "events";
+
+if(!isset($autorefresh_list)){
+	$select = db_process_sql("SELECT value FROM tconfig WHERE token='autorefresh_white_list'");
+	$autorefresh_list = json_decode($select[0]['value']);
+	if($autorefresh_list === null){
+		$autorefresh_list[0] = __('None');
+	}else{
+		$aux = array();
+		for ($i =0;$i < count($autorefresh_list);$i++){
+			$aux[$autorefresh_list[$i]] = $autorefresh_list_out[$autorefresh_list[$i]];
+			unset($autorefresh_list_out[$autorefresh_list[$i]]);
+			$autorefresh_list[$i] = $aux;
+		}
+		$autorefresh_list = $aux;
+	}
+
+
+}else{
+	if(($autorefresh_list[0] === '') || ($autorefresh_list[0] === '0')){
+		$autorefresh_list[0] = __('None');
+	}else{
+		$aux = array();
+		for ($i =0;$i < count($autorefresh_list);$i++){
+			$aux[$autorefresh_list[$i]] = $autorefresh_list_out[$autorefresh_list[$i]];
+			unset($autorefresh_list_out[$autorefresh_list[$i]]);
+			$autorefresh_list[$i] = $aux;
+		}
+		$autorefresh_list = $aux;
+	}
+
+}
+
+$data[0] = _('Autorefresh') . ui_print_help_tip(__('This will activate autorefresh in selected pages'), true);
+$select_out = html_print_select ($autorefresh_list_out, 'autorefresh_list_out[]', '', '', '', '', true, true, true, '', false, 'width:200px');
+$arrows = " ";
+$select_in = html_print_select ($autorefresh_list, 'autorefresh_list[]', '', '', '', '', true, true, true, '', false, 'width:200px');
+
+$table_ichanges = '<table>
+		<tr>
+			<td>' . __('Full list of pages') . '</td>
+			<td></td>
+			<td>' . __('List of pages with autorefresh') . '</td>
+		</tr>
+		<tr>
+			<td>' . $select_out . '</td>
+			<td>
+				<a href="javascript:">'.
+					html_print_image('images/darrowright.png', true, array('id' => 'right_autorefreshlist', 'alt' => __('Push selected pages into autorefresh list'), 'title' => __('Push selected pages into autorefresh list'))).
+				'</a>
+				<br><br>
+				<a href="javascript:">'.
+					html_print_image('images/darrowleft.png', true, array('id' => 'left_autorefreshlist', 'alt' => __('Pop selected pages out of autorefresh list'), 'title' => __('Pop selected pages out of autorefresh list'))).
+				'</a>
+			</td>
+			<td>'. $select_in .'</td>
+		</tr>
+	</table>';
+$data[0] .= $table_ichanges;
+
+
+$table->rowclass[] = '';
+$table->colspan[count($table->data)][0] = 3;
+$table->rowstyle[] = 'font-weight: bold;';
+$table->data[] = $data;
 
 $data = array();
 $data[0] = __('Comments');
@@ -484,6 +572,45 @@ enterprise_hook('close_meta_frame');
 
 <script language="javascript" type="text/javascript">
 $(document).ready (function () {
+
+	$("#right_autorefreshlist").click (function () {
+		jQuery.each($("select[name='autorefresh_list_out[]'] option:selected"), function (key, value) {
+			imodule_name = $(value).html();
+			if (imodule_name != <?php echo "'".__('None')."'"; ?>) {
+				id_imodule = $(value).attr('value');
+				$("select[name='autorefresh_list[]']").append($("<option></option>").val(id_imodule).html('<i>' + imodule_name + '</i>'));
+				$("#autorefresh_list_out").find("option[value='" + id_imodule + "']").remove();
+				$("#autorefresh_list").find("option[value='']").remove();
+				$("#autorefresh_list").find("option[value='0']").remove();
+				if($("#autorefresh_list_out option").length == 0) {
+					$("select[name='autorefresh_list_out[]']").append($("<option></option>").val('').html('<i><?php echo __('None'); ?></i>'));
+				}
+			}
+		});
+	});
+
+	$("#left_autorefreshlist").click (function () {
+		jQuery.each($("select[name='autorefresh_list[]'] option:selected"), function (key, value) {
+				imodule_name = $(value).html();
+				if (imodule_name != <?php echo "'".__('None')."'"; ?>) {
+					id_imodule = $(value).attr('value');
+					$("#autorefresh_list").find("option[value='" + id_imodule + "']").remove();
+					$("#autorefresh_list_out").find("option[value='']").remove();
+					$("select[name='autorefresh_list_out[]']").append($("<option><option>").val(id_imodule).html('<i>' + imodule_name + '</i>'));
+					$("#autorefresh_list_out option").last().remove();
+					if($("#autorefresh_list option").length == 0) {
+						$("select[name='autorefresh_list[]']").append($("<option></option>").val('').html('<i><?php echo __('None'); ?></i>'));
+					}
+				}
+		});
+	});
+
+	$("#submit-uptbutton").click (function () {
+		if($("#autorefresh_list option").length > 0) {
+			$('#autorefresh_list option').prop('selected', true);
+		}
+	});
+
 	check_default_block_size()
 	$("#checkbox-default_block_size").change(function() {
 		check_default_block_size();

@@ -339,7 +339,19 @@ config_check();
 	
 	var new_chat = <?php echo (int)$_SESSION['new_chat'];?>;
 	$(document).ready (function () {
-		
+		<?php
+		if ((array_search($_GET['sec2'], $config['autorefresh_white_list']) !== false) && (!isset($_GET["refr"]))) {
+		?>
+			$("a.autorefresh_txt").toggle ();
+			$("#combo_refr").toggle ();
+			$("#combo_refr").css('padding-right', '9px');
+			href = $("a.autorefresh").attr ("href");
+			$(document).attr ("location", href + "30");
+		<?php
+		}
+		?>
+
+
 		if (fixed_header) {
 			$('div#head').addClass('fixed_header');
 			$('div#page')

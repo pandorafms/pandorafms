@@ -305,6 +305,8 @@ install () {
 	mkdir $DESTDIR$PANDORA_SPOOL/data_in/netflow 2> /dev/null
 	chmod 770 $DESTDIR$PANDORA_SPOOL/data_in/netflow
 	mkdir -p $DESTDIR$PANDORA_LOG 2> /dev/null	
+	chown -R pandora $DESTDIR$PANDORA_LOG 2> /dev/null
+	chmod 770 $DESTDIR$PANDORA_LOG 2> /dev/null
 
 	echo "Giving proper permission to /var/spool/pandora"
 	for group in "www-data" wwwrun www apache

@@ -340,7 +340,7 @@ config_check();
 	var new_chat = <?php echo (int)$_SESSION['new_chat'];?>;
 	$(document).ready (function () {
 		<?php
-		if ((array_search($_GET['sec2'], $config['autorefresh_white_list']) !== false) && (!isset($_GET["refr"]))) {
+		if (($config['autorefresh_white_list'] !== null) && (array_search($_GET['sec2'], $config['autorefresh_white_list']) !== false) && (!isset($_GET["refr"]))) {
 		?>
 			$("a.autorefresh_txt").toggle ();
 			$("#combo_refr").toggle ();

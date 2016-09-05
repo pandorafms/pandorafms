@@ -295,18 +295,18 @@ if ($ag_group > 0) {
 				FROM tagente
 				WHERE id_grupo IN (%s)
 					%s
-				ORDER BY %s, %s %s
+				ORDER BY %s %s, %s %s
 				LIMIT %d, %d',
-				implode (",", $ag_groups), $search_sql, $order['field'], $order['field2'], $order['order'], $offset, $config["block_size"]);
+				implode (",", $ag_groups), $search_sql, $order['field'],$order['order'], $order['field2'], $order['order'], $offset, $config["block_size"]);
 			break;
 		case "postgresql":
 			$sql = sprintf ('SELECT *
 				FROM tagente
 				WHERE id_grupo IN (%s)
 					%s
-				ORDER BY %s, %s %s
+				ORDER BY %s %s, %s %s
 				LIMIT %d OFFSET %d',
-				implode (",", $ag_groups), $search_sql, $order['field'], $order['field2'], $order['order'], $config["block_size"], $offset);
+				implode (",", $ag_groups), $search_sql, $order['field'],$order['order'], $order['field2'], $order['order'], $config["block_size"], $offset);
 			break;
 		case "oracle":
 			$set = array ();
@@ -316,8 +316,8 @@ if ($ag_group > 0) {
 				FROM tagente
 				WHERE id_grupo IN (%s)
 					%s
-				ORDER BY %s, %s %s',
-				implode (",", $ag_groups), $search_sql, $order['field'], $order['field2'], $order['order']);
+				ORDER BY %s %s, %s %s',
+				implode (",", $ag_groups), $search_sql, $order['field'],$order['order'], $order['field2'], $order['order']);
 			$sql = oracle_recode_query ($sql, $set);
 			break;
 	}
@@ -342,7 +342,7 @@ else {
 					FROM tagente
 					WHERE 1=1
 						%s
-					ORDER BY %s, %s %s LIMIT %d, %d', $search_sql, $order['field'], $order['field2'],
+					ORDER BY %s %s, %s %s LIMIT %d, %d', $search_sql, $order['field'],$order['order'], $order['field2'],
 					$order['order'], $offset, $config["block_size"]);
 				break;
 			case "postgresql":
@@ -350,7 +350,7 @@ else {
 					FROM tagente
 					WHERE 1=1
 						%s
-					ORDER BY %s, %s %s LIMIT %d OFFSET %d', $search_sql, $order['field'], $order['field2'],
+					ORDER BY %s %s, %s %s LIMIT %d OFFSET %d', $search_sql, $order['field'],$order['order'], $order['field2'],
 					$order['order'], $config["block_size"], $offset);
 				break;
 			case "oracle":
@@ -361,7 +361,7 @@ else {
 					FROM tagente
 					WHERE 1=1
 						%s
-					ORDER BY %s, %s %s', $search_sql, $order['field'], $order['field2'], $order['order']);
+					ORDER BY %s %s, %s %s', $search_sql, $order['field'],$order['order'], $order['field2'], $order['order']);
 				$sql = oracle_recode_query ($sql, $set);
 				break;
 		}
@@ -389,20 +389,20 @@ else {
 					FROM tagente
 					WHERE id_grupo IN (%s)
 						%s
-					ORDER BY %s, %s %s
+					ORDER BY %s %s, %s %s
 					LIMIT %d, %d',
 					implode (',', array_keys ($user_groups)),
-					$search_sql, $order['field'], $order['field2'], $order['order'], $offset, $config["block_size"]);
+					$search_sql, $order['field'],$order['order'], $order['field2'], $order['order'], $offset, $config["block_size"]);
 				break;
 			case "postgresql":
 				$sql = sprintf ('SELECT *
 					FROM tagente
 					WHERE id_grupo IN (%s)
 						%s
-					ORDER BY %s, %s %s
+					ORDER BY %s %s, %s %s
 					LIMIT %d OFFSET %d',
 					implode (',', array_keys ($user_groups)),
-					$search_sql, $order['field'], $order['field2'], $order['order'], $config["block_size"], $offset);
+					$search_sql, $order['field'],$order['order'], $order['field2'], $order['order'], $config["block_size"], $offset);
 				break;
 			case "oracle":
 				$set = array ();
@@ -412,9 +412,9 @@ else {
 					FROM tagente
 					WHERE id_grupo IN (%s)
 						%s
-					ORDER BY %s, %s %s',
+					ORDER BY %s %s, %s %s',
 					implode (',', array_keys ($user_groups)),
-					$search_sql, $order['field'], $order['field2'], $order['order']);
+					$search_sql, $order['field'],$order['order'], $order['field2'], $order['order']);
 				$sql = oracle_recode_query ($sql, $set);
 				break;
 		}

@@ -48,7 +48,7 @@ class Bulk_operations(PandoraWebDriverTestCase):
 				
 		driver.find_element_by_css_selector("b").click()
 		driver.find_element_by_css_selector("b").click()
-		click_menu_element(driver,"Agents operations")
+		click_menu_element(driver,"Agent operations")
 		driver.find_element_by_id("option").click()
 		Select(driver.find_element_by_id("option")).select_by_visible_text("Bulk agent delete")
 		Select(driver.find_element_by_id("id_agents")).select_by_visible_text(agent_name_1)

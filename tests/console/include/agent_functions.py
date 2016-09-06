@@ -59,7 +59,7 @@ def create_agent_group(driver,group_name,parent_group="All",alerts=True,propagat
 	# parent_group by defect is All.
 	# Alerts by default is activate.
 	
-	click_menu_element(driver,"Manage agents groups")
+	click_menu_element(driver,"Manage agent groups")
 	driver.find_element_by_id("submit-crt").click()
 	
 	driver.find_element_by_id("text-name").send_keys(group_name)

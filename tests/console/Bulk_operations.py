@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from include.common_classes_60 import PandoraWebDriverTestCase
-from include.common_functions_60 import login, click_menu_element, detect_and_pass_all_wizards, gen_random_string, delete_agent
-from include.agent_functions import create_agent
+from include.common_functions_60 import login, click_menu_element, detect_and_pass_all_wizards, gen_random_string
+from include.agent_functions import create_agent, delete_agent
 from include.api_functions import *
 from selenium import webdriver
 from selenium.webdriver.common.by import By

@@ -77,14 +77,15 @@ if (check_acl ($config["id_user"], 0, "PM")) {
 
 $table->data = array ();
 $names_servers = array ();
+$server_status = servers_check_status();
 
 foreach ($servers as $server) {
 	$data = array ();
 	$table->cellclass[][3] = "progress_bar";
 	$data[0] = '<span title="' . $server['version'] . '">' .
 		$server['name'] . '</span>';
-	
-	if ($server['status'] == 0) {
+
+	if (($server_status == 0) || ($server['status'] == 0)) {
 		$data[1] = ui_print_status_image (STATUS_SERVER_DOWN, '', true);
 	}
 	else {

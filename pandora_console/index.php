@@ -372,9 +372,12 @@ if (! isset ($config['id_user'])) {
 
 			//login ok and password has not expired
 			$process_login = true;
-
-			echo "<script type='text/javascript'>var process_login_ok = 1;</script>";
-
+			
+			if (is_user_admin($nick))
+				echo "<script type='text/javascript'>var process_login_ok = 1;</script>";
+			else
+				echo "<script type='text/javascript'>var process_login_ok = 0;</script>";
+			
 			if (!isset($_GET["sec2"]) && !isset($_GET["sec"])) {
 				// Avoid the show homepage when the user go to
 				// a specific section of pandora

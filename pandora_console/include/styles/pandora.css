@@ -2344,40 +2344,40 @@ span#plugin_description {
 #tinymce {
 	text-align: left;
 }
-.visual_font_size_4pt, .visual_font_size_4pt > em, .visual_font_size_4pt > strong, .visual_font_size_4pt > strong > span {
+.visual_font_size_4pt, .visual_font_size_4pt > em, .visual_font_size_4pt > strong, .visual_font_size_4pt > strong > span .visual_font_size_4pt > span {
 	font-size: 4pt !important;
 }
-.visual_font_size_6pt, .visual_font_size_6pt > em, .visual_font_size_6pt > strong, .visual_font_size_6pt > strong > span {
+.visual_font_size_6pt, .visual_font_size_6pt > em, .visual_font_size_6pt > strong, .visual_font_size_6pt > strong > span, .visual_font_size_6pt > span {
 	font-size: 6pt !important;
 }
-.visual_font_size_8pt, .visual_font_size_8pt > em, .visual_font_size_8pt > strong, .visual_font_size_8pt > strong > span {
+.visual_font_size_8pt, .visual_font_size_8pt > em, .visual_font_size_8pt > strong, .visual_font_size_8pt > strong > span , .visual_font_size_8pt > span {
 	font-size: 8pt !important;
 }
-.visual_font_size_14pt, .visual_font_size_14pt > em , .visual_font_size_14pt > strong, .visual_font_size_14pt > strong > span  {
+.visual_font_size_14pt, .visual_font_size_14pt > em , .visual_font_size_14pt > strong, .visual_font_size_14pt > strong > span, .visual_font_size_14pt > span  {
 	font-size: 14pt !important;
 }
-.visual_font_size_24pt, .visual_font_size_24pt > em, .visual_font_size_24pt > strong, .visual_font_size_24pt > strong > span {
+.visual_font_size_24pt, .visual_font_size_24pt > em, .visual_font_size_24pt > strong, .visual_font_size_24pt > strong > span , .visual_font_size_24pt > span {
 	font-size: 24pt !important;
 }
-.visual_font_size_36pt, .visual_font_size_36pt > em, .visual_font_size_36pt > strong, .visual_font_size_36pt > strong > span {
+.visual_font_size_36pt, .visual_font_size_36pt > em, .visual_font_size_36pt > strong, .visual_font_size_36pt > strong > span, .visual_font_size_36pt > span {
 	font-size: 36pt !important;
 }
-.visual_font_size_72pt, .visual_font_size_72pt > em, .visual_font_size_72pt > strong, .visual_font_size_72pt > strong > span {
+.visual_font_size_72pt, .visual_font_size_72pt > em, .visual_font_size_72pt > strong, .visual_font_size_72pt > strong > span, .visual_font_size_72pt > span {
 	font-size: 72pt !important;
 }
-.resize_visual_font_size_8pt, .resize_visual_font_size_8pt > em, .resize_visual_font_size_8pt > strong , .resize_visual_font_size_8pt > strong > span {
+.resize_visual_font_size_8pt, .resize_visual_font_size_8pt > em, .resize_visual_font_size_8pt > strong, .resize_visual_font_size_8pt > strong > span, .resize_visual_font_size_8pt > span {
 	font-size: 4pt !important;
 }
-.resize_visual_font_size_14pt, .resize_visual_font_size_14pt > em , .resize_visual_font_size_14pt > strong , .resize_visual_font_size_14pt > strong > span {
+.resize_visual_font_size_14pt, .resize_visual_font_size_14pt > em , .resize_visual_font_size_14pt > strong, .resize_visual_font_size_14pt > strong > span, .resize_visual_font_size_14pt > span {
 	font-size: 7pt !important;
 }
-.resize_visual_font_size_24pt, .resize_visual_font_size_24pt > em, .resize_visual_font_size_24pt > strong, .resize_visual_font_size_24pt > strong > span {
+.resize_visual_font_size_24pt, .resize_visual_font_size_24pt > em, .resize_visual_font_size_24pt > strong, .resize_visual_font_size_24pt > strong > span, .resize_visual_font_size_24pt > span {
 	font-size: 12pt !important;
 }
-.resize_visual_font_size_36pt, .resize_visual_font_size_36pt > em, .resize_visual_font_size_36pt > strong, .resize_visual_font_size_36pt > strong > span {
+.resize_visual_font_size_36pt, .resize_visual_font_size_36pt > em, .resize_visual_font_size_36pt > strong, .resize_visual_font_size_36pt > strong > span, .resize_visual_font_size_36pt > span {
 	font-size: 18pt !important;
 }
-.resize_visual_font_size_72pt, .resize_visual_font_size_72pt > em, .resize_visual_font_size_72pt > strong, .resize_visual_font_size_72pt > strong > span {
+.resize_visual_font_size_72pt, .resize_visual_font_size_72pt > em, .resize_visual_font_size_72pt > strong, .resize_visual_font_size_72pt > strong > span, .resize_visual_font_size_72pt > span {
 	font-size: 36pt !important;
 }
 

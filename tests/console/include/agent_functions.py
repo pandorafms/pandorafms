@@ -12,7 +12,7 @@ def delete_agent (driver,agent_names_list):
 
 	click_menu_element(driver,"Agent operations")
 	driver.find_element_by_id("option").click()
-	Select(driver.find_element_by_id("option")).select_by_visible_text("Bulk agent delete")
+	Select(driver.find_element_by_id("option")).select_by_visible_text("Delete agents in bulk")
 
 	for agent_name in agent_names_list:
 		Select(driver.find_element_by_id("id_agents")).select_by_visible_text(agent_name)

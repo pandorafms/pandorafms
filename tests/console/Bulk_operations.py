@@ -44,17 +44,10 @@ class Bulk_operations(PandoraWebDriverTestCase):
 
                 url = lista[0]+'//'+lista[2]+'/pandora_console'
 
-                driver.get(url)	
+                driver.get(url)
+
+		delete_agent(driver,[agent_name_1,agent_name_2])
 				
-		driver.find_element_by_css_selector("b").click()
-		driver.find_element_by_css_selector("b").click()
-		click_menu_element(driver,"Agent operations")
-		driver.find_element_by_id("option").click()
-		Select(driver.find_element_by_id("option")).select_by_visible_text("Bulk agent delete")
-		Select(driver.find_element_by_id("id_agents")).select_by_visible_text(agent_name_1)
-		Select(driver.find_element_by_id("id_agents")).select_by_visible_text(agent_name_2)
-		driver.find_element_by_id("submit-go").click()
-			
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
 		self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Successfully deleted (2)")]').text,"Successfully deleted (2)")
 		

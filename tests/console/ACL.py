@@ -14,19 +14,18 @@ from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
 import unittest, time, re
 
-class ACL(PandoraWebDriverTestCase):
+class ACLPropagation(PandoraWebDriverTestCase):
 
-	test_name = u'ACL'
+	test_name = u'ACL propagation'
 	tickets_associated = []
 
 
-	def test_A_ACL_propagation(self):
+	def test_ACL_propagation(self):
 
 		u"""
 		ACL Propagation test: Creates one group "A" with ACL propagation, then a group "B" son of "A" with no ACL propagation, and finally group "C".
 		The test asserts if a user with privileges to "A" can see the agent of "B" but no agents of "C".
 		"""
-		print "funciono"
         	group_name_A = gen_random_string(6)
         	group_name_B = gen_random_string(6)
         	group_name_C = gen_random_string(6)
@@ -71,10 +70,12 @@ class ACL(PandoraWebDriverTestCase):
 		element = driver.find_elements_by_xpath('//a[contains(.,"'+agent_name_B+'")]')
 		self.assertEqual(element,[])
 
-		#We need to logout because we've loged in with a non-admin user
-		self.logout()
+class ACLReports(PandoraWebDriverTestCase):
 
- 	def test_B_ACL_reports(self):
+        test_name = u'ACL reports'
+        tickets_associated = []
+
+ 	def test_ACL_reports(self):
 
                 u"""
 		Creates a user with Chief Operator permissions over the Applications group. 
@@ -123,11 +124,12 @@ class ACL(PandoraWebDriverTestCase):
                 element = driver.find_element_by_xpath('//td[contains(.,"No data found.")]')
                 self.assertIsInstance(element,WebElement)
 
-                
-		#Delete reports
-                self.logout()
+class ACLTags(PandoraWebDriverTestCase):
 
-	def test_C_ACL_tag(self):
+        test_name = u'ACL tag test'
+        tickets_associated = []
+        
+	def test_ACL_tag(self):
 
 		u"""Create agent and two modules, one without tag and with tag, create a user with tag and check this user can view module with tag and user can´t view module without tag"""
 		

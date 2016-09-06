@@ -31,7 +31,8 @@ for test,error_msg in c.failures+c.errors:
 
 for test,error_msg in c.success+c.skipped:
 	try:
-		sauce_client.jobs.update_job(test.sauce_labs_job_id, passed=True,tags=[environ["TRAVIS_BRANCH"],test.id()],build_num=environ["TRAVIS_JOB_NUMBER"],name=str(test.id().split('.')[1]+': '+test.id().split('.')[2])
+		sauce_client.jobs.update_job(test.sauce_labs_job_id, passed=True,tags=[environ["TRAVIS_BRANCH"],test.id()],build_num=environ["TRAVIS_JOB_NUMBER"],name=str(test.id().split('.')[1]+': '+test.id().split('.')[2]))
+
 	except:
                 print "Could not annotate Sauce Labs job #%s" % str(test)
                 next

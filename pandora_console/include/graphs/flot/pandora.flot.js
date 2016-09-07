@@ -1517,6 +1517,11 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			},
 			crosshair: { mode: 'xy' },
 			selection: { mode: 'x', color: '#777' },
+			export: {
+				export_data: true,
+				labels_long: labels_long,
+				homeurl: homeurl
+			},
 			grid: {
 				hoverable: true,
 				clickable: true,
@@ -1855,195 +1860,195 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 	// Used to export the graph data to a file.
 	// Uses plot, labels and labels_long as scope variables.
-	function exportData (options) {
-		options = options || {};
+	//~ function exportData (options) {
+		//~ options = options || {};
 
-		// Options
-		var type = options.type || 'csv';
-		type = type.toLowerCase().trim();
+		//~ // Options
+		//~ var type = options.type || 'csv';
+		//~ type = type.toLowerCase().trim();
 
-		var graphData,
-			dataObject,
-			dataObjects = plot.getData(),
-			result = [];
+		//~ var graphData,
+			//~ dataObject,
+			//~ dataObjects = plot.getData(),
+			//~ result = [];
 
-		// Throw errors
-		var retrieveDataOject = function (dataObjects) {
-			var result;
+		//~ // Throw errors
+		//~ var retrieveDataOject = function (dataObjects) {
+			//~ var result;
 
-			if (typeof dataObjects === 'undefined')
-				throw new Error('Empty parameter');
+			//~ if (typeof dataObjects === 'undefined')
+				//~ throw new Error('Empty parameter');
 
-			// Try to retrieve the avg set (not 100% reliable, I know)
-			if (dataObjects.length == 1) {
-				result = dataObjects.shift();
-			}
-			if (dataObjects.length > 1) {
-				dataObjects.forEach(function (element) {
-					if (/^Avg.:/i.test(element.label))
-						result = element;
-				});
+			//~ // Try to retrieve the avg set (not 100% reliable, I know)
+			//~ if (dataObjects.length == 1) {
+				//~ result = dataObjects.shift();
+			//~ }
+			//~ if (dataObjects.length > 1) {
+				//~ dataObjects.forEach(function (element) {
+					//~ if (/^Avg.:/i.test(element.label))
+						//~ result = element;
+				//~ });
 
-				// If the avg set is missing, retrieve the first set
-				if (typeof result === 'undefined')
-					result = dataObjects.shift();
-			}
+				//~ // If the avg set is missing, retrieve the first set
+				//~ if (typeof result === 'undefined')
+					//~ result = dataObjects.shift();
+			//~ }
 
-			if (typeof result === 'undefined')
-				throw new Error('Empty result');
+			//~ if (typeof result === 'undefined')
+				//~ throw new Error('Empty result');
 
-			return result;
-		}
+			//~ return result;
+		//~ }
 
-		// Throw errors
-		var processDataObject = function (dataObject) {
-			var result;
+		//~ // Throw errors
+		//~ var processDataObject = function (dataObject) {
+			//~ var result;
 
-			if (typeof dataObject === 'undefined')
-				throw new Error('Empty parameter');
+			//~ if (typeof dataObject === 'undefined')
+				//~ throw new Error('Empty parameter');
 
-			if (typeof dataObject.data === 'undefined'
-					|| !(dataObject.data instanceof Array))
-				throw new Error('Object malformed');
+			//~ if (typeof dataObject.data === 'undefined'
+					//~ || !(dataObject.data instanceof Array))
+				//~ throw new Error('Object malformed');
 
-			/* {
-			 *   head: [<column>,<column>,...,<column>],
-			 *   data: [
-			 *     [<data>,<data>,...,<data>],
-			 *     [<data>,<data>,...,<data>],
-			 *     ...,
-			 *     [<data>,<data>,...,<data>],
-			 *   ]
-			 * }
-			 */
-			if (type === 'csv') {
+			//~ /* {
+			 //~ *   head: [<column>,<column>,...,<column>],
+			 //~ *   data: [
+			 //~ *     [<data>,<data>,...,<data>],
+			 //~ *     [<data>,<data>,...,<data>],
+			 //~ *     ...,
+			 //~ *     [<data>,<data>,...,<data>],
+			 //~ *   ]
+			 //~ * }
+			 //~ */
+			//~ if (type === 'csv') {
 
-				result = {
-					head: ['date', 'value','label'],
-					data: []
-				};
+				//~ result = {
+					//~ head: ['date', 'value','label'],
+					//~ data: []
+				//~ };
 
-				dataObject.data.forEach(function (item, index) {
-					var date = '', value = item[1];
+				//~ dataObject.data.forEach(function (item, index) {
+					//~ var date = '', value = item[1];
 
-					// Long labels are preferred
-					if (typeof labels_long[index] !== 'undefined')
-						date = labels_long[index];
-					else if (typeof labels[index] !== 'undefined')
-						date = labels[index];
+					//~ // Long labels are preferred
+					//~ if (typeof labels_long[index] !== 'undefined')
+						//~ date = labels_long[index];
+					//~ else if (typeof labels[index] !== 'undefined')
+						//~ date = labels[index];
 
-					result.data.push([date, value,dataObject.label]);
-				});
-			}
-			/* [
-			 *   {
-			 *     'date': <date>,
-			 *     'value': <value>
-			 *   }
-			 * ],
-			 * [
-			 *   {
-			 *     'date': <date>,
-			 *     'value': <value>
-			 *   }
-			 * ],
-			 * ...,
-			 * [
-			 *   {
-			 *     'date': <date>,
-			 *     'value': <value>
-			 *   }
-			 * ]
-			 */
-			else if (type === 'json') {
-				result = [];
+					//~ result.data.push([date, value,dataObject.label]);
+				//~ });
+			//~ }
+			//~ /* [
+			 //~ *   {
+			 //~ *     'date': <date>,
+			 //~ *     'value': <value>
+			 //~ *   }
+			 //~ * ],
+			 //~ * [
+			 //~ *   {
+			 //~ *     'date': <date>,
+			 //~ *     'value': <value>
+			 //~ *   }
+			 //~ * ],
+			 //~ * ...,
+			 //~ * [
+			 //~ *   {
+			 //~ *     'date': <date>,
+			 //~ *     'value': <value>
+			 //~ *   }
+			 //~ * ]
+			 //~ */
+			//~ else if (type === 'json') {
+				//~ result = [];
 
-				dataObject.data.forEach(function (item, index) {
-					var date = '', value = item[1];
+				//~ dataObject.data.forEach(function (item, index) {
+					//~ var date = '', value = item[1];
 
-					// Long labels are preferred
-					if (typeof labels_long[index] !== 'undefined')
-						date = labels_long[index];
-					else if (typeof labels[index] !== 'undefined')
-						date = labels[index];
+					//~ // Long labels are preferred
+					//~ if (typeof labels_long[index] !== 'undefined')
+						//~ date = labels_long[index];
+					//~ else if (typeof labels[index] !== 'undefined')
+						//~ date = labels[index];
 
-					result.push({
-						'date': date,
-						'value': value,
-						'label': dataObject.label
-					});
-				});
-			}
+					//~ result.push({
+						//~ 'date': date,
+						//~ 'value': value,
+						//~ 'label': dataObject.label
+					//~ });
+				//~ });
+			//~ }
 
-			if (typeof result === 'undefined')
-				throw new Error('Empty result');
+			//~ if (typeof result === 'undefined')
+				//~ throw new Error('Empty result');
 
-			return result;
-		}
+			//~ return result;
+		//~ }
 
-		try {
-			var elements = [];
-			var custom_graph = $('input:hidden[name=custom_graph]').value;
+		//~ try {
+			//~ var elements = [];
+			//~ var custom_graph = $('input:hidden[name=custom_graph]').value;
 
-			if (custom_graph) {
-				dataObject = retrieveDataOject(dataObjects);
-				dataObjects.forEach(function (element) {
-					elements.push(processDataObject(element));
-				});
-				graphData = elements;
-			}
-			else {
-				dataObject = retrieveDataOject(dataObjects);
-				elements.push(processDataObject(dataObject));
-				graphData = elements;
-			}
+			//~ if (custom_graph) {
+				//~ dataObject = retrieveDataOject(dataObjects);
+				//~ dataObjects.forEach(function (element) {
+					//~ elements.push(processDataObject(element));
+				//~ });
+				//~ graphData = elements;
+			//~ }
+			//~ else {
+				//~ dataObject = retrieveDataOject(dataObjects);
+				//~ elements.push(processDataObject(dataObject));
+				//~ graphData = elements;
+			//~ }
 
-			// Transform the object data into a string
-			// cause PHP has limitations in the number
-			// of POST params received.
-			var graphDataStr = JSON.stringify(graphData);
+			//~ // Transform the object data into a string
+			//~ // cause PHP has limitations in the number
+			//~ // of POST params received.
+			//~ var graphDataStr = JSON.stringify(graphData);
 
-			// Build form
-			var $form = $('<form></form>'),
-				$dataInput = $('<input>'),
-				$typeInput = $('<input>'),
-				$separatorInput = $('<input>'),
-				$excelInput = $('<input>');
+			//~ // Build form
+			//~ var $form = $('<form></form>'),
+				//~ $dataInput = $('<input>'),
+				//~ $typeInput = $('<input>'),
+				//~ $separatorInput = $('<input>'),
+				//~ $excelInput = $('<input>');
 
-			$dataInput
-				.prop('name', 'data')
-				.prop('type', 'text')
-				.prop('value', graphDataStr);
+			//~ $dataInput
+				//~ .prop('name', 'data')
+				//~ .prop('type', 'text')
+				//~ .prop('value', graphDataStr);
 
-			$typeInput
-				.prop('name', 'type')
-				.prop('type', 'text')
-				.prop('value', type);
+			//~ $typeInput
+				//~ .prop('name', 'type')
+				//~ .prop('type', 'text')
+				//~ .prop('value', type);
 
-			$separatorInput
-				.prop('name', 'separator')
-				.prop('type', 'text')
-				.prop('value', ';');
+			//~ $separatorInput
+				//~ .prop('name', 'separator')
+				//~ .prop('type', 'text')
+				//~ .prop('value', ';');
 
-			$excelInput
-				.prop('name', 'excel_encoding')
-				.prop('type', 'text')
-				.prop('value', 0);
+			//~ $excelInput
+				//~ .prop('name', 'excel_encoding')
+				//~ .prop('type', 'text')
+				//~ .prop('value', 0);
 
-			$form
-				.prop('method', 'POST')
-				.prop('action', homeurl + '/include/graphs/export_data.php')
-				.append($dataInput, $typeInput, $separatorInput, $excelInput)
-				.hide()
-				// Firefox made me write into the DOM for this :(
-				.appendTo('body')
-				.submit();
-		}
-		catch (e) {
-			alert('There was an error exporting the data');
-			console.log(e);
-		}
-	}
+			//~ $form
+				//~ .prop('method', 'POST')
+				//~ .prop('action', homeurl + '/include/graphs/export_data.php')
+				//~ .append($dataInput, $typeInput, $separatorInput, $excelInput)
+				//~ .hide()
+				//~ // Firefox made me write into the DOM for this :(
+				//~ .appendTo('body')
+				//~ .submit();
+		//~ }
+		//~ catch (e) {
+			//~ alert('There was an error exporting the data');
+			//~ console.log(e);
+		//~ }
+	//~ }
 
 	// Prepared to turn series with a checkbox
 	//~ $('.check_serie_'+graph_id).click(function() {
@@ -2059,13 +2064,27 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			$('#overview_' + graph_id).toggle();
 		});
 
-		$('#menu_export_csv_' + graph_id).click(function() {
-			exportData({ type: 'csv' });
+		//~ $('#menu_export_csv_' + graph_id).click(function() {
+			//~ exportData({ type: 'csv' });
+		//~ });
+		
+		$("#menu_export_csv_"+graph_id)
+			.click(function (event) {
+				event.preventDefault();
+				plot.exportDataCSV();
 		});
-
-		$('#menu_export_json_' + graph_id).click(function() {
-			exportData({ type: 'json' });
-		});
+		
+		//Not a correct call
+		//~ $('#menu_export_json_' + graph_id).click(function() {
+			//~ exportData({ type: 'json' });
+		//~ });
+		
+		//This is a correct call to export data in json
+		//~ $("#menu_export_json_"+graph_id)
+			//~ .click(function (event) {
+				//~ event.preventDefault();
+				//~ plot.exportDataJSON();
+		//~ });
 
 		$('#menu_threshold_' + graph_id).click(function() {
 			datas = new Array();

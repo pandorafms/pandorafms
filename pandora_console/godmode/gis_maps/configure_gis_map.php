@@ -19,7 +19,7 @@ check_login ();
 
 $gis_w = check_acl ($config['id_user'], 0, 'MW');
 $gis_m = check_acl ($config['id_user'], 0, 'MM')
-$access = ($gis_w == true) ? 'MW' : ($gis_m == true) ? 'MM' : 'MW';
+$access = ($gis_w == true) ? 'MW' : (($gis_m == true) ? 'MM' : 'MW');
 
 if (!$gis_w  && !$gis_m ) {
 	db_pandora_audit("ACL Violation", "Trying to access map builder");

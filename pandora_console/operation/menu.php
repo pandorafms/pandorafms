@@ -170,7 +170,7 @@ if (check_acl ($config['id_user'], 0, "VR") || check_acl ($config['id_user'], 0,
 			$sub["godmode/reporting/map_builder"]["sub2"] = $sub2;
 	}
 }	
-// GIS MAPS DESACTIVATE THIS PART; LIBRARY DOESN'T WORK CORRECTLY.
+
 
 if (check_acl ($config['id_user'], 0, "MR") || check_acl ($config['id_user'], 0, "MW") || check_acl ($config['id_user'], 0, "MM")) {
 	

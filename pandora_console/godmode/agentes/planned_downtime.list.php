@@ -21,7 +21,7 @@ check_login();
 $read_permisson = check_acl ($config['id_user'], 0, "AR");
 $write_permisson = check_acl ($config['id_user'], 0, "AD");
 $manage_permisson = check_acl ($config['id_user'], 0, "AW");
-$access = ($read_permisson == true) ? 'AR' : ($write_permisson == true) ? 'AD' : ($manage_permisson == true) ? 'AW' : 'AR';
+$access = ($read_permisson == true) ? 'AR' : (($write_permisson == true) ? 'AD' : (($manage_permisson == true) ? 'AW' : 'AR'));
 
 if (! $read_permisson && !$manage_permisson) {
 	db_pandora_audit("ACL Violation",

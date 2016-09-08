@@ -746,7 +746,7 @@ if (empty ($id_agente)) {
 }
 $agent_a = check_acl ($config['id_user'], 0, "AR");
 $agent_w = check_acl ($config['id_user'], 0, "AW");
-$access = ($agent_a == true) ? 'AR' : ($agent_w == true) ? 'AW' : 'AR';
+$access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
 $agent = db_get_row ('tagente', 'id_agente', $id_agente);
 // get group for this id_agente
 $id_grupo = $agent['id_grupo'];

@@ -35,7 +35,7 @@ $config["id_user"] = $_SESSION["id_usuario"];
 $event_a = check_acl ($config['id_user'], 0, "ER");
 $event_w = check_acl ($config['id_user'], 0, "EW");
 $event_m = check_acl ($config['id_user'], 0, "EM");
-$access = ($event_a == true) ? 'ER' : ($event_w == true) ? 'EW' : ($event_m == true) ? 'EM' : 'ER';
+$access = ($event_a == true) ? 'ER' : (($event_w == true) ? 'EW' : (($event_m == true) ? 'EM' : 'ER'));
 
 if (! check_acl ($config['id_user'], 0, "ER") && ! check_acl ($config['id_user'], 0, "EW") && ! check_acl ($config['id_user'], 0, "EM")) {
 	db_pandora_audit("ACL Violation","Trying to access event viewer");

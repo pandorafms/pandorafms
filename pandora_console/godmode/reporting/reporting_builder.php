@@ -24,7 +24,7 @@ enterprise_hook('open_meta_frame');
 $report_r = check_acl ($config['id_user'], 0, "RR");
 $report_w = check_acl ($config['id_user'], 0, "RW");
 $report_m = check_acl ($config['id_user'], 0, "RM");
-$access = ($report_r == true) ? 'RR' : ($report_w == true) ? 'RW' : ($report_m == true) ? 'RM' : 'RR';
+$access = ($report_r == true) ? 'RR' : (($report_w == true) ? 'RW' : (($report_m == true) ? 'RM' : 'RR'));
 if (!$report_r  && !$report_w && !$report_m) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");

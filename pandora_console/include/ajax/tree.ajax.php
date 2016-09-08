@@ -49,7 +49,7 @@ if (is_ajax ()) {
 		
 		$agent_a = check_acl ($config['id_user'], 0, "AR");
 		$agent_w = check_acl ($config['id_user'], 0, "AW");
-		$access = ($agent_a == true) ? 'AR' : ($agent_w == true) ? 'AW' : 'AR';
+		$access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
 		if (class_exists('TreeEnterprise')) {
 			$tree = new TreeEnterprise($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
 		}

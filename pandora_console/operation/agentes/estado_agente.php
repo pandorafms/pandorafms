@@ -120,9 +120,10 @@ $recursion = get_parameter('recursion', 0);
 $status = (int) get_parameter ('status', -1);
 
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
-$agent_a = check_acl ($config['id_user'], 0, "AR");
-$agent_w = check_acl ($config['id_user'], 0, "AW");
-$access = ($agent_a == true) ? 'AR' : ($agent_w == true) ? 'AW' : 'AR';
+$agent_a = (bool) check_acl ($config['id_user'], 0, "AR");
+$agent_w = (bool) check_acl ($config['id_user'], 0, "AW");
+$access = ($agent_a === true) ? 'AR' : (($agent_w === true) ? 'AW' : 'AR');
+
 $onheader = array();
 
 if (check_acl ($config['id_user'], 0, "AW")) {
@@ -166,6 +167,7 @@ echo '<tr><td style="white-space:nowrap;">';
 echo __('Group') . '&nbsp;';
 
 $groups = users_get_groups (false, $access);
+
 html_print_select_groups(false, $access, true, 'group_id', $group_id, 'this.form.submit()', '', '', false, false, true, '', false, 'width:150px');
 
 echo '</td><td style="white-space:nowrap;">';

@@ -409,7 +409,7 @@ if ($list_modules) {
 
 	$agent_a = check_acl ($config['id_user'], 0, "AR");
 	$agent_w = check_acl ($config['id_user'], 0, "AW");
-	$access = ($agent_a == true) ? 'AR' : ($agent_w == true) ? 'AW' : 'AR';
+	$access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
 
 	$id_agente = $id_agent = (int)get_parameter('id_agente', 0);
 	$url = 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $id_agent;

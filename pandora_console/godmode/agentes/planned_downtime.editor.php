@@ -19,7 +19,7 @@ check_login();
 
 $agent_d = check_acl ($config['id_user'], 0, "AD");
 $agent_w = check_acl ($config['id_user'], 0, "AW");
-$access = ($agent_d == true) ? 'AD' : ($agent_w == true) ? 'AW' : 'AD';
+$access = ($agent_d == true) ? 'AD' : (($agent_w == true) ? 'AW' : 'AD');
 if (!$agent_d && !$agent_w) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access downtime scheduler");

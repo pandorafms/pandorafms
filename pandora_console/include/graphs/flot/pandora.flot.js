@@ -117,9 +117,10 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 	}
 }
 
-function pandoraFlotPieCustom(graph_id, values, labels, width, 
-			font_size, water_mark, separator, legend_position, height, 
+function pandoraFlotPieCustom(graph_id, values, labels, width,
+			font_size, font, water_mark, separator, legend_position, height,
 				colors,legend) {
+	font = font.split("/").pop().split(".").shift();
 	var labels = labels.split(separator);
 	var legend = legend.split(separator);
 	var data = values.split(separator);
@@ -189,6 +190,8 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 	legends.each(function () {
 		//$(this).css('width', $(this).width());
 		$(this).css('font-size', font_size+'pt');
+		$(this).removeClass("legendLabel");
+		$(this).addClass(font);
 		$(this).text(legend[j]);
 		j++;
 	});
@@ -259,10 +262,11 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 }
 
 function pandoraFlotHBars(graph_id, values, labels, water_mark,
-	maxvalue, water_mark, separator, separator2) {
+	maxvalue, water_mark, separator, separator2, font, font_size) {
 
 	var colors_data = ['#FC4444','#FFA631','#FAD403','#5BB6E5','#F2919D','#80BA27'];
 	values = values.split(separator2);
+	font = font.split("/").pop().split(".").shift();
 	var datas = new Array();
 	for (i = 0; i < values.length; i++) {
 		var serie = values[i].split(separator);
@@ -309,7 +313,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 			yaxis:  {
 					axisLabelUseCanvas: true,
 					axisLabelFontSizePixels: 12,
-					axisLabelFontFamily: 'Verdana, Arial',
+					axisLabelFontFamily: font+'Font',
 					axisLabelPadding: 3,
 					ticks: yFormatter,
 					tickSize: 1,
@@ -465,7 +469,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 				title = label;
 				label = shortLabel;
 			}
-			format.push([i,'<div title="'+title+'" class="legend_'+i+' legend-tooltip">'
+			format.push([i,'<div style=font-size:'+font_size+'pt title="'+title+'" class="'+font+'">'
 				+ label
 				+ '</div>']);
 		}
@@ -543,10 +547,11 @@ function showTooltip(x, y, color, contents) {
     }).appendTo("body").fadeIn(200);
 }
 
-function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2) {
+function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2, font, font_size ) {
 
 	values = values.split(separator2);
 	legend = legend.split(separator);
+	font = font.split("/").pop().split(".").shift();
 	labels_long = labels_long.length > 0 ? labels_long.split(separator) : 0;
 	colors = colors.length > 0 ? colors.split(separator) : [];
 	var colors_data = colors.length > 0
@@ -591,7 +596,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		xaxis: {
 			axisLabelUseCanvas: true,
 			axisLabelFontSizePixels: 7,
-			axisLabelFontFamily: 'Verdana, Arial',
+			axisLabelFontFamily: font+'Font',
 			axisLabelPadding: 0,
 			ticks: xFormatter,
 			labelWidth: 130,
@@ -599,7 +604,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		yaxis: {
 			axisLabelUseCanvas: true,
 			axisLabelFontSizePixels: 7,
-			axisLabelFontFamily: 'Verdana, Arial',
+			axisLabelFontFamily: font+'Font',
 			axisLabelPadding: 100,
 			autoscaleMargin: 0.02,
 			tickFormatter: function (v, axis) {
@@ -695,7 +700,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 				label = shortLabel;
 			}
 			format.push([i,
-				'<div class="legend_'+i+' legend-tooltip" title="'+title+'" style="word-break: break-word; max-width: 110px;">'
+				'<div class="'+font+'" title="'+title+'" style="word-break: break-word; max-width: 110px;font-size:'+font_size+'pt">'
 				+ label
 				+ '</div>']);
 		}
@@ -842,7 +847,7 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 
 function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	colors, type, serie_types, water_mark, width, max_x, homeurl, unit,
-	font_size, menu, events, event_ids, legend_events, alerts,
+	font_size, font, menu, events, event_ids, legend_events, alerts,
 	alert_ids, legend_alerts, yellow_threshold, red_threshold,
 	force_integer, separator, separator2, 
 	yellow_up, red_up, yellow_inverse, red_inverse,
@@ -850,6 +855,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 
 	var threshold = true;
 	var thresholded = false;
+	font = font.split("/").pop().split(".").shift();
 
 	values = values.split(separator2);
 	serie_types = serie_types.split(separator);
@@ -1740,6 +1746,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			$('#legend_' + graph_id + ' .legendLabel')
 				.eq(i).css('color','#000');
 
+			$('#legend_' + graph_id + ' .legendLabel')
+				.eq(i).css('font-family',font+'Font');
+
 			i++;
 		}
 	}
@@ -1843,17 +1852,17 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		if (labels[v] == undefined) {
 			return '';
 		}
-		return '<div style=font-size:'+font_size+'pt>'+labels[v]+'</div>';
+		return '<div class='+font+' style=font-size:'+font_size+'pt>'+labels[v]+'</div>';
 	}
 
 	function yFormatter(v, axis) {
 		var formatted = number_format(v,force_integer,unit);
 
-		return '<div style=font-size:'+font_size+'pt>'+formatted+'</div>';
+		return '<div class='+font+' style=font-size:'+font_size+'pt>'+formatted+'</div>';
 	}
 
 	function lFormatter(v, item) {
-		return '<div style=color:#000;font-size:'+font_size+'pt>'+v+'</div>';
+		return '<div class='+font+' style=color:#000;font-size:'+font_size+'pt>'+v+'</div>';
 		// Prepared to turn series with a checkbox
 		//return '<div style=color:#000;font-size:'+font_size+'pt><input type="checkbox" id="' + graph_id + '_' + item.id +'" checked="checked" class="check_serie_'+graph_id+'">'+v+'</div>';
 	}

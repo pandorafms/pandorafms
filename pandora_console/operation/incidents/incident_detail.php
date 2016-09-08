@@ -21,7 +21,7 @@ require_once ("include/functions_events.php"); //To get events group information
 
 check_login ();
 
-if (! check_acl ($config["id_user"], 0, "IR")) {
+if (! check_acl ($config["id_user"], 0, "IR") && ! check_acl ($config["id_user"], 0, "IW") && ! check_acl ($config["id_user"], 0, "IM")) {
 	// Doesn't have access to this page
 	db_pandora_audit("ACL Violation", "Trying to access incident details");
 	require ("general/noaccess.php");

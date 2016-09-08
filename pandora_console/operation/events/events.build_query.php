@@ -13,7 +13,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-$groups = users_get_groups($id_user, 'ER');
+if (check_acl ($id_user, 0, "ER"))
+	$groups = users_get_groups($id_user, 'ER');
+elseif (check_acl ($id_user, 0, "EW"))
+	$groups = users_get_groups($id_user, 'EW');
+elseif (check_acl ($id_user, 0, "EM"))
+	$groups = users_get_groups($id_user, 'EM');
+
 
 $propagate = db_get_value('propagate','tgrupo','id_grupo',$id_group);
 
@@ -217,9 +223,15 @@ if ($id_group > 0 && in_array ($id_group, array_keys ($groups))) {
 else {
 	$group_array = array_keys($groups);
 }
-
-$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'ER',
-	'event_condition', 'AND', '', $meta, array(), true); //FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)"
+if (check_acl ($id_user, 0, "ER"))
+	$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'ER',
+		'event_condition', 'AND', '', $meta, array(), true); //FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)"
+elseif (check_acl ($id_user, 0, "EW"))
+	$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'EW',
+		'event_condition', 'AND', '', $meta, array(), true); //FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)"
+elseif (check_acl ($id_user, 0, "EM"))
+	$tags_acls_condition = tags_get_acl_tags($id_user, $group_array, 'EM',
+		'event_condition', 'AND', '', $meta, array(), true); //FORCE CHECK SQL "(TAG = tag1 AND id_grupo = 1)"
 
 if (($tags_acls_condition != ERR_WRONG_PARAMETERS) && ($tags_acls_condition != ERR_ACL)&& ($tags_acls_condition != -110000)) {
 	$sql_post .= $tags_acls_condition;

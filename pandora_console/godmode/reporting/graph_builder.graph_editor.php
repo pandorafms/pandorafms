@@ -17,7 +17,10 @@ global $config;
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "RW")) {
+$report_w = check_acl ($config['id_user'], 0, "RW");
+$report_m = check_acl ($config['id_user'], 0, "RM");
+
+if (!$report_w && !$report_m ) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access graph builder");
 	include ("general/noaccess.php");
@@ -129,7 +132,6 @@ if (count($module_array) > 0) {
 }
 
 //Configuration form
-
 echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
 echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&add_module=1&edit_graph=1&id=" . $id_graph . "'>";
 
@@ -137,7 +139,9 @@ echo "<table width='100%' cellpadding='4' cellpadding='4' class='databox filters
 echo "<tr>";
 echo "<td colspan='3'>".__('Filter group')."</td>";
 echo "</tr><tr>";
-echo "<td colspan='3'>".html_print_select(groups_get_all(), 'group', '', "filterByGroup($('#group').val());", __('All'), '0', true)."</td>";
+echo "<td colspan='3'>".html_print_select_groups($config['id_user'], ($report_w == true) ? 'RW' : (($report_m == true) ? 'RM' : 'RW'),
+	true, 'group', '', 'filterByGroup($(\'#group\').val());',
+	'', 0, true)."</td>";
 echo "</tr><tr>";
 echo "<td style='vertical-align: top;'>".__('Agents')."</td>";
 echo "<td></td>";

@@ -23,7 +23,7 @@ require_once ($config["homedir"] . '/include/functions_graph.php');
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "ER")) {
+if (! check_acl ($config['id_user'], 0, "ER") && ! check_acl ($config['id_user'], 0, "EW") && ! check_acl ($config['id_user'], 0, "EM")) {
 	db_pandora_audit("ACL Violation","Trying to access event viewer");
 	require ("general/noaccess.php");
 	return;

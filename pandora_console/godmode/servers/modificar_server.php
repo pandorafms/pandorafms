@@ -88,7 +88,7 @@ else {
 			ui_print_success_message(__('Successfully action'));
 		}
 	}
-	
+
 	if (isset ($_GET["delete"])) {
 		$id_server = get_parameter_get ("server_del");
 		

@@ -245,10 +245,10 @@ else {
 	$total_maps = count(visual_map_get_user_layouts ($config['id_user'], false,
 		false, false));
 }
-if (!$maps && !defined("METACONSOLE")) {
+if (!$maps && !is_metaconsole()) {
 	require_once ($config['homedir'] . "/general/firts_task/map_builder.php");
 }
-elseif (!$maps && defined("METACONSOLE")) {
+elseif (!$maps && is_metaconsole()) {
 	ui_print_info_message(
 		array(
 			'no_close'=>true,
@@ -266,7 +266,7 @@ else {
 		
 		$data = array ();
 		
-		if (!defined('METACONSOLE')) {
+		if (!is_metaconsole()) {
 			$data[0] = '<a href="index.php?sec=network&amp;sec2=operation/visual_console/render_view&amp;id='.
 				$map['id'].'&amp;refr=' . $refr . '">'.$map['name'].'</a>';
 		}
@@ -281,7 +281,7 @@ else {
 		// Fix: IW was the old ACL for report editing, now is RW
 		if ($vconsole_write || $vconsole_manage) {
 			
-			if (!defined('METACONSOLE')) {
+			if (!is_metaconsole()) {
 				$data[3] = '<a class="copy_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image ("images/copy.png", true).'</a>';
 				$data[4] = '<a class="delete_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1">'.html_print_image ("images/cross.png", true).'</a>';
 			}
@@ -295,7 +295,7 @@ else {
 	html_print_table ($table);
 }
 if ($maps) {
-	if (!defined('METACONSOLE'))
+	if (!is_metaconsole())
 		echo '<div class="action-buttons" style="width: 0px;">';
 	else
 		echo '<div class="" style="width: 100%; text-align: right;">';

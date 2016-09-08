@@ -17,8 +17,11 @@ global $config;
 
 check_login ();
 
+$gis_w = check_acl ($config['id_user'], 0, 'MW');
+$gis_m = check_acl ($config['id_user'], 0, 'MM')
+$access = ($gis_w == true) ? 'MW' : (($gis_m == true) ? 'MM' : 'MW');
 
-if (! check_acl ($config['id_user'], 0, "IW")) {
+if (!$gis_w  && !$gis_m ) {
 	db_pandora_audit("ACL Violation", "Trying to access map builder");
 	require ("general/noaccess.php");
 	return;
@@ -337,7 +340,7 @@ if (isset($invalidFields['map_connection_list'])) {
 $listConnectionTemp = db_get_all_rows_sql("SELECT id_tmap_connection, conection_name, group_id FROM tgis_map_connection");
 $listConnection = array();
 foreach ($listConnectionTemp as $connectionTemp) {
-	if (check_acl ($config["id_user"], $connectionTemp['group_id'], "IW")) {
+	if (check_acl ($config["id_user"], $connectionTemp['group_id'], "MW") || check_acl ($config["id_user"], $connectionTemp['group_id'], "MM")) {
 		$listConnection[$connectionTemp['id_tmap_connection']] = $connectionTemp['conection_name'];
 	}
 }
@@ -356,7 +359,7 @@ $table->data[1][1] = "<table style='padding:0px;' class='no-class' border='0' id
 	</tr> " . gis_add_conection_maps_in_form($map_connection_list) . "
 </table>";
 $own_info = get_user_info($config['id_user']);
-if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
+if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "MM"))
 	$display_all_group = true;
 else
 	$display_all_group = false;
@@ -408,7 +411,7 @@ $table->data[1][1] = '<div id="form_layer">
 			</tr>
 			<tr>
 				<td>' . __('Show agents from group') . ':</td>
-				<td colspan="3">' . html_print_select_groups(false, 'IW', $display_all_group, 'layer_group_form', '-1', '', __('None'), '-1', true) . '</td>
+				<td colspan="3">' . html_print_select_groups(false, $access, $display_all_group, 'layer_group_form', '-1', '', __('None'), '-1', true) . '</td>
 			</tr>
 			<tr>
 				<td colspan="4"><hr /></td>

@@ -744,7 +744,9 @@ $id_agente = (int) get_parameter ("id_agente", 0);
 if (empty ($id_agente)) {
 	return;
 }
-
+$agent_a = check_acl ($config['id_user'], 0, "AR");
+$agent_w = check_acl ($config['id_user'], 0, "AW");
+$access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
 $agent = db_get_row ('tagente', 'id_agente', $id_agente);
 // get group for this id_agente
 $id_grupo = $agent['id_grupo'];
@@ -755,7 +757,7 @@ if ($is_extra === ENTERPRISE_NOT_HOOK) {
 	$is_extra = false;
 }
 
-if (! check_acl ($config['id_user'], $id_grupo, "AR", $id_agente) && !$is_extra) {
+if (! check_acl ($config['id_user'], $id_grupo, "AR", $id_agente) && ! check_acl ($config['id_user'], $id_grupo, "AW", $id_agente) && !$is_extra) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access (read) to agent ".agents_get_name($id_agente));
 	include ("general/noaccess.php");

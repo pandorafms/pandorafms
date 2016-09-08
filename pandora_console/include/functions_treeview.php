@@ -356,7 +356,7 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 		$is_extra = false;
 	}
 
-	if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && !$is_extra) {
+	if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && ! check_acl ($config["id_user"], $agent["id_grupo"], "AW") && !$is_extra) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access Agent General Information");
 		require_once ("general/noaccess.php");

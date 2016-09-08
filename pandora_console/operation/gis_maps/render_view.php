@@ -29,7 +29,7 @@ $show_history = get_parameter ('show_history', 'n');
 $map = db_get_row ('tgis_map', 'id_tgis_map', $idMap);
 $confMap = gis_get_map_conf($idMap);
 
-if (! check_acl ($config['id_user'], $map['group_id'], "IR")) {
+if (! check_acl ($config['id_user'], $map['group_id'], "MR") && ! check_acl ($config['id_user'], $map['group_id'], "MW") && ! check_acl ($config['id_user'], $map['group_id'], "MM")) {
 	db_pandora_audit("ACL Violation", "Trying to access map builder");
 	require ("general/noaccess.php");
 	return;
@@ -103,7 +103,7 @@ else {
 		html_print_image ("images/normalscreen.png", true, array ("title" => __('Back to normal mode'))) . "</a>";
 }
 
-if (check_acl ($config["id_user"], $map['group_id'], "IW")) {
+if (check_acl ($config["id_user"], $map['group_id'], "MW") || check_acl ($config["id_user"], $map['group_id'], "MM")) {
 	$buttons['setup']['text'] = '<a href="index.php?sec=godgismaps&sec2=godmode/gis_maps/configure_gis_map&action=edit_map&map_id='. $idMap.'">'.html_print_image ("images/setup.png", true, array ("title" => __('Setup'))).'</a>';
 	$buttons['setup']['godmode'] = 1;
 	
@@ -146,7 +146,7 @@ ui_print_page_header(__('Map') . " &raquo; " . __('Map') . "&nbsp;" . $map['map_
 	"images/op_gis.png", false, "", false, $buttons);
 
 if ($config["pure"] == 0) {
-	echo "<div id='map' style='width: 99%; height: 500px; border: 1px solid black;' ></div>";
+	echo "<div id='map' style='width: 100%; height: 500px; border: 1px solid black;' ></div>";
 }
 else {
 	echo "<div id='map' style='position:absolute; top:40px; z-index:100; width: 100%; height: 500px; min-height:500px; border: 1px solid black;' ></div>";

@@ -20,8 +20,10 @@ check_login();
 
 $read_permisson = check_acl ($config['id_user'], 0, "AR");
 $write_permisson = check_acl ($config['id_user'], 0, "AD");
+$manage_permisson = check_acl ($config['id_user'], 0, "AW");
+$access = ($read_permisson == true) ? 'AR' : (($write_permisson == true) ? 'AD' : (($manage_permisson == true) ? 'AW' : 'AR'));
 
-if (! $read_permisson) {
+if (! $read_permisson && !$manage_permisson) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access downtime scheduler");
 	require ("general/noaccess.php");
@@ -64,7 +66,7 @@ if ($stop_downtime) {
 	$downtime = db_get_row('tplanned_downtime', 'id', $id_downtime);
 	
 	// Check AD permission on the downtime
-	if (empty($downtime) || ! check_acl ($config['id_user'], $downtime['id_group'], "AD")) {
+	if (empty($downtime) || (! check_acl ($config['id_user'], $downtime['id_group'], "AD") && ! check_acl ($config['id_user'], $downtime['id_group'], "AW"))) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access downtime scheduler");
 		require ("general/noaccess.php");
@@ -87,7 +89,7 @@ if ($delete_downtime) {
 	$downtime = db_get_row('tplanned_downtime', 'id', $id_downtime);
 	
 	// Check AD permission on the downtime
-	if (empty($downtime) || ! check_acl ($config['id_user'], $downtime['id_group'], "AD")) {
+	if (empty($downtime) || (! check_acl ($config['id_user'], $downtime['id_group'], "AD") && ! check_acl ($config['id_user'], $downtime['id_group'], "AW"))) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access downtime scheduler");
 		require ("general/noaccess.php");
@@ -180,7 +182,7 @@ $table_form->data[] = $row;
 // Useful to know if the user has done a form filtering
 $filter_performed = false;
 
-$groups = users_get_groups ();
+$groups = users_get_groups (false, $access);
 if (!empty($groups)) {
 	$where_values = "1=1";
 
@@ -375,8 +377,8 @@ else {
 	
 	ui_pagination($downtimes_number, "index.php?sec=estado&sec2=godmode/agentes/planned_downtime.list&$filter_params_str", $offset);
 	
-	// User groups with AD permission
-	$groupsAD = users_get_groups($config['id_user'], 'AD');
+	// User groups with AR, AD or AW permission
+	$groupsAD = users_get_groups($config['id_user'], $access);
 	$groupsAD = array_keys($groupsAD);
 	
 	// View available downtimes present in database (if any of them)
@@ -394,7 +396,7 @@ else {
 	$table->head['configuration'] = __('Configuration');
 	$table->head['running'] = __('Running');
 	
-	if ($write_permisson) {
+	if ($write_permisson || $manage_permisson) {
 		$table->head['stop'] = __('Stop downtime');
 		$table->head['edit'] = __('Edit');
 		$table->head['delete'] = __('Delete');
@@ -404,7 +406,7 @@ else {
 	$table->align['group'] = "center";
 	$table->align['running'] = "center";
 	
-	if ($write_permisson) {
+	if ($write_permisson || $manage_permisson) {
 		$table->align['stop'] = "center";
 		$table->align['edit'] = "center";
 		$table->align['delete'] = "center";

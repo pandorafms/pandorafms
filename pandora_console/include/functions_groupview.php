@@ -17,7 +17,7 @@
 include_once ($config['homedir'] . "/include/functions_groups.php");
 include_once ($config['homedir'] . "/include/functions_tags.php");
 
-function groupview_get_all_data ($id_user = false, $user_strict = false, $acltags, $returnAllGroup = false, $agent_filter = array(), $module_filter = array()) {
+function groupview_get_all_data ($id_user = false, $user_strict = false, $acltags, $returnAllGroup = false, $agent_filter = array(), $module_filter = array(), $access = 'AR') {
 	global $config;
 	if ($id_user == false) {
 		$id_user = $config['id_user'];
@@ -198,7 +198,7 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 		$list['_monitors_critical_'] = $group_stat[0]["critical"];
 		$list['_monitors_unknown_'] = $group_stat[0]["unknown"];
 		$list['_monitors_not_init_'] = $group_stat[0]["not_init"];
-		$total_agentes = agents_get_agents (false, array('count(*) as total_agents'), 'AR',false, false);
+		$total_agentes = agents_get_agents (false, array('count(*) as total_agents'), $access,false, false);
 		$list['_total_agents_'] = $total_agentes[0]['total_agents'];
 		$list["_monitor_alerts_fire_count_"] = $group_stat[0]["alerts_fired"];
 
@@ -253,18 +253,18 @@ function groupview_get_all_data ($id_user = false, $user_strict = false, $acltag
 				'disabled' => 0,
 				'id_grupo' => $group['id_grupo'],
 				'status' => AGENT_STATUS_NOT_INIT),
-				array ('COUNT(*) as total'), 'AR', false);
+				array ('COUNT(*) as total'), $access, false);
 			$list[$group['id_grupo']]['_agents_not_init_'] = isset ($agent_not_init[0]['total']) ? $agent_not_init[0]['total'] : 0;
 			$agent_unknown = agents_get_agents(array (
 							'disabled' => 0,
 							'id_grupo' => $group['id_grupo'],
 							'status' => AGENT_STATUS_UNKNOWN),
-							array ('COUNT(*) as total'), 'AR', false);
+							array ('COUNT(*) as total'), $access, false);
 			$list[$group['id_grupo']]['_agents_unknown_'] = isset ($agent_unknown[0]['total']) ? $agent_unknown[0]['total'] : 0;
 			$agent_total = agents_get_agents(array (
 							'disabled' => 0,
 							'id_grupo' => $group['id_grupo']),
-							array ('COUNT(*) as total'), 'AR', false);
+							array ('COUNT(*) as total'), $access, false);
 			$list[$group['id_grupo']]['_total_agents_'] = isset ($agent_total[0]['total']) ? $agent_total[0]['total'] : 0;
 			$list[$group['id_grupo']]["_monitor_not_normal_"] = $list[$group['id_grupo']]["_monitor_checks_"] - $list[$group['id_grupo']]["_monitors_ok_"];
 			$list[$group['id_grupo']]['_monitors_alerts_fired_'] = groupview_monitor_fired_alerts ($group['id_grupo'], $user_strict,array($group['id_grupo']));
@@ -421,9 +421,9 @@ function groupview_status_modules_agents($id_user = false, $user_strict = false,
 		return $result_list;
 	}
 	else {
-
+		
 		$result_list = groupview_get_all_data ($id_user, $user_strict,
-				$acltags);
+				$acltags, false, array(), array(), $access);
 		return $result_list;
 	}
 }
@@ -551,20 +551,20 @@ function groupview_get_groups_list($id_user = false, $user_strict = false, $acce
 	// If using metaconsole, the not strict users will use the metaconsole's agent cache table
 	else {
 		$result_list = groupview_get_data ($id_user, $user_strict, $acltags,
-			$returnAllGroup);
+			$returnAllGroup, array(), array(), $access);
 
 		return $result_list;
 	}
 }
 
-function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $returnAllGroup = false, $agent_filter = array(), $module_filter = array()) {
+function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $returnAllGroup = false, $agent_filter = array(), $module_filter = array(), $access = 'AR') {
 	global $config;
 	if ($id_user == false) {
 		$id_user = $config['id_user'];
 	}
-	$groups_with_privileges = users_get_groups($id_user);
+	$groups_with_privileges = users_get_groups($id_user, $access);
 	$groups_with_privileges = implode('","', $groups_with_privileges);
-
+	
 	$user_groups = array();
 	$user_tags = array();
 	$groups_without_tags = array();
@@ -591,7 +591,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 	else {
 		$user_groups_ids = implode(',', array_keys($acltags));
 	}
-
+	
 	if (!empty($user_groups_ids)) {
 		if (is_metaconsole() && (!$user_strict)) {
 			switch ($config["dbtype"]) {
@@ -811,7 +811,7 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 		$list['_monitors_critical_'] = $group_stat[0]["critical"];
 		$list['_monitors_unknown_'] = $group_stat[0]["unknown"];
 		$list['_monitors_not_init_'] = $group_stat[0]["not_init"];
-		$total_agentes = agents_get_agents (false, array('count(*) as total_agents'), 'AR',false, false);
+		$total_agentes = agents_get_agents (false, array('count(*) as total_agents'), $access,false, false);
 		$list['_total_agents_'] = $total_agentes[0]['total_agents'];
 		$list["_monitor_alerts_fire_count_"] = $group_stat[0]["alerts_fired"];
 
@@ -866,18 +866,18 @@ function groupview_get_data ($id_user = false, $user_strict = false, $acltags, $
 				'disabled' => 0,
 				'id_grupo' => $group['id_grupo'],
 				'status' => AGENT_STATUS_NOT_INIT),
-				array ('COUNT(*) as total'), 'AR', false);
+				array ('COUNT(*) as total'), $access, false);
 			$list[$group['id_grupo']]['_agents_not_init_'] = isset ($agent_not_init[0]['total']) ? $agent_not_init[0]['total'] : 0;
 			$agent_unknown = agents_get_agents(array (
 							'disabled' => 0,
 							'id_grupo' => $group['id_grupo'],
 							'status' => AGENT_STATUS_UNKNOWN),
-							array ('COUNT(*) as total'), 'AR', false);
+							array ('COUNT(*) as total'), $access, false);
 			$list[$group['id_grupo']]['_agents_unknown_'] = isset ($agent_unknown[0]['total']) ? $agent_unknown[0]['total'] : 0;
 			$agent_total = agents_get_agents(array (
 							'disabled' => 0,
 							'id_grupo' => $group['id_grupo']),
-							array ('COUNT(*) as total'), 'AR', false);
+							array ('COUNT(*) as total'), $access, false);
 			$list[$group['id_grupo']]['_total_agents_'] = isset ($agent_total[0]['total']) ? $agent_total[0]['total'] : 0;
 			$list[$group['id_grupo']]["_monitor_not_normal_"] = $list[$group['id_grupo']]["_monitor_checks_"] - $list[$group['id_grupo']]["_monitors_ok_"];
 			$list[$group['id_grupo']]["_monitor_not_normal_"] = $list[$group['id_grupo']]["_monitor_checks_"] - $list[$group['id_grupo']]["_monitors_ok_"];

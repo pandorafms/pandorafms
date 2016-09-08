@@ -40,6 +40,11 @@ $config["id_user"] = $_SESSION["id_usuario"];
 // Session locking concurrency speedup!
 check_login ();
 
+$event_a = check_acl ($config['id_user'], 0, "ER");
+$event_w = check_acl ($config['id_user'], 0, "EW");
+$event_m = check_acl ($config['id_user'], 0, "EM");
+$access = ($event_a == true) ? 'ER' : (($event_w == true) ? 'EW' : (($event_m == true) ? 'EM' : 'ER'));
+
 if (!isInACL($_SERVER['REMOTE_ADDR'])) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access marquee without ACL Access");
@@ -47,7 +52,8 @@ if (!isInACL($_SERVER['REMOTE_ADDR'])) {
 	exit;
 }
 
-$groups = users_get_groups ($config["id_user"], "ER");
+$groups = users_get_groups ($config["id_user"], $access);
+
 //Otherwise select all groups the user has rights to.
 if (!empty($groups)) {
 	$sql_group_filter = " AND id_grupo IN (".implode (",", array_keys ($groups)).")";

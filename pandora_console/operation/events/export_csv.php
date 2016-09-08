@@ -27,7 +27,7 @@ session_write_close ();
 
 $config["id_user"] = $_SESSION["id_usuario"];
 
-if (! check_acl ($config["id_user"], 0, "ER") && ! check_acl ($config["id_user"], 0, "EW")) {
+if (! check_acl ($config["id_user"], 0, "ER") && ! check_acl ($config["id_user"], 0, "EW") && ! check_acl ($config["id_user"], 0, "EM")) {
 	exit;
 }
 
@@ -105,7 +105,8 @@ echo chr (13);
 $new = true;
 while ($event = db_get_all_row_by_steps_sql($new, $result, $sql)) {
 	$new = false;
-	if (!check_acl($config["id_user"], $event["id_grupo"], "ER") ||
+	if ((!check_acl($config["id_user"], $event["id_grupo"], "ER") && 
+		!check_acl($config["id_user"], $event["id_grupo"], "EW") && !check_acl($config["id_user"], $event["id_grupo"], "EM") ) ||
 	(!check_acl($config["id_user"], 0, "PM") && $event["event_type"] == 'system'))
 		continue;
 	

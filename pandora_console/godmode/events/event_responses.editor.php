@@ -59,7 +59,7 @@ $table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 
-if(defined('METACONSOLE')) {
+if(is_metaconsole()) {
 	$table->head[0] = __('Edit event responses');
 	$table->head_colspan[0] = 5;
 	$table->headstyle[0] = 'text-align: center';
@@ -79,7 +79,7 @@ $data[1] = html_print_input_text('name', $event_response['name'], '',
 $data[1] .= html_print_input_hidden('id_response',$event_response['id'],true);
 
 $data[2] = __('Group');
-$data[3] = html_print_select_groups(false, 'AR', true, 'id_group',$event_response['id_group'],'','','',true);
+$data[3] = html_print_select_groups(false, 'PM', true, 'id_group',$event_response['id_group'],'','','',true);
 $table->data[0] = $data;
 
 $data = array();

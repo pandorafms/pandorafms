@@ -53,7 +53,7 @@ if ($is_extra === ENTERPRISE_NOT_HOOK) {
 	$is_extra = false;
 }
 
-if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && !$is_extra) {
+if (! check_acl ($config["id_user"], $agent["id_grupo"], "AR") && ! check_acl ($config["id_user"], $agent["id_grupo"], "AW") && !$is_extra) {
 	db_pandora_audit("ACL Violation", 
 		"Trying to access Agent General Information");
 	require_once ("general/noaccess.php");

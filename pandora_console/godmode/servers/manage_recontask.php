@@ -19,7 +19,7 @@ global $config;
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "AW")) {
+if (! check_acl ($config['id_user'], 0, "PM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Recon Task Management");
 	require ("general/noaccess.php");
@@ -32,10 +32,10 @@ if (check_acl ($config['id_user'], 0, "AW")) {
 	$options[]['text'] = "<a href='index.php?sec=estado&sec2=operation/servers/recon_view'>" . html_print_image ("images/operation.png", true, array ("title" =>__('View'))) . "</a>";
 }
 
-$user_groups_w = users_get_groups(false, 'AW', true, false, null, 'id_grupo');
+$user_groups_w = users_get_groups(false, 'PM', true, false, null, 'id_grupo');
 $user_groups_w = array_keys($user_groups_w);
 
-$user_groups_r = users_get_groups(false, 'AR', true, false, null, 'id_grupo');
+$user_groups_r = users_get_groups(false, 'AW', true, false, null, 'id_grupo');
 $user_groups_r = array_keys($user_groups_r);
 
 // Headers

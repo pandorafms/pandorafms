@@ -47,11 +47,14 @@ if (is_ajax ()) {
 			);
 		$filter = get_parameter('filter', $default_filters);
 		
+		$agent_a = check_acl ($config['id_user'], 0, "AR");
+		$agent_w = check_acl ($config['id_user'], 0, "AW");
+		$access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
 		if (class_exists('TreeEnterprise')) {
-			$tree = new TreeEnterprise($type, $rootType, $id, $rootID, $serverID, $childrenMethod);
+			$tree = new TreeEnterprise($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
 		}
 		else {
-			$tree = new Tree($type, $rootType, $id, $rootID, $serverID, $childrenMethod);
+			$tree = new Tree($type, $rootType, $id, $rootID, $serverID, $childrenMethod, $access);
 		}
 		
 		$tree->setFilter($filter);

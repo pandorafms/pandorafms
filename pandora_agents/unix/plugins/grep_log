@@ -53,6 +53,12 @@ my $Idx_size = 0;
 # Regular expression to be matched
 my $Reg_exp = '';
 
+# Flag to show or not summary module
+my $summary_flag = 0;
+
+# Number of coincidences found
+my $coincidences = 0;
+
 ###############################################################################
 # SUB error_msg
 # Print an error message and exit.
@@ -72,7 +78,7 @@ sub error_msg ($) {
 # Print a help message.
 ###############################################################################
 sub print_help () {
-	print "Usage: $0 <log_file> <module_name> <pattern> <up_lines_extra> <bot_lines_extra>\n";
+	print "Usage: $0 <log_file> <module_name> <pattern> <up_lines_extra> <bot_lines_extra> [--summary]\n";
 }
 
 ###############################################################################
@@ -193,6 +199,7 @@ sub parse_log (;$$) {
 			push @lines, $line;
 			if ($line =~ m/$Reg_exp/i) {
 				push @nl_found, $nl;
+				$coincidences++;
 			}
 			$nl++;
 		}
@@ -237,6 +244,21 @@ sub parse_log (;$$) {
 }
 
 ###############################################################################
+# SUB print_summary
+# Print module summary to stdout.
+###############################################################################
+sub print_summary() {
+	my $output = "<module>\n";
+	$output .= "<name><![CDATA[" . $Module_name . " coincidences]]></name>\n";
+	$output .= "<type><![CDATA[async_data]]></type>\n";
+	$output .= "<datalist>\n";
+	$output .= "<data><value><![CDATA[$coincidences]]></value></data>\n";
+	$output .= "</datalist>\n";
+	$output .= "</module>\n";
+	print stdout $output;
+}
+
+###############################################################################
 # SUB parse_log
 # Print log data to stdout.
 ###############################################################################
@@ -245,6 +267,7 @@ sub print_log (@) {
 
 	# No data
 	if ($#data < 0) {
+		print_summary() if ($summary_flag == 1);
 		return;
 	}
 	
@@ -263,7 +286,9 @@ sub print_log (@) {
 	}
 	# Regular module
 	else {
-		my $output = "<module>\n";
+		my $output;
+		print_summary() if ($summary_flag == 1);
+		$output = "<module>\n";
 		$output .= "<name><![CDATA[" . $Module_name . "]]></name>\n";
 		$output .= "<type><![CDATA[async_string]]></type>\n";
 		$output .= "<datalist>\n";
@@ -292,8 +317,15 @@ if ($#ARGV < 2) {
 $Log_file = $ARGV[0];
 $Module_name = $ARGV[1];
 $Reg_exp = $ARGV[2];
-my $up_lines = $ARGV[3];
+my $up_lines  = $ARGV[3];
 my $bot_lines = $ARGV[4];
+my $sum_flag  = $ARGV[5];
+
+if (   ( defined($up_lines)  && ($up_lines  eq "--summary"))
+    || ( defined($bot_lines) && ($bot_lines eq "--summary"))
+    || ( defined($sum_flag)  && ($sum_flag  eq "--summary")) ) {
+	$summary_flag = 1;
+}
 # Create index file storage directory
 if ( ! -d $Idx_dir) {
 	mkdir($Idx_dir) || error_msg("Error creating directory $Idx_dir: "

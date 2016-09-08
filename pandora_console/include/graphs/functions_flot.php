@@ -670,7 +670,7 @@ function flot_hcolumn_chart ($graph_data, $width, $height, $water_mark, $font = 
 }
 
 // Returns a 3D column chart
-function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark, $homedir) {
+function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $long_index, $homeurl, $unit, $water_mark, $homedir, $font, $font_size) {
 	global $config;
 	
 	include_javascript_dependencies_flot_graph();
@@ -751,9 +751,9 @@ function flot_vcolumn_chart ($graph_data, $width, $height, $color, $legend, $lon
 	
 	// Javascript code
 	$return .= "<script type='text/javascript'>";
-	
-	$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2')";
-	
+
+	$return .= "pandoraFlotVBars('$graph_id', '$values', '$labels', '$labels', '$legend', '$colors', false, $max, '$water_mark', '$separator', '$separator2','$font',$font_size)";
+
 	$return .= "</script>";
 	
 	return $return;

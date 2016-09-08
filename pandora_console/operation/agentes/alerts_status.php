@@ -111,7 +111,7 @@ if ($idAgent != 0) {
 else {
 	$agent_a = check_acl ($config['id_user'], 0, "AR");
 	$agent_w = check_acl ($config['id_user'], 0, "AW");
-	$access = ($agent_a == true) ? 'AR' : ($agent_w == true) ? 'AW' : 'AR';
+	$access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
 	
 	if (!$agent_a && !$agent_w) {
 		db_pandora_audit("ACL Violation","Trying to access alert view");

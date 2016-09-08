@@ -139,7 +139,7 @@ echo "<table width='100%' cellpadding='4' cellpadding='4' class='databox filters
 echo "<tr>";
 echo "<td colspan='3'>".__('Filter group')."</td>";
 echo "</tr><tr>";
-echo "<td colspan='3'>".html_print_select_groups($config['id_user'], ($report_w == true) ? 'RW' : ($report_m == true) ? 'RM' : 'RW',
+echo "<td colspan='3'>".html_print_select_groups($config['id_user'], ($report_w == true) ? 'RW' : (($report_m == true) ? 'RM' : 'RW'),
 	true, 'group', '', 'filterByGroup($(\'#group\').val());',
 	'', 0, true)."</td>";
 echo "</tr><tr>";

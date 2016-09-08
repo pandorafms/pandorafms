@@ -20,7 +20,7 @@ check_login ();
 
 $event_w = check_acl ($config['id_user'], 0, "EW");
 $event_m = check_acl ($config['id_user'], 0, "EM");
-$access = ($event_w == true) ? 'EW' : ($event_m == true) ? 'EM' : 'EW';
+$access = ($event_w == true) ? 'EW' : (($event_m == true) ? 'EM' : 'EW');
 
 if (!$event_w && !$event_m) {
 	db_pandora_audit("ACL Violation",

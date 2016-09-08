@@ -70,7 +70,7 @@ ui_print_page_header (__("Group view"), "images/group.png", false, "", false, $u
 
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
-$all_data = groupview_status_modules_agents ($config['id_user'], $strict_user, ($agent_a == true) ? 'AR' : ($agent_w == true) ? 'AW' : 'AR', $strict_user);
+$all_data = groupview_status_modules_agents ($config['id_user'], $strict_user, ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR'), $strict_user);
 
 $total_agentes = 0;
 $monitor_ok = 0;

@@ -32,13 +32,13 @@ ui_print_page_header(__('GIS Maps'), "images/op_gis.png", false,
 	"configure_gis_map", false, $buttons);
 
 $own_info = get_user_info($config['id_user']);
-if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
+if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "MM"))
 	$display_default_column = true;
 else
 	$display_default_column = false;
 
 $edit_gis_maps = false;
-if (check_acl ($config['id_user'], 0, "IW")) {
+if (check_acl ($config['id_user'], 0, "MW") || check_acl ($config['id_user'], 0, "MM")) {
 	$edit_gis_maps = true;
 }
 
@@ -128,7 +128,9 @@ $iterator = 0;
 
 if ($maps !== false) {
 	foreach ($maps as $map) {
-		if (!check_acl ($config["id_user"], $map["group_id"], "IR", 0, true)) {
+		if (!check_acl ($config["id_user"], $map["group_id"], "MR") && 
+			!check_acl ($config["id_user"], $map["group_id"], "MW") && 
+			!check_acl ($config["id_user"], $map["group_id"], "MM")) {
 			continue;
 		}
 		

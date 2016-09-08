@@ -27,17 +27,19 @@ class Tree {
 
 	protected $strictACL = false;
 	protected $acltags = false;
+	protected $access = false;
 
-	public function __construct($type, $rootType = '', $id = -1, $rootID = -1, $serverID = false, $childrenMethod = "on_demand") {
+	public function __construct($type, $rootType = '', $id = -1, $rootID = -1, $serverID = false, $childrenMethod = "on_demand", $access = 'AR') {
 
 		$this->type = $type;
 		$this->rootType = !empty($rootType) ? $rootType : $type;
 		$this->id = $id;
 		$this->rootID = !empty($rootID) ? $rootID : $id;
 		$this->serverID = $serverID;
-		$this->childrenMethod = $childrenMethod;
-
-		$userGroups = users_get_groups();
+		$this->childrenMethod = $childrenMethod;		
+		$this->access = $access;		
+		
+		$userGroups = users_get_groups(false, $this->access);
 
 		if (empty($userGroups))
 			$this->userGroups = false;
@@ -53,8 +55,8 @@ class Tree {
 			enterprise_include_once("meta/include/functions_ui_meta.php");
 
 		$this->strictACL = (bool) db_get_value("strict_acl", "tusuario", "id_user", $config['id_user']);
-
-		$this->acltags = tags_get_user_module_and_tags($config['id_user'], 'AR');
+		
+		$this->acltags = tags_get_user_module_and_tags($config['id_user'], $this->access);
 	}
 
 	public function setType($type) {

@@ -26,14 +26,9 @@ $menu_operation = array ();
 $menu_operation['class'] = 'operation';
 
 // Agent read, Server read
-if (check_acl ($config['id_user'], 0, "AR")) {
+$sub = array ();
+if (check_acl ($config['id_user'], 0, "AR") || check_acl ($config['id_user'], 0, "AW")) {
 	//View agents
-	$menu_operation["estado"]["text"] = __('Monitoring');
-	$menu_operation["estado"]["sec2"] = "operation/agentes/tactical";
-	$menu_operation["estado"]["refr"] = 0;
-	$menu_operation["estado"]["id"] = "oper-agents";
-	
-	$sub = array ();
 	$sub["view"]["text"] = __('Views');
 	$sub["view"]["id"] = 'Views';
 	$sub["view"]["type"] = "direct";
@@ -75,43 +70,44 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	if ($config['log_collector'] == 1) {
 		enterprise_hook ('log_collector_menu');
 	}
-	
-	//SNMP Console
+	//End of view agents
+}
+
+//SNMP Console
+$sub2 = array();
+if (check_acl ($config['id_user'], 0, "AR") || check_acl ($config['id_user'], 0, "AW") ) {
+	$sub2["operation/snmpconsole/snmp_view"]["text"] = __("SNMP console");
+	$sub2["operation/snmpconsole/snmp_browser"]["text"] = __("SNMP browser");
+	enterprise_hook ('snmpconsole_submenu');
+}
+if (check_acl ($config['id_user'], 0, "PM"))
+	$sub2["operation/snmpconsole/snmp_mib_uploader"]["text"] = __("MIB uploader");
+
+if (check_acl ($config['id_user'], 0, "LW") || check_acl ($config['id_user'], 0, "LM")) {
+	$sub2["godmode/snmpconsole/snmp_filters"]["text"] = __("SNMP filters");
+	$sub2["godmode/snmpconsole/snmp_trap_generator"]["text"] = __("SNMP trap generator");
+}
+
+if (!empty($sub2)) {
+	$sub["snmpconsole"]["sub2"] = $sub2;
 	$sub["snmpconsole"]["text"] = __('SNMP');
 	$sub["snmpconsole"]["id"] = 'SNMP';
 	$sub["snmpconsole"]["refr"] = 0;
 	$sub["snmpconsole"]["type"] = "direct";
 	$sub["snmpconsole"]["subtype"] = "nolink";
-	$sub2 = array();
-	$sub2["operation/snmpconsole/snmp_view"]["text"] = __("SNMP console");
-	$sub2["operation/snmpconsole/snmp_browser"]["text"] = __("SNMP browser");
-	
-	if (check_acl ($config['id_user'], 0, "PM"))
-		$sub2["operation/snmpconsole/snmp_mib_uploader"]["text"] = __("MIB uploader");
-	
-	if (check_acl ($config['id_user'], 0, "LW")) {
-		$sub2["godmode/snmpconsole/snmp_filters"]["text"] = __("SNMP filters");
-		$sub2["godmode/snmpconsole/snmp_trap_generator"]["text"] = __("SNMP trap generator");
-	}
-	enterprise_hook ('snmpconsole_submenu');
-	$sub["snmpconsole"]["sub2"] = $sub2;
-	
+}
+
+if (!empty($sub)) {
+	$menu_operation["estado"]["text"] = __('Monitoring');
+	$menu_operation["estado"]["sec2"] = "operation/agentes/tactical";
+	$menu_operation["estado"]["refr"] = 0;
+	$menu_operation["estado"]["id"] = "oper-agents";
 	$menu_operation["estado"]["sub"] = $sub;
-	
-	//End of view agents
-	
 }
 
-if (check_acl ($config['id_user'], 0, "AR") || check_acl ($config['id_user'], 0, "MR")) {
-	//Start network view
-	$menu_operation["network"]["text"] = __('Topology maps');
-	$menu_operation["network"]["sec2"] = "operation/agentes/networkmap_list";
-	$menu_operation["network"]["refr"] = 0;
-	$menu_operation["network"]["id"] = "oper-networkconsole";
-	$sub = array();
-}
-
-if (check_acl ($config['id_user'], 0, "MR")) {
+//Start network view
+$sub = array();
+if (check_acl ($config['id_user'], 0, "MR") || check_acl ($config['id_user'], 0, "MW") || check_acl ($config['id_user'], 0, "MM")) {
 	$sub["operation/agentes/networkmap_list"]["text"] = __('Network map');
 	$sub["operation/agentes/networkmap_list"]["id"] = 'Network map';
 	$sub["operation/agentes/networkmap_list"]["refr"] = 0;
@@ -121,7 +117,7 @@ enterprise_hook ('networkmap_console');
 
 enterprise_hook ('services_menu');
 
-if (check_acl ($config['id_user'], 0, "VR")) {		
+if (check_acl ($config['id_user'], 0, "VR") || check_acl ($config['id_user'], 0, "VW") || check_acl ($config['id_user'], 0, "VM")) {		
 	//Visual console
 	$sub["godmode/reporting/map_builder"]["text"] = __('Visual console');
 	$sub["godmode/reporting/map_builder"]["id"] = 'Visual console';
@@ -143,7 +139,7 @@ if (check_acl ($config['id_user'], 0, "VR")) {
 		$firstLetterNameVisualToShow = array('_', ',', '[', '(');
 		
 		foreach ($layouts as $layout) {
-			if (! check_acl ($config["id_user"], $layout["id_group"], "AR")) {
+			if (!check_acl ($config['id_user'], 0, "VR") && ! check_acl ($config['id_user'], 0, "VW") && ! check_acl ($config['id_user'], 0, "VM")) {
 				continue;
 			}
 			$name = io_safe_output($layout['name']);
@@ -176,7 +172,7 @@ if (check_acl ($config['id_user'], 0, "VR")) {
 }	
 // GIS MAPS DESACTIVATE THIS PART; LIBRARY DOESN'T WORK CORRECTLY.
 
-if (check_acl ($config['id_user'], 0, "AR")) {
+if (check_acl ($config['id_user'], 0, "MR") || check_acl ($config['id_user'], 0, "MW") || check_acl ($config['id_user'], 0, "MM")) {
 	
 	//INI GIS Maps
 	if ($config['activate_gis']) {
@@ -218,12 +214,17 @@ if (check_acl ($config['id_user'], 0, "AR")) {
 	//END GIS Maps
 }
 
-if (check_acl ($config['id_user'], 0, "AR") || check_acl ($config['id_user'], 0, "MR"))
+if (!empty($sub)) {
+	$menu_operation["network"]["text"] = __('Topology maps');
+	$menu_operation["network"]["sec2"] = "operation/agentes/networkmap_list";
+	$menu_operation["network"]["refr"] = 0;
+	$menu_operation["network"]["id"] = "oper-networkconsole";
 	$menu_operation["network"]["sub"] = $sub;
+}
 //End networkview
 
 // Reports read
-if (check_acl ($config['id_user'], 0, "RR")) {
+if (check_acl ($config['id_user'], 0, "RR") || check_acl ($config['id_user'], 0, "RW") || check_acl ($config['id_user'], 0, "RM")) {
 	// Reporting
 	$menu_operation["reporting"]["text"] = __('Reporting');
 	$menu_operation["reporting"]["sec2"] = "godmode/reporting/reporting_builder";
@@ -269,26 +270,27 @@ if (check_acl ($config['id_user'], 0, "ER")
 	$sub["operation/events/event_statistics"]["text"] = __('Statistics');
 	$sub["operation/events/event_statistics"]["id"] = 'Statistics';
 	
-	//RSS
+	//If ip doesn't is in list of allowed IP, isn't show this options
 	include_once ('include/functions_api.php');
 	if (isInACL($_SERVER['REMOTE_ADDR'])) {
 		$pss = get_user_info($config['id_user']);
 		$hashup = md5($config['id_user'].$pss['password']);
 		
+		//RSS
 		$sub["operation/events/events_rss.php?user=".$config['id_user']."&amp;hashup=".$hashup."&search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure="]["text"] = __('RSS');
 		$sub["operation/events/events_rss.php?user=".$config['id_user']."&amp;hashup=".$hashup."&search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure="]["id"] = 'RSS';
 		$sub["operation/events/events_rss.php?user=".$config['id_user']."&amp;hashup=".$hashup."&search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure="]["type"] = "direct";
+		
+		//Marquee
+		$sub["operation/events/events_marquee.php"]["text"] = __('Marquee');
+		$sub["operation/events/events_marquee.php"]["id"] = 'Marquee';
+		$sub["operation/events/events_marquee.php"]["type"] = "direct";
 	}
 
 	//CSV
 	$sub["operation/events/export_csv.php?search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure="]["text"] = __('CSV File');
 	$sub["operation/events/export_csv.php?search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure="]["id"] = 'CSV File';
 	$sub["operation/events/export_csv.php?search=&event_type=&severity=-1&status=3&id_group=0&refr=0&id_agent=0&pagination=20&group_rep=1&event_view_hr=8&id_user_ack=0&tag_with=&tag_without=&filter_only_alert-1&offset=0&toogle_filter=no&filter_id=0&id_name=&id_group=0&history=0&section=list&open_filter=0&pure="]["type"] = "direct";
-	
-	//Marquee
-	$sub["operation/events/events_marquee.php"]["text"] = __('Marquee');
-	$sub["operation/events/events_marquee.php"]["id"] = 'Marquee';
-	$sub["operation/events/events_marquee.php"]["type"] = "direct";
 	
 	//Sound Events
 	$javascript = "javascript: window.open('operation/events/sound_events.php');";
@@ -307,7 +309,7 @@ if (check_acl ($config['id_user'], 0, "ER")
 		
 		window.open(url,
 			'<?php __('Sound Alerts'); ?>',
-			'width=475, height=275, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no');
+			'width=400, height=350, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no');
 	}
 	</script>
 	<?php
@@ -335,7 +337,9 @@ $sub["operation/users/webchat"]["refr"] = 0;
 
 
 //Incidents
-if (check_acl ($config['id_user'], 0, "IR")) {
+if (check_acl ($config['id_user'], 0, "IR") 
+	|| check_acl ($config['id_user'], 0, "IW") 
+	|| check_acl ($config['id_user'], 0, "IM")) {
 	$temp_sec2 = $sec2;
 	if($config['integria_enabled']) {
 		$sec2 = "incident";
@@ -387,22 +391,21 @@ $menu_operation["workspace"]["sub"] = $sub;
 // Extensions menu additions
 if (is_array ($config['extensions'])) {
 	
-	
 	$sub = array ();
 	$sub2 = array ();
 	
-	if (check_acl ($config['id_user'], 0, "RR")) {
+	if (check_acl ($config['id_user'], 0, "RR") || check_acl ($config['id_user'], 0, "RW") || check_acl ($config['id_user'], 0, "RM")) {
 		$sub["operation/agentes/exportdata"]["text"] = __('Export data');
 		$sub["operation/agentes/exportdata"]["id"] = 'Export data';
 		$sub["operation/agentes/exportdata"]["subsecs"] =  array("operation/agentes/exportdata");
 	}
 	
-	if (check_acl ($config['id_user'], 0, "AR") || check_acl ($config['id_user'], 0, "AD")) {
+	if (check_acl ($config['id_user'], 0, "AR") || check_acl ($config['id_user'], 0, "AD") || check_acl ($config['id_user'], 0, "AW")) {
 		$sub["godmode/agentes/planned_downtime.list"]["text"] = __('Scheduled downtime');
 		$sub["godmode/agentes/planned_downtime.list"]["id"] = 'Scheduled downtime';
 	}
 	
-	if (check_acl ($config['id_user'], 0, "PM")) {
+	if (check_acl ($config['id_user'], 0, "AW")) {
 		$sub["operation/servers/recon_view"]["text"] = __('Recon view');
 		$sub["operation/servers/recon_view"]["id"] = 'Recon view';
 		$sub["operation/servers/recon_view"]["refr"] = 0;

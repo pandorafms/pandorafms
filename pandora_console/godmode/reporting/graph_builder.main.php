@@ -48,7 +48,7 @@ if (is_ajax ()) {
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "RW")) {
+if (! check_acl ($config['id_user'], 0, "RW") && ! check_acl ($config['id_user'], 0, "RM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access graph builder");
 	include ("general/noaccess.php");
@@ -111,9 +111,12 @@ if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
 else	
 	$return_all_groups = false;
 	
-echo "<td><b>".__('Group')."</b></td><td>" .
-	html_print_select_groups($config['id_user'], "AR", $return_all_groups, 'graph_id_group', $id_group, '', '', '', true) .
-	"</td></tr>";
+echo "<td><b>".__('Group')."</b></td><td>";
+	if (check_acl ($config['id_user'], 0, "RW"))
+		echo html_print_select_groups($config['id_user'], 'RW', $return_all_groups, 'graph_id_group', $id_group, '', '', '', true);
+	elseif (check_acl ($config['id_user'], 0, "RM"))
+		echo html_print_select_groups($config['id_user'], 'RM', $return_all_groups, 'graph_id_group', $id_group, '', '', '', true);
+echo "</td></tr>";
 echo "<tr>";
 echo "<td class='datos2'><b>".__('Description')."</b></td>";
 echo "<td class='datos2' colspan=3><textarea name='description' style='height:45px;' cols=55 rows=2>";

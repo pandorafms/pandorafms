@@ -137,10 +137,10 @@ require('events.build_query.php');
 // Now $sql_post have all the where condition
 ////////////////////////////////////////////////////////////////////////
 
-$sql = "SELECT *
+$sql = 'SELECT * 
 	FROM tevento
-	WHERE 1=1 " . $sql_post . "
-	ORDER BY utimestamp DESC";
+	WHERE 1=1 ' . $sql_post . '
+	ORDER BY utimestamp DESC';
 
 $result = db_get_all_rows_sql ($sql);
 

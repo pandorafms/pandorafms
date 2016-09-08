@@ -20,7 +20,7 @@ check_login ();
 
 enterprise_hook('open_meta_frame');
 
-if (! check_acl ($config["id_user"], 0, "EW")) {
+if (!check_acl ($config["id_user"], 0, "EW") && !check_acl ($config["id_user"], 0, "EM") && ! check_acl ($config["id_user"], 0, "PM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event manage");
 	require ("general/noaccess.php");
@@ -31,29 +31,31 @@ if (! check_acl ($config["id_user"], 0, "EW")) {
 $section = (string) get_parameter ("section", "filter");
 
 // Draws header
-$buttons['view'] = array('active' => false, 
-			'text' => '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'">' . 
-			html_print_image("images/events_list.png", true, array("title" => __('Event list'))) . '</a>',
-			'operation' => true);
+if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0, "EM")) {
+	$buttons['view'] = array('active' => false, 
+		'text' => '<a href="index.php?sec=eventos&sec2=operation/events/events&amp;pure='.$config['pure'].'">' . 
+		html_print_image("images/events_list.png", true, array("title" => __('Event list'))) . '</a>',
+		'operation' => true);
 			
-$buttons['filter'] = array('active' => false, 
-			'text' => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">' .
-			html_print_image("images/filter_mc.png", true, array ("title" => __('Filter list'))) . '</a>');
+	$buttons['filter'] = array('active' => false, 
+		'text' => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">' .
+		html_print_image("images/filter_mc.png", true, array ("title" => __('Filter list'))) . '</a>');
+}
 
 if (check_acl ($config["id_user"], 0, "PM")) {
 	$buttons['responses'] = array('active' => false,
-				'text' => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=responses&amp;pure='.$config['pure'].'">' .
-				html_print_image("images/event_responses.png", true, array ("title" => __('Event responses'))) . '</a>');
+		'text' => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=responses&amp;pure='.$config['pure'].'">' .
+		html_print_image("images/event_responses.png", true, array ("title" => __('Event responses'))) . '</a>');
 	
-	if (! defined ('METACONSOLE')) {
+	if (!is_metaconsole()) {
 		$buttons['fields'] = array('active' => false,
-				'text' => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=fields&amp;pure='.$config['pure'].'">' .
-				html_print_image("images/custom_columns.png", true, array ("title" => __('Custom fields'))) . '</a>');
+			'text' => '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=fields&amp;pure='.$config['pure'].'">' .
+			html_print_image("images/custom_columns.png", true, array ("title" => __('Custom fields'))) . '</a>');
 	}
 	else {
 		$buttons['fields'] = array('active' => false,
-				'text' => '<a href="index.php?sec=eventos&sec2=event/custom_events&amp;section=fields&amp;pure='.$config['pure'].'">' .
-				html_print_image("images/custom_columns.png", true, array ("title" => __('Custom fields'))) . '</a>');
+			'text' => '<a href="index.php?sec=eventos&sec2=event/custom_events&amp;section=fields&amp;pure='.$config['pure'].'">' .
+			html_print_image("images/custom_columns.png", true, array ("title" => __('Custom fields'))) . '</a>');
 	}
 }
 

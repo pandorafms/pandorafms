@@ -28,7 +28,12 @@ require_once ($config["homedir"] . "/include/functions_tags.php");
 
 check_login ();
 
-if (! check_acl ($config["id_user"], 0, "ER")) {
+$event_a = check_acl ($config['id_user'], 0, "ER");
+$event_w = check_acl ($config['id_user'], 0, "EW");
+$event_m = check_acl ($config['id_user'], 0, "EM");
+$access = ($event_a == true) ? 'ER' : ($event_w == true) ? 'EW' : ($event_m == true) ? 'EM' : 'ER';
+
+if (!$event_a && !$event_w && !$event_m) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");
@@ -139,7 +144,7 @@ if (is_ajax()) {
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
 // Get the tags where the user have permissions in Events reading tasks
-$tags = tags_get_user_tags($config['id_user'], 'ER');
+$tags = tags_get_user_tags($config['id_user'], $access);
 
 
 if ($id_agent == 0 && !empty($text_agent)) {
@@ -191,14 +196,13 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$table->cellspacing = 4;
 	$table->cellpadding = 4;
 	$table->class = 'databox';
-	if (defined('METACONSOLE')) {
-		$table->width = '100%';
+	if (is_metaconsole()) {
 		$table->class = 'databox filters';
 		$table->cellspacing = 0;
 		$table->cellpadding = 0;
 	}
 	$table->styleTable = 'font-weight: bold; text-align:left;';
-	if (!defined("METACONSOLE"))
+	if (!is_metaconsole())
 		$table->style[0] = 'width: 50%; width:50%;';
 	
 	$data = array();
@@ -212,12 +216,12 @@ if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0,
 	$table->rowid[1] = 'save_filter_row1';
 	$data[0] = __('Filter name') . $jump;
 	$data[0] .= html_print_input_text ('id_name', '', '', 15, 255, true);
-	if(defined('METACONSOLE'))
+	if(is_metaconsole())
 		$data[1] = __('Save in Group') . $jump;
 	else
 		$data[1] = __('Filter group') . $jump;
 	# Fix : Only admin users can see group ALL
-	$data[1] .= html_print_select_groups($config['id_user'], "ER", users_can_manage_group_all(), "id_group_filter",
+	$data[1] .= html_print_select_groups($config['id_user'], $access, users_can_manage_group_all(), "id_group_filter",
 				$id_group_filter, '', '', 0, true, false, false, 'w130', false, '', false, false, 'id_grupo', $strict_user);
 	$table->data[] = $data;
 	$table->rowclass[] = '';
@@ -255,15 +259,14 @@ $table->width = '100%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
 $table->class = 'databox';
-if (defined('METACONSOLE')) {
-	$table->width = '100%';
+if (is_metaconsole()) {
 	$table->cellspacing = 0;
 	$table->cellpadding = 0;
 	$table->class = 'databox filters';
 }
 
 $table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
-if (!defined("METACONSOLE"))
+if (!is_metaconsole())
 	$table->style[0] = 'width: 50%; width:50%;';
 $data = array();
 $table->rowid[3] = 'update_filter_row1';
@@ -311,11 +314,9 @@ $tabletags_with->cellpadding = 4;
 $tabletags_with->class = 'noshadow';
 $tabletags_with->styleTable = 'border: 0px;';
 if (defined('METACONSOLE')) {
-	$tabletags_with->width = '100%';
 	$tabletags_with->class = 'nobady';
 	$tabletags_with->cellspacing = 0;
 	$tabletags_with->cellpadding = 0;
-	$tabletags_with->styleTable = 'border: 0px;';
 }
 
 
@@ -342,7 +343,6 @@ $tabletags_without->cellspacing = 4;
 $tabletags_without->cellpadding = 4;
 $tabletags_without->class = 'noshadow';
 if (defined('METACONSOLE')) {
-	$tabletags_without->width = '100%';
 	$tabletags_without->class = 'nobady';
 	$tabletags_without->cellspacing = 0;
 	$tabletags_without->cellpadding = 0;
@@ -365,7 +365,7 @@ $tabletags_without->rowclass[] = '';
 
 // EVENTS FILTER
 // Table for filter controls
-if (defined('METACONSOLE')) {
+if (is_metaconsole()) {
 	$events_filter = '<form id="form_filter" class="filters_form" method="post" action="index.php?sec=eventos&amp;sec2=operation/events/events&amp;refr='. 
 		(int)get_parameter("refr", 0) .'&amp;pure='.$config["pure"].'&amp;section=' . $section . '&amp;history='.(int)$history.'">';
 }
@@ -426,8 +426,9 @@ $data[0] = __('User ack.') . $jump;
 
 if ($strict_user) {
 	$user_users = array($config['id_user']=>$config['id_user']);
-} else {
-	$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all());
+}
+else {
+	$user_users = users_get_user_users($config['id_user'], $access, users_can_manage_group_all());
 }
 
 $data[0] .= html_print_select($user_users, "id_user_ack", $id_user_ack, '',
@@ -467,7 +468,7 @@ $table_advanced->rowclass[] = '';
 $data = array();
 $data[0] = __('Date from') . $jump;
 
-$user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all());
+//~ $user_users = users_get_user_users($config['id_user'], "ER", users_can_manage_group_all());
 
 $data[0] .= html_print_input_text ('date_from', $date_from, '', 15, 10, true);
 
@@ -528,9 +529,8 @@ $table->data = array();
 $data = array();
 $data[0] = __('Group') . $jump;
 
-$data[0] .= html_print_select_groups($config["id_user"], "ER", true, 
+$data[0] .= html_print_select_groups($config["id_user"], $access, true, 
 	'id_group', $id_group, '', '', 0, true, false, false, 'w130', false, false, false, false, 'id_grupo', $strict_user). $jump;
-	
 //**********************************************************************
 // TODO
 // This code is disabled for to enabled in Pandora 5.1
@@ -582,7 +582,7 @@ $table->rowclass[] = '';
 
 $data = array();
 $data[0] = '<div style="width:100%; text-align:left">';
-if (check_acl ($config["id_user"], 0, "EW")) {
+if ($event_w || $event_m) {
 	$data[0] .= '<a href="javascript:" onclick="show_save_filter_dialog();">' . 
 				html_print_image("images/disk.png", true, array("border" => '0', "title" => __('Save filter'), "alt" => __('Save filter'))) . '</a> &nbsp;';
 }
@@ -624,7 +624,7 @@ $events_filter .= $botom_update;
 
 $events_filter .= "</form>"; //This is the filter div
 
-if (defined('METACONSOLE'))
+if (is_metaconsole())
 	ui_toggle($events_filter, __("Show Options"));
 else
 	ui_toggle($events_filter, __('Event control filter'), '', !$open_filter);
@@ -782,7 +782,7 @@ if (!empty($result)) {
 if (!empty($result)) {
 	//~ Checking the event tags exactly. The event query filters approximated tags to keep events
 	//~ with several tags
-	$acltags = tags_get_user_module_and_tags ($config['id_user'],'ER', true);
+	$acltags = tags_get_user_module_and_tags ($config['id_user'], $access, true);
 
 	foreach ($result as $key=>$event_data) {
 		$has_tags = events_checks_event_tags($event_data, $acltags);

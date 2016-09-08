@@ -21,8 +21,11 @@ global $config;
 check_login ();
 
 enterprise_hook('open_meta_frame');
-
-if (! check_acl ($config['id_user'], 0, "RR")) {
+$report_r = check_acl ($config['id_user'], 0, "RR");
+$report_w = check_acl ($config['id_user'], 0, "RW");
+$report_m = check_acl ($config['id_user'], 0, "RM");
+$access = ($report_r == true) ? 'RR' : ($report_w == true) ? 'RW' : ($report_m == true) ? 'RM' : 'RR';
+if (!$report_r  && !$report_w && !$report_m) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
@@ -427,15 +430,15 @@ switch ($action) {
 		$table_aux->colspan[0][0] = 4;
 		$table_aux->data[0][0] = "<b>". __("Group") . "</b>";
 		
-		$table_aux->data[0][1] = html_print_select_groups(false, "AR", true, 'id_group', $id_group, '', '', '', true, false, true, '', false, 'width:150px', false, false, 'id_grupo', $strict_user). '<br>';
+		$table_aux->data[0][1] = html_print_select_groups(false, $access, true, 'id_group', $id_group, '', '', '', true, false, true, '', false, 'width:150px', false, false, 'id_grupo', $strict_user). '<br>';
 		
 		$table_aux->data[0][2] = "<b>". __("Free text for search: ") . ui_print_help_tip(
-	__('Search by report name or description, list matches.'),true) . "</b>";
+		__('Search by report name or description, list matches.'),true) . "</b>";
 		$table_aux->data[0][3] = html_print_input_text ("search", $search, '', 30, '', true);
 		
 		$table_aux->data[0][6] = html_print_submit_button(__('Search'), 'search_submit', false, 'class="sub upd"', true);
 		
-		if (defined('METACONSOLE')) {
+		if (is_metaconsole()) {
 			$filter = "<form class ='' action='index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&id_group=$id_group&pure=$pure'
 				method='post'>";
 			$filter .= html_print_table($table_aux,true);
@@ -449,12 +452,10 @@ switch ($action) {
 			echo "</form>";
 		}
 		
-		
 		ui_require_jquery_file ('pandora.controls');
 		ui_require_jquery_file ('ajaxqueue');
 		ui_require_jquery_file ('bgiframe');
 		ui_require_jquery_file ('autocomplete');
-		
 		
 		// Show only selected groups
 		if ($id_group > 0) {
@@ -465,7 +466,7 @@ switch ($action) {
 		}
 		
 		$own_info = get_user_info ($config['id_user']);
-		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
+		if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "RM"))
 			$return_all_group = true;
 		else
 			$return_all_group = false;
@@ -505,10 +506,10 @@ switch ($action) {
 				'private',
 				'id_user',
 				'id_group',
-				'non_interactive'), $return_all_group, 'RR', $group, $strict_user);
+				'non_interactive'), $return_all_group, $access, $group, $strict_user);
 		
 		$total_reports = (int) count(reports_get_reports ($filter,
-			array ('name'), $return_all_group, 'RR', $group, $strict_user));
+			array ('name'), $return_all_group, $access, $group, $strict_user));
 		
 		
 		if (sizeof ($reports)) {
@@ -579,15 +580,19 @@ switch ($action) {
 				
 				if (!is_user_admin ($config["id_user"])) {
 					if ($report["private"] && $report["id_user"] != $config['id_user'])
-						if (!check_acl ($config["id_user"], $report["id_group"], "RR"))
+						if (!check_acl ($config["id_user"], $report["id_group"], "RR") && 
+								!check_acl ($config["id_user"], $report["id_group"], "RW") 
+								&& !check_acl ($config["id_user"], $report["id_group"], "RM"))
 							continue;
-					if (!check_acl ($config["id_user"], $report["id_group"], "RR"))
+					if (!check_acl ($config["id_user"], $report["id_group"], "RR") && 
+							!check_acl ($config["id_user"], $report["id_group"], "RW") 
+								&& !check_acl ($config["id_user"], $report["id_group"], "RM"))
 						continue;
 				}
 				
 				$data = array ();
 				
-				if (check_acl ($config["id_user"], $report["id_group"], "RW")) {
+				if (check_acl ($config["id_user"], $report["id_group"], "RW") || check_acl ($config["id_user"], $report["id_group"], "RM")) {
 					$data[0] = '<a href="' . $config['homeurl'] . 'index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&action=edit&id_report='.
 						$report['id_report'].'&pure='.$pure.'">'.$report['name'].'</a>';
 				}
@@ -721,7 +726,7 @@ switch ($action) {
 		else {
 			ui_print_info_message ( array ( 'no_close' => true, 'message' =>  __('No data found.') ) );
 		}
-		if (check_acl ($config['id_user'], 0, "RW")) {
+		if (check_acl ($config['id_user'], 0, "RW") || check_acl ($config['id_user'], 0, "RM")) {
 			echo '<form method="post" action="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder&tab=main&action=new&pure='.$pure.'">';
 			if (defined("METACONSOLE"))
 				echo '<div class="action-buttons" style="width: 100%; ">';

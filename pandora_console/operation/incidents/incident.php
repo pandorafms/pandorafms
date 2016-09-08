@@ -18,7 +18,12 @@ require_once ("include/functions_incidents.php");
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "IR")) {
+$incident_r = check_acl ($config['id_user'], 0, "IR");
+$incident_w = check_acl ($config['id_user'], 0, "IW");
+$incident_m = check_acl ($config['id_user'], 0, "IM");
+$access = ($incident_r == true) ? 'IR' : ($incident_w == true) ? 'IW' : ($incident_m == true) ? 'IM' : 'IR';
+
+if (!$incident_r && !$incident_w && !$incident_m) {
 	db_pandora_audit("ACL Violation","Trying to access incident viewer");
 	require ("general/noaccess.php");
 	exit;
@@ -178,7 +183,7 @@ if ($agent_search != 0) {
 }
 
 $offset = (int) get_parameter ("offset", 0);
-$groups = users_get_groups ($config["id_user"], "IR");
+$groups = users_get_groups ($config["id_user"], $access);
 
 //Select incidencts where the user has access to ($groups from
 //get_user_groups), array_keys for the id, implode to pass to SQL
@@ -277,7 +282,7 @@ if ($count_total >= 1) {
 	echo '</td></tr><tr><td colspan=3>';
 
 	echo "<b>" . __("Groups:") . "</b>" . '&nbsp;&nbsp;';
-	html_print_select_groups($config["id_user"], "IR", true, "grupo", $grupo, 'javascript:this.form.submit();', '', '',false,false,false,'w155');
+	html_print_select_groups($config["id_user"], $access, true, "grupo", $grupo, 'javascript:this.form.submit();', '', '',false,false,false,'w155');
 
 	//echo "&nbsp;&nbsp;&nbsp;&nbsp;";
 	echo '</td></tr><tr><td colspan=3>';
@@ -390,7 +395,7 @@ else {
 	echo '<form method="post" action="'.$url.'&amp;action=mass" style="margin-bottom: 0px;">';
 	html_print_table ($table);
 	echo '<div style="text-align:right; float:right;">';
-	if (check_acl ($config["id_user"], 0, "IW")) {
+	if (check_acl ($config["id_user"], 0, "IW") || check_acl ($config["id_user"], 0, "IM")) {
 		html_print_submit_button (__('Delete incidents'), 'delete_btn', false, 'class="sub delete" style="margin-right: 5px;"');
 	}
 	
@@ -400,7 +405,7 @@ else {
 	echo '</div>';
 	echo '</form>';
 	unset ($table);
-	if (check_acl ($config["id_user"], 0, "IW")) {
+	if (check_acl ($config["id_user"], 0, "IW") || check_acl ($config["id_user"], 0, "IM")) {
 		echo '<div style="text-align:right; float:right; padding-right: 5px;">';
 		echo '<form method="post" action="index.php?sec=workspace&amp;sec2=operation/incidents/incident_detail&amp;insert_form=1">';
 		html_print_submit_button (__('Create incident'), 'crt', false, 'class="sub next"');

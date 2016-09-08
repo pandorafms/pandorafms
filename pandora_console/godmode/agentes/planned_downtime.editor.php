@@ -17,8 +17,10 @@ global $config;
 
 check_login();
 
-
-if (! check_acl ($config['id_user'], 0, "AD")) {
+$agent_d = check_acl ($config['id_user'], 0, "AD");
+$agent_w = check_acl ($config['id_user'], 0, "AW");
+$access = ($agent_d == true) ? 'AD' : ($agent_w == true) ? 'AW' : 'AD';
+if (!$agent_d && !$agent_w) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access downtime scheduler");
 	require ("general/noaccess.php");
@@ -82,8 +84,8 @@ $id_agent 				= (int) get_parameter ('id_agent');
 $insert_downtime_agent 	= (int) get_parameter ('insert_downtime_agent');
 $delete_downtime_agent 	= (int) get_parameter ('delete_downtime_agent');
 
-// User groups with AD permission for ACL checks
-$user_groups_ad = array_keys(users_get_groups($config['id_user'], 'AD'));
+// User groups with AD or AW permission for ACL checks
+$user_groups_ad = array_keys(users_get_groups($config['id_user'], $access));
 
 // INSERT A NEW DOWNTIME_AGENT ASSOCIATION
 if ($insert_downtime_agent === 1) {
@@ -472,7 +474,7 @@ $table->data = array ();
 $table->data[0][0] = __('Name');
 $table->data[0][1] = html_print_input_text ('name', $name, '', 25, 40, true, $disabled_in_execution);
 $table->data[1][0] = __('Group');
-$table->data[1][1] = html_print_select_groups(false, "AD", true, 'id_group', $id_group, '', '', 0, true, false, true, '', $disabled_in_execution);
+$table->data[1][1] = html_print_select_groups(false, $access, true, 'id_group', $id_group, '', '', 0, true, false, true, '', $disabled_in_execution);
 $table->data[2][0] = __('Description');
 $table->data[2][1] = html_print_textarea ('description', 3, 35, $description, '', true);
 
@@ -671,7 +673,7 @@ if ($id_downtime > 0) {
 	
 	echo "<form method=post action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.editor&id_downtime=$id_downtime'>";
 	
-	html_print_select_groups(false, "AD", true, 'filter_group', $filter_group, '', '', '', false, false, true, '', false, 'width:180px');
+	html_print_select_groups(false, $access, true, 'filter_group', $filter_group, '', '', '', false, false, true, '', false, 'width:180px');
 	
 	echo "<br /><br />";
 	html_print_submit_button (__('Filter by group'), '', false, 'class="sub next"',false);

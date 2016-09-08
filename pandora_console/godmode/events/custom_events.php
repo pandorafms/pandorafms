@@ -18,7 +18,7 @@ global $config;
 
 check_login ();
 
-if (! check_acl($config['id_user'], 0, "EW")) {
+if (! check_acl($config['id_user'], 0, "PM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Custom events Management");
 	require ("general/noaccess.php");

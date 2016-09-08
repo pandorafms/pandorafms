@@ -91,7 +91,7 @@ if ($idAgent != 0) {
 		$is_extra = false;
 	}
 	
-	if (!check_acl ($config["id_user"], $id_group, "AR") && !$is_extra) {
+	if (!check_acl ($config["id_user"], $id_group, "AR") && !check_acl ($config["id_user"], $id_group, "AW") && !$is_extra) {
 		db_pandora_audit("ACL Violation","Trying to access alert view");
 		require ("general/noaccess.php");
 		exit;
@@ -109,7 +109,11 @@ if ($idAgent != 0) {
 	}
 }
 else {
-	if (!check_acl ($config["id_user"], 0, "AR")) {
+	$agent_a = check_acl ($config['id_user'], 0, "AR");
+	$agent_w = check_acl ($config['id_user'], 0, "AW");
+	$access = ($agent_a == true) ? 'AR' : ($agent_w == true) ? 'AW' : 'AR';
+	
+	if (!$agent_a && !$agent_w) {
 		db_pandora_audit("ACL Violation","Trying to access alert view");
 		require ("general/noaccess.php");
 		return;
@@ -118,13 +122,13 @@ else {
 	$agents = array_keys(
 		agents_get_group_agents(
 			array_keys(
-				users_get_groups($config["id_user"], 'AR', false))));
+				users_get_groups($config["id_user"], $access, false)), false, 'lower', true));
 	
 	$idGroup = $id_group;
 	
 	$print_agent = true;
 	
-	if (!defined('METACONSOLE')) {
+	if (!is_metaconsole()) {
 		ui_print_page_header (__('Alert detail'), "images/op_alerts.png", false, "alert_validation");
 	}
 	else {
@@ -300,7 +304,7 @@ switch ($sortField) {
 
 
 //Add checks for user ACL
-$groups = users_get_groups($config["id_user"]);
+$groups = users_get_groups($config["id_user"], $access);
 $id_groups = array_keys($groups);
 
 if (empty($id_groups)) {
@@ -333,7 +337,7 @@ else {
 	$filter_alert['disabled'] = $filter;
 }
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole()) {
 	require_once ($config['homedir'] . '/enterprise/meta/include/functions_alerts_meta.php');
 	if ($idAgent != 0) {
 		$alerts['alerts_simple'] = alerts_meta_get_alerts ($agents, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user);
@@ -357,7 +361,7 @@ else {
 	}
 	else {
 		$id_groups = array_keys(
-			users_get_groups($config["id_user"], 'AR', false));
+			users_get_groups($config["id_user"], $access, false));
 
 		$alerts['alerts_simple'] = get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter,$action_filter);
 
@@ -379,7 +383,7 @@ if ($free_search != ''){
 
 // Filter form
 if ($print_agent) {
-	if(defined('METACONSOLE')) {
+	if(is_metaconsole()) {
 		ui_toggle(
 			printFormFilterAlert($id_group, $filter, $free_search,
 				$url, $filter_standby, $tag_filter, true, $strict_user),
@@ -389,7 +393,7 @@ if ($print_agent) {
 		ui_toggle(
 			printFormFilterAlert($id_group, $filter, $free_search,
 				$url, $filter_standby, $tag_filter, $action_filter, true, $strict_user),
-			__('Alert control filter'), __('Toggle filter(s)'));
+			__('Alert control filter'), __('Toggle filter(s)'), $access);
 	}
 }
 
@@ -404,7 +408,7 @@ $table->align = array ();
 
 if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 	if ($print_agent) {
-		if (!defined('METACONSOLE')) {
+		if (!is_metaconsole() {
 			$table->head[0] = "<span title='" . __('Policy') . "'>" .
 				__('P.') . "</span>";
 		}
@@ -412,7 +416,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[1] = "<span title='" . __('Standby') . "'>" .
 			__('S.') . "</span>";
 		
-		if (!defined('METACONSOLE')) {
+		if (!is_metaconsole()) {
 			$table->head[2] =
 				"<span title='" . __('Force execution') . "'>" .
 					__('F.') . "</span>";
@@ -424,7 +428,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[6] = __('Action');
 		$table->head[7] = __('Last fired');
 		$table->head[8] = __('Status');
-		if (!defined('METACONSOLE')) {
+		if (!is_metaconsole()) {
 			$table->size[8] = '4%';
 			if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
 				$table->head[9] = __('Validate');
@@ -436,7 +440,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->align[8] = 'center';
 		
 		// Sort buttons are only for normal console
-		if (!defined('METACONSOLE')) {
+		if (!is_metaconsole()) {
 			$table->head[3] .= ' ' .
 				'<a href="' . $url . '&sort_field=agent&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
 				'<a href="' . $url . '&sort_field=agent&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
@@ -449,13 +453,13 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		}
 	}
 	else {
-		if (!defined('METACONSOLE')) {
+		if (!is_metaconsole()) {
 			$table->head[0] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
 		}
 		
 		$table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		
-		if (!defined('METACONSOLE')) {
+		if (!is_metaconsole()) {
 			$table->head[2] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		}
 		
@@ -464,7 +468,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[5] = __('Action');
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
-		if (!defined('METACONSOLE')) {
+		if (!is_metaconsole()) {
 			$table->size[7] = '5%';
 			if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
 				$table->head[8] = __('Validate');
@@ -475,7 +479,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->align[7] = 'center';
 		
 		// Sort buttons are only for normal console
-		if (!defined('METACONSOLE')) {
+		if (!is_metaconsole()) {
 			$table->head[3] .= ' ' .
 				'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
 				'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
@@ -488,7 +492,7 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 else {
 	if ($print_agent) {
 		$table->head[0] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
-		if (!defined('METACONSOLE')) {
+		if (!is_metaconsole()) {
 			$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		}
 		$table->head[2] = __('Agent');
@@ -497,7 +501,7 @@ else {
 		$table->head[5] = __('Action');
 		$table->head[6] = __('Last fired');
 		$table->head[7] = __('Status');
-		if (!defined('METACONSOLE')) {
+		if (!is_metaconsole()) {
 			$table->size[7] = '5%';
 			if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
 				$table->head[8] = __('Validate');
@@ -508,7 +512,7 @@ else {
 		$table->align[7] = 'center';
 		
 		// Sort buttons are only for normal console
-		if (!defined('METACONSOLE')) {
+		if (!is_metaconsole()) {
 			$table->head[2] .= ' ' .
 				'<a href="' . $url . '&sort_field=agent&sort=up">'. html_print_image("images/sort_up.png", true, array("style" => $selectAgentUp)) . '</a>' .
 				'<a href="' . $url . '&sort_field=agent&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectAgentDown)) . '</a>';
@@ -522,7 +526,7 @@ else {
 	}
 	else {
 		$table->head[0] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
-		if (!defined('METACONSOLE')) {
+		if (!is_metaconsole()) {
 			$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		}
 		$table->head[2] = __('Module');
@@ -530,7 +534,7 @@ else {
 		$table->head[4] = __('Action');
 		$table->head[5] = __('Last fired');
 		$table->head[6] = __('Status');
-		if (!defined('METACONSOLE')) {
+		if (!is_metaconsole()) {
 			$table->size[6] = '5%';
 			if (check_acl ($config["id_user"], $id_group, "LW") || check_acl ($config["id_user"], $id_group, "LM")) {
 				$table->head[7] = __('Validate');
@@ -541,7 +545,7 @@ else {
 		$table->align[6] = 'center';
 		
 		// Sort buttons are only for normal console
-		if (!defined('METACONSOLE')) {
+		if (!is_metaconsole()) {
 			$table->head[2] .= ' ' .
 				'<a href="' . $url . '&sort_field=module&sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
 				'<a href="' . $url . '&sort_field=module&sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>';
@@ -574,7 +578,7 @@ if (!empty ($table->data)) {
 		'offset_simple');
 	html_print_table ($table);
 	
-	if (!defined('METACONSOLE')) {
+	if (!is_metaconsole()) {
 		if (check_acl ($config["id_user"], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "LM") ) {
 			if (count($alerts['alerts_simple']) > 0) {
 				echo '<div class="action-buttons" style="width: '.$table->width.';">';
@@ -593,12 +597,8 @@ else {
 //strict user hidden
 echo '<div id="strict_hidden" style="display:none;">';
 html_print_input_text('strict_user_hidden', $strict_user);
-if (defined('METACONSOLE')) {
-	$is_meta = true;
-} else {
-	$is_meta = false;
-}
-html_print_input_text('is_meta_hidden', $is_meta);
+
+html_print_input_text('is_meta_hidden', (int) is_metaconsole());
 echo '</div>';
 
 enterprise_hook('close_meta_frame');

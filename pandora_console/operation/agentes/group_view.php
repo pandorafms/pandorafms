@@ -21,7 +21,10 @@ require_once ("include/functions_groupview.php");
 
 check_login ();
 // ACL Check
-if (! check_acl ($config['id_user'], 0, "AR")) {
+$agent_a = check_acl ($config['id_user'], 0, "AR");
+$agent_w = check_acl ($config['id_user'], 0, "AW");
+
+if (!$agent_a && !$agent_w) {
 	db_pandora_audit("ACL Violation", 
 	"Trying to access Agent view (Grouped)");
 	require ("general/noaccess.php");
@@ -67,7 +70,7 @@ ui_print_page_header (__("Group view"), "images/group.png", false, "", false, $u
 
 $strict_user = db_get_value('strict_acl', 'tusuario', 'id_user', $config['id_user']);
 
-$all_data = groupview_status_modules_agents ($config['id_user'], $strict_user, 'AR', $strict_user);
+$all_data = groupview_status_modules_agents ($config['id_user'], $strict_user, ($agent_a == true) ? 'AR' : ($agent_w == true) ? 'AW' : 'AR', $strict_user);
 
 $total_agentes = 0;
 $monitor_ok = 0;
@@ -130,7 +133,7 @@ echo "</table>";
 
 //Groups and tags
 $result_groups = groupview_get_groups_list($config['id_user'], $strict_user,
-	'AR', true, true);
+	($agent_a == true) ? 'AR' : ($agent_w == true) ? 'AW' : 'AR', true, true);
 
 $count = count($result_groups);
 

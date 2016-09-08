@@ -297,10 +297,12 @@ if (! isset ($config['id_user'])) {
 		}
 		else if (($config['auth'] == 'saml') && ($login_button_saml)) {
 			include_once(ENTERPRISE_DIR . "/include/auth/saml.php");
+			
 			$saml_user_id = saml_process_user_login();
+			
 			$nick_in_db = $saml_user_id;
 			if (!$nick_in_db) {
-				require_once('/opt/simplesamlphp/lib/_autoload.php');
+				require_once($config['saml_path'] . 'simplesamlphp/lib/_autoload.php');
 				$as = new SimpleSAML_Auth_Simple('PandoraFMS');
 				$as->logout();
 			}
@@ -517,7 +519,7 @@ if (isset ($_GET["bye"])) {
 	unset($_SESSION['id_usuario']);
 	unset($iduser);
 	if ($config['auth'] == 'saml') {
-		require_once('/opt/simplesamlphp/lib/_autoload.php');
+		require_once($config['saml_path'] . 'simplesamlphp/lib/_autoload.php');
 		$as = new SimpleSAML_Auth_Simple('PandoraFMS');
 		$as->logout();
 	}

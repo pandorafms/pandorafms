@@ -134,11 +134,13 @@ echo '</div>';
 ui_require_jquery_file('countdown');
 ui_require_javascript_file('wz_jsgraphics');
 ui_require_javascript_file('pandora_visual_console');
+$ignored_params['refr'] = '';
 ?>
 
 <script language="javascript" type="text/javascript">
 	$(document).ready(function () {
 		var refr = <?php echo (int) $refr; ?>;
+		var href = "<?php echo ui_get_url_refresh ($ignored_params); ?>";
 		
 		var startCountDown = function (duration, cb) {
 			$('div.vc-countdown').countdown('destroy');
@@ -152,42 +154,44 @@ ui_require_javascript_file('pandora_visual_console');
 				alwaysExpire: true,
 				onExpiry: function () {
 					$('div.vc-countdown').countdown('destroy');
-					cb();
+					//~ cb();
+					url = js_html_entity_decode( href ) + duration;
+					$(document).attr ("location", url);
 				}
 			});
 		}
 		
-		var fetchMap = function () {
-			$.ajax({
-				url: 'public_console.php',
-				type: 'GET',
-				dataType: 'html',
-				data: {
-					hash: '<?php echo $hash; ?>',
-					id_layout: <?php echo $id_layout; ?>,
-					graph_javascript: <?php echo (int) $graph_javascript; ?>,
-					id_user: '<?php echo $config['id_user']; ?>',
-					width: $(window).width(),
-					height: $(window).height(),
-					xhr: true
-				}
-			})
-			.done(function (data, textStatus, xhr) {
-				$('div#vc-container').html(data);
-				startCountDown(refr, fetchMap);
-			});
-		}
-		
+		//~ var fetchMap = function () {
+			//~ $.ajax({
+				//~ url: 'public_console.php',
+				//~ type: 'GET',
+				//~ dataType: 'html',
+				//~ data: {
+					//~ hash: '<?php echo $hash; ?>',
+					//~ id_layout: <?php echo $id_layout; ?>,
+					//~ graph_javascript: <?php echo (int) $graph_javascript; ?>,
+					//~ id_user: '<?php echo $config['id_user']; ?>',
+					//~ width: $(window).width(),
+					//~ height: $(window).height(),
+					//~ xhr: true
+				//~ }
+			//~ })
+			//~ .done(function (data, textStatus, xhr) {
+				//~ $('div#vc-container').html(data);
+				//~ startCountDown(refr, fetchMap);
+			//~ });
+		//~ }
+		startCountDown(refr, false);
 		// Auto hide controls
 		var controls = document.getElementById('vc-controls');
 		autoHideElement(controls, 1000);
 		
 		$('select#refr').change(function (event) {
 			refr = Number.parseInt(event.target.value, 10);
-			startCountDown(refr, fetchMap);
+			startCountDown(refr, false);
 		});
 		
 		// Start the map fetch
-		fetchMap();
+		//~ fetchMap();
 	});
 </script>

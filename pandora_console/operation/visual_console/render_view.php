@@ -209,31 +209,34 @@ else {
 
 ui_require_javascript_file('wz_jsgraphics');
 ui_require_javascript_file('pandora_visual_console');
-
+$ignored_params['refr'] = '';
 ?>
 
 <script language="javascript" type="text/javascript">
 	$(document).ready (function () {
-		var refr = <?php echo $refr; ?>;
+		var refr = <?php echo (int)$refr; ?>;
 		var pure = <?php echo (int) $config['pure']; ?>;
-			
+		var href = "<?php echo ui_get_url_refresh ($ignored_params); ?>";
+		
 		if (pure) {
-			//~ var startCountDown = function (duration, cb) {
-				//~ $('div.vc-countdown').countdown('destroy');
-				//~ if (!duration) return;
-				//~ var t = new Date();
-				//~ t.setTime(t.getTime() + duration * 1000);
-				//~ $('div.vc-countdown').countdown({
-					//~ until: t,
-					//~ format: 'MS',
-					//~ layout: '(%M%nn%M:%S%nn%S <?php echo __('Until refresh'); ?>) ',
-					//~ alwaysExpire: true,
-					//~ onExpiry: function () {
-						//~ $('div.vc-countdown').countdown('destroy');
-						//~ cb();
-					//~ }
-				//~ });
-			//~ }
+			var startCountDown = function (duration, cb) {
+				$('div.vc-countdown').countdown('destroy');
+				if (!duration) return;
+				var t = new Date();
+				t.setTime(t.getTime() + duration * 1000);
+				$('div.vc-countdown').countdown({
+					until: t,
+					format: 'MS',
+					layout: '(%M%nn%M:%S%nn%S <?php echo __('Until refresh'); ?>) ',
+					alwaysExpire: true,
+					onExpiry: function () {
+						$('div.vc-countdown').countdown('destroy');
+						//cb();
+						url = js_html_entity_decode( href ) + duration;
+						$(document).attr ("location", url);
+					}
+				});
+			}
 			
 			//~ var fetchMap = function () {
 				//~ $.ajax({
@@ -252,17 +255,18 @@ ui_require_javascript_file('pandora_visual_console');
 				//~ })
 				//~ .done(function (data, textStatus, xhr) {
 					//~ $('div#vc-container').html(data);
-					//~ startCountDown(refr, fetchMap);
+					//~ startCountDown(refr, false);
 				//~ });
 			//~ }
-			
+			startCountDown(refr, false);
 			//~ // Auto hide controls
-			//~ var controls = document.getElementById('vc-controls');
-			//~ autoHideElement(controls, 1000);
-			//~ $('select#refr').change(function (event) {
-				//~ refr = Number.parseInt(event.target.value, 10);
-				//~ startCountDown(refr, fetchMap);
-			//~ });
+			var controls = document.getElementById('vc-controls');
+			autoHideElement(controls, 1000);
+			
+			$('select#refr').change(function (event) {
+				refr = Number.parseInt(event.target.value, 10);
+				startCountDown(refr, false);
+			});
 			
 			//~ // Start the map fetch
 			//~ fetchMap();

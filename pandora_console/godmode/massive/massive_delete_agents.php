@@ -120,6 +120,10 @@ $table->data[1][0] = __('Status');
 $table->data[1][1] = html_print_select($status_list, 'status_agents', 'selected',
 	'', __('All'), AGENT_STATUS_ALL, true);
 
+$table->data[1][2] = __('Only disabled agents');
+$table->data[1][3] = html_print_checkbox ("disabled", 1, $disabled,
+	true, false);
+
 $table->data[2][0] = __('Agents');
 $table->data[2][0] .= '<span id="agent_loading" class="invisible">';
 $table->data[2][0] .= html_print_image('images/spinner.png', true);
@@ -170,6 +174,14 @@ ui_require_jquery_file ('pandora.controls');
 			$("#id_group").trigger("change");
 		});
 		
+		var disabled;
+		
+		$("#checkbox-disabled").click(function () {
+			disabled = this.checked ? 1 : 0;
+			
+			$("#id_group").trigger("change");
+		});
+		
 		$("#id_group").pandoraSelectGroupAgent ({
 			status_agents: function () {
 				return $("#status_agents").val();
@@ -178,6 +190,9 @@ ui_require_jquery_file ('pandora.controls');
 			privilege: "AW",
 			recursion: function() {
 				return recursion;
+			},
+			disabled: function() {
+				return disabled;
 			}
 		});
 		

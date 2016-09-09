@@ -358,6 +358,8 @@ function config_update_config () {
 						$error_update[] = __('User');
 					if (!config_update_value ('rintegria_pass', io_input_password(get_parameter ('rintegria_pass'))))
 						$error_update[] = __('Password');
+					if (!config_update_value ('saml_path', get_parameter ('saml_path')))
+						$error_update[] = __('Saml path');
 					if (!config_update_value ('double_auth_enabled', get_parameter ('double_auth_enabled')))
 						$error_update[] = __('Double authentication');
 					if (!config_update_value ('session_timeout', get_parameter ('session_timeout')))
@@ -1259,6 +1261,10 @@ function config_process_config () {
 	
 	if (!isset ($config['rintegria_pass'])) {
 		config_update_value ( 'rintegria_pass', '');
+	}
+	
+	if (!isset ($config['saml_path'])) {
+		config_update_value ('saml_path', '/opt/');
 	}
 	
 	if (!isset ($config['integria_enabled'])) {

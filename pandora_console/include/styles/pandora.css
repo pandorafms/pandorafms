@@ -3313,6 +3313,9 @@ div#vc-controls img.vc-qr {
 div.simple_value > span.text > p {
 	white-space: pre;
 }
+div.simple_value > a > span.text > p {
+	white-space: pre;
+}
 
 /* Visual map */
 

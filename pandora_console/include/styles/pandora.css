@@ -3310,6 +3310,10 @@ div#vc-controls img.vc-qr {
 	margin-left: 8px;
 	margin-right: 8px;
 }
+div.simple_value > span.text > p {
+	white-space: pre;
+}
+
 /* Visual map */
 
 /* jQuery dialog */

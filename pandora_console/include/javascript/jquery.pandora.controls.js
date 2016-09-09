@@ -42,7 +42,9 @@
 						"id_group" : this.value,
 						"recursion" : config.recursion,
 						"filter_agents_json" : config.filter_agents_json,
-						"disabled" : config.disabled ? 1 : 0,
+						"disabled" : (typeof config.disabled === "function")
+							? (config.disabled() ? 1 : 0)
+							: (config.disabled ? 1 : 0),
 						"status_agents" : config.status_agents,
 						"add_alert_bulk_op" : config.add_alert_bulk_op,
 						"privilege" : config.privilege,

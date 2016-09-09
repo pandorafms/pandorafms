@@ -856,7 +856,7 @@ function sunburst (recipient, data, width, height) {
 	}
 }
 
-function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,min_critical,max_critical,font_size, height)
+function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,min_critical,max_critical,font_size, height, font)
 {
 	var gauges;
 	

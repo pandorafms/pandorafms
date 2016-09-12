@@ -44,6 +44,9 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 					resizable: true,
 					draggable: true,
 					modal: true,
+					close: function() {
+						$("#refrcounter").countdown("resume");
+					},
 					overlay: {
 						opacity: 0.5,
 						background: "black"
@@ -52,6 +55,8 @@ function show_event_dialog(event_id, group_rep, dialog_page, result) {
 					height: 530
 				})
 				.show ();
+				
+			$("#refrcounter").countdown("pause");
 				
 			switch (result) {
 				case 'comment_ok':

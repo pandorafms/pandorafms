@@ -174,7 +174,7 @@ $row[] = $agent_input;
 // Module
 $row[] = __('Module') . '&nbsp;' . html_print_autocomplete_modules('module_name', $module_name, false, true, '', array(), true);
 
-$row[] = html_print_submit_button('Search', 'search', false, 'class="sub search"', true);
+$row[] = html_print_submit_button(__('Search'), 'search', false, 'class="sub search"', true);
 
 $table_form->data[] = $row;
 // End of table filter

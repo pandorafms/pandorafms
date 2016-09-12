@@ -19,7 +19,7 @@ global $config;
 require_once ("include/functions_agents.php");
 require_once ("include/functions_custom_graphs.php");
 
-if (! check_acl ($config['id_user'], $id_grupo, "AR")) {
+if (! check_acl ($config['id_user'], $id_grupo, "AR") && ! check_acl ($config['id_user'], 0, "AW")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access (read) to agent ".agents_get_name($id_agente));
 	include ("general/noaccess.php");

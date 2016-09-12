@@ -442,11 +442,10 @@ function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 	
 	$table->data[0][3] = html_print_input_text('status_text_monitor', $status_text_monitor, '', 30, 100, true);
 	$table->data[0][4] = __('Module group');
-	$rows = db_get_all_rows_sql("SELECT *
-		FROM tmodule_group where id_mg in (SELECT id_module_group from tagente_modulo where id_agente = $id_agent )  ORDER BY name");
+	$rows = db_get_all_rows_sql("SELECT * FROM tmodule_group where id_mg in (SELECT id_module_group from tagente_modulo where id_agente = $id_agent )  ORDER BY name");
 	
+	$rows_select[-1] = __('All');
 	if (!empty($rows)) {
-		$rows_select[-1] = __('All');
 		foreach ($rows as $module_group)
 			$rows_select[$module_group['id_mg']] = __($module_group['name']);
 	}

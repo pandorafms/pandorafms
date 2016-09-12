@@ -2116,9 +2116,9 @@ function visual_map_get_user_layouts ($id_user = 0, $only_names = false, $filter
 		$filter = array ();
 	
 	if ($returnAllGroup)
-		$groups = users_get_groups ($id_user, 'RR');
+		$groups = users_get_groups ($id_user, 'VR');
 	else
-		$groups = users_get_groups ($id_user, 'RR', false);
+		$groups = users_get_groups ($id_user, 'VR', false);
 	
 	if (!empty($groups)) {
 		if (empty($where))

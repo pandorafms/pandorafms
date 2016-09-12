@@ -19,7 +19,7 @@ require_once ($config['homedir'] . '/include/db/oracle.php');
 // Login check
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "RW")) {
+if (! check_acl ($config['id_user'], 0, "RW") && ! check_acl ($config['id_user'], 0, "RM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access report builder");
 	require ("general/noaccess.php");
@@ -30,12 +30,6 @@ $meta = false;
 if (($config['metaconsole'] == 1) && (defined('METACONSOLE'))) {
 	$meta = true;
 }
-
-
-
-
-
-
 
 $show_graph_options = Array();
 $show_graph_options[0] = __('Only table');
@@ -632,7 +626,10 @@ $class = 'databox filters';
 				$own_info = get_user_info ($config['id_user']);
 				
 				// Get group list that user has access
-				$groups_user = users_get_groups ($config['id_user'], "RW", $own_info['is_admin'], true);
+				if (check_acl ($config['id_user'], 0, "RW"))
+					$groups_user = users_get_groups ($config['id_user'], "RW", $own_info['is_admin'], true);
+				elseif (check_acl ($config['id_user'], 0, "RM"))
+					$groups_user = users_get_groups ($config['id_user'], "RM", $own_info['is_admin'], true);
 				$groups_id = array();
 				foreach ($groups_user as $key => $groups) {
 					$groups_id[] = $groups['id_grupo'];
@@ -821,8 +818,12 @@ $class = 'databox filters';
 			<td style="font-weight:bold;"><?php echo __('Group');?></td>
 			<td style="">
 				<?php
-				html_print_select_groups($config['id_user'],
-					"AR", true, 'combo_group', $group, '');
+				if(check_acl ($config['id_user'], 0, "RW"))
+					html_print_select_groups($config['id_user'],
+						"RW", true, 'combo_group', $group, '');
+				elseif(check_acl ($config['id_user'], 0, "RM"))
+					html_print_select_groups($config['id_user'],
+						"RM", true, 'combo_group', $group, '');
 				?>
 			</td>
 		</tr>

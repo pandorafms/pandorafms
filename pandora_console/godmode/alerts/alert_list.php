@@ -18,7 +18,9 @@ global $config;
 // Login check
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "LW") && ! check_acl ($config['id_user'], 0, "AD")) {
+if (! check_acl ($config['id_user'], 0, "LW") && 
+	! check_acl ($config['id_user'], 0, "AD") && 
+	! check_acl ($config['id_user'], 0, "LM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
@@ -266,7 +268,7 @@ if ($id_agente) {
 	
 	require_once('godmode/alerts/alert_list.list.php');
 	
-	if(check_acl ($config['id_user'], $agent['id_grupo'], "LW")) {
+	if(check_acl ($config['id_user'], $agent['id_grupo'], "LW") || check_acl ($config['id_user'], $agent['id_grupo'], "LM")) {
 		require_once('godmode/alerts/alert_list.builder.php');
 	}
 	
@@ -274,9 +276,9 @@ if ($id_agente) {
 }
 else {
 	$searchFlag = true;
-	if (!defined('METACONSOLE')) {
+	if (!is_metaconsole()) {
 		// The tabs will be shown only with manage alerts permissions
-		if(check_acl ($config['id_user'], 0, "LW")) {
+		if(check_acl ($config['id_user'], 0, "LW") || check_acl ($config['id_user'], 0, "LM")) {
 			$buttons = array(
 				'list' => array(
 					'active' => false,
@@ -315,7 +317,7 @@ else {
 			else {
 				$groups = array(0 => __('All'));
 			}
-			$agents = agents_get_group_agents (array_keys ($groups), false, "none");
+			$agents = agents_get_group_agents (array_keys ($groups), false, "none",true);
 			
 			require_once($config['homedir'] . '/godmode/alerts/alert_list.list.php');
 			

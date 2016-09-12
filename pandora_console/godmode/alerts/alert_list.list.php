@@ -20,7 +20,9 @@ check_login ();
 
 /* Check if this page is included from a agent edition */
 
-if (! check_acl ($config['id_user'], 0, "LW") && ! check_acl ($config['id_user'], 0, "AD")) {
+if (! check_acl ($config['id_user'], 0, "LW") && 
+	! check_acl ($config['id_user'], 0, "AD") && 
+		! check_acl ($config['id_user'], 0, "LM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
@@ -88,7 +90,12 @@ $form_filter .= "</tr>";
 
 $all_groups = db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
 
-$groups_user = users_get_groups($config['id_user'], 'AR', $all_groups);
+if (check_acl ($config['id_user'], 0, "AD"))
+	$groups_user = users_get_groups($config['id_user'], 'AD', $all_groups);
+elseif (check_acl ($config['id_user'], 0, "LW"))
+	$groups_user = users_get_groups($config['id_user'], 'LW', $all_groups);
+elseif (check_acl ($config['id_user'], 0, "LM"))
+	$groups_user = users_get_groups($config['id_user'], 'LM', $all_groups);
 if ($groups_user === false) {
 	$groups_user = array();
 }
@@ -478,7 +485,7 @@ foreach ($simple_alerts as $alert) {
 		$data[1] .= html_print_image("images/zoom.png", true, array("id" => 'template-details-'.$alert['id_alert_template'], "class" => "img_help"));
 	$data[1] .= '</a> ';
 	
-	if(check_acl ($config['id_user'], $template_group, "LW")) {
+	if(check_acl ($config['id_user'], $template_group, "LW") || check_acl ($config['id_user'], $template_group, "LM")) {
 		$data[1] .= "</a>";
 	}
 	
@@ -533,7 +540,7 @@ foreach ($simple_alerts as $alert) {
 				$data[2] .= '</ul>';
 
 				// Is possible manage actions if have LW permissions in the agent group of the alert module
-				if (check_acl ($config['id_user'], $agent_group, "LW")) {
+				if (check_acl ($config['id_user'], $agent_group, "LW") || check_acl ($config['id_user'], $template_group, "LM")) {
 							$data[2] .= '<form method="post" action="' . $url . '" class="delete_link" style="display: inline; vertical-align: -50%;">';
 							$data[2] .= html_print_input_image ('delete',
 								'images/cross.png', 1, 'padding:0px;', true,
@@ -549,9 +556,12 @@ foreach ($simple_alerts as $alert) {
 	}
 	$data[2] .= '</table>';
 	// Is possible manage actions if have LW permissions in the agent group of the alert module
-	if (check_acl ($config['id_user'], $agent_group, "LW")) {
+	if (check_acl ($config['id_user'], $agent_group, "LW") || check_acl ($config['id_user'], $template_group, "LM")) {
 		$own_info = get_user_info($config['id_user']);
-		$own_groups = users_get_groups($config['id_user'], 'LW', true);
+		if (check_acl ($config['id_user'], $template_group, "LW"))
+			$own_groups = users_get_groups($config['id_user'], 'LW', true);
+		elseif (check_acl ($config['id_user'], $template_group, "LM"))
+			$own_groups = users_get_groups($config['id_user'], 'LM', true);
 		$filter_groups = '';
 		$filter_groups = implode(',', array_keys($own_groups));
 		$actions = alerts_get_alert_actions_filter(true, 'id_group IN (' . $filter_groups . ')');
@@ -643,7 +653,7 @@ foreach ($simple_alerts as $alert) {
 	$data[4] .= '</form>';
 
 	// To manage alert is necessary LW permissions in the agent group
-	if(check_acl ($config['id_user'], $agent_group, "LW")) {
+	if(check_acl ($config['id_user'], $agent_group, "LW") || check_acl ($config['id_user'], $template_group, "LM")) {
 		$data[4] .= '&nbsp;&nbsp;<form class="standby_alert_form" action="' . $url . '" method="post" style="display: inline;">';
 		if (!$alert['standby']) {
 			$data[4] .= html_print_input_image ('standby_off', 'images/bell.png', 1, 'padding:0px;', true);
@@ -674,7 +684,7 @@ foreach ($simple_alerts as $alert) {
 	}
 	
 	// To manage alert is necessary LW permissions in the agent group 
-	if(check_acl ($config['id_user'], $agent_group, "LW")) {
+	if(check_acl ($config['id_user'], $agent_group, "LW") || check_acl ($config['id_user'], $template_group, "LM")) {
 		$data[4] .= '&nbsp;&nbsp;<form class="delete_alert_form" action="' . $url . '" method="post" style="display: inline;">';
 		if ($alert['disabled']) {
 			$data[4] .= html_print_image('images/add.disabled.png',
@@ -714,7 +724,7 @@ if (isset($dont_display_alert_create_bttn))
 	if ($dont_display_alert_create_bttn)
 		$display_create = false;
 
-if ($display_create && check_acl ($config['id_user'], 0, "LW")) {
+if ($display_create && (check_acl ($config['id_user'], 0, "LW") || check_acl ($config['id_user'], $template_group, "LM"))) {
 	echo '<div class="action-buttons" style="width: ' . $table->width . '">';
 	echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">';
 	html_print_submit_button (__('Create'), 'crtbtn', false, 'class="sub next"');

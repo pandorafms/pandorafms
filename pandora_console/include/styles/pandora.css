@@ -3174,6 +3174,13 @@ div#vc-controls img.vc-qr {
 	margin-left: 8px;
 	margin-right: 8px;
 }
+div.simple_value > span.text > p {
+	white-space: pre;
+}
+div.simple_value > a > span.text > p {
+	white-space: pre;
+}
+
 /* Visual map */
 
 /* jQuery dialog */
@@ -3185,4 +3192,125 @@ div#vc-controls img.vc-qr {
 /* Image open dialog in group events by agents*/
 #open_agent_groups {
 	cursor: pointer;
+}
+
+/*Font ttf */
+@font-face
+{
+ font-family: 'DejaVuSerif-BoldFont';
+ src: url('../fonts/DejaVuSerif-Bold.ttf') format('truetype');
+}
+
+.DejaVuSerif-Bold{
+	font-family: DejaVuSerif-BoldFont;
+}
+
+@font-face
+{
+ font-family: 'DejaVuSerif-BoldItalicFont';
+ src: url('../fonts/DejaVuSerif-BoldItalic.ttf') format('truetype');
+}
+
+.DejaVuSerif-BoldItalic{
+	font-family: DejaVuSerif-BoldItalicFont;
+}
+
+@font-face
+{
+ font-family: 'DejaVuSerif-ItalicFont';
+ src: url('../fonts/DejaVuSerif-Italic.ttf') format('truetype');
+}
+
+.DejaVuSerif-Italic{
+	font-family: DejaVuSerif-ItalicFont;
+}
+
+@font-face
+{
+ font-family: 'DejaVuSerifFont';
+ src: url('../fonts/DejaVuSerif.ttf') format('truetype');
+}
+
+.DejaVuSerif{
+	font-family: DejaVuSerifFont;
+}
+
+@font-face
+{
+ font-family: 'DejaVuSerifCondensed-BoldFont';
+ src: url('../fonts/DejaVuSerifCondensed-Bold.ttf') format('truetype');
+}
+
+.DejaVuSerifCondensed-Bold{
+	font-family: DejaVuSerifCondensed-BoldFont;
+}
+
+@font-face
+{
+ font-family: 'DejaVuSerifCondensed-BoldItalicFont';
+ src: url('../fonts/DejaVuSerifCondensed-BoldItalic.ttf') format('truetype');
+}
+
+.DejaVuSerifCondensed-BoldItalic{
+	font-family: DejaVuSerifCondensed-BoldItalicFont;
+}
+
+@font-face
+{
+ font-family: 'DejaVuSerifCondensed-ItalicFont';
+ src: url('../fonts/DejaVuSerifCondensed-Italic.ttf') format('truetype');
+}
+
+.DejaVuSerifCondensed-Italic{
+	font-family: DejaVuSerifCondensed-ItalicFont;
+}
+
+@font-face
+{
+ font-family: 'DejaVuSerifCondensedFont';
+ src: url('../fonts/DejaVuSerifCondensed.ttf') format('truetype');
+}
+
+.DejaVuSerifCondensed{
+	font-family: DejaVuSerifCondensedFont;
+}
+
+@font-face
+{
+ font-family: 'FreeSansFont';
+ src: url('../fonts/FreeSans.ttf') format('truetype');
+}
+
+.FreeSans{
+	font-family: FreeSansFont;
+}
+
+@font-face
+{
+ font-family: 'FreeSansBoldFont';
+ src: url('../fonts/FreeSansBold.ttf') format('truetype');
+}
+
+.FreeSansBold{
+	font-family: FreeSansBoldFont;
+}
+
+@font-face
+{
+ font-family: 'smallfontFont';
+ src: url('../fonts/smallfont.ttf') format('truetype');
+}
+
+.smallfont{
+	font-family: smallfontFont;
+}
+
+@font-face
+{
+ font-family: 'unicodeFont';
+ src: url('../fonts/unicode.ttf') format('truetype');
+}
+
+.unicode{
+	font-family: unicodeFont;
 }

@@ -25,7 +25,7 @@ require_once ($config["homedir"] . '/include/functions_graph.php');
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "AR")) {
+if (! check_acl ($config['id_user'], 0, "AR") && ! check_acl ($config['id_user'], 0, "AW")) {
 	db_pandora_audit("ACL Violation", 
 	"Trying to access Agent view (Grouped)");
 	require ("general/noaccess.php");
@@ -182,7 +182,7 @@ echo '<td style="vertical-align: top; width: 75%; padding-top: 0px;" id="rightco
 // Last events information
 // ---------------------------------------------------------------------
 
-$acltags = tags_get_user_module_and_tags ($config['id_user'], $access = 'ER', $user_strict);
+$acltags = tags_get_user_module_and_tags ($config['id_user'], 'ER', $user_strict);
 
 if (!empty($acltags)) {
 	$tags_condition = tags_get_acl_tags_event_condition($acltags, false, $user_strict);

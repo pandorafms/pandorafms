@@ -18,7 +18,11 @@ global $config;
 
 check_login ();
 
-if (! check_acl ($config["id_user"], 0, "EW")) {
+$event_w = check_acl ($config['id_user'], 0, "EW");
+$event_m = check_acl ($config['id_user'], 0, "EM");
+$access = ($event_w == true) ? 'EW' : (($event_m == true) ? 'EM' : 'EW');
+
+if (!$event_w && !$event_m) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access events filter editor");
 	require ("general/noaccess.php");
@@ -183,9 +187,7 @@ $table->style[0] = 'vertical-align: top;';
 
 $table->valign[1] = 'top';
 
-if (defined('METACONSOLE')) {
-	$table->width = '100%';
-	$table->border = 0;
+if (is_metaconsole()) {
 	if ($id) {
 		$table->head[0] = __('Update Filter');
 	}
@@ -206,12 +208,12 @@ $table->data[0][1] =
 $table->data[1][0] = '<b>' . __('Save in group') . '</b>' .
 	ui_print_help_tip(__('This group will be use to restrict the visibility of this filter with ACLs'), true);
 $table->data[1][1] = html_print_select_groups(
-	$config['id_user'], "ER", users_can_manage_group_all(),
+	$config['id_user'], $access, users_can_manage_group_all(),
 	"id_group_filter", $id_group_filter, '', '', -1, true, false, false,
 	'', false, '', false, false, 'id_grupo', $strict_user);
 
 $table->data[2][0] = '<b>' . __('Group').'</b>';
-$table->data[2][1] = html_print_select_groups($config["id_user"], "ER",
+$table->data[2][1] = html_print_select_groups($config["id_user"], $access,
 	true, 'id_group', $id_group, '', '', -1, true, false, false, '',
 	false, false, false, false, 'id_grupo', $strict_user);
 
@@ -244,7 +246,7 @@ $params['input_name'] = 'text_agent';
 $params['value'] = $text_agent;
 $params['return'] = true;
 
-if (defined('METACONSOLE')) {
+if (is_metaconsole()) {
 	$params['javascript_page'] = 'enterprise/meta/include/ajax/events.ajax';
 }
 else {
@@ -276,7 +278,7 @@ if ($strict_user) {
 	$users = array($config['id_user'] => $config['id_user']);
 }
 else {
-	$users = users_get_user_users($config['id_user'], "ER",
+	$users = users_get_user_users($config['id_user'], $access,
 		users_can_manage_group_all());
 }
 
@@ -300,7 +302,7 @@ if (empty($tag_without)) {
 }
 
 # Fix : only admin users can see all tags
-$tags = tags_get_user_tags($config['id_user'], 'ER');
+$tags = tags_get_user_tags($config['id_user'], $access);
 
 $tags_select_with = array();
 $tags_select_without = array();

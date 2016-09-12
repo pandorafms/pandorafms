@@ -27,7 +27,7 @@ check_login ();
 
 
 
-if (! check_acl ($config["id_user"], 0, "ER")) {
+if (! check_acl ($config["id_user"], 0, "ER") && ! check_acl ($config["id_user"], 0, "EW") && ! check_acl ($config["id_user"], 0, "EM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");
@@ -345,7 +345,7 @@ if ($config["pure"] == 0 || $meta) {
 	$sound_event['text'] = '<a href="javascript: openSoundEventWindow();">' . html_print_image('images/sound.png', true, array('title' => __('Sound events'))) . '</a>';
 	
 	// If the user has administrator permission display manage tab
-	if (check_acl ($config["id_user"], 0, "EW")) {
+	if (check_acl ($config["id_user"], 0, "EW") || check_acl ($config["id_user"], 0, "EM")) {
 		// Manage events
 		$manage_events['active'] = false;
 		$manage_events['text'] = '<a href="index.php?sec=eventos&sec2=godmode/events/events&amp;section=filter&amp;pure='.$config['pure'].'">' .

@@ -5462,7 +5462,7 @@ function reporting_get_stats_alerts($data, $links = false) {
 	$table_al->rowclass[] = '';
 	$table_al->data[] = $tdata;
 	
-	if (!defined('METACONSOLE')) {
+	if (!is_metaconsole()) {
 		$output = '<fieldset class="databox tactical_set">
 					<legend>' . 
 						__('Defined and fired alerts') . 

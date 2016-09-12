@@ -21,7 +21,7 @@ require_once ("include/functions_events.php"); //To get events group information
 
 check_login ();
 
-if (! check_acl ($config["id_user"], 0, "IR")) {
+if (! check_acl ($config["id_user"], 0, "IR") && ! check_acl ($config["id_user"], 0, "IW") && ! check_acl ($config["id_user"], 0, "IM")) {
 	// Doesn't have access to this page
 	db_pandora_audit("ACL Violation", "Trying to access incident details");
 	require ("general/noaccess.php");
@@ -446,7 +446,7 @@ if (isset ($id_inc)) {
 	$table->cellpadding = 4;
 	$table->cellspacing = 4;
 	$table->class = "databox";
-	$table->width = '98%';
+	$table->width = '100%';
 	$table->head = array ();
 	$table->data = array ();
 	
@@ -491,7 +491,7 @@ if (isset ($id_inc)) {
 	
 	
 	// Upload control
-	if ((check_acl($config["id_user"], $id_grupo, "IW")==1)) {
+	if (check_acl($config["id_user"], $id_grupo, "IW") || check_acl($config["id_user"], $id_grupo, "IM")) {
 		
 		echo '<div>';
 		echo '<a class="attachment" href="#">';
@@ -500,12 +500,26 @@ if (isset ($id_inc)) {
 		echo '</a>';
 		echo '</div>';
 		
-		echo '<div><form method="post" id="file_control" action="index.php?sec=workspace&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" enctype="multipart/form-data"><h4>'.__('Add attachment').'</h4>';
-		echo '<table cellpadding="4" cellspacing="3" class="databox" width="98%">
-			<tr><td class="datos">'.__('Filename').'</td><td class="datos"><input type="file" name="userfile" value="userfile" class="sub" size="40" /></td></tr>
-			<tr><td class="datos2">'.__('Description').'</td><td class="datos2" colspan="3"><input type="text" name="file_description" size="47"></td></tr>
-			<tr><td colspan="2" style="text-align: right;">	<input type="submit" name="upload" value="'.__('Upload').'" class="sub wand"></td></tr>
-			</table></form></div>';
+		echo '<div><
+		form method="post" id="file_control" action="index.php?sec=workspace&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" 
+			enctype="multipart/form-data">
+			<h4>'.__('Add attachment').'</h4>';
+		echo '<table cellpadding="4" cellspacing="3" class="databox" width="100%">
+				<tr>
+					<td class="datos">'.__('Filename').'</td>
+					<td class="datos"><input type="file" name="userfile" value="userfile" class="sub" size="40" /></td>
+				</tr>
+				<tr>
+					<td class="datos2">'.__('Description').'</td>
+					<td class="datos2" colspan="3"><input type="text" name="file_description" size="47"></td>
+				</tr>
+				<tr>
+				<td colspan="2" style="text-align: right;">
+					<input type="submit" name="upload" value="'.__('Upload').'" class="sub wand"></td>
+				</tr>
+				</table>
+			</form>
+		</div>';
 	}
 }
 ?>

@@ -20,7 +20,11 @@ require_once ('include/functions_custom_graphs.php');
 // Check user credentials
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "RR")) {
+$report_r = check_acl ($config['id_user'], 0, "RR");
+$report_w = check_acl ($config['id_user'], 0, "RW");
+$report_m = check_acl ($config['id_user'], 0, "RM");
+$access = ($report_r == true) ? 'RR' : (($report_w == true) ? 'RW' : (($report_m == true) ? 'RM' : 'RR'));
+if (!$report_r && !$report_w && !$report_m) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Inventory Module Management");
 	require ("general/noaccess.php");
@@ -72,7 +76,7 @@ ui_print_page_header (__('Reporting')." &raquo; ".__('Custom graphs'), "images/c
 
 // Delete module SQL code
 if ($delete_graph) {
-	if (check_acl ($config['id_user'], 0, "RW")) {
+	if ( $report_w || $report_m ) {
 		
 		$exist = db_get_value("id_graph", "tgraph_source", "id_graph", $id);
 		if ($exist) {
@@ -134,7 +138,7 @@ if ($multiple_delete) {
 }
 
 
-$graphs = custom_graphs_get_user ($config['id_user'], false, true, "RR");
+$graphs = custom_graphs_get_user ($config['id_user'], false, true, $access);
 $offset = (int) get_parameter ("offset");
 
 ui_pagination (count($graphs));
@@ -154,7 +158,7 @@ if (!empty ($graphs)) {
 	$table->size[3] = '200px';
 	$table->align[2] = 'left';
 	$table->align[3] = 'left';
-	if (check_acl ($config['id_user'], 0, "RW")) {
+	if ($report_w || $report_m) {
 		$table->align[4] = 'left';
 		$table->head[4] = __('Op.') .
 			html_print_checkbox('all_delete', 0, false, true, false,
@@ -176,7 +180,7 @@ if (!empty ($graphs)) {
 		$data[2] = $graph["graphs_count"];
 		$data[3] = ui_print_group_icon($graph['id_group'],true);
 		
-		if (check_acl ($config['id_user'], 0, "RW") && users_can_manage_group_all($graph['id_group'])) {
+		if (($report_w || $report_m) && users_can_manage_group_all($access)) {
 			$data[4] = '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_builder&edit_graph=1&id='.
 			$graph['id_graph'].'">'.html_print_image("images/config.png", true).'</a>';
 			
@@ -204,7 +208,7 @@ if (!empty ($graphs)) {
 
 
 	echo "<div style='float: right;'>";
-		if (check_acl ($config['id_user'], 0, "RW")) {
+		if ($report_w || $report_m) {
 			echo '<form method="post" style="float:right;" action="index.php?sec=reporting&sec2=godmode/reporting/graph_builder">';
 				html_print_submit_button (__('Create graph'), 'create', false, 'class="sub next" style="margin-right:5px;"');
 			echo "</form>";

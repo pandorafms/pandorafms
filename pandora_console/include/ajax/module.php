@@ -407,7 +407,9 @@ if ($list_modules) {
 	include_once($config['homedir'] . "/include/functions_tags.php");
 	include_once($config['homedir'] . "/include/functions_clippy.php");
 
-
+	$agent_a = check_acl ($config['id_user'], 0, "AR");
+	$agent_w = check_acl ($config['id_user'], 0, "AW");
+	$access = ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR');
 
 	$id_agente = $id_agent = (int)get_parameter('id_agente', 0);
 	$url = 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=' . $id_agent;
@@ -499,10 +501,10 @@ if ($list_modules) {
 	}
 
 	// Fix: for tag functionality groups have to be all user_groups (propagate ACL funct!)
-	$groups = users_get_groups($config["id_user"]);
+	$groups = users_get_groups($config["id_user"], $access);
 
 	$tags_sql = tags_get_acl_tags($config['id_user'],
-		array_keys($groups), 'AR', 'module_condition', 'AND',
+		array_keys($groups), $access, 'module_condition', 'AND',
 		'tagente_modulo', false, array(), true);
 
 	$status_filter_monitor = (int)get_parameter('status_filter_monitor', -1);

@@ -34,7 +34,7 @@ function validateAlert() {
 	}
 }
 
-function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby = false, $tag_filter = false,$action_filter = false, $return = false, $strict_user = false) {
+function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby = false, $tag_filter = false,$action_filter = false, $return = false, $strict_user = false, $access = 'AR') {
 
 	global $config;
 	require_once ($config['homedir'] . "/include/functions_tags.php");
@@ -66,7 +66,7 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
 	}
 	
 	$table->data[0][0] = __('Group');
-	$table->data[0][1] = html_print_select_groups($config['id_user'], "AR", true, "ag_group", $id_group, '', '', '', true, false, false, '', false, '', false, false, 'id_grupo', $strict_user);
+	$table->data[0][1] = html_print_select_groups($config['id_user'], $access, true, "ag_group", $id_group, '', '', '', true, false, false, '', false, '', false, false, 'id_grupo', $strict_user);
 	
 	$alert_status_filter = array();
 	$alert_status_filter['all_enabled'] = __('All (Enabled)');

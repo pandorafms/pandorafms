@@ -32,7 +32,12 @@ global $config;
 check_login ();
 $config["id_user"] = $_SESSION["id_usuario"];
 
-if (! check_acl ($config['id_user'], 0, "ER")) {
+$event_a = check_acl ($config['id_user'], 0, "ER");
+$event_w = check_acl ($config['id_user'], 0, "EW");
+$event_m = check_acl ($config['id_user'], 0, "EM");
+$access = ($event_a == true) ? 'ER' : (($event_w == true) ? 'EW' : (($event_m == true) ? 'EM' : 'ER'));
+
+if (! check_acl ($config['id_user'], 0, "ER") && ! check_acl ($config['id_user'], 0, "EW") && ! check_acl ($config['id_user'], 0, "EM")) {
 	db_pandora_audit("ACL Violation","Trying to access event viewer");
 	require ("general/noaccess.php");
 	
@@ -69,7 +74,7 @@ $table->size[1] = '90%';
 $table->style[0] = 'font-weight: bold; vertical-align: top;';
 
 $table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select_groups(false, "ER", true, 'group', '', 'changeGroup();', '', 0, true);
+$table->data[0][1] = html_print_select_groups(false, $access, true, 'group', '', 'changeGroup();', '', 0, true);
 $table->data[1][0] = __('Type');
 $table->data[1][1] = html_print_checkbox('alert_fired', 'alert_fired', true, true, false, 'changeType();') . __('Alert fired') . '<br />' .
 	html_print_checkbox('critical', 'critical', true, true, false, 'changeType();') . __('Monitor critical') . '<br />' .

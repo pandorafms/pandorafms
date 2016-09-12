@@ -2397,7 +2397,19 @@ function modules_get_modules_name ($sql_from , $sql_conditions = '', $meta = fal
 		return $return;
 	}
 	else {
-		// For each server defined and not disabled:
+		switch ($config['dbtype']) {
+			case 'mysql':
+			case 'postgresql':
+				$sql = 'SELECT distinct(tagente_modulo.nombre)
+					'. $sql_from . $sql_conditions;
+				break;
+			case 'oracle':			
+				$sql = 'SELECT DISTINCT(tagente_modulo.nombre)' .
+					$sql_from . $sql_conditions;
+				break;
+		}
+		
+		// For each server defined and not disabled:h
 		$servers = db_get_all_rows_sql ('SELECT *
 			FROM tmetaconsole_setup
 			WHERE disabled = 0');
@@ -2406,6 +2418,7 @@ function modules_get_modules_name ($sql_from , $sql_conditions = '', $meta = fal
 			$servers = array();
 		
 		$result = array();
+		$modules = array();
 		foreach($servers as $server) {
 			// If connection was good then retrieve all data server
 			if (metaconsole_connect($server) == NOERR) {
@@ -2414,7 +2427,6 @@ function modules_get_modules_name ($sql_from , $sql_conditions = '', $meta = fal
 			else {
 				$connection = false;
 			}
-			
 			// Get all info for filters of all nodes
 			$modules_temp = db_get_all_rows_sql($sql);
 			

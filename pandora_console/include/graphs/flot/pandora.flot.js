@@ -829,7 +829,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	alert_ids, legend_alerts, yellow_threshold, red_threshold,
 	force_integer, separator, separator2, 
 	yellow_up, red_up, yellow_inverse, red_inverse,
-	series_suffix_str, dashboard, vconsole) {
+	series_suffix_str, dashboard, vconsole, xaxisname) {
 
 	var threshold = true;
 	var thresholded = false;
@@ -1510,6 +1510,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				markings: markings
 				},
 			xaxes: [ {
+					axisLabelFontSizePixels: font_size,
+					axisLabelUseCanvas: false,
+					axisLabel: xaxisname,
 					tickFormatter: xFormatter,
 					minTickSize: steps,
 					color: '#000'

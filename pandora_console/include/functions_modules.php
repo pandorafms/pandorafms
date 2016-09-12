@@ -1022,6 +1022,17 @@ function modules_get_agentmodule_name ($id_agente_modulo) {
 }
 
 /**
+ * Get the module descripcion of an agent module.
+ *
+ * @param int $id_agente_modulo Agent module id.
+ *
+ * @return string descripcion of the given agent module.
+ */
+function modules_get_agentmodule_descripcion ($id_agente_modulo) {
+	return (string) db_get_value ('descripcion', 'tagente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
+}
+
+/**
  * Get the module type of an agent module.
  *
  * @param int $id_agentmodule Agent module id.

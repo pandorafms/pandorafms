@@ -265,7 +265,8 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 			$vconsole,
 			$agent_module_id,
 			$font,
-			$font_size);
+			$font_size,
+			$xaxisname);
 	}
 	else {
 		$graph = array();

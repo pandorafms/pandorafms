@@ -63,8 +63,6 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		agent_name_2 = gen_random_string(6)
 
 		driver = self.driver
-		self.login()
-		detect_and_pass_all_wizards
 
 		activate_api(driver,"1234")
 
@@ -86,7 +84,6 @@ class Bulk_operations(PandoraWebDriverTestCase):
 
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
 		self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Agents updated successfully(2)")]').text,"Agents updated successfully(2)")
-
 
 	
 if __name__ == "__main__":

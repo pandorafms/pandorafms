@@ -113,8 +113,7 @@ if (!is_metaconsole()) {
 	}
 }
 else {
-	
-	if ($ag_group !== 0 && check_acl ($config['id_user'], $id_ag_group, 'AR')) {
+	if (((int)$ag_group !== 0) && (check_acl ($config['id_user'], $id_ag_group, 'AR'))) {
 		$sql_conditions_group = sprintf (' AND tagente.id_grupo IN (%s) ', $ag_group);
 	}
 	elseif ($user_groups != '') {
@@ -126,8 +125,7 @@ else {
 // Module group
 if (is_metaconsole()) {
 	if ($modulegroup != '-1')
-		$sql_conditions .= sprintf (' AND tagente_modulo.id_module_group IN (SELECT id_mg 
-			FROM tmodule_group WHERE name = \'%s\')', $modulegroup);
+		$sql_conditions .= sprintf (' AND tagente_modulo.id_module_group IN (%s)', $modulegroup);
 }
 else if ($modulegroup > -1) {
 	$sql_conditions .= sprintf (' AND tagente_modulo.id_module_group = \'%d\'', $modulegroup);
@@ -294,6 +292,9 @@ if (!is_metaconsole()) {
 	if (!empty($rows))
 		foreach ($rows as $module_group)
 			$rows_select[$module_group['id_mg']] = $module_group['name'];
+}
+else {
+	$rows_select = modules_get_modulegroups();
 }
 $table->data[0][5] = html_print_select($rows_select, 'modulegroup', $modulegroup, '', __('All'), -1, true, false, true, '', false, 'width: 120px;');
 

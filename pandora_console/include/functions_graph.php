@@ -4141,7 +4141,7 @@ function graph_netflow_host_traffic ($data, $unit, $width = 700, $height = 700) 
  * @param integer date date
  */
 function grafico_modulo_string ($agent_module_id, $period, $show_events,
-	$width, $height , $title, $unit_name, $show_alerts, $avg_only = 0, $pure = 0,
+	$width, $height, $title, $unit_name, $show_alerts, $avg_only = 0, $pure = 0,
 	$date = 0, $only_image = false, $homeurl = '', $adapt_key = '', $ttl = 1, $menu = true) {
 	global $config;
 	global $graphic_type;

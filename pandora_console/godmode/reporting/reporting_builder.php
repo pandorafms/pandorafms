@@ -903,6 +903,7 @@ switch ($action) {
 						$values['name'] = (string) get_parameter('name');
 						$values['description'] = get_parameter('description');
 						$values['type'] = get_parameter('type', null);
+						$label = get_parameter('label', '');
 						// Added support for projection graphs, prediction date and SLA reports
 						// 'top_n_value','top_n' and 'text' fields will be reused for these types of report
 						switch ($values['type']) {
@@ -1127,12 +1128,45 @@ switch ($action) {
 										$style['event_filter_search'] =
 											$event_filter_search;
 										break;
+									case 'event_report_agent':
+										if ($label != '')
+											$style['label'] = $label;
+										else
+											$style['label'] = '';
+										break;
 								}
 								break;
 							case 'simple_graph':
 								// Warning. We are using this column to hold this value to avoid
 								// the modification of the database for compatibility reasons.
 								$style['only_avg'] = (int) get_parameter('only_avg');
+								if ($label != '')
+									$style['label'] = $label;
+								else
+									$style['label'] = '';
+								break;
+							case 'agent_configuration':
+							case 'event_report_module':
+							case 'alert_report_agent':
+							case 'alert_report_module':
+							case 'historical_data':
+							case 'sumatory':
+							case 'database_serialized':
+							case 'monitor_report':
+							case 'min_value':
+							case 'max_value':
+							case 'avg_value':
+							case 'projection_graph':
+							case 'prediction_date':
+							case 'TTRT':
+							case 'TTO':
+							case 'MTBF':
+							case 'MTTR':
+							case 'simple_baseline_graph':
+								if ($label != '')
+									$style['label'] = $label;
+								else
+									$style['label'] = '';
 								break;
 						}
 						
@@ -1166,6 +1200,7 @@ switch ($action) {
 						$values['type'] = get_parameter('type', null);
 						$values['name'] = (string) get_parameter('name');
 						$values['description'] = get_parameter('description');
+						$label = get_parameter('label', '');
 						
 						// Support for projection graph, prediction date and SLA reports
 						// 'top_n_value', 'top_n' and 'text' fields will be reused for these types of report
@@ -1401,6 +1436,12 @@ switch ($action) {
 										$style['event_filter_search'] =
 											$event_filter_search;
 										break;
+									case 'event_report_agent':
+										if ($label != '')
+											$style['label'] = $label;
+										else
+											$style['label'] = '';
+										break;
 								}
 								
 								break;
@@ -1408,6 +1449,33 @@ switch ($action) {
 								// Warning. We are using this column to hold this value to avoid
 								// the modification of the database for compatibility reasons.
 								$style['only_avg'] = (int) get_parameter('only_avg');
+								if ($label != '')
+									$style['label'] = $label;
+								else
+									$style['label'] = '';
+								break;
+							case 'agent_configuration':
+							case 'event_report_module':
+							case 'alert_report_agent':
+							case 'alert_report_module':
+							case 'historical_data':
+							case 'sumatory':
+							case 'database_serialized':
+							case 'monitor_report':
+							case 'min_value':
+							case 'max_value':
+							case 'avg_value':
+							case 'projection_graph':
+							case 'prediction_date':
+							case 'TTRT':
+							case 'TTO':
+							case 'MTBF':
+							case 'MTTR':
+							case 'simple_baseline_graph':
+								if ($label != '')
+									$style['label'] = $label;
+								else
+									$style['label'] = '';
 								break;
 						}
 						

@@ -751,6 +751,9 @@ if ($update_agent) { // if modified some agent paramenter
 				__('There was a problem updating the agent'));
 		}
 		else {
+			// Update the agent from the metaconsole cache
+			enterprise_include_once('include/functions_agents.php');
+			enterprise_hook ('agent_update_from_cache', array($id_agente, $values));
 			
 			if ($old_interval != $intervalo) {
 				enterprise_hook('config_agents_update_config_interval', array($id_agente, $intervalo));

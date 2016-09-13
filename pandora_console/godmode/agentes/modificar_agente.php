@@ -101,6 +101,11 @@ if ($enable_agent) {
 	$result = db_process_sql_update('tagente', array('disabled' => 0), array('id_agente' => $enable_agent));
 	
 	if ($result) {
+		// Update the agent from the metaconsole cache
+		enterprise_include_once('include/functions_agents.php');
+		$values = array('disabled' => 0);
+		enterprise_hook ('agent_update_from_cache', array($enable_agent, $values));
+		
 		db_pandora_audit("Agent management", 'Enable  ' . $enable_agent);
 	}
 	else {
@@ -115,6 +120,11 @@ if ($disable_agent) {
 	$result = db_process_sql_update('tagente', array('disabled' => 1), array('id_agente' => $disable_agent));
 	
 	if ($result) {
+		// Update the agent from the metaconsole cache
+		enterprise_include_once('include/functions_agents.php');
+		$values = array('disabled' => 1);
+		enterprise_hook ('agent_update_from_cache', array($disable_agent, $values));
+		
 		db_pandora_audit("Agent management", 'Disable  ' . $disable_agent);
 	}
 	else {

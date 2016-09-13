@@ -370,8 +370,6 @@ function agents_get_agents ($filter = false, $fields = false,
 	if (empty ($filter['id_grupo'])) {
 		$all_groups = true;
 		$filter['id_grupo'] = $groups;
-		// Include "All group"
-		$filter['id_grupo'][] = 0;
 	}
 	elseif (! is_array ($filter['id_grupo'])) {
 		$all_groups = false;

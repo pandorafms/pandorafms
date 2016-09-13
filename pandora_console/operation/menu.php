@@ -113,12 +113,10 @@ if (!empty($sub)) {
 //Start network view
 $sub = array();
 if (check_acl ($config['id_user'], 0, "MR") || check_acl ($config['id_user'], 0, "MW") || check_acl ($config['id_user'], 0, "MM")) {
-	$sub["operation/agentes/networkmap_list"]["text"] = __('Network map');
-	$sub["operation/agentes/networkmap_list"]["id"] = 'Network map';
-	$sub["operation/agentes/networkmap_list"]["refr"] = 0;
-	$sub["operation/agentes/networkmap_list"]["pages"] = array(
-		"operation/agentes/networkmap"
-		);
+	//Network enterprise
+	$sub["operation/agentes/pandora_networkmap"]["text"] = __('Network map');
+	$sub["operation/agentes/pandora_networkmap"]["id"] = 'Network map';
+	$sub["operation/agentes/pandora_networkmap"]["refr"] = 0;
 	
 	enterprise_hook ('transmap_console');
 	
@@ -129,8 +127,6 @@ if (check_acl ($config['id_user'], 0, "MR") || check_acl ($config['id_user'], 0,
 		"operation/maps/networkmap"
 		);
 }
-
-enterprise_hook ('networkmap_console');
 
 enterprise_hook ('services_menu');
 

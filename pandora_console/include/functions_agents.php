@@ -1499,6 +1499,17 @@ function agents_get_address ($id_agent) {
 }
 
 /**
+ * Get description of an agent.
+ *
+ * @param int Agent id
+ *
+ * @return string The address of the given agent
+ */
+function agents_get_description ($id_agent) {
+	return (string) db_get_value ('comentarios', 'tagente', 'id_agente', (int) $id_agent);
+}
+
+/**
  * Get the agent that matches an IP address
  *
  * @param string IP address to get the agents.

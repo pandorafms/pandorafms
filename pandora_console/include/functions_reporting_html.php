@@ -38,7 +38,7 @@ include_once($config['homedir'] . "/include/functions_ui.php");
 include_once($config['homedir'] . "/include/functions_netflow.php");
 
 function reporting_html_header(&$table, $mini, $title, $subtitle,
-	$period, $date, $from, $to) {
+	$period, $date, $from, $to, $label = '') {
 	
 	global $config;
 	
@@ -73,7 +73,8 @@ function reporting_html_header(&$table, $mini, $title, $subtitle,
 	
 	$data = array();
 	if (empty($subtitle) && (empty($date_text))) {
-		$data[] = $sizh . $title . $sizhfin;
+		$title = $sizh . $title . $sizhfin;
+		$data[] = $title;
 		$table->colspan[0][0] = 3;
 	}
 	else if (empty($subtitle)) {
@@ -87,7 +88,11 @@ function reporting_html_header(&$table, $mini, $title, $subtitle,
 		$table->colspan[0][1] = 2;
 	}
 	else {
-		$data[] = $sizh . $title . $sizhfin;
+		$title = $sizh . $title;
+		if ($label != '') {
+			$title .= '<br >' . __('Label: ') . $label;
+		}
+		$data[] = $title . $sizhfin;
 		$data[] = $sizh . $subtitle . $sizhfin;
 		$data[] = "<div style='text-align: right;'>" . $sizh . $date_text . $sizhfin . "</div>";
 	}
@@ -111,14 +116,19 @@ function reporting_html_print_report($report, $mini = false) {
 		$table->colspan = array ();
 		$table->rowstyle = array ();
 		
-		
+		if (isset($item['label']) && $item['label'] != '') {
+			$label = reporting_label_macro($item, $item['label']);
+		}
+		else
+			$label = '';
 		reporting_html_header($table,
 			$mini, $item['title'],
 			$item['subtitle'],
 			$item['date']['period'],
 			$item['date']['date'],
 			$item['date']['from'],
-			$item['date']['to']);
+			$item['date']['to'],
+			$label);
 		
 		if ($item["description"] != "") {
 			$table->data['description_row']['description'] = $item["description"];

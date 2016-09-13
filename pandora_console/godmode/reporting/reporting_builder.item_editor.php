@@ -51,6 +51,7 @@ $idAgent = null;
 $idAgentModule = null;
 $idCustomGraph = null;
 $text = null;
+$label = null;
 $header = null;
 $idCustom = null;
 $url = null;
@@ -553,7 +554,33 @@ switch ($action) {
 					$max_values = $item ['top_n_value']; // Max values
 					break;
 			}
-			
+			switch ($type) {
+				case 'event_report_agent':
+				case 'simple_graph':
+				case 'agent_configuration':
+				case 'event_report_module':
+				case 'alert_report_agent':
+				case 'alert_report_module':
+				case 'historical_data':
+				case 'sumatory':
+				case 'database_serialized':
+				case 'monitor_report':
+				case 'min_value':
+				case 'max_value':
+				case 'avg_value':
+				case 'projection_graph':
+				case 'prediction_date':
+				case 'TTRT':
+				case 'TTO':
+				case 'MTBF':
+				case 'MTTR':
+				case 'simple_baseline_graph':
+					$label = (isset($style['label'])) ? $style['label'] : '';
+					break;
+				default:
+					$label = '';
+					break;
+			}
 			//Restore db connection
 			if ($meta && $server_name != '') {
 				metaconsole_restore_db();
@@ -640,12 +667,21 @@ $class = 'databox filters';
 				?>
 			</td>
 		</tr>
-		
 		<tr id="row_description" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Description'); ?></td>
 			<td style="">
 				<?php
 				echo html_print_textarea('description', 3, 25, $description);
+				?>
+			</td>
+		</tr>
+		
+		<tr id="row_label" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Label') . 
+				ui_print_help_icon ('reports_label_field',true); ?></td>
+			<td style="">
+				<?php
+				echo html_print_input_text ('label', $label, '', 50, 255, true);				
 				?>
 			</td>
 		</tr>
@@ -2193,6 +2229,7 @@ function chooseType() {
 	type = $("#type").val();
 	
 	$("#row_description").hide();
+	$("#row_label").hide();
 	$("#row_period").hide();
 	$("#row_agent").hide();
 	$("#row_module").hide();
@@ -2740,7 +2777,32 @@ function chooseType() {
 			$("#row_resolution").show();
 			$("#row_servers").show();
 			break;
-		
+	}
+	switch (type) {
+		case 'event_report_agent':
+		case 'simple_graph':
+		case 'agent_configuration':
+		case 'event_report_module':
+		case 'alert_report_agent':
+		case 'alert_report_module':
+		case 'historical_data':
+		case 'sumatory':
+		case 'database_serialized':
+		case 'monitor_report':
+		case 'min_value':
+		case 'max_value':
+		case 'avg_value':
+		case 'projection_graph':
+		case 'prediction_date':
+		case 'TTRT':
+		case 'TTO':
+		case 'MTBF':
+		case 'MTTR':
+		case 'simple_baseline_graph':
+			$("#row_label").show();
+			break;
+		default:
+			
 	}
 }
 

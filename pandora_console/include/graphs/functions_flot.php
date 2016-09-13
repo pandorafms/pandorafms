@@ -53,6 +53,8 @@ function include_javascript_dependencies_flot_graph($return = false) {
 			<script language="javascript" type="text/javascript" src="'.
 				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.exportdata.pandora.js') .'"></script>
 			<script language="javascript" type="text/javascript" src="'.
+				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/jquery.flot.axislabels.js') .'"></script>
+			<script language="javascript" type="text/javascript" src="'.				
 				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/pandora.flot.js') .'"></script>';
 		$output .= "
 			<script type='text/javascript'>
@@ -112,15 +114,15 @@ function flot_area_simple_graph($chart_data, $width, $height, $color,
 	$serie_types = array(), $chart_extra_data = array(),
 	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
 	$force_integer = false, $series_suffix_str = '', $menu = true,
-	$background_color = 'white', $dashboard = false, $vconsole = false, $agent_module_id = 0, $font = '',$font_size = 7) {
-
+	$background_color = 'white', $dashboard = false, $vconsole = false, $agent_module_id = 0, $font = '',$font_size = 7, $xaxisname = '') {
+	
 	global $config;
 	
 	return flot_area_graph($chart_data, $width, $height, $color,
 		$legend, $long_index, $homeurl, $unit, 'area_simple',
 		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
 		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
-		$menu, $background_color, $dashboard, $vconsole, $agent_module_id,$font,$font_size);
+		$menu, $background_color, $dashboard, $vconsole, $agent_module_id,$font,$font_size, $xaxisname);
 }
 
 function flot_line_stacked_graph($chart_data, $width, $height, $color,
@@ -159,8 +161,8 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	$long_index, $homeurl, $unit, $type, $water_mark, $serie_types,
 	$chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key,
 	$force_integer, $series_suffix_str = '', $menu = true,
-	$background_color = 'white', $dashboard = false, $vconsole = false, $agent_module_id = 0,$font = '',$font_size = 7) {
-
+	$background_color = 'white', $dashboard = false, $vconsole = false, $agent_module_id = 0,$font = '',$font_size = 7, $xaxisname = '') {
+	
 	global $config;
 	
 	
@@ -449,7 +451,8 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		"'$red_inverse', \n" .
 		"'$series_suffix_str',
 		" . json_encode($dashboard) . ",\n
-		" . json_encode($vconsole) . ");";
+		" . json_encode($vconsole) . ",\n" .
+		"'$xaxisname');";
 	$return .= "\n//]]>";
 	$return .= "</script>";
 	

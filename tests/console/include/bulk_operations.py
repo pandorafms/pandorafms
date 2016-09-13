@@ -33,7 +33,7 @@ def edit_agents_in_bulk(driver,agent_names_list,new_group=None,new_description=N
 	time.sleep(3)
 
 	if new_group != None:
-		#driver.find_element_by_id("group").click()
+		
 		Select(driver.find_element_by_id("group")).select_by_visible_text(new_group)
 
 	if new_description != None:

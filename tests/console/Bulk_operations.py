@@ -19,7 +19,7 @@ class Bulk_operations(PandoraWebDriverTestCase):
 	test_description = u'Bulk operation tests'
 	tickets_associated = []
 
-	def test_A_delete_agent_bulk_operations(self):
+	def atest_A_delete_agent_bulk_operations(self):
 
 		u"""
 		Creation two agents and delete this agents using bulk operation
@@ -52,7 +52,7 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
 		self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Successfully deleted (2)")]').text,"Successfully deleted (2)")
 
-	def test_B_edit_agents_group_bulk_operations(self):
+	def atest_B_edit_agents_group_bulk_operations(self):
 
 		u"""
 		Create two agents and edit group with bulk operation                
@@ -84,7 +84,7 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
 		self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Agents updated successfully(2)")]').text,"Agents updated successfully(2)")
 
-	def test_C_edit_agent_description_bulk_operation(self):
+	def atest_C_edit_agent_description_bulk_operation(self):
 
 		u"""
 		Create two agents and edit description with bulk operation
@@ -112,10 +112,11 @@ class Bulk_operations(PandoraWebDriverTestCase):
                 agent_names_list = [agent_name_1,agent_name_2]
 
                 edit_agents_in_bulk(driver,agent_names_list,new_description="test C edit description bulk operation")
+		
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
                 self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Agents updated successfully(2)")]').text,"Agents updated successfully(2)")
 	
-	def test_D_delete_modules_in_bulk(self):
+	def atest_D_delete_modules_in_bulk(self):
 		
 		u"""
 		Create two agents with two modules and delete this modules through bulk operation	
@@ -155,6 +156,55 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		delete_modules_in_bulk(driver,agent_name_list,module_name_list)	
 		
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
+
+
+	def test_E_edit_module_group_in_bulk(self):
+
+		u"""
+		Create two agents and one module in this agents. With bulk operation, change module group that this module
+		"""
+		
+		agent_name_1 = gen_random_string(6)
+		agent_name_2 = gen_random_string(6)
+
+		module_name_1 = gen_random_string(6)
+
+		driver = self.driver
+		
+	
+		self.login()
+		detect_and_pass_all_wizards(driver)		
+
+
+
+		activate_api(driver,"1234")
+
+		params = [agent_name_1,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
+                create_agent_api(driver,params,user="admin",pwd="pandora")
+
+		params = [agent_name_2,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
+                create_agent_api(driver,params,user="admin",pwd="pandora")
+
+		params = [agent_name_1,module_name_1,"0","6","1","0","0","0","0","0","0","0","0","129.99.40.1","0","0","180","0","0","0","0","Host_Alive"]
+		add_network_module_to_agent_api(driver,params,user="admin",pwd="pandora",apipwd="1234")
+
+		params = [agent_name_2,module_name_1,"0","6","1","0","0","0","0","0","0","0","0","129.99.40.1","0","0","180","0","0","0","0","Host_Alive"]
+		add_network_module_to_agent_api(driver,params,user="admin",pwd="pandora",apipwd="1234")
+
+		lista = driver.current_url.split('/')
+
+		url = lista[0]+'//'+lista[2]+'/pandora_console'
+
+		driver.get(url)
+
+		agent_name_list = [agent_name_1,agent_name_2]
+
+		module_name_list = [module_name_1]
+
+		edit_modules_in_bulk(driver,module_name_list,agent_name_list,new_module_group="Users")	
+
+		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
+
 
 if __name__ == "__main__":
         unittest.main()

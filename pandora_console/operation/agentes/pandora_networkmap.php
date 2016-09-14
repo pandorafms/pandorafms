@@ -23,13 +23,13 @@ $networkmaps_manage = check_acl ($config['id_user'], 0, "MM");
 
 if (!$networkmaps_read && !$networkmaps_write && !$networkmaps_manage) {
 	db_pandora_audit("ACL Violation",
-		"Trying to access networkmap enterprise");
+		"Trying to access networkmap");
 	require ($config["homedir"]."/general/noaccess.php");
 	return;
 }
 
 include_once("include/functions_networkmap.php");
-enterprise_include_once("include/functions_networkmap_enterprise.php");
+include_once("include/functions_pandora_networkmap.php");
 
 $new_networkmap = (bool) get_parameter('new_networkmap', false);
 $save_networkmap = (bool) get_parameter('save_networkmap', false);
@@ -49,7 +49,7 @@ if ($new_networkmap || $save_networkmap) {
 		}
 		else {
 			db_pandora_audit("ACL Violation",
-				"Trying to access networkmap enterprise");
+				"Trying to access networkmap");
 			require ("general/noaccess.php");
 			return;
 		}
@@ -64,7 +64,7 @@ if ($new_networkmap || $save_networkmap) {
 		
 		if (!$networkmap_write && !$networkmap_manage) {
 			db_pandora_audit("ACL Violation",
-				"Trying to access networkmap enterprise");
+				"Trying to access networkmap");
 			require ("general/noaccess.php");
 			return;
 		}
@@ -98,7 +98,7 @@ if ($new_networkmap || $save_networkmap) {
 		
 		if (!$networkmap_write && !$networkmap_manage) {
 			db_pandora_audit("ACL Violation",
-				"Trying to access networkmap enterprise");
+				"Trying to access networkmap");
 			require ("general/noaccess.php");
 			return;
 		}
@@ -141,7 +141,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 	// Networkmap id required
 	if (empty($id)) {
 		db_pandora_audit("ACL Violation",
-			"Trying to access networkmap enterprise");
+			"Trying to access networkmap");
 		require ("general/noaccess.php");
 		return;
 	}
@@ -161,7 +161,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 	
 	if (!$networkmap_write && !$networkmap_manage) {
 		db_pandora_audit("ACL Violation",
-			"Trying to access networkmap enterprise");
+			"Trying to access networkmap");
 		require ("general/noaccess.php");
 		return;
 	}
@@ -176,7 +176,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 		
 		if (!$networkmap_write && !$networkmap_manage) {
 			db_pandora_audit("ACL Violation",
-				"Trying to access networkmap enterprise");
+				"Trying to access networkmap");
 			require ("general/noaccess.php");
 			return;
 		}
@@ -235,7 +235,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 	if ($copy_networkmap) {
 		$id = (int) get_parameter('id_networkmap', 0);
 		
-		$result = duplicate_networkmap_enterprise($id);
+		$result = duplicate_networkmap($id);
 		$result_txt = ui_print_result_message($result,
 			__('Succesfully duplicate'), __('Could not be duplicated'), '',
 			true);
@@ -243,7 +243,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 	if ($delete) {
 		$id = (int)get_parameter('id_networkmap', 0);
 		
-		$result = networkmap_enterprise_delete_networkmap($id);
+		$result = networkmap_delete_networkmap($id);
 		
 		$result_txt = ui_print_result_message($result,
 			__('Succesfully deleted'), __('Could not be deleted'), '',
@@ -259,7 +259,7 @@ switch ($tab) {
 		require('pandora_networkmap.view.php');
 		break;
 	case 'list':
-		ui_print_page_header(__('Networkmap enterprise'),
+		ui_print_page_header(__('Networkmap'),
 			"images/op_network.png", false, "network_map_enterprise",
 			false);
 		

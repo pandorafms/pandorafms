@@ -25,7 +25,7 @@ require_once ($config['homedir'] . '/include/functions_reporting.php');
 require_once ($config['homedir'] . '/include/functions_graph.php');
 require_once ($config['homedir'] . '/include/functions_modules.php');
 require_once ($config['homedir'] . '/include/functions_ui.php');
-require_once ($config['homedir'] . '/' . ENTERPRISE_DIR . '/include/functions_networkmap_enterprise.php');
+require_once ($config['homedir'] . '/include/functions_pandora_networkmap.php');
 
 //error_reporting(E_ALL);
 //ini_set("display_errors", 1);

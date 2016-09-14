@@ -385,13 +385,9 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 	// Get policy data
 	if ($show_policies) {
 		
-		$policies =
-			enterprise_hook("networkmap_enterprise_get_policies",
-				array($group));
+		$policies = networkmap_get_policies(array($group));
 		
-		$agents = enterprise_hook(
-			"networkmap_enterprise_filter_agents_policies",
-			array($policies, $agents));
+		$agents = networkmap_filter_agents_policies(array($policies, $agents));
 	}
 	
 	

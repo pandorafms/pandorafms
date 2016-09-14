@@ -16,8 +16,7 @@ global $config;
 // Check user credentials
 check_login();
 
-require_once($config["homedir"] . '/' . ENTERPRISE_DIR .
-	'/include/functions_networkmap_enterprise.php');
+require_once ('/include/functions_pandora_networkmap.php');
 require_once ('enterprise/include/functions_policies.php');
 require_once ('include/functions_modules.php');
 
@@ -79,7 +78,7 @@ if (is_ajax ()) {
 			return;
 		}
 		
-		$data = networkmap_enterprise_refresh_holding_area($networkmap_id);
+		$data = networkmap_refresh_holding_area($networkmap_id);
 		
 		if (!empty($data)) {
 			$return['correct'] = true;
@@ -151,7 +150,7 @@ if (is_ajax ()) {
 			return;
 		}
 		
-		$result = networkmap_enterprise_update_link
+		$result = networkmap_update_link
 			($networkmap_id, $id_link, $interface_source, $interface_target);
 		
 		if (is_bool($result)) {
@@ -242,7 +241,7 @@ if (is_ajax ()) {
 			return;
 		}
 		
-		$return['correct'] = networkmap_enterprise_delete_link(
+		$return['correct'] = networkmap_delete_link(
 			$networkmap_id,
 			$source_id,
 			$source_module_id,
@@ -423,7 +422,7 @@ if (is_ajax ()) {
 		
 		$count = 0;
 		foreach ($id_agents as $id_agent) {
-			$id_node = add_agent_networkmap_enterprise($id, '',
+			$id_node = add_agent_networkmap($id, '',
 				$x + ($count * 20), $y + ($count * 20), $id_agent);
 			
 			if ($id_node !== false) {
@@ -930,7 +929,7 @@ if (is_ajax ()) {
 		$return = array();
 		$return['correct'] = false;
 		
-		$id_node = add_agent_networkmap_enterprise($id, $agent, $x, $y, $id_agent);
+		$id_node = add_agent_networkmap($id, $agent, $x, $y, $id_agent);
 		
 		if ($id_node !== false) {
 			$return['correct'] = true;
@@ -1130,9 +1129,9 @@ else {
 		WHERE id_networkmap_enterprise = ' . $id . ';');
 	
 	if ($numNodes == 0) {
-		networkmap_enterprise_process_networkmap($id);
+		networkmap_process_networkmap($id);
 	}
 	
-	show_networkmap_enterprise($id, $user_readonly);
+	show_networkmap($id, $user_readonly);
 }
 ?>

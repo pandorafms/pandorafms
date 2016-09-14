@@ -906,7 +906,7 @@ foreach ($result as $row) {
 		$data[1] .= '</a></strong>';
 	}
 	
-	$data[2] = html_print_image('mages/'. modules_show_icon_type ($row['module_type']), true);
+	$data[2] = html_print_image('images/'. modules_show_icon_type ($row['module_type']), true);
 	if (check_acl ($config['id_user'], $row['id_group'], 'AW')) {
 		$show_edit_icon = true;
 		if (defined('METACONSOLE')) {

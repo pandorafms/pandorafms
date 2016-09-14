@@ -88,3 +88,49 @@ def delete_modules_in_bulk(driver,agent_name_list,module_name_list,select_agent_
 	driver.find_element_by_id("submit-go").click()
 
 
+def edit_modules_in_bulk(driver,module_name_list,agent_name_list,new_module_group=None,new_min=None,new_max=None,ff_threshold_list=None):
+
+	#ff_threshold_list example: ff_threshold_list = [normal value,warning value,critical value] -> Mode Change each status
+
+	click_menu_element(driver,"Module operations")
+
+	driver.find_element_by_id("option").click()
+	Select(driver.find_element_by_id("option")).select_by_visible_text("Edit modules in bulk")
+
+	Select(driver.find_element_by_id("module_type")).select_by_visible_text("All")
+
+	for module_name in module_name_list:
+		Select(driver.find_element_by_id("module_name")).select_by_visible_text(module_name)
+
+	time.sleep(3)
+
+	for agent_name in agent_name_list:
+		Select(driver.find_element_by_id("agents")).select_by_visible_text(agent_name)
+
+	time.sleep(3)
+
+	if new_module_group != None:
+		Select(driver.find_element_by_id("id_module_group")).select_by_visible_text(new_module_group)
+
+	if new_min != None:
+		driver.find_element_by_id("text-min").clear()
+		driver.find_element_by_id("text-min").send_keys(new_min)
+
+	if new_max != None:
+		driver.find_element_by_id("text-max").clear()
+		driver.find_element_by_id("text-max").send_keys(new_max)
+
+	if ff_threshold_list != None:
+
+		Select(driver.find_element_by_id("option")).select_by_visible_text("Change each status")
+
+		driver.find_element_by_id("text-min_ff_event_normal").clear()
+		Select(driver.find_element_by_id("text-min_ff_event_normal")).select_by_visible_text(ff_threshold_list[0])
+
+		driver.find_element_by_id("text-min_ff_event_warning").clear()
+		Select(driver.find_element_by_id("text-min_ff_event_warning")).select_by_visible_text(ff_threshold_list[1])
+
+		driver.find_element_by_id("text-min_ff_event_critical").clear()
+		Select(driver.find_element_by_id("text-min_ff_event_critical")).select_by_visible_text(ff_threshold_list[2])
+
+	driver.find_element_by_id("submit-go").click()

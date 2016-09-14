@@ -19,7 +19,7 @@ class Bulk_operations(PandoraWebDriverTestCase):
 	test_description = u'Bulk operation tests'
 	tickets_associated = []
 
-	def atest_A_delete_agent_bulk_operations(self):
+	def test_A_delete_agent_bulk_operations(self):
 
 		u"""
 		Creation two agents and delete this agents using bulk operation
@@ -52,7 +52,7 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
 		self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Successfully deleted (2)")]').text,"Successfully deleted (2)")
 
-	def atest_B_edit_agents_group_bulk_operations(self):
+	def test_B_edit_agents_group_bulk_operations(self):
 
 		u"""
 		Create two agents and edit group with bulk operation                
@@ -84,7 +84,7 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
 		self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Agents updated successfully(2)")]').text,"Agents updated successfully(2)")
 
-	def atest_C_edit_agent_description_bulk_operation(self):
+	def test_C_edit_agent_description_bulk_operation(self):
 
 		u"""
 		Create two agents and edit description with bulk operation
@@ -116,7 +116,7 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
                 self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Agents updated successfully(2)")]').text,"Agents updated successfully(2)")
 	
-	def atest_D_delete_modules_in_bulk(self):
+	def test_D_delete_modules_in_bulk(self):
 		
 		u"""
 		Create two agents with two modules and delete this modules through bulk operation	
@@ -171,12 +171,6 @@ class Bulk_operations(PandoraWebDriverTestCase):
 
 		driver = self.driver
 		
-	
-		self.login()
-		detect_and_pass_all_wizards(driver)		
-
-
-
 		activate_api(driver,"1234")
 
 		params = [agent_name_1,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]

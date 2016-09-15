@@ -257,15 +257,5 @@ class Bulk_operations(PandoraWebDriverTestCase):
 
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
 
-<<<<<<< HEAD
-=======
-		search_module (driver,agent_name_1,module_name_1)
-
-
-		
-
-
-
->>>>>>> 7d1de5c... Add changes in Bulk_operations.py and extend search_module function
 if __name__ == "__main__":
         unittest.main()

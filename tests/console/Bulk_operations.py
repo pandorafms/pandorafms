@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from include.common_classes_60 import PandoraWebDriverTestCase
 from include.common_functions_60 import login, click_menu_element, detect_and_pass_all_wizards, gen_random_string
-from include.agent_functions import create_agent, delete_agent
+from include.agent_functions import search_agent,create_agent, delete_agent
 from include.api_functions import *
+from include.module_functions import search_module
 from include.bulk_operations import *
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -10,6 +11,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
+from selenium.webdriver.remote.webelement import WebElement
 
 import unittest, time, re
 
@@ -94,7 +96,7 @@ class Bulk_operations(PandoraWebDriverTestCase):
                 agent_name_2 = gen_random_string(6)
 
                 driver = self.driver
-		
+
 		activate_api(driver,"1234")
 
                 params = [agent_name_1,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
@@ -114,7 +116,12 @@ class Bulk_operations(PandoraWebDriverTestCase):
                 edit_agents_in_bulk(driver,agent_names_list,new_description="test C edit description bulk operation")
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
                 self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Agents updated successfully(2)")]').text,"Agents updated successfully(2)")
-	
+
+
+		search_agent(driver,agent_name_1,go_to_agent=True)
+
+		self.assertEqual("test C edit description bulk operation" in driver.page_source,True)
+
 	def test_D_delete_modules_in_bulk(self):
 		
 		u"""
@@ -155,6 +162,12 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		delete_modules_in_bulk(driver,agent_name_list,module_name_list)	
 		
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
+
+		search_module(driver,agent_name_1,module_name_1)
+
+		element = driver.find_elements_by_xpath('//a[contains(.,"No available data to show")]')
+
+		self.assertEqual(element,[])
 
 
 	def test_E_edit_module_group_in_bulk(self):
@@ -198,8 +211,12 @@ class Bulk_operations(PandoraWebDriverTestCase):
 	
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
 
+		search_module(driver,agent_name_1,module_name_1,go_to_module=True)
 
-def test_F_edit_module_umbral_in_bulk(self):
+		self.assertEqual("Users" in driver.page_source,True)
+
+
+	def test_F_edit_module_umbral_in_bulk(self):
 
 		u"""
 		Create two agents and one module in this agents. With bulk operation, change module umbral with bulk operation
@@ -211,7 +228,7 @@ def test_F_edit_module_umbral_in_bulk(self):
 		module_name_1 = gen_random_string(6)
 
 		driver = self.driver
-
+		
 		activate_api(driver,"1234")
 
 		params = [agent_name_1,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
@@ -240,5 +257,15 @@ def test_F_edit_module_umbral_in_bulk(self):
 
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
 
+<<<<<<< HEAD
+=======
+		search_module (driver,agent_name_1,module_name_1)
+
+
+		
+
+
+
+>>>>>>> 7d1de5c... Add changes in Bulk_operations.py and extend search_module function
 if __name__ == "__main__":
         unittest.main()

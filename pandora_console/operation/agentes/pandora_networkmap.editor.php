@@ -27,7 +27,7 @@ if (is_ajax ()) {
 		$return = array();
 		$return['correct'] = false;
 		
-		$id_group = db_get_value('id_group', 'tnetworkmap_enterprise', 'id', $id);
+		$id_group = db_get_value('id_group', 'tmap', 'id', $id);
 		// ACL for the network map
 		// $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
 		$networkmap_write = check_acl ($config['id_user'], $id_group, "MW");
@@ -35,18 +35,18 @@ if (is_ajax ()) {
 		
 		if (!$networkmap_write && !$networkmap_manage) {
 			db_pandora_audit("ACL Violation",
-				"Trying to access networkmap enterprise");
+				"Trying to access networkmap");
 			echo json_encode($return);
 			return;
 		}
 		
 		$min_x = db_get_sql('SELECT MIN(x)
-			FROM tnetworkmap_enterprise_nodes
-			WHERE id_networkmap_enterprise = ' . $id . ';');
+			FROM titem
+			WHERE id_map = ' . $id . ';');
 		
-		$min_x_options = db_get_sql('SELECT options
-			FROM tnetworkmap_enterprise_nodes
-			WHERE id_networkmap_enterprise = ' . $id . '
+		$min_x_options = db_get_sql('SELECT style
+			FROM titem
+			WHERE id_map = ' . $id . '
 			ORDER BY x ASC LIMIT 1;');
 		
 		$min_x_options = json_decode($min_x_options, true);
@@ -54,29 +54,29 @@ if (is_ajax ()) {
 		
 		
 		$min_y = db_get_sql('SELECT MIN(y)
-			FROM tnetworkmap_enterprise_nodes
-			WHERE id_networkmap_enterprise = ' . $id . ';');
+			FROM titem
+			WHERE id_map = ' . $id . ';');
 		
-		$min_y_options = db_get_sql('SELECT options
-			FROM tnetworkmap_enterprise_nodes
-			WHERE id_networkmap_enterprise = ' . $id . '
+		$min_y_options = db_get_sql('SELECT style
+			FROM titem
+			WHERE id_map = ' . $id . '
 			ORDER BY y ASC LIMIT 1;');
 		
 		$min_y_options = json_decode($min_y_options, true);
 		$min_y = $min_y - $min_y_options['height'] - 10; //For prevent the exit icons of networkmap, -10 for the text
 		
-		$result = db_process_sql('UPDATE tnetworkmap_enterprise_nodes
+		$result = db_process_sql('UPDATE titem
 			SET x = x - ' . $min_x . ', y = y - ' . $min_y . '
-			WHERE id_networkmap_enterprise = ' . $id . ';');
+			WHERE id_map = ' . $id . ';');
 		
 		if ($result !== false) {
 			$max_x = db_get_sql('SELECT MAX(x)
-				FROM tnetworkmap_enterprise_nodes
-				WHERE id_networkmap_enterprise = ' . $id . ';');
+				FROM titem
+				WHERE id_map = ' . $id . ';');
 			
-			$max_x_options = db_get_sql('SELECT options
-				FROM tnetworkmap_enterprise_nodes
-				WHERE id_networkmap_enterprise = ' . $id . '
+			$max_x_options = db_get_sql('SELECT style
+				FROM titem
+				WHERE id_map = ' . $id . '
 				ORDER BY x DESC LIMIT 1;');
 			
 			$max_x_options = json_decode($max_x_options, true);
@@ -84,27 +84,28 @@ if (is_ajax ()) {
 			
 			
 			$max_y = db_get_sql('SELECT MAX(y)
-				FROM tnetworkmap_enterprise_nodes
-				WHERE id_networkmap_enterprise = ' . $id . ';');
+				FROM titem
+				WHERE tmap = ' . $id . ';');
 			
-			$max_y_options = db_get_sql('SELECT options
-				FROM tnetworkmap_enterprise_nodes
-				WHERE id_networkmap_enterprise = ' . $id . '
+			$max_y_options = db_get_sql('SELECT style
+				FROM titem
+				WHERE tmap = ' . $id . '
 				ORDER BY y DESC LIMIT 1;');
 			
 			$max_y_options = json_decode($max_y_options, true);
 			$max_y = $max_y + $max_y_options['height'] + 10; //For prevent the exit icons of networkmap, +10 for the text
 			
 			
-			$options = db_get_value_filter('options',
-				'tnetworkmap_enterprise', array('id' => $id));
-			$options = json_decode($options, true);
+			$options_w = db_get_value_filter('width',
+				'tmap', array('id' => $id));
+			$options_h = db_get_value_filter('height',
+				'tmap', array('id' => $id));
 			
-			$options['width'] = $max_x; 
-			$options['height'] = $max_y;
+			$options_w = $max_x; 
+			$options_h = $max_y;
 			
-			$result = db_process_sql_update('tnetworkmap_enterprise',
-				array('options' => json_encode($options)),
+			$result = db_process_sql_update('tmap',
+				array('width' => $options_w, 'height' => $options_h),
 				array('id' => $id));
 			
 			if ($result) {
@@ -133,22 +134,6 @@ if (empty($id)) {
 }
 
 if ($new_networkmap) {
-	/*
-	// Open the cipher.
-	$td = mcrypt_module_open('blowfish', '', 'ecb', '');
-
-	// An IV should not be necessary for ECB. Prevents a warning.
-	$iv = str_repeat('0', mcrypt_enc_get_iv_size($td));
-
-	// Intialize decryption.
-	mcrypt_generic_init($td, "1234", $iv);
-	
-	// Crypt the pass
-	$new_pass = "[[" . rtrim(bin2hex(mcrypt_generic($td, "ramonmelaponecomounjamon")), "\0") . "]]";
-	
-	html_debug($new_pass, true);
-	*/
-	
 	$name = '';
 	$id_group = 0;
 	$width = 3000;
@@ -169,7 +154,7 @@ $disabled_generation_method_select = false;
 if ($edit_networkmap) {
 	$disabled_generation_method_select = true;
 	
-	$values = db_get_row('tnetworkmap_enterprise', 'id', $id);
+	$values = db_get_row('tmap', 'id', $id);
 	
 	$not_found = false;
 	if ($values === false) {
@@ -185,45 +170,70 @@ if ($edit_networkmap) {
 		
 		if (!$networkmap_write && !$networkmap_manage) {
 			db_pandora_audit("ACL Violation",
-				"Trying to access networkmap enterprise");
+				"Trying to access networkmap");
 			require ("general/noaccess.php");
 			return;
 		}
 		
 		$name = io_safe_output($values['name']);
 
-		$options = json_decode($values['options'], true);
-		$source_data = $options['source_data'];
-		$width = $options['width'];
-		$height = $options['height'];
-		$method = $options['method'];
-		$refresh_value = $options['refresh_state'];
+		$filter = json_decode($values['filter'], true);
+		$source_data = $values['source_data'];
+		$width = $values['width'];
+		$height = $values['height'];
+		switch ($values['generation_method']) {
+			case 0:
+				$method = "circo";
+				break;
+			case 1:
+				$method = "dot";
+				break;
+			case 2:
+				$method = "twopi";
+				break;
+			case 3:
+				$method = "neato";
+				break;
+			case 4:
+				$method = "neato";
+				break;
+			case 5:
+				$method = "fdp";
+				break;
+		}
+		$refresh_value = $values['source_period'];
 		$l2_network_interfaces = false;
+		/* NO CONTEMPLADO
 		if (isset($options['l2_network_interfaces']))
 			$l2_network_interfaces = $options['l2_network_interfaces'];
+		*/
 		// --------- DEPRECATED ----------------------------------------
 		$old_mode = false;
+		/* NO CONTEMPLADO
 		if (isset($options['old_mode']))
 			$old_mode = (bool)$options['old_mode'];
+		*/
 		// --------- END DEPRECATED ------------------------------------
 		$recon_task_id = 0;
-		if (isset($options['recon_task_id'])) {
-			$recon_task_id = $options['recon_task_id'];
+		if ($values['source'] == 1) {
+			$recon_task_id = $values['source_data'];
 		}
 		else {
 			$ip_mask = '';
-			if (isset($options['ip_mask'])) {
-				$ip_mask = $options['ip_mask'];
+			if (isset($filter['ip_mask'])) {
+				$ip_mask = $filter['ip_mask'];
 			}
 		}
 		
 		$dont_show_subgroups = false;
+		/* NO CONTEMPLADO
 		if (isset($options['dont_show_subgroups']))
 			$dont_show_subgroups = $options['dont_show_subgroups'];
+		*/
 	}
 }
 
-ui_print_page_header(__('Networkmap enterprise'), "images/bricks.png",
+ui_print_page_header(__('Networkmap'), "images/bricks.png",
 	false, "network_map_enterprise", false);
 
 $id_snmp_l2_recon = db_get_value('id_recon_script', 'trecon_script',
@@ -361,12 +371,7 @@ else {
 		'process', !((bool)$id), 'resize_networkmap_enterprise(' . $id . ');', 'class="sub"', true) .
 		'</div>';
 	
-	
-	
-	
-	
 	echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
-	
 	
 	html_print_table($table);
 	
@@ -409,7 +414,7 @@ function resize_networkmap_enterprise(id) {
 	var params = [];
 	params.push("resize_networkmap_enterprise=1");
 	params.push("id=" + id);
-	params.push("page=enterprise/operation/agentes/networkmap_enterprise.editor");
+	params.push("page=operation/agentes/pandora_networkmap.editor");
 	jQuery.ajax ({
 		data: params.join ("&"),
 		dataType: 'json',

@@ -1798,8 +1798,8 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 			"id_agent_module", $where_modules, true);
 		if (enterprise_installed()) {
 			$nodes = db_get_all_rows_filter(
-				"tnetworkmap_enterprise_nodes",
-				array("id_agent" => $id_agent));
+				"titem",
+				array("source_data" => $id_agent, "type" => 0));
 			if (empty($nodes)) {
 				$nodes = array();
 			}
@@ -1811,8 +1811,8 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 					"child", $node['id']);
 			}
 			
-			db_process_delete_temp ("tnetworkmap_enterprise_nodes",
-				"id_agent", $id_agent);
+			db_process_delete_temp ("titem",
+				"source_data", $id_agent);
 		}
 		
 		//Planned Downtime

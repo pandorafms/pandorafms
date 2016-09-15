@@ -224,18 +224,6 @@ function networkmap_generate_hash($pandora_name, $group = 0,
 	return $return;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 	$simple = 0, $font_size = 12, $layout = 'radial', $nooverlap = 0,
 	$zoom = 1, $ranksep = 2.5, $center = 0, $regen = 1, $pure = 0,
@@ -512,7 +500,7 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 			$node_ref[$agent['id_agente']] = $node_count;
 			
 			$agent['id_node'] = $node_count;
-			$agent['type'] = 'agent';
+			$agent['type'] = 0;
 			
 			// Add node
 			$nodes[$node_count] = $agent;
@@ -566,13 +554,10 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 						}
 					}
 					
-					
-					
-					
 					$node_count ++;
 					$modules_node_ref[$module['id_agente_modulo']] = $node_count;
 					$module['id_node'] = $node_count;
-					$module['type'] = 'module';
+					$module['type'] = 1;
 					$module['status'] = $status_module;
 					
 					// Try to get the interface name
@@ -1077,8 +1062,6 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 		//~ }
 	//~ }
 	
-	
-	
 	return array("nodes" => $nodes, "edges" => $edges, "orphans" => $orphans);
 }
 
@@ -1118,7 +1101,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$filter_module_group = 0, $show_modulegroup = false,
 	$show_groups = false, $show_agents = true, $show_policies = false) {
 	
-	
 	$networkmap_data = networkmap_get_nodes_and_links($pandora_name,
 		$group, $simple, $font_size, $layout, $nooverlap, $zoom,
 		$ranksep, $center, $regen, $pure, $id_networkmap,
@@ -1127,8 +1109,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		$strict_user, $size_canvas, $old_mode, $id_tag,
 		$show_all_modules, $only_modules_alerts, $filter_module_group,
 		$show_modulegroup, $show_groups, $show_agents, $show_policies);
-	
-	
 	
 	if ($l2_network_or_mixed === 'mix_l2_l3') {
 		$l2_network = true;
@@ -1148,25 +1128,30 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	// Create nodes
 	foreach ($networkmap_data['nodes'] as $node_id => $node) {
 		switch ($node['type']) {
-			case 'policy':
+			// Policy
+			case 4:
 				if (enterprise_installed()) {
 					enterprise_include_once("include/functions_policies.php");
 					$graph .= policies_create_node($node, $simple, $font_size)."\n\t\t";
 				}
 				break;
-			case 'group':
+			// Group
+			case 2:
 				$graph .= networkmap_create_group_node ($node , $simple, $font_size, $metaconsole = false, null, $strict_user) .
 					"\n\t\t";
 				break;
-			case 'agent':
+			// Agent
+			case 0:
 				$graph .= networkmap_create_agent_node($node, $simple,
 					$font_size, $cut_names, $relative) . "\n\t\t";
 				break;
-			case 'module':
+			// Module
+			case 1:
 				$graph .= networkmap_create_module_node($node, $simple,
 					$font_size) . "\n\t\t";
 				break;
-			case 'module_group':
+			// Module group
+			case 3:
 				$graph .= networkmap_create_module_group_node ($node , $simple, $font_size, true, $node['id_server']) . "\n\t\t";
 				break;
 		}
@@ -1195,9 +1180,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 				$id_networkmap);
 		}
 	}
-	
-	
-	
 	
 	//The orphans
 	if ($l2_network || $old_mode) {
@@ -2292,23 +2274,6 @@ function networkmap_type_to_str_type($type) {
 			return __("Topology");
 			break;
 	}
-}
-
-/**
- * Deletes a network map.
- * 
- * @param int Map id to be deleted.
- *
- * @return bool True if the map was deleted, false otherwise.
- */
-function networkmap_delete_networkmap ($id_networkmap) {
-	$id_networkmap = safe_int ($id_networkmap);
-	if (empty ($id_networkmap))
-		return false;
-	$networkmap = networkmap_get_networkmap ($id_networkmap);
-	if ($networkmap === false)
-		return false;
-	return @db_process_sql_delete ('tnetwork_map', array ('id_networkmap' => $id_networkmap));
 }
 
 /**

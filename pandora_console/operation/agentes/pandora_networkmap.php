@@ -39,7 +39,6 @@ $delete = (bool) get_parameter('delete', false);
 $tab = (string) get_parameter('tab', 'list');
 
 $result_txt = '';
-
 // The networkmap doesn't exist yet
 if ($new_networkmap || $save_networkmap) {
 	if ($new_networkmap) {
@@ -146,7 +145,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 		return;
 	}
 	
-	$id_group_old = db_get_value('id_group', 'tnetworkmap_enterprise', 'id', $id);
+	$id_group_old = db_get_value('id_group', 'tmap', 'id', $id);
 	if ($id_group_old === false) {
 		db_pandora_audit("ACL Violation",
 			"Trying to accessnode graph builder");
@@ -305,7 +304,7 @@ switch ($tab) {
 		}
 		$id_groups = array_keys(users_get_groups());
 		
-		$network_maps = db_get_all_rows_filter('tnetworkmap_enterprise',
+		$network_maps = db_get_all_rows_filter('tmap',
 			array('id_group' => $id_groups));
 		
 		if ($network_maps !== false) {
@@ -324,8 +323,6 @@ switch ($tab) {
 					return;
 				}
 				
-				$options = json_decode($network_map['options'], true);
-				
 				$data = array();
 				$data['name'] = '<a href="index.php?' .
 					'sec=network&' .
@@ -336,13 +333,12 @@ switch ($tab) {
 				
 				$count = db_get_value_sql(
 					'SELECT COUNT(*)
-					FROM tnetworkmap_enterprise_nodes
-					WHERE id_networkmap_enterprise = ' . $network_map['id'] . ' AND
-						id_agent_module = 0 AND id_module = 0 AND deleted = 0');
+					FROM titem
+					WHERE id_map = ' . $network_map['id'] . ' AND deleted = 0');
 				if (empty($count))
 					$count = 0;
 				
-				if (($count == 0) && ($options['generation_process'] != 'empty')) {
+				if (($count == 0) && ($network_map['source'] != 'empty')) {
 					$data['nodes'] = __('Pending to generate');
 				}
 				else {
@@ -383,7 +379,6 @@ switch ($tab) {
 		}
 		
 		if ($networkmaps_write || $networkmaps_manage) {
-			
 			echo "<div style='width: " . $table->width . "; text-align: right; margin-top: 5px;'>";
 			echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
 			html_print_input_hidden ('new_networkmap', 1);

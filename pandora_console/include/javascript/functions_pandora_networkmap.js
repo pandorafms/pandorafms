@@ -1680,7 +1680,6 @@ function init_graph(parameter_object) {
 	}
 	else {
 		//Set the height in the pure view (fullscreen).
-		
 		window.height_svg = $(window).height() -
 			$("#menu_tab_frame_view").height() -
 			20; // 20 of margin
@@ -1760,21 +1759,19 @@ function init_graph(parameter_object) {
 	
 	window.url_background_grid = '';
 	if (typeof(parameter_object.url_background_grid) != "undefined") {
-		window.url_background_grid = parameter_object.url_background_grid;
+		// GRID
+		window.url_background_grid = "";
 	}
-	
 	
 	//For to catch the keyevent for the ctrl key
 	d3.select(document)
 		.on("keydown", function() {
-			
 			if (d3.event.keyCode == key_multiple_selection) {
 				flag_multiple_selection = true;
 				disabled_drag_zoom = true;
 			}
 		})
 		.on("keyup", function() {
-			
 			if (d3.event.keyCode == key_multiple_selection) {
 				flag_multiple_selection = false;
 				disabled_drag_zoom = false;
@@ -1785,24 +1782,16 @@ function init_graph(parameter_object) {
 			}
 		});
 	
-	
-	
 	window.force = d3.layout.force()
 		.charge(10)
 		.linkDistance(0)
 		.size([width_svg, height_svg]);
-	
-	
-	
-	
-	
 	
 	window.zoom_obj = d3.behavior.zoom();
 	zoom_obj.scaleExtent([0.3, 1])
 		.on("zoom", zoom)
 		.translate(translation)
 		.scale(scale);
-	
 	
 	window.svg = d3.select("#networkconsole")
 		.append("svg")
@@ -1907,13 +1896,13 @@ function init_graph(parameter_object) {
 			.attr("markerHeight", (node_radius / 2) + interface_radius)
 			.attr("orient", "auto")
 			.append("circle")
-				//~ .attr("class", "link")
 				.attr("cx", (node_radius / 2) - (interface_radius / 2))
 				.attr("cy", interface_radius)
 				.attr("r", interface_radius)
 				.attr("style", function(d) {
 					return "fill: " + d.color + ";";
 				});
+	
 	defs.selectAll("defs")
 		.data(module_color_status)
 		.enter()
@@ -1925,42 +1914,40 @@ function init_graph(parameter_object) {
 		.attr("markerHeight", (node_radius / 2) + interface_radius)
 		.attr("orient", "auto")
 		.append("circle")
-			//~ .attr("class", "link")
 			.attr("cx", interface_radius)
 			.attr("cy", interface_radius)
 			.attr("r", interface_radius)
 			.attr("style", function(d) {
 				return "fill: " + d.color + ";";
 			});
-	defs
-		.append("marker")
-			.attr("id", "interface_start")
-			.attr("refX", 0)
-			.attr("refY", interface_radius)
-			.attr("markerWidth", (node_radius / 2) + interface_radius)
-			.attr("markerHeight", (node_radius / 2) + interface_radius)
-			.attr("orient", "auto")
-			.append("circle")
-				//~ .attr("class", "link")
-				.attr("cx", (node_radius / 2) - (interface_radius / 2))
-				.attr("cy", interface_radius)
-				.attr("r", interface_radius)
-				.attr("style", "fill:" + module_color_status_unknown + ";");
-	defs
-		.append("marker")
-			.attr("id", "interface_end")
-			.attr("refX", (node_radius / 2) + (interface_radius / 2))
-			.attr("refY", interface_radius)
-			.attr("markerWidth", (node_radius / 2) + interface_radius)
-			.attr("markerHeight", (node_radius / 2) + interface_radius)
-			.attr("orient", "auto")
-			.append("circle")
-				//~ .attr("class", "link")
-				.attr("cx", interface_radius)
-				.attr("cy", interface_radius)
-				.attr("r", interface_radius)
-				.attr("style", "fill:" + module_color_status_unknown + ";");
-	
+			
+	defs.append("marker")
+		.attr("id", "interface_start")
+		.attr("refX", 0)
+		.attr("refY", interface_radius)
+		.attr("markerWidth", (node_radius / 2) + interface_radius)
+		.attr("markerHeight", (node_radius / 2) + interface_radius)
+		.attr("orient", "auto")
+		.append("circle")
+			//~ .attr("class", "link")
+			.attr("cx", (node_radius / 2) - (interface_radius / 2))
+			.attr("cy", interface_radius)
+			.attr("r", interface_radius)
+			.attr("style", "fill:" + module_color_status_unknown + ";");
+			
+	defs.append("marker")
+		.attr("id", "interface_end")
+		.attr("refX", (node_radius / 2) + (interface_radius / 2))
+		.attr("refY", interface_radius)
+		.attr("markerWidth", (node_radius / 2) + interface_radius)
+		.attr("markerHeight", (node_radius / 2) + interface_radius)
+		.attr("orient", "auto")
+		.append("circle")
+			//~ .attr("class", "link")
+			.attr("cx", interface_radius)
+			.attr("cy", interface_radius)
+			.attr("r", interface_radius)
+			.attr("style", "fill:" + module_color_status_unknown + ";");
 	
 	//Added pattern for the background grid
 	svg.append("pattern")
@@ -1974,7 +1961,6 @@ function init_graph(parameter_object) {
 			.attr("xlink:href", url_background_grid)
 			.attr("height", 24)
 			.attr("width", 25);
-	
 	
 	window.layer_graph = svg
 		.append("g")
@@ -2034,7 +2020,6 @@ function init_graph(parameter_object) {
 			.attr("y", networkmap_dimensions[1] + node_radius - holding_area_dimensions[1])
 			.text(holding_area_title);
 	
-	
 	window.layer_graph_links = window.layer_graph
 		.append("g")
 			.attr("id", "layer_graph_links");
@@ -2042,22 +2027,16 @@ function init_graph(parameter_object) {
 		.append("g")
 			.attr("id", "layer_graph_nodes");
 	
-	
-	
 	window.layer_selection_rectangle = svg
 		.append("g")
 			.attr("id", "layer_selection_rectangle");
 	
-	
-	
-	force
-		.nodes(graph.nodes)
+	force.nodes(graph.nodes)
 		.links(graph.links)
 		.start();
 	
 	window.node = layer_graph_nodes.selectAll(".node");
 	window.link = layer_graph_links.selectAll(".link");
-	
 	
 	draw_elements_graph();
 	set_positions_graph();
@@ -2077,7 +2056,6 @@ function init_graph(parameter_object) {
 				"stroke-opacity:1; " +
 				"stroke-dasharray:none;");
 	
-	
 	$("#dialog_node_edit").dialog({
 		autoOpen: false,
 		width: 650
@@ -2090,7 +2068,6 @@ function init_graph(parameter_object) {
 }
 
 function draw_elements_graph() {
-	
 	link = link.data(force.links(), function(d) {
 		return d.source.id + "-" + d.target.id;
 	});
@@ -2098,63 +2075,61 @@ function draw_elements_graph() {
 		.append("g");
 	link.exit().remove();
 	
-	link_temp
-		.append("path")
-			.attr("id", function(d) {
-				return "link_id_" + d.id_db;
-			})
-			.attr("class",  function(d) {
-				var holding_area_text = "";
-				if ((d.source.state == 'holding_area') ||
-					(d.target.state == 'holding_area')) {
-					
-					holding_area_text = " holding_area_link ";
-					
-				}
+	link_temp.append("path")
+		.attr("id", function(d) {
+			return "link_id_" + d.id_db;
+		})
+		.attr("class",  function(d) {
+			var holding_area_text = "";
+			if ((d.source.state == 'holding_area') ||
+				(d.target.state == 'holding_area')) {
 				
-				return "link " +
-					"source_" + d.source.id + " " +
-					"target_" + d.target.id + " " +
-					holding_area_text +
-					"id_module_start_" + d.id_module_start + " " +
-					"id_module_end_" + d.id_module_end;
-			})
-			.attr("stroke-width", 3)
-			.attr("d", null)
-			.attr('marker-start',  function(d) {
-				if (d.arrow_start == "") {
-					return "";
-				}
-				else if (d.arrow_start == "module") {
-					if (typeof(module_color_status[d.status_start]) == "undefined")
-						return "url(#interface_start)";
-					else
-						return "url(#interface_start_" + d.status_start + ")";
-				}
-			})
-			.attr('marker-end',  function(d) {
-				if (d.arrow_end == "") {
-					return "";
-				}
-				else if (d.arrow_end == "module") {
-					if (typeof(module_color_status[d.status_end]) == "undefined")
-						return "url(#interface_end)";
-					else
-						return "url(#interface_end_" + d.status_end + ")";
-				}
-			})
+				holding_area_text = " holding_area_link ";
+				
+			}
+			
+			return "link " +
+				"source_" + d.source.id + " " +
+				"target_" + d.target.id + " " +
+				holding_area_text +
+				"id_module_start_" + d.id_module_start + " " +
+				"id_module_end_" + d.id_module_end;
+		})
+		.attr("stroke-width", 3)
+		.attr("d", null)
+		.attr('marker-start',  function(d) {
+			if (d.arrow_start == "") {
+				return "";
+			}
+			else if (d.arrow_start == "module") {
+				if (typeof(module_color_status[d.status_start]) == "undefined")
+					return "url(#interface_start)";
+				else
+					return "url(#interface_start_" + d.status_start + ")";
+			}
+		})
+		.attr('marker-end',  function(d) {
+			if (d.arrow_end == "") {
+				return "";
+			}
+			else if (d.arrow_end == "module") {
+				if (typeof(module_color_status[d.status_end]) == "undefined")
+					return "url(#interface_end)";
+				else
+					return "url(#interface_end_" + d.status_end + ")";
+			}
+		})
 		.on("mouseover", function(d) {
-				d3.select(this)
-					.classed("link_over", true);
-			})
+			d3.select(this)
+				.classed("link_over", true);
+		})
 		.on("mouseout", function(d) {
-				d3.select(this)
-					.classed("link_over", false);
-			});
+			d3.select(this)
+				.classed("link_over", false);
+		});
 	
 	//Add the reverse line for the end marker, it is invisible
-	 link_temp
-		.append("path")
+	 link_temp.append("path")
 			.attr("id", function(d) {
 				return "link_reverse_id_" + d.id_db;
 			})
@@ -2164,64 +2139,57 @@ function draw_elements_graph() {
 				return "link_reverse";
 		});
 	
-	link_temp
-		.append("text")
-			.attr("xml:space", "preserve")
-			.append("textPath")
-				.attr("xlink:href", function(d) {
-						return "#link_id_" + d.id_db;
-				})
-				.append("tspan")
-					.attr("style", "font-size: 8px; " +
-						"font-style:normal; " +
-						"font-weight:normal; " +
-						"line-height: 100%; " +
-						"letter-spacing:0px; " +
-						"word-spacing:0px; " +
-						"fill:#000000; " +
-						"fill-opacity:1; " +
-						"stroke:none; " +
-						"text-align:end; ")
-					.text(function(d) {
-						var text_link = "";
-						if (d.text_start) {
-							text_link = d.text_start;
-						}
-						
-						return (Array(25).join(" ")) + text_link;
-					});
+	link_temp.append("text")
+		.attr("xml:space", "preserve")
+		.append("textPath")
+			.attr("xlink:href", function(d) {
+					return "#link_id_" + d.id_db;
+			})
+			.append("tspan")
+				.attr("style", "font-size: 8px; " +
+					"font-style:normal; " +
+					"font-weight:normal; " +
+					"line-height: 100%; " +
+					"letter-spacing:0px; " +
+					"word-spacing:0px; " +
+					"fill:#000000; " +
+					"fill-opacity:1; " +
+					"stroke:none; " +
+					"text-align:end; ")
+				.text(function(d) {
+					var text_link = "";
+					if (d.text_start) {
+						text_link = d.text_start;
+					}
+					
+					return (Array(25).join(" ")) + text_link;
+				});
 	
-	link_temp
-		.append("text")
-			.attr("xml:space", "preserve")
-			.append("textPath")
-				.attr("xlink:href", function(d) {
-					return "#link_reverse_id_" + d.id_db;
-				})
-				.append("tspan")
-					.attr("style", "font-size: 8px; " +
-						"font-style:normal; " +
-						"font-weight:normal; " +
-						"line-height: 100%; " +
-						"letter-spacing:0px; " +
-						"word-spacing:0px; " +
-						"fill:#000000; " +
-						"fill-opacity:1; " +
-						"stroke:none; " +
-						"text-align:end; ")
-					.text(function(d) {
-						var text_link = "";
-						if (d.text_end) {
-							text_link = d.text_end;
-						}
-						
-						return (Array(25).join(" ")) + text_link;
-					});
-	
-	
-	
-	
-	
+	link_temp.append("text")
+		.attr("xml:space", "preserve")
+		.append("textPath")
+			.attr("xlink:href", function(d) {
+				return "#link_reverse_id_" + d.id_db;
+			})
+			.append("tspan")
+				.attr("style", "font-size: 8px; " +
+					"font-style:normal; " +
+					"font-weight:normal; " +
+					"line-height: 100%; " +
+					"letter-spacing:0px; " +
+					"word-spacing:0px; " +
+					"fill:#000000; " +
+					"fill-opacity:1; " +
+					"stroke:none; " +
+					"text-align:end; ")
+				.text(function(d) {
+					var text_link = "";
+					if (d.text_end) {
+						text_link = d.text_end;
+					}
+					
+					return (Array(25).join(" ")) + text_link;
+				});
 	
 	node = node.data(force.nodes(), function(d) { return d.id;});
 	node_temp = node.enter()
@@ -2255,6 +2223,7 @@ function draw_elements_graph() {
 			.on("click", selected_node)
 			.on("dblclick", show_details_agent)
 			.on("contextmenu", function(d) { show_menu("node", d);});
+	
 	//Shape square
 	node_temp.filter(function(d) {
 			if (d.shape == 'square') {return true;}
@@ -2273,6 +2242,7 @@ function draw_elements_graph() {
 			.on("click", selected_node)
 			.on("dblclick", show_details_agent)
 			.on("contextmenu", function(d) { show_menu("node", d);});
+	
 	//Shape square
 	node_temp.filter(function(d) {
 			if (d.shape == 'rhombus') {return true;}
@@ -2294,40 +2264,35 @@ function draw_elements_graph() {
 			.on("dblclick", show_details_agent)
 			.on("contextmenu", function(d) { show_menu("node", d);});
 	
-	
-	
-	node_temp
-		.append("title")
+	node_temp.append("title")
 		.text(function(d) {return d.text; });
 	
-	node_temp
-		.append("image")
-			.attr("class", "node_image")
-			.attr("xlink:href", function(d) {
-					return d.image_url;
-				})
-			.attr("x", function(d) {
-					return d.x - (d.image_width / 2);
-				})
-			.attr("y", function(d) {
-					return d.y - (d.image_height / 2);
-				})
-			.attr("width", function(d) {
-					return d.image_width;
-				})
-			.attr("height", function(d) {
-					return d.image_height;
-				})
-			.attr("id", "image2995")
-			.classed('dragable_node', true) //own dragable
+	node_temp.append("image")
+		.attr("class", "node_image")
+		.attr("xlink:href", function(d) {
+				return d.image_url;
+			})
+		.attr("x", function(d) {
+				return d.x - (d.image_width / 2);
+			})
+		.attr("y", function(d) {
+				return d.y - (d.image_height / 2);
+			})
+		.attr("width", function(d) {
+				return d.image_width;
+			})
+		.attr("height", function(d) {
+				return d.image_height;
+			})
+		.attr("id", "image2995")
+		.classed('dragable_node', true) //own dragable
 		.on("mouseover", over_node)
 		.on("mouseout", over_node)
 		.on("click", selected_node)
 		.on("dblclick", show_details_agent)
 		.on("contextmenu", function(d) { show_menu("node", d);});
 		
-	node_temp
-		.append("text")
+	node_temp.append("text")
 		.attr("class", "node_text")
 		.attr("style", "font-size: 32px; font-style:normal; font-weight:normal; line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans")
 		.attr("x", function(d) {
@@ -2341,12 +2306,13 @@ function draw_elements_graph() {
 			.text(function(d) {
 					return d.text;
 				})
-			.classed('dragable_node', true) //own dragable
-			.on("mouseover", over_node)
-			.on("mouseout", over_node)
-			.on("click", selected_node)
-			.on("dblclick", show_details_agent)
-			.on("contextmenu", function(d) { show_menu("node", d);});
+		.classed('dragable_node', true) //own dragable
+		.on("mouseover", over_node)
+		.on("mouseout", over_node)
+		.on("click", selected_node)
+		.on("dblclick", show_details_agent)
+		.on("contextmenu", function(d) { show_menu("node", d);});
+		
 	node.exit().remove();
 }
 

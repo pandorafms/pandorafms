@@ -1009,15 +1009,25 @@ function addTinyMCE(elementID) {
 		tinyMCE.EditorManager.execCommand('mceAddControl', true, elementID);
 }
 
-function autoclick_profile_users(firts_level, second_level) {
-	if (typeof firts_level !== "undefined") {
-		var is_checked_firts = $('#checkbox-' + firts_level).is(':checked');
-		if (!is_checked_firts) {
-			$('#checkbox-' + firts_level).prop('checked', true);
 		}
-		if (second_level !== false) {
-			if (!$('#checkbox-' + second_level).is(":checked")) {
-				$('#checkbox-' + second_level).prop('checked', true);
+	});
+}
+
+function autoclick_profile_users(actual_level, firts_level, second_level) {
+	if ($('#checkbox-' + actual_level).is(":checked")) {
+		if (typeof firts_level !== "undefined") {
+			var is_checked_firts = $('#checkbox-' + firts_level).is(':checked');
+			console.log("FIRTS");
+			console.log(is_checked_firts);
+			if (!is_checked_firts) {
+				$('#checkbox-' + firts_level).prop('checked', true);
+			}
+			if (second_level !== false) {
+				console.log("SECOND");
+				console.log($('#checkbox-' + second_level).is(":checked"));
+				if (!$('#checkbox-' + second_level).is(":checked")) {
+					$('#checkbox-' + second_level).prop('checked', true);
+				}
 			}
 		}
 	}

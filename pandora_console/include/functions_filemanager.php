@@ -733,6 +733,7 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 		//Delete button
 		$data[4] = '';
 		$data[4] .= '<span style="">';
+		$typefile = array_pop(explode(".",$fileinfo['name']));
 		if (is_writable ($fileinfo['realpath'])  &&
 			(! is_dir ($fileinfo['realpath']) || count (scandir ($fileinfo['realpath'])) < 3)) {
 			$data[4] .= '<form method="post" action="' . $url . '" style="display: inline;">';
@@ -752,14 +753,14 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 			$data[4] .= '</form>';
 			
 			if (($editor) && (!$readOnly)) {
-				if ($fileinfo['mime'] == MIME_TEXT) {
-					$data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&location_file=" . $fileinfo['realpath'] . "&hash=" . md5($fileinfo['realpath'] . $config['dbpass']) . "' style='float: left;'>" . html_print_image('images/edit.png', true, array("style" => 'margin-top: 2px;', 'title' => __('Edit file'))) . "</a>";
+				if (($typefile == 'sh') || ($typefile == 'pl') || ($typefile == 'vbs')) {
+					$data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&location_file=" . $fileinfo['realpath'] . "' style='float: left;'>" . html_print_image('images/edit.png', true, array("style" => 'margin-top: 2px;', 'title' => __('Edit file'))) . "</a>";
 				}
 			}
 		}
 		if ((!$fileinfo['is_dir']) && ($download_button)) {
-			$hash = md5($fileinfo['url'] . $config['dbpass']);
-			$data[4] .= '<a href="include/get_file.php?file='.urlencode(base64_encode($fileinfo['url'])).'&hash=' . $hash . '" style="vertical-align: 25%;">';
+			$hash = md5($fileinfo['realpath'] . $config['dbpass']);
+			$data[4] .= '<a href="include/get_file.php?file='.urlencode(base64_encode($fileinfo['realpath'])).'&hash=' . $hash . '" style="vertical-align: 25%;">';
 			$data[4] .= html_print_image('images/file.png', true);
 			$data[4] .= '</a>';
 		}

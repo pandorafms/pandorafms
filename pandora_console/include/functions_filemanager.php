@@ -753,7 +753,8 @@ function filemanager_file_explorer($real_directory, $relative_directory,
 			$data[4] .= '</form>';
 			
 			if (($editor) && (!$readOnly)) {
-				if (($typefile == 'sh') || ($typefile == 'pl') || ($typefile == 'vbs')) {
+				if (($typefile != 'bin') && ($typefile != 'pdf') && ($typefile != 'png') && ($typefile != 'jpg') &&
+					($typefile != 'iso') && ($typefile != 'docx') && ($typefile != 'doc')) {
 					$data[4] .= "<a style='vertical-align: top;' href='$url&edit_file=1&location_file=" . $fileinfo['realpath'] . "' style='float: left;'>" . html_print_image('images/edit.png', true, array("style" => 'margin-top: 2px;', 'title' => __('Edit file'))) . "</a>";
 				}
 			}

@@ -49,15 +49,15 @@ class PandoraWebDriverTestCase(TestCase):
 			#Start VM in Sauce Labs
 			#cls.driver = webdriver.Remote(command_executor='http://'+cls.sauce_username+':'+cls.sauce_access_key+'@ondemand.saucelabs.com:80/wd/hub',desired_capabilities=cls.desired_cap)
 			#cls.sauce_labs_job_id = cls.driver.session_id
-                        display = Display(visible=0, size=(800, 600))
-                        display.start()
+                        cls.display = Display(visible=0, size=(800, 600))
+                        cls.display.start()
 			cls.driver = webdriver.Firefox()
 			cls.base_url = "http://127.0.0.1/"
 		
 	@classmethod
 	def tearDownClass(cls):
 		if cls.is_development == False:
-                    display.stop()
+                    cls.display.stop()
 		cls.driver.quit()
 
 	def setUp(self):

@@ -257,6 +257,17 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		edit_modules_in_bulk(driver,module_name_list,agent_name_list,new_min="1",new_max="2")
 
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
+		
+		search_module(driver,agent_name_1,module_name_1,go_to_module=True)
+
+		driver.find_element_by_xpath('//a[contains(.,"Advanced options")]').click()
+
+		element = driver.find_element_by_xpath('//tr//td[contains(.,"1")]')
+		self.assertIsInstance(element,WebElement)
+		
+		element = driver.find_element_by_xpath('//tr//td[contains(.,"2")]')
+		self.assertIsInstance(element,WebElement)	
+
 
 		search_module (driver,agent_name_1,module_name_1)
 

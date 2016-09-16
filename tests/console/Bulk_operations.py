@@ -312,9 +312,6 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
 
 
-		search_module (driver,agent_name_1,module_name_1)
-
-
 		
 
 

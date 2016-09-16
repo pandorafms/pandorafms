@@ -268,53 +268,6 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//tr//td[contains(.,"2")]')
 		self.assertIsInstance(element,WebElement)	
 
-	def test_G_edit_module_threshold_in_bulk(self):
-
-		u"""
-		Create two agents and one module in this agents. With bulk operation, change FF Threshold with bulk operation
-		"""
-
-		agent_name_1 = gen_random_string(6)
-		agent_name_2 = gen_random_string(6)
-
-		module_name_1 = gen_random_string(6)
-
-		driver = self.driver
-
-		activate_api(driver,"1234")
-
-		params = [agent_name_1,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
-		create_agent_api(driver,params,user="admin",pwd="pandora")
-
-		params = [agent_name_2,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
-		create_agent_api(driver,params,user="admin",pwd="pandora")
-
-		params = [agent_name_1,module_name_1,"0","6","1","0","0","0","0","0","0","0","0","129.99.40.1","0","0","180","0","0","0","0","Host_Alive"]
-		add_network_module_to_agent_api(driver,params,user="admin",pwd="pandora",apipwd="1234")
-
-		params = [agent_name_2,module_name_1,"0","6","1","0","0","0","0","0","0","0","0","129.99.40.1","0","0","180","0","0","0","0","Host_Alive"]
-		add_network_module_to_agent_api(driver,params,user="admin",pwd="pandora",apipwd="1234")
-
-		lista = driver.current_url.split('/')
-
-		url = lista[0]+'//'+lista[2]+'/pandora_console'
-
-		driver.get(url)
-
-		agent_name_list = [agent_name_1,agent_name_2]
-
-		module_name_list = [module_name_1]
-
-		ff_threshold_list = ["0","1","2"]
-			
-		edit_modules_in_bulk(driver,module_name_list,agent_name_list,ff_threshold_list)
-
-		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
-
-
-		
-
-
 
 if __name__ == "__main__":
         unittest.main()

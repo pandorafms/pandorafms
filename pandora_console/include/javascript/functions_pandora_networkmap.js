@@ -752,12 +752,12 @@ function add_agent_node(agents) {
 }
 
 function show_details_agent(d) {
-	if (d.networkmap_id != 0) {
+	if (d.map_id != 0) {
 		url = "index.php?" +
 			"sec=network&" +
 			"sec2=operation/agentes/pandora_networkmap&" +
 			"tab=view&" +
-			"id_networkmap=" + d.networkmap_id;
+			"id_networkmap=" + d.map_id;
 		
 		window.location.href = url;
 	}

@@ -867,27 +867,35 @@ function erase_node($id) {
 	$nodes = db_get_all_rows_filter('titem',
 		array(
 			'id_map' => $node['id_map'],
-			'source_data' => $node['id_agent'],
+			'source_data' => $node['source_data'],
+			'type' => $node['type'],
 			'id' => $id['id']
 			));
-	
+			
 	foreach ($nodes as $node) {
 		db_process_sql_update('titem',
-			array('deleted' => 1), array('id' => $node['id']));
+			array('deleted' => 1), array('id' => (int)$node['id'], 'type' => (int)$node['type']));
 		
 		db_process_sql_update('trel_item',
-			array('deleted' => 1), array('id_parent' => $node['id']));
+			array('deleted' => 1), array('id_parent' => (int)$node['id']));
 		db_process_sql_update('trel_item',
-			array('deleted' => 1), array('id_child' => $node['id']));
+			array('deleted' => 1), array('id_child' => (int)$node['id']));
 	}
 	
 	db_process_sql_update('trel_item',
-		array('deleted' => 1), array('id_parent' => $id));
+		array('deleted' => 1), array('id_parent' => (int)$node['id']));
 	db_process_sql_update('trel_item',
-		array('deleted' => 1), array('id_child' => $id));
+		array('deleted' => 1), array('id_child' => (int)$node['id']));
 	
-	return (bool)db_process_sql_update('titem',
-		array('deleted' => 1), array('id' => $id));
+	$return = db_process_sql_update('titem',
+		array('deleted' => 1), array('id' => (int)$node['id'], 'type' => (int)$node['type']));
+		
+	if ($return === false) {
+		return false;
+	}
+	else {
+		return true;
+	}
 }
 
 function networkmap_delete_nodes_by_agent($id_agent) {

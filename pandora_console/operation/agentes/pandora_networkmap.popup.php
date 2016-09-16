@@ -17,8 +17,8 @@ if (! isset($_SESSION["id_usuario"])) {
 }
 
 // Global & session management
-require_once ('../../../include/config.php');
-require_once ('../../../include/auth/mysql.php');
+require_once ($config['homedir'] . '/include/config.php');
+require_once ($config['homedir'] . '/include/auth/mysql.php');
 require_once ($config['homedir'] . '/include/functions.php');
 require_once ($config['homedir'] . '/include/functions_db.php');
 require_once ($config['homedir'] . '/include/functions_reporting.php');

@@ -267,8 +267,8 @@ function networkmap_process_networkmap($id = 0) {
 			$values = array();
 			
 			$values['id_map'] = $id;
-			$values['id_parent'] = $array_key_to_db_id[$relation['parent']];
-			$values['id_child'] = $array_key_to_db_id[$relation['child']];
+			$values['id_parent'] = $array_key_to_db_id[$relation['id_parent']];
+			$values['id_child'] = $array_key_to_db_id[$relation['id_child']];
 			$values['parent_type'] = $relation['parent_type']; 
 			$values['child_type'] = $relation['child_type'];
 			db_process_sql_insert('trel_item', $values);
@@ -809,9 +809,9 @@ function networkmap_loadfile($id = 0, $file = '',
 		}
 		
 		$row = array(
-			'child' => $rel['orig'],
+			'id_child' => $rel['orig'],
 			'child_type' => $networkmap_nodes[$rel['orig']]['type'],
-			'parent' => $rel['dest'],
+			'id_parent' => $rel['dest'],
 			'parent_type' => $networkmap_nodes[$rel['dest']]['type']);
 		$relations_param[] = $row;
 	}

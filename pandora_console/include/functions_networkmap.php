@@ -1212,7 +1212,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		}
 		
 	}
-	
 	// Close graph
 	$graph .= networkmap_close_graph ();
 	
@@ -1494,7 +1493,6 @@ function networkmap_generate_dot_groups ($pandora_name, $group = 0,
 
 // Returns an edge definition
 function networkmap_create_edge ($head, $tail, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, $sec2 = 'operation/agentes/networkmap', $tab = 'topology', $id_networkmap = 0) {
-	
 	if (defined("METACONSOLE")) {
 		$url = '';
 	}
@@ -1971,7 +1969,7 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 	}
 	else {
 		$image = html_print_image("images/networkmap/pandora_node.png", true, false, false, true);
-		$image = str_replace('"',"'",$image);
+		//$image = str_replace('"',"'",$image);
 		$img = '<TR><TD>' . $image . '</TD></TR>';
 	}
 	$name = "<TR><TD BGCOLOR='#FFFFFF'>" . $name . '</TD></TR>';

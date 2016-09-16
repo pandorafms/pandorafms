@@ -765,8 +765,11 @@ function show_details_agent(d) {
 		//Fictional node without link
 	}
 	else {
-		url = url_popup;
-		url = url + "?refresh_state=" + refresh_period;
+		url = "index.php?" +
+			"sec=network&" +
+			"sec2=operation/agentes/pandora_networkmap&" +
+			"tab=popup&";
+		url = url + "refresh_state=" + refresh_period;
 		
 		url = url + "&id=" + d.id_db;
 		

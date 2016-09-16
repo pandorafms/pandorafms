@@ -423,8 +423,8 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 	}
 	$item['color'] = $color;
 	$item['map_id'] = 0;
-	if (isset($node['map_id'])) {
-		$item['map_id'] = $node['map_id'];
+	if (isset($node['id_map'])) {
+		$item['map_id'] = $node['id_map'];
 	}
 	
 	$count++;
@@ -1192,7 +1192,7 @@ function show_node_info($id_node, $refresh_state, $user_readonly) {
 					};";
 		}
 		
-		echo "var color_status_node = '" . get_status_color_networkmap($row['id_agent']) . "';";
+		echo "var color_status_node = '" . get_status_color_networkmap($row['source_data']) . "';";
 		echo "</script>";
 		
 		$mode_show = get_parameter('mode_show', 'all');
@@ -1201,7 +1201,7 @@ function show_node_info($id_node, $refresh_state, $user_readonly) {
 		</script>";
 		
 		echo '<div style="text-align: center;">';
-		echo '<b><a target="_blank" style="text-decoration: none;" href="' . $url_agent . '">' . agents_get_name($row['id_agent']) . '</a></b><br />';
+		echo '<b><a target="_blank" style="text-decoration: none;" href="' . $url_agent . '">' . agents_get_name($row['source_data']) . '</a></b><br />';
 		$modes_show = array('status_module' => 'Only status', 'all' => 'All');
 		echo __('Show modules:');
 		html_print_select($modes_show, 'modes_show', $mode_show, 'refresh_window();');
@@ -1234,7 +1234,7 @@ function show_node_info($id_node, $refresh_state, $user_readonly) {
 					//Set the first size for the canvas
 					//$("#node_info").attr("height", $(window).height());
 					//$("#node_info").attr("width", $(window).width());
-					show_networkmap_node(' . $row['id_agent'] . ', ' . $refresh_state . ');
+					show_networkmap_node(' . $row['source_data'] . ', ' . $refresh_state . ');
 				});
 			</script>
 			</div>

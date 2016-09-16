@@ -16,6 +16,11 @@ before_install:
 install:
   - pip install selenium PyVirtualDisplay testtools
 
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
+
 script:
   - docker run --name pandorafms -h pandorafms -dt -v "$TRAVIS_BUILD_DIR:/tmp/pandorafms" -p 127.0.0.1:80:80 pandorafms/pandorafms-base tail -f /var/log/messages
   - docker exec -t pandorafms /tmp/pandorafms/tests/test.sh

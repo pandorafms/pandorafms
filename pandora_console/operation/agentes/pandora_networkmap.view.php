@@ -1121,8 +1121,8 @@ else {
 		WHERE id_map = ' . $id . ';');
 	
 	if ($numNodes == 0) {
-		networkmap_process_networkmap($id);
-		show_networkmap($id, $user_readonly);
+		$nodes_and_relations = networkmap_process_networkmap($id);
+		show_networkmap($id, $user_readonly, $nodes_and_relations);
 	}
 	else if (enterprise_installed()) {
 		show_networkmap($id, $user_readonly);

@@ -705,7 +705,6 @@ function add_agent_node(agents) {
 		x = x + (i * 20);
 		y = y + (i * 20);
 		
-		
 		var params = [];
 		params.push("add_agent=1");
 		params.push("id=" + networkmap_id);
@@ -727,20 +726,46 @@ function add_agent_node(agents) {
 					temp_node['id'] = graph.nodes.length;
 					temp_node['id_db'] = data['id_node'];
 					temp_node['id_agent'] = data['id_agent'];
-					temp_node['id_module'] = 0;
+					temp_node['id_module'] = "";
+					temp_node['px'] = data['x'];
+					temp_node['py'] = data['y'];
 					temp_node['x'] = data['x'];
 					temp_node['y'] = data['y'];
 					temp_node['z'] = 0;
 					temp_node['fixed'] = true;
-					temp_node['type'] = 'agent';
+					temp_node['type'] = 0;
 					temp_node['color'] = data['status'];
 					temp_node['shape'] = data['shape'];
 					temp_node['text'] = data['text'];
 					temp_node['image_url'] = data['image_url'];
 					temp_node['image_width'] = data['width'];
 					temp_node['image_height'] = data['height'];
+					temp_node['map_id'] = data['map_id'];
+					temp_node['state'] = data['state'];
 					
 					graph.nodes.push(temp_node);
+					/* FLECHAS EMPEZADO PARA MEJORAR
+					jQuery.each(data['rel'], function(i, relation) {
+						var temp_link = {};
+						temp_link['id_db'] = String(relation['id_db']);
+						temp_link['id_agent_end'] = String(relation['id_agent_end']);
+						temp_link['id_agent_start'] = String(relation['id_agent_start']);
+						temp_link['id_module_end'] = relation['id_module_end'];
+						temp_link['id_module_start'] = relation['id_module_start'];
+						temp_link['source'] = relation['source'];
+						temp_link['target'] = relation['target'];
+						temp_link['source_in_db'] = String(relation['source_in_db']);
+						temp_link['target_in_db'] = String(relation['target_in_db']);
+						temp_link['arrow_end'] = relation['arrow_end'];
+						temp_link['arrow_start'] = relation['arrow_start'];
+						temp_link['status_end'] = relation['status_end'];
+						temp_link['status_start'] = relation['status_start'];
+						temp_link['text_end'] = relation['text_end'];
+						temp_link['text_start'] = relation['text_start'];
+						
+						graph.links.push(temp_link);
+					});
+					*/
 					
 					draw_elements_graph();
 					init_drag_and_drop();
@@ -1321,6 +1346,14 @@ function show_menu(item, data) {
 			items_list["add_node"] = {
 				name: add_node_menu,
 				icon: "add_node",
+				disabled : function() {
+					if (enterprise_installed) {
+						return false;
+					}
+					else {
+						return true;
+					}
+				},
 				"callback": function(key, options) {
 					add_node();
 				}
@@ -1693,7 +1726,7 @@ function add_fictional_node() {
 				temp_node['y'] = y;
 				temp_node['z'] = 0;
 				temp_node['fixed'] = true;
-				temp_node['type'] = 'fictional_node';
+				temp_node['type'] = 3;
 				temp_node['color'] = data['color'];
 				temp_node['shape'] = data['shape'];
 				temp_node['text'] = data['text'];

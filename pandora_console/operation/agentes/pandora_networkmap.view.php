@@ -369,7 +369,10 @@ if (is_ajax ()) {
 		$data['x'] = $x;
 		$data['y'] = $y;
 		$data['source_data'] = -2; //The id for the fictional points.
-		$data['parent'] = 0;
+		$data['deleted'] = 0;
+		//Type in db to fictional nodes
+		$data['type'] = 3;
+		$data['state'] = "";
 		$style = array();
 		$style['shape'] = $shape;
 		$style['image'] = '';
@@ -392,7 +395,6 @@ if (is_ajax ()) {
 		if ($return['correct']) {
 			$return['id_node'] = $id_node;
 			$return['id_agent'] = -2; //The finctional point id
-			$return['parent'] = 0;
 			$return['shape'] = $shape;
 			$return['image'] = '';
 			$return['width'] = $radious * 2;
@@ -925,9 +927,10 @@ if (is_ajax ()) {
 		$return = array();
 		$return['correct'] = false;
 		
-		$id_node = add_agent_networkmap($id, $agent, $x, $y, $id_agent);
+		$return_data = add_agent_networkmap($id, $agent, $x, $y, $id_agent);
 		
-		if ($id_node !== false) {
+		if ($return_data['id_node'] !== false) {
+			$id_node = $return_data['id_node'];
 			$return['correct'] = true;
 			
 			$node = db_get_row('titem', 'id',
@@ -935,7 +938,7 @@ if (is_ajax ()) {
 			$style = json_decode($node['style'], true);
 			
 			$return['id_node'] = $id_node;
-			$return['source_data'] = $node['id_agent'];
+			$return['id_agent'] = $node['source_data'];
 			$return['parent'] = $node['parent'];
 			$return['shape'] = $style['shape'];
 			$return['image'] = $style['image'];
@@ -943,10 +946,16 @@ if (is_ajax ()) {
 				$style['image'], true, false, true);
 			$return['width'] = $style['width'];
 			$return['height'] = $style['height'];
-			$return['text'] = $style['text'];
+			$return['text'] = $style['label'];
 			$return['x'] = $x;
 			$return['y'] = $y;
+			$return['map_id'] = $node['id_map'];
+			$return['state'] = $node['state'];
 			$return['status'] = get_status_color_networkmap($id_agent);
+		}
+		
+		if (!empty($return_data['rel'])) {
+			$return['rel'] = $return_data['rel'];
 		}
 		
 		echo json_encode($return);

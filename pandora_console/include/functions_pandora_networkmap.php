@@ -358,12 +358,18 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 	$item['id'] = $count;
 	$item['id_db'] = (int)$node['id'];
 	if ((int)$node['type'] == 0) {
+		$item['type'] = 0;
 		$item['id_agent'] = (int)$node['source_data'];
 		$item['id_module'] = "";
 	}
 	else if ((int)$node['type'] == 1) {
+		$item['type'] = 1;
 		$item['id_agent'] = "";
 		$item['id_module'] = (int)$node['source_data'];
+	}else if ((int)$node['type'] == 3) {
+		$item['type'] = 3;
+		$item['id_agent'] = "";
+		$item['id_module'] = "";
 	}
 	$item['fixed'] = true;
 	$item['x'] = (int)$node['x'];
@@ -414,7 +420,7 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 				$color = "#364D1F";
 			}
 			else if ($node['source_data'] == -2) {
-				$color = $node['style']['fill_color'];
+				$color = "#364D1F";
 			}
 			else {
 				$color = get_status_color_networkmap($node['source_data']);
@@ -1069,7 +1075,6 @@ function add_agent_networkmap($id, $agent_name_param, $x, $y,
 	$data['x'] = $x;
 	$data['y'] = $y;
 	$data['source_data'] = $id_agent;
-	$data['parent'] = 0;
 	$style = array();
 	$style['shape'] = 'circle';
 	$style['image'] = $img_node;
@@ -1083,8 +1088,8 @@ function add_agent_networkmap($id, $agent_name_param, $x, $y,
 		$data['state'] = $other_values['state'];
 	}
 	
-	if (isset($other_values['text'])) {
-		$agent_name = $other_values['text'];
+	if (isset($other_values['label'])) {
+		$agent_name = $other_values['label'];
 	}
 	
 	if (isset($other_values['id_module'])) {
@@ -1100,7 +1105,91 @@ function add_agent_networkmap($id, $agent_name_param, $x, $y,
 	$data['style'] = str_replace('json_encode_crash_with_ut8_chars',
 		$agent_name, $data['style']);
 	
-	return db_process_sql_insert('titem', $data);
+	$id_node = db_process_sql_insert('titem', $data);
+	
+	$node = db_get_all_rows_filter('titem', array('id' => $id_node));
+	$node = $node[0];
+	
+	
+	$rel = array();
+	/* FLECHAS EMPEZADO PARA MEJORAR
+	$index = 0;
+	if ($agent['id_parent'] != 0) {
+		$values = array();
+		$values['id_child'] = $agent['id_agente'];
+		$values['id_parent'] = $agent['id_parent'];
+		$values['parent_type'] = 0;
+		$values['child_type'] = 0;
+		$values['id_item'] = 0;
+		$values['deleted'] = 0;
+		$values['id_map'] = $id;
+		
+		$parent = db_get_row('tagente', 'id_agente', $agent['id_parent']);
+		$parent_item = db_get_all_rows_filter('titem', array('source_data' => $agent['id_parent'], 'type' => 0));
+		$parent_item = $parent_item[0];
+		
+		$rel[$index]['id_db'] = db_process_sql_insert('trel_item', $values);
+		$rel[$index]['id_agent_end'] = $parent['id_agente'];
+		$rel[$index]['id_agent_start'] = $agent['id_agente'];
+		$rel[$index]['id_module_end'] = 0;
+		$rel[$index]['id_module_start'] = 0;
+		$rel[$index]['source'] = $id_node;
+		$rel[$index]['target'] = $parent_item['id'];
+		$rel[$index]['source_in_db'] = $id_node;
+		$rel[$index]['target_in_db'] = $parent_item['id'];
+		$rel[$index]['arrow_end'] = "";
+		$rel[$index]['arrow_start'] = "";
+		$rel[$index]['status_end'] = "";
+		$rel[$index]['status_start'] = "";
+		$rel[$index]['text_end'] = "";
+		$rel[$index]['text_start'] = "";
+		$index++;
+		
+		$childs_of_new_agent = db_get_all_rows_filter('tagente', array('id_parent' => $agent['id_agente']));
+		
+		foreach ($childs_of_new_agent as $child) {
+			$values = array();
+			$values['id_child'] = $child['id_agente'];
+			$values['id_parent'] = $agent['id_agente'];
+			$values['parent_type'] = 0;
+			$values['child_type'] = 0;
+			$values['id_item'] = 0;
+			$values['deleted'] = 0;
+			$values['id_map'] = $id;
+			
+			$child_item = db_get_all_rows_filter('titem', array('source_data' => $child['id_agente'], 'type' => 0));
+			$child_item = $child_item[0];
+			
+			$rel[$index]['id_db'] = db_process_sql_insert('trel_item', $values);
+			$rel[$index]['id_agent_end'] = $agent['id_agente'];
+			$rel[$index]['id_agent_start'] = $child['id_agente'];
+			$rel[$index]['id_module_end'] = 0;
+			$rel[$index]['id_module_start'] = 0;
+			$rel[$index]['source'] = $child_item['id'];
+			$rel[$index]['target'] = $id_node;
+			$rel[$index]['source_in_db'] = $child_item['id'];
+			$rel[$index]['target_in_db'] = $id_node;
+			$rel[$index]['arrow_end'] = "";
+			$rel[$index]['arrow_start'] = "";
+			$rel[$index]['status_end'] = "";
+			$rel[$index]['status_start'] = "";
+			$rel[$index]['text_end'] = "";
+			$rel[$index]['text_start'] = "";
+			
+			$index++;
+		}
+	}
+	*/
+	
+	$return_data = array();
+	if ($id_node !== false) {
+		$return_data['id_node'] = $id_node;
+		$return_data['rel'] = $rel;
+		return $return_data;
+	}
+	else {
+		return false;
+	}
 }
 
 function show_node_info($id_node, $refresh_state, $user_readonly) {

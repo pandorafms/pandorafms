@@ -52,7 +52,7 @@ class PandoraWebDriverTestCase(TestCase):
                         cls.display = Display(visible=0, size=(800, 600))
                         cls.display.start()
 			cls.driver = webdriver.Firefox()
-			cls.base_url = "http://127.0.0.1/"
+			cls.base_url = "http://127.0.0.1:8080/"
 		
 	@classmethod
 	def tearDownClass(cls):

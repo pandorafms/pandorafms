@@ -8974,8 +8974,12 @@ function api_get_module_graph($id_module, $thrash2, $other, $thrash4) {
                 // returnError('error_module_graph', __(''));
         }
         else {
-			header('Content-type: text/html');
-            returnData('string', array('type' => 'string', 'data' => '<img src="data:image/jpeg;base64,' . $graph_image_file_encoded . '">'));
+			if($other['data'] < 40000){
+				header('Content-type: text/html');
+            	returnData('string', array('type' => 'string', 'data' => '<img src="data:image/jpeg;base64,' . $graph_image_file_encoded . '">'));
+        	} else {
+        		returnData('string', array('type' => 'string', 'data' => $graph_image_file_encoded));	
+        	}
 		// To show only the base64 code, call returnData as:
         // returnData('string', array('type' => 'string', 'data' => $graph_image_file_encoded));
         }

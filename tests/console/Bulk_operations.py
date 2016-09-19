@@ -13,7 +13,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
 
-import unittest, time, re
+import unittest2, time, re
 
 class Bulk_operations(PandoraWebDriverTestCase):
 	
@@ -268,4 +268,4 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		self.assertIsInstance(element,WebElement)	
 
 if __name__ == "__main__":
-        unittest.main()
+        unittest2.main()

@@ -13,7 +13,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
-import unittest, time, re, datetime
+import unittest2, time, re, datetime
 
 
 class PAN13(PandoraWebDriverTestCase):
@@ -162,4 +162,4 @@ class PAN13(PandoraWebDriverTestCase):
 		self.assertNotEqual(event_who_should_be_present_b,[])
 
 if __name__ == "__main__":
-	unittest.main()
+	unittest2.main()

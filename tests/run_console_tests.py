@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from unittest import *
+from unittest2 import *
 from console.include.common_functions_60 import *
 from console.include.common_classes_60 import *
 #from sauceclient import SauceClient
@@ -15,7 +15,7 @@ is_enterprise = '1' == getenv('ENTERPRISE', False)
 
 a = TestLoader()
 
-tests = a.discover(start_dir='console',pattern='*.py')
+tests = a.discover(start_dir='console',pattern='ACL.py')
 
 c = ArticaTestResult()
 tests.run(c)

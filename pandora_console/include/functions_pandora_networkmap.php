@@ -1018,7 +1018,6 @@ function get_status_color_networkmap($id, $color = true) {
 	if (!$color) {
 		return $status;
 	}
-	
 	// Set node status
 	switch($status) {
 		case 0: 
@@ -1200,7 +1199,7 @@ function show_node_info($id_node, $refresh_state, $user_readonly) {
 	$row = db_get_row('titem', 'id', $id_node);
 	
 	$style = json_decode($row['style'], true);
-	html_debug($style, true);
+	
 	if ($row['source_data'] == -2) {
 		//Show the dialog to edit the fictional point.
 		if ($user_readonly) {
@@ -2190,7 +2189,7 @@ function networkmap_get_new_nodes_and_links($id_networkmap) {
 				$new_agents = array();
 		}
 	}
-	else if (!empty($networkmap['source_data'])) {
+	else if (!empty($networkmap['source_data']) && ($networkmap['source_data'] != 0)) {
 		$agents = networkmap_get_new_nodes_from_ip_mask(
 			$networkmap['source_data']);
 		
@@ -2251,9 +2250,9 @@ function networkmap_get_new_nodes_and_links($id_networkmap) {
 			WHERE " . $sql_group . "
 				AND t1.disabled = 0
 				AND t1.id_agente NOT IN (
-					SELECT id_agent
+					SELECT source_data
 					FROM titem
-					WHERE id_map = " . $id_networkmap . ")
+					WHERE id_map = " . $id_networkmap . " AND type = 0)
 			";
 		
 		$new_agents = db_get_all_rows_sql($sql);

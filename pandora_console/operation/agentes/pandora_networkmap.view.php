@@ -122,7 +122,6 @@ if (is_ajax ()) {
 		$return['correct'] = (bool)db_process_sql_update(
 			'titem', $node,
 			array('id' => $node_id));
-		
 		echo json_encode($return);
 		
 		return;
@@ -836,7 +835,6 @@ if (is_ajax ()) {
 	
 	if ($update_node_color) {
 		$id = (int)get_parameter('id', 0);
-		
 		
 		$id_agent = db_get_value('source_data',
 			'titem', 'id', $id);

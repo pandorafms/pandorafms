@@ -549,6 +549,8 @@ function networkmap_write_js_array($id, $nodes_and_relations = array()) {
 	echo "var networkmap_dimensions = [ " .
 		$networkmap['width'] . ", " .
 		$networkmap['height'] . "];\n";
+		
+	echo "var enterprise_installed = " . enterprise_installed() . ";\n";
 	
 	echo "var networkmap_holding_area_dimensions = " .
 		json_encode($networkmap['filter']['holding_area']) . ";\n";
@@ -1558,6 +1560,7 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 			networkmap_center: networkmap_center,
 			url_popup: url_popup_pandora,
 			networkmap_dimensions: networkmap_dimensions,
+			enterprise_installed: enterprise_installed,
 			holding_area_dimensions: networkmap_holding_area_dimensions,
 			url_background_grid: url_background_grid
 		});

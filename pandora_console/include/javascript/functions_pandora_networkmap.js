@@ -1207,6 +1207,14 @@ function show_menu(item, data) {
 			items_list["edit"] = {
 					name: edit_menu,
 					icon: "edit",
+					disabled : function() {
+						if (enterprise_installed) {
+							return false;
+						}
+						else {
+							return true;
+						}
+					},
 					"callback": function(key, options) {
 						edit_node(data);
 					}
@@ -1214,6 +1222,14 @@ function show_menu(item, data) {
 			items_list["children"] = {
 					name: set_as_children_menu,
 					icon: "children",
+					disabled : function() {
+						if (enterprise_installed) {
+							return false;
+						}
+						else {
+							return true;
+						}
+					},
 					"callback": function(key, options) {
 						var selection = d3.selectAll('.node_children');
 						selection
@@ -1241,6 +1257,14 @@ function show_menu(item, data) {
 					items_list["set_parent"] = {
 						name: set_parent_menu,
 						icon: "set_parent",
+						disabled : function() {
+							if (enterprise_installed) {
+								return false;
+							}
+							else {
+								return true;
+							}
+						},
 						"callback": function(key, options) {
 							set_parent(data);
 						}
@@ -1250,6 +1274,14 @@ function show_menu(item, data) {
 				items_list["cancel_set_parent"] = {
 					name: abort_relationship_menu,
 					icon: "cancel_set_parent",
+					disabled : function() {
+						if (enterprise_installed) {
+							return false;
+						}
+						else {
+							return true;
+						}
+					},
 					"callback": function(key, options) {
 						cancel_set_parent();
 					}
@@ -1260,6 +1292,14 @@ function show_menu(item, data) {
 				items_list["delete"] = {
 					name: delete_menu,
 					icon: "delete",
+					disabled : function() {
+						if (enterprise_installed) {
+							return false;
+						}
+						else {
+							return true;
+						}
+					},
 					"callback": function(key, options) {
 						delete_nodes();
 					}
@@ -1702,6 +1742,7 @@ function init_graph(parameter_object) {
 	window.flag_drag_running = false;
 	window.in_a_node = false;
 	window.url_popup = "";
+	window.enterprise_installed = false;
 	window.flag_setting_relationship_running = false;
 	
 	window.minimap_w = 0;
@@ -1738,6 +1779,12 @@ function init_graph(parameter_object) {
 	if (typeof(parameter_object.url_popup) != "undefined") {
 		window.url_popup = parameter_object.url_popup;
 	}
+	
+	window.enterprise_installed = '';
+	if (typeof(parameter_object.enterprise_installed) != "undefined") {
+		window.enterprise_installed = parameter_object.enterprise_installed;
+	}
+	
 	window.networkmap_dimensions = [];
 	if (typeof(parameter_object.networkmap_dimensions) != "undefined") {
 		window.networkmap_dimensions = parameter_object.networkmap_dimensions;

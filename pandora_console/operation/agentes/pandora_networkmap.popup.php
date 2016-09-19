@@ -49,18 +49,17 @@ $user_readonly = !$networkmap_write && !$networkmap_manage;
 
 $refresh_state = (int)get_parameter('refresh_state', 0);
 
-$style = db_get_value('style', 'titem', 'id', $id_node);
-$style = json_decode($style, true);
+$style = json_decode($row['style'], true);
 
-//The next line "<!DOCTYPE...." it is necesary for the fucking IE9 because
-//this crap browser doesn't execute correcly the getContext without this line.
+//The next line "<!DOCTYPE...." it is necesary for IE9 because
+//this browser doesn't execute correcly the getContext without this line.
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 	<head>
 		<title><?php echo __('Details of node:') . ' ' . $style['label'];?></title>
 		<script type="text/javascript" src="../../include/javascript/jquery-1.6.1.min.js"></script>
-		<script type="text/javascript" src="../../../include/javascript/jquery.colorpicker.js"></script>
+		<script type="text/javascript" src="../../include/javascript/jquery.colorpicker.js"></script>
 	</head>
 	<body>
 		<style type="text/css">

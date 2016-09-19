@@ -95,27 +95,27 @@ $table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filters';
 
-$table->style[0] = 'font-weight: bolder;';
+$table->style[0] = 'font-weight: bolder;width:250px';
 
 $table->data[0][0] = __('URL update manager:');
 $table->data[0][1] = html_print_input_text('url_update_manager',
-	$url_update_manager, __('URL update manager'), 40, 60, true);
+	$url_update_manager, __('URL update manager'), 80, 60, true);
 
 $table->data[1][0] = __('Proxy server:');
 $table->data[1][1] = html_print_input_text('update_manager_proxy_server',
-	$update_manager_proxy_server, __('Proxy server'), 40, 60, true);
+	$update_manager_proxy_server, __('Proxy server'), 80, 60, true);
 
 $table->data[2][0] = __('Proxy port:');
 $table->data[2][1] = html_print_input_text('update_manager_proxy_port',
-	$update_manager_proxy_port, __('Proxy port'), 40, 60, true);
+	$update_manager_proxy_port, __('Proxy port'), 80, 60, true);
 
 $table->data[3][0] = __('Proxy user:');
 $table->data[3][1] = html_print_input_text('update_manager_proxy_user',
-	$update_manager_proxy_user, __('Proxy user'), 40, 60, true);
+	$update_manager_proxy_user, __('Proxy user'), 80, 60, true);
 
 $table->data[4][0] = __('Proxy password:');
 $table->data[4][1] = html_print_input_password('update_manager_proxy_password',
-	$update_manager_proxy_password, __('Proxy password'), 40, 60, true);
+	$update_manager_proxy_password, __('Proxy password'), 80, 60, true);
 
 if (license_free()) {
 	$config["identification_reminder"] = isset($config["identification_reminder"]) ? $config["identification_reminder"] : 1;

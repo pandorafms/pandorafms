@@ -10,14 +10,12 @@
 // You cannnot redistribute it without written permission of copyright holder.
 // ============================================================================
 
-
-
 if (! isset($_SESSION["id_usuario"])) {
 	session_start();
 }
 
 // Global & session management
-require_once ($config['homedir'] . '/include/config.php');
+require_once ('../../include/config.php');
 require_once ($config['homedir'] . '/include/auth/mysql.php');
 require_once ($config['homedir'] . '/include/functions.php');
 require_once ($config['homedir'] . '/include/functions_db.php');
@@ -27,10 +25,9 @@ require_once ($config['homedir'] . '/include/functions_modules.php');
 require_once ($config['homedir'] . '/include/functions_ui.php');
 require_once ($config['homedir'] . '/include/functions_pandora_networkmap.php');
 
+check_login();
 //error_reporting(E_ALL);
 //ini_set("display_errors", 1);
-
-check_login ();
 
 $id_node = (int)get_parameter('id', 0);
 $row = db_get_row('titem', 'id', $id_node);

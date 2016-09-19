@@ -209,8 +209,9 @@ if (is_ajax ()) {
 		$node['style'] = json_encode($node['style']);
 		
 		$return['correct'] = db_process_sql_update('titem',
-			$node, array('tmap' => $networkmap_id,
+			$node, array('id_map' => $networkmap_id,
 				'id' => $id));
+		
 		echo json_encode($return);
 		
 		return;

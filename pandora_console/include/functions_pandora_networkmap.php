@@ -472,6 +472,8 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 	$return = array();
 	
 	foreach ($relations as $relation) {
+		$id_target = db_get_value('source_data', 'titem', 'id', $relation['id_parent']);
+		$id_source = db_get_value('source_data', 'titem', 'id', $relation['id_child']);
 		$item = array();
 		$item['id_db'] = $relation['id'];
 		$item['arrow_start'] = '';
@@ -479,9 +481,9 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 		$item['status_start'] = '';
 		$item['status_end'] = '';
 		$item['id_module_start'] = 0;
-		$item['id_agent_start'] = $relation['id_child'];
+		$item['id_agent_start'] = $id_source;
 		$item['id_module_end'] = 0;
-		$item['id_agent_end'] = $relation['id_parent'];
+		$item['id_agent_end'] = $id_target;
 		$item['target'] = -1;
 		$item['source'] = -1;
 		$item['target_id_db'] = $relation['id_parent'];
@@ -491,14 +493,14 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 		
 		if ($relation['parent_type'] == 1) {
 			$item['arrow_end'] = 'module';
-			$item['status_end'] = modules_get_agentmodule_status($relation['id_parent'], false, false, null);
-			$item['id_module_end'] = $relation['id_parent'];
+			$item['status_end'] = modules_get_agentmodule_status($id_target, false, false, null);
+			$item['id_module_end'] = $id_target;
 			$item['text_end'] = io_safe_output(modules_get_agentmodule_name($item['id_module_end']));
 		}
 		if ($relation['child_type'] == 1) {
 			$item['arrow_start'] = 'module';
-			$item['status_start'] = modules_get_agentmodule_status($relation['id_child'], false, false, null);
-			$item['id_module_start'] = $relation['id_child'];
+			$item['status_start'] = modules_get_agentmodule_status($id_source, false, false, null);
+			$item['id_module_start'] = $id_source;
 			$item['text_start'] = io_safe_output(modules_get_agentmodule_name($item['id_module_start']));
 		}
 		
@@ -1102,12 +1104,12 @@ function add_agent_networkmap($id, $agent_name_param, $x, $y,
 function show_node_info($id_node, $refresh_state, $user_readonly) {
 	global $config;
 	
-	echo "<script type='text/javascript' src='/include/javascript/functions_pandora_networkmap.js'></script>";
+	echo "<script type='text/javascript' src='../../include/javascript/functions_pandora_networkmap.js'></script>";
 	
 	$row = db_get_row('titem', 'id', $id_node);
 	
-	$options = json_decode($row['options'], true);
-	
+	$style = json_decode($row['style'], true);
+	html_debug($style, true);
 	if ($row['source_data'] == -2) {
 		//Show the dialog to edit the fictional point.
 		if ($user_readonly) {
@@ -1118,7 +1120,7 @@ function show_node_info($id_node, $refresh_state, $user_readonly) {
 			$networkmaps = get_networkmaps($row['id_map']);
 				
 			$selectNetworkmaps = html_print_select($networkmaps,
-				'networmaps_enterprise', $options['networkmap'], '', '', 0, true);
+				'networmaps_enterprise', $style['networkmap'], '', '', 0, true);
 			
 			$shapes = array(
 				'circle' => __('Circle'),
@@ -1127,11 +1129,11 @@ function show_node_info($id_node, $refresh_state, $user_readonly) {
 			
 			$mini_form_fictional_point = "<table cellpadding='2'>
 				<tr>" .
-					"<td>" . __('Name') ."<td>". html_print_input_text('fictional_name', $options['text'], '', 25, 255, true) . 
+					"<td>" . __('Name') ."<td>". html_print_input_text('fictional_name', $style['label'], '', 25, 255, true) . 
 				'<td>' .__('Shape') . "<td>". html_print_select($shapes, 'fictional_shape', 0, '', '', 0, true) . "</td></tr><tr><td>".
-				__('Radius') . "<td>". '<input type="text" size="3" maxlength="3" value="' . ($options['width'] / 2) . '" id="fictional_radious" />' . "<td>" .
+				__('Radius') . "<td>". '<input type="text" size="3" maxlength="3" value="' . ($style['width'] / 2) . '" id="fictional_radious" />' . "<td>" .
 				__('Color') . "<td>" .
-				'<input type="text" size="7" value="' . $options['color'] . '" id="fictional_color" class="fictional_color"/> <tr />' 
+				'<input type="text" size="7" value="' . $style['color'] . '" id="fictional_color" class="fictional_color"/> <tr />' 
 				."<tr><td>".__("Network map linked"). "<td>".$selectNetworkmaps.
 				"<td align=right>". html_print_button(__('Update'), 'update_fictional', false, 'update_fictional_node_popup(' . $id_node . ');', 'class="sub next"', true) . "</tr></table>";
 			

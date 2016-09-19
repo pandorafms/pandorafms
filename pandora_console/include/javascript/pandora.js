@@ -1005,12 +1005,8 @@ function removeTinyMCE(elementID) {console.log(elementID);
 }
 
 function addTinyMCE(elementID) {
-	if (elementID.length > 0 && !isEmptyObject(tinyMCE))
+	if (elementID.length > 0 && !isEmptyObject(tinyMCE)) 
 		tinyMCE.EditorManager.execCommand('mceAddControl', true, elementID);
-}
-
-		}
-	});
 }
 
 function autoclick_profile_users(actual_level, firts_level, second_level) {

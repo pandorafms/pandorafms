@@ -338,11 +338,20 @@ else {
 		$total_agents = db_get_sql ($sql);
 		switch ($config["dbtype"]) {
 			case "mysql":
+				$order['field2'] = "";
+				/*
 				$sql = sprintf ('SELECT *
 					FROM tagente
 					WHERE 1=1
 						%s
 					ORDER BY %s %s, %s %s LIMIT %d, %d', $search_sql, $order['field'],$order['order'], $order['field2'],
+					$order['order'], $offset, $config["block_size"]);
+				*/
+				$sql = sprintf ('SELECT *
+					FROM tagente
+					WHERE 1=1
+						%s
+					ORDER BY %s %s %s LIMIT %d, %d', $search_sql, $order['field'], $order['field2'],
 					$order['order'], $offset, $config["block_size"]);
 				break;
 			case "postgresql":
@@ -350,7 +359,7 @@ else {
 					FROM tagente
 					WHERE 1=1
 						%s
-					ORDER BY %s %s, %s %s LIMIT %d OFFSET %d', $search_sql, $order['field'],$order['order'], $order['field2'],
+					ORDER BY %s %s %s LIMIT %d OFFSET %d', $search_sql, $order['field'], $order['field2'],
 					$order['order'], $config["block_size"], $offset);
 				break;
 			case "oracle":
@@ -361,7 +370,7 @@ else {
 					FROM tagente
 					WHERE 1=1
 						%s
-					ORDER BY %s %s, %s %s', $search_sql, $order['field'],$order['order'], $order['field2'], $order['order']);
+					ORDER BY %s %s %s', $search_sql, $order['field'], $order['field2'], $order['order']);
 				$sql = oracle_recode_query ($sql, $set);
 				break;
 		}

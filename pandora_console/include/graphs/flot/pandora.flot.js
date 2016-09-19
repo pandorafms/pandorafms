@@ -819,7 +819,7 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 				newdate = year + "/" + month + "/" + day;
 
 			if(!to){
-				to= '12:00';
+				to= '23:59';
 			}
 			window.location='index.php?sec=eventos&sec2=operation/events/events&id_agent='+id_agent+'&date_from='+newdate+'&time_from='+from+'&date_to='+newdate+'&time_to='+to+'&status=-1';
 		}

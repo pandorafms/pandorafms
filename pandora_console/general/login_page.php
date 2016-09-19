@@ -79,9 +79,9 @@ echo '<div id="login_in">';
 	echo '<table id="login_layout">';
 	echo'<tr style="height:15px;"><td>';
 	echo '<div class="login_links">';
-	echo '<a href="http://wiki.pandorafms.com/" target="_blank">' . __('Help') . '</a>';
+	echo '<a href="http://wiki.pandorafms.com/" target="_blank">' . __('Docs') . '</a>';
 	echo ' | ';
-	echo '<a href="http://forums.pandorafms.com/" target="_blank">' . __('Support') . '</a>';
+	echo '<a href="https://pandorafms.com/monitoring-services/support/" target="_blank">' . __('Support') . '</a>';
 	echo '</div>';
 	echo '</td></tr>';
 	echo'<tr>
@@ -96,15 +96,16 @@ echo '<div id="login_in">';
 			}
 			else {
 				html_print_image ("images/logo_login.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+				echo "<br><span style='font-size:120%;color:white;top:10px;position:relative;'>Community edition</span>";
 			}
 			echo '</a>';
 			
 			// This prints the current pandora console version.
 			// For stable/live function it might be wise to comment it out
-			
+
 			/* CUSTOM BRANDING ENDS HERE */
 	echo '</td><td style="padding-top: 15px; position:absolute;">';
-	
+
 	switch ($login_screen) {
 		case 'login':
 			if (!empty ($page) && !empty ($sec)) {

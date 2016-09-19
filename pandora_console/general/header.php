@@ -71,7 +71,7 @@ config_check();
 				$table->width = "100%";
 				$table->styleTable = 'margin: auto; margin-top: 0px;';
 				$table->rowclass[0] = '';
-				
+				$table->data[0][11] = ui_print_help_tip (__("Blank characters are used as AND conditions"), true);
 				// Search bar
 				$search_bar = '<form method="get" style="display: inline;" name="quicksearch" action="">';
 				if (!isset($config['search_keywords'])) {
@@ -303,9 +303,9 @@ config_check();
 					$table->data[0][9] .= html_print_image ("images/header_email.png", true, array ("title" => __('You have %d unread message(s)', $msg_cnt), "id" => "yougotmail", "class" => "bot", 'style' => 'width:24px;'));
 					$table->data[0][9] .= '</a>';
 				}
-				
-				$table->data[0][11] = ui_print_help_tip (__("Blank characters are used as AND conditions"), true);
-				
+
+
+
 				html_print_table($table);
 				
 				unset($table);
@@ -386,8 +386,8 @@ config_check();
 		<?php
 		}
 		?>
-		
-		
+		$("#publienterprise").pulsate ();
+
 		<?php
 		if ($_GET["refr"]) {
 			$_get_refr = strip_tags($_GET["refr"]);

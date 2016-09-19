@@ -201,13 +201,14 @@ if (defined('METACONSOLE')) {
 	$table->head_colspan[0] = 5;
 	$table->headstyle[0] = 'text-align: center';
 }
+$table->style[0] = 'width: 500px;';
 $table->style[2] = 'width: 200px;';
 
 $data = array();
 $data[0] = '<b>' . __('User ID') . '</b>';
-$data[0] .= $jump . '<span style="font-weight: normal;">' . $id . '</span>';
+$data[0] .= '<div style="position:absolute;left:200px;display:inline;">'.$jump . '<span style="font-weight: normal;">' . $id . '</span></div>';
 $data[1] = '<b>' . __('Full (display) name') . '</b>';
-$data[1] .= $jump . html_print_input_text_extended ("fullname", $user_info["fullname"], '', '', 40, 100, $view_mode, '', 'class="input"', true);
+$data[1] .= '<div style="position:absolute;left:700px;display:inline;">'.$jump . html_print_input_text_extended ("fullname", $user_info["fullname"], '', '', 40, 100, $view_mode, '', 'class="input"', true).'</div>';
 // Show "Picture" (in future versions, why not, allow users to upload it's own avatar here.
 
 if (is_user_admin ($id)) {
@@ -229,9 +230,9 @@ $table->data[] = $data;
 
 $data = array();
 $data[0] = __('E-mail');
-$data[0] .= $jump . html_print_input_text_extended ("email", $user_info["email"], '', '', '40', '100', $view_mode, '', 'class="input"', true);
+$data[0] .= '<div style="position:absolute;left:200px;display:inline;">'.$jump . html_print_input_text_extended ("email", $user_info["email"], '', '', '40', '100', $view_mode, '', 'class="input"', true).'</div>';
 $data[1] = __('Phone number');
-$data[1] .= $jump . html_print_input_text_extended ("phone", $user_info["phone"], '', '', '40', '30', $view_mode, '', 'class="input"', true);
+$data[1] .= '<div style="position:absolute;left:700px;display:inline;">'.$jump . html_print_input_text_extended ("phone", $user_info["phone"], '', '', '40', '30', $view_mode, '', 'class="input"', true).'</div>';
 $table->rowclass[] = '';
 $table->rowstyle[] = 'font-weight: bold;';
 $table->data[] = $data;
@@ -240,9 +241,9 @@ if ($view_mode === false) {
 	if ($config["user_can_update_password"]) {
 		$data = array();
 		$data[0] = __('New Password');
-		$data[0] .= $jump . html_print_input_text_extended ("password_new", "", '', '', '40', '45', $view_mode, '', 'class="input"', true, true);
+		$data[0] .=  '<div style="position:absolute;left:200px;display:inline;">'.$jump . html_print_input_text_extended ("password_new", "", '', '', '40', '45', $view_mode, '', 'class="input"', true, true).'</div>';
 		$data[1] = __('Password confirmation');
-		$data[1] .= $jump . html_print_input_text_extended ("password_conf", "", '', '', '40', '45', $view_mode, '', 'class="input"', true, true);
+		$data[1] .= '<div style="position:absolute;left:700px;display:inline;">'.$jump . html_print_input_text_extended ("password_conf", "", '', '', '40', '45', $view_mode, '', 'class="input"', true, true).'</div>';
 		$table->rowclass[] = '';
 		$table->rowstyle[] = 'font-weight: bold;';
 		$table->data[] = $data;
@@ -272,7 +273,7 @@ $data[0] .= __('Default').' ('.$config["global_block_size"].')';
 $values = array(-1 => __('Default'),1 => __('Yes'),0 => __('No'));
 
 $data[1] = __('Interactive charts') . ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true);
-$data[1] .= $jump . html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false);
+$data[1] .= '<div style="position:absolute;left:700px;display:inline;">'.$jump . html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false).'</div>';
 
 
 $data[2] = __('Language');
@@ -295,8 +296,8 @@ $id_usr = $config['id_user'];
 if (!$meta) {
 	$data = array();
 	$data[0] = __('Shortcut bar') . ui_print_help_tip(__('This will activate a shortcut bar with alerts, events, messages... information'), true);
-	$data[0] .= $jump . html_print_checkbox('shortcut_bar', 1, $user_info["shortcut"], true);
-	
+	$data[0] .= '<div style="position:absolute;left:200px;display:inline;">'.$jump . html_print_checkbox('shortcut_bar', 1, $user_info["shortcut"], true).'</div>';
+
 	$data[1] = __('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true);
 	$values = array (
 		'Default' =>__('Default'),
@@ -309,9 +310,9 @@ if (!$meta) {
 	if (enterprise_installed()) {
 		$values['Dashboard'] = __('Dashboard');
 	}
-	
-	$data[1] .= $jump . html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);
-		
+
+	$data[1] .= '<div style="position:absolute;left:700px;display:inline;">'.$jump . html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false).'</div>';
+
 	if (enterprise_installed()) {
 		$dashboards = get_user_dashboards ($config['id_user']);
 		$dashboards_aux = array();
@@ -358,8 +359,8 @@ if (!$meta) {
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
 $data = array();
 $data[0] = __('Double authentication');
-$data[0] .= $jump;
-$data[0] .= html_print_checkbox('double_auth', 1, $double_auth_enabled, true);
+$data[0] .= '<div style="position:absolute;left:200px;display:inline;">'.$jump;
+$data[0] .= html_print_checkbox('double_auth', 1, $double_auth_enabled, true).'</span>';
 if ($double_auth_enabled) {
 	$data[0] .= $jump;
 	$data[0] .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
@@ -369,8 +370,8 @@ $data[0] .= "<div id=\"dialog-double_auth\"><div id=\"dialog-double_auth-contain
 
 if (check_acl ($config['id_user'], 0, "ER")){
 	$data[1] = __('Event filter');
-	$data[1] .= $jump . html_print_select_from_sql ('SELECT id_filter, id_name FROM tevent_filter',
-		'event_filter', $user_info["id_filter"], '', __('None'), NULL, true);
+	$data[1] .= '<div style="position:absolute;left:700px;display:inline;">'.$jump . html_print_select_from_sql ('SELECT id_filter, id_name FROM tevent_filter',
+		'event_filter', $user_info["id_filter"], '', __('None'), NULL, true).'</div>';
 }// Newsletter
 else if (license_free()) {
 	$data[1] = __('Newsletter Subscribed') . ':';

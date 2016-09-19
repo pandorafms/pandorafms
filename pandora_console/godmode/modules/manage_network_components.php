@@ -40,7 +40,7 @@ if (defined('METACONSOLE')) {
 else {
 	ui_print_page_header (__('Module management') . ' &raquo; ' .
 		__('Network component management'), "", false,
-		"network_component", true);
+		"network_component", true,"sell",true,"module");
 	$sec = 'gmodules';
 }
 

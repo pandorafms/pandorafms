@@ -205,7 +205,7 @@ $onheader['satellite'] = $satellitetab;
 
 ui_print_page_header(
 	__('Massive operations') . ' &raquo; '. $options[$option],
-	"images/gm_massive_operations.png", false, "", true, $onheader);
+	"images/gm_massive_operations.png", false, "", true, $onheader,true, "massive");
 
 // Checks if the PHP configuration is correctly
 if ((get_cfg_var("max_execution_time") != 0)

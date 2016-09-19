@@ -2383,7 +2383,7 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
  * @return string Header HTML
  */
 
-function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = "") {
+function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = "",$modal = false, $message = "") {
 	$title = io_safe_input_html($title);
 	if (($icon == "") && ($godmode == true)) {
 		$icon = "images/gm_setup.png";
@@ -2411,6 +2411,12 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . '&nbsp; ';
 	$buffer .= '<span style="">' .
 		ui_print_truncate_text($title, 38);
+	if ($modal){
+		$buffer .= "
+		<div id='publienterprise' class='".$message."' title='Community version' style='float: right;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		";
+	}
+
 	if ($help != "")
 		$buffer .= "<div class='head_help' style='float: right; margin-top: -2px !important; margin-left: 2px !important;'>" .
 			ui_print_help_icon ($help, true, '', 'images/help_w.png') . "</div>";

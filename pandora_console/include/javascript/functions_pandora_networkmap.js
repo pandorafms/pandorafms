@@ -934,7 +934,6 @@ function zoom(manual) {
 
 
 function set_positions_graph() {
-	
 	link.selectAll("path.link")
 		.attr("d", function(d) {
 			
@@ -948,8 +947,6 @@ function set_positions_graph() {
 			return "M " + d.target.x + " " + d.target.y +
 				" L " + d.source.x + " " + d.source.y;
 		});
-	
-	
 	
 	node.selectAll(".node_shape_circle")
 		.attr("cx", function(d) {
@@ -1624,41 +1621,42 @@ function init_drag_and_drop() {
 			if (d3.event.sourceEvent.button == 2)
 				return;
 			
-			
 			flag_drag_running = false;
 			
 			var selection = d3.selectAll('.node_selected');
 			
-			selection
-				.each(function(d) {
-					var params = [];
-					params.push("update_node=1");
-					params.push("node=" + JSON.stringify(d));
-					params.push("page=operation/agentes/pandora_networkmap.view");
-					jQuery.ajax ({
-						data: params.join ("&"),
-						dataType: 'json',
-						type: 'POST',
-						url: action="ajax.php",
-						success: function (data) {
-							if (d.state == 'holding_area') {
-								//It is out the holding area
-								if (data['state'] == "") {
-									//Remove the style of nodes and links
-									//in holding area
-									
-									d3.select("#id_node_" + d.id)
-										.classed("holding_area", false);
-									
-									d3.select(".source_" + d.id)
-										.classed("holding_area_link", false);
-									d3.select(".target_" + d.id)
-										.classed("holding_area_link", false);
+			if (enterprise_installed) {
+				selection
+					.each(function(d) {
+						var params = [];
+						params.push("update_node=1");
+						params.push("node=" + JSON.stringify(d));
+						params.push("page=operation/agentes/pandora_networkmap.view");
+						jQuery.ajax ({
+							data: params.join ("&"),
+							dataType: 'json',
+							type: 'POST',
+							url: action="ajax.php",
+							success: function (data) {
+								if (d.state == 'holding_area') {
+									//It is out the holding area
+									if (data['state'] == "") {
+										//Remove the style of nodes and links
+										//in holding area
+										
+										d3.select("#id_node_" + d.id)
+											.classed("holding_area", false);
+										
+										d3.select(".source_" + d.id)
+											.classed("holding_area_link", false);
+										d3.select(".target_" + d.id)
+											.classed("holding_area_link", false);
+									}
 								}
 							}
-						}
+						});
 					});
-				});
+			}
 			
 			d3.event.sourceEvent.stopPropagation();
 		})

@@ -2567,6 +2567,8 @@ function networkmap_refresh_holding_area($id_networkmap) {
 			array('state' => $row['state']),
 			array('id' => $row['id']));
 		
+		$row['style'] = json_decode($row['style'], true);
+		
 		$node = networkmap_db_node_to_js_node($row, $count,
 			$count_item_holding_area);
 		

@@ -295,7 +295,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 		return $output;
 	else
 		echo $output;
-		
+	
 	return '';
 }
 
@@ -450,8 +450,11 @@ function ui_print_timestamp ($unixtime, $return = false, $option = array ()) {
 		$data = __('Unknown');
 	}
 	elseif ($prominent == "timestamp") {
+		pandora_setlocale();
+		
 		$title = human_time_comparation ($unixtime);
-		$data = date ($config["date_format"], $unixtime);
+		$data = strftime(date2strftime_format($config["date_format"]),
+			$unixtime);
 	}
 	else {
 		$title = date ($config["date_format"], $unixtime);
@@ -513,7 +516,7 @@ function ui_print_tags_warning ($return = false) {
 	}
 }
 
-/** 
+/**
  * Print group icon within a link
  * 
  * @param int Group id
@@ -591,7 +594,7 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
 	else
 		$output .= '<img style="' . $style . '" class="bot" src="'.$path.'/'.$icon.'.png" alt="'.groups_get_name ($id_group, true).'" title="'.groups_get_name ($id_group, true).'" />';
 	
-	if ($link) 
+	if ($link)
 		$output .= '</a>';
 	
 	if (!$return)
@@ -600,12 +603,12 @@ function ui_print_group_icon_path ($id_group, $return = false, $path = "images/g
 	return $output;
 }
 
-/** 
+/**
  * Get the icon of an operating system.
  *
  * @param int Operating system id
  * @param bool Whether to also append the name of the OS after the icon
- * @param bool Whether to return or echo the result 
+ * @param bool Whether to return or echo the result
  * @param bool Whether to apply skin or not
  * 
  * @return string HTML with icon of the OS
@@ -632,8 +635,7 @@ function ui_print_os_icon ($id_os, $name = true, $return = false,
 			return "-";
 		}
 	}
-	
-	if ($apply_skin) {
+	else if ($apply_skin) {
 		if ($only_src) {
 			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, $options, true, $relative);
 		}
@@ -686,7 +688,7 @@ function ui_print_agent_name ($id_agent, $return = false, $cutoff = 'agent_mediu
 	}
 	
 	if ($link) {
-		$url = $server_url . 'index.php?sec=estado&amp;'. 
+		$url = $server_url . 'index.php?sec=estado&amp;'.
 			'sec2=operation/agentes/ver_agente&amp;' .
 			'id_agente=' . $id_agent.$extra_params;
 		
@@ -798,7 +800,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 			else {
 				$img = 'images/policies.png';
 				
-				$data[$index['policy']] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id'] . '">' . 
+				$data[$index['policy']] = '<a href="?sec=gpolicies&amp;sec2=enterprise/godmode/policies/policies&amp;id=' . $policyInfo['id'] . '">' .
 					html_print_image($img,true, array('title' => $policyInfo['name'])) .
 					'</a>';
 			}
@@ -817,7 +819,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 		if ($alert["force_execution"] == 0) {
 			$data[$index['force_execution']] =
 				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;force_execution=1&refr=60">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'))) . '</a>';
-		} 
+		}
 		else {
 			$data[$index['force_execution']] =
 				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;refr=60">' . html_print_image("images/refresh.png", true) . '</a>';
@@ -828,7 +830,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	if ($agent == 0) {
 		$data[$index['module_name']] .=
 			ui_print_truncate_text(isset($alert['agent_module_name']) ? $alert['agent_module_name'] : modules_get_agentmodule_name ($alert["id_agent_module"]), 'module_small', false, true, true, '[&hellip;]', 'font-size: 7.2pt');
-	} 
+	}
 	else {
 		if (defined('METACONSOLE')) {
 			$agent_name = $alert['agent_name'];
@@ -847,7 +849,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 				$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 'agent_medium', $styleDisabled . " $agent_style", false, $console_url, $url_hash, $agent_name);
 			}
 			else {
-				$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 'agent_medium', $styleDisabled, false, $console_url, $url_hash);		
+				$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 'agent_medium', $styleDisabled, false, $console_url, $url_hash);
 			}
 		}
 		
@@ -1046,7 +1048,7 @@ function ui_print_alert_template_example ($id_alert_template, $return = false, $
  * 
  * @param string Id of the help article
  * @param bool Whether to return or output the result
- * @param string Home url if its necessary 
+ * @param string Home url if its necessary
  * @param string Image path
  * 
  * @return string The help tip
@@ -1059,7 +1061,7 @@ function ui_print_help_icon ($help_id, $return = false, $home_url = '', $image =
 		$home_url = "../../" . $home_url;
 	}
 	
-	$output = html_print_image ($image, true, 
+	$output = html_print_image ($image, true,
 		array ("class" => "img_help",
 			"title" => __('Help'),
 			"onclick" => "open_help ('" . $help_id . "','" . $home_url . "')"));
@@ -1365,15 +1367,15 @@ function ui_process_page_head ($string, $bitfield) {
 	if ($exists_css) {
 		foreach ($skin_styles as $filename => $name) {
 			$style = substr ($filename, 0, strlen ($filename) - 4);
-			$config['css'][$style] = $skin_path . 'include/styles/' . $filename; 
+			$config['css'][$style] = $skin_path . 'include/styles/' . $filename;
 		}
-	} 
+	}
 	//Otherwise assign default and user's css
 	else {
 		//User style should go last so it can rewrite common styles
 		$config['css'] = array_merge (array (
-			"common" => "include/styles/common.css", 
-			"menu" => "include/styles/menu.css", 
+			"common" => "include/styles/common.css",
+			"menu" => "include/styles/menu.css",
 			$config['style'] => "include/styles/" . $config['style'] . ".css"),
 			$config['css']);
 	}
@@ -1548,7 +1550,7 @@ function ui_process_page_body ($string, $bitfield) {
 	return $output;
 }
 
-/** 
+/**
  * Prints a pagination menu to browse into a collection of data.
  * 
  * @param int $count Number of elements in the collection.
@@ -1558,7 +1560,7 @@ function ui_process_page_body ($string, $bitfield) {
  * taken from $_REQUEST['offset']
  * @param int $pagination Current pagination size. If a user requests a larger
  * pagination than config["block_size"]
- * @param bool $return Whether to return or print this 
+ * @param bool $return Whether to return or print this
  * @param string $offset_name The name of parameter for the offset.
  * @param bool $print_total_items Show the text with the total items. By default true.
  *
@@ -1592,8 +1594,8 @@ function ui_pagination ($count, $url = false, $offset = 0,
 	/*
 	 URL passed render links with some parameter
 	 &offset - Offset records passed to next page
-	 &counter - Number of items to be blocked 
-	 Pagination needs $url to build the base URL to render links, its a base url, like 
+	 &counter - Number of items to be blocked
+	 Pagination needs $url to build the base URL to render links, its a base url, like
 	 " http://pandora/index.php?sec=godmode&sec2=godmode/admin_access_logs "
 	 */
 	$block_limit = PAGINATION_BLOCKS_LIMIT; // Visualize only $block_limit blocks
@@ -1789,7 +1791,7 @@ function ui_pagination ($count, $url = false, $offset = 0,
 	return $output;
 }
 
-/** 
+/**
  * Prints only a tip button which shows a text when the user puts the mouse over it.
  * 
  * @param string Complete text to show in the tip
@@ -1800,8 +1802,8 @@ function ui_pagination ($count, $url = false, $offset = 0,
  */
 function ui_print_session_action_icon ($action, $return = false) {
 	$key_icon = array(
-		'acl' => 'images/delete.png', 
-		'agent' => 'images/agent.png', 
+		'acl' => 'images/delete.png',
+		'agent' => 'images/agent.png',
 		'module' => 'images/module.png',
 		'alert' => 'images/bell.png',
 		'incident' => 'images/default_list.png',
@@ -1827,7 +1829,7 @@ function ui_print_session_action_icon ($action, $return = false) {
 	$output = '';
 	foreach($key_icon as $key => $icon) {
 		if (stristr($action, $key) !== false) {
-			$output = html_print_image($icon, true, array('title' => $action)) . ' '; 
+			$output = html_print_image($icon, true, array('title' => $action)) . ' ';
 			break;
 		}
 	}
@@ -1837,7 +1839,7 @@ function ui_print_session_action_icon ($action, $return = false) {
 	echo $output;
 }
 
-/** 
+/**
  * Prints only a tip button which shows a text when the user puts the mouse over it.
  * 
  * @param string Complete text to show in the tip
@@ -2028,7 +2030,7 @@ function ui_get_status_images_path () {
 	
 	$imageset = $config["status_images_set"];
 	
-	if (strpos ($imageset, ",") === false) 
+	if (strpos ($imageset, ",") === false)
 		$imageset .= ",40x18";
 	list ($imageset, $sizes) = preg_split ("/\,/", $imageset);
 	
@@ -2045,7 +2047,7 @@ function ui_get_status_images_path () {
  * Prints an image representing a status.
  *
  * @param string
- * @param string 
+ * @param string
  * @param bool Whether to return an output string or echo now (optional, echo by default).
  * @param array options to set image attributes: I.E.: style
  * @param Path of the image, if not provided use the status path
@@ -2154,7 +2156,7 @@ function ui_toggle($code, $name, $title = '', $hidden_default = true, $return = 
 function ui_get_url_refresh ($params = false, $relative = true, $add_post = true) {
 	// Agent selection filters and refresh
 	global $config;
-
+	
 	// slerena, 8/Ene/2015 - Need to put index.php on URL which have it.
 	if (strpos($_SERVER['REQUEST_URI'], 'index.php') === false)
 		$url = '';
@@ -2407,8 +2409,8 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	
 	
 	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . '&nbsp; ';
-	$buffer .= '<span style="">' . 
-		ui_print_truncate_text($title, 38);
+	$buffer .= '<span style="">' .
+		ui_print_truncate_text($title, 46);
 	if ($modal){
 		$buffer .= "
 		<div id='publienterprise' class='".$message."' title='Community version' style='float: right;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
@@ -3216,7 +3218,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 						server_id = ui.item.id_server;
 					}
 					
-					 
+					
 					
 					//Put the name
 					$(this).val(agent_name);
@@ -3537,7 +3539,7 @@ function ui_get_error ($error_code) {
 		case 'error_dbconfig':
 			$title = __('Problem with Pandora FMS database');
 			$message = __('Cannot connect to the database, please check your database setup in the <b>include/config.php</b> file.<i><br/><br/>
-			Probably your database, hostname, user or password values are incorrect or 
+			Probably your database, hostname, user or password values are incorrect or
 			the database server is not running.').'<br /><br />';
 			$message .= '<span class="red">';
 			$message .= '<b>' . __('DB ERROR') . ':</b><br>';
@@ -3579,9 +3581,9 @@ function ui_get_error ($error_code) {
 			break;
 		case 'error_perms':
 			$title = __('Bad permission for include/config.php');
-			$message = __('For security reasons, <i>config.php</i> must have restrictive permissions, and "other" users 
-			should not read it or write to it. It should be written only for owner 
-			(usually www-data or http daemon user), normal operation is not possible until you change 
+			$message = __('For security reasons, <i>config.php</i> must have restrictive permissions, and "other" users
+			should not read it or write to it. It should be written only for owner
+			(usually www-data or http daemon user), normal operation is not possible until you change
 			permissions for <i>include/config.php</i> file. Please do it, it is for your security.');
 			break;
 	}

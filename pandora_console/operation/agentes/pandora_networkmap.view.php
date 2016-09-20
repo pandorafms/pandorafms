@@ -21,9 +21,7 @@ require_once ('enterprise/include/functions_policies.php');
 require_once ('include/functions_modules.php');
 
 //--------------INIT AJAX-----------------------------------------------
-if (is_ajax ()) {
-	$erase_node = (bool)get_parameter('erase_node', false);
-	
+if (is_ajax ()) {	
 	$update_refresh_state = (bool)get_parameter('update_refresh_state',
 		false);
 	
@@ -474,22 +472,6 @@ if (is_ajax ()) {
 		
 		return;
  	}
-	
-	if ($erase_node) {
-		$node_json = io_safe_output(get_parameter('node', ''));
-		
-		$node = json_decode($node_json, true);
-		
-		$return = array();
-		$return['correct'] = false;
-		
-		$return['correct'] = erase_node($node['id']);
-		$return['old_id'] = $node['id'];
-		
-		echo json_encode($return);
-		
-		return;
-	}
 	
 	if ($update_refresh_state) {
 		$refresh_state = (int)get_parameter('refresh_state', 60);

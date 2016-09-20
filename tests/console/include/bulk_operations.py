@@ -122,16 +122,18 @@ def edit_modules_in_bulk(driver,module_name_list,agent_name_list,new_module_grou
 
 	if ff_threshold_list != None:
 
-		Select(driver.find_element_by_id("option")).select_by_visible_text("Change each status")
+		Select(driver.find_element_by_id("each_ff")).select_by_visible_text("Change each status")
+
+		time.sleep(3)
 
 		driver.find_element_by_id("text-min_ff_event_normal").clear()
-		Select(driver.find_element_by_id("text-min_ff_event_normal")).select_by_visible_text(ff_threshold_list[0])
+		driver.find_element_by_id("text-min_ff_event_normal").send_keys(ff_threshold_list[0])
 
 		driver.find_element_by_id("text-min_ff_event_warning").clear()
-		Select(driver.find_element_by_id("text-min_ff_event_warning")).select_by_visible_text(ff_threshold_list[1])
+		driver.find_element_by_id("text-min_ff_event_warning").send_keys(ff_threshold_list[1])
 
 		driver.find_element_by_id("text-min_ff_event_critical").clear()
-		Select(driver.find_element_by_id("text-min_ff_event_critical")).select_by_visible_text(ff_threshold_list[2])
+		driver.find_element_by_id("text-min_ff_event_critical").send_keys(ff_threshold_list[2])
 
 	driver.find_element_by_id("submit-go").click()
 

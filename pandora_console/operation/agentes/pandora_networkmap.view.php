@@ -22,7 +22,6 @@ require_once ('include/functions_modules.php');
 
 //--------------INIT AJAX-----------------------------------------------
 if (is_ajax ()) {
-	$update_node = (bool)get_parameter('update_node', false);
 	$erase_node = (bool)get_parameter('erase_node', false);
 	
 	$update_refresh_state = (bool)get_parameter('update_refresh_state',
@@ -38,8 +37,7 @@ if (is_ajax ()) {
 	$get_info_module = (bool)get_parameter('get_info_module', false);
 	$get_tooltip_content = (bool)get_parameter('get_tooltip_content',
 		false);
-	$get_agents_in_group = (bool)get_parameter('get_agents_in_group',
-		false);
+	
 	$add_several_agents = (bool)get_parameter('add_several_agents',
 		false);
 	
@@ -47,44 +45,6 @@ if (is_ajax ()) {
 		'update_fictional_point', false);
 	$update_z = (bool)get_parameter('update_z', false);
 	$module_get_status = (bool)get_parameter('module_get_status', false);
-	
-	$update_link = (bool)get_parameter('update_link', false);
-	
-	if ($update_link) {
-		$networkmap_id = (int)get_parameter('networkmap_id', 0);
-		$id_link = (int)get_parameter('id_link', 0);
-		$interface_source = (int)get_parameter('interface_source', 0);
-		$interface_target = (int)get_parameter('interface_target', 0);
-		
-		$return = array();
-		$return['correct'] = false;
-		
-		// ACL for the network map
-		$id_group = db_get_value('id_group', 'tmap', 'id', $networkmap_id);
-		// $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
-		$networkmap_write = check_acl ($config['id_user'], $id_group, "MW");
-		$networkmap_manage = check_acl ($config['id_user'], $id_group, "MM");
-		
-		if (!$networkmap_write && !$networkmap_manage) {
-			db_pandora_audit("ACL Violation",
-				"Trying to access networkmap");
-			echo json_encode($return);
-			return;
-		}
-		
-		$result = networkmap_update_link
-			($networkmap_id, $id_link, $interface_source, $interface_target);
-		
-		if (is_bool($result)) {
-			$return['correct'] = $result;
-		}
-		else
-			$return = $result;
-		
-		echo json_encode($return);
-		
-		return;
-	}
 	
 	if ($module_get_status) {
 		$id = (int)get_parameter('id', 0);
@@ -206,56 +166,6 @@ if (is_ajax ()) {
 				$return['nodes'][] = $data;
 			}
 			$count++;
-		}
-		
-		echo json_encode($return);
-		
-		return;
-	}
-	
-	if ($get_agents_in_group) {
-		$id = (int)get_parameter('id', 0);
-		$group = (int)get_parameter('group', -1);
-		
-		$return = array();
-		$return['correct'] = false;
-		
-		if ($group != -1) {
-			$where_id_agente = ' 1=1 ';
-			
-			$agents_in_networkmap = db_get_all_rows_filter(
-				'titem',
-				array('tmap' => $id,
-					'deleted' => 0));
-			if ($agents_in_networkmap !== false) {
-				$ids = array();
-				foreach ($agents_in_networkmap as $agent) {
-					if ($agent['type'] == 0) {
-						$ids[] = $agent['source_data'];
-					}
-				}
-				$where_id_agente = ' id_agente NOT IN (' .
-					implode(',', $ids) . ')';
-			}
-			
-			
-			$sql = 'SELECT id_agente, nombre
-				FROM tagente
-				WHERE id_grupo = ' . $group . ' AND ' .
-					$where_id_agente . ' 
-				ORDER BY nombre ASC';
-			
-			$agents = db_get_all_rows_sql($sql);
-			
-			if ($agents !== false) {
-				$return['agents'] = array();
-				foreach ($agents as $agent) {
-					$return['agents'][$agent['id_agente']] =
-						$agent['nombre'];
-				}
-				
-				$return['correct'] = true;
-			}
 		}
 		
 		echo json_encode($return);
@@ -564,16 +474,6 @@ if (is_ajax ()) {
 		
 		return;
  	}
-	
-	if ($update_node) {
-		$node_json = io_safe_output(get_parameter('node', ''));
-		
-		$node = json_decode($node_json, true);
-		
-		echo json_encode(update_node($node));
-		
-		return;
-	}
 	
 	if ($erase_node) {
 		$node_json = io_safe_output(get_parameter('node', ''));

@@ -336,7 +336,7 @@ function update_link(row_index, id_link) {
 	params.push("id_link=" + id_link);
 	params.push("interface_source=" + interface_source);
 	params.push("interface_target=" + interface_target);
-	params.push("page=operation/agentes/pandora_networkmap.view");
+	params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
 	
 	jQuery.ajax ({
 		data: params.join ("&"),
@@ -826,12 +826,10 @@ function show_details_agent(d) {
 	else {
 		url = url_popup;
 		url = url + "?refresh_state=" + refresh_period;
-		
 		url = url + "&id=" + d.id_db;
+		url = url + "&id_agent=" + d.id_agent;
 		
 		popup = window.open(url, 'Details' + d.text, 'width=800,height=600');
-		
-		//~ d3.event.sourceEvent.stopPropagation();
 	}
 	
 	return false;
@@ -1685,7 +1683,7 @@ function init_drag_and_drop() {
 						var params = [];
 						params.push("update_node=1");
 						params.push("node=" + JSON.stringify(d));
-						params.push("page=operation/agentes/pandora_networkmap.view");
+						params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
 						jQuery.ajax ({
 							data: params.join ("&"),
 							dataType: 'json',
@@ -2479,205 +2477,207 @@ function draw_elements_graph() {
 }
 
 function choose_group_for_show_agents() {
-	group = $("#group_for_show_agents option:selected").val();
-	
-	$("#agents_filter_group").attr('disabled', true);
-	$("#spinner_group").css('display', '');
-	if (group == -1) {
-		$("#agents_filter_group").html('<option value="-1">' + $("#hack_translation_none").html() + '</option>');
-		$("#spinner_group").css('display', 'none');
-	}
-	else {
-		$("#group_for_show_agents").attr('disabled', true);
+	if (enterprise_installed) {
+		group = $("#group_for_show_agents option:selected").val();
 		
-		var params = [];
-		params.push("get_agents_in_group=1");
-		params.push("id=" + networkmap_id);
-		params.push("group=" + group);
-		params.push("page=operation/agentes/pandora_networkmap.view");
-		jQuery.ajax ({
-			data: params.join ("&"),
-			dataType: 'json',
-			type: 'POST',
-			url: action="ajax.php",
-			success: function (data) {
-				if (data['correct']) {
-					$("#agents_filter_group").html('');
-					jQuery.each(data['agents'], function (id, name) {
-						if (typeof(name) == 'undefined') return;
+		$("#agents_filter_group").attr('disabled', true);
+		$("#spinner_group").css('display', '');
+		if (group == -1) {
+			$("#agents_filter_group").html('<option value="-1">' + $("#hack_translation_none").html() + '</option>');
+			$("#spinner_group").css('display', 'none');
+		}
+		else {
+			$("#group_for_show_agents").attr('disabled', true);
+			
+			var params = [];
+			params.push("get_agents_in_group=1");
+			params.push("id=" + networkmap_id);
+			params.push("group=" + group);
+			params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+			jQuery.ajax ({
+				data: params.join ("&"),
+				dataType: 'json',
+				type: 'POST',
+				url: action="ajax.php",
+				success: function (data) {
+					if (data['correct']) {
+						$("#agents_filter_group").html('');
+						jQuery.each(data['agents'], function (id, name) {
+							if (typeof(name) == 'undefined') return;
+							
+							$("#agents_filter_group").append('<option value="' + id + '">' + name + '</option>');
+						});
 						
-						$("#agents_filter_group").append('<option value="' + id + '">' + name + '</option>');
-					});
-					
-					$("#agents_filter_group").removeAttr('disabled');
-					$("#group_for_show_agents").removeAttr('disabled');
-					$("#spinner_group").css('display', 'none');
-					$("input[name=add_agent_group_button]").removeAttr('disabled');
-				}
-				else {
-					$("#group_for_show_agents").removeAttr('disabled');
-					$("#agents_filter_group").html('<option value="-1">' +
-						translation_none + '</option>');
-					$("#spinner_group").css('display', 'none');function show_networkmap_node(id_agent_param, refresh_state) {
-	id_agent = id_agent_param;
-	
-	canvas = $("#node_info");
-	context_popup = canvas[0].getContext('2d');
-	
-	dirty_popup = true;
-	self.setInterval("check_popup_modification()", 1000/30);
-	
-	$("#node_info").mousemove(function(event) {
-		var x = event.pageX - $("#node_info").offset().left;
-		var y = event.pageY - $("#node_info").offset().top;
+						$("#agents_filter_group").removeAttr('disabled');
+						$("#group_for_show_agents").removeAttr('disabled');
+						$("#spinner_group").css('display', 'none');
+						$("input[name=add_agent_group_button]").removeAttr('disabled');
+					}
+					else {
+						$("#group_for_show_agents").removeAttr('disabled');
+						$("#agents_filter_group").html('<option value="-1">' +
+							translation_none + '</option>');
+						$("#spinner_group").css('display', 'none');function show_networkmap_node(id_agent_param, refresh_state) {
+		id_agent = id_agent_param;
 		
-		module_inner = inner_module(x, y);
-		
-		if (module_inner != null) {
-			document.body.style.cursor = "pointer";
-		}
-		else {
-			document.body.style.cursor = "default";
-		}
-	});
-	
-	$("#node_info").mousedown(function(event) {
-		var x = event.pageX - $("#node_info").offset().left;
-		var y = event.pageY - $("#node_info").offset().top;
-		
-		if (module_inner != null) {
-			show_tooltip(module_inner, x, y);
-		}
-		
-		event.stopPropagation();
-		return false;
-	});
-	
-	$("#node_info").mouseup(function(event) {
-		var x = event.pageX - $("#node_info").offset().left;
-		var y = event.pageY - $("#node_info").offset().top;
-		
-		drag = false;
-		drag_x = 0;
-		drag_y = 0;
-		dirty_popup = true;
-		
-		document.body.style.cursor = "default";
-		
-		module_inner = null;
-		
-		event.stopPropagation();
-		return false;
-	});
-	
-	$("#node_info").mouseout(function(event) {
-		var x = event.pageX - $("#node_info").offset().left;
-		var y = event.pageY - $("#node_info").offset().top;
-		
-		drag = false;
-		drag_x = 0;
-		drag_y = 0;
-		dirty_popup = true;
-		
-		document.body.style.cursor = "default";
-		
-		module_inner = null;
-		
-		event.stopPropagation();
-		return false;
-	});
-	
-	$(window).resize(function() {
-		function show_networkmap_node(id_agent_param, refresh_state) {
-	id_agent = id_agent_param;
-	
-	canvas = $("#node_info");
-	context_popup = canvas[0].getContext('2d');
-	
-	dirty_popup = true;
-	self.setInterval("check_popup_modification()", 1000/30);
-	
-	$("#node_info").mousemove(function(event) {
-		var x = event.pageX - $("#node_info").offset().left;
-		var y = event.pageY - $("#node_info").offset().top;
-		
-		module_inner = inner_module(x, y);
-		
-		if (module_inner != null) {
-			document.body.style.cursor = "pointer";
-		}
-		else {
-			document.body.style.cursor = "default";
-		}
-	});
-	
-	$("#node_info").mousedown(function(event) {
-		var x = event.pageX - $("#node_info").offset().left;
-		var y = event.pageY - $("#node_info").offset().top;
-		
-		if (module_inner != null) {
-			show_tooltip(module_inner, x, y);
-		}
-		
-		event.stopPropagation();
-		return false;
-	});
-	
-	$("#node_info").mouseup(function(event) {
-		var x = event.pageX - $("#node_info").offset().left;
-		var y = event.pageY - $("#node_info").offset().top;
-		
-		drag = false;
-		drag_x = 0;
-		drag_y = 0;
-		dirty_popup = true;
-		
-		document.body.style.cursor = "default";
-		
-		module_inner = null;
-		
-		event.stopPropagation();
-		return false;
-	});
-	
-	$("#node_info").mouseout(function(event) {
-		var x = event.pageX - $("#node_info").offset().left;
-		var y = event.pageY - $("#node_info").offset().top;
-		
-		drag = false;
-		drag_x = 0;
-		drag_y = 0;
-		dirty_popup = true;
-		
-		document.body.style.cursor = "default";
-		
-		module_inner = null;
-		
-		event.stopPropagation();
-		return false;
-	});
-	
-	$(window).resize(function() {
-		
-		pos_scroll = Math.floor($("#content_node_info").width() / 2);
-		
-		$("#content_node_info").scrollLeft(pos_scroll);
+		canvas = $("#node_info");
+		context_popup = canvas[0].getContext('2d');
 		
 		dirty_popup = true;
-		check_popup_modification();
-	});
-}
-		pos_scroll = Math.floor($("#content_node_info").width() / 2);
+		self.setInterval("check_popup_modification()", 1000/30);
 		
-		$("#content_node_info").scrollLeft(pos_scroll);
-		
-		dirty_popup = true;
-		check_popup_modification();
-	});
-}
-				}
+		$("#node_info").mousemove(function(event) {
+			var x = event.pageX - $("#node_info").offset().left;
+			var y = event.pageY - $("#node_info").offset().top;
+			
+			module_inner = inner_module(x, y);
+			
+			if (module_inner != null) {
+				document.body.style.cursor = "pointer";
+			}
+			else {
+				document.body.style.cursor = "default";
 			}
 		});
+		
+		$("#node_info").mousedown(function(event) {
+			var x = event.pageX - $("#node_info").offset().left;
+			var y = event.pageY - $("#node_info").offset().top;
+			
+			if (module_inner != null) {
+				show_tooltip(module_inner, x, y);
+			}
+			
+			event.stopPropagation();
+			return false;
+		});
+		
+		$("#node_info").mouseup(function(event) {
+			var x = event.pageX - $("#node_info").offset().left;
+			var y = event.pageY - $("#node_info").offset().top;
+			
+			drag = false;
+			drag_x = 0;
+			drag_y = 0;
+			dirty_popup = true;
+			
+			document.body.style.cursor = "default";
+			
+			module_inner = null;
+			
+			event.stopPropagation();
+			return false;
+		});
+		
+		$("#node_info").mouseout(function(event) {
+			var x = event.pageX - $("#node_info").offset().left;
+			var y = event.pageY - $("#node_info").offset().top;
+			
+			drag = false;
+			drag_x = 0;
+			drag_y = 0;
+			dirty_popup = true;
+			
+			document.body.style.cursor = "default";
+			
+			module_inner = null;
+			
+			event.stopPropagation();
+			return false;
+		});
+		
+		$(window).resize(function() {
+			function show_networkmap_node(id_agent_param, refresh_state) {
+		id_agent = id_agent_param;
+		
+		canvas = $("#node_info");
+		context_popup = canvas[0].getContext('2d');
+		
+		dirty_popup = true;
+		self.setInterval("check_popup_modification()", 1000/30);
+		
+		$("#node_info").mousemove(function(event) {
+			var x = event.pageX - $("#node_info").offset().left;
+			var y = event.pageY - $("#node_info").offset().top;
+			
+			module_inner = inner_module(x, y);
+			
+			if (module_inner != null) {
+				document.body.style.cursor = "pointer";
+			}
+			else {
+				document.body.style.cursor = "default";
+			}
+		});
+		
+		$("#node_info").mousedown(function(event) {
+			var x = event.pageX - $("#node_info").offset().left;
+			var y = event.pageY - $("#node_info").offset().top;
+			
+			if (module_inner != null) {
+				show_tooltip(module_inner, x, y);
+			}
+			
+			event.stopPropagation();
+			return false;
+		});
+		
+		$("#node_info").mouseup(function(event) {
+			var x = event.pageX - $("#node_info").offset().left;
+			var y = event.pageY - $("#node_info").offset().top;
+			
+			drag = false;
+			drag_x = 0;
+			drag_y = 0;
+			dirty_popup = true;
+			
+			document.body.style.cursor = "default";
+			
+			module_inner = null;
+			
+			event.stopPropagation();
+			return false;
+		});
+		
+		$("#node_info").mouseout(function(event) {
+			var x = event.pageX - $("#node_info").offset().left;
+			var y = event.pageY - $("#node_info").offset().top;
+			
+			drag = false;
+			drag_x = 0;
+			drag_y = 0;
+			dirty_popup = true;
+			
+			document.body.style.cursor = "default";
+			
+			module_inner = null;
+			
+			event.stopPropagation();
+			return false;
+		});
+		
+		$(window).resize(function() {
+			
+			pos_scroll = Math.floor($("#content_node_info").width() / 2);
+			
+			$("#content_node_info").scrollLeft(pos_scroll);
+			
+			dirty_popup = true;
+			check_popup_modification();
+		});
+	}
+			pos_scroll = Math.floor($("#content_node_info").width() / 2);
+			
+			$("#content_node_info").scrollLeft(pos_scroll);
+			
+			dirty_popup = true;
+			check_popup_modification();
+		});
+	}
+					}
+				}
+			});
+		}
 	}
 }
 

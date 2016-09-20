@@ -32,6 +32,7 @@ check_login();
 $id_node = (int)get_parameter('id', 0);
 $row = db_get_row('titem', 'id', $id_node);
 $networkmap = db_get_row('tmap', 'id', $row['id_map']);
+$id_agent = (int)get_parameter('id_agent', 0);
 
 // ACL for the network map
 $networkmap_read = check_acl ($config['id_user'], $networkmap['id_group'], "MR");
@@ -69,7 +70,7 @@ $style = json_decode($row['style'], true);
 		}
 		</style>
 		<?php
-		show_node_info($id_node, $refresh_state, $user_readonly);
+		show_node_info($id_node, $refresh_state, $user_readonly, $id_agent);
 		?>
 	</body>
 </html>

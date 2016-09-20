@@ -1839,8 +1839,10 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		enterprise_hook('policies_delete_agent', array($id_agent));
 		
 		// Delete agent in networkmap enterprise
-		include_once("include/functions_pandora_networkmap.php");
-		networkmap_delete_nodes_by_agent(array($id_agent));
+		if (enterprise_installed()) {
+			enterprise_include_once("include/functions_pandora_networkmap.php");
+			networkmap_delete_nodes_by_agent(array($id_agent));
+		}
 		
 		// tagente_datos_inc
 		// Dont delete here, this records are deleted later, in database script

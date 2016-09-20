@@ -2410,7 +2410,7 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	
 	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . '&nbsp; ';
 	$buffer .= '<span style="">' .
-		ui_print_truncate_text($title, 38);
+		ui_print_truncate_text($title, 46);
 	if ($modal){
 		$buffer .= "
 		<div id='publienterprise' class='".$message."' title='Community version' style='float: right;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>

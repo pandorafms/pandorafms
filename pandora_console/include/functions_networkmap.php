@@ -372,12 +372,14 @@ function networkmap_get_nodes_and_links($pandora_name, $group = 0,
 	
 	// Get policy data
 	if ($show_policies) {
-		
-		$policies = networkmap_get_policies(array($group));
-		
-		$agents = networkmap_filter_agents_policies(array($policies, $agents));
+		if (enterprise_installed()) {
+			enterprise_include_once("include/functions_pandora_networkmap.php");
+			
+			$policies = networkmap_get_policies(array($group));
+			
+			$agents = networkmap_filter_agents_policies(array($policies, $agents));
+		}
 	}
-	
 	
 	// Get groups data
 	if ($show_groups) {

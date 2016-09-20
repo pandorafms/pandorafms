@@ -10,40 +10,6 @@
 // You cannnot redistribute it without written permission of copyright holder.
 // ============================================================================
 
-function networkmap_get_policies($id_group) {
-	enterprise_include_once("include/functions_policies.php");
-	
-	$filter_policy = array();
-	$filter_policy['id_group'] = $id_group;
-	
-	$policies = policies_get_policies($filter_policy);
-	if ($policies === false) {
-		$policies = array();
-	}
-	
-	return $policies;
-}
-
-function networkmap_filter_agents_policies($policies, $agents) {
-	enterprise_include_once("include/functions_policies.php");
-	
-	$temp = array();
-	foreach ($policies as $policy) {
-		foreach ($agents as $i => $agent) {
-			$exists = (bool)db_get_value_filter(
-				'id', 'tpolicy_agents',
-				array('id_agent' => $agent['id_agente'],
-					'id_policy' => $policy['id']));
-			
-			if ($exists) {
-				$temp[] = $agent;
-			}
-		}
-	}
-	
-	return $temp;
-}
-
 function networkmap_delete_networkmap($id = 0) {
 	// Relations
 	$result = db_process_sql_delete('trel_item', array('id_map' => $id));
@@ -109,14 +75,6 @@ function networkmap_process_networkmap($id = 0) {
 	if (isset($options['l2_network_interfaces']))
 		$l2_network_interfaces = (bool)$options['l2_network_interfaces'];
 	*/
-	// --------- DEPRECATED --------------------------------------------
-	// NO CONTEMPLADO
-	$old_mode = false;
-	/*
-	if (isset($options['old_mode']))
-		$old_mode = (bool)$options['old_mode'];
-	*/
-	// --------- END DEPRECATED ----------------------------------------
 	
 	// NO CONTEMPLADO
 	$dont_show_subgroups = false;
@@ -210,72 +168,9 @@ function networkmap_process_networkmap($id = 0) {
 	
 	$nodes_and_relations = array();
 	if (enterprise_installed()) {
-		$array_key_to_db_id = array();
-		foreach ($nodes as $key => $node) {
-			$values = array();
-			$values['id_map'] = $id;
-			$values['x'] = (int)$node['coords'][0];
-			$values['y'] = (int)$node['coords'][1];
-			//$values['parent'] = 0;
-				$style = array();
-				if ($l2_network_interfaces) {
-					$values['type'] = $node['type'];
-					if ($node['type'] == 'agent') {
-						switch (os_get_name(agents_get_os($node['id_agent']))) {
-							case 'Router':
-								$style['shape'] = 'circle';
-								break;
-							case 'Switch':
-								$style['shape'] = 'circle';
-								break;
-							default:
-								$style['shape'] = 'circle';
-								break;
-						}
-					}
-					else {
-						$style['shape'] = 'arrowhead';
-					}
-				}
-				else {
-					$style['shape'] = 'circle';
-				}
-				$style['image'] = $node['image'];
-				$style['width'] = $node['width'];
-				$style['height'] = $node['height'];
-				$style['label'] = $node['text'];
-				
-			$values['style'] = json_encode($style);
-			if ($node['type'] == 'agent') {
-				$values['source_data'] = $node['id_agent'];
-			}
-			else {
-				$values['source_data'] = $node['id_module'];
-			}
-			
-			$id_or_result = db_process_sql_insert(
-				'titem', $values);
-			
-			if ($id_or_result !== false) {
-				$id_node = $id_or_result;
-				$array_key_to_db_id[$key] = $id_node;
-				
-			}
-		}
+		enterprise_include_once("include/functions_pandora_networkmap.php");
 		
-		foreach ($relation_nodes as $relation) {
-			$values = array();
-			
-			$values['id_map'] = $id;
-			$values['id_parent'] = $array_key_to_db_id[$relation['id_parent']];
-			$values['id_child'] = $array_key_to_db_id[$relation['id_child']];
-			$values['parent_type'] = $relation['parent_type']; 
-			$values['child_type'] = $relation['child_type'];
-			db_process_sql_insert('trel_item', $values);
-		}
-		
-		//-------Set center map---------------------------------------------
-		$center = db_get_row('titem', 'id_map', $id);
+		$center = save_generate_nodes($id, $nodes, $relation_nodes);
 	}
 	else {
 		$nodes_and_relations['nodes'] = array();
@@ -438,6 +333,34 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 	return $item;
 }
 
+function get_status_color_networkmap($id, $color = true) {
+	$status = agents_get_status($id);
+	
+	if (!$color) {
+		return $status;
+	}
+	// Set node status
+	switch($status) {
+		case 0: 
+			$status_color = COL_NORMAL; // Normal monitor
+			break;
+		case 1:
+			$status_color = COL_CRITICAL; // Critical monitor
+			break;
+		case 2:
+			$status_color = COL_WARNING; // Warning monitor
+			break;
+		case 4:
+			$status_color = COL_ALERTFIRED; // Alert fired
+			break;
+		default:
+			$status_color = COL_UNKNOWN; // Unknown monitor
+			break;
+	}
+	
+	return $status_color;
+}
+
 function networkmap_clean_relations_for_js(&$relations) {
 	do {
 		$cleaned = true;
@@ -564,8 +487,9 @@ function networkmap_write_js_array($id, $nodes_and_relations = array()) {
 	echo "var networkmap = {'nodes': [], 'links':  []};\n";
 	
 	if (enterprise_installed()) {
-		$nodes = db_get_all_rows_filter('titem',
-			array('id_map' => $id, 'deleted' => 0));
+		enterprise_include_once("include/functions_pandora_networkmap.php");
+		
+		$nodes = get_nodes_from_db($id);
 	}
 	else {
 		$nodes = $nodes_and_relations['nodes'];
@@ -597,19 +521,9 @@ function networkmap_write_js_array($id, $nodes_and_relations = array()) {
 	}
 	
 	if (enterprise_installed()) {
-		$relations = db_get_all_rows_sql("
-			SELECT t1.*,
-				(SELECT t2.source_data
-				FROM titem t2
-				WHERE t2.id_map = " . $id . "
-					AND t2.id = t1.id_parent) AS id_agent_parent,
-				
-				(SELECT t2.source_data
-				FROM titem t2
-				WHERE t2.id_map = " . $id . "
-					AND t2.id = t1.id_child) AS id_agent_child
-			FROM trel_item t1
-			WHERE t1.deleted = 0 AND t1.id_map = " . $id);
+		enterprise_include_once("include/functions_pandora_networkmap.php");
+		
+		$relations = get_relations_from_db($id);
 	}
 	else {
 		$relations = $nodes_and_relations['relations'];
@@ -870,44 +784,6 @@ function update_node($node) {
 	return $return;
 }
 
-function erase_node($id) {
-	$node = db_get_row('titem', 'id', $id['id']);
-	
-	//For networkmaps of Level 2
-	$nodes = db_get_all_rows_filter('titem',
-		array(
-			'id_map' => $node['id_map'],
-			'source_data' => $node['source_data'],
-			'type' => $node['type'],
-			'id' => $id['id']
-			));
-			
-	foreach ($nodes as $node) {
-		db_process_sql_update('titem',
-			array('deleted' => 1), array('id' => (int)$node['id'], 'type' => (int)$node['type']));
-		
-		db_process_sql_update('trel_item',
-			array('deleted' => 1), array('id_parent' => (int)$node['id']));
-		db_process_sql_update('trel_item',
-			array('deleted' => 1), array('id_child' => (int)$node['id']));
-	}
-	
-	db_process_sql_update('trel_item',
-		array('deleted' => 1), array('id_parent' => (int)$node['id']));
-	db_process_sql_update('trel_item',
-		array('deleted' => 1), array('id_child' => (int)$node['id']));
-	
-	$return = db_process_sql_update('titem',
-		array('deleted' => 1), array('id' => (int)$node['id'], 'type' => (int)$node['type']));
-		
-	if ($return === false) {
-		return false;
-	}
-	else {
-		return true;
-	}
-}
-
 function networkmap_delete_nodes_by_agent($id_agent) {
 	$rows = db_get_all_rows_filter('titem',
 		array('source_data' => $id_agent));
@@ -923,272 +799,6 @@ function networkmap_delete_nodes_by_agent($id_agent) {
 	
 	db_process_sql_delete('titem',
 		array('source_data' => $id_agent));
-}
-
-function get_status_color_networkmap_fictional_point($id_networkmap, $parent = null) {
-	$last_status = 0;
-	
-	if ($id_networkmap != 0) {
-		$agents = db_get_all_rows_filter('titem',
-			array('id_map' => $id_networkmap));
-		if ($agents == false)
-			$agents = array();
-		
-		$exit = false;
-		foreach ($agents as $agent) {
-			if ($agent['source_data'] == -1) continue;
-			if ($agent['source_data'] == -2) {
-				if (empty($parent)) {
-					$option = json_decode($agent, true);
-					if ($option['networkmap'] == 0) {
-						$status = 0;
-					}
-					else {
-						$status = get_status_color_networkmap($option['networkmap'], true);
-					}
-				}
-				else {
-					//TODO Calculate next levels.
-					$status = 0;
-				}
-			}
-			else {
-				$status = get_status_color_networkmap($agent['source_data'], false);
-			}
-			
-			switch($status) {
-				case 0: 
-					// Normal monitor
-					break;
-				case 1:
-					// Critical monitor
-					$last_status = 1;
-					$exit = true;
-					break;
-				case 2:
-					// Warning monitor
-					$last_status = 2;
-					break;
-				case 4:
-					if ($last_status != 2) {
-						$last_status = 4;
-					}
-					break;
-				default:
-					// Unknown monitor
-					if (($last_status != 2) && ($last_status != 4)) {
-						$last_status = $status;
-					}
-					break;
-			}
-			
-			if ($exit) break;
-		}
-	}
-	
-	if (empty($parent)) {
-		switch($last_status) {
-			case 0: 
-				$status_color = COL_NORMAL; // Normal monitor
-				break;
-			case 1:
-				$status_color = COL_CRITICAL; // Critical monitor
-				break;
-			case 2:
-				$status_color = COL_WARNING; // Warning monitor
-				break;
-			case 4:
-				$status_color = COL_ALERTFIRED; // Alert fired
-				break;
-			default:
-				$status_color = COL_UNKNOWN; // Unknown monitor
-				break;
-		}
-		
-		return $status_color;
-	}
-	else  {
-		return $last_status;
-	}
-}
-
-function get_status_color_networkmap($id, $color = true) {
-	$status = agents_get_status($id);
-	
-	if (!$color) {
-		return $status;
-	}
-	// Set node status
-	switch($status) {
-		case 0: 
-			$status_color = COL_NORMAL; // Normal monitor
-			break;
-		case 1:
-			$status_color = COL_CRITICAL; // Critical monitor
-			break;
-		case 2:
-			$status_color = COL_WARNING; // Warning monitor
-			break;
-		case 4:
-			$status_color = COL_ALERTFIRED; // Alert fired
-			break;
-		default:
-			$status_color = COL_UNKNOWN; // Unknown monitor
-			break;
-	}
-	
-	return $status_color;
-}
-
-function add_agent_networkmap($id, $agent_name_param, $x, $y,
-	$id_agent_param = false, $other_values = array()) {
-	
-	global $config;
-	
-	if ($id_agent_param !== false) {
-		$agent_name = io_safe_output(agents_get_name($id_agent_param));
-		
-		$id_agent = $id_agent_param;
-	}
-	else {
-		$id_agent = agents_get_agent_id($agent_name_param);
-		$agent_name = io_safe_output($agent_name_param);
-	}
-	
-	if ($id_agent == false)
-		return false;
-	
-	$agent = db_get_row('tagente', 'id_agente', $id_agent);
-	
-	$img_node = ui_print_os_icon ($agent['id_os'], false, true, true,
-		true, true, true);
-	$img_node_dir = str_replace($config['homeurl'], $config['homedir'],
-		$img_node);
-	
-	$size = getimagesize($img_node_dir);
-	$width = $size[0];
-	$height = $size[1];
-	
-	$data = array();
-	$data['id_map'] = $id;
-	$data['x'] = $x;
-	$data['y'] = $y;
-	$data['source_data'] = $id_agent;
-	$style = array();
-	$style['shape'] = 'circle';
-	$style['image'] = $img_node;
-	$style['width'] = $width;
-	$style['height'] = $height;
-	$data['type'] = 0;
-	//WORK AROUND FOR THE JSON ENCODE WITH FOR EXAMPLE Ñ OR Á
-	$style['label'] = 'json_encode_crash_with_ut8_chars';
-	
-	if (isset($other_values['state'])) {
-		$data['state'] = $other_values['state'];
-	}
-	
-	if (isset($other_values['label'])) {
-		$agent_name = $other_values['label'];
-	}
-	
-	if (isset($other_values['id_module'])) {
-		$data['source_data'] = $other_values['id_module'];
-		$style['shape'] = 'arrowhead';
-	}
-	
-	if (isset($other_values['type'])) {
-		$data['type'] = $other_values['type'];
-	}
-	
-	$data['style'] = json_encode($style);
-	$data['style'] = str_replace('json_encode_crash_with_ut8_chars',
-		$agent_name, $data['style']);
-	
-	$id_node = db_process_sql_insert('titem', $data);
-	
-	$node = db_get_all_rows_filter('titem', array('id' => $id_node));
-	$node = $node[0];
-	
-	
-	$rel = array();
-	/* FLECHAS EMPEZADO PARA MEJORAR
-	$index = 0;
-	if ($agent['id_parent'] != 0) {
-		$values = array();
-		$values['id_child'] = $agent['id_agente'];
-		$values['id_parent'] = $agent['id_parent'];
-		$values['parent_type'] = 0;
-		$values['child_type'] = 0;
-		$values['id_item'] = 0;
-		$values['deleted'] = 0;
-		$values['id_map'] = $id;
-		
-		$parent = db_get_row('tagente', 'id_agente', $agent['id_parent']);
-		$parent_item = db_get_all_rows_filter('titem', array('source_data' => $agent['id_parent'], 'type' => 0));
-		$parent_item = $parent_item[0];
-		
-		$rel[$index]['id_db'] = db_process_sql_insert('trel_item', $values);
-		$rel[$index]['id_agent_end'] = $parent['id_agente'];
-		$rel[$index]['id_agent_start'] = $agent['id_agente'];
-		$rel[$index]['id_module_end'] = 0;
-		$rel[$index]['id_module_start'] = 0;
-		$rel[$index]['source'] = $id_node;
-		$rel[$index]['target'] = $parent_item['id'];
-		$rel[$index]['source_in_db'] = $id_node;
-		$rel[$index]['target_in_db'] = $parent_item['id'];
-		$rel[$index]['arrow_end'] = "";
-		$rel[$index]['arrow_start'] = "";
-		$rel[$index]['status_end'] = "";
-		$rel[$index]['status_start'] = "";
-		$rel[$index]['text_end'] = "";
-		$rel[$index]['text_start'] = "";
-		$index++;
-		
-		$childs_of_new_agent = db_get_all_rows_filter('tagente', array('id_parent' => $agent['id_agente']));
-		
-		foreach ($childs_of_new_agent as $child) {
-			$values = array();
-			$values['id_child'] = $child['id_agente'];
-			$values['id_parent'] = $agent['id_agente'];
-			$values['parent_type'] = 0;
-			$values['child_type'] = 0;
-			$values['id_item'] = 0;
-			$values['deleted'] = 0;
-			$values['id_map'] = $id;
-			
-			$child_item = db_get_all_rows_filter('titem', array('source_data' => $child['id_agente'], 'type' => 0));
-			$child_item = $child_item[0];
-			
-			$rel[$index]['id_db'] = db_process_sql_insert('trel_item', $values);
-			$rel[$index]['id_agent_end'] = $agent['id_agente'];
-			$rel[$index]['id_agent_start'] = $child['id_agente'];
-			$rel[$index]['id_module_end'] = 0;
-			$rel[$index]['id_module_start'] = 0;
-			$rel[$index]['source'] = $child_item['id'];
-			$rel[$index]['target'] = $id_node;
-			$rel[$index]['source_in_db'] = $child_item['id'];
-			$rel[$index]['target_in_db'] = $id_node;
-			$rel[$index]['arrow_end'] = "";
-			$rel[$index]['arrow_start'] = "";
-			$rel[$index]['status_end'] = "";
-			$rel[$index]['status_start'] = "";
-			$rel[$index]['text_end'] = "";
-			$rel[$index]['text_start'] = "";
-			
-			$index++;
-		}
-	}
-	*/
-	
-	$return_data = array();
-	if ($id_node !== false) {
-		$return_data['id_node'] = $id_node;
-		$return_data['rel'] = $rel;
-		return $return_data;
-	}
-	else {
-		return false;
-	}
 }
 
 function show_node_info($id_node, $refresh_state, $user_readonly) {
@@ -1464,107 +1074,20 @@ function duplicate_networkmap($id) {
 	}
 }
 
-function networkmap_clean_duplicate_links($id) {
-	global $config;
-	
-	//Clean (for migrations of older Pandoras)
-	// - duplicated links
-	// - duplicate links
-	//          (parent) node 1 - (child) node 2
-	//          (parent) node 2 - (child) node 1
-	//          
-	//          and erase the last, only the first row alive
-	
-	$sql_duplicate_links = "SELECT id, id_parent, id_child
-		FROM trel_item t1
-		WHERE t1.id_child IN (
-				SELECT t2.id_child
-				FROM trel_item t2
-				WHERE t1.id != t2.id
-					AND t1.id_child = t2.id_child
-					AND t1.id_parent = t2.id_parent
-					AND t2.id_map = " . $id . ")
-			AND t1.id_map = " . $id . "
-		ORDER BY id_parent, id_child";
-	
-	$rows = db_get_all_rows_sql($sql_duplicate_links);
-	if (empty($rows))
-		$rows = array();
-	
-	$pre_parent = -1;
-	$pre_child = -1;
-	foreach ($rows as $row) {
-		if (($pre_parent == $row['id_parent']) &&
-			($pre_child == $row['id_child'])) {
-			
-			//Delete the duplicate row
-			db_process_sql_delete('trel_item',
-				array('id' => $row['id']));
-			
-		}
-		else {
-			$pre_parent = $row['id_parent'];
-			$pre_child = $row['id_child'];
-		}
-	}
-	
-	db_process_sql($sql_duplicate_links);
-	
-	do {
-		db_clean_cache();
-		
-		$sql_duplicate_links_parent_as_children = "
-			SELECT id, id_parent, id_child
-			FROM trel_item t1
-			WHERE t1.id_child IN (
-				SELECT t2.id_parent
-				FROM trel_item t2
-				WHERE t1.id_parent = t2.id_child
-					AND t1.id_child = t2.id_parent
-					AND t2.id_map = " . $id . ")
-				AND t1.id_map = " . $id . "
-			ORDER BY id_parent, id_child";
-		$rows = db_get_all_rows_sql($sql_duplicate_links_parent_as_children);
-		
-		if (empty($rows))
-			$rows = array();
-		
-		$found = false;
-		
-		foreach ($rows as $row) {
-			foreach ($rows as $row2) {
-				if (($row['id'] != $row2['id'])
-					&& ($row['id_child'] == $row2['id_parent'])
-					&& ($row['id_parent'] == $row2['id_child'])
-					) {
-					
-					db_process_sql_delete('trel_item',
-						array('id' => $row2['id']));
-					
-					$found = true;
-					break;
-					
-				}
-			}
-			
-			if ($found)
-				break;
-		}
-	}
-	while ($found);
-}
-
 function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations = array()) {
 	global $config;
 	
-	//Clean (for migrations of older Pandoras)
-	// - duplicated links
-	// - duplicate links
-	//          (parent) node 1 - (child) node 2
-	//          (parent) node 2 - (child) node 1
-	//          
-	//          and erase the last, only the first row alive
-	networkmap_clean_duplicate_links($id);
+	if (enterprise_installed()) {
+		enterprise_include_once("include/functions_pandora_networkmap.php");
+		//Clean (for migrations of older Pandoras)
+		// - duplicated links
+		// - duplicate links
+		//          (parent) node 1 - (child) node 2
+		//          (parent) node 2 - (child) node 1
+		//          
+		//          and erase the last, only the first row alive
+		networkmap_clean_duplicate_links($id);
+	}
 	
 	$networkmap = db_get_row('tmap', 'id', $id);
 	$networkmap['filter'] = json_decode($networkmap['filter'], true);
@@ -2066,90 +1589,6 @@ function networkmap_update_link($networkmap_id, $id_link, $interface_source, $in
 		return array('correct' => true, 'id_link_change' => $id_link_change);
 }
 
-function networkmap_delete_link($networkmap_id, $source_id,
-	$source_module_id, $target_id, $target_module_id, $id_link) {
-	
-	$flag_delete_level2 = false;
-	
-	if ($source_module_id != 0) {
-		$flag_delete_level2 = true;
-	}
-	
-	if ($target_module_id != 0) {
-		$flag_delete_level2 = true;
-	}
-	
-	if ($flag_delete_level2) {
-		$link = db_get_row_filter('trel_item',
-			array('id_map' => $networkmap_id,
-				'id' => $id_link));
-		
-		if (($link['parent_type'] == 0) &&
-			($link['child_type'] == 0)) {
-			
-			//Delete normaly
-			
-			$result = db_process_sql_update(
-				'trel_item',
-				array('deleted' => 1),
-				array('id' => $link['id']));
-		}
-		else {
-			
-			//Delete modules nodes and the relation module node with agent node
-			
-			if ($link['parent_type'] == 1) {
-				$result = db_process_sql_update(
-					'titem',
-					array('deleted' => 1),
-					array('id' => $link['id_parent']));
-				
-				db_process_sql_update(
-					'trel_item',
-					array('deleted' => 1),
-					array('id_parent' => $link['id_parent']));
-				
-				db_process_sql_update(
-					'trel_item',
-					array('deleted' => 1),
-					array('id_child' => $link['id_parent']));
-			}
-			
-			if (!empty($result)) {
-				if (!$result)
-					return $result;
-			}
-			
-			if ($link['child_type'] == 1) {
-				$result = db_process_sql_update(
-					'titem',
-					array('deleted' => 1),
-					array('id' => $link['id_child']));
-				
-				db_process_sql_update(
-					'trel_item',
-					array('deleted' => 1),
-					array('id_parent' => $link['id_child']));
-				
-				db_process_sql_update(
-					'trel_item',
-					array('deleted' => 1),
-					array('id_child' => $link['id_child']));
-			}
-		}
-	}
-	else {
-		$result = db_process_sql_update(
-			'trel_item',
-			array('deleted' => 1),
-			array('id_map' => $networkmap_id,
-				'id_parent' => $target_id,
-				'id_child' => $source_id));
-	}
-	
-	return $result;
-}
-
 function networkmap_get_new_nodes_and_links($id_networkmap) {
 	$networkmap = db_get_row_filter('tmap',
 		array('id' => $id_networkmap));
@@ -2539,82 +1978,6 @@ function networkmap_get_new_nodes_and_links($id_networkmap) {
 	}
 }
 
-function networkmap_refresh_holding_area($id_networkmap) {
-	networkmap_get_new_nodes_and_links($id_networkmap);
-	networkmap_clean_duplicate_links($id_networkmap);
-	
-	$rows = db_get_all_rows_filter('titem',
-		array('id_map' => $id_networkmap,
-			'state' => 'pending_holding_area', 'deleted' => 0));
-	if (empty($rows))
-		$rows = array();
-	
-	$nodes = array();
-	
-	$count = 0;
-	$count_item_holding_area = 0;
-	foreach ($rows as $row) {
-		if (isset($row['type'])) {
-			if ($row['type'] == 1)
-				continue;
-		}
-		else {
-			$row['type'] = '';
-		}
-		
-		$row['state'] = 'holding_area';
-		db_process_sql_update('titem',
-			array('state' => $row['state']),
-			array('id' => $row['id']));
-		
-		$row['style'] = json_decode($row['style'], true);
-		
-		$node = networkmap_db_node_to_js_node($row, $count,
-			$count_item_holding_area);
-		
-		$nodes[$node['id']] = $node;
-	}
-	
-	//Get all links of actual nodes
-	//but in the javascript code filter the links and only add the
-	//new links
-	$relations = db_get_all_rows_sql("
-		SELECT t1.*,
-		
-			(SELECT t2.source_data
-			FROM titem t2
-			WHERE t2.id_map = " . $id_networkmap . "
-				AND t2.type = 0 
-				AND t2.id = t1.id_parent) AS id_agent_parent,
-			
-			(SELECT t2.source_data
-			FROM titem t2
-			WHERE t2.id_map = " . $id_networkmap . "
-				AND t2.type = 0 
-				AND t2.id = t1.id_child) AS id_agent_child,
-			
-			(SELECT t2.source_data
-			FROM titem t2
-			WHERE t2.id_map = " . $id_networkmap . "
-				AND t2.type = 1 
-				AND t2.id = t1.id_parent) AS id_module_parent,
-			
-			(SELECT t2.source_data
-			FROM titem t2
-			WHERE t2.id_map = " . $id_networkmap . "
-				AND t2.type = 1 
-				AND t2.id = t1.id_child) AS id_module_child
-		
-		FROM trel_item t1
-		WHERE t1.id_map = " . $id_networkmap . "
-			AND t1.deleted = 0");
-	if ($relations === false) $relations = array();
-	networkmap_clean_relations_for_js($relations);
-	
-	$links_js = networkmap_links_to_js_links(
-		$relations, $nodes);
-	
-	return array('nodes' => $nodes, 'links' => $links_js);
-}
+
 
 ?>

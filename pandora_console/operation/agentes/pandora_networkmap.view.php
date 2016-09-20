@@ -24,12 +24,10 @@ require_once ('include/functions_modules.php');
 if (is_ajax ()) {
 	$update_node = (bool)get_parameter('update_node', false);
 	$erase_node = (bool)get_parameter('erase_node', false);
-	$update_node_color = (bool)get_parameter('update_node_color',
-		false);
-	$set_relationship = (bool)get_parameter('set_relationship', false);
+	
 	$update_refresh_state = (bool)get_parameter('update_refresh_state',
 		false);
-	$add_agent = (bool)get_parameter('add_agent', false);
+	
 	$set_center = (bool)get_parameter('set_center', false);
 	$erase_relation = (bool)get_parameter('erase_relation', false);
 	$search_agents = (bool) get_parameter ('search_agents');
@@ -44,88 +42,13 @@ if (is_ajax ()) {
 		false);
 	$add_several_agents = (bool)get_parameter('add_several_agents',
 		false);
-	$create_fictional_point = (bool)get_parameter(
-		'create_fictional_point', false);
+	
 	$update_fictional_point = (bool)get_parameter(
 		'update_fictional_point', false);
 	$update_z = (bool)get_parameter('update_z', false);
 	$module_get_status = (bool)get_parameter('module_get_status', false);
-	$delete_node = (bool)get_parameter('delete_node', false);
-	$delete_link = (bool)get_parameter('delete_link', false);
-	$change_shape = (bool)get_parameter('change_shape', false);
-	$get_intefaces = (bool)get_parameter('get_intefaces', false);
+	
 	$update_link = (bool)get_parameter('update_link', false);
-	$update_fictional_node = (bool)get_parameter('update_fictional_node', false);
-	$refresh_holding_area = (bool)get_parameter('refresh_holding_area', false);
-	
-	if ($refresh_holding_area) {
-		$networkmap_id = (int)get_parameter('id', 0);
-		
-		$return = array();
-		$return['correct'] = false;
-		$return['holding_area'] = array();
-		
-		// ACL for the network map
-		$id_group = db_get_value('id_group', 'tmap', 'id', $networkmap_id);
-		// $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
-		$networkmap_write = check_acl ($config['id_user'], $id_group, "MW");
-		$networkmap_manage = check_acl ($config['id_user'], $id_group, "MM");
-		
-		if (!$networkmap_write && !$networkmap_manage) {
-			db_pandora_audit("ACL Violation",
-				"Trying to access networkmap");
-			echo json_encode($return);
-			return;
-		}
-		
-		$data = networkmap_refresh_holding_area($networkmap_id);
-		
-		if (!empty($data)) {
-			$return['correct'] = true;
-			$return['holding_area'] = $data;
-		}
-		
-		echo json_encode($return);
-		
-		return;
-	}
-	
-	if ($update_fictional_node) {
-		$networkmap_id = (int)get_parameter('networkmap_id', 0);
-		$node_id = (int)get_parameter('node_id', 0);
-		$name = get_parameter('name', "");
-		$networkmap_to_link = (int)get_parameter('networkmap_to_link', 0);
-		
-		$return = array();
-		$return['correct'] = false;
-		
-		// ACL for the network map
-		$id_group = db_get_value('id_group', 'tmap', 'id', $networkmap_id);
-		// $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
-		$networkmap_write = check_acl ($config['id_user'], $id_group, "MW");
-		$networkmap_manage = check_acl ($config['id_user'], $id_group, "MM");
-		
-		if (!$networkmap_write && !$networkmap_manage) {
-			db_pandora_audit("ACL Violation",
-				"Trying to access networkmap");
-			echo json_encode($return);
-			return;
-		}
-		
-		$node = db_get_row('titem', 'id',
-			$node_id);
-		$node['style'] = json_decode($node['style'], true);
-		$node['style']['label'] = $name;
-		$node['style']['networkmap'] = $networkmap_to_link;
-		$node['style'] = json_encode($node['style']);
-		
-		$return['correct'] = (bool)db_process_sql_update(
-			'titem', $node,
-			array('id' => $node_id));
-		echo json_encode($return);
-		
-		return;
-	}
 	
 	if ($update_link) {
 		$networkmap_id = (int)get_parameter('networkmap_id', 0);
@@ -157,111 +80,6 @@ if (is_ajax ()) {
 		}
 		else
 			$return = $result;
-		
-		echo json_encode($return);
-		
-		return;
-	}
-	
-	if ($get_intefaces) {
-		$id_agent = (int)get_parameter('id_agent', 0);
-		
-		$return = array();
-		$return['correct'] = true;
-		$return['interfaces'] = array();
-		
-		$return['interfaces'] = modules_get_interfaces($id_agent,
-			array('id_agente_modulo', 'nombre'));
-		
-		echo json_encode($return);
-		
-		return;
-	}
-	
-	if ($change_shape) {
-		$networkmap_id = (int)get_parameter('networkmap_id', 0);
-		$id = (int)get_parameter('id', 0);
-		$shape = get_parameter('shape', 'circle');
-		
-		$return = array();
-		$return['correct'] = false;
-		
-		// ACL for the network map
-		$id_group = db_get_value('id_group', 'tmap', 'id', $networkmap_id);
-		// $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
-		$networkmap_write = check_acl ($config['id_user'], $id_group, "MW");
-		$networkmap_manage = check_acl ($config['id_user'], $id_group, "MM");
-		
-		if (!$networkmap_write && !$networkmap_manage) {
-			db_pandora_audit("ACL Violation",
-				"Trying to access networkmap");
-			echo json_encode($return);
-			return;
-		}
-		
-		$node = db_get_row_filter('titem',
-			array('id_map' => $networkmap_id,
-				'id' => $id));
-		
-		$node['style'] = json_decode($node['style'], true);
-		$node['style']['shape'] = $shape;
-		$node['style'] = json_encode($node['style']);
-		
-		$return['correct'] = db_process_sql_update('titem',
-			$node, array('id_map' => $networkmap_id,
-				'id' => $id));
-		
-		echo json_encode($return);
-		
-		return;
-	}
-	
-	if ($delete_link) {
-		$source_id = (int)get_parameter('source_id', 0);
-		$source_module_id = (int)get_parameter('source_module_id', 0);
-		$target_id = (int)get_parameter('target_id', 0);
-		$target_module_id = (int)get_parameter('target_module_id', 0);
-		$networkmap_id = (int)get_parameter('networkmap_id', 0);
-		$id_link = (int)get_parameter('id_link', 0);
-		
-		
-		$return = array();
-		$return['correct'] = false;
-		
-		// ACL for the network map
-		$id_group = db_get_value('id_group', 'tmap', 'id', $networkmap_id);
-		// $networkmap_read = check_acl ($config['id_user'], $id_group, "MR");
-		$networkmap_write = check_acl ($config['id_user'], $id_group, "MW");
-		$networkmap_manage = check_acl ($config['id_user'], $id_group, "MM");
-		
-		if (!$networkmap_write && !$networkmap_manage) {
-			db_pandora_audit("ACL Violation",
-				"Trying to access networkmap");
-			echo json_encode($return);
-			return;
-		}
-		
-		$return['correct'] = networkmap_delete_link(
-			$networkmap_id,
-			$source_id,
-			$source_module_id,
-			$target_id,
-			$target_module_id,
-			$id_link
-			);
-		
-		echo json_encode($return);
-		
-		return;
-	}
-	
-	if ($delete_node) {
-		$id = (int)get_parameter('id', 0);
-		
-		$return = array();
-		$return['correct'] = false;
-		
-		$return['correct'] = erase_node(array('id' => $id));
 		
 		echo json_encode($return);
 		
@@ -342,65 +160,6 @@ if (is_ajax ()) {
 		}
 		else {
 			$return['message'] = __('Could not be updated.');
-		}
-		
-		echo json_encode($return);
-		
-		return;
-	}
-	
-	
-	if ($create_fictional_point) {
-		$id = (int)get_parameter('id', 0);
-		$x = (int)get_parameter('x', 0);
-		$y = (int)get_parameter('y', 0);
-		$name = io_safe_output(get_parameter('name', ''));
-		$shape = get_parameter('shape', 0);
-		$radious = (int)get_parameter('radious', 20);
-		$color = get_parameter('color', 0);
-		$networkmap = (int)get_parameter('networkmap', 0);
-		
-		$return = array();
-		$return['correct'] = false;
-		
-		$data = array();
-		$data['id_map'] = $id;
-		$data['x'] = $x;
-		$data['y'] = $y;
-		$data['source_data'] = -2; //The id for the fictional points.
-		$data['deleted'] = 0;
-		//Type in db to fictional nodes
-		$data['type'] = 3;
-		$data['state'] = "";
-		$style = array();
-		$style['shape'] = $shape;
-		$style['image'] = '';
-		$style['width'] = $radious * 2;
-		$style['height'] = $radious * 2;
-		//WORK AROUND FOR THE JSON ENCODE WITH FOR EXAMPLE Ñ OR Á
-		$style['label'] = 'json_encode_crash_with_ut8_chars';
-		$style['color'] = $color;
-		$style['networkmap'] = $networkmap;
-		$data['style'] = json_encode($style);
-		$data['style'] = str_replace(
-			'json_encode_crash_with_ut8_chars', $name,
-			$data['style']);
-		
-		$id_node = db_process_sql_insert('titem',
-			$data);
-		
-		$return['correct'] = (bool)$id_node;
-		
-		if ($return['correct']) {
-			$return['id_node'] = $id_node;
-			$return['id_agent'] = -2; //The finctional point id
-			$return['shape'] = $shape;
-			$return['image'] = '';
-			$return['width'] = $radious * 2;
-			$return['height'] = $radious * 2;
-			$return['text'] = $name;
-			$return['color'] = $color;
-			$return['networkmap'] = $networkmap;
 		}
 		
 		echo json_encode($return);
@@ -506,7 +265,6 @@ if (is_ajax ()) {
 	
 	if ($get_tooltip_content) {
 		$id = (int)get_parameter('id', 0);
-		
 		
 		// Get all module from agent
 		switch ($config["dbtype"]) {
@@ -833,62 +591,6 @@ if (is_ajax ()) {
 		return;
 	}
 	
-	if ($update_node_color) {
-		$id = (int)get_parameter('id', 0);
-		
-		$id_agent = db_get_value('source_data',
-			'titem', 'id', $id);
-		
-		$return = array();
-		$return['correct'] = true;
-		if ($id_agent != -2) {
-			$return['color'] = get_status_color_networkmap($id_agent);
-		}
-		else {
-			$style = db_get_value('style',
-				'titem', 'id', $id);
-			$style = json_decode($style, true);
-			if ($style['networkmap'] == 0) {
-				$return['color'] = $style['color'];
-			}
-			else {
-				$return['color'] =
-					get_status_color_networkmap_fictional_point(
-						$style['networkmap']);
-			}
-		}
-		
-		echo json_encode($return);
-		
-		return;
-	}
-	
-	if ($set_relationship) {
-		$id = (int)get_parameter('id');
-		$child = (int)get_parameter('child'); 
-		$parent = (int)get_parameter('parent');
-		
-		$correct = db_process_sql_insert(
-			'trel_item',
-			array('id_map' => $id,
-				'id_parent' => $parent,
-				'id_child' => $child));
-		
-		$return = array();
-		$return['correct'] = false;
-		
-		if ($correct) {
-			$return['correct'] = true;
-			$return['id'] = $correct;
-			$return['id_child'] = $child;
-			$return['id_parent'] = $parent;
-		}
-		
-		echo json_encode($return);
-		
-		return;
-	}
-	
 	if ($update_refresh_state) {
 		$refresh_state = (int)get_parameter('refresh_state', 60);
 		$id = (int)get_parameter('id', 0);
@@ -907,54 +609,6 @@ if (is_ajax ()) {
 		
 		if ($correct)
 			$return['correct'] = true;
-		
-		echo json_encode($return);
-		
-		return;
-	}
-	
-	if ($add_agent) {
-		$id = (int)get_parameter('id', 0);
-		$agent = get_parameter('agent', '');
-		$x = (int)get_parameter('x', 0);
-		$y = (int)get_parameter('y', 0);
-		$id_agent = (int)get_parameter('id_agent', -1);
-		if ($id_agent == -1)
-			$id_agent = agents_get_agent_id($agent);
-		
-		$return = array();
-		$return['correct'] = false;
-		
-		$return_data = add_agent_networkmap($id, $agent, $x, $y, $id_agent);
-		
-		if ($return_data['id_node'] !== false) {
-			$id_node = $return_data['id_node'];
-			$return['correct'] = true;
-			
-			$node = db_get_row('titem', 'id',
-				$id_node);
-			$style = json_decode($node['style'], true);
-			
-			$return['id_node'] = $id_node;
-			$return['id_agent'] = $node['source_data'];
-			$return['parent'] = $node['parent'];
-			$return['shape'] = $style['shape'];
-			$return['image'] = $style['image'];
-			$return['image_url'] = html_print_image(
-				$style['image'], true, false, true);
-			$return['width'] = $style['width'];
-			$return['height'] = $style['height'];
-			$return['text'] = $style['label'];
-			$return['x'] = $x;
-			$return['y'] = $y;
-			$return['map_id'] = $node['id_map'];
-			$return['state'] = $node['state'];
-			$return['status'] = get_status_color_networkmap($id_agent);
-		}
-		
-		if (!empty($return_data['rel'])) {
-			$return['rel'] = $return_data['rel'];
-		}
 		
 		echo json_encode($return);
 		
@@ -1062,8 +716,6 @@ if (is_ajax ()) {
 	}
 }
 //--------------END AJAX------------------------------------------------
-
-
 
 $id = (int) get_parameter('id_networkmap', 0);
 

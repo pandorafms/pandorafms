@@ -401,10 +401,7 @@ else {
 	$table->size[4] = '1%';
 }
 
-$table->head[1] = __('Module') . '&nbsp;' .
-	'<a href="' . $url . '&sort_field=module&sort=up&pure='.$pure.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectModuleUp)) . '</a>' .
-	'<a href="' . $url . '&sort_field=module&sort=down&pure='.$pure.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectModuleDown)) . '</a>' .
-'<br/>' . __('Template') . '&nbsp;' .
+$table->head[1] = __('Template') . '&nbsp;' .
 	'<a href="' . $url . '&sort_field=template&sort=up&pure='.$pure.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectTemplateUp)) . '</a>' .
 	'<a href="' . $url . '&sort_field=template&sort=down&pure='.$pure.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectTemplateDown)) . '</a>';
 $table->head[2] = __('Actions');
@@ -416,6 +413,8 @@ $table->valign[1] = 'middle';
 $table->valign[2] = 'middle';
 $table->valign[3] = 'middle';
 $table->valign[4] = 'middle';
+
+$table->style[4] = "min-width:80px";
 
 $table->data = array ();
 
@@ -469,8 +468,9 @@ foreach ($simple_alerts as $alert) {
 	}
 	
 	$module_name = modules_get_agentmodule_name ($alert['id_agent_module']);
-	$data[1] = ui_print_truncate_text($module_name, 'module_medium', false, true, true, '[&hellip;]', 'display:block;font-size: 7.2pt') . '<br>';
-	
+	$data[0] .= ui_print_truncate_text($module_name, 'module_medium', false, true, true, '[&hellip;]', 'display:block;font-size: 7.2pt') . '<br>';
+
+
 	$template_group = db_get_value('id_group', 'talert_templates', 'id', $alert['id_alert_template']);
 	
 	// The access to the template manage page is necessary have LW permissions on template group
@@ -508,13 +508,13 @@ foreach ($simple_alerts as $alert) {
 	foreach ($actions as $action_id => $action) {
 		$data[2] .= "<tr>";
 			$data[2] .= "<td>";
-				$data[2] .= '<ul class="action_list">';
-				$data[2] .= '<li>';
+				$data[2] .= '<ul class="action_list" style="display:inline;">';
+				$data[2] .= '<li style="display:inline;">';
 				if ($alert['disabled'])
 					$data[2] .= '<font class="action_name" style="font-style: italic; color: #aaaaaa;">';
 				else
 					$data[2] .= '<font class="action_name">';
-				$data[2] .= ui_print_truncate_text($action['name'], GENERIC_SIZE_TEXT, false);
+				$data[2] .= ui_print_truncate_text($action['name'], (GENERIC_SIZE_TEXT+20), false);
 				$data[2] .= ' <em>(';
 				if ($action['fires_min'] == $action['fires_max']) {
 					if ($action['fires_min'] == 0)

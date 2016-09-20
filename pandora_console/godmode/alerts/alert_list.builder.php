@@ -37,9 +37,9 @@ $table->head = array ();
 $table->data = array ();
 $table->size = array ();
 $table->size = array ();
-$table->size[0] = '10%';
+$table->size[0] = '5%';
 $table->size[1] = '25%';
-$table->size[2] = '10%';
+$table->size[2] = '5%';
 $table->size[3] = '20%';
 $table->style[0] = 'font-weight: bold; ';
 $table->style[1] = 'font-weight: bold; ';
@@ -80,30 +80,8 @@ $table->data[0][1] .= '<span id="value">&nbsp;</span></span>';
 $table->data[0][1] .= ' <span id="module_loading" class="invisible">';
 $table->data[0][1] .= html_print_image('images/spinner.png', true) . '</span>';
 
-$table->data[0][2] = __('Template');
-$own_info = get_user_info ($config['id_user']);
-if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
-	$templates = alerts_get_alert_templates (false, array ('id', 'name'));
-else {
-	$usr_groups = users_get_groups($config['id_user'], 'LW', true);
-	$filter_groups = '';
-	$filter_groups = implode(',', array_keys($usr_groups));
-	$templates = alerts_get_alert_templates (array ('id_group IN (' . $filter_groups . ')'), array ('id', 'name'));
-}
-
-$table->data[0][3] = html_print_select (index_array ($templates, 'id', 'name'),
-	'template', '', '', __('Select'), 0, true, false, true, '', false, 'width: 250px;');
-$table->data[0][3] .= ' <a class="template_details invisible" href="#">' .
-	html_print_image("images/zoom.png", true, array("class" => 'img_help')) . '</a>';
-if (check_acl ($config['id_user'], 0, "LM")) {
-	$table->data[0][3] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';
-	$table->data[0][3] .= html_print_image ('images/add.png', true);
-	$table->data[0][3] .= "<div style='float:right;padding-top:5px;' >" . __('Create Template') . "</div>";
-	$table->data[0][3] .= '</a>';
-}
-
 $table->data[1][0] = __('Actions');
-	
+
 $groups_user = users_get_groups($config["id_user"]);
 if (!empty($groups_user)) {
 	$groups = implode(',', array_keys($groups_user));
@@ -124,14 +102,39 @@ $table->data[1][1] .= ui_print_help_icon ("alert-matches", true,
 	ui_get_full_url(false, false, false, false));
 $table->data[1][1] .= '</span>';
 if (check_acl ($config['id_user'], 0, "LM")) {
-	
-	$table->data[1][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
-	$table->data[1][1] .= '  ' . __('Create Action');
+
+
+	$table->data[1][1] .= '<a style="margin-left:5px;" href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_action&pure='.$pure.'">';
+	$table->data[1][1] .= html_print_image ('images/add.png', true);
+	$table->data[1][1] .=  '<span style="margin-left:5px;vertical-align:middle;">'.__('Create Action').'</span>';
 	$table->data[1][1] .= '</a>';
 }
-$table->data[1][2] = __('Threshold');
-$table->data[1][3] = html_print_extended_select_for_time ('module_action_threshold', 0, '', 0,
-	__('None'), false, true) . ui_print_help_icon ('action_threshold', true, ui_get_full_url(false, false, false, false));
+
+	$table->data[2][0] = __('Template');
+	$own_info = get_user_info ($config['id_user']);
+	if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM"))
+		$templates = alerts_get_alert_templates (false, array ('id', 'name'));
+	else {
+		$usr_groups = users_get_groups($config['id_user'], 'LW', true);
+		$filter_groups = '';
+		$filter_groups = implode(',', array_keys($usr_groups));
+		$templates = alerts_get_alert_templates (array ('id_group IN (' . $filter_groups . ')'), array ('id', 'name'));
+	}
+
+	$table->data[2][1] = html_print_select (index_array ($templates, 'id', 'name'),
+		'template', '', '', __('Select'), 0, true, false, true, '', false, 'width: 250px;');
+	$table->data[2][1] .= ' <a class="template_details invisible" href="#">' .
+		html_print_image("images/zoom.png", true, array("class" => 'img_help')) . '</a>';
+	if (check_acl ($config['id_user'], 0, "LM")) {
+		$table->data[2][1] .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/configure_alert_template&pure='.$pure.'">';
+		$table->data[2][1] .= html_print_image ('images/add.png', true);
+		$table->data[2][1] .=  '<span style="margin-left:5px;vertical-align:middle;">'.__('Create Template').'</span>';
+		$table->data[2][1] .= '</a>';
+	}
+	$table->data[3][0] = __('Threshold');
+	$table->data[3][1] = html_print_extended_select_for_time ('module_action_threshold', 0, '', 0,
+		__('None'), false, true) . ui_print_help_icon ('action_threshold', true, ui_get_full_url(false, false, false, false));
+
 
 echo '<form class="add_alert_form" method="post">';
 

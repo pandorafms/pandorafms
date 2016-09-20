@@ -296,17 +296,17 @@ if ($get_extended_event) {
 	
 	// Tabs
 	$tabs = "<ul style='background:#ffffff !important; border-top: 0px; border-left: 0px; border-right: 0px; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; border-color: #D3D3D3;'>";
-	$tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image('images/lightning_go.png',true).__('General')."</a></li>";
-	$tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image('images/zoom.png',true).__('Details')."</a></li>";
-	$tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image('images/custom_field_col.png',true).__('Agent fields')."</a></li>";
-	$tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png',true).__('Comments')."</a></li>";
-	
-	if (!$readonly && 
+	$tabs .= "<li><a href='#extended_event_general_page' id='link_general'>".html_print_image('images/lightning_go.png',true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('General')."</span></a></li>";
+	$tabs .= "<li><a href='#extended_event_details_page' id='link_details'>".html_print_image('images/zoom.png',true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Details')."</span></a></li>";
+	$tabs .= "<li><a href='#extended_event_custom_fields_page' id='link_custom_fields'>".html_print_image('images/custom_field_col.png',true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Agent fields')."</span></a></li>";
+	$tabs .= "<li><a href='#extended_event_comments_page' id='link_comments'>".html_print_image('images/pencil.png',true)."<span style='position:relative;top:-6px;left:5px;margin-right:10px;'>".__('Comments')."</span></a></li>";
+
+	if (!$readonly &&
 		(tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EM", $event['clean_tags'], $childrens_ids)) || (tags_checks_event_acl($config["id_user"], $event["id_grupo"], "EW", $event['clean_tags'],$childrens_ids))) {
-		$tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/event_responses_col.png',true).__('Responses')."</a></li>";
+		$tabs .= "<li><a href='#extended_event_responses_page' id='link_responses'>".html_print_image('images/event_responses_col.png',true)."<span style='position:relative;top:-6px;left:3px;margin-right:10px;'>".__('Responses')."</span></a></li>";
 	}
 	if ($event['custom_data'] != '') {
-		$tabs .= "<li><a href='#extended_event_custom_data_page' id='link_custom_data'>".html_print_image('images/custom_field_col.png',true).__('Custom data')."</a></li>";
+		$tabs .= "<li><a href='#extended_event_custom_data_page' id='link_custom_data'>".html_print_image('images/custom_field_col.png',true)."<span style='position:relative;top:-6px;left:3px;margin-right:10px;'>".__('Custom data')."</span></a></li>";
 	}
 	$tabs .= "</ul>";
 	

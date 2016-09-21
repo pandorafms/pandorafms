@@ -1716,6 +1716,23 @@ function init_drag_and_drop() {
 						});
 					});
 			}
+			else {
+				var params = [];
+				params.push("update_node_alert=1");
+				params.push("map_id=" + networkmap_id);
+				params.push("page=operation/agentes/pandora_networkmap.view");
+				jQuery.ajax ({
+					data: params.join ("&"),
+					dataType: 'json',
+					type: 'POST',
+					url: action="ajax.php",
+					success: function (data) {
+						if (data['correct']) {
+							alert("In the Open version of PandoraFMS can not be edited nodes or map");
+						}
+					}
+				});
+			}
 			
 			d3.event.sourceEvent.stopPropagation();
 		})

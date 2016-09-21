@@ -22,27 +22,20 @@ require_once ('include/functions_modules.php');
 
 //--------------INIT AJAX-----------------------------------------------
 if (is_ajax ()) {	
-	$update_refresh_state = (bool)get_parameter('update_refresh_state',
-		false);
-	
+	$update_refresh_state = (bool)get_parameter('update_refresh_state',false);
 	$set_center = (bool)get_parameter('set_center', false);
 	$erase_relation = (bool)get_parameter('erase_relation', false);
 	$search_agents = (bool) get_parameter ('search_agents');
-	$get_agent_pos_search = (bool)get_parameter('get_agent_pos_search',
-		false);
+	$get_agent_pos_search = (bool)get_parameter('get_agent_pos_search',false);
 	$get_shape_node = (bool)get_parameter('get_shape_node', false);
 	$set_shape_node = (bool)get_parameter('set_shape_node', false);
 	$get_info_module = (bool)get_parameter('get_info_module', false);
-	$get_tooltip_content = (bool)get_parameter('get_tooltip_content',
-		false);
-	
-	$add_several_agents = (bool)get_parameter('add_several_agents',
-		false);
-	
-	$update_fictional_point = (bool)get_parameter(
-		'update_fictional_point', false);
+	$get_tooltip_content = (bool)get_parameter('get_tooltip_content',false);
+	$add_several_agents = (bool)get_parameter('add_several_agents',false);
+	$update_fictional_point = (bool)get_parameter('update_fictional_point', false);
 	$update_z = (bool)get_parameter('update_z', false);
 	$module_get_status = (bool)get_parameter('module_get_status', false);
+	$update_node_alert = (bool)get_parameter('update_node_alert', false);
 	
 	if ($module_get_status) {
 		$id = (int)get_parameter('id', 0);
@@ -591,6 +584,27 @@ if (is_ajax ()) {
 		$return = array();
 		$return['correct'] = true;
 		$return['count'] = count($modules);
+		
+		echo json_encode($return);
+		
+		return;
+	}
+	
+	if ($update_node_alert) {
+		$map_id = (int)get_parameter('map_id', 0);
+		
+		$filter = db_get_value('filter', 'tmap', 'id', $map_id);
+		$filter = json_decode($filter, true);
+		
+		$return = array();
+		$return['correct'] = false;
+		if (!isset($filter['alert'])) {
+			$return['correct'] = true;
+			$filter['alert'] = 1;
+			$filter = json_encode($filter);
+			$values = array('filter' => $filter);
+			db_process_sql_update('tmap', $values, array('id' => $map_id));
+		}
 		
 		echo json_encode($return);
 		

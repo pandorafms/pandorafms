@@ -5018,7 +5018,7 @@ function graph_monitor_wheel ($width = 550, $height = 600, $filter = false) {
 	}
 
 	if (!empty($data_groups)) {
-		$filter = array('id_grupo' => array_keys($groups));
+		$filter = array('id_grupo' => array_keys($data_groups));
 		$fields = array('id_agente', 'id_parent', 'id_grupo', 'nombre');
 		$agents = agents_get_agents($filter, $fields);
 

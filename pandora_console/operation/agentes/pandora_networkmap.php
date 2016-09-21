@@ -324,12 +324,22 @@ switch ($tab) {
 				}
 				
 				$data = array();
-				$data['name'] = '<a href="index.php?' .
-					'sec=network&' .
-					'sec2=operation/agentes/pandora_networkmap&' .
-					'tab=view&' .
-					'id_networkmap=' . $network_map['id'] . '">' .
-					$network_map['name'] . '</a>';
+				if ($network_map['generation_method'] == 6) {
+					$data['name'] = '<a href="index.php?' .
+						'sec=network&' .
+						'sec2=operation/agentes/networkmap.dinamic&' .
+						'activeTab=radial_dynamic&' .
+						'id_networkmap=' . $network_map['id'] . '">' .
+						$network_map['name'] . '</a>';
+				}
+				else {
+					$data['name'] = '<a href="index.php?' .
+						'sec=network&' .
+						'sec2=operation/agentes/pandora_networkmap&' .
+						'tab=view&' .
+						'id_networkmap=' . $network_map['id'] . '">' .
+						$network_map['name'] . '</a>';
+				}
 				
 				$count = db_get_value_sql(
 					'SELECT COUNT(*)

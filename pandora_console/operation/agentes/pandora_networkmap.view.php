@@ -684,7 +684,7 @@ else {
 		show_networkmap($id, $user_readonly);
 	}
 	else {
-		ui_print_error_message(__('MENSAJE DE ADVERTENCIA OPEN'));
+		ui_print_error_message(__('The open version can`t be registered nodes'));
 		return;
 	}
 }

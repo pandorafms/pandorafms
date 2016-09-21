@@ -2,7 +2,6 @@
 from unittest2 import TestResult, TestCase
 from common_functions_60 import *
 from datetime import datetime
-from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -49,15 +48,11 @@ class PandoraWebDriverTestCase(TestCase):
 			#Start VM in Sauce Labs
 			#cls.driver = webdriver.Remote(command_executor='http://'+cls.sauce_username+':'+cls.sauce_access_key+'@ondemand.saucelabs.com:80/wd/hub',desired_capabilities=cls.desired_cap)
 			#cls.sauce_labs_job_id = cls.driver.session_id
-                        cls.display = Display(visible=0, size=(800, 600))
-                        cls.display.start()
 			cls.driver = webdriver.Firefox()
 			cls.base_url = "http://127.0.0.1/"
 		
 	@classmethod
 	def tearDownClass(cls):
-		if cls.is_development == False:
-                    cls.display.stop()
 		cls.driver.quit()
 
 	def setUp(self):

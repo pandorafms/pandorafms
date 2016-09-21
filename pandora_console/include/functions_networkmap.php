@@ -1127,6 +1127,38 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$graph = networkmap_open_graph ($layout, $nooverlap, $pure, $zoom,
 		$ranksep, $font_size, $size_canvas);
 	
+	//The orphans
+	if ($l2_network || $old_mode) {
+		$count = 0;
+		$group_nodes = 10;
+		$graph .= networkmap_create_transparent_node($count);
+		foreach (array_keys($networkmap_data['orphans']) as $node) {
+			if ($group_nodes == 0) {
+				$count++;
+				$graph .= networkmap_create_transparent_node($count);
+				
+				$group_nodes = 10;
+			}
+			
+			$graph .= networkmap_create_transparent_edge('transp_' . $count,
+				$node);
+			
+			$group_nodes--;
+		}
+	}
+	else {
+		// Create a central node if orphan nodes exist
+		if (count ($networkmap_data['$orphans']) || empty ($nodes)) {
+			$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple, $stats);
+		}
+		
+		// Define edges for orphan nodes
+		foreach (array_keys($networkmap_data['orphans']) as $node) {
+			$graph .= networkmap_create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
+		}
+		
+	}
+	
 	// Create nodes
 	foreach ($networkmap_data['nodes'] as $node_id => $node) {
 		switch ($node['type']) {
@@ -1183,37 +1215,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		}
 	}
 	
-	//The orphans
-	if ($l2_network || $old_mode) {
-		$count = 0;
-		$group_nodes = 10;
-		$graph .= networkmap_create_transparent_node($count);
-		foreach (array_keys($networkmap_data['orphans']) as $node) {
-			if ($group_nodes == 0) {
-				$count++;
-				$graph .= networkmap_create_transparent_node($count);
-				
-				$group_nodes = 10;
-			}
-			
-			$graph .= networkmap_create_transparent_edge('transp_' . $count,
-				$node);
-			
-			$group_nodes--;
-		}
-	}
-	else {
-		// Create a central node if orphan nodes exist
-		if (count ($networkmap_data['$orphans']) || empty ($nodes)) {
-			$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple, $stats);
-		}
-		
-		// Define edges for orphan nodes
-		foreach (array_keys($networkmap_data['orphans']) as $node) {
-			$graph .= networkmap_create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
-		}
-		
-	}
 	// Close graph
 	$graph .= networkmap_close_graph ();
 	

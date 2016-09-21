@@ -178,32 +178,36 @@ function networkmap_process_networkmap($id = 0) {
 	}
 	else {
 		$nodes_and_relations['nodes'] = array();
+		$index = 0;
 		foreach ($nodes as $key => $node) {
-			$nodes_and_relations['nodes'][]['id_map'] = $id;
-			$nodes_and_relations['nodes'][]['x'] = (int)$node['coords'][0];
-			$nodes_and_relations['nodes'][]['y'] = (int)$node['coords'][1];
-			$nodes_and_relations['nodes'][]['type'] = $node['type'];
+			$nodes_and_relations['nodes'][$index]['id_map'] = $id;
+			$nodes_and_relations['nodes'][$index]['x'] = (int)$node['coords'][0];
+			$nodes_and_relations['nodes'][$index]['y'] = (int)$node['coords'][1];
+			$nodes_and_relations['nodes'][$index]['type'] = $node['type'];
 			$style['shape'] = 'circle';
 			$style['image'] = $node['image'];
 			$style['width'] = $node['width'];
 			$style['height'] = $node['height'];
 			$style['label'] = $node['text'];
-			$nodes_and_relations['nodes'][]['style'] = json_encode($style);
+			$nodes_and_relations['nodes'][$index]['style'] = json_encode($style);
 			if ($node['type'] == 'agent') {
-				$nodes_and_relations['nodes'][]['source_data'] = $node['id_agent'];
+				$nodes_and_relations['nodes'][$index]['source_data'] = $node['id_agent'];
 			}
 			else {
-				$nodes_and_relations['nodes'][]['source_data'] = $node['id_module'];
+				$nodes_and_relations['nodes'][$index]['source_data'] = $node['id_module'];
 			}
+			$index++;
 		}
 		
+		$index = 0;
 		$nodes_and_relations['relations'] = array();
 		foreach ($relation_nodes as $relation) {
-			$nodes_and_relations['relations'][]['id_map'] = $id;
-			$nodes_and_relations['relations'][]['id_parent'] = $array_key_to_db_id[$relation['parent']];
-			$nodes_and_relations['relations'][]['id_child'] = $array_key_to_db_id[$relation['child']];
-			$nodes_and_relations['relations'][]['parent_type'] = $relation['parent_type']; 
-			$nodes_and_relations['relations'][]['child_type'] = $relation['child_type'];
+			$nodes_and_relations['relations'][$index]['id_map'] = $id;
+			$nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
+			$nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
+			$nodes_and_relations['relations'][$index]['parent_type'] = $relation['parent_type']; 
+			$nodes_and_relations['relations'][$index]['child_type'] = $relation['child_type'];
+			$index++;
 		}
 		
 		$center = array('x' => 500, 'y' => 500);
@@ -450,13 +454,22 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 			$item['id_module_start'] = $id_source;
 			$item['text_start'] = io_safe_output(modules_get_agentmodule_name($item['id_module_start']));
 		}
-		
 		foreach ($nodes_graph as $node) {
-			if ($node['id_db'] == $relation['id_parent']) {
-				$item['target'] = $node['id'];
+			if (enterprise_installed()) {
+				if ($node['id_db'] == $relation['id_parent']) {
+					$item['target'] = $node['id'];
+				}
+				if ($node['id_db'] == $relation['id_child']) {
+					$item['source'] = $node['id'];
+				}
 			}
-			if ($node['id_db'] == $relation['id_child']) {
-				$item['source'] = $node['id'];
+			else {
+				if ($node['id'] == $relation['id_parent']) {
+					$item['target'] = $node['id'];
+				}
+				else if ($node['id'] == $relation['id_child']) {
+					$item['source'] = $node['id'];
+				}
 			}
 		}
 		
@@ -470,6 +483,8 @@ function networkmap_write_js_array($id, $nodes_and_relations = array()) {
 	global $config;
 	
 	db_clean_cache();
+	
+	$ent_installed = (int)enterprise_installed();
 	
 	$networkmap = db_get_row('tmap', 'id', $id);
 	
@@ -497,7 +512,7 @@ function networkmap_write_js_array($id, $nodes_and_relations = array()) {
 		$networkmap['width'] . ", " .
 		$networkmap['height'] . "];\n";
 		
-	echo "var enterprise_installed = " . enterprise_installed() . ";\n";
+	echo "var enterprise_installed = " . $ent_installed . ";\n";
 	
 	echo "var networkmap_holding_area_dimensions = " .
 		json_encode($networkmap['filter']['holding_area']) . ";\n";
@@ -519,6 +534,7 @@ function networkmap_write_js_array($id, $nodes_and_relations = array()) {
 	$count_item_holding_area = 0;
 	$count = 0;
 	$nodes_graph = array();
+	
 	foreach ($nodes as $key => $node) {
 		$style = json_decode($node['style'], true);
 		$node['style'] = json_decode($node['style'], true);
@@ -1070,7 +1086,6 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 <script type="text/javascript">
 	<?php
 	networkmap_write_js_array($id, $nodes_and_relations);
-	
 	?>
 	////////////////////////////////////////////////////////////////////////
 	// document ready

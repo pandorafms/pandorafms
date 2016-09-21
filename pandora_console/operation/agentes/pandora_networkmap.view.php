@@ -17,7 +17,7 @@ global $config;
 check_login();
 
 require_once ('include/functions_pandora_networkmap.php');
-require_once ('enterprise/include/functions_policies.php');
+enterprise_include_once('include/functions_policies.php');
 require_once ('include/functions_modules.php');
 
 //--------------INIT AJAX-----------------------------------------------

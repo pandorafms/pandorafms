@@ -30,7 +30,6 @@ function draw_minimap() {
 		context_minimap.fill();
 	});
 	
-	
 	//Draw the rect of viewport
 	context_minimap.beginPath();
 	context_minimap.strokeStyle = "#f00";
@@ -1375,6 +1374,14 @@ function show_menu(item, data) {
 			items_list["add_node"] = {
 				name: add_node_menu,
 				icon: "add_node",
+				disabled : function() {
+					if (enterprise_installed) {
+						return false;
+					}
+					else {
+						return true;
+					}
+				},
 				"callback": function(key, options) {
 					add_node();
 				}
@@ -1824,9 +1831,7 @@ function add_fictional_node() {
 	}
 }
 
-function init_graph(parameter_object) {
-	console.log(parameter_object);
-	
+function init_graph(parameter_object) {	
 	window.width_svg = $("#networkconsole").width();
 	if ($("#main").height()) {
 		window.height_svg = $("#main").height();
@@ -2142,43 +2147,44 @@ function init_graph(parameter_object) {
 			"stroke-dasharray: none;")
 		.on("contextmenu", function(d) { show_menu("background", d);});
 	
+	if (enterprise_installed) {
+		window.layer_graph.append("rect")
+			.attr("id", "holding_area")
+			.attr("width", holding_area_dimensions[0])
+			.attr("height", holding_area_dimensions[1])
+			.attr("x",
+				networkmap_dimensions[0] + node_radius - holding_area_dimensions[0])
+			.attr("y",
+				networkmap_dimensions[1] + node_radius - holding_area_dimensions[1])
+			.attr("style", "fill: #ddd; " +
+				"fill-opacity: 0.75; " +
+				"stroke: #00ff00; " +
+				"stroke-width: 4; " +
+				"stroke-miterlimit: 4; " +
+				"stroke-opacity: 1; " +
+				"stroke-dasharray: none; " + 
+				"stroke-dasharray: 12,3; " +
+				"stroke-dashoffset: 0");
 	
-	window.layer_graph.append("rect")
-		.attr("id", "holding_area")
-		.attr("width", holding_area_dimensions[0])
-		.attr("height", holding_area_dimensions[1])
-		.attr("x",
-			networkmap_dimensions[0] + node_radius - holding_area_dimensions[0])
-		.attr("y",
-			networkmap_dimensions[1] + node_radius - holding_area_dimensions[1])
-		.attr("style", "fill: #ddd; " +
-			"fill-opacity: 0.75; " +
-			"stroke: #00ff00; " +
-			"stroke-width: 4; " +
-			"stroke-miterlimit: 4; " +
-			"stroke-opacity: 1; " +
-			"stroke-dasharray: none; " + 
-			"stroke-dasharray: 12,3; " +
-			"stroke-dashoffset: 0");
-	
-	window.layer_graph.append("text")
-		.append("tspan")
-			.attr("xml:space", "preserve")
-			.attr("style", "font-size: 32px; " +
-				"font-style: normal; " +
-				"font-weight: normal; " +
-				"text-align: start; " +
-				"line-height: 125%; " +
-				"letter-spacing: 0px; " +
-				"word-spacing: 0px; " +
-				"text-anchor: start; " +
-				"fill: #000000; " +
-				"fill-opacity: 1; " +
-				"stroke: none; " +
-				"font-family: Sans")
-			.attr("x", networkmap_dimensions[0] + node_radius - holding_area_dimensions[0])
-			.attr("y", networkmap_dimensions[1] + node_radius - holding_area_dimensions[1])
-			.text(holding_area_title);
+		window.layer_graph.append("text")
+			.append("tspan")
+				.attr("xml:space", "preserve")
+				.attr("style", "font-size: 32px; " +
+					"font-style: normal; " +
+					"font-weight: normal; " +
+					"text-align: start; " +
+					"line-height: 125%; " +
+					"letter-spacing: 0px; " +
+					"word-spacing: 0px; " +
+					"text-anchor: start; " +
+					"fill: #000000; " +
+					"fill-opacity: 1; " +
+					"stroke: none; " +
+					"font-family: Sans")
+				.attr("x", networkmap_dimensions[0] + node_radius - holding_area_dimensions[0])
+				.attr("y", networkmap_dimensions[1] + node_radius - holding_area_dimensions[1])
+				.text(holding_area_title);
+	}
 	
 	window.layer_graph_links = window.layer_graph
 		.append("g")

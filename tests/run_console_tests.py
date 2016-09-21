@@ -20,7 +20,7 @@ is_enterprise = '1' == getenv('ENTERPRISE', False)
 
 a = TestLoader()
 
-tests = a.discover(start_dir='console',pattern='ACL.py')
+tests = a.discover(start_dir='console',pattern='*.py')
 
 c = ArticaTestResult()
 tests.run(c)

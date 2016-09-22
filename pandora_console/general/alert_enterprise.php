@@ -2,11 +2,21 @@
 
 $tipo = $_GET['message'];
 
-echo "<div class='info_box' style='padding-top:20px;padding-bottom:20px;'><span style='padding:20px;'>";
+echo "
+<div class='modalheader'>
+<span class='modalheadertext'>
+Community version</span>
+<img class='modalclosex cerrar' src='".$config['homeurl']."images/icono_cerrar.png'>
+</div>
+
+<div class='modalcontent'>
+<img class='modalcontentimg' src='".$config['homeurl']."images/icono_popup.png'>
+<div class='modalcontenttext'>";
 
 switch ($tipo) {
     case "module":
-      echo __("The community version have not the ability to define your own library of local modules, or distribute it to remote agents. You need to do that changes individually on each agent, but it's possible by using external tools and space time and effort. Nor can distribute local plugins, and nor does it have access to the library of plugins enterprise to monitor applications such as Informix, Oracle, DB2, SQL Server, Exchange, WebSphere, Oracle Exadata, F5, JBoss, HyperV, VMWare, RHEV, to name a few. With the Enterprise version will have all this, and the ability to distribute and manage their own local modules to your systems, individually or through policies.");
+      echo __("The community version have not the ability to define your own library of local modules, or distribute it to remote agents. You need to do that changes individually on each agent, but it's possible by using external tools and space time and effort. Nor can distribute local plugins, and nor does it have access to the library of plugins enterprise to monitor applications such as Informix, Oracle, DB2, SQL Server, Exchange, WebSphere, Oracle Exadata, F5, JBoss, HyperV, VMWare, RHEV, to name a few. With the Enterprise version will have all this, and the ability to distribute and manage their own local modules to your systems, individually or through policies.
+      <br><br><img style='width:105px' src='".$config['homeurl']."images/logo_oracle.png'><img style='width:105px' src='".$config['homeurl']."images/logo_citrix.png'><img style='width:105px' src='".$config['homeurl']."images/logo_sap.png'><img style='width:105px' src='".$config['homeurl']."images/logo_exchange.png'>");
       break;
     case "massive":
       echo __("You want to manage your monitoring homogeneously? Do you have many systems and is difficult to manage in a comprehensive manner? Would you like to deploy monitoring, alerts and even local plugins with a single click? Pandora FMS Enterprise Policies are exactly what you need, you'll save time, effort and dislikes. More information (link to pandorafms.com)");
@@ -21,19 +31,28 @@ switch ($tipo) {
     break;
 }
 
-echo "</span></div>";
+echo "
+</div>
+<div class='modalokbutton cerrar'>
+<span class='modalokbuttontext'>OK</span>
+</div>
 
-
-echo "<button id='cerrar' onclick='ocultar();'>OK</button>";
+<div class='modalgobutton gopandora'>
+<span class='modalokbuttontext'>Go to Enterprise version</span>
+</div>
+";
 
 ?>
 
 <script>
 
-function ocultar(){
-$("#alert_messages" ).dialog('close');
+$(".cerrar").click(function(){
+  $("#alert_messages").hide();
+  $( "#opacidad" ).remove();
+});
 
-
-}
+$(".gopandora").click(function(){
+  window.open('https://pandorafms.com/es/software-de-monitorizacion-pandorafms/','_blank');
+});
 
 </script>

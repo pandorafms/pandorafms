@@ -30,6 +30,10 @@ enterprise_include_once("include/functions_update_manager.php");
 
 $current_package = update_manager_get_current_package();
 
+if(!enterprise_installed()){
+	$open=true; 
+}
+
 echo "<p><b>" . sprintf(__("The last version of package installed is: %d"),
 	$current_package) . "</b></p>";
 
@@ -59,27 +63,20 @@ if ($memory_limit < 100) {
 
 
 /* Translators: Do not translade Update Manager, it's the name of the program */
-ui_print_info_message(
-	'<p>' .
-		__('The new <a href="http://updatemanager.sourceforge.net">Update Manager</a> client is shipped with Pandora FMS It helps system administrators to update their Pandora FMS automatically, since the Update Manager does the task of getting new modules, new plugins and new features (even full migrations tools for future versions) automatically.') .
-	'</p>' .
-	'<p>' .
-		__('Update Manager is one of the most advanced features of Pandora FMS Enterprise version, for more information visit <a href="http://pandorafms.com">http://pandorafms.com</a>.') .
-	'</p>' .
-	'<p>' .
-		__('Update Manager sends anonymous information about Pandora FMS usage (number of agents and modules running). To disable it, remove remote server address from Update Manager plugin setup.') .
-	'</p>');
 
-echo "<div id='box_online' style='text-align: center;'>";
-	echo "<span class='loading' style=''>";
+
+
+
+echo "<div id='box_online' class='cargatextodialogo'>";
+	echo "<span class='loading' style='font-size:18pt;'>";
 	echo "<img src='images/wait.gif' />";
 	echo "</span>";
 	
-	echo "<div class='checking_package' style='width:100%; text-align: center; display: none;'>";
+	echo "<div class='checking_package' style='font-size:18pt;width:100%; text-align: center; display: none;'>";
 	echo __('Checking for the newest package.');
 	echo "</div>";
 	
-	echo "<div class='downloading_package' style='width:100%; text-align: center; display: none;'>";
+	echo "<div class='downloading_package' style='font-size:18pt;width:100%; text-align: center; display: none;'>";
 	echo __('Downloading for the newest package.');
 	echo "</div>";
 	
@@ -87,7 +84,11 @@ echo "<div id='box_online' style='text-align: center;'>";
 	
 	echo "<div class='progressbar' style='display: none;'><img class='progressbar_img' src='' /></div>";
 	
-echo "</div>";
+	if($open){
+		echo "<div id='updatemodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		";
+	}
+	
 
 $enterprise = enterprise_hook('update_manager_enterprise_main');
 if ($enterprise == ENTERPRISE_NOT_HOOK) {
@@ -95,3 +96,24 @@ if ($enterprise == ENTERPRISE_NOT_HOOK) {
 	update_manager_main();
 }
 ?>
+
+<script>
+$(document).ready(function() {
+$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
+jQuery.get ("ajax.php",
+	{
+"page": "general/alert_enterprise",
+"message":"infomodal"},
+	function (data, status) {
+		$("#alert_messages").hide ()
+			.empty ()
+			.append (data)
+			.show ();
+	},
+	"html"
+);
+
+return false;
+
+});
+</script>

@@ -1755,6 +1755,8 @@ function init_drag_and_drop() {
 				.each(function(d) {
 					graph.nodes[d.id].x = d.x + delta[0];
 					graph.nodes[d.id].y = d.y + delta[1];
+					graph.nodes[d.id].px = d.px + delta[0];
+					graph.nodes[d.id].py = d.py + delta[1];
 				});
 			
 			set_positions_graph();

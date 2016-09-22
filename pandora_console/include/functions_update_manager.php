@@ -796,7 +796,7 @@ function update_manger_get_single_message ($message_id) {
 	
 	$sql = 'SELECT data, svn_version, db_field_value FROM tupdate ';
 	$sql .= 'WHERE svn_version=' . $message_id;
-	html_debug ("S: " . $sql, true);
+	
 	$message = db_get_row_sql($sql);
 	return $message;
 }

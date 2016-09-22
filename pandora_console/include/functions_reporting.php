@@ -2601,19 +2601,14 @@ function reporting_alert_report_group($report, $content) {
 		$data_row['template'] = db_get_value_filter('name', 'talert_templates',
 			array('id' => $alert['id_alert_template']));
 		
-		
-		$actions = db_get_all_rows_sql('SELECT name 
-			FROM talert_actions 
-			WHERE id IN (SELECT id_alert_action 
-				FROM talert_template_module_actions 
-				WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ')');
+		$actions = alerts_get_alert_agent_module_actions ($alert['id']);
 		
 		if (!empty($actions)) {
 			$row = db_get_row_sql('SELECT id_alert_action
 				FROM talert_templates
 				WHERE id IN (SELECT id_alert_template
 					FROM talert_template_modules
-					WHERE id = ' . $alert['id_alert_template'] . ')');
+					WHERE id = ' . $alert['id'] . ')');
 			
 			$id_action = 0;
 			if (!empty($row))
@@ -2622,16 +2617,13 @@ function reporting_alert_report_group($report, $content) {
 			// Prevent from void action
 			if (empty($id_action))
 				$id_action = 0;
-			
+		}
+		else {
 			$actions = db_get_all_rows_sql('SELECT name 
 				FROM talert_actions 
 				WHERE id = ' . $id_action);
-			
-			if (empty($actions)) {
-				$actions = array();
-			}
 		}
-		
+
 		$data_row['action'] = array();
 		foreach ($actions as $action) {
 			$data_row['action'][] = $action['name'];
@@ -2643,9 +2635,12 @@ function reporting_alert_report_group($report, $content) {
 			$alert['id_alert_template'],
 			(int) $content['period'],
 			(int) $report["datetime"]);
+		
 		if (empty($firedTimes)) {
 			$firedTimes = array();
+			$firedTimes[0]['timestamp'] = '----------------------------';
 		}
+		
 		foreach ($firedTimes as $fireTime) {
 			$data_row['fired'][] = $fireTime['timestamp'];
 		}
@@ -2675,8 +2670,6 @@ function reporting_alert_report_agent($report, $content) {
 	if ($config['metaconsole']) {
 		$id_meta = metaconsole_get_id_server($content["server_name"]);
 		
-		
-		
 		$server = metaconsole_get_connection_by_id ($id_meta);
 		metaconsole_connect($server);
 	}
@@ -2700,87 +2693,69 @@ function reporting_alert_report_agent($report, $content) {
 	
 	$data = array();
 	
-	foreach ($alerts as $alert) {
-		$data_row = array();
-		
-		$data_row['disabled'] = $alert['disabled'];
-		
-		$data_row['module'] = db_get_value_filter('nombre', 'tagente_modulo',
-			array('id_agente_modulo' => $alert['id_agent_module']));
-		$data_row['template'] = db_get_value_filter('name', 'talert_templates',
-			array('id' => $alert['id_alert_template']));
-		
-		
-		
-		switch ($config["dbtype"]) {
-			case "mysql":
-			case "postgresql":
-				$actions = db_get_all_rows_sql('SELECT name 
-					FROM talert_actions 
-					WHERE id IN (SELECT id_alert_action 
-						FROM talert_template_module_actions 
-						WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ');');
-				break;
-			case "oracle":
-				$actions = db_get_all_rows_sql('SELECT name 
-					FROM talert_actions 
-					WHERE id IN (SELECT id_alert_action 
-						FROM talert_template_module_actions 
-						WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ')');
-				break;
-		}
-		
-		
-		
-		
-		if (!empty($actions)) {
-			$row = db_get_row_sql('SELECT id_alert_action
-				FROM talert_templates
-				WHERE id IN (SELECT id_alert_template
-					FROM talert_template_modules
-					WHERE id = ' . $alert['id_alert_template'] . ')');
+	if (is_array($alerts) || is_object($alerts)) {
+		foreach ($alerts as $alert) {
+			$data_row = array();
 			
-			$id_action = 0;
-			if (!empty($row))
-				$id_action = $row['id_alert_action'];
+			$data_row['disabled'] = $alert['disabled'];
 			
-			// Prevent from void action
-			if (empty($id_action))
+			$data_row['module'] = db_get_value_filter('nombre', 'tagente_modulo',
+				array('id_agente_modulo' => $alert['id_agent_module']));
+			$data_row['template'] = db_get_value_filter('name', 'talert_templates',
+				array('id' => $alert['id_alert_template']));
+			
+			$actions = alerts_get_alert_agent_module_actions ($alert['id']);
+
+			if (!empty($actions)) {
+				$row = db_get_row_sql('SELECT id_alert_action
+					FROM talert_templates
+					WHERE id IN (SELECT id_alert_template
+						FROM talert_template_modules
+						WHERE id = ' . $alert['id_alert_template'] . ')');
+				
 				$id_action = 0;
-			
-			$actions = db_get_all_rows_sql('SELECT name 
-				FROM talert_actions 
-				WHERE id = ' . $id_action);
+				if (!empty($row))
+					$id_action = $row['id_alert_action'];
+				
+				// Prevent from void action
+				if (empty($id_action))
+					$id_action = 0;
+			}
+			else {
+				$actions = db_get_all_rows_sql('SELECT name 
+					FROM talert_actions 
+					WHERE id = ' . $id_action);	
+			} 
 			
 			if (empty($actions)) {
 				$actions = array();
 			}
+
+			$data_row['action'] = array();
+			foreach ($actions as $action) {
+				$data_row['action'][] = $action['name'];
+			}
+			
+			$data_row['fired'] = array();
+			$firedTimes = get_module_alert_fired(
+				$alert['id_agent_module'],
+				$alert['id_alert_template'],
+				(int) $content['period'],
+				(int) $report["datetime"]);
+			
+			if (empty($firedTimes)) {
+				$firedTimes = array();
+				$firedTimes[0]['timestamp'] = '----------------------------';
+			}
+
+			foreach ($firedTimes as $fireTime) {
+				$data_row['fired'][] = $fireTime['timestamp'];
+			}
+			
+			$data[] = $data_row;
 		}
-		
-		$data_row['action'] = array();
-		foreach ($actions as $action) {
-			$data_row['action'][] = $action['name'];
-		}
-		
-		$data_row['fired'] = array();
-		$firedTimes = get_module_alert_fired(
-			$alert['id_agent_module'],
-			$alert['id_alert_template'],
-			(int) $content['period'],
-			(int) $report["datetime"]);
-		
-		
-		
-		if (empty($firedTimes)) {
-			$firedTimes = array();
-		}
-		foreach ($firedTimes as $fireTime) {
-			$data_row['fired'][] = $fireTime['timestamp'];
-		}
-		
-		$data[] = $data_row;
 	}
-	
+
 	$return['data'] = $data;
 	
 	if ($config['metaconsole']) {
@@ -2845,7 +2820,9 @@ function reporting_alert_report_module($report, $content) {
 	}
 	
 	$data = array();
+
 	foreach ($alerts as $alert) {
+		
 		$data_row = array();
 		
 		$data_row['disabled'] = $alert['disabled'];
@@ -2853,25 +2830,7 @@ function reporting_alert_report_module($report, $content) {
 		$data_row['template'] = db_get_value_filter('name',
 			'talert_templates', array('id' => $alert['id_alert_template']));
 		
-		switch ($config["dbtype"]) {
-			case "mysql":
-			case "postgresql":
-				$actions = db_get_all_rows_sql('SELECT name 
-					FROM talert_actions 
-					WHERE id IN (SELECT id_alert_action 
-						FROM talert_template_module_actions 
-						WHERE id_alert_template_module = ' . $alert['id_alert_template_module'] . ');');
-				break;
-			case "oracle":
-				$actions = db_get_all_rows_sql('SELECT name 
-					FROM talert_actions 
-					WHERE id IN (SELECT id_alert_action 
-						FROM talert_template_module_actions 
-						WHERE id_alert_template_module = ' . $alert['id_alert_template_module'] . ')');
-				break;
-		}
-		
-		
+		$actions = alerts_get_alert_agent_module_actions ($alert['id_alert_template_module']);
 		
 		if (!empty($actions)) {
 			$row = db_get_row_sql('SELECT id_alert_action
@@ -2881,43 +2840,41 @@ function reporting_alert_report_module($report, $content) {
 					WHERE id = ' . $alert['id_alert_template_module'] . ')');
 			
 			$id_action = 0;
+			
 			if (!empty($row))
 				$id_action = $row['id_alert_action'];
 			
 			// Prevent from void action
 			if (empty($id_action))
 				$id_action = 0;
-			
+		} 
+		else {
 			$actions = db_get_all_rows_sql('SELECT name 
 				FROM talert_actions 
 				WHERE id = ' . $id_action);
-			
-			if (empty($actions)) {
-				$actions = array();
-			}
 		}
 		
 		$data_row['action'] = array();
 		foreach ($actions as $action) {
 			$data_row['action'][] = $action['name'];
 		}
-		
+
 		$data_row['fired'] = array();
 		$firedTimes = get_module_alert_fired(
 			$content['id_agent_module'],
 			$alert['id_alert_template_module'],
 			(int) $content['period'],
-			(int) $report["datetime"]);
-		
-		
+			(int) $report["datetime"]);	
 		
 		if (empty($firedTimes)) {
 			$firedTimes = array();
+			$firedTimes[0]['timestamp'] = '----------------------------';
 		}
+
 		foreach ($firedTimes as $fireTime) {
 			$data_row['fired'][] = $fireTime['timestamp'];
 		}
-		
+
 		$data[] = $data_row;
 	}
 	

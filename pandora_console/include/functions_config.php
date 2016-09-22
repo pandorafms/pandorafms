@@ -53,8 +53,7 @@ function config_update_value ($token, $value) {
 	}
 	
 	if ($token == 'ad_adv_perms') {
-		$value = str_replace(array("\r\n", "\r", "\n"), ";",
-			io_safe_output($value));
+		$value = io_safe_output($value);
 	}
 	
 	if ($token == 'default_assign_tags') {
@@ -1189,14 +1188,14 @@ function config_process_config () {
 		config_update_value ( 'ad_domain', '');
 	}
 	
-	if (!isset ($config["ad_adv_perms"])) {
+	if (!isset ($config['ad_adv_perms'])) {
 		config_update_value ('ad_adv_perms', '');
 	}
 	else{
 		$temp_ad_adv_perms = array();
 		if (isset($config['ad_adv_perms'])) {
 			if (!empty($config['ad_adv_perms'])) {
-				$temp_ad_adv_perms = explode(';', io_safe_output($config['ad_adv_perms']));
+				$temp_ad_adv_perms = $config['ad_adv_perms'];
 			}
 		}
 		$config['ad_adv_perms'] = $temp_ad_adv_perms;

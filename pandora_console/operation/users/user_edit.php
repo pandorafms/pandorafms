@@ -201,8 +201,9 @@ if (defined('METACONSOLE')) {
 	$table->head_colspan[0] = 5;
 	$table->headstyle[0] = 'text-align: center';
 }
-$table->style[0] = 'width: 500px;';
-$table->style[2] = 'width: 200px;';
+$table->style[0] = 'min-width: 500px;width: 500px;';
+$table->style[1] = 'min-width: 500px;width: 500px;';
+$table->style[2] = 'min-width: 200px;width: 200px;';
 
 $data = array();
 $data[0] = '<b>' . __('User ID') . '</b>';
@@ -443,7 +444,7 @@ $select_out = html_print_select ($autorefresh_list_out, 'autorefresh_list_out[]'
 $arrows = " ";
 $select_in = html_print_select ($autorefresh_list, 'autorefresh_list[]', '', '', '', '', true, true, true, '', false, 'width:200px');
 
-$table_ichanges = '<table>
+$table_ichanges = '<table style="position:relative;left:160px;">
 		<tr>
 			<td>' . __('Full list of pages') . '</td>
 			<td></td>

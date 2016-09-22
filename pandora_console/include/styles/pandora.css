@@ -465,7 +465,7 @@ div#login_in, #login_f {
 	-moz-transform: rotate(36deg); /* FF */
 	-o-transform: rotate(36deg); /* Opera */
 	-webkit-transform: rotate(36deg); /* Safari and Chrome */
-	
+
 	float: right;
 	margin-top: 18px;
 	width: 80px;
@@ -3031,13 +3031,13 @@ table#policy_modules td * {
 	margin: 0px;
 }
 
-.databox.filters td>img, .databox.filters td>div>a>img, 
+.databox.filters td>img, .databox.filters td>div>a>img,
 .databox.filters td>span>img, .databox.filters td>span>a>img,
 .databox.filters td>a>img{
 	vertical-align: middle;
 	margin-left: 5px;
 }
-.databox.data td>img,.databox.data th>img, .databox.data td>div>a>img, 
+.databox.data td>img,.databox.data th>img, .databox.data td>div>a>img,
 .databox.data td>span>img, .databox.data td>span>a>img,
 .databox.data td>a>img, .databox.data td>form>a>img {
 	vertical-align: middle;
@@ -3164,7 +3164,7 @@ table#policy_modules td * {
 	height: 210px;
 	background: blue;
 	border-radius: 15px;
-	
+
 	top: 50px;
 	left: 10px;
 	position: absolute;
@@ -3192,7 +3192,7 @@ table#policy_modules td * {
 @media screen and (-webkit-min-device-pixel-ratio:0)
 {
 	/* Only for chrome */
-	
+
 	.vertical_range {
 		left: -87px;
 		top: 93px;
@@ -3202,7 +3202,7 @@ table#policy_modules td * {
 .home_zoom {
 	top: 310px;
 	left: 10px;
-	
+
 	display: table-cell;
 	position: absolute;
 	font-weight: bolder;
@@ -3220,7 +3220,7 @@ table#policy_modules td * {
 .zoom_in {
 	top: 10px;
 	left: 10px;
-	
+
 	display: table-cell;
 	position: absolute;
 	font-weight: bolder;
@@ -3238,7 +3238,7 @@ table#policy_modules td * {
 .zoom_out {
 	top: 270px;
 	left: 10px;
-	
+
 	display: table-cell;
 	position: absolute;
 	font-weight: bolder;
@@ -3449,4 +3449,62 @@ div.simple_value > a > span.text > p {
 
 .unicode{
 	font-family: unicodeFont;
+}
+
+#alert_messages{
+	-moz-border-bottom-right-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+	z-index:2;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -50%);
+	position:absolute;
+	width:650px;
+	background:white;
+}
+.modalheader{
+	text-align:center;width:100%;height:37px;left:0px;background-color:#82b92e;
+}
+.modalheadertext{
+	color:white;position:relative;font-family:Nunito;font-size:13pt;top:8px;
+}
+.modalclosex{
+	cursor:pointer;display:inline;float:right;margin-right:10px;margin-top:10px;
+}
+.modalcontent{
+	color:black;background:white;
+}
+.modalcontentimg{
+	float:left;margin-left:30px;margin-top:30px;
+}
+.modalcontenttext{
+	float:left;text-align:justify;color:black;font-size: 9.5pt;line-height:13pt;margin-top:30px;width:430px;margin-left:30px;
+}
+.modalokbutton{
+	cursor:pointer;text-align:center;margin-right:45px;margin-top:30px;margin-bottom:30px;float:right;-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;border-radius: 3px;bottom:0px;width:90px;height:30px;background-color:white;border: 1px solid #82b92e;
+}
+.modalokbuttontext{
+	color:#82b92e;font-family:Nunito;font-size:10pt;position:relative;top:6px;
+}
+.modalgobutton{
+	cursor:pointer;text-align:center;margin-right:15px;margin-top:30px;margin-bottom:30px;float:right;-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;border-radius: 3px;bottom:0px;width:240px;height:30px;background-color:white;border: 1px solid #82b92e;
+}
+.modalgobuttontext{
+color:#82b92e;font-family:Nunito;font-size:10pt;position:relative;top:6px;	
+}
+
+
+#opacidad{
+	opacity:0.5;
+	z-index:1;
+	width:100%;
+	height:100%;
+	position:absolute;
+	left:0px;
+	top:0px;
 }

@@ -1609,7 +1609,7 @@ function createItem(type, values, id_data) {
 		case 'simple_value':
 			sizeStyle = '';
 			imageSize = '';
-			item = $('<div id="' + id_data + '" class="item simple_value" style="text-align: center; position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
+			item = $('<div id="' + id_data + '" class="item simple_value" style="position: absolute; ' + sizeStyle + ' top: ' + values['top'] + 'px; left: ' + values['left'] + 'px;">' +
 					'<span id="text_' + id_data + '" class="text"> ' + values['label'] + '</span> ' + '</div>'
 			);
 			setModuleValue(id_data,values.process_simple_value,values.period);

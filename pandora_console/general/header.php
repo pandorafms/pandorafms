@@ -357,11 +357,19 @@ config_check();
 			$("#agent_access").css("display","");
 		});
 		
-		
+		function blinkmail(){
+			$("#yougotmail").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkmail);
+		}
+		function blinkalert(){
+			$("#yougotalert").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkalert);
+		}
+		function blinkpubli(){
+			$(".publienterprise").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkpubli);
+		}
 		<?php
 		if ($msg_cnt > 0) {
 		?>
-			$("#yougotmail").pulsate ();
+			blinkmail();
 		<?php
 		}
 		?>
@@ -370,11 +378,11 @@ config_check();
 		<?php
 		if ($config["alert_cnt"] > 0) {
 		?>
-			$("#yougotalert").pulsate ();
+			blinkalert();
 		<?php
 		}
 		?>
-		$("#publienterprise").pulsate ();
+			blinkpubli();
 
 		<?php
 		if ($_GET["refr"]) {

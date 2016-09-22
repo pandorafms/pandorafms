@@ -88,8 +88,9 @@ else {
 		$utimestamp_sql = $utimestamp_sql[0];
 		
 		
-		$agentCell = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $module['id_agente'] . '">' .
-			$module['agent_name'] . '</a>';
+		$agent = db_get_row ('tagente', 'id_agente', $module['id_agente']);
+		$agentCell = '<a title='.$module['agent_name'].' href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $module['id_agente'] . '">' .
+			$agent['alias'] . '</a>';
 		
 		$typeCell = ui_print_moduletype_icon($module["id_tipo_modulo"], true);
 		

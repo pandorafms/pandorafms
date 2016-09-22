@@ -73,6 +73,7 @@ $campo_3 = "";
 $maximo = 0;
 $minimo = 0;
 $nombre_agente = "";
+$alias = "";
 $direccion_agente = get_parameter('direccion', '');
 $direccion_agente = trim(io_safe_output($direccion_agente));
 $direccion_agente = io_safe_input($direccion_agente);
@@ -146,7 +147,8 @@ $module_macros = array ();
 
 // Create agent
 if ($create_agent) {
-	$nombre_agente = (string) get_parameter_post("agente",'');
+	$nombre_agente = md5($alias . $direccion_agente);
+	$alias = (string) get_parameter_post("alias",'');
 	$direccion_agente = (string) get_parameter_post("direccion",'');
 	$direccion_agente = trim(io_safe_output($direccion_agente));
 	$direccion_agente = io_safe_input($direccion_agente);
@@ -177,18 +179,19 @@ if ($create_agent) {
 	}
 	
 	// Check if agent exists (BUG WC-50518-2)
-	if ($nombre_agente == "") {
-		$agent_creation_error = __('No agent name specified');
+	if ($alias == "") {
+		$agent_creation_error = __('No agent alias specified');
 		$agent_created_ok = 0;
 	}
-	elseif (agents_get_agent_id ($nombre_agente)) {
+	/*elseif (agents_get_agent_id ($nombre_agente)) {
 		$agent_creation_error =
 			__('There is already an agent in the database with this name');
 		$agent_created_ok = 0;
-	}
+	}*/
 	else {
 		$id_agente = db_process_sql_insert ('tagente', 
 			array ('nombre' => $nombre_agente,
+				'alias' => $alias,
 				'direccion' => $direccion_agente,
 				'id_grupo' => $grupo,
 				'intervalo' => $intervalo,
@@ -237,7 +240,7 @@ if ($create_agent) {
 				' Quiet: ' . (int)$quiet;
 			
 			db_pandora_audit("Agent management",
-				"Created agent $nombre_agente", false, true, $info);
+				"Created agent $alias", false, true, $info);
 		}
 		else {
 			$id_agente = 0;
@@ -550,10 +553,9 @@ if ($id_agente) {
 		default:
 			break;
 	}
-	
-	ui_print_page_header (
-		agents_get_name ($id_agente) . ' ' . $tab_description,
-		"images/setup.png", false, $help_header , true, $onheader);
+	$agent = db_get_row ('tagente', 'id_agente', $id_agente);
+	ui_print_page_header ($agent["nombre"],
+	"images/setup.png", false, $help_header , true, $onheader,$agent["alias"] . ' ' . $tab_description);
 }
 else {
 	// Create agent 
@@ -637,6 +639,7 @@ $update_agent = (bool) get_parameter ('update_agent');
 if ($update_agent) { // if modified some agent paramenter
 	$id_agente = (int) get_parameter_post ("id_agente");
 	$nombre_agente = str_replace('`','&lsquo;',(string) get_parameter_post ("agente", ""));
+	$alias = str_replace('`','&lsquo;',(string) get_parameter_post ("alias", ""));
 	$direccion_agente = (string) get_parameter_post ("direccion", '');
 	$direccion_agente = trim(io_safe_output($direccion_agente));
 	$direccion_agente = io_safe_input($direccion_agente);
@@ -700,14 +703,14 @@ if ($update_agent) { // if modified some agent paramenter
 	}
 	
 	//Verify if there is another agent with the same name but different ID
-	if ($nombre_agente == "") {
-		ui_print_error_message(__('No agent name specified'));
+	if ($alias == "") {
+		ui_print_error_message(__('No agent alias specified'));
 		//If there is an agent with the same name, but a different ID
 	}
-	elseif (agents_get_agent_id ($nombre_agente) > 0 &&
+	/*elseif (agents_get_agent_id ($nombre_agente) > 0 &&
 		agents_get_agent_id ($nombre_agente) != $id_agente) {
 		ui_print_error_message(__('There is already an agent in the database with this name'));
-	}
+	}*/
 	else {
 		//If different IP is specified than previous, add the IP
 		if ($direccion_agente != '' &&
@@ -727,7 +730,7 @@ if ($update_agent) { // if modified some agent paramenter
 				'id_parent' => $id_parent,
 				'id_os' => $id_os,
 				'modo' => $modo,
-				'nombre' => $nombre_agente,
+				'alias' => $alias,
 				'direccion' => $direccion_agente,
 				'id_grupo' => $grupo,
 				'intervalo' => $intervalo,
@@ -771,8 +774,8 @@ if ($update_agent) { // if modified some agent paramenter
 			enterprise_hook ('update_agent', array ($id_agente));
 			ui_print_success_message (__('Successfully updated'));
 			db_pandora_audit("Agent management",
-				"Updated agent $nombre_agente", false, false, $info);
-			
+				"Updated agent $alias", false, false, $info);
+
 		}
 	}
 }
@@ -797,6 +800,10 @@ if ($id_agente) {
 	
 	$intervalo = $agent["intervalo"]; // Define interval in seconds
 	$nombre_agente = $agent["nombre"];
+	$alias = $agent["alias"];
+	if(empty ($alias)){
+		$alias = $nombre_agente;
+	}
 	$direccion_agente = $agent["direccion"];
 	$grupo = $agent["id_grupo"];
 	$ultima_act = $agent["ultimo_contacto"];

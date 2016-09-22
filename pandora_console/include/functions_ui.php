@@ -2383,7 +2383,7 @@ function ui_get_full_url ($url = '', $no_proxy = false, $add_name_php_file = fal
  * @return string Header HTML
  */
 
-function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = "",$modal = false, $message = "") {
+function ui_print_page_header ($title, $icon = "", $return = false, $help = "", $godmode = false, $options = "", $alias = "") {
 	$title = io_safe_input_html($title);
 	if (($icon == "") && ($godmode == true)) {
 		$icon = "images/gm_setup.png";
@@ -2409,8 +2409,13 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	
 	
 	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . '&nbsp; ';
-	$buffer .= '<span style="">' .
-		ui_print_truncate_text($title, 46);
+	if(empty($alias)){
+		$buffer .= '<span style="">' .
+			ui_print_truncate_text($title, 38);
+	}else{
+		$buffer .= '<span style="">' .
+			'<span title='.$title.'>'.$alias.'</span>';
+	}
 	if ($modal){
 		$buffer .= "
 		<div id='publienterprise' class='".$message."' title='Community version' style='float: right;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
@@ -3257,10 +3262,10 @@ function ui_print_agent_autocomplete_input($parameters) {
 				})
 			.data("ui-autocomplete")._renderItem = function( ul, item ) {
 				if (item.ip == "") {
-					text = "<a>" + item.name + "</a>";
+					text = "<a>" + item.alias+ "</a>";
 				}
 				else {
-					text = "<a>" + item.name
+					text = "<a>" + item.alias
 						+ "<br><span style=\"font-size: 70%; font-style: italic;\">IP:" + item.ip + "</span></a>";
 				}
 				
@@ -3280,6 +3285,12 @@ function ui_print_agent_autocomplete_input($parameters) {
 						break;
 					case \'description\':
 						return $("<li style=\'background: #FEFCC6;\'></li>")
+							.data("item.autocomplete", item)
+							.append(text)
+							.appendTo(ul);
+						break;
+					case \'alias\':
+						return $("<li style=\'background: #a8e7eb;\'></li>")
 							.data("item.autocomplete", item)
 							.append(text)
 							.appendTo(ul);

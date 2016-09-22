@@ -362,7 +362,7 @@ if ($search != "") {
 		$search_sql .= ")";
 	}else{
 		$search_sql = " AND ( nombre " . $order_collation . "
-			LIKE '%$search%') ";
+			LIKE '%$search%' OR alias ".$order_collation." LIKE '%$search%') ";
 	}
 }
 
@@ -436,6 +436,8 @@ else {
 		
 		array ('id_agente',
 			'id_grupo',
+			'nombre',
+			'alias',
 			'id_os',
 			'ultimo_contacto',
 			'intervalo',
@@ -546,7 +548,7 @@ foreach ($agents as $agent) {
 	if ($agent['quiet']) {
 		$data[0] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "&nbsp;";
 	}
-	$data[0] .= ui_print_agent_name($agent["id_agente"], true, 60, 'font-size:6.5pt !important;', true);
+	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'"> <span style="font-size: 7pt;font-weight:bold" title ="' . $agent["nombre"]. '">'.$agent["alias"].'</span></a>';
 	$data[0] .= '</span>';
 	$data[0] .= '<div class="agentleft_' . $agent["id_agente"] . '" style="visibility: hidden; clear: left;">';
 	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';

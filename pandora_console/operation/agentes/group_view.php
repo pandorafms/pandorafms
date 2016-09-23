@@ -79,6 +79,7 @@ $monitor_critical = 0;
 $monitor_unknown = 0;
 $monitor_not_init = 0;
 $agents_unknown = 0;
+$agents_critical = 0;
 $agents_notinit = 0;
 $all_alerts_fired = 0;
 
@@ -92,6 +93,7 @@ foreach ($all_data as $group_all_data) {
 	
 	$agents_unknown += $group_all_data["_agents_unknown_"];
 	$agents_notinit += $group_all_data["_agents_not_init_"];
+	$agents_critical += $group_all_data["_agents_critical_"];
 
 	$all_alerts_fired += $group_all_data["_monitors_alerts_fired_"];
 }
@@ -106,6 +108,7 @@ $total_unknown = format_numeric (($monitor_unknown*100)/$total,2);
 $total_monitor_not_init = format_numeric (($monitor_not_init*100)/$total,2);
 //Agents
 $total_agent_unknown = format_numeric (($agents_unknown*100)/$total_agentes,2);
+$total_agent_critical = format_numeric (($agents_critical*100)/$total_agentes,2);
 $total_not_init = format_numeric (($agents_notinit*100)/$total_agentes,2);
 
 echo '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="databox">';
@@ -120,6 +123,7 @@ echo '<table cellpadding="0" cellspacing="0" border="0" width="100%" class="data
 		echo "<td align='center'>";
 			echo "<span id='sumary' style='background-color:#B2B2B2;'>". $total_agent_unknown ."%</span>";
 			echo "<span id='sumary' style='background-color:#5bb6e5;'>". $total_not_init ."%</span>";
+			echo "<span id='sumary' style='background-color:#FC4444;'>". $total_critical ."%</span>";
 		echo "</td>";
 		echo "<td align='center'>";
 			echo "<span id='sumary' style='background-color:#FC4444;'>". $total_critical ."%</span>";

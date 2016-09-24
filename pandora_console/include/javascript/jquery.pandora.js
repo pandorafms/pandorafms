@@ -89,14 +89,6 @@ $(document).ready (function () {
 			},
 			"html"
 		);
-
-
-
-		return false;
-	});
-
-
-
 		return false;
 	});
 

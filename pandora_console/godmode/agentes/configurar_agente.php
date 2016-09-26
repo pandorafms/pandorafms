@@ -73,7 +73,7 @@ $campo_3 = "";
 $maximo = 0;
 $minimo = 0;
 $nombre_agente = "";
-$alias = "";
+$alias = get_parameter('alias', '');
 $direccion_agente = get_parameter('direccion', '');
 $direccion_agente = trim(io_safe_output($direccion_agente));
 $direccion_agente = io_safe_input($direccion_agente);
@@ -800,9 +800,11 @@ if ($id_agente) {
 	
 	$intervalo = $agent["intervalo"]; // Define interval in seconds
 	$nombre_agente = $agent["nombre"];
-	$alias = $agent["alias"];
-	if(empty ($alias)){
-		$alias = $nombre_agente;
+	if(empty($alias)){
+		$alias = $agent["alias"];
+		if(empty($alias)){
+			$alias = $nombre_agente;
+		}
 	}
 	$direccion_agente = $agent["direccion"];
 	$grupo = $agent["id_grupo"];

@@ -234,7 +234,7 @@ class Tree {
 		// Agent name filter
 		$agent_search_filter = "";
 		if (!empty($this->filter['searchAgent'])) {
-			$agent_search_filter = " AND ta.nombre LIKE '%".$this->filter['searchAgent']."%' ";
+			$agent_search_filter = " AND ta.nombre LIKE '%".$this->filter['searchAgent']."%' OR ta.alias LIKE '%".$this->filter['searchAgent']."%'";
 		}
 
 		// Agent status filter
@@ -409,15 +409,15 @@ class Tree {
 						}
 						else {
 							if (! is_metaconsole() || $this->strictACL) {
-								$columns = 'ta.id_agente AS id, ta.nombre AS name,
+								$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.alias,
 									ta.fired_count, ta.normal_count, ta.warning_count,
 									ta.critical_count, ta.unknown_count, ta.notinit_count,
 									ta.total_count, ta.quiet';
-								$group_by_fields = 'ta.id_agente, ta.nombre,
+								$group_by_fields = 'ta.id_agente, ta.nombre, ta.alias,
 									ta.fired_count, ta.normal_count, ta.warning_count,
 									ta.critical_count, ta.unknown_count, ta.notinit_count,
 									ta.total_count, ta.quiet';
-								$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
+								$order_fields = 'ta.alias ASC, ta.id_agente ASC';
 
 								$sql = "SELECT $columns
 										FROM tagente ta
@@ -435,11 +435,11 @@ class Tree {
 										ORDER BY $order_fields";
 							}
 							else {
-								$columns = 'ta.id_tagente AS id, ta.nombre AS name,
+								$columns = 'ta.id_tagente AS id, ta.nombre AS name, ta.alias,
 									ta.fired_count, ta.normal_count, ta.warning_count,
 									ta.critical_count, ta.unknown_count, ta.notinit_count,
 									ta.total_count, ta.quiet, id_tmetaconsole_setup AS server_id';
-								$order_fields = 'ta.nombre ASC, ta.id_tagente ASC';
+								$order_fields = 'ta.alias ASC, ta.id_tagente ASC';
 
 								$sql = "SELECT $columns
 										FROM tmetaconsole_agent ta
@@ -593,15 +593,15 @@ class Tree {
 							}
 						}
 						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name,
+							$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.alias,
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
-							$group_by_fields = 'ta.id_agente, ta.nombre,
+							$group_by_fields = 'ta.id_agente, ta.nombre, ta.alias,
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
-							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
+							$order_fields = 'ta.alias ASC, ta.id_agente ASC';
 
 							$sql = "SELECT $columns
 									FROM tagente ta
@@ -716,15 +716,15 @@ class Tree {
 							}
 						}
 						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name,
+							$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.alias,
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
-							$group_by_fields = 'ta.id_agente, ta.nombre,
+							$group_by_fields = 'ta.id_agente, ta.nombre, ta.alias,
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
-							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
+							$order_fields = 'ta.alias ASC, ta.id_agente ASC';
 
 							$sql = "SELECT $columns
 									FROM tagente ta
@@ -845,15 +845,15 @@ class Tree {
 							}
 						}
 						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name,
+							$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.alias,
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
-							$group_by_fields = 'ta.id_agente, ta.nombre,
+							$group_by_fields = 'ta.id_agente, ta.nombre, ta.alias,
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
-							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
+							$order_fields = 'ta.alias ASC, ta.id_agente ASC';
 
 							$sql = "SELECT $columns
 									FROM tagente ta
@@ -976,15 +976,15 @@ class Tree {
 							}
 						}
 						else {
-							$columns = 'ta.id_agente AS id, ta.nombre AS name,
+							$columns = 'ta.id_agente AS id, ta.nombre AS name, ta.alias,
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
-							$group_by_fields = 'ta.id_agente, ta.nombre,
+							$group_by_fields = 'ta.id_agente, ta.nombre, ta.alias,
 								ta.fired_count, ta.normal_count, ta.warning_count,
 								ta.critical_count, ta.unknown_count, ta.notinit_count,
 								ta.total_count, ta.quiet';
-							$order_fields = 'ta.nombre ASC, ta.id_agente ASC';
+							$order_fields = 'ta.alias ASC, ta.id_agente ASC';
 
 							$symbols = ' !"#$%&\'()*+,./:;<=>?@[\\]^{|}~';
 							$name = $rootID;

@@ -369,7 +369,7 @@ var TreeController = {
 
 								$content.append($alertImage);
 							}
-							$content.append(element.name);
+							$content.append(element.alias);
 							break;
 						case 'module':
 							// Status image

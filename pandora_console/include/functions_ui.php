@@ -787,6 +787,7 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	
 	// Get agent id
 	$id_agent = modules_get_agentmodule_agent ($alert['id_agent_module']);
+	$alias = db_get_row ('tagente', 'id_agente', $id_agent);
 	$template = alerts_get_alert_template ($alert['id_alert_template']);
 	$description = io_safe_output($template['name']);
 	
@@ -846,10 +847,10 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 		}
 		else {
 			if ($agent_style !== false) {
-				$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 'agent_medium', $styleDisabled . " $agent_style", false, $console_url, $url_hash, $agent_name);
+				$data[$index['agent_name']] .='<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span style="font-size: 7pt;font-weight:bold" title ="' . $alias['nombre']. '">'.$alias["alias"].'</span></a>';
 			}
 			else {
-				$data[$index['agent_name']] .= ui_print_agent_name ($id_agent, true, 'agent_medium', $styleDisabled, false, $console_url, $url_hash);
+				$data[$index['agent_name']] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'"> <span style="font-size: 7pt;font-weight:bold" title ="' . $alias['nombre']. '">'.$alias["alias"].'</span></a>';
 			}
 		}
 		

@@ -222,9 +222,10 @@ function mainAgentsAlerts() {
 	}
 	
 	foreach ($agents as $agent) {
+		$alias = db_get_row ('tagente', 'id_agente', $agent['id_agente']);
 		echo '<tr>';
 		// Name of the agent
-		echo '<td style="font-weight:bold;">'.$agent['nombre'].'</td>';
+		echo '<td style="font-weight:bold;">'.$alias['alias'].'</td>';
 		
 		// Alerts of the agent
 		$anyfired = false;

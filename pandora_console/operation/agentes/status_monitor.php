@@ -141,8 +141,9 @@ if ($ag_modulename != '') {
 if ($ag_freestring != '') {
 	$sql_conditions .= sprintf (' AND (tagente.nombre LIKE \'%%%s%%\'
 		OR tagente_modulo.nombre LIKE \'%%%s%%\'
-		OR tagente_modulo.descripcion LIKE \'%%%s%%\')',
-		$ag_freestring, $ag_freestring, $ag_freestring);
+		OR tagente_modulo.descripcion LIKE \'%%%s%%\'
+		OR tagente.alias LIKE \'%%%s%%\')',
+		$ag_freestring, $ag_freestring, $ag_freestring, $ag_freestring);
 }
 
 // Status selector
@@ -552,7 +553,8 @@ switch ($config['dbtype']) {
 			AS tags, 
 			tagente_modulo.id_agente_modulo,
 			tagente.intervalo AS agent_interval,
-			tagente.nombre AS agent_name, 
+			tagente.nombre AS agent_name,
+			tagente.alias AS alias,  
 			tagente_modulo.nombre AS module_name,
 			tagente_modulo.history_data,
 			tagente_modulo.flag AS flag,
@@ -600,6 +602,7 @@ switch ($config['dbtype']) {
 			tagente_modulo.id_agente_modulo,
 			tagente.intervalo AS agent_interval,
 			tagente.nombre AS agent_name, 
+			tagente.alias AS alias,
 			tagente_modulo.nombre AS module_name,
 			tagente_modulo.history_data,
 			tagente_modulo.flag AS flag,
@@ -641,7 +644,8 @@ switch ($config['dbtype']) {
 			AS tags,
 			tagente_modulo.id_agente_modulo,
 			tagente.intervalo AS agent_interval,
-			tagente.nombre AS agent_name, 
+			tagente.nombre AS agent_name,
+			tagente.alias AS alias,
 			tagente_modulo.nombre AS module_name,
 			tagente_modulo.history_data,
 			tagente_modulo.flag AS flag,
@@ -901,8 +905,8 @@ foreach ($result as $row) {
 		}
 	}
 	else {
-		$data[1] = '<strong><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$row["id_agent"].'">';
-		$data[1] .= ui_print_truncate_text($row['agent_name'], 'agent_medium', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
+		$data[1] = '<strong><a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$row['id_agent'].'">';
+		$data[1] .= '<span style="font-weight:bold" title="' . $row['agent_name'] . '">'.$row['alias'].'</span>';
 		$data[1] .= '</a></strong>';
 	}
 	

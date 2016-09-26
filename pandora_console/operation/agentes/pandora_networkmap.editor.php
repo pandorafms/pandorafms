@@ -17,11 +17,10 @@ global $config;
 check_login();
 
 if (is_ajax ()) {
+	$resize_networkmap = (bool)get_parameter(
+		'resize_networkmap', false);
 	
-	$resize_networkmap_enterprise = (bool)get_parameter(
-		'resize_networkmap_enterprise', false);
-	
-	if ($resize_networkmap_enterprise) {
+	if ($resize_networkmap) {
 		$id = (int) get_parameter('id', 0);
 		
 		$return = array();
@@ -202,7 +201,7 @@ if ($edit_networkmap) {
 				break;
 		}
 		$refresh_value = $values['source_period'];
-		$l2_network_interfaces = false;
+		$l2_network_interfaces = true;
 		/* NO CONTEMPLADO
 		if (isset($options['l2_network_interfaces']))
 			$l2_network_interfaces = $options['l2_network_interfaces'];
@@ -368,7 +367,7 @@ else {
 		__('This operation can\'t be undone, because it is on DB.'), true);
 	$table->data[6][1] = '<div id="spinner_process"></div><div id="process_button">' . 
 		html_print_button(__('Process'), 
-		'process', !((bool)$id), 'resize_networkmap_enterprise(' . $id . ');', 'class="sub"', true) .
+		'process', !((bool)$id), 'resize_networkmap(' . $id . ');', 'class="sub"', true) .
 		'</div>';
 	
 	echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
@@ -392,7 +391,7 @@ else {
 }
 ?>
 <script type="text/javascript">
-function resize_networkmap_enterprise(id) {
+function resize_networkmap(id) {
 	var params1 = [];
 	params1.push("get_image_path=1");
 	params1.push("img_src=" + "images/spinner.gif");
@@ -412,7 +411,7 @@ function resize_networkmap_enterprise(id) {
 	
 	
 	var params = [];
-	params.push("resize_networkmap_enterprise=1");
+	params.push("resize_networkmap=1");
 	params.push("id=" + id);
 	params.push("page=operation/agentes/pandora_networkmap.editor");
 	jQuery.ajax ({

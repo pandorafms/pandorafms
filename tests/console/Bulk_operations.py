@@ -323,6 +323,55 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//tr//td[contains(.,"2")]')
 		self.assertIsInstance(element,WebElement)
 
+	def test_H_copy_modules_in_bulk(self):
+
+		u"""
+		Create three agents One of them with a module. Through a bulk operation, copy this module in other two agents
+		"""
+
+		agent_name_1 = gen_random_string(6)
+		agent_name_2 = gen_random_string(6)
+		agent_name_3 = gen_random_string(6)
+
+		module_name_1 = gen_random_string(6)
+
+		driver = self.driver
+
+		activate_api(driver,"1234")
+
+		params = [agent_name_1,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
+		create_agent_api(driver,params,user="admin",pwd="pandora")
+
+		params = [agent_name_2,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
+		create_agent_api(driver,params,user="admin",pwd="pandora")
+
+		params = [agent_name_3,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
+		create_agent_api(driver,params,user="admin",pwd="pandora")
+
+		params = [agent_name_1,module_name_1,"0","6","1","0","0","0","0","0","0","0","0","129.99.40.1","0","0","180","0","0","0","0","Host_Alive"]
+		add_network_module_to_agent_api(driver,params,user="admin",pwd="pandora",apipwd="1234")
+
+		lista = driver.current_url.split('/')
+
+		url = lista[0]+'//'+lista[2]+'/pandora_console'
+
+		driver.get(url)
+
+		destiny_agents_list = [agent_name_2,agent_name_3]
+
+		module_list = [module_name_1]
+
+		agent_name = agent_name_1.lower()
+		
+		copy_modules_in_bulk(driver,agent_name,module_list,destiny_agents_list) 
+
+		search_module(driver,agent_name_2,module_name_1)
+
+		self.assertEqual(module_name_1 in driver.page_source,True)
+
+		search_module(driver,agent_name_3,module_name_1)
+
+		self.assertEqual(module_name_1 in driver.page_source,True)
 
 if __name__ == "__main__":
         unittest.main()

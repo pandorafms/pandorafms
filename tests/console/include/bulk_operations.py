@@ -98,8 +98,6 @@ def copy_modules_in_bulk(driver,owner_agent_name,module_name_list,destiny_agents
 	Select(driver.find_element_by_id("option")).select_by_visible_text("Copy modules in bulk")
 	time.sleep(2)
 	
-	driver.find_element_by_id("source_id_agent").click()
-	
 	Select(driver.find_element_by_id("source_id_agent")).select_by_visible_text(owner_agent_name)
 
 	time.sleep(3)
@@ -110,9 +108,9 @@ def copy_modules_in_bulk(driver,owner_agent_name,module_name_list,destiny_agents
 	for agent_name in destiny_agents_list:
 		Select(driver.find_element_by_id("destiny_id_agent")).select_by_visible_text(agent_name)
 
-
 	driver.find_element_by_id("submit-go").click()
-
+	alert = driver.switch_to_alert()
+	alert.accept()
 
 
 def edit_modules_in_bulk(driver,module_name_list,agent_name_list,new_module_group=None,new_min=None,new_max=None,ff_threshold_list=None):

@@ -45,6 +45,7 @@ RUN yum install -y \
 	php-common \ 
 	php-zip \ 
 	nmap \
+	net-snmp-utils \
 	xprobe2
 
 #Clone the repo

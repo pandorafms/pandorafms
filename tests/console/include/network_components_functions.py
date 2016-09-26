@@ -10,7 +10,7 @@ import random, time
 import string
 
 
-def create_network_component(driver,name,type_component,group,module_group,min_warning=None,max_warning=None,description=None):
+def create_network_component(driver,name,type_component,group,module_group,min_warning=None,max_warning=None,min_critical=None,max_critical=None,str_warning=None,str_critical=None,description=None):
 
 	# type_component is for example -> Remote ICMP network agent (latency) or Remote TCP network agent, numeric data	
 
@@ -18,6 +18,8 @@ def create_network_component(driver,name,type_component,group,module_group,min_w
 
 	driver.find_element_by_id("id_component_type").click()
 	Select(driver.find_element_by_id("id_component_type")).select_by_visible_text("Create a new network component")
+	
+	driver.find_element_by_id("submit-crt").click()
 
 	driver.find_element_by_id("text-name").click()
 	driver.find_element_by_id("text-name").clear()
@@ -76,14 +78,16 @@ def create_network_component(driver,name,type_component,group,module_group,min_w
 
 	driver.find_element_by_id("submit-crt").click()
 
-def create_plugin_component(driver,name,type_component,group,module_group,min_warning=None,max_warning=None,description=None):
+def create_plugin_component(driver,name,type_component,group,module_group,min_warning=None,max_warning=None,min_critical=None,max_critical=None,str_warning=None,str_critical=None,description=None):
 
-	# Type is for example -> Generic boolean or Generic numeric incremental (absolute)
+	# type_component is for example -> Generic boolean or Generic numeric incremental (absolute)
 
 	click_menu_element(driver,"Network components")
 	
 	driver.find_element_by_id("id_component_type").click()
 	Select(driver.find_element_by_id("id_component_type")).select_by_visible_text("Create a new plug-in component")
+
+	driver.find_element_by_id("submit-crt").click()
 	
 	driver.find_element_by_id("text-name").click()
 	driver.find_element_by_id("text-name").clear()

@@ -181,7 +181,7 @@ function mainModuleGroups() {
 		$table = null;
 		$table->headstyle[] = "width: 20%";
 		foreach ($modelGroups as $i => $n) {
-			$table->headstyle[] = "width: 7%";
+			$table->headstyle[] = "min-width: 60px;max-width: 5%;text-align:center;";
 			$modelGroups[$i] = ui_print_truncate_text($n, GENERIC_SIZE_TEXT, true, true, true, '&hellip;', 'color:#FFF');
 		}
 		
@@ -278,9 +278,9 @@ function mainModuleGroups() {
 				array_push($row,
 					'<div
 						style="background: ' . $color . ';
-						height: 25px;
+						height: 20px;min-width: 60px;max-width:5%;overflow:hidden;
 						margin-left: auto; margin-right: auto;
-						text-align: center; padding-top: 0px; font-size: 18px;">
+						text-align: center; padding: 5px;padding-bottom:10px;font-size: 18px;">
 						' . $alinkStart . $count . $alinkEnd . '</div>');
 			}
 			array_push($tableData,$row);

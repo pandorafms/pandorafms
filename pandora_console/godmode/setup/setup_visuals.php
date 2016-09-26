@@ -150,9 +150,14 @@ $backgrounds_list_png = list_files("images/backgrounds", "png", 1, 0);
 $backgrounds_list = array_merge($backgrounds_list_jpg, $backgrounds_list_png);
 $backgrounds_list = array_merge($backgrounds_list, $backgrounds_list_gif);
 asort($backgrounds_list);
+
+if(!enterprise_installed()){
+	$open=true; 
+}
+
 $table_styles->data[$row][1] = html_print_select ($backgrounds_list,
 	'login_background', $config["login_background"], '', __('Default'),
-	'', true);
+	'', true,false,true,'',false,'width:240px');
 $table_styles->data[$row][1] .= "&nbsp;" .
 	html_print_button(__("View"), 'login_background_preview', false, '', 'class="sub camera"', true);
 $row++;
@@ -160,9 +165,26 @@ $row++;
 $table_styles->data[$row][0] = __('Custom logo') . ui_print_help_icon("custom_logo", true);
 $table_styles->data[$row][1] = html_print_select(
 	list_files('images/custom_logo', "png", 1, 0), 'custom_logo',
-	$config["custom_logo"], '', '', '', true);
-$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview', false, '', 'class="sub camera"', true);
+	$config["custom_logo"], '', '', '',true,false,true,'',$open,'width:240px');
+$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
 $row++;
+
+$table_styles->data[$row][0] = __('Custom logo in login') . ui_print_help_icon("custom_logo", true);
+$table_styles->data[$row][1] = html_print_select(
+	list_files('images/custom_logo_login', "png", 1, 0), 'custom_logo_login',
+	$config["custom_logo_login"], '', '', '',true,false,true,'',$open,'width:240px');
+$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview_', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
+$row++;
+
+
+$table_styles->data[$row][0] = __('Disable Pandora FMS on graphs');
+$table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
+	html_print_radio_button_extended ('fixed_graph', 1, '', $config["fixed_graph"], $open, '','',true) .
+	'&nbsp;&nbsp;';
+$table_styles->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button_extended ('fixed_graph', 0, '', $config["fixed_graph"], $open, '','',true, $open,'visualmodal');
+$row++;
+
 
 $table_styles->data[$row][0] = __('Fixed header');
 $table_styles->data[$row][1] = __('Yes') . '&nbsp;' .

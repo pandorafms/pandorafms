@@ -136,7 +136,7 @@ use constant FIRED_ALERT => 1;
 
 # Set OS, OS version and /dev/null
 our $OS = $^O;
-our $OS_VERSION;
+our $OS_VERSION = "unknown";
 our $DEVNULL = '/dev/null';
 if ($OS eq 'linux') {
 	$OS_VERSION = `lsb_release -sd 2>/dev/null`;
@@ -146,6 +146,8 @@ if ($OS eq 'linux') {
 	$OS = "windows";
 	$OS_VERSION = `ver`;
 	$DEVNULL = '/Nul';
+} elsif ($OS eq 'freebsd') {
+	$OS_VERSION = `uname -r`;
 }
 chomp($OS_VERSION);
 

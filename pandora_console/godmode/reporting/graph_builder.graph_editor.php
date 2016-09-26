@@ -98,7 +98,8 @@ if (count($module_array) > 0) {
 			$color = 1;
 		}
 		
-		echo "<tr><td class='$tdcolor'>" . $agent_array[$a] . "</td>";
+		$alias = db_get_row ('tagente', 'nombre', $agent_array[$a]);
+		echo "<tr><td class='$tdcolor'>" . $alias['alias'] . "</td>";
 		echo "<td class='$tdcolor'>";
 		echo modules_get_agentmodule_name ($module_array[$a])."</td>";
 		

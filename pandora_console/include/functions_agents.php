@@ -933,14 +933,14 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 		$filter['disabled'] = 0;
 	}
 	
-	$filter['order'] = 'nombre';
+	$filter['order'] = 'alias';
 	
 	if (is_metaconsole()) {
 		$table_name = 'tmetaconsole_agent';
 		
 		$fields = array(
 				'id_tagente AS id_agente',
-				'nombre',
+				'alias',
 				'id_tmetaconsole_setup AS id_server'
 			);
 	}
@@ -949,7 +949,7 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 		
 		$fields = array(
 				'id_agente',
-				'nombre'
+				'alias'
 			);
 	}
 	
@@ -960,7 +960,7 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 	
 	$agents = array ();
 	foreach ($result as $row) {
-		if (!isset($row["id_agente"]) || !isset($row["nombre"]))
+		if (!isset($row["id_agente"]) || !isset($row["alias"]))
 			continue;
 		
 		if ($serialized && isset($row["id_server"])) {
@@ -972,13 +972,13 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 		
 		switch ($case) {
 			case "lower":
-				$value = mb_strtolower ($row["nombre"], "UTF-8");
+				$value = mb_strtolower ($row["alias"], "UTF-8");
 				break;
 			case "upper":
-				$value = mb_strtoupper ($row["nombre"], "UTF-8");
+				$value = mb_strtoupper ($row["alias"], "UTF-8");
 				break;
 			default:
-				$value = $row["nombre"];
+				$value = $row["alias"];
 				break;
 		}
 		

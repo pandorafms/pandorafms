@@ -84,9 +84,8 @@ def create_plugin_component(driver,name,type_component,group,module_group,min_wa
 
 	click_menu_element(driver,"Network components")
 	
-	driver.find_element_by_id("id_component_type").click()
-	Select(driver.find_element_by_id("id_component_type")).select_by_visible_text("Create a new plug-in component")
-
+	driver.find_element_by_xpath('//*[@id="id_component_type"]/option[2]').click()
+	
 	driver.find_element_by_id("submit-crt").click()
 	
 	driver.find_element_by_id("text-name").click()

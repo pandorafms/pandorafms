@@ -221,7 +221,7 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 		}
 	}
 	
-	$selectText = 'talert_template_modules.*, t2.nombre AS agent_module_name, t3.nombre AS agent_name, t4.name AS template_name';
+	$selectText = 'talert_template_modules.*, t2.nombre AS agent_module_name, t3.alias AS agent_name, t4.name AS template_name';
 	if ($count !== false) {
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}

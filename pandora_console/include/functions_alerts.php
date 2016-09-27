@@ -1733,7 +1733,7 @@ function get_group_alerts($id_group, $filter = '', $options = false,
 		}
 	}
 	
-	$selectText = 'talert_template_modules.*, t2.nombre AS agent_module_name, t3.nombre AS agent_name, t4.name AS template_name';
+	$selectText = 'talert_template_modules.*, t2.nombre AS agent_module_name, t3.alias AS agent_name, t4.name AS template_name';
 	if ($count !== false) {
 		$selectText = 'COUNT(talert_template_modules.id) AS count';
 	}

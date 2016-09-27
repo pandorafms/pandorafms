@@ -198,14 +198,14 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectNameUp = $selected;
-				$order = array('field' => 'nombre ' . $order_collation,
-					'field2' => 'nombre ' . $order_collation,
+				$order = array('field' => 'alias ' . $order_collation,
+					'field2' => 'alias ' . $order_collation,
 					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectNameDown = $selected;
-				$order = array('field' => 'nombre ' . $order_collation,
-					'field2' => 'nombre ' . $order_collation,
+				$order = array('field' => 'alias ' . $order_collation,
+					'field2' => 'alias ' . $order_collation,
 					'order' => 'DESC');
 				break;
 		}
@@ -215,13 +215,13 @@ switch ($sortField) {
 			case 'up':
 				$selectOsUp = $selected;
 				$order = array('field' => 'id_os',
-					'field2' => 'nombre ' . $order_collation,
+					'field2' => 'alias ' . $order_collation,
 					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectOsDown = $selected;
 				$order = array('field' => 'id_os',
-					'field2' => 'nombre ' . $order_collation,
+					'field2' => 'alias ' . $order_collation,
 					'order' => 'DESC');
 				break;
 		}
@@ -231,13 +231,13 @@ switch ($sortField) {
 			case 'up':
 				$selectGroupUp = $selected;
 				$order = array('field' => 'id_grupo',
-					'field2' => 'nombre ' . $order_collation,
+					'field2' => 'alias ' . $order_collation,
 					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectGroupDown = $selected;
 				$order = array('field' => 'id_grupo',
-					'field2' => 'nombre ' . $order_collation,
+					'field2' => 'alias ' . $order_collation,
 					'order' => 'DESC');
 				break;
 		}
@@ -249,8 +249,8 @@ switch ($sortField) {
 		$selectOsDown = '';
 		$selectGroupUp = '';
 		$selectGroupDown = '';
-		$order = array('field' => 'nombre ' . $order_collation,
-			'field2' => 'nombre ' . $order_collation,
+		$order = array('field' => 'alias ' . $order_collation,
+			'field2' => 'alias ' . $order_collation,
 			'order' => 'ASC');
 		break;
 }

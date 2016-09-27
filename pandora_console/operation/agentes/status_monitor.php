@@ -414,12 +414,12 @@ switch ($sortField) {
 		switch ($sort) {
 			case 'up':
 				$selectAgentNameUp = $selected;
-				$order = array('field' => 'tagente.nombre',
+				$order = array('field' => 'tagente.alias',
 					'order' => 'ASC');
 				break;
 			case 'down':
 				$selectAgentNameDown = $selected;
-				$order = array('field' => 'tagente.nombre',
+				$order = array('field' => 'tagente.alias',
 					'order' => 'DESC');
 				break;
 		}
@@ -536,7 +536,7 @@ switch ($sortField) {
 		$selectTimestampUp = '';
 		$selectTimestampDown = '';
 		$order = array(
-			'field' => 'tagente.nombre',
+			'field' => 'tagente.alias',
 			'order' => 'ASC');
 		break;
 }

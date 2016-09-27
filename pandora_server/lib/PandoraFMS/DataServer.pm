@@ -336,9 +336,11 @@ sub process_xml_data ($$$$$) {
 
 		my $description = '';
 		$description = $data->{'description'} if (defined ($data->{'description'}));
+		my $alias = '';
+		$alias = $data->{'agent_alias'} if (defined ($data->{'agent_alias'}));
 		
 		$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, $address, $group_id, $parent_id, $os, 
-						$description, $interval, $dbh, $timezone_offset, undef, undef, undef, undef, $custom_id, $url_address, $agent_mode);
+						$description, $interval, $dbh, $timezone_offset, undef, undef, undef, undef, $custom_id, $url_address, $agent_mode, $alias);
 												 
 		if (! defined ($agent_id)) {
 			return;

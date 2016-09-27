@@ -1302,29 +1302,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	// Create void statistics array
 	$stats = array();
 	
-	// Create nodes
-	foreach ($nodes as $node_id => $node) {
-		if ($center > 0 && ! networkmap_is_descendant ($node_id, $center, $parents)) {
-			unset ($parents[$node_id]);
-			unset ($orphans[$node_id]);
-			unset ($nodes[$node_id]);
-			continue;
-		}
-		
-		switch ($node['type']) {
-			case 'agent':
-				$graph .= networkmap_create_agent_node($node, $simple,
-					$font_size, $cut_names, $relative) . "\n\t\t";
-				$stats['agents'][] = $node['id_agente'];
-				break;
-			case 'module':
-				$graph .= networkmap_create_module_node($node, $simple,
-					$font_size) . "\n\t\t";
-				$stats['modules'][] = $node['id_agente_modulo'];
-				break;
-		}
-	}
-	
 	if ($l2_network || $old_mode) {
 		$count = 0;
 		$group_nodes = 10;
@@ -1352,6 +1329,29 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		// Define edges for orphan nodes
 		foreach (array_keys($orphans) as $node) {
 			$graph .= networkmap_create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
+		}
+	}
+	
+	// Create nodes
+	foreach ($nodes as $node_id => $node) {
+		if ($center > 0 && ! networkmap_is_descendant ($node_id, $center, $parents)) {
+			unset ($parents[$node_id]);
+			unset ($orphans[$node_id]);
+			unset ($nodes[$node_id]);
+			continue;
+		}
+		
+		switch ($node['type']) {
+			case 'agent':
+				$graph .= networkmap_create_agent_node($node, $simple,
+					$font_size, $cut_names, $relative) . "\n\t\t";
+				$stats['agents'][] = $node['id_agente'];
+				break;
+			case 'module':
+				$graph .= networkmap_create_module_node($node, $simple,
+					$font_size) . "\n\t\t";
+				$stats['modules'][] = $node['id_agente_modulo'];
+				break;
 		}
 	}
 	
@@ -1476,7 +1476,7 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			}
 		}
 	}
-	
+
 	// Close graph
 	$graph .= networkmap_close_graph ();
 	

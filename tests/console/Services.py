@@ -14,7 +14,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
 
-import unittest, time, re
+import unittest2, time, re
 
 class SimpleService(PandoraWebDriverTestCase):
 
@@ -275,4 +275,4 @@ class ManualService(PandoraWebDriverTestCase):
 
 	
 if __name__ == "__main__":
-	unittest.main()
+	unittest2.main()

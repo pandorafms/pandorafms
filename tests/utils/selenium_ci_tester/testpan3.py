@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from unittest import *
+from unittest2 import *
 from console import *
 from console.include.common_functions_60 import *
 from console.include.common_classes_60 import *

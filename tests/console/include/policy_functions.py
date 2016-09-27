@@ -8,7 +8,7 @@ from module_functions import create_module
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
-import unittest, time, re
+import unittest2, time, re
 
 
 def create_policy(driver,policy_name,group,description=None):

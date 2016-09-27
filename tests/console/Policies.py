@@ -11,7 +11,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
-import unittest, time, re
+import unittest2, time, re
 
 class Policies(PandoraWebDriverTestCase):
 
@@ -130,4 +130,4 @@ class Policies(PandoraWebDriverTestCase):
 
 
 if __name__ == "__main__":
-	unittest.main()
+	unittest2.main()

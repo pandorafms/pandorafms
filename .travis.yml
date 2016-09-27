@@ -1,22 +1,7 @@
 sudo: required
 
-language: python
-python:
-  - 2.7
-
-addons:
-  firefox: "latest"
-
 services:
   - docker
 
-before_install:
-  - sudo apt-get install xvfb
-
-install:
-  - pip install selenium PyVirtualDisplay testtools
-
 script:
-  - docker run --name pandorafms -h pandorafms -dt -v "$TRAVIS_BUILD_DIR:/tmp/pandorafms" -p 127.0.0.1:80:80 pandorafms/pandorafms-base tail -f /var/log/messages
-  - docker exec -t pandorafms /tmp/pandorafms/tests/test.sh
-  - python $TRAVIS_BUILD_DIR/tests/run_console_tests.py
+  - docker run --rm -h pandorafms -t -v "$TRAVIS_BUILD_DIR:/tmp/pandorafms" pandorafms/pandorafms-base /tmp/pandorafms/tests/test.sh

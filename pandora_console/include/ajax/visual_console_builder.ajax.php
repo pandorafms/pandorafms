@@ -153,7 +153,7 @@ switch ($action) {
 		if ($id_custom_graph != 0) {
 			$img = custom_graphs_print(
 				$id_custom_graph, $height, $width, $period,
-				true, true, 0, true, $background_color);
+				null, true, 0, true, $background_color);
 		}
 		else {
 			$img = grafico_modulo_sparse($id_agent_module,
@@ -189,7 +189,8 @@ switch ($action) {
 	case 'get_layout_data':
 		$layoutData = db_get_row_filter('tlayout_data',
 			array('id' => $id_element));
-		
+		$layoutData['height'] = $layoutData['height'] + 60;
+		$layoutData['width']  = $layoutData['width'] + 60;
 		echo json_encode($layoutData);
 		break;
 	

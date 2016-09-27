@@ -19,11 +19,11 @@ import unittest2, time, re
 class Network_components(PandoraWebDriverTestCase):
 
 
-	test_name = u'Planned_downtime'
-	test_description = u'Planed downtime test'
+	test_name = u'Network_components'
+	test_description = u'Network components test'
 	tickets_associated = []
 
-	def test_A_create_network_component(self):
+	def atest_A_create_network_component(self):
 
 		u"""
 		Create and search new network component module
@@ -73,14 +73,18 @@ class Network_components(PandoraWebDriverTestCase):
 		self.assertEqual(network_component_name in driver.page_source,True)
 
 
-	def test_B_create_plugin_component(self):
+	def atest_B_create_plugin_component(self):
 
 		u"""
 		Create and search new plug-in component
 		"""
 
 		driver = self.driver
+		
+		self.login()
 
+		detect_and_pass_all_wizards(driver)
+		
 		agent_name = gen_random_string(6)
 		plugin_component_name = gen_random_string(6)
 
@@ -120,10 +124,55 @@ class Network_components(PandoraWebDriverTestCase):
 		
 		self.assertEqual(plugin_component_name in driver.page_source,True)
 
+	def test_C_create_wmi_component(self):
+
+		u"""
+		Create and search new wmi component
+		"""
+
+		driver = self.driver
+
+		self.login()
+		detect_and_pass_all_wizards(driver)
+
+		agent_name = gen_random_string(6)
+		plugin_component_name = gen_random_string(6)
+
+		activate_api(driver,"1234")
+
+		params = [agent_name,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
+		create_agent_api(driver,params,user="admin",pwd="pandora")
+
+		lista = driver.current_url.split('/')
+		
+		url = lista[0]+'//'+lista[2]+'/pandora_console'
+		
+		driver.get(url)
+		
+		create_wmi_component(driver,plugin_component_name,"Generic numeric","Network Management","Application",max_warning=50,max_critical=100,description="New WMI component")
+		
+		search_agent(driver,agent_name,go_to_agent=True)
+
+		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Manage"]').click()
+		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
+
+		Select(driver.find_element_by_id("moduletype")).select_by_visible_text("Create a new WMI server module")
+					
+		driver.find_element_by_xpath('//*[@id="main"]/form/table/tbody/tr/td[5]/input').click()
+
+		driver.find_element_by_xpath('//a[contains(.,"Advanced options")]').click()
+
+		Select(driver.find_element_by_id("network_component_group")).select_by_visible_text("Network Management")
+
+		time.sleep(3)
+		
+		Select(driver.find_element_by_id("network_component")).select_by_visible_text(plugin_component_name)
+		
+		driver.find_element_by_id("submit-crtbutton").click()
+		
+		search_module (driver,agent_name,plugin_component_name,go_to_module=False)
+		
+		self.assertEqual(plugin_component_name in driver.page_source,True)
 
 if __name__ == "__main__":
 	unittest2.main()
-
-
-
-	

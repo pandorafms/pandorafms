@@ -59,7 +59,14 @@ def create_new_action_to_alert(driver,action_name,action_group,command,threshold
 		driver.find_element_by_id("textarea_field3_value").clear()
 		driver.find_element_by_id("textarea_field3_value").send_keys(field3)
 
+	if command == "Syslog" and field1 != None and field2 != None:
 
+		driver.find_element_by_id("textarea_field1_value").clear()
+		driver.find_element_by_id("textarea_field1_value").send_keys(field1)
+	
+		driver.find_element_by_id("textarea_field2_value").clear()
+		driver.find_element_by_id("textarea_field2_value").send_keys(field2)
+	
 	driver.find_element_by_id("submit-create").click()
 
 

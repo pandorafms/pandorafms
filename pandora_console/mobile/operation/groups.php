@@ -13,11 +13,9 @@
 // GNU General Public License for more details.
 
 include_once("../include/functions_users.php");
-include_once("../include/functions_groupview.php");
 
 class Groups {
 	private $correct_acl = false;
-	private $acl = 'AR';
 	
 	private $groups = array();
 	private $status = array();
@@ -25,7 +23,7 @@ class Groups {
 	function __construct() {
 		$system = System::getInstance();
 		
-		if ($system->checkACL($this->acl)) {
+		if ($system->checkACL()) {
 			$this->correct_acl = true;
 			
 			$this->groups = $this->getListGroups();
@@ -73,41 +71,11 @@ class Groups {
 			
 			$ui->contentAddHtml('<div class="list_groups" data-role="collapsible-set" data-theme="a" data-content-theme="d">');
 				$count = 0;
-				$url_agent = 'index.php?page=agents&group=%s&status=%s';
-				$url_modules = 'index.php?page=modules&group=%s&status=%s';
-				
 				foreach ($this->groups as $group) {
-					// Calculate entire row color
-					if ($group["_monitors_alerts_fired_"] > 0) {
-						$color_class = 'group_view_alrm';
-						$status_image = ui_print_status_image ('agent_alertsfired_ball.png', "", true);
-					}
-					elseif ($group["_monitors_critical_"] > 0) {
-						$color_class = 'group_view_crit';
-						$status_image = ui_print_status_image ('agent_critical_ball.png', "", true);
-					}
-					elseif ($group["_monitors_warning_"] > 0) {
-						$color_class = 'group_view_warn';
-						$status_image = ui_print_status_image ('agent_warning_ball.png', "", true);
-					}
-					elseif ($group["_monitors_ok_"] > 0)  {
-						
-						$color_class = 'group_view_ok';
-						$status_image = ui_print_status_image ('agent_ok_ball.png', "", true);
-					}
-					elseif (($group["_monitors_unknown_"] > 0) ||  ($group["_agents_unknown_"] > 0)) {
-						$color_class = 'group_view_unk';
-						$status_image = ui_print_status_image ('agent_no_monitors_ball.png', "", true);
-					}
-					else {
-						$color_class = '';
-						$status_image = ui_print_status_image ('agent_no_data_ball.png', "", true);
-					}
-					$group['icon'] = ($group['icon'] == '') ? 'world' : $group['icon'];
 					$ui->contentAddHtml('
 						<style type="text/css">
 							.ui-icon-group_' . $count . ' {
-								background: url("../images/groups_small/'.$group['icon'].'.png") no-repeat scroll 0 0 #F3F3F3 !important;
+								background: url("' . $group['group_icon'] . '") no-repeat scroll 0 0 #F3F3F3 !important;
 								width: 24px;
 								height: 24px;
 								margin-top: -12px !important;
@@ -117,49 +85,47 @@ class Groups {
 					$ui->contentAddHtml('<div data-collapsed-icon="group_' . $count . '" ' .
 						'data-expanded-icon="group_' . $count . '" ' .
 						'data-iconpos="right" data-role="collapsible" ' .
-						'data-collapsed="true" data-theme="' . $color_class . '" data-content-theme="d">');
-					$ui->contentAddHtml('<h4>' . $group['_name_'] . '</h4>');
+						'data-collapsed="true" data-theme="' . $group['status'] . '" data-content-theme="d">');
+					$ui->contentAddHtml('<h4>' . $group['group_name'] . '</h4>');
 					$ui->contentAddHtml('<ul data-role="listview" class="groups_sublist">');
 					
-					$ui->contentAddHtml('<li data-icon="false"><a href="' . sprintf($url_agent, $group['_id_'], AGENT_STATUS_ALL) . '">' .
-						'<span class="name_count">' . html_print_image('images/agent.png', true, false,false, false, false, true) . __('Total agents') . '</span>' .
-						'<span class="number_count">' . $group['_total_agents_'] . '</span>' .
+					foreach ($group['counts'] as $k => $v) {
+						if($v == 0) {
+							$group['counts'][$k] = '-';
+						}
+					}
+					
+					$ui->contentAddHtml('<li data-icon="false"><a href="' . $group['links'][__('Agents')] . '">' .
+						'<span class="name_count">' . html_print_image('images/agent.png', true) . __('Total agents') . '</span>' .
+						'<span class="number_count">' . $group['counts'][__('Agents')] . '</span>' .
 						'</a></li>');
-					$ui->contentAddHtml('<li data-icon="false"><a href="' . sprintf($url_agent, $group['_id_'], AGENT_STATUS_NOT_INIT) . '">' .
-						'<span class="name_count">' . html_print_image('images/agent_notinit.png', true, false,false, false, false, true) . __('Agents not init') . '</span>' .
-						'<span class="number_count">' . $group['_agents_not_init_'] . '</span>' .
+					$ui->contentAddHtml('<li data-icon="false"><a href="' . $group['links'][__('Agents unknown')] . '">' .
+						'<span class="name_count">' . html_print_image('images/agent_unknown.png', true) . __('Agents unknown') . '</span>' .
+						'<span class="number_count">' . $group['counts'][__('Agents unknown')] . '</span>' .
 						'</a></li>');
-					$ui->contentAddHtml('<li data-icon="false"><a href="' . sprintf($url_agent, $group['_id_'], AGENT_STATUS_CRITICAL) . '">' .
-						'<span class="name_count">' . html_print_image('images/agent_critical.png', true, false,false, false, false, true) . __('Agents critical') . '</span>' .
-						'<span class="number_count">' . $group['_agents_critical_'] . '</span>' .
+					$ui->contentAddHtml('<li data-icon="false"><a href="' . $group['links'][__('Unknown')] . '">' .
+						'<span class="name_count">' . html_print_image('images/module_unknown.png', true) . __('Unknown modules') . '</span>' .
+						'<span class="number_count">' . $group['counts'][__('Unknown')] . '</span>' .
 						'</a></li>');
-					$ui->contentAddHtml('<li data-icon="false"><a href="' . sprintf($url_agent, $group['_id_'], AGENT_STATUS_UNKNOWN) . '">' .
-						'<span class="name_count">' . html_print_image('images/agent_unknown.png', true, false,false, false, false, true) . __('Agents unknown') . '</span>' .
-						'<span class="number_count">' . $group['_agents_unknown_'] . '</span>' .
+					$ui->contentAddHtml('<li data-icon="false"><a href="' . $group['links'][__('Not init')] . '">' .
+						'<span class="name_count">' . html_print_image('images/module_notinit.png', true) . __('Not init modules') . '</span>' .
+						'<span class="number_count">' . $group['counts'][__('Not init')] . '</span>' .
 						'</a></li>');
-					$ui->contentAddHtml('<li data-icon="false"><a href="' . sprintf($url_modules, $group['_id_'], AGENT_MODULE_STATUS_UNKNOWN) . '">' .
-						'<span class="name_count">' . html_print_image('images/module_unknown.png', true, false,false, false, false, true) . __('Unknown modules') . '</span>' .
-						'<span class="number_count">' . $group['_monitors_unknown_'] . '</span>' .
+					$ui->contentAddHtml('<li data-icon="false"><a href="' . $group['links'][__('Normal')] . '">' .
+						'<span class="name_count">' . html_print_image('images/module_ok.png', true) . __('Normal modules') . '</span>' .
+						'<span class="number_count">' . $group['counts'][__('Normal')] . '</span>' .
 						'</a></li>');
-					$ui->contentAddHtml('<li data-icon="false"><a href="' . sprintf($url_modules, $group['_id_'], AGENT_MODULE_STATUS_NOT_INIT) . '">' .
-						'<span class="name_count">' . html_print_image('images/module_notinit.png', true, false,false, false, false, true) . __('Not init modules') . '</span>' .
-						'<span class="number_count">' . $group['_monitors_not_init_'] . '</span>' .
+					$ui->contentAddHtml('<li data-icon="false"><a href="' . $group['links'][__('Warning')] . '">' .
+						'<span class="name_count">' . html_print_image('images/module_warning.png', true) . __('Warning modules') . '</span>' .
+						'<span class="number_count">' . $group['counts'][__('Warning')] . '</span>' .
 						'</a></li>');
-					$ui->contentAddHtml('<li data-icon="false"><a href="' . sprintf($url_modules, $group['_id_'], AGENT_MODULE_STATUS_NORMAL) . '">' .
-						'<span class="name_count">' . html_print_image('images/module_ok.png', true, false,false, false, false, true) . __('Normal modules') . '</span>' .
-						'<span class="number_count">' . $group['_monitors_ok_'] . '</span>' .
+					$ui->contentAddHtml('<li data-icon="false"><a href="' . $group['links'][__('Critical')] . '">' .
+						'<span class="name_count">' . html_print_image('images/module_critical.png', true) . __('Critical modules') . '</span>' .
+						'<span class="number_count">' . $group['counts'][__('Critical')] . '</span>' .
 						'</a></li>');
-					$ui->contentAddHtml('<li data-icon="false"><a href="' . sprintf($url_modules, $group['_id_'], AGENT_MODULE_STATUS_WARNING) . '">' .
-						'<span class="name_count">' . html_print_image('images/module_warning.png', true, false,false, false, false, true) . __('Warning modules') . '</span>' .
-						'<span class="number_count">' . $group['_monitors_warning_'] . '</span>' .
-						'</a></li>');
-					$ui->contentAddHtml('<li data-icon="false"><a href="' . sprintf($url_modules, $group['_id_'], AGENT_MODULE_STATUS_CRITICAL_BAD) . '">' .
-						'<span class="name_count">' . html_print_image('images/module_critical.png', true, false,false, false, false, true) . __('Critical modules') . '</span>' .
-						'<span class="number_count">' . $group['_monitors_critical_'] . '</span>' .
-						'</a></li>');
-					$ui->contentAddHtml('<li data-icon="false"><a href="">' .
-						'<span class="name_count">' . html_print_image('images/bell_error.png', true, false,false, false, false, true) . __('Alerts fired') . '</span>' .
-						'<span class="number_count">' . $group['_monitors_alerts_fired_'] . '</span>' .
+					$ui->contentAddHtml('<li data-icon="false"><a href="' . $group['links'][__('Alerts fired')] . '">' .
+						'<span class="name_count">' . html_print_image('images/bell_error.png', true) . __('Alerts fired') . '</span>' .
+						'<span class="number_count">' . $group['counts'][__('Alerts fired')] . '</span>' .
 						'</a></li>');
 					$ui->contentAddHtml('</ul>');
 					$ui->contentAddHtml('</div>');
@@ -183,25 +149,35 @@ class Groups {
 	private function getListGroups() {
 		$return = array();
 		
-		$system = System::getInstance();
 		$user = User::getInstance();
 		
-		$all_data = groupview_status_modules_agents ($system->getConfig('id_user'), false, 'AR', false);
-		$result_groups = groupview_get_groups_list($system->getConfig('id_user'), false, 'AR', true, true);
-		
-		foreach ($all_data as $group_all_data) {
-			$result_groups[0]['_total_agents_'] += $group_all_data["_total_agents_"];
-			$result_groups[0]['_monitors_ok_'] += $group_all_data["_monitors_ok_"];
-			$result_groups[0]['_monitors_warning_'] += $group_all_data["_monitors_warning_"];
-			$result_groups[0]['_monitors_critical_'] += $group_all_data["_monitors_critical_"];
-			$result_groups[0]['_monitors_unknown_'] += $group_all_data["_monitors_unknown_"];
-			$result_groups[0]['_monitors_not_init_'] += $group_all_data["_monitors_not_init_"];
-			$result_groups[0]['_agents_unknown_'] += $group_all_data["_agents_unknown_"];
-			$result_groups[0]['_agents_not_init_'] += $group_all_data["_agents_not_init_"];
-			$result_groups[0]['_agents_critical_'] += $group_all_data["_agents_critical_"];
-			$result_groups[0]['_monitors_alerts_fired_'] += $group_all_data["_monitors_alerts_fired_"];
+		// Get group list that user has access
+		$groups_full = users_get_groups($user->getIdUser(), "AR", true, true);
+		$groups = array();
+		foreach ($groups_full as $group) {
+			$groups[$group['id_grupo']]['name'] = $group['nombre'];
+			
+			if ($group['id_grupo'] != 0) {
+				$groups[$group['parent']]['childs'][] = $group['id_grupo'];
+				$groups[$group['id_grupo']]['prefix'] = $groups[$group['parent']]['prefix'].'&nbsp;&nbsp;&nbsp;';
+			}
+			else {
+				$groups[$group['id_grupo']]['prefix'] = '';
+			}
+			
+			if (!isset($groups[$group['id_grupo']]['childs'])) {
+				$groups[$group['id_grupo']]['childs'] = array();
+			}
 		}
 		
-		return $result_groups;
+		// For each valid group for this user, take data from agent and modules
+		foreach ($groups as $id_group => $group) {
+			$rows = groups_get_group_row_data($id_group, $groups, $group, $printed_groups);
+			
+			if (!empty($rows))
+				$return = array_merge($return, $rows);
+		}
+		
+		return $return;
 	}
 }

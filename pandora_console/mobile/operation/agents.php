@@ -223,76 +223,40 @@ class Agents {
 				OR comentarios LIKE '%" . $this->free_search . "%') ";
 		}
 		
-		if (!$system->getConfig('metaconsole')) {
-			$total = agents_get_agents(array(
-				'disabled' => 0,
-				'id_grupo' => $this->group,
-				'search' => $search_sql,
-				'status' => $this->status),
-				array ('COUNT(*) AS total'), 'AR', false);
-		}
-		else {
-			$total = agents_get_meta_agents(array(
-				'disabled' => 0,
-				'id_grupo' => $this->group,
-				'search' => $search_sql,
-				'status' => $this->status),
-				array ('COUNT(*) AS total'), 'AR', false);
-		}
+		$total = agents_get_agents(array(
+			'disabled' => 0,
+			'id_grupo' => $this->group,
+			'search' => $search_sql,
+			'status' => $this->status),
+			array ('COUNT(*) AS total'), 'AR', false);
 		$total = isset($total[0]['total']) ? $total[0]['total'] : 0;
 		
 		$order = array('field' => 'nombre COLLATE utf8_general_ci',
 			'field2' => 'nombre COLLATE utf8_general_ci', 'order' => 'ASC');
-		if (!$system->getConfig('metaconsole')) {
-			$agents_db = agents_get_agents(array(
-				'disabled' => 0,
-				'id_grupo' => $this->group,
-				'search' => $search_sql,
-				'status' => $this->status,
-				'offset' => (int) $page * $system->getPageSize(),
-				'limit' => (int) $system->getPageSize()),
-				array ('id_agente',
-					'id_grupo',
-					'id_os',
-					'nombre',
-					'ultimo_contacto',
-					'intervalo',
-					'comentarios description',
-					'quiet',
-					'normal_count',
-					'warning_count',
-					'critical_count',
-					'unknown_count',
-					'notinit_count',
-					'total_count',
-					'fired_count'),
-				'AR', $order);
-		}
-		else {
-			$agents_db = agents_get_meta_agents(array(
-				'disabled' => 0,
-				'id_grupo' => $this->group,
-				'search' => $search_sql,
-				'status' => $this->status,
-				'offset' => (int) $page * $system->getPageSize(),
-				'limit' => (int) $system->getPageSize()),
-				array ('id_agente',
-					'id_grupo',
-					'id_os',
-					'nombre',
-					'ultimo_contacto',
-					'intervalo',
-					'comentarios description',
-					'quiet',
-					'normal_count',
-					'warning_count',
-					'critical_count',
-					'unknown_count',
-					'notinit_count',
-					'total_count',
-					'fired_count'),
-				'AR', $order);
-		}
+		$agents_db = agents_get_agents(array(
+			'disabled' => 0,
+			'id_grupo' => $this->group,
+			'search' => $search_sql,
+			'status' => $this->status,
+			'offset' => (int) $page * $system->getPageSize(),
+			'limit' => (int) $system->getPageSize()),
+			array ('id_agente',
+				'id_grupo',
+				'id_os',
+				'nombre',
+				'ultimo_contacto',
+				'intervalo',
+				'comentarios description',
+				'quiet',
+				'normal_count',
+				'warning_count',
+				'critical_count',
+				'unknown_count',
+				'notinit_count',
+				'total_count',
+				'fired_count'),
+			'AR', $order);
+		
 		if (empty($agents_db))
 			$agents_db = array();
 		
@@ -376,7 +340,7 @@ class Agents {
 			
 			if ($system->getPageSize() < $listAgents['total']) {
 				$ui->contentAddHtml('<div id="loading_rows">' .
-						html_print_image('images/spinner.gif', true, false, false, false, false, true) .
+						html_print_image('images/spinner.gif', true) .
 						' ' . __('Loading...') .
 					'</div>');
 				

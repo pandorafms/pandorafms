@@ -12,17 +12,16 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-include("../include/functions_tactical.php");
+include("../include/functions_reporting.php");
 include("../include/functions_servers.php");
 
 class Tactical {
 	private $correct_acl = false;
-	private $acl = "AR";
 	
 	function __construct() {
 		$system = System::getInstance();
 		
-		if ($system->checkACL($this->acl)) {
+		if ($system->checkACL()) {
 			$this->correct_acl = true;
 		}
 		else {
@@ -41,7 +40,7 @@ class Tactical {
 	
 	public function ajax($parameter2 = false) {
 		$system = System::getInstance();
-		
+
 		if (!$this->correct_acl) {
 			return;
 		}
@@ -50,8 +49,6 @@ class Tactical {
 				case 'render_status_pie':
 					$links = $system->getRequest('links', '');
 					$data = $system->getRequest('data', '');
-					$data = str_replace('\\','',$data);
-					$links = str_replace('\\','',$links);
 					$width = $system->getRequest('width', 230);
 					
 					$max_width = 399;
@@ -90,55 +87,7 @@ class Tactical {
 		$ui->showFooter(false);
 		$ui->beginContent();
 			$ui->contentBeginGrid('responsive');
-				//~ $data = reporting_get_group_stats();
-				$all_data = tactical_status_modules_agents($config['id_user'], $user_strict, 'AR', $user_strict);
-
-				$data = array();
-
-				$data['monitor_not_init'] = (int) $all_data['_monitors_not_init_'];
-				$data['monitor_unknown'] = (int) $all_data['_monitors_unknown_'];
-				$data['monitor_ok'] = (int) $all_data['_monitors_ok_'];
-				$data['monitor_warning'] = (int) $all_data['_monitors_warning_'];
-				$data['monitor_critical'] = (int) $all_data['_monitors_critical_'];
-				$data['monitor_not_normal'] = (int) $all_data['_monitor_not_normal_'];
-				$data['monitor_alerts'] = (int) $all_data['_monitors_alerts_'];
-				$data['monitor_alerts_fired'] = (int) $all_data['_monitors_alerts_fired_'];
-
-				$data['total_agents'] = (int) $all_data['_total_agents_'];
-
-				$data["monitor_checks"] = (int) $all_data['_monitor_checks_'];
-
-
-				// Percentages
-				if (!empty($all_data)) {
-					if ($data["monitor_not_normal"] > 0 && $data["monitor_checks"] > 0)
-						$data['monitor_health'] = format_numeric (100 - ($data["monitor_not_normal"] / ($data["monitor_checks"] / 100)), 1);
-					else
-						$data["monitor_health"] = 100;
-					
-					if ($data["monitor_not_init"] > 0 && $data["monitor_checks"] > 0)
-						$data["module_sanity"] = format_numeric (100 - ($data["monitor_not_init"] / ($data["monitor_checks"] / 100)), 1);
-					else
-						$data["module_sanity"] = 100;
-					
-					if (isset($data["alerts"])) {
-						if ($data["monitor_alerts_fired"] > 0 && $data["alerts"] > 0)
-							$data["alert_level"] = format_numeric (100 - ($data["monitor_alerts_fired"] / ($data["alerts"] / 100)), 1);
-						else
-							$data["alert_level"] = 100;
-					} 
-					else {
-						$data["alert_level"] = 100;
-						$data["alerts"] = 0;
-					}
-					$data["monitor_bad"] = $data["monitor_critical"] + $data["monitor_warning"];
-					if ($data["monitor_bad"] > 0 && $data["monitor_checks"] > 0)
-						$data["global_health"] = format_numeric (100 - ($data["monitor_bad"] / ($data["monitor_checks"] / 100)), 1);
-					else
-						$data["global_health"] = 100;
-					$data["server_sanity"] = format_numeric (100 - $data["module_sanity"], 1);
-				}
-				
+				$data = reporting_get_group_stats();
 				$data['mobile'] = true;
 				
 				$formatted_data = reporting_get_stats_indicators($data, 100, 10, false);
@@ -175,17 +124,21 @@ class Tactical {
 				
 				$ui->contentGridAddCell($overview, 'tactical1');
 
+				ob_start();
+				$links = array();
 				$links['monitor_critical'] = "index.php?page=modules&status=1";
 				$links['monitor_warning'] = "index.php?page=modules&status=2";
 				$links['monitor_ok'] = "index.php?page=modules&status=0";
 				$links['monitor_unknown'] = "index.php?page=modules&status=3";
 				$links['monitor_not_init'] = "index.php?page=modules&status=5";
 				
+				$modules_status_untiny = reporting_get_stats_modules_status($data, 230, 150, $links);
+				$modules_status_tiny = reporting_get_stats_modules_status($data, 185, 110, $links);
 				$formatted_data = "<div id='status_pie'></div>";
-				$formatted_data .= html_print_div (array('id' => 'status_pie_links','content' => io_safe_input(json_encode($links)), 'hidden' => '1'), true);
-				$formatted_data .= html_print_div (array('id' => 'status_pie_data','content' => io_safe_input(json_encode($data)), 'hidden' => '1'), true);
-				
-				$formatted_data = $formatted_data;
+				$formatted_data .= html_print_div (array('id' => 'status_pie_links','content' => json_encode($links), 'hidden' => '1'), true);
+				$formatted_data .= html_print_div (array('id' => 'status_pie_data','content' => json_encode($data), 'hidden' => '1'), true);
+				$graph_js = ob_get_clean();
+				$formatted_data = $graph_js . $formatted_data;
 				$ui->contentGridAddCell($formatted_data, 'tactical2');
 			$ui->contentEndGrid();
 			
@@ -220,8 +173,8 @@ class Tactical {
 					postvars[\"action\"] = \"ajax\";
 					postvars[\"parameter1\"] = \"tactical\";
 					postvars[\"parameter2\"] = \"render_status_pie\";
-					postvars[\"links\"] = $('#status_pie_links').text();
-					postvars[\"data\"] = $('#status_pie_data').text();
+					postvars[\"links\"] = $('#status_pie_links').html();
+					postvars[\"data\"] = $('#status_pie_data').html();
 					postvars[\"width\"] = pie_width;
 					$.post(\"index.php\",
 						postvars,

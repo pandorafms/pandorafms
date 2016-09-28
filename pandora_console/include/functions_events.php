@@ -93,7 +93,7 @@ function events_get_events ($filter = false, $fields = false) {
  * 
  * @return mixed False in case of error or invalid values passed. Event row otherwise
  */
-function events_get_event ($id, $fields = false, $meta = false) {
+function events_get_event ($id, $fields = false) {
 	if (empty ($id))
 		return false;
 	global $config;
@@ -103,13 +103,7 @@ function events_get_event ($id, $fields = false, $meta = false) {
 			$fields[] = 'id_grupo';
 	}
 	
-	if($meta) {
-		$event = events_meta_get_event($id, array ('evento', 'id_agentmodule'), $history);
-	}
-	else {
-		$event = events_get_event ($id, array ('evento', 'id_agentmodule'));
-	}
-	
+	$event = db_get_row ('tevento', 'id_evento', $id, $fields);
 	if (! check_acl ($config['id_user'], $event['id_grupo'], 'ER'))
 		return false;
 	

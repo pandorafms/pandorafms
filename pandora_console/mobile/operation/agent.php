@@ -23,17 +23,9 @@ class Agent {
 		$system = System::getInstance();
 		
 		$this->id = $system->getRequest('id', 0);
-		
-		if (!$system->getConfig('metaconsole')) {
-			$this->agent = agents_get_agents(array(
-				'disabled' => 0,
-				'id_agente' => $this->id), array('*'));
-		}
-		else {
-			$this->agent = agents_get_meta_agents(array(
-				'disabled' => 0,
-				'id_agente' => $this->id), array('*'));
-		}
+		$this->agent = agents_get_agents(array(
+			'disabled' => 0,
+			'id_agente' => $this->id), array('*'));
 		
 		if (!empty($this->agent)) {
 			$this->agent = $this->agent[0];
@@ -98,7 +90,7 @@ class Agent {
 		$ui->createPage();
 		
 		if ($this->id != 0) {
-			$agent_name = (string) $this->agent['nombre'];
+			$agent_name = (string) agents_get_name ($this->id);
 			
 			$ui->createDefaultHeader(
 				sprintf('%s', $agent_name),
@@ -129,17 +121,8 @@ class Agent {
 					}
 					
 					
-					if ($system->getConfig('metaconsole')) {
-						metaconsole_connect(null, $this->agent['id_tmetaconsole_setup']);
-						$addresses = agents_get_addresses($this->agent['id_tagente']);
-					}
-					else
-						$addresses = agents_get_addresses($this->id);
-					
-					if ($system->getConfig('metaconsole'))
-						metaconsole_restore_db();
-					
-					$address = $this->agent['direccion'];
+					$addresses = agents_get_addresses($this->id);
+					$address = agents_get_address($this->id);
 					foreach ($addresses as $k => $add) {
 						if ($add == $address) {
 							unset($addresses[$k]);
@@ -171,9 +154,7 @@ class Agent {
 					$html .= $last_contact;
 					$html .= $description;
 					$html .= '</div>';
-				if ($system->getConfig('metaconsole')) {
-					metaconsole_connect(null, $this->agent['id_tmetaconsole_setup']);
-				}	
+					
 				$ui->contentGridAddCell($html, 'agent_details');
 					ob_start();
 					$html = '<div class="agent_graphs">';
@@ -189,38 +170,26 @@ class Agent {
 					$html .= '<div id="events_bar"></div>';
 					$html .= '<br>';
 					$html .= '</div>';
-				
 				$ui->contentGridAddCell($html, 'agent_graphs');
 				$ui->contentEndGrid();
-				if ($system->getConfig('metaconsole'))
-					metaconsole_restore_db();
+				
 				
 				$modules = new Modules();
-				if ($system->getConfig('metaconsole'))
-					$filters = array('id_agent' => $this->agent['id_tagente'], 'all_modules' => true, 'status' => -1);
-				else
-					$filters = array('id_agent' => $this->id, 'all_modules' => true, 'status' => -1);
+				$filters = array('id_agent' => $this->id, 'all_modules' => true, 'status' => -1);
 				$modules->setFilters($filters);
 				$modules->disabledColumns(array('agent'));
 				$ui->contentBeginCollapsible(__('Modules'));
 				$ui->contentCollapsibleAddItem($modules->listModulesHtml(0, true));
 				$ui->contentEndCollapsible();
 				
-				if ($system->getConfig('metaconsole')) {
-					metaconsole_connect(null, $this->agent['id_tmetaconsole_setup']);
-				}	
 				$alerts = new Alerts();
-				if ($system->getConfig('metaconsole'))
-					$filters = array('id_agent' => $this->agent['id_tagente'], 'all_alerts' => true);
-				else
-					$filters = array('id_agent' => $this->id, 'all_alerts' => true);
+				$filters = array('id_agent' => $this->id, 'all_alerts' => true);
 				$alerts->setFilters($filters);
 				$alerts->disabledColumns(array('agent'));
 				$ui->contentBeginCollapsible(__('Alerts'));
 				$ui->contentCollapsibleAddItem($alerts->listAlertsHtml(true));
 				$ui->contentEndCollapsible();
-				if ($system->getConfig('metaconsole'))
-					metaconsole_restore_db();
+				
 				$events = new Events();
 				$events->addJavascriptDialog();
 				

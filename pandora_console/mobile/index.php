@@ -18,7 +18,7 @@ if (function_exists ('mb_internal_encoding')) {
 	mb_internal_encoding ("UTF-8");
 }
 
-$develop_bypass = 0;
+$develop_bypass = 1;
 
 require_once("include/ui.class.php");
 require_once("include/system.class.php");
@@ -69,8 +69,8 @@ $system = System::getInstance();
 
 //~ In this moment doesn't work the version mobile when have metaconsole version.
 //~ In the future versions of pandora maybe is added a mobile version of PandoraFMS Metaconsole version.
-//~ if ($system->getConfig('metaconsole'))
-	//~ header ("Location: " . $system->getConfig('homeurl') . "enterprise/meta");
+if ($system->getConfig('metaconsole'))
+	header ("Location: " . $system->getConfig('homeurl') . "enterprise/meta");
 
 
 require_once($system->getConfig('homedir').'/include/constants.php');

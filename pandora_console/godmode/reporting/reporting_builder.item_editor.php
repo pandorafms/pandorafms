@@ -620,7 +620,7 @@ $class = 'databox filters';
 			<td style="">
 				<?php
 				if ($action == 'new') {
-					html_print_select(reports_get_report_types(false, true), 'type', $type, 'chooseType();', '', '','','','','','','','','',true,'reporting');
+					html_print_select(reports_get_report_types(false, true), 'type', $type, 'chooseType();', '', '','','','','','','','','',true,'reportingmodal');
 				}
 				else {
 					$report_type = reports_get_report_types();

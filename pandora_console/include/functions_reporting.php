@@ -5441,15 +5441,15 @@ function reporting_get_stats_alerts($data, $links = false) {
 	$table_al = html_get_predefined_table();
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/bell.png', true, array('title' => __('Defined  alerts')));
+	$tdata[0] = html_print_image('images/bell.png', true, array('title' => __('Defined alerts')), false, false, false, true);
 	$tdata[1] = $data["monitor_alerts"] <= 0 ? '-' : $data["monitor_alerts"];
 	$tdata[1] = '<a class="big_data" href="' . $urls["monitor_alerts"] . '">' . $tdata[1] . '</a>';
 	
-	if($data["monitor_alerts"]>$data["total_agents"] && !enterprise_installed()){
+	if($data["monitor_alerts"] > $data["total_agents"] && !enterprise_installed()) {
 	$tdata[2] = "<div id='alertagentmodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";	
 	}
 	
-	$tdata[3] = html_print_image('images/bell_error.png', true, array('title' => __('Fired alerts')));
+	$tdata[3] = html_print_image('images/bell_error.png', true, array('title' => __('Fired alerts')), false, false, false, true);
 	$tdata[4] = $data["monitor_alerts_fired"] <= 0 ? '-' : $data["monitor_alerts_fired"];
 	$tdata[4] = '<a style="color: ' . COL_ALERTFIRED . ';" class="big_data" href="' . $urls["monitor_alerts_fired"] . '">' . $tdata[4] . '</a>';
 	$table_al->rowclass[] = '';
@@ -5513,29 +5513,29 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	$table_mbs = html_get_predefined_table();
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/module_critical.png', true, array('title' => __('Monitor critical')));
+	$tdata[0] = html_print_image('images/module_critical.png', true, array('title' => __('Monitor critical')), false, false, false, true);
 	$tdata[1] = $data["monitor_critical"] <= 0 ? '-' : $data["monitor_critical"];
 	$tdata[1] = '<a style="color: ' . COL_CRITICAL . ';" class="big_data" href="' . $urls['monitor_critical'] . '">' . $tdata[1] . '</a>';
 	
-	$tdata[2] = html_print_image('images/module_warning.png', true, array('title' => __('Monitor warning')));
+	$tdata[2] = html_print_image('images/module_warning.png', true, array('title' => __('Monitor warning')), false, false, false, true);
 	$tdata[3] = $data["monitor_warning"] <= 0 ? '-' : $data["monitor_warning"];
 	$tdata[3] = '<a style="color: ' . COL_WARNING_DARK . ';" class="big_data" href="' . $urls['monitor_warning'] . '">' . $tdata[3] . '</a>';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/module_ok.png', true, array('title' => __('Monitor normal')));
+	$tdata[0] = html_print_image('images/module_ok.png', true, array('title' => __('Monitor normal')), false, false, false, true);
 	$tdata[1] = $data["monitor_ok"] <= 0 ? '-' : $data["monitor_ok"];
 	$tdata[1] = '<a style="color: ' . COL_NORMAL . ';" class="big_data" href="' . $urls["monitor_ok"] . '">' . $tdata[1] . '</a>';
 	
-	$tdata[2] = html_print_image('images/module_unknown.png', true, array('title' => __('Monitor unknown')));
+	$tdata[2] = html_print_image('images/module_unknown.png', true, array('title' => __('Monitor unknown')), false, false, false, true);
 	$tdata[3] = $data["monitor_unknown"] <= 0 ? '-' : $data["monitor_unknown"];
 	$tdata[3] = '<a style="color: ' . COL_UNKNOWN . ';" class="big_data" href="' . $urls["monitor_unknown"] . '">' . $tdata[3] . '</a>';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/module_notinit.png', true, array('title' => __('Monitor not init')));
+	$tdata[0] = html_print_image('images/module_notinit.png', true, array('title' => __('Monitor not init')), false, false, false, true);
 	$tdata[1] = $data["monitor_not_init"] <= 0 ? '-' : $data["monitor_not_init"];
 	$tdata[1] = '<a style="color: ' . COL_NOTINIT . ';" class="big_data" href="' . $urls["monitor_not_init"] . '">' . $tdata[1] . '</a>';
 	
@@ -5555,7 +5555,7 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 		$table_mbs->data[] = $tdata;
 	}
 	
-	if(!defined("METACONSOLE")) {
+	if(!is_metaconsole()) {
 		$output = '
 			<fieldset class="databox tactical_set">
 				<legend>' . 
@@ -5604,7 +5604,7 @@ function reporting_get_stats_agents_monitors($data) {
 	$table_am = html_get_predefined_table();
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/agent.png', true, array('title' => __('Total agents')));
+	$tdata[0] = html_print_image('images/agent.png', true, array('title' => __('Total agents')), false, false, false, true);
 	$tdata[1] = $data["total_agents"] <= 0 ? '-' : $data["total_agents"];
 	$tdata[1] = '<a class="big_data" href="' . $urls['total_agents'] . '">' . $tdata[1] . '</a>';
 	
@@ -5612,11 +5612,11 @@ function reporting_get_stats_agents_monitors($data) {
 	$tdata[2] = "<div id='agentsmodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
 	}
 	
-	$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Monitor checks')));
+	$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Monitor checks')), false, false, false, true);
 	$tdata[4] = $data["monitor_checks"] <= 0 ? '-' : $data["monitor_checks"];
 	$tdata[4] = '<a class="big_data" href="' . $urls['monitor_checks'] . '">' . $tdata[4] . '</a>';
 	
-	if(($data["monitor_checks"]/$data["total_agents"]>100) && !enterprise_installed()){
+	if(($data["monitor_checks"]/$data["total_agents"] > 100) && !enterprise_installed()) {
 	$tdata[5] = "<div id='monitorcheckmodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
 	}
 	

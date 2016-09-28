@@ -278,6 +278,7 @@ class Modules {
 		
 		$total = 0;
 		$modules = array();
+		$modules_db = array();
 		
 		$sql_conditions_base = " WHERE tagente.id_agente = tagente_modulo.id_agente 
 			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
@@ -405,8 +406,34 @@ class Modules {
 			$sql_limit = " LIMIT " . (int)($page * $system->getPageSize()) . "," . (int)$system->getPageSize();
 		}
 		
-		$total = db_get_value_sql($sql_total. $sql);
-		$modules_db = db_get_all_rows_sql($sql_select . $sql . $sql_limit);
+		if ($system->getConfig('metaconsole')) {
+			$servers = db_get_all_rows_sql ('SELECT *
+				FROM tmetaconsole_setup
+				WHERE disabled = 0');
+			if ($servers === false)
+				$servers = array();
+			
+			//$modules_db = array();
+			$total = 0;
+			foreach ($servers as $server) {
+				if (metaconsole_connect($server) != NOERR)
+					continue;
+				
+				$temp_modules = db_get_all_rows_sql($sql_select . $sql . $sql_limit);
+				
+				foreach ($temp_modules as $result_element_key => $result_element_value) {
+					array_push($modules_db, $result_element_value);
+				}
+				$total += db_get_value_sql($sql_total. $sql);
+				
+				metaconsole_restore_db();
+			}
+			
+		}
+		else {
+			$total = db_get_value_sql($sql_total. $sql);
+			$modules_db = db_get_all_rows_sql($sql_select . $sql . $sql_limit);
+		}
 		
 		if (empty($modules_db)) {
 			$modules_db = array();
@@ -592,7 +619,7 @@ class Modules {
 			if (!$this->all_modules) {
 				if ($system->getPageSize() < $listModules['total']) {
 					$ui->contentAddHtml('<div id="loading_rows">' .
-							html_print_image('images/spinner.gif', true) .
+							html_print_image('images/spinner.gif', true, false, false, false, false, true) .
 							' ' . __('Loading...') .
 						'</div>');
 					

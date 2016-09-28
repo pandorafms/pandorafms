@@ -104,7 +104,6 @@ tr.group_view_crit, .group_view_crit {
 }
 
 
-
 .group_view_normal, .group_view_normal *,
 .group_view_norm, .group_view_norm * {
 	background-color: #FFFFFF;
@@ -128,7 +127,6 @@ tr.group_view_crit, .group_view_crit {
 	font-weight: bold;
 	text-shadow: none;
 }
-
 
 .group_view_ok, .group_view_ok * {
 	background-color: #00C000;

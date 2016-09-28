@@ -554,7 +554,7 @@ function ui_print_group_icon ($id_group, $return = false, $path = "groups_small"
 			$output .= '<span title="'. groups_get_name($id_group, true).'">&nbsp;&nbsp;</span>';
 		else {
 			$output .= html_print_image("images/" . $path . "/" . $icon . ".png",
-				true, array("style" => $style, "class" => "bot", "alt" => groups_get_name($id_group, true), "title" => groups_get_name ($id_group, true)));
+				true, array("style" => $style, "class" => "bot", "alt" => groups_get_name($id_group, true), "title" => groups_get_name ($id_group, true)), false, false, false, true);
 		}
 	}
 	
@@ -629,7 +629,7 @@ function ui_print_os_icon ($id_os, $name = true, $return = false,
 	if (empty ($icon)) {
 		if ($only_src) {
 			$output = html_print_image("images/" . $subfolter . "/unknown.png",
-				true, $options, true, $relative);
+				true, $options, true, $relative, false, true);
 		}
 		else {
 			return "-";
@@ -637,13 +637,13 @@ function ui_print_os_icon ($id_os, $name = true, $return = false,
 	}
 	else if ($apply_skin) {
 		if ($only_src) {
-			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, $options, true, $relative);
+			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, $options, true, $relative, false, true);
 		}
 		else {
 			if (!isset($options['title'])) {
 				$options['title'] = $os_name;
 			}
-			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, $options, false, $relative);
+			$output = html_print_image("images/" . $subfolter . "/" . $icon, true, $options, false, $relative, false, true);
 		}
 	}
 	else
@@ -1807,6 +1807,8 @@ function ui_pagination ($count, $url = false, $offset = 0,
  * @return string HTML code if return parameter is true.
  */
 function ui_print_session_action_icon ($action, $return = false) {
+	global $config;
+	
 	$key_icon = array(
 		'acl' => 'images/delete.png',
 		'agent' => 'images/agent.png',
@@ -1835,7 +1837,7 @@ function ui_print_session_action_icon ($action, $return = false) {
 	$output = '';
 	foreach($key_icon as $key => $icon) {
 		if (stristr($action, $key) !== false) {
-			$output = html_print_image($icon, true, array('title' => $action)) . ' ';
+			$output = html_print_image($icon, true, array('title' => $action), false, false, false, true) . ' ';
 			break;
 		}
 	}
@@ -2076,7 +2078,7 @@ function ui_print_status_image ($type, $title = "", $return = false, $options = 
 	
 	$options['title'] = $title;
 	
-	return html_print_image ($imagepath, $return, $options);
+	return html_print_image ($imagepath, $return, $options, false, false, false, true);
 }
 
 /**

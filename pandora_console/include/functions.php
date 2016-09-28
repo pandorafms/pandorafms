@@ -2546,4 +2546,80 @@ function get_refresh_time_array() {
 		(string)SECONDS_30MINUTES => __('30 minutes'),
 		(string)SECONDS_1HOUR => __('1 hour'));
 }
+
+function date2strftime_format($date_format) {
+	$replaces_list = array(
+		'D' => '%a',
+		'l' => '%A',
+		'd' => '%d',
+		'j' => '%e',
+		'N' => '%u',
+		'w' => '%w',
+		'W' => '%W',
+		'M' => '%b',
+		'F' => '%B',
+		'm' => '%m',
+		'o' => '%G',
+		'y' => '%y',
+		'Y' => '%Y',
+		'H' => '%H',
+		'h' => '%I',
+		'g' => '%l',
+		'a' => '%P',
+		'A' => '%p',
+		'i' => '%M',
+		's' => '%S',
+		'u' => '%s',
+		'O' => '%z',
+		'T' => '%Z',
+		'%' => '%%',
+		);
+	
+	$return = "";
+	
+	//character to character because 
+	// Replacement order gotcha
+	//		http://php.net/manual/en/function.str-replace.php
+	$chars = str_split($date_format);
+	foreach ($chars as $c) {
+		if (isset($replaces_list[$c])) {
+			$return .= $replaces_list[$c];
+		}
+		else {
+			$return .= $c;
+		}
+	}
+	
+	return $return;
+}
+
+function pandora_setlocale() {
+	global $config;
+	
+	$replace_locale = array(
+		'ca' => 'ca_ES',
+		'de' => 'de_DE',
+		'en_GB' => 'de',
+		'es' => 'es_ES',
+		'fr' => 'fr_FR',
+		'it' => 'it_IT',
+		'nl' => 'nl_BE',
+		'pl' => 'pl_PL',
+		'pt' => 'pt_PT',
+		'pt_BR' => 'pt_BR',
+		'sk' => 'sk_SK',
+		'tr' => 'tr_TR',
+		'cs' => 'cs_CZ',
+		'el' => 'el_GR',
+		'ru' => 'ru_RU',
+		'ar' => 'ar_MA',
+		'ja' => 'ja_JP',
+		'zh_CN' => 'zh_CN',
+		);
+	
+	$user_language = get_user_language($config['id_user']);
+	
+	setlocale(LC_ALL,
+		str_replace(array_keys($replace_locale), $replace_locale, $user_language));
+}
 ?>

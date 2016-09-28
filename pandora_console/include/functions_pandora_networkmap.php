@@ -72,20 +72,7 @@ function networkmap_process_networkmap($id = 0) {
 	$center = 0;
 	$regen = 1;
 	$show_snmp_modules = false;
-	
-	// NO CONTEMPLADO
-	$l2_network_interfaces = true;
-	/*
-	if (isset($options['l2_network_interfaces']))
-		$l2_network_interfaces = (bool)$options['l2_network_interfaces'];
-	*/
-	
-	// NO CONTEMPLADO
 	$dont_show_subgroups = false;
-	/*
-	if (isset($options['dont_show_subgroups']))
-		$dont_show_subgroups = (bool)$options['dont_show_subgroups'];
-	*/
 	
 	$id_group = -666;
 	$ip_mask = "";
@@ -118,7 +105,6 @@ function networkmap_process_networkmap($id = 0) {
 		false, //cut_names
 		true, // relative
 		'',
-		$l2_network_interfaces,
 		$ip_mask,
 		$dont_show_subgroups,
 		false,
@@ -146,22 +132,20 @@ function networkmap_process_networkmap($id = 0) {
 	unlink($filename_dot);
 	
 	$nodes = networkmap_loadfile($id, $filename_plain,
-		$relation_nodes, $graph, $l2_network_interfaces);
-	
-	if ($l2_network_interfaces) {
-		//Set the position of modules
-		foreach ($nodes as $key => $node) {
-			if ($node['type'] == 'module') {
-				//Search the agent of this module for to get the
-				//position
-				foreach ($nodes as $key2 => $node2) {
-					if ($node2['id_agent'] != 0 && $node2['type'] == 'agent') {
-						if ($node2['id_agent'] == $node['id_agent']) {
-							$nodes[$key]['coords'][0] =
-								$nodes[$key2]['coords'][0] + $node['height'] / 2;
-							$nodes[$key]['coords'][1] =
-								$nodes[$key2]['coords'][1] + $node['width'] / 2;
-						}
+		$relation_nodes, $graph);
+		
+	//Set the position of modules
+	foreach ($nodes as $key => $node) {
+		if ($node['type'] == 'module') {
+			//Search the agent of this module for to get the
+			//position
+			foreach ($nodes as $key2 => $node2) {
+				if ($node2['id_agent'] != 0 && $node2['type'] == 'agent') {
+					if ($node2['id_agent'] == $node['id_agent']) {
+						$nodes[$key]['coords'][0] =
+							$nodes[$key2]['coords'][0] + $node['height'] / 2;
+						$nodes[$key]['coords'][1] =
+							$nodes[$key2]['coords'][1] + $node['width'] / 2;
 					}
 				}
 			}
@@ -171,10 +155,8 @@ function networkmap_process_networkmap($id = 0) {
 	unlink($filename_plain);
 	
 	$nodes_and_relations = array();
-	$nodes_and_relations['l2_network'] = $l2_network_interfaces;
 	if (enterprise_installed()) {
 		enterprise_include_once("include/functions_pandora_networkmap.php");
-		
 		$center = save_generate_nodes($id, $nodes, $relation_nodes);
 	}
 	else {
@@ -184,12 +166,6 @@ function networkmap_process_networkmap($id = 0) {
 			$nodes_and_relations['nodes'][$index]['id_map'] = $id;
 			$nodes_and_relations['nodes'][$index]['x'] = (int)$node['coords'][0];
 			$nodes_and_relations['nodes'][$index]['y'] = (int)$node['coords'][1];
-			$style['shape'] = 'circle';
-			$style['image'] = $node['image'];
-			$style['width'] = $node['width'];
-			$style['height'] = $node['height'];
-			$style['label'] = $node['text'];
-			$nodes_and_relations['nodes'][$index]['style'] = json_encode($style);
 			if (($node['type'] == 'agent') || ($node['type'] == '')) {
 				$nodes_and_relations['nodes'][$index]['source_data'] = $node['id_agent'];
 				$nodes_and_relations['nodes'][$index]['type'] = 0;
@@ -199,6 +175,14 @@ function networkmap_process_networkmap($id = 0) {
 				$nodes_and_relations['nodes'][$index]['id_agent'] = $node['id_agent'];
 				$nodes_and_relations['nodes'][$index]['type'] = 1;
 			}
+			
+			$style['shape'] = 'circle';
+			$style['image'] = $node['image'];
+			$style['width'] = $node['width'];
+			$style['height'] = $node['height'];
+			$style['label'] = $node['text'];
+			$nodes_and_relations['nodes'][$index]['style'] = json_encode($style);
+			
 			$index++;
 		}
 		
@@ -206,43 +190,23 @@ function networkmap_process_networkmap($id = 0) {
 		$nodes_and_relations['relations'] = array();
 		foreach ($relation_nodes as $relation) {
 			$nodes_and_relations['relations'][$index]['id_map'] = $id;
+			$nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
+			$nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
 			
-			if ($l2_network_interfaces) {
-				if (($relation['parent_type'] == 'agent') || ($relation['parent_type'] == '')) {
-					$nodes_and_relations['relations'][$index]['id_parent'] = $relation['id_parent'];
-					$nodes_and_relations['relations'][$index]['parent_type'] = 0; 
-				}
-				else if ($relation['parent_type'] == 'module') {
-					$nodes_and_relations['relations'][$index]['id_parent'] = $nodes[$relation['id_parent']]['id_module'];
-					$nodes_and_relations['relations'][$index]['parent_type'] = 1; 
-				}
-				
-				if (($relation['child_type'] == 'agent') || ($relation['child_type'] == '')) {
-					$nodes_and_relations['relations'][$index]['id_child'] = $relation['id_child'];
-					$nodes_and_relations['relations'][$index]['child_type'] = 0; 
-				}
-				else if ($relation['child_type'] == 'module') {
-					$nodes_and_relations['relations'][$index]['id_child'] = $nodes[$relation['id_child']]['id_module'];
-					$nodes_and_relations['relations'][$index]['child_type'] = 1; 
-				}
+			if (($relation['parent_type'] == 'agent') || ($relation['parent_type'] == '')) {
+				$nodes_and_relations['relations'][$index]['parent_type'] = 0; 
 			}
-			else {
-				$nodes_and_relations['relations'][$index]['id_parent'] = $nodes[$relation['id_parent']]['id_agent'];
-				$nodes_and_relations['relations'][$index]['id_child'] = $nodes[$relation['id_child']]['id_agent'];
-				if (($relation['parent_type'] == 'agent') || ($relation['parent_type'] == '')) {
-					$nodes_and_relations['relations'][$index]['parent_type'] = 0; 
-				}
-				else if ($relation['parent_type'] == 'module') {
-					$nodes_and_relations['relations'][$index]['parent_type'] = 1; 
-				}
-				
-				if (($relation['child_type'] == 'agent') || ($relation['child_type'] == '')) {
-					$nodes_and_relations['relations'][$index]['child_type'] = 0; 
-				}
-				else if ($relation['child_type'] == 'module') {
-					$nodes_and_relations['relations'][$index]['child_type'] = 1; 
-				}
+			else if ($relation['parent_type'] == 'module') {
+				$nodes_and_relations['relations'][$index]['parent_type'] = 1; 
 			}
+			
+			if (($relation['child_type'] == 'agent') || ($relation['child_type'] == '')) {
+				$nodes_and_relations['relations'][$index]['child_type'] = 0; 
+			}
+			else if ($relation['child_type'] == 'module') {
+				$nodes_and_relations['relations'][$index]['child_type'] = 1; 
+			}
+			
 			$index++;
 		}
 		
@@ -449,7 +413,7 @@ function networkmap_clean_relations_for_js(&$relations) {
 	while (!$cleaned);
 }
 
-function networkmap_links_to_js_links($relations, $nodes_graph, $l2_network = false) {
+function networkmap_links_to_js_links($relations, $nodes_graph) {
 	$return = array();
 	
 	foreach ($relations as $relation) {
@@ -568,29 +532,13 @@ function networkmap_links_to_js_links($relations, $nodes_graph, $l2_network = fa
 				}
 			}
 			else {
-				if ($l2_network) {
-					$agent1 = agents_get_agent_id_by_module_id($relation['id_parent']);
-					$agent2 = agents_get_agent_id_by_module_id($relation['id_child']);
-					if (($node['id_agent'] == $agent1) && ($node['id_module'] == "")) {
-						$item['target'] = $node['id'];
-					}
-					else if (($node['id_agent'] == $agent2) && ($node['id_module'] == "")) {
-						$item['source'] = $node['id'];
-					}
+				$agent1 = agents_get_agent_id_by_module_id($relation['id_parent']);
+				$agent2 = agents_get_agent_id_by_module_id($relation['id_child']);
+				if (($node['id_agent'] == $agent1) && ($node['id_module'] == "")) {
+					$item['target'] = $node['id'];
 				}
-				else {
-					$agent1 = $relation['id_parent'];
-					$agent2 = $relation['id_child'];
-					if ($agent1 == 0) {
-						$item['target'] = 0;
-					}
-					else if (($node['id_agent'] == $agent1) && ($node['id_module'] == "")) {
-							$item['target'] = $node['id'];
-					}
-					
-					if (($node['id_agent'] == $agent2) && ($node['id_module'] == "")) {
-							$item['source'] = $node['id'];
-					}
+				else if (($node['id_agent'] == $agent2) && ($node['id_module'] == "")) {
+					$item['source'] = $node['id'];
 				}
 			}
 		}
@@ -690,7 +638,7 @@ function networkmap_write_js_array($id, $nodes_and_relations = array()) {
 	//interfaces
 	networkmap_clean_relations_for_js($relations);
 	
-	$links_js = networkmap_links_to_js_links($relations, $nodes_graph, $nodes_and_relations['l2_network']);
+	$links_js = networkmap_links_to_js_links($relations, $nodes_graph);
 	
 	foreach ($links_js as $link_js) {
 		if ($link_js['target'] == -1)
@@ -755,7 +703,7 @@ function networkmap_write_js_array($id, $nodes_and_relations = array()) {
 }
 
 function networkmap_loadfile($id = 0, $file = '',
-	&$relations_param, $graph, $l2_network_interfaces) {
+	&$relations_param, $graph) {
 	global $config;
 	
 	$height_map = db_get_value('height', 'tmap', 'id', $id);
@@ -800,7 +748,6 @@ function networkmap_loadfile($id = 0, $file = '',
 			$node_id = $items[1];
 			$node_x = $items[2] * 100; //200 is for show more big
 			$node_y = $height_map - $items[3] * 100; //200 is for show more big
-			
 			$data['text'] = '';
 			$data['image'] = '';
 			$data['width'] = 10;
@@ -838,6 +785,7 @@ function networkmap_loadfile($id = 0, $file = '',
 								'agent_medium', false, true, false,
 								'...', false);
 							$data['text'] = $text;
+							$data['id_agent'] = db_get_value("id_agente", "tagente_modulo", "id_agente_modulo", $data['id_module']);
 							break;
 						case 'agent':
 							$data['id_agent'] = $ids[$node_id]['id_agent'];
@@ -848,6 +796,7 @@ function networkmap_loadfile($id = 0, $file = '',
 								'agent_medium', false, true, false,
 								'...', false);
 							$data['text'] = $text;
+							$data['parent'] = db_get_value("id_parent", "tagente", "id_agente", $data['id_agent']);
 							break;
 					}
 				}
@@ -857,7 +806,6 @@ function networkmap_loadfile($id = 0, $file = '',
 			}
 			
 			$data['coords'] = array($node_x, $node_y);
-			$data['parent'] = -1;
 			
 			if (strpos($node_id, "transp_") !== false) {
 				//removed the transparent nodes
@@ -1136,6 +1084,8 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 		//          
 		//          and erase the last, only the first row alive
 		networkmap_clean_duplicate_links($id);
+		
+		networkmap_clean_useless_l3_links($id);
 	}
 	
 	$networkmap = db_get_row('tmap', 'id', $id);

@@ -79,7 +79,7 @@ if (!empty($macros)) {
 		$macros[$k]['value'] = get_parameter($m['macro'], '');
 	}
 	
-	$macros = json_encode($macros);
+	$macros = io_json_mb_encode($macros);
 }
 
 $max_timeout = (int) get_parameter ('max_timeout');

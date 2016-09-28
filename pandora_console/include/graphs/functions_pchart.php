@@ -691,7 +691,7 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 				"Mode"=>SCALE_MODE_START0, "LabelRotation" => 60);
 			$margin_left = 40;
 			$margin_top = 10;
-			$margin_bottom = 10 * $max_chars;
+			$margin_bottom = 3 * $max_chars;
 			break;
 		case "hbar":
 			$scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,
@@ -718,13 +718,13 @@ function pch_bar_graph ($graph_type, $index, $data, $width, $height, $font,
 	$myPicture->setGraphArea($margin_left,$margin_top,$width - $water_mark_width,$height-$margin_bottom);
 	
 	$myPicture->drawScale($scaleSettings);
-	
+	/*
 	if (isset($legend)) {
-		/* Write the chart legend */
+		/* Write the chart legend 
 		$size = $myPicture->getLegendSize(array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL));
 		$myPicture->drawLegend($width-$size['Width'],0,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL, "BoxWidth"=>10, "BoxHeight"=>10));
 	}
-	
+	*/
 	/* Turn on shadow computing */ 
 	$myPicture->setShadow(TRUE,array("X"=>0,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 	
@@ -1137,8 +1137,9 @@ function pch_bullet_chart($graph_type, $data, $legend,
 	$MyData->setSerieDescription("Labels", __("Agents/Modules"));
 	
 	$height_t = ($height * count($data) ) + 40;
-	$width_t = ($width + ( 200 + $max_chars));
-	$max_chars = graph_get_max_index($legend_values);
+	$height_t = $height;
+	$max_chars = graph_get_max_index($legend);
+	$width_t = ($width + ( 100 + $max_chars));
 	
 	/* Create the pChart object */
 	$myPicture = new pImage($width_t, $height_t,$MyData);
@@ -1151,7 +1152,7 @@ function pch_bullet_chart($graph_type, $data, $legend,
 	
 	$height_t - 10;
 	/* Draw the scale and chart */
-	$myPicture->setGraphArea(220,20,($width + 80), $height_t);
+	$myPicture->setGraphArea(250,20,($width + 100), $height_t);
 	$myPicture->drawScale(array("Pos"=>SCALE_POS_TOPBOTTOM, "Mode"=>SCALE_MODE_ADDALL_START0,
 		  "LabelingMethod"=>LABELING_DIFFERENT, "GridR"=>255, "GridG"=>255,
 		  "GridB"=>255, "GridAlpha"=>50, "TickR"=>0,"TickG"=>0, "TickB"=>0, 

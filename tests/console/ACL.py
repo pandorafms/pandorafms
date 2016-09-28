@@ -133,48 +133,48 @@ class ACLTags(PandoraWebDriverTestCase):
 
 		u"""Create agent and two modules, one without tag and with tag, create a user with tag and check this user can view module with tag and user can´t view module without tag"""
 		
-                agent_name = gen_random_string(6)
-                module_name_A = gen_random_string(6)
-                module_name_B = gen_random_string(6)
-		user_name = gen_random_string(6)
+                #agent_name = gen_random_string(6)
+                #module_name_A = gen_random_string(6)
+                #module_name_B = gen_random_string(6)
+		#user_name = gen_random_string(6)
 
-		driver = self.driver
-		self.login()
-		detect_and_pass_all_wizards(driver)
+		#driver = self.driver
+		#self.login()
+		#detect_and_pass_all_wizards(driver)
 		
-		create_agent(driver,agent_name,group="Applications",ip="192.168.50.50")
+		#create_agent(driver,agent_name,group="Applications",ip="192.168.50.50")
 		
 		#We create a module without a tag
 			
-		create_module("network_server",driver,agent_name=agent_name,module_name=module_name_A,component_group="Network Management",network_component="Host Alive",ip="192.168.50.50")
+		#create_module("network_server",driver,agent_name=agent_name,module_name=module_name_A,component_group="Network Management",network_component="Host Alive",ip="192.168.50.50")
 		
 		#We now create a modulo with tag "critical"
 		
-		create_module("network_server",driver,agent_name=agent_name,module_name=module_name_B,component_group="Network Management",network_component="Host Alive",ip="192.168.50.50",tag_name="critical")
+		#create_module("network_server",driver,agent_name=agent_name,module_name=module_name_B,component_group="Network Management",network_component="Host Alive",ip="192.168.50.50",tag_name="critical")
 
 		
-		l = [("Operator (Read)","All",["critical"])]
+		#l = [("Operator (Read)","All",["critical"])]
 
-		create_user(driver,user_name,"pandora",profile_list=l) 
+		#create_user(driver,user_name,"pandora",profile_list=l) 
 		
-		self.logout()
+		#self.logout()
 		
-		self.login(user=user_name)
+		#self.login(user=user_name)
 		
-		detect_and_pass_all_wizards(driver)
+		#detect_and_pass_all_wizards(driver)
 		
-		search_agent(driver,agent_name)
+		#search_agent(driver,agent_name)
 
-		time.sleep(6)
+		#time.sleep(6)
 
 		
 		#The user should be able to see the module with Tag
-		module = driver.find_element_by_xpath('//td[contains(.,"'+module_name_B+'")]')
-		self.assertIsInstance(module,WebElement)		
+		#module = driver.find_element_by_xpath('//td[contains(.,"'+module_name_B+'")]')
+		#self.assertIsInstance(module,WebElement)		
 
 		#The user should NOT be able to see the module without tag
-		modules = driver.find_elements_by_xpath('//td[contains(.,"'+module_name_A+'")]')
-		self.assertEqual(modules,[])
+		#modules = driver.find_elements_by_xpath('//td[contains(.,"'+module_name_A+'")]')
+		#self.assertEqual(modules,[])
  
 if __name__ == "__main__":
 	unittest2.main()

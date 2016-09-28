@@ -2631,8 +2631,8 @@ function reporting_alert_report_group($report, $content) {
 		
 		$data_row['fired'] = array();
 		$firedTimes = get_module_alert_fired(
-			$content['id_agent_module'],
-			$alert['id_alert_template'],
+			$alert['id_agent_module'],
+			$alert['id'],
 			(int) $content['period'],
 			(int) $report["datetime"]);
 		
@@ -2739,7 +2739,7 @@ function reporting_alert_report_agent($report, $content) {
 			$data_row['fired'] = array();
 			$firedTimes = get_module_alert_fired(
 				$alert['id_agent_module'],
-				$alert['id_alert_template'],
+				$alert['id'],
 				(int) $content['period'],
 				(int) $report["datetime"]);
 			

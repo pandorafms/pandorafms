@@ -1239,8 +1239,8 @@ function setModuleGraph(id_data) {
 			id_agente_modulo = data['id_agente_modulo'];
 			id_custom_graph = data['id_custom_graph'];
 			label = data['label'];
-			height = data['height'];
-			width = data['width'];
+			height = (data['height'] + 60);
+			width = (data['width'] + 60);
 			period = data['period'];
 			background_color = data['image'];
 

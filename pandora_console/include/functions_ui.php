@@ -260,7 +260,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 
 	//Use the no_meta parameter because this image is only in the base console
 	$output = '<table cellspacing="0" cellpadding="0" id="' . $id . '" ' . $attributes . '
-		class="info_box ' . $id . ' ' . $class . '" style="' . $force_style . '">
+		class="info_box ' . $id . ' ' . $class . ' textodialogo" style="' . $force_style . '">
 		<tr>
 			<td class="icon" rowspan="2" style="padding-right: 10px; padding-top: 3px;">' . html_print_image($icon_image, true, false, false, false, true) . '</td>
 			<td class="title" style="text-transform: uppercase; padding-top: 10px;"><b>' . $text_title . '</b></td>
@@ -274,7 +274,7 @@ function ui_print_message ($message, $class = '', $attributes = '', $return = fa
 	$output .= 	'</td>
 		</tr>
 		<tr>
-			<td style="color:#222">' . $text_message . '</td>
+			<td style="color:#333">' . $text_message . '</td>
 			<td></td>
 		</tr>
 		</table>';
@@ -1299,8 +1299,14 @@ function ui_process_page_head ($string, $bitfield) {
 		<meta name="author" content="Pandora FMS Developer team" />
 		<meta name="copyright" content="(c) Artica Soluciones Tecnologicas" />
 		<meta name="keywords" content="pandora, monitoring, system, GPL, software" />
-		<meta name="robots" content="index, follow" />
-		<link rel="icon" href="images/pandora.ico" type="image/ico" />
+		<meta name="robots" content="index, follow" />';
+		if(defined ('METACONSOLE')){
+		$output .='<link rel="icon" href="images/favicon_meta.ico" type="image/ico" />';
+		}
+		else{
+		$output .='<link rel="icon" href="images/pandora.ico" type="image/ico" />';	
+		}
+		$output .='	
 		<link rel="shortcut icon" href="images/pandora.ico" type="image/x-icon" />
 		<link rel="alternate" href="operation/events/events_rss.php" title="Pandora RSS Feed" type="application/rss+xml" />';
 	
@@ -2403,17 +2409,17 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 		$type2 = "menu_tab_frame_view";
 		$separator_class = "separator_view";
 	}
-	
-	
-	$buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
-	
-	
+
+
+	$buffer = '<div id="'.$type2.'" style="font-size:9pt;text-transform:uppercase;font-weight:100;letter:spacing:1px;"><div id="menu_tab_left">';
+
+
 	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . '&nbsp; ';
-	$buffer .= '<span style="">' .
+	$buffer .= '<span style="margin-right:10px;">' .
 		ui_print_truncate_text($title, 46);
 	if ($modal){
 		$buffer .= "
-		<div id='publienterprise' class='".$message."' title='Community version' style='float: right;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise' title='Community version' style='float: right;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
 	}
 

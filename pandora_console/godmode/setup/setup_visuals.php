@@ -173,7 +173,7 @@ $table_styles->data[$row][0] = __('Custom logo in login') . ui_print_help_icon("
 $table_styles->data[$row][1] = html_print_select(
 	list_files('images/custom_logo_login', "png", 1, 0), 'custom_logo_login',
 	$config["custom_logo_login"], '', '', '',true,false,true,'',$open,'width:240px');
-$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview_', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
+$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
 $row++;
 
 

@@ -64,7 +64,7 @@ config_check();
 					$table->style[8] =
 					$table->style[9] =
 					$table->style['qr'] =
-					'width: 22px; text-align:center; height: 22px; padding-right: 9px;';
+					'width: 22px; text-align:center; height: 22px; padding-right: 9px;padding-left: 9px;';
 				$table->style[7] = 'width: 20px; padding-right: 9px;';
 				$table->style['searchbar'] = 'width: 180px; min-width: 180px;';
 				$table->style[11] = 'padding-left: 10px; padding-right: 5px;width: 16px;';

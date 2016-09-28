@@ -5441,13 +5441,17 @@ function reporting_get_stats_alerts($data, $links = false) {
 	$table_al = html_get_predefined_table();
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/bell.png', true, array('title' => __('Defined alerts')));
+	$tdata[0] = html_print_image('images/bell.png', true, array('title' => __('Defined  alerts')));
 	$tdata[1] = $data["monitor_alerts"] <= 0 ? '-' : $data["monitor_alerts"];
 	$tdata[1] = '<a class="big_data" href="' . $urls["monitor_alerts"] . '">' . $tdata[1] . '</a>';
 	
-	$tdata[2] = html_print_image('images/bell_error.png', true, array('title' => __('Fired alerts')));
-	$tdata[3] = $data["monitor_alerts_fired"] <= 0 ? '-' : $data["monitor_alerts_fired"];
-	$tdata[3] = '<a style="color: ' . COL_ALERTFIRED . ';" class="big_data" href="' . $urls["monitor_alerts_fired"] . '">' . $tdata[3] . '</a>';
+	if($data["monitor_alerts"]>$data["total_agents"] && !enterprise_installed()){
+	$tdata[2] = "<div id='alertagentmodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";	
+	}
+	
+	$tdata[3] = html_print_image('images/bell_error.png', true, array('title' => __('Fired alerts')));
+	$tdata[4] = $data["monitor_alerts_fired"] <= 0 ? '-' : $data["monitor_alerts_fired"];
+	$tdata[4] = '<a style="color: ' . COL_ALERTFIRED . ';" class="big_data" href="' . $urls["monitor_alerts_fired"] . '">' . $tdata[4] . '</a>';
 	$table_al->rowclass[] = '';
 	$table_al->data[] = $tdata;
 	
@@ -5604,9 +5608,18 @@ function reporting_get_stats_agents_monitors($data) {
 	$tdata[1] = $data["total_agents"] <= 0 ? '-' : $data["total_agents"];
 	$tdata[1] = '<a class="big_data" href="' . $urls['total_agents'] . '">' . $tdata[1] . '</a>';
 	
-	$tdata[2] = html_print_image('images/module.png', true, array('title' => __('Monitor checks')));
-	$tdata[3] = $data["monitor_checks"] <= 0 ? '-' : $data["monitor_checks"];
-	$tdata[3] = '<a class="big_data" href="' . $urls['monitor_checks'] . '">' . $tdata[3] . '</a>';
+	if($data["total_agents"]>500 && !enterprise_installed()){
+	$tdata[2] = "<div id='agentsmodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+	}
+	
+	$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Monitor checks')));
+	$tdata[4] = $data["monitor_checks"] <= 0 ? '-' : $data["monitor_checks"];
+	$tdata[4] = '<a class="big_data" href="' . $urls['monitor_checks'] . '">' . $tdata[4] . '</a>';
+	
+	if(($data["monitor_checks"]/$data["total_agents"]>100) && !enterprise_installed()){
+	$tdata[5] = "<div id='monitorcheckmodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+	}
+	
 	$table_am->rowclass[] = '';
 	$table_am->data[] = $tdata;
 	
@@ -8254,12 +8267,12 @@ function reporting_get_stats_servers($tiny = true) {
 	$table_srv->style[0] = $table_srv->style[2] = 'text-align: right; padding: 5px;';
 	$table_srv->style[1] = $table_srv->style[3] = 'text-align: left; padding: 5px;';
 	
-	$tdata = array();
+	$tdata = array();'<span class="big_data">' . format_numeric($server_performance ["total_local_modules"]) . '</span>';
 	$tdata[0] = html_print_image('images/module.png', true, array('title' => __('Total running modules'), 'width' => '25px'));
 	$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_modules"]) . '</span>';
-	
-	$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["total_modules_rate"], 2) . '</span>';
-	$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+	$tdata[2] = '&nbsp;';
+	$tdata[3] = '<span class="med_data">' . format_numeric($server_performance ["total_modules_rate"], 2) . '</span>';
+	$tdata[4] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 	
 	$table_srv->rowclass[] = '';
 	$table_srv->data[] = $tdata;
@@ -8274,9 +8287,13 @@ function reporting_get_stats_servers($tiny = true) {
 	$tdata[0] = html_print_image('images/database.png', true, array('title' => __('Local modules'), 'width' => '25px'));
 	$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_local_modules"]) . '</span>';
 	
-	$tdata[2] = '<span class="med_data">' .
+	
+		$tdata[2] = '&nbsp;';
+
+	$tdata[3] = '<span class="med_data">' .
 		format_numeric($server_performance ["local_modules_rate"], 2) . '</span>';
-	$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+		
+	$tdata[4] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 	
 	$table_srv->rowclass[] = '';
 	$table_srv->data[] = $tdata;
@@ -8286,8 +8303,16 @@ function reporting_get_stats_servers($tiny = true) {
 		$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Remote modules'), 'width' => '25px'));
 		$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_remote_modules"]) . '</span>';
 		
-		$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["remote_modules_rate"], 2) . '</span>';
-		$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+		if($server_performance ["total_remote_modules"]>10000 && !enterprise_installed()){
+			$tdata[2] = "<div id='agentsmodal' class='publienterprise' title='Community version' style='text-align:left;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+		}
+		else{
+			$tdata[2] = '&nbsp;';
+		}
+		
+		
+		$tdata[3] = '<span class="med_data">' . format_numeric($server_performance ["remote_modules_rate"], 2) . '</span>';
+		$tdata[4] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 		
 		$table_srv->rowclass[] = '';
 		$table_srv->data[] = $tdata;
@@ -8387,8 +8412,15 @@ function reporting_get_stats_servers($tiny = true) {
 			array('title' => __('Total events'), 'width' => '25px'));
 		$tdata[1] = '<span class="big_data">' .
 			format_numeric($system_events) . '</span>';
-		
-		$table_srv->colspan[count($table_srv->data)][1] = 3;
+			
+		if($system_events > 50000 && !enterprise_installed()){
+			$tdata[2] = "<div id='monitoreventsmodal' class='publienterprise' title='Community version' style='text-align:left'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+		}
+			
+		else{
+		$tdata[3] = "&nbsp;";	
+		}
+		$table_srv->colspan[count($table_srv->data)][1] = 2;
 		$table_srv->rowclass[] = '';
 		$table_srv->data[] = $tdata;
 	}

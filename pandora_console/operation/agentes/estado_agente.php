@@ -546,7 +546,7 @@ foreach ($agents as $agent) {
 	if ($agent['quiet']) {
 		$data[0] .= html_print_image("images/dot_green.disabled.png", true, array("border" => '0', "title" => __('Quiet'), "alt" => "")) . "&nbsp;";
 	}
-	$data[0] .= ui_print_agent_name($agent["id_agente"], true, 60, 'font-size:6.5pt !important;', true);
+	$data[0] .= ui_print_agent_name($agent["id_agente"], true, 60, 'font-size:8pt !important;', true);
 	$data[0] .= '</span>';
 	$data[0] .= '<div class="agentleft_' . $agent["id_agente"] . '" style="visibility: hidden; clear: left;">';
 	$data[0] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'">'.__('View').'</a>';
@@ -560,7 +560,7 @@ foreach ($agents as $agent) {
 	
 	$data[2] = ui_print_os_icon ($agent["id_os"], false, true);
 	
-	$data[3] = human_time_description_raw($agent["intervalo"]);
+	$data[3] = '<span style="font-size:6.5pt;">'.human_time_description_raw($agent["intervalo"])."</span>";
 	
 	$data[4] = ui_print_group_icon ($agent["id_grupo"], true);
 	

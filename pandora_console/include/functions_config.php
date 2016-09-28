@@ -461,8 +461,25 @@ function config_update_config () {
 						$error_update[] = __('Font size');
 					if (!config_update_value ('flash_charts', (bool) get_parameter ('flash_charts')))
 						$error_update[] = __('Interactive charts');
-					if (!config_update_value ('custom_logo', (string) get_parameter ('custom_logo')))
-						$error_update[] = __('Custom logo');
+					
+						if(!enterprise_installed()){
+					  	$open=true; 
+					  }
+					
+					if(!$open){
+						if (!config_update_value ('custom_logo', (string) get_parameter ('custom_logo')))
+							$error_update[] = __('Custom logo');
+							if (!config_update_value ('custom_logo_login', (string) get_parameter ('custom_logo_login')))
+							$error_update[] = __('Custom logo login');
+								
+					
+					
+					}
+					
+						
+						
+						
+						
 					if (!config_update_value ('login_background', (string) get_parameter ('login_background')))
 						$error_update[] = __('Login background');
 					if (!config_update_value ('vc_refr', get_parameter('vc_refr')))
@@ -487,6 +504,8 @@ function config_update_config () {
 						$error_update[] = __('Default icon in GIS');
 					if (!config_update_value ('autohidden_menu', get_parameter('autohidden_menu')))
 						$error_update[] = __('Autohidden menu');
+					if (!config_update_value ('fixed_graph', get_parameter('fixed_graph')))
+							$error_update[] = __('Fixed graph');
 					if (!config_update_value ('fixed_header', get_parameter('fixed_header')))
 						$error_update[] = __('Fixed header');
 					if (!config_update_value ('fixed_menu', get_parameter('fixed_menu')))
@@ -1026,13 +1045,26 @@ function config_process_config () {
 		config_update_value ('fixed_header', false);
 	}
 	
+	if (!isset ($config["fixed_graph"])) {
+		config_update_value ('fixed_graph', false);
+	}
+	
 	if (!isset ($config["fixed_menu"])) {
 		config_update_value ('fixed_menu', false);
 	}
 	
+	if(!$open){
+		
+	
 	if (!isset ($config["custom_logo"])) {
 		config_update_value ('custom_logo', 'pandora_logo_head.png');
 	}
+	if (!isset ($config["custom_logo_login"])) {
+		config_update_value ('custom_logo_login', 'pandora_logo.png');
+	}
+	
+	
+}
 	
 	if (!isset ($config['history_db_enabled'])) {
 		config_update_value ( 'history_db_enabled', false);

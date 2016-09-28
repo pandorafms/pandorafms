@@ -1,5 +1,13 @@
 <?php
 
+/* Hello there! :)
+
+We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
+
+You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
+
+*/
+
 if(!enterprise_installed()){
 	$open=true; 
 }
@@ -38,6 +46,21 @@ switch ($tipo) {
     case "updatemodal":  
       echo "icono_info.png";
         break;
+		case "agentsmodal":  
+		  echo "icono_info.png";
+		    break;
+		case "monitorcheckmodal":  
+		  echo "icono_info.png";
+		    break;
+		case "remotemodulesmodal":
+			echo "icono_info.png";
+		break;
+		case "monitoreventsmodal":
+			echo "icono_info.png";
+		break;
+		case "alertagentmodal":
+			echo "icono_info.png";
+		break;
     default:
     break;
 }
@@ -98,7 +121,22 @@ switch ($tipo) {
     case "updatemodal":  
         echo __("WARNING: You are just one click of an automated update. This may result on a damaged system, including loss of data and operation. Check you have a recent backup. OpenSource updates are automated created packages, and there is no WARRANTY or SUPPORT. If you need professional support and warranty, please upgrade to Enterprise Version.");
       break;
-    default:
+		case "agentsmodal":  
+	      echo __("This system is heavily loaded. OpenSource version could get a lot more agents but fine tuning requires knowledge and time. Checkout the Enterprise Version for a professional supported system.");
+	    break;
+		case "monitorcheckmodal":  	
+				echo __("This system has too many modules per agent. OpenSource version could manage thousands of modules, but is not recommended to have more than 40 modules per agent. This configuration has B/A modules per agent. Checkout the Enterprise Version for a professional supported system.");
+			break;
+		case "remotemodulesmodal":
+				echo __("Too much remote modules has been detected on this system. OpenSource version could manage thousands of modules, but performance is limited on high amount of SNMP or ICMP request. Checkout the <a href='https://pandorafms.com/'>Enterprise Version</a>	 for a professional supported system with improved capacity on network monitoring, including distributed servers.");
+    	break;
+		case "monitoreventsmodal":
+				echo __("Too much remote modules has been detected on this system. OpenSource version could manage thousands of modules, but performance is limited on high amount of SNMP or ICMP request. Checkout the <a href='https://pandorafms.com/'>Enterprise Version</a>	 for a professional supported system with improved capacity on network monitoring, including distributed servers.");
+	  	break;
+		case "alertagentmodal":
+				echo __("You have defined a high number of alerts, this may cause you performance problems in the future. In the Enterprise version, you can use event correlation alerts to simplify the alerting system and have easier administration and increased performance.");
+	  	break;
+		default:
     break;
 }
 

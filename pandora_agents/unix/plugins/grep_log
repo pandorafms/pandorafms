@@ -188,7 +188,10 @@ sub parse_log (;$$) {
 	seek(LOGFILE, $Idx_pos, 0);
 
 	# Parse log file
-	my @data;
+	my %data;
+
+	# Matched line id
+	my $matched_line = 0;
 
 	if ( (defined($up_lines)) || (defined($bot_lines)) ){
 		# Detailed workmode
@@ -210,8 +213,9 @@ sub parse_log (;$$) {
 				$flag = 1;
 				# Push upper lines
 				for (my $i = ($curr_line-$up_lines); $i<=$curr_line; $i++){
+					if ($i < 0) {next;}
 					if (defined ($lines[$i])) {
-						push (@data, $lines[$i]);
+						push (@{$data{$matched_line}}, $lines[$i]);
 					}
 
 				}
@@ -220,16 +224,17 @@ sub parse_log (;$$) {
 				# Push bottom lines
 				for (my $i = ($curr_line+$flag); $i<=($curr_line+$bot_lines); $i++){
 					if (defined ($lines[$i])) {
-						push (@data, $lines[$i]);
+						push (@{$data{$matched_line}}, $lines[$i]);
 					}
 				}
 			}
+			$matched_line++;
 		}
 	}
 	else { # Standar workmode
 		while ($line = <LOGFILE>) {
 			if ($line =~ m/$Reg_exp/i) {
-				push @data, $line;
+				push (@{$data{$matched_line++}}, $line);
 			}
 		}
 	}
@@ -240,7 +245,7 @@ sub parse_log (;$$) {
 	# Save the index file
 	save_idx();
 
-	return @data;
+	return \%data;
 }
 
 ###############################################################################
@@ -262,11 +267,12 @@ sub print_summary() {
 # SUB parse_log
 # Print log data to stdout.
 ###############################################################################
-sub print_log (@) {
-	my @data = @_;
+sub print_log ($) {
+	my $data = shift;
 
 	# No data
-	if ($#data < 0) {
+	my @kdata = keys (%{$data});
+	if ($#kdata < 0) {
 		print_summary() if ($summary_flag == 1);
 		return;
 	}
@@ -276,8 +282,8 @@ sub print_log (@) {
 		my $output = "<log_module>\n";
 		$output .= "<source><![CDATA[" . $Module_name . "]]></source>\n";
 		$output .= "<data><![CDATA[";
-		foreach my $line (@data) {
-			$output .= $line;
+		foreach my $line (@kdata) {
+			$output .= $data->{$line};
 		}
 		$output .= "]]></data>";
 		$output .= "</log_module>\n";
@@ -292,8 +298,12 @@ sub print_log (@) {
 		$output .= "<name><![CDATA[" . $Module_name . "]]></name>\n";
 		$output .= "<type><![CDATA[async_string]]></type>\n";
 		$output .= "<datalist>\n";
-		foreach my $line (@data) {
-			$output .= "<data><value><![CDATA[$line]]></value></data>\n";
+		foreach my $line (@kdata) {
+			$output .= "<data><value><![CDATA[";
+			foreach my $content (@{$data->{$line}}) {
+				$output .= $content;
+			}
+			$output .= "]]></value></data>\n";
 		}
 		$output .= "</datalist>\n";
 		$output .= "</module>\n";
@@ -348,9 +358,9 @@ if (! -e $Idx_file) {
 load_idx();
 
 # Parse log file
-my @data = parse_log($up_lines,$bot_lines);
+my $data = parse_log($up_lines,$bot_lines);
 
 # Print output to stdout
-print_log (@data);
+print_log ($data);
 
 exit 0;

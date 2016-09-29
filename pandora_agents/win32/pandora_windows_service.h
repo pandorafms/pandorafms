@@ -44,6 +44,7 @@ namespace Pandora {
 		Pandora_Module_List *modules;
 		long                 execution_number;
 		string               agent_name;
+		string               alias;
 		time_t               timestamp;
 		time_t               run_time;
 		bool                 started;
@@ -116,6 +117,7 @@ namespace Pandora {
 		Pandora_Agent_Conf *getConf ();
 		long           getInterval ();
 		long           getIntensiveInterval ();
+		string         generateAgentName ();
 
 	};
 }

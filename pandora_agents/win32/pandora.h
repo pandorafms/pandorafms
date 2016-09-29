@@ -62,7 +62,9 @@ namespace Pandora {
 		void   parseLine (string str);
 		void   parseLineByPosition (string str, int pos);
 		string getKey    ();
+		void   setKey    (const string value);
 		string getValue  ();
+		void   setValue  (const string value);
 	};
 	
 	static const HKEY  hkey          = HKEY_LOCAL_MACHINE;

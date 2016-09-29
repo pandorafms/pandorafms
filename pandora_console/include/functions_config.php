@@ -462,22 +462,12 @@ function config_update_config () {
 					if (!config_update_value ('flash_charts', (bool) get_parameter ('flash_charts')))
 						$error_update[] = __('Interactive charts');
 					
-						if(!enterprise_installed()){
-					  	$open=true; 
-					  }
-					
-					if(!$open){
+						
 						if (!config_update_value ('custom_logo', (string) get_parameter ('custom_logo')))
 							$error_update[] = __('Custom logo');
 							if (!config_update_value ('custom_logo_login', (string) get_parameter ('custom_logo_login')))
 							$error_update[] = __('Custom logo login');
-								
-					
-					
-					}
-					
-						
-						
+	
 						
 						
 					if (!config_update_value ('login_background', (string) get_parameter ('login_background')))
@@ -1053,18 +1043,15 @@ function config_process_config () {
 		config_update_value ('fixed_menu', false);
 	}
 	
-	if(!$open){
-		
+
 	
 	if (!isset ($config["custom_logo"])) {
-		config_update_value ('custom_logo', 'pandora_logo_head.png');
+		config_update_value ('custom_logo', 'pandora_logo_head_3.png');
 	}
 	if (!isset ($config["custom_logo_login"])) {
-		config_update_value ('custom_logo_login', 'pandora_logo.png');
+		config_update_value ('custom_logo_login', 'login_logo.png');
 	}
 	
-	
-}
 	
 	if (!isset ($config['history_db_enabled'])) {
 		config_update_value ( 'history_db_enabled', false);

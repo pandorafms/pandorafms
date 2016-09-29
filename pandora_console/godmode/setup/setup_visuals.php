@@ -163,17 +163,39 @@ $table_styles->data[$row][1] .= "&nbsp;" .
 $row++;
 
 $table_styles->data[$row][0] = __('Custom logo') . ui_print_help_icon("custom_logo", true);
+
+if(enterprise_installed()){
+
 $table_styles->data[$row][1] = html_print_select(
+list_files('enterprise/images/custom_logo', "png", 1, 0), 'custom_logo',
+$config["custom_logo"], '', '', '',true,false,true,'',$open,'width:240px');
+
+}
+else{
+
+	$table_styles->data[$row][1] = html_print_select(
 	list_files('images/custom_logo', "png", 1, 0), 'custom_logo',
 	$config["custom_logo"], '', '', '',true,false,true,'',$open,'width:240px');
-$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
+}
+	
+	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
 $row++;
 
-$table_styles->data[$row][0] = __('Custom logo in login') . ui_print_help_icon("custom_logo", true);
+$table_styles->data[$row][0] = __('Custom logo in login') . ui_print_help_icon("custom_logo_login", true);
+
+if(enterprise_installed()){
 $table_styles->data[$row][1] = html_print_select(
-	list_files('images/custom_logo_login', "png", 1, 0), 'custom_logo_login',
+	list_files('enterprise/images/custom_logo_login', "png", 1, 0), 'custom_logo_login',
 	$config["custom_logo_login"], '', '', '',true,false,true,'',$open,'width:240px');
-$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
+}
+else{
+	$table_styles->data[$row][1] = html_print_select(
+		list_files('images/custom_logo_login', "png", 1, 0), 'custom_logo_login',
+		$config["custom_logo_login"], '', '', '',true,false,true,'',$open,'width:240px');
+	
+}
+
+	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_login_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
 $row++;
 
 

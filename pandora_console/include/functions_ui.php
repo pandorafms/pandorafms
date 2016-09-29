@@ -2417,7 +2417,7 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . '&nbsp; ';
 	$buffer .= '<span style="margin-right:10px;">' .
 		ui_print_truncate_text($title, 46);
-	if ($modal){
+	if ($modal && !enterprise_installed()){
 		$buffer .= "
 		<div id='".$message."' class='publienterprise' title='Community version' style='float: right;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";

@@ -1169,22 +1169,16 @@ function clean_duplicate_links ($relations) {
 				($rel_aa['id_child_source_data'] == $rel_am['rel']['id_parent_source_data'])) || 
 				(($rel_aa['id_child_source_data'] == $rel_am['parent']['id_parent_source_data']) && 
 					($rel_aa['id_parent_source_data'] == $rel_am['rel']['id_parent_source_data']))) {
-						
-				$have_l3 = true;
 				
 				if (enterprise_installed()) {
 					delete_link($final_links2['aa'][$key]);
 				}
+				unset($final_links2['aa'][$key]);
 			}
 		}
-		if (!$have_l3) {
-			$final_links3['aa'][$index] = $l3_link;
-			$index++;
-		}
-		unset($final_links2['aa'][$key]);
-		
-		$have_l3 = false;
 	}
+	
+	$final_links3['aa'] = $final_links2['aa'];
 	$final_links3['mm'] = $final_links2['mm'];
 	$final_links3['am'] = $final_links2['am'];
 	

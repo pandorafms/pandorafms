@@ -671,21 +671,7 @@ else {
 		io_safe_output($networkmap['name'])), "images/bricks.png",
 		false, "network_map_enterprise", false, $buttons);
 	
-	$numNodes = (int)db_get_num_rows('
-		SELECT *
-		FROM titem
-		WHERE id_map = ' . $id . ';');
-	
-	if ($numNodes == 0) {
-		$nodes_and_relations = networkmap_process_networkmap($id);
-		show_networkmap($id, $user_readonly, $nodes_and_relations);
-	}
-	else if (enterprise_installed()) {
-		show_networkmap($id, $user_readonly);
-	}
-	else {
-		ui_print_error_message(__('The open version can`t be registered nodes'));
-		return;
-	}
+	$nodes_and_relations = networkmap_process_networkmap($id);
+	show_networkmap($id, $user_readonly, $nodes_and_relations);
 }
 ?>

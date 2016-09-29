@@ -2256,6 +2256,7 @@ function draw_elements_graph() {
 	link = link.data(force.links(), function(d) {
 		return d.source.id + "-" + d.target.id;
 	});
+	
 	link_temp = link.enter()
 		.append("g");
 	link.exit().remove();
@@ -2270,7 +2271,6 @@ function draw_elements_graph() {
 				(d.target.state == 'holding_area')) {
 				
 				holding_area_text = " holding_area_link ";
-				
 			}
 			
 			return "link " +
@@ -2428,7 +2428,7 @@ function draw_elements_graph() {
 			.on("dblclick", show_details_agent)
 			.on("contextmenu", function(d) { show_menu("node", d);});
 	
-	//Shape square
+	//Shape rhombus
 	node_temp.filter(function(d) {
 			if (d.shape == 'rhombus') {return true;}
 			else return false;

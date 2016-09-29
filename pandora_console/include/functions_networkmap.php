@@ -457,6 +457,16 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 		}
 	}
 	
+	// Create a central node if orphan nodes exist
+	if (count ($orphans) || empty ($nodes)) {
+		$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple, $stats);
+	}
+	
+	// Define edges for orphan nodes
+	foreach (array_keys($orphans) as $node) {
+		$graph .= networkmap_create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
+	}
+	
 	// Create void statistics array
 	$stats = array();
 	
@@ -475,16 +485,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 			$node);
 		
 		$group_nodes--;
-	}
-	
-	// Create a central node if orphan nodes exist
-	if (count ($orphans) || empty ($nodes)) {
-		$graph .= networkmap_create_pandora_node ($pandora_name, $font_size, $simple, $stats);
-	}
-	
-	// Define edges for orphan nodes
-	foreach (array_keys($orphans) as $node) {
-		$graph .= networkmap_create_edge ('0', $node, $layout, $nooverlap, $pure, $zoom, $ranksep, $simple, $regen, $font_size, $group, 'operation/agentes/networkmap', 'topology', $id_networkmap);
 	}
 	
 	// Create nodes

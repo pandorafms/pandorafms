@@ -2015,10 +2015,13 @@ function events_page_details ($event, $server = "") {
 		$data = array();
 		$data[0] = '<div style="font-weight:normal; margin-left: 20px;">'.__('Name').'</div>';
 		if (can_user_access_node ()) {
-			$data[1] = ui_print_agent_name ($event["id_agente"], true, 'agent_medium', '', false, $serverstring, $hashstring, $agent['nombre']);
+			//$data[1] = ui_print_agent_name ($event["id_agente"], true, 'agent_medium', '', false, $serverstring, $hashstring, $agent['nombre']);
+            $alias = db_get_row ("tagente","id_agente",$event["id_agente"]);
+            $data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $event["id_agente"] . '" title='.$alias['nombre']. '>';
+            $data[1] .= '<b>' . $alias['alias'] . '</a></b>';
 		}
 		else {
-			$data[1] = ui_print_truncate_text($agent['nombre'], 'agent_medium', true, true, true);
+			$data[1] = ui_print_truncate_text($agent['alias'], 'agent_medium', true, true, true);
 		}
 		$table_details->data[] = $data;
 		

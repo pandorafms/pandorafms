@@ -2048,6 +2048,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 	
 	
 	foreach ($layout_datas as $layout_data) {
+		//change agent name by alias
+		if(!empty($layout_data['label'])){
+			$alias = db_get_value ("alias","tagente","id_agente",$layout_data['id_agent']);
+			$aux = explode('-',$layout_data['label']);
+			$layout_data['label'] = '<p>'. $alias .' -' . $aux[1];
+		}
 		//Check the items are from disabled or pending delete modules
 		if ($layout_data['id_agente_modulo'] != 0 &&
 			(($layout_data['type'] != LABEL)

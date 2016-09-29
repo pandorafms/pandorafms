@@ -2935,7 +2935,9 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "", $meta = 
 					$name = mb_substr (io_safe_output($row['agent_name']), 0, 14)." (".$row["count"].")";
 				}
 				else {
-					$name = mb_substr (agents_get_name ($row["id_agente"], "lower"), 0, 14)." (".$row["count"].")";
+					$alias = db_get_value ("alias","tagente","id_agente",$row["id_agente"]);
+					//$name = mb_substr (agents_get_name ($row["id_agente"], "lower"), 0, 14)." (".$row["count"].")";
+					$name = mb_substr ($alias, 0, 14)." (".$row["count"].")";
 				}
 				$data[$name] = $row["count"];
 			}

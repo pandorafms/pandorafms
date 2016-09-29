@@ -87,6 +87,12 @@ echo "<div id='background_grid'
 
 //Print the layout datas from the DB.
 foreach ($layoutDatas as $layoutData) {
+	//change agent name by alias
+	if(!empty($layoutData['label'])){
+		$alias = db_get_value ("alias","tagente","id_agente",$layoutData['id_agent']);
+		$aux = explode('-',$layoutData['label']);
+		$layoutData['label'] = '<p>'. $alias .' -' . $aux[1];
+	}
 	
 	$layoutData['status_calculated'] = 
 		visual_map_get_status_element($layoutData);

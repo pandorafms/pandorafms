@@ -174,7 +174,7 @@ class Network_components(PandoraWebDriverTestCase):
 		"""
 
 		driver = self.driver
-		
+	
 		agent_name = gen_random_string(6)
 		plugin_component_name = gen_random_string(6)
 
@@ -207,14 +207,15 @@ class Network_components(PandoraWebDriverTestCase):
 		time.sleep(3)
 		
 		Select(driver.find_element_by_id("network_component")).select_by_visible_text(plugin_component_name)
-		
+			
+		self.assertEqual("80" in driver.page_source,True)
+	
 		driver.find_element_by_id("submit-crtbutton").click()
 		
-		search_module (driver,agent_name,plugin_component_name,go_to_module=True)
+		search_module (driver,agent_name,plugin_component_name)
 		
-		self.assertEqual("127.0.0.1" in driver.page_source,True)
+		self.assertEqual(plugin_component_name in driver.page_source,True)
 
-		self.assertEqual("80" in driver.page_source,True)
 
 if __name__ == "__main__":
 	unittest2.main()

@@ -78,9 +78,10 @@ def create_network_component(driver,name,type_component,group,module_group,min_w
 
 	driver.find_element_by_id("submit-crt").click()
 
-def create_plugin_component(driver,name,type_component,group,module_group,min_warning=None,max_warning=None,min_critical=None,max_critical=None,str_warning=None,str_critical=None,description=None):
+def create_plugin_component(driver,name,type_component,group,module_group,min_warning=None,max_warning=None,min_critical=None,max_critical=None,str_warning=None,str_critical=None,description=None,plugin=None,target_ip=None,port=None):
 
 	# type_component is for example -> Generic boolean or Generic numeric incremental (absolute)
+	#Variable plugin is for example -> SMTP Check or UDP port check
 
 	click_menu_element(driver,"Network components")
 	
@@ -143,6 +144,19 @@ def create_plugin_component(driver,name,type_component,group,module_group,min_wa
 		driver.find_element_by_id("textarea_description").click()
 		driver.find_element_by_id("textarea_description").clear()
 		driver.find_element_by_id("textarea_description").send_keys(description)
+
+	
+	if plugin != None: 
+		
+		driver.find_element_by_xpath('//option[contains(.,"'+plugin+'")]').click()
+
+		if plugin == "UDP port check":
+			
+			driver.find_element_by_id("text-_field1_").clear()
+			driver.find_element_by_id("text-_field1_").send_keys(target_ip)
+	
+			driver.find_element_by_id("text-_field2_").clear()
+			driver.find_element_by_id("text-_field2_").send_keys(port)
 
 	driver.find_element_by_id("submit-crt").click()	
 

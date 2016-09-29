@@ -23,7 +23,7 @@ class Network_components(PandoraWebDriverTestCase):
 	test_description = u'Network components test'
 	tickets_associated = []
 
-	def atest_A_create_network_component(self):
+	def test_A_create_network_component(self):
 
 		u"""
 		Create and search new network component module
@@ -73,17 +73,13 @@ class Network_components(PandoraWebDriverTestCase):
 		self.assertEqual(network_component_name in driver.page_source,True)
 
 
-	def atest_B_create_plugin_component(self):
+	def test_B_create_plugin_component(self):
 
 		u"""
 		Create and search new plug-in component
 		"""
 
 		driver = self.driver
-		
-		self.login()
-
-		detect_and_pass_all_wizards(driver)
 		
 		agent_name = gen_random_string(6)
 		plugin_component_name = gen_random_string(6)
@@ -132,9 +128,6 @@ class Network_components(PandoraWebDriverTestCase):
 
 		driver = self.driver
 
-		self.login()
-		detect_and_pass_all_wizards(driver)
-
 		agent_name = gen_random_string(6)
 		plugin_component_name = gen_random_string(6)
 
@@ -173,6 +166,55 @@ class Network_components(PandoraWebDriverTestCase):
 		search_module (driver,agent_name,plugin_component_name,go_to_module=False)
 		
 		self.assertEqual(plugin_component_name in driver.page_source,True)
+	
+	def test_D_plugin_component_with_parameters(self):
+	
+		u"""
+		Create and search new plug-in component with parameters
+		"""
+
+		driver = self.driver
+		
+		agent_name = gen_random_string(6)
+		plugin_component_name = gen_random_string(6)
+
+		activate_api(driver,"1234")
+
+		params = [agent_name,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
+		create_agent_api(driver,params,user="admin",pwd="pandora")
+
+		lista = driver.current_url.split('/')
+		
+		url = lista[0]+'//'+lista[2]+'/pandora_console'
+		
+		driver.get(url)
+		
+		create_plugin_component(driver,plugin_component_name,"Generic numeric","Network Management","Application",description="New plugin component",plugin="UDP port check",target_ip="127.0.0.1",port="80")
+		
+		search_agent(driver,agent_name,go_to_agent=True)
+
+		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Manage"]').click()
+		driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Modules"]').click()
+
+		Select(driver.find_element_by_id("moduletype")).select_by_visible_text("Create a new plug-in server module")
+					
+		driver.find_element_by_xpath('//*[@id="main"]/form/table/tbody/tr/td[5]/input').click()
+
+		driver.find_element_by_xpath('//a[contains(.,"Advanced options")]').click()
+
+		Select(driver.find_element_by_id("network_component_group")).select_by_visible_text("Network Management")
+
+		time.sleep(3)
+		
+		Select(driver.find_element_by_id("network_component")).select_by_visible_text(plugin_component_name)
+		
+		driver.find_element_by_id("submit-crtbutton").click()
+		
+		search_module (driver,agent_name,plugin_component_name,go_to_module=True)
+		
+		self.assertEqual("127.0.0.1" in driver.page_source,True)
+
+		self.assertEqual("80" in driver.page_source,True)
 
 if __name__ == "__main__":
 	unittest2.main()

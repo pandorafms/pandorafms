@@ -420,7 +420,7 @@ class Modules {
 					continue;
 				
 				$temp_modules = db_get_all_rows_sql($sql_select . $sql . $sql_limit);
-				html_debug($temp_modules, true);
+				
 				foreach ($temp_modules as $result_element_key => $result_element_value) {
 					array_push($modules_db, $result_element_value);
 				}

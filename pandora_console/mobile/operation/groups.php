@@ -183,35 +183,25 @@ class Groups {
 	private function getListGroups() {
 		$return = array();
 		
+		$system = System::getInstance();
 		$user = User::getInstance();
 		
-		// Get group list that user has access
-		$groups_full = users_get_groups($user->getIdUser(), "AR", true, true);
-		$groups = array();
-		foreach ($groups_full as $group) {
-			$groups[$group['id_grupo']]['name'] = $group['nombre'];
-			
-			if ($group['id_grupo'] != 0) {
-				$groups[$group['parent']]['childs'][] = $group['id_grupo'];
-				$groups[$group['id_grupo']]['prefix'] = $groups[$group['parent']]['prefix'].'&nbsp;&nbsp;&nbsp;';
-			}
-			else {
-				$groups[$group['id_grupo']]['prefix'] = '';
-			}
-			
-			if (!isset($groups[$group['id_grupo']]['childs'])) {
-				$groups[$group['id_grupo']]['childs'] = array();
-			}
+		$all_data = groupview_status_modules_agents ($system->getConfig('id_user'), false, 'AR', false);
+		$result_groups = groupview_get_groups_list($system->getConfig('id_user'), false, 'AR', true, true);
+		
+		foreach ($all_data as $group_all_data) {
+			$result_groups[0]['_total_agents_'] += $group_all_data["_total_agents_"];
+			$result_groups[0]['_monitors_ok_'] += $group_all_data["_monitors_ok_"];
+			$result_groups[0]['_monitors_warning_'] += $group_all_data["_monitors_warning_"];
+			$result_groups[0]['_monitors_critical_'] += $group_all_data["_monitors_critical_"];
+			$result_groups[0]['_monitors_unknown_'] += $group_all_data["_monitors_unknown_"];
+			$result_groups[0]['_monitors_not_init_'] += $group_all_data["_monitors_not_init_"];
+			$result_groups[0]['_agents_unknown_'] += $group_all_data["_agents_unknown_"];
+			$result_groups[0]['_agents_not_init_'] += $group_all_data["_agents_not_init_"];
+			$result_groups[0]['_agents_critical_'] += $group_all_data["_agents_critical_"];
+			$result_groups[0]['_monitors_alerts_fired_'] += $group_all_data["_monitors_alerts_fired_"];
 		}
 		
-		// For each valid group for this user, take data from agent and modules
-		foreach ($groups as $id_group => $group) {
-			$rows = groups_get_group_row_data($id_group, $groups, $group, $printed_groups);
-			
-			if (!empty($rows))
-				$return = array_merge($return, $rows);
-		}
-		
-		return $return;
+		return $result_groups;
 	}
 }

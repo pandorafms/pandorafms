@@ -18,7 +18,7 @@ if (function_exists ('mb_internal_encoding')) {
 	mb_internal_encoding ("UTF-8");
 }
 
-$develop_bypass = 1;
+$develop_bypass = 0;
 
 require_once("include/ui.class.php");
 require_once("include/system.class.php");

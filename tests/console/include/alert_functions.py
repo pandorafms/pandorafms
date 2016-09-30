@@ -106,3 +106,74 @@ def create_new_command_to_alert(driver,command_name,command,list_field_descripti
 		
 	driver.find_element_by_id("submit-create").click()
 
+def create_new_template_to_alert(driver,template_name,group,action_name,condition_type,list_days=None,time_from=None,time_to=None,description=None,alert_recovery=False,field_list=None):
+
+	#If list_days is None, we select all days. Example list_days = ["monsday","friday"]
+	#alert_recovery is disabled by defect. Choose True for pyt in enabled status
+
+
+	click_menu_element(driver,"Templates")	
+	driver.find_element_by_id("submit-create").click()
+
+	time.sleep(3)
+
+	driver.find_element_by_id("text-name").clear()
+	driver.find_element_by_xpath('text-name').send_keys(template_name)
+
+	driver.find_element_by_xpath('//option[contains(.,"'+group+'")]').click()
+
+	if description != None:
+		driver.find_element_by_id("textarea_description").clear()
+		driver.find_element_by_xpath('textarea_description').send_keys(description)
+
+	
+	driver.find_element_by_id("submit-next").click()
+
+	time.sleep(3)
+	
+	if list_days != None:
+
+		driver.find_element_by_id("checkbox-monday").click()
+		driver.find_element_by_id("checkbox-tuesday").click()
+		driver.find_element_by_id("checkbox-wednesday").click()
+		driver.find_element_by_id("checkbox-thursday").click()
+		driver.find_element_by_id("checkbox-friday").click()
+		driver.find_element_by_id("checkbox-saturday").click()
+		driver.find_element_by_id("checkbox-sunday").click()
+	
+		for day in list_days:
+	
+			driver.find_element_by_id("checkbox-"+day).click()
+
+	if time_from != None:
+		
+		driver.find_element_by_id("text-time_from").clear()
+		driver.find_element_by_id("text-time_from").send_keys(time_from)
+
+	if time_to != None:
+		
+		driver.find_element_by_id("text-time_to").clear()		
+		driver.find_element_by_id("text-time_to").send_keys(time_to)
+
+	driver.find_element_by_xpath('//option[contains(.,"'+action_name+'")]').click()
+
+	driver.find_element_by_xpath('//option[contains(.,"'+condition_type+'")]').click()
+
+	driver.find_element_by_id("submit-next").click()
+
+	time.sleep(3)
+
+	if alert_recovery == True:
+
+		driver.find_element_by_xpath('//option[contains(.,"Enabled")]').click()
+
+	if field_list != None:
+		
+		i=1
+		for field in field_list:
+			
+			driver.find_element_by_id("textarea_field"+str(i)).clear()
+			driver.find_element_by_id("textarea_field"+str(i)).send_keys(field)
+			i=i+1
+	
+	driver.find_element_by_id("submit-finish").click()

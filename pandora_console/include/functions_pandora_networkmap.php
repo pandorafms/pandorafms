@@ -228,7 +228,7 @@ function networkmap_process_networkmap($id = 0) {
 		
 		if (enterprise_installed()) {
 			enterprise_include_once("include/functions_pandora_networkmap.php");
-			$center = save_generate_nodes($id, $nodes_and_relations);
+			$center = save_generate_nodes($id, &$nodes_and_relations);
 		}
 		
 		$networkmap['center_x'] = $center['x'];
@@ -278,7 +278,15 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 	
 	$item = array();
 	$item['id'] = $count;
-	$item['id_db'] = (int)$node['id'];
+	
+	if (enterprise_installed()) {
+		enterprise_include_once('include/functions_pandora_networkmap.php');
+		$item['id_db'] = $node['id_in_db'];
+	}
+	else {
+		$item['id_db'] = (int)$node['id'];
+	}
+	
 	if ((int)$node['type'] == 0) {
 		$item['type'] = 0;
 		$item['id_agent'] = (int)$node['source_data'];

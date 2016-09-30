@@ -22,7 +22,7 @@ class Planned_downtime(PandoraWebDriverTestCase):
 	test_description = u'Planed downtime test'
 	tickets_associated = []
 
-	def test_A_create_planned_downtime_Quiet(self):
+	def atest_A_create_planned_downtime_Quiet(self):
 
 		u"""
 		Create and search planned downtime quiet
@@ -42,7 +42,7 @@ class Planned_downtime(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//img[@data-title="Running"]')
                 self.assertIsInstance(element,WebElement)
 	
-	def test_B_create_planned_downtime_disabled_agents(self):
+	def atest_B_create_planned_downtime_disabled_agents(self):
 		
                 u"""
                 Create and search planned downtime disabled agents
@@ -60,7 +60,7 @@ class Planned_downtime(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//img[@data-title="Running"]')
                 self.assertIsInstance(element,WebElement)
 	   
-	def test_C_create_planned_downtime_disabled_only_alerts(self):
+	def atest_C_create_planned_downtime_disabled_only_alerts(self):
 		
 		u"""
 		Create and search planned downtime disabled only alerts
@@ -78,7 +78,7 @@ class Planned_downtime(PandoraWebDriverTestCase):
  		element = driver.find_element_by_xpath('//img[@data-title="Running"]')
                 self.assertIsInstance(element,WebElement)
 
-        def test_D_delete_planned_downtime(self):
+        def atest_D_delete_planned_downtime(self):
 
 	
 		driver=self.driver
@@ -89,7 +89,7 @@ class Planned_downtime(PandoraWebDriverTestCase):
 
 		delete_planned_downtime(driver,planned_name)
 
-	def test_E_quiet_functionality(self):
+	def atest_E_quiet_functionality(self):
 
 		driver=self.driver
 		

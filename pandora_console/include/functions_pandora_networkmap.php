@@ -566,8 +566,6 @@ function networkmap_write_js_array($id, $nodes_and_relations = array()) {
 	echo "\n";
 	echo "var url_background_grid = '" . ui_get_full_url(
 		'images/background_grid.png') . "'\n";
-	echo "var url_popup_pandora = '" . ui_get_full_url(
-		'operation/agentes/pandora_networkmap.popup.php') . "'\n";
 	echo "var networkmap_id = " . $id . ";\n";
 	echo "var networkmap_refresh_time = 1000 * " .
 		$networkmap['source_period'] . ";\n";
@@ -1304,7 +1302,6 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 			refesh_period: networkmap_refresh_time,
 			graph: networkmap,
 			networkmap_center: networkmap_center,
-			url_popup: url_popup_pandora,
 			networkmap_dimensions: networkmap_dimensions,
 			enterprise_installed: enterprise_installed,
 			holding_area_dimensions: networkmap_holding_area_dimensions,
@@ -1338,6 +1335,23 @@ if (empty($list_networkmaps))
 	<div style="text-align: left; width: 100%;">
 	<?php
 	
+	$table = null;
+	$table->id = 'node_details';
+	$table->width = "100%";
+	
+	$table->data = array();
+	$table->data[0][0] = __('Agent');
+	$table->data[0][1] = "";
+	$table->data[1][0] = __('Adresses');
+	$table->data[1][1] = "";
+	$table->data[2][0] = __('OS type');
+	$table->data[2][1] = "";
+	$table->data[3][0] = __('Group');
+	$table->data[3][1] = "";
+	
+	ui_toggle(html_print_table($table, true), __('Node Details'),
+		__('Node Details'), false);
+		
 	$table = null;
 	$table->id = 'node_options';
 	$table->width = "100%";
@@ -1376,40 +1390,36 @@ if (empty($list_networkmaps))
 	
 	$table->head = array();
 	$table->head['node_source'] = __('Node source');
-	if ($networkmap['options']['l2_network_interfaces']) {
-		$table->head['interface_source'] = __('Interface source');
-		$table->head['interface_target'] = __('Interface Target');
-	}
+	$table->head['interface_source'] = __('Interface source');
+	$table->head['interface_target'] = __('Interface Target');
+	
 	$table->head['node_target'] = __('Node target');
 	$table->head['edit'] = '<span title="' . __('Edit') . '">' . __('E.') . '</span>';
 	
 	$table->data = array();
 	$table->rowstyle['template_row'] = 'display: none;';
 	$table->data['template_row']['node_source'] = '';
-	if ($networkmap['options']['l2_network_interfaces']) {
-		$table->data['template_row']['interface_source'] = 
-			html_print_select(array(), 'interface_source', '', '',
-				__('None'), 0, true);
-		$table->data['template_row']['interface_target'] =
-			html_print_select(array(), 'interface_target', '', '',
-				__('None'), 0, true);
-	}
+	$table->data['template_row']['interface_source'] = 
+		html_print_select(array(), 'interface_source', '', '',
+			__('None'), 0, true);
+	$table->data['template_row']['interface_target'] =
+		html_print_select(array(), 'interface_target', '', '',
+			__('None'), 0, true);
+
 	$table->data['template_row']['node_target'] = '';
 	$table->data['template_row']['edit'] = "";
 	
 	$table->data['template_row']['edit'] = '';
 	
-	if ($networkmap['options']['l2_network_interfaces']) {
-		$table->data['template_row']['edit'] .=
-			'<span class="edit_icon_correct" style="display: none;">' . 
-				html_print_image('images/dot_green.png', true) . '</span>' .
-			'<span class="edit_icon_fail" style="display: none;">' . 
-				html_print_image('images/dot_red.png', true) . '</span>' .
-			'<span class="edit_icon_progress" style="display: none;">' . 
-				html_print_image('images/spinner.gif', true) . '</span>' .
-			'<span class="edit_icon"><a class="edit_icon_link" title="' . __('Update') . '" href="#">' .
-			html_print_image('images/config.png', true) . '</a></span>';
-	}
+	$table->data['template_row']['edit'] .=
+		'<span class="edit_icon_correct" style="display: none;">' . 
+			html_print_image('images/dot_green.png', true) . '</span>' .
+		'<span class="edit_icon_fail" style="display: none;">' . 
+			html_print_image('images/dot_red.png', true) . '</span>' .
+		'<span class="edit_icon_progress" style="display: none;">' . 
+			html_print_image('images/spinner.gif', true) . '</span>' .
+		'<span class="edit_icon"><a class="edit_icon_link" title="' . __('Update') . '" href="#">' .
+		html_print_image('images/config.png', true) . '</a></span>';
 	
 	$table->data['template_row']['edit'] .=
 		'<a class="delete_icon" href="#">' .
@@ -1426,7 +1436,7 @@ if (empty($list_networkmaps))
 	
 	
 	ui_toggle(html_print_table($table, true), __('Relations'),
-		__('Relations'), false);
+		__('Relations'), true);
 	?>
 	</div>
 </div>

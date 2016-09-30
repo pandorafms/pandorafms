@@ -245,7 +245,6 @@ function change_shape(id_db_node) {
 									.on("mouseover", over_node)
 									.on("mouseout", over_node)
 									.on("click", selected_node)
-									.on("dblclick", show_details_agent)
 									.on("contextmenu", function(d) { show_menu("node", d);});
 								
 							}
@@ -262,7 +261,6 @@ function change_shape(id_db_node) {
 										.on("mouseover", over_node)
 										.on("mouseout", over_node)
 										.on("click", selected_node)
-										.on("dblclick", show_details_agent)
 										.on("contextmenu", function(d) { show_menu("node", d);});
 								
 							}
@@ -281,7 +279,6 @@ function change_shape(id_db_node) {
 										.on("mouseover", over_node)
 										.on("mouseout", over_node)
 										.on("click", selected_node)
-										.on("dblclick", show_details_agent)
 										.on("contextmenu", function(d) { show_menu("node", d);});
 								
 							}
@@ -510,6 +507,27 @@ function edit_node(data) {
 			$("#node_options-fictional_node_update_button-1 input")
 				.attr("onclick", "update_fictional_node(" + data.id_db + ");");
 			
+			$("#node_details-0-1").html(data["text"]);
+			var params = [];
+			params.push("get_agent_info=1");
+			params.push("id_agent=" + data["id_agent"]);
+			params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+			jQuery.ajax ({
+				data: params.join ("&"),
+				dataType: 'json',
+				type: 'POST',
+				url: action="ajax.php",
+				async: false,
+				success: function (data) {
+					var adressess = "";
+					for (adress in data['adressess']) {
+						adressess += adress + "<br>";
+					}
+					$("#node_details-1-1").html(adressess);
+					$("#node_details-2-1").html(data["os"]);
+					$("#node_details-3-1").html(data["group"]);
+				}
+			});
 			
 			$("#dialog_node_edit" )
 				.dialog( "option", "title",
@@ -807,31 +825,6 @@ function add_agent_node(agents) {
 		
 		graph.nodes.push(temp_node);
 	}
-}
-
-function show_details_agent(d) {
-	if (d.map_id != 0) {
-		url = "index.php?" +
-			"sec=network&" +
-			"sec2=operation/agentes/pandora_networkmap&" +
-			"tab=view&" +
-			"id_networkmap=" + d.map_id;
-		
-		window.location.href = url;
-	}
-	if (d.id_agent == -2) {
-		//Fictional node without link
-	}
-	else {
-		url = url_popup;
-		url = url + "?refresh_state=" + refresh_period;
-		url = url + "&id=" + d.id_db;
-		url = url + "&id_agent=" + d.id_agent;
-		
-		popup = window.open(url, 'Details' + d.text, 'width=800,height=600');
-	}
-	
-	return false;
 }
 
 function toggle_minimap() {
@@ -1251,15 +1244,8 @@ function show_menu(item, data) {
 			
 			var items_list = {};
 			items_list["details"] = {
-					name: show_details_menu,
-					icon: "details",
-					"callback": function(key, options) {
-						show_details_agent(data);
-					}
-				};
-			items_list["edit"] = {
 					name: edit_menu,
-					icon: "edit",
+					icon: "details",
 					disabled : function() {
 						if (enterprise_installed) {
 							return false;
@@ -1877,7 +1863,6 @@ function init_graph(parameter_object) {
 	window.selection_rectangle = [0, 0, 0, 0];
 	window.flag_drag_running = false;
 	window.in_a_node = false;
-	window.url_popup = "";
 	window.enterprise_installed = false;
 	window.flag_setting_relationship_running = false;
 	
@@ -1910,11 +1895,6 @@ function init_graph(parameter_object) {
 	
 	translation[0] = translation[0] * scale;
 	translation[1] = translation[1] * scale;
-	
-	window.url_popup = '';
-	if (typeof(parameter_object.url_popup) != "undefined") {
-		window.url_popup = parameter_object.url_popup;
-	}
 	
 	window.enterprise_installed = '';
 	if (typeof(parameter_object.enterprise_installed) != "undefined") {
@@ -2405,7 +2385,6 @@ function draw_elements_graph() {
 			.on("mouseover", over_node)
 			.on("mouseout", over_node)
 			.on("click", selected_node)
-			.on("dblclick", show_details_agent)
 			.on("contextmenu", function(d) { show_menu("node", d);});
 	
 	//Shape square
@@ -2424,7 +2403,6 @@ function draw_elements_graph() {
 			.on("mouseover", over_node)
 			.on("mouseout", over_node)
 			.on("click", selected_node)
-			.on("dblclick", show_details_agent)
 			.on("contextmenu", function(d) { show_menu("node", d);});
 	
 	//Shape rhombus
@@ -2445,7 +2423,6 @@ function draw_elements_graph() {
 			.on("mouseover", over_node)
 			.on("mouseout", over_node)
 			.on("click", selected_node)
-			.on("dblclick", show_details_agent)
 			.on("contextmenu", function(d) { show_menu("node", d);});
 	
 	node_temp.append("title")
@@ -2473,7 +2450,6 @@ function draw_elements_graph() {
 		.on("mouseover", over_node)
 		.on("mouseout", over_node)
 		.on("click", selected_node)
-		.on("dblclick", show_details_agent)
 		.on("contextmenu", function(d) { show_menu("node", d);});
 		
 	node_temp.append("text")
@@ -2494,7 +2470,6 @@ function draw_elements_graph() {
 		.on("mouseover", over_node)
 		.on("mouseout", over_node)
 		.on("click", selected_node)
-		.on("dblclick", show_details_agent)
 		.on("contextmenu", function(d) { show_menu("node", d);});
 		
 	node.exit().remove();

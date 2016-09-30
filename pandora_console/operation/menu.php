@@ -119,13 +119,6 @@ if (check_acl ($config['id_user'], 0, "MR") || check_acl ($config['id_user'], 0,
 	$sub["operation/agentes/pandora_networkmap"]["refr"] = 0;
 	
 	enterprise_hook ('transmap_console');
-	
-	$sub["operation/maps/networkmap_list"]["text"] = __('(Temp) Network map');
-	$sub["operation/maps/networkmap_list"]["id"] = '(Temp) Network map';
-	$sub["operation/maps/networkmap_list"]["refr"] = 0;
-	$sub["operation/maps/networkmap_list"]["pages"] = array(
-		"operation/maps/networkmap"
-		);
 }
 
 enterprise_hook ('services_menu');

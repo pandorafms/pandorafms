@@ -1491,7 +1491,7 @@ function refresh_holding_area() {
 						temp_node['z'] = 0;
 						temp_node['fixed'] = true;
 						temp_node['state'] = node['state'];
-						temp_node['type'] = 'agent';
+						temp_node['type'] = 0;
 						temp_node['color'] = node['color'];
 						temp_node['shape'] = node['shape'];
 						temp_node['text'] = node['text'];
@@ -1533,7 +1533,6 @@ function refresh_holding_area() {
 								temp_link['source'] = graph.nodes[j];
 							}
 						});
-						
 						
 						graph.links.push(temp_link);
 					});

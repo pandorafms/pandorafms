@@ -301,6 +301,8 @@ function networkmap_db_node_to_js_node($node, &$count, &$count_item_holding_area
 	$item['fixed'] = true;
 	$item['x'] = (int)$node['x'];
 	$item['y'] = (int)$node['y'];
+	$item['px'] = (int)$node['x'];
+	$item['py'] = (int)$node['y'];
 	$item['z'] = (int)$node['z'];
 	$item['state'] = $node['state'];
 	if ($item['state'] == 'holding_area') {
@@ -444,6 +446,11 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 			$id_source_module = $relation['id_child_source_data'];
 		}
 		else if (($relation['parent_type'] == 1) && ($relation['child_type'] == 0)) {
+			$id_target_module = $relation['id_parent_source_data'];
+			$id_source_agent = $relation['id_child_source_data'];
+		}
+		else if (($relation['parent_type'] == 0) && ($relation['child_type'] == 1)) {
+			html_debug($relation, true);
 			$id_target_agent = $relation['id_parent_source_data'];
 			$id_source_module = $relation['id_child_source_data'];
 		}

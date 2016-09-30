@@ -70,30 +70,39 @@ def create_new_action_to_alert(driver,action_name,action_group,command,threshold
 	driver.find_element_by_id("submit-create").click()
 
 
-def create_new_command_to_alert(driver,command_name,command,list_field_description,list_field_values,description=None):
+def create_new_command_to_alert(driver,command_name,command,list_field_description=None,list_field_values=None,description=None):
 
 	click_menu_element(driver,"Commands")
 	driver.find_element_by_id("submit-create").click()
-	
-	driver.find_element_by_id("text-name").clear()
-	Select(driver.find_element_by_id("text-name")).send_keys(command_name)
+
+	time.sleep(3)
+
+	driver.find_element_by_id("text-name").clear()	
+	driver.find_element_by_xpath('//*[@id="text-name"]').send_keys(command_name)
 	
 	driver.find_element_by_id("textarea_command").clear()
-	Select(driver.find_element_by_id("textarea_command")).send_keys(command)
+	driver.find_element_by_id("textarea_command").send_keys(command)
 	
 	if description != None:
 		
 		driver.find_element_by_id("textarea_description").clear()
-		Select(driver.find_element_by_id("textarea_description")).send_keys(description)	
-	i=1
-	for field_description in list_field_description:
-		driver.find_element_by_id("text-field"+i+"_description").clear()
-		Select(driver.find_element_by_id("text-field"+i+"_description")).send_keys(field_description)
+		driver.find_element_by_id("textarea_description").send_keys(description)	
+
+	if list_field_description != None:
+
+		i=1
+		for field_description in list_field_description:
+			driver.find_element_by_id("text-field"+str(i)+"_description").clear()
+			driver.find_element_by_id("text-field"+str(i)+"_description").send_keys(field_description)
+			i=i+1
 	
-	i=1
-	for field_value in list_field_values:
-		driver.find_element_by_id("text-field"+i+"_description").clear()
-		Select(driver.find_element_by_id("text-field"+i+"_description")).send_keys(field_value)
+	if list_field_values != None:
+
+		i=1
+		for field_value in list_field_values:
+			driver.find_element_by_id("text-field"+str(i)+"_values").clear()
+			driver.find_element_by_id("text-field"+str(i)+"_values").send_keys(field_value)
+			i=i+1
 		
 	driver.find_element_by_id("submit-create").click()
 

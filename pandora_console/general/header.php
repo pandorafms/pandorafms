@@ -188,7 +188,7 @@ config_check();
 					$_GET['refr'] = null;
 				}
 				
-				if (array_search($_GET['sec2'], $config['autorefresh_white_list']) !== false) {
+				if ($config['autorefresh_white_list'] !== null && array_search($_GET['sec2'], $config['autorefresh_white_list']) !== false) {
 					$autorefresh_img = html_print_image("images/header_refresh.png", true, array("class" => 'bot', "alt" => 'lightning', 'title' => __('Configure autorefresh')));
 					
 					if ($_GET['refr']) {

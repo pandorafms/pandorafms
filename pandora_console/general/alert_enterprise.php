@@ -84,13 +84,13 @@ switch ($tipo) {
 
   echo 
     '<p>' .
-    	__('The Update Manager client is included on Pandora FMS. It helps system administrators update their Pandora FMS automatically, since the Update Manager retrieves new modules, new plugins and new features (even full migrations tools for future versions) automatically.') .
+    	__('The Uppdate Manager client is included on Pandora FMS. It helps system administrators update their Pandora FMS automatically, since the Update Manager retrieves new modules, new plugins and new features (even full migrations tools for future versions) automatically.') .
     '</p>' .
     '<p>' .
-    	__('<b>OpenSource version updates are automated packages generated each week. This updates comes WITHOUT ANY warranty or support. If your system goes corrupt or a feature stop working properly, you will need to recover a backup by yourself.</b>') .
+    	__('<b>OpenSource version updates are automated packages generated each week. These updates come WITHOUT ANY warranty or support. If your system is corrupted or a feature stops working properly, you will need to recover a backup by yourself.</b>') .
     '</p>' .
     '<p>' .
-    	__('Enterprise version comes with a different update system, with fully tested, proffessional supported packages, and our support team will be helping you in case of any problem happen. The Update Manager is another feature present in Enterprise version and missing in the OpenSource version. There are lots of advanced features ready for the enterprise on the Pandora FMS Enterprise Edition. For more information visit <a href="http://pandorafms.com">pandorafms.com</a>') .
+    	__('The Enterprise version comes with a different update system, with fully tested, professionally-supported packages, and our support team is there to help you in case of problems or queries. Update Manager is another feature present in the Enterprise version and not included in the OpenSource version. There are lots of advanced business-oriented features contained in Pandora FMS Enterprise Edition. For more information visit <a href="http://pandorafms.com">pandorafms.com</a>') .
     '</p>'
     ;
     	
@@ -104,30 +104,30 @@ switch ($tipo) {
     		__('Update Manager is one of the most advanced features of Pandora FMS Enterprise version, for more information visit <a href="http://pandorafms.com">http://pandorafms.com</a>.') .
     	'</p>' .
     	'<p>' .
-    		__('Update Manager sends anonymous information about Pandora FMS usage (number of agents and modules running). To disable it, remove remote server address from Update Manager plugin setup.') .
+    		__('Update Manager sends anonymous information about Pandora FMS usage (number of agents and modules running). To disable it, please remove the remote server address from the Update Manager plugin setup.') .
     	'</p>'
     ;
     }
     
       break;
     case "modulemodal":
-      echo __("La versión de la comunidad no permite definir su propia librería de módulos ni distribuirla a agentes remotos, solo le permite hacerlo de manera individual en cada agente usando herramientas externas. Tampoco puede distribuir plugins locales ni acceder a la librería de plugins Enterprise para monitorizar aplicaciones como VMWare, RHEV o Informix entre otras. Cambie a la versión Enterprise para administrar sus propios módulos de forma individual o mediante políticas.
+      echo __("The community version doesn't have the ability to define your own library of local modules, or distribute it to remote agents. You need to make those changes individually on each agent which is possible by using external tools and time and effort. Nor can it distribute local plugins, or have access to the library of enterprise plugins to monitor applications such as VMWare, RHEV or Informix between others. The Enterprise version will have all this, plus the ability to distribute and manage your own local modules on your systems, individually or through policies.
       <br><br><img style='width:105px' src='".$config['homeurl']."images/logo_oracle.png'><img style='width:105px' src='".$config['homeurl']."images/logo_citrix.png'><img style='width:105px' src='".$config['homeurl']."images/logo_sap.png'><img style='width:105px' src='".$config['homeurl']."images/logo_exchange.png'><br><br><span style='font-style:italic;'>* Todos los logotipos pertenecen a marcas registradas</span>");
       break;
     case "massivemodal":
-      echo __("You want to manage your monitoring homogeneously? Do you have many systems and is difficult to manage in a comprehensive manner? Would you like to deploy monitoring, alerts and even local plugins with a single click? Pandora FMS Enterprise Policies are exactly what you need, you'll save time, effort and dislikes. More information (link to pandorafms.com)");
+      echo __("Do you want to consolidate all your system monitoring? Do you have many systems, making it difficult to manage them in a comprehensive manner? Would you like to deploy monitoring, alerts and even local plugins with a single click? Pandora FMS Enterprise Policies are exactly what you need; you'll save time, effort and annoyances. More information <a href='pandorafms.com'>pandorafms.com</a>");
       break;
     case "eventsmodal":
-      echo __("Pandora FMS Enterprise has event correlation. Through correlation you can generate alerts and / or new events based on logical rules on your realtime events. This allows you to automate the troubleshooting. If you know the value of working with events, the correlation will take you to a new level.");
+      echo __("Pandora FMS Enterprise also features event correlation. Through correlation you can generate realtime alerts and / or new events based on logical rules. This allows you to automate troubleshooting. If you know the value of working with events, event correlation will take you to a new level.");
       break;
     case "reportingmodal":
-      echo __("The reports of the Enterprise version are more powerful: it has wizards, you can schedule sending via email in PDF, and it has a template system to create reports quickly for each of your customers. It will even allow your customers generate their own reports from templates created by you. If reports are key to your business, Pandora FMS Enterprise version can be very useful for you.");
+      echo __("Report generating on the Enterprise version is also more powerful: it has wizards, you can schedule emails in PDF to be sent according to the schedule you decide, and it has a template system to create personalized reports quickly for each of your customers. It will even allow your customers to generate their own reports from templates created by you. If reports are key to your business, Pandora FMS Enterprise version is for you.");
       break;
     case "visualmodal":  
       echo __("These options are only effective on the Enterprise version.");
       break;
     case "updatemodal":  
-        echo __("WARNING: You are just one click of an automated update. This may result on a damaged system, including loss of data and operation. Check you have a recent backup. OpenSource updates are automated created packages, and there is no WARRANTY or SUPPORT. If you need professional support and warranty, please upgrade to Enterprise Version.");
+        echo __("WARNING: You are just one click away from an automated update. This may result in a damaged system, including loss of data and operativity. Check you have a recent backup. OpenSource updates are automatically created packages, and there is no WARRANTY or SUPPORT. If you need professional support and warranty, please upgrade to Enterprise Version.");
       break;
 		case "agentsmodal":  
 	      echo __("This system is heavily loaded. OpenSource version could get a lot more agents but fine tuning requires knowledge and time. Checkout the Enterprise Version for a professional supported system.");
@@ -136,10 +136,10 @@ switch ($tipo) {
 				echo __("This system has too many modules per agent. OpenSource version could manage thousands of modules, but is not recommended to have more than 40 modules per agent. This configuration has B/A modules per agent. Checkout the Enterprise Version for a professional supported system.");
 			break;
 		case "remotemodulesmodal":
-				echo __("Too much remote modules has been detected on this system. OpenSource version could manage thousands of modules, but performance is limited on high amount of SNMP or ICMP request. Checkout the <a href='https://pandorafms.com/'>Enterprise Version</a>	 for a professional supported system with improved capacity on network monitoring, including distributed servers.");
+				echo __("Too much remote modules has been detected on this system. OpenSource version could manage thousands of modules, but performance is limited on high amount of SNMP or ICMP request. Checkout the Enterprise Version for a professional supported system with improved capacity on network monitoring, including distributed servers.");
     	break;
 		case "monitoreventsmodal":
-				echo __("Too much remote modules has been detected on this system. OpenSource version could manage thousands of modules, but performance is limited on high amount of SNMP or ICMP request. Checkout the <a href='https://pandorafms.com/'>Enterprise Version</a>	 for a professional supported system with improved capacity on network monitoring, including distributed servers.");
+				echo __("This system has too much events in the database. Checkout database purge options. Checkout the Enterprise Version for a professional supported system.");
 	  	break;
 		case "alertagentmodal":
 				echo __("You have defined a high number of alerts, this may cause you performance problems in the future. In the Enterprise version, you can use event correlation alerts to simplify the alerting system and have easier administration and increased performance.");

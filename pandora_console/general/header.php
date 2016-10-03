@@ -125,7 +125,7 @@ config_check();
 				$servers_link_open = '<a class="white" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
 				$servers_link_close = '</a>';
 				
-				$show_qr_code_header = 'display: none;';
+				$show_qr_code_header = 'display: inline;';
 				if (isset($config['show_qr_code_header']))
 					if ($config['show_qr_code_header'])
 						$show_qr_code_header = '';
@@ -134,7 +134,7 @@ config_check();
 					'<div style="' . $show_qr_code_header . '" id="qr_code_container" style="">' .
 					'<a href="javascript: show_dialog_qrcode();">' .
 					html_print_image(
-						"images/qrcode_icon.jpg",
+						"images/qrcode_icon.png",
 						true,
 						array("alt" => __('QR Code of the page'),
 							'title' => __('QR Code of the page'))) .

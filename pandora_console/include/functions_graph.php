@@ -863,10 +863,11 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	if ($only_image) {
 		$flash_chart = false;
 	}
-	
-	$water_mark = array('file' =>
-		$config['homedir'] . "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	if ($config['type_module_charts'] === 'area') {
 		if ($compare === 'separated') {

@@ -89,13 +89,28 @@ echo '<div id="login_in">';
 	
 			echo '<a href="' . $logo_link . '">';
 			if (defined ('METACONSOLE')) {
-				html_print_image ("images/custom_logo_login/".$config['custom_logo_login'], false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
-			}
+				if (!isset ($config["custom_logo"])){
+					html_print_image ("images/custom_logo_login/login_logo.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+				}
+				else{
+					html_print_image ("images/custom_logo_login/".$config['custom_logo_login'], false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+				}
+		}
 			else if (defined ('PANDORA_ENTERPRISE')) {
+				if (!isset ($config["custom_logo"])){
+					html_print_image ("images/custom_logo_login/login_logo.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+				}
+				else{
 				html_print_image ("images/custom_logo_login/".$config['custom_logo_login'], false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+				}
 			}
 			else {
+				if (!isset ($config["custom_logo"])){
+					html_print_image ("images/custom_logo_login/login_logo.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+				}
+				else{
 				html_print_image ("images/custom_logo_login/".$config['custom_logo_login'], false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+				}
 echo "<br><span style='font-size:120%;color:white;top:10px;position:relative;'>Community edition</span>";
 			}
 			echo '</a>';

@@ -240,10 +240,11 @@ div#page {
 }
 div#main {
 	width: auto;
-	margin: 0px 2% 0px 0%;
-	float: right;
+	margin: 0px 0% 0px 0%;
+	float: left;
 	position: relative;
 	min-height: 850px;
+	margin-left:60px;
 }
 div#main_help {
 	width: 100%;

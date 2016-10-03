@@ -1891,6 +1891,9 @@ function init_graph(parameter_object) {
 	window.translation = [0, 0];
 	window.scale = 0.6;
 	window.node_radius = 40;
+	if (typeof(parameter_object.node_radius) != "undefined") {
+		window.node_radius = parameter_object.node_radius;
+	}
 	window.interface_radius = 5;
 	window.disabled_drag_zoom = false;
 	window.key_multiple_selection = 17; //CTRL key
@@ -2170,19 +2173,7 @@ function init_graph(parameter_object) {
 			.attr("transform",
 				"translate(" + translation + ")scale(" + scale + ")");
 	
-	window.layer_graph.append("rect")
-		.attr("id", "background_size_networkmap")
-		.attr("width", networkmap_dimensions[0] + node_radius)
-		.attr("height", networkmap_dimensions[1] + node_radius)
-		.attr("x", rect_center_x - (networkmap_dimensions[0] / 2))
-		.attr("y", rect_center_y - (networkmap_dimensions[1] / 2))
-		.attr("style", "fill: url(#background_grid); " +
-			"stroke: #960000; " +
-			"stroke-width: 2; " +
-			"stroke-miterlimit: 4; " +
-			"stroke-opacity: 1; " +
-			"stroke-dasharray: none;")
-		.on("contextmenu", function(d) { show_menu("background", d);});
+	
 	
 	if (enterprise_installed) {
 		window.layer_graph.append("rect")
@@ -2193,14 +2184,13 @@ function init_graph(parameter_object) {
 				networkmap_dimensions[0] + node_radius - holding_area_dimensions[0])
 			.attr("y",
 				networkmap_dimensions[1] + node_radius - holding_area_dimensions[1])
-			.attr("style", "fill: #ddd; " +
+			.attr("style", "fill: #efefef; " +
 				"fill-opacity: 0.75; " +
-				"stroke: #00ff00; " +
-				"stroke-width: 4; " +
+				"stroke: #dedede; " +
+				"stroke-width: 1; " +
 				"stroke-miterlimit: 4; " +
-				"stroke-opacity: 1; " +
+				"stroke-opacity: 0.75; " +
 				"stroke-dasharray: none; " + 
-				"stroke-dasharray: 12,3; " +
 				"stroke-dashoffset: 0");
 	
 		window.layer_graph.append("text")
@@ -2219,7 +2209,7 @@ function init_graph(parameter_object) {
 					"stroke: none; " +
 					"font-family: Sans")
 				.attr("x", networkmap_dimensions[0] + node_radius - holding_area_dimensions[0])
-				.attr("y", networkmap_dimensions[1] + node_radius - holding_area_dimensions[1])
+				.attr("y", networkmap_dimensions[1] + node_radius - holding_area_dimensions[1] - 10)
 				.text(holding_area_title);
 	}
 	

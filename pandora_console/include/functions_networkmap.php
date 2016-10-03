@@ -333,6 +333,12 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	else if ($group == -666) {
 		$agents = false;
 	}
+	else if (!empty($ip_mask)) {
+		$agents = networkmap_get_new_nodes_from_ip_mask($ip_mask,
+			array ('id_grupo, nombre, id_os, id_parent, id_agente,
+				normal_count, warning_count, critical_count,
+				unknown_count, total_count, notinit_count'), $strict_user);
+	}
 	else {
 		if ($strict_user) {
 			$filter['group_by'] = 'tagente.id_agente';

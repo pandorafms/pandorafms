@@ -69,31 +69,64 @@ if ($new_networkmap || $save_networkmap) {
 		}
 		
 		$name = (string) get_parameter('name', '');
-		$generation_process = get_parameter('generation_process', 'group');
-		$width = (int) get_parameter('width', 3000);
-		$height = (int) get_parameter('height', 3000);
-		$method = (string) get_parameter('method', 'twopi');
-		$refresh_state = (int) get_parameter('refresh_state', 60);
-		$l2_network_interfaces = (int) get_parameter(
-			'l2_network_interfaces', 0);
 		
-		// --------- DEPRECATED ----------------------------------------
-		$old_mode = (int)get_parameter('old_mode', 0);
-		if ($old_mode) {
-			$l2_network_interfaces = 0;
-		}
-		// --------- END DEPRECATED ------------------------------------
+		// Default size values
+		$width = 4000;
+		$height = 4000;
+		
+		$method = (string) get_parameter('method', 'twopi');
 		
 		$recon_task_id = (int) get_parameter(
 			'recon_task_id', 0);
 		$ip_mask = get_parameter(
 			'ip_mask', '');
-		$source_data = (string)get_parameter('source_data', 'group');
+		$source = (string)get_parameter('source', 'group');
 		$dont_show_subgroups = (int)get_parameter('dont_show_subgroups', 0);
+		$node_radius = (int)get_parameter('node_radius', 40);
+		$description = get_parameter('description', '');
 		
 		$values = array();
 		$values['name'] = $name;
 		$values['id_group'] = $id_group;
+		$values['source_period'] = 60;
+		$values['width'] = $width;
+		$values['height'] = $height;
+		$values['id_user'] = $config['id_user'];
+		$values['description'] = $description;
+		
+		switch ($method) {
+			case 'twopi':
+				$values['generation_method'] = 2;
+				break;
+			case 'dot':
+				$values['generation_method'] = 1;
+				break;
+			case 'circo':
+				$values['generation_method'] = 0;
+				break;
+			case 'neato':
+				$values['generation_method'] = 3;
+				break;
+			case 'fdp':
+				$values['generation_method'] = 4;
+				break;
+			default:
+				$values['generation_method'] = 2;
+				break;
+		}
+		
+		if ($source == 'group') {
+			$values['source'] = 0;
+			$values['source_data'] = $id_group;
+		}
+		else if ($source == 'recon_task') {
+			$values['source'] = 1;
+			$values['source_data'] = $recon_task_id;
+		}
+		else if ($source == 'ip_mask') {
+			$values['source'] = 2;
+			$values['source_data'] = $ip_mask;
+		}
 		
 		if (!$networkmap_write && !$networkmap_manage) {
 			db_pandora_audit("ACL Violation",
@@ -102,26 +135,14 @@ if ($new_networkmap || $save_networkmap) {
 			return;
 		}
 		
-		$options = array();
-		$options['refresh_state'] = 60;
-		$options['width'] = $width;
-		$options['height'] = $height;
-		$options['method'] = $method;
-		$options['generation_process'] = $generation_process;
-		$options['refresh_state'] = $refresh_state;
-		$options['l2_network_interfaces'] = $l2_network_interfaces;
-		// --------- DEPRECATED ----------------------------------------
-		$options['old_mode'] = $old_mode;
-		// --------- END DEPRECATED ------------------------------------
-		$options['recon_task_id'] = $recon_task_id;
-		$options['ip_mask'] = $ip_mask;
-		$options['dont_show_subgroups'] = $dont_show_subgroups;
-		$options['source_data'] = $source_data;
-		$values['options'] = json_encode($options);
+		$filter = array();
+		$filter['dont_show_subgroups'] = $dont_show_subgroups;
+		$filter['node_radius'] = $node_radius;
+		$values['filter'] = json_encode($filter);
 		
 		$result = false;
 		if (!empty($name)) {
-			$result = db_process_sql_insert('tnetworkmap_enterprise',
+			$result = db_process_sql_insert('tmap',
 				$values);
 		}
 		
@@ -154,7 +175,6 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 	}
 	
 	// ACL for the network map
-	// $networkmap_read = check_acl ($config['id_user'], $id_group_old, "MR");
 	$networkmap_write = check_acl ($config['id_user'], $id_group_old, "MW");
 	$networkmap_manage = check_acl ($config['id_user'], $id_group_old, "MM");
 	
@@ -169,7 +189,6 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 		$id_group = (int) get_parameter('id_group', 0);
 		
 		// ACL for the new network map
-		// $networkmap_read_new = check_acl ($config['id_user'], $id_group, "MR");
 		$networkmap_write_new = check_acl ($config['id_user'], $id_group, "MW");
 		$networkmap_manage_new = check_acl ($config['id_user'], $id_group, "MM");
 		
@@ -181,43 +200,43 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 		}
 		
 		$name = (string) get_parameter('name', '');
-		$width = (int) get_parameter('width', 3000);
-		$height = (int) get_parameter('height', 3000);
 		$method = (string) get_parameter('method', 'twopi');
-		$refresh_state = (int) get_parameter('refresh_state', 60);
-		$l2_network_interfaces = (int) get_parameter(
-			'l2_network_interfaces', 0);
-		// --------- DEPRECATED ----------------------------------------
-		$old_mode = (int)get_parameter('old_mode', 0);
-		if ($old_mode) {
-			$l2_network_interfaces = 0;
-		}
-		// --------- END DEPRECATED ------------------------------------
+		
 		$recon_task_id = (int) get_parameter(
 			'recon_task_id', 0);
-		$source_data = (string)get_parameter('source_data', 'group');
+			
+		$source = (string)get_parameter('source', 'group');
+		
 		$values = array();
 		$values['name'] = $name;
 		$values['id_group'] = $id_group;
+		if ($source == 'group') {
+			$values['source'] = 0;
+			$values['source_data'] = $id_group;
+		}
+		else if ($source == 'recon_task') {
+			$values['source'] = 1;
+			$values['source_data'] = $recon_task_id;
+		}
+		else if ($source == 'ip_mask') {
+			$values['source'] = 2;
+			$values['source_data'] = $ip_mask;
+		}
+		$description = get_parameter('description', '');
+		$values['description'] = $description;
 		
-		$row = db_get_row('tnetworkmap_enterprise', 'id', $id);
-		$options = json_decode($row['options'], true);
-		$options['width'] = $width;
-		$options['height'] = $height;
-		$options['refresh_state'] = $refresh_state;
-		$options['l2_network_interfaces'] = $l2_network_interfaces;
-		// --------- DEPRECATED ----------------------------------------
-		$options['old_mode'] = $old_mode;
-		// --------- END DEPRECATED ------------------------------------
-		$options['recon_task_id'] = $recon_task_id;
-		$options['source_data'] = $source_data;
+		$dont_show_subgroups = (int)get_parameter('dont_show_subgroups', 0);
+		$node_radius = (int)get_parameter('node_radius', 40);
+		$row = db_get_row('tmap', 'id', $id);
+		$filter = json_decode($row['filter'], true);
+		$filter['dont_show_subgroups'] = $dont_show_subgroups;
+		$filter['node_radius'] = $node_radius;
 		
-		$values['options'] = json_encode($options);
-		
-		
+		$values['filter'] = json_encode($filter);
+		html_debug($values);
 		$result = false;
 		if (!empty($name)) {
-			$result = db_process_sql_update('tnetworkmap_enterprise',
+			$result = db_process_sql_update('tmap',
 				$values, array('id' => $id));
 		}
 		
@@ -226,7 +245,6 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 			true);
 		
 		if ($result) {
-			// $networkmap_read = $networkmap_read_new;
 			$networkmap_write = $networkmap_write_new;
 			$networkmap_manage = $networkmap_manage_new;
 		}

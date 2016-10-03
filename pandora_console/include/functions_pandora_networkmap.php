@@ -58,13 +58,9 @@ function networkmap_process_networkmap($id = 0) {
 			break;
 		case 3:
 			$filter = "neato";
-			$layout = "neato";
-			break;
-		case 4:
-			$filter = "neato";
 			$layout = "spring1";
 			break;
-		case 5:
+		case 4:
 			$filter = "fdp";
 			$layout = "spring2";
 			break;
@@ -88,8 +84,9 @@ function networkmap_process_networkmap($id = 0) {
 		case 1:
 			$recon_task = db_get_row_filter('trecon_task',
 				array('id_rt' => $networkmap['source_data']));
-			
-			$ip_mask = $recon_task['field1'];
+			break;
+		case 2:
+			$ip_mask = $networkmap['source_data'];
 			break;
 	}
 	
@@ -224,12 +221,13 @@ function networkmap_process_networkmap($id = 0) {
 			$index++;
 		}
 		
-		$center = array('x' => 500, 'y' => 500);
-		
 		if (enterprise_installed()) {
 			enterprise_include_once("include/functions_pandora_networkmap.php");
-			$center = save_generate_nodes($id, &$nodes_and_relations);
+			save_generate_nodes($id, &$nodes_and_relations);
 		}
+		
+		$pandorafms_node = $nodes_and_relations['nodes'][0];
+		$center = array('x' => $pandorafms_node['x'], 'y' => $pandorafms_node['y']);
 		
 		$networkmap['center_x'] = $center['x'];
 		$networkmap['center_y'] = $center['y'];
@@ -577,6 +575,8 @@ function networkmap_write_js_array($id, $nodes_and_relations = array()) {
 		$networkmap['height'] . "];\n";
 		
 	echo "var enterprise_installed = " . $ent_installed . ";\n";
+	
+	echo "var node_radius = " . $networkmap['filter']['node_radius'] . ";\n";
 	
 	echo "var networkmap_holding_area_dimensions = " .
 		json_encode($networkmap['filter']['holding_area']) . ";\n";
@@ -1154,6 +1154,7 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 			networkmap_center: networkmap_center,
 			networkmap_dimensions: networkmap_dimensions,
 			enterprise_installed: enterprise_installed,
+			node_radius: node_radius,
 			holding_area_dimensions: networkmap_holding_area_dimensions,
 			url_background_grid: url_background_grid
 		});

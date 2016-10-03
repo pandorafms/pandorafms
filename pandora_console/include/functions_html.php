@@ -1688,8 +1688,8 @@ function html_print_radio_button_extended ($name, $value, $label, $checkedvalue,
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_radio_button ($name, $value, $label = '', $checkedvalue = '', $return = false) {
-	$output = html_print_radio_button_extended ($name, $value, $label, $checkedvalue, false, '', '', true);
+function html_print_radio_button ($name, $value, $label = '', $checkedvalue = '', $return = false, $disabled = false) {
+	$output = html_print_radio_button_extended ($name, $value, $label, $checkedvalue, $disabled, '', '', true);
 	
 	if ($return)
 		return $output;

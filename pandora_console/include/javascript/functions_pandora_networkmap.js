@@ -529,6 +529,42 @@ function edit_node(data) {
 				}
 			});
 			
+			$("#interface_information").find("tr:gt(0)").remove();
+			
+			var params = [];
+			params.push("get_interface_info=1");
+			params.push("id_agent=" + data["id_agent"]);
+			params.push("page=enterprise/operation/agentes/pandora_networkmap.view");
+			jQuery.ajax ({
+				data: params.join ("&"),
+				dataType: 'json',
+				type: 'POST',
+				url: action="ajax.php",
+				async: false,
+				success: function (data) {
+					jQuery.each(data, function(j, interface) {
+						$("#interface_information").find('tbody')
+							.append($('<tr>')
+								.append($('<td>')
+									.html(interface['name'])
+								)
+								.append($('<td>')
+									.html(interface['status'])
+								)
+								.append($('<td>')
+									.html(interface['graph'])
+								)
+								.append($('<td>')
+									.html(interface['ip'])
+								)
+								.append($('<td>')
+									.html(interface['mac'])
+								)
+							);
+					});
+				}
+			});
+			
 			$("#dialog_node_edit" )
 				.dialog( "option", "title",
 					dialog_node_edit_title.replace("%s", data.text));

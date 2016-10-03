@@ -668,8 +668,7 @@ function networkmap_write_js_array($id, $nodes_and_relations = array()) {
 	echo "var translation_none = '" . __('None') . "';\n";
 	echo "var dialog_node_edit_title = '" . __('Edit node %s') . "';\n";
 	echo "var holding_area_title = '" . __('Holding Area') . "';\n";
-	echo "var show_details_menu = '" . __('Show details') . "';\n";
-	echo "var edit_menu = '" . __('Edit') . "';\n";
+	echo "var edit_menu = '" . __('Show details and options') . "';\n";
 	echo "var set_as_children_menu = '" . __('Set as children') . "';\n";
 	echo "var set_parent_menu = '" . __('Set parent') . "';\n";
 	echo "var abort_relationship_menu = '" . __('Abort the action of set relationship') . "';\n";
@@ -1351,6 +1350,26 @@ if (empty($list_networkmaps))
 	
 	ui_toggle(html_print_table($table, true), __('Node Details'),
 		__('Node Details'), false);
+		
+	$table = null;
+	$table->id = 'interface_information';
+	$table->width = "100%";
+	
+	$table->head['interface_name'] = __('Name');
+	$table->head['interface_status'] = __('Status');
+	$table->head['interface_graph'] = __('Graph');
+	$table->head['interface_ip'] = __('Ip');
+	$table->head['interface_mac'] = __('MAC');
+	$table->data = array();
+	$table->rowstyle['template_row'] = 'display: none;';
+	$table->data['template_row']['interface_name'] = '';
+	$table->data['template_row']['interface_status'] = '';
+	$table->data['template_row']['interface_graph'] = '';
+	$table->data['template_row']['interface_ip'] = '';
+	$table->data['template_row']['interface_mac'] = '';
+	
+	ui_toggle(html_print_table($table, true), __('Interface Information (SNMP)'),
+		__('Interface Information (SNMP)'), true);
 		
 	$table = null;
 	$table->id = 'node_options';

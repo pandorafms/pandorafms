@@ -89,7 +89,7 @@ echo '<div id="login_in">';
 	
 			echo '<a href="' . $logo_link . '">';
 			if (defined ('METACONSOLE')) {
-				if (!isset ($config["custom_logo"])){
+				if (!isset ($config["custom_logo_login"])){
 					html_print_image ("images/custom_logo_login/login_logo.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 				}
 				else{
@@ -97,7 +97,7 @@ echo '<div id="login_in">';
 				}
 		}
 			else if (defined ('PANDORA_ENTERPRISE')) {
-				if (!isset ($config["custom_logo"])){
+				if (!isset ($config["custom_logo_login"])){
 					html_print_image ("images/custom_logo_login/login_logo.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 				}
 				else{
@@ -105,7 +105,7 @@ echo '<div id="login_in">';
 				}
 			}
 			else {
-				if (!isset ($config["custom_logo"])){
+				if (!isset ($config["custom_logo_login"])){
 					html_print_image ("images/custom_logo_login/login_logo.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 				}
 				else{

@@ -1962,6 +1962,9 @@ function init_graph(parameter_object) {
 		window.url_background_grid = "";
 	}
 	
+	var rect_center_x = graph.nodes[0].x;
+	var rect_center_y = graph.nodes[0].y;
+	
 	//For to catch the keyevent for the ctrl key
 	d3.select(document)
 		.on("keydown", function() {
@@ -1987,7 +1990,7 @@ function init_graph(parameter_object) {
 		.size([width_svg, height_svg]);
 	
 	window.zoom_obj = d3.behavior.zoom();
-	zoom_obj.scaleExtent([0.3, 1])
+	zoom_obj.scaleExtent([0.05, 1])
 		.on("zoom", zoom)
 		.translate(translation)
 		.scale(scale);
@@ -2171,8 +2174,8 @@ function init_graph(parameter_object) {
 		.attr("id", "background_size_networkmap")
 		.attr("width", networkmap_dimensions[0] + node_radius)
 		.attr("height", networkmap_dimensions[1] + node_radius)
-		.attr("x", 0)
-		.attr("y", 0)
+		.attr("x", rect_center_x - (networkmap_dimensions[0] / 2))
+		.attr("y", rect_center_y - (networkmap_dimensions[1] / 2))
 		.attr("style", "fill: url(#background_grid); " +
 			"stroke: #960000; " +
 			"stroke-width: 2; " +

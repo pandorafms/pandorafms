@@ -4,7 +4,16 @@
 
 echo "
 <div class='modalheader'>
-<span class='modalheadertext'>Community version</span>
+<span class='modalheadertext'>";
+
+if(!enterprise_installed()){
+	echo "Community version";
+}
+else{
+	echo "Enterprise version";
+}
+
+echo "</span>
 <img class='modalclosex cerrar' src='".$config['homeurl']."/images/icono_cerrar.png'>
 </div>".get_pandora_error_for_header()."
 

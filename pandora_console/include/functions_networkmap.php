@@ -257,7 +257,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 	$old_mode = false) {
 	
 	global $config;
-	
 	$nooverlap = 1;
 	
 	$parents = array();

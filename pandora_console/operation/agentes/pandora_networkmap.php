@@ -233,7 +233,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 		$filter['node_radius'] = $node_radius;
 		
 		$values['filter'] = json_encode($filter);
-		html_debug($values);
+		
 		$result = false;
 		if (!empty($name)) {
 			$result = db_process_sql_update('tmap',

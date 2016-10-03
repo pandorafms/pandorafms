@@ -75,15 +75,14 @@ function networkmap_process_networkmap($id = 0) {
 	$show_snmp_modules = false;
 	$dont_show_subgroups = false;
 	
-	$id_group = -666;
+	$id_group = $networkmap['id_group'];;
 	$ip_mask = "";
 	switch ($networkmap['source']) {
-		case 0:
-			$id_group = $networkmap['id_group'];
-			break;
 		case 1:
 			$recon_task = db_get_row_filter('trecon_task',
 				array('id_rt' => $networkmap['source_data']));
+				
+			$ip_mask = $recon_task['field1'];
 			break;
 		case 2:
 			$ip_mask = $networkmap['source_data'];

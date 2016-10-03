@@ -164,10 +164,10 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 	$background_color = 'white', $modules_param = array(), $homeurl = '',
 	$name_list = array(), $unit_list = array(), $show_last = true,
 	$show_max = true, $show_min = true, $show_avg = true, $ttl = 1,
-	$dashboard = false, $vconsole = false) {
+	$dashboard = false, $vconsole = false, $percentil = 0) {
 	
 	global $config;
-
+	
 	if ($id_graph == 0) {
 		$graph_conf['stacked'] = CUSTOM_GRAPH_LINE;
 	}
@@ -244,7 +244,8 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		$show_avg,
 		$labels,
 		$dashboard,
-		$vconsole);
+		$vconsole,
+		$percentil);
 	
 	if ($return)
 		return $output;

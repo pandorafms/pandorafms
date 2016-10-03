@@ -1028,7 +1028,7 @@ function config_process_config () {
 	
 	if (!isset ($config["custom_logo"])) {
 		if(enterprise_installed()){
-		config_update_value ('custom_logo', 'pandora_logo_head.png');
+		config_update_value ('custom_logo', 'pandora_logo_head_4.png');
 	}
 	else{
 		config_update_value ('custom_logo', 'pandora_logo_head_3.png');

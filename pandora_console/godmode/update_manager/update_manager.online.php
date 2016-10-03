@@ -34,8 +34,7 @@ if(!enterprise_installed()){
 	$open=true; 
 }
 
-echo "<p><b>" . sprintf(__("The last version of package installed is: %d"),
-	$current_package) . "</b></p>";
+
 
 
 $memory_limit = ini_get("memory_limit");
@@ -67,10 +66,14 @@ if ($memory_limit < 100) {
 
 
 
-echo "<div id='box_online' class='cargatextodialogo'>";
-	echo "<span class='loading' style='font-size:18pt;'>";
-	echo "<img src='images/wait.gif' />";
-	echo "</span>";
+echo "<div id='box_online' style='padding-top:40px;padding-bottom:40px;' class='cargatextodialogo'>";
+echo "<span class='loading' style='font-size:18pt;'>";
+echo "<img src='images/wait.gif' />";
+echo "</span><br><br>";
+
+echo "<div><b>".__('The last version of package installed is:')."</b></div><br>";
+echo "<div style='color:#82b92e;font-size:40pt;font-weight:bold;'>".$current_package."</div>";
+
 	
 	echo "<div class='checking_package' style='font-size:18pt;width:100%; text-align: center; display: none;'>";
 	echo __('Checking for the newest package.');
@@ -94,7 +97,7 @@ You can of course remove the warnings, that's why we include the source and do n
 */
 	
 	if($open){
-		echo "<div id='updatemodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		echo "<br><br><div id='updatemodal' class='publienterprisehide' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/icono_exclamacion_2.png'></div><br>
 		";
 	}
 	

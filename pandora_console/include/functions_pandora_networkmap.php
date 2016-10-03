@@ -1339,13 +1339,13 @@ if (empty($list_networkmaps))
 	$table->width = "100%";
 	
 	$table->data = array();
-	$table->data[0][0] = __('Agent');
+	$table->data[0][0] = '<strong>' . __('Agent') . '</strong>';
 	$table->data[0][1] = "";
-	$table->data[1][0] = __('Adresses');
+	$table->data[1][0] = '<strong>' . __('Adresses') . '</strong>';
 	$table->data[1][1] = "";
-	$table->data[2][0] = __('OS type');
+	$table->data[2][0] = '<strong>' . __('OS type') . '</strong>';
 	$table->data[2][1] = "";
-	$table->data[3][0] = __('Group');
+	$table->data[3][0] = '<strong>' . __('Group') . '</strong>';
 	$table->data[3][1] = "";
 	
 	ui_toggle(html_print_table($table, true), __('Node Details'),

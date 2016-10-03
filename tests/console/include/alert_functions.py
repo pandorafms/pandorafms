@@ -118,13 +118,13 @@ def create_new_template_to_alert(driver,template_name,group,action_name,conditio
 	time.sleep(3)
 
 	driver.find_element_by_id("text-name").clear()
-	driver.find_element_by_xpath('text-name').send_keys(template_name)
+	driver.find_element_by_id('text-name').send_keys(template_name)
 
 	driver.find_element_by_xpath('//option[contains(.,"'+group+'")]').click()
 
 	if description != None:
 		driver.find_element_by_id("textarea_description").clear()
-		driver.find_element_by_xpath('textarea_description').send_keys(description)
+		driver.find_element_by_id('textarea_description').send_keys(description)
 
 	
 	driver.find_element_by_id("submit-next").click()

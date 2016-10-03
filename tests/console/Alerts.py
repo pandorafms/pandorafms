@@ -38,7 +38,6 @@ class Alerts (PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//a[contains(.,"'+action_name+'")]')
 		self.assertIsInstance(element,WebElement)
 
-
 	def test_B_create_new_action_command(self):
 		
 		u"""
@@ -68,7 +67,31 @@ class Alerts (PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//a[contains(.,"'+action_name+'")]')
 		self.assertIsInstance(element,WebElement)	
 
-		driver.find_element_by_xpath('//a[contains(.,"'+action_name+'")]').click()
+	def test_C_create_new_template(self):
+		
+		u"""
+		Create a new template (Unknown Status) and check that changes are applied
+		"""
+		
+		template_name = gen_random_string(6)
+
+		driver = self.driver
+
+		field_list = ["_agent_","_agentdescription_","_data_","_alert_description_"]		
+
+		days_list=["wednesday","saturday"]
+
+		create_new_template_to_alert(driver,template_name,"Applications","Mail to Admin","Unknown status",list_days=days_list,description="Template with test C",field_list=field_list)
+
+		element = driver.find_element_by_xpath('//td[contains(.,"Successfully")]')
+		self.assertIsInstance(element,WebElement)
+
+		time.sleep(3)		
+
+		click_menu_element(driver,"Templates")
+
+		element = driver.find_element_by_xpath('//a[contains(.,"'+template_name+'")]')
+		self.assertIsInstance(element,WebElement)
 
 if __name__ == "__main__":
 	unittest2.main()

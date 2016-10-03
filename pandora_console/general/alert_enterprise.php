@@ -84,7 +84,7 @@ switch ($tipo) {
 
   echo 
     '<p>' .
-    	__('The Uppdate Manager client is included on Pandora FMS. It helps system administrators update their Pandora FMS automatically, since the Update Manager retrieves new modules, new plugins and new features (even full migrations tools for future versions) automatically.') .
+    	__('The Update Manager client is included on Pandora FMS. It helps system administrators update their Pandora FMS automatically, since the Update Manager retrieves new modules, new plugins and new features (even full migrations tools for future versions) automatically.') .
     '</p>' .
     '<p>' .
     	__('<b>OpenSource version updates are automated packages generated each week. These updates come WITHOUT ANY warranty or support. If your system is corrupted or a feature stops working properly, you will need to recover a backup by yourself.</b>') .

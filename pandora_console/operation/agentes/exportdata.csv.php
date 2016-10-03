@@ -138,7 +138,8 @@ if (!empty ($module)) {
 			
 			foreach ($data as $key => $module) {
 				$output .= $rowstart;
-				$output .= io_safe_output($module['agent_name']);
+				$alias = db_get_value ("alias","tagente","id_agente",$module['agent_id']);
+				$output .= io_safe_output($alias);
 				$output .= $divider;
 				$output .= io_safe_output($module['module_name']);
 				$output .= $divider;

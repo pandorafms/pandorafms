@@ -645,7 +645,7 @@ if ($id_downtime > 0) {
 	$filter_cond = '';
 	if ($filter_group > 0)
 		$filter_cond = " AND id_grupo = $filter_group ";
-	$sql = sprintf("SELECT tagente.id_agente, tagente.nombre
+	$sql = sprintf("SELECT tagente.id_agente, tagente.alias
 					FROM tagente
 					WHERE tagente.id_agente NOT IN (
 							SELECT tagente.id_agente
@@ -660,7 +660,7 @@ if ($id_downtime > 0) {
 		$agents = array();
 	
 	$agent_ids = extract_column($agents, 'id_agente');
-	$agent_names = extract_column($agents, 'nombre');
+	$agent_names = extract_column($agents, 'alias');
 	// item[<id>] = <name>;
 	$agents = array_combine($agent_ids, $agent_names);
 	if ($agents === false)
@@ -736,7 +736,8 @@ if ($id_downtime > 0) {
 		foreach ($downtimes_agents as $downtime_agent) {
 			$data = array ();
 			
-			$data[0] = $downtime_agent['nombre'];
+			$alias = db_get_value("alias","tagente","id_agente",$downtime_agent['id_agente']);
+			$data[0] = $alias;
 			
 			$data[1] = db_get_sql ("SELECT nombre
 									FROM tgrupo

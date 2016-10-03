@@ -159,7 +159,8 @@ if (!empty($downtimes)) {
 		if (!empty($downtime_agents)) {
 			foreach ($downtime_agents as $downtime_agent) {
 				$downtime_items = array();
-				$downtime_items[] = $downtime_agent['agent_name'];
+				$alias = db_get_value("alias","tagente","id_agente",$downtime_agent['agent_id']);
+				$downtime_items[] = $alias;
 
 				if (!$downtime_agent['all_modules']) {
 					$agent_id = $downtime_agent['agent_id'];

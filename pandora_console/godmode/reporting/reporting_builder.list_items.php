@@ -87,7 +87,8 @@ else {
 	
 	$agents = array();
 	foreach ($rows as $row) {
-		$agents[$row['id_agente']] = $row['nombre'];
+		$alias = db_get_value ("alias","tagente","id_agente",$row['id_agente']);
+		$agents[$row['id_agente']] = $alias;
 	}
 	
 	switch ($config['dbtype']) {
@@ -372,15 +373,17 @@ foreach ($items as $item) {
 				
 				$agent_name_db = array();
 				foreach ($agents as $a) {
-					$agent_name_db[] = agents_get_name($a);
+					
+					$alias = db_get_value ("alias","tagente","id_agente",$a);
+					$agent_name_db[] = $alias;
 				}
 				$agent_name_db = implode('<br>',$agent_name_db);
 				
 				$module_name_db = implode('<br>',$modules);
 			}
 			else {
-				$agent_name_db = agents_get_name(agents_get_agent_id_by_module_id($item['id_agent_module']));
-				$agent_name_db = ui_print_truncate_text($agent_name_db, 'agent_small');
+				$alias = db_get_value ("alias","tagente","id_agente",agents_get_agent_id_by_module_id($item['id_agent_module']));
+				$agent_name_db = '<span title='. agents_get_name(agents_get_agent_id_by_module_id($item['id_agent_module'])) . '>' .$alias . '</span>';
 				$module_name_db = db_get_value_filter('nombre', 'tagente_modulo', array('id_agente_modulo' => $item['id_agent_module']));
 				$module_name_db = ui_print_truncate_text(io_safe_output($module_name_db), 'module_small');
 			}
@@ -390,7 +393,8 @@ foreach ($items as $item) {
 		}
 	}
 	else {
-		$row[2] = ui_print_truncate_text(agents_get_name($item['id_agent']), 'agent_small');
+		$alias = db_get_value ("alias","tagente","id_agente",$item['id_agent']);
+		$row[2] = '<span title='. agents_get_name($item['id_agent']) . '>' .$alias . '</span>';
 		
 		if ($item['id_agent_module'] == '') {
 			$row [3] = '';

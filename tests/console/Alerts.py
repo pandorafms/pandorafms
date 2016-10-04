@@ -103,10 +103,6 @@ class Alerts (PandoraWebDriverTestCase):
 
 		driver = self.driver
 
-		self.login()
-
-		detect_and_pass_all_wizards(driver)
-
 		field_list = ["_agentcustomid_","_address_","_module_","_modulecustomid_"]
 
 		days_list=["monday","wednesday","saturday"]

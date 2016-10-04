@@ -637,7 +637,7 @@ $class = 'databox filters';
 		
 		<tr id="row_name" style="" class="datos">
 			<td style="font-weight:bold;">
-				<?php echo __('Name'); ?>
+				<?php echo __('Name') . ui_print_help_icon ('reports_label_field',true); ?>
 			</td>
 			<td style="">
 				<?php

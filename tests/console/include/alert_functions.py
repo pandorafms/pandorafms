@@ -111,7 +111,6 @@ def create_new_template_to_alert(driver,template_name,group,action_name,conditio
 	#If list_days is None, we select all days. Example list_days = ["monsday","friday"]
 	#alert_recovery is disabled by defect. Choose True for pyt in enabled status
 
-
 	click_menu_element(driver,"Templates")	
 	driver.find_element_by_id("submit-create").click()
 
@@ -123,10 +122,10 @@ def create_new_template_to_alert(driver,template_name,group,action_name,conditio
 	driver.find_element_by_xpath('//option[contains(.,"'+group+'")]').click()
 
 	if description != None:
+	
 		driver.find_element_by_id("textarea_description").clear()
 		driver.find_element_by_id('textarea_description').send_keys(description)
 
-	
 	driver.find_element_by_id("submit-next").click()
 
 	time.sleep(3)
@@ -177,3 +176,31 @@ def create_new_template_to_alert(driver,template_name,group,action_name,conditio
 			i=i+1
 	
 	driver.find_element_by_id("submit-finish").click()
+
+def edit_template_to_alert(driver,template_name,new_action=None,new_field_list=None):
+
+	click_menu_element(driver,"Templates")
+	
+	driver.find_element_by_xpath('//a[contains(.,"'+template_name+'")]').click()
+
+	#Go to Step 2
+	driver.find_element_by_id("submit-next").click()
+	
+	if new_action != None:
+
+		 driver.find_element_by_xpath('//option[contains(.,"'+new_action+'")]').click()	
+
+	#Go to Step 3
+	driver.find_element_by_id("submit-next").click()
+
+	if new_field_list != None:
+
+		i=1
+		for field in new_field_list:
+			
+			driver.find_element_by_id("textarea_field"+str(i)).clear()
+			driver.find_element_by_id("textarea_field"+str(i)).send_keys(field)
+			i=i+1
+
+	driver.find_element_by_id("submit-finish").click()
+

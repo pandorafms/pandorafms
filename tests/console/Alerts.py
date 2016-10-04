@@ -93,6 +93,55 @@ class Alerts (PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//a[contains(.,"'+template_name+'")]')
 		self.assertIsInstance(element,WebElement)
 
+	def test_D_edit_template_created(self):
+
+		u"""
+		Create a new template and edit template created, verify the changes
+		"""
+
+		template_name = gen_random_string(6)
+
+		driver = self.driver
+
+		self.login()
+
+		detect_and_pass_all_wizards(driver)
+
+		field_list = ["_agentcustomid_","_address_","_module_","_modulecustomid_"]
+
+		days_list=["monday","wednesday","saturday"]
+
+		create_new_template_to_alert(driver,template_name,"Databases","Mail to Admin","Critical",list_days=days_list,description="Template with test C",field_list=field_list)
+
+		element = driver.find_element_by_xpath('//td[contains(.,"Successfully")]')
+		self.assertIsInstance(element,WebElement)
+
+		time.sleep(3)
+
+		click_menu_element(driver,"Templates")
+
+		element = driver.find_element_by_xpath('//a[contains(.,"'+template_name+'")]')
+		self.assertIsInstance(element,WebElement)
+		
+		new_field_list = ["_agent_","_agentdescription_","_data_","_alert_description_"]
+		
+		edit_template_to_alert(driver,template_name,new_action="Create a ticket in Integria IMS",new_field_list=new_field_list)	
+		
+		element = driver.find_element_by_xpath('//td[contains(.,"Successfully")]')
+		self.assertIsInstance(element,WebElement)
+
+		click_menu_element(driver,"Templates")	
+		
+		driver.find_element_by_xpath('//a[contains(.,"'+template_name+'")]').click()
+
+		driver.find_element_by_id("submit-next").click()
+		
+		self.assertEqual("Create a ticket in Integria IMS" in driver.page_source,True)
+
+		driver.find_element_by_id("submit-next").click()
+
+		self.assertEqual("_agentdescription_" in driver.page_source,True)
+
 if __name__ == "__main__":
 	unittest2.main()
 

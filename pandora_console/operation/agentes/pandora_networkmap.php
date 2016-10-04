@@ -37,6 +37,7 @@ $update_networkmap = (bool) get_parameter('update_networkmap', false);
 $copy_networkmap = (bool) get_parameter('copy_networkmap', false);
 $delete = (bool) get_parameter('delete', false);
 $tab = (string) get_parameter('tab', 'list');
+$migrate_networkmap = (string) get_parameter('migrate_networkmap', false);
 
 $result_txt = '';
 // The networkmap doesn't exist yet
@@ -267,6 +268,17 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 			true);
 	}
 }
+else if ($migrate_networkmap) {
+	if (enterprise_installed()) {
+		enterprise_include_once ('include/functions_pandora_networkmap.php');
+		
+		$result = migrate_older_networkmap();
+		
+		$result_txt = ui_print_result_message($result,
+			__('Succesfully migrated (New map, I AM YOUR FATHER)'), __('Could not be migrated'), '',
+			true);
+	}
+}
 
 switch ($tab) {
 	case 'edit':
@@ -411,10 +423,17 @@ switch ($tab) {
 			echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
 			html_print_input_hidden ('new_networkmap', 1);
 			html_print_submit_button (__('Create networkmap'), 'crt', false, 'class="sub next"');
+			echo '<br>';
+			echo '<br>';
+			if (enterprise_installed()) {
+				html_print_input_hidden ('migrate_networkmap', 1);
+				html_print_submit_button (__('Migrate older networkmaps'), 'crt', false, 'class="sub next"');
+			}
 			echo "</form>";
 			echo "</div>";
 			
 		}
+		
 		break;
 }
 ?>

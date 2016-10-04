@@ -2173,8 +2173,6 @@ function init_graph(parameter_object) {
 			.attr("transform",
 				"translate(" + translation + ")scale(" + scale + ")");
 	
-	
-	
 	if (enterprise_installed) {
 		window.layer_graph.append("rect")
 			.attr("id", "holding_area")

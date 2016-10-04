@@ -2132,7 +2132,6 @@ function init_graph(parameter_object) {
 		.attr("markerHeight", (node_radius / 2) + interface_radius)
 		.attr("orient", "auto")
 		.append("circle")
-			//~ .attr("class", "link")
 			.attr("cx", (node_radius / 2) - (interface_radius / 2))
 			.attr("cy", interface_radius)
 			.attr("r", interface_radius)
@@ -2146,7 +2145,6 @@ function init_graph(parameter_object) {
 		.attr("markerHeight", (node_radius / 2) + interface_radius)
 		.attr("orient", "auto")
 		.append("circle")
-			//~ .attr("class", "link")
 			.attr("cx", interface_radius)
 			.attr("cy", interface_radius)
 			.attr("r", interface_radius)
@@ -2180,7 +2178,7 @@ function init_graph(parameter_object) {
 				networkmap_dimensions[0] + node_radius - holding_area_dimensions[0])
 			.attr("y",
 				networkmap_dimensions[1] + node_radius - holding_area_dimensions[1])
-			.attr("style", "fill: #efefef; " +
+			.attr("style", "fill: #e6e6e6; " +
 				"fill-opacity: 0.75; " +
 				"stroke: #dedede; " +
 				"stroke-width: 1; " +
@@ -2203,7 +2201,7 @@ function init_graph(parameter_object) {
 					"fill: #000000; " +
 					"fill-opacity: 1; " +
 					"stroke: none; " +
-					"font-family: Sans")
+					"font-family: Verdana")
 				.attr("x", networkmap_dimensions[0] + node_radius - holding_area_dimensions[0])
 				.attr("y", networkmap_dimensions[1] + node_radius - holding_area_dimensions[1] - 10)
 				.text(holding_area_title);
@@ -2237,10 +2235,10 @@ function init_graph(parameter_object) {
 			.attr("x", 0)
 			.attr("y", 0)
 			.attr("id", "selection_rectangle")
-			.attr("style", "display: none; fill:#000096; " +
+			.attr("style", "display: none; fill:#e6e6e6; " +
 				"fill-opacity:0.46153846; " +
-				"stroke:#000096; " +
-				"stroke-width:3; " +
+				"stroke:#e6e6e6; " +
+				"stroke-width:1; " +
 				"stroke-miterlimit:4; " +
 				"stroke-opacity:1; " +
 				"stroke-dasharray:none;");

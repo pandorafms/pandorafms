@@ -1181,7 +1181,7 @@ if (empty($list_networkmaps))
 	$list_networkmaps = array();
 ?>
 
-<div id="dialog_node_edit" style="display: none;" title="<?php echo __('Edit node');?>">
+<div id="dialog_node_edit" style="display: none; background-color: #e6e6e6;" title="<?php echo __('Edit node');?>">
 	<div style="text-align: left; width: 100%;">
 	<?php
 	
@@ -1303,7 +1303,6 @@ if (empty($list_networkmaps))
 	$table->cellstyle['loading']['0'] = 'text-align: center;';
 	$table->data['loading']['0'] = html_print_image(
 		'images/wait.gif', true);
-	
 	
 	ui_toggle(html_print_table($table, true), __('Relations'),
 		__('Relations'), true);

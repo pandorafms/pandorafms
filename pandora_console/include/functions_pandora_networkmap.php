@@ -1088,7 +1088,7 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 	echo '<div id="networkconsole" style="position: relative; overflow: hidden; background: #FAFAFA">';
 		
 		echo '<canvas id="minimap"
-			style="position: absolute; left: 0px; top: 0px; border: 1px solid #3a4a70;">
+			style="position: absolute; left: 0px; top: 0px; border: 1px solid #bbbbbb;">
 			</canvas>';
 		
 		echo '<div id="arrow_minimap" style="position: absolute; left: 0px; top: 0px;">
@@ -1111,7 +1111,7 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 	}
 	
 	.node_selected {
-		stroke:#000096;
+		stroke:#999;
 		stroke-width:3;
 	}
 	

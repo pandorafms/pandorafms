@@ -1353,7 +1353,7 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 	}
 	$stats_json = base64_encode(json_encode($summary));
 	
-	$img_src = "images/networkmap/pandora_node.png";
+	$img_src = "images/networkmap/bola_pandora_network_maps.png";
 	if (defined('METACONSOLE')) {
 		
 		$url_tooltip = '../../ajax.php?' .
@@ -1372,11 +1372,11 @@ function networkmap_create_pandora_node ($name, $font_size = 10, $simple = 0, $s
 	
 	if ($hack_networkmap_mobile) {
 		$img = '<TR><TD>' .
-			"<img src='" . $config['homedir'] . '/' . "images/networkmap/pandora_node.png' />" .
+			"<img src='" . $config['homedir'] . '/' . "images/networkmap/bola_pandora_network_maps.png' />" .
 			'</TD></TR>';
 	}
 	else {
-		$image = html_print_image("images/networkmap/pandora_node.png", true, false, false, true);
+		$image = html_print_image("images/networkmap/bola_pandora_network_maps.png", true, false, false, true);
 		//$image = str_replace('"',"'",$image);
 		$img = '<TR><TD>' . $image . '</TD></TR>';
 	}

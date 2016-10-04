@@ -8,7 +8,6 @@ function draw_minimap() {
 	context_minimap.fillStyle = "#ddd";
 	context_minimap.fillRect(0, 0, minimap_w, minimap_h);
 	
-	
 	//Draw the items and lines
 	jQuery.each(graph.nodes, function (key, value) {
 		if (typeof(value) == 'undefined') return;
@@ -32,7 +31,7 @@ function draw_minimap() {
 	
 	//Draw the rect of viewport
 	context_minimap.beginPath();
-	context_minimap.strokeStyle = "#f00";
+	context_minimap.strokeStyle = "#3f3f3f";
 	context_minimap.strokeRect(
 		(-translation[0] / scale) * minimap_relation,
 		(-translation[1] / scale) * minimap_relation,
@@ -40,7 +39,7 @@ function draw_minimap() {
 		height_svg * minimap_relation / scale);
 	
 	context_minimap.beginPath();
-	context_minimap.strokeStyle = "#0f0";
+	context_minimap.strokeStyle = "#82B92E";
 	context_minimap.strokeRect(
 		(networkmap_dimensions[0] + node_radius - holding_area_dimensions[0]) * minimap_relation,
 		(networkmap_dimensions[1] + node_radius - holding_area_dimensions[1]) * minimap_relation,
@@ -863,8 +862,7 @@ function add_agent_node(agents) {
 	}
 }
 
-function toggle_minimap() {
-	
+function toggle_minimap() {	
 	if (show_minimap) {
 		function_close_minimap();
 	}
@@ -1910,7 +1908,7 @@ function init_graph(parameter_object) {
 	window.show_minimap = false;
 	window.context_minimap;
 	
-	window.holding_area_dimensions = [100, 100];
+	window.holding_area_dimensions = [200, 200];
 	if (typeof(parameter_object.holding_area_dimensions) != "undefined") {
 		window.holding_area_dimensions = parameter_object.holding_area_dimensions;
 	}
@@ -2706,7 +2704,6 @@ function choose_group_for_show_agents() {
 		}
 	}
 }
-
 
 ////////////////////////////////////////////////////////////////////////
 // Old code for the details node

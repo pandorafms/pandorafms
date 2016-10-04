@@ -89,16 +89,12 @@ $row = array();
 $row['name'] = __('Autocreate profile');
 $row['control'] = html_print_select($profile_list, 'default_remote_profile', $config['default_remote_profile'], '', '', '', true, false, true, '', $config['autocreate_remote_users'] == 0);
 $table->data['default_remote_profile'] = $row;
-$remote_rows[] = 'default_remote_profile';
-$autocreate_rows[] = 'default_remote_profile';
 
 // Autocreate profile group
 $row = array();
 $row['name'] = __('Autocreate profile group');
 $row['control'] = html_print_select_groups($config['id_user'], "AR", true, 'default_remote_group', $config['default_remote_group'], '', '', '', true, false, true, '', $config['autocreate_remote_users'] == 0);
 $table->data['default_remote_group'] = $row;
-$remote_rows[] = 'default_remote_group';
-$autocreate_rows[] = 'default_remote_group';
 
 // Autocreate profile tags
 $tags = tags_get_all_tags();
@@ -106,8 +102,20 @@ $row = array();
 $row['name'] = __('Autocreate profile tags');
 $row['control'] = html_print_select($tags, 'default_assign_tags[]', explode(',', $config['default_assign_tags']), '', __('Any'), '', true, true);
 $table->data['default_assign_tags'] = $row;
-$remote_rows[] = 'default_assign_tags';
-$autocreate_rows[] = 'default_assign_tags';
+
+if (((int)$config['autocreate_remote_users'] === 1) && ((int)$config['ad_advanced_config'] === 1)) {
+	$table->rowstyle['default_remote_profile'] = 'display:none;';
+	$table->rowstyle['default_remote_group'] = 'display:none;';
+	$table->rowstyle['default_assign_tags'] = 'display:none;';
+}
+else {
+	$autocreate_rows[] = 'default_remote_profile';
+	$autocreate_rows[] = 'default_remote_group';
+	$autocreate_rows[] = 'default_assign_tags';
+	$remote_rows[] = 'default_remote_group';
+	$remote_rows[] = 'default_remote_profile';
+	$remote_rows[] = 'default_assign_tags';
+}
 
 // Autocreate blacklist
 $row = array();

@@ -900,10 +900,19 @@ switch ($action) {
 					case 'update':
 						$values = array();
 						$values['id_report'] = $idReport;
-						$values['name'] = (string) get_parameter('name');
+						//$values['name'] = (string) get_parameter('name');
 						$values['description'] = get_parameter('description');
 						$values['type'] = get_parameter('type', null);
 						$label = get_parameter('label', '');
+						
+						//Add macros name
+						$items_label = array();
+						$items_label['type'] = get_parameter('type');
+						$items_label['id_agent'] = get_parameter('id_agent');
+						$items_label['id_agent_module'] = get_parameter('id_agent_module');
+						$name_it = (string) get_parameter('name');
+						$values['name'] = reporting_label_macro($items_label, $name_it);
+
 						// Added support for projection graphs, prediction date and SLA reports
 						// 'top_n_value','top_n' and 'text' fields will be reused for these types of report
 						switch ($values['type']) {
@@ -1198,9 +1207,17 @@ switch ($action) {
 						$values = array();
 						$values['id_report'] = $idReport;
 						$values['type'] = get_parameter('type', null);
-						$values['name'] = (string) get_parameter('name');
+						//$values['name'] = (string) get_parameter('name');
 						$values['description'] = get_parameter('description');
 						$label = get_parameter('label', '');
+						
+						//Add macros name
+						$items_label = array();
+						$items_label['type'] = get_parameter('type');
+						$items_label['id_agent'] = get_parameter('id_agent');
+						$items_label['id_agent_module'] = get_parameter('id_agent_module');
+						$name_it = (string) get_parameter('name');
+						$values['name'] = reporting_label_macro($items_label, $name_it);
 						
 						// Support for projection graph, prediction date and SLA reports
 						// 'top_n_value', 'top_n' and 'text' fields will be reused for these types of report

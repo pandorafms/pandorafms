@@ -436,8 +436,7 @@ switch ($tab) {
 			html_print_input_hidden ('migrate_networkmap', 1);
 			html_print_submit_button (__('Migrate older networkmaps'), 'crt', false, 'class="sub next" style="float: left;"');
 			echo "</form>";
-			echo "</div>";
-			
+			echo "</div>";	
 		}
 		
 		break;

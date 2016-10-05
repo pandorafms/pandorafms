@@ -1257,20 +1257,14 @@ function init_minimap() {
 ////////////////////////////////////////////////////////////////////////
 function show_menu(item, data) {
 	mouse = [];
-	//mouse[0] = d3.event.clientX;
-	//mouse[0] = d3.event.layerX;
 	mouse[0] = d3.event.pageX;
-	//mouse[1] = d3.event.clientY;
-	//mouse[1] = d3.event.layerY;
 	mouse[1] = d3.event.pageY;
-	
 	
 	window.click_menu_position_svg = [d3.event.layerX, d3.event.layerY];
 	
 	//stop showing browser menu
 	d3.event.preventDefault();
 	d3.event.stopPropagation();
-	
 	
 	switch (item) {
 		case 'node':

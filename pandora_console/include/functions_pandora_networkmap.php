@@ -1143,7 +1143,6 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 			</div>';
 		
 	echo '</div>';
-	
 	?>
 <style type="text/css">
 	.node {

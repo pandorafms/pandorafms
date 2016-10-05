@@ -23,7 +23,7 @@
     list-style-type: none;
     
     border: 1px solid #DDD;
-	border-radius: 10px;
+	border-radius: 4px;
     background: #EEE;
     
     -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
@@ -41,7 +41,7 @@
     padding: 2px 2px 2px 24px;
     background-color: #EEE;
     position: relative;
-	border-radius: 10px;
+	border-radius: 4px;
     -webkit-user-select: none;
        -moz-user-select: -moz-none;
         -ms-user-select: none;
@@ -71,7 +71,7 @@
 .context-menu-item.hover {
     cursor: pointer;
     background-color: #82b92e;
-	border-radius: 10px;
+	border-radius: 4px;
 	color: #fff;
 }
 

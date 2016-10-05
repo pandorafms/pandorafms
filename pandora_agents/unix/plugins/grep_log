@@ -21,6 +21,7 @@
 ###############################################################################
 use strict;
 use File::Basename;
+use Scalar::Util qw(looks_like_number);
 
 # Output format (module or log_module).
 my $Output = 'module';
@@ -29,7 +30,7 @@ my $Output = 'module';
 my $Verbose = 0;
 
 # Index file storage directory, with a trailing '/'
-my $Idx_dir='/tmp/';
+my $Idx_dir=($^O =~ /win/i)?'C:\\':'/tmp/';
 
 # Log file
 my $Log_file = '';
@@ -57,6 +58,44 @@ my $summary_flag = 0;
 
 # Number of coincidences found
 my $coincidences = 0;
+
+########################################################################################
+# Erase blank spaces before and after the string 
+########################################################################################
+sub trim($){
+	my $string = shift;
+	if (empty ($string)){
+		return "";
+	}
+
+	$string =~ s/\r//g;
+
+	chomp ($string);
+	$string =~ s/^\s+//g;
+	$string =~ s/\s+$//g;
+
+	return $string;
+}
+
+########################################################################################
+# Empty
+########################################################################################
+sub empty($){
+	my $str = shift;
+
+	if (! (defined ($str)) ){
+		return 1;
+	}
+
+	if(looks_like_number($str)){
+		return 0;
+	}
+
+	if ($str =~ /^\ *[\n\r]{0,2}\ *$/) {
+		return 1;
+	}
+	return 0;
+}
 
 ###############################################################################
 # SUB error_msg
@@ -323,12 +362,12 @@ if ($#ARGV < 2) {
 	exit 1;
 }
 
-$Log_file = $ARGV[0];
-$Module_name = $ARGV[1];
-$Reg_exp = $ARGV[2];
-my $up_lines  = $ARGV[3];
-my $bot_lines = $ARGV[4];
-my $sum_flag  = $ARGV[5];
+$Log_file     = trim($ARGV[0]);
+$Module_name  = trim($ARGV[1]);
+$Reg_exp      = trim($ARGV[2]);
+my $up_lines  = trim($ARGV[3]);
+my $bot_lines = trim($ARGV[4]);
+my $sum_flag  = trim($ARGV[5]);
 
 if (   ( defined($up_lines)  && ($up_lines  eq "--summary"))
     || ( defined($bot_lines) && ($bot_lines eq "--summary"))

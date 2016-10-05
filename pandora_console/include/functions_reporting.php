@@ -128,9 +128,15 @@ function reporting_make_reporting_data($report = null, $id_report,
 			$content['period'] = $period;
 		}
 		
-		$content['style'] = json_decode(
-			io_safe_output($content['style']), true);
-		
+		$content['style'] = json_decode(io_safe_output($content['style']), true);
+		if(isset($content['style']['name_label'])){
+			//Add macros name
+			$items_label = array();
+			$items_label['type'] = $content['type'];
+			$items_label['id_agent'] = $content['id_agent'];
+			$items_label['id_agent_module'] = $content['id_agent_module'];
+			$content['name'] = reporting_label_macro($items_label, $content['style']['name_label']);
+		}
 		switch (reporting_get_type($content)) {
 			case 'simple_graph':
 				$report['contents'][] =
@@ -151,7 +157,9 @@ function reporting_make_reporting_data($report = null, $id_report,
 				$report['contents'][] =
 					reporting_availability(
 						$report,
-						$content);
+						$content,
+						$date,
+						$time);
 				break;
 			case 'sql':
 				$report['contents'][] = reporting_sql(
@@ -3700,7 +3708,7 @@ function reporting_sql($report, $content) {
 	return reporting_check_structure_content($return);
 }
 
-function reporting_availability($report, $content) {
+function reporting_availability($report, $content, $date=false, $time=false) {
 	global $config;
 	
 	$return = array();
@@ -3712,6 +3720,10 @@ function reporting_availability($report, $content) {
 		$content['name'] = __('Availability');
 	}
 	
+	if($date){
+		$datetime_to = strtotime ($date . ' ' . $time);
+	}
+
 	$return['title'] = $content['name'];
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text(
@@ -3753,9 +3765,22 @@ function reporting_availability($report, $content) {
 	$max = null;
 	$max_text = "";
 	$count = 0;
+
+	$style = io_safe_output($content['style']);
+	if($style['hide_notinit_agents']){
+		$aux_id_agents = $agents;
+		$i=0;
+		foreach ($items as $item) {
+			$utimestamp = db_get_value('utimestamp', 'tagente_datos', 'id_agente_modulo', $item['id_agent_module']);
+			if (($utimestamp === false) || (intval($utimestamp) > intval($datetime_to))){
+				unset($items[$i]);
+			}
+			$i++;
+		}
+	}
 	
 	if (!empty($items)) {
-		foreach ($items as $item) {
+		foreach ($items as $item) { 
 			//aaMetaconsole connection
 			$server_name = $item ['server_name'];
 			if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {

@@ -428,12 +428,13 @@ switch ($tab) {
 			echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
 			html_print_input_hidden ('new_networkmap', 1);
 			html_print_submit_button (__('Create networkmap'), 'crt', false, 'class="sub next"');
-			echo '<br>';
-			echo '<br>';
-			if (enterprise_installed()) {
-				html_print_input_hidden ('migrate_networkmap', 1);
-				html_print_submit_button (__('Migrate older networkmaps'), 'crt', false, 'class="sub next"');
-			}
+			echo "</form>";
+			echo "</div>";
+			
+			echo "<div style='width: " . $table->width . "; text-align: right; margin-top: 5px;'>";
+			echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
+			html_print_input_hidden ('migrate_networkmap', 1);
+			html_print_submit_button (__('Migrate older networkmaps'), 'crt', false, 'class="sub next"');
 			echo "</form>";
 			echo "</div>";
 			

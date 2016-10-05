@@ -111,6 +111,9 @@ if ($new_networkmap || $save_networkmap) {
 			case 'fdp':
 				$values['generation_method'] = 4;
 				break;
+			case 'radial_dinamic':
+				$values['generation_method'] = 6;
+				break;
 			default:
 				$values['generation_method'] = 2;
 				break;
@@ -269,15 +272,17 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 	}
 }
 else if ($migrate_networkmap) {
+	$result = migrate_older_open_maps();
+	
 	if (enterprise_installed()) {
 		enterprise_include_once ('include/functions_pandora_networkmap.php');
 		
-		$result = migrate_older_networkmap();
-		
-		$result_txt = ui_print_result_message($result,
-			__('Succesfully migrated (New map, I AM YOUR FATHER)'), __('Could not be migrated'), '',
-			true);
+		$result = migrate_older_networkmap_enterprise();
 	}
+	
+	$result_txt = ui_print_result_message($result,
+		__('Succesfully migrated (New map, I AM YOUR FATHER)'), __('Could not be migrated'), '',
+		true);
 }
 
 switch ($tab) {

@@ -106,6 +106,8 @@ if ($edit_networkmap) {
 				break;
 			case 5:
 				$method = "fdp";
+			case 6:
+				$method = "radial_dinamic";
 				break;
 		}
 		$recon_task_id = 0;
@@ -216,7 +218,8 @@ else {
 		'dot' => 'flat',
 		'circo' => 'circular',
 		'neato' => 'spring1',
-		'fdp' => 'spring2'
+		'fdp' => 'spring2',
+		'radial_dinamic' => 'radial dinamic'
 		);
 	
 	$table->data[4][0] = __('Method generation networkmap');

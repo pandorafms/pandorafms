@@ -48,6 +48,7 @@ $remote_rows = array();
 // Autocreate options row names
 // Fill this array for every matched row
 $autocreate_rows = array();
+$no_autocreate_rows = array();
 
 // LDAP data row names
 // Fill this array for every matched row
@@ -107,6 +108,9 @@ if (((int)$config['autocreate_remote_users'] === 1) && ((int)$config['ad_advance
 	$table->rowstyle['default_remote_profile'] = 'display:none;';
 	$table->rowstyle['default_remote_group'] = 'display:none;';
 	$table->rowstyle['default_assign_tags'] = 'display:none;';
+	$no_autocreate_rows[] = 'default_remote_profile';
+	$no_autocreate_rows[] = 'default_remote_group';
+	$no_autocreate_rows[] = 'default_assign_tags';
 }
 else {
 	$autocreate_rows[] = 'default_remote_profile';
@@ -129,14 +133,20 @@ $autocreate_rows[] = 'autocreate_blacklist';
 foreach ($remote_rows as $name) {
 	if (!isset($table->rowclass[$name]))
 		$table->rowclass[$name] = '';
-	$table->rowclass[$name] .= ' ' . 'remote';
+	$table->rowclass[$name] .= ' remote';
+}
+// Add the remote class to the no autocreate rows
+foreach ($no_autocreate_rows as $name) {
+	if (!isset($table->rowclass[$name]))
+		$table->rowclass[$name] = '';
+	$table->rowclass[$name] .= ' no_autocreate';
 }
 
 // Add the autocreate class to the autocreate rows
 foreach ($autocreate_rows as $name) {
 	if (!isset($table->rowclass[$name]))
 		$table->rowclass[$name] = '';
-	$table->rowclass[$name] .= ' ' . 'autocreate';
+	$table->rowclass[$name] .= ' autocreate';
 }
 
 
@@ -300,5 +310,21 @@ echo '</form>';
 			$('tr.autocreate').hide();
 		else
 			$('tr.autocreate').show();
+			
+		if (typeof $('input:radio[name=ad_advanced_config]') !== 'undefined') {
+			advanced_value = $('input:radio[name=ad_advanced_config]:checked').val();
+			if (disabled) {
+				$('tr.ad_advanced').hide();
+				$('tr.no_autocreate').hide();
+				$('input:radio[name=ad_advanced_config][value=0]').prop('checked', true);
+				$('input:radio[name=ad_advanced_config][value=1]').prop('checked', false);
+				$('input:radio[name=ad_advanced_config][value=1]').prop('checked', '');
+			}
+			else {
+				if (advanced_value == 0) {
+					$('tr.no_autocreate').show();
+				}
+			}
+		}
 	}
 </script>

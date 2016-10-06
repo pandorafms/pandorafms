@@ -30,10 +30,10 @@ if (is_ajax ()) {
 		switch ($config['dbtype']) {
 			case "mysql":
 			case "postgresql":
-				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%' . $string . '%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%")';
+				$filter[] = '(nombre COLLATE utf8_general_ci LIKE "%' . $string . '%" OR direccion LIKE "%'.$string.'%" OR comentarios LIKE "%'.$string.'%" OR alias LIKE "%'.$string.'%")';
 				break;
 			case "oracle":
-				$filter[] = '(upper(nombre) LIKE upper(\'%'.$string.'%\') OR upper(direccion) LIKE upper(\'%'.$string.'%\') OR upper(comentarios) LIKE upper(\'%'.$string.'%\'))';
+				$filter[] = '(upper(nombre) LIKE upper(\'%'.$string.'%\') OR upper(direccion) LIKE upper(\'%'.$string.'%\') OR upper(comentarios) LIKE upper(\'%'.$string.'%\') OR upper(alias) LIKE upper(\'%'.$string.'%\'))';
 				break;
 		}
 		$filter[] = 'id_agente != ' . $id_agent;
@@ -150,7 +150,7 @@ $table->style[0] = 'font-weight: bold; width: 150px;';
 $table->data = array ();
 
 $table->align[2] = 'center';
-html_debug($alias);
+
 if(!$new_agent && $alias != ''){
 	$table->data[0][0] = __('Agent name') .
 		ui_print_help_tip (__("The agent's name must be the same as the one defined at the console"), true);

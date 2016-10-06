@@ -882,6 +882,21 @@ function agents_get_group_agents ($id_group = 0, $search = false,
 			unset ($search["name"]);
 		}
 		
+		if (isset ($search["alias"])) {
+			$name = io_safe_input ($search["alias"]);
+			switch ($config["dbtype"]) {
+				case "mysql":
+				case "postgresql":
+					$filter[] = "alias COLLATE utf8_general_ci LIKE '$name'";
+					break;
+				case "oracle":
+					$filter[] = "UPPER(alias) LIKE UPPER('$name')";
+					break;
+			}
+			
+			unset ($search["alias"]);
+		}
+		
 		if (isset($search['status'])) {
 			switch ($search['status']) {
 				case AGENT_STATUS_NORMAL:

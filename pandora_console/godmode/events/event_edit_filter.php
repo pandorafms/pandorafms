@@ -82,7 +82,7 @@ if ($id) {
 		}
 	}
 	if ($id_agent != 0) {
-		$text_agent = db_get_value('nombre', 'tagente', 'id_agente', $id_agent);
+		$text_agent = db_get_value('alias', 'tagente', 'id_agente', $id_agent);
 		if ($text_agent == false) {
 			$text_agent =  '';
 		}

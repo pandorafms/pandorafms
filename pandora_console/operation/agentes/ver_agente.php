@@ -461,7 +461,7 @@ if (is_ajax ()) {
 		
 		if ($agentName != null) {
 			$search = array();
-			$search['name'] = io_safe_output($agentName);
+			$search['alias'] = io_safe_output($agentName);
 		}
 		else
 			$search = false;

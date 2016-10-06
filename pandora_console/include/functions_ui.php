@@ -3205,7 +3205,7 @@ function ui_print_agent_autocomplete_input($parameters) {
 				
 				
 				select: function( event, ui ) {
-					var agent_name = ui.item.name;
+					var agent_name = ui.item.alias;
 					var agent_id = ui.item.id;
 					var server_name = "";
 					var server_id = "";

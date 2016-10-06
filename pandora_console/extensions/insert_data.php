@@ -37,10 +37,11 @@ function createXMLData($agent, $agentModule, $time, $data) {
 	$xml = sprintf($xmlTemplate, io_safe_output(get_os_name($agent['id_os'])),
 		io_safe_output($agent['os_version']), $agent['intervalo'],
 		io_safe_output($agent['agent_version']), $time,
-		io_safe_output($agent['nombre']), $agent['timezone_offset'],
+		io_safe_output($agent['alias']), $agent['timezone_offset'],
 		io_safe_output($agentModule['nombre']), io_safe_output($agentModule['descripcion']), modules_get_type_name($agentModule['id_tipo_modulo']), $data);
-	
-	if (false === @file_put_contents($config['remote_config'] . '/' . io_safe_output($agent['nombre']) . '.' . strtotime($time) . '.data', $xml)) {
+
+
+	if (false === @file_put_contents($config['remote_config'] . '/' . io_safe_output($agent['alias']) . '.' . strtotime($time) . '.data', $xml)) {
 		return false;
 	}
 	else {
@@ -83,7 +84,7 @@ function mainInsertData() {
 			ui_print_error_message(__('You haven\'t privileges for insert data in the agent.'));
 		}
 		else {
-			$agent = db_get_row_filter('tagente', array('nombre' => $id_agent));
+			$agent = db_get_row_filter('tagente', array('alias' => $id_agent));
 			$agentModule = db_get_row_filter('tagente_modulo', array('id_agente_modulo' => $id_agent_module));
 			
 			$done = 0;

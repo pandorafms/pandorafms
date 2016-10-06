@@ -94,7 +94,7 @@ $result = db_get_all_rows_sql ($sql);
 foreach ($result as $row) {
 	$agente = "";
 	if ($row["id_agente"] != 0) {
-		$agente = db_get_sql ("SELECT nombre
+		$agente = db_get_sql ("SELECT alias
 			FROM tagente
 			WHERE id_agente = ". $row["id_agente"]);
 		$agente = $agente . " : ";

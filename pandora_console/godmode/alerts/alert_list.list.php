@@ -189,12 +189,12 @@ if ($searchFlag) {
 			case "postgresql":
 				$where .= " AND id_agent_module IN (SELECT t2.id_agente_modulo
 					FROM tagente t1 INNER JOIN tagente_modulo t2 ON t1.id_agente = t2.id_agente
-					WHERE t1.nombre LIKE '" . trim($agentName) . "')";
+					WHERE t1.alias LIKE '" . trim($agentName) . "')";
 				break;
 			case "oracle":
 				$where .= " AND id_agent_module IN (SELECT t2.id_agente_modulo
 					FROM tagente t1 INNER JOIN tagente_modulo t2 ON t1.id_agente = t2.id_agente
-					WHERE t1.nombre LIKE '" . trim($agentName) . "')";
+					WHERE t1.alias LIKE '" . trim($agentName) . "')";
 				break;
 		}
 	}
@@ -456,8 +456,8 @@ foreach ($simple_alerts as $alert) {
 		
 		if ($alert['disabled'])
 			$data[0] .= '<span style="font-style: italic; color: #aaaaaa;">';
-		$agent_name = agents_get_name ($id_agent);
-		$data[0] .= ui_print_truncate_text($agent_name, 'agent_small', false, true, true, '[&hellip;]', 'display:block;font-size: 7.2pt');
+		$alias = db_get_value ("alias","tagente","id_agente",$id_agent);
+		$data[0] .= $alias;
 		if ($alert['disabled'])
 			$data[0] .= '</span>';
 		

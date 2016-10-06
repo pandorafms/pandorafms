@@ -1149,6 +1149,7 @@ switch ($action) {
 								// Warning. We are using this column to hold this value to avoid
 								// the modification of the database for compatibility reasons.
 								$style['only_avg'] = (int) get_parameter('only_avg');
+								$style['percentil_95'] = (int) get_parameter('percentil_95');
 								if ($label != '')
 									$style['label'] = $label;
 								else
@@ -1466,6 +1467,7 @@ switch ($action) {
 								// Warning. We are using this column to hold this value to avoid
 								// the modification of the database for compatibility reasons.
 								$style['only_avg'] = (int) get_parameter('only_avg');
+								$style['percentil_95'] = (int) get_parameter('percentil_95');
 								if ($label != '')
 									$style['label'] = $label;
 								else

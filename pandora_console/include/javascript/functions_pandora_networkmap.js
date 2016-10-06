@@ -2248,6 +2248,33 @@ function init_graph(parameter_object) {
 	});
 }
 
+function myMouseoverFunction() {
+	var node_id = d3.select(this).attr("node_id");
+	var circle = d3.select("#id_node_" + node_id + " circle");
+	
+	over = circle.classed("node_over");
+	
+	in_a_node = !in_a_node;
+	
+	circle.classed("node_over", !over);
+	
+	circle.transition().duration(400)
+		.attr("r", node_radius + 10);
+}
+function myMouseoutFunction() {
+	var node_id = d3.select(this).attr("node_id");
+	var circle = d3.select("#id_node_" + node_id + " circle");
+	
+	over = circle.classed("node_over");
+	
+	in_a_node = !in_a_node;
+	
+	circle.classed("node_over", !over);
+	
+	circle.transition().duration(400)
+		.attr("r", node_radius);
+}
+
 function draw_elements_graph() {
 	link = link.data(force.links(), function(d) {
 		return d.source.id + "-" + d.target.id;
@@ -2395,12 +2422,15 @@ function draw_elements_graph() {
 		.append("circle")
 			.attr("r", node_radius)
 			.attr("class", "node_shape node_shape_circle")
+			.attr("node_id", function(d) {
+					return d.id;
+				})
 			.style("fill", function(d) {
 					return d.color;
 				})
 			.classed('dragable_node', true) //own dragable
-			.on("mouseover", over_node)
-			.on("mouseout", over_node)
+			.on("mouseover", myMouseoverFunction)
+			.on("mouseout", myMouseoutFunction)
 			.on("click", selected_node)
 			.on("contextmenu", function(d) { show_menu("node", d);});
 	
@@ -2462,10 +2492,13 @@ function draw_elements_graph() {
 		.attr("height", function(d) {
 				return d.image_height;
 			})
+		.attr("node_id", function(d) {
+				return d.id;
+			})
 		.attr("id", "image2995")
 		.classed('dragable_node', true) //own dragable
-		.on("mouseover", over_node)
-		.on("mouseout", over_node)
+		.on("mouseover", myMouseoverFunction)
+		.on("mouseout", myMouseoutFunction)
 		.on("click", selected_node)
 		.on("contextmenu", function(d) { show_menu("node", d);});
 		
@@ -2484,8 +2517,6 @@ function draw_elements_graph() {
 					return d.text;
 				})
 		.classed('dragable_node', true) //own dragable
-		.on("mouseover", over_node)
-		.on("mouseout", over_node)
 		.on("click", selected_node)
 		.on("contextmenu", function(d) { show_menu("node", d);});
 		

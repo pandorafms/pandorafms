@@ -1047,7 +1047,7 @@ function set_positions_graph() {
 			return d.x;
 		})
 		.attr("y", function(d) {
-			return d.y + node_radius  + 12;
+			return d.y + node_radius  + 30;
 		});
 	
 	draw_minimap();
@@ -2632,7 +2632,7 @@ function draw_elements_graph() {
 		
 	node_temp.append("text")
 		.attr("class", "node_text")
-		.attr("style", "font-size: 32px; font-style:normal; font-weight:normal; line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans")
+		.attr("style", "font-size: 32px; font-style:normal; font-weight:normal; line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Verdana")
 		.attr("x", function(d) {
 				return d.x;
 			})

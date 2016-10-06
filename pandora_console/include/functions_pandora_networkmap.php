@@ -1240,8 +1240,8 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 	}
 	
 	.node_selected {
-		stroke:#999;
-		stroke-width:3;
+		stroke:#717171;
+		stroke-width:5;
 	}
 	
 	.node_children {

@@ -470,7 +470,7 @@ function update_link(row_index, id_link) {
 	});
 }
 
-function edit_node(data) {
+function edit_node(data, dblClick) {
 	if (enterprise_installed) {
 		var flag_edit_node = true;
 		var edit_node = null
@@ -484,10 +484,14 @@ function edit_node(data) {
 		else if (selection[0].length > 1) {
 			edit_node = selection[0].pop();
 		}
+		else if (dblClick){
+			edit_node = d3.select("#id_node_" + data['id']);
+			edit_node = edit_node[0][0];
+		}
 		else {
 			flag_edit_node = false;
 		}
-		
+		console.log(edit_node);
 		if (flag_edit_node) {
 			d3.selectAll('.node_selected')
 				.classed("node_selected", false);
@@ -961,7 +965,6 @@ function zoom(manual) {
 		manual = false;
 	}
 	
-	
 	if (manual) {
 		layer_graph.attr("transform",
 			"translate(" + translation + ")scale(" + scale + ")");
@@ -1047,7 +1050,7 @@ function set_positions_graph() {
 			return d.x;
 		})
 		.attr("y", function(d) {
-			return d.y + node_radius  + 30;
+			return d.y + node_radius  + 24;
 		});
 	
 	draw_minimap();
@@ -1283,7 +1286,7 @@ function show_menu(item, data) {
 						}
 					},
 					"callback": function(key, options) {
-						edit_node(data);
+						edit_node(data, false);
 					}
 				};
 			items_list["children"] = {
@@ -2492,6 +2495,9 @@ function draw_elements_graph() {
 			.on("mouseover", myMouseoverCircleFunction)
 			.on("mouseout", myMouseoutCircleFunction)
 			.on("click", selected_node)
+			.on("dblclick", function(d) {
+					edit_node(d, true);
+				})
 			.on("contextmenu", function(d) { show_menu("node", d);});
 	
 	node_temp.append("image")
@@ -2518,7 +2524,9 @@ function draw_elements_graph() {
 		.classed('dragable_node', true) //own dragable
 		.on("mouseover", myMouseoverCircleFunction)
 		.on("mouseout", myMouseoutCircleFunction)
-		.on("click", selected_node)
+		.on("dblclick", function(d) {
+				edit_node(d, true);
+			})
 		.on("contextmenu", function(d) { show_menu("node", d);});
 	
 	//Shape square
@@ -2540,6 +2548,9 @@ function draw_elements_graph() {
 			.on("mouseover", myMouseoverSquareFunction)
 			.on("mouseout", myMouseoutSquareFunction)
 			.on("click", selected_node)
+			.on("dblclick", function(d) {
+					edit_node(d, true);
+				})
 			.on("contextmenu", function(d) { show_menu("node", d);});
 			
 	node_temp.filter(function(d) {
@@ -2571,6 +2582,9 @@ function draw_elements_graph() {
 		.on("mouseover", myMouseoverSquareFunction)
 		.on("mouseout", myMouseoutSquareFunction)
 		.on("click", selected_node)
+		.on("dblclick", function(d) {
+				edit_node(d, true);
+			})
 		.on("contextmenu", function(d) { show_menu("node", d);});
 	
 	//Shape rhombus
@@ -2594,6 +2608,9 @@ function draw_elements_graph() {
 			.on("mouseover", myMouseoverRhombusFunction)
 			.on("mouseout", myMouseoutRhombusFunction)
 			.on("click", selected_node)
+			.on("dblclick", function(d) {
+					edit_node(d, true);
+				})
 			.on("contextmenu", function(d) { show_menu("node", d);});
 			
 	node_temp.filter(function(d) {
@@ -2625,6 +2642,9 @@ function draw_elements_graph() {
 		.on("mouseover", myMouseoverRhombusFunction)
 		.on("mouseout", myMouseoutRhombusFunction)
 		.on("click", selected_node)
+		.on("dblclick", function(d) {
+				edit_node(d, true);
+			})
 		.on("contextmenu", function(d) { show_menu("node", d);});
 	
 	node_temp.append("title")

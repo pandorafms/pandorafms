@@ -119,6 +119,7 @@ function networkmap_process_networkmap($id = 0) {
 			$old_mode);
 		
 		$filename_dot = sys_get_temp_dir() . "/networkmap_" . $filter;
+		
 		if ($simple) {
 			$filename_dot .= "_simple";
 		}
@@ -133,14 +134,12 @@ function networkmap_process_networkmap($id = 0) {
 		
 		$cmd = "$filter -Tplain -o " . $filename_plain . " " .
 			$filename_dot;
-		
+
 		system ($cmd);
-		
-		unlink($filename_dot);
 		
 		$nodes = networkmap_loadfile($id, $filename_plain,
 			$relation_nodes, $graph);
-		
+			
 		//Set the position of modules
 		foreach ($nodes as $key => $node) {
 			if ($node['type'] == 'module') {
@@ -159,7 +158,7 @@ function networkmap_process_networkmap($id = 0) {
 			}
 		}
 		
-		unlink($filename_plain);
+		
 		
 		$nodes_and_relations['nodes'] = array();
 		$index = 0;
@@ -243,6 +242,9 @@ function networkmap_process_networkmap($id = 0) {
 		db_process_sql_update('tmap',
 			array('center_x' => $networkmap['center_x'], 'center_y' => $networkmap['center_y']),
 			array('id' => $id));
+			
+		unlink($filename_plain);
+		unlink($filename_dot);
 	}
 	
 	return $nodes_and_relations;
@@ -1240,7 +1242,7 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 	}
 	
 	.node_selected {
-		stroke:#717171;
+		stroke:#343434;
 		stroke-width:5;
 	}
 	

@@ -1080,7 +1080,17 @@ sub connect_pandora_agents($$$$) {
 	}
 
 	# Update parents.
-	db_do($DBH, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $agent_2->{'id_agente'}, $agent_1->{'id_agente'});
+	if (!defined($PARENTS{$agent_2->{'id_agente'}}) &&
+	    (!defined($PARENTS{$agent_1->{'id_agente'}}) ||
+	    $PARENTS{$agent_1->{'id_agente'}} != $agent_2->{'id_agente'})) {
+		$PARENTS{$agent_2->{'id_agente'}} = $agent_1->{'id_agente'};
+		db_do($DBH, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $agent_1->{'id_agente'}, $agent_2->{'id_agente'});
+	} elsif (!defined($PARENTS{$agent_1->{'id_agente'}}) &&
+	    (!defined($PARENTS{$agent_2->{'id_agente'}}) ||
+	    $PARENTS{$agent_2->{'id_agente'}} != $agent_1->{'id_agente'})) {
+		$PARENTS{$agent_1->{'id_agente'}} = $agent_2->{'id_agente'};
+		db_do($DBH, 'UPDATE tagente SET id_parent=? WHERE id_agente=?', $agent_2->{'id_agente'}, $agent_1->{'id_agente'});
+	}
 }
 
 

@@ -4535,7 +4535,10 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 					false,
 					'',
 					$time_compare_overlapped,
-					true);
+					true,
+					true,
+					'white',
+					($content['style']['percentil_95'] == 1) ? 95 : null);
 			}
 			break;
 		case 'data':

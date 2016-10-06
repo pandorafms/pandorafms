@@ -2248,7 +2248,7 @@ function init_graph(parameter_object) {
 	});
 }
 
-function myMouseoverFunction() {
+function myMouseoverCircleFunction() {
 	var node_id = d3.select(this).attr("node_id");
 	var circle = d3.select("#id_node_" + node_id + " circle");
 	
@@ -2261,7 +2261,7 @@ function myMouseoverFunction() {
 	circle.transition().duration(400)
 		.attr("r", node_radius + 10);
 }
-function myMouseoutFunction() {
+function myMouseoutCircleFunction() {
 	var node_id = d3.select(this).attr("node_id");
 	var circle = d3.select("#id_node_" + node_id + " circle");
 	
@@ -2273,6 +2273,66 @@ function myMouseoutFunction() {
 	
 	circle.transition().duration(400)
 		.attr("r", node_radius);
+}
+
+function myMouseoverSquareFunction() {
+	var node_id = d3.select(this).attr("node_id");
+	var square = d3.select("#id_node_" + node_id + " rect");
+	
+	over = square.classed("node_over");
+	
+	in_a_node = !in_a_node;
+	
+	square.classed("node_over", !over);
+	
+	square.transition().duration(400)
+		.attr("width", (node_radius * 2) + 10)
+		.attr("height", (node_radius * 2) + 10)
+		.attr("transform", "translate(" + (-5) + "," + (-5) + ")");
+}
+function myMouseoutSquareFunction() {
+	var node_id = d3.select(this).attr("node_id");
+	var square = d3.select("#id_node_" + node_id + " rect");
+	
+	over = square.classed("node_over");
+	
+	in_a_node = !in_a_node;
+	
+	square.classed("node_over", !over);
+	
+	square.transition().duration(400)
+		.attr("width", (node_radius * 2))
+		.attr("height", (node_radius * 2))
+		.attr("transform", "translate(" + 0 + "," + 0 + ")");
+}
+
+function myMouseoverRhombusFunction() {
+	var node_id = d3.select(this).attr("node_id");
+	var rhombus = d3.select("#id_node_" + node_id + " rect");
+	
+	over = rhombus.classed("node_over");
+	
+	in_a_node = !in_a_node;
+	
+	rhombus.classed("node_over", !over);
+	
+	rhombus.transition().duration(400)
+		.attr("width", (node_radius * 1.5) + 10)
+		.attr("height", (node_radius * 1.5) + 10);
+}
+function myMouseoutRhombusFunction() {
+	var node_id = d3.select(this).attr("node_id");
+	var rhombus = d3.select("#id_node_" + node_id + " rect");
+	
+	over = rhombus.classed("node_over");
+	
+	in_a_node = !in_a_node;
+	
+	rhombus.classed("node_over", !over);
+	
+	rhombus.transition().duration(400)
+		.attr("width", (node_radius * 1.5))
+		.attr("height", (node_radius * 1.5));
 }
 
 function draw_elements_graph() {
@@ -2429,51 +2489,10 @@ function draw_elements_graph() {
 					return d.color;
 				})
 			.classed('dragable_node', true) //own dragable
-			.on("mouseover", myMouseoverFunction)
-			.on("mouseout", myMouseoutFunction)
+			.on("mouseover", myMouseoverCircleFunction)
+			.on("mouseout", myMouseoutCircleFunction)
 			.on("click", selected_node)
 			.on("contextmenu", function(d) { show_menu("node", d);});
-	
-	//Shape square
-	node_temp.filter(function(d) {
-			if (d.shape == 'square') {return true;}
-			else return false;
-		})
-		.append("rect")
-			.attr("width", node_radius * 2)
-			.attr("height", node_radius * 2)
-			.attr("class", "node_shape node_shape_square")
-			.style("fill", function(d) {
-					return d.color;
-				})
-			.classed('dragable_node', true) //own dragable
-			.on("mouseover", over_node)
-			.on("mouseout", over_node)
-			.on("click", selected_node)
-			.on("contextmenu", function(d) { show_menu("node", d);});
-	
-	//Shape rhombus
-	node_temp.filter(function(d) {
-			if (d.shape == 'rhombus') {return true;}
-			else return false;
-		})
-		.append("rect")
-			.attr("transform",
-				"")
-			.attr("width", node_radius * 1.5)
-			.attr("height", node_radius * 1.5)
-			.attr("class", "node_shape node_shape_rhombus")
-			.style("fill", function(d) {
-					return d.color;
-				})
-			.classed('dragable_node', true) //own dragable
-			.on("mouseover", over_node)
-			.on("mouseout", over_node)
-			.on("click", selected_node)
-			.on("contextmenu", function(d) { show_menu("node", d);});
-	
-	node_temp.append("title")
-		.text(function(d) {return d.text; });
 	
 	node_temp.append("image")
 		.attr("class", "node_image")
@@ -2497,10 +2516,119 @@ function draw_elements_graph() {
 			})
 		.attr("id", "image2995")
 		.classed('dragable_node', true) //own dragable
-		.on("mouseover", myMouseoverFunction)
-		.on("mouseout", myMouseoutFunction)
+		.on("mouseover", myMouseoverCircleFunction)
+		.on("mouseout", myMouseoutCircleFunction)
 		.on("click", selected_node)
 		.on("contextmenu", function(d) { show_menu("node", d);});
+	
+	//Shape square
+	node_temp.filter(function(d) {
+			if (d.shape == 'square') {return true;}
+			else return false;
+		})
+		.append("rect")
+			.attr("width", node_radius * 2)
+			.attr("height", node_radius * 2)
+			.attr("class", "node_shape node_shape_square")
+			.attr("node_id", function(d) {
+					return d.id;
+				})
+			.style("fill", function(d) {
+					return d.color;
+				})
+			.classed('dragable_node', true) //own dragable
+			.on("mouseover", myMouseoverSquareFunction)
+			.on("mouseout", myMouseoutSquareFunction)
+			.on("click", selected_node)
+			.on("contextmenu", function(d) { show_menu("node", d);});
+			
+	node_temp.filter(function(d) {
+			if (d.shape == 'square') {return true;}
+			else return false;
+		})
+		.append("image")
+		.attr("class", "node_image")
+		.attr("xlink:href", function(d) {
+				return d.image_url;
+			})
+		.attr("x", function(d) {
+				return d.x - (d.image_width / 2);
+			})
+		.attr("y", function(d) {
+				return d.y - (d.image_height / 2);
+			})
+		.attr("width", function(d) {
+				return d.image_width;
+			})
+		.attr("height", function(d) {
+				return d.image_height;
+			})
+		.attr("node_id", function(d) {
+				return d.id;
+			})
+		.attr("id", "image2995")
+		.classed('dragable_node', true) //own dragable
+		.on("mouseover", myMouseoverSquareFunction)
+		.on("mouseout", myMouseoutSquareFunction)
+		.on("click", selected_node)
+		.on("contextmenu", function(d) { show_menu("node", d);});
+	
+	//Shape rhombus
+	node_temp.filter(function(d) {
+			if (d.shape == 'rhombus') {return true;}
+			else return false;
+		})
+		.append("rect")
+			.attr("transform",
+				"")
+			.attr("width", node_radius * 1.5)
+			.attr("height", node_radius * 1.5)
+			.attr("class", "node_shape node_shape_rhombus")
+			.attr("node_id", function(d) {
+					return d.id;
+				})
+			.style("fill", function(d) {
+					return d.color;
+				})
+			.classed('dragable_node', true) //own dragable
+			.on("mouseover", myMouseoverRhombusFunction)
+			.on("mouseout", myMouseoutRhombusFunction)
+			.on("click", selected_node)
+			.on("contextmenu", function(d) { show_menu("node", d);});
+			
+	node_temp.filter(function(d) {
+			if (d.shape == 'rhombus') {return true;}
+			else return false;
+		})
+		.append("image")
+		.attr("class", "node_image")
+		.attr("xlink:href", function(d) {
+				return d.image_url;
+			})
+		.attr("x", function(d) {
+				return d.x - (d.image_width / 2);
+			})
+		.attr("y", function(d) {
+				return d.y - (d.image_height / 2);
+			})
+		.attr("width", function(d) {
+				return d.image_width;
+			})
+		.attr("height", function(d) {
+				return d.image_height;
+			})
+		.attr("node_id", function(d) {
+				return d.id;
+			})
+		.attr("id", "image2995")
+		.classed('dragable_node', true) //own dragable
+		.on("mouseover", myMouseoverRhombusFunction)
+		.on("mouseout", myMouseoutRhombusFunction)
+		.on("click", selected_node)
+		.on("contextmenu", function(d) { show_menu("node", d);});
+	
+	node_temp.append("title")
+		.text(function(d) {return d.text; });
 		
 	node_temp.append("text")
 		.attr("class", "node_text")

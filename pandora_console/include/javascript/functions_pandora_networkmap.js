@@ -900,7 +900,6 @@ function function_close_minimap() {
 function delete_nodes() {
 	if (enterprise_installed) {
 		var selection = d3.selectAll('.node_selected');
-		
 		selection
 			.each(function(d) {
 				//Avoid to delete pandora node center

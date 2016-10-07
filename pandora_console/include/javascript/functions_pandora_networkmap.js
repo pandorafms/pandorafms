@@ -1334,7 +1334,14 @@ function show_menu(item, data) {
 							}
 						},
 						"callback": function(key, options) {
-							set_parent(data);
+							var selection = d3.selectAll('.node_selected');
+							selection = selection[0];
+							if (selection.length > 1) {
+								alert("Yo no tengo dedo, por eso no poido trabajo");
+							}
+							else {
+								set_parent(data);
+							}
 						}
 					};
 				}

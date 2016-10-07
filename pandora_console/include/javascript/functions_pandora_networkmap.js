@@ -491,7 +491,7 @@ function edit_node(data, dblClick) {
 		else {
 			flag_edit_node = false;
 		}
-		console.log(edit_node);
+		
 		if (flag_edit_node) {
 			d3.selectAll('.node_selected')
 				.classed("node_selected", false);
@@ -1067,7 +1067,6 @@ function over_node(d) {
 }
 
 function selected_node(d, selected_param, hold_other_selections) {
-	
 	if (typeof(selected_param) == "boolean") {
 		selected = !selected_param; //because the next negate
 	}
@@ -2524,6 +2523,7 @@ function draw_elements_graph() {
 		.classed('dragable_node', true) //own dragable
 		.on("mouseover", myMouseoverCircleFunction)
 		.on("mouseout", myMouseoutCircleFunction)
+		.on("click", selected_node)
 		.on("dblclick", function(d) {
 				edit_node(d, true);
 			})

@@ -1147,6 +1147,10 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 					$value .= " " . $unit_text;
 				}
 			}
+			
+			$value = preg_replace ('/\n/i','<br>',$value);
+			$value =  preg_replace ('/\s/i','&nbsp;',$value);
+			
 			return $value;
 			break;
 		case SIMPLE_VALUE_MAX:

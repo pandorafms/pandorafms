@@ -371,6 +371,39 @@ class serviceInsideService(PandoraWebDriverTestCase):
 
 			element = driver.find_element_by_xpath('//td/img[@data-title="Critical"]')
 			self.assertIsInstance(element,WebElement)
-			
+
+		@is_enterprise
+		def test_C_service_warning(self):
+
+				u"""
+				Comprobar que un servicio padre hereda el estado del hijo, en este caso "warning"
+				"""
+
+				father_service_name = gen_random_string(6)
+				service_name = gen_random_string(6)
+
+				driver = self.driver
+
+				#Creamos el servicio añadiendo el modulo ok y warning y el servicio será crit
+				create_service(driver,service_name,"Applications",self.agent_name,description=service_name,mode="manual",critical="1",warning="0.5")
+
+				add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_warning_1_name,description=self.module_warning_1_name,warning_weight="0.3")
+				add_elements_to_service(driver,service_name,"Module",agent_name=self.agent_name,module=self.module_critical_1_name,description=self.module_critical_1_name,critical_weight="0.3")
+
+				#Creamos el servicio padre
+				create_service(driver,father_service_name,"Applications",self.agent_name,description="this is the father service",mode="manual")
+
+				add_elements_to_service(driver,father_service_name,"Service",service_to_add=father_service_name,description=service_name,ok_weight="0.2")
+
+				force_service(driver,service_name)
+
+				force_service(driver,father_service_name)
+
+				search_service(driver,father_service_name,go_to_service=False)
+
+				element = driver.find_element_by_xpath('//td/img[@data-title="Critical"]')
+				self.assertIsInstance(element,WebElement)
+		
+	
 if __name__ == "__main__":
 	unittest2.main()

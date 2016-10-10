@@ -75,7 +75,7 @@ function networkmap_process_networkmap($id = 0) {
 	$show_snmp_modules = false;
 	$dont_show_subgroups = false;
 	
-	$id_group = $networkmap['id_group'];;
+	$id_group = $networkmap['id_group'];
 	$ip_mask = "";
 	switch ($networkmap['source']) {
 		case 1:
@@ -157,8 +157,6 @@ function networkmap_process_networkmap($id = 0) {
 				}
 			}
 		}
-		
-		
 		
 		$nodes_and_relations['nodes'] = array();
 		$index = 0;

@@ -376,10 +376,25 @@ switch ($tab) {
 						$network_map['name'] . '</a>';
 				}
 				
-				$count = db_get_value_sql(
-					'SELECT COUNT(*)
-					FROM titem
-					WHERE id_map = ' . $network_map['id'] . ' AND deleted = 0');
+				
+				if ($network_map['id_group'] > 0) {
+					$nodes = db_get_all_rows_sql("SELECT style FROM titem WHERE id_map = " . $network_map['id'] . " AND deleted = 0");
+					$count = 0;
+					foreach ($nodes as $node) {
+						$node_style = json_decode($node['style'], true);
+						if ($node_style['id_group'] == $network_map['id_group']) {
+							$count++;
+						}
+					}
+				}
+				else {
+					$count = db_get_value_sql(
+						'SELECT COUNT(*)
+						FROM titem
+						WHERE id_map = ' . $network_map['id'] . ' AND deleted = 0');
+				}
+				
+				
 				if (empty($count))
 					$count = 0;
 				

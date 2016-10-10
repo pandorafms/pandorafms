@@ -137,9 +137,11 @@ function networkmap_process_networkmap($id = 0) {
 
 		system ($cmd);
 		
+		unlink($filename_dot);
+		
 		$nodes = networkmap_loadfile($id, $filename_plain,
 			$relation_nodes, $graph);
-			
+		
 		//Set the position of modules
 		foreach ($nodes as $key => $node) {
 			if ($node['type'] == 'module') {
@@ -242,7 +244,6 @@ function networkmap_process_networkmap($id = 0) {
 			array('id' => $id));
 			
 		unlink($filename_plain);
-		unlink($filename_dot);
 	}
 	
 	return $nodes_and_relations;
@@ -577,14 +578,6 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 					$item['source'] = $node['id'];
 				}
 			}
-			else if ($node['id_agent'] == 0 && $node['text'] == "") {
-				if ($node['id'] == $relation['id_parent']) {
-					$item['target'] = $node['id'];
-				}
-				else if($node['id'] == $relation['id_child']) {
-					$item['source'] = $node['id'];
-				}
-			}
 			else {
 				if ($node['id_agent'] == $agent) {
 					$item['target'] = $node['id'];
@@ -849,9 +842,6 @@ function networkmap_loadfile($id = 0, $file = '',
 			
 			if (strpos($node_id, "transp_") !== false) {
 				//removed the transparent nodes
-			}
-			else if ($data['text'] == "" && $data['image'] == "" && $data['id_agent'] == 0) {
-				//removed weird nodes
 			}
 			else {
 				$networkmap_nodes[$node_id] = $data;

@@ -327,7 +327,6 @@ function networkmap_generate_dot ($pandora_name, $group = 0,
 					unknown_count, total_count, notinit_count'), 'AR',
 					array('field' => 'id_parent', 'order' => 'ASC'));
 		}
-		
 	}
 	else if ($group == -666) {
 		$agents = false;

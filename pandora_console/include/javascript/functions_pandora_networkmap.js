@@ -545,26 +545,32 @@ function edit_node(data, dblClick) {
 				url: action="ajax.php",
 				async: false,
 				success: function (data) {
-					jQuery.each(data, function(j, interface) {
+					if (data.length == 0) {
 						$("#interface_information").find('tbody')
-							.append($('<tr>')
-								.append($('<td>')
-									.html(interface['name'])
-								)
-								.append($('<td>')
-									.html(interface['status'])
-								)
-								.append($('<td>')
-									.html(interface['graph'])
-								)
-								.append($('<td>')
-									.html(interface['ip'])
-								)
-								.append($('<td>')
-									.html(interface['mac'])
-								)
-							);
-					});
+							.append($('<tr>').html("<p style=\"text-align: center;\">It has no interface to display</p>"));
+					}
+					else {
+						jQuery.each(data, function(j, interface) {
+							$("#interface_information").find('tbody')
+								.append($('<tr>')
+									.append($('<td>')
+										.html(interface['name'])
+									)
+									.append($('<td>')
+										.html(interface['status'])
+									)
+									.append($('<td>')
+										.html(interface['graph'])
+									)
+									.append($('<td>')
+										.html(interface['ip'])
+									)
+									.append($('<td>')
+										.html(interface['mac'])
+									)
+								);
+						});
+					}
 				}
 			});
 			

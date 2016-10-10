@@ -406,8 +406,8 @@ button.ui-button::-moz-focus-inner {
 }
 .ui-dialog .ui-dialog-titlebar {
 	padding: .4em 1em;
-	padding-top: 5px;
-	padding-bottom: 5px;
+	padding-top: 8px;
+	padding-bottom: 8px;
 	/*margin: 3px;*/
 	position: relative;
 }
@@ -426,6 +426,7 @@ button.ui-button::-moz-focus-inner {
 	margin: 0px 0 0 0;
 	padding: 1px;
 	height: 20px;
+	bottom: 20%;
 }
 .ui-dialog .ui-dialog-content {
 	position: relative;
@@ -1234,6 +1235,7 @@ body .ui-tooltip {
 }
 
 .ui-dialog {
+	box-shadow: 5px 5px 19px #4e4e4e;
 	border: 0px;
 }
 

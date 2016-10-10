@@ -1152,48 +1152,62 @@ function is_in_rel_array ($relations, $relation) {
 	return $is_in_array;
 }
 
-function migrate_older_open_maps() {
-	global $config;
+function map_migrated($id) {
+	$new_maps = db_get_all_rows_sql("SELECT filter FROM tmap");
+	$new_map_filter = json_decode($new_maps, true);
 	
-	$older_networkmaps = db_get_all_rows_sql("SELECT * FROM tnetwork_map");
-	
-	foreach ($older_networkmaps as $old_networkmap) {
-		$map_values = array();
-		$map_values['id_group'] = $old_networkmap['id_group'];
-		$map_values['id_user'] = $old_networkmap['id_user'];
-		$map_values['type'] = 0;
-		$map_values['subtype'] = 0;
-		$map_values['name'] = $old_networkmap['name'];
-		
-		$new_map_filter = array();
-		$new_map_filter['dont_show_subgroups'] = $old_networkmap['dont_show_subgroups'];
-		$new_map_filter['node_radius'] = 40;
-		$map_values['filter'] = json_encode($new_map_filter);
-		
-		$map_values['description'] = "Mapa open migrado";
-		$map_values['width'] = 4000;
-		$map_values['height'] = 4000;
-		$map_values['center_x'] = 2000;
-		$map_values['center_y'] = 2000;
-		$map_values['background'] = "";
-		$map_values['background_options'] = 0;
-		$map_values['source_period'] = 60;
-		$map_values['source'] = 0;
-		$map_values['source_data'] = $old_networkmap['id_group'];
-		if ($old_networkmap['type'] == 'radial_dinamic') {
-			$map_values['generation_method'] = 6;
-		}
-		else {
-			$map_values['generation_method'] = 4;
-		}
-		$map_values['generated'] = 0;
-		
-		$id_new_map = db_process_sql_insert('tmap', $map_values);
-		
-		if (!$id_new_map) {
-			return false;
+	foreach ($new_map_filter as $filter) {
+		if ((isset($filter['id_migrate_map'])) && ($filter['id_migrate_map'] == $id)) {
+			return true;
 		}
 	}
+	
+	return false;
+}
+
+function migrate_older_open_maps($id) {
+	global $config;
+	
+	$old_networkmap = db_get_row_filter('tnetwork_map',
+		array('id_networkmap' => $id));
+	
+	$map_values = array();
+	$map_values['id_group'] = $old_networkmap['id_group'];
+	$map_values['id_user'] = $old_networkmap['id_user'];
+	$map_values['type'] = 0;
+	$map_values['subtype'] = 0;
+	$map_values['name'] = $old_networkmap['name'];
+	
+	$new_map_filter = array();
+	$new_map_filter['dont_show_subgroups'] = $old_networkmap['dont_show_subgroups'];
+	$new_map_filter['node_radius'] = 40;
+	$new_map_filter['id_migrate_map'] = $id;
+	$map_values['filter'] = json_encode($new_map_filter);
+	
+	$map_values['description'] = "Mapa open migrado";
+	$map_values['width'] = 4000;
+	$map_values['height'] = 4000;
+	$map_values['center_x'] = 2000;
+	$map_values['center_y'] = 2000;
+	$map_values['background'] = "";
+	$map_values['background_options'] = 0;
+	$map_values['source_period'] = 60;
+	$map_values['source'] = 0;
+	$map_values['source_data'] = $old_networkmap['id_group'];
+	if ($old_networkmap['type'] == 'radial_dinamic') {
+		$map_values['generation_method'] = 6;
+	}
+	else {
+		$map_values['generation_method'] = 4;
+	}
+	$map_values['generated'] = 0;
+	
+	$id_new_map = db_process_sql_insert('tmap', $map_values);
+	
+	if (!$id_new_map) {
+		return false;
+	}
+	
 	return true;
 }
 

@@ -1049,13 +1049,18 @@ function set_positions_graph() {
 		.attr("y", function(d) {
 			return d.y - (d.image_height / 2);
 		});
-		
+	
+	var position_text = 40;
+	if (node_radius > 100) {
+		position_text = 60;
+	}
+	
 	node.selectAll(".node_text")
 		.attr("x", function(d) {
 			return d.x;
 		})
 		.attr("y", function(d) {
-			return d.y + node_radius  + 24;
+			return d.y + node_radius  + position_text;
 		});
 	
 	draw_minimap();
@@ -2661,10 +2666,15 @@ function draw_elements_graph() {
 	
 	node_temp.append("title")
 		.text(function(d) {return d.text; });
-		
+	
+	var font_size = "32px";
+	if (node_radius > 100) {
+		font_size = "64px";
+	}
+	
 	node_temp.append("text")
 		.attr("class", "node_text")
-		.attr("style", "font-size: 32px; font-style:normal; font-weight:normal; line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Verdana")
+		.attr("style", "font-style:normal; font-weight:normal; line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;")
 		.attr("x", function(d) {
 				return d.x;
 			})
@@ -2672,7 +2682,7 @@ function draw_elements_graph() {
 				return d.y + node_radius + 12;
 			})
 		.append("tspan")
-			.attr("style", "text-align:center; text-anchor:middle; fill:#000000")
+			.attr("style", "font-size: " + font_size + " !important; font-family:Verdana; text-align:center; text-anchor:middle; fill:#000000")
 			.text(function(d) {
 					return d.text;
 				})

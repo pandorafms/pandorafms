@@ -1468,7 +1468,7 @@ function networkmap_open_graph ($layout, $nooverlap, $pure, $zoom,
 	
 	$head .= "ratio=fill;";
 	$head .= "root=0;";
-	$head .= "nodesep=\"0.5\";";
+	$head .= "nodesep=\"0.02\";";
 	$head .= "size=\"$size\";";
 	
 	$head .= "\n";

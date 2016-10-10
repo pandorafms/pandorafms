@@ -37,7 +37,6 @@ $update_networkmap = (bool) get_parameter('update_networkmap', false);
 $copy_networkmap = (bool) get_parameter('copy_networkmap', false);
 $delete = (bool) get_parameter('delete', false);
 $tab = (string) get_parameter('tab', 'list');
-$migrate_networkmap = (string) get_parameter('migrate_networkmap', false);
 
 $result_txt = '';
 // The networkmap doesn't exist yet
@@ -271,19 +270,6 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
 			true);
 	}
 }
-else if ($migrate_networkmap) {
-	$result = migrate_older_open_maps();
-	
-	if (enterprise_installed()) {
-		enterprise_include_once ('include/functions_pandora_networkmap.php');
-		
-		$result = migrate_older_networkmap_enterprise();
-	}
-	
-	$result_txt = ui_print_result_message($result,
-		__('Succesfully migrated (New map, I AM YOUR FATHER)'), __('Could not be migrated'), '',
-		true);
-}
 
 switch ($tab) {
 	case 'edit':
@@ -293,6 +279,38 @@ switch ($tab) {
 		require('pandora_networkmap.view.php');
 		break;
 	case 'list':
+		$old_networkmaps_enterprise = array();
+		$old_networkmaps_open = array();
+		
+		if (enterprise_installed()) {
+			$old_networkmaps_enterprise = db_get_all_rows_sql("SELECT id FROM tnetworkmap_enterprise");
+		}
+		$old_networkmaps_open = db_get_all_rows_sql("SELECT id_networkmap FROM tnetwork_map");
+		
+		foreach ($old_networkmaps_enterprise as $old_map_ent) {
+			if (!map_migrated($old_map_ent['id'])) {
+				if (enterprise_installed()) {
+					enterprise_include_once ('include/functions_pandora_networkmap.php');
+					
+					$return = migrate_older_networkmap_enterprise($old_map_ent['id']);
+					
+					if (!$return) {
+						break;
+					}
+				}
+			}
+		}
+		
+		foreach ($old_networkmaps_enterprise as $old_map_ent) {
+			if (!map_migrated($old_map_ent['id'])) {
+				$return = migrate_older_open_maps($old_map_ent['id']);
+			}
+			
+			if (!$return) {
+				break;
+			}
+		}
+		
 		ui_print_page_header(__('Networkmap'),
 			"images/op_network.png", false, "network_map_enterprise",
 			false);
@@ -376,7 +394,6 @@ switch ($tab) {
 						$network_map['name'] . '</a>';
 				}
 				
-				
 				if ($network_map['id_group'] > 0) {
 					$nodes = db_get_all_rows_sql("SELECT style FROM titem WHERE id_map = " . $network_map['id'] . " AND deleted = 0");
 					$count = 0;
@@ -393,7 +410,6 @@ switch ($tab) {
 						FROM titem
 						WHERE id_map = ' . $network_map['id'] . ' AND deleted = 0');
 				}
-				
 				
 				if (empty($count))
 					$count = 0;
@@ -445,13 +461,6 @@ switch ($tab) {
 			html_print_submit_button (__('Create networkmap'), 'crt', false, 'class="sub next" style="float: right;"');
 			echo "</form>";
 			echo "</div>";
-			
-			echo "<div style='width: " . $table->width . "; margin-top: 5px;'>";
-			echo '<form method="post" action="index.php?sec=network&amp;sec2=operation/agentes/pandora_networkmap">';
-			html_print_input_hidden ('migrate_networkmap', 1);
-			html_print_submit_button (__('Migrate older networkmaps'), 'crt', false, 'class="sub next" style="float: left;"');
-			echo "</form>";
-			echo "</div>";	
 		}
 		
 		break;

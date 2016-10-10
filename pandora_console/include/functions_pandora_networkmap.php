@@ -565,9 +565,6 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 				$agent = $relation['id_parent_source_data'];
 			}
 		}
-		else if (($relation['parent_type'] == 3) && ($relation['child_type'] == 3)) {
-			
-		}
 		else {
 			$agent = $relation['id_parent_source_data'];
 			$agent2 = $relation['id_child_source_data'];
@@ -579,6 +576,14 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 					$item['target'] = $node['id'];
 				}
 				else if($node['id'] == $agent2) {
+					$item['source'] = $node['id'];
+				}
+			}
+			else if ($node['id_agent'] == 0 && $node['text'] == "") {
+				if ($node['id'] == $relation['id_parent']) {
+					$item['target'] = $node['id'];
+				}
+				else if($node['id'] == $relation['id_child']) {
 					$item['source'] = $node['id'];
 				}
 			}

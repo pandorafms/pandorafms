@@ -850,6 +850,9 @@ function networkmap_loadfile($id = 0, $file = '',
 			if (strpos($node_id, "transp_") !== false) {
 				//removed the transparent nodes
 			}
+			else if ($data['text'] == "" && $data['image'] == "" && $data['id_agent'] == 0) {
+				//removed weird nodes
+			}
 			else {
 				$networkmap_nodes[$node_id] = $data;
 			}

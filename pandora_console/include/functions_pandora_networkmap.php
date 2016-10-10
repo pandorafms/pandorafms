@@ -1312,7 +1312,7 @@ if (empty($list_networkmaps))
 	$list_networkmaps = array();
 ?>
 
-<div id="dialog_node_edit" style="display: none; background-color: #e6e6e6;" title="<?php echo __('Edit node');?>">
+<div id="dialog_node_edit" style="display: none;" title="<?php echo __('Edit node');?>">
 	<div style="text-align: left; width: 100%;">
 	<?php
 	

@@ -36,6 +36,7 @@ if (is_ajax ()) {
 	$update_z = (bool)get_parameter('update_z', false);
 	$module_get_status = (bool)get_parameter('module_get_status', false);
 	$update_node_alert = (bool)get_parameter('update_node_alert', false);
+	$process_migration = (bool)get_parameter('process_migration', false);
 	
 	if ($module_get_status) {
 		$id = (int)get_parameter('id', 0);
@@ -607,6 +608,72 @@ if (is_ajax ()) {
 		}
 		
 		echo json_encode($return);
+		
+		return;
+	}
+	
+	if ($process_migration) {
+		$old_maps_ent = get_parameter('old_maps_ent', true);
+		
+		$old_maps_open = get_parameter('old_maps_open', true);
+		
+		$return_data = array();
+		
+		$return_data['ent'] = true;
+		if ($old_maps_ent != 0) {
+			$old_maps_ent = explode(",", $old_maps_ent);
+			if (enterprise_installed()) {
+				foreach ($old_maps_ent as $id_ent_map) {
+					$return = migrate_older_networkmap_enterprise($id_ent_map);
+					
+					if (!$return) {
+						$return_data['ent'] = false;
+						break;
+					}
+					else {
+						$old_networkmap_ent = db_get_row_filter('tnetworkmap_enterprise',
+							array('id' => $id_ent_map));
+								
+						$options = json_decode($old_networkmap_ent, true);
+						$options['migrated'] = "migrated";
+						
+						$values['options'] = json_encode($options);
+						
+						$return_update = db_process_sql_update('tnetworkmap_enterprise', $values, array('id' => $id_ent_map));
+						if (!$return_update) {
+							$return_data['ent'] = false;
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		$return_data['open'] = true;
+		if ($old_maps_open != 0) {
+			$old_maps_open = explode(",", $old_maps_open);
+			foreach ($old_maps_open as $id_open_map) {
+				$return = migrate_older_open_maps($id_open_map);
+				if (!$return) {
+					$return_data['open'] = false;
+					break;
+				}
+				else {
+					$old_networkmap_open = db_get_row_filter('tnetwork_map',
+						array('id_networkmap' => $id_open_map));
+					
+					$values['text_filter'] = "migrated";
+					
+					$return_update = db_process_sql_update('tnetwork_map', $values, array('id_networkmap' => $id_ent_map));
+					if (!$return_update) {
+						$return_data['open'] = false;
+						break;
+					}
+				}
+			}
+		}
+		
+		echo json_encode($return_data);
 		
 		return;
 	}

@@ -283,32 +283,83 @@ switch ($tab) {
 		$old_networkmaps_open = array();
 		
 		if (enterprise_installed()) {
-			$old_networkmaps_enterprise = db_get_all_rows_sql("SELECT id FROM tnetworkmap_enterprise");
+			$old_networkmaps_enterprise = db_get_all_rows_sql("SELECT * FROM tnetworkmap_enterprise");
 		}
-		$old_networkmaps_open = db_get_all_rows_sql("SELECT id_networkmap FROM tnetwork_map");
+		$old_networkmaps_open = db_get_all_rows_sql("SELECT * FROM tnetwork_map");
 		
+		$ent_maps_to_migrate = array();
 		foreach ($old_networkmaps_enterprise as $old_map_ent) {
-			if (!map_migrated($old_map_ent['id'])) {
-				if (enterprise_installed()) {
-					enterprise_include_once ('include/functions_pandora_networkmap.php');
-					
-					$return = migrate_older_networkmap_enterprise($old_map_ent['id']);
-					
-					if (!$return) {
-						break;
-					}
-				}
-			}
-		}
-		
-		foreach ($old_networkmaps_enterprise as $old_map_ent) {
-			if (!map_migrated($old_map_ent['id'])) {
-				$return = migrate_older_open_maps($old_map_ent['id']);
-			}
+			$old_map_options = json_decode($old_map_ent['options'], true);
 			
-			if (!$return) {
-				break;
+			if (!isset($old_map_options['migrated'])) {
+				$ent_maps_to_migrate[] = $old_map_ent['id'];
 			}
+		}
+		
+		$open_maps_to_migrate = array();
+		foreach ($old_networkmaps_open as $old_map_open) {
+			$text_filter = $old_map_open['text_filter'];
+			
+			if ($text_filter != "migrated") {
+				$open_maps_to_migrate[] = $old_map_open['id'];
+			}
+		}
+		
+		if (!empty($ent_maps_to_migrate) || !empty($open_maps_to_migrate)) {
+			?>
+			<div id="migration_dialog" style="text-align: center;">
+				<p style="text-align: center;"><strong>Networkmaps are not migrated, wait while migration is processed...</strong></p>
+				<br>
+				<img style="vertical-align: middle;" src="images/spinner.gif"> 
+			</div>
+			<script>
+				$("#migration_dialog").dialog({
+											close: function() {document.location.href = document.location.href;}
+										});
+				
+				var old_maps_ent = "<?php echo implode(",", $ent_maps_to_migrate); ?>";
+				var old_maps_open = "<?php echo implode(",", $open_maps_to_migrate); ?>";
+				
+				if (old_maps_ent == "") {
+					old_maps_ent = 0;
+				}
+				if (old_maps_open == "") {
+					old_maps_open = 0;
+				}
+				
+				var params = [];
+				params.push("process_migration=1");
+				params.push("old_maps_ent=" + old_maps_ent);
+				params.push("old_maps_open=" + old_maps_open);
+				params.push("page=operation/agentes/pandora_networkmap.view");
+				jQuery.ajax ({
+					data: params.join ("&"),
+					dataType: 'json',
+					type: 'POST',
+					url: action="ajax.php",
+					success: function (data) {
+						var html_message = "";
+						if (data['ent'] && data['open']) {
+							html_message = "<p><strong>Complete migrations without errors</strong></p>"
+							$("#migration_dialog").html(html_message);
+						}
+						else if (data['ent']) {
+							html_message = "<p><strong>Complete migrations with open maps errors</strong></p>"
+							$("#migration_dialog").html(html_message);
+						}
+						else if (data['open']) {
+							html_message = "<p><strong>Complete migrations with enterprise maps errors</strong></p>"
+							$("#migration_dialog").html(html_message);
+						}
+						else {
+							html_message = "<p><strong>Complete migrations with errors</strong></p>"
+							$("#migration_dialog").html(html_message);
+						}
+					}
+				});
+				
+			</script>
+			<?php
 		}
 		
 		ui_print_page_header(__('Networkmap'),

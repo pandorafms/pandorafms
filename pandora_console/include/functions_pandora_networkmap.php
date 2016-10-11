@@ -1238,8 +1238,16 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 					<img id="image_arrow_minimap" src="images/minimap_open_arrow.png" />
 				</a>
 			</div>';
+			
+			echo '<div id="hide_labels" style="position: absolute; right: 0px; top: 0px;">
+					<a title="' . __('Hide Labels') . '" href="javascript: hide_labels();">
+						<img id="image_hide_show_labels" src="images/delete.png" />
+					</a>
+				</div>';
 		
 	echo '</div>';
+	
+	
 	?>
 <style type="text/css">
 	.node {

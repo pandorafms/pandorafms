@@ -872,6 +872,35 @@ function add_agent_node(agents) {
 	}
 }
 
+function hide_labels() {
+	if (show_labels) {
+		hide_labels_function();
+	}
+	else {
+		show_labels_function();
+	}
+}
+
+function hide_labels_function() {
+	show_labels = false;
+	
+	//Change the image arrow
+	$("#hide_labels > a").attr("title", "Show Labels");
+	$("#image_hide_show_labels").attr("src", "images/refresh.png");
+	
+	d3.selectAll(".node_text").style("display", "none");
+}
+
+function show_labels_function() {
+	show_labels = true;
+	console.log("PINTA");
+	//Change the image arrow
+	$("#hide_labels > a").attr("title", "Hide Labels");
+	$("#image_hide_show_labels").attr("src", "images/delete.png");
+	
+	d3.selectAll(".node_text").style("display", "");
+}
+
 function toggle_minimap() {	
 	if (show_minimap) {
 		function_close_minimap();
@@ -1919,6 +1948,7 @@ function init_graph(parameter_object) {
 	window.minimap_w = 0;
 	window.minimap_h = 0;
 	window.show_minimap = false;
+	window.show_labels = true;
 	window.context_minimap;
 	
 	window.holding_area_dimensions = [200, 200];

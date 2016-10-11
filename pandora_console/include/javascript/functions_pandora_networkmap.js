@@ -8,14 +8,23 @@ function draw_minimap() {
 	context_minimap.fillStyle = "#ddd";
 	context_minimap.fillRect(0, 0, minimap_w, minimap_h);
 	
+	var relation_min_nodes = minimap_relation;
+	var relation_minimap_w = 2;
+	var relation_minimap_h = 2;
+	if (graph.nodes.length > 100) {
+		relation_min_nodes = 0.01;
+		relation_minimap_w = 2.5;
+		relation_minimap_h = 1.5;
+	}
+	
 	//Draw the items and lines
 	jQuery.each(graph.nodes, function (key, value) {
 		if (typeof(value) == 'undefined') return;
 		
 		context_minimap.beginPath();
 		//Paint the item
-		center_orig_x = (value.x + value.image_width / 2) * minimap_relation;
-		center_orig_y = (value.y + value.image_height / 2) * minimap_relation;
+		center_orig_x = (value.x + value.image_width / 4) * relation_min_nodes + minimap_w / relation_minimap_w;
+		center_orig_y = (value.y + value.image_height / 4) * relation_min_nodes + minimap_h / relation_minimap_h;
 		
 		context_minimap.arc(center_orig_x,
 			center_orig_y, 2, 0, Math.PI * 2, false);
@@ -33,10 +42,10 @@ function draw_minimap() {
 	context_minimap.beginPath();
 	context_minimap.strokeStyle = "#3f3f3f";
 	context_minimap.strokeRect(
-		(-translation[0] / scale) * minimap_relation,
-		(-translation[1] / scale) * minimap_relation,
-		width_svg * minimap_relation / scale,
-		height_svg * minimap_relation / scale);
+		(-translation[0] / scale) * relation_min_nodes + minimap_w / relation_minimap_w,
+		(-translation[1] / scale) * relation_min_nodes + minimap_h / relation_minimap_h,
+		width_svg * relation_min_nodes / scale,
+		height_svg * relation_min_nodes / scale);
 	
 	context_minimap.beginPath();
 	context_minimap.strokeStyle = "#82B92E";

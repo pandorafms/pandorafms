@@ -23,8 +23,14 @@ function draw_minimap() {
 		
 		context_minimap.beginPath();
 		//Paint the item
-		center_orig_x = (value.x + value.image_width / 4) * relation_min_nodes + minimap_w / relation_minimap_w;
-		center_orig_y = (value.y + value.image_height / 4) * relation_min_nodes + minimap_h / relation_minimap_h;
+		if (graph.nodes.length > 100) {
+			center_orig_x = (value.x + value.image_width / 4) * relation_min_nodes + minimap_w / relation_minimap_w;
+			center_orig_y = (value.y + value.image_height / 4) * relation_min_nodes + minimap_h / relation_minimap_h;
+		}
+		else {
+			center_orig_x = (value.x + value.image_width / 2) * relation_min_nodes;
+			center_orig_y = (value.y + value.image_height / 2) * relation_min_nodes;
+		}
 		
 		context_minimap.arc(center_orig_x,
 			center_orig_y, 2, 0, Math.PI * 2, false);
@@ -38,15 +44,27 @@ function draw_minimap() {
 		context_minimap.fill();
 	});
 	
-	//Draw the rect of viewport
-	context_minimap.beginPath();
-	context_minimap.strokeStyle = "#3f3f3f";
-	context_minimap.strokeRect(
-		(-translation[0] / scale) * relation_min_nodes + minimap_w / relation_minimap_w,
-		(-translation[1] / scale) * relation_min_nodes + minimap_h / relation_minimap_h,
-		width_svg * relation_min_nodes / scale,
-		height_svg * relation_min_nodes / scale);
-	
+	if (graph.nodes.length > 100) {
+		//Draw the rect of viewport
+		context_minimap.beginPath();
+		context_minimap.strokeStyle = "#3f3f3f";
+		context_minimap.strokeRect(
+			(-translation[0] / scale) * relation_min_nodes + minimap_w / relation_minimap_w,
+			(-translation[1] / scale) * relation_min_nodes + minimap_h / relation_minimap_h,
+			width_svg * relation_min_nodes / scale,
+			height_svg * relation_min_nodes / scale);
+	}
+	else {
+		//Draw the rect of viewport
+		context_minimap.beginPath();
+		context_minimap.strokeStyle = "#f00";
+		context_minimap.strokeRect(
+			(-translation[0] / scale) * relation_min_nodes,
+			(-translation[1] / scale) * relation_min_nodes,
+			width_svg * relation_min_nodes / scale,
+			height_svg * relation_min_nodes / scale);
+	}
+		
 	context_minimap.beginPath();
 	context_minimap.strokeStyle = "#82B92E";
 	context_minimap.strokeRect(
@@ -895,7 +913,7 @@ function hide_labels_function() {
 	
 	//Change the image arrow
 	$("#hide_labels > a").attr("title", "Show Labels");
-	$("#image_hide_show_labels").attr("src", "images/refresh.png");
+	$("#image_hide_show_labels").attr("src", "images/icono_refresh_networkmaps.png");
 	
 	d3.selectAll(".node_text").style("display", "none");
 }
@@ -905,7 +923,7 @@ function show_labels_function() {
 	console.log("PINTA");
 	//Change the image arrow
 	$("#hide_labels > a").attr("title", "Hide Labels");
-	$("#image_hide_show_labels").attr("src", "images/delete.png");
+	$("#image_hide_show_labels").attr("src", "images/icono_delete_networkmaps.png");
 	
 	d3.selectAll(".node_text").style("display", "");
 }

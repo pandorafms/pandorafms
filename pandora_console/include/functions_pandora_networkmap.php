@@ -1241,7 +1241,7 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 			
 			echo '<div id="hide_labels" style="position: absolute; right: 10px; top: 10px;">
 					<a title="' . __('Hide Labels') . '" href="javascript: hide_labels();">
-						<img id="image_hide_show_labels" src="images/delete.png" />
+						<img id="image_hide_show_labels" src="images/icono_delete_networkmaps.png" />
 					</a>
 				</div>';
 		

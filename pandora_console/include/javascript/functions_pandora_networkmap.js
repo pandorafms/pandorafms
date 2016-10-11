@@ -2721,7 +2721,7 @@ function draw_elements_graph() {
 	node_temp.append("title")
 		.text(function(d) {return d.text; });
 	
-	var font_size = node_radius / 1.8 + "px";
+	var font_size = (node_radius / 2.5);
 	
 	node_temp.append("text")
 		.attr("class", "node_text")
@@ -2733,7 +2733,7 @@ function draw_elements_graph() {
 				return d.y + node_radius + 12;
 			})
 		.append("tspan")
-			.attr("style", "font-size: " + font_size + " !important; font-family:Verdana; text-align:center; text-anchor:middle; fill:#000000")
+			.attr("style", "font-size: " + font_size + "px !important; font-family:Verdana; text-align:center; text-anchor:middle; fill:#000000")
 			.text(function(d) {
 					return d.text;
 				})

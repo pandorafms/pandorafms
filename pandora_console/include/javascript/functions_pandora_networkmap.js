@@ -13,7 +13,7 @@ function draw_minimap() {
 	var relation_minimap_h = 2;
 	if (graph.nodes.length > 100) {
 		relation_min_nodes = 0.01;
-		relation_minimap_w = 2.5;
+		relation_minimap_w = (graph.nodes.length / 100) * 2.5;
 		relation_minimap_h = 1.5;
 	}
 	
@@ -920,7 +920,7 @@ function hide_labels_function() {
 
 function show_labels_function() {
 	show_labels = true;
-	console.log("PINTA");
+	
 	//Change the image arrow
 	$("#hide_labels > a").attr("title", "Hide Labels");
 	$("#image_hide_show_labels").attr("src", "images/icono_delete_networkmaps.png");
@@ -1106,10 +1106,7 @@ function set_positions_graph() {
 			return d.y - (d.image_height / 2);
 		});
 	
-	var position_text = 40;
-	if (node_radius > 100) {
-		position_text = 60;
-	}
+	var position_text = node_radius * 0.6;
 	
 	node.selectAll(".node_text")
 		.attr("x", function(d) {
@@ -2724,10 +2721,7 @@ function draw_elements_graph() {
 	node_temp.append("title")
 		.text(function(d) {return d.text; });
 	
-	var font_size = "32px";
-	if (node_radius > 100) {
-		font_size = "64px";
-	}
+	var font_size = node_radius / 1.8 + "px";
 	
 	node_temp.append("text")
 		.attr("class", "node_text")

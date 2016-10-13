@@ -366,9 +366,6 @@ switch ($tab) {
 			"images/op_network.png", false, "network_map_enterprise",
 			false);
 		
-		//Information to correct configuration
-		ui_print_message (__('The default display will depend on the definition and topology detected by Pandora.'), 'info');
-		
 		echo $result_txt;
 		
 		$table = new stdClass();

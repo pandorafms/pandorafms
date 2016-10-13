@@ -1248,10 +1248,25 @@ function update_networkmap() {
 // Minimap
 ////////////////////////////////////////////////////////////////////////
 function init_minimap() {
+	var relation_min_nodes = minimap_relation;
+	var relation_minimap_w = 2;
+	var relation_minimap_h = 2;
+	
+	if (graph.nodes.length > 100) {
+		relation_min_nodes = 0.01;
+		relation_minimap_w = (graph.nodes.length / 100) * 2.5;
+		relation_minimap_h = 1.5;
+	}
+	
 	$("#minimap").bind("mousemove", function(event) {
-		
-		var x = event.pageX - $("#minimap").offset().left;
-		var y = event.pageY - $("#minimap").offset().top;
+		if (graph.nodes.length > 100) {
+			var x = event.pageX - $("#minimap").offset().left - minimap_w / relation_minimap_w;
+			var y = event.pageY - $("#minimap").offset().top - minimap_h / relation_minimap_h;
+		}
+		else {
+			var x = event.pageX - $("#minimap").offset().left;
+			var y = event.pageY - $("#minimap").offset().top;
+		}
 		
 		if (inner_minimap_box(x, y)) {
 			document.body.style.cursor = "pointer";
@@ -1261,8 +1276,8 @@ function init_minimap() {
 		}
 		
 		if (minimap_drag) {
-			translation[0] = -(x * scale) / minimap_relation + width_svg / 2;
-			translation[1] = -(y * scale) / minimap_relation + height_svg / 2;
+			translation[0] = -(x * scale) / relation_min_nodes + width_svg / 2;
+			translation[1] = -(y * scale) / relation_min_nodes + height_svg / 2;
 			
 			zoom(true);
 			
@@ -1302,13 +1317,17 @@ function init_minimap() {
 	});
 	
 	$("#minimap").click(function(event) {
+		if (graph.nodes.length > 100) {
+			var x = event.pageX - $("#minimap").offset().left - minimap_w / relation_minimap_w;
+			var y = event.pageY - $("#minimap").offset().top - minimap_h / relation_minimap_h;
+		}
+		else {
+			var x = event.pageX - $("#minimap").offset().left;
+			var y = event.pageY - $("#minimap").offset().top;
+		}
 		
-		var x = event.pageX - $("#minimap").offset().left;
-		var y = event.pageY - $("#minimap").offset().top;
-		
-		//DISABLE TO TEST
-		translation[0] = -(x * scale) / minimap_relation + width_svg / 2;
-		translation[1] = -(y * scale) / minimap_relation + height_svg / 2;
+		translation[0] = -(x * scale) / relation_min_nodes + width_svg / 2;
+		translation[1] = -(y * scale) / relation_min_nodes + height_svg / 2;
 		
 		zoom(true);
 		
@@ -2721,7 +2740,7 @@ function draw_elements_graph() {
 	node_temp.append("title")
 		.text(function(d) {return d.text; });
 	
-	var font_size = (node_radius / 2.5);
+	var font_size = (node_radius / 2.8);
 	
 	node_temp.append("text")
 		.attr("class", "node_text")

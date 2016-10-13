@@ -256,8 +256,9 @@ function change_shape(id_db_node) {
 						if (element.id_db == id_db_node) {
 							graph.nodes[i].shape = shape;
 							
-							$("#id_node_" + i + " rect").remove();
-							$("#id_node_" + i + " circle").remove();
+							$("#id_node_" + element.id + " rect").remove();
+							$("#id_node_" + element.id + " circle").remove();
+							$("#id_node_" + element.id + " image").remove();
 							
 							if (shape == 'circle') {
 								d3.select("#id_node_" + element.id)
@@ -268,9 +269,51 @@ function change_shape(id_db_node) {
 											return d.color;
 										})
 									.classed('dragable_node', true) //own dragable
-									.on("mouseover", over_node)
-									.on("mouseout", over_node)
+									.on("mouseover", function(d) {
+										myMouseoverCircleFunction(d.id)
+										})
+									.on("mouseout", function(d) {
+										myMouseoutCircleFunction(d.id)
+										})
 									.on("click", selected_node)
+									.on("dblclick", function(d) {
+											edit_node(d, true);
+										})
+									.on("contextmenu", function(d) { show_menu("node", d);});
+									
+								d3.select("#id_node_" + element.id)
+									.append("image")
+									.attr("class", "node_image")
+									.attr("xlink:href", function(d) {
+											return d.image_url;
+										})
+									.attr("x", function(d) {
+											return d.x - (d.image_width / 2);
+										})
+									.attr("y", function(d) {
+											return d.y - (d.image_height / 2);
+										})
+									.attr("width", function(d) {
+											return (node_radius / 0.8);
+										})
+									.attr("height", function(d) {
+											return (node_radius / 0.8);
+										})
+									.attr("node_id", function(d) {
+											return d.id;
+										})
+									.attr("id", "image2995")
+									.classed('dragable_node', true) //own dragable
+									.on("mouseover", function(d) {
+										myMouseoverCircleFunction(d.id)
+										})
+									.on("mouseout", function(d) {
+										myMouseoutCircleFunction(d.id)
+										})
+									.on("click", selected_node)
+									.on("dblclick", function(d) {
+											edit_node(d, true);
+										})
 									.on("contextmenu", function(d) { show_menu("node", d);});
 								
 							}
@@ -284,10 +327,52 @@ function change_shape(id_db_node) {
 												return d.color;
 											})
 										.classed('dragable_node', true) //own dragable
-										.on("mouseover", over_node)
-										.on("mouseout", over_node)
+										.on("mouseover", function(d) {
+											myMouseoverSquareFunction(d.id)
+											})
+										.on("mouseout", function(d) {
+											myMouseoutSquareFunction(d.id)
+											})
 										.on("click", selected_node)
+										.on("dblclick", function(d) {
+												edit_node(d, true);
+											})
 										.on("contextmenu", function(d) { show_menu("node", d);});
+										
+								d3.select("#id_node_" + element.id)
+									.append("image")
+									.attr("class", "node_image")
+									.attr("xlink:href", function(d) {
+											return d.image_url;
+										})
+									.attr("x", function(d) {
+											return d.x - (d.image_width / 2);
+										})
+									.attr("y", function(d) {
+											return d.y - (d.image_height / 2);
+										})
+									.attr("width", function(d) {
+											return (node_radius / 0.8);
+										})
+									.attr("height", function(d) {
+											return (node_radius / 0.8);
+										})
+									.attr("node_id", function(d) {
+											return d.id;
+										})
+									.attr("id", "image2995")
+									.classed('dragable_node', true) //own dragable
+									.on("mouseover", function(d) {
+										myMouseoverSquareFunction(d.id)
+										})
+									.on("mouseout", function(d) {
+										myMouseoutSquareFunction(d.id)
+										})
+									.on("click", selected_node)
+									.on("dblclick", function(d) {
+											edit_node(d, true);
+										})
+									.on("contextmenu", function(d) { show_menu("node", d);});
 								
 							}
 							else if (shape == 'rhombus') {
@@ -302,11 +387,52 @@ function change_shape(id_db_node) {
 												return d.color;
 											})
 										.classed('dragable_node', true) //own dragable
-										.on("mouseover", over_node)
-										.on("mouseout", over_node)
+										.on("mouseover", function(d) {
+											myMouseoverRhombusFunction(d.id)
+											})
+										.on("mouseout", function(d) {
+											myMouseoutRhombusFunction(d.id)
+											})
 										.on("click", selected_node)
+										.on("dblclick", function(d) {
+												edit_node(d, true);
+											})
 										.on("contextmenu", function(d) { show_menu("node", d);});
-								
+										
+								d3.select("#id_node_" + element.id)
+									.append("image")
+									.attr("class", "node_image")
+									.attr("xlink:href", function(d) {
+											return d.image_url;
+										})
+									.attr("x", function(d) {
+											return d.x - (d.image_width / 2);
+										})
+									.attr("y", function(d) {
+											return d.y - (d.image_height / 2);
+										})
+									.attr("width", function(d) {
+											return (node_radius / 0.8);
+										})
+									.attr("height", function(d) {
+											return (node_radius / 0.8);
+										})
+									.attr("node_id", function(d) {
+											return d.id;
+										})
+									.attr("id", "image2995")
+									.classed('dragable_node', true) //own dragable
+									.on("mouseover", function(d) {
+										myMouseoverRhombusFunction(d.id)
+										})
+									.on("mouseout", function(d) {
+										myMouseoutRhombusFunction(d.id)
+										})
+									.on("click", selected_node)
+									.on("dblclick", function(d) {
+											edit_node(d, true);
+										})
+									.on("contextmenu", function(d) { show_menu("node", d);});	
 							}
 							
 						}
@@ -1100,10 +1226,10 @@ function set_positions_graph() {
 	
 	node.selectAll(".node_image")
 		.attr("x", function(d) {
-			return d.x - (d.image_width / 2);
+			return d.x - ((node_radius / 0.8) / 2);
 		})
 		.attr("y", function(d) {
-			return d.y - (d.image_height / 2);
+			return d.y - ((node_radius / 0.8) / 2);
 		});
 	
 	var position_text = node_radius * 0.6;
@@ -2340,10 +2466,9 @@ function init_graph(parameter_object) {
 	});
 }
 
-function myMouseoverCircleFunction() {
-	var node_id = d3.select(this).attr("node_id");
+function myMouseoverCircleFunction(node_id) {
 	var circle = d3.select("#id_node_" + node_id + " circle");
-	
+
 	over = circle.classed("node_over");
 	
 	in_a_node = !in_a_node;
@@ -2353,8 +2478,7 @@ function myMouseoverCircleFunction() {
 	circle.transition().duration(400)
 		.attr("r", node_radius + 10);
 }
-function myMouseoutCircleFunction() {
-	var node_id = d3.select(this).attr("node_id");
+function myMouseoutCircleFunction(node_id) {
 	var circle = d3.select("#id_node_" + node_id + " circle");
 	
 	over = circle.classed("node_over");
@@ -2367,8 +2491,7 @@ function myMouseoutCircleFunction() {
 		.attr("r", node_radius);
 }
 
-function myMouseoverSquareFunction() {
-	var node_id = d3.select(this).attr("node_id");
+function myMouseoverSquareFunction(node_id) {
 	var square = d3.select("#id_node_" + node_id + " rect");
 	
 	over = square.classed("node_over");
@@ -2382,8 +2505,7 @@ function myMouseoverSquareFunction() {
 		.attr("height", (node_radius * 2) + 10)
 		.attr("transform", "translate(" + (-5) + "," + (-5) + ")");
 }
-function myMouseoutSquareFunction() {
-	var node_id = d3.select(this).attr("node_id");
+function myMouseoutSquareFunction(node_id) {
 	var square = d3.select("#id_node_" + node_id + " rect");
 	
 	over = square.classed("node_over");
@@ -2398,8 +2520,7 @@ function myMouseoutSquareFunction() {
 		.attr("transform", "translate(" + 0 + "," + 0 + ")");
 }
 
-function myMouseoverRhombusFunction() {
-	var node_id = d3.select(this).attr("node_id");
+function myMouseoverRhombusFunction(node_id) {
 	var rhombus = d3.select("#id_node_" + node_id + " rect");
 	
 	over = rhombus.classed("node_over");
@@ -2412,8 +2533,7 @@ function myMouseoverRhombusFunction() {
 		.attr("width", (node_radius * 1.5) + 10)
 		.attr("height", (node_radius * 1.5) + 10);
 }
-function myMouseoutRhombusFunction() {
-	var node_id = d3.select(this).attr("node_id");
+function myMouseoutRhombusFunction(node_id) {
 	var rhombus = d3.select("#id_node_" + node_id + " rect");
 	
 	over = rhombus.classed("node_over");
@@ -2581,8 +2701,12 @@ function draw_elements_graph() {
 					return d.color;
 				})
 			.classed('dragable_node', true) //own dragable
-			.on("mouseover", myMouseoverCircleFunction)
-			.on("mouseout", myMouseoutCircleFunction)
+			.on("mouseover", function(d) {
+				myMouseoverCircleFunction(d.id)
+				})
+			.on("mouseout", function(d) {
+				myMouseoutCircleFunction(d.id)
+				})
 			.on("click", selected_node)
 			.on("dblclick", function(d) {
 					edit_node(d, true);
@@ -2601,18 +2725,22 @@ function draw_elements_graph() {
 				return d.y - (d.image_height / 2);
 			})
 		.attr("width", function(d) {
-				return d.image_width;
+				return (node_radius / 0.8);
 			})
 		.attr("height", function(d) {
-				return d.image_height;
+				return (node_radius / 0.8);
 			})
 		.attr("node_id", function(d) {
 				return d.id;
 			})
 		.attr("id", "image2995")
 		.classed('dragable_node', true) //own dragable
-		.on("mouseover", myMouseoverCircleFunction)
-		.on("mouseout", myMouseoutCircleFunction)
+		.on("mouseover", function(d) {
+			myMouseoverCircleFunction(d.id)
+			})
+		.on("mouseout", function(d) {
+			myMouseoutCircleFunction(d.id)
+			})
 		.on("click", selected_node)
 		.on("dblclick", function(d) {
 				edit_node(d, true);
@@ -2635,8 +2763,12 @@ function draw_elements_graph() {
 					return d.color;
 				})
 			.classed('dragable_node', true) //own dragable
-			.on("mouseover", myMouseoverSquareFunction)
-			.on("mouseout", myMouseoutSquareFunction)
+			.on("mouseover", function(d) {
+				myMouseoverSquareFunction(d.id)
+				})
+			.on("mouseout", function(d) {
+				myMouseoutSquareFunction(d.id)
+				})
 			.on("click", selected_node)
 			.on("dblclick", function(d) {
 					edit_node(d, true);
@@ -2659,18 +2791,22 @@ function draw_elements_graph() {
 				return d.y - (d.image_height / 2);
 			})
 		.attr("width", function(d) {
-				return d.image_width;
+				return (node_radius / 0.8);
 			})
 		.attr("height", function(d) {
-				return d.image_height;
+				return (node_radius / 0.8);
 			})
 		.attr("node_id", function(d) {
 				return d.id;
 			})
 		.attr("id", "image2995")
 		.classed('dragable_node', true) //own dragable
-		.on("mouseover", myMouseoverSquareFunction)
-		.on("mouseout", myMouseoutSquareFunction)
+		.on("mouseover", function(d) {
+			myMouseoverSquareFunction(d.id)
+			})
+		.on("mouseout", function(d) {
+			myMouseoutSquareFunction(d.id)
+			})
 		.on("click", selected_node)
 		.on("dblclick", function(d) {
 				edit_node(d, true);
@@ -2695,8 +2831,12 @@ function draw_elements_graph() {
 					return d.color;
 				})
 			.classed('dragable_node', true) //own dragable
-			.on("mouseover", myMouseoverRhombusFunction)
-			.on("mouseout", myMouseoutRhombusFunction)
+			.on("mouseover", function(d) {
+				myMouseoverRhombusFunction(d.id)
+				})
+			.on("mouseout", function(d) {
+				myMouseoutRhombusFunction(d.id)
+				})
 			.on("click", selected_node)
 			.on("dblclick", function(d) {
 					edit_node(d, true);
@@ -2719,18 +2859,22 @@ function draw_elements_graph() {
 				return d.y - (d.image_height / 2);
 			})
 		.attr("width", function(d) {
-				return d.image_width;
+				return (node_radius / 0.8);
 			})
 		.attr("height", function(d) {
-				return d.image_height;
+				return (node_radius / 0.8);
 			})
 		.attr("node_id", function(d) {
 				return d.id;
 			})
 		.attr("id", "image2995")
 		.classed('dragable_node', true) //own dragable
-		.on("mouseover", myMouseoverRhombusFunction)
-		.on("mouseout", myMouseoutRhombusFunction)
+		.on("mouseover", function(d) {
+			myMouseoverRhombusFunction(d.id)
+			})
+		.on("mouseout", function(d) {
+			myMouseoutRhombusFunction(d.id)
+			})
 		.on("click", selected_node)
 		.on("dblclick", function(d) {
 				edit_node(d, true);

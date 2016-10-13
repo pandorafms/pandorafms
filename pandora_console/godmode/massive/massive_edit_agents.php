@@ -59,7 +59,7 @@ if ($update_agents) {
 	if (get_parameter ('id_os', '') != -1)
 		$values['id_os'] = get_parameter ('id_os');
 	if (get_parameter ('id_parent', '') != '')
-		$values['id_parent'] = agents_get_agent_id(get_parameter('id_parent'));
+		$values['id_parent'] = get_parameter('id_agent_parent', 0);	
 	if (get_parameter ('server_name', '') != -1)
 		$values['server_name'] = get_parameter ('server_name');
 	if (get_parameter ('description', '') != '')
@@ -269,7 +269,10 @@ $params = array();
 $params['return'] = true;
 $params['show_helptip'] = true;
 $params['input_name'] = 'id_parent';
-$params['value'] = agents_get_name ($id_parent);
+$params['print_hidden_input_idagent'] = true;
+$params['hidden_input_idagent_name'] = 'id_agent_parent';
+$params['hidden_input_idagent_value'] = $id_parent;
+$params['value'] = db_get_value ("alias","tagente","id_agente",$id_parent);
 $table->data[0][1] = ui_print_agent_autocomplete_input($params);
 
 $table->data[0][1] .= "<b>" . __('Cascade protection'). "</b>&nbsp;" .

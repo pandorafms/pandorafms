@@ -1147,7 +1147,7 @@ if ($update_module) {
 		$edit_module = true;
 		
 		db_pandora_audit("Agent management",
-			"Fail to try update module '$name' for agent " . $agent["nombre"]);
+			"Fail to try update module '$name' for agent " . $agent["alias"]);
 	}
 	else {
 		if ($prediction_module == 3) {
@@ -1165,7 +1165,7 @@ if ($update_module) {
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		
 		db_pandora_audit("Agent management",
-			"Updated module '$name' for agent ".$agent["nombre"], false, false, io_json_mb_encode($values));
+			"Updated module '$name' for agent ".$agent["alias"], false, false, io_json_mb_encode($values));
 	}
 }
 
@@ -1278,7 +1278,7 @@ if ($create_module) {
 		$edit_module = true;
 		$moduletype = $id_module;
 		db_pandora_audit("Agent management",
-			"Fail to try added module '$name' for agent ".$agent["nombre"]);
+			"Fail to try added module '$name' for agent ".$agent["alias"]);
 	}
 	else {
 		if ($prediction_module == 3) {
@@ -1296,7 +1296,7 @@ if ($create_module) {
 		
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		db_pandora_audit("Agent management",
-			"Added module '$name' for agent ".$agent["nombre"], false, true, io_json_mb_encode($values));
+			"Added module '$name' for agent ".$agent["alias"], false, true, io_json_mb_encode($values));
 	}
 }
 
@@ -1413,7 +1413,7 @@ if ($delete_module) { // DELETE agent module !
 		
 		$agent = db_get_row ('tagente', 'id_agente', $id_agente);
 		db_pandora_audit("Agent management",
-			"Deleted module '".$module_data["nombre"]."' for agent ".$agent["nombre"]);
+			"Deleted module '".$module_data["nombre"]."' for agent ".$agent["alias"]);
 	}
 }
 
@@ -1444,11 +1444,11 @@ if (!empty($duplicate_module)) { // DUPLICATE agent module !
 	
 	if ($result) {
 		db_pandora_audit("Agent management",
-			"Duplicate module '".$id_duplicate_module."' for agent " . $agent["nombre"] . " with the new id for clon " . $result);
+			"Duplicate module '".$id_duplicate_module."' for agent " . $agent["alias"] . " with the new id for clon " . $result);
 	}
 	else {
 		db_pandora_audit("Agent management",
-			"Fail to try duplicate module '".$id_duplicate_module."' for agent " . $agent["nombre"]);
+			"Fail to try duplicate module '".$id_duplicate_module."' for agent " . $agent["alias"]);
 	}
 }
 

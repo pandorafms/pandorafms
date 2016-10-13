@@ -98,8 +98,8 @@ if (is_ajax ()) {
 		$filter['order'] = "nombre ASC";
 		
 		// Build fields
-		$fields = array('id_agente', 'nombre');
-		
+		$fields = array('id_agente', 'alias');
+
 		// Perform search
 		$agents = db_get_all_rows_filter('tagente', $filter, $fields);
 		if (empty($agents)) $agents = array();
@@ -148,8 +148,8 @@ if (is_ajax ()) {
 		
 		$groups = users_get_groups ($config["id_user"], "AW", false);
 		$group_id_list = ($groups ? join(",",array_keys($groups)):"0");
-		
-		$sql = 'SELECT DISTINCT(t1.nombre) as name
+
+		$sql = 'SELECT DISTINCT(t1.alias) as name
 			FROM tagente t1, tagente_modulo t2
 			WHERE t1.id_agente = t2.id_agente
 				AND t1.id_grupo IN (' . $group_id_list .')
@@ -162,9 +162,9 @@ if (is_ajax ()) {
 					WHERE t3.id_agente = t4.id_agente AND t1.nombre = t3.nombre
 						AND t4.nombre IN (\'' . implode('\',\'', $nameModules) . '\')) = '.count($nameModules);
 		}
-		
-		$sql .= ' ORDER BY t1.nombre';
-		
+
+		$sql .= ' ORDER BY t1.alias';
+
 		$nameAgents = db_get_all_rows_sql($sql);
 		
 		if ($nameAgents == false)

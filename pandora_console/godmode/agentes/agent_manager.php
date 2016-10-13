@@ -247,7 +247,10 @@ $params = array();
 $params['return'] = true;
 $params['show_helptip'] = true;
 $params['input_name'] = 'id_parent';
-$params['value'] = agents_get_name ($id_parent);
+$params['print_hidden_input_idagent'] = true;
+$params['hidden_input_idagent_name'] = 'id_agent_parent';
+$params['hidden_input_idagent_value'] = $id_parent;
+$params['value'] = db_get_value ("alias","tagente","id_agente",$id_parent);
 $table->data[3][1] = ui_print_agent_autocomplete_input($params);
 
 $table->data[3][1] .= html_print_checkbox ("cascade_protection", 1, $cascade_protection, true).__('Cascade protection'). "&nbsp;" . ui_print_help_icon("cascade_protection", true);

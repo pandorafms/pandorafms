@@ -954,7 +954,7 @@ $(document).ready (function () {
 						
 						option = $("<option></option>")
 							.attr("value", value["id_agente"])
-							.html(value["nombre"]);
+							.html(value["alias"]);
 						$("#id_agents").append (option);
 					});
 				},
@@ -966,6 +966,13 @@ $(document).ready (function () {
 	$("#status_agents").change(function() {
 		$("#groups_select").trigger("change");
 	});
+	
+
+	if("<?php echo $update ?>"){
+		if("<?php echo $selection_mode ?>" == 'agents'){
+			$("#groups_select").trigger("change");
+		}	
+	}
 });
 /* ]]> */
 </script>

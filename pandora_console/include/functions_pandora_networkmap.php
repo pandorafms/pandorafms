@@ -1211,10 +1211,11 @@ function migrate_older_open_maps($id) {
 	return true;
 }
 
-function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations = array()) {
+function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations = array(), $dashboard_mode = false) {
 	global $config;
-	
 	$clean_relations = clean_duplicate_links($nodes_and_relations['relations']);
+	
+	$hide_minimap = "";
 	
 	$nodes_and_relations['relations'] = $clean_relations;
 
@@ -1227,26 +1228,28 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 	ui_require_css_file("jquery.contextMenu", 'include/javascript/');
 	echo '<script type="text/javascript" src="' . $config['homeurl'] . 'include/javascript/jquery.contextMenu.js"></script>';
 	echo '<script type="text/javascript" src="' . $config['homeurl'] . 'include/javascript/functions_pandora_networkmap.js"></script>';
-	echo '<div id="networkconsole" style="position: relative; overflow: hidden; background: #FAFAFA">';
-		
-		echo '<canvas id="minimap"
-			style="position: absolute; left: 0px; top: 0px; border: 1px solid #bbbbbb;">
+	echo '<div id="networkconsole_' . $networkmap['id'] . '" style="position: relative; overflow: hidden; background: #FAFAFA">';
+		if ($dashboard_mode) {
+			$hide_minimap = "none";
+		}
+		echo '<div style="display: ' . $hide_minimap . ';">';
+		echo '<canvas id="minimap_' . $networkmap['id'] . '" style="position: absolute; left: 0px; top: 0px; border: 1px solid #bbbbbb;">
 			</canvas>';
 		
-		echo '<div id="arrow_minimap" style="position: absolute; left: 0px; top: 0px;">
+		echo '<div id="arrow_minimap_' . $networkmap['id'] . '" style="position: absolute; left: 0px; top: 0px;">
 				<a title="' . __('Open Minimap') . '" href="javascript: toggle_minimap();">
-					<img id="image_arrow_minimap" src="images/minimap_open_arrow.png" />
+					<img id="image_arrow_minimap_' . $networkmap['id'] . '" src="images/minimap_open_arrow.png" />
 				</a>
 			</div>';
+		echo '</div>';
 			
-			echo '<div id="hide_labels" style="position: absolute; right: 10px; top: 10px;">
+			echo '<div id="hide_labels_' . $networkmap['id'] . '" style="position: absolute; right: 10px; top: 10px;">
 					<a title="' . __('Hide Labels') . '" href="javascript: hide_labels();">
 						<img id="image_hide_show_labels" src="images/icono_delete_networkmaps.png" />
 					</a>
 				</div>';
 		
 	echo '</div>';
-	
 	
 	?>
 <style type="text/css">
@@ -1316,7 +1319,7 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 			".context-menu-list",
 			function(e) {
 				try {
-					$("#networkconsole").contextMenu("hide");
+					$("#networkconsole_" + "<?php echo $id; ?>").contextMenu("hide");
 				}
 				catch(err) {
 				}

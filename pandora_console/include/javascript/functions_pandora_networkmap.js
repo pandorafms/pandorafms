@@ -212,8 +212,8 @@ function update_fictional_node(id_db_node) {
 							graph.nodes[i].text = name;
 							graph.nodes[i].networkmap_id = networkmap_to_link;
 							
-							$("#id_node_" + i + " title").html(name);
-							$("#id_node_" + i + " tspan").html(name);
+							$("#id_node_" + i + networkmap_id + " title").html(name);
+							$("#id_node_" + i + networkmap_id + " tspan").html(name);
 						}
 					});
 					
@@ -256,12 +256,12 @@ function change_shape(id_db_node) {
 						if (element.id_db == id_db_node) {
 							graph.nodes[i].shape = shape;
 							
-							$("#id_node_" + element.id + " rect").remove();
-							$("#id_node_" + element.id + " circle").remove();
-							$("#id_node_" + element.id + " image").remove();
+							$("#id_node_" + element.id + networkmap_id + " rect").remove();
+							$("#id_node_" + element.id + networkmap_id + " circle").remove();
+							$("#id_node_" + element.id + networkmap_id + " image").remove();
 							
 							if (shape == 'circle') {
-								d3.select("#id_node_" + element.id)
+								d3.select("#id_node_" + element.id + networkmap_id)
 								.insert("circle", "title")
 									.attr("r", node_radius)
 									.attr("class", "node_shape node_shape_circle")
@@ -281,7 +281,7 @@ function change_shape(id_db_node) {
 										})
 									.on("contextmenu", function(d) { show_menu("node", d);});
 									
-								d3.select("#id_node_" + element.id)
+								d3.select("#id_node_" + element.id + networkmap_id)
 									.append("image")
 									.attr("class", "node_image")
 									.attr("xlink:href", function(d) {
@@ -318,7 +318,7 @@ function change_shape(id_db_node) {
 								
 							}
 							else if (shape == 'square') {
-								d3.select("#id_node_" + element.id)
+								d3.select("#id_node_" + element.id + networkmap_id)
 									.insert("rect", "title")
 										.attr("width", node_radius * 2)
 										.attr("height", node_radius * 2)
@@ -339,7 +339,7 @@ function change_shape(id_db_node) {
 											})
 										.on("contextmenu", function(d) { show_menu("node", d);});
 										
-								d3.select("#id_node_" + element.id)
+								d3.select("#id_node_" + element.id + networkmap_id)
 									.append("image")
 									.attr("class", "node_image")
 									.attr("xlink:href", function(d) {
@@ -376,7 +376,7 @@ function change_shape(id_db_node) {
 								
 							}
 							else if (shape == 'rhombus') {
-								d3.select("#id_node_" + element.id)
+								d3.select("#id_node_" + element.id + networkmap_id)
 									.insert("rect", "title")
 										.attr("transform",
 											"")
@@ -399,7 +399,7 @@ function change_shape(id_db_node) {
 											})
 										.on("contextmenu", function(d) { show_menu("node", d);});
 										
-								d3.select("#id_node_" + element.id)
+								d3.select("#id_node_" + element.id + networkmap_id)
 									.append("image")
 									.attr("class", "node_image")
 									.attr("xlink:href", function(d) {
@@ -497,9 +497,9 @@ function update_link(row_index, id_link) {
 			if (data['correct']) {
 				$(".edit_icon_correct_" + row_index).css("display", "");
 				
-				$("select[name='interface_source_" + row_index + "'] option[value='" + interface_source + "']")
+				$("select[name='interface_source_" + row_index + networkmap_id + "'] option[value='" + interface_source + "']")
 					.prop("selected", true);
-				$("select[name='interface_target_" + row_index + "'] option[value='" + interface_target + "']")
+				$("select[name='interface_target_" + row_index + networkmap_id + "'] option[value='" + interface_target + "']")
 					.prop("selected", true);
 				
 				
@@ -638,7 +638,7 @@ function edit_node(data, dblClick) {
 			edit_node = selection[0].pop();
 		}
 		else if (dblClick){
-			edit_node = d3.select("#id_node_" + data['id']);
+			edit_node = d3.select("#id_node_" + data['id'] + networkmap_id);
 			edit_node = edit_node[0][0];
 		}
 		else {
@@ -652,6 +652,7 @@ function edit_node(data, dblClick) {
 				.classed("node_selected", true);
 			
 			id = d3.select(edit_node).attr("id").replace("id_node_", "");
+			id = id.replace(networkmap_id, "");
 			node_selected = graph.nodes[id];
 			
 			selected_links = get_relations(node_selected);
@@ -774,10 +775,10 @@ function edit_node(data, dblClick) {
 				
 				$("select[name='interface_source']", template_relation_row)
 					.attr('name', "interface_source_" + i)
-					.attr('id', "interface_source_" + i);
+					.attr('id', "interface_source_" + i + networkmap_id);
 				$("select[name='interface_target']", template_relation_row)
 					.attr('name', "interface_target_" + i)
-					.attr('id', "interface_target_" + i);
+					.attr('id', "interface_target_" + i + networkmap_id);
 				$(".edit_icon_progress", template_relation_row)
 					.attr('class', "edit_icon_progress_" + i);
 				$(".edit_icon", template_relation_row)
@@ -1038,8 +1039,8 @@ function hide_labels_function() {
 	show_labels = false;
 	
 	//Change the image arrow
-	$("#hide_labels > a").attr("title", "Show Labels");
-	$("#image_hide_show_labels").attr("src", "images/icono_refresh_networkmaps.png");
+	$("#hide_labels_" + networkmap_id + " > a").attr("title", "Show Labels");
+	$("#image_hide_show_labels" + networkmap_id).attr("src", "images/icono_refresh_networkmaps.png");
 	
 	d3.selectAll(".node_text").style("display", "none");
 }
@@ -1048,8 +1049,8 @@ function show_labels_function() {
 	show_labels = true;
 	
 	//Change the image arrow
-	$("#hide_labels > a").attr("title", "Hide Labels");
-	$("#image_hide_show_labels").attr("src", "images/icono_delete_networkmaps.png");
+	$("#hide_labels_" + networkmap_id + " > a").attr("title", "Hide Labels");
+	$("#image_hide_show_labels" + networkmap_id).attr("src", "images/icono_delete_networkmaps.png");
 	
 	d3.selectAll(".node_text").style("display", "");
 }
@@ -1067,10 +1068,10 @@ function function_open_minimap() {
 	show_minimap = true;
 	
 	//Change the image arrow
-	$("#arrow_minimap > a").attr("title", "Close Minimap");
-	$("#image_arrow_minimap").attr("src", "images/minimap_close_arrow.png");
+	$("#arrow_minimap_" + networkmap_id + " > a").attr("title", "Close Minimap");
+	$("#image_arrow_minimap_" + networkmap_id).attr("src", "images/minimap_close_arrow.png");
 	
-	$("#minimap").show();
+	$("#minimap_" + networkmap_id).show();
 	
 	draw_minimap();
 }
@@ -1079,10 +1080,10 @@ function function_close_minimap() {
 	show_minimap = false;
 	
 	//Change the image arrow
-	$("#arrow_minimap > a").attr("title", "Open Minimap");
-	$("#image_arrow_minimap").attr("src", "images/minimap_open_arrow.png");
+	$("#arrow_minimap_" + networkmap_id + " > a").attr("title", "Open Minimap");
+	$("#image_arrow_minimap_" + networkmap_id).attr("src", "images/minimap_open_arrow.png");
 	
-	$("#minimap").hide();
+	$("#minimap_" + networkmap_id).hide();
 }
 
 function delete_nodes() {
@@ -1246,12 +1247,12 @@ function set_positions_graph() {
 }
 
 function over_node(d) {
-	over = d3.select("#id_node_" + d.id)
+	over = d3.select("#id_node_" + d.id + networkmap_id)
 		.classed("node_over");
 	
 	in_a_node = !in_a_node;
 	
-	d3.select("#id_node_" + d.id)
+	d3.select("#id_node_" + d.id + networkmap_id)
 		.classed("node_over", !over);
 }
 
@@ -1260,7 +1261,7 @@ function selected_node(d, selected_param, hold_other_selections) {
 		selected = !selected_param; //because the next negate
 	}
 	else {
-		selected = d3.select("#id_node_" + d.id)
+		selected = d3.select("#id_node_" + d.id + networkmap_id)
 			.classed("node_selected");
 	}
 	
@@ -1277,7 +1278,7 @@ function selected_node(d, selected_param, hold_other_selections) {
 			.classed("node_selected", false);
 	}
 	
-	d3.select("#id_node_" + d.id)
+	d3.select("#id_node_" + d.id + networkmap_id)
 		.classed("node_selected", !selected);
 	
 	d3.event.stopPropagation();
@@ -1309,7 +1310,7 @@ function update_networkmap() {
 						type: 'POST',
 						url: action="ajax.php",
 						success: function (data) {
-							d3.select("#id_node_" + d.id + " .node_shape")
+							d3.select("#id_node_" + d.id + networkmap_id + " .node_shape")
 								.style("fill", data['color']);
 						}
 					});
@@ -1384,14 +1385,14 @@ function init_minimap() {
 		relation_minimap_h = 1.5;
 	}
 	
-	$("#minimap").bind("mousemove", function(event) {
+	$("#minimap_" + networkmap_id).bind("mousemove", function(event) {
 		if (graph.nodes.length > 100) {
-			var x = event.pageX - $("#minimap").offset().left - minimap_w / relation_minimap_w;
-			var y = event.pageY - $("#minimap").offset().top - minimap_h / relation_minimap_h;
+			var x = event.pageX - $("#minimap_" + networkmap_id).offset().left - minimap_w / relation_minimap_w;
+			var y = event.pageY - $("#minimap_" + networkmap_id).offset().top - minimap_h / relation_minimap_h;
 		}
 		else {
-			var x = event.pageX - $("#minimap").offset().left;
-			var y = event.pageY - $("#minimap").offset().top;
+			var x = event.pageX - $("#minimap_" + networkmap_id).offset().left;
+			var y = event.pageY - $("#minimap_" + networkmap_id).offset().top;
 		}
 		
 		if (inner_minimap_box(x, y)) {
@@ -1413,14 +1414,14 @@ function init_minimap() {
 		}
 	});
 	
-	$("#minimap").mousedown(function(event) {
+	$("#minimap_" + networkmap_id).mousedown(function(event) {
 		minimap_drag = true;
 		
 		event.stopPropagation();
 		return false;
 	});
 	
-	$("#minimap").mouseout(function(event) {
+	$("#minimap_" + networkmap_id).mouseout(function(event) {
 		minimap_drag = false;
 		
 		document.body.style.cursor = "default";
@@ -1430,26 +1431,26 @@ function init_minimap() {
 		return false;
 	});
 	
-	$("#minimap").mouseup(function(event) {
+	$("#minimap_" + networkmap_id).mouseup(function(event) {
 		minimap_drag = false;
 		
 		event.stopPropagation();
 		return false;
 	});
 	
-	$("#minimap").bind("contextmenu", function(event) {
+	$("#minimap_" + networkmap_id).bind("contextmenu", function(event) {
 		event.stopPropagation();
 		return false;
 	});
 	
-	$("#minimap").click(function(event) {
+	$("#minimap_" + networkmap_id).click(function(event) {
 		if (graph.nodes.length > 100) {
-			var x = event.pageX - $("#minimap").offset().left - minimap_w / relation_minimap_w;
-			var y = event.pageY - $("#minimap").offset().top - minimap_h / relation_minimap_h;
+			var x = event.pageX - $("#minimap_" + networkmap_id).offset().left - minimap_w / relation_minimap_w;
+			var y = event.pageY - $("#minimap_" + networkmap_id).offset().top - minimap_h / relation_minimap_h;
 		}
 		else {
-			var x = event.pageX - $("#minimap").offset().left;
-			var y = event.pageY - $("#minimap").offset().top;
+			var x = event.pageX - $("#minimap_" + networkmap_id).offset().left;
+			var y = event.pageY - $("#minimap_" + networkmap_id).offset().top;
 		}
 		
 		translation[0] = -(x * scale) / relation_min_nodes + width_svg / 2;
@@ -1511,7 +1512,7 @@ function show_menu(item, data) {
 						var selection = d3.selectAll('.node_children');
 						selection
 							.each(function(d) {
-								d3.select("#id_node_" + d.id)
+								d3.select("#id_node_" + d.id + networkmap_id)
 									.classed("node_children", false);
 							}
 						);
@@ -1519,7 +1520,7 @@ function show_menu(item, data) {
 						selection = d3.selectAll('.node_selected');
 						selection
 							.each(function(d) {
-								d3.select("#id_node_" + d.id)
+								d3.select("#id_node_" + d.id + networkmap_id)
 									.classed("node_selected", false)
 									.classed("node_children", true);
 							}
@@ -1530,7 +1531,7 @@ function show_menu(item, data) {
 				};
 			
 			if (flag_setting_relationship_running) {
-				if (d3.select("#id_node_" + data.id).attr("class").search("node_children") == -1) {
+				if (d3.select("#id_node_" + data.id + networkmap_id).attr("class").search("node_children") == -1) {
 					items_list["set_parent"] = {
 						name: set_parent_menu,
 						icon: "set_parent",
@@ -1593,7 +1594,7 @@ function show_menu(item, data) {
 			$.contextMenu('destroy');
 			$.contextMenu({
 				disabled: false,
-				selector: "#networkconsole",
+				selector: "#networkconsole_" + networkmap_id,
 				// define the elements of the menu
 				items: items_list
 			});
@@ -1677,7 +1678,7 @@ function show_menu(item, data) {
 			$.contextMenu('destroy');
 			$.contextMenu({
 				disabled: false,
-				selector: "#networkconsole",
+				selector: "#networkconsole_" + networkmap_id,
 				// define the elements of the menu
 				items: items_list
 			});
@@ -1685,7 +1686,7 @@ function show_menu(item, data) {
 	}
 	
 	//Force to show in the mouse position
-	$("#networkconsole").contextMenu({
+	$("#networkconsole_" + networkmap_id).contextMenu({
 		x: mouse[0],
 		y: mouse[1]
 	});
@@ -1876,7 +1877,7 @@ function cancel_set_parent() {
 	
 	selection
 		.each(function(d) {
-			d3.select("#id_node_" + d.id)
+			d3.select("#id_node_" + d.id + networkmap_id)
 				.classed("node_selected", true)
 				.classed("node_children", false);
 		}
@@ -1933,12 +1934,12 @@ function init_drag_and_drop() {
 										//Remove the style of nodes and links
 										//in holding area
 										
-										d3.select("#id_node_" + d.id)
+										d3.select("#id_node_" + d.id + networkmap_id)
 											.classed("holding_area", false);
 										
-										d3.select(".source_" + d.id)
+										d3.select(".source_" + d.id + networkmap_id)
 											.classed("holding_area_link", false);
-										d3.select(".target_" + d.id)
+										d3.select(".target_" + d.id + networkmap_id)
 											.classed("holding_area_link", false);
 									}
 								}
@@ -2081,7 +2082,7 @@ function add_fictional_node() {
 }
 
 function init_graph(parameter_object) {	
-	window.width_svg = $("#networkconsole").width();
+	window.width_svg = $("#networkconsole_" + networkmap_id).width();
 	if ($("#main").height()) {
 		window.height_svg = $("#main").height();
 	}
@@ -2098,7 +2099,7 @@ function init_graph(parameter_object) {
 	}
 	window.scale_minimap = 4.2;
 	window.translation = [0, 0];
-	window.scale = 0.6;
+	window.scale = 0.5;
 	window.node_radius = 40;
 	if (typeof(parameter_object.node_radius) != "undefined") {
 		window.node_radius = parameter_object.node_radius;
@@ -2162,10 +2163,10 @@ function init_graph(parameter_object) {
 	minimap_w = networkmap_dimensions[0] * minimap_relation;
 	minimap_h = networkmap_dimensions[1] * minimap_relation;
 	
-	$("#minimap").attr('width', minimap_w);
-	$("#minimap").attr('height', minimap_h);
+	$("#minimap_" + networkmap_id).attr('width', minimap_w);
+	$("#minimap_" + networkmap_id).attr('height', minimap_h);
 	
-	window.canvas_minimap = $("#minimap");
+	window.canvas_minimap = $("#minimap_" + networkmap_id);
 	window.context_minimap = canvas_minimap[0].getContext('2d');
 	window.minimap_drag = false;
 	
@@ -2202,15 +2203,21 @@ function init_graph(parameter_object) {
 		.linkDistance(0)
 		.size([width_svg, height_svg]);
 	
+	if (graph.nodes.length > 100) {
+		scale = 0.05;
+		translation[0] = 200;
+		translation[1] = 400;
+	}
+	
 	window.zoom_obj = d3.behavior.zoom();
 	zoom_obj.scaleExtent([0.05, 1])
 		.on("zoom", zoom)
 		.translate(translation)
 		.scale(scale);
 	
-	window.svg = d3.select("#networkconsole")
+	window.svg = d3.select("#networkconsole_" + networkmap_id)
 		.append("svg")
-			.attr("id", "dinamic_networkmap_svg")
+			.attr("id", "dinamic_networkmap_svg_" + networkmap_id)
 			.attr("width", width_svg)
 			.attr("height", height_svg)
 		.call(zoom_obj)
@@ -2290,7 +2297,7 @@ function init_graph(parameter_object) {
 						item_y1 <= sel_rec_y2
 					) {
 						
-						d3.select("#id_node_" + data.id)
+						d3.select("#id_node_" + data.id + networkmap_id)
 							.classed("node_selected", true);
 					}
 				});
@@ -2377,13 +2384,13 @@ function init_graph(parameter_object) {
 	
 	window.layer_graph = svg
 		.append("g")
-			.attr("id", "layer_graph")
+			.attr("id", "layer_graph_" + networkmap_id)
 			.attr("transform",
 				"translate(" + translation + ")scale(" + scale + ")");
 	
 	if (enterprise_installed) {
 		window.layer_graph.append("rect")
-			.attr("id", "holding_area")
+			.attr("id", "holding_area_" + networkmap_id)
 			.attr("width", holding_area_dimensions[0])
 			.attr("height", holding_area_dimensions[1])
 			.attr("x",
@@ -2421,10 +2428,10 @@ function init_graph(parameter_object) {
 	
 	window.layer_graph_links = window.layer_graph
 		.append("g")
-			.attr("id", "layer_graph_links");
+			.attr("id", "layer_graph_links_" + networkmap_id);
 	window.layer_graph_nodes = window.layer_graph
 		.append("g")
-			.attr("id", "layer_graph_nodes");
+			.attr("id", "layer_graph_nodes_" + networkmap_id);
 	
 	window.layer_selection_rectangle = svg
 		.append("g")
@@ -2467,7 +2474,7 @@ function init_graph(parameter_object) {
 }
 
 function myMouseoverCircleFunction(node_id) {
-	var circle = d3.select("#id_node_" + node_id + " circle");
+	var circle = d3.select("#id_node_" + node_id + networkmap_id + " circle");
 
 	over = circle.classed("node_over");
 	
@@ -2479,7 +2486,7 @@ function myMouseoverCircleFunction(node_id) {
 		.attr("r", node_radius + 10);
 }
 function myMouseoutCircleFunction(node_id) {
-	var circle = d3.select("#id_node_" + node_id + " circle");
+	var circle = d3.select("#id_node_" + node_id + networkmap_id + " circle");
 	
 	over = circle.classed("node_over");
 	
@@ -2492,7 +2499,7 @@ function myMouseoutCircleFunction(node_id) {
 }
 
 function myMouseoverSquareFunction(node_id) {
-	var square = d3.select("#id_node_" + node_id + " rect");
+	var square = d3.select("#id_node_" + node_id + networkmap_id + " rect");
 	
 	over = square.classed("node_over");
 	
@@ -2506,7 +2513,7 @@ function myMouseoverSquareFunction(node_id) {
 		.attr("transform", "translate(" + (-5) + "," + (-5) + ")");
 }
 function myMouseoutSquareFunction(node_id) {
-	var square = d3.select("#id_node_" + node_id + " rect");
+	var square = d3.select("#id_node_" + node_id + networkmap_id + " rect");
 	
 	over = square.classed("node_over");
 	
@@ -2521,7 +2528,7 @@ function myMouseoutSquareFunction(node_id) {
 }
 
 function myMouseoverRhombusFunction(node_id) {
-	var rhombus = d3.select("#id_node_" + node_id + " rect");
+	var rhombus = d3.select("#id_node_" + node_id + networkmap_id + " rect");
 	
 	over = rhombus.classed("node_over");
 	
@@ -2534,7 +2541,7 @@ function myMouseoverRhombusFunction(node_id) {
 		.attr("height", (node_radius * 1.5) + 10);
 }
 function myMouseoutRhombusFunction(node_id) {
-	var rhombus = d3.select("#id_node_" + node_id + " rect");
+	var rhombus = d3.select("#id_node_" + node_id + networkmap_id + " rect");
 	
 	over = rhombus.classed("node_over");
 	
@@ -2549,7 +2556,7 @@ function myMouseoutRhombusFunction(node_id) {
 
 function draw_elements_graph() {
 	link = link.data(force.links(), function(d) {
-		return d.source.id + "-" + d.target.id;
+		return d.source.id + networkmap_id + "-" + d.target.id + networkmap_id;
 	});
 	
 	link_temp = link.enter()
@@ -2558,7 +2565,7 @@ function draw_elements_graph() {
 	
 	link_temp.append("path")
 		.attr("id", function(d) {
-			return "link_id_" + d.id_db;
+			return "link_id_" + d.id_db + networkmap_id;
 		})
 		.attr("class",  function(d) {
 			var holding_area_text = "";
@@ -2569,8 +2576,8 @@ function draw_elements_graph() {
 			}
 			
 			return "link " +
-				"source_" + d.source.id + " " +
-				"target_" + d.target.id + " " +
+				"source_" + d.source.id + networkmap_id + " " +
+				"target_" + d.target.id + networkmap_id + " " +
 				holding_area_text +
 				"id_module_start_" + d.id_module_start + " " +
 				"id_module_end_" + d.id_module_end;
@@ -2675,7 +2682,7 @@ function draw_elements_graph() {
 	node_temp = node.enter()
 		.append("g")
 			.attr("id", function(d) {
-				return "id_node_" + d.id;
+				return "id_node_" + d.id + networkmap_id;
 			})
 			.attr("class", function(d) {
 				if (d.state == 'holding_area')
@@ -2695,7 +2702,7 @@ function draw_elements_graph() {
 			.attr("r", node_radius)
 			.attr("class", "node_shape node_shape_circle")
 			.attr("node_id", function(d) {
-					return d.id;
+					return d.id  + networkmap_id;
 				})
 			.style("fill", function(d) {
 					return d.color;
@@ -2731,7 +2738,7 @@ function draw_elements_graph() {
 				return (node_radius / 0.8);
 			})
 		.attr("node_id", function(d) {
-				return d.id;
+				return d.id + networkmap_id;
 			})
 		.attr("id", "image2995")
 		.classed('dragable_node', true) //own dragable
@@ -2757,7 +2764,7 @@ function draw_elements_graph() {
 			.attr("height", node_radius * 2)
 			.attr("class", "node_shape node_shape_square")
 			.attr("node_id", function(d) {
-					return d.id;
+					return d.id  + networkmap_id;
 				})
 			.style("fill", function(d) {
 					return d.color;
@@ -2797,7 +2804,7 @@ function draw_elements_graph() {
 				return (node_radius / 0.8);
 			})
 		.attr("node_id", function(d) {
-				return d.id;
+				return d.id + networkmap_id;
 			})
 		.attr("id", "image2995")
 		.classed('dragable_node', true) //own dragable
@@ -2825,7 +2832,7 @@ function draw_elements_graph() {
 			.attr("height", node_radius * 1.5)
 			.attr("class", "node_shape node_shape_rhombus")
 			.attr("node_id", function(d) {
-					return d.id;
+					return d.id + networkmap_id;
 				})
 			.style("fill", function(d) {
 					return d.color;
@@ -2865,7 +2872,7 @@ function draw_elements_graph() {
 				return (node_radius / 0.8);
 			})
 		.attr("node_id", function(d) {
-				return d.id;
+				return d.id + networkmap_id;
 			})
 		.attr("id", "image2995")
 		.classed('dragable_node', true) //own dragable
@@ -2888,6 +2895,7 @@ function draw_elements_graph() {
 	
 	node_temp.append("text")
 		.attr("class", "node_text")
+		.attr("id", "node_text_" + networkmap_id)
 		.attr("style", "font-style:normal; font-weight:normal; line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;")
 		.attr("x", function(d) {
 				return d.x;

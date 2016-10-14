@@ -217,7 +217,7 @@ var zoom_obj = d3.behavior.zoom();
 zoom_obj.scaleExtent([0.3, 3]).on("zoom", zoom);
 
 var svg = d3.select("#dinamic_networkmap").append("svg")
-	.attr("id", "dinamic_networkmap_svg")
+	.attr("id", "dinamic_networkmap_svg_" + "<?php echo $id; ?>")
 	.attr("width", width)
 	.attr("height", height)
 	.attr("pointer-events", "all")

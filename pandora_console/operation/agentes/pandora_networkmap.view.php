@@ -680,11 +680,13 @@ if (is_ajax ()) {
 }
 //--------------END AJAX------------------------------------------------
 $id = (int) get_parameter('id_networkmap', 0);
+$dash_mode = 0;
 
 if (enterprise_installed()) {
 	include_once("enterprise/dashboard/widgets/network_map.php");
 	if ($id_networkmap) {
 		$id = $id_networkmap;
+		$dash_mode = $dashboard_mode;
 	}
 }
 
@@ -725,19 +727,21 @@ else {
 				'</a>');
 	}
 	else {
-		$buttons['screen'] = array('active' => false,
-			'text' => '<a href="index.php?sec=networkmapconsole&amp;' .
-				'sec2=operation/agentes/pandora_networkmap&amp;' .
-				'pure=1&amp;tab=view&amp;id_networkmap=' . $id . '">' . 
-				html_print_image("images/full_screen.png", true,
-					array ('title' => __('Full screen'))) .
-				'</a>');
-		$buttons['list'] = array('active' => false,
-			'text' => '<a href="index.php?sec=networkmapconsole&amp;' .
-				'sec2=operation/agentes/pandora_networkmap">' . 
-				html_print_image("images/list.png", true,
-					array ('title' => __('List of networkmap'))) .
-				'</a>');
+		if (!$dash_mode) {
+			$buttons['screen'] = array('active' => false,
+				'text' => '<a href="index.php?sec=networkmapconsole&amp;' .
+					'sec2=operation/agentes/pandora_networkmap&amp;' .
+					'pure=1&amp;tab=view&amp;id_networkmap=' . $id . '">' . 
+					html_print_image("images/full_screen.png", true,
+						array ('title' => __('Full screen'))) .
+					'</a>');
+			$buttons['list'] = array('active' => false,
+				'text' => '<a href="index.php?sec=networkmapconsole&amp;' .
+					'sec2=operation/agentes/pandora_networkmap">' . 
+					html_print_image("images/list.png", true,
+						array ('title' => __('List of networkmap'))) .
+					'</a>');
+		}
 	}
 	
 	ui_print_page_header(sprintf(__('Networkmap - %s'),
@@ -745,6 +749,6 @@ else {
 		false, "network_map_enterprise", false, $buttons);
 	
 	$nodes_and_relations = networkmap_process_networkmap($id);
-	show_networkmap($id, $user_readonly, $nodes_and_relations);
+	show_networkmap($id, $user_readonly, $nodes_and_relations, $dash_mode);
 }
 ?>

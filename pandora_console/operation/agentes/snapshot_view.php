@@ -68,11 +68,15 @@ $label = get_parameter ("label");
 		echo $row["timestamp"];
 		echo "</h2>";
 		$datos = io_safe_output($row["datos"]);
-		$datos = preg_replace ('/\n/i','<br>',$datos);
-		$datos =  preg_replace ('/\s/i','&nbsp;',$datos);
-		echo "<div id='result_div' style='width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
-		echo $datos;
-		echo "</div>";
+		if (is_image_data($datos)) {
+			echo '<img src="' . $datos . '" alt="image"/>';
+		}
+		else {
+			$datos = preg_replace ('/\n/i','<br>',$datos);
+			$datos =  preg_replace ('/\s/i','&nbsp;',$datos);
+			echo "<div id='result_div' style='width: 100%; height: 100%; overflow: scroll; padding: 10px; font-size: 14px; line-height: 16px; font-family: mono,monospace; text-align: left'>";
+			echo $datos;
+			echo "</div>";
 		?>
 		<script type="text/javascript">
 			function getScrollbarWidth() {
@@ -98,5 +102,8 @@ $label = get_parameter ("label");
 				$("#result_div").css("height", (height - getScrollbarWidth() - $("#title_snapshot_view").height() - 16) + "px");
 			});
 		</script>
+		<?php
+		}
+		?>
 	</body>
 </html>

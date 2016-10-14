@@ -1248,12 +1248,13 @@ div.title_line {
 	max-height: 26px;
 }
 #menu_tab_left li a, #menu_tab_left li span {
-/*	text-transform: uppercase; */
+	/*text-transform: uppercase; */
 	padding: 0px 0px 0px 0px;
 	color: #fff;
-	font-size: 8.5pt;
-	font-weight: normal;
+	font-size: 9pt;
 	line-height: 20px;
+	letter-spacing:1px;
+	font-family: verdana;
 }
 #menu_tab_left .mn li a {
 	display: block;

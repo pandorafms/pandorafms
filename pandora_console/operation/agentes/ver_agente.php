@@ -42,7 +42,7 @@ if (is_ajax ()) {
 	$get_agentmodule_status_tooltip = (bool) get_parameter ("get_agentmodule_status_tooltip");
 	$get_group_status_tooltip = (bool) get_parameter ("get_group_status_tooltip");
 	$get_agent_id = (bool) get_parameter ("get_agent_id");
-	
+	$id_group = (int) get_parameter('id_group');
 	if ($get_agents_group_json) {
 		$id_group = (int) get_parameter('id_group');
 		$recursion = (int) get_parameter ('recursion', 0);
@@ -382,7 +382,19 @@ if (is_ajax ()) {
 			asort($result);
 		}
 		else {
-			$sql = 'SELECT DISTINCT(nombre)
+      
+      if(implode(',', $idAgents) < 0){
+      
+        
+      $sql = 'SELECT DISTINCT(nombre) FROM tagente_modulo
+WHERE nombre IN (
+SELECT nombre
+FROM tagente_modulo 
+GROUP BY nombre
+HAVING count(nombre) = (SELECT count(nombre) FROM tagente_modulo))';
+      }
+      else{
+      	$sql = 'SELECT DISTINCT(nombre)
 				FROM tagente_modulo t1
 				WHERE ' . $filter . '
 					AND t1.delete_pending = 0
@@ -398,7 +410,7 @@ if (is_ajax ()) {
 			}elseif ($selection_mode == 'unknown'){
 				$sql .= 'AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where estado = 3 OR estado = 4)';
 			}
-			
+    }
 			$sql .= ' ORDER BY nombre';
 			
 			$nameModules = db_get_all_rows_sql($sql);

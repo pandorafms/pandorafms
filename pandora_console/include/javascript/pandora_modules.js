@@ -117,6 +117,7 @@ function configure_modules_form () {
 					js_html_entity_decode (data["name"]));
 				$("#textarea_description").attr ("value",
 					js_html_entity_decode (data["description"]));
+					$("#textarea_description").html(js_html_entity_decode (data["description"]));
 				$("#textarea_configuration_data").val(configuration_data);
 				$("#component_loading").hide ();
 				$("#id_module_type").val(data["type"]);
@@ -259,7 +260,7 @@ function configure_modules_form () {
 				flag_load_plugin_component = true;
 				
 				$("#text-name").attr ("value", js_html_entity_decode (data["name"]));
-				$("#textarea_description").attr ("value", js_html_entity_decode (data["description"]));
+				$("#textarea_description").html (js_html_entity_decode (data["description"]));
 				$("#id_module_type").val(data["type"]);
 				$("#text-max").attr ("value", data["max"]);
 				$("#text-min").attr ("value", data["min"]);
@@ -275,6 +276,10 @@ function configure_modules_form () {
 					.attr ("value", js_html_entity_decode (data["tcp_send"]));
 				$("#textarea_tcp_rcv")
 					.attr ("value", js_html_entity_decode (data["tcp_rcv"]));
+					$("#textarea_tcp_send")
+						.html (js_html_entity_decode (data["tcp_send"]));
+					$("#textarea_tcp_rcv")
+						.html (js_html_entity_decode (data["tcp_rcv"]));
 				$("#text-snmp_community")
 					.attr ("value", js_html_entity_decode (data["snmp_community"]));
 				$("#text-snmp_oid")

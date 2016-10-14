@@ -78,6 +78,10 @@ function configure_modules_form () {
 			$("#checkbox-history_data").check ();
 			$("#text-max").attr ("value", "");
 			$("#text-min").attr ("value", "");
+			$("#dynamic_interval_select").attr ("value", 0);
+			$("#text-dynamic_min").attr ("value", 0);
+			$("#text-dynamic_max").attr ("value", 0);
+			$("#checkbox-dynamic_two_tailed").attr ("value", 0);
 			$("#text-min_warning").attr ("value", 0);
 			$("#text-max_warning").attr ("value", 0);
 			$("#text-str_warning").attr ("value", '');
@@ -134,6 +138,15 @@ function configure_modules_form () {
 				else
 					$("#checkbox-history_data").uncheck ();
 				
+				$("#dynamic_interval_select").attr ("value", (data["dynamic_interval"] == 0) ? 0 : data["dynamic_interval"]);
+				$("#text-dynamic_max").attr ("value", (data["dynamic_max"] == 0) ? 0 : data["dynamic_max"]);
+				$("#text-dynamic_min").attr ("value", (data["dynamic_min"] == 0) ? 0 : data["dynamic_min"]);
+				
+				if (data["dynamic_two_tailed"])
+					$("#checkbox-dynamic_two_tailed").check ();
+				else
+					$("#checkbox-dynamic_two_tailed").uncheck ();
+
 				$("#text-min_warning").attr ("value", (data["min_warning"] == 0) ? 0 : data["min_warning"]);
 				$("#text-max_warning").attr ("value", (data["max_warning"] == 0) ? 0 : data["max_warning"]);
 				$("#text-str_warning").attr ("value", data["str_warning"]);
@@ -281,6 +294,16 @@ function configure_modules_form () {
 					$("#checkbox-history_data").check ();
 				else
 					$("#checkbox-history_data").uncheck ();
+
+				$("#dynamic_interval_select").attr ("value", (data["dynamic_interval"] == 0) ? 0 : data["dynamic_interval"]);
+				$("#text-dynamic_max").attr ("value", (data["dynamic_max"] == 0) ? 0 : data["dynamic_max"]);
+				$("#text-dynamic_min").attr ("value", (data["dynamic_min"] == 0) ? 0 : data["dynamic_min"]);
+				
+				if (data["dynamic_two_tailed"])
+					$("#checkbox-dynamic_two_tailed").check ();
+				else
+					$("#checkbox-dynamic_two_tailed").uncheck ();
+				
 				$("#text-min_warning").attr ("value", (data["min_warning"] == 0) ? 0 : data["min_warning"]);
 				$("#text-max_warning").attr ("value", (data["max_warning"] == 0) ? 0 : data["max_warning"]);
 				$("#text-str_warning").attr ("value", data["str_warning"]);

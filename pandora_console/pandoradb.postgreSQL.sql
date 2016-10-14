@@ -245,7 +245,12 @@ CREATE TABLE "tagente_modulo" (
 	"min_ff_event_warning" INTEGER default 0,
 	"min_ff_event_critical" INTEGER default 0,
 	"each_ff" SMALLINT default 0,
-	"ff_timeout" INTEGER default 0
+	"ff_timeout" INTEGER default 0,
+	"dynamic_interval" INTEGER default 0,
+	"dynamic_max" INTEGER default 0,
+	"dynamic_min" INTEGER default 0,
+	"dynamic_next" INTEGER NOT NULL default 0,
+	"dynamic_two_tailed" INTEGER default 0
 );
 CREATE INDEX "tagente_modulo_id_agente_idx" ON "tagente_modulo"("id_agente");
 CREATE INDEX "tagente_modulo_id_tipo_modulo_idx" ON "tagente_modulo"("id_tipo_modulo");
@@ -702,9 +707,14 @@ CREATE TABLE "tnetwork_component" (
 	"disabled_types_event" TEXT default '',
 	"module_macros" TEXT default '',
 	"min_ff_event_normal" INTEGER default 0,
-        "min_ff_event_warning" INTEGER default 0,
-        "min_ff_event_critical" INTEGER default 0,
-        "each_ff" SMALLINT default 0
+    	"min_ff_event_warning" INTEGER default 0,
+    	"min_ff_event_critical" INTEGER default 0,
+    	"each_ff" SMALLINT default 0,
+    	"dynamic_interval" INTEGER default 0,
+	"dynamic_max" INTEGER default 0,
+	"dynamic_min" INTEGER default 0,
+	"dynamic_next" INTEGER NOT NULL default 0,
+	"dynamic_two_tailed" INTEGER default 0
 );
 
 -- ---------------------------------------------------------------------

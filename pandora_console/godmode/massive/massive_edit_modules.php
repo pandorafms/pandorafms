@@ -176,6 +176,7 @@ $table->size[2] = '15%';
 $table->size[3] = '35%';
 if (! $module_type) {
 	$table->rowstyle['edit1'] = 'display: none';
+	$table->rowstyle['edit0'] = 'display: none';
 	$table->rowstyle['edit1_1'] = 'display: none';
 	$table->rowstyle['edit2'] = 'display: none';
 	$table->rowstyle['edit3'] = 'display: none';
@@ -340,7 +341,16 @@ $table->data['form_agents_3'][3] = html_print_select (array(), 'module[]',
 	$modules_select, false, '', '', true, true, false);
 
 
-
+$table->data['edit0'][0] = __('Dynamic Interval');
+$table->data['edit0'][1] = html_print_extended_select_for_time ('dynamic_interval', '', '', 'None', '0', 10, true, 'width:150px',false);
+$table->data['edit0'][2] = '<table width="100%"><tr><td><em>' . __('Dynamic Min.') . '</em></td>';
+$table->data['edit0'][2] .= '<td align="right">' . 
+	html_print_input_text ('dynamic_min', '', '', 10, 255, true) . '</td></tr>';
+$table->data['edit0'][2] .= '<tr><td><em>' . __('Dynamic Max.') . '</em></td>';
+$table->data['edit0'][2] .= '<td align="right">' . 
+	html_print_input_text ('dynamic_max', '', '', 10, 255, true) . '</td></tr></table>';
+$table->data['edit0'][3] = __('Dynamic Two Tailed: ');
+$table->data['edit0'][3] .= html_print_checkbox ("dynamic_two_tailed", 1, '', true);
 
 $table->data['edit1'][0] = __('Warning status');
 $table->data['edit1'][1] = '<table width="100%">';
@@ -656,6 +666,7 @@ $(document).ready (function () {
 		}
 		
 		$("tr#delete_table-edit1, " +
+			"tr#delete_table-edit0, " +
 			"tr#delete_table-edit1_1, " +
 			"tr#delete_table-edit2, " +
 			"tr#delete_table-edit3, " +
@@ -685,7 +696,7 @@ $(document).ready (function () {
 			params['id_tipo_modulo'] = this.value;
 		
 		$("#module_loading").show ();
-		$("tr#delete_table-edit1, tr#delete_table-edit2").hide ();
+		$("tr#delete_table-edit1, tr#delete_table-edit0, tr#delete_table-edit2").hide ();
 		$("#module_name").attr ("disabled", "disabled")
 		$("#module_name option[value!=0]").remove ();
 		jQuery.post ("ajax.php",
@@ -708,6 +719,7 @@ $(document).ready (function () {
 		$("#form_edit input[type=text]").attr ("value", "");
 		$("#form_edit input[type=checkbox]").not ("#checkbox-recursion").removeAttr ("checked");
 		$("tr#delete_table-edit1, " +
+			"tr#delete_table-edit0, " +
 			"tr#delete_table-edit1_1, " +
 			"tr#delete_table-edit2, " +
 			"tr#delete_table-edit3, " +
@@ -733,6 +745,7 @@ $(document).ready (function () {
 		$("#agents").html('<?php echo __('None'); ?>');
 		$("#module").html('<?php echo __('None'); ?>');
 		$("tr#delete_table-edit1, "  +
+			"tr#delete_table-edit0, " +
 			"tr#delete_table-edit1_1, " +
 			"tr#delete_table-edit2, " +
 			"tr#delete_table-edit3, " +
@@ -766,6 +779,7 @@ $(document).ready (function () {
 				if (this.checked) {
 					$(".select_modules_row_2").css('display', 'none');
 					$("tr#delete_table-edit1, " +
+						"tr#delete_table-edit0, " +
 						"tr#delete_table-edit1_1, " +
 						"tr#delete_table-edit2, " +
 						"tr#delete_table-edit3, " +
@@ -782,6 +796,7 @@ $(document).ready (function () {
 					$(".select_modules_row_2").css('display', '');
 					if ($('#module_name option:selected').val() == undefined) {
 						$("tr#delete_table-edit1, " +
+							"tr#delete_table-edit0, " +
 							"tr#delete_table-edit1_1, " +
 							"tr#delete_table-edit2, " +
 							"tr#delete_table-edit3, " +
@@ -812,6 +827,9 @@ $(document).ready (function () {
 			else if (this.id == "checkbox-critical_inverse") {
 				return; //Do none
 			}
+			else if (this.id == "checkbox-dynamic_two_tailed") {
+				return; //Do none
+			}
 			else {
 				if (this.id == "checkbox-force_group") {
 					$("#checkbox-recursion").attr("checked", false);
@@ -820,6 +838,7 @@ $(document).ready (function () {
 				if (this.checked) {
 					$(".select_agents_row_2").css('display', 'none');
 					$("tr#delete_table-edit1, " +
+						"tr#delete_table-edit0, " +
 						"tr#delete_table-edit1_1, " +
 						"tr#delete_table-edit2, " +
 						"tr#delete_table-edit3, " +
@@ -842,6 +861,7 @@ $(document).ready (function () {
 					$(".select_agents_row_2").css('display', '');
 					if ($('#id_agents option:selected').val() == undefined) {
 						$("tr#delete_table-edit1, " +
+							"tr#delete_table-edit0, " +
 							"tr#delete_table-edit1_1, " +
 							"tr#delete_table-edit2, " +
 							"tr#delete_table-edit3, " +
@@ -916,6 +936,7 @@ $(document).ready (function () {
 			}
 			
 			$("tr#delete_table-edit1, " +
+				"tr#delete_table-edit0, " +
 				"tr#delete_table-edit1_1, " +
 				"tr#delete_table-edit2, " +
 				"tr#delete_table-edit3, " +
@@ -966,7 +987,35 @@ $(document).ready (function () {
 	$("#status_agents").change(function() {
 		$("#groups_select").trigger("change");
 	});
+
+	//Dynamic_interval;
+	disabled_status();
+	$('#dynamic_interval_select').change (function() {
+		disabled_status();
+	});
 });
+
+function disabled_status () {
+	if($('#dynamic_interval_select').val() != 0){
+		$('#text-min_warning').prop('readonly', true);
+		$('#text-min_warning').addClass('readonly');
+		$('#text-max_warning').prop('readonly', true);
+		$('#text-max_warning').addClass('readonly');
+		$('#text-min_critical').prop('readonly', true);
+		$('#text-min_critical').addClass('readonly');
+		$('#text-max_critical').prop('readonly', true);
+		$('#text-max_critical').addClass('readonly');
+	} else {
+		$('#text-min_warning').prop('readonly', false);
+		$('#text-min_warning').removeClass('readonly');
+		$('#text-max_warning').prop('readonly', false);
+		$('#text-max_warning').removeClass('readonly');
+		$('#text-min_critical').prop('readonly', false);
+		$('#text-min_critical').removeClass('readonly');
+		$('#text-max_critical').prop('readonly', false);
+		$('#text-max_critical').removeClass('readonly');
+	}
+}
 /* ]]> */
 </script>
 <?php
@@ -982,7 +1031,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 		$agents_select = array($agents_select);
 	
 	/* List of fields which can be updated */
-	$fields = array ('min_warning', 'max_warning', 'str_warning',
+	$fields = array ('dynamic_interval', 'dynamic_max', 'dynamic_min', 'dynamic_two_tailed', 'min_warning', 'max_warning', 'str_warning',
 		'min_critical', 'max_critical', 'str_critical', 'min_ff_event',
 		'module_interval', 'disabled', 'post_process', 'unit',
 		'snmp_community', 'tcp_send', 'custom_string_1',

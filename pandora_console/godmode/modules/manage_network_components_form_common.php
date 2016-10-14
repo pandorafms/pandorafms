@@ -102,73 +102,82 @@ $table->data[2][1] = html_print_select (network_components_get_groups (),
 $table->data[2][2] = __('Interval');
 $table->data[2][3] = html_print_extended_select_for_time ('module_interval' , $module_interval, '', '', '0', false, true);
 
+$table->data[3][0] = __('Dynamic Interval') .' ' . ui_print_help_icon ('warning_status', true);
+html_debug_print($dynamic_interval);
+$table->data[3][1] = html_print_extended_select_for_time ('dynamic_interval', $dynamic_interval, '', 'None', '0', 10, true, 'width:150px',false);
+$table->data[3][2] = '<span><em>'.__('Dynamic Min. ').'</em>';
+$table->data[3][2] .= html_print_input_text ('dynamic_min', $dynamic_min, '', 10, 255, true);
+$table->data[3][2] .= '<br /><em>'.__('Dynamic Max.').'</em>';
+$table->data[3][2] .= html_print_input_text ('dynamic_max', $dynamic_max, '', 10, 255, true);
+$table->data[3][3] = '<span><em>'.__('Dynamic Two Tailed: ').'</em>';
+$table->data[3][3] .= html_print_checkbox ("dynamic_two_tailed", 1, $dynamic_two_tailed, true);
 
-$table->data[3][0] = __('Warning status') . ' ' . ui_print_help_icon ('warning_status', true);
-$table->data[3][1] = '<span id="minmax_warning"><em>'.__('Min.').'&nbsp;</em>&nbsp;';
-$table->data[3][1] .= html_print_input_text ('min_warning', $min_warning,
+$table->data[4][0] = __('Warning status') . ' ' . ui_print_help_icon ('warning_status', true);
+$table->data[4][1] = '<span id="minmax_warning"><em>'.__('Min.').'&nbsp;</em>&nbsp;';
+$table->data[4][1] .= html_print_input_text ('min_warning', $min_warning,
 	'', 5, 15, true);
-$table->data[3][1] .= '<br /><em>'.__('Max.').'</em>&nbsp;';
-$table->data[3][1] .= html_print_input_text ('max_warning', $max_warning,
+$table->data[4][1] .= '<br /><em>'.__('Max.').'</em>&nbsp;';
+$table->data[4][1] .= html_print_input_text ('max_warning', $max_warning,
 	'', 5, 15, true) . '</span>';
-$table->data[3][1] .= '<span id="string_warning"><em>'.__('Str.').' </em>&nbsp;';
-$table->data[3][1] .= html_print_input_text ('str_warning', $str_warning,
+$table->data[4][1] .= '<span id="string_warning"><em>'.__('Str.').' </em>&nbsp;';
+$table->data[4][1] .= html_print_input_text ('str_warning', $str_warning,
 	'', 5, 15, true) . '</span>';
-$table->data[3][1] .= '<br /><em>'.__('Inverse interval').'</em>';
-$table->data[3][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true);
+$table->data[4][1] .= '<br /><em>'.__('Inverse interval').'</em>';
+$table->data[4][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true);
 
-$table->data[3][2] = __('Critical status'). ' ' . ui_print_help_icon ('critical_status', true);
-$table->data[3][3] = '<span id="minmax_critical"><em>'.__('Min.').'&nbsp;</em>&nbsp;';
-$table->data[3][3] .= html_print_input_text ('min_critical', $min_critical,
+$table->data[4][2] = __('Critical status'). ' ' . ui_print_help_icon ('critical_status', true);
+$table->data[4][3] = '<span id="minmax_critical"><em>'.__('Min.').'&nbsp;</em>&nbsp;';
+$table->data[4][3] .= html_print_input_text ('min_critical', $min_critical,
 	'', 5, 15, true);
-$table->data[3][3] .= '<br /><em>'.__('Max.').'</em>&nbsp;';
-$table->data[3][3] .= html_print_input_text ('max_critical', $max_critical,
+$table->data[4][3] .= '<br /><em>'.__('Max.').'</em>&nbsp;';
+$table->data[4][3] .= html_print_input_text ('max_critical', $max_critical,
 	'', 5, 15, true) . '</span>';
-$table->data[3][3] .= '<span id="string_critical"><em>'.__('Str.').' </em>&nbsp;';
-$table->data[3][3] .= html_print_input_text ('str_critical', $str_critical,
+$table->data[4][3] .= '<span id="string_critical"><em>'.__('Str.').' </em>&nbsp;';
+$table->data[4][3] .= html_print_input_text ('str_critical', $str_critical,
 	'', 5, 15, true) . '</span>';
-$table->data[3][3] .= '<br /><em>'.__('Inverse interval').'</em>';
-$table->data[3][3] .= html_print_checkbox ("critical_inverse", 1, $critical_inverse, true);
+$table->data[4][3] .= '<br /><em>'.__('Inverse interval').'</em>';
+$table->data[4][3] .= html_print_checkbox ("critical_inverse", 1, $critical_inverse, true);
 
-$table->data[4][0] = __('FF threshold') . ' ' . ui_print_help_icon ('ff_threshold', true);
-$table->colspan[4][1] = 3;
-$table->data[4][1] = html_print_radio_button ('each_ff', 0, '', $each_ff, true) . ' ' . __('All state changing') . ' : ';
-$table->data[4][1] .= html_print_input_text ('ff_event', $ff_event,
+$table->data[5][0] = __('FF threshold') . ' ' . ui_print_help_icon ('ff_threshold', true);
+$table->colspan[5][1] = 3;
+$table->data[5][1] = html_print_radio_button ('each_ff', 0, '', $each_ff, true) . ' ' . __('All state changing') . ' : ';
+$table->data[5][1] .= html_print_input_text ('ff_event', $ff_event,
 	'', 5, 15, true) . '<br />';
-$table->data[4][1] .= html_print_radio_button ('each_ff', 1, '', $each_ff, true) . ' ' . __('Each state changing') . ' : ';
-$table->data[4][1] .= __('To normal');
-$table->data[4][1] .= html_print_input_text ('ff_event_normal', $ff_event_normal, '', 5, 15, true) . ' ';
-$table->data[4][1] .= __('To warning');
-$table->data[4][1] .= html_print_input_text ('ff_event_warning', $ff_event_warning, '', 5, 15, true) . ' ';
-$table->data[4][1] .= __('To critical');
-$table->data[4][1] .= html_print_input_text ('ff_event_critical', $ff_event_critical, '', 5, 15, true);
+$table->data[5][1] .= html_print_radio_button ('each_ff', 1, '', $each_ff, true) . ' ' . __('Each state changing') . ' : ';
+$table->data[5][1] .= __('To normal');
+$table->data[5][1] .= html_print_input_text ('ff_event_normal', $ff_event_normal, '', 5, 15, true) . ' ';
+$table->data[5][1] .= __('To warning');
+$table->data[5][1] .= html_print_input_text ('ff_event_warning', $ff_event_warning, '', 5, 15, true) . ' ';
+$table->data[5][1] .= __('To critical');
+$table->data[5][1] .= html_print_input_text ('ff_event_critical', $ff_event_critical, '', 5, 15, true);
 
-$table->data[5][0] = __('Historical data');
-$table->data[5][1] = html_print_checkbox ("history_data", 1, $history_data, true);
+$table->data[6][0] = __('Historical data');
+$table->data[6][1] = html_print_checkbox ("history_data", 1, $history_data, true);
 
-$table->data[6][0] = __('Min. Value');
-$table->data[6][1] = html_print_input_text ('min', $min, '', 5, 15, true). ' ' . ui_print_help_tip (__('Any value below this number is discarted'), true);
-$table->data[6][2] = __('Max. Value');
-$table->data[6][3] = html_print_input_text ('max', $max, '', 5, 15, true) . ' ' . ui_print_help_tip (__('Any value over this number is discarted'), true);
-$table->data[7][0] = __('Unit');
-$table->data[7][1] = html_print_input_text ('unit', $unit, '', 12, 25, true);
+$table->data[7][0] = __('Min. Value');
+$table->data[7][1] = html_print_input_text ('min', $min, '', 5, 15, true). ' ' . ui_print_help_tip (__('Any value below this number is discarted'), true);
+$table->data[7][2] = __('Max. Value');
+$table->data[7][3] = html_print_input_text ('max', $max, '', 5, 15, true) . ' ' . ui_print_help_tip (__('Any value over this number is discarted'), true);
+$table->data[8][0] = __('Unit');
+$table->data[8][1] = html_print_input_text ('unit', $unit, '', 12, 25, true);
 
-$table->data[7][2] = __('Throw unknown events');
-$table->data[7][3] = html_print_checkbox('throw_unknown_events', 1,
+$table->data[8][2] = __('Throw unknown events');
+$table->data[8][3] = html_print_checkbox('throw_unknown_events', 1,
 	!network_components_is_disable_type_event($id, EVENTS_GOING_UNKNOWN), true);
 
-$table->data[8][0] = __('Critical instructions'). ui_print_help_tip(__("Instructions when the status is critical"), true);
-$table->data[8][1] = html_print_textarea ('critical_instructions', 2, 65, $critical_instructions, '', true);
-$table->colspan[8][1] = 3;
-
-$table->data[9][0] = __('Warning instructions'). ui_print_help_tip(__("Instructions when the status is warning"), true);
-$table->data[9][1] = html_print_textarea ('warning_instructions', 2, 65, $warning_instructions, '', true);
+$table->data[9][0] = __('Critical instructions'). ui_print_help_tip(__("Instructions when the status is critical"), true);
+$table->data[9][1] = html_print_textarea ('critical_instructions', 2, 65, $critical_instructions, '', true);
 $table->colspan[9][1] = 3;
 
-$table->data[10][0] = __('Unknown instructions'). ui_print_help_tip(__("Instructions when the status is unknown"), true);
-$table->data[10][1] = html_print_textarea ('unknown_instructions', 2, 65, $unknown_instructions, '', true);
+$table->data[10][0] = __('Warning instructions'). ui_print_help_tip(__("Instructions when the status is warning"), true);
+$table->data[10][1] = html_print_textarea ('warning_instructions', 2, 65, $warning_instructions, '', true);
 $table->colspan[10][1] = 3;
 
-$next_row = 11;
+$table->data[11][0] = __('Unknown instructions'). ui_print_help_tip(__("Instructions when the status is unknown"), true);
+$table->data[11][1] = html_print_textarea ('unknown_instructions', 2, 65, $unknown_instructions, '', true);
+$table->colspan[11][1] = 3;
+
+$next_row = 12;
 
 if (check_acl ($config['id_user'], 0, "PM")) {
 	$table->data[$next_row][0] = __('Category');
@@ -178,7 +187,7 @@ if (check_acl ($config['id_user'], 0, "PM")) {
 }
 else {
 	// Store in a hidden field if is not visible to avoid delete the value
-	$table->data[10][1] .= html_print_input_hidden ('id_category', $id_category, true);
+	$table->data[11][1] .= html_print_input_hidden ('id_category', $id_category, true);
 }
 
 $table->data[$next_row][0] =  __('Tags');
@@ -237,7 +246,33 @@ $next_row++;
 				$('#minmax_warning').hide();
 			}
 		});
-		
+		//Dynamic_interval;
+		disabled_status();
+		$('#dynamic_interval_select').change (function() {
+			disabled_status();
+		});
 		$("#type").trigger('change');
 	});
+
+	function disabled_status () {
+		if($('#dynamic_interval_select').val() != 0){
+			$('#text-min_warning').prop('readonly', true);
+			$('#text-min_warning').addClass('readonly');
+			$('#text-max_warning').prop('readonly', true);
+			$('#text-max_warning').addClass('readonly');
+			$('#text-min_critical').prop('readonly', true);
+			$('#text-min_critical').addClass('readonly');
+			$('#text-max_critical').prop('readonly', true);
+			$('#text-max_critical').addClass('readonly');
+		} else {
+			$('#text-min_warning').prop('readonly', false);
+			$('#text-min_warning').removeClass('readonly');
+			$('#text-max_warning').prop('readonly', false);
+			$('#text-max_warning').removeClass('readonly');
+			$('#text-min_critical').prop('readonly', false);
+			$('#text-min_critical').removeClass('readonly');
+			$('#text-max_critical').prop('readonly', false);
+			$('#text-max_critical').removeClass('readonly');
+		}
+	}
 </script>

@@ -608,6 +608,10 @@ function process_upload_xml_component($xml) {
 		$max_timeout = (int)$componentElement->max_timeout;
 		$max_retries = (int)$componentElement->max_retries;
 		$historical_data = (int)$componentElement->historical_data;
+		$dynamic_interval = (int)$componentElement->dynamic_interval;
+		$dynamic_min = (int)$componentElement->dynamic_min;
+		$dynamic_max = (int)$componentElement->dynamic_max;
+		$dynamic_two_tailed = (int)$componentElement->dynamic_two_tailed;
 		$min_war = (float)$componentElement->min_war;
 		$max_war = (float)$componentElement->max_war;
 		$str_war = (string)$componentElement->str_war;
@@ -680,6 +684,10 @@ function process_upload_xml_component($xml) {
 						'max_timeout' => $max_timeout,
 						'max_retries' => $max_retries,
 						'history_data' => $historical_data,
+						'dynamic_interval' => $dynamic_interval,
+						'dynamic_min' => $dynamic_min,
+						'dynamic_max' => $dynamic_max,
+						'dynamic_two_tailed' => $dynamic_two_tailed,
 						'min_warning' => $min_war,
 						'max_warning' => $max_war,
 						'str_warning' => $str_war,
@@ -716,6 +724,10 @@ function process_upload_xml_component($xml) {
 						'max_timeout' => $max_timeout,
 						'max_retries' => $max_retries,
 						'history_data' => $historical_data,
+						'dynamic_interval' => $dynamic_interval,
+						'dynamic_min' => $dynamic_min,
+						'dynamic_max' => $dynamic_max,
+						'dynamic_two_tailed' => $dynamic_two_tailed,
 						'min_warning' => $min_war,
 						'max_warning' => $max_war,
 						'str_warning' => $str_war,
@@ -754,6 +766,10 @@ function process_upload_xml_component($xml) {
 						'max_timeout' => $max_timeout,
 						'max_retries' => $max_retries,
 						'history_data' => $historical_data,
+						'dynamic_interval' => $dynamic_interval,
+						'dynamic_min' => $dynamic_min,
+						'dynamic_max' => $dynamic_max,
+						'dynamic_two_tailed' => $dynamic_two_tailed,
 						'min_warning' => $min_war,
 						'max_warning' => $max_war,
 						'str_warning' => $str_war,

@@ -709,9 +709,14 @@ function html_print_extended_select_for_time ($name, $selected = '',
 
 	if ( ! $selected ) {
 		foreach( $fields as $t_key => $t_value){
-			if ( $t_key != -1 ) {			//  -1 means 'custom'
-				$selected = $t_key;
-				break;
+			if ( $t_key != -1 ) {
+				if($nothing == ''){			//  -1 means 'custom'
+					$selected = $t_key;
+					break;
+				} else {
+					$selected = $nothing;
+					break;
+				}
 			}
 		}
 	}

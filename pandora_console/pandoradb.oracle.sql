@@ -283,6 +283,8 @@ CREATE TABLE tagente_modulo (
 	dynamic_interval INTEGER default 0,
 	dynamic_max INTEGER default 0,
 	dynamic_min INTEGER default 0,
+	dynamic_next INTEGER NOT NULL default 0,
+	dynamic_two_tailed INTEGER default 0,
 	prediction_sample_window INTEGER default 0,
 	prediction_samples INTEGER default 0,
 	prediction_threshold INTEGER default 0,
@@ -861,6 +863,11 @@ CREATE TABLE tnetwork_component (
 	min_ff_event_warning INTEGER DEFAULT 0,
 	min_ff_event_critical INTEGER DEFAULT 0,
 	each_ff NUMBER(1, 0) DEFAULT 0,
+	dynamic_interval INTEGER default 0,
+	dynamic_max INTEGER default 0,
+	dynamic_min INTEGER default 0,
+	dynamic_next INTEGER NOT NULL default 0,
+	dynamic_two_tailed INTEGER default 0,
 	CONSTRAINT t_network_component_wiz_cons CHECK (wizard_level IN ('basic','advanced','nowizard'))
 );
 

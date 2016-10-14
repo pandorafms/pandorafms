@@ -67,3 +67,21 @@ ALTER TABLE tevent_filter ADD COLUMN date_to date DEFAULT NULL;
 -- ---------------------------------------------------------------------
 ALTER TABLE tusuario ADD (id_filter int(10) unsigned NULL default NULL);
 ALTER TABLE tusuario ADD CONSTRAINT fk_id_filter FOREIGN KEY (id_filter) REFERENCES tevent_filter(id_filter) ON DELETE SET NULL;
+
+-- ---------------------------------------------------------------------
+-- Table `tagente_modulo`
+-- ---------------------------------------------------------------------
+ALTER TABLE tagente_modulo ADD COLUMN dynamic_interval int(4) unsigned default '0';
+ALTER TABLE tagente_modulo ADD COLUMN dynamic_max bigint(20) default '0';
+ALTER TABLE tagente_modulo ADD COLUMN dynamic_min bigint(20) default '0';
+ALTER TABLE tagente_modulo ADD COLUMN dynamic_next bigint(20) NOT NULL default '0';
+ALTER TABLE tagente_modulo ADD COLUMN dynamic_two_tailed tinyint(1) unsigned default '0';
+
+-- ---------------------------------------------------------------------
+-- Table `tnetwork_component`
+-- ---------------------------------------------------------------------
+ALTER TABLE tnetwork_component ADD COLUMN dynamic_interval int(4) unsigned default '0';
+ALTER TABLE tnetwork_component ADD COLUMN dynamic_max int(4) default '0';
+ALTER TABLE tnetwork_component ADD COLUMN dynamic_min int(4) default '0';
+ALTER TABLE tnetwork_component ADD COLUMN dynamic_next bigint(20) NOT NULL default '0';
+ALTER TABLE tnetwork_component ADD COLUMN dynamic_two_tailed tinyint(1) unsigned default '0';

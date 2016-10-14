@@ -3562,3 +3562,7 @@ color:#82b92e;font-family:Nunito;font-size:10pt;position:relative;top:6px;
 	
 	
 }
+
+.readonly{
+	background-color: #dedede !important;
+}

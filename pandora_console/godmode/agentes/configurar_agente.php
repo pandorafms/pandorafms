@@ -975,6 +975,10 @@ if ($update_module || $create_module) {
 	$ip_target = (string) get_parameter ('ip_target');
 	$custom_id = (string) get_parameter ('custom_id');
 	$history_data = (int) get_parameter('history_data');
+	$dynamic_interval = (int) get_parameter('dynamic_interval');
+	$dynamic_max = (int) get_parameter('dynamic_max');
+	$dynamic_min = (int) get_parameter('dynamic_min');
+	$dynamic_two_tailed = (int) get_parameter('dynamic_two_tailed');
 	$min_warning = (float) get_parameter ('min_warning');
 	$max_warning = (float) get_parameter ('max_warning');
 	$str_warning = (string) get_parameter ('str_warning');
@@ -1069,6 +1073,10 @@ if ($update_module) {
 		'max_retries' => $max_retries,
 		'custom_id' => $custom_id,
 		'history_data' => $history_data,
+		'dynamic_interval' => $dynamic_interval,
+		'dynamic_max' => $dynamic_max,
+		'dynamic_min' => $dynamic_min,
+		'dynamic_two_tailed' => $dynamic_two_tailed,
 		'min_warning' => $min_warning,
 		'max_warning' => $max_warning,
 		'str_warning' => $str_warning,
@@ -1212,6 +1220,10 @@ if ($create_module) {
 		'id_modulo' => $id_module,
 		'custom_id' => $custom_id,
 		'history_data' => $history_data,
+		'dynamic_interval' => $dynamic_interval,
+		'dynamic_max' => $dynamic_max,
+		'dynamic_min' => $dynamic_min,
+		'dynamic_two_tailed' => $dynamic_two_tailed,
 		'min_warning' => $min_warning,
 		'max_warning' => $max_warning,
 		'str_warning' => $str_warning,

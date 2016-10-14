@@ -53,6 +53,10 @@ if ($create_network_from_module) {
 	$macros = $data_module["macros"];
 	$max_timeout = $data_module["max_timeout"];
 	$max_retries = $data_module["max_retries"];
+	$dynamic_interval = $data_module['dynamic_interval'];
+	$dynamic_max = $data_module['dynamic_max'];
+	$dynamic_min = $data_module['dynamic_min'];
+	$dynamic_two_tailed = $data_module['dynamic_two_tailed'];
 	$min_warning = $data_module["min_warning"];
 	$max_warning = $data_module["max_warning"];
 	$str_warning = $data_module["str_warning"];
@@ -106,6 +110,10 @@ if (isset ($id)) {
 		$macros = $component["macros"];
 		$max_timeout = $component["max_timeout"];
 		$max_retries = $component["max_retries"];
+		$dynamic_interval = $component['dynamic_interval'];
+		$dynamic_max = $component['dynamic_max'];
+		$dynamic_min = $component['dynamic_min'];
+		$dynamic_two_tailed = $component['dynamic_two_tailed'];
 		$min_warning = $component["min_warning"];
 		$max_warning = $component["max_warning"];
 		$str_warning = $component["str_warning"];
@@ -161,6 +169,10 @@ if (isset ($id)) {
 		$min_warning = 0;
 		$max_warning = 0;
 		$str_warning = '';
+		$dynamic_interval = 0;
+		$dynamic_min = 0;
+		$dynamic_max = 0;
+		$dynamic_two_tailed = 0;
 		$max_critical = 0;
 		$min_critical = 0;
 		$str_critical = '';

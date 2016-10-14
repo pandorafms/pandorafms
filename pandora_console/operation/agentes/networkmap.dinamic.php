@@ -18,11 +18,21 @@
 global $config;
 
 check_login ();
-$id_networkmap = get_parameter('id_networkmap', true);
+$id = get_parameter('id_networkmap', true);
 $activeTab = get_parameter('activeTab', true);
 
+if (enterprise_installed()) {
+	include_once("enterprise/dashboard/widgets/network_map.php");
+	if ($id_networkmap) {
+		$id = $id_networkmap;
+	}
+	if ($tab) {
+		$activeTab = $tab;
+	}
+}
+
 // Networkmap id required
-if (!isset($id_networkmap)) {
+if (!isset($id)) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access node graph builder");
 	require ("general/noaccess.php");
@@ -31,7 +41,7 @@ if (!isset($id_networkmap)) {
 
 // Get the group for ACL
 if (!isset($store_group)) {
-	$store_group = db_get_value("id_group", "tmap", "id", $id_networkmap);
+	$store_group = db_get_value("id_group", "tmap", "id", $id);
 	if ($store_group === false) {
 		db_pandora_audit("ACL Violation",
 			"Trying to accessnode graph builder");
@@ -86,7 +96,7 @@ if ($activeTab == "radial_dynamic") {
 	return;
 }
 
-$networkmap = db_get_row('tmap', 'id', $id_networkmap);
+$networkmap = db_get_row('tmap', 'id', $id);
 
 switch ($networkmap['generation_method']) {
 	case 0:
@@ -115,11 +125,11 @@ $filter = networkmap_get_filter ($layout);
 if (!isset($text_filter)) {
 	$text_filter = '';
 }
-html_debug($filter);
+
 // Generate dot file
 $graph = networkmap_generate_hash(__('Pandora FMS'), $group, $simple,
 	$font_size, $layout, $nooverlap, $zoom, $ranksep, $center, $regen,
-	$pure, $id_networkmap, $show_snmp_modules, true, true,
+	$pure, $id, $show_snmp_modules, true, true,
 	$text_filter, $strict_user);
 
 networkmap_print_jsdata($graph);
@@ -133,7 +143,6 @@ $zoom_default = file($config['homedir'] . '/images/zoom_default.svg');
 </div>
 <?php
 
-//html_debug_print($graph);
 echo '<script '.
 	' type="text/javascript" ' .
 	' src="' . $config['homeurl'] . 'include/javascript/d3.3.5.14.js" ' .

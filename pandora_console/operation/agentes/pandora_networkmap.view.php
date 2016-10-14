@@ -679,8 +679,14 @@ if (is_ajax ()) {
 	}
 }
 //--------------END AJAX------------------------------------------------
-
 $id = (int) get_parameter('id_networkmap', 0);
+
+if (enterprise_installed()) {
+	include_once("enterprise/dashboard/widgets/network_map.php");
+	if ($id_networkmap) {
+		$id = $id_networkmap;
+	}
+}
 
 $networkmap = db_get_row('tmap', 'id', $id);
 

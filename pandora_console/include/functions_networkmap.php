@@ -1637,26 +1637,12 @@ function networkmap_get_networkmaps ($id_user = null, $type = null,
 	$networkmaps = array();
 	foreach ($networkmaps_raw as $networkmapitem) {
 		if ($optgrouped) {
-			if ((($networkmapitem['subtype'] == MAP_SUBTYPE_POLICIES) ||
-				($networkmapitem['subtype'] == MAP_SUBTYPE_RADIAL_DYNAMIC)) &&
-				($strict_user)) {
-				
-				continue;
-			}
-			
 			$networkmaps[$networkmapitem['id']] = 
 				array('name' => $networkmapitem['name'], 
 					'optgroup' =>
 						networkmap_type_to_str_type($networkmapitem['subtype']));
 		}
 		else {
-			if ((($networkmapitem['type'] == MAP_SUBTYPE_POLICIES) ||
-				($networkmapitem['type'] == MAP_SUBTYPE_RADIAL_DYNAMIC)) &&
-				($strict_user)) {
-				
-				continue;
-			}
-			
 			$networkmaps[$networkmapitem['id']] =
 				$networkmapitem['name'];
 		}

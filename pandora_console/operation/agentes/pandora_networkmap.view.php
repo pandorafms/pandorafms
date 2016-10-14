@@ -681,12 +681,19 @@ if (is_ajax ()) {
 //--------------END AJAX------------------------------------------------
 $id = (int) get_parameter('id_networkmap', 0);
 $dash_mode = 0;
+$map_dash_details = array();
 
 if (enterprise_installed()) {
 	include_once("enterprise/dashboard/widgets/network_map.php");
 	if ($id_networkmap) {
 		$id = $id_networkmap;
 		$dash_mode = $dashboard_mode;
+		$x_offs = $x_offset;
+		$y_offs = $y_offset;
+		$z_dash = $zoom_dash;
+		$map_dash_details['x_offs'] = $x_offs;
+		$map_dash_details['y_offs'] = $y_offs;
+		$map_dash_details['z_dash'] = $z_dash;
 	}
 }
 
@@ -744,11 +751,13 @@ else {
 		}
 	}
 	
-	ui_print_page_header(sprintf(__('Networkmap - %s'),
-		io_safe_output($networkmap['name'])), "images/bricks.png",
-		false, "network_map_enterprise", false, $buttons);
+	if (!$dash_mode) {
+		ui_print_page_header(sprintf(__('Networkmap - %s'),
+			io_safe_output($networkmap['name'])), "images/bricks.png",
+			false, "network_map_enterprise", false, $buttons);
+	}
 	
 	$nodes_and_relations = networkmap_process_networkmap($id);
-	show_networkmap($id, $user_readonly, $nodes_and_relations, $dash_mode);
+	show_networkmap($id, $user_readonly, $nodes_and_relations, $dash_mode, $map_dash_details);
 }
 ?>

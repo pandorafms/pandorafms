@@ -2203,10 +2203,14 @@ function init_graph(parameter_object) {
 		.linkDistance(0)
 		.size([width_svg, height_svg]);
 	
-	if (graph.nodes.length > 100) {
-		scale = 0.05;
-		translation[0] = 200;
-		translation[1] = 400;
+	if (x_offs != null) {
+		translation[0] = x_offs;
+	}
+	if (y_offs != null) {
+		translation[1] = y_offs;
+	}
+	if (z_dash != null) {
+		scale = z_dash;
 	}
 	
 	window.zoom_obj = d3.behavior.zoom();

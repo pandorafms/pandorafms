@@ -594,7 +594,7 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 	return $return;
 }
 
-function networkmap_write_js_array($id, $nodes_and_relations = array()) {
+function networkmap_write_js_array($id, $nodes_and_relations = array(), $map_dash_details = array()) {
 	global $config;
 	
 	db_clean_cache();
@@ -616,6 +616,18 @@ function networkmap_write_js_array($id, $nodes_and_relations = array()) {
 	echo "var url_background_grid = '" . ui_get_full_url(
 		'images/background_grid.png') . "'\n";
 	echo "var networkmap_id = " . $id . ";\n";
+	
+	if (!empty($map_dash_details)) {
+		echo "var x_offs = " . $map_dash_details['x_offs'] . ";\n";
+		echo "var y_offs = " . $map_dash_details['y_offs'] . ";\n";
+		echo "var z_dash = " . $map_dash_details['z_dash'] . ";\n";
+	}
+	else {
+		echo "var x_offs = null;\n";
+		echo "var y_offs = null;\n";
+		echo "var z_dash = null;\n";
+	}
+	
 	echo "var networkmap_refresh_time = 1000 * " .
 		$networkmap['source_period'] . ";\n";
 	echo "var networkmap_center = [ " .
@@ -1211,7 +1223,7 @@ function migrate_older_open_maps($id) {
 	return true;
 }
 
-function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations = array(), $dashboard_mode = false) {
+function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations = array(), $dashboard_mode = false, $map_dash_details = array()) {
 	global $config;
 	$clean_relations = clean_duplicate_links($nodes_and_relations['relations']);
 	
@@ -1293,7 +1305,7 @@ function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations =
 
 <script type="text/javascript">
 	<?php
-	networkmap_write_js_array($id, $nodes_and_relations);
+	networkmap_write_js_array($id, $nodes_and_relations, $map_dash_details);
 	?>
 	////////////////////////////////////////////////////////////////////////
 	// document ready

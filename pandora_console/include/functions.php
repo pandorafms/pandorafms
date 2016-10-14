@@ -2090,7 +2090,7 @@ function is_snapshot_data ($data) {
 	$temp = array();
 	$count = preg_match_all ("/\n/", $data, $temp);
 	
-	if ( ($count > 2) || (is_image_data($data) )
+	if ( ($count > 2) || (is_image_data($data)) )
 		return 1;
 	else
 		return 0;

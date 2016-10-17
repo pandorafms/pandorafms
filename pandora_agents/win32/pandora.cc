@@ -30,7 +30,7 @@ using namespace Pandora;
 using namespace Pandora_Strutils;
 
 #define PATH_SIZE    _MAX_PATH+1
-#define PANDORA_VERSION ("5.1SP4(Build 161017)")
+#define PANDORA_VERSION ("5.1SP4(Build 161018)")
 
 string pandora_path;
 string pandora_dir;

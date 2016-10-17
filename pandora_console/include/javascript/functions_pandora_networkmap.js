@@ -1959,7 +1959,7 @@ function init_drag_and_drop() {
 					url: action="ajax.php",
 					success: function (data) {
 						if (data['correct']) {
-							alert("In the Open version of PandoraFMS can not be edited nodes or map");
+							$("#open_version_dialog").dialog();
 						}
 					}
 				});

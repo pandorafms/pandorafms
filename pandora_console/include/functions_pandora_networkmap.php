@@ -1345,6 +1345,8 @@ if (empty($list_networkmaps))
 	$list_networkmaps = array();
 ?>
 
+<div id="open_version_dialog" style="display: none;">In the Open version of PandoraFMS can not be edited nodes or map</div>
+
 <div id="dialog_node_edit" style="display: none;" title="<?php echo __('Edit node');?>">
 	<div style="text-align: left; width: 100%;">
 	<?php

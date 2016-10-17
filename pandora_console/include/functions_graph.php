@@ -465,7 +465,6 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 		}
 	}
 	
-	
 	if (!is_null($percentil)) {
 		$avg = array_map(function($item) { return $item['sum'];}, $chart);
 		
@@ -863,10 +862,11 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	if ($only_image) {
 		$flash_chart = false;
 	}
-	
-	$water_mark = array('file' =>
-		$config['homedir'] . "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	if ($config['type_module_charts'] === 'area') {
 		if ($compare === 'separated') {
@@ -874,7 +874,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				area_graph($flash_chart, $chart, $width, $height/2, $color,
 					$legend, $long_index,
 					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-					"", $unit, $homeurl, $water_mark, $config['fontpath'],
+					$title, $unit, $homeurl, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $series_type,
 					$chart_extra_data, $warning_min, $critical_min,
 					$adapt_key, false, $series_suffix_str, $menu,
@@ -883,7 +883,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				area_graph($flash_chart, $chart_prev, $width, $height/2,
 					$color_prev, $legend_prev, $long_index_prev,
 					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-					"", $unit, $homeurl, $water_mark, $config['fontpath'],
+					$title, $unit, $homeurl, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $series_type_prev,
 					$chart_extra_data, $warning_min, $critical_min,
 					$adapt_key, false, $series_suffix_str, $menu,
@@ -895,7 +895,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				area_graph($flash_chart, $chart, $width, $height, $color,
 					$legend, $long_index,
 					ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-					"", $unit, $homeurl, $water_mark, $config['fontpath'],
+					$title, $unit, $homeurl, $water_mark, $config['fontpath'],
 					$config['font_size'], $unit, $ttl, $series_type,
 					$chart_extra_data, $warning_min, $critical_min,
 					$adapt_key, false, $series_suffix_str, $menu,
@@ -976,7 +976,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
 	$prediction_period = false, $background_color = 'white',
 	$name_list = array(), $unit_list = array(), $show_last = true, $show_max = true,
-	$show_min = true, $show_avg = true, $labels = array(), $dashboard = false, $vconsole = false) {
+	$show_min = true, $show_avg = true, $labels = array(), $dashboard = false,
+	$vconsole = false, $percentil = null) {
 	
 	global $config;
 	global $graphic_type;
@@ -1704,9 +1705,28 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			}
 			break;
 		default:
-			foreach ($graph_values as $graph_group => $point) {
-				foreach ($point as $timestamp_point => $point_value) {
-					$temp[$timestamp_point][$graph_group] = $point_value;
+			if (!is_null($percentil)) {
+				
+				foreach ($graph_values as $graph_group => $point) {
+					foreach ($point as $timestamp_point => $point_value) {
+						$temp[$timestamp_point][$graph_group] = $point_value;
+					}
+					
+					$percentile_value = get_percentile($percentil, $point);
+					$percentil_result[$graph_group] = array_fill ( 0, count($point), $percentile_value);
+					$series_type[$graph_group] = 'line';
+					$agent_name = io_safe_output(
+						modules_get_agentmodule_agent_name ($module_list[$graph_group]));
+					$module_name = io_safe_output(
+						modules_get_agentmodule_name ($module_list[$graph_group]));
+					$module_name_list['percentil'.$graph_group] = __('Percentile %dº', $percentil) . __(' of module ') . $agent_name .' / ' . $module_name . ' (' . $percentile_value . ' ' . $unit . ') ';
+				}
+			}
+			else {
+				foreach ($graph_values as $graph_group => $point) {
+					foreach ($point as $timestamp_point => $point_value) {
+						$temp[$timestamp_point][$graph_group] = $point_value;
+					}
 				}
 			}
 			break;
@@ -1786,7 +1806,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			return area_graph($flash_charts, $graph_values, $width,
 				$height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-				"", "", $homeurl, $water_mark, $config['fontpath'],
+				$title, "", $homeurl, $water_mark, $config['fontpath'],
 				$fixed_font_size, $unit, $ttl, array(), array(), 0,  0,  '',
 				false, '', true, $background_color,$dashboard, $vconsole);
 			break;
@@ -1795,22 +1815,23 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			return stacked_area_graph($flash_charts, $graph_values,
 				$width, $height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
+				$title, "", $water_mark, $config['fontpath'], $fixed_font_size,
 				"", $ttl, $homeurl, $background_color,$dashboard, $vconsole);
 			break;
 		case CUSTOM_GRAPH_LINE:  
 			return line_graph($flash_charts, $graph_values, $width,
 				$height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
-				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				$unit, $ttl, $homeurl, $background_color,$dashboard, $vconsole); 
+				$title, "", $water_mark, $config['fontpath'], $fixed_font_size,
+				$unit, $ttl, $homeurl, $background_color, $dashboard, 
+				$vconsole, $series_type, $percentil_result); 
 			break;
 		case CUSTOM_GRAPH_STACKED_LINE:
 			return stacked_line_graph($flash_charts, $graph_values,
 				$width, $height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				"", "", $water_mark, $config['fontpath'], $fixed_font_size,
-				"", $ttl, $homeurl, $background_color,$dashboard, $vconsole);
+				"", $ttl, $homeurl, $background_color, $dashboard, $vconsole);
 			break;
 		case CUSTOM_GRAPH_BULLET_CHART_THRESHOLD:
 		case CUSTOM_GRAPH_BULLET_CHART:

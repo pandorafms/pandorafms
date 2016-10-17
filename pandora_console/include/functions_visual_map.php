@@ -94,8 +94,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	require_once ($config["homedir"] . '/include/functions_custom_graphs.php');
 	
-	$width = $layoutData['width'];
-	$height = $max_percentile = $layoutData['height'];
+	//add 60 px for visual console map
+	$width = $layoutData['width'] + 60;
+	$height = $layoutData['height'] + 60;
+	$max_percentile = $layoutData['height'];
 	$top = $layoutData['pos_y'];
 	$left = $layoutData['pos_x'];
 	$id = $layoutData['id'];
@@ -1145,6 +1147,10 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 					$value .= " " . $unit_text;
 				}
 			}
+			
+			$value = preg_replace ('/\n/i','<br>',$value);
+			$value =  preg_replace ('/\s/i','&nbsp;',$value);
+			
 			return $value;
 			break;
 		case SIMPLE_VALUE_MAX:

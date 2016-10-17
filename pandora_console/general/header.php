@@ -64,7 +64,7 @@ config_check();
 					$table->style[8] =
 					$table->style[9] =
 					$table->style['qr'] =
-					'width: 22px; text-align:center; height: 22px; padding-right: 9px;';
+					'width: 22px; text-align:center; height: 22px; padding-right: 9px;padding-left: 9px;';
 				$table->style[7] = 'width: 20px; padding-right: 9px;';
 				$table->style['searchbar'] = 'width: 180px; min-width: 180px;';
 				$table->style[11] = 'padding-left: 10px; padding-right: 5px;width: 16px;';
@@ -125,7 +125,7 @@ config_check();
 				$servers_link_open = '<a class="white" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
 				$servers_link_close = '</a>';
 				
-				$show_qr_code_header = 'display: none;';
+				$show_qr_code_header = 'display: inline;';
 				if (isset($config['show_qr_code_header']))
 					if ($config['show_qr_code_header'])
 						$show_qr_code_header = '';
@@ -134,7 +134,7 @@ config_check();
 					'<div style="' . $show_qr_code_header . '" id="qr_code_container" style="">' .
 					'<a href="javascript: show_dialog_qrcode();">' .
 					html_print_image(
-						"images/qrcode_icon.jpg",
+						"images/qrcode_icon.png",
 						true,
 						array("alt" => __('QR Code of the page'),
 							'title' => __('QR Code of the page'))) .
@@ -188,7 +188,7 @@ config_check();
 					$_GET['refr'] = null;
 				}
 				
-				if (array_search($_GET['sec2'], $config['autorefresh_white_list']) !== false) {
+				if ($config['autorefresh_white_list'] !== null && array_search($_GET['sec2'], $config['autorefresh_white_list']) !== false) {
 					$autorefresh_img = html_print_image("images/header_refresh.png", true, array("class" => 'bot', "alt" => 'lightning', 'title' => __('Configure autorefresh')));
 					
 					if ($_GET['refr']) {
@@ -369,11 +369,19 @@ config_check();
 			$("#agent_access").css("display","");
 		});
 		
-		
+		function blinkmail(){
+			$("#yougotmail").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkmail);
+		}
+		function blinkalert(){
+			$("#yougotalert").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkalert);
+		}
+		function blinkpubli(){
+			$(".publienterprise").delay(100).fadeTo(300,0.2).delay(100).fadeTo(300,1, blinkpubli);
+		}
 		<?php
 		if ($msg_cnt > 0) {
 		?>
-			$("#yougotmail").pulsate ();
+			blinkmail();
 		<?php
 		}
 		?>
@@ -382,11 +390,11 @@ config_check();
 		<?php
 		if ($config["alert_cnt"] > 0) {
 		?>
-			$("#yougotalert").pulsate ();
+			blinkalert();
 		<?php
 		}
 		?>
-		$("#publienterprise").pulsate ();
+			blinkpubli();
 
 		<?php
 		if ($_GET["refr"]) {

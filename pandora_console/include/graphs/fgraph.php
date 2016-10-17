@@ -510,7 +510,8 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 	$legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
 	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
-	$dashboard = false, $vconsole = false) {
+	$dashboard = false, $vconsole = false, $series_type = array(),
+	$percentil_values = array()) {
 	
 	include_once("functions_flot.php");
 	
@@ -535,7 +536,7 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 			$font_size,
 			$unit,
 			$water_mark_url,
-			array(),
+			$series_type,
 			array(),
 			0,
 			0,
@@ -545,7 +546,9 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 			$menu,
 			$backgroundColor,
 			$dashboard,
-			$vconsole);
+			$vconsole,
+			false,
+			$percentil_values);
 	}
 	else {
 		$graph = array();

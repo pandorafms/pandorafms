@@ -543,9 +543,9 @@ function html_print_select ($fields, $name, $selected = '', $script = '',
 	}
 	
 	$output .= "</select>";
-	if ($modal){
+	if ($modal && !enterprise_installed()){
 		$output .= "
-		<div id='publienterprise' class='".$message."' title='Community version' style='display:inline;position:relative;top:10px;left:0px;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		<div id='".$message."' class='publienterprise' title='Community version' style='display:inline;position:relative;top:10px;left:0px;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
 		";
 	}
 	if ($return)
@@ -709,9 +709,14 @@ function html_print_extended_select_for_time ($name, $selected = '',
 
 	if ( ! $selected ) {
 		foreach( $fields as $t_key => $t_value){
-			if ( $t_key != -1 ) {			//  -1 means 'custom'
-				$selected = $t_key;
-				break;
+			if ( $t_key != -1 ) {
+				if($nothing == ''){			//  -1 means 'custom'
+					$selected = $t_key;
+					break;
+				} else {
+					$selected = $nothing;
+					break;
+				}
 			}
 		}
 	}
@@ -1268,7 +1273,7 @@ function html_print_submit_button ($label = 'OK', $name = '', $disabled = false,
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_button ($label = 'OK', $name = '', $disabled = false, $script = '', $attributes = '', $return = false, $imageButton = false) {
+function html_print_button ($label = 'OK', $name = '', $disabled = false, $script = '', $attributes = '', $return = false, $imageButton = false,$modal=false,$message='') {
 	$output = '';
 	
 	$alt = $title = '';
@@ -1281,6 +1286,12 @@ function html_print_button ($label = 'OK', $name = '', $disabled = false, $scrip
 	if ($disabled)
 		$output .= ' disabled';
 	$output .= ' />';
+	
+	if ($modal && !enterprise_installed()){
+		$output .= "
+		<div id='".$message."' class='publienterprise' title='Community version' style='display:inline;position:relative;top:10px;left:0px;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		";
+	}
 	if ($return)
 		return $output;
 	
@@ -1650,7 +1661,7 @@ function html_print_table (&$table, $return = false) {
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_radio_button_extended ($name, $value, $label, $checkedvalue, $disabled, $script, $attributes, $return = false) {
+function html_print_radio_button_extended ($name, $value, $label, $checkedvalue, $disabled, $script, $attributes, $return = false,$modal=false,$message='visualmodal') {
 	static $idcounter = 0;
 	
 	$output = '';
@@ -1673,6 +1684,12 @@ function html_print_radio_button_extended ($name, $value, $label, $checkedvalue,
 	
 	if ($label != '') {
 		$output .= '<label for="'.$htmlid.'">'. $label .'</label>' . "\n";
+	}
+	
+	if ($modal && !enterprise_installed()){
+		$output .= "
+		<div id='".$message."' class='publienterprise' title='Community version' style='display:inline;position:relative;top:10px;left:0px;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		";
 	}
 	
 	if ($return)

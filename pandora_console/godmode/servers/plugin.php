@@ -93,7 +93,7 @@ require_once ($config['homedir'] . "/include/functions_filemanager.php");
 
 check_login ();
 
-if (! check_acl ($config['id_user'], 0, "LM")) {
+if (! check_acl ($config['id_user'], 0, "PM")) {
 	db_pandora_audit("ACL Violation",
 		"Trying to access Plugin Management");
 	require ("general/noaccess.php");

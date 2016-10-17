@@ -198,6 +198,10 @@ if ($id_agent_module) {
 	$max_retries = $module['max_retries'];
 	$custom_id = $module['custom_id'];
 	$history_data = $module['history_data'];
+	$dynamic_interval = $module['dynamic_interval'];
+	$dynamic_max = $module['dynamic_max'];
+	$dynamic_min = $module['dynamic_min'];
+	$dynamic_two_tailed = $module['dynamic_two_tailed'];
 	$min_warning = $module['min_warning'];
 	$max_warning = $module['max_warning'];
 	$str_warning = $module['str_warning'];
@@ -280,6 +284,10 @@ else {
 		$plugin_parameter = '';
 		$custom_id = '';
 		$history_data = 1;
+		$dynamic_interval = 0;
+		$dynamic_min = 0;
+		$dynamic_max = 0;
+		$dynamic_two_tailed = 0;
 		$min_warning = 0;
 		$max_warning = 0;
 		$str_warning = '';

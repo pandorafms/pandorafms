@@ -150,19 +150,57 @@ $backgrounds_list_png = list_files("images/backgrounds", "png", 1, 0);
 $backgrounds_list = array_merge($backgrounds_list_jpg, $backgrounds_list_png);
 $backgrounds_list = array_merge($backgrounds_list, $backgrounds_list_gif);
 asort($backgrounds_list);
+
+if(!enterprise_installed()){
+	$open=true; 
+}
+
 $table_styles->data[$row][1] = html_print_select ($backgrounds_list,
 	'login_background', $config["login_background"], '', __('Default'),
-	'', true);
+	'', true,false,true,'',false,'width:240px');
 $table_styles->data[$row][1] .= "&nbsp;" .
 	html_print_button(__("View"), 'login_background_preview', false, '', 'class="sub camera"', true);
 $row++;
 
 $table_styles->data[$row][0] = __('Custom logo') . ui_print_help_icon("custom_logo", true);
+
+if(enterprise_installed()){
+
 $table_styles->data[$row][1] = html_print_select(
+list_files('enterprise/images/custom_logo', "png", 1, 0), 'custom_logo',
+$config["custom_logo"], '', '', '',true,false,true,'',$open,'width:240px');
+
+}
+else{
+
+	$table_styles->data[$row][1] = html_print_select(
 	list_files('images/custom_logo', "png", 1, 0), 'custom_logo',
-	$config["custom_logo"], '', '', '', true);
-$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview', false, '', 'class="sub camera"', true);
+	$config["custom_logo"], '', '', '',true,false,true,'',$open,'width:240px');
+}
+	
+	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
 $row++;
+
+$table_styles->data[$row][0] = __('Custom logo in login') . ui_print_help_icon("custom_logo_login", true);
+
+
+	$table_styles->data[$row][1] = html_print_select(
+		list_files('images/custom_logo_login', "png", 1, 0), 'custom_logo_login',
+		$config["custom_logo_login"], '', '', '',true,false,true,'',$open,'width:240px');
+
+
+	$table_styles->data[$row][1] .= "&nbsp;" . html_print_button(__("View"), 'custom_logo_login_preview', $open, '', 'class="sub camera"', true,false,$open,'visualmodal');
+$row++;
+
+
+$table_styles->data[$row][0] = __('Disable Pandora FMS on graphs');
+$table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
+	html_print_radio_button_extended ('fixed_graph', 1, '', $config["fixed_graph"], $open, '','',true) .
+	'&nbsp;&nbsp;';
+$table_styles->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button_extended ('fixed_graph', 0, '', $config["fixed_graph"], $open, '','',true, $open,'visualmodal');
+$row++;
+
 
 $table_styles->data[$row][0] = __('Fixed header');
 $table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
@@ -799,6 +837,46 @@ $(document).ready (function () {
 $("#button-custom_logo_preview").click (function (e) {
 	var icon_name = $("select#custom_logo option:selected").val();
 	var icon_path = "<?php echo $config['homeurl']; ?>/images/custom_logo/" + icon_name;
+
+	if (icon_name == "")
+		return;
+
+	$dialog = $("<div></div>");
+	$image = $("<img src=\"" + icon_path + "\">");
+	$image
+		.css('max-width', '500px')
+		.css('max-height', '500px');
+
+	try {
+		$dialog
+			.hide()
+			.html($image)
+			.dialog({
+				title: "<?php echo __('Logo preview'); ?>",
+				resizable: true,
+				draggable: true,
+				modal: true,
+				overlay: {
+					opacity: 0.5,
+					background: "black"
+				},
+				minHeight: 1,
+				width: $image.width,
+				close: function () {
+					$dialog
+						.empty()
+						.remove();
+				}
+			}).show();
+	}
+	catch (err) {
+		// console.log(err);
+	}
+});
+
+$("#button-custom_logo_login_preview").click (function (e) {
+	var icon_name = $("select#custom_logo_login option:selected").val();
+	var icon_path = "<?php echo $config['homeurl']; ?>/images/custom_logo_login/" + icon_name;
 
 	if (icon_name == "")
 		return;

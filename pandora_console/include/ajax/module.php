@@ -30,6 +30,7 @@ $add_module_relation = (bool) get_parameter('add_module_relation');
 $remove_module_relation = (bool) get_parameter('remove_module_relation');
 $change_module_relation_updates = (bool) get_parameter('change_module_relation_updates');
 $get_id_tag = (bool) get_parameter('get_id_tag', 0);
+$get_type = (bool) get_parameter('get_type', 0);
 $list_modules = (bool) get_parameter('list_modules', 0);
 
 
@@ -49,7 +50,6 @@ if ($get_plugin_macros) {
 	echo json_encode($macros);
 	return;
 }
-
 
 if ($search_modules) {
 	if ( https_is_running() ) {
@@ -71,7 +71,6 @@ if ($search_modules) {
 	echo json_encode($modules);
 	return;
 }
-
 
 if ($get_module_detail) {
 	// This script is included manually to be included after jquery and avoid error
@@ -317,7 +316,6 @@ if ($get_module_detail) {
 	return;
 }
 
-
 if ($get_module_autocomplete_input) {
 	$id_agent = (int) get_parameter("id_agent");
 
@@ -329,7 +327,6 @@ if ($get_module_autocomplete_input) {
 	}
 	return;
 }
-
 
 if ($add_module_relation) {
 	$result = false;
@@ -364,7 +361,6 @@ if ($add_module_relation) {
 	return;
 }
 
-
 if ($remove_module_relation) {
 	$id_relation = (int) get_parameter("id_relation");
 	if ($id_relation > 0) {
@@ -375,7 +371,6 @@ if ($remove_module_relation) {
 	return;
 }
 
-
 if ($change_module_relation_updates) {
 	$id_relation = (int) get_parameter("id_relation");
 	if ($id_relation > 0) {
@@ -385,7 +380,6 @@ if ($change_module_relation_updates) {
 	echo json_encode($result);
 	return;
 }
-
 
 if ($get_id_tag) {
 	$tag_name = get_parameter('tag_name');
@@ -1054,4 +1048,13 @@ if ($list_modules) {
 
 
 }
+
+if ($get_type) {
+	$id_module = (int) get_parameter("id_module");
+	$module = modules_get_agentmodule($id_module);
+	$graph_type = return_graphtype ($module["id_tipo_modulo"]);
+	echo $graph_type;
+	return;
+}
+
 ?>

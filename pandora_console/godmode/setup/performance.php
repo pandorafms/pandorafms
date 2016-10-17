@@ -71,6 +71,9 @@ $table->data[8][1] = html_print_input_text ('days_delete_unknown', $config["days
 $table->data[9][0] = __('Max. days before delete autodisabled agents');
 $table->data[9][1] = html_print_input_text ('days_autodisable_deletion', $config["days_autodisable_deletion"], '', 5, 5, true);
 
+$table->data[10][0] = __('Retention period of past special days') . ui_print_help_tip(__('This number is days to keep past special days. 0 means never remove.'), true);
+$table->data[10][1] = html_print_input_text ('num_past_special_days', $config["num_past_special_days"], '', 5, 5, true);
+
 $table_other = new stdClass();
 $table_other->width = '100%';
 $table_other->class = 'databox filters';

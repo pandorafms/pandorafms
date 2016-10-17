@@ -12,7 +12,7 @@ def get_test_file(test_list):
 
 # Are we running headless?
 if ('DISPLAY' not in os.environ):
-    display = Display(visible=0, size=(800, 600))
+    display = Display(visible=0, size=(1920, 1080))
     display.start()
 
 #Run Enterprise tests

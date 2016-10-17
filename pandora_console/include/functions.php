@@ -2071,10 +2071,16 @@ function delete_dir($dir) {
 }
 
 /**
+ * Returns 1 if the data contains a codified image (base64)
+ */
+function is_image_data ($data) {
+	return (substr($data,0,10) == "data:image");
+}
+
+/**
 *  Returns 1 if this is Snapshot data, 0 otherwise
 *  Looks for two or more carriage returns.
 */
-
 function is_snapshot_data ($data) {
 	
 	// TODO IDEA: In the future, we can set a variable in setup
@@ -2084,7 +2090,7 @@ function is_snapshot_data ($data) {
 	$temp = array();
 	$count = preg_match_all ("/\n/", $data, $temp);
 	
-	if ($count > 2)
+	if ( ($count > 2) || (is_image_data($data)) )
 		return 1;
 	else
 		return 0;

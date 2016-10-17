@@ -33,7 +33,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "6.1dev PS160921";
+my $version = "6.1dev PS161017";
 
 # Pandora server configuration
 my %conf;
@@ -434,6 +434,20 @@ sub pandora_purgedb ($$) {
 	else {
 		log_message ('PURGE', 'log_max_lifetime is set to 0. Old log data will not be deleted.');
 	}
+
+	# Delete old special days
+	log_message ('PURGE', "Deleting old special days.");
+	if ($conf->{'_num_past_special_days'} > 0) {
+		log_message ('PURGE', 'Deleting special days older than ' . $conf->{'_num_past_special_days'} . ' days.');
+		if (${RDBMS} eq 'oracle') {
+			db_do ($dbh, "DELETE FROM talert_special_days
+				WHERE \"date\" < SYSDATE - $conf->{'_num_past_special_days'} AND \"date\" > '0001-01-01'");
+		}
+		elsif (${RDBMS} eq 'mysql') { 
+			db_do ($dbh, "DELETE FROM talert_special_days
+				WHERE date < CURDATE() - $conf->{'_num_past_special_days'} AND date > '0001-01-01'");
+		}
+	}
 }
 
 ########################################################################
@@ -702,6 +716,8 @@ sub pandora_load_config ($) {
 					if ( $conf->{'_big_operation_step_datos_purge'} );
 	$SMALL_OPERATION_STEP = $conf->{'_small_operation_step_datos_purge'}
 					if ( $conf->{'_small_operation_step_datos_purge'} );
+
+	$conf->{'_num_past_special_days'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'num_past_special_days'");
    	
 	db_disconnect ($dbh);
 

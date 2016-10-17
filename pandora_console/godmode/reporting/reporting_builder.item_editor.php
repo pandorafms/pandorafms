@@ -91,6 +91,7 @@ $inventory_modules = array();
 $date = null;
 // Only avg is selected by default for the simple graphs
 $only_avg = true;
+$percentil_95 = false;
 $time_compare_overlapped = false;
 
 //Added for events items
@@ -191,6 +192,7 @@ switch ($action) {
 				
 				case 'simple_graph':
 					$only_avg = isset($style['only_avg']) ? (bool) $style['only_avg'] : true;
+					$percentil_95 = isset($style['percentil_95']) ? $style['percentil_95'] : 0;
 					// The break hasn't be forgotten.
 				case 'simple_baseline_graph':
 				case 'projection_graph':
@@ -620,7 +622,7 @@ $class = 'databox filters';
 			<td style="">
 				<?php
 				if ($action == 'new') {
-					html_print_select(reports_get_report_types(false, true), 'type', $type, 'chooseType();', '', '','','','','','','','','',true,'reporting');
+					html_print_select(reports_get_report_types(false, true), 'type', $type, 'chooseType();', '', '','','','','','','','','',true,'reportingmodal');
 				}
 				else {
 					$report_type = reports_get_report_types();
@@ -637,7 +639,7 @@ $class = 'databox filters';
 		
 		<tr id="row_name" style="" class="datos">
 			<td style="font-weight:bold;">
-				<?php echo __('Name'); ?>
+				<?php echo __('Name') . ui_print_help_icon ('reports_label_field',true); ?>
 			</td>
 			<td style="">
 				<?php
@@ -909,7 +911,7 @@ $class = 'databox filters';
 				
 				$params['javascript_is_function_select'] = true;
 				$params['selectbox_id'] = 'id_agent_module';
-				$params['add_none_module'] = false;
+				$params['add_none_module'] = true;
 				$params['use_hidden_input_idagent'] = true;
 				$params['hidden_input_idagent_id'] = 'hidden-id_agent';
 				if ($meta) {
@@ -1200,6 +1202,10 @@ $class = 'databox filters';
 		<tr id="row_only_avg" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Only average');?></td>
 			<td><?php html_print_checkbox('only_avg', 1, $only_avg);?></td>
+		</tr>
+		<tr id="row_percentil" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Percentil 95');?></td>
+			<td><?php html_print_checkbox('percentil_95', 1, $percentil_95);?></td>
 		</tr>
 		<tr id="row_exception_condition_value" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Value'); ?></td>
@@ -1772,6 +1778,7 @@ function print_General_list($width, $action, $idItem = null, $type = 'general') 
 ui_require_javascript_file ('pandora_inventory', ENTERPRISE_DIR.'/include/javascript/');
 
 ?>
+
 <script type="text/javascript">
 $(document).ready (function () {
 	chooseType();
@@ -1788,6 +1795,37 @@ $(document).ready (function () {
 		currentText: '<?php echo __('Now');?>',
 		closeText: '<?php echo __('Close');?>'
 	});
+	
+	$('#id_agent_module').change(function(){
+		
+		var idModule = $(this).val();
+		
+		var params = [];
+		params.push("get_type=1");
+		params.push("id_module=" + idModule);
+		params.push("page=include/ajax/module");
+		jQuery.ajax ({
+			data: params.join ("&"),
+			type: 'POST',
+			url: action= <?php echo '"' . ui_get_full_url(false, false, false, false) . '"'; ?> + "/ajax.php",
+			async: false,
+			timeout: 10000,
+			success: function (data) {
+				console.log(data);
+				switch (data) {
+					case 'boolean':
+					case 'sparse':
+						$("#row_percentil").show();
+						break;
+					default:
+						$("#row_percentil").hide();
+						break;
+				}
+			}
+		});
+		
+	});
+	
 });
 
 function create_custom_graph() {
@@ -2283,6 +2321,7 @@ function chooseType() {
 	$("#row_resolution").hide();
 	$("#row_last_value").hide();
 	$("#row_filter_search").hide();
+	$("#row_percentil").hide();
 	
 	// SLA list default state
 	$("#sla_list").hide();
@@ -2318,6 +2357,8 @@ function chooseType() {
 		case 'simple_graph':
 			$("#row_time_compare_overlapped").show();
 			$("#row_only_avg").show();
+			if ($("#checkbox-percentil_95").prop("checked"))
+				$("#row_percentil").show();
 			// The break hasn't be forgotten, this element
 			// only should be shown on the simple graphs.
 		case 'simple_baseline_graph':
@@ -2802,7 +2843,7 @@ function chooseType() {
 			$("#row_label").show();
 			break;
 		default:
-			
+			break;
 	}
 }
 

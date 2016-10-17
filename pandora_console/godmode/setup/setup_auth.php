@@ -48,6 +48,7 @@ $remote_rows = array();
 // Autocreate options row names
 // Fill this array for every matched row
 $autocreate_rows = array();
+$no_autocreate_rows = array();
 
 // LDAP data row names
 // Fill this array for every matched row
@@ -89,16 +90,12 @@ $row = array();
 $row['name'] = __('Autocreate profile');
 $row['control'] = html_print_select($profile_list, 'default_remote_profile', $config['default_remote_profile'], '', '', '', true, false, true, '', $config['autocreate_remote_users'] == 0);
 $table->data['default_remote_profile'] = $row;
-$remote_rows[] = 'default_remote_profile';
-$autocreate_rows[] = 'default_remote_profile';
 
 // Autocreate profile group
 $row = array();
 $row['name'] = __('Autocreate profile group');
 $row['control'] = html_print_select_groups($config['id_user'], "AR", true, 'default_remote_group', $config['default_remote_group'], '', '', '', true, false, true, '', $config['autocreate_remote_users'] == 0);
 $table->data['default_remote_group'] = $row;
-$remote_rows[] = 'default_remote_group';
-$autocreate_rows[] = 'default_remote_group';
 
 // Autocreate profile tags
 $tags = tags_get_all_tags();
@@ -106,8 +103,23 @@ $row = array();
 $row['name'] = __('Autocreate profile tags');
 $row['control'] = html_print_select($tags, 'default_assign_tags[]', explode(',', $config['default_assign_tags']), '', __('Any'), '', true, true);
 $table->data['default_assign_tags'] = $row;
-$remote_rows[] = 'default_assign_tags';
-$autocreate_rows[] = 'default_assign_tags';
+
+if (((int)$config['autocreate_remote_users'] === 1) && ((int)$config['ad_advanced_config'] === 1)) {
+	$table->rowstyle['default_remote_profile'] = 'display:none;';
+	$table->rowstyle['default_remote_group'] = 'display:none;';
+	$table->rowstyle['default_assign_tags'] = 'display:none;';
+	$no_autocreate_rows[] = 'default_remote_profile';
+	$no_autocreate_rows[] = 'default_remote_group';
+	$no_autocreate_rows[] = 'default_assign_tags';
+}
+else {
+	$autocreate_rows[] = 'default_remote_profile';
+	$autocreate_rows[] = 'default_remote_group';
+	$autocreate_rows[] = 'default_assign_tags';
+	$remote_rows[] = 'default_remote_group';
+	$remote_rows[] = 'default_remote_profile';
+	$remote_rows[] = 'default_assign_tags';
+}
 
 // Autocreate blacklist
 $row = array();
@@ -121,14 +133,20 @@ $autocreate_rows[] = 'autocreate_blacklist';
 foreach ($remote_rows as $name) {
 	if (!isset($table->rowclass[$name]))
 		$table->rowclass[$name] = '';
-	$table->rowclass[$name] .= ' ' . 'remote';
+	$table->rowclass[$name] .= ' remote';
+}
+// Add the remote class to the no autocreate rows
+foreach ($no_autocreate_rows as $name) {
+	if (!isset($table->rowclass[$name]))
+		$table->rowclass[$name] = '';
+	$table->rowclass[$name] .= ' no_autocreate';
 }
 
 // Add the autocreate class to the autocreate rows
 foreach ($autocreate_rows as $name) {
 	if (!isset($table->rowclass[$name]))
 		$table->rowclass[$name] = '';
-	$table->rowclass[$name] .= ' ' . 'autocreate';
+	$table->rowclass[$name] .= ' autocreate';
 }
 
 
@@ -292,5 +310,21 @@ echo '</form>';
 			$('tr.autocreate').hide();
 		else
 			$('tr.autocreate').show();
+			
+		if (typeof $('input:radio[name=ad_advanced_config]') !== 'undefined') {
+			advanced_value = $('input:radio[name=ad_advanced_config]:checked').val();
+			if (disabled) {
+				$('tr.ad_advanced').hide();
+				$('tr.no_autocreate').hide();
+				$('input:radio[name=ad_advanced_config][value=0]').prop('checked', true);
+				$('input:radio[name=ad_advanced_config][value=1]').prop('checked', false);
+				$('input:radio[name=ad_advanced_config][value=1]').prop('checked', '');
+			}
+			else {
+				if (advanced_value == 0) {
+					$('tr.no_autocreate').show();
+				}
+			}
+		}
 	}
 </script>

@@ -128,9 +128,15 @@ function reporting_make_reporting_data($report = null, $id_report,
 			$content['period'] = $period;
 		}
 		
-		$content['style'] = json_decode(
-			io_safe_output($content['style']), true);
-		
+		$content['style'] = json_decode(io_safe_output($content['style']), true);
+		if(isset($content['style']['name_label'])){
+			//Add macros name
+			$items_label = array();
+			$items_label['type'] = $content['type'];
+			$items_label['id_agent'] = $content['id_agent'];
+			$items_label['id_agent_module'] = $content['id_agent_module'];
+			$content['name'] = reporting_label_macro($items_label, $content['style']['name_label']);
+		}
 		switch (reporting_get_type($content)) {
 			case 'simple_graph':
 				$report['contents'][] =
@@ -151,7 +157,9 @@ function reporting_make_reporting_data($report = null, $id_report,
 				$report['contents'][] =
 					reporting_availability(
 						$report,
-						$content);
+						$content,
+						$date,
+						$time);
 				break;
 			case 'sql':
 				$report['contents'][] = reporting_sql(
@@ -2601,19 +2609,14 @@ function reporting_alert_report_group($report, $content) {
 		$data_row['template'] = db_get_value_filter('name', 'talert_templates',
 			array('id' => $alert['id_alert_template']));
 		
-		
-		$actions = db_get_all_rows_sql('SELECT name 
-			FROM talert_actions 
-			WHERE id IN (SELECT id_alert_action 
-				FROM talert_template_module_actions 
-				WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ')');
+		$actions = alerts_get_alert_agent_module_actions ($alert['id']);
 		
 		if (!empty($actions)) {
 			$row = db_get_row_sql('SELECT id_alert_action
 				FROM talert_templates
 				WHERE id IN (SELECT id_alert_template
 					FROM talert_template_modules
-					WHERE id = ' . $alert['id_alert_template'] . ')');
+					WHERE id = ' . $alert['id'] . ')');
 			
 			$id_action = 0;
 			if (!empty($row))
@@ -2622,16 +2625,13 @@ function reporting_alert_report_group($report, $content) {
 			// Prevent from void action
 			if (empty($id_action))
 				$id_action = 0;
-			
+		}
+		else {
 			$actions = db_get_all_rows_sql('SELECT name 
 				FROM talert_actions 
 				WHERE id = ' . $id_action);
-			
-			if (empty($actions)) {
-				$actions = array();
-			}
 		}
-		
+
 		$data_row['action'] = array();
 		foreach ($actions as $action) {
 			$data_row['action'][] = $action['name'];
@@ -2639,13 +2639,16 @@ function reporting_alert_report_group($report, $content) {
 		
 		$data_row['fired'] = array();
 		$firedTimes = get_module_alert_fired(
-			$content['id_agent_module'],
-			$alert['id_alert_template'],
+			$alert['id_agent_module'],
+			$alert['id'],
 			(int) $content['period'],
 			(int) $report["datetime"]);
+		
 		if (empty($firedTimes)) {
 			$firedTimes = array();
+			$firedTimes[0]['timestamp'] = '----------------------------';
 		}
+		
 		foreach ($firedTimes as $fireTime) {
 			$data_row['fired'][] = $fireTime['timestamp'];
 		}
@@ -2675,8 +2678,6 @@ function reporting_alert_report_agent($report, $content) {
 	if ($config['metaconsole']) {
 		$id_meta = metaconsole_get_id_server($content["server_name"]);
 		
-		
-		
 		$server = metaconsole_get_connection_by_id ($id_meta);
 		metaconsole_connect($server);
 	}
@@ -2700,87 +2701,69 @@ function reporting_alert_report_agent($report, $content) {
 	
 	$data = array();
 	
-	foreach ($alerts as $alert) {
-		$data_row = array();
-		
-		$data_row['disabled'] = $alert['disabled'];
-		
-		$data_row['module'] = db_get_value_filter('nombre', 'tagente_modulo',
-			array('id_agente_modulo' => $alert['id_agent_module']));
-		$data_row['template'] = db_get_value_filter('name', 'talert_templates',
-			array('id' => $alert['id_alert_template']));
-		
-		
-		
-		switch ($config["dbtype"]) {
-			case "mysql":
-			case "postgresql":
-				$actions = db_get_all_rows_sql('SELECT name 
-					FROM talert_actions 
-					WHERE id IN (SELECT id_alert_action 
-						FROM talert_template_module_actions 
-						WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ');');
-				break;
-			case "oracle":
-				$actions = db_get_all_rows_sql('SELECT name 
-					FROM talert_actions 
-					WHERE id IN (SELECT id_alert_action 
-						FROM talert_template_module_actions 
-						WHERE id_alert_template_module = ' . $alert['id_alert_template'] . ')');
-				break;
-		}
-		
-		
-		
-		
-		if (!empty($actions)) {
-			$row = db_get_row_sql('SELECT id_alert_action
-				FROM talert_templates
-				WHERE id IN (SELECT id_alert_template
-					FROM talert_template_modules
-					WHERE id = ' . $alert['id_alert_template'] . ')');
+	if (is_array($alerts) || is_object($alerts)) {
+		foreach ($alerts as $alert) {
+			$data_row = array();
 			
-			$id_action = 0;
-			if (!empty($row))
-				$id_action = $row['id_alert_action'];
+			$data_row['disabled'] = $alert['disabled'];
 			
-			// Prevent from void action
-			if (empty($id_action))
+			$data_row['module'] = db_get_value_filter('nombre', 'tagente_modulo',
+				array('id_agente_modulo' => $alert['id_agent_module']));
+			$data_row['template'] = db_get_value_filter('name', 'talert_templates',
+				array('id' => $alert['id_alert_template']));
+			
+			$actions = alerts_get_alert_agent_module_actions ($alert['id']);
+
+			if (!empty($actions)) {
+				$row = db_get_row_sql('SELECT id_alert_action
+					FROM talert_templates
+					WHERE id IN (SELECT id_alert_template
+						FROM talert_template_modules
+						WHERE id = ' . $alert['id_alert_template'] . ')');
+				
 				$id_action = 0;
-			
-			$actions = db_get_all_rows_sql('SELECT name 
-				FROM talert_actions 
-				WHERE id = ' . $id_action);
+				if (!empty($row))
+					$id_action = $row['id_alert_action'];
+				
+				// Prevent from void action
+				if (empty($id_action))
+					$id_action = 0;
+			}
+			else {
+				$actions = db_get_all_rows_sql('SELECT name 
+					FROM talert_actions 
+					WHERE id = ' . $id_action);	
+			} 
 			
 			if (empty($actions)) {
 				$actions = array();
 			}
+
+			$data_row['action'] = array();
+			foreach ($actions as $action) {
+				$data_row['action'][] = $action['name'];
+			}
+			
+			$data_row['fired'] = array();
+			$firedTimes = get_module_alert_fired(
+				$alert['id_agent_module'],
+				$alert['id'],
+				(int) $content['period'],
+				(int) $report["datetime"]);
+			
+			if (empty($firedTimes)) {
+				$firedTimes = array();
+				$firedTimes[0]['timestamp'] = '----------------------------';
+			}
+
+			foreach ($firedTimes as $fireTime) {
+				$data_row['fired'][] = $fireTime['timestamp'];
+			}
+			
+			$data[] = $data_row;
 		}
-		
-		$data_row['action'] = array();
-		foreach ($actions as $action) {
-			$data_row['action'][] = $action['name'];
-		}
-		
-		$data_row['fired'] = array();
-		$firedTimes = get_module_alert_fired(
-			$alert['id_agent_module'],
-			$alert['id_alert_template'],
-			(int) $content['period'],
-			(int) $report["datetime"]);
-		
-		
-		
-		if (empty($firedTimes)) {
-			$firedTimes = array();
-		}
-		foreach ($firedTimes as $fireTime) {
-			$data_row['fired'][] = $fireTime['timestamp'];
-		}
-		
-		$data[] = $data_row;
 	}
-	
+
 	$return['data'] = $data;
 	
 	if ($config['metaconsole']) {
@@ -2845,7 +2828,9 @@ function reporting_alert_report_module($report, $content) {
 	}
 	
 	$data = array();
+
 	foreach ($alerts as $alert) {
+		
 		$data_row = array();
 		
 		$data_row['disabled'] = $alert['disabled'];
@@ -2853,25 +2838,7 @@ function reporting_alert_report_module($report, $content) {
 		$data_row['template'] = db_get_value_filter('name',
 			'talert_templates', array('id' => $alert['id_alert_template']));
 		
-		switch ($config["dbtype"]) {
-			case "mysql":
-			case "postgresql":
-				$actions = db_get_all_rows_sql('SELECT name 
-					FROM talert_actions 
-					WHERE id IN (SELECT id_alert_action 
-						FROM talert_template_module_actions 
-						WHERE id_alert_template_module = ' . $alert['id_alert_template_module'] . ');');
-				break;
-			case "oracle":
-				$actions = db_get_all_rows_sql('SELECT name 
-					FROM talert_actions 
-					WHERE id IN (SELECT id_alert_action 
-						FROM talert_template_module_actions 
-						WHERE id_alert_template_module = ' . $alert['id_alert_template_module'] . ')');
-				break;
-		}
-		
-		
+		$actions = alerts_get_alert_agent_module_actions ($alert['id_alert_template_module']);
 		
 		if (!empty($actions)) {
 			$row = db_get_row_sql('SELECT id_alert_action
@@ -2881,43 +2848,41 @@ function reporting_alert_report_module($report, $content) {
 					WHERE id = ' . $alert['id_alert_template_module'] . ')');
 			
 			$id_action = 0;
+			
 			if (!empty($row))
 				$id_action = $row['id_alert_action'];
 			
 			// Prevent from void action
 			if (empty($id_action))
 				$id_action = 0;
-			
+		} 
+		else {
 			$actions = db_get_all_rows_sql('SELECT name 
 				FROM talert_actions 
 				WHERE id = ' . $id_action);
-			
-			if (empty($actions)) {
-				$actions = array();
-			}
 		}
 		
 		$data_row['action'] = array();
 		foreach ($actions as $action) {
 			$data_row['action'][] = $action['name'];
 		}
-		
+
 		$data_row['fired'] = array();
 		$firedTimes = get_module_alert_fired(
 			$content['id_agent_module'],
 			$alert['id_alert_template_module'],
 			(int) $content['period'],
-			(int) $report["datetime"]);
-		
-		
+			(int) $report["datetime"]);	
 		
 		if (empty($firedTimes)) {
 			$firedTimes = array();
+			$firedTimes[0]['timestamp'] = '----------------------------';
 		}
+
 		foreach ($firedTimes as $fireTime) {
 			$data_row['fired'][] = $fireTime['timestamp'];
 		}
-		
+
 		$data[] = $data_row;
 	}
 	
@@ -3759,7 +3724,7 @@ function reporting_sql($report, $content) {
 	return reporting_check_structure_content($return);
 }
 
-function reporting_availability($report, $content) {
+function reporting_availability($report, $content, $date=false, $time=false) {
 	global $config;
 	
 	$return = array();
@@ -3771,6 +3736,10 @@ function reporting_availability($report, $content) {
 		$content['name'] = __('Availability');
 	}
 	
+	if($date){
+		$datetime_to = strtotime ($date . ' ' . $time);
+	}
+
 	$return['title'] = $content['name'];
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text(
@@ -3811,9 +3780,22 @@ function reporting_availability($report, $content) {
 	$max = null;
 	$max_text = "";
 	$count = 0;
+
+	$style = io_safe_output($content['style']);
+	if($style['hide_notinit_agents']){
+		$aux_id_agents = $agents;
+		$i=0;
+		foreach ($items as $item) {
+			$utimestamp = db_get_value('utimestamp', 'tagente_datos', 'id_agente_modulo', $item['id_agent_module']);
+			if (($utimestamp === false) || (intval($utimestamp) > intval($datetime_to))){
+				unset($items[$i]);
+			}
+			$i++;
+		}
+	}
 	
 	if (!empty($items)) {
-		foreach ($items as $item) {
+		foreach ($items as $item) { 
 			//aaMetaconsole connection
 			$server_name = $item ['server_name'];
 			if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
@@ -4553,7 +4535,10 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 					false,
 					'',
 					$time_compare_overlapped,
-					true);
+					true,
+					true,
+					'white',
+					($content['style']['percentil_95'] == 1) ? 95 : null);
 			}
 			break;
 		case 'data':
@@ -5517,13 +5502,17 @@ function reporting_get_stats_alerts($data, $links = false) {
 	$table_al = html_get_predefined_table();
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/bell.png', true, array('title' => __('Defined alerts')));
+	$tdata[0] = html_print_image('images/bell.png', true, array('title' => __('Defined alerts')), false, false, false, true);
 	$tdata[1] = $data["monitor_alerts"] <= 0 ? '-' : $data["monitor_alerts"];
 	$tdata[1] = '<a class="big_data" href="' . $urls["monitor_alerts"] . '">' . $tdata[1] . '</a>';
 	
-	$tdata[2] = html_print_image('images/bell_error.png', true, array('title' => __('Fired alerts')));
-	$tdata[3] = $data["monitor_alerts_fired"] <= 0 ? '-' : $data["monitor_alerts_fired"];
-	$tdata[3] = '<a style="color: ' . COL_ALERTFIRED . ';" class="big_data" href="' . $urls["monitor_alerts_fired"] . '">' . $tdata[3] . '</a>';
+	if($data["monitor_alerts"]>$data["total_agents"] && !enterprise_installed()) {
+	$tdata[2] = "<div id='alertagentmodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";	
+	}
+	
+	$tdata[3] = html_print_image('images/bell_error.png', true, array('title' => __('Fired alerts')), false, false, false, true);
+	$tdata[4] = $data["monitor_alerts_fired"] <= 0 ? '-' : $data["monitor_alerts_fired"];
+	$tdata[4] = '<a style="color: ' . COL_ALERTFIRED . ';" class="big_data" href="' . $urls["monitor_alerts_fired"] . '">' . $tdata[4] . '</a>';
 	$table_al->rowclass[] = '';
 	$table_al->data[] = $tdata;
 	
@@ -5585,29 +5574,29 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 	$table_mbs = html_get_predefined_table();
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/module_critical.png', true, array('title' => __('Monitor critical')));
+	$tdata[0] = html_print_image('images/module_critical.png', true, array('title' => __('Monitor critical')), false, false, false, true);
 	$tdata[1] = $data["monitor_critical"] <= 0 ? '-' : $data["monitor_critical"];
 	$tdata[1] = '<a style="color: ' . COL_CRITICAL . ';" class="big_data" href="' . $urls['monitor_critical'] . '">' . $tdata[1] . '</a>';
 	
-	$tdata[2] = html_print_image('images/module_warning.png', true, array('title' => __('Monitor warning')));
+	$tdata[2] = html_print_image('images/module_warning.png', true, array('title' => __('Monitor warning')), false, false, false, true);
 	$tdata[3] = $data["monitor_warning"] <= 0 ? '-' : $data["monitor_warning"];
 	$tdata[3] = '<a style="color: ' . COL_WARNING_DARK . ';" class="big_data" href="' . $urls['monitor_warning'] . '">' . $tdata[3] . '</a>';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/module_ok.png', true, array('title' => __('Monitor normal')));
+	$tdata[0] = html_print_image('images/module_ok.png', true, array('title' => __('Monitor normal')), false, false, false, true);
 	$tdata[1] = $data["monitor_ok"] <= 0 ? '-' : $data["monitor_ok"];
 	$tdata[1] = '<a style="color: ' . COL_NORMAL . ';" class="big_data" href="' . $urls["monitor_ok"] . '">' . $tdata[1] . '</a>';
 	
-	$tdata[2] = html_print_image('images/module_unknown.png', true, array('title' => __('Monitor unknown')));
+	$tdata[2] = html_print_image('images/module_unknown.png', true, array('title' => __('Monitor unknown')), false, false, false, true);
 	$tdata[3] = $data["monitor_unknown"] <= 0 ? '-' : $data["monitor_unknown"];
 	$tdata[3] = '<a style="color: ' . COL_UNKNOWN . ';" class="big_data" href="' . $urls["monitor_unknown"] . '">' . $tdata[3] . '</a>';
 	$table_mbs->rowclass[] = '';
 	$table_mbs->data[] = $tdata;
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/module_notinit.png', true, array('title' => __('Monitor not init')));
+	$tdata[0] = html_print_image('images/module_notinit.png', true, array('title' => __('Monitor not init')), false, false, false, true);
 	$tdata[1] = $data["monitor_not_init"] <= 0 ? '-' : $data["monitor_not_init"];
 	$tdata[1] = '<a style="color: ' . COL_NOTINIT . ';" class="big_data" href="' . $urls["monitor_not_init"] . '">' . $tdata[1] . '</a>';
 	
@@ -5627,7 +5616,7 @@ function reporting_get_stats_modules_status($data, $graph_width = 250, $graph_he
 		$table_mbs->data[] = $tdata;
 	}
 	
-	if(!defined("METACONSOLE")) {
+	if(!is_metaconsole()) {
 		$output = '
 			<fieldset class="databox tactical_set">
 				<legend>' . 
@@ -5676,13 +5665,22 @@ function reporting_get_stats_agents_monitors($data) {
 	$table_am = html_get_predefined_table();
 	
 	$tdata = array();
-	$tdata[0] = html_print_image('images/agent.png', true, array('title' => __('Total agents')));
+	$tdata[0] = html_print_image('images/agent.png', true, array('title' => __('Total agents')), false, false, false, true);
 	$tdata[1] = $data["total_agents"] <= 0 ? '-' : $data["total_agents"];
 	$tdata[1] = '<a class="big_data" href="' . $urls['total_agents'] . '">' . $tdata[1] . '</a>';
 	
-	$tdata[2] = html_print_image('images/module.png', true, array('title' => __('Monitor checks')));
-	$tdata[3] = $data["monitor_checks"] <= 0 ? '-' : $data["monitor_checks"];
-	$tdata[3] = '<a class="big_data" href="' . $urls['monitor_checks'] . '">' . $tdata[3] . '</a>';
+	if($data["total_agents"]>500 && !enterprise_installed()) {
+	$tdata[2] = "<div id='agentsmodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+	}
+	
+	$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Monitor checks')), false, false, false, true);
+	$tdata[4] = $data["monitor_checks"] <= 0 ? '-' : $data["monitor_checks"];
+	$tdata[4] = '<a class="big_data" href="' . $urls['monitor_checks'] . '">' . $tdata[4] . '</a>';
+	
+	if(($data["monitor_checks"]/$data["total_agents"]>100) && !enterprise_installed()) {
+	$tdata[5] = "<div id='monitorcheckmodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+	}
+	
 	$table_am->rowclass[] = '';
 	$table_am->data[] = $tdata;
 	
@@ -8330,12 +8328,12 @@ function reporting_get_stats_servers($tiny = true) {
 	$table_srv->style[0] = $table_srv->style[2] = 'text-align: right; padding: 5px;';
 	$table_srv->style[1] = $table_srv->style[3] = 'text-align: left; padding: 5px;';
 	
-	$tdata = array();
+	$tdata = array();'<span class="big_data">' . format_numeric($server_performance ["total_local_modules"]) . '</span>';
 	$tdata[0] = html_print_image('images/module.png', true, array('title' => __('Total running modules'), 'width' => '25px'));
 	$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_modules"]) . '</span>';
-	
-	$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["total_modules_rate"], 2) . '</span>';
-	$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+	$tdata[2] = '&nbsp;';
+	$tdata[3] = '<span class="med_data">' . format_numeric($server_performance ["total_modules_rate"], 2) . '</span>';
+	$tdata[4] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 	
 	$table_srv->rowclass[] = '';
 	$table_srv->data[] = $tdata;
@@ -8350,9 +8348,13 @@ function reporting_get_stats_servers($tiny = true) {
 	$tdata[0] = html_print_image('images/database.png', true, array('title' => __('Local modules'), 'width' => '25px'));
 	$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_local_modules"]) . '</span>';
 	
-	$tdata[2] = '<span class="med_data">' .
+	
+		$tdata[2] = '&nbsp;';
+
+	$tdata[3] = '<span class="med_data">' .
 		format_numeric($server_performance ["local_modules_rate"], 2) . '</span>';
-	$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+		
+	$tdata[4] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 	
 	$table_srv->rowclass[] = '';
 	$table_srv->data[] = $tdata;
@@ -8362,8 +8364,16 @@ function reporting_get_stats_servers($tiny = true) {
 		$tdata[0] = html_print_image('images/network.png', true, array('title' => __('Remote modules'), 'width' => '25px'));
 		$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_remote_modules"]) . '</span>';
 		
-		$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["remote_modules_rate"], 2) . '</span>';
-		$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+		if($server_performance ["total_remote_modules"]>10000 && !enterprise_installed()){
+			$tdata[2] = "<div id='agentsmodal' class='publienterprise' title='Community version' style='text-align:left;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+		}
+		else{
+			$tdata[2] = '&nbsp;';
+		}
+		
+		
+		$tdata[3] = '<span class="med_data">' . format_numeric($server_performance ["remote_modules_rate"], 2) . '</span>';
+		$tdata[4] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 		
 		$table_srv->rowclass[] = '';
 		$table_srv->data[] = $tdata;
@@ -8463,8 +8473,15 @@ function reporting_get_stats_servers($tiny = true) {
 			array('title' => __('Total events'), 'width' => '25px'));
 		$tdata[1] = '<span class="big_data">' .
 			format_numeric($system_events) . '</span>';
-		
-		$table_srv->colspan[count($table_srv->data)][1] = 3;
+			
+		if($system_events > 50000 && !enterprise_installed()){
+			$tdata[2] = "<div id='monitoreventsmodal' class='publienterprise' title='Community version' style='text-align:left'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+		}
+			
+		else{
+		$tdata[3] = "&nbsp;";	
+		}
+		$table_srv->colspan[count($table_srv->data)][1] = 2;
 		$table_srv->rowclass[] = '';
 		$table_srv->data[] = $tdata;
 	}

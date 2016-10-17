@@ -56,6 +56,9 @@ function rrmdir($dir) {
 		reset($objects);
 		rmdir($dir);
 	}
+	else {
+		unlink ($dir);
+	}
 }
 
 function update_manager_install_package_step2() {
@@ -606,14 +609,19 @@ function update_manager_starting_update() {
 		"/downloads/last_package.tgz";
 	
 	$full_path = $config['attachment_store'] . "/downloads/pandora_console";
-	rrmdir($full_path);
-	
-	
+
+	$phar = new PharData($path_package);
 	ob_start();
-	$result = system("tar xvzf " . $path_package .
-		" -C " . $config['attachment_store'] . "/downloads/", $none);
+	try {
+		$result = $phar->extractTo($config['attachment_store'] . "/downloads/"); 
+	}
+	catch (Exception $e) {
+		echo ' There\'s a problem ... -> ' . $e->getMessage();
+	}
 	ob_end_clean();
-	
+
+	rrmdir($path_package);
+
 	if ($result != 0) {
 		db_process_sql_update('tconfig',
 			array('value' => json_encode(
@@ -640,7 +648,9 @@ function update_manager_starting_update() {
 		$full_path,
 		$homedir,
 		array('install.php'));
-	
+
+	rrmdir($full_path);
+
 	if (!$result) {
 		db_process_sql_update('tconfig',
 			array('value' => json_encode(
@@ -796,7 +806,7 @@ function update_manger_get_single_message ($message_id) {
 	
 	$sql = 'SELECT data, svn_version, db_field_value FROM tupdate ';
 	$sql .= 'WHERE svn_version=' . $message_id;
-	html_debug ("S: " . $sql, true);
+	
 	$message = db_get_row_sql($sql);
 	return $message;
 }

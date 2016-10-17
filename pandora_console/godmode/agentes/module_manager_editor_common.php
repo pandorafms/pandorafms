@@ -228,70 +228,78 @@ $table_simple->data[1][3] = html_print_select_from_sql ('SELECT id_mg, name FROM
 if($disabledBecauseInPolicy){
  	$table_simple->data[1][3] .= html_print_input_hidden ('id_module_group', $id_module_group, true);
 }
+$table_simple->data[2][0] = __('Dynamic Interval') .' ' . ui_print_help_icon ('warning_status', true);
+html_debug_print($dynamic_interval);
+$table_simple->data[2][1] = html_print_extended_select_for_time ('dynamic_interval', $dynamic_interval, '', 'None', '0', 10, true, 'width:150px',false);
+$table_simple->data[2][2] = '<span><em>'.__('Dynamic Min. ').'</em>';
+$table_simple->data[2][2] .= html_print_input_text ('dynamic_min', $dynamic_min, '', 10, 255, true);
+$table_simple->data[2][2] .= '<br /><em>'.__('Dynamic Max.').'</em>';
+$table_simple->data[2][2] .= html_print_input_text ('dynamic_max', $dynamic_max, '', 10, 255, true);
+$table_simple->data[2][3] = '<span><em>'.__('Dynamic Two Tailed: ').'</em>';
+$table_simple->data[2][3] .= html_print_checkbox ("dynamic_two_tailed", 1, $dynamic_two_tailed, true);
+$table_simple->data[3][0] = __('Warning status').' ' . ui_print_help_icon ('warning_status', true);
 
-$table_simple->data[2][0] = __('Warning status').' ' . ui_print_help_icon ('warning_status', true);
-
-$table_simple->data[2][1] = '';
+$table_simple->data[3][1] = '';
 
 if (!modules_is_string_type($id_module_type) || $edit) {
-	$table_simple->data[2][1] .= '<span id="minmax_warning"><em>'.__('Min. ').'</em>';
-	$table_simple->data[2][1] .= html_print_input_text ('min_warning', $min_warning,
+	$table_simple->data[3][1] .= '<span id="minmax_warning"><em>'.__('Min. ').'</em>';
+	$table_simple->data[3][1] .= html_print_input_text ('min_warning', $min_warning,
 		'', 10, 255, true, $disabledBecauseInPolicy);
-	$table_simple->data[2][1] .= '<br /><em>'.__('Max.').'</em>';
-	$table_simple->data[2][1] .= html_print_input_text ('max_warning', $max_warning,
+	$table_simple->data[3][1] .= '<br /><em>'.__('Max.').'</em>';
+	$table_simple->data[3][1] .= html_print_input_text ('max_warning', $max_warning,
 		'', 10, 255, true, $disabledBecauseInPolicy).'</span>';
 }
 if (modules_is_string_type($id_module_type) || $edit) {
-	$table_simple->data[2][1] .= '<span id="string_warning"><em>'.__('Str.').'</em>';
-	$table_simple->data[2][1] .= html_print_input_text ('str_warning', $str_warning, 
+	$table_simple->data[3][1] .= '<span id="string_warning"><em>'.__('Str.').'</em>';
+	$table_simple->data[3][1] .= html_print_input_text ('str_warning', $str_warning, 
 		'', 10, 255, true, $disabledBecauseInPolicy).'</span>';
 }
 
-$table_simple->data[2][1] .= '<br /><em>'.__('Inverse interval').'</em>';
-$table_simple->data[2][1] .= html_print_checkbox ("warning_inverse", 1,
+$table_simple->data[3][1] .= '<br /><em>'.__('Inverse interval').'</em>';
+$table_simple->data[3][1] .= html_print_checkbox ("warning_inverse", 1,
 	$warning_inverse, true);
-$table_simple->data[2][2] = __('Critical status').' ' . ui_print_help_icon ('critical_status', true);
-$table_simple->data[2][3] = '';
+$table_simple->data[3][2] = __('Critical status').' ' . ui_print_help_icon ('critical_status', true);
+$table_simple->data[3][3] = '';
 
 if (!modules_is_string_type($id_module_type) || $edit) {
-	$table_simple->data[2][3] .= '<span id="minmax_critical"><em>'.__('Min. ').'</em>';
-	$table_simple->data[2][3] .= html_print_input_text ('min_critical', $min_critical,
+	$table_simple->data[3][3] .= '<span id="minmax_critical"><em>'.__('Min. ').'</em>';
+	$table_simple->data[3][3] .= html_print_input_text ('min_critical', $min_critical,
 		'', 10, 255, true, $disabledBecauseInPolicy);
-	$table_simple->data[2][3] .= '<br /><em>'.__('Max.').'</em>';
-	$table_simple->data[2][3] .= html_print_input_text ('max_critical', $max_critical,
+	$table_simple->data[3][3] .= '<br /><em>'.__('Max.').'</em>';
+	$table_simple->data[3][3] .= html_print_input_text ('max_critical', $max_critical,
 		'', 10, 255, true, $disabledBecauseInPolicy).'</span>';
 }
 if (modules_is_string_type($id_module_type) || $edit) {
-	$table_simple->data[2][3] .= '<span id="string_critical"><em>'.__('Str.').'</em>';
-	$table_simple->data[2][3] .= html_print_input_text ('str_critical', $str_critical, 
+	$table_simple->data[3][3] .= '<span id="string_critical"><em>'.__('Str.').'</em>';
+	$table_simple->data[3][3] .= html_print_input_text ('str_critical', $str_critical, 
 		'', 10, 255, true, $disabledBecauseInPolicy).'</span>';
 }
 
-$table_simple->data[2][3] .= '<br /><em>'.__('Inverse interval').'</em>';
-$table_simple->data[2][3] .= html_print_checkbox ("critical_inverse", 1, $critical_inverse, true);
+$table_simple->data[3][3] .= '<br /><em>'.__('Inverse interval').'</em>';
+$table_simple->data[3][3] .= html_print_checkbox ("critical_inverse", 1, $critical_inverse, true);
 
 /* FF stands for Flip-flop */
-$table_simple->data[3][0] = __('FF threshold').' ' . ui_print_help_icon ('ff_threshold', true);
-$table_simple->colspan[3][1] = 3;
+$table_simple->data[4][0] = __('FF threshold').' ' . ui_print_help_icon ('ff_threshold', true);
+$table_simple->colspan[4][1] = 3;
 
-$table_simple->data[3][1] = html_print_radio_button ('each_ff', 0, '', $each_ff, true) . ' ' . __('All state changing') . ' : ';
-$table_simple->data[3][1] .= html_print_input_text ('ff_event', $ff_event, '', 5
+$table_simple->data[4][1] = html_print_radio_button ('each_ff', 0, '', $each_ff, true) . ' ' . __('All state changing') . ' : ';
+$table_simple->data[4][1] .= html_print_input_text ('ff_event', $ff_event, '', 5
 , 15, true, $disabledBecauseInPolicy) . '<br />';
-$table_simple->data[3][1] .= html_print_radio_button ('each_ff', 1, '', $each_ff, true) . ' ' . __('Each state changing') . ' : ';
-$table_simple->data[3][1] .= __('To normal');
-$table_simple->data[3][1] .= html_print_input_text ('ff_event_normal', $ff_event_normal, '', 5, 15, true, $disabledBecauseInPolicy) . ' ';
-$table_simple->data[3][1] .= __('To warning');
-$table_simple->data[3][1] .= html_print_input_text ('ff_event_warning', $ff_event_warning, '', 5, 15, true, $disabledBecauseInPolicy) . ' ';
-$table_simple->data[3][1] .= __('To critical');
-$table_simple->data[3][1] .= html_print_input_text ('ff_event_critical', $ff_event_critical, '', 5, 15, true, $disabledBecauseInPolicy);
-$table_simple->data[4][0] = __('Historical data');
+$table_simple->data[4][1] .= html_print_radio_button ('each_ff', 1, '', $each_ff, true) . ' ' . __('Each state changing') . ' : ';
+$table_simple->data[4][1] .= __('To normal');
+$table_simple->data[4][1] .= html_print_input_text ('ff_event_normal', $ff_event_normal, '', 5, 15, true, $disabledBecauseInPolicy) . ' ';
+$table_simple->data[4][1] .= __('To warning');
+$table_simple->data[4][1] .= html_print_input_text ('ff_event_warning', $ff_event_warning, '', 5, 15, true, $disabledBecauseInPolicy) . ' ';
+$table_simple->data[4][1] .= __('To critical');
+$table_simple->data[4][1] .= html_print_input_text ('ff_event_critical', $ff_event_critical, '', 5, 15, true, $disabledBecauseInPolicy);
+$table_simple->data[5][0] = __('Historical data');
 if($disabledBecauseInPolicy) {
 	// If is disabled, we send a hidden in his place and print a false checkbox because HTML dont send disabled fields and could be disabled by error
-	$table_simple->data[4][1] = html_print_checkbox ("history_data_fake", 1, $history_data, true, $disabledBecauseInPolicy);
-	$table_simple->data[4][1] .= '<input type="hidden" name="history_data" value="'.(int)$history_data.'">';
+	$table_simple->data[5][1] = html_print_checkbox ("history_data_fake", 1, $history_data, true, $disabledBecauseInPolicy);
+	$table_simple->data[5][1] .= '<input type="hidden" name="history_data" value="'.(int)$history_data.'">';
 }
 else {
-	$table_simple->data[4][1] = html_print_checkbox ("history_data", 1, $history_data, true, $disabledBecauseInPolicy);
+	$table_simple->data[5][1] = html_print_checkbox ("history_data", 1, $history_data, true, $disabledBecauseInPolicy);
 }
 
 /* Advanced form part */
@@ -799,8 +807,35 @@ $(document).ready (function () {
 	$("#submit-crtbutton").click (function () {
 		validate_post_process();
 	});
+	//Dynamic_interval;
+	disabled_status();
+	$('#dynamic_interval_select').change (function() {
+		disabled_status();
+	});
 
 });
+
+function disabled_status () {
+	if($('#dynamic_interval_select').val() != 0){
+		$('#text-min_warning').prop('readonly', true);
+		$('#text-min_warning').addClass('readonly');
+		$('#text-max_warning').prop('readonly', true);
+		$('#text-max_warning').addClass('readonly');
+		$('#text-min_critical').prop('readonly', true);
+		$('#text-min_critical').addClass('readonly');
+		$('#text-max_critical').prop('readonly', true);
+		$('#text-max_critical').addClass('readonly');
+	} else {
+		$('#text-min_warning').prop('readonly', false);
+		$('#text-min_warning').removeClass('readonly');
+		$('#text-max_warning').prop('readonly', false);
+		$('#text-max_warning').removeClass('readonly');
+		$('#text-min_critical').prop('readonly', false);
+		$('#text-min_critical').removeClass('readonly');
+		$('#text-max_critical').prop('readonly', false);
+		$('#text-max_critical').removeClass('readonly');
+	}
+}
 
 // Add a new module macro
 function add_macro () {

@@ -2204,10 +2204,10 @@ function init_graph(parameter_object) {
 		.size([width_svg, height_svg]);
 	
 	if (x_offs != null) {
-		translation[0] = x_offs;
+		translation[0] = translation [0] + x_offs;
 	}
 	if (y_offs != null) {
-		translation[1] = y_offs;
+		translation[1] = translation [1] + y_offs;
 	}
 	if (z_dash != null) {
 		scale = z_dash;

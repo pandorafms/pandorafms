@@ -977,7 +977,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$prediction_period = false, $background_color = 'white',
 	$name_list = array(), $unit_list = array(), $show_last = true, $show_max = true,
 	$show_min = true, $show_avg = true, $labels = array(), $dashboard = false,
-	$vconsole = false, $percentil = 0) {
+	$vconsole = false, $percentil = null) {
 	
 	global $config;
 	global $graphic_type;

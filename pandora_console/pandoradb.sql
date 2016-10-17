@@ -1846,7 +1846,7 @@ CREATE TABLE tsessions_php (
 CREATE TABLE IF NOT EXISTS `tmap` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`id_group` int(10) unsigned NOT NULL default 0,
-	`id_user` int(10) unsigned NOT NULL default 0,
+	`id_user` varchar(250) NOT NULL default '',
 	`type` int(10) unsigned NOT NULL default 0,
 	`subtype` int(10) unsigned NOT NULL default 0,
 	`name` varchar(250) default '',
@@ -1892,6 +1892,8 @@ CREATE TABLE IF NOT EXISTS `trel_item` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`id_parent` int(10) unsigned NOT NULL default 0,
 	`id_child` int(10) unsigned NOT NULL default 0,
+	`id_parent_source_data` int(10) unsigned NOT NULL default 0,
+	`id_child_source_data` int(10) unsigned NOT NULL default 0,
 	`parent_type` int(10) unsigned NOT NULL default 0,
 	`child_type` int(10) unsigned NOT NULL default 0,
 	`id_item` int(10) unsigned NOT NULL default 0,

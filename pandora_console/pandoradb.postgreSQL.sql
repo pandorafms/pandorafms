@@ -1736,7 +1736,7 @@ CREATE TABLE "tsessions_php" (
 CREATE TABLE IF NOT EXISTS "tmap" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"id_group" INTEGER default 0,
-	"id_user" INTEGER default 0,
+	"id_user" varchar(250) default '',
 	"type" SMALLINT NOT NULL default 0,
 	"subtype" SMALLINT NOT NULL default 0,
 	"name" varchar(250) default '',
@@ -1781,6 +1781,8 @@ CREATE TABLE IF NOT EXISTS "trel_item" (
 	"id" SERIAL NOT NULL PRIMARY KEY,
 	"id_parent" INTEGER default 0,
 	"id_child" INTEGER default 0,
+	"id_parent_source_data" INTEGER default 0,
+	"id_child_source_data" INTEGER default 0,
 	"parent_type" SMALLINT NOT NULL default 0,
 	"child_type" SMALLINT NOT NULL default 0,
 	"id_item" INTEGER default 0,

@@ -2075,7 +2075,7 @@ CREATE TABLE tsessions_php (
 CREATE TABLE IF NOT EXISTS tmap (
 	id NUMBER(10, 0) PRIMARY KEY,
 	id_group NUMBER(10, 0) DEFAULT 0,
-	id_user NUMBER(10, 0) DEFAULT 0,
+	id_user VARCHAR2(100) DEFAULT '',
 	type NUMBER(5, 0) DEFAULT 0,
 	subtype NUMBER(5, 0) DEFAULT 0,
 	name VARCHAR2(100) DEFAULT '',
@@ -2124,6 +2124,8 @@ CREATE TABLE IF NOT EXISTS trel_item (
 	id NUMBER(10, 0) PRIMARY KEY,
 	id_parent NUMBER(10, 0) DEFAULT 0,
 	id_child NUMBER(10, 0) DEFAULT 0,
+	id_parent_source_data NUMBER(10, 0) DEFAULT 0,
+	id_child_source_data NUMBER(10, 0) DEFAULT 0,
 	parent_type NUMBER(5, 0) DEFAULT 0,
 	child_type NUMBER(5, 0) DEFAULT 0,
 	id_item NUMBER(10, 0) DEFAULT 0,

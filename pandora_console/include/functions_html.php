@@ -429,8 +429,8 @@ function html_print_select_groups($id_user = false, $privilege = "AR",
 function html_print_select ($fields, $name, $selected = '', $script = '',
 	$nothing = '', $nothing_value = 0, $return = false, $multiple = false,
 	$sort = true, $class = '', $disabled = false, $style = false,
-	$option_style = false, $size = false) {
-	
+	$option_style = false, $size = false,$modal=false,$message=''){
+
 	$output = "\n";
 	
 	static $idcounter = array ();
@@ -543,7 +543,11 @@ function html_print_select ($fields, $name, $selected = '', $script = '',
 	}
 	
 	$output .= "</select>";
-	
+	if ($modal){
+		$output .= "
+		<div id='publienterprise' class='".$message."' title='Community version' style='display:inline;position:relative;top:10px;left:0px;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>
+		";
+	}
 	if ($return)
 		return $output;
 	

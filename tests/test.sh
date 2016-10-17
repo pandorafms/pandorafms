@@ -51,4 +51,14 @@ check "Starting the Pandora FMS Server" $?
 service pandora_agent_daemon start
 check "Starting the Pandora FMS Agent" $?
 
+# Disable the initial wizards.
+echo "UPDATE tconfig SET value='1' WHERE token='initial_wizard'" | mysql -u root -ppandora -Dpandora
+echo "UPDATE tconfig SET value='1' WHERE token='instance_registered'" | mysql -u root -ppandora -Dpandora
+echo "INSERT INTO tconfig (token, value) VALUES ('skip_login_help_dialog', '1')" | mysql -u root -ppandora -Dpandora
+echo "UPDATE tusuario SET middlename='1'" | mysql -u root -ppandora -Dpandora
+
+# Run console tests.
+cd /tmp/pandorafms/tests && chmod +x run_console_tests.py && ./run_console_tests.py
+check "Running tests for the Pandora FMS Console" $?
+
 exit 0

@@ -83,7 +83,40 @@ $(document).ready (function () {
 		);
 		return false;
 	});
-	
+
+
+	$("#publienterprise").click (function () {
+		jQuery.get ("ajax.php",
+			{
+		"page": "general/alert_enterprise",
+		"message":$(this).attr("class")},
+			function (data, status) {
+				$("#alert_messages").hide ()
+					.empty ()
+					.append (data)
+					.dialog ({
+						title: $("#publienterprise").attr ("title"),
+						resizable: true,
+						draggable: true,
+						modal: true,
+						open: function (event, ui) {
+    				$(this).css({'overflow': 'hidden','text-align': 'center','padding-right':'25px','padding-bottom':'25px'}); //this line does the actual hiding
+  					},
+						overlay: {
+							opacity: 0.5,
+							background: "black"
+						},
+						width: 600
+					})
+					.show ();
+			},
+			"html"
+		);
+		return false;
+	});
+
+
+
 	if ($('#license_error_msg_dialog').length) {
 		if (typeof(process_login_ok) == "undefined")
 			process_login_ok = 0;

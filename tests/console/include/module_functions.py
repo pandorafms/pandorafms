@@ -156,7 +156,7 @@ def delete_module (driver,agent_name,module_name):
 	alert = driver.switch_to_alert()
 	alert.accept()
 	
-def search_module (driver,agent_name,module_name):
+def search_module (driver,agent_name,module_name,go_to_module=False):
 	
 	search_agent(driver,agent_name)
 	driver.find_element_by_xpath('//ul[@class="mn"]/li/a/img[@data-title="Manage"]').click()
@@ -166,6 +166,9 @@ def search_module (driver,agent_name,module_name):
 	driver.find_element_by_id("text-search_string").send_keys(module_name)
 	
 	driver.find_element_by_id("submit-filter").click()
+
+	if go_to_module == True:
+		driver.find_element_by_xpath('//a[contains(.,"'+module_name+'")]').click()
 
 
 	

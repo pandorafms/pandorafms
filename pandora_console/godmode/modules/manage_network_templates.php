@@ -27,7 +27,7 @@ if (! check_acl ($config['id_user'], 0, "PM")) {
 }
 
 // Header
-ui_print_page_header (__('Module management')." &raquo; ".__('Module template management'), "images/gm_modules.png", false, "template_tab", true);
+ui_print_page_header (__('Module management')." &raquo; ".__('Module template management'), "images/gm_modules.png", false, "template_tab", true,"",true,"module");
 
 
 require_once ('include/functions_network_profiles.php');
@@ -180,7 +180,7 @@ $table->class = "databox data";
 $table->head = array ();
 $table->head[0] = __('Name');
 $table->head[1] = __('Description');
-$table->head[2] = __('Action') .
+$table->head[2] = '<span style="margin-right:7%;">'.__('Action') .'</span>'.
 	html_print_checkbox('all_delete', 0, false, true, false, 'check_all_checkboxes();');
 $table->size = array ();
 $table->size[1] = '65%';

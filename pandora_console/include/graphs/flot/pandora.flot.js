@@ -819,7 +819,7 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 				newdate = year + "/" + month + "/" + day;
 
 			if(!to){
-				to= '12:00';
+				to= '23:59';
 			}
 			window.location='index.php?sec=eventos&sec2=operation/events/events&id_agent='+id_agent+'&date_from='+newdate+'&time_from='+from+'&date_to='+newdate+'&time_to='+to+'&status=-1';
 		}
@@ -980,9 +980,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			//threshold: [{ below: 80, color: "rgb(200, 20, 30)" } , { below: 65, color: "rgb(30, 200, 30)" }, { below: 50, color: "rgb(30, 200, 30)" }],
 			lines: {
 				show: line_show,
-				fill: filled,
+				fill: 0.2,
 				fillColor: {
-					colors: [ { opacity: 0.9 }, { opacity: 0.9 } ]
+					colors: [ { opacity: 0.9 }, { opacity: 0.6 } ]
 				},
 				lineWidth: lineWidth,
 				steps: steps_chart

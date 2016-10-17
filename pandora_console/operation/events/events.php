@@ -400,7 +400,7 @@ if ($config["pure"] == 0 || $meta) {
 	if (! defined ('METACONSOLE')) {
 		unset($onheader['history']);
 		ui_print_page_header (__("Events"), "images/op_events.png",
-			false, "eventview", false, $onheader);
+			false, "eventview", false, $onheader,true, "events");
 	}
 	else {
 		unset($onheader['rss']);

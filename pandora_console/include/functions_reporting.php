@@ -4355,6 +4355,7 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	if ($graphs === false)
 		$graphs = array();
 	
+	$labels = array();
 	foreach ($graphs as $graph_item) {
 		if ($type_report == 'automatic_graph') {
 			array_push ($modules, array(
@@ -4366,12 +4367,13 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 		}
 		
 		array_push ($weights, $graph_item["weight"]);
-	}
-	
-	$labels = array();
-	if (in_array('label',$content['style'])) {
-		$label = reporting_label_macro($content, $content['style']['label']);
-		$labels = array_fill_keys($modules, $label);
+		if (in_array('label',$content['style'])) {
+			$item = array('type' => 'custom_graph',
+						'id_agent' =>modules_get_agentmodule_agent($graph_item['id_agent_module']),
+						'id_agent_module'=>$graph_item['id_agent_module']);
+			$label = reporting_label_macro($item, $content['style']['label']);
+			$labels[$graph_item['id_agent_module']] = $label;
+		}
 	}
 	
 	$return['chart'] = '';

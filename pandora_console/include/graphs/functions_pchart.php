@@ -1009,7 +1009,7 @@ function pch_vertical_graph ($graph_type, $index, $data, $width, $height,
 	
 	/* Draw the chart */
 	$settings = array(
-		"ForceTransparency" => $ForceTransparency,
+		"ForceTransparency" => 20,
 		"Gradient" => TRUE,
 		"GradientMode" => GRADIENT_EFFECT_CAN,
 		"DisplayValues" => $show_values,

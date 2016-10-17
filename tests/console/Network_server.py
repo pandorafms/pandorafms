@@ -9,7 +9,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import StaleElementReferenceException
 from include.module_functions import *
 
-import unittest, time, re
+import unittest2, time, re
 
 class Network_server_module(PandoraWebDriverTestCase):
 
@@ -54,5 +54,5 @@ class Network_server_module(PandoraWebDriverTestCase):
 				break
 
 if __name__ == "__main__":
-	unittest.main()
+	unittest2.main()
 

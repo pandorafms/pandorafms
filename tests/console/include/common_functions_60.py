@@ -6,7 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 import random, time
 import string
-import unittest
+import unittest2
 
 def is_enterprise(func):
         u"""
@@ -22,7 +22,7 @@ def is_enterprise(func):
                 if is_enterprise:
                         return func(*args,**kwargs)
 		else:
-			raise unittest.SkipTest("Skipping test")
+			raise unittest2.SkipTest("Skipping test")
         return inner
 
 
@@ -48,6 +48,7 @@ def login(driver,user="admin",passwd="pandora",pandora_url=None):
 	print "Pandora url is "+pandora_url
 
 	driver.get(pandora_url+"/pandora_console/index.php")
+        driver.add_cookie({'name': 'clippy_is_annoying', 'value': 1})
 	driver.find_element_by_id("nick").clear()
 	driver.find_element_by_id("nick").send_keys(user)
 	driver.find_element_by_id("pass").clear()
@@ -109,11 +110,12 @@ def detect_and_pass_newsletter_wizard(driver):
 
 
 def detect_and_pass_all_wizards(driver):
-	driver.implicitly_wait(2) #Optimisation workaround for skipping wizards quickly
-	detect_and_pass_pandorin(driver)
-	detect_and_pass_initial_wizard(driver)
-	detect_and_pass_newsletter_wizard(driver)
-	driver.implicitly_wait(30)
+	#driver.implicitly_wait(2) #Optimisation workaround for skipping wizards quickly
+	#detect_and_pass_pandorin(driver)
+	#detect_and_pass_initial_wizard(driver)
+	#detect_and_pass_newsletter_wizard(driver)
+	#driver.implicitly_wait(30)
+        return
 
 def activate_home_screen(driver,mode):
  

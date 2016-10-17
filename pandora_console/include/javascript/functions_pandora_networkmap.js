@@ -1040,8 +1040,8 @@ function hide_labels_function() {
 	
 	//Change the image arrow
 	$("#hide_labels_" + networkmap_id + " > a").attr("title", "Show Labels");
-	$("#image_hide_show_labels" + networkmap_id).attr("src", "images/icono_refresh_networkmaps.png");
-	
+	$("#hide_labels_" + networkmap_id + " > a > img").attr("src", "images/icono_pintar.png");
+
 	d3.selectAll(".node_text").style("display", "none");
 }
 
@@ -1050,7 +1050,7 @@ function show_labels_function() {
 	
 	//Change the image arrow
 	$("#hide_labels_" + networkmap_id + " > a").attr("title", "Hide Labels");
-	$("#image_hide_show_labels" + networkmap_id).attr("src", "images/icono_delete_networkmaps.png");
+	$("#hide_labels_" + networkmap_id + " > a > img").attr("src", "images/icono_borrar.png");
 	
 	d3.selectAll(".node_text").style("display", "");
 }

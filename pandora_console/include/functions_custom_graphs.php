@@ -164,7 +164,7 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 	$background_color = 'white', $modules_param = array(), $homeurl = '',
 	$name_list = array(), $unit_list = array(), $show_last = true,
 	$show_max = true, $show_min = true, $show_avg = true, $ttl = 1,
-	$dashboard = false, $vconsole = false, $percentil = 0) {
+	$dashboard = false, $vconsole = false, $percentil = null) {
 	
 	global $config;
 	

@@ -58,6 +58,7 @@ function include_javascript_dependencies_flot_graph($return = false) {
 				ui_get_full_url($metaconsole_hack . '/include/graphs/flot/pandora.flot.js') .'"></script>';
 		$output .= "
 			<script type='text/javascript'>
+			var precision_graph = " . $config['graph_precision'] . ";
 			function pieHover(event, pos, obj) 
 			{
 				if (!obj)

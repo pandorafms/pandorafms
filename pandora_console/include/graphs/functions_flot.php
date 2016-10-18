@@ -551,7 +551,7 @@ function flot_custom_pie_chart ($flash_charts, $graph_values,
 			else if ($value['value'] > 1000)
 				$legendvalue = sprintf("%sK", number_format($value['value'] / 1000, $config['graph_precision']));
 			else
-				$legendvalue = $value['value'];
+				$legendvalue = number_format($value['value'], $config['graph_precision']);
 		}
 		else
 			$legendvalue = __('No data');

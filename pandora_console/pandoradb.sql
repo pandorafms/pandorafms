@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente_datos` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
-	`datos` double(22,2) default NULL,
+	`datos` double(22,5) default NULL,
 	`utimestamp` bigint(20) default '0',
 	KEY `data_index1` (`id_agente_modulo`),
 	KEY `idx_utimestamp` USING BTREE (`utimestamp`)
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `tagente_datos` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tagente_datos_inc` (
 	`id_agente_modulo` int(10) unsigned NOT NULL default '0',
-	`datos` double(22,2) default NULL,
+	`datos` double(22,5) default NULL,
 	`utimestamp` int(20) unsigned default '0',
 	KEY `data_inc_index_1` (`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

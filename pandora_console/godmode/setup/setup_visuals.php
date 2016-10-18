@@ -398,7 +398,8 @@ if (!enterprise_installed()) {
 }
 
 $table_chars->data[$row][0] = __('Data precision for reports');
-$table_chars->data[$row][1] = html_print_input_text ('graph_precision', $config["graph_precision"], '', 5, 5, true, $disabled_graph_precision);
+$table_chars->data[$row][0] .= ui_print_help_tip(__('Precision must be a integer number between 0 and 5'), true);
+$table_chars->data[$row][1] = html_print_input_text ('graph_precision', $config["graph_precision"], '', 5, 5, true, $disabled_graph_precision, false, "onChange=\"change_precision()\"");
 $row++;
 
 $table_chars->data[$row][0] = __('Default line thickness for the Custom Graph.');
@@ -752,7 +753,13 @@ function showPreview() {
 			$("#preview_image").html(data);
 		}
 	);
-	
+}
+
+function change_precision() {
+	var value = $("#text-graph_precision").val();
+	if ((value < 0) || (value > 5)) {
+		$("#text-graph_precision").val(1);
+	}
 }
 
 tinyMCE.init({

@@ -330,7 +330,6 @@ ui_require_jquery_file("ui.datepicker-" . get_user_language(), "include/javascri
 		
 	// Show the modal window of an module
 	function show_module_detail_dialog(module_id, id_agent, server_name, offset, period,module_name) {
-		
 		var server_name = '';
 		var extra_parameters = '';
 		if ($('input[name=selection_mode]:checked').val()) {

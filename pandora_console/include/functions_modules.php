@@ -1840,6 +1840,7 @@ function modules_get_modulegroup_name ($modulegroup_id) {
 function modules_get_status($id_agent_module, $db_status, $data, &$status, &$title) {
 	$status = STATUS_MODULE_WARNING;
 	$title = "";
+	global $config;
 	
 	// This module is initialized ? (has real data)
 	//$module_init = db_get_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $id_agent_module);
@@ -1879,7 +1880,7 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
 	}
 	
 	if (is_numeric($data)) {
-		$title .= ": " . format_for_graph($data);
+		$title .= ": " . number_format($data, $config['graph_precision']);
 	}
 	else {
 		$text = io_safe_output($data);

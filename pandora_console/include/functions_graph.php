@@ -498,7 +498,6 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	global $max_value;
 	global $min_value;
 	
-	
 	$chart = array();
 	$color = array();
 	$legend = array();
@@ -734,16 +733,16 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	
 	if ($dashboard || $vconsole) {
 		$legend['sum'.$series_suffix] =
-			__('Last') . ': ' . rtrim(number_format($graph_stats['sum']['last'], 2), '.0') . ($unit ? ' ' . $unit : '') . ' ; '
-			. __('Avg') . ': ' . rtrim(number_format($graph_stats['sum']['avg'], 2), '.0') . ($unit ? ' ' . $unit : '');
+			__('Last') . ': ' . rtrim(number_format($graph_stats['sum']['last'], $config['graph_precision']), '.0') . ($unit ? ' ' . $unit : '') . ' ; '
+			. __('Avg') . ': ' . rtrim(number_format($graph_stats['sum']['avg'], $config['graph_precision']), '.0') . ($unit ? ' ' . $unit : '');
 	}
 	else if (!$avg_only) {
-		$legend['max'.$series_suffix] = __('Max').$series_suffix_str.': '.__('Last').': '.rtrim(number_format($graph_stats['max']['last'], 2), '.0').' '.$unit.' ; '.__('Avg').': '.rtrim(number_format($graph_stats['max']['avg'], 2), '.0').' '.$unit.' ; '.__('Max').': '.rtrim(number_format($graph_stats['max']['max'], 2), '.0').' '.$unit.' ; '.__('Min').': '.rtrim(number_format($graph_stats['max']['min'], 2), '.0').' '.$unit.'--> '.__('Selected');
-		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Last').': '.rtrim(number_format($graph_stats['sum']['last'], 2), '.0').' '.$unit.' ; '.__('Avg').': '.rtrim(number_format($graph_stats['sum']['avg'], 2), '.0').' '.$unit.' ; '.__('Max').': '.rtrim(number_format($graph_stats['sum']['max'], 2), '.0').' '.$unit.' ; '.__('Min').': '.rtrim(number_format($graph_stats['sum']['min'], 2), '.0').' '.$unit.'--> '.__('Selected');
-		$legend['min'.$series_suffix] = __('Min').$series_suffix_str.': '.__('Last').': '.rtrim(number_format($graph_stats['min']['last'], 2), '.0').' '.$unit.' ; '.__('Avg').': '.rtrim(number_format($graph_stats['min']['avg'], 2), '.0').' '.$unit.' ; '.__('Max').': '.rtrim(number_format($graph_stats['min']['max'], 2), '.0').' '.$unit.' ; '.__('Min').': '.rtrim(number_format($graph_stats['min']['min'], 2), '.0').' '.$unit.'--> '.__('Selected');
+		$legend['max'.$series_suffix] = __('Max').$series_suffix_str.': '.__('Last').': '.rtrim(number_format($graph_stats['max']['last'], $config['graph_precision']), '.0').' '.$unit.' ; '.__('Avg').': '.rtrim(number_format($graph_stats['max']['avg'], $config['graph_precision']), '.0').' '.$unit.' ; '.__('Max').': '.rtrim(number_format($graph_stats['max']['max'], $config['graph_precision']), '.0').' '.$unit.' ; '.__('Min').': '.rtrim(number_format($graph_stats['max']['min'], $config['graph_precision']), '.0').' '.$unit.' --> '.__('Selected');
+		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Last').': '.rtrim(number_format($graph_stats['sum']['last'], $config['graph_precision']), '.0').' '.$unit.' ; '.__('Avg').': '.rtrim(number_format($graph_stats['sum']['avg'], $config['graph_precision']), '.0').' '.$unit.' ; '.__('Max').': '.rtrim(number_format($graph_stats['sum']['max'], $config['graph_precision']), '.0').' '.$unit.' ; '.__('Min').': '.rtrim(number_format($graph_stats['sum']['min'], $config['graph_precision']), '.0').' '.$unit.' --> '.__('Selected');
+		$legend['min'.$series_suffix] = __('Min').$series_suffix_str.': '.__('Last').': '.rtrim(number_format($graph_stats['min']['last'], $config['graph_precision']), '.0').' '.$unit.' ; '.__('Avg').': '.rtrim(number_format($graph_stats['min']['avg'], $config['graph_precision']), '.0').' '.$unit.' ; '.__('Max').': '.rtrim(number_format($graph_stats['min']['max'], $config['graph_precision']), '.0').' '.$unit.' ; '.__('Min').': '.rtrim(number_format($graph_stats['min']['min'], $config['graph_precision']), '.0').' '.$unit.' --> '.__('Selected');
 	}
 	else {
-		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Last').': '.rtrim(number_format($graph_stats['sum']['last'], 2), '.0').' '.$unit.' ; '.__('Avg').': '.rtrim(number_format($graph_stats['sum']['avg'], 2), '.0').' '.$unit.' ; '.__('Max').': '.rtrim(number_format($graph_stats['sum']['max'], 2), '.0').' '.$unit.' ; '.__('Min').': '.rtrim(number_format($graph_stats['sum']['min'], 2), '.0').' '.$unit.'--> '.__('Selected');
+		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Last').': '.rtrim(number_format($graph_stats['sum']['last'], $config['graph_precision']), '.0').' '.$unit.' ; '.__('Avg').': '.rtrim(number_format($graph_stats['sum']['avg'], $config['graph_precision']), '.0').' '.$unit.' ; '.__('Max').': '.rtrim(number_format($graph_stats['sum']['max'], $config['graph_precision']), '.0').' '.$unit.' ; '.__('Min').': '.rtrim(number_format($graph_stats['sum']['min'], $config['graph_precision']), '.0').' '.$unit.' --> '.__('Selected');
 	}
 	//Baseline was replaced by compare graph feature
 	/*if ($baseline) {
@@ -804,8 +803,6 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$compare, $series_suffix, $series_suffix_str,
 			$show_unknown, $percentil, $dashboard, $vconsole);
 		
-		
-		
 		switch ($compare) {
 			case 'separated':
 				// Store the chart calculated
@@ -829,7 +826,6 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 				break;
 		}
 	}
-	
 	
 	// Build the data of the current period
 	$data_returned = grafico_modulo_sparse_data ($agent_module_id,
@@ -1351,30 +1347,30 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			$last = $graph_stats['last'];
 			
 			if ($min > 1000000)
-				$min = sprintf("%sM", number_format($min / 1000000, 2));
+				$min = sprintf("%sM", number_format($min / 1000000, $config['graph_precision']));
 			else if ($min > 1000)
-				$min = sprintf("%sK", number_format($min / 1000, 2));
+				$min = sprintf("%sK", number_format($min / 1000, $config['graph_precision']));
 			
 			if ($max > 1000000)
-				$max = sprintf("%sM", number_format($max / 1000000, 2));
+				$max = sprintf("%sM", number_format($max / 1000000, $config['graph_precision']));
 			else if ($max > 1000)
-				$max = sprintf("%sK", number_format($max / 1000, 2));
+				$max = sprintf("%sK", number_format($max / 1000, $config['graph_precision']));
 			
 			if ($avg > 1000000)
-				$avg = sprintf("%sM", number_format($avg / 1000000, 2));
+				$avg = sprintf("%sM", number_format($avg / 1000000, $config['graph_precision']));
 			else if ($avg > 1000)
-				$avg = sprintf("%sK", number_format($avg / 1000, 2));
+				$avg = sprintf("%sK", number_format($avg / 1000, $config['graph_precision']));
 			
 			if ($last > 1000000)
-				$last = sprintf("%sM", number_format($last / 1000000, 2));
+				$last = sprintf("%sM", number_format($last / 1000000, $config['graph_precision']));
 			else if ($last > 1000)
-				$last = sprintf("%sK", number_format($last / 1000, 2));
+				$last = sprintf("%sK", number_format($last / 1000, $config['graph_precision']));
 		}
 		else {
-			$min = number_format($graph_stats['min'], 2);
-			$max = number_format($graph_stats['max'], 2);
-			$avg = number_format($graph_stats['avg'], 2);
-			$last = number_format($graph_stats['last'], 2);
+			$min = number_format($graph_stats['min'], $config['graph_precision']);
+			$max = number_format($graph_stats['max'], $config['graph_precision']);
+			$avg = number_format($graph_stats['avg'], $config['graph_precision']);
+			$last = number_format($graph_stats['last'], $config['graph_precision']);
 		}
 		
 		
@@ -3754,8 +3750,8 @@ function grafico_modulo_boolean_data ($agent_module_id, $period, $show_events,
 		//Boolean graph doesn't have max!!!
 		//$legend['max'.$series_suffix] = __('Max').$series_suffix_str .': '.__('Last').': '.$graph_stats['max']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['max']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['max']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['max']['min'].' '.$unit;
 		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;
-		//Boolean graph doesn't have min!!!
-		//$legend['min'.$series_suffix] = __('Min').$series_suffix_str .': '.__('Last').': '.$graph_stats['min']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['min']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['min']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['min']['min'].' '.$unit;
+		// Boolean graph doesn't have min!!!
+		// $legend['min'.$series_suffix] = __('Min').$series_suffix_str .': '.__('Last').': '.$graph_stats['min']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['min']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['min']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['min']['min'].' '.$unit;
 	}
 	else {
 		$legend['sum'.$series_suffix] = __('Avg').$series_suffix_str.': '.__('Last').': '.$graph_stats['sum']['last'].' '.$unit.' ; '.__('Avg').': '.$graph_stats['sum']['avg'].' '.$unit.' ; '.__('Max').': '.$graph_stats['sum']['max'].' '.$unit.' ; '.__('Min').': '.$graph_stats['sum']['min'].' '.$unit;

@@ -911,12 +911,12 @@ if ($list_modules) {
 								$salida = $config["render_proc_fail"];
 							break;
 						default:
-							$salida = format_numeric($module["datos"]);
+							$salida = number_format($module["datos"], $config['graph_precision']);
 						break;
 					}
 				}
 				else {
-					$salida = format_numeric($module["datos"]);
+					$salida = number_format($module["datos"], $config['graph_precision']);
 				}
 				// Show units ONLY in numeric data types
 				if (isset($module["unit"])) {

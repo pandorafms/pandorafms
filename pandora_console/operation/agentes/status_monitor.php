@@ -1242,12 +1242,12 @@ if (!empty($result)) {
 								$salida = $config['render_proc_fail'];
 							break;
 						default:	
-							$salida = format_numeric($row['datos']);
+							$salida = number_format($row['datos'], $config['graph_precision']);
 							break;
 					}
 			}
 			else {
-				$salida = format_numeric($row['datos']);
+				$salida = number_format($row['datos'], $config['graph_precision']);
 			}
 			
 			// Show units ONLY in numeric data types

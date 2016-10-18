@@ -392,6 +392,15 @@ $table_chars->data[$row][0] = __('Value to interface graphics');
 $table_chars->data[$row][1] = html_print_input_text ('interface_unit', $config["interface_unit"], '', 20, 20, true);
 $row++;
 
+$disabled_graph_precision = false;
+if (!enterprise_installed()) {
+	$disabled_graph_precision = true;
+}
+
+$table_chars->data[$row][0] = __('Data precision for reports');
+$table_chars->data[$row][1] = html_print_input_text ('graph_precision', $config["graph_precision"], '', 5, 5, true, $disabled_graph_precision);
+$row++;
+
 $table_chars->data[$row][0] = __('Default line thickness for the Custom Graph.');
 $table_chars->data[$row][1] = html_print_input_text ('custom_graph_width',
 	$config["custom_graph_width"], '', 5, 5, true);

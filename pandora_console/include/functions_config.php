@@ -444,6 +444,8 @@ function config_update_config () {
 						$error_update[] = __('Graphic resolution (1-low, 5-high)');
 					if (!config_update_value ('interface_unit', (string) get_parameter ('interface_unit', __('Bytes') )))
 						$error_update[] = __('Value to interface graphics');
+					if (!config_update_value ('graph_precision', (string) get_parameter ('graph_precision', 1)))
+						$error_update[] = __('Data precision for reports');
 					$style = (string) get_parameter ('style');
 					if ($style != $config['style'])
 						$style = substr ($style, 0, strlen ($style) - 4);
@@ -1407,6 +1409,15 @@ function config_process_config () {
 
 	if (!isset($config['interface_unit'])) {
 		config_update_value ('interface_unit',  __('Bytes'));
+	}
+	
+	if (!isset($config['graph_precision'])) {
+		config_update_value ('graph_precision',  1);
+	}
+	else {
+		if (!isset($config['enterprise_installed'])) {
+			config_update_value ('graph_precision',  1);
+		}
 	}
 
 	if (!isset($config['gis_default_icon'])) {

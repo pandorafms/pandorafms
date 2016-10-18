@@ -3586,7 +3586,7 @@ sub process_data ($$$$$$$) {
 	# TODO: Float precission should be adjusted here in the future with a global
 	# config parameter
 	# Format data
-	$data = sprintf("%.2f", $data);
+	$data = sprintf("%.5f", $data);
 
 	$data_object->{'data'} = $data;
 	return $data;

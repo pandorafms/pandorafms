@@ -535,7 +535,7 @@ function flot_custom_pie_chart ($flash_charts, $graph_values,
 		$no_data,$xaxisname, $yaxisname, $water_mark, $fontpath, $font_size,
 		$unit, $ttl, $homeurl, $background_color, $legend_position) {
 	
-	
+	global $config;
 	///TODO
 	include_javascript_dependencies_flot_graph();
 	
@@ -545,9 +545,9 @@ function flot_custom_pie_chart ($flash_charts, $graph_values,
 	foreach ($graph_values as $label => $value) {
 		if ($value['value']) {
 			if ($value['value'] > 1000000)
-				$legendvalue = sprintf("%sM", number_format($value['value'] / 1000000, 2));
+				$legendvalue = sprintf("%sM", number_format($value['value'] / 1000000, $config['graph_precision']));
 			else if ($value['value'] > 1000)
-				$legendvalue = sprintf("%sK", number_format($value['value'] / 1000, 2));
+				$legendvalue = sprintf("%sK", number_format($value['value'] / 1000, $config['graph_precision']));
 			else
 				$legendvalue = $value['value'];
 		}

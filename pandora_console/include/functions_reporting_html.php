@@ -296,6 +296,8 @@ function reporting_html_SLA($table, $item, $mini) {
 	$hide_notinit_agent = $style['hide_notinit_agents'];
 	$same_agent_in_resume = "";
 	
+	global $config;
+	
 	if ($mini) {
 		$font_size = '1.5';
 	}
@@ -351,7 +353,7 @@ function reporting_html_SLA($table, $item, $mini) {
 				$row = array();
 				$row[] = $sla['agent'];
 				$row[] = $sla['module'];
-				$row[] = $sla['max'] . " / " . $sla['min'];
+				$row[] = number_format($sla['max'], $config['graph_precision']) . " / " . number_format($sla['min'], $config['graph_precision']);
 				$row[] = round($sla['sla_limit'], 2) . "%";
 				
 				if ($sla['sla_value_unknown']) {
@@ -378,7 +380,7 @@ function reporting_html_SLA($table, $item, $mini) {
 					$row = array();
 					$row[] = $sla['agent'];
 					$row[] = $sla['module'];
-					$row[] = $sla['max'] . " / " . $sla['min'];
+					$row[] = number_format($sla['max'], $config['graph_precision']) . " / " . number_format($sla['min'], $config['graph_precision']);
 					$row[] = round($sla['sla_limit'], 2) . "%";
 					
 					if ($sla['sla_value_unknown']) {
@@ -1481,6 +1483,8 @@ function reporting_html_sql_graph($table, $item) {
 }
 
 function reporting_html_monitor_report($table, $item, $mini) {
+	global $config;
+	
 	if ($mini) {
 		$font_size = '1.5';
 	}
@@ -1505,13 +1509,13 @@ function reporting_html_monitor_report($table, $item, $mini) {
 			'<p style="font: bold ' . $font_size . 'em Arial, Sans-serif; color: ' . COL_NORMAL . ';">';
 		$table1->data['data']['ok'] .=
 			html_print_image("images/module_ok.png", true) . ' ' .
-				__('OK') . ': ' . $item['data']["ok"]["formated_value"].' %</p>';
+				__('OK') . ': ' . number_format($item['data']["ok"]["formated_value"], $config['graph_precision']).' %</p>';
 		
 		$table1->data['data']['fail'] =
 			'<p style="font: bold ' . $font_size . 'em Arial, Sans-serif; color: ' . COL_CRITICAL . ';">';
 		$table1->data['data']['fail'] .=
 			html_print_image("images/module_critical.png", true) . ' ' .
-				__('Not OK') . ': ' . $item['data']["fail"]["formated_value"] . ' % ' . '</p>';
+				__('Not OK') . ': ' . number_format($item['data']["fail"]["formated_value"], $config['graph_precision']) . ' % ' . '</p>';
 	}
 	
 	$table->data['module']['cell'] = html_print_table($table1, true);
@@ -1699,6 +1703,8 @@ function reporting_html_availability(&$table, $item) {
 	$hide_notinit_agent = $style['hide_notinit_agents'];
 	$same_agent_in_resume = "";
 	
+	global $config;
+	
 	if (!empty($item["data"])) {
 		$table1 = new stdClass();
 		$table1->width = '99%';
@@ -1747,10 +1753,10 @@ function reporting_html_availability(&$table, $item) {
 				$table_row[] = $row['availability_item'];
 				$table_row[] = $row['checks'];
 				$table_row[] = $row['failed'];
-				$table_row[] = $row['fail'];
+				$table_row[] = number_format($row['fail'], $config['graph_precision']);
 				$table_row[] = $row['poling_time'];
 				$table_row[] = $row['time_unavaliable'];
-				$table_row[] = $row['ok'];
+				$table_row[] = number_format($row['ok'], $config['graph_precision']);
 			}
 			else {
 				if ($item['date']['to'] > $the_first_men_time) {
@@ -1759,10 +1765,10 @@ function reporting_html_availability(&$table, $item) {
 					$table_row[] = $row['availability_item'];
 					$table_row[] = $row['checks'];
 					$table_row[] = $row['failed'];
-					$table_row[] = $row['fail'];
+					$table_row[] = number_format($row['fail'], $config['graph_precision']);
 					$table_row[] = $row['poling_time'];
 					$table_row[] = $row['time_unavaliable'];
-					$table_row[] = $row['ok'];
+					$table_row[] = number_format($row['ok'], $config['graph_precision']);
 				}
 				else {
 					$same_agent_in_resume = $row['agent'];
@@ -1812,10 +1818,10 @@ function reporting_html_availability(&$table, $item) {
 			
 			$table1->data[] = array(
 				'max_text' => $item['resume']['min_text'],
-				'max' => format_numeric($item['resume']['max'], 2) . "%",
-				'avg' => format_numeric($item['resume']['avg'], 2) . "%",
+				'max' => number_format($item['resume']['max'], $config['graph_precision']) . "%",
+				'avg' => number_format($item['resume']['avg'], $config['graph_precision']) . "%",
 				'min_text' => $item['resume']['max_text'],
-				'min' => format_numeric($item['resume']['min'], 2) . "%"
+				'min' => number_format($item['resume']['min'], $config['graph_precision']) . "%"
 				);
 			
 			$table->colspan[2][0] = 3;

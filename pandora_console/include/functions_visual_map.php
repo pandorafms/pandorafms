@@ -804,7 +804,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 	}
 	
-	
 	$class = "item ";
 	switch ($type) {
 		case STATIC_GRAPH:
@@ -1011,9 +1010,23 @@ function visual_map_print_item($mode = "read", $layoutData,
 			$value = visual_map_get_simple_value($type,
 					$layoutData['id_agente_modulo'], $period);
 			
-			// If the value is a string, dont format it
-			if (!is_string($value)) {
-				$value = format_for_graph($value, 2);
+			global $config;
+			
+			if ($type == SIMPLE_VALUE) {
+				$returnValue_value = explode('&nbsp;', $value);
+				
+				if ($returnValue_value[1] != "") {
+					$value = number_format($returnValue_value[0], $config['graph_precision']) . " " . $returnValue_value[1];
+				}
+				else {
+					$value = number_format($returnValue_value[0], $config['graph_precision']);
+				}
+			}
+			else {
+				// If the value is a string, dont format it
+				if (!is_string($value)) {
+					$value = format_for_graph($value, $config['graph_precision']);
+				}
 			}
 			
 			$io_safe_output_text = str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);

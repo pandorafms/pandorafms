@@ -47,6 +47,7 @@ ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
 -- ---------------------------------------------------------------------
 ALTER TABLE trel_item ADD `id_parent_source_data` int(11) NOT NULL DEFAULT 0;
 ALTER TABLE trel_item ADD `id_child_source_data` int(11) NOT NULL DEFAULT 0;
+ALTER TABLE trel_item ADD `id_map` int(11) NOT NULL DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig`

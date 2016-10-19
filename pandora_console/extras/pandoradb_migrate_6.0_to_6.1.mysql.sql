@@ -1,19 +1,16 @@
 -- ---------------------------------------------------------------------
 -- Table `talert_templates`
 -- ---------------------------------------------------------------------
-
 ALTER TABLE talert_templates ADD COLUMN `min_alerts_reset_counter` tinyint(1) DEFAULT 0;
 
 -- ----------------------------------------------------------------------
 -- Table `tserver`
 -- ----------------------------------------------------------------------
-
 ALTER TABLE tserver ADD COLUMN `server_keepalive` int(11) DEFAULT 0;
 
 -- ----------------------------------------------------------------------
 -- Table `tagente_estado`
 -- ----------------------------------------------------------------------
-
 ALTER TABLE tagente_estado MODIFY `status_changes` tinyint(4) unsigned default 0;
 ALTER TABLE tagente_estado CHANGE `last_known_status` `known_status` tinyint(4) default 0;
 ALTER TABLE tagente_estado ADD COLUMN `last_known_status` tinyint(4) default 0;
@@ -34,6 +31,22 @@ WHERE `id` = 4 AND `id_alert_command` = 11;
 -- Table `talert_commands`
 -- ---------------------------------------------------------------------
 UPDATE `talert_commands` SET `fields_descriptions` = '[\"Integria&#x20;IMS&#x20;API&#x20;path\",\"Integria&#x20;IMS&#x20;API&#x20;pass\",\"Integria&#x20;IMS&#x20;user\",\"Integria&#x20;IMS&#x20;user&#x20;pass\",\"Ticket&#x20;title\",\"Ticket&#x20;group&#x20;ID\",\"Ticket&#x20;priority\",\"Email&#x20;copy\",\"Ticket&#x20;owner\",\"Ticket&#x20;description\"]', `fields_values` = '[\"\",\"\",\"\",\"\",\"\",\"\",\"10,Maintenance;0,Informative;1,Low;2,Medium;3,Serious;4,Very&#x20;Serious\",\"\",\"\",\"\"]' WHERE `id` = 11 AND `name` = 'Integria&#x20;IMS&#x20;Ticket';
+
+-- ---------------------------------------------------------------------
+-- Table `tmap`
+-- ---------------------------------------------------------------------
+ALTER TABLE tmap MODIFY `id_user` varchar(128);
+
+-- ---------------------------------------------------------------------
+-- Table `titem`
+-- ---------------------------------------------------------------------
+ALTER TABLE titem MODIFY `source_data` int(10) unsigned;
+
+-- ---------------------------------------------------------------------
+-- Table `trel_item`
+-- ---------------------------------------------------------------------
+ALTER TABLE trel_item ADD `id_parent_source_data` int(11) NOT NULL DEFAULT 0;
+ALTER TABLE trel_item ADD `id_child_source_data` int(11) NOT NULL DEFAULT 0;
 
 -- ---------------------------------------------------------------------
 -- Table `tconfig`

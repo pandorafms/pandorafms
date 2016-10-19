@@ -980,9 +980,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			//threshold: [{ below: 80, color: "rgb(200, 20, 30)" } , { below: 65, color: "rgb(30, 200, 30)" }, { below: 50, color: "rgb(30, 200, 30)" }],
 			lines: {
 				show: line_show,
-				fill: 0.4,
+				fill: filled,
 				fillColor: {
-					colors: [ { opacity: 0.3 }, { opacity: 0.7 } ]
+					colors: [ { opacity: 0.5 }, { opacity: 1 } ]
 				},
 				lineWidth: lineWidth,
 				steps: steps_chart

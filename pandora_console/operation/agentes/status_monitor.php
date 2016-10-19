@@ -1136,35 +1136,74 @@ if (!empty($result)) {
 				__('NOT INIT'), true);
 		}
 		elseif ($row['estado'] == 0) {
-			$data[6] = ui_print_status_image(STATUS_MODULE_OK,
-				__('NORMAL') . ': ' . $row['datos'], true);
+			if (is_numeric($row['datos'])) {
+				$data[6] = ui_print_status_image(STATUS_MODULE_OK,
+					__('NORMAL') . ': ' . number_format($row['datos'], $config['graph_precision']), true);
+			}
+			else {
+				$data[6] = ui_print_status_image(STATUS_MODULE_OK,
+					__('NORMAL') . ': ' . $row['datos'], true);
+			}
 		}
 		elseif ($row['estado'] == 1) {
-			$data[6] = ui_print_status_image(STATUS_MODULE_CRITICAL,
-				__('CRITICAL') . ': ' . $row['datos'], true);
+			if (is_numeric($row['datos'])) {
+				$data[6] = ui_print_status_image(STATUS_MODULE_CRITICAL,
+					__('CRITICAL') . ': ' . number_format($row['datos'], $config['graph_precision']), true);
+			}
+			else {
+				$data[6] = ui_print_status_image(STATUS_MODULE_CRITICAL,
+					__('CRITICAL') . ': ' . $row['datos'], true);
+			}
 		}
 		elseif ($row['estado'] == 2) {
-			$data[6] = ui_print_status_image(STATUS_MODULE_WARNING,
-				__('WARNING') . ': ' . $row['datos'], true);
+			if (is_numeric($row['datos'])) {
+				$data[6] = ui_print_status_image(STATUS_MODULE_WARNING,
+					__('WARNING') . ': ' . number_format($row['datos'], $config['graph_precision']), true);
+			}
+			else {
+				$data[6] = ui_print_status_image(STATUS_MODULE_WARNING,
+					__('WARNING') . ': ' . $row['datos'], true);
+			}
 		}
 		else {
 			$last_status =  modules_get_agentmodule_last_status(
 				$row['id_agente_modulo']);
 			switch($last_status) {
 				case 0:
-					$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
-						__('UNKNOWN') . ' - ' . __('Last status') . " " .
-						__('NORMAL') . ': ' . $row['datos'], true);
+					if (is_numeric($row['datos'])) {
+						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+							__('UNKNOWN') . ' - ' . __('Last status') . " " .
+							__('NORMAL') . ': ' . number_format($row['datos'], $config['graph_precision']), true);
+					}
+					else {
+						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+							__('UNKNOWN') . ' - ' . __('Last status') . " " .
+							__('NORMAL') . ': ' . $row['datos'], true);
+					}
 					break;
 				case 1:
-					$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
-						__('UNKNOWN') . ' - ' . __('Last status') ." " .
-						__('CRITICAL') . ': ' . $row['datos'], true);
+					if (is_numeric($row['datos'])) {
+						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+							__('UNKNOWN') . ' - ' . __('Last status') ." " .
+							__('CRITICAL') . ': ' . number_format($row['datos'], $config['graph_precision']), true);
+					}
+					else {
+						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+							__('UNKNOWN') . ' - ' . __('Last status') ." " .
+							__('CRITICAL') . ': ' . $row['datos'], true);
+					}
 					break;
 				case 2:
-					$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
-						__('UNKNOWN') . ' - ' . __('Last status') . " " .
-						__('WARNING') . ': ' . $row['datos'], true);
+					if (is_numeric($row['datos'])) {
+						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+							__('UNKNOWN') . ' - ' . __('Last status') . " " .
+							__('WARNING') . ': ' .  number_format($row['datos'], $config['graph_precision']), true);
+					}
+					else {
+						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+							__('UNKNOWN') . ' - ' . __('Last status') . " " .
+							__('WARNING') . ': ' . $row['datos'], true);
+					}
 					break;
 			}
 		}

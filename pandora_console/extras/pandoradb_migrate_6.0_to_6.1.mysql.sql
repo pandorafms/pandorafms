@@ -76,6 +76,16 @@ ALTER TABLE tagente_modulo ADD COLUMN `dynamic_next` bigint(20) NOT NULL default
 ALTER TABLE tagente_modulo ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
 
 -- ---------------------------------------------------------------------
+-- Table `tagente_datos`
+-- ---------------------------------------------------------------------
+ALTER TABLE tagente_datos MODIFY `datos` double(22,5);
+
+-- ---------------------------------------------------------------------
+-- Table `tagente_datos_inc`
+-- ---------------------------------------------------------------------
+ALTER TABLE tagente_datos_inc MODIFY `datos` double(22,5);
+
+-- ---------------------------------------------------------------------
 -- Table `tnetwork_component`
 -- ---------------------------------------------------------------------
 ALTER TABLE tnetwork_component ADD COLUMN `dynamic_interval` int(4) unsigned default '0';

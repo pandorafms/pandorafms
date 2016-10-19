@@ -1892,6 +1892,7 @@ CREATE TABLE IF NOT EXISTS `trel_item` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`id_parent` int(10) unsigned NOT NULL default 0,
 	`id_child` int(10) unsigned NOT NULL default 0,
+	`id_map` int(10) unsigned NOT NULL default 0,
 	`id_parent_source_data` int(10) unsigned NOT NULL default 0,
 	`id_child_source_data` int(10) unsigned NOT NULL default 0,
 	`parent_type` int(10) unsigned NOT NULL default 0,

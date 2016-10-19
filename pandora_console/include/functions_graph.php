@@ -1199,7 +1199,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			if ($labels[$agent_module_id] != '')
 				$module_name_list[$i] = $labels[$agent_module_id];
 			else
-				$module_name_list[$i] = $agent_name ." / ". $module_name;
+				$module_name_list[$i] = $agent_name . ' / ' . $module_name;
 		}
 		
 		// Data iterator
@@ -1644,7 +1644,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	
 	
 	//Work around for fixed the agents name with huge size chars.
-	$fixed_font_size = $config['font_size'] - 1;
+	$fixed_font_size = $config['font_size'];
 	
 	//Set graph color
 	

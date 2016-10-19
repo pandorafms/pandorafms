@@ -1397,27 +1397,27 @@ table.databox {
 	box-shadow: 0px 0px 0px #DDD !important;
 }
 
-.databox td {
+.databox>tbody>tr>td {
 	-moz-border-radius: 0px;
 	-webkit-border-radius: 0px;
 	border-radius: 0px;
 	border: 0px none #E2E2E2;
 }
 
-.databox th {
+.databox>thead>tr>th, .databox>tbody>tr>th {
 	padding: 9px 7px;
 	font-weight: normal;
 	color: #fff;
 }
-.databox td {
+.databox>td {
 	#border-bottom: 1px solid #E2E2E2;
 }
 
-.databox th * {
+.databox>th * {
 	color: #fff;
 }
 
-.databox th input, .databox th textarea, .databox th select, .databox th select option {
+.databox>th>input, .databox>th>textarea, .databox>th>select, .databox>th>select>option {
 	color: #222 !important;
 }
 
@@ -1444,11 +1444,11 @@ table.databox_grid {
 	margin: 25px;
 }
 
-table.databox_grid th {
+table.databox_grid>th {
 	font-size: 12px;
 }
 
-table.databox_grid td {
+table.databox_grid>td {
 	padding: 6px;
 	margin: 4px;
 	border-bottom: 1px solid #acacac;
@@ -2545,7 +2545,7 @@ div.legend>div {
 }
 
 /* Recover the padding of the legend elements under a databox parent */
-table.databox div.legend td {
+table.databox div.legend>td {
 	padding: 1px;
 }
 
@@ -2921,7 +2921,7 @@ table#policy_modules td * {
 	border-radius: 2px;
 }
 
-.databox.data td{
+.databox.data>tbody>tr>td{
 	border-bottom: 1px solid #E2E2E2;
 }
 
@@ -2929,12 +2929,12 @@ table#policy_modules td * {
 	margin-top: 0px;
 }
 
-.databox.data td.progress_bar img{
+.databox.data>tbody>tr>td.progress_bar img{
 	border: 3px solid #000;
 	border-radius: 100px;
 }
 
-.databox td{
+.databox>tbody>tr>td{
 	padding-left: 9px;
 	padding-right: 9px;
 	padding-top: 7px;
@@ -3020,49 +3020,49 @@ table#policy_modules td * {
 	margin-bottom: 20px;
 }
 
-.databox.filters td{
+.databox.filters>tbody>tr>td{
 	padding: 10px;
 	padding-left:20px;
 }
-.databox.profile_list td{
+.databox.profile_list>tbody>tr>td{
 	padding: 4px 1px;
 	padding-left: 5px;
 	border-bottom: 1px solid #E2E2E2;
 }
-.databox.profile_list a.tip > img{
+.databox.profile_list>tbody>tr>a.tip > img{
 	margin: 0px;
 }
 
-.databox.filters td>img, .databox.filters td>div>a>img,
-.databox.filters td>span>img, .databox.filters td>span>a>img,
-.databox.filters td>a>img{
+.databox.filters>tbody>tr>td>img, .databox.filters>tbody>tr>td>div>a>img,
+.databox.filters>tbody>tr>td>span>img, .databox.filters>tbody>tr>td>span>a>img,
+.databox.filters>tbody>tr>td>a>img{
 	vertical-align: middle;
 	margin-left: 5px;
 }
-.databox.data td>img,.databox.data th>img, .databox.data td>div>a>img,
-.databox.data td>span>img, .databox.data td>span>a>img,
-.databox.data td>a>img, .databox.data td>form>a>img {
+.databox.data>tbody>tr>td>img,.databox.data>thead>tr>th>img, .databox.data>tbody>tr>td>div>a>img,
+.databox.data>tbody>tr>td>span>img, .databox.data>tbody>tr>td>span>a>img,
+.databox.data>tbody>tr>td>a>img, .databox.data>tbody>tr>td>form>a>img {
 	vertical-align: middle;
 
 }
 
-.databox.filters td>a>img {
+.databox.filters>tbody>tr>td>a>img {
 	vertical-align: middle;
 }
 
-.databox.data td>input[type="checkbox"] {
+.databox.data>tbody>tr>td>input[type="checkbox"] {
 	margin: 0px;
 }
 
-.databox_color td{
+.databox_color>tbody>tr>td{
 	padding-left: 10px;
 }
 
-.databox.agente td>div>canvas{
+.databox.agente>tbody>tr>td>div>canvas{
 	width: 100% !important;
 	text-align: left !important;
 }
-.databox.agente td>div.graph{
+.databox.agente>tbody>tr>td>div.graph{
 	width: 100% !important;
 	text-align: left !important;
 }

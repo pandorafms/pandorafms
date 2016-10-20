@@ -39,10 +39,8 @@ For Each objItem in colItems
 				Wscript.StdOut.WriteLine "    <data><![CDATA[" & Percentused & "]]></data>"
 				End If
 				Wscript.StdOut.WriteLine "    <unit>%</unit>"
-				Wscript.StdOut.WriteLine "    <min_warning>5</min_warning>"
-				Wscript.StdOut.WriteLine "    <max_warning>10</max_warning>"
-				Wscript.StdOut.WriteLine "    <min_critical>0</min_critical>"
-				Wscript.StdOut.WriteLine "    <max_critical>5</max_critical>"
+				Wscript.StdOut.WriteLine "    <min_warning>90</min_warning>"
+				Wscript.StdOut.WriteLine "    <min_critical>95</min_critical>"
 				Wscript.StdOut.WriteLine "</module>"
 				Wscript.StdOut.flush
 		End If

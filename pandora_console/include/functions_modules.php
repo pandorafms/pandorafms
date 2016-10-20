@@ -1880,7 +1880,7 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
 	}
 	
 	if (is_numeric($data)) {
-		$title .= ": " . number_format($data, $config['graph_precision']);
+		$title .= ": " . remove_right_zeros(number_format($data, $config['graph_precision']));
 	}
 	else {
 		$text = io_safe_output($data);

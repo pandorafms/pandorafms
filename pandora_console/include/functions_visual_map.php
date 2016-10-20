@@ -1014,16 +1014,16 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$returnValue_value = explode('&nbsp;', $value);
 				
 				if ($returnValue_value[1] != "") {
-					$value = number_format($returnValue_value[0], $config['graph_precision']) . " " . $returnValue_value[1];
+					$value = remove_right_zeros(number_format($returnValue_value[0], $config['graph_precision'])) . " " . $returnValue_value[1];
 				}
 				else {
-					$value = number_format($returnValue_value[0], $config['graph_precision']);
+					$value = remove_right_zeros(number_format($returnValue_value[0], $config['graph_precision']));
 				}
 			}
 			else {
 				// If the value is a string, dont format it
 				if (!is_string($value)) {
-					$value = format_for_graph($value, $config['graph_precision']);
+					$value = remove_right_zeros(format_for_graph($value, $config['graph_precision']));
 				}
 			}
 			

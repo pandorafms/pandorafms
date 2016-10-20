@@ -1138,7 +1138,7 @@ if (!empty($result)) {
 		elseif ($row['estado'] == 0) {
 			if (is_numeric($row['datos'])) {
 				$data[6] = ui_print_status_image(STATUS_MODULE_OK,
-					__('NORMAL') . ': ' . number_format($row['datos'], $config['graph_precision']), true);
+					__('NORMAL') . ': ' . remove_right_zeros(number_format($row['datos'], $config['graph_precision'])), true);
 			}
 			else {
 				$data[6] = ui_print_status_image(STATUS_MODULE_OK,
@@ -1148,7 +1148,7 @@ if (!empty($result)) {
 		elseif ($row['estado'] == 1) {
 			if (is_numeric($row['datos'])) {
 				$data[6] = ui_print_status_image(STATUS_MODULE_CRITICAL,
-					__('CRITICAL') . ': ' . number_format($row['datos'], $config['graph_precision']), true);
+					__('CRITICAL') . ': ' . remove_right_zeros(number_format($row['datos'], $config['graph_precision'])), true);
 			}
 			else {
 				$data[6] = ui_print_status_image(STATUS_MODULE_CRITICAL,
@@ -1158,7 +1158,7 @@ if (!empty($result)) {
 		elseif ($row['estado'] == 2) {
 			if (is_numeric($row['datos'])) {
 				$data[6] = ui_print_status_image(STATUS_MODULE_WARNING,
-					__('WARNING') . ': ' . number_format($row['datos'], $config['graph_precision']), true);
+					__('WARNING') . ': ' . remove_right_zeros(number_format($row['datos'], $config['graph_precision'])), true);
 			}
 			else {
 				$data[6] = ui_print_status_image(STATUS_MODULE_WARNING,
@@ -1173,7 +1173,7 @@ if (!empty($result)) {
 					if (is_numeric($row['datos'])) {
 						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
 							__('UNKNOWN') . ' - ' . __('Last status') . " " .
-							__('NORMAL') . ': ' . number_format($row['datos'], $config['graph_precision']), true);
+							__('NORMAL') . ': ' . remove_right_zeros(number_format($row['datos'], $config['graph_precision'])), true);
 					}
 					else {
 						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
@@ -1185,7 +1185,7 @@ if (!empty($result)) {
 					if (is_numeric($row['datos'])) {
 						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
 							__('UNKNOWN') . ' - ' . __('Last status') ." " .
-							__('CRITICAL') . ': ' . number_format($row['datos'], $config['graph_precision']), true);
+							__('CRITICAL') . ': ' . remove_right_zeros(number_format($row['datos'], $config['graph_precision'])), true);
 					}
 					else {
 						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
@@ -1197,7 +1197,7 @@ if (!empty($result)) {
 					if (is_numeric($row['datos'])) {
 						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
 							__('UNKNOWN') . ' - ' . __('Last status') . " " .
-							__('WARNING') . ': ' .  number_format($row['datos'], $config['graph_precision']), true);
+							__('WARNING') . ': ' .  remove_right_zeros(number_format($row['datos'], $config['graph_precision'])), true);
 					}
 					else {
 						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
@@ -1281,12 +1281,12 @@ if (!empty($result)) {
 								$salida = $config['render_proc_fail'];
 							break;
 						default:	
-							$salida = number_format($row['datos'], $config['graph_precision']);
+							$salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
 							break;
 					}
 			}
 			else {
-				$salida = number_format($row['datos'], $config['graph_precision']);
+				$salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
 			}
 			
 			// Show units ONLY in numeric data types

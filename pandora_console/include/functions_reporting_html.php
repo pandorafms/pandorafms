@@ -353,7 +353,7 @@ function reporting_html_SLA($table, $item, $mini) {
 				$row = array();
 				$row[] = $sla['agent'];
 				$row[] = $sla['module'];
-				$row[] = number_format($sla['max'], $config['graph_precision']) . " / " . number_format($sla['min'], $config['graph_precision']);
+				$row[] = remove_right_zeros(number_format($sla['max'], $config['graph_precision'])) . " / " . remove_right_zeros(number_format($sla['min'], $config['graph_precision']));
 				$row[] = round($sla['sla_limit'], 2) . "%";
 				
 				if ($sla['sla_value_unknown']) {
@@ -380,7 +380,7 @@ function reporting_html_SLA($table, $item, $mini) {
 					$row = array();
 					$row[] = $sla['agent'];
 					$row[] = $sla['module'];
-					$row[] = number_format($sla['max'], $config['graph_precision']) . " / " . number_format($sla['min'], $config['graph_precision']);
+					$row[] = remove_right_zeros(number_format($sla['max'], $config['graph_precision'])) . " / " . remove_right_zeros(number_format($sla['min'], $config['graph_precision']));
 					$row[] = round($sla['sla_limit'], 2) . "%";
 					
 					if ($sla['sla_value_unknown']) {
@@ -1500,13 +1500,13 @@ function reporting_html_monitor_report($table, $item, $mini) {
 			'<p style="font: bold ' . $font_size . 'em Arial, Sans-serif; color: ' . COL_NORMAL . ';">';
 		$table1->data['data']['ok'] .=
 			html_print_image("images/module_ok.png", true) . ' ' .
-				__('OK') . ': ' . number_format($item['data']["ok"]["formated_value"], $config['graph_precision']).' %</p>';
+				__('OK') . ': ' . remove_right_zeros(number_format($item['data']["ok"]["formated_value"], $config['graph_precision'])).' %</p>';
 		
 		$table1->data['data']['fail'] =
 			'<p style="font: bold ' . $font_size . 'em Arial, Sans-serif; color: ' . COL_CRITICAL . ';">';
 		$table1->data['data']['fail'] .=
 			html_print_image("images/module_critical.png", true) . ' ' .
-				__('Not OK') . ': ' . number_format($item['data']["fail"]["formated_value"], $config['graph_precision']) . ' % ' . '</p>';
+				__('Not OK') . ': ' . remove_right_zeros(number_format($item['data']["fail"]["formated_value"], $config['graph_precision'])) . ' % ' . '</p>';
 	}
 	
 	$table->data['module']['cell'] = html_print_table($table1, true);
@@ -1744,10 +1744,10 @@ function reporting_html_availability(&$table, $item) {
 				$table_row[] = $row['availability_item'];
 				$table_row[] = $row['checks'];
 				$table_row[] = $row['failed'];
-				$table_row[] = number_format($row['fail'], $config['graph_precision']);
+				$table_row[] = remove_right_zeros(number_format($row['fail'], $config['graph_precision']));
 				$table_row[] = $row['poling_time'];
 				$table_row[] = $row['time_unavaliable'];
-				$table_row[] = number_format($row['ok'], $config['graph_precision']);
+				$table_row[] = remove_right_zeros(number_format($row['ok'], $config['graph_precision']));
 			}
 			else {
 				if ($item['date']['to'] > $the_first_men_time) {
@@ -1756,10 +1756,10 @@ function reporting_html_availability(&$table, $item) {
 					$table_row[] = $row['availability_item'];
 					$table_row[] = $row['checks'];
 					$table_row[] = $row['failed'];
-					$table_row[] = number_format($row['fail'], $config['graph_precision']);
+					$table_row[] = remove_right_zeros(number_format($row['fail'], $config['graph_precision']));
 					$table_row[] = $row['poling_time'];
 					$table_row[] = $row['time_unavaliable'];
-					$table_row[] = number_format($row['ok'], $config['graph_precision']);
+					$table_row[] = remove_right_zeros(number_format($row['ok'], $config['graph_precision']));
 				}
 				else {
 					$same_agent_in_resume = $row['agent'];
@@ -1809,10 +1809,10 @@ function reporting_html_availability(&$table, $item) {
 			
 			$table1->data[] = array(
 				'max_text' => $item['resume']['min_text'],
-				'max' => number_format($item['resume']['max'], $config['graph_precision']) . "%",
-				'avg' => number_format($item['resume']['avg'], $config['graph_precision']) . "%",
+				'max' => remove_right_zeros(number_format($item['resume']['max'], $config['graph_precision'])) . "%",
+				'avg' => remove_right_zeros(number_format($item['resume']['avg'], $config['graph_precision'])) . "%",
 				'min_text' => $item['resume']['max_text'],
-				'min' => number_format($item['resume']['min'], $config['graph_precision']) . "%"
+				'min' => remove_right_zeros(number_format($item['resume']['min'], $config['graph_precision'])) . "%"
 				);
 			
 			$table->colspan[2][0] = 3;

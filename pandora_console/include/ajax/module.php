@@ -284,7 +284,7 @@ if ($get_module_detail) {
 				}
 				else if (is_numeric($row[$attr[0]]) && !modules_is_string_type($row['module_type']) ) {
 
-					$data[] = number_format($row[$attr[0]], $config['graph_precision']);
+					$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
 				}
 				else {
 					if ($row[$attr[0]] == '') {
@@ -909,12 +909,12 @@ if ($list_modules) {
 								$salida = $config["render_proc_fail"];
 							break;
 						default:
-							$salida = number_format($module["datos"], $config['graph_precision']);
+							$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
 						break;
 					}
 				}
 				else {
-					$salida = number_format($module["datos"], $config['graph_precision']);
+					$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
 				}
 				// Show units ONLY in numeric data types
 				if (isset($module["unit"])) {

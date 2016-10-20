@@ -17,6 +17,8 @@
 include_once("include/functions_modules.php");
 include_once("include/functions_categories.php");
 
+echo "<script type='text/javascript' src='include/javascript/d3.3.5.14.js'></script>" . "\n";
+
 function prepend_table_simple ($row, $id = false) {
 	global $table_simple;
 	
@@ -119,9 +121,11 @@ $table_simple->class = 'databox';
 $table_simple->data = array ();
 $table_simple->colspan = array ();
 $table_simple->style = array ();
-$table_simple->style[0] = 'font-weight: bold; width: 26%;';
-$table_simple->style[1] = 'width: 40%';
-$table_simple->style[2] = 'font-weight: bold;';
+$table_simple->style[0] = 'font-weight: bold; width: 15%;';
+$table_simple->style[1] = 'width: 35%';
+$table_simple->style[2] = 'font-weight: bold; width: 25%;';
+$table_simple->style[3] = 'width: 25%';
+
 
 #$table_simple->colspan[4][1] = 3;
 $table_simple->colspan[5][1] = 3;
@@ -151,7 +155,12 @@ if ($policy_link != 0) {
 	$disabled_enable = 1;
 }
 $table_simple->data[0][2] = __('Disabled');
-$table_simple->data[0][3] = html_print_checkbox ("disabled", 1, $disabled, true, $disabled_enable);
+$table_simple->data[0][2] .= html_print_checkbox ("disabled", 1, $disabled, true, $disabled_enable);
+$table_simple->data[0][3] = __('Module group');
+$table_simple->data[0][3] .= html_print_select_from_sql ('SELECT id_mg, name FROM tmodule_group ORDER BY name',
+	'id_module_group', $id_module_group, '', __('Not assigned'), '0', true, false, true, $disabledBecauseInPolicy);
+
+
 
 $table_simple->data[1][0] = __('Type').' ' . ui_print_help_icon ('module_type', true);
 $table_simple->data[1][0] .= html_print_input_hidden ('id_module_type_hidden', $id_module_type, true);
@@ -220,27 +229,22 @@ else {
 	$table_simple->data[1][1] .= html_print_input_hidden('type_names',base64_encode(io_json_mb_encode($type_names_hash)),true);
 }
 
-$table_simple->data[1][2] = __('Module group');
-$table_simple->data[1][3] = html_print_select_from_sql ('SELECT id_mg, name FROM tmodule_group ORDER BY name',
-	'id_module_group', $id_module_group, '', __('Not assigned'), '0',
-	true, false, true, $disabledBecauseInPolicy);
-
 if($disabledBecauseInPolicy){
  	$table_simple->data[1][3] .= html_print_input_hidden ('id_module_group', $id_module_group, true);
 }
-$table_simple->data[2][0] = __('Dynamic Interval') .' ' . ui_print_help_icon ('warning_status', true);
-
+$table_simple->data[2][0] = __('Dynamic Threshold Interval') .' ' . ui_print_help_icon ('dynamic_threshold', true);
 $table_simple->data[2][1] = html_print_extended_select_for_time ('dynamic_interval', $dynamic_interval, '', 'None', '0', 10, true, 'width:150px',false);
-$table_simple->data[2][2] = '<span><em>'.__('Dynamic Min. ').'</em>';
+$table_simple->data[2][1] .= '<a onclick=advanced_option_dynamic()>' . html_print_image('images/cog.png', true, array('title' => __('Advanced options Dynamic Threshold'))) . '</a>';
+
+$table_simple->data[2][2] = '<span><em>'.__('Dynamic Threshold Min. ').'</em>';
 $table_simple->data[2][2] .= html_print_input_text ('dynamic_min', $dynamic_min, '', 10, 255, true);
-$table_simple->data[2][2] .= '<br /><em>'.__('Dynamic Max.').'</em>';
+$table_simple->data[2][2] .= '<br /><em>'.__('Dynamic Threshold Max.').'</em>';
 $table_simple->data[2][2] .= html_print_input_text ('dynamic_max', $dynamic_max, '', 10, 255, true);
-$table_simple->data[2][3] = '<span><em>'.__('Dynamic Two Tailed: ').'</em>';
+$table_simple->data[2][3] = '<span><em>'.__('Dynamic Threshold Two Tailed: ').'</em>';
 $table_simple->data[2][3] .= html_print_checkbox ("dynamic_two_tailed", 1, $dynamic_two_tailed, true);
+
+
 $table_simple->data[3][0] = __('Warning status').' ' . ui_print_help_icon ('warning_status', true);
-
-$table_simple->data[3][1] = '';
-
 if (!modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[3][1] .= '<span id="minmax_warning"><em>'.__('Min. ').'</em>';
 	$table_simple->data[3][1] .= html_print_input_text ('min_warning', $min_warning,
@@ -254,52 +258,54 @@ if (modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[3][1] .= html_print_input_text ('str_warning', $str_warning, 
 		'', 10, 255, true, $disabledBecauseInPolicy).'</span>';
 }
-
 $table_simple->data[3][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 $table_simple->data[3][1] .= html_print_checkbox ("warning_inverse", 1,
 	$warning_inverse, true);
-$table_simple->data[3][2] = __('Critical status').' ' . ui_print_help_icon ('critical_status', true);
-$table_simple->data[3][3] = '';
 
+$table_simple->data[3][2] = '<svg id="svg_dinamic" width="350" height="200" style="padding:40px; padding-left: 100px;"> </svg>';
+$table_simple->colspan[3][2] = 2;
+$table_simple->rowspan[3][2] = 3;
+
+$table_simple->data[4][0] = __('Critical status').' ' . ui_print_help_icon ('critical_status', true);
 if (!modules_is_string_type($id_module_type) || $edit) {
-	$table_simple->data[3][3] .= '<span id="minmax_critical"><em>'.__('Min. ').'</em>';
-	$table_simple->data[3][3] .= html_print_input_text ('min_critical', $min_critical,
+	$table_simple->data[4][1] .= '<span id="minmax_critical"><em>'.__('Min. ').'</em>';
+	$table_simple->data[4][1] .= html_print_input_text ('min_critical', $min_critical,
 		'', 10, 255, true, $disabledBecauseInPolicy);
-	$table_simple->data[3][3] .= '<br /><em>'.__('Max.').'</em>';
-	$table_simple->data[3][3] .= html_print_input_text ('max_critical', $max_critical,
+	$table_simple->data[4][1] .= '<br /><em>'.__('Max.').'</em>';
+	$table_simple->data[4][1] .= html_print_input_text ('max_critical', $max_critical,
 		'', 10, 255, true, $disabledBecauseInPolicy).'</span>';
 }
 if (modules_is_string_type($id_module_type) || $edit) {
-	$table_simple->data[3][3] .= '<span id="string_critical"><em>'.__('Str.').'</em>';
-	$table_simple->data[3][3] .= html_print_input_text ('str_critical', $str_critical, 
+	$table_simple->data[4][1] .= '<span id="string_critical"><em>'.__('Str.').'</em>';
+	$table_simple->data[4][1] .= html_print_input_text ('str_critical', $str_critical, 
 		'', 10, 255, true, $disabledBecauseInPolicy).'</span>';
 }
 
-$table_simple->data[3][3] .= '<br /><em>'.__('Inverse interval').'</em>';
-$table_simple->data[3][3] .= html_print_checkbox ("critical_inverse", 1, $critical_inverse, true);
+$table_simple->data[4][1] .= '<br /><em>'.__('Inverse interval').'</em>';
+$table_simple->data[4][1] .= html_print_checkbox ("critical_inverse", 1, $critical_inverse, true);
 
 /* FF stands for Flip-flop */
-$table_simple->data[4][0] = __('FF threshold').' ' . ui_print_help_icon ('ff_threshold', true);
-$table_simple->colspan[4][1] = 3;
+$table_simple->data[5][0] = __('FF threshold').' ' . ui_print_help_icon ('ff_threshold', true);
+$table_simple->colspan[5][1] = 3;
 
-$table_simple->data[4][1] = html_print_radio_button ('each_ff', 0, '', $each_ff, true) . ' ' . __('All state changing') . ' : ';
-$table_simple->data[4][1] .= html_print_input_text ('ff_event', $ff_event, '', 5
+$table_simple->data[5][1] = html_print_radio_button ('each_ff', 0, '', $each_ff, true) . ' ' . __('All state changing') . ' : ';
+$table_simple->data[5][1] .= html_print_input_text ('ff_event', $ff_event, '', 5
 , 15, true, $disabledBecauseInPolicy) . '<br />';
-$table_simple->data[4][1] .= html_print_radio_button ('each_ff', 1, '', $each_ff, true) . ' ' . __('Each state changing') . ' : ';
-$table_simple->data[4][1] .= __('To normal');
-$table_simple->data[4][1] .= html_print_input_text ('ff_event_normal', $ff_event_normal, '', 5, 15, true, $disabledBecauseInPolicy) . ' ';
-$table_simple->data[4][1] .= __('To warning');
-$table_simple->data[4][1] .= html_print_input_text ('ff_event_warning', $ff_event_warning, '', 5, 15, true, $disabledBecauseInPolicy) . ' ';
-$table_simple->data[4][1] .= __('To critical');
-$table_simple->data[4][1] .= html_print_input_text ('ff_event_critical', $ff_event_critical, '', 5, 15, true, $disabledBecauseInPolicy);
-$table_simple->data[5][0] = __('Historical data');
+$table_simple->data[5][1] .= html_print_radio_button ('each_ff', 1, '', $each_ff, true) . ' ' . __('Each state changing') . ' : ';
+$table_simple->data[5][1] .= __('To normal');
+$table_simple->data[5][1] .= html_print_input_text ('ff_event_normal', $ff_event_normal, '', 5, 15, true, $disabledBecauseInPolicy) . ' ';
+$table_simple->data[5][1] .= __('To warning');
+$table_simple->data[5][1] .= html_print_input_text ('ff_event_warning', $ff_event_warning, '', 5, 15, true, $disabledBecauseInPolicy) . ' ';
+$table_simple->data[5][1] .= __('To critical');
+$table_simple->data[5][1] .= html_print_input_text ('ff_event_critical', $ff_event_critical, '', 5, 15, true, $disabledBecauseInPolicy);
+$table_simple->data[6][0] = __('Historical data');
 if($disabledBecauseInPolicy) {
 	// If is disabled, we send a hidden in his place and print a false checkbox because HTML dont send disabled fields and could be disabled by error
-	$table_simple->data[5][1] = html_print_checkbox ("history_data_fake", 1, $history_data, true, $disabledBecauseInPolicy);
-	$table_simple->data[5][1] .= '<input type="hidden" name="history_data" value="'.(int)$history_data.'">';
+	$table_simple->data[6][1] = html_print_checkbox ("history_data_fake", 1, $history_data, true, $disabledBecauseInPolicy);
+	$table_simple->data[6][1] .= '<input type="hidden" name="history_data" value="'.(int)$history_data.'">';
 }
 else {
-	$table_simple->data[5][1] = html_print_checkbox ("history_data", 1, $history_data, true, $disabledBecauseInPolicy);
+	$table_simple->data[6][1] = html_print_checkbox ("history_data", 1, $history_data, true, $disabledBecauseInPolicy);
 }
 
 /* Advanced form part */
@@ -807,14 +813,53 @@ $(document).ready (function () {
 	$("#submit-crtbutton").click (function () {
 		validate_post_process();
 	});
+
 	//Dynamic_interval;
 	disabled_status();
 	$('#dynamic_interval_select').change (function() {
 		disabled_status();
 	});
 
+	//Dynamic_options_advance;
+	$('#simple-2-2').hide();
+	$('#simple-2-3').hide();
+
+	//paint graph stutus critical and warning:
+	paint_graph_values();
+	$('#text-min_warning').on ('input', function() {
+		paint_graph_values();
+		if (isNaN($('#text-min_warning').val()) && !($('#text-min_warning').val() == "-")){
+			$('#text-min_warning').val(0);
+		}
+	});
+	$('#text-max_warning').on ('input', function() {
+		paint_graph_values();
+		if (isNaN($('#text-max_warning').val()) && !($('#text-max_warning').val() == "-")){
+			$('#text-max_warning').val(0);
+		}
+	});
+	$('#text-min_critical').on ('input', function() {
+		paint_graph_values();
+		if (isNaN($('#text-min_critical').val()) && !($('#text-min_critical').val() == "-")){
+			$('#text-min_critical').val(0);
+		}
+	});
+	$('#text-max_critical').on ('input', function() {
+		paint_graph_values();
+		if (isNaN($('#text-max_critical').val()) && !($('#text-max_critical').val() == "-")){
+			$('#text-max_critical').val(0);
+		}
+	});
+	$('#checkbox-warning_inverse').change (function() {
+		paint_graph_values();
+	});
+	$('#checkbox-critical_inverse').change (function() {
+		paint_graph_values();
+	});
+
 });
 
+//readonly and add class input
 function disabled_status () {
 	if($('#dynamic_interval_select').val() != 0){
 		$('#text-min_warning').prop('readonly', true);
@@ -837,7 +882,18 @@ function disabled_status () {
 	}
 }
 
-// Add a new module macro
+//Dynamic_options_advance;
+function advanced_option_dynamic() {
+	if($('#simple-2-2').is(":visible")){
+		$('#simple-2-2').hide();
+		$('#simple-2-3').hide();
+	} else {
+		$('#simple-2-2').show();
+		$('#simple-2-3').show();
+	}
+}
+
+//Add a new module macro
 function add_macro () {
 	var macro_count = parseInt($("#hidden-module_macro_count").val());
 	var delete_icon = '<?php html_print_image ("images/cross.png", false) ?>';
@@ -1062,6 +1118,312 @@ function validate_post_process() {
 	var new_post_process = post_process.replace(',', '.');
 	
 	$("#text-post_process").val(new_post_process);
+}
+
+//function paint graph
+function paint_graph_values(){
+	//Parse integrer
+	var min_w = parseInt($('#text-min_warning').val());
+		if(min_w == '0.00'){ min_w = 0; }
+	var max_w = parseInt($('#text-max_warning').val());
+		if(max_w == '0.00'){ max_w = 0; }
+	var min_c = parseInt($('#text-min_critical').val());
+		if(min_c =='0.00'){ min_c = 0; }
+	var max_c = parseInt($('#text-max_critical').val());
+		if(max_c =='0.00'){ max_c = 0; }
+	var inverse_w = $('input:checkbox[name=warning_inverse]:checked').val();
+		if(!inverse_w){ inverse_w = 0; }
+	var inverse_c = $('input:checkbox[name=critical_inverse]:checked').val();
+		if(!inverse_c){ inverse_c = 0; }
+	//inicialiced error
+	var error_w = 0;
+	var error_c = 0;
+	//if haven't error
+	if(max_w == 0 || max_w > min_w){
+		if(max_c == 0 || max_c > min_c){
+			paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, error_w, error_c);
+		} else {
+			error_c = 1;
+			paint_graph_status(0,0,0,0,0,0, error_w, error_c);
+		}
+	} else {
+		error_w = 1;
+		paint_graph_status(0,0,0,0,0,0, error_w, error_c);
+	}
+}
+
+//function use d3.js for paint graph
+function paint_graph_status(min_w, max_w, min_c, max_c, inverse_w, inverse_c, error_w, error_c) {
+	
+	//Check if they are numbers
+	if(isNaN(min_w)){ min_w = 0; };
+	if(isNaN(max_w)){ max_w = 0; };
+	if(isNaN(min_c)){ min_c = 0; };
+	if(isNaN(max_c)){ max_c = 0; };
+
+	//messages legend
+	var legend_normal = '<?php echo __("Normal Status");?>';
+	var legend_warning = '<?php echo __("Warning Status");?>';
+	var legend_critical = '<?php echo __("Critical Status");?>';
+
+	//remove elements
+	d3.select("#svg_dinamic rect").remove();
+	$("#text-max_warning").removeClass("input_error");
+	$("#text-max_critical").removeClass("input_error");
+
+	//if haven't errors
+	if (error_w == 0 && error_c == 0){
+		//parse element
+		min_w = parseInt(min_w);
+		min_c = parseInt(min_c);
+		max_w = parseInt(max_w);
+		max_c = parseInt(max_c);
+		
+		//inicialize var
+		var range_min = 0;
+		var range_max = 0;
+		var range_max_min = 0;
+		var range_max_min = 0;
+		
+		//Find the lowest possible value
+		if(min_w < 0 || min_c < 0){
+			if(min_w < min_c){
+				range_min = min_w - 100;
+			} else {
+				range_min = min_c - 100;	
+			}
+		} else if (min_w > 0 || min_c > 0) {
+			if(min_w > min_c){
+				range_max_min = min_w;
+			} else {
+				range_max_min = min_c;	
+			}
+		} else {
+			if(min_w < min_c){
+				range_min = min_w - 100;
+			} else {
+				range_min = min_c - 100;	
+			}
+		}
+
+		//Find the maximum possible value
+		if(max_w > max_c){
+			range_max = max_w + 100 + range_max_min;
+		} else {
+			range_max = max_c + 100 + range_max_min;
+		}
+		
+		//Controls whether the maximum = 0 is infinite
+		if((max_w == 0 || max_w == 0.00) && min_w != 0){
+			max_w = range_max;
+		}
+		if((max_c == 0 || max_c == 0.00) && min_c != 0){
+			max_c = range_max;
+		}
+		
+		//Scale according to the position
+		position = 200 / (range_max-range_min);
+		
+		//axes
+		var yScale = d3.scale.linear()
+		    .domain([range_min, range_max])
+		    .range([100, -100]);
+
+	    var yAxis = d3.svg.axis()
+	            .orient("left")
+	            .scale(yScale);
+
+	    //create svg
+		var svg = d3.select("#svg_dinamic");
+		//delete elements
+		svg.selectAll("g").remove();
+		svg.selectAll("rect").remove();
+		svg.selectAll("text").remove();
+		svg.append("g")
+			.attr("transform", "translate(0, 100)")
+			.call(yAxis);
+		
+		//legend Normal text
+		svg.append("text")
+				.attr("x", 0)
+				.attr("y", -20)
+				.attr("fill", 'black')
+				.style("font-family", "arial")
+				.style("font-weight", "bold")
+				.style("font-size", 10)
+				.html(legend_normal)
+				.style("text-anchor", "first");
+
+		//legend Normal rect
+		svg.append("rect")
+			.attr("id", "legend_normal")
+	       	.attr("x", 72)
+	       	.attr("y", -30)
+	       	.attr("width", 10)
+	       	.attr("height", 10)
+	  		.style("fill", "#82B92E");
+
+	  	//legend Warning text
+		svg.append("text")
+				.attr("x", 91)
+				.attr("y", -20)
+				.attr("fill", 'black')
+				.style("font-family", "arial")
+				.style("font-weight", "bold")
+				.style("font-size", 10)
+				.html(legend_warning)
+				.style("text-anchor", "first");
+
+		//legend Warning rect
+		svg.append("rect")
+			.attr("id", "legend_warning")
+	       	.attr("x", 168)
+	       	.attr("y", -30)
+	       	.attr("width", 10)
+	       	.attr("height", 10)
+	  		.style("fill", "#ffd731");
+
+	  	//legend Critical text
+		svg.append("text")
+				.attr("x", 187)
+				.attr("y", -20)
+				.attr("fill", 'black')
+				.style("font-family", "arial")
+				.style("font-weight", "bold")
+				.style("font-size", 10)
+				.html(legend_critical)
+				.style("text-anchor", "first");
+
+		//legend critical rect
+		svg.append("rect")
+			.attr("id", "legend_critical")
+	       	.attr("x", 258)
+	       	.attr("y", -30)
+	       	.attr("width", 10)
+	       	.attr("height", 10)
+	  		.style("fill", "#fc4444");
+
+		//styles for number and axes
+	    svg.selectAll("g .domain")
+	    	.style("stroke-width",  2)
+	    	.style("fill",  "none")
+	    	.style("stroke", "black");
+
+	    svg.selectAll("g .tick text")
+	    	.style("font-size", "9pt")
+			.style("font-weight", "initial");
+
+	    //estatus normal
+		svg.append("rect")
+			.attr("id", "warning_rect")
+	       	.attr("x", 3)
+	       	.attr("y", 0)
+	       	.attr("width", 300)
+	       	.attr("height", 200)
+	  		.style("fill", "#82B92E");
+	  	
+	  	//controls the inverse warning
+	  	if(inverse_w == 0){
+			svg.append("rect").transition()
+				.duration(600)
+				.attr("id", "warning_rect")
+		       	.attr("x", 3)
+		       	.attr("y", ((range_max - min_w) * position) - ((max_w - min_w) * position))
+		       	.attr("width", 300)
+		       	.attr("height", ((max_w - min_w) * position))
+		  		.style("fill", "#ffd731");
+	  	}
+	  	else {
+	  		svg.append("rect").transition()
+	  			.duration(600)
+				.attr("id", "warning_rect")
+		       	.attr("x", 3)
+		       	.attr("y", 200 - ((min_w -range_min) * position))
+		       	.attr("width", 300)
+		       	.attr("height", (min_w -range_min) * position)
+		  		.style("fill", "#ffd731");
+		  	
+		  	svg.append("rect").transition()
+		  		.duration(600)
+				.attr("id", "warning_inverse_rect")
+		       	.attr("x", 3)
+		       	.attr("y",  0)
+		       	.attr("width", 300)
+		       	.attr("height", ((range_max - min_w) * position) - ((max_w - min_w) * position))
+		  		.style("fill", "#ffd731");
+		  	
+	  	}
+	  	//controls the inverse critical
+	  	if(inverse_c == 0){
+		    svg.append("rect").transition()
+		    	.duration(600)
+		    	.attr("id", "critical_rect")
+		       	.attr("x", 3)
+		       	.attr("y", ((range_max - min_c) * position) - ((max_c - min_c) * position))
+		       	.attr("width", 300)
+		       	.attr("height", ((max_c - min_c) * position))
+		  		.style("fill", "#fc4444");
+	  	}
+	  	else {
+	  		svg.append("rect").transition()
+				.duration(600)
+				.attr("id", "critical_rect")
+		       	.attr("x", 3)
+		       	.attr("y", 200 - ((min_c -range_min) * position))
+		       	.attr("width", 300)
+		       	.attr("height", (min_c -range_min) * position)
+		  		.style("fill", "#fc4444");
+		  	
+		  	svg.append("rect").transition()
+				.duration(600)
+				.attr("id", "critical_inverse_rect")
+		       	.attr("x", 3)
+		       	.attr("y", 0)
+		       	.attr("width", 300)
+		       	.attr("height", ((range_max - min_c) * position) - ((max_c - min_c) * position))
+		  		.style("fill", "#fc4444");
+	  	}
+	}
+	else {
+		var message_error_warning = '<?php echo __("Please introduce a maximum warning higher than the minimun warning") ?>';
+		var message_error_critical = '<?php echo __("Please introduce a maximum critical higher than the minimun critical") ?>';
+
+		d3.select("#svg_dinamic rect").remove();
+		//create svg
+		var svg = d3.select("#svg_dinamic");
+		svg.selectAll("g").remove();
+		svg.selectAll("rect").remove();
+		svg.selectAll("text").remove();
+		//message error warning
+		if (error_w == 1) {
+			$("#text-max_warning").addClass("input_error");
+			svg.append("text")
+				.attr("x", -90)
+				.attr("y", 10)
+				.attr("fill", 'black')
+				.style("font-family", "arial")
+				.style("font-weight", "bold")
+				.style("font-size", 14)
+				.style("fill", "red")
+				.html(message_error_warning)
+				.style("text-anchor", "first");
+		}
+		//message error critical
+		if (error_c == 1) {
+			$("#text-max_critical").addClass("input_error");
+			svg.append("text")
+				.attr("x", -90)
+				.attr("y", 105)
+				.attr("fill", 'black')
+				.style("font-family", "arial")
+				.style("font-weight", "bold")
+				.style("font-size", 14)
+				.style("fill", "red")
+				.html(message_error_critical)
+				.style("text-anchor", "first");	
+		}
+
+	}
 }
 
 /* End of relationship javascript */

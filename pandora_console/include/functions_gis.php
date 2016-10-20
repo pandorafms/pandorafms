@@ -511,6 +511,12 @@ function gis_get_map_conf($idMap) {
 	return $mapConfs;
 }
 
+function get_good_con() {
+	$sql = 'SELECT * FROM tgis_map_connection WHERE id_tmap_connection = 2';
+
+	return db_get_all_rows_sql($sql);
+}
+
 function gis_get_map_connection($idMapConnection) {
 	return db_get_row('tgis_map_connection', 'id_tmap_connection', $idMapConnection);
 }

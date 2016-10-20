@@ -29,12 +29,13 @@ For Each objItem in colItems
 			Wscript.StdOut.WriteLine "<module>"
 			Wscript.StdOut.WriteLine "    <name><![CDATA[DiskFree%_" & objItem.Name & "]]></name>"
 			Wscript.StdOut.WriteLine "    <description><![CDATA[Drive " & objItem.Name & " % free space ]]></description>"
-				if (Percent > 99.99) then
+				If (Percent > 99.99) then
 				Wscript.StdOut.WriteLine "    <data><![CDATA[" & 100 & "]]></data>"
-				elseif (Percent < 0.01) then
+				Elseif (Percent < 0.01) then
 				Wscript.StdOut.WriteLine "    <data><![CDATA[" & 0 & "]]></data>"
-				else
+				Else
 				Wscript.StdOut.WriteLine "    <data><![CDATA[" & Percent & "]]></data>"
+				End If
 				Wscript.StdOut.WriteLine "<unit>%</unit>"
 				Wscript.StdOut.WriteLine "<min_warning>5</min_warning>"
 				Wscript.StdOut.WriteLine "<max_warning>10</max_warning>"
@@ -42,7 +43,6 @@ For Each objItem in colItems
 				Wscript.StdOut.WriteLine "<max_critical>5</max_critical>"
 				Wscript.StdOut.WriteLine "</module>"
 				Wscript.StdOut.flush
-				End If
 		End If
 
 	End If

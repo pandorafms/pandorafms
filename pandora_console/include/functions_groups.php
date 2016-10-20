@@ -1383,7 +1383,7 @@ function groups_get_agents_counter ($group, $agent_filter = array(), $module_fil
 							$count ++;
 						break;
 					case AGENT_STATUS_WARNING:
-						if ($total > 0 && $critical = 0 && $warning > 0)
+						if (($total > 0) && ($critical == 0) && ($warning > 0))
 							$count ++;
 						break;
 					case AGENT_STATUS_UNKNOWN:

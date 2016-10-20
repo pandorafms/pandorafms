@@ -1136,35 +1136,74 @@ if (!empty($result)) {
 				__('NOT INIT'), true);
 		}
 		elseif ($row['estado'] == 0) {
-			$data[6] = ui_print_status_image(STATUS_MODULE_OK,
-				__('NORMAL') . ': ' . $row['datos'], true);
+			if (is_numeric($row['datos'])) {
+				$data[6] = ui_print_status_image(STATUS_MODULE_OK,
+					__('NORMAL') . ': ' . remove_right_zeros(number_format($row['datos'], $config['graph_precision'])), true);
+			}
+			else {
+				$data[6] = ui_print_status_image(STATUS_MODULE_OK,
+					__('NORMAL') . ': ' . $row['datos'], true);
+			}
 		}
 		elseif ($row['estado'] == 1) {
-			$data[6] = ui_print_status_image(STATUS_MODULE_CRITICAL,
-				__('CRITICAL') . ': ' . $row['datos'], true);
+			if (is_numeric($row['datos'])) {
+				$data[6] = ui_print_status_image(STATUS_MODULE_CRITICAL,
+					__('CRITICAL') . ': ' . remove_right_zeros(number_format($row['datos'], $config['graph_precision'])), true);
+			}
+			else {
+				$data[6] = ui_print_status_image(STATUS_MODULE_CRITICAL,
+					__('CRITICAL') . ': ' . $row['datos'], true);
+			}
 		}
 		elseif ($row['estado'] == 2) {
-			$data[6] = ui_print_status_image(STATUS_MODULE_WARNING,
-				__('WARNING') . ': ' . $row['datos'], true);
+			if (is_numeric($row['datos'])) {
+				$data[6] = ui_print_status_image(STATUS_MODULE_WARNING,
+					__('WARNING') . ': ' . remove_right_zeros(number_format($row['datos'], $config['graph_precision'])), true);
+			}
+			else {
+				$data[6] = ui_print_status_image(STATUS_MODULE_WARNING,
+					__('WARNING') . ': ' . $row['datos'], true);
+			}
 		}
 		else {
 			$last_status =  modules_get_agentmodule_last_status(
 				$row['id_agente_modulo']);
 			switch($last_status) {
 				case 0:
-					$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
-						__('UNKNOWN') . ' - ' . __('Last status') . " " .
-						__('NORMAL') . ': ' . $row['datos'], true);
+					if (is_numeric($row['datos'])) {
+						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+							__('UNKNOWN') . ' - ' . __('Last status') . " " .
+							__('NORMAL') . ': ' . remove_right_zeros(number_format($row['datos'], $config['graph_precision'])), true);
+					}
+					else {
+						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+							__('UNKNOWN') . ' - ' . __('Last status') . " " .
+							__('NORMAL') . ': ' . $row['datos'], true);
+					}
 					break;
 				case 1:
-					$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
-						__('UNKNOWN') . ' - ' . __('Last status') ." " .
-						__('CRITICAL') . ': ' . $row['datos'], true);
+					if (is_numeric($row['datos'])) {
+						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+							__('UNKNOWN') . ' - ' . __('Last status') ." " .
+							__('CRITICAL') . ': ' . remove_right_zeros(number_format($row['datos'], $config['graph_precision'])), true);
+					}
+					else {
+						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+							__('UNKNOWN') . ' - ' . __('Last status') ." " .
+							__('CRITICAL') . ': ' . $row['datos'], true);
+					}
 					break;
 				case 2:
-					$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
-						__('UNKNOWN') . ' - ' . __('Last status') . " " .
-						__('WARNING') . ': ' . $row['datos'], true);
+					if (is_numeric($row['datos'])) {
+						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+							__('UNKNOWN') . ' - ' . __('Last status') . " " .
+							__('WARNING') . ': ' .  remove_right_zeros(number_format($row['datos'], $config['graph_precision'])), true);
+					}
+					else {
+						$data[6] = ui_print_status_image(STATUS_MODULE_UNKNOWN,
+							__('UNKNOWN') . ' - ' . __('Last status') . " " .
+							__('WARNING') . ': ' . $row['datos'], true);
+					}
 					break;
 			}
 		}
@@ -1206,12 +1245,8 @@ if (!empty($result)) {
 			
 			$link = 'winopeng(\''.$url.'?'.$graph_params_str.'\',\''.$win_handle.'\')';
 			
-			$data[7] = '';
-			
-			if(!is_snapshot_data($row['datos'])){
-			
 			$data[7] = '<a href="javascript:'.$link.'">' . html_print_image('images/chart_curve.png', true, array('border' => '0', 'alt' => '')) .  '</a>';
-			}
+			
 			$data[7] .= '<a href="javascript: ' .
 				'show_module_detail_dialog(' .
 					$row['id_agente_modulo'] . ', '.
@@ -1246,12 +1281,12 @@ if (!empty($result)) {
 								$salida = $config['render_proc_fail'];
 							break;
 						default:	
-							$salida = number_format($row['datos'], $config['graph_precision']);
+							$salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
 							break;
 					}
 			}
 			else {
-				$salida = number_format($row['datos'], $config['graph_precision']);
+				$salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
 			}
 			
 			// Show units ONLY in numeric data types
@@ -1281,19 +1316,12 @@ if (!empty($result)) {
 					"id=" . $row['id_agente_modulo'] .
 					"&refr=" . $row['current_interval'] .
 					"&label=" . rawurlencode(urlencode(io_safe_output($row['module_name']))) . "','" . $win_handle . "', 700,480)";
-				if(!is_snapshot_data($row['datos'])){
+				
 				$salida = '<a href="javascript:' . $link . '">' .
 					html_print_image('images/default_list.png', true,
 						array('border' => '0',
 							'alt' => '',
 							'title' => __('Snapshot view'))) . '</a> &nbsp;&nbsp;';
-						}else{
-						$salida = '<a href="javascript:' . $link . '">' .
-							html_print_image('images/photo.png', true,
-								array('border' => '0',
-									'alt' => '',
-									'title' => __('Snapshot view'))) . '</a> &nbsp;&nbsp;';
-								}
 			}
 			else {
 				
@@ -1440,27 +1468,11 @@ $('#moduletype').click(function(){
 				period = <?php echo SECONDS_1DAY; ?>;
 			}
 		}
-		
-		var server_name = '';
-		var extra_parameters = '';
-		if ($('input[name=selection_mode]:checked').val()) {
-			
-			period = $('#period').val();
-			
-			var selection_mode = $('input[name=selection_mode]:checked').val();
-			var date_from = $('#text-date_from').val();
-			var time_from = $('#text-time_from').val();
-			var date_to = $('#text-date_to').val();
-			var time_to = $('#text-time_to').val();
-			
-			extra_parameters = '&selection_mode=' + selection_mode + '&date_from=' + date_from + '&date_to=' + date_to + '&time_from=' + time_from + '&time_to=' + time_to;
-		
-		}
 		title = <?php echo "\"" . __("Module: ") . "\"" ?>;
 		$.ajax({
 			type: "POST",
 			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-			data: "page=include/ajax/module&get_module_detail=1&server_name="+server_name+"&id_agent="+id_agent+"&id_module=" + module_id+"&offset="+offset+"&period="+period + extra_parameters,
+			data: "page=include/ajax/module&get_module_detail=1&server_name="+server_name+"&id_agent="+id_agent+"&id_module=" + module_id+"&offset="+offset+"&period="+period,
 			dataType: "html",
 			success: function(data) {
 				$("#monitor_details_window").hide ()

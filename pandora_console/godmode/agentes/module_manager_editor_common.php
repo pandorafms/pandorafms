@@ -229,7 +229,7 @@ if($disabledBecauseInPolicy){
  	$table_simple->data[1][3] .= html_print_input_hidden ('id_module_group', $id_module_group, true);
 }
 $table_simple->data[2][0] = __('Dynamic Interval') .' ' . ui_print_help_icon ('warning_status', true);
-html_debug_print($dynamic_interval);
+
 $table_simple->data[2][1] = html_print_extended_select_for_time ('dynamic_interval', $dynamic_interval, '', 'None', '0', 10, true, 'width:150px',false);
 $table_simple->data[2][2] = '<span><em>'.__('Dynamic Min. ').'</em>';
 $table_simple->data[2][2] .= html_print_input_text ('dynamic_min', $dynamic_min, '', 10, 255, true);

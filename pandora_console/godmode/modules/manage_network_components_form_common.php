@@ -103,7 +103,7 @@ $table->data[2][2] = __('Interval');
 $table->data[2][3] = html_print_extended_select_for_time ('module_interval' , $module_interval, '', '', '0', false, true);
 
 $table->data[3][0] = __('Dynamic Interval') .' ' . ui_print_help_icon ('warning_status', true);
-html_debug_print($dynamic_interval);
+
 $table->data[3][1] = html_print_extended_select_for_time ('dynamic_interval', $dynamic_interval, '', 'None', '0', 10, true, 'width:150px',false);
 $table->data[3][2] = '<span><em>'.__('Dynamic Min. ').'</em>';
 $table->data[3][2] .= html_print_input_text ('dynamic_min', $dynamic_min, '', 10, 255, true);

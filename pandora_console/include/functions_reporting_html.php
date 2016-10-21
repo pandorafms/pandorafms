@@ -1238,12 +1238,19 @@ function reporting_html_event_report_agent($table, $item) {
 }
 
 function reporting_html_historical_data($table, $item) {
+	global $config;
+
 	$table1->width = '100%';
 	$table1->head = array (__('Date'), __('Data'));
-	
 	$table1->data = array ();
 	foreach ($item['data'] as $data) {
-		$row = array($data[__('Date')], $data[__('Data')]);
+		if (!is_numeric($data[__('Data')])) {
+			$row = array($data[__('Date')], $data[__('Data')]);
+		}
+		else {
+			$row = array($data[__('Date')], remove_right_zeros(number_format($data[__('Data')], $config['graph_precision'])));
+		}
+		
 		$table1->data[] = $row;
 	}
 	

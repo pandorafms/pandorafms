@@ -1196,7 +1196,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$module_name = io_safe_output(
 					modules_get_agentmodule_name ($agent_module_id));
 				
-				$module_name_list[$i] = $agent_name ." / ". $module_name;
+				$module_name_list[$i] = '<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . $agent_name . " / " . $module_name. '</span>';
 			}
 		}
 		else {
@@ -1214,9 +1214,9 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			$module_name = ui_print_truncate_text($module_name, 'module_small', false, true, false, '...', false);
 			
 			if ($labels[$agent_module_id] != '')
-				$module_name_list[$i] = $labels[$agent_module_id];
+				$module_name_list[$i] = '<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . $labels[$agent_module_id] . '</span>';
 			else
-				$module_name_list[$i] = $agent_name . ' / ' . $module_name;
+				$module_name_list[$i] = '<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . $agent_name . ' / ' . $module_name . '</span>';
 		}
 		
 		// Data iterator
@@ -1746,7 +1746,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	
 	
 	//Work around for fixed the agents name with huge size chars.
-	$fixed_font_size = $config['font_size'];
+	$fixed_font_size = $config['font_size'] - 2;
 	
 	//Set graph color
 	

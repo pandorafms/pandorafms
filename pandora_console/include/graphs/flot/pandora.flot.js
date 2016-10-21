@@ -1728,14 +1728,13 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				$('#timestamp_'+graph_id).hide();
 			}
 
-			var label_aux = series.label + ' = ';
-
+			var label_aux = series.label;
+			
 			// The graphs of points type and unknown graphs will dont be updated
 			if (serie_types[i] != 'points' && series.label != $('#hidden-unknown_text').val()) {
-
 				$('#legend_' + graph_id + ' .legendLabel')
-					.eq(i).text(label_aux.replace(/=.*/,
-					'= ' + parseFloat(y).toFixed(2) + ' ' + unit));
+					.eq(i).html(label_aux +	'= ' + parseFloat(y).toFixed(2) + ' ' + unit);
+				console.log($('#legend_' + graph_id + ' .legendLabel'));
 			}
 
 			$('#legend_' + graph_id + ' .legendLabel')
@@ -1838,8 +1837,10 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 		$('#timestamp_'+graph_id).hide();
 		dataset = plot.getData();
 		for (i = 0; i < dataset.length; ++i) {
+			var series = dataset[i];
+			var label_aux = series.label;
 			$('#legend_' + graph_id + ' .legendLabel')
-				.eq(i).text(legends.eq(i).text().replace(/=.*/, ''));
+				.eq(i).html(label_aux);
 		}
 		plot.clearCrosshair();
 		overview.clearCrosshair();

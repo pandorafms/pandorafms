@@ -2236,21 +2236,41 @@ function reporting_historical_data($report, $content) {
 	
 	$return['keys'] = array(__('Date'), __('Data'));
 
-	$result = db_get_all_rows_sql 	(
+	$module_type = db_get_value_filter('id_tipo_modulo', 'tagente_modulo',
+			array('id_agente_modulo' => $content['id_agent_module']));
+	
+	$result = array();
+	switch ($module_type) {
+		case 3:
+		case 17:
+		case 23:
+		case 33:
+			$result = db_get_all_rows_sql 	(
+									'SELECT *
+									FROM tagente_datos_string
+									WHERE id_agente_modulo =' . $content['id_agent_module'] . '
+									 AND utimestamp >' . $date_limit . '
+									 AND utimestamp <=' . time()
+									);
+			break;
+		default:
+			$result = db_get_all_rows_sql 	(
 									'SELECT *
 									FROM tagente_datos
 									WHERE id_agente_modulo =' . $content['id_agent_module'] . '
 									 AND utimestamp >' . $date_limit . '
 									 AND utimestamp <=' . time()
 									);
-
+			break;
+	}
+	
 	$data = array();
 	foreach ($result as $row) {
 		$data[] = array(
 			__('Date') => date ($config["date_format"], $row['utimestamp']),
 			__('Data') => $row['datos']);
 	}
-	
+
 	$return["data"] = $data;
 	
 	return reporting_check_structure_content($return);
@@ -4373,7 +4393,7 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 				$weights,
 				$content['period'],
 				$width, $height,
-				__('Combined%20Sample%20Graph'),
+				__('Combined Sample Graph'),
 				'',
 				0,
 				0,

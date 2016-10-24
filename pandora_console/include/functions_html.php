@@ -701,7 +701,8 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 
 function html_print_extended_select_for_time ($name, $selected = '',
 	$script = '', $nothing = '', $nothing_value = '0', $size = false,
-	$return = false, $select_style = false, $unique_name = true) {
+	$return = false, $select_style = false, $unique_name = true, $class='',
+	$readonly = false) {
 	
 	global $config;
 	
@@ -756,12 +757,16 @@ function html_print_extended_select_for_time ($name, $selected = '',
 	else {
 		$uniq_name = $name;
 	}
+
+	if ($readonly){
+		$readonly = true;
+	}
 	
 	ob_start();
 	//Use the no_meta parameter because this image is only in the base console
 	echo '<div id="'.$uniq_name.'_default" style="width:100%;display:inline;">';
 		html_print_select ($fields, $uniq_name . '_select', $selected,"" . $script,
-			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
+			$nothing, $nothing_value, false, false, false, $class, $readonly, 'font-size: xx-small;'.$select_style);
 		echo ' <a href="javascript:">' .
 			html_print_image('images/pencil.png', true,
 				array('class' => $uniq_name . '_toggler',
@@ -772,11 +777,11 @@ function html_print_extended_select_for_time ($name, $selected = '',
 	echo '</div>';
 	
 	echo '<div id="'.$uniq_name.'_manual" style="width:100%;display:inline;">';
-		html_print_input_text ($uniq_name . '_text', $selected, '', $size);
-	
+		html_print_input_text ($uniq_name . '_text', $selected, '', $size, 255, false, $readonly, false, '', $class);
+
 		html_print_input_hidden ($name, $selected, false, $uniq_name);
 		html_print_select ($units, $uniq_name . '_units', 1, "" . $script,
-			$nothing, $nothing_value, false, false, false, '', false, 'font-size: xx-small;'.$select_style);
+			$nothing, $nothing_value, false, false, false, $class, $readonly, 'font-size: xx-small;'.$select_style);
 		echo ' <a href="javascript:">' .
 			html_print_image('images/default_list.png', true,
 				array('class' => $uniq_name . '_toggler',
@@ -1043,7 +1048,7 @@ function html_print_div ($options, $return = false) {
  */
 function html_print_input_password ($name, $value, $alt = '',
 	$size = 50, $maxlength = 255, $return = false, $disabled = false,
-	$required = false) {
+	$required = false, $class = '') {
 	
 	if ($maxlength == 0)
 		$maxlength = 255;
@@ -1054,6 +1059,8 @@ function html_print_input_password ($name, $value, $alt = '',
 	$attr = array();
 	if ($required)
 		$attr['required'] = 'required';
+	if ($class)
+		$attr['class'] = $class;
 	
 	return html_print_input_text_extended ($name, $value, 'password-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, true);
 }
@@ -1073,7 +1080,7 @@ function html_print_input_password ($name, $value, $alt = '',
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false, $required = false, $function = "") {
+function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false, $required = false, $function = "", $class = "") {
 	if ($maxlength == 0)
 		$maxlength = 255;
 		
@@ -1083,6 +1090,8 @@ function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength
 	$attr = array();
 	if ($required)
 		$attr['required'] = 'required';
+	if ($class != '')
+		$attr['class'] = $class;
 	
 	return html_print_input_text_extended ($name, $value, 'text-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, false, $function);
 }
@@ -1312,8 +1321,8 @@ function html_print_button ($label = 'OK', $name = '', $disabled = false, $scrip
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_textarea ($name, $rows, $columns, $value = '', $attributes = '', $return = false) {
-	$output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' >';
+function html_print_textarea ($name, $rows, $columns, $value = '', $attributes = '', $return = false, $class = '') {
+	$output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.'" '.$class.'>';
 	//$output .= io_safe_input ($value);
 	$output .= ($value);
 	$output .= '</textarea>';

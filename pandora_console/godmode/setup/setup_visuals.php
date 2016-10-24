@@ -185,7 +185,7 @@ $table_styles->data[$row][0] = __('Custom logo in login') . ui_print_help_icon("
 
 
 	$table_styles->data[$row][1] = html_print_select(
-		list_files('images/custom_logo_login', "png", 1, 0), 'custom_logo_login',
+		list_files('enterprise/images/custom_logo_login', "png", 1, 0), 'custom_logo_login',
 		$config["custom_logo_login"], '', '', '',true,false,true,'',$open,'width:240px');
 
 
@@ -836,7 +836,7 @@ $(document).ready (function () {
 
 $("#button-custom_logo_preview").click (function (e) {
 	var icon_name = $("select#custom_logo option:selected").val();
-	var icon_path = "<?php echo $config['homeurl']; ?>/images/custom_logo/" + icon_name;
+	var icon_path = "<?php echo $config['homeurl'];  if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_logo/" + icon_name;
 
 	if (icon_name == "")
 		return;
@@ -876,7 +876,7 @@ $("#button-custom_logo_preview").click (function (e) {
 
 $("#button-custom_logo_login_preview").click (function (e) {
 	var icon_name = $("select#custom_logo_login option:selected").val();
-	var icon_path = "<?php echo $config['homeurl']; ?>/images/custom_logo_login/" + icon_name;
+	var icon_path = "<?php echo $config['homeurl']; if(enterprise_installed){ echo 'enterprise/'; } ?>images/custom_logo_login/" + icon_name;
 
 	if (icon_name == "")
 		return;

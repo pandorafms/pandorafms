@@ -328,11 +328,10 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 	// the X axis show negative part instead to
 	// show the axis only the positive part.
 	if (maxvalue == 0) {
-		options['xaxes'][0]['min'] = 0;
-
+		options['yaxis']['min'] = 0;
 		// Fixed the values with a lot of decimals in the situation
 		// with all 0 values.
-		options['xaxes'][0]['tickDecimals'] = 0;
+		options['yaxis']['tickDecimals'] = 0;
 	}
 
 

@@ -2411,7 +2411,7 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 	}
 
 
-	$buffer = '<div id="'.$type2.'" style="font-size:9pt;text-transform:uppercase;font-weight:100;letter:spacing:1px;"><div id="menu_tab_left">';
+	$buffer = '<div id="'.$type2.'" style=""><div id="menu_tab_left">';
 
 
 	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . '&nbsp; ';

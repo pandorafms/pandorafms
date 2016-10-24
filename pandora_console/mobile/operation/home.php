@@ -54,12 +54,6 @@ class Home {
 			);
 			
 		if (!$system->getConfig('metaconsole'))	{
-			$items['alerts'] = array(
-					'name' => __('Alerts'),
-					'filename' => 'alerts.php',
-					'menu_item' => true,
-					'icon' => 'alerts'
-				);
 			$items['agents'] = array(
 					'name' => __('Agents'),
 					'filename' => 'agents.php',
@@ -72,18 +66,6 @@ class Home {
 					'menu_item' => true,
 					'icon' => 'modules'
 				);
-			$items['networkmaps'] = array(
-					'name' => __('Networkmaps'),
-					'filename' => 'networkmaps.php',
-					'menu_item' => true,
-					'icon' => 'network_maps'
-				);
-			$items['visualmaps'] = array(
-					'name' => __('Visual consoles'),
-					'filename' => 'visualmaps.php',
-					'menu_item' => true,
-					'icon' => 'visual_console'
-				);
 			
 			// Not in home
 			$items['agent'] = array(
@@ -95,18 +77,6 @@ class Home {
 			$items['module_graph'] = array(
 					'name' => __('Module graph'),
 					'filename' => 'module_graph.php',
-					'menu_item' => false,
-					'icon' => ''
-				);
-			$items['networkmap'] = array(
-					'name' => __('Networkmap'),
-					'filename' => 'networkmap.php',
-					'menu_item' => false,
-					'icon' => ''
-				);
-			$items['visualmap'] = array(
-					'name' => __('Visualmap'),
-					'filename' => 'visualmap.php',
 					'menu_item' => false,
 					'icon' => ''
 				);

@@ -33,6 +33,8 @@ $isFunctionPolicies = enterprise_include_once('include/functions_policies.php');
 
 $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
+$classdisabledBecauseInPolicy = '';
+$largeclassdisabledBecauseInPolicy = '';
 $page = get_parameter('page', '');
 if (strstr($page, "policy_modules") === false) {
 	if ($config['enterprise_installed']) {
@@ -41,8 +43,12 @@ if (strstr($page, "policy_modules") === false) {
 	else {
 		$disabledBecauseInPolicy = false;
 	}
-	if ($disabledBecauseInPolicy)
-		$disabledTextBecauseInPolicy = 'disabled = "disabled"';
+	if ($disabledBecauseInPolicy){
+		$disabledTextBecauseInPolicy = 'readonly = "yes"';
+		$classdisabledBecauseInPolicy = 'readonly';
+		$largeclassdisabledBecauseInPolicy = 'class = readonly';
+	}
+
 }
 
 define ('ID_NETWORK_COMPONENT_TYPE', 2);
@@ -68,7 +74,8 @@ if ($id_module_type >= 6 && $id_module_type <= 7) {
 }
 else {
 	$data[2] = __('Port');
-	$data[3] = html_print_input_text ('tcp_port', $tcp_port, '', 5, 20, true, $disabledBecauseInPolicy);
+	$data[3] = html_print_input_text ('tcp_port', $tcp_port, '', 5, 20, true, $disabledBecauseInPolicy,
+									false, '', $classdisabledBecauseInPolicy);
 }
 
 push_table_simple ($data, 'target_ip');
@@ -85,7 +92,8 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK && isset($id_agent_module)) {
 	$adopt = policies_is_module_adopt($id_agent_module);
 }
 if (!$adopt) {
-	$data[1] = html_print_input_text ('snmp_community', $snmp_community, '', 15, 60, true, $disabledBecauseInPolicy);
+	$data[1] = html_print_input_text ('snmp_community', $snmp_community, '', 15, 60, true, $disabledBecauseInPolicy,
+										 false, '', $classdisabledBecauseInPolicy);
 }
 else {
 	$data[1] = html_print_input_text ('snmp_community', $snmp_community, '', 15, 60, true, false);
@@ -95,11 +103,13 @@ $data[2] = _('SNMP version');
 
 if ($id_module_type >= 15 && $id_module_type <= 18) {
 	$data[3] = html_print_select ($snmp_versions, 'snmp_version', $tcp_send,
-		'', '', '', true, false, false, '', $disabledBecauseInPolicy);
+		'', '', '', true, false, false, '', $disabledBecauseInPolicy,
+		 false, '', $classdisabledBecauseInPolicy);
 }
 else {
 	$data[3] = html_print_select ($snmp_versions, 'snmp_version', 0, '', '',
-		'', true, false, false, '', $disabledBecauseInPolicy);
+		'', true, false, false, '', $disabledBecauseInPolicy,
+		 false, '', $classdisabledBecauseInPolicy);
 }
 if($disabledBecauseInPolicy){
 	if ($id_module_type >= 15 && $id_module_type <= 18) {
@@ -111,7 +121,8 @@ push_table_simple ($data, 'snmp_1');
 $data = array ();
 $data[0] = __('SNMP OID');
 $data[1] = '<span class="left"; style="width: 50%">';
-$data[1] .= html_print_input_text ('snmp_oid', $snmp_oid, '', 30, 255, true, $disabledBecauseInPolicy);
+$data[1] .= html_print_input_text ('snmp_oid', $snmp_oid, '', 30, 255, true, $disabledBecauseInPolicy,
+		 false, '', $classdisabledBecauseInPolicy);
 $data[1] .= '<span class="invisible" id="oid">';
 $data[1] .= html_print_select (array (), 'select_snmp_oid', $snmp_oid, '', '', 0, true, false, false, '', $disabledBecauseInPolicy);
 $data[1] .= html_print_image("images/edit.png", true, array("class" => "invisible clickable", "id" => "edit_oid"));
@@ -128,13 +139,13 @@ push_table_simple ($data, 'snmp_2');
 /* Advanced stuff */
 $data = array ();
 $data[0] = __('TCP send') . ' ' . ui_print_help_icon ("tcp_send", true);
-$data[1] = html_print_textarea ('tcp_send', 2, 65, $tcp_send, $disabledTextBecauseInPolicy, true);
+$data[1] = html_print_textarea ('tcp_send', 2, 65, $tcp_send, $disabledTextBecauseInPolicy, true, $largeclassdisabledBecauseInPolicy);
 $table_simple->colspan['tcp_send'][1] = 3;
 
 push_table_simple ($data, 'tcp_send');
 
 $data[0] = __('TCP receive');
-$data[1] = html_print_textarea ('tcp_rcv', 2, 65, $tcp_rcv, $disabledTextBecauseInPolicy, true);
+$data[1] = html_print_textarea ('tcp_rcv', 2, 65, $tcp_rcv, $disabledTextBecauseInPolicy, true, $largeclassdisabledBecauseInPolicy);
 $table_simple->colspan['tcp_receive'][1] = 3;
 
 push_table_simple ($data, 'tcp_receive');
@@ -173,27 +184,31 @@ else if ($id_agent_module === false) {
 
 $data = array();
 $data[0] = __('Auth user');
-$data[1] = html_print_input_text ('snmp3_auth_user', $snmp3_auth_user, '', 15, 60, true);
+$data[1] = html_print_input_text ('snmp3_auth_user', $snmp3_auth_user, '', 15, 60, true, $disabledBecauseInPolicy,
+		 false, '', $classdisabledBecauseInPolicy);
 $data[2] = __('Auth password') . ui_print_help_tip(__("The pass length must be eight character minimum."), true);
-$data[3] = html_print_input_password ('snmp3_auth_pass', $snmp3_auth_pass, '', 15, 60, true);
+$data[3] = html_print_input_password ('snmp3_auth_pass', $snmp3_auth_pass, '', 15, 60, true, $disabledBecauseInPolicy,
+		 false, $largeclassdisabledBecauseInPolicy);
 $data[3] .= html_print_input_hidden('active_snmp_v3', 0, true);
 if ($snmp_version != 3) $table_simple->rowstyle['field_snmpv3_row1'] = 'display: none;';
 push_table_simple($data, 'field_snmpv3_row1');
 
 $data = array();
 $data[0] = __('Privacy method');
-$data[1] = html_print_select(array('DES' => __('DES'), 'AES' => __('AES')), 'snmp3_privacy_method', $snmp3_privacy_method, '', '', '', true);
+$data[1] = html_print_select(array('DES' => __('DES'), 'AES' => __('AES')), 'snmp3_privacy_method', $snmp3_privacy_method, '', '', '', true, false, false, '', $disabledBecauseInPolicy);
 $data[2] = __('Privacy pass') . ui_print_help_tip(__("The pass length must be eight character minimum."), true);
-$data[3] = html_print_input_password ('snmp3_privacy_pass', $snmp3_privacy_pass, '', 15, 60, true);
+$data[3] = html_print_input_password ('snmp3_privacy_pass', $snmp3_privacy_pass, '', 15, 60, true, $disabledBecauseInPolicy,
+		 false, $largeclassdisabledBecauseInPolicy);
+
 if ($snmp_version != 3) $table_simple->rowstyle['field_snmpv3_row2'] = 'display: none;';
 push_table_simple($data, 'field_snmpv3_row2');
 
 $data = array();
 $data[0] = __('Auth method');
-$data[1] = html_print_select(array('MD5' => __('MD5'), 'SHA' => __('SHA')), 'snmp3_auth_method', $snmp3_auth_method, '', '', '', true);
+$data[1] = html_print_select(array('MD5' => __('MD5'), 'SHA' => __('SHA')), 'snmp3_auth_method', $snmp3_auth_method, '', '', '', true, false, false, '', $disabledBecauseInPolicy);
 $data[2] = __('Security level');
 $data[3] = html_print_select(array('noAuthNoPriv' => __('Not auth and not privacy method'),
-	'authNoPriv' => __('Auth and not privacy method'), 'authPriv' => __('Auth and privacy method')), 'snmp3_security_level', $snmp3_security_level, '', '', '', true);
+	'authNoPriv' => __('Auth and not privacy method'), 'authPriv' => __('Auth and privacy method')), 'snmp3_security_level', $snmp3_security_level, '', '', '', true, false, false, '', $disabledBecauseInPolicy);
 if ($snmp_version != 3)
 	$table_simple->rowstyle['field_snmpv3_row3'] = 'display: none;';
 push_table_simple($data, 'field_snmpv3_row3');
@@ -203,6 +218,24 @@ snmp_browser_print_container (false, '100%', '60%', 'none');
 ?>
 <script type="text/javascript">
 $(document).ready (function () {
+	$("#id_module_type").change(function (){
+		if ((this.value == "17") || (this.value == "18") || (this.value == "16") || (this.value == "15")) {
+			if ($("#snmp_version").val() == "3"){
+				$("#simple-field_snmpv3_row1").attr("style", "");
+				$("#simple-field_snmpv3_row2").attr("style", "");
+				$("#simple-field_snmpv3_row3").attr("style", "");
+				$("input[name=active_snmp_v3]").val(1);
+				$("input[name=snmp_community]").attr("disabled", true);
+			}
+		} else {
+			$("#simple-field_snmpv3_row1").css("display", "none");
+			$("#simple-field_snmpv3_row2").css("display", "none");
+			$("#simple-field_snmpv3_row3").css("display", "none");
+			$("input[name=active_snmp_v3]").val(0);
+			$("input[name=snmp_community]").removeAttr('disabled');
+		}
+	});
+
 	$("#snmp_version").change(function () {
 		if (this.value == "3") {
 			$("#simple-field_snmpv3_row1").attr("style", "");

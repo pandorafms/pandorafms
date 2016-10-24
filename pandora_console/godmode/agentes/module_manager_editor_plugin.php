@@ -21,14 +21,17 @@ $macros = $module['macros'];
 
 $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
+$classdisabledBecauseInPolicy = '';
 $page = get_parameter('page', '');
 if (strstr($page, "policy_modules") === false) {
 	if ($config['enterprise_installed'])
 		$disabledBecauseInPolicy = policies_is_module_in_policy($id_agent_module) && policies_is_module_linked($id_agent_module);
 	else
 		$disabledBecauseInPolicy = false;
-	if ($disabledBecauseInPolicy)
+	if ($disabledBecauseInPolicy){
 		$disabledTextBecauseInPolicy = 'disabled = "disabled"';
+		$classdisabledBecauseInPolicy = 'readonly';
+	}
 }
 
 define ('ID_NETWORK_COMPONENT_TYPE', 4);
@@ -93,7 +96,8 @@ if (!empty($macros)) {
 			$data[1] = html_print_input_password($m['macro'], io_output_password($m['value']), '', 100, 255, true);
 		}
 		else {
-			$data[1] = html_print_input_text($m['macro'], $m['value'], '', 100, 255, true);
+			$data[1] = html_print_input_text($m['macro'], $m['value'], '', 100, 255, true,
+				$disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy);
 		}
 		$table_simple->colspan['macro'.$m['macro']][1] = 3;
 		$table_simple->rowclass['macro'.$m['macro']] = 'macro_field';

@@ -137,7 +137,7 @@ echo "</table>";
 
 //Groups and tags
 $result_groups = groupview_get_groups_list($config['id_user'], $strict_user,
-	($agent_a == true) ? 'AR' : ($agent_w == true) ? 'AW' : 'AR', true, true);
+	($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR'), true, true);
 
 $count = count($result_groups);
 

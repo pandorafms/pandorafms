@@ -39,6 +39,7 @@ require_once('operation/networkmap.php');
 require_once('operation/visualmaps.php');
 require_once('operation/visualmap.php');
 $enterpriseHook = enterprise_include('mobile/include/enterprise.class.php');
+$enterpriseHook = enterprise_include('mobile/operation/dashboard.php');
 $enterpriseHook = enterprise_include('mobile/operation/home.php');
 
 if (!empty ($config["https"]) && empty ($_SERVER['HTTPS'])) {
@@ -157,6 +158,11 @@ switch ($action) {
 				$tactical = new Tactical();
 				$tactical->ajax($parameter2);
 				break;
+			default:
+				if (class_exists("Enterprise")) {
+					$enterprise->enterpriseAjax($parameter1, $parameter2);
+				}
+			break;
 		}
 		return;
 		break;
@@ -226,7 +232,6 @@ switch ($action) {
 	default:
 		if (class_exists("Enterprise")) {
 			$enterprise = Enterprise::getInstance();
-
 			if ($page != "home") {
 				$permission = $enterprise->checkEnterpriseACL($page);
 
@@ -301,6 +306,32 @@ switch ($action) {
 			case 'visualmap':
 				$visualmap = new Visualmap();
 				$visualmap->show();
+				break;
+			case 'dashboard_list':
+				if (class_exists("Dashboards")) {
+					$dashboard = new Dashboards();
+					$dashboard->showDashboards();
+				}
+				else {
+					if (class_exists("HomeEnterprise"))
+						$home = new HomeEnterprise();
+					else
+						$home = new Home();
+					$home->show();
+				}
+				break;
+			case 'dashboard':
+				if (class_exists("Dashboards")) {
+					$dashboard = new Dashboards();
+					$dashboard->show();
+				}
+				else {
+					if (class_exists("HomeEnterprise"))
+						$home = new HomeEnterprise();
+					else
+						$home = new Home();
+					$home->show();
+				}
 				break;
 		}
 		break;

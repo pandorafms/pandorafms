@@ -45,6 +45,8 @@ class System {
 	private function loadConfig() {
 		global $config;
 		
+		$config['mobile'] = true;
+		
 		$this->config = &$config;
 	}
 	

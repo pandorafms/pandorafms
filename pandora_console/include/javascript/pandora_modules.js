@@ -359,10 +359,10 @@ function configure_modules_form () {
 				if (data["type"] >= 15 && data["type"] <= 18) {
 					$("#snmp_version").val(data["tcp_send"]);
 					$("#text-snmp3_auth_user").val(data["plugin_user"]);
-					$("#text-snmp3_auth_pass").val(data["plugin_pass"]);
+					$("#password-snmp3_auth_pass").val(data["plugin_pass"]);
 					$("#snmp3_auth_method").val(data["plugin_parameter"]);
 					$("#snmp3_privacy_method").val(data["custom_string_1"]);
-					$("#text-snmp3_privacy_pass").val(data["custom_string_2"]);
+					$("#password-snmp3_privacy_pass").val(data["custom_string_2"]);
 					$("#snmp3_security_level").val(data["custom_string_3"]);
 					
 					if (data["tcp_send"] == "3") {

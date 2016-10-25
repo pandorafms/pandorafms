@@ -57,7 +57,7 @@ RUN yum install -y \
 	nmap \
 	xprobe2 \
 	mysql-server \
-	mysql
+	mysql; yum clean all;
 
 # Pandora FMS Server dependencies
 RUN yum install -y \ 
@@ -91,5 +91,15 @@ RUN yum install -y \
 	perl-XML-Twig \ 
 	perl-Encode-Locale \
 	net-snmp \
-	net-snmp-utils
+	net-snmp-utils \
+	perl-Test-Simple; yum clean all;
 
+# Install geckodriver
+RUN cd /tmp && \
+curl -o geckodriver.tgz -L https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-linux64.tar.gz && \
+tar zxvf geckodriver.tgz && \
+mv geckodriver /usr/bin && \
+rm geckodriver.tgz
+
+#Exposing ports for: HTTP, SNMP Traps, Anytermd (SSH), Anytermd (Telnet), Tentacle protocol
+EXPOSE 80 162/udp 8022 8023 41121

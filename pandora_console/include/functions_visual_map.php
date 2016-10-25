@@ -95,8 +95,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 	require_once ($config["homedir"] . '/include/functions_custom_graphs.php');
 	
 	//add 60 px for visual console map
-	$width = $layoutData['width'] + 60;
-	$height = $layoutData['height'] + 60;
+	$width = $layoutData['width'];
+	$height = $layoutData['height'];
 	$max_percentile = $layoutData['height'];
 	$top = $layoutData['pos_y'];
 	$left = $layoutData['pos_x'];
@@ -749,6 +749,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$percentile = 100;
 			break;
 		case MODULE_GRAPH:
+			$width	+= 60;
+			$height	+= 60;
 			if (!empty($proportion)) {
 				$width =
 					((integer)($proportion['proportion_width'] * $width));

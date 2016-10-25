@@ -189,8 +189,8 @@ switch ($action) {
 	case 'get_layout_data':
 		$layoutData = db_get_row_filter('tlayout_data',
 			array('id' => $id_element));
-		$layoutData['height'] = $layoutData['height'] + 60;
-		$layoutData['width']  = $layoutData['width'] + 60;
+		$layoutData['height'] = $layoutData['height'];
+		$layoutData['width']  = $layoutData['width'];
 		echo json_encode($layoutData);
 		break;
 	

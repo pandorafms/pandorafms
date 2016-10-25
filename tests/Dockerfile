@@ -97,5 +97,12 @@ RUN yum install -y \
 	net-snmp-utils \
 	perl-Test-Simple; yum clean all;
 
+# Install geckodriver
+RUN cd /tmp && \
+curl -o geckodriver.tgz -L https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-linux64.tar.gz && \
+tar zxvf geckodriver.tgz && \
+mv geckodriver /usr/bin && \
+rm geckodriver.tgz
+
 #Exposing ports for: HTTP, SNMP Traps, Anytermd (SSH), Anytermd (Telnet), Tentacle protocol
 EXPOSE 80 162/udp 8022 8023 41121

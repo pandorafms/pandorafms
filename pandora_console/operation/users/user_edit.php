@@ -101,7 +101,6 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	$upd_info["comments"] = get_parameter_post ("comments", $user_info["comments"]);
 	$upd_info["language"] = get_parameter_post ("language", $user_info["language"]);
 	$upd_info["id_skin"] = get_parameter ("skin", $user_info["id_skin"]);
-	$upd_info["id_filter"] = get_parameter ("event_filter",NULL);
 	$upd_info["block_size"] = get_parameter ("block_size", $config["block_size"]);
 	$upd_info["firstname"] = get_parameter ("newsletter_reminder", $user_info["first_name"]);
 	$default_block_size = get_parameter ("default_block_size", 0);
@@ -174,12 +173,9 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	// message could be confussing to the user.
 	
 	$return = update_user ($id, $upd_info);
-	if ($return > 0) {
-		ui_print_result_message ($return,
+	ui_print_result_message ($return,
 			__('User info successfully updated'),
 			__('Error updating user info'));
-	}
-	
 	$user_info = $upd_info;
 }
 
@@ -207,9 +203,9 @@ $table->style[2] = 'min-width: 200px;width: 200px;';
 
 $data = array();
 $data[0] = '<b>' . __('User ID') . '</b>';
-$data[0] .= '<div style="position:absolute;left:200px;display:inline;">'.$jump . '<span style="font-weight: normal;">' . $id . '</span></div>';
+$data[0] .= $jump . '<span style="font-weight: normal;">' . $id . '</span>';
 $data[1] = '<b>' . __('Full (display) name') . '</b>';
-$data[1] .= '<div style="position:absolute;left:700px;display:inline;">'.$jump . html_print_input_text_extended ("fullname", $user_info["fullname"], '', '', 40, 100, $view_mode, '', 'class="input"', true).'</div>';
+$data[1] .= $jump . html_print_input_text_extended ("fullname", $user_info["fullname"], '', '', 40, 100, $view_mode, '', 'class="input"', true);
 // Show "Picture" (in future versions, why not, allow users to upload it's own avatar here.
 
 if (is_user_admin ($id)) {
@@ -231,9 +227,9 @@ $table->data[] = $data;
 
 $data = array();
 $data[0] = __('E-mail');
-$data[0] .= '<div style="position:absolute;left:200px;display:inline;">'.$jump . html_print_input_text_extended ("email", $user_info["email"], '', '', '40', '100', $view_mode, '', 'class="input"', true).'</div>';
+$data[0] .= $jump . html_print_input_text_extended ("email", $user_info["email"], '', '', '40', '100', $view_mode, '', 'class="input"', true);
 $data[1] = __('Phone number');
-$data[1] .= '<div style="position:absolute;left:700px;display:inline;">'.$jump . html_print_input_text_extended ("phone", $user_info["phone"], '', '', '40', '30', $view_mode, '', 'class="input"', true).'</div>';
+$data[1] .= $jump . html_print_input_text_extended ("phone", $user_info["phone"], '', '', '40', '30', $view_mode, '', 'class="input"', true);
 $table->rowclass[] = '';
 $table->rowstyle[] = 'font-weight: bold;';
 $table->data[] = $data;
@@ -242,9 +238,9 @@ if ($view_mode === false) {
 	if ($config["user_can_update_password"]) {
 		$data = array();
 		$data[0] = __('New Password');
-		$data[0] .=  '<div style="position:absolute;left:200px;display:inline;">'.$jump . html_print_input_text_extended ("password_new", "", '', '', '40', '45', $view_mode, '', 'class="input"', true, true).'</div>';
+		$data[0] .=  $jump . html_print_input_text_extended ("password_new", "", '', '', '40', '45', $view_mode, '', 'class="input"', true, true);
 		$data[1] = __('Password confirmation');
-		$data[1] .= '<div style="position:absolute;left:700px;display:inline;">'.$jump . html_print_input_text_extended ("password_conf", "", '', '', '40', '45', $view_mode, '', 'class="input"', true, true).'</div>';
+		$data[1] .= $jump . html_print_input_text_extended ("password_conf", "", '', '', '40', '45', $view_mode, '', 'class="input"', true, true);
 		$table->rowclass[] = '';
 		$table->rowstyle[] = 'font-weight: bold;';
 		$table->data[] = $data;
@@ -274,7 +270,7 @@ $data[0] .= __('Default').' ('.$config["global_block_size"].')';
 $values = array(-1 => __('Default'),1 => __('Yes'),0 => __('No'));
 
 $data[1] = __('Interactive charts') . ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true);
-$data[1] .= '<div style="position:absolute;left:700px;display:inline;">'.$jump . html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false).'</div>';
+$data[1] .= $jump . html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false);
 
 
 $data[2] = __('Language');
@@ -297,7 +293,7 @@ $id_usr = $config['id_user'];
 if (!$meta) {
 	$data = array();
 	$data[0] = __('Shortcut bar') . ui_print_help_tip(__('This will activate a shortcut bar with alerts, events, messages... information'), true);
-	$data[0] .= '<div style="position:absolute;left:200px;display:inline;">'.$jump . html_print_checkbox('shortcut_bar', 1, $user_info["shortcut"], true).'</div>';
+	$data[0] .= $jump . html_print_checkbox('shortcut_bar', 1, $user_info["shortcut"], true);
 
 	$data[1] = __('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true);
 	$values = array (
@@ -312,7 +308,7 @@ if (!$meta) {
 		$values['Dashboard'] = __('Dashboard');
 	}
 
-	$data[1] .= '<div style="position:absolute;left:700px;display:inline;">'.$jump . html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false).'</div>';
+	$data[1] .= $jump . html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);
 
 	if (enterprise_installed()) {
 		$dashboards = get_user_dashboards ($config['id_user']);
@@ -360,21 +356,16 @@ if (!$meta) {
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
 $data = array();
 $data[0] = __('Double authentication');
-$data[0] .= '<div style="position:absolute;left:200px;display:inline;">'.$jump;
+$data[0] .= $jump;
 $data[0] .= html_print_checkbox('double_auth', 1, $double_auth_enabled, true).'</span>';
 if ($double_auth_enabled) {
 	$data[0] .= $jump;
 	$data[0] .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
 }
 // Dialog
-$data[0] .= "<div id=\"dialog-double_auth\"><div id=\"dialog-double_auth-container\"></div></div>";
+$data[0] .= '<div id="dialog-double_auth"><div id="dialog-double_auth-container"></div></div>';
 
-if (check_acl ($config['id_user'], 0, "ER")){
-	$data[1] = __('Event filter');
-	$data[1] .= $jump . html_print_select_from_sql ('SELECT id_filter, id_name FROM tevent_filter',
-		'event_filter', $user_info["id_filter"], '', __('None'), NULL, true);
-}// Newsletter
-else if (license_free()) {
+if (license_free()) {
 	$data[1] = __('Newsletter Subscribed') . ':';
 	if ($user_info["middlename"]) {
 		$data[1] .= $jump . '<span style="font-weight:initial;">' . __('Already subscribed to Pandora FMS newsletter') . "</span>";
@@ -386,89 +377,11 @@ else if (license_free()) {
 	$data[2] = __('Newsletter Reminder') . ' ';
 	if ($user_info["firstname"] != 0) $user_info["firstname"] = 1;
 	$data[2] .= html_print_checkbox('newsletter_reminder', 1, $user_info["firstname"], true);
-} else {
+} 
+else {
 	$table->colspan[count($table->data)][0] = 3;
 }
 $table->rowclass[] = '';
-$table->rowstyle[] = 'font-weight: bold;';
-$table->data[] = $data;
-$data = array();
-
-$autorefresh_list_out = array();
-$autorefresh_list_out['operation/agentes/tactical'] = "tactical";
-$autorefresh_list_out['operation/agentes/group_view'] = "group_view";
-$autorefresh_list_out['operation/agentes/estado_agente'] = "agent_status";
-$autorefresh_list_out['operation/agentes/alerts_status'] = "alerts_status";
-$autorefresh_list_out['operation/agentes/status_monitor'] = "status_monitor";
-$autorefresh_list_out['enterprise/operation/services/services'] = "services";
-$autorefresh_list_out['enterprise/dashboard/main_dashboard'] = "main_dashboard";
-$autorefresh_list_out['operation/reporting/graph_viewer'] = "graph_viewer";
-$autorefresh_list_out['operation/snmpconsole/snmp_view'] = "snmp_view";
-$autorefresh_list_out['operation/agentes/networkmap'] = "networkmap";
-$autorefresh_list_out['operation/visual_console/render_view'] = "render_view";
-$autorefresh_list_out['operation/events/events'] = "events";
-
-if(!isset($autorefresh_list)){
-	$select = db_process_sql("SELECT value FROM tconfig WHERE token='autorefresh_white_list'");
-	$autorefresh_list = json_decode($select[0]['value']);
-	if($autorefresh_list === null){
-		$autorefresh_list[0] = __('None');
-	}else{
-		$aux = array();
-		for ($i =0;$i < count($autorefresh_list);$i++){
-			$aux[$autorefresh_list[$i]] = $autorefresh_list_out[$autorefresh_list[$i]];
-			unset($autorefresh_list_out[$autorefresh_list[$i]]);
-			$autorefresh_list[$i] = $aux;
-		}
-		$autorefresh_list = $aux;
-	}
-
-
-}else{
-	if(($autorefresh_list[0] === '') || ($autorefresh_list[0] === '0')){
-		$autorefresh_list[0] = __('None');
-	}else{
-		$aux = array();
-		for ($i =0;$i < count($autorefresh_list);$i++){
-			$aux[$autorefresh_list[$i]] = $autorefresh_list_out[$autorefresh_list[$i]];
-			unset($autorefresh_list_out[$autorefresh_list[$i]]);
-			$autorefresh_list[$i] = $aux;
-		}
-		$autorefresh_list = $aux;
-	}
-
-}
-
-$data[0] = _('Autorefresh') . ui_print_help_tip(__('This will activate autorefresh in selected pages'), true);
-$select_out = html_print_select ($autorefresh_list_out, 'autorefresh_list_out[]', '', '', '', '', true, true, true, '', false, 'width:200px');
-$arrows = " ";
-$select_in = html_print_select ($autorefresh_list, 'autorefresh_list[]', '', '', '', '', true, true, true, '', false, 'width:200px');
-
-$table_ichanges = '<table style="position:relative;left:160px;">
-		<tr>
-			<td>' . __('Full list of pages') . '</td>
-			<td></td>
-			<td>' . __('List of pages with autorefresh') . '</td>
-		</tr>
-		<tr>
-			<td>' . $select_out . '</td>
-			<td>
-				<a href="javascript:">'.
-					html_print_image('images/darrowright.png', true, array('id' => 'right_autorefreshlist', 'alt' => __('Push selected pages into autorefresh list'), 'title' => __('Push selected pages into autorefresh list'))).
-				'</a>
-				<br><br>
-				<a href="javascript:">'.
-					html_print_image('images/darrowleft.png', true, array('id' => 'left_autorefreshlist', 'alt' => __('Pop selected pages out of autorefresh list'), 'title' => __('Pop selected pages out of autorefresh list'))).
-				'</a>
-			</td>
-			<td>'. $select_in .'</td>
-		</tr>
-	</table>';
-$data[0] .= $table_ichanges;
-
-
-$table->rowclass[] = '';
-$table->colspan[count($table->data)][0] = 3;
 $table->rowstyle[] = 'font-weight: bold;';
 $table->data[] = $data;
 
@@ -574,45 +487,7 @@ enterprise_hook('close_meta_frame');
 
 <script language="javascript" type="text/javascript">
 $(document).ready (function () {
-
-	$("#right_autorefreshlist").click (function () {
-		jQuery.each($("select[name='autorefresh_list_out[]'] option:selected"), function (key, value) {
-			imodule_name = $(value).html();
-			if (imodule_name != <?php echo "'".__('None')."'"; ?>) {
-				id_imodule = $(value).attr('value');
-				$("select[name='autorefresh_list[]']").append($("<option></option>").val(id_imodule).html('<i>' + imodule_name + '</i>'));
-				$("#autorefresh_list_out").find("option[value='" + id_imodule + "']").remove();
-				$("#autorefresh_list").find("option[value='']").remove();
-				$("#autorefresh_list").find("option[value='0']").remove();
-				if($("#autorefresh_list_out option").length == 0) {
-					$("select[name='autorefresh_list_out[]']").append($("<option></option>").val('').html('<i><?php echo __('None'); ?></i>'));
-				}
-			}
-		});
-	});
-
-	$("#left_autorefreshlist").click (function () {
-		jQuery.each($("select[name='autorefresh_list[]'] option:selected"), function (key, value) {
-				imodule_name = $(value).html();
-				if (imodule_name != <?php echo "'".__('None')."'"; ?>) {
-					id_imodule = $(value).attr('value');
-					$("#autorefresh_list").find("option[value='" + id_imodule + "']").remove();
-					$("#autorefresh_list_out").find("option[value='']").remove();
-					$("select[name='autorefresh_list_out[]']").append($("<option><option>").val(id_imodule).html('<i>' + imodule_name + '</i>'));
-					$("#autorefresh_list_out option").last().remove();
-					if($("#autorefresh_list option").length == 0) {
-						$("select[name='autorefresh_list[]']").append($("<option></option>").val('').html('<i><?php echo __('None'); ?></i>'));
-					}
-				}
-		});
-	});
-
-	$("#submit-uptbutton").click (function () {
-		if($("#autorefresh_list option").length > 0) {
-			$('#autorefresh_list option').prop('selected', true);
-		}
-	});
-
+	
 	check_default_block_size()
 	$("#checkbox-default_block_size").change(function() {
 		check_default_block_size();

@@ -102,6 +102,7 @@ global $__code_from;
 
 $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
+$largeClassDisabledBecauseInPolicy = '';
 
 $page = get_parameter('page', '');
 if (strstr($page, "policy_modules") === false && $id_agent_module) {
@@ -110,7 +111,7 @@ if (strstr($page, "policy_modules") === false && $id_agent_module) {
 	else
 		$disabledBecauseInPolicy = false;
 	if ($disabledBecauseInPolicy)
-		$disabledTextBecauseInPolicy = 'disabled = "disabled"';
+		$disabledTextBecauseInPolicy = 'readonly = "readonly"';
 }
 
 if($disabledBecauseInPolicy){

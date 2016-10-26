@@ -24,7 +24,7 @@ if (strstr($page, "policy_modules") === false) {
 	else
 		$disabledBecauseInPolicy = false;
 	if ($disabledBecauseInPolicy){
-		$disabledTextBecauseInPolicy = 'disabled = "disabled"';
+		$disabledTextBecauseInPolicy = 'readonly = "readonly"';
 		$classdisabledBecauseInPolicy = 'readonly';
 	}
 }

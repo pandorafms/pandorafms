@@ -283,8 +283,19 @@ if ($get_module_detail) {
 					$data[] = io_safe_input($row[$attr[0]]);
 				}
 				else if (is_numeric($row[$attr[0]]) && !modules_is_string_type($row['module_type']) ) {
-
-					$data[] = (double) $row[$attr[0]];
+					switch($row['module_type']) {
+						case 15:
+							$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module_id);
+							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
+								$data[] = human_milliseconds_to_string($row['data']);
+							else
+								$data[] = (double) $row[$attr[0]];
+							break;
+						default:
+							$data[] = (double) $row[$attr[0]];
+							break;
+					}
+					//~ $data[] = (double) $row[$attr[0]];
 				}
 				else {
 					if ($row[$attr[0]] == '') {
@@ -917,12 +928,34 @@ if ($list_modules) {
 								$salida = $config["render_proc_fail"];
 							break;
 						default:
-							$salida = format_numeric($module["datos"]);
+							switch($module['id_tipo_modulo']) {
+								case 15:
+									$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
+									if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
+										$salida = human_milliseconds_to_string($module['datos']);
+									else
+										$salida = format_numeric($module['datos']);
+									break;
+								default:
+									$salida = format_numeric($module['datos']);
+									break;
+							}
 						break;
 					}
 				}
 				else {
-					$salida = format_numeric($module["datos"]);
+					switch($module['id_tipo_modulo']) {
+						case 15:
+							$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
+							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
+								$salida = human_milliseconds_to_string($module['datos']);
+							else
+								$salida = format_numeric($module['datos']);
+							break;
+						default:
+							$salida = format_numeric($module['datos']);
+							break;
+					}
 				}
 				// Show units ONLY in numeric data types
 				if (isset($module["unit"])) {

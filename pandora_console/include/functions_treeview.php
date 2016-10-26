@@ -183,18 +183,50 @@ function treeview_printModuleTable($id_module, $server_data = false, $no_head = 
 				}
 				break;
 			default:
+				//~ if (is_numeric($last_data["datos"]))
+					//~ $data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . format_numeric($last_data["datos"]) . "</span>";
+				//~ else
+					//~ $data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
+				switch($module['id_tipo_modulo']) {
+					case 15:
+						$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
+						if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
+							$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . human_milliseconds_to_string($last_data['datos']) . "</span>";
+						else
+							if (is_numeric($last_data["datos"]))
+								$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . format_numeric($last_data["datos"]) . "</span>";
+							else
+								$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
+						break;
+					default:
+						if (is_numeric($last_data["datos"]))
+							$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . format_numeric($last_data["datos"]) . "</span>";
+						else
+							$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
+						break;
+				}
+				break;
+		}
+	}
+	else {
+		switch($module['id_tipo_modulo']) {
+			case 15:
+				$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
+				if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
+					$data = "<span title='" . human_milliseconds_to_string($last_data['datos']) . "' style='white-space: nowrap;'>" . human_milliseconds_to_string($last_data['datos']) . "</span>";
+				else
+					if (is_numeric($last_data["datos"]))
+						$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . format_numeric($last_data["datos"]) . "</span>";
+					else
+						$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
+				break;
+			default:
 				if (is_numeric($last_data["datos"]))
 					$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . format_numeric($last_data["datos"]) . "</span>";
 				else
 					$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
-					break;
+				break;
 		}
-	}
-	else {
-		if (is_numeric($last_data["datos"]))
-			$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . format_numeric($last_data["datos"]) . "</span>";
-		else
-			$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
 	}
 	if (!empty($last_data['utimestamp'])) {
 		$last_data_str = $data;

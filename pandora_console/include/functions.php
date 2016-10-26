@@ -247,6 +247,32 @@ function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands
 	return format_numeric ($number, $decimals). $shorts[$pos]; //This will actually do the rounding and the decimals
 }
 
+function human_milliseconds_to_string($seconds) {
+    $ret = "";
+	
+    /*** get the days ***/
+    $days = intval(intval($seconds) / (360000*24));
+    if($days > 0)
+		$ret .= "$days days ";
+	
+    /*** get the hours ***/
+    $hours = (intval($seconds) / 360000) % 24;
+    if($hours > 0)
+		$ret .= "$hours hours ";
+
+    /*** get the minutes ***/
+    $minutes = (intval($seconds) / 6000) % 60;
+    if($minutes > 0)
+		$ret .= "$minutes minutes ";
+	
+    /*** get the seconds ***/
+    $seconds = intval($seconds / 100) % 60;
+    if ($seconds > 0)
+        $ret .= "$seconds seconds";
+	
+    return $ret;
+}
+
 /**
  * Rounds an integer to a multiple of 5.
  *

@@ -128,7 +128,7 @@ $table->data[4][1] .= html_print_input_text ('str_warning', $str_warning,
 $table->data[4][1] .= '<br /><em>'.__('Inverse interval').'</em>';
 $table->data[4][1] .= html_print_checkbox ("warning_inverse", 1, $warning_inverse, true);
 
-$table->data[4][2] = '<svg id="svg_dinamic" width="350" height="200" style="padding:40px; padding-left: 100px;"> </svg>';
+$table->data[4][2] = '<svg id="svg_dinamic" width="350" height="200" style="padding:40px; padding-left: 100px; margin-bottom: 60px;"> </svg>';
 $table->colspan[4][2] = 2;
 $table->rowspan[4][2] = 3;
 

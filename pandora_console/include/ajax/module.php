@@ -177,7 +177,7 @@ if ($get_module_detail) {
 		"Data" => array(
 			"data",
 			"modules_format_data",
-			"align" => "left",
+			"align" => "center",
 			"width" => "230px"),
 	);
 
@@ -185,14 +185,14 @@ if ($get_module_detail) {
 		$columns["Time"] = array(
 			"utimestamp",
 			"modules_format_time",
-			"align" => "left",
+			"align" => "center",
 			"width" => "50px");
 	}
 	else {
 		$columns["Timestamp"] = array(
 			"utimestamp",
 			"modules_format_timestamp",
-			"align" => "left",
+			"align" => "center",
 			"width" => "50px");
 	}
 
@@ -249,7 +249,7 @@ if ($get_module_detail) {
 
 		foreach ($columns as $col => $attr) {
 			if ($attr[1] != "modules_format_data") {
-				$data[] = $attr[1] ($row[$attr[0]]);
+				$data[] = date('d F Y - h:i:s A', $row['utimestamp']);
 
 			}
 			elseif (($config['command_snapshot']) && (preg_match ("/[\n]+/i", $row[$attr[0]]))) {
@@ -303,7 +303,7 @@ if ($get_module_detail) {
 						$data[] = 'No data';
 					}
 					else {
-						$data[] = io_safe_input($row[$attr[0]]);
+						$data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
 					}
 				}
 			}
@@ -990,8 +990,10 @@ if ($list_modules) {
 						base64_encode($module["nombre"]))) . "&amp;" .
 				"refresh=" . SECONDS_10MINUTES . "&amp;" .
 				"draw_events=$draw_events', 'day_".$win_handle."')";
-			
+
+if(!is_snapshot_data($module['datos'])){
 			$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
+			}
 			$server_name = '';
 			$data[8] .= "<a href='javascript: " .
 				"show_module_detail_dialog(" .
@@ -1001,7 +1003,7 @@ if ($list_modules) {
 					0 . ", " .
 					SECONDS_1DAY . ", \" " . modules_get_agentmodule_name( $module["id_agente_modulo"] ) . "\")'>". html_print_image ("images/binary.png", true, array ("border" => "0", "alt" => "")) . "</a>";
 		}
-		
+
 		if ($module['estado'] == 3) {
 			$data[9] = '<span class="redb">';
 		}

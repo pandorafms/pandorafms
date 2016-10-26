@@ -1170,7 +1170,7 @@ sub cli_create_data_module($) {
 		my $module_exists = get_agent_module_id($dbh, $module_name, $agent_id);
 		non_exist_check($module_exists, 'module name', $module_name);
 		
-		print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+		#~ print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
 	}
 	else {
 		$policy_id = enterprise_hook('get_policy_id',[$dbh, safe_input($policy_name)]);
@@ -1179,7 +1179,7 @@ sub cli_create_data_module($) {
 		my $policy_module_exist = enterprise_hook('get_policy_module_id',[$dbh, $policy_id, $module_name]);
 		non_exist_check($policy_module_exist,'policy module',$module_name);
 		
-		print_log "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
+		#~ print_log "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
 	}
 	
 	$module_name_def = $module_name;
@@ -1216,6 +1216,15 @@ sub cli_create_data_module($) {
 		close(FILE);
 		
 		enterprise_hook('pandora_update_md5_file', [$conf, $agent_name]);
+	}
+	
+	if ($in_policy == 0) {
+		non_exist_check($module_exists, 'module name', $module_name_def);
+		print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
+	}
+	else {
+		non_exist_check($policy_module_exist,'policy module',$module_name_def);
+		print_log "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
 	}
 	
 	if (defined($definition_file) && $module_type ne $module_type_def) {

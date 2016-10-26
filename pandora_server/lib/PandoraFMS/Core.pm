@@ -1074,25 +1074,13 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		};
 		
 		# Default content type
-		my $content_type;
-
-		# Check if message looks like html.
-		# Assume that html message starts with "<" and ends with ">".
-		if ($field3 =~ /^\s*<.*>\s*$/s ) {
-			$content_type = 'text/html;';
-		}
-		else {
-			$content_type = 'text/plain;';
-		}
+		my $content_type = 'text/html; charset="iso-8859-1"';
 		
 		# Check if message has non-ascii chars.
 		# non-ascii chars should be encoded in UTF-8.
 		if ($field3 =~ /[^[:ascii:]]/o) {
 			$field3 = encode("UTF-8", $field3);
-			$content_type .= ' charset="UTF-8"';
-		}
-		else {
-			$content_type .= ' charset="iso-8859-1"';
+			$content_type = 'text/plain; charset="UTF-8"';
 		}
 		
 		# Build the mail with attached content

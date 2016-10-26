@@ -610,14 +610,38 @@ function update_manager_starting_update() {
 	
 	$full_path = $config['attachment_store'] . "/downloads/pandora_console";
 
-	$phar = new PharData($path_package);
 	ob_start();
-	try {
-		$result = $phar->extractTo($config['attachment_store'] . "/downloads/"); 
+
+
+	if (!defined('PHP_VERSION_ID')) {
+		$version = explode('.', PHP_VERSION);
+		define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
 	}
-	catch (Exception $e) {
-		echo ' There\'s a problem ... -> ' . $e->getMessage();
+
+	$extracted = false;
+	// Phar and exception working fine in 5.5.0 or higher
+	if (PHP_VERSION_ID >= 50505) {
+		$phar = new PharData($path_package);
+		try {
+			$result = $phar->extractTo($config['attachment_store'] . "/downloads/",null, true);
+			$extracted = true;
+		}
+		catch (Exception $e) {
+			echo ' There\'s a problem ... -> ' . $e->getMessage();
+			$extracted = false;
+		}
 	}
+
+	if($extracted === false) {
+		if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+			// unsupported OS
+			echo "This OS [" . PHP_OS . "] does not support direct extraction of tgz files. Upgrade PHP version to be > 5.5.0";
+		}
+		else {
+			system('tar xzf "' . $path_package . '" -C ' . $config['attachment_store'] . "/downloads/");
+		}
+	}
+
 	ob_end_clean();
 
 	rrmdir($path_package);

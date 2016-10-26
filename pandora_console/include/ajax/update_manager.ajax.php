@@ -485,10 +485,8 @@ if ($check_update_free_package) {
 if ($install_free_package) {
 	$version = get_parameter('version', '');
 	
-	update_manager_starting_update();
-	
 	$result = update_manager_starting_update();
-	
+
 	if ($result)
 		update_manager_set_current_package($version);
 	

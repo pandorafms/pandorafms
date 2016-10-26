@@ -22,7 +22,7 @@ ui_require_css_file ('firts_task');
 
 <div class="new_task">
 	<div class="image_task">
-		<?php echo html_print_image('images/firts_task/icono_grande_servicios.png', true, array("title" => __('Transactions')));?>
+		<?php echo html_print_image('images/firts_task/icono_grande_topology.png', true, array("title" => __('Transactions')));?>
 	</div>
 	<div class="text_task">
 		<h3> <?php echo __('Create Transactions'); ?></h3>

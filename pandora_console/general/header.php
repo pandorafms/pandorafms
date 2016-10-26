@@ -125,10 +125,12 @@ config_check();
 				$servers_link_open = '<a class="white" href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server&amp;refr=60">';
 				$servers_link_close = '</a>';
 				
-				$show_qr_code_header = 'display: inline;';
-				if (isset($config['show_qr_code_header']))
-					if ($config['show_qr_code_header'])
-						$show_qr_code_header = '';
+				if ($config['show_qr_code_header'] == 0){
+					$show_qr_code_header = 'display: none;';
+				}
+				else {
+					$show_qr_code_header = 'display: inline;';
+				}
 				
 				$table->data[0]['qr'] =
 					'<div style="' . $show_qr_code_header . '" id="qr_code_container" style="">' .

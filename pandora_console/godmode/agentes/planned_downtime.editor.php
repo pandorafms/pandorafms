@@ -702,7 +702,7 @@ if ($id_downtime > 0) {
 	echo "<form method=post action='index.php?sec=estado&sec2=godmode/agentes/planned_downtime.editor&id_downtime=$id_downtime'>";
 	html_print_select_groups(false, $access, true, 'filter_group', $filter_group, '', '', '', false, false, true, '', false, 'min-width:180px;width:180px;max-width:180px;margin-right:15px;');
 	
-	html_print_checkbox ("recursion", !$_POST['recursion'], $_POST['recursion'], false, false, '');
+	html_print_checkbox ("recursion", 1, $recursion, false, false, '');
 	echo __('Recursion') . '&nbsp;';
 	echo "<br /><br />";
 	html_print_submit_button (__('Filter by group'), '', false, 'class="sub next"',false);

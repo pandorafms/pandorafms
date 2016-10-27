@@ -1078,7 +1078,7 @@ $(document).ready( function() {
 	$("#submit-save_filter").click(function () {
 		// If the filter name is blank show error
 		if ($('#text-id_name').val() == '') {
-			$('#show_filter_error').html('<h3 class="error"> <?php echo __('Filter name cannot be left blank'); ?> </h3>');
+			$('#show_filter_error').html("<h3 class='error'><?php echo __("Filter name cannot be left blank"); ?></h3>");
 			
 			// Close dialog
 			$('.ui-dialog-titlebar-close').trigger('click');

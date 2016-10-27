@@ -2654,9 +2654,4 @@ function pandora_setlocale() {
 	setlocale(LC_ALL,
 		str_replace(array_keys($replace_locale), $replace_locale, $user_language));
 }
-
-function remove_right_zeros ($value) {
-	$value_to_return = rtrim($value, "0");
-	return rtrim($value_to_return, ".");
-}
 ?>

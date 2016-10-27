@@ -284,7 +284,7 @@ if ($get_module_detail) {
 				}
 				else if (is_numeric($row[$attr[0]]) && !modules_is_string_type($row['module_type']) ) {
 
-					$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
+					$data[] = (double) $row[$attr[0]];
 				}
 				else {
 					if ($row[$attr[0]] == '') {
@@ -854,6 +854,7 @@ if ($list_modules) {
 		modules_get_status($module['id_agente_modulo'], $module['estado'],
 			$module_value, $status, $title);
 
+
 		$data[5] = ui_print_status_image($status, $title, true);
 		if (!$show_context_help_first_time) {
 			$show_context_help_first_time = true;
@@ -862,6 +863,7 @@ if ($list_modules) {
 				$data[5] .= clippy_context_help("module_unknow");
 			}
 		}
+		
 		
 		if ($module["id_tipo_modulo"] == 24) {
 			// log4x

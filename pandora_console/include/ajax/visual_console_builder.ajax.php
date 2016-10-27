@@ -344,10 +344,10 @@ switch ($action) {
 		
 		$return = array();
 		if ($returnValue_value[1] != "") {
-			$return['value'] = remove_right_zeros(number_format($returnValue_value[0], $config['graph_precision'])) . " " . $returnValue_value[1];
+			$return['value'] = number_format($returnValue_value[0], $config['graph_precision']) . " " . $returnValue_value[1];
 		}
 		else {
-			$return['value'] = remove_right_zeros(number_format($returnValue_value[0], $config['graph_precision']));
+			$return['value'] = number_format($returnValue_value[0], $config['graph_precision']);
 		}
 		$return['max_percentile'] = $layoutData['height'];
 		$return['width_percentile'] = $layoutData['width'];

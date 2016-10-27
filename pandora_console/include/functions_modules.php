@@ -534,7 +534,6 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 					'datos' => 0,
 					'timestamp' => '01-01-1970 00:00:00',
 					'estado' => $status,
-					'known_status' => $status,
 					'id_agente' => (int) $id_agent,
 					'utimestamp' => 0,
 					'status_changes' => 0,
@@ -548,7 +547,6 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 					'datos' => 0,
 					'timestamp' => null,
 					'estado' => $status,
-					'known_status' => $status,
 					'id_agente' => (int) $id_agent,
 					'utimestamp' => 0,
 					'status_changes' => 0,
@@ -562,7 +560,6 @@ function modules_create_agent_module ($id_agent, $name, $values = false, $disabl
 					'datos' => 0,
 					'timestamp' => '#to_date(\'1970-01-01 00:00:00\', \'YYYY-MM-DD HH24:MI:SS\')',
 					'estado' => $status,
-					'known_status' => $status,
 					'id_agente' => (int) $id_agent,
 					'utimestamp' => 0,
 					'status_changes' => 0,
@@ -1572,7 +1569,7 @@ function modules_get_agentmodule_status($id_agentmodule = 0, $without_alerts = f
 function modules_get_agentmodule_last_status($id_agentmodule = 0) {
 	$status_row = db_get_row ("tagente_estado", "id_agente_modulo", $id_agentmodule);
 	
-	return $status_row['known_status'];
+	return $status_row['last_known_status'];
 }
 
 /**
@@ -1840,7 +1837,6 @@ function modules_get_modulegroup_name ($modulegroup_id) {
 function modules_get_status($id_agent_module, $db_status, $data, &$status, &$title) {
 	$status = STATUS_MODULE_WARNING;
 	$title = "";
-	global $config;
 	
 	// This module is initialized ? (has real data)
 	//$module_init = db_get_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $id_agent_module);
@@ -1880,7 +1876,7 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
 	}
 	
 	if (is_numeric($data)) {
-		$title .= ": " . remove_right_zeros(number_format($data, $config['graph_precision']));
+		$title .= ": " . format_for_graph($data);
 	}
 	else {
 		$text = io_safe_output($data);
@@ -2331,60 +2327,6 @@ function modules_get_unknown_time ($id_agent_module, $date, $period){
 	}
 	
 	return $unknown_seconds;
-}
-
-
-function modules_get_module_group_status($id_agent, $id_module_group) {
-	$status_return = null;
-	
-	
-	$modules = db_get_all_rows_filter('tagente_modulo',
-		array('id_agente' => $id_agent,
-			'id_module_group' => $id_module_group));
-	
-	if (empty($modules))
-		$module = array();
-	
-	foreach ($modules as $module) {
-		$status = modules_get_status($module['id_agente_modulo']);
-		
-		// This code is copied from the networkmap old code
-		switch ($status) {
-			case AGENT_MODULE_STATUS_NORMAL:
-				if (is_null($status_return)) {
-					$status_return = AGENT_MODULE_STATUS_NORMAL;
-				}
-				elseif ($status_return == AGENT_MODULE_STATUS_ALL) {
-					$status_return = AGENT_MODULE_STATUS_NORMAL;
-				}
-				break;
-			case AGENT_MODULE_STATUS_CRITICAL_BAD:
-				$status_return = AGENT_MODULE_STATUS_CRITICAL_BAD;
-				break;
-			case AGENT_MODULE_STATUS_WARNING:
-				if (is_null($status_return)) {
-					$status_return = AGENT_MODULE_STATUS_NORMAL;
-				}
-				elseif ($status_return != AGENT_MODULE_STATUS_CRITICAL_BAD) {
-					$status_return = AGENT_MODULE_STATUS_WARNING;
-				}
-				break;
-			case AGENT_MODULE_STATUS_NO_DATA:
-				if (is_null($status_return)) {
-					$status_return = AGENT_MODULE_STATUS_NO_DATA;
-				}
-				elseif (($status_return == AGENT_MODULE_STATUS_NORMAL) ||
-					($status_return == AGENT_MODULE_STATUS_ALL)) {
-					$status_return = AGENT_MODULE_STATUS_NO_DATA;
-				}
-				break;
-			default:
-				$status_return = AGENT_MODULE_STATUS_ALL;
-				break;
-		}
-	}
-	
-	return $status_return;
 }
 
 function modules_get_modules_name ($sql_from , $sql_conditions = '', $meta = false) {

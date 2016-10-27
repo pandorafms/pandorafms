@@ -106,7 +106,8 @@ CREATE TABLE tagente (
 	total_count NUMBER(20, 0) DEFAULT 0,
 	fired_count NUMBER(20, 0) DEFAULT 0,
 	update_module_count NUMBER(5, 0) DEFAULT 0,
-	update_alert_count NUMBER(5, 0) DEFAULT 0
+	update_alert_count NUMBER(5, 0) DEFAULT 0,
+	transactional_agent NUMBER(5,0) DEFAULT 0
 );
 CREATE INDEX tagente_nombre_idx ON tagente(nombre);
 CREATE INDEX tagente_direccion_idx ON tagente(direccion);

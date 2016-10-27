@@ -85,3 +85,8 @@ ALTER TABLE tnetwork_component ADD COLUMN dynamic_max int(4) default '0';
 ALTER TABLE tnetwork_component ADD COLUMN dynamic_min int(4) default '0';
 ALTER TABLE tnetwork_component ADD COLUMN dynamic_next bigint(20) NOT NULL default '0';
 ALTER TABLE tnetwork_component ADD COLUMN dynamic_two_tailed tinyint(1) unsigned default '0';
+
+-- ---------------------------------------------------------------------
+-- Table `tagente`
+-- ---------------------------------------------------------------------
+ALTER TABLE tagente ADD transactional_agent tinyint(1) NOT NULL default 0;

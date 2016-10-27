@@ -223,6 +223,7 @@ our @EXPORT = qw(
 	pandora_update_server
 	pandora_update_table_from_hash
 	pandora_update_template_module
+	pandora_mark_transactional_agent
 	pandora_group_statistics
 	pandora_server_statistics
 	pandora_self_monitoring
@@ -2286,6 +2287,25 @@ sub pandora_update_agent ($$$$$$$;$$) {
 	
 	db_do ($dbh, "UPDATE tagente SET $set WHERE id_agente = ?", @{$values}, $agent_id);
 }
+
+
+##########################################################################
+=head2 C<< pandora_mark_transactional_agent (I<$id_agente>) >>
+
+Set an agent as transactional agent
+
+=cut
+##########################################################################
+sub pandora_mark_transactional_agent($$) {
+	my ($dbh, $id_agente) = @_;
+
+	if ( (!(defined($id_agente))) || (!(defined($dbh))) ) {
+		return;
+	}
+
+	db_do ($dbh, "UPDATE tagente SET transactional_agent=1 WHERE id_agente = ?", $id_agente);
+}
+
 
 ##########################################################################
 =head2 C<< pandora_update_gis_data (I<$pa_config>, I<$dbh>, I<$agent_id>, I<$longitude>, I<$latitude>, I<$altitude>) >>

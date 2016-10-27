@@ -584,6 +584,12 @@ sub process_module_data ($$$$$$$$$$) {
 	
 	# Name XML tag and column name don't match
 	$module_conf->{'nombre'} = safe_input($module_name);
+
+	# Check if module is 'Transactional subsystem status'
+	if ($module_conf->{'name'} eq "Transactional subsystem status") {
+		# Defines current agent as transactional agent
+		pandora_mark_transactional_agent($dbh, $agent->{'id_agente'});
+	}
 	delete $module_conf->{'name'};
 	
 	# Calculate the module interval in seconds

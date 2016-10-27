@@ -1239,10 +1239,12 @@ sub cli_create_data_module($) {
 	}
 	
 	if ($in_policy == 0) {
+		my $module_exists = get_agent_module_id($dbh, $module_name_def, $agent_id);
 		non_exist_check($module_exists, 'module name', $module_name_def);
 		print_log "[INFO] Adding module '$module_name' to agent '$agent_name'\n\n";
 	}
 	else {
+		my $policy_module_exist = enterprise_hook('get_policy_module_id',[$dbh, $policy_id, $module_name_def]);
 		non_exist_check($policy_module_exist,'policy module',$module_name_def);
 		print_log "[INFO] Adding module '$module_name' to policy '$policy_name'\n\n";
 	}

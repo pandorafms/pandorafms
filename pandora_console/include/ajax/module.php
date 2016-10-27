@@ -283,8 +283,20 @@ if ($get_module_detail) {
 					$data[] = io_safe_input($row[$attr[0]]);
 				}
 				else if (is_numeric($row[$attr[0]]) && !modules_is_string_type($row['module_type']) ) {
-
-					$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
+					
+					switch($row['module_type']) {
+						case 15:
+							$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module_id);
+							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
+								$data[] = human_milliseconds_to_string($row['data']);
+							else
+								$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
+							break;
+						default:
+							$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
+							break;
+					}
+					//~ $data[] = (double) $row[$attr[0]];
 				}
 				else {
 					if ($row[$attr[0]] == '') {

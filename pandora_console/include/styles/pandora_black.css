@@ -3106,3 +3106,137 @@ table#policy_modules td * {
 		transform: rotate(359deg);
 	}
 }
+
+#alert_messages{
+	-moz-border-bottom-right-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+	z-index:2;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -50%);
+	position:fixed;
+	width:650px;
+	background:white;
+}
+.modalheader{
+	text-align:center;
+	width:100%;
+	height:37px;
+	left:0px;
+	background-color:#82b92e;
+}
+.modalheadertext{
+	color:white;
+	position:relative;
+	font-family:Nunito;
+	font-size:13pt;
+	top:8px;
+}
+.modalclosex{
+	cursor:pointer;
+	display:inline;
+	float:right;
+	margin-right:10px;
+	margin-top:10px;
+}
+.modalcontent{
+	color:black;
+	background:white;
+}
+.modalcontentimg{
+	float:left;
+	margin-left:30px;
+	margin-top:30px;
+	margin-bottom:30px;
+}
+.modalcontenttext{
+	float:left;
+	text-align:justify;
+	color: #666;
+	font-size: 9.5pt;
+	line-height:13pt;
+	margin-top:30px;
+	width:430px;
+	margin-left:30px;
+}
+
+.modalcontenttext > p{
+	color: black;
+}
+.modalcontenttext > p > a{
+	color: black;
+}
+
+.modalokbutton{
+	cursor:pointer;
+	text-align:center;
+	margin-right:45px;
+	float:right;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	margin-bottom:30px;
+	border-radius: 3px;width:90px;height:30px;background-color:white;border: 1px solid #82b92e;
+}
+.modalokbuttontext{
+	color:#82b92e;font-family:Nunito;font-size:10pt;position:relative;top:6px;
+}
+.modalgobutton{
+	cursor:pointer;text-align:center;margin-right:15px;margin-bottom:30px;float:right;-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;border-radius: 3px;width:240px;height:30px;background-color:white;border: 1px solid #82b92e;
+}
+.modalgobuttontext{
+color:#82b92e;font-family:Nunito;font-size:10pt;position:relative;top:6px;	
+}
+
+
+#opacidad{
+	opacity:0.5;
+	z-index:1;
+	width:100%;
+	height:100%;
+	position:absolute;
+	left:0px;
+	top:0px;
+}
+
+.textodialogo{
+	margin-left: 0px;
+	color: black;
+	font-size:9pt;
+}
+
+.cargatextodialogo{
+	max-width:58.5%;
+	width:58.5%;
+	min-width:58.5%;
+	float:left;
+	margin-left: 0px;
+	font-size:18pt;
+	padding:20px;
+	text-align:center;
+}
+
+.cargatextodialogo  b{
+	color: black;
+}
+.cargatextodialogo  p{
+	color: black;
+}
+
+.cargatextodialogo  b{
+	color: black;
+}
+.cargatextodialogo  a{
+	color: black;
+}
+
+.cargatextodialogo > div{
+	color: black;
+}
+
+.cargatextodialogo p, .cargatextodialogo b, .cargatextodialogo a{
+	font-size:18pt;
+}

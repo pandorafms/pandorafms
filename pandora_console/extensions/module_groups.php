@@ -280,7 +280,7 @@ function mainModuleGroups() {
 						style="background: ' . $color . ';
 						height: 20px;min-width: 60px;max-width:5%;overflow:hidden;
 						margin-left: auto; margin-right: auto;
-						text-align: center; padding: 5px;padding-bottom:10px;font-size: 18px;">
+						text-align: center; padding: 5px;padding-bottom:10px;font-size: 18px;line-height:25px;">
 						' . $alinkStart . $count . $alinkEnd . '</div>');
 			}
 			array_push($tableData,$row);

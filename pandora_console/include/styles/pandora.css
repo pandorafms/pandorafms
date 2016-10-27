@@ -1247,16 +1247,6 @@ div.title_line {
 	height: 26px;
 	max-height: 26px;
 }
-#menu_tab_left li a, #menu_tab_left li span {
-	text-transform: uppercase;
-	padding: 0px 0px 0px 0px;
-	color: #fff;
-	font-size: 9pt;
-	line-height: 20px;
-	letter-spacing:1px;
-	font-family: verdana, sans-serif;
-	
-}
 #menu_tab_left .mn li a {
 	display: block;
 	text-decoration: none;
@@ -1272,7 +1262,7 @@ div.title_line {
 
 #menu_tab_left li.view {
 	background: #82b92e;
-	max-width: 40%;
+	max-width: 45%;
 	min-width: 20%;
 	padding: 5px 5px 0px;
 	text-align: center;
@@ -1294,6 +1284,18 @@ div.title_line {
 
 #menu_tab_frame *, #menu_tab_frame_view *{
 	#margin: 0px 0px 0px 0px !important;
+}
+
+
+#menu_tab_left li a, #menu_tab_left li span {
+	text-transform: uppercase;
+	padding: 0px 20px 0px 20px;
+	color: #fff;
+	font-size: 9.5pt;
+	line-height: 20px;
+	letter-spacing:0px;
+	font-family: verdana, sans-serif;
+	font-weight: normal;	
 }
 
 span.users {

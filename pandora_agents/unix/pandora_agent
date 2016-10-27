@@ -1923,7 +1923,14 @@ sub write_module_xml ($@) {
 	
 	# Module Alert template
 	$Xml .= "	<crontab>" . $module->{'cron'} . "</crontab>\n" if (defined ($module->{'cron'}) and ($module->{'cron'} ne ""));
-		
+
+	# FF threshold configuration
+	$Xml .= "	<min_ff_event_normal>" . $module->{'min_ff_event_normal'} . "</min_ff_event_normal>\n" if (defined ($module->{'min_ff_event_normal'}));
+	$Xml .= "	<min_ff_event_warning>" . $module->{'min_ff_event_warning'} . "</min_ff_event_warning>\n" if (defined ($module->{'min_ff_event_warning'}));
+	$Xml .= "	<min_ff_event_critical>" . $module->{'min_ff_event_critical'} . "</min_ff_event_critical>\n" if (defined ($module->{'min_ff_event_critical'}));
+	$Xml .= "	<ff_timeout>" . $module->{'ff_timeout'} . "</ff_timeout>\n" if (defined ($module->{'ff_timeout'}));
+	$Xml .= "	<each_ff>" . $module->{'each_ff'} . "</each_ff>\n" if (defined ($module->{'each_ff'}));
+
 	# Data list
 	if ($#data > 0) {
 		$Xml .= "	<data><![CDATA[" . join('', @data) . "]]></data>\n";

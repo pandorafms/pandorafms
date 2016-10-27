@@ -194,13 +194,13 @@ function treeview_printModuleTable($id_module, $server_data = false, $no_head = 
 							$data = "<span title='" . human_milliseconds_to_string($last_data['datos']) . "' style='white-space: nowrap;'>" . human_milliseconds_to_string($last_data['datos']) . "</span>";
 						else
 							if (is_numeric($last_data["datos"]))
-								$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . format_numeric($last_data["datos"]) . "</span>";
+								$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . remove_right_zeros(number_format($last_data["datos"], $config['graph_precision'])) . "</span>";
 							else
 								$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
 						break;
 					default:
 						if (is_numeric($last_data["datos"]))
-							$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . format_numeric($last_data["datos"]) . "</span>";
+							$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . remove_right_zeros(number_format($last_data["datos"], $config['graph_precision'])) . "</span>";
 						else
 							$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
 						break;
@@ -216,13 +216,13 @@ function treeview_printModuleTable($id_module, $server_data = false, $no_head = 
 					$data = "<span title='" . human_milliseconds_to_string($last_data['datos']) . "' style='white-space: nowrap;'>" . human_milliseconds_to_string($last_data['datos']) . "</span>";
 				else
 					if (is_numeric($last_data["datos"]))
-						$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . format_numeric($last_data["datos"]) . "</span>";
+						$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . remove_right_zeros(number_format($last_data["datos"], $config['graph_precision'])) . "</span>";
 					else
 						$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
 				break;
 			default:
 				if (is_numeric($last_data["datos"]))
-					$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . format_numeric($last_data["datos"]) . "</span>";
+					$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . remove_right_zeros(number_format($last_data["datos"], $config['graph_precision'])) . "</span>";
 				else
 					$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . substr(io_safe_output($last_data['datos']),0,12) . "</span>";
 				break;

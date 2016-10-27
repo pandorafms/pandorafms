@@ -70,6 +70,9 @@ sub new ($$$$$$) {
 	$Sem = Thread::Semaphore->new;
 	$TaskSem = Thread::Semaphore->new (0);
 	
+	db_do ($dbh, 'UPDATE trecon_task  SET utimestamp = 0 WHERE id_recon_server = ? AND status <> -1',
+	       get_server_id ($dbh, $config->{'servername'}, RECONSERVER));
+
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, RECONSERVER, \&PandoraFMS::ReconServer::data_producer, \&PandoraFMS::ReconServer::data_consumer, $dbh);
 	

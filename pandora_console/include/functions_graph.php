@@ -861,7 +861,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	}
 	if($config["fixed_graph"] == false){
 		$water_mark = array('file' =>
-			$config['homedir'] . "/images/.png",
+			$config['homedir'] . "/images/logo_vertical_water.png",
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
@@ -1926,8 +1926,11 @@ function graphic_agentaccess ($id_agent, $width, $height, $period = 0, $return =
 		}
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 
 	if ($empty_data) {
 		$out = graph_nodata_image($width, $height);
@@ -1962,8 +1965,11 @@ function graph_alert_status ($defined_alerts, $fired_alerts, $width = 300, $heig
 	$data = array(__('Not fired alerts') => $defined_alerts - $fired_alerts, __('Fired alerts') => $fired_alerts);
 	$colors = array(COL_NORMAL, COL_ALERTFIRED);
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-			'url' => ui_get_full_url("/images/logo_vertical_water.png"));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	$out = pie2d_graph($config['flash_charts'], $data, $width, $height, __("other"),
 		'', '', $config['fontpath'], $config['font_size'], 1, "hidden", $colors);
@@ -2024,8 +2030,11 @@ function graph_agent_status ($id_agent = false, $width = 300, $height = 200, $re
 	
 	array_walk($data, 'truncate_negatives');
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	//$colors = array(COL_CRITICAL, COL_WARNING, COL_NORMAL, COL_UNKNOWN);
 	$colors[__('Critical')] = COL_CRITICAL;
@@ -2110,9 +2119,11 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 		$data[$key] = $event["count_number"];
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
-
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	return pie3d_graph($config['flash_charts'], $data, $width, $height, __("other"),
 		'', $water_mark, $config['fontpath'], $config['font_size'], 1, "bottom");
 }
@@ -2461,8 +2472,11 @@ function grafico_db_agentes_paquetes($width = 380, $height = 300) {
 		$data[$agents[$agent_id]]['g'] = $value;
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png", 
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	return hbar_graph($config['flash_charts'], $data, $width, $height, array(),
 		$legend, "", "", true, "", $water_mark,
@@ -2523,8 +2537,11 @@ function graph_db_agentes_modulos($width, $height) {
 		}
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	return hbar_graph($config['flash_charts'],
 		$data, $width, $height, array(),
@@ -2571,8 +2588,11 @@ function graphic_user_activity ($width = 350, $height = 230) {
 		$data[$login['id_usuario']] = $login['n_incidents'];
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Other'), '', $water_mark,
@@ -2609,8 +2629,11 @@ function grafico_incidente_prioridad () {
 		__('Very serious') => $data_tmp[4],
 		__('Maintenance') => $data_tmp[5]);
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+		if($config["fixed_graph"] == false){
+			$water_mark = array('file' =>
+				$config['homedir'] . "/images/logo_vertical_water.png",
+				'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+		}
 	
 	return pie3d_graph($config['flash_charts'], $data, 320, 200,
 		__('Other'), '', $water_mark,
@@ -2647,8 +2670,11 @@ function graph_incidents_status () {
 			$data[__("Invalid")]++;
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	return pie3d_graph($config['flash_charts'], $data, 370, 180,
 		__('Other'), '', $water_mark,
@@ -2700,8 +2726,11 @@ function graphic_incident_group () {
 		$data[__('All')] = $incidents_all;
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	return pie3d_graph($config['flash_charts'], $data, 320, 200,
 		__('Other'), '', $water_mark,
@@ -2753,8 +2782,11 @@ function graphic_incident_user () {
 		$data[$name] = $incident['n_incidents'];
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	return pie3d_graph($config['flash_charts'], $data, 320, 200,
 		__('Other'), '', $water_mark,
@@ -2804,8 +2836,11 @@ function graphic_incident_source($width = 320, $height = 200) {
 		$data[$origin['origen']] = $origin['n_incident'];
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Other'), '', $water_mark,
@@ -2829,8 +2864,11 @@ function graph_events_validated($width = 300, $height = 200, $url = "", $meta = 
 		}
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	echo pie3d_graph(
 		true, $data_graph, $width, $height, __("other"), "",
@@ -3035,8 +3073,11 @@ function grafico_eventos_agente ($width = 300, $height = 200, $result = false, $
 	
 	// Sort the data
 	arsort($data);
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	return pie3d_graph($config['flash_charts'], $data, $width, $height,
 		__('Others'), '', $water_mark,
@@ -3261,8 +3302,11 @@ function graph_custom_sql_graph ($id, $width, $height,
 		$flash_charts = false;
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("/images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	switch ($type) {
 		case 'sql_graph_vbar': // vertical bar
@@ -3987,8 +4031,11 @@ function graph_netflow_aggregate_area ($data, $period, $width, $height, $unit = 
 		$homeurl = '';
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	
 	return area_graph($flash_chart, $chart, $width, $height, array (), $sources,
@@ -4066,8 +4113,11 @@ function graph_netflow_total_area ($data, $period, $width, $height, $unit = '', 
 		$homeurl = '';
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	$legend = array (__('Max.') . ' ' . format_numeric($max) . ' ' . __('Min.') . ' ' . format_numeric($min) . ' ' . __('Avg.') . ' ' . format_numeric ($avg));
 	return area_graph($flash_chart, $chart, $width, $height, array (), $legend,
@@ -4106,8 +4156,11 @@ function graph_netflow_aggregate_pie ($data, $aggregate, $ttl = 1, $only_image =
 		$flash_chart = false;
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	return pie3d_graph($flash_chart, $values, 370, 200,
 		__('Other'), $config['homeurl'], $water_mark,
@@ -4425,8 +4478,11 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 		$legend['min'] = __('Min').': '.__('Last').': '.remove_right_zeros(number_format($graph_stats['min']['last'], $config['graph_precision'])).' '.$unit.' ; '.__('Avg').': '.remove_right_zeros(number_format($graph_stats['min']['avg'], $config['graph_precision'])).' '.$unit.' ; '.__('Max').': '.remove_right_zeros(number_format($graph_stats['min']['max'], $config['graph_precision'])).' '.$unit.' ; '.__('Min').': '.remove_right_zeros(number_format($graph_stats['min']['min'], $config['graph_precision'])).' '.$unit;
 	}
 	
-	$water_mark = array('file' => $config['homedir'] .  "/images/logo_vertical_water.png",
-		'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	if($config["fixed_graph"] == false){
+		$water_mark = array('file' =>
+			$config['homedir'] . "/images/logo_vertical_water.png",
+			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
+	}
 	
 	if ($config['type_module_charts'] === 'area') {
 		return area_graph($flash_chart, $chart, $width, $height, $color,

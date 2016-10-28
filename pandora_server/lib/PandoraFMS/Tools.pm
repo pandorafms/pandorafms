@@ -98,6 +98,7 @@ our @EXPORT = qw(
 	month_have_days
 	translate_obj
 	valid_regex
+	set_file_permissions
 );
 
 # ID of the different servers
@@ -140,6 +141,28 @@ if ($OS eq 'linux') {
 	$OS_VERSION = `uname -r`;
 }
 chomp($OS_VERSION);
+
+
+###############################################################################
+# Sets user:group owner for the given file
+###############################################################################
+sub set_file_permissions($$) {
+	my ($pa_config, $file) = @_;
+	if ($^O !~ /win/i ) { # Only for Linux environments
+		eval {
+			my $uid  = getpwnam($pa_config->{'user'});
+			my $gid  = getgrnam($pa_config->{'group'});
+			my $perm = oct("0777") & (~oct($pa_config->{'umask'}));
+
+			chown $uid, $gid, $file;
+			chmod ( $perm, $file );
+		};
+		if ($@) {
+			# Ignore error
+		}
+	}
+}
+
 
 ########################################################################
 ## SUB pandora_trash_ascii 

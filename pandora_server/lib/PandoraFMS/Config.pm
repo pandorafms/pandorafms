@@ -195,6 +195,9 @@ sub pandora_load_config {
 	$pa_config->{"dbname"} = "pandora";
 	$pa_config->{"basepath"} = $pa_config->{'pandora_path'}; # Compatibility with Pandora 1.1
 	$pa_config->{"incomingdir"} = "/var/spool/pandora/data_in";
+	$pa_config->{"user"}  = "pandora"; # environment settings default user owner for files generated
+	$pa_config->{"group"} = "apache"; # environment settings default group owner for files generated
+	$pa_config->{"umask"} = "0007"; # environment settings umask applied over chmod (A & (not B))
 	$pa_config->{"server_threshold"} = 30;
 	$pa_config->{"alert_threshold"} = 60;
 	$pa_config->{"log_file"} = "/var/log/pandora_server.log";
@@ -549,6 +552,15 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^translate_enterprise_strings\s+([0-1])/i) { 
 			$pa_config->{'translate_enterprise_strings'}= clean_blank($1); 
 		}
+		elsif ($parametro =~ m/^user\s(.*)/i) { 
+			$pa_config->{'user'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^group\s(.*)/i) { 
+			$pa_config->{'group'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^umask\s(.*)/i) { 
+			$pa_config->{'umask'}= clean_blank($1); 
+		}
 		elsif ($parametro =~ m/^dbengine\s(.*)/i) { 
 			$pa_config->{'dbengine'}= clean_blank($1); 
 		}
@@ -606,7 +618,7 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^transactional_threads\s+([0-9]*)/i) {
 			$pa_config->{'transactional_threads'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^transactional_threshold\s+([0-9]*)/i) {
+		elsif ($parametro =~ m/^transactional_threshold\s+([0-9]*\.{0,1}[0-9]*)/i) {
 			$pa_config->{'transactional_threshold'}= clean_blank($1);
 		}
 		if ($parametro =~ m/^transactional_pool\s(.*)/i) {

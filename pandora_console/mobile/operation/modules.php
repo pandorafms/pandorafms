@@ -547,14 +547,20 @@ class Modules {
 						$output = $sub_string;
 					}
 				}
-				
+				if (is_snapshot($module['datos'])){
+					'<span style="white-space: nowrap;">' .
+					'<span style="display: none;" class="show_collapside">' . $row[__('Status')] . '&nbsp;&nbsp;</span>' .
+					'<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style="width:300px" src='".io_safe_input($row[$attr[0]])."'>' .
+					$output . '</a>' . '</span>';
+				}
+				else{
 				$row[7] = $row[__('Data')] = 
 					'<span style="white-space: nowrap;">' .
 					'<span style="display: none;" class="show_collapside">' . $row[__('Status')] . '&nbsp;&nbsp;</span>' .
 					'<a data-ajax="false" class="ui-link" ' .
 						'href="index.php?page=module_graph&id=' . $module['id_agente_modulo'] . '&id_agent=' . $this->id_agent . '">' .
 					$output . '</a>' . '</span>';
-				
+				}
 				if (!$ajax) {
 					if ($this->columns['agent']) {
 						unset($row[0]);

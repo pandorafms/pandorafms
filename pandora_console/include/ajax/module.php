@@ -249,7 +249,7 @@ if ($get_module_detail) {
 
 		foreach ($columns as $col => $attr) {
 			if ($attr[1] != "modules_format_data") {
-				$data[] = date('d F Y - h:i:s A', $row['utimestamp']);
+				$data[] = $attr[1] ($row[$attr[0]]);
 
 			}
 			elseif (($config['command_snapshot']) && (preg_match ("/[\n]+/i", $row[$attr[0]]))) {
@@ -284,18 +284,7 @@ if ($get_module_detail) {
 				}
 				else if (is_numeric($row[$attr[0]]) && !modules_is_string_type($row['module_type']) ) {
 					
-					switch($row['module_type']) {
-						case 15:
-							$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module_id);
-							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
-								$data[] = human_milliseconds_to_string($row['data']);
-							else
-								$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
-							break;
-						default:
-							$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
-							break;
-					}
+					$data[] = remove_right_zeros(number_format($row[$attr[0]], $config['graph_precision']));
 					//~ $data[] = (double) $row[$attr[0]];
 				}
 				else {
@@ -921,34 +910,12 @@ if ($list_modules) {
 								$salida = $config["render_proc_fail"];
 							break;
 						default:
-							switch($module['id_tipo_modulo']) {
-								case 15:
-									$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-									if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
-										$salida = human_milliseconds_to_string($module['datos']);
-									else
-										$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
-									break;
-								default:
-									$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
-									break;
-							}
+							$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
 						break;
 					}
 				}
 				else {
-					switch($module['id_tipo_modulo']) {
-						case 15:
-							$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $module['id_agente_modulo']);
-							if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
-								$salida = human_milliseconds_to_string($module['datos']);
-							else
-								$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
-							break;
-						default:
-							$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
-							break;
-					}
+					$salida = remove_right_zeros(number_format($module["datos"], $config['graph_precision']));
 				}
 				// Show units ONLY in numeric data types
 				if (isset($module["unit"])) {
@@ -1078,9 +1045,6 @@ if(!is_snapshot_data($module['datos'])){
 
 	unset ($table);
 	unset ($table_data);
-
-
-
 }
 
 if ($get_type) {

@@ -76,7 +76,7 @@ $(document).ready (function () {
 // Creacion de ventana modal y botones
 
 	$(".publienterprise").click (function () {
-		$('body').append( "<div id='opacidad'></div>" );
+		$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
 		jQuery.get ("ajax.php",
 			{
 		"page": "general/alert_enterprise",

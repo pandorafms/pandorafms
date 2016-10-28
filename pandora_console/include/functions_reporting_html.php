@@ -364,13 +364,13 @@ function reporting_html_SLA($table, $item, $mini) {
 				}
 				elseif ($sla['sla_status']) {
 					$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
-						round($sla['sla_value'], 2) . "%" . '</span>';
+						remove_right_zeros(number_format($sla['sla_value'], $config['graph_precision'])) . "%" . '</span>';
 					$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
 						__('OK') . '</span>';
 				}
 				else {
 					$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
-						round($sla['sla_value'], 2) . "%" . '</span>';
+						remove_right_zeros(number_format($sla['sla_value'], $config['graph_precision'])) . "%" . '</span>';
 					$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
 						__('Fail') . '</span>';
 				}
@@ -391,13 +391,13 @@ function reporting_html_SLA($table, $item, $mini) {
 					}
 					elseif ($sla['sla_status']) {
 						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
-							round($sla['sla_value'], 2) . "%" . '</span>';
+							remove_right_zeros(number_format($sla['sla_value'], $config['graph_precision'])) . "%" . '</span>';
 						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
 							__('OK') . '</span>';
 					}
 					else {
 						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
-							round($sla['sla_value'], 2) . "%" . '</span>';
+							remove_right_zeros(number_format($sla['sla_value'], $config['graph_precision'])) . "%" . '</span>';
 						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
 							__('Fail') . '</span>';
 					}

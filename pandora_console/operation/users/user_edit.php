@@ -197,15 +197,15 @@ if (defined('METACONSOLE')) {
 	$table->head_colspan[0] = 5;
 	$table->headstyle[0] = 'text-align: center';
 }
-$table->style[0] = 'min-width: 500px;width: 500px;';
-$table->style[1] = 'min-width: 500px;width: 500px;';
-$table->style[2] = 'min-width: 200px;width: 200px;';
+$table->style[0] = 'min-width: 320px;width: 320px;margin-right:0px;padding-right:0px;';
+$table->style[1] = 'min-width: 280px;width: 280px;margin-right:0px;padding-right:0px;';
+$table->style[2] = 'min-width: 150px;width: 150px;margin-right:0px;margin-left:0px;padding-left:0px;padding-right:0px;';
 
 $data = array();
-$data[0] = '<b>' . __('User ID') . '</b>';
-$data[0] .= $jump . '<span style="font-weight: normal;">' . $id . '</span>';
-$data[1] = '<b>' . __('Full (display) name') . '</b>';
-$data[1] .= $jump . html_print_input_text_extended ("fullname", $user_info["fullname"], '', '', 40, 100, $view_mode, '', 'class="input"', true);
+$data[0] = '<span style="width:50%;float:left;"><b>' . __('User ID') . '</b></span>';
+$data[0] .= $jump . '<span style="font-weight: normal;width:20%;float:left;">' . $id . '</span>';
+$data[1] = '<span style="width:40%;float:left;line-height:20px;"><b>' . __('Full (display) name') . '</b></span>';
+$data[1] .= $jump . '<span style="width:20%;float:left;line-height:20px;">' . html_print_input_text_extended ("fullname", $user_info["fullname"], '', '', 20, 100, $view_mode, '', 'class="input"', true).'</span>';
 // Show "Picture" (in future versions, why not, allow users to upload it's own avatar here.
 
 if (is_user_admin ($id)) {
@@ -226,10 +226,10 @@ $table->rowstyle[] = 'font-weight: bold;';
 $table->data[] = $data;
 
 $data = array();
-$data[0] = __('E-mail');
-$data[0] .= $jump . html_print_input_text_extended ("email", $user_info["email"], '', '', '40', '100', $view_mode, '', 'class="input"', true);
-$data[1] = __('Phone number');
-$data[1] .= $jump . html_print_input_text_extended ("phone", $user_info["phone"], '', '', '40', '30', $view_mode, '', 'class="input"', true);
+$data[0] = '<span style="width:50%;float:left;">'.__('E-mail').'</span>';
+$data[0] .= $jump .'<span style="width:20%;float:left;line-height:20px;">'. html_print_input_text_extended ("email", $user_info["email"], '', '', '25', '100', $view_mode, '', 'class="input"', true).'</span>';
+$data[1] = '<span style="width:40%;float:left;">'.__('Phone number').'</span>';
+$data[1] .= $jump . '<div style="width:20%;float:left;line-height:50px;">'.html_print_input_text_extended ("phone", $user_info["phone"], '', '', '20', '30', $view_mode, '', 'class="input"', true).'</div>';
 $table->rowclass[] = '';
 $table->rowstyle[] = 'font-weight: bold;';
 $table->data[] = $data;
@@ -237,10 +237,10 @@ $table->data[] = $data;
 if ($view_mode === false) {
 	if ($config["user_can_update_password"]) {
 		$data = array();
-		$data[0] = __('New Password');
-		$data[0] .=  $jump . html_print_input_text_extended ("password_new", "", '', '', '40', '45', $view_mode, '', 'class="input"', true, true);
-		$data[1] = __('Password confirmation');
-		$data[1] .= $jump . html_print_input_text_extended ("password_conf", "", '', '', '40', '45', $view_mode, '', 'class="input"', true, true);
+		$data[0] = '<span style="width:50%;float:left;">'.__('New Password').'</span>';
+		$data[0] .=  $jump .'<span style="width:20%;float:left;line-height:20px;">'.html_print_input_text_extended ("password_new", "", '', '', '25', '45', $view_mode, '', 'class="input"', true, true).'</span>';
+		$data[1] = '<span style="width:40%;float:left;">'.__('Password confirmation').'</span>';
+		$data[1] .= $jump . '<span style="width:20%;float:left;line-height:20px;">'.html_print_input_text_extended ("password_conf", "", '', '', '20', '45', $view_mode, '', 'class="input"', true, true).'</span>';
 		$table->rowclass[] = '';
 		$table->rowstyle[] = 'font-weight: bold;';
 		$table->data[] = $data;
@@ -256,26 +256,26 @@ if ($view_mode === false) {
 }
 
 $data = array();
-$data[0] = __('Block size for pagination') . ui_print_help_tip(__('If checkbox is clicked then block size global configuration is used'), true);
+$data[0] = '<span style="width:50%;float:left;">'.__('Block size for pagination') . ui_print_help_tip(__('If checkbox is clicked then block size global configuration is used'), true).'</span>';
 if ($user_info["block_size"] == 0) {
 	$block_size = $config["global_block_size"];
 }
 else {
 	$block_size = $user_info["block_size"];
 }
-$data[0] .= $jump . html_print_input_text ('block_size', $block_size, '', 5, 5, true);
-$data[0] .= $jump . html_print_checkbox('default_block_size', 1, $user_info["block_size"] == 0, true);
+$data[0] .= $jump .'<span style="font-weight: normal;width:15%;float:left;line-height:20px;">'. html_print_input_text ('block_size', $block_size, '', 5, 5, true).'</span>';
+$data[0] .= $jump . '<span style="width:2%;float:left;line-height:20px;">'.html_print_checkbox('default_block_size', 1, $user_info["block_size"] == 0, true).'</span>';
 $data[0] .= __('Default').' ('.$config["global_block_size"].')';
 
 $values = array(-1 => __('Default'),1 => __('Yes'),0 => __('No'));
 
-$data[1] = __('Interactive charts') . ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true);
-$data[1] .= $jump . html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false);
+$data[1] = '<span style="width:40%;float:left;">'.__('Interactive charts') . ui_print_help_tip(__('Whether to use Javascript or static PNG graphs'), true).'</span>';
+$data[1] .= $jump . '<span style="width:20%;float:left;line-height:20px;">'. html_print_select($values, 'flash_charts', $user_info["flash_chart"], '', '', -1, true, false, false).'</span>';
 
 
-$data[2] = __('Language');
+$data[2] = '<span style="width:30%;float:left;">'.__('Language').'</span>';
 $data[2] .= $jump . html_print_select_from_sql ('SELECT id_language, name FROM tlanguage',
-	'language', $user_info["language"], '', __('Default'), 'default', true);
+	'language', $user_info["language"], '', __('Default'), 'default', true,'','','','','',10);
 
 $table->rowclass[] = '';
 $table->rowstyle[] = 'font-weight: bold;';
@@ -292,10 +292,10 @@ $id_usr = $config['id_user'];
 
 if (!$meta) {
 	$data = array();
-	$data[0] = __('Shortcut bar') . ui_print_help_tip(__('This will activate a shortcut bar with alerts, events, messages... information'), true);
-	$data[0] .= $jump . html_print_checkbox('shortcut_bar', 1, $user_info["shortcut"], true);
+	$data[0] = '<span style="width:50%;float:left;">'.__('Shortcut bar') . ui_print_help_tip(__('This will activate a shortcut bar with alerts, events, messages... information'), true).'</span>';
+	$data[0] .= $jump . '<span style="width:20%;float:left;line-height:20px;">'.html_print_checkbox('shortcut_bar', 1, $user_info["shortcut"], true).'</span>';
 
-	$data[1] = __('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true);
+	$data[1] = '<span style="width:40%;float:left;">'.__('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true).'</span>';
 	$values = array (
 		'Default' =>__('Default'),
 		'Visual console'=>__('Visual console'),
@@ -308,7 +308,7 @@ if (!$meta) {
 		$values['Dashboard'] = __('Dashboard');
 	}
 
-	$data[1] .= $jump . html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false);
+	$data[1] .= $jump . '<span style="width:20%;float:left;line-height:20px;">'.html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false).'</span>';
 
 	if (enterprise_installed()) {
 		$dashboards = get_user_dashboards ($config['id_user']);
@@ -343,7 +343,7 @@ if (!$meta) {
 	$data[2] = '';
 	if (function_exists('skins_print_select')) {
 		if (count($usr_groups) > 1) {
-			$data[2] = __('Skin');
+			$data[2] = '<span style="width:30%;float:left;">'.__('Skin').'</span>';
 			$data[2] .= $jump . skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
 		}
 	}
@@ -355,9 +355,9 @@ if (!$meta) {
 // Double auth
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
 $data = array();
-$data[0] = __('Double authentication');
+$data[0] = '<span style="width:21%;float:left;">'.__('Double authentication').'</span>';
 $data[0] .= $jump;
-$data[0] .= html_print_checkbox('double_auth', 1, $double_auth_enabled, true).'</span>';
+$data[0] .= '<span style="width:20%;float:left;line-height:20px;">'.html_print_checkbox('double_auth', 1, $double_auth_enabled, true).'</span>';
 if ($double_auth_enabled) {
 	$data[0] .= $jump;
 	$data[0] .= html_print_button(__('Show information'), 'show_info', false, 'javascript:show_double_auth_info();', '', true);
@@ -393,7 +393,7 @@ $table->rowstyle[] = 'font-weight: bold;';
 $table->data[] = $data;
 
 $data = array();
-$data[0] = html_print_textarea("comments", 2, 60, $user_info["comments"], ($view_mode ? 'readonly="readonly"' : ''), true);
+$data[0] = '<div style="width:98%">'.html_print_textarea("comments", 2, 60, $user_info["comments"], ($view_mode ? 'readonly="readonly"' : ''), true).'</div>';
 $data[0] .= html_print_input_hidden('quick_language_change', 1, true);
 $table->colspan[count($table->data)][0] = 3;
 $table->rowclass[] = '';

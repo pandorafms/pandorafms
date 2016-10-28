@@ -1285,12 +1285,34 @@ if (!empty($result)) {
 								$salida = $config['render_proc_fail'];
 							break;
 						default:	
-							$salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
+							switch($row['module_type']) {
+								case 15:
+									$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $row['id_agente_modulo']);
+									if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
+										$salida = human_milliseconds_to_string($row['datos']);
+									else
+										$salida = format_numeric($row['datos']);
+									break;
+								default:
+									$salida = format_numeric($row['datos']);
+									break;
+							}
 							break;
 					}
 			}
 			else {
-				$salida = remove_right_zeros(number_format($row['datos'], $config['graph_precision']));
+				switch($row['module_type']) {
+					case 15:
+						$value = db_get_value('snmp_oid', 'tagente_modulo', 'id_agente_modulo', $row['id_agente_modulo']);
+						if ($value == '.1.3.6.1.2.1.1.3.0' || $value == '.1.3.6.1.2.1.25.1.1.0')
+							$salida = human_milliseconds_to_string($row['datos']);
+						else
+							$salida = format_numeric($row['datos']);
+						break;
+					default:
+						$salida = format_numeric($row['datos']);
+						break;
+				}
 			}
 			
 			// Show units ONLY in numeric data types

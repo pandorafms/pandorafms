@@ -249,7 +249,7 @@ if ($get_module_detail) {
 
 		foreach ($columns as $col => $attr) {
 			if ($attr[1] != "modules_format_data") {
-				$data[] = $attr[1] ($row[$attr[0]]);
+				$data[] = date('d F Y - h:i:s A', $row['utimestamp']);
 
 			}
 			elseif (($config['command_snapshot']) && (preg_match ("/[\n]+/i", $row[$attr[0]]))) {

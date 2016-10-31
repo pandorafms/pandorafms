@@ -67,6 +67,7 @@ then
 	mkdir -p temp_package/usr/bin/
 	mkdir -p temp_package/usr/sbin/
 	mkdir -p temp_package/etc/init.d/
+	mkdir -p temp_package/lib/systemd/system/
 	mkdir -p temp_package/etc/pandora/
 	mkdir -p temp_package/var/spool/pandora/data_in
 	chmod 770 temp_package/var/spool/pandora/data_in
@@ -96,6 +97,9 @@ then
 	
 	cp -aRf util/pandora_server temp_package/etc/init.d/
 	cp -aRf util/tentacle_serverd temp_package/etc/init.d/
+
+	cp -aRf util/pandora_server.service temp_package/lib/systemd/system/
+	cp -aRf util/tentacle_serverd.service temp_package/lib/systemd/system/
 	
 	cp -aRf man/man1/* temp_package/usr/share/man/man1/
 	

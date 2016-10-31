@@ -27,6 +27,10 @@ DAEMON_TENTACLE=/usr/bin/tentacle_server
 LOGFILE=/var/log/pandora/pandora_agent.log
 PANDORA_USER=root
 
+if [ -x /lib/lsb/init-functions ]; then
+. /lib/lsb/init-functions
+fi
+
 # This function replace pidof, not working in the same way in different linux distros
 
 pidof_pandora () {

@@ -1,0 +1,9 @@
+[Unit]
+Description=Pandora FMS agent daemon
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/pandora_agent /etc/pandora
+
+[Install]
+WantedBy=multi-user.target

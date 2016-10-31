@@ -146,13 +146,19 @@ chomp($OS_VERSION);
 ###############################################################################
 # Sets user:group owner for the given file
 ###############################################################################
-sub set_file_permissions($$) {
-	my ($pa_config, $file) = @_;
+sub set_file_permissions($$;$) {
+	my ($pa_config, $file, $grants) = @_;
 	if ($^O !~ /win/i ) { # Only for Linux environments
 		eval {
+			if (defined ($grants)) {
+				$grants = oct($grants);
+			}
+			else {
+				$grants = oct("0777");
+			}
 			my $uid  = getpwnam($pa_config->{'user'});
 			my $gid  = getgrnam($pa_config->{'group'});
-			my $perm = oct("0777") & (~oct($pa_config->{'umask'}));
+			my $perm = $grants & (~oct($pa_config->{'umask'}));
 
 			chown $uid, $gid, $file;
 			chmod ( $perm, $file );

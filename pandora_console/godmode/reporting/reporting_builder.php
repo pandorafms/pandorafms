@@ -1969,7 +1969,21 @@ else {
 
 
 if ($resultOperationDB !== null) {
-	ui_print_result_message ($resultOperationDB, __('Successfull action'), __('Unsuccessfull action'));
+	
+	
+	$err = '';
+	
+	if($_POST[sla_min]==''){
+		$err.='You must enter some character in SLA min field<br>';
+	}
+	if($_POST[sla_max]==''){
+		$err.='You must enter some character in SLA max field<br>';
+	}
+	if($_POST[sla_limit]==''){
+		$err.='You must enter some character in SLA limit field';
+	}
+
+	ui_print_result_message ($resultOperationDB, __('Successfull action'), __('Unsuccessfull action<br><br>'.$err));
 }
 
 switch ($activeTab) {

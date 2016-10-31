@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-09-12 04:48+0000\n"
-"X-Generator: Launchpad (build 18186)\n"
+"X-Launchpad-Export-Date: 2016-10-31 14:03+0000\n"
+"X-Generator: Launchpad (build 18246)\n"
 
 #: ../../general/footer.php:30 ../../mobile/include/ui.class.php:257
 #: ../../mobile/include/functions_web.php:81

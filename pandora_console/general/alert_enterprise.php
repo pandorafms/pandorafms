@@ -18,7 +18,10 @@ echo "
 <div class='modalheader'>
 <span class='modalheadertext'>";
 
-if(!enterprise_installed()){
+if($tipo=='noaccess'){
+	echo "You don't have access to this page";
+}
+elseif(!enterprise_installed()){
 	echo "Community version";
 }
 else{
@@ -69,6 +72,9 @@ switch ($tipo) {
 		case "alertagentmodal":
 			echo "icono_info.png";
 		break;
+		case "noaccess":
+      echo "access_denied.png";
+      break;
     default:
     break;
 }
@@ -78,6 +84,14 @@ echo "'>
 <div class='modalcontenttext'>";
 
 switch ($tipo) {
+	
+	case "noaccess":
+	
+	echo __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br/> <br/>
+	Please know that all attempts to access this page are recorded in security logs of Pandora System Database');
+	
+	break;
+	
     case "infomodal":
     
     if($open){
@@ -155,12 +169,12 @@ echo "
 </div>
 <div class='modalokbutton cerrar'>
 <span class='modalokbuttontext'>OK</span>
-</div>
-
-<div class='modalgobutton gopandora'>
+</div>";
+if($open){
+echo "<div class='modalgobutton gopandora'>
 <span class='modalokbuttontext'>About Enterprise</span>
-</div>
-";
+</div>";
+}
 
 ?>
 

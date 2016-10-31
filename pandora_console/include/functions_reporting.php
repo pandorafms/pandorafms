@@ -3875,13 +3875,13 @@ function reporting_availability($report, $content, $date=false, $time=false) {
 				$percent_ok = 0;
 			}
 			else {
-				$percent_ok = format_numeric($sla_value, 2);
+				$percent_ok = $sla_value;
 				$percent_fail = (100 - $percent_ok);
 				
 				$row['checks'] = format_numeric($count_checks, 0);
-				$row['ok'] = format_numeric($percent_ok,2) . " %";
+				$row['ok'] = $percent_ok . " %";
 				$row['order'] = $percent_ok;
-				$row['fail'] = format_numeric($percent_fail,2) . " %";
+				$row['fail'] = $percent_fail . " %";
 				
 				//$row['failed'] = format_numeric($percent_fail * $count_checks / 100, 0);
 				//if the value of time in failures is less than those recorded in the database the number of errors that have registered in the database is set

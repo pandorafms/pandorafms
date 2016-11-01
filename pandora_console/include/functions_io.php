@@ -102,8 +102,6 @@ function io_safe_input($value) {
 	// Replace ( for the html entitie
 	$valueHtmlEncode = str_replace(')', "&#41;", $valueHtmlEncode);
 	
-	$valueHtmlEncode = str_replace(')', "&#41;", $valueHtmlEncode);
-	
 	
 	// Fixed the º character, because the Perl in the Pandora Server
 	// use the hex value instead the human readble.

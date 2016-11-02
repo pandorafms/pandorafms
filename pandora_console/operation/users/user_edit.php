@@ -264,7 +264,7 @@ else {
 	$block_size = $user_info["block_size"];
 }
 $data[0] .= $jump .'<span style="font-weight: normal;width:15%;float:left;line-height:20px;">'. html_print_input_text ('block_size', $block_size, '', 5, 5, true).'</span>';
-$data[0] .= $jump . '<span style="width:2%;float:left;line-height:20px;">'.html_print_checkbox('default_block_size', 1, $user_info["block_size"] == 0, true).'</span>';
+$data[0] .= $jump . '<span style="width:2%;float:left;line-height:20px;margin-right:5px;">'.html_print_checkbox('default_block_size', 1, $user_info["block_size"] == 0, true).'</span>';
 $data[0] .= __('Default').' ('.$config["global_block_size"].')';
 
 $values = array(-1 => __('Default'),1 => __('Yes'),0 => __('No'));
@@ -355,7 +355,15 @@ if (!$meta) {
 // Double auth
 $double_auth_enabled = (bool) db_get_value('id', 'tuser_double_auth', 'id_user', $config['id_user']);
 $data = array();
-$data[0] = '<span style="width:21%;float:left;">'.__('Double authentication').'</span>';
+
+if (license_free()) {
+$data[0] = '<span style="width:50%;float:left;">'.__('Double authentication').'</span>';
+}
+else{
+$data[0] = '<span style="width:21%;float:left;">'.__('Double authentication').'</span>';	
+}
+
+
 $data[0] .= $jump;
 $data[0] .= '<span style="width:20%;float:left;line-height:20px;">'.html_print_checkbox('double_auth', 1, $double_auth_enabled, true).'</span>';
 if ($double_auth_enabled) {

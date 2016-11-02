@@ -517,8 +517,8 @@ sub exec_recon_script ($$$) {
 		logger ($pa_config, "Cannot execute recon task command $command.");
 	}
 	
-	# Notify this recon task is ended
-	update_recon_task ($dbh, $task->{'id_rt'}, -1);
+	# Only update the timestamp in case something went wrong. The script should set the status.
+	db_do ($dbh, 'UPDATE trecon_task SET utimestamp = ? WHERE id_rt = ?', time (), $task->{'id_rt'});
 	
 	logger($pa_config, 'Done executing recon script ' . safe_output($script->{'name'}), 10);
 	return 0;

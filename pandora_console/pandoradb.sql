@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	`agent_version` varchar(100) default '',
 	`ultimo_contacto_remoto` datetime default '1970-01-01 00:00:00',
 	`disabled` tinyint(2) NOT NULL default '0',
+	`remote` tinyint(1) NOT NULL default 0,
 	`id_parent` int(10) unsigned default '0',
 	`custom_id` varchar(255) default '',
 	`server_name` varchar(100) default '',

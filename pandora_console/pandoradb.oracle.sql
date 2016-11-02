@@ -86,6 +86,7 @@ CREATE TABLE tagente (
 	agent_version VARCHAR2(100) DEFAULT '',
 	ultimo_contacto_remoto TIMESTAMP DEFAULT to_timestamp('1970-01-01 00:00:00', 'yyyy-mm-dd hh24:mi:ss'),
 	disabled NUMBER(5, 0) DEFAULT 0,
+	remote NUMBER(5, 0) DEFAULT 0,
 	id_parent NUMBER(10, 0) DEFAULT 0,
 	custom_id VARCHAR2(255) DEFAULT '',
 	server_name VARCHAR2(100) DEFAULT '',

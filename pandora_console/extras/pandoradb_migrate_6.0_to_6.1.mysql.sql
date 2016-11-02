@@ -112,3 +112,4 @@ ALTER TABLE tnetwork_component ADD COLUMN `dynamic_two_tailed` tinyint(1) unsign
 -- Table `tagente`
 -- ---------------------------------------------------------------------
 ALTER TABLE tagente ADD `transactional_agent` tinyint(1) NOT NULL default 0;
+ALTER TABLE tagente ADD `remote` tinyint(1) NOT NULL default 0;

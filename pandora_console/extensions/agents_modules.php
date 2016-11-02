@@ -56,7 +56,8 @@ function mainAgentsModules() {
 		$updated_info = __('Last update'). " : ". ui_print_timestamp (db_get_sql ("SELECT min(utimestamp) FROM tgroup_stat"), true);
 	}
 	else {
-		$updated_info = __("Updated at realtime");
+	//	$updated_info = __("Updated at realtime");
+		$updated_info = "";
 	}
 	
 	$updated_time = $updated_info;

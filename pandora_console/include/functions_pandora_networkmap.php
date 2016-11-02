@@ -231,7 +231,7 @@ function networkmap_process_networkmap($id = 0) {
 		
 		if (enterprise_installed()) {
 			enterprise_include_once("include/functions_pandora_networkmap.php");
-			save_generate_nodes($id, &$nodes_and_relations);
+			save_generate_nodes($id, $nodes_and_relations);
 		}
 		
 		$pandorafms_node = $nodes_and_relations['nodes'][0];

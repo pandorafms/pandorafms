@@ -81,6 +81,21 @@ $row['control'] .= __('No').'&nbsp;'.html_print_radio_button_extended('autocreat
 $table->data['autocreate_remote_users'] = $row;
 $remote_rows[] = 'autocreate_remote_users';
 
+// Autocreate blacklist
+$row = array();
+$row['name'] = __('Autocreate blacklist') . ui_print_help_icon ('autocreate_blacklist', true);
+$row['control'] = html_print_input_text('autocreate_blacklist', $config['autocreate_blacklist'], '', 60, 100, true);
+$table->data['autocreate_blacklist'] = $row;
+$remote_rows[] = 'autocreate_blacklist';
+$autocreate_rows[] = 'autocreate_blacklist';
+
+// Add enterprise authentication options
+if (enterprise_installed()) {
+	$enterprise_auth_options_added = add_enterprise_auth_options($table);
+	
+	array_merge($auth_methods_added, $enterprise_auth_options_added);
+}
+
 // Autocreate profile
 $profile_list = profile_get_profiles ();
 if ($profile_list === false) {
@@ -120,14 +135,6 @@ else {
 	$remote_rows[] = 'default_remote_profile';
 	$remote_rows[] = 'default_assign_tags';
 }
-
-// Autocreate blacklist
-$row = array();
-$row['name'] = __('Autocreate blacklist') . ui_print_help_icon ('autocreate_blacklist', true);
-$row['control'] = html_print_input_text('autocreate_blacklist', $config['autocreate_blacklist'], '', 60, 100, true);
-$table->data['autocreate_blacklist'] = $row;
-$remote_rows[] = 'autocreate_blacklist';
-$autocreate_rows[] = 'autocreate_blacklist';
 
 // Add the remote class to the remote rows
 foreach ($remote_rows as $name) {
@@ -205,12 +212,7 @@ foreach ($ldap_rows as $name) {
 
 $auth_methods_added[] = 'ldap';
 
-// Add enterprise authentication options
-if (enterprise_installed()) {
-	$enterprise_auth_options_added = add_enterprise_auth_options($table);
-	
-	array_merge($auth_methods_added, $enterprise_auth_options_added);
-}
+
 
 // Enable double authentication
 // Set default value
@@ -258,7 +260,6 @@ echo '</form>';
 	var auth_methods = $.map($('select#auth option'), function(option) {
 		return option.value;
 	});
-	
 	// Add the click event and perform it once
 	// for process the action on the section load
 	$('input[name="autocreate_remote_users"]').change(show_autocreate_options).change();
@@ -270,7 +271,6 @@ echo '</form>';
 	// Event callback for the auth select
 	function show_selected_rows (event) {
 		var auth_method = $(this).val();
-
 		if (auth_method !== 'mysql') {
 			$('tr.remote').show();
 			if (auth_method == 'saml') {
@@ -280,6 +280,7 @@ echo '</form>';
 		}
 		else {
 			$('tr.remote').hide();
+			$('tr.autocreate').hide();
 		}	
 		// Hide all the auth methods (except mysql)
 		_.each(auth_methods, function(value, key) {
@@ -293,10 +294,12 @@ echo '</form>';
 	}
 	
 	// Event callback for the autocreate remote users radio buttons
-	function show_autocreate_options (event) {
+	function show_autocreate_options(event) {
 		var remote_auto = $('input:radio[name=autocreate_remote_users]:checked').val();
+		var authentication_method_value = $('#auth').val();
 		var disabled = false;
-		
+		if (authentication_method_value != 'ad')
+			disabled = true;
 		if (remote_auto == 0)
 			disabled = true;
 		
@@ -304,7 +307,6 @@ echo '</form>';
 		$('select#default_remote_group').prop('disabled', disabled);
 		$('select#default_assign_tags').prop('disabled', disabled);
 		$('input#text-autocreate_blacklist').prop('disabled', disabled);
-		
 		// Show when disabled = false and hide when disabled = true
 		if (disabled)
 			$('tr.autocreate').hide();
@@ -323,6 +325,8 @@ echo '</form>';
 			else {
 				if (advanced_value == 0) {
 					$('tr.no_autocreate').show();
+					$('#table4-ad_adv_perms').removeClass("ad");
+					$('#table4-ad_adv_perms2').removeClass("ad");
 				}
 			}
 		}

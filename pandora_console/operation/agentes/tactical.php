@@ -47,7 +47,8 @@ if ($config["realtimestats"] == 0) {
 	$updated_time .= "</a>";
 }
 else {
-	$updated_time = __("Updated at realtime");
+//	$updated_info = __("Updated at realtime");
+		$updated_info = "";
 }
 
 // Header

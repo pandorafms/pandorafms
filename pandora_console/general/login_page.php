@@ -98,10 +98,10 @@ echo '<div id="login_in">';
 		}
 			else if (defined ('PANDORA_ENTERPRISE')) {
 				if (!isset ($config["custom_logo_login"])){
-					html_print_image ("images/custom_logo_login/login_logo.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+					html_print_image ("enterprise/images/custom_logo_login/login_logo.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 				}
 				else{
-				html_print_image ("images/custom_logo_login/".$config['custom_logo_login'], false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
+				html_print_image ("enterprise/images/custom_logo_login/".$config['custom_logo_login'], false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 				}
 			}
 			else {

@@ -690,8 +690,8 @@ if ($list_modules) {
 	$table->data = array ();
 
 	$isFunctionPolicies = enterprise_include_once ('include/functions_policies.php');
-
-	$table->head[0] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
+	if ($agent_w)
+		$table->head[0] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 
 	if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[1] = "<span title='" . __('Policy') . "'>" . __('P.') . "</span>";
@@ -744,17 +744,19 @@ if ($list_modules) {
 		
 		$data = array ();
 		if (($module["id_modulo"] != 1) && ($module["id_tipo_modulo"] != 100)) {
-			if ($module["flag"] == 0) {
-				$data[0] = '<a href="index.php?' .
-					'sec=estado&amp;' .
-					'sec2=operation/agentes/ver_agente&amp;' .
-					'id_agente=' . $id_agente . '&amp;' .
-					'id_agente_modulo=' . $module["id_agente_modulo"] . '&amp;' .
-					'flag=1&amp;' .
-					'refr=60">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'))) . '</a>';
-			}
-			else {
-				$data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module["id_agente_modulo"].'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => "0", "title" => __("Refresh"))) . '</a>';
+			if ($agent_w) {
+				if ($module["flag"] == 0) {
+					$data[0] = '<a href="index.php?' .
+						'sec=estado&amp;' .
+						'sec2=operation/agentes/ver_agente&amp;' .
+						'id_agente=' . $id_agente . '&amp;' .
+						'id_agente_modulo=' . $module["id_agente_modulo"] . '&amp;' .
+						'flag=1&amp;' .
+						'refr=60">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'))) . '</a>';
+				}
+				else {
+					$data[0] = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module["id_agente_modulo"].'&amp;refr=60">' . html_print_image("images/refresh.png", true, array("border" => "0", "title" => __("Refresh"))) . '</a>';
+				}
 			}
 		}
 		else {

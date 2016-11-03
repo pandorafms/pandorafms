@@ -417,9 +417,11 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 			__('S.') . "</span>";
 		
 		if (!is_metaconsole()) {
-			$table->head[2] =
-				"<span title='" . __('Force execution') . "'>" .
-					__('F.') . "</span>";
+			if (check_acl($config['id_user'], $id_group, "AW") || check_acl($config['id_user'], $id_group, "LM")) {
+				$table->head[2] =
+					"<span title='" . __('Force execution') . "'>" .
+						__('F.') . "</span>";
+			}
 		}
 		
 		$table->head[3] = __('Agent');
@@ -460,7 +462,8 @@ if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 		$table->head[1] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		
 		if (!is_metaconsole()) {
-			$table->head[2] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
+			if (check_acl($config['id_user'], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "LM"))
+				$table->head[2] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		}
 		
 		$table->head[3] = __('Module');
@@ -493,7 +496,8 @@ else {
 	if ($print_agent) {
 		$table->head[0] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		if (!is_metaconsole()) {
-			$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
+			if (check_acl($config['id_user'], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "LM"))
+				$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		}
 		$table->head[2] = __('Agent');
 		$table->head[3] = __('Module');
@@ -527,7 +531,8 @@ else {
 	else {
 		$table->head[0] = "<span title='" . __('Standby') . "'>" . __('S.') . "</span>";
 		if (!is_metaconsole()) {
-			$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
+			if (check_acl($config['id_user'], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "LM"))
+				$table->head[1] = "<span title='" . __('Force execution') . "'>" . __('F.') . "</span>";
 		}
 		$table->head[2] = __('Module');
 		$table->head[3] = __('Template');

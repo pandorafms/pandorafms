@@ -816,13 +816,15 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	if (!defined('METACONSOLE')) {
 		// Force alert execution
 		$data[$index['force_execution']] = '';
-		if ($alert["force_execution"] == 0) {
-			$data[$index['force_execution']] =
-				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;force_execution=1&refr=60">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'))) . '</a>';
-		}
-		else {
-			$data[$index['force_execution']] =
-				'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;refr=60">' . html_print_image("images/refresh.png", true) . '</a>';
+		if (check_acl ($config["id_user"], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "LM")) {
+			if ($alert["force_execution"] == 0) {
+				$data[$index['force_execution']] =
+					'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;force_execution=1&refr=60">' . html_print_image("images/target.png", true, array("border" => '0', "title" => __('Force'))) . '</a>';
+			}
+			else {
+				$data[$index['force_execution']] =
+					'<a href="'.$url.'&amp;id_alert='.$alert["id"].'&amp;refr=60">' . html_print_image("images/refresh.png", true) . '</a>';
+			}
 		}
 	}
 
@@ -2416,7 +2418,7 @@ function ui_print_page_header ($title, $icon = "", $return = false, $help = "", 
 
 	$buffer .= '<ul class="mn"><li class="' . $type . '">&nbsp;' . '&nbsp; ';
 	$buffer .= '<span style="margin-right:10px;">' .
-		ui_print_truncate_text($title, 46);
+		ui_print_truncate_text($title, 'item_title');
 	if ($modal && !enterprise_installed()){
 		$buffer .= "
 		<div id='".$message."' class='publienterprise' title='Community version' style='float: right;margin-top: -2px !important; margin-left: 2px !important;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>

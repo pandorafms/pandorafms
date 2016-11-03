@@ -105,13 +105,13 @@ echo '<div id="login_in">';
 				}
 			}
 			else {
-				if (!isset ($config["custom_logo_login"])){
+				if (!isset ($config["custom_logo_login"]) || $config["custom_logo_login"] == 0){
 					html_print_image ("images/custom_logo_login/login_logo.png", false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 				}
 				else{
 				html_print_image ("images/custom_logo_login/".$config['custom_logo_login'], false, array ("class" => "login_logo", "alt" => "logo", "border" => 0, "title" => $logo_title), false, true);
 				}
-echo "<br><span style='font-size:120%;color:white;top:10px;position:relative;'>Community edition</span>";
+				echo "<br><span style='font-size:120%;color:white;top:10px;position:relative;'>Community edition</span>";
 			}
 			echo '</a>';
 			

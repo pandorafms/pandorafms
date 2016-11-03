@@ -32,6 +32,7 @@ config_check();
 					
 					if (!defined ('PANDORA_ENTERPRISE')) {
 						$logo_title = 'Pandora FMS Opensource';
+						$custom_logo = 'images/custom_logo/pandora_logo_head_3.png';
 					}
 					else {
 						if (file_exists(ENTERPRISE_DIR . '/' . $custom_logo)) {

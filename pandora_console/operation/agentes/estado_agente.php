@@ -229,7 +229,8 @@ $order = null;
 $order_collation = "";
 switch ($config["dbtype"]) {
 	case "mysql":
-		$order_collation = " COLLATE utf8_general_ci";
+		//$order_collation = " COLLATE utf8_general_ci";
+		$order_collation = "";
 		break;
 	case "postgresql":
 	case "oracle":
@@ -239,6 +240,20 @@ switch ($config["dbtype"]) {
 
 
 switch ($sortField) {
+	case 'remote':
+		switch ($sort) {
+			case 'up':
+				$selectRemoteUp = $selected;
+				$order = array('field' => 'remote' . $order_collation,
+					'field2' => 'nombre' . $order_collation, 'order' => 'ASC');
+				break;
+			case 'down':
+				$selectRemoteDown = $selected;
+				$order = array('field' => 'remote' . $order_collation,
+					'field2' => 'nombre' . $order_collation, 'order' => 'DESC');
+				break;
+		}
+		break;
 	case 'name':
 		switch ($sort) {
 			case 'up':
@@ -383,12 +398,14 @@ else {
 if ($strict_user) {
 	
 	$count_filter = array (
-		'order' => 'tagente.nombre COLLATE utf8_general_ci ASC',
+		//'order' => 'tagente.nombre COLLATE utf8_general_ci ASC',
+		'order' => 'tagente.nombre ASC',
 		'disabled' => 0,
 		'status' => $status,
 		'search' => $search);
 	$filter = array (
-		'order' => 'tagente.nombre COLLATE utf8_general_ci ASC',
+		//'order' => 'tagente.nombre COLLATE utf8_general_ci ASC',
+		'order' => 'tagente.nombre ASC',
 		'disabled' => 0,
 		'status' => $status,
 		'search' => $search,
@@ -477,7 +494,13 @@ $table->head[1] = __('Description'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=description&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectNameUp, "alt" => "up"))  . '</a>' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=description&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectNameDown, "alt" => "down")) . '</a>';
 
-$table->size[1] = "25%";
+$table->size[1] = "16%";
+
+$table->head[9] = __('Remote'). ' ' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=remote&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectRemoteUp, "alt" => "up"))  . '</a>' .
+	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=remote&amp;sort=down">' . html_print_image("images/sort_down.png", true, array("style" => $selectRemoteDown, "alt" => "down")) . '</a>';
+
+$table->size[9] = "9%";
 
 $table->head[2] = __('OS'). ' ' .
 	'<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=' . $refr . '&amp;offset=' . $offset . '&amp;group_id=' . $group_id . '&amp;recursion=' . $recursion . '&amp;search=' . $search . '&amp;status='. $status . '&amp;sort_field=os&amp;sort=up">' . html_print_image("images/sort_up.png", true, array("style" => $selectOsUp, "alt" => "up"))  . '</a>' .
@@ -557,6 +580,18 @@ foreach ($agents as $agent) {
 	$data[0] .= '</div></div>';
 	
 	$data[1] = ui_print_truncate_text($agent["description"], 'description', false, true, true, '[&hellip;]', 'font-size: 6.5pt');
+	
+	$data[9] = "";
+	
+	if (enterprise_installed()) {
+		enterprise_include_once('include/functions_config_agents.php');
+		
+		if (config_agents_has_remote_configuration($agent["id_agente"])) {
+	
+	$data[9] = html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Remote config')));
+		
+		}
+	}
 	
 	$data[2] = ui_print_os_icon ($agent["id_os"], false, true);
 	

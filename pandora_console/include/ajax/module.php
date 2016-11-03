@@ -1,5 +1,7 @@
 <?php
 
+if(check_login()){
+
 //Pandora FMS- http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
@@ -1055,6 +1057,7 @@ if ($get_type) {
 	$graph_type = return_graphtype ($module["id_tipo_modulo"]);
 	echo $graph_type;
 	return;
+}
 }
 
 ?>

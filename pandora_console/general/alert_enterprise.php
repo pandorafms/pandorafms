@@ -8,6 +8,9 @@ You can of course remove the warnings, that's why we include the source and do n
 
 */
 
+if(check_login()){
+
+
 if(!enterprise_installed()){
 	$open=true; 
 }
@@ -174,6 +177,8 @@ if($open){
 echo "<div class='modalgobutton gopandora'>
 <span class='modalokbuttontext'>About Enterprise</span>
 </div>";
+}
+
 }
 
 ?>

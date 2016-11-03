@@ -1,6 +1,7 @@
 <?php
 
 // TODO: Poner esto resizable y dragable: http://jqueryui.com/demos/dialog
+if(check_login()){
 
 echo "
 <div class='modalheader'>
@@ -15,12 +16,16 @@ else{
 
 echo "</span>
 <img class='modalclosex cerrar' src='".$config['homeurl']."/images/icono_cerrar.png'>
-</div>".get_pandora_error_for_header()."
+</div>";
+
+
+echo get_pandora_error_for_header()."
 
 <div class='modalokbutton cerrar'>
 <span class='modalokbuttontext close'>OK</span>
 </div>";
 
+}
 ?>
 
 <script>

@@ -1315,11 +1315,16 @@ if (!empty($result)) {
 				$handle = 'snapshot_' . $row['id_agente_modulo'];
 				$url = 'include/procesos.php?agente=' . $row['id_agente_modulo'];
 				$win_handle = dechex(crc32($handle));
-				
+				if (! defined ('METACONSOLE')) {
 				$link = "winopeng_var('operation/agentes/snapshot_view.php?" .
 					"id=" . $row['id_agente_modulo'] .
 					"&refr=" . $row['current_interval'] .
 					"&label=" . rawurlencode(urlencode(io_safe_output($row['module_name']))) . "','" . $win_handle . "', 700,480)";
+				}
+				else{
+					$link = "winopeng_var('$row[datos]','',700,480)";
+						
+				}
 				if(!is_snapshot_data($row['datos'])){
 				$salida = '<a href="javascript:' . $link . '">' .
 					html_print_image('images/default_list.png', true,
@@ -1479,27 +1484,24 @@ $('#moduletype').click(function(){
 				period = <?php echo SECONDS_1DAY; ?>;
 			}
 		}
+
 		
-		var server_name = '';
-		var extra_parameters = '';
 		if ($('input[name=selection_mode]:checked').val()) {
-			
-			period = $('#period').val();
-			
+	
 			var selection_mode = $('input[name=selection_mode]:checked').val();
 			var date_from = $('#text-date_from').val();
 			var time_from = $('#text-time_from').val();
 			var date_to = $('#text-date_to').val();
 			var time_to = $('#text-time_to').val();
 			
-			extra_parameters = '&selection_mode=' + selection_mode + '&date_from=' + date_from + '&date_to=' + date_to + '&time_from=' + time_from + '&time_to=' + time_to;
+			var extra_parameters = '&selection_mode=' + selection_mode + '&date_from=' + date_from + '&date_to=' + date_to + '&time_from=' + time_from + '&time_to=' + time_to;
 		
 		}
 		title = <?php echo "\"" . __("Module: ") . "\"" ?>;
 		$.ajax({
 			type: "POST",
 			url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-			data: "page=include/ajax/module&get_module_detail=1&server_name="+server_name+"&id_agent="+id_agent+"&id_module=" + module_id+"&offset="+offset+"&period="+period + extra_parameters,
+			data: "page=include/ajax/module&get_module_detail=1&server_name="+server_name+"&id_agent="+id_agent+"&id_module=" + module_id+"&offset="+offset+"&period="+period+extra_parameters,
 			dataType: "html",
 			success: function(data) {
 				$("#monitor_details_window").hide ()

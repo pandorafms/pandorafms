@@ -8362,9 +8362,8 @@ function reporting_get_stats_servers($tiny = true) {
 	$tdata = array();'<span class="big_data">' . format_numeric($server_performance ["total_local_modules"]) . '</span>';
 	$tdata[0] = html_print_image('images/module.png', true, array('title' => __('Total running modules'), 'width' => '25px'));
 	$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_modules"]) . '</span>';
-	$tdata[2] = '&nbsp;';
-	$tdata[3] = '<span class="med_data">' . format_numeric($server_performance ["total_modules_rate"], 2) . '</span>';
-	$tdata[4] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+	$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["total_modules_rate"], 2) . '</span>';
+	$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 	
 	$table_srv->rowclass[] = '';
 	$table_srv->data[] = $tdata;
@@ -8378,14 +8377,9 @@ function reporting_get_stats_servers($tiny = true) {
 	$tdata = array();
 	$tdata[0] = html_print_image('images/database.png', true, array('title' => __('Local modules'), 'width' => '25px'));
 	$tdata[1] = '<span class="big_data">' . format_numeric($server_performance ["total_local_modules"]) . '</span>';
-	
-	
-		$tdata[2] = '&nbsp;';
-
-	$tdata[3] = '<span class="med_data">' .
-		format_numeric($server_performance ["local_modules_rate"], 2) . '</span>';
-		
-	$tdata[4] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+	$tdata[2] = '<span class="med_data">' .
+	format_numeric($server_performance ["local_modules_rate"], 2) . '</span>';
+	$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 	
 	$table_srv->rowclass[] = '';
 	$table_srv->data[] = $tdata;
@@ -8400,16 +8394,15 @@ We added some of what seems to be "buggy" messages to the openSource version rec
 You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
 */
 		
+		$tdata[2] = '<span class="med_data">' . format_numeric($server_performance ["remote_modules_rate"], 2) . '</span>';
+		$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+		
 		if($server_performance ["total_remote_modules"]>10000 && !enterprise_installed()){
-			$tdata[2] = "<div id='agentsmodal' class='publienterprise' title='Community version' style='text-align:left;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+			$tdata[4] = "<div id='agentsmodal' class='publienterprise' title='Community version' style='text-align:left;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
 		}
 		else{
-			$tdata[2] = '&nbsp;';
+			$tdata[4] = '&nbsp;';
 		}
-		
-		
-		$tdata[3] = '<span class="med_data">' . format_numeric($server_performance ["remote_modules_rate"], 2) . '</span>';
-		$tdata[4] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
 		
 		$table_srv->rowclass[] = '';
 		$table_srv->data[] = $tdata;
@@ -8423,7 +8416,16 @@ You can of course remove the warnings, that's why we include the source and do n
 			$tdata[2] = '<span class="med_data">' .
 				format_numeric($server_performance["network_modules_rate"], 2) .
 				'</span>';
+				
+								
 			$tdata[3] = html_print_image('images/module.png', true, array('title' => __('Ratio') . ': ' . __('Modules by second'), 'width' => '16px')) . '/sec </span>';
+			
+			if($server_performance ["total_remote_modules"]>10000 && !enterprise_installed()){
+				$tdata[4] = "<div id='remotemodulesmodal' class='publienterprise' title='Community version' style='text-align:left;'><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
+			}
+			else{
+				$tdata[4] = '&nbsp;';
+			}
 			
 			$table_srv->rowclass[] = '';
 			$table_srv->data[] = $tdata;

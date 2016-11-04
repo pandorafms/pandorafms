@@ -1,5 +1,7 @@
 <?php
 
+if(check_login()){
+
 //Pandora FMS- http://pandorafms.com
 // ==================================================
 // Copyright (c) 2005-2010 Artica Soluciones Tecnologicas
@@ -292,7 +294,7 @@ if ($get_module_detail) {
 						$data[] = 'No data';
 					}
 					else {
-						$data[] = io_safe_input($row[$attr[0]]);
+						$data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
 					}
 				}
 			}
@@ -960,8 +962,8 @@ if ($list_modules) {
 				"refresh=" . SECONDS_10MINUTES . "&amp;" .
 				"draw_events=$draw_events', 'day_".$win_handle."')";
 
-			if(!is_snapshot_data($module['datos'])){
-				$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
+if(!is_snapshot_data($module['datos'])){
+			$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
 			}
 			$server_name = '';
 			$data[8] .= "<a href='javascript: " .
@@ -1062,6 +1064,7 @@ if ($get_type) {
 	$graph_type = return_graphtype ($module["id_tipo_modulo"]);
 	echo $graph_type;
 	return;
+}
 }
 
 ?>

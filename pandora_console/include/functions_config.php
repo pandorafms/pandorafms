@@ -1869,7 +1869,13 @@ function config_prepare_session() {
 	global $config;
 	
 	// Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours
-	$sessionCookieExpireTime = $config["session_timeout"] * 60;
+	$sessionCookieExpireTime = $config["session_timeout"];
+	
+	if ($sessionCookieExpireTime <= 0)
+		$sessionCookieExpireTime = 10 * 365 * 24 * 60 * 60;
+	else
+		$sessionCookieExpireTime *= 60;
+	
 	ini_set('session.gc_maxlifetime', $sessionCookieExpireTime);
 	session_set_cookie_params ($sessionCookieExpireTime);
 	

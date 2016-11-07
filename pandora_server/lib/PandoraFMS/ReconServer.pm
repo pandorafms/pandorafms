@@ -70,6 +70,9 @@ sub new ($$$$$$) {
 	$Sem = Thread::Semaphore->new;
 	$TaskSem = Thread::Semaphore->new (0);
 	
+	db_do ($dbh, 'UPDATE trecon_task  SET utimestamp = 0 WHERE id_recon_server = ? AND status <> -1',
+	       get_server_id ($dbh, $config->{'servername'}, RECONSERVER));
+
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, RECONSERVER, \&PandoraFMS::ReconServer::data_producer, \&PandoraFMS::ReconServer::data_consumer, $dbh);
 	
@@ -517,8 +520,8 @@ sub exec_recon_script ($$$) {
 		logger ($pa_config, "Cannot execute recon task command $command.");
 	}
 	
-	# Notify this recon task is ended
-	update_recon_task ($dbh, $task->{'id_rt'}, -1);
+	# Only update the timestamp in case something went wrong. The script should set the status.
+	db_do ($dbh, 'UPDATE trecon_task SET utimestamp = ? WHERE id_rt = ?', time (), $task->{'id_rt'});
 	
 	logger($pa_config, 'Done executing recon script ' . safe_output($script->{'name'}), 10);
 	return 0;

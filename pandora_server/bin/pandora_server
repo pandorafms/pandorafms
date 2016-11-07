@@ -694,3 +694,11 @@ else {
 	win32_service_run();
 }
 
+################################################################################
+# Kill any scripts started by the Pandora FMS Server that are still running.
+################################################################################
+END {{
+	local $SIG{HUP} = "IGNORE";
+	kill("HUP", -$$);
+}}
+

@@ -34,7 +34,7 @@ require_once ('../../include/functions_users.php');
 global $config;
 
 
-$config["id_user"] = $_SESSION["id_usuario"];
+$config["id_user"] = $_SESSION[$config['homeurl_static']]["id_usuario"];
 
 // http://es2.php.net/manual/en/ref.session.php#64525
 // Session locking concurrency speedup!

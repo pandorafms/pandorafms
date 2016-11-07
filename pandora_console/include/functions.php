@@ -1730,9 +1730,9 @@ function check_login ($output = true) {
 		exit;
 	}
 	
-	if ((isset($_SESSION["id_usuario"])) AND ($_SESSION["id_usuario"] != "")) {
-		if (is_user ($_SESSION["id_usuario"])) {
-			$config['id_user'] = $_SESSION["id_usuario"];
+	if ((isset($_SESSION[$config['homeurl_static']]["id_usuario"])) AND ($_SESSION[$config['homeurl_static']]["id_usuario"] != "")) {
+		if (is_user ($_SESSION[$config['homeurl_static']]["id_usuario"])) {
+			$config['id_user'] = $_SESSION[$config['homeurl_static']]["id_usuario"];
 			
 			return true;
 		}

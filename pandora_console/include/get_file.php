@@ -13,14 +13,14 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-if (! isset($_SESSION['id_usuario'])) {
-	session_start();
-}
-
 require_once('functions.php');
 require_once('functions_filemanager.php');
 require_once ("config.php");
 global $config;
+
+if (! isset($_SESSION[$config['homeurl_static']]['id_usuario'])) {
+	session_start();
+}
 
 check_login ();
 

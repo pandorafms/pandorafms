@@ -24,7 +24,7 @@ if ($searchHelps) {
 	
 	$help_directory = $config['homedir'] . "/include/help";
 	
-	$user_language = get_user_language ($_SESSION['id_usuario']);
+	$user_language = get_user_language ($_SESSION[$config['homeurl_static']]['id_usuario']);
 	if ($user_language === 'en_GB') {
 		$user_language = 'en';
 	}

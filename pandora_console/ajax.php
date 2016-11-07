@@ -35,7 +35,7 @@ if (isset ($_GET["loginhash"])) {
 	if ($config["loginhash_pwd"] != ""
 		&& $loginhash_data == md5($loginhash_user.io_output_password($config["loginhash_pwd"]))) {
 		db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
-		$_SESSION['id_usuario'] = $loginhash_user;
+		$_SESSION[$config['homeurl_static']]['id_usuario'] = $loginhash_user;
 		$config["id_user"] = $loginhash_user;
 	}
 	else {
@@ -61,7 +61,7 @@ $config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
 $page = (string) get_parameter ('page');
 $page = safe_url_extraclean ($page);
 $page .= '.php';
-$config["id_user"] = $_SESSION["id_usuario"];
+$config["id_user"] = $_SESSION[$config['homeurl_static']]["id_usuario"];
 $isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK)
 	$config["relative_path"] = enterprise_hook('skins_set_image_skin_path',array($config['id_user']));

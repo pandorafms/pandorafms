@@ -21,7 +21,7 @@ require_once ("../../include/functions_db.php");
 require_once ("../../include/functions_modules.php");
 require_once ("../../include/functions_agents.php");
 
-$config["id_user"] = $_SESSION["id_usuario"];
+$config["id_user"] = $_SESSION[$config['homeurl_static']]["id_usuario"];
 if (! check_acl ($config['id_user'], 0, "AR") && ! check_acl ($config['id_user'], 0, "AW")) {
 	require ("../../general/noaccess.php");
 	return;

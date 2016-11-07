@@ -22,7 +22,7 @@ require_once ("../../include/functions_users.php");
 require_once ("../../include/functions_groups.php");
 require_once ("../../include/functions_reporting.php");
 
-$config["id_user"] = $_SESSION["id_usuario"];
+$config["id_user"] = $_SESSION[$config['homeurl_static']]["id_usuario"];
 if (! check_acl ($config['id_user'], 0, "AR")) {
 	db_pandora_audit("ACL Violation", "Trying to access downtime scheduler");
 	require ("general/noaccess.php");

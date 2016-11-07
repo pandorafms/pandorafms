@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-11-03 10:13+0100\n"
-"PO-Revision-Date: 2016-11-03 10:53+0000\n"
+"PO-Revision-Date: 2016-11-07 12:05+0000\n"
 "Last-Translator: artu30 <gonzalez.arturo1991@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-11-03 11:04+0000\n"
+"X-Launchpad-Export-Date: 2016-11-07 12:11+0000\n"
 "X-Generator: Launchpad (build 18246)\n"
 
 #: ../../general/links_menu.php:20 ../../godmode/menu.php:284
@@ -10976,7 +10976,7 @@ msgstr "Siguiente IP disponible"
 
 #: ../../enterprise/extensions/csv_import_group.php:27
 msgid "CSV import group"
-msgstr "Importar el grupo a CSV"
+msgstr "Importar grupos de CSV"
 
 #: ../../enterprise/extensions/resource_exportation/functions.php:19
 #: ../../extensions/resource_exportation.php:350
@@ -33565,47 +33565,3 @@ msgstr "Nodo principal"
 
 #~ msgid "Agent max"
 #~ msgstr "Máximo agente"
-
-#~ msgid "Show percentil 95º"
-#~ msgstr "Mostrar porcentaje 95º"
-
-#~ msgid "Combined%20Sample%20Graph"
-#~ msgstr "Gráfico de Muestra Combinado"
-
-#~ msgid "Update manager » Messages"
-#~ msgstr "Administrador de actualizaciones  » Mensajes"
-
-#~ msgid "Update manager » Online"
-#~ msgstr "Administrador de actualizaciones  » Conectado"
-
-#~ msgid "Update manager » Offline"
-#~ msgstr "Administrador de actualizaciones  » Sin conexión"
-
-#~ msgid "Update manager » Setup"
-#~ msgstr "Administrador de actualizaciones  » Configuración"
-
-#, php-format
-#~ msgid "Percentile %dº"
-#~ msgstr "Porcentaje %dº"
-
-#~ msgid ""
-#~ "This happen when you have just created a module and it's not executed at "
-#~ "first time. Usually in a few seconds should be initialized and you will be "
-#~ "able to see in main view. If you keep non-init modules for more than 24hr "
-#~ "(due a problem in it's execution or configuration) they will be "
-#~ "automatically deleted by the system. Non-init are not visible in the “main "
-#~ "view”, you can see/edit them in the module administration section, in the "
-#~ "agent administrator."
-#~ msgstr ""
-#~ "Esto pasa cuando se acaba de crear un método y no se ejecuta la primera vez. "
-#~ "Habitualmente en unos segundos debería estar iniciado para que lo pueda ver "
-#~ "en la vista principal. Si se mantiene en la lista de módulos no iniciados "
-#~ "más tiempo de 24hrs (debido a un problema en su ejecución o configuración) "
-#~ "serán borrados automáticamente por el sistema."
-
-#~ msgid "Create group if doesn’t exist in destination"
-#~ msgstr "Crear grupo si no existe en el destino"
-
-#, php-format
-#~ msgid "&reg; Ártica soluciones Pandora FMS %s - Build %s"
-#~ msgstr "&reg; Ártica soluciones Pandora FMS %s - Versión %s"

@@ -110,22 +110,25 @@ if ($enterprise == ENTERPRISE_NOT_HOOK) {
 ?>
 
 <script>
-$(document).ready(function() {
-$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
-jQuery.get ("ajax.php",
-	{
-"page": "general/alert_enterprise",
-"message":"infomodal"},
-	function (data, status) {
-		$("#alert_messages").hide ()
-			.empty ()
-			.append (data)
-			.show ();
-	},
-	"html"
-);
+var open = "<?php echo $open;?>";
+if(open){
+	$(document).ready(function() {
+	$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
+	jQuery.get ("ajax.php",
+		{
+	"page": "general/alert_enterprise",
+	"message":"infomodal"},
+		function (data, status) {
+			$("#alert_messages").hide ()
+				.empty ()
+				.append (data)
+				.show ();
+		},
+		"html"
+	);
 
 return false;
 
 });
+}
 </script>

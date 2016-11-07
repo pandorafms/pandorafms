@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-11-03 10:13+0100\n"
-"PO-Revision-Date: 2016-09-09 07:59+0000\n"
+"PO-Revision-Date: 2016-11-07 00:56+0000\n"
 "Last-Translator: Junichi Satoh <junichi@rworks.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-11-03 11:03+0000\n"
+"X-Launchpad-Export-Date: 2016-11-07 03:08+0000\n"
 "X-Generator: Launchpad (build 18246)\n"
 
 #: ../../general/links_menu.php:20 ../../godmode/menu.php:284
@@ -198,6 +198,8 @@ msgid ""
 "\tPlease know that all attempts to access this page are recorded in security "
 "logs of Pandora System Database"
 msgstr ""
+"このページへのアクセスは許可されたユーザのみ可能です。手助けが必要であればシステム管理者へ連絡してください。<br/></br/>\n"
+"\tこのページへのアクセスは、Pandora のシステムデータベースのセキュリティログに記録されます。"
 
 #: ../../general/alert_enterprise.php:101
 msgid ""
@@ -206,6 +208,9 @@ msgid ""
 "Manager retrieves new modules, new plugins and new features (even full "
 "migrations tools for future versions) automatically."
 msgstr ""
+"アップデートマネージャクライアントは、Pandora FMS に含まれています。Pandorra FMS "
+"を自動的に更新する処理をサポートします。アップデートマネージャは、新たなモジュール、新たなプラグインおよび新たな機能(将来のバージョンへのマイグレーション"
+"ツールを含む)を自動的に取り込みます。"
 
 #: ../../general/alert_enterprise.php:104
 msgid ""
@@ -214,6 +219,8 @@ msgid ""
 "corrupted or a feature stops working properly, you will need to recover a "
 "backup by yourself.</b>"
 msgstr ""
+"<b>オープンソース版は毎週生成されるパッケージで更新されます。これらの更新は保証やサポートはありません。システムが壊れたり一部の機能が正しく動作しなかっ"
+"た場合は、ご自身でバックアップから戻す必要があります。</b>"
 
 #: ../../general/alert_enterprise.php:107
 msgid ""
@@ -225,6 +232,10 @@ msgid ""
 "Pandora FMS Enterprise Edition. For more information visit <a "
 "href=\"http://pandorafms.com\">pandorafms.com</a>"
 msgstr ""
+"Enterprise版では、完全にテストされ、サポートされたパッケージでの異なる更新システムです。我々のサポートチームが問題や問い合わせに対して対応します"
+"。Enterprise版のアップデートマネージャには、オープンソース版には無い異なる機能があります。Pandora FMS "
+"Enterpriseには、多くのビジネス向けの機能が含まれています。より詳細は、<a "
+"href=\"http://pandorafms.com\">pandorafms.com</a>を参照してください。"
 
 #: ../../general/alert_enterprise.php:115
 msgid ""
@@ -254,6 +265,9 @@ msgid ""
 "of agents and modules running). To disable it, please remove the remote "
 "server address from the Update Manager plugin setup."
 msgstr ""
+"アップデートマネージャは、Pandora FMS "
+"の利用状況の情報(実行しているエージェントとモジュール数)を送信します。無効化するには、アップデートマネージャプラグインの設定からリモートサーバのアドレス"
+"を削除します。"
 
 #: ../../general/alert_enterprise.php:128
 msgid ""
@@ -267,6 +281,11 @@ msgid ""
 "systems, individually or through policies.\n"
 "      <br><br><img style='width:105px' src='"
 msgstr ""
+"オープンソース版では、ローカルモジュールにライブラリを定義する機能や、それをリモートエージェントに配布する機能はありません。これらの変更を行うためには個々"
+"のエージェントで変更する必要があり、外部ツールを使う必要があったり、時間がかかります。また、ローカルプラグインを配布したり、VMWare, RHEV や "
+"informix などのアプリケーションを監視するための Enterprise "
+"プラグインのライブラリも利用できません。Enterprise版は、これらすべてがあり、個別はもちろんポリシーを通してローカルモジュールを配布したり管理する"
+"ことができます。"
 
 #: ../../general/alert_enterprise.php:132
 msgid ""
@@ -277,6 +296,10 @@ msgid ""
 "save time, effort and annoyances. More information <a "
 "href='pandorafms.com'>pandorafms.com</a>"
 msgstr ""
+"すべての監視を集約したいですか。多くのシステムがあり、包括的なルールでそれらを管理するのは難しくはないでしょうか。監視、アラート設定、ローカルプラグインで"
+"さえ、一回のクリックで展開したくありませんか。Pandora FMS Enterprise "
+"ポリシーは、まさにそういったニーズに答えるものです。時間の浪費と頭痛の種を軽減します。より詳細は、 <a "
+"href='pandorafms.com'>pandorafms.com</a>を参照してください。"
 
 #: ../../general/alert_enterprise.php:135
 msgid ""
@@ -285,6 +308,9 @@ msgid ""
 "This allows you to automate troubleshooting. If you know the value of "
 "working with events, event correlation will take you to a new level."
 msgstr ""
+"Pandora FMS Enterprise "
+"は、イベント集約の相関も持っています。これを通して、論理的なルールに基づくリアルタイムアラートや新たなイベントを生成することができます。これは、自動的なト"
+"ラブルシューティングを可能にします。イベント発生時の値を知れば、イベント送還が次のステップを教えてくれます。"
 
 #: ../../general/alert_enterprise.php:138
 msgid ""
@@ -295,10 +321,13 @@ msgid ""
 "generate their own reports from templates created by you. If reports are key "
 "to your business, Pandora FMS Enterprise version is for you."
 msgstr ""
+"Enterprise版のレポートはより強力です。ウィザードがあり、決めたスケジュールで PDF "
+"を送信することができます。また、あなたの顧客ごとに個別のレポートを素早く作成できるテンプレートシステムがあります。作成したテンプレートから、顧客自身が独自"
+"のレポートを生成することもできます。レポートがビジネスにとって重要であるならば、Pandora FMS Enteprise はあなたの要望にマッチします。"
 
 #: ../../general/alert_enterprise.php:141
 msgid "These options are only effective on the Enterprise version."
-msgstr ""
+msgstr "これらのオプションは、Enterprise版でのみ有効です。"
 
 #: ../../general/alert_enterprise.php:144
 msgid ""
@@ -308,6 +337,10 @@ msgid ""
 "packages, and there is no WARRANTY or SUPPORT. If you need professional "
 "support and warranty, please upgrade to Enterprise Version."
 msgstr ""
+"警告: "
+"自動更新後に操作が行われました。データの消失や操作性を含むシステムの問題が発生している可能性があります。最新のバックアップを確認してください。オープンソー"
+"ス版はパッケージを使って自動更新されます。保障やサポートはありません。プロフェッショナルサポートや保証が必要な場合は、Enterprise版にアップデート"
+"してください。"
 
 #: ../../general/alert_enterprise.php:147
 msgid ""
@@ -315,6 +348,8 @@ msgid ""
 "agents but fine tuning requires knowledge and time. Checkout the Enterprise "
 "Version for a professional supported system."
 msgstr ""
+"このシステムは高負荷になっています。オープンソース版は多くのエージェントに対応できますが、最適なチューニングのための知識と時間が必要です。プロフェッショナ"
+"ルサポートは、Enterprise版を確認してください。"
 
 #: ../../general/alert_enterprise.php:150
 msgid ""
@@ -323,6 +358,8 @@ msgid ""
 "per agent. This configuration has B/A modules per agent. Checkout the "
 "Enterprise Version for a professional supported system."
 msgstr ""
+"このシステムは、一つのエージェントあたりのモジュール数が多すぎです。オープンソース版では数千のモジュールを管理することができますが、一つのエージェントで "
+"40以上はお勧めしません。プロフェッショナルサポートは、Enterprise版を確認してください。"
 
 #: ../../general/alert_enterprise.php:153
 msgid ""
@@ -332,12 +369,17 @@ msgid ""
 "supported system with improved capacity on network monitoring, including "
 "distributed servers."
 msgstr ""
+"このシステムで多くのリモートモジュールが検出されました。オープンソース版では数千のモジュールを管理できますが、大量の SNMP や ICMP "
+"リクエストがある環境でのパフォーマンスは限られています。プロフェッショナルサポートがあり、容量を改善したネットワーク監視や分散監視ができる "
+"Enterprise版を確認してください。"
 
 #: ../../general/alert_enterprise.php:156
 msgid ""
 "This system has too much events in the database. Checkout database purge "
 "options. Checkout the Enterprise Version for a professional supported system."
 msgstr ""
+"このシステムはデータベースに多くのイベントがあります。データベースの削除オプションを確認してください。プロフェッショナルサポートは、Enterprise版"
+"を確認してください。"
 
 #: ../../general/alert_enterprise.php:159
 msgid ""
@@ -346,6 +388,8 @@ msgid ""
 "correlation alerts to simplify the alerting system and have easier "
 "administration and increased performance."
 msgstr ""
+"アラートの定義数が多くあるため、将来的にパフォーマンスの問題が発生する可能性があります。Enterprise版では、イベント相関でアラートシステムを単純化"
+"でき、管理が簡単になりパフォーマンスが向上します。"
 
 #: ../../general/subselect_data_module.php:42
 #: ../../enterprise/meta/monitoring/wizard/wizard.php:105
@@ -1156,7 +1200,7 @@ msgstr "リフレッシュ"
 
 #: ../../general/login_page.php:82
 msgid "Docs"
-msgstr ""
+msgstr "ドキュメント"
 
 #: ../../general/login_page.php:84 ../../general/login_help_dialog.php:67
 #: ../../general/login_help_dialog.php:69
@@ -4796,7 +4840,7 @@ msgstr "合計"
 
 #: ../../enterprise/meta/monitoring/group_view.php:148
 msgid "critical"
-msgstr ""
+msgstr "障害"
 
 #: ../../enterprise/meta/monitoring/group_view.php:155
 #: ../../enterprise/meta/include/ajax/tree_view.ajax.php:637
@@ -10024,12 +10068,12 @@ msgstr "'%s' コレクション追加エラー"
 #: ../../enterprise/extensions/resource_registration/functions.php:148
 #, php-format
 msgid "Success add '%s' agent plugin."
-msgstr ""
+msgstr "エージェントプラグイン '%s' を追加しました。"
 
 #: ../../enterprise/extensions/resource_registration/functions.php:149
 #, php-format
 msgid "Error add '%s' agent plugin."
-msgstr ""
+msgstr "エージェントプラグイン '%s' の追加エラー。"
 
 #: ../../enterprise/extensions/resource_registration/functions.php:160
 msgid "Error add the module, haven't type."
@@ -10044,7 +10088,7 @@ msgstr "モジュール追加エラー。タグコンポーネント内にエラ
 
 #: ../../enterprise/extensions/resource_registration/functions.php:406
 msgid "Error add the module plugin importation, plugin is not registered"
-msgstr ""
+msgstr "モジュールプラグイン追加エラー。プラグインは登録されていません。"
 
 #: ../../enterprise/extensions/resource_registration/functions.php:417
 #, php-format
@@ -11148,11 +11192,11 @@ msgstr "サマリ"
 
 #: ../../enterprise/dashboard/widgets/module_icon.php:28
 msgid "Module with icon"
-msgstr ""
+msgstr "モジュールとアイコン"
 
 #: ../../enterprise/dashboard/widgets/module_icon.php:30
 msgid "Show a value of module and icon"
-msgstr ""
+msgstr "モジュールの値とアイコンを表示"
 
 #: ../../enterprise/dashboard/widgets/module_icon.php:49
 #: ../../enterprise/dashboard/widgets/module_status.php:49
@@ -11216,18 +11260,18 @@ msgstr "更新間隔"
 #: ../../enterprise/dashboard/widgets/module_value.php:76
 #: ../../enterprise/dashboard/widgets/module_table_value.php:73
 msgid "Text size of value in px"
-msgstr ""
+msgstr "pxでの値のテキストサイズ"
 
 #: ../../enterprise/dashboard/widgets/module_icon.php:91
 #: ../../enterprise/dashboard/widgets/module_status.php:88
 #: ../../enterprise/dashboard/widgets/module_value.php:79
 msgid "Text size of label in px"
-msgstr ""
+msgstr "pxでのラベルのテキストサイズ"
 
 #: ../../enterprise/dashboard/widgets/module_icon.php:94
 #: ../../enterprise/dashboard/widgets/module_status.php:91
 msgid "Size of icon"
-msgstr ""
+msgstr "アイコンのサイズ"
 
 #: ../../enterprise/dashboard/widgets/monitor_health.php:21
 msgid "Global health"
@@ -11239,11 +11283,11 @@ msgstr "全体の監視状態一覧の表示"
 
 #: ../../enterprise/dashboard/widgets/module_status.php:28
 msgid "Status of module"
-msgstr ""
+msgstr "モジュールの状態"
 
 #: ../../enterprise/dashboard/widgets/module_status.php:30
 msgid "Show status of a module"
-msgstr ""
+msgstr "モジュールの状態表示"
 
 #: ../../enterprise/dashboard/widgets/top_n_events_by_module.php:26
 msgid "Top N Events by module."
@@ -11528,11 +11572,11 @@ msgstr "アクセスできません。"
 
 #: ../../enterprise/dashboard/widgets/module_value.php:28
 msgid "Show module value"
-msgstr ""
+msgstr "モジュールの値表示"
 
 #: ../../enterprise/dashboard/widgets/module_value.php:30
 msgid "Show a value of module"
-msgstr ""
+msgstr "モジュールの値表示"
 
 #: ../../enterprise/dashboard/widgets/maps_made_by_user.php:25
 msgid "Map made by user"
@@ -11826,39 +11870,39 @@ msgstr "不十分なデータ"
 
 #: ../../enterprise/dashboard/widgets/module_table_value.php:28
 msgid "Show module value in a table"
-msgstr ""
+msgstr "表にモジュールの値を表示"
 
 #: ../../enterprise/dashboard/widgets/module_table_value.php:30
 msgid "Show a value of module in a table"
-msgstr ""
+msgstr "表にモジュールの値を表示"
 
 #: ../../enterprise/dashboard/widgets/module_table_value.php:76
 msgid "Separator of data"
-msgstr ""
+msgstr "データの区切り"
 
 #: ../../enterprise/dashboard/widgets/module_table_value.php:78
 msgid "Carriage Return"
-msgstr ""
+msgstr "キャリッジリターン"
 
 #: ../../enterprise/dashboard/widgets/module_table_value.php:79
 msgid "Vertical Bar"
-msgstr ""
+msgstr "縦棒"
 
 #: ../../enterprise/dashboard/widgets/module_table_value.php:80
 msgid "Semicolon"
-msgstr ""
+msgstr "セミコロン"
 
 #: ../../enterprise/dashboard/widgets/module_table_value.php:81
 msgid "Colon"
-msgstr ""
+msgstr "コロン"
 
 #: ../../enterprise/dashboard/widgets/module_table_value.php:82
 msgid "Commas"
-msgstr ""
+msgstr "カンマ"
 
 #: ../../enterprise/dashboard/widgets/module_table_value.php:83
 msgid "Blank"
-msgstr ""
+msgstr "空白"
 
 #: ../../enterprise/dashboard/widgets/top_n_events_by_group.php:26
 msgid "Top N Events by agent."
@@ -11926,7 +11970,7 @@ msgstr "タブ"
 
 #: ../../enterprise/dashboard/widgets/tree_view.php:47
 msgid "Open all nodes"
-msgstr ""
+msgstr "すべてのノードを開く"
 
 #: ../../enterprise/dashboard/widgets/tree_view.php:58
 msgid "Agents status"
@@ -11948,7 +11992,7 @@ msgstr "ユーザにエージェントを参照する権限がありません。
 
 #: ../../enterprise/dashboard/widgets/tree_view.php:89
 msgid "This widget only working in desktop version."
-msgstr ""
+msgstr "ウィジェットはデスクトップ版でのみ動作します。"
 
 #: ../../enterprise/dashboard/widgets/tree_view.php:187
 #: ../../enterprise/include/functions_inventory.php:165
@@ -12094,15 +12138,15 @@ msgstr "エージェントモジュールのグラフ表示"
 
 #: ../../enterprise/mobile/operation/dashboard.php:86
 msgid "Dashboards list"
-msgstr ""
+msgstr "ダッシュボード一覧"
 
 #: ../../enterprise/mobile/operation/dashboard.php:106
 msgid "No Dashboards"
-msgstr ""
+msgstr "ダッシュボードがありません"
 
 #: ../../enterprise/mobile/operation/dashboard.php:139
 msgid "Dashboard name"
-msgstr ""
+msgstr "ダッシュボード名"
 
 #: ../../enterprise/operation/agentes/networkmap_enterprise.editor.php:210
 #: ../../enterprise/operation/agentes/networkmap_enterprise.view.php:1085
@@ -12950,24 +12994,24 @@ msgstr "このオプションを有効化すると、新規ユーザがログイ
 #: ../../enterprise/godmode/setup/setup_auth.php:90
 #: ../../enterprise/godmode/setup/setup_auth.php:131
 msgid "AD Groups"
-msgstr ""
+msgstr "ADグループ"
 
 #: ../../enterprise/godmode/setup/setup_auth.php:90
 #: ../../enterprise/godmode/setup/setup_auth.php:131
 msgid "OP"
-msgstr ""
+msgstr "OP"
 
 #: ../../enterprise/godmode/setup/setup_auth.php:133
 msgid "Select profile"
-msgstr ""
+msgstr "プロファイルを選択"
 
 #: ../../enterprise/godmode/setup/setup_auth.php:169
 msgid "You must select a profile from the list of profiles."
-msgstr ""
+msgstr "プロファイル一覧からぷらファイルを選択する必要があります。"
 
 #: ../../enterprise/godmode/setup/setup_auth.php:277
 msgid "Add new permissions"
-msgstr ""
+msgstr "新規の権限を追加"
 
 #: ../../enterprise/godmode/setup/setup_auth.php:351
 #: ../../include/functions_config.php:326
@@ -12976,12 +13020,12 @@ msgstr "MySQL ホスト"
 
 #: ../../enterprise/godmode/setup/setup_auth.php:397
 msgid "SimpleSAML path"
-msgstr ""
+msgstr "SimpleSAML パス"
 
 #: ../../enterprise/godmode/setup/setup_auth.php:397
 msgid ""
 "Select the path where SimpleSAML has been installed (by default '/opt/')"
-msgstr ""
+msgstr "SimpleSAML がインストールされているパスを選択 (デフォルトは '/opt/')"
 
 #: ../../enterprise/godmode/setup/setup.php:30
 #: ../../include/functions_config.php:213
@@ -15100,14 +15144,14 @@ msgstr "平均のみ"
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1594
 #: ../../godmode/reporting/reporting_builder.item_editor.php:1213
 msgid "Percentil 95"
-msgstr ""
+msgstr "95パーセント"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:266
 #: ../../enterprise/godmode/reporting/reporting_builder.template_item.php:1595
 msgid ""
 "If this option was checked, only adding in elements that type of modules "
 "support this option."
-msgstr ""
+msgstr "このオプションをチェックすると、このオプションをサポートするモジュールタイプの要素のみ追加できます。"
 
 #: ../../enterprise/godmode/reporting/reporting_builder.wizard.php:325
 #: ../../enterprise/include/functions_massive.php:15
@@ -21324,11 +21368,11 @@ msgstr "予測サーバモジュール"
 #: ../../operation/agentes/status_monitor.php:382
 #: ../../operation/agentes/status_monitor.php:948
 msgid "Server type"
-msgstr ""
+msgstr "サーバの種類"
 
 #: ../../operation/agentes/status_monitor.php:393
 msgid "Data type"
-msgstr ""
+msgstr "データのタイプ"
 
 #: ../../operation/agentes/status_monitor.php:512
 msgid "Advanced Options"
@@ -21336,7 +21380,7 @@ msgstr "高度なオプション"
 
 #: ../../operation/agentes/status_monitor.php:935
 msgid "Data Type"
-msgstr ""
+msgstr "データのタイプ"
 
 #: ../../operation/agentes/status_monitor.php:973
 #: ../../godmode/agentes/module_manager.php:529
@@ -22216,7 +22260,7 @@ msgstr "SNMP トラップデータがありません。"
 #: ../../godmode/snmpconsole/snmp_alert.php:1051
 #: ../../godmode/snmpconsole/snmp_trap_generator.php:72
 msgid "Enterprise String"
-msgstr "Ｅｎｔｅｒｐｒｉｓｅ文字列"
+msgstr "Enterprise文字列"
 
 #: ../../operation/snmpconsole/snmp_view.php:523
 msgid "Trap subtype"
@@ -23559,11 +23603,11 @@ msgstr "カスタム画像を images/backgrounds/ フォルダに置くことが
 
 #: ../../godmode/setup/setup_visuals.php:184
 msgid "Custom logo in login"
-msgstr ""
+msgstr "ログイン時のカスタムロゴ"
 
 #: ../../godmode/setup/setup_visuals.php:196
 msgid "Disable Pandora FMS on graphs"
-msgstr ""
+msgstr "グラフで Pandora FMS 表示を無効化"
 
 #: ../../godmode/setup/setup_visuals.php:210
 #: ../../include/functions_config.php:492
@@ -23717,7 +23761,7 @@ msgstr "グラフ解像度 (1-低, 5-高)"
 #: ../../godmode/setup/setup_visuals.php:405
 #: ../../include/functions_config.php:436
 msgid "Data precision for reports"
-msgstr ""
+msgstr "レポートのデータ精度"
 
 #: ../../godmode/setup/setup_visuals.php:409
 #: ../../include/functions_config.php:506
@@ -24497,6 +24541,7 @@ msgid ""
 "The alert would fire when the value is not between <span id=\\'min\\"
 "'></span> and <span id=\\'max\\'></span>"
 msgstr ""
+"値が<span id=\\'最小\\'></span> と <span id=\\'最大\\'></span>の間に無い場合に、アラートを発報します。"
 
 #: ../../godmode/alerts/configure_alert_template.php:837
 #: ../../godmode/alerts/alert_view.php:170
@@ -25856,7 +25901,7 @@ msgstr "レポートの作成"
 
 #: ../../godmode/reporting/reporting_builder.php:1986
 msgid "Unsuccessfull action<br><br>"
-msgstr ""
+msgstr "実行に失敗<br><br>"
 
 #: ../../godmode/reporting/reporting_builder.list_items.php:312
 #: ../../include/functions_custom_graphs.php:212
@@ -26639,7 +26684,7 @@ msgstr "アップデートマネージャ > オンライン"
 
 #: ../../godmode/update_manager/update_manager.php:64
 msgid "Update manager Â» Messages"
-msgstr ""
+msgstr "アップデートマネージャ > メッセージ"
 
 #: ../../godmode/update_manager/update_manager.offline.php:37
 msgid "Drop the package here or"
@@ -26779,7 +26824,7 @@ msgstr ""
 
 #: ../../godmode/update_manager/update_manager.online.php:74
 msgid "The last version of package installed is:"
-msgstr ""
+msgstr "インストールされている最新バージョンのパッケージ:"
 
 #: ../../godmode/update_manager/update_manager.online.php:79
 msgid "Checking for the newest package."
@@ -31025,6 +31070,10 @@ msgid ""
 "incorrect or\n"
 "\t\t\tthe database server is not running."
 msgstr ""
+"データベースに接続できません。 <b>include/config.php</b> "
+"ファイル内のデータベースの設定を確認してください。<i><br/><br/>\n"
+"\t\t\tおそらく、データベース名、ホスト名、ユーザ名またはパスワードの値が不正か、\n"
+"\t\t\tデータベースが動作していません。"
 
 #: ../../include/functions_ui.php:3551
 msgid "DB ERROR"
@@ -31114,6 +31163,10 @@ msgid ""
 "\t\t\tpermissions for <i>include/config.php</i> file. Please do it, it is "
 "for your security."
 msgstr ""
+"セキュリティ上の理由により、 <i>config.php</i> は制限されたパーミッションである必要があります。\n"
+"\t\t\t\"other\"ユーザは読み書きできないようにし、所有者(通常は www-data や http デーモンの\n"
+"\t\t\tユーザ)のみが書き込みできるようにします。<i>include/config.php</i> ファイルの\n"
+"\t\t\tパーミッションを修正するまで通常の動作をしません。セキュリティのために調整をしてください。"
 
 #: ../../include/functions_filemanager.php:172
 #: ../../include/functions_filemanager.php:242
@@ -31349,7 +31402,7 @@ msgstr "コメントがありません"
 
 #: ../../include/functions_reporting_html.php:93
 msgid "Label: "
-msgstr ""
+msgstr "ラベル: "
 
 #: ../../include/functions_reporting_html.php:625
 msgid "Events by Severity"
@@ -31388,7 +31441,7 @@ msgstr "警告<br/>障害"
 
 #: ../../include/functions_reporting_html.php:1798
 msgid "Agent max value"
-msgstr ""
+msgstr "エージェント最大値"
 
 #: ../../include/functions_reporting_html.php:1801
 msgid "Agent min"
@@ -31396,7 +31449,7 @@ msgstr "最小エージェント"
 
 #: ../../include/functions_reporting_html.php:1802
 msgid "Agent min Value"
-msgstr ""
+msgstr "エージェント最小値"
 
 #: ../../include/functions_reporting_html.php:2187
 msgid "Alerts not fired"
@@ -31782,7 +31835,7 @@ msgstr "複製 DB ポート"
 
 #: ../../include/functions_config.php:357
 msgid "Saml path"
-msgstr ""
+msgstr "SAML パス"
 
 #: ../../include/functions_config.php:387
 msgid "Item limit for realtime reports)"
@@ -31794,11 +31847,11 @@ msgstr "QR コードヘッダー表示"
 
 #: ../../include/functions_config.php:461
 msgid "Custom logo login"
-msgstr ""
+msgstr "ログイン時のカスタムロゴ"
 
 #: ../../include/functions_config.php:490
 msgid "Fixed graph"
-msgstr ""
+msgstr "グラフの固定"
 
 #: ../../include/functions_config.php:496
 msgid "Paginate module"
@@ -32488,7 +32541,7 @@ msgstr "%s"
 
 #: ../../include/functions_graph.php:1613
 msgid " of module "
-msgstr ""
+msgstr " のモジュール "
 
 #: ../../include/functions_graph.php:1859
 msgid "Not fired alerts"
@@ -32586,45 +32639,3 @@ msgstr "メインノード"
 
 #~ msgid "Agent max"
 #~ msgstr "最大エージェント"
-
-#~ msgid "Combined%20Sample%20Graph"
-#~ msgstr "組み合わせサンプルグラフ"
-
-#, php-format
-#~ msgid "Percentile %dº"
-#~ msgstr "%dパーセント"
-
-#~ msgid "Update manager » Messages"
-#~ msgstr "アップデートマネージャ > メッセージ"
-
-#~ msgid "Update manager » Online"
-#~ msgstr "アップデートマネージャ > オンライン"
-
-#~ msgid ""
-#~ "This happen when you have just created a module and it's not executed at "
-#~ "first time. Usually in a few seconds should be initialized and you will be "
-#~ "able to see in main view. If you keep non-init modules for more than 24hr "
-#~ "(due a problem in it's execution or configuration) they will be "
-#~ "automatically deleted by the system. Non-init are not visible in the “main "
-#~ "view”, you can see/edit them in the module administration section, in the "
-#~ "agent administrator."
-#~ msgstr ""
-#~ "モジュール作成後、最初の実行がされていない場合にこれが発生します。通常は数秒で初期化されメイン画面で参照できるようになります。24時間以上(実行や設定に問"
-#~ "題がある等で)未初期化モジュールが放置された場合は、システムにより自動的に削除されます。未初期化モジュールは、メインがメインに表示されません。エージェント"
-#~ "管理のモジュール管理画面でのみ参照や編集ができます。"
-
-#~ msgid "Show percentil 95º"
-#~ msgstr "95パーセント表示"
-
-#~ msgid "Update manager » Offline"
-#~ msgstr "アップデートマネージャ > オフライン"
-
-#~ msgid "Update manager » Setup"
-#~ msgstr "アップデートマネージャ > 設定"
-
-#~ msgid "Create group if doesn’t exist in destination"
-#~ msgstr "移動先にグループが無ければ作成する"
-
-#, php-format
-#~ msgid "&reg; Ártica soluciones Pandora FMS %s - Build %s"
-#~ msgstr "&reg; Ártica soluciones Pandora FMS %s - ビルド %s"

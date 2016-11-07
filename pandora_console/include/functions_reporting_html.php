@@ -139,6 +139,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'availability':
 				reporting_html_availability($table, $item);
 				break;
+			case 'event_report_log':
+				reporting_html_log($table, $item);
+				break;
 			case 'general':
 				reporting_html_general($table, $item);
 				break;
@@ -288,6 +291,10 @@ function reporting_html_print_report($report, $mini = false) {
 		if ($item['type'] == 'agent_module')
 			echo '</div>';
 	}
+}
+
+function reporting_html_log ($table, $item) {
+	html_debug('AAAA');
 }
 
 function reporting_html_SLA($table, $item, $mini) {

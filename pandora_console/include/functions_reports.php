@@ -643,6 +643,9 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 		$types['netflow_summary'] = array('optgroup' => __('Netflow'),
 			'name' => __('Netflow summary table')); 
 	}
+
+	$types['event_report_log'] = array('optgroup' => __('Log'),
+		'name' => __('Log report'));
 	
 	return $types;
 }

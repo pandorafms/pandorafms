@@ -140,6 +140,7 @@ switch ($action) {
 			case 'general':
 			case 'network_interfaces_report':
 			case 'availability':
+			case 'event_report_log':
 				$get_data_editor = true;
 				break;
 			
@@ -189,7 +190,9 @@ switch ($action) {
 					$idAgentModule = $item['id_agent_module'];
 					$idAgent = db_get_value_filter('id_agente', 'tagente_modulo', array('id_agente_modulo' => $idAgentModule));
 					break;
-				
+				case 'event_report_log':
+					$period = $item['period'];
+					$description = $item['description'];
 				case 'simple_graph':
 					$only_avg = isset($style['only_avg']) ? (bool) $style['only_avg'] : true;
 					$percentil_95 = isset($style['percentil_95']) ? $style['percentil_95'] : 0;
@@ -577,6 +580,7 @@ switch ($action) {
 				case 'MTBF':
 				case 'MTTR':
 				case 'simple_baseline_graph':
+				case 'event_report_log':
 					$label = (isset($style['label'])) ? $style['label'] : '';
 					break;
 				default:
@@ -2358,6 +2362,11 @@ function chooseType() {
 			$("#row_event_graph_by_validated").show();
 			
 			$("#row_filter_search").show();
+			break;
+
+		case 'event_report_log':
+			$("#row_description").show();
+			$("#row_period").show();
 			break;
 		
 		case 'simple_graph':

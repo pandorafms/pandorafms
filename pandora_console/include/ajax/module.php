@@ -251,7 +251,7 @@ if ($get_module_detail) {
 
 		foreach ($columns as $col => $attr) {
 			if ($attr[1] != "modules_format_data") {
-				$data[] = date('d F Y - h:i:s A', $row['utimestamp']);
+				$data[] = date('d F Y h:i:s A', $row['utimestamp']);
 
 			}
 			elseif (($config['command_snapshot']) && (preg_match ("/[\n]+/i", $row[$attr[0]]))) {
@@ -294,7 +294,17 @@ if ($get_module_detail) {
 						$data[] = 'No data';
 					}
 					else {
+					
+					if(is_snapshot_data($row[$attr[0]])){	
 						$data[] = "<a target='_blank' href='".io_safe_input($row[$attr[0]])."'><img style='width:300px' src='".io_safe_input($row[$attr[0]])."'></a>";
+					}
+					else{
+						$data[] = $row[$attr[0]];
+					}
+						
+						
+					
+					
 					}
 				}
 			}

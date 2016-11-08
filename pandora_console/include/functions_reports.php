@@ -625,8 +625,6 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 		}
 	}
 	
-	
-	
 	if (!$template) {
 		$types['agent_configuration'] = array('optgroup' => __('Configuration'),
 			'name' => __('Agent configuration')); 
@@ -644,8 +642,10 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 			'name' => __('Netflow summary table')); 
 	}
 
-	$types['event_report_log'] = array('optgroup' => __('Log'),
+	if ($config['enterprise_installed']) {
+		$types['event_report_log'] = array('optgroup' => __('Log'),
 		'name' => __('Log report'));
+	}
 	
 	return $types;
 }

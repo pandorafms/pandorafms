@@ -2367,6 +2367,7 @@ function chooseType() {
 		case 'event_report_log':
 			$("#row_description").show();
 			$("#row_period").show();
+			$("#row_agent").show();
 			break;
 		
 		case 'simple_graph':

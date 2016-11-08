@@ -469,40 +469,6 @@ function reporting_make_reporting_data($report = null, $id_report,
 	return reporting_check_structure_report($report);
 }
 
-function reporting_log ($report, $content) {
-	$return['type'] = 'event_report_log';
-
-	$period = $content['period'];
-	$date_limit = time() - $period;
-	if (empty($content['name'])) {
-		$content['name'] = __('Log report');
-	}
-	
-	$return['title'] = $content['name'];
-	$return["description"] = $content["description"];
-	$return["date"] = reporting_get_date_text($report, $content);
-	$return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
-	
-	$return['keys'] = array(__('Date'), __('Log'));
-
-	// LEER FICHERO DE LOG Y SACAR DATOS
-	$log_data = array();
-	$log_data = read_log_file_to_report($date_limit);
-	
-	$data = array();
-	foreach ($result as $row) {
-		$data[] = array(
-			__('Date') => date ($config["date_format"], $row['utimestamp']),
-			__('Data') => $row['datos']);
-	}
-
-	$return["data"] = $data;
-}
-
-function read_log_file_to_report($date_limit) {
-	
-}
-
 function reporting_SLA($report, $content, $type = 'dinamic',
 	$force_width_chart = null, $force_height_chart = null) {
 	

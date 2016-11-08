@@ -135,7 +135,7 @@ if (is_ajax ()) {
 		set_when_empty ($config["session_timeout"], 90);
 		$row = array();
 		$row['name'] = __('Session timeout (mins)')
-			. ui_print_help_tip(__("This is defined in minutes"), true);
+			. ui_print_help_tip(__("This is defined in minutes, If you wish a permanent session should putting -1 in this field."), true);
 		$row['control'] = html_print_input_text ('session_timeout', $config["session_timeout"], '', 10, 10, true);
 		$table->data['session_timeout'] = $row;
 

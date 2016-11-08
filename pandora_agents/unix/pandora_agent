@@ -41,7 +41,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '6.1dev';
-use constant AGENT_BUILD => '161107';
+use constant AGENT_BUILD => '161108';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -630,6 +630,16 @@ sub parse_conf_modules($) {
 		# FF interval
 		} elsif ($line =~ /^\s*module_ff_interval\s+(\S+)\s*$/) {
 			$module->{'module_ff_interval'} = $1;
+		} elsif ($line =~ /^\s*module_min_ff_event_normal\s+(\S+)\s*$/) {
+			$module->{'min_ff_event_normal'} = $1;
+		} elsif ($line =~ /^\s*module_min_ff_event_warning\s+(\S+)\s*$/) {
+			$module->{'min_ff_event_warning'} = $1;
+		} elsif ($line =~ /^\s*module_min_ff_event_critical\s+(\S+)\s*$/) {
+			$module->{'min_ff_event_critical'} = $1;
+		} elsif ($line =~ /^\s*module_ff_timeout\s+(\S+)\s*$/) {
+			$module->{'ff_timeout'} = $1;
+		} elsif ($line =~ /^\s*module_each_ff\s+(\S+)\s*$/) {
+			$module->{'each_ff'} = $1;
 		# Macros
 		} elsif ($line =~ /^\s*module_macro(\S+)\s+(.*)\s*$/) {
 			$module->{'macros'}{$1} = $2;

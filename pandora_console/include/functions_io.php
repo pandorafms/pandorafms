@@ -387,7 +387,7 @@ function __ ($string /*, variable arguments */) {
 	if (defined('METACONSOLE')) {
 		enterprise_include_once ('meta/include/functions_meta.php');
 		
-		$tranlateString = meta_get_defined_translation($string);
+		$tranlateString = call_user_func_array('meta_get_defined_translation', func_get_args());
 		
 		if ($tranlateString !== false) {
 			return $tranlateString;
@@ -400,7 +400,7 @@ function __ ($string /*, variable arguments */) {
 		
 		enterprise_include_once('extensions/translate_string/functions.php');
 		
-		$tranlateString = get_defined_translation($string);
+		$tranlateString = call_user_func_array('get_defined_translation', func_get_args());
 		
 		if ($tranlateString !== false) {
 			return $tranlateString;

@@ -644,7 +644,12 @@ You can of course remove the warnings, that's why we include the source and do n
 					echo '<input type="hidden" id="type" name="type" value="' . $type . '" />';
 				}
 				?>
+				<?php
+					$text = __('This type of report brings a lot of data loading, it is recommended to use it for scheduled reports and not for real-time view.');
+					echo '<a id="log_help_tip" style="visibility: hidden;" href="javascript:" class="tip" >' . html_print_image ("images/tip.png", true, array('title' => $text)) . '</a>';
+				?>
 			</td>
+			
 		</tr>
 		
 		<tr id="row_name" style="" class="datos">
@@ -2332,6 +2337,7 @@ function chooseType() {
 	$("#row_last_value").hide();
 	$("#row_filter_search").hide();
 	$("#row_percentil").hide();
+	$("#log_help_tip").css("visibility", "hidden");
 	
 	// SLA list default state
 	$("#sla_list").hide();
@@ -2365,6 +2371,7 @@ function chooseType() {
 			break;
 
 		case 'event_report_log':
+			$("#log_help_tip").css("visibility", "visible");
 			$("#row_description").show();
 			$("#row_period").show();
 			$("#row_agent").show();

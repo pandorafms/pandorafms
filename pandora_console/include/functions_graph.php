@@ -1081,7 +1081,20 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$graph_values = array();
 	$module_name_list = array();
 	$collector = 0;
-
+	$user = users_get_user_by_id($config['id_user']);
+	$user_flash_charts = $user['flash_chart'];
+	
+	if ($user_flash_charts == 1)
+		$flash_charts = true;
+	elseif($user_flash_charts == -1)
+		$flash_charts = $config['flash_charts'];
+	elseif($user_flash_charts == 0)
+		$flash_charts = false;
+	
+	if ($only_image) {
+		$flash_charts = false;
+	}
+	
 	// Calculate data for each module
 	for ($i = 0; $i < $module_number; $i++) {
 		// If its a projection graph, first module will be data and second will be the projection
@@ -1175,7 +1188,10 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$module_name = io_safe_output(
 					modules_get_agentmodule_name ($agent_module_id));
 				
-				$module_name_list[$i] = '<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . $agent_name . " / " . $module_name. '</span>';
+				if ($flash_charts)
+					$module_name_list[$i] = '<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . $agent_name . " / " . $module_name. '</span>';
+				else
+					$module_name_list[$i] = $agent_name . " / " . $module_name;
 			}
 		}
 		else {
@@ -1192,10 +1208,22 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			$module_name = sprintf(__("%s"), $module_name);
 			$module_name = ui_print_truncate_text($module_name, 'module_small', false, true, false, '...', false);
 			
-			if ($labels[$agent_module_id] != '')
-				$module_name_list[$i] = '<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . $labels[$agent_module_id] . '</span>';
-			else
-				$module_name_list[$i] = '<span style=\"font-size:' . ($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . $agent_name . ' / ' . $module_name . '</span>';
+			if ($flash_charts) {
+				if ($labels[$agent_module_id] != '')
+					$module_name_list[$i] = '<span style=\"font-size:' . 
+						($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . 
+						$labels[$agent_module_id] . '</span>';
+				else
+					$module_name_list[$i] = '<span style=\"font-size:' . 
+						($config['font_size']) . 'pt;font-family: smallfontFont;\" >' . 
+						$agent_name . ' / ' . $module_name . '</span>';
+			}
+			else {
+				if ($labels[$agent_module_id] != '')
+					$module_name_list[$i] = $labels[$agent_module_id];
+				else
+					$module_name_list[$i] = $agent_name . ' / ' . $module_name;
+			}
 		}
 		
 		// Data iterator
@@ -1385,19 +1413,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	}
 	
 	$temp = array();
-	$user = users_get_user_by_id($config['id_user']);
-	$user_flash_charts = $user['flash_chart'];
-	
-	if ($user_flash_charts == 1)
-		$flash_charts = true;
-	elseif($user_flash_charts == -1)
-		$flash_charts = $config['flash_charts'];
-	elseif($user_flash_charts == 0)
-		$flash_charts = false;
-	
-	if ($only_image) {
-		$flash_charts = false;
-	}
 	
 	if ($flash_charts === false && $stacked == CUSTOM_GRAPH_GAUGE)
 		$stacked = CUSTOM_GRAPH_BULLET_CHART;

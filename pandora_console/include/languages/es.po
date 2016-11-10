@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-11-03 10:13+0100\n"
-"PO-Revision-Date: 2016-11-07 12:05+0000\n"
+"PO-Revision-Date: 2016-11-10 11:03+0000\n"
 "Last-Translator: artu30 <gonzalez.arturo1991@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-11-07 12:11+0000\n"
-"X-Generator: Launchpad (build 18246)\n"
+"X-Launchpad-Export-Date: 2016-11-10 11:12+0000\n"
+"X-Generator: Launchpad (build 18255)\n"
 
 #: ../../general/links_menu.php:20 ../../godmode/menu.php:284
 #: ../../godmode/menu.php:394
@@ -23030,7 +23030,7 @@ msgstr "Lista de incidentes"
 
 #: ../../operation/menu.php:378
 msgid "Messages List"
-msgstr "Lista de mensages"
+msgstr "Lista de mensajes"
 
 #: ../../operation/menu.php:379
 msgid "New message"

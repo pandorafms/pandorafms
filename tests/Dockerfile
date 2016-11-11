@@ -25,7 +25,7 @@ RUN yum install -y \
 	python-pip \
 	xorg-x11-server-Xvfb; yum clean all;
 RUN pip install pyvirtualdisplay
-RUN pip install selenium
+RUN pip install 'selenium==2.53.0'
 RUN pip install unittest2
 RUN pip install testtools
 
@@ -96,13 +96,6 @@ RUN yum install -y \
 	net-snmp \
 	net-snmp-utils \
 	perl-Test-Simple; yum clean all;
-
-# Install geckodriver
-RUN cd /tmp && \
-curl -o geckodriver.tgz -L https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-linux64.tar.gz && \
-tar zxvf geckodriver.tgz && \
-mv geckodriver /usr/bin && \
-rm geckodriver.tgz
 
 #Exposing ports for: HTTP, SNMP Traps, Anytermd (SSH), Anytermd (Telnet), Tentacle protocol
 EXPOSE 80 162/udp 8022 8023 41121

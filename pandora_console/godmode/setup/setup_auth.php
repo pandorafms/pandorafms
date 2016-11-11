@@ -202,7 +202,6 @@ echo '</form>';
 
 <script type="text/javascript">
 	$('#auth').on('change', function(){
-		console.log('poco a poco');
 		type_auth = $('#auth').val();
 		$.ajax({
 			type: "POST",

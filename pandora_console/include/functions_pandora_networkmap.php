@@ -409,7 +409,7 @@ function networkmap_clean_relations_for_js(&$relations) {
 		
 		foreach ($relations as $key => $relation) {
 			if ($relation['id_parent_source_data'] == $relation['id_child_source_data']) {
-				if (($relation['id_parent_source_data'] != -2) && $relation['id_child_source_data'] != -2) {
+				if (($relation['child_type'] != 3) && $relation['parent_type'] != 3) {
 					$cleaned = false;
 					
 					if ($relation['parent_type'] == 1) {
@@ -567,6 +567,12 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 		else {
 			$agent = $relation['id_parent_source_data'];
 			$agent2 = $relation['id_child_source_data'];
+			if ($agent == 0) {
+				$agent = -1;
+			}
+			if ($agent2 == 0) {
+				$agent = -1;
+			}
 		}
 		
 		foreach ($nodes_graph as $node) {
@@ -590,7 +596,6 @@ function networkmap_links_to_js_links($relations, $nodes_graph) {
 		
 		$return[] = $item;
 	}
-	
 	return $return;
 }
 
@@ -1226,7 +1231,7 @@ function migrate_older_open_maps($id) {
 function show_networkmap($id = 0, $user_readonly = false, $nodes_and_relations = array(), $dashboard_mode = false, $map_dash_details = array()) {
 	global $config;
 	$clean_relations = clean_duplicate_links($nodes_and_relations['relations']);
-	
+
 	$hide_minimap = "";
 	
 	$nodes_and_relations['relations'] = $clean_relations;

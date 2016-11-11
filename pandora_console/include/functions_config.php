@@ -648,6 +648,8 @@ function config_update_config () {
 			case 'hist_db':
 				if (!config_update_value ('history_db_enabled', get_parameter ('history_db_enabled')))
 					$error_update[] = __('Enable history database');
+				if (!config_update_value ('history_event_enabled', get_parameter ('history_event_enabled')))
+					$error_update[] = __('Enable history event');
 				if (!config_update_value ('history_db_host', get_parameter ('history_db_host')))
 					$error_update[] = __('Host');
 				if (!config_update_value ('history_db_port', get_parameter ('history_db_port')))
@@ -660,6 +662,8 @@ function config_update_config () {
 					$error_update[] = __('Database password');
 				if (!config_update_value ('history_db_days', get_parameter ('history_db_days')))
 					$error_update[] = __('Days');
+				if (!config_update_value ('history_event_days', get_parameter ('history_event_days')))
+					$error_update[] = __('Event Days');
 				if (!config_update_value ('history_db_step', get_parameter ('history_db_step')))
 					$error_update[] = __('Step');
 				if (!config_update_value ('history_db_delay', get_parameter ('history_db_delay')))
@@ -1062,6 +1066,10 @@ function config_process_config () {
 		config_update_value ( 'history_db_enabled', false);
 	}
 	
+	if (!isset ($config['history_event_enabled'])) {
+		config_update_value ( 'history_event_enabled', false);
+	}
+	
 	if (!isset ($config['history_db_host'])) {
 		config_update_value ( 'history_db_host', '');
 	}
@@ -1084,6 +1092,10 @@ function config_process_config () {
 	
 	if (!isset ($config['history_db_days'])) {
 		config_update_value ( 'history_db_days', 0);
+	}
+	
+	if (!isset ($config['history_event_days'])) {
+		config_update_value ('history_event_days', 90);
 	}
 	
 	if (!isset ($config['history_db_step'])) {

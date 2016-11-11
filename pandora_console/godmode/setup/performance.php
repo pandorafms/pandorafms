@@ -24,7 +24,7 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 	return;
 }
 // Load enterprise extensions
-enterprise_include_once ('godmode/setup/setup.php');
+//~ enterprise_include_once ('godmode/setup/setup.php');
 
 /*
 NOTICE FOR DEVELOPERS:
@@ -43,6 +43,8 @@ $table->style[0] = "font-weight: bold";
 
 $table->size[0] = '70%';
 $table->size[1] = '30%';
+
+enterprise_hook('enterprise_warnings_history_days');
 
 $table->data[1][0] = __('Max. days before delete events') . ui_print_help_tip(__('If the compaction or purge of the data is more frequent than the events deletion, anomalies in module graphs could appear'), true);
 $table->data[1][1] = html_print_input_text ('event_purge', $config["event_purge"], '', 5, 5, true);

@@ -340,7 +340,7 @@ function treeview_printAlertsTable($id_module, $server_data = array(), $no_head 
 		}
 		else {
 			$actions_list = '<ul>';
-			foreach($actions_list as $act) {
+			foreach($actions as $act) {
 				$actions_list .= '<li>';
 				$actions_list .= $act['name'];
 				$actions_list .= '</li>';
@@ -355,6 +355,36 @@ function treeview_printAlertsTable($id_module, $server_data = array(), $no_head 
 	}
 
 	html_print_table($table);
+
+	$table2 = new StdClass();
+	$table2->width = "100%";
+	$table2->class = "databox data";
+	$table2->rowstyle = array();
+	$table2->rowstyle['titles'] = 'font-weight: bold;';
+
+	$table2->head_colspan[] = 3;
+	$table2->data = array();
+
+	$row = array();
+	$row['template'] = __('Template');
+	$row['times_fired'] = __('Times fired');
+	$row['last_fired'] = __('Last fired');
+	$table2->data['titles'] = $row;
+	html_debug($module_alerts, true);
+	foreach ($module_alerts as $module_alert) {
+		$template_name = db_get_value('name','talert_templates','id',$module_alert['id_alert_template']);
+		
+		$times_fired = $module_alert['times_fired'];
+		
+		$last_fired = date($config['date_format'], $module_alert['last_fired']);
+
+		$row = array();
+		$row['template'] = $template_name;
+		$row['times_fired'] = $times_fired;
+		$row['last_fired'] = $last_fired;
+		$table2->data['last_data'] = $row;
+	}
+	html_print_table($table2);
 
 	if (can_user_access_node () && check_acl ($config["id_user"], $id_group, 'LW')) {
 		// Actions table

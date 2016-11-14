@@ -2662,6 +2662,9 @@ sub pandora_create_module_from_hash ($$$) {
 	if (defined $parameters->{'id_network_component_group'}) {
 		delete $parameters->{'id_network_component_group'};
 	}
+	if (defined $parameters->{'timestamp'}) {
+		delete $parameters->{'timestamp'};
+	}
 
 	# Encrypt plug-in passwords.
 	if (defined($parameters->{'plugin_pass'})) {

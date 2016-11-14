@@ -446,6 +446,14 @@ $table_chars->data[$row][1] .= __('Line').'&nbsp;' .
 		$config["type_module_charts"] != 'area', true);
 $row++;
 
+$table_chars->data[$row][0] = __('Show only average');
+$table_chars->data[$row][0] .= ui_print_help_tip(__('Allows only show the average in graphs'), true);
+$table_chars->data[$row][1] = __('Yes').'&nbsp;' .
+	html_print_radio_button ('only_average', 1, '', $config["only_average"], true).'&nbsp;&nbsp;';
+$table_chars->data[$row][1] .= __('No').'&nbsp;' .
+	html_print_radio_button ('only_average', 0, '', $config["only_average"], true);
+$row++;
+
 echo "<fieldset>";
 echo "<legend>" . __('Charts configuration') . "</legend>";
 html_print_table ($table_chars);

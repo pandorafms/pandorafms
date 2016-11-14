@@ -91,11 +91,11 @@ $id = get_parameter('id');
 			};
 			
 			function show_others() {
-				if (!$("#checkbox-avg_only").attr('checked')) {
-					$("#hidden-show_other").val(0);
+				if ($('#checkbox-avg_only').is(":checked") == true) {
+					$("#hidden-show_other").val(1);
 				}
 				else {
-					$("#hidden-show_other").val(1);
+					$("#hidden-show_other").val(0);
 				}
 			}
 			//-->
@@ -134,11 +134,19 @@ $id = get_parameter('id');
 		}
 		
 		$draw_alerts = get_parameter("draw_alerts", 0);
-		$avg_only = get_parameter ("avg_only", 1);
-		$show_other = (bool)get_parameter('show_other', false);
-		if ($show_other) {
+
+		if(isset($config['only_average'])){
+			$avg_only = 1;
+		} 
+		else {
 			$avg_only = 0;
 		}
+
+		$show_other = get_parameter('show_other');
+		if (isset($show_other)) {
+			$avg_only = $show_other;
+		}
+
 		$period = get_parameter ("period", SECONDS_1DAY);
 		$id = get_parameter ("id", 0);
 		$width = get_parameter ("width", STATWIN_DEFAULT_CHART_WIDTH);

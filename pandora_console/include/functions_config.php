@@ -514,6 +514,8 @@ function config_update_config () {
 						$error_update[] = __('Default line thickness for the Custom Graph.');
 					if (!config_update_value ('type_module_charts', (string) get_parameter('type_module_charts', 'area')))
 						$error_update[] = __('Default type of module charts.');
+					if (!config_update_value ('only_average', (bool) get_parameter('only_average', false)))
+						$error_update[] = __('Default show only average or min and max');
 					if (!config_update_value ('render_proc', (bool) get_parameter('render_proc', false)))
 						$error_update[] = __('Display data of proc modules in other format');
 					if (!config_update_value ('render_proc_ok', (string) get_parameter('render_proc_ok', __('Ok') )))

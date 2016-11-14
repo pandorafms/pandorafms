@@ -612,18 +612,12 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 	$fields = post_process_get_custom_values();
 	$selected_float = (float)$selected;
 	$found = false;
-	foreach ($fields as $value => $text) {
-		$value = (float)$value;
-		
-		
-		
-		if ($value == $selected_float) {
-			$found = true;
-			break;
-		}
-	}
+	
+	if (array_key_exists($selected, $fields))
+		$found = true;
+	
 	if (!$found) {
-		$fields[floatval($selected)] = floatval($selected);
+		$fields[$selected] = floatval($selected);
 	}
 	
 	
@@ -633,9 +627,6 @@ function html_print_extended_select_for_post_process($name, $selected = '',
 	else {
 		$uniq_name = $name;
 	}
-	
-	
-	
 	
 	ob_start();
 	

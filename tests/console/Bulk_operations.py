@@ -52,7 +52,8 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		delete_agent(driver,[agent_name_1,agent_name_2])
 			
 		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
-		self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Successfully deleted (2)")]').text,"Successfully deleted (2)")
+		element = driver.find_element_by_xpath('//td[contains(.,"uccessfully")]')
+		self.assertIsInstance(element,WebElement)
 
 	def test_B_edit_agents_group_bulk_operations(self):
 

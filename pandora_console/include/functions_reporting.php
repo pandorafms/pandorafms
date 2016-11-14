@@ -1505,12 +1505,14 @@ function reporting_inventory($report, $content, $type) {
 
 function reporting_agent_module($report, $content) {
 	global $config;
-	
+	$agents_and_modules = json_decode($content['external_source'], true);
+	$agents = array();
+	$agents = $agents_and_modules['id_agents'];
+	$modules = $agents_and_modules['module'];
 	$id_group = $content['id_group'];
 	$id_module_group = $content['id_module_group'];
 	
 	$return['type'] = 'agent_module';
-	
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('Agent/Modules');
@@ -1532,54 +1534,25 @@ function reporting_agent_module($report, $content) {
 	
 	$return["data"] = array();
 	
-	$agents = array();
-	if ($id_group > 0) {
-		$agents = agents_get_group_agents($id_group);
-		$agents = array_keys($agents);
-	}
-	
-	$filter_module_groups = false;
-	if ($id_module_group > 0) {
-		$filter_module_groups['id_module_group'] = $id_module_group;
-	}
-	
-	$all_modules = agents_get_modules($agents, false,
-		$filter_module_groups, true, false);
-	
 	$modules_by_name = array();
-	$name = '';
 	$cont = 0;
 	
-	foreach ($all_modules as $key => $module) {
-		if ($module == $name) {
-			$modules_by_name[$cont - 1]['id'][] = $key;
-		}
-		else {
-			$name = $module;
-			$modules_by_name[$cont]['name'] = $name;
-			$modules_by_name[$cont]['id'][] = $key;
-			$cont ++;
-		}
+	foreach ($modules as $modul_id) {
+		$modules_by_name[$cont]['name'] = io_safe_output(modules_get_agentmodule_name($modul_id));
+		$modules_by_name[$cont]['id'][] = $modul_id;
+		$cont ++;
 	}
-	
-	$filter_groups = array();
-	if ($id_group > 0) {
-		$filter_groups['id_grupo'] = $id_group;
-	}
-	$agents = agents_get_agents ($filter_groups);
-	$nagents = count($agents);
-	
-	if ($all_modules == false || $agents == false) {
+	if ($modules_by_name == false || $agents == false) {
 		$return['failed'] = __('There are no agents with modules');
 	}
 	else {
 		foreach ($agents as $agent) {
 			$row = array();
-			$row['agent_status'][$agent['id_agente']] =
-				agents_get_status($agent['id_agente']);
-			$row['agent_name'] = $agent['nombre'];
+			$row['agent_status'][$agent] =
+				agents_get_status($agent);
+			$row['agent_name'] = agents_get_name($agent);
 			
-			$agent_modules = agents_get_modules($agent['id_agente']);
+			$agent_modules = agents_get_modules($agent);
 			
 			$row['modules'] = array();
 			foreach ($modules_by_name as $module) {

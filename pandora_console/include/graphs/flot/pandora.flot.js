@@ -1697,6 +1697,15 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				}
 
 			var y = series.data[j][1];
+			var how_bigger = "";
+			if (y > 1000000) {
+				how_bigger = "M";
+				y = y / 1000000;
+			}
+			else if (y > 1000) {
+				how_bigger = "K";
+				y = y / 1000;
+			}
 
 			if (currentRanges == null || (currentRanges.xaxis.from < j && j < currentRanges.xaxis.to)) {
 				$('#timestamp_'+graph_id).show();
@@ -1736,7 +1745,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			// The graphs of points type and unknown graphs will dont be updated
 			if (serie_types[i] != 'points' && series.label != $('#hidden-unknown_text').val()) {
 				$('#legend_' + graph_id + ' .legendLabel')
-					.eq(i).html(label_aux +	'= ' + parseFloat(y).toFixed(2) + ' ' + unit);
+					.eq(i).html(label_aux +	'= ' + parseFloat(y).toFixed(precision_graph) + how_bigger + ' ' + unit);
 				console.log($('#legend_' + graph_id + ' .legendLabel'));
 			}
 

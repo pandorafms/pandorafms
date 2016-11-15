@@ -1355,30 +1355,30 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			$last = $graph_stats['last'];
 			
 			if ($min > 1000000)
-				$min = sprintf("%sM", number_format($min / 1000000, $config['graph_precision']));
+				$min = sprintf("%sM", remove_right_zeros(number_format($min / 1000000, $config['graph_precision'])));
 			else if ($min > 1000)
-				$min = sprintf("%sK", number_format($min / 1000, $config['graph_precision']));
+				$min = sprintf("%sK", remove_right_zeros(number_format($min / 1000, $config['graph_precision'])));
 			
 			if ($max > 1000000)
-				$max = sprintf("%sM", number_format($max / 1000000, $config['graph_precision']));
+				$max = sprintf("%sM", remove_right_zeros(number_format($max / 1000000, $config['graph_precision'])));
 			else if ($max > 1000)
-				$max = sprintf("%sK", number_format($max / 1000, $config['graph_precision']));
+				$max = sprintf("%sK", remove_right_zeros(number_format($max / 1000, $config['graph_precision'])));
 			
 			if ($avg > 1000000)
-				$avg = sprintf("%sM", number_format($avg / 1000000, $config['graph_precision']));
+				$avg = sprintf("%sM", remove_right_zeros(number_format($avg / 1000000, $config['graph_precision'])));
 			else if ($avg > 1000)
-				$avg = sprintf("%sK", number_format($avg / 1000, $config['graph_precision']));
+				$avg = sprintf("%sK", remove_right_zeros(number_format($avg / 1000, $config['graph_precision'])));
 			
 			if ($last > 1000000)
-				$last = sprintf("%sM", number_format($last / 1000000, $config['graph_precision']));
+				$last = sprintf("%sM", remove_right_zeros(number_format($last / 1000000, $config['graph_precision'])));
 			else if ($last > 1000)
-				$last = sprintf("%sK", number_format($last / 1000, $config['graph_precision']));
+				$last = sprintf("%sK", remove_right_zeros(number_format($last / 1000, $config['graph_precision'])));
 		}
 		else {
-			$min = number_format($graph_stats['min'], $config['graph_precision']);
-			$max = number_format($graph_stats['max'], $config['graph_precision']);
-			$avg = number_format($graph_stats['avg'], $config['graph_precision']);
-			$last = number_format($graph_stats['last'], $config['graph_precision']);
+			$min = remove_right_zeros(number_format($graph_stats['min'], $config['graph_precision']));
+			$max = remove_right_zeros(number_format($graph_stats['max'], $config['graph_precision']));
+			$avg = remove_right_zeros(number_format($graph_stats['avg'], $config['graph_precision']));
+			$last = remove_right_zeros(number_format($graph_stats['last'], $config['graph_precision']));
 		}
 		
 		

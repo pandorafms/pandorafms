@@ -244,7 +244,7 @@ function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands
 		$number = $number / 1000;
 	}
 	
-	return format_numeric ($number, $decimals). $shorts[$pos]; //This will actually do the rounding and the decimals
+	return remove_right_zeros(format_numeric ($number, $decimals)). $shorts[$pos]; //This will actually do the rounding and the decimals
 }
 
 function human_milliseconds_to_string($seconds) {

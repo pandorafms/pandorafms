@@ -413,6 +413,9 @@ sub pandora_load_config {
 	$pa_config->{"warmup_unknown_interval"} = 300; # 6.1
 	$pa_config->{"warmup_unknown_on"} = 1; # 6.1
 
+	# External .enc files for XML::Parser.
+	$pa_config->{"enc_dir"} = ""; # > 6.0SP4
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -912,6 +915,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^warmup_unknown_interval\s+([0-9]*)/i) {
 			$pa_config->{'warmup_unknown_interval'}= clean_blank($1);
 			$pa_config->{'warmup_unknown_on'} = 0 if ($pa_config->{'warmup_unknown_interval'} == 0); # On by default.
+		}
+		elsif ($parametro =~ m/^enc_dir\s+(.*)/i) {
+			$pa_config->{'enc_dir'} = clean_blank($1);
 		}
 	} # end of loop for parameter #
 

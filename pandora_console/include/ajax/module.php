@@ -783,9 +783,6 @@ if ($list_modules) {
 				}
 			}
 		}
-		else {
-			$data[0] = '';
-		}
 		
 		if ($isFunctionPolicies !== ENTERPRISE_NOT_HOOK) {
 			if ($module["id_policy_module"] != 0) {

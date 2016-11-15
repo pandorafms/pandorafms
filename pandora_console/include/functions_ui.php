@@ -815,7 +815,6 @@ function ui_format_alert_row ($alert, $agent = true, $url = '', $agent_style = f
 	
 	if (!defined('METACONSOLE')) {
 		// Force alert execution
-		$data[$index['force_execution']] = '';
 		if (check_acl ($config["id_user"], $id_group, "AW") || check_acl ($config["id_user"], $id_group, "LM")) {
 			if ($alert["force_execution"] == 0) {
 				$data[$index['force_execution']] =

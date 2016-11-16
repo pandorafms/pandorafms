@@ -108,11 +108,11 @@ $table->data = array();
 
 //Background
 $table->data[0]['icon'] = '';
-$table->data[0][0] = __('Background');
-$table->data[0][1] = html_print_select($backgrounds_list, 'background', $visualConsole['background'], '', 'None', '', true, false, true, '', false, 'width: 120px;');
-$table->data[0][2] = html_print_input_text('width', $visualConsole['width'], '', 3, 5, true) .
+$table->data[0][0] = '<div style="display:none;">'.__('Background').'</div>';
+$table->data[0][1] = '<div style="display:none;">'.html_print_select($backgrounds_list, 'background', $visualConsole['background'], '', 'None', '', true, false, true, '', false, 'width: 120px;').'</div>';
+$table->data[0][2] = '<div style="display:none;">'.html_print_input_text('width', $visualConsole['width'], '', 3, 5, true) .
 	' x ' .
-	html_print_input_text('height', $visualConsole['height'], '', 3, 5, true);
+	html_print_input_text('height', $visualConsole['height'], '', 3, 5, true).'</div>';
 $table->data[0][3] = $table->data[0][4] = $table->data[0][5] = '';
 
 $i = 1;
@@ -593,7 +593,11 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 				"14pt=.visual_font_size_14pt, " +
 				"24pt=.visual_font_size_24pt, " +
 				"36pt=.visual_font_size_36pt, " +
-				"72pt=.visual_font_size_72pt",
+				"72pt=.visual_font_size_72pt, " +
+				"96pt=.visual_font_size_96pt, " +
+				"128pt=.visual_font_size_128pt, " +
+				"154pt=.visual_font_size_154pt, " +
+				"196pt=.visual_font_size_196pt",
 			theme_advanced_toolbar_location : "top",
 			theme_advanced_toolbar_align : "left",
 			theme_advanced_buttons1 : "bold,italic, |, image, link, |, forecolor, fontsizeselect",

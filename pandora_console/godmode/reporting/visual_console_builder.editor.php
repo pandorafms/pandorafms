@@ -198,10 +198,14 @@ ui_require_javascript_file ('encode_decode_base64');
 			"14pt=.visual_font_size_14pt, " +
 			"24pt=.visual_font_size_24pt, " +
 			"36pt=.visual_font_size_36pt, " +
-			"72pt=.visual_font_size_72pt",
+			"72pt=.visual_font_size_72pt, " +
+			"96pt=.visual_font_size_96pt, " +
+			"128pt=.visual_font_size_128pt, " +
+			"154pt=.visual_font_size_154pt, " +
+			"196pt=.visual_font_size_196pt",
 		theme_advanced_toolbar_location : "top",
 		theme_advanced_toolbar_align : "left",
-		theme_advanced_buttons1 : "bold,italic, |, justifyleft, justifycenter, justifyright, |,undo, redo, |, image, link, |, forecolor, fontsizeselect, |, code",
+		theme_advanced_buttons1 : "bold,italic, |, justifyleft, justifycenter, justifyright, |,undo, redo, |, image, link, |, fontselect, |, forecolor, fontsizeselect, |, code",
 		theme_advanced_buttons2 : "",
 		theme_advanced_buttons3 : "",
 		theme_advanced_statusbar_location : "none",

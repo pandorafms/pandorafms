@@ -204,7 +204,7 @@ if ($config['pure']) {
 	<?php
 }
 else {
-	visual_map_print_visual_map ($id_layout, true, true, null, null, '', false, $graph_javascript);
+	visual_map_print_visual_map ($id_layout, true, true, null, null, '', false, $graph_javascript, true);
 }
 
 ui_require_javascript_file('wz_jsgraphics');

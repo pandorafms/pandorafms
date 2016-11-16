@@ -51,11 +51,11 @@ $pure = get_parameter('pure', 0);
 switch ($action) {
 	case 'new':
 		if (!defined('METACONSOLE')) {
-			echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "' enctype='multipart/form-data'>";
+			echo "<form id='back' method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "' enctype='multipart/form-data'>";
 			html_print_input_hidden('action', 'save');
 		}
 		else {
-			echo '<form action="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '" method="post"  enctype="multipart/form-data">';
+			echo '<form id="back" action="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '" method="post"  enctype="multipart/form-data">';
 			html_print_input_hidden('action2', 'save');
 		}
 		
@@ -63,22 +63,22 @@ switch ($action) {
 	case 'update':
 	case 'save':
 		if (!defined('METACONSOLE')) {
-			echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "' enctype='multipart/form-data'>";
+			echo "<form id='back' method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "' enctype='multipart/form-data'>";
 			html_print_input_hidden('action', 'update');
 		}
 		else {
 			//echo '<form action="index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=' . $pure . '" method="post">';
-			echo "<form action='index.php?sec=screen&sec2=screens/screens&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "&id_visualmap=" . $idVisualConsole . "&action=visualmap' method='post' enctype='multipart/form-data'>";
+			echo "<form id='back' action='index.php?sec=screen&sec2=screens/screens&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "&id_visualmap=" . $idVisualConsole . "&action=visualmap' method='post' enctype='multipart/form-data'>";
 			html_print_input_hidden('action2', 'update');
 		}
 		break;
 	case 'edit':
 		if (!defined('METACONSOLE')) {
-			echo "<form method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "' enctype='multipart/form-data'>";
+			echo "<form id='back' method='post' action='index.php?sec=reporting&sec2=godmode/reporting/visual_console_builder&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "' enctype='multipart/form-data'>";
 			html_print_input_hidden('action', 'update');
 		}
 		else {
-			echo "<form action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "&action=visualmap' method='post' enctype='multipart/form-data' >";
+			echo "<form id='back' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&tab=" . $activeTab  . "&id_visual_console=" . $idVisualConsole . "&action=visualmap' method='post' enctype='multipart/form-data' >";
 			html_print_input_hidden('action2', 'update');
 		}
 		break;
@@ -120,9 +120,42 @@ $backgrounds_list = array_merge($backgrounds_list,
 	list_files($config['homedir'] . '/images/console/background/', "png", 1, 0));
 $table->data[2][0] = __('Background');
 $table->data[2][1] = html_print_select($backgrounds_list, 'background',
-	$background, '', '', 0, true);
+	$background, '', 'None', 'None.png', true);
 $table->data[3][0] = __('Background image');
 $table->data[3][1] = html_print_input_file('background_image',true);
+$table->data[4][0] = __('Background color');
+
+if($action == 'new'){
+$table->data[4][1] .= html_print_input_text ('background_color', 'white', '', 8, 8, true);	
+}
+else{
+	$table->data[4][1] .= html_print_input_text ('background_color', $background_color, '', 8, 8, true);
+}
+
+
+$table->data[5][0] = __('Size - (Width x Height)');
+$table->data[5][1] = html_print_input_text('width', 1024, '', 10, 10, true , true) .
+	' x ' .
+	html_print_input_text('height', 768, '', 10, 10, true, true);
+
+if($action == 'new'){
+$table->data[5][1] .= '<button disabled id="getsize" style="margin-left:20px;" value="modsize">Set default size</button>';
+}
+else{
+$table->data[5][1] .= '<button id="getsize" style="margin-left:20px;" value="modsize">Set default size</button>';
+}
+
+$table->data[5][1] .= ui_print_help_tip(__("You must define size"), true);
+
+if($action == 'new'){
+$table->data[5][1] .= '<button disabled id="modsize" style="margin-left:20px;" value="modsize">Set other size</button><span style="margin-left:20px;" id="modsizetext">Disabled</span>';
+}
+else{
+$table->data[5][1] .= '<button id="modsize" style="margin-left:20px;" value="modsize">Set other size</button><span style="margin-left:20px;" id="modsizetext">Disabled</span>';
+}
+
+$table->data[5][2] = '<img id="imagen" style="display:none" src="images/console/background/'.$background.'">';
+$table->data[0][3] = $table->data[0][4] = $table->data[0][5] = '';
 if ($action == 'new') {
 	$textButtonSubmit = __('Save');
 	$classButtonSubmit = 'sub wand';
@@ -134,10 +167,76 @@ else {
 
 html_print_table($table);
 
-echo '<div class="action-buttons" style="width: '.$table->width.'">';
-html_print_submit_button ($textButtonSubmit, 'update_layout', false,
-	'class="' . $classButtonSubmit . '"');
-echo '</div>';
+	echo '<div class="action-buttons" style="width: '.$table->width.'">';
+	if($action == 'new'){
+		html_print_submit_button ($textButtonSubmit, 'update_layout', true,
+			'class="' . $classButtonSubmit . '"');
+	}
+	else{
+		html_print_submit_button ($textButtonSubmit, 'update_layout', false,
+			'class="' . $classButtonSubmit . '"');
+	}
+	echo '</div>';
+
+
 
 echo "</form>";
 ?>
+
+<script src="include/javascript/jquery.colorpicker.js"></script>
+
+<script>
+
+$(document).ready (function () {
+	
+$("#modsize").click(function(event){
+    event.preventDefault();
+	
+		if($('input[name=width]').attr('readonly')){
+			$('input[name=width]').attr('readonly',false);
+			$('input[name=height]').attr('readonly',false);
+			$('#modsizetext').html('Enabled');
+				$('input[name=update_layout]').attr('disabled',false);	
+		}
+		else{
+			$('input[name=width]').attr('readonly',true);
+			$('input[name=height]').attr('readonly',true);
+			$('#modsizetext').html('Disabled');
+				$('input[name=update_layout]').attr('enabled',false);	
+		}
+		
+		$('input[name=width]').val($('#imagen').width());
+		$('input[name=height]').val($('#imagen').height());
+		
+	
+		
+		
+});
+
+$("#getsize").click(function(event){
+    event.preventDefault();
+
+$('input[name=update_layout]').attr('disabled',false);		
+$('input[name=width]').val($('#imagen').width());
+$('input[name=height]').val($('#imagen').height());
+
+
+});
+
+
+$("#background").click(function(event){
+	$('#imagen').attr('src','images/console/background/'+$('#background').val());
+	$('input[name=update_layout]').attr('disabled',true);
+	$("#getsize").attr('disabled',false);
+	$("#modsize").attr('disabled',false);
+});
+
+$("#file-background_image").change(function(event){
+	$('#back').submit();
+});
+
+$("#text-background_color").attachColorPicker();
+
+});
+
+</script>

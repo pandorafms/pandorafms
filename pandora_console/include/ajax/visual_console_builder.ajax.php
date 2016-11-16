@@ -129,6 +129,7 @@ $line_color = get_parameter('line_color', '');
 $get_element_status = get_parameter('get_element_status', 0);
 
 $enable_link = get_parameter('enable_link', 1);
+$type_graph = get_parameter('type_graph', 'area');
 
 switch ($action) {
 	case 'get_font':
@@ -394,6 +395,7 @@ switch ($action) {
 		// In Graphs, background color is stored in column image (sorry)
 		if ($type == 'module_graph') {
 			$values['image'] = $background_color;
+			$values['type_graph'] = $type_graph;
 		}
 		
 		switch ($type) {
@@ -574,6 +576,7 @@ switch ($action) {
 							break;
 						case 'module_graph':
 							unset($values['image']);
+							unset($values['type_graph']);
 							break;
 						case 'box_item':
 							unset($values['border_width']);
@@ -773,6 +776,8 @@ switch ($action) {
 		$values['id_layout_linked'] = $map_linked;
 		$values['parent_item'] = $parent;
 		$values['enable_link'] = $enable_link;
+		$values['image'] = $background_color;
+		$values['type_graph'] = $type_graph;
 		
 		$values['id_custom_graph'] = $id_custom_graph;
 		

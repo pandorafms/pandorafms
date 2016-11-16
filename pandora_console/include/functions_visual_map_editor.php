@@ -254,7 +254,7 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				'percentile_bar', 'percentile_item', 'module_graph',
 				'simple_value', 'datos');
 			$form_items['agent_row']['html'] = '<td align="left">' .
-				__('Agent') . '</td>';
+				__('Agent') . '</td>';			
 			$params = array();
 			$params['return'] = true;
 			$params['show_helptip'] = true;
@@ -291,6 +291,18 @@ function visual_map_editor_print_item_palette($visualConsole_id, $background) {
 				<td align="left">' .
 				html_print_select(array(), 'module', '', '', __('Any'), 0, true) .
 				'</td>';
+				
+				
+				$form_items['type_graph'] = array();
+				$form_items['type_graph']['items'] = array(
+					'Line',
+					'Area');
+				$form_items['type_graph']['html'] = '<td align="left"><span>' .
+					__('Type of graph') . '</span></td>
+					<td align="left">'. html_print_select (
+						array ('line' => __('Line'), 
+						'area' => __('Area')),
+						'type_graph', '', '', 0, 'area', true, false, false) . '</td>';
 			
 			$own_info = get_user_info($config['id_user']);
 			if (!$own_info['is_admin'] && !check_acl ($config['id_user'], 0, "PM"))

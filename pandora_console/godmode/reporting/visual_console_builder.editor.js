@@ -101,11 +101,13 @@ function visual_map_main() {
 				$("#custom_graph_row").css('display', 'none');
 				$("#agent_row").css('display', '');
 				$("#module_row").css('display', '');
+				$("#type_graph").css('display', '');
 			}
 			else {
 				$("#custom_graph_row").css('display', '');
 				$("#agent_row").css('display', 'none');
 				$("#module_row").css('display', 'none');
+				$("#type_graph").css('display', 'none');
 			}
 		}
 	});
@@ -264,7 +266,7 @@ function readFields() {
 
 	var text = tinymce.get('text-label').getContent();
 	values['label'] = text;
-
+	values['type_graph'] = $("select[name=type_graph]").val();
 	values['image'] = $("select[name=image]").val();
 	values['background_color'] = $("select[name=background_color]").val();
 	values['left'] = $("input[name=left]").val();
@@ -748,6 +750,15 @@ function loadFieldsFromDB(item) {
 							.prop("checked", false);
 					}
 				}
+				
+				if (key == 'type_graph') {
+					if (val == "area") {
+						$("select[name=type_graph]").val(val);
+					}
+					else {
+						$("select[name=type_graph]").val(val);
+					}
+				}
 
 				if (key == 'image') {
 					//Load image preview
@@ -880,8 +891,8 @@ function loadFieldsFromDB(item) {
 					$("input[name='radio_choice'][value='custom_graph']")
 						.prop('checked', true);
 					$("input[name='radio_choice']").trigger('change');
-					$("#custom_graph option[value=" + data.id_custom_graph + "]")
-						.prop("selected", true);
+				//	$("#custom_graph option[value=" + data.id_custom_graph + "]")
+				//		.prop("selected", true);
 				}
 				else {
 					$("input[name='radio_choice'][value='module_graph']")
@@ -1030,6 +1041,9 @@ function hiddenFields(item) {
 
 	$("#background_color").css('display', 'none');
 	$("#background_color." + item).css('display', '');
+	
+	$("#type_graph").css('display', 'none');
+	$("#type_graph." + item).css('display', '');
 
 	$("#radio_choice_graph").css('display', 'none');
 	$("#radio_choice_graph." + item).css('display', '');
@@ -1535,8 +1549,8 @@ function createItem(type, values, id_data) {
 				// Do none
 			}
 			else {
-				item.css('width', values['width']  + 'px')
-					.css('height', values['height'] + 'px');
+				item.css('width','70'  + 'px')
+					.css('height', '70' + 'px');
 			}
 
 			var $image = $('<img></img>')
@@ -1545,6 +1559,8 @@ function createItem(type, values, id_data) {
 				.attr('src', img_src);
 			if ((values['width'] == 0) && (values['height'] == 0)) {
 				// Do none
+				$image.attr('width', '70')
+					.attr('height', '70');
 			}
 			else {
 				$image.attr('width', values['width'])
@@ -1627,8 +1643,8 @@ function createItem(type, values, id_data) {
 			break;
 		case 'icon':
 			if ((values['width'] == 0) && (values['height'] == 0)) {
-				sizeStyle = '';
-				imageSize = '';
+				sizeStyle = 'width: ' + '70'  + 'px; height: ' + '70' + 'px;';
+				imageSize = 'width="' + '70'  + '" height="' + '70' + '"';
 			}
 			else {
 				sizeStyle = 'width: ' + values['width']  + 'px; height: ' + values['height'] + 'px;';

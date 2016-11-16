@@ -136,6 +136,22 @@ $table->data["staticgraph_modulegraph"][1] = __('Width').': ' .
 $table->data["staticgraph_modulegraph"][1] .= '&nbsp;&nbsp;&nbsp;' .
 	__('Height') . ': ' .
 	html_print_input_text('height', 0, '', 5, 5, true);
+	
+	$fontf = array('comic sans ms' => 'comic sans ms');
+	
+	$table->rowstyle['all_9'] = 'display: none;';
+	$table->data['all_9'][0] = __('Font');
+	$table->colspan['all_9'][1] = "3";
+	$table->data["all_9"][1] = html_print_select($fontf,
+		'fontf', '', '', '', '', true);
+		
+		$fonts = array('4pt' => '4pt','6pt' => '6pt','8pt' => '8pt','14pt' => '14pt','24pt' => '24pt','36pt' => '36pt','72pt' => '72pt','96pt' => '96pt','128pt' => '128pt','154pt' => '154pt','196pt' => '196pt');
+		
+		$table->rowstyle['all_10'] = 'display: none;';
+		$table->data['all_10'][0] = __('Font size');
+		$table->colspan['all_10'][1] = "3";
+		$table->data["all_10"][1] = html_print_select($fonts,
+			'fonts', '', '', '', '', true);
 
 
 $table->rowstyle["modulegraph_simplevalue"] = 'display: none;';

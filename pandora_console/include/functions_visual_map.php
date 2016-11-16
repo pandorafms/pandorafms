@@ -105,6 +105,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 	$id_module = $layoutData['id_agente_modulo'];
 	$type = $layoutData['type'];
 	$period = $layoutData['period'];
+	$type_graph = $layoutData['type_graph'];
 	$border_width = $layoutData['border_width'];
 	$border_color = $layoutData['border_color'];
 	$fill_color = $layoutData['fill_color'];
@@ -772,7 +773,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 				// Show only avg on the visual console
 				$img = custom_graphs_print(
 					$layoutData['id_custom_graph'], $height, $width,
-					$period, null, true, 0, $only_image, $layoutData['image'],
+					$period, null, true, 0, false, $layoutData['image'],
 					array(), '', array(), array(), true,
 					false, false, true, 1, false, true);
 			}
@@ -782,10 +783,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 				else
 					$homeurl = '';
 				
-				$img = grafico_modulo_sparse($id_module, $period, 0, $width,
-					$height, '', null, false, 1, false, 0, '', 0, 0,
-					true, $only_image, $homeurl, 1, false, '', false, false, false,
-					$layoutData['image'], null, false, true);
+				$img =  grafico_modulo_sparse($id_module, $period, 0,$width,$height,
+									'',null,
+									false, 1, false, 0, '', 0, 0, true, false, '', 1, false,
+									'', false, false, false, $layoutData['image'], null, true, false,$type_graph);
 			}
 			
 			//Restore db connection
@@ -881,8 +882,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 		case GROUP_ITEM:
 			echo "<div>";
 			if ($layoutData['image'] != null) {
-				
-				
+						
 				
 				$img_style_title = strip_tags($label);
 				if ($layoutData['type'] == STATIC_GRAPH) {
@@ -1306,7 +1306,7 @@ function visual_map_process_wizard_add_modules ($id_modules, $image,
 	$process_value, $percentileitem_width, $max_value, $type_percentile,
 	$value_show, $label_type, $type, $enable_link = true,
 	$id_server = 0, $kind_relationship = VISUAL_MAP_WIZARD_PARENTS_NONE,
-	$item_in_the_map = 0) {
+	$item_in_the_map = 0,$fontf = 'arial',$fonts = '12pt') {
 	
 	if (empty ($id_modules)) {
 		$return = ui_print_error_message(
@@ -1345,15 +1345,15 @@ function visual_map_process_wizard_add_modules ($id_modules, $image,
 			default:
 				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 'agent_small', false, true, false, '…', false);
 				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_small', false, true, false, '…', false);
-				$label = $agent_label . " - " . $module_label;
+				$label = '<p><span class="visual_font_size_'.$fonts.'" style="font-family:'.$fontf.';">'.$agent_label . " - " . $module_label.'</span></p>';
 				break;
 			case 'module':
 				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_small', false, true, false, '…', false);
-				$label = $module_label;
+				$label = '<p><span class="visual_font_size_'.$fonts.'" style="font-family:'.$fontf.';">'.$module_label.'</span></p>';
 				break;
 			case 'agent':
 				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 'agent_small', false, true, false, '…', false);
-				$label = $agent_label;
+				$label = '<p><span class="visual_font_size_'.$fonts.'" style="font-family:'.$fontf.';">'.$agent_label.'</span></p>';
 				break;
 			case 'none':
 				$label = '';
@@ -1453,7 +1453,7 @@ function visual_map_process_wizard_add_agents ($id_agents, $image,
 	$process_value, $percentileitem_width, $max_value, $type_percentile,
 	$value_show, $label_type, $type, $enable_link = 1, $id_server = 0,
 	$kind_relationship = VISUAL_MAP_WIZARD_PARENTS_NONE,
-	$item_in_the_map = 0) {
+	$item_in_the_map = 0,$fontf = 'arial',$fonts = '12pt') {
 	
 	global $config;
 	
@@ -2049,7 +2049,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		echo "<div style='width: 920px; overflow:auto; margin: 0 auto;'>";
 	}
 	
-	echo '<div id="background_'.$id_layout.'"
+	echo '<div style="background-color:'.$layout["background_color"].';"><div id="background_'.$id_layout.'"
 		style="margin:0px auto;
 			text-align:center;
 			z-index: 0;
@@ -2108,7 +2108,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 	}
 	
 	// End main div
-	echo "</div>";
+	echo "</div></div>";
 	
 	
 	

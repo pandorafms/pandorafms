@@ -484,7 +484,7 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	$show_alerts = false, $avg_only = 0, $date = 0, $unit = '',
 	$baseline = 0, $return_data = 0, $show_title = true, $projection = false, 
 	$adapt_key = '', $compare = false, $series_suffix = '', $series_suffix_str = '', 
-	$show_unknown = false, $percentil = null, $dashboard = false, $vconsole = false) {
+	$show_unknown = false, $percentil = null, $dashboard = false, $vconsole = false,$type_graph='area') {
 	
 	global $config;
 	global $chart;
@@ -771,7 +771,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 	$only_image = false, $homeurl = '', $ttl = 1, $projection = false,
 	$adapt_key = '', $compare = false, $show_unknown = false,
 	$menu = true, $backgroundColor = 'white', $percentil = null,
-	$dashboard = false, $vconsole = false) {
+	$dashboard = false, $vconsole = false,$type_graph = 'area') {
 	
 	global $config;
 	global $graphic_type;
@@ -802,7 +802,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			$show_alerts, $avg_only, $date-$period, $unit, $baseline,
 			$return_data, $show_title, $projection, $adapt_key,
 			$compare, $series_suffix, $series_suffix_str,
-			$show_unknown, $percentil, $dashboard, $vconsole);
+			$show_unknown, $percentil, $dashboard, $vconsole,$type_graph);
 		
 		switch ($compare) {
 			case 'separated':
@@ -835,7 +835,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 		$show_alerts, $avg_only,
 		$date, $unit, $baseline, $return_data, $show_title,
 		$projection, $adapt_key, $compare, '', '', $show_unknown,
-		$percentil, $dashboard, $vconsole);
+		$percentil, $dashboard, $vconsole,$type_graph);
 	
 	
 	if ($return_data) {
@@ -865,7 +865,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	if ($config['type_module_charts'] === 'area') {
+	if ($type_graph === 'area') {
 		if ($compare === 'separated') {
 			return
 				area_graph($flash_chart, $chart, $width, $height/2, $color,
@@ -899,7 +899,7 @@ function grafico_modulo_sparse ($agent_module_id, $period, $show_events,
 					$backgroundColor, $dashboard, $vconsole, $agent_module_id);
 		}
 	}
-	elseif ($config['type_module_charts'] === 'line') {
+	elseif ($type_graph === 'line') {
 		if ($compare === 'separated') {
 			return
 				line_graph($flash_chart, $chart, $width, $height/2, $color,
@@ -3931,7 +3931,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 		'url' => ui_get_full_url("/images/logo_vertical_water.png",
 		false, false, false));
 	
-	if ($config['type_module_charts'] === 'area') {
+	if ($type_graph === 'area') {
 		if ($compare === 'separated') {
 			return area_graph($flash_chart, $chart, $width, $height/2, $color, $legend,
 				$long_index, ui_get_full_url("images/image_problem.opaque.png", false, false, false),
@@ -3953,7 +3953,7 @@ function grafico_modulo_boolean ($agent_module_id, $period, $show_events,
 				$chart_extra_data, 0, 0, $adapt_key, false, $series_suffix_str, $menu);
 		}
 	}
-	elseif ($config['type_module_charts'] === 'line') {
+	elseif ($type_graph === 'line') {
 		if ($compare === 'separated') {
 			return
 				line_graph($flash_chart, $chart, $width, $height/2, $color,
@@ -4499,7 +4499,7 @@ function grafico_modulo_string ($agent_module_id, $period, $show_events,
 			'url' => ui_get_full_url("images/logo_vertical_water.png", false, false, false));
 	}
 	
-	if ($config['type_module_charts'] === 'area') {
+	if ($type_graph === 'area') {
 		return area_graph($flash_chart, $chart, $width, $height, $color,
 			$legend, array(), '', "", $unit, $homeurl,
 			$water_mark, $config['fontpath'], $config['font_size'], $unit,

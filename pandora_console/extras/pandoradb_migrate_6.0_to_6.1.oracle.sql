@@ -91,3 +91,13 @@ ALTER TABLE tnetwork_component ADD COLUMN dynamic_two_tailed tinyint(1) unsigned
 -- ---------------------------------------------------------------------
 ALTER TABLE tagente ADD transactional_agent tinyint(1) NOT NULL default 0;
 ALTER TABLE tagente ADD remoteto tinyint(1) NOT NULL default 0;
+
+-- ---------------------------------------------------------------------
+-- Table `tlayout`
+-- ---------------------------------------------------------------------
+ALTER TABLE tlayout ADD COLUMN background_color varchar(50) NOT NULL default '#FFF';
+
+-- ---------------------------------------------------------------------
+-- Table `tlayout_data`
+-- ---------------------------------------------------------------------
+ALTER TABLE tlayout_data ADD COLUMN type_graph varchar(50) NOT NULL default 'area';

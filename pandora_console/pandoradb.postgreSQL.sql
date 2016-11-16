@@ -1112,6 +1112,7 @@ CREATE TABLE "tlayout" (
 	"id_group" INTEGER NOT NULL,
 	"background" varchar(200)  NOT NULL,
 	"height" INTEGER NOT NULL default 0,
+	"background_color" varchar(50) NOT NULL default '#FFF',
 	"width" INTEGER NOT NULL default 0
 );
 
@@ -1138,6 +1139,7 @@ CREATE TABLE "tlayout_data" (
 	"id_group" INTEGER NOT NULL default 0,
 	"id_custom_graph" INTEGER NOT NULL default 0,
 	"border_width" INTEGER NOT NULL default 0,
+	"type_graph" varchar(50) NOT NULL DEFAULT 'area',
 	"border_color" varchar(200) DEFAULT '',
 	"fill_color" varchar(200) DEFAULT '' 
 );

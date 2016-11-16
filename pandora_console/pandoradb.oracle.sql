@@ -1345,8 +1345,9 @@ CREATE TABLE tlayout (
 	id NUMBER(10, 0) PRIMARY KEY,
 	name varchar(50) ,
 	id_group NUMBER(10, 0),
-	background varchar(200) ,
+	background VARCHAR2(200) ,
 	height NUMBER(10, 0) DEFAULT 0,
+	background_color VARCHAR2(50) DEFAULT '#FFF',
 	width NUMBER(10, 0) DEFAULT 0
 );
 
@@ -1376,6 +1377,7 @@ CREATE TABLE tlayout_data (
 	id_group NUMBER(10, 0) DEFAULT 0,
 	id_custom_graph NUMBER(10, 0) DEFAULT 0,
 	border_width NUMBER(10, 0) DEFAULT 0,
+	type_graph VARCHAR2(50) DEFAULT 'area',
 	border_color VARCHAR2(200) DEFAULT '',
 	fill_color VARCHAR2(200) DEFAULT ''
 );

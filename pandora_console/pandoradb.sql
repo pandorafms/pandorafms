@@ -1238,6 +1238,7 @@ CREATE TABLE IF NOT EXISTS `tlayout` (
 	`background` varchar(200)  NOT NULL,
 	`height` INTEGER UNSIGNED NOT NULL default 0,
 	`width` INTEGER UNSIGNED NOT NULL default 0,
+	`background_color` varchar(50) NOT NULL default '#FFF',
 	PRIMARY KEY(`id`)
 )  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1264,6 +1265,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`id_group` INTEGER UNSIGNED NOT NULL default 0,
 	`id_custom_graph` INTEGER UNSIGNED NOT NULL default 0,
 	`border_width` INTEGER UNSIGNED NOT NULL default 0,
+	`type_graph` varchar(50) NOT NULL default 'area',
 	`border_color` varchar(200) DEFAULT "",
 	`fill_color` varchar(200) DEFAULT "",
 	PRIMARY KEY(`id`)

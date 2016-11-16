@@ -35,6 +35,7 @@ if (is_ajax ()) {
 	$get_agent_modules_json = (bool) get_parameter ('get_agent_modules_json');
 	$get_agent_status_tooltip = (bool) get_parameter ("get_agent_status_tooltip");
 	$get_agents_group_json = (bool) get_parameter ("get_agents_group_json");
+	$get_modules_group_json = (bool) get_parameter ("get_modules_group_json");
 	$get_agent_modules_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_json_for_multiple_agents");
 	$get_agent_modules_alerts_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_alerts_json_for_multiple_agents");
 	$get_agents_json_for_multiple_modules = (bool) get_parameter("get_agents_json_for_multiple_modules");
@@ -104,15 +105,47 @@ if (is_ajax ()) {
 		$agents = db_get_all_rows_filter('tagente', $filter, $fields);
 		if (empty($agents)) $agents = array();
 		
+		foreach ($agents as $k => $v) {
+			$agents[$k] = io_safe_output($v);
+		}
+
 		// Add keys prefix
 		if ($keys_prefix !== '') {
 			foreach ($agents as $k => $v) {
-				$agents[$keys_prefix . $k] = $v;
+				$agents[$keys_prefix . $k] = io_safe_output($v);
 				unset($agents[$k]);
 			}
 		}
 		
 		echo json_encode($agents);
+		return;
+	}
+
+	if ($get_modules_group_json) {
+		$id_group = (int) get_parameter('id_module_group');
+		$id_agents = get_parameter('id_agents');
+
+		$agents = implode(",", $id_agents);
+
+		$filter_group = "";
+		$filter_agent = "";
+
+		if ($id_group != 0) {
+			$filter_group = " AND id_module_group = ". $id_group;
+		}
+		if ($agents != null) {
+			$filter_agent = " AND id_agente IN (" . $agents . ")";
+		}
+
+		$modules = db_get_all_rows_sql("SELECT nombre, id_agente_modulo FROM tagente_modulo WHERE 1 = 1" . $filter_agent . $filter_group);
+
+		if (empty($modules)) $modules = array();
+		
+		foreach ($modules as $k => $v) {
+			$modules[$k] = io_safe_output($v);
+		}
+		
+		echo json_encode($modules);
 		return;
 	}
 	
@@ -135,7 +168,7 @@ if (is_ajax ()) {
 		
 		$return = array();
 		foreach ($modules as $module) {
-			$return[$module['id_agente_modulo']] = $module['nombre'];
+			$return[$module['id_agente_modulo']] = io_safe_output($module['nombre']);
 		}
 		
 		echo json_encode($return);

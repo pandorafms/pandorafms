@@ -1013,19 +1013,20 @@ function visual_map_print_item($mode = "read", $layoutData,
 			global $config;
 			
 			if ($type == SIMPLE_VALUE) {
-				$returnValue_value = explode('&nbsp;', $value);
+				//~ $returnValue_value = explode('&nbsp;', $value);
 				
-				if ($returnValue_value[1] != "") {
-					$value = remove_right_zeros(number_format($returnValue_value[0], $config['graph_precision'])) . " " . $returnValue_value[1];
-				}
-				else {
-					$value = remove_right_zeros(number_format($returnValue_value[0], $config['graph_precision']));
-				}
+				//~ if ($returnValue_value[1] != "") {
+					//~ $value = remove_right_zeros(number_format($returnValue_value[0], $config['graph_precision'])) . " " . $returnValue_value[1];
+				//~ }
+				//~ else {
+					//~ $value = remove_right_zeros(number_format($returnValue_value[0], $config['graph_precision']));
+				//~ }
+				
 			}
 			else {
 				// If the value is a string, dont format it
 				if (!is_string($value)) {
-					$value = remove_right_zeros(format_for_graph($value, $config['graph_precision']));
+					//~ $value = remove_right_zeros(format_for_graph($value, $config['graph_precision']));
 				}
 			}
 			
@@ -1144,6 +1145,8 @@ function visual_map_get_simple_value_type($process_simple_value) {
  * @return string value retrieved with units
  */
 function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) {
+	global $config;
+	
 	$unit_text = db_get_sql ('SELECT unit
 		FROM tagente_modulo WHERE id_agente_modulo = ' . $id_module);
 	$unit_text = trim(io_safe_output($unit_text));
@@ -1157,7 +1160,7 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 			}
 			else {
 				if ( is_numeric($value) )
-					$value = format_for_graph($value, 2);
+					$value = format_for_graph($value, $config['graph_precision']);
 				if (!empty($unit_text)) {
 					$value .= " " . $unit_text;
 				}

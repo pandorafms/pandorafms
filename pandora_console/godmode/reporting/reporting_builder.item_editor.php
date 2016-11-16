@@ -140,6 +140,7 @@ switch ($action) {
 			case 'general':
 			case 'network_interfaces_report':
 			case 'availability':
+			case 'agent_module':
 				$get_data_editor = true;
 				break;
 			
@@ -514,8 +515,18 @@ switch ($action) {
 					break;
 				case 'agent_module':
 					$description = $item['description'];
+					$es = json_decode($item['external_source'], true);
+					$agents_id = get_parameter('id_agents');
+					
+					if ((count($es['module']) == 1) && ($es['module'][0] == 0)) {
+						$module = "";
+					}
+					else {
+						$module = $es['module'];
+					}
 					$group = $item['id_group'];
-					$modulegroup = $item ['id_module_group'];
+					$modulegroup = $item['id_module_group'];
+					$idAgentModule = $module;
 					break;
 				case 'inventory':
 					$description = $item['description'];
@@ -978,6 +989,39 @@ You can of course remove the warnings, that's why we include the source and do n
 					</select>
 					<?php
 				}
+				?>
+			</td>
+		</tr>
+
+		<tr id="agents_row" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Agents'); ?></td>
+			<td>
+				<?php 
+					$agents = agents_get_group_agents($group);
+					if ((empty($agents)) || $agents == -1) $agents = array();
+					
+					$agents_select = array();
+					foreach ($id_agents as $id) {
+						foreach ($agents as $key => $a) {
+							if ($key == (int)$id) {
+								$agents_select[$key] = $key;
+							}
+						}
+					}
+					html_print_select($agents, 'id_agents[]', $agents_id, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
+				?>
+			</td>
+		</tr>
+		
+		<tr id="modules_row" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Modules'); ?></td>
+			<td>
+				<?php
+					$all_modules = array();
+					foreach ($module as $id_modul) {
+						$all_modules[] = modules_get_agentmodule_name($id_modul);
+					}
+					html_print_select($all_modules, 'module[]', $module, $script = '', __('None'), 0, false, true, true, '', false, "min-width: 180px");
 				?>
 			</td>
 		</tr>
@@ -1789,7 +1833,79 @@ ui_require_javascript_file ('pandora_inventory', ENTERPRISE_DIR.'/include/javasc
 $(document).ready (function () {
 	chooseType();
 	chooseSQLquery();
-	
+
+	$("#id_agents").change(agent_changed_by_multiple_agents);
+
+	$("#combo_group").change (
+		function () {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_agents_group_json" : 1,
+					"id_group" : this.value,
+					"privilege" : "AW",
+					"keys_prefix" : "_"
+				},
+				function (data, status) {
+					$("#id_agents").html('');
+					jQuery.each (data, function (id, value) {
+						// Remove keys_prefix from the index
+						id = id.substring(1);
+						
+						option = $("<option></option>")
+							.attr ("value", value["id_agente"])
+							.html (value["nombre"]);
+						$("#id_agents").append (option);
+					});
+				},
+				"json"
+			);
+		}
+	);
+
+	$("#combo_modulegroup").change (
+		function () {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_modules_group_json" : 1,
+					"id_module_group" : this.value,
+					"id_agents" : $("#id_agents").val()
+				},
+				function (data, status) {
+					$("#module").html('');
+					jQuery.each (data, function (id, value) {
+						option = $("<option></option>")
+							.attr ("value", value["id_agente_modulo"])
+							.html (value["nombre"]);
+						$("#module").append (option);
+					});
+				},
+				"json"
+			);
+		}
+	);
+
+	$("#id_agents").change (
+		function () {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_modules_group_json" : 1,
+					"id_module_group" : $("#combo_modulegroup").val(),
+					"id_agents" : $("#id_agents").val()
+				},
+				function (data, status) {
+					$("#module").html('');
+					jQuery.each (data, function (id, value) {
+						option = $("<option></option>")
+							.attr ("value", value["id_agente_modulo"])
+							.html (value["nombre"]);
+						$("#module").append (option);
+					});
+				},
+				"json"
+			);
+		}
+	);
+
 	$("#text-time_to, #text-time_from").timepicker({
 		showSecond: true,
 		timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
@@ -1817,7 +1933,6 @@ $(document).ready (function () {
 			async: false,
 			timeout: 10000,
 			success: function (data) {
-				console.log(data);
 				switch (data) {
 					case 'boolean':
 					case 'sparse':
@@ -1831,7 +1946,6 @@ $(document).ready (function () {
 		});
 		
 	});
-	
 });
 
 function create_custom_graph() {
@@ -2328,6 +2442,8 @@ function chooseType() {
 	$("#row_last_value").hide();
 	$("#row_filter_search").hide();
 	$("#row_percentil").hide();
+	$("#agents_row").hide();
+	$("#modules_row").hide();
 	
 	// SLA list default state
 	$("#sla_list").hide();
@@ -2717,6 +2833,8 @@ function chooseType() {
 			$("#row_description").show();
 			$("#row_group").show();
 			$("#row_module_group").show();
+			$("#agents_row").show();
+			$("#modules_row").show();
 			break;
 		
 		case 'inventory_changes':

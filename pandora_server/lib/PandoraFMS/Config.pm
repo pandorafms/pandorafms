@@ -43,7 +43,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "6.1dev";
-my $pandora_build = "161114";
+my $pandora_build = "161116";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -426,6 +426,9 @@ sub pandora_load_config {
 	$pa_config->{"warmup_unknown_on"} = 1; # 6.1
 
 	#$pa_config->{'include_agents'} = 0; #6.1
+	#
+	# External .enc files for XML::Parser.
+	$pa_config->{"enc_dir"} = ""; # > 6.0SP4
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -956,6 +959,9 @@ sub pandora_load_config {
 		#elsif ($parametro =~ m/^include_agents\s+([0-1])/i) {
 		#	$pa_config->{'include_agents'}= clean_blank($1);
 		#}
+		elsif ($parametro =~ m/^enc_dir\s+(.*)/i) {
+			$pa_config->{'enc_dir'} = clean_blank($1);
+		}
 	} # end of loop for parameter #
 
 	# Set to RDBMS' standard port

@@ -22,7 +22,7 @@
 /**
  * Pandora build version and version 
  */
-$build_version = 'PC161114';
+$build_version = 'PC161116';
 $pandora_version = 'v6.1dev';
 
 // Do not overwrite default timezone set if defined.
@@ -112,6 +112,9 @@ require_once ($ownDir. 'functions_config.php');
 // We need a timezone BEFORE calling config_process_config. 
 // If not we will get ugly warnings. Set Europe/Madrid by default
 // Later will be replaced by the good one.
+if (!isset($config["homeurl_static"])) {
+	$config["homeurl_static"] = $config["homeurl"];
+}
 
 date_default_timezone_set("Europe/Madrid");
 
@@ -122,11 +125,6 @@ config_prepare_session();
 require_once ($config["homedir"].'/include/load_session.php');
 if(session_id() == '') {
 	$resultado = session_start();
-}
-
-
-if (!isset($config["homeurl_static"])) {
-	$config["homeurl_static"] = $config["homeurl"];
 }
 
 // Set a the system timezone default 

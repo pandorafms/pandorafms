@@ -2346,12 +2346,15 @@ while (1) {
 	if(defined($Conf{'address'})) {
 		# Check if address is auto to get the local ip
 		if ($Conf{'address'} eq 'auto') {
-			# Tested on Ubuntu, debian, Suse, Solaris 10 and AIX 5.1
-			my @address_list = `ifconfig -a 2>$DevNull | grep -v '127.0.0' | grep '[0-9]*\\.[0-9]*\\.[0-9]*' | awk '{ print \$2 }' | awk -F':' '{ print \$2 }'`;
-			if ($#address_list < 0) {
-				# Tested on Red Hat 7
-				@address_list = `ip addr show 2>$DevNull | grep -v '127.0.0' | grep '[0-9]*\\.[0-9]*\\.[0-9]*' | awk '{print \$2}' | cut -d/ -f1`;
+			my @address_list;
+
+			if( -x "/bin/ip" || -x "/sbin/ip" || -x "/usr/sbin/ip" ) {
+				@address_list = `ip addr show 2>$DevNull | sed -e '/127.0.0/d' -e '/[0-9]*\\.[0-9]*\\.[0-9]*/!d' -e 's/^[ \\t]*\\([^ \\t]*\\)[ \\t]*\\([^ \\t]*\\)[ \\t].*/\\2/' -e 's/\\/.*//'`;
 			}
+			else {
+				@address_list = `ifconfig -a 2>$DevNull | sed -e '/127.0.0/d' -e '/[0-9]*\\.[0-9]*\\.[0-9]*/!d' -e 's/^[ \\t]*\\([^ \\t]*\\)[ \\t]*\\([^ \\t]*\\)[ \\t].*/\\2/' -e 's/.*://'`;
+			}
+
 			for (my $i = 0; $i <= $#address_list; $i++) {		
 				chomp($address_list[$i]);
 				if ($i > 0) {

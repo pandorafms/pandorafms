@@ -30,7 +30,7 @@ function post_process_get_custom_values() {
 	}
 	else {
 		$return = json_decode(
-			$config['post_process_custom_values'], true);
+			io_safe_output($config['post_process_custom_values']), true);
 	}
 	
 	if (empty($return)) {

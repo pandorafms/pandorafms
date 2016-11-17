@@ -178,6 +178,7 @@ if (is_ajax ()) {
 	if ($get_agents_json_for_multiple_modules) {
 		$nameModules = get_parameter('module_name');
 		$selection_mode = get_parameter('selection_mode','common');
+		$status_modulo = (int) get_parameter ('status_module', -1);
 		
 		$groups = users_get_groups ($config["id_user"], "AW", false);
 		$group_id_list = ($groups ? join(",",array_keys($groups)):"0");
@@ -187,6 +188,10 @@ if (is_ajax ()) {
 			WHERE t1.id_agente = t2.id_agente
 				AND t1.id_grupo IN (' . $group_id_list .')
 				AND t2.nombre IN (\'' . implode('\',\'', $nameModules) . '\')';
+		
+		if ($status_modulo != -1) {
+			$sql .= ' AND t2.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where estado = ' . $status_modulo . ') ';
+		}
 		
 		if ($selection_mode == 'common') {
 			$sql .= 'AND (
@@ -258,6 +263,7 @@ if (is_ajax ()) {
 		$selection_mode = get_parameter('selection_mode', 'common');
 		$serialized = get_parameter('serialized', '');
 		$id_server = (int) get_parameter('id_server', 0);
+		$status_modulo = (int) get_parameter ('status_module', -1);
 		$metaconsole_server_name = null;
 		if (!empty($id_server)) {
 			$metaconsole_server_name = db_get_value('server_name',
@@ -293,6 +299,11 @@ if (is_ajax ()) {
 					break;
 			}
 		}
+		
+		if ($status_modulo != -1) {
+			$filter .= ' AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where estado = ' . $status_modulo . ')';
+		}
+		
 		
 		if (is_metaconsole()) {
 			$result = array();
@@ -475,6 +486,7 @@ HAVING count(nombre) = (SELECT count(nombre) FROM tagente_modulo))';
 		$delete_pending = (int) get_parameter ('delete_pending', -1);
 		// Use 0 as not received
 		$id_tipo_modulo = (int) get_parameter ('id_tipo_modulo', 0);
+		$status_modulo = (int) get_parameter ('status_module', -1);
 		
 		// Filter
 		$filter = array();
@@ -486,6 +498,11 @@ HAVING count(nombre) = (SELECT count(nombre) FROM tagente_modulo))';
 			$filter['id_tipo_modulo'] = $id_tipo_modulo;
 		if (empty($filter))
 			$filter = false;
+		
+		if ($status_modulo != -1) {
+			$filter['id_agente_modulo IN'] = ' (SELECT id_agente_modulo FROM tagente_estado where estado = '.$status_modulo.') ';
+		}
+		
 		
 		$get_id_and_name = (bool) get_parameter ('get_id_and_name');
 		$get_distinct_name = (bool) get_parameter ('get_distinct_name');

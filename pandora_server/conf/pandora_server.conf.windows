@@ -516,3 +516,6 @@ warmup_event_interval 0
 # since the server starts up. 
 warmup_unknown_interval 300
 
+# Directory were additional enc files for the XML parser are located.
+enc_dir /usr/share/pandora_server/enc/
+

@@ -50,7 +50,7 @@ function wmi_compose_query($wmi_client, $user, $password, $host, $namespace = ''
 }
 
 
-function wmi_create_wizard_modules($id_agent, $names, $wizard_mode, $values) {
+function wmi_create_wizard_modules($id_agent, $names, $wizard_mode, $values, $id_police=0, $module_id=0) {
 	$results = array(ERR_GENERIC => array(), NOERR => array());
 	
 	if (empty($names)) {
@@ -74,8 +74,12 @@ function wmi_create_wizard_modules($id_agent, $names, $wizard_mode, $values) {
 		// Add the query to values
 		$values['snmp_oid'] = io_safe_input($wmi_query);
 		
-		$return = modules_create_agent_module ($id_agent, $name, $values);
-		
+		if($id_police != 0){
+			$return = policies_create_module ($name, $id_police, $module_id, $values);
+		}
+		else{
+			$return = modules_create_agent_module ($id_agent, $name, $values);
+		}
 		if($return < 0) {
 			$results[ERR_GENERIC][] = $name;
 		}
@@ -87,7 +91,7 @@ function wmi_create_wizard_modules($id_agent, $names, $wizard_mode, $values) {
 	return $results;
 }
 
-function wmi_create_module_from_components($components, $values) {
+function wmi_create_module_from_components($components, $values, $id_police=0, $module_id=0) {
 	$results = array(ERR_GENERIC => array(), NOERR => array(), ERR_EXIST => array());
 	
 	if (empty($components)) {
@@ -97,18 +101,23 @@ function wmi_create_module_from_components($components, $values) {
 		$nc = db_get_row ("tnetwork_component", "id_nc", $component_id);
 		
 		// Compatibilize the fields between components and modules table
-		$nc['descripcion'] = $nc['description'];
-		unset($nc['description']);
+		if($id_police == 0){
+			$nc['descripcion'] = $nc['description'];
+			unset($nc['description']);
 		
-		$nc['nombre'] = $nc['name'];
-		unset($nc['name']);
+			$nc['nombre'] = $nc['name'];
+			unset($nc['name']);
+		}
 		
 		$nc['id_tipo_modulo'] = $nc['type'];
 		unset($nc['type']);
 		
 		unset($nc['id_nc']);
 		unset($nc['id_group']);
-		
+		if($id_police != 0){
+			unset($nc['id_modulo']);
+			unset($nc['wizard_level']);
+		}
 		// Store the passed values with the component values
 		foreach ($values as $k => $v) {
 			$nc[$k] = $v;
@@ -125,13 +134,22 @@ function wmi_create_module_from_components($components, $values) {
 		unset($nc['tags']);
 		
 		// Check if this module exists in the agent
-		$module_name_check = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('delete_pending' => 0, 'nombre' => $nc['nombre'], 'id_agente' => $nc['id_agente']));
-		
+		if($nc['id_agente'] != ""){
+			$module_name_check = db_get_value_filter('id_agente_modulo', 'tagente_modulo', array('delete_pending' => 0, 'nombre' => $nc['nombre'], 'id_agente' => $nc['id_agente']));
+			}
+		else{
+			$module_name_check = false;
+		}
 		if ($module_name_check !== false) {
 			$results[ERR_EXIST][] = $nc["nombre"];
 		}
 		else {
-			$id_agente_modulo = modules_create_agent_module($nc["id_agente"], $nc["nombre"], $nc);
+			if($id_police == 0){
+				$id_agente_modulo = modules_create_agent_module($nc["id_agente"], $nc["nombre"], $nc);
+			}
+			else{
+				$id_agente_modulo = policies_create_module ($nc["name"], $id_police, $module_id, $nc);	
+			}
 
 			if ($id_agente_modulo === false) {
 				$results[ERR_GENERIC][] = $nc["nombre"];

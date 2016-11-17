@@ -60,7 +60,7 @@ $sort 				= 		get_parameter('sort', 'none');
 //When the previous page was a visualmap and show only one module
 $id_module 			= 		(int) get_parameter('id_module', 0);
 $ag_custom_fields 	= 		(array) get_parameter('ag_custom_fields', array());
-$module_option = (int) get_parameter('module_option', 0);
+$module_option = (int) get_parameter('module_option', 1);
 
 if (!is_metaconsole()) {
 	$ag_group 		= 		(int) get_parameter ('ag_group', 0);
@@ -394,7 +394,7 @@ else {
 
   $table->data[2][1] = html_print_select ($typemodules, 'moduletype',$moduletype, '', __('All'),'', true, false, true, '', false, 'width: 150px;');
 	
-  	$monitor_options = array(0 => __('Everyone'), 1 => __('Only enabled'), 2 => __('Only disabled'));
+  	$monitor_options = array(0 => __('All'), 1 => __('Only enabled'), 2 => __('Only disabled'));
 
 	$table->data[2][2] = '<span>'.__('Show monitors...').'</span>';
 	

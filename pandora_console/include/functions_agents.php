@@ -1169,6 +1169,9 @@ function agents_get_modules ($id_agent = null, $details = false,
 							break;
 					}
 				}
+				else if (preg_match('/\bin\b/i',$field)) {
+					array_push ($fields, $field.' '.$value);
+				}
 				else {
 					switch ($config["dbtype"]) {
 						case "mysql":

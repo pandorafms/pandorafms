@@ -288,6 +288,19 @@ $table->data['form_agents_1'][3] = __('Select all modules of this group') . ' ' 
 		'', 'style="margin-right: 40px;"', true);
 
 
+$table->rowclass['form_modules_3'] = '';
+$table->data['form_modules_3'][0] = __('Module Status');
+$table->colspan['form_modules_3'][1] = 2;
+$status_list = array ();
+$status_list[AGENT_MODULE_STATUS_NORMAL] = __('Normal');
+$status_list[AGENT_MODULE_STATUS_WARNING] = __('Warning');
+$status_list[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
+$status_list[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
+$status_list[AGENT_MODULE_STATUS_NOT_NORMAL] = __('Not normal');
+$status_list[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
+$table->data['form_modules_3'][1] = html_print_select($status_list,
+	'status_module', 'selected', '', __('All'), AGENT_MODULE_STATUS_ALL, true);
+$table->data['form_modules_3'][3] = '';
 
 $table->rowstyle['form_modules_2'] = 'vertical-align: top;';
 $table->rowclass['form_modules_2'] = 'select_modules_row select_modules_row_2';
@@ -304,10 +317,8 @@ $table->data['form_modules_2'][2] .= html_print_select (
 $table->data['form_modules_2'][3] = html_print_select (array(), 'agents[]',
 	$agents_select, false, __('None'), 0, true, true, false);
 
-
-
 $table->rowclass['form_agents_2'] = 'select_agents_row';
-$table->data['form_agents_2'][0] = __('Status');
+$table->data['form_agents_2'][0] = __('Agent Status');
 $table->colspan['form_agents_2'][1] = 2;
 $status_list = array ();
 $status_list[AGENT_STATUS_NORMAL] = __('Normal');
@@ -684,6 +695,10 @@ $(document).ready (function () {
 		if (this.value != '0')
 			params['id_tipo_modulo'] = this.value;
 		
+		var status_module = $('#status_module').val();
+		if (status_module != '-1')
+			params['status_module'] = status_module;
+		
 		$("#module_loading").show ();
 		$("tr#delete_table-edit1, tr#delete_table-edit2").hide ();
 		$("#module_name").attr ("disabled", "disabled")
@@ -701,6 +716,7 @@ $(document).ready (function () {
 			"json"
 		);
 	});
+	
 	function show_form() {
 		$("td#delete_table-0-1, " +
 			"td#delete_table-edit1-1, " +
@@ -869,7 +885,7 @@ $(document).ready (function () {
 	$("#id_agents").change (show_form);
 	
 	$("#form_edit input[name=selection_mode]").change (function () {
-		selector = this.value;
+		selector = $("#form_edit input[name=selection_mode]:checked").val();
 		clean_lists();
 		
 		if(selector == 'agents') {
@@ -965,6 +981,17 @@ $(document).ready (function () {
 	
 	$("#status_agents").change(function() {
 		$("#groups_select").trigger("change");
+	});
+	
+	$("#status_module").change(function() {
+		
+		selector = $("#form_edit input[name=selection_mode]:checked").val();
+		if(selector == 'agents') {
+			$("#id_agents").trigger("change");
+		}
+		else if(selector == 'modules') {
+			$("#module_type").trigger("change");
+		}
 	});
 });
 /* ]]> */

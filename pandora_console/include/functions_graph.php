@@ -434,6 +434,20 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 				}
 			}
 		}
+
+		if ($uncompressed_module || ($timestamp > time ())) {
+			if (!isset($chart[$timestamp]['no_data'.$series_suffix])) {
+				$chart[$timestamp]['no_data'.$series_suffix] = 0;
+			}
+			if ($chart[$timestamp]['sum'.$series_suffix] == $last_known) {
+				$chart[$timestamp]['no_data'.$series_suffix] = 0;
+				$series_type['no_data'.$series_suffix] = 'area';
+			}
+			else {
+				$chart[$timestamp]['no_data'.$series_suffix] = $last_known;
+				$series_type['no_data'.$series_suffix] = 'area';
+			}
+		}
 		
 		if ($show_unknown) {
 			if (!isset($chart[$timestamp]['unknown'.$series_suffix])) {
@@ -705,6 +719,9 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 			array('border' => '#ff7f00', 'color' => '#ff7f00',
 				'alpha' => CHART_DEFAULT_ALPHA);
 	}
+	$color['no_data'.$series_suffix] = array(
+		'border' => '#000000', 'color' => '#f2c40e',
+		'alpha' => CHART_DEFAULT_ALPHA);
 	if ($show_unknown) {
 		$color['unknown' . $series_suffix] =
 			array('border' => '#999999', 'color' => '#999999',
@@ -749,7 +766,10 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	/*if ($baseline) {
 		$legend['baseline'.$series_suffix] = __('Baseline');
 	}*/
-	
+
+	$legend['no_data'.$series_suffix] = __('No data').$series_suffix_str;
+		$chart_extra_data['legend_no_data'] = $legend['no_data'.$series_suffix_str];
+
 	if ($show_unknown) {
 		$legend['unknown'.$series_suffix] = __('Unknown').$series_suffix_str;
 		$chart_extra_data['legend_unknown'] = $legend['unknown'.$series_suffix_str];

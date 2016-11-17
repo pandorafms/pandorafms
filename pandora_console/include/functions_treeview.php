@@ -236,6 +236,7 @@ function treeview_printModuleTable($id_module, $server_data = false, $no_head = 
 					$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . 
 						substr(io_safe_output($last_data['datos']),0,12) . "</span>";
 			break;
+		}
 	}
 	if (!empty($last_data['utimestamp'])) {
 		$last_data_str = $data;
@@ -370,7 +371,7 @@ function treeview_printAlertsTable($id_module, $server_data = array(), $no_head 
 	$row['times_fired'] = __('Times fired');
 	$row['last_fired'] = __('Last fired');
 	$table2->data['titles'] = $row;
-	html_debug($module_alerts, true);
+	
 	foreach ($module_alerts as $module_alert) {
 		$template_name = db_get_value('name','talert_templates','id',$module_alert['id_alert_template']);
 		
@@ -710,5 +711,4 @@ function treeview_printTable($id_agente, $server_data = array(), $no_head = fals
 
 	return;
 }
-
 ?>

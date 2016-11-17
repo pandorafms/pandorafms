@@ -3728,6 +3728,701 @@ function reporting_sql($report, $content) {
 	return reporting_check_structure_content($return);
 }
 
+
+//
+// Truncates a value
+// 
+// Returns the truncated value
+//
+function sla_truncate($num, $accurancy = 2){
+	if (!isset($accurancy)){
+		$accurancy = 2;
+	}
+	$mult = pow(10, $accurancy);
+	return floor($num*$mult)/$mult;
+}
+
+//
+// Aux: check value limits
+// 
+// Returns if the data is in a valid range or not
+//
+function sla_check_value($value, $min, $max, $inverse_interval = 0) {
+	if ($max == $min) { // equal 0
+		if ($value == $max) {
+			return ($inverse_interval==0)?true:false;
+		}
+		return ($inverse_interval==0)?false:true;
+	}
+	if (!isset ($max)) {
+		if ($value >= $min) {
+			return ($inverse_interval==0)?true:false;
+		}
+		return ($inverse_interval==0)?false:true;
+	}
+	if (!isset ($min)) {
+		if ($value <= $max) {
+			return ($inverse_interval==0)?true:false;
+		}
+		return ($inverse_interval==0)?false:true;
+	}
+	if (($max*1) == 0) { // ignore
+		return sla_check_value($value,$min,null, $inverse_interval);
+	}
+	if (($min*1) == 0) { // ignore
+		return sla_check_value($value,null,$max, $inverse_interval);
+	}
+	if (($value >= $min) && ($value <= $max)) {
+		return ($inverse_interval==0)?true:false;
+	}
+	return ($inverse_interval==0)?false:true;
+}
+
+/**
+ * SLA fixed worktime
+ * 
+ * Check (if needed) if the range specified by wt_start and wt_end is a valid
+ * range or not.
+ * 
+ * As worktime is order (older ... newer) the idx works as flag to identify 
+ * last range checked, in order to improve the algorythm performance.
+ * 
+ * @param int  $wt_start   start of the range
+ * @param int  $wt_end     end of the range
+ * @param hash $worktime   hash containing the valid intervals
+ * @param int  $idx        last ranges checked
+ * 
+ */
+function sla_fixed_worktime($wt_start, $wt_end, $worktime = null, $idx = 0) {
+
+	$return = array();
+
+	// Accept all ranges by default
+	$return["wt_valid"] = 1;
+	$return["interval"] = $wt_end - $wt_start;
+
+	// No exclusions defined, entire worktime is valid
+	if ((!isset($worktime) || (!is_array($worktime)))) {
+		return $return;
+	}
+
+	// Check exceptions
+	$total = count($worktime);
+
+	$return["idx"] = $idx;
+
+	if (!(($idx <= $total) && ($idx >= 0))) {
+		$idx = 0;
+	}
+
+	$start_fixed = 0;
+	for ($i=$idx; $i < $total; $i++) {
+		$wt = $worktime[$i];
+	
+		if ($start_fixed == 1) {
+			// Intervals greater than 1 DAY
+			if ($wt_end < $wt["date_from"]) {
+				return $return;
+			}
+
+			if (   ($wt_end >= $wt["date_from"])
+				&& ($wt_end <= $wt["date_to"]))  {
+				// add last slice
+				$return["interval"] += $wt_end - $wt["date_from"];
+				return $return;
+			}
+			if (   ($wt_end >= $wt["date_from"])
+				&& ($wt_end <= $wt["date_to"]))  {
+				// Add current slice and continue checking
+				$return["interval"] += $wt["date_to"] - $wt["date_from"];
+				// Also ignore this slice
+				$return["idx"] = $i;
+			}
+		}
+		else  {
+			if (   ($wt_start <  $wt["date_from"])
+				&& ($wt_end   <  $wt["date_from"])) {
+				// Case A: ..start..end..[...]......
+				$return["wt_valid"] = 0;
+				return $return;
+			}
+			if (   ($wt_start <= $wt["date_from"])
+				&& ($wt_end   >= $wt["date_from"]) 
+				&& ($wt_end   <= $wt["date_to"])) {
+				// Case B: ...start..[..end..]......
+				$return["wt_valid"] = 1;
+				$return["interval"] = $wt_end - $wt["date_from"];
+				return $return;
+			}
+			if (   ($wt_start >= $wt["date_from"])
+				&& ($wt_start <= $wt["date_to"])
+				&& ($wt_end   >= $wt["date_from"])
+				&& ($wt_end   <= $wt["date_to"])) {
+				// Case C: ...[..start..end..]......
+				$return["wt_valid"] = 1;
+				return $return;
+			}
+			if (   ($wt_start >= $wt["date_from"])
+				&& ($wt_start <= $wt["date_to"])
+				&& ($wt_end   >  $wt["date_to"])) {
+				// Case D: ...[..start..]...end.....
+				$return["interval"] = $wt["date_to"] - $wt_start;
+
+				$return["wt_valid"] = 1;
+				$start_fixed = 1;
+				if (($i+1) == $total) {
+					// if there's no more worktime ranges to check return the accumulated
+					return $return;
+				}
+
+			}
+
+			if (   ($wt_start < $wt["date_from"])
+				&& ($wt_end   > $wt["date_to"])) {
+				// Case E: ...start...[...]...end...
+				$return["wt_valid"] = 1;
+				$return["interval"] = $wt["date_to"] - $wt["date_from"];
+
+				if (($wt_end - $wt_start) < SECONDS_1DAY) {
+					// Interval is less than 1 day
+					return $return;
+				}
+				else {
+					// Interval greater than 1 day, split valid worktimes
+					$start_fixed = 1;
+				}
+				
+			}
+			if (   ($wt_start >  $wt["date_to"])
+				&& ($wt_end   >  $wt["date_to"])) {
+				// Case F: ...[....]..start...end...
+				// Invalid, check next worktime hole
+				$return["wt_valid"] = 0;
+				//  and remove current one
+				$return["idx"] = $i+1;
+			}
+		}
+	}
+
+	$return["wt_valid"] = 0;
+
+	return $return;
+}
+
+/**
+ * Advanced SLA result with summary
+ * 
+ * @param int  $id_agent_module    id_agent_module 
+ * @param int  $time_from          Time start
+ * @param int  $time_to            time end
+ * @param int  $min_value          minimum value for OK status
+ * @param int  $max_value          maximum value for OK status
+ * @param int  $inverse_interval   inverse interval (range) for OK status
+ * @param hash $daysWeek           Days of active work times (M-T-W-T-V-S-S)
+ * @param int  $timeFrom           Start of work time, in each day
+ * @param int  $timeTo             End of work time, in each day
+ * @param int  $slices             Number of reports (time division)
+ * 
+ * @return array                  Returns a hash with the calculated data
+ * 
+ */
+function reporting_advanced_sla ($id_agent_module, $time_from = null, $time_to = null,
+	$min_value = null, $max_value = null, $inverse_interval = null, $daysWeek = null,
+	$timeFrom = null, $timeTo = null, $slices = 1) {
+
+	// In content:
+	// 
+	// [time_from, time_to] => Worktime
+	// week's days => flags to manage workdays
+
+	if (!isset($id_agent_module)) {
+		return false;
+	}
+
+	if ($slices < 1) {
+		$slices = 1;
+	}
+
+	if (!isset($min_value) && (!isset($max_value) && (!isset($inverse_interval)))) {
+		// Infer availability range based on the critical thresholds
+		$agentmodule_info = modules_get_agentmodule($id_agent_module);
+
+		// take in mind: the "inverse" critical threshold 
+		$min_value        = $agentmodule_info["min_critical"];
+		$max_value        = $agentmodule_info["max_critical"];
+		$inverse_interval = $agentmodule_info["critical_inverse"]==0?1:0;
+
+		if (!isset($min_value)){
+			$min_value = 0;
+		}
+		if (!isset($max_value)){
+			$max_value = 0;
+		}
+	}
+
+	// By default show last day
+	$datetime_to = time();
+	$datetime_from = $datetime_to - SECONDS_1DAY;
+
+	// Or apply specified range
+	if ((isset($time_to) && isset($time_from)) && ($time_to > $time_from)) {
+		$datetime_to   = $time_to;
+		$datetime_from = $time_from;
+	}
+	if (!isset($time_to)) {
+		$datetime_to = $time_to;	
+	}
+	if (!isset($time_from)) {
+		$datetime_from = $time_from;
+	}
+
+	
+	$uncompressed_data = db_uncompress_module_data($id_agent_module, $datetime_from, $datetime_to);	
+
+	if (is_array($uncompressed_data)){
+		$n_pools = count($uncompressed_data);
+		if ($n_pools == 0){
+			return false;
+		}
+	}
+	$planned_downtimes = reporting_get_planned_downtimes_intervals($id_agent_module, $datetime_from, $datetime_to);
+
+	if ( (is_array($planned_downtimes)) && (count($planned_downtimes) > 0)){
+		// Sort retrieved planned downtimes
+		usort($planned_downtimes, function ($a, $b) {
+			$a = intval($a["date_from"]);
+			$b = intval($b["date_from"]);
+			if ($a==$b) {
+				return 0;
+			}
+			return ($a<$b)?-1:1;
+		});
+
+		// Compress (overlapped) planned downtimes
+		$npd = count($planned_downtimes);
+		for ($i=0; $i<$npd; $i++) {
+			if (isset($planned_downtimes[$i+1])) {
+				if ($planned_downtimes[$i]["date_to"] >= $planned_downtimes[$i+1]["date_from"]) {
+					// merge
+					$planned_downtimes[$i]["date_to"] = $planned_downtimes[$i+1]["date_to"];
+					array_splice ($planned_downtimes, $i+1, 1);
+					$npd--;
+				}
+			}
+		}
+	}
+	else {
+		$planned_downtimes = null;
+	}
+
+	// Structure retrieved: schema:
+	// 
+	// uncompressed_data =>
+	//      pool_id (int)
+	//          utimestamp (start of current slice)
+	//          data
+	//              array
+	//                  utimestamp
+	//                  datos
+	//                  
+
+
+	// Build exceptions
+	$worktime = null;
+
+	if (  ((isset($daysWeek))
+		&& (isset($timeFrom))
+		&& (isset($timeTo)))
+		|| (is_array($planned_downtimes)) ) {
+		$n = 0;
+
+		if (!isset($daysWeek)) {
+			// init
+			$daysWeek = array  ( 
+				"1" => 1, // sunday"
+				"2" => 1, // monday
+				"3" => 1, // tuesday
+				"4" => 1, // wednesday
+				"5" => 1, // thursday
+				"6" => 1, // friday
+				"7" => 1, // saturday
+			);
+		}
+
+		foreach ($daysWeek as $day) {
+			if ($day == 1){
+				$n++;
+			}
+		}
+		if ( ($n == count($daysWeek)) && ($timeFrom == $timeTo) && (!is_array($planned_downtimes)) ) {
+			// Ignore custom ranges
+			$worktime = null;
+		}
+		else {
+
+			// get only first day
+			$date_start = strtotime(date("Y/m/d",$datetime_from));
+			$date_end   = strtotime(date("Y/m/d",$datetime_to));
+
+			$t_day    = $date_start;
+			$i        = 0;
+			$worktime = array();
+
+			if ($timeFrom == $timeTo) {
+				$timeFrom = "00:00:00";
+				$timeTo   = "00:00:00";
+			}
+
+			if (!isset($timeFrom)) {
+				$timeFrom = "00:00:00";
+			}
+			if (!isset($timeTo)) {
+				$timeTo   = "00:00:00";
+			}
+
+			// timeFrom (seconds)
+			sscanf($timeFrom, "%d:%d:%d", $hours, $minutes, $seconds);
+			$secondsFrom = $hours * 3600 + $minutes * 60 + $seconds;
+
+			// timeTo (seconds)
+			sscanf($timeTo, "%d:%d:%d", $hours, $minutes, $seconds);
+			$secondsTo   = $hours * 3600 + $minutes * 60 + $seconds;
+
+			// Apply planned downtime exceptions (fix matrix)
+			while ($t_day <= $date_end) {
+				if ($daysWeek[date("w", $t_day)+1] == 1) {
+					$wt_start = strtotime(date("Y/m/d H:i:s",$t_day + $secondsFrom));
+					$wt_end   = strtotime(date("Y/m/d H:i:s",$t_day + $secondsTo));
+					if ($timeFrom == $timeTo) {
+						$wt_end += SECONDS_1DAY;
+					}
+
+					// Check if in planned downtime
+					if (is_array($planned_downtimes)) {
+						$start_fixed = 0;
+
+						$n_planned_downtimes = count($planned_downtimes);
+						$i_planned_downtimes = 0;
+
+
+
+						$last_pd = end($planned_downtimes);
+
+						if ($wt_start > $last_pd["date_to"]) {
+							// There's no more planned downtimes, accept remaining range
+							$worktime[$i]= array();
+							$worktime[$i]["date_from"] = $wt_start;
+							$worktime[$i]["date_to"]   = $wt_end;
+							$i++;
+						}
+						else {
+							for($i_planned_downtimes=0; $i_planned_downtimes < $n_planned_downtimes; $i_planned_downtimes++){
+								$pd = $planned_downtimes[$i_planned_downtimes];
+
+								if($start_fixed == 1) {
+									// Interval greater than found planned downtime
+									if ( $wt_end < $pd["date_from"] ) {
+										$worktime[$i]= array();
+										// wt_start already fixed
+										$worktime[$i]["date_from"] = $wt_start;
+										$worktime[$i]["date_to"]   = $wt_end;
+										$i++;
+										break;
+									}
+									if (   ( $wt_end >= $pd["date_from"] ) 
+										&& ( $wt_end <= $pd["date_to"]  )) {
+										$worktime[$i]= array();
+										// wt_start already fixed
+										$worktime[$i]["date_from"] = $wt_start;
+										$worktime[$i]["date_to"]   = $pd["date_from"];
+										$i++;
+										break;
+									}
+									if ( $wt_end > $pd["date_to"]  ) {
+										$worktime[$i]= array();
+										// wt_start already fixed
+										$worktime[$i]["date_from"] = $wt_start;
+										$worktime[$i]["date_to"]   = $pd["date_from"];
+										$i++;
+										
+										$start_fixed = 0;
+										// Search following planned downtimes, we're still on work time!
+										$wt_start = $pd["date_from"];
+									}
+
+								}
+								
+								if (   ( $wt_start <  $pd["date_from"])
+									&& ( $wt_end   <  $pd["date_from"]) ) {
+									// Out of planned downtime: Add worktime
+									$worktime[$i]= array();
+									$worktime[$i]["date_from"] = $wt_start;
+									$worktime[$i]["date_to"]   = $wt_end;
+									$i++;
+									break;
+								}
+								if (   ( $wt_start <  $pd["date_from"])
+									&& ( $wt_end   <= $pd["date_to"]) ) {
+									// Not all worktime in downtime.
+									$worktime[$i]= array();
+									$worktime[$i]["date_from"] = $wt_start;
+									$worktime[$i]["date_to"]   = $pd["date_from"];
+									$i++;
+									break;
+								}
+								if (   ( $wt_start >= $pd["date_from"])
+									&& ( $wt_end   <= $pd["date_to"]) ) {
+									// All worktime in downtime, ignore
+									break;
+								}
+								if (   ( $wt_start >= $pd["date_from"])
+									&& ( $wt_start <= $pd["date_to"])
+									&& ( $wt_end   >  $pd["date_to"]) ) {
+									// Begin of the worktime in downtime, adjust.
+									// Search for end of worktime.
+									$wt_start = $pd["date_to"];
+									$start_fixed = 1;
+								}
+								if (   ( $wt_start <  $pd["date_from"])
+									&& ( $wt_end   >  $pd["date_to"]) ) {
+									// Begin of the worktime in downtime, adjust.
+									// Search for end of worktime.
+									$worktime[$i]= array();
+									$worktime[$i]["date_from"] = $wt_start;
+									$worktime[$i]["date_to"]   = $pd["date_from"];
+									$i++;
+									$wt_start = $pd["date_to"];
+									$start_fixed = 1;
+								}
+
+								if ( ($start_fixed == 1) && (($i_planned_downtimes+1) == $n_planned_downtimes) ) {
+									// There's no more planned downtimes, accept remaining range
+									$worktime[$i]= array();
+									$worktime[$i]["date_from"] = $wt_start;
+									$worktime[$i]["date_to"]   = $wt_end;
+									$i++;
+									break;
+								}
+							}
+						}
+					}
+					else {
+						// No planned downtimes scheduled
+						$worktime[$i]= array();
+						$worktime[$i]["date_from"] = $wt_start;
+						$worktime[$i]["date_to"]   = $wt_end;
+						$i++;
+					}
+				}
+				$t_day+=SECONDS_1DAY;
+			} // End while -> build matrix
+		} // End else (prepare fixed matrix)
+	} // Finished: Build exceptions
+
+// DEBUG
+// print "Umcompressed data debug:\n";
+// foreach ($uncompressed_data as $k => $caja) {
+// 	print "caja: $k\t" . $caja["utimestamp"] . "\n";
+// 	foreach ($caja["data"] as $dato) {
+// 		print "\t" . $dato["utimestamp"] . "\t" . $dato["datos"] . "\t" . date("Y/m/d H:i:s",$dato["utimestamp"]) . "\t" . $dato["obs"] . "\n";
+// 	}
+// }
+
+
+	// Initialization
+	$global_return = array();
+
+	$wt_check["idx"] = 0;
+	$last_pool_id    = 0;
+	$last_item_id    = 0;
+
+	// Support to slices
+	$global_datetime_from = $datetime_from;
+	$global_datetime_to   = $datetime_to;
+	$range                = ($datetime_to - $datetime_from) / $slices;
+	
+	// Analysis begins
+	for ($count=0; $count < $slices; $count++) {
+
+		$datetime_from = $global_datetime_from + ($count*$range);
+		$datetime_to   = $global_datetime_from + (($count+1)*$range);
+
+		$return = array();
+		// timing
+		$time_total       = 0;
+		$time_in_ok       = 0;
+		$time_in_error    = 0;
+		$time_in_unknown  = 0;
+		$time_in_not_init = 0;
+
+		// checks
+		$bad_checks       = 0;
+		$ok_checks        = 0;
+		$not_init_checks  = 0;
+		$unknown_checks   = 0;
+		$total_checks     = 0;
+
+		if (is_array($uncompressed_data)) {
+
+			$n_pools = count($uncompressed_data);
+			for($pool_index = $last_pool_id; $pool_index < $n_pools; $pool_index++ ) {
+				$pool = $uncompressed_data[$pool_index];
+
+				// check limits
+				if (isset($uncompressed_data[$pool_index+1])) {
+					$next_pool = $uncompressed_data[$pool_index+1];
+				}
+				else {
+					$next_pool = null;
+				}
+				if (isset($next_pool)) {
+					$pool["next_utimestamp"] = $next_pool["utimestamp"];
+				}
+				else {
+					$pool["next_utimestamp"] = $global_datetime_to;
+				}
+
+				// update last pool checked: avoid repetition
+				$last_pool_id = $pool_index;
+
+
+				if ($datetime_from > $pool["utimestamp"]) {
+					# Skip pool
+					continue;
+				}
+
+				// Test if need to acquire current pool
+				if (   (($datetime_from <= $pool["utimestamp"]) && ($datetime_to >= $pool["next_utimestamp"])) 
+					|| ($datetime_to > $pool["utimestamp"]) ) {
+
+					# Acquire pool to this slice
+					
+					$nitems_in_pool = count($pool["data"]);
+					for ($i=0; $i < $nitems_in_pool; $i++ ) {
+						$current_data = $pool["data"][$i];
+
+						if (($i+1) >= $nitems_in_pool) {
+							// if pool exceded, check next pool timestamp
+							$next_data = $next_pool;
+						}
+						else {
+							// pool not exceded, check next item
+							$next_data = $pool["data"][$i+1];
+						}
+
+						if (isset ($next_data["utimestamp"])) {
+							// check next mark time in current pool
+							$next_timestamp = $next_data["utimestamp"];
+							
+						}
+						else {
+							// check last time -> datetime_to
+							if (!isset($next_pool)) {
+								$next_timestamp = $global_datetime_to;
+							}
+							else {
+								$next_timestamp = $datetime_to;	
+							}
+						}
+
+						// Effective time limits for current data
+						$wt_start = $current_data["utimestamp"];
+						$wt_end   = $next_timestamp;
+
+						// Remove time spent in planned downtime and not in planning
+						$wt_check = sla_fixed_worktime($wt_start, $wt_end, $worktime, $wt_check["idx"]);
+						$time_interval = $wt_check["interval"];
+						if ($time_interval == 0){
+							continue;
+						}
+
+						if ($wt_check["wt_valid"] == 1) {
+							$total_checks++;
+							$time_total += $time_interval;
+							if ((isset ($current_data["datos"])) && ($current_data["datos"] !== false)) {
+								// not unknown nor not init values
+								if (sla_check_value($current_data["datos"],$min_value, $max_value, $inverse_interval)) {
+									$ok_checks++;
+									$time_in_ok += $time_interval;
+
+								}
+								else {
+									$bad_checks++;
+									$time_in_error += $time_interval;
+								}
+							}
+							else {
+								if($current_data["datos"] === null) {
+									$time_in_unknown += $time_interval;
+									$unknown_checks++; 
+								}
+								elseif ($current_data["datos"] === false) {
+									$time_in_not_init += $time_interval;
+									$not_init_checks++; 
+								}
+							}
+						}
+						else {
+							// ignore worktime, is in an invalid period:
+							//   scheduled downtimes
+							//   not 24x7 sla's
+						}
+					} // End of pool items analysis (for)
+
+				} // End analysis of pool acquired
+				else {
+					break;
+				}
+
+			} // End of pool analysis (for)
+		}
+		else {
+			// If monitor in not-init status => no data to show
+			$time_in_not_init = $datetime_to - $datetime_from;
+			$not_init_checks++;
+		}
+
+
+		// Timing
+		$return["time_total"]      = $time_total;
+		$return["time_ok"]         = $time_in_ok;
+		$return["time_error"]      = $time_in_error;
+		$return["time_unknown"]    = $time_in_unknown;
+		$return["time_not_init"]   = $time_in_not_init;
+
+		// # Checks
+		$return["checks_total"]    = $total_checks;
+		$return["checks_ok"]       = $ok_checks;
+		$return["checks_error"]    = $bad_checks;
+		$return["checks_unknown"]  = $unknown_checks;
+		$return["checks_not_init"] = $not_init_checks;
+
+		// SLA
+		if (($time_in_error+$time_in_ok) == 0) {
+			$return["SLA"] = 0;
+		}
+		else {
+			$return["SLA"] = (($time_in_ok/($time_in_error+$time_in_ok))*100);
+		}
+
+		// SLA
+		$return["SLA_fixed"] = sla_truncate($return["SLA"], $config['graph_precision']);
+
+		if ($slices > 1) {
+			array_push($global_return, $return);
+		}
+
+	} // end of slice analysis (for)
+
+	if ($slices > 1) {
+		return $global_return;
+	}
+
+	return $return;
+}
+
+
+
 function reporting_availability($report, $content, $date=false, $time=false) {
 	global $config;
 	

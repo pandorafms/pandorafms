@@ -72,6 +72,22 @@ $(document).ready (function () {
 			);
 		return false;
 	});
+	
+	$("a.modalpopup").click (function () {
+		$('body').append( "<div id='opacidad' style='position:fixed;background:black;opacity:0.6;z-index:1'></div>" );
+			jQuery.get ("ajax.php",
+			{"page": "general/alert_enterprise",
+			 "message":$(this).attr("id")},
+				function (data, status) {
+					$("#alert_messages").hide ()
+						.empty ()
+						.append (data)
+						.show ();
+				},
+				"html"
+			);
+		return false;
+	});
 
 // Creacion de ventana modal y botones
 

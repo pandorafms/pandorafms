@@ -195,8 +195,10 @@ function update_button_palette_callback() {
 			else {
 				$("#image_" + idItem).removeAttr('width');
 				$("#image_" + idItem).removeAttr('height');
-				$("#" + idItem).css('width', '');
-				$("#" + idItem).css('height', '');
+				$("#" + idItem +" img").css('width', '70px');
+				$("#" + idItem +" img").css('height', '70px');
+				$("#" + idItem).css('width', '70px');
+				$("#" + idItem).css('height', '70px');
 			}
 			break;
 		case 'percentile_bar':
@@ -237,8 +239,11 @@ function update_button_palette_callback() {
 			else {
 				$("#image_" + idItem).removeAttr('width');
 				$("#image_" + idItem).removeAttr('height');
-				$("#" + idItem).css('width', '');
-				$("#" + idItem).css('height', '');
+				$("#" + idItem).css('width', '70px');
+				$("#" + idItem).css('height', '70px');
+				
+				$("#" + idItem +" img").css('width', '70px');
+				$("#" + idItem +" img").css('height', '70px');
 			}
 			var image = values['image'] + ".png";
 			set_image("image", idItem, image);
@@ -1253,8 +1258,8 @@ function setModuleGraph(id_data) {
 			id_agente_modulo = data['id_agente_modulo'];
 			id_custom_graph = data['id_custom_graph'];
 			label = data['label'];
-			height = (data['height'] + 60);
-			width = (data['width'] + 60);
+			height = (data['height']);
+			width = (data['width']);
 			period = data['period'];
 			background_color = data['image'];
 
@@ -1291,7 +1296,15 @@ function setModuleGraph(id_data) {
 						$('#' + id_data).html(data['url']);
 					}
 					else {
-						$("#image_" + id_data).attr('src', data['url']);
+						if($("#module_row").css('display')!='none'){
+							$("#" + id_data + " img").attr('src', 'images/console/signes/module_graph.png');
+							$("#" + id_data + " img").css('width', $('#text-width_module_graph').val()+'px');
+							$("#" + id_data + " img").css('height', $('#text-height_module_graph').val()+'px');
+						}else{
+							$("#" + id_data + " img").attr('src', 'images/console/signes/custom_graph.png');
+							$("#" + id_data + " img").css('width', $('#text-width_module_graph').val()+'px');
+							$("#" + id_data + " img").css('height', $('#text-height_module_graph').val()+'px');	
+						}
 					}
 				}
 			});
@@ -1320,7 +1333,7 @@ function setModuleValue(id_data, process_simple_value, period) {
 		success: function (data) {
 			var currentValue = $("#text_" + id_data).html();
 			currentValue = currentValue.replace(/_VALUE_/gi, data.value);
-			$("#text_" + id_data).html(currentValue);
+			$("#text_" + id_data).html('Data value');
 		}
 	});
 }
@@ -1377,7 +1390,11 @@ function setPercentileBar(id_data, values) {
 				'width=' + width_percentile + '&mode=1&progress=' + percentile +
 				'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
 
-			$("#image_" + id_data).attr('src', img);
+			$("#"+  id_data).attr('src', img);
+			
+			$("#" + id_data + " img").attr('src', 'images/console/signes/percentil.png');
+			$("#" + id_data + " img").css('width', $('#text-width_percentile').val()+'px');
+			$("#" + id_data + " img").css('height', '30px');
 		}
 	});
 }
@@ -1432,6 +1449,11 @@ function setPercentileBubble(id_data, values) {
 				'&font=' + font + '&value_text=' + value_text + '&colorRGB=' + colorRGB;
 
 			$("#image_" + id_data).attr('src', img);
+			
+			$("#" + id_data + " img").attr('src', 'images/console/signes/percentil_bubble.png');
+			$("#" + id_data + " img").css('width', $('#text-width_percentile').val()+'px');
+			$("#" + id_data + " img").css('height', $('#text-width_percentile').val()+'px');
+			
 		}
 	});
 }
@@ -2775,6 +2797,7 @@ function showPreviewStaticGraph(staticGraph) {
 
 				jQuery.each(data, function(i, line) {
 					$("#preview").append(line);
+					$('#preview > img').css({'max-width':'70px','max-height':'70px'});
 				});
 			}
 		});
@@ -2816,6 +2839,7 @@ function showPreviewIcon(icon) {
 				$("#preview")
 					.empty()
 					.append(data);
+				$('#preview > img').css({'max-width':'70px','max-height':'70px'});
 			}
 		});
 	}

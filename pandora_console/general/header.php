@@ -273,7 +273,7 @@ config_check();
 				$table->data[0][3] = $maintenance_img;
 				
 				// Main help icon
-				$table->data[0][4] = ui_print_help_icon ("main_help", true, '', 'images/header_help.png');
+				$table->data[0][4] = '<a href="#" class="modalpopup" id="helpmodal"><img src="images/header_help.png""></a>';
 				
 				// Logout
 				$table->data[0][5] = '<a class="white" href="' . ui_get_full_url('index.php?bye=bye') . '">';

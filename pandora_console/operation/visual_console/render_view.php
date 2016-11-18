@@ -276,5 +276,12 @@ $ignored_params['refr'] = '';
 				$('#hidden-vc_refr').val($('#refr option:selected').val());
 			});
 		}
+		
+		
+		$(".module_graph").each(function(){
+		left =	parseInt($(this).css("left")) + 150;
+				$(this).css('left', left);
+		});
+		
 	});
 </script>

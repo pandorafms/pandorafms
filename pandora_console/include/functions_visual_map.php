@@ -750,8 +750,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$percentile = 100;
 			break;
 		case MODULE_GRAPH:
-			$width	+= 60;
-			$height	+= 60;
 			if (!empty($proportion)) {
 				$width =
 					((integer)($proportion['proportion_width'] * $width));
@@ -771,11 +769,23 @@ function visual_map_print_item($mode = "read", $layoutData,
 			$only_image = !$graph_javascript || $isExternalLink;
 			if ($layoutData['id_custom_graph'] != 0) {
 				// Show only avg on the visual console
-				$img = custom_graphs_print(
+				if(get_parameter('action') == 'edit'){
+								
+				$img =  '<img src="images/console/signes/custom_graph.png" style="width:'.$width.'px;height:'.$height.'px;">';
+									
+					}
+				else{
+			
+					$img = custom_graphs_print(
 					$layoutData['id_custom_graph'], $height, $width,
 					$period, null, true, 0, false, $layoutData['image'],
 					array(), '', array(), array(), true,
 					false, false, true, 1, false, true);
+					
+					}
+				
+				
+				
 			}
 			else {
 				if ($isExternalLink)
@@ -783,11 +793,20 @@ function visual_map_print_item($mode = "read", $layoutData,
 				else
 					$homeurl = '';
 				
+				if(get_parameter('action') == 'edit'){
+								
+				$img =  '<img src="images/console/signes/module_graph.png" style="width:'.$width.'px;height:'.$height.'px;">';
+									
+			 		}
+			else{
+			
 				$img =  grafico_modulo_sparse($id_module, $period, 0,$width,$height,
 									'',null,
 									false, 1, false, 0, '', 0, 0, true, false, '', 1, false,
 									'', false, false, false, $layoutData['image'], null, true, false,$type_graph);
-			}
+					
+					}
+		      }
 			
 			//Restore db connection
 			if ($layoutData['id_metaconsole'] != 0) {
@@ -903,6 +922,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 						$img_style_title .= " <br>" . __("Last value: ") .
 							$value;
 					}
+					
+					if(get_parameter('action') == 'edit'){
+					$img_style_title = '';
+					}
 				}
 				
 				if (!empty($proportion)) {
@@ -937,6 +960,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 					echo html_print_image($img, true,
 						array("class" => "image",
 							"id" => "image_" . $id,
+							"width" => "70px",
+							"height" => "70px",
 							"title" => $img_style_title,
 							"style" => $borderStyle), false,
 							false, false, $isExternalLink);
@@ -947,6 +972,50 @@ function visual_map_print_item($mode = "read", $layoutData,
 			break;
 		
 		case PERCENTILE_BAR:
+		$progress_bar_heigh = 15;
+		if (!empty($proportion)) {
+			if ($width != 0) {
+				$width = (integer)($proportion['proportion_width'] * $width);
+			}
+			else {
+				$width = (integer)($proportion['proportion_width'] * $infoImage[0]);
+			}
+
+			if ($height != 0) {
+				$height = (integer)($proportion['proportion_height'] * $height);
+				$progress_bar_heigh = $progress_bar_heigh * $proportion['proportion_height'];
+			}
+			else {
+				$height = (integer)($proportion['proportion_height'] * $infoImage[1]);
+			}
+		}
+		echo io_safe_output($text) . '<br />';
+		
+		ob_start();
+		if ($type == PERCENTILE_BUBBLE) {
+			echo progress_bubble($percentile, $width, $width, '', 1, $value_text, $colorStatus);
+		}
+		else {
+			echo progress_bar($percentile, $width, $progress_bar_heigh, '', 1, $value_text, $colorStatus);
+		}
+		$img = ob_get_clean();
+		
+		
+		if(get_parameter('action') == 'edit'){
+		
+		$img =  '<img src="images/console/signes/percentil.png" style="width:'.$width.'px;height:30px;">';
+			
+		}
+		else{
+			
+		$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
+		
+		}
+		
+		echo $img;			
+		
+		break;
+		
 		case PERCENTILE_BUBBLE:
 		 	$progress_bar_heigh = 15;
 			if (!empty($proportion)) {
@@ -975,8 +1044,21 @@ function visual_map_print_item($mode = "read", $layoutData,
 				echo progress_bar($percentile, $width, $progress_bar_heigh, '', 1, $value_text, $colorStatus);
 			}
 			$img = ob_get_clean();
+			
+			
+			if(get_parameter('action') == 'edit'){
+			
+			$img =  '<img src="images/console/signes/percentil_bubble.png" style="width:'.$width.'px;height:'.$width.'px;">';
+				
+			}
+			else{
+				
 			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
-			echo $img;
+			
+			}
+			
+			echo $img;			
+			
 			break;
 		
 		case MODULE_GRAPH:
@@ -1032,7 +1114,18 @@ function visual_map_print_item($mode = "read", $layoutData,
 			
 			$io_safe_output_text = str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
 			
+			
+			
+			if(get_parameter('action') == 'edit'){
+							
+			echo 'Data value';
+								
+				}
+			else{
+		
 			echo $io_safe_output_text;
+				
+				}
 			
 			
 			//Restore db connection
@@ -1078,7 +1171,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 							false, false, $isExternalLink);
 				else
 					echo html_print_image($img, true,
-						array("class" => "image", "id" => "image_" . $id),
+						array("class" => "image", "id" => "image_" . $id,"width" => "70px",
+						"70px" => "$height"),
 						false, false, false, $isExternalLink);
 				echo '<br />';
 			}

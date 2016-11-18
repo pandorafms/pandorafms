@@ -169,7 +169,7 @@ html_print_table($table);
 
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 	if($action == 'new'){
-		html_print_submit_button ($textButtonSubmit, 'update_layout', true,
+		html_print_submit_button ($textButtonSubmit, 'update_layout', false,
 			'class="' . $classButtonSubmit . '"');
 	}
 	else{

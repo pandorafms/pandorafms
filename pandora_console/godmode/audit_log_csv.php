@@ -22,18 +22,18 @@ require_once ($config["homedir"]."/include/auth/mysql.php");
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
-if (! isset ($_SESSION[$config['homeurl_static']]["id_usuario"])) {
+if (! isset ($_SESSION["id_usuario"])) {
 	session_start ();
 	session_write_close ();
 }
 
 
 // Login check
-if (!isset($_SESSION[$config['homeurl_static']]["id_usuario"])) {
+if (!isset($_SESSION["id_usuario"])) {
 	$config['id_user'] = null;
 }
 else {
-	$config['id_user'] = $_SESSION[$config['homeurl_static']]["id_usuario"];
+	$config['id_user'] = $_SESSION["id_usuario"];
 }
 
 if (!check_login()) {

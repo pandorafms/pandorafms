@@ -68,7 +68,7 @@ if (isset ($_GET["direct"]) && $_GET["direct"]) {
 		unset ($_GET["sec2"]);
 		$_GET["sec"] = "general/logon_ok";
 		db_logon ($nick, $_SERVER['REMOTE_ADDR']);
-		$_SESSION[$config['homeurl_static']]['id_usuario'] = $nick;
+		$_SESSION['id_usuario'] = $nick;
 		$config['id_user'] = $nick;
 		//Remove everything that might have to do with people's passwords or logins
 		unset ($_GET['pass'], $pass, $_POST['pass'], $_REQUEST['pass'], $login_good);

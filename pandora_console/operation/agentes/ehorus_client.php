@@ -14,13 +14,12 @@
 // GNU General Public License for more details.
 
 
-// Global & session management
-require_once ('../../include/config.php');
-
-if (! isset($_SESSION[$config['homeurl_static']]['id_usuario'])) {
+if (! isset($_SESSION['id_usuario'])) {
 	session_start();
 }
 
+// Global & session management
+require_once ('../../include/config.php');
 require_once ($config['homedir'] . '/include/functions.php');
 
 check_login();

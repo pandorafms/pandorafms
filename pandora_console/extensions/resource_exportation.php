@@ -25,11 +25,11 @@ if (isset($_GET['get_ptr'])) {
 		require_once ($ownDir.'../include/config.php');
 		
 		// Login check
-		if (!isset($_SESSION[$config['homeurl_static']]["id_usuario"])) {
+		if (!isset($_SESSION["id_usuario"])) {
 			$config['id_user'] = null;
 		}
 		else {
-			$config['id_user'] = $_SESSION[$config['homeurl_static']]["id_usuario"];
+			$config['id_user'] = $_SESSION["id_usuario"];
 		}
 		
 		

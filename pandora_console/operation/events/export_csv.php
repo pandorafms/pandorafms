@@ -25,7 +25,7 @@ require_once ('../../include/functions_groups.php');
 
 session_write_close ();
 
-$config["id_user"] = $_SESSION[$config['homeurl_static']]["id_usuario"];
+$config["id_user"] = $_SESSION["id_usuario"];
 
 if (! check_acl ($config["id_user"], 0, "ER") && ! check_acl ($config["id_user"], 0, "EW") && ! check_acl ($config["id_user"], 0, "EM")) {
 	exit;

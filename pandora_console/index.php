@@ -440,11 +440,9 @@ if (! isset ($config['id_user'])) {
 			}
 
 			db_logon ($nick_in_db, $_SERVER['REMOTE_ADDR']);
-			$path = $config['homeurl_static'];
-			$_SESSION[$path]['id_usuario'] = $nick_in_db;
-			$_SESSION[$path]['status'] = 'logged';
+			$_SESSION['id_usuario'] = $nick_in_db;
 			$config['id_user'] = $nick_in_db;
-			
+
 			//==========================================================
 			//-------- SET THE CUSTOM CONFIGS OF USER ------------------
 
@@ -494,7 +492,7 @@ if (! isset ($config['id_user'])) {
 
 		if ($config["loginhash_pwd"] != "" && $loginhash_data == md5($loginhash_user.io_output_password($config["loginhash_pwd"]))) {
 			db_logon ($loginhash_user, $_SERVER['REMOTE_ADDR']);
-			$_SESSION[$config['homeurl_static']]['id_usuario'] = $loginhash_user;
+			$_SESSION['id_usuario'] = $loginhash_user;
 			$config["id_user"] = $loginhash_user;
 		}
 		else {
@@ -515,10 +513,10 @@ if (! isset ($config['id_user'])) {
 // Log off
 if (isset ($_GET["bye"])) {
 	include ("general/logoff.php");
-	$iduser = $_SESSION[$config['homeurl_static']]["id_usuario"];
+	$iduser = $_SESSION["id_usuario"];
 	db_logoff ($iduser, $_SERVER['REMOTE_ADDR']);
 	// Unregister Session (compatible with 5.2 and 6.x, old code was deprecated
-	unset($_SESSION[$config['homeurl_static']]['id_usuario']);
+	unset($_SESSION['id_usuario']);
 	unset($iduser);
 	if ($config['auth'] == 'saml') {
 		require_once($config['saml_path'] . 'simplesamlphp/lib/_autoload.php');

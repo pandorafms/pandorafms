@@ -30,7 +30,7 @@ global $config;
 
 // Check user
 check_login ();
-$config["id_user"] = $_SESSION[$config['homeurl_static']]["id_usuario"];
+$config["id_user"] = $_SESSION["id_usuario"];
 
 $event_a = check_acl ($config['id_user'], 0, "ER");
 $event_w = check_acl ($config['id_user'], 0, "EW");

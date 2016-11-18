@@ -810,8 +810,8 @@ function config_process_config () {
 		config_update_value ('autorefresh_white_list', '');
 	}
 	// Load user session
-	if (isset ($_SESSION[$config['homeurl_static']]['id_usuario']))
-		$config["id_user"] = $_SESSION[$config['homeurl_static']]["id_usuario"];
+	if (isset ($_SESSION['id_usuario']))
+		$config["id_user"] = $_SESSION["id_usuario"];
 	
 	if (!isset ($config["round_corner"])) {
 		config_update_value ('round_corner', false);

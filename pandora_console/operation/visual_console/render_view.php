@@ -126,13 +126,13 @@ if ($vconsole_write || $vconsole_manage) {
 			array ("title" => __('Builder'))) .'</a>';
 }
 
-$options['view']['text'] = '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id=' . $id_layout . '&refr=' . $view_refresh . '">'
+$options['view']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id=' . $id_layout . '&refr=' . $view_refresh . '">'
 	. html_print_image("images/operation.png", true, array ("title" => __('View'))) .'</a>';
 $options['view']['active'] = true;
 
 if (!is_metaconsole()) {
 	if (!$config['pure']) {
-		$options['pure']['text'] = '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'&pure=1">'
+		$options['pure']['text'] = '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'&pure=1">'
 			. html_print_image('images/full_screen.png', true, array('title' => __('Full screen mode')))
 			. "</a>";
 		ui_print_page_header($layout_name, 'images/visual_console.png', false, '', false, $options);
@@ -160,7 +160,7 @@ if ($config['pure']) {
 
 	// Quit fullscreen
 	echo '<li class="nomn">';
-	echo '<a href="index.php?sec=reporting&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'">';
+	echo '<a href="index.php?sec=network&sec2=operation/visual_console/render_view&id='.$id_layout.'&refr='.$refr.'">';
 	echo html_print_image('images/normal_screen.png', true, array('title' => __('Back to normal mode')));
 	echo '</a>';
 	echo '</li>';

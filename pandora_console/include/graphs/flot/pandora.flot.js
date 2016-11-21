@@ -1536,7 +1536,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 					axisLabel: xaxisname,
 					tickFormatter: xFormatter,
 					minTickSize: steps,
-					color: '#000'
+					color: '#000',
+					font: font
 				} ],
 			yaxes: [ {
 						tickFormatter: yFormatter,
@@ -1545,8 +1546,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 					{
 						// align if we are to the right
 						alignTicksWithAxis: 1,
-						position: 'right'
-
+						position: 'right',
+						font: font
 						//tickFormatter: dFormatter
 					} ]
 					,
@@ -1873,7 +1874,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	}
 
 	function lFormatter(v, item) {
-		return '<div class='+font+' style=color:#000;font-size:'+font_size+'pt>'+v+'</div>';
+		return '<div style=color:#000;font-size:'+font_size+'pt>'+v+'</div>';
 		// Prepared to turn series with a checkbox
 		//return '<div style=color:#000;font-size:'+font_size+'pt><input type="checkbox" id="' + graph_id + '_' + item.id +'" checked="checked" class="check_serie_'+graph_id+'">'+v+'</div>';
 	}

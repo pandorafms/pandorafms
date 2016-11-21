@@ -93,11 +93,12 @@ function include_javascript_dependencies_flot_graph($return = false) {
 ////////// AREA GRAPHS ////////
 ///////////////////////////////
 function flot_area_stacked_graph($chart_data, $width, $height, $color,
-	$legend, $long_index, $homeurl = '', $font = '', $font_size = 7,$unit = '', $water_mark = '',
-	$serie_types = array(), $chart_extra_data = array(),
-	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
-	$force_integer = false, $series_suffix_str = '', $menu = true,
-	$background_color = 'white', $dashboard = false, $vconsole = false, $agent_module_id = 0) {
+	$legend, $long_index, $homeurl = '', $font = '', $font_size = 7, 
+	$unit = '', $water_mark = '', $serie_types = array(), 
+	$chart_extra_data = array(), $yellow_threshold = 0, 
+	$red_threshold = 0, $adapt_key= '', $force_integer = false, 
+	$series_suffix_str = '', $menu = true, $background_color = 'white', 
+	$dashboard = false, $vconsole = false, $agent_module_id = 0) {
 	
 	global $config;
 	
@@ -105,7 +106,8 @@ function flot_area_stacked_graph($chart_data, $width, $height, $color,
 		$legend, $long_index, $homeurl, $unit, 'area_stacked',
 		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
 		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
-		$menu, $background_color, $dashboard, $vconsole, $agent_module_id, $font,$font_size);
+		$menu, $background_color, $dashboard, $vconsole, 
+		$agent_module_id, $font, $font_size);
 }
 
 function flot_area_simple_graph($chart_data, $width, $height, $color,
@@ -113,7 +115,8 @@ function flot_area_simple_graph($chart_data, $width, $height, $color,
 	$serie_types = array(), $chart_extra_data = array(),
 	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
 	$force_integer = false, $series_suffix_str = '', $menu = true,
-	$background_color = 'white', $dashboard = false, $vconsole = false, $agent_module_id = 0, $font = '',$font_size = 7, $xaxisname = '') {
+	$background_color = 'white', $dashboard = false, $vconsole = false, 
+	$agent_module_id = 0, $font = '', $font_size = 7, $xaxisname = '') {
 	
 	global $config;
 	
@@ -121,15 +124,17 @@ function flot_area_simple_graph($chart_data, $width, $height, $color,
 		$legend, $long_index, $homeurl, $unit, 'area_simple',
 		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
 		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
-		$menu, $background_color, $dashboard, $vconsole, $agent_module_id,$font,$font_size, $xaxisname);
+		$menu, $background_color, $dashboard, $vconsole, 
+		$agent_module_id, $font, $font_size, $xaxisname);
 }
 
 function flot_line_stacked_graph($chart_data, $width, $height, $color,
-	$legend, $long_index, $homeurl = '',$font = '', $font_size = 7, $unit = '', $water_mark = '',
-	$serie_types = array(), $chart_extra_data = array(),
-	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
-	$force_integer = false, $series_suffix_str = '', $menu = true,
-	$background_color = 'white', $dashboard = false, $vconsole = false, $agent_module_id = 0) {
+	$legend, $long_index, $homeurl = '', $font = '', $font_size = 7, 
+	$unit = '', $water_mark = '', $serie_types = array(), 
+	$chart_extra_data = array(), $yellow_threshold = 0, 
+	$red_threshold = 0, $adapt_key= '', $force_integer = false, 
+	$series_suffix_str = '', $menu = true, $background_color = 'white', 
+	$dashboard = false, $vconsole = false, $agent_module_id = 0) {
 	
 	global $config;
 	
@@ -137,16 +142,18 @@ function flot_line_stacked_graph($chart_data, $width, $height, $color,
 		$legend, $long_index, $homeurl, $unit, 'line_stacked',
 		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
 		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
-		$menu, $background_color, $dashboard, $vconsole, $agent_module_id, $font, $font_size);
+		$menu, $background_color, $dashboard, $vconsole, 
+		$agent_module_id, $font, $font_size);
 }
 
 function flot_line_simple_graph($chart_data, $width, $height, $color,
-	$legend, $long_index, $homeurl = '', $font = '', $font_size = 7, $unit = '', $water_mark = '',
-	$serie_types = array(), $chart_extra_data = array(),
-	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
-	$force_integer = false, $series_suffix_str = '', $menu = true,
-	$background_color = 'white', $dashboard = false, $vconsole = false, 
-	$agent_module_id = 0, $percentil_values = array()) {
+	$legend, $long_index, $homeurl = '', $font = '', $font_size = 7, 
+	$unit = '', $water_mark = '', $serie_types = array(), 
+	$chart_extra_data = array(), $yellow_threshold = 0, 
+	$red_threshold = 0, $adapt_key= '', $force_integer = false, 
+	$series_suffix_str = '', $menu = true, $background_color = 'white', 
+	$dashboard = false, $vconsole = false, $agent_module_id = 0, 
+	$percentil_values = array()) {
 	
 	global $config;
 	
@@ -163,7 +170,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	$chart_extra_data, $yellow_threshold, $red_threshold, $adapt_key,
 	$force_integer, $series_suffix_str = '', $menu = true,
 	$background_color = 'white', $dashboard = false, $vconsole = false, 
-	$agent_module_id = 0,$font = '',$font_size = 7, $xaxisname = '',
+	$agent_module_id = 0, $font = '', $font_size = 7, $xaxisname = '',
 	$percentil_values = array()) {
 	
 	global $config;

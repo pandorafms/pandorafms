@@ -1756,8 +1756,8 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			$('#legend_' + graph_id + ' .legendLabel')
 				.eq(i).css('color','#000');
 
-			$('#legend_' + graph_id + ' .legendLabel')
-				.eq(i).css('font-family',font+'Font');
+			//~ $('#legend_' + graph_id + ' .legendLabel')
+				//~ .eq(i).css('font-family',font+'Font');
 
 			i++;
 		}

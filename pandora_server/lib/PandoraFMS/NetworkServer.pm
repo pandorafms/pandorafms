@@ -462,7 +462,7 @@ sub exec_network_module ($$$$) {
 	my $retries = $module->{'max_retries'};
 
 	# Use the agent address by default
-	if (! defined($ip_target) || $ip_target eq '') {
+	if (! defined($ip_target) || $ip_target eq '' || $ip_target eq 'auto') {
 		$ip_target = $agent_row->{'direccion'};
 	}
 

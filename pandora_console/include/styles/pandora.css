@@ -3339,8 +3339,11 @@ div#vc-controls img.vc-qr {
 	margin-right: 8px;
 }
 div.simple_value > span.text > p, 
-div.simple_value > a > span.text > p {
-	font-family: monospace;
+div.simple_value > span.text > p > span > strong, 
+div.simple_value > span.text > p > strong, 
+div.simple_value > a > span.text p
+{
+	font-family: monospace !important;
 	white-space: pre;
 }
 

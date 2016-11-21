@@ -203,6 +203,17 @@ $(document).ready (function () {
 	}
 
 	forced_title_callback();
+	
+	
+	$(document).on("scroll", function(){	
+		if((document.documentElement.scrollTop != 0 || document.body.scrollTop != 0) && $('#menu').css('position') =='fixed'){
+				$('#menu').css('top','20px');
+			}
+		else{
+				$('#menu').css('top','80px');
+		}
+});
+	
 });
 
 function forced_title_callback() {

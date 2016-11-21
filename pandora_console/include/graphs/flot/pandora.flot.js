@@ -39,7 +39,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 			},
 			background: {
 				opacity: 0.5,
-				color: '#000'
+				color: ''
 			}
 		};
 	}
@@ -103,7 +103,7 @@ function pandoraFlotPie(graph_id, values, labels, nseries, width, font_size, wat
 
 		index = obj.seriesIndex;
 		legends.css('color', '#3F3F3D');
-		legends.eq(index).css('color', '#000000');
+		legends.eq(index).css('color', '');
 	}
 
 	// Reset styles
@@ -153,7 +153,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		},
 		background: {
 			opacity: 0.5,
-			color: '#000'
+			color: ''
 		}
 	};
 	
@@ -225,7 +225,7 @@ function pandoraFlotPieCustom(graph_id, values, labels, width,
 		
 		index = obj.seriesIndex;
 		legends.css('color', '#3F3F3D');
-		legends.eq(index).css('color', '#000000');
+		legends.eq(index).css('color', '');
 	}
 	
 	function Clickpie(event, pos, obj) {
@@ -317,7 +317,7 @@ function pandoraFlotHBars(graph_id, values, labels, water_mark,
 					axisLabelPadding: 3,
 					ticks: yFormatter,
 					tickSize: 1,
-					color: '#000',
+					color: '',
 					},
 			legend: {
 				show: false
@@ -612,7 +612,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 		},
 		legend: {
 			noColumns: 100,
-			labelBoxBorderColor: "#000000",
+			labelBoxBorderColor: "",
 			margin: 100,
 			container: true,
 			sorted: false
@@ -711,7 +711,7 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	}
 
 	function lFormatter(v, axis) {
-		return '<div style=color:#000>'+v+'</div>';
+		return '<div style=color:>'+v+'</div>';
 	}
 
 	// Events
@@ -765,12 +765,12 @@ function pandoraFlotSlicebar(graph_id, values, datacolor, labels, legend, acumul
 				hoverable: true,
 				clickable: true,
 				borderWidth:1,
-				borderColor: '#000',
+				borderColor: '',
 				tickColor: '#fff'
 				},
 			xaxes: [ {
 					tickFormatter: xFormatter,
-					color: '#000',
+					color: '',
 					tickSize: intervaltick,
 					tickLength: 0
 					} ],
@@ -1541,12 +1541,12 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 					axisLabel: xaxisname,
 					tickFormatter: xFormatter,
 					minTickSize: steps,
-					color: '#000',
+					color: '',
 					font: font
 				} ],
 			yaxes: [ {
 						tickFormatter: yFormatter,
-						color: '#000'
+						color: ''
 					},
 					{
 						// align if we are to the right
@@ -1608,7 +1608,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			xaxes: [ {
 				tickFormatter: xFormatter,
 				minTickSize: steps,
-				color: '#000'
+				color: ''
 				} ],
 		yaxis: {ticks: [], autoscaleMargin: 0.1 },
 		selection: {mode: 'x', color: '#777' },
@@ -1636,7 +1636,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				xaxes: [ {
 						tickFormatter: xFormatter,
 						minTickSize: new_steps,
-						color: '#000'
+						color: ''
 						} ],
 				legend: { show: false }
 			}));
@@ -1760,7 +1760,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 				.eq(i).css('font-size',font_size+'pt');
 
 			$('#legend_' + graph_id + ' .legendLabel')
-				.eq(i).css('color','#000');
+				.eq(i).css('color','');
 
 			//~ $('#legend_' + graph_id + ' .legendLabel')
 				//~ .eq(i).css('font-family',font+'Font');
@@ -1880,9 +1880,9 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	}
 
 	function lFormatter(v, item) {
-		return '<div style=color:#000;font-size:'+font_size+'pt>'+v+'</div>';
+		return '<div class='+font+' style=color:;font-size:'+font_size+'pt>'+v+'</div>';
 		// Prepared to turn series with a checkbox
-		//return '<div style=color:#000;font-size:'+font_size+'pt><input type="checkbox" id="' + graph_id + '_' + item.id +'" checked="checked" class="check_serie_'+graph_id+'">'+v+'</div>';
+		//return '<div style=color:;font-size:'+font_size+'pt><input type="checkbox" id="' + graph_id + '_' + item.id +'" checked="checked" class="check_serie_'+graph_id+'">'+v+'</div>';
 	}
 
 	// Used to export the graph data to a file.

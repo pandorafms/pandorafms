@@ -283,5 +283,14 @@ $ignored_params['refr'] = '';
 				$(this).css('left', left);
 		});
 		
+		$(".parent_graph").each(function(){
+		if($(this).css('background-color') != 'rgb(255, 255, 255)'){
+				$(this).css('color', 'red');
+				
+				}
+		});
+		
+		
+		
 	});
 </script>

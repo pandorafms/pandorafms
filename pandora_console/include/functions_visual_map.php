@@ -1167,7 +1167,8 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 			}
 			
 			$value = preg_replace ('/\n/i','<br>',$value);
-			$value =  preg_replace ('/\s/i','&nbsp;',$value);
+            $value =  preg_replace ('/\t/i','&#09;',$value);
+            $value =  preg_replace ('/\s/i','&nbsp;',$value);
 			
 			return $value;
 			break;

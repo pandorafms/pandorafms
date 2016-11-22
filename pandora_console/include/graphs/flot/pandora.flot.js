@@ -1880,7 +1880,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 	}
 
 	function lFormatter(v, item) {
-		return '<div class='+font+' style=color:;font-size:'+font_size+'pt>'+v+'</div>';
+		return '<div style=font-size:'+font_size+'pt>'+v+'</div>';
 		// Prepared to turn series with a checkbox
 		//return '<div style=color:;font-size:'+font_size+'pt><input type="checkbox" id="' + graph_id + '_' + item.id +'" checked="checked" class="check_serie_'+graph_id+'">'+v+'</div>';
 	}

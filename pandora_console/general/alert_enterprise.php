@@ -44,7 +44,7 @@ switch ($tipo) {
       break;
     case "helpmodal":
       echo "icono_info.png";
-	break;
+			break;
     case "modulemodal":
       echo "icono_popup.png";
         break;

@@ -1879,6 +1879,8 @@ function agents_delete_agent ($id_agents, $disableACL = false) {
 		//And at long last, the agent
 		db_process_delete_temp ("tagente", "id_agente", $id_agent);
 		
+		db_process_sql ("delete from ttag_module where id_agente_modulo = (select id_agente_modulo from tagente_modulo where id_agente = ".$id_agent.")");
+		
 		db_pandora_audit( "Agent management",
 			"Deleted agent '$agent_name'");
 		

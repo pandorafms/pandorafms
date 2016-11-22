@@ -548,12 +548,56 @@ class Modules {
 					}
 				}
 				
-				$row[7] = $row[__('Data')] = 
-					'<span style="white-space: nowrap;">' .
-					'<span style="display: none;" class="show_collapside">' . $row[__('Status')] . '&nbsp;&nbsp;</span>' .
-					'<a data-ajax="false" class="ui-link" ' .
-						'href="index.php?page=module_graph&id=' . $module['id_agente_modulo'] . '&id_agent=' . $this->id_agent . '">' .
-					$output . '</a>' . '</span>';
+				
+				$is_snapshot = is_snapshot_data($module["datos"]);
+	
+				$handle = "snapshot" . "_" . $module["id_agente_modulo"];
+				$url = 'include/procesos.php?agente=' . $module["id_agente_modulo"];
+		
+				$link = "window.open('../operation/agentes/snapshot_view.php?" .
+				"id=" . $module["id_agente_modulo"] .
+				"&refr=" . $module["module_interval"]."','".$handle."','width=700, height=480')";
+	
+				if ($is_snapshot) {
+				
+				if (is_image_data($module["datos"])) {	
+					$row[7] = $row[__('Data')] = '<a href="javascript:' . $link . '">' .
+					html_print_image("images/photo.png", true,
+					array("border" => '0',
+						"alt" => "",
+						"title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
+				}
+				else {
+					$row[7] = $row[__('Data')] = '<a href="javascript:' . $link . '">' .
+                                html_print_image("images/default_list.png", true,
+                                        array("border" => '0',
+                                                "alt" => "",
+                                                "title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
+
+																							}
+		   }			 
+			 else{
+				 
+				$row[7] = $row[__('Data')] = '<span style="white-space: nowrap;">' .
+	 			'<span style="display: none;" class="show_collapside">' .
+	 				$row[__('Status')] . '&nbsp;&nbsp;</span>' .
+	 			'<a data-ajax="false" class="ui-link" ' .
+	 				'href="index.php?page=module_graph&id=' . 
+	 			$module['id_agente_modulo'] . '&id_agent=' . 
+	 			$this->id_agent . '">' . $output . '</a>' . '</span>';
+				 
+			 }
+				
+				
+		/*
+		
+			'<span style="white-space: nowrap;">' .
+			'<span style="display: none;" class="show_collapside">' .
+				$row[__('Status')] . '&nbsp;&nbsp;</span>' .
+			'<a data-ajax="false" class="ui-link" ' .
+				'href="index.php?page=module_graph&id=' . 
+			$module['id_agente_modulo'] . '&id_agent=' . 
+			$this->id_agent . '">' . $output . '</a>' . '</span>';*/
 				
 				if (!$ajax) {
 					if ($this->columns['agent']) {

@@ -3649,12 +3649,21 @@ function ui_print_module_string_value($value, $id_agente_module,
 			"id=" . $id_agente_module .
 			"&refr=" . $current_interval .
 			"&label=" . rawurlencode(urlencode(io_safe_output($module_name))) . "','" . $win_handle . "', 700,480)";
-		
-		$salida = '<a href="javascript:' . $link . '">' .
-			html_print_image("images/photo.png", true,
-				array("border" => '0',
-					"alt" => "",
-					"title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
+		if (is_image_data($value)) {	
+			$salida = '<a href="javascript:' . $link . '">' .
+				html_print_image("images/photo.png", true,
+					array("border" => '0',
+						"alt" => "",
+						"title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
+		}
+		else {
+			$salida = '<a href="javascript:' . $link . '">' .
+                                html_print_image("images/default_list.png", true,
+                                        array("border" => '0',
+                                                "alt" => "",
+                                                "title" => __("Snapshot view"))) . '</a> &nbsp;&nbsp;';
+
+		}
 	}
 	else {
 		

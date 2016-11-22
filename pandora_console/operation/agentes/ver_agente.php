@@ -189,8 +189,30 @@ if (is_ajax ()) {
 				AND t1.id_grupo IN (' . $group_id_list .')
 				AND t2.nombre IN (\'' . implode('\',\'', $nameModules) . '\')';
 		
+		// Status selector
+		if ($status_modulo == AGENT_MODULE_STATUS_NORMAL) { //Normal
+			$sql_conditions .= ' estado = 0 AND utimestamp > 0)
+			OR (t1.id_tipo_modulo IN(21,22,23,100))) ';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_CRITICAL_BAD) { //Critical
+			$sql_conditions .= ' estado = 1 AND utimestamp > 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_WARNING) { //Warning
+			$sql_conditions .= ' estado = 2 AND utimestamp > 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_NOT_NORMAL) { //Not normal
+			$sql_conditions .= ' estado <> 0';
+		} 
+		elseif ($status_modulo == AGENT_MODULE_STATUS_UNKNOWN) { //Unknown
+			$sql_conditions .= ' estado = 3 AND utimestamp <> 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_NOT_INIT) { //Not init
+			$sql_conditions .= ' utimestamp = 0 )
+				AND t1.id_tipo_modulo NOT IN (21,22,23,100)';
+		}
+		
 		if ($status_modulo != -1) {
-			$sql .= ' AND t2.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where estado = ' . $status_modulo . ') ';
+			$filter .= ' AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where ' . $sql_conditions;
 		}
 		
 		if ($selection_mode == 'common') {
@@ -300,10 +322,31 @@ if (is_ajax ()) {
 			}
 		}
 		
-		if ($status_modulo != -1) {
-			$filter .= ' AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where estado = ' . $status_modulo . ')';
+		// Status selector
+		if ($status_modulo == AGENT_MODULE_STATUS_NORMAL) { //Normal
+			$sql_conditions .= ' estado = 0 AND utimestamp > 0 )
+			 OR (t1.id_tipo_modulo IN(21,22,23,100)) ';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_CRITICAL_BAD) { //Critical
+			$sql_conditions .= ' estado = 1 AND utimestamp > 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_WARNING) { //Warning
+			$sql_conditions .= ' estado = 2 AND utimestamp > 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_NOT_NORMAL) { //Not normal
+			$sql_conditions .= ' estado <> 0)';
+		} 
+		elseif ($status_modulo == AGENT_MODULE_STATUS_UNKNOWN) { //Unknown
+			$sql_conditions .= ' estado = 3 AND utimestamp <> 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_NOT_INIT) { //Not init
+			$sql_conditions .= ' utimestamp = 0 )
+				AND t1.id_tipo_modulo NOT IN (21,22,23,100)';
 		}
 		
+		if ($status_modulo != -1) {
+			$filter .= ' AND t1.id_agente_modulo IN (SELECT id_agente_modulo FROM tagente_estado where ' . $sql_conditions;
+		}
 		
 		if (is_metaconsole()) {
 			$result = array();
@@ -499,8 +542,30 @@ HAVING count(nombre) = (SELECT count(nombre) FROM tagente_modulo))';
 		if (empty($filter))
 			$filter = false;
 		
+		// Status selector
+		if ($status_modulo == AGENT_MODULE_STATUS_NORMAL) { //Normal
+			$sql_conditions .= ' estado = 0 AND utimestamp > 0 ) 
+			OR (tagente_modulo.id_tipo_modulo IN(21,22,23,100)) ';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_CRITICAL_BAD) { //Critical
+			$sql_conditions .= ' estado = 1 AND utimestamp > 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_WARNING) { //Warning
+			$sql_conditions .= ' estado = 2 AND utimestamp > 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_NOT_NORMAL) { //Not normal
+			$sql_conditions .= ' estado <> 0 )';
+		} 
+		elseif ($status_modulo == AGENT_MODULE_STATUS_UNKNOWN) { //Unknown
+			$sql_conditions .= ' estado = 3 AND utimestamp <> 0 )';
+		}
+		elseif ($status_modulo == AGENT_MODULE_STATUS_NOT_INIT) { //Not init
+			$sql_conditions .= ' utimestamp = 0 )
+				AND tagente_modulo.id_tipo_modulo NOT IN (21,22,23,100)';
+		}
+		
 		if ($status_modulo != -1) {
-			$filter['id_agente_modulo IN'] = ' (SELECT id_agente_modulo FROM tagente_estado where estado = '.$status_modulo.') ';
+			$filter['id_agente_modulo IN'] = ' (SELECT id_agente_modulo FROM tagente_estado where ' . $sql_conditions;
 		}
 		
 		

@@ -1882,8 +1882,17 @@ function config_user_set_custom_config() {
 function config_prepare_session() {
 	global $config;
 	
-	// Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours
-	$sessionCookieExpireTime = $config["session_timeout"];
+	$user = users_get_user_by_id($config["id_user"]);
+	$user_sesion_time = $user['session_time'];
+
+	if ($user_sesion_time == 0) {
+		// Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours
+		$sessionCookieExpireTime = $config["session_timeout"];
+	}
+	else {
+		// Change the session timeout value to session_timeout minutes  // 8*60*60 = 8 hours
+		$sessionCookieExpireTime = $user_sesion_time;
+	}
 	
 	if ($sessionCookieExpireTime <= 0)
 		$sessionCookieExpireTime = 10 * 365 * 24 * 60 * 60;

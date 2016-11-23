@@ -1128,6 +1128,7 @@ CREATE TABLE tusuario (
 	metaconsole_assigned_server NUMBER(10, 0) DEFAULT 0,
 	metaconsole_access_node NUMBER(10, 0) DEFAULT 0,
 	strict_acl NUMBER(5,0) DEFAULT 0,
+	session_time NUMBER(10,0) DEFAULT 0,
 	CONSTRAINT t_usuario_metaconsole_acc_cons CHECK (metaconsole_access IN ('basic','advanced'))
 );
 

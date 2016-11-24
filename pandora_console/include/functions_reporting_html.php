@@ -319,111 +319,309 @@ function reporting_html_SLA($table, $item, $mini) {
 				$table->data['planned_downtime']['cell'] = $downtimes_table;
 			}
 		}
-		
-		$table1 = new stdClass();
-		$table1->width = '99%';
-		
-		$table1->align = array();
-		$table1->align[0] = 'left';
-		$table1->align[1] = 'left';
-		$table1->align[2] = 'right';
-		$table1->align[3] = 'right';
-		$table1->align[4] = 'right';
-		$table1->align[5] = 'right';
-		
-		$table1->data = array ();
-		
-		$table1->head = array ();
-		$table1->head[0] = __('Agent');
-		$table1->head[1] = __('Module');
-		$table1->head[2] = __('Max/Min Values');
-		$table1->head[3] = __('SLA Limit');
-		$table1->head[4] = __('SLA Compliance');
-		$table1->head[5] = __('Status');
-		
-		$table1->headstyle = array();
-		$table1->headstyle[2] = 'text-align: right';
-		$table1->headstyle[3] = 'text-align: right';
-		$table1->headstyle[4] = 'text-align: right';
-		$table1->headstyle[5] = 'text-align: right';
-		
-		foreach ($item['data'] as $sla) {
-			$the_first_men_time = get_agent_first_time(io_safe_output($sla['agent']));
-			if (!$hide_notinit_agent) {
-				$row = array();
-				$row[] = $sla['agent'];
-				$row[] = $sla['module'];
-				$row[] = remove_right_zeros(number_format($sla['max'], $config['graph_precision'])) . " / " . remove_right_zeros(number_format($sla['min'], $config['graph_precision']));
-				$row[] = round($sla['sla_limit'], 2) . "%";
-				
-				if ($sla['sla_value_unknown']) {
-					$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
-						__('N/A') . '</span>';
-					$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
-						__('Unknown') . '</span>';
-				}
-				elseif ($sla['sla_status']) {
-					$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
-						remove_right_zeros(number_format($sla['sla_value'], $config['graph_precision'])) . "%" . '</span>';
-					$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
-						__('OK') . '</span>';
-				}
-				else {
-					$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
-						remove_right_zeros(number_format($sla['sla_value'], $config['graph_precision'])) . "%" . '</span>';
-					$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
-						__('Fail') . '</span>';
-				}
-			}
-			else {
-				if ($item['date']['to'] > $the_first_men_time) {
-					$row = array();
-					$row[] = $sla['agent'];
-					$row[] = $sla['module'];
-					$row[] = remove_right_zeros(number_format($sla['max'], $config['graph_precision'])) . " / " . remove_right_zeros(number_format($sla['min'], $config['graph_precision']));
-					$row[] = round($sla['sla_limit'], 2) . "%";
-					
-					if ($sla['sla_value_unknown']) {
-						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
-							__('N/A') . '</span>';
-						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
-							__('Unknown') . '</span>';
-					}
-					elseif ($sla['sla_status']) {
-						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
-							remove_right_zeros(number_format($sla['sla_value'], $config['graph_precision'])) . "%" . '</span>';
-						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
-							__('OK') . '</span>';
+
+		if(isset($item['data'])){
+			$table1 = new stdClass();
+			$table1->width = '99%';
+			
+			$table1->align = array();
+			$table1->align[0] = 'left';
+			$table1->align[1] = 'left';
+			$table1->align[2] = 'right';
+			$table1->align[3] = 'right';
+			$table1->align[4] = 'right';
+			$table1->align[5] = 'right';
+			
+			$table1->data = array ();
+			
+			$table1->head = array ();
+			$table1->head[0] = __('Agent');
+			$table1->head[1] = __('Module');
+			$table1->head[2] = __('Max/Min Values');
+			$table1->head[3] = __('SLA Limit');
+			$table1->head[4] = __('SLA Compliance');
+			$table1->head[5] = __('Status');
+			
+			$table1->headstyle = array();
+			$table1->headstyle[2] = 'text-align: right';
+			$table1->headstyle[3] = 'text-align: right';
+			$table1->headstyle[4] = 'text-align: right';
+			$table1->headstyle[5] = 'text-align: right';
+
+			//second_table for time globals
+			$table2 = new stdClass();
+			$table2->width = '99%';
+			
+			$table2->align = array();
+			$table2->align[0] = 'left';
+			$table2->align[1] = 'left';
+			$table2->align[2] = 'right';
+			$table2->align[3] = 'right';
+			$table2->align[4] = 'right';
+			$table2->align[5] = 'right';
+			$table2->align[6] = 'right';
+			
+			$table2->data = array ();
+			
+			$table2->head = array ();
+			$table2->head[0] = __('Global Time');
+			$table2->head[1] = __('Time Total');
+			$table2->head[2] = __('Time Failed');
+			$table2->head[3] = __('Time OK');
+			$table2->head[4] = __('Time Unknown');
+			$table2->head[5] = __('Time Not Init');
+			$table2->head[6] = __('Downtime');
+			
+			$table2->headstyle = array();
+			$table2->headstyle[2] = 'text-align: right';
+			$table2->headstyle[3] = 'text-align: right';
+			$table2->headstyle[4] = 'text-align: right';
+			$table2->headstyle[5] = 'text-align: right';
+			$table2->headstyle[6] = 'text-align: right';
+
+			//third_table for time globals
+			$table3 = new stdClass();
+			$table3->width = '99%';
+			
+			$table3->align = array();
+			$table3->align[0] = 'left';
+			$table3->align[1] = 'left';
+			$table3->align[2] = 'right';
+			$table3->align[3] = 'right';
+			$table3->align[4] = 'right';
+			$table3->align[5] = 'right';
+			$table3->align[6] = 'right';
+			
+			$table3->data = array ();
+			
+			$table3->head = array ();
+			$table3->head[0] = __('Checks Time');
+			$table3->head[1] = __('Checks Total');
+			$table3->head[2] = __('Checks Failed');
+			$table3->head[3] = __('Checks OK');
+			$table3->head[4] = __('Checks Unknown');
+			
+			$table3->headstyle = array();
+			$table3->headstyle[2] = 'text-align: right';
+			$table3->headstyle[3] = 'text-align: right';
+			$table3->headstyle[4] = 'text-align: right';
+			$table3->headstyle[5] = 'text-align: right';
+
+			foreach ($item['data'] as $sla) {
+				if(isset($sla)){
+					$the_first_men_time = get_agent_first_time(io_safe_output($sla['agent']));
+					if (!$hide_notinit_agent) {
+						//first_table
+						$row = array();
+						$row[] = $sla['agent'];
+						$row[] = $sla['module'];
+
+						if(is_numeric($sla['dinamic_text'])){
+							$row[] = remove_right_zeros(number_format($sla['max'], $config['graph_precision'])) . " / " . 
+									 remove_right_zeros(number_format($sla['min'], $config['graph_precision']));
+						}
+						else{
+							$row[] = $sla['dinamic_text'];
+						}
+						$row[] = round($sla['sla_limit'], 2) . "%";
+						
+						if ($sla['sla_value_unknown']) {
+							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
+								__('N/A') . '</span>';
+							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
+								__('Unknown') . '</span>';
+						}
+						elseif ($sla['sla_status']) {
+							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
+								remove_right_zeros(number_format($sla['sla_value'], $config['graph_precision'])) . "%" . '</span>';
+							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
+								__('OK') . '</span>';
+						}
+						else {
+							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
+								remove_right_zeros(number_format($sla['sla_value'], $config['graph_precision'])) . "%" . '</span>';
+							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
+								__('Fail') . '</span>';
+						}
+
+						//second table for time globals
+						$row2 = array();
+						$row2[] = $sla['agent'] . ' -- [' . $sla['module'] . ']';
+
+						if($sla['time_total'] != 0)
+							$row2[] = human_time_description_raw($sla['time_total']);
+						else
+							$row2[] = '--';
+
+						if($sla['time_error'] != 0)
+							$row2[] = '<span style="color: '.COL_CRITICAL.';">' . human_time_description_raw($sla['time_error'], true) . '</span>';
+						else
+							$row2[] = '--';
+						
+						if($sla['time_ok'] != 0)
+							$row2[] = '<span style="color: '.COL_NORMAL.';">' . human_time_description_raw($sla['time_ok'], true) . '</span>';
+						else
+							$row2[] = '--';
+
+						if($sla['time_unknown'] != 0)
+							$row2[] = '<span style="color: '.COL_UNKNOWN.';">' . human_time_description_raw($sla['time_unknown'], true) . '</span>';
+						else
+							$row2[] = '--';
+
+						if($sla['time_not_init'] != 0)
+							$row2[] = '<span style="color: '.COL_NOTINIT.';">' . human_time_description_raw($sla['time_not_init'], true) . '</span>';
+						else
+							$row2[] = '--';
+
+						if($sla['time_downtime'] != 0)
+							$row2[] = '<span style="color: #ff8400;">' . human_time_description_raw($sla['time_downtime'], true) . '</span>';
+						else
+							$row2[] = '--';
+
+						//third table for checks globals
+						$row3 = array();
+						$row3[] = $sla['agent'] . ' -- [' . $sla['module'] . ']';
+						$row3[] = $sla['checks_total'];
+						$row3[] = '<span style="color: '.COL_CRITICAL.';">' . $sla['checks_error'] . '</span>';
+						$row3[] = '<span style="color: '.COL_NORMAL.';">' . $sla['checks_ok'] . '</span>';
+						$row3[] = '<span style="color: '.COL_UNKNOWN.';">' . $sla['checks_unknown'] . '</span>';
+
 					}
 					else {
-						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
-							remove_right_zeros(number_format($sla['sla_value'], $config['graph_precision'])) . "%" . '</span>';
-						$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
-							__('Fail') . '</span>';
+						if ($item['date']['to'] > $the_first_men_time) {
+							//first_table
+							$row = array();
+							$row[] = $sla['agent'];
+							$row[] = $sla['module'];
+							$row[] = remove_right_zeros(number_format($sla['max'], $config['graph_precision'])) . " / " . remove_right_zeros(number_format($sla['min'], $config['graph_precision']));
+							$row[] = round($sla['sla_limit'], 2) . "%";
+							
+							if ($sla['sla_value_unknown']) {
+								$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
+									__('N/A') . '</span>';
+								$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_UNKNOWN.';">' .
+									__('Unknown') . '</span>';
+							}
+							elseif ($sla['sla_status']) {
+								$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
+									remove_right_zeros(number_format($sla['sla_value'], $config['graph_precision'])) . "%" . '</span>';
+								$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
+									__('OK') . '</span>';
+							}
+							else {
+								$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
+									remove_right_zeros(number_format($sla['sla_value'], $config['graph_precision'])) . "%" . '</span>';
+								$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
+									__('Fail') . '</span>';
+							}
+
+							//second table for time globals
+							$row2 = array();
+							$row2[] = $sla['agent'] . ' -- [' . $sla['module'] . ']';
+
+							if($sla['time_total'] != 0)
+								$row2[] = human_time_description_raw($sla['time_total']);
+							else
+								$row2[] = '--';
+
+							if($sla['time_error'] != 0)
+								$row2[] = '<span style="color: '.COL_CRITICAL.';">' . human_time_description_raw($sla['time_error'], true) . '</span>';
+							else
+								$row2[] = '--';
+							
+							if($sla['time_ok'] != 0)
+								$row2[] = '<span style="color: '.COL_NORMAL.';">' . human_time_description_raw($sla['time_ok'], true) . '</span>';
+							else
+								$row2[] = '--';
+
+							if($sla['time_unknown'] != 0)
+								$row2[] = '<span style="color: '.COL_UNKNOWN.';">' . human_time_description_raw($sla['time_unknown'], true) . '</span>';
+							else
+								$row2[] = '--';
+
+							if($sla['time_not_init'] != 0)
+								$row2[] = '<span style="color: '.COL_NOTINIT.';">' . human_time_description_raw($sla['time_not_init'], true) . '</span>';
+							else
+								$row2[] = '--';
+
+							if($sla['time_downtime'] != 0)
+								$row2[] = '<span style="color: #ff8400;">' . human_time_description_raw($sla['time_downtime'], true) . '</span>';
+							else
+								$row2[] = '--';
+
+							//third table for checks globals
+							$row3 = array();
+							$row3[] = $sla['agent'] . ' -- [' . $sla['module'] . ']';
+							$row3[] = $sla['checks_total'];
+							$row3[] = '<span style="color: '.COL_CRITICAL.';">' . $sla['checks_error'] . '</span>';
+							$row3[] = '<span style="color: '.COL_NORMAL.';">' . $sla['checks_ok'] . '</span>';
+							$row3[] = '<span style="color: '.COL_UNKNOWN.';">' . $sla['checks_unknown'] . '</span>';
+						}
 					}
+
+					$table1->data[] = $row;
+					$table2->data[] = $row2;
+					$table3->data[] = $row3;
 				}
 			}
 			
-			$table1->data[] = $row;
+			$table->colspan['sla']['cell'] = 2;
+			$table->data['sla']['cell'] = html_print_table($table1, true);
+			$table->colspan['time_global']['cell'] = 2;
+			$table->data['time_global']['cell'] = html_print_table($table2, true);
+			$table->colspan['checks_global']['cell'] = 2;
+			$table->data['checks_global']['cell'] = html_print_table($table3, true);
 		}
-		
-		$table->colspan['sla']['cell'] = 3;
-		$table->data['sla']['cell'] = html_print_table($table1, true);
 		
 		if (!empty($item['charts'])) {
 			$table1 = new stdClass();
 			$table1->width = '99%';
 			
 			$table1->data = array ();
-			
-			foreach ($item['charts'] as $chart) {
-				$table1->data[] = array(
-					$chart['agent'] . "<br />" . $chart['module'],
-					$chart['chart']);
+			if (!$hide_notinit_agent) {
+				foreach ($item['charts'] as $chart) {
+					$table1->data[] = array(
+						$chart['agent'] . "<br />" . $chart['module'],
+						$chart['chart']);
+				}
 			}
-			
-			$table->colspan['charts']['cell'] = 3;
+			else{
+				foreach ($item['charts'] as $chart) {
+					$the_first_men_time = get_agent_first_time(io_safe_output($chart['agent']));
+					if ($item['date']['to'] > $the_first_men_time) {
+						$table1->data[] = array(
+							$chart['agent'] . "<br />" . $chart['module'],
+							$chart['chart']);
+					}
+				}
+			}
+			$table->colspan['charts']['cell'] = 2;
 			$table->data['charts']['cell'] = html_print_table($table1, true);
+
+			//table_legend_graphs;
+			$table1 = new stdClass();
+			$table1->width = '99%';
+			$table1->data = array ();
+			$table1->data[0][0] = '<div class="legend_graphs_sla" style="background-color:#80BA27"></div>';
+			$table1->data[0][0] .= '<span class="label_legend_graph">'.__('OK') . '</span>';
+			
+			$table1->data[0][1] = '<div class="legend_graphs_sla" style="background-color:#FC4444"></div>';
+			$table1->data[0][1] .= '<span class="label_legend_graph">'.__('Critical'). '</span>';
+			
+			$table1->data[0][2] = '<div class="legend_graphs_sla" style="background-color:#B2B2B2"></div>';
+			$table1->data[0][2] .= '<span class="label_legend_graph">'.__('Unknow'). '</span>';
+			
+			$table1->data[0][3] = '<div class="legend_graphs_sla" style="background-color:#3BA0FF"></div>';
+			$table1->data[0][3] .= '<span class="label_legend_graph">'.__('Not Init'). '</span>';
+			
+			$table1->data[0][4] = '<div class="legend_graphs_sla" style="background-color:#ff8400"></div>';
+			$table1->data[0][4] .= '<span class="label_legend_graph">'.__('Downtimes'). '</span>';
+			
+			$table1->data[0][5] = '<div class="legend_graphs_sla" style="background-color:#ddd"></div>';
+			$table1->data[0][5] .= '<span class="label_legend_graph">'.__('Ignore time'). '</span>';
+			
+			$table->colspan['legend']['cell'] = 2;
+			$table->data['legend']['cell'] = html_print_table($table1, true);
 		}
 	}
 }
@@ -1718,30 +1916,72 @@ function reporting_html_availability(&$table, $item) {
 		else {
 			$table1->head[1] = __('Module');
 		}
-		$table1->head[2] = __('# Checks');
-		$table1->head[3] = __('# Failed');
-		$table1->head[4] = __('% Fail');
-		$table1->head[5] = __('Time available');
-		$table1->head[6] = __('Time unavailable');
-		$table1->head[7] = __('% Ok');
+		$table1->head[2] = __('Total time');
+		$table1->head[3] = __('Time failed');
+		$table1->head[4] = __('Time OK');
+		$table1->head[5] = __('Time Uknown');
+		$table1->head[6] = __('Time Not Init Module');
+		$table1->head[7] = __('Time Downtime');
+		$table1->head[8] = __('% Ok');
 		
 		$table1->headstyle = array();
-		$table1->headstyle[2] = 'text-align: right';
-		$table1->headstyle[3] = 'text-align: right';
-		$table1->headstyle[4] = 'text-align: right';
-		$table1->headstyle[5] = 'text-align: right';
-		$table1->headstyle[6] = 'text-align: right';
-		$table1->headstyle[7] = 'text-align: right';
+		$table1->headstyle[0]  = 'text-align: left';
+		$table1->headstyle[1]  = 'text-align: left';
+		$table1->headstyle[2]  = 'text-align: right';
+		$table1->headstyle[3]  = 'text-align: right';
+		$table1->headstyle[4]  = 'text-align: right';
+		$table1->headstyle[5]  = 'text-align: right';
+		$table1->headstyle[6]  = 'text-align: right';
+		$table1->headstyle[7]  = 'text-align: right';
+		$table1->headstyle[8]  = 'text-align: right';
 		
-		$table1->style[0] = 'text-align: left';
-		$table1->style[1] = 'text-align: left';
-		$table1->style[2] = 'text-align: right';
-		$table1->style[3] = 'text-align: right';
-		$table1->style[4] = 'text-align: right';
-		$table1->style[5] = 'text-align: right';
-		$table1->style[6] = 'text-align: right';
-		$table1->style[7] = 'text-align: right';
+		$table1->style[0]  = 'text-align: left';
+		$table1->style[1]  = 'text-align: left';
+		$table1->style[2]  = 'text-align: right';
+		$table1->style[3]  = 'text-align: right';
+		$table1->style[4]  = 'text-align: right';
+		$table1->style[5]  = 'text-align: right';
+		$table1->style[6]  = 'text-align: right';
+		$table1->style[7]  = 'text-align: right';
+		$table1->style[8]  = 'text-align: right';
+
+		$table2 = new stdClass();
+		$table2->width = '99%';
+		$table2->data = array ();
+
+		$table2->head = array ();
+		$table2->head[0] = __('Agent');
+		// HACK it is saved in show_graph field.
+		// Show interfaces instead the modules
+		if ($item['kind_availability'] == 'address') {
+			$table2->head[1] = __('IP Address');
+		}
+		else {
+			$table2->head[1] = __('Module');
+		}
+		$table2->head[2] = __('Total checks');
+		$table2->head[3] = __('Checks failed');
+		$table2->head[4] = __('Checks OK');
+		$table2->head[5] = __('Checks Uknown');
+		//$table2->head[6] = __('% Ok');
+
+		$table2->headstyle = array();
+		$table2->headstyle[0] = 'text-align: left';
+		$table2->headstyle[1] = 'text-align: left';
+		$table2->headstyle[2] = 'text-align: right';
+		$table2->headstyle[3] = 'text-align: right';
+		$table2->headstyle[4] = 'text-align: right';
+		$table2->headstyle[5] = 'text-align: right';
+		//$table2->headstyle[6] = 'text-align: right';
 		
+		$table2->style[0] = 'text-align: left';
+		$table2->style[1] = 'text-align: left';
+		$table2->style[2] = 'text-align: right';
+		$table2->style[3] = 'text-align: right';
+		$table2->style[4] = 'text-align: right';
+		$table2->style[5] = 'text-align: right';
+		//$table2->style[6] = 'text-align: right';
+
 		foreach ($item['data'] as $row) {
 			$the_first_men_time = get_agent_first_time(io_safe_output($row['agent']));
 			
@@ -1749,31 +1989,102 @@ function reporting_html_availability(&$table, $item) {
 				$table_row = array();
 				$table_row[] = $row['agent'];
 				$table_row[] = $row['availability_item'];
-				$table_row[] = $row['checks'];
-				$table_row[] = $row['failed'];
-				$table_row[] = remove_right_zeros(number_format($row['fail'], $config['graph_precision']));
-				$table_row[] = $row['poling_time'];
-				$table_row[] = $row['time_unavaliable'];
-				$table_row[] = remove_right_zeros(number_format($row['ok'], $config['graph_precision']));
+				
+				if($row['time_total'] != 0)
+					$table_row[] = human_time_description_raw($row['time_total'], true);
+				else
+					$table_row[] = '--';
+				
+				if($row['time_error'] != 0)
+					$table_row[] = human_time_description_raw($row['time_error'], true);
+				else
+					$table_row[] = '--';
+				
+				if($row['time_ok'] != 0)
+					$table_row[] = human_time_description_raw($row['time_ok'], true);
+				else
+					$table_row[] = '--';
+
+				if($row['time_unknown'] != 0)
+					$table_row[] = human_time_description_raw($row['time_unknown'], true);
+				else
+					$table_row[] = '--';
+				
+				if($row['time_not_init'] != 0)
+					$table_row[] = human_time_description_raw($row['time_not_init'], true);
+				else
+					$table_row[] = '--';
+
+				if($row['time_downtime'] != 0)
+					$table_row[] = human_time_description_raw($row['time_downtime'], true);
+				else
+					$table_row[] = '--';
+				
+				$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' .remove_right_zeros(number_format($row['SLA'], $config['graph_precision'])). '%</span>';	
+
+				$table_row2 = array();
+				$table_row2[] = $row['agent'];
+				$table_row2[] = $row['availability_item'];
+				$table_row2[] = $row['checks_total'];
+				$table_row2[] = $row['checks_error'];
+				$table_row2[] = $row['checks_ok'];
+				$table_row2[] = $row['checks_unknown'];
+				//$table_row2[] = remove_right_zeros(number_format($row['SLA'], $config['graph_precision']));				
 			}
 			else {
 				if ($item['date']['to'] > $the_first_men_time) {
 					$table_row = array();
 					$table_row[] = $row['agent'];
 					$table_row[] = $row['availability_item'];
-					$table_row[] = $row['checks'];
-					$table_row[] = $row['failed'];
-					$table_row[] = remove_right_zeros(number_format($row['fail'], $config['graph_precision']));
-					$table_row[] = $row['poling_time'];
-					$table_row[] = $row['time_unavaliable'];
-					$table_row[] = remove_right_zeros(number_format($row['ok'], $config['graph_precision']));
+					
+					if($row['time_total'] != 0)
+						$table_row[] = human_time_description_raw($row['time_total'], true);
+					else
+						$table_row[] = '--';
+					
+					if($row['time_error'] != 0)
+						$table_row[] = human_time_description_raw($row['time_error'], true);
+					else
+						$table_row[] = '--';
+					
+					if($row['time_ok'] != 0)
+						$table_row[] = human_time_description_raw($row['time_ok'], true);
+					else
+						$table_row[] = '--';
+
+					if($row['time_unknown'] != 0)
+						$table_row[] = human_time_description_raw($row['time_unknown'], true);
+					else
+						$table_row[] = '--';
+					
+					if($row['time_not_init'] != 0)
+						$table_row[] = human_time_description_raw($row['time_not_init'], true);
+					else
+						$table_row[] = '--';
+
+					if($row['time_downtime'] != 0)
+						$table_row[] = human_time_description_raw($row['time_downtime'], true);
+					else
+						$table_row[] = '--';
+					
+					$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' .remove_right_zeros(number_format($row['SLA'], $config['graph_precision'])). '%</span>';	
+
+					$table_row2 = array();
+					$table_row2[] = $row['agent'];
+					$table_row2[] = $row['availability_item'];
+					$table_row2[] = $row['checks_total'];
+					$table_row2[] = $row['checks_error'];
+					$table_row2[] = $row['checks_ok'];
+					$table_row2[] = $row['checks_unknown'];
+					//$table_row2[] = remove_right_zeros(number_format($row['SLA'], $config['graph_precision']));
 				}
 				else {
-					$same_agent_in_resume = $row['agent'];
+					$same_agent_in_resume = $item['data']['agent'];
 				}
 			}
 			
 			$table1->data[] = $table_row;
+			$table2->data[] = $table_row2;
 		}
 	}
 	else {
@@ -1782,10 +2093,14 @@ function reporting_html_availability(&$table, $item) {
 			__('There are no Agent/Modules defined');
 	}
 	
-	$table->colspan[1][0] = 3;
+	$table->colspan[1][0] = 2;
+	$table->colspan[2][0] = 2;
 	$data = array();
 	$data[0] = html_print_table($table1, true);
+	$data2 = array();
+	$data2[0] = html_print_table($table2, true);
 	array_push ($table->data, $data);
+	array_push ($table->data, $data2);
 	
 	if ($item['resume'] && !empty($item["data"])) {
 		$table1->width = '99%';
@@ -1794,35 +2109,34 @@ function reporting_html_availability(&$table, $item) {
 		if (($same_agent_in_resume == "") && (strpos($item['resume']['min_text'], $same_agent_in_resume) === false)) {
 			$table1->head = array ();
 			$table1->head['max_text'] = __('Agent max value');
-			$table1->head['max'] = __('Max Value');
-			$table1->head['avg'] = __('Average Value');
+			$table1->head['max']      = __('Max Value');
 			$table1->head['min_text'] = __('Agent min');
-			$table1->head['min'] = __('Agent min Value');
+			$table1->head['min']      = __('Agent min Value');
+			$table1->head['avg']      = __('Average Value');
 			
 			$table1->headstyle = array();
 			$table1->headstyle['min_text'] = 'text-align: left';
-			$table1->headstyle['min'] = 'text-align: right';
-			$table1->headstyle['avg'] = 'text-align: right';
+			$table1->headstyle['min'] 	   = 'text-align: right';
 			$table1->headstyle['max_text'] = 'text-align: left';
-			$table1->headstyle['max'] = 'text-align: right';
-			
+			$table1->headstyle['max']      = 'text-align: right';
+			$table1->headstyle['avg']      = 'text-align: right';
 			
 			$table1->style = array();
 			$table1->style['min_text'] = 'text-align: left';
-			$table1->style['min'] = 'text-align: right';
-			$table1->style['avg'] = 'text-align: right';
+			$table1->style['min']      = 'text-align: right';
 			$table1->style['max_text'] = 'text-align: left';
-			$table1->style['max'] = 'text-align: right';
+			$table1->style['max']      = 'text-align: right';
+			$table1->style['avg']      = 'text-align: right';
 			
 			$table1->data[] = array(
 				'max_text' => $item['resume']['max_text'],
 				'max' => remove_right_zeros(number_format($item['resume']['max'], $config['graph_precision'])) . "%",
-				'avg' => remove_right_zeros(number_format($item['resume']['avg'], $config['graph_precision'])) . "%",
 				'min_text' => $item['resume']['min_text'],
-				'min' => remove_right_zeros(number_format($item['resume']['min'], $config['graph_precision'])) . "%"
+				'min' => remove_right_zeros(number_format($item['resume']['min'], $config['graph_precision'])) . "%",
+				'avg' => '<span style="font-size: 1.2em; font-weight:bold;">' .remove_right_zeros(number_format($item['resume']['avg'], $config['graph_precision'])) . "%</span>"
 				);
 			
-			$table->colspan[2][0] = 3;
+			$table->colspan[3][0] = 3;
 			$data = array();
 			$data[0] = html_print_table($table1, true);
 			array_push ($table->data, $data);

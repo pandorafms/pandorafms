@@ -2645,7 +2645,7 @@ function pandora_setlocale() {
 		'el' => 'el_GR',
 		'ru' => 'ru_RU',
 		'ar' => 'ar_MA',
-		'ja' => 'ja_JP',
+		'ja' => 'ja_JP.UTF-8',
 		'zh_CN' => 'zh_CN',
 		);
 	

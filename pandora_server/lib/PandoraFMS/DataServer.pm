@@ -351,6 +351,13 @@ sub process_xml_data ($$$$$) {
 			}
 		}
 
+		# Check the group password.
+		my $rc = enterprise_hook('check_group_password', [$dbh, $group_id, $data->{'group_password'}]);
+		if (defined($rc) && $rc != 1) {
+			logger($pa_config, "Agent $agent_name did not send a valid password for group id $group_id.", 10);
+			return;
+		}
+
 		my $description = '';
 		$description = $data->{'description'} if (defined ($data->{'description'}));
 		

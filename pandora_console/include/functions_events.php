@@ -1229,7 +1229,7 @@ function events_get_group_events ($id_group, $period, $date,
 		AND utimestamp <= %d ',
 		implode (",", $id_group), $datelimit, $date);
 	
-	return events_get_events_grouped(($sql_where, 0, 1000, $meta, 
+	return events_get_events_grouped($sql_where, 0, 1000, $meta, 
 				false, false, $history);
 }
 

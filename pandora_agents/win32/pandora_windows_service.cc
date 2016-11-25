@@ -385,6 +385,7 @@ Pandora_Windows_Service::getXmlHeader () {
 	char          timestamp[20];
 	string        agent_name, os_name, os_version, encoding, value, xml, address, parent_agent_name, agent_name_cmd;
 	string        custom_id, url_address, latitude, longitude, altitude, position_description, gis_exec, gis_result, agent_mode;
+	string        group_password;
 	time_t        ctime;
 	struct tm     *ctime_tm = NULL;
 	int pos;
@@ -476,6 +477,13 @@ Pandora_Windows_Service::getXmlHeader () {
 	if (url_address != "") {
 		xml += "\" url_address=\"";
 		xml += url_address;
+	}
+
+	// Get Url Address
+	group_password = conf->getValue ("group_password");
+	if (group_password != "") {
+		xml += "\" group_password=\"";
+		xml += group_password;
 	}
 	
 	// Get Coordinates

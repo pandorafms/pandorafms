@@ -65,7 +65,7 @@ INSERT INTO tconfig (token, value) VALUES ('days_compact','0');
 INSERT INTO tconfig (token, value) VALUES ('graph_res','5');
 INSERT INTO tconfig (token, value) VALUES ('step_compact','1');
 INSERT INTO tconfig (token, value) VALUES ('db_scheme_first_version','6.0orc');
-INSERT INTO tconfig (token, value) VALUES('db_scheme_version','6.1dev');
+INSERT INTO tconfig (token, value) VALUES('db_scheme_version','7.0dev');
 INSERT INTO tconfig (token, value) VALUES('db_scheme_build','PD161125');
 INSERT INTO tconfig (token, value) VALUES ('show_unknown','0');
 INSERT INTO tconfig (token, value) VALUES ('show_lastalerts','1');

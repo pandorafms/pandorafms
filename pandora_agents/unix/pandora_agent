@@ -135,6 +135,7 @@ my %DefaultConf = (
 	'agent_name_cmd' => '',
 	'description' => '',
 	'group' => '',
+	'group_password' => undef,
 	'encoding' => 'UTF-8',
 	'server_port' => 41121,
 	'transfer_mode' => 'tentacle',
@@ -2419,7 +2420,8 @@ while (1) {
 		
 		# Compose the XML
 		my $xml_header = "<?xml version='1.0' encoding='" . $Conf{'encoding'} . "'?>\n" .
-			"<agent_data description='" . $Conf{'description'} ."' group='" . $Conf{'group'} .
+			"<agent_data description='" . $Conf{'description'} . "' group='" . $Conf{'group'} .
+			(defined($Conf{'group_password'}) ? ("' group_password='" . $Conf{'group_password'}) : '') .
 			"' os_name='$OS' os_version='$OS_VERSION' interval='" . $Conf{'interval'} .
 			"' version='" . AGENT_VERSION . '(Build ' . AGENT_BUILD . ')' . ($Conf{'autotime'} eq '1' ? '' : "' timestamp='" . strftime ('%Y/%m/%d %H:%M:%S', localtime ())) .
 			"' agent_name='" . $Conf{'agent_name'} . "' timezone_offset='". $Conf{'timezone_offset'} . 

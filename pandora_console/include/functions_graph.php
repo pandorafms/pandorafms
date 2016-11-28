@@ -973,7 +973,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	$prediction_period = false, $background_color = 'white',
 	$name_list = array(), $unit_list = array(), $show_last = true, $show_max = true,
 	$show_min = true, $show_avg = true, $labels = array(), $dashboard = false,
-	$vconsole = false, $percentil = null) {
+	$vconsole = false, $percentil = null, $from_interface = false) {
 	
 	global $config;
 	global $graphic_type;
@@ -1707,6 +1707,44 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		'color' => COL_GRAPH13,
 		'alpha' => CHART_DEFAULT_ALPHA);
 	
+	$yellow_threshold = 0;
+	$red_threshold = 0;
+	if ($from_interface) {
+		$compare_warning = 0;
+		$compare_critical = 0;
+		$do_it_warning = true;
+		$do_it_critical = true;
+		foreach ($module_list as $id_module) {
+			// Get module warning_min and critical_min
+			$warning_min = db_get_value('min_warning','tagente_modulo','id_agente_modulo',$id_module);
+			$critical_min = db_get_value('min_critical','tagente_modulo','id_agente_modulo',$id_module);
+			if ($compare_warning == 0) {
+				$compare_warning = $warning_min;
+			}
+			else {
+				if ($compare_warning != $warning_min) {
+					$do_it_warning = false;
+				}
+			}
+			if ($compare_critical == 0) {
+				$compare_critical = $critical_min;
+			}
+			else {
+				if ($compare_warning != $warning_min) {
+					$do_it_critical = false;
+				}
+			}
+		}
+
+		if ($do_it_warning) {
+			$yellow_threshold = $compare_warning;
+		}
+
+		if ($do_it_critical) {
+			$red_threshold = $compare_critical;
+		}
+	}
+
 	switch ($stacked) {
 		case CUSTOM_GRAPH_AREA:
 			return area_graph($flash_charts, $graph_values, $width,
@@ -1730,7 +1768,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				$title, "", $water_mark, $config['fontpath'], $fixed_font_size,
 				$unit, $ttl, $homeurl, $background_color, $dashboard, 
-				$vconsole, $series_type, $percentil_result); 
+				$vconsole, $series_type, $percentil_result, $yellow_threshold, $red_threshold); 
 			break;
 		case CUSTOM_GRAPH_STACKED_LINE:
 			return stacked_line_graph($flash_charts, $graph_values,

@@ -1022,7 +1022,7 @@ if ($update_module || $create_module) {
 	
 	$throw_unknown_events = (bool)get_parameter('throw_unknown_events', false);
 	//Set the event type that can show.
-	$disabled_types_event = array(EVENTS_GOING_UNKNOWN => (int)!$throw_unknown_events);
+	$disabled_types_event = array(EVENTS_GOING_UNKNOWN => (int)$throw_unknown_events);
 	$disabled_types_event = io_json_mb_encode($disabled_types_event);
 	
 	$module_macro_names = (array) get_parameter('module_macro_names', array());

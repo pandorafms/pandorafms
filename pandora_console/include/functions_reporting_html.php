@@ -2104,7 +2104,7 @@ function reporting_html_availability(&$table, $item) {
 	array_push ($table->data, $data);
 	array_push ($table->data, $data2);
 	
-	if ($item['resume'] && !empty($item["data"])) {
+	if ($item['resume']['resume'] && !empty($item["data"])) {
 		$table1->width = '99%';
 		$table1->data = array ();
 		

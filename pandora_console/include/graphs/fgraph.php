@@ -511,7 +511,7 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
 	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
 	$dashboard = false, $vconsole = false, $series_type = array(),
-	$percentil_values = array()) {
+	$percentil_values = array(), $yellow_threshold = 0, $red_threshold = 0) {
 	
 	include_once("functions_flot.php");
 	
@@ -538,8 +538,8 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 			$water_mark_url,
 			$series_type,
 			array(),
-			0,
-			0,
+			$yellow_threshold,
+			$red_threshold,
 			'',
 			false,
 			'',

@@ -187,7 +187,8 @@ $interface_traffic_modules = array(
 			1,
 			false,
 			false,
-			(($show_percentil_95)? 95 : null));
+			(($show_percentil_95)? 95 : null),
+			true);
 		
 		echo '</div>';
 		

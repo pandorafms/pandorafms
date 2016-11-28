@@ -507,6 +507,8 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 		$return['failed'] = __('There are no SLAs defined');
 	}
 	else {
+		require_once ($config['homedir'] . '/include/functions_planned_downtimes.php');
+		$metaconsole_on = is_metaconsole();
 
 		// checking if needed to show graph or table
 		if ($content['show_graph'] == 0 || $content['show_graph'] == 1){
@@ -604,12 +606,12 @@ function reporting_SLA($report, $content, $type = 'dinamic',
         		    $slice
 		            );
 
-            /*
+            
 			if ($metaconsole_on) {
 				//Restore db connection
 				metaconsole_restore_db();
 			}
-			
+	
 			$server_name = $sla ['server_name'];
 			//Metaconsole connection
 			if ($metaconsole_on && $server_name != '') {
@@ -618,8 +620,6 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 					continue;
 				}
 			}
-			*/
-			//$total_SLA += $sla_value;
 
 			if ($show_graphs) {
 				$planned_downtimes = reporting_get_planned_downtimes_intervals($sla['id_agent_module'], $report['datetime'] - $content['period'], $report['datetime']);
@@ -787,12 +787,12 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 				
 				$return['charts'][] = $dataslice;
 			}
-			/*	
+
 			if ($metaconsole_on) {
 				//Restore db connection
 				metaconsole_restore_db();
 			}
-			*/	
+
 		}
 			
 		// SLA items sorted descending ()
@@ -4400,7 +4400,7 @@ function reporting_advanced_sla ($id_agent_module, $time_from = null, $time_to =
 						$i++;
 					}
 				}
-				$t_day+=SECONDS_1DAY;
+				$t_day = strtotime(" + 1 days", $t_day);
 			} // End while -> build matrix
 		} // End else (prepare fixed matrix)
 	} // Finished: Build exceptions
@@ -4427,12 +4427,12 @@ function reporting_advanced_sla ($id_agent_module, $time_from = null, $time_to =
 	$global_datetime_from = $datetime_from;
 	$global_datetime_to   = $datetime_to;
 	$range                = ($datetime_to - $datetime_from) / $slices;
-	
+
 	// Analysis begins
 	for ($count=0; $count < $slices; $count++) {
-
-		$datetime_from = $global_datetime_from + ($count*$range);
-		$datetime_to   = $global_datetime_from + (($count+1)*$range);
+		// use strtotime based on local timezone to avoid datetime conversions
+		$datetime_from = strtotime(" + " . ($count*$range) . " seconds"      , $global_datetime_from);
+		$datetime_to   = strtotime(" + " . (($count + 1)*$range) . " seconds", $global_datetime_from);	
 
 		$return = array();
 		// timing
@@ -4634,11 +4634,10 @@ function reporting_advanced_sla ($id_agent_module, $time_from = null, $time_to =
 
 function reporting_availability($report, $content, $date=false, $time=false) {
 	global $config;
-	
+
 	$return = array();
 	$return['type'] = 'availability';
 	$return['subtype'] = $content['group_by_agent'];
-	$return['resume'] = $content['show_resume'];
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('Availability');
@@ -4859,6 +4858,7 @@ function reporting_availability($report, $content, $date=false, $time=false) {
 	
 	$return["data"] = $data;
 	$return["resume"] = array();
+	$return['resume']['resume'] = $content['show_resume'];
 	$return["resume"]['min_text'] = $min_text;
 	$return["resume"]['min'] = $min;
 	$return["resume"]['avg'] = $avg;

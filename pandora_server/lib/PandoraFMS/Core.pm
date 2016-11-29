@@ -4228,6 +4228,13 @@ sub pandora_process_event_replication ($) {
 	logger($pa_config, "Starting replication events process.", 1);
 
 	while(1) { 
+
+		# If we are not the master server sleep and check again.
+		if (pandora_is_master($pa_config) == 0) {
+			sleep ($pa_config->{'server_threshold'});
+			next;
+		}
+
 		# Check the queue each N seconds
 		sleep ($replication_interval);
 		enterprise_hook('pandora_replicate_copy_events',[$pa_config, $dbh, $dbh_metaconsole, $metaconsole_server_id, $replication_mode]);
@@ -4252,6 +4259,13 @@ sub pandora_process_policy_queue ($) {
 	logger($pa_config, "Starting policy queue patrol process.", 1);
 
 	while(1) {
+
+		# If we are not the master server sleep and check again.
+		if (pandora_is_master($pa_config) == 0) {
+			sleep ($pa_config->{'server_threshold'});
+			next;
+		}
+
 		# Check the queue each 5 seconds
 		sleep (5);
 		

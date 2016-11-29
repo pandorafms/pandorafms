@@ -466,6 +466,394 @@ function db_get_all_rows_sql($sql, $search_history_db = false, $cache = true, $d
 	}
 }
 
+
+
+
+/**
+ * 
+ * Returns the time the module is in unknown status (by events)
+ * 
+ * @param int  $id_agente_modulo  module to check
+ * @param int  $tstart            begin of search
+ * @param int  $tend              end of search
+ * 
+ */
+function db_get_module_ranges_unknown($id_agente_modulo, $tstart = false, $tend = false) {
+	global $config;
+
+	if (!isset($id_agente_modulo)) {
+		return false;
+	}
+
+	if ((!isset($tstart)) || ($tstart === false)) {
+		// Return data from the begining
+		$tstart = 0;
+	}
+
+	if ((!isset($tend)) || ($tend === false)) {
+		// Return data until now
+		$tend = time();
+	}
+
+	if ($tstart > $tend) {
+		return false;
+	}
+
+
+	// Retrieve going unknown events in range
+	$query  = "SELECT utimestamp,event_type FROM tevento WHERE id_agentmodule = " . $id_agente_modulo;
+	$query .= " AND event_type like 'going_%' ";
+	$query .= " AND utimestamp >= $tstart AND utimestamp <= $tend ";
+	$query .= " ORDER BY utimestamp ASC";
+
+	$events = db_get_all_rows_sql($query);
+
+	if (! is_array($events)){
+		return false;
+	}
+
+	$last_status = 0; // normal
+	$return = array();
+	$i=0;
+	foreach ($events as $event) {
+		switch ($event["event_type"]) {
+			case "going_up_critical":
+			case "going_up_warning":
+			case "going_up_normal": {
+				if ($last_status == 1) {
+					$return[$i]["time_to"] = $event["utimestamp"];
+					$i++;
+					$last_status = 0;
+				}
+				break;
+			}
+			case "going_unknown":{
+				if ($last_status == 0){
+					$return[$i] = array();
+					$return[$i]["time_from"] = $event["utimestamp"];
+					$last_status = 1;
+				}
+				break;
+			}
+		}
+	}
+
+	return $return;
+}
+
+
+/**
+ * Uncompresses and returns the data of a given id_agent_module
+ * 
+ * @param int          $id_agente_modulo  id_agente_modulo
+ * @param utimestamp   $tstart            Begin of the catch
+ * @param utimestamp   $tend              End of the catch
+ * @param int          $interval          Size of slice (default-> module_interval)
+ * 
+ * @return   hash with the data uncompressed in blocks of module_interval
+ * false in case of empty result
+ * 
+ * Note: All "unknown" data are marked as NULL
+ * Warning: Be careful with the amount of data, check your RAM size available
+ * 
+ */
+function db_uncompress_module_data($id_agente_modulo, $tstart = false, $tend = false) {
+	global $config;
+
+	if (!isset($id_agente_modulo)) {
+		return false;
+	}
+
+	if ((!isset($tstart)) || ($tstart === false)) {
+		// Return data from the begining
+		$tstart = 0;
+	}
+
+	if ((!isset($tend)) || ($tend === false)) {
+		// Return data until now
+		$tend = time();
+	}
+
+	if ($tstart > $tend) {
+		return false;
+	}
+
+
+	$search_historydb = false;
+	$table = "tagente_datos";
+	
+	$module = modules_get_agentmodule($id_agente_modulo);
+	if ($module === false){
+		// module not exists
+		return false;
+	}
+	$module_type = $module['id_tipo_modulo'];
+	$module_type_str = modules_get_type_name ($module_type);
+	if (strstr ($module_type_str, 'string') !== false) {
+		$table = "tagente_datos_string";
+	}
+
+
+	// Get first available utimestamp in active DB
+	$query  = " SELECT utimestamp, datos FROM $table ";
+	$query .= " WHERE id_agente_modulo=$id_agente_modulo AND utimestamp < $tstart";
+	$query .= " ORDER BY utimestamp DESC LIMIT 1";
+
+
+	$ret = db_get_all_rows_sql( $query , $search_historydb);
+
+	if ( ( $ret === false ) || (( isset($ret[0]["utimestamp"]) && ($ret[0]["utimestamp"] > $tstart )))) {
+		// Value older than first retrieved from active DB
+		$search_historydb = true;
+
+		$ret = db_get_all_rows_sql( $query , $search_historydb);
+	}
+	else {
+		$first_data["utimestamp"] = $ret[0]["utimestamp"];
+		$first_data["datos"]      = $ret[0]["datos"];
+	}
+
+	if ( ( $ret === false ) || (( isset($ret[0]["utimestamp"]) && ($ret[0]["utimestamp"] > $tstart )))) {
+		// No previous data. -> not init
+		// Avoid false unknown status
+		$first_data["utimestamp"] = time();
+		$first_data["datos"]      = false;
+	}
+	else {
+		$first_data["utimestamp"] = $ret[0]["utimestamp"];
+		$first_data["datos"]      = $ret[0]["datos"];
+	}
+
+	$query  = " SELECT utimestamp, datos FROM $table ";
+	$query .= " WHERE id_agente_modulo=$id_agente_modulo AND utimestamp >= $tstart AND utimestamp <= $tend";
+	$query .= " ORDER BY utimestamp ASC";
+
+	// Retrieve all data from module in given range
+	$raw_data = db_get_all_rows_sql($query, $search_historydb);
+
+	if (($raw_data === false) && ($ret === false)) {
+		// No data
+		return false;
+	}
+
+	// Retrieve going unknown events in range
+	$unknown_events = db_get_module_ranges_unknown($id_agente_modulo, $tstart, $tend);
+
+	// Retrieve module_interval to build the template
+	$module_interval = modules_get_interval ($id_agente_modulo);
+	$slice_size = $module_interval;
+
+	// We'll return a bidimensional array
+	// Structure returned: schema:
+	// 
+	// uncompressed_data =>
+	//      pool_id (int)
+	//          utimestamp (start of current slice)
+	//          data
+	//              array
+	//                  utimestamp
+	//                  datos
+
+	$return = array();
+
+	// Point current_timestamp to begin of the set and initialize flags
+	$current_timestamp   = $tstart;
+	$last_inserted_value = $first_data["datos"];
+	$last_timestamp      = $first_data["utimestamp"];
+	$data_found          = 0;
+
+	// Build template
+	$pool_id = 0;
+	$now = time();
+
+	$in_unknown_status = 0;
+	if (is_array($unknown_events)) {
+		$current_unknown = array_shift($unknown_events);
+	}
+	while ( $current_timestamp < $tend ) {
+		$expected_data_generated = 0;
+
+		$return[$pool_id]["data"] = array();
+		$tmp_data   = array();
+		$data_found = 0;
+
+		if (is_array($unknown_events)) {
+			$i = 0;
+			while ($current_timestamp >= $unknown_events[$i]["time_to"] ) {
+				// Skip unknown events in past
+				array_splice($unknown_events, $i,1);
+				$i++;
+				if (!isset($unknown_events[$i])) {
+					break;
+				}
+			}
+			if (isset($current_unknown)) {
+
+				// check if recovered from unknown status
+				if(is_array($unknown_events) && isset($current_unknown)) {
+					if (   (($current_timestamp+$slice_size) > $current_unknown["time_to"])
+						&& ($current_timestamp < $current_unknown["time_to"])
+						&& ($in_unknown_status == 1) ) {
+						// Recovered from unknown
+
+						if (   ($current_unknown["time_to"] > $current_timestamp)
+							&& ($expected_data_generated == 0) ) {
+							// also add the "expected" data
+							$tmp_data["utimestamp"] = $current_timestamp;
+							if ($in_unknown_status == 1) {
+								$tmp_data["datos"]  = null;
+							}
+							else {
+								$tmp_data["datos"]  = $last_inserted_value;
+							}
+							$return[$pool_id]["utimestamp"] = $current_timestamp;
+							array_push($return[$pool_id]["data"], $tmp_data);
+							$expected_data_generated = 1;
+						}
+
+
+						$tmp_data["utimestamp"] = $current_unknown["time_to"];
+						$tmp_data["datos"]      = $last_inserted_value;
+						// debug purpose
+						//$tmp_data["obs"]        = "event recovery data";
+						
+						$return[$pool_id]["utimestamp"] = $current_timestamp;
+						array_push($return[$pool_id]["data"], $tmp_data);
+						$data_found = 1;
+						$in_unknown_status = 0;
+					}
+
+					if (   (($current_timestamp+$slice_size) > $current_unknown["time_from"])
+						&& (($current_timestamp+$slice_size) < $current_unknown["time_to"])
+						&& ($in_unknown_status == 0) ) {
+						// Add unknown state detected
+
+						if ( $current_unknown["time_from"] < ($current_timestamp+$slice_size)) {
+							if (   ($current_unknown["time_from"] > $current_timestamp)
+								&& ($expected_data_generated == 0) ) {
+								// also add the "expected" data
+								$tmp_data["utimestamp"] = $current_timestamp;
+								if ($in_unknown_status == 1) {
+									$tmp_data["datos"]  = null;
+								}
+								else {
+									$tmp_data["datos"]  = $last_inserted_value;
+								}
+								$return[$pool_id]["utimestamp"] = $current_timestamp;
+								array_push($return[$pool_id]["data"], $tmp_data);
+								$expected_data_generated = 1;
+							}
+
+							$tmp_data["utimestamp"] = $current_unknown["time_from"];
+							$tmp_data["datos"]      = null;
+							// debug purpose
+							//$tmp_data["obs"] = "event data";
+							$return[$pool_id]["utimestamp"] = $current_timestamp;
+							array_push($return[$pool_id]["data"], $tmp_data);
+							$data_found = 1;
+						}
+						$in_unknown_status = 1;
+					}
+
+					if ( ($in_unknown_status == 0) && ($current_timestamp >= $current_unknown["time_to"]) ) {
+						$current_unknown = array_shift($unknown_events);
+					}
+				}
+			} // unknown events handle
+		}
+
+		// Search for data
+		$i=0;
+		if (is_array($raw_data)) {
+			foreach ($raw_data as $data) {
+				if ( ($data["utimestamp"] >= $current_timestamp)
+				  && ($data["utimestamp"] < ($current_timestamp+$slice_size)) ) {
+					// Data in block, push in, and remove from $raw_data (processed)
+
+					if (   ($data["utimestamp"] > $current_timestamp)
+						&& ($expected_data_generated == 0) ) {
+						// also add the "expected" data
+						$tmp_data["utimestamp"] = $current_timestamp;
+						if ($in_unknown_status == 1) {
+							$tmp_data["datos"]  = null;
+						}
+						else {
+							$tmp_data["datos"]  = $last_inserted_value;
+						}
+						//$tmp_data["obs"] = "expected data";
+						$return[$pool_id]["utimestamp"] = $current_timestamp;
+						array_push($return[$pool_id]["data"], $tmp_data);
+						$expected_data_generated = 1;
+					}
+
+					$tmp_data["utimestamp"] = intval($data["utimestamp"]);
+					$tmp_data["datos"]      = $data["datos"];
+					// debug purpose
+					//$tmp_data["obs"] = "real data";
+
+					$return[$pool_id]["utimestamp"] = $current_timestamp;
+					array_push($return[$pool_id]["data"], $tmp_data);
+
+					$last_inserted_value = $data["datos"];
+					$last_timestamp      = intval($data["utimestamp"]);
+
+					unset($raw_data[$i]);
+					$data_found = 1;
+					$in_unknown_status = 0;
+				}
+				elseif ($data["utimestamp"] > ($current_timestamp+$slice_size)) {
+					// Data in future, stop searching new ones
+					break;
+				}
+			}
+			$i++;
+		}
+
+		if ($data_found == 0) {
+			// No data found, lug the last_value until SECONDS_1DAY + 2*modules_get_interval
+			// UNKNOWN!
+
+			if (($current_timestamp > $now) || (($current_timestamp - $last_timestamp) > (SECONDS_1DAY + 2*$module_interval))) {
+				if (isset($last_inserted_value)) {
+					// unhandled unknown status control
+					$unhandled_time_unknown = $current_timestamp - (SECONDS_1DAY + 2*$module_interval) - $last_timestamp;
+					if ($unhandled_time_unknown > 0) {
+						// unhandled unknown status detected. Add to previous pool
+						$tmp_data["utimestamp"] = intval($last_timestamp) +  (SECONDS_1DAY + 2*$module_interval);
+						$tmp_data["datos"]      = null;
+						// debug purpose
+						//$tmp_data["obs"] = "unknown extra";
+						// add to previous pool if needed
+						if (isset($return[$pool_id-1])) {
+							array_push($return[$pool_id-1]["data"], $tmp_data);
+						}
+					}
+				}
+				$last_inserted_value = null;
+			}
+
+			$tmp_data["utimestamp"] = $current_timestamp;
+
+			if ($in_unknown_status == 1) {
+				$tmp_data["datos"]  = null;
+			}
+			else {
+				$tmp_data["datos"]  = $last_inserted_value;
+			}
+			// debug purpose
+			//$tmp_data["obs"] = "virtual data";
+			
+			$return[$pool_id]["utimestamp"] = $current_timestamp;
+			array_push($return[$pool_id]["data"], $tmp_data);
+		}
+
+		$pool_id++;
+		$current_timestamp += $slice_size;
+	}
+
+	return $return;
+}
+
 /**
  * Get all the rows of a table in the database that matches a filter.
  *

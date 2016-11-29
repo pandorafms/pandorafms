@@ -403,13 +403,13 @@ $table_advanced->colspan[4][1] = 2;
 // Code comes from module_editor
 if ($__code_from == 'modules') {
 	$throw_unknown_events_check =
-		!modules_is_disable_type_event($id_agent_module, EVENTS_GOING_UNKNOWN);
+		modules_is_disable_type_event($id_agent_module, EVENTS_GOING_UNKNOWN);
 }
 else {
 	global $__id_pol_mod;
 	
 	$throw_unknown_events_check =
-		!policy_module_is_disable_type_event($__id_pol_mod, EVENTS_GOING_UNKNOWN);
+		policy_module_is_disable_type_event($__id_pol_mod, EVENTS_GOING_UNKNOWN);
 }
 $table_advanced->data[4][3] = __('Throw unknown events');
 $table_advanced->data[4][4] = html_print_checkbox('throw_unknown_events',

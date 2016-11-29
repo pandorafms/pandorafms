@@ -43,7 +43,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "6.0SP4";
-my $pandora_build = "161125";
+my $pandora_build = "161129";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -415,6 +415,9 @@ sub pandora_load_config {
 
 	# External .enc files for XML::Parser.
 	$pa_config->{"enc_dir"} = ""; # > 6.0SP4
+
+	# Enable (1) or disable (0) events related to the unknown status.
+	$pa_config->{"unknown_events"} = 1; # > 6.0SP4
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -918,6 +921,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^enc_dir\s+(.*)/i) {
 			$pa_config->{'enc_dir'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^unknown_events\s+([0-1])/i) {
+			$pa_config->{'unknown_events'} = clean_blank($1);
 		}
 	} # end of loop for parameter #
 

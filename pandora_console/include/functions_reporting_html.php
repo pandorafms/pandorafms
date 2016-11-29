@@ -1306,14 +1306,12 @@ function reporting_html_group_configuration($table, $item) {
 }
 
 function reporting_html_network_interfaces_report($table, $item) {
-	
 	if (!empty($item['failed'])) {
 		$table->colspan['interfaces']['cell'] = 3;
 		$table->cellstyle['interfaces']['cell'] = 'text-align: left;';
 		$table->data['interfaces']['cell'] = $item['failed'];
 	}
 	else {
-		
 		foreach ($item['data'] as $agent) {
 			$table_agent = new StdCLass();
 			$table_agent->width = '100%';
@@ -1358,7 +1356,7 @@ function reporting_html_network_interfaces_report($table, $item) {
 				$table_agent->colspan[$interface_name][0] = 3;
 			}
 			
-			$id = uniq_id();
+			$id = uniqid();
 			
 			$table->data['agents'][$id] = html_print_table($table_agent, true);
 			$table->colspan[$id][0] = 3;

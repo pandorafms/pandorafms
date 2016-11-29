@@ -683,17 +683,17 @@ function reporting_SLA($report, $content, $type = 'dinamic',
 
 					// generate raw data for graph
 					if ($value_sla['time_total'] != 0) {
-						if ($value_sla['time_unknown'] == $value_sla['time_total']) { // UNKNOWN
+						if ($value_sla['time_error'] > 0) { // ERR
+							$raw_graph[$i]['data'] = 3;
+						}
+						elseif ($value_sla['time_unknown'] > 0) { // UNKNOWN
 							$raw_graph[$i]['data'] = 4;
 						}
 						elseif ($value_sla['time_not_init'] == $value_sla['time_total']) { // NOT INIT
 							$raw_graph[$i]['data'] = 6;
 						}
-						elseif ($value_sla['SLA'] >= $sla['sla_limit']) { // OK 
+						else {
 							$raw_graph[$i]['data'] = 1;
-						}
-						elseif ($value_sla['SLA'] < $sla['sla_limit']) { // ERR
-							$raw_graph[$i]['data'] = 3;
 						}
 					}
 					else {

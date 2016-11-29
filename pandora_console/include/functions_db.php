@@ -519,7 +519,10 @@ function db_get_module_ranges_unknown($id_agente_modulo, $tstart = false, $tend 
 		switch ($event["event_type"]) {
 			case "going_up_critical":
 			case "going_up_warning":
-			case "going_up_normal": {
+			case "going_up_normal":
+			case "going_down_critical":
+			case "going_down_warning":
+			case "going_down_normal": {
 				if ($last_status == 1) {
 					$return[$i]["time_to"] = $event["utimestamp"];
 					$i++;

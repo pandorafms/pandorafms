@@ -430,6 +430,9 @@ sub pandora_load_config {
 	# External .enc files for XML::Parser.
 	$pa_config->{"enc_dir"} = ""; # > 6.0SP4
 
+	# Enable (1) or disable (0) events related to the unknown status.
+	$pa_config->{"unknown_events"} = 1; # > 6.0SP4
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -961,6 +964,9 @@ sub pandora_load_config {
 		#}
 		elsif ($parametro =~ m/^enc_dir\s+(.*)/i) {
 			$pa_config->{'enc_dir'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^unknown_events\s+([0-1])/i) {
+			$pa_config->{'unknown_events'} = clean_blank($1);
 		}
 	} # end of loop for parameter #
 

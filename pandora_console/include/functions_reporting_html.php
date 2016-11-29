@@ -433,13 +433,13 @@ function reporting_html_SLA($table, $item, $mini) {
 						}
 						elseif ($sla['sla_status']) {
 							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
-								remove_right_zeros(number_format($sla['sla_value'], $config['graph_precision'])) . "%" . '</span>';
+								sla_truncate($sla['sla_value'], $config['graph_precision']) . "%" . '</span>';
 							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
 								__('OK') . '</span>';
 						}
 						else {
 							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
-								remove_right_zeros(number_format($sla['sla_value'], $config['graph_precision'])) . "%" . '</span>';
+								sla_truncate($sla['sla_value'], $config['graph_precision']) . "%" . '</span>';
 							$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
 								__('Fail') . '</span>';
 						}
@@ -493,7 +493,15 @@ function reporting_html_SLA($table, $item, $mini) {
 							$row = array();
 							$row[] = $sla['agent'];
 							$row[] = $sla['module'];
-							$row[] = remove_right_zeros(number_format($sla['max'], $config['graph_precision'])) . " / " . remove_right_zeros(number_format($sla['min'], $config['graph_precision']));
+
+							if(is_numeric($sla['dinamic_text'])){
+								$row[] = remove_right_zeros(number_format($sla['max'], $config['graph_precision'])) . " / " . 
+									 remove_right_zeros(number_format($sla['min'], $config['graph_precision']));
+							}
+							else{
+								$row[] = $sla['dinamic_text'];
+							}
+							
 							$row[] = round($sla['sla_limit'], 2) . "%";
 							
 							if ($sla['sla_value_unknown']) {
@@ -504,13 +512,13 @@ function reporting_html_SLA($table, $item, $mini) {
 							}
 							elseif ($sla['sla_status']) {
 								$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
-									remove_right_zeros(number_format($sla['sla_value'], $config['graph_precision'])) . "%" . '</span>';
+									sla_truncate($sla['sla_value'], $config['graph_precision']) . "%" . '</span>';
 								$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_NORMAL.';">' .
 									__('OK') . '</span>';
 							}
 							else {
 								$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
-									remove_right_zeros(number_format($sla['sla_value'], $config['graph_precision'])) . "%" . '</span>';
+									sla_truncate($sla['sla_value'], $config['graph_precision']) . "%" . '</span>';
 								$row[] = '<span style="font: bold '.$font_size.'em Arial, Sans-serif; color: '.COL_CRITICAL.';">' .
 									__('Fail') . '</span>';
 							}
@@ -2020,7 +2028,7 @@ function reporting_html_availability(&$table, $item) {
 				else
 					$table_row[] = '--';
 				
-				$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' .remove_right_zeros(number_format($row['SLA'], $config['graph_precision'])). '%</span>';	
+				$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'], $config['graph_precision']). '%</span>';	
 
 				$table_row2 = array();
 				$table_row2[] = $row['agent'];
@@ -2066,7 +2074,7 @@ function reporting_html_availability(&$table, $item) {
 					else
 						$table_row[] = '--';
 					
-					$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' .remove_right_zeros(number_format($row['SLA'], $config['graph_precision'])). '%</span>';	
+					$table_row[] = '<span style="font-size: 1.2em; font-weight:bold;">' . sla_truncate($row['SLA'], $config['graph_precision']). '%</span>';	
 
 					$table_row2 = array();
 					$table_row2[] = $row['agent'];
@@ -2128,9 +2136,9 @@ function reporting_html_availability(&$table, $item) {
 			
 			$table1->data[] = array(
 				'max_text' => $item['resume']['max_text'],
-				'max' => remove_right_zeros(number_format($item['resume']['max'], $config['graph_precision'])) . "%",
+				'max' => sla_truncate($item['resume']['max'], $config['graph_precision']) . "%",
 				'min_text' => $item['resume']['min_text'],
-				'min' => remove_right_zeros(number_format($item['resume']['min'], $config['graph_precision'])) . "%",
+				'min' => sla_truncate($item['resume']['min'], $config['graph_precision']) . "%",
 				'avg' => '<span style="font-size: 1.2em; font-weight:bold;">' .remove_right_zeros(number_format($item['resume']['avg'], $config['graph_precision'])) . "%</span>"
 				);
 			

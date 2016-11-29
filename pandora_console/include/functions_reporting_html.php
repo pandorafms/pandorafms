@@ -1356,7 +1356,7 @@ function reporting_html_network_interfaces_report($table, $item) {
 				$table_agent->colspan[$interface_name][0] = 3;
 			}
 			
-			$id = uniq_id();
+			$id = uniqid();
 			
 			$table->data['agents'][$id] = html_print_table($table_agent, true);
 			$table->colspan[$id][0] = 3;

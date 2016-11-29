@@ -3810,6 +3810,11 @@ sub generate_status_event ($$$$$$$$) {
 		pandora_event ($pa_config, "Warmup mode for events ended.", 0, 0, 0, 0, 0, 'system', 0, $dbh);
 	}
 
+	# Disable events related to the unknown status.
+	if ($pa_config->{'unknown_events'} == 0 && ($last_status == 3 || $status == 3)) {
+		return;
+	}
+
 	# disable event just recovering from 'Unknown' without status change
 	if($last_status == 3 && $status == $last_known_status && $module->{'disabled_types_event'} ) {
 		my $disabled_types_event;
@@ -4604,8 +4609,11 @@ sub pandora_module_unknown ($$) {
 		        load_module_macros ($module->{'module_macros'}, \%macros);
 			$description = subst_alert_macros ($description, \%macros, $pa_config, $dbh, $agent, $module);
 
-			pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
-				$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+			# Are unknown events enabled?
+			if ($pa_config->{'unknown_events'} == 1) {
+				pandora_event ($pa_config, $description, $agent->{'id_grupo'}, $module->{'id_agente'},
+					$severity, 0, $module->{'id_agente_modulo'}, $event_type, 0, $dbh, 'Pandora', '', '', '', '', $module->{'critical_instructions'}, $module->{'warning_instructions'}, $module->{'unknown_instructions'});
+			}
 		}
 		# Regular module
 		else {
@@ -4631,8 +4639,12 @@ sub pandora_module_unknown ($$) {
 				logger($pa_config, "Alerts inhibited for agent '" . $agent->{'nombre'} . "'.", 10);
 			}
 			
-			my $do_event = 0;
-			if (!defined($module->{'disabled_types_event'}) || $module->{'disabled_types_event'} eq "") {
+			my $do_event;
+			# Are unknown events enabled?
+			if ($pa_config->{'unknown_events'} == 0) {
+				$do_event = 0;
+			}
+			elsif (!defined($module->{'disabled_types_event'}) || $module->{'disabled_types_event'} eq "") {
 				$do_event = 1;
 			}
 			else {

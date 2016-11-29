@@ -503,6 +503,9 @@ console_pass pandora
 # Passphrase used to generate the key for password encryption (PANDORA FMS ENTERPRISE ONLY).
 #encryption_passphrase passphrase
 
+# Enable (1) or disable (0) events related to the unknown module status.
+unknown_events 1
+
 # Time interval (as a multiple of the module interval) before a module becomes unknown. Twice the module's interval by default.
 #unknown_interval 2
 

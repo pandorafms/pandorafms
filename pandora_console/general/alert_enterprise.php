@@ -39,6 +39,9 @@ switch ($tipo) {
     case "infomodal":
       echo "icono_info.png";
       break;
+    case "helpmodal":
+      echo "icono_info.png";
+			break;
     case "modulemodal":
       echo "icono_popup.png";
         break;
@@ -84,6 +87,13 @@ echo "'>
 <div class='modalcontenttext'>";
 
 switch ($tipo) {
+	
+	case "helpmodal":
+	
+	echo __("This is the online help for Pandora FMS console. This help is -in best cases- just a brief contextual help, not intented to teach you how to use Pandora FMS. Official documentation of Pandora FMS is about 900 pages, and you probably don't need to read it entirely, but sure, you should download it and take a look.<br><br>
+	<a href='https://pandorafms.org/en/docs/monitoring-documentation/' target='_blanck'>Download the official documentation</a>");
+	
+	break;
 	
 	case "noaccess":
 	

@@ -30,7 +30,7 @@ if (is_ajax ()) {
 		$component = db_get_row ('tnetwork_component', 'id_nc', $id_component);
 		
 		$component['throw_unknown_events'] =
-			!network_components_is_disable_type_event($id_component, EVENTS_GOING_UNKNOWN);
+			network_components_is_disable_type_event($id_component, EVENTS_GOING_UNKNOWN);
 		
 		// Decrypt passwords in the component.
 		$component['plugin_pass'] = io_output_password($component['plugin_pass']);

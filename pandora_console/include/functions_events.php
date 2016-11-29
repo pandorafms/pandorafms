@@ -111,7 +111,8 @@ function events_get_event ($id, $fields = false) {
 }
 
 function events_get_events_grouped($sql_post, $offset = 0,
-	$pagination = 1, $meta = false, $history = false, $total = false) {
+	$pagination = 1, $meta = false, $history = false, $total = false, 
+	$history_db = false) {
 	
 	global $config; 
 	
@@ -211,7 +212,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 	}
 	
 	//Extract the events by filter (or not) from db
-	$events = db_get_all_rows_sql ($sql);
+	$events = db_get_all_rows_sql ($sql, $history_db);
 	
 	if ($total) {
 		return reset($events[0]);
@@ -1186,7 +1187,7 @@ function events_print_type_description ($type, $return = false) {
 function events_get_group_events ($id_group, $period, $date,
 	$filter_event_validated = false, $filter_event_critical = false,
 	$filter_event_warning = false, $filter_event_no_validated = false,
-	$filter_event_search = false, $meta = false) {
+	$filter_event_search = false, $meta = false, $history = false) {
 	
 	global $config;
 	
@@ -1228,7 +1229,8 @@ function events_get_group_events ($id_group, $period, $date,
 		AND utimestamp <= %d ',
 		implode (",", $id_group), $datelimit, $date);
 	
-	return events_get_events_grouped($sql_where, 0, 1000, $meta);
+	return events_get_events_grouped($sql_where, 0, 1000, $meta, 
+				false, false, $history);
 }
 
 /**
@@ -1305,7 +1307,8 @@ function events_get_group_events_steps ($begin, &$result, $id_group, $period, $d
  */
 function events_get_agent ($id_agent, $period, $date = 0,
 	$filter_event_validated = false, $filter_event_critical = false,
-	$filter_event_warning = false, $filter_event_no_validated = false) {
+	$filter_event_warning = false, $filter_event_no_validated = false, 
+	$history = false) {
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -1345,7 +1348,8 @@ function events_get_agent ($id_agent, $period, $date = 0,
 	$sql_where .= sprintf(' AND id_agente = %d AND utimestamp > %d
 			AND utimestamp <= %d ', $id_agent, $datelimit, $date);
 	
-	return events_get_events_grouped($sql_where, 0, 1000, is_metaconsole());
+	return events_get_events_grouped($sql_where, 0, 1000, 
+				is_metaconsole(), false, false, $history);
 }
 
 /**
@@ -1359,7 +1363,9 @@ function events_get_agent ($id_agent, $period, $date = 0,
  *
  * @return array An array with all the events happened.
  */
-function events_get_module ($id_agent_module, $period, $date = 0) {
+function events_get_module ($id_agent_module, $period, $date = 0, $history = false) {
+	global $config;
+	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
 	}
@@ -1372,7 +1378,8 @@ function events_get_module ($id_agent_module, $period, $date = 0) {
 	$sql_where = sprintf(' AND id_agentmodule = %d AND utimestamp > %d
 			AND utimestamp <= %d ', $id_agent_module, $datelimit, $date);
 	
-	return events_get_events_grouped($sql_where, 0, 1000);
+	return events_get_events_grouped($sql_where, 0, 1000, false, 
+				false, false, $history);
 	
 	$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep, max(timestamp) AS time2
 		FROM tevento

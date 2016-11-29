@@ -1227,6 +1227,10 @@ function reporting_event_report_group($report, $content,
 		metaconsole_connect($server);
 	}
 	
+	$history = false;
+	if ($config['history_event_enabled'])
+		$history = true;
+	
 	$return['title'] = $content['name'];
 	$return['subtitle'] = groups_get_name($content['id_group'], true);
 	if (!empty($content['style']['event_filter_search'])) {
@@ -1252,7 +1256,7 @@ function reporting_event_report_group($report, $content,
 		$content['id_group'], $content['period'], $report["datetime"],
 		true, true, $filter_event_validated, $filter_event_critical,
 		$filter_event_warning, $filter_event_no_validated,
-		$filter_event_filter_search, 'hash');
+		$filter_event_filter_search, 'hash', $history);
 	
 	if (empty($data)) {
 		$return['failed'] = __('No events');
@@ -2142,6 +2146,9 @@ function reporting_event_report_agent($report, $content,
 		$content['name'] = __('Event Report Agent');
 	}
 	
+	$history = false;
+	if ($config['history_event_enabled'])
+		$history = true;
 	
 	$return['title'] = $content['name'];
 	$return['subtitle'] = agents_get_name($content['id_agent']);
@@ -2169,7 +2176,8 @@ function reporting_event_report_agent($report, $content,
 		$filter_event_critical,
 		$filter_event_warning,
 		$filter_event_no_validated,
-		true);
+		true,
+		$history);
 	
 	
 	
@@ -5612,7 +5620,7 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 	$date = 0, $return = false, $html = true,
 	$filter_event_validated = false, $filter_event_critical = false,
 	$filter_event_warning = false, $filter_event_no_validated = false,
-	$filter_event_filter_search = null, $return_type = false) {
+	$filter_event_filter_search = null, $return_type = false, $history = false) {
 	
 	global $config;
 	
@@ -5644,7 +5652,7 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 	$events = events_get_group_events($id_group, $period, $date,
 		$filter_event_validated, $filter_event_critical,
 		$filter_event_warning, $filter_event_no_validated,
-		$filter_event_filter_search);
+		$filter_event_filter_search, false, $history);
 	
 	if ($return_type === 'hash') {
 		return $events;
@@ -5750,11 +5758,14 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 		$date = get_system_time ();
 	}
 	
+	$history = false;
+	if ($config['history_event_enabled'])
+		$history = true;
 	
 	$events = array ();
 	
 	foreach ($id_modules as $id_module) {
-		$event = events_get_module ($id_module, (int) $period, (int) $date);
+		$event = events_get_module ($id_module, (int) $period, (int) $date, $history);
 		if (!empty ($event)) {
 			array_push ($events, $event);
 		}
@@ -5837,7 +5848,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 	$date = 0, $return = false, $filter_event_validated = false,
 	$filter_event_critical = false, $filter_event_warning = false,
-	$filter_event_no_validated = false, $only_data = false) {
+	$filter_event_no_validated = false, $only_data = false, $history = false) {
 	
 	global $config;
 	
@@ -5863,7 +5874,8 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 			(int)$period,
 			(int)$date,
 			$filter_event_validated, $filter_event_critical,
-			$filter_event_warning, $filter_event_no_validated);
+			$filter_event_warning, $filter_event_no_validated,
+			$history);
 		
 		if (empty($event)) {
 			$event = array();

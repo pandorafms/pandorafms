@@ -1347,19 +1347,21 @@ if (!empty($result)) {
 					$link = "winopeng_var('$row[datos]','',700,480)";
 						
 				}
-				if(!is_snapshot_data($row['datos'])){
-				$salida = '<a href="javascript:' . $link . '">' .
-					html_print_image('images/default_list.png', true,
-						array('border' => '0',
+
+				if(!is_image_data($row['datos'])){
+					$salida = '<a href="javascript:' . $link . '">' .
+						html_print_image('images/default_list.png', true,
+							array('border' => '0',
 							'alt' => '',
 							'title' => __('Snapshot view'))) . '</a> &nbsp;&nbsp;';
-						}else{
-						$salida = '<a href="javascript:' . $link . '">' .
-							html_print_image('images/photo.png', true,
-								array('border' => '0',
-									'alt' => '',
-									'title' => __('Snapshot view'))) . '</a> &nbsp;&nbsp;';
-								}
+				}
+				else {
+					$salida = '<a href="javascript:' . $link . '">' .
+						html_print_image('images/photo.png', true,
+							array('border' => '0',
+								'alt' => '',
+								'title' => __('Snapshot view'))) . '</a> &nbsp;&nbsp;';
+				}
 			}
 			else {
 				

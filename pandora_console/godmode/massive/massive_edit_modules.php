@@ -1066,7 +1066,7 @@ function process_manage_edit ($module_name, $agents_select = null) {
 	if ($throw_unknown_events !== '') {
 		//Set the event type that can show.
 		$disabled_types_event = array(
-			EVENTS_GOING_UNKNOWN => (int)!$throw_unknown_events);
+			EVENTS_GOING_UNKNOWN => (int)$throw_unknown_events);
 		$values['disabled_types_event'] = json_encode($disabled_types_event);
 	}
 	

@@ -2028,8 +2028,7 @@ function reporting_html_availability(&$table, $item) {
 				$table_row2[] = $row['checks_total'];
 				$table_row2[] = $row['checks_error'];
 				$table_row2[] = $row['checks_ok'];
-				$table_row2[] = $row['checks_unknown'];
-				//$table_row2[] = remove_right_zeros(number_format($row['SLA'], $config['graph_precision']));				
+				$table_row2[] = $row['checks_unknown'];				
 			}
 			else {
 				if ($item['date']['to'] > $the_first_men_time) {
@@ -2076,7 +2075,6 @@ function reporting_html_availability(&$table, $item) {
 					$table_row2[] = $row['checks_error'];
 					$table_row2[] = $row['checks_ok'];
 					$table_row2[] = $row['checks_unknown'];
-					//$table_row2[] = remove_right_zeros(number_format($row['SLA'], $config['graph_precision']));
 				}
 				else {
 					$same_agent_in_resume = $item['data']['agent'];

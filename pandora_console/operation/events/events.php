@@ -287,7 +287,7 @@ $params = "search=" . rawurlencode(io_safe_input($search)) .
 	"&amp;id_user_ack=" . $id_user_ack .
 	"&amp;tag_with=". $tag_with_base64 . 
 	"&amp;tag_without=" . $tag_without_base64 . 
-	"&amp;filter_only_alert" . $filter_only_alert .
+	"&amp;filter_only_alert=" . $filter_only_alert .
 	"&amp;offset=" . $offset .
 	"&amp;toogle_filter=no" .
 	"&amp;filter_id=" . $filter_id .

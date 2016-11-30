@@ -411,7 +411,7 @@ else {
 	$throw_unknown_events_check =
 		policy_module_is_disable_type_event($__id_pol_mod, EVENTS_GOING_UNKNOWN);
 }
-$table_advanced->data[4][3] = __('Throw unknown events');
+$table_advanced->data[4][3] = __('Discard unknown events');
 $table_advanced->data[4][4] = html_print_checkbox('throw_unknown_events',
 	1, $throw_unknown_events_check, true, $disabledBecauseInPolicy);
 $table_advanced->colspan[4][4] = 3;

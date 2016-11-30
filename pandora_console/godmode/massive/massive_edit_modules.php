@@ -558,7 +558,7 @@ if ($table->rowspan['edit10'][0] == 2) {
 else {
 	$table->rowspan['edit10'][0] = $table->rowspan['edit10'][1] = 2;
 }
-$table->data['edit102'][2] = __('Throw unknown events');
+$table->data['edit102'][2] = __('Discard unknown events');
 
 $table->data['edit102'][3] = html_print_select(
 	array('' => __('No change'),

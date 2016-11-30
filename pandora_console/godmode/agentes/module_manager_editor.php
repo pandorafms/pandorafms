@@ -93,7 +93,7 @@ if (is_ajax ()) {
 		}
 		
 		$component['throw_unknown_events'] =
-			!local_components_is_disable_type_event($id_component, EVENTS_GOING_UNKNOWN);
+			local_components_is_disable_type_event($id_component, EVENTS_GOING_UNKNOWN);
 		
 		echo io_json_mb_encode ($component);
 		return;

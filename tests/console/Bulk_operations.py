@@ -93,36 +93,36 @@ class Bulk_operations(PandoraWebDriverTestCase):
 		Create two agents and edit description with bulk operation
 		"""
 		
-                Agent_name_1 = gen_random_string(6)
-                Agent_name_2 = gen_random_string(6)
+                agent_name_1 = gen_random_string(6)
+                agent_name_2 = gen_random_string(6)
 
-                Driver = self.driver
+                driver = self.driver
 
-		Activate_api(driver,"1234")
+		activate_api(driver,"1234")
 
-                Params = [agent_name_1,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
-                Create_agent_api(driver,params,user="admin",pwd="pandora")
+                params = [agent_name_1,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
+                create_agent_api(driver,params,user="admin",pwd="pandora")
 
-                Params = [agent_name_2,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
-                Create_agent_api(driver,params,user="admin",pwd="pandora")
+                params = [agent_name_2,"127.0.0.1","0","4","0","300","2","pandorafms","2","0","0","pruebas"]
+                create_agent_api(driver,params,user="admin",pwd="pandora")
 
-                Lista = driver.current_url.split('/')
+                lista = driver.current_url.split('/')
 
-                Url = lista[0]+'//'+lista[2]+'/pandora_console'
+                url = lista[0]+'//'+lista[2]+'/pandora_console'
 
-                Driver.get(url)
+                driver.get(url)
 
-                Agent_names_list = [agent_name_1,agent_name_2]
+                agent_names_list = [agent_name_1,agent_name_2]
 
-                Edit_agents_in_bulk(driver,agent_names_list,new_description="test C edit description bulk operation")
+                edit_agents_in_bulk(driver,agent_names_list,new_description="test C edit description bulk operation")
 		
-		Self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
-                Self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Agents updated successfully(2)")]').text,"Agents updated successfully(2)")
+		self.assertRegexpMatches(self.close_alert_and_get_its_text(), r"^Are you sure[\s\S]$")
+                self.assertEqual(self.driver.find_element_by_xpath('//div[@id="main"]//td[contains(.,"Agents updated successfully(2)")]').text,"Agents updated successfully(2)")
 
 
-		Search_agent(driver,agent_name_1,go_to_agent=True)
+		search_agent(driver,agent_name_1,go_to_agent=True)
 
-		Self.assertEqual("test C edit description bulk operation" in driver.page_source,True)
+		self.assertEqual("test C edit description bulk operation" in driver.page_source,True)
 
 	def test_D_delete_modules_in_bulk(self):
 		

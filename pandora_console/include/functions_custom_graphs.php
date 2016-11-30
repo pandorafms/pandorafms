@@ -168,11 +168,21 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 	
 	global $config;
 	
-	if ($id_graph == 0) {
-		$graph_conf['stacked'] = CUSTOM_GRAPH_LINE;
+	if ($from_interface) {
+		if ($config["type_interface_charts"] == 'line') {
+			$graph_conf['stacked'] = CUSTOM_GRAPH_LINE;
+		}
+		else {
+			$graph_conf['stacked'] = CUSTOM_GRAPH_AREA;
+		}
 	}
 	else {
-		$graph_conf = db_get_row('tgraph', 'id_graph', $id_graph);
+		if ($id_graph == 0) {
+			$graph_conf['stacked'] = CUSTOM_GRAPH_LINE;
+		}
+		else {
+			$graph_conf = db_get_row('tgraph', 'id_graph', $id_graph);
+		}
 	}
 	
 	if ($stacked === null) {

@@ -1713,7 +1713,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				$height, $color, $module_name_list, $long_index,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				$title, "", $homeurl, $water_mark, $config['fontpath'],
-				$fixed_font_size, $unit, $ttl, array(), array(), 0,  0,  '',
+				$fixed_font_size, $unit, $ttl, array(), array(), $yellow_threshold, $red_threshold,  '',
 				false, '', true, $background_color,$dashboard, $vconsole);
 			break;
 		default:

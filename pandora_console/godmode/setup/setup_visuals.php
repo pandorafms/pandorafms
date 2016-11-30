@@ -446,6 +446,15 @@ $table_chars->data[$row][1] .= __('Line').'&nbsp;' .
 		$config["type_module_charts"] != 'area', true);
 $row++;
 
+$table_chars->data[$row][0] = __('Type of interface charts');
+$table_chars->data[$row][1] = __('Area').'&nbsp;' .
+	html_print_radio_button ('type_interface_charts', 'area', '',
+		$config["type_interface_charts"] == 'area', true).'&nbsp;&nbsp;';
+$table_chars->data[$row][1] .= __('Line').'&nbsp;' .
+	html_print_radio_button ('type_interface_charts', 'line', '',
+		$config["type_interface_charts"] != 'area', true);
+$row++;
+
 $table_chars->data[$row][0] = __('Show only average');
 $table_chars->data[$row][0] .= ui_print_help_tip(__('Allows only show the average in graphs'), true);
 $table_chars->data[$row][1] = __('Yes').'&nbsp;' .

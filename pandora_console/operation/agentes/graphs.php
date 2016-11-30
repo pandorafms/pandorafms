@@ -349,7 +349,15 @@ echo "</div>";
 			var $container = $(element);
 			var $errorMessage = $('div#graph-error-message');
 			var period = $container.data('period');
-			var stacked = $container.data('stacked');
+			var conf_stacked = '<?php echo $config['type_module_charts']; ?>';
+			switch (conf_stacked) {
+				case 'area':
+					var stacked = 0;
+					break;
+				case 'line':
+					var stacked = 2;
+					break;
+			}
 			var date = $container.data('date');
 			var height = $container.data('height');
 			

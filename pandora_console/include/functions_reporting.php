@@ -4774,13 +4774,12 @@ function reporting_availability($report, $content, $date=false, $time=false) {
 				$item['id_agent_module']);
 			
 			$text = $row['data']['agent'] . " (" . $text . ")";
+				
+			//Restore dbconnection
+			if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+				metaconsole_restore_db();
+			}
 			
-			/*
-				//Restore dbconnection
-				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
-					metaconsole_restore_db();
-				}
-			*/
 			//find order
 			$row['data']['order'] = $row['data']['SLA'];
 

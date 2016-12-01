@@ -4432,7 +4432,14 @@ function reporting_advanced_sla ($id_agent_module, $time_from = null, $time_to =
 	for ($count=0; $count < $slices; $count++) {
 		// use strtotime based on local timezone to avoid datetime conversions
 		$datetime_from = strtotime(" + " . ($count*$range) . " seconds"      , $global_datetime_from);
-		$datetime_to   = strtotime(" + " . (($count + 1)*$range) . " seconds", $global_datetime_from);	
+		$datetime_to   = strtotime(" + " . (($count + 1)*$range) . " seconds", $global_datetime_from);
+
+		if ( (!isset ($datetime_from)) || ($datetime_from === false)){
+			$datetime_from = $global_datetime_from + ($count*$range);
+		}
+		if ( (!isset ($datetime_to)) || ($datetime_to === false)){
+			$datetime_to = $global_datetime_from + (($count + 1)*$range);
+		}
 
 		$return = array();
 		// timing

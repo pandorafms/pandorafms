@@ -100,6 +100,8 @@ $filter_event_no_validated = false;
 $filter_event_critical = false;
 $filter_event_warning = false;
 
+$filter_event_type = false;
+
 $event_graph_by_agent = false;
 $event_graph_by_user_validator = false;
 $event_graph_by_criticity = false;
@@ -415,6 +417,7 @@ switch ($action) {
 					$filter_event_validated = $style['filter_event_validated'];
 					$filter_event_critical = $style['filter_event_critical'];
 					$filter_event_warning = $style['filter_event_warning'];
+					$filter_event_type = json_decode($style['filter_event_type'], true);
 					
 					$event_graph_by_agent = $style['event_graph_by_agent'];
 					$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
@@ -431,6 +434,7 @@ switch ($action) {
 					$filter_event_validated = $style['filter_event_validated'];
 					$filter_event_critical = $style['filter_event_critical'];
 					$filter_event_warning = $style['filter_event_warning'];
+					$filter_event_type = json_decode($style['filter_event_type'], true);
 					
 					$event_graph_by_agent = $style['event_graph_by_agent'];
 					$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
@@ -1347,6 +1351,20 @@ You can of course remove the warnings, that's why we include the source and do n
 			</td>
 		</tr>
 		
+		<tr id="row_event_type" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Event type'); ?></td>
+			<td>
+				<?php
+				$event_types_select = get_event_types();
+				html_debug($filter_event_type);
+				html_print_select ($event_types_select, 'filter_event_type[]', 
+					$filter_event_type, '', __('All'), 'all', false, true, 
+					false, '', false, false, false, false, false, '');
+				
+				?>
+			</td>
+		</tr>
+		
 		<tr id="row_event_graphs" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Event graphs'); ?></td>
 			<td>
@@ -1946,6 +1964,7 @@ $(document).ready (function () {
 		});
 		
 	});
+	
 });
 
 function create_custom_graph() {
@@ -2444,6 +2463,7 @@ function chooseType() {
 	$("#row_percentil").hide();
 	$("#agents_row").hide();
 	$("#modules_row").hide();
+	$("#row_event_type").hide();
 	
 	// SLA list default state
 	$("#sla_list").hide();
@@ -2472,6 +2492,7 @@ function chooseType() {
 			$("#row_event_graph_by_user").show();
 			$("#row_event_graph_by_criticity").show();
 			$("#row_event_graph_by_validated").show();
+			$("#row_event_type").show();
 			
 			$("#row_filter_search").show();
 			break;
@@ -2734,6 +2755,7 @@ function chooseType() {
 			$("#row_event_graph_by_user").show();
 			$("#row_event_graph_by_criticity").show();
 			$("#row_event_graph_by_validated").show();
+			$("#row_event_type").show();
 			
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();

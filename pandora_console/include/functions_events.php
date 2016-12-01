@@ -1187,7 +1187,8 @@ function events_print_type_description ($type, $return = false) {
 function events_get_group_events ($id_group, $period, $date,
 	$filter_event_validated = false, $filter_event_critical = false,
 	$filter_event_warning = false, $filter_event_no_validated = false,
-	$filter_event_search = false, $meta = false, $history = false) {
+	$filter_event_search = false, $meta = false, $history = false, 
+	$filter_event_type = false) {
 	
 	global $config;
 	
@@ -1221,6 +1222,28 @@ function events_get_group_events ($id_group, $period, $date,
 	if (!empty($filter_event_search)) {
 		$sql_where .= ' AND (evento LIKE "%'. io_safe_input($filter_event_search) . '%"'.
 			' OR id_evento LIKE "%' . io_safe_input($filter_event_search) . '%")';
+	}
+	
+	if (!empty($filter_event_type)) {
+		$sql_where .= ' AND (';
+		$type = array();
+		foreach ($filter_event_type as $event_type) {
+			if ($event_type != "") {
+				// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
+				// for the user so for him is presented only "warning, critical and normal"
+				if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal") {
+					$type[] = " event_type LIKE '%$event_type%' ";
+				}
+				else if ($event_type == "not_normal") {
+					$type[] = " (event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%') ";
+				}
+				else if ($event_type != "all") {
+					$type[] = " event_type = '" . $event_type."'";
+				}
+			}
+		}
+		
+		$sql_where .= implode(' OR ', $type) . ')';
 	}
 	
 	$sql_where .= sprintf('
@@ -1308,7 +1331,7 @@ function events_get_group_events_steps ($begin, &$result, $id_group, $period, $d
 function events_get_agent ($id_agent, $period, $date = 0,
 	$filter_event_validated = false, $filter_event_critical = false,
 	$filter_event_warning = false, $filter_event_no_validated = false, 
-	$history = false) {
+	$history = false, $filter_event_type = false) {
 	
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -1343,6 +1366,28 @@ function events_get_agent ($id_agent, $period, $date = 0,
 				$sql_where .= ' AND estado = 0 ';
 			}
 		}
+	}
+	
+	if (!empty($filter_event_type)) {
+		$sql_where .= ' AND (';
+		$type = array();
+		foreach ($filter_event_type as $event_type) {
+			if ($event_type != "") {
+				// If normal, warning, could be several (going_up_warning, going_down_warning... too complex 
+				// for the user so for him is presented only "warning, critical and normal"
+				if ($event_type == "warning" || $event_type == "critical" || $event_type == "normal") {
+					$type[] = " event_type LIKE '%$event_type%' ";
+				}
+				else if ($event_type == "not_normal") {
+					$type[] = " (event_type LIKE '%warning%' OR event_type LIKE '%critical%' OR event_type LIKE '%unknown%') ";
+				}
+				else if ($event_type != "all") {
+					$type[] = " event_type = '" . $event_type."'";
+				}
+			}
+		}
+		
+		$sql_where .= implode(' OR ', $type) . ')';
 	}
 	
 	$sql_where .= sprintf(' AND id_agente = %d AND utimestamp > %d

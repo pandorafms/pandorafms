@@ -1056,6 +1056,7 @@ switch ($action) {
 						$filter_event_no_validated = get_parameter('filter_event_no_validated', 0);
 						$filter_event_critical = get_parameter('filter_event_critical', 0);
 						$filter_event_warning = get_parameter('filter_event_warning', 0);
+						$filter_event_type = get_parameter('filter_event_type', '');
 						
 						$event_graph_by_agent = get_parameter('event_graph_by_agent', 0);
 						$event_graph_by_user_validator = get_parameter('event_graph_by_user_validator', 0);
@@ -1126,7 +1127,7 @@ switch ($action) {
 								$style['filter_event_validated'] = $filter_event_validated;
 								$style['filter_event_critical'] = $filter_event_critical;
 								$style['filter_event_warning'] = $filter_event_warning;
-								
+								$style['filter_event_type'] = json_encode($filter_event_type);
 								$style['event_graph_by_agent'] = $event_graph_by_agent;
 								$style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
 								$style['event_graph_by_criticity'] = $event_graph_by_criticity;
@@ -1435,6 +1436,7 @@ switch ($action) {
 								$event_graph_by_user_validator = get_parameter('event_graph_by_user_validator', 0);
 								$event_graph_by_criticity = get_parameter('event_graph_by_criticity', 0);
 								$event_graph_validated_vs_unvalidated = get_parameter('event_graph_validated_vs_unvalidated', 0);
+								$filter_event_type = get_parameter('filter_event_type', '');
 								
 								$event_filter_search = get_parameter('filter_search', '');
 								
@@ -1443,6 +1445,7 @@ switch ($action) {
 								$style['filter_event_validated'] = $filter_event_validated;
 								$style['filter_event_critical'] = $filter_event_critical;
 								$style['filter_event_warning'] = $filter_event_warning;
+								$style['filter_event_type'] = json_encode($filter_event_type);
 								
 								$style['event_graph_by_agent'] = $event_graph_by_agent;
 								$style['event_graph_by_user_validator'] = $event_graph_by_user_validator;

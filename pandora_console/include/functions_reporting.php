@@ -167,14 +167,22 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$content);
 				break;
 			case 'custom_graph':
-			case 'automatic_custom_graph':
 				$report['contents'][] =
 					reporting_custom_graph(
 						$report,
 						$content,
 						$type,
 						$force_width_chart,
-						$force_height_chart);
+						$force_height_chart, 'custom_graph');
+				break;
+			case 'automatic_graph':
+				$report['contents'][] =
+					reporting_custom_graph(
+						$report,
+						$content,
+						$type,
+						$force_width_chart,
+						$force_height_chart, 'automatic_graph');
 				break;
 			case 'text':
 				$report['contents'][] = reporting_text(
@@ -1239,26 +1247,24 @@ function reporting_event_report_group($report, $content,
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	
-	$event_filter = $content['style'];
 	
-	$filter_event_no_validated = $event_filter['filter_event_no_validated'];
-	$filter_event_validated = $event_filter['filter_event_validated'];
-	$filter_event_critical = $event_filter['filter_event_critical'];
-	$filter_event_warning = $event_filter['filter_event_warning'];
-	$filter_event_filter_search = $event_filter['event_filter_search'];
-	$filter_event_type = json_decode($event_filter['filter_event_type'],true);
+	$filter_event_no_validated = $content['style']['filter_event_no_validated'];
+	$filter_event_validated = $content['style']['filter_event_validated'];
+	$filter_event_critical = $content['style']['filter_event_critical'];
+	$filter_event_warning = $content['style']['filter_event_warning'];
+	$filter_event_filter_search = $content['style']['event_filter_search'];
 	
-	$event_graph_by_agent = $event_filter['event_graph_by_agent'];
-	$event_graph_by_user_validator = $event_filter['event_graph_by_user_validator'];
-	$event_graph_by_criticity = $event_filter['event_graph_by_criticity'];
-	$event_graph_validated_vs_unvalidated = $event_filter['event_graph_validated_vs_unvalidated'];
+	$event_graph_by_agent = $content['style']['event_graph_by_agent'];
+	$event_graph_by_user_validator = $content['style']['event_graph_by_user_validator'];
+	$event_graph_by_criticity = $content['style']['event_graph_by_criticity'];
+	$event_graph_validated_vs_unvalidated = $content['style']['event_graph_validated_vs_unvalidated'];
 	
 	
 	$data = reporting_get_group_detailed_event(
 		$content['id_group'], $content['period'], $report["datetime"],
 		true, true, $filter_event_validated, $filter_event_critical,
 		$filter_event_warning, $filter_event_no_validated,
-		$filter_event_filter_search, 'hash', $history, $filter_event_type);
+		$filter_event_filter_search, 'hash', $history);
 	
 	if (empty($data)) {
 		$return['failed'] = __('No events');
@@ -1389,8 +1395,6 @@ function reporting_event_report_group($report, $content,
 		metaconsole_restore_db();
 	}
 	
-	$return['total_events'] = count($return['data']);
-	
 	return reporting_check_structure_content($return);
 }
 
@@ -1434,8 +1438,6 @@ function reporting_event_report_module($report, $content) {
 	if ($config['metaconsole']) {
 		metaconsole_restore_db();
 	}
-	
-	$return['total_events'] = count($return['data']);
 	
 	return reporting_check_structure_content($return);
 }
@@ -1565,12 +1567,14 @@ function reporting_inventory($report, $content, $type) {
 
 function reporting_agent_module($report, $content) {
 	global $config;
-	
+	$agents_and_modules = json_decode($content['external_source'], true);
+	$agents = array();
+	$agents = $agents_and_modules['id_agents'];
+	$modules = $agents_and_modules['module'];
 	$id_group = $content['id_group'];
 	$id_module_group = $content['id_module_group'];
 	
 	$return['type'] = 'agent_module';
-	
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('Agent/Modules');
@@ -1592,54 +1596,25 @@ function reporting_agent_module($report, $content) {
 	
 	$return["data"] = array();
 	
-	$agents = array();
-	if ($id_group > 0) {
-		$agents = agents_get_group_agents($id_group);
-		$agents = array_keys($agents);
-	}
-	
-	$filter_module_groups = false;
-	if ($id_module_group > 0) {
-		$filter_module_groups['id_module_group'] = $id_module_group;
-	}
-	
-	$all_modules = agents_get_modules($agents, false,
-		$filter_module_groups, true, false);
-	
 	$modules_by_name = array();
-	$name = '';
 	$cont = 0;
 	
-	foreach ($all_modules as $key => $module) {
-		if ($module == $name) {
-			$modules_by_name[$cont - 1]['id'][] = $key;
-		}
-		else {
-			$name = $module;
-			$modules_by_name[$cont]['name'] = $name;
-			$modules_by_name[$cont]['id'][] = $key;
-			$cont ++;
-		}
+	foreach ($modules as $modul_id) {
+		$modules_by_name[$cont]['name'] = io_safe_output(modules_get_agentmodule_name($modul_id));
+		$modules_by_name[$cont]['id'][] = $modul_id;
+		$cont ++;
 	}
-	
-	$filter_groups = array();
-	if ($id_group > 0) {
-		$filter_groups['id_grupo'] = $id_group;
-	}
-	$agents = agents_get_agents ($filter_groups);
-	$nagents = count($agents);
-	
-	if ($all_modules == false || $agents == false) {
+	if ($modules_by_name == false || $agents == false) {
 		$return['failed'] = __('There are no agents with modules');
 	}
 	else {
 		foreach ($agents as $agent) {
 			$row = array();
-			$row['agent_status'][$agent['id_agente']] =
-				agents_get_status($agent['id_agente']);
-			$row['agent_name'] = $agent['nombre'];
+			$row['agent_status'][$agent] =
+				agents_get_status($agent);
+			$row['agent_name'] = agents_get_name($agent);
 			
-			$agent_modules = agents_get_modules($agent['id_agente']);
+			$agent_modules = agents_get_modules($agent);
 			
 			$row['modules'] = array();
 			foreach ($modules_by_name as $module) {
@@ -2168,7 +2143,6 @@ function reporting_event_report_agent($report, $content,
 	$filter_event_validated = $style['filter_event_validated'];
 	$filter_event_critical = $style['filter_event_critical'];
 	$filter_event_warning = $style['filter_event_warning'];
-	$filter_event_type = json_decode($style['filter_event_type'], true);
 	
 	$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
 	$event_graph_by_criticity = $style['event_graph_by_criticity'];
@@ -2184,8 +2158,7 @@ function reporting_event_report_agent($report, $content,
 		$filter_event_warning,
 		$filter_event_no_validated,
 		true,
-		$history,
-		$filter_event_type);
+		$history);
 	
 	
 	
@@ -2281,8 +2254,6 @@ function reporting_event_report_agent($report, $content,
 	if ($config['metaconsole']) {
 		metaconsole_restore_db();
 	}
-	
-	$return['total_events'] = count($return['data']);
 	
 	return reporting_check_structure_content($return);
 }
@@ -3278,6 +3249,14 @@ function reporting_prediction_date($report, $content) {
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	$return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+	
+	$module_name = io_safe_output(
+		modules_get_agentmodule_name($content['id_agent_module']));
+	$agent_name = io_safe_output(
+		modules_get_agentmodule_agent_name ($content['id_agent_module']));
+	
+	$return['agent_name'] = $agent_name;
+	$return['module_name'] = $module_name;
 	
 	set_time_limit(500);
 	
@@ -4784,12 +4763,12 @@ function reporting_availability($report, $content, $date=false, $time=false) {
 				$item['id_agent_module']);
 			
 			$text = $row['data']['agent'] . " (" . $text . ")";
-				
+			
 			//Restore dbconnection
 			if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
 				metaconsole_restore_db();
 			}
-			
+
 			//find order
 			$row['data']['order'] = $row['data']['SLA'];
 
@@ -5170,18 +5149,23 @@ function reporting_general($report, $content) {
 }
 
 function reporting_custom_graph($report, $content, $type = 'dinamic',
-	$force_width_chart = null, $force_height_chart = null) {
+	$force_width_chart = null, $force_height_chart = null, $type_report = "custom_graph") {
 	
 	global $config;
 	
 	require_once ($config["homedir"] . '/include/functions_graph.php');
 	
-	if ($config['metaconsole']) {
-		$id_meta = metaconsole_get_id_server($content["server_name"]);
-		
-		
-		$server = metaconsole_get_connection_by_id ($id_meta);
-		metaconsole_connect($server);
+	if ($type_report == 'automatic_graph') {
+		// Do none
+	}
+	else {
+		if ($config['metaconsole']) {
+			$id_meta = metaconsole_get_id_server($content["server_name"]);
+			
+			
+			$server = metaconsole_get_connection_by_id ($id_meta);
+			metaconsole_connect($server);
+		}
 	}
 	
 	$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
@@ -5209,7 +5193,15 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	
 	$labels = array();
 	foreach ($graphs as $graph_item) {
-		array_push ($modules, $graph_item['id_agent_module']);
+		if ($type_report == 'automatic_graph') {
+			array_push ($modules, array(
+				'module' => $graph_item['id_agent_module'],
+				'server' => $graph_item['id_server']));
+		}
+		else {
+			array_push ($modules, $graph_item['id_agent_module']);
+		}
+		
 		array_push ($weights, $graph_item["weight"]);
 		if (in_array('label',$content['style'])) {
 			$item = array('type' => 'custom_graph',
@@ -5260,8 +5252,13 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 			break;
 	}
 	
-	if ($config['metaconsole']) {
-		metaconsole_restore_db();
+	if ($type_report == 'automatic_graph') {
+		// Do none
+	}
+	else {
+		if ($config['metaconsole']) {
+			metaconsole_restore_db();
+		}
 	}
 	
 	return reporting_check_structure_content($return);
@@ -5629,8 +5626,7 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 	$date = 0, $return = false, $html = true,
 	$filter_event_validated = false, $filter_event_critical = false,
 	$filter_event_warning = false, $filter_event_no_validated = false,
-	$filter_event_filter_search = null, $return_type = false,
-	$history = false, $filter_event_type = false) {
+	$filter_event_filter_search = null, $return_type = false, $history = false) {
 	
 	global $config;
 	
@@ -5662,7 +5658,7 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 	$events = events_get_group_events($id_group, $period, $date,
 		$filter_event_validated, $filter_event_critical,
 		$filter_event_warning, $filter_event_no_validated,
-		$filter_event_filter_search, false, $history, $filter_event_type);
+		$filter_event_filter_search, false, $history);
 	
 	if ($return_type === 'hash') {
 		return $events;
@@ -5858,8 +5854,7 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 	$date = 0, $return = false, $filter_event_validated = false,
 	$filter_event_critical = false, $filter_event_warning = false,
-	$filter_event_no_validated = false, $only_data = false, 
-	$history = false, $filter_event_type = false) {
+	$filter_event_no_validated = false, $only_data = false, $history = false) {
 	
 	global $config;
 	
@@ -5885,8 +5880,8 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 			(int)$period,
 			(int)$date,
 			$filter_event_validated, $filter_event_critical,
-			$filter_event_warning, $filter_event_no_validated, 
-			$history, $filter_event_type);
+			$filter_event_warning, $filter_event_no_validated,
+			$history);
 		
 		if (empty($event)) {
 			$event = array();
@@ -6537,7 +6532,11 @@ function reporting_get_stats_agents_monitors($data) {
 	$tdata[1] = $data["total_agents"] <= 0 ? '-' : $data["total_agents"];
 	$tdata[1] = '<a class="big_data" href="' . $urls['total_agents'] . '">' . $tdata[1] . '</a>';
 	
-
+	/* Hello there! :)
+We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
+You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
+*/
+	
 	if($data["total_agents"]>500 && !enterprise_installed()) {
 	$tdata[2] = "<div id='agentsmodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
 	}
@@ -6546,7 +6545,11 @@ function reporting_get_stats_agents_monitors($data) {
 	$tdata[4] = $data["monitor_checks"] <= 0 ? '-' : $data["monitor_checks"];
 	$tdata[4] = '<a class="big_data" href="' . $urls['monitor_checks'] . '">' . $tdata[4] . '</a>';
 	
-
+	/* Hello there! :)
+We added some of what seems to be "buggy" messages to the openSource version recently. This is not to force open-source users to move to the enterprise version, this is just to inform people using Pandora FMS open source that it requires skilled people to maintain and keep it running smoothly without professional support. This does not imply open-source version is limited in any way. If you check the recently added code, it contains only warnings and messages, no limitations except one: we removed the option to add custom logo in header. In the Update Manager section, it warns about the 'danger’ of applying automated updates without a proper backup, remembering in the process that the Enterprise version comes with a human-tested package. Maintaining an OpenSource version with more than 500 agents is not so easy, that's why someone using a Pandora with 8000 agents should consider asking for support. It's not a joke, we know of many setups with a huge number of agents, and we hate to hear that “its becoming unstable and slow” :(
+You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
+*/
+	
 	if(($data["monitor_checks"]/$data["total_agents"]>100) && !enterprise_installed()) {
 	$tdata[5] = "<div id='monitorcheckmodal' class='publienterprise' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/alert_enterprise.png'></div>";
 	}

@@ -1262,24 +1262,26 @@ function reporting_event_report_group($report, $content,
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	
+	$event_filter = $content['style'];
 	
-	$filter_event_no_validated = $content['style']['filter_event_no_validated'];
-	$filter_event_validated = $content['style']['filter_event_validated'];
-	$filter_event_critical = $content['style']['filter_event_critical'];
-	$filter_event_warning = $content['style']['filter_event_warning'];
-	$filter_event_filter_search = $content['style']['event_filter_search'];
+	$filter_event_no_validated = $event_filter['filter_event_no_validated'];
+	$filter_event_validated = $event_filter['filter_event_validated'];
+	$filter_event_critical = $event_filter['filter_event_critical'];
+	$filter_event_warning = $event_filter['filter_event_warning'];
+	$filter_event_filter_search = $event_filter['event_filter_search'];
+	$filter_event_type = json_decode($event_filter['filter_event_type'],true);
 	
-	$event_graph_by_agent = $content['style']['event_graph_by_agent'];
-	$event_graph_by_user_validator = $content['style']['event_graph_by_user_validator'];
-	$event_graph_by_criticity = $content['style']['event_graph_by_criticity'];
-	$event_graph_validated_vs_unvalidated = $content['style']['event_graph_validated_vs_unvalidated'];
+	$event_graph_by_agent = $event_filter['event_graph_by_agent'];
+	$event_graph_by_user_validator = $event_filter['event_graph_by_user_validator'];
+	$event_graph_by_criticity = $event_filter['event_graph_by_criticity'];
+	$event_graph_validated_vs_unvalidated = $event_filter['event_graph_validated_vs_unvalidated'];
 	
 	
 	$data = reporting_get_group_detailed_event(
 		$content['id_group'], $content['period'], $report["datetime"],
 		true, true, $filter_event_validated, $filter_event_critical,
 		$filter_event_warning, $filter_event_no_validated,
-		$filter_event_filter_search, 'hash', $history);
+		$filter_event_filter_search, 'hash', $history, $filter_event_type);
 	
 	if (empty($data)) {
 		$return['failed'] = __('No events');
@@ -2162,6 +2164,7 @@ function reporting_event_report_agent($report, $content,
 	$filter_event_validated = $style['filter_event_validated'];
 	$filter_event_critical = $style['filter_event_critical'];
 	$filter_event_warning = $style['filter_event_warning'];
+	$filter_event_type = json_decode($style['filter_event_type'], true);
 	
 	$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
 	$event_graph_by_criticity = $style['event_graph_by_criticity'];
@@ -2177,7 +2180,8 @@ function reporting_event_report_agent($report, $content,
 		$filter_event_warning,
 		$filter_event_no_validated,
 		true,
-		$history);
+		$history,
+		$filter_event_type);
 	
 	
 	
@@ -6048,7 +6052,8 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 	$date = 0, $return = false, $html = true,
 	$filter_event_validated = false, $filter_event_critical = false,
 	$filter_event_warning = false, $filter_event_no_validated = false,
-	$filter_event_filter_search = null, $return_type = false, $history = false) {
+	$filter_event_filter_search = null, $return_type = false,
+	$history = false, $filter_event_type = false) {
 	
 	global $config;
 	
@@ -6080,7 +6085,7 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 	$events = events_get_group_events($id_group, $period, $date,
 		$filter_event_validated, $filter_event_critical,
 		$filter_event_warning, $filter_event_no_validated,
-		$filter_event_filter_search, false, $history);
+		$filter_event_filter_search, false, $history, $filter_event_type);
 	
 	if ($return_type === 'hash') {
 		return $events;
@@ -6276,7 +6281,8 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 	$date = 0, $return = false, $filter_event_validated = false,
 	$filter_event_critical = false, $filter_event_warning = false,
-	$filter_event_no_validated = false, $only_data = false, $history = false) {
+	$filter_event_no_validated = false, $only_data = false, 
+	$history = false, $filter_event_type = false) {
 	
 	global $config;
 	
@@ -6302,8 +6308,8 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 			(int)$period,
 			(int)$date,
 			$filter_event_validated, $filter_event_critical,
-			$filter_event_warning, $filter_event_no_validated,
-			$history);
+			$filter_event_warning, $filter_event_no_validated, 
+			$history, $filter_event_type);
 		
 		if (empty($event)) {
 			$event = array();

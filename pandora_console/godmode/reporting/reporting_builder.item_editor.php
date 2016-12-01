@@ -133,6 +133,7 @@ switch ($action) {
 		
 		switch ($type) {
 			case 'SLA_monthly':
+			case 'SLA_weekly':
 			case 'SLA_services':
 			case 'SLA':
 			case 'top_n':
@@ -264,6 +265,24 @@ switch ($action) {
 					// 'top_n' filed will be reused for SLA sort option
 					$sla_sorted_by = $item['top_n'];
 					break;
+
+				case 'SLA_weekly':
+					$description = $item['description'];
+					$only_display_wrong = $item['only_display_wrong'];
+					$monday = $item['monday'];
+					$tuesday = $item['tuesday'];
+					$wednesday = $item['wednesday'];
+					$thursday = $item['thursday'];
+					$friday = $item['friday'];
+					$saturday = $item['saturday'];
+					$sunday = $item['sunday'];
+					$time_from = $item['time_from'];
+					$time_to = $item['time_to'];
+					$show_graph = $item['show_graph'];
+					// 'top_n' filed will be reused for SLA sort option
+					$sla_sorted_by = $item['top_n'];
+					break;
+
 				case 'SLA_services':
 					$description = $item['description'];
 					$period = $item['period'];
@@ -2528,7 +2547,7 @@ function chooseType() {
 			$("#row_working_time").show();
 			$("#row_only_display_wrong").show();
 			$("#row_show_graph").show();
-			$("#row_show_in_two_columns").show();
+			//$("#row_show_in_two_columns").show();
 			$("#row_sort").show();
 			$('#row_hide_notinit_agents').show();
 			break;
@@ -2537,7 +2556,15 @@ function chooseType() {
 			$("#row_description").show();
 			$("#sla_list").show();
 			$("#row_working_time").show();
-			$("#row_show_in_two_columns").show();
+			//$("#row_show_in_two_columns").show();
+			$("#row_sort").show();
+			break;
+
+		case 'SLA_weekly':
+			$("#row_description").show();
+			$("#sla_list").show();
+			$("#row_working_time").show();
+			//$("#row_show_in_two_columns").show();
 			$("#row_sort").show();
 			break;
 		

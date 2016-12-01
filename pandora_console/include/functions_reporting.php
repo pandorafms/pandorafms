@@ -449,6 +449,11 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$report,
 					$content);
 				break;
+			case 'SLA_weekly':
+				$report['contents'][] = reporting_enterprise_sla_weekly(
+					$report,
+					$content);
+				break;
 			case 'SLA_services':
 				$report['contents'][] = reporting_enterprise_sla_services_refactoriced(
 					$report,
@@ -4764,12 +4769,11 @@ function reporting_availability($report, $content, $date=false, $time=false) {
 			
 			$text = $row['data']['agent'] . " (" . $text . ")";
 			
-			/*
-				//Restore dbconnection
-				if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
-					metaconsole_restore_db();
-				}
-			*/
+			//Restore dbconnection
+			if (($config ['metaconsole'] == 1) && $server_name != '' && defined('METACONSOLE')) {
+				metaconsole_restore_db();
+			}
+
 			//find order
 			$row['data']['order'] = $row['data']['SLA'];
 

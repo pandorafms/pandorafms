@@ -275,6 +275,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'SLA_monthly':
 				reporting_enterprise_html_SLA_monthly($table, $item, $mini);
 				break;
+			case 'SLA_weekly':
+				reporting_enterprise_html_SLA_weekly($table, $item, $mini);
+				break;
 			case 'SLA_services':
 				reporting_enterprise_html_SLA_services($table, $item, $mini);
 				break;

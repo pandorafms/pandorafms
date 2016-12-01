@@ -537,6 +537,8 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 	if ($config['enterprise_installed']) {
 		$types['SLA_monthly'] = array('optgroup' => __('SLA'),
 			'name' => __('Monthly S.L.A.'));
+		$types['SLA_weekly'] = array('optgroup' => __('SLA'),
+			'name' => __('Weekly S.L.A.'));
 
 		if (!$config['metaconsole'] && !$template) {
 			$types['SLA_services'] = array('optgroup' => __('SLA'),

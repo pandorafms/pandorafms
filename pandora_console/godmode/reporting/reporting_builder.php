@@ -936,6 +936,7 @@ switch ($action) {
 								$values['text'] = $intervals;
 								break;
 							case 'SLA_monthly':
+							case 'SLA_weekly':
 							case 'SLA_services':
 							case 'SLA':
 								$values['period'] = get_parameter('period');

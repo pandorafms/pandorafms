@@ -365,7 +365,7 @@ function resource_exportation_extension_main() {
 		id = $("select#" + type + " option:selected").val();
 		url = location.href.split('index');
 		if (type == "policy") {
-			include_agents = $("#checkbox-export_agents").prop("checked")
+			var include_agents = $("#checkbox-export_agents").prop("checked")
 			
 			url = url[0] + 'extensions/resource_exportation.php?get_ptr=1&type=' + type
 				+ '&id=' + id + '&include_agents=' + include_agents;

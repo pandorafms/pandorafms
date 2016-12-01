@@ -2664,7 +2664,13 @@ function pandora_setlocale() {
 }
 
 function remove_right_zeros ($value) {
-	$value_to_return = rtrim($value, "0");
-	return rtrim($value_to_return, ".");
+	$is_decimal = explode(".", $value);
+	if (isset($is_decimal[1])) {
+		$value_to_return = rtrim($value, "0");
+		return rtrim($value_to_return, ".");
+	}
+	else {
+		return $value;
+	}
 }
 ?>

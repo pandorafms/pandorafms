@@ -245,7 +245,7 @@ foreach ($result as $row) {
 	}
 	$data[1] = ui_print_session_action_icon ($row['accion'], true);
 	$data[1] .= $row["accion"];
-	$data[2] = ui_print_help_tip($row['fecha'], true) . human_time_comparation($row['utimestamp']);
+	$data[2] = ui_print_help_tip($row['fecha'], true) . ui_print_timestamp($row['utimestamp'], true);
 	switch ($config['dbtype']) {
 		case "mysql":
 		case "postgresql":

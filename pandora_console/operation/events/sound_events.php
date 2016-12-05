@@ -44,6 +44,8 @@ if (! check_acl ($config['id_user'], 0, "ER") && ! check_acl ($config['id_user']
 	return;
 }
 
+$agents = agents_get_group_agents(0, false, "none", false, true);
+
 echo "<html>";
 echo "<head>";
 echo "<title>" . __("Sound Events") . "</title>";
@@ -62,32 +64,40 @@ echo "<title>" . __("Sound Events") . "</title>";
 echo '<link rel="icon" href="../../images/pandora.ico" type="image/ico" />';
 echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css" />';
 echo "</head>";
-echo "<body>";
-echo html_print_image('images/pandora_logo_head.png', true);
-echo "<h1 style='background: #66AA44; color: #fff;'>" . __("Sound console"). "</h1>";
+echo "<body style='max-width: 400px; max-height: 400px;'>";
+echo "<h1 class='modalheaderh1'>" . __("Sound console"). "</h1>";
 
 $table = null;
 $table->width = '100%';
 
 $table->size[0] = '10%';
-$table->size[1] = '90%';
 $table->style[0] = 'font-weight: bold; vertical-align: top;';
+$table->style[1] = 'font-weight: bold; vertical-align: top;';
 
 $table->data[0][0] = __('Group');
-$table->data[0][1] = html_print_select_groups(false, $access, true, 'group', '', 'changeGroup();', '', 0, true);
-$table->data[1][0] = __('Type');
-$table->data[1][1] = html_print_checkbox('alert_fired', 'alert_fired', true, true, false, 'changeType();') . __('Alert fired') . '<br />' .
+$table->data[0][0] .= html_print_select_groups(false, $access, true, 'group', '', 'changeGroup();', '', 0, true) . '<br />' . '<br />';
+$table->data[0][0] .= __('Agent');
+$table->data[0][0] .= html_print_select($agents, 'id_agents[]', true, false, '', '', true, true);
+$table->data[0][1] = __('Type');
+$table->data[0][1] .= '<br />' . html_print_checkbox('alert_fired', 'alert_fired', true, true, false, 'changeType();') . __('Alert fired') . '<br />' .
 	html_print_checkbox('critical', 'critical', true, true, false, 'changeType();') . __('Monitor critical') . '<br />' .
-	html_print_checkbox('warning', 'warning', true, true, false, 'changeType();') . __('Monitor warning') . '<br />' .
-$table->data[2][0] = '';
-$table->data[2][1] = '<a href="javascript: toggleButton();">' .
-	html_print_image("images/play.button.png", true, array("id" => "button")) .
-	'</a>';
-$table->data[2][1] .= '<a href="javascript: ok();">' .
-	html_print_image("images/ok.button.png", true,
-		array("style" => "margin-left: 10px;")) . '</a>';
+	html_print_checkbox('unknown', 'unknown', true, true, false, 'changeType();') . __('Monitor unknown') . '<br />' .
+	html_print_checkbox('warning', 'warning', true, true, false, 'changeType();') . __('Monitor warning') . '<br />';
 
 html_print_table($table);
+
+echo '<br />';
+
+echo '<a href="javascript: toggleButton();">' .
+		html_print_image("images/icono_play.png", true, array("id" => "button")) .
+	'</a>';
+echo '<a href="javascript: ok();">' .
+		html_print_image("images/icono_ok.png", true, array("style" => "margin-left: 15px;")) . 
+	'</a>';
+echo '<a href="javascript: test_sound_button();">' .
+		html_print_image("images/icono_altavoz.png", true, array("id" => "button_try", "style" => "margin-left: 15px;")) . 
+	'</a>';
+
 ?>
 <script src="../../include/javascript/jquery.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -95,6 +105,7 @@ var group = 0;
 var alert_fired = true;
 var critical = true;
 var warning = true;
+var unknown = true;
 
 var running = false;
 var fired = false;
@@ -105,14 +116,48 @@ var redBackground = false;
 
 var button_play_status = "play";
 
+var test_sound = false;
+
+function test_sound_button() {
+	if (!test_sound) {
+		$("#button_try").attr('src', '../../images/icono_try.png');
+		$('body').append("<audio src='../../include/sounds/Star_Trek_emergency_simulation.wav' autoplay='true' hidden='true' loop='false'>");
+		test_sound = true;
+	}
+	else {
+		$("#button_try").attr('src', '../../images/icono_altavoz.png');
+		$('body audio').remove();
+		test_sound = false;
+	}
+}
+
 function changeGroup() {
 	group = $("#group").val();
+
+	jQuery.post ("../../ajax.php",
+		{"page" : "include/ajax/agent",
+			"get_agents_group": 1,
+			"id_group": group
+		},
+		function (data) {
+			$("#id_agents").empty();
+			$("#id_agents").style("size", 0);
+
+			jQuery.each (data, function (id, value) {
+				if (value != "") {
+					$("#id_agents").append('<option value="' + id + '">' + value + '</option>');
+				}
+			});
+		},
+		"json"
+	);
 }
 
 function changeType() {
 	alert_fired = $("input[name=alert_fired]").attr('checked');
 	critical = $("input[name=critical]").attr('checked');
 	warning = $("input[name=warning]").attr('checked');
+	unknown = $("input[name=unknown]").attr('checked');
 }
 
 function toggleButton() {
@@ -120,14 +165,14 @@ function toggleButton() {
 	if (button_play_status == 'pause') {
 	//~ if ($("#button").attr('src') == '../../images/pause.button.png') {
 		
-		$("#button").attr('src', '../../images/play.button.png');
+		$("#button").attr('src', '../../images/icono_play.png');
 		stopSound();
 		
 		button_play_status = 'play';
 	}
 	else {
 		
-		$("#button").attr('src', '../../images/pause.button.png');
+		$("#button").attr('src', '../../images/icono_pausa.png');
 		forgetPreviousEvents();
 		startSound();
 		
@@ -152,17 +197,21 @@ function stopSound() {
 }
 
 function startSound() {
-	//running = true;
+	running = true;
 }
 
 function forgetPreviousEvents() {
+	var agents = $("#id_agents").val();
+
 	jQuery.post ("../../ajax.php",
 		{"page" : "operation/events/events",
 			"get_events_fired": 1,
 			"id_group": group,
+			"agents[]" : agents,
 			"alert_fired": alert_fired,
 			"critical": critical,
 			"warning": warning,
+			"unknown": unknown,
 			"id_row": id_row
 		},
 		function (data) {
@@ -177,15 +226,19 @@ function forgetPreviousEvents() {
 }
 
 function check_event() {
+	var agents = $("#id_agents").val();
+	
 	if (running) {
 		if (!fired) {
 			jQuery.post ("../../ajax.php",
 				{"page" : "operation/events/events",
 					"get_events_fired": 1,
 					"id_group": group,
+					"agents[]" : agents,
 					"alert_fired": alert_fired,
 					"critical": critical,
 					"warning": warning,
+					"unknown": unknown,
 					"id_row": id_row
 				},
 				function (data) {

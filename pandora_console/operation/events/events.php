@@ -133,24 +133,30 @@ if (is_ajax ()) {
 		
 		$id = get_parameter('id_row');
 		$idGroup = get_parameter('id_group');
-		
+		$agents = get_parameter('agents', null);
+
 		$query = ' AND id_evento > ' . $id;
 		
 		$type = array();
 		$alert = get_parameter('alert_fired');
 		if ($alert == 'true') {
 			$resultAlert = alerts_get_event_status_group($idGroup,
-				'alert_fired', $query);
+				'alert_fired', $query, $agents);
 		}
 		$critical = get_parameter('critical');
 		if ($critical == 'true') {
 			$resultCritical = alerts_get_event_status_group($idGroup,
-				'going_up_critical', $query);
+				'going_up_critical', $query, $agents);
 		}
 		$warning = get_parameter('warning');
 		if ($warning == 'true') {
 			$resultWarning = alerts_get_event_status_group($idGroup,
-				'going_up_warning', $query);
+				'going_up_warning', $query, $agents);
+		}
+		$unknown = get_parameter('unknown');
+		if ($unknown == 'true') {
+			$resultUnknown = alerts_get_event_status_group($idGroup,
+				'going_unknown', $query, $agents);
 		}
 		
 		if ($resultAlert) {
@@ -164,6 +170,10 @@ if (is_ajax ()) {
 		else if ($resultWarning) {
 			$return = array('fired' => $resultWarning,
 				'sound' => $config['sound_warning']);
+		}
+		else if ($resultUnknown) {
+			$return = array('fired' => $resultWarning,
+				'sound' => $config['sound_alert']);
 		}
 		else {
 			$return = array('fired' => 0);
@@ -427,7 +437,7 @@ if ($config["pure"] == 0 || $meta) {
 				echo ui_get_full_url('operation/events/sound_events.php');
 				?>';
 			
-			window.open(url, '<?php __('Sound Alerts'); ?>','width=300, height=300, toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=yes'); 
+			window.open(url, '<?php __('Sound Alerts'); ?>','width=400, height=380, toolbar=no, location=no, directories=no, status=no, menubar=no, resizable=no'); 
 		}
 	</script>
 	<?php

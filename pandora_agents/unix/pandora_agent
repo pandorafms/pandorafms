@@ -131,6 +131,7 @@ my %DefaultConf = (
 	'temporal' => '/var/spool/pandora',
 	'interval' => 300,
 	'debug' => 0,		
+	'ehorus_conf' => undef,
 	'agent_name' => hostname (),
 	'agent_name_cmd' => '',
 	'description' => '',
@@ -2195,6 +2196,33 @@ sub init_module ($) {
 }
 
 ################################################################################
+# Get the eHorus key from the eHorus agent configuration file.
+################################################################################
+sub get_ehkey {
+	my $fh;
+
+	# Open the eHorus configuration file.
+	if (!open($fh, '<', $Conf{'ehorus_conf'})) {
+		log_message ('log', "Error opening the eHorus configuration file: $!");
+		return '';
+	}
+
+	# Look fot the eHorus key.
+	while (my $line = <$fh>) {
+		if ($line =~ m/\s*eh_key\s+(\S+)/) {
+			my $eh_key = $1;
+			close($fh);
+
+			return $eh_key;
+		}
+	}
+
+	# Not found.
+	close($fh);
+	return '';
+}
+
+################################################################################
 # Main.
 ################################################################################
 
@@ -2475,6 +2503,12 @@ while (1) {
 				$xml_header .= "' position_description='" .$Conf{'position_description'};
 			}
 		}
+
+		# eHorus key.
+		if (defined ($Conf{'ehorus_conf'})) {
+			$xml_header .= "' eh_key='" . get_ehkey();
+		}
+
 		$xml_header .= "'>\n";
 		$Xml = $xml_header . $Xml . "</agent_data>";
 

@@ -62,14 +62,14 @@ $label = get_parameter ("label");
 			FROM tagente_estado
 			WHERE id_agente_modulo = $id");
 		
-		echo "<h2 id='title_snapshot_view'>";
+		echo "<h2 style='text-align:center;' id='title_snapshot_view'>";
 		echo __("Current data at");
 		echo " ";
 		echo $row["timestamp"];
 		echo "</h2>";
 		$datos = io_safe_output($row["datos"]);
 		if (is_image_data($datos)) {
-			echo '<img src="' . $datos . '" alt="image"/>';
+			echo '<center><img src="' . $datos . '" alt="image"/></center>';
 		}
 		else {
 			$datos = preg_replace ('/</', '&lt;', $datos);

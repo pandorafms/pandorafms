@@ -2285,6 +2285,11 @@ function print_audit_csv ($data) {
 	global $config;
 	global $graphic_type;
 
+	if (!$data) {
+		echo __('No data found to export');
+		return 0;
+	}
+
 	$config['ignore_callback'] = true;
 	while (@ob_end_clean ());
 	
@@ -2292,20 +2297,20 @@ function print_audit_csv ($data) {
 	header("Content-Disposition: attachment; filename=audit_log".date("Y-m-d_His").".csv");
 	header("Pragma: no-cache");
 	header("Expires: 0");
+
+	// BOM
+	print pack('C*',0xEF,0xBB,0xBF);
 	
-	if ($data) {
-		echo __('User') . ';' .
-			__('Action') . ';' .
-			__('Date') . ';' .
-			__('Source ID') . ';' .
-			__('Comments') ."\n";
-		foreach ($data as $line) {
-			echo io_safe_output($line['id_usuario']) . ';' .  io_safe_output($line['accion']) . ';' .  $line['fecha'] . ';' .  $line['ip_origen'] . ';'.  io_safe_output($line['descripcion']). "\n";
-		}
+	echo __('User') . ';' .
+		__('Action') . ';' .
+		__('Date') . ';' .
+		__('Source ID') . ';' .
+		__('Comments') ."\n";
+	foreach ($data as $line) {
+		echo io_safe_output($line['id_usuario']) . ';' .  io_safe_output($line['accion']) . ';' .  $line['fecha'] . ';' .  $line['ip_origen'] . ';'.  io_safe_output($line['descripcion']). "\n";
 	}
-	else {
-		echo __('No data found to export');
-	}
+
+	exit;
 }
 
 /**

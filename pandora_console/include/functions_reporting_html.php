@@ -139,6 +139,9 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'availability':
 				reporting_html_availability($table, $item);
 				break;
+			case 'availability_graph':
+				reporting_html_availability_graph($table, $item);
+				break;
 			case 'general':
 				reporting_html_general($table, $item);
 				break;
@@ -277,6 +280,9 @@ function reporting_html_print_report($report, $mini = false) {
 				break;
 			case 'SLA_weekly':
 				reporting_enterprise_html_SLA_weekly($table, $item, $mini);
+				break;
+			case 'SLA_hourly':
+				reporting_enterprise_html_SLA_hourly($table, $item, $mini);
 				break;
 			case 'SLA_services':
 				reporting_enterprise_html_SLA_services($table, $item, $mini);
@@ -2150,6 +2156,37 @@ function reporting_html_availability(&$table, $item) {
 			$data[0] = html_print_table($table1, true);
 			array_push ($table->data, $data);
 		}
+	}
+}
+
+function reporting_html_availability_graph(&$table, $item, $pdf=0) {
+	$table1 = new stdClass();
+	$table1->width = '99%';
+	$table1->data = array ();
+	if (!$hide_notinit_agent) {
+		foreach ($item['charts'] as $chart) {
+			$table1->data[] = array(
+				$chart['agent'] . "<br />" . $chart['module'],
+				$chart['chart'],
+				"<span style = 'font: bold 2em Arial, Sans-serif;'>" . sla_truncate($chart['sla_value'], $config['graph_precision']) . '%</span>',
+				 "(" . $chart['checks_ok'] . "/" . $chart['checks_total'] . ")" 
+			);
+		}
+	}
+	else{
+		foreach ($item['charts'] as $chart) {
+			$the_first_men_time = get_agent_first_time(io_safe_output($chart['agent']));
+			if ($item['date']['to'] > $the_first_men_time) {
+				$table1->data[] = array(
+					$chart['agent'] . "<br />" . $chart['module'],
+					$chart['chart']);
+			}
+		}
+	}
+	$table->colspan['charts']['cell'] = 2;
+	$table->data['charts']['cell'] = html_print_table($table1, true);
+	if($pdf){
+		return html_print_table($table, true);
 	}
 }
 

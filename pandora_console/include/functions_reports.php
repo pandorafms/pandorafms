@@ -518,6 +518,9 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 		$types['automatic_graph'] = array('optgroup' => __('Graphs'), 
 			'name' => __('Automatic combined Graph'));
 	}
+
+	$types['availability_graph'] = array('optgroup' => __('Graphs'), 
+		'name' => __('Availability graph'));
 	
 	
 	
@@ -539,6 +542,8 @@ function reports_get_report_types ($template = false, $not_editor = false) {
 			'name' => __('Monthly S.L.A.'));
 		$types['SLA_weekly'] = array('optgroup' => __('SLA'),
 			'name' => __('Weekly S.L.A.'));
+		$types['SLA_hourly'] = array('optgroup' => __('SLA'),
+			'name' => __('Hourly S.L.A.'));
 
 		if (!$config['metaconsole'] && !$template) {
 			$types['SLA_services'] = array('optgroup' => __('SLA'),

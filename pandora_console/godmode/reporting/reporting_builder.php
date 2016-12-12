@@ -937,8 +937,10 @@ switch ($action) {
 								break;
 							case 'SLA_monthly':
 							case 'SLA_weekly':
+							case 'SLA_hourly':
 							case 'SLA_services':
 							case 'SLA':
+							case 'availability_graph':
 								$values['period'] = get_parameter('period');
 								$values['top_n'] = get_parameter('combo_sla_sort_options',0);
 								$values['top_n_value'] = get_parameter('quantity');

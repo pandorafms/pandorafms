@@ -123,3 +123,8 @@ ALTER TABLE tlayout ADD `background_color` varchar(50) NOT NULL default '#FFF';
 -- Table `tlayout_data`
 -- ---------------------------------------------------------------------
 ALTER TABLE tlayout_data ADD `type_graph` varchar(50) NOT NULL default 'area';
+
+-- ---------------------------------------------------------------------
+-- Table `tagent_custom_fields`
+-- ---------------------------------------------------------------------
+INSERT INTO `tagent_custom_fields` (`name`) VALUES ('eHorusID');

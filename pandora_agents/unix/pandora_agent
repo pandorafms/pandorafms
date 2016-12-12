@@ -131,6 +131,7 @@ my %DefaultConf = (
 	'temporal' => '/var/spool/pandora',
 	'interval' => 300,
 	'debug' => 0,		
+	'ehorus_conf' => undef,
 	'agent_name' => hostname (),
 	'agent_name_cmd' => '',
 	'description' => '',
@@ -2195,6 +2196,39 @@ sub init_module ($) {
 }
 
 ################################################################################
+# Get the eHorus key from the eHorus agent configuration file.
+################################################################################
+sub get_ehkey {
+	my $fh;
+
+	return '' unless defined($Conf{'ehorus_conf'});
+
+	# Open the eHorus configuration file.
+	if (!open($fh, '<', $Conf{'ehorus_conf'})) {
+		# Do not write to the log, since ehorus_conf points to the default eHorus configuration file by default.
+		return '';
+	}
+
+	# Look for the eHorus key.
+	while (my $line = <$fh>) {
+		
+		# Skip comments.
+		next if ($line =~ m/^\s*#/);
+
+		if ($line =~ m/\s*eh_key\s+(\S+)/) {
+			my $eh_key = $1;
+			close($fh);
+
+			return $eh_key;
+		}
+	}
+
+	# Not found.
+	close($fh);
+	return '';
+}
+
+################################################################################
 # Main.
 ################################################################################
 
@@ -2373,11 +2407,14 @@ while (1) {
 	# Clear the XML
 	$Xml = "";
 
+	# Get the eHorus key.
+	my $eh_key = get_ehkey();
+
 	# Custom fields
-	
 	my @customfieldskeys = keys(%Customfields);
-	if ($#customfieldskeys > -1) {
+	if ($#customfieldskeys > -1 || $eh_key ne '') {
 		$Xml .= "<custom_fields>\n";
+
 		foreach my $customfieldkey (@customfieldskeys) {
 			if($customfieldkey =~ m/^(custom_field\d+_)name/) {
 				if(defined($Customfields{$1."value"})) {
@@ -2388,6 +2425,15 @@ while (1) {
 				}
 			}
 		}
+
+		# Add the eHorus key as a custom field.
+		if ($eh_key ne '') {
+			$Xml .= "	<field>\n";
+			$Xml .= "		<name>eHorusID</name>\n";
+			$Xml .= "		<value><![CDATA[". $eh_key ."]]></value>\n";
+			$Xml .= "	</field>\n";
+		}
+
 		$Xml .= "</custom_fields>\n";
 	}
 	
@@ -2475,6 +2521,7 @@ while (1) {
 				$xml_header .= "' position_description='" .$Conf{'position_description'};
 			}
 		}
+
 		$xml_header .= "'>\n";
 		$Xml = $xml_header . $Xml . "</agent_data>";
 

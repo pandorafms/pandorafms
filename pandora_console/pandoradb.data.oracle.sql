@@ -1371,6 +1371,7 @@ EXECUTE IMMEDIATE 'ALTER TRIGGER tagent_custom_fields_inc DISABLE';
 INSERT INTO tagent_custom_fields VALUES (1,'Serial&#x20;Number',0);
 INSERT INTO tagent_custom_fields VALUES (2,'Department',0);
 INSERT INTO tagent_custom_fields VALUES (3,'Additional&#x20;ID',0);
+INSERT INTO tagent_custom_fields VALUES (4,'eHorusID',0);
 
 -- Update curr val of sequence
 update_currval('tagent_custom_fields', 'id_field');

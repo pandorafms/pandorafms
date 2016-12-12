@@ -95,6 +95,9 @@ my %SWITCH_TO_SWITCH;
 # MAC addresses.
 my %MAC;
 
+# Parent-child relationships (in Pandora).
+my %PARENTS;
+
 # SNMP query cache.
 my %SNMP_CACHE;
 
@@ -1323,4 +1326,3 @@ foreach my $device (values(%VISITED_DEVICES)) {
 # Do not delete unused connections unless at least one connection has been found
 # (prevents the script from deleting connections if there has been a network outage).
 delete_unused_connections(\%CONF, $DBH, $TASK_ID,\%CONNECTIONS) if (scalar(keys(%CONNECTIONS)) > 0);
-

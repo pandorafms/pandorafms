@@ -136,6 +136,7 @@ switch ($action) {
 		switch ($type) {
 			case 'SLA_monthly':
 			case 'SLA_weekly':
+			case 'SLA_hourly':
 			case 'SLA_services':
 			case 'SLA':
 			case 'top_n':
@@ -143,6 +144,11 @@ switch ($action) {
 			case 'general':
 			case 'network_interfaces_report':
 			case 'availability':
+<<<<<<< HEAD
+=======
+			case 'availability_graph':
+			case 'agent_module':
+>>>>>>> 2b0820d... add new reports sla_hourly , weekly and availability graph
 				$get_data_editor = true;
 				break;
 			
@@ -233,23 +239,9 @@ switch ($action) {
 					$period = $item['period'];
 					$idCustomGraph = $item['id_gs'];
 					break;
+				
 				case 'SLA':
-					$description = $item['description'];
-					$period = $item['period'];
-					$only_display_wrong = $item['only_display_wrong'];
-					$monday = $item['monday'];
-					$tuesday = $item['tuesday'];
-					$wednesday = $item['wednesday'];
-					$thursday = $item['thursday'];
-					$friday = $item['friday'];
-					$saturday = $item['saturday'];
-					$sunday = $item['sunday'];
-					$time_from = $item['time_from'];
-					$time_to = $item['time_to'];
-					$show_graph = $item['show_graph'];
-					// 'top_n' filed will be reused for SLA sort option
-					$sla_sorted_by = $item['top_n'];
-					break;
+				case 'SLA_weekly':
 				case 'SLA_monthly':
 					$description = $item['description'];
 					$only_display_wrong = $item['only_display_wrong'];
@@ -268,6 +260,9 @@ switch ($action) {
 					break;
 
 				case 'SLA_weekly':
+				case 'SLA_monthly':
+				case 'SLA_hourly':
+				case 'availability_graph';
 					$description = $item['description'];
 					$only_display_wrong = $item['only_display_wrong'];
 					$monday = $item['monday'];
@@ -2450,24 +2445,23 @@ function chooseType() {
 			$("#row_working_time").show();
 			$("#row_only_display_wrong").show();
 			$("#row_show_graph").show();
-			//$("#row_show_in_two_columns").show();
 			$("#row_sort").show();
 			$('#row_hide_notinit_agents').show();
 			break;
+
+		case 'availability_graph':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#sla_list").show();
+			$("#row_working_time").show();
+			break;
 		
 		case 'SLA_monthly':
-			$("#row_description").show();
-			$("#sla_list").show();
-			$("#row_working_time").show();
-			//$("#row_show_in_two_columns").show();
-			$("#row_sort").show();
-			break;
-
 		case 'SLA_weekly':
+		case 'SLA_hourly':
 			$("#row_description").show();
 			$("#sla_list").show();
 			$("#row_working_time").show();
-			//$("#row_show_in_two_columns").show();
 			$("#row_sort").show();
 			break;
 		

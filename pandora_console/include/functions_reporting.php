@@ -161,6 +161,11 @@ function reporting_make_reporting_data($report = null, $id_report,
 						$date,
 						$time);
 				break;
+			case 'availability_graph':
+				$report['contents'][] = reporting_availability_graph(
+					$report,
+					$content);
+				break;
 			case 'sql':
 				$report['contents'][] = reporting_sql(
 					$report,
@@ -449,6 +454,19 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$report,
 					$content);
 				break;
+<<<<<<< HEAD
+=======
+			case 'SLA_weekly':
+				$report['contents'][] = reporting_enterprise_sla_weekly(
+					$report,
+					$content);
+				break;
+			case 'SLA_hourly':
+				$report['contents'][] = reporting_enterprise_sla_hourly(
+					$report,
+					$content);
+				break;
+>>>>>>> 2b0820d... add new reports sla_hourly , weekly and availability graph
 			case 'SLA_services':
 				$report['contents'][] = reporting_enterprise_sla_services_refactoriced(
 					$report,
@@ -4639,6 +4657,12 @@ function reporting_advanced_sla ($id_agent_module, $time_from = null, $time_to =
 	return $return;
 }
 
+/**
+ * reporting_availability
+ *
+ *  Generates a structure the report.
+ *
+ */
 function reporting_availability($report, $content, $date=false, $time=false) {
 	global $config;
 
@@ -4874,6 +4898,394 @@ function reporting_availability($report, $content, $date=false, $time=false) {
 	return reporting_check_structure_content($return);
 }
 
+/**
+ * reporting_availability_graph
+ *
+ *  Generates a structure the report.
+ *
+ */
+function reporting_availability_graph($report, $content, $date=false, $time=false) {
+	global $config;
+	$return = array(); 
+	$return['type'] = 'availability_graph';
+	
+	if (empty($content['name'])) {
+		$content['name'] = __('Availability');
+	}
+	
+	$return['title'] = $content['name'];
+	$return["description"] = $content["description"];
+	$return["date"] = reporting_get_date_text($report, $content);
+	
+	// Get chart
+	reporting_set_conf_charts($width, $height, $only_image, $type,
+		$content, $ttl);
+	
+
+	$return["id_rc"] = $content['id_rc'];
+	
+	$edge_interval = 10;
+	
+	if (empty($content['subitems'])) {
+		$slas = db_get_all_rows_field_filter (
+			'treport_content_sla_combined',
+			'id_report_content', $content['id_rc']);
+	}
+	else {
+		$slas = $content['subitems'];
+	}
+	
+	if (empty($slas)) {
+		$return['failed'] = __('There are no SLAs defined');
+	}
+	else {
+		require_once ($config['homedir'] . '/include/functions_planned_downtimes.php');
+		$metaconsole_on = is_metaconsole();
+
+		$urlImage = ui_get_full_url(false, true, false, false);
+		
+		$sla_failed = false;
+		$total_SLA = 0;
+		$total_result_SLA = 'ok';
+		$sla_showed = array();
+		$sla_showed_values = array();
+		
+		foreach ($slas as $sla) {
+			$server_name = $sla ['server_name'];
+			//Metaconsole connection
+			if ($metaconsole_on && $server_name != '') {
+				$connection = metaconsole_get_connection($server_name);
+				if (!metaconsole_load_external_db($connection)) {
+					//ui_print_error_message ("Error connecting to ".$server_name);
+					continue;
+				}
+			}
+			
+			if (modules_is_disable_agent($sla['id_agent_module'])
+				|| modules_is_not_init($sla['id_agent_module'])) {
+				if ($metaconsole_on) {
+					//Restore db connection
+					metaconsole_restore_db();
+				}
+				
+				continue;
+			}
+			
+			//controller min and max == 0 then dinamic min and max critical 
+			$dinamic_text = 0;
+			if($sla['sla_min'] == 0 && $sla['sla_max'] == 0){
+				$sla['sla_min'] = null;
+				$sla['sla_max'] = null;
+				$dinamic_text = __('Dynamic');
+			}
+
+			//controller inverse interval
+			$inverse_interval = 0;
+			if( (isset($sla['sla_max'])) && (isset($sla['sla_min'])) ) {
+				if($sla['sla_max'] < $sla['sla_min']){
+					$content_sla_max  = $sla['sla_max'];
+					$sla['sla_max']   = $sla['sla_min'];
+					$sla['sla_min']   = $content_sla_max;
+					$inverse_interval = 1;
+					$dinamic_text = __('Inverse');
+				}
+			}
+
+			//for graph slice for module-interval, if not slice=0;	
+			$module_interval = modules_get_interval ($sla['id_agent_module']);
+			$slice = $content["period"] / $module_interval;
+			
+			//call functions sla
+			$sla_array = array();
+			$sla_array = reporting_advanced_sla(
+	                    $sla['id_agent_module'],
+        	            $report["datetime"] - $content['period'],
+	                    $report["datetime"],
+                	    $sla['sla_min'], // min_value -> dynamic
+	                    $sla['sla_max'], // max_value -> dynamic
+	                    $inverse_interval, // inverse_interval -> dynamic
+	                    array  ( "1" => $content["sunday"],
+	                             "2" => $content["monday"],
+        	                     "3" => $content["tuesday"],
+                	             "4" => $content["wednesday"],
+                        	     "5" => $content["thursday"],
+	                             "6" => $content["friday"],
+	                             "7" => $content["saturday"]
+                       	    ),
+	          	    $content['time_from'],
+	           	    $content['time_to'],
+        		    $slice
+		            );
+
+            
+			if ($metaconsole_on) {
+				//Restore db connection
+				metaconsole_restore_db();
+			}
+	
+			$server_name = $sla ['server_name'];
+			//Metaconsole connection
+			if ($metaconsole_on && $server_name != '') {
+				$connection = metaconsole_get_connection($server_name);
+				if (metaconsole_connect($connection) != NOERR) {
+					continue;
+				}
+			}
+
+			$planned_downtimes = reporting_get_planned_downtimes_intervals($sla['id_agent_module'], $report['datetime'] - $content['period'], $report['datetime']);
+
+			if ( (is_array($planned_downtimes)) && (count($planned_downtimes) > 0)){
+				// Sort retrieved planned downtimes
+				usort($planned_downtimes, function ($a, $b) {
+					$a = intval($a["date_from"]);
+					$b = intval($b["date_from"]);
+					if ($a==$b) {
+						return 0;
+					}
+					return ($a<$b)?-1:1;
+				});
+		
+				// Compress (overlapped) planned downtimes
+				$npd = count($planned_downtimes);
+				for ($i=0; $i<$npd; $i++) {
+					if (isset($planned_downtimes[$i+1])) {
+						if ($planned_downtimes[$i]["date_to"] >= $planned_downtimes[$i+1]["date_from"]) {
+							// merge
+							$planned_downtimes[$i]["date_to"] = $planned_downtimes[$i+1]["date_to"];
+							array_splice ($planned_downtimes, $i+1, 1);
+							$npd--;
+						}
+					}
+				}
+			}
+			else {
+				$planned_downtimes = null;
+			}
+
+			$data = array();
+			$data['agent']        = modules_get_agentmodule_agent_name($sla['id_agent_module']);
+			$data['module']       = modules_get_agentmodule_name($sla['id_agent_module']);
+			$data['max']          = $sla['sla_max'];
+			$data['min']          = $sla['sla_min'];
+			$data['sla_limit']    = $sla['sla_limit'];
+			$data['dinamic_text'] = $dinamic_text;
+			
+			if(isset($sla_array[0])){
+				$data['time_total']      = 0;	
+				$data['time_ok']         = 0;
+				$data['time_error']      = 0;
+				$data['time_unknown']    = 0;
+				$data['time_not_init']   = 0;
+				$data['time_downtime']   = 0;
+				$data['checks_total']    = 0;
+				$data['checks_ok']       = 0;
+				$data['checks_error']    = 0;
+				$data['checks_unknown']  = 0;
+				$data['checks_not_init'] = 0;
+
+				$raw_graph = array();
+				$i = 0;
+				foreach ($sla_array as $value_sla) {
+					$data['time_total']      += $value_sla['time_total'];
+					$data['time_ok']         += $value_sla['time_ok'];
+					$data['time_error']      += $value_sla['time_error'];
+					$data['time_unknown']    += $value_sla['time_unknown'];
+					$data['time_downtime']   += $value_sla['time_downtime'];
+					$data['time_not_init']   += $value_sla['time_not_init'];
+					$data['checks_total']    += $value_sla['checks_total'];
+					$data['checks_ok']       += $value_sla['checks_ok'];
+					$data['checks_error']    += $value_sla['checks_error'];
+					$data['checks_unknown']  += $value_sla['checks_unknown'];
+					$data['checks_not_init'] += $value_sla['checks_not_init'];
+
+					// generate raw data for graph
+					if ($value_sla['time_total'] != 0) {
+						if ($value_sla['time_error'] > 0) { // ERR
+							$raw_graph[$i]['data'] = 3;
+						}
+						elseif ($value_sla['time_unknown'] > 0) { // UNKNOWN
+							$raw_graph[$i]['data'] = 4;
+						}
+						elseif ($value_sla['time_not_init'] == $value_sla['time_total']) { // NOT INIT
+							$raw_graph[$i]['data'] = 6;
+						}
+						else {
+							$raw_graph[$i]['data'] = 1;
+						}
+					}
+					else {
+						$raw_graph[$i]['data'] = 7;
+					}
+					$raw_graph[$i]['utimestamp'] = $value_sla['date_to'] - $value_sla['date_from'];
+
+					if (isset($planned_downtimes)) {
+						foreach($planned_downtimes as $pd){
+							if(  ($value_sla['date_from'] >= $pd['date_from'])
+							  && ($value_sla['date_to'] <= $pd['date_to']) ) {
+								$raw_graph[$i]['data'] = 5; // in scheduled downtime
+								break;
+							}
+						}
+					}
+					$i++;
+				}
+				$data['sla_value'] = ($data['time_ok']/($data['time_ok']+$data['time_error']))*100;
+				$data['sla_fixed'] = sla_truncate($data['sla_value'],  $config['graph_precision'] );
+			}
+			else{
+				//Show only table not divider in slice for defect slice=1
+				$data['time_total']      = $sla_array['time_total'];
+				$data['time_ok']         = $sla_array['time_ok'];
+				$data['time_error']      = $sla_array['time_error'];
+				$data['time_unknown']    = $sla_array['time_unknown'];
+				$data['time_downtime']   = $sla_array['time_downtime'];
+				$data['time_not_init']   = $sla_array['time_not_init'];
+				$data['checks_total']    = $sla_array['checks_total'];
+				$data['checks_ok']       = $sla_array['checks_ok'];
+				$data['checks_error']    = $sla_array['checks_error'];
+				$data['checks_unknown']  = $sla_array['checks_unknown'];
+				$data['checks_not_init'] = $sla_array['checks_not_init'];
+				$data['sla_value']       = $sla_array['SLA'];
+			}
+			
+			//checks whether or not it meets the SLA
+			if ($data['sla_value'] >= $sla['sla_limit']) {
+				$data['sla_status'] = 1;
+				$sla_failed = false;
+			}
+			else {
+				$sla_failed = true;
+				$data['sla_status'] = 0;
+			}
+
+			//Do not show right modules if 'only_display_wrong' is active
+			if($content['only_display_wrong'] && $sla_failed == false){
+				continue;
+			}
+
+			//find order
+			$data['order'] = $data['sla_value'];
+			$return['data'][] = $data;
+			
+			// Slice graphs calculation
+			$dataslice = array();
+			$dataslice['agent']        = modules_get_agentmodule_agent_name ($sla['id_agent_module']);
+			$dataslice['module']       = modules_get_agentmodule_name ($sla['id_agent_module']);
+			$dataslice['order']        = $data['sla_value'];
+			$dataslice['checks_total'] = $data['checks_total'];
+			$dataslice['checks_ok']    = $data['checks_ok'];
+			$dataslice['sla_status']   = $data['sla_status'];
+			$dataslice['sla_value']    = $data['sla_value'];
+
+			$dataslice['chart'] = graph_sla_slicebar(
+				$sla['id_agent_module'],
+				$content['period'],
+				$sla['sla_min'],
+				$sla['sla_max'],
+				$report['datetime'],
+				$content,
+				$content['time_from'],
+				$content['time_to'],
+				1920,
+				50,
+				$urlImage,
+				5,
+				$raw_graph,
+				false);
+			
+			$return['charts'][] = $dataslice;
+
+			if ($metaconsole_on) {
+				//Restore db connection
+				metaconsole_restore_db();
+			}
+
+		}
+			
+		// SLA items sorted descending ()
+		if ($content['top_n'] == 2) {
+			arsort($return['data']['']);
+		}
+		// SLA items sorted ascending
+		else if ($content['top_n'] == 1) {
+			asort($sla_showed_values);
+		}
+
+		//order data for ascending or descending
+		if($content['top_n'] != 0){
+			switch ($content['top_n']) {
+				case 1:
+					//order tables
+					$temp = array();
+					foreach ($return['data'] as $row) {
+						$i = 0;
+						foreach ($temp as $t_row) {
+							if ($row['sla_value'] < $t_row['order']) {
+								break;
+							}
+							$i++;
+						}
+						array_splice($temp, $i, 0, array($row));
+					}
+					$return['data'] = $temp;
+
+					//order graphs
+					$temp = array();
+					foreach ($return['charts'] as $row) {
+						$i = 0;
+						foreach ($temp as $t_row) {
+							if ($row['sla_value'] < $t_row['order']) {
+								break;
+							}
+							$i++;
+						}
+						array_splice($temp, $i, 0, array($row));
+					}
+					$return['charts'] = $temp;
+
+					break;
+				case 2:
+					//order tables
+					$temp = array();
+					foreach ($return['data'] as $row) {
+						$i = 0;
+						foreach ($temp as $t_row) {
+							if ($row['sla_value'] > $t_row['order']) {
+								break;
+							}
+							$i++;
+						}
+						array_splice($temp, $i, 0, array($row));
+					}
+					$return['data'] = $temp;
+
+					//order graph
+					$temp = array();
+					foreach ($return['charts'] as $row) {
+						$i = 0;
+						foreach ($temp as $t_row) {
+							if ($row['sla_value'] > $t_row['order']) {
+								break;
+							}
+							$i++;
+						}
+						array_splice($temp, $i, 0, array($row));
+					}
+					$return['charts'] = $temp;
+
+					break;
+			}
+		}
+	}
+	return reporting_check_structure_content($return);
+}
+
+/**
+ * reporting_general
+ *
+ *  Generates a structure the report.
+ *
+ */
 function reporting_general($report, $content) {
 	
 	global $config;

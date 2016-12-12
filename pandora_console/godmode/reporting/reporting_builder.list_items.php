@@ -223,7 +223,7 @@ if ($moduleFilter != 0) {
 // Filter report items created from metaconsole in normal console list and the opposite
 if (defined('METACONSOLE') and $config['metaconsole'] == 1) {
 	$where .= ' AND ((server_name IS NOT NULL AND length(server_name) != 0) ' .
-		'OR ' . $type_escaped . ' IN (\'general\', \'SLA\', \'exception\', \'availability\', \'top_n\',\'SLA_monthly\',\'SLA_weekly\'))';
+		'OR ' . $type_escaped . ' IN (\'general\', \'SLA\', \'exception\', \'availability\', \'availability_graph\', \'top_n\',\'SLA_monthly\',\'SLA_weekly\',\'SLA_hourly\'))';
 }
 else
 	$where .= ' AND ((server_name IS NULL OR length(server_name) = 0) ' .

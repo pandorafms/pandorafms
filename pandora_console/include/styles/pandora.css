@@ -3582,3 +3582,10 @@ color:#82b92e;font-family:Nunito;font-size:10pt;position:relative;top:6px;
 	float:left;
 	margin-left: 20px;
 }
+<<<<<<< HEAD
+=======
+#table_hourly,
+#table_hourly2{
+	border-spacing: 2px;
+}
+>>>>>>> 2b0820d... add new reports sla_hourly , weekly and availability graph

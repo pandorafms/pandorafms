@@ -95,7 +95,7 @@ echo '<a href="javascript: ok();">' .
 		html_print_image("images/icono_ok.png", true, array("style" => "margin-left: 15px;")) . 
 	'</a>';
 echo '<a href="javascript: test_sound_button();">' .
-		html_print_image("images/icono_altavoz.png", true, array("id" => "button_try", "style" => "margin-left: 15px;")) . 
+		html_print_image("images/icono_test.png", true, array("id" => "button_try", "style" => "margin-left: 15px;")) . 
 	'</a>';
 
 ?>
@@ -120,12 +120,12 @@ var test_sound = false;
 
 function test_sound_button() {
 	if (!test_sound) {
-		$("#button_try").attr('src', '../../images/icono_try.png');
+		$("#button_try").attr('src', '../../images/icono_test_active.png');
 		$('body').append("<audio src='../../include/sounds/Star_Trek_emergency_simulation.wav' autoplay='true' hidden='true' loop='false'>");
 		test_sound = true;
 	}
 	else {
-		$("#button_try").attr('src', '../../images/icono_altavoz.png');
+		$("#button_try").attr('src', '../../images/icono_test.png');
 		$('body audio').remove();
 		test_sound = false;
 	}

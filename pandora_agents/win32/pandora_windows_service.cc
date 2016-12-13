@@ -386,7 +386,6 @@ Pandora_Windows_Service::getXmlHeader () {
 	string        agent_name, os_name, os_version, encoding, value, xml, address, parent_agent_name, agent_name_cmd;
 	string        custom_id, url_address, latitude, longitude, altitude, position_description, gis_exec, gis_result, agent_mode;
 	string        group_password, group_id, ehorus_conf;
-	string        group_password, group_id;
 	time_t        ctime;
 	struct tm     *ctime_tm = NULL;
 	int pos;

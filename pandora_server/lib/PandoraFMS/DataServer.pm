@@ -344,7 +344,14 @@ sub process_xml_data ($$$$$) {
 		my $os = pandora_get_os ($dbh, $data->{'os_name'});
 		my $group_id = $pa_config->{'autocreate_group'};
 		if (! defined (get_group_name ($dbh, $group_id))) {
-			if (defined ($data->{'group'}) && $data->{'group'} ne '') {
+			if (defined ($data->{'group_id'}) && $data->{'group_id'} ne '') {
+				$group_id = $data->{'group_id'};
+				if (! defined (get_group_name ($dbh, $group_id))) {
+					pandora_event ($pa_config, "Unable to create agent '$agent_name': group ID '" . $group_id . "' does not exist.", 0, 0, 0, 0, 0, 'error', 0, $dbh);
+					logger($pa_config, "Group ID " . $group_id . " does not exist.", 3);
+					return;
+				}
+			} elsif (defined ($data->{'group'}) && $data->{'group'} ne '') {
 				$group_id = get_group_id ($dbh, $data->{'group'});
 				if (! defined (get_group_name ($dbh, $group_id))) {
 					pandora_event ($pa_config, "Unable to create agent '$agent_name': group '" . $data->{'group'} . "' does not exist.", 0, 0, 0, 0, 0, 'error', 0, $dbh);

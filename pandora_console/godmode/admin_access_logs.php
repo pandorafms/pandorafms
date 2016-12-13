@@ -299,7 +299,7 @@ html_print_table ($table);
 echo '<div style="width: '.$table->width.'" class="action-buttons">';
 echo '<a href="' .
 	ui_get_full_url(false, false, false, false) . 'index.php?sec=gextensions&sec2=godmode/audit_log_csv&tipo_log='.$tipo_log.'&user_filter='.$user_filter.'&filter_text='.$filter_text.'&filter_hours_old='.$filter_hours_old.'&filter_ip='.$filter_ip.'"'.
-	'target="_new">' .
+	'>' .
 	html_print_button (__('Export to CSV '), 'export_csv', false, '', 'class=sub upd', true, false). '</a>';
 echo '</div>';
 

@@ -1339,6 +1339,8 @@ function reporting_event_report_group($report, $content,
 		metaconsole_restore_db();
 	}
 	
+	$return['total_events'] = count($return['data']);
+	
 	return reporting_check_structure_content($return);
 }
 
@@ -1382,6 +1384,8 @@ function reporting_event_report_module($report, $content) {
 	if ($config['metaconsole']) {
 		metaconsole_restore_db();
 	}
+	
+	$return['total_events'] = count($return['data']);
 	
 	return reporting_check_structure_content($return);
 }
@@ -2200,6 +2204,8 @@ function reporting_event_report_agent($report, $content,
 	if ($config['metaconsole']) {
 		metaconsole_restore_db();
 	}
+	
+	$return['total_events'] = count($return['data']);
 	
 	return reporting_check_structure_content($return);
 }

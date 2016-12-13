@@ -317,7 +317,7 @@ if (check_acl ($config['id_user'], 0, "ER")
 		
 		window.open(url,
 			'<?php __('Sound Alerts'); ?>',
-			'width=400, height=350, resizable=yes, toolbar=no, location=no, directories=no, status=no, menubar=no');
+			'width=400, height=380, resizable=no, toolbar=no, location=no, directories=no, status=no, menubar=no');
 	}
 	</script>
 	<?php

@@ -66,7 +66,7 @@ INSERT INTO tconfig (token, value) VALUES ('graph_res','5');
 INSERT INTO tconfig (token, value) VALUES ('step_compact','1');
 INSERT INTO tconfig (token, value) VALUES ('db_scheme_first_version','6.0orc');
 INSERT INTO tconfig (token, value) VALUES('db_scheme_version','7.0dev');
-INSERT INTO tconfig (token, value) VALUES('db_scheme_build','PD161204');
+INSERT INTO tconfig (token, value) VALUES('db_scheme_build','PD161213');
 INSERT INTO tconfig (token, value) VALUES ('show_unknown','0');
 INSERT INTO tconfig (token, value) VALUES ('show_lastalerts','1');
 INSERT INTO tconfig (token, value) VALUES ('style','pandora');
@@ -1371,6 +1371,7 @@ EXECUTE IMMEDIATE 'ALTER TRIGGER tagent_custom_fields_inc DISABLE';
 INSERT INTO tagent_custom_fields VALUES (1,'Serial&#x20;Number',0);
 INSERT INTO tagent_custom_fields VALUES (2,'Department',0);
 INSERT INTO tagent_custom_fields VALUES (3,'Additional&#x20;ID',0);
+INSERT INTO tagent_custom_fields VALUES (4,'eHorusID',0);
 
 -- Update curr val of sequence
 update_currval('tagent_custom_fields', 'id_field');

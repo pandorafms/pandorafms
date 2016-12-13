@@ -132,7 +132,7 @@ function alerts_get_alerts($id_group = 0, $free_search = "", $status = "all", $s
  * 
  * @return mixed Return id if the group have any alert is fired or false is not.
  */
-function alerts_get_event_status_group($idGroup, $type = "alert_fired", $query = 'AND 1=1') {
+function alerts_get_event_status_group($idGroup, $type = "alert_fired", $query = 'AND 1=1', $agents = null) {
 	global $config;
 	
 	$return = false;
@@ -151,9 +151,14 @@ function alerts_get_event_status_group($idGroup, $type = "alert_fired", $query =
 		$typeWhere = ' AND event_type IN (' . implode(',', $temp) . ')';
 	}
 	
-	$agents = agents_get_group_agents($idGroup, false, "lower", false);
-	
-	$idAgents = array_keys($agents);
+	if ($agents == null) {
+		$agents = agents_get_group_agents($idGroup, false, "lower", false);
+
+		$idAgents = array_keys($agents);
+	}
+	else {
+		$idAgents = array_values($agents);
+	}
 	
 	$result = db_get_all_rows_sql('SELECT id_evento
 		FROM tevento

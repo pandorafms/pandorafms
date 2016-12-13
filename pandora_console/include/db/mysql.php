@@ -28,8 +28,12 @@ function mysql_connect_db($host = null, $db = null, $user = null, $pass = null, 
 	if ($port === null)
 		$port = $config["dbport"];
 
-	if ($config["mysqli"] === null && extension_loaded(mysqli))
+	if ($config["mysqli"] === null && extension_loaded(mysqli)) {
 		$config["mysqli"] = true;
+	}
+	else {
+		$config["mysqli"] = false;
+	}
 	
 	// Non-persistent connection: This will help to avoid mysql errors like "has gone away" or locking problems
 	// If you want persistent connections change it to mysql_pconnect(). 

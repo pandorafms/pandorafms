@@ -563,6 +563,27 @@ sub process_xml_data ($$$$$) {
 		}
 	}
 
+	# Link modules
+	foreach my $module_data (@{$data->{'module'}}) {
+
+		my $module_name = get_tag_value ($module_data, 'name', '');
+		$module_name =~ s/\r//g;
+		$module_name =~ s/\n//g;
+		
+		# Unnamed module
+		next if ($module_name eq '');
+
+		# No parent module defined
+		my $parent_module_name = get_tag_value ($module_data, 'module_parent', undef);
+		if (! defined ($parent_module_name)) {
+			use Data::Dumper;
+			print Dumper($module_data);
+			next;
+		}
+		
+		link_modules($pa_config, $dbh, $agent_id, $module_name, $parent_module_name);
+	}
+
 	# Process inventory modules
 	enterprise_hook('process_inventory_data', [$pa_config, $data, $server_id, $agent_name,
 							 $interval, $timestamp, $dbh]);
@@ -882,6 +903,26 @@ sub process_xml_server ($$$$) {
 	
 	# Update server information
 	pandora_update_server ($pa_config, $dbh, $data->{'server_name'}, 0, 1, $server_type, $threads, $modules, $version, $data->{'keepalive'});
+}
+
+
+###############################################################################
+# Link two modules
+###############################################################################
+sub link_modules {
+	my ($pa_config, $dbh, $agent_id, $child_name, $parent_name) = @_;
+
+	# Get the child module ID.
+	my $child_id = get_agent_module_id ($dbh, $child_name, $agent_id);
+	return unless ($child_id != -1);
+
+	# Get the parent module ID.
+	my $parent_id = get_agent_module_id ($dbh, $parent_name, $agent_id);
+	return unless ($parent_id != -1);
+
+	# Link them.
+    logger($pa_config, "Linking module $child_name to module $parent_name for agent ID $agent_id", 10);
+	db_do($dbh, "UPDATE tagente_modulo SET parent_module_id = ? WHERE id_agente_modulo = ?", $parent_id, $child_id);
 }
 
 1;

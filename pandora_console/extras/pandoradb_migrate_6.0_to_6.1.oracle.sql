@@ -76,6 +76,7 @@ ALTER TABLE tagente_modulo ADD COLUMN dynamic_max bigint(20) default '0';
 ALTER TABLE tagente_modulo ADD COLUMN dynamic_min bigint(20) default '0';
 ALTER TABLE tagente_modulo ADD COLUMN dynamic_next bigint(20) NOT NULL default '0';
 ALTER TABLE tagente_modulo ADD COLUMN dynamic_two_tailed tinyint(1) unsigned default '0';
+ALTER TABLE tagente_modulo ADD COLUMN parent_module_id NUMBER(10, 0);
 
 -- ---------------------------------------------------------------------
 -- Table `tnetwork_component`

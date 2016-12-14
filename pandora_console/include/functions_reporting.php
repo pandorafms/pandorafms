@@ -5009,9 +5009,9 @@ function reporting_availability_graph($report, $content, $date=false, $time=fals
 	                             "6" => $content["friday"],
 	                             "7" => $content["saturday"]
                        	    ),
-	          	    $content['time_from'],
-	           	    $content['time_to'],
-        		    $slice
+	          	    	$content['time_from'],
+	           	   	$content['time_to'],
+        		    	$slice
 		            );
 
             

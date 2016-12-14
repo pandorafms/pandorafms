@@ -3597,18 +3597,3 @@ color:#82b92e;font-family:Nunito;font-size:10pt;position:relative;top:6px;
 .input_error {
     border: 1px solid red;
 }
-
-.legend_graphs_sla{
-	width: 40px;
-	height: 15px;
-	float:left;
-	margin-left: 20px;
-}
-.label_legend_graph{
-	float:left;
-	margin-left: 20px;
-}
-#table_hourly,
-#table_hourly2{
-	border-spacing: 2px;
-}

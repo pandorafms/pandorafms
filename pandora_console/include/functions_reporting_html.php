@@ -112,7 +112,6 @@ function reporting_html_print_report($report, $mini = false) {
 		$table->rowclass[0] = 'datos3';
 		$table->data = array ();
 		$table->head = array ();
-		$table->style = array ();
 		$table->colspan = array ();
 		$table->rowstyle = array ();
 		
@@ -2158,6 +2157,7 @@ function reporting_html_availability(&$table, $item) {
 }
 
 function reporting_html_availability_graph(&$table, $item, $pdf=0) {
+	global $config;
 	$table1 = new stdClass();
 	$table1->width = '99%';
 	$table1->data = array ();
@@ -2181,8 +2181,46 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0) {
 			}
 		}
 	}
+
+	//table_legend_graphs;
+	$table2 = new stdClass();
+	$table2->width = '99%';
+	$table2->data = array ();
+	$table2->size = array ();
+	$table2->size[0] = '2%';
+	$table2->data[0][0] = '<img src ="'. $config['homeurl'] .'images/square_green.png">';
+	$table2->size[1] = '14%';
+	$table2->data[0][1] = '<span>'.__('OK') . '</span>';
+	
+	$table2->size[2] = '2%';
+	$table2->data[0][2] = '<img src ="'. $config['homeurl'] .'images/square_red.png">';
+	$table2->size[3] = '14%';
+	$table2->data[0][3] = '<span>'.__('Critical'). '</span>';
+	
+	$table2->size[4] = '2%';
+	$table2->data[0][4] = '<img src ="'. $config['homeurl'] .'images/square_gray.png">';
+	$table2->size[5] = '14%';
+	$table2->data[0][5] = '<span>'.__('Unknow'). '</span>';
+
+	$table2->size[6] = '2%';
+	$table2->data[0][6] = '<img src ="'. $config['homeurl'] .'images/square_blue.png">';
+	$table2->size[7] = '14%';
+	$table2->data[0][7] = '<span>'.__('Not Init'). '</span>';
+	
+	$table2->size[8] = '2%';
+	$table2->data[0][8] = '<img src ="'. $config['homeurl'] .'images/square_orange.png">';
+	$table2->size[9] = '14%';
+	$table2->data[0][9] = '<span>'.__('Downtimes'). '</span>';
+
+	$table2->size[10] = '2%';
+	$table2->data[0][10] = '<img src ="'. $config['homeurl'] .'images/square_light_gray.png">';
+	$table2->size[11] = '15%';
+	$table2->data[0][11] = '<span>'.__('Ignore time'). '</span>';
+	
 	$table->colspan['charts']['cell'] = 2;
 	$table->data['charts']['cell'] = html_print_table($table1, true);
+	$table->colspan['legend']['cell'] = 2;
+	$table->data['legend']['cell'] = html_print_table($table2, true);
 	if($pdf){
 		return html_print_table($table, true);
 	}

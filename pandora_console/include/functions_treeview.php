@@ -247,6 +247,42 @@ function treeview_printModuleTable($id_module, $server_data = false, $no_head = 
 
 		$last_data_str .= "&nbsp;";
 		$last_data_str .= html_print_image('images/clock2.png', true, array('title' => $last_data["timestamp"], 'width' => '18px'));
+		
+		$is_snapshot = is_snapshot_data ( $last_data["datos"] );
+			
+			if (($config['command_snapshot']) && ($is_snapshot)) {
+				$handle = 'snapshot_' . $module['id_agente_modulo'];
+				$url = 'include/procesos.php?agente=' . $row['id_agente_modulo'];
+				$win_handle = dechex(crc32($handle));
+				if (! defined ('METACONSOLE')) {
+				$link = "winopeng_var('operation/agentes/snapshot_view.php?" .
+					"id=" . $module['id_agente_modulo'] .
+					"&refr=" . $module['current_interval'] .
+					"&label=" . rawurlencode(urlencode(io_safe_output($module['module_name']))) . "','" . $win_handle . "', 700,480)";
+				}
+				else{
+					$link = "winopeng_var('$last_data[datos]','',700,480)";
+						
+				}
+
+				if(!is_image_data($last_data["datos"])){
+					$salida = '<a href="javascript:' . $link . '">' .
+						html_print_image('images/default_list.png', true,
+							array('border' => '0',
+							'alt' => '',
+							'title' => __('Snapshot view'))) . '</a> &nbsp;&nbsp;';
+				}
+				else {
+					$salida = '<a href="javascript:' . $link . '">' .
+						html_print_image('images/photo.png', true,
+							array('border' => '0',
+								'alt' => '',
+								'title' => __('Snapshot view'))) . '</a> &nbsp;&nbsp;';
+				}
+			}
+		
+		
+			$last_data_str .=  $salida;
 	}
 	else {
 		$last_data_str = '<i>' . __('No data') . '</i>';
@@ -370,7 +406,7 @@ function treeview_printAlertsTable($id_module, $server_data = array(), $no_head 
 	$row['times_fired'] = __('Times fired');
 	$row['last_fired'] = __('Last fired');
 	$table2->data['titles'] = $row;
-	html_debug($module_alerts, true);
+	
 	foreach ($module_alerts as $module_alert) {
 		$template_name = db_get_value('name','talert_templates','id',$module_alert['id_alert_template']);
 		

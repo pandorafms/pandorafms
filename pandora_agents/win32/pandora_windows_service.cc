@@ -385,7 +385,7 @@ Pandora_Windows_Service::getXmlHeader () {
 	char          timestamp[20];
 	string        agent_name, os_name, os_version, encoding, value, xml, address, parent_agent_name, agent_name_cmd;
 	string        custom_id, url_address, latitude, longitude, altitude, position_description, gis_exec, gis_result, agent_mode;
-	string        group_password;
+	string        group_password, group_id, ehorus_conf;
 	time_t        ctime;
 	struct tm     *ctime_tm = NULL;
 	int pos;
@@ -479,11 +479,18 @@ Pandora_Windows_Service::getXmlHeader () {
 		xml += url_address;
 	}
 
-	// Get Url Address
+	// Get group password
 	group_password = conf->getValue ("group_password");
 	if (group_password != "") {
 		xml += "\" group_password=\"";
 		xml += group_password;
+	}
+
+	// Get Group ID
+	group_id = conf->getValue ("group_id");
+	if (group_id != "") {
+		xml += "\" group_id=\"";
+		xml += group_id;
 	}
 	
 	// Get Coordinates
@@ -1634,6 +1641,7 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	string            xml_filename, random_integer;
 	string            tmp_filename, tmp_filepath;
 	string            encoding;
+	string            ehorus_conf, eh_key;
 	static HANDLE     mutex = 0; 
     ULARGE_INTEGER    free_bytes;
     double            min_free_bytes = 0;
@@ -1653,6 +1661,12 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	
 	data_xml = getXmlHeader ();
 	
+	/* Get the eHorus key. */
+	ehorus_conf = conf->getValue ("ehorus_conf");
+	if (ehorus_conf != "") {
+		eh_key = getEHKey(ehorus_conf);
+	}
+	
 	/* Write custom fields */
 	int c = 1;
 	
@@ -1662,8 +1676,8 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	sprintf(token_value_token, "custom_field%d_value", c);
 	string token_name = conf->getValue (token_name_token);
 	string token_value = conf->getValue (token_value_token);
-	
-	if(token_name != "" && token_value != "") {
+
+	if((token_name != "" && token_value != "") || eh_key != "") {
 		data_xml += "<custom_fields>\n";
 		while(token_name != "" && token_value != "") {
 			data_xml += "	<field>\n";
@@ -1677,6 +1691,15 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 			token_name = conf->getValue (token_name_token);
 			token_value = conf->getValue (token_value_token);
 		}
+
+		/* Add the eHorus key as a custom field. */
+		if (eh_key != "") {
+			data_xml += "	<field>\n";
+			data_xml += "		<name>eHorusID</name>\n";
+			data_xml += "		<value><![CDATA["+ eh_key +"]]></value>\n";
+			data_xml += "	</field>\n";
+		}
+
 		data_xml += "</custom_fields>\n";
 	}
 	
@@ -2032,6 +2055,37 @@ Pandora_Windows_Service::pandora_run (int forced_run) {
 Pandora_Agent_Conf  *
 Pandora_Windows_Service::getConf () {
 	return this->conf;
+}
+
+string
+Pandora_Windows_Service::getEHKey (string ehorus_conf) {
+	string buffer, eh_key;
+	std::ifstream ifs(ehorus_conf.c_str());
+	int pos;
+
+	if (! ifs.is_open ()) {
+		pandoraDebug ("Error opening eHorus configuration file %s", ehorus_conf.c_str ());
+		return eh_key;
+	}
+
+	/* Look for the eHorus key. */
+	while (ifs.good ()) {
+		getline (ifs, buffer);
+
+		/* Skip comments. */
+		if (buffer.empty() || buffer.at(0) == '#') {
+			continue;
+		}
+
+		pos = buffer.find("eh_key");
+		if (pos != string::npos){
+			eh_key = buffer.substr(pos + 7); /* pos + strlen("eh_key ") */
+			eh_key = trim(eh_key);
+			return eh_key;
+		}
+	}
+
+	return eh_key;
 }
 
 long

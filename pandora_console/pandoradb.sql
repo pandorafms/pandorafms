@@ -252,6 +252,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 	`prediction_sample_window` int(10) default 0,
 	`prediction_samples` int(4) default 0,
 	`prediction_threshold` int(4) default 0,
+	`parent_module_id` int(10) unsigned NOT NULL,
 	PRIMARY KEY  (`id_agente_modulo`),
 	KEY `main_idx` (`id_agente_modulo`,`id_agente`),
 	KEY `tam_agente` (`id_agente`),

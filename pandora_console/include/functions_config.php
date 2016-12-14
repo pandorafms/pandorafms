@@ -407,6 +407,10 @@ function config_update_config () {
 						$error_update[] = __('Small Operation Step to purge old data');
 					if (!config_update_value ('num_past_special_days', get_parameter ('num_past_special_days')))
 						$error_update[] = __('Retention period of past special days');
+					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
+						if (!config_update_value ('inventory_purge', get_parameter ('inventory_purge')))
+							$error_update[] = __('Max. days before delete inventory data');
+					}
 					/////////////
 					break;
 					
@@ -514,6 +518,8 @@ function config_update_config () {
 						$error_update[] = __('Default line thickness for the Custom Graph.');
 					if (!config_update_value ('type_module_charts', (string) get_parameter('type_module_charts', 'area')))
 						$error_update[] = __('Default type of module charts.');
+					if (!config_update_value ('type_interface_charts', (string) get_parameter('type_interface_charts', 'line')))
+						$error_update[] = __('Default type of interface charts.');
 					if (!config_update_value ('only_average', (bool) get_parameter('only_average', false)))
 						$error_update[] = __('Default show only average or min and max');
 					if (!config_update_value ('render_proc', (bool) get_parameter('render_proc', false)))
@@ -851,6 +857,12 @@ function config_process_config () {
 
 	if (!isset ($config["num_past_special_days"])) {
 		config_update_value ('num_past_special_days', 0);
+	}
+
+	if (isset($config['enterprise_installed'])) {
+		if (!isset($config['inventory_purge'])) {
+			config_update_value ('inventory_purge',  21);
+		}
 	}
 
 	if (!isset ($config["event_purge"])) {
@@ -1514,6 +1526,10 @@ function config_process_config () {
 	
 	if (!isset($config['type_module_charts'])) {
 		config_update_value ('type_module_charts', 'area');
+	}
+
+	if (!isset($config['type_interface_charts'])) {
+		config_update_value ('type_interface_charts', 'line');
 	}
 	
 	if (!isset($config['render_proc'])) {

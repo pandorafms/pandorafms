@@ -273,7 +273,7 @@ $table->head[2] = __('Last contact') . ' ' .
 	'<a href="?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=last_connect&sort=up&pure='.$pure.'">' . html_print_image("images/sort_up.png", true, array("style" => $selectLastConnectUp )) . '</a>' .
 	'<a href="?sec='.$sec.'&sec2=godmode/users/user_list&sort_field=last_connect&sort=down&pure='.$pure.'">' . html_print_image("images/sort_down.png", true, array("style" => $selectLastConnectDown)) . '</a>';
 $table->head[3] = __('Admin');
-$table->head[4] = __('Profile');
+$table->head[4] = __('Profile / Group');
 $table->head[5] = __('Description');
 $table->head[6] = '<span title="Operations">' . __('Op.') . '</span>';
 if (!defined('METACONSOLE')) {
@@ -445,8 +445,7 @@ foreach ($info as $user_id => $user_info) {
 				$data[4] .= "<tr>";
 				$data[4] .= "<td>";
 				$data[4] .= profile_get_name ($row["id_perfil"]);
-				$data[4] .= "</td>";
-				$data[4] .= "<td align='right'>";
+				$data[4] .= " / ";
 				$data[4] .= groups_get_name ($row["id_grupo"], true);
 				$data[4] .= "</td>";
 				$data[4] .= "</tr>";

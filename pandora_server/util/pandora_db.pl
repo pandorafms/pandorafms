@@ -33,7 +33,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0dev PS161130";
+my $version = "7.0dev PS161214";
 
 # Pandora server configuration
 my %conf;
@@ -91,21 +91,11 @@ sub pandora_purgedb ($$) {
 			WHERE id_sesion NOT IN ( SELECT id_sesion FROM tsesion )");
 		log_message ('PURGE', 'Deleting old extended session data.');
 	}
-		
-	# Delete old data
-	if ($conf->{'_days_purge'} > 0) {
 
-		# Delete old numeric data
-		pandora_delete_old_module_data ($dbh, 'tagente_datos', $ulimit_access_timestamp, $ulimit_timestamp);
-
-		# Delete old export data
-		pandora_delete_old_export_data ($dbh, $ulimit_timestamp);
-		
-		# Delete sessions data
-		pandora_delete_old_session_data ($dbh, $ulimit_timestamp);
-	
-		# Delete old inventory data
+	# Delete old inventory data
+	if ($conf->{'_inventory_purge'} > 0) {
 		if (enterprise_load (\%conf) != 0) {
+			my $ulimit_timestamp_inventory = time() - (86400 * $conf->{'_inventory_purge'});
 
 		    log_message ('PURGE', 'Deleting old inventory data.');
 
@@ -116,7 +106,7 @@ sub pandora_purgedb ($$) {
 
 			$first_mark =  get_db_value_limit ($dbh, 'SELECT utimestamp FROM tagente_datos_inventory ORDER BY utimestamp ASC', 1);
 			if (defined ($first_mark)) {
-				$total_time = $ulimit_timestamp - $first_mark;
+				$total_time = $ulimit_timestamp_inventory - $first_mark;
 				$purge_steps = int($total_time / $BIG_OPERATION_STEP);
 				if ($purge_steps > 0) {
 					for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++) {
@@ -133,8 +123,22 @@ sub pandora_purgedb ($$) {
 				log_message ('PURGE', 'No data in tagente_datos_inventory.');
 			}
 		}
+	}
+		
+	# Delete old data
+	if ($conf->{'_days_purge'} > 0) {
 
+		# Delete old numeric data
+		pandora_delete_old_module_data ($dbh, 'tagente_datos', $ulimit_access_timestamp, $ulimit_timestamp);
 
+		# Delete old export data
+		pandora_delete_old_export_data ($dbh, $ulimit_timestamp);
+		
+		# Delete sessions data
+		pandora_delete_old_session_data ($dbh, $ulimit_timestamp);
+	
+		# Delete old inventory data
+		
 		#
 		# Now the log4x data
 		#
@@ -700,6 +704,7 @@ sub pandora_load_config ($) {
 	$conf->{'_history_db_step'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_step'");
 	$conf->{'_history_db_delay'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'history_db_delay'");
 	$conf->{'_days_delete_unknown'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_unknown'");
+	$conf->{'_inventory_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'inventory_purge'");
 	$conf->{'_enterprise_installed'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'enterprise_installed'");
 	$conf->{'_metaconsole'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole'");
 	$conf->{'_metaconsole_events_history'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole_events_history'");

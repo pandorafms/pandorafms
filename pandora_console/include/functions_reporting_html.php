@@ -129,10 +129,8 @@ function reporting_html_print_report($report, $mini = false) {
 			$item['date']['to'],
 			$label);
 		
-		if ($item["description"] != "") {
-			$table->data['description_row']['description'] = $item["description"];
+			$table->data['description_row']['description'] = $item["description"]." - Total events: ".$item["total_events"];
 			$table->colspan['description_row']['description'] = 3;
-		}
 		
 		switch ($item['type']) {
 			case 'availability':

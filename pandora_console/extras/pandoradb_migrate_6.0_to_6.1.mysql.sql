@@ -88,6 +88,7 @@ ALTER TABLE tusuario ADD CONSTRAINT fk_id_filter FOREIGN KEY (id_filter) REFEREN
 -- ---------------------------------------------------------------------
 ALTER TABLE tagente_modulo ADD COLUMN `dynamic_next` bigint(20) NOT NULL default '0';
 ALTER TABLE tagente_modulo ADD COLUMN `dynamic_two_tailed` tinyint(1) unsigned default '0';
+ALTER TABLE tagente_modulo ADD COLUMN `parent_module_id` int(10) unsigned NOT NULL;
 
 -- ---------------------------------------------------------------------
 -- Table `tagente_datos`
@@ -123,3 +124,8 @@ ALTER TABLE tlayout ADD `background_color` varchar(50) NOT NULL default '#FFF';
 -- Table `tlayout_data`
 -- ---------------------------------------------------------------------
 ALTER TABLE tlayout_data ADD `type_graph` varchar(50) NOT NULL default 'area';
+
+-- ---------------------------------------------------------------------
+-- Table `tagent_custom_fields`
+-- ---------------------------------------------------------------------
+INSERT INTO `tagent_custom_fields` (`name`) VALUES ('eHorusID');

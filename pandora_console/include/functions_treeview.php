@@ -406,7 +406,7 @@ function treeview_printAlertsTable($id_module, $server_data = array(), $no_head 
 	$row['times_fired'] = __('Times fired');
 	$row['last_fired'] = __('Last fired');
 	$table2->data['titles'] = $row;
-	html_debug($module_alerts, true);
+	
 	foreach ($module_alerts as $module_alert) {
 		$template_name = db_get_value('name','talert_templates','id',$module_alert['id_alert_template']);
 		

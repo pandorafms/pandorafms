@@ -201,6 +201,7 @@ if ($id_agent_module) {
 	$dynamic_interval = $module['dynamic_interval'];
 	$dynamic_max = $module['dynamic_max'];
 	$dynamic_min = $module['dynamic_min'];
+	$parent_module_id = $module['parent_module_id'];
 	$dynamic_two_tailed = $module['dynamic_two_tailed'];
 	$min_warning = $module['min_warning'];
 	$max_warning = $module['max_warning'];
@@ -287,6 +288,7 @@ else {
 		$dynamic_interval = 0;
 		$dynamic_min = 0;
 		$dynamic_max = 0;
+		$parent_module_id = 0;
 		$dynamic_two_tailed = 0;
 		$min_warning = 0;
 		$max_warning = 0;

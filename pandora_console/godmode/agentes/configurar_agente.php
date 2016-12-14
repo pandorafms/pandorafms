@@ -971,7 +971,8 @@ if ($update_module || $create_module) {
 		
 		$plugin_parameter = (string) get_parameter ('plugin_parameter');
 	}
-	
+
+	$parent_module_id = (int) get_parameter('parent_module_id');
 	$ip_target = (string) get_parameter ('ip_target');
 	$custom_id = (string) get_parameter ('custom_id');
 	$history_data = (int) get_parameter('history_data');
@@ -1077,6 +1078,7 @@ if ($update_module) {
 		'dynamic_max' => $dynamic_max,
 		'dynamic_min' => $dynamic_min,
 		'dynamic_two_tailed' => $dynamic_two_tailed,
+		'parent_module_id' => $parent_module_id,
 		'min_warning' => $min_warning,
 		'max_warning' => $max_warning,
 		'str_warning' => $str_warning,
@@ -1224,6 +1226,7 @@ if ($create_module) {
 		'dynamic_max' => $dynamic_max,
 		'dynamic_min' => $dynamic_min,
 		'dynamic_two_tailed' => $dynamic_two_tailed,
+		'parent_module_id' => $parent_module_id,
 		'min_warning' => $min_warning,
 		'max_warning' => $max_warning,
 		'str_warning' => $str_warning,

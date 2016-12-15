@@ -454,8 +454,6 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$report,
 					$content);
 				break;
-<<<<<<< HEAD
-=======
 			case 'SLA_weekly':
 				$report['contents'][] = reporting_enterprise_sla_weekly(
 					$report,
@@ -466,7 +464,6 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$report,
 					$content);
 				break;
->>>>>>> 2b0820d... add new reports sla_hourly , weekly and availability graph
 			case 'SLA_services':
 				$report['contents'][] = reporting_enterprise_sla_services_refactoriced(
 					$report,

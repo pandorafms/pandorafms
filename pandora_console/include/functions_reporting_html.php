@@ -311,6 +311,14 @@ function reporting_html_SLA($table, $item, $mini) {
 		$font_size = '3';
 	}
 	
+	$metaconsole_on = is_metaconsole();
+	if($metaconsole_on){
+		$src= '../../';
+	}
+	else{
+		$src=$config['homeurl'];
+	}
+
 	if (!empty($item['failed'])) {
 		$table->colspan['sla']['cell'] = 3;
 		$table->data['sla']['cell'] = $item['failed'];
@@ -618,32 +626,32 @@ function reporting_html_SLA($table, $item, $mini) {
 			$table1->data = array ();
 			$table1->size = array ();
 			$table1->size[0] = '2%';
-			$table1->data[0][0] = '<img src ="'. $config['homeurl'] .'images/square_green.png">';
+			$table1->data[0][0] = '<img src ="'. $src .'images/square_green.png">';
 			$table1->size[1] = '14%';
 			$table1->data[0][1] = '<span>'.__('OK') . '</span>';
 			
 			$table1->size[2] = '2%';
-			$table1->data[0][2] = '<img src ="'. $config['homeurl'] .'images/square_red.png">';
+			$table1->data[0][2] = '<img src ="'. $src .'images/square_red.png">';
 			$table1->size[3] = '14%';
 			$table1->data[0][3] = '<span>'.__('Critical'). '</span>';
 			
 			$table1->size[4] = '2%';
-			$table1->data[0][4] = '<img src ="'. $config['homeurl'] .'images/square_gray.png">';
+			$table1->data[0][4] = '<img src ="'. $src .'images/square_gray.png">';
 			$table1->size[5] = '14%';
 			$table1->data[0][5] = '<span>'.__('Unknow'). '</span>';
 			
 			$table1->size[6] = '2%';
-			$table1->data[0][6] = '<img src ="'. $config['homeurl'] .'images/square_blue.png">';
+			$table1->data[0][6] = '<img src ="'. $src .'images/square_blue.png">';
 			$table1->size[7] = '14%';
 			$table1->data[0][7] = '<span>'.__('Not Init'). '</span>';
 			
 			$table1->size[8] = '2%';
-			$table1->data[0][8] = '<img src ="'. $config['homeurl'] .'images/square_orange.png">';
+			$table1->data[0][8] = '<img src ="'. $src .'images/square_orange.png">';
 			$table1->size[9] = '14%';
 			$table1->data[0][9] = '<span>'.__('Downtimes'). '</span>';
 		
 			$table1->size[10] = '2%';
-			$table1->data[0][10] = '<img src ="'. $config['homeurl'] .'images/square_light_gray.png">';
+			$table1->data[0][10] = '<img src ="'. $src .'images/square_light_gray.png">';
 			$table1->size[11] = '15%';
 			$table1->data[0][11] = '<span>'.__('Ignore time'). '</span>';
 			
@@ -2171,6 +2179,13 @@ function reporting_html_availability(&$table, $item) {
 
 function reporting_html_availability_graph(&$table, $item, $pdf=0) {
 	global $config;
+	$metaconsole_on = is_metaconsole();
+	if($metaconsole_on && $pdf==0){
+		$src= '../../';
+	}
+	else{
+		$src=$config['homeurl'];
+	}
 	$table1 = new stdClass();
 	$table1->width = '99%';
 	$table1->data = array ();
@@ -2201,32 +2216,32 @@ function reporting_html_availability_graph(&$table, $item, $pdf=0) {
 	$table2->data = array ();
 	$table2->size = array ();
 	$table2->size[0] = '2%';
-	$table2->data[0][0] = '<img src ="'. $config['homeurl'] .'images/square_green.png">';
+	$table2->data[0][0] = '<img src ="'. $src .'images/square_green.png">';
 	$table2->size[1] = '14%';
 	$table2->data[0][1] = '<span>'.__('OK') . '</span>';
 	
 	$table2->size[2] = '2%';
-	$table2->data[0][2] = '<img src ="'. $config['homeurl'] .'images/square_red.png">';
+	$table2->data[0][2] = '<img src ="'. $src .'images/square_red.png">';
 	$table2->size[3] = '14%';
 	$table2->data[0][3] = '<span>'.__('Critical'). '</span>';
 	
 	$table2->size[4] = '2%';
-	$table2->data[0][4] = '<img src ="'. $config['homeurl'] .'images/square_gray.png">';
+	$table2->data[0][4] = '<img src ="'. $src .'images/square_gray.png">';
 	$table2->size[5] = '14%';
 	$table2->data[0][5] = '<span>'.__('Unknow'). '</span>';
 
 	$table2->size[6] = '2%';
-	$table2->data[0][6] = '<img src ="'. $config['homeurl'] .'images/square_blue.png">';
+	$table2->data[0][6] = '<img src ="'. $src .'images/square_blue.png">';
 	$table2->size[7] = '14%';
 	$table2->data[0][7] = '<span>'.__('Not Init'). '</span>';
 	
 	$table2->size[8] = '2%';
-	$table2->data[0][8] = '<img src ="'. $config['homeurl'] .'images/square_orange.png">';
+	$table2->data[0][8] = '<img src ="'. $src .'images/square_orange.png">';
 	$table2->size[9] = '14%';
 	$table2->data[0][9] = '<span>'.__('Downtimes'). '</span>';
 
 	$table2->size[10] = '2%';
-	$table2->data[0][10] = '<img src ="'. $config['homeurl'] .'images/square_light_gray.png">';
+	$table2->data[0][10] = '<img src ="'. $src .'images/square_light_gray.png">';
 	$table2->size[11] = '15%';
 	$table2->data[0][11] = '<span>'.__('Ignore time'). '</span>';
 	

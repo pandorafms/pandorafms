@@ -144,11 +144,8 @@ switch ($action) {
 			case 'general':
 			case 'network_interfaces_report':
 			case 'availability':
-<<<<<<< HEAD
-=======
 			case 'availability_graph':
 			case 'agent_module':
->>>>>>> 2b0820d... add new reports sla_hourly , weekly and availability graph
 				$get_data_editor = true;
 				break;
 			

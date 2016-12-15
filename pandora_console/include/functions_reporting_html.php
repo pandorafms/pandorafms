@@ -616,23 +616,36 @@ function reporting_html_SLA($table, $item, $mini) {
 			$table1 = new stdClass();
 			$table1->width = '99%';
 			$table1->data = array ();
-			$table1->data[0][0] = '<div class="legend_graphs_sla" style="background-color:#80BA27"></div>';
-			$table1->data[0][0] .= '<span class="label_legend_graph">'.__('OK') . '</span>';
+			$table1->size = array ();
+			$table1->size[0] = '2%';
+			$table1->data[0][0] = '<img src ="'. $config['homeurl'] .'images/square_green.png">';
+			$table1->size[1] = '14%';
+			$table1->data[0][1] = '<span>'.__('OK') . '</span>';
 			
-			$table1->data[0][1] = '<div class="legend_graphs_sla" style="background-color:#FC4444"></div>';
-			$table1->data[0][1] .= '<span class="label_legend_graph">'.__('Critical'). '</span>';
+			$table1->size[2] = '2%';
+			$table1->data[0][2] = '<img src ="'. $config['homeurl'] .'images/square_red.png">';
+			$table1->size[3] = '14%';
+			$table1->data[0][3] = '<span>'.__('Critical'). '</span>';
 			
-			$table1->data[0][2] = '<div class="legend_graphs_sla" style="background-color:#B2B2B2"></div>';
-			$table1->data[0][2] .= '<span class="label_legend_graph">'.__('Unknow'). '</span>';
+			$table1->size[4] = '2%';
+			$table1->data[0][4] = '<img src ="'. $config['homeurl'] .'images/square_gray.png">';
+			$table1->size[5] = '14%';
+			$table1->data[0][5] = '<span>'.__('Unknow'). '</span>';
 			
-			$table1->data[0][3] = '<div class="legend_graphs_sla" style="background-color:#3BA0FF"></div>';
-			$table1->data[0][3] .= '<span class="label_legend_graph">'.__('Not Init'). '</span>';
+			$table1->size[6] = '2%';
+			$table1->data[0][6] = '<img src ="'. $config['homeurl'] .'images/square_blue.png">';
+			$table1->size[7] = '14%';
+			$table1->data[0][7] = '<span>'.__('Not Init'). '</span>';
 			
-			$table1->data[0][4] = '<div class="legend_graphs_sla" style="background-color:#ff8400"></div>';
-			$table1->data[0][4] .= '<span class="label_legend_graph">'.__('Downtimes'). '</span>';
-			
-			$table1->data[0][5] = '<div class="legend_graphs_sla" style="background-color:#ddd"></div>';
-			$table1->data[0][5] .= '<span class="label_legend_graph">'.__('Ignore time'). '</span>';
+			$table1->size[8] = '2%';
+			$table1->data[0][8] = '<img src ="'. $config['homeurl'] .'images/square_orange.png">';
+			$table1->size[9] = '14%';
+			$table1->data[0][9] = '<span>'.__('Downtimes'). '</span>';
+		
+			$table1->size[10] = '2%';
+			$table1->data[0][10] = '<img src ="'. $config['homeurl'] .'images/square_light_gray.png">';
+			$table1->size[11] = '15%';
+			$table1->data[0][11] = '<span>'.__('Ignore time'). '</span>';
 			
 			$table->colspan['legend']['cell'] = 2;
 			$table->data['legend']['cell'] = html_print_table($table1, true);

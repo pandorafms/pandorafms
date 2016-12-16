@@ -1022,7 +1022,7 @@ You can of course remove the warnings, that's why we include the source and do n
 							}
 						}
 					}
-					html_print_select($agents, 'id_agents[]', $agents_id, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
+					html_print_select($agents, 'id_agents2[]', $agents_id, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
 				?>
 			</td>
 		</tr>
@@ -1875,6 +1875,7 @@ $(document).ready (function () {
 				},
 				function (data, status) {
 					$("#id_agents").html('');
+					$("#id_agents2").html('');
 					jQuery.each (data, function (id, value) {
 						// Remove keys_prefix from the index
 						id = id.substring(1);
@@ -1883,6 +1884,7 @@ $(document).ready (function () {
 							.attr ("value", value["id_agente"])
 							.html (value["nombre"]);
 						$("#id_agents").append (option);
+						$("#id_agents2").append (option);
 					});
 				},
 				"json"
@@ -1912,13 +1914,13 @@ $(document).ready (function () {
 		}
 	);
 
-	$("#id_agents").change (
+	$("#id_agents2").change (
 		function () {
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",
 					"get_modules_group_json" : 1,
 					"id_module_group" : $("#combo_modulegroup").val(),
-					"id_agents" : $("#id_agents").val()
+					"id_agents" : $("#id_agents2").val()
 				},
 				function (data, status) {
 					$("#module").html('');

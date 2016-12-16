@@ -282,7 +282,7 @@ if (!modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->colspan[4][2] = 2;
 	$table_simple->rowspan[4][2] = 3;
 }
-$table_simple->data[4][0] = __('Critical status').' ' . ui_print_help_icon ('critical_status', true);
+$table_simple->data[5][0] = __('Critical status').' ' . ui_print_help_icon ('critical_status', true);
 if (!modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[5][1] .= '<span id="minmax_critical"><em>'.__('Min. ').'</em>';
 	$table_simple->data[5][1] .= html_print_input_text ('min_critical', $min_critical, '', 10, 255, true,

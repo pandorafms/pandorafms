@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-12-19 09:59+0100\n"
-"PO-Revision-Date: 2016-12-19 10:47+0000\n"
+"PO-Revision-Date: 2016-12-19 15:51+0000\n"
 "Last-Translator: artu30 <gonzalez.arturo1991@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-12-19 10:58+0000\n"
+"X-Launchpad-Export-Date: 2016-12-19 15:57+0000\n"
 "X-Generator: Launchpad (build 18298)\n"
 
 #: ../../extras/pandora_diag.php:90
@@ -24949,8 +24949,8 @@ msgid ""
 "When it is set as \"yes\" in some important sections check if the user have "
 "gone from url Pandora."
 msgstr ""
-"Cuando está configurado a \"sí\" se comprueba, en algunas secciones "
-"importante, si el usuario ha dejado la url de Pandora."
+"Al estar activada, se comprobará si el usuario proviene de la URL de la "
+"consola de Pandora"
 
 #: ../../godmode/setup/setup_general.php:249
 #: ../../include/functions_config.php:192

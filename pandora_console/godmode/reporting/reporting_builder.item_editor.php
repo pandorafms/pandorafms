@@ -1859,6 +1859,7 @@ $(document).ready (function () {
 				function (data, status) {
 					$("#id_agents").html('');
 					$("#id_agents2").html('');
+					$("#module").html('');
 					jQuery.each (data, function (id, value) {
 						// Remove keys_prefix from the index
 						id = id.substring(1);

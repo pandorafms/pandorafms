@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2016-12-19 09:59+0100\n"
-"PO-Revision-Date: 2016-12-19 09:18+0000\n"
+"PO-Revision-Date: 2016-12-19 10:47+0000\n"
 "Last-Translator: artu30 <gonzalez.arturo1991@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-12-19 09:26+0000\n"
+"X-Launchpad-Export-Date: 2016-12-19 10:58+0000\n"
 "X-Generator: Launchpad (build 18298)\n"
 
 #: ../../extras/pandora_diag.php:90
@@ -3437,7 +3437,7 @@ msgstr ""
 #: ../../godmode/setup/setup_general.php:89
 #: ../../include/functions_config.php:148
 msgid "IP list with API access"
-msgstr "Lista de IPs con acceso al API"
+msgstr "Lista de IPs con acceso a la API"
 
 #: ../../enterprise/meta/advanced/synchronizing.os.php:69
 #, php-format
@@ -20878,7 +20878,7 @@ msgstr "Gestionar eventos"
 #: ../../godmode/users/configure_profile.php:290
 #: ../../general/shortcut_bar.php:217
 msgid "View reports"
-msgstr "Ver informaes"
+msgstr "Ver informes"
 
 #: ../../godmode/users/configure_profile.php:294
 msgid "Edit reports"
@@ -24852,7 +24852,7 @@ msgstr "Directorio remoto de configuración"
 
 #: ../../godmode/setup/setup_general.php:58
 msgid "Directory where agent remote configuration is stored."
-msgstr "Directorio donde la configuración remota del agente es almacenado."
+msgstr "Directorio en el que se almacena la configuración remota del agente."
 
 #: ../../godmode/setup/setup_general.php:70
 #: ../../include/functions_config.php:138
@@ -24968,7 +24968,7 @@ msgstr ""
 #: ../../godmode/setup/setup_general.php:258
 #: ../../include/functions_config.php:194
 msgid "Command Snapshot"
-msgstr "captura de comando"
+msgstr "Salida de comandos como capturas"
 
 #: ../../godmode/setup/setup_general.php:259
 msgid "The string modules with several lines show as command output"
@@ -25036,8 +25036,8 @@ msgid ""
 "Your PHP environment is setted with %d max_input_vars. Maybe you must not "
 "set this value with upper values."
 msgstr ""
-"Tu entorno PHP fue establecido con % de max_input_vars. Tal vez no deba "
-"establecer este valor con valores superiores"
+"Su entorno PHP fue establecido con %d max_input_vars. Tal vez no deba "
+"establecer valores superiores en este parámetro."
 
 #: ../../godmode/setup/setup_general.php:289
 msgid "Include agents manually disabled"
@@ -25049,7 +25049,7 @@ msgstr "Directorio de log"
 
 #: ../../godmode/setup/setup_general.php:294
 msgid "Directory where audit log is stored."
-msgstr "Directorio donde el log está guardado"
+msgstr "Directorio donde se guarda el log."
 
 #: ../../godmode/setup/setup_general.php:300
 msgid "General options"

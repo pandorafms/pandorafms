@@ -240,24 +240,6 @@ switch ($action) {
 				case 'SLA':
 				case 'SLA_weekly':
 				case 'SLA_monthly':
-					$description = $item['description'];
-					$only_display_wrong = $item['only_display_wrong'];
-					$monday = $item['monday'];
-					$tuesday = $item['tuesday'];
-					$wednesday = $item['wednesday'];
-					$thursday = $item['thursday'];
-					$friday = $item['friday'];
-					$saturday = $item['saturday'];
-					$sunday = $item['sunday'];
-					$time_from = $item['time_from'];
-					$time_to = $item['time_to'];
-					$show_graph = $item['show_graph'];
-					// 'top_n' filed will be reused for SLA sort option
-					$sla_sorted_by = $item['top_n'];
-					break;
-
-				case 'SLA_weekly':
-				case 'SLA_monthly':
 				case 'SLA_hourly':
 				case 'availability_graph';
 					$description = $item['description'];
@@ -274,6 +256,7 @@ switch ($action) {
 					$show_graph = $item['show_graph'];
 					// 'top_n' filed will be reused for SLA sort option
 					$sla_sorted_by = $item['top_n'];
+					$period = $item['period'];
 					break;
 
 				case 'SLA_services':

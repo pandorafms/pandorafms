@@ -859,7 +859,7 @@ function sunburst (recipient, data, width, height) {
 function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,min_critical,max_critical,font_size, height, font)
 {
 	var gauges;
-	
+
 	var config = 
 	{
 		size: height,
@@ -880,7 +880,7 @@ function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,mi
 	
 	//var range = config.max - config.min;
 	var range = config.max - config.min;
-	if (value != false) {
+	if (value !== false) {
 		if ( min_warning > 0 ) {
 			config.yellowZones = [{ from: min_warning, to: max_warning }];
 		}
@@ -888,6 +888,7 @@ function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,mi
 			config.redZones = [{ from: min_critical, to: max_critical }];
 		}
 	}
+	
 	gauges = new Gauge(name, config, font);
 	gauges.render();
 	gauges.redraw(value);
@@ -927,8 +928,7 @@ function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,mi
 	config = false;
 }
 
-function createGauges(data, width, height, font_size, no_data_image, font)
-{
+function createGauges(data, width, height, font_size, no_data_image, font) {
 	var nombre,label,minimun_warning,maximun_warning,minimun_critical,maximun_critical,
 		mininum,maxinum,valor;
 	
@@ -948,8 +948,10 @@ function createGauges(data, width, height, font_size, no_data_image, font)
 		maximun_warning 	= Math.round(parseFloat( data[key].max_warning ),2);
 		minimun_critical	= Math.round(parseFloat( data[key].min_critical ),2);
 		maximun_critical 	= Math.round(parseFloat( data[key].max_critical ),2);
+
 		mininum = Math.round(parseFloat(data[key].min),2);
 		maxinum = Math.round(parseFloat(data[key].max),2);
+
 		valor = Math.round(parseFloat(data[key].value),2);
 		if (maxinum == 0)
 			maxinum = 100;

@@ -1191,7 +1191,7 @@ function mysql_db_get_type_field_table($table, $field) {
 	if ($config["mysqli"] === true) {
 		$result = mysqli_query($config['dbconnection'], 'SELECT parameters FROM ' . $table);
 	
-		return mysqli_field_type($result, $field); 
+		return mysqli_fetch_field_direct($result, $field); 
 	}
 	else {
 		$result = mysql_query('SELECT parameters FROM ' . $table);

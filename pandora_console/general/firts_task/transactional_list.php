@@ -26,7 +26,9 @@ ui_require_css_file ('firts_task');
 	</div>
 	<div class="text_task">
 		<h3> <?php echo __('Create Transactions'); ?></h3>
-		<p id="description_task"> <?php echo __("Text."); ?></p>
+		<p id="description_task"> <?php echo __("The new transactional server allows you to execute tasks dependent on the others following a user-defined design. This means that it is possible to coordinate several executions to check a target at a given time.
+
+Transaction graphs represent the different processes within our infrastructure that we use to deliver our service."); ?></p>
 		<form action="index.php?sec=network&sec2=enterprise/operation/agentes/manage_transmap_creation&create_transaction=1" method="post">
 			<input type="submit" class="button_task" value="<?php echo __('Create Transactions'); ?>" />
 		</form>

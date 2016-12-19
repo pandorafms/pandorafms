@@ -240,24 +240,6 @@ switch ($action) {
 				case 'SLA':
 				case 'SLA_weekly':
 				case 'SLA_monthly':
-					$description = $item['description'];
-					$only_display_wrong = $item['only_display_wrong'];
-					$monday = $item['monday'];
-					$tuesday = $item['tuesday'];
-					$wednesday = $item['wednesday'];
-					$thursday = $item['thursday'];
-					$friday = $item['friday'];
-					$saturday = $item['saturday'];
-					$sunday = $item['sunday'];
-					$time_from = $item['time_from'];
-					$time_to = $item['time_to'];
-					$show_graph = $item['show_graph'];
-					// 'top_n' filed will be reused for SLA sort option
-					$sla_sorted_by = $item['top_n'];
-					break;
-
-				case 'SLA_weekly':
-				case 'SLA_monthly':
 				case 'SLA_hourly':
 				case 'availability_graph';
 					$description = $item['description'];
@@ -274,6 +256,7 @@ switch ($action) {
 					$show_graph = $item['show_graph'];
 					// 'top_n' filed will be reused for SLA sort option
 					$sla_sorted_by = $item['top_n'];
+					$period = $item['period'];
 					break;
 
 				case 'SLA_services':
@@ -1022,7 +1005,7 @@ You can of course remove the warnings, that's why we include the source and do n
 							}
 						}
 					}
-					html_print_select($agents, 'id_agents[]', $agents_id, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
+					html_print_select($agents, 'id_agents2[]', $agents_id, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
 				?>
 			</td>
 		</tr>
@@ -1366,7 +1349,6 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td>
 				<?php
 				$event_types_select = get_event_types();
-				html_debug($filter_event_type);
 				html_print_select ($event_types_select, 'filter_event_type[]', 
 					$filter_event_type, '', __('All'), 'all', false, true, 
 					false, '', false, false, false, false, false, '');
@@ -1875,6 +1857,8 @@ $(document).ready (function () {
 				},
 				function (data, status) {
 					$("#id_agents").html('');
+					$("#id_agents2").html('');
+					$("#module").html('');
 					jQuery.each (data, function (id, value) {
 						// Remove keys_prefix from the index
 						id = id.substring(1);
@@ -1883,6 +1867,7 @@ $(document).ready (function () {
 							.attr ("value", value["id_agente"])
 							.html (value["nombre"]);
 						$("#id_agents").append (option);
+						$("#id_agents2").append (option);
 					});
 				},
 				"json"
@@ -1912,13 +1897,13 @@ $(document).ready (function () {
 		}
 	);
 
-	$("#id_agents").change (
+	$("#id_agents2").change (
 		function () {
 			jQuery.post ("ajax.php",
 				{"page" : "operation/agentes/ver_agente",
 					"get_modules_group_json" : 1,
 					"id_module_group" : $("#combo_modulegroup").val(),
-					"id_agents" : $("#id_agents").val()
+					"id_agents" : $("#id_agents2").val()
 				},
 				function (data, status) {
 					$("#module").html('');

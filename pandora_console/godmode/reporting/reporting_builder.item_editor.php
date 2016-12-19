@@ -1349,7 +1349,6 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td>
 				<?php
 				$event_types_select = get_event_types();
-				html_debug($filter_event_type);
 				html_print_select ($event_types_select, 'filter_event_type[]', 
 					$filter_event_type, '', __('All'), 'all', false, true, 
 					false, '', false, false, false, false, false, '');

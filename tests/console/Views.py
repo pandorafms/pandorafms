@@ -15,7 +15,7 @@ class viewAppear(PandoraWebDriverTestCase):
 	test_name = u'test menu'
 	tickets_associated = []
 
-
+	@is_enterprise
 	def test_views_appear(self):
 
 		u"""

@@ -133,6 +133,9 @@ function reporting_html_print_report($report, $mini = false) {
 
 				$table->data['description_row']['description'] =  $item['description']." - Total events: ".$item["total_events"];	
 			}
+			else{
+				$table->data['description_row']['description'] = $item["description"];
+			}
 			 
 			$table->colspan['description_row']['description'] = 3;
 		

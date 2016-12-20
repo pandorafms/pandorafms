@@ -211,7 +211,7 @@ function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit) {
 	$start_date = date ($nfdump_date_format, $start_date);
 	$end_date = date ($nfdump_date_format, $end_date);
 	$values = array();
-	$table->width = '50%';
+	$table->width = '40%';
 	$table->cellspacing = 0;
 	$table->class = 'databox';
 	$table->data = array();
@@ -221,8 +221,8 @@ function netflow_stat_table ($data, $start_date, $end_date, $aggregate, $unit) {
 	$table->head = array ();
 	$table->head[0] = '<b>' . netflow_format_aggregate ($aggregate) . '</b>';
 	$table->head[1] = '<b>' . netflow_format_unit ($unit) . '</b>';
-	$table->style[0] = 'padding: 6px';
-	$table->style[1] = 'padding: 6px';
+	$table->style[0] = 'padding: 6px;';
+	$table->style[1] = 'padding: 6px;';
 	
 	while (isset ($data[$j])) {
 		$agg = $data[$j]['agg'];
@@ -278,7 +278,7 @@ function netflow_data_table ($data, $start_date, $end_date, $aggregate, $unit) {
 	}
 	
 	$values = array();
-	$table->size = array ('60%');
+	$table->size = array ('100%');
 	$table->class = 'databox';
 	$table->cellspacing = 0;
 	$table->data = array();
@@ -1189,7 +1189,7 @@ function netflow_draw_item ($start_date, $end_date, $interval_length, $type, $fi
 				if ($interval_length != 0) {
 					$html .= "&nbsp;<b>" . _('Resolution') . ":</b> $interval_length " . __('seconds');
 				}
-				$html .= "<div style='max-width: 1000px; overflow: auto;'>";
+				$html .= "<div style='width: 100%; overflow: auto;'>";
 				$html .= netflow_data_table ($data, $start_date, $end_date, $aggregate, $unit);
 				$html .= "</div>";
 				

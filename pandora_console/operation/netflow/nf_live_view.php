@@ -258,8 +258,13 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 		'15' => '15',
 		'20' => '20',
 		'25' => '25',
-		'50' => '50');
-	echo "<td>" . html_print_select ($max_values, 'max_aggregates', $max_aggregates, '', '', 0, true) . "</td>";
+		'50' => '50',
+		$max_aggregates => $max_aggregates);
+	echo "<td>" . html_print_select ($max_values, 'max_aggregates', $max_aggregates, '', '', 0, true) . 
+		'<a id="max_values" href="#" onclick="javascript: edit_max_value();">' .
+			html_print_image('images/pencil.png', true, array('id' => 'pencil')) . 
+		"</a>";
+	echo "</td>";
 	
 	$onclick = "if (!confirm('".__('Warning').". ".__('IP address resolution can take a lot of time')."')) return false;";
 	$radio_buttons = __('Yes').'&nbsp;&nbsp;'.html_print_radio_button_extended ('address_resolution', 1, '', $address_resolution, false, $onclick, '', true).'&nbsp;&nbsp;&nbsp;';
@@ -397,8 +402,8 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	
 	if (!$netflow_disable_custom_lvfilters) {
 		if (check_acl ($config["id_user"], 0, "AW")) {
-			html_print_submit_button (__('Save as new filter'), 'save_button', false, 'class="sub upd" onClick="return defineFilterName();"');
-			html_print_submit_button (__('Update current filter'), 'update_button', false, 'class="sub upd"');
+			html_print_submit_button (__('Save as new filter'), 'save_button', false, 'style="margin-left: 5px;" class="sub upd" onClick="return defineFilterName();"');
+			html_print_submit_button (__('Update current filter'), 'update_button', false, 'style="margin-left: 5px;" class="sub upd"');
 		}
 	}
 	
@@ -428,6 +433,36 @@ ui_include_time_picker();
 ?>
 
 <script type="text/javascript">
+	function edit_max_value () {
+		if ($("#max_values img").attr("id") == "pencil") {
+			$("#max_values img").attr("src", "images/default_list.png");
+			$("#max_values img").attr("id", "select");
+			var value = $("#max_aggregates").val();
+			$("#max_aggregates").replaceWith("<input id='max_aggregates' name='max_aggregates' type='text'>");
+			$("#max_aggregates").val(value);
+		}
+		else {
+			$("#max_values img").attr("src", "images/pencil.png");
+			$("#max_values img").attr("id", "pencil");
+			$("#max_aggregates").replaceWith("<select id='max_aggregates' name='max_aggregates'>");
+			var o = new Option("2", 2);
+			var o1 = new Option("5", 5);
+			var o2 = new Option("10", 10);
+			var o3 = new Option("15", 15);
+			var o4 = new Option("20", 20);
+			var o5 = new Option("25", 25);
+			var o6 = new Option("50", 50);
+			$("#max_aggregates").append(o);
+			$("#max_aggregates").append(o1);
+			$("#max_aggregates").append(o2);
+			$("#max_aggregates").append(o3);
+			$("#max_aggregates").append(o4);
+			$("#max_aggregates").append(o5);
+			$("#max_aggregates").append(o6);
+		}
+		
+	}
+
 	// Hide the normal filter and display the advanced filter
 	function displayAdvancedFilter () {
 		// Erase the normal filter

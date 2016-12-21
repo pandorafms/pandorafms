@@ -513,7 +513,7 @@ switch ($action) {
 				case 'agent_module':
 					$description = $item['description'];
 					$es = json_decode($item['external_source'], true);
-					$agents_id = get_parameter('id_agents');
+					$agents_id = get_parameter('id_agents2');
 					
 					if ((count($es['module']) == 1) && ($es['module'][0] == 0)) {
 						$module = "";

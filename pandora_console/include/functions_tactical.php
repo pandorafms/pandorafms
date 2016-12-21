@@ -370,7 +370,7 @@ function tactical_get_data ($id_user = false, $user_strict = false, $acltags, $r
 		$list['_monitors_alerts_fired_'] = tactical_monitor_fired_alerts (explode(',',$user_groups_ids), $user_strict,explode(',',$user_groups_ids));
 		$list['_monitors_alerts_'] = tactical_monitor_alerts (explode(',',$user_groups_ids), $user_strict,explode(',',$user_groups_ids));
 		
-		$total_agentes = agents_get_agents (false, array('count(*) as total_agents'), 'AR',false, false);
+		$total_agentes = agents_get_agents (false, array('count(*) as total_agents'), 'AR',false, false, 1);
 		$list['_total_agents_'] = $total_agentes[0]['total_agents'];
 		
 		$list["_monitor_checks_"] = $list["_monitors_not_init_"] + $list["_monitors_unknown_"] + $list["_monitors_warning_"] + $list["_monitors_critical_"] + $list["_monitors_ok_"];

@@ -297,7 +297,8 @@ function agents_get_alerts_simple ($id_agent = false, $filter = '', $options = f
 function agents_get_agents ($filter = false, $fields = false,
 	$access = 'AR',
 	$order = array('field' => 'nombre', 'order' => 'ASC'),
-	$return = false) {
+	$return = false,
+	$disabled_agent = 0) {
 	
 	global $config;
 	
@@ -428,6 +429,13 @@ function agents_get_agents ($filter = false, $fields = false,
 	if ($where_nogroup == '') {
 		$where_nogroup = '1 = 1';
 	}
+
+	if ($disabled_agent == 1){
+		$disabled = 'disabled = 0';
+	}
+	else{
+		$disabled = '1 = 1';	
+	}
 	
 	$extra = false;
 	
@@ -438,12 +446,12 @@ function agents_get_agents ($filter = false, $fields = false,
 	}
 	
 	if ($extra) { 
-		$where = sprintf('(%s OR (%s)) AND (%s) AND (%s) %s',
-			$sql_extra, $where, $where_nogroup, $status_sql, $search);	
+		$where = sprintf('(%s OR (%s)) AND (%s) AND (%s) %s AND %s',
+			$sql_extra, $where, $where_nogroup, $status_sql, $search, $disabled);	
 	}
 	else {
-		$where = sprintf('%s AND %s AND (%s) %s',
-			$where, $where_nogroup, $status_sql, $search);
+		$where = sprintf('%s AND %s AND (%s) %s AND %s',
+			$where, $where_nogroup, $status_sql, $search, $disabled);
 	}
 	$sql = sprintf('SELECT %s
 		FROM tagente

@@ -565,6 +565,7 @@ function install_step2() {
 			$res += check_extension("json","PHP json extension");
 			$res += check_extension("curl","CURL (Client URL Library)");
 			$res += check_extension("filter","PHP filter extension");
+			$res += check_extension("calendar","PHP calendar extension");
 			if (PHP_OS == "FreeBSD") {
 				$res += check_exists ("/usr/local/bin/twopi","Graphviz Binary");
 			}

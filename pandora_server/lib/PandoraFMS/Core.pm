@@ -3185,7 +3185,7 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		
 		# Specific SNMP Trap alert macros for regexp selectors in trap info
 		my %macros;
-		$macros{'_snmp_oid_'} = $trap_oid_text;
+		$macros{'_snmp_oid_'} = $trap_oid;
 		$macros{'_snmp_value_'} = $trap_value;
 		
 		# Custom OID/value

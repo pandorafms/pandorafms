@@ -1001,6 +1001,9 @@ if ($update_module || $create_module) {
 	$month = get_parameter('month');
 	$wday = get_parameter('wday');
 	$cron_interval = "$minute $hour $mday $month $wday";
+	if (!cron_check_syntax($cron)) {
+		$cron_interval = '';
+	}
 	
 	if ($prediction_module != MODULE_PREDICTION_SYNTHETIC) {
 		unset($serialize_ops);

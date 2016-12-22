@@ -2480,4 +2480,25 @@ function modules_get_modules_name ($sql_from , $sql_conditions = '', $meta = fal
 	}
 }
 
+function get_same_modules ($agents, $modules) {
+	$modules_to_report = array();
+	if ($modules != "") {
+		foreach ($modules as $m) {
+			$module_name = modules_get_agentmodule_name($m);
+			foreach ($agents as $a) {
+				$module_in_agent = db_get_value_filter('id_agente_modulo',
+					'tagente_modulo', array('id_agente' => $a, 'nombre' => $module_name));
+				if ($module_in_agent) {
+					$modules_to_report[] = $module_in_agent;
+				}
+			}
+		}
+	}
+
+	$modules_to_report = array_merge($modules_to_report, $modules);
+	$modules_to_report = array_unique($modules_to_report);
+	
+	return $modules_to_report;
+}
+
 ?>

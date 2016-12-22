@@ -137,10 +137,19 @@ if (is_ajax ()) {
 			$filter_agent = " AND id_agente IN (" . $agents . ")";
 		}
 
-		$modules = db_get_all_rows_sql("SELECT nombre, id_agente_modulo FROM tagente_modulo WHERE 1 = 1" . $filter_agent . $filter_group);
+		$modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo FROM tagente_modulo WHERE 1 = 1" . $filter_agent . $filter_group);
 
 		if (empty($modules)) $modules = array();
 		
+
+		foreach ($modules as $k => $v) {
+			for ($j = $k + 1; $j <= sizeof($modules); $j++) {
+				if ($modules[$j]['nombre'] == $v['nombre']) {
+					unset($modules[$j]);
+				}
+			}
+		}
+
 		foreach ($modules as $k => $v) {
 			$modules[$k] = io_safe_output($v);
 		}

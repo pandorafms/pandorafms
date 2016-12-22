@@ -1014,11 +1014,9 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td style="font-weight:bold;"><?php echo __('Modules'); ?></td>
 			<td>
 				<?php
-					$all_modules = array();
-					foreach ($module as $id_modul) {
-						$all_modules[] = modules_get_agentmodule_name($id_modul);
-					}
-					html_print_select($all_modules, 'module[]', $module, $script = '', __('None'), 0, false, true, true, '', false, "min-width: 180px");
+					$all_modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo FROM tagente_modulo WHERE id_agente IN (" . implode(',', array_keys($agents)) . ")");
+					
+					html_print_select($all_modules, 'module[]', "", $script = '', __('None'), 0, false, true, true, '', false, "min-width: 180px");
 				?>
 			</td>
 		</tr>
@@ -1881,7 +1879,7 @@ $(document).ready (function () {
 				{"page" : "operation/agentes/ver_agente",
 					"get_modules_group_json" : 1,
 					"id_module_group" : this.value,
-					"id_agents" : $("#id_agents").val()
+					"id_agents" : $("#id_agents2").val()
 				},
 				function (data, status) {
 					$("#module").html('');

@@ -950,8 +950,12 @@ switch ($action) {
 								$good_format = true;
 								break;
 							case 'agent_module':
-								$es['id_agents'] = get_parameter('id_agents2');
-								$es['module'] = get_parameter('module', "");
+								$agents_to_report = get_parameter('id_agents2');
+								$modules_to_report = get_parameter('module', "");
+
+								$es['module'] = get_same_modules($agents_to_report, $modules_to_report);
+								$es['id_agents'] = $agents_to_report;
+
 								$values['external_source'] = json_encode($es);
 								$good_format = true;
 								break;
@@ -1270,8 +1274,12 @@ switch ($action) {
 								$good_format = true;
 								break;
 							case 'agent_module':
-								$es['id_agents'] = get_parameter('id_agents');
-								$es['module'] = get_parameter('module', "");
+							$agents_to_report = get_parameter('id_agents2');
+								$modules_to_report = get_parameter('module', "");
+
+								$es['module'] = get_same_modules($agents_to_report, $modules_to_report);
+								$es['id_agents'] = $agents_to_report;
+
 								$values['external_source'] = json_encode($es);
 								$good_format = true;
 								break;

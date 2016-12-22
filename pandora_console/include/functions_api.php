@@ -5866,11 +5866,11 @@ function api_set_create_netflow_filter($thrash1, $thrash2, $other, $thrash3) {
  * 
  * @param integer $id The ID of module in DB. 
  * @param $thrash1 Don't use.
- * @param array $other it's array, $other as param is <separator>;<period> in this order
+ * @param array $other it's array, $other as param is <separator>;<period>;<tstart>;<tend> in this order
  *  and separator char (after text ; ) and separator (pass in param othermode as othermode=url_encode_separator_<separator>)
  *  example:
  *  
- *  api.php?op=get&op2=module_data&id=17&other=;|604800&other_mode=url_encode_separator_|
+ *  api.php?op=get&op2=module_data&id=17&other=;|604800|20161201T13:40|20161215T13:40&other_mode=url_encode_separator_|
  *  
  * @param $returnType Don't use.
  */
@@ -5879,14 +5879,42 @@ function api_get_module_data($id, $thrash1, $other, $returnType) {
 		return;
 	}
 	
-	$separator = $other['data'][0];
-	$periodSeconds = $other['data'][1];
-	
-	$sql = sprintf ("SELECT utimestamp, datos 
-		FROM tagente_datos 
-		WHERE id_agente_modulo = %d AND utimestamp > %d 
-		ORDER BY utimestamp DESC", $id, get_system_time () - $periodSeconds);
-	
+	$data = explode("|", $other['data']);
+	$separator = $data[0];
+	$periodSeconds = $data[1];
+	$tstart = $data[2];
+	$tend = $data[3];
+
+	$dateStart = explode("T", $tstart);
+	$dateYearStart = substr($dateStart[0], 0, 4);
+	$dateMonthStart = substr($dateStart[0], 4, 2);
+	$dateDayStart = substr($dateStart[0], 6, 2);
+	$date_start = $dateYearStart . "-" . $dateMonthStart . "-" . $dateDayStart . " " . $dateStart[1];
+	$date_start = new DateTime($date_start);
+	$date_start = $date_start->format('U');
+
+	$dateEnd = explode("T", $tend);
+	$dateYearEnd = substr($dateEnd[0], 0, 4);
+	$dateMonthEnd = substr($dateEnd[0], 4, 2);
+	$dateDayEnd = substr($dateEnd[0], 6, 2);
+	$date_end = $dateYearEnd . "-" . $dateMonthEnd . "-" . $dateDayEnd . " " . $dateEnd[1];
+	$date_end = new DateTime($date_end);
+	$date_end = $date_end->format('U');
+
+	if (($tstart != "") && ($tend != "")) {
+		$sql = sprintf ("SELECT utimestamp, datos 
+			FROM tagente_datos 
+			WHERE id_agente_modulo = %d AND utimestamp > %d 
+			AND utimestamp < %d 
+			ORDER BY utimestamp DESC", $id, $date_start, $date_end);
+	}
+	else {
+		$sql = sprintf ("SELECT utimestamp, datos 
+			FROM tagente_datos 
+			WHERE id_agente_modulo = %d AND utimestamp > %d 
+			ORDER BY utimestamp DESC", $id, get_system_time () - $periodSeconds);
+	}
+
 	$data['type'] = 'array';
 	$data['list_index'] = array('utimestamp', 'datos');
 	$data['data'] = db_get_all_rows_sql($sql);

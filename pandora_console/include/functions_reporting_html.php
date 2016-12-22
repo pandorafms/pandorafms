@@ -127,13 +127,20 @@ function reporting_html_print_report($report, $mini = false) {
 			$item['date']['from'],
 			$item['date']['to'],
 			$label);
+			
+			$table->data['description_row']['description'] =  $item['description'];
 		
 			if($item['type']=='event_report_agent' || $item['type']=='event_report_module' || $item['type']=='event_report_group'){
-
-				$table->data['description_row']['description'] =  $item['description']." - Total events: ".$item["total_events"];	
-			}
-			else{
-				$table->data['description_row']['description'] = $item["description"];
+								
+				if($item['description'] != '' && $item['description'] != null){
+					
+					$table->data['description_row']['description'] .= " - ";
+					
+				}
+				
+				$table->data['description_row']['description'] .= "Total events: ".$item["total_events"];
+										
+				
 			}
 			 
 			$table->colspan['description_row']['description'] = 3;

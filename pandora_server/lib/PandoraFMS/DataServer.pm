@@ -575,11 +575,7 @@ sub process_xml_data ($$$$$) {
 
 		# No parent module defined
 		my $parent_module_name = get_tag_value ($module_data, 'module_parent', undef);
-		if (! defined ($parent_module_name)) {
-			use Data::Dumper;
-			print Dumper($module_data);
-			next;
-		}
+		next if (! defined ($parent_module_name));
 		
 		link_modules($pa_config, $dbh, $agent_id, $module_name, $parent_module_name);
 	}

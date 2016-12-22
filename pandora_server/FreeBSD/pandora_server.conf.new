@@ -423,11 +423,11 @@ icmp_threads 4
 # Enable (1) or disable (0) Pandora FMS Enterprise SNMP Server (PANDORA FMS ENTERPRISE ONLY).
 # Check braa tool is running and operative.
 
-snmpserver 4
+snmpserver 1
 
 # Number of threads for the Enterprise SNMP Server (PANDORA FMS ENTERPRISE ONLY).
 
-snmp_threads 1
+snmp_threads 4
 
 # Block size for block producer/consumer servers, that is, the number of modules
 # per block (20 by default) (PANDORA FMS ENTERPRISE ONLY).

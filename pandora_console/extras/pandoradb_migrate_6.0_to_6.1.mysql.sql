@@ -129,3 +129,9 @@ ALTER TABLE tlayout_data ADD `type_graph` varchar(50) NOT NULL default 'area';
 -- Table `tagent_custom_fields`
 -- ---------------------------------------------------------------------
 INSERT INTO `tagent_custom_fields` (`name`) VALUES ('eHorusID');
+
+-- ---------------------------------------------------------------------
+-- Table `tagente_modulo` Fixed problems with blank space 
+-- in cron interval and problems with process data from pandora server
+-- ---------------------------------------------------------------------
+UPDATE tagente_modulo SET cron_interval = '' WHERE cron_interval LIKE '%    %'

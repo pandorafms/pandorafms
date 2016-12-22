@@ -101,7 +101,6 @@ function reporting_html_header(&$table, $mini, $title, $subtitle,
 }
 
 function reporting_html_print_report($report, $mini = false) {
-	
 	foreach ($report['contents'] as $key => $item) {
 		$table = new stdClass();
 		$table->size = array ();

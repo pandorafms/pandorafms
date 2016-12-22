@@ -514,6 +514,7 @@ switch ($action) {
 					$description = $item['description'];
 					$es = json_decode($item['external_source'], true);
 					$agents_id = get_parameter('id_agents2');
+					$selection_a_m = get_parameter('selection');
 					
 					if ((count($es['module']) == 1) && ($es['module'][0] == 0)) {
 						$module = "";
@@ -1006,6 +1007,17 @@ You can of course remove the warnings, that's why we include the source and do n
 						}
 					}
 					html_print_select($agents, 'id_agents2[]', $agents_id, $script = '', "", 0, false, true, true, '', false, "min-width: 180px");
+				?>
+			</td>
+		</tr>
+
+		<tr id="select_agent_modules" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Show modules'); ?></td>
+			<td>
+				<?php 
+					$selection = array(0 => __('Show common modules'),
+						1=> __('Show all modules'));
+					html_print_select($selection, 'selection_agent_module', $selection_a_m, $script = '', "", 0, false, false, true, '', false, "min-width: 180px");
 				?>
 			</td>
 		</tr>
@@ -1879,7 +1891,8 @@ $(document).ready (function () {
 				{"page" : "operation/agentes/ver_agente",
 					"get_modules_group_json" : 1,
 					"id_module_group" : this.value,
-					"id_agents" : $("#id_agents2").val()
+					"id_agents" : $("#id_agents2").val(),
+					"selection" : $("#selection_agent_module").val()
 				},
 				function (data, status) {
 					$("#module").html('');
@@ -1901,7 +1914,31 @@ $(document).ready (function () {
 				{"page" : "operation/agentes/ver_agente",
 					"get_modules_group_json" : 1,
 					"id_module_group" : $("#combo_modulegroup").val(),
-					"id_agents" : $("#id_agents2").val()
+					"id_agents" : $("#id_agents2").val(),
+					"selection" : $("#selection_agent_module").val()
+				},
+				function (data, status) {
+					$("#module").html('');
+					jQuery.each (data, function (id, value) {
+						option = $("<option></option>")
+							.attr ("value", value["id_agente_modulo"])
+							.html (value["nombre"]);
+						$("#module").append (option);
+					});
+				},
+				"json"
+			);
+		}
+	);
+
+	$("#selection_agent_module").change(
+		function() {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_modules_group_json" : 1,
+					"id_module_group" : $("#combo_modulegroup").val(),
+					"id_agents" : $("#id_agents2").val(),
+					"selection" : $("#selection_agent_module").val()
 				},
 				function (data, status) {
 					$("#module").html('');
@@ -2455,6 +2492,7 @@ function chooseType() {
 	$("#row_filter_search").hide();
 	$("#row_percentil").hide();
 	$("#agents_row").hide();
+	$("#select_agent_modules").hide();
 	$("#modules_row").hide();
 	$("#row_event_type").hide();
 	
@@ -2855,6 +2893,7 @@ function chooseType() {
 			$("#row_description").show();
 			$("#row_group").show();
 			$("#row_module_group").show();
+			$("#select_agent_modules").show();
 			$("#agents_row").show();
 			$("#modules_row").show();
 			break;

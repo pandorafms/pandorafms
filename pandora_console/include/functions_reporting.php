@@ -1627,7 +1627,7 @@ function reporting_agent_module($report, $content) {
 	
 	foreach ($modules as $modul_id) {
 		$modules_by_name[$cont]['name'] = io_safe_output(modules_get_agentmodule_name($modul_id));
-		$modules_by_name[$cont]['id'][] = $modul_id;
+		$modules_by_name[$cont]['id'] = $modul_id;
 		$cont ++;
 	}
 	if ($modules_by_name == false || $agents == false) {
@@ -1636,21 +1636,21 @@ function reporting_agent_module($report, $content) {
 	else {
 		foreach ($agents as $agent) {
 			$row = array();
-			$row['agent_status'][$agent] =
-				agents_get_status($agent);
+			$row['agent_status'][$agent] = agents_get_status($agent);
 			$row['agent_name'] = agents_get_name($agent);
 			
 			$agent_modules = agents_get_modules($agent);
 			
 			$row['modules'] = array();
 			foreach ($modules_by_name as $module) {
-				$row['modules'][$module['name']] = null;
-				foreach ($module['id'] as $module_id) {
-					if (array_key_exists($module_id, $agent_modules)) {
-						$row['modules'][$module['name']] =
-							modules_get_agentmodule_status($module_id);
-						break;
-					} 
+				if (array_key_exists($module['id'], $agent_modules)) {
+					$row['modules'][$module['name']] =
+						modules_get_agentmodule_status($module['id']);
+				}
+				else {
+					if (!array_key_exists($module['name'], $row['modules'])) {
+						$row['modules'][$module['name']] = null;
+					}
 				}
 			}
 			

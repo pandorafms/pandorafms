@@ -2917,7 +2917,7 @@ function reporting_alert_report_module($report, $content) {
 	}
 	
 	$data = array();
-
+	$actions = array();
 	foreach ($alerts as $alert) {
 		
 		$data_row = array();
@@ -2946,14 +2946,21 @@ function reporting_alert_report_module($report, $content) {
 				$id_action = 0;
 		} 
 		else {
-			$actions = db_get_all_rows_sql('SELECT name 
-				FROM talert_actions 
-				WHERE id = ' . $id_action);
+			if ($id_action != null) {
+				$actions = db_get_all_rows_sql('SELECT name 
+					FROM talert_actions 
+					WHERE id = ' . $id_action);
+			}
 		}
 		
-		$data_row['action'] = array();
-		foreach ($actions as $action) {
-			$data_row['action'][] = $action['name'];
+		if (empty($actions)) {
+			$data_row['action'][] = __('No defined actions');
+		}
+		else {
+			$data_row['action'] = array();
+			foreach ($actions as $action) {
+				$data_row['action'][] = $action['name'];
+			}
 		}
 
 		$data_row['fired'] = array();

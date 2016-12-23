@@ -5830,7 +5830,7 @@ function reporting_simple_graph($report, $content, $type = 'dinamic',
 					true,
 					true,
 					'white',
-					($content['style']['percentil_95'] == 1) ? 95 : null);
+					($content['style']['percentil'] == 1) ? $config['percentil'] : null);
 			}
 			break;
 		case 'data':

@@ -91,7 +91,7 @@ $inventory_modules = array();
 $date = null;
 // Only avg is selected by default for the simple graphs
 $only_avg = true;
-$percentil_95 = false;
+$percentil = false;
 $time_compare_overlapped = false;
 
 //Added for events items
@@ -198,7 +198,7 @@ switch ($action) {
 				
 				case 'simple_graph':
 					$only_avg = isset($style['only_avg']) ? (bool) $style['only_avg'] : true;
-					$percentil_95 = isset($style['percentil_95']) ? $style['percentil_95'] : 0;
+					$percentil = isset($style['percentil']) ? $config['percentil'] : 0;
 					// The break hasn't be forgotten.
 				case 'simple_baseline_graph':
 				case 'projection_graph':
@@ -1261,8 +1261,8 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td><?php html_print_checkbox('only_avg', 1, $only_avg);?></td>
 		</tr>
 		<tr id="row_percentil" style="" class="datos">
-			<td style="font-weight:bold;"><?php echo __('Percentil 95');?></td>
-			<td><?php html_print_checkbox('percentil_95', 1, $percentil_95);?></td>
+			<td style="font-weight:bold;"><?php echo __('Percentil');?></td>
+			<td><?php html_print_checkbox('percentil', 1, $percentil);?></td>
 		</tr>
 		<tr id="row_exception_condition_value" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Value'); ?></td>
@@ -2531,7 +2531,7 @@ function chooseType() {
 		case 'simple_graph':
 			$("#row_time_compare_overlapped").show();
 			$("#row_only_avg").show();
-			if ($("#checkbox-percentil_95").prop("checked"))
+			if ($("#checkbox-percentil").prop("checked"))
 				$("#row_percentil").show();
 			// The break hasn't be forgotten, this element
 			// only should be shown on the simple graphs.

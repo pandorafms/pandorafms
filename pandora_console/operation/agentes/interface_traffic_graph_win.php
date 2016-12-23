@@ -144,7 +144,7 @@ $interface_traffic_modules = array(
 		$start_date = (string) get_parameter("start_date", date("Y-m-d"));
 		$zoom = (int) get_parameter ("zoom", 1);
 		$baseline = get_parameter ("baseline", 0);
-		$show_percentil_95 = get_parameter ("show_percentil_95", 0);
+		$show_percentil = get_parameter ("show_percentil", 0);
 		
 		if ($zoom > 1) {
 			$height = $height * ($zoom / 2.1);
@@ -187,7 +187,7 @@ $interface_traffic_modules = array(
 			1,
 			false,
 			false,
-			(($show_percentil_95)? 95 : null),
+			(($show_percentil)? $config['percentil'] : null),
 			true);
 		
 		echo '</div>';
@@ -236,8 +236,8 @@ $interface_traffic_modules = array(
 		$table->rowclass[] = '';
 		
 		$data = array();
-		$data[0] = __('Show percentil 95º');
-		$data[1] = html_print_checkbox ("show_percentil_95", 1, (bool) $show_percentil_95, true);
+		$data[0] = __('Show percentil');
+		$data[1] = html_print_checkbox ("show_percentil", 1, (bool) $show_percentil, true);
 		$table->data[] = $data;
 		$table->rowclass[] ='';
 		

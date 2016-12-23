@@ -159,7 +159,7 @@ $id = get_parameter('id');
 		$zoom = get_parameter ("zoom", 1);
 		$baseline = get_parameter ("baseline", 0);
 		$show_events_graph = get_parameter ("show_events_graph", 0);
-		$show_percentil_95 = get_parameter ("show_percentil_95", 0);
+		$show_percentil = get_parameter ("show_percentil", 0);
 		$time_compare_separated = get_parameter ("time_compare_separated", 0);
 		$time_compare_overlapped = get_parameter ("time_compare_overlapped", 0);
 		$unknown_graph = get_parameter_checkbox ("unknown_graph", 1);
@@ -221,7 +221,7 @@ $id = get_parameter('id');
 					false, $urlImage, 1, false,
 					'adapter_' . $graph_type, $time_compare,
 					$unknown_graph, true, 'white',
-					(($show_percentil_95)? 95 : null));
+					(($show_percentil)? $config['percentil'] : null));
 				echo '<br>';
 				if ($show_events_graph)
 					echo graphic_module_events($id, $width, $height,
@@ -369,8 +369,8 @@ $id = get_parameter('id');
 			case 'boolean':
 			case 'sparse':
 				$data = array();
-				$data[0] = __('Show percentil 95º');
-				$data[1] = html_print_checkbox ("show_percentil_95", 1, (bool) $show_percentil_95, true);
+				$data[0] = __('Show percentil');
+				$data[1] = html_print_checkbox ("show_percentil", 1, (bool) $show_percentil, true);
 				$table->data[] = $data;
 				$table->rowclass[] ='';
 				

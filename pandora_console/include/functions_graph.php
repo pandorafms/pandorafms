@@ -484,7 +484,7 @@ function grafico_modulo_sparse_data_chart (&$chart, &$chart_data_extra, &$long_i
 		$avg = array_map(function($item) { return $item['sum'];}, $chart);
 		
 		$percentil_result = get_percentile($percentil, $avg);
-		
+
 		//Fill the data of chart
 		array_walk($chart, function(&$item) use ($percentil_result, $series_suffix) {
 			$item['percentil' . $series_suffix] = $percentil_result; });
@@ -766,9 +766,8 @@ function grafico_modulo_sparse_data ($agent_module_id, $period, $show_events,
 	/*if ($baseline) {
 		$legend['baseline'.$series_suffix] = __('Baseline');
 	}*/
-
-	$legend['no_data'.$series_suffix] = __('No data').$series_suffix_str;
-		$chart_extra_data['legend_no_data'] = $legend['no_data'.$series_suffix_str];
+	//$legend['no_data'.$series_suffix] = __('No data').$series_suffix_str;
+	//$chart_extra_data['legend_no_data'] = $legend['no_data'.$series_suffix_str];
 
 	if ($show_unknown) {
 		$legend['unknown'.$series_suffix] = __('Unknown').$series_suffix_str;

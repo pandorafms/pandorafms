@@ -464,6 +464,11 @@ $table_chars->data[$row][1] .= __('No').'&nbsp;' .
 	html_print_radio_button ('only_average', 0, '', $config["only_average"], true);
 $row++;
 
+$table_chars->data[$row][0] = __('Percentil');
+$table_chars->data[$row][0] .= ui_print_help_tip(__('Allows only show the average in graphs'), true);
+$table_chars->data[$row][1] = html_print_input_text ('percentil', $config['percentil'], '', 20, 20, true);
+$row++;
+
 echo "<fieldset>";
 echo "<legend>" . __('Charts configuration') . "</legend>";
 html_print_table ($table_chars);

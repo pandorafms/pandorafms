@@ -532,6 +532,8 @@ function config_update_config () {
 					if (!config_update_value ('click_display', (bool) get_parameter('click_display', false)))
 						$error_update[] = __('Display lateral menus with left click');
 					//Daniel maya 02/06/2016 Display menu with click --END
+					if (!config_update_value ('percentil', (int) get_parameter('percentil', 0)))
+						$error_update[] = __('Default percentil');
 
 
 					//--------------------------------------------------

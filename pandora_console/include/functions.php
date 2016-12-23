@@ -1596,8 +1596,6 @@ function get_snmpwalk($ip_target, $snmp_version, $snmp_community = '',
 			break;
 	}
 	
-	//html_debug_print($command_str);
-	
 	exec($command_str, $output, $rc);
 	
 	// Parse the output of snmpwalk

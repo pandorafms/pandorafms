@@ -54,13 +54,13 @@ CREATE TABLE IF NOT EXISTS `tagente` (
 	`direccion` varchar(100) default NULL,
 	`comentarios` varchar(255) default '',
 	`id_grupo` int(10) unsigned NOT NULL default '0',
-	`ultimo_contacto` DATETIME NOT NULL default '1970-01-01 00:00:00',
+	`ultimo_contacto` datetime NOT NULL default '1970-01-01 00:00:00',
 	`modo` tinyint(1) NOT NULL default '0',
 	`intervalo` int(11) unsigned NOT NULL default '300',
 	`id_os` int(10) unsigned default '0',
 	`os_version` varchar(100) default '',
 	`agent_version` varchar(100) default '',
-	`ultimo_contacto_remoto` DATETIME NOT NULL default '1970-01-01 00:00:00',
+	`ultimo_contacto_remoto` datetime default '1970-01-01 00:00:00',
 	`disabled` tinyint(2) NOT NULL default '0',
 	`remote` tinyint(1) NOT NULL default 0,
 	`id_parent` int(10) unsigned default '0',
@@ -144,11 +144,11 @@ CREATE TABLE IF NOT EXISTS `tagente_estado` (
 	`id_agente_estado` int(10) unsigned NOT NULL auto_increment,
 	`id_agente_modulo` int(10) NOT NULL default '0',
 	`datos` text NOT NULL,
-	`timestamp` DATETIME NOT NULL default '1970-01-01 00:00:00',
+	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
 	`estado` int(4) NOT NULL default '0',
 	`known_status` tinyint(4) default 0,
 	`id_agente` int(10) NOT NULL default '0',
-	`last_try` DATETIME NOT NULL default '1970-01-01 00:00:00',
+	`last_try` datetime default NULL,
 	`utimestamp` bigint(20) NOT NULL default '0',
 	`current_interval` int(8) unsigned NOT NULL default '0',
 	`running_by` smallint(4) unsigned default '0',
@@ -297,7 +297,7 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
 	`oid` varchar(255) NOT NULL default '',
 	`time_threshold` int(11) NOT NULL default '0',
 	`times_fired` int(2) unsigned NOT NULL default '0',
-	`last_fired` DATETIME NOT NULL default '1970-01-01 00:00:00',
+	`last_fired` datetime NOT NULL default '1970-01-01 00:00:00',
 	`max_alerts` int(11) NOT NULL default '1',
 	`min_alerts` int(11) NOT NULL default '1',
 	`internal_counter` int(2) unsigned NOT NULL default '0',
@@ -553,7 +553,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 	`id_usuario` varchar(100) NOT NULL default '0',
 	`id_grupo` mediumint(4) NOT NULL default '0',
 	`estado` tinyint(3) unsigned NOT NULL default '0',
-	`timestamp` DATETIME NOT NULL default '1970-01-01 00:00:00',
+	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
 	`evento` text NOT NULL,
 	`utimestamp` bigint(20) NOT NULL default '0',
 	`event_type` enum('going_unknown','unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal','going_down_critical','going_up_normal', 'configuration_change') default 'unknown',
@@ -606,8 +606,8 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tincidencia` (
 	`id_incidencia` bigint(6) unsigned zerofill NOT NULL auto_increment,
-	`inicio` DATETIME NOT NULL default '1970-01-01 00:00:00',
-	`cierre` DATETIME NOT NULL default '1970-01-01 00:00:00',
+	`inicio` datetime NOT NULL default '1970-01-01 00:00:00',
+	`cierre` datetime NOT NULL default '1970-01-01 00:00:00',
 	`titulo` text NOT NULL,
 	`descripcion` text NOT NULL,
 	`id_usuario` varchar(60) NOT NULL default '',
@@ -885,8 +885,8 @@ CREATE TABLE IF NOT EXISTS `tserver` (
 	`name` varchar(100) NOT NULL default '',
 	`ip_address` varchar(100) NOT NULL default '',
 	`status` int(11) NOT NULL default '0',
-	`laststart` DATETIME NOT NULL default '1970-01-01 00:00:00',
-	`keepalive` DATETIME NOT NULL default '1970-01-01 00:00:00',
+	`laststart` datetime NOT NULL default '1970-01-01 00:00:00',
+	`keepalive` datetime NOT NULL default '1970-01-01 00:00:00',
 	`snmp_server` tinyint(3) unsigned NOT NULL default '0',
 	`network_server` tinyint(3) unsigned NOT NULL default '0',
 	`data_server` tinyint(3) unsigned NOT NULL default '0',
@@ -933,7 +933,7 @@ CREATE TABLE IF NOT EXISTS `tsesion` (
 	`ip_origen` varchar(100) NOT NULL default '',
 	`accion` varchar(100) NOT NULL default '',
 	`descripcion` text NOT NULL,
-	`fecha` DATETIME NOT NULL default '1970-01-01 00:00:00',
+	`fecha` datetime NOT NULL default '1970-01-01 00:00:00',
 	`utimestamp` bigint(20) unsigned NOT NULL default '0',
 	PRIMARY KEY  (`id_sesion`),
 	KEY `idx_user` (`id_usuario`)
@@ -966,7 +966,7 @@ CREATE TABLE IF NOT EXISTS `ttrap` (
 	`alerted` smallint(6) NOT NULL default '0',
 	`status` smallint(6) NOT NULL default '0',
 	`id_usuario` varchar(150) default '',
-	`timestamp` DATETIME NOT NULL default '1970-01-01 00:00:00',
+	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
 	`priority` tinyint(4) unsigned NOT NULL default '2',
 	`text` varchar(255) default '',
 	`description` varchar(255) default '',
@@ -1031,8 +1031,8 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
 	`section` TEXT NOT NULL,
 	`data_section` TEXT NOT NULL,
 	`force_change_pass` tinyint(1) unsigned NOT NULL default 0,
-	`last_pass_change` DATETIME NOT NULL default '1970-01-01 00:00:00',
-	`last_failed_login` DATETIME NOT NULL default '1970-01-01 00:00:00',
+	`last_pass_change` DATETIME  NOT NULL DEFAULT 0,
+	`last_failed_login` DATETIME  NOT NULL DEFAULT 0,
 	`failed_attempt` int(4) NOT NULL DEFAULT 0,
 	`login_blocked` tinyint(1) unsigned NOT NULL default 0,
 	`metaconsole_access` enum('basic','advanced') default 'basic',
@@ -1081,11 +1081,11 @@ CREATE TABLE IF NOT EXISTS `tnews` (
 	`author` varchar(255)  NOT NULL DEFAULT '',
 	`subject` varchar(255)  NOT NULL DEFAULT '',
 	`text` TEXT NOT NULL,
-	`timestamp` DATETIME NOT NULL default '1970-01-01 00:00:00',
+	`timestamp` DATETIME  NOT NULL DEFAULT 0,
 	`id_group` int(10) NOT NULL default 0,
 	`modal` tinyint(1) DEFAULT 0,
 	`expire` tinyint(1) DEFAULT 0,
-	`expire_timestamp` DATETIME NOT NULL default '1970-01-01 00:00:00',
+	`expire_timestamp` DATETIME  NOT NULL DEFAULT 0,
 	PRIMARY KEY(`id_news`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
@@ -1337,7 +1337,7 @@ CREATE TABLE IF NOT EXISTS `tserver_export_data` (
 	`module_name` varchar(100) NOT NULL default '',
 	`module_type` varchar(100) NOT NULL default '',
 	`data` varchar(255) default NULL, 
-	`timestamp` DATETIME NOT NULL default '1970-01-01 00:00:00',
+	`timestamp` datetime NOT NULL default '1970-01-01 00:00:00',
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1739,8 +1739,8 @@ CREATE TABLE IF NOT EXISTS `tpassword_history` (
 	`id_pass`  int(10) unsigned NOT NULL auto_increment,
 	`id_user` varchar(60) NOT NULL,
 	`password` varchar(45) default NULL,
-	`date_begin` DATETIME NOT NULL default '1970-01-01 00:00:00',
-	`date_end` DATETIME NOT NULL default '1970-01-01 00:00:00',
+	`date_begin` DATETIME  NOT NULL DEFAULT 0,
+	`date_end` DATETIME  NOT NULL DEFAULT 0,
 	PRIMARY KEY  (`id_pass`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
@@ -1783,7 +1783,7 @@ CREATE TABLE IF NOT EXISTS `tupdate_settings` (
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tupdate_package` (  
 	id int(11) unsigned NOT NULL auto_increment,  
-	timestamp DATETIME NOT NULL default '1970-01-01 00:00:00',
+	timestamp datetime NOT NULL,  
 	description varchar(255) default '',  PRIMARY KEY (`id`) 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

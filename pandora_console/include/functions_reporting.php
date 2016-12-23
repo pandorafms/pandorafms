@@ -1588,14 +1588,12 @@ function reporting_inventory($report, $content, $type) {
 
 function reporting_agent_module($report, $content) {
 	global $config;
-	$agents_and_modules = json_decode($content['external_source'], true);
-	$agents = array();
-	$agents = $agents_and_modules['id_agents'];
-	$modules = $agents_and_modules['module'];
+	
 	$id_group = $content['id_group'];
 	$id_module_group = $content['id_module_group'];
 	
 	$return['type'] = 'agent_module';
+	
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('Agent/Modules');
@@ -1617,25 +1615,54 @@ function reporting_agent_module($report, $content) {
 	
 	$return["data"] = array();
 	
+	$agents = array();
+	if ($id_group > 0) {
+		$agents = agents_get_group_agents($id_group);
+		$agents = array_keys($agents);
+	}
+	
+	$filter_module_groups = false;
+	if ($id_module_group > 0) {
+		$filter_module_groups['id_module_group'] = $id_module_group;
+	}
+	
+	$all_modules = agents_get_modules($agents, false,
+		$filter_module_groups, true, false);
+	
 	$modules_by_name = array();
+	$name = '';
 	$cont = 0;
 	
-	foreach ($modules as $modul_id) {
-		$modules_by_name[$cont]['name'] = io_safe_output(modules_get_agentmodule_name($modul_id));
-		$modules_by_name[$cont]['id'][] = $modul_id;
-		$cont ++;
+	foreach ($all_modules as $key => $module) {
+		if ($module == $name) {
+			$modules_by_name[$cont - 1]['id'][] = $key;
+		}
+		else {
+			$name = $module;
+			$modules_by_name[$cont]['name'] = $name;
+			$modules_by_name[$cont]['id'][] = $key;
+			$cont ++;
+		}
 	}
-	if ($modules_by_name == false || $agents == false) {
+	
+	$filter_groups = array();
+	if ($id_group > 0) {
+		$filter_groups['id_grupo'] = $id_group;
+	}
+	$agents = agents_get_agents ($filter_groups);
+	$nagents = count($agents);
+	
+	if ($all_modules == false || $agents == false) {
 		$return['failed'] = __('There are no agents with modules');
 	}
 	else {
 		foreach ($agents as $agent) {
 			$row = array();
-			$row['agent_status'][$agent] =
-				agents_get_status($agent);
-			$row['agent_name'] = agents_get_name($agent);
+			$row['agent_status'][$agent['id_agente']] =
+				agents_get_status($agent['id_agente']);
+			$row['agent_name'] = $agent['nombre'];
 			
-			$agent_modules = agents_get_modules($agent);
+			$agent_modules = agents_get_modules($agent['id_agente']);
 			
 			$row['modules'] = array();
 			foreach ($modules_by_name as $module) {
@@ -4920,6 +4947,14 @@ function reporting_availability_graph($report, $content, $date=false, $time=fals
 		$content['name'] = __('Availability');
 	}
 	
+	$height_graph = 50;
+	if (isset($content['height']))
+		$height_graph = $content['height'];
+	
+	$width_graph = 1920;
+	if (isset($content['width']))
+		$width_graph = $content['width'];
+	
 	$return['title'] = $content['name'];
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
@@ -5023,8 +5058,7 @@ function reporting_availability_graph($report, $content, $date=false, $time=fals
 	           	   	$content['time_to'],
         		    	$slice
 		            );
-
-            
+			
 			if ($metaconsole_on) {
 				//Restore db connection
 				metaconsole_restore_db();
@@ -5193,8 +5227,8 @@ function reporting_availability_graph($report, $content, $date=false, $time=fals
 				$content,
 				$content['time_from'],
 				$content['time_to'],
-				1920,
-				50,
+				$width_graph,
+				$height_graph,
 				$urlImage,
 				5,
 				$raw_graph,

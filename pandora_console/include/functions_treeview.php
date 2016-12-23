@@ -48,12 +48,12 @@ function treeview_printModuleTable($id_module, $server_data = false, $no_head = 
 		return;
 	}
 
-	if (! check_acl ($config["id_user"], $module["id_grupo"], "AR")) {
+	/*if (! check_acl ($config["id_user"], $module["id_grupo"], "AR")) {
 		db_pandora_audit("ACL Violation",
 			"Trying to access Module Information");
 		require_once ("general/noaccess.php");
 		return;
-	}
+	}*/
 
 	$table = new StdClass();
 	$table->width = "100%";

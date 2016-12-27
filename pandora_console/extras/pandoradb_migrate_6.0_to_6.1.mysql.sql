@@ -135,3 +135,8 @@ INSERT INTO `tagent_custom_fields` (`name`) VALUES ('eHorusID');
 -- in cron interval and problems with process data from pandora server
 -- ---------------------------------------------------------------------
 UPDATE tagente_modulo SET cron_interval = '' WHERE cron_interval LIKE '%    %'
+
+-- ---------------------------------------------------------------------
+-- Table `tgraph`
+-- ---------------------------------------------------------------------
+ALTER TABLE tgraph ADD COLUMN `percentil` int(4) unsigned default '0';

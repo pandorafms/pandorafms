@@ -991,7 +991,8 @@ CREATE TABLE "tgraph" (
 	"events" SMALLINT NOT NULL default 0,
 	"stacked" SMALLINT NOT NULL default 0,
 	"id_group" BIGINT NOT NULL default 0,
-	"id_graph_template" INTEGER NOT NULL default 0 
+	"id_graph_template" INTEGER NOT NULL default 0,
+	"percentil" INTEGER NOT NULL default 0 
 );
 
 -- -----------------------------------------------------

@@ -1196,7 +1196,8 @@ CREATE TABLE tgraph (
 	events NUMBER(5, 0) DEFAULT 0,
 	stacked NUMBER(5, 0) DEFAULT 0,
 	id_group NUMBER(19, 0) DEFAULT 0,
-	id_graph_template NUMBER(11, 0) DEFAULT 0 
+	id_graph_template NUMBER(11, 0) DEFAULT 0,
+	percentil NUMBER(5, 0) DEFAULT 0 
 );
 
 CREATE SEQUENCE tgraph_s INCREMENT BY 1 START WITH 1;

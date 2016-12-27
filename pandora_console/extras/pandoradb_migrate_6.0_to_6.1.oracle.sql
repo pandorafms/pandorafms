@@ -107,3 +107,8 @@ ALTER TABLE tlayout_data ADD COLUMN type_graph varchar(50) NOT NULL default 'are
 -- Table `tagent_custom_fields`
 -- ---------------------------------------------------------------------
 INSERT INTO tagent_custom_fields (name) VALUES ('eHorusID');
+
+-- ---------------------------------------------------------------------
+-- Table `tgraph`
+-- ---------------------------------------------------------------------
+ALTER TABLE tgraph ADD COLUMN percentil int(4) unsigned default '0';

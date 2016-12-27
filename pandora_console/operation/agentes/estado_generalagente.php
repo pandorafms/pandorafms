@@ -267,7 +267,7 @@ $table_data->data[] = $data;
 if (!empty($addresses)) {
 	$data = array();
 	$data[0] = '<b>' . __('Other IP addresses') . '</b>';
-	$data[1] = '<div style="max-height: 45px; overflow: scroll; height:45px;">' .
+	$data[1] = '<div style="max-height: 45px; overflow-y: scroll; height:45px;">' .
 		implode('<br>',$addresses) .
 		'</div>';
 	//~ $table_data->data[] = '<div style="max-height: 200px; overflow: hidden;>' .
@@ -431,7 +431,7 @@ if (!empty($network_interfaces)) {
 	$table_interface->style['interface_graph'] = 'width: 20px;padding-top:0px;padding-bottom:0px;';
 	$table_interface->style['interface_event_graph'] = 'width: 100%;padding-top:0px;padding-bottom:0px;';
 	$table_interface->align['interface_event_graph'] = 'right';
-	$table_interface->style['interface_event_graph'] = 'width: 5%;padding-top:0px;padding-bottom:0px;';
+	$table_interface->style['interface_event_graph'] = 'width: 100%;padding-top:0px;padding-bottom:0px;';
 	$table_interface->align['interface_event_graph_text'] = 'left';
 	$table_interface->style['interface_name'] = 'width: 10%;padding-top:0px;padding-bottom:0px;';
 	$table_interface->align['interface_name'] = 'left';

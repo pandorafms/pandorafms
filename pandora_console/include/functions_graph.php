@@ -1743,14 +1743,14 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 						$temp[$timestamp_point][$graph_group] = $point_value;
 					}
 					
-					$percentile_value = get_percentile($percentil, $point);
+					$percentile_value = get_percentile($config['percentil'], $point);
 					$percentil_result[$graph_group] = array_fill ( 0, count($point), $percentile_value);
 					$series_type[$graph_group] = 'line';
 					$agent_name = io_safe_output(
 						modules_get_agentmodule_agent_name ($module_list[$graph_group]));
 					$module_name = io_safe_output(
 						modules_get_agentmodule_name ($module_list[$graph_group]));
-					$module_name_list['percentil'.$graph_group] = __('Percentile %dº', $percentil) . __(' of module ') . $agent_name .' / ' . $module_name . ' (' . $percentile_value . ' ' . $unit . ') ';
+					$module_name_list['percentil'.$graph_group] = __('Percentile %dº', $config['percentil']) . __(' of module ') . $agent_name .' / ' . $module_name . ' (' . $percentile_value . ' ' . $unit . ') ';
 				}
 			}
 			else {
@@ -1869,7 +1869,6 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 			$red_threshold = $compare_critical;
 		}
 	}
-
 	switch ($stacked) {
 		case CUSTOM_GRAPH_AREA:
 			return area_graph($flash_charts, $graph_values, $width,
@@ -1877,7 +1876,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				$title, "", $homeurl, $water_mark, $config['fontpath'],
 				$fixed_font_size, $unit, $ttl, array(), array(), $yellow_threshold, $red_threshold,  '',
-				false, '', true, $background_color,$dashboard, $vconsole);
+				false, '', true, $background_color,$dashboard, $vconsole, 0, $percentil_result);
 			break;
 		default:
 		case CUSTOM_GRAPH_STACKED_AREA: 

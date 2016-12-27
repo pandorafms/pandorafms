@@ -5607,7 +5607,6 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 	}
 	
 	$graph = db_get_row ("tgraph", "id_graph", $content['id_gs']);
-	
 	$return = array();
 	$return['type'] = 'custom_graph';
 	
@@ -5684,7 +5683,11 @@ function reporting_custom_graph($report, $content, $type = 'dinamic',
 				true,
 				true,
 				true,
-				$labels);
+				$labels,
+				false,
+				false,
+				$graph["percentil"]
+			);
 			break;
 		case 'data':
 			break;

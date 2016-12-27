@@ -118,7 +118,8 @@ function flot_area_simple_graph($chart_data, $width, $height, $color,
 	$yellow_threshold = 0, $red_threshold = 0, $adapt_key= '',
 	$force_integer = false, $series_suffix_str = '', $menu = true,
 	$background_color = 'white', $dashboard = false, $vconsole = false, 
-	$agent_module_id = 0, $font = '', $font_size = 7, $xaxisname = '') {
+	$agent_module_id = 0, $font = '', $font_size = 7, $xaxisname = '', 
+	$percentil_values = array()) {
 	
 	global $config;
 	
@@ -127,7 +128,7 @@ function flot_area_simple_graph($chart_data, $width, $height, $color,
 		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
 		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
 		$menu, $background_color, $dashboard, $vconsole, 
-		$agent_module_id, $font, $font_size, $xaxisname);
+		$agent_module_id, $font, $font_size, $xaxisname, $percentil_values);
 }
 
 function flot_line_stacked_graph($chart_data, $width, $height, $color,

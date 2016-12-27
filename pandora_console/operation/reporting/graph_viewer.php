@@ -94,6 +94,7 @@ if ($view_graph) {
 	$events = $graph["events"];
 	$description = $graph["description"];
 	$stacked = (int) get_parameter ('stacked', -1);
+	$percentil = (int) get_parameter ('percentil', 0);
 	$check = get_parameter('threshold',false);
 
 	if($check == CUSTOM_GRAPH_BULLET_CHART_THRESHOLD){
@@ -164,9 +165,8 @@ if ($view_graph) {
 		__('Custom graphs') . " - " . $graph['name'],
 		"images/chart.png", false, "", false, $options);
 	
-	$graph_return = custom_graphs_print($id_graph, $height, $width, $period, $stacked,
-			true, $unixdate);
-	
+	$graph_return = custom_graphs_print($id_graph, $height, $width, $period, $stacked, true, $unixdate, false, 'white', 
+		array(), '', array(), array(), true, true, true, true, 1, false, false, $percentil, false);
 	if ($graph_return){
 		echo "<table class='databox filters' cellpadding='0' cellspacing='0' width='100%'>";
 		echo "<tr><td>";

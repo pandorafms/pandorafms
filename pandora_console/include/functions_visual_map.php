@@ -770,19 +770,16 @@ function visual_map_print_item($mode = "read", $layoutData,
 			if ($layoutData['id_custom_graph'] != 0) {
 				// Show only avg on the visual console
 				if(get_parameter('action') == 'edit'){
-								
-				$img =  '<img src="images/console/signes/custom_graph.png" style="width:'.$width.'px;height:'.$height.'px;">';
-									
-					}
+					$img =  '<img src="images/console/signes/custom_graph.png" style="width:'.$width.'px;height:'.$height.'px;">';
+				}
 				else{
-			
 					$img = custom_graphs_print(
-					$layoutData['id_custom_graph'], $height, $width,
-					$period, null, true, 0, false, $layoutData['image'],
-					array(), '', array(), array(), true,
-					false, false, true, 1, false, true);
-					
-					}
+						$layoutData['id_custom_graph'], $height, $width,
+						$period, null, true, 0, false, $layoutData['image'],
+						array(), '', array(), array(), true,
+						false, false, true, 1, false, true, $layoutData['percentil']
+					);
+				}
 				
 				
 				
@@ -794,19 +791,15 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$homeurl = '';
 				
 				if(get_parameter('action') == 'edit'){
-								
-				$img =  '<img src="images/console/signes/module_graph.png" style="width:'.$width.'px;height:'.$height.'px;">';
-									
-			 		}
-			else{
-			
-				$img =  grafico_modulo_sparse($id_module, $period, 0,$width,$height,
-									'',null,
-									false, 1, false, 0, '', 0, 0, true, false, '', 1, false,
-									'', false, false, false, $layoutData['image'], null, true, false,$type_graph);
-					
-					}
-		      }
+					$img =  '<img src="images/console/signes/module_graph.png" style="width:'.$width.'px;height:'.$height.'px;">';
+			 	}
+				else {
+					$img =  grafico_modulo_sparse($id_module, $period, 0, $width, $height, '', null,
+											  false, 1, false, 0, '', 0, 0, true, false, '', 1, false,
+									          '', false, false, false, $layoutData['image'], null, true,
+									          false,$type_graph);
+				}
+		    }
 			
 			//Restore db connection
 			if ($layoutData['id_metaconsole'] != 0) {
@@ -2193,7 +2186,12 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				'proportion_height' => $proportion_height,
 				'proportion_width' => $proportion_width);
 		}
-		
+
+		if($layout_data['id_custom_graph']){
+			$layout_data['percentil'] = db_get_value ("percentil", "tgraph",
+				"id_graph", $layout_data["id_custom_graph"]);
+		}
+
 		switch ($layout_data['type']) {
 			case LINE_ITEM:
 				visual_map_print_user_lines($layout_data, $proportion);

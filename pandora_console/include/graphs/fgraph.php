@@ -219,7 +219,7 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 	$chart_extra_data = array(), $yellow_threshold = 0,
 	$red_threshold = 0, $adapt_key = '', $force_integer = false,
 	$series_suffix_str = '', $menu = true, $backgroundColor = 'white',
-	$dashboard = false, $vconsole = false, $agent_module_id = 0) {
+	$dashboard = false, $vconsole = false, $agent_module_id = 0, $percentil_values = array()) {
 	
 	include_once('functions_flot.php');
 	
@@ -266,7 +266,9 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 			$agent_module_id,
 			$font,
 			$font_size,
-			$xaxisname);
+			$xaxisname,
+			$percentil_values
+			);
 	}
 	else {
 		$graph = array();

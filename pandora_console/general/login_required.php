@@ -118,6 +118,9 @@ echo '<div id="login_id_dialog" title="' .
 		echo '<div style="float: right; width: 20%;">';
 		html_print_submit_button(__("Register"), 'id_dialog_button', false, 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
 		echo '</div>';
+		echo '<div style="float: right; width: 20%;">';
+			html_print_button(__("Cancel"), 'cancel', false, '', 'class="ui-button-dialog ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok" style="width:100px;"');  
+		echo '</div>';
 		echo '<div id="all-required" style="float: right; margin-right: 30px; display: none; color: red;">';
 			echo __("All fields required");
 		echo '</div>';
@@ -214,6 +217,10 @@ $(document).ready (function () {
 	$(".ui-widget-overlay").css("background", "#000");
 	$(".ui-widget-overlay").css("opacity", 0.6);
 	$(".ui-draggable").css("cursor", "inherit");
+	
+	$("#button-cancel").click (function () {
+		$("#login_id_dialog" ).dialog('close')
+	});
 	
 });
 

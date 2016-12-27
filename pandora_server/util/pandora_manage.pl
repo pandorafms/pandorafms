@@ -3716,16 +3716,18 @@ sub cli_get_bad_conf_files() {
 		my $missings = 0;
 		my @tokens = ("server_ip","server_path","temporal","logfile");
 		
-		foreach my $token (@tokens) {
-			if(enterprise_hook('pandora_check_conf_token',[$conf->{incomingdir}.'/conf/'.$file, $token]) == 0) {
-				$missings++;
+		if ($file !~ /.srv./) {
+			foreach my $token (@tokens) {
+				if(enterprise_hook('pandora_check_conf_token',[$conf->{incomingdir}.'/conf/'.$file, $token]) == 0) {
+					$missings++;
+				}
 			}
-		}
-		
-		# If any token of checked is missed we print the file path
-		if($missings > 0) {
-			print $conf->{incomingdir}.'/conf/'.$file."\n";
-			$bad_files++;
+			
+			# If any token of checked is missed we print the file path
+			if($missings > 0) {
+				print $conf->{incomingdir}.'/conf/'.$file."\n";
+				$bad_files++;
+			}
 		}
 	}
 	

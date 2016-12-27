@@ -431,7 +431,7 @@ if (!empty($network_interfaces)) {
 	$table_interface->style['interface_graph'] = 'width: 20px;padding-top:0px;padding-bottom:0px;';
 	$table_interface->style['interface_event_graph'] = 'width: 100%;padding-top:0px;padding-bottom:0px;';
 	$table_interface->align['interface_event_graph'] = 'right';
-	$table_interface->style['interface_event_graph'] = 'width: 100%;padding-top:0px;padding-bottom:0px;';
+	//$table_interface->style['interface_event_graph'] = 'width: 5%;padding-top:0px;padding-bottom:0px;';
 	$table_interface->align['interface_event_graph_text'] = 'left';
 	$table_interface->style['interface_name'] = 'width: 10%;padding-top:0px;padding-bottom:0px;';
 	$table_interface->align['interface_name'] = 'left';
@@ -555,6 +555,9 @@ if (!empty($network_interfaces)) {
 		if ($event_text_cont == 0) {
 			$data['interface_event_graph_text'] = ui_print_help_tip('Module events graph', true);
 			$event_text_cont++;
+		}
+		else {
+			$data['interface_event_graph_text'] = "";
 		}
 		$table_interface->data[] = $data;
 	}

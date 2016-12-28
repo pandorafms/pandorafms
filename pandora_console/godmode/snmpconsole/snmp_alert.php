@@ -43,6 +43,7 @@ $delete_alert = (bool)get_parameter('delete_alert', false);
 $multiple_delete = (bool)get_parameter('multiple_delete', false);
 $add_action = (bool)get_parameter('add_alert', 0);
 $delete_action = get_parameter('delete_action', 0);
+$duplicate_alert = get_parameter('duplicate_alert', 0);
 
 if ($add_action) {
 	$values['id_alert_snmp'] = (int) get_parameter('id_alert_snmp');
@@ -303,17 +304,21 @@ if ($save_alert || $modify_alert) {
 
 // From variable init
 // ==================
-if ($update_alert) {
+if ($update_alert || $duplicate_alert) {
 	$id_as = (int) get_parameter("id_alert_snmp", -1);
 	
 	$alert = db_get_row ("talert_snmp", "id_as", $id_as);
 	$id_as = $alert["id_as"];
+	$id_alert = $alert["id_alert"];
 	$source_ip = $alert["agent"];
 	$alert_type = $alert["id_alert"];
 	$description = $alert["description"];
 	$oid = $alert["oid"];
 	$custom_value = $alert["custom_oid"];
 	$time_threshold = $alert["time_threshold"];
+	$times_fired = $alert["times_fired"];
+	$last_fired = $alert["last_fired"];
+	$internal_counter = $alert["internal_counter"];
 	$al_field1 = $alert["al_field1"];
 	$al_field2 = $alert["al_field2"];
 	$al_field3 = $alert["al_field3"];
@@ -438,6 +443,72 @@ elseif ($create_alert) {
 	$single_value = '';
 	$position = 0;
 	$group = 0;
+}
+
+//Duplicate alert snmp
+if($duplicate_alert){
+	$sql = sprintf ("insert into talert_snmp (
+		id_alert, al_field1, al_field2, al_field3, 
+		al_field4, al_field5, al_field6, al_field7,
+		al_field8, al_field9, al_field10, description,
+		agent, custom_oid, oid, time_threshold,
+		times_fired, last_fired, max_alerts, min_alerts,
+		internal_counter, priority,
+		".db_escape_key_identifier('_snmp_f1_') .",
+		".db_escape_key_identifier('_snmp_f2_') .",
+		".db_escape_key_identifier('_snmp_f3_') .",
+		".db_escape_key_identifier('_snmp_f4_') .",
+		".db_escape_key_identifier('_snmp_f5_') .",
+		".db_escape_key_identifier('_snmp_f6_') .",
+		".db_escape_key_identifier('_snmp_f7_') .",
+		".db_escape_key_identifier('_snmp_f8_') .",
+		".db_escape_key_identifier('_snmp_f9_') .",
+		".db_escape_key_identifier('_snmp_f10_').",
+		".db_escape_key_identifier('_snmp_f11_').",
+		".db_escape_key_identifier('_snmp_f12_').",
+		".db_escape_key_identifier('_snmp_f13_').",
+		".db_escape_key_identifier('_snmp_f14_').",
+		".db_escape_key_identifier('_snmp_f15_').",
+		".db_escape_key_identifier('_snmp_f16_').",
+		".db_escape_key_identifier('_snmp_f17_').",
+		".db_escape_key_identifier('_snmp_f18_').",
+		".db_escape_key_identifier('_snmp_f19_').",
+		".db_escape_key_identifier('_snmp_f20_').",
+		trap_type, single_value, position, id_group,
+		order_1, order_2, order_3, order_4, order_5, order_6, order_7, order_8, 
+		order_9, order_10, order_11, order_12, order_13, order_14, order_15, 
+		order_16, order_17, order_18, order_19, order_20)
+		VALUES
+		(%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s',
+		'%s', '%s', %d, %d, %d, %d, %d, %d, %d, '%s', '%s', '%s', '%s', '%s', '%s',
+		'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s',
+		'%s', %d, '%s', %d, %d, '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d',
+		'%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d')",
+		$id_alert, $al_field1, $al_field2, $al_field3, $al_field4, $al_field5, 
+		$al_field6, $al_field7, $al_field8, $al_field9, $al_field10,
+		$description, $source_ip, $custom_value, $oid, $time_threshold,
+		$times_fired, $last_fired, $max_alerts, $min_alerts, $internal_counter,
+		$priority, $custom_oid_data_1, $custom_oid_data_2, $custom_oid_data_3, 
+		$custom_oid_data_4, $custom_oid_data_5, $custom_oid_data_6, 
+		$custom_oid_data_7, $custom_oid_data_8, $custom_oid_data_9, 
+		$custom_oid_data_10, $custom_oid_data_11, $custom_oid_data_12, 
+		$custom_oid_data_13, $custom_oid_data_14, $custom_oid_data_15, 
+		$custom_oid_data_16, $custom_oid_data_17, $custom_oid_data_18, 
+		$custom_oid_data_19, $custom_oid_data_20, $trap_type, $single_value, 
+		$position, $group, $order_1, $order_2, $order_3, $order_4, $order_5, 
+		$order_6, $order_7, $order_8, $order_9, $order_10, 
+		$order_11, $order_12, $order_13, $order_14, $order_15, 
+		$order_16, $order_17, $order_18, $order_19, $order_20);
+	$result = db_process_sql ($sql);
+	
+	if (!$result) {
+		db_pandora_audit("SNMP management", "Fail try to duplicate snmp alert #$id_as");
+		ui_print_error_message(__('There was a problem duplicating the alert'));
+	}
+	else {
+		db_pandora_audit("SNMP management", "Duplicate snmp alert #$id_as");
+		ui_print_success_message(__('Successfully Duplicate'));
+	}
 }
 
 // Header
@@ -1111,7 +1182,14 @@ else {
 			$data[7] = __('Never');
 		}
 		
-		$data[8] = '<a href="index.php?' .
+		$data[8] = 
+			'<a href="index.php?' .
+			'sec=snmpconsole&' .
+			'sec2=godmode/snmpconsole/snmp_alert&' .
+			'duplicate_alert=1&'.
+			'id_alert_snmp='.$row["id_as"].'">' .
+			html_print_image('images/copy.png', true, array('alt' => __('Duplicate'), 'title' => __('Duplicate'))) . '</a>' .
+			'<a href="index.php?' .
 			'sec=snmpconsole&' .
 			'sec2=godmode/snmpconsole/snmp_alert&' .
 			'update_alert=1&'.

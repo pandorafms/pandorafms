@@ -461,7 +461,7 @@ function update_link(row_index, id_link) {
 	var text_source_interface = "";
 	if (interface_source != 0) {
 		text_source_interface = $("select[name='interface_source_" +
-			row_index + "'] option:selected").text();
+			row_index +"'] option:selected").text();
 	}
 	
 	var interface_target = parseInt(
@@ -470,9 +470,9 @@ function update_link(row_index, id_link) {
 		);
 	
 	var text_target_interface = "";
-	if (interface_source != 0) {
-		text_source_interface = $("select[name='interface_source_" +
-			row_index + "'] option:selected").text();
+	if (interface_target != 0) {
+		text_target_interface = $("select[name='interface_target_" +
+			row_index +"'] option:selected").text();
 	}
 	
 	$(".edit_icon_progress_" + row_index).css("display", "");
@@ -497,12 +497,10 @@ function update_link(row_index, id_link) {
 			if (data['correct']) {
 				$(".edit_icon_correct_" + row_index).css("display", "");
 				
-				$("select[name='interface_source_" + row_index + networkmap_id + "'] option[value='" + interface_source + "']")
+				$("select[name='interface_source_" + row_index + "'] option[value='" + interface_source + "']")
 					.prop("selected", true);
-				$("select[name='interface_target_" + row_index + networkmap_id + "'] option[value='" + interface_target + "']")
+				$("select[name='interface_target_" + row_index + "'] option[value='" + interface_target + "']")
 					.prop("selected", true);
-				
-				
 				
 				if (interface_source == 0) {
 					jQuery.each(graph.links, function(i, link_each) {
@@ -2081,7 +2079,7 @@ function add_fictional_node() {
 	}
 }
 
-function init_graph(parameter_object) {	
+function init_graph(parameter_object) {
 	window.width_svg = $("#networkconsole_" + networkmap_id).width();
 	if ($("#main").height()) {
 		window.height_svg = $("#main").height();

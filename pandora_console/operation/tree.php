@@ -212,13 +212,12 @@ if (is_metaconsole()) {
 
 enterprise_hook('close_meta_frame');
 
-?>
 
-<? if (!is_metaconsole()): ?>
+if (!is_metaconsole()) { ?>
 <script type="text/javascript" src="include/javascript/fixed-bottom-box.js"></script>
-<? else: ?>
+<?php } else { ?>
 <script type="text/javascript" src="../../include/javascript/fixed-bottom-box.js"></script>
-<? endif; ?>
+<?php } ?>
 
 <script type="text/javascript">
 	var treeController = TreeController.getController();

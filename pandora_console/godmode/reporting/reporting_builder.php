@@ -1972,24 +1972,18 @@ else {
 		"reporting_" . $activeTab . "_tab", false, $buttons);
 }
 
-
-
 if ($resultOperationDB !== null) {
-	
-	
 	$err = '';
-	/*
-	if($_POST[sla_min]==''){
-		$err.='You must enter some character in SLA min field<br>';
+	switch ($_POST['type']) {
+		case 'custom_graph':
+			$err.='You must enter custom graph';
+			break;
+		case 'SLA':
+			$err.='You must enter some character in SLA limit field';
+		default:
+			$err.='';
+			break;
 	}
-	if($_POST[sla_max]==''){
-		$err.='You must enter some character in SLA max field<br>';
-	}
-	*/
-	if($_POST[sla_limit]==''){
-		$err.='You must enter some character in SLA limit field';
-	}
-
 	ui_print_result_message ($resultOperationDB, __('Successfull action'), __('Unsuccessfull action<br><br>'.$err));
 }
 

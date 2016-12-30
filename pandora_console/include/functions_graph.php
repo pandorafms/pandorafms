@@ -1715,22 +1715,23 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		$do_it_warning = true;
 		$do_it_critical = true;
 		foreach ($module_list as $id_module) {
-			// Get module warning_min and critical_min
-			$warning_min = db_get_value('min_warning','tagente_modulo','id_agente_modulo',$id_module);
-			$critical_min = db_get_value('min_critical','tagente_modulo','id_agente_modulo',$id_module);
+			// Get module warning_max and critical_max
+			$warning_max = db_get_value('max_warning','tagente_modulo','id_agente_modulo',$id_module);
+			$critical_max = db_get_value('max_critical','tagente_modulo','id_agente_modulo',$id_module);
+			
 			if ($compare_warning == 0) {
-				$compare_warning = $warning_min;
+				$compare_warning = $warning_max;
 			}
 			else {
-				if ($compare_warning != $warning_min) {
+				if ($compare_warning != $warning_max) {
 					$do_it_warning = false;
 				}
 			}
 			if ($compare_critical == 0) {
-				$compare_critical = $critical_min;
+				$compare_critical = $critical_max;
 			}
 			else {
-				if ($compare_warning != $warning_min) {
+				if ($compare_warning != $critical_max) {
 					$do_it_critical = false;
 				}
 			}

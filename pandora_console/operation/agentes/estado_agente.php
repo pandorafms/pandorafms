@@ -598,8 +598,8 @@ foreach ($agents as $agent) {
 	$data[3] = '<span style="font-size:6.5pt;">'.human_time_description_raw($agent["intervalo"])."</span>";
 	
 	$data[4] = ui_print_group_icon ($agent["id_grupo"], true);
-	
-	$data[5] = reporting_tiny_stats($agent, true, 'agent', ':', $strict_user);
+	$agent['not_init_count'] = $agent['notinit_count'];
+	$data[5] = reporting_tiny_stats($agent, true, ' ', ':', $strict_user);
 	
 	
 	$data[6] = $status_img;

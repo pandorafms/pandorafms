@@ -881,10 +881,10 @@ function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,mi
 	//var range = config.max - config.min;
 	var range = config.max - config.min;
 	if (value !== false) {
-		if ( min_warning > 0 ) {
+		if ( min_warning >= 0 ) {
 			config.yellowZones = [{ from: min_warning, to: max_warning }];
 		}
-		if ( min_critical > 0 ) {
+		if ( min_critical >= 0 ) {
 			config.redZones = [{ from: min_critical, to: max_critical }];
 		}
 	}

@@ -1224,7 +1224,7 @@ function events_get_group_events ($id_group, $period, $date,
 			' OR id_evento LIKE "%' . io_safe_input($filter_event_search) . '%")';
 	}
 	
-	if (!empty($filter_event_type)) {
+	if (!empty($filter_event_type) && $filter_event_type[0] != 'all') {
 		$sql_where .= ' AND (';
 		$type = array();
 		foreach ($filter_event_type as $event_type) {
@@ -1367,8 +1367,8 @@ function events_get_agent ($id_agent, $period, $date = 0,
 			}
 		}
 	}
-	
-	if (!empty($filter_event_type)) {
+
+	if (!empty($filter_event_type) && $filter_event_type[0] != 'all') {
 		$sql_where .= ' AND (';
 		$type = array();
 		foreach ($filter_event_type as $event_type) {

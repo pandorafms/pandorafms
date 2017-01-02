@@ -148,7 +148,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 					FROM $table te
 					WHERE 1=1 " . $sql_post . "
 					GROUP BY estado, evento, id_agentmodule" . $groupby_extra . "
-					ORDER BY timestamp_rep DESC LIMIT " . $offset . "," . $pagination;
+					ORDER BY timestamp_rep ASC LIMIT " . $offset . "," . $pagination;
 			}
 			break;
 		case "postgresql":
@@ -180,7 +180,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 						te.owner_user,
 						te.ack_utimestamp,
 						te.custom_data " . $groupby_extra . "
-					ORDER BY timestamp_rep DESC LIMIT " . $pagination . " OFFSET " . $offset;
+					ORDER BY timestamp_rep ASC LIMIT " . $pagination . " OFFSET " . $offset;
 			}
 			break;
 		case "oracle":
@@ -205,12 +205,12 @@ function events_get_events_grouped($sql_post, $offset = 0,
 									WHERE 1=1 $sql_post
 									GROUP BY estado, to_char(evento), id_agentmodule$groupby_extra) tb
 							ON ta.id_evento = tb.id_evento
-						ORDER BY tb.timestamp_rep DESC";
+						ORDER BY tb.timestamp_rep ASC";
 				$sql = oracle_recode_query ($sql, $set);
 			}
 			break;
 	}
-	
+
 	//Extract the events by filter (or not) from db
 	$events = db_get_all_rows_sql ($sql, $history_db);
 	

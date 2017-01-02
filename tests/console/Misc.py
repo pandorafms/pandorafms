@@ -15,6 +15,7 @@ from selenium.common.exceptions import StaleElementReferenceException, NoSuchEle
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
 import unittest2, time, re
+import logging
 
 class Miscellaneous (PandoraWebDriverTestCase):
 
@@ -26,7 +27,9 @@ class Miscellaneous (PandoraWebDriverTestCase):
 		u"""
 		Creates an agent and a module with japanese characters and test if the event list show the characters properly
 		"""
-		
+
+		logging.basicConfig(filename="Misc.log", level=logging.INFO, filemode='w')
+
 		driver = self.driver
 		self.login()
 		detect_and_pass_all_wizards(driver)
@@ -58,8 +61,12 @@ class Miscellaneous (PandoraWebDriverTestCase):
 		search_events(driver,agent_name=u"次のライセンスに基づいていま",module_name=u"管理者ガイド")
 
 		#Check that there are japanese characters present on the event
-		element = driver.find_element_by_xpath(u'//a[contains(.,"Alert fired (Critical condition) assigned to (管理者ガイド)")]')
+
+		element=driver.find_element_by_xpath(u'//a[contains(.,"Alert fired (Critical condition) assigned to (管理者ガイド)")]')
+		
 		self.assertIsInstance(element,WebElement)
+
+		logging.info("test_japanese_characters is correct")
 
 if __name__ == "__main__":
 	unittest2.main()

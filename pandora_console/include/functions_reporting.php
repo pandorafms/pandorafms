@@ -6350,7 +6350,10 @@ function reporting_get_agents_detailed_event ($id_agents, $period = 0,
 		}
 		
 		if ($only_data) {
-			foreach ($event as $e) {
+			$nevents = count($event);
+			for($i=$nevents-1; $i  >= 0; $i--) {
+			$e = $event[$i];
+			//foreach ($event as $e) {
 				$return_data[] = array(
 					'status' => $e['estado'],
 					'count' => $e['event_rep'],

@@ -1330,7 +1330,7 @@ You can of course remove the warnings, that's why we include the source and do n
 		</tr>
 		
 		<tr id="row_show_resume" style="" class="datos">
-			<td style="font-weight:bold;"><?php echo __('Show resume') . ui_print_help_tip(__('Show a resume table with max, min, average of total modules on the report bottom'), true);?></td>
+			<td style="font-weight:bold;"><?php echo __('Show resume') . ui_print_help_tip(__('Show a summary chart with max, min and average number of total modules at the end of the report and Checks.'), true);?></td>
 			<td>
 				<?php
 				html_print_checkbox('checkbox_show_resume', 1,

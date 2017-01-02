@@ -856,7 +856,7 @@ function sunburst (recipient, data, width, height) {
 	}
 }
 
-function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,min_critical,max_critical,font_size, height, font)
+function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,warning_inverse,min_critical,max_critical,critical_inverse,font_size, height, font)
 {
 	var gauges;
 
@@ -877,17 +877,104 @@ function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,mi
 	else {
 		config.minorTicks = 10;
 	}
+
+	save_min_critical = min_critical;
+	save_max_critical = max_critical;
+	save_min_warning  = min_warning;
+	save_max_warning  = max_warning;
 	
-	//var range = config.max - config.min;
-	var range = config.max - config.min;
-	if (value !== false) {
-		if ( min_warning >= 0 && ( min_warning != max_warning ) ) {
-			config.yellowZones = [{ from: min_warning, to: max_warning }];
+	if (max_warning < config.min) {
+		config.min = max_warning;
+	}
+	if (min_warning < config.min) {
+		config.min = min_warning;
+	}
+	if (max_critical < config.min) {
+		config.min = max_critical;
+	}
+	if (min_critical < config.min) {
+		config.min = min_critical;
+	}
+
+	if (max_warning > config.max) {
+		config.max = max_warning;
+	}
+	if (min_warning > config.max) {
+		config.max = min_warning;
+	}
+	if (max_critical > config.max) {
+		config.max = max_critical;
+	}
+	if (min_critical > config.max) {
+		config.max = min_critical;
+	}
+	
+	if(config.max < value){
+		config.max = value;
+	}
+	
+	if (critical_inverse == 1) {
+		if (max_critical == 0) {
+			max_critical = min_critical;
+			min_critical = config.min;
 		}
-		if ( min_critical >= 0 && ( min_critical != max_critical ) ) {
-			config.redZones = [{ from: min_critical, to: max_critical }];
+		else {
+			max_critical  = save_min_critical;
+			min_critical  = config.min;
+			max_critical2 = config.max;
+			min_critical2 = save_max_critical; 
 		}
 	}
+	else {
+		if ((min_critical > max_critical) && (max_critical == 0)) {
+			max_critical = config.max;
+		}
+	}
+
+	if (warning_inverse == 1) {
+		if (max_warning == 0) {
+			max_warning = min_warning;
+			min_warning = config.min;
+		}
+		else{
+			max_warning  = save_min_warning;
+			min_warning  = config.min;
+			max_warning2 = config.max;
+			min_warning2 = save_max_warning;
+		}
+	
+	}
+	else {	
+		if ((min_warning > max_warning) && (max_warning == 0)) {
+			max_warning = config.max;
+		}
+	}
+
+	if (value !== false) {
+		if(typeof max_warning2 !== 'undefined'){
+			if ( min_warning >= 0 && ( min_warning != max_warning ) ) {
+				config.yellowZones = [{ from: min_warning, to: max_warning },{ from: min_warning2, to: max_warning2 }];
+			}	
+		}
+		else{
+			if ( min_warning >= 0 && ( min_warning != max_warning ) ) {
+				config.yellowZones = [{ from: min_warning, to: max_warning }];
+			}
+		}
+
+		if(typeof max_critical2 !== 'undefined'){
+			if ( min_critical >= 0 && ( min_critical != max_critical ) ) {
+				config.redZones = [{ from: min_critical, to: max_critical},{from: min_critical2, to: max_critical2 }];
+			}	
+		}
+		else {
+			if ( min_critical >= 0 && ( min_critical != max_critical ) ) {
+				config.redZones = [{ from: min_critical, to: max_critical }];
+			}
+		}
+	}
+
+	var range = config.max - config.min;
 	
 	gauges = new Gauge(name, config, font);
 	gauges.render();
@@ -899,11 +986,11 @@ function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,mi
 			label = parseFloat(label);
 			text = label.toLocaleString();
 			if ( label >= 1000000)
-					text = text.substring(0,3) + "M";
+					text = text.substring(0,4) + "M";
 			else if (label >= 100000)
 					text = text.substring(0,3) + "K";
-				else if (label >= 1000)
-					text = text.substring(0,2) + "K";
+				else if (label >= 10000)
+					text = text.substring(0,3) + "K";
 				
 			$(this).text(text);
 		}
@@ -917,15 +1004,17 @@ function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,mi
 			if ( label >= 10000000)
 				text = text.substring(0,4) + "M";
 			else if ( label >= 1000000)
-						text = text.substring(0,3) + "M";
+						text = text.substring(0,4) + "M";
 				else if (label >= 100000)
 						text = text.substring(0,3) + "K";
-					else if (label >= 1000)
-						text = text.substring(0,2) + "K";
+					else if (label >= 10000)
+						text = text.substring(0,3) + "K";
 			$(this).text(text);
 		}
 	});
 	config = false;
+	max_warning2 = false;
+	min_warning2 = false;
 }
 
 function createGauges(data, width, height, font_size, no_data_image, font) {
@@ -951,39 +1040,17 @@ function createGauges(data, width, height, font_size, no_data_image, font) {
 
 		mininum = Math.round(parseFloat(data[key].min),2);
 		maxinum = Math.round(parseFloat(data[key].max),2);
+	
+		critical_inverse = parseInt(data[key].critical_inverse);
+		warning_inverse  = parseInt(data[key].warning_inverse);
 
 		valor = Math.round(parseFloat(data[key].value),2);
-		if (maxinum == 0)
-			maxinum = 100;
-		if (mininum == 0.00)
-			mininum = 0;
-		if (mininum == maxinum)
-			mininum = 0;
-		/*
-		if (maximun_critical == 0 )
-			maximun_critical = maxinum;
-		if (maximun_warning == 0 )
-			maximun_warning = minimun_critical;
-		*/
-		if ( maxinum <= minimun_warning ) {
-			minimun_warning = 0;
-			maximun_warning = 0;
-			minimun_critical = 0;
-			maximun_critical = 0;
-		}
-		if ( maxinum < minimun_critical ) {
-			minimun_critical = 0;
-			maximun_critical = 0;
-		}
-		if ( mininum > minimun_warning ) {
-			minimun_warning = mininum;
-		}
 		
 		if (isNaN(valor)) 
 			valor = (-1200);
 		createGauge(nombre, label, valor, mininum, maxinum, 
-				minimun_warning, maximun_warning, minimun_critical,
-					maximun_critical, font_size, height, font);
+				minimun_warning, maximun_warning, warning_inverse, minimun_critical,
+					maximun_critical, critical_inverse, font_size, height, font);
 
 
 	}

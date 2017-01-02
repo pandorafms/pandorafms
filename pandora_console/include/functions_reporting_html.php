@@ -2144,10 +2144,13 @@ function reporting_html_availability(&$table, $item) {
 	$table->colspan[2][0] = 2;
 	$data = array();
 	$data[0] = html_print_table($table1, true);
-	$data2 = array();
-	$data2[0] = html_print_table($table2, true);
 	array_push ($table->data, $data);
-	array_push ($table->data, $data2);
+	
+	if ($item['resume']['resume']){
+		$data2 = array();
+		$data2[0] = html_print_table($table2, true);
+		array_push ($table->data, $data2);
+	}	
 	
 	if ($item['resume']['resume'] && !empty($item["data"])) {
 		$table1->width = '99%';

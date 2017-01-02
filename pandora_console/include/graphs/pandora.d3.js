@@ -869,7 +869,7 @@ function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,wa
 		font_size: font_size
 	}
 	
-	if (value == -1200) {
+	if (!value) {
 		config.majorTicks = 1;
 		config.minorTicks = 1;
 		value = false;
@@ -911,6 +911,10 @@ function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,wa
 	
 	if(config.max < value){
 		config.max = value;
+	}
+
+	if(config.min < value){
+		config.min = value;
 	}
 	
 	if (critical_inverse == 1) {
@@ -1047,7 +1051,7 @@ function createGauges(data, width, height, font_size, no_data_image, font) {
 		valor = Math.round(parseFloat(data[key].value),2);
 		
 		if (isNaN(valor)) 
-			valor = (-1200);
+			valor = null;
 		createGauge(nombre, label, valor, mininum, maxinum, 
 				minimun_warning, maximun_warning, warning_inverse, minimun_critical,
 					maximun_critical, critical_inverse, font_size, height, font);

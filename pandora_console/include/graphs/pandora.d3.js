@@ -869,7 +869,7 @@ function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,wa
 		font_size: font_size
 	}
 	
-	if (!value) {
+	if (value == null) {
 		config.majorTicks = 1;
 		config.minorTicks = 1;
 		value = false;
@@ -913,7 +913,7 @@ function createGauge(name, etiqueta, value, min, max, min_warning,max_warning,wa
 		config.max = value;
 	}
 
-	if(config.min < value){
+	if(config.min > value){
 		config.min = value;
 	}
 	

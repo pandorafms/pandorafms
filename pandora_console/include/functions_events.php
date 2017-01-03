@@ -221,7 +221,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 		// Override the column 'user_comment' with the column 'user_comments' when oracle
 		if (!empty($events) && $config["dbtype"] == "oracle") {
 			array_walk($events, function(&$value, $key) {
-				set_if_defined($value['user_comments'], $value['user_comments']);
+				set_if_defined($value['user_comment'], $value['user_comments']);
 			});
 		}
 		

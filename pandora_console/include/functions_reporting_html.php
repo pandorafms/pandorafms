@@ -233,14 +233,10 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'sql_graph_pie':
 				reporting_html_sql_graph($table, $item);
 				break;
-			case 'alert_report_module':
-				reporting_html_alert_report_module($table, $item);
-				break;
-			case 'alert_report_agent':
-				reporting_html_alert_report_agent($table, $item);
-				break;
 			case 'alert_report_group':
-				reporting_html_alert_report_group($table, $item);
+			case 'alert_report_module':
+			case 'alert_report_agent':
+				reporting_html_alert_report($table, $item);
 				break;
 			case 'network_interfaces_report':
 				reporting_html_network_interfaces_report($table, $item);
@@ -1610,113 +1606,72 @@ function reporting_html_network_interfaces_report($table, $item) {
 	}
 }
 
-function reporting_html_alert_report_group($table, $item) {
+/**
+ * Unified alert report HTML
+ */
+function reporting_html_alert_report($table, $item) {
 	$table->colspan['alerts']['cell'] = 3;
 	$table->cellstyle['alerts']['cell'] = 'text-align: left;';
 	
-	$table1->width = '99%';
-	$table1->head = array ();
-	$table1->head['agent'] = __('Agent');
-	$table1->head['module'] = __('Module');
+	$table1->width   = '99%';
+	$table1->head    = array ();
+	$table1->data    = array ();
+	$table1->rowspan = array();
+	$table1->valign  = array();
+	$table1->head['agent']    = __('Agent');
+	$table1->head['module']   = __('Module');
 	$table1->head['template'] = __('Template');
-	$table1->head['actions'] = __('Actions');
-	$table1->head['fired'] = __('Fired');
-	$table1->data = array ();
-	foreach ($item['data'] as $alert) {
-		$row = array();
-		
-		$row['agent'] = $alert['agent'];
-		$row['module'] = $alert['module'];
-		$row['template'] = $alert['template'];
-		$row['actions'] = $alert['template'];
-		
-		$row['actions'] = '<ul class="action_list">' . "\n";
-		foreach ($alert['action'] as $action) {
-			$row['actions'] .= '<li>' . $action . '</li>' . "\n";
-		}
-		$row['actions'] .= '</ul>';
-		
-		$row['fired'] = '<ul style="list-style-type: disc; margin-left: 10px;">' . "\n";
-		foreach ($alert['fired'] as $fired) {
-			$row['fired'] .= '<li>' . $fired . '</li>' . "\n";
-		}
-		$row['fired'] .= '</ul>';
-		
-		$table1->data[] = $row;
-	}
-	
-	$table->data['alerts']['cell'] = html_print_table($table1, true);
-}
+	$table1->head['actions']  = __('Actions');
+	$table1->head['fired']    = __('Action') . " " . __('Fired');
+	$table1->head['tfired']   = __('Template') . " " . __('Fired');
+	$table1->valign["agent"]    = "top";
+	$table1->valign["module"]   = "top";
+	$table1->valign["template"] = "top";
+	$table1->valign["actions"]  = "top";
+	$table1->valign["fired"]    = "top";
+	$table1->valign["tfired"]   = "top";
 
-function reporting_html_alert_report_agent($table, $item) {
-	$table->colspan['alerts']['cell'] = 3;
-	$table->cellstyle['alerts']['cell'] = 'text-align: left;';
-	
-	$table1 = new stdClass();
-	$table1->width = '99%';
-	$table1->head = array ();
-	$table1->head['module'] = __('Module');
-	$table1->head['template'] = __('Template');
-	$table1->head['actions'] = __('Actions');
-	$table1->head['fired'] = __('Fired');
-	$table1->data = array ();
-	foreach ($item['data'] as $alert) {
+	$td = 0;
+	foreach ($item['data'] as $information) {
 		$row = array();
 		
-		$row['module'] = $alert['module'];
-		$row['template'] = $alert['template'];
-		$row['actions'] = $alert['template'];
+		$td = count($information["alerts"]);
 		
-		$row['actions'] = '<ul class="action_list">' . "\n";
-		foreach ($alert['action'] as $action) {
-			$row['actions'] .= '<li>' . $action . '</li>' . "\n";
-		}
-		$row['actions'] .= '</ul>';
-		
-		$row['fired'] = '<ul style="list-style-type: disc; margin-left: 10px;">' . "\n";
-		foreach ($alert['fired'] as $fired) {
-			$row['fired'] .= '<li>' . $fired . '</li>' . "\n";
-		}
-		$row['fired'] .= '</ul>';
-		
-		$table1->data[] = $row;
-	}
+		$row['agent'] = $information['agent'];
+		$row['module'] = $information['module'];
 	
-	$table->data['alerts']['cell'] = html_print_table($table1, true);
-}
+		foreach ($information["alerts"] as $alert) {
+			$row['template'] = $alert["template"];
+			$row['actions']  = '<ul>' . "\n";
+			$row['fired']    = '<ul style="list-style-type: none;">' . "\n";
+			foreach ($alert['actions'] as $action) {
+				$row['actions'] .= '<li>' . $action['name'] . '</li>';
+				if (is_numeric($action['fired'])){
+					$row['fired']   .= '<li>' . date("Y-m-d H:i:s", $action['fired']) . '</li>';
+				}
+				else {
+					$row['fired']   .= '<li>' . $action['fired'] . '</li>';
+				}
+			}
+			$row['actions'] .= '</ul>';
+			$row['fired']   .= '</ul>';
 
-function reporting_html_alert_report_module($table, $item) {
-	$table->colspan['alerts']['cell'] = 3;
-	$table->cellstyle['alerts']['cell'] = 'text-align: left;';
-	
-	$table1 = new stdClass();
-	$table1->width = '99%';
-	$table1->head = array ();
-	$table1->head['template'] = __('Template');
-	$table1->head['actions'] = __('Actions');
-	$table1->head['fired'] = __('Fired');
-	$table1->data = array ();
-	foreach ($item['data'] as $alert) {
-		$row = array();
-		
-		$row['template'] = $alert['template'];
-		$row['actions'] = $alert['template'];
-		
-		$row['actions'] = '<ul class="action_list">' . "\n";
-		foreach ($alert['action'] as $action) {
-			$row['actions'] .= '<li>' . $action . '</li>' . "\n";
+			$row['tfired'] = '<ul style="list-style-type: none;">' . "\n";
+			foreach ($alert['template_fired'] as $fired) {
+				$row['tfired'] .= '<li>' . $fired . '</li>' . "\n";
+			}
+			$row['tfired'] .= '</ul>';
+
+			// Skip first td's to avoid repeat the agent and module names
+			$table1->data[] = $row;
+			if($td > 1){
+				for($i=0; $i<$td;$i++) {
+					$row['agent']  = "";
+					$row['module'] = "";
+				}
+			}
 		}
-		$row['actions'] .= '</ul>';
-		
-		$row['fired'] = '<ul style="list-style-type: disc; margin-left: 10px;">' . "\n";
-		foreach ($alert['fired'] as $fired) {
-			$row['fired'] .= '<li>' . $fired . '</li>' . "\n";
-		}
-		$row['fired'] .= '</ul>';
-		
-		$table1->data[] = $row;
 	}
-	
 	$table->data['alerts']['cell'] = html_print_table($table1, true);
 }
 

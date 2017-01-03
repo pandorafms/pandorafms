@@ -1292,7 +1292,7 @@ function reporting_event_report_group($report, $content,
 		$return['failed'] = __('No events');
 	}
 	else {
-		$return['data'] = $data;
+		$return['data'] = array_reverse($data);
 	}
 	
 	
@@ -1456,7 +1456,7 @@ function reporting_event_report_module($report, $content) {
 		$return['failed'] = __('No events');
 	}
 	else {
-		$return['data'] = $data;
+		$return['data'] = array_reverse($data);
 	}
 	
 	if ($config['metaconsole']) {
@@ -2632,6 +2632,32 @@ function reporting_network_interfaces_report($report, $content,
 	return reporting_check_structure_content($return);
 }
 
+/**
+ * reporting alert get fired
+ */
+function reporting_alert_get_fired($id_agent_module, $id_alert_template_module, $period, $datetime) {
+	$fired = array();
+	$firedTimes = get_module_alert_fired(
+		$id_agent_module,
+		$id_alert_template_module,
+		$period,
+		$datetime);
+	
+	if (empty($firedTimes)) {
+		$firedTimes = array();
+		$firedTimes[0]['timestamp'] = '----------------------------';
+	}
+
+	foreach ($firedTimes as $fireTime) {
+		$fired[] = $fireTime['timestamp'];
+	}
+
+	return $fired;
+}
+
+/**
+ * Reporting alert report group
+ */
 function reporting_alert_report_group($report, $content) {
 	
 	global $config;
@@ -2658,8 +2684,8 @@ function reporting_alert_report_group($report, $content) {
 	$return["date"] = reporting_get_date_text($report, $content);
 	
 	if ($content['id_group'] == 0) {
-		$alerts = db_get_all_rows_sql('
-			SELECT *
+		$agent_modules = db_get_all_rows_sql('
+			SELECT distinct(id_agent_module)
 			FROM talert_template_modules
 			WHERE disabled = 0
 				AND id_agent_module IN (
@@ -2667,8 +2693,8 @@ function reporting_alert_report_group($report, $content) {
 					FROM tagente_modulo)');
 	}
 	else {
-		$alerts = db_get_all_rows_sql('
-			SELECT *
+		$agent_modules = db_get_all_rows_sql('
+			SELECT distinct(id_agent_module)
 			FROM talert_template_modules
 			WHERE disabled = 0
 				AND id_agent_module IN (
@@ -2686,71 +2712,95 @@ function reporting_alert_report_group($report, $content) {
 	
 	$data = array();
 	
-	foreach ($alerts as $alert) {
+	foreach ($agent_modules as $agent_module) {
 		$data_row = array();
 		
-		$data_row['disabled'] = $alert['disabled'];
-		
+	
 		$data_row['agent'] = io_safe_output(agents_get_name(
-			agents_get_agent_id_by_module_id($alert['id_agent_module'])));
+			agents_get_agent_id_by_module_id($agent_module['id_agent_module'])));
 		$data_row['module'] = db_get_value_filter('nombre', 'tagente_modulo',
-			array('id_agente_modulo' => $alert['id_agent_module']));
-		$data_row['template'] = db_get_value_filter('name', 'talert_templates',
-			array('id' => $alert['id_alert_template']));
-		
-		$actions = alerts_get_alert_agent_module_actions ($alert['id']);
-		
-		if (!empty($actions)) {
-			$row = db_get_row_sql('SELECT id_alert_action
-				FROM talert_templates
-				WHERE id IN (SELECT id_alert_template
-					FROM talert_template_modules
-					WHERE id = ' . $alert['id'] . ')');
-			
-			$id_action = 0;
-			if (!empty($row))
-				$id_action = $row['id_alert_action'];
-			
-			// Prevent from void action
-			if (empty($id_action))
-				$id_action = 0;
+			array('id_agente_modulo' => $agent_module['id_agent_module']));
+
+		// Alerts over $id_agent_module
+		$alerts = alerts_get_effective_alert_actions($agent_module['id_agent_module']);
+
+		if ($alerts === false){
+			continue;
 		}
-		else {
-			$actions = db_get_all_rows_sql('SELECT name 
-				FROM talert_actions 
-				WHERE id = ' . $id_action);
+		
+		$ntemplates = 0;
+		
+		foreach ($alerts as $template => $actions) {
+
+			$data_action = array();
+			$data_action['actions'] = array();
+			
+			$naction = 0;
+			if (isset($actions["custom"])) {
+				foreach ($actions["custom"] as $action) {
+					$data_action[$naction]["name"] = $action["name"];
+					$fired = $action["fired"];
+					if ($fired == 0){
+						$data_action[$naction]['fired']  = '----------------------------';
+					}
+					else {
+						$data_action[$naction]['fired']  = $fired;	
+					}
+					$naction++;
+				}
+			}
+			elseif (isset($actions["default"])) {
+				foreach ($actions["default"] as $action) {
+					$data_action[$naction]["name"] = $action["name"];
+					$fired = $action["fired"];
+					if ($fired == 0){
+						$data_action[$naction]['fired']  = '----------------------------';
+					}
+					else {
+						$data_action[$naction]['fired']  = $fired;	
+					}
+					$naction++;
+				}
+			}
+			elseif(isset($actions["unavailable"])) {
+				foreach ($actions["unavailable"] as $action) {
+					$data_action[$naction]["name"] = $action["name"];
+					$fired = $action["fired"];
+					if ($fired == 0){
+						$data_action[$naction]['fired']  = '----------------------------';
+					}
+					else {
+						$data_action[$naction]['fired']  = $fired;	
+					}
+					$naction++;
+				}
+			}
+
+			$module_actions = array();
+			
+			$module_actions["template"]       = $template;
+			$module_actions["template_fired"] = reporting_alert_get_fired(
+													$agent_module['id_agent_module'],
+													$actions["id"],
+													(int) $content["period"],
+													(int) $report["datetime"]);
+			$module_actions["actions"]        = $data_action;
+
+			$data_row['alerts'][$ntemplates] = $module_actions;
+			$ntemplates++;
 		}
 
-		$data_row['action'] = array();
-		foreach ($actions as $action) {
-			$data_row['action'][] = $action['name'];
+		if ($ntemplates > 0) {
+			$data[] = $data_row;
 		}
-		
-		$data_row['fired'] = array();
-		$firedTimes = get_module_alert_fired(
-			$alert['id_agent_module'],
-			$alert['id'],
-			(int) $content['period'],
-			(int) $report["datetime"]);
-		
-		if (empty($firedTimes)) {
-			$firedTimes = array();
-			$firedTimes[0]['timestamp'] = '----------------------------';
-		}
-		
-		foreach ($firedTimes as $fireTime) {
-			$data_row['fired'][] = $fireTime['timestamp'];
-		}
-		
-		$data[] = $data_row;
 	}
-	
-	$return['data'] = $data;
-	
+
+	$return["data"] = $data;
+
 	if ($config['metaconsole']) {
 		metaconsole_restore_db();
 	}
-	
+
 	return reporting_check_structure_content($return);
 }
 
@@ -2778,83 +2828,92 @@ function reporting_alert_report_agent($report, $content) {
 	$return["description"] = $content["description"];
 	$return["date"] = reporting_get_date_text($report, $content);
 	$return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
-	
-	$alerts = agents_get_alerts($content['id_agent']);
-	
-	if (isset($alerts['simple'])) {
-		$alerts = $alerts['simple'];
-	}
-	else {
-		$alerts = array();
-	}
-	
+
+	$module_list = agents_get_modules($content['id_agent']);
+
 	$data = array();
-	
-	if (is_array($alerts) || is_object($alerts)) {
-		foreach ($alerts as $alert) {
-			$data_row = array();
-			
-			$data_row['disabled'] = $alert['disabled'];
-			
-			$data_row['module'] = db_get_value_filter('nombre', 'tagente_modulo',
-				array('id_agente_modulo' => $alert['id_agent_module']));
-			$data_row['template'] = db_get_value_filter('name', 'talert_templates',
-				array('id' => $alert['id_alert_template']));
-			
-			$actions = alerts_get_alert_agent_module_actions ($alert['id']);
+	foreach ($module_list as $id => $module_name) {
 
-			if (!empty($actions)) {
-				$row = db_get_row_sql('SELECT id_alert_action
-					FROM talert_templates
-					WHERE id IN (SELECT id_alert_template
-						FROM talert_template_modules
-						WHERE id = ' . $alert['id_alert_template'] . ')');
-				
-				$id_action = 0;
-				if (!empty($row))
-					$id_action = $row['id_alert_action'];
-				
-				// Prevent from void action
-				if (empty($id_action))
-					$id_action = 0;
-			}
-			else {
-				$actions = db_get_all_rows_sql('SELECT name 
-					FROM talert_actions 
-					WHERE id = ' . $id_action);	
-			} 
+		$data_row = array();
+		$data_row['agent']  = $agent_name;
+		$data_row['module'] = $module_name;
+
+		// Alerts over $id_agent_module
+		$alerts = alerts_get_effective_alert_actions($id);
+
+		if ($alerts === false){
+			continue;
+		}
+
+		$ntemplates = 0;
+		
+		foreach ($alerts as $template => $actions) {
+
+			$data_action = array();
+			$data_action['actions'] = array();
 			
-			if (empty($actions)) {
-				$actions = array();
+			$naction = 0;
+			if (isset($actions["custom"])) {
+				foreach ($actions["custom"] as $action) {
+					$data_action[$naction]["name"] = $action["name"];
+					$fired = $action["fired"];
+					if ($fired == 0){
+						$data_action[$naction]['fired']  = '----------------------------';
+					}
+					else {
+						$data_action[$naction]['fired']  = $fired;	
+					}
+					$naction++;
+				}
+			}
+			elseif (isset($actions["default"])) {
+				foreach ($actions["default"] as $action) {
+					$data_action[$naction]["name"] = $action["name"];
+					$fired = $action["fired"];
+					if ($fired == 0){
+						$data_action[$naction]['fired']  = '----------------------------';
+					}
+					else {
+						$data_action[$naction]['fired']  = $fired;	
+					}
+					$naction++;
+				}
+			}
+			elseif(isset($actions["unavailable"])) {
+				foreach ($actions["unavailable"] as $action) {
+					$data_action[$naction]["name"] = $action["name"];
+					$fired = $action["fired"];
+					if ($fired == 0){
+						$data_action[$naction]['fired']  = '----------------------------';
+					}
+					else {
+						$data_action[$naction]['fired']  = $fired;	
+					}
+					$naction++;
+				}
 			}
 
-			$data_row['action'] = array();
-			foreach ($actions as $action) {
-				$data_row['action'][] = $action['name'];
-			}
+			$module_actions = array();
 			
-			$data_row['fired'] = array();
-			$firedTimes = get_module_alert_fired(
-				$alert['id_agent_module'],
-				$alert['id'],
-				(int) $content['period'],
-				(int) $report["datetime"]);
-			
-			if (empty($firedTimes)) {
-				$firedTimes = array();
-				$firedTimes[0]['timestamp'] = '----------------------------';
-			}
+			$module_actions["template"]       = $template;
+			$module_actions["template_fired"] = reporting_alert_get_fired(
+													$id,
+													$actions["id"],
+													(int) $content["period"],
+													(int) $report["datetime"]);
+			$module_actions["actions"]        = $data_action;
 
-			foreach ($firedTimes as $fireTime) {
-				$data_row['fired'][] = $fireTime['timestamp'];
-			}
-			
+			$data_row['alerts'][$ntemplates] = $module_actions;
+			$ntemplates++;
+		}
+
+		if ($ntemplates > 0) {
 			$data[] = $data_row;
 		}
 	}
 
-	$return['data'] = $data;
-	
+	$return["data"] = $data;
+
 	if ($config['metaconsole']) {
 		metaconsole_restore_db();
 	}
@@ -2891,101 +2950,92 @@ function reporting_alert_report_module($report, $content) {
 	$return["date"] = reporting_get_date_text($report, $content);
 	$return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 	
-	switch ($config["dbtype"]) {
-		case "mysql":
-		case "postgresql":
-			$alerts = db_get_all_rows_sql('
-				SELECT *, t1.id as id_alert_template_module
-				FROM talert_template_modules t1
-				INNER JOIN talert_templates t2
-					ON t1.id_alert_template = t2.id
-				WHERE id_agent_module = ' . $content['id_agent_module']);
-			break;
-		case "oracle":
-			$alerts = db_get_all_rows_sql('
-				SELECT t1.*, t2.*, t1.id as id_alert_template_module
-				FROM talert_template_modules t1
-				INNER JOIN talert_templates t2
-					ON t1.id_alert_template = t2.id
-				WHERE id_agent_module = ' . $content['id_agent_module']);
-			break;
+
+	$data_row = array();
+		
+	
+	$data_row['agent'] = io_safe_output(agents_get_name(
+		agents_get_agent_id_by_module_id($content['id_agent_module'])));
+	$data_row['module'] = db_get_value_filter('nombre', 'tagente_modulo',
+		array('id_agente_modulo' => $content['id_agent_module']));
+
+	// Alerts over $id_agent_module
+	$alerts = alerts_get_effective_alert_actions($content['id_agent_module']);
+
+	if ($alerts === false){
+		continue;
 	}
+
+	$ntemplates = 0;
 	
-	
-	if ($alerts === false) {
-		$alerts = array();
-	}
-	
-	$data = array();
-	$actions = array();
-	foreach ($alerts as $alert) {
+	foreach ($alerts as $template => $actions) {
+
+		$data_action = array();
+		$data_action['actions'] = array();
 		
-		$data_row = array();
-		
-		$data_row['disabled'] = $alert['disabled'];
-		
-		$data_row['template'] = db_get_value_filter('name',
-			'talert_templates', array('id' => $alert['id_alert_template']));
-		
-		$actions = alerts_get_alert_agent_module_actions ($alert['id_alert_template_module']);
-		
-		if (!empty($actions)) {
-			$row = db_get_row_sql('SELECT id_alert_action
-				FROM talert_templates
-				WHERE id IN (SELECT id_alert_template
-					FROM talert_template_modules
-					WHERE id = ' . $alert['id_alert_template_module'] . ')');
-			
-			$id_action = 0;
-			
-			if (!empty($row))
-				$id_action = $row['id_alert_action'];
-			
-			// Prevent from void action
-			if (empty($id_action))
-				$id_action = 0;
-		} 
-		else {
-			if ($id_action != null) {
-				$actions = db_get_all_rows_sql('SELECT name 
-					FROM talert_actions 
-					WHERE id = ' . $id_action);
+		$naction = 0;
+		if (isset($actions["custom"])) {
+			foreach ($actions["custom"] as $action) {
+				$data_action[$naction]["name"] = $action["name"];
+				$fired = $action["fired"];
+				if ($fired == 0){
+					$data_action[$naction]['fired']  = '----------------------------';
+				}
+				else {
+					$data_action[$naction]['fired']  = $fired;	
+				}
+				$naction++;
 			}
 		}
-		
-		if (empty($actions)) {
-			$data_row['action'][] = __('No defined actions');
+		elseif (isset($actions["default"])) {
+			foreach ($actions["default"] as $action) {
+				$data_action[$naction]["name"] = $action["name"];
+				$fired = $action["fired"];
+				if ($fired == 0){
+					$data_action[$naction]['fired']  = '----------------------------';
+				}
+				else {
+					$data_action[$naction]['fired']  = $fired;	
+				}
+				$naction++;
+			}
 		}
-		else {
-			$data_row['action'] = array();
-			foreach ($actions as $action) {
-				$data_row['action'][] = $action['name'];
+		elseif(isset($actions["unavailable"])) {
+			foreach ($actions["unavailable"] as $action) {
+				$data_action[$naction]["name"] = $action["name"];
+				$fired = $action["fired"];
+				if ($fired == 0){
+					$data_action[$naction]['fired']  = '----------------------------';
+				}
+				else {
+					$data_action[$naction]['fired']  = $fired;	
+				}
+				$naction++;
 			}
 		}
 
-		$data_row['fired'] = array();
-		$firedTimes = get_module_alert_fired(
-			$content['id_agent_module'],
-			$alert['id_alert_template_module'],
-			(int) $content['period'],
-			(int) $report["datetime"]);	
+		$module_actions = array();
 		
-		if (empty($firedTimes)) {
-			$firedTimes = array();
-			$firedTimes[0]['timestamp'] = '----------------------------';
-		}
+		$module_actions["template"]       = $template;
+		$module_actions["template_fired"] = reporting_alert_get_fired(
+												$content['id_agent_module'],
+												$actions["id"],
+												(int) $content["period"],
+												(int) $report["datetime"]);
+		$module_actions["actions"]        = $data_action;
 
-		foreach ($firedTimes as $fireTime) {
-			$data_row['fired'][] = $fireTime['timestamp'];
-		}
+		$data_row['alerts'][$ntemplates] = $module_actions;
+		$ntemplates++;
+	}
 
+	if ($ntemplates > 0) {
 		$data[] = $data_row;
 	}
-	
-	$return['data'] = $data;
-	
+
+	$return["data"] = $data;
+
 	if ($config['metaconsole']) {
-		metaconsole_restore_db();
+	 	metaconsole_restore_db();
 	}
 	
 	return reporting_check_structure_content($return);
@@ -5208,7 +5258,7 @@ function reporting_availability_graph($report, $content, $date=false, $time=fals
 				1920,
 				50,
 				$urlImage,
-				5,
+				1,
 				$raw_graph,
 				false);
 			
@@ -6101,7 +6151,7 @@ function reporting_get_group_detailed_event ($id_group, $period = 0,
 		$filter_event_validated, $filter_event_critical,
 		$filter_event_warning, $filter_event_no_validated,
 		$filter_event_filter_search, false, $history, $filter_event_type);
-	
+
 	if ($return_type === 'hash') {
 		return $events;
 	}

@@ -1003,7 +1003,6 @@ sub pandoradb_main ($$$) {
 	if (defined ($history_dbh)) {
 		undef ($history_dbh) unless defined (enterprise_hook ('pandora_historydb', [$dbh, $history_dbh, $conf->{'_history_db_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
 		if (defined($conf{'_history_event_enabled'})) {
-			log_message ('', "Entrando a los eventoss ::::  " . $conf->{'_history_event_days'} . "\n");
 			undef ($history_dbh) unless defined (enterprise_hook ('pandora_history_event', [$dbh, $history_dbh, $conf->{'_history_event_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}]));
 		}
 	}

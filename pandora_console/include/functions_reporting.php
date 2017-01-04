@@ -98,7 +98,7 @@ function reporting_get_name($id_report) {
 
 function reporting_make_reporting_data($report = null, $id_report,
 	$date, $time, $period = null, $type = 'dinamic',
-	$force_width_chart = null, $force_height_chart = null) {
+	$force_width_chart = null, $force_height_chart = null, $pdf= false) {
 	
 	global $config;
 	
@@ -164,7 +164,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 			case 'availability_graph':
 				$report['contents'][] = reporting_availability_graph(
 					$report,
-					$content);
+					$content,
+					$pdf);
 				break;
 			case 'sql':
 				$report['contents'][] = reporting_sql(
@@ -4973,10 +4974,14 @@ function reporting_availability($report, $content, $date=false, $time=false) {
  *  Generates a structure the report.
  *
  */
-function reporting_availability_graph($report, $content, $date=false, $time=false) {
+function reporting_availability_graph($report, $content, $pdf=false) {
 	global $config;
 	$return = array(); 
 	$return['type'] = 'availability_graph';
+	$ttl = 1;
+	if ($pdf){
+		$ttl = 2;
+	}
 	
 	if (empty($content['name'])) {
 		$content['name'] = __('Availability');
@@ -5258,7 +5263,7 @@ function reporting_availability_graph($report, $content, $date=false, $time=fals
 				1920,
 				50,
 				$urlImage,
-				1,
+				$ttl,
 				$raw_graph,
 				false);
 			

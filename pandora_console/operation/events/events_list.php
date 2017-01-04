@@ -696,7 +696,10 @@ elseif ($group_rep == 1) {
 		$offset,
 		$pagination,
 		$meta,
-		$history);
+		$history,
+		false,
+		false,
+		'DESC');
 }
 elseif ($group_rep == 2) {
 	$result = events_get_events_grouped_by_agent(

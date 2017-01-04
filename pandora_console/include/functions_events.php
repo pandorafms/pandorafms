@@ -112,7 +112,7 @@ function events_get_event ($id, $fields = false) {
 
 function events_get_events_grouped($sql_post, $offset = 0,
 	$pagination = 1, $meta = false, $history = false, $total = false, 
-	$history_db = false) {
+	$history_db = false, $order = "ASC") {
 	
 	global $config; 
 	
@@ -148,7 +148,7 @@ function events_get_events_grouped($sql_post, $offset = 0,
 					FROM $table te
 					WHERE 1=1 " . $sql_post . "
 					GROUP BY estado, evento, id_agentmodule" . $groupby_extra . "
-					ORDER BY timestamp_rep ASC LIMIT " . $offset . "," . $pagination;
+					ORDER BY timestamp_rep " . $order . " LIMIT " . $offset . "," . $pagination;
 			}
 			break;
 		case "postgresql":

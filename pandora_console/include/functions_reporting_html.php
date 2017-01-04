@@ -1610,7 +1610,7 @@ function reporting_html_network_interfaces_report($table, $item) {
 /**
  * Unified alert report HTML
  */
-function reporting_html_alert_report($table, $item) {
+function reporting_html_alert_report($table, $item, $pdf = 0) {
 	$table->colspan['alerts']['cell'] = 3;
 	$table->cellstyle['alerts']['cell'] = 'text-align: left;';
 	
@@ -1643,25 +1643,25 @@ function reporting_html_alert_report($table, $item) {
 	
 		foreach ($information["alerts"] as $alert) {
 			$row['template'] = $alert["template"];
-			$row['actions']  = '<ul>' . "\n";
-			$row['fired']    = '<ul style="list-style-type: none;">' . "\n";
+			$row['actions']  = '';
+			$row['fired']    = '';
 			foreach ($alert['actions'] as $action) {
-				$row['actions'] .= '<li>' . $action['name'] . '</li>';
+				if ($action['name'] == "" ) { // Removed from retrieved hash
+					continue;
+				}
+				$row['actions'] .= '<div style="width: 100%;">' . $action['name'] . '</div>';
 				if (is_numeric($action['fired'])){
-					$row['fired']   .= '<li>' . date("Y-m-d H:i:s", $action['fired']) . '</li>';
+					$row['fired']   .= '<div style="width: 100%;">' . date("Y-m-d H:i:s", $action['fired']) . '</div>';
 				}
 				else {
-					$row['fired']   .= '<li>' . $action['fired'] . '</li>';
+					$row['fired']   .= '<div style="width: 100%;">' . $action['fired'] . '</div>';
 				}
 			}
-			$row['actions'] .= '</ul>';
-			$row['fired']   .= '</ul>';
 
-			$row['tfired'] = '<ul style="list-style-type: none;">' . "\n";
+			$row['tfired']    = '';
 			foreach ($alert['template_fired'] as $fired) {
-				$row['tfired'] .= '<li>' . $fired . '</li>' . "\n";
+				$row['tfired'] .= '<div style="width: 100%;">' . $fired . '</div>' . "\n";
 			}
-			$row['tfired'] .= '</ul>';
 
 			// Skip first td's to avoid repeat the agent and module names
 			$table1->data[] = $row;
@@ -1674,6 +1674,10 @@ function reporting_html_alert_report($table, $item) {
 		}
 	}
 	$table->data['alerts']['cell'] = html_print_table($table1, true);
+	if($pdf){
+		$table1->class = 'table-beauty pdf_alert_table';
+		return html_print_table($table1, true);
+	}
 }
 
 function reporting_html_sql_graph($table, $item) {

@@ -135,7 +135,25 @@ function reporting_make_reporting_data($report = null, $id_report,
 			$items_label['type'] = $content['type'];
 			$items_label['id_agent'] = $content['id_agent'];
 			$items_label['id_agent_module'] = $content['id_agent_module'];
+			$metaconsole_on = is_metaconsole();
+			$server_name = $content['server_name'];
+			
+			//Metaconsole connection
+			if ($metaconsole_on && $server_name != '') {
+				$connection = metaconsole_get_connection($server_name);
+				if (!metaconsole_load_external_db($connection)) {
+					//ui_print_error_message ("Error connecting to ".$server_name);
+					continue;
+				}
+			}
+
 			$content['name'] = reporting_label_macro($items_label, $content['style']['name_label']);
+
+			if ($metaconsole_on) {
+				//Restore db connection
+				metaconsole_restore_db();
+			}
+
 		}
 		switch (reporting_get_type($content)) {
 			case 'simple_graph':

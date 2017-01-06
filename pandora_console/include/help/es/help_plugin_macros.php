@@ -34,5 +34,5 @@ Hidden this macros because they cannot edit in the module form
 <li>_email_tag_ : Emails associated to the module tags.</li>
 <li>_phone_tag_ : Phone numbers associated to the module tags.</li>
 <li>_moduletags_ : URLs associated to the module tags.</li>
-
+<li>_agentcustomfield_<i>n</i>_: Campo personalizado número <i>n</i> del agente (eg. _agentcustomfield_9_). </li>
 </ul>

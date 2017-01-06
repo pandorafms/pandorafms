@@ -12,7 +12,7 @@
 <li>_agent_ : エージェント名。</li>
 <li>_agentdescription_ : エージェントの説明。</li>
 <li>_agentgroup_ : エージェントグループ名。</li>
-<li>_agentstatus : エージェントの現在の状態。</li>
+<li>_agentstatus_ : エージェントの現在の状態。</li>
 <li>_address_ : エージェントのアドレス。</li>
 <li>_module_ : モジュール名。</li>
 <li>_modulegroup_ : モジュールグループ名。</li>
@@ -36,6 +36,7 @@ Hidden this macros because they cannot edit in the module form
 <li>_email_tag_ : モジュールタグに関連付けられた Email。</li>
 <li>_phone_tag_ : モジュールタグに関連付けられた電話番号。</li>
 <li>_moduletags_ : モジュールタグに関連付けられた URL。</li>
+<li>_agentcustomfield_<i>n</i>_ : エージェントカスタムフィールド番号<i>n</i> (例: _agentcustomfield_9_). </li>
 
 </ul>
 <p>

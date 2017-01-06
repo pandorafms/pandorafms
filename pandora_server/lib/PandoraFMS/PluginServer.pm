@@ -235,6 +235,7 @@ sub data_consumer ($$) {
 				_email_tag_ => undef,
 				_phone_tag_ => undef,
 				_name_tag_ => undef,
+				'_agentcustomfield_\d+_' => undef,
 	);
 	$parameters = subst_alert_macros ($parameters, \%macros, $pa_config, $dbh, $agent, $module);
 

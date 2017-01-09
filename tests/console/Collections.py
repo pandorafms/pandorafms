@@ -12,8 +12,9 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
-import unittest2, time, re
 
+import unittest2, time, re
+import logging
 
 class Collections(PandoraWebDriverTestCase):
 
@@ -27,6 +28,8 @@ class Collections(PandoraWebDriverTestCase):
 	@is_enterprise
 	def test_A_create_collection(self):
 
+		logging.basicConfig(filename="Collections.log", level=logging.INFO, filemode='w')
+
 		driver = self.driver
 		self.login()
 		detect_and_pass_all_wizards(driver)
@@ -37,6 +40,8 @@ class Collections(PandoraWebDriverTestCase):
 
 		element = driver.find_element_by_xpath('//a[contains(.,self.collection_name)]')
 		self.assertIsInstance(element,WebElement)
+
+		logging.info("test_A_create_collection is correct")
 
 	@is_enterprise
 	def test_B_edit_collection(self):
@@ -50,6 +55,8 @@ class Collections(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//a[contains(.,self.new_collection_name)]')
 		self.assertIsInstance(element,WebElement)
 
+		logging.info("test_B_edit_collection is correct")
+
 	@is_enterprise
 	def test_C_create_text_collection(self):
 	
@@ -59,6 +66,8 @@ class Collections(PandoraWebDriverTestCase):
 				
 		element = driver.find_element_by_xpath('//a[contains(.,"file_collectionPAN11")]')
 		self.assertIsInstance(element,WebElement)
+
+		logging.info("test_C_create_text_collection is correct")
 
 	@is_enterprise
 	def test_D_directory_collection(self):	
@@ -70,6 +79,8 @@ class Collections(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//a[contains(.,"directory_collectionPAN11")]')
 		self.assertIsInstance(element,WebElement)
 
+		logging.info("test_D_directory_collection is correct")
+
 	@is_enterprise
 	def test_E_delete_collection(self):
 	
@@ -80,6 +91,8 @@ class Collections(PandoraWebDriverTestCase):
 		#Check that New_collectionPAN11 is delete
 		element = driver.find_elements_by_xpath('//a[contains(.,"'+self.new_collection_name+'")]')
 		self.assertEqual(element,[])
+
+		logging.info("test_E_delete_collection is correct")
 
 if __name__ == "__main__":
 	unittest2.main()

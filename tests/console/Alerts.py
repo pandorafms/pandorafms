@@ -72,7 +72,7 @@ class Alerts (PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//a[contains(.,"'+action_name+'")]')
 		self.assertIsInstance(element,WebElement)	
 
-		logging.info("test_B_create_new_action_command")
+		logging.info("test_B_create_new_action_command is correct")
 
 	def test_C_create_new_template(self):
 		

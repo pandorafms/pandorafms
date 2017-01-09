@@ -50,7 +50,9 @@ namespace Pandora_Modules {
 		TYPE_ASYNC_DATA, /**< Asynchronous generic_data */
 		TYPE_ASYNC_PROC, /**< Asynchronous generic_proc */
 		TYPE_ASYNC_STRING, /**< Asynchronous generic_data_string */
-		TYPE_LOG /**< Log data */
+		TYPE_LOG, /**< Log data */
+		TYPE_GENERIC_DATA_INC_ABS /**< The value is an integer with
+					  *  incremental diferences (timestamps are ignored) */
 	} Module_Type;
 
 	const string module_generic_data_str        = "generic_data";
@@ -61,6 +63,7 @@ namespace Pandora_Modules {
 	const string module_async_proc_str          = "async_proc";
 	const string module_async_string_str        = "async_string";
 	const string module_log_str                 = "log";
+	const string module_generic_data_inc_abs_str = "generic_data_inc_abs";
 
 	/**
 	 * Defines the kind of the module.

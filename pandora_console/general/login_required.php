@@ -24,6 +24,7 @@ if (is_ajax()) {
 	
 	$save_identification = get_parameter ('save_required_wizard', 0);
 	$change_language = get_parameter ('change_language', 0);
+	$cancel_wizard = get_parameter ('cancel_wizard', 0);
 	
 	// Updates the values get on the identification wizard
 	if ($save_identification) {
@@ -50,6 +51,10 @@ if (is_ajax()) {
 	//Change the language if is change in checkbox
 	if ($change_language !== 0) {
 		config_update_value ('language', $change_language);
+	}
+	
+	if ($cancel_wizard !== 0) {
+		config_update_value ('initial_wizard', 1);
 	}
 	
 	return;
@@ -219,7 +224,13 @@ $(document).ready (function () {
 	$(".ui-draggable").css("cursor", "inherit");
 	
 	$("#button-cancel").click (function () {
-		$("#login_id_dialog" ).dialog('close')
+		jQuery.post ("ajax.php",
+			{"page": "general/login_required",
+			"cancel_wizard": 1},
+			function (data) {}
+		);
+		
+		$("#login_id_dialog" ).dialog('close');
 	});
 	
 });

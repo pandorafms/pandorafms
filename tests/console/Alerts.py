@@ -10,6 +10,7 @@ from selenium.common.exceptions import StaleElementReferenceException, NoSuchEle
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
 import unittest2, time, re
+import logging
 
 class Alerts (PandoraWebDriverTestCase):
 
@@ -21,7 +22,9 @@ class Alerts (PandoraWebDriverTestCase):
 		u"""
 		Create a new alert action using eMail command and check that create ok
 		"""
-			
+		
+		logging.basicConfig(filename="Alerts.log", level=logging.INFO, filemode='w')
+					
 		action_name = gen_random_string(6)
 
 		driver = self.driver
@@ -37,6 +40,8 @@ class Alerts (PandoraWebDriverTestCase):
 
 		element = driver.find_element_by_xpath('//a[contains(.,"'+action_name+'")]')
 		self.assertIsInstance(element,WebElement)
+
+		logging.info("test_A_create_new_email_action is correct")
 
 	def test_B_create_new_action_command(self):
 		
@@ -67,6 +72,8 @@ class Alerts (PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//a[contains(.,"'+action_name+'")]')
 		self.assertIsInstance(element,WebElement)	
 
+		logging.info("test_B_create_new_action_command")
+
 	def test_C_create_new_template(self):
 		
 		u"""
@@ -92,6 +99,8 @@ class Alerts (PandoraWebDriverTestCase):
 
 		element = driver.find_element_by_xpath('//a[contains(.,"'+template_name+'")]')
 		self.assertIsInstance(element,WebElement)
+
+		logging.info("test_C_create_new_template is correct")
 
 	def test_D_edit_template_created(self):
 
@@ -137,6 +146,8 @@ class Alerts (PandoraWebDriverTestCase):
 		driver.find_element_by_id("submit-next").click()
 
 		self.assertEqual("_agentdescription_" in driver.page_source,True)
+
+		logging.info("test_D_edit_template_created is correct")
 
 if __name__ == "__main__":
 	unittest2.main()

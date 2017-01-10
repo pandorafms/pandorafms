@@ -14,7 +14,7 @@ from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
 
 import unittest2, time, re
-
+import logging
 
 class Network_components(PandoraWebDriverTestCase):
 
@@ -28,7 +28,9 @@ class Network_components(PandoraWebDriverTestCase):
 		u"""
 		Create and search new network component module
 		"""
-		
+
+		logging.basicConfig(filename="Network_components.log", level=logging.INFO, filemode='w')	
+	
 		driver = self.driver
 		self.login()
 		detect_and_pass_all_wizards(driver)
@@ -72,6 +74,7 @@ class Network_components(PandoraWebDriverTestCase):
 
 		self.assertEqual(network_component_name in driver.page_source,True)
 
+		logging.info("test_A_create_network_component is correct")
 
 	def test_B_create_plugin_component(self):
 
@@ -120,6 +123,8 @@ class Network_components(PandoraWebDriverTestCase):
 		
 		self.assertEqual(plugin_component_name in driver.page_source,True)
 
+		logging.info("test_B_create_plugin_component is correct")
+
 	def test_C_create_wmi_component(self):
 
 		u"""
@@ -166,7 +171,8 @@ class Network_components(PandoraWebDriverTestCase):
 		search_module (driver,agent_name,plugin_component_name,go_to_module=False)
 		
 		self.assertEqual(plugin_component_name in driver.page_source,True)
-	
+		logging.info("test_C_create_wmi_component is correct")	
+
 	def test_D_plugin_component_with_parameters(self):
 	
 		u"""
@@ -216,6 +222,7 @@ class Network_components(PandoraWebDriverTestCase):
 		
 		self.assertEqual(plugin_component_name in driver.page_source,True)
 
+		logging.info("test_D_plugin_component_with_parameters is correct")
 
 if __name__ == "__main__":
 	unittest2.main()

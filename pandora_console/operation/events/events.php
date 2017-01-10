@@ -303,6 +303,7 @@ $params = "search=" . rawurlencode(io_safe_input($search)) .
 
 if ($meta) {
 	$params .= "&amp;text_agent=" . $text_agent;
+	$params .= "&amp;server_id=" . $server_id;
 }
 
 $url = "index.php?sec=eventos&amp;sec2=operation/events/events&amp;" . $params;

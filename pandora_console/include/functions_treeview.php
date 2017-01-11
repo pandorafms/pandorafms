@@ -198,16 +198,18 @@ function treeview_printModuleTable($id_module, $server_data = false, $no_head = 
 								$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" .
 									remove_right_zeros(number_format($last_data["datos"], $config['graph_precision'])) . "</span>";
 							else
-								$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . 
-									substr(io_safe_output($last_data['datos']),0,12) . "</span>";
+								$data = ui_print_truncate_text(io_safe_output($last_data['datos']),
+										GENERIC_SIZE_TEXT, true, true, 
+										true, '...', 'white-space: nowrap;');
 						break;
 					default:
 						if (is_numeric($last_data["datos"]))
 							$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . 
 								remove_right_zeros(number_format($last_data["datos"], $config['graph_precision'])) . "</span>";
 						else
-							$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . 
-								substr(io_safe_output($last_data['datos']),0,12) . "</span>";
+							$data = ui_print_truncate_text(io_safe_output($last_data['datos']),
+										GENERIC_SIZE_TEXT, true, true, 
+											true, '...', 'white-space: nowrap;');
 						break;
 				}
 				break;
@@ -225,17 +227,20 @@ function treeview_printModuleTable($id_module, $server_data = false, $no_head = 
 						$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . 
 							remove_right_zeros(number_format($last_data["datos"], $config['graph_precision'])) . "</span>";
 					else
-						$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . 
-							substr(io_safe_output($last_data['datos']),0,12) . "</span>";
+						$data = ui_print_truncate_text(io_safe_output($last_data['datos']),
+								GENERIC_SIZE_TEXT, true, true, true, 
+									'...', 'white-space: nowrap;');
 				break;
 			default:
 				if (is_numeric($last_data["datos"]))
 					$data = "<span style='height: 20px; display: inline-table; vertical-align: top;'>" . 
 						remove_right_zeros(number_format($last_data["datos"], $config['graph_precision'])) . "</span>";
 				else
-					$data = "<span title='" . $last_data["datos"] . "' style='white-space: nowrap;'>" . 
-						substr(io_safe_output($last_data['datos']),0,12) . "</span>";
+					$data = ui_print_truncate_text(io_safe_output($last_data['datos']),
+						GENERIC_SIZE_TEXT, true, true, true, 
+							'...', 'white-space: nowrap;');
 			break;
+		}
 	}
 	if (!empty($last_data['utimestamp'])) {
 		$last_data_str = $data;

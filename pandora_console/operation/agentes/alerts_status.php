@@ -386,7 +386,7 @@ if ($print_agent) {
 	if(is_metaconsole()) {
 		ui_toggle(
 			printFormFilterAlert($id_group, $filter, $free_search,
-				$url, $filter_standby, $tag_filter, true, $strict_user),
+				$url, $filter_standby, $tag_filter, false, true, $strict_user),
 			__('Show Options'));;
 	}
 	else {

@@ -2338,7 +2338,13 @@ function chooseType() {
 	$("#row_last_value").hide();
 	$("#row_filter_search").hide();
 	$("#row_percentil").hide();
+	$("#agents_row").hide();
+	$("#select_agent_modules").hide();
+	$("#modules_row").hide();
+	$("#row_show_summary_group").hide();
+	$("#row_event_severity").hide();
 	$("#row_event_type").hide();
+	$("#row_event_status").hide();
 	
 	// SLA list default state
 	$("#sla_list").hide();

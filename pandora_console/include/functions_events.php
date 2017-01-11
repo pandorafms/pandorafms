@@ -1348,22 +1348,16 @@ function events_get_agent ($id_agent, $period, $date = 0,
 	if ($filter_event_critical) {
 		$criticities[] = 4;
 	}
-	if ($filter_event_warning) {
-		$criticities[] = 3;
-	}
-	if (!empty($criticities)) {
-		$sql_where .= ' AND criticity IN (' . implode(', ', $criticities) . ')';
-	}
-	
-	if ( $filter_event_validated && $filter_event_no_validated ) {
-		$sql_where .= " AND (estado = 1 OR estado = 0)";
-	}	
-	else {
-		if ($filter_event_validated) {
-			$sql_where .= ' AND estado = 1 ';
-		} else {
-			if ($filter_event_no_validated) {
-				$sql_where .= ' AND estado = 0 ';
+
+	$status_all = 0;
+	if(!empty($filter_event_status)){
+		foreach ($filter_event_status as $key => $value) {
+			switch ($value) {
+				case -1:
+					$status_all = 1;
+					break;
+				default:
+					break;
 			}
 		}
 	}
@@ -2334,19 +2328,19 @@ function events_page_custom_data ($event) {
 	if ($event['custom_data'] == '') {
 		return '';
 	}
-
+	
 	$table->width = '100%';
 	$table->data = array ();
 	$table->head = array ();
 	$table->style[0] = 'width:35%; font-weight: bold; text-align: left;';
 	$table->style[1] = 'text-align: left;';
 	$table->class = "alternate rounded_cells";
-
+	
 	$json_custom_data = base64_decode ($event['custom_data']);
 	$custom_data = json_decode ($json_custom_data);
 	if ($custom_data === NULL) {
 		return '<div id="extended_event_custom_data_page" class="extended_event_pages">'.__('Invalid custom data: %s', $json_custom_data).'</div>';
-	}	
+	}
 	
 	$i = 0;
 	foreach ($custom_data as $field => $value) {
@@ -2354,7 +2348,7 @@ function events_page_custom_data ($event) {
 		$table->data[$i][1] = io_safe_output ($value);
 		$i++;
 	}
-
+	
 	$custom_data = '<div id="extended_event_custom_data_page" class="extended_event_pages">'.html_print_table($table, true).'</div>';
 	
 	return $custom_data;

@@ -688,7 +688,7 @@ else {
 				$main_sec = get_parameter('extension_in_menu');
 			else
 				if ($sec == 'gextensions')
-+					$main_sec = get_parameter('extension_in_menu');
+					$main_sec = get_parameter('extension_in_menu');
 				else
 					$main_sec = $sec;
 			$sec = $sec2;

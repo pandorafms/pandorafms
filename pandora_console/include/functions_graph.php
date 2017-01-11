@@ -2926,7 +2926,7 @@ function graph_events_validated($width = 300, $height = 200, $url = "", $meta = 
 	global $config;
 	global $graphic_type;
 	
-	$data_graph = reporting_get_count_events_validated(
+	$data_graph = events_get_count_events_validated(
 		array('id_group' => array_keys(users_get_groups())));
 	
 	$colors = array();

@@ -95,17 +95,15 @@ $percentil = false;
 $time_compare_overlapped = false;
 
 //Added for events items
-$filter_event_validated = false;
-$filter_event_no_validated = false;
-$filter_event_critical = false;
-$filter_event_warning = false;
-
-$filter_event_type = false;
-
+$show_summary_group    = false;
+$filter_event_severity = false;
+$filter_event_type     = false;
+$filter_event_status   = false;
 $event_graph_by_agent = false;
 $event_graph_by_user_validator = false;
 $event_graph_by_criticity = false;
 $event_graph_validated_vs_unvalidated = false;
+
 $netflow_filter = 0;
 $max_values = 0;
 $resolution = 0;
@@ -401,33 +399,17 @@ switch ($action) {
 					$group = $item['id_group'];
 					break;
 				case 'event_report_agent':
-					$description = $item['description'];
-					$idAgent = $item['id_agent'];
-					$period = $item['period'];
-					
-					//Added for events items
-					$filter_event_no_validated = $style['filter_event_no_validated'];
-					$filter_event_validated = $style['filter_event_validated'];
-					$filter_event_critical = $style['filter_event_critical'];
-					$filter_event_warning = $style['filter_event_warning'];
-					$filter_event_type = json_decode($style['filter_event_type'], true);
-					
-					$event_graph_by_agent = $style['event_graph_by_agent'];
-					$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
-					$event_graph_by_criticity = $style['event_graph_by_criticity'];
-					$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
-					break;
 				case 'event_report_group':
 					$description = $item['description'];
 					$period = $item['period'];
 					$group = $item['id_group'];
+					$idAgent = $item['id_agent'];
 					
 					//Added for events items
-					$filter_event_no_validated = $style['filter_event_no_validated'];
-					$filter_event_validated = $style['filter_event_validated'];
-					$filter_event_critical = $style['filter_event_critical'];
-					$filter_event_warning = $style['filter_event_warning'];
-					$filter_event_type = json_decode($style['filter_event_type'], true);
+					$show_summary_group    = $style['show_summary_group'];
+					$filter_event_severity = json_decode($style['filter_event_severity'], true);
+					$filter_event_status   = json_decode($style['filter_event_status'], true);
+					$filter_event_type     = json_decode($style['filter_event_type'], true);
 					
 					$event_graph_by_agent = $style['event_graph_by_agent'];
 					$event_graph_by_user_validator = $style['event_graph_by_user_validator'];
@@ -1338,22 +1320,28 @@ You can of course remove the warnings, that's why we include the source and do n
 				?>
 			</td>
 		</tr>
-		<tr id="row_event_filter" style="" class="datos">
-			<td style="font-weight:bold;"><?php echo __('Event filter'); ?></td>
+
+		<tr id="row_show_summary_group" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Show Summary group'); ?></td>
 			<td>
 				<?php
-				echo __('No Validated');
-				html_print_checkbox ('filter_event_no_validated', true, $filter_event_no_validated);
-				echo __('Validated');
-				html_print_checkbox ('filter_event_validated', true, $filter_event_validated);
-				echo __('Critical');
-				html_print_checkbox ('filter_event_critical', true, $filter_event_critical);
-				echo __('Warning');
-				html_print_checkbox ('filter_event_warning', true, $filter_event_warning);
+				html_print_checkbox ('show_summary_group', true, $show_summary_group);
 				?>
 			</td>
 		</tr>
-		
+
+		<tr id="row_event_severity" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Severity'); ?></td>
+			<td>
+				<?php
+					$valuesSeverity = get_priorities ();
+					html_print_select ($valuesSeverity, 'filter_event_severity[]', 
+					$filter_event_severity, '', __('All'), 'all', false, true, 
+					false, '', false, false, false, false, false, '');
+				?>
+			</td>
+		</tr>
+
 		<tr id="row_event_type" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Event type'); ?></td>
 			<td>
@@ -1362,11 +1350,22 @@ You can of course remove the warnings, that's why we include the source and do n
 				html_print_select ($event_types_select, 'filter_event_type[]', 
 					$filter_event_type, '', __('All'), 'all', false, true, 
 					false, '', false, false, false, false, false, '');
-				
 				?>
 			</td>
 		</tr>
 		
+		<tr id="row_event_status" style="" class="datos">
+			<td style="font-weight:bold;"><?php echo __('Event Status'); ?></td>
+			<td>
+				<?php
+				$fields = events_get_all_status(true);
+				html_print_select ($fields, 'filter_event_status[]', 
+					$filter_event_status, '', '', '', false, true, 
+					false, '', false, false, false, false, false, '');
+				?>
+			</td>
+		</tr>
+
 		<tr id="row_event_graphs" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Event graphs'); ?></td>
 			<td>
@@ -2479,7 +2478,6 @@ function chooseType() {
 	$("#row_date").hide();
 	$("#row_agent_multi").hide();
 	$("#row_module_multi").hide();
-	$("#row_event_filter").hide();
 	$("#row_event_graphs").hide();
 	$("#row_event_graph_by_agent").hide();
 	$("#row_event_graph_by_user").hide();
@@ -2494,7 +2492,10 @@ function chooseType() {
 	$("#agents_row").hide();
 	$("#select_agent_modules").hide();
 	$("#modules_row").hide();
+	$("#row_show_summary_group").hide();
+	$("#row_event_severity").hide();
 	$("#row_event_type").hide();
+	$("#row_event_status").hide();
 	
 	// SLA list default state
 	$("#sla_list").hide();
@@ -2510,24 +2511,6 @@ function chooseType() {
 	$('#agent_autocomplete_events').show();
 	
 	switch (type) {
-		case 'event_report_group':
-			$("#row_description").show();
-			$("#row_period").show();
-			$("#row_servers").show();
-			$("#row_group").show();
-			$("#row_show_in_two_columns").show();
-			$("#row_event_filter").show();
-			$("#row_event_graphs").show();
-			
-			$("#row_event_graph_by_agent").show();
-			$("#row_event_graph_by_user").show();
-			$("#row_event_graph_by_criticity").show();
-			$("#row_event_graph_by_validated").show();
-			$("#row_event_type").show();
-			
-			$("#row_filter_search").show();
-			break;
-		
 		case 'simple_graph':
 			$("#row_time_compare_overlapped").show();
 			$("#row_only_avg").show();
@@ -2782,12 +2765,36 @@ function chooseType() {
 			$("#row_show_in_two_columns").show();
 			break;
 		
+		case 'event_report_group':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_servers").show();
+			$("#row_group").show();
+			$("#row_show_in_two_columns").show();
+			$("#row_event_severity").show();
+			$("#row_event_status").show();
+			$("#row_show_summary_group").show();
+			
+			$("#row_event_graphs").show();
+			
+			$("#row_event_graph_by_agent").show();
+			$("#row_event_graph_by_user").show();
+			$("#row_event_graph_by_criticity").show();
+			$("#row_event_graph_by_validated").show();
+			$("#row_event_type").show();
+			
+			$("#row_filter_search").show();
+			break;
+
+
 		case 'event_report_agent':
 			$("#row_description").show();
 			$("#row_agent").show();
 			$("#row_period").show();
 			$("#row_show_in_two_columns").show();
-			$("#row_event_filter").show();
+			$("#row_event_severity").show();
+			$("#row_event_status").show();
+			$("#row_show_summary_group").show();
 			$("#row_event_graphs").show();
 			
 			$("#row_event_graph_by_user").show();
@@ -2797,6 +2804,7 @@ function chooseType() {
 			
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();
+			$("#row_filter_search").show();
 			break;
 		
 		case 'event_report_module':

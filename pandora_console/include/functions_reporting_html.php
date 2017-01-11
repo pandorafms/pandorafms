@@ -250,10 +250,6 @@ function reporting_html_print_report($report, $mini = false) {
 			case 'database_serialized':
 				reporting_html_database_serialized($table, $item);
 				break;
-			case 'agent_detailed_event':
-			case 'event_report_agent':
-				reporting_html_event_report_agent($table, $item);
-				break;
 			case 'group_report':
 				reporting_html_group_report($table, $item);
 				break;
@@ -268,6 +264,10 @@ function reporting_html_print_report($report, $mini = false) {
 				break;
 			case 'inventory_changes':
 				reporting_html_inventory_changes($table, $item);
+				break;
+			case 'agent_detailed_event':
+			case 'event_report_agent':
+				reporting_html_event_report_agent($table, $item);
 				break;
 			case 'event_report_module':
 				reporting_html_event_report_module($table, $item);
@@ -752,7 +752,6 @@ function reporting_html_top_n($table, $item) {
 
 function reporting_html_event_report_group($table, $item) {
 	global $config;
-	
 	if (!empty($item['failed'])) {
 		$table->colspan['events']['cell'] = 3;
 		$table->data['events']['cell'] = $item['failed'];
@@ -763,26 +762,49 @@ function reporting_html_event_report_group($table, $item) {
 		
 		$table1->align = array();
 		$table1->align[0] = 'center';
-		$table1->align[2] = 'center';
-		
+		if($item['show_summary_group']){
+			$table1->align[3] = 'center';
+		}
+		else{
+			$table1->align[2] = 'center';	
+		}
 		$table1->data = array ();
 		
 		$table1->head = array ();
-		$table1->head[0] = __('Status');
-		$table1->head[1] = __('Name');
-		$table1->head[2] = __('Type');
-		$table1->head[3] = __('Agent');
-		$table1->head[4] = __('Severity');
-		$table1->head[5] = __('Val. by');
-		$table1->head[6] = __('Timestamp');
-		
+		if($item['show_summary_group']){
+			$table1->head[0] = __('Status');
+			$table1->head[1] = __('Count');
+			$table1->head[2] = __('Name');
+			$table1->head[3] = __('Type');
+			$table1->head[4] = __('Agent');
+			$table1->head[5] = __('Severity');
+			$table1->head[6] = __('Val. by');
+			$table1->head[7] = __('Timestamp');
+		}
+		else{
+			$table1->head[0] = __('Status');
+			$table1->head[1] = __('Name');
+			$table1->head[2] = __('Type');
+			$table1->head[3] = __('Agent');
+			$table1->head[4] = __('Severity');
+			$table1->head[5] = __('Val. by');
+			$table1->head[6] = __('Timestamp');
+		}
+
 		foreach ($item['data'] as $k => $event) {
 			//First pass along the class of this row
-			$table1->cellclass[$k][1] = $table1->cellclass[$k][3] =
-			$table1->cellclass[$k][4] = $table1->cellclass[$k][5] =
-			$table1->cellclass[$k][6] =
-				get_priority_class ($event["criticity"]);
-			
+			if($item['show_summary_group']){
+				$table1->cellclass[$k][1] = $table1->cellclass[$k][2] =
+				$table1->cellclass[$k][4] = $table1->cellclass[$k][5] =
+				$table1->cellclass[$k][6] = $table1->cellclass[$k][7] =
+					get_priority_class ($event["criticity"]);
+			}
+			else{
+				$table1->cellclass[$k][1] = $table1->cellclass[$k][3] =
+				$table1->cellclass[$k][4] = $table1->cellclass[$k][5] =
+				$table1->cellclass[$k][6] = 
+					get_priority_class ($event["criticity"]);
+			}
 			$data = array ();
 			
 			// Colored box
@@ -805,6 +827,10 @@ function reporting_html_event_report_group($table, $item) {
 					"width" => 16,
 					"title" => $title_st,
 					"id" => 'status_img_' . $event["id_evento"]));
+
+			if($item['show_summary_group']){
+				$data[] = $event['event_rep'];
+			}
 			
 			$data[] = ui_print_truncate_text(
 				io_safe_output($event['evento']),
@@ -825,16 +851,19 @@ function reporting_html_event_report_group($table, $item) {
 				$user_name = db_get_value ('fullname', 'tusuario', 'id_user', $event['id_usuario']);
 				$data[] = io_safe_output($user_name);
 			}
-			$data[] = '<font style="font-size: 6pt;">' .
-				date($config['date_format'], $event['timestamp_rep']) .
-				'</font>';
+
+			if($item['show_summary_group']){
+				$data[] = '<font style="font-size: 6pt;">' . date($config['date_format'], $event['timestamp_rep']) . '</font>';
+			}
+			else{
+				$data[] = '<font style="font-size: 6pt;">' . date($config['date_format'], strtotime($event['timestamp'])) . '</font>';	
+			}
+
 			array_push ($table1->data, $data);
 		}
 		
 		$table->colspan['events']['cell'] = 3;
 		$table->data['events']['cell'] = html_print_table($table1, true);
-		
-		
 		
 		if (!empty($item['chart']['by_agent'])) {
 			$table1 = new stdClass();
@@ -1368,10 +1397,8 @@ function reporting_html_group_report($table, $item) {
 
 function reporting_html_event_report_agent($table, $item) {
 	global $config;
-	
 	$table1 = new stdClass();
 	$table1->width = '99%';
-	
 	$table1->align = array();
 	$table1->align[0] = 'center';
 	$table1->align[1] = 'center';
@@ -1381,7 +1408,9 @@ function reporting_html_event_report_agent($table, $item) {
 	
 	$table1->head = array ();
 	$table1->head[0] = __('Status');
-	$table1->head[1] = __('Count');
+	if($item['show_summary_group']){
+		$table1->head[1] = __('Count');
+	}
 	$table1->head[2] = __('Name');
 	$table1->head[3] = __('Type');
 	$table1->head[4] = __('Severity');
@@ -1389,13 +1418,21 @@ function reporting_html_event_report_agent($table, $item) {
 	$table1->head[6] = __('Timestamp');
 	
 	foreach ($item['data'] as $i => $event) {
-		$table1->cellclass[$i][1] =
-		$table1->cellclass[$i][2] = 
-		$table1->cellclass[$i][4] =
-		$table1->cellclass[$i][5] =
-		$table1->cellclass[$i][6] =
-			get_priority_class ($event["criticity"]);
-		
+		if($item['show_summary_group']){
+			$table1->cellclass[$i][1] =
+			$table1->cellclass[$i][2] = 
+			$table1->cellclass[$i][4] =
+			$table1->cellclass[$i][5] =
+			$table1->cellclass[$i][6] =
+				get_priority_class ($event["criticity"]);
+		}
+		else{
+			$table1->cellclass[$i][1] =
+			$table1->cellclass[$i][3] = 
+			$table1->cellclass[$i][4] =
+			$table1->cellclass[$i][5] =
+				get_priority_class ($event["criticity"]);
+		}
 		$data = array ();
 		// Colored box
 		switch ($event['status']) {
@@ -1417,8 +1454,10 @@ function reporting_html_event_report_agent($table, $item) {
 				"width" => 16,
 				"title" => $title_st));
 		
-		$data[] = $event['count'];
-		
+		if($item['show_summary_group']){
+			$data[] = $event['count'];
+		}
+
 		$data[] = ui_print_truncate_text(
 			io_safe_output($event['name']),
 			140, false, true);
@@ -1433,8 +1472,12 @@ function reporting_html_event_report_agent($table, $item) {
 			$user_name = db_get_value ('fullname', 'tusuario', 'id_user', $event['validated_by']);
 			$data[] = io_safe_output($user_name);
 		}
-		$data[] = '<font style="font-size: 6pt;">' .
-			date($config['date_format'], $event['timestamp']) . '</font>';
+		if($item['show_summary_group']){
+			$data[] = '<font style="font-size: 6pt;">' . date($config['date_format'], $event['timestamp']) . '</font>';
+		}
+		else{
+			$data[] = '<font style="font-size: 6pt;">' . date($config['date_format'], strtotime($event['timestamp'])) . '</font>';	
+		}
 		array_push ($table1->data, $data);
 	}
 	

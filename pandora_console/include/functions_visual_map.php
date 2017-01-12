@@ -2137,7 +2137,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 	}
 	
 	if (defined('METACONSOLE')) {
-		echo "<div style='width: 920px; overflow:auto; margin: 0 auto;'>";
+		echo "<div style='width: 100%; overflow:auto; margin: 0 auto; padding:5px;'>";
 	}
 	
 	echo '<div style="background-color:'.$layout["background_color"].';"><div id="background_'.$id_layout.'"

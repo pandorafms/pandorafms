@@ -37,6 +37,7 @@ if (is_ajax ()) {
 	$get_agents_group_json = (bool) get_parameter ("get_agents_group_json");
 	$get_agent_modules_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_json_for_multiple_agents");
 	$get_agent_modules_alerts_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_alerts_json_for_multiple_agents");
+	$get_agent_modules_multiple_alerts_json_for_multiple_agents = (bool) get_parameter("get_agent_modules_multiple_alerts_json_for_multiple_agents");
 	$get_agents_json_for_multiple_modules = (bool) get_parameter("get_agents_json_for_multiple_modules");
 	$get_agent_modules_json_for_multiple_agents_id = (bool) get_parameter("get_agent_modules_json_for_multiple_agents_id");
 	$get_agentmodule_status_tooltip = (bool) get_parameter ("get_agentmodule_status_tooltip");
@@ -206,6 +207,46 @@ if (is_ajax ()) {
 	}
 	
 	if ($get_agent_modules_alerts_json_for_multiple_agents) {
+		$idAgents = (array) get_parameter('id_agent');
+		$templates = (array) get_parameter('templates');
+		
+		$selection_mode = get_parameter('selection_mode','common');
+		
+		$sql = 'SELECT DISTINCT(nombre)
+			FROM tagente_modulo t1, talert_template_modules t2
+			WHERE t2.id_agent_module = t1.id_agente_modulo
+				AND delete_pending = 0
+				AND id_alert_template IN (' . implode(',', $templates) . ')
+				AND id_agente IN (' . implode(',', $idAgents) . ')';
+			
+		if ($selection_mode == 'common') {
+			$sql .= ' AND (
+					SELECT count(nombre)
+					FROM tagente_modulo t3, talert_template_modules t4
+					WHERE t4.id_agent_module = t3.id_agente_modulo
+						AND delete_pending = 0 AND t1.nombre = t3.nombre
+						AND id_agente IN (' . implode(',', $idAgents) . ')
+						AND id_alert_template IN (' . implode(',', $templates) . ')) = (' . count($idAgents) . ')';
+		}
+		
+		$sql .= ' ORDER BY t1.nombre';
+		
+		$nameModules = db_get_all_rows_sql($sql);
+		
+		if ($nameModules == false) {
+			$nameModules = array();
+		}
+		
+		$result = array();
+		foreach($nameModules as $nameModule) {
+			$result[] = io_safe_output($nameModule['nombre']);
+		}
+		
+		echo json_encode($result);
+		return;
+	}
+	
+	if ($get_agent_modules_multiple_alerts_json_for_multiple_agents) {
 		$idAgents = get_parameter('id_agent');
 		$id_template = get_parameter('template');
 		

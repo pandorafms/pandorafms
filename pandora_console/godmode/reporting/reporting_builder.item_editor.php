@@ -400,11 +400,13 @@ switch ($action) {
 					break;
 				case 'event_report_agent':
 				case 'event_report_group':
+				case 'event_report_module':
 					$description = $item['description'];
 					$period = $item['period'];
 					$group = $item['id_group'];
 					$idAgent = $item['id_agent'];
-					
+					$idAgentModule = $item['id_agent_module'];
+
 					//Added for events items
 					$show_summary_group    = $style['show_summary_group'];
 					$filter_event_severity = json_decode($style['filter_event_severity'], true);
@@ -417,14 +419,6 @@ switch ($action) {
 					$event_graph_validated_vs_unvalidated = $style['event_graph_validated_vs_unvalidated'];
 					
 					$filter_search = $style['event_filter_search'];
-					break;
-				case 'event_report_module':
-					$description = $item['description'];
-					$idAgentModule = $item['id_agent_module'];
-					$idAgent = db_get_value_filter('id_agente',
-						'tagente_modulo',
-						array('id_agente_modulo' => $idAgentModule));
-					$period = $item['period'];
 					break;
 				case 'general':
 					$description = $item['description'];
@@ -981,10 +975,12 @@ You can of course remove the warnings, that's why we include the source and do n
 					if ((empty($agents)) || $agents == -1) $agents = array();
 					
 					$agents_select = array();
-					foreach ($id_agents as $id) {
-						foreach ($agents as $key => $a) {
-							if ($key == (int)$id) {
-								$agents_select[$key] = $key;
+					if (is_array($id_agents) || is_object($id_agents)){
+						foreach ($id_agents as $id) {
+							foreach ($agents as $key => $a) {
+								if ($key == (int)$id) {
+									$agents_select[$key] = $key;
+								}
 							}
 						}
 					}
@@ -1336,8 +1332,8 @@ You can of course remove the warnings, that's why we include the source and do n
 				<?php
 					$valuesSeverity = get_priorities ();
 					html_print_select ($valuesSeverity, 'filter_event_severity[]', 
-					$filter_event_severity, '', __('All'), 'all', false, true, 
-					false, '', false, false, false, false, false, '');
+						$filter_event_severity, '', __('All'), '-1', false, true, 
+						false, '', false, false, false, false, false, '');
 				?>
 			</td>
 		</tr>
@@ -1346,10 +1342,10 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td style="font-weight:bold;"><?php echo __('Event type'); ?></td>
 			<td>
 				<?php
-				$event_types_select = get_event_types();
-				html_print_select ($event_types_select, 'filter_event_type[]', 
-					$filter_event_type, '', __('All'), 'all', false, true, 
-					false, '', false, false, false, false, false, '');
+					$event_types_select = get_event_types();
+					html_print_select ($event_types_select, 'filter_event_type[]', 
+						$filter_event_type, '', __('All'), 'all', false, true, 
+						false, '', false, false, false, false, false, '');
 				?>
 			</td>
 		</tr>
@@ -1358,10 +1354,10 @@ You can of course remove the warnings, that's why we include the source and do n
 			<td style="font-weight:bold;"><?php echo __('Event Status'); ?></td>
 			<td>
 				<?php
-				$fields = events_get_all_status(true);
-				html_print_select ($fields, 'filter_event_status[]', 
-					$filter_event_status, '', '', '', false, true, 
-					false, '', false, false, false, false, false, '');
+					$fields = events_get_all_status(true);
+					html_print_select ($fields, 'filter_event_status[]', 
+						$filter_event_status, '', '', '', false, true, 
+						false, '', false, false, false, false, false, '');
 				?>
 			</td>
 		</tr>
@@ -1427,9 +1423,7 @@ You can of course remove the warnings, that's why we include the source and do n
 				?>
 			</td>
 		</tr>
-		
-		
-		
+
 		<tr id="row_filter_search" style="" class="datos">
 			<td style="font-weight:bold;"><?php echo __('Free search');?></td>
 			<td>
@@ -1983,7 +1977,7 @@ $(document).ready (function () {
 				switch (data) {
 					case 'boolean':
 					case 'sparse':
-						$("#row_percentil").show();
+						//$("#row_percentil").show();
 						break;
 					default:
 						$("#row_percentil").hide();
@@ -1992,6 +1986,47 @@ $(document).ready (function () {
 			}
 		});
 		
+	});
+
+	
+	$("#submit-create_item").click(function () {
+		var type = $('#type').val();
+		switch (type){
+			case 'alert_report_module': case 'alert_report_agent': case 'alert_report_group':
+			case 'event_report_agent': case 'event_report_module': case 'event_report_group':
+			case 'simple_graph': case 'simple_baseline_graph': case 'TTRT': case 'TTO':
+			case 'MTBF': case 'MTTR': case 'prediction_date': case 'projection_graph':
+			case 'avg_value': case 'max_value': case 'min_value': case 'monitor_report':
+			case 'database_serialized': case 'sumatory': case 'historical_data': 
+			case 'agent_configuration':
+				if ($("#hidden-id_agent").val() == 0) {
+					alert( <?php echo "'" . __('Please select Agent'). "'"; ?> );
+					return false;
+				}
+				break;
+			default:
+				break;
+		}
+	});
+
+	$("#submit-edit_item").click(function () {
+		var type = $('#type').val();
+		switch (type){
+			case 'alert_report_module': case 'alert_report_agent': case 'alert_report_group':
+			case 'event_report_agent': case 'event_report_module': case 'event_report_group':
+			case 'simple_graph': case 'simple_baseline_graph': case 'TTRT': case 'TTO':
+			case 'MTBF': case 'MTTR': case 'prediction_date': case 'projection_graph':
+			case 'avg_value': case 'max_value': case 'min_value': case 'monitor_report':
+			case 'database_serialized': case 'sumatory': case 'historical_data': 
+			case 'agent_configuration':
+				if ($("#hidden-id_agent").val() == 0) {
+					alert( <?php echo "'" . __('Please select Agent'). "'"; ?> );
+					return false;
+				}
+				break;
+			default:
+				break;
+		}
 	});
 	
 });
@@ -2770,12 +2805,9 @@ function chooseType() {
 			$("#row_period").show();
 			$("#row_servers").show();
 			$("#row_group").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_event_severity").show();
 			$("#row_event_status").show();
 			$("#row_show_summary_group").show();
-			
-			$("#row_event_graphs").show();
 			
 			$("#row_event_graph_by_agent").show();
 			$("#row_event_graph_by_user").show();
@@ -2791,16 +2823,17 @@ function chooseType() {
 			$("#row_description").show();
 			$("#row_agent").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
 			$("#row_event_severity").show();
 			$("#row_event_status").show();
 			$("#row_show_summary_group").show();
 			$("#row_event_graphs").show();
+			$("#row_event_type").show();
+			
 			
 			$("#row_event_graph_by_user").show();
 			$("#row_event_graph_by_criticity").show();
 			$("#row_event_graph_by_validated").show();
-			$("#row_event_type").show();
+			
 			
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();
@@ -2812,15 +2845,19 @@ function chooseType() {
 			$("#row_agent").show();
 			$("#row_module").show();
 			$("#row_period").show();
-			$("#row_show_in_two_columns").show();
-			
-			$("#row_event_graph_by_agent").show();
+			$("#row_event_severity").show();
+			$("#row_event_status").show();
+			$("#row_show_summary_group").show();
+			$("#row_event_graphs").show();
+			$("#row_event_type").show();
+
 			$("#row_event_graph_by_user").show();
 			$("#row_event_graph_by_criticity").show();
 			$("#row_event_graph_by_validated").show();
 			
 			$('#agent_autocomplete').hide();
 			$('#agent_autocomplete_events').show();
+			$("#row_filter_search").show();
 			break;
 		
 		case 'general':

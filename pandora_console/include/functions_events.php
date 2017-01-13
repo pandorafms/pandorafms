@@ -1261,7 +1261,7 @@ function events_get_group_events_steps ($begin, &$result, $id_group, $period, $d
 function events_get_agent ($id_agent, $period, $date = 0, 
 	$history = false, $show_summary_group = false, $filter_event_severity = false,
 	$filter_event_type = false, $filter_event_status = false, $filter_event_filter_search=false, 
-	$id_group = false, $events_group = false) {
+	$id_group = false, $events_group = false, $id_agent_module = false, $events_module = false) {
 	global $config;
 
 	if (!is_numeric ($date)) {
@@ -1350,15 +1350,19 @@ function events_get_agent ($id_agent, $period, $date = 0,
 			' OR id_evento LIKE "%' . io_safe_input($filter_event_filter_search) . '%")';
 	}
 	
-	if(!$events_group){
-		$sql_where .= sprintf(' AND id_agente = %d AND utimestamp > %d
-			AND utimestamp <= %d ', $id_agent, $datelimit, $date);
-	}
-	else{
+	if($events_group){
 		$sql_where .= sprintf(' AND id_grupo IN (%s) AND utimestamp > %d
 			AND utimestamp <= %d ', implode (",", $id_group), $datelimit, $date);
 	}
-	
+	elseif($events_module){
+		$sql_where .= sprintf(' AND id_agentmodule = %d AND utimestamp > %d
+			AND utimestamp <= %d ', $id_agent_module, $datelimit, $date);
+	}
+	else{
+		$sql_where .= sprintf(' AND id_agente = %d AND utimestamp > %d
+			AND utimestamp <= %d ', $id_agent, $datelimit, $date);
+	}
+
 	if($show_summary_group){
 		return events_get_events_grouped($sql_where, 0, 1000, 
 				is_metaconsole(), false, false, $history);
@@ -1367,43 +1371,6 @@ function events_get_agent ($id_agent, $period, $date = 0,
 		return events_get_events_no_grouped($sql_where, 0, 1000, 
 				is_metaconsole(), false, false, $history);
 	}
-}
-
-/**
- * Get all the events happened in an Agent during a period of time.
- *
- * The returned events will be in the time interval ($date - $period, $date]
- *
- * @param int $id_agent_module Module id to get events.
- * @param int $period Period of time in seconds to get events.
- * @param int $date Beginning date to get events.
- *
- * @return array An array with all the events happened.
- */
-function events_get_module ($id_agent_module, $period, $date = 0, $history = false, $show_summary_group = false) {
-	global $config;
-	
-	if (!is_numeric ($date)) {
-		$date = strtotime ($date);
-	}
-	if (empty ($date)) {
-		$date = get_system_time ();
-	}
-	
-	$datelimit = $date - $period;
-	
-	$sql_where = sprintf(' AND id_agentmodule = %d AND utimestamp > %d
-			AND utimestamp <= %d ', $id_agent_module, $datelimit, $date);
-	
-	return events_get_events_grouped($sql_where, 0, 1000, false, 
-				false, false, $history);
-	
-	$sql = sprintf ('SELECT evento, event_type, criticity, count(*) as count_rep, max(timestamp) AS time2
-		FROM tevento
-		WHERE id_agentmodule = %d AND utimestamp > %d AND utimestamp <= %d 
-		GROUP BY id_agentmodule, evento ORDER BY time2 DESC', $id_agent_module, $datelimit, $date);
-	
-	return db_get_all_rows_sql ($sql);
 }
 
 /**
@@ -2757,7 +2724,6 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
 function events_get_count_events_validated_by_user ($filter, $period, $date,
 	$filter_event_severity = false, $filter_event_type = false,
 	$filter_event_status = false, $filter_event_filter_search = false) {
-	
 	global $config;
 	//group
 	$sql_filter = ' AND 1=1 ';
@@ -2772,11 +2738,17 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
 		$sql_filter .= 
 			sprintf(' AND id_grupo IN (%s) ', implode (",", $id_group));
 	}
+
 	if (!empty($filter['id_agent'])) {
 		$sql_filter .= 
 			sprintf(' AND id_agente = %d ', $filter['id_agent']);
 	}
 	
+	if(!empty($filter['id_agentmodule'])){
+		$sql_filter .= 
+			sprintf(' AND id_agentmodule = %d ', $filter['id_agentmodule']);	
+	}
+
 	//date
 	if (!is_numeric ($date)) {
 		$date = strtotime ($date);
@@ -2865,7 +2837,6 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
 			%s %s
 		GROUP BY id_usuario',
 		$datelimit, $date, $sql_filter, $sql_where);
-
 	$rows = db_get_all_rows_sql ($sql);
 	
 	if ($rows == false)
@@ -2879,7 +2850,6 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
 		}
 		$return[$user_name] = $row['count'];
 	}
-	
 	return $return;
 }
 
@@ -2912,9 +2882,15 @@ function events_get_count_events_by_criticity ($filter, $period, $date,
 		$sql_filter .= 
 			sprintf(' AND id_grupo IN (%s) ', implode (",", $id_group));
 	}
+	
 	if (!empty($filter['id_agent'])) {
 		$sql_filter .= 
 			sprintf(' AND id_agente = %d ', $filter['id_agent']);
+	}
+
+	if(!empty($filter['id_agentmodule'])){
+		$sql_filter .= 
+			sprintf(' AND id_agentmodule = %d ', $filter['id_agentmodule']);	
 	}
 
 	if (!is_numeric ($date)) {
@@ -3045,9 +3021,15 @@ function events_get_count_events_validated ($filter, $period = null, $date = nul
 		$sql_filter .=
 			sprintf(" AND id_grupo IN (%s) ", implode (",", $id_group));
 	}
+	//agent
 	if (!empty($filter['id_agent'])) {
 		$sql_filter .=
 			sprintf(" AND id_agente = %d ", $filter['id_agent']);
+	}
+	//module
+	if(!empty($filter['id_agentmodule'])){
+		$sql_filter .= 
+			sprintf(' AND id_agentmodule = %d ', $filter['id_agentmodule']);	
 	}
 	
 	//date

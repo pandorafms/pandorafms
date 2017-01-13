@@ -3608,3 +3608,9 @@ color:#82b92e;font-family:Nunito;font-size:10pt;position:relative;top:6px;
 .input_error {
     border: 1px solid red;
 }
+
+#filter_event_status,
+#filter_event_severity,
+#filter_event_type {
+	width:50%;
+}

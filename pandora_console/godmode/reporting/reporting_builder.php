@@ -1124,6 +1124,7 @@ switch ($action) {
 						switch ($values['type']) {
 							case 'event_report_agent':
 							case 'event_report_group':
+							case 'event_report_module':
 								//Added for events items
 								$style['show_summary_group']    = $show_summary_group;
 								$style['filter_event_severity'] = json_encode($filter_event_severity);
@@ -1157,7 +1158,6 @@ switch ($action) {
 									$style['label'] = '';
 								break;
 							case 'agent_configuration':
-							case 'event_report_module':
 							case 'alert_report_agent':
 							case 'alert_report_module':
 							case 'historical_data':
@@ -1426,7 +1426,8 @@ switch ($action) {
 						
 						switch ($values['type']) {
 							case 'event_report_agent':
-							case 'event_report_group':	
+							case 'event_report_group':
+							case 'event_report_module':	
 								$show_summary_group    = get_parameter('show_summary_group', 0);
 								$filter_event_severity = get_parameter('filter_event_severity', '');
 								$filter_event_type     = get_parameter('filter_event_type', '');
@@ -1474,7 +1475,6 @@ switch ($action) {
 									$style['label'] = '';
 								break;
 							case 'agent_configuration':
-							case 'event_report_module':
 							case 'alert_report_agent':
 							case 'alert_report_module':
 							case 'historical_data':

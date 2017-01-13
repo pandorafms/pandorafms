@@ -131,17 +131,13 @@ function reporting_html_print_report($report, $mini = false) {
 			
 			$table->data['description_row']['description'] =  $item['description'];
 		
-			if($item['type']=='event_report_agent' || $item['type']=='event_report_module' || $item['type']=='event_report_group'){
-								
+			if($item['type']=='event_report_agent' || $item['type']=='event_report_group'){
 				if($item['description'] != '' && $item['description'] != null){
 					
 					$table->data['description_row']['description'] .= " - ";
 					
 				}
-				
 				$table->data['description_row']['description'] .= "Total events: ".$item["total_events"];
-										
-				
 			}
 			 
 			$table->colspan['description_row']['description'] = 3;
@@ -917,69 +913,139 @@ function reporting_html_event_report_group($table, $item) {
 }
 
 function reporting_html_event_report_module($table, $item) {
-	
 	global $config;
-	
+	$show_summary_group = $item['show_summary_group'];
 	if (!empty($item['failed'])) {
 		$table->colspan['events']['cell'] = 3;
 		$table->data['events']['cell'] = $item['failed'];
 	}
 	else {
-		$table1 = new stdClass();
-		$table1->width = '99%';
-		$table1->data = array ();
-		$table1->head = array ();
-		$table1->head[0] = __('Status');
-		$table1->head[1] = __('Event name');
-		$table1->head[2] = __('Event type');
-		$table1->head[3] = __('Severity');
-		$table1->head[4] = __('Count');
-		$table1->head[5] = __('Timestamp');
-		$table1->style[0] = 'text-align: center;';
-		$table1->style[4] = 'text-align: center;';
-		
-		
-		foreach ($item['data'] as $i => $event) {
-			$data = array();
-			
-			$table1->cellclass[$i][1] =
-			$table1->cellclass[$i][2] =
-			$table1->cellclass[$i][3] =
-			$table1->cellclass[$i][4] =
-			$table1->cellclass[$i][5] =  get_priority_class($event["criticity"]);
-			
-			// Colored box
-			switch ($event['estado']) {
-				case 0:
-					$img_st = "images/star.png";
-					$title_st = __('New event');
-					break;
-				case 1:
-					$img_st = "images/tick.png";
-					$title_st = __('Event validated');
-					break;
-				case 2:
-					$img_st = "images/hourglass.png";
-					$title_st = __('Event in process');
-					break;
+		foreach ($item['data'] as $item) {
+			$table1 = new stdClass();
+			$table1->width = '99%';
+			$table1->data = array ();
+			$table1->head = array ();
+			if($show_summary_group){
+				$table1->head[0]  = __('Status');
+				$table1->head[1]  = __('Event name');
+				$table1->head[2]  = __('Event type');
+				$table1->head[3]  = __('Severity');
+				$table1->head[4]  = __('Count');
+				$table1->head[5]  = __('Timestamp');
+				$table1->style[0] = 'text-align: center;';
+			}
+			else{
+				$table1->head[0]  = __('Status');
+				$table1->head[1]  = __('Event name');
+				$table1->head[2]  = __('Event type');
+				$table1->head[3]  = __('Severity');
+				$table1->head[4]  = __('Timestamp');
+				$table1->style[0] = 'text-align: center;';
+			}
+			$table->data['tatal_events']['cell'] = "Total events: ".$item["total_events"]; 
+			if (is_array($item['data']) || is_object($item['data'])){
+				$item_data = array_reverse($item['data']);
 			}
 			
-			$data[0] = html_print_image ($img_st, true, 
-				array ("class" => "image_status",
-					"width" => 16,
-					"title" => $title_st,
-					"id" => 'status_img_' . $event["id_evento"]));
-			$data[1] = io_safe_output($event['evento']);
-			$data[2] = $event['event_type'];
-			$data[3] = get_priority_name ($event['criticity']);
-			$data[4] = $event['event_rep'];
-			$data[5] = date($config['date_format'], $event['timestamp_rep']);
+			if (is_array($item_data) || is_object($item_data)){
+				foreach ($item_data as $i => $event) {
+					$data = array();
+					if($show_summary_group){
+						$table1->cellclass[$i][1] = $table1->cellclass[$i][2] =
+						$table1->cellclass[$i][3] = $table1->cellclass[$i][4] =
+						$table1->cellclass[$i][5] = get_priority_class($event["criticity"]);
+					}
+					else{
+						$table1->cellclass[$i][1] = $table1->cellclass[$i][2] =
+						$table1->cellclass[$i][3] = 
+						$table1->cellclass[$i][4] = get_priority_class($event["criticity"]);
+					}
+					// Colored box
+					switch ($event['estado']) {
+						case 0:
+							$img_st   = "images/star.png";
+							$title_st = __('New event');
+							break;
+						case 1:
+							$img_st   = "images/tick.png";
+							$title_st = __('Event validated');
+							break;
+						case 2:
+							$img_st   = "images/hourglass.png";
+							$title_st = __('Event in process');
+							break;
+					}
+					
+					$data[0] = html_print_image ($img_st, true, 
+						array ("class" => "image_status",
+							"width" => 16,
+							"title" => $title_st,
+							"id" => 'status_img_' . $event["id_evento"]));
+					$data[1] = io_safe_output($event['evento']);
+					$data[2] = $event['event_type'];
+					$data[3] = get_priority_name ($event['criticity']);
+					if($show_summary_group){
+						$data[4] = $event['event_rep'];
+						$data[5] = date($config['date_format'], $event['timestamp_rep']);
+					}
+					else{
+						$data[4] = date($config['date_format'], strtotime($event['timestamp']));
+					}
+					$table1->data[] = $data;
+				}
+			}
+
+			$table->colspan['events']['cell'] = 3;
+			$table->data['events']['cell'] = html_print_table($table1, true);
+
+			if (!empty($item['chart']['by_agent'])) {
+				$table1 = new stdClass();
+				$table1->width = '99%';
+				$table1->head = array ();
+				$table1->head[0] = __('Events by agent');
+				$table1->data[0][0] = $item['chart']['by_agent'];
+				
+				$table->colspan['chart_by_agent']['cell'] = 3;
+				$table->cellstyle['chart_by_agent']['cell'] = 'text-align: center;';
+				$table->data['chart_by_agent']['cell'] = html_print_table($table1, true);
+			}
 			
-			$table1->data[] = $data;
+			if (!empty($item['chart']['by_user_validator'])) {
+				$table1 = new stdClass();
+				$table1->width = '99%';
+				$table1->head = array ();
+				$table1->head[0] = __('Events by user validator');
+				$table1->data[0][0] = $item['chart']['by_user_validator'];
+				
+				$table->colspan['chart_by_user_validator']['cell'] = 3;
+				$table->cellstyle['chart_by_user_validator']['cell'] = 'text-align: center;';
+				$table->data['chart_by_user_validator']['cell'] = html_print_table($table1, true);
+			}
+			
+			if (!empty($item['chart']['by_criticity'])) {
+				$table1 = new stdClass();
+				$table1->width = '99%';
+				$table1->head = array ();
+				$table1->head[0] = __('Events by Severity');
+				$table1->data[0][0] = $item['chart']['by_criticity'];
+				
+				$table->colspan['chart_by_criticity']['cell'] = 3;
+				$table->cellstyle['chart_by_criticity']['cell'] = 'text-align: center;';
+				$table->data['chart_by_criticity']['cell'] = html_print_table($table1, true);
+			}
+			
+			if (!empty($item['chart']['validated_vs_unvalidated'])) {
+				$table1 = new stdClass();
+				$table1->width = '99%';
+				$table1->head = array ();
+				$table1->head[0] = __('Events validated vs unvalidated');
+				$table1->data[0][0] = $item['chart']['validated_vs_unvalidated'];
+				
+				$table->colspan['chart_validated_vs_unvalidated']['cell'] = 3;
+				$table->cellstyle['chart_validated_vs_unvalidated']['cell'] = 'text-align: center;';
+				$table->data['chart_validated_vs_unvalidated']['cell'] = html_print_table($table1, true);
+			}
 		}
-		
-		$table->colspan['events']['cell'] = 3;
-		$table->data['events']['cell'] = html_print_table($table1, true);
 	}
 }
 

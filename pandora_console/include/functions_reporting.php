@@ -442,7 +442,10 @@ function reporting_make_reporting_data($report = null, $id_report,
 			case 'event_report_module':
 				$report['contents'][] = reporting_event_report_module(
 					$report,
-					$content);
+					$content,
+					$type,
+					$force_width_chart,
+					$force_height_chart);
 				break;
 			case 'event_report_group':
 				$report['contents'][] = reporting_event_report_group(
@@ -1408,14 +1411,24 @@ function reporting_event_report_group($report, $content,
 		metaconsole_restore_db();
 	}
 	
-	$return['total_events'] = count($return['data']);
+	//total_events
+	if(isset($return['data'])){
+		$return['total_events'] = count($return['data']);
+	}
+	else{
+		$return['total_events'] = 0;
+	}
 	
 	return reporting_check_structure_content($return);
 }
 
-function reporting_event_report_module($report, $content) {
+function reporting_event_report_module($report, $content,
+	$type = 'dinamic', $force_width_chart = null,
+	$force_height_chart = null) {
 	
 	global $config;
+
+	$ttl = 1;
 
 	$return['type'] = 'event_report_module';
 	
@@ -1440,22 +1453,38 @@ function reporting_event_report_module($report, $content) {
 	$return["date"] = reporting_get_date_text($report, $content);
 	$return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
 	
-	$data = reporting_get_module_detailed_event(
-		$content['id_agent_module'], $content['period'],
-		$report["datetime"], true, false, true);
+	$event_filter = $content['style'];
+	$return['show_summary_group'] = $event_filter['show_summary_group'];
+	//filter
+	$show_summary_group         = $event_filter['show_summary_group'];
+	$filter_event_severity      = json_decode($event_filter['filter_event_severity'],true);
+	$filter_event_type          = json_decode($event_filter['filter_event_type'],true);
+	$filter_event_status        = json_decode($event_filter['filter_event_status'],true);
+	$filter_event_filter_search = $event_filter['event_filter_search'];
 	
+	//graphs
+	$event_graph_by_user_validator        = $event_filter['event_graph_by_user_validator'];
+	$event_graph_by_criticity             = $event_filter['event_graph_by_criticity'];
+	$event_graph_validated_vs_unvalidated = $event_filter['event_graph_validated_vs_unvalidated'];
+
+	//data events
+	$data = reporting_get_module_detailed_event (
+		$content['id_agent_module'], $content['period'], $report["datetime"], 
+		$show_summary_group, $filter_event_severity, $filter_event_type, 
+		$filter_event_status, $filter_event_filter_search, $force_width_chart,
+		$event_graph_by_user_validator, $event_graph_by_criticity, 
+		$event_graph_validated_vs_unvalidated, $ttl);
+
 	if (empty($data)) {
 		$return['failed'] = __('No events');
 	}
 	else {
 		$return['data'] = array_reverse($data);
-	}
-	
+	}	
+
 	if ($config['metaconsole']) {
 		metaconsole_restore_db();
 	}
-	
-	$return['total_events'] = count($return['data']);	
 	
 	return reporting_check_structure_content($return);
 }
@@ -2290,8 +2319,14 @@ function reporting_event_report_agent($report, $content,
 		metaconsole_restore_db();
 	}
 	
-	$return['total_events'] = count($return['data']);
-	
+	//total_events
+	if(isset($return['data'])){
+		$return['total_events'] = count($return['data']);
+	}
+	else{
+		$return['total_events'] = 0;
+	}
+
 	return reporting_check_structure_content($return);
 }
 
@@ -6043,7 +6078,11 @@ function reporting_set_conf_charts(&$width, &$height, &$only_image, $type,
  * @return mixed A table object (XHTML) or object table is false the html.
  */
 function reporting_get_module_detailed_event ($id_modules, $period = 0,
-	$date = 0, $return = false, $html = true, $only_data = false) {
+	$date = 0, $show_summary_group = false, $filter_event_severity = false,
+	$filter_event_type = false, $filter_event_status = false, 
+	$filter_event_filter_search = false, $force_width_chart = false,
+	$event_graph_by_user_validator = false, $event_graph_by_criticity = false, 
+	$event_graph_validated_vs_unvalidated = false, $ttl = 1) {
 	
 	global $config;
 	
@@ -6063,70 +6102,92 @@ function reporting_get_module_detailed_event ($id_modules, $period = 0,
 	$events = array ();
 	
 	foreach ($id_modules as $id_module) {
-		$event = events_get_module ($id_module, (int) $period, (int) $date, $history, $show_summary_group);
+		$event['data'] = events_get_agent (false, (int) $period, (int) $date, 
+			$history, $show_summary_group, $filter_event_severity, 
+			$filter_event_type, $filter_event_status, $filter_event_filter_search, 
+			false, false, $id_module, true);
+
+		//total_events
+		if(isset($event['data'])){
+			$event['total_events'] = count($event['data']);
+		}
+		else{
+			$event['total_events'] = 0;
+		}
+
+		//graphs
+		if (!empty($force_width_chart)) {
+			$width = $force_width_chart;
+		}
+		
+		if (!empty($force_height_chart)) {
+			$height = $force_height_chart;
+		}
+		
+		if ($event_graph_by_user_validator) {
+			$data_graph = events_get_count_events_validated_by_user(
+				array('id_agentmodule' => $id_module), $period, $date, $filter_event_severity,
+				$filter_event_type, $filter_event_status, $filter_event_filter_search);
+			
+			$event['chart']['by_user_validator'] = pie3d_graph(
+				false,
+				$data_graph,
+				500,
+				150,
+				__("other"),
+				ui_get_full_url(false, false, false, false),
+				ui_get_full_url(false, false, false, false) . "/images/logo_vertical_water.png",
+				$config['fontpath'],
+				$config['font_size'],
+				$ttl);
+		}
+		
+		if ($event_graph_by_criticity) {
+			$data_graph = events_get_count_events_by_criticity(
+				array('id_agentmodule' => $id_module), $period, $date, $filter_event_severity,
+				$filter_event_type, $filter_event_status, $filter_event_filter_search);
+			
+			$colors = get_criticity_pie_colors($data_graph);
+			
+			$event['chart']['by_criticity'] = pie3d_graph(
+				false,
+				$data_graph,
+				500,
+				150,
+				__("other"),
+				ui_get_full_url(false, false, false, false),
+				ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
+				$config['fontpath'],
+				$config['font_size'],
+				$ttl,
+				false,
+				$colors);
+		}
+		
+		if ($event_graph_validated_vs_unvalidated) {
+			$data_graph = events_get_count_events_validated(
+				array('id_agentmodule' => $id_module), $period, $date, $filter_event_severity,
+				$filter_event_type, $filter_event_status, $filter_event_filter_search);
+			
+			$event['chart']['validated_vs_unvalidated'] = pie3d_graph(
+				false,
+				$data_graph,
+				500,
+				150,
+				__("other"),
+				ui_get_full_url(false, false, false, false),
+				ui_get_full_url(false, false, false, false) .  "/images/logo_vertical_water.png",
+				$config['fontpath'],
+				$config['font_size'],
+				$ttl);
+		}
+
 		if (!empty ($event)) {
 			array_push ($events, $event);
 		}
 	}
-	
-	if ($only_data) {
-		return $event;
-	}
-	
-	if ($events) {
-		$note = '';
-		if (count($events) >= 1000) {
-			$note .= '* ' . __('Maximum of events shown') . ' (1000)<br>';
-		}
-		foreach ($events as $eventRow) {
-			foreach ($eventRow as $k => $event) {
-				//$k = count($table->data);
-				$table->cellclass[$k][1] = $table->cellclass[$k][2] =
-				$table->cellclass[$k][3] = $table->cellclass[$k][4] =
-				$table->cellclass[$k][5] =  get_priority_class ($event["criticity"]);
-				
-				$data = array ();
-				
-				// Colored box
-				switch ($event['estado']) {
-					case 0:
-						$img_st = "images/star.png";
-						$title_st = __('New event');
-						break;
-					case 1:
-						$img_st = "images/tick.png";
-						$title_st = __('Event validated');
-						break;
-					case 2:
-						$img_st = "images/hourglass.png";
-						$title_st = __('Event in process');
-						break;
-				}
-				$data[0] = html_print_image ($img_st, true, 
-					array ("class" => "image_status",
-						"width" => 16,
-						"title" => $title_st,
-						"id" => 'status_img_' . $event["id_evento"]));
-						
-				$data[1] = io_safe_output($event['evento']);
-				$data[2] = $event['event_type'];
-				$data[3] = get_priority_name ($event['criticity']);
-				$data[4] = $event['event_rep'];
-				$data[5] = date($config['date_format'], $event['timestamp_rep']);
-				array_push ($table->data, $data);
-			}
-		}
-		
-		if ($html) {
-			return html_print_table ($table, $return) . $note;
-		}
-		else {
-			return $table;
-		}
-	}
-	else {
-		return false;
-	}
+
+	return $events;
 }
 
 

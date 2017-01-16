@@ -80,6 +80,9 @@ Pandora_Module_Exec::Pandora_Module_Exec (string name, string exec, string nativ
 	} else {
 		this->output_encoding = "";
 	}
+
+	/*allways change input encoding from UTF-8 to ANSI*/
+	changeInputEncoding();
 }
 
 void
@@ -147,9 +150,6 @@ Pandora_Module_Exec::run () {
 	   to find the GNU W32 tools */
 	working_dir = getPandoraInstallDir () + "util\\";
 	
-	/*allways change input encoding from UTF-8 to ANSI*/
-	changeInputEncoding();
-		
 	/* Create the child process. */
 	if (! CreateProcess (NULL, (CHAR *) this->module_exec.c_str (), NULL,
 			     NULL, TRUE, CREATE_SUSPENDED | CREATE_NO_WINDOW, NULL,

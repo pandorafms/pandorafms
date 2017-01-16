@@ -178,6 +178,7 @@ if (($create_group) && (check_acl($config['id_user'], 0, "PM"))) {
 	$name = (string) get_parameter ('name');
 	$icon = (string) get_parameter ('icon');
 	$id_parent = (int) get_parameter ('id_parent');
+	$group_pass = (string)get_parameter('group_pass');
 	$alerts_disabled = (bool) get_parameter ('alerts_disabled');
 	$custom_id = (string) get_parameter ('custom_id');
 	$skin = (string) get_parameter ('skin');
@@ -200,7 +201,8 @@ if (($create_group) && (check_acl($config['id_user'], 0, "PM"))) {
 				'description' => $description,
 				'contact' => $contact,
 				'propagate' => $propagate,
-				'other' => $other
+				'other' => $other,
+				'password' => io_safe_input($group_pass)
 			);
 		
 			$result = db_process_sql_insert('tgrupo', $values);
@@ -228,6 +230,7 @@ if ($update_group) {
 	$icon = (string) get_parameter ('icon');
 	$id_parent = (int) get_parameter ('id_parent');
 	$description = (string) get_parameter ('description');
+	$group_pass = (string)get_parameter('group_pass');
 	$alerts_enabled = (bool) get_parameter ('alerts_enabled');
 	$custom_id = (string) get_parameter ('custom_id');
 	$propagate = (bool) get_parameter('propagate');
@@ -241,9 +244,9 @@ if ($update_group) {
 		switch ($config["dbtype"]) {
 			case "mysql":
 				$sql = sprintf ('UPDATE tgrupo  SET nombre = "%s",
-					icon = "%s", disabled = %d, parent = %d, custom_id = "%s", propagate = %d, id_skin = %d, description = "%s", contact = "%s", other = "%s"
+					icon = "%s", disabled = %d, parent = %d, custom_id = "%s", propagate = %d, id_skin = %d, description = "%s", contact = "%s", other = "%s", password = "%s"
 					WHERE id_grupo = %d',
-					$name, empty($icon) ? '' : substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $description, $contact, $other, $id_group);
+					$name, empty($icon) ? '' : substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $propagate, $skin, $description, $contact, $other, $group_pass, $id_group);
 				break;
 			case "postgresql":
 			case "oracle":

@@ -31,6 +31,7 @@ $ipAgent = db_get_value('direccion', 'tagente', 'id_agente', $idAgent);
 check_login ();
 
 $ip_target = (string) get_parameter ('ip_target', $ipAgent);
+$use_agent = get_parameter ('use_agent');
 $snmp_community = (string) get_parameter ('snmp_community', 'public');
 $snmp_version = get_parameter('snmp_version', '1');
 $snmp3_auth_user = get_parameter('snmp3_auth_user');
@@ -305,7 +306,13 @@ if ($create_modules) {
 			$common_values['tcp_port'] = $tcp_port;
 		}
 		$common_values['snmp_community'] = $snmp_community;
-		$common_values['ip_target'] = $ip_target;
+		if($use_agent){
+			$common_values['ip_target'] = 'auto';
+		}
+		else{
+			$common_values['ip_target'] = $ip_target;	
+		}
+		
 		$common_values['tcp_send'] = $snmp_version;
 		
 		if ($snmp_version == '3') {
@@ -696,18 +703,22 @@ $table->data[0][1] = html_print_input_text ('ip_target', $ip_target, '', 15, 60,
 $table->data[0][2] = '<b>' . __('Port') . '</b>';
 $table->data[0][3] = html_print_input_text ('tcp_port', $tcp_port, '', 5, 20, true);
 
+$table->data[1][0] = '<b>' . __('Use agent ip') . '</b>';
+$table->data[1][1] = html_print_checkbox ('use_agent', 1, $use_agent, true);
+
 $snmp_versions['1'] = 'v. 1';
 $snmp_versions['2'] = 'v. 2';
 $snmp_versions['2c'] = 'v. 2c';
 $snmp_versions['3'] = 'v. 3';
 
-$table->data[1][0] = '<b>' . __('SNMP community') . '</b>';
-$table->data[1][1] = html_print_input_text ('snmp_community', $snmp_community, '', 15, 60, true);
+$table->data[2][0] = '<b>' . __('SNMP community') . '</b>';
+$table->data[2][1] = html_print_input_text ('snmp_community', $snmp_community, '', 15, 60, true);
 
-$table->data[1][2] = '<b>' . __('SNMP version') . '</b>';
-$table->data[1][3] = html_print_select ($snmp_versions, 'snmp_version', $snmp_version, '', '', '', true, false, false, '');
+$table->data[2][2] = '<b>' . __('SNMP version') . '</b>';
+$table->data[2][3] = html_print_select ($snmp_versions, 'snmp_version', $snmp_version, '', '', '', true, false, false, '');
 
-$table->data[1][3] .= '<div id="spinner_modules" style="float: left; display: none;">' . html_print_image("images/spinner.gif", true) . '</div>';
+$table->data[2][3] .= '<div id="spinner_modules" style="float: left; display: none;">' . html_print_image("images/spinner.gif", true) . '</div>';
+
 html_print_input_hidden('snmpwalk', 1);
 
 html_print_table($table);
@@ -760,9 +771,10 @@ if (!$fail) {
 	echo '<span id ="none_text" style="display: none;">' . __('None') . '</span>';
 	echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_explorer&id_agente=$id_agent'>";
 	echo '<span id="form_interfaces">';
-	
+
 	html_print_input_hidden('create_modules', 1);
 	html_print_input_hidden('ip_target', $ip_target);
+	html_print_input_hidden('use_agent', $use_agent);
 	html_print_input_hidden('tcp_port', $tcp_port);
 	html_print_input_hidden('snmp_community', $snmp_community);
 	html_print_input_hidden('snmp_version', $snmp_version);

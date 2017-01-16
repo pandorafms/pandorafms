@@ -945,7 +945,7 @@ function pandoraFlotArea(graph_id, values, labels, labels_long, legend,
 			serie_color = colors[i];
 		}
 		else {
-			serie_color = null;
+			serie_color = '#8c2';
 		}
 
 		var normalw = '#efe';

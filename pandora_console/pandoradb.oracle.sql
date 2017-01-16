@@ -1381,6 +1381,7 @@ CREATE TABLE tlayout_data (
 	id_custom_graph NUMBER(10, 0) DEFAULT 0,
 	border_width NUMBER(10, 0) DEFAULT 0,
 	type_graph VARCHAR2(50) DEFAULT 'area',
+	label_position VARCHAR2(50) DEFAULT 'down',
 	border_color VARCHAR2(200) DEFAULT '',
 	fill_color VARCHAR2(200) DEFAULT ''
 );

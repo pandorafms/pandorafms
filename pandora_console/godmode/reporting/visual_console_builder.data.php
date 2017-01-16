@@ -134,24 +134,23 @@ else{
 
 
 $table->data[5][0] = __('Size - (Width x Height)');
-$table->data[5][1] = html_print_input_text('width', 1024, '', 10, 10, true , true) .
+
+if($action == 'new'){
+$table->data[5][1] = '<button id="modsize" style="margin-right:20px;" value="modsize">Set custom size</button>';
+}
+else{
+$table->data[5][1] = '<button id="modsize" style="margin-right:20px;" value="modsize">Set custom size</button>';
+}
+
+$table->data[5][1] .= '<span class="opt" style="visibility:hidden;">'.html_print_input_text('width', 1024, '', 10, 10, true , false) .
 	' x ' .
-	html_print_input_text('height', 768, '', 10, 10, true, true);
+	html_print_input_text('height', 768, '', 10, 10, true, false).'</span>';
 
 if($action == 'new'){
-$table->data[5][1] .= '<button disabled id="getsize" style="margin-left:20px;" value="modsize">Set default size</button>';
+$table->data[5][1] .= '<span class="opt" style="visibility:hidden;">'.'<button id="getsize" style="margin-left:20px;" value="modsize">Set default size</button>'.'</span>';
 }
 else{
-$table->data[5][1] .= '<button id="getsize" style="margin-left:20px;" value="modsize">Set default size</button>';
-}
-
-$table->data[5][1] .= ui_print_help_tip(__("You must define size"), true);
-
-if($action == 'new'){
-$table->data[5][1] .= '<button disabled id="modsize" style="margin-left:20px;" value="modsize">Set other size</button><span style="margin-left:20px;" id="modsizetext">Disabled</span>';
-}
-else{
-$table->data[5][1] .= '<button id="modsize" style="margin-left:20px;" value="modsize">Set other size</button><span style="margin-left:20px;" id="modsizetext">Disabled</span>';
+$table->data[5][1] .= '<span class="opt" style="visibility:hidden;">'.'<button id="getsize" style="margin-left:20px;" value="modsize">Set default size</button>'.'</span>';
 }
 
 $table->data[5][2] = '<img id="imagen" style="display:none" src="images/console/background/'.$background.'">';
@@ -191,45 +190,38 @@ $(document).ready (function () {
 	
 $("#modsize").click(function(event){
     event.preventDefault();
-	
-		if($('input[name=width]').attr('readonly')){
-			$('input[name=width]').attr('readonly',false);
-			$('input[name=height]').attr('readonly',false);
-			$('#modsizetext').html('Enabled');
-				$('input[name=update_layout]').attr('disabled',false);	
-		}
-		else{
-			$('input[name=width]').attr('readonly',true);
-			$('input[name=height]').attr('readonly',true);
-			$('#modsizetext').html('Disabled');
-				$('input[name=update_layout]').attr('enabled',false);	
-		}
 		
+		if($('.opt').css('visibility') == 'hidden'){
+			$('.opt').css('visibility','visible');
+		}
+			
 		$('input[name=width]').val($('#imagen').width());
 		$('input[name=height]').val($('#imagen').height());
-		
-	
-		
-		
+			
 });
 
 $("#getsize").click(function(event){
     event.preventDefault();
-
-$('input[name=update_layout]').attr('disabled',false);		
+	
 $('input[name=width]').val($('#imagen').width());
 $('input[name=height]').val($('#imagen').height());
 
-
 });
-
 
 $("#background").click(function(event){
 	$('#imagen').attr('src','images/console/background/'+$('#background').val());
-	$('input[name=update_layout]').attr('disabled',true);
-	$("#getsize").attr('disabled',false);
-	$("#modsize").attr('disabled',false);
 });
+
+$( "input[type=submit]" ).click(function( event ) {
+	
+	if($( "#getsize" ).css('visibility')=='hidden'){
+		$('input[name=width]').val($('#imagen').width());
+		$('input[name=height]').val($('#imagen').height());
+	}
+	
+	
+});
+
 
 $("#file-background_image").change(function(event){
 	$('#back').submit();

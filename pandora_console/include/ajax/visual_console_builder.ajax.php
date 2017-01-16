@@ -130,6 +130,7 @@ $get_element_status = get_parameter('get_element_status', 0);
 
 $enable_link = get_parameter('enable_link', 1);
 $type_graph = get_parameter('type_graph', 'area');
+$label_position = get_parameter('label_position', 'down');
 
 switch ($action) {
 	case 'get_font':
@@ -394,6 +395,8 @@ switch ($action) {
 	case 'move':
 		$values = array();
 		
+		$values['label_position'] = $label_position;
+		
 		// In Graphs, background color is stored in column image (sorry)
 		if ($type == 'module_graph') {
 			$values['image'] = $background_color;
@@ -505,6 +508,15 @@ switch ($action) {
 						break;
 					case 'group_item':
 						$values['id_group'] = $id_group;
+						if ($image !== null) {
+							$values['image'] = $image;
+						}
+						if ($width !== null) {
+							$values['width'] = $width;
+						}
+						if ($height !== null) {
+							$values['height'] = $height;
+						}
 						break;
 					case 'module_graph':
 						if ($height_module_graph !== null) {
@@ -570,6 +582,7 @@ switch ($action) {
 				if ($action == 'move') {
 					// Don't change the label because only change the positions
 					unset($values['label']);
+					unset($values['label_position']);
 					// Don't change background color in graphs when move
 					
 					switch ($type) {
@@ -757,6 +770,7 @@ switch ($action) {
 		$values['label'] = $label;
 		$values['pos_x'] = $left;
 		$values['pos_y'] = $top;
+		$values['label_position'] = $label_position;
 		
 		if (defined('METACONSOLE') && $metaconsole) {
 			if ($server_id > 0) {
@@ -933,6 +947,16 @@ switch ($action) {
 					$return['values']['width_box'] = $values['width'];
 					$return['values']['height_box'] = $values['height'];
 					break;
+					
+				case PERCENTILE_BUBBLE:
+					$return['values']['type_percentile'] = 'bubble';
+					break;
+					
+				case PERCENTILE_BAR:
+					$return['values']['type_percentile'] = 'percentile';
+					break;				
+			
+				
 			}
 		}
 		

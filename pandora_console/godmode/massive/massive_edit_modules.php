@@ -468,9 +468,17 @@ $table->data['edit3'][2] = __('SMNP community');
 $table->data['edit3'][3] = html_print_input_text ('snmp_community', '',
 	'', 10, 15, true);
 
+$target_ip_values = array();
+$target_ip_values['auto']      = __('Auto');
+$target_ip_values['force_pri'] = __('Force primary key');
+$target_ip_values['custom']    = __('Custom');
+
 $table->data['edit35'][0] = __('Target IP');
-$table->data['edit35'][1] = html_print_input_text ('ip_target', '', '',
-	15, 60, true);
+$table->data['edit35'][1] = html_print_select ($target_ip_values,
+	'ip_target', '', '', __('No change'), '', true, false, false, '', false, 'width:200px;');
+
+$table->data['edit35'][1] .= html_print_input_text ('custom_ip_target', '', '', 15, 60, true);
+
 $table->data['edit35'][2] = __('SNMP version');
 $table->data['edit35'][3] = html_print_select ($snmp_versions,
 	'tcp_send', '', '', __('No change'), '', true, false, false, '');

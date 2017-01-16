@@ -256,7 +256,7 @@ function main_net_tools () {
 function godmode_net_tools() {
 	global $config;
 	
-	check_config ();
+	check_login();
 	
 	if (! check_acl ($config['id_user'], 0, "PM")) {
 		db_pandora_audit("ACL Violation",

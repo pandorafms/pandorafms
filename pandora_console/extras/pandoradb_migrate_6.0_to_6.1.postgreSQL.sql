@@ -38,8 +38,4 @@ ALTER TABLE tlayout ADD COLUMN background_color varchar(50) NOT NULL default '#F
 -- Table `tlayout_data`
 -- ---------------------------------------------------------------------
 ALTER TABLE tlayout_data ADD COLUMN type_graph varchar(50) NOT NULL default 'area';
-
--- ---------------------------------------------------------------------
--- Table `tgraph`
--- ---------------------------------------------------------------------
-ALTER TABLE tgraph ADD COLUMN percentil int(4) unsigned default 0;
+ALTER TABLE tlayout_data ADD COLUMN label_position varchar(50) NOT NULL default 'down';

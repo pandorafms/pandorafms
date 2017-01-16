@@ -1269,6 +1269,7 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
 	`id_custom_graph` INTEGER UNSIGNED NOT NULL default 0,
 	`border_width` INTEGER UNSIGNED NOT NULL default 0,
 	`type_graph` varchar(50) NOT NULL default 'area',
+	`label_position` varchar(50) NOT NULL default 'down',
 	`border_color` varchar(200) DEFAULT "",
 	`fill_color` varchar(200) DEFAULT "",
 	PRIMARY KEY(`id`)

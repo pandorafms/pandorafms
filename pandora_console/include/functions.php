@@ -1744,6 +1744,9 @@ function check_login ($output = true) {
 		}
 	}
 	
+	if (isset($_SESSION['session_public']) && $_SESSION['session_public']['session_public'] )
+		return true;
+	
 	if (!$output) {
 		return false;
 	}

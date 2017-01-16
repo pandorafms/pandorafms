@@ -62,6 +62,9 @@ $page = (string) get_parameter ('page');
 $page = safe_url_extraclean ($page);
 $page .= '.php';
 $config["id_user"] = $_SESSION["id_usuario"];
+if (isset($_SESSION['session_public']) && $_SESSION['session_public']['session_public'])
+	$config["id_user"] = $_SESSION['session_public']["id_user"];
+
 $isFunctionSkins = enterprise_include_once ('include/functions_skins.php');
 if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK)
 	$config["relative_path"] = enterprise_hook('skins_set_image_skin_path',array($config['id_user']));

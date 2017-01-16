@@ -970,6 +970,9 @@ if ($update_module || $create_module) {
 	}
 	
 	$ip_target = (string) get_parameter ('ip_target');
+	if($ip_target == ''){
+		$ip_target = 'auto';
+	}
 	$custom_id = (string) get_parameter ('custom_id');
 	$history_data = (int) get_parameter('history_data');
 	$min_warning = (float) get_parameter ('min_warning');

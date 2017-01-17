@@ -974,9 +974,6 @@ if ($update_module || $create_module) {
 
 	$parent_module_id = (int) get_parameter('parent_module_id');
 	$ip_target = (string) get_parameter ('ip_target');
-	if($ip_target == ''){
-		$ip_target = 'auto';
-	}
 	$custom_id = (string) get_parameter ('custom_id');
 	$history_data = (int) get_parameter('history_data');
 	$dynamic_interval = (int) get_parameter('dynamic_interval');

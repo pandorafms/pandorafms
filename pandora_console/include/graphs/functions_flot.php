@@ -431,6 +431,22 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		$force_integer = 'false';
 	}
 	
+	//modify internal grid lines and legend text color
+	
+	if(substr($background_style, -6, 4) == '#fff'){
+		$background_color = "#eee";
+		$legend_color = "#151515";
+		
+	}
+	else if(substr($background_style, -6, 4) == '#000'){
+		$background_color = "#151515";
+		$legend_color = "#BDBDBD";
+	}
+	else{
+		$background_color = "#A4A4A4";
+		$legend_color = "#A4A4A4";
+	}
+	
 	// Trick to get translated string from javascript
 	$return .= html_print_input_hidden('unknown_text', __('Unknown'),
 		true);
@@ -473,7 +489,13 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		"'$series_suffix_str',
 		" . json_encode($dashboard) . ",\n
 		" . json_encode($vconsole) . ",\n" .
-		"'$xaxisname');";
+		"'$xaxisname', \n" .
+		"'$background_color', \n" .
+		"'$legend_color'
+	
+	);";
+	
+	
 	$return .= "\n//]]>";
 	$return .= "</script>";
 	

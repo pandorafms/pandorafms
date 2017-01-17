@@ -268,7 +268,7 @@ function process_user_login_remote ($login, $pass, $api = false) {
 		return false;
 	}
 	
-	if (isset($config['ad_advanced_config']) && $config['ad_advanced_config']) {
+	if ($config["auth"] === 'ad' && (isset($config['ad_advanced_config']) && $config['ad_advanced_config'])) {
 		
 		
 		if ( defined('METACONSOLE') ) {
@@ -313,10 +313,40 @@ function process_user_login_remote ($login, $pass, $api = false) {
 			return false;
 		}
 		
-		//TODO: Check the creation in the nodes
-		
 		profile_create_user_profile ($login, $config['default_remote_profile'], 
 			$config['default_remote_group'], false, $config['default_assign_tags']);
+		//TODO: Check the creation in the nodes
+		if ( is_metaconsole() ) {
+			enterprise_include_once('include/functions_metaconsole.php');
+			enterprise_include_once ('meta/include/functions_groups_meta.php');
+			
+			$return = groups_meta_synchronizing();
+			
+			if ($return["group_create_err"] > 0  || $return["group_update_err"] > 0) {
+				$config["auth_error"] = __('Fail the group synchronizing');
+				return false;
+			}
+			
+			$return = meta_tags_synchronizing();
+			if ($return['tag_create_err'] > 0 || $return['tag_update_err'] > 0) {
+				$config["auth_error"] = __('Fail the tag synchronizing');
+				return false;
+			}
+			
+			$servers = metaconsole_get_servers();
+			foreach ($servers as $server) {
+				if (metaconsole_connect($server) == NOERR ) {
+					if (create_user ($login, $pass,
+						array ('fullname' => $login, 
+						'comments' => 'Imported from ' . $config['auth'])
+					) === false)
+						continue;
+					profile_create_user_profile ($login, $config['default_remote_profile'], 
+						$config['default_remote_group'], false, $config['default_assign_tags']);
+				}
+				metaconsole_restore_db();
+			}
+		}
 	}
 	
 	return $login;

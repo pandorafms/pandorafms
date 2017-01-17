@@ -4832,7 +4832,7 @@ function reporting_availability($report, $content, $date=false, $time=false) {
 		$aux_id_agents = $agents;
 		$i=0;
 		foreach ($items as $item) {
-			$utimestamp = db_get_value('utimestamp', 'tagente_datos', 'id_agente_modulo', $item['id_agent_module']);
+			$utimestamp = db_get_value('utimestamp', 'tagente_datos', 'id_agente_modulo', $item['id_agent_module'], true);
 			if (($utimestamp === false) || (intval($utimestamp) > intval($datetime_to))){
 				unset($items[$i]);
 			}

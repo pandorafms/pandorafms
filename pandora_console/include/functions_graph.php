@@ -1832,42 +1832,113 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 		'color' => COL_GRAPH13,
 		'alpha' => CHART_DEFAULT_ALPHA);
 	
-	$yellow_threshold = 0;
-	$red_threshold = 0;
+	$threshold_data = array();
+
 	if ($from_interface) {
-		$compare_warning = 0;
-		$compare_critical = 0;
-		$do_it_warning = true;
-		$do_it_critical = true;
-		foreach ($module_list as $id_module) {
-			// Get module warning_max and critical_max
-			$warning_max = db_get_value('max_warning','tagente_modulo','id_agente_modulo',$id_module);
-			$critical_max = db_get_value('max_critical','tagente_modulo','id_agente_modulo',$id_module);
-			
-			if ($compare_warning == 0) {
-				$compare_warning = $warning_max;
+		$yellow_threshold = 0;
+		$red_threshold = 0;
+
+		$yellow_up = 0;
+		$red_up = 0;
+
+		$yellow_inverse = 0;
+		$red_inverse = 0;
+
+		$compare_warning = false;
+		$compare_critical = false;
+
+		$do_it_warning_min = true;
+		$do_it_critical_min = true;
+
+		$do_it_warning_max = true;
+		$do_it_critical_max = true;
+
+		$do_it_warning_inverse = true;
+		$do_it_critical_inverse = true;
+		foreach ($module_list as $index => $id_module) {
+			// Get module warning_min and critical_min
+			$warning_min = db_get_value('min_warning','tagente_modulo','id_agente_modulo',$id_module);
+			$critical_min = db_get_value('min_critical','tagente_modulo','id_agente_modulo',$id_module);
+
+			if ($index == 0) {
+				$compare_warning = $warning_min;
 			}
 			else {
-				if ($compare_warning != $warning_max) {
-					$do_it_warning = false;
+				if ($compare_warning != $warning_min) {
+					$do_it_warning_min = false;
 				}
 			}
-			if ($compare_critical == 0) {
-				$compare_critical = $critical_max;
+
+			if ($index == 0) {
+				$compare_critical = $critical_min;
 			}
 			else {
-				if ($compare_warning != $critical_max) {
-					$do_it_critical = false;
+				if ($compare_critical != $critical_min) {
+					$do_it_critical_min = false;
 				}
 			}
 		}
 
-		if ($do_it_warning) {
+		if ($do_it_warning_min || $do_it_critical_min) {
+			foreach ($module_list as $index => $id_module) {
+				$warning_max = db_get_value('max_warning','tagente_modulo','id_agente_modulo',$id_module);
+				$critical_max = db_get_value('max_critical','tagente_modulo','id_agente_modulo',$id_module);
+
+				if ($index == 0) {
+					$yellow_up = $warning_max;
+				}
+				else {
+					if ($yellow_up != $warning_max) {
+						$do_it_warning_max = false;
+					}
+				}
+
+				if ($index == 0) {
+					$red_up = $critical_max;
+				}
+				else {
+					if ($red_up != $critical_max) {
+						$do_it_critical_max = false;
+					}
+				}
+			}
+		}
+
+		if ($do_it_warning_min || $do_it_critical_min) {
+			foreach ($module_list as $index => $id_module) {
+				$warning_inverse = db_get_value('warning_inverse','tagente_modulo','id_agente_modulo',$id_module);
+				$critical_inverse = db_get_value('critical_inverse','tagente_modulo','id_agente_modulo',$id_module);
+
+				if ($index == 0) {
+					$yellow_inverse = $warning_inverse;
+				}
+				else {
+					if ($yellow_inverse != $warning_inverse) {
+						$do_it_warning_inverse = false;
+					}
+				}
+
+				if ($index == 0) {
+					$red_inverse = $critical_inverse;
+				}
+				else {
+					if ($red_inverse != $critical_inverse) {
+						$do_it_critical_inverse = false;
+					}
+				}
+			}
+		}
+		
+		if ($do_it_warning_min && $do_it_warning_max && $do_it_warning_inverse) {
 			$yellow_threshold = $compare_warning;
+			$threshold_data['yellow_up'] = $yellow_up;
+			$threshold_data['yellow_inverse'] = (bool)$yellow_inverse;
 		}
 
-		if ($do_it_critical) {
+		if ($do_it_critical_min && $do_it_critical_max && $do_it_critical_inverse) {
 			$red_threshold = $compare_critical;
+			$threshold_data['red_up'] = $red_up;
+			$threshold_data['red_inverse'] = (bool)$red_inverse;
 		}
 	}
 
@@ -1878,7 +1949,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				$title, "", $homeurl, $water_mark, $config['fontpath'],
 				$fixed_font_size, $unit, $ttl, array(), array(), $yellow_threshold, $red_threshold,  '',
-				false, '', true, $background_color,$dashboard, $vconsole, 0, $percentil_result);
+				false, '', true, $background_color,$dashboard, $vconsole, 0, $percentil_result, $threshold_data);
 			break;
 		default:
 		case CUSTOM_GRAPH_STACKED_AREA: 
@@ -1894,7 +1965,7 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 				ui_get_full_url("images/image_problem.opaque.png", false, false, false),
 				$title, "", $water_mark, $config['fontpath'], $fixed_font_size,
 				$unit, $ttl, $homeurl, $background_color, $dashboard, 
-				$vconsole, $series_type, $percentil_result, $yellow_threshold, $red_threshold); 
+				$vconsole, $series_type, $percentil_result, $yellow_threshold, $red_threshold, $threshold_data); 
 			break;
 		case CUSTOM_GRAPH_STACKED_LINE:
 			return stacked_line_graph($flash_charts, $graph_values,

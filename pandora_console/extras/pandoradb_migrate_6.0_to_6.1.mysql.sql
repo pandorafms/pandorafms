@@ -135,7 +135,7 @@ INSERT INTO `tagent_custom_fields` (`name`) VALUES ('eHorusID');
 -- Table `tagente_modulo` Fixed problems with blank space 
 -- in cron interval and problems with process data from pandora server
 -- ---------------------------------------------------------------------
-UPDATE tagente_modulo SET cron_interval = '' WHERE cron_interval LIKE '%    %'
+UPDATE tagente_modulo SET cron_interval = '' WHERE cron_interval LIKE '%    %';
 
 -- ---------------------------------------------------------------------
 -- Table `tgraph`

@@ -65,25 +65,7 @@ $extra_title = __('Network server module');
 
 $data = array ();
 $data[0] = __('Target IP');
-//show agent_for defect;
-html_debug_print($ip_target);
-if($ip_target == 'auto'){
-	$ip_target = agents_get_address ($id_agente);
-}
-if($page == 'enterprise/godmode/policies/policy_modules'){
-	$target_ip_values = array();
-	$target_ip_values['auto']      = __('Auto');
-	$target_ip_values['force_pri'] = __('Force primary key');
-	$target_ip_values['custom']    = __('Custom');
-
-	$data[1] = html_print_select ($target_ip_values, 'ip_target', '', '', '', '', 
-				true, false, false, '', false, 'width:200px;');
-
-	//$table->data['edit35'][1] .= html_print_input_text ('custom_ip_target', '', '', 15, 60, true);
-}
-else{
-	$data[1] = html_print_input_text ('ip_target', $ip_target, '', 15, 60, true);
-}
+$data[1] = html_print_input_text ('ip_target', $ip_target, '', 15, 60, true);
 
 // In ICMP modules, port is not configurable
 if ($id_module_type >= 6 && $id_module_type <= 7) {

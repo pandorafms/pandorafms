@@ -1553,10 +1553,11 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 				$value = __('Unknown');
 			}
 			else {
-				if ( is_numeric($value) )
-				$value = remove_right_zeros(number_format($value, $config['graph_precision']));
-				//$value = format_for_graph($value, $config['graph_precision']);
-					
+				if ( is_numeric($value) ) {
+					if ($config['simple_module_value']) {
+						$value = remove_right_zeros(number_format($value, $config['graph_precision']));
+					}
+				}
 				if (!empty($unit_text)) {
 					$value .= " " . $unit_text;
 				}
@@ -1573,8 +1574,11 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 				$value = __('Unknown');
 			}
 			else {
-				if ( is_numeric($value) )
-					$value = format_for_graph($value, 2);
+				if ( is_numeric($value) ) {
+					if ($config['simple_module_value']) {
+						$value = format_for_graph($value, 2);
+					}
+				}
 				if (!empty($unit_text))
 					$value .= " " . $unit_text;
 			}
@@ -1586,8 +1590,11 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 				$value = __('Unknown');
 			}
 			else {
-				if ( is_numeric($value) )
-					$value = format_for_graph($value, 2);
+				if ( is_numeric($value) ) {
+					if ($config['simple_module_value']) {
+						$value = format_for_graph($value, 2);
+					}
+				}
 				if (!empty($unit_text))
 					$value .= " " . $unit_text;
 			}
@@ -1599,8 +1606,11 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 				$value = __('Unknown');
 			}
 			else {
-				if ( is_numeric($value) )
-					$value = format_for_graph($value, 2);
+				if ( is_numeric($value) ) {
+					if ($config['simple_module_value']) {
+						$value = format_for_graph($value, 2);
+					}
+				}
 				if (!empty($unit_text))
 					$value .= " " . $unit_text;
 			}

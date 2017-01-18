@@ -119,16 +119,17 @@ function flot_area_simple_graph($chart_data, $width, $height, $color,
 	$force_integer = false, $series_suffix_str = '', $menu = true,
 	$background_color = 'white', $dashboard = false, $vconsole = false, 
 	$agent_module_id = 0, $font = '', $font_size = 7, $xaxisname = '', 
-	$percentil_values = array()) {
+	$percentil_values = array(), $threshold_data = array()) {
 	
 	global $config;
-	
+
 	return flot_area_graph($chart_data, $width, $height, $color,
 		$legend, $long_index, $homeurl, $unit, 'area_simple',
 		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
 		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
 		$menu, $background_color, $dashboard, $vconsole, 
-		$agent_module_id, $font, $font_size, $xaxisname, $percentil_values);
+		$agent_module_id, $font, $font_size, $xaxisname, $percentil_values,
+		$threshold_data);
 }
 
 function flot_line_stacked_graph($chart_data, $width, $height, $color,
@@ -156,7 +157,7 @@ function flot_line_simple_graph($chart_data, $width, $height, $color,
 	$red_threshold = 0, $adapt_key= '', $force_integer = false, 
 	$series_suffix_str = '', $menu = true, $background_color = 'white', 
 	$dashboard = false, $vconsole = false, $agent_module_id = 0, 
-	$percentil_values = array()) {
+	$percentil_values = array(), $threshold_data = array()) {
 	
 	global $config;
 	
@@ -165,7 +166,8 @@ function flot_line_simple_graph($chart_data, $width, $height, $color,
 		$water_mark, $serie_types, $chart_extra_data, $yellow_threshold,
 		$red_threshold, $adapt_key, $force_integer, $series_suffix_str,
 		$menu, $background_color, $dashboard, $vconsole, 
-		$agent_module_id, $font, $font_size, '', $percentil_values);
+		$agent_module_id, $font, $font_size, '', $percentil_values,
+		$threshold_data);
 }
 
 function flot_area_graph($chart_data, $width, $height, $color, $legend,
@@ -174,7 +176,7 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	$force_integer, $series_suffix_str = '', $menu = true,
 	$background_color = 'white', $dashboard = false, $vconsole = false, 
 	$agent_module_id = 0, $font = '', $font_size = 7, $xaxisname = '',
-	$percentil_values = array()) {
+	$percentil_values = array(), $threshold_data = array()) {
 	
 	global $config;
 	
@@ -205,19 +207,31 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 	// Set some containers to legend, graph, timestamp tooltip, etc.
 	$return .= "<p id='legend_$graph_id' class='legend_graph' style='font-size:".$font_size."pt'></p>";
 	
-			
-	// Get other required module datas to draw warning and critical
-	if ($agent_module_id == 0) {
-		$yellow_up = 0;
-		$red_up = 0;
-		$yellow_inverse = false;
-		$red_inverse = false;
-	} else {
-		$module_data = db_get_row_sql ('SELECT * FROM tagente_modulo WHERE id_agente_modulo = ' . $agent_module_id);
-		$yellow_up = $module_data['max_warning'];
-		$red_up = $module_data['max_critical'];
-		$yellow_inverse = !($module_data['warning_inverse'] == 0);
-		$red_inverse = !($module_data['critical_inverse'] == 0);
+	if (!empty($threshold_data)) {
+		html_debug($threshold_data, true);
+		html_debug($yellow_threshold, true);
+		$yellow_up = $threshold_data['yellow_up'];
+		$red_up = $threshold_data['red_up'];
+		$yellow_inverse = $threshold_data['yellow_inverse'];
+		$red_inverse = $threshold_data['red_inverse'];
+	}
+	else {
+		// Get other required module datas to draw warning and critical
+		if ($agent_module_id == 0) {
+			$yellow_up = 0;
+			$red_up = 0;
+			$yellow_inverse = false;
+			$red_inverse = false;
+		} else {
+			$module_data = db_get_row_sql ('SELECT * FROM tagente_modulo WHERE id_agente_modulo = ' . $agent_module_id);
+			$yellow_up = $module_data['max_warning'];
+			$red_up = $module_data['max_critical'];
+			$yellow_inverse = !($module_data['warning_inverse'] == 0);
+			$red_inverse = !($module_data['critical_inverse'] == 0);
+			html_debug($yellow_up, true);
+			html_debug($yellow_threshold, true);
+			html_debug($yellow_inverse, true);
+		}
 	}
 	
 	if ($menu) {
@@ -431,6 +445,22 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		$force_integer = 'false';
 	}
 	
+	//modify internal grid lines and legend text color
+	
+	if(substr($background_style, -6, 4) == '#fff'){
+		$background_color = "#eee";
+		$legend_color = "#151515";
+		
+	}
+	else if(substr($background_style, -6, 4) == '#000'){
+		$background_color = "#151515";
+		$legend_color = "#BDBDBD";
+	}
+	else{
+		$background_color = "#A4A4A4";
+		$legend_color = "#A4A4A4";
+	}
+	
 	// Trick to get translated string from javascript
 	$return .= html_print_input_hidden('unknown_text', __('Unknown'),
 		true);
@@ -473,7 +503,13 @@ function flot_area_graph($chart_data, $width, $height, $color, $legend,
 		"'$series_suffix_str',
 		" . json_encode($dashboard) . ",\n
 		" . json_encode($vconsole) . ",\n" .
-		"'$xaxisname');";
+		"'$xaxisname', \n" .
+		"'$background_color', \n" .
+		"'$legend_color'
+	
+	);";
+	
+	
 	$return .= "\n//]]>";
 	$return .= "</script>";
 	

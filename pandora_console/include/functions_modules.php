@@ -411,9 +411,19 @@ function modules_update_agent_module ($id, $values,
 			return ERR_EXIST;
 		}
 	}
-	
-	
-	
+
+	if(isset ($values['ip_target'])){
+		if($values['ip_target'] == 'force_pri'){
+			$sql_agent = "SELECT id_agente FROM tagente_modulo WHERE id_agente_modulo=" .  $id;
+			$id_agente = mysql_db_process_sql($sql_agent);
+			$values['ip_target'] = agents_get_address ($id_agente);
+		}
+		elseif($values['ip_target'] == 'custom'){
+			$values['ip_target'] = $values['custom_ip_target'];
+		}
+	}
+	unset($values['custom_ip_target']);
+
 	$where = array();
 	$where['id_agente_modulo'] = $id;
 	if ($onlyNoDeletePending) {

@@ -11,7 +11,9 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
+
 import unittest2, time, re
+import logging
 
 class Policies(PandoraWebDriverTestCase):
 
@@ -22,6 +24,7 @@ class Policies(PandoraWebDriverTestCase):
 	policy_name = gen_random_string(6)
 	network_server_module_name = gen_random_string(6)
 
+	logging.basicConfig(filename="Policies.log", level=logging.INFO, filemode='w')
 
 	@is_enterprise
 	def test_A_create_policy(self):
@@ -40,7 +43,8 @@ class Policies(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//a[contains(.,"'+self.policy_name+'")]')
 		self.assertIsInstance(element,WebElement)
 
-	
+		logging.info("test_A_create_policy is correct")	
+
 	@is_enterprise
 	def test_B_add_network_server_module_to_policy(self):
 		
@@ -54,7 +58,8 @@ class Policies(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//td[contains(.,"uccessfully")]')
 		self.assertIsInstance(element,WebElement)
 
-	
+		logging.info("test_B_add_network_server_module_to_policy is correct")	
+
 	@is_enterprise
 	def test_C_add_collection_to_policy(self):
 
@@ -77,7 +82,7 @@ class Policies(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//td[contains(.,"Correct: add the collection in the policy")]')
 		self.assertIsInstance(element,WebElement)
 
-
+		logging.info("test_C_add_collection_to_policy is correct")
 
 	@is_enterprise
 	def test_D_Apply_policy_to_agents(self):
@@ -127,6 +132,8 @@ class Policies(PandoraWebDriverTestCase):
 
                 module = driver.find_element_by_xpath('//td[contains(.,"'+module_name_2+'")]')
                 self.assertIsInstance(module,WebElement)
+
+		logging.info("test_D_Apply_policy_to_agents is correct")
 
 	@is_enterprise
 	def test_E_Apply_policy_to_agents_with_spaces(self):
@@ -181,6 +188,7 @@ class Policies(PandoraWebDriverTestCase):
 		module = driver.find_element_by_xpath('//td[contains(.,"'+module_name+'")]')
 		self.assertIsInstance(module,WebElement)
 
+		logging.info("test_E_Apply_policy_to_agents_with_spaces is correct")
 
 if __name__ == "__main__":
 	unittest2.main()

@@ -217,7 +217,6 @@ $ignored_params['refr'] = '';
 		var refr = <?php echo (int)$refr; ?>;
 		var pure = <?php echo (int) $config['pure']; ?>;
 		var href = "<?php echo ui_get_url_refresh ($ignored_params); ?>";
-		
 		if (pure) {
 			var startCountDown = function (duration, cb) {
 				$('div.vc-countdown').countdown('destroy');
@@ -233,7 +232,13 @@ $ignored_params['refr'] = '';
 						$('div.vc-countdown').countdown('destroy');
 						//cb();
 						url = js_html_entity_decode( href ) + duration;
-						$(document).attr ("location", url);
+						//$(document).attr ("location", url);
+						$.get(window.location.href.replace("render_view","pure_ajax"), function(respuestaSolicitud){
+							$('#background_<?php echo $id_layout; ?>').html(respuestaSolicitud);	
+							startCountDown(refr, false);
+						});
+						
+					
 					}
 				});
 			}
@@ -277,20 +282,96 @@ $ignored_params['refr'] = '';
 			});
 		}
 		
-		
+		/*
 		$(".module_graph").each(function(){
-		left =	parseInt($(this).css("left")) + 150;
+		left =	parseInt($(this).css("left")) + 150 + ((parseInt($(this).css("width"))-300)/2);
 				$(this).css('left', left);
 		});
 		
-		$(".parent_graph").each(function(){
-		if($(this).css('background-color') != 'rgb(255, 255, 255)'){
-				$(this).css('color', 'red');
-				
-				}
+		$('.item:not([class~="module_graph"])').each(function(){
+			left =	parseInt($(this).css('left')) + ((parseInt($('#' + $(this).attr('id')).css('width')) - parseInt($('#' + $(this).attr('id') + " img").css('width')))*0.5);
+			
+			$(this).css('left', left);
 		});
 		
 		
+		*/
 		
+		$(".module_graph .menu_graph").css('display','none');
+		
+		$(".parent_graph").each(function(){
+			
+		if($(this).css('background-color') != 'rgb(255, 255, 255)'){
+				$(this).css('color', '#999');				
+				}
+		});			
+
+		$(".overlay").removeClass("overlay").addClass("overlaydisabled");
+		
+		$('.item:not(.icon) img').each(function(){
+			
+			
+			if($(this).css('float')=='left' || $(this).css('float')=='right'){
+			
+				
+			$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');
+			$(this).css('margin-left','');
+			
+			}
+			else{
+				$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+				$(this).css('margin-top','');
+			}
+			
+		});
+		
+		$('.item > div').each(function(){
+			if($(this).css('float')=='left' || $(this).css('float')=='right'){
+			
+				
+			$(this).css('margin-top',(parseInt($(this).parent().css('height'))/2-parseInt($(this).css('height'))/2-15)+'px');
+			$(this).css('margin-left','');
+			
+			}
+			else{
+				$(this).css('margin-left',(parseInt($(this).parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+				$(this).css('margin-top','');
+			}
+			
+		});
+		
+		$('.item > a > div').each(function(){
+			if($(this).css('float')=='left' || $(this).css('float')=='right'){
+			
+				
+			$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2-5)+'px');
+			$(this).css('margin-left','');
+			
+			}
+			else{
+				$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+				$(this).css('margin-top','');
+			}
+			
+		});
+		
+		/*
+		$('.percentile_item a > img').each(function(){
+			
+			if($(this).css('float')=='left' || $(this).css('float')=='right'){
+				
+				
+			$(this).css('margin-top',(parseInt($(this).parent().parent().css('height'))/2-parseInt($(this).css('height'))/2)+'px');
+			$(this).css('margin-left','');
+			
+			}
+			else{
+				$(this).css('margin-left',(parseInt($(this).parent().parent().css('width'))/2-parseInt($(this).css('width'))/2)+'px');
+				$(this).css('margin-top','');
+			}
+			
+		});
+		*/
+	
 	});
 </script>

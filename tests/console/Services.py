@@ -15,6 +15,7 @@ from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
 
 import unittest2, time, re
+import logging
 
 class SimpleService(PandoraWebDriverTestCase):
 
@@ -31,6 +32,7 @@ class SimpleService(PandoraWebDriverTestCase):
 	module_normal_2_name = gen_random_string(6)
 	module_warning_1_name = gen_random_string(6)
 
+	logging.basicConfig(filename="Service.log", level=logging.INFO, filemode='w')
 	
 	@is_enterprise	
 	def test_A_simple_service(self):
@@ -106,6 +108,8 @@ class SimpleService(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//td/img[@data-title="Warning"]')
 		self.assertIsInstance(element,WebElement)
 
+		logging.info("test_A_simple_service is correct")
+
 	@is_enterprise
 	def test_B_simple_service(self):
 
@@ -135,6 +139,8 @@ class SimpleService(PandoraWebDriverTestCase):
 
 		element = driver.find_element_by_xpath('//td/img[@data-title="Critical"]')
 		self.assertIsInstance(element,WebElement)
+
+		logging.info("test_B_simple_service is correct")
 
 	@is_enterprise
 	def test_C_simple_service(self):
@@ -166,7 +172,8 @@ class SimpleService(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//td/img[@data-title="Ok"]')
 		self.assertIsInstance(element,WebElement)
 
-	
+		logging.info("test_C_simple_service is correct")	
+
 class ManualService(PandoraWebDriverTestCase):
 
         test_name = u'Auto service tests'
@@ -224,6 +231,9 @@ class ManualService(PandoraWebDriverTestCase):
 
                 element = driver.find_element_by_xpath('//td/img[@data-title="Ok"]')
                 self.assertIsInstance(element,WebElement)
+		
+		logging.info("test_A_manual_service_ok is correct")
+
 
 	@is_enterprise
 	def test_B_auto_service_critical(self):
@@ -249,6 +259,8 @@ class ManualService(PandoraWebDriverTestCase):
 		element = driver.find_element_by_xpath('//td/img[@data-title="Critical"]')
 		self.assertIsInstance(element,WebElement)		
 
+		logging.info("test_B_auto_service_critical is correct")
+
 	@is_enterprise
 	def test_C_auto_service_warning(self):
 
@@ -272,6 +284,8 @@ class ManualService(PandoraWebDriverTestCase):
 
 		element = driver.find_element_by_xpath('//td/img[@data-title="Warning"]')
 		self.assertIsInstance(element,WebElement)
+
+		logging.info("test_C_auto_service_warning is correct")
 
 class serviceInsideService(PandoraWebDriverTestCase):
 
@@ -341,6 +355,8 @@ class serviceInsideService(PandoraWebDriverTestCase):
 			element = driver.find_element_by_xpath('//td/img[@data-title="Ok"]')
 			self.assertIsInstance(element,WebElement)
 
+			logging.info("test_A_service_ok is correct")
+
 		@is_enterprise	
 		def test_B_service_critical(self):
 
@@ -371,6 +387,8 @@ class serviceInsideService(PandoraWebDriverTestCase):
 
 			element = driver.find_element_by_xpath('//td/img[@data-title="Critical"]')
 			self.assertIsInstance(element,WebElement)
+
+			logging.info("test_B_service_critical is correct")
 
 		@is_enterprise
 		def test_C_service_warning(self):
@@ -404,6 +422,6 @@ class serviceInsideService(PandoraWebDriverTestCase):
 				element = driver.find_element_by_xpath('//td/img[@data-title="Critical"]')
 				self.assertIsInstance(element,WebElement)
 		
-	
+				logging.info("test_C_service_warning is correct")
 if __name__ == "__main__":
 	unittest2.main()

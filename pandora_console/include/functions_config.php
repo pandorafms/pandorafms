@@ -494,6 +494,8 @@ function config_update_config () {
 						$error_update[] = __('Item title size text');
 					if (!config_update_value ('gis_label', get_parameter ('gis_label')))
 						$error_update[] = __('GIS Labels');
+					if (!config_update_value ('simple_module_value', get_parameter ('simple_module_value')))
+						$error_update[] = __('Show units in values report');
 					if (!config_update_value ('gis_default_icon', get_parameter ('gis_default_icon')))
 						$error_update[] = __('Default icon in GIS');
 					if (!config_update_value ('autohidden_menu', get_parameter('autohidden_menu')))
@@ -1475,6 +1477,10 @@ function config_process_config () {
 	
 	if (!isset($config['item_title_size_text'])) {
 		config_update_value ('item_title_size_text', 45);
+	}
+
+	if (!isset($config['simple_module_value'])) {
+		config_update_value ('simple_module_value', 1);
 	}
 	
 	if (!isset($config['gis_label'])) {

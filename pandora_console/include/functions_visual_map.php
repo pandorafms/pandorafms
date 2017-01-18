@@ -41,7 +41,7 @@ function visual_map_print_item_toolbox($idDiv, $text, $float) {
 	}
 	
 	echo '<div class="button_toolbox" id="' . $idDiv . '"
-		style="font-weight: bolder; text-align: center; float: ' . $float . ';'
+		style="font-weight: bolder; text-align:; float: ' . $float . ';'
 		. $margin . ': 5px;">';
 	echo $text;
 	echo '</span>';
@@ -67,7 +67,7 @@ function visual_map_print_user_line_handles($layoutData) {
 		'style="z-index: ' .$z_index . ';' .
 			'position: absolute; top: ' . ($start_y - $radious_handle) . 'px; ' .
 			'left: ' . ($start_x - $radious_handle) . 'px;' .
-			'text-align: center;' .
+			'text-align: ;' .
 			'display: inline-block; ' . $sizeStyle . '">';
 	
 	html_print_image("images/dot_red.png");
@@ -79,7 +79,7 @@ function visual_map_print_user_line_handles($layoutData) {
 		'style="z-index: ' .$z_index . ';' .
 			'position: absolute; top: ' . ($end_y - $radious_handle) . 'px; ' .
 			'left: ' . ($end_x - $radious_handle) . 'px;' .
-			'text-align: center;' .
+			'text-align: ;' .
 			'display: inline-block; ' . $sizeStyle . '">';
 	
 	html_print_image("images/dot_green.png");
@@ -109,7 +109,8 @@ function visual_map_print_item($mode = "read", $layoutData,
 	$border_width = $layoutData['border_width'];
 	$border_color = $layoutData['border_color'];
 	$fill_color = $layoutData['fill_color'];
-	
+	$label_position = $layoutData['label_position'];
+		
 	$sizeStyle = '';
 	$borderStyle = '';
 	$imageSize = '';
@@ -121,8 +122,113 @@ function visual_map_print_item($mode = "read", $layoutData,
 		$left = $left * $proportion['proportion_width'];
 	}
 	
+	$agentname = agents_get_name(agents_get_module_id ($id_module));
+	$label = str_replace($agentname,ui_print_truncate_text($agentname, 'agent_small', false, true, false, '…', false),$label);
+	$text = '<span id="text_' . $id . '" class="text">' . $label .'</span>';
+
+	if($height == 0){
+		
+	switch($type){
+		
+		case 0:
+		case 11:
+		$tableheight0 = '70';
+		break;
+		
+		case 3:
+		$tableheight0 = '30';
+		break;
+		
+		case 9:
+		$tableheight0 = '130';
+		break;
+		
+		case 1:
+		$tableheight0 = '180';
+		break;
+		
+		case SERVICE:
+		$tableheight0 = '50';
+		break;
 	
-	$text = '<span id="text_' . $id . '" class="text">' . $label . '</span>';
+	}
+}
+else{
+	$tableheight0 = $height;
+}
+
+if ($layoutData['width'] == 0 || $layoutData['height'] == 0){
+	switch($type){
+		
+		case 0:
+		case 11:
+		$himg = '70';
+		$wimg ='70';
+		break;
+		
+		case 3:
+		
+		if(get_parameter('action') == 'edit'){
+		
+		$himg = '30';
+		$wimg = '150';
+		
+		}
+		else{
+			$himg = '15';
+			$wimg = '150';
+		}
+		
+		
+		break;
+		
+		case 9:
+		$himg = '130';
+		$wimg = '130';
+		break;
+		
+		case 1:
+		$himg = '180';
+		$wimg = '300';
+		break;
+		
+		case SERVICE:
+		$himg = '50';
+		$wimg = '150';
+		break;
+	
+	}
+}
+else{
+	$wimg = $layoutData['width'];
+	$himg = $layoutData['height'];
+	
+	if($type == 3){
+		if(get_parameter('action') == 'edit'){
+		
+		$himg = '30';
+		
+		}
+		else{
+			$himg = '15';
+		}
+	}
+	if($type == 9){
+	$himg = $wimg;
+	}
+}
+
+	if($label_position == 'left'){
+		$text = '<table style="float:left;height:'.$himg.'px;"><tr><td></td></tr><tr><td><span id="text_' . $id . '" class="text">' . $label .'</span></td></tr><tr><td></td></tr></table>';	
+	}
+	else if($label_position == 'right'){
+		$text = '<table style="float:right;height:'.$himg.'px;"><tr><td></td></tr><tr><td><span style="" id="text_' . $id . '" class="text">' . $label .'</span></td></tr><tr><td></td></tr></table>';
+	}
+	else{
+		$text = '<table style="width:'.$wimg.'px;"><tr><td></td></tr><tr><td><span style="" id="text_' . $id . '" class="text">' . $label .'</span></td></tr><tr><td></td></tr></table>';
+	}
+	
+	
 	
 	if (!isset($layoutData['status_calculated'])) {
 		$layoutData['status_calculated'] =
@@ -678,12 +784,7 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$img = substr_replace($img, '', 0,1);
 				}
 			}
-			
-			if (($width != 0) && ($height != 0)) {
-				$sizeStyle = 'width: ' . $width . 'px; height: ' . $height . 'px;';
-				$imageSize = 'width="' . $width . '" height="' . $height . '"';
-			}
-			
+									
 			if ($status == VISUAL_MAP_STATUS_CRITICAL_BAD)
 				$z_index = 3 + 1;
 			elseif ($status == VISUAL_MAP_STATUS_WARNING)
@@ -735,6 +836,10 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$unit_text = trim(io_safe_output($unit_text));
 				
 				$value_text = format_for_graph($module_value, 2);
+				if($value_text<=0){
+					$value_text = remove_right_zeros(number_format($module_value, $config['graph_precision']));
+					
+				}
 				if (!empty($unit_text))
 					$value_text .= " " . $unit_text;
 			}
@@ -750,6 +855,16 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$percentile = 100;
 			break;
 		case MODULE_GRAPH:
+		
+			$imgpos = '';
+						
+			if($layoutData['label_position']=='left'){
+				$imgpos = 'float:right';
+			}
+			else if($layoutData['label_position']=='right'){
+				$imgpos = 'float:left';
+			}
+		
 			if (!empty($proportion)) {
 				$width =
 					((integer)($proportion['proportion_width'] * $width));
@@ -770,36 +885,137 @@ function visual_map_print_item($mode = "read", $layoutData,
 			if ($layoutData['id_custom_graph'] != 0) {
 				// Show only avg on the visual console
 				if(get_parameter('action') == 'edit'){
-					$img =  '<img src="images/console/signes/custom_graph.png" style="width:'.$width.'px;height:'.$height.'px;">';
-				}
+					if($width == 0 || $height == 0){
+							$img =  '<img src="images/console/signes/custom_graph.png" style="width:300px;height:180px;'.$imgpos.'">';	
+						}
+						else{
+							$img =  '<img src="images/console/signes/custom_graph.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
+						}				
+			 		}
 				else{
-					$img = custom_graphs_print(
-						$layoutData['id_custom_graph'], $height, $width,
+			
+						if($width == 0 || $height == 0){
+			
+							if($layoutData['label_position']=='left'){
+								$img = '<div style="float:right;height:'.$himg.'px;">'.custom_graphs_print(
+								$layoutData['id_custom_graph'], 180, 300,
+								$period, null, true, 0, false, $layoutData['image'],
+								array(), '', array(), array(), true,
+								false, false, true, 1, false, true).'</div>';
+							}
+							else if($layoutData['label_position']=='right'){
+							$img = '<div style="float:left;height:'.$himg.'px;">'.custom_graphs_print(
+								$layoutData['id_custom_graph'], 180, 300,
+								$period, null, true, 0, false, $layoutData['image'],
+								array(), '', array(), array(), true,
+								false, false, true, 1, false, true).'</div>';
+							}
+							else{
+								$img = custom_graphs_print(
+								$layoutData['id_custom_graph'], 180, 300,
+								$period, null, true, 0, false, $layoutData['image'],
+								array(), '', array(), array(), true,
+								false, false, true, 1, false, true);
+							}
+			
+					
+				}
+				
+				else{
+					
+					if($layoutData['label_position']=='left'){
+						$img = '<div style="float:right;height:'.$himg.'px;">'.custom_graphs_print(
+						$layoutData['id_custom_graph'],$height,$width,
 						$period, null, true, 0, false, $layoutData['image'],
 						array(), '', array(), array(), true,
-						false, false, true, 1, false, true, $layoutData['percentil']
-					);
+						false, false, true, 1, false, true).'</div>';
+					}
+					else if($layoutData['label_position']=='right'){
+						$img = '<div style="float:left;height:'.$himg.'px;">'.custom_graphs_print(
+						$layoutData['id_custom_graph'],$height,$width,
+						$period, null, true, 0, false, $layoutData['image'],
+						array(), '', array(), array(), true,
+						false, false, true, 1, false, true).'</div>';
+					}
+					else{
+						$img = custom_graphs_print(
+						$layoutData['id_custom_graph'],$height,$width,
+						$period, null, true, 0, false, $layoutData['image'],
+						array(), '', array(), array(), true,
+						false, false, true, 1, false, true);
+					}
+					
+					
 				}
-				
-				
-				
+					
+					}
+		
 			}
 			else {
 				if ($isExternalLink)
 					$homeurl = $config['homeurl'];
 				else
 					$homeurl = '';
-				
+		
 				if(get_parameter('action') == 'edit'){
-					$img =  '<img src="images/console/signes/module_graph.png" style="width:'.$width.'px;height:'.$height.'px;">';
-			 	}
-				else {
-					$img =  grafico_modulo_sparse($id_module, $period, 0, $width, $height, '', null,
-											  false, 1, false, 0, '', 0, 0, true, false, '', 1, false,
-									          '', false, false, false, $layoutData['image'], null, true,
-									          false,$type_graph);
-				}
-		    }
+					if($width == 0 || $height == 0){
+							$img =  '<img src="images/console/signes/module_graph.png" style="width:300px;height:180px;'.$imgpos.'">';	
+						}
+						else{
+							$img =  '<img src="images/console/signes/module_graph.png" style="width:'.$width.'px;height:'.$height.'px;'.$imgpos.'">';
+						}				
+			 		}
+			else{
+			
+				if($width == 0 || $height == 0){
+					
+					if($layoutData['label_position']=='left'){
+						$img =  '<div style="float:right;height:'.$himg.'px;">'.grafico_modulo_sparse($id_module, $period, 0,300,180,
+						'',null,
+						false, 1, false, 0, '', 0, 0, true, false, '', 1, false,
+						'', false, false, false, $layoutData['image'], null, true, false,$type_graph).'</div>';
+					}
+					else if($layoutData['label_position']=='right'){
+						$img =  '<div style="float:left;height:'.$himg.'px;">'.grafico_modulo_sparse($id_module, $period, 0,300,180,
+						'',null,
+						false, 1, false, 0, '', 0, 0, true, false, '', 1, false,
+						'', false, false, false, $layoutData['image'], null, true, false,$type_graph).'</div>';
+					}
+					else{
+						$img =  grafico_modulo_sparse($id_module, $period, 0,300,180,
+						'',null,
+						false, 1, false, 0, '', 0, 0, true, false, '', 1, false,
+						'', false, false, false, $layoutData['image'], null, true, false,$type_graph);
+					}
+									
+									
+					}
+					else{
+						
+						if($layoutData['label_position']=='left'){
+							$img =  '<div style="float:right;height:'.$himg.'px;">'.grafico_modulo_sparse($id_module, $period, 0,$width,$height,
+							'',null,
+							false, 1, false, 0, '', 0, 0, true, false, '', 1, false,
+							'', false, false, false, $layoutData['image'], null, true, false,$type_graph).'</div>';
+					  }
+						else if($layoutData['label_position']=='right'){
+							$img =  '<div style="float:left;height:'.$himg.'px;">'.grafico_modulo_sparse($id_module, $period, 0,$width,$height,
+							'',null,
+							false, 1, false, 0, '', 0, 0, true, false, '', 1, false,
+							'', false, false, false, $layoutData['image'], null, true, false,$type_graph).'</div>';
+						}
+						else{
+							$img =  grafico_modulo_sparse($id_module, $period, 0,$width,$height,
+							'',null,
+							false, 1, false, 0, '', 0, 0, true, false, '', 1, false,
+							'', false, false, false, $layoutData['image'], null, true, false,$type_graph);
+						}
+						
+					}
+					
+					
+					}
+		      }
 			
 			//Restore db connection
 			if ($layoutData['id_metaconsole'] != 0) {
@@ -859,7 +1075,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 			'position: absolute; ' .
 			'top: ' . $top . 'px; ' .
 			'left: ' . $left . 'px;' .
-			'text-align: left;' .
 			'display: inline-block; ' . $sizeStyle . '">';
 	
 	if ($link) {
@@ -868,31 +1083,44 @@ function visual_map_print_item($mode = "read", $layoutData,
 	
 	switch ($type) {
 		case BOX_ITEM:
-			if (!empty($proportion)){
+		
+			
+			if($width == 0 || $width == 0){
 				$style = "";
-				$style .= "width: " . ($width * $proportion['proportion_width']) . "px; ";
-				$style .= "height: " . ($height * $proportion['proportion_height']) . "px; ";
+				$style .= "width: 300px; ";
+				$style .= "height: 180px; ";
 				$style .= "border-style: solid; ";
 				$style .= "border-width: " . $border_width . "px; ";
 				$style .= "border-color: " . $border_color . "; ";
 				$style .= "background-color: " . $fill_color . "; ";
 				echo "<div style='" . $style . "'></div>";
 			}
-			else{
-				$style = "";
-				$style .= "width: " . $width . "px; ";
-				$style .= "height: " . $height . "px; ";
-				$style .= "border-style: solid; ";
-				$style .= "border-width: " . $border_width . "px; ";
-				$style .= "border-color: " . $border_color . "; ";
-				$style .= "background-color: " . $fill_color . "; ";
-				echo "<div style='" . $style . "'></div>";
-			}
+				else{
+					if (!empty($proportion)){
+						$style = "";
+						$style .= "width: " . ($width * $proportion['proportion_width']) . "px; ";
+						$style .= "height: " . ($height * $proportion['proportion_height']) . "px; ";
+						$style .= "border-style: solid; ";
+						$style .= "border-width: " . $border_width . "px; ";
+						$style .= "border-color: " . $border_color . "; ";
+						$style .= "background-color: " . $fill_color . "; ";
+						echo "<div style='" . $style . "'></div>";
+					}
+					else{
+						$style = "";
+						$style .= "width: " . $width . "px; ";
+						$style .= "height: " . $height . "px; ";
+						$style .= "border-style: solid; ";
+						$style .= "border-width: " . $border_width . "px; ";
+						$style .= "border-color: " . $border_color . "; ";
+						$style .= "background-color: " . $fill_color . "; ";
+						echo "<div style='" . $style . "'></div>";
+					}
+				}
 
 			break;
 		case STATIC_GRAPH:
 		case GROUP_ITEM:
-			echo "<div>";
 			if ($layoutData['image'] != null) {
 						
 				
@@ -925,46 +1153,70 @@ function visual_map_print_item($mode = "read", $layoutData,
 					if (is_file($config['homedir'] . '/' . $img))
 						$infoImage = getimagesize($config['homedir'] . '/' . $img);
 					
-					if ($width != 0) {
+					if ($height == 0 || $height == 0) {
+						$height = '70px';
+						$width = '70px';
+					}
+					else {
+						$height = (integer)($proportion['proportion_height'] * $height);
 						$width = (integer)($proportion['proportion_width'] * $width);
 					}
-					else {
-						$width = (integer)($proportion['proportion_width'] * $infoImage[0]);
-					}
+				}
 					
-					if ($height != 0) {
-						$height = (integer)($proportion['proportion_height'] * $height);
-					}
-					else {
-						$height = (integer)($proportion['proportion_height'] * $infoImage[1]);
-					}
+				$imgpos = '';
+								
+				if($layoutData['label_position']=='up'){
+					echo io_safe_output($text);
 				}
 				
-				if (($width != 0) && ($height != 0)) 
-					echo html_print_image($img, true,
-						array("class" => "image",
-							"id" => "image_" . $id,
-							"width" => "$width",
-							"height" => "$height",
-							"title" => $img_style_title,
-							"style" => $borderStyle), false,
-							false, false, $isExternalLink);
+				if($layoutData['label_position']=='left'){
+					$imgpos = 'float:right';
+				}
+				else if($layoutData['label_position']=='right'){
+					$imgpos = 'float:left';
+				}
+				
+				if ($width == 0 || $height == 0) 
+				echo html_print_image($img, true,
+					array("class" => "image",
+						"id" => "image_" . $id,
+						"width" => "70px",
+						"height" => "70px",
+						"title" => $img_style_title,
+						"style" => $borderStyle.$imgpos), false,
+						false, false, $isExternalLink);
 				else
-					echo html_print_image($img, true,
-						array("class" => "image",
-							"id" => "image_" . $id,
-							"width" => "70px",
-							"height" => "70px",
-							"title" => $img_style_title,
-							"style" => $borderStyle), false,
-							false, false, $isExternalLink);
-				echo '<br />';
+				echo html_print_image($img, true,
+					array("class" => "image",
+						"id" => "image_" . $id,
+						"width" => $width,
+						"height" => $height,
+						"title" => $img_style_title,
+						"style" => $borderStyle.$imgpos), false,
+						false, false, $isExternalLink);
+					
 			}
-			echo io_safe_output($text);
-			echo "</div>";
+			
+			if($layoutData['label_position']=='down'){
+				echo io_safe_output($text);
+			}			
+			else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
+				echo io_safe_output($text);
+			}
+			
 			break;
 		
 		case PERCENTILE_BAR:
+		
+		$imgpos = '';
+								
+		if($layoutData['label_position']=='left'){
+			$imgpos = 'float:right;';
+		}
+		else if($layoutData['label_position']=='right'){
+			$imgpos = 'float:left;';
+		}
+		
 		$progress_bar_heigh = 15;
 		if (!empty($proportion)) {
 			if ($width != 0) {
@@ -982,34 +1234,59 @@ function visual_map_print_item($mode = "read", $layoutData,
 				$height = (integer)($proportion['proportion_height'] * $infoImage[1]);
 			}
 		}
-		echo io_safe_output($text) . '<br />';
+		
+		if($layoutData['label_position']=='up'){
+			echo io_safe_output($text);
+		}
 		
 		ob_start();
 		if ($type == PERCENTILE_BUBBLE) {
-			echo progress_bubble($percentile, $width, $width, '', 1, $value_text, $colorStatus);
+			echo progress_bubble($percentile, $width, $width, '', 1, $value_text, $colorStatus,$imgpos);
 		}
 		else {
-			echo progress_bar($percentile, $width, $progress_bar_heigh, '', 1, $value_text, $colorStatus);
+			echo progress_bar($percentile, $width, $progress_bar_heigh, '', 1, $value_text, $colorStatus,$imgpos);
 		}
 		$img = ob_get_clean();
 		
 		
 		if(get_parameter('action') == 'edit'){
 		
-		$img =  '<img src="images/console/signes/percentil.png" style="width:'.$width.'px;height:30px;">';
-			
+		if($width == 0){
+		$img =  '<img src="images/console/signes/percentil.png" style="width:130px;height:30px;'.$imgpos.'">';	
+		}
+		else{
+		$img =  '<img src="images/console/signes/percentil.png" style="width:'.$width.'px;height:30px;'.$imgpos.'">';	
+		}
+					
 		}
 		else{
 			
-		$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
+		$img = str_replace('>', 'class="image" style="height:'.$himg.'px;width:'.$wimg.'px;'.$imgpos.'" id="image_' . $id . '" />', $img);
 		
 		}
 		
-		echo $img;			
+		echo $img;		
+		
+		if($layoutData['label_position']=='down'){
+			echo io_safe_output($text);
+		}			
+		else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
+			echo io_safe_output($text);
+		}	
 		
 		break;
 		
 		case PERCENTILE_BUBBLE:
+		
+			$imgpos = '';
+									
+			if($layoutData['label_position']=='left'){
+				$imgpos = 'float:right;';
+			}
+			else if($layoutData['label_position']=='right'){
+				$imgpos = 'float:left;';
+			}
+		
 		 	$progress_bar_heigh = 15;
 			if (!empty($proportion)) {
 				if ($width != 0) {
@@ -1027,11 +1304,20 @@ function visual_map_print_item($mode = "read", $layoutData,
 					$height = (integer)($proportion['proportion_height'] * $infoImage[1]);
 				}
 			}
-			echo io_safe_output($text) . '<br />';
+			
+			if($layoutData['label_position']=='up'){
+			echo io_safe_output($text);
+		}
 			
 			ob_start();
 			if ($type == PERCENTILE_BUBBLE) {
-				echo progress_bubble($percentile, $width, $width, '', 1, $value_text, $colorStatus);
+				if($width == 0){
+					echo progress_bubble($percentile, 100,100, '', 1, $value_text, $colorStatus,$s);
+				
+				}
+				else{
+					echo progress_bubble($percentile, $width,$width, '', 1, $value_text, $colorStatus);
+				}
 			}
 			else {
 				echo progress_bar($percentile, $width, $progress_bar_heigh, '', 1, $value_text, $colorStatus);
@@ -1041,22 +1327,42 @@ function visual_map_print_item($mode = "read", $layoutData,
 			
 			if(get_parameter('action') == 'edit'){
 			
-			$img =  '<img src="images/console/signes/percentil_bubble.png" style="width:'.$width.'px;height:'.$width.'px;">';
-				
+			if($width == 0){
+			$img =  '<img src="images/console/signes/percentil_bubble.png" style="width:130px;height:130px;'.$imgpos.'">';	
+			}
+			else{
+			$img =  '<img src="images/console/signes/percentil_bubble.png" style="width:'.$width.'px;height:'.$width.'px;'.$imgpos.'">';	
+			}
+						
 			}
 			else{
 				
-			$img = str_replace('>', 'class="image" id="image_' . $id . '" />', $img);
+			$img = str_replace('>', 'class="image" style="width:'.$wimg.'px;height:'.$himg.'px;'.$imgpos.'" id="image_' . $id . '" />', $img);
 			
 			}
 			
 			echo $img;			
 			
+			if($layoutData['label_position']=='down'){
+			echo io_safe_output($text);
+		}			
+		else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
+			echo io_safe_output($text);
+		}
+			
 			break;
 		
 		case MODULE_GRAPH:
-			echo io_safe_output($text) . '<br />'; 
+			if($layoutData['label_position']=='up'){
+				echo io_safe_output($text);
+			}
 			echo $img;
+			if($layoutData['label_position']=='down'){
+			echo io_safe_output($text);
+			}			
+			else if($layoutData['label_position']=='left' || $layoutData['label_position']=='right'){
+				echo io_safe_output($text);
+			}
 			break;
 		case SIMPLE_VALUE:
 		case SIMPLE_VALUE_MAX:
@@ -1105,18 +1411,20 @@ function visual_map_print_item($mode = "read", $layoutData,
 				}
 			}
 			
-			$io_safe_output_text = str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
+			//$io_safe_output_text = str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
 			
 			
 			
 			if(get_parameter('action') == 'edit'){
 							
-			echo 'Data value';
+			//echo 'Data value';
+			
+			echo $io_safe_output_text;
 								
 				}
 			else{
 		
-			echo $io_safe_output_text;
+			echo str_replace(array('_VALUE_','_value_'), $value, $io_safe_output_text);
 				
 				}
 			
@@ -1167,7 +1475,6 @@ function visual_map_print_item($mode = "read", $layoutData,
 						array("class" => "image", "id" => "image_" . $id,"width" => "70px",
 						"70px" => "$height"),
 						false, false, false, $isExternalLink);
-				echo '<br />';
 			}
 			break;
 		default:
@@ -1246,16 +1553,18 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 				$value = __('Unknown');
 			}
 			else {
-				if ( is_numeric($value) )
-					$value = format_for_graph($value, $config['graph_precision']);
+				if ( is_numeric($value) ) {
+					if ($config['simple_module_value']) {
+						$value = remove_right_zeros(number_format($value, $config['graph_precision']));
+					}
+				}
 				if (!empty($unit_text)) {
 					$value .= " " . $unit_text;
 				}
 			}
 			
 			$value = preg_replace ('/\n/i','<br>',$value);
-            $value =  preg_replace ('/\t/i','&#09;',$value);
-            $value =  preg_replace ('/\s/i','&nbsp;',$value);
+			$value =  preg_replace ('/\s/i','&nbsp;',$value);
 			
 			return $value;
 			break;
@@ -1265,8 +1574,11 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 				$value = __('Unknown');
 			}
 			else {
-				if ( is_numeric($value) )
-					$value = format_for_graph($value, 2);
+				if ( is_numeric($value) ) {
+					if ($config['simple_module_value']) {
+						$value = format_for_graph($value, 2);
+					}
+				}
 				if (!empty($unit_text))
 					$value .= " " . $unit_text;
 			}
@@ -1278,8 +1590,11 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 				$value = __('Unknown');
 			}
 			else {
-				if ( is_numeric($value) )
-					$value = format_for_graph($value, 2);
+				if ( is_numeric($value) ) {
+					if ($config['simple_module_value']) {
+						$value = format_for_graph($value, 2);
+					}
+				}
 				if (!empty($unit_text))
 					$value .= " " . $unit_text;
 			}
@@ -1291,8 +1606,11 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 				$value = __('Unknown');
 			}
 			else {
-				if ( is_numeric($value) )
-					$value = format_for_graph($value, 2);
+				if ( is_numeric($value) ) {
+					if ($config['simple_module_value']) {
+						$value = format_for_graph($value, 2);
+					}
+				}
 				if (!empty($unit_text))
 					$value .= " " . $unit_text;
 			}
@@ -1434,16 +1752,16 @@ function visual_map_process_wizard_add_modules ($id_modules, $image,
 		switch ($label_type) {
 			case 'agent_module':
 			default:
-				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 'agent_small', false, true, false, '…', false);
-				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_small', false, true, false, '…', false);
+				$agent_label = agents_get_name ($id_agent);
+				$module_label = modules_get_agentmodule_name($id_module);
 				$label = '<p><span class="visual_font_size_'.$fonts.'" style="font-family:'.$fontf.';">'.$agent_label . " - " . $module_label.'</span></p>';
 				break;
 			case 'module':
-				$module_label = ui_print_truncate_text(modules_get_agentmodule_name($id_module), 'module_small', false, true, false, '…', false);
+				$module_label = modules_get_agentmodule_name($id_module);
 				$label = '<p><span class="visual_font_size_'.$fonts.'" style="font-family:'.$fontf.';">'.$module_label.'</span></p>';
 				break;
 			case 'agent':
-				$agent_label = ui_print_truncate_text(agents_get_name ($id_agent), 'agent_small', false, true, false, '…', false);
+				$agent_label = agents_get_name ($id_agent);
 				$label = '<p><span class="visual_font_size_'.$fonts.'" style="font-family:'.$fontf.';">'.$agent_label.'</span></p>';
 				break;
 			case 'none':
@@ -1635,9 +1953,8 @@ function visual_map_process_wizard_add_agents ($id_agents, $image,
 		
 		switch ($label_type) {
 			case 'agent':
-				$agent_label = ui_print_truncate_text(
-					agents_get_name($id_agent),
-					'agent_small', false, true, false, '…', false);
+				$agent_label = 
+					agents_get_name($id_agent);
 				$label = $agent_label;
 				break;
 			case 'none':
@@ -2079,7 +2396,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		$(window).load(function () {
 			draw_lines(lines, 'background_'+id_layout);
 			draw_user_lines_read('background_'+id_layout);
-			center_labels();
+			//center_labels();
 		});
 		/* ]]> */
 	</script>
@@ -2140,9 +2457,23 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 		echo "<div style='width: 100%; overflow:auto; margin: 0 auto; padding:5px;'>";
 	}
 	
-	echo '<div style="background-color:'.$layout["background_color"].';"><div id="background_'.$id_layout.'"
-		style="margin:0px auto;
-			text-align:center;
+	echo '<div style="';
+	
+	if(get_parameter('pure')==1){
+		echo 'width:100%;height:100%;position:absolute;';
+	}
+	
+	
+	echo 'background-color:'.$layout["background_color"].';"><div id="background_'.$id_layout.'"
+		style="margin:0px auto;';
+
+		if(get_parameter('pure')==1){
+			echo 'top: 50%;
+    transform: translate(-0%, -50%);
+    -webkit-transform: translate(-0%, -50%);';
+		}		
+		
+ echo 'text-align:;
 			z-index: 0;
 			position:relative;
 			width:' . $mapWidth . 'px;
@@ -2186,12 +2517,7 @@ function visual_map_print_visual_map ($id_layout, $show_links = true,
 				'proportion_height' => $proportion_height,
 				'proportion_width' => $proportion_width);
 		}
-
-		if($layout_data['id_custom_graph']){
-			$layout_data['percentil'] = db_get_value ("percentil", "tgraph",
-				"id_graph", $layout_data["id_custom_graph"]);
-		}
-
+		
 		switch ($layout_data['type']) {
 			case LINE_ITEM:
 				visual_map_print_user_lines($layout_data, $proportion);

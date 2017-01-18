@@ -509,7 +509,41 @@ if (! isset ($config['id_user'])) {
 		exit ("</html>");
 	}
 }
-
+else {
+	$user_in_db = db_get_row_filter('tusuario', 
+		array('id_user' => $config['id_user']), '*');
+	if ($user_in_db == false) {
+		//logout
+		$_REQUEST = array ();
+		$_GET = array ();
+		$_POST = array ();
+		$config["auth_error"] = __("User doesn\'t exist.");
+		$iduser = $_SESSION["id_usuario"];
+		logoff_db ($iduser, $_SERVER["REMOTE_ADDR"]);
+		unset($_SESSION["id_usuario"]);
+		unset($iduser);
+		require_once ('general/login_page.php');
+		while (@ob_end_flush ());
+		exit ("</html>");
+	}
+	else {
+		if (((bool) $user_in_db['is_admin'] === false) && 
+				((bool) $user_in_db['not_login'] === true)) {
+			//logout
+			$_REQUEST = array ();
+			$_GET = array ();
+			$_POST = array ();
+			$config["auth_error"] = __("User only can use the API.");
+			$iduser = $_SESSION["id_usuario"];
+			logoff_db ($iduser, $_SERVER["REMOTE_ADDR"]);
+			unset($_SESSION["id_usuario"]);
+			unset($iduser);
+			require_once ('general/login_page.php');
+			while (@ob_end_flush ());
+			exit ("</html>");
+		}
+	}
+}
 // Log off
 if (isset ($_GET["bye"])) {
 	include ("general/logoff.php");

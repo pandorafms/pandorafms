@@ -58,52 +58,65 @@ if ($delete) {
 		$actions = get_parameter ('action');
 		
 		if (!empty($actions)) {
-			$agent_alerts = agents_get_alerts($id_agents);
-			
-			$alerts_agent_modules = array();
-			foreach ($agent_alerts['simple'] as $agent_alert) {
-				if (in_array($agent_alert['id_alert_template'], $id_alert_templates)) {
-					$alerts_agent_modules = array_merge($alerts_agent_modules, alerts_get_alerts_agent_module ($agent_alert['id_agent_module'], true, false, 'id'));
+			$modules = (array) get_parameter ('module');
+			$modules_id = array();
+			if (!empty($modules)) {
+				foreach ($modules as $module) {
+					foreach ($id_agents as $id_agent) {
+						$module_id = modules_get_agentmodule_id($module, $id_agent);
+						$modules_id[] = $module_id['id_agente_modulo'];
+					}
 				}
-			}
-			
-			if (empty($alerts_agent_modules)) {
-				ui_print_result_message (false, '',
-					__('Could not be deleted. No alerts selected'));
-			}
-			else {
-				$results = true;
-				$agent_module_actions = array();
-				
-				foreach ($alerts_agent_modules as $alert_agent_module) {
-					$agent_module_actions = alerts_get_alert_agent_module_actions ($alert_agent_module['id'], array('id','id_alert_action'));
-					
-					foreach ($agent_module_actions as $agent_module_action) {
-						foreach ($actions as $action) {
-							if ($agent_module_action['id_alert_action'] == $action) {
-								$result = alerts_delete_alert_agent_module_action ($agent_module_action['id']);
-								
-								if ($result === false)
-									$results = false;
-							}
-						}
+							
+				$agent_alerts = agents_get_alerts($id_agents);
+				$alerts_agent_modules = array();
+				foreach ($agent_alerts['simple'] as $agent_alert) {
+					if ((in_array($agent_alert['id_alert_template'], $id_alert_templates)) && (in_array($agent_alert['id_agent_module'], $modules_id))) {
+						$alerts_agent_modules = array_merge($alerts_agent_modules, alerts_get_alerts_agent_module ($agent_alert['id_agent_module'], true, false, 'id'));
 					}
 				}
 				
-				if ($results) {
-					db_pandora_audit("Massive management", "Delete alert action", false, false,
-						'Agent: ' . json_encode($id_agents) . ' Alert templates: ' . json_encode($id_alert_templates) . 
-						' Actions: ' . implode(',',$actions));
+				if (empty($alerts_agent_modules)) {
+					ui_print_result_message (false, '',
+						__('Could not be deleted. No alerts selected'));
 				}
 				else {
-					db_pandora_audit("Massive management", "Fail try to delete alert action", false, false,
-						'Agent: ' . json_encode($id_agents) . ' Alert templates: ' . json_encode($id_alert_templates) . 
-						' Actions: ' . implode(',',$actions));
+					$results = true;
+					$agent_module_actions = array();
+					
+					foreach ($alerts_agent_modules as $alert_agent_module) {
+						$agent_module_actions = alerts_get_alert_agent_module_actions ($alert_agent_module['id'], array('id','id_alert_action'));
+						
+						foreach ($agent_module_actions as $agent_module_action) {
+							foreach ($actions as $action) {
+								if ($agent_module_action['id_alert_action'] == $action) {
+									$result = alerts_delete_alert_agent_module_action ($agent_module_action['id']);
+									
+									if ($result === false)
+										$results = false;
+								}
+							}
+						}
+					}
+					
+					if ($results) {
+						db_pandora_audit("Massive management", "Delete alert action", false, false,
+							'Agent: ' . json_encode($id_agents) . ' Alert templates: ' . json_encode($id_alert_templates) . 
+							' Actions: ' . implode(',',$actions));
+					}
+					else {
+						db_pandora_audit("Massive management", "Fail try to delete alert action", false, false,
+							'Agent: ' . json_encode($id_agents) . ' Alert templates: ' . json_encode($id_alert_templates) . 
+							' Actions: ' . implode(',',$actions));
+					}
+					
+					ui_print_result_message ($results,
+						__('Successfully deleted'),
+						__('Could not be deleted'));
 				}
-				
-				ui_print_result_message ($results,
-					__('Successfully deleted'),
-					__('Could not be deleted'));
+			}
+			else {
+				ui_print_result_message (false, '', __('Could not be added').". ".__('No modules selected'));
 			}
 		}
 		else {
@@ -143,9 +156,6 @@ $table->data[0][3] = html_print_checkbox ("recursion", 1, $recursion,
 	true, false);
 
 $table->data[1][0] = __('Agents with templates');
-$table->data[1][0] .= '<span id="agent_loading" class="invisible">';
-$table->data[1][0] .= html_print_image('images/spinner.png', true);
-$table->data[1][0] .= '</span>';
 $table->data[1][1] = html_print_select (array(),'id_agents[]', 0, false, '', '', true, true);
 
 if (empty($id_agents)) {
@@ -155,10 +165,17 @@ else {
 	$alert_templates = agents_get_alerts_simple ($id_agents);
 }
 $table->data[2][0] = __('Alert templates');
-$table->data[2][0] .= '<span id="template_loading" class="invisible">';
-$table->data[2][0] .= html_print_image('images/spinner.png', true);
-$table->data[2][0] .= '</span>';
 $table->data[2][1] = html_print_select (index_array ($alert_templates, 'id_alert_template', 'template_name'), 'id_alert_templates[]', '', '', '', '', true, true, true, '', $alert_templates == 0);
+$table->data[2][2] = __('When select agents');
+$table->data[2][2] .= '<br>';
+$table->data[2][2] .= html_print_select (
+	array('common' => __('Show common modules'),
+		'all' => __('Show all modules'),'unknown' => __('Show unknown and not init modules')),
+	'modules_selection_mode',
+	'common', false, '', '', true);
+$table->data[2][3] = html_print_select (array(), 'module[]',
+	$modules_select, false, '', '', true, true, false);
+
 
 $actions = alerts_get_alert_actions ();
 $table->data[3][0] = __('Action');
@@ -219,6 +236,12 @@ $(document).ready (function () {
 	
 	$("#id_agents").change (function () {
 		update_alerts();
+	});
+	
+	$("#id_alert_templates").change(alert_templates_changed_by_multiple_agents_with_alerts);
+	
+	$("#modules_selection_mode").click(function () {
+		$("#id_alert_templates").trigger("change");
 	});
 	
 	function update_alerts() {

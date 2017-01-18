@@ -590,6 +590,8 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 				"4pt=.visual_font_size_4pt, " +
 				"6pt=.visual_font_size_6pt, " +
 				"8pt=.visual_font_size_8pt, " +
+				"10pt=.visual_font_size_10pt, " +
+				"12pt=.visual_font_size_12pt, " +
 				"14pt=.visual_font_size_14pt, " +
 				"24pt=.visual_font_size_24pt, " +
 				"36pt=.visual_font_size_36pt, " +

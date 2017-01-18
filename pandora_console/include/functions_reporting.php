@@ -3697,18 +3697,33 @@ function reporting_value($report, $content, $type) {
 			break;
 		case 'min':
 			$value = reporting_get_agentmodule_data_min(
-				$content['id_agent_module'], $content['period'], $report["datetime"]);
-			$formated_value = format_for_graph($value, 2) . " " . $unit;
+					$content['id_agent_module'], $content['period'], $report["datetime"]);
+			if (!$config['simple_module_value']) {
+				$formated_value = $value;
+			}
+			else {
+				$formated_value = format_for_graph($value, 2) . " " . $unit;
+			}
 			break;
 		case 'avg':
 			$value = reporting_get_agentmodule_data_average(
 				$content['id_agent_module'], $content['period'], $report["datetime"]);
-			$formated_value = format_for_graph($value, 2) . " " . $unit;
+			if (!$config['simple_module_value']) {
+				$formated_value = $value;
+			}
+			else {
+				$formated_value = format_for_graph($value, 2) . " " . $unit;
+			}
 			break;
 		case 'sum':
 			$value = reporting_get_agentmodule_data_sum(
 				$content['id_agent_module'], $content['period'], $report["datetime"]);
-			$formated_value = format_for_graph($value, 2) . " " . $unit;
+			if (!$config['simple_module_value']) {
+				$formated_value = $value;
+			}
+			else {
+				$formated_value = format_for_graph($value, 2) . " " . $unit;
+			}
 			break;
 		case 'MTTR':
 			$value = reporting_get_agentmodule_mttr(
@@ -4817,7 +4832,7 @@ function reporting_availability($report, $content, $date=false, $time=false) {
 		$aux_id_agents = $agents;
 		$i=0;
 		foreach ($items as $item) {
-			$utimestamp = db_get_value('utimestamp', 'tagente_datos', 'id_agente_modulo', $item['id_agent_module']);
+			$utimestamp = db_get_value('utimestamp', 'tagente_datos', 'id_agente_modulo', $item['id_agent_module'], true);
 			if (($utimestamp === false) || (intval($utimestamp) > intval($datetime_to))){
 				unset($items[$i]);
 			}

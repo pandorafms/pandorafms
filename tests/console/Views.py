@@ -8,7 +8,9 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.remote.webelement import WebElement
+
 import unittest2, time, re
+import logging
 
 class viewAppear(PandoraWebDriverTestCase):
 
@@ -23,6 +25,9 @@ class viewAppear(PandoraWebDriverTestCase):
 		"""
 		
 		"""	
+
+		logging.basicConfig(filename="Views.log", level=logging.INFO, filemode='w')
+		
 		driver = self.driver
 		self.login()
 		detect_and_pass_all_wizards(driver)
@@ -312,6 +317,8 @@ class viewAppear(PandoraWebDriverTestCase):
 		self.assertEqual("The last version of package installed is:" in driver.page_source,True)
 		click_menu_element(driver,"Update Manager options")
 		
+		logging.info("test_views_appear is correct")
+
 		"""
 
 if __name__ == "__main__":

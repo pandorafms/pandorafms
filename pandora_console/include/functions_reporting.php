@@ -450,7 +450,8 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$content,
 					$type,
 					$force_width_chart,
-					$force_height_chart);
+					$force_height_chart,
+					$pdf);
 				break;
 			case 'event_report_group':
 				$report['contents'][] = reporting_event_report_group(
@@ -1429,11 +1430,16 @@ function reporting_event_report_group($report, $content,
 
 function reporting_event_report_module($report, $content,
 	$type = 'dinamic', $force_width_chart = null,
-	$force_height_chart = null) {
+	$force_height_chart = null, $pdf=0) {
 	
 	global $config;
 
-	$ttl = 1;
+	if($pdf){
+		$ttl = 2;
+	}
+	else{
+		$ttl = 1;
+	}
 
 	$return['type'] = 'event_report_module';
 	

@@ -746,7 +746,7 @@ function reporting_html_top_n($table, $item) {
 	}
 }
 
-function reporting_html_event_report_group($table, $item) {
+function reporting_html_event_report_group($table, $item, $pdf = 0) {
 	global $config;
 	if (!empty($item['failed'])) {
 		$table->colspan['events']['cell'] = 3;
@@ -858,9 +858,16 @@ function reporting_html_event_report_group($table, $item) {
 			array_push ($table1->data, $data);
 		}
 		
-		$table->colspan['events']['cell'] = 3;
-		$table->data['events']['cell'] = html_print_table($table1, true);
-		
+		if($pdf){
+			$table1->class = 'table-beauty';
+			$pdf_export = html_print_table($table1, true);
+			$pdf_export .= '<br>';
+		}
+		else{
+			$table->colspan['events']['cell'] = 3;
+			$table->data['events']['cell'] = html_print_table($table1, true);
+		}
+
 		if (!empty($item['chart']['by_agent'])) {
 			$table1 = new stdClass();
 			$table1->width = '99%';
@@ -868,9 +875,16 @@ function reporting_html_event_report_group($table, $item) {
 			$table1->head[0] = __('Events by agent');
 			$table1->data[0][0] = $item['chart']['by_agent'];
 			
-			$table->colspan['chart_by_agent']['cell'] = 3;
-			$table->cellstyle['chart_by_agent']['cell'] = 'text-align: center;';
-			$table->data['chart_by_agent']['cell'] = html_print_table($table1, true);
+			if($pdf){
+				$table1->class = 'table-beauty';
+				$pdf_export .= html_print_table($table1, true);
+				$pdf_export .= '<br>';
+			}
+			else{
+				$table->colspan['chart_by_agent']['cell'] = 3;
+				$table->cellstyle['chart_by_agent']['cell'] = 'text-align: center;';
+				$table->data['chart_by_agent']['cell'] = html_print_table($table1, true);
+			}
 		}
 		
 		if (!empty($item['chart']['by_user_validator'])) {
@@ -880,9 +894,16 @@ function reporting_html_event_report_group($table, $item) {
 			$table1->head[0] = __('Events by user validator');
 			$table1->data[0][0] = $item['chart']['by_user_validator'];
 			
-			$table->colspan['chart_by_user_validator']['cell'] = 3;
-			$table->cellstyle['chart_by_user_validator']['cell'] = 'text-align: center;';
-			$table->data['chart_by_user_validator']['cell'] = html_print_table($table1, true);
+			if($pdf){
+				$table1->class = 'table-beauty';
+				$pdf_export .= html_print_table($table1, true);
+				$pdf_export .= '<br>';
+			}
+			else{
+				$table->colspan['chart_by_user_validator']['cell'] = 3;
+				$table->cellstyle['chart_by_user_validator']['cell'] = 'text-align: center;';
+				$table->data['chart_by_user_validator']['cell'] = html_print_table($table1, true);
+			}
 		}
 		
 		if (!empty($item['chart']['by_criticity'])) {
@@ -892,9 +913,16 @@ function reporting_html_event_report_group($table, $item) {
 			$table1->head[0] = __('Events by Severity');
 			$table1->data[0][0] = $item['chart']['by_criticity'];
 			
-			$table->colspan['chart_by_criticity']['cell'] = 3;
-			$table->cellstyle['chart_by_criticity']['cell'] = 'text-align: center;';
-			$table->data['chart_by_criticity']['cell'] = html_print_table($table1, true);
+			if($pdf){
+				$table1->class = 'table-beauty';
+				$pdf_export .= html_print_table($table1, true);
+				$pdf_export .= '<br>';
+			}
+			else{
+				$table->colspan['chart_by_criticity']['cell'] = 3;
+				$table->cellstyle['chart_by_criticity']['cell'] = 'text-align: center;';
+				$table->data['chart_by_criticity']['cell'] = html_print_table($table1, true);
+			}
 		}
 		
 		if (!empty($item['chart']['validated_vs_unvalidated'])) {
@@ -904,14 +932,25 @@ function reporting_html_event_report_group($table, $item) {
 			$table1->head[0] = __('Events validated vs unvalidated');
 			$table1->data[0][0] = $item['chart']['validated_vs_unvalidated'];
 			
-			$table->colspan['chart_validated_vs_unvalidated']['cell'] = 3;
-			$table->cellstyle['chart_validated_vs_unvalidated']['cell'] = 'text-align: center;';
-			$table->data['chart_validated_vs_unvalidated']['cell'] = html_print_table($table1, true);
+			if($pdf){
+				$table1->class = 'table-beauty';
+				$pdf_export .= html_print_table($table1, true);
+				$pdf_export .= '<br>';
+			}
+			else{
+				$table->colspan['chart_validated_vs_unvalidated']['cell'] = 3;
+				$table->cellstyle['chart_validated_vs_unvalidated']['cell'] = 'text-align: center;';
+				$table->data['chart_validated_vs_unvalidated']['cell'] = html_print_table($table1, true);
+			}
+		}
+
+		if($pdf){
+			return $pdf_export;
 		}
 	}
 }
 
-function reporting_html_event_report_module($table, $item) {
+function reporting_html_event_report_module($table, $item, $pdf = 0) {
 	global $config;
 	$show_summary_group = $item['show_summary_group'];
 	if (!empty($item['failed'])) {
@@ -993,10 +1032,16 @@ function reporting_html_event_report_module($table, $item) {
 					$table1->data[] = $data;
 				}
 			}
-
-			$table->colspan['events']['cell'] = 3;
-			$table->data['events']['cell'] = html_print_table($table1, true);
-
+			if($pdf){
+				$table1->class = 'table-beauty';
+				$pdf_export = html_print_table($table1, true);
+				$pdf_export .= '<br>';
+			}
+			else{
+				$table->colspan['events']['cell'] = 3;
+				$table->data['events']['cell'] = html_print_table($table1, true);
+			}
+			
 			if (!empty($item['chart']['by_agent'])) {
 				$table1 = new stdClass();
 				$table1->width = '99%';
@@ -1004,9 +1049,16 @@ function reporting_html_event_report_module($table, $item) {
 				$table1->head[0] = __('Events by agent');
 				$table1->data[0][0] = $item['chart']['by_agent'];
 				
-				$table->colspan['chart_by_agent']['cell'] = 3;
-				$table->cellstyle['chart_by_agent']['cell'] = 'text-align: center;';
-				$table->data['chart_by_agent']['cell'] = html_print_table($table1, true);
+				if($pdf){
+					$table1->class = 'table-beauty';
+					$pdf_export .= html_print_table($table1, true);
+					$pdf_export .= '<br>';
+				}
+				else{	
+					$table->colspan['chart_by_agent']['cell'] = 3;
+					$table->cellstyle['chart_by_agent']['cell'] = 'text-align: center;';
+					$table->data['chart_by_agent']['cell'] = html_print_table($table1, true);
+				}
 			}
 			
 			if (!empty($item['chart']['by_user_validator'])) {
@@ -1016,9 +1068,16 @@ function reporting_html_event_report_module($table, $item) {
 				$table1->head[0] = __('Events by user validator');
 				$table1->data[0][0] = $item['chart']['by_user_validator'];
 				
-				$table->colspan['chart_by_user_validator']['cell'] = 3;
-				$table->cellstyle['chart_by_user_validator']['cell'] = 'text-align: center;';
-				$table->data['chart_by_user_validator']['cell'] = html_print_table($table1, true);
+				if($pdf){
+					$table1->class = 'table-beauty';
+					$pdf_export .= html_print_table($table1, true);
+					$pdf_export .= '<br>';
+				}
+				else{	
+					$table->colspan['chart_by_user_validator']['cell'] = 3;
+					$table->cellstyle['chart_by_user_validator']['cell'] = 'text-align: center;';
+					$table->data['chart_by_user_validator']['cell'] = html_print_table($table1, true);
+				}
 			}
 			
 			if (!empty($item['chart']['by_criticity'])) {
@@ -1028,9 +1087,16 @@ function reporting_html_event_report_module($table, $item) {
 				$table1->head[0] = __('Events by Severity');
 				$table1->data[0][0] = $item['chart']['by_criticity'];
 				
-				$table->colspan['chart_by_criticity']['cell'] = 3;
-				$table->cellstyle['chart_by_criticity']['cell'] = 'text-align: center;';
-				$table->data['chart_by_criticity']['cell'] = html_print_table($table1, true);
+				if($pdf){
+					$table1->class = 'table-beauty';
+					$pdf_export .= html_print_table($table1, true);
+					$pdf_export .= '<br>';
+				}
+				else{	
+					$table->colspan['chart_by_criticity']['cell'] = 3;
+					$table->cellstyle['chart_by_criticity']['cell'] = 'text-align: center;';
+					$table->data['chart_by_criticity']['cell'] = html_print_table($table1, true);
+				}
 			}
 			
 			if (!empty($item['chart']['validated_vs_unvalidated'])) {
@@ -1040,9 +1106,20 @@ function reporting_html_event_report_module($table, $item) {
 				$table1->head[0] = __('Events validated vs unvalidated');
 				$table1->data[0][0] = $item['chart']['validated_vs_unvalidated'];
 				
-				$table->colspan['chart_validated_vs_unvalidated']['cell'] = 3;
-				$table->cellstyle['chart_validated_vs_unvalidated']['cell'] = 'text-align: center;';
-				$table->data['chart_validated_vs_unvalidated']['cell'] = html_print_table($table1, true);
+				if($pdf){
+					$table1->class = 'table-beauty';
+					$pdf_export .= html_print_table($table1, true);
+					$pdf_export .= '<br>';
+				}
+				else{	
+					$table->colspan['chart_validated_vs_unvalidated']['cell'] = 3;
+					$table->cellstyle['chart_validated_vs_unvalidated']['cell'] = 'text-align: center;';
+					$table->data['chart_validated_vs_unvalidated']['cell'] = html_print_table($table1, true);
+				}
+			}
+
+			if($pdf){
+				return $pdf_export;
 			}
 		}
 	}
@@ -1461,7 +1538,7 @@ function reporting_html_group_report($table, $item) {
 	</table>";
 }
 
-function reporting_html_event_report_agent($table, $item) {
+function reporting_html_event_report_agent($table, $item, $pdf = 0) {
 	global $config;
 	$table1 = new stdClass();
 	$table1->width = '99%';
@@ -1547,9 +1624,16 @@ function reporting_html_event_report_agent($table, $item) {
 		array_push ($table1->data, $data);
 	}
 	
-	$table->colspan['event_list']['cell'] = 3;
-	$table->cellstyle['event_list']['cell'] = 'text-align: center;';
-	$table->data['event_list']['cell'] = html_print_table($table1, true);
+	if($pdf){
+		$table1->class = 'table-beauty';
+		$pdf_export = html_print_table($table1, true);
+		$pdf_export .= '<br>';
+	}
+	else{
+		$table->colspan['event_list']['cell'] = 3;
+		$table->cellstyle['event_list']['cell'] = 'text-align: center;';
+		$table->data['event_list']['cell'] = html_print_table($table1, true);
+	}
 	
 	if (!empty($item['chart']['by_user_validator'])) {
 		$table1 = new stdClass();
@@ -1558,9 +1642,16 @@ function reporting_html_event_report_agent($table, $item) {
 		$table1->head[0] = __('Events validated by user');
 		$table1->data[0][0] = $item['chart']['by_user_validator'];
 		
-		$table->colspan['chart_by_user_validator']['cell'] = 3;
-		$table->cellstyle['chart_by_user_validator']['cell'] = 'text-align: center;';
-		$table->data['chart_by_user_validator']['cell'] = html_print_table($table1, true);
+		if($pdf){
+			$table1->class = 'table-beauty';
+			$pdf_export .= html_print_table($table1, true);
+			$pdf_export .= '<br>';
+		}
+		else{
+			$table->colspan['chart_by_user_validator']['cell'] = 3;
+			$table->cellstyle['chart_by_user_validator']['cell'] = 'text-align: center;';
+			$table->data['chart_by_user_validator']['cell'] = html_print_table($table1, true);
+		}
 	}
 	
 	if (!empty($item['chart']['by_criticity'])) {
@@ -1570,9 +1661,16 @@ function reporting_html_event_report_agent($table, $item) {
 		$table1->head[0] = __('Events by severity');
 		$table1->data[0][0] = $item['chart']['by_criticity'];
 		
-		$table->colspan['chart_by_criticity']['cell'] = 3;
-		$table->cellstyle['chart_by_criticity']['cell'] = 'text-align: center;';
-		$table->data['chart_by_criticity']['cell'] = html_print_table($table1, true);
+		if($pdf){
+			$table1->class = 'table-beauty';
+			$pdf_export .= html_print_table($table1, true);
+			$pdf_export .= '<br>';
+		}
+		else{
+			$table->colspan['chart_by_criticity']['cell'] = 3;
+			$table->cellstyle['chart_by_criticity']['cell'] = 'text-align: center;';
+			$table->data['chart_by_criticity']['cell'] = html_print_table($table1, true);
+		}
 	}
 	
 	if (!empty($item['chart']['validated_vs_unvalidated'])) {
@@ -1582,9 +1680,20 @@ function reporting_html_event_report_agent($table, $item) {
 		$table1->head[0] = __('Amount events validated');
 		$table1->data[0][0] = $item['chart']['validated_vs_unvalidated'];
 		
-		$table->colspan['chart_validated_vs_unvalidated']['cell'] = 3;
-		$table->cellstyle['chart_validated_vs_unvalidated']['cell'] = 'text-align: center;';
-		$table->data['chart_validated_vs_unvalidated']['cell'] = html_print_table($table1, true);
+		if($pdf){
+			$table1->class = 'table-beauty';
+			$pdf_export .= html_print_table($table1, true);
+			$pdf_export .= '<br>';
+		}
+		else{
+			$table->colspan['chart_validated_vs_unvalidated']['cell'] = 3;
+			$table->cellstyle['chart_validated_vs_unvalidated']['cell'] = 'text-align: center;';
+			$table->data['chart_validated_vs_unvalidated']['cell'] = html_print_table($table1, true);
+		}
+	}
+
+	if($pdf){
+		return $pdf_export;
 	}
 }
 

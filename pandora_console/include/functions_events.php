@@ -1287,7 +1287,7 @@ function events_get_agent ($id_agent, $period, $date = 0,
 	if (!empty($filter_event_severity)) {
 		foreach ($filter_event_severity as $key => $value) {
 			switch ($value) {
-				case 'all':
+				case -1:
 					$severity_all = 1;
 					break;
 				case 34:
@@ -2619,7 +2619,7 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
 	if (!empty($filter_event_severity)) {
 		foreach ($filter_event_severity as $key => $value) {
 			switch ($value) {
-				case 'all':
+				case -1:
 					$severity_all = 1;
 					break;
 				case 34:
@@ -2765,7 +2765,7 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
 	if (!empty($filter_event_severity)) {
 		foreach ($filter_event_severity as $key => $value) {
 			switch ($value) {
-				case 'all':
+				case -1:
 					$severity_all = 1;
 					break;
 				case 34:
@@ -2908,7 +2908,7 @@ function events_get_count_events_by_criticity ($filter, $period, $date,
 	if (!empty($filter_event_severity)) {
 		foreach ($filter_event_severity as $key => $value) {
 			switch ($value) {
-				case 'all':
+				case -1:
 					$severity_all = 1;
 					break;
 				case 34:
@@ -3064,7 +3064,7 @@ function events_get_count_events_validated ($filter, $period = null, $date = nul
 	if (!empty($filter_event_severity)) {
 		foreach ($filter_event_severity as $key => $value) {
 			switch ($value) {
-				case 'all':
+				case -1:
 					$severity_all = 1;
 					break;
 				case 34:

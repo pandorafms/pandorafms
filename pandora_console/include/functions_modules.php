@@ -2511,4 +2511,62 @@ function get_same_modules ($agents, $modules) {
 	return $modules_to_report;
 }
 
+function get_hierachy_modules_tree ($modules) {
+	$new_modules = array();
+
+	$new_modules_root = array_filter($modules, function ($module) {
+		return (isset($module['parent_module_id']) && ($module['parent_module_id'] == 0));
+	});
+
+	$new_modules_child = array_filter($modules, function ($module) {
+		return (isset($module['parent_module_id']) && ($module['parent_module_id'] != 0));
+	});
+
+	while (!empty($new_modules_child)) {
+		foreach ($new_modules_child as $i => $child) {
+			recursive_modules_tree($new_modules_root, $new_modules_child, $i, $child);
+		}
+	}
+
+	return $new_modules_root;
+}
+
+function recursive_modules_tree (&$new_modules, &$new_modules_child, $i, $child) {
+	foreach ($new_modules as $index => $module) {
+		if ($module['id_agente_modulo'] == $child['parent_module_id']) {
+			$new_modules[$index]['child'][] = $child;
+			unset($new_modules_child[$i]);
+			break;
+		}
+		else if (isset($new_modules[$index]['child'])) {
+			recursive_modules_tree ($new_modules[$index]['child'], $new_modules_child, $i, $child);
+		}
+	}
+}
+
+function get_dt_from_modules_tree ($modules) {
+	$final_modules = array();
+
+	foreach ($modules as $i => $module) {
+		$final_modules[$module['id_agente_modulo']] = $module;
+		$final_modules[$module['id_agente_modulo']]['deep'] = 0;
+		if (isset($modules[$i]['child'])) {
+			recursive_get_dt_from_modules_tree($final_modules, $modules[$i]['child'], $final_modules[$module['id_agente_modulo']]['deep']);
+		}
+		unset($modules[$i]);
+	}
+	
+	return $final_modules;
+}
+
+function recursive_get_dt_from_modules_tree (&$f_modules, $modules, $deep) {
+	foreach ($modules as $i => $module) {
+		$f_modules[$module['id_agente_modulo']] = $module;
+		$f_modules[$module['id_agente_modulo']]['deep'] = $deep + 1;
+		if (isset($modules[$i]['child'])) {
+			recursive_get_dt_from_modules_tree($f_modules, $modules[$i]['child'], $f_modules[$module['id_agente_modulo']]['deep']);
+		}
+	}
+}
+
 ?>

@@ -1065,15 +1065,14 @@ switch ($action) {
 							$resultOperationDB = false;
 							break;
 						}
-						$filter_event_validated = get_parameter('filter_event_validated', 0);
-						$filter_event_no_validated = get_parameter('filter_event_no_validated', 0);
-						$filter_event_critical = get_parameter('filter_event_critical', 0);
-						$filter_event_warning = get_parameter('filter_event_warning', 0);
-						$filter_event_type = get_parameter('filter_event_type', '');
-						
-						$event_graph_by_agent = get_parameter('event_graph_by_agent', 0);
-						$event_graph_by_user_validator = get_parameter('event_graph_by_user_validator', 0);
-						$event_graph_by_criticity = get_parameter('event_graph_by_criticity', 0);
+						$show_summary_group    = get_parameter('show_summary_group', 0);
+						$filter_event_severity = get_parameter('filter_event_severity', 0);
+						$filter_event_type     = get_parameter('filter_event_type', '');
+						$filter_event_status   = get_parameter('filter_event_status', 0);
+
+						$event_graph_by_agent                 = get_parameter('event_graph_by_agent', 0);
+						$event_graph_by_user_validator        = get_parameter('event_graph_by_user_validator', 0);
+						$event_graph_by_criticity             = get_parameter('event_graph_by_criticity', 0);
 						$event_graph_validated_vs_unvalidated = get_parameter('event_graph_validated_vs_unvalidated', 0);
 						
 						$event_filter_search = get_parameter('filter_search', '');
@@ -1135,12 +1134,13 @@ switch ($action) {
 						switch ($values['type']) {
 							case 'event_report_agent':
 							case 'event_report_group':
+							case 'event_report_module':
 								//Added for events items
-								$style['filter_event_no_validated'] = $filter_event_no_validated;
-								$style['filter_event_validated'] = $filter_event_validated;
-								$style['filter_event_critical'] = $filter_event_critical;
-								$style['filter_event_warning'] = $filter_event_warning;
-								$style['filter_event_type'] = json_encode($filter_event_type);
+								$style['show_summary_group']    = $show_summary_group;
+								$style['filter_event_severity'] = json_encode($filter_event_severity);
+								$style['filter_event_type']     = json_encode($filter_event_type);
+								$style['filter_event_status']   = json_encode($filter_event_status);
+								
 								$style['event_graph_by_agent'] = $event_graph_by_agent;
 								$style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
 								$style['event_graph_by_criticity'] = $event_graph_by_criticity;
@@ -1148,10 +1148,8 @@ switch ($action) {
 								
 								switch ($values['type']) {
 									case 'event_report_group':
-										$style['event_filter_search'] =
-											$event_filter_search;
-										break;
 									case 'event_report_agent':
+										$style['event_filter_search'] = $event_filter_search;
 										if ($label != '')
 											$style['label'] = $label;
 										else
@@ -1170,7 +1168,6 @@ switch ($action) {
 									$style['label'] = '';
 								break;
 							case 'agent_configuration':
-							case 'event_report_module':
 							case 'alert_report_agent':
 							case 'alert_report_module':
 							case 'historical_data':
@@ -1450,37 +1447,35 @@ switch ($action) {
 						switch ($values['type']) {
 							case 'event_report_agent':
 							case 'event_report_group':
-								$filter_event_no_validated = get_parameter('filter_event_no_validated', 0);
-								$filter_event_validated = get_parameter('filter_event_validated', 0);
-								$filter_event_critical = get_parameter('filter_event_critical', 0);
-								$filter_event_warning = get_parameter('filter_event_warning', 0);
+							case 'event_report_module':	
+								$show_summary_group    = get_parameter('show_summary_group', 0);
+								$filter_event_severity = get_parameter('filter_event_severity', '');
+								$filter_event_type     = get_parameter('filter_event_type', '');
+								$filter_event_status   = get_parameter('filter_event_status', '');
 								
-								$event_graph_by_agent = get_parameter('event_graph_by_agent', 0);
-								$event_graph_by_user_validator = get_parameter('event_graph_by_user_validator', 0);
-								$event_graph_by_criticity = get_parameter('event_graph_by_criticity', 0);
+								$event_graph_by_agent                 = get_parameter('event_graph_by_agent', 0);
+								$event_graph_by_user_validator        = get_parameter('event_graph_by_user_validator', 0);
+								$event_graph_by_criticity             = get_parameter('event_graph_by_criticity', 0);
 								$event_graph_validated_vs_unvalidated = get_parameter('event_graph_validated_vs_unvalidated', 0);
-								$filter_event_type = get_parameter('filter_event_type', '');
 								
 								$event_filter_search = get_parameter('filter_search', '');
 								
 								//Added for events items
-								$style['filter_event_no_validated'] = $filter_event_no_validated;
-								$style['filter_event_validated'] = $filter_event_validated;
-								$style['filter_event_critical'] = $filter_event_critical;
-								$style['filter_event_warning'] = $filter_event_warning;
-								$style['filter_event_type'] = json_encode($filter_event_type);
-								
-								$style['event_graph_by_agent'] = $event_graph_by_agent;
-								$style['event_graph_by_user_validator'] = $event_graph_by_user_validator;
-								$style['event_graph_by_criticity'] = $event_graph_by_criticity;
+								$style['show_summary_group']    = $show_summary_group;
+								$style['filter_event_severity'] = json_encode($filter_event_severity);
+								$style['filter_event_type']     = json_encode($filter_event_type);
+								$style['filter_event_status']   = json_encode($filter_event_status);
+
+								$style['event_graph_by_agent']                 = $event_graph_by_agent;
+								$style['event_graph_by_user_validator']        = $event_graph_by_user_validator;
+								$style['event_graph_by_criticity']             = $event_graph_by_criticity;
 								$style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
+								
 								
 								switch ($values['type']) {
 									case 'event_report_group':
-										$style['event_filter_search'] =
-											$event_filter_search;
-										break;
 									case 'event_report_agent':
+										$style['event_filter_search'] = $event_filter_search;
 										if ($label != '')
 											$style['label'] = $label;
 										else
@@ -1500,7 +1495,6 @@ switch ($action) {
 									$style['label'] = '';
 								break;
 							case 'agent_configuration':
-							case 'event_report_module':
 							case 'alert_report_agent':
 							case 'alert_report_module':
 							case 'historical_data':

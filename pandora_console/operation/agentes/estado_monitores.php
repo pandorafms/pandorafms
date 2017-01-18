@@ -186,6 +186,20 @@ ui_toggle($html_toggle,
 		*/
 	});
 	
+	function change_module_filter () {
+		hierachy_mode = $("#checkbox-status_hierachy_mode").is(":checked");
+		if (hierachy_mode) {
+			$("#status_module_group").disable();
+			$("#status_filter_monitor").disable();
+			$("#status_module_group").val(-1);
+			$("#status_filter_monitor").val(-1);
+		}
+		else {
+			$("#status_module_group").enable();
+			$("#status_filter_monitor").enable();
+		}
+	}
+
 	function order_module_list(sort_field_param, sort_rows_param) {
 		sort_field = sort_field_param;
 		sort_rows = sort_rows_param;
@@ -263,6 +277,9 @@ ui_toggle($html_toggle,
 		$("#status_filter_monitor").val(-1);
 		$("#status_module_group").val(-1);
 		$("input[name='status_text_monitor']").val("");
+		$("#checkbox-status_hierachy_mode").prop("checked", false);
+		$("#status_module_group").enable();
+		$("#status_filter_monitor").enable();
 		
 		filter_modules();
 	}
@@ -453,7 +470,7 @@ function print_form_filter_monitors($id_agent, $status_filter_monitor = -1,
 	}
 	$table->data[0][5] = html_print_select ($rows_select,'status_module_group', $status_module_group, '', '',0, true);
 	$table->data[0][6] = __('Show in hierachy mode');
-	$table->data[0][6] .= html_print_checkbox ('status_hierachy_mode', "", false, true);
+	$table->data[0][6] .= html_print_checkbox ('status_hierachy_mode', "", false, true, false, "onChange=change_module_filter();");
 	$table->data[0][7] = html_print_button(__('Filter'), 'filter', false, 'filter_modules();', 'class="sub search"', true);
 	$table->data[0][8] = '&nbsp;' . html_print_button(__('Reset'), 'filter', false, 'reset_filter_modules();', 'class="sub upd" style="margin-top:0px;"', true);
 	$form_text .= html_print_table($table, true);

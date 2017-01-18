@@ -852,9 +852,14 @@ if ($list_modules) {
 			$data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . html_print_image("images/config.png", true, array("alt" => '0', "border" => "", "title" => __('Edit'))) . '</a>';
 
 
-
-
+		
 		$data[3] = "";
+
+		if (isset($module['deep']) && ($module['deep'] != 0)) {
+			$data[3] .= str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $module['deep']);
+			$data[3] .= html_print_image("images/icono_escuadra.png", true, array("style" => 'padding-bottom: inherit;')) . "&nbsp;&nbsp;";
+		}
+		
 		if ($module['quiet']) {
 			$data[3] .= html_print_image("images/dot_green.disabled.png", true,
 				array("border" => '0', "title" => __('Quiet'), "alt" => ""))

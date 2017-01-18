@@ -1265,7 +1265,7 @@ function hiddenFields(item) {
 	$("#percentile_item_row_4." + item).css('display', '');
 
 	$("#period_row").css('display', 'none');
-	$("#period_row." + item).css('display', '');
+	$("#period_row." + item).css('display', 'none');
 
 	$("#size_row").css('display', 'none');
 	$("#size_row." + item).css('display', '');
@@ -1335,7 +1335,7 @@ function cleanFields(item) {
 	$("input[name=top]").val(0);
 	$("input[name=agent]").val('');
 	$("select[name=module]").val('');
-	$("input[name=process_value]").val('');
+	$("select[name=process_value]").val(0);
 	$("select[name=background_image]").val('');
 	$("input[name=width_percentile]").val('');
 	$("input[name=max_percentile]").val('');

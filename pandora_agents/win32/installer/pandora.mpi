@@ -186,7 +186,7 @@ UpgradeApplicationID
 {}
 
 Version
-{170118}
+{170119}
 
 ViewReadme
 {Yes}
@@ -2387,7 +2387,7 @@ Windows,BuildSeparateArchives
 {No}
 
 Windows,Executable
-{<%AppName%>-Setup<%Ext%>}
+{<%AppName%>-<%Version%>-Setup<%Ext%>}
 
 Windows,FileDescription
 {<%AppName%> <%Version%> Setup}

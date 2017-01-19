@@ -1526,6 +1526,26 @@ sub cli_create_web_module($) {
 	else {
 		enterprise_hook('pandora_create_policy_module_from_hash', [$conf, \%parameters, $dbh]);
 	}
+	
+	#Begin Insert module definition from file_definition in bd
+	if (defined($definition_file)){	
+		
+				open(my $fh, '<', $definition_file) or die($!);
+				my @lines = <$fh>;
+				close ($fh);
+		
+				my $sql = get_db_value ($dbh, "SELECT MAX(id_agente_modulo) FROM tagente_modulo");
+				my $sql2 = "UPDATE tagente_modulo SET plugin_parameter = '".join("",@lines)."' WHERE id_agente_modulo = ".$sql;
+				my $create = $dbh->do($sql2);
+				if($create){
+				print "Success";
+				}
+				else{
+					print "Failure<br/>$DBI::errstr";
+				}
+			}
+		#End Insert module definition from file_definition in bd
+		
 }
 
 ##############################################################################

@@ -1435,7 +1435,7 @@ class Tree {
 
 		$module['type'] = 'module';
 		$module['id'] = (int) $module['id'];
-		$module['name'] = $module['name'];
+		$module['name'] = io_safe_output($module['name']);
 		$module['id_module_type'] = (int) $module['id_tipo_modulo'];
 		$module['server_type'] = (int) $module['id_modulo'];
 		$module['status'] = $module['estado'];

@@ -115,16 +115,18 @@ if (($policy_page) || (isset($agent))) {
 	if ($show_creation) {
 		// Create module/type combo
 		echo '<form id="create_module_type" method="post" action="'.$url.'">';
-		echo '<td class="datos" style="font-weight: bold;">';
-		echo __('Show in hierachy mode');
-		if ($checked == "true") {
-			$checked = true;
+		if (!$policy_page) {
+			echo '<td class="datos" style="font-weight: bold;">';
+			echo __('Show in hierachy mode');
+			if ($checked == "true") {
+				$checked = true;
+			}
+			else {
+				$checked = false;
+			}
+			html_print_checkbox ('status_hierachy_mode', "", $checked, false, false, "onChange=change_mod_filter();");
+			echo '</td>';
 		}
-		else {
-			$checked = false;
-		}
-		html_print_checkbox ('status_hierachy_mode', "", $checked, false, false, "onChange=change_mod_filter();");
-		echo '</td>';
 		echo '<td class="datos" style="font-weight: bold;">';
 		echo __("Type");
 		html_print_select ($modules, 'moduletype', '', '', '', '', false, false, false, '', false, 'max-width:300px;' );

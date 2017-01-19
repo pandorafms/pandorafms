@@ -2535,6 +2535,7 @@ function recursive_modules_tree (&$new_modules, &$new_modules_child, $i, $child)
 	foreach ($new_modules as $index => $module) {
 		if ($module['id_agente_modulo'] == $child['parent_module_id']) {
 			$new_modules[$index]['child'][] = $child;
+			$new_modules[$index]['have_childs'] = true;
 			unset($new_modules_child[$i]);
 			break;
 		}

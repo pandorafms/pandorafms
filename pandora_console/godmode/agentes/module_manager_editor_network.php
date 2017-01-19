@@ -66,10 +66,36 @@ $extra_title = __('Network server module');
 $data = array ();
 $data[0] = __('Target IP');
 //show agent_for defect;
-if($ip_target == 'auto'){
-	$ip_target = agents_get_address ($id_agente);
+
+if($page == 'enterprise/godmode/policies/policy_modules'){
+	
+	if($ip_target != 'auto' && $ip_target != ''){
+		$custom_ip_target = $ip_target;
+		$ip_target = 'custom';
+	}
+	elseif($ip_target == ''){
+		$ip_target = 'force_pri';	
+		$custom_ip_target = '';
+	}
+	else{
+		$custom_ip_target = '';
+	}
+
+	$target_ip_values = array();
+	$target_ip_values['auto']      = __('Auto');
+	$target_ip_values['force_pri'] = __('Force primary key');
+	$target_ip_values['custom']    = __('Custom');
+
+	$data[1] = html_print_select ($target_ip_values, 'ip_target', $ip_target, '', '', '', 
+				true, false, false, '', false, 'width:200px;');
+	$data[1] .= html_print_input_text ('custom_ip_target', $custom_ip_target, '', 15, 60, true);
 }
-$data[1] = html_print_input_text ('ip_target', $ip_target, '', 15, 60, true);
+else{
+	if($ip_target == 'auto'){
+		$ip_target = agents_get_address ($id_agente);
+	}
+	$data[1] = html_print_input_text ('ip_target', $ip_target, '', 15, 60, true);
+}
 
 // In ICMP modules, port is not configurable
 if ($id_module_type >= 6 && $id_module_type <= 7) {
@@ -350,6 +376,18 @@ $(document).ready (function () {
 	});
 	$('#snmp3_browser_privacy_pass').keyup(function() {
 		$('#snmp3_privacy_pass').val($(this).val());
+	});
+	var custom_ip_target = "<?php echo $custom_ip_target?>";
+	if(custom_ip_target == ''){
+		$("#text-custom_ip_target").hide();
+	}
+	$('#ip_target').change(function() {
+		if($(this).val() == 'custom') {
+			$("#text-custom_ip_target").show();	
+		}
+		else{
+			$("#text-custom_ip_target").hide();	
+		}
 	});
 });
 

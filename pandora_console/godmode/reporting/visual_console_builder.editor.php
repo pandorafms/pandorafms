@@ -75,7 +75,7 @@ if (!defined('METACONSOLE')) {
 	echo '<div id="frame_view" style="width: 100%; height: 500px; overflow: scroll; margin: 0 auto;">';
 }
 else {
-	echo '<div id="frame_view" style="width: 919px; height: 500px; overflow: scroll; margin: 0 auto;">';
+	echo '<div id="frame_view" style="overflow: auto; margin: 0px auto; padding: 5px; ">';
 }
 echo '<div id="background" class="" style="top:50px;
 	margin: 0px auto;border: 1px lightgray solid; width: ' . $widthBackground . 'px; height: ' . $heightBackground . 'px;">';

@@ -71,9 +71,9 @@ function treeview_printModuleTable($id_module, $server_data = false, $no_head = 
 	
 	//Module name
 	if ($module["disabled"])
-		$cellName = "<em>" . ui_print_truncate_text ($module["nombre"], GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]',"text-transform: uppercase;") .  ui_print_help_tip(__('Disabled'), true) . "<em>";
+		$cellName = "<em>" . ui_print_truncate_text (io_safe_output($module["nombre"]), GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]',"text-transform: uppercase;") .  ui_print_help_tip(__('Disabled'), true) . "<em>";
 	else
-		$cellName = ui_print_truncate_text ($module["nombre"], GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]',"text-transform: uppercase;");
+		$cellName = ui_print_truncate_text (io_safe_output($module["nombre"]), GENERIC_SIZE_TEXT, true, true, true, '[&hellip;]',"text-transform: uppercase;");
 	
 	$row = array();
 	$row['title'] = __('Name');

@@ -5638,10 +5638,10 @@ function reporting_general($report, $content) {
 							$data['operator'] = __('Summatory');
 							break;
 						case 'min':
-							$data['operator'] = __('Minimal');
+							$data['operator'] = __('Minimum');
 							break;
 						case 'max':
-							$data['operator'] = __('Maximun');
+							$data['operator'] = __('Maximum');
 							break;
 						case 'avg':
 						default:

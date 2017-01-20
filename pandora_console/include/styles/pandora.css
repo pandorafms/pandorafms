@@ -2353,60 +2353,85 @@ span#plugin_description {
 #tinymce {
 	text-align: left;
 }
-.visual_font_size_4pt, .visual_font_size_4pt > em, .visual_font_size_4pt > strong, .visual_font_size_4pt > strong > span .visual_font_size_4pt > span {
+.visual_font_size_4pt, .visual_font_size_4pt > em, .visual_font_size_4pt > strong, .visual_font_size_4pt > strong > span, .visual_font_size_4pt > span, .visual_font_size_4pt > strong > em, .visual_font_size_4pt > em > strong, .visual_font_size_4pt em span, .visual_font_size_4pt span em  {
 	font-size: 4pt !important;
+	line-height: 4pt;
 }
-.visual_font_size_6pt, .visual_font_size_6pt > em, .visual_font_size_6pt > strong, .visual_font_size_6pt > strong > span, .visual_font_size_6pt > span {
+.visual_font_size_6pt, .visual_font_size_6pt > em, .visual_font_size_6pt > strong, .visual_font_size_6pt > strong > span, .visual_font_size_6pt > span, .visual_font_size_6pt > strong > em, .visual_font_size_6pt > em > strong, .visual_font_size_6pt em span, .visual_font_size_6pt span em   {
 	font-size: 6pt !important;
+	line-height: 6pt;
 }
-.visual_font_size_8pt, .visual_font_size_8pt > em, .visual_font_size_8pt > strong, .visual_font_size_8pt > strong > span , .visual_font_size_8pt > span {
+.visual_font_size_8pt, .visual_font_size_8pt > em, .visual_font_size_8pt > strong, .visual_font_size_8pt > strong > span , .visual_font_size_8pt > span, .visual_font_size_8pt > strong > em, .visual_font_size_8pt > em > strong, .visual_font_size_8pt em span, .visual_font_size_8pt span em   {
 	font-size: 8pt !important;
+	line-height: 8pt;
 }
-.visual_font_size_14pt, .visual_font_size_14pt > em , .visual_font_size_14pt > strong, .visual_font_size_14pt > strong > span, .visual_font_size_14pt > span  {
-	font-size: 14pt !important;
+.visual_font_size_10pt, .visual_font_size_10pt > em , .visual_font_size_10pt > strong, .visual_font_size_10pt > strong > em, .visual_font_size_10pt > em > strong, .visual_font_size_10pt em span, .visual_font_size_10pt span em   {
+	font-size: 10pt !important;
+	line-height: 10pt;
 }
-.visual_font_size_24pt, .visual_font_size_24pt > em, .visual_font_size_24pt > strong, .visual_font_size_24pt > strong > span , .visual_font_size_24pt > span {
-	font-size: 24pt !important;
-}
-.visual_font_size_36pt, .visual_font_size_36pt > em, .visual_font_size_36pt > strong, .visual_font_size_36pt > strong > span, .visual_font_size_36pt > span {
-	font-size: 36pt !important;
-}
-.visual_font_size_72pt, .visual_font_size_72pt > em, .visual_font_size_72pt > strong, .visual_font_size_72pt > strong > span, .visual_font_size_72pt > span {
-	font-size: 72pt !important;
-}
-
-.visual_font_size_96pt, .visual_font_size_96pt > em, .visual_font_size_96pt > strong, .visual_font_size_96pt > strong > span, .visual_font_size_96pt > span {
-	font-size: 96pt !important;
-}
-
-.visual_font_size_128pt, .visual_font_size_128pt > em, .visual_font_size_128pt > strong, .visual_font_size_128pt > strong > span, .visual_font_size_128pt > span {
-	font-size: 128pt !important;
-}
-
-.visual_font_size_154pt, .visual_font_size_154pt > em, .visual_font_size_154pt > strong, .visual_font_size_154pt > strong > span, .visual_font_size_154pt > span {
-	font-size: 154pt !important;
-}
-
-.visual_font_size_196pt, .visual_font_size_196pt > em, .visual_font_size_196pt > strong, .visual_font_size_196pt > strong > span, .visual_font_size_196pt > span {
-	font-size: 196pt !important;
-}
-
-
-
-.resize_visual_font_size_8pt, .resize_visual_font_size_8pt > em, .resize_visual_font_size_8pt > strong, .resize_visual_font_size_8pt > strong > span, .resize_visual_font_size_8pt > span {
-	font-size: 4pt !important;
-}
-.resize_visual_font_size_14pt, .resize_visual_font_size_14pt > em , .resize_visual_font_size_14pt > strong, .resize_visual_font_size_14pt > strong > span, .resize_visual_font_size_14pt > span {
-	font-size: 7pt !important;
-}
-.resize_visual_font_size_24pt, .resize_visual_font_size_24pt > em, .resize_visual_font_size_24pt > strong, .resize_visual_font_size_24pt > strong > span, .resize_visual_font_size_24pt > span {
+.visual_font_size_12pt, .visual_font_size_12pt > em , .visual_font_size_12pt > strong, .visual_font_size_12pt > strong > em, .visual_font_size_12pt > em > strong, .visual_font_size_12pt em span, .visual_font_size_12pt span em   {
 	font-size: 12pt !important;
+	line-height: 12pt;
 }
-.resize_visual_font_size_36pt, .resize_visual_font_size_36pt > em, .resize_visual_font_size_36pt > strong, .resize_visual_font_size_36pt > strong > span, .resize_visual_font_size_36pt > span {
-	font-size: 18pt !important;
+.visual_font_size_14pt, .visual_font_size_14pt > em , .visual_font_size_14pt > strong, .visual_font_size_14pt > strong > span, .visual_font_size_14pt > span, .visual_font_size_14pt > strong > em, .visual_font_size_14pt > em > strong, .visual_font_size_14pt em span, .visual_font_size_14pt span em    {
+	font-size: 14pt !important;
+	line-height: 14pt;
 }
-.resize_visual_font_size_72pt, .resize_visual_font_size_72pt > em, .resize_visual_font_size_72pt > strong, .resize_visual_font_size_72pt > strong > span, .resize_visual_font_size_72pt > span {
+.visual_font_size_24pt, .visual_font_size_24pt > em, .visual_font_size_24pt > strong, .visual_font_size_24pt > strong > span , .visual_font_size_24pt > span, .visual_font_size_24pt > strong > em, .visual_font_size_24pt > em > strong, .visual_font_size_24pt em span, .visual_font_size_24pt span em   {
+	font-size: 24pt !important;
+	line-height: 24pt;
+}
+.visual_font_size_36pt, .visual_font_size_36pt > em, .visual_font_size_36pt > strong, .visual_font_size_36pt > strong > span, .visual_font_size_36pt > span, .visual_font_size_36pt > strong > em, .visual_font_size_36pt > em > strong, .visual_font_size_36pt em span, .visual_font_size_36pt span em   {
 	font-size: 36pt !important;
+	line-height: 36pt;
+}
+.visual_font_size_72pt, .visual_font_size_72pt > em, .visual_font_size_72pt > strong, .visual_font_size_72pt > strong > span, .visual_font_size_72pt > span, .visual_font_size_72pt > strong > em, .visual_font_size_72pt > em > strong, .visual_font_size_72pt em span, .visual_font_size_72pt span em   {
+	font-size: 72pt !important;
+	line-height: 72pt;
+}
+
+.visual_font_size_96pt, .visual_font_size_96pt > em, .visual_font_size_96pt > strong, .visual_font_size_96pt > strong > span, .visual_font_size_96pt > span, .visual_font_size_96pt > strong > em, .visual_font_size_96pt > em > strong, .visual_font_size_96pt em span, .visual_font_size_96pt span em   {
+	font-size: 96pt !important;
+	line-height: 96pt;
+}
+
+.visual_font_size_128pt, .visual_font_size_128pt > em, .visual_font_size_128pt > strong, .visual_font_size_128pt > strong > span, .visual_font_size_128pt > span, .visual_font_size_128pt > strong > em, .visual_font_size_128pt > em > strong, .visual_font_size_128pt em span, .visual_font_size_128pt span em   {
+	font-size: 128pt !important;
+	line-height: 128pt;
+}
+
+.visual_font_size_154pt, .visual_font_size_154pt > em, .visual_font_size_154pt > strong, .visual_font_size_154pt > strong > span, .visual_font_size_154pt > span, .visual_font_size_154pt > strong > em, .visual_font_size_154pt > em > strong, .visual_font_size_154pt em span, .visual_font_size_154pt span em   {
+	font-size: 154pt !important;
+	line-height: 154pt;
+}
+
+.visual_font_size_196pt, .visual_font_size_196pt > em, .visual_font_size_196pt > strong, .visual_font_size_196pt > strong > span, .visual_font_size_196pt > span, .visual_font_size_196pt > strong > em, .visual_font_size_196pt > em > strong, .visual_font_size_196pt em span, .visual_font_size_196pt span em   {
+	font-size: 196pt !important;
+	line-height: 196pt;
+}
+
+
+
+.resize_visual_font_size_8pt, .resize_visual_font_size_8pt > em, .resize_visual_font_size_8pt > strong, .resize_visual_font_size_8pt > strong > span, .resize_visual_font_size_8pt > span, .resize_visual_font_size_8pt > strong > em, .resize_visual_font_size_8pt > em > strong, .visual_font_size_8pt em span, .visual_font_size_8pt span em   {
+	font-size: 4pt !important;
+	line-height: 4pt;
+}
+.resize_visual_font_size_14pt, .resize_visual_font_size_14pt > em , .resize_visual_font_size_14pt > strong, .resize_visual_font_size_14pt > strong > span, .resize_visual_font_size_14pt > span, .resize_visual_font_size_14pt > strong > em, .resize_visual_font_size_14pt > em > strong, .visual_font_size_14pt em span, .visual_font_size_14pt span em  {
+	font-size: 7pt !important;
+	line-height: 7pt;
+}
+.resize_visual_font_size_24pt, .resize_visual_font_size_24pt > em, .resize_visual_font_size_24pt > strong, .resize_visual_font_size_24pt > strong > span, .resize_visual_font_size_24pt > span, .resize_visual_font_size_24pt > strong > em, .resize_visual_font_size_24pt > em > strong, .visual_font_size_14pt em span, .visual_font_size_14pt span em  {
+	font-size: 12pt !important;
+	line-height: 12pt;
+	
+}
+.resize_visual_font_size_36pt, .resize_visual_font_size_36pt > em, .resize_visual_font_size_36pt > strong, .resize_visual_font_size_36pt > strong > span, .resize_visual_font_size_36pt > span, .resize_visual_font_size_36pt > strong > em, .resize_visual_font_size_36pt > em > strong, .visual_font_size_36pt em span, .visual_font_size_36pt span em  {
+	font-size: 18pt !important;
+	line-height: 18pt;
+}
+.resize_visual_font_size_72pt, .resize_visual_font_size_72pt > em, .resize_visual_font_size_72pt > strong, .resize_visual_font_size_72pt > strong > span, .resize_visual_font_size_72pt > span, .resize_visual_font_size_72pt > strong > em, .resize_visual_font_size_72pt > em > strong, .visual_font_size_72pt em span, .visual_font_size_72pt span em  {
+	font-size: 36pt !important;
+	line-height: 36pt;
 }
 
 /*SIDEBAR*/
@@ -3475,6 +3500,30 @@ div.simple_value > a > span.text p
 {
  font-family: 'unicodeFont';
  src: url('../fonts/unicode.ttf') format('truetype');
+}
+
+@font-face
+{
+ font-family: 'roboto';
+ src: url('../../fonts/roboto.woff2') format('woff2');
+}
+
+@font-face
+{
+ font-family: 'opensans';
+ src: url('../../fonts/opensans.woff2') format('woff2');
+}
+
+@font-face
+{
+ font-family: 'lato';
+ src: url('../../fonts/lato.woff2') format('woff2');
+}
+
+@font-face
+{
+ font-family: 'leaguegothic';
+ src: url('../../fonts/leaguegothic.woff') format('woff');
 }
 
 .unicode{

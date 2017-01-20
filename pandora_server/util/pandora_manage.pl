@@ -2798,6 +2798,11 @@ sub cli_module_update() {
 	my $update;
 	
 	$update->{$field} = $new_value;
+
+	my $policy_id = enterprise_hook('get_id_policy_module_agent_module',[$dbh, safe_input($id_agent_module)]);
+	if ( $policy_id > 0) {
+		$update->{policy_linked} = 0;
+	}
 	
 	pandora_update_module_from_hash ($conf, $update, 'id_agente_modulo', $id_agent_module, $dbh);
 }

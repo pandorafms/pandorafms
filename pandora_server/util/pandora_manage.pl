@@ -1402,14 +1402,14 @@ sub cli_create_web_module($) {
 		}
 		close (FILE);
 		
-		open (FILE, $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
-		my @file = <FILE>;
-		my $conf_file = join("", @file);
-		close(FILE);
+		#open (FILE, $conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf');
+		#my @file = <FILE>;
+		#my $conf_file = join("", @file);
+		#close(FILE);
 		
-		open FILE, "> ".$conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf';
-		print FILE "$conf_file\n$definition";
-		close(FILE);
+		#open FILE, "> ".$conf->{incomingdir}.'/conf/'.md5($agent_name).'.conf';
+		#print FILE "$conf_file\n$definition";
+		#close(FILE);
 		
 		enterprise_hook('pandora_update_md5_file', [$conf, $agent_name]);
 	}

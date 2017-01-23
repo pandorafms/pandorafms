@@ -454,8 +454,10 @@ class Tree {
 						break;
 					// Get the modules of an agent
 					case 'agent':
-						$columns = 'tam.id_agente_modulo AS id, tam.nombre AS name,
-							tam.id_tipo_modulo, tam.id_modulo, tae.estado, tae.datos';
+						$columns = 'tam.id_agente_modulo AS id, 
+							tam.parent_module_id AS parent, 
+							tam.nombre AS name, tam.id_tipo_modulo, 
+							tam.id_modulo, tae.estado, tae.datos';
 						$order_fields = 'tam.nombre ASC, tam.id_agente_modulo ASC';
 
 						// Set for the common ACL only. The strict ACL case is different (groups and tags divided).
@@ -1109,6 +1111,12 @@ class Tree {
 		$data = db_process_sql($sql);
 		if (empty($data))
 			return array();
+
+		if ($this->type == 'agent') {
+			//html_debug($data, true);
+			$data = $this->getProcessedModules($data);
+			html_debug($data, true);
+		}
 
 		return $data;
 	}
@@ -2571,6 +2579,42 @@ class Tree {
 			}
 		}
 		return $all_counters;
+	}
+
+	protected function getProcessedModules($modules_tree) {
+		$tree_modules = array();
+		$new_modules_root = array_filter($modules_tree, function ($module) {
+			return (isset($module['parent']) && ($module['parent'] == 0));
+		});
+
+		$new_modules_child = array_filter($modules_tree, function ($module) {
+			return (isset($module['parent']) && ($module['parent'] != 0));
+		});
+		
+		while (!empty($new_modules_child)) {
+			foreach ($new_modules_child as $i => $child) {
+				Tree::recursive_modules_tree_view($new_modules_root, $new_modules_child, $i, $child);
+			}
+		}
+
+		foreach ($new_modules_root as $m) {
+			$tree_modules[] = $m;
+		}
+		
+		return $tree_modules;
+	}
+
+	static function recursive_modules_tree_view (&$new_modules, &$new_modules_child, $i, $child) {
+		foreach ($new_modules as $index => $module) {
+			if ($module['id'] == $child['parent']) {
+				$new_modules[$index]['children'][] = $child;
+				unset($new_modules_child[$i]);
+				break;
+			}
+			else if (isset($new_modules[$index]['children'])) {
+				Tree::recursive_modules_tree_view ($new_modules[$index]['children'], $new_modules_child, $i, $child);
+			}
+		}
 	}
 
 }

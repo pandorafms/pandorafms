@@ -119,7 +119,7 @@ if ($show_update_action_menu) {
 	$id_action = (int) get_parameter ('id_action');
 	
 	$actions = alerts_get_alert_agent_module_actions ($id_alert);
-	$action_opction = db_get_row ('talert_template_module_actions', 'id', $id_module_action);
+	$action_opction = db_get_row ('talert_template_module_actions', 'id', $id_alert);
 	
 	$data .= '<form id="update_action-'.$alert['id'] . '" method="post">';
 	$data .= '<table class="databox_color" style="width:100%">';

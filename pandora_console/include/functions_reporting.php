@@ -2148,8 +2148,8 @@ function reporting_group_report($report, $content) {
 	
 	$return["data"] = array();
 	
-	$events = events_get_group_events(
-		$content['id_group'],
+	$events = events_get_agent(
+		false,
 		$content['period'],
 		$report['datetime'],
 		false,
@@ -2157,8 +2157,10 @@ function reporting_group_report($report, $content) {
 		false,
 		false,
 		false,
-		$metaconsole_on);
-	
+		false,
+		$content['id_group'],
+		true);
+		
 	if (empty($events)) {
 		$events = array();
 	}

@@ -58,6 +58,10 @@ if (is_ajax ()) {
 			$row['control'] = __('Yes').'&nbsp;'.html_print_radio_button_extended('autocreate_remote_users', 1, '', $config['autocreate_remote_users'], false, '', '', true).'&nbsp;&nbsp;';
 			$row['control'] .= __('No').'&nbsp;'.html_print_radio_button_extended('autocreate_remote_users', 0, '', $config['autocreate_remote_users'], false, '', '', true);
 			$table->data['autocreate_remote_users'] = $row;
+			
+			if (enterprise_installed()) {
+				add_enterprise_auth_autocreate_profiles($table, $type_auth);
+			}
 		}
 
 		switch ($type_auth) {
@@ -202,7 +206,6 @@ echo '</form>';
 
 <script type="text/javascript">
 	$('#auth').on('change', function(){
-		console.log('poco a poco');
 		type_auth = $('#auth').val();
 		$.ajax({
 			type: "POST",

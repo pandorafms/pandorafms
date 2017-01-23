@@ -236,9 +236,9 @@ config_check();
 				
 				$pandora_management = check_acl($config['id_user'], 0, "PM");
 				
-				if ($config["alert_cnt"] > 0) {
-					echo '<div id="alert_messages" style="display: none"></div>';
-					
+				echo '<div id="alert_messages" style="display: none"></div>';
+		
+				if ($config["alert_cnt"] > 0) {					
 					$maintenance_link = 'javascript:';
 					$maintenance_title = __("System alerts detected - Please fix as soon as possible");
 					$maintenance_class = $maintenance_id = 'show_systemalert_dialog white';

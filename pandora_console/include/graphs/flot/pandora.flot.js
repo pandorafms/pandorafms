@@ -546,13 +546,13 @@ function showTooltip(x, y, color, contents) {
     }).appendTo("body").fadeIn(200);
 }
 
-function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2, font, font_size ) {
-
+function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors, water_mark, maxvalue, water_mark, separator, separator2, font, font_size , from_ux) {
 	values = values.split(separator2);
 	legend = legend.split(separator);
 	font = font.split("/").pop().split(".").shift();
 	labels_long = labels_long.length > 0 ? labels_long.split(separator) : 0;
 	colors = colors.length > 0 ? colors.split(separator) : [];
+	
 	var colors_data = colors.length > 0
 		? colors
 		: ['#FFA631','#FC4444','#FAD403','#5BB6E5','#F2919D','#80BA27'];
@@ -561,15 +561,22 @@ function pandoraFlotVBars(graph_id, values, labels, labels_long, legend, colors,
 	for (i = 0; i < values.length; i++) {
 		var serie = values[i].split(separator);
 		
-		
 		var aux = new Array();
 		for (j = 0; j < serie.length; j++) {
 			var aux2 = parseFloat(serie[j]);
 			aux.push([aux2, j]);
-			datas.push( {
-				data: [[j, aux2]],
-				color: colors_data[0]
-			});
+			if (from_ux) {
+				datas.push( {
+					data: [[j, aux2]],
+					color: colors_data[j]
+				});
+			}
+			else {
+				datas.push( {
+					data: [[j, aux2]],
+					color: colors_data[0]
+				});
+			}
 		};
 	}
 	

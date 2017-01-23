@@ -168,8 +168,8 @@ function slicesbar_graph($chart_data, $period, $width, $height, $colors,
 function vbar_graph($flash_chart, $chart_data, $width, $height,
 	$color, $legend, $long_index, $no_data_image, $xaxisname = "",
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
-	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white') {
-	
+	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
+	$from_ux = false) {
 	setup_watermark($water_mark, $water_mark_file, $water_mark_url);
 	
 	if (empty($chart_data)) {
@@ -179,7 +179,7 @@ function vbar_graph($flash_chart, $chart_data, $width, $height,
 	if ($flash_chart) {
 		return flot_vcolumn_chart ($chart_data, $width, $height, $color,
 			$legend, $long_index, $homeurl, $unit, $water_mark_url,
-			$homedir,$font,$font_size);
+			$homedir,$font,$font_size, $from_ux);
 	}
 	else {
 		$graph = array();

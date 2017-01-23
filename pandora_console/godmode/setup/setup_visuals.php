@@ -334,6 +334,14 @@ $table_font->data[$row][1] = html_print_input_text('item_title_size_text',
 	$config["item_title_size_text"], '', 3, 3, true);
 $row++;
 
+$table_font->data[$row][0] = __('Show units in values report') .
+	ui_print_help_tip(__('This enabling this, max, min and avg values will be shown with units.'), true);
+$table_font->data[$row][1] = __('Yes') . '&nbsp;' .
+	html_print_radio_button ('simple_module_value', 1, '', $config["simple_module_value"], true).'&nbsp;&nbsp;';
+$table_font->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('simple_module_value', 0, '', $config["simple_module_value"], true);
+$row++;
+
 echo "<fieldset>";
 echo "<legend>" . __('Font and Text configuration') . "</legend>";
 html_print_table ($table_font);

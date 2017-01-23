@@ -234,7 +234,7 @@ class Tree {
 		// Agent name filter
 		$agent_search_filter = "";
 		if (!empty($this->filter['searchAgent'])) {
-			$agent_search_filter = " AND ta.nombre LIKE '%".$this->filter['searchAgent']."%' ";
+			$agent_search_filter = " AND LOWER(ta.nombre) LIKE LOWER('%".$this->filter['searchAgent']."%')";
 		}
 
 		// Agent status filter

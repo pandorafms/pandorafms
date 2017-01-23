@@ -255,7 +255,8 @@ function custom_graphs_print($id_graph, $height, $width, $period,
 		$labels,
 		$dashboard,
 		$vconsole,
-		$percentil);
+		$percentil,
+		$from_interface);
 	
 	if ($return)
 		return $output;

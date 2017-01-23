@@ -219,7 +219,8 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 	$chart_extra_data = array(), $yellow_threshold = 0,
 	$red_threshold = 0, $adapt_key = '', $force_integer = false,
 	$series_suffix_str = '', $menu = true, $backgroundColor = 'white',
-	$dashboard = false, $vconsole = false, $agent_module_id = 0) {
+	$dashboard = false, $vconsole = false, $agent_module_id = 0, $percentil_values = array(), 
+	$threshold_data = array()) {
 	
 	include_once('functions_flot.php');
 	
@@ -266,7 +267,14 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 			$agent_module_id,
 			$font,
 			$font_size,
+<<<<<<< HEAD
 			$xaxisname);
+=======
+			$xaxisname,
+			$percentil_values,
+			$threshold_data
+			);
+>>>>>>> d3f5a6281... Fixed threshold in interface graphs. Ticket #156
 	}
 	else {
 		$graph = array();
@@ -511,7 +519,8 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 	$yaxisname = "", $water_mark = "", $font = '', $font_size = '',
 	$unit = '', $ttl = 1, $homeurl = '', $backgroundColor = 'white',
 	$dashboard = false, $vconsole = false, $series_type = array(),
-	$percentil_values = array()) {
+	$percentil_values = array(), $yellow_threshold = 0, $red_threshold = 0,
+	$threshold_data = array()) {
 	
 	include_once("functions_flot.php");
 	
@@ -538,8 +547,8 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 			$water_mark_url,
 			$series_type,
 			array(),
-			0,
-			0,
+			$yellow_threshold,
+			$red_threshold,
 			'',
 			false,
 			'',
@@ -548,7 +557,8 @@ function line_graph($flash_chart, $chart_data, $width, $height, $color,
 			$dashboard,
 			$vconsole,
 			false,
-			$percentil_values);
+			$percentil_values,
+			$threshold_data);
 	}
 	else {
 		$graph = array();

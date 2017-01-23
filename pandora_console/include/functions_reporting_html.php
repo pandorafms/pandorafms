@@ -2479,6 +2479,16 @@ function reporting_html_general(&$table, $item) {
 				$table1->style[2] = 'text-align: left';
 				$table1->style[3] = 'text-align: left';
 				
+				/* Begin - Order by agent */
+				
+				foreach ($item['data'] as $key => $row) {
+    			$aux[$key] = $row['agent'];
+				}
+				
+				array_multisort($aux, SORT_ASC, $item['data']);
+				
+				/* End - Order by agent */
+				
 				foreach ($item['data'] as $row) {
 					if ($item['date']['period'] != 0) {
 						$table1->data[] = array(

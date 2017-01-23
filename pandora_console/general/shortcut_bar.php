@@ -102,7 +102,8 @@ function sc_get_critical_events () {
 		$own_groups = array_keys(users_get_groups($config['id_user'], "IR", false));
 	
 	// Get events in the last 8 hours
-	$shortcut_events_update = events_get_group_events($own_groups, 28800, time());
+	$shortcut_events_update = events_get_agent (false, 28800, time(), false, false, false, false, 
+		false, false, $own_groups, true);
 	if ($shortcut_events_update == false)
 		$shortcut_events_update = array();
 	

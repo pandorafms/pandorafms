@@ -173,9 +173,12 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	// message could be confussing to the user.
 	
 	$return = update_user ($id, $upd_info);
-	ui_print_result_message ($return,
+	if ($return > 0) {
+		ui_print_result_message ($return,
 			__('User info successfully updated'),
 			__('Error updating user info'));
+	}
+	
 	$user_info = $upd_info;
 }
 

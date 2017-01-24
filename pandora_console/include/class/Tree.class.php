@@ -1113,9 +1113,7 @@ class Tree {
 			return array();
 
 		if ($this->type == 'agent') {
-			//html_debug($data, true);
 			$data = $this->getProcessedModules($data);
-			html_debug($data, true);
 		}
 
 		return $data;
@@ -1440,6 +1438,12 @@ class Tree {
 
 	protected function processModule (&$module, $server = false) {
 		global $config;
+		
+		if (isset($module['children'])) {
+			foreach ($module['children'] as $i => $children) {
+				$this->processModule($module['children'][$i], $server);
+			}
+		}
 
 		$module['type'] = 'module';
 		$module['id'] = (int) $module['id'];

@@ -251,7 +251,7 @@ if (!modules_is_string_type($id_module_type) || $edit) {
 }
 if (modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[2][1] .= '<span id="string_warning"><em>'.__('Str.').'</em>';
-	$table_simple->data[2][1] .= html_print_input_text ('str_warning', $str_warning, 
+	$table_simple->data[2][1] .= html_print_input_text ('str_warning', str_replace("\"","",$str_warning), 
 		'', 10, 255, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy).'</span>';
 }
 
@@ -270,7 +270,7 @@ if (!modules_is_string_type($id_module_type) || $edit) {
 }
 if (modules_is_string_type($id_module_type) || $edit) {
 	$table_simple->data[2][3] .= '<span id="string_critical"><em>'.__('Str.').'</em>';
-	$table_simple->data[2][3] .= html_print_input_text ('str_critical', $str_critical, 
+	$table_simple->data[2][3] .= html_print_input_text ('str_critical', str_replace("\"","",$str_critical), 
 		'', 10, 255, true, $disabledBecauseInPolicy, false, '', $classdisabledBecauseInPolicy).'</span>';
 }
 

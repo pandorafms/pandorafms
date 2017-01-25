@@ -1051,6 +1051,11 @@ $policyTab = enterprise_hook('policy_tab');
 if ($policyTab == -1)
 	$policyTab = "";
 
+/* UX Console */
+$ux_console_tab = enterprise_hook('ux_console_tab');
+if ($ux_console_tab == -1)
+	$ux_console_tab = "";
+
 
 /* GIS tab */
 $gistab="";
@@ -1181,7 +1186,8 @@ $onheader = array('manage' => $managetab,
 	'gis' => $gistab,
 	'custom' => $custom_fields,
 	'graphs' => $graphs,
-	'policy' => $policyTab);
+	'policy' => $policyTab,
+	'ux_console' => $ux_console_tab);
 
 //Added after it exists
 // If the agent has incidents associated
@@ -1285,6 +1291,9 @@ switch($tab) {
 	case "policy":
 		$header_description = ' - ' . __('Policy');
 		break;
+	case "ux_console_tab":
+		$header_description = ' - ' . __('UX Console');
+		break;
 	case "incident":
 		$header_description = ' - ' . __('Incident');
 		break;
@@ -1333,6 +1342,9 @@ switch ($tab) {
 		break;
 	case "policy":
 		enterprise_include ("operation/agentes/policy_view.php");
+		break;
+	case "ux_console_tab":
+		enterprise_include ("operation/agentes/ux_console_view.php");
 		break;
 	case "graphs";
 		require("operation/agentes/graphs.php");

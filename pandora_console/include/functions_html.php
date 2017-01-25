@@ -1500,11 +1500,11 @@ function html_print_table (&$table, $return = false) {
 		$table->border = '0';
 	}
 	
-	if (empty ($table->tablealign) || $table->tablealign != 'left' || $table->tablealign != 'right') {
-		$table->tablealign = '';
+	if (empty ($table->tablealign) || (($table->tablealign != 'left') && ($table->tablealign != 'right'))) {
+		$table->tablealign = '"';
 	}
 	else {
-		$table->tablealign = 'style="float:'.$table->tablealign.';"'; //Align is deprecated. Use float instead
+		$table->tablealign = 'float:'.$table->tablealign.';"'; //Align is deprecated. Use float instead
 	}
 	
 	if (!isset ($table->cellpadding)) {
@@ -1526,10 +1526,10 @@ function html_print_table (&$table, $return = false) {
 	$tableid = empty ($table->id) ? 'table'.$table_count : $table->id;
 	
 	if (!empty($table->width)) {
-		$output .= '<table style="width:' . $table->width . ';' . $styleTable . '"'.$table->tablealign;
+		$output .= '<table style="width:' . $table->width . '; ' . $styleTable . ' '.$table->tablealign;
 	}
 	else {
-		$output .= '<table style="' . $styleTable . '"'.$table->tablealign;
+		$output .= '<table style="' . $styleTable . ' ' . $table->tablealign;
 	}
 	$output .= ' cellpadding="'.$table->cellpadding.'" cellspacing="'.$table->cellspacing.'"';
 	$output .= ' border="'.$table->border.'" class="'.$table->class.'" id="'.$tableid.'">';

@@ -764,21 +764,32 @@ if ($list_modules) {
 
 	$show_context_help_first_time = false;
 
+	$hierachy_mode = get_parameter('hierachy_mode', false);
+
+	if ($hierachy_mode == "true") {
+		$modules_hierachy = array();
+		$modules_hierachy = get_hierachy_modules_tree($modules);
+
+		$modules_dt = get_dt_from_modules_tree($modules_hierachy);
+
+		$modules = $modules_dt;
+	}
+	
 	foreach ($modules as $module) {
-		//The code add the row of 1 cell with title of group for to be more organice the list.
+		if ($hierachy_mode !== "true") {
+			//The code add the row of 1 cell with title of group for to be more organice the list.
+			if ($module["id_module_group"] != $last_modulegroup)
+			{
+				$table->colspan[$rowIndex][0] = count($table->head);
+				$table->rowclass[$rowIndex] = 'datos4';
 
-		if ($module["id_module_group"] != $last_modulegroup)
-		{
-			$table->colspan[$rowIndex][0] = count($table->head);
-			$table->rowclass[$rowIndex] = 'datos4';
+				array_push ($table->data, array ('<b>'.$module['name'].'</b>'));
 
-			array_push ($table->data, array ('<b>'.$module['name'].'</b>'));
-
-			$rowIndex++;
-			$last_modulegroup = $module["id_module_group"];
+				$rowIndex++;
+				$last_modulegroup = $module["id_module_group"];
+			}
+			//End of title of group
 		}
-		//End of title of group
-		
 		
 		$data = array ();
 		if (($module["id_modulo"] != 1) && ($module["id_tipo_modulo"] != 100)) {
@@ -855,9 +866,14 @@ if ($list_modules) {
 			$data[2] .= '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module["id_agente_modulo"].'&amp;edit_module='.$module["id_modulo"].'">' . html_print_image("images/config.png", true, array("alt" => '0', "border" => "", "title" => __('Edit'))) . '</a>';
 
 
-
-
+		
 		$data[3] = "";
+
+		if (isset($module['deep']) && ($module['deep'] != 0)) {
+			$data[3] .= str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $module['deep']);
+			$data[3] .= html_print_image("images/icono_escuadra.png", true, array("style" => 'padding-bottom: inherit;')) . "&nbsp;&nbsp;";
+		}
+		
 		if ($module['quiet']) {
 			$data[3] .= html_print_image("images/dot_green.disabled.png", true,
 				array("border" => '0', "title" => __('Quiet'), "alt" => ""))
@@ -1022,7 +1038,7 @@ if ($list_modules) {
 				"refresh=" . SECONDS_10MINUTES . "&amp;" .
 				"draw_events=$draw_events', 'day_".$win_handle."')";
 
-if(!is_snapshot_data($module['datos'])){
+		if(!is_snapshot_data($module['datos'])){
 			$data[8] .= '<a href="javascript:'.$link.'">' . html_print_image("images/chart_curve.png", true, array("border" => '0', "alt" => "")) . '</a> &nbsp;&nbsp;';
 			}
 			$server_name = '';

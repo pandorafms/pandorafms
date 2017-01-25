@@ -267,14 +267,11 @@ function area_graph($flash_chart, $chart_data, $width, $height, $color,
 			$agent_module_id,
 			$font,
 			$font_size,
-<<<<<<< HEAD
-			$xaxisname);
-=======
 			$xaxisname,
 			$percentil_values,
 			$threshold_data
 			);
->>>>>>> d3f5a6281... Fixed threshold in interface graphs. Ticket #156
+			
 	}
 	else {
 		$graph = array();

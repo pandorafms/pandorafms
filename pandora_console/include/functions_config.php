@@ -1370,22 +1370,6 @@ function config_process_config () {
 		config_update_value ('saml_path', '/opt/');
 	}
 	
-	if (!isset ($config['integria_enabled'])) {
-		config_update_value ( 'integria_enabled', '0');
-	}
-	
-	if (!isset ($config['integria_api_password'])) {
-		config_update_value ( 'integria_api_password', '');
-	}
-	
-	if (!isset ($config['integria_inventory'])) {
-		config_update_value ( 'integria_inventory', '0');
-	}
-	
-	if (!isset ($config['integria_url'])) {
-		config_update_value ( 'integria_url', '');
-	}
-	
 	if (!isset ($config['autoupdate'])) {
 		config_update_value ( 'autoupdate', 1);
 	}

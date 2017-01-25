@@ -392,7 +392,7 @@ if ($id_agente) {
 	$total_incidents = agents_get_count_incidents($id_agente);
 	
 	/* Incident tab */
-	if ($config['integria_enabled'] == 0 and $total_incidents > 0) {
+	if ($total_incidents > 0) {
 		$incidenttab['text'] = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=incident&amp;id_agente='.$id_agente.'">' 
 			. html_print_image ("images/book_edit.png", true, array ("title" =>__('Incidents')))
 			. '</a>';

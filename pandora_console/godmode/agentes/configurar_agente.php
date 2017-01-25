@@ -132,6 +132,7 @@ $grupo = 0;
 $id_os = 9; // Windows
 $custom_id = "";
 $cascade_protection = 0;
+$cascade_protection_modules = 0;
 $icon_path = '';
 $update_gis_data = 0;
 $unit = "";
@@ -161,6 +162,7 @@ if ($create_agent) {
 	$disabled = (int) get_parameter_post ("disabled");
 	$custom_id = (string) get_parameter_post ("custom_id",'');
 	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
+	$cascade_protection_module = (int) get_parameter_post("cascade_protection_module", 0);
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
 	$url_description = (string) get_parameter("url_description");
@@ -197,6 +199,7 @@ if ($create_agent) {
 				'id_os' => $id_os,
 				'disabled' => $disabled,
 				'cascade_protection' => $cascade_protection,
+				'cascade_protection_module' => $cascade_protection_module,
 				'server_name' => $server_name,
 				'id_parent' => $id_parent,
 				'custom_id' => $custom_id,
@@ -230,7 +233,8 @@ if ($create_agent) {
 				' ID os: ' . $id_os .
 				' Disabled: ' . $disabled .
 				' Custom ID: ' . $custom_id .
-				' Cascade protection: '  . $cascade_protection . 
+				' Cascade protection: '  . $cascade_protection .
+				' Cascade protection module: ' . $cascade_protection_module .
 				' Icon path: ' . $icon_path .
 				' Update GIS data: ' . $update_gis_data . 
 				' Url description: ' . $url_description .
@@ -666,6 +670,7 @@ if ($update_agent) { // if modified some agent paramenter
 	$id_parent = (int) agents_get_agent_id ($parent_name);
 	$custom_id = (string) get_parameter_post ("custom_id", "");
 	$cascade_protection = (int) get_parameter_post ("cascade_protection", 0);
+	$cascade_protection_module = (int) get_parameter ("cascade_protection_module", 0);
 	$icon_path = (string) get_parameter_post ("icon_path",'');
 	$update_gis_data = (int) get_parameter_post("update_gis_data", 0);
 	$url_description = (string) get_parameter("url_description");
@@ -733,6 +738,7 @@ if ($update_agent) { // if modified some agent paramenter
 				'intervalo' => $intervalo,
 				'comentarios' => $comentarios,
 				'cascade_protection' => $cascade_protection,
+				'cascade_protection_module' => $cascade_protection_module,
 				'server_name' => $server_name,
 				'custom_id' => $custom_id,
 				'icon_path' => $icon_path,
@@ -764,6 +770,7 @@ if ($update_agent) { // if modified some agent paramenter
 				' ID OS: ' . $id_os . ' Disabled: ' . $disabled . 
 				' Server Name: ' . $server_name . ' ID parent: ' . $id_parent .
 				' Custom ID: ' . $custom_id . ' Cascade Protection: ' . $cascade_protection .
+				' Cascade protection module: ' . $cascade_protection_module .
 				' Icon Path: ' . $icon_path . 'Update GIS data: ' .$update_gis_data .
 				' Url description: ' . $url_description .
 				' Quiet: ' . (int)$quiet;
@@ -808,6 +815,7 @@ if ($id_agente) {
 	$id_parent = $agent["id_parent"];
 	$custom_id = $agent["custom_id"];
 	$cascade_protection = $agent["cascade_protection"];
+	$cascade_protection_module = $agent["cascade_protection_module"];
 	$icon_path = $agent["icon_path"];
 	$update_gis_data = $agent["update_gis_data"];
 	$url_description = $agent["url_address"];

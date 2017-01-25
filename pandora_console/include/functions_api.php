@@ -396,7 +396,8 @@ $agent_field_column_mapping = array(
 	'agent_id_parent' => 'id_parent as agent_id_parent',
 	'agent_custom_id' => 'custom_id as agent_custom_id',
 	'agent_server_name' => 'server_name as agent_server_name',
-	'agent_cascade_protection' => 'cascade_protection as agent_cascade_protection');
+	'agent_cascade_protection' => 'cascade_protection as agent_cascade_protection',
+	'agent_cascade_protection_module' => 'cascade_protection_module as agent_cascade_protection_module',);
 
 /* module related field mappings 1/2 (output field => column for 'tagente_modulo') */
 $module_field_column_mampping = array(
@@ -540,6 +541,7 @@ function api_get_tree_agents($trash1, $trahs2, $other, $returnType) {
 		'agent_custom_id',
 		'agent_server_name',
 		'agent_cascade_protection',
+		'agent_cascade_protection_module',
 		
 		'module_id_agent_modulo',
 		'module_id_agent',
@@ -1060,20 +1062,32 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 		return;
 	}
 	
-		//html_debug_print($other);
 	$name = $other['data'][0];
 	$ip = $other['data'][1];
 	$idParent = $other['data'][2];
 	$idGroup = $other['data'][3];
 	$cascadeProtection = $other['data'][4];
-	$intervalSeconds = $other['data'][5];
-	$idOS = $other['data'][6];
-	$nameServer = $other['data'][7];
-	$customId = $other['data'][8];
-	$learningMode = $other['data'][9];
-	$disabled = $other['data'][10];
-	$description = $other['data'][11];
+	$cascadeProtectionModule = $other['data'][5];
+	$intervalSeconds = $other['data'][6];
+	$idOS = $other['data'][7];
+	$nameServer = $other['data'][8];
+	$customId = $other['data'][9];
+	$learningMode = $other['data'][10];
+	$disabled = $other['data'][11];
+	$description = $other['data'][12];
 	
+	if ($cascadeProtection == 1) {
+		if (($idParent != 0) && (db_get_value_sql('SELECT id_agente_modulo
+									FROM tagente_modulo
+									WHERE id_agente = ' . $idParent . 
+									' AND id_agente_modulo = ' . $cascadeProtectionModule) === false)) {
+				returnError('parent_agent_not_exist', 'Is not a parent module to do cascade protection.');
+		}
+	}
+	else {
+		$cascadeProtectionModule = 0;
+	}
+
 	$return = db_process_sql_update('tagente', 
 		array('nombre' => $name,
 			'direccion' => $ip,
@@ -1084,6 +1098,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3) {
 			'id_os' => $idOS,
 			'disabled' => $disabled,
 			'cascade_protection' => $cascadeProtection,
+			'cascade_protection_module' => $cascadeProtectionModule,
 			'server_name' => $nameServer,
 			'id_parent' => $idParent,
 			'custom_id' => $customId),
@@ -1124,14 +1139,27 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 	$idParent = $other['data'][2];
 	$idGroup = $other['data'][3];
 	$cascadeProtection = $other['data'][4];
-	$intervalSeconds = $other['data'][5];
-	$idOS = $other['data'][6];
+	$cascadeProtectionModule = $other['data'][5];
+	$intervalSeconds = $other['data'][6];
+	$idOS = $other['data'][7];
 	//$idServer = $other['data'][7];
-	$nameServer = $other['data'][7];
-	$customId = $other['data'][8];
-	$learningMode = $other['data'][9];
-	$disabled = $other['data'][10];
-	$description = $other['data'][11];
+	$nameServer = $other['data'][8];
+	$customId = $other['data'][9];
+	$learningMode = $other['data'][10];
+	$disabled = $other['data'][11];
+	$description = $other['data'][12];
+
+	if ($cascadeProtection == 1) {
+		if (($idParent != 0) && (db_get_value_sql('SELECT id_agente_modulo
+									FROM tagente_modulo
+									WHERE id_agente = ' . $idParent . 
+									' AND id_agente_modulo = ' . $cascadeProtectionModule) === false)) {
+				returnError('parent_agent_not_exist', 'Is not a parent module to do cascade protection.');
+		}
+	}
+	else {
+		$cascadeProtectionModule = 0;
+	}
 	
 	switch ($config["dbtype"]) {
 		case "mysql":
@@ -1183,10 +1211,11 @@ function api_set_new_agent($thrash1, $thrash2, $other, $thrash3) {
 				'id_os' => $idOS,
 				'disabled' => $disabled,
 				'cascade_protection' => $cascadeProtection,
+				'cascade_protection_module' => $cascadeProtectionModule,
 				'server_name' => $nameServer,
 				'id_parent' => $idParent,
 				'custom_id' => $customId));
-
+		
 		if (!empty($idAgente) && !empty($ip)) {
 			// register ip for this agent in 'taddress'
 			agents_add_address ($idAgente, $ip);

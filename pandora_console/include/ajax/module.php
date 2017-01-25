@@ -34,7 +34,21 @@ $change_module_relation_updates = (bool) get_parameter('change_module_relation_u
 $get_id_tag = (bool) get_parameter('get_id_tag', 0);
 $get_type = (bool) get_parameter('get_type', 0);
 $list_modules = (bool) get_parameter('list_modules', 0);
+$get_agent_modules_json_by_name = (bool) get_parameter('get_agent_modules_json_by_name', 0);
 
+
+if ($get_agent_modules_json_by_name) {
+	$agent_name = get_parameter('agent_name');
+
+	$agent_id = agents_get_agent_id($agent_name);
+
+	$agent_modules = db_get_all_rows_sql("SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo
+											WHERE id_agente = " . $agent_id);
+
+	echo json_encode ($agent_modules);
+	
+	return;
+}
 
 if ($get_plugin_macros) {
 	if ( https_is_running() ) {

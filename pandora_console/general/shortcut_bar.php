@@ -196,7 +196,6 @@ if ($own_info['is_admin'] || check_acl ($config['id_user'], 0, "PM") || check_ac
 }
 
 // Calculate opened incidents (id integria incidents are not enabled)
-if ($config['integria_enabled'] == 0) {
 	$shortcut_incidents = sc_get_opened_incidents();
 	
 	$shortcut_html .= "<a class='shortcut_item' href='index.php?sec=incidencias&sec2=operation/incidents/incident&estado=0'>";
@@ -206,7 +205,6 @@ if ($config['integria_enabled'] == 0) {
 	$shortcut_html .= "</a>";
 
 	$num_shortcut_items++;
-}
 
 if ($num_shortcut_items > 0) {
 	$shortcut_html .= "<span class='shortcut_item' href='javascript:;'>";

@@ -25,7 +25,13 @@ if (! check_acl ($config['id_user'], 0, "PM") && ! is_user_admin ($config['id_us
 }
 
 ui_require_css_file('update_manager', 'godmode/update_manager/');
-require_once("include/functions_update_manager.php");
+if (!is_metaconsole()) {
+	require_once("include/functions_update_manager.php");
+}
+else {
+	require_once("../../include/functions_update_manager.php");
+}
+
 enterprise_include_once("include/functions_update_manager.php");
 
 $current_package = update_manager_get_current_package();
@@ -63,10 +69,19 @@ if ($memory_limit < 100) {
 
 /* Translators: Do not translade Update Manager, it's the name of the program */
 
+if (is_metaconsole()) {
+	echo "<style type='text/css' media='screen'>
+  		@import 'styles/meta_pandora.css';
+	</style>";
+}
 
+if (is_metaconsole()) {
+	echo "<div id='box_online' style='float:right;padding-right:400px;padding-top:40px;padding-bottom:40px;' class='cargatextodialogo'>";
+}
+else {
+	echo "<div id='box_online' style='padding-top:40px;padding-bottom:40px;' class='cargatextodialogo'>";
+}
 
-
-echo "<div id='box_online' style='padding-top:40px;padding-bottom:40px;' class='cargatextodialogo'>";
 echo "<span class='loading' style='font-size:18pt;'>";
 echo "<img src='images/wait.gif' />";
 echo "</span><br><br>";
@@ -95,7 +110,7 @@ We added some of what seems to be "buggy" messages to the openSource version rec
 You can of course remove the warnings, that's why we include the source and do not use any kind of trick. And that's why we added here this comment, to let you know this does not reflect any change in our opensource mentality of does the last 14 years.
 
 */
-	
+
 	if($open){
 		echo "<br><br><div id='updatemodal' class='publienterprisehide' title='Community version' style=''><img data-title='Enterprise version' class='img_help forced_title' data-use_title_for_force_title='1' src='images/icono_exclamacion_2.png'></div><br>
 		";
@@ -103,6 +118,7 @@ You can of course remove the warnings, that's why we include the source and do n
 	
 
 $enterprise = enterprise_hook('update_manager_enterprise_main');
+
 if ($enterprise == ENTERPRISE_NOT_HOOK) {
 	//Open view
 	update_manager_main();

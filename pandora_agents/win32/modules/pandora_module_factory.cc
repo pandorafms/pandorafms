@@ -1288,6 +1288,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		switch (type) {
 		case TYPE_GENERIC_DATA:
 		case TYPE_GENERIC_DATA_INC:
+		case TYPE_GENERIC_DATA_INC_ABS:
 		case TYPE_GENERIC_PROC:
 		case TYPE_ASYNC_DATA:
 		case TYPE_ASYNC_PROC:

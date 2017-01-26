@@ -1928,6 +1928,18 @@ div.warn {
 }
 
 .submenu_not_selected {
+	transition-property: background-color;
+	transition-duration: 0.5s;
+	transition-timing-function: ease-out;
+	-webkit-transition-property: background-color;
+	-webkit-transition-duration: 0.5s;
+	-webkit-transition-timing-function: ease-out;
+	-moz-transition-property: background-color;
+	-moz-transition-duration: 0.5s;
+	-moz-transition-timing-function: ease-out;
+	-o-transition-property: background-color;
+	-o-transition-duration: 0.5s;
+	-o-transition-timing-function: ease-out;
 	font-weight: normal !important;
 }
 
@@ -2277,16 +2289,79 @@ ul.operation li a:hover  {
 	#font-weight: bold;
 }
 
+.menu_icon{
+	transition-property: background-color;
+	transition-duration: 0.5s;
+	transition-timing-function: ease-out;
+	-webkit-transition-property: background-color;
+	-webkit-transition-duration: 0.5s;
+	-webkit-transition-timing-function: ease-out;
+	-moz-transition-property: background-color;
+	-moz-transition-duration: 0.5s;
+	-moz-transition-timing-function: ease-out;
+	-o-transition-property: background-color;
+	-o-transition-duration: 0.5s;
+	-o-transition-timing-function: ease-out;
+}
+
 .menu_icon:hover{
+	transition-property: background-color;
+	transition-duration: 0.5s;
+	transition-timing-function: ease-out;
+	-webkit-transition-property: background-color;
+	-webkit-transition-duration: 0.5s;
+	-webkit-transition-timing-function: ease-out;
+	-moz-transition-property: background-color;
+	-moz-transition-duration: 0.5s;
+	-moz-transition-timing-function: ease-out;
+	-o-transition-property: background-color;
+	-o-transition-duration: 0.5s;
+	-o-transition-timing-function: ease-out;
 	background-color: #585858 !important;
 }
 .submenu_not_selected:hover{
+	transition-property: background-color;
+	transition-duration: 0.5s;
+	transition-timing-function: ease-out;
+	-webkit-transition-property: background-color;
+	-webkit-transition-duration: 0.5s;
+	-webkit-transition-timing-function: ease-out;
+	-moz-transition-property: background-color;
+	-moz-transition-duration: 0.5s;
+	-moz-transition-timing-function: ease-out;
+	-o-transition-property: background-color;
+	-o-transition-duration: 0.5s;
+	-o-transition-timing-function: ease-out;
 	background-color: #585858 !important;
 }
 .submenu_selected:hover{
 	background-color: #585858 !important;
 }
+.sub_subMenu{
+	transition-property: background-color;
+	transition-duration: 0.5s;
+	transition-timing-function: ease-out;
+	-webkit-transition-property: background-color;
+	-webkit-transition-duration: 0.5s;
+	-webkit-transition-timing-function: ease-out;
+	-moz-transition-property: background-color;
+	-moz-transition-duration: 0.5s;
+	-moz-transition-timing-function: ease-out;
+	-o-transition-property: background-color;
+	-o-transition-duration: 0.5s;
+}
 .sub_subMenu:hover{
+	transition-property: background-color;
+	transition-duration: 0.5s;
+	transition-timing-function: ease-out;
+	-webkit-transition-property: background-color;
+	-webkit-transition-duration: 0.5s;
+	-webkit-transition-timing-function: ease-out;
+	-moz-transition-property: background-color;
+	-moz-transition-duration: 0.5s;
+	-moz-transition-timing-function: ease-out;
+	-o-transition-property: background-color;
+	-o-transition-duration: 0.5s;
 	background-color: #585858 !important;
 }
 
@@ -3516,6 +3591,13 @@ div.simple_value > a > span.text p
 	margin-right:10px;
 	margin-top:10px;
 }
+.modalclosex:hover{
+	cursor:pointer;
+	display:inline;
+	float:right;
+	margin-right:10px;
+	margin-top:10px;
+}
 .modalcontent{
 	color:black;
 	background:white;
@@ -3537,6 +3619,13 @@ div.simple_value > a > span.text p
 	margin-left:30px;
 }
 .modalokbutton{
+	transition-property: background-color, color;
+	transition-duration: 1s;
+  transition-timing-function: ease-out;
+  -webkit-transition-property: background-color, color;
+  -webkit-transition-duration: 1s;
+  -o-transition-property: background-color, color;
+  -o-transition-duration: 1s;
 	cursor:pointer;
 	text-align:center;
 	margin-right:45px;
@@ -3547,14 +3636,80 @@ div.simple_value > a > span.text p
 	border-radius: 3px;width:90px;height:30px;background-color:white;border: 1px solid #82b92e;
 }
 .modalokbuttontext{
+	transition-property: background-color, color;
+	transition-duration: 1s;
+  transition-timing-function: ease-out;
+  -webkit-transition-property: background-color, color;
+  -webkit-transition-duration: 1s;
+  -o-transition-property: background-color, color;
+  -o-transition-duration: 1s;
 	color:#82b92e;font-family:Nunito;font-size:10pt;position:relative;top:6px;
 }
+
+.modalokbutton:hover {
+  transition-property: background-color, color;
+	transition-duration: 1s;
+  transition-timing-function: ease-out;
+  -webkit-transition-property: background-color, color;
+  -webkit-transition-duration: 1s;
+  -o-transition-property: background-color, color;
+  -o-transition-duration: 1s;
+  background-color:#82b92e;
+}
+
+.modalokbutton:hover .modalokbuttontext {
+  transition-property: background-color, color;
+	transition-duration: 1s;
+  transition-timing-function: ease-out;
+  -webkit-transition-property: background-color, color;
+  -webkit-transition-duration: 1s;
+  -o-transition-property: background-color, color;
+  -o-transition-duration: 1s;
+  color:white;
+}
+
 .modalgobutton{
+	transition-property: background-color, color;
+	transition-duration: 1s;
+  transition-timing-function: ease-out;
+  -webkit-transition-property: background-color, color;
+  -webkit-transition-duration: 1s;
+  -o-transition-property: background-color, color;
+  -o-transition-duration: 1s;
 	cursor:pointer;text-align:center;margin-right:15px;margin-bottom:30px;float:right;-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;border-radius: 3px;width:240px;height:30px;background-color:white;border: 1px solid #82b92e;
 }
 .modalgobuttontext{
+	transition-property: background-color, color;
+	transition-duration: 1s;
+  transition-timing-function: ease-out;
+  -webkit-transition-property: background-color, color;
+  -webkit-transition-duration: 1s;
+  -o-transition-property: background-color, color;
+  -o-transition-duration: 1s;
 color:#82b92e;font-family:Nunito;font-size:10pt;position:relative;top:6px;	
+}
+
+.modalgobutton:hover {
+  transition-property: background-color, color;
+	transition-duration: 1s;
+  transition-timing-function: ease-out;
+  -webkit-transition-property: background-color, color;
+  -webkit-transition-duration: 1s;
+  -o-transition-property: background-color, color;
+  -o-transition-duration: 1s;
+  background-color:#82b92e;
+}
+
+.modalgobutton:hover .modalgobuttontext {
+  transition-property: background-color, color;
+	transition-duration: 1s;
+  transition-timing-function: ease-out;
+  -webkit-transition-property: background-color, color;
+  -webkit-transition-duration: 1s;
+  -o-transition-property: background-color, color;
+  -o-transition-duration: 1s;
+  color:white;
 }
 
 

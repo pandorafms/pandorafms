@@ -58,7 +58,7 @@ echo "INSERT INTO tconfig (token, value) VALUES ('skip_login_help_dialog', '1')"
 echo "UPDATE tusuario SET middlename='1'" | mysql -u root -ppandora -Dpandora
 
 # Run console tests.
-cd /tmp/pandorafms/tests && chmod +x run_console_tests.py && ./run_console_tests.py
-check "Running tests for the Pandora FMS Console" $?
+#cd /tmp/pandorafms/tests && chmod +x run_console_tests.py && ./run_console_tests.py
+#check "Running tests for the Pandora FMS Console" $?
 
 exit 0

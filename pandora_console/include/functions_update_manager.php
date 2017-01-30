@@ -608,10 +608,9 @@ function update_manager_starting_update() {
 	$path_package = $config['attachment_store'] .
 		"/downloads/last_package.tgz";
 	
-	$full_path = $config['attachment_store'] . "/downloads/pandora_console";
+	$full_path = $config['attachment_store'] . "/downloads/unix";
 
 	ob_start();
-
 
 	if (!defined('PHP_VERSION_ID')) {
 		$version = explode('.', PHP_VERSION);

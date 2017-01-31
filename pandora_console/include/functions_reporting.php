@@ -3717,7 +3717,12 @@ function reporting_value($report, $content, $type) {
 		case 'max':
 			$value = reporting_get_agentmodule_data_max(
 				$content['id_agent_module'], $content['period'], $report["datetime"]);
-			$formated_value = format_for_graph($value, 2) . " " . $unit;
+			if (!$config['simple_module_value']) {
+				$formated_value = $value;
+			}
+			else {
+				$formated_value = format_for_graph($value, $config['graph_precision']) . " " . $unit;
+			}
 			break;
 		case 'min':
 			$value = reporting_get_agentmodule_data_min(
@@ -3726,7 +3731,7 @@ function reporting_value($report, $content, $type) {
 				$formated_value = $value;
 			}
 			else {
-				$formated_value = format_for_graph($value, 2) . " " . $unit;
+				$formated_value = format_for_graph($value, $config['graph_precision']) . " " . $unit;
 			}
 			break;
 		case 'avg':
@@ -3736,7 +3741,7 @@ function reporting_value($report, $content, $type) {
 				$formated_value = $value;
 			}
 			else {
-				$formated_value = format_for_graph($value, 2) . " " . $unit;
+				$formated_value = format_for_graph($value, $config['graph_precision']) . " " . $unit;
 			}
 			break;
 		case 'sum':
@@ -3746,7 +3751,7 @@ function reporting_value($report, $content, $type) {
 				$formated_value = $value;
 			}
 			else {
-				$formated_value = format_for_graph($value, 2) . " " . $unit;
+				$formated_value = format_for_graph($value, $config['graph_precision']) . " " . $unit;
 			}
 			break;
 		case 'MTTR':

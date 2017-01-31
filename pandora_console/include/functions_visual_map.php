@@ -1183,7 +1183,7 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 			else {
 				if ( is_numeric($value) ) {
 					if ($config['simple_module_value']) {
-						$value = format_for_graph($value, 2);
+						$value = format_for_graph($value, $config['graph_precision']);
 					}
 				}
 				if (!empty($unit_text))
@@ -1199,7 +1199,7 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 			else {
 				if ( is_numeric($value) ) {
 					if ($config['simple_module_value']) {
-						$value = format_for_graph($value, 2);
+						$value = format_for_graph($value, $config['graph_precision']);
 					}
 				}
 				if (!empty($unit_text))
@@ -1215,7 +1215,7 @@ function visual_map_get_simple_value($type, $id_module, $period = SECONDS_1DAY) 
 			else {
 				if ( is_numeric($value) ) {
 					if ($config['simple_module_value']) {
-						$value = format_for_graph($value, 2);
+						$value = format_for_graph($value, $config['graph_precision']);
 					}
 				}
 				if (!empty($unit_text))

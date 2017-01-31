@@ -314,7 +314,7 @@ sub data_consumer ($$) {
 		$agent_os_version = $pa_config->{'servername'}.'_Plugin';
 	}
 
-	pandora_update_agent ($pa_config, $timestamp, $module->{'id_agente'}, $agent_os_version, $pa_config->{'version'}, -1, $dbh);
+	pandora_update_agent ($pa_config, $timestamp, $module->{'id_agente'}, undef, undef, -1, $dbh);
 }
 
 1;

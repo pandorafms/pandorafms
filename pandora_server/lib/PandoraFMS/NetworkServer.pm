@@ -553,7 +553,7 @@ sub exec_network_module ($$$$) {
 		}
 
 		# Update agent last contact using Pandora version as agent version
-		pandora_update_agent ($pa_config, $timestamp, $id_agente, $agent_os_version, $pa_config->{'version'}, -1, $dbh);
+		pandora_update_agent ($pa_config, $timestamp, $id_agente, undef, undef, -1, $dbh);
 	
     } else {
 		# Modules who cannot connect or something go bad, update last_execution_try field

@@ -323,7 +323,7 @@ sub exec_prediction_module ($$$$) {
 		$agent_os_version = $pa_config->{'servername'}.'_Prediction';
 	}
 	
-	pandora_update_agent ($pa_config, $timestamp, $agent_module->{'id_agente'}, $agent_os_version, $pa_config->{'version'}, -1, $dbh);
+	pandora_update_agent ($pa_config, $timestamp, $agent_module->{'id_agente'}, undef, undef, -1, $dbh);
 }
 
 1;

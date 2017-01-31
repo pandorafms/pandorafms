@@ -191,8 +191,8 @@ if (!empty($tag_with)) {
 	$first = true;
 	foreach ($tag_with as $id_tag) {
 		if ($first) $first = false;
-		else $sql_post .= " OR ";
-		$sql_post .= "tags = '" . tags_get_name($id_tag) . "'";
+		else $sql_post .= " AND ";
+		$sql_post .= "tags LIKE '%" . tags_get_name($id_tag) . "%'";
 	}
 	$sql_post .= ' ) ';
 }
@@ -203,7 +203,7 @@ if (!empty($tag_without)) {
 		if ($first) $first = false;
 		else $sql_post .= " AND ";
 		
-		$sql_post .= "tags <> '" . tags_get_name($id_tag) . "'";
+		$sql_post .= "tags NOT LIKE '%" . tags_get_name($id_tag) . "%'";
 	}
 	$sql_post .= ' ) ';
 }

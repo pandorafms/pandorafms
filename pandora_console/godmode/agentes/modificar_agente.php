@@ -282,8 +282,8 @@ if ($search != "") {
 	$id = db_get_all_rows_sql($sql);
 	if($id != ''){
 		$aux = $id[0]['id_agent'];
-		$search_sql = " AND ( nombre " . $order_collation . "
-			LIKE '%$search%' OR tagente.id_agente = $aux";
+		$search_sql = " AND ( LOWER(nombre) " . $order_collation . "
+			LIKE LOWER('%$search%') OR tagente.id_agente = $aux";
 		if(count($id)>=2){
 			for ($i = 1; $i < count($id); $i++){
 				$aux = $id[$i]['id_agent'];
@@ -292,8 +292,8 @@ if ($search != "") {
 		}
 		$search_sql .= ")";
 	}else{
-		$search_sql = " AND ( nombre " . $order_collation . "
-			LIKE '%$search%') ";
+		$search_sql = " AND ( LOWER(nombre) " . $order_collation . "
+			LIKE LOWER('%$search%')) ";
 	}
 }
 

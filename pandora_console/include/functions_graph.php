@@ -987,11 +987,8 @@ function graphic_combined_module ($module_list, $weight_list, $period,
 	}
 	
 	// Set the title and time format
-	if ($temp_range <= SECONDS_6HOURS) {
-		$time_format = 'H:i:s';
-	}
-	elseif ($temp_range < SECONDS_1DAY) {
-		$time_format = 'H:i';
+	if ($temp_range <= SECONDS_1DAY) {
+		$time_format = 'd.m.Y H:i:s';
 	}
 	elseif ($temp_range < SECONDS_15DAYS) {
 		$time_format = 'M d';

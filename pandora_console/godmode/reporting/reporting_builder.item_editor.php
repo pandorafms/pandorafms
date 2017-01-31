@@ -1836,8 +1836,8 @@ $(document).ready (function () {
 	$("#submit-create_item").click(function () {
 		var type = $('#type').val();
 		switch (type){
-			case 'alert_report_module': case 'alert_report_agent': case 'alert_report_group':
-			case 'event_report_agent': case 'event_report_module': case 'event_report_group':
+			case 'alert_report_module': case 'alert_report_agent': 
+			case 'event_report_agent': case 'event_report_module': 
 			case 'simple_graph': case 'simple_baseline_graph': case 'TTRT': case 'TTO':
 			case 'MTBF': case 'MTTR': case 'prediction_date': case 'projection_graph':
 			case 'avg_value': case 'max_value': case 'min_value': case 'monitor_report':
@@ -1856,8 +1856,8 @@ $(document).ready (function () {
 	$("#submit-edit_item").click(function () {
 		var type = $('#type').val();
 		switch (type){
-			case 'alert_report_module': case 'alert_report_agent': case 'alert_report_group':
-			case 'event_report_agent': case 'event_report_module': case 'event_report_group':
+			case 'alert_report_module': case 'alert_report_agent': 
+			case 'event_report_agent': case 'event_report_module': 
 			case 'simple_graph': case 'simple_baseline_graph': case 'TTRT': case 'TTO':
 			case 'MTBF': case 'MTTR': case 'prediction_date': case 'projection_graph':
 			case 'avg_value': case 'max_value': case 'min_value': case 'monitor_report':

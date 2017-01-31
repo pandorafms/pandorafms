@@ -1,4 +1,67 @@
 -- ---------------------------------------------------------------------
+-- Table `titem`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `titem` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`id_map` int(10) unsigned NOT NULL default 0,
+	`x` INTEGER NOT NULL default 0,
+	`y` INTEGER NOT NULL default 0,
+	`z` INTEGER NOT NULL default 0,
+	`deleted` INTEGER(1) unsigned NOT NULL default 0,
+	`type` INTEGER UNSIGNED NOT NULL default 0,
+	`refresh` INTEGER UNSIGNED NOT NULL default 0,
+	`source` INTEGER UNSIGNED NOT NULL default 0,
+	`source_data` varchar(250) default '',
+	`options` TEXT,
+	`style` TEXT,
+	PRIMARY KEY(`id`)
+)  ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tmap`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tmap` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`id_group` int(10) unsigned NOT NULL default 0,
+	`id_user` varchar(250) NOT NULL default '',
+	`type` int(10) unsigned NOT NULL default 0,
+	`subtype` int(10) unsigned NOT NULL default 0,
+	`name` varchar(250) default '',
+	`description` TEXT,
+	`height` INTEGER UNSIGNED NOT NULL default 0,
+	`width` INTEGER UNSIGNED NOT NULL default 0,
+	`center_x` INTEGER NOT NULL default 0,
+	`center_y` INTEGER NOT NULL default 0,
+	`background` varchar(250) default '',
+	`background_options` INTEGER UNSIGNED NOT NULL default 0,
+	`source_period` INTEGER UNSIGNED NOT NULL default 0,
+	`source` INTEGER UNSIGNED NOT NULL default 0,
+	`source_data`  varchar(250) default '',
+	`generation_method` INTEGER UNSIGNED NOT NULL default 0,
+	`generated` INTEGER UNSIGNED NOT NULL default 0,
+	`filter` TEXT,
+	PRIMARY KEY(`id`)
+)  ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+
+-- ---------------------------------------------------------------------
+-- Table `trel_item`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `trel_item` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`id_parent` int(10) unsigned NOT NULL default 0,
+	`id_child` int(10) unsigned NOT NULL default 0,
+	`id_map` int(10) unsigned NOT NULL default 0,
+	`id_parent_source_data` int(10) unsigned NOT NULL default 0,
+	`id_child_source_data` int(10) unsigned NOT NULL default 0,
+	`parent_type` int(10) unsigned NOT NULL default 0,
+	`child_type` int(10) unsigned NOT NULL default 0,
+	`id_item` int(10) unsigned NOT NULL default 0,
+	`deleted` int(1) unsigned NOT NULL default 0,
+	PRIMARY KEY(`id`)
+)  ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
 -- Table `talert_templates`
 -- ---------------------------------------------------------------------
 ALTER TABLE talert_templates ADD COLUMN `min_alerts_reset_counter` tinyint(1) DEFAULT 0;

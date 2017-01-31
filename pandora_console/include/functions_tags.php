@@ -655,10 +655,13 @@ function tags_get_acl_tags($id_user, $id_group, $access = 'AR',
 	
 	$acltags = tags_get_user_module_and_tags($id_user, $access);
 	
-	
 	// Delete the groups without tag restrictions from the acl tags array if $force_group_and_tag == false
 	// Delete the groups that aren't in the received groups id
 	$acltags_aux = array();
+	
+	if (!empty($groups) && in_array(0, $groups)) {
+		$acltags_aux[0] = "";
+	}
 	foreach ($acltags as $group_id => $tags) {
 		if (!empty($groups) && array_search($group_id, $groups) === false) {
 			unset($acltags[$group_id]);
@@ -843,7 +846,7 @@ function tags_get_acl_tags_event_condition($acltags, $meta = false, $force_group
 	foreach ($acltags as $group_id => $group_tags) {
 		// Group condition (The module belongs to an agent of the group X)
 		// Juanma (08/05/2014) Fix : Get all groups (children also, Propagate ACL func!)
-		$group_condition = sprintf('id_grupo IN (%s)', implode(',', array_values(groups_get_id_recursive($group_id))));
+		$group_condition = sprintf('id_grupo IN (%s)', implode(',', array_values(groups_get_id_recursive($group_id, true))));
 		$_groups_not_in .= implode(',', array_values(groups_get_id_recursive($group_id))) . ',';
 		
 		// Tags condition (The module has at least one of the restricted tags)

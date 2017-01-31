@@ -739,23 +739,23 @@ ui_require_javascript_file('tiny_mce', 'include/javascript/tiny_mce/');
 <script language="javascript" type="text/javascript">
 
 // Juanma (07/05/2014) New feature: Custom front page for reports  
-function display_custom_report_front (show) {
+function display_custom_report_front (show,table) {
 	
 	if (show == true) {
-		$('tr#table2-custom_report_front-font').show();
-		$('tr#table2-custom_report_front-logo').show();
-		$('tr#table2-custom_report_front-preview').show();
-		$('tr#table2-custom_report_front-header').show();
-		$('tr#table2-custom_report_front-first_page').show();
-		$('tr#table2-custom_report_front-footer').show();
+		$('tr#'+table+'-custom_report_front-font').show();
+		$('tr#'+table+'-custom_report_front-logo').show();
+		$('tr#'+table+'-custom_report_front-preview').show();
+		$('tr#'+table+'-custom_report_front-header').show();
+		$('tr#'+table+'-custom_report_front-first_page').show();
+		$('tr#'+table+'-custom_report_front-footer').show();
 	}
 	else {
-		$('tr#table2-custom_report_front-font').hide();
-		$('tr#table2-custom_report_front-logo').hide();
-		$('tr#table2-custom_report_front-preview').hide();
-		$('tr#table2-custom_report_front-header').hide();
-		$('tr#table2-custom_report_front-first_page').hide();
-		$('tr#table2-custom_report_front-footer').hide();
+		$('tr#'+table+'-custom_report_front-font').hide();
+		$('tr#'+table+'-custom_report_front-logo').hide();
+		$('tr#'+table+'-custom_report_front-preview').hide();
+		$('tr#'+table+'-custom_report_front-header').hide();
+		$('tr#'+table+'-custom_report_front-first_page').hide();
+		$('tr#'+table+'-custom_report_front-footer').hide();
 	}
 	
 }
@@ -862,12 +862,12 @@ $(document).ready (function () {
 	// Juanma (06/05/2014) New feature: Custom front page for reports  
 	var custom_report = $('#checkbox-custom_report_front')
 		.prop('checked');
-	display_custom_report_front(custom_report);
+	display_custom_report_front(custom_report,$('#checkbox-custom_report_front').parent().parent().parent().parent().attr('id'));
 	
 	$("#checkbox-custom_report_front").click( function()  {
 		var custom_report = $('#checkbox-custom_report_front')
 			.prop('checked');
-		display_custom_report_front(custom_report);
+		display_custom_report_front(custom_report,$(this).parent().parent().parent().parent().attr('id'));
 	});
 });
 

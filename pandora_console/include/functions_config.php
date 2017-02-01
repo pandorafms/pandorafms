@@ -1552,7 +1552,7 @@ function config_process_config () {
 		}
 
 		if (!isset($config["service_item_padding_size"])) {
-			config_update_value ('service_item_padding_size', 0);
+			config_update_value ('service_item_padding_size', 80);
 		}
 	}
 	if (!isset($config['command_snapshot'])) {

@@ -4261,19 +4261,20 @@ sub cli_update_group() {
 
 
 ###############################################################################
-# Locate agent in any Nodes of metaconsole
+# Returns the Nodes ID where the agent is defined (Metaconsole only)
 # Related option: --locate_agent
 ###############################################################################
 sub cli_locate_agent () {
 	my ($agent_name) = @ARGV[2];
-	
+
 	if (is_metaconsole($conf) == 1) {
+
 		my $agents_server = enterprise_hook('get_metaconsole_agent',[$dbh, $agent_name]);
-		
+
 		if (scalar(@{$agents_server}) != 0) {
 			foreach my $agent (@{$agents_server}) {
-				my $server = enterprise_hook('get_metaconsole_setup_server_id',[$dbh, $agent->{'server_name'}]);
-				print " $server \n\n "
+				#my $server = enterprise_hook('get_metaconsole_setup_server_id',[$dbh, $agent->{'server_name'}]);
+				print $agent->{'id_tmetaconsole_setup'} . "\n";
 			}
 		}
 		else {

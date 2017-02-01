@@ -878,7 +878,7 @@ function html_print_extended_select_for_cron ($hour = '*', $minute = '*', $mday 
  *
  * @return string HTML code if return parameter is true.
  */
-function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength, $disabled, $script, $attributes, $return = false, $password = false) {
+function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength, $disabled, $script, $attributes, $return = false, $password = false, $function = "") {
 	static $idcounter = 0;
 	
 	if ($maxlength == 0)
@@ -959,7 +959,7 @@ function html_print_input_text_extended ($name, $value, $id, $alt, $size, $maxle
 		}
 	}
 	
-	$output .= '/>';
+	$output .= $function . '/>';
 	
 	if (!$return)
 		echo $output;
@@ -1067,7 +1067,7 @@ function html_print_input_password ($name, $value, $alt = '',
  * @return string HTML code if return parameter is true.
  */
 
-function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false, $required = false, $function = "", $class = "") {
+function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 255, $return = false, $disabled = false, $required = false, $function = "", $class = "", $onChange = "") {
 
 	if ($maxlength == 0)
 		$maxlength = 255;
@@ -1080,6 +1080,9 @@ function html_print_input_text ($name, $value, $alt = '', $size = 50, $maxlength
 		$attr['required'] = 'required';
 	if ($class != '')
 		$attr['class'] = $class;
+	if ($onChange != "") {
+		$attr['onchange'] = $onChange;
+	}
 	
 	return html_print_input_text_extended ($name, $value, 'text-'.$name, $alt, $size, $maxlength, $disabled, '', $attr, $return, false, $function);
 }

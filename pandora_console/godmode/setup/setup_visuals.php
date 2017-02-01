@@ -112,6 +112,16 @@ $table_behaviour->data[$row][1] .= __('No') . '&nbsp;' .
 $row++;
 //Daniel maya 02/06/2016 Display menu with click --END
 
+if (enterprise_installed()) {
+	$table_behaviour->data[$row][0] = __('Service label font size');
+	$table_behaviour->data[$row][1] = html_print_input_text ('service_label_font_size', $config["service_label_font_size"], '', 5, 5, true);
+	$row++;
+
+	$table_behaviour->data[$row][0] = __('Service item padding size');
+	$table_behaviour->data[$row][1] = html_print_input_text ('service_item_padding_size', $config["service_item_padding_size"], '', 5, 5, true);
+	$row++;
+}
+
 echo "<fieldset>";
 echo "<legend>" . __('Behaviour configuration') . "</legend>";
 html_print_table ($table_behaviour);

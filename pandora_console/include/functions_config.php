@@ -534,6 +534,12 @@ function config_update_config () {
 					if (!config_update_value ('click_display', (bool) get_parameter('click_display', false)))
 						$error_update[] = __('Display lateral menus with left click');
 					//Daniel maya 02/06/2016 Display menu with click --END
+					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
+						if (!config_update_value ('service_label_font_size', get_parameter('service_label_font_size', false)))
+							$error_update[] = __('Service label font size');
+						if (!config_update_value ('service_item_padding_size', get_parameter('service_item_padding_size', false)))
+							$error_update[] = __('Service item padding size');
+					}
 					if (!config_update_value ('percentil', (int) get_parameter('percentil', 0)))
 						$error_update[] = __('Default percentil');
 
@@ -1540,6 +1546,15 @@ function config_process_config () {
 		config_update_value ('click_display', 1);
 	}
 	//Daniel maya 02/06/2016 Display menu with click --END
+	if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
+		if (!isset($config["service_label_font_size"])) {
+			config_update_value ('service_label_font_size', 11);
+		}
+
+		if (!isset($config["service_item_padding_size"])) {
+			config_update_value ('service_item_padding_size', 0);
+		}
+	}
 	if (!isset($config['command_snapshot'])) {
 		config_update_value ('command_snapshot', 1);
 	}

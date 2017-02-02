@@ -77,7 +77,7 @@ $table->style[1] = 'font-weight: bold; vertical-align: top;';
 $table->data[0][0] = __('Group');
 $table->data[0][0] .= html_print_select_groups(false, $access, true, 'group', '', 'changeGroup();', '', 0, true) . '<br />' . '<br />';
 $table->data[0][0] .= __('Agent');
-$table->data[0][0] .= html_print_select($agents, 'id_agents[]', true, false, '', '', true, true);
+$table->data[0][0] .= html_print_select($agents, 'id_agents[]', true, false, '', '', true, true,'','','','','',false,'','',true);
 $table->data[0][1] = __('Type');
 $table->data[0][1] .= '<br />' . html_print_checkbox('alert_fired', 'alert_fired', true, true, false, 'changeType();') . __('Alert fired') . '<br />' .
 	html_print_checkbox('critical', 'critical', true, true, false, 'changeType();') . __('Monitor critical') . '<br />' .
@@ -87,17 +87,17 @@ $table->data[0][1] .= '<br />' . html_print_checkbox('alert_fired', 'alert_fired
 html_print_table($table);
 
 echo '<br />';
-
+echo '<div style="text-align:center">';
 echo '<a href="javascript: toggleButton();">' .
-		html_print_image("images/icono_play.png", true, array("id" => "button")) .
+		html_print_image("images/play.button.png", true, array("id" => "button")) .
 	'</a>';
 echo '<a href="javascript: ok();">' .
-		html_print_image("images/icono_ok.png", true, array("style" => "margin-left: 15px;")) . 
+		html_print_image("images/ok.button.png", true, array("style" => "margin-left: 15px;")) . 
 	'</a>';
 echo '<a href="javascript: test_sound_button();">' .
 		html_print_image("images/icono_test.png", true, array("id" => "button_try", "style" => "margin-left: 15px;")) . 
 	'</a>';
-
+echo '</div>';
 ?>
 <script src="../../include/javascript/jquery.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -165,14 +165,14 @@ function toggleButton() {
 	if (button_play_status == 'pause') {
 	//~ if ($("#button").attr('src') == '../../images/pause.button.png') {
 		
-		$("#button").attr('src', '../../images/icono_play.png');
+		$("#button").attr('src', '../../images/play.button.png');
 		stopSound();
 		
 		button_play_status = 'play';
 	}
 	else {
 		
-		$("#button").attr('src', '../../images/icono_pausa.png');
+		$("#button").attr('src', '../../images/pause.button.png');
 		forgetPreviousEvents();
 		startSound();
 		

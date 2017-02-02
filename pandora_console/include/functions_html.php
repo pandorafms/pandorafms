@@ -429,7 +429,7 @@ function html_print_select_groups($id_user = false, $privilege = "AR",
 function html_print_select ($fields, $name, $selected = '', $script = '',
 	$nothing = '', $nothing_value = 0, $return = false, $multiple = false,
 	$sort = true, $class = '', $disabled = false, $style = false,
-	$option_style = false, $size = false,$modal=false,$message=''){
+	$option_style = false, $size = false,$modal=false,$message='',$select_all=false){
 
 	$output = "\n";
 	
@@ -513,7 +513,12 @@ function html_print_select ($fields, $name, $selected = '', $script = '',
 				$optlabel = $label['name'];
 			}
 			
-			$output .= '<option value="'.$value.'"';
+			$output .= '<option ';
+			if($select_all){
+			$output .= 'selected ';	
+			}
+			$output .= 'value="'.$value.'"';
+			
 			if (is_array ($selected) && in_array ($value, $selected)) {
 				$output .= ' selected="selected"';
 			}

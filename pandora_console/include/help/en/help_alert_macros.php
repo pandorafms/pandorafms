@@ -29,6 +29,7 @@ Besides the defined module macros, the following macros are available:
 <li>_timestamp_: Time and date on which the alert was triggered (yy-mm-dd hh:mm:ss).</li>
 <li>_timezone_: Timezone that is represented on _timestamp_.</li>
 <li>_data_: Module data that caused the alert to fire.</li>
+<li>_prevdata_ : Module data previus the alert to fire.</li>
 <li>_alert_description_: Alert description.</li>
 <li>_alert_threshold_: Alert threshold.</li>
 <li>_alert_times_fired_: Number of times the alert has been triggered.</li>

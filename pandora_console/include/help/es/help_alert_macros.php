@@ -29,6 +29,7 @@ Además de las macros de módulo definidas, las siguientes macros están disponi
 <li>_timestamp_: Hora y fecha en que se disparó la alerta.</li>
 <li>_timezone_: Area Nombre _timestamp_ que representa en.</li>
 <li>_data_: Dato que hizo que la alerta se disparase.</li>
+<li>_prevdata_: Dato previo antes de disparase la alerta.</li>
 <li>_alert_description_: Descripción de la alerta.</li>
 <li>_alert_threshold_: Umbral de la alerta.</li>
 <li>_alert_times_fired_: Número de veces que se ha disparado la alerta.</li>

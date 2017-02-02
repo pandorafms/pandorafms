@@ -155,9 +155,14 @@ function alerts_get_event_status_group($idGroup, $type = "alert_fired", $query =
 		$agents = agents_get_group_agents($idGroup, false, "lower", false);
 
 		$idAgents = array_keys($agents);
+			
 	}
 	else {
 		$idAgents = array_values($agents);
+		
+		if($type=='alert_fired'){
+				$idAgents = array_keys($agents);
+		}
 	}
 	
 	$result = db_get_all_rows_sql('SELECT id_evento

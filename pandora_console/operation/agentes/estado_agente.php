@@ -586,7 +586,7 @@ foreach ($agents as $agent) {
 	if (enterprise_installed()) {
 		enterprise_include_once('include/functions_config_agents.php');
 		
-		if (config_agents_has_remote_configuration($agent["id_agente"])) {
+		if (enterprise_hook('config_agents_has_remote_configuration',$agent["id_agente"])) {
 	
 	$data[9] = html_print_image("images/application_edit.png", true, array("align" => 'middle', "title" => __('Remote config')));
 		

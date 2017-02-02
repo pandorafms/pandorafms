@@ -1315,6 +1315,8 @@ function events_get_agent ($id_agent, $period, $date = 0,
 				case -1:
 					$status_all = 1;
 					break;
+				case  3:
+					$filter_event_status[$key] = ('0, 2');
 				default:
 					break;
 			}
@@ -2647,6 +2649,8 @@ function events_get_count_events_by_agent ($id_group, $period, $date,
 				case -1:
 					$status_all = 1;
 					break;
+				case  3:
+					$filter_event_status[$key] = ('0, 2');
 				default:
 					break;
 			}
@@ -2792,6 +2796,8 @@ function events_get_count_events_validated_by_user ($filter, $period, $date,
 				case -1:
 					$status_all = 1;
 					break;
+				case  3:
+					$filter_event_status[$key] = ('0, 2');
 				default:
 					break;
 			}
@@ -2935,6 +2941,8 @@ function events_get_count_events_by_criticity ($filter, $period, $date,
 				case -1:
 					$status_all = 1;
 					break;
+				case  3:
+					$filter_event_status[$key] = ('0, 2');
 				default:
 					break;
 			}
@@ -3091,6 +3099,8 @@ function events_get_count_events_validated ($filter, $period = null, $date = nul
 				case -1:
 					$status_all = 1;
 					break;
+				case  3:
+					$filter_event_status[$key] = ('0, 2');
 				default:
 					break;
 			}

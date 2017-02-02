@@ -260,7 +260,7 @@ sub process_xml_data ($$$$$) {
 		$data->{'custom_id'}, $data->{'url_address'});
 
 	# Timezone offset must be an integer beween -12 and +12
-	if (!defined($timezone_offset) || $timezone_offset !~ /[-+]?[0-9,11,12]/) {
+	if (!defined($timezone_offset) || $timezone_offset !~ /[-+]?\d+/) {
 		$timezone_offset = 0;
 	}
 	

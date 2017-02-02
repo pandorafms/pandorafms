@@ -1136,16 +1136,11 @@ switch ($action) {
 								$style['event_graph_by_criticity'] = $event_graph_by_criticity;
 								$style['event_graph_validated_vs_unvalidated'] = $event_graph_validated_vs_unvalidated;
 								
-								switch ($values['type']) {
-									case 'event_report_group':
-									case 'event_report_agent':
-										$style['event_filter_search'] = $event_filter_search;
-										if ($label != '')
-											$style['label'] = $label;
-										else
-											$style['label'] = '';
-										break;
-								}
+								$style['event_filter_search'] = $event_filter_search;
+								if ($label != '')
+									$style['label'] = $label;
+								else
+									$style['label'] = '';
 								break;
 							case 'simple_graph':
 								// Warning. We are using this column to hold this value to avoid

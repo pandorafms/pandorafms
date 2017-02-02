@@ -231,7 +231,7 @@ function modules_copy_agent_module_to_agent ($id_agent_module, $id_destiny_agent
 	
 	if ($module['id_modulo'] == MODULE_DATA) {
 		if (enterprise_installed()) {
-			if (config_agents_has_remote_configuration($id_agente)) {
+			if (enterprise_hook('config_agents_has_remote_configuration',$id_agente)) {
 				$result = enterprise_hook(
 					'config_agents_copy_agent_module_to_agent',
 					array($id_agent_module, $id_new_module));

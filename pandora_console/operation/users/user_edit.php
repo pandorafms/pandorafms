@@ -53,30 +53,6 @@ else {
 	$view_mode = true;
 }
 
-if (is_ajax ()) {
-	
-	$shortcut_update = get_parameter("shortcut_update", 0);
-	
-	// Update of user to show/don't show shortcut bar
-	if ($shortcut_update) {
-		
-		// First we get the actual state
-		$shortcut_value = db_get_value_filter('shortcut', 'tusuario', array('id_user' => $id));
-		
-		//Deactivate shorcut var
-		if ($shortcut_value == 1) {
-			db_process_sql_update('tusuario', array('shortcut' => 0), array('id_user' => $id));
-		}
-		// Activate shortcut var
-		else {
-			db_process_sql_update('tusuario', array('shortcut' => 1), array('id_user' => $id));
-		}
-	
-	}
-	
-	return;
-}
-
 // Header
 if ($meta) {
 	user_meta_print_header();
@@ -109,7 +85,6 @@ if (isset ($_GET["modified"]) && !$view_mode) {
 	}
 	
 	$upd_info["flash_chart"] = get_parameter ("flash_charts", $config["flash_charts"]);
-	$upd_info["shortcut"] = get_parameter ("shortcut_bar", 0);
 	$upd_info["section"] = get_parameter ("section", $user_info["section"]);
 	$upd_info["data_section"] = get_parameter ("data_section", '');
 	$dashboard = get_parameter('dashboard', '');
@@ -295,10 +270,7 @@ $id_usr = $config['id_user'];
 
 if (!$meta) {
 	$data = array();
-	$data[0] = '<span style="width:50%;float:left;">'.__('Shortcut bar') . ui_print_help_tip(__('This will activate a shortcut bar with alerts, events, messages... information'), true).'</span>';
-	$data[0] .= $jump . '<span style="width:20%;float:left;line-height:20px;">'.html_print_checkbox('shortcut_bar', 1, $user_info["shortcut"], true).'</span>';
-
-	$data[1] = '<span style="width:40%;float:left;">'.__('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true).'</span>';
+	$data[0] = '<span style="width:40%;float:left;">'.__('Home screen'). ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type sec=estado&sec2=operation/agentes/estado_agente to show agent detail view'), true).'</span>';
 	$values = array (
 		'Default' =>__('Default'),
 		'Visual console'=>__('Visual console'),
@@ -311,7 +283,7 @@ if (!$meta) {
 		$values['Dashboard'] = __('Dashboard');
 	}
 
-	$data[1] .= $jump . '<span style="width:20%;float:left;line-height:20px;">'.html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false).'</span>';
+	$data[0] .= $jump . '<span style="width:20%;float:left;line-height:20px;">'.html_print_select($values, 'section', io_safe_output($user_info["section"]), 'show_data_section();', '', -1, true, false, false).'</span>';
 
 	if (enterprise_installed()) {
 		$dashboards = get_user_dashboards ($config['id_user']);
@@ -324,7 +296,7 @@ if (!$meta) {
 				$dashboards_aux[$dashboard['name']] = $dashboard['name'];
 			}
 		}
-		$data[1] .= html_print_select ($dashboards_aux, 'dashboard', $user_info["data_section"], '', '', '', true);
+		$data[0] .= html_print_select ($dashboards_aux, 'dashboard', $user_info["data_section"], '', '', '', true);
 	}
 	
 	$layouts = visual_map_get_user_layouts ($config['id_user'], true);
@@ -337,17 +309,17 @@ if (!$meta) {
 			$layouts_aux[$layout] = $layout;
 		}
 	}
-	$data[1] .=  html_print_select ($layouts_aux, 'visual_console', $user_info["data_section"], '', '', '', true);
-	$data[1] .=  html_print_input_text ('data_section', $user_info["data_section"], '', 60, 255, true, false);
+	$data[0] .=  html_print_select ($layouts_aux, 'visual_console', $user_info["data_section"], '', '', '', true);
+	$data[0] .=  html_print_input_text ('data_section', $user_info["data_section"], '', 60, 255, true, false);
 	
 	
 	
 	// User only can change skins if has more than one group 
-	$data[2] = '';
+	$data[1] = '';
 	if (function_exists('skins_print_select')) {
 		if (count($usr_groups) > 1) {
-			$data[2] = '<span style="width:30%;float:left;">'.__('Skin').'</span>';
-			$data[2] .= $jump . skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
+			$data[1] = '<span style="width:30%;float:left;">'.__('Skin').'</span>';
+			$data[1] .= $jump . skins_print_select($id_usr,'skin', $user_info['id_skin'], '', __('None'), 0, true);
 		}
 	}
 	$table->rowclass[] = '';

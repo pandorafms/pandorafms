@@ -2765,43 +2765,6 @@ td.empty_field {
 	width: 96%;
 }
 
-/* Shortcut bar */
-
-#shortcut_container {
-	position: fixed;
-	margin: 0px !important;
-	bottom: 0px;
-	left: 0px;
-	z-index: 9001;
-}
-
-#shortcut_bar {
-	background-color: #333;
-	border-top: 1px solid #808080;
-	border-right: 1px solid #808080;
-	border-top-right-radius: 5px;
-}
-
-#shortcut_button {
-	display: inline-block;
-	background-color: #333;
-	border: 1px solid #808080;
-	border-bottom: none;
-	border-top-left-radius: 15px;
-	border-top-right-radius: 15px;
-}
-
-.shortcut_item {
-	padding: 2px 10px;
-	text-decoration: none;
-}
-
-.shortcut_item>span {
-	color: #eee;
-	font-weight: bold;
-	font-size: 9pt;
-}
-
 /* Policies styles */
 
 table#policy_modules td * {

@@ -79,6 +79,7 @@ $filter['ip_src'] = get_parameter('ip_src','');
 $filter['dst_port'] = get_parameter('dst_port','');
 $filter['src_port'] = get_parameter('src_port','');
 $filter['advanced_filter'] = get_parameter('advanced_filter','');
+$filter['router_ip'] = get_parameter('router_ip');
 
 // Read chart configuration
 $chart_type = get_parameter('chart_type', 'netflow_area');
@@ -386,6 +387,9 @@ echo '<form method="post" action="' . $config['homeurl'] . 'index.php?sec=netf&s
 	$aggregate_list = array ('none' => __('None'), 'proto' => __('Protocol'), 'srcip' =>__('Src Ip Address'), 'dstip' =>__('Dst Ip Address'), 'srcport' =>__('Src Port'), 'dstport' =>__('Dst Port') );
 	echo "<td colspan='2'>" . html_print_select ($aggregate_list, "aggregate", $filter['aggregate'], '', '', 0, true, false, true, '', false) . "</td>";
 	
+	echo "<td>" . '<b>'.__('Router ip').'</b>' . "</td>";
+	echo "<td colspan='2'>" . html_print_input_text ('router_ip', $filter['router_ip'], false, 30, 80, true) . "</td>";
+
 	echo "<td>" . '<b>'.__('Output format').'</b>' . "</td>";
 	$show_output = array ('bytes' => __('Bytes'), 'bytespersecond' => __('Bytes per second'), 'kilobytes' => __('Kilobytes'), 'megabytes' => __('Megabytes'), 'kilobytespersecond' => __('Kilobytes per second'), 'megabytespersecond' => __('Megabytes per second'));
 	echo "<td colspan='2'>" . html_print_select ($show_output, 'output', $filter['output'], '', '', 0, true, false, true, '', false) . "</td>";

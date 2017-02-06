@@ -914,7 +914,6 @@ function netflow_get_command ($filter) {
  *
  */
 function netflow_get_filter_arguments ($filter) {
-	
 	// Advanced filter
 	$filter_args = '';
 	if ($filter['advanced_filter'] != '') {
@@ -922,6 +921,9 @@ function netflow_get_filter_arguments ($filter) {
 		return ' "(' . $filter_args . ')"';
 	}
 	
+	if ($filter['router_ip'] != "") {
+		$filter_args .=' "(router ip ' . $filter['router_ip'] . ')';
+	}
 	// Normal filter
 	if ($filter['ip_dst'] != '') {
 		$filter_args .= ' "(';

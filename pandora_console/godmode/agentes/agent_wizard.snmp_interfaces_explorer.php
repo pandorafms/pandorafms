@@ -206,7 +206,7 @@ if ($create_modules) {
 			
 			// Get the name
 			$name_array = explode('::', $oid_array[0]);
-			$name = $name_array[1] . "_" . $ifname;
+			$name = $ifname . "_" . $name_array[1];
 			
 			// Clean the name
 			$name = str_replace  ( "\""  , "" , $name);

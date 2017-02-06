@@ -40,3 +40,17 @@ ALTER TABLE tlayout ADD COLUMN background_color varchar(50) NOT NULL default '#F
 -- ---------------------------------------------------------------------
 ALTER TABLE tlayout_data ADD COLUMN type_graph varchar(50) NOT NULL default 'area';
 ALTER TABLE tlayout_data ADD COLUMN label_position varchar(50) NOT NULL default 'down';
+
+-- ---------------------------------------------------------------------
+-- Table `talert_templates`
+-- ---------------------------------------------------------------------
+ALTER TABLE talert_templates ADD COLUMN field11 TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field12 TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field13 TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field14 TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field15 TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field11_recovery TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field12_recovery TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field13_recovery TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field14_recovery TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field15_recovery TEXT NOT NULL DEFAULT "";

@@ -3,6 +3,16 @@
 -- ---------------------------------------------------------------------
 
 ALTER TABLE talert_templates ADD COLUMN min_alerts_reset_counter NUMBER(5, 0) DEFAULT 0;
+ALTER TABLE talert_templates ADD COLUMN field11 CLOB DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field12 CLOB DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field13 CLOB DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field14 CLOB DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field15 CLOB DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field11_recovery CLOB DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field12_recovery CLOB DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field13_recovery CLOB DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field14_recovery CLOB DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN field15_recovery CLOB DEFAULT "";
 
 -- ----------------------------------------------------------------------
 -- Table `tserver`

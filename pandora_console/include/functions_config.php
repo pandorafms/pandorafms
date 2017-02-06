@@ -407,6 +407,8 @@ function config_update_config () {
 						$error_update[] = __('Small Operation Step to purge old data');
 					if (!config_update_value ('num_past_special_days', get_parameter ('num_past_special_days')))
 						$error_update[] = __('Retention period of past special days');
+					if (!config_update_value ('max_macro_fields', get_parameter ('max_macro_fields')))
+						$error_update[] = __('Max. macro data fields');
 					if (isset($config['enterprise_installed']) && $config['enterprise_installed'] == 1) {
 						if (!config_update_value ('inventory_purge', get_parameter ('inventory_purge')))
 							$error_update[] = __('Max. days before delete inventory data');
@@ -874,6 +876,10 @@ function config_process_config () {
 		if (!isset($config['inventory_purge'])) {
 			config_update_value ('inventory_purge',  21);
 		}
+	}
+
+	if (!isset($config['max_macro_fields'])) {
+		config_update_value ('max_macro_fields', 10);
 	}
 
 	if (!isset ($config["event_purge"])) {

@@ -65,6 +65,16 @@ CREATE TABLE IF NOT EXISTS `trel_item` (
 -- Table `talert_templates`
 -- ---------------------------------------------------------------------
 ALTER TABLE talert_templates ADD COLUMN `min_alerts_reset_counter` tinyint(1) DEFAULT 0;
+ALTER TABLE talert_templates ADD COLUMN `field11` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field12` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field13` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field14` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field11_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field12_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field13_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field14_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_templates ADD COLUMN `field15_recovery` TEXT NOT NULL DEFAULT "";
 
 -- ----------------------------------------------------------------------
 -- Table `tserver`

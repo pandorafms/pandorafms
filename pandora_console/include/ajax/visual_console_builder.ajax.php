@@ -503,6 +503,9 @@ switch ($action) {
 						break;
 					case 'group_item':
 						$values['id_group'] = $id_group;
+						$values['height'] = $height;
+						$values['width'] = $width;
+						$values['image'] = $image;
 						break;
 					case 'module_graph':
 						if ($height_module_graph !== null) {

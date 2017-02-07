@@ -685,11 +685,21 @@ if (get_parameter ('login', 0) !== 0) {
 
 // Header
 if ($config["pure"] == 0) {
-	echo '<div id="container"><div id="head">';
-	require ("general/header.php");
-	echo '</div><div id="page"><div id="menu">';
-	require ("general/main_menu.php");
-	echo '</div>';
+	if ($config['classic_menu']) {
+		echo '<div id="container"><div id="head">';
+		require ("general/header.php");
+		echo '</div><div id="menu">';
+		require ("general/main_menu.php");
+		echo '</div>';
+		echo '<div style="padding-left:100px;" id="page">';
+	}
+	else {
+		echo '<div id="container"><div id="head">';
+		require ("general/header.php");
+		echo '</div><div id="page"><div id="menu">';
+		require ("general/main_menu.php");
+		echo '</div>';
+	}
 }
 else {
 	echo '<div id="main_pure">';

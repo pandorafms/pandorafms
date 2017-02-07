@@ -544,6 +544,8 @@ function config_update_config () {
 					}
 					if (!config_update_value ('percentil', (int) get_parameter('percentil', 0)))
 						$error_update[] = __('Default percentil');
+					if (!config_update_value ('classic_menu', (bool) get_parameter('classic_menu', false)))
+						$error_update[] = __('Classic menu mode');
 
 
 					//--------------------------------------------------
@@ -1561,6 +1563,10 @@ function config_process_config () {
 			config_update_value ('service_item_padding_size', 80);
 		}
 	}
+	if (!isset($config["classic_menu"])) {
+		config_update_value ('classic_menu', 0);
+	}
+
 	if (!isset($config['command_snapshot'])) {
 		config_update_value ('command_snapshot', 1);
 	}

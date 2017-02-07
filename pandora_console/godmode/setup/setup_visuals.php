@@ -122,6 +122,17 @@ if (enterprise_installed()) {
 	$row++;
 }
 
+$table_behaviour->data[$row][0] = __('Classic menu mode').
+	ui_print_help_tip(__('Text menu options always visible, don\'t hide'), true);
+$table_behaviour->data[$row][1] = __('Yes') . '&nbsp;' .
+		html_print_radio_button ('classic_menu', 1, '',
+		$config["classic_menu"], true) .
+	'&nbsp;&nbsp;';
+$table_behaviour->data[$row][1] .= __('No') . '&nbsp;' .
+	html_print_radio_button ('classic_menu', 0, '',
+		$config["classic_menu"], true);
+$row++;
+
 echo "<fieldset>";
 echo "<legend>" . __('Behaviour configuration') . "</legend>";
 html_print_table ($table_behaviour);

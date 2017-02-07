@@ -654,17 +654,15 @@ if (is_ajax ()) {
 			$old_maps_open = explode(",", $old_maps_open);
 			foreach ($old_maps_open as $id_open_map) {
 				$return = migrate_older_open_maps($id_open_map);
+				
 				if (!$return) {
 					$return_data['open'] = false;
 					break;
 				}
 				else {
-					$old_networkmap_open = db_get_row_filter('tnetwork_map',
-						array('id_networkmap' => $id_open_map));
-					
 					$values['text_filter'] = "migrated";
 					
-					$return_update = db_process_sql_update('tnetwork_map', $values, array('id_networkmap' => $id_ent_map));
+					$return_update = db_process_sql_update('tnetwork_map', $values, array('id_networkmap' => $id_open_map));
 					if (!$return_update) {
 						$return_data['open'] = false;
 						break;

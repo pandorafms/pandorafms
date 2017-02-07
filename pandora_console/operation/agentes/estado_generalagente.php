@@ -191,7 +191,7 @@ $table_contact->width = '100%';
 $table_contact->cellspacing = 0;
 $table_contact->cellpadding = 0;
 $table_contact->class = 'databox data';
-$table_contact->style[0] = 'width: 30%;';
+$table_contact->style[0] = 'width: 30%;height:30px;';
 $table_contact->style[1] = 'width: 70%;';
 
 $table_contact->head[0] = ' <span>' . __('Agent contact') . '</span>';

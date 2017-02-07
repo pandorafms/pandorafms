@@ -224,7 +224,7 @@ function menu_print_menu (&$menu) {
 			
 			if (isset ($sub["type"]) && $sub["type"] == "direct") {
 				//This is an external link
-				$submenu_output .= '<li id="'. str_replace(' ','_',$sub["id"]) . '" class="'.$class.'">';
+				$submenu_output .= '<li title="'.$sub["id"].'" id="'. str_replace(' ','_',$sub["id"]) . '" class="'.$class.'">';
 				
 				if (isset ($sub["subtype"]) && $sub["subtype"] == "nolink") {
 					$submenu_output .= '<div class=" SubNoLink ' . $sub_tree_class . '">'.$sub["text"].'</div>';
@@ -364,7 +364,7 @@ function menu_print_menu (&$menu) {
 					else
 						$sub_title = '';
 					$submenu2_list .= '<li class="'.$class.'" style="">';
-					$submenu2_list .= '<a href="'.$link.'"><div class="' . $sub_tree_class . '" title="' . $sub_title . '" >'.
+					$submenu2_list .= '<a href="'.$link.'"><div class="' . $sub_tree_class . '" title="' . $sub2["text"] . '" >'.
 											$sub2["text"].'</div></a></li>';
 					$sub_title = '';
 				}
@@ -396,7 +396,7 @@ function menu_print_menu (&$menu) {
 			$seleccionado = '';
 			
 		//Print out the first level
-		$output .= '<li title="'.ucwords(str_replace(array("oper-","god-"),"",$sub["id"])).'" class="'.implode (" ", $classes).' ' . $seleccionado . '" id="icon_'.$id.'">';
+		$output .= '<li title="'.ucwords(str_replace(array("oper-","god-"),"",$id)).'" class="'.implode (" ", $classes).' ' . $seleccionado . '" id="icon_'.$id.'">';
 						//onclick="location.href=\'index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'\'">';
 
 		$length = strlen(__($main["text"]));

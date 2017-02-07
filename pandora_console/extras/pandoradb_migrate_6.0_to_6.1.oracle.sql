@@ -14,6 +14,24 @@ ALTER TABLE talert_templates ADD COLUMN field13_recovery CLOB DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN field14_recovery CLOB DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN field15_recovery CLOB DEFAULT "";
 
+-- ---------------------------------------------------------------------
+-- Table `talert_snmp`
+-- ---------------------------------------------------------------------
+ALTER TABLE talert_snmp ADD COLUMN al_field11 CLOB DEFAULT "";
+ALTER TABLE talert_snmp ADD COLUMN al_field12 CLOB DEFAULT "";
+ALTER TABLE talert_snmp ADD COLUMN al_field13 CLOB DEFAULT "";
+ALTER TABLE talert_snmp ADD COLUMN al_field14 CLOB DEFAULT "";
+ALTER TABLE talert_snmp ADD COLUMN al_field15 CLOB DEFAULT "";
+
+-- ---------------------------------------------------------------------
+-- Table `talert_snmp_action`
+-- ---------------------------------------------------------------------
+ALTER TABLE talert_snmp_action ADD COLUMN al_field11 CLOB DEFAULT "";
+ALTER TABLE talert_snmp_action ADD COLUMN al_field12 CLOB DEFAULT "";
+ALTER TABLE talert_snmp_action ADD COLUMN al_field13 CLOB DEFAULT "";
+ALTER TABLE talert_snmp_action ADD COLUMN al_field14 CLOB DEFAULT "";
+ALTER TABLE talert_snmp_action ADD COLUMN al_field15 CLOB DEFAULT "";
+
 -- ----------------------------------------------------------------------
 -- Table `tserver`
 -- ----------------------------------------------------------------------
@@ -38,6 +56,16 @@ UPDATE talert_actions SET   field4 = 'integria',
 							field9 = 'admin',
 							field10 = '_alert_description_'
 WHERE id = 4 AND id_alert_command = 11;
+ALTER TABLE talert_actions ADD COLUMN field11 CLOB DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN field12 CLOB DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN field13 CLOB DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN field14 CLOB DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN field15 CLOB DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN field11_recovery CLOB DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN field12_recovery CLOB DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN field13_recovery CLOB DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN field14_recovery CLOB DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN field15_recovery CLOB DEFAULT "";
 
 -- ---------------------------------------------------------------------
 -- Table `talert_commands`

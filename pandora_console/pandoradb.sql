@@ -290,6 +290,11 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
 	`al_field8` text NOT NULL,
 	`al_field9` text NOT NULL,
 	`al_field10` text NOT NULL,
+	`al_field11` text NOT NULL,
+	`al_field12` text NOT NULL,
+	`al_field13` text NOT NULL,
+	`al_field14` text NOT NULL,
+	`al_field15` text NOT NULL,
 	`description` varchar(255) default '',
 	`alert_type` int(2) unsigned NOT NULL default '0',
 	`agent` varchar(100) default '',
@@ -380,6 +385,11 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
 	`field8` text NOT NULL,
 	`field9` text NOT NULL,
 	`field10` text NOT NULL,
+	`field11` text NOT NULL,
+	`field12` text NOT NULL,
+	`field13` text NOT NULL,
+	`field14` text NOT NULL,
+	`field15` text NOT NULL,
 	`id_group` mediumint(8) unsigned NULL default 0,
 	`action_threshold` int(10) NOT NULL default '0',
 	`field1_recovery` text NOT NULL,
@@ -392,6 +402,11 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
 	`field8_recovery` text NOT NULL,
 	`field9_recovery` text NOT NULL,
 	`field10_recovery` text NOT NULL,
+	`field11_recovery` text NOT NULL,
+	`field12_recovery` text NOT NULL,
+	`field13_recovery` text NOT NULL,
+	`field14_recovery` text NOT NULL,
+	`field15_recovery` text NOT NULL,
 	PRIMARY KEY  (`id`),
 	FOREIGN KEY (`id_alert_command`) REFERENCES talert_commands(`id`)
 		ON DELETE CASCADE ON UPDATE CASCADE
@@ -1845,6 +1860,11 @@ CREATE TABLE  IF NOT EXISTS  `talert_snmp_action` (
 	`al_field8` text NOT NULL,
 	`al_field9` text NOT NULL,
 	`al_field10` text NOT NULL,
+	`al_field11` text NOT NULL,
+	`al_field12` text NOT NULL,
+	`al_field13` text NOT NULL,
+	`al_field14` text NOT NULL,
+	`al_field15` text NOT NULL,
 	PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

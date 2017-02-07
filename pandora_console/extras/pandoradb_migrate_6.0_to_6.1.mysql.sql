@@ -76,6 +76,24 @@ ALTER TABLE talert_templates ADD COLUMN `field13_recovery` TEXT NOT NULL DEFAULT
 ALTER TABLE talert_templates ADD COLUMN `field14_recovery` TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_templates ADD COLUMN `field15_recovery` TEXT NOT NULL DEFAULT "";
 
+-- ---------------------------------------------------------------------
+-- Table `talert_snmp`
+-- ---------------------------------------------------------------------
+ALTER TABLE talert_snmp ADD COLUMN `al_field11` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_snmp ADD COLUMN `al_field12` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_snmp ADD COLUMN `al_field13` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_snmp ADD COLUMN `al_field14` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_snmp ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
+
+-- ---------------------------------------------------------------------
+-- Table `talert_snmp_action`
+-- ---------------------------------------------------------------------
+ALTER TABLE talert_snmp_action ADD COLUMN `al_field11` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_snmp_action ADD COLUMN `al_field12` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_snmp_action ADD COLUMN `al_field13` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_snmp_action ADD COLUMN `al_field14` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_snmp_action ADD COLUMN `al_field15` TEXT NOT NULL DEFAULT "";
+
 -- ----------------------------------------------------------------------
 -- Table `tserver`
 -- ----------------------------------------------------------------------
@@ -99,6 +117,16 @@ UPDATE talert_actions SET   `field4` = 'integria',
 							`field9` = 'admin',
 							`field10` = '_alert_description_'
 WHERE `id` = 4 AND `id_alert_command` = 11;
+ALTER TABLE talert_actions ADD COLUMN `field11` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field12` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field13` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field14` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field15` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field11_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field12_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field13_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field14_recovery` TEXT NOT NULL DEFAULT "";
+ALTER TABLE talert_actions ADD COLUMN `field15_recovery` TEXT NOT NULL DEFAULT "";
 
 -- ---------------------------------------------------------------------
 -- Table `talert_commands`

@@ -330,6 +330,11 @@ CREATE TABLE talert_snmp (
 	al_field8 CLOB DEFAULT '',
 	al_field9 CLOB DEFAULT '',
 	al_field10 CLOB DEFAULT '',
+	al_field11 CLOB DEFAULT '',
+	al_field12 CLOB DEFAULT '',
+	al_field13 CLOB DEFAULT '',
+	al_field14 CLOB DEFAULT '',
+	al_field15 CLOB DEFAULT '',
 	description VARCHAR2(255) DEFAULT '',
 	alert_type NUMBER(5, 0) DEFAULT 0,
 	agent VARCHAR2(100) DEFAULT '',
@@ -424,6 +429,11 @@ CREATE TABLE talert_actions (
 	field8 CLOB DEFAULT '',
 	field9 CLOB DEFAULT '',
 	field10 CLOB DEFAULT '',
+	field11 CLOB DEFAULT '',
+	field12 CLOB DEFAULT '',
+	field13 CLOB DEFAULT '',
+	field14 CLOB DEFAULT '',
+	field15 CLOB DEFAULT '',
 	id_group NUMBER(19, 0) DEFAULT 0,
 	action_threshold NUMBER(19, 0) DEFAULT 0,
 	field1_recovery CLOB DEFAULT '',
@@ -435,7 +445,12 @@ CREATE TABLE talert_actions (
 	field7_recovery CLOB DEFAULT '',
 	field8_recovery CLOB DEFAULT '',
 	field9_recovery CLOB DEFAULT '',
-	field10_recovery CLOB DEFAULT ''
+	field10_recovery CLOB DEFAULT '',
+	field11_recovery CLOB DEFAULT '',
+	field12_recovery CLOB DEFAULT '',
+	field13_recovery CLOB DEFAULT '',
+	field14_recovery CLOB DEFAULT '',
+	field15_recovery CLOB DEFAULT '',
 );
 
 CREATE SEQUENCE talert_actions_s INCREMENT BY 1 START WITH 1;
@@ -2069,7 +2084,12 @@ CREATE TABLE talert_snmp_action (
 	al_field7 CLOB DEFAULT '',
 	al_field8 CLOB DEFAULT '',
 	al_field9 CLOB DEFAULT '',
-	al_field10 CLOB DEFAULT ''
+	al_field10 CLOB DEFAULT '',
+	al_field11 CLOB DEFAULT '',
+	al_field12 CLOB DEFAULT '',
+	al_field13 CLOB DEFAULT '',
+	al_field14 CLOB DEFAULT '',
+	al_field15 CLOB DEFAULT ''
 );
 CREATE SEQUENCE talert_snmp_action_s INCREMENT BY 1 START WITH 1;
 CREATE OR REPLACE TRIGGER talert_snmp_action_inc BEFORE INSERT ON talert_snmp_action REFERENCING NEW AS NEW FOR EACH ROW BEGIN SELECT talert_snmp_action_s.nextval INTO :NEW.id FROM dual; END;;

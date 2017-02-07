@@ -58,6 +58,11 @@ if ($add_action) {
 	$values[db_escape_key_identifier('al_field8')] = get_parameter('field8_value');
 	$values[db_escape_key_identifier('al_field9')] = get_parameter('field9_value');
 	$values[db_escape_key_identifier('al_field10')] = get_parameter('field10_value');
+	$values[db_escape_key_identifier('al_field11')] = get_parameter('field11_value');
+	$values[db_escape_key_identifier('al_field12')] = get_parameter('field12_value');
+	$values[db_escape_key_identifier('al_field13')] = get_parameter('field13_value');
+	$values[db_escape_key_identifier('al_field14')] = get_parameter('field14_value');
+	$values[db_escape_key_identifier('al_field15')] = get_parameter('field15_value');
 	
 	$result = db_process_sql_insert('talert_snmp_action', $values);
 }
@@ -102,6 +107,11 @@ if ($save_alert || $modify_alert) {
 	$al_field8 = (string) get_parameter_post ("field8_value");
 	$al_field9 = (string) get_parameter_post ("field9_value");
 	$al_field10 = (string) get_parameter_post ("al_field10");
+	$al_field11 = (string) get_parameter_post ("field11_value");
+	$al_field12 = (string) get_parameter_post ("field12_value");
+	$al_field13 = (string) get_parameter_post ("field13_value");
+	$al_field14 = (string) get_parameter_post ("field14_value");
+	$al_field15 = (string) get_parameter_post ("field15_value");
 	$max_alerts = (int) get_parameter_post ("max_alerts", 1);
 	$min_alerts = (int) get_parameter_post ("min_alerts", 0);
 	$priority = (int) get_parameter_post ("priority", 0);
@@ -168,6 +178,11 @@ if ($save_alert || $modify_alert) {
 			'al_field8' => $al_field8,
 			'al_field9' => $al_field9,
 			'al_field10' => $al_field10,
+			'al_field11' => $al_field11,
+			'al_field12' => $al_field12,
+			'al_field13' => $al_field13,
+			'al_field14' => $al_field14,
+			'al_field15' => $al_field15,
 			'description' => $description,
 			'agent' => $source_ip,
 			'custom_oid' => $custom_value,
@@ -239,6 +254,8 @@ if ($save_alert || $modify_alert) {
 			al_field2 = '%s', al_field3 = '%s', al_field4 = '%s',
 			al_field5 = '%s', al_field6 = '%s',al_field7 = '%s',
 			al_field8 = '%s', al_field9 = '%s',al_field10 = '%s',
+			al_field11 = '%s', al_field12 = '%s', al_field13 = '%s',
+			al_field14 = '%s', al_field15 = '%s',
 			description = '%s',
 			agent = '%s', custom_oid = '%s', oid = '%s',
 			time_threshold = %d, max_alerts = %d, min_alerts = %d,
@@ -274,7 +291,8 @@ if ($save_alert || $modify_alert) {
 			WHERE id_as = %d",
 			$priority, $alert_type, $al_field1, $al_field2, $al_field3,
 			$al_field4, $al_field5, $al_field6, $al_field7, $al_field8,
-			$al_field9, $al_field10,
+			$al_field9, $al_field10, $al_field11, $al_field12, $al_field13, 
+			$al_field14, $al_field15, 
 			$description, $source_ip, $custom_value, $oid, $time_threshold,
 			$max_alerts, $min_alerts, $custom_oid_data_1, $custom_oid_data_2,
 			$custom_oid_data_3, $custom_oid_data_4, $custom_oid_data_5,
@@ -329,6 +347,11 @@ if ($update_alert || $duplicate_alert) {
 	$al_field8 = $alert["al_field8"];
 	$al_field9 = $alert["al_field9"];
 	$al_field10 = $alert["al_field10"];
+	$al_field11 = $alert["al_field11"];
+	$al_field12 = $alert["al_field12"];
+	$al_field13 = $alert["al_field13"];
+	$al_field14 = $alert["al_field14"];
+	$al_field15 = $alert["al_field15"];
 	$max_alerts = $alert["max_alerts"];
 	$min_alerts = $alert["min_alerts"];
 	$priority = $alert["priority"];
@@ -396,6 +419,11 @@ elseif ($create_alert) {
 	$al_field8 = "";
 	$al_field9 = "";
 	$al_field10 = "";
+	$al_field11 = "";
+	$al_field12 = "";
+	$al_field13 = "";
+	$al_field14 = "";
+	$al_field15 = "";
 	$max_alerts = 1;
 	$min_alerts = 0;
 	$priority = 0;
@@ -450,8 +478,9 @@ if($duplicate_alert){
 	$sql = sprintf ("insert into talert_snmp (
 		id_alert, al_field1, al_field2, al_field3, 
 		al_field4, al_field5, al_field6, al_field7,
-		al_field8, al_field9, al_field10, description,
-		agent, custom_oid, oid, time_threshold,
+		al_field8, al_field9, al_field10, al_field11, 
+		al_field12, al_field13, al_field14, al_field15, 
+		description, agent, custom_oid, oid, time_threshold,
 		times_fired, last_fired, max_alerts, min_alerts,
 		internal_counter, priority,
 		".db_escape_key_identifier('_snmp_f1_') .",
@@ -486,6 +515,7 @@ if($duplicate_alert){
 		'%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d')",
 		$id_alert, $al_field1, $al_field2, $al_field3, $al_field4, $al_field5, 
 		$al_field6, $al_field7, $al_field8, $al_field9, $al_field10,
+		$al_field11, $al_field12, $al_field13, $al_field14, $al_field15,
 		$description, $source_ip, $custom_value, $oid, $time_threshold,
 		$times_fired, $last_fired, $max_alerts, $min_alerts, $internal_counter,
 		$priority, $custom_oid_data_1, $custom_oid_data_2, $custom_oid_data_3, 
@@ -860,12 +890,17 @@ if ($create_alert || $update_alert) {
 		'al_field7' => $al_field7,
 		'al_field8' => $al_field8,
 		'al_field9' => $al_field9,
-		'al_field10' => $al_field10);
+		'al_field10' => $al_field10,
+		'al_field11' => $al_field11,
+		'al_field12' => $al_field12,
+		'al_field13' => $al_field13,
+		'al_field14' => $al_field14,
+		'al_field15' => $al_field15);
 	
 	// Hidden div with help hint to fill with javascript
 	html_print_div(array('id' => 'help_snmp_alert_hint', 'content' => ui_print_help_icon ("snmp_alert_field1", true), 'hidden' => true));
 	
-	for ($i = 1; $i <= 10; $i++) {
+	for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 		echo '<tr id="table_macros-field'.$i.'"><td class="datos" valign="top">'.html_print_image('images/spinner.gif',true);
 		echo '<td class="datos">' . html_print_image('images/spinner.gif',true);
 		html_print_input_hidden('field'.$i.'_value', isset($al['al_field'.$i]) ? $al['al_field'.$i] : '');
@@ -1260,9 +1295,14 @@ else {
 				'al_field7' => $al_field7,
 				'al_field8' => $al_field8,
 				'al_field9' => $al_field9,
-				'al_field10' => $al_field10);
+				'al_field10' => $al_field10,
+				'al_field11' => $al_field11,
+				'al_field12' => $al_field12,
+				'al_field13' => $al_field13,
+				'al_field14' => $al_field14,
+				'al_field15' => $al_field15);
 				
-				for ($i = 1; $i <= 10; $i++) {
+				for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
 					echo '<tr id="table_macros-field'.$i.'"><td class="datos" valign="top">'.html_print_image('images/spinner.gif',true);
 					echo '<td class="datos">' . html_print_image('images/spinner.gif',true);
 					html_print_input_hidden('field'.$i.'_value', isset($al['al_field'.$i]) ? $al['al_field'.$i] : '');
@@ -1360,9 +1400,11 @@ $(document).ready (function () {
 			?>,
 			values,
 			function (data, status) {
+				var max_fields = parseInt('<?php echo $config["max_macro_fields"]; ?>');
+				
 				original_command = js_html_entity_decode (data["command"]);
 				command_description = js_html_entity_decode (data["description"]);
-				for (i = 1; i <= 10; i++) {
+				for (i = 1; i <= max_fields; i++) {
 					var old_value = '';
 					// Only keep the value if is provided from hidden (first time)
 					

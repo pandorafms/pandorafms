@@ -280,6 +280,11 @@ CREATE TABLE "talert_snmp" (
 	"al_field8" text NOT NULL default '',
 	"al_field9" text NOT NULL default '',
 	"al_field10" text NOT NULL default '',
+	"al_field11" text NOT NULL default '',
+	"al_field12" text NOT NULL default '',
+	"al_field13" text NOT NULL default '',
+	"al_field14" text NOT NULL default '',
+	"al_field15" text NOT NULL default '',
 	"description" varchar(255) default '',
 	"alert_type" SMALLINT NOT NULL default 0,
 	"agent" varchar(100) default '',
@@ -362,6 +367,11 @@ CREATE TABLE "talert_actions" (
 	"field8" text NOT NULL default '',
 	"field9" text NOT NULL default '',
 	"field10" text NOT NULL default '',
+	"field11" text NOT NULL default '',
+	"field12" text NOT NULL default '',
+	"field13" text NOT NULL default '',
+	"field14" text NOT NULL default '',
+	"field15" text NOT NULL default '',
 	"id_group" BIGINT NOT NULL default 0,
 	"action_threshold" BIGINT NOT NULL default 0,
 	"field1_recovery" text NOT NULL default '',
@@ -373,7 +383,12 @@ CREATE TABLE "talert_actions" (
 	"field7_recovery" text NOT NULL default '',
 	"field8_recovery" text NOT NULL default '',
 	"field9_recovery" text NOT NULL default '',
-	"field10_recovery" text NOT NULL default ''
+	"field10_recovery" text NOT NULL default '',
+	"field11_recovery" text NOT NULL default '',
+	"field12_recovery" text NOT NULL default '',
+	"field13_recovery" text NOT NULL default '',
+	"field14_recovery" text NOT NULL default '',
+	"field15_recovery" text NOT NULL default '',
 );
 
 CREATE TYPE type_talert_templates_alert_template AS ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always');
@@ -1735,7 +1750,12 @@ CREATE TABLE  "talert_snmp_action" (
 	"al_field7" TEXT default '',
 	"al_field8" TEXT default '',
 	"al_field9" TEXT default '',
-	"al_field10" TEXT default ''
+	"al_field10" TEXT default '',
+	"al_field11" TEXT default '',
+	"al_field12" TEXT default '',
+	"al_field13" TEXT default '',
+	"al_field14" TEXT default '',
+	"al_field15" TEXT default '',
 );
 
 -- ---------------------------------------------------------------------

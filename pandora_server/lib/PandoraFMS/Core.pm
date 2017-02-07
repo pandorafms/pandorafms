@@ -837,6 +837,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field8 = $action->{'field8'} ? $action->{'field8'} : $alert->{'field8'};
 		$field9 = $action->{'field9'} ? $action->{'field9'} : $alert->{'field9'};
 		$field10 = $action->{'field10'} ? $action->{'field10'} : $alert->{'field10'};
+		$field11 = $action->{'field11'} ? $action->{'field11'} : $alert->{'field11'};
+		$field12 = $action->{'field12'} ? $action->{'field12'} : $alert->{'field12'};
+		$field13 = $action->{'field13'} ? $action->{'field13'} : $alert->{'field13'};
+		$field14 = $action->{'field14'} ? $action->{'field14'} : $alert->{'field14'};
+		$field15 = $action->{'field15'} ? $action->{'field15'} : $alert->{'field15'};
 	}
 	else {
 		$field1 = $alert->{'field1'} ? $alert->{'field1'} : $action->{'field1'};
@@ -849,6 +854,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field8 = $action->{'field8'} ? $action->{'field8'} : $alert->{'field8'};
 		$field9 = $action->{'field9'} ? $action->{'field9'} : $alert->{'field9'};
 		$field10 = $action->{'field10'} ? $action->{'field10'} : $alert->{'field10'};
+		$field10 = $action->{'field11'} ? $action->{'field11'} : $alert->{'field11'};
+		$field10 = $action->{'field12'} ? $action->{'field12'} : $alert->{'field12'};
+		$field10 = $action->{'field13'} ? $action->{'field13'} : $alert->{'field13'};
+		$field10 = $action->{'field14'} ? $action->{'field14'} : $alert->{'field14'};
+		$field10 = $action->{'field15'} ? $action->{'field15'} : $alert->{'field15'};
 	}
 	
 	# Recovery fields, thanks to Kato Atsushi
@@ -892,6 +902,26 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field10 = $field10 ? "[RECOVER]" . $field10 : "";
 		$field10 = $alert->{'field10_recovery'} ? $alert->{'field10_recovery'} : $field10;
 		$field10 = $action->{'field10_recovery'} ? $action->{'field10_recovery'} : $field10;
+
+		$field11 = $field11 ? "[RECOVER]" . $field11 : "";
+		$field11 = $alert->{'field11_recovery'} ? $alert->{'field11_recovery'} : $field11;
+		$field11 = $action->{'field11_recovery'} ? $action->{'field11_recovery'} : $field11;
+
+		$field12 = $field12 ? "[RECOVER]" . $field12 : "";
+		$field12 = $alert->{'field12_recovery'} ? $alert->{'field12_recovery'} : $field12;
+		$field12 = $action->{'field12_recovery'} ? $action->{'field12_recovery'} : $field12;
+
+		$field13 = $field13 ? "[RECOVER]" . $field13 : "";
+		$field13 = $alert->{'field13_recovery'} ? $alert->{'field13_recovery'} : $field13;
+		$field13 = $action->{'field13_recovery'} ? $action->{'field13_recovery'} : $field13;
+
+		$field14 = $field14 ? "[RECOVER]" . $field14 : "";
+		$field14 = $alert->{'field14_recovery'} ? $alert->{'field14_recovery'} : $field14;
+		$field14 = $action->{'field14_recovery'} ? $action->{'field14_recovery'} : $field14;
+
+		$field15 = $field15 ? "[RECOVER]" . $field15 : "";
+		$field15 = $alert->{'field15_recovery'} ? $alert->{'field15_recovery'} : $field15;
+		$field15 = $action->{'field15_recovery'} ? $action->{'field15_recovery'} : $field15;
 	}
 
 	$field1 = $field1 ? decode_entities($field1) : "";
@@ -904,6 +934,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	$field8 = $field8 ? decode_entities($field8) : "";
 	$field9 = $field9 ? decode_entities($field9) : "";
 	$field10 = $field10 ? decode_entities($field10) : "";
+	$field11 = $field11 ? decode_entities($field11) : "";
+	$field12 = $field12 ? decode_entities($field12) : "";
+	$field13 = $field13 ? decode_entities($field13) : "";
+	$field14 = $field14 ? decode_entities($field14) : "";
+	$field15 = $field15 ? decode_entities($field15) : "";
 
 	# Get group info
 	my $group = undef;
@@ -926,6 +961,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 				_field8_ => $field8,
 				_field9_ => $field9,
 				_field10_ => $field10,
+				_field11_ => $field11,
+				_field12_ => $field12,
+				_field13_ => $field13,
+				_field14_ => $field14,
+				_field15_ => $field15,
 				_agent_ => (defined ($agent)) ? $agent->{'nombre'} : '',
 				_agentcustomid_ => (defined ($agent)) ? $agent->{'custom_id'} : '',
 				'_agentcustomfield_\d+_'  => undef,
@@ -989,6 +1029,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$macros{_field8_} = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module);
 		$macros{_field9_} = subst_alert_macros ($field9, \%macros, $pa_config, $dbh, $agent, $module);
 		$macros{_field10_} = subst_alert_macros ($field10, \%macros, $pa_config, $dbh, $agent, $module);
+		$macros{_field11_} = subst_alert_macros ($field11, \%macros, $pa_config, $dbh, $agent, $module);
+		$macros{_field12_} = subst_alert_macros ($field12, \%macros, $pa_config, $dbh, $agent, $module);
+		$macros{_field13_} = subst_alert_macros ($field13, \%macros, $pa_config, $dbh, $agent, $module);
+		$macros{_field14_} = subst_alert_macros ($field14, \%macros, $pa_config, $dbh, $agent, $module);
+		$macros{_field15_} = subst_alert_macros ($field15, \%macros, $pa_config, $dbh, $agent, $module);
 		
 		my @command_args = ();
 		# divide command into words based on quotes and whitespaces
@@ -3307,6 +3352,11 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 		$alert->{'al_field8'} = subst_alert_macros ($alert->{'al_field8'}, \%macros);
 		$alert->{'al_field9'} = subst_alert_macros ($alert->{'al_field9'}, \%macros);
 		$alert->{'al_field10'} = subst_alert_macros ($alert->{'al_field10'}, \%macros);
+		$alert->{'al_field11'} = subst_alert_macros ($alert->{'al_field11'}, \%macros);
+		$alert->{'al_field12'} = subst_alert_macros ($alert->{'al_field12'}, \%macros);
+		$alert->{'al_field13'} = subst_alert_macros ($alert->{'al_field13'}, \%macros);
+		$alert->{'al_field14'} = subst_alert_macros ($alert->{'al_field14'}, \%macros);
+		$alert->{'al_field15'} = subst_alert_macros ($alert->{'al_field15'}, \%macros);
 
 		# Check time threshold
 		$alert->{'last_fired'} = '1970-01-01 00:00:00' unless defined ($alert->{'last_fired'});
@@ -3341,6 +3391,11 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 				'field8' => $alert->{'al_field8'},
 				'field9' => $alert->{'al_field9'},
 				'field10' => $alert->{'al_field10'},
+				'field11' => $alert->{'al_field11'},
+				'field12' => $alert->{'al_field12'},
+				'field13' => $alert->{'al_field13'},
+				'field14' => $alert->{'al_field14'},
+				'field15' => $alert->{'al_field15'},
 				'description' => $alert->{'description'},
 				'times_fired' => $times_fired,
 				'time_threshold' => 0,
@@ -3419,6 +3474,11 @@ sub pandora_evaluate_snmp_alerts ($$$$$$$$$) {
 					'field8' => $other_action->{'al_field8'},
 					'field9' => $other_alert->{'al_field9'},
 					'field10' => $other_alert->{'al_field10'},
+					'field11' => $other_alert->{'al_field11'},
+					'field12' => $other_alert->{'al_field12'},
+					'field13' => $other_alert->{'al_field13'},
+					'field14' => $other_alert->{'al_field14'},
+					'field15' => $other_alert->{'al_field15'},
 					'description' => '',
 					'times_fired' => $times_fired,
 					'time_threshold' => 0,

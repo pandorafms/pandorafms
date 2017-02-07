@@ -824,6 +824,7 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 	my $clean_name = safe_output($action->{'name'});
 
 	my ($field1, $field2, $field3, $field4, $field5, $field6, $field7, $field8, $field9, $field10);
+	my ($field11, $field12, $field13, $field14, $field15);
 
 	if (!defined($alert->{'snmp_alert'})) {
 		# Regular alerts
@@ -854,11 +855,11 @@ sub pandora_execute_action ($$$$$$$$$;$) {
 		$field8 = $action->{'field8'} ? $action->{'field8'} : $alert->{'field8'};
 		$field9 = $action->{'field9'} ? $action->{'field9'} : $alert->{'field9'};
 		$field10 = $action->{'field10'} ? $action->{'field10'} : $alert->{'field10'};
-		$field10 = $action->{'field11'} ? $action->{'field11'} : $alert->{'field11'};
-		$field10 = $action->{'field12'} ? $action->{'field12'} : $alert->{'field12'};
-		$field10 = $action->{'field13'} ? $action->{'field13'} : $alert->{'field13'};
-		$field10 = $action->{'field14'} ? $action->{'field14'} : $alert->{'field14'};
-		$field10 = $action->{'field15'} ? $action->{'field15'} : $alert->{'field15'};
+		$field11 = $action->{'field11'} ? $action->{'field11'} : $alert->{'field11'};
+		$field12 = $action->{'field12'} ? $action->{'field12'} : $alert->{'field12'};
+		$field13 = $action->{'field13'} ? $action->{'field13'} : $alert->{'field13'};
+		$field14 = $action->{'field14'} ? $action->{'field14'} : $alert->{'field14'};
+		$field15 = $action->{'field15'} ? $action->{'field15'} : $alert->{'field15'};
 	}
 	
 	# Recovery fields, thanks to Kato Atsushi

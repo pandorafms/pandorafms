@@ -396,7 +396,7 @@ function menu_print_menu (&$menu) {
 			$seleccionado = '';
 			
 		//Print out the first level
-		$output .= '<li class="'.implode (" ", $classes).' ' . $seleccionado . '" id="icon_'.$id.'">';
+		$output .= '<li title="'.ucwords(str_replace(array("oper-","god-"),"",$sub["id"])).'" class="'.implode (" ", $classes).' ' . $seleccionado . '" id="icon_'.$id.'">';
 						//onclick="location.href=\'index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].($main["refr"] ? '&amp;refr='.$main["refr"] : '').'\'">';
 
 		$length = strlen(__($main["text"]));

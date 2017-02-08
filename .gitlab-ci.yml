@@ -3,4 +3,4 @@ variables:
 
 test:
   script:
-    - docker run --rm -h pandorafms -t -v "$CI_PROJECT_DIR:$CI_PROJECT_DIR" -e CI_PROJECT_DIR="$CI_PROJECT_DIR" pandorafms/pandorafms-base "$CI_PROJECT_DIR/tests/test.sh"
+    - docker run --rm -h pandorafms -t -v "$CI_PROJECT_DIR:$CI_PROJECT_DIR" -e CI_PROJECT_DIR="$CI_PROJECT_DIR" pandorafms/pandorafms-base /tmp/pandorafms/tests/test.sh

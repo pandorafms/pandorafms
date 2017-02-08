@@ -108,7 +108,12 @@ $page = get_parameter('page', '');
 
 if (strstr($page, "policy_modules") === false && $id_agent_module) {
 	if ($config['enterprise_installed'])
-		$disabledBecauseInPolicy = policies_is_module_in_policy($id_agent_module) && policies_is_module_linked($id_agent_module);
+		if(policies_is_module_linked($id_agent_module) == 1){
+		$disabledBecauseInPolicy = 1;
+		}
+		else{
+		$disabledBecauseInPolicy = 0;
+		}
 	else
 		$disabledBecauseInPolicy = false;
 	if ($disabledBecauseInPolicy)

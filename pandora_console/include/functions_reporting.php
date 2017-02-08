@@ -6726,21 +6726,101 @@ function reporting_get_group_stats_resume ($id_group = 0, $access = 'AR') {
 	else {
 		
 		if (!empty($id_group)) {
-
+			//check tags for user
+			$tags = db_get_value("tags", "tusuario_perfil", "id_usuario" , $config['id_user']);
+			if($tags){
+				$tags_sql = " AND tae.id_agente_modulo IN ( SELECT id_agente_modulo 
+				                                           FROM ttag_module 
+				                                           WHERE id_tag IN ($tags) ) ";
+			}
+			else{
+				$tags_sql = "";
+			}
+			
+			if(is_array($id_group)){
+				$id_group = implode("," , $id_group);
+			}
+			
+			//for stats modules
 			$sql = "SELECT tg.id_grupo as id, tg.nombre as name, 
-					SUM(ta.normal_count) as monitor_ok, 
-					SUM(ta.warning_count) as monitor_warning, 
-					SUM(ta.critical_count) as monitor_critical, 
-					SUM(ta.unknown_count) as monitor_unknown, 
-					SUM(ta.notinit_count) as monitor_not_init, 
-					count(ta.nombre) as total_agents 
-					FROM tagente ta, tgrupo tg 
-					WHERE tg.id_grupo = ta.id_grupo 
-					AND ta.id_grupo = ". $id_group ."  
-					GROUP BY ta.id_grupo;";
+    				SUM(tae.estado=0) as monitor_ok,
+    				SUM(tae.estado=1) as monitor_critical,
+    				SUM(tae.estado=2) as monitor_warning,
+    				SUM(tae.estado=3) as monitor_unknown,
+    				SUM(tae.estado=4) as monitor_not_init,
+    				COUNT(tae.estado) as monitor_total
 
+					FROM
+    					tagente_estado tae,
+    					tagente        ta,
+    					tagente_modulo tam,
+    					tgrupo         tg
+    
+					WHERE 1=1
+    					AND tae.id_agente = ta.id_agente
+       					AND tae.id_agente_modulo = tam.id_agente_modulo
+    					AND ta.id_grupo = tg.id_grupo
+    					AND tam.disabled = 0
+    					AND ta.disabled = 0
+    					AND ta.id_grupo IN ($id_group) $tags_sql 
+					GROUP BY tg.id_grupo;";
 			$data_array = db_get_all_rows_sql($sql);
+			
 			$data = $data_array[0];
+
+			// Get alerts configured, except disabled 
+			$data["monitor_alerts"] += groups_monitor_alerts ($group_array) ;
+			
+			// Get alert configured currently FIRED, except disabled 
+			$data["monitor_alerts_fired"] += groups_monitor_fired_alerts ($group_array);
+
+			//for stats agents
+			$sql = "SELECT tae.id_agente id_agente, tg.id_grupo id_grupo,
+    				SUM(tae.estado=0) as monitor_agent_ok,
+    				SUM(tae.estado=1) as monitor_agent_critical,
+    				SUM(tae.estado=2) as monitor_agent_warning,
+				    SUM(tae.estado=3) as monitor_agent_unknown,
+				    SUM(tae.estado=4) as monitor_agent_not_init,
+				    COUNT(tae.estado) as monitor_agent_total
+
+				FROM
+				    tagente_estado tae,
+				    tagente        ta,
+				    tagente_modulo tam,
+				    tgrupo         tg
+				    
+				WHERE 1=1
+				    AND tae.id_agente = ta.id_agente
+				    AND tae.id_agente_modulo = tam.id_agente_modulo
+				    AND ta.id_grupo = tg.id_grupo
+				    AND tam.disabled = 0
+				    AND ta.disabled = 0
+				    AND ta.id_grupo IN ($id_group) $tags_sql
+				GROUP BY tae.id_agente;";
+			$data_array_2 = db_get_all_rows_sql($sql);
+			
+			foreach ($data_array_2 as $key => $value) {
+				if($value['monitor_agent_critical'] != 0){
+					$data['agent_critical'] ++;
+				}
+				elseif($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] != 0){
+					$data['agent_warning'] ++;	
+				}
+				elseif($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0 && 
+					   $value['monitor_agent_unknown'] != 0){
+					$data['agent_unknown'] ++;	
+				}
+				elseif($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0 && 
+					   $value['monitor_agent_unknown'] == 0 && $value['monitor_agent_ok'] != 0){
+					$data['agent_ok'] ++;	
+				}
+				elseif($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0 && 
+					   $value['monitor_agent_unknown'] == 0  && $value['monitor_agent_ok'] == 0 && 
+					   $value['monitor_agent_not_init'] != 0){
+					$data['agent_not_init'] ++;	
+				}
+				$data['total_agents'] ++; 
+			}
 			
 			// Get total count of monitors for this group, except disabled.
 			$data["monitor_checks"] = $data["monitor_not_init"] + $data["monitor_unknown"] + $data["monitor_warning"] + $data["monitor_critical"] + $data["monitor_ok"];

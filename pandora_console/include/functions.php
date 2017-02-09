@@ -2613,6 +2613,7 @@ function date2strftime_format($date_format) {
 		'O' => '%z',
 		'T' => '%Z',
 		'%' => '%%',
+		'G' => '%k',
 		);
 	
 	$return = "";

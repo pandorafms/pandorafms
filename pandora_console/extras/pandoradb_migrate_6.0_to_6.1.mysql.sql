@@ -243,3 +243,8 @@ UPDATE tagente_modulo SET cron_interval = '' WHERE cron_interval LIKE '%    %';
 -- Table `tgraph`
 -- ---------------------------------------------------------------------
 ALTER TABLE tgraph ADD COLUMN `percentil` int(4) unsigned default '0';
+
+-- ---------------------------------------------------------------------
+-- Table `tnetflow_filter`
+-- ---------------------------------------------------------------------
+ALTER TABLE tnetflow_filter ADD COLUMN `router_ip` TEXT NOT NULL DEFAULT "";

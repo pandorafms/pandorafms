@@ -86,3 +86,8 @@ ALTER TABLE talert_actions ADD COLUMN field12_recovery TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN field13_recovery TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN field14_recovery TEXT NOT NULL DEFAULT "";
 ALTER TABLE talert_actions ADD COLUMN field15_recovery TEXT NOT NULL DEFAULT "";
+
+-- ---------------------------------------------------------------------
+-- Table `tnetflow_filter`
+-- ---------------------------------------------------------------------
+ALTER TABLE tnetflow_filter ADD COLUMN router_ip TEXT NOT NULL DEFAULT "";

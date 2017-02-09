@@ -152,3 +152,8 @@ INSERT INTO tagent_custom_fields (name) VALUES ('eHorusID');
 -- Table `tgraph`
 -- ---------------------------------------------------------------------
 ALTER TABLE tgraph ADD COLUMN percentil int(4) unsigned default '0';
+
+-- ---------------------------------------------------------------------
+-- Table `tnetflow_filter`
+-- ---------------------------------------------------------------------
+ALTER TABLE tnetflow_filter ADD COLUMN router_ip CLOB DEFAULT "";

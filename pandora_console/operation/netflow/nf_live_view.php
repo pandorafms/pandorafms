@@ -532,6 +532,7 @@ ui_include_time_picker();
 			$("#text-ip_src").val('');
 			$("#text-dst_port").val('');
 			$("#text-src_port").val('');
+			$("#text-router_ip").val('');
 			$("#textarea_advanced_filter").val('');
 			$("#aggregate").val('');
 			$("#output").val('');
@@ -599,6 +600,8 @@ ui_include_time_picker();
 							$("#text-dst_port").val(val);
 						if (i == 'src_port')
 							$("#text-src_port").val(val);
+						if (i == 'router_ip')
+							$("#text-router_ip").val(val);
 						if (i == 'advanced_filter')
 							$("#textarea_advanced_filter").val(val);
 						if (i == 'aggregate')

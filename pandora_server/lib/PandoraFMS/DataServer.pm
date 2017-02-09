@@ -641,9 +641,9 @@ sub process_module_data ($$$$$$$$$$) {
 	$module_conf->{'nombre'} = safe_input($module_name);
 
 	# Check if module is 'Transactional subsystem status'
+	my $enable_transactional_subsystem = 0;
 	if ($module_conf->{'name'} eq "Transactional subsystem status") {
-		# Defines current agent as transactional agent
-		pandora_mark_transactional_agent($dbh, $agent->{'id_agente'});
+		$enable_transactional_subsystem = 1;
 	}
 	delete $module_conf->{'name'};
 	
@@ -696,6 +696,11 @@ sub process_module_data ($$$$$$$$$$) {
 				$module_conf->{'id_module_group'} = $id_group_module;
 			}
 			delete $module_conf->{'module_group'};
+		}
+
+		if ($enable_transactional_subsystem == 1) {
+			# Defines current agent as transactional agent
+			pandora_mark_transactional_agent($dbh, $agent->{'id_agente'});
 		}
 		
 		$module_conf->{'id_modulo'} = 1;

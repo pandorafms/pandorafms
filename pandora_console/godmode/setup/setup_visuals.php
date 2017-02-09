@@ -186,14 +186,14 @@ $row++;
 $table_styles->data[$row][0] = __('Custom logo') . ui_print_help_icon("custom_logo", true);
 
 if(enterprise_installed()){
-
-$table_styles->data[$row][1] = html_print_select(
-list_files('enterprise/images/custom_logo', "png", 1, 0), 'custom_logo',
-$config["custom_logo"], '', '', '',true,false,true,'',$open,'width:240px');
-
+	$ent_files = list_files('enterprise/images/custom_logo', "png", 1, 0);
+	$open_files = list_files('images/custom_logo', "png", 1, 0);
+	
+	$table_styles->data[$row][1] = html_print_select(
+	array_merge($ent_files, $open_files), 'custom_logo',
+	$config["custom_logo"], '', '', '',true,false,true,'',$open,'width:240px');
 }
 else{
-
 	$table_styles->data[$row][1] = html_print_select(
 	list_files('images/custom_logo', "png", 1, 0), 'custom_logo',
 	$config["custom_logo"], '', '', '',true,false,true,'',$open,'width:240px');

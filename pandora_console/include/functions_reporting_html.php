@@ -318,6 +318,9 @@ function reporting_html_print_report($report, $mini = false, $report_info = 1) {
 			case 'SLA_services':
 				reporting_enterprise_html_SLA_services($table, $item, $mini);
 				break;
+			case 'module_histogram_graph':
+				reporting_enterprise_html_module_histogram_graph($table, $item, $mini);
+				break;
 		}
 		
 		if ($item['type'] == 'agent_module')

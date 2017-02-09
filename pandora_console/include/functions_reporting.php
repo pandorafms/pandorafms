@@ -500,6 +500,12 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$force_width_chart,
 					$force_height_chart);
 				break;
+			case 'module_histogram_graph':
+				$report['contents'][] = reporting_enterprise_module_histogram_graph(
+					$report,
+					$content,
+					$pdf);
+				break;
 		}
 	}
 	
@@ -6799,27 +6805,29 @@ function reporting_get_group_stats_resume ($id_group = 0, $access = 'AR') {
 				GROUP BY tae.id_agente;";
 			$data_array_2 = db_get_all_rows_sql($sql);
 			
-			foreach ($data_array_2 as $key => $value) {
-				if($value['monitor_agent_critical'] != 0){
-					$data['agent_critical'] ++;
+			if (is_array($data_array_2) || is_object($data_array_2)){
+				foreach ($data_array_2 as $key => $value) {
+					if($value['monitor_agent_critical'] != 0){
+						$data['agent_critical'] ++;
+					}
+					elseif($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] != 0){
+						$data['agent_warning'] ++;	
+					}
+					elseif($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0 && 
+						   $value['monitor_agent_unknown'] != 0){
+						$data['agent_unknown'] ++;	
+					}
+					elseif($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0 && 
+						   $value['monitor_agent_unknown'] == 0 && $value['monitor_agent_ok'] != 0){
+						$data['agent_ok'] ++;	
+					}
+					elseif($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0 && 
+						   $value['monitor_agent_unknown'] == 0  && $value['monitor_agent_ok'] == 0 && 
+						   $value['monitor_agent_not_init'] != 0){
+						$data['agent_not_init'] ++;	
+					}
+					$data['total_agents'] ++; 
 				}
-				elseif($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] != 0){
-					$data['agent_warning'] ++;	
-				}
-				elseif($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0 && 
-					   $value['monitor_agent_unknown'] != 0){
-					$data['agent_unknown'] ++;	
-				}
-				elseif($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0 && 
-					   $value['monitor_agent_unknown'] == 0 && $value['monitor_agent_ok'] != 0){
-					$data['agent_ok'] ++;	
-				}
-				elseif($value['monitor_agent_critical'] == 0 && $value['monitor_agent_warning'] == 0 && 
-					   $value['monitor_agent_unknown'] == 0  && $value['monitor_agent_ok'] == 0 && 
-					   $value['monitor_agent_not_init'] != 0){
-					$data['agent_not_init'] ++;	
-				}
-				$data['total_agents'] ++; 
 			}
 			
 			// Get total count of monitors for this group, except disabled.
@@ -10324,6 +10332,7 @@ function reporting_label_macro ($item, $label) {
 			}
 			break;
 		case 'simple_graph':
+		case 'module_histogram_graph':
 		case 'custom_graph':
 		case 'simple_baseline_graph':
 		case 'event_report_module':

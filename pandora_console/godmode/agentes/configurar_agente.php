@@ -1019,8 +1019,9 @@ if ($update_module || $create_module) {
 	$mday = get_parameter('mday');
 	$month = get_parameter('month');
 	$wday = get_parameter('wday');
+	
 	$cron_interval = "$minute $hour $mday $month $wday";
-	if (!cron_check_syntax($cron)) {
+	if (!cron_check_syntax($cron_interval)) {
 		$cron_interval = '';
 	}
 	

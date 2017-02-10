@@ -192,7 +192,13 @@ if (!empty($tag_with)) {
 	foreach ($tag_with as $id_tag) {
 		if ($first) $first = false;
 		else $sql_post .= " AND ";
-		$sql_post .= "tags LIKE '%" . tags_get_name($id_tag) . "%'";
+		$sql_post .= "tags LIKE '" . tags_get_name($id_tag) . "'";
+		$sql_post .= " OR ";
+		$sql_post .= "tags LIKE '" . tags_get_name($id_tag) . ",%'";
+		$sql_post .= " OR ";
+		$sql_post .= "tags LIKE '%, " . tags_get_name($id_tag) . "'";
+		$sql_post .= " OR ";
+		$sql_post .= "tags LIKE '%, " . tags_get_name($id_tag) . ",%'";
 	}
 	$sql_post .= ' ) ';
 }

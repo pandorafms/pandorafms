@@ -193,7 +193,7 @@ $table_styles->data[$row][0] = __('Custom logo in login') . ui_print_help_icon("
 $row++;
 
 
-$table_styles->data[$row][0] = __('Disable Pandora FMS on graphs');
+$table_styles->data[$row][0] = __('Disable logo in graphs');
 $table_styles->data[$row][1] = __('Yes') . '&nbsp;' .
 	html_print_radio_button_extended ('fixed_graph', 1, '', $config["fixed_graph"], $open, '','',true) .
 	'&nbsp;&nbsp;';

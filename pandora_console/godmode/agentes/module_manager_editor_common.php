@@ -576,11 +576,20 @@ $table_advanced->data[10][1] = html_print_textarea ('unknown_instructions', 2, 6
 $table_advanced->colspan[10][1] = 6;
 
 if (isset($id_agente) && $moduletype == MODULE_DATA) {
-	$table_advanced->data[11][0] = __('Cron') .
-		ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
-	$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour, $minute, $mday, $month, $wday, true, true);
-	$table_advanced->colspan[11][1] = 6;
+	$has_remote_conf = enterprise_hook('config_agents_has_remote_configuration',array($agent["id_agente"]));
+	if ($has_remote_conf) {
+		$table_advanced->data[11][0] = __('Cron') .
+			ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
+		$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour, $minute, $mday, $month, $wday, true, $disabledBecauseInPolicy);
+		$table_advanced->colspan[11][1] = 6;
 	}
+	else {
+		$table_advanced->data[11][0] = __('Cron') .
+			ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);
+		$table_advanced->data[11][1] = html_print_extended_select_for_cron ($hour, $minute, $mday, $month, $wday, true, true);
+		$table_advanced->colspan[11][1] = 6;
+	}
+}
 else {
 	$table_advanced->data[11][0] = __('Cron') .
 		ui_print_help_tip (__('If cron is set the module interval is ignored and the module runs on the specified date and time'), true);

@@ -359,7 +359,7 @@ function perform_response(target) {
 		dataType: 'html',
 		success: function (data) {
 			if (data == '') {
-				$('#response_out').html('<i>No output</i>');
+				$('#response_out').html('<i>Unreachable host</i>');
 			}
 			else {
 				var out = data.replace(/[\n|\r]/g, "<br>");

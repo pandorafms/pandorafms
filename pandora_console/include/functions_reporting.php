@@ -299,44 +299,49 @@ function reporting_make_reporting_data($report = null, $id_report,
 					$force_height_chart);
 				break;
 			case 'netflow_area':
-				$report['contents'][] = reporting_simple_baseline_graph(
+				$report['contents'][] = reporting_netflow(
 					$report,
 					$content,
 					$type,
 					$force_width_chart,
-					$force_height_chart);
+					$force_height_chart,
+					'netflow_area');
 				break;
 			case 'netflow_pie':
-				$report['contents'][] = reporting_netflow_pie(
+				$report['contents'][] = reporting_netflow(
 					$report,
 					$content,
 					$type,
 					$force_width_chart,
-					$force_height_chart);
+					$force_height_chart,
+					'netflow_pie');
 				break;
 			case 'netflow_data':
-				$report['contents'][] = reporting_netflow_data(
+				$report['contents'][] = reporting_netflow(
 					$report,
 					$content,
 					$type,
 					$force_width_chart,
-					$force_height_chart);
+					$force_height_chart,
+					'netflow_data');
 				break;
 			case 'netflow_statistics':
-				$report['contents'][] = reporting_netflow_statistics(
+				$report['contents'][] = reporting_netflow(
 					$report,
 					$content,
 					$type,
 					$force_width_chart,
-					$force_height_chart);
+					$force_height_chart,
+					'netflow_statistics');
 				break;
 			case 'netflow_summary':
-				$report['contents'][] = reporting_netflow_summary(
+				$report['contents'][] = reporting_netflow(
 					$report,
 					$content,
 					$type,
 					$force_width_chart,
-					$force_height_chart);
+					$force_height_chart,
+					'netflow_summary');
 				break;
 			case 'monitor_report':
 				$report['contents'][] = reporting_monitor_report(

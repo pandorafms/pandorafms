@@ -3573,13 +3573,10 @@ div.simple_value > a > span.text p
 	-webkit-border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 	border-bottom-left-radius: 5px;
-	z-index:2;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-	-webkit-transform: translate(-50%, -50%);
+	z-index:3;
 	position:fixed;
 	width:650px;
+	top: 30%;
 	background:white;
 }
 .modalheader{

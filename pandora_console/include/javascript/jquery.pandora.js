@@ -213,6 +213,9 @@ $(document).ready (function () {
 				$('#menu').css('top','80px');
 		}
 });
+
+$("#alert_messages").draggable();
+$("#alert_messages").css({'left':+parseInt(screen.width/2)-parseInt($("#alert_messages").css('width'))/2+'px'});
 	
 });
 

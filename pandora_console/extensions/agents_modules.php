@@ -69,20 +69,34 @@ function mainAgentsModules() {
 	$offset = (int)get_parameter('offset', 0);
 	$hor_offset = (int)get_parameter('hor_offset', 0);
 	$block = $config['block_size'];
+	$agents_id = (array)get_parameter('id_agents2', -1);
+	$selection_a_m = (int)get_parameter('selection_agent_module');
+	$modules_selected = (array)get_parameter('module', 0);
+	$update_item = (string)get_parameter('edit_item','');
+	$save_serialize = (int)get_parameter('save_serialize', 0);
 	
-	$groups = users_get_groups ();
+	if($save_serialize && $update_item == ''){
+		$unserialize_modules_selected  = unserialize_in_temp($config['id_user']."_agent_module", true, 1);
+		$unserialize_agents_id         = unserialize_in_temp($config['id_user']."_agents", true, 1); 	
+		if($unserialize_modules_selected){
+			$modules_selected = $unserialize_modules_selected;
+		}
+		if($unserialize_agents_id){
+			$agents_id = $unserialize_agents_id; 
+		}
+	}
+	else{
+		unserialize_in_temp($config['id_user']."_agent_module", true, 1);
+		unserialize_in_temp($config['id_user']."_agents", true, 1);
+	}
 	
-	$filter_module_groups = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => $offset, 'hor_offset' => $offset,'group_id' => $group_id, 'modulegroup' => $modulegroup)).'">';
-	$filter_module_groups .= '<b>'.__('Module group').'</b>';
-	$filter_module_groups .= html_print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
-		'modulegroup', $modulegroup, 'this.form.submit()',__('All'), 0, true, false, true, false, 'width: auto;');
-	$filter_module_groups .= '</form>';
-	
-	$filter_groups = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => $offset, 'hor_offset' => $offset,'group_id' => $group_id, 'modulegroup' => $modulegroup)).'">';
-	$filter_groups .= '<b>'.__('Group').'</b>';
-	$filter_groups .= html_print_select_groups(false, "AR", true, 'group_id', $group_id, 'this.form.submit()', '', '', true, false, true, '', false , 'width: auto;');
-	$filter_groups .= '</form>';
-	
+	if($modules_selected[0]){
+		serialize_in_temp($modules_selected, $config['id_user']."_agent_module", 1);
+	}
+	if($agents_id[0] != -1 ){
+		serialize_in_temp($agents_id, $config['id_user']."_agents", 1);
+	}
+
 	$comborefr = '<form method="post" action="' . ui_get_url_refresh (array ('offset' => $offset, 'hor_offset' => $offset,'group_id' => $group_id, 'modulegroup' => $modulegroup)).'">';
 	$comborefr .= '<b>'.__('Refresh').'</b>';
 	$comborefr .= html_print_select (
@@ -107,7 +121,50 @@ function mainAgentsModules() {
 			. "</a>";
 		$config['refr'] = $refr;
 	}
+
+	$groups = users_get_groups ();
 	
+	//groups
+	$filter_groups_label = '<b>'.__('Group').'</b>';
+	$filter_groups = html_print_select_groups(false, "AR", true, 'group_id', $group_id, '', '', '', true, false, true, '', false , 'width: auto;');
+	
+	//groups module
+	$filter_module_groups_label = '<b>'.__('Module group').'</b>';
+	$filter_module_groups = html_print_select_from_sql ("SELECT * FROM tmodule_group ORDER BY name",
+		'modulegroup', $modulegroup, '',__('All'), 0, true, false, true, false, 'width: auto;');
+			
+	$agents_select = array();
+	if (is_array($id_agents) || is_object($id_agents)){
+		foreach ($id_agents as $id) {
+			foreach ($agents as $key => $a) {
+				if ($key == (int)$id) {
+					$agents_select[$key] = $key;
+				}
+			}
+		}
+	}
+	
+	//agent
+	$agents = agents_get_group_agents($group_id);
+	if ((empty($agents)) || $agents == -1) $agents = array();
+	$filter_agents_label = '<b>'.__('Agents').'</b>';
+	$filter_agents = html_print_select($agents, 'id_agents2[]', $agents_id, '', '', 0, true, true, true, '', false, "min-width: 180px");
+
+	//type show
+	$selection = array(0 => __('Show common modules'),
+						1=> __('Show all modules'));
+	$filter_type_show_label = '<b>'.__('Show common modules').'</b>';
+	$filter_type_show = html_print_select($selection, 'selection_agent_module', $selection_a_m, '', "", 0, true, false, true, '', false, "min-width: 180px");
+
+	//modules
+	$all_modules = db_get_all_rows_sql("SELECT DISTINCT nombre, id_agente_modulo FROM tagente_modulo WHERE id_agente IN (" . implode(',', array_keys($agents)) . ")");
+	
+	$filter_modules_label = '<b>'.__('Module').'</b>';
+	$filter_modules = html_print_select($all_modules, 'module[]', $modules_selected, '', __('None'), 0, true, true, true, '', false, "min-width: 180px");
+
+	//update
+	$filter_update = html_print_submit_button(__('Update item'), 'edit_item', false, 'class="sub upd"', true);
+
 	$onheader = array('updated_time' => $updated_time, 'fullscreen' => $fullscreen, 
 		'combo_module_groups' => $filter_module_groups,
 		'combo_groups' => $filter_groups);
@@ -121,38 +178,77 @@ function mainAgentsModules() {
 	
 	// Old style table, we need a lot of special formatting,don't use table function
 	// Prepare old-style table
-	echo '<table class="databox filters" cellpadding="0" cellspacing="0" border="0" style="width:100%;">';
+	echo '<table style="width:100%;">';
 	echo "<tr>";
-	echo "<td>" . $filter_module_groups . "</td>";
-	echo "<td>" . $filter_groups  . "</td>";
-	if ($config['pure'] == 1) 
-		echo "<td>" . $comborefr  . "</td>";
-	echo "<td> <strong>" . __("Full screen") . "</strong>" . $fullscreen['text'] . "</td>";
+		if ($config['pure'] == 1){ 
+			echo "<td>" . $comborefr  . "</td>";
+			echo "<td>"  . $fullscreen['text'] . "</td>";
+		}
+		else{
+			echo "<td> <span style='float: right;'>" . $fullscreen['text'] . "</span> </td>";
+		}
 	echo "</tr>";
 	echo "</table>";
 	
-	$agents = '';
-	$agents = agents_get_group_agents($group_id,array('disabled' => 0));
-	$agents = array_keys($agents);
-	
-	$filter_module_group = array('disabled' => 0);
-	
-	if ($modulegroup > 0) {
-		$filter_module_group['id_module_group'] = $modulegroup;
+	if($config['pure'] != 1){
+		echo '<form method="post" action="' . ui_get_url_refresh (array ('offset' => $offset, 'hor_offset' => $offset,'group_id' => $group_id, 'modulegroup' => $modulegroup)).'">';
+		echo '<table class="databox filters" cellpadding="0" cellspacing="0" border="0" style="width:100%;">';
+			echo "<tr>";
+				echo "<td>" . $filter_groups_label . "</td>";
+				echo "<td>" . $filter_groups       . "</td>";
+				echo "<td></td>";
+				echo "<td></td>";
+				echo "<td>" . $filter_module_groups_label . "</td>";
+				echo "<td>" . $filter_module_groups       . "</td>";
+			echo "</tr>";
+			echo "<tr>";
+				echo "<td>" . $filter_agents_label        . "</td>";
+				echo "<td>" . $filter_agents              . "</td>";
+				echo "<td>" . $filter_type_show_label     . "</td>";
+				echo "<td>" . $filter_type_show           . "</td>";
+				echo "<td>" . $filter_modules_label       . "</td>";
+				echo "<td>" . $filter_modules             . "</td>";
+			echo "</tr>";
+			echo "<tr>";
+				echo "<td colspan=6 ><span style='float: right; padding-right: 20px;'>" . $filter_update . "</sapn></td>";
+			echo "</tr>";
+		echo "</table>";
+		echo '</form>';
 	}
-	$count = 0;
-	foreach ($agents as $agent) {
-		$module = agents_get_modules($agent, false,
-			$filter_module_group, true, false);
-		if ($module == false) {
-			unset($agents[$count]);
+	
+	if($agents_id[0] != -1){
+		$agents = $agents_id;
+		$all_modules = array();
+		$total_pagination = count($agents);
+		foreach ($modules_selected as $key => $value) {
+			$all_modules[$value] = io_safe_output(modules_get_agentmodule_name($value));  
 		}
-		$count++;
 	}
-	$total_pagination = count($agents);
-	$all_modules = agents_get_modules($agents, false,
-		$filter_module_group, true, false);
-	
+	else {
+		$agents = '';
+		$agents = agents_get_group_agents($group_id,array('disabled' => 0));
+		$agents = array_keys($agents);	
+		$filter_module_group = array('disabled' => 0);
+		
+		if ($modulegroup > 0) {
+			$filter_module_group['id_module_group'] = $modulegroup;
+		}
+		$count = 0;
+		foreach ($agents as $agent) {
+			$module = agents_get_modules($agent, false,
+				$filter_module_group, true, false);
+			if ($module == false) {
+				unset($agents[$count]);
+			}
+			$count++;
+		}
+		$total_pagination = count($agents);
+
+
+		$all_modules = agents_get_modules($agents, false,
+			$filter_module_group, true, false);
+	}
+
 	$modules_by_name = array();
 	$name = '';
 	$cont = 0;
@@ -173,9 +269,15 @@ function mainAgentsModules() {
 		$block = count($modules_by_name);
 	}
 	
-	$filter_groups = array ('offset' => (int) $offset,
-		'limit' => (int) $config['block_size'], 'disabled' => 0,'id_agente'=>$agents);
-	
+	if($update_item == ''){
+		$filter_groups = array ('offset' => (int) $offset,
+			'limit' => (int) $config['block_size'], 'disabled' => 0,'id_agente'=>$agents);
+	}
+	else{
+		$filter_groups = array ('offset' => 0,
+			'limit' => (int) $config['block_size'], 'disabled' => 0,'id_agente'=>$agents);	
+	}
+
 	if ($group_id > 0) {
 		$filter_groups['id_grupo'] = $group_id;
 	}
@@ -204,10 +306,11 @@ function mainAgentsModules() {
 				"sec=extensions&" .
 				"sec2=extensions/agents_modules&" .
 				"refr=0&" .
+				"save_serialize=1&" .
+				"selection_a_m=" . $selection_a_m . "&" .
 				"hor_offset=" . $new_hor_offset . "&" .
-				"offset=" . $offset . "&" .
-				"group_id=" . $group_id . "&" .
-				"modulegroup=" . $modulegroup . "'>" .
+				"offset=" . $offset .
+			    "'>" .
 				html_print_image("images/arrow_left.png", true,
 					array('title' => __('Previous modules'))) . 
 			"</a>" .
@@ -241,10 +344,11 @@ function mainAgentsModules() {
 				"extension_in_menu=estado&" .
 				"sec=extensions&".
 				"sec2=extensions/agents_modules&".
+				"save_serialize=1&" .
+				"selection_a_m=" . $selection_a_m . "&" .
 				"hor_offset=" . $new_hor_offset . "&".
-				"offset=" . $offset . "&" .
-				"group_id=" . $group_id . "&" .
-				"modulegroup=" . $modulegroup . "'>" .
+				"offset=" . $offset .
+				 "'>" .
 				html_print_image(
 					"images/arrow.png", true,
 					array('title' => __('More modules'))) .
@@ -259,7 +363,8 @@ function mainAgentsModules() {
 		$filter_agents['id_grupo'] = $group_id;
 	}
 	// Prepare pagination
-	ui_pagination ($total_pagination);
+	$url = 'index.php?extension_in_menu=estado&sec=extensions&sec2=extensions/agents_modules&save_serialize=1&' . "hor_offset=" . $hor_offset ."&selection_a_m=" . $selection_a_m;
+	ui_pagination ($total_pagination, $url);
 	
 	foreach ($agents as $agent) {
 		// Get stats for this group
@@ -407,3 +512,108 @@ extensions_add_operation_menu_option(__("Agents/Modules view"), 'estado', 'agent
 extensions_add_main_function('mainAgentsModules');
 
 ?>
+<script type="text/javascript">
+	$(document).ready (function () {
+		$("#group_id").change (function () {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_agents_group_json" : 1,
+					"id_group" : this.value,
+					"privilege" : "AW",
+					"keys_prefix" : "_"
+				},
+				function (data, status) {
+					$("#id_agents2").html('');
+					$("#module").html('');
+					jQuery.each (data, function (id, value) {
+						// Remove keys_prefix from the index
+						id = id.substring(1);
+						
+						option = $("<option></option>")
+							.attr ("value", value["id_agente"])
+							.html (value["nombre"]);
+						$("#id_agents").append (option);
+						$("#id_agents2").append (option);
+					});
+				},
+				"json"
+			);
+		});
+
+		$("#modulegroup").change (function () {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_modules_group_json" : 1,
+					"id_module_group" : this.value,
+					"id_agents" : $("#id_agents2").val(),
+					"selection" : $("#selection_agent_module").val()
+				},
+				function (data, status) {
+					$("#module").html('');
+					if(data){
+						jQuery.each (data, function (id, value) {
+							option = $("<option></option>")
+								.attr ("value", value["id_agente_modulo"])
+								.html (value["nombre"]);
+							$("#module").append (option);
+						});
+					}
+				},
+				"json"
+			);
+		});
+
+		$("#id_agents2").change (function(){
+			selection_agent_module();
+		});
+
+		$("#selection_agent_module").change(function() {
+			jQuery.post ("ajax.php",
+				{"page" : "operation/agentes/ver_agente",
+					"get_modules_group_json" : 1,
+					"id_module_group" : $("#modulegroup").val(),
+					"id_agents" : $("#id_agents2").val(),
+					"selection" : $("#selection_agent_module").val()
+				},
+				function (data, status) {
+					$("#module").html('');
+					if(data){
+						jQuery.each (data, function (id, value) {
+							option = $("<option></option>")
+								.attr ("value", value["id_agente_modulo"])
+								.html (value["nombre"]);
+							$("#module").append (option);
+						});
+					}
+				},
+				"json"
+			);
+		});
+
+		selection_agent_module();
+
+	});
+
+	function selection_agent_module() {
+		jQuery.post ("ajax.php",
+			{"page" : "operation/agentes/ver_agente",
+				"get_modules_group_json" : 1,
+				"id_module_group" : $("#modulegroup").val(),
+				"id_agents" : $("#id_agents2").val(),
+				"selection" : $("#selection_agent_module").val()
+			},
+			function (data, status) {
+				$("#module").html('');
+				if(data){
+					jQuery.each (data, function (id, value) {
+						option = $("<option></option>")
+							.attr ("value", value["id_agente_modulo"])
+							.html (value["nombre"]);
+						$("#module").append (option);
+					});
+				}
+			},
+			"json"
+			);
+	}
+</script>

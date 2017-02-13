@@ -1919,12 +1919,14 @@ $(document).ready (function () {
 				},
 				function (data, status) {
 					$("#module").html('');
-					jQuery.each (data, function (id, value) {
-						option = $("<option></option>")
-							.attr ("value", value["id_agente_modulo"])
-							.html (value["nombre"]);
-						$("#module").append (option);
-					});
+					if(data){
+						jQuery.each (data, function (id, value) {
+							option = $("<option></option>")
+								.attr ("value", value["id_agente_modulo"])
+								.html (value["nombre"]);
+							$("#module").append (option);
+						});
+					}
 				},
 				"json"
 			);
@@ -1942,12 +1944,14 @@ $(document).ready (function () {
 				},
 				function (data, status) {
 					$("#module").html('');
-					jQuery.each (data, function (id, value) {
-						option = $("<option></option>")
-							.attr ("value", value["id_agente_modulo"])
-							.html (value["nombre"]);
-						$("#module").append (option);
-					});
+					if(data){
+						jQuery.each (data, function (id, value) {
+							option = $("<option></option>")
+								.attr ("value", value["id_agente_modulo"])
+								.html (value["nombre"]);
+							$("#module").append (option);
+						});
+					}
 				},
 				"json"
 			);
@@ -2613,6 +2617,13 @@ function chooseType() {
 			$("#row_period").show();
 			$("#sla_list").show();
 			$("#row_working_time").show();
+			break;
+
+		case 'module_histogram_graph':
+			$("#row_description").show();
+			$("#row_period").show();
+			$("#row_agent").show();
+			$("#row_module").show();
 			break;
 		
 		case 'SLA_monthly':

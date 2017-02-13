@@ -229,18 +229,53 @@ if ($id_agent_module) {
 	
 	$cron_interval = explode (" ", $module['cron_interval']);
 	if (isset ($cron_interval[4])) {
-		$minute = $cron_interval[0];
-		$hour = $cron_interval[1];
-		$mday = $cron_interval[2];
-		$month = $cron_interval[3];
-		$wday = $cron_interval[4];
+		$minute_from = $cron_interval[0];
+		$min = explode("-", $minute_from);
+		$minute_from = $min[0];
+		if (isset($min[1])) {
+			$minute_to = $min[1];
+		}
+
+		$hour_from = $cron_interval[1];
+		$h = explode("-", $hour_from);
+		$hour_from = $h[0];
+		if (isset($h[1])) {
+			$hour_to = $h[1];
+		}
+
+		$mday_from = $cron_interval[2];
+		$md = explode("-", $mday_from);
+		$mday_from = $md[0];
+		if (isset($md[1])) {
+			$mday_to = $md[1];
+		}
+		
+		$month_from = $cron_interval[3];
+		$m = explode("-", $month_from);
+		$month_from = $m[0];
+		if (isset($m[1])) {
+			$month_to = $m[1];
+		}
+
+		$wday_from = $cron_interval[4];
+		$wd = explode("-", $wday_from);
+		$wday_from = $wd[0];
+		if (isset($wd[1])) {
+			$wday_to = $wd[1];
+		}
 	}
 	else {
-		$minute = '*';
-		$hour = '*';
-		$mday = '*';
-		$month = '*';
-		$wday = '*';
+		$minute_from = '*';
+		$hour_from = '*';
+		$mday_from = '*';
+		$month_from = '*';
+		$wday_from = '*';
+
+		$minute_to = '*';
+		$hour_to = '*';
+		$mday_to = '*';
+		$month_to = '*';
+		$wday_to = '*';
 	}
 	
 	$module_macros = null;
@@ -322,11 +357,16 @@ else {
 		$id_category = 0;
 		
 		$cron_interval = '* * * * *';
-		$hour = '*';
-		$minute = '*';
-		$mday = '*';
-		$month = '*';
-		$wday = '*';
+		$hour_from = '*';
+		$minute_from = '*';
+		$mday_from = '*';
+		$month_from = '*';
+		$wday_from = '*';
+		$hour_to = '*';
+		$minute_to = '*';
+		$mday_to = '*';
+		$month_to = '*';
+		$wday_to = '*';
 		
 		$ff_interval = 0;
 

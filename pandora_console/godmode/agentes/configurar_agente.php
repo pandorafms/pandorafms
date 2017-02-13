@@ -1014,13 +1014,50 @@ if ($update_module || $create_module) {
 	
 	$id_category = (int) get_parameter('id_category');
 	
-	$hour = get_parameter('hour');
-	$minute = get_parameter('minute');
-	$mday = get_parameter('mday');
-	$month = get_parameter('month');
-	$wday = get_parameter('wday');
-	
-	$cron_interval = "$minute $hour $mday $month $wday";
+	$hour_from = get_parameter('hour_from');
+	$minute_from = get_parameter('minute_from');
+	$mday_from = get_parameter('mday_from');
+	$month_from = get_parameter('month_from');
+	$wday_from = get_parameter('wday_from');
+
+	$hour_to = get_parameter('hour_to');
+	$minute_to = get_parameter('minute_to');
+	$mday_to = get_parameter('mday_to');
+	$month_to = get_parameter('month_to');
+	$wday_to = get_parameter('wday_to');
+
+	if ($hour_to != "*") {
+		$hour_to = "-" . $hour_to;
+	}
+	else {
+		$hour_to = "";
+	}
+	if ($minute_to != "*") {
+		$minute_to = "-" . $minute_to;
+	}
+	else {
+		$minute_to = "";
+	}
+	if ($mday_to != "*") {
+		$mday_to = "-" . $mday_to;
+	}
+	else {
+		$mday_to = "";
+	}
+	if ($month_to != "*") {
+		$month_to = "-" . $month_to;
+	}
+	else {
+		$month_to = "";
+	}
+	if ($wday_to != "*") {
+		$wday_to = "-" . $wday_to;
+	}
+	else {
+		$wday_to = "";
+	}
+
+	$cron_interval = $minute_from . $minute_to . " " . $hour_from . $hour_to . " " . $mday_from . $mday_to . " " . $month_from . $month_to . " " . $wday_from . $wday_to;
 	if (!cron_check_syntax($cron_interval)) {
 		$cron_interval = '';
 	}
